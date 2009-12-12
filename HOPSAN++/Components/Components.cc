@@ -19,3 +19,23 @@ void Component::simulate(const double startT, const double Ts)
         time += mTimestep;
     }
 }
+
+void Component::setName(string &rName)
+{
+    mName = rName;
+}
+
+string Component::getName()
+{
+    return &mName;
+}
+
+void Component::setTimestep(const double timestep)
+{
+    mTimestep = timestep;
+}
+
+double Component::getTimestep()
+{
+    return mTimestep;
+}
