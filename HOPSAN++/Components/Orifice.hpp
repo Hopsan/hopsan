@@ -18,7 +18,9 @@ public:
 
     void simulateOneTimestep(self)
     {
-        #Input
+        
+		//Man behöver väl inte hämta värden för p och q när de endast är utparametrar? /Robert
+		#Input
         p1  = self.getNode('p1').getPressure()
         q1  = self.getNode('p1').getMassflow()
         c1  = self.getNode('p1').getWavevariable()
