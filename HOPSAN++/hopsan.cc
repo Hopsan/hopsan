@@ -33,7 +33,7 @@ int main()
     simulationmodel.connect(orificeC, orificeC.P2, psourceR, psourceR.P1);
 
     //Run simulation
-    simulationmodel.simulate(0,4);
+    simulationmodel.simulate(0,1);
 
 
     cout << "HOPSAN++ Done!" << endl;

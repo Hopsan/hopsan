@@ -44,9 +44,9 @@ public:
 
         //Write to nodes
         p1_ptr->setData(NodeHydraulic::PRESSURE, p1);
-        p1_ptr->setData(NodeHydraulic::PRESSURE, q1);
+        p1_ptr->setData(NodeHydraulic::MASSFLOW, q1);
         p2_ptr->setData(NodeHydraulic::PRESSURE, p2);
-        p2_ptr->setData(NodeHydraulic::PRESSURE, q2);
+        p2_ptr->setData(NodeHydraulic::MASSFLOW, q2);
     }
 
 

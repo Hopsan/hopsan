@@ -213,9 +213,9 @@ void ComponentSystem::simulate(const double startT, const double Ts)
         }
 
         //Q components
-        for (size_t c=0; c < mpComponentsC.size(); ++c)
+        for (size_t c=0; c < mpComponentsQ.size(); ++c)
         {
-            mpComponentsC[c]->simulate(time, mTimestep);
+            mpComponentsQ[c]->simulate(time, mTimestep);
         }
 
         time += mTimestep;
