@@ -1,17 +1,17 @@
 #include "Nodes.h"
 
 //Node constructor
-Node::Node(string name)
+Node::Node()
 {
-    mName = name;
+    //mName = name;
     mNodeType = "Node";
     mDataVector.clear();
 }
 
-string &Node::getName()
-{
-    return mName;
-}
+//string &Node::getName()
+//{
+//    return mName;
+//}
 
 string &Node::getNodeType()
 {
@@ -29,21 +29,21 @@ double Node::getData(const size_t data_type)
 }
 
 //Hydraulic Node constructor
-NodeFluid::NodeFluid(string name) : Node(name)
+NodeFluid::NodeFluid() : Node()
 {
     mNodeType = "NodeFluid";
     mDataVector.resize(3);
 }
 
 //Hydraulic Node constructor
-NodeHydraulic::NodeHydraulic(string name) : NodeFluid(name)
+NodeHydraulic::NodeHydraulic() : NodeFluid()
 {
     mNodeType = "NodeHydraulic";
     mDataVector.resize(4);
 }
 
 //Mechanic Node constructor
-NodeMech::NodeMech(string name) : Node(name)
+NodeMech::NodeMech() : Node()
 {
     mNodeType = "NodeMech";
     mDataVector.resize(2);

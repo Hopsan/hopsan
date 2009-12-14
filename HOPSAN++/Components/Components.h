@@ -13,6 +13,7 @@ public:
     string &getNodeType();
     Node &getNode();
     Node* getNodePtr();
+    void setNode(Node* node_ptr);
 
 private:
     string mNodeType;
@@ -25,28 +26,33 @@ class Component
 {
 public:
     Component(string name, double timestep=0.001);
-    virtual void simulateOneTimestep()=0;
+    virtual void simulateOneTimestep();
     void simulate(const double startT, const double Ts);
 
     void setName(string &rName);
     string &getName();
 
+    string &getType();
+
     void setTimestep(const double timestep);
     double getTimestep();
 
+    void setSystemparent(Component &rComponent); ///TODO: this should not be public
+    Port &getPort(const size_t port_idx); ///TODO: this should not be public
+
 protected:
     void addPort(const size_t port_idx, Port port);
+    Component &getSystemparent();
+
     string mType;
     vector<Port> mPorts;
 
+    double mTimestep;
+
 private:
     string mName;
-    double mTimestep;
+
     Component* mpSystemparent;
-
-
-
-
 
 };
 
@@ -69,5 +75,28 @@ public:
 };
 
 
+class ComponentSystem :public Component
+{
+    public:
+    ComponentSystem(string name, double timestep=0.001);
+    void addComponents(vector<Component*> components);
+    void addComponent(Component &rComponent);
+    void addSubNode(Node* node_ptr);
+    void logAllNodes();
+    void connect(Component &rComponent1, size_t portname1, Component &rComponent2, size_t portname2);
+    void simulate(const double startT, const double Ts);
+
+    protected:
+    vector<Component*> mpSubComponents;
+    vector<Node*> mpSubNodes;
+    vector<Component*> mpComponentsQ;
+    vector<Component*> mpComponentsC;
+    //vector<ComponentSignal*>
+
+    private:
+
+
+
+};
 
 #endif // COMPONENTS_H_INCLUDED

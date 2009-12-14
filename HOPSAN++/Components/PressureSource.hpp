@@ -5,9 +5,9 @@ class ComponentPressureSource : public ComponentC
 {
 
 public:
-    enum {P1, P2};
+    enum {P1};
 
-    ComponentPressureSource(const string name, const double timestep=0.001, const double pressure=1.0e5)
+    ComponentPressureSource(const string name, const double pressure=1.0e5, const double timestep=0.001)
                     :ComponentC(name, timestep)
     {
         mPressure = pressure;

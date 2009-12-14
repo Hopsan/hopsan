@@ -8,13 +8,12 @@ using namespace std;
 class Node
 {
 public:
-    Node(string name);
-    string &getName();
+    Node();
+    //string &getName();
+    string &getNodeType();
 
     void setData(const size_t data_type, double data);
     double getData(const size_t data_type);
-
-    string &getNodeType();
 
 protected:
     vector<double> mDataVector;
@@ -29,21 +28,21 @@ private:
 class NodeFluid :public Node
 {
 public:
-    NodeFluid(string name);
+    NodeFluid();
     enum {MASSFLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP};
 };
 
 class NodeHydraulic :public NodeFluid
 {
 public:
-    NodeHydraulic(string name);
+    NodeHydraulic();
     enum {MASSFLOW, PRESSURE, TEMPERATURE, HEATFLOW};
 };
 
 class NodeMech :public Node
 {
 public:
-    NodeMech(string name);
+    NodeMech();
     enum {VELOCITY, FORCE};
 };
 

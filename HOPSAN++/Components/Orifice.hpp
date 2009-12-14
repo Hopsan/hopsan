@@ -10,7 +10,7 @@ class ComponentOrifice : public ComponentQ
 public:
     enum {P1, P2};
 
-    ComponentOrifice(const string name, const double timestep=0.001, const double kc=1.0e-11)
+    ComponentOrifice(const string name, const double kc=1.0e-11, const double timestep=0.001)
                     : ComponentQ(name, timestep)
     {
         //ComponentQ.__init__(self,  name=name,  timestep=timestep)
