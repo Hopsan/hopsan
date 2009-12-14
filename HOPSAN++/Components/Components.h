@@ -87,7 +87,7 @@ class ComponentSystem :public Component
     void simulate(const double startT, const double Ts);
 
     protected:
-    vector<Component*> mpSubComponents;
+    vector<Component*> mpSubComponents; //Problems with inheritance and casting?
     vector<Node*> mpSubNodes;
     vector<Component*> mpComponentsQ;
     vector<Component*> mpComponentsC;

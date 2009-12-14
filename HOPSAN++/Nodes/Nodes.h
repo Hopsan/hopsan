@@ -36,7 +36,7 @@ class NodeHydraulic :public NodeFluid
 {
 public:
     NodeHydraulic();
-    enum {MASSFLOW, PRESSURE, TEMPERATURE, HEATFLOW};
+    enum {MASSFLOW, PRESSURE, TEMPERATURE, HEATFLOW}; //Which is used here, enum from NodeFluid or this one???
 };
 
 class NodeMech :public Node
