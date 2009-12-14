@@ -2,48 +2,56 @@
 #define ORIFICE_HPP_INCLUDED
 
 #include "Components.h"
+#include "Node.h"
 
-class ComponentOrifice : Component
+class ComponentOrifice : ComponentQ
 {
 
 public:
+    enum {p1, p2};
+
     ComponentOrifice(const string name, const double timestep=0.001, const double kc=1.0e-11)
-                    : Component(name, timestep)
+                    : ComponentQ(name, timestep)
     {
         //ComponentQ.__init__(self,  name=name,  timestep=timestep)
 
         mKc = kc;
-        setNodeSpecifications({'p1':'NodeHydraulic', 'p2':'NodeHydraulic'})
+        //setNodeSpecifications({'p1':'NodeHydraulic', 'p2':'NodeHydraulic'})
+        addPort(p1, Port("NodeHydraulic"));
+        addPort(p2, Port("NodeHydraulic"));
     }
 
     void simulateOneTimestep(self)
     {
-        
-		//Man behöver väl inte hämta värden för p och q när de endast är utparametrar? /Robert
-		#Input
-        p1  = self.getNode('p1').getPressure()
-        q1  = self.getNode('p1').getMassflow()
-        c1  = self.getNode('p1').getWavevariable()
-        Zc1 = self.getNode('p1').getCharimp()
-        p2  = self.getNode('p2').getPressure()
-        q2  = self.getNode('p2').getMassflow()
-        c2  = self.getNode('p2').getWavevariable()
-        Zc2 = self.getNode('p2').getCharimp()
+		#read from nodes
+		Node* p1_ptr = mPorts[p1];
+		Node* p2_ptr = mPorts[p2];
+
+        double p1  = p1_ptr->getData(NodeHydraulic::PRESSURE);
+        double q1  = p1_ptr->getData(NodeHydraulic::MASSFLOW);
+        double c1  = p1_ptr->getData(NodeHydraulic::WAVEVARIABLE);
+        double Zc1 = p1_ptr->getData(NodeHydraulic::CHARIMP);
+        double p2  = p2_ptr->getData(NodeHydraulic::PRESSURE);
+        double q2  = p2_ptr->getData(NodeHydraulic::MASSFLOW);
+        double c2  = p2_ptr->getData(NodeHydraulic::WAVEVARIABLE);
+        double Zc2 = p2_ptr->getData(NodeHydraulic::CHARIMP);
 
         #Delay Line
-        q2 = self.kc*(c1-c2)/(1+ self.kc*(Zc1+Zc2))
+        q2 = mKc*(c1-c2)/(1+ mKc*(Zc1+Zc2))
         q1 = -q2
         p1 = c1 + q1*Zc1
         p2 = c2 + q2*Zc2
+
+        #Write to nodes
+        p1_ptr->setData(NodeHydraulic::PRESSURE, p1);
+        p1_ptr->setData(NodeHydraulic::PRESSURE, q1);
+        p2_ptr->setData(NodeHydraulic::PRESSURE, p2);
+        p2_ptr->setData(NodeHydraulic::PRESSURE, q2);
     }
 
 
 private:
     double mKc;
-
-
-
-
 
 };
 

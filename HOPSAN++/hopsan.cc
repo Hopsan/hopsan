@@ -1,16 +1,20 @@
 #include "Components.h"
 #include "Nodes.h"
 #include <iostream>
+//#include <typeinfo>
 
 int main()
 {
-    HydraulicNode myNode("mynode");
-    myNode.setData(HydraulicNode::PRESSURE, 8);
-    cout << "p1: " << myNode.getData(HydraulicNode::PRESSURE) << endl;
-    myNode.setData(HydraulicNode::PRESSURE, 2);
+    NodeHydraulic myNode("mynode");
+    myNode.setData(NodeHydraulic::PRESSURE, 8);
+    cout << "p1: " << myNode.getData(NodeHydraulic::PRESSURE) << endl;
+    myNode.setData(NodeHydraulic::PRESSURE, 2);
     cout << "p2: " << myNode.getData(myNode.PRESSURE) << endl;
     myNode.setData(myNode.PRESSURE, 5);
-    cout << "p3: " << myNode.getData(MechNode::FORCE) << endl;
+    cout << "p3: " << myNode.getData(NodeMech::FORCE) << endl;
+
+
+    //cout << "type: " << typeid(myNode).name() << endl;
 
 
     cout << "Hello HOPSAN" << endl;

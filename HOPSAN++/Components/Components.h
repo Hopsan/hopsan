@@ -2,7 +2,24 @@
 #define COMPONENTS_H_INCLUDED
 
 #include <string>
+#include "Nodes.h"
 using namespace std;
+
+class Port
+{
+public:
+    Port();
+    Port(string node_type);
+    string &getNodeType();
+    Node &getNode();
+    Node* getNodePtr();
+
+private:
+    string mNodeType;
+    Node* mpNode;
+
+};
+
 
 class Component
 {
@@ -17,10 +34,18 @@ public:
     void setTimestep(const double timestep);
     double getTimestep();
 
+protected:
+    void addPort(const size_t port_idx, Port port);
+    string mType;
+    vector<Port> mPorts;
 
 private:
     string mName;
     double mTimestep;
+    Component* mpSystemparent;
+
+
+
 
 
 };
