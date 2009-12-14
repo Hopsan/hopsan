@@ -8,7 +8,7 @@ class ComponentOrifice : ComponentQ
 {
 
 public:
-    enum {p1, p2};
+    enum {P1, P2};
 
     ComponentOrifice(const string name, const double timestep=0.001, const double kc=1.0e-11)
                     : ComponentQ(name, timestep)
@@ -17,15 +17,15 @@ public:
 
         mKc = kc;
         //setNodeSpecifications({'p1':'NodeHydraulic', 'p2':'NodeHydraulic'})
-        addPort(p1, Port("NodeHydraulic"));
-        addPort(p2, Port("NodeHydraulic"));
+        addPort(P1, Port("NodeHydraulic"));
+        addPort(P2, Port("NodeHydraulic"));
     }
 
-    void simulateOneTimestep(self)
+    void simulateOneTimestep()
     {
-		#read from nodes
-		Node* p1_ptr = mPorts[p1];
-		Node* p2_ptr = mPorts[p2];
+		//read from nodes
+		Node* p1_ptr = mPorts[P1];
+		Node* p2_ptr = mPorts[P2];
 
         double p1  = p1_ptr->getData(NodeHydraulic::PRESSURE);
         double q1  = p1_ptr->getData(NodeHydraulic::MASSFLOW);
@@ -36,17 +36,17 @@ public:
         double c2  = p2_ptr->getData(NodeHydraulic::WAVEVARIABLE);
         double Zc2 = p2_ptr->getData(NodeHydraulic::CHARIMP);
 
-        #Delay Line
+        //Delay Line
         q2 = mKc*(c1-c2)/(1+ mKc*(Zc1+Zc2))
         q1 = -q2
         p1 = c1 + q1*Zc1
         p2 = c2 + q2*Zc2
 
-        #Write to nodes
-        p1_ptr->setData(NodeHydraulic::PRESSURE, p1);
-        p1_ptr->setData(NodeHydraulic::PRESSURE, q1);
-        p2_ptr->setData(NodeHydraulic::PRESSURE, p2);
-        p2_ptr->setData(NodeHydraulic::PRESSURE, q2);
+        //Write to nodes
+        p1_ptr->setData(NodeHydraulic::PRESSURE, P1);
+        p1_ptr->setData(NodeHydraulic::PRESSURE, Q1);
+        p2_ptr->setData(NodeHydraulic::PRESSURE, P2);
+        p2_ptr->setData(NodeHydraulic::PRESSURE, Q2);
     }
 
 
