@@ -19,6 +19,6 @@ int main()
     //cout << "type: " << typeid(myNode).name() << endl;
 
 
-    cout << "Hello HOPSAN" << endl;
+    cout << "Hello HOPSAN++" << endl;
     return 0;
 }
