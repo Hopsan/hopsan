@@ -26,4 +26,23 @@ private:
 };
 
 
+class ComponentC :public Component
+{
+public:
+    ComponentC(string name, double timestep=0.001);
+
+
+};
+
+
+class ComponentQ :public Component
+{
+public:
+    ComponentQ(string name, double timestep=0.001);
+
+
+};
+
+
+
 #endif // COMPONENTS_H_INCLUDED

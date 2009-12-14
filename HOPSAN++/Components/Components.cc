@@ -39,3 +39,15 @@ double Component::getTimestep()
 {
     return mTimestep;
 }
+
+//constructor ComponentC
+ComponentC::ComponentC(string name, double timestep) : Component(name, timestep)
+{
+
+}
+
+//Constructor ComponentQ
+ComponentQ::ComponentQ(string name, double timestep) : Component(name, timestep)
+{
+
+}

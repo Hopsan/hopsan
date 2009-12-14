@@ -5,21 +5,6 @@
 #include <string>
 using namespace std;
 
-//enum {HYDRAULICNODE, MECHANICNODE}
-
-
-
-//class NodeData
-//{
-//    public:
-//    NodeData();
-//
-//    private:
-//    vector<int> mDataMap;
-//    vector<double> mDataVector;
-//
-//};
-
 class Node
 {
 public:
@@ -42,7 +27,7 @@ class HydraulicNode :public Node // Måste ha samma uppsättning attribut och me
 {
 public:
     HydraulicNode(string name);
-    enum enum1 {MASSFLOW, PRESSURE, TEMPERATURE};
+    enum {MASSFLOW, PRESSURE, TEMPERATURE};
 };
 
 class MechNode :public Node // Måste ha samma uppsättning attribut och metoder som Node för att vara "polymorphic"

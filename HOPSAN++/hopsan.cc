@@ -12,9 +12,6 @@ int main()
     myNode.setData(myNode.PRESSURE, 5);
     cout << "p3: " << myNode.getData(MechNode::FORCE) << endl;
 
-    cout << "enum1: " << sizeof(HydraulicNode::enum1) << endl;
-
-
 
     cout << "Hello HOPSAN" << endl;
     return 0;
