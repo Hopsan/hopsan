@@ -2,6 +2,8 @@
 #include "Nodes.h"
 #include <iostream>
 //#include <typeinfo>
+#include "PressureSource.hpp"
+#include "Orifice.hpp"
 
 int main()
 {

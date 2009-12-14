@@ -1,14 +1,14 @@
 #ifndef PRESSURESOURCE_HPP_INCLUDED
 #define PRESSURESOURCE_HPP_INCLUDED
 
-class ComponentPressureSource : ComponentC
+class ComponentPressureSource : public ComponentC
 {
 
 public:
     enum {P1, P2};
 
     ComponentPressureSource(const string name, const double timestep=0.001, const double pressure=1.0e5)
-                    : ComponentQ(name, timestep)
+                    :ComponentC(name, timestep)
     {
         mPressure = pressure;
 
@@ -18,15 +18,15 @@ public:
     void simulateOneTimestep()
     {
         //read fron nodes
-   		Node* p1_ptr = mPorts[P1];
+   		Node* p1_ptr = mPorts[P1].getNodePtr();
 
         //delayed line
         double p1 = mPressure;
-        double Zc = 0;
+        double zc = 0;
 
         //write to nodes
         p1_ptr->setData(NodeHydraulic::WAVEVARIABLE, p1);
-        p1_ptr->setData(NodeHydraulic::CHARIMP, Zc);
+        p1_ptr->setData(NodeHydraulic::CHARIMP, zc);
     }
 
 private:

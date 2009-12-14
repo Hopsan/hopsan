@@ -2,9 +2,9 @@
 #define ORIFICE_HPP_INCLUDED
 
 #include "Components.h"
-#include "Node.h"
+#include "Nodes.h"
 
-class ComponentOrifice : ComponentQ
+class ComponentOrifice : public ComponentQ
 {
 
 public:
@@ -24,8 +24,8 @@ public:
     void simulateOneTimestep()
     {
 		//read from nodes
-		Node* p1_ptr = mPorts[P1];
-		Node* p2_ptr = mPorts[P2];
+		Node* p1_ptr = mPorts[P1].getNodePtr();
+		Node* p2_ptr = mPorts[P2].getNodePtr();
 
         double p1  = p1_ptr->getData(NodeHydraulic::PRESSURE);
         double q1  = p1_ptr->getData(NodeHydraulic::MASSFLOW);
@@ -37,16 +37,16 @@ public:
         double Zc2 = p2_ptr->getData(NodeHydraulic::CHARIMP);
 
         //Delay Line
-        q2 = mKc*(c1-c2)/(1+ mKc*(Zc1+Zc2))
-        q1 = -q2
-        p1 = c1 + q1*Zc1
-        p2 = c2 + q2*Zc2
+        q2 = mKc*(c1-c2)/(1+ mKc*(Zc1+Zc2));
+        q1 = -q2;
+        p1 = c1 + q1*Zc1;
+        p2 = c2 + q2*Zc2;
 
         //Write to nodes
-        p1_ptr->setData(NodeHydraulic::PRESSURE, P1);
-        p1_ptr->setData(NodeHydraulic::PRESSURE, Q1);
-        p2_ptr->setData(NodeHydraulic::PRESSURE, P2);
-        p2_ptr->setData(NodeHydraulic::PRESSURE, Q2);
+        p1_ptr->setData(NodeHydraulic::PRESSURE, p1);
+        p1_ptr->setData(NodeHydraulic::PRESSURE, q1);
+        p2_ptr->setData(NodeHydraulic::PRESSURE, p2);
+        p2_ptr->setData(NodeHydraulic::PRESSURE, q2);
     }
 
 

@@ -30,7 +30,7 @@ class NodeFluid :public Node
 {
 public:
     NodeFluid(string name);
-    enum {MASSFLOW, PRESSURE, TEMPERATURE};
+    enum {MASSFLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP};
 };
 
 class NodeHydraulic :public NodeFluid
