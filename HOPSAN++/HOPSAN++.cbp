@@ -30,8 +30,8 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add directory="/home/petno25/svn/temp_hopsan/trunk/HOPSAN++/Components" />
-			<Add directory="/home/petno25/svn/temp_hopsan/trunk/HOPSAN++/Nodes" />
+			<Add directory="./Components" />
+			<Add directory="./Nodes" />
 		</Compiler>
 		<Linker>
 			<Add directory="/home/petno25/svn/temp_hopsan/trunk/HOPSAN++/Components" />
