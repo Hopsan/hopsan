@@ -2,12 +2,13 @@
 #define COMPONENTS_H_INCLUDED
 
 #include <string>
+using namespace std;
 
 class Component
 {
 public:
     Component(string name, double timestep=0.001);
-    virtual void simulateOneTimestep();
+    virtual void simulateOneTimestep()=0;
     void simulate(const double startT, const double Ts);
 
     void setName(string &rName);

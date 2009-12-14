@@ -1,30 +1,55 @@
 #ifndef NODES_H_INCLUDED
 #define NODES_H_INCLUDED
 
+#include <vector>
+#include <string>
+using namespace std;
+
+//enum {HYDRAULICNODE, MECHANICNODE}
+
+
+
+//class NodeData
+//{
+//    public:
+//    NodeData();
+//
+//    private:
+//    vector<int> mDataMap;
+//    vector<double> mDataVector;
+//
+//};
+
 class Node
 {
 public:
     Node(string name);
+    string &getName();
 
-    virtual void writeData(int dataPos, double data) =0;
+    void setData(const size_t data_type, double data);
+    double getData(const size_t data_type);
 
-    virtual double readData(int dataPos) =0;
+protected:
+    vector<double> mDataVector;
 
 private:
+    size_t mNodeType;
     string mName;
-    vector<double> mDataVector;
 
 };
 
-class MekNode : public Node // Måste ha samma uppsättning attribut och metoder som Node för att vara "polymorphic"
+class HydraulicNode :public Node // Måste ha samma uppsättning attribut och metoder som Node för att vara "polymorphic"
 {
 public:
-    MekNode(string name);
+    HydraulicNode(string name);
+    enum enum1 {MASSFLOW, PRESSURE, TEMPERATURE};
+};
 
-    void writeData(int dataPos, double data);
-
-    double readData(int dataPos);
-
+class MechNode :public Node // Måste ha samma uppsättning attribut och metoder som Node för att vara "polymorphic"
+{
+public:
+    MechNode(string name);
+    enum {VELOCITY, FORCE};
 };
 
 #endif // NODES_H_INCLUDED

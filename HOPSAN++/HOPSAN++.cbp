@@ -30,7 +30,13 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add directory="/home/petno25/svn/temp_hopsan/trunk/HOPSAN++/Components" />
+			<Add directory="/home/petno25/svn/temp_hopsan/trunk/HOPSAN++/Nodes" />
 		</Compiler>
+		<Linker>
+			<Add directory="/home/petno25/svn/temp_hopsan/trunk/HOPSAN++/Components" />
+			<Add directory="/home/petno25/svn/temp_hopsan/trunk/HOPSAN++/Nodes" />
+		</Linker>
 		<Unit filename="Components/Components.cc" />
 		<Unit filename="Components/Components.h" />
 		<Unit filename="Components/Orifice.hpp" />

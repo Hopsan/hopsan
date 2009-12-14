@@ -1,7 +1,7 @@
 #include "Components.h"
 
 //Constructor
-Component::Component(string name, double timestep=0.001)
+Component::Component(string name, double timestep)
 {
     mName = name;
     //this->mName = name;
@@ -25,9 +25,9 @@ void Component::setName(string &rName)
     mName = rName;
 }
 
-string Component::getName()
+string &Component::getName()
 {
-    return &mName;
+    return mName;
 }
 
 void Component::setTimestep(const double timestep)
