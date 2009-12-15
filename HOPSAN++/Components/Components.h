@@ -92,7 +92,7 @@ class ComponentSystem :public Component
     void addComponents(vector<Component*> components);
     void addComponent(Component &rComponent);
     void addSubNode(Node* node_ptr);
-    void logAllNodes();
+    void logAllNodes(const double time);
     void connect(Component &rComponent1, size_t portname1, Component &rComponent2, size_t portname2);
     void simulate(const double startT, const double Ts);
 

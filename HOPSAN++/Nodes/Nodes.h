@@ -15,9 +15,14 @@ public:
     void setData(const size_t data_type, double data);
     double getData(const size_t data_type);
 
+    void logData(const double time);
+    void saveLogData(string filename);
+
 protected:
     vector<double> mDataVector;
     string mNodeType;
+    vector<double> mTimeStorage;
+    vector<vector<double> > mDataStorage;
 
 private:
     string mName;
@@ -36,7 +41,7 @@ class NodeHydraulic :public NodeFluid
 {
 public:
     NodeHydraulic();
-    enum {MASSFLOW, PRESSURE, TEMPERATURE, HEATFLOW}; //Which is used here, enum from NodeFluid or this one???
+    enum {MASSFLOW, PRESSURE, TEMPERATURE, HEATFLOW, DATALENGTH}; //Which is used here, enum from NodeFluid or this one???
 };
 
 class NodeMech :public Node

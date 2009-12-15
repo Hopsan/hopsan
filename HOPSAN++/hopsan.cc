@@ -35,7 +35,8 @@ int main()
     //Run simulation
     simulationmodel.simulate(0,1);
 
-
+    //Test write to file
+    orificeC.getPort(orificeC.P1).getNode().saveLogData("orificeC_P1.txt");
     cout << "HOPSAN++ Done!" << endl;
     return 0;
 }

@@ -201,8 +201,13 @@ void ComponentSystem::addSubNode(Node* node_ptr)
     mpSubNodes.push_back(node_ptr);
 }
 
-void ComponentSystem::logAllNodes()
+void ComponentSystem::logAllNodes(const double time)
 {
+    vector<Node*>::iterator it;
+    for (it=mpSubNodes.begin(); it!=mpSubNodes.end(); ++it)
+    {
+        (*it)->logData(time);
+    }
     ///TODO: this should do something else for now print
     cout << "flow: " << mpSubNodes[0]->getData(0) << endl;
 }
@@ -229,7 +234,7 @@ void ComponentSystem::simulate(const double startT, const double Ts)
 
     while (time < stopT)
     {
-        logAllNodes();
+        logAllNodes(time);
 
         //cout << "time: " << time << endl;
         ///TODO: signal components
