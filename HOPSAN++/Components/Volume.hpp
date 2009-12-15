@@ -1,0 +1,58 @@
+#ifndef ORIFICE_HPP_INCLUDED
+#define ORIFICE_HPP_INCLUDED
+
+#include "Components.h"
+#include "Nodes.h"
+
+class ComponentVolume : public ComponentC
+{
+
+public:
+    enum {P1, P2};
+    ComponentOrifice(const string name, const double bulkmudulus=1.0e9,
+                     const double volume=1.0e-3, const double alpha=0,
+                     const double timestep=0.001)
+                     : ComponentQ(name, timestep)
+    {
+
+        mZc = bulkmodulus/volume*timestep;
+        mAlpha = alpha;
+        //setNodeSpecifications({'p1':'NodeHydraulic', 'p2':'NodeHydraulic'})
+        addPort(P1, Port("NodeHydraulic"));
+        addPort(P2, Port("NodeHydraulic"));
+    }
+
+    void simulateOneTimestep()
+    {
+		//read from nodes
+		Node* p1_ptr = mPorts[P1].getNodePtr();
+		Node* p2_ptr = mPorts[P2].getNodePtr();
+
+        //double p1  = p1_ptr->getData(NodeHydraulic::PRESSURE);
+        double q1  = p1_ptr->getData(NodeHydraulic::MASSFLOW);
+        double c1  = p1_ptr->getData(NodeHydraulic::WAVEVARIABLE);
+        double q2  = p2_ptr->getData(NodeHydraulic::MASSFLOW);
+        double c2  = p2_ptr->getData(NodeHydraulic::WAVEVARIABLE);
+
+        //Delay Line
+        double c10 = c2 + 2*mZc * q2;
+        double c20 = c1 + 2*mZc * q1;
+        c1 = mAlpha*c1 + (1-mAlpha)*c10;
+        c2 = mAlpha*c2 + (1-mAlpha)*c20;
+
+        //Write to nodes
+        p1_ptr->setData(NodeHydraulic::WAVEVARIABLE, c1);
+        p2_ptr->setData(NodeHydraulic::WAVEVARIABLE, c2);
+        p1_ptr->setData(NodeHydraulic::CHARIMP, mZc);
+        p2_ptr->setData(NodeHydraulic::CHARIMP, mZc);
+    }
+
+
+private:
+    double mAlpha;
+    double mZc; ///TODO: Should be only in node.
+
+};
+
+
+#endif // ORIFICE_HPP_INCLUDED
