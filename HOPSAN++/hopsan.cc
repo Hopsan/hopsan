@@ -42,6 +42,7 @@ int main()
 
 
     // Test with a volume
+    //   This example in Python ~85 sec. Here: ~8 sec.
 
     //Create master component
     ComponentSystem simulationmodel("simulationmodel");
@@ -66,11 +67,11 @@ int main()
     simulationmodel.connect(orificeR, orificeR.P2, psourceR, psourceR.P1);
 
     //Run simulation
-    simulationmodel.simulate(0,1);
+    simulationmodel.simulate(0,1000);
 
     //Test write to file
-    volumeC.getPort(volumeC.P1).getNode().saveLogData("volumeC_P1.txt");
-    cout << "HOPSAN++ Done!" << endl;
+    //volumeC.getPort(volumeC.P1).getNode().saveLogData("volumeC_P1.txt");
+    //cout << "HOPSAN++ Done!" << endl;
 
     return 0;
 }

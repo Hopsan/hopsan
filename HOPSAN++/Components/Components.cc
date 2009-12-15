@@ -209,7 +209,7 @@ void ComponentSystem::logAllNodes(const double time)
         (*it)->logData(time);
     }
     ///TODO: this should do something else for now print
-    cout << "flow: " << mpSubNodes[0]->getData(0) << endl;
+    //cout << "flow: " << mpSubNodes[0]->getData(0) << endl;
 }
 
 void ComponentSystem::connect(Component &rComponent1, size_t portname1, Component &rComponent2, size_t portname2)
