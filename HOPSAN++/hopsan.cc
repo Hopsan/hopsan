@@ -42,7 +42,7 @@ int main()
 
 
     // Test with a volume
-    //   This example in Python ~85 sec. Here: ~8 sec.
+    //   This example ~20 times faster than Python.
 
     //Create master component
     ComponentSystem simulationmodel("simulationmodel");
@@ -67,7 +67,7 @@ int main()
     simulationmodel.connect(orificeR, orificeR.P2, psourceR, psourceR.P1);
 
     //Run simulation
-    simulationmodel.simulate(0,1000);
+    simulationmodel.simulate(0,10);
 
     //Test write to file
     //volumeC.getPort(volumeC.P1).getNode().saveLogData("volumeC_P1.txt");
