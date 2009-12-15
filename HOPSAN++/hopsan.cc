@@ -82,8 +82,8 @@ int main()
     cout << "Time: " << CalcTimeDiff(t2,t1) << endl;
 
     //Test write to file
-    //volumeC.getPort(volumeC.P1).getNode().saveLogData("volumeC_P1.txt");
-    //cout << "HOPSAN++ Done!" << endl;
+    volumeC.getPort(volumeC.P1).getNode().saveLogData("volumeC_P1.txt");
+    cout << "HOPSAN++ Done!" << endl;
 
     return 0;
 }
