@@ -33,6 +33,9 @@
 			<Add directory="./Components" />
 			<Add directory="./Nodes" />
 		</Compiler>
+		<Linker>
+			<Add library="../../../../../../usr/lib/librt.so" />
+		</Linker>
 		<Unit filename="Components/Components.cc" />
 		<Unit filename="Components/Components.h" />
 		<Unit filename="Components/Orifice.hpp" />
