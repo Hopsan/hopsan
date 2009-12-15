@@ -21,7 +21,7 @@ private:
 
 };
 
-
+class ComponentSystem;  //forward declaration
 class Component
 {
 public:
@@ -42,12 +42,12 @@ public:
     bool isComponentSystem();
     bool isComponentSignal();
 
-    void setSystemparent(Component &rComponent); ///TODO: this should not be public
+    void setSystemparent(ComponentSystem &rComponentSystem); ///TODO: this should not be public
     Port &getPort(const size_t port_idx); ///TODO: this should not be public
 
 protected:
     void addPort(const size_t port_idx, Port port);
-    Component &getSystemparent();
+    ComponentSystem &getSystemparent();
 
     string mType;
     vector<Port> mPorts;
@@ -62,7 +62,7 @@ protected:
 private:
     string mName;
 
-    Component* mpSystemparent;
+    ComponentSystem* mpSystemparent;
 
 };
 

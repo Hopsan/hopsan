@@ -30,25 +30,18 @@ private:
 
 };
 
-class NodeFluid :public Node
-{
-public:
-    NodeFluid();
-    enum {MASSFLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP};
-};
-
-class NodeHydraulic :public NodeFluid
+class NodeHydraulic :public Node
 {
 public:
     NodeHydraulic();
-    enum {MASSFLOW, PRESSURE, TEMPERATURE, HEATFLOW, DATALENGTH}; //Which is used here, enum from NodeFluid or this one???
+    enum {MASSFLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP, HEATFLOW, DATALENGTH};
 };
 
 class NodeMech :public Node
 {
 public:
     NodeMech();
-    enum {VELOCITY, FORCE};
+    enum {VELOCITY, FORCE, DATALENGTH};
 };
 
 #endif // NODES_H_INCLUDED

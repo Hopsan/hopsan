@@ -121,9 +121,9 @@ void Component::addPort(const size_t port_idx, Port port)
     mPorts[port_idx] = port;
 }
 
-void Component::setSystemparent(Component &rComponent)
+void Component::setSystemparent(ComponentSystem &rComponentSystem)
 {
-    mpSystemparent = &rComponent;
+    mpSystemparent = &rComponentSystem;
 }
 
 Port &Component::getPort(const size_t port_idx)
@@ -131,7 +131,7 @@ Port &Component::getPort(const size_t port_idx)
     return mPorts[port_idx];
 }
 
-Component &Component::getSystemparent()
+ComponentSystem &Component::getSystemparent()
 {
     return *mpSystemparent;
 }

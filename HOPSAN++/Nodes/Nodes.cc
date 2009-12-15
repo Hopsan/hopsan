@@ -69,15 +69,15 @@ void Node::saveLogData(string filename)
     }
 }
 
-//Hydraulic Node constructor
-NodeFluid::NodeFluid() : Node()
-{
-    mNodeType = "NodeFluid";
-    mDataVector.resize(3);
-}
+////Hydraulic Node constructor
+//NodeFluid::NodeFluid() : Node()
+//{
+//    mNodeType = "NodeFluid";
+//    mDataVector.resize(3);
+//}
 
 //Hydraulic Node constructor
-NodeHydraulic::NodeHydraulic() : NodeFluid()
+NodeHydraulic::NodeHydraulic() : Node()
 {
     mNodeType = "NodeHydraulic";
     mDataVector.resize(DATALENGTH,0.0);
@@ -87,5 +87,5 @@ NodeHydraulic::NodeHydraulic() : NodeFluid()
 NodeMech::NodeMech() : Node()
 {
     mNodeType = "NodeMech";
-    mDataVector.resize(2);
+    mDataVector.resize(DATALENGTH,0.0);
 }
