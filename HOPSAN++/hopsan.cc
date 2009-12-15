@@ -8,6 +8,7 @@
 
 int main()
 {
+    /* // Static orifice test
     NodeHydraulic myNode;
     myNode.setData(NodeHydraulic::PRESSURE, 8);
     cout << "p1: " << myNode.getData(NodeHydraulic::PRESSURE) << endl;
@@ -23,9 +24,6 @@ int main()
     ComponentPressureSource psourceR("ps_right_side", 0e5);
     ComponentOrifice orificeC("orifice_center", 1e-12);
 
-    ComponentVolume volumeL("volume_left_side");
-
-
     //Add components
     simulationmodel.addComponent(psourceL);
     simulationmodel.addComponent(psourceR);
@@ -40,5 +38,39 @@ int main()
     //Test write to file
     orificeC.getPort(orificeC.P1).getNode().saveLogData("orificeC_P1.txt");
     cout << "HOPSAN++ Done!" << endl;
+    */
+
+
+    // Test with a volume
+
+    //Create master component
+    ComponentSystem simulationmodel("simulationmodel");
+    //Create other components
+    ComponentPressureSource psourceL("ps_left_side", 10e5);
+    ComponentOrifice orificeL("orifice_left_side", 1e-12);
+    ComponentVolume volumeC("volume_center");
+    ComponentOrifice orificeR("orifice_right_side", 1e-12);
+    ComponentPressureSource psourceR("ps_right_side", 0e5);
+
+
+    //Add components
+    simulationmodel.addComponent(psourceL);
+    simulationmodel.addComponent(orificeL);
+    simulationmodel.addComponent(volumeC);
+    simulationmodel.addComponent(orificeR);
+    simulationmodel.addComponent(psourceR);
+    //Connect components
+    simulationmodel.connect(psourceL, psourceL.P1, orificeL, orificeL.P1);
+    simulationmodel.connect(orificeL, orificeL.P2, volumeC, volumeC.P1);
+    simulationmodel.connect(volumeC, volumeC.P2, orificeR, orificeR.P1);
+    simulationmodel.connect(orificeR, orificeR.P2, psourceR, psourceR.P1);
+
+    //Run simulation
+    simulationmodel.simulate(0,1);
+
+    //Test write to file
+    volumeC.getPort(volumeC.P1).getNode().saveLogData("volumeC_P1.txt");
+    cout << "HOPSAN++ Done!" << endl;
+
     return 0;
 }
