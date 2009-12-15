@@ -1,5 +1,5 @@
-#ifndef ORIFICE_HPP_INCLUDED
-#define ORIFICE_HPP_INCLUDED
+#ifndef VOLUME_HPP_INCLUDED
+#define VOLUME_HPP_INCLUDED
 
 #include "Components.h"
 #include "Nodes.h"
@@ -9,13 +9,13 @@ class ComponentVolume : public ComponentC
 
 public:
     enum {P1, P2};
-    ComponentOrifice(const string name, const double bulkmudulus=1.0e9,
-                     const double volume=1.0e-3, const double alpha=0,
-                     const double timestep=0.001)
-                     : ComponentQ(name, timestep)
+    ComponentVolume(const string name, const double volume=1.0e-3,
+                    const double bulkmudulus=1.0e9, const double alpha=0,
+                    const double timestep=0.001)
+                    : ComponentC(name, timestep)
     {
 
-        mZc = bulkmodulus/volume*timestep;
+        mZc = bulkmudulus/volume*timestep;
         mAlpha = alpha;
         //setNodeSpecifications({'p1':'NodeHydraulic', 'p2':'NodeHydraulic'})
         addPort(P1, Port("NodeHydraulic"));
@@ -55,4 +55,4 @@ private:
 };
 
 
-#endif // ORIFICE_HPP_INCLUDED
+#endif // VOLUME_HPP_INCLUDED

@@ -4,6 +4,7 @@
 //#include <typeinfo>
 #include "PressureSource.hpp"
 #include "Orifice.hpp"
+#include "Volume.hpp"
 
 int main()
 {
@@ -22,6 +23,7 @@ int main()
     ComponentPressureSource psourceR("ps_right_side", 0e5);
     ComponentOrifice orificeC("orifice_center", 1e-12);
 
+    ComponentVolume volumeL("volume_left_side");
 
 
     //Add components
