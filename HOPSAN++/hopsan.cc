@@ -6,6 +6,14 @@
 #include "Orifice.hpp"
 #include "Volume.hpp"
 
+#include <time.h>
+
+
+double CalcTimeDiff(const timespec &time_now, const timespec &time_last)
+{
+    return (double)(time_now.tv_sec - time_last.tv_sec) + ( (double)(time_now.tv_nsec - time_last.tv_nsec) )/1000000000.0;
+}
+
 int main()
 {
     /* // Static orifice test
@@ -40,6 +48,8 @@ int main()
     cout << "HOPSAN++ Done!" << endl;
     */
 
+    timespec t1,t2;
+    clock_gettime(CLOCK_REALTIME,&t1);
 
     // Test with a volume
     //   This example ~20 times faster than Python.
@@ -68,6 +78,8 @@ int main()
 
     //Run simulation
     simulationmodel.simulate(0,10);
+    clock_gettime(CLOCK_REALTIME,&t2);
+    cout << "Time: " << CalcTimeDiff(t2,t1) << endl;
 
     //Test write to file
     //volumeC.getPort(volumeC.P1).getNode().saveLogData("volumeC_P1.txt");
