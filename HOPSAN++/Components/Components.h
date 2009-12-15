@@ -37,6 +37,11 @@ public:
     void setTimestep(const double timestep);
     double getTimestep();
 
+    bool isComponentC();
+    bool isComponentQ();
+    bool isComponentSystem();
+    bool isComponentSignal();
+
     void setSystemparent(Component &rComponent); ///TODO: this should not be public
     Port &getPort(const size_t port_idx); ///TODO: this should not be public
 
@@ -48,6 +53,11 @@ protected:
     vector<Port> mPorts;
 
     double mTimestep;
+
+    bool mIsComponentC;
+    bool mIsComponentQ;
+    bool mIsComponentSystem;
+    bool mIsComponentSignal;
 
 private:
     string mName;

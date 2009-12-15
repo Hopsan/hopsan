@@ -27,11 +27,11 @@ public:
 		Node* p1_ptr = mPorts[P1].getNodePtr();
 		Node* p2_ptr = mPorts[P2].getNodePtr();
 
-        double p1  = p1_ptr->getData(NodeHydraulic::PRESSURE);
+        //double p1  = p1_ptr->getData(NodeHydraulic::PRESSURE);
         double q1  = p1_ptr->getData(NodeHydraulic::MASSFLOW);
         double c1  = p1_ptr->getData(NodeHydraulic::WAVEVARIABLE);
         double Zc1 = p1_ptr->getData(NodeHydraulic::CHARIMP);
-        double p2  = p2_ptr->getData(NodeHydraulic::PRESSURE);
+        //double p2  = p2_ptr->getData(NodeHydraulic::PRESSURE);
         double q2  = p2_ptr->getData(NodeHydraulic::MASSFLOW);
         double c2  = p2_ptr->getData(NodeHydraulic::WAVEVARIABLE);
         double Zc2 = p2_ptr->getData(NodeHydraulic::CHARIMP);
@@ -39,8 +39,8 @@ public:
         //Delay Line
         q2 = mKc*(c1-c2)/(1+ mKc*(Zc1+Zc2));
         q1 = -q2;
-        p1 = c1 + q1*Zc1;
-        p2 = c2 + q2*Zc2;
+        double p1 = c1 + q1*Zc1;
+        double p2 = c2 + q2*Zc2;
 
         //Write to nodes
         p1_ptr->setData(NodeHydraulic::PRESSURE, p1);

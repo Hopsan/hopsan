@@ -40,8 +40,12 @@ void Port::setNode(Node* node_ptr)
 Component::Component(string name, double timestep)
 {
     mName = name;
-    //this->mName = name;
     mTimestep = timestep;
+
+    mIsComponentC = false;
+    mIsComponentQ = false;
+    mIsComponentSystem = false;
+    mIsComponentSignal = false;
 }
 
 void Component::simulate(const double startT, const double Ts)
@@ -59,6 +63,7 @@ void Component::simulate(const double startT, const double Ts)
 void Component::simulateOneTimestep()
 {
     cout << "Warning! You should implement your own method" << endl;
+    assert(false);
 }
 
 void Component::setName(string &rName)
@@ -84,6 +89,26 @@ void Component::setTimestep(const double timestep)
 double Component::getTimestep()
 {
     return mTimestep;
+}
+
+bool Component::isComponentC()
+{
+    return mIsComponentC;
+}
+
+bool Component::isComponentQ()
+{
+    return mIsComponentQ;
+}
+
+bool Component::isComponentSystem()
+{
+    return mIsComponentSystem;
+}
+
+bool Component::isComponentSignal()
+{
+    return mIsComponentSignal;
 }
 
 void Component::addPort(const size_t port_idx, Port port)
@@ -115,18 +140,21 @@ Component &Component::getSystemparent()
 ComponentC::ComponentC(string name, double timestep) : Component(name, timestep)
 {
     mType = "ComponentC";
+    mIsComponentC = true;
 }
 
 //Constructor ComponentQ
 ComponentQ::ComponentQ(string name, double timestep) : Component(name, timestep)
 {
     mType = "ComponentQ";
+    mIsComponentQ = true;
 }
 
 //Constructor
 ComponentSystem::ComponentSystem(string name, double timestep) : Component(name, timestep)
 {
     mType = "ComponentSystem";
+    mIsComponentSystem = true;
 }
 
 void ComponentSystem::addComponents(vector<Component*> components)
@@ -136,15 +164,17 @@ void ComponentSystem::addComponents(vector<Component*> components)
     {
         Component* comp_ptr = components[idx];
         ///TODO: add subcomponent
-        if (comp_ptr->getType() == (string)"ComponentC")
+        //if (comp_ptr->getType() == (string)"ComponentC")
+        if (comp_ptr->isComponentC())
         {
             mpComponentsC.push_back(comp_ptr);
         }
-        else if (comp_ptr->getType() == (string)"ComponentQ")
+        //else if (comp_ptr->getType() == (string)"ComponentQ")
+        else if (comp_ptr->isComponentQ())
         {
             mpComponentsQ.push_back(comp_ptr);
         }
-//        else if (comp_ptr->mType.c_str() == "ComponentSignal")
+//        else if (comp_ptr->isComponentSignal())
 //        {
 //            mpComponentsQ.push_back(comp_ptr);
 //        }
@@ -155,7 +185,6 @@ void ComponentSystem::addComponents(vector<Component*> components)
             assert(false);
         }
         comp_ptr->setSystemparent(*this);
-
     }
 }
 
@@ -190,7 +219,6 @@ void ComponentSystem::connect(Component &rComponent1, size_t portname1, Componen
     rComponent2.getPort(portname2).setNode(node_ptr);
     //rComponent1.getSystemparent().addSubNode(node_ptr); //doesnt work getSystemparent returns Component , addSubNode is in ComponentSystem
     this->addSubNode(node_ptr);
-
 }
 
 void ComponentSystem::simulate(const double startT, const double Ts)
@@ -203,9 +231,10 @@ void ComponentSystem::simulate(const double startT, const double Ts)
     {
         logAllNodes();
 
-        cout << "time: " << time << endl;
+        //cout << "time: " << time << endl;
         ///TODO: signal components
 
+        ///TODO: maybe use iterators instead
         //C components
         for (size_t c=0; c < mpComponentsC.size(); ++c)
         {
@@ -213,14 +242,11 @@ void ComponentSystem::simulate(const double startT, const double Ts)
         }
 
         //Q components
-        for (size_t c=0; c < mpComponentsQ.size(); ++c)
+        for (size_t q=0; q < mpComponentsQ.size(); ++q)
         {
-            mpComponentsQ[c]->simulate(time, mTimestep);
+            mpComponentsQ[q]->simulate(time, mTimestep);
         }
 
         time += mTimestep;
-
     }
-
-
 }
