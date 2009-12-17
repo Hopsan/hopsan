@@ -28,7 +28,6 @@ public:
 		Node* p1_ptr = mPorts[P1].getNodePtr();
 		Node* p2_ptr = mPorts[P2].getNodePtr();
 
-        //double p1  = p1_ptr->getData(NodeHydraulic::PRESSURE);
         double q1  = p1_ptr->getData(NodeHydraulic::MASSFLOW);
         double c1  = p1_ptr->getData(NodeHydraulic::WAVEVARIABLE);
         double q2  = p2_ptr->getData(NodeHydraulic::MASSFLOW);

@@ -35,6 +35,11 @@ double Node::getData(const size_t data_type)
     return mDataVector[data_type];
 }
 
+double &Node::getDataRef(const size_t data_type)
+{
+    return mDataVector[data_type];
+}
+
 void Node::preAllocateLogSpace(const size_t nSlots)
 {
     size_t data_size = mDataVector.size();

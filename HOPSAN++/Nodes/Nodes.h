@@ -14,6 +14,7 @@ public:
 
     void setData(const size_t data_type, double data);
     double getData(const size_t data_type);
+    double &getDataRef(const size_t data_type);
 
     void preAllocateLogSpace(const size_t nSlots);
     void logData(const double time);
