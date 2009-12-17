@@ -92,7 +92,6 @@ void Node::saveLogData(string filename)
             for (size_t datacol=0; datacol<mDataVector.size(); ++datacol)
             {
                 out_file << " " << mDataStorage[row][datacol];
-
             }
             out_file << endl;
         }

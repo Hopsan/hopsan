@@ -1,5 +1,9 @@
 #include "TicToc.h"
 #include <iostream>
+#ifdef WIN32
+	#include "windows.h"
+#endif
+
 using namespace std;
 
 
@@ -23,7 +27,7 @@ double TicToc::Toc()
 #ifdef WIN32
     int now_time;
     now_time = GetTickCount();
-    return now_time - mLastTime;
+    return (now_time - mLastTime)/1000.0; //Convert to seconds
 #else
     timespec now_time;
     clock_gettime(CLOCK_REALTIME, &now_time);

@@ -6,9 +6,6 @@
 #include "Orifice.hpp"
 #include "Volume.hpp"
 #include "TicToc.h"
-#ifdef WIN32 
-	#include "windows.h"
-#endif
 
 int main()
 {
@@ -83,7 +80,9 @@ int main()
     totaltimer.TocPrint();
 
     //Test write to file
+    TicToc filewritetimer("filewritetimer");
     volumeC.getPort(volumeC.P1).getNode().saveLogData("volumeC_P1.txt");
+    filewritetimer.TocPrint();
     cout << "HOPSAN++ Done!" << endl;
 
     return 0;

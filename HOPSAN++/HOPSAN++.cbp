@@ -7,8 +7,20 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/HOPSAN++" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug/" />
+				<Option output="bin\Debug\HOPSAN++" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+				<Linker>
+					<Add library="..\..\..\..\..\..\usr\lib\librt.so" />
+				</Linker>
+			</Target>
+			<Target title="DebugWin32">
+				<Option platforms="Windows;" />
+				<Option output="HOPSAN++" prefix_auto="1" extension_auto="1" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -16,8 +28,21 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="bin/Release/HOPSAN++" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release/" />
+				<Option output="bin\Release\HOPSAN++" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="..\..\..\..\..\..\usr\lib\librt.so" />
+				</Linker>
+			</Target>
+			<Target title="ReleaseWin32">
+				<Option output="bin\Release\HOPSAN++" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -30,22 +55,19 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add directory="./Components" />
-			<Add directory="./Nodes" />
-			<Add directory="./Utilities" />
+			<Add directory=".\Components" />
+			<Add directory=".\Nodes" />
+			<Add directory=".\Utilities" />
 		</Compiler>
-		<Linker>
-			<Add library="../../../../../../usr/lib/librt.so" />
-		</Linker>
-		<Unit filename="Components/Components.cc" />
-		<Unit filename="Components/Components.h" />
-		<Unit filename="Components/Orifice.hpp" />
-		<Unit filename="Components/PressureSource.hpp" />
-		<Unit filename="Components/Volume.hpp" />
-		<Unit filename="Nodes/Nodes.cc" />
-		<Unit filename="Nodes/Nodes.h" />
-		<Unit filename="Utilities/TicToc.cc" />
-		<Unit filename="Utilities/TicToc.h" />
+		<Unit filename="Components\Components.cc" />
+		<Unit filename="Components\Components.h" />
+		<Unit filename="Components\Orifice.hpp" />
+		<Unit filename="Components\PressureSource.hpp" />
+		<Unit filename="Components\Volume.hpp" />
+		<Unit filename="Nodes\Nodes.cc" />
+		<Unit filename="Nodes\Nodes.h" />
+		<Unit filename="Utilities\TicToc.cc" />
+		<Unit filename="Utilities\TicToc.h" />
 		<Unit filename="hopsan.cc" />
 		<Extensions>
 			<envvars />
