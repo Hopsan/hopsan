@@ -6,16 +6,30 @@
 
 class TicToc
 {
-public:
-    TicToc(const std::string prefix=std::string());
-    void Tic();
-    double Toc();
-    double TocPrint(const std::string prefix=std::string());
+#ifdef WIN32
+	public:
+		TicToc(const std::string prefix=std::string());
+		void Tic();
+		double Toc();
+		double TocPrint(const std::string prefix=std::string());
+	private:
+		std::string mPrefix;
+		int mLastTime;
+		double CalcTimeDiff(const int &time_now, const int &time_last);
 
-private:
-    std::string mPrefix;
-    timespec mLastTime;
-    double CalcTimeDiff(const timespec &time_now, const timespec &time_last);
+#else
+	public:
+		TicToc(const std::string prefix=std::string());
+		void Tic();
+		double Toc();
+		double TocPrint(const std::string prefix=std::string());
+
+	private:
+		std::string mPrefix;
+		timespec mLastTime;
+		double CalcTimeDiff(const timespec &time_now, const timespec &time_last);
+#endif
+
 };
 
 

@@ -6,6 +6,9 @@
 #include "Orifice.hpp"
 #include "Volume.hpp"
 #include "TicToc.h"
+#ifdef WIN32 
+	#include "windows.h"
+#endif
 
 int main()
 {
