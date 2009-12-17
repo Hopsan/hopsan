@@ -9,6 +9,10 @@ Node::Node()
     //mName = name;
     mNodeType = "Node";
     mDataVector.clear();
+    mDataStorage.clear();
+    mTimeStorage.clear();
+    mLogSpaceAllocated = false;
+    mLogCtr = 0;
 }
 
 //string &Node::getName()
@@ -31,14 +35,41 @@ double Node::getData(const size_t data_type)
     return mDataVector[data_type];
 }
 
+void Node::preAllocateLogSpace(const size_t nSlots)
+{
+    size_t data_size = mDataVector.size();
+    mTimeStorage.resize(nSlots);
+    mDataStorage.resize(nSlots, vector<double>(data_size));
+    //mDataStorage.reserve(nSlots);
+//    vector<vector<double> >::iterator it;
+//    for (it=mDataStorage.begin(); it!=mDataStorage.end(); ++it)
+//    {
+//        it->reserve(data_size);
+//    }
+    cout << "requestedSize: " << nSlots << " " << data_size << " Capacities: " << mTimeStorage.capacity() << " " << mDataStorage.capacity() << " " << mDataStorage[1].capacity() << " maxSize: " << mTimeStorage.max_size() << " " << mDataStorage.max_size() << " " << mDataStorage[1].max_size() << endl;
+    mLogSpaceAllocated = true;
+}
+
 void Node::logData(const double time)
 {
     //Check if vectors are large enough, else alocate
     //if
 
-    ///TODO: for now always append
-    mTimeStorage.push_back(time);
-    mDataStorage.push_back(mDataVector);
+    if (mLogSpaceAllocated)
+    {
+        //cout << "mLogCtr: " << mLogCtr << endl;
+        mTimeStorage[mLogCtr] = time;
+        mDataStorage[mLogCtr] = mDataVector;
+        //mDataStorage.push_back(mDataVector);
+        ++mLogCtr;
+    }
+    else
+    {
+        ///TODO: for now always append
+        mTimeStorage.push_back(time);
+        mDataStorage.push_back(mDataVector);
+    }
+
 }
 
 void Node::saveLogData(string filename)
@@ -67,25 +98,4 @@ void Node::saveLogData(string filename)
     {
         cout << "Warning! Could not open out file for writing" << endl;
     }
-}
-
-////Hydraulic Node constructor
-//NodeFluid::NodeFluid() : Node()
-//{
-//    mNodeType = "NodeFluid";
-//    mDataVector.resize(3);
-//}
-
-//Hydraulic Node constructor
-NodeHydraulic::NodeHydraulic() : Node()
-{
-    mNodeType = "NodeHydraulic";
-    mDataVector.resize(DATALENGTH,0.0);
-}
-
-//Mechanic Node constructor
-NodeMech::NodeMech() : Node()
-{
-    mNodeType = "NodeMech";
-    mDataVector.resize(DATALENGTH,0.0);
 }

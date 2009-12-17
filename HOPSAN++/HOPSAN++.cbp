@@ -32,6 +32,7 @@
 			<Add option="-Wall" />
 			<Add directory="./Components" />
 			<Add directory="./Nodes" />
+			<Add directory="./Utilities" />
 		</Compiler>
 		<Linker>
 			<Add library="../../../../../../usr/lib/librt.so" />
@@ -43,6 +44,8 @@
 		<Unit filename="Components/Volume.hpp" />
 		<Unit filename="Nodes/Nodes.cc" />
 		<Unit filename="Nodes/Nodes.h" />
+		<Unit filename="Utilities/TicToc.cc" />
+		<Unit filename="Utilities/TicToc.h" />
 		<Unit filename="hopsan.cc" />
 		<Extensions>
 			<envvars />

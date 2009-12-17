@@ -201,6 +201,20 @@ void ComponentSystem::addSubNode(Node* node_ptr)
     mpSubNodes.push_back(node_ptr);
 }
 
+void ComponentSystem::preAllocateLogSpace(const double startT, const double stopT)
+{
+    size_t needed_slots = (double(stopT-startT))/mTimestep; ///TODO: make sure this calculation is EXACTLY correct
+    //First allocate memory for own subnodes
+    vector<Node*>::iterator it;
+    for (it=mpSubNodes.begin(); it!=mpSubNodes.end(); ++it)
+    {
+        (*it)->preAllocateLogSpace(needed_slots);
+    }
+
+    ///TODO: Call allocate for subsubsystems
+
+}
+
 void ComponentSystem::logAllNodes(const double time)
 {
     vector<Node*>::iterator it;
@@ -226,10 +240,9 @@ void ComponentSystem::connect(Component &rComponent1, size_t portname1, Componen
     this->addSubNode(node_ptr);
 }
 
-void ComponentSystem::simulate(const double startT, const double Ts)
+void ComponentSystem::simulate(const double startT, const double stopT)
 {
     ///TODO: quick hack for now
-    double stopT = startT + Ts;
     double time = startT;
 
     while (time < stopT)

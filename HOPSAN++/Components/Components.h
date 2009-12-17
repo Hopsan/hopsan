@@ -92,9 +92,10 @@ class ComponentSystem :public Component
     void addComponents(vector<Component*> components);
     void addComponent(Component &rComponent);
     void addSubNode(Node* node_ptr);
+    void preAllocateLogSpace(const double startT, const double stopT);
     void logAllNodes(const double time);
     void connect(Component &rComponent1, size_t portname1, Component &rComponent2, size_t portname2);
-    void simulate(const double startT, const double Ts);
+    void simulate(const double startT, const double stopT);
 
     protected:
     vector<Component*> mpSubComponents; //Problems with inheritance and casting?
