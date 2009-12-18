@@ -1,6 +1,7 @@
 #include "Components.h"
 #include <iostream>
 #include <cassert>
+#include <math.h>
 
 Port::Port()
 {
@@ -203,7 +204,11 @@ void ComponentSystem::addSubNode(Node* node_ptr)
 
 void ComponentSystem::preAllocateLogSpace(const double startT, const double stopT)
 {
-    size_t needed_slots = ((double)(stopT-startT))/mTimestep+1; ///TODO: make sure this calculation is EXACTLY correct
+    ///TODO: make sure this calculation is EXACTLY correct
+    double dslots = ((double)(stopT-startT))/mTimestep;
+    std::cout << "dslots: " << dslots << std::endl;
+    size_t needed_slots = floor(dslots+0.5); //Round to nearest
+
     //First allocate memory for own subnodes
     vector<Node*>::iterator it;
     for (it=mpSubNodes.begin(); it!=mpSubNodes.end(); ++it)

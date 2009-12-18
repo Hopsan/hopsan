@@ -70,7 +70,7 @@ void test1()
 
     //Run simulation
     TicToc prealloctimer("prealloctimer");
-    //simulationmodel.preAllocateLogSpace(0, 1000);
+    simulationmodel.preAllocateLogSpace(0, 1000);
     prealloctimer.TocPrint();
 
     TicToc simutimer("simutimer");
