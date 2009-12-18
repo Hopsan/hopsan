@@ -203,7 +203,7 @@ void ComponentSystem::addSubNode(Node* node_ptr)
 
 void ComponentSystem::preAllocateLogSpace(const double startT, const double stopT)
 {
-    size_t needed_slots = ((double)(stopT-startT))/mTimestep; ///TODO: make sure this calculation is EXACTLY correct
+    size_t needed_slots = ((double)(stopT-startT))/mTimestep+1; ///TODO: make sure this calculation is EXACTLY correct
     //First allocate memory for own subnodes
     vector<Node*>::iterator it;
     for (it=mpSubNodes.begin(); it!=mpSubNodes.end(); ++it)
