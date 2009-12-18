@@ -7,7 +7,7 @@
 #include "Volume.hpp"
 #include "TicToc.h"
 
-int main()
+void test1()
 {
     /* // Static orifice test
     NodeHydraulic myNode;
@@ -70,7 +70,7 @@ int main()
 
     //Run simulation
     TicToc prealloctimer("prealloctimer");
-    simulationmodel.preAllocateLogSpace(0, 1000);
+    //simulationmodel.preAllocateLogSpace(0, 1000);
     prealloctimer.TocPrint();
 
     TicToc simutimer("simutimer");
@@ -84,6 +84,14 @@ int main()
     volumeC.getPort(volumeC.P1).getNode().saveLogData("volumeC_P1.txt");
     filewritetimer.TocPrint();
     cout << "HOPSAN++ Done!" << endl;
+}
+
+
+
+int main()
+{
+    test1();
+
 
     return 0;
 }
