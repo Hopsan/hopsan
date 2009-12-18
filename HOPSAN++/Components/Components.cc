@@ -206,8 +206,9 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
 {
     ///TODO: make sure this calculation is EXACTLY correct
     double dslots = ((double)(stopT-startT))/mTimestep;
-    std::cout << "dslots: " << dslots << std::endl;
+    //std::cout << "dslots: " << dslots << std::endl;
     size_t needed_slots = floor(dslots+0.5); //Round to nearest
+    //size_t needed_slots = ((double)(stopT-startT))/mTimestep;
 
     //First allocate memory for own subnodes
     vector<Node*>::iterator it;
