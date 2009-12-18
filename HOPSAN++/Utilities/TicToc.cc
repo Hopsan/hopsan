@@ -54,10 +54,8 @@ double TicToc::TocPrint(const string prefix)
 }
 
 #ifndef WIN32
-#ifdef MAC
 double TicToc::CalcTimeDiff(const timespec &time_now, const timespec &time_last)
 {
     return (double)(time_now.tv_sec - time_last.tv_sec) + ( (double)(time_now.tv_nsec - time_last.tv_nsec) )/1000000000.0;
 }
-#endif
 #endif
