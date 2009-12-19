@@ -25,8 +25,6 @@ public:
         mZc = Zc;
         addPort(P1, Port("NodeHydraulic"));
         addPort(P2, Port("NodeHydraulic"));
-//		double tmp1 = mPorts[P1].getNodePtr()->getData(NodeHydraulic::WAVEVARIABLE); // Blir fel vid runtime
-//		double tmp2 = mPorts[P2].getNodePtr()->getData(NodeHydraulic::WAVEVARIABLE);
 		mDelayedC1.setTimeDelay(timeDelay, timestep);
 		mDelayedC2.setTimeDelay(timeDelay, timestep);
     }
