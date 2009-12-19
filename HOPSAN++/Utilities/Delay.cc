@@ -7,6 +7,7 @@
  *
  */
 
+#include <math.h>
 #include "Delay.h"
 
 
@@ -24,7 +25,7 @@ Delay::Delay(const std::size_t stepDelay)
 
 Delay::Delay(const double timeDelay, const double Ts)
 {
-    mStepDelay = (std::size_t)timeDelay/Ts; ///TODO: fixa divisionen med avrundningen
+    mStepDelay = (std::size_t) floor((((double) timeDelay)/Ts)+0.5); ///TODO: kolla att det verkligen ar ratt
     mValues.resize(mStepDelay, 0.0);
 }
 
