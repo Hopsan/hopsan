@@ -10,6 +10,11 @@
 #include "Delay.h"
 
 
+Delay::Delay()
+{
+}
+
+
 Delay::Delay(double &var, const std::size_t stepDelay)
 {
     mVar = &var;
@@ -33,6 +38,12 @@ void Delay::simulateOneTimestep()
 }
 
 
+void Delay::setDelayVariable(double& var)
+{
+    mVar = &var;
+}
+
+
 void Delay::setStepDelay(const std::size_t stepDelay)
 {
     mStepDelay = stepDelay;
@@ -47,13 +58,13 @@ void Delay::setTimeDelay(const double timeDelay, const double Ts)
 }
 
 
-double Delay::value()
+double Delay::value() ///TODO: interpolera värden
 {
     return mValues.back();
 }
 
 
-double Delay::value(const std::size_t idx)
+double Delay::value(const std::size_t idx) ///TODO: interpolera värden
 {
     return mValues[idx];
 }

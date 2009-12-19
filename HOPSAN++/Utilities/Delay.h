@@ -25,9 +25,11 @@
 class Delay
 {
 public:
+    Delay();
     Delay(double& var, const std::size_t stepDelay); //OBS! Init for all not set values are always 0
     Delay(double& var, const double timeDelay, const double Ts);
     void simulateOneTimestep();
+    void setDelayVariable(double& var);
     void setStepDelay(const std::size_t stepDelay);
     void setTimeDelay(const double timeDelay, const double Ts);
 	double value();
