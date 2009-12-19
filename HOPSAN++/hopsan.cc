@@ -6,6 +6,7 @@
 #include "Orifice.hpp"
 #include "Volume.hpp"
 #include "TicToc.h"
+#include "Delay.h"
 
 void test1()
 {
@@ -70,11 +71,11 @@ void test1()
 
     //Run simulation
     TicToc prealloctimer("prealloctimer");
-    simulationmodel.preAllocateLogSpace(0, 1000);
+    simulationmodel.preAllocateLogSpace(0, 1);
     prealloctimer.TocPrint();
 
     TicToc simutimer("simutimer");
-    simulationmodel.simulate(0,1000);
+    simulationmodel.simulate(0,1);
     simutimer.TocPrint();
 
     totaltimer.TocPrint();
@@ -87,10 +88,21 @@ void test1()
 }
 
 
+void test2()
+{	
+	double myVar;
+	Delay myD(myVar, 3);
+	for (double i=1; i < 11; ++i) {
+		myVar=i;
+		myD.simulateOneTimestep();
+		cout << i << " Delayed one step: " << myD.value(1)<< " Delayed variable: "  << myD.value() << endl;
+	}
+}
+
 
 int main()
 {
-    test1();
+    test2();
 
 
     return 0;
