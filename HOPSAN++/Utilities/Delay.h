@@ -15,27 +15,26 @@
 /*
  * Följande exempel fördröjer variablen var i 5 tidssteg
  * 
- * Delay delayedVar(var, 5); // instansiering av en fördröjning
+ * Delay delayedVar(5); // instansiering av en fördröjning
  * 
  * För att komma åt det fördröjda värdet:
  *
  * delayedVar.value()
+ * delayedVar.update(var) // sista som sker i tidssteget
  */
 
 class Delay
 {
 public:
     Delay();
-    Delay(double& var, const std::size_t stepDelay); //OBS! Init for all not set values are always 0
-    Delay(double& var, const double timeDelay, const double Ts);
-    void simulateOneTimestep();
-    void setDelayVariable(double& var);
+    Delay(const std::size_t stepDelay); //OBS! Init for all not set values are always 0
+    Delay(const double timeDelay, const double Ts);
+    void update(const double value);
     void setStepDelay(const std::size_t stepDelay);
     void setTimeDelay(const double timeDelay, const double Ts);
 	double value();
 	double value(const std::size_t idx);
 private:
-	double* mVar;
 	std::size_t mStepDelay;
 	std::deque<double> mValues;
 };

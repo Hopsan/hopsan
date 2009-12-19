@@ -40,12 +40,6 @@ public:
         double q2 = p2_ptr->getData(NodeHydraulic::MASSFLOW);
         double c2 = p2_ptr->getData(NodeHydraulic::WAVEVARIABLE);
 		
-		mDelayedC1.setDelayVariable(c1);
-		mDelayedC2.setDelayVariable(c2);
-
-		mDelayedC1.simulateOneTimestep();
-		mDelayedC2.simulateOneTimestep();
-		
         //Delay Line
         double c10 = c2 + 2*mZc * q2;
         double c20 = c1 + 2*mZc * q1;
@@ -57,7 +51,10 @@ public:
         p2_ptr->setData(NodeHydraulic::WAVEVARIABLE, mDelayedC2.value());
         p1_ptr->setData(NodeHydraulic::CHARIMP, mZc);
         p2_ptr->setData(NodeHydraulic::CHARIMP, mZc);
-    }
+
+		mDelayedC1.update(c1);
+		mDelayedC2.update(c2);
+	}
 	
 	
 private:

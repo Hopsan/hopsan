@@ -53,8 +53,8 @@ void test1()
     //Create other components
     ComponentPressureSource psourceL("ps_left_side", 10e5);
     ComponentOrifice orificeL("orifice_left_side", 1e-12);
-    //ComponentVolume volumeC("volume_center");
-    ComponentTLMlossless volumeC("volume_center");
+    ComponentVolume volumeC("volume_center");
+    //ComponentTLMlossless volumeC("volume_center");
     ComponentOrifice orificeR("orifice_right_side", 1e-12);
     ComponentPressureSource psourceR("ps_right_side", 0e5);
 
@@ -91,20 +91,17 @@ void test1()
 
 
 void test2()
-{	
-	double myVar;
-	Delay myD(myVar, 3);
-	for (double i=1; i < 11; ++i) {
-		myVar=i;
-		myD.simulateOneTimestep();
-		cout << i << " Delayed one step: " << myD.value(1)<< " Delayed variable: "  << myD.value() << endl;
+{
+	Delay d1(2); ///TODO: funkar inte med decimaltal...
+	for (int i=0; i < 11; ++i) {
+		cout << "Value: " << i << "    Delayed value: " << d1.value() << endl;
+		d1.update(i);
 	}
 }
 
-
 int main()
 {
-    test1();
+    test2();
 
 
     return 0;

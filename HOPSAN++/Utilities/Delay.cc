@@ -15,52 +15,51 @@ Delay::Delay()
 }
 
 
-Delay::Delay(double &var, const std::size_t stepDelay)
+Delay::Delay(const std::size_t stepDelay)
 {
-    mVar = &var;
     mStepDelay = stepDelay;
-    mValues.resize(mStepDelay+1, 0.0);
+    mValues.resize(mStepDelay, 0.0);
 }
 
 
-Delay::Delay(double &var, const double timeDelay, const double Ts)
+Delay::Delay(const double timeDelay, const double Ts)
 {
-    mVar = &var;
-    mStepDelay = (std::size_t)timeDelay/Ts;
-    mValues.resize(mStepDelay+1, 0.0);
+    mStepDelay = (std::size_t)timeDelay/Ts; ///TODO: fixa divisionen med avrundningen
+    mValues.resize(mStepDelay, 0.0);
 }
 
 
-void Delay::simulateOneTimestep()
+void Delay::update(const double value)
 {
-    mValues.push_front(*mVar);
+    mValues.push_front(value);
     mValues.pop_back();
-}
-
-
-void Delay::setDelayVariable(double& var)
-{
-    mVar = &var;
 }
 
 
 void Delay::setStepDelay(const std::size_t stepDelay)
 {
     mStepDelay = stepDelay;
-    mValues.resize(mStepDelay+1, 0.0);
+    mValues.resize(mStepDelay, 0.0);
 }
 
 
 void Delay::setTimeDelay(const double timeDelay, const double Ts)
 {
     mStepDelay = (std::size_t)timeDelay/Ts;
-    mValues.resize(mStepDelay+1, 0.0);
+    mValues.resize(mStepDelay, 0.0);
 }
 
 
 double Delay::value() ///TODO: interpolera värden
 {
-    return mValues.back();
+    if (mValues.empty()) 
+    {
+        return 0;
+    }
+    else 
+    {
+        return mValues.back();
+    }
 }
 
 
