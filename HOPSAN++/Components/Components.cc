@@ -1,19 +1,22 @@
 #include "Components.h"
 #include <iostream>
+#include <sstream>
 #include <cassert>
 #include <math.h>
 
+//Constructor
 Port::Port()
 {
-    //mNodeType should already be empty
-    mpNode = 0;
+    mpNode  = 0;
+    mpComponent = 0;
 }
 
-//Constructor
-Port::Port(string node_type)
+Port::Port(string portname, string node_type)
 {
+    mPortName = portname;
     mNodeType = node_type;
     mpNode  = 0;
+    mpComponent = 0;
 }
 
 string &Port::getNodeType()
@@ -112,24 +115,73 @@ bool Component::isComponentSignal()
     return mIsComponentSignal;
 }
 
-void Component::addPort(const size_t port_idx, Port port)
-{
-    if (port_idx+1 > mPorts.size())
-    {
-        mPorts.resize(port_idx+1);
-    }
+//void Component::addPort(const size_t port_idx, Port port)
+//{
+//    //Instead of push_back, make it possible to add ports out of order
+//    if (port_idx+1 > mPorts.size())
+//    {
+//        mPorts.resize(port_idx+1);
+//    }
+//
+//    port.mpComponent = this;    //Set port owner
+//    mPorts[port_idx] = port;
+//}
 
-    mPorts[port_idx] = port;
+void Component::addPort(const string portname, const string nodetype, const int id)
+{
+    ///TODO: handle trying to add multiple ports with same name or pos
+    Port new_port(portname, nodetype);
+    new_port.mpComponent = this;    //Set port owner
+
+    if (id >= 0)
+    {
+        //Instead of allways push_back, make it possible to add ports out of order
+        if ((size_t)id+1 > mPorts.size())
+        {
+            mPorts.resize(id+1);
+        }
+        mPorts[id] = new_port;
+    }
+    else
+    {
+        //If no id specified push back
+        mPorts.push_back(new_port);     //Copy port into storage
+    }
 }
+
+//void Component::addMultiPort(const string portname, const string nodetype, const size_t nports, const size_t startctr)
+//{
+//    for (size_t idx=startctr; idx < nports+startctr; ++idx)
+//    {
+//        sstream ss;
+//        ss << portname << idx;
+//        addPort(ss.str(), nodetype);
+//    }
+//}
 
 void Component::setSystemparent(ComponentSystem &rComponentSystem)
 {
     mpSystemparent = &rComponentSystem;
 }
 
-Port &Component::getPort(const size_t port_idx)
+Port &Component::getPortById(const size_t port_idx)
 {
     return mPorts[port_idx];
+}
+
+Port &Component::getPort(const string portname)
+{
+    vector<Port>::iterator it;
+    for (it=mPorts.begin(); it!=mPorts.end(); ++it)
+    {
+        if (it->mPortName == portname)
+        {
+            return *it;
+        }
+    }
+    ///TODO: cast not found exception
+    cout << "specified port: " << portname << " not found" << endl;
+    assert(false);
 }
 
 ComponentSystem &Component::getSystemparent()
@@ -168,16 +220,16 @@ void ComponentSystem::addComponents(vector<Component*> components)
         //if (comp_ptr->getType() == (string)"ComponentC")
         if (comp_ptr->isComponentC())
         {
-            mpComponentsC.push_back(comp_ptr);
+            mComponentCptrs.push_back(comp_ptr);
         }
         //else if (comp_ptr->getType() == (string)"ComponentQ")
         else if (comp_ptr->isComponentQ())
         {
-            mpComponentsQ.push_back(comp_ptr);
+            mComponentQptrs.push_back(comp_ptr);
         }
 //        else if (comp_ptr->isComponentSignal())
 //        {
-//            mpComponentsQ.push_back(comp_ptr);
+//            mComponentQptrs.push_back(comp_ptr);
 //        }
         else
         {
@@ -199,7 +251,7 @@ void ComponentSystem::addComponent(Component &rComponent)
 
 void ComponentSystem::addSubNode(Node* node_ptr)
 {
-    mpSubNodes.push_back(node_ptr);
+    mSubNodePtrs.push_back(node_ptr);
 }
 
 void ComponentSystem::preAllocateLogSpace(const double startT, const double stopT)
@@ -207,12 +259,12 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
     ///TODO: make sure this calculation is EXACTLY correct
     double dslots = ((double)(stopT-startT))/mTimestep;
     //std::cout << "dslots: " << dslots << std::endl;
-    size_t needed_slots = floor(dslots+0.5); //Round to nearest
+    size_t needed_slots = (size_t)(dslots+0.5); //Round to nearest
     //size_t needed_slots = ((double)(stopT-startT))/mTimestep;
 
     //First allocate memory for own subnodes
     vector<Node*>::iterator it;
-    for (it=mpSubNodes.begin(); it!=mpSubNodes.end(); ++it)
+    for (it=mSubNodePtrs.begin(); it!=mSubNodePtrs.end(); ++it)
     {
         (*it)->preAllocateLogSpace(needed_slots);
     }
@@ -224,15 +276,15 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
 void ComponentSystem::logAllNodes(const double time)
 {
     vector<Node*>::iterator it;
-    for (it=mpSubNodes.begin(); it!=mpSubNodes.end(); ++it)
+    for (it=mSubNodePtrs.begin(); it!=mSubNodePtrs.end(); ++it)
     {
         (*it)->logData(time);
     }
     ///TODO: this should do something else for now print
-    //cout << "flow: " << mpSubNodes[0]->getData(0) << endl;
+    //cout << "flow: " << mSubNodePtrs[0]->getData(0) << endl;
 }
 
-void ComponentSystem::connect(Component &rComponent1, size_t portname1, Component &rComponent2, size_t portname2)
+void ComponentSystem::connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2)
 {
     ///TODO: do it correct, for now quickhack
 
@@ -260,15 +312,15 @@ void ComponentSystem::simulate(const double startT, const double stopT)
 
         ///TODO: maybe use iterators instead
         //C components
-        for (size_t c=0; c < mpComponentsC.size(); ++c)
+        for (size_t c=0; c < mComponentCptrs.size(); ++c)
         {
-            mpComponentsC[c]->simulate(time, mTimestep);
+            mComponentCptrs[c]->simulate(time, mTimestep);
         }
 
         //Q components
-        for (size_t q=0; q < mpComponentsQ.size(); ++q)
+        for (size_t q=0; q < mComponentQptrs.size(); ++q)
         {
-            mpComponentsQ[q]->simulate(time, mTimestep);
+            mComponentQptrs[q]->simulate(time, mTimestep);
         }
 
         time += mTimestep;

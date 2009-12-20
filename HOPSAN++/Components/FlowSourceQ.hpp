@@ -13,38 +13,35 @@
 
 class ComponentFlowSourceQ : public ComponentQ
 {
-	
-public:
+private:
+    double mFlow;
     enum {P1};
-	
+
+public:
     ComponentFlowSourceQ(const string name, const double flow=1.0e-3, const double timestep=0.001)
 	:ComponentQ(name, timestep)
     {
         mFlow = flow;
-		
-        addPort(P1, Port("NodeHydraulic"));
+
+        addPort("P1", "NodeHydraulic", P1);
     }
-	
+
     void simulateOneTimestep()
     {
         //read fron node
    		Node* p1_ptr = mPorts[P1].getNodePtr();
-		
+
 		double c  = p1_ptr->getData(NodeHydraulic::WAVEVARIABLE);
         double Zc = p1_ptr->getData(NodeHydraulic::CHARIMP);
-		
+
         //delayed line
         double q = mFlow;
 		double p = c + mFlow*Zc;
-		
+
         //write to node
         p1_ptr->setData(NodeHydraulic::MASSFLOW, q);
         p1_ptr->setData(NodeHydraulic::PRESSURE, p);
     }
-	
-private:
-    double mFlow;
-	
 };
 
 #endif // FLOWSOURCEQ_HPP_INCLUDED

@@ -6,20 +6,22 @@
 
 class ComponentVolume : public ComponentC
 {
+private:
+    double mAlpha;
+    double mZc; ///TODO: Should be only in node.
+    enum {P1, P2};
 
 public:
-    enum {P1, P2};
     ComponentVolume(const string name, const double volume=1.0e-3,
                     const double bulkmudulus=1.0e9, const double alpha=0,
                     const double timestep=0.001)
                     : ComponentC(name, timestep)
     {
-
         mZc = bulkmudulus/volume*timestep;
         mAlpha = alpha;
         //setNodeSpecifications({'p1':'NodeHydraulic', 'p2':'NodeHydraulic'})
-        addPort(P1, Port("NodeHydraulic"));
-        addPort(P2, Port("NodeHydraulic"));
+        addPort("P1", "NodeHydraulic", P1);
+        addPort("P2", "NodeHydraulic", P2);
     }
 
     void simulateOneTimestep()
@@ -45,12 +47,6 @@ public:
         p1_ptr->setData(NodeHydraulic::CHARIMP, mZc);
         p2_ptr->setData(NodeHydraulic::CHARIMP, mZc);
     }
-
-
-private:
-    double mAlpha;
-    double mZc; ///TODO: Should be only in node.
-
 };
 
 

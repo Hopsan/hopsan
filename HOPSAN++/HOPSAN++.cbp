@@ -61,8 +61,10 @@
 		</Compiler>
 		<Unit filename="Components\Components.cc" />
 		<Unit filename="Components\Components.h" />
+		<Unit filename="Components\FlowSourceQ.hpp" />
 		<Unit filename="Components\Orifice.hpp" />
 		<Unit filename="Components\PressureSource.hpp" />
+		<Unit filename="Components\PressureSourceQ.hpp" />
 		<Unit filename="Components\TLMlossless.hpp" />
 		<Unit filename="Components\Volume.hpp" />
 		<Unit filename="Nodes\Nodes.cc" />

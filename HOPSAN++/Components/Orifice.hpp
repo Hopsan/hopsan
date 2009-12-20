@@ -6,16 +6,18 @@
 
 class ComponentOrifice : public ComponentQ
 {
-
-public:
+private:
+    double mKc;
     enum {P1, P2};
 
+public:
     ComponentOrifice(const string name, const double kc=1.0e-11, const double timestep=0.001)
                     : ComponentQ(name, timestep)
     {
         mKc = kc;
-        addPort(P1, Port("NodeHydraulic"));
-        addPort(P2, Port("NodeHydraulic"));
+        addPort("P1", "NodeHydraulic", P1);
+        addPort("P2", "NodeHydraulic", P2);
+        //addMultiPort("P", "NodeHydraulic", 2);
     }
 
     void simulateOneTimestep()
@@ -42,11 +44,6 @@ public:
         p2_ptr->setData(NodeHydraulic::PRESSURE, p2);
         p2_ptr->setData(NodeHydraulic::MASSFLOW, q2);
     }
-
-
-private:
-    double mKc;
-
 };
 
 

@@ -5,20 +5,22 @@
 #include "Nodes.h"
 using namespace std;
 
+class Component; //forward declaration
 class Port
 {
+    friend class Component;
 public:
     Port();
-    Port(string node_type);
+    Port(string portname, string node_type);
     string &getNodeType();
     Node &getNode();
     Node* getNodePtr();
     void setNode(Node* node_ptr);
 
 private:
-    string mNodeType;
+    string mPortName, mNodeType;
     Node* mpNode;
-
+    Component* mpComponent;
 };
 
 class ComponentSystem;  //forward declaration
@@ -43,10 +45,13 @@ public:
     bool isComponentSignal();
 
     void setSystemparent(ComponentSystem &rComponentSystem); ///TODO: this should not be public
-    Port &getPort(const size_t port_idx); ///TODO: this should not be public
+    Port &getPortById(const size_t port_idx); ///TODO: this should not be public
+    Port &getPort(const string portname);
 
 protected:
-    void addPort(const size_t port_idx, Port port);
+    //void addPort(const size_t port_idx, Port port);
+    void addPort(const string portname, const string nodetype, const int id=-1);
+    //void addMultiPort(const string portname, const string nodetype, const size_t nports, const size_t startctr=0);
     ComponentSystem &getSystemparent();
 
     string mType;
@@ -94,14 +99,14 @@ class ComponentSystem :public Component
     void addSubNode(Node* node_ptr);
     void preAllocateLogSpace(const double startT, const double stopT);
     void logAllNodes(const double time);
-    void connect(Component &rComponent1, size_t portname1, Component &rComponent2, size_t portname2);
+    void connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2);
     void simulate(const double startT, const double stopT);
 
     protected:
-    vector<Component*> mpSubComponents; //Problems with inheritance and casting?
-    vector<Node*> mpSubNodes;
-    vector<Component*> mpComponentsQ;
-    vector<Component*> mpComponentsC;
+    vector<Component*> mSubComponentPtrs; //Problems with inheritance and casting?
+    vector<Node*> mSubNodePtrs;
+    vector<Component*> mComponentQptrs;
+    vector<Component*> mComponentCptrs;
     //vector<ComponentSignal*>
 
     private:

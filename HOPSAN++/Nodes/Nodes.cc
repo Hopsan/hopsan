@@ -51,7 +51,7 @@ void Node::preAllocateLogSpace(const size_t nSlots)
 //    {
 //        it->reserve(data_size);
 //    }
-    cout << "requestedSize: " << nSlots << " " << data_size << " Capacities: " << mTimeStorage.capacity() << " " << mDataStorage.capacity() << " " << mDataStorage[1].capacity() << " maxSize: " << mTimeStorage.max_size() << " " << mDataStorage.max_size() << " " << mDataStorage[1].max_size() << endl;
+    cout << "requestedSize: " << nSlots << " " << data_size << " Capacities: " << mTimeStorage.capacity() << " " << mDataStorage.capacity() << " " << mDataStorage[1].capacity() << " Size: " << mTimeStorage.size() << " " << mDataStorage.size() << " " << mDataStorage[1].size() << endl;
     mLogSpaceAllocated = true;
 }
 

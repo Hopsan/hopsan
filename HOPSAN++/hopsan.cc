@@ -14,42 +14,7 @@
 
 void test1()
 {
-    /* // Static orifice test
-    NodeHydraulic myNode;
-    myNode.setData(NodeHydraulic::PRESSURE, 8);
-    cout << "p1: " << myNode.getData(NodeHydraulic::PRESSURE) << endl;
-    myNode.setData(NodeHydraulic::PRESSURE, 2);
-    cout << "p2: " << myNode.getData(myNode.PRESSURE) << endl;
-    myNode.setData(myNode.PRESSURE, 5);
-    cout << "p3: " << myNode.getData(NodeMech::FORCE) << endl;
-
-    //Create master component
-    ComponentSystem simulationmodel("simulationmodel");
-    //Create other components
-    ComponentPressureSource psourceL("ps_left_side", 10e5);
-    ComponentPressureSource psourceR("ps_right_side", 0e5);
-    ComponentOrifice orificeC("orifice_center", 1e-12);
-
-    //Add components
-    simulationmodel.addComponent(psourceL);
-    simulationmodel.addComponent(psourceR);
-    simulationmodel.addComponent(orificeC);
-    //Connect components
-    simulationmodel.connect(psourceL, psourceL.P1, orificeC, orificeC.P1);
-    simulationmodel.connect(orificeC, orificeC.P2, psourceR, psourceR.P1);
-
-    //Run simulation
-    simulationmodel.simulate(0,1);
-
-    //Test write to file
-    orificeC.getPort(orificeC.P1).getNode().saveLogData("orificeC_P1.txt");
-    cout << "HOPSAN++ Done!" << endl;
-    */
-
     TicToc totaltimer("totaltimer");
-
-    // Test with a volume
-    //   This example ~20 times faster than Python.
 
     //Create master component
     ComponentSystem simulationmodel("simulationmodel");
@@ -61,7 +26,6 @@ void test1()
     ComponentOrifice orificeR("orifice_right_side", 1e-12);
     ComponentPressureSource psourceR("ps_right_side", 0e5);
 
-
     //Add components
     simulationmodel.addComponent(psourceL);
     simulationmodel.addComponent(orificeL);
@@ -69,25 +33,25 @@ void test1()
     simulationmodel.addComponent(orificeR);
     simulationmodel.addComponent(psourceR);
     //Connect components
-    simulationmodel.connect(psourceL, psourceL.P1, orificeL, orificeL.P1);
-    simulationmodel.connect(orificeL, orificeL.P2, volumeC, volumeC.P1);
-    simulationmodel.connect(volumeC, volumeC.P2, orificeR, orificeR.P1);
-    simulationmodel.connect(orificeR, orificeR.P2, psourceR, psourceR.P1);
+    simulationmodel.connect(psourceL, "P1", orificeL, "P1");
+    simulationmodel.connect(orificeL, "P2", volumeC, "P1");
+    simulationmodel.connect(volumeC, "P2", orificeR, "P1");
+    simulationmodel.connect(orificeR, "P2", psourceR, "P1");
 
     //Run simulation
     TicToc prealloctimer("prealloctimer");
-    simulationmodel.preAllocateLogSpace(0, 1);
+    simulationmodel.preAllocateLogSpace(0, 100);
     prealloctimer.TocPrint();
 
     TicToc simutimer("simutimer");
-    simulationmodel.simulate(0,1);
+    simulationmodel.simulate(0,100);
     simutimer.TocPrint();
 
     totaltimer.TocPrint();
 
     //Test write to file
     TicToc filewritetimer("filewritetimer");
-    volumeC.getPort(volumeC.P1).getNode().saveLogData("volumeC_P1.txt");
+    volumeC.getPort("P1").getNode().saveLogData("volumeC_P1.txt");
     filewritetimer.TocPrint();
     cout << "HOPSAN++ Done!" << endl;
 }
@@ -110,27 +74,27 @@ void testTLM()
     ComponentPressureSourceQ psourceL("ps_left_side", 1);
     ComponentTLMlossless lineC("line_center", 1, .1);
     ComponentFlowSourceQ qsourceR("qs_right_side", 1);
-	
+
     //Add components
     simulationmodel.addComponent(psourceL);
     simulationmodel.addComponent(lineC);
     simulationmodel.addComponent(qsourceR);
 
     //Connect components
-    simulationmodel.connect(psourceL, psourceL.P1, lineC, lineC.P1);
-    simulationmodel.connect(lineC, lineC.P2, qsourceR, qsourceR.P1);
-	
+    simulationmodel.connect(psourceL, "P1", lineC, "P1");
+    simulationmodel.connect(lineC, "P2", qsourceR, "P1");
+
     //Run simulation
     simulationmodel.preAllocateLogSpace(0, 1);
-	
+
     simulationmodel.simulate(0, 1);
-	
+
     //Test write to file
-    lineC.getPort(lineC.P1).getNode().saveLogData("volumeC_P1.txt");
+    lineC.getPort("P1").getNode().saveLogData("volumeC_P1.txt");
 
 	//Finished
     cout << "HOPSAN++ Done!" << endl;
-	
+
 }
 
 
@@ -148,29 +112,29 @@ void test3()
     ComponentTLMlossless lineC("line_center", 1, .05);
     ComponentOrifice orificeR("orifice_right_side", 2);
     ComponentPressureSource psourceR("ps_right_side", 1);
-	
+
     //Add components
     simulationmodel.addComponent(qsourceL);
     simulationmodel.addComponent(lineC);
     simulationmodel.addComponent(orificeR);
     simulationmodel.addComponent(psourceR);
-	
+
     //Connect components
-    simulationmodel.connect(qsourceL, qsourceL.P1, lineC, lineC.P1);
-    simulationmodel.connect(lineC, lineC.P2, orificeR, orificeR.P1);
-    simulationmodel.connect(orificeR, orificeR.P2, psourceR, psourceR.P1);
-	
+    simulationmodel.connect(qsourceL, "P1", lineC, "P1");
+    simulationmodel.connect(lineC, "P2", orificeR, "P1");
+    simulationmodel.connect(orificeR, "P2", psourceR, "P1");
+
     //Run simulation
     simulationmodel.preAllocateLogSpace(0, 1);
-	
+
     simulationmodel.simulate(0, 1);
-	
+
     //Test write to file
-    lineC.getPort(lineC.P1).getNode().saveLogData("output.txt");
-	
+    lineC.getPort("P1").getNode().saveLogData("output.txt");
+
 	//Finished
     cout << "HOPSAN++ Done!" << endl;
-	
+
 }
 
 

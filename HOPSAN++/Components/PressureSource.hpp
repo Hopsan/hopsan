@@ -3,16 +3,17 @@
 
 class ComponentPressureSource : public ComponentC
 {
-
-public:
+private:
+    double mPressure;
     enum {P1};
 
+public:
     ComponentPressureSource(const string name, const double pressure=1.0e5, const double timestep=0.001)
                     :ComponentC(name, timestep)
     {
         mPressure = pressure;
 
-        addPort(P1, Port("NodeHydraulic"));
+        addPort("P1", "NodeHydraulic", P1);
     }
 
     void simulateOneTimestep()
@@ -28,10 +29,6 @@ public:
         p1_ptr->setData(NodeHydraulic::WAVEVARIABLE, p1);
         p1_ptr->setData(NodeHydraulic::CHARIMP, zc);
     }
-
-private:
-    double mPressure;
-
 };
 
 #endif // PRESSURESOURCE_HPP_INCLUDED
