@@ -35,6 +35,7 @@ public:
 	double value();
 	double value(const std::size_t idx);
 private:
+	double mFracStep;
 	std::size_t mStepDelay;
 	std::deque<double> mValues;
 };

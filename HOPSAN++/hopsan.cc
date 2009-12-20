@@ -8,6 +8,7 @@
 #include "TLMlossless.hpp"
 #include "TicToc.h"
 #include "Delay.h"
+#include <math.h>
 
 void test1()
 {
@@ -92,7 +93,7 @@ void test1()
 
 void test2()
 {
-	Delay d1(2); ///TODO: funkar inte med decimaltal...
+	Delay d1(.15, .1); //delay .15 with sampletime .1
 	for (int i=0; i < 11; ++i) {
 		cout << "Value: " << i << "    Delayed value: " << d1.value() << endl;
 		d1.update(i);

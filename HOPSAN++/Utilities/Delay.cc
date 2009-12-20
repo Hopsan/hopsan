@@ -11,6 +11,7 @@
 #include "Delay.h"
 
 
+
 Delay::Delay()
 {
 }
@@ -19,13 +20,16 @@ Delay::Delay()
 Delay::Delay(const std::size_t stepDelay)
 {
     mStepDelay = stepDelay;
+    mFracStep = mStepDelay;
     mValues.resize(mStepDelay, 0.0);
 }
 
 
 Delay::Delay(const double timeDelay, const double Ts)
 {
-    mStepDelay = (std::size_t) floor((((double) timeDelay)/Ts)+0.5); ///TODO: kolla att det verkligen ar ratt
+    mFracStep = timeDelay/Ts;
+    //avrundar uppat
+    mStepDelay = (std::size_t) ceil(((double) timeDelay)/Ts); ///TODO: kolla att det verkligen ar ratt
     mValues.resize(mStepDelay, 0.0);
 }
 
@@ -40,27 +44,35 @@ void Delay::update(const double value)
 void Delay::setStepDelay(const std::size_t stepDelay)
 {
     mStepDelay = stepDelay;
+    mFracStep = mStepDelay;
     mValues.resize(mStepDelay, 0.0);
 }
 
 
 void Delay::setTimeDelay(const double timeDelay, const double Ts)
 {
-    mStepDelay = (std::size_t)timeDelay/Ts;
+    mFracStep = timeDelay/Ts;
+    //avrundar uppat
+    mStepDelay = (std::size_t) ceil(((double) timeDelay)/Ts); ///TODO: kolla att det verkligen ar ratt
     mValues.resize(mStepDelay, 0.0);
 }
 
 
-double Delay::value() ///TODO: interpolera värden
+double Delay::value()
 {
     if (mValues.empty()) 
     {
         return 0;
     }
+    else if ((mFracStep < mStepDelay) && (mValues.size() >= 2))
+    {
+        return ((1 - (mStepDelay - mFracStep)) * mValues[mValues.size()-2] + (mStepDelay - mFracStep) * mValues.back()); //interpolerar
+    }
     else 
     {
         return mValues.back();
     }
+    
 }
 
 
