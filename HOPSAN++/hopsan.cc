@@ -166,7 +166,7 @@ void test3()
     simulationmodel.simulate(0, 1);
 	
     //Test write to file
-    lineC.getPort(lineC.P1).getNode().saveLogData("volumeC_P1.txt");
+    lineC.getPort(lineC.P1).getNode().saveLogData("output.txt");
 	
 	//Finished
     cout << "HOPSAN++ Done!" << endl;
