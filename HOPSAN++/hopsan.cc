@@ -134,9 +134,49 @@ void testTLM()
 }
 
 
+void test3()
+{
+	/*   Exempelsystem:
+					  Kc
+	   q       T, Zc  v
+	 ------>o=========----o p
+	                  ^
+	 */
+	ComponentSystem simulationmodel("simulationmodel");
+    //Create other components
+    ComponentFlowSourceQ qsourceL("qs_left_side", 1);
+    ComponentTLMlossless lineC("line_center", 1, .05);
+    ComponentOrifice orificeR("orifice_right_side", 2);
+    ComponentPressureSource psourceR("ps_right_side", 1);
+	
+    //Add components
+    simulationmodel.addComponent(qsourceL);
+    simulationmodel.addComponent(lineC);
+    simulationmodel.addComponent(orificeR);
+    simulationmodel.addComponent(psourceR);
+	
+    //Connect components
+    simulationmodel.connect(qsourceL, qsourceL.P1, lineC, lineC.P1);
+    simulationmodel.connect(lineC, lineC.P2, orificeR, orificeR.P1);
+    simulationmodel.connect(orificeR, orificeR.P2, psourceR, psourceR.P1);
+	
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0, 1);
+	
+    simulationmodel.simulate(0, 1);
+	
+    //Test write to file
+    lineC.getPort(lineC.P1).getNode().saveLogData("volumeC_P1.txt");
+	
+	//Finished
+    cout << "HOPSAN++ Done!" << endl;
+	
+}
+
+
 int main()
 {
-    testTLM();
+    test3();
 
 
     return 0;
