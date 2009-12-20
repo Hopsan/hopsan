@@ -19,10 +19,13 @@ class ComponentTLMlossless : public ComponentC
 	
 public:
     enum {P1, P2};
-    ComponentTLMlossless(const string name, const double Zc=1.0e9, const double timeDelay=0.1, const double timestep=0.001)
+    ComponentTLMlossless(const string name, const double Zc=1.0e9, 
+						 const double timeDelay=0.1, const double alpha=0, 
+						 const double timestep=0.001)
 	: ComponentC(name, timestep)
     {
         mZc = Zc;
+		mAlpha = alpha;
         addPort(P1, Port("NodeHydraulic"));
         addPort(P2, Port("NodeHydraulic"));
 		mDelayedC1.setTimeDelay(timeDelay, timestep);

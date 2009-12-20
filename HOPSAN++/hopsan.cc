@@ -6,6 +6,8 @@
 #include "Orifice.hpp"
 #include "Volume.hpp"
 #include "TLMlossless.hpp"
+#include "PressureSourceQ.hpp"
+#include "FlowSourceQ.hpp"
 #include "TicToc.h"
 #include "Delay.h"
 #include <math.h>
@@ -100,9 +102,41 @@ void test2()
 	}
 }
 
+
+void testTLM()
+{
+	ComponentSystem simulationmodel("simulationmodel");
+    //Create other components
+    ComponentPressureSourceQ psourceL("ps_left_side", 1);
+    ComponentTLMlossless lineC("line_center", 1, .1);
+    ComponentFlowSourceQ qsourceR("qs_right_side", 1);
+	
+    //Add components
+    simulationmodel.addComponent(psourceL);
+    simulationmodel.addComponent(lineC);
+    simulationmodel.addComponent(qsourceR);
+
+    //Connect components
+    simulationmodel.connect(psourceL, psourceL.P1, lineC, lineC.P1);
+    simulationmodel.connect(lineC, lineC.P2, qsourceR, qsourceR.P1);
+	
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0, 1);
+	
+    simulationmodel.simulate(0, 1);
+	
+    //Test write to file
+    lineC.getPort(lineC.P1).getNode().saveLogData("volumeC_P1.txt");
+
+	//Finished
+    cout << "HOPSAN++ Done!" << endl;
+	
+}
+
+
 int main()
 {
-    test2();
+    testTLM();
 
 
     return 0;
