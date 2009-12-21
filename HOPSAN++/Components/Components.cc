@@ -303,7 +303,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
 {
     ///TODO: do it correct, for now quickhack
     //Check if component1 is a System component containing Component2
-        if (&rComponent1 == &(rComponent2.getSystemparent())) //Component 1 is a systemcomponent
+        if (&rComponent1 == &(rComponent2.getSystemparent()))
         {
             //Create an instance of the node specified in nodespecifications
             NodeHydraulic* node_ptr = new NodeHydraulic(); ///TODO:
@@ -314,7 +314,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             rComponent1.addSubNode(node_ptr);    //Component1 contains this node as subnode
         }
         //Check if component2 is a System component containing Component1
-        else if (&rComponent2 == &(rComponent1.getSystemparent())) //#Component 2 is a systemcomponent
+        else if (&rComponent2 == &(rComponent1.getSystemparent()))
         {
             //Create an instance of the node specified in nodespecifications
             NodeHydraulic* node_ptr = new NodeHydraulic();///TODO:

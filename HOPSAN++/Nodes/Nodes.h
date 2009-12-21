@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <map>
 using namespace std;
 
 class Node
@@ -33,6 +34,7 @@ private:
     size_t mLogCtr;
 
 };
+
 
 class NodeHydraulic :public Node
 {
