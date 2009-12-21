@@ -28,6 +28,7 @@ class Component
 {
 public:
     Component(string name, double timestep=0.001);
+    virtual void initialize(); ///TODO: Default values are hard set
     virtual void simulateOneTimestep();
     void simulate(const double startT, const double Ts);
 

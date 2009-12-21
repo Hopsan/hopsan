@@ -26,6 +26,18 @@ public:
         addPort("P1", "NodeHydraulic", P1);
     }
 
+	
+	void initialize()
+	{
+        //read fron node
+   		Node* p1_ptr = mPorts[P1].getNodePtr();
+		
+        //write to node
+        p1_ptr->setData(NodeHydraulic::MASSFLOW, 0.0);
+        p1_ptr->setData(NodeHydraulic::PRESSURE, 1.0);
+	}
+	
+	
     void simulateOneTimestep()
     {
         //read fron node

@@ -24,6 +24,13 @@ public:
         addPort("P2", "NodeHydraulic", P2);
     }
 
+	
+	void initialize()
+    {
+        
+	}
+	
+
     void simulateOneTimestep()
     {
 		//read from nodes

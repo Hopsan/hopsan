@@ -10,6 +10,8 @@
 #ifndef TLMLOSSLESS_HPP_INCLUDED
 #define TLMLOSSLESS_HPP_INCLUDED
 
+#include <iostream>
+
 #include "Components.h"
 #include "Nodes.h"
 #include "Delay.h"
@@ -37,22 +39,41 @@ public:
 		mDelayedC2.setTimeDelay(timeDelay, timestep);
     }
 
-    void simulateOneTimestep()
+
+	void initialize()
+    {
+		//read from nodes
+		Node* p1_ptr = mPorts[P1].getNodePtr();
+		Node* p2_ptr = mPorts[P2].getNodePtr();
+		
+        //Write to nodes
+        p1_ptr->setData(NodeHydraulic::WAVEVARIABLE, 1.0);
+        p2_ptr->setData(NodeHydraulic::WAVEVARIABLE, 1.0);
+        p1_ptr->setData(NodeHydraulic::CHARIMP, mZc);
+        p2_ptr->setData(NodeHydraulic::CHARIMP, mZc);
+		
+		//Init delay
+		mDelayedC1.initilizeValues(1.0);
+		mDelayedC2.initilizeValues(1.0);
+	}
+	
+    
+	void simulateOneTimestep()
     {
 		//read from nodes
 		Node* p1_ptr = mPorts[P1].getNodePtr();
 		Node* p2_ptr = mPorts[P2].getNodePtr();
 
         double q1 = p1_ptr->getData(NodeHydraulic::MASSFLOW);
-        double c1 = p1_ptr->getData(NodeHydraulic::WAVEVARIABLE);
+        double p1 = p1_ptr->getData(NodeHydraulic::PRESSURE);
         double q2 = p2_ptr->getData(NodeHydraulic::MASSFLOW);
-        double c2 = p2_ptr->getData(NodeHydraulic::WAVEVARIABLE);
+        double p2 = p2_ptr->getData(NodeHydraulic::PRESSURE);
 
         //Delay Line
-        double c10 = c2 + 2*mZc * q2;
-        double c20 = c1 + 2*mZc * q1;
-        c1 = mAlpha*c1 + (1-mAlpha)*c10;
-        c2 = mAlpha*c2 + (1-mAlpha)*c20;
+        double c10 = p2 + mZc * q2;
+        double c20 = p1 + mZc * q1;
+        double c1 = mAlpha*c1 + (1.0-mAlpha)*c10;
+        double c2 = mAlpha*c2 + (1.0-mAlpha)*c20;
 
         //Write to nodes
         p1_ptr->setData(NodeHydraulic::WAVEVARIABLE, mDelayedC1.value());
@@ -62,7 +83,7 @@ public:
 
 		mDelayedC1.update(c1);
 		mDelayedC2.update(c2);
-	}
+		}
 };
 
 

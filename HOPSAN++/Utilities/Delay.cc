@@ -17,20 +17,26 @@ Delay::Delay()
 }
 
 
-Delay::Delay(const std::size_t stepDelay)
+Delay::Delay(const std::size_t stepDelay, const double defaultValue)
 {
     mStepDelay = stepDelay;
     mFracStep = mStepDelay;
-    mValues.resize(mStepDelay, 0.0);
+    mValues.resize(mStepDelay, defaultValue);
 }
 
 
-Delay::Delay(const double timeDelay, const double Ts)
+Delay::Delay(const double timeDelay, const double Ts, const double defaultValue)
 {
     mFracStep = timeDelay/Ts;
     //avrundar uppat
     mStepDelay = (std::size_t) ceil(((double) timeDelay)/Ts); ///TODO: kolla att det verkligen ar ratt
-    mValues.resize(mStepDelay, 0.0);
+    mValues.resize(mStepDelay, defaultValue);
+}
+
+
+void Delay::initilizeValues(const double initValue)
+{
+    mValues.assign(mValues.size(), initValue);
 }
 
 
@@ -41,20 +47,20 @@ void Delay::update(const double value)
 }
 
 
-void Delay::setStepDelay(const std::size_t stepDelay)
+void Delay::setStepDelay(const std::size_t stepDelay, const double defaultValue)
 {
     mStepDelay = stepDelay;
     mFracStep = mStepDelay;
-    mValues.resize(mStepDelay, 0.0);
+    mValues.resize(mStepDelay, defaultValue);
 }
 
 
-void Delay::setTimeDelay(const double timeDelay, const double Ts)
+void Delay::setTimeDelay(const double timeDelay, const double Ts, const double defaultValue)
 {
     mFracStep = timeDelay/Ts;
     //avrundar uppat
     mStepDelay = (std::size_t) ceil(((double) timeDelay)/Ts); ///TODO: kolla att det verkligen ar ratt
-    mValues.resize(mStepDelay, 0.0);
+    mValues.resize(mStepDelay, defaultValue);
 }
 
 

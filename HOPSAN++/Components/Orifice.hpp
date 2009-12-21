@@ -20,6 +20,21 @@ public:
         //addMultiPort("P", "NodeHydraulic", 2);
     }
 
+    
+    void initialize()
+    {
+		//read from nodes
+		Node* p1_ptr = mPorts[P1].getNodePtr();
+		Node* p2_ptr = mPorts[P2].getNodePtr();
+        
+        //Write to nodes
+        p1_ptr->setData(NodeHydraulic::PRESSURE, 1.0);
+        p1_ptr->setData(NodeHydraulic::MASSFLOW, 0.0);
+        p2_ptr->setData(NodeHydraulic::PRESSURE, 1.0);
+        p2_ptr->setData(NodeHydraulic::MASSFLOW, 0.0);
+	}
+
+    
     void simulateOneTimestep()
     {
 		//read from nodes

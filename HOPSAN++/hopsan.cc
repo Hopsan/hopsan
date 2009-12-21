@@ -71,26 +71,26 @@ void testTLM()
 {
 	ComponentSystem simulationmodel("simulationmodel");
     //Create other components
-    ComponentPressureSourceQ psourceL("ps_left_side", 1);
-    ComponentTLMlossless lineC("line_center", 1, .1);
-    ComponentFlowSourceQ qsourceR("qs_right_side", 1);
+    ComponentFlowSourceQ qsourceL("qs_left_side", 1);
+    ComponentTLMlossless lineC("line_center", 3, .2);
+    ComponentPressureSourceQ psourceR("ps_right_side", 1);
 
     //Add components
-    simulationmodel.addComponent(psourceL);
+    simulationmodel.addComponent(qsourceL);
     simulationmodel.addComponent(lineC);
-    simulationmodel.addComponent(qsourceR);
+    simulationmodel.addComponent(psourceR);
 
     //Connect components
-    simulationmodel.connect(psourceL, "P1", lineC, "P1");
-    simulationmodel.connect(lineC, "P2", qsourceR, "P1");
+    simulationmodel.connect(qsourceL, "P1", lineC, "P1");
+    simulationmodel.connect(lineC, "P2", psourceR, "P1");
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0, 1);
+    simulationmodel.preAllocateLogSpace(0, 1.0);
 
-    simulationmodel.simulate(0, 1);
+    simulationmodel.simulate(0, 1.0);
 
     //Test write to file
-    lineC.getPort("P1").getNode().saveLogData("volumeC_P1.txt");
+    lineC.getPort("P1").getNode().saveLogData("output.txt");
 
 	//Finished
     cout << "HOPSAN++ Done!" << endl;
@@ -108,10 +108,10 @@ void test3()
 	 */
 	ComponentSystem simulationmodel("simulationmodel");
     //Create other components
-    ComponentFlowSourceQ qsourceL("qs_left_side", 1);
-    ComponentTLMlossless lineC("line_center", 1, .05);
-    ComponentOrifice orificeR("orifice_right_side", 2);
-    ComponentPressureSource psourceR("ps_right_side", 1);
+    ComponentFlowSourceQ qsourceL("qs_left_side", 1.0);
+    ComponentTLMlossless lineC("line_center", 1.0, .1);
+    ComponentOrifice orificeR("orifice_right_side", 3.0);
+    ComponentPressureSource psourceR("ps_right_side", 1.0);
 
     //Add components
     simulationmodel.addComponent(qsourceL);
@@ -125,12 +125,13 @@ void test3()
     simulationmodel.connect(orificeR, "P2", psourceR, "P1");
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0, 1);
+    simulationmodel.preAllocateLogSpace(0, 1.0);
 
-    simulationmodel.simulate(0, 1);
+    simulationmodel.simulate(0, 1.0);
 
     //Test write to file
     lineC.getPort("P1").getNode().saveLogData("output.txt");
+    lineC.getPort("P2").getNode().saveLogData("output2.txt");
 
 	//Finished
     cout << "HOPSAN++ Done!" << endl;

@@ -64,6 +64,12 @@ void Component::simulate(const double startT, const double Ts)
     }
 }
 
+void Component::initialize()
+{
+    cout << "Warning! You should implement your own method" << endl;
+    assert(false);
+}
+
 void Component::simulateOneTimestep()
 {
     cout << "Warning! You should implement your own method" << endl;
@@ -303,7 +309,25 @@ void ComponentSystem::simulate(const double startT, const double stopT)
     ///TODO: quick hack for now
     double time = startT;
 
-    while (time < stopT)
+    ///TODO: problem with several subsystems
+	//Init
+	for (size_t i=0; i<1; ++i) 
+	{
+		//C components
+		for (size_t c=0; c < mComponentCptrs.size(); ++c)
+		{
+			mComponentCptrs[c]->initialize();
+		}
+		
+		//Q components
+		for (size_t q=0; q < mComponentQptrs.size(); ++q)
+		{
+			mComponentQptrs[q]->initialize();
+		}
+    }
+	
+    //Simulate
+	while (time < stopT)
     {
         logAllNodes(time);
 
