@@ -212,6 +212,7 @@ ComponentQ::ComponentQ(string name, double timestep) : Component(name, timestep)
 //Constructor
 ComponentSystem::ComponentSystem(string name, double timestep) : Component(name, timestep)
 {
+    mInnerPorts.clear();
     mType = "ComponentSystem";
     mIsComponentSystem = true;
 }
@@ -255,7 +256,15 @@ void ComponentSystem::addComponent(Component &rComponent)
     addComponents(components);
 }
 
-void ComponentSystem::addSubNode(Node* node_ptr)
+void Component::addInnerPortSetNode(const string portname, Node &rNode)
+{
+    ///TODO: handle trying to add multiple ports with same name or pos
+    Port new_port(portname, rNode.getNodeType());
+    new_port.mpComponent = this;    //Set port owner
+    mInnerPorts.push_back(new_port);     //Copy port into storage
+}
+
+void Component::addSubNode(Node* node_ptr)
 {
     mSubNodePtrs.push_back(node_ptr);
 }
@@ -293,15 +302,55 @@ void ComponentSystem::logAllNodes(const double time)
 void ComponentSystem::connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2)
 {
     ///TODO: do it correct, for now quickhack
+    //Check if component1 is a System component containing Component2
+        if (&rComponent1 == &(rComponent2.getSystemparent())) //Component 1 is a systemcomponent
+        {
+            //Create an instance of the node specified in nodespecifications
+            NodeHydraulic* node_ptr = new NodeHydraulic(); ///TODO:
+            //add node to components and parent system
+            rComponent1.addInnerPortSetNode(portname1, *node_ptr); //Add and set inner port
+            rComponent1.addPort(portname1, rComponent2.getPort(portname2).getNodeType()); //Add outer port
+            rComponent2.getPort(portname2).setNode(node_ptr);
+            rComponent1.addSubNode(node_ptr);    //Component1 contains this node as subnode
+        }
+        //Check if component2 is a System component containing Component1
+        else if (&rComponent2 == &(rComponent1.getSystemparent())) //#Component 2 is a systemcomponent
+        {
+            //Create an instance of the node specified in nodespecifications
+            NodeHydraulic* node_ptr = new NodeHydraulic();///TODO:
+            //add node to parentsystem
+            rComponent2.addInnerPortSetNode(portname2, *node_ptr); //Add and set inner port
+            rComponent2.addPort(portname2, rComponent1.getPort(portname1).getNodeType()); //Add outer port
+            rComponent1.getPort(portname1).setNode(node_ptr);
+            rComponent2.addSubNode(node_ptr);    //Component2 contains this node as subnode
+        }
+        else   //Both components are on the same level
+        {
+            //Error handling when component is not a subsystem
+            if (rComponent1.getPort(portname1).getNodeType() != rComponent2.getPort(portname2).getNodeType())
+            {
+                cout << "raise Exception('component port types mismatch')" << endl;
+                assert(false);
+            }
+///TODO: fix
+//            if (portname1 not in component1.getNodeSpecifications())
+//                raise Exception('type of port does not exist')
+//
+//            if (portname2 not in component2.getNodeSpecifications())
+//                raise Exception('type of port does not exist')
 
-    //Create Node
-    NodeHydraulic* node_ptr = new NodeHydraulic();
+//            for i in [component1, component2]:
+//                if not self.getSubcomponents().__contains__(i):
+//                    raise Exception('Component %s is not added in the system' % (i.getName()))
 
-    //Set node in component ports and add it to the parent node
-    rComponent1.getPort(portname1).setNode(node_ptr);
-    rComponent2.getPort(portname2).setNode(node_ptr);
-    //rComponent1.getSystemparent().addSubNode(node_ptr); //doesnt work getSystemparent returns Component , addSubNode is in ComponentSystem
-    this->addSubNode(node_ptr);
+            //Create an instance of the node specified in nodespecifications
+            NodeHydraulic* node_ptr = new NodeHydraulic();///TODO:
+            //Set node in both components ports and add it to the parent system component
+            rComponent1.getPort(portname1).setNode(node_ptr);
+            rComponent2.getPort(portname2).setNode(node_ptr);
+            //rComponent1.getSystemparent().addSubNode(node_ptr); //doesnt work getSystemparent returns Component , addSubNode is in ComponentSystem
+            this->addSubNode(node_ptr);
+        }
 }
 
 void ComponentSystem::simulate(const double startT, const double stopT)
@@ -311,21 +360,21 @@ void ComponentSystem::simulate(const double startT, const double stopT)
 
     ///TODO: problem with several subsystems
 	//Init
-	for (size_t i=0; i<1; ++i) 
+	for (size_t i=0; i<1; ++i)
 	{
 		//C components
 		for (size_t c=0; c < mComponentCptrs.size(); ++c)
 		{
 			mComponentCptrs[c]->initialize();
 		}
-		
+
 		//Q components
 		for (size_t q=0; q < mComponentQptrs.size(); ++q)
 		{
 			mComponentQptrs[q]->initialize();
 		}
     }
-	
+
     //Simulate
 	while (time < stopT)
     {

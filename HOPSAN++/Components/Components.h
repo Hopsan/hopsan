@@ -6,9 +6,13 @@
 using namespace std;
 
 class Component; //forward declaration
+class ComponentSystem;  //forward declaration
+
 class Port
 {
     friend class Component;
+    friend class ComponentSystem;
+
 public:
     Port();
     Port(string portname, string node_type);
@@ -23,9 +27,11 @@ private:
     Component* mpComponent;
 };
 
-class ComponentSystem;  //forward declaration
+
 class Component
 {
+    friend class ComponentSystem;
+
 public:
     Component(string name, double timestep=0.001);
     virtual void initialize(); ///TODO: Default values are hard set
@@ -46,6 +52,7 @@ public:
     bool isComponentSignal();
 
     void setSystemparent(ComponentSystem &rComponentSystem); ///TODO: this should not be public
+    ComponentSystem &getSystemparent();
     Port &getPortById(const size_t port_idx); ///TODO: this should not be public
     Port &getPort(const string portname);
 
@@ -53,10 +60,16 @@ protected:
     //void addPort(const size_t port_idx, Port port);
     void addPort(const string portname, const string nodetype, const int id=-1);
     //void addMultiPort(const string portname, const string nodetype, const size_t nports, const size_t startctr=0);
-    ComponentSystem &getSystemparent();
+
+    void addInnerPortSetNode(const string portname, Node &rNode);
+
+    void addSubNode(Node* node_ptr);
+
 
     string mType;
-    vector<Port> mPorts;
+    vector<Port> mPorts, mInnerPorts;
+
+    vector<Node*> mSubNodePtrs;
 
     double mTimestep;
 
@@ -97,7 +110,7 @@ class ComponentSystem :public Component
     ComponentSystem(string name, double timestep=0.001);
     void addComponents(vector<Component*> components);
     void addComponent(Component &rComponent);
-    void addSubNode(Node* node_ptr);
+    void addInnerPortSetNode(const string portname, Node &rNode);
     void preAllocateLogSpace(const double startT, const double stopT);
     void logAllNodes(const double time);
     void connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2);
@@ -105,12 +118,12 @@ class ComponentSystem :public Component
 
     protected:
     vector<Component*> mSubComponentPtrs; //Problems with inheritance and casting?
-    vector<Node*> mSubNodePtrs;
     vector<Component*> mComponentQptrs;
     vector<Component*> mComponentCptrs;
     //vector<ComponentSignal*>
 
     private:
+
 
 
 
