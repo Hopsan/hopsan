@@ -103,3 +103,5 @@ void Node::saveLogData(string filename)
         cout << "Warning! Could not open out file for writing" << endl;
     }
 }
+
+int NodeHydraulic::iDummyNr = CClassFactory<int, Node>::RegisterCreatorFunction(1, NodeHydraulic::SampleCreatorFunction);
