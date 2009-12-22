@@ -20,6 +20,7 @@ class ComponentTLMlossless : public ComponentC
 {
 private:
     double mAlpha;
+    double mTimeDelay;
 	Delay mDelayedC1;
 	Delay mDelayedC2;
     double mZc; ///TODO: Should be only in node.
@@ -27,17 +28,17 @@ private:
 
 public:
     ComponentTLMlossless(const string name, const double Zc=1.0e9,
-						 const double timeDelay=0.1, const double alpha=0,
+						 const double timeDelay=0.1, const double alpha=0.0,
 						 const double timestep=0.001)
 	: ComponentC(name, timestep)
     {
+        mTimeDelay = timeDelay;
         mZc = Zc;
 		mAlpha = alpha;
         addPort("P1", "NodeHydraulic", P1);
         addPort("P2", "NodeHydraulic", P2);
-		mDelayedC1.setTimeDelay(timeDelay, timestep);
-		mDelayedC2.setTimeDelay(timeDelay, timestep);
         
+        registerParameter("Tidsfördröjning", "s", mTimeDelay);
         registerParameter("Alpha, någon lågpassgrej", "-", mAlpha);
         registerParameter("Zc, kapasitans", "Enhet?", mZc);
     }
@@ -54,9 +55,13 @@ public:
         p2_ptr->setData(NodeHydraulic::WAVEVARIABLE, 1.0);
         p1_ptr->setData(NodeHydraulic::CHARIMP, mZc);
         p2_ptr->setData(NodeHydraulic::CHARIMP, mZc);
-		
+
+		//Set external parameters
+		mDelayedC1.setTimeDelay(mTimeDelay-mTimestep, mTimestep);
+		mDelayedC2.setTimeDelay(mTimeDelay-mTimestep, mTimestep);
+        
 		//Init delay
-		mDelayedC1.initilizeValues(1.0);
+        mDelayedC1.initilizeValues(1.0);
 		mDelayedC2.initilizeValues(1.0);
 	}
 	

@@ -14,6 +14,7 @@ public:
         mPressure = pressure;
 
         addPort("P1", "NodeHydraulic", P1);
+        registerParameter("Tryck", "Pa", mPressure);
     }
 
     

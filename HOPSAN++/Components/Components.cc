@@ -134,10 +134,12 @@ void Component::registerParameter(const string name, const string unit, double &
 
 void Component::listParametersConsole()
 {
+    cout <<"-----------------------------------------------" << endl << getName() << ":" << endl;
     for (size_t i=0; i<mParameters.size(); ++i)
     {
         cout << "Parameter " << i+1 << ": " << mParameters[i].getName() << " = " << mParameters[i].getValue() << " " << mParameters[i].getUnit() << endl;
     }
+    cout <<"-----------------------------------------------" << endl;
 }
 
 double Component::getParameter(const string name)

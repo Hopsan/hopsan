@@ -71,15 +71,20 @@ void testTLM()
 {
 	ComponentSystem simulationmodel("simulationmodel");
     //Create other components
-    ComponentFlowSourceQ qsourceL("qs_left_side", 1);
-    ComponentTLMlossless lineC("line_center", 3, .2);
-    ComponentPressureSourceQ psourceR("ps_right_side", 1);
+    ComponentFlowSourceQ qsourceL("qs_left_side", 1.0);
+    ComponentTLMlossless lineC("line_center", 3.0, 0.2);
+    ComponentPressureSourceQ psourceR("ps_right_side", 1.0);
 
     //Add components
     simulationmodel.addComponent(qsourceL);
     simulationmodel.addComponent(lineC);
     simulationmodel.addComponent(psourceR);
 
+    lineC.listParametersConsole();
+    lineC.setParameter("Zc, kapasitans", 3.0);
+    lineC.setParameter("Tidsfördröjning", 0.1);
+    lineC.listParametersConsole();
+    
     //Connect components
     simulationmodel.connect(qsourceL, "P1", lineC, "P1");
     simulationmodel.connect(lineC, "P2", psourceR, "P1");
@@ -124,6 +129,17 @@ void test3()
     simulationmodel.connect(lineC, "P2", orificeR, "P1");
     simulationmodel.connect(orificeR, "P2", psourceR, "P1");
 
+    qsourceL.listParametersConsole();
+    lineC.listParametersConsole();
+    orificeR.listParametersConsole();
+    psourceR.listParametersConsole();
+    lineC.setParameter("Zc, kapasitans", 1.0);
+    lineC.setParameter("Tidsfördröjning", 0.1);
+    qsourceL.listParametersConsole();
+    lineC.listParametersConsole();
+    orificeR.listParametersConsole();
+    psourceR.listParametersConsole();
+    
     //Run simulation
     simulationmodel.preAllocateLogSpace(0, 1.0);
 
@@ -135,10 +151,6 @@ void test3()
 
 	//Finished
     cout << "HOPSAN++ Done!" << endl;
-    lineC.listParametersConsole();
-    lineC.setParameter("Zc, kapasitans", 42.0);
-    lineC.listParametersConsole();
-
 }
 
 
