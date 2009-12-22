@@ -6,7 +6,7 @@
 #include "Orifice.hpp"
 #include "Volume.hpp"
 #include "TLMlossless.hpp"
-#include "TLMlumped.hpp"
+#include "TLMRlineR.hpp"
 #include "PressureSourceQ.hpp"
 #include "FlowSourceQ.hpp"
 #include "TicToc.h"
@@ -89,7 +89,7 @@ void testTLM()
 
     //List and set parameters
     lineC.listParametersConsole();
-    lineC.setParameter("Zc, kapasitans",  3.0);
+    lineC.setParameter("Kappasitans",  3.0);
     lineC.setParameter("Tidsfördröjning", 0.1);
     lineC.listParametersConsole();
 
@@ -104,6 +104,71 @@ void testTLM()
 
     //Test write to file
     lineC.getPort("P1").getNode().saveLogData("output.txt");
+
+	//Finished
+    cout << "HOPSAN++ Done!" << endl;
+
+}
+
+
+void testTLMlumped()
+{
+	/*   Exempelsystem:
+
+	   q         T, Zc
+             v  v  v  v  v
+	 ------>o=============o p
+             ^  ^  ^  ^  ^
+            R/8 R/4 ... R/8
+
+	 */
+    double R  = 1.0;
+    double Zc = 3.0;
+    double T  = 0.1;
+
+	ComponentSystem simulationmodel("simulationmodel");
+    //Create other components
+    ComponentFlowSourceQ qsourceL("qs_left_side",  1.0);
+    ComponentTLMRlineR lineL("line_left",     Zc, T/4.0, R/8.0, 0.0);
+    ComponentOrifice orificeL("orifice_L", 4.0*R);
+    ComponentTLMRlineR lineLC("line_lcenter", Zc, T/4.0, 0.0, 0.0);
+    ComponentOrifice orificeC("orifice_C", 4.0*R);
+    ComponentTLMRlineR lineRC("line_rcenter", Zc, T/4.0, 0.0, 0.0);
+    ComponentOrifice orificeR("orifice_R", 4.0*R);
+    ComponentTLMRlineR lineR("line_right",    Zc, T/4.0, 0.0, R/8.0);
+    ComponentPressureSourceQ psourceR("ps_right_side", 1.0);
+
+    //Add components
+    simulationmodel.addComponent(qsourceL);
+    simulationmodel.addComponent(lineL);
+    simulationmodel.addComponent(orificeL);
+    simulationmodel.addComponent(lineLC);
+    simulationmodel.addComponent(orificeC);
+    simulationmodel.addComponent(lineRC);
+    simulationmodel.addComponent(orificeR);
+    simulationmodel.addComponent(lineR);
+    simulationmodel.addComponent(psourceR);
+
+    //List and set parameters
+    lineLC.listParametersConsole();
+
+    //Connect components
+    simulationmodel.connect(qsourceL, "P1", lineL, "P1");
+    simulationmodel.connect(lineL, "P2", orificeL, "P1");
+    simulationmodel.connect(orificeL, "P2", lineLC, "P1");
+    simulationmodel.connect(lineLC, "P2", orificeC, "P1");
+    simulationmodel.connect(orificeC, "P2", lineRC, "P1");
+    simulationmodel.connect(lineRC, "P2", orificeR, "P1");
+    simulationmodel.connect(orificeR, "P2", lineR, "P1");
+    simulationmodel.connect(lineR, "P2", psourceR, "P1");
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0, 2.0);
+
+    simulationmodel.simulate(0.0, 2.0);
+
+    //Test write to file
+    lineL.getPort("P1").getNode().saveLogData("output.txt");
 
 	//Finished
     cout << "HOPSAN++ Done!" << endl;
@@ -165,7 +230,7 @@ void test3()
 
 int main()
 {
-    test3();
+    testTLMlumped();
 
     return 0;
 }
