@@ -8,12 +8,12 @@ using namespace std;
 class CompParameter
 {
 public:
-    CompParameter(const string name, const string unit, double & rValue);
+    CompParameter(const string name, const string unit, double &rValue); //should maybe be a description field as well
     string getName();
     string getUnit();
     double getValue();
     void setValue(const double value);
-    
+
 private:
     string mName;
     string mUnit;
@@ -63,7 +63,7 @@ public:
     void listParametersConsole();
     double getParameter(const string name);
     void setParameter(const string name, const double value);
-    
+
     void setTimestep(const double timestep);
     double getTimestep();
 
@@ -91,7 +91,7 @@ protected:
     vector<Port> mPorts, mInnerPorts;
 
     vector<Node*> mSubNodePtrs;
-    
+
     vector<CompParameter> mParameters;
 
     double mTimestep;

@@ -118,7 +118,7 @@ public:
         //Update the delayed variabels
 		mDelayedC1.update(c1);
 		mDelayedC2.update(c2);
-		}
+    }
 };
 
 #endif // TLMRLINER_HPP_INCLUDED
