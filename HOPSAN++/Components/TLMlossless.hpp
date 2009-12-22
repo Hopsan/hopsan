@@ -18,82 +18,97 @@
 
 class ComponentTLMlossless : public ComponentC
 {
+
 private:
-    double mAlpha;
+    double mStartPressure;
+    double mStartFlow;
     double mTimeDelay;
+    double mAlpha;
+    double mZc;
 	Delay mDelayedC1;
 	Delay mDelayedC2;
-    double mZc; ///TODO: Should be only in node.
     enum {P1, P2};
 
 public:
-    ComponentTLMlossless(const string name, const double Zc=1.0e9,
-						 const double timeDelay=0.1, const double alpha=0.0,
-						 const double timestep=0.001)
+    ComponentTLMlossless(const string name,
+                         const double zc        = 1.0e9,
+                         const double timeDelay = 0.1,
+                         const double alpha     = 0.0,
+                         const double timestep  = 0.001)
 	: ComponentC(name, timestep)
     {
-        mTimeDelay = timeDelay;
-        mZc = Zc;
-		mAlpha = alpha;
+        //Set member attributes
+        mStartPressure = 0.0;
+        mStartFlow     = 0.0;
+        mTimeDelay     = timeDelay;
+        mZc            = zc;
+		mAlpha         = alpha;
+
+		//Add ports to the component
         addPort("P1", "NodeHydraulic", P1);
         addPort("P2", "NodeHydraulic", P2);
 
-        registerParameter("Tidsfördröjning", "s", mTimeDelay);
-        registerParameter("Alpha, någon lågpassgrej", "-", mAlpha);
-        registerParameter("Zc, kapasitans", "Enhet?", mZc);
+        //Register changable parameters to the HOPSAN++ core
+        registerParameter("Tidsfördröjning", "s",   mTimeDelay);
+        registerParameter("Lågpasskoeficient", "-", mAlpha);
+        registerParameter("Kappasitans", "Ns/m^5",  mZc);
     }
 
 
 	void initialize()
     {
-		//read from nodes
+        //Read from nodes
 		Node* p1_ptr = mPorts[P1].getNodePtr();
 		Node* p2_ptr = mPorts[P2].getNodePtr();
 
         //Write to nodes
-        p1_ptr->setData(NodeHydraulic::WAVEVARIABLE, 1.0);
-        p2_ptr->setData(NodeHydraulic::WAVEVARIABLE, 1.0);
-        p1_ptr->setData(NodeHydraulic::CHARIMP, mZc);
-        p2_ptr->setData(NodeHydraulic::CHARIMP, mZc);
+        p1_ptr->setData(NodeHydraulic::MASSFLOW,     mStartFlow);
+        p1_ptr->setData(NodeHydraulic::PRESSURE,     mStartPressure);
+        p1_ptr->setData(NodeHydraulic::WAVEVARIABLE, mStartPressure+mZc*mStartFlow);
+        p1_ptr->setData(NodeHydraulic::CHARIMP,      mZc);
+        p2_ptr->setData(NodeHydraulic::MASSFLOW,     mStartFlow);
+        p2_ptr->setData(NodeHydraulic::PRESSURE,     mStartPressure);
+        p2_ptr->setData(NodeHydraulic::WAVEVARIABLE, mStartPressure+mZc*mStartFlow);
+        p2_ptr->setData(NodeHydraulic::CHARIMP,      mZc);
 
 		//Set external parameters
-		mDelayedC1.setTimeDelay(mTimeDelay-mTimestep, mTimestep);
+		mDelayedC1.setTimeDelay(mTimeDelay-mTimestep, mTimestep); //-mTimestep sue to calc time
 		mDelayedC2.setTimeDelay(mTimeDelay-mTimestep, mTimestep);
 
-        ///TODO: mInitialize value in DelayClass
 		//Init delay
-        mDelayedC1.initilizeValues(1.0);
-		mDelayedC2.initilizeValues(1.0);
+        mDelayedC1.initilizeValues(mStartPressure+mZc*mStartFlow);
+		mDelayedC2.initilizeValues(mStartPressure+mZc*mStartFlow);
 	}
 
 
 	void simulateOneTimestep()
     {
-		//read from nodes
+        //Get the nodes
 		Node* p1_ptr = mPorts[P1].getNodePtr();
 		Node* p2_ptr = mPorts[P2].getNodePtr();
 
+        //Get variable values from nodes
         double q1 = p1_ptr->getData(NodeHydraulic::MASSFLOW);
         double p1 = p1_ptr->getData(NodeHydraulic::PRESSURE);
         double q2 = p2_ptr->getData(NodeHydraulic::MASSFLOW);
         double p2 = p2_ptr->getData(NodeHydraulic::PRESSURE);
 
-        //Delay Line
+        //Delay Line equations
         double c10 = p2 + mZc * q2;
         double c20 = p1 + mZc * q1;
-        double c1 = mAlpha*c1 + (1.0-mAlpha)*c10;
-        double c2 = mAlpha*c2 + (1.0-mAlpha)*c20;
+        double c1  = mAlpha*c1 + (1.0-mAlpha)*c10;
+        double c2  = mAlpha*c2 + (1.0-mAlpha)*c20;
 
-        //Write to nodes
+        //Write new values to nodes
         p1_ptr->setData(NodeHydraulic::WAVEVARIABLE, mDelayedC1.value());
+        p1_ptr->setData(NodeHydraulic::CHARIMP,      mZc);
         p2_ptr->setData(NodeHydraulic::WAVEVARIABLE, mDelayedC2.value());
-        p1_ptr->setData(NodeHydraulic::CHARIMP, mZc);
-        p2_ptr->setData(NodeHydraulic::CHARIMP, mZc);
+        p2_ptr->setData(NodeHydraulic::CHARIMP,      mZc);
 
+        //Update the delayed variabels
 		mDelayedC1.update(c1);
 		mDelayedC2.update(c2);
 		}
 };
-
 
 #endif // TLMLOSSLESS_HPP_INCLUDED

@@ -17,26 +17,29 @@ Delay::Delay()
 }
 
 
-Delay::Delay(const std::size_t stepDelay, const double defaultValue)
+Delay::Delay(const std::size_t stepDelay, const double initValue)
 {
     mStepDelay = stepDelay;
     mFracStep = mStepDelay;
-    mValues.resize(mStepDelay, defaultValue);
+    mInitialValue = initValue;
+    mValues.resize(mStepDelay, mInitialValue);
 }
 
 
-Delay::Delay(const double timeDelay, const double Ts, const double defaultValue)
+Delay::Delay(const double timeDelay, const double Ts, const double initValue)
 {
     mFracStep = timeDelay/Ts;
     //avrundar uppat
     mStepDelay = (std::size_t) ceil(((double) timeDelay)/Ts); ///TODO: kolla att det verkligen ar ratt
-    mValues.resize(mStepDelay, defaultValue);
+    mInitialValue = initValue;
+    mValues.resize(mStepDelay, mInitialValue);
 }
 
 
 void Delay::initilizeValues(const double initValue)
 {
-    mValues.assign(mValues.size(), initValue);
+    mInitialValue = initValue;
+    mValues.assign(mValues.size(), mInitialValue);
 }
 
 
@@ -47,26 +50,34 @@ void Delay::update(const double value)
 }
 
 
-void Delay::setStepDelay(const std::size_t stepDelay, const double defaultValue)
+void Delay::setStepDelay(const std::size_t stepDelay, const double initValue)
 {
     mStepDelay = stepDelay;
     mFracStep = mStepDelay;
-    mValues.resize(mStepDelay, defaultValue);
+    if (initValue != 0)
+    {
+        mInitialValue = initValue;
+    }
+    mValues.resize(mStepDelay, mInitialValue);
 }
 
 
-void Delay::setTimeDelay(const double timeDelay, const double Ts, const double defaultValue)
+void Delay::setTimeDelay(const double timeDelay, const double Ts, const double initValue)
 {
     mFracStep = timeDelay/Ts;
     //avrundar uppat
     mStepDelay = (std::size_t) ceil(((double) timeDelay)/Ts); ///TODO: kolla att det verkligen ar ratt
-    mValues.resize(mStepDelay, defaultValue);
+    if (initValue != 0)
+    {
+        mInitialValue = initValue;
+    }
+    mValues.resize(mStepDelay, mInitialValue);
 }
 
 
 double Delay::value()
 {
-    if (mValues.empty()) 
+    if (mValues.empty())
     {
         return 0;
     }
@@ -74,11 +85,11 @@ double Delay::value()
     {
         return ((1 - (mStepDelay - mFracStep)) * mValues[mValues.size()-2] + (mStepDelay - mFracStep) * mValues.back()); //interpolerar
     }
-    else 
+    else
     {
         return mValues.back();
     }
-    
+
 }
 
 

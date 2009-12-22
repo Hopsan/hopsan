@@ -84,6 +84,8 @@ Component::Component(string name, double timestep)
     mIsComponentQ = false;
     mIsComponentSystem = false;
     mIsComponentSignal = false;
+
+    registerParameter("Sampeltid", "s",   mTimestep);
 }
 
 void Component::simulate(const double startT, const double Ts)
@@ -146,7 +148,7 @@ double Component::getParameter(const string name)
 {
     for (size_t i=0; i<mParameters.size(); ++i)
     {
-        if (mParameters[i].getName() == name) 
+        if (mParameters[i].getName() == name)
         {
             return mParameters[i].getValue();
         }
@@ -160,17 +162,17 @@ void Component::setParameter(const string name, const double value)
     bool notset = 1;
     for (size_t i=0; i<mParameters.size(); ++i)
     {
-//        if (name.compare(mParameters[i].getName()) == 0) 
-        if (name == mParameters[i].getName()) 
+//        if (name.compare(mParameters[i].getName()) == 0)
+        if (name == mParameters[i].getName())
         {
             mParameters[i].setValue(value);
             notset = 0;
         }
     }
-    if (notset) 
+    if (notset)
     {
         cout << "No such parameter" << endl;
-        assert(false);    
+        assert(false);
     }
 }
 

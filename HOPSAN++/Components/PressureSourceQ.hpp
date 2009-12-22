@@ -13,45 +13,49 @@
 
 class ComponentPressureSourceQ : public ComponentQ
 {
+
 private:
+    double mStartPressure;
+    double mStartFlow;
     double mPressure;
     enum {P1};
 
 public:
-    ComponentPressureSourceQ(const string name, const double pressure=1.0e5, const double timestep=0.001)
+    ComponentPressureSourceQ(const string name,
+                             const double pressure = 1.0e5,
+                             const double timestep = 0.001)
 	:ComponentQ(name, timestep)
     {
-        mPressure = pressure;
+        mStartPressure = 0.0;
+        mStartFlow     = 0.0;
+        mPressure      = pressure;
 
         addPort("P1", "NodeHydraulic", P1);
+
         registerParameter("Tryck", "Pa", mPressure);
     }
 
-	
+
 	void initialize()
 	{
-        //read fron node
-   		Node* p1_ptr = mPorts[P1].getNodePtr();
-		
-        //write to node
-        p1_ptr->setData(NodeHydraulic::MASSFLOW, 0.0);
-        p1_ptr->setData(NodeHydraulic::PRESSURE, 1.0);
+        //Nothing to initialize
 	}
-	
-	
+
+
     void simulateOneTimestep()
     {
-        //read fron node
+        //Get the nodes
    		Node* p1_ptr = mPorts[P1].getNodePtr();
 
+        //Get variable values from nodes
 		double c  = p1_ptr->getData(NodeHydraulic::WAVEVARIABLE);
         double Zc = p1_ptr->getData(NodeHydraulic::CHARIMP);
 
-        //delayed line
+        //Pressure source equations
         double q = (mPressure - c)/Zc;
 		double p = mPressure;
 
-        //write to node
+        //Write new values to nodes
         p1_ptr->setData(NodeHydraulic::MASSFLOW, q);
         p1_ptr->setData(NodeHydraulic::PRESSURE, p);
     }
