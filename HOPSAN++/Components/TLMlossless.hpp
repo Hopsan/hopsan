@@ -37,7 +37,7 @@ public:
 		mAlpha = alpha;
         addPort("P1", "NodeHydraulic", P1);
         addPort("P2", "NodeHydraulic", P2);
-        
+
         registerParameter("Tidsfördröjning", "s", mTimeDelay);
         registerParameter("Alpha, någon lågpassgrej", "-", mAlpha);
         registerParameter("Zc, kapasitans", "Enhet?", mZc);
@@ -49,7 +49,7 @@ public:
 		//read from nodes
 		Node* p1_ptr = mPorts[P1].getNodePtr();
 		Node* p2_ptr = mPorts[P2].getNodePtr();
-		
+
         //Write to nodes
         p1_ptr->setData(NodeHydraulic::WAVEVARIABLE, 1.0);
         p2_ptr->setData(NodeHydraulic::WAVEVARIABLE, 1.0);
@@ -59,13 +59,14 @@ public:
 		//Set external parameters
 		mDelayedC1.setTimeDelay(mTimeDelay-mTimestep, mTimestep);
 		mDelayedC2.setTimeDelay(mTimeDelay-mTimestep, mTimestep);
-        
+
+        ///TODO: mInitialize value in DelayClass
 		//Init delay
         mDelayedC1.initilizeValues(1.0);
 		mDelayedC2.initilizeValues(1.0);
 	}
-	
-    
+
+
 	void simulateOneTimestep()
     {
 		//read from nodes
