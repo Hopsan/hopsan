@@ -135,6 +135,9 @@ void test3()
 
 	//Finished
     cout << "HOPSAN++ Done!" << endl;
+    lineC.listParametersConsole();
+    lineC.setParameter("Zc, kapasitans", 42.0);
+    lineC.listParametersConsole();
 
 }
 

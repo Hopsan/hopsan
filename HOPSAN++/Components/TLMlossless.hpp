@@ -37,6 +37,9 @@ public:
         addPort("P2", "NodeHydraulic", P2);
 		mDelayedC1.setTimeDelay(timeDelay, timestep);
 		mDelayedC2.setTimeDelay(timeDelay, timestep);
+        
+        registerParameter("Alpha, någon lågpassgrej", "-", mAlpha);
+        registerParameter("Zc, kapasitans", "Enhet?", mZc);
     }
 
 

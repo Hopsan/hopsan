@@ -5,6 +5,22 @@
 #include "Nodes.h"
 using namespace std;
 
+class CompParameter
+{
+public:
+    CompParameter(const string name, const string unit, double & rValue);
+    string getName();
+    string getUnit();
+    double getValue();
+    void setValue(const double value);
+    
+private:
+    string mName;
+    string mUnit;
+    double* mpValue;
+};
+
+
 class Component; //forward declaration
 class ComponentSystem;  //forward declaration
 
@@ -43,6 +59,11 @@ public:
 
     string &getType();
 
+    void registerParameter(const string name, const string unit, double &value);
+    void listParametersConsole();
+    double getParameter(const string name);
+    void setParameter(const string name, const double value);
+    
     void setTimestep(const double timestep);
     double getTimestep();
 
@@ -70,6 +91,8 @@ protected:
     vector<Port> mPorts, mInnerPorts;
 
     vector<Node*> mSubNodePtrs;
+    
+    vector<CompParameter> mParameters;
 
     double mTimestep;
 

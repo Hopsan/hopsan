@@ -4,6 +4,40 @@
 #include <cassert>
 #include <math.h>
 
+
+//Constructor
+CompParameter::CompParameter(const string name, const string unit, double & rValue)
+{
+    mName = name;
+    mUnit = unit;
+    mpValue = &rValue;
+};
+
+
+string CompParameter::getName()
+{
+    return mName;
+}
+
+
+string CompParameter::getUnit()
+{
+    return mUnit;
+}
+
+
+double CompParameter::getValue()
+{
+    return *mpValue;
+}
+
+
+void CompParameter::setValue(const double value)
+{
+    *mpValue = value;
+}
+
+
 //Constructor
 Port::Port()
 {
@@ -89,6 +123,53 @@ string &Component::getName()
 string &Component::getType()
 {
     return mType;
+}
+
+void Component::registerParameter(const string name, const string unit, double &rValue)
+{
+    ///TODO: handle trying to add multiple comppar with same name or pos
+    CompParameter new_comppar(name, unit, rValue);
+    mParameters.push_back(new_comppar); //Copy parameters into storage
+}
+
+void Component::listParametersConsole()
+{
+    for (size_t i=0; i<mParameters.size(); ++i)
+    {
+        cout << "Parameter " << i+1 << ": " << mParameters[i].getName() << " = " << mParameters[i].getValue() << " " << mParameters[i].getUnit() << endl;
+    }
+}
+
+double Component::getParameter(const string name)
+{
+    for (size_t i=0; i<mParameters.size(); ++i)
+    {
+        if (mParameters[i].getName() == name) 
+        {
+            return mParameters[i].getValue();
+        }
+    }
+    cout << "No such parameter" << endl;
+    assert(false);
+}
+
+void Component::setParameter(const string name, const double value)
+{
+    bool notset = 1;
+    for (size_t i=0; i<mParameters.size(); ++i)
+    {
+//        if (name.compare(mParameters[i].getName()) == 0) 
+        if (name == mParameters[i].getName()) 
+        {
+            mParameters[i].setValue(value);
+            notset = 0;
+        }
+    }
+    if (notset) 
+    {
+        cout << "No such parameter" << endl;
+        assert(false);    
+    }
 }
 
 void Component::setTimestep(const double timestep)
