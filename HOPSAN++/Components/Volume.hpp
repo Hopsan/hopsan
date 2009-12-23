@@ -1,7 +1,7 @@
 #ifndef VOLUME_HPP_INCLUDED
 #define VOLUME_HPP_INCLUDED
 
-#include "Components.h"
+#include "Component.h"
 #include "Nodes.h"
 
 class ComponentVolume : public ComponentC

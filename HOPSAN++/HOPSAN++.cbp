@@ -55,12 +55,11 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add directory="./Components" />
+			<Add directory="./HopsanCore" />
 			<Add directory="./Nodes" />
 			<Add directory="./Utilities" />
+			<Add directory="./Components" />
 		</Compiler>
-		<Unit filename="Components/Components.cc" />
-		<Unit filename="Components/Components.h" />
 		<Unit filename="Components/FlowSourceQ.hpp" />
 		<Unit filename="Components/Orifice.hpp" />
 		<Unit filename="Components/PressureSource.hpp" />
@@ -68,6 +67,13 @@
 		<Unit filename="Components/TLMRlineR.hpp" />
 		<Unit filename="Components/TLMlossless.hpp" />
 		<Unit filename="Components/Volume.hpp" />
+		<Unit filename="HopsanCore/ClassFactory.h" />
+		<Unit filename="HopsanCore/Component.cc" />
+		<Unit filename="HopsanCore/Component.h" />
+		<Unit filename="HopsanCore/Node.cc">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="HopsanCore/Node.h" />
 		<Unit filename="Nodes/Nodes.cc" />
 		<Unit filename="Nodes/Nodes.h" />
 		<Unit filename="Utilities/Delay.cc" />

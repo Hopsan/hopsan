@@ -12,7 +12,7 @@
 
 #include <iostream>
 
-#include "Components.h"
+#include "Component.h"
 #include "Nodes.h"
 #include "Delay.h"
 

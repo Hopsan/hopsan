@@ -1,7 +1,7 @@
 #ifndef ORIFICE_HPP_INCLUDED
 #define ORIFICE_HPP_INCLUDED
 
-#include "Components.h"
+#include "Component.h"
 #include "Nodes.h"
 
 class ComponentOrifice : public ComponentQ

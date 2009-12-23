@@ -1,8 +1,9 @@
 #ifndef COMPONENTS_H_INCLUDED
 #define COMPONENTS_H_INCLUDED
 
+#include "Node.h"
 #include <string>
-#include "Nodes.h"
+
 using namespace std;
 
 class CompParameter

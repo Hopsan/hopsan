@@ -1,7 +1,6 @@
-#include "Components.h"
+#include "Component.h"
 #include "Nodes.h"
 #include <iostream>
-//#include <typeinfo>
 #include "PressureSource.hpp"
 #include "Orifice.hpp"
 #include "Volume.hpp"
