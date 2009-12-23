@@ -70,6 +70,8 @@
 		<Unit filename="HopsanCore/ClassFactory.h" />
 		<Unit filename="HopsanCore/Component.cc" />
 		<Unit filename="HopsanCore/Component.h" />
+		<Unit filename="HopsanCore/LoadExternal.cc" />
+		<Unit filename="HopsanCore/LoadExternal.h" />
 		<Unit filename="HopsanCore/Node.cc">
 			<Option compilerVar="CC" />
 		</Unit>
