@@ -36,8 +36,7 @@ private:
 };
 
 
-template <typename _Key, typename _Base,
-  typename _Predicator = std::less<_Key> >
+template <typename _Key, typename _Base, typename _Predicator = std::less<_Key> >
 class CClassFactory
 {
 public:
@@ -49,18 +48,14 @@ public:
 
     // called at the beginning of execution to register creation functions
     // used later to create class instances
-
-    static _Key RegisterCreatorFunction(_Key idKey,
-                              CreatorFunction classCreator)
+    static _Key RegisterCreatorFunction(_Key idKey, CreatorFunction classCreator)
     {
-        get_mapFactory()->insert(std::pair<_Key,
-             CreatorFunction>(idKey, classCreator));
+        get_mapFactory()->insert(std::pair<_Key, CreatorFunction>(idKey, classCreator));
         return idKey;
     }
 
     // tries to create instance based on the key
     // using creator function (if provided)
-
     static _Base* CreateInstance(_Key idKey)
     {
         typename _mapFactory::iterator it = get_mapFactory()->find(idKey);
@@ -90,8 +85,8 @@ protected:
 
 class NodeHydraulic :public Node
 {
-    static Node* SampleCreatorFunction() {return new NodeHydraulic;}
-    static int iDummyNr;
+    static Node* CreatorFunction() {return new NodeHydraulic;}
+    static string iDummyId;
 
 public:
     enum {MASSFLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP, HEATFLOW, DATALENGTH};
@@ -103,13 +98,16 @@ public:
 };
 
 
-class NodeMech :public Node
+class NodeMechanic :public Node
 {
+    static Node* CreatorFunction() {return new NodeMechanic;}
+    static string iDummyId;
+
 public:
     enum {VELOCITY, FORCE, DATALENGTH};
-    NodeMech() : Node()
+    NodeMechanic() : Node()
     {
-        mNodeType = "NodeMech";
+        mNodeType = "NodeMechanic";
         mDataVector.resize(DATALENGTH,0.0);
     }
 };

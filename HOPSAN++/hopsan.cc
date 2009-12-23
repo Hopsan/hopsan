@@ -163,7 +163,7 @@ void testTLMlumped()
     simulationmodel.connect(lineR, "P2", psourceR, "P1");
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0, 2.0);
+    simulationmodel.preAllocateLogSpace(0.0, 2.0);
 
     simulationmodel.simulate(0.0, 2.0);
 

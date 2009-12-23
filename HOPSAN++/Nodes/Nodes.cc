@@ -63,9 +63,13 @@ void Node::logData(const double time)
     if (mLogSpaceAllocated)
     {
         //cout << "mLogCtr: " << mLogCtr << endl;
-        mTimeStorage[mLogCtr] = time;
-        mDataStorage[mLogCtr] = mDataVector;
-        //mDataStorage.push_back(mDataVector);
+        ///TODO: this if check should not be needed if everything else is working
+        if (mLogCtr < mTimeStorage.size())
+        {
+            mTimeStorage[mLogCtr] = time;
+            mDataStorage[mLogCtr] = mDataVector;
+            //mDataStorage.push_back(mDataVector);
+        }
         ++mLogCtr;
     }
     else
@@ -104,4 +108,5 @@ void Node::saveLogData(string filename)
     }
 }
 
-int NodeHydraulic::iDummyNr = CClassFactory<int, Node>::RegisterCreatorFunction(1, NodeHydraulic::SampleCreatorFunction);
+string NodeHydraulic::iDummyId = CClassFactory<string, Node>::RegisterCreatorFunction("NodeHydraulic", NodeHydraulic::CreatorFunction);
+string NodeMechanic::iDummyId = CClassFactory<string, Node>::RegisterCreatorFunction("NodeMechanic", NodeMechanic::CreatorFunction);

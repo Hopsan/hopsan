@@ -386,12 +386,14 @@ void ComponentSystem::logAllNodes(const double time)
 
 void ComponentSystem::connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2)
 {
+    Node* node_ptr;
     ///TODO: do it correct, for now quickhack
     //Check if component1 is a System component containing Component2
         if (&rComponent1 == &(rComponent2.getSystemparent()))
         {
             //Create an instance of the node specified in nodespecifications
-            NodeHydraulic* node_ptr = new NodeHydraulic(); ///TODO:
+            node_ptr = CClassFactory<string, Node>::CreateInstance(rComponent2.getPort(portname2).getNodeType());
+            //NodeHydraulic* node_ptr = new NodeHydraulic(); ///TODO:
             //add node to components and parent system
             rComponent1.addInnerPortSetNode(portname1, *node_ptr); //Add and set inner port
             rComponent1.addPort(portname1, rComponent2.getPort(portname2).getNodeType()); //Add outer port
@@ -402,7 +404,8 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
         else if (&rComponent2 == &(rComponent1.getSystemparent()))
         {
             //Create an instance of the node specified in nodespecifications
-            NodeHydraulic* node_ptr = new NodeHydraulic();///TODO:
+            node_ptr = CClassFactory<string, Node>::CreateInstance(rComponent1.getPort(portname1).getNodeType());
+            //NodeHydraulic* node_ptr = new NodeHydraulic();///TODO:
             //add node to parentsystem
             rComponent2.addInnerPortSetNode(portname2, *node_ptr); //Add and set inner port
             rComponent2.addPort(portname2, rComponent1.getPort(portname1).getNodeType()); //Add outer port
@@ -411,6 +414,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
         }
         else   //Both components are on the same level
         {
+            ///TODO: erro handle on all cases
             //Error handling when component is not a subsystem
             if (rComponent1.getPort(portname1).getNodeType() != rComponent2.getPort(portname2).getNodeType())
             {
@@ -429,7 +433,8 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
 //                    raise Exception('Component %s is not added in the system' % (i.getName()))
 
             //Create an instance of the node specified in nodespecifications
-            NodeHydraulic* node_ptr = new NodeHydraulic();///TODO:
+            node_ptr = CClassFactory<string, Node>::CreateInstance(rComponent1.getPort(portname1).getNodeType());
+            cout << "Created NodeType: " << node_ptr->getNodeType() << endl;
             //Set node in both components ports and add it to the parent system component
             rComponent1.getPort(portname1).setNode(node_ptr);
             rComponent2.getPort(portname2).setNode(node_ptr);
@@ -461,11 +466,17 @@ void ComponentSystem::simulate(const double startT, const double stopT)
     }
 
     //Simulate
+    ///TODO: while (time < stopT) will not work sometimes the loop will run even if time == stopT probably due to numeric error
 	while (time < stopT)
     {
+        if (time > stopT-0.01)
+        {
+            //debug output for time in the last 0.01 second
+            cout <<"time: " << time << " stopT: " << stopT << endl;
+        }
+
         logAllNodes(time);
 
-        //cout << "time: " << time << endl;
         ///TODO: signal components
 
         ///TODO: maybe use iterators instead
@@ -482,5 +493,8 @@ void ComponentSystem::simulate(const double startT, const double stopT)
         }
 
         time += mTimestep;
+        //time = floor(time+0.5);
+
+
     }
 }
