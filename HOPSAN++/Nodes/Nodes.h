@@ -6,7 +6,7 @@
 class NodeHydraulic :public Node
 {
     static Node* CreatorFunction() {return new NodeHydraulic;}
-    static string iDummyId;
+    static NodeTypeT iDummyId;
 
 public:
     enum {MASSFLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP, HEATFLOW, DATALENGTH};
@@ -21,7 +21,7 @@ public:
 class NodeMechanic :public Node
 {
     static Node* CreatorFunction() {return new NodeMechanic;}
-    static string iDummyId;
+    static NodeTypeT iDummyId;
 
 public:
     enum {VELOCITY, FORCE, DATALENGTH};

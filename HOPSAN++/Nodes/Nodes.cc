@@ -1,5 +1,4 @@
 #include "Nodes.h"
-#include "ClassFactory.h"
 
-string NodeHydraulic::iDummyId = CClassFactory<string, Node>::RegisterCreatorFunction("NodeHydraulic", NodeHydraulic::CreatorFunction);
-string NodeMechanic::iDummyId = CClassFactory<string, Node>::RegisterCreatorFunction("NodeMechanic", NodeMechanic::CreatorFunction);
+NodeTypeT NodeHydraulic::iDummyId = NodeFactory::RegisterCreatorFunction("NodeHydraulic", NodeHydraulic::CreatorFunction);
+NodeTypeT NodeMechanic::iDummyId = NodeFactory::RegisterCreatorFunction("NodeMechanic", NodeMechanic::CreatorFunction);

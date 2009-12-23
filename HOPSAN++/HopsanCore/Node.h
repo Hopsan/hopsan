@@ -3,15 +3,18 @@
 
 #include <vector>
 #include <string>
+#include "ClassFactory.h"
 
 using namespace std;
+
+typedef string NodeTypeT;
 
 class Node
 {
 public:
     Node();
     //string &getName();
-    string &getNodeType();
+    NodeTypeT &getNodeType();
 
     void setData(const size_t data_type, double data);
     double getData(const size_t data_type);
@@ -23,7 +26,7 @@ public:
 
 protected:
 
-    string mNodeType;
+    NodeTypeT mNodeType;
     vector<double> mDataVector;
 
 private:
@@ -35,5 +38,6 @@ private:
 
 };
 
+typedef CClassFactory<NodeTypeT, Node> NodeFactory;
 
 #endif // NODE_H_INCLUDED

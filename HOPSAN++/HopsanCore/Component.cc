@@ -1,5 +1,4 @@
 #include "Component.h"
-#include "ClassFactory.h"
 #include <iostream>
 #include <sstream>
 #include <cassert>

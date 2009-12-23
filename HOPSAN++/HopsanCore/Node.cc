@@ -20,7 +20,7 @@ Node::Node()
 //    return mName;
 //}
 
-string &Node::getNodeType()
+NodeTypeT &Node::getNodeType()
 {
     return mNodeType;
 }
