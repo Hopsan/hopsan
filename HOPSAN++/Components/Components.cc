@@ -6,7 +6,7 @@
 
 
 //Constructor
-CompParameter::CompParameter(const string name, const string unit, double & rValue)
+CompParameter::CompParameter(const string name, const string unit, double &rValue)
 {
     mName = name;
     mUnit = unit;
@@ -493,8 +493,5 @@ void ComponentSystem::simulate(const double startT, const double stopT)
         }
 
         time += mTimestep;
-        //time = floor(time+0.5);
-
-
     }
 }
