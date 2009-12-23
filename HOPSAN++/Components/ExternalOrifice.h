@@ -1,0 +1,6 @@
+#ifndef EXTERNALORIFICE_H
+#define EXTERNALORIFICE_H
+
+
+
+#endif // EXTERNALORIFICE_H

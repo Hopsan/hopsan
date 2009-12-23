@@ -1,7 +1,8 @@
-#ifndef COMPONENTS_H_INCLUDED
-#define COMPONENTS_H_INCLUDED
+#ifndef COMPONENT_H_INCLUDED
+#define COMPONENT_H_INCLUDED
 
 #include "Node.h"
+#include "ClassFactory.h"
 #include <string>
 
 using namespace std;
@@ -153,4 +154,6 @@ class ComponentSystem :public Component
 
 };
 
-#endif // COMPONENTS_H_INCLUDED
+typedef CClassFactory<string, Component> ComponentFactory;
+
+#endif // COMPONENT_H_INCLUDED
