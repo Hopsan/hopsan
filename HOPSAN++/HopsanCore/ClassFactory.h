@@ -3,6 +3,8 @@
 
 #include <map>
 
+//This code has been "borrowed" from:
+//http://www.codeproject.com/KB/architecture/SimpleDynCreate.aspx
 template <typename _Key, typename _Base, typename _Predicator = std::less<_Key> >
 class CClassFactory
 {
