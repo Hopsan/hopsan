@@ -39,8 +39,10 @@
 			<Add directory="Nodes" />
 			<Add directory="Components" />
 		</Compiler>
+		<Linker>
+			<Add option="-shared" />
+		</Linker>
 		<Unit filename="Components/ExternalOrifice.cc" />
-		<Unit filename="Components/ExternalOrifice.h" />
 		<Unit filename="HopsanCore/ClassFactory.h" />
 		<Unit filename="HopsanCore/Component.h" />
 		<Unit filename="HopsanCore/LoadExternal.h" />

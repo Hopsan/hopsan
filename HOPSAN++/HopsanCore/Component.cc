@@ -392,7 +392,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
         if (&rComponent1 == &(rComponent2.getSystemparent()))
         {
             //Create an instance of the node specified in nodespecifications
-            node_ptr = CClassFactory<string, Node>::CreateInstance(rComponent2.getPort(portname2).getNodeType());
+            node_ptr = NodeFactory::CreateInstance(rComponent2.getPort(portname2).getNodeType());
             //NodeHydraulic* node_ptr = new NodeHydraulic(); ///TODO:
             //add node to components and parent system
             rComponent1.addInnerPortSetNode(portname1, *node_ptr); //Add and set inner port
@@ -404,7 +404,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
         else if (&rComponent2 == &(rComponent1.getSystemparent()))
         {
             //Create an instance of the node specified in nodespecifications
-            node_ptr = CClassFactory<string, Node>::CreateInstance(rComponent1.getPort(portname1).getNodeType());
+            node_ptr = NodeFactory::CreateInstance(rComponent1.getPort(portname1).getNodeType());
             //NodeHydraulic* node_ptr = new NodeHydraulic();///TODO:
             //add node to parentsystem
             rComponent2.addInnerPortSetNode(portname2, *node_ptr); //Add and set inner port
@@ -433,7 +433,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
 //                    raise Exception('Component %s is not added in the system' % (i.getName()))
 
             //Create an instance of the node specified in nodespecifications
-            node_ptr = CClassFactory<string, Node>::CreateInstance(rComponent1.getPort(portname1).getNodeType());
+            node_ptr = NodeFactory::CreateInstance(rComponent1.getPort(portname1).getNodeType());
             cout << "Created NodeType: " << node_ptr->getNodeType() << endl;
             //Set node in both components ports and add it to the parent system component
             rComponent1.getPort(portname1).setNode(node_ptr);

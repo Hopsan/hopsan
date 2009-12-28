@@ -16,6 +16,7 @@
 				</Compiler>
 				<Linker>
 					<Add library="/usr/lib/librt.so" />
+					<Add library="/usr/lib/libdl.so" />
 				</Linker>
 			</Target>
 			<Target title="DebugWin32">
@@ -60,6 +61,9 @@
 			<Add directory="./Utilities" />
 			<Add directory="./Components" />
 		</Compiler>
+		<Linker>
+			<Add option="-rdynamic" />
+		</Linker>
 		<Unit filename="Components/FlowSourceQ.hpp" />
 		<Unit filename="Components/Orifice.hpp" />
 		<Unit filename="Components/PressureSource.hpp" />
