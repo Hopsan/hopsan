@@ -68,7 +68,7 @@ public:
     void setParameter(const string name, const double value);
 
     void setTimestep(const double timestep);
-    double getTimestep();
+    double getTimestep();    
 
     bool isComponentC();
     bool isComponentQ();
@@ -98,6 +98,7 @@ protected:
     vector<CompParameter> mParameters;
 
     double mTimestep;
+    double mTime;
 
     bool mIsComponentC;
     bool mIsComponentQ;
@@ -141,7 +142,7 @@ class ComponentSystem :public Component
     void logAllNodes(const double time);
     void connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2);
     void simulate(const double startT, const double stopT);
-
+    
     protected:
     vector<Component*> mSubComponentPtrs; //Problems with inheritance and casting?
     vector<Component*> mComponentQptrs;
@@ -149,8 +150,6 @@ class ComponentSystem :public Component
     //vector<ComponentSignal*>
 
     private:
-
-
 
 
 };

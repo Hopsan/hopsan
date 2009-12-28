@@ -92,11 +92,11 @@ void Component::simulate(const double startT, const double Ts)
 {
 //TODO: adjust self.timestep or simulation depending on Ts from system above (self.timestep should be multipla of Ts)
     double stopT = startT+Ts;
-    double time = startT;
-    while (time < stopT)
+    mTime = startT;
+    while (mTime < stopT)
     {
         simulateOneTimestep();
-        time += mTimestep;
+        mTime += mTimestep;
     }
 }
 
@@ -446,7 +446,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
 void ComponentSystem::simulate(const double startT, const double stopT)
 {
     ///TODO: quick hack for now
-    double time = startT;
+    mTime = startT;
 
     ///TODO: problem with several subsystems
 	//Init
@@ -467,15 +467,15 @@ void ComponentSystem::simulate(const double startT, const double stopT)
 
     //Simulate
     ///TODO: while (time < stopT) will not work sometimes the loop will run even if time == stopT probably due to numeric error
-	while (time < stopT)
+	while (mTime < stopT)
     {
-        if (time > stopT-0.01)
+        if (mTime > stopT-0.01)
         {
             //debug output for time in the last 0.01 second
-            cout <<"time: " << time << " stopT: " << stopT << endl;
+            cout <<"time: " << mTime << " stopT: " << stopT << endl;
         }
 
-        logAllNodes(time);
+        logAllNodes(mTime);
 
         ///TODO: signal components
 
@@ -483,15 +483,15 @@ void ComponentSystem::simulate(const double startT, const double stopT)
         //C components
         for (size_t c=0; c < mComponentCptrs.size(); ++c)
         {
-            mComponentCptrs[c]->simulate(time, mTimestep);
+            mComponentCptrs[c]->simulate(mTime, mTimestep);
         }
 
         //Q components
         for (size_t q=0; q < mComponentQptrs.size(); ++q)
         {
-            mComponentQptrs[q]->simulate(time, mTimestep);
+            mComponentQptrs[q]->simulate(mTime, mTimestep);
         }
 
-        time += mTimestep;
+        mTime += mTimestep;
     }
 }
