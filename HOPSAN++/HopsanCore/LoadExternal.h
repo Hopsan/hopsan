@@ -36,6 +36,16 @@ public:
         {
             cout << "Succes (probably) opening external lib: " << libpath << endl;
         }
+        //Now load the register function
+        typedef void (*register_contents_t)(ComponentFactory *factory_ptr);
+
+        register_contents_t register_contents = (register_contents_t)GetProcAddress(lib_ptr, "register_contents");
+        if (!register_contents)
+        {
+            cout << "Cannot load symbol 'register_contents': " << GetLastError() << endl;
+            //dlclose(handle);
+            //return 1;
+        }
 #else
         void *lib_ptr;
         //First open the lib
@@ -63,13 +73,11 @@ public:
             //return 1;
         }
 
+#endif
+
         ///TODO: this feels ugnly, I create an instance of ClasFactory (which has all members static) so that a pointer can be sent into the register function.
         ComponentFactory cfactory;  //It seems to be ok to let this temp factory go out of scope, all contents are static anyway
         register_contents(&cfactory);
-
-
-
-#endif
 
 
     }
