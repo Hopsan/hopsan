@@ -72,7 +72,7 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fPIC" />
-			<Add option="-DDODLLEXPORT" />
+			<Add option="-DDOCOREDLLEXPORT" />
 			<Add directory=".\HopsanCore" />
 			<Add directory=".\Nodes" />
 			<Add directory=".\Utilities" />

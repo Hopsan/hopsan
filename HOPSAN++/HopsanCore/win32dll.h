@@ -6,7 +6,7 @@
 #define DLLEXPORT __declspec(dllexport)
 #define DLLIMPORT __declspec(dllimport)
 
-#ifdef DODLLEXPORT
+#ifdef DOCOREDLLEXPORT
 #define DLLIMPORTEXPORT DLLEXPORT /* DLL export */
 #else
 #define DLLIMPORTEXPORT DLLIMPORT /* EXE import */
