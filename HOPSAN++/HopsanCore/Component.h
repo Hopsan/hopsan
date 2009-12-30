@@ -132,7 +132,7 @@ public:
 };
 
 
-class ComponentSystem :public Component
+class DLLIMPORTEXPORT ComponentSystem :public Component
 {
     public:
     ComponentSystem(string name, double timestep=0.001);

@@ -70,6 +70,7 @@
 		</Compiler>
 		<Linker>
 			<Add option="-shared" />
+			<Add library="bin\Debug\libHOPSAN++.dll" />
 			<Add directory="bin\Debug" />
 		</Linker>
 		<Unit filename="Components\ExternalOrifice.cc" />

@@ -14,6 +14,8 @@
 //#include "LoadExternal.h"
 
 #include "HopsanCore.h"
+#include "TicToc.h"
+#include "Delay.h"
 
 void test1()
 {
@@ -43,11 +45,11 @@ void test1()
 
     //Run simulation
     TicToc prealloctimer("prealloctimer");
-    simulationmodel.preAllocateLogSpace(0, 100);
+    simulationmodel.preAllocateLogSpace(0, 10);
     prealloctimer.TocPrint();
 
     TicToc simutimer("simutimer");
-    simulationmodel.simulate(0,100);
+    simulationmodel.simulate(0,10);
     simutimer.TocPrint();
 
     totaltimer.TocPrint();
@@ -56,7 +58,7 @@ void test1()
     TicToc filewritetimer("filewritetimer");
     volumeC.getPort("P1").getNode().saveLogData("output.txt");
     filewritetimer.TocPrint();
-    cout << "HOPSAN++ Done!" << endl;
+    cout << "test1() Done!" << endl;
 }
 
 
@@ -108,7 +110,7 @@ void testTLM()
     lineC.getPort("P1").getNode().saveLogData("output.txt");
 
 	//Finished
-    cout << "HOPSAN++ Done!" << endl;
+    cout << "testTLM Done!" << endl;
 
 }
 
@@ -173,7 +175,7 @@ void testTLMlumped()
     lineL.getPort("P1").getNode().saveLogData("output.txt");
 
 	//Finished
-    cout << "HOPSAN++ Done!" << endl;
+    cout << "testTLMlumped() Done!" << endl;
 
 }
 
@@ -226,7 +228,7 @@ void test3()
     lineC.getPort("P2").getNode().saveLogData("output2.txt");
 
 	//Finished
-    cout << "HOPSAN++ Done!" << endl;
+    cout << "test3() Done!" << endl;
 }
 
 
@@ -241,7 +243,12 @@ void test_external_lib()
     ComponentPressureSource psourceL("ps_left_side", 10e5);
     //ComponentOrifice orificeL("orifice_left_side", 1e-12);
 
-    loader.Load("./ExternalOrifice.so");
+    #ifdef WIN32
+    loader.Load("./libExternalOrifice.dll");
+    #else
+    loader.Load("./libExternalOrifice.so");
+    #endif
+
     cout << "afterload" << endl;
 
     orificeL = ComponentFactory::CreateInstance("ComponentExternalOrifice");
@@ -277,6 +284,7 @@ void test_external_lib()
 
 int main()
 {
+    test1();
     test_external_lib();
 
     return 0;

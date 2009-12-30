@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include "Component.h"
+#include "win32dll.h"
 
 #ifdef WIN32
 #include "windows.h"
@@ -14,7 +15,7 @@
 
 using namespace std;
 
-class LoadExternal
+class DLLIMPORTEXPORT LoadExternal
 {
 public:
     LoadExternal();
