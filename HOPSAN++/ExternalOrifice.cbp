@@ -7,8 +7,9 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/ExternalOrifice" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug/" />
+				<Option platforms="Unix;Mac;" />
+				<Option output="bin\Debug\ExternalOrifice" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug\" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -18,8 +19,36 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="bin/Release/ExternalOrifice" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release/" />
+				<Option platforms="Unix;Mac;" />
+				<Option output="bin\Release\ExternalOrifice" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+			<Target title="DebugWin32">
+				<Option platforms="Windows;" />
+				<Option output="bin\Debug\ExternalOrifice" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug\" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="ReleaseWin32">
+				<Option platforms="Windows;" />
+				<Option output="bin\Release\ExternalOrifice" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -42,12 +71,13 @@
 		<Linker>
 			<Add option="-shared" />
 		</Linker>
-		<Unit filename="Components/ExternalOrifice.cc" />
-		<Unit filename="HopsanCore/ClassFactory.h" />
-		<Unit filename="HopsanCore/Component.h" />
-		<Unit filename="HopsanCore/LoadExternal.h" />
-		<Unit filename="HopsanCore/Node.h" />
-		<Unit filename="Nodes/Nodes.h" />
+		<Unit filename="Components\ExternalOrifice.cc" />
+		<Unit filename="HopsanCore\ClassFactory.h" />
+		<Unit filename="HopsanCore\Component.h" />
+		<Unit filename="HopsanCore\LoadExternal.h" />
+		<Unit filename="HopsanCore\Node.h" />
+		<Unit filename="HopsanCore\win32dll.h" />
+		<Unit filename="Nodes\Nodes.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

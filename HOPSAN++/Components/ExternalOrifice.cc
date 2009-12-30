@@ -4,6 +4,7 @@
 #include "Nodes.h"
 #include <iostream>
 
+#include "win32dll.h"
 
 
 class ComponentExternalOrifice : public ComponentQ
@@ -13,24 +14,24 @@ private:
     enum {P1, P2};
 
 public:
-        static Component *maker()
-        {
-            std::cout << "running maker" << std::endl;
-            return new ComponentExternalOrifice("somename");
-        }
+    static Component *maker()
+    {
+        std::cout << "running maker" << std::endl;
+        return new ComponentExternalOrifice("somename");
+    }
 
     ComponentExternalOrifice(const string name,
                              const double kc       = 1.0e-11,
                              const double timestep = 0.001)
-            : ComponentQ(name, timestep)
+        : ComponentQ(name, timestep)
     {
         mKc = kc;
 
-        addPort("P1", "NodeHydraulic", P1);
-        addPort("P2", "NodeHydraulic", P2);
+        //addPort("P1", "NodeHydraulic", P1);
+        //addPort("P2", "NodeHydraulic", P2);
         //addMultiPort("P", "NodeHydraulic", 2);
 
-        registerParameter("Tryck-flödeskoeff.", "m^5/Ns", mKc);
+        //registerParameter("Tryck-flödeskoeff.", "m^5/Ns", mKc);
     }
 
 
@@ -75,17 +76,23 @@ public:
 //        return new ComponentExternalOrifice("somename");
 //    }
 
-    class proxy
-    {
-    public:
-        proxy()
-        {
-            //factory["shape name"] = maker;
-            std::cout << "Running maker proxy" << std::endl;
-            ComponentFactory::RegisterCreatorFunction("ComponentExternalOrifice", ComponentExternalOrifice::maker);
-        }
-    };
+//    class proxy
+//    {
+//    public:
+//        proxy()
+//        {
+//            //factory["shape name"] = maker;
+//            std::cout << "Running maker proxy" << std::endl;
+//            ComponentFactory::RegisterCreatorFunction("ComponentExternalOrifice", ComponentExternalOrifice::maker);
+//        }
+//    };
 
-    proxy p;
+//proxy p;
 
-//}
+extern "C" DLLEXPORT void register_contents(ComponentFactory *factory_ptr)
+{
+    std::cout << "Running maker proxy" << std::endl;
+    factory_ptr->RegisterCreatorFunction("ComponentExternalOrifice", ComponentExternalOrifice::maker);
+}
+
+//};
