@@ -40,5 +40,6 @@ private:
 };
 
 typedef ClassFactory<NodeTypeT, Node> NodeFactory;
+//static NodeFactory gNodeFactory;
 
 #endif // NODE_H_INCLUDED

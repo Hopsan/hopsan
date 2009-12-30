@@ -1,9 +1,7 @@
-//#include "ExternalOrifice.h"
+#include <iostream>
 
 #include "Component.h"
 #include "Nodes.h"
-#include <iostream>
-
 #include "win32dll.h"
 
 
@@ -14,9 +12,9 @@ private:
     enum {P1, P2};
 
 public:
-    static Component *maker()
+    static Component *Creator()
     {
-        std::cout << "running maker" << std::endl;
+        std::cout << "running creator" << std::endl;
         return new ComponentExternalOrifice("somename");
     }
 
@@ -29,7 +27,6 @@ public:
 
         addPort("P1", "NodeHydraulic", P1);
         addPort("P2", "NodeHydraulic", P2);
-        //addMultiPort("P", "NodeHydraulic", 2);
 
         registerParameter("Tryck-flödeskoeff.", "m^5/Ns", mKc);
     }
@@ -37,7 +34,6 @@ public:
 
     void initialize()
     {
-        std::cout << "nothing to initialize" << std::endl;
         //Nothing to initialize
     }
 
@@ -68,31 +64,10 @@ public:
     }
 };
 
-//extern "C"
-//{
-//    Component *maker()
-//    {
-//        std::cout << "running maker" << std::endl;
-//        return new ComponentExternalOrifice("somename");
-//    }
-
-//    class proxy
-//    {
-//    public:
-//        proxy()
-//        {
-//            //factory["shape name"] = maker;
-//            std::cout << "Running maker proxy" << std::endl;
-//            ComponentFactory::RegisterCreatorFunction("ComponentExternalOrifice", ComponentExternalOrifice::maker);
-//        }
-//    };
-
-//proxy p;
-
-extern "C" DLLEXPORT void register_contents(ComponentFactory *factory_ptr)
+extern "C" DLLEXPORT void register_contents(ComponentFactory::FactoryVectorT *factory_vector_ptr)
 {
-    std::cout << "Running maker proxy" << std::endl;
-    factory_ptr->RegisterCreatorFunction("ComponentExternalOrifice", ComponentExternalOrifice::maker);
+    std::cout << "Running register function in dll" << std::endl;
+//    factory_ptr->RegisterCreatorFunction("ComponentExternalOrifice", ComponentExternalOrifice::maker);
+//    factory_ptr->CreateInstance("ComponentExternalOrifice");
+    factory_vector_ptr->push_back(ComponentFactory::FactoryPairT("ComponentExternalOrifice", ComponentExternalOrifice::Creator));
 }
-
-//};

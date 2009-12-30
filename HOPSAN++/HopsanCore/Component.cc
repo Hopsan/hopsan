@@ -4,7 +4,6 @@
 #include <cassert>
 #include <math.h>
 
-
 //Constructor
 CompParameter::CompParameter(const string name, const string unit, double &rValue)
 {

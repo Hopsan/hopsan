@@ -18,9 +18,10 @@ using namespace std;
 class DLLIMPORTEXPORT LoadExternal
 {
 public:
-    LoadExternal();
+    LoadExternal(){};
     void Load(string libpath)
     {
+        typedef void (*register_contents_t)(ComponentFactory::FactoryVectorT *factory_vector_ptr);
 
 #ifdef WIN32
         HINSTANCE lib_ptr;
@@ -37,8 +38,6 @@ public:
             cout << "Succes (probably) opening external lib: " << libpath << endl;
         }
         //Now load the register function
-        typedef void (*register_contents_t)(ComponentFactory *factory_ptr);
-
         register_contents_t register_contents = (register_contents_t)GetProcAddress(lib_ptr, "register_contents");
         if (!register_contents)
         {
@@ -62,8 +61,6 @@ public:
             cout << "Succes (probably) opening external lib: " << libpath << endl;
         }
         //Now load the register function
-        typedef void (*register_contents_t)(ComponentFactory *factory_ptr);
-
         register_contents_t register_contents = (register_contents_t)dlsym(lib_ptr, "register_contents");
         const char *dlsym_error = dlerror();
         if (dlsym_error)
@@ -75,9 +72,17 @@ public:
 
 #endif
 
-        ///TODO: this feels ugnly, I create an instance of ClasFactory (which has all members static) so that a pointer can be sent into the register function.
-        ComponentFactory cfactory;  //It seems to be ok to let this temp factory go out of scope, all contents are static anyway
-        register_contents(&cfactory);
+        //Cant send factory ptr as it contain static memberfunctions for registering. Local static functions in dll will be used then = VERY BAD
+        ComponentFactory::FactoryVectorT new_components;
+        new_components.clear();                 //Make sure clean
+        register_contents(&new_components);     //Send vector to dll for registration info
+
+        //Register all components given by dll or so
+        ComponentFactory::FactoryVectorT::iterator it;
+        for (it = new_components.begin(); it != new_components.end(); ++it)
+        {
+            ComponentFactory::RegisterCreatorFunction((*it).first, (*it).second);
+        }
 
 
     }

@@ -2,6 +2,7 @@
 #define CLASFACTORY_H_INCLUDED
 
 #include <map>
+#include <vector>
 #include <iostream>
 
 //This code has been "borrowed" from:
@@ -14,14 +15,18 @@ public:
     ~ClassFactory() {};
 
     typedef _Base* (*CreatorFunctionT) (void);
-    typedef std::map<_Key, CreatorFunctionT, _Predicator> _mapFactoryT;
+    typedef std::map<_Key, CreatorFunctionT, _Predicator> FactoryMapT;
+    typedef std::pair<_Key, CreatorFunctionT> FactoryPairT;
+    typedef std::vector<FactoryPairT> FactoryVectorT;
 
     // called at the beginning of execution to register creation functions
     // used later to create class instances
     static _Key RegisterCreatorFunction(_Key idKey, CreatorFunctionT classCreator)
     {
         std::cout << "Registering: " << idKey << " key" << std::endl;
-        get_mapFactory()->insert(std::pair<_Key, CreatorFunctionT>(idKey, classCreator));
+        std::cout << "BeforeInsert: Size: " << getFactoryMap()->size() << std::endl;
+        getFactoryMap()->insert(FactoryPairT(idKey, classCreator));
+        std::cout << "AfterInsert: Size: " << getFactoryMap()->size() << std::endl;
         return idKey;
     }
 
@@ -29,8 +34,9 @@ public:
     // using creator function (if provided)
     static _Base* CreateInstance(_Key idKey)
     {
-        typename _mapFactoryT::iterator it = get_mapFactory()->find(idKey);
-        if (it != get_mapFactory()->end())
+        std::cout << "Create: Size: " << getFactoryMap()->size() << std::endl;
+        typename FactoryMapT::iterator it = getFactoryMap()->find(idKey);
+        if (it != getFactoryMap()->end())
         {
             if (it->second)
             {
@@ -47,10 +53,10 @@ protected:
     // place it into static function as static member,
     // so it will be initialised only once - at first call
 
-    static _mapFactoryT * get_mapFactory()
+    static FactoryMapT * getFactoryMap()
     {
-        static _mapFactoryT m_sMapFactory;
-        return &m_sMapFactory;
+        static FactoryMapT smFactoryMap;
+        return &smFactoryMap;
     }
 };
 
