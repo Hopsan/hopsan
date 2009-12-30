@@ -27,11 +27,11 @@ public:
     {
         mKc = kc;
 
-        //addPort("P1", "NodeHydraulic", P1);
-        //addPort("P2", "NodeHydraulic", P2);
+        addPort("P1", "NodeHydraulic", P1);
+        addPort("P2", "NodeHydraulic", P2);
         //addMultiPort("P", "NodeHydraulic", 2);
 
-        //registerParameter("Tryck-flödeskoeff.", "m^5/Ns", mKc);
+        registerParameter("Tryck-flödeskoeff.", "m^5/Ns", mKc);
     }
 
 

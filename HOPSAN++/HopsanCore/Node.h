@@ -39,6 +39,6 @@ private:
 
 };
 
-typedef CClassFactory<NodeTypeT, Node> NodeFactory;
+typedef ClassFactory<NodeTypeT, Node> NodeFactory;
 
 #endif // NODE_H_INCLUDED

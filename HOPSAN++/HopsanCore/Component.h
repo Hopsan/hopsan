@@ -155,6 +155,6 @@ class ComponentSystem :public Component
 
 };
 
-typedef CClassFactory<string, Component> ComponentFactory;
+typedef ClassFactory<string, Component> ComponentFactory;
 
 #endif // COMPONENT_H_INCLUDED

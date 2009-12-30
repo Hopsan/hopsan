@@ -2,15 +2,16 @@
 #define CLASFACTORY_H_INCLUDED
 
 #include <map>
+#include <iostream>
 
 //This code has been "borrowed" from:
 //http://www.codeproject.com/KB/architecture/SimpleDynCreate.aspx
 template <typename _Key, typename _Base, typename _Predicator = std::less<_Key> >
-class CClassFactory
+class ClassFactory
 {
 public:
-    CClassFactory() {};
-    ~CClassFactory() {};
+    ClassFactory() {};
+    ~ClassFactory() {};
 
     typedef _Base* (*CreatorFunction) (void);
     typedef std::map<_Key, CreatorFunction, _Predicator> _mapFactory;
@@ -19,6 +20,7 @@ public:
     // used later to create class instances
     static _Key RegisterCreatorFunction(_Key idKey, CreatorFunction classCreator)
     {
+        std::cout << "Registering: " << idKey << " key" << std::endl;
         get_mapFactory()->insert(std::pair<_Key, CreatorFunction>(idKey, classCreator));
         return idKey;
     }
@@ -35,6 +37,7 @@ public:
                 return it->second();
             }
         }
+        std::cout << "Warning key: " << idKey << " not found!" << std::endl;
         return NULL;
     }
 

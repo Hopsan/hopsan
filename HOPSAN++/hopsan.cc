@@ -238,8 +238,10 @@ void test_external_lib()
     //Create other components
     ComponentPressureSource psourceL("ps_left_side", 10e5);
     //ComponentOrifice orificeL("orifice_left_side", 1e-12);
+
     loader.Load("./ExternalOrifice.so");
     cout << "afterload" << endl;
+
     orificeL = ComponentFactory::CreateInstance("ComponentExternalOrifice");
 
 
