@@ -246,7 +246,7 @@ void test_external_lib()
     #ifdef WIN32
     loader.Load("./libExternalOrifice.dll");
     #else
-    loader.Load("./libExternalOrifice.so");
+    loader.Load("./bin/Debug/libExternalOrifice.so");
     #endif
 
     cout << "afterload" << endl;

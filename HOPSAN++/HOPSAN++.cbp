@@ -7,17 +7,20 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin\Debug\HOPSAN++" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Debug\" />
+				<Option output="bin/Debug/HOPSAN++" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
+				<Linker>
+					<Add library="bin/Debug/libHOPSAN++.so" />
+				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="bin\Release\HOPSAN++" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Release\" />
+				<Option output="bin/Release/HOPSAN++" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -25,20 +28,24 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add library="bin/Debug/libHOPSAN++.so" />
 				</Linker>
 			</Target>
 			<Target title="DebugWin32">
-				<Option output="bin\Debug\HOPSAN++" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Debug\" />
+				<Option output="bin/Debug/HOPSAN++" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
+				<Linker>
+					<Add library="bin/Debug/libHOPSAN++.dll" />
+				</Linker>
 			</Target>
 			<Target title="ReleaseWin32">
-				<Option output="bin\Release\HOPSAN++" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Release\" />
+				<Option output="bin/Release/HOPSAN++" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -46,6 +53,7 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add library="bin/Debug/libHOPSAN++.dll" />
 				</Linker>
 			</Target>
 		</Build>
@@ -56,14 +64,11 @@
 			<Add directory="Nodes" />
 			<Add directory="Utilities" />
 		</Compiler>
-		<Linker>
-			<Add library="bin\Debug\libHOPSAN++.dll" />
-		</Linker>
-		<Unit filename="HopsanCore\HopsanCore.h" />
-		<Unit filename="Utilities\Delay.cc" />
-		<Unit filename="Utilities\Delay.h" />
-		<Unit filename="Utilities\TicToc.cc" />
-		<Unit filename="Utilities\TicToc.h" />
+		<Unit filename="HopsanCore/HopsanCore.h" />
+		<Unit filename="Utilities/Delay.cc" />
+		<Unit filename="Utilities/Delay.h" />
+		<Unit filename="Utilities/TicToc.cc" />
+		<Unit filename="Utilities/TicToc.h" />
 		<Unit filename="hopsan.cc" />
 		<Extensions>
 			<code_completion />
