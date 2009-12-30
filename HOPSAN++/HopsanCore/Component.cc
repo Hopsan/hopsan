@@ -117,9 +117,9 @@ void Component::simulateOneTimestep()
     assert(false);
 }
 
-void Component::setName(string &rName)
+void Component::setName(string name)
 {
-    mName = rName;
+    mName = name;
 }
 
 string &Component::getName()

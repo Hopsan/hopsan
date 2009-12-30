@@ -15,7 +15,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running orifice creator" << std::endl;
-        return new ComponentExternalOrifice("default orifice name");
+        return new ComponentExternalOrifice("DefaultOrificeName");
     }
 
     ComponentExternalOrifice(const string name,

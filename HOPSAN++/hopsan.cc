@@ -245,7 +245,7 @@ void test_external_lib()
     #ifdef WIN32
     loader.Load("./libHydraulic.dll");
     #else
-    loader.Load("./bin/Debug/libExternalOrifice.so");
+    loader.Load("./bin/Debug/libHydraulic.so");
     #endif
 
     cout << "afterload" << endl;
@@ -253,6 +253,7 @@ void test_external_lib()
     Component* orificeL = ComponentFactory::CreateInstance("ComponentExternalOrifice");
     Component* volumeC = ComponentFactory::CreateInstance("ComponentExternalVolume");
     Component* orificeR = ComponentFactory::CreateInstance("ComponentExternalOrifice");
+    orificeR->setName("right orifice");
     orificeR->setParameter("Kc", 1e-12);
 
     //ComponentOrifice orificeR("orifice_right_side", 1e-12);

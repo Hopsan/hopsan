@@ -20,7 +20,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running volume creator" << std::endl;
-        return new ComponentExternalVolume("default volume name");
+        return new ComponentExternalVolume("DefaultVolumeName");
     }
 
     ComponentExternalVolume(const string name,

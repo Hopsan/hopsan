@@ -61,7 +61,7 @@ public:
     virtual void simulateOneTimestep();
     void simulate(const double startT, const double Ts);
 
-    void setName(string &rName);
+    void setName(string name);
     string &getName();
 
     string &getType();
