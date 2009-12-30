@@ -47,7 +47,7 @@ private:
 };
 
 
-class Component
+class DLLIMPORTEXPORT Component
 {
     friend class ComponentSystem;
 
@@ -114,7 +114,7 @@ private:
 };
 
 
-class ComponentC :public Component
+class DLLIMPORTEXPORT ComponentC :public Component
 {
 public:
     ComponentC(string name, double timestep=0.001);
@@ -123,7 +123,7 @@ public:
 };
 
 
-class ComponentQ :public Component
+class DLLIMPORTEXPORT ComponentQ :public Component
 {
 public:
     ComponentQ(string name, double timestep=0.001);

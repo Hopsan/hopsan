@@ -10,7 +10,7 @@ using namespace std;
 
 typedef string NodeTypeT;
 
-class Node
+class DLLIMPORTEXPORT Node
 {
 public:
     Node();

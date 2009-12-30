@@ -3,12 +3,12 @@
 
 #include <string>
 #include <iostream>
-#include <Component.h>
+#include "Component.h"
 
 #ifdef WIN32
 #include "windows.h"
 #else
-#include <dlfcn.h>
+#include "dlfcn.h"
 #endif
 
 

@@ -7,16 +7,16 @@
 #define DLLIMPORT __declspec(dllimport)
 
 #ifdef DODLLEXPORT
-#define DLLDIR DLLEXPORT /* DLL export */
+#define DLLIMPORTEXPORT DLLEXPORT /* DLL export */
 #else
-#define DLLDIR DLLIMPORT /* EXE import */
+#define DLLIMPORTEXPORT DLLIMPORT /* EXE import */
 #endif
 
 #else
 //Define nothing on non WIN32 systems
 #define DLLEXPORT
 #define DLLIMPORT
-#define DLLDIR
+#define DLLIMPORTEXPORT
 
 #endif
 

@@ -155,6 +155,7 @@ double Component::getParameter(const string name)
     }
     cout << "No such parameter" << endl;
     assert(false);
+	return 0.0;
 }
 
 void Component::setParameter(const string name, const double value)
