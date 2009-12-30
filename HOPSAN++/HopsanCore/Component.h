@@ -8,7 +8,7 @@
 
 using namespace std;
 
-class CompParameter
+class DLLIMPORTEXPORT CompParameter
 {
 public:
     CompParameter(const string name, const string unit, double &rValue); //should maybe be a description field as well
@@ -27,7 +27,7 @@ private:
 class Component; //forward declaration
 class ComponentSystem;  //forward declaration
 
-class Port
+class DLLIMPORTEXPORT Port
 {
     friend class Component;
     friend class ComponentSystem;
