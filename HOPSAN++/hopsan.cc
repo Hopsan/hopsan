@@ -235,7 +235,6 @@ void test3()
 void test_external_lib()
 {
     LoadExternal loader;
-    Component* orificeL;
 
     //Create master component
     ComponentSystem simulationmodel("simulationmodel");
@@ -244,39 +243,42 @@ void test_external_lib()
     //ComponentOrifice orificeL("orifice_left_side", 1e-12);
 
     #ifdef WIN32
-    loader.Load("./libExternalOrifice.dll");
+    loader.Load("./libHydraulic.dll");
     #else
     loader.Load("./bin/Debug/libExternalOrifice.so");
     #endif
 
     cout << "afterload" << endl;
 
-    orificeL = ComponentFactory::CreateInstance("ComponentExternalOrifice");
+    Component* orificeL = ComponentFactory::CreateInstance("ComponentExternalOrifice");
+    Component* volumeC = ComponentFactory::CreateInstance("ComponentExternalVolume");
+    Component* orificeR = ComponentFactory::CreateInstance("ComponentExternalOrifice");
+    orificeR->setParameter("Kc", 1e-12);
 
-
-    ComponentVolume volumeC("volume_center");
-    //ComponentTLMlossless volumeC("volume_center");
-    ComponentOrifice orificeR("orifice_right_side", 1e-12);
+    //ComponentOrifice orificeR("orifice_right_side", 1e-12);
     ComponentPressureSource psourceR("ps_right_side", 0e5);
 
     //Add components
     simulationmodel.addComponent(psourceL);
     simulationmodel.addComponent(*orificeL);
-    simulationmodel.addComponent(volumeC);
-    simulationmodel.addComponent(orificeR);
+    simulationmodel.addComponent(*volumeC);
+    simulationmodel.addComponent(*orificeR);
     simulationmodel.addComponent(psourceR);
     //Connect components
     simulationmodel.connect(psourceL, "P1", *orificeL, "P1");
-    simulationmodel.connect(*orificeL, "P2", volumeC, "P1");
-    simulationmodel.connect(volumeC, "P2", orificeR, "P1");
-    simulationmodel.connect(orificeR, "P2", psourceR, "P1");
+    simulationmodel.connect(*orificeL, "P2", *volumeC, "P1");
+    simulationmodel.connect(*volumeC, "P2", *orificeR, "P1");
+    simulationmodel.connect(*orificeR, "P2", psourceR, "P1");
+
+    //list some stuff
+    orificeR->listParametersConsole();
 
     //Run simulation
     simulationmodel.preAllocateLogSpace(0, 100);
     simulationmodel.simulate(0,100);
 
     //Test write to file
-    volumeC.getPort("P1").getNode().saveLogData("output.txt");
+    volumeC->getPort("P1").getNode().saveLogData("output.txt");
 
     cout << "test_external_lib() Done!" << endl;
 

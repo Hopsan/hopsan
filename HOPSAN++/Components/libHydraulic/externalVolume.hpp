@@ -1,10 +1,10 @@
-#ifndef VOLUME_HPP_INCLUDED
-#define VOLUME_HPP_INCLUDED
+#ifndef EXTERNALVOLUME_HPP_INCLUDED
+#define EXTERNALVOLUME_HPP_INCLUDED
 
 #include "Component.h"
 #include "Nodes.h"
 
-class ComponentVolume : public ComponentC
+class ComponentExternalVolume : public ComponentC
 {
 
 private:
@@ -17,7 +17,13 @@ private:
     enum {P1, P2};
 
 public:
-    ComponentVolume(const string name,
+    static Component *Creator()
+    {
+        std::cout << "running volume creator" << std::endl;
+        return new ComponentExternalVolume("default volume name");
+    }
+
+    ComponentExternalVolume(const string name,
                     const double volume      = 1.0e-3,
                     const double bulkmudulus = 1.0e9,
                     const double alpha       = 0.0,
@@ -37,10 +43,10 @@ public:
         addPort("P2", "NodeHydraulic", P2);
 
         //Register changable parameters to the HOPSAN++ core
-        registerParameter("V", "Volym", "m^3",            mVolume);
-        registerParameter("Be", "Kompressionsmodul", "Pa", mBulkmodulus);
-        registerParameter("a", "Lågpasskoeficient", "-",  mAlpha);
-        registerParameter("Zc", "Kappasitans", "Ns/m^5",   mZc);
+        registerParameter("V", "Volume", "[m^3]",            mVolume);
+        registerParameter("Be", "Bulkmodulus", "[Pa]", mBulkmodulus);
+        registerParameter("a", "LowPass coeficient to dampen standing delayline waves", "[-]",  mAlpha);
+        registerParameter("Zc", "Cappacitance", "[Ns/m^5]",   mZc);
     }
 
 
@@ -90,4 +96,4 @@ public:
     }
 };
 
-#endif // VOLUME_HPP_INCLUDED
+#endif // EXTERNALVOLUME_HPP_INCLUDED

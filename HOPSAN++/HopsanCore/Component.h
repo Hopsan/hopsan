@@ -11,14 +11,17 @@ using namespace std;
 class DLLIMPORTEXPORT CompParameter
 {
 public:
-    CompParameter(const string name, const string unit, double &rValue); //should maybe be a description field as well
+    CompParameter(const string name, const string description, const string unit, double &rValue); //should maybe be a description field as well
+    ///TODO: getting strings can (probably) be speed up by returning const references instead of copying strings
     string getName();
+    string getDesc();
     string getUnit();
     double getValue();
     void setValue(const double value);
 
 private:
     string mName;
+    string mDescription;
     string mUnit;
     double* mpValue;
 };
@@ -37,7 +40,7 @@ public:
     Port(string portname, string node_type);
     string &getNodeType();
     Node &getNode();
-    Node* getNodePtr();
+    Node *getNodePtr();
     void setNode(Node* node_ptr);
 
 private:
@@ -63,7 +66,7 @@ public:
 
     string &getType();
 
-    void registerParameter(const string name, const string unit, double &value);
+    void registerParameter(const string name, const string description, const string unit, double &rValue);
     void listParametersConsole();
     double getParameter(const string name);
     void setParameter(const string name, const double value);

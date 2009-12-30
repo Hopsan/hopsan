@@ -49,9 +49,9 @@ public:
         addPort("P2", "NodeHydraulic", P2);
 
         //Register changable parameters to the HOPSAN++ core
-        registerParameter("Tidsfördröjning", "s",   mTimeDelay);
-        registerParameter("Lågpasskoeficient", "-", mAlpha);
-        registerParameter("Kappasitans", "Ns/m^5",  mZc);
+        registerParameter("TD", "Tidsfördröjning", "s",   mTimeDelay);
+        registerParameter("a", "Lågpasskoeficient", "-", mAlpha);
+        registerParameter("Zc", "Kappasitans", "Ns/m^5",  mZc);
     }
 
 

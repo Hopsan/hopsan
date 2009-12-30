@@ -5,9 +5,10 @@
 #include <math.h>
 
 //Constructor
-CompParameter::CompParameter(const string name, const string unit, double &rValue)
+CompParameter::CompParameter(const string name, const string description, const string unit, double &rValue)
 {
     mName = name;
+    mDescription = description;
     mUnit = unit;
     mpValue = &rValue;
 };
@@ -16,6 +17,11 @@ CompParameter::CompParameter(const string name, const string unit, double &rValu
 string CompParameter::getName()
 {
     return mName;
+}
+
+string CompParameter::getDesc()
+{
+    return mDescription;
 }
 
 
@@ -84,7 +90,7 @@ Component::Component(string name, double timestep)
     mIsComponentSystem = false;
     mIsComponentSignal = false;
 
-    registerParameter("Sampeltid", "s",   mTimestep);
+    registerParameter("Ts", "SampleTime", "[s]",   mTimestep);
 }
 
 void Component::simulate(const double startT, const double Ts)
@@ -126,10 +132,10 @@ string &Component::getType()
     return mType;
 }
 
-void Component::registerParameter(const string name, const string unit, double &rValue)
+void Component::registerParameter(const string name, const string description, const string unit, double &rValue)
 {
     ///TODO: handle trying to add multiple comppar with same name or pos
-    CompParameter new_comppar(name, unit, rValue);
+    CompParameter new_comppar(name, description, unit, rValue);
     mParameters.push_back(new_comppar); //Copy parameters into storage
 }
 
@@ -138,7 +144,7 @@ void Component::listParametersConsole()
     cout <<"-----------------------------------------------" << endl << getName() << ":" << endl;
     for (size_t i=0; i<mParameters.size(); ++i)
     {
-        cout << "Parameter " << i+1 << ": " << mParameters[i].getName() << " = " << mParameters[i].getValue() << " " << mParameters[i].getUnit() << endl;
+        cout << "Parameter " << i << ": " << mParameters[i].getName() << " = " << mParameters[i].getValue() << " " << mParameters[i].getUnit() << " " << mParameters[i].getDesc() << endl;
     }
     cout <<"-----------------------------------------------" << endl;
 }

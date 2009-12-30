@@ -1,9 +1,9 @@
-#include <iostream>
+#ifndef EXTERNALORIFICE_HPP_INCLUDED
+#define EXTERNALORIFICE_HPP_INCLUDED
 
+#include <iostream>
 #include "Component.h"
 #include "Nodes.h"
-#include "win32dll.h"
-
 
 class ComponentExternalOrifice : public ComponentQ
 {
@@ -14,8 +14,8 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running creator" << std::endl;
-        return new ComponentExternalOrifice("somename");
+        std::cout << "running orifice creator" << std::endl;
+        return new ComponentExternalOrifice("default orifice name");
     }
 
     ComponentExternalOrifice(const string name,
@@ -28,7 +28,7 @@ public:
         addPort("P1", "NodeHydraulic", P1);
         addPort("P2", "NodeHydraulic", P2);
 
-        registerParameter("Tryck-flödeskoeff.", "m^5/Ns", mKc);
+        registerParameter("Kc", "Pressure-Flow Coefficient", "[m^5/Ns]", mKc);
     }
 
 
@@ -64,10 +64,4 @@ public:
     }
 };
 
-extern "C" DLLEXPORT void register_contents(ComponentFactory::FactoryVectorT *factory_vector_ptr)
-{
-    std::cout << "Running register function in dll" << std::endl;
-//    factory_ptr->RegisterCreatorFunction("ComponentExternalOrifice", ComponentExternalOrifice::maker);
-//    factory_ptr->CreateInstance("ComponentExternalOrifice");
-    factory_vector_ptr->push_back(ComponentFactory::FactoryPairT("ComponentExternalOrifice", ComponentExternalOrifice::Creator));
-}
+#endif // EXTERNALORIFICE_HPP_INCLUDED

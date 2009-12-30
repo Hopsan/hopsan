@@ -28,7 +28,7 @@ public:
 
         addPort("P1", "NodeHydraulic", P1);
 
-        registerParameter("Flöde", "m^3/s", mFlow);
+        registerParameter("Flow", "Flöde", "m^3/s", mFlow);
     }
 
 

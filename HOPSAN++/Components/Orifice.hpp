@@ -22,7 +22,7 @@ public:
         addPort("P2", "NodeHydraulic", P2);
         //addMultiPort("P", "NodeHydraulic", 2);
 
-        registerParameter("Tryck-flödeskoeff.", "m^5/Ns", mKc);
+        registerParameter("Kc", "Tryck-flödeskoeff.", "m^5/Ns", mKc);
     }
 
 

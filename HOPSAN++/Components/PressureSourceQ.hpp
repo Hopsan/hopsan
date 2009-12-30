@@ -32,7 +32,7 @@ public:
 
         addPort("P1", "NodeHydraulic", P1);
 
-        registerParameter("Tryck", "Pa", mPressure);
+        registerParameter("P", "Tryck", "Pa", mPressure);
     }
 
 
