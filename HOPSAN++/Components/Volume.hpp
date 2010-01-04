@@ -77,10 +77,10 @@ public:
         double c2  = p2_ptr->getData(NodeHydraulic::WAVEVARIABLE);
 
         //Orifice equations
-        double c10 = c2 + 2*mZc * q2;
-        double c20 = c1 + 2*mZc * q1;
-        c1 = mAlpha*c1 + (1-mAlpha)*c10;
-        c2 = mAlpha*c2 + (1-mAlpha)*c20;
+        double c10 = c2 + 2.0*mZc * q2;
+        double c20 = c1 + 2.0*mZc * q1;
+        c1 = mAlpha*c1 + (1.0-mAlpha)*c10;
+        c2 = mAlpha*c2 + (1.0-mAlpha)*c20;
 
         //Write new values to nodes
         p1_ptr->setData(NodeHydraulic::WAVEVARIABLE, c1);
