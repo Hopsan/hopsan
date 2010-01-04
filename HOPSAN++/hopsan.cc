@@ -93,8 +93,8 @@ void testTLM()
 
     //List and set parameters
     lineC.listParametersConsole();
-    lineC.setParameter("Kappasitans",  3.0);
-    lineC.setParameter("Tidsfördröjning", 0.1);
+    lineC.setParameter("Zc",  3.0);
+    lineC.setParameter("TD", 0.1);
     lineC.listParametersConsole();
 
     //Connect components
@@ -211,8 +211,8 @@ void test3()
     lineC.listParametersConsole();
     orificeR.listParametersConsole();
     psourceR.listParametersConsole();
-    lineC.setParameter("Kappasitans", 1.0);
-    lineC.setParameter("Tidsfördröjning", 0.005);
+    lineC.setParameter("Zc", 1.0);
+    lineC.setParameter("TD", 0.005);
     qsourceL.listParametersConsole();
     lineC.listParametersConsole();
     orificeR.listParametersConsole();
