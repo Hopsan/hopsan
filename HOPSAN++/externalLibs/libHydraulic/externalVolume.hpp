@@ -1,8 +1,7 @@
 #ifndef EXTERNALVOLUME_HPP_INCLUDED
 #define EXTERNALVOLUME_HPP_INCLUDED
 
-#include "Component.h"
-#include "Nodes.h"
+#include "HopsanCore.h"
 
 class ComponentExternalVolume : public ComponentC
 {

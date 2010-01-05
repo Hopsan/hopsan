@@ -2,8 +2,7 @@
 #define EXTERNALORIFICE_HPP_INCLUDED
 
 #include <iostream>
-#include "Component.h"
-#include "Nodes.h"
+#include "HopsanCore.h"
 
 class ComponentExternalOrifice : public ComponentQ
 {

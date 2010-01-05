@@ -11,6 +11,7 @@
 #define DELAY_H_INCLUDED
 
 #include <deque>
+#include "win32dll.h"
 
 /*
  * Följande exempel fördröjer variablen var i 5 tidssteg
@@ -23,7 +24,7 @@
  * delayedVar.update(var) // sista som sker i tidssteget
  */
 
-class Delay
+class DLLIMPORTEXPORT Delay
 {
 public:
     Delay();
