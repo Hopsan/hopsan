@@ -20,7 +20,7 @@ class DLLIMPORTEXPORT LoadExternal
 public:
     LoadExternal();
     //void Load(string libpath);
-    void LoadExternal::Load(string libpath)
+    void Load(string libpath)
 {
     typedef void (*register_contents_t)(ComponentFactory::FactoryVectorT *factory_vector_ptr);
 
