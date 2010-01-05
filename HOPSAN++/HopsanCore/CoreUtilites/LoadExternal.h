@@ -18,7 +18,7 @@ using namespace std;
 class DLLIMPORTEXPORT LoadExternal
 {
 public:
-    LoadExternal(){};
+    LoadExternal();
     void Load(string libpath)
     {
         typedef void (*register_contents_t)(ComponentFactory::FactoryVectorT *factory_vector_ptr);

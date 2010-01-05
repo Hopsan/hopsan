@@ -6,32 +6,8 @@
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="Debug">
-				<Option output="bin/Debug/HOPSAN++" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug/" />
-				<Option type="1" />
-				<Option compiler="gcc" />
-				<Compiler>
-					<Add option="-g" />
-				</Compiler>
-				<Linker>
-					<Add library="bin/Debug/libHOPSAN++.so" />
-				</Linker>
-			</Target>
-			<Target title="Release">
-				<Option output="bin/Release/HOPSAN++" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release/" />
-				<Option type="1" />
-				<Option compiler="gcc" />
-				<Compiler>
-					<Add option="-O2" />
-				</Compiler>
-				<Linker>
-					<Add option="-s" />
-					<Add library="bin/Debug/libHOPSAN++.so" />
-				</Linker>
-			</Target>
 			<Target title="DebugWin32">
+				<Option platforms="Windows;" />
 				<Option output="bin/Debug/HOPSAN++" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
@@ -44,6 +20,7 @@
 				</Linker>
 			</Target>
 			<Target title="ReleaseWin32">
+				<Option platforms="Windows;" />
 				<Option output="bin/Release/HOPSAN++" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
@@ -57,6 +34,7 @@
 				</Linker>
 			</Target>
 			<Target title="DebugMAC">
+				<Option platforms="Mac;" />
 				<Option output="bin/Debug/HOPSAN++" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
@@ -69,17 +47,41 @@
 					<Add library="bin/Debug/libHOPSAN++.dylib" />
 				</Linker>
 			</Target>
+			<Target title="DebugUnix">
+				<Option platforms="Unix;" />
+				<Option output="bin/Debug/HOPSAN++" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+				<Linker>
+					<Add library="libHOPSAN++.so" />
+					<Add directory="bin/Debug" />
+				</Linker>
+			</Target>
+			<Target title="ReleaseUnix">
+				<Option platforms="Unix;" />
+				<Option output="bin/Release/HOPSAN++" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="bin/Debug/libHOPSAN++.so" />
+				</Linker>
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add directory="HopsanCore" />
-			<Add directory="Components" />
-			<Add directory="Nodes" />
 			<Add directory="Utilities" />
+			<Add directory="HopsanCore" />
 		</Compiler>
 		<Unit filename="HopsanCore/HopsanCore.h" />
-		<Unit filename="Utilities/Delay.cc" />
-		<Unit filename="Utilities/Delay.h" />
 		<Unit filename="Utilities/TicToc.cc" />
 		<Unit filename="Utilities/TicToc.h" />
 		<Unit filename="hopsan.cc" />
