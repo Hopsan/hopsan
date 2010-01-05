@@ -2,7 +2,7 @@
 #define ORIFICE_HPP_INCLUDED
 
 #include "Component.h"
-#include "Nodes.h"
+#include "Nodes/Nodes.h"
 
 class ComponentOrifice : public ComponentQ
 {

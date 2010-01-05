@@ -13,8 +13,8 @@
 #include <iostream>
 
 #include "Component.h"
-#include "Nodes.h"
-#include "Delay.h"
+#include "Nodes/Nodes.h"
+#include "CoreUtilities/Delay.h"
 
 class ComponentTLMlossless : public ComponentC
 {

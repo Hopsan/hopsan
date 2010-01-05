@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <string>
-#include "ClassFactory.h"
+#include "CoreUtilities/ClassFactory.h"
 #include "win32dll.h"
 
 using namespace std;

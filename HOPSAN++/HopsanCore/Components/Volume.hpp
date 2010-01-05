@@ -2,7 +2,7 @@
 #define VOLUME_HPP_INCLUDED
 
 #include "Component.h"
-#include "Nodes.h"
+#include "Nodes/Nodes.h"
 
 class ComponentVolume : public ComponentC
 {

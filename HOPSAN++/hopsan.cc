@@ -1,21 +1,6 @@
-//#include "Component.h"
-//#include "Nodes.h"
-//#include <iostream>
-//#include "PressureSource.hpp"
-//#include "Orifice.hpp"
-//#include "Volume.hpp"
-//#include "TLMlossless.hpp"
-//#include "TLMRlineR.hpp"
-//#include "PressureSourceQ.hpp"
-//#include "FlowSourceQ.hpp"
-//#include "TicToc.h"
-//#include "Delay.h"
-//#include <math.h>
-//#include "LoadExternal.h"
-
 #include "HopsanCore.h"
 #include "TicToc.h"
-#include "Delay.h"
+#include "CoreUtilities/Delay.h"
 
 void test1()
 {

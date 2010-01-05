@@ -2,13 +2,13 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="libHOPSAN++" />
+		<Option title="libHOPSANCORE" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="DebugWin32">
 				<Option platforms="Windows;" />
-				<Option output="bin/Debug/libHOPSAN++" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug/libHOPSANCORE" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -20,7 +20,7 @@
 			</Target>
 			<Target title="ReleaseWin32">
 				<Option platforms="Windows;" />
-				<Option output="bin/Release/libHOPSAN++" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release/libHOPSANCORE" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -51,7 +51,7 @@
 			</Target>
 			<Target title="DebugUnix">
 				<Option platforms="Unix;" />
-				<Option output="bin/Debug/libHOPSAN++" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug/libHOPSANCORE" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -68,7 +68,7 @@
 			</Target>
 			<Target title="ReleaseUnix">
 				<Option platforms="Unix;" />
-				<Option output="bin/Release/libHOPSAN++" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release/libHOPSANCORE" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -90,9 +90,6 @@
 			<Add option="-fPIC" />
 			<Add option="-DDOCOREDLLEXPORT" />
 			<Add directory="HopsanCore" />
-			<Add directory="HopsanCore/Components" />
-			<Add directory="HopsanCore/CoreUtilites" />
-			<Add directory="HopsanCore/Nodes" />
 		</Compiler>
 		<Linker>
 			<Add option="-shared" />
@@ -106,11 +103,11 @@
 		<Unit filename="HopsanCore/Components/TLMRlineR.hpp" />
 		<Unit filename="HopsanCore/Components/TLMlossless.hpp" />
 		<Unit filename="HopsanCore/Components/Volume.hpp" />
-		<Unit filename="HopsanCore/CoreUtilites/ClassFactory.h" />
-		<Unit filename="HopsanCore/CoreUtilites/Delay.cc" />
-		<Unit filename="HopsanCore/CoreUtilites/Delay.h" />
-		<Unit filename="HopsanCore/CoreUtilites/LoadExternal.cc" />
-		<Unit filename="HopsanCore/CoreUtilites/LoadExternal.h" />
+		<Unit filename="HopsanCore/CoreUtilities/ClassFactory.h" />
+		<Unit filename="HopsanCore/CoreUtilities/Delay.cc" />
+		<Unit filename="HopsanCore/CoreUtilities/Delay.h" />
+		<Unit filename="HopsanCore/CoreUtilities/LoadExternal.cc" />
+		<Unit filename="HopsanCore/CoreUtilities/LoadExternal.h" />
 		<Unit filename="HopsanCore/HopsanCore.h" />
 		<Unit filename="HopsanCore/Node.cc" />
 		<Unit filename="HopsanCore/Node.h" />

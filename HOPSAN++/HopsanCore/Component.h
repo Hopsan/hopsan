@@ -2,7 +2,7 @@
 #define COMPONENT_H_INCLUDED
 
 #include "Node.h"
-#include "ClassFactory.h"
+#include "CoreUtilities/ClassFactory.h"
 #include "win32dll.h"
 #include <string>
 

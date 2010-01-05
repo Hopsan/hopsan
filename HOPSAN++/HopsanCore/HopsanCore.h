@@ -2,14 +2,16 @@
 #define HOPSANCORE_H_INCLUDED
 
 #include "Component.h"
-#include "Nodes.h"
-#include "PressureSource.hpp"
-#include "Orifice.hpp"
-#include "Volume.hpp"
-#include "TLMlossless.hpp"
-#include "TLMRlineR.hpp"
-#include "PressureSourceQ.hpp"
-#include "FlowSourceQ.hpp"
-#include "LoadExternal.h"
+#include "Nodes/Nodes.h"
+#include "CoreUtilities/LoadExternal.h"
+
+#include "Components/PressureSource.hpp"
+#include "Components/Orifice.hpp"
+#include "Components/Volume.hpp"
+#include "Components/TLMlossless.hpp"
+#include "Components/TLMRlineR.hpp"
+#include "Components/PressureSourceQ.hpp"
+#include "Components/FlowSourceQ.hpp"
+
 
 #endif // HOPSANCORE_H_INCLUDED

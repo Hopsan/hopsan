@@ -57,7 +57,7 @@
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add library="libHOPSAN++.so" />
+					<Add library="./libHOPSANCORE.so" />
 					<Add directory="bin/Debug" />
 				</Linker>
 			</Target>
