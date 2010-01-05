@@ -57,7 +57,7 @@
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add library="./libHOPSANCORE.so" />
+					<Add library="libHOPSANCORE" />
 					<Add directory="bin/Debug" />
 				</Linker>
 			</Target>
