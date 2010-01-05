@@ -2,7 +2,7 @@
  *  Sink.hpp
  *  HOPSAN++
  *
- *  Created by Björn Eriksson on 2009-01-05.
+ *  Created by Bj√∂rn Eriksson on 2009-01-05.
  *  Copyright 2010 LiU. All rights reserved.
  *
  */
@@ -15,14 +15,14 @@ class ComponentSink : public ComponentSignal
 {
 
 private:
-    enum {IN};
+    enum {in};
 
 public:
     ComponentSink(const string name,
                   const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
     {
-        addPort("IN", "NodeSignal", IN);
+        addPort("in", "NodeSignal", in);
     }
 
 

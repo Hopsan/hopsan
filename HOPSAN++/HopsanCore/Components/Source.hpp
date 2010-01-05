@@ -2,7 +2,7 @@
  *  Source.hpp
  *  HOPSAN++
  *
- *  Created by Bjšrn Eriksson on 2009-01-05.
+ *  Created by BjÃ¶rn Eriksson on 2009-01-05.
  *  Copyright 2010 LiU. All rights reserved.
  *
  */
@@ -16,7 +16,7 @@ class ComponentSource : public ComponentSignal
 
 private:
     double mValue;
-    enum {OUT};
+    enum {out};
 
 public:
     ComponentSource(const string name,
@@ -26,9 +26,9 @@ public:
     {
         mValue = value;
 
-        addPort("OUT", "NodeSignal", OUT);
+        addPort("out", "NodeSignal", out);
 
-        registerParameter("Value", "VŠrde", "-", mValue);
+        registerParameter("Value", "VÃ¤rde", "-", mValue);
     }
 
 
@@ -41,7 +41,7 @@ public:
     void simulateOneTimestep()
     {
         //read fron nodes
-   		Node* p1_ptr = mPorts[OUT].getNodePtr();
+   		Node* p1_ptr = mPorts[out].getNodePtr();
 
         //Write new values to nodes
         p1_ptr->setData(NodeSignal::VALUE, mValue);

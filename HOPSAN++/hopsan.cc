@@ -293,8 +293,8 @@ void testSignal()
     simulationmodel.addComponent(sinkR);
 
     //Connect components
-    simulationmodel.connect(sourceL, "OUT", gainC, "IN");
-    simulationmodel.connect(gainC, "OUT", sinkR, "IN");
+    simulationmodel.connect(sourceL, "out", gainC, "in");
+    simulationmodel.connect(gainC, "out", sinkR, "in");
 
     //List and set parameters
     sourceL.listParametersConsole();
@@ -310,7 +310,7 @@ void testSignal()
     simulationmodel.simulate(0.0, 1.0);
 
     //Test write to file
-    sinkR.getPort("IN").getNode().saveLogData("output.txt");
+    sinkR.getPort("in").getNode().saveLogData("output.txt");
 
 	//Finished
     cout << "testSignal() Done!" << endl;

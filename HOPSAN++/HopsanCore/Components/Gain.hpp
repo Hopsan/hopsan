@@ -2,7 +2,7 @@
  *  Gain.hpp
  *  HOPSAN++
  *
- *  Created by Bjšrn Eriksson on 2009-01-05.
+ *  Created by BjÃ¶rn Eriksson on 2009-01-05.
  *  Copyright 2010 LiU. All rights reserved.
  *
  */
@@ -16,7 +16,7 @@ class ComponentGain : public ComponentSignal
 
 private:
     double mGain;
-    enum {IN, OUT};
+    enum {in, out};
 
 public:
     ComponentGain(const string name,
@@ -26,10 +26,10 @@ public:
     {
         mGain = gain;
 
-        addPort("IN", "NodeSignal", IN);
-        addPort("OUT", "NodeSignal", OUT);
+        addPort("in", "NodeSignal", in);
+        addPort("out", "NodeSignal", out);
 
-        registerParameter("Gain", "FšrstŠrkning", "-", mGain);
+        registerParameter("Gain", "FÃ¶rstÃ¤rkning", "-", mGain);
     }
 
 
@@ -42,8 +42,8 @@ public:
     void simulateOneTimestep()
     {
         //read fron nodes
-   		Node* p1_ptr = mPorts[IN].getNodePtr();
-   		Node* p2_ptr = mPorts[OUT].getNodePtr();
+   		Node* p1_ptr = mPorts[in].getNodePtr();
+   		Node* p2_ptr = mPorts[out].getNodePtr();
 
         //Get variable values from nodes
         double u = p1_ptr->getData(NodeSignal::VALUE);
