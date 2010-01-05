@@ -91,6 +91,7 @@
 			<Add directory="bin\Debug" />
 		</Linker>
 		<Unit filename="HopsanCore\HopsanCore.h" />
+		<Unit filename="externalLibs\libHydraulic\externalFlowSourceQ.hpp" />
 		<Unit filename="externalLibs\libHydraulic\externalOrifice.hpp" />
 		<Unit filename="externalLibs\libHydraulic\externalPressureSource.hpp" />
 		<Unit filename="externalLibs\libHydraulic\externalVolume.hpp" />

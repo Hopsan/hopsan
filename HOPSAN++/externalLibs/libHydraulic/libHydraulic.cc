@@ -8,4 +8,5 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory::FactoryVectorT *fa
     factory_vector_ptr->push_back(ComponentFactory::FactoryPairT("ComponentExternalOrifice", ComponentExternalOrifice::Creator));
     factory_vector_ptr->push_back(ComponentFactory::FactoryPairT("ComponentExternalVolume", ComponentExternalVolume::Creator));
     factory_vector_ptr->push_back(ComponentFactory::FactoryPairT("ComponentExternalPressureSource", ComponentExternalPressureSource::Creator));
+    factory_vector_ptr->push_back(ComponentFactory::FactoryPairT("ComponentExternalFlowSourceQ", ComponentExternalFlowSourceQ::Creator));
 }
