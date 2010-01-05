@@ -263,6 +263,7 @@ void Component::setSystemparent(ComponentSystem &rComponentSystem)
 
 Port &Component::getPortById(const size_t port_idx)
 {
+    ///TODO: error handle if request outside of vector
     return mPorts[port_idx];
 }
 
@@ -279,6 +280,20 @@ Port &Component::getPort(const string portname)
     ///TODO: cast not found exception
     cout << "specified port: " << portname << " not found" << endl;
     assert(false);
+}
+
+bool Component::getPort(const string portname, Port &rPort)
+{
+    vector<Port>::iterator it;
+    for (it=mPorts.begin(); it!=mPorts.end(); ++it)
+    {
+        if (it->mPortName == portname)
+        {
+            rPort = *it;
+            return true;
+        }
+    }
+    return false;
 }
 
 ComponentSystem &Component::getSystemparent()
@@ -393,20 +408,42 @@ void ComponentSystem::logAllNodes(const double time)
     {
         (*it)->logData(time);
     }
-    ///TODO: this should do something else for now print
-    //cout << "flow: " << mSubNodePtrs[0]->getData(0) << endl;
 }
 
 void ComponentSystem::connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2)
 {
     Node* node_ptr;
-    ///TODO: do it correct, for now quickhack
+    Port port1, port2;
+    //First some error checking
+
+    //Check if commponents have specified ports
+    if (!rComponent1.getPort(portname1, port1))
+    {
+        //raise Exception('type of port does not exist')
+        cout << "rComponent1: "<< rComponent1.getName() << " does not have a port with name " << portname1 << endl;
+        assert(false);
+    }
+
+    if (!rComponent2.getPort(portname2, port2))
+    {
+        //raise Exception('type of port does not exist')
+        cout << "rComponent2: "<< rComponent2.getName() << " does not have a port with name " << portname2 << endl;
+        assert(false);
+    }
+
+    //check if both ports have the same node type specified
+    if (rComponent1.getPort(portname1).getNodeType() != rComponent2.getPort(portname2).getNodeType())
+    {
+        cout << "You are trying to connect a " << rComponent1.getPort(portname1).getNodeType() << " to " << rComponent2.getPort(portname2).getNodeType() << endl;
+        cout << "raise Exception('component port nodetypes mismatch') or similar should be here" << endl;
+        assert(false);
+    }
+
     //Check if component1 is a System component containing Component2
         if (&rComponent1 == &(rComponent2.getSystemparent()))
         {
             //Create an instance of the node specified in nodespecifications
             node_ptr = NodeFactory::CreateInstance(rComponent2.getPort(portname2).getNodeType());
-            //NodeHydraulic* node_ptr = new NodeHydraulic(); ///TODO:
             //add node to components and parent system
             rComponent1.addInnerPortSetNode(portname1, *node_ptr); //Add and set inner port
             rComponent1.addPort(portname1, rComponent2.getPort(portname2).getNodeType()); //Add outer port
@@ -427,23 +464,13 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
         }
         else   //Both components are on the same level
         {
-            ///TODO: erro handle on all cases
-            //Error handling when component is not a subsystem
-            if (rComponent1.getPort(portname1).getNodeType() != rComponent2.getPort(portname2).getNodeType())
+            ///TODO: this maybe should be checked every time not only if same level, with some modification as i can connect to myself aswell
+            //Check so that both systems to connect have been added to this system
+            if ((&rComponent1.getSystemparent() != (Component*)this) && ((&rComponent1.getSystemparent() != (Component*)this)) )
             {
-                cout << "raise Exception('component port types mismatch')" << endl;
+                cout << "The two components to be connected are not contained within the connecting system" << endl;
                 assert(false);
             }
-///TODO: fix
-//            if (portname1 not in component1.getNodeSpecifications())
-//                raise Exception('type of port does not exist')
-//
-//            if (portname2 not in component2.getNodeSpecifications())
-//                raise Exception('type of port does not exist')
-
-//            for i in [component1, component2]:
-//                if not self.getSubcomponents().__contains__(i):
-//                    raise Exception('Component %s is not added in the system' % (i.getName()))
 
             //Create an instance of the node specified in nodespecifications
             node_ptr = NodeFactory::CreateInstance(rComponent1.getPort(portname1).getNodeType());

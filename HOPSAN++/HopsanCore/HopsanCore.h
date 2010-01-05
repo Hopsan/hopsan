@@ -16,5 +16,5 @@
 #include "Components/Sink.hpp"
 #include "Components/Gain.hpp"
 
-
+//extern LoadExternal DLLIMPORTEXPORT gExternalLoader;
 #endif // HOPSANCORE_H_INCLUDED
