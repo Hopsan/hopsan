@@ -90,7 +90,7 @@ Component::Component(string name, double timestep)
     mIsComponentSystem = false;
     mIsComponentSignal = false;
 
-    registerParameter("Ts", "SampleTime", "[s]",   mTimestep);
+    registerParameter("Ts", "Sample time", "[s]",   mTimestep);
 }
 
 void Component::simulate(const double startT, const double Ts)
@@ -286,6 +286,13 @@ ComponentSystem &Component::getSystemparent()
     return *mpSystemparent;
 }
 
+//constructor ComponentSignal
+ComponentSignal::ComponentSignal(string name, double timestep) : Component(name, timestep)
+{
+    mType = "ComponentSignal";
+    mIsComponentSignal = true;
+}
+
 //constructor ComponentC
 ComponentC::ComponentC(string name, double timestep) : Component(name, timestep)
 {
@@ -325,10 +332,10 @@ void ComponentSystem::addComponents(vector<Component*> components)
         {
             mComponentQptrs.push_back(comp_ptr);
         }
-//        else if (comp_ptr->isComponentSignal())
-//        {
-//            mComponentQptrs.push_back(comp_ptr);
-//        }
+        else if (comp_ptr->isComponentSignal())
+        {
+            mComponentSignalptrs.push_back(comp_ptr);
+        }
         else
         {
             ///TODO: use exception instead
@@ -458,6 +465,12 @@ void ComponentSystem::simulate(const double startT, const double stopT)
 	//Init
 	for (size_t i=0; i<1; ++i)
 	{
+		//Signal components
+		for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
+		{
+			mComponentSignalptrs[s]->initialize();
+		}
+
 		//C components
 		for (size_t c=0; c < mComponentCptrs.size(); ++c)
 		{
@@ -483,9 +496,13 @@ void ComponentSystem::simulate(const double startT, const double stopT)
 
         logAllNodes(mTime);
 
-        ///TODO: signal components
-
         ///TODO: maybe use iterators instead
+        //Signal components
+        for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
+        {
+            mComponentSignalptrs[s]->simulate(mTime, mTimestep);
+        }
+
         //C components
         for (size_t c=0; c < mComponentCptrs.size(); ++c)
         {

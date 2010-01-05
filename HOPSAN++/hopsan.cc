@@ -272,10 +272,55 @@ void test_external_lib()
 
 }
 
+
+void testSignal()
+{
+	/*   Exempelsystem:
+					  Kc
+	   q       T, Zc  v
+	 ------>o=========----o p
+	                  ^
+	 */
+	ComponentSystem simulationmodel("simulationmodel");
+    //Create other components
+    ComponentSource sourceL("source_left", 1.0);
+    ComponentGain gainC("gain_center", 1.0);
+    ComponentSink sinkR("sink_right");
+
+    //Add components
+    simulationmodel.addComponent(sourceL);
+    simulationmodel.addComponent(gainC);
+    simulationmodel.addComponent(sinkR);
+
+    //Connect components
+    simulationmodel.connect(sourceL, "OUT", gainC, "IN");
+    simulationmodel.connect(gainC, "OUT", sinkR, "IN");
+
+    //List and set parameters
+    sourceL.listParametersConsole();
+    gainC.listParametersConsole();
+    sourceL.setParameter("Value", 2.0);
+    gainC.setParameter("Gain", 3.0);
+    sourceL.listParametersConsole();
+    gainC.listParametersConsole();
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0.0, 1.0);
+
+    simulationmodel.simulate(0.0, 1.0);
+
+    //Test write to file
+    sinkR.getPort("IN").getNode().saveLogData("output.txt");
+
+	//Finished
+    cout << "testSignal() Done!" << endl;
+}
+
+
 int main()
 {
-    test1();
-    test_external_lib();
-
+//    test1();
+//    test_external_lib();
+    testSignal();
     return 0;
 }

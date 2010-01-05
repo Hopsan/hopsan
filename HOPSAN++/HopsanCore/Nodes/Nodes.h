@@ -3,6 +3,22 @@
 
 #include "Node.h"
 
+
+class NodeSignal :public Node
+{
+    static Node* CreatorFunction() {return new NodeSignal;}
+    static NodeTypeT iDummyId;
+
+public:
+    enum {VALUE, DATALENGTH};
+    NodeSignal() : Node()
+    {
+        mNodeType = "NodeSignal";
+        mDataVector.resize(DATALENGTH,0.0);
+    }
+};
+
+
 class NodeHydraulic :public Node
 {
     static Node* CreatorFunction() {return new NodeHydraulic;}

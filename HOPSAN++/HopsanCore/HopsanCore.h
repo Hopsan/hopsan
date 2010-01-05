@@ -12,6 +12,9 @@
 #include "Components/TLMRlineR.hpp"
 #include "Components/PressureSourceQ.hpp"
 #include "Components/FlowSourceQ.hpp"
+#include "Components/Source.hpp"
+#include "Components/Sink.hpp"
+#include "Components/Gain.hpp"
 
 
 #endif // HOPSANCORE_H_INCLUDED

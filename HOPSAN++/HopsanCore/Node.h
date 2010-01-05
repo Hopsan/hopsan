@@ -12,6 +12,7 @@ typedef string NodeTypeT;
 
 class DLLIMPORTEXPORT Node
 {
+///TODO: Nodes should know their ports so a check can be performed by the node at connection time, the check should be virtual and implement different checks at different nodes.
 public:
     Node();
     //string &getName();

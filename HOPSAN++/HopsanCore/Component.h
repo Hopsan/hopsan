@@ -117,6 +117,15 @@ private:
 };
 
 
+class DLLIMPORTEXPORT ComponentSignal :public Component
+{
+public:
+    ComponentSignal(string name, double timestep=0.001);
+
+
+};
+
+
 class DLLIMPORTEXPORT ComponentC :public Component
 {
 public:
@@ -149,6 +158,7 @@ class DLLIMPORTEXPORT ComponentSystem :public Component
 
     protected:
     vector<Component*> mSubComponentPtrs; //Problems with inheritance and casting?
+    vector<Component*> mComponentSignalptrs;
     vector<Component*> mComponentQptrs;
     vector<Component*> mComponentCptrs;
     //vector<ComponentSignal*>
