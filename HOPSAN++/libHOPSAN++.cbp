@@ -34,7 +34,7 @@
 				</Linker>
 			</Target>
 			<Target title="Debug">
-				<Option platforms="Unix;Mac;" />
+				<Option platforms="Unix;" />
 				<Option output="bin/Debug/libHOPSAN++" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="3" />
@@ -51,7 +51,7 @@
 				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option platforms="Unix;Mac;" />
+				<Option platforms="Unix;" />
 				<Option output="bin/Release/libHOPSAN++" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="3" />
@@ -69,7 +69,7 @@
 				</Linker>
 			</Target>
 			<Target title="DebugMAC">
-				<Option platforms="Unix;Mac;" />
+				<Option platforms="Mac;" />
 				<Option output="/Users/bjoer37/svn/HOPSAN++/bin/Debug/libHOPSAN++" prefix_auto="1" extension_auto="1" />
 				<Option object_output="/Users/bjoer37/svn/HOPSAN++/obj/Debug/" />
 				<Option type="3" />
