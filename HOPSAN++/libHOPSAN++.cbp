@@ -8,8 +8,8 @@
 		<Build>
 			<Target title="DebugWin32">
 				<Option platforms="Windows;" />
-				<Option output="bin\Debug\libHOPSAN++" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Debug\" />
+				<Option output="bin/Debug/libHOPSAN++" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -20,8 +20,8 @@
 			</Target>
 			<Target title="ReleaseWin32">
 				<Option platforms="Windows;" />
-				<Option output="bin\Release\libHOPSAN++" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Release\" />
+				<Option output="bin/Release/libHOPSAN++" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -35,8 +35,8 @@
 			</Target>
 			<Target title="Debug">
 				<Option platforms="Unix;Mac;" />
-				<Option output="bin\Debug\libHOPSAN++" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Debug\" />
+				<Option output="bin/Debug/libHOPSAN++" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -46,14 +46,14 @@
 				</Compiler>
 				<Linker>
 					<Add option="-rdynamic" />
-					<Add library="\usr\lib\librt.so" />
-					<Add library="\usr\lib\libdl.so" />
+					<Add library="/usr/lib/librt.so" />
+					<Add library="/usr/lib/libdl.so" />
 				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option platforms="Unix;Mac;" />
-				<Option output="bin\Release\libHOPSAN++" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Release\" />
+				<Option output="bin/Release/libHOPSAN++" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -64,8 +64,24 @@
 				<Linker>
 					<Add option="-s" />
 					<Add option="-rdynamic" />
-					<Add library="\usr\lib\librt.so" />
-					<Add library="\usr\lib\libdl.so" />
+					<Add library="/usr/lib/librt.so" />
+					<Add library="/usr/lib/libdl.so" />
+				</Linker>
+			</Target>
+			<Target title="DebugMAC">
+				<Option platforms="Unix;Mac;" />
+				<Option output="/Users/bjoer37/svn/HOPSAN++/bin/Debug/libHOPSAN++" prefix_auto="1" extension_auto="1" />
+				<Option object_output="/Users/bjoer37/svn/HOPSAN++/obj/Debug/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-DMAC" />
+				</Compiler>
+				<Linker>
+					<Add option="-rdynamic" />
 				</Linker>
 			</Target>
 		</Build>
@@ -73,37 +89,37 @@
 			<Add option="-Wall" />
 			<Add option="-fPIC" />
 			<Add option="-DDOCOREDLLEXPORT" />
-			<Add directory=".\HopsanCore" />
-			<Add directory=".\Nodes" />
-			<Add directory=".\Utilities" />
-			<Add directory=".\Components" />
+			<Add directory="./HopsanCore" />
+			<Add directory="./Nodes" />
+			<Add directory="./Utilities" />
+			<Add directory="./Components" />
 		</Compiler>
 		<Linker>
 			<Add option="-shared" />
 		</Linker>
-		<Unit filename="Components\FlowSourceQ.hpp" />
-		<Unit filename="Components\Orifice.hpp" />
-		<Unit filename="Components\PressureSource.hpp" />
-		<Unit filename="Components\PressureSourceQ.hpp" />
-		<Unit filename="Components\TLMRlineR.hpp" />
-		<Unit filename="Components\TLMlossless.hpp" />
-		<Unit filename="Components\Volume.hpp" />
-		<Unit filename="HopsanCore\ClassFactory.h" />
-		<Unit filename="HopsanCore\Component.cc" />
-		<Unit filename="HopsanCore\Component.h" />
-		<Unit filename="HopsanCore\HopsanCore.h" />
-		<Unit filename="HopsanCore\LoadExternal.h" />
-		<Unit filename="HopsanCore\Node.cc">
+		<Unit filename="Components/FlowSourceQ.hpp" />
+		<Unit filename="Components/Orifice.hpp" />
+		<Unit filename="Components/PressureSource.hpp" />
+		<Unit filename="Components/PressureSourceQ.hpp" />
+		<Unit filename="Components/TLMRlineR.hpp" />
+		<Unit filename="Components/TLMlossless.hpp" />
+		<Unit filename="Components/Volume.hpp" />
+		<Unit filename="HopsanCore/ClassFactory.h" />
+		<Unit filename="HopsanCore/Component.cc" />
+		<Unit filename="HopsanCore/Component.h" />
+		<Unit filename="HopsanCore/HopsanCore.h" />
+		<Unit filename="HopsanCore/LoadExternal.h" />
+		<Unit filename="HopsanCore/Node.cc">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="HopsanCore\Node.h" />
-		<Unit filename="HopsanCore\win32dll.h" />
-		<Unit filename="Nodes\Nodes.cc" />
-		<Unit filename="Nodes\Nodes.h" />
-		<Unit filename="Utilities\Delay.cc" />
-		<Unit filename="Utilities\Delay.h" />
-		<Unit filename="Utilities\TicToc.cc" />
-		<Unit filename="Utilities\TicToc.h" />
+		<Unit filename="HopsanCore/Node.h" />
+		<Unit filename="HopsanCore/win32dll.h" />
+		<Unit filename="Nodes/Nodes.cc" />
+		<Unit filename="Nodes/Nodes.h" />
+		<Unit filename="Utilities/Delay.cc" />
+		<Unit filename="Utilities/Delay.h" />
+		<Unit filename="Utilities/TicToc.cc" />
+		<Unit filename="Utilities/TicToc.h" />
 		<Extensions>
 			<envvars />
 			<code_completion />
