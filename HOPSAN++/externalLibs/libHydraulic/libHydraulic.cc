@@ -7,4 +7,5 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory::FactoryVectorT *fa
     std::cout << "Running register function in dll" << std::endl;
     factory_vector_ptr->push_back(ComponentFactory::FactoryPairT("ComponentExternalOrifice", ComponentExternalOrifice::Creator));
     factory_vector_ptr->push_back(ComponentFactory::FactoryPairT("ComponentExternalVolume", ComponentExternalVolume::Creator));
+    factory_vector_ptr->push_back(ComponentFactory::FactoryPairT("ComponentExternalPressureSource", ComponentExternalPressureSource::Creator));
 }
