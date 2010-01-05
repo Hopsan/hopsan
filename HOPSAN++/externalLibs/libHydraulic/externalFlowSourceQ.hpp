@@ -17,7 +17,7 @@ public:
         return new ComponentExternalFlowSourceQ("DefaultFlowSourceQName");
     }
 
-    ComponentFlowSourceQ(const string name,
+    ComponentExternalFlowSourceQ(const string name,
                          const double flow     = 1.0e-3,
                          const double timestep = 0.001)
 	: ComponentQ(name, timestep)
