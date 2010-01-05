@@ -245,7 +245,7 @@ void test_external_lib()
     #ifdef WIN32
     loader.Load("./libHydraulic.dll");
     #elif defined MAC
-    loader.Load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libHydraulic.dylib");
+    loader.Load("./bin/Debug/libHydraulic.dylib");
     #else
     loader.Load("./bin/Debug/libHydraulic.so");
     #endif
