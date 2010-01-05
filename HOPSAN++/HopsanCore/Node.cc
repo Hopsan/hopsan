@@ -6,7 +6,6 @@
 //Node constructor
 Node::Node()
 {
-    //mName = name;
     mNodeType = "Node";
     mDataVector.clear();
     mDataStorage.clear();
@@ -14,11 +13,6 @@ Node::Node()
     mLogSpaceAllocated = false;
     mLogCtr = 0;
 }
-
-//string &Node::getName()
-//{
-//    return mName;
-//}
 
 NodeTypeT &Node::getNodeType()
 {
@@ -106,4 +100,10 @@ void Node::saveLogData(string filename)
     {
         cout << "Warning! Could not open out file for writing" << endl;
     }
+}
+
+NodeFactory gCoreNodeFactory;
+DLLIMPORTEXPORT NodeFactory* getGlobalNodeFactoryPtr()
+{
+    return &gCoreNodeFactory;
 }

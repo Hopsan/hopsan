@@ -112,9 +112,7 @@ protected:
 
 private:
     string mName;
-
     ComponentSystem* mpSystemparent;
-
 };
 
 
@@ -122,8 +120,6 @@ class DLLIMPORTEXPORT ComponentSignal :public Component
 {
 public:
     ComponentSignal(string name, double timestep=0.001);
-
-
 };
 
 
@@ -131,8 +127,6 @@ class DLLIMPORTEXPORT ComponentC :public Component
 {
 public:
     ComponentC(string name, double timestep=0.001);
-
-
 };
 
 
@@ -140,8 +134,6 @@ class DLLIMPORTEXPORT ComponentQ :public Component
 {
 public:
     ComponentQ(string name, double timestep=0.001);
-
-
 };
 
 
@@ -162,13 +154,14 @@ class DLLIMPORTEXPORT ComponentSystem :public Component
     vector<Component*> mComponentSignalptrs;
     vector<Component*> mComponentQptrs;
     vector<Component*> mComponentCptrs;
-    //vector<ComponentSignal*>
+
+    NodeFactory mpNodeFactory;
 
     private:
-
-
 };
 
 typedef ClassFactory<string, Component> ComponentFactory;
+extern ComponentFactory gCoreComponentFactory;
+DLLIMPORTEXPORT ComponentFactory* getCoreComponentFactoryPtr();
 
 #endif // COMPONENT_H_INCLUDED

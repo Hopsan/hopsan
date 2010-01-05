@@ -47,10 +47,12 @@
 				<Option createDefFile="1" />
 				<Option createStaticLib="1" />
 				<Compiler>
-					<Add option="-g" />
+					<Add option="-O2" />
+					<Add option="-fPIC" />
 				</Compiler>
 				<Linker>
-					<Add library="bin\Debug\libHOPSAN++.dylib" />
+					<Add option="-s" />
+					<Add library="libHOPSANCORE" />
 				</Linker>
 			</Target>
 			<Target title="DebugUnix">
@@ -75,15 +77,17 @@
 				<Option createStaticLib="1" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add option="-fPIC" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add library="libHOPSANCORE" />
+					<Add library="libHOPSANCORE" />
 				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add option="-fPIC" />
 			<Add directory="HopsanCore" />
 		</Compiler>
 		<Linker>

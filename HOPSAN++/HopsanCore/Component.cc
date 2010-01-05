@@ -443,7 +443,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
         if (&rComponent1 == &(rComponent2.getSystemparent()))
         {
             //Create an instance of the node specified in nodespecifications
-            node_ptr = NodeFactory::CreateInstance(rComponent2.getPort(portname2).getNodeType());
+            node_ptr = gCoreNodeFactory.CreateInstance(rComponent2.getPort(portname2).getNodeType());
             //add node to components and parent system
             rComponent1.addInnerPortSetNode(portname1, *node_ptr); //Add and set inner port
             rComponent1.addPort(portname1, rComponent2.getPort(portname2).getNodeType()); //Add outer port
@@ -454,7 +454,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
         else if (&rComponent2 == &(rComponent1.getSystemparent()))
         {
             //Create an instance of the node specified in nodespecifications
-            node_ptr = NodeFactory::CreateInstance(rComponent1.getPort(portname1).getNodeType());
+            node_ptr = gCoreNodeFactory.CreateInstance(rComponent1.getPort(portname1).getNodeType());
             //NodeHydraulic* node_ptr = new NodeHydraulic();///TODO:
             //add node to parentsystem
             rComponent2.addInnerPortSetNode(portname2, *node_ptr); //Add and set inner port
@@ -473,7 +473,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             }
 
             //Create an instance of the node specified in nodespecifications
-            node_ptr = NodeFactory::CreateInstance(rComponent1.getPort(portname1).getNodeType());
+            node_ptr = gCoreNodeFactory.CreateInstance(rComponent1.getPort(portname1).getNodeType());
             cout << "Created NodeType: " << node_ptr->getNodeType() << endl;
             //Set node in both components ports and add it to the parent system component
             rComponent1.getPort(portname1).setNode(node_ptr);
@@ -544,4 +544,10 @@ void ComponentSystem::simulate(const double startT, const double stopT)
 
         mTime += mTimestep;
     }
+}
+
+ComponentFactory gCoreComponentFactory;
+DLLIMPORTEXPORT ComponentFactory* getCoreComponentFactoryPtr()
+{
+    return &gCoreComponentFactory;
 }

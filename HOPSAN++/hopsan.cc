@@ -219,7 +219,7 @@ void test3()
 
 void test_external_lib()
 {
-    LoadExternal loader;
+    HopsanEssentials Hopsan;
 
     //Create master component
     ComponentSystem simulationmodel("simulationmodel");
@@ -228,18 +228,18 @@ void test_external_lib()
     //ComponentOrifice orificeL("orifice_left_side", 1e-12);
 
     #ifdef WIN32
-    loader.Load("./libHydraulic.dll");
+    Hopsan.externalLoader.load("./libHydraulic.dll");
     #elif defined MAC
-    loader.Load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libHydraulic.dylib");
+    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libHydraulic.dylib");
     #else
-    loader.Load("./bin/Debug/libHydraulic.so");
+    Hopsan.externalLoader.load("./bin/Debug/libHydraulic.so");
     #endif
 
     cout << "afterload" << endl;
 
-    Component* orificeL = ComponentFactory::CreateInstance("ComponentExternalOrifice");
-    Component* volumeC = ComponentFactory::CreateInstance("ComponentExternalVolume");
-    Component* orificeR = ComponentFactory::CreateInstance("ComponentExternalOrifice");
+    Component* orificeL = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalOrifice");
+    Component* volumeC = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalVolume");
+    Component* orificeR = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalOrifice");
     orificeR->setName("right orifice");
     orificeR->setParameter("Kc", 1e-12);
 
@@ -320,7 +320,7 @@ void testSignal()
 int main()
 {
 //    test1();
-//    test_external_lib();
-    testSignal();
+    test_external_lib();
+//    testSignal();
     return 0;
 }

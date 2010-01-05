@@ -6,10 +6,10 @@
 
 class NodeSignal :public Node
 {
-    static Node* CreatorFunction() {return new NodeSignal;}
-    static NodeTypeT iDummyId;
-
 public:
+    static Node* CreatorFunction() {return new NodeSignal;}
+    //static NodeTypeT iDummyId;
+
     enum {VALUE, DATALENGTH};
     NodeSignal() : Node()
     {
@@ -21,10 +21,10 @@ public:
 
 class NodeHydraulic :public Node
 {
-    static Node* CreatorFunction() {return new NodeHydraulic;}
-    static NodeTypeT iDummyId;
-
 public:
+    static Node* CreatorFunction() {return new NodeHydraulic;}
+    //static NodeTypeT iDummyId;
+
     enum {MASSFLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP, HEATFLOW, DATALENGTH};
     NodeHydraulic() : Node()
     {
@@ -36,10 +36,10 @@ public:
 
 class NodeMechanic :public Node
 {
-    static Node* CreatorFunction() {return new NodeMechanic;}
-    static NodeTypeT iDummyId;
-
 public:
+    static Node* CreatorFunction() {return new NodeMechanic;}
+    //static NodeTypeT iDummyId;
+
     enum {VELOCITY, FORCE, DATALENGTH};
     NodeMechanic() : Node()
     {
@@ -47,5 +47,7 @@ public:
         mDataVector.resize(DATALENGTH,0.0);
     }
 };
+
+DLLIMPORTEXPORT void register_nodes(NodeFactory* nfact_ptr);
 
 #endif // NODES_H_INCLUDED

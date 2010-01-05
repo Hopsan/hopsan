@@ -15,7 +15,6 @@ class DLLIMPORTEXPORT Node
 ///TODO: Nodes should know their ports so a check can be performed by the node at connection time, the check should be virtual and implement different checks at different nodes.
 public:
     Node();
-    //string &getName();
     NodeTypeT &getNodeType();
 
     void setData(const size_t data_type, double data);
@@ -27,7 +26,6 @@ public:
     void saveLogData(string filename);
 
 protected:
-
     NodeTypeT mNodeType;
     vector<double> mDataVector;
 
@@ -41,6 +39,7 @@ private:
 };
 
 typedef ClassFactory<NodeTypeT, Node> NodeFactory;
-//static NodeFactory gNodeFactory;
+extern NodeFactory gCoreNodeFactory;
+DLLIMPORTEXPORT NodeFactory* getCoreNodeFactoryPtr();
 
 #endif // NODE_H_INCLUDED
