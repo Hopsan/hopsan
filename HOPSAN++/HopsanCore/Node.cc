@@ -103,7 +103,7 @@ void Node::saveLogData(string filename)
 }
 
 NodeFactory gCoreNodeFactory;
-DLLIMPORTEXPORT NodeFactory* getGlobalNodeFactoryPtr()
+DLLIMPORTEXPORT NodeFactory* getCoreNodeFactoryPtr()
 {
     return &gCoreNodeFactory;
 }
