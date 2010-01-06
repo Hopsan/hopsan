@@ -47,13 +47,9 @@
 				<Option createDefFile="1" />
 				<Option createStaticLib="1" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-g" />
 					<Add option="-fPIC" />
 				</Compiler>
-				<Linker>
-					<Add option="-s" />
-					<Add library="libHOPSANCORE" />
-				</Linker>
 			</Target>
 			<Target title="DebugUnix">
 				<Option platforms="Unix;" />
@@ -65,6 +61,7 @@
 				<Option createStaticLib="1" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-fPIC" />
 				</Compiler>
 			</Target>
 			<Target title="ReleaseUnix">
@@ -81,7 +78,6 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="libHOPSANCORE" />
 					<Add library="libHOPSANCORE" />
 				</Linker>
 			</Target>
