@@ -4,6 +4,7 @@
 
 void test1()
 {
+    HopsanEssentials Hopsan;
     TicToc totaltimer("totaltimer");
 
     //Create master component
@@ -59,6 +60,7 @@ void test2() //Test of the Delay utillity class
 
 void testTLM()
 {
+    HopsanEssentials Hopsan;
 	/*   Exempelsystem:
 
 	   q       T, Zc
@@ -102,6 +104,7 @@ void testTLM()
 
 void testTLMlumped()
 {
+    HopsanEssentials Hopsan;
 	/*   Exempelsystem:
 
 	   q         T, Zc
@@ -167,6 +170,7 @@ void testTLMlumped()
 
 void test3()
 {
+    HopsanEssentials Hopsan;
 	/*   Exempelsystem:
 					  Kc
 	   q       T, Zc  v
@@ -275,6 +279,7 @@ void test_external_lib()
 
 void testSignal()
 {
+    HopsanEssentials Hopsan;
 	/*   Exempelsystem:
 					  Kc
 	   q       T, Zc  v
@@ -319,8 +324,8 @@ void testSignal()
 
 int main()
 {
-//    test1();
+    test1();
     test_external_lib();
-//    testSignal();
+    testSignal();
     return 0;
 }
