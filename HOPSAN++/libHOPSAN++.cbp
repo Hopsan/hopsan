@@ -110,7 +110,6 @@
 		<Unit filename="HopsanCore\CoreUtilities\Delay.h" />
 		<Unit filename="HopsanCore\CoreUtilities\LoadExternal.cc" />
 		<Unit filename="HopsanCore\CoreUtilities\LoadExternal.h" />
-		<Unit filename="HopsanCore\HopsanCore.cc" />
 		<Unit filename="HopsanCore\HopsanCore.h" />
 		<Unit filename="HopsanCore\Node.cc" />
 		<Unit filename="HopsanCore\Node.h" />
