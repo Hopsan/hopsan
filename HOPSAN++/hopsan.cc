@@ -176,7 +176,7 @@ void test3()
 	   q       T, Zc  v
 	 ------>o=========----o p
 	                  ^
-	 */
+    */
 	ComponentSystem simulationmodel("simulationmodel");
     //Create other components
     ComponentFlowSourceQ qsourceL(   "qs_left_side",       1.0);
@@ -335,13 +335,25 @@ void test_fixed_pump()
 
 void testSignal()
 {
-    HopsanEssentials Hopsan;
 	/*   Exempelsystem:
-					  Kc
-	   q       T, Zc  v
-	 ------>o=========----o p
-	                  ^
-	 */
+
+	 2   |\ 3
+	 o===| >===o
+	     |/
+    */
+
+    HopsanEssentials Hopsan;
+
+    #ifdef WIN32
+    Hopsan.externalLoader.load("./libHydraulic.dll");
+    #elif defined MAC
+    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libHydraulic.dylib");
+    #else
+    Hopsan.externalLoader.load("./bin/Debug/libHydraulic.so");
+    #endif
+
+    cout << "afterload" << endl;
+
 	ComponentSystem simulationmodel("simulationmodel");
     //Create other components
     ComponentSource sourceL("source_left", 1.0);
@@ -376,6 +388,64 @@ void testSignal()
 	//Finished
     cout << "testSignal() Done!" << endl;
 }
+
+
+void testExternalSignal()
+{
+	/*   Exempelsystem:
+
+	 2   |\ 3
+	 o===| >===o
+	     |/
+    */
+
+    HopsanEssentials Hopsan;
+
+    #ifdef WIN32
+    Hopsan.externalLoader.load("./libHydraulic.dll");
+    #elif defined MAC
+    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libHydraulic.dylib");
+    #else
+    Hopsan.externalLoader.load("./bin/Debug/libHydraulic.so");
+    #endif
+
+    cout << "afterload" << endl;
+
+	ComponentSystem simulationmodel("simulationmodel");
+    //Create other components
+    Component* sourceL = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalSource");
+    Component* gainC = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalGain");
+    Component* sinkR = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalSink");
+
+    //Add components
+    simulationmodel.addComponent(*sourceL);
+    simulationmodel.addComponent(*gainC);
+    simulationmodel.addComponent(*sinkR);
+
+    //Connect components
+    simulationmodel.connect(*sourceL, "out", *gainC, "in");
+    simulationmodel.connect(*gainC, "out", *sinkR, "in");
+
+    //List and set parameters
+    sourceL->listParametersConsole();
+    gainC->listParametersConsole();
+    sourceL->setParameter("Value", 2.0);
+    gainC->setParameter("Gain", 3.0);
+    sourceL->listParametersConsole();
+    gainC->listParametersConsole();
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0.0, 1.0);
+
+    simulationmodel.simulate(0.0, 1.0);
+
+    //Test write to file
+    sinkR->getPort("in").getNode().saveLogData("output.txt");
+
+	//Finished
+    cout << "testSignal() Done!" << endl;
+}
+
 
 void testkarl()
 {
@@ -442,7 +512,7 @@ int main()
     //test_external_lib();
 
 
-    //testSignal();
+    testExternalSignal();
 
 
     //testkarl();
@@ -451,7 +521,7 @@ int main()
     //test1();
 
 
-    test_fixed_pump();
+    //test_fixed_pump();
 
 
     // testSignal();
