@@ -63,10 +63,10 @@ public:
 
         double pi = 3.1415926536;
 
-        double q2 = ( mDp*mSpeed / (2.0*pi) + mKcp*(c1-c2)) / ((Zc1+Zc2)*mKcp+1 );
+        double q2 = ( mDp*mSpeed/(2.0*pi) + mKcp*(c1-c2) ) / ( (Zc1+Zc2)*mKcp+1 );
         double q1 = -q2;
         double p2 = c2 + Zc2*q2;
-        double p1 = c1 + Zc1 * q1;
+        double p1 = c1 + Zc1*q1;
 
         /* Cavitation Check */
 
@@ -86,7 +86,7 @@ public:
         }
         if (cav)
         {
-            q2 = ( mDp*mSpeed / (2.0*pi) + mKcp*(c1-c2)) / ((Zc1+Zc2)*mKcp+1 );
+            q2 = ( mDp*mSpeed/(2.0*pi) + mKcp*(c1-c2) ) / ( (Zc1+Zc2)*mKcp+1 );
             q1 = -q2;
             p1 = c1 + Zc1 * q1;
             p2 = c2 + Zc2 * q2;
