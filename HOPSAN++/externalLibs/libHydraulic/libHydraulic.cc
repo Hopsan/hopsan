@@ -20,6 +20,7 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* cfact_ptr, NodeFac
     cfact_ptr->RegisterCreatorFunction("ComponentExternalPressureSource", ComponentExternalPressureSource::Creator);
     cfact_ptr->RegisterCreatorFunction("ComponentExternalFlowSourceQ", ComponentExternalFlowSourceQ::Creator);
     cfact_ptr->RegisterCreatorFunction("ComponentExternalPressureSourceQ", ComponentExternalPressureSourceQ::Creator);
+    cfact_ptr->RegisterCreatorFunction("ComponentExternalFixedDisplacementPump", ComponentExternalFixedDisplacementPump::Creator);
 
     //Register custom nodes (if any)
 }
