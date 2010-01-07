@@ -16,6 +16,7 @@
 #include "Components/Source.hpp"
 #include "Components/Sink.hpp"
 #include "Components/Gain.hpp"
+#include "Components/TurbOrifice.hpp"
 
 class HopsanEssentials
 {
