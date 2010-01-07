@@ -7,7 +7,7 @@
 class ComponentExternalFixedDisplacementPump : public ComponentQ
 {
 private:
-    double mSpeed;             // rev/s
+    double mSpeed;             // rad/s
     double mDp;
     double mKcp;
 
@@ -51,7 +51,7 @@ public:
     {
         //Get the nodes
    		Node* p1_ptr = mPorts[P1].getNodePtr();
-   		Node* p2_ptr = mPorts[P1].getNodePtr();
+   		Node* p2_ptr = mPorts[P2].getNodePtr();
 
         //Get variable values from nodes
 		double c1  = p1_ptr->getData(NodeHydraulic::WAVEVARIABLE);
@@ -63,7 +63,7 @@ public:
 
         double pi = 3.1415926536;
 
-        double q2 = ( mDp*mSpeed / (2*pi) + mKcp*(c1-c2)) / ((Zc1+Zc2)*mKcp+1 );
+        double q2 = ( mDp*mSpeed / (2.0*pi) + mKcp*(c1-c2)) / ((Zc1+Zc2)*mKcp+1 );
         double q1 = -q2;
         double p2 = c2 + Zc2*q2;
         double p1 = c1 + Zc1 * q1;
@@ -86,7 +86,7 @@ public:
         }
         if (cav)
         {
-            q2 = ( mDp*mSpeed / (2*pi) + mKcp*(c1-c2)) / ((Zc1+Zc2)*mKcp+1 );
+            q2 = ( mDp*mSpeed / (2.0*pi) + mKcp*(c1-c2)) / ((Zc1+Zc2)*mKcp+1 );
             q1 = -q2;
             p1 = c1 + Zc1 * q1;
             p2 = c2 + Zc2 * q2;

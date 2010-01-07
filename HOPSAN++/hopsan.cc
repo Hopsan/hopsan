@@ -282,6 +282,57 @@ void test_external_lib()
 }
 
 
+void test_fixed_pump()
+{
+    HopsanEssentials Hopsan;
+
+    //Create master component
+    ComponentSystem simulationmodel("simulationmodel");
+
+    //Create other components
+
+    #ifdef WIN32
+    Hopsan.externalLoader.load("./libHydraulic.dll");
+    #elif defined MAC
+    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libHydraulic.dylib");
+    #else
+    Hopsan.externalLoader.load("./bin/Debug/libHydraulic.so");
+    #endif
+
+    cout << "afterload" << endl;
+
+    Component* psourceL = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalPressureSource");
+    Component* pump = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalFixedDisplacementPump");
+    Component* volumeC = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalVolume");
+    Component* psourceR = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalPressureSourceQ");
+
+    psourceL->setParameter("P", 10e5);
+    //pump->setParameter("Kcp", 1e-7);
+    psourceR->setParameter("P", 10e5);
+
+    //Add components
+    simulationmodel.addComponent(*psourceL);
+    simulationmodel.addComponent(*pump);
+    simulationmodel.addComponent(*volumeC);
+    simulationmodel.addComponent(*psourceR);
+
+    //Connect components
+    simulationmodel.connect(*psourceL, "P1", *pump, "P1");
+    simulationmodel.connect(*pump, "P2", *volumeC, "P1");
+    simulationmodel.connect(*volumeC, "P2", *psourceR, "P1");
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0, 100);
+    simulationmodel.simulate(0,100);
+
+    //Test write to file
+    pump->getPort("P2").getNode().saveLogData("output.txt");
+
+    cout << "test_fixed_pump() Done!" << endl;
+
+}
+
+
 void testSignal()
 {
     HopsanEssentials Hopsan;
@@ -329,8 +380,8 @@ void testSignal()
 
 int main()
 {
-    test1();
-    test_external_lib();
-    testSignal();
+    //test1();
+    test_fixed_pump();
+    // testSignal();
     return 0;
 }
