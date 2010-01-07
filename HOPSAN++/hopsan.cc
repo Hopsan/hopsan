@@ -228,7 +228,7 @@ void test_external_lib()
     //Create master component
     ComponentSystem simulationmodel("simulationmodel");
     //Create other components
-    ComponentPressureSource psourceL("ps_left_side", 10e5);
+    //ComponentPressureSource psourceL("ps_left_side", 10e5);
     //ComponentOrifice orificeL("orifice_left_side", 1e-12);
 
     #ifdef WIN32
@@ -241,26 +241,31 @@ void test_external_lib()
 
     cout << "afterload" << endl;
 
+    Component* psourceL = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalPressureSource");
     Component* orificeL = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalOrifice");
     Component* volumeC = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalVolume");
     Component* orificeR = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalOrifice");
+    Component* psourceR = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalPressureSource");
+    psourceL->setParameter("P", 10e5);
     orificeR->setName("right orifice");
     orificeR->setParameter("Kc", 1e-12);
+    psourceR->setParameter("P", 0e5);
+
 
     //ComponentOrifice orificeR("orifice_right_side", 1e-12);
-    ComponentPressureSource psourceR("ps_right_side", 0e5);
+    //ComponentPressureSource psourceR("ps_right_side", 0e5);
 
     //Add components
-    simulationmodel.addComponent(psourceL);
+    simulationmodel.addComponent(*psourceL);
     simulationmodel.addComponent(*orificeL);
     simulationmodel.addComponent(*volumeC);
     simulationmodel.addComponent(*orificeR);
-    simulationmodel.addComponent(psourceR);
+    simulationmodel.addComponent(*psourceR);
     //Connect components
-    simulationmodel.connect(psourceL, "P1", *orificeL, "P1");
+    simulationmodel.connect(*psourceL, "P1", *orificeL, "P1");
     simulationmodel.connect(*orificeL, "P2", *volumeC, "P1");
     simulationmodel.connect(*volumeC, "P2", *orificeR, "P1");
-    simulationmodel.connect(*orificeR, "P2", psourceR, "P1");
+    simulationmodel.connect(*orificeR, "P2", *psourceR, "P1");
 
     //list some stuff
     orificeR->listParametersConsole();
