@@ -377,11 +377,83 @@ void testSignal()
     cout << "testSignal() Done!" << endl;
 }
 
+void testkarl()
+{
+    HopsanEssentials Hopsan;
+	/*   Exempelsystem:
+					  Kc
+	   q       T, Zc  v
+	 ------>o=========----o p
+	                  ^
+	 */
+	ComponentSystem simulationmodel("simulationmodel");
+    //Create other components
+    ComponentPressureSource psourceL(   "ps_left_side");
+    ComponentTurbOrifice orificeL(       "orifice_left_side");
+    ComponentVolume volume("volume_left");
+    ComponentTurbOrifice orificeR(       "orifice_right_side");
+    ComponentPressureSource psourceR("ps_right_side");
+
+    //Add components
+    simulationmodel.addComponent(psourceL);
+    simulationmodel.addComponent(orificeL);
+    simulationmodel.addComponent(volume);
+    simulationmodel.addComponent(orificeR);
+    simulationmodel.addComponent(psourceR);
+
+    //Connect components
+    simulationmodel.connect(psourceL, "P1", orificeL,    "P1");
+    simulationmodel.connect(orificeL,    "P2", volume, "P1");
+    simulationmodel.connect(volume, "P2", orificeR, "P1");
+    simulationmodel.connect(orificeR, "P2", psourceR, "P1");
+
+    //List and set parameters
+    psourceL.listParametersConsole();
+    orificeL.listParametersConsole();
+    volume.listParametersConsole();
+    orificeR.listParametersConsole();
+    psourceR.listParametersConsole();
+
+    psourceL.setParameter("P", 10.0e5);
+    psourceR.setParameter("P", 1.0e5);
+    orificeR.setParameter("A",0.000005);
+    psourceL.listParametersConsole();
+    psourceR.listParametersConsole();
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0.0, 1.0);
+
+    simulationmodel.simulate(0.0, 1.0);
+
+    //Test write to file
+    volume.getPort("P1").getNode().saveLogData("output.txt");
+    volume.getPort("P2").getNode().saveLogData("output2.txt");
+
+	//Finished
+    cout << "testkarl() Done!" << endl;
+}
 
 int main()
 {
+
+    //test2();
+
+
+    //test_external_lib();
+
+
+    //testSignal();
+
+
+    //testkarl();
+
+
     //test1();
+
+
     test_fixed_pump();
+
+
     // testSignal();
     return 0;
 }
