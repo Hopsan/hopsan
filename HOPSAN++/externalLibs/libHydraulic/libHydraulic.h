@@ -7,5 +7,6 @@
 #include "externalFlowSourceQ.hpp"
 #include "externalPressureSourceQ.hpp"
 #include "externalFixedDisplacementPump.hpp"
+#include "externalCheckValve.hpp"
 
 #endif // LIBHYDRAULIC_H_INCLUDED

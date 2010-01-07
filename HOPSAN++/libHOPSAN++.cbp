@@ -104,6 +104,7 @@
 		<Unit filename="HopsanCore\Components\Source.hpp" />
 		<Unit filename="HopsanCore\Components\TLMRlineR.hpp" />
 		<Unit filename="HopsanCore\Components\TLMlossless.hpp" />
+		<Unit filename="HopsanCore\Components\TurbOrifice.hpp" />
 		<Unit filename="HopsanCore\Components\Volume.hpp" />
 		<Unit filename="HopsanCore\CoreUtilities\ClassFactory.h" />
 		<Unit filename="HopsanCore\CoreUtilities\Delay.cc" />
