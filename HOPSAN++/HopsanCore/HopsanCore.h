@@ -29,6 +29,7 @@ private:
     {
         //Make sure that internal Nodes and Components register
         register_nodes(mpNodeFactory);
+        register_components(mpComponentFactory);
 
         //Do some other stuff
     }
