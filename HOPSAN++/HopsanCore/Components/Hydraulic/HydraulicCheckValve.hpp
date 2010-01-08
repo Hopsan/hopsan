@@ -27,13 +27,12 @@ private:
     {
 
         double ret_val, r1;
-        double k, k1, k2;
+        double k1, k2;
 
-        k = ks * ks;
-        k1 = k * (Zc1+Zc2) / 2.0;
+        k1 = ks*ks * (Zc1+Zc2) / 2.0;
         if (k1 == 0.0)
         {
-            if (k == 0.0)
+            if (ks*ks == 0.0)
             {
                 ret_val = 0.0;
             }
@@ -45,7 +44,7 @@ private:
         }
         else
         {
-            k2 = 4 / (k * (Zc1 + Zc2) * (Zc1 + Zc2));
+            k2 = 4 / (ks*ks * (Zc1 + Zc2) * (Zc1 + Zc2));
             if (c1 > c2) 	{ ret_val = k1 * (sqrt(k2 * (c1 - c2) + 1) - 1); }
             else  { ret_val = k1*(1 - sqrt(k2*(c2-c1)+1)); }
         }
