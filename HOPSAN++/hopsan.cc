@@ -11,10 +11,10 @@ void test1()
     ComponentSystem simulationmodel("simulationmodel");
     //Create other components
     HydraulicPressureSource psourceL("ps_left_side", 10e5);
-    HydraulicOrifice orificeL("orifice_left_side", 1e-12);
+    HydraulicLaminarOrifice orificeL("orifice_left_side", 1e-12);
     HydraulicVolume volumeC("volume_center");
     //ComponentTLMlossless volumeC("volume_center");
-    HydraulicOrifice orificeR("orifice_right_side", 1e-12);
+    HydraulicLaminarOrifice orificeR("orifice_right_side", 1e-12);
     HydraulicPressureSource psourceR("ps_right_side", 0e5);
 
     //Add components
@@ -122,11 +122,11 @@ void testTLMlumped()
     //Create other components
     HydraulicFlowSourceQ qsourceL("qs_left_side",  1.0);
     HydraulicTLMRlineR lineL("line_left",     Zc, T/4.0, R/8.0, 0.0);
-    HydraulicOrifice orificeL("orifice_L", 4.0*R);
+    HydraulicLaminarOrifice orificeL("orifice_L", 4.0*R);
     HydraulicTLMRlineR lineLC("line_lcenter", Zc, T/4.0, 0.0, 0.0);
-    HydraulicOrifice orificeC("orifice_C", 4.0*R);
+    HydraulicLaminarOrifice orificeC("orifice_C", 4.0*R);
     HydraulicTLMRlineR lineRC("line_rcenter", Zc, T/4.0, 0.0, 0.0);
-    HydraulicOrifice orificeR("orifice_R", 4.0*R);
+    HydraulicLaminarOrifice orificeR("orifice_R", 4.0*R);
     HydraulicTLMRlineR lineR("line_right",    Zc, T/4.0, 0.0, R/8.0);
     HydraulicPressureSourceQ psourceR("ps_right_side", 1.0);
 
@@ -181,7 +181,7 @@ void test3()
     //Create other components
     HydraulicFlowSourceQ qsourceL(   "qs_left_side",       1.0);
     HydraulicTLMlossless lineC(      "line_center",        1.0, 0.1, 0.0);
-    HydraulicOrifice orificeR(       "orifice_right_side", 3.0);
+    HydraulicLaminarOrifice orificeR(       "orifice_right_side", 3.0);
     HydraulicPressureSource psourceR("ps_right_side",      1.0);
 
     //Add components
@@ -356,9 +356,9 @@ void testSignal()
 
 	ComponentSystem simulationmodel("simulationmodel");
     //Create other components
-    ComponentSource sourceL("source_left", 1.0);
-    ComponentGain gainC("gain_center", 1.0);
-    ComponentSink sinkR("sink_right");
+    SignalSource sourceL("source_left", 1.0);
+    SignalGain gainC("gain_center", 1.0);
+    SignalSink sinkR("sink_right");
 
     //Add components
     simulationmodel.addComponent(sourceL);
@@ -505,7 +505,7 @@ void testkarl()
     Component* orificeB = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicOrifice");
     Component* tankA = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicPressureSource");
     Component* tankB = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicPressureSource");
-    ComponentSource constant("const");
+    SignalSource constant("const");
 
     //Add components
     simulationmodel.addComponent(*psource);
