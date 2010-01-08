@@ -1,7 +1,7 @@
 #ifndef NODES_H_INCLUDED
 #define NODES_H_INCLUDED
 
-#include "Node.h"
+#include "../Node.h"
 
 
 class NodeSignal :public Node

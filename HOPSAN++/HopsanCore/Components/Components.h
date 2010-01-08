@@ -1,8 +1,9 @@
 #ifndef COMPONENTS_H_INCLUDED
 #define COMPONENTS_H_INCLUDED
 
-/* Signal Components */
+#include "../Component.h"
 
+/* Signal Components */
 #include "Signal/SignalSource.hpp"
 #include "Signal/SignalGain.hpp"
 #include "Signal/SignalSink.hpp"
@@ -23,5 +24,7 @@
 #include "Hydraulic/HydraulicTurbulentOrifice.hpp"
 #include "Hydraulic/HydraulicTLMRLineR.hpp"
 #include "Hydraulic/HydraulicTLMlossless.hpp"
+
+DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr);
 
 #endif // COMPONENTS_H_INCLUDED
