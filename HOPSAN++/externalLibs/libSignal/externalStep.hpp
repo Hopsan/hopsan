@@ -54,11 +54,11 @@ public:
         double outputSignal;
         if (mTime < mStepTime)
         {
-            outputSignal = mStartValue;
+            outputSignal = mStartValue;     //Before step
         }
         else
         {
-            outputSignal = mStartValue + mStepSize;
+            outputSignal = mStartValue + mStepSize;     //After step
         }
 
         //Write new values to nodes
