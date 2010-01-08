@@ -16,13 +16,13 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->RegisterCreatorFunction("ComponentExternal43Valve", ComponentExternal43Valve::Creator);
 
     //Signal components
-    cfact_ptr->RegisterCreatorFunction("ComponentExternalSource", ComponentExternalSource::Creator);
-    cfact_ptr->RegisterCreatorFunction("ComponentExternalGain", ComponentExternalGain::Creator);
-    cfact_ptr->RegisterCreatorFunction("ComponentExternalSink", ComponentExternalSink::Creator);
-    cfact_ptr->RegisterCreatorFunction("ComponentExternalStep", ComponentExternalStep::Creator);
-    cfact_ptr->RegisterCreatorFunction("ComponentExternalSineWave", ComponentExternalSineWave::Creator);
-    cfact_ptr->RegisterCreatorFunction("ComponentExternalSquareWave", ComponentExternalSquareWave::Creator);
-    cfact_ptr->RegisterCreatorFunction("ComponentExternalRamp", ComponentExternalRamp::Creator);
+    cfact_ptr->RegisterCreatorFunction("SignalSource", SignalSource::Creator);
+    cfact_ptr->RegisterCreatorFunction("SignalGain", SignalGain::Creator);
+    cfact_ptr->RegisterCreatorFunction("SignalSink", SignalSink::Creator);
+    cfact_ptr->RegisterCreatorFunction("SignalStep", SignalStep::Creator);
+    cfact_ptr->RegisterCreatorFunction("CSignalSineWave", SignalSineWave::Creator);
+    cfact_ptr->RegisterCreatorFunction("SignalSquareWave", SignalSquareWave::Creator);
+    cfact_ptr->RegisterCreatorFunction("SignalRamp", SignalRamp::Creator);
 
     //Mechanical components
 
