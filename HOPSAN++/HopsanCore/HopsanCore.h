@@ -37,10 +37,10 @@ public:
         Initialize();
     }
 
-    ComponentFactory* getComponentFactoryPtr()
-    {
-        return mpComponentFactory;
-    }
+//    ComponentFactory* getComponentFactoryPtr()
+//    {
+//        return mpComponentFactory;
+//    }
 
     Component* CreateComponent(const string &rString)
     {
