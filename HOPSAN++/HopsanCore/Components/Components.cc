@@ -6,14 +6,14 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr)
 {
     //Hydraulic components
     cfact_ptr->RegisterCreatorFunction();
-    cfact_ptr->RegisterCreatorFunction("HydraulicLaminarOrifice", ComponentExternalOrifice::Creator);
-    cfact_ptr->RegisterCreatorFunction("HydraulicVolume", ComponentExternalVolume::Creator);
-    cfact_ptr->RegisterCreatorFunction("HydraulicPressureSource", ComponentExternalPressureSource::Creator);
-    cfact_ptr->RegisterCreatorFunction("HydraulicFlowSourceQ", ComponentExternalFlowSourceQ::Creator);
-    cfact_ptr->RegisterCreatorFunction("HydraulicPressureSourceQ", ComponentExternalPressureSourceQ::Creator);
-    cfact_ptr->RegisterCreatorFunction("HydraulicFixedDisplacementPump", ComponentExternalFixedDisplacementPump::Creator);
-    cfact_ptr->RegisterCreatorFunction("HydraulicCheckValve", ComponentExternalCheckValve::Creator);
-    cfact_ptr->RegisterCreatorFunction("Hydraulic43Valve", ComponentExternal43Valve::Creator);
+    cfact_ptr->RegisterCreatorFunction("HydraulicLaminarOrifice", HydraulicLaminarOrifice::Creator);
+    cfact_ptr->RegisterCreatorFunction("HydraulicVolume", HydraulicVolume::Creator);
+    cfact_ptr->RegisterCreatorFunction("HydraulicPressureSource", HydraulicPressureSource::Creator);
+    cfact_ptr->RegisterCreatorFunction("HydraulicFlowSourceQ", HydraulicFlowSourceQ::Creator);
+    cfact_ptr->RegisterCreatorFunction("HydraulicPressureSourceQ", HydraulicPressureSourceQ::Creator);
+    cfact_ptr->RegisterCreatorFunction("HydraulicFixedDisplacementPump", HydraulicFixedDisplacementPump::Creator);
+    cfact_ptr->RegisterCreatorFunction("HydraulicCheckValve", HydraulicCheckValve::Creator);
+    cfact_ptr->RegisterCreatorFunction("Hydraulic43Valve", Hydraulic43Valve::Creator);
 
     //Signal components
     cfact_ptr->RegisterCreatorFunction("SignalSource", SignalSource::Creator);
