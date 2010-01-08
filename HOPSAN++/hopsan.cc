@@ -505,7 +505,7 @@ void testkarl()
     Component* orificeB = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalOrifice");
     Component* tankA = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalPressureSource");
     Component* tankB = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalPressureSource");
-    ComponentSource constant("xv");
+    ComponentSource constant("const");
 
     //Add components
     simulationmodel.addComponent(*psource);
@@ -738,10 +738,10 @@ int main()
     //test_external_lib();
 
 
-    testExternalSquareWave();
+    //testExternalSquareWave();
 
 
-    //testkarl();
+    testkarl();
 
 
     //test1();
