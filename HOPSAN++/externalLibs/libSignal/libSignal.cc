@@ -6,13 +6,13 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* cfact_ptr, NodeFac
 {
     std::cout << "Running register function in dll" << std::endl;
     //Register Components
-    cfact_ptr->RegisterCreatorFunction("ComponentExternalSource", ComponentExternalSource::Creator);
-    cfact_ptr->RegisterCreatorFunction("ComponentExternalGain", ComponentExternalGain::Creator);
-    cfact_ptr->RegisterCreatorFunction("ComponentExternalSink", ComponentExternalSink::Creator);
-    cfact_ptr->RegisterCreatorFunction("ComponentExternalStep", ComponentExternalStep::Creator);
-    cfact_ptr->RegisterCreatorFunction("ComponentExternalSineWave", ComponentExternalSineWave::Creator);
-    cfact_ptr->RegisterCreatorFunction("ComponentExternalSquareWave", ComponentExternalSquareWave::Creator);
-    cfact_ptr->RegisterCreatorFunction("ComponentExternalRamp", ComponentExternalRamp::Creator);
+//    cfact_ptr->RegisterCreatorFunction("ComponentExternalSource", ComponentExternalSource::Creator);
+//    cfact_ptr->RegisterCreatorFunction("ComponentExternalGain", ComponentExternalGain::Creator);
+//    cfact_ptr->RegisterCreatorFunction("ComponentExternalSink", ComponentExternalSink::Creator);
+//    cfact_ptr->RegisterCreatorFunction("ComponentExternalStep", ComponentExternalStep::Creator);
+//    cfact_ptr->RegisterCreatorFunction("ComponentExternalSineWave", ComponentExternalSineWave::Creator);
+//    cfact_ptr->RegisterCreatorFunction("ComponentExternalSquareWave", ComponentExternalSquareWave::Creator);
+//    cfact_ptr->RegisterCreatorFunction("ComponentExternalRamp", ComponentExternalRamp::Creator);
 
     //Register custom nodes (if any)
 }

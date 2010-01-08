@@ -16,7 +16,13 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->RegisterCreatorFunction("ComponentExternal43Valve", ComponentExternal43Valve::Creator);
 
     //Signal components
-
+    cfact_ptr->RegisterCreatorFunction("ComponentExternalSource", ComponentExternalSource::Creator);
+    cfact_ptr->RegisterCreatorFunction("ComponentExternalGain", ComponentExternalGain::Creator);
+    cfact_ptr->RegisterCreatorFunction("ComponentExternalSink", ComponentExternalSink::Creator);
+    cfact_ptr->RegisterCreatorFunction("ComponentExternalStep", ComponentExternalStep::Creator);
+    cfact_ptr->RegisterCreatorFunction("ComponentExternalSineWave", ComponentExternalSineWave::Creator);
+    cfact_ptr->RegisterCreatorFunction("ComponentExternalSquareWave", ComponentExternalSquareWave::Creator);
+    cfact_ptr->RegisterCreatorFunction("ComponentExternalRamp", ComponentExternalRamp::Creator);
 
     //Mechanical components
 
