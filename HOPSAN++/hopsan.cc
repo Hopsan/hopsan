@@ -341,13 +341,13 @@ void test_variable_pump()
 
     //Create other components
 
-    HydraulicPressureSource psourceL("ps_left_side", 10e5);
-    HydraulicVariableDisplacementPump pump("ComponentExternalVariableDisplacementPump");
+    HydraulicPressureSource psourceL("ps_left_side", 1e5);
+    HydraulicVariableDisplacementPump pump("VariableDisplacementPump");
     SignalSource eps("Swivel Angle", 1.0);
-    HydraulicVolume volumeC("ComponentExternalVolume");
-    HydraulicPressureSourceQ psourceR("ComponentExternalPressureSourceQ");
+    HydraulicVolume volumeC("Volume");
+    HydraulicPressureSourceQ psourceR("ps_right_side");
 
-    psourceL.setParameter("P", 10e5);
+    //psourceL.setParameter("P", 1e5);
     //pump->setParameter("Kcp", 1e-7);
     eps.setParameter("Value", 0.5);
     psourceR.setParameter("P", 10e5);
@@ -370,7 +370,7 @@ void test_variable_pump()
     simulationmodel.simulate(0,100);
 
     //Test write to file
-    //pump->getPort("P2").getNode().saveLogData("output.txt");
+    pump.getPort("P2").getNode().saveLogData("output.txt");
 
     cout << "test_variable_pump() Done!" << endl;
 
@@ -836,7 +836,7 @@ void testExternalRamp()
 int main()
 {
 
-    test1();
+    //test1();
 
     //cfact_ptr->RegisterCreatorFunction("ComponentExternalSink", ComponentExternalSink::Creator);
     //test_external_lib();
