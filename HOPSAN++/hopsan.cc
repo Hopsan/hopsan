@@ -402,11 +402,11 @@ void testExternalSignal()
     HopsanEssentials Hopsan;
 
     #ifdef WIN32
-    Hopsan.externalLoader.load("./libHydraulic.dll");
+    Hopsan.externalLoader.load("./libSignal.dll");
     #elif defined MAC
-    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libHydraulic.dylib");
+    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libSignal.dylib");
     #else
-    Hopsan.externalLoader.load("./bin/Debug/libHydraulic.so");
+    Hopsan.externalLoader.load("./bin/Debug/libSignal.so");
     #endif
 
     cout << "afterload" << endl;
@@ -566,11 +566,11 @@ void testExternalSignalStep()
     HopsanEssentials Hopsan;
 
     #ifdef WIN32
-    Hopsan.externalLoader.load("./libHydraulic.dll");
+    Hopsan.externalLoader.load("./libSignal.dll");
     #elif defined MAC
-    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libHydraulic.dylib");
+    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libSignal.dylib");
     #else
-    Hopsan.externalLoader.load("./bin/Debug/libHydraulic.so");
+    Hopsan.externalLoader.load("./bin/Debug/libSignal.so");
     #endif
 
     cout << "afterload" << endl;
@@ -622,11 +622,11 @@ void testExternalSineWave()
     HopsanEssentials Hopsan;
 
     #ifdef WIN32
-    Hopsan.externalLoader.load("./libHydraulic.dll");
+    Hopsan.externalLoader.load("./libSignal.dll");
     #elif defined MAC
-    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libHydraulic.dylib");
+    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libSignal.dylib");
     #else
-    Hopsan.externalLoader.load("./bin/Debug/libHydraulic.so");
+    Hopsan.externalLoader.load("./bin/Debug/libSignal.so");
     #endif
 
     cout << "afterload" << endl;
