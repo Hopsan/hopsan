@@ -1,10 +1,10 @@
-#ifndef EXTERNALSQUAREWAVE_HPP_INCLUDED
-#define EXTERNALSQUAREWAVE_HPP_INCLUDED
+#ifndef SIGNALSQUAREWAVE_HPP_INCLUDED
+#define SIGNALSQUAREWAVE_HPP_INCLUDED
 
 #include "HopsanCore.h"
 #include "math.h"
 
-class ComponentExternalSquareWave : public ComponentSignal
+class SignalSquareWave : public ComponentSignal
 {
 
 private:
@@ -18,11 +18,11 @@ public:
     static Component *Creator()
     {
         std::cout << "running Squarewave creator" << std::endl;
-        return new ComponentExternalSquareWave("DefaultSquareWaveName");
+        return new SignalSquareWave("DefaultSquareWaveName");
     }
 
 
-    ComponentExternalSquareWave(const string name,
+    SignalSquareWave(const string name,
                               const double starttime = 0.0,
                               const double frequency = 1.0,
                               const double amplitude = 1.0,
@@ -73,4 +73,4 @@ public:
     }
 };
 
-#endif // EXTERNALSQUAREWAVE_HPP_INCLUDED
+#endif // SIGNALSQUAREWAVE_HPP_INCLUDED

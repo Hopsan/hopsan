@@ -1,9 +1,9 @@
-#ifndef EXTERNALSTEP_HPP_INCLUDED
-#define EXTERNALSTEP_HPP_INCLUDED
+#ifndef SIGNALSTEP_HPP_INCLUDED
+#define SIGNALSTEP_HPP_INCLUDED
 
 #include "HopsanCore.h"
 
-class ComponentExternalStep : public ComponentSignal
+class SignalStep : public ComponentSignal
 {
 
 private:
@@ -16,11 +16,11 @@ public:
     static Component *Creator()
     {
         std::cout << "running Step creator" << std::endl;
-        return new ComponentExternalStep("DefaultStepName");
+        return new SignalStep("DefaultStepName");
     }
 
 
-    ComponentExternalStep(const string name,
+    SignalStep(const string name,
                           const double startvalue = 0.0,
                           const double stepsize = 1.0,
                           const double steptime = 1.0,
@@ -66,4 +66,4 @@ public:
     }
 };
 
-#endif // EXTERNALSTEP_HPP_INCLUDED
+#endif // SIGNALSTEP_HPP_INCLUDED

@@ -8,12 +8,12 @@
  */
 
 
-#ifndef EXTERNALSOURCE_HPP_INCLUDED
-#define EXTERNALSOURCE_HPP_INCLUDED
+#ifndef SIGNALSOURCE_HPP_INCLUDED
+#define SIGNALSOURCE_HPP_INCLUDED
 
 #include "HopsanCore.h"
 
-class ComponentExternalSource : public ComponentSignal
+class SignalSource : public ComponentSignal
 {
 
 private:
@@ -24,11 +24,11 @@ public:
     static Component *Creator()
     {
         std::cout << "running Source creator" << std::endl;
-        return new ComponentExternalSource("DefaultSourceName");
+        return new SignalSource("DefaultSourceName");
     }
 
 
-    ComponentExternalSource(const string name,
+    SignalSource(const string name,
                     const double value    = 1.0,
                     const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
@@ -57,4 +57,4 @@ public:
     }
 };
 
-#endif // EXTERNALSOURCE_HPP_INCLUDED
+#endif // SIGNALSOURCE_HPP_INCLUDED
