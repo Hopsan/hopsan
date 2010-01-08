@@ -37,10 +37,14 @@ public:
         Initialize();
     }
 
-//    ComponentFactory* getComponentFactoryPtr()
-//    {
-//        return mpComponentFactory;
-//    }
+    ~HopsanEssentials()
+    {
+        //Clear the factories
+        ///TODO: need to make sure that every one has destoyed all components/nodes before we unregister them, it probably cant be done from inside here
+        std::cout << "Clearing factories" << std::endl;
+        mpNodeFactory->ClearFactory();
+        mpComponentFactory->ClearFactory();
+    }
 
     Component* CreateComponent(const string &rString)
     {

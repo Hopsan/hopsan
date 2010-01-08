@@ -17,22 +17,27 @@ public:
     typedef _Base* (*CreatorFunctionT) (void);
     typedef std::map<_Key, CreatorFunctionT, _Predicator> FactoryMapT;
     typedef std::pair<_Key, CreatorFunctionT> FactoryPairT;
-    typedef std::vector<FactoryPairT> FactoryPairVectorT;
+    //typedef std::vector<FactoryPairT> FactoryPairVectorT;
 
     // Used to register creator functions
     _Key RegisterCreatorFunction(_Key idKey, CreatorFunctionT classCreator)
     {
-        std::cout << "Registering: " << idKey << " key" << std::endl;
-        std::cout << "BeforeInsert: Size: " << mFactoryMap.size() << std::endl;
-        mFactoryMap.insert(FactoryPairT(idKey, classCreator));
-        std::cout << "AfterInsert: Size: " << mFactoryMap.size() << std::endl;
+        std::cout << "Registering: " << idKey << std::endl;
+        //std::cout << "BeforeInsert: Size: " << mFactoryMap.size() << std::endl;
+        std::pair<typename FactoryMapT::iterator, bool> rc;
+        rc = mFactoryMap.insert(FactoryPairT(idKey, classCreator));
+        if (!rc.second)
+        {
+            std::cout << "Warning! You are trying to register a Key value that already exist. This registration will be ignored, Key: " << idKey << std::endl;
+        }
+        //std::cout << "AfterInsert: Size: " << mFactoryMap.size() << std::endl;
         return idKey;
     }
 
     // tries to create instance based on the key using creator function (if provided)
     _Base* CreateInstance(_Key idKey)
     {
-        std::cout << "Create: Size: " << mFactoryMap.size() << std::endl;
+        //std::cout << "Create: Size: " << mFactoryMap.size() << std::endl;
         typename FactoryMapT::iterator it = mFactoryMap.find(idKey);
         if (it != mFactoryMap.end())
         {
@@ -43,6 +48,25 @@ public:
         }
         std::cout << "Warning key: " << idKey << " not found!" << std::endl;
         return NULL;
+    }
+
+    void UnRegisterCreatorFunction(_Key idKey)
+    {
+        size_t rc;
+        rc = mFactoryMap.erase(idKey);
+        if (rc > 0)
+        {
+            std::cout << "Sucessfully unregistered: " << idKey << std::endl;
+        }
+        else
+        {
+            std::cout << "Failed to unregister: " << idKey << std::endl;
+        }
+    }
+
+    void ClearFactory()
+    {
+        mFactoryMap.clear();
     }
 
 protected:
