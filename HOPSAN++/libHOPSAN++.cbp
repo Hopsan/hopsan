@@ -115,9 +115,6 @@
 		<Unit filename="HopsanCore\Components\Signal\SignalSource.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalSquareWave.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalStep.hpp" />
-		<Unit filename="HopsanCore\Components\TLMRlineR.hpp" />
-		<Unit filename="HopsanCore\Components\TLMlossless.hpp" />
-		<Unit filename="HopsanCore\Components\TurbOrifice.hpp" />
 		<Unit filename="HopsanCore\CoreUtilities\ClassFactory.h" />
 		<Unit filename="HopsanCore\CoreUtilities\Delay.cc" />
 		<Unit filename="HopsanCore\CoreUtilities\Delay.h" />
