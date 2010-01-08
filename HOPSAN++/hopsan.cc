@@ -669,6 +669,66 @@ void testExternalSineWave()
 }
 
 
+void testExternalSquareWave()
+{
+	/*   Exempelsystem:
+
+	 2   |\ 3
+	 o===| >===o
+	     |/
+    */
+
+    HopsanEssentials Hopsan;
+
+    #ifdef WIN32
+    Hopsan.externalLoader.load("./libHydraulic.dll");
+    #elif defined MAC
+    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libHydraulic.dylib");
+    #else
+    Hopsan.externalLoader.load("./bin/Debug/libHydraulic.so");
+    #endif
+
+    cout << "afterload" << endl;
+
+	ComponentSystem simulationmodel("simulationmodel");
+    //Create other components
+    Component* squareL = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalSquareWave");
+    Component* gainC = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalGain");
+    Component* sinkR = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalSink");
+
+    //Add components
+    simulationmodel.addComponent(*squareL);
+    simulationmodel.addComponent(*gainC);
+    simulationmodel.addComponent(*sinkR);
+
+    //Connect components
+    simulationmodel.connect(*squareL, "out", *gainC, "in");
+    simulationmodel.connect(*gainC, "out", *sinkR, "in");
+
+    //List and set parameters
+    squareL->listParametersConsole();
+    gainC->listParametersConsole();
+    squareL->setParameter("StartTime", 1.0);
+    squareL->setParameter("Frequency", 2.0);
+    squareL->setParameter("Amplitude", 5);
+    squareL->setParameter("BaseValue", 2);
+    squareL->listParametersConsole();
+    //gainC->setParameter("Gain", 3.0);
+    gainC->listParametersConsole();
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0.0, 10.0);
+
+    simulationmodel.simulate(0.0, 10.0);
+
+    //Test write to file
+    sinkR->getPort("in").getNode().saveLogData("output.txt");
+
+	//Finished
+    cout << "testExternalSquareWave() Done!" << endl;
+}
+
+
 int main()
 {
 
@@ -678,10 +738,10 @@ int main()
     //test_external_lib();
 
 
-    testExternalSignalStep();
+    testExternalSquareWave();
 
 
-    testkarl();
+    //testkarl();
 
 
     //test1();

@@ -8,8 +8,8 @@
 		<Build>
 			<Target title="DebugWin32">
 				<Option platforms="Windows;" />
-				<Option output="bin/Debug/libHydraulic" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug/" />
+				<Option output="bin\Debug\libHydraulic" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug\" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -19,13 +19,13 @@
 				</Compiler>
 				<Linker>
 					<Add library="libHOPSANCORE" />
-					<Add directory="bin/Debug" />
+					<Add directory="bin\Debug" />
 				</Linker>
 			</Target>
 			<Target title="ReleaseWin32">
 				<Option platforms="Windows;" />
-				<Option output="bin/Release/libHydraulic" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release/" />
+				<Option output="bin\Release\libHydraulic" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -40,8 +40,8 @@
 			</Target>
 			<Target title="DebugMAC">
 				<Option platforms="Mac;" />
-				<Option output="/Users/bjoer37/svn/HOPSAN++/bin/Debug/libHydraulic" prefix_auto="1" extension_auto="1" />
-				<Option object_output="/Users/bjoer37/svn/HOPSAN++/obj/Debug/" />
+				<Option output="\Users\bjoer37\svn\HOPSAN++\bin\Debug\libHydraulic" prefix_auto="1" extension_auto="1" />
+				<Option object_output="\Users\bjoer37\svn\HOPSAN++\obj\Debug\" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -53,8 +53,8 @@
 			</Target>
 			<Target title="DebugUnix">
 				<Option platforms="Unix;" />
-				<Option output="bin/Debug/libHydraulic" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug/" />
+				<Option output="bin\Debug\libHydraulic" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug\" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -66,8 +66,8 @@
 			</Target>
 			<Target title="ReleaseUnix">
 				<Option platforms="Unix;" />
-				<Option output="bin/Release/libHydraulic" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release/" />
+				<Option output="bin\Release\libHydraulic" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -88,18 +88,18 @@
 		</Compiler>
 		<Linker>
 			<Add option="-shared" />
-			<Add directory="bin/Debug" />
+			<Add directory="bin\Debug" />
 		</Linker>
-		<Unit filename="HopsanCore/HopsanCore.h" />
-		<Unit filename="externalLibs/libHydraulic/externalCheckValve.hpp" />
-		<Unit filename="externalLibs/libHydraulic/externalFixedDisplacementPump.hpp" />
-		<Unit filename="externalLibs/libHydraulic/externalFlowSourceQ.hpp" />
-		<Unit filename="externalLibs/libHydraulic/externalOrifice.hpp" />
-		<Unit filename="externalLibs/libHydraulic/externalPressureSource.hpp" />
-		<Unit filename="externalLibs/libHydraulic/externalPressureSourceQ.hpp" />
-		<Unit filename="externalLibs/libHydraulic/externalVolume.hpp" />
-		<Unit filename="externalLibs/libHydraulic/libHydraulic.cc" />
-		<Unit filename="externalLibs/libHydraulic/libHydraulic.h" />
+		<Unit filename="HopsanCore\HopsanCore.h" />
+		<Unit filename="externalLibs\libHydraulic\externalCheckValve.hpp" />
+		<Unit filename="externalLibs\libHydraulic\externalFixedDisplacementPump.hpp" />
+		<Unit filename="externalLibs\libHydraulic\externalFlowSourceQ.hpp" />
+		<Unit filename="externalLibs\libHydraulic\externalOrifice.hpp" />
+		<Unit filename="externalLibs\libHydraulic\externalPressureSource.hpp" />
+		<Unit filename="externalLibs\libHydraulic\externalPressureSourceQ.hpp" />
+		<Unit filename="externalLibs\libHydraulic\externalVolume.hpp" />
+		<Unit filename="externalLibs\libHydraulic\libHydraulic.cc" />
+		<Unit filename="externalLibs\libHydraulic\libHydraulic.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />
