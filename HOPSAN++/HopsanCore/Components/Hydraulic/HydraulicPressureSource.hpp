@@ -1,10 +1,10 @@
-#ifndef EXTERNALPRESSURESOURCE_HPP_INCLUDED
-#define EXTERNALPRESSURESOURCE_HPP_INCLUDED
+#ifndef HYDRAULICPRESSURESOURCE_HPP_INCLUDED
+#define HYDRAULICPRESSURESOURCE_HPP_INCLUDED
 
 #include <iostream>
 #include "HopsanCore.h"
 
-class ComponentExternalPressureSource : public ComponentC
+class HydraulicPressureSource : public ComponentC
 {
 private:
     double mStartPressure;
@@ -17,10 +17,10 @@ public:
     static Component *Creator()
     {
         std::cout << "running pressuresource creator" << std::endl;
-        return new ComponentExternalPressureSource("DefaultPressureSourceName");
+        return new HydraulicPressureSource("DefaultPressureSourceName");
     }
 
-    ComponentExternalPressureSource(const string name,
+    HydraulicPressureSource(const string name,
                                     const double pressure       = 1.0e5,
                                     const double timestep       = 0.001)
         : ComponentC(name, timestep)
@@ -61,4 +61,4 @@ public:
     }
 };
 
-#endif // EXTERNALORIFICE_HPP_INCLUDED
+#endif // HYDRAULICPRESSURESOURCE_HPP_INCLUDED

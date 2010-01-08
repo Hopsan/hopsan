@@ -1,10 +1,10 @@
-#ifndef EXTERNALFIXEDDISPLACEMENTPUMP_HPP_INCLUDED
-#define EXTERNALFIXEDDISPLACEMENTPUMP_HPP_INCLUDED
+#ifndef HYDRAULICFIXEDDISPLACEMENTPUMP_HPP_INCLUDED
+#define HYDRAULICFIXEDDISPLACEMENTPUMP_HPP_INCLUDED
 
 #include <iostream>
 #include "HopsanCore.h"
 
-class ComponentExternalFixedDisplacementPump : public ComponentQ
+class HydraulicFixedDisplacementPump : public ComponentQ
 {
 private:
     double mSpeed;             // rad/s
@@ -17,10 +17,10 @@ public:
     static Component *Creator()
     {
         std::cout << "running fixeddisplacementpump creator" << std::endl;
-        return new ComponentExternalFixedDisplacementPump("DefaultFixedDisplacementPumpName");
+        return new HydraulicFixedDisplacementPump("DefaultFixedDisplacementPumpName");
     }
 
-    ComponentExternalFixedDisplacementPump(const string name,
+    HydraulicFixedDisplacementPump(const string name,
                          const double speed = 125.0,
                          const double dp = 0.00005,
                          const double kcp = 0.0,
@@ -102,4 +102,4 @@ public:
     }
 };
 
-#endif // EXTERNALFIXEDDISPLACEMENTPUMP_HPP_INCLUDED
+#endif // HYDRAULICFIXEDDISPLACEMENTPUMP_HPP_INCLUDED

@@ -1,10 +1,10 @@
-#ifndef EXTERNALORIFICE_HPP_INCLUDED
-#define EXTERNALORIFICE_HPP_INCLUDED
+#ifndef HYDRAULICLAMINARORIFICE_HPP_INCLUDED
+#define HYDRAULICLAMINARORIFICE_HPP_INCLUDED
 
 #include <iostream>
 #include "HopsanCore.h"
 
-class ComponentExternalOrifice : public ComponentQ
+class HydraulicLaminarOrifice : public ComponentQ
 {
 private:
     double mKc;
@@ -14,10 +14,10 @@ public:
     static Component *Creator()
     {
         std::cout << "running orifice creator" << std::endl;
-        return new ComponentExternalOrifice("DefaultOrificeName");
+        return new HydraulicLaminarOrifice("DefaultOrificeName");
     }
 
-    ComponentExternalOrifice(const string name,
+    HydraulicLaminarOrifice(const string name,
                              const double kc       = 1.0e-11,
                              const double timestep = 0.001)
         : ComponentQ(name, timestep)
@@ -63,4 +63,4 @@ public:
     }
 };
 
-#endif // EXTERNALORIFICE_HPP_INCLUDED
+#endif // HYDRAULICLAMINARORIFICE_HPP_INCLUDED

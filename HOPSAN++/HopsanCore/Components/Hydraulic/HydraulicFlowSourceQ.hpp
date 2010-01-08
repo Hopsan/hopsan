@@ -1,10 +1,10 @@
-#ifndef EXTERNALFLOWSOURCEQ_HPP_INCLUDED
-#define EXTERNALFLOWSOURCEQ_HPP_INCLUDED
+#ifndef HYDRAULICFLOWSOURCEQ_HPP_INCLUDED
+#define HYDRAULICFLOWSOURCEQ_HPP_INCLUDED
 
 #include <iostream>
 #include "HopsanCore.h"
 
-class ComponentExternalFlowSourceQ : public ComponentQ
+class HydraulicFlowSourceQ : public ComponentQ
 {
 private:
     double mFlow;
@@ -14,10 +14,10 @@ public:
     static Component *Creator()
     {
         std::cout << "running flowsourceQ creator" << std::endl;
-        return new ComponentExternalFlowSourceQ("DefaultFlowSourceQName");
+        return new HydraulicFlowSourceQ("DefaultFlowSourceQName");
     }
 
-    ComponentExternalFlowSourceQ(const string name,
+    HydraulicFlowSourceQ(const string name,
                          const double flow     = 1.0e-3,
                          const double timestep = 0.001)
 	: ComponentQ(name, timestep)
@@ -55,4 +55,4 @@ public:
     }
 };
 
-#endif // EXTERNALFLOWSOURCEQ_HPP_INCLUDED
+#endif // HYDRAULICFLOWSOURCEQ_HPP_INCLUDED

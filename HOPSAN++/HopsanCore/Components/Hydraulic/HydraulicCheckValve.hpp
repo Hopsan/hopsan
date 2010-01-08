@@ -1,10 +1,10 @@
-#ifndef EXTERNALCHECKVALVE_HPP_INCLUDED
-#define EXTERNALCHECKVALVE_HPP_INCLUDED
+#ifndef HYDRAULICCHECKVALVE_HPP_INCLUDED
+#define HYDRAULICCHECKVALVE_HPP_INCLUDED
 
 #include <iostream>
 #include "HopsanCore.h"
 
-class ComponentExternalCheckValve : public ComponentQ
+class HydraulicCheckValve : public ComponentQ
 {
 private:
     double mKs;
@@ -56,10 +56,10 @@ public:
     static Component *Creator()
     {
         std::cout << "running checkvalve creator" << std::endl;
-        return new ComponentExternalCheckValve("DefaultCheckValveName");
+        return new HydraulicCheckValve("DefaultCheckValveName");
     }
 
-    ComponentExternalCheckValve(const string name,
+    HydraulicCheckValve(const string name,
                                 const double ks       = 0.000000025,
                                 const double timestep = 0.001)
         : ComponentQ(name, timestep)
@@ -137,4 +137,4 @@ public:
     }
 };
 
-#endif // EXTERNALCHECKVALVE_HPP_INCLUDED
+#endif // HYDRAULICCHECKVALVE_HPP_INCLUDED

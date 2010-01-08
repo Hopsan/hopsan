@@ -1,10 +1,10 @@
-#ifndef EXTERNAL43VALVE_HPP_INCLUDED
-#define EXTERNAL43VALVE_HPP_INCLUDED
+#ifndef HYDRAULIC43VALVE_HPP_INCLUDED
+#define HYDRAULIC43VALVE_HPP_INCLUDED
 
 #include <iostream>
 #include "HopsanCore.h"
 
-class ComponentExternal43Valve : public ComponentQ
+class Hydraulic43Valve : public ComponentQ
 {
 private:
     double mCq;
@@ -33,10 +33,10 @@ public:
     static Component *Creator()
     {
         std::cout << "running 4/3-valve creator" << std::endl;
-        return new ComponentExternal43Valve("Default43ValveName");
+        return new Hydraulic43Valve("Default43ValveName");
     }
 
-    ComponentExternal43Valve(const string name,
+    Hydraulic43Valve(const string name,
                              const double Cq         = 0.67,
                              const double fraction   = 1.0,
                              const double diameter   = 0.01,
@@ -155,5 +155,5 @@ public:
     }
 };
 
-#endif // EXTERNAL43VALVE_HPP_INCLUDED
+#endif // HYDRAULIC43VALVE_HPP_INCLUDED
 

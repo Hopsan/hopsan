@@ -1,9 +1,9 @@
-#ifndef EXTERNALVOLUME_HPP_INCLUDED
-#define EXTERNALVOLUME_HPP_INCLUDED
+#ifndef HYDRAULICVOLUME_HPP_INCLUDED
+#define HYDRAULICVOLUME_HPP_INCLUDED
 
 #include "HopsanCore.h"
 
-class ComponentExternalVolume : public ComponentC
+class HydraulicVolume : public ComponentC
 {
 
 private:
@@ -19,10 +19,10 @@ public:
     static Component *Creator()
     {
         std::cout << "running volume creator" << std::endl;
-        return new ComponentExternalVolume("DefaultVolumeName");
+        return new HydraulicVolume("DefaultVolumeName");
     }
 
-    ComponentExternalVolume(const string name,
+    HydraulicVolume(const string name,
                     const double volume      = 1.0e-3,
                     const double bulkmudulus = 1.0e9,
                     const double alpha       = 0.0,
@@ -95,4 +95,4 @@ public:
     }
 };
 
-#endif // EXTERNALVOLUME_HPP_INCLUDED
+#endif // HYDRAULICVOLUME_HPP_INCLUDED
