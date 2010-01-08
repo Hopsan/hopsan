@@ -450,54 +450,104 @@ void testExternalSignal()
 void testkarl()
 {
     HopsanEssentials Hopsan;
-	/*   Exempelsystem:
-					  Kc
-	   q       T, Zc  v
-	 ------>o=========----o p
-	                  ^
-	 */
+
 	ComponentSystem simulationmodel("simulationmodel");
+
+#ifdef WIN32
+    Hopsan.externalLoader.load("./libHydraulic.dll");
+    #elif defined MAC
+    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libHydraulic.dylib");
+    #else
+    Hopsan.externalLoader.load("./bin/Debug/libHydraulic.so");
+    #endif
+
+//    //Create other components
+//    ComponentPressureSource psourceL(   "ps_left_side");
+//    ComponentTurbOrifice orificeL(       "orifice_left_side");
+//    ComponentVolume volume("volume_left");
+//    ComponentTurbOrifice orificeR(       "orifice_right_side");
+//    ComponentPressureSource psourceR("ps_right_side");
+//
+//    //Add components
+//    simulationmodel.addComponent(psourceL);
+//    simulationmodel.addComponent(orificeL);
+//    simulationmodel.addComponent(volume);
+//    simulationmodel.addComponent(orificeR);
+//    simulationmodel.addComponent(psourceR);
+//
+//    //Connect components
+//    simulationmodel.connect(psourceL, "P1", orificeL,    "P1");
+//    simulationmodel.connect(orificeL,    "P2", volume, "P1");
+//    simulationmodel.connect(volume, "P2", orificeR, "P1");
+//    simulationmodel.connect(orificeR, "P2", psourceR, "P1");
+//
+//    //List and set parameters
+//    psourceL.listParametersConsole();
+//    orificeL.listParametersConsole();
+//    volume.listParametersConsole();
+//    orificeR.listParametersConsole();
+//    psourceR.listParametersConsole();
+//
+//    psourceL.setParameter("P", 1.0e5);
+//    psourceR.setParameter("P", 10.0e5);
+//    orificeR.setParameter("A",0.00001);
+//    volume.setParameter("V", 1.0e-1);
+//    psourceL.listParametersConsole();
+//    psourceR.listParametersConsole();
+
     //Create other components
-    ComponentPressureSource psourceL(   "ps_left_side");
-    ComponentTurbOrifice orificeL(       "orifice_left_side");
-    ComponentVolume volume("volume_left");
-    ComponentTurbOrifice orificeR(       "orifice_right_side");
-    ComponentPressureSource psourceR("ps_right_side");
+    Component* psource = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalPressureSource");
+    Component* tankT = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalPressureSource");
+    Component* valve = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternal43Valve");
+    Component* volumeA = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalVolume");
+    Component* volumeB = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalVolume");
+    Component* orificeA = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalOrifice");
+    Component* orificeB = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalOrifice");
+    Component* tankA = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalPressureSource");
+    Component* tankB = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalPressureSource");
+    ComponentSource constant("xv");
 
     //Add components
-    simulationmodel.addComponent(psourceL);
-    simulationmodel.addComponent(orificeL);
-    simulationmodel.addComponent(volume);
-    simulationmodel.addComponent(orificeR);
-    simulationmodel.addComponent(psourceR);
+    simulationmodel.addComponent(*psource);
+    simulationmodel.addComponent(*tankT);
+    simulationmodel.addComponent(*valve);
+    simulationmodel.addComponent(*volumeA);
+    simulationmodel.addComponent(*volumeB);
+    simulationmodel.addComponent(*orificeA);
+    simulationmodel.addComponent(*orificeB);
+    simulationmodel.addComponent(*tankA);
+    simulationmodel.addComponent(*tankB);
+    simulationmodel.addComponent(constant);
 
     //Connect components
-    simulationmodel.connect(psourceL, "P1", orificeL,    "P1");
-    simulationmodel.connect(orificeL,    "P2", volume, "P1");
-    simulationmodel.connect(volume, "P2", orificeR, "P1");
-    simulationmodel.connect(orificeR, "P2", psourceR, "P1");
+    simulationmodel.connect(*psource, "P1", *valve,    "PP");
+    simulationmodel.connect(*tankT, "P1", *valve,    "PT");
+    simulationmodel.connect(*volumeA, "P1", *valve,    "PA");
+    simulationmodel.connect(*volumeB, "P1", *valve,    "PB");
+    simulationmodel.connect(constant, "out", *valve,    "PX");
+    simulationmodel.connect(*volumeA,    "P2", *orificeA, "P1");
+    simulationmodel.connect(*volumeB,    "P2", *orificeB, "P1");
+    simulationmodel.connect(*orificeA,    "P2", *tankA, "P1");
+    simulationmodel.connect(*orificeB,    "P2", *tankB, "P1");
 
     //List and set parameters
-    psourceL.listParametersConsole();
-    orificeL.listParametersConsole();
-    volume.listParametersConsole();
-    orificeR.listParametersConsole();
-    psourceR.listParametersConsole();
-
-    psourceL.setParameter("P", 10.0e5);
-    psourceR.setParameter("P", 1.0e5);
-    orificeR.setParameter("A",0.000005);
-    psourceL.listParametersConsole();
-    psourceR.listParametersConsole();
+    psource->setParameter("P", 10.0e5);
+    tankT->setParameter("P", 1.0e5);
+    tankA->setParameter("P", 1.0e5);
+    tankB->setParameter("P", 1.0e5);
+    volumeA->setParameter("V", 1.0e-1);
+    volumeB->setParameter("V", 1.0e-1);
+    valve->setParameter("overlap_pa", -0.0001);
+    constant.setParameter("Value", 0.0);
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0.0, 1.0);
+    simulationmodel.preAllocateLogSpace(0.0, 20.0);
 
-    simulationmodel.simulate(0.0, 1.0);
+    simulationmodel.simulate(0.0, 20.0);
 
     //Test write to file
-    volume.getPort("P1").getNode().saveLogData("output.txt");
-    volume.getPort("P2").getNode().saveLogData("output2.txt");
+    volumeA->getPort("P1").getNode().saveLogData("output.txt");
+    volumeA->getPort("P2").getNode().saveLogData("output2.txt");
 
 	//Finished
     cout << "testkarl() Done!" << endl;
@@ -572,7 +622,7 @@ int main()
     testExternalSignalStep();
 
 
-    //testkarl();
+    testkarl();
 
 
     //test1();
