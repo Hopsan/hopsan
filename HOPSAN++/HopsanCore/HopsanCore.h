@@ -5,6 +5,7 @@
 #include "Nodes/Nodes.h"
 #include "Components/Components.h"
 
+
 class HopsanEssentials
 {
 private:
@@ -17,6 +18,7 @@ private:
         //Make sure that internal Nodes and Components register
         register_nodes(mpNodeFactory);
         register_components(mpComponentFactory);
+
 
         //Do some other stuff
     }

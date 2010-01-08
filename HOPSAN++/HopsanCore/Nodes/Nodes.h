@@ -3,6 +3,7 @@
 
 #include "../Node.h"
 
+DLLIMPORTEXPORT void register_nodes(NodeFactory* nfact_ptr);
 
 class NodeSignal :public Node
 {
@@ -47,7 +48,5 @@ public:
         mDataVector.resize(DATALENGTH,0.0);
     }
 };
-
-DLLIMPORTEXPORT void register_nodes(NodeFactory* nfact_ptr);
 
 #endif // NODES_H_INCLUDED
