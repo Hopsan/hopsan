@@ -10,6 +10,7 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* cfact_ptr, NodeFac
     cfact_ptr->RegisterCreatorFunction("ComponentExternalGain", ComponentExternalGain::Creator);
     cfact_ptr->RegisterCreatorFunction("ComponentExternalSink", ComponentExternalSink::Creator);
     cfact_ptr->RegisterCreatorFunction("ComponentExternalStep", ComponentExternalStep::Creator);
+    cfact_ptr->RegisterCreatorFunction("ComponentExternalSineWave", ComponentExternalSineWave::Creator);
 
     //Register custom nodes (if any)
 }

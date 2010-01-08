@@ -5,5 +5,6 @@
 #include "externalGain.hpp"
 #include "externalSink.hpp"
 #include "externalStep.hpp"
+#include "externalSineWave.hpp"
 
 #endif // LIBSIGNAL_H_INCLUDED
