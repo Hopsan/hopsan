@@ -92,6 +92,7 @@
 		</Linker>
 		<Unit filename="HopsanCore\HopsanCore.h" />
 		<Unit filename="externalLibs\libSignal\externalGain.hpp" />
+		<Unit filename="externalLibs\libSignal\externalRamp.hpp" />
 		<Unit filename="externalLibs\libSignal\externalSineWave.hpp" />
 		<Unit filename="externalLibs\libSignal\externalSink.hpp" />
 		<Unit filename="externalLibs\libSignal\externalSource.hpp" />

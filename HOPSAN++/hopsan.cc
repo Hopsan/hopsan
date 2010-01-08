@@ -729,6 +729,66 @@ void testExternalSquareWave()
 }
 
 
+void testExternalRamp()
+{
+	/*   Exempelsystem:
+
+	 2   |\ 3
+	 o===| >===oComponentExternalSquareWave
+	     |/
+    */
+
+    HopsanEssentials Hopsan;
+
+    #ifdef WIN32
+    Hopsan.externalLoader.load("./libSignal.dll");
+    #elif defined MAC
+    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libSignal.dylib");
+    #else
+    Hopsan.externalLoader.load("./bin/Debug/libSignal.so");
+    #endif
+
+    cout << "afterload" << endl;
+
+	ComponentSystem simulationmodel("simulationmodel");
+    //Create other components
+    Component* rampL = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalRamp");
+    Component* gainC = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalGain");
+    Component* sinkR = Hopsan.getComponentFactoryPtr()->CreateInstance("ComponentExternalSink");
+
+    //Add components
+    simulationmodel.addComponent(*rampL);
+    simulationmodel.addComponent(*gainC);
+    simulationmodel.addComponent(*sinkR);
+
+    //Connect components
+    simulationmodel.connect(*rampL, "out", *gainC, "in");
+    simulationmodel.connect(*gainC, "out", *sinkR, "in");
+
+    //List and set parameters
+    rampL->listParametersConsole();
+    gainC->listParametersConsole();
+    rampL->setParameter("BaseValue", 1.0);
+    rampL->setParameter("Amplitude", 1.0);
+    rampL->setParameter("StartTime", 1.0);
+    rampL->setParameter("StopTime", 2.0);
+    rampL->listParametersConsole();
+    //gainC->setParameter("Gain", 3.0);
+    gainC->listParametersConsole();
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0.0, 10.0);
+
+    simulationmodel.simulate(0.0, 10.0);
+
+    //Test write to file
+    sinkR->getPort("in").getNode().saveLogData("output.txt");
+
+	//Finished
+    cout << "testExternalRamp() Done!" << endl;
+}
+
+
 int main()
 {
 
@@ -738,7 +798,7 @@ int main()
     //test_external_lib();
 
 
-    testExternalSquareWave();
+    testExternalRamp();
 
 
     //testkarl();
