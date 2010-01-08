@@ -333,61 +333,61 @@ void test_fixed_pump()
 }
 
 
-void testSignal()
-{
-	/*   Exempelsystem:
-
-	 2   |\ 3
-	 o===| >===o
-	     |/
-    */
-
-    HopsanEssentials Hopsan;
-
-    #ifdef WIN32
-    Hopsan.externalLoader.load("./libHydraulic.dll");
-    #elif defined MAC
-    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libHydraulic.dylib");
-    #else
-    Hopsan.externalLoader.load("./bin/Debug/libHydraulic.so");
-    #endif
-
-    cout << "afterload" << endl;
-
-	ComponentSystem simulationmodel("simulationmodel");
-    //Create other components
-    SignalSource sourceL("source_left", 1.0);
-    SignalGain gainC("gain_center", 1.0);
-    SignalSink sinkR("sink_right");
-
-    //Add components
-    simulationmodel.addComponent(sourceL);
-    simulationmodel.addComponent(gainC);
-    simulationmodel.addComponent(sinkR);
-
-    //Connect components
-    simulationmodel.connect(sourceL, "out", gainC, "in");
-    simulationmodel.connect(gainC, "out", sinkR, "in");
-
-    //List and set parameters
-    sourceL.listParametersConsole();
-    gainC.listParametersConsole();
-    sourceL.setParameter("Value", 2.0);
-    gainC.setParameter("Gain", 3.0);
-    sourceL.listParametersConsole();
-    gainC.listParametersConsole();
-
-    //Run simulation
-    simulationmodel.preAllocateLogSpace(0.0, 1.0);
-
-    simulationmodel.simulate(0.0, 1.0);
-
-    //Test write to file
-    sinkR.getPort("in").getNode().saveLogData("output.txt");
-
-	//Finished
-    cout << "testSignal() Done!" << endl;
-}
+//void testSignal()
+//{
+//	/*   Exempelsystem:
+//
+//	 2   |\ 3
+//	 o===| >===o
+//	     |/
+//    */
+//
+//    HopsanEssentials Hopsan;
+//
+//    #ifdef WIN32
+//    Hopsan.externalLoader.load("./libHydraulic.dll");
+//    #elif defined MAC
+//    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libHydraulic.dylib");
+//    #else
+//    Hopsan.externalLoader.load("./bin/Debug/libHydraulic.so");
+//    #endif
+//
+//    cout << "afterload" << endl;
+//
+//	ComponentSystem simulationmodel("simulationmodel");
+//    //Create other components
+//    SignalSource sourceL("source_left", 1.0);
+//    SignalGain gainC("gain_center", 1.0);
+//    SignalSink sinkR("sink_right");
+//
+//    //Add components
+//    simulationmodel.addComponent(sourceL);
+//    simulationmodel.addComponent(gainC);
+//    simulationmodel.addComponent(sinkR);
+//
+//    //Connect components
+//    simulationmodel.connect(sourceL, "out", gainC, "in");
+//    simulationmodel.connect(gainC, "out", sinkR, "in");
+//
+//    //List and set parameters
+//    sourceL.listParametersConsole();
+//    gainC.listParametersConsole();
+//    sourceL.setParameter("Value", 2.0);
+//    gainC.setParameter("Gain", 3.0);
+//    sourceL.listParametersConsole();
+//    gainC.listParametersConsole();
+//
+//    //Run simulation
+//    simulationmodel.preAllocateLogSpace(0.0, 1.0);
+//
+//    simulationmodel.simulate(0.0, 1.0);
+//
+//    //Test write to file
+//    sinkR.getPort("in").getNode().saveLogData("output.txt");
+//
+//	//Finished
+//    cout << "testSignal() Done!" << endl;
+//}
 
 
 void testExternalSignal()
@@ -505,7 +505,7 @@ void testkarl()
     Component* orificeB = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicOrifice");
     Component* tankA = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicPressureSource");
     Component* tankB = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicPressureSource");
-    SignalSource constant("const");
+    Component* constant = Hopsan.getComponentFactoryPtr()->CreateInstance("SignalSource");
 
     //Add components
     simulationmodel.addComponent(*psource);
@@ -517,7 +517,7 @@ void testkarl()
     simulationmodel.addComponent(*orificeB);
     simulationmodel.addComponent(*tankA);
     simulationmodel.addComponent(*tankB);
-    simulationmodel.addComponent(constant);
+    simulationmodel.addComponent(*constant);
 
     //Connect components
     simulationmodel.connect(*psource, "P1", *valve,    "PP");
