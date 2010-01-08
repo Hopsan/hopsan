@@ -24,18 +24,18 @@ private:
 public:
     ComponentTurbOrifice(const string name,
                      const double Cq       = 0.67,
-                     const double A=0.00001,
+                     const double A        = 0.00001,
                      const double timestep = 0.001)
     : ComponentQ(name, timestep)
     {
         mCq = Cq;
-        mA=A;
+        mA = A;
 
         addPort("P1", "NodeHydraulic", P1);
         addPort("P2", "NodeHydraulic", P2);
         //addMultiPort("P", "NodeHydraulic", 2);
 
-        registerParameter("Cq", "Flödeskoeff.", "-", mCq);
+        registerParameter("Cq", "Flow coefficient", "[-]", mCq);
         registerParameter("A", "Area", "m^3", mA);
     }
 
@@ -72,4 +72,4 @@ public:
     }
 };
 
-#endif // ORIFICE_HPP_INCLUDED
+#endif // TURBORIFICE_HPP_INCLUDED
