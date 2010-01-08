@@ -1,9 +1,9 @@
-#ifndef EXTERNALRAMP_HPP_INCLUDED
-#define EXTERNALRAMP_HPP_INCLUDED
+#ifndef SIGNALRAMP_HPP_INCLUDED
+#define SIGNALRAMP_HPP_INCLUDED
 
 #include "HopsanCore.h"
 
-class ComponentExternalRamp : public ComponentSignal
+class SignalRamp : public ComponentSignal
 {
 
 private:
@@ -18,11 +18,11 @@ public:
     static Component *Creator()
     {
         std::cout << "running ramp creator" << std::endl;
-        return new ComponentExternalRamp("DefaultRampName");
+        return new SignalRamp("DefaultRampName");
     }
 
 
-    ComponentExternalRamp(const string name,
+    SignalRamp(const string name,
                           const double basevalue = 0.0,
                           const double amplitude = 1.0,
                           const double starttime = 1.0,
@@ -76,4 +76,4 @@ public:
     }
 };
 
-#endif // EXTERNALRAMP_HPP_INCLUDED
+#endif // SIGNALRAMP_HPP_INCLUDED

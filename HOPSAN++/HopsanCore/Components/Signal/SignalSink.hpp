@@ -8,12 +8,12 @@
  */
 
 
-#ifndef EXTERNALSINK_HPP_INCLUDED
-#define EXTERNALSINK_HPP_INCLUDED
+#ifndef SIGNALSINK_HPP_INCLUDED
+#define SIGNALSINK_HPP_INCLUDED
 
 #include "HopsanCore.h"
 
-class ComponentExternalSink : public ComponentSignal
+class SignalSink : public ComponentSignal
 {
 
 private:
@@ -23,11 +23,11 @@ public:
     static Component *Creator()
     {
         std::cout << "running Sink creator" << std::endl;
-        return new ComponentExternalSink("DefaultSinkName");
+        return new SignalSink("DefaultSinkName");
     }
 
 
-    ComponentExternalSink(const string name,
+    SignalSink(const string name,
                   const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
     {
@@ -47,4 +47,4 @@ public:
     }
 };
 
-#endif // EXTERNALSINK_HPP_INCLUDED
+#endif // SIGNALSINK_HPP_INCLUDED

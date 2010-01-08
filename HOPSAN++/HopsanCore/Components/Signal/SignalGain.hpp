@@ -8,12 +8,12 @@
  */
 
 
-#ifndef EXTERNALGAIN_HPP_INCLUDED
-#define EXTERNALGAIN_HPP_INCLUDED
+#ifndef SIGNALGAIN_HPP_INCLUDED
+#define SIGNALGAIN_HPP_INCLUDED
 
 #include "HopsanCore.h"
 
-class ComponentExternalGain : public ComponentSignal
+class SignalGain : public ComponentSignal
 {
 
 private:
@@ -24,10 +24,10 @@ public:
     static Component *Creator()
     {
         std::cout << "running Gain creator" << std::endl;
-        return new ComponentExternalGain("DefaultGainName");
+        return new SignalGain("DefaultGainName");
     }
 
-    ComponentExternalGain(const string name,
+    SignalGain(const string name,
                           const double gain     = 1.0,
                           const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
@@ -64,4 +64,4 @@ public:
     }
 };
 
-#endif // EXTERNALGAIN_HPP_INCLUDED
+#endif // SIGNALGAIN_HPP_INCLUDED

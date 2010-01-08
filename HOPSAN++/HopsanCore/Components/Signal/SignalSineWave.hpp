@@ -1,10 +1,10 @@
-#ifndef EXTERNALSINEWAVE_HPP_INCLUDED
-#define EXTERNALSINEWAVE_HPP_INCLUDED
+#ifndef SIGNALSINEWAVE_HPP_INCLUDED
+#define SIGNALSINEWAVE_HPP_INCLUDED
 
 #include "HopsanCore.h"
 #include "math.h"
 
-class ComponentExternalSineWave : public ComponentSignal
+class SignalSineWave : public ComponentSignal
 {
 
 private:
@@ -18,11 +18,11 @@ public:
     static Component *Creator()
     {
         std::cout << "running Sinewave creator" << std::endl;
-        return new ComponentExternalSineWave("DefaultSineWaveName");
+        return new SignalSineWave("DefaultSineWaveName");
     }
 
 
-    ComponentExternalSineWave(const string name,
+    SignalSineWave(const string name,
                               const double starttime = 0.0,
                               const double frequency = 1.0,
                               const double amplitude = 1.0,
@@ -71,4 +71,4 @@ public:
     }
 };
 
-#endif // EXTERNALSINEWAVE_HPP_INCLUDED
+#endif // SIGNALSINEWAVE_HPP_INCLUDED
