@@ -57,15 +57,15 @@ public:
 
         //Step Equations
         double outputSignal;
-        int zeroOrOne;
+        int relTimeInt;
         if (mTime < mStartTime)
         {
             outputSignal = 0;
         }
         else
         {
-            zeroOrOne = ceil((mTime-mStartTime)*mFrequency);
-            outputSignal = mBaseValue + (mAmplitude * (zeroOrOne % 2));
+            relTimeInt = ceil((mTime-mStartTime)*mFrequency);
+            outputSignal = mBaseValue + (mAmplitude * (relTimeInt % 2));
         }
 
         //Write new values to nodes
