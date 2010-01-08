@@ -752,9 +752,9 @@ void testExternalRamp()
 
 	ComponentSystem simulationmodel("simulationmodel");
     //Create other components
-    Component* rampL = Hopsan.getComponentFactoryPtr()->CreateInstance("SignalRamp");
-    Component* gainC = Hopsan.getComponentFactoryPtr()->CreateInstance("SignalGain");
-    Component* sinkR = Hopsan.getComponentFactoryPtr()->CreateInstance("SignalSink");
+    Component* rampL = Hopsan.CreateComponent("SignalRamp");
+    Component* gainC = Hopsan.CreateComponent("SignalGain");
+    Component* sinkR = Hopsan.CreateComponent("SignalSink");
 
     //Add components
     simulationmodel.addComponent(*rampL);

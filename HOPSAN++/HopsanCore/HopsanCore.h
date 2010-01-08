@@ -4,6 +4,7 @@
 #include "CoreUtilities/LoadExternal.h"
 #include "Nodes/Nodes.h"
 #include "Components/Components.h"
+#include <string>
 
 
 class HopsanEssentials
@@ -39,6 +40,11 @@ public:
     ComponentFactory* getComponentFactoryPtr()
     {
         return mpComponentFactory;
+    }
+
+    Component* CreateComponent(const string &rString)
+    {
+        return mpComponentFactory->CreateInstance(rString.c_str());
     }
 };
 
