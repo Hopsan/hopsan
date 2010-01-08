@@ -241,11 +241,11 @@ void test_external_lib()
 
     cout << "afterload" << endl;
 
-    Component* psourceL = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicPressureSource");
-    Component* orificeL = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicOrifice");
-    Component* volumeC = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicVolume");
-    Component* orificeR = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicOrifice");
-    Component* psourceR = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicPressureSource");
+    Component* psourceL = Hopsan.CreateComponent("HydraulicPressureSource");
+    Component* orificeL = Hopsan.CreateComponent("HydraulicOrifice");
+    Component* volumeC = Hopsan.CreateComponent("HydraulicVolume");
+    Component* orificeR = Hopsan.CreateComponent("HydraulicOrifice");
+    Component* psourceR = Hopsan.CreateComponent("HydraulicPressureSource");
     psourceL->setParameter("P", 10e5);
     orificeR->setName("right orifice");
     orificeR->setParameter("Kc", 1e-12);
@@ -301,10 +301,10 @@ void test_fixed_pump()
 
     cout << "afterload" << endl;
 
-    Component* psourceL = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicPressureSource");
-    Component* pump = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicFixedDisplacementPump");
-    Component* volumeC = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicVolume");
-    Component* psourceR = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicPressureSourceQ");
+    Component* psourceL = Hopsan.CreateComponent("HydraulicPressureSource");
+    Component* pump = Hopsan.CreateComponent("HydraulicFixedDisplacementPump");
+    Component* volumeC = Hopsan.CreateComponent("HydraulicVolume");
+    Component* psourceR = Hopsan.CreateComponent("HydraulicPressureSourceQ");
 
     psourceL->setParameter("P", 10e5);
     //pump->setParameter("Kcp", 1e-7);
@@ -457,9 +457,9 @@ void testExternalSignal()
 
 	ComponentSystem simulationmodel("simulationmodel");
     //Create other components
-    Component* sourceL = Hopsan.getComponentFactoryPtr()->CreateInstance("SignalSource");
-    Component* gainC = Hopsan.getComponentFactoryPtr()->CreateInstance("SignalGain");
-    Component* sinkR = Hopsan.getComponentFactoryPtr()->CreateInstance("SignalSink");
+    Component* sourceL = Hopsan.CreateComponent("SignalSource");
+    Component* gainC = Hopsan.CreateComponent("SignalGain");
+    Component* sinkR = Hopsan.CreateComponent("SignalSink");
 
     //Add components
     simulationmodel.addComponent(*sourceL);
@@ -540,16 +540,16 @@ void testkarl()
 //    psourceR.listParametersConsole();
 
     //Create other components
-    Component* psource = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicPressureSource");
-    Component* tankT = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicPressureSource");
-    Component* valve = Hopsan.getComponentFactoryPtr()->CreateInstance("Hydraulic43Valve");
-    Component* volumeA = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicVolume");
-    Component* volumeB = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicVolume");
-    Component* orificeA = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicOrifice");
-    Component* orificeB = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicOrifice");
-    Component* tankA = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicPressureSource");
-    Component* tankB = Hopsan.getComponentFactoryPtr()->CreateInstance("HydraulicPressureSource");
-    Component* constant = Hopsan.getComponentFactoryPtr()->CreateInstance("SignalSource");
+    Component* psource = Hopsan.CreateComponent("HydraulicPressureSource");
+    Component* tankT = Hopsan.CreateComponent("HydraulicPressureSource");
+    Component* valve = Hopsan.CreateComponent("Hydraulic43Valve");
+    Component* volumeA = Hopsan.CreateComponent("HydraulicVolume");
+    Component* volumeB = Hopsan.CreateComponent("HydraulicVolume");
+    Component* orificeA = Hopsan.CreateComponent("HydraulicOrifice");
+    Component* orificeB = Hopsan.CreateComponent("HydraulicOrifice");
+    Component* tankA = Hopsan.CreateComponent("HydraulicPressureSource");
+    Component* tankB = Hopsan.CreateComponent("HydraulicPressureSource");
+    Component* constant = Hopsan.CreateComponent("SignalSource");
 
     //Add components
     simulationmodel.addComponent(*psource);
@@ -621,9 +621,9 @@ void testExternalSignalStep()
 
 	ComponentSystem simulationmodel("simulationmodel");
     //Create other components
-    Component* stepL = Hopsan.getComponentFactoryPtr()->CreateInstance("SignalStep");
-    Component* gainC = Hopsan.getComponentFactoryPtr()->CreateInstance("SignalGain");
-    Component* sinkR = Hopsan.getComponentFactoryPtr()->CreateInstance("SignalSink");
+    Component* stepL = Hopsan.CreateComponent("SignalStep");
+    Component* gainC = Hopsan.CreateComponent("SignalGain");
+    Component* sinkR = Hopsan.CreateComponent("SignalSink");
 
     //Add components
     simulationmodel.addComponent(*stepL);
@@ -677,9 +677,9 @@ void testExternalSineWave()
 
 	ComponentSystem simulationmodel("simulationmodel");
     //Create other components
-    Component* sineL = Hopsan.getComponentFactoryPtr()->CreateInstance("SignalSineWave");
-    Component* gainC = Hopsan.getComponentFactoryPtr()->CreateInstance("SignalGain");
-    Component* sinkR = Hopsan.getComponentFactoryPtr()->CreateInstance("SignalSink");
+    Component* sineL = Hopsan.CreateComponent("SignalSineWave");
+    Component* gainC = Hopsan.CreateComponent("SignalGain");
+    Component* sinkR = Hopsan.CreateComponent("SignalSink");
 
     //Add components
     simulationmodel.addComponent(*sineL);
@@ -736,9 +736,9 @@ void testExternalSquareWave()
 
 	ComponentSystem simulationmodel("simulationmodel");
     //Create other components
-    Component* squareL = Hopsan.getComponentFactoryPtr()->CreateInstance("SignalSquareWave");
-    Component* gainC = Hopsan.getComponentFactoryPtr()->CreateInstance("SignalGain");
-    Component* sinkR = Hopsan.getComponentFactoryPtr()->CreateInstance("SignalSink");
+    Component* squareL = Hopsan.CreateComponent("SignalSquareWave");
+    Component* gainC = Hopsan.CreateComponent("SignalGain");
+    Component* sinkR = Hopsan.CreateComponent("SignalSink");
 
     //Add components
     simulationmodel.addComponent(*squareL);
