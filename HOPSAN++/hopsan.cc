@@ -449,8 +449,8 @@ void testExternalSignal()
 
 void testkarl()
 {
-    HopsanEssentials Hopsan;
 
+    HopsanEssentials Hopsan;
 	ComponentSystem simulationmodel("simulationmodel");
 
 #ifdef WIN32
@@ -674,18 +674,18 @@ void testExternalSquareWave()
 	/*   Exempelsystem:
 
 	 2   |\ 3
-	 o===| >===o
+	 o===| >===oComponentExternalSquareWave
 	     |/
     */
 
     HopsanEssentials Hopsan;
 
     #ifdef WIN32
-    Hopsan.externalLoader.load("./libHydraulic.dll");
+    Hopsan.externalLoader.load("./libSignal.dll");
     #elif defined MAC
-    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libHydraulic.dylib");
+    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libSignal.dylib");
     #else
-    Hopsan.externalLoader.load("./bin/Debug/libHydraulic.so");
+    Hopsan.externalLoader.load("./bin/Debug/libSignal.so");
     #endif
 
     cout << "afterload" << endl;
@@ -738,10 +738,10 @@ int main()
     //test_external_lib();
 
 
-    //testExternalSquareWave();
+    testExternalSquareWave();
 
 
-    testkarl();
+    //testkarl();
 
 
     //test1();
