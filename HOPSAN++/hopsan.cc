@@ -524,7 +524,7 @@ void testkarl()
     simulationmodel.connect(*tankT, "P1", *valve,    "PT");
     simulationmodel.connect(*volumeA, "P1", *valve,    "PA");
     simulationmodel.connect(*volumeB, "P1", *valve,    "PB");
-    simulationmodel.connect(constant, "out", *valve,    "PX");
+    simulationmodel.connect(*constant, "out", *valve,    "PX");
     simulationmodel.connect(*volumeA,    "P2", *orificeA, "P1");
     simulationmodel.connect(*volumeB,    "P2", *orificeB, "P1");
     simulationmodel.connect(*orificeA,    "P2", *tankA, "P1");
@@ -538,7 +538,7 @@ void testkarl()
     volumeA->setParameter("V", 1.0e-1);
     volumeB->setParameter("V", 1.0e-1);
     valve->setParameter("overlap_pa", -0.0001);
-    constant.setParameter("Value", 0.0);
+    constant->setParameter("Value", 0.0);
 
     //Run simulation
     simulationmodel.preAllocateLogSpace(0.0, 20.0);
