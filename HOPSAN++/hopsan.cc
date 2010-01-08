@@ -792,13 +792,13 @@ void testExternalRamp()
 int main()
 {
 
-    //test2();
+    test1();
 
     //cfact_ptr->RegisterCreatorFunction("ComponentExternalSink", ComponentExternalSink::Creator);
     //test_external_lib();
 
 
-    testExternalRamp();
+    //testExternalRamp();
 
 
     //testkarl();

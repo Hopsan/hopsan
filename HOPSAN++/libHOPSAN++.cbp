@@ -107,6 +107,7 @@
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicTLMRlineR.hpp" />
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicTLMlossless.hpp" />
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicTurbulentOrifice.hpp" />
+		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicVariableDisplacementPump.hpp" />
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicVolume.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalGain.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalRamp.hpp" />

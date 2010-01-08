@@ -25,5 +25,6 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr);
 #include "Hydraulic/HydraulicTurbulentOrifice.hpp"
 #include "Hydraulic/HydraulicTLMRLineR.hpp"
 #include "Hydraulic/HydraulicTLMlossless.hpp"
+#include "Hydraulic/HydraulicVariableDisplacementPump.hpp"
 
 #endif // COMPONENTS_H_INCLUDED
