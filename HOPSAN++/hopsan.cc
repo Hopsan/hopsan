@@ -332,6 +332,50 @@ void test_fixed_pump()
 
 }
 
+void test_variable_pump()
+{
+    HopsanEssentials Hopsan;
+
+    //Create master component
+    ComponentSystem simulationmodel("simulationmodel");
+
+    //Create other components
+
+    HydraulicPressureSource psourceL("ps_left_side", 10e5);
+    HydraulicVariableDisplacementPump pump("ComponentExternalVariableDisplacementPump");
+    SignalSource eps("Swivel Angle", 1.0);
+    HydraulicVolume volumeC("ComponentExternalVolume");
+    HydraulicPressureSourceQ psourceR("ComponentExternalPressureSourceQ");
+
+    psourceL.setParameter("P", 10e5);
+    //pump->setParameter("Kcp", 1e-7);
+    eps.setParameter("Value", 0.5);
+    psourceR.setParameter("P", 10e5);
+
+    //Add components
+    simulationmodel.addComponent(psourceL);
+    simulationmodel.addComponent(pump);
+    simulationmodel.addComponent(eps);
+    simulationmodel.addComponent(volumeC);
+    simulationmodel.addComponent(psourceR);
+
+    //Connect components
+    simulationmodel.connect(psourceL, "P1", pump, "P1");
+    simulationmodel.connect(eps, "out", pump, "in");
+    simulationmodel.connect(pump, "P2", volumeC, "P1");
+    simulationmodel.connect(volumeC, "P2", psourceR, "P1");
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0, 100);
+    simulationmodel.simulate(0,100);
+
+    //Test write to file
+    //pump->getPort("P2").getNode().saveLogData("output.txt");
+
+    cout << "test_variable_pump() Done!" << endl;
+
+}
+
 
 //void testSignal()
 //{
@@ -808,6 +852,9 @@ int main()
 
 
     //test_fixed_pump();
+
+
+    test_variable_pump();
 
 
     // testSignal();
