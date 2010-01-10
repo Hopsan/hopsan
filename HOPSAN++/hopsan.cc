@@ -712,6 +712,54 @@ void testExternalSineWave()
     cout << "testExternalSineWave() Done!" << endl;
 }
 
+void testSineWave()
+{
+	/*   Exempelsystem:
+
+	 2   |\ 3
+	 o===| >===o
+	     |/
+    */
+
+    HopsanEssentials Hopsan;
+
+	ComponentSystem simulationmodel("simulationmodel");
+    //Create other components
+    SignalSineWave sineL("SineWave");
+    SignalGain gainC("Gain");
+    SignalSink sinkR("Sink");
+
+    //Add components
+    simulationmodel.addComponent(sineL);
+    simulationmodel.addComponent(gainC);
+    simulationmodel.addComponent(sinkR);
+
+    //Connect components
+    simulationmodel.connect(sineL, "out", gainC, "in");
+    simulationmodel.connect(gainC, "out", sinkR, "in");
+
+    //List and set parameters
+    sineL.listParametersConsole();
+    gainC.listParametersConsole();
+    sineL.setParameter("StartTime", 1.0);
+    sineL.setParameter("Frequency", 2.0);
+    sineL.setParameter("Amplitude", 5);
+    //sineL.setParameter("Offset", 0.5);
+    //gainC.setParameter("Gain", 3.0);
+    gainC.listParametersConsole();
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0.0, 10.0);
+
+    simulationmodel.simulate(0.0, 10.0);
+
+    //Test write to file
+    sinkR.getPort("in").getNode().saveLogData("output.txt");
+
+	//Finished
+    cout << "testSineWave() Done!" << endl;
+}
+
 
 void testExternalSquareWave()
 {
@@ -854,9 +902,14 @@ int main()
     //test_fixed_pump();
 
 
-    test_variable_pump();
+    //test_variable_pump();
 
 
-    // testSignal();
+    //testSignal();
+
+
+    testSineWave();
+
+
     return 0;
 }
