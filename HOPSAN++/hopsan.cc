@@ -545,11 +545,11 @@ void testkarl()
     Component* valve = Hopsan.CreateComponent("Hydraulic43Valve");
     Component* volumeA = Hopsan.CreateComponent("HydraulicVolume");
     Component* volumeB = Hopsan.CreateComponent("HydraulicVolume");
-    Component* orificeA = Hopsan.CreateComponent("HydraulicOrifice");
-    Component* orificeB = Hopsan.CreateComponent("HydraulicOrifice");
+    Component* orificeA = Hopsan.CreateComponent("HydraulicLaminarOrifice");
+    Component* orificeB = Hopsan.CreateComponent("HydraulicLaminarOrifice");
     Component* tankA = Hopsan.CreateComponent("HydraulicPressureSource");
     Component* tankB = Hopsan.CreateComponent("HydraulicPressureSource");
-    Component* constant = Hopsan.CreateComponent("SignalSource");
+    Component* sinus = Hopsan.CreateComponent("SignalSineWave");
 
     //Add components
     simulationmodel.addComponent(*psource);
@@ -561,14 +561,14 @@ void testkarl()
     simulationmodel.addComponent(*orificeB);
     simulationmodel.addComponent(*tankA);
     simulationmodel.addComponent(*tankB);
-    simulationmodel.addComponent(*constant);
+    simulationmodel.addComponent(*sinus);
 
     //Connect components
     simulationmodel.connect(*psource, "P1", *valve,    "PP");
     simulationmodel.connect(*tankT, "P1", *valve,    "PT");
     simulationmodel.connect(*volumeA, "P1", *valve,    "PA");
     simulationmodel.connect(*volumeB, "P1", *valve,    "PB");
-    simulationmodel.connect(*constant, "out", *valve,    "PX");
+    simulationmodel.connect(*sinus, "out", *valve,    "PX");
     simulationmodel.connect(*volumeA,    "P2", *orificeA, "P1");
     simulationmodel.connect(*volumeB,    "P2", *orificeB, "P1");
     simulationmodel.connect(*orificeA,    "P2", *tankA, "P1");
@@ -581,8 +581,11 @@ void testkarl()
     tankB->setParameter("P", 1.0e5);
     volumeA->setParameter("V", 1.0e-1);
     volumeB->setParameter("V", 1.0e-1);
-    valve->setParameter("overlap_pa", -0.0001);
-    constant->setParameter("Value", 0.0);
+    valve->setParameter("overlap_pa", 0.0001);
+    sinus->setParameter("Frequency",0.1);
+    sinus->setParameter("StartTime", 0.0);
+    sinus->setParameter("Amplitude", 0.001);
+
 
     //Run simulation
     simulationmodel.preAllocateLogSpace(0.0, 20.0);
@@ -590,8 +593,8 @@ void testkarl()
     simulationmodel.simulate(0.0, 20.0);
 
     //Test write to file
-    volumeA->getPort("P1").getNode().saveLogData("output.txt");
-    volumeA->getPort("P2").getNode().saveLogData("output2.txt");
+    valve->getPort("PX").getNode().saveLogData("output2.txt");
+    volumeA->getPort("P2").getNode().saveLogData("output.txt");
 
 	//Finished
     cout << "testkarl() Done!" << endl;
@@ -909,7 +912,7 @@ int main()
     //testSignal();
 
 
-    testSineWave();
+    //testSineWave();
 
 
     return 0;
