@@ -949,11 +949,69 @@ void test_signals_and_hydraulics()
 }
 
 
+void testArithmetics()
+{
+	/*   Exempelsystem:
+
+	 2   |\ 3
+	 o===| >===oComponentExternalSquareWave
+	     |/
+    */
+
+    HopsanEssentials Hopsan;
+
+    #ifdef WIN32
+    Hopsan.externalLoader.load("./libSignal.dll");
+    #elif defined MAC
+    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libSignal.dylib");
+    #else
+    Hopsan.externalLoader.load("./bin/Debug/libSignal.so");
+    #endif
+
+    cout << "afterload" << endl;
+
+	ComponentSystem simulationmodel("simulationmodel");
+    //Create other components
+    Component* source1 = Hopsan.CreateComponent("SignalSource");
+    //Component* source2 = Hopsan.CreateComponent("SignalSource");
+    Component* divide = Hopsan.CreateComponent("SignalDivide");
+    Component* sink = Hopsan.CreateComponent("SignalSink");
+
+    //Add components
+    simulationmodel.addComponent(*source1);
+    //simulationmodel.addComponent(*source2);
+    simulationmodel.addComponent(*divide);
+    simulationmodel.addComponent(*sink);
+
+    //Connect components
+    simulationmodel.connect(*source1, "out", *divide, "in2");
+    //simulationmodel.connect(*source2, "out", *divide, "in2");
+    simulationmodel.connect(*divide, "out", *sink, "in");
+
+    //List and set parameters
+    source1->setParameter("Value", 1.0);
+    //source2->setParameter("Value", 3.0);
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0.0, 10.0);
+
+    simulationmodel.simulate(0.0, 10.0);
+
+    //Test write to file
+    sink->getPort("in").getNode().saveLogData("output.txt");
+
+	//Finished
+    cout << "testArithmetics() Done!" << endl;
+}
+
+
 
 int main()
 {
 
-    test_signals_and_hydraulics();
+    testArithmetics();
+
+    //test_signals_and_hydraulics();
 
     //test1();
 

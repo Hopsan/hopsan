@@ -12,6 +12,11 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr);
 #include "Signal/SignalSineWave.hpp"
 #include "Signal/SignalSquareWave.hpp"
 #include "Signal/SignalRamp.hpp"
+#include "Signal/SignalAdd.hpp"
+#include "Signal/SignalSubtract.hpp"
+#include "Signal/SignalMultiply.hpp"
+#include "Signal/SignalDivide.hpp"
+
 
 /* Hydraulic Components */
 #include "Hydraulic/HydraulicLaminarOrifice.hpp"

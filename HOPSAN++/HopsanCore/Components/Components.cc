@@ -22,6 +22,10 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->RegisterCreatorFunction("SignalSineWave", SignalSineWave::Creator);
     cfact_ptr->RegisterCreatorFunction("SignalSquareWave", SignalSquareWave::Creator);
     cfact_ptr->RegisterCreatorFunction("SignalRamp", SignalRamp::Creator);
+    cfact_ptr->RegisterCreatorFunction("SignalAdd", SignalAdd::Creator);
+    cfact_ptr->RegisterCreatorFunction("SignalSubtract", SignalSubtract::Creator);
+    cfact_ptr->RegisterCreatorFunction("SignalMultiply", SignalMultiply::Creator);
+    cfact_ptr->RegisterCreatorFunction("SignalDivide", SignalDivide::Creator);
 
     //Mechanical components
 
