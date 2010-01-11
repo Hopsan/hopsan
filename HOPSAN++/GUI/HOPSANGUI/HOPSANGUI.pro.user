@@ -62,8 +62,7 @@
   <valuemap type="QVariantMap" >
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
-    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-1rmEdbf7ns,guid=920b2c1f60a274783c2220484b49dcfd</value>
-    <value type="QString" >DESKTOP_AUTOSTART_ID=10a4d0acec89a9e451126289280975252400000022000069</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-4jNHFe3hxt,guid=2680cf6a7fd96107eac8a4814b4ade07</value>
     <value type="QString" >DESKTOP_SESSION=gnome</value>
     <value type="QString" >DESKTOP_STARTUP_ID=</value>
     <value type="QString" >DISPLAY=:0.0</value>
@@ -71,29 +70,30 @@
     <value type="QString" >GDM_KEYBOARD_LAYOUT=se</value>
     <value type="QString" >GDM_LANG=en_US.UTF-8</value>
     <value type="QString" >GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
-    <value type="QString" >GNOME_KEYRING_PID=2215</value>
-    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-IDkjxj/socket</value>
-    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-pq4Dkv/S.gpg-agent:2299:1</value>
+    <value type="QString" >GNOME_KEYRING_PID=2729</value>
+    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-nK1bFj/socket</value>
+    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-LoW3Eh/S.gpg-agent:2813:1</value>
     <value type="QString" >GTK_MODULES=canberra-gtk-module</value>
     <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/alede48/.gtkrc-1.2-gnome2</value>
     <value type="QString" >HOME=/home/alede48</value>
     <value type="QString" >LANG=en_US.UTF-8</value>
+    <value type="QString" >LD_LIBRARY_PATH=/usr/lib/qtcreator:</value>
     <value type="QString" >LOGNAME=alede48</value>
     <value type="QString" >MESA_NO_ASM=1</value>
     <value type="QString" >ORBIT_SOCKETDIR=/tmp/orbit-alede48</value>
     <value type="QString" >PATH=/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games</value>
     <value type="QString" >PWD=/home/alede48</value>
     <value type="QString" >QTDIR=/usr</value>
-    <value type="QString" >SESSION_MANAGER=local/alede48-laptop:@/tmp/.ICE-unix/2230,unix/alede48-laptop:/tmp/.ICE-unix/2230</value>
+    <value type="QString" >SESSION_MANAGER=local/alede48-laptop:@/tmp/.ICE-unix/2744,unix/alede48-laptop:/tmp/.ICE-unix/2744</value>
     <value type="QString" >SHELL=/bin/bash</value>
     <value type="QString" >SPEECHD_PORT=7560</value>
-    <value type="QString" >SSH_AGENT_PID=2276</value>
-    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-IDkjxj/socket.ssh</value>
+    <value type="QString" >SSH_AGENT_PID=2788</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-nK1bFj/socket.ssh</value>
     <value type="QString" >USER=alede48</value>
     <value type="QString" >USERNAME=alede48</value>
-    <value type="QString" >XAUTHORITY=/var/run/gdm/auth-for-alede48-3KR7OX/database</value>
+    <value type="QString" >XAUTHORITY=/var/run/gdm/auth-for-alede48-YJmFmx/database</value>
     <value type="QString" >XDG_DATA_DIRS=/usr/share/gnome:/usr/local/share/:/usr/share/</value>
-    <value type="QString" >XDG_SESSION_COOKIE=e56ce5094b812f5b00ca2e6949b906e9-1263131901.120311-629440988</value>
+    <value type="QString" >XDG_SESSION_COOKIE=e56ce5094b812f5b00ca2e6949b906e9-1263197702.995257-561825180</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList" >
     <value type="QString" >/home/alede48/HOPSAN_project/HOPSAN_svn/HOPSAN++/GUI/HOPSANGUI/HOPSANGUI.pro</value>
@@ -113,8 +113,7 @@
   <valuemap type="QVariantMap" >
    <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
    <valuelist key="abstractProcess.Environment" type="QVariantList" >
-    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-1rmEdbf7ns,guid=920b2c1f60a274783c2220484b49dcfd</value>
-    <value type="QString" >DESKTOP_AUTOSTART_ID=10a4d0acec89a9e451126289280975252400000022000069</value>
+    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-4jNHFe3hxt,guid=2680cf6a7fd96107eac8a4814b4ade07</value>
     <value type="QString" >DESKTOP_SESSION=gnome</value>
     <value type="QString" >DESKTOP_STARTUP_ID=</value>
     <value type="QString" >DISPLAY=:0.0</value>
@@ -122,29 +121,30 @@
     <value type="QString" >GDM_KEYBOARD_LAYOUT=se</value>
     <value type="QString" >GDM_LANG=en_US.UTF-8</value>
     <value type="QString" >GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
-    <value type="QString" >GNOME_KEYRING_PID=2215</value>
-    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-IDkjxj/socket</value>
-    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-pq4Dkv/S.gpg-agent:2299:1</value>
+    <value type="QString" >GNOME_KEYRING_PID=2729</value>
+    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-nK1bFj/socket</value>
+    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-LoW3Eh/S.gpg-agent:2813:1</value>
     <value type="QString" >GTK_MODULES=canberra-gtk-module</value>
     <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/alede48/.gtkrc-1.2-gnome2</value>
     <value type="QString" >HOME=/home/alede48</value>
     <value type="QString" >LANG=en_US.UTF-8</value>
+    <value type="QString" >LD_LIBRARY_PATH=/usr/lib/qtcreator:</value>
     <value type="QString" >LOGNAME=alede48</value>
     <value type="QString" >MESA_NO_ASM=1</value>
     <value type="QString" >ORBIT_SOCKETDIR=/tmp/orbit-alede48</value>
     <value type="QString" >PATH=/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games</value>
     <value type="QString" >PWD=/home/alede48</value>
     <value type="QString" >QTDIR=/usr</value>
-    <value type="QString" >SESSION_MANAGER=local/alede48-laptop:@/tmp/.ICE-unix/2230,unix/alede48-laptop:/tmp/.ICE-unix/2230</value>
+    <value type="QString" >SESSION_MANAGER=local/alede48-laptop:@/tmp/.ICE-unix/2744,unix/alede48-laptop:/tmp/.ICE-unix/2744</value>
     <value type="QString" >SHELL=/bin/bash</value>
     <value type="QString" >SPEECHD_PORT=7560</value>
-    <value type="QString" >SSH_AGENT_PID=2276</value>
-    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-IDkjxj/socket.ssh</value>
+    <value type="QString" >SSH_AGENT_PID=2788</value>
+    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-nK1bFj/socket.ssh</value>
     <value type="QString" >USER=alede48</value>
     <value type="QString" >USERNAME=alede48</value>
-    <value type="QString" >XAUTHORITY=/var/run/gdm/auth-for-alede48-3KR7OX/database</value>
+    <value type="QString" >XAUTHORITY=/var/run/gdm/auth-for-alede48-YJmFmx/database</value>
     <value type="QString" >XDG_DATA_DIRS=/usr/share/gnome:/usr/local/share/:/usr/share/</value>
-    <value type="QString" >XDG_SESSION_COOKIE=e56ce5094b812f5b00ca2e6949b906e9-1263131901.120311-629440988</value>
+    <value type="QString" >XDG_SESSION_COOKIE=e56ce5094b812f5b00ca2e6949b906e9-1263197702.995257-561825180</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList" >
     <value type="QString" >-w</value>

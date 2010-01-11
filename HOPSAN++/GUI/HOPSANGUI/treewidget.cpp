@@ -3,7 +3,7 @@
 TreeWidget::TreeWidget(QWidget *parent)
         : QTreeWidget(parent)
 {
-
+    this->setDragEnabled(true);
 }
 
 TreeWidget::~TreeWidget()
@@ -24,6 +24,8 @@ void TreeWidget::startDrag(Qt::DropActions)
     QString mimeType = "application/x-text";
     mimeData->setData(mimeType, *data);
 
+    drag = new QDrag(this);
+
     drag->setMimeData(mimeData);
-    drag->start(Qt::MoveAction);
+    drag->exec(Qt::CopyAction);
 }
