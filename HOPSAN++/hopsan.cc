@@ -716,9 +716,10 @@ void testSineWave()
 {
 	/*   Exempelsystem:
 
-	 2   |\ 3
-	 o===| >===o
-	     |/
+	 +-----+   +------+
+	 + sin +===+ gain +===o
+	 +-----+   +------+
+
     */
 
     HopsanEssentials Hopsan;

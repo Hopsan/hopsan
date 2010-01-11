@@ -56,7 +56,7 @@ public:
         //Get variable values from nodes
         double u = p1_ptr->getData(NodeSignal::VALUE);
 
-        //Pressure source equations
+        //Gain equations
 		double y = mGain*u;
 
         //Write new values to nodes
