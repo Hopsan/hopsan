@@ -8,7 +8,7 @@ class HydraulicFlowSourceQ : public ComponentQ
 {
 private:
     double mFlow;
-    enum {P1};
+    enum {P1,in};
 
 public:
     static Component *Creator()
@@ -25,6 +25,7 @@ public:
         mFlow = flow;
 
         addPort("P1", "NodeHydraulic", P1);
+        addPort("in", "NodeSignal", in);
 
         registerParameter("Flow", "Flöde", "m^3/s", mFlow);
     }
@@ -40,14 +41,23 @@ public:
     {
         //Get the nodes
    		Node* p1_ptr = mPorts[P1].getNodePtr();
+        Node* p2_ptr = mPorts[in].getNodePtr();
 
         //Get variable values from nodes
 		double c  = p1_ptr->getData(NodeHydraulic::WAVEVARIABLE);
         double Zc = p1_ptr->getData(NodeHydraulic::CHARIMP);
 
         //Flow source equations
-        double q = mFlow;
-		double p = c + mFlow*Zc;
+        double q;
+        if (mPorts[in].isConnected())
+        {
+            q = p2_ptr->getData(NodeSignal::VALUE);         //Control signal exist!
+        }
+        else
+        {
+            q = mFlow;              //No control signal, use parameter...
+        }
+        double p = c + mFlow*Zc;
 
         //Write new values to nodes
         p1_ptr->setData(NodeHydraulic::MASSFLOW, q);
