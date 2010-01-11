@@ -20,7 +20,15 @@ private:
     enum {PP, PT, PA, PB, PX};
     double sign(double x)
     {
-        return x/fabs(x);
+        if (x>=0.0)
+        {
+            return 1.0;
+        }
+        else
+        {
+            return -1.0;
+        }
+        //return x/fabs(x);
     }
     double sigsqrl(double x,
             const double x0=0.001,
@@ -120,6 +128,13 @@ public:
         double qpb = 0.5*pow(Kcpb,2.0)*(Zcp+Zcb)+sigsqrl(pow(Kcpb,2.0)*(cp-cb)+0.25*pow(Kcpb,4.0)*pow(Zcp+Zcb,2.0));
         double qat = 0.5*pow(Kcat,2.0)*(Zca+Zct)+sigsqrl(pow(Kcat,2.0)*(ca-ct)+0.25*pow(Kcat,4.0)*pow(Zca+Zct,2.0));
         double qbt = 0.5*pow(Kcbt,2.0)*(Zcb+Zct)+sigsqrl(pow(Kcbt,2.0)*(cb-ct)+0.25*pow(Kcbt,4.0)*pow(Zcb+Zct,2.0));
+
+        //Without siqsqrl
+//        double qpa = 0.5*pow(Kcpa,2.0)*(Zcp+Zca)+sqrt(pow(Kcpa,2.0)*(cp-ca)+0.25*pow(Kcpa,4.0)*pow(Zcp+Zca,2.0))*sign(pow(Kcpa,2.0)*(cp-ca)+0.25*pow(Kcpa,4.0)*pow(Zcp+Zca,2.0));
+//        double qpb = 0.5*pow(Kcpb,2.0)*(Zcp+Zcb)+sqrt(pow(Kcpb,2.0)*(cp-cb)+0.25*pow(Kcpb,4.0)*pow(Zcp+Zcb,2.0))*sign(pow(Kcpb,2.0)*(cp-cb)+0.25*pow(Kcpb,4.0)*pow(Zcp+Zcb,2.0));
+//        double qat = 0.5*pow(Kcat,2.0)*(Zca+Zct)+sqrt(pow(Kcat,2.0)*(ca-ct)+0.25*pow(Kcat,4.0)*pow(Zca+Zct,2.0))*sign(pow(Kcat,2.0)*(ca-ct)+0.25*pow(Kcat,4.0)*pow(Zca+Zct,2.0));
+//        double qbt = 0.5*pow(Kcbt,2.0)*(Zcb+Zct)+sqrt(pow(Kcbt,2.0)*(cb-ct)+0.25*pow(Kcbt,4.0)*pow(Zcb+Zct,2.0))*sign(pow(Kcbt,2.0)*(cb-ct)+0.25*pow(Kcbt,4.0)*pow(Zcb+Zct,2.0));
+
 
         double qp, qa, qb, qt;
         if (xv >= 0.0)
