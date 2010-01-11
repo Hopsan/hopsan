@@ -55,11 +55,11 @@ public:
         //read fron nodes
    		Node* p1_ptr = mPorts[out].getNodePtr();
 
-        //Step Equations
+        //Sinewave Equations
         double outputSignal;
         if (mTime < mStartTime)
         {
-            outputSignal = 0.0;     //Before step
+            outputSignal = 0.0;     //Before start
         }
         else
         {
