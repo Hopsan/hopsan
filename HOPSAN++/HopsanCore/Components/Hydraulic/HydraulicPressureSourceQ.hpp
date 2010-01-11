@@ -10,7 +10,7 @@ private:
     double mStartPressure;
     double mStartFlow;
     double mPressure;
-    enum {P1};
+    enum {P1,in};
 
 public:
     static Component *Creator()
@@ -20,8 +20,8 @@ public:
     }
 
     HydraulicPressureSourceQ(const string name,
-                                      const double pressure = 1.0e5,
-                                      const double timestep = 0.001)
+                             const double pressure = 1.0e5,
+                             const double timestep = 0.001)
 	: ComponentQ(name, timestep)
     {
         mStartPressure = 0.0;
@@ -29,6 +29,7 @@ public:
         mPressure      = pressure;
 
         addPort("P1", "NodeHydraulic", P1);
+        addPort("in", "NodeSignal", in);
 
         registerParameter("P", "Tryck", "Pa", mPressure);
     }
@@ -44,14 +45,25 @@ public:
     {
         //Get the nodes
    		Node* p1_ptr = mPorts[P1].getNodePtr();
+        Node* p2_ptr = mPorts[in].getNodePtr();
 
         //Get variable values from nodes
 		double c  = p1_ptr->getData(NodeHydraulic::WAVEVARIABLE);
         double Zc = p1_ptr->getData(NodeHydraulic::CHARIMP);
 
         //Flow source equations
-        double q = (mPressure - c)/Zc;
-		double p = mPressure;
+        double q,p;
+
+        if (mPorts[in].isConnected())
+        {
+            q = (p2_ptr->getData(NodeSignal::VALUE) - c)/Zc;
+            p = p2_ptr->getData(NodeSignal::VALUE);         //We have a signal!
+        }
+        else
+        {
+            q = (mPressure - c)/Zc;
+            p = mPressure;                                  //No signal, use internal parameter
+        }
 
         //Write new values to nodes
         p1_ptr->setData(NodeHydraulic::MASSFLOW, q);
