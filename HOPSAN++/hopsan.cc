@@ -885,8 +885,75 @@ void testExternalRamp()
 }
 
 
+void test_signals_and_hydraulics()
+{
+    HopsanEssentials Hopsan;
+
+    //Create master component
+    ComponentSystem simulationmodel("simulationmodel");
+
+    //Create other components
+
+    #ifdef WIN32
+    Hopsan.externalLoader.load("./libHydraulic.dll");
+    #elif defined MAC
+    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libHydraulic.dylib");
+    #else
+    Hopsan.externalLoader.load("./bin/Debug/libHydraulic.so");
+    #endif
+
+    #ifdef WIN32
+    Hopsan.externalLoader.load("./libSignal.dll");
+    #elif defined MAC
+    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libSignal.dylib");
+    #else
+    Hopsan.externalLoader.load("./bin/Debug/libSignal.so");
+    #endif
+
+    cout << "afterload" << endl;
+
+    Component* rampL = Hopsan.CreateComponent("SignalRamp");
+    Component* psourceL = Hopsan.CreateComponent("HydraulicPressureSource");
+    Component* orifice = Hopsan.CreateComponent("HydraulicLaminarOrifice");
+    Component* psourceR = Hopsan.CreateComponent("HydraulicPressureSource");
+
+    rampL->setParameter("BaseValue", 100000);
+    rampL->setParameter("Amplitude", 1000000);
+    rampL->setParameter("StartTime", 1.0);
+    rampL->setParameter("StopTime", 2.0);
+    rampL->listParametersConsole();
+    psourceL->setParameter("P", 20e5);
+    //pump->setParameter("Kcp", 1e-7);
+    psourceR->setParameter("P", 10e5);
+
+    //Add components
+    simulationmodel.addComponent(*rampL);
+    simulationmodel.addComponent(*psourceL);
+    simulationmodel.addComponent(*orifice);
+    simulationmodel.addComponent(*psourceR);
+
+    //Connect components
+    simulationmodel.connect(*rampL, "out", *psourceL, "in");
+    simulationmodel.connect(*psourceL, "P1", *orifice, "P1");
+    simulationmodel.connect(*orifice, "P2", *psourceR, "P1");
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0, 10);
+    simulationmodel.simulate(0,10);
+
+    //Test write to file
+    orifice->getPort("P1").getNode().saveLogData("output.txt");
+
+    cout << "test_signals_and_hydraulics() Done!" << endl;
+
+}
+
+
+
 int main()
 {
+
+    test_signals_and_hydraulics();
 
     //test1();
 

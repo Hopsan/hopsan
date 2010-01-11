@@ -42,11 +42,13 @@ public:
     Node &getNode();
     Node *getNodePtr();
     void setNode(Node* node_ptr);
+    bool isConnected();
 
 private:
     string mPortName, mNodeType;
     Node* mpNode;
     Component* mpComponent;
+    bool mIsConnected;
 };
 
 

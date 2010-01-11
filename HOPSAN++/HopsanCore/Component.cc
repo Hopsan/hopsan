@@ -48,6 +48,7 @@ Port::Port()
 {
     mpNode  = 0;
     mpComponent = 0;
+    mIsConnected = false;
 }
 
 Port::Port(string portname, string node_type)
@@ -56,6 +57,7 @@ Port::Port(string portname, string node_type)
     mNodeType = node_type;
     mpNode  = 0;
     mpComponent = 0;
+    mIsConnected = false;
 }
 
 string &Port::getNodeType()
@@ -77,6 +79,12 @@ Node* Port::getNodePtr()
 void Port::setNode(Node* node_ptr)
 {
     mpNode = node_ptr;
+    mIsConnected = true;
+}
+
+bool Port::isConnected()
+{
+    return mIsConnected;
 }
 
 //Constructor

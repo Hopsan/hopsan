@@ -11,7 +11,7 @@ private:
     double mStartFlow;
     double mZc;
     double mPressure;
-    enum {P1};
+    enum {P1,in};
 
 public:
     static Component *Creator()
@@ -31,6 +31,7 @@ public:
         mZc             = 0.0;
 
         addPort("P1", "NodeHydraulic", P1);
+        addPort("in", "NodeSignal", in);
 
         registerParameter("P", "Pressure", "Pa", mPressure);
     }
@@ -44,6 +45,7 @@ public:
         //write to nodes
         p1_ptr->setData(NodeHydraulic::PRESSURE, mStartPressure);
         p1_ptr->setData(NodeHydraulic::MASSFLOW, mStartFlow);
+
     }
 
 
@@ -51,9 +53,18 @@ public:
     {
         //Get the nodes
         Node* p1_ptr = mPorts[P1].getNodePtr();
+        Node* p2_ptr = mPorts[in].getNodePtr();
 
-        //Orifice equations
-        double p = mPressure;
+        //Pressure source equation
+        double p;
+        if (mPorts[in].isConnected())
+        {
+            p = p2_ptr->getData(NodeSignal::VALUE);         //We have a signal!
+        }
+        else
+        {
+            p = mPressure;                                  //No signal, use internal parameter
+        }
 
         //Write new values to nodes
         p1_ptr->setData(NodeHydraulic::WAVEVARIABLE, p);
