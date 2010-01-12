@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "HopsanCore.h"
+#include "CoreUtilities/TransferFunction.h"
 
 class Hydraulic43Valve : public ComponentQ
 {
@@ -15,6 +16,9 @@ private:
     double moverlap_pb;
     double moverlap_at;
     double moverlap_bt;
+    double momegah;
+    double mdeltah;
+    TransferFunction myFilter;
 
     #define pi 3.14159
     enum {PP, PT, PA, PB, PX};
@@ -53,6 +57,8 @@ public:
                              const double overlap_pb = 0.0,
                              const double overlap_at = 0.0,
                              const double overlap_bt = 0.0,
+                             const double resfrequency = 100.0,
+                             const double damping = 0.0,
                              const double timestep   = 0.001)
         : ComponentQ(name, timestep)
     {
@@ -64,6 +70,9 @@ public:
         moverlap_pb = overlap_pb;
         moverlap_at = overlap_at;
         moverlap_bt = overlap_bt;
+        momegah = resfrequency;
+        mdeltah = damping;
+        mTimestep = timestep;
 
         addPort("PP", "NodeHydraulic", PP);
         addPort("PT", "NodeHydraulic", PT);
@@ -79,14 +88,15 @@ public:
         registerParameter("overlap_pb", "Spool Overlap From Port P To B", "[m]", moverlap_pb);
         registerParameter("overlap_at", "Spool Overlap From Port A To T", "[m]", moverlap_at);
         registerParameter("overlap_pa", "Spool Overlap From Port B To T", "[m]", moverlap_bt);
+        registerParameter("omegah", "Resonance Frequency", "[rad/s]", momegah);
+        registerParameter("deltah", "Damping Factor", "[-]", mdeltah);
     }
 
 
     void initialize()
     {
-        //Nothing to initialize
+        myFilter.Initialize();
     }
-
 
     void simulateOneTimestep()
     {
@@ -107,7 +117,11 @@ public:
         double Zca = pa_ptr->getData(NodeHydraulic::CHARIMP);
         double cb  = pb_ptr->getData(NodeHydraulic::WAVEVARIABLE);
         double Zcb = pb_ptr->getData(NodeHydraulic::CHARIMP);
-        double xv  = px_ptr->getData(NodeSignal::VALUE);
+        double xvin  = px_ptr->getData(NodeSignal::VALUE);
+
+        double num [3] = {1.0, 0.0, 0.0};
+        double den [3] = {1.0, 2.0*mdeltah/momegah, 1.0/pow(momegah,2.0)};
+        double xv = myFilter.Filter(xvin, num, den, mTimestep);
 
         //Valve equations
         if (fabs(xv)>mxvmax)
