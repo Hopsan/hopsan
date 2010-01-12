@@ -581,7 +581,8 @@ void testkarl()
     tankB->setParameter("P", 1.0e5);
     volumeA->setParameter("V", 1.0e-1);
     volumeB->setParameter("V", 1.0e-1);
-    valve->setParameter("overlap_pa", 0.0001);
+    valve->setParameter("omegah", 10.0);
+    valve->setParameter("deltah", 0.7);
     sinus->setParameter("Frequency",0.1);
     sinus->setParameter("StartTime", 0.0);
     sinus->setParameter("Amplitude", 0.001);
@@ -1009,7 +1010,7 @@ void testArithmetics()
 int main()
 {
 
-    testArithmetics();
+    //testArithmetics();
 
     //test_signals_and_hydraulics();
 
@@ -1022,7 +1023,7 @@ int main()
     //testExternalRamp();
 
 
-    //testkarl();
+    testkarl();
 
 
     //test1();
