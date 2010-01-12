@@ -130,6 +130,8 @@
 		<Unit filename="HopsanCore\CoreUtilities\LoadExternal.h" />
 		<Unit filename="HopsanCore\CoreUtilities\TransferFunction.cc" />
 		<Unit filename="HopsanCore\CoreUtilities\TransferFunction.h" />
+		<Unit filename="HopsanCore\CoreUtilities\TurbulentFlowFunction.cc" />
+		<Unit filename="HopsanCore\CoreUtilities\TurbulentFlowFunction.h" />
 		<Unit filename="HopsanCore\HopsanCore.h" />
 		<Unit filename="HopsanCore\Node.cc" />
 		<Unit filename="HopsanCore\Node.h" />

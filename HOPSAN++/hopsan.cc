@@ -1044,6 +1044,47 @@ void testArithmetics()
     cout << "testArithmetics() Done!" << endl;
 }
 
+void testCheckValve()
+{
+    HopsanEssentials Hopsan;
+
+    //Create master component
+    ComponentSystem simulationmodel("simulationmodel");
+
+    //Create other components
+
+    HydraulicPressureSource psourceL("ps_left_side", 1e7);
+    HydraulicCheckValve checkValve("CheckValve");
+    HydraulicVolume volumeC("Volume");
+    HydraulicPressureSourceQ psourceR("ps_right_side");
+
+    //psourceL.setParameter("P", 1e5);
+    //pump->setParameter("Kcp", 1e-7);
+    psourceR.setParameter("P", 10e5);
+
+    //Add components
+    simulationmodel.addComponent(psourceL);
+    simulationmodel.addComponent(checkValve);
+    simulationmodel.addComponent(volumeC);
+    simulationmodel.addComponent(psourceR);
+
+    //Connect components
+    simulationmodel.connect(psourceL, "P1", checkValve, "P2");
+    simulationmodel.connect(checkValve, "P1", volumeC, "P1");
+    simulationmodel.connect(volumeC, "P2", psourceR, "P1");
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0, 100);
+    simulationmodel.simulate(0,100);
+
+    //Test write to file
+    volumeC.getPort("P2").getNode().saveLogData("output.txt");
+
+    cout << "test_checkvalve() Done!" << endl;
+
+}
+
+
 
 
 int main()
@@ -1074,13 +1115,15 @@ int main()
     //test_variable_pump();
 
 
-    testMicke();
+    //testMicke();
 
 
     //testSignal();
 
 
     //testSineWave();
+
+    testCheckValve();
 
 
     return 0;

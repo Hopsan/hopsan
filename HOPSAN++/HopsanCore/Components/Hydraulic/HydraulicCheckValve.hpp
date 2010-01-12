@@ -13,53 +13,55 @@
 #include <iostream>
 #include "HopsanCore.h"
 #include "math.h"
+#include "CoreUtilities/TurbulentFlowFunction.h"
 
 class HydraulicCheckValve : public ComponentQ
 {
 private:
     double mKs;
+    TurbulentFlowFunction mQturb;
     enum {P1, P2};
 
-    double r_sign(double r1, double arg)        //Give r1 same sign as arg
-    {
-        if (r1 >= 0 && arg >= 0) { return r1; }
-        else if (r1 >= 0 && arg < 0) { return -r1; }
-        else if (r1 < 0 && arg >= 0) { return -r1; }
-        else { return r1; }
-    }
-
-    double sigsqr(double arg)              //Signed Square Root
-    {
-        return r_sign(sqrt(fabs(arg)), arg);
-    }
-
-    double qturb(double ks, double c1, double c2, double Zc1, double Zc2)       //Turbulent Flow Equation
-    {
-
-        double ret_val, r1;
-        double k1, k2;
-
-        k1 = ks*ks * (Zc1+Zc2) / 2.0;
-        if (k1 == 0.0)
-        {
-            if (ks*ks == 0.0)
-            {
-                ret_val = 0.0;
-            }
-            else
-            {
-                r1 = c1 - c2;
-                ret_val = ks * sigsqr(r1);
-            }
-        }
-        else
-        {
-            k2 = 4 / (ks*ks * (Zc1 + Zc2) * (Zc1 + Zc2));
-            if (c1 > c2) 	{ ret_val = k1 * (sqrt(k2 * (c1 - c2) + 1) - 1); }
-            else  { ret_val = k1*(1 - sqrt(k2*(c2-c1)+1)); }
-        }
-        return ret_val;
-    }
+//    double r_sign(double r1, double arg)        //Give r1 same sign as arg
+//    {
+//        if (r1 >= 0 && arg >= 0) { return r1; }
+//        else if (r1 >= 0 && arg < 0) { return -r1; }
+//        else if (r1 < 0 && arg >= 0) { return -r1; }
+//        else { return r1; }
+//    }
+//
+//    double sigsqr(double arg)              //Signed Square Root
+//    {
+//        return r_sign(sqrt(fabs(arg)), arg);
+//    }
+//
+//    double qturb(double ks, double c1, double c2, double Zc1, double Zc2)       //Turbulent Flow Equation
+//    {
+//
+//        double ret_val, r1;
+//        double k1, k2;
+//
+//        k1 = ks*ks * (Zc1+Zc2) / 2.0;
+//        if (k1 == 0.0)
+//        {
+//            if (ks*ks == 0.0)
+//            {
+//                ret_val = 0.0;
+//            }
+//            else
+//            {
+//                r1 = c1 - c2;
+//                ret_val = ks * sigsqr(r1);
+//            }
+//        }
+//        else
+//        {
+//            k2 = 4 / (ks*ks * (Zc1 + Zc2) * (Zc1 + Zc2));
+//            if (c1 > c2) 	{ ret_val = k1 * (sqrt(k2 * (c1 - c2) + 1) - 1); }
+//            else  { ret_val = k1*(1 - sqrt(k2*(c2-c1)+1)); }
+//        }
+//        return ret_val;
+//    }
 
 public:
     static Component *Creator()
@@ -84,7 +86,7 @@ public:
 
     void initialize()
     {
-        //Nothing to initialize
+        mQturb.setFlowCoefficient(mKs);
     }
 
 
@@ -105,7 +107,7 @@ public:
         bool cav;
         double q1, q2;
 
-        if (c1 > c2) { q2 = qturb(mKs, c1, c2, Zc1, Zc2); }
+        if (c1 > c2) { q2 = mQturb.getFlow(c1, c2, Zc1, Zc2); }
         else { q2 = 0.0; }
 
         q1 = -q2;
@@ -129,7 +131,7 @@ public:
         }
         if (cav)
         {
-            if (c1 > c2) { q2 = qturb(mKs, c1, c2, Zc1, Zc2); }
+            if (c1 > c2) { q2 = mQturb.getFlow(c1, c2, Zc1, Zc2); }
             else { q2 = 0.0; }
         }
         q1 = -q2;
