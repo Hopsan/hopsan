@@ -17,7 +17,7 @@
 class HydraulicAckumulator : public ComponentQ
 {
 private:
-    double mPmin, mVtot, mVoil, mVgas, mBetae, mKappa, mKce, mStartPressureInternal, mStartPressureExternal, mStartFlowExternal;
+    double mPmin, mVtot, mVoil, mVgas, mBetae, mKappa, mKce, mStartPressureInternal, mStartPressureExternal, mStartFlowExternal, mStartFlowInternal;
     Delay mDelayedP2, mDelayedC1, mDelayedZc1, mDelayedQ2, ;
     enum {P1, P2};
 
@@ -47,8 +47,9 @@ public:
         mKappa                  = kappa;
         mKce                    = kce;
         mStartPressureInternal  = startpressure;
-        mStartPressureExternal  = 1.0;
+        mStartPressureExternal  = 100000.0;
         mStartFlowExternal      = 0.0;
+        mStartFlowInternal      = 0.0;
 
 
         addPort("P1", "NodeHydraulic", P1);     //External port
@@ -73,8 +74,8 @@ public:
             mVoil = 0;
             mDelayedP2.initilizeValues(mStartPressureInternal);
             mDelayedC1.initilizeValues(mStartPressureExternal);
-            mDelayedZc1.initilizeValues(0);                                     //This is a problem! Zc is not zero at the beginning, but we cannot know what it is...
-            mDelayedQ2.initilizeValues(0);
+            mDelayedZc1.initilizeValues(0);                        //This is a problem! Zc is not zero at the beginning, but we cannot know what it is...
+            mDelayedQ2.initilizeValues(mStartFlowInternal);
         }
         else
         {
