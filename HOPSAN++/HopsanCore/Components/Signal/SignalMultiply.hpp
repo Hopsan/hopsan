@@ -1,3 +1,12 @@
+/*
+ *  SignalMultiply.hpp
+ *  HOPSAN++
+ *
+ *  Created by Robert Braun on 2010-01-11.
+ *  Copyright 2010 LiU. All rights reserved.
+ *
+ */
+
 #ifndef SIGNALMULTIPLY_HPP_INCLUDED
 #define SIGNALMULTIPLY_HPP_INCLUDED
 

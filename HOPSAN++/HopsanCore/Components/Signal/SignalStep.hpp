@@ -1,3 +1,22 @@
+/*
+ *  SignalStep.hpp
+ *  HOPSAN++
+ *
+ *  Created by Robert Braun on 2010-01-08.
+ *  Copyright 2010 LiU. All rights reserved.
+ *
+ */
+
+/*
+ *                    XXXXXX  ↑
+ *                    X       | StepSize
+ *                    X       |
+ * StartValue →  XXXXXX       ↓
+ *
+ *                    ↑
+ *                 StepTime
+ */
+
 #ifndef SIGNALSTEP_HPP_INCLUDED
 #define SIGNALSTEP_HPP_INCLUDED
 

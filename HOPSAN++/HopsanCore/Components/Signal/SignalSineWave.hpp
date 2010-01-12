@@ -1,3 +1,26 @@
+/*
+ *  SignalSineWave.hpp
+ *  HOPSAN++
+ *
+ *  Created by Robert Braun on 2010-01-08.
+ *  Copyright 2010 LiU. All rights reserved.
+ *
+ */
+
+//////////////////////////////////////////////////////////
+//                                                      //
+//              Offset →                                //
+//                                                      //
+//                   XXX         XXX        ↑           //
+//                  X   X       X   X       | Amplitude //
+// Zero →  XXXXX   X     X     X     X      ↓           //
+//                X       X   X       X                 //
+//              XX         XXX         XXX              //
+//                                                      //
+//              ↑           ←1/Frequency→               //
+//          StartTime                                   //
+//////////////////////////////////////////////////////////
+
 #ifndef SIGNALSINEWAVE_HPP_INCLUDED
 #define SIGNALSINEWAVE_HPP_INCLUDED
 

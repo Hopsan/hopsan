@@ -1,3 +1,12 @@
+/*
+ *  SignalSubtract.hpp
+ *  HOPSAN++
+ *
+ *  Created by Robert Braun on 2010-01-11.
+ *  Copyright 2010 LiU. All rights reserved.
+ *
+ */
+
 #ifndef SIGNALSUBTRACT_HPP_INCLUDED
 #define SIGNALSUBTRACT_HPP_INCLUDED
 

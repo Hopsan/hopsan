@@ -1,3 +1,12 @@
+/*
+ *  SignalSaturation.hpp
+ *  HOPSAN++
+ *
+ *  Created by Robert Braun on 2010-01-12.
+ *  Copyright 2010 LiU. All rights reserved.
+ *
+ */
+
 #ifndef SIGNALSATURATION_HPP_INCLUDED
 #define SIGNALSATURATION_HPP_INCLUDED
 

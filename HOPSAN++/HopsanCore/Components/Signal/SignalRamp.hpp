@@ -1,3 +1,26 @@
+/*
+ *  SignalRamp.hpp
+ *  HOPSAN++
+ *
+ *  Created by Robert Braun on 2010-01-08.
+ *  Copyright 2010 LiU. All rights reserved.
+ *
+ */
+
+///////////////////////////////////////////////////
+//                       StopTime                //
+//                          ↓                    //
+//                                               //
+//                          XXXXXXX  ↑           //
+//                        XX         |           //
+//                      XX           | Amplitude //
+//                    XX             |           //
+// BaseValue →  XXXXXX               ↓           //
+//                                               //
+//                   ↑                           //
+//               StartTime                       //
+///////////////////////////////////////////////////
+
 #ifndef SIGNALRAMP_HPP_INCLUDED
 #define SIGNALRAMP_HPP_INCLUDED
 
@@ -11,7 +34,6 @@ private:
     double mAmplitude;
     double mStartTime;
     double mStopTime;
-    double mStepTime;
     enum {out};
 
 public:

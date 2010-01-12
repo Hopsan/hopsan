@@ -1,3 +1,23 @@
+/*
+ *  SignalSquareWave.hpp
+ *  HOPSAN++
+ *
+ *  Created by Robert Braun on 2010-01-08.
+ *  Copyright 2010 LiU. All rights reserved.
+ *
+ */
+
+///////////////////////////////////////////////////////////
+//               ↑  XXXXX   XXXXX   XXXXX                //
+//     Amplitude |  X   X   X   X   X   X                //
+//               ↓  X   XXXXX   XXXXX   XXX  ← BaseValue //
+//                  X                                    //
+// Zero →  XXXXXXXXXXX                                   //
+//                                                       //
+//                   ↑                                   //
+//              StartTime                                //
+///////////////////////////////////////////////////////////
+
 #ifndef SIGNALSQUAREWAVE_HPP_INCLUDED
 #define SIGNALSQUAREWAVE_HPP_INCLUDED
 
