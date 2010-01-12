@@ -96,8 +96,6 @@ public:
         //Get variable values from nodes
         double c1  = p1_ptr->getData(NodeHydraulic::WAVEVARIABLE);
         double Zc1 = p1_ptr->getData(NodeHydraulic::CHARIMP);
-        double c2  = p2_ptr->getData(NodeHydraulic::WAVEVARIABLE);
-        double Zc2 = p2_ptr->getData(NodeHydraulic::CHARIMP);
 
         //Ackumulator equations
 
