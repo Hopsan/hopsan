@@ -32,5 +32,6 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr);
 #include "Signal/SignalMultiply.hpp"
 #include "Signal/SignalDivide.hpp"
 #include "Signal/SignalSaturation.hpp"
+#include "Signal/SignalDeadZone.hpp"
 
 #endif // COMPONENTS_H_INCLUDED

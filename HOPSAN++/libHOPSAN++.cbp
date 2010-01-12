@@ -111,6 +111,7 @@
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicVariableDisplacementPump.hpp" />
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicVolume.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalAdd.hpp" />
+		<Unit filename="HopsanCore\Components\Signal\SignalDeadZone.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalDivide.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalGain.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalMultiply.hpp" />

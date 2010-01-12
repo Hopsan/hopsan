@@ -765,6 +765,45 @@ void testSineWave()
     cout << "testSineWave() Done!" << endl;
 }
 
+void testMicke()
+{
+    HopsanEssentials Hopsan;
+
+	ComponentSystem simulationmodel("simulationmodel");
+    //Create other components
+    SignalSineWave sine("SineWave");
+    SignalDeadZone deadzone("DeadZone");
+    SignalSink sink("Sink");
+
+    //Add components
+    simulationmodel.addComponent(sine);
+    simulationmodel.addComponent(deadzone);
+    simulationmodel.addComponent(sink);
+
+    //Connect components
+    simulationmodel.connect(sine, "out", deadzone, "in");
+    simulationmodel.connect(deadzone, "out", sink, "in");
+
+    //List and set parameters
+    //sine.listParametersConsole();
+    sine.setParameter("StartTime", 1.0);
+    sine.setParameter("Frequency", 2.0);
+    sine.setParameter("Amplitude", 5);
+    deadzone.setParameter("StartDead", -2.0);
+    deadzone.setParameter("EndDead", 2.0);
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0.0, 10.0);
+
+    simulationmodel.simulate(0.0, 10.0);
+
+    //Test write to file
+    sink.getPort("in").getNode().saveLogData("output.txt");
+
+	//Finished
+    cout << "testMicke() Done!" << endl;
+}
+
 
 void testExternalSquareWave()
 {
@@ -1023,7 +1062,7 @@ int main()
     //testExternalRamp();
 
 
-    testkarl();
+    //testkarl();
 
 
     //test1();
@@ -1033,6 +1072,9 @@ int main()
 
 
     //test_variable_pump();
+
+
+    testMicke();
 
 
     //testSignal();
