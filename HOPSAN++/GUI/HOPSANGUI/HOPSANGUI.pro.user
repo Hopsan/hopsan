@@ -1,230 +1,231 @@
 <!DOCTYPE QtCreatorProject>
 <qtcreator>
  <data>
+  <variable>RunConfiguration0-BaseEnvironmentBase</variable>
+  <value type="int">2</value>
+ </data>
+ <data>
   <variable>RunConfiguration0-CommandLineArguments</variable>
-  <valuelist type="QVariantList" />
+  <valuelist type="QVariantList"/>
  </data>
  <data>
   <variable>RunConfiguration0-ProFile</variable>
-  <value type="QString" >HOPSANGUI.pro</value>
+  <value type="QString">HOPSANGUI.pro</value>
  </data>
  <data>
   <variable>RunConfiguration0-RunConfiguration.name</variable>
-  <value type="QString" >HOPSANGUI</value>
+  <value type="QString">HOPSANGUI</value>
  </data>
  <data>
   <variable>RunConfiguration0-UseDyldImageSuffix</variable>
-  <value type="bool" >false</value>
+  <value type="bool">false</value>
  </data>
  <data>
   <variable>RunConfiguration0-UseTerminal</variable>
-  <value type="bool" >false</value>
+  <value type="bool">false</value>
  </data>
  <data>
   <variable>RunConfiguration0-UserEnvironmentChanges</variable>
-  <valuelist type="QVariantList" />
+  <valuelist type="QVariantList"/>
  </data>
  <data>
   <variable>RunConfiguration0-UserSetName</variable>
-  <value type="bool" >false</value>
+  <value type="bool">false</value>
+ </data>
+ <data>
+  <variable>RunConfiguration0-UserSetWorkingDirectory</variable>
+  <value type="bool">false</value>
+ </data>
+ <data>
+  <variable>RunConfiguration0-UserWorkingDirectory</variable>
+  <value type="QString"></value>
  </data>
  <data>
   <variable>RunConfiguration0-type</variable>
-  <value type="QString" >Qt4ProjectManager.Qt4RunConfiguration</value>
+  <value type="QString">Qt4ProjectManager.Qt4RunConfiguration</value>
  </data>
  <data>
   <variable>activeRunConfiguration</variable>
-  <value type="int" >0</value>
+  <value type="int">0</value>
  </data>
  <data>
   <variable>activebuildconfiguration</variable>
-  <value type="QString" >Debug</value>
+  <value type="QString">Debug</value>
  </data>
  <data>
   <variable>buildConfiguration-Debug</variable>
-  <valuemap type="QVariantMap" >
-   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
-   <value key="QtVersionId" type="int" >0</value>
-   <value key="addQDumper" type="" ></value>
-   <value key="buildDirectory" type="QString" >/home/alede48/HOPSAN_project/HOPSAN_svn/HOPSAN++/GUI/HOPSANGUI</value>
+  <valuemap type="QVariantMap">
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
+   <value key="QtVersionId" type="int">0</value>
+   <value key="ToolChain" type="int">0</value>
+   <value key="addQDumper" type=""></value>
+   <value key="buildConfiguration" type="int">2</value>
+   <value key="buildDirectory" type="QString">/home/alede48/HOPSAN_project/HOPSAN_svn/HOPSAN++/GUI/HOPSANGUI</value>
   </valuemap>
  </data>
  <data>
   <variable>buildConfiguration-Release</variable>
-  <valuemap type="QVariantMap" >
-   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Release</value>
-   <value key="QtVersionId" type="int" >0</value>
-   <value key="addQDumper" type="" ></value>
+  <valuemap type="QVariantMap">
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Release</value>
+   <value key="QtVersionId" type="int">0</value>
+   <value key="addQDumper" type=""></value>
+   <value key="buildConfiguration" type="int">0</value>
   </valuemap>
  </data>
  <data>
   <variable>buildconfiguration-Debug-buildstep0</variable>
-  <valuemap type="QVariantMap" >
-   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
-   <valuelist key="abstractProcess.Environment" type="QVariantList" >
-    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-4jNHFe3hxt,guid=2680cf6a7fd96107eac8a4814b4ade07</value>
-    <value type="QString" >DESKTOP_SESSION=gnome</value>
-    <value type="QString" >DESKTOP_STARTUP_ID=</value>
-    <value type="QString" >DISPLAY=:0.0</value>
-    <value type="QString" >GDMSESSION=gnome</value>
-    <value type="QString" >GDM_KEYBOARD_LAYOUT=se</value>
-    <value type="QString" >GDM_LANG=en_US.UTF-8</value>
-    <value type="QString" >GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
-    <value type="QString" >GNOME_KEYRING_PID=2729</value>
-    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-nK1bFj/socket</value>
-    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-LoW3Eh/S.gpg-agent:2813:1</value>
-    <value type="QString" >GTK_MODULES=canberra-gtk-module</value>
-    <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/alede48/.gtkrc-1.2-gnome2</value>
-    <value type="QString" >HOME=/home/alede48</value>
-    <value type="QString" >LANG=en_US.UTF-8</value>
-    <value type="QString" >LD_LIBRARY_PATH=/usr/lib/qtcreator:</value>
-    <value type="QString" >LOGNAME=alede48</value>
-    <value type="QString" >MESA_NO_ASM=1</value>
-    <value type="QString" >ORBIT_SOCKETDIR=/tmp/orbit-alede48</value>
-    <value type="QString" >PATH=/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games</value>
-    <value type="QString" >PWD=/home/alede48</value>
-    <value type="QString" >QTDIR=/usr</value>
-    <value type="QString" >SESSION_MANAGER=local/alede48-laptop:@/tmp/.ICE-unix/2744,unix/alede48-laptop:/tmp/.ICE-unix/2744</value>
-    <value type="QString" >SHELL=/bin/bash</value>
-    <value type="QString" >SPEECHD_PORT=7560</value>
-    <value type="QString" >SSH_AGENT_PID=2788</value>
-    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-nK1bFj/socket.ssh</value>
-    <value type="QString" >USER=alede48</value>
-    <value type="QString" >USERNAME=alede48</value>
-    <value type="QString" >XAUTHORITY=/var/run/gdm/auth-for-alede48-YJmFmx/database</value>
-    <value type="QString" >XDG_DATA_DIRS=/usr/share/gnome:/usr/local/share/:/usr/share/</value>
-    <value type="QString" >XDG_SESSION_COOKIE=e56ce5094b812f5b00ca2e6949b906e9-1263197702.995257-561825180</value>
+  <valuemap type="QVariantMap">
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
+   <valuelist key="abstractProcess.Environment" type="QVariantList">
+    <value type="QString">Apple_PubSub_Socket_Render=/tmp/launch-FWToFn/Render</value>
+    <value type="QString">COMMAND_MODE=legacy</value>
+    <value type="QString">DISPLAY=/tmp/launch-epDRXZ/:0</value>
+    <value type="QString">HOME=/Users/bjoer37</value>
+    <value type="QString">LOGNAME=bjoer37</value>
+    <value type="QString">PATH=/opt/local/libexec/qt4-mac/bin:/usr/bin:/bin:/usr/sbin:/sbin</value>
+    <value type="QString">QTDIR=/opt/local/libexec/qt4-mac</value>
+    <value type="QString">SHELL=/bin/bash</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/launch-NUAPEm/Listeners</value>
+    <value type="QString">TMPDIR=/var/folders/uO/uOuKaLWmG5yBhJ7Iz9CJtU+++TI/-Tmp-/</value>
+    <value type="QString">USER=bjoer37</value>
+    <value type="QString">__CF_USER_TEXT_ENCODING=0x1F5:0:7</value>
    </valuelist>
-   <valuelist key="abstractProcess.arguments" type="QVariantList" >
-    <value type="QString" >/home/alede48/HOPSAN_project/HOPSAN_svn/HOPSAN++/GUI/HOPSANGUI/HOPSANGUI.pro</value>
-    <value type="QString" >-spec</value>
-    <value type="QString" >/usr/share/qt4/mkspecs/linux-g++</value>
-    <value type="QString" >-r</value>
-    <value type="QString" >CONFIG+=debug</value>
+   <valuelist key="abstractProcess.arguments" type="QVariantList">
+    <value type="QString">/Users/bjoer37/svn/HOPSAN++/GUI/HOPSANGUI/HOPSANGUI.pro</value>
+    <value type="QString">-spec</value>
+    <value type="QString">macx-g++</value>
+    <value type="QString">-r</value>
    </valuelist>
-   <value key="abstractProcess.command" type="QString" >/usr/bin/qmake-qt4</value>
-   <value key="abstractProcess.enabled" type="bool" >false</value>
-   <value key="abstractProcess.workingDirectory" type="QString" >/home/alede48/HOPSAN_project/HOPSAN_svn/HOPSAN++/GUI/HOPSANGUI</value>
-   <value key="buildConfiguration" type="int" >2</value>
+   <value key="abstractProcess.command" type="QString">/opt/local/libexec/qt4-mac/bin/qmake</value>
+   <value key="abstractProcess.enabled" type="bool">false</value>
+   <value key="abstractProcess.workingDirectory" type="QString">/Users/bjoer37/svn/HOPSAN++/GUI/HOPSANGUI</value>
+   <value key="buildConfiguration" type=""></value>
   </valuemap>
  </data>
  <data>
   <variable>buildconfiguration-Debug-buildstep1</variable>
-  <valuemap type="QVariantMap" >
-   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
-   <valuelist key="abstractProcess.Environment" type="QVariantList" >
-    <value type="QString" >DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-4jNHFe3hxt,guid=2680cf6a7fd96107eac8a4814b4ade07</value>
-    <value type="QString" >DESKTOP_SESSION=gnome</value>
-    <value type="QString" >DESKTOP_STARTUP_ID=</value>
-    <value type="QString" >DISPLAY=:0.0</value>
-    <value type="QString" >GDMSESSION=gnome</value>
-    <value type="QString" >GDM_KEYBOARD_LAYOUT=se</value>
-    <value type="QString" >GDM_LANG=en_US.UTF-8</value>
-    <value type="QString" >GNOME_DESKTOP_SESSION_ID=this-is-deprecated</value>
-    <value type="QString" >GNOME_KEYRING_PID=2729</value>
-    <value type="QString" >GNOME_KEYRING_SOCKET=/tmp/keyring-nK1bFj/socket</value>
-    <value type="QString" >GPG_AGENT_INFO=/tmp/seahorse-LoW3Eh/S.gpg-agent:2813:1</value>
-    <value type="QString" >GTK_MODULES=canberra-gtk-module</value>
-    <value type="QString" >GTK_RC_FILES=/etc/gtk/gtkrc:/home/alede48/.gtkrc-1.2-gnome2</value>
-    <value type="QString" >HOME=/home/alede48</value>
-    <value type="QString" >LANG=en_US.UTF-8</value>
-    <value type="QString" >LD_LIBRARY_PATH=/usr/lib/qtcreator:</value>
-    <value type="QString" >LOGNAME=alede48</value>
-    <value type="QString" >MESA_NO_ASM=1</value>
-    <value type="QString" >ORBIT_SOCKETDIR=/tmp/orbit-alede48</value>
-    <value type="QString" >PATH=/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games</value>
-    <value type="QString" >PWD=/home/alede48</value>
-    <value type="QString" >QTDIR=/usr</value>
-    <value type="QString" >SESSION_MANAGER=local/alede48-laptop:@/tmp/.ICE-unix/2744,unix/alede48-laptop:/tmp/.ICE-unix/2744</value>
-    <value type="QString" >SHELL=/bin/bash</value>
-    <value type="QString" >SPEECHD_PORT=7560</value>
-    <value type="QString" >SSH_AGENT_PID=2788</value>
-    <value type="QString" >SSH_AUTH_SOCK=/tmp/keyring-nK1bFj/socket.ssh</value>
-    <value type="QString" >USER=alede48</value>
-    <value type="QString" >USERNAME=alede48</value>
-    <value type="QString" >XAUTHORITY=/var/run/gdm/auth-for-alede48-YJmFmx/database</value>
-    <value type="QString" >XDG_DATA_DIRS=/usr/share/gnome:/usr/local/share/:/usr/share/</value>
-    <value type="QString" >XDG_SESSION_COOKIE=e56ce5094b812f5b00ca2e6949b906e9-1263197702.995257-561825180</value>
+  <valuemap type="QVariantMap">
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
+   <valuelist key="abstractProcess.Environment" type="QVariantList">
+    <value type="QString">Apple_PubSub_Socket_Render=/tmp/launch-FWToFn/Render</value>
+    <value type="QString">COMMAND_MODE=legacy</value>
+    <value type="QString">DISPLAY=/tmp/launch-epDRXZ/:0</value>
+    <value type="QString">HOME=/Users/bjoer37</value>
+    <value type="QString">LOGNAME=bjoer37</value>
+    <value type="QString">PATH=/opt/local/libexec/qt4-mac/bin:/usr/bin:/bin:/usr/sbin:/sbin</value>
+    <value type="QString">QTDIR=/opt/local/libexec/qt4-mac</value>
+    <value type="QString">SHELL=/bin/bash</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/launch-NUAPEm/Listeners</value>
+    <value type="QString">TMPDIR=/var/folders/uO/uOuKaLWmG5yBhJ7Iz9CJtU+++TI/-Tmp-/</value>
+    <value type="QString">USER=bjoer37</value>
+    <value type="QString">__CF_USER_TEXT_ENCODING=0x1F5:0:7</value>
    </valuelist>
-   <valuelist key="abstractProcess.arguments" type="QVariantList" >
-    <value type="QString" >-w</value>
+   <value key="abstractProcess.IgnoreReturnValue" type="bool">false</value>
+   <valuelist key="abstractProcess.arguments" type="QVariantList">
+    <value type="QString">-w</value>
    </valuelist>
-   <value key="abstractProcess.command" type="QString" >/usr/bin/make</value>
-   <value key="abstractProcess.enabled" type="bool" >true</value>
-   <value key="abstractProcess.workingDirectory" type="QString" >/home/alede48/HOPSAN_project/HOPSAN_svn/HOPSAN++/GUI/HOPSANGUI</value>
+   <value key="abstractProcess.command" type="QString">/usr/bin/make</value>
+   <value key="abstractProcess.enabled" type="bool">true</value>
+   <value key="abstractProcess.workingDirectory" type="QString">/Users/bjoer37/svn/HOPSAN++/GUI/HOPSANGUI</value>
   </valuemap>
  </data>
  <data>
   <variable>buildconfiguration-Debug-cleanstep0</variable>
-  <valuemap type="QVariantMap" >
-   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
+  <valuemap type="QVariantMap">
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Debug</value>
+   <valuelist key="abstractProcess.Environment" type="QVariantList">
+    <value type="QString">Apple_PubSub_Socket_Render=/tmp/launch-FWToFn/Render</value>
+    <value type="QString">COMMAND_MODE=legacy</value>
+    <value type="QString">DISPLAY=/tmp/launch-epDRXZ/:0</value>
+    <value type="QString">HOME=/Users/bjoer37</value>
+    <value type="QString">LOGNAME=bjoer37</value>
+    <value type="QString">PATH=/opt/local/libexec/qt4-mac/bin:/usr/bin:/bin:/usr/sbin:/sbin</value>
+    <value type="QString">QTDIR=/opt/local/libexec/qt4-mac</value>
+    <value type="QString">SHELL=/bin/bash</value>
+    <value type="QString">SSH_AUTH_SOCK=/tmp/launch-NUAPEm/Listeners</value>
+    <value type="QString">TMPDIR=/var/folders/uO/uOuKaLWmG5yBhJ7Iz9CJtU+++TI/-Tmp-/</value>
+    <value type="QString">USER=bjoer37</value>
+    <value type="QString">__CF_USER_TEXT_ENCODING=0x1F5:0:7</value>
+   </valuelist>
+   <value key="abstractProcess.IgnoreReturnValue" type="bool">true</value>
+   <valuelist key="abstractProcess.arguments" type="QVariantList">
+    <value type="QString">clean</value>
+    <value type="QString">-w</value>
+   </valuelist>
+   <value key="abstractProcess.command" type="QString">/usr/bin/make</value>
+   <value key="abstractProcess.enabled" type="bool">true</value>
+   <value key="abstractProcess.workingDirectory" type="QString">/Users/bjoer37/svn/HOPSAN++/GUI/HOPSANGUI</value>
+   <value key="cleanConfig" type="bool">true</value>
+   <valuelist key="makeargs" type="QVariantList">
+    <value type="QString">clean</value>
+   </valuelist>
   </valuemap>
  </data>
  <data>
   <variable>buildconfiguration-Release-buildstep0</variable>
-  <valuemap type="QVariantMap" >
-   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Release</value>
-   <value key="buildConfiguration" type="int" >0</value>
+  <valuemap type="QVariantMap">
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Release</value>
+   <value key="buildConfiguration" type=""></value>
   </valuemap>
  </data>
  <data>
   <variable>buildconfiguration-Release-buildstep1</variable>
-  <valuemap type="QVariantMap" >
-   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Release</value>
+  <valuemap type="QVariantMap">
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Release</value>
   </valuemap>
  </data>
  <data>
   <variable>buildconfiguration-Release-cleanstep0</variable>
-  <valuemap type="QVariantMap" >
-   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Release</value>
+  <valuemap type="QVariantMap">
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString">Release</value>
   </valuemap>
  </data>
  <data>
   <variable>buildconfigurations</variable>
-  <valuelist type="QVariantList" >
-   <value type="QString" >Debug</value>
-   <value type="QString" >Release</value>
+  <valuelist type="QVariantList">
+   <value type="QString">Debug</value>
+   <value type="QString">Release</value>
   </valuelist>
  </data>
  <data>
   <variable>buildstep0</variable>
-  <valuemap type="QVariantMap" >
-   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" ></value>
-   <value key="mkspec" type="QString" ></value>
+  <valuemap type="QVariantMap">
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString"></value>
+   <value key="mkspec" type="QString"></value>
   </valuemap>
  </data>
  <data>
   <variable>buildstep1</variable>
-  <valuemap type="QVariantMap" >
-   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" ></value>
+  <valuemap type="QVariantMap">
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString"></value>
   </valuemap>
  </data>
  <data>
   <variable>buildsteps</variable>
-  <valuelist type="QVariantList" >
-   <value type="QString" >trolltech.qt4projectmanager.qmake</value>
-   <value type="QString" >trolltech.qt4projectmanager.make</value>
+  <valuelist type="QVariantList">
+   <value type="QString">trolltech.qt4projectmanager.qmake</value>
+   <value type="QString">trolltech.qt4projectmanager.make</value>
   </valuelist>
  </data>
  <data>
   <variable>cleanstep0</variable>
-  <valuemap type="QVariantMap" >
-   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" ></value>
-   <value key="clean" type="bool" >true</value>
+  <valuemap type="QVariantMap">
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString"></value>
+   <value key="clean" type="bool">true</value>
   </valuemap>
  </data>
  <data>
   <variable>cleansteps</variable>
-  <valuelist type="QVariantList" >
-   <value type="QString" >trolltech.qt4projectmanager.make</value>
+  <valuelist type="QVariantList">
+   <value type="QString">trolltech.qt4projectmanager.make</value>
   </valuelist>
  </data>
  <data>
   <variable>defaultFileEncoding</variable>
-  <value type="QByteArray" >System</value>
+  <value type="QByteArray">System</value>
  </data>
  <data>
   <variable>project</variable>
-  <valuemap type="QVariantMap" />
+  <valuemap type="QVariantMap"/>
  </data>
 </qtcreator>
