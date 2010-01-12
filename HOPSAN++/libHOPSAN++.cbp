@@ -98,6 +98,7 @@
 		<Unit filename="HopsanCore\Components\Components.cc" />
 		<Unit filename="HopsanCore\Components\Components.h" />
 		<Unit filename="HopsanCore\Components\Hydraulic\Hydraulic43Valve.hpp" />
+		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicAckumulator.hpp" />
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicCheckValve.hpp" />
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicFixedDisplacementPump.hpp" />
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicFlowSourceQ.hpp" />
