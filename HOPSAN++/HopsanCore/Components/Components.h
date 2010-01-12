@@ -4,20 +4,6 @@
 #include "../Component.h"
 DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr);
 
-/* Signal Components */
-#include "Signal/SignalSource.hpp"
-#include "Signal/SignalGain.hpp"
-#include "Signal/SignalSink.hpp"
-#include "Signal/SignalStep.hpp"
-#include "Signal/SignalSineWave.hpp"
-#include "Signal/SignalSquareWave.hpp"
-#include "Signal/SignalRamp.hpp"
-#include "Signal/SignalAdd.hpp"
-#include "Signal/SignalSubtract.hpp"
-#include "Signal/SignalMultiply.hpp"
-#include "Signal/SignalDivide.hpp"
-
-
 /* Hydraulic Components */
 #include "Hydraulic/HydraulicLaminarOrifice.hpp"
 #include "Hydraulic/HydraulicVolume.hpp"
@@ -31,5 +17,19 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr);
 #include "Hydraulic/HydraulicTLMRLineR.hpp"
 #include "Hydraulic/HydraulicTLMlossless.hpp"
 #include "Hydraulic/HydraulicVariableDisplacementPump.hpp"
+
+/* Signal Components */
+#include "Signal/SignalSource.hpp"
+#include "Signal/SignalGain.hpp"
+#include "Signal/SignalSink.hpp"
+#include "Signal/SignalStep.hpp"
+#include "Signal/SignalSineWave.hpp"
+#include "Signal/SignalSquareWave.hpp"
+#include "Signal/SignalRamp.hpp"
+#include "Signal/SignalAdd.hpp"
+#include "Signal/SignalSubtract.hpp"
+#include "Signal/SignalMultiply.hpp"
+#include "Signal/SignalDivide.hpp"
+#include "Signal/SignalSaturation.hpp"
 
 #endif // COMPONENTS_H_INCLUDED

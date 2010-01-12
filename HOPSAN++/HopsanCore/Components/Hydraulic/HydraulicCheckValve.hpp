@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "HopsanCore.h"
+#include "math.h"
 
 class HydraulicCheckValve : public ComponentQ
 {
