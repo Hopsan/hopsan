@@ -7,15 +7,15 @@
  *
  */
 
-/*
- *                    XXXXXX  ↑
- *                    X       | StepSize
- *                    X       |
- * StartValue →  XXXXXX       ↓
- *
- *                    ↑
- *                 StepTime
- */
+///////////////////////////////////////////
+//                    XXXXXX  ↑          //
+//                    X       | StepSize //
+//                    X       |          //
+// StartValue →  XXXXXX       ↓          //
+//                                       //
+//                    ↑                  //
+//                 StepTime              //
+///////////////////////////////////////////
 
 #ifndef SIGNALSTEP_HPP_INCLUDED
 #define SIGNALSTEP_HPP_INCLUDED
