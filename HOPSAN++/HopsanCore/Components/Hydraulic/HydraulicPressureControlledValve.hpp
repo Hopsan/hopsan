@@ -36,7 +36,7 @@ public:
 
     HydraulicPressureControlledValve(const string name,
                                      const double pref       = 2000000,
-                                     const double tao        = 0.01,
+                                     const double tao        = 0.001,
                                      const double kcs        = 0.00000001,
                                      const double kcf        = 0.00000001,
                                      const double qnom       = 0.001,
@@ -72,8 +72,15 @@ public:
     void initialize()
     {
         mX0 = 0;
+
         mDelayedX0.setStepDelay(1);
         mDelayedX0.initilizeValues(0);
+
+        //double wCutoff = mTimestep / mTao;
+        double wCutoff = 1000000;
+        double num [3] = {1.0, 0.0, 0.0};
+        double den [3] = {1.0, 1.0/wCutoff, 0.0};
+        mFilterLP.setCoefficients(num, den, mTimestep);
     }
 
     void simulateOneTimestep()
@@ -120,13 +127,11 @@ public:
         double xs = (p_open - mPref - p_close) / b1;
         double xh = mPh/b1;
         double xsh = mHyst.getValue(xs, xh, mDelayedX0.value());
-        double wCutoff = mTimestep / mTao;
-        double num [3] = {1.0, 0.0, 0.0};
-        double den [3] = {1.0, 1.0/wCutoff, 0.0};
-        mFilterLP.setCoefficients(num, den, mTimestep);
         mX0 = mFilterLP.filter(xsh);
         if (mX0 > mX0max)
         {
+            if (mTime > 0.9 && mTime < 1.0) { cout << mX0 << endl; }
+            if (mTime > 1.9 && mTime < 2.0) { cout << mX0 << endl; }
             mX0 = mX0max;
         }
         else if (mX0 < 0)
@@ -167,10 +172,6 @@ public:
             xh = mPh / b1;
             //if (mTime == 0) { xs = mX0; }
             xsh = mHyst.getValue(xs, xh, mDelayedX0.value());
-            wCutoff = mTimestep/mTao;
-            double num [3] = {1.0, 0.0, 0.0};
-            double den [3] = {1.0, 1.0/wCutoff, 0.0};
-            mFilterLP.setCoefficients(num, den, mTimestep);
             mX0 = mFilterLP.filter(xsh);
             if (mX0 > mX0max)
             {
@@ -185,11 +186,14 @@ public:
             q1 = -q2;
             p1 = c1 + Zc1 * q1;
             p2 = c2 + Zc2 * q2;
-            if (p1 < 0.0) { p1 = 0.0;	}
-            if (p2 < 0.0) { p2 = 0.0;	}
+            if (p1 < 0.0) { p1 = 0.0; }
+            if (p2 < 0.0) { p2 = 0.0; }
         }
 
         mDelayedX0.update(mX0);
+
+        if (mTime > 0.9 && mTime < 1.0) { cout << xsh << "   " << mX0 << "   " << cav << endl; }
+        if (mTime > 1.9 && mTime < 2.0) { cout << xsh << "   " << mX0 << "   " << cav << endl; }
 
         //Write new values to nodes
 

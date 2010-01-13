@@ -2,8 +2,8 @@
  *  TurbulentFlowFunction.h
  *  HOPSAN++
  *
- *  Created by Robert Braun on 2010-01-XX.
- *  Copyright 2009 LiU. All rights reserved.
+ *  Created by Robert Braun on 2010-01-12.
+ *  Copyright 2010 LiU. All rights reserved.
  *
  */
 

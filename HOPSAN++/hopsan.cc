@@ -1123,6 +1123,60 @@ void testMechanic()
     cout << "testMechanic() Done!" << endl;
 
 }
+
+
+void testPressureControlledValve()
+{
+    HopsanEssentials Hopsan;
+
+    //Create master component
+    ComponentSystem simulationmodel("simulationmodel");
+
+    //Create other components
+
+    HydraulicPressureSource psource1("ps1", 2e6);
+    HydraulicPressureSource psource2("ps1", 1e5);
+    HydraulicPressureSource psource_open("ps1", 1e5);
+    HydraulicPressureSource psource_close("ps1", 1e5);
+    HydraulicPressureControlledValve pValve("pValve");
+    SignalRamp ramp("ramp");
+
+    ramp.setParameter("BaseValue", 0.0);
+    ramp.setParameter("Amplitude", 2000000.0);
+    ramp.setParameter("StartTime", 1.0);
+    ramp.setParameter("StopTime", 2.0);
+    ramp.listParametersConsole();
+    pValve.setParameter("pref", 0.0);
+    pValve.listParametersConsole();
+
+
+    //Add components
+    simulationmodel.addComponent(psource1);
+    simulationmodel.addComponent(psource2);
+    simulationmodel.addComponent(psource_open);
+    simulationmodel.addComponent(psource_close);
+    simulationmodel.addComponent(pValve);
+    simulationmodel.addComponent(ramp);
+
+    //Connect components
+    simulationmodel.connect(psource1, "P1", pValve, "P1");
+    simulationmodel.connect(psource2, "P1", pValve, "P2");
+    simulationmodel.connect(psource_open, "P1", pValve, "P_OPEN");
+    simulationmodel.connect(psource_close, "P1", pValve, "P_CLOSE");
+    simulationmodel.connect(ramp, "out", psource_close, "in");
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0,3);
+    simulationmodel.simulate(0,3);
+
+    //Test write to file
+    pValve.getPort("P2").getNode().saveLogData("output.txt");
+
+    cout << "test_pvalve() Done!" << endl;
+
+}
+
+
 int main()
 {
 
@@ -1159,8 +1213,9 @@ int main()
 
     //testSineWave();
 
+    testPressureControlledValve();
 
-    testMechanic();
+    //testMechanic();
 
     //testCheckValve();
 
