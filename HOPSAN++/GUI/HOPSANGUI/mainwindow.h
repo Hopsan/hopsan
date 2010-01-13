@@ -18,6 +18,8 @@
 #include <QtCore/QIODevice>
 
 #include "treewidget.h"
+#include "graphicsview.h"
+#include "graphicsscene.h"
 
 class MainWindow : public QMainWindow
 {
@@ -45,9 +47,10 @@ public:
     QAction *actionLoadLibs;
     QAction *actionSimulate;
 
-    QString fileName;
     QString libDir;
-    //QDir libDirObject;
+
+    GraphicsScene *scene;
+    GraphicsView *view;
 
 private slots:
     void addProject();

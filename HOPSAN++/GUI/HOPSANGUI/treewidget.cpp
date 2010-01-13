@@ -1,4 +1,5 @@
 #include "treewidget.h"
+#include <iostream>
 
 TreeWidget::TreeWidget(QWidget *parent)
         : QTreeWidget(parent)
@@ -14,6 +15,9 @@ TreeWidget::~TreeWidget()
 void TreeWidget::startDrag(Qt::DropActions)
 {
     item = this->currentItem();
+
+    if (item->parent() == 0)
+        return;
 
     data = new QByteArray();
 

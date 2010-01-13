@@ -6,6 +6,10 @@ TARGET = HOPSANGUI
 TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
-    treewidget.cpp
+    treewidget.cpp \
+    graphicsview.cpp \
+    graphicsscene.cpp
 HEADERS += mainwindow.h \
-    treewidget.h
+    treewidget.h \
+    graphicsview.h \
+    graphicsscene.h

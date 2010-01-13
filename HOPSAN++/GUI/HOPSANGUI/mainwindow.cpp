@@ -126,7 +126,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::addProject()
 {
-    std::cout << "hej" << std::endl;
+    scene = new GraphicsScene();
+    view = new GraphicsView();
+
+    view->setScene(scene);
+    this->tabgrid->addWidget(view,0,0);
+    this->projectTabs->setTabText(0,"untitled");
+
 }
 
 void MainWindow::addLibs()
