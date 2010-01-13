@@ -1084,9 +1084,45 @@ void testCheckValve()
 
 }
 
+void testMechanic()
+{
+    HopsanEssentials Hopsan;
 
+    ComponentSystem simulationmodel("simulationmodel");
 
+    Component* force = Hopsan.CreateComponent("SignalSource");
+    Component* ftrans = Hopsan.CreateComponent("MechanicForceTransformer");
+    Component* mass = Hopsan.CreateComponent("MechanicTranslationalMass");
+    Component* spring = Hopsan.CreateComponent("MechanicTranslationalSpring");
+    Component* vtrans = Hopsan.CreateComponent("MechanicVelocityTransformer");
+    Component* velocity = Hopsan.CreateComponent("SignalSource");
 
+    simulationmodel.addComponent(*force);
+    simulationmodel.addComponent(*ftrans);
+    simulationmodel.addComponent(*mass);
+    simulationmodel.addComponent(*spring);
+    simulationmodel.addComponent(*vtrans);
+    simulationmodel.addComponent(*velocity);
+
+    simulationmodel.connect(*force,"out", *ftrans, "in");
+    simulationmodel.connect(*ftrans, "out", *mass, "P1");
+    simulationmodel.connect(*mass, "P2", *spring, "P1");
+    simulationmodel.connect(*spring, "P2", *vtrans, "out");
+    simulationmodel.connect(*vtrans, "in", *velocity, "out");
+
+    force->setParameter("Value", 100.0);
+    velocity->setParameter("Value", 0.0);
+
+    simulationmodel.preAllocateLogSpace(0.0, 10.0);
+    simulationmodel.simulate(0.0, 10.0);
+
+    //Write to file
+    mass->getPort("P2").getNode().saveLogData("output.txt");
+
+	//Finished
+    cout << "testMechanic() Done!" << endl;
+
+}
 int main()
 {
 
@@ -1122,6 +1158,9 @@ int main()
 
 
     //testSineWave();
+
+
+    testMechanic();
 
     testCheckValve();
 
