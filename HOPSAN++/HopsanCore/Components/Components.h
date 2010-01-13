@@ -18,6 +18,7 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr);
 #include "Hydraulic/HydraulicTLMlossless.hpp"
 #include "Hydraulic/HydraulicVariableDisplacementPump.hpp"
 #include "Hydraulic/HydraulicAckumulator.hpp"
+#include "Hydraulic/HydraulicPressureControlledValve.hpp"
 
 /* Signal Components */
 #include "Signal/SignalSource.hpp"

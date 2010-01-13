@@ -103,6 +103,8 @@
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicFixedDisplacementPump.hpp" />
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicFlowSourceQ.hpp" />
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicLaminarOrifice.hpp" />
+		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicPressureControlledValve.hpp" />
+		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicPressureReliefValve.hpp" />
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicPressureSource.hpp" />
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicPressureSourceQ.hpp" />
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicTLMRlineR.hpp" />
@@ -136,6 +138,8 @@
 		<Unit filename="HopsanCore\CoreUtilities\TransferFunction.h" />
 		<Unit filename="HopsanCore\CoreUtilities\TurbulentFlowFunction.cc" />
 		<Unit filename="HopsanCore\CoreUtilities\TurbulentFlowFunction.h" />
+		<Unit filename="HopsanCore\CoreUtilities\ValveHysteresis.cc" />
+		<Unit filename="HopsanCore\CoreUtilities\ValveHysteresis.h" />
 		<Unit filename="HopsanCore\HopsanCore.h" />
 		<Unit filename="HopsanCore\Node.cc" />
 		<Unit filename="HopsanCore\Node.h" />
