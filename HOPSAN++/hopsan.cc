@@ -1162,7 +1162,7 @@ int main()
 
     testMechanic();
 
-    testCheckValve();
+    //testCheckValve();
 
 
     return 0;
