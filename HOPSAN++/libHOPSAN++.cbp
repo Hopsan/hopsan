@@ -110,6 +110,10 @@
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicTurbulentOrifice.hpp" />
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicVariableDisplacementPump.hpp" />
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicVolume.hpp" />
+		<Unit filename="HopsanCore\Components\Mechanic\MechanicForceTransformer.hpp" />
+		<Unit filename="HopsanCore\Components\Mechanic\MechanicTranslationalMass.hpp" />
+		<Unit filename="HopsanCore\Components\Mechanic\MechanicTranslationalSpring.hpp" />
+		<Unit filename="HopsanCore\Components\Mechanic\MechanicVelocityTransformer.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalAdd.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalDeadZone.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalDivide.hpp" />
