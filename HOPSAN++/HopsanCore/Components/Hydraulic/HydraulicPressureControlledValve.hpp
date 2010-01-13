@@ -127,11 +127,12 @@ public:
         double xs = (p_open - mPref - p_close) / b1;
         double xh = mPh/b1;
         double xsh = mHyst.getValue(xs, xh, mDelayedX0.value());
-        mX0 = mFilterLP.filter(xsh);
+        //mX0 = mFilterLP.filter(xsh);          //Filter disabled because it's not working!
+        mX0 = xsh;
         if (mX0 > mX0max)
         {
-            if (mTime > 0.9 && mTime < 1.0) { cout << mX0 << endl; }
-            if (mTime > 1.9 && mTime < 2.0) { cout << mX0 << endl; }
+            //if (mTime > 0.9 && mTime < 1.0) { cout << mX0 << endl; }
+            //if (mTime > 1.9 && mTime < 2.0) { cout << mX0 << endl; }
             mX0 = mX0max;
         }
         else if (mX0 < 0)
@@ -172,7 +173,8 @@ public:
             xh = mPh / b1;
             //if (mTime == 0) { xs = mX0; }
             xsh = mHyst.getValue(xs, xh, mDelayedX0.value());
-            mX0 = mFilterLP.filter(xsh);
+            //mX0 = mFilterLP.filter(xsh);          //Filter is not working
+            mX0 = xsh;
             if (mX0 > mX0max)
             {
                 mX0 = mX0max;
@@ -192,8 +194,8 @@ public:
 
         mDelayedX0.update(mX0);
 
-        if (mTime > 0.9 && mTime < 1.0) { cout << xsh << "   " << mX0 << "   " << cav << endl; }
-        if (mTime > 1.9 && mTime < 2.0) { cout << xsh << "   " << mX0 << "   " << cav << endl; }
+        //if (mTime > 0.9 && mTime < 1.0) { cout << xsh << "   " << mX0 << "   " << cav << endl; }
+        //if (mTime > 1.9 && mTime < 2.0) { cout << xsh << "   " << mX0 << "   " << cav << endl; }
 
         //Write new values to nodes
 
