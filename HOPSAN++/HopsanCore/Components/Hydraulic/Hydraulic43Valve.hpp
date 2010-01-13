@@ -36,15 +36,7 @@ private:
         {
             return -1.0;
         }
-//        //return x/fabs(x);
     }
-//    double sigsqrl(double x,
-//            const double x0=0.001,
-//            const double r=4)
-//    {
-//        return sign(x)*pow(pow(fabs(x),r)/(pow(fabs(x),(r/2))+pow(x0,r)),(1/r));
-//    }
-
 public:
     static Component *Creator()
     {
@@ -99,7 +91,9 @@ public:
 
     void initialize()
     {
-        myFilter.Initialize();
+        double num [3] = {1.0, 0.0, 0.0};
+        double den [3] = {1.0, 2.0*mdeltah/momegah, 1.0/pow(momegah,2.0)};
+        myFilter.setCoefficients(num, den, mTimestep);
     }
 
     void simulateOneTimestep()
@@ -123,9 +117,7 @@ public:
         double Zcb = pb_ptr->getData(NodeHydraulic::CHARIMP);
         double xvin  = px_ptr->getData(NodeSignal::VALUE);
 
-        double num [3] = {1.0, 0.0, 0.0};
-        double den [3] = {1.0, 2.0*mdeltah/momegah, 1.0/pow(momegah,2.0)};
-        double xv = myFilter.Filter(xvin, num, den, mTimestep);
+        double xv = myFilter.filter(xvin);
 
         //Valve equations
         if (fabs(xv)>mxvmax)
@@ -164,7 +156,6 @@ public:
 //        double qpb = 0.5*pow(Kcpb,2.0)*(Zcp+Zcb)+sqrt(pow(Kcpb,2.0)*(cp-cb)+0.25*pow(Kcpb,4.0)*pow(Zcp+Zcb,2.0))*sign(pow(Kcpb,2.0)*(cp-cb)+0.25*pow(Kcpb,4.0)*pow(Zcp+Zcb,2.0));
 //        double qat = 0.5*pow(Kcat,2.0)*(Zca+Zct)+sqrt(pow(Kcat,2.0)*(ca-ct)+0.25*pow(Kcat,4.0)*pow(Zca+Zct,2.0))*sign(pow(Kcat,2.0)*(ca-ct)+0.25*pow(Kcat,4.0)*pow(Zca+Zct,2.0));
 //        double qbt = 0.5*pow(Kcbt,2.0)*(Zcb+Zct)+sqrt(pow(Kcbt,2.0)*(cb-ct)+0.25*pow(Kcbt,4.0)*pow(Zcb+Zct,2.0))*sign(pow(Kcbt,2.0)*(cb-ct)+0.25*pow(Kcbt,4.0)*pow(Zcb+Zct,2.0));
-
 
         double qp, qa, qb, qt;
         if (xv >= 0.0)
