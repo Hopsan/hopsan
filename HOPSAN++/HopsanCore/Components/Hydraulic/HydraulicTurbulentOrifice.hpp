@@ -10,17 +10,19 @@ class HydraulicTurbulentOrifice : public ComponentQ
 private:
     double mCq;
     double mA;
+    double mKc;
+    TurbulentFlowFunction qTurb;
     enum {P1, P2};
-    double sign(double x)
-    {
-        return x/fabs(x);
-    }
-    double sigsqrl(double x,
-            const double x0=0.001,
-            const double r=4)
-    {
-        return sign(x)*pow(pow(fabs(x),r)/(pow(fabs(x),(r/2))+pow(x0,r)),(1/r));
-    }
+//    double sign(double x)
+//    {
+//        return x/fabs(x);
+//    }
+//    double sigsqrl(double x,
+//            const double x0=0.001,
+//            const double r=4)
+//    {
+//        return sign(x)*pow(pow(fabs(x),r)/(pow(fabs(x),(r/2))+pow(x0,r)),(1/r));
+//    }
 public:
     HydraulicTurbulentOrifice(const string name,
                      const double Cq       = 0.67,
@@ -30,6 +32,7 @@ public:
     {
         mCq = Cq;
         mA = A;
+        mKc = mCq*mA*sqrt(2.0/890.0);
 
         addPort("P1", "NodeHydraulic", P1);
         addPort("P2", "NodeHydraulic", P2);
@@ -42,7 +45,7 @@ public:
 
     void initialize()
     {
-		//Nothing to initialize
+		qTurb.setFlowCoefficient(mKc);
     }
 
     void simulateOneTimestep()
@@ -58,8 +61,7 @@ public:
         double Zc2 = p2_ptr->getData(NodeHydraulic::CHARIMP);
 
         //Orifice equations
-        double Kc = mCq*mA*sqrt(2.0/890.0);
-        double q2 = 0.5*pow(Kc,2.0)*(Zc1+Zc2)+sigsqrl(pow(Kc,2.0)*(c1-c2)+0.25*pow(Kc,4.0)*pow(Zc1+Zc2,2.0));
+        double q2 = qTurb.getFlow(c1,c2,Zc1,Zc2);
         double q1 = -q2;
         double p1 = c1 + q1*Zc1;
         double p2 = c2 + q2*Zc2;
