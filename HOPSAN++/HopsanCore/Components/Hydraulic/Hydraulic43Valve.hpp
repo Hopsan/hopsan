@@ -4,6 +4,7 @@
 #include <iostream>
 #include "HopsanCore.h"
 #include "CoreUtilities/TransferFunction.h"
+#include "CoreUtilities/TurbulentFlowFunction.h"
 
 class Hydraulic43Valve : public ComponentQ
 {
@@ -19,7 +20,10 @@ private:
     double momegah;
     double mdeltah;
     TransferFunction myFilter;
-
+    TurbulentFlowFunction mQturbpa;
+    TurbulentFlowFunction mQturbpb;
+    TurbulentFlowFunction mQturbat;
+    TurbulentFlowFunction mQturbbt;
     #define pi 3.14159
     enum {PP, PT, PA, PB, PX};
     double sign(double x)
@@ -32,14 +36,14 @@ private:
         {
             return -1.0;
         }
-        //return x/fabs(x);
+//        //return x/fabs(x);
     }
-    double sigsqrl(double x,
-            const double x0=0.001,
-            const double r=4)
-    {
-        return sign(x)*pow(pow(fabs(x),r)/(pow(fabs(x),(r/2))+pow(x0,r)),(1/r));
-    }
+//    double sigsqrl(double x,
+//            const double x0=0.001,
+//            const double r=4)
+//    {
+//        return sign(x)*pow(pow(fabs(x),r)/(pow(fabs(x),(r/2))+pow(x0,r)),(1/r));
+//    }
 
 public:
     static Component *Creator()
@@ -138,10 +142,22 @@ public:
         double Kcat = mCq*mf*pi*md*xatnom*sqrt(2.0/890.0);
         double Kcbt = mCq*mf*pi*md*xbtnom*sqrt(2.0/890.0);
 
-        double qpa = 0.5*pow(Kcpa,2.0)*(Zcp+Zca)+sigsqrl(pow(Kcpa,2.0)*(cp-ca)+0.25*pow(Kcpa,4.0)*pow(Zcp+Zca,2.0));
-        double qpb = 0.5*pow(Kcpb,2.0)*(Zcp+Zcb)+sigsqrl(pow(Kcpb,2.0)*(cp-cb)+0.25*pow(Kcpb,4.0)*pow(Zcp+Zcb,2.0));
-        double qat = 0.5*pow(Kcat,2.0)*(Zca+Zct)+sigsqrl(pow(Kcat,2.0)*(ca-ct)+0.25*pow(Kcat,4.0)*pow(Zca+Zct,2.0));
-        double qbt = 0.5*pow(Kcbt,2.0)*(Zcb+Zct)+sigsqrl(pow(Kcbt,2.0)*(cb-ct)+0.25*pow(Kcbt,4.0)*pow(Zcb+Zct,2.0));
+        //With TurbulentFlowFunction:
+        mQturbpa.setFlowCoefficient(Kcpa);
+        mQturbpb.setFlowCoefficient(Kcpb);
+        mQturbat.setFlowCoefficient(Kcat);
+        mQturbbt.setFlowCoefficient(Kcbt);
+
+        double qpa = mQturbpa.getFlow(cp, ca, Zcp, Zca);
+        double qpb = mQturbpb.getFlow(cp, cb, Zcp, Zcb);
+        double qat = mQturbat.getFlow(ca, ct, Zca, Zct);
+        double qbt = mQturbbt.getFlow(cb, ct, Zcb, Zct);
+
+        //With sigsqrl:
+//        double qpa = 0.5*pow(Kcpa,2.0)*(Zcp+Zca)+sigsqrl(pow(Kcpa,2.0)*(cp-ca)+0.25*pow(Kcpa,4.0)*pow(Zcp+Zca,2.0));
+//        double qpb = 0.5*pow(Kcpb,2.0)*(Zcp+Zcb)+sigsqrl(pow(Kcpb,2.0)*(cp-cb)+0.25*pow(Kcpb,4.0)*pow(Zcp+Zcb,2.0));
+//        double qat = 0.5*pow(Kcat,2.0)*(Zca+Zct)+sigsqrl(pow(Kcat,2.0)*(ca-ct)+0.25*pow(Kcat,4.0)*pow(Zca+Zct,2.0));
+//        double qbt = 0.5*pow(Kcbt,2.0)*(Zcb+Zct)+sigsqrl(pow(Kcbt,2.0)*(cb-ct)+0.25*pow(Kcbt,4.0)*pow(Zcb+Zct,2.0));
 
         //Without siqsqrl
 //        double qpa = 0.5*pow(Kcpa,2.0)*(Zcp+Zca)+sqrt(pow(Kcpa,2.0)*(cp-ca)+0.25*pow(Kcpa,4.0)*pow(Zcp+Zca,2.0))*sign(pow(Kcpa,2.0)*(cp-ca)+0.25*pow(Kcpa,4.0)*pow(Zcp+Zca,2.0));
