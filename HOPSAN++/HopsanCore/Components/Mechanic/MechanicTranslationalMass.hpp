@@ -12,7 +12,6 @@ private:
     double mB;
     double mk;
     TransferFunction Filter;
-    TransferFunction Der;
     enum {P1, P2};
 
 public:
@@ -66,7 +65,8 @@ public:
         //Mass equations
         double num [] = {0.0, 1.0, 0.0};
         double den [] = {mk, mB+Zx1+Zx2, mMass};
-        double v2 = Filter.Filter(c1-c2, num, den, mTimestep);
+        Filter.setCoefficients(num, den, mTimestep);
+        double v2 = Filter.filter(c1-c2);
         double v1 = -v2;
         double F1 = c1 + Zx1*v1;
         double F2 = c2 + Zx2*v2;
