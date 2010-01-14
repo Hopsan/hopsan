@@ -41,7 +41,7 @@ public:
     static Node* CreatorFunction() {return new NodeMechanic;}
     //static NodeTypeT iDummyId;
 
-    enum {VELOCITY, FORCE, WAVEVARIABLE, CHARIMP, DATALENGTH};
+    enum {VELOCITY, FORCE, POSITION, WAVEVARIABLE, CHARIMP, DATALENGTH};
     NodeMechanic() : Node()
     {
         mNodeType = "NodeMechanic";
