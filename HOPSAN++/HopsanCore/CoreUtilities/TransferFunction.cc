@@ -20,12 +20,12 @@ TransferFunction::TransferFunction(double num [3], double den [3], double timest
 
 void TransferFunction::update(double signal)
 {
-    u2 = mDelayu.value(2);
-    u1 = mDelayu.value(1);
+    u2 = mDelayu.value(1);
+    u1 = mDelayu.value(0);
     u0 = signal;
 
-    y2 = mDelayy.value(2);
-    y1 = mDelayy.value(1);
+    y2 = mDelayy.value(1);
+    y1 = mDelayy.value(0);
 
     b[0] = 4.0*mnum[2]+mnum[0]*pow(mTimestep,2.0)+2.0*mnum[1]*mTimestep;
     b[1] = -8.0*mnum[2]+2*mnum[0]*pow(mTimestep,2.0);
