@@ -66,7 +66,7 @@ public:
         double num [] = {0.0, 1.0, 0.0};
         double den [] = {mk, mB+Zx1+Zx2, mMass};
         Filter.setCoefficients(num, den, mTimestep);
-        double v2 = Filter.filter(c1-c2);
+        double v2 = Filter.getValue();
         double v1 = -v2;
         double F1 = c1 + Zx1*v1;
         double F2 = c2 + Zx2*v2;
@@ -76,6 +76,11 @@ public:
         p2_ptr->setData(NodeMechanic::FORCE, F2);
         p1_ptr->setData(NodeMechanic::VELOCITY, v1);
         p2_ptr->setData(NodeMechanic::VELOCITY, v2);
+      //  p1_ptr->setData(NodeMechanic::POSITION, x1);
+      //  p2_ptr->setData(NodeMechanic::POSITION, x2);
+
+        //Update Filter:
+        Filter.update(c1-c2);
     }
 };
 
