@@ -8,6 +8,8 @@
  */
 
 #include <math.h>
+#include <iostream>
+#include <cassert>
 #include "Delay.h"
 
 
@@ -79,7 +81,7 @@ double Delay::value()
 {
     if (mValues.empty())
     {
-        return 0;
+        return mInitialValue;
     }
     else if ((mFracStep < mStepDelay) && (mValues.size() >= 2))
     {
@@ -95,5 +97,13 @@ double Delay::value()
 
 double Delay::value(const std::size_t idx) ///TODO: interpolera värden
 {
-    return mValues[idx];
+    if ((idx < 1) || (idx > mValues.size()))
+    {
+        std::cout << "Indexed outside Delay-vector" << idx << std::endl;
+        assert(false);
+    }
+    else
+    {
+        return mValues[idx-1]; // -1 because index 0 is last value
+    }
 }
