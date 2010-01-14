@@ -35,6 +35,7 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr);
 #include "Signal/SignalSaturation.hpp"
 #include "Signal/SignalDeadZone.hpp"
 #include "Signal/SignalLP1Filter.hpp"
+#include "Signal/SignalPulse.hpp"
 
 /* Mechanical Components */
 #include "Mechanic/MechanicForceTransformer.hpp"

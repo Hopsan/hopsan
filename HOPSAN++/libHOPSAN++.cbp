@@ -121,6 +121,7 @@
 		<Unit filename="HopsanCore\Components\Signal\SignalDivide.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalGain.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalMultiply.hpp" />
+		<Unit filename="HopsanCore\Components\Signal\SignalPulse.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalRamp.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalSaturation.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalSineWave.hpp" />
