@@ -1163,7 +1163,7 @@ void testPressureControlledValve()
     simulationmodel.connect(psource2, "P1", pValve, "P2");
     simulationmodel.connect(psource_open, "P1", pValve, "P_OPEN");
     simulationmodel.connect(psource_close, "P1", pValve, "P_CLOSE");
-    simulationmodel.connect(ramp, "out", psource_close, "in");
+    simulationmodel.connect(ramp, "out", psource_open, "in");
 
     //Run simulation
     simulationmodel.preAllocateLogSpace(0,3);
