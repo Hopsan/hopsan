@@ -7,7 +7,7 @@ class SignalLP1Filter : public ComponentSignal
 {
 
 private:
-    double mcofrequency;
+    double mCofrequency;
     double mTimestep;
     TransferFunction Filter;
     enum {in, out};
@@ -24,20 +24,20 @@ public:
                  const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
     {
-        mcofrequency = cofrequency;
+        mCofrequency = cofrequency;
         mTimestep = timestep;
 
         addPort("in", "NodeSignal", in);
         addPort("out", "NodeSignal", out);
 
-        registerParameter("Frequency", "Cut-Off Frequency", "[rad/s]", mcofrequency);
+        registerParameter("Frequency", "Cut-Off Frequency", "[rad/s]", mCofrequency);
     }
 
 
 	void initialize()
 	{
 	    double num [3] = {1.0, 0.0, 0.0};
-	    double den [3] = {1.0, 1.0/mcofrequency, 0.0};
+	    double den [3] = {1.0, 1.0/mCofrequency, 0.0};
         Filter.setCoefficients(num, den, mTimestep);
 	}
 
