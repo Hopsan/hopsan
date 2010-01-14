@@ -117,7 +117,7 @@ public:
         double Zcb = pb_ptr->getData(NodeHydraulic::CHARIMP);
         double xvin  = px_ptr->getData(NodeSignal::VALUE);
 
-        double xv = myFilter.filter(xvin);
+        double xv = myFilter.getValue();
 
         //Valve equations
         if (fabs(xv)>mxvmax)
@@ -188,6 +188,9 @@ public:
         pa_ptr->setData(NodeHydraulic::MASSFLOW, qa);
         pb_ptr->setData(NodeHydraulic::PRESSURE, pb);
         pb_ptr->setData(NodeHydraulic::MASSFLOW, qb);
+
+        //Update Filter:
+        myFilter.update(xvin);
     }
 };
 
