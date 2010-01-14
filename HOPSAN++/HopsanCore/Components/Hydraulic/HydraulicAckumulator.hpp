@@ -72,16 +72,16 @@ public:
             mStartPressureInternal = mPmin;
             mVgas = mVtot;
             mVoil = 0;
-            mDelayedP2.initilizeValues(mStartPressureInternal);
-            mDelayedC1.initilizeValues(mStartPressureExternal);
-            mDelayedZc1.initilizeValues(0);                        //This is a problem! Zc is not zero at the beginning, but we cannot know what it is...
-            mDelayedQ2.initilizeValues(mStartFlowInternal);
+            mDelayedP2.initializeValues(mStartPressureInternal);
+            mDelayedC1.initializeValues(mStartPressureExternal);
+            mDelayedZc1.initializeValues(0);                        //This is a problem! Zc is not zero at the beginning, but we cannot know what it is...
+            mDelayedQ2.initializeValues(mStartFlowInternal);
         }
         else
         {
-            mDelayedC1.initilizeValues(mStartPressureExternal);
-            mDelayedZc1.initilizeValues(0);                                     //Problem here too...
-            mDelayedQ2.initilizeValues(mKce*(mStartPressureExternal-mStartPressureInternal));
+            mDelayedC1.initializeValues(mStartPressureExternal);
+            mDelayedZc1.initializeValues(0);                                     //Problem here too...
+            mDelayedQ2.initializeValues(mKce*(mStartPressureExternal-mStartPressureInternal));
             mVgas = pow(mPmin*pow(mVtot, mKappa)/mStartPressureInternal, 1/mKappa);
             mVoil = mVtot - mVgas;
         }

@@ -76,8 +76,8 @@ public:
 		mDelayedC2.setTimeDelay(mTimeDelay-mTimestep, mTimestep);
 
 		//Init delay
-        mDelayedC1.initilizeValues(mStartPressure+mZc*mStartFlow);
-		mDelayedC2.initilizeValues(mStartPressure+mZc*mStartFlow);
+        mDelayedC1.initializeValues(mStartPressure+mZc*mStartFlow);
+		mDelayedC2.initializeValues(mStartPressure+mZc*mStartFlow);
 	}
 
 

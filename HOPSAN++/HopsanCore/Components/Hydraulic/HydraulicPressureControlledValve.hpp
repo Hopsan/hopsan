@@ -74,7 +74,7 @@ public:
         mX0 = 0.00001;
 
         mDelayedX0.setStepDelay(1);
-        mDelayedX0.initilizeValues(0);
+        mDelayedX0.initializeValues(0);
 
         //double wCutoff = mTimestep / mTao;
         double wCutoff = 1000000.0;
