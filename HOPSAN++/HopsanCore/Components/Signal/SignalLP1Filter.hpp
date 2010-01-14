@@ -52,10 +52,13 @@ public:
         double u = p1_ptr->getData(NodeSignal::VALUE);
 
         //Filter equations
-		double y = Filter.filter(u);
+		double y = Filter.getValue();
 
         //Write new values to nodes
         p2_ptr->setData(NodeSignal::VALUE, y);
+
+        //Update filter:
+        Filter.update(u);
     }
 };
 
