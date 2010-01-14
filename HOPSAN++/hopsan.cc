@@ -582,11 +582,10 @@ void testkarl()
     volumeA->setParameter("V", 1.0e-1);
     volumeB->setParameter("V", 1.0e-1);
     valve->setParameter("omegah", 10.0);
-    valve->setParameter("deltah", 0.7);
+    valve->setParameter("deltah", 0.6);
     sinus->setParameter("Frequency",0.1);
     sinus->setParameter("StartTime", 0.0);
     sinus->setParameter("Amplitude", 0.001);
-
 
     //Run simulation
     simulationmodel.preAllocateLogSpace(0.0, 20.0);
@@ -594,8 +593,8 @@ void testkarl()
     simulationmodel.simulate(0.0, 20.0);
 
     //Test write to file
-    valve->getPort("PX").getNode().saveLogData("output2.txt");
-    volumeA->getPort("P2").getNode().saveLogData("output.txt");
+    valve->getPort("PA").getNode().saveLogData("output2.txt");
+    sinus->getPort("out").getNode().saveLogData("output.txt");
 
 	//Finished
     cout << "testkarl() Done!" << endl;
@@ -1095,7 +1094,8 @@ void testMechanic()
     Component* mass = Hopsan.CreateComponent("MechanicTranslationalMass");
     Component* spring = Hopsan.CreateComponent("MechanicTranslationalSpring");
     Component* vtrans = Hopsan.CreateComponent("MechanicVelocityTransformer");
-    Component* velocity = Hopsan.CreateComponent("SignalSource");
+    Component* velocity = Hopsan.CreateComponent("SignalStep");
+    Component* filter = Hopsan.CreateComponent("SignalLP1Filter");
 
     simulationmodel.addComponent(*force);
     simulationmodel.addComponent(*ftrans);
@@ -1103,21 +1103,26 @@ void testMechanic()
     simulationmodel.addComponent(*spring);
     simulationmodel.addComponent(*vtrans);
     simulationmodel.addComponent(*velocity);
+    simulationmodel.addComponent(*filter);
 
     simulationmodel.connect(*force,"out", *ftrans, "in");
     simulationmodel.connect(*ftrans, "out", *mass, "P1");
     simulationmodel.connect(*mass, "P2", *spring, "P1");
     simulationmodel.connect(*spring, "P2", *vtrans, "out");
-    simulationmodel.connect(*vtrans, "in", *velocity, "out");
+    simulationmodel.connect(*vtrans, "in", *filter, "out");
+    simulationmodel.connect(*filter, "in", *velocity, "out");
 
-    force->setParameter("Value", 100.0);
-    velocity->setParameter("Value", 0.0);
+    force->setParameter("Value", 0.0);
+    velocity->setParameter("StepSize", 1.0);
+    spring->setParameter("k", 1.0e2);
+    filter->setParameter("Frequency", 10);
 
     simulationmodel.preAllocateLogSpace(0.0, 10.0);
     simulationmodel.simulate(0.0, 10.0);
 
     //Write to file
-    mass->getPort("P2").getNode().saveLogData("output.txt");
+    spring->getPort("P2").getNode().saveLogData("output.txt");
+    filter->getPort("out").getNode().saveLogData("output2.txt");
 
 	//Finished
     cout << "testMechanic() Done!" << endl;
@@ -1134,10 +1139,10 @@ void testPressureControlledValve()
 
     //Create other components
 
-    HydraulicPressureSource psource1("ps1", 2e6);
-    HydraulicPressureSource psource2("ps1", 1e5);
-    HydraulicPressureSource psource_open("ps1", 1e5);
-    HydraulicPressureSource psource_close("ps1", 1e5);
+    HydraulicPressureSource psource1("ps1", 2.0e6);
+    HydraulicPressureSource psource2("ps1", 1.0e5);
+    HydraulicPressureSource psource_open("ps1", 1.0e5);
+    HydraulicPressureSource psource_close("ps1", 1.0e5);
     HydraulicPressureControlledValve pValve("pValve");
     SignalRamp ramp("ramp");
 
