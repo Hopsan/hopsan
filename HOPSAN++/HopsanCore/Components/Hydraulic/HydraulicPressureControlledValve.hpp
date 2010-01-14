@@ -127,8 +127,8 @@ public:
         double xs = (p_open - mPref - p_close) / b1;
         double xh = mPh/b1;
         double xsh = mHyst.getValue(xs, xh, mDelayedX0.value());
-        //mX0 = mFilterLP.filter(1);          //Filter disabled because it's not working!
-        mX0 = xsh;      //Debug, ta bort sen
+        mX0 = mFilterLP.getValue();          //Filter disabled because it's not working!
+        //mX0 = xsh;      //Debug, ta bort sen
         if (xsh > mX0max)
         {
 
@@ -202,6 +202,8 @@ public:
         p2_ptr->setData(NodeHydraulic::MASSFLOW, q2);
         p3_ptr->setData(NodeHydraulic::PRESSURE, p_open);
         p4_ptr->setData(NodeHydraulic::PRESSURE, p_close);
+
+        mFilterLP.update(xsh);
     }
 };
 
