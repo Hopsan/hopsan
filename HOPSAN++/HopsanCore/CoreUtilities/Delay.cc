@@ -36,7 +36,7 @@ Delay::Delay(const double timeDelay, const double Ts, const double initValue)
 }
 
 
-void Delay::initilizeValues(const double initValue)
+void Delay::initializeValues(const double initValue)
 {
     mInitialValue = initValue;
     mValues.assign(mValues.size(), mInitialValue);
