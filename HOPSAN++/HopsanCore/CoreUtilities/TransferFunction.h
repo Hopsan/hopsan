@@ -3,19 +3,25 @@
 
 #include <deque>
 #include "win32dll.h"
+#include "Delay.h"
 
 class DLLIMPORTEXPORT TransferFunction
 {
 public:
     TransferFunction();
     TransferFunction(double num [3], double den [3], double timestep);
+    void update(double signal);
     void setCoefficients(double num [3], double den [3], double timestep);
-    double filter(double signal);
+    double getValue();
+    void initializeValues(double initValueU, double initValueY);
+
 private:
-    double u [3];
-	double y [3];
+    double u0, u1, u2;
+	double y0, y1, y2;
 	double a [3];
 	double b [3];
+	Delay mDelayu;
+	Delay mDelayy;
 	double mnum [3];
 	double mden [3];
 	double mTimestep;

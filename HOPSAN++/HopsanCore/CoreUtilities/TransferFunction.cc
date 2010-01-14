@@ -14,16 +14,18 @@ TransferFunction::TransferFunction(double num [3], double den [3], double timest
       mden[i] = den[i];
     }
     mTimestep = timestep;
+    mDelayu.setStepDelay(2);
+    mDelayy.setStepDelay(2);
 }
 
-double TransferFunction::filter(double signal)
+void TransferFunction::update(double signal)
 {
-    u[2] = u[1];
-    u[1] = u[0];
-    u[0] = signal;
+    u2 = mDelayu.value(2);
+    u1 = mDelayu.value(1);
+    u0 = signal;
 
-    y[2] = y[1];
-    y[1] = y[0];
+    y2 = mDelayy.value(2);
+    y1 = mDelayy.value(1);
 
     b[0] = 4.0*mnum[2]+mnum[0]*pow(mTimestep,2.0)+2.0*mnum[1]*mTimestep;
     b[1] = -8.0*mnum[2]+2*mnum[0]*pow(mTimestep,2.0);
@@ -39,8 +41,10 @@ double TransferFunction::filter(double signal)
                 a0+a1q^-1+a2q^-2
         */
 
-        y[0] = (b[0]*u[0]+b[1]*u[1]+b[2]*u[2]-a[1]*y[1]-a[2]*y[2])/a[0];
-        return y[0];
+        y0 = (b[0]*u0+b[1]*u1+b[2]*u2-a[1]*y1-a[2]*y2)/a[0];
+
+        mDelayu.update(u0);
+        mDelayy.update(y0);
 }
 
 void TransferFunction::setCoefficients(double num [3], double den [3], double timestep)
@@ -52,3 +56,16 @@ void TransferFunction::setCoefficients(double num [3], double den [3], double ti
     }
     mTimestep = timestep;
 }
+
+double TransferFunction::getValue()
+{
+    return y0;
+}
+
+void TransferFunction::initializeValues(double initValueU, double initValueY)
+{
+    mDelayu.initializeValues(initValueU);
+    mDelayy.initializeValues(initValueY);
+}
+
+
