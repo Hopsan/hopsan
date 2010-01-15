@@ -5,6 +5,7 @@
 //!
 //! @brief Contains the ExternalLoader class
 //!
+//$Id$
 
 #include "LoadExternal.h"
 #include "Component.h"

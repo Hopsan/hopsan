@@ -5,6 +5,7 @@
 //!
 //! @brief Contains the ExternalLoader class
 //!
+//$Id$
 
 #ifndef LOADEXTERNAL_H
 #define LOADEXTERNAL_H
