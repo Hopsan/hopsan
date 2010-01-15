@@ -1,3 +1,11 @@
+//!
+//! @file   LoadExternal.h
+//! @author <peter.nordin@liu.se>
+//! @date   2009-12-22
+//!
+//! @brief Contains the ExternalLoader class
+//!
+
 #ifndef LOADEXTERNAL_H
 #define LOADEXTERNAL_H
 
@@ -9,6 +17,8 @@
 
 using namespace std;
 
+//! @class LoadExternal
+//! @brief This class handles loading and unloading of external component and node libs
 class DLLIMPORTEXPORT LoadExternal
 {
 private:
@@ -16,8 +26,11 @@ private:
     NodeFactory* mpNodeFactory;
 
 public:
+    //!LoadExternal Constructor
     LoadExternal();
+    //!This function loads a library with given path
     void load(string libpath);
+    //!This function sets the node and component factory pointers
     void setFactory(ComponentFactory* cfactory_ptr, NodeFactory* nfactory_ptr);
 };
 

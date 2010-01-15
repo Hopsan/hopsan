@@ -1,3 +1,11 @@
+//!
+//! @file   LoadExternal.cc
+//! @author <peter.nordin@liu.se>
+//! @date   2009-12-22
+//!
+//! @brief Contains the ExternalLoader class
+//!
+
 #include "LoadExternal.h"
 #include "Component.h"
 #include <iostream>
