@@ -51,7 +51,7 @@ public:
         //Register changable parameters to the HOPSAN++ core
         registerParameter("TD", "Tidsfördröjning", "s",   mTimeDelay);
         registerParameter("a", "Lågpasskoeficient", "-", mAlpha);
-        registerParameter("Zc", "Kappasitans", "Ns/m^5",  mZc);
+        registerParameter("Zc", "Impedans", "Ns/m^5",  mZc);
     }
 
 
