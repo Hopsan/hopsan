@@ -6,7 +6,7 @@
 //! @brief Contains Component base classes as well as ports and parameters
 //!
 //$Id$
-
+//testchange
 #include "Component.h"
 #include <iostream>
 #include <sstream>
