@@ -36,7 +36,7 @@ public:
 
     HydraulicPressureControlledValve(const string name,
                                      const double pref       = 2000000,
-                                     const double tao        = 0.001,
+                                     const double tao        = 0.01,
                                      const double kcs        = 0.00000001,
                                      const double kcf        = 0.00000001,
                                      const double qnom       = 0.001,
@@ -76,7 +76,7 @@ public:
         mDelayedX0.setStepDelay(1);
         mDelayedX0.initializeValues(0);
 
-        double wCutoff = mTimestep / mTao;
+        double wCutoff = 1 / mTao;      //Ska det vara Timestep/Tao?
         //double wCutoff = 100;     DEBUG
         double num [3] = {1.0, 0.0, 0.0};
         double den [3] = {1.0, 1.0/wCutoff, 0.0};
