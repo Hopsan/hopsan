@@ -1,3 +1,12 @@
+//!
+//! @file   Component.cc
+//! @author <FluMeS>
+//! @date   2009-12-20
+//!
+//! @brief Contains Component base classes as well as ports and parameters
+//!
+//$Id$
+
 #include "Component.h"
 #include <iostream>
 #include <sstream>
