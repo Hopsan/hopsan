@@ -80,6 +80,7 @@ public:
         double wCutoff = 1000000.0;
         double num [3] = {1.0, 0.0, 0.0};
         double den [3] = {1.0, 1.0/wCutoff, 0.0};
+        mFilterLP.initializeValues(0.0,0.0);
         mFilterLP.setCoefficients(num, den, mTimestep);
     }
 
@@ -125,9 +126,14 @@ public:
 
         // Spool position calculation
         double xs = (p_open - mPref - p_close) / b1;
+
         double xh = mPh/b1;
-        double xsh = mHyst.getValue(xs, xh, mDelayedX0.value());
+        //cout << "xs = " << xs << endl;
+        double xsh = mHyst.getValue(xs, xh, mDelayedX0.value(1));
+        //cout << "xsh = " << xsh << endl;
         mX0 = mFilterLP.getValue();          //Filter disabled because it's not working!
+        if (mTime < 0.1) { cout << "p1 = " << p1 << ", xs = " << xs << ", xsh = " << xsh << ", mDelayedX0 = " << mDelayedX0.value(1) << ", mX0 = " << mX0 << endl; }
+        //cout << "mX0 = " << mX0 << endl;
         //mX0 = xsh;      //Debug, ta bort sen
         if (xsh > mX0max)
         {
