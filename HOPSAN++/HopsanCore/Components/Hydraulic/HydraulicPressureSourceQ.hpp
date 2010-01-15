@@ -44,8 +44,8 @@ public:
     void simulateOneTimestep()
     {
         //Get the nodes
-   		Node* p1_ptr = mPorts[P1].getNodePtr();
-        Node* p2_ptr = mPorts[in].getNodePtr();
+   		Node* p1_ptr = mPortPtrs[P1]->getNodePtr();
+        Node* p2_ptr = mPortPtrs[in]->getNodePtr();
 
         //Get variable values from nodes
 		double c  = p1_ptr->getData(NodeHydraulic::WAVEVARIABLE);
@@ -54,7 +54,7 @@ public:
         //Flow source equations
         double q,p;
 
-        if (mPorts[in].isConnected())
+        if (mPortPtrs[in]->isConnected())
         {
             q = (p2_ptr->getData(NodeSignal::VALUE) - c)/Zc;
             p = p2_ptr->getData(NodeSignal::VALUE);         //We have a signal!

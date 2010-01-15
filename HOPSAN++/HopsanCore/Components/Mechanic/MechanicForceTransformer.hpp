@@ -37,8 +37,8 @@ public:
     void simulateOneTimestep()
     {
         //Get the nodes
-		Node* p1_ptr = mPorts[in].getNodePtr();
-		Node* p2_ptr = mPorts[out].getNodePtr();
+		Node* p1_ptr = mPortPtrs[in]->getNodePtr();
+		Node* p2_ptr = mPortPtrs[out]->getNodePtr();
 
         //Get variable values from nodes
         double signal  = p1_ptr->getData(NodeSignal::VALUE);

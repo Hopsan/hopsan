@@ -40,7 +40,7 @@ public:
     void initialize()
     {
         //read fron nodes
-   		Node* p1_ptr = mPorts[P1].getNodePtr();
+   		Node* p1_ptr = mPortPtrs[P1]->getNodePtr();
 
         //write to nodes
         p1_ptr->setData(NodeHydraulic::PRESSURE, mStartPressure);
@@ -52,12 +52,12 @@ public:
     void simulateOneTimestep()
     {
         //Get the nodes
-        Node* p1_ptr = mPorts[P1].getNodePtr();
-        Node* p2_ptr = mPorts[in].getNodePtr();
+        Node* p1_ptr = mPortPtrs[P1]->getNodePtr();
+        Node* p2_ptr = mPortPtrs[in]->getNodePtr();
 
         //Pressure source equation
         double p;
-        if (mPorts[in].isConnected())
+        if (mPortPtrs[in]->isConnected())
         {
             p = p2_ptr->getData(NodeSignal::VALUE);         //We have a signal!
         }

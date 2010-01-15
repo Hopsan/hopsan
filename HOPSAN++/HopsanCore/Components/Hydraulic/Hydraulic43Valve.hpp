@@ -100,11 +100,11 @@ public:
     {
 
         //Get the nodes
-        Node* pp_ptr = mPorts[PP].getNodePtr();
-        Node* pt_ptr = mPorts[PT].getNodePtr();
-        Node* pa_ptr = mPorts[PA].getNodePtr();
-        Node* pb_ptr = mPorts[PB].getNodePtr();
-        Node* px_ptr = mPorts[PX].getNodePtr();
+        Node* pp_ptr = mPortPtrs[PP]->getNodePtr();
+        Node* pt_ptr = mPortPtrs[PT]->getNodePtr();
+        Node* pa_ptr = mPortPtrs[PA]->getNodePtr();
+        Node* pb_ptr = mPortPtrs[PB]->getNodePtr();
+        Node* px_ptr = mPortPtrs[PX]->getNodePtr();
 
         //Get variable values from nodes
         double cp  = pp_ptr->getData(NodeHydraulic::WAVEVARIABLE);

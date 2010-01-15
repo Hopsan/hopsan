@@ -232,34 +232,34 @@ bool Component::isComponentSignal()
 //void Component::addPort(const size_t port_idx, Port port)
 //{
 //    //Instead of push_back, make it possible to add ports out of order
-//    if (port_idx+1 > mPorts.size())
+//    if (port_idx+1 > mPortPtrs.size())
 //    {
-//        mPorts.resize(port_idx+1);
+//        mPortPtrs.resize(port_idx+1);
 //    }
 //
 //    port.mpComponent = this;    //Set port owner
-//    mPorts[port_idx] = port;
+//    mPortPtrs[port_idx] = port;
 //}
 
 void Component::addPort(const string portname, const string nodetype, const int id)
 {
     ///TODO: handle trying to add multiple ports with same name or pos
-    Port new_port(portname, nodetype);
-    new_port.mpComponent = this;    //Set port owner
+    Port* new_port = new Port(portname, nodetype);
+    new_port->mpComponent = this;    //Set port owner
 
     if (id >= 0)
     {
         //Instead of allways push_back, make it possible to add ports out of order
-        if ((size_t)id+1 > mPorts.size())
+        if ((size_t)id+1 > mPortPtrs.size())
         {
-            mPorts.resize(id+1);
+            mPortPtrs.resize(id+1);
         }
-        mPorts[id] = new_port;
+        mPortPtrs[id] = new_port;
     }
     else
     {
         //If no id specified push back
-        mPorts.push_back(new_port);     //Copy port into storage
+        mPortPtrs.push_back(new_port);     //Copy port into storage
     }
 }
 
@@ -281,17 +281,17 @@ void Component::setSystemparent(ComponentSystem &rComponentSystem)
 Port &Component::getPortById(const size_t port_idx)
 {
     ///TODO: error handle if request outside of vector
-    return mPorts[port_idx];
+    return *mPortPtrs[port_idx];
 }
 
 Port &Component::getPort(const string portname)
 {
-    vector<Port>::iterator it;
-    for (it=mPorts.begin(); it!=mPorts.end(); ++it)
+    vector<Port*>::iterator it;
+    for (it=mPortPtrs.begin(); it!=mPortPtrs.end(); ++it)
     {
-        if (it->mPortName == portname)
+        if ((*it)->mPortName == portname)
         {
-            return *it;
+            return *(*it);
         }
     }
     ///TODO: cast not found exception
@@ -301,12 +301,12 @@ Port &Component::getPort(const string portname)
 
 bool Component::getPort(const string portname, Port &rPort)
 {
-    vector<Port>::iterator it;
-    for (it=mPorts.begin(); it!=mPorts.end(); ++it)
+    vector<Port*>::iterator it;
+    for (it=mPortPtrs.begin(); it!=mPortPtrs.end(); ++it)
     {
-        if (it->mPortName == portname)
+        if ((*it)->mPortName == portname)
         {
-            rPort = *it;
+            rPort = *(*it);
             return true;
         }
     }
@@ -342,7 +342,7 @@ ComponentQ::ComponentQ(string name, double timestep) : Component(name, timestep)
 //Constructor
 ComponentSystem::ComponentSystem(string name, double timestep) : Component(name, timestep)
 {
-    mInnerPorts.clear();
+    mInnerPortPtrs.clear();
     mType = "ComponentSystem";
     mIsComponentSystem = true;
 }
@@ -389,9 +389,9 @@ void ComponentSystem::addComponent(Component &rComponent)
 void Component::addInnerPortSetNode(const string portname, Node &rNode)
 {
     ///TODO: handle trying to add multiple ports with same name or pos
-    Port new_port(portname, rNode.getNodeType());
-    new_port.mpComponent = this;    //Set port owner
-    mInnerPorts.push_back(new_port);     //Copy port into storage
+    Port* new_port = new Port(portname, rNode.getNodeType());
+    new_port->mpComponent = this;    //Set port owner
+    mInnerPortPtrs.push_back(new_port);     //Copy port into storage
 }
 
 void Component::addSubNode(Node* node_ptr)

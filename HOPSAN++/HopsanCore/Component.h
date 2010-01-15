@@ -98,7 +98,7 @@ protected:
 
 
     string mType;
-    vector<Port> mPorts, mInnerPorts;
+    vector<Port*> mPortPtrs, mInnerPortPtrs;
 
     vector<Node*> mSubNodePtrs;
 

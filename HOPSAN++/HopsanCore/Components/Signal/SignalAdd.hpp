@@ -44,24 +44,24 @@ public:
     void simulateOneTimestep()
     {
         //read fron nodes
-   		Node* p1_ptr = mPorts[in1].getNodePtr();
-   		Node* p2_ptr = mPorts[in2].getNodePtr();
-   		Node* p3_ptr = mPorts[out].getNodePtr();
+   		Node* p1_ptr = mPortPtrs[in1]->getNodePtr();
+   		Node* p2_ptr = mPortPtrs[in2]->getNodePtr();
+   		Node* p3_ptr = mPortPtrs[out]->getNodePtr();
 
         //Get variable values from nodes
         double signal1, signal2;
 
-        if (mPorts[in1].isConnected() && mPorts[in2].isConnected())       //Both ports connected
+        if (mPortPtrs[in1]->isConnected() && mPortPtrs[in2]->isConnected())       //Both ports connected
         {
             signal1 = p1_ptr->getData(NodeSignal::VALUE);
             signal2 = p2_ptr->getData(NodeSignal::VALUE);
         }
-        else if (mPorts[in1].isConnected() && !mPorts[in2].isConnected())       //Port 1 connected, port 2 disconnected
+        else if (mPortPtrs[in1]->isConnected() && !mPortPtrs[in2]->isConnected())       //Port 1 connected, port 2 disconnected
         {
             signal1 = p1_ptr->getData(NodeSignal::VALUE);
             signal2 = 0;
         }
-        else if (!mPorts[in1].isConnected() && mPorts[in2].isConnected())       //Port 2 connected, port 1 disconnected
+        else if (!mPortPtrs[in1]->isConnected() && mPortPtrs[in2]->isConnected())       //Port 2 connected, port 1 disconnected
         {
             signal1 = 0;
             signal2 = p2_ptr->getData(NodeSignal::VALUE);

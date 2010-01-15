@@ -58,8 +58,8 @@ public:
 	void initialize()
     {
         //Read from nodes
-		Node* p1_ptr = mPorts[P1].getNodePtr();
-		Node* p2_ptr = mPorts[P2].getNodePtr();
+		Node* p1_ptr = mPortPtrs[P1]->getNodePtr();
+		Node* p2_ptr = mPortPtrs[P2]->getNodePtr();
 
         //Write to nodes
         p1_ptr->setData(NodeHydraulic::MASSFLOW,     mStartFlow);
@@ -84,8 +84,8 @@ public:
 	void simulateOneTimestep()
     {
         //Get the nodes
-		Node* p1_ptr = mPorts[P1].getNodePtr();
-		Node* p2_ptr = mPorts[P2].getNodePtr();
+		Node* p1_ptr = mPortPtrs[P1]->getNodePtr();
+		Node* p2_ptr = mPortPtrs[P2]->getNodePtr();
 
         //Get variable values from nodes
         double q1 = p1_ptr->getData(NodeHydraulic::MASSFLOW);

@@ -1219,7 +1219,9 @@ int main()
 
     //testSineWave();
 
-    testPressureControlledValve();
+    //testPressureControlledValve();
+
+    testTLMlumped();
 
     //testMechanic();
 

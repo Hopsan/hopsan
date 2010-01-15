@@ -57,7 +57,7 @@ public:
         //Register changable parameters to the HOPSAN++ core
         registerParameter("TD", "Tidsfördröjning", "s",   mTimeDelay);
         registerParameter("a", "Lågpasskoeficient", "-", mAlpha);
-        registerParameter("Zc", "Kappasitans", "Ns/m^5",  mZc);
+        registerParameter("Zc", "Impedans", "Ns/m^5",  mZc);
         registerParameter("R1", "Resistans 1", "Ns/m^5",  mR1);
         registerParameter("R2", "Resistans 2", "Ns/m^5",  mR2);
     }
@@ -66,8 +66,8 @@ public:
 	void initialize()
     {
         //Read from nodes
-		Node* p1_ptr = mPorts[P1].getNodePtr();
-		Node* p2_ptr = mPorts[P2].getNodePtr();
+		Node* p1_ptr = mPortPtrs[P1]->getNodePtr();
+		Node* p2_ptr = mPortPtrs[P2]->getNodePtr();
 
         //Write to nodes
         p1_ptr->setData(NodeHydraulic::MASSFLOW,     mStartFlow);
@@ -92,8 +92,8 @@ public:
 	void simulateOneTimestep()
     {
         //Get the nodes
-		Node* p1_ptr = mPorts[P1].getNodePtr();
-		Node* p2_ptr = mPorts[P2].getNodePtr();
+		Node* p1_ptr = mPortPtrs[P1]->getNodePtr();
+		Node* p2_ptr = mPortPtrs[P2]->getNodePtr();
 
         //Get variable values from nodes
         double q1 = p1_ptr->getData(NodeHydraulic::MASSFLOW);

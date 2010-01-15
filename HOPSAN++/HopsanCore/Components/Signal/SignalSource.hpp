@@ -50,7 +50,7 @@ public:
     void simulateOneTimestep()
     {
         //read fron nodes
-   		Node* p1_ptr = mPorts[out].getNodePtr();
+   		Node* p1_ptr = mPortPtrs[out]->getNodePtr();
 
         //Write new values to nodes
         p1_ptr->setData(NodeSignal::VALUE, mValue);

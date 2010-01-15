@@ -88,10 +88,10 @@ public:
     {
 
         //Get the nodes
-        Node* p1_ptr = mPorts[P1].getNodePtr();
-        Node* p2_ptr = mPorts[P2].getNodePtr();
-        Node* p3_ptr = mPorts[P_OPEN].getNodePtr();
-        Node* p4_ptr = mPorts[P_CLOSE].getNodePtr();
+        Node* p1_ptr = mPortPtrs[P1]->getNodePtr();
+        Node* p2_ptr = mPortPtrs[P2]->getNodePtr();
+        Node* p3_ptr = mPortPtrs[P_OPEN]->getNodePtr();
+        Node* p4_ptr = mPortPtrs[P_CLOSE]->getNodePtr();
 
         //Get variable values from nodes
         double p1 = p1_ptr->getData(NodeHydraulic::PRESSURE);
