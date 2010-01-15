@@ -99,7 +99,7 @@ double Delay::value(const std::size_t idx) ///TODO: interpolera värden
 {
     if ((idx < 1) || (idx > mValues.size()))
     {
-        std::cout << "Indexed outside Delay-vector" << idx << std::endl;
+        std::cout << "Indexed outside Delay-vector" << "  Index: " << idx << "  Length: " << mValues.size() << std::endl;
         assert(false);
     }
     else

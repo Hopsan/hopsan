@@ -1202,7 +1202,7 @@ int main()
     //testkarl();
 
 
-    test2();
+    //test2();
 
 
     //test_fixed_pump();
@@ -1219,7 +1219,7 @@ int main()
 
     //testSineWave();
 
-    //testPressureControlledValve();
+    testPressureControlledValve();
 
     //testMechanic();
 
