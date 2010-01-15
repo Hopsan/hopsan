@@ -76,8 +76,8 @@ public:
         mDelayedX0.setStepDelay(1);
         mDelayedX0.initializeValues(0);
 
-        //double wCutoff = mTimestep / mTao;
-        double wCutoff = 1000000.0;
+        double wCutoff = mTimestep / mTao;
+        //double wCutoff = 100;     DEBUG
         double num [3] = {1.0, 0.0, 0.0};
         double den [3] = {1.0, 1.0/wCutoff, 0.0};
         mFilterLP.initializeValues(0.0,0.0);
