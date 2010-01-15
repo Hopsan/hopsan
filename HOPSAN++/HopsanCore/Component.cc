@@ -55,6 +55,7 @@ void CompParameter::setValue(const double value)
 //Constructor
 Port::Port()
 {
+    mPortType = "Port";
     mpNode  = 0;
     mpComponent = 0;
     mIsConnected = false;
@@ -62,6 +63,7 @@ Port::Port()
 
 Port::Port(string portname, string node_type)
 {
+    mPortType = "Port";
     mPortName = portname;
     mNodeType = node_type;
     mpNode  = 0;
@@ -85,6 +87,16 @@ Node* Port::getNodePtr()
     return mpNode;
 }
 
+double Port::ReadNode(const size_t idx)
+{
+    return mpNode->getData(idx);
+}
+
+void Port::WriteNode(const size_t idx, const double value)
+{
+    return mpNode->setData(idx, value);
+}
+
 void Port::setNode(Node* node_ptr)
 {
     mpNode = node_ptr;
@@ -95,6 +107,52 @@ bool Port::isConnected()
 {
     return mIsConnected;
 }
+
+//Constructor
+PowerPort::PowerPort() : Port()
+{
+    mPortType = "PowerPort";
+}
+
+PowerPort::PowerPort(string portname, string node_type) : Port(portname, node_type)
+{
+    mPortType = "PowerPort";
+}
+
+//Constructor
+ReadPort::ReadPort() : Port()
+{
+    mPortType = "ReadPort";
+}
+
+ReadPort::ReadPort(string portname, string node_type) : Port(portname, node_type)
+{
+    mPortType = "ReadPort";
+}
+
+void ReadPort::WriteNode(const size_t idx, const double value)
+{
+    cout << "Could not write to port, this is a ReadPort" << endl;
+    assert(false);
+}
+
+//Constructor
+WritePort::WritePort() : Port()
+{
+    mPortType = "WritePort";
+}
+
+WritePort::WritePort(string portname, string node_type) : Port(portname, node_type)
+{
+    mPortType = "WritePort";
+}
+
+double WritePort::ReadNode(const size_t idx)
+{
+    cout << "Could not read from port, this is a WritePort" << endl;
+    assert(false);
+}
+
 
 //Constructor
 Component::Component(string name, double timestep)
@@ -241,10 +299,76 @@ bool Component::isComponentSignal()
 //    mPortPtrs[port_idx] = port;
 //}
 
+void Component::addPowerPort(const string portname, const string nodetype, const int id)
+{
+    ///TODO: handle trying to add multiple ports with same name or pos
+    Port* new_port = new PowerPort(portname, nodetype);
+    new_port->mpComponent = this;    //Set port owner
+
+    if (id >= 0)
+    {
+        //Instead of allways push_back, make it possible to add ports out of order
+        if ((size_t)id+1 > mPortPtrs.size())
+        {
+            mPortPtrs.resize(id+1);
+        }
+        mPortPtrs[id] = new_port;
+    }
+    else
+    {
+        //If no id specified push back
+        mPortPtrs.push_back(new_port);     //Copy port into storage
+    }
+}
+
 void Component::addPort(const string portname, const string nodetype, const int id)
 {
     ///TODO: handle trying to add multiple ports with same name or pos
     Port* new_port = new Port(portname, nodetype);
+    new_port->mpComponent = this;    //Set port owner
+
+    if (id >= 0)
+    {
+        //Instead of allways push_back, make it possible to add ports out of order
+        if ((size_t)id+1 > mPortPtrs.size())
+        {
+            mPortPtrs.resize(id+1);
+        }
+        mPortPtrs[id] = new_port;
+    }
+    else
+    {
+        //If no id specified push back
+        mPortPtrs.push_back(new_port);     //Copy port into storage
+    }
+}
+
+void Component::addReadPort(const string portname, const string nodetype, const int id)
+{
+    ///TODO: handle trying to add multiple ports with same name or pos
+    Port* new_port = new ReadPort(portname, nodetype);
+    new_port->mpComponent = this;    //Set port owner
+
+    if (id >= 0)
+    {
+        //Instead of allways push_back, make it possible to add ports out of order
+        if ((size_t)id+1 > mPortPtrs.size())
+        {
+            mPortPtrs.resize(id+1);
+        }
+        mPortPtrs[id] = new_port;
+    }
+    else
+    {
+        //If no id specified push back
+        mPortPtrs.push_back(new_port);     //Copy port into storage
+    }
+}
+
+void Component::addWritePort(const string portname, const string nodetype, const int id)
+{
+    ///TODO: handle trying to add multiple ports with same name or pos
+    Port* new_port = new WritePort(portname, nodetype);
     new_port->mpComponent = this;    //Set port owner
 
     if (id >= 0)

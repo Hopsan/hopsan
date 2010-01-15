@@ -34,8 +34,8 @@ public:
     {
         mGain = gain;
 
-        addPort("in", "NodeSignal", in);
-        addPort("out", "NodeSignal", out);
+        addReadPort("in", "NodeSignal", in);
+        addWritePort("out", "NodeSignal", out);
 
         registerParameter("Gain", "Förstärkning", "-", mGain);
     }
@@ -49,18 +49,14 @@ public:
 
     void simulateOneTimestep()
     {
-        //read fron nodes
-   		Node* p1_ptr = mPortPtrs[in]->getNodePtr();
-   		Node* p2_ptr = mPortPtrs[out]->getNodePtr();
-
         //Get variable values from nodes
-        double u = p1_ptr->getData(NodeSignal::VALUE);
+        double u = mPortPtrs[in]->ReadNode(NodeSignal::VALUE);
 
         //Gain equations
 		double y = mGain*u;
 
         //Write new values to nodes
-        p2_ptr->setData(NodeSignal::VALUE, y);
+        mPortPtrs[out]->WriteNode(NodeSignal::VALUE, y);
     }
 };
 

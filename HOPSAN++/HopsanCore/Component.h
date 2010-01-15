@@ -30,7 +30,7 @@ private:
 class Component; //forward declaration
 class ComponentSystem;  //forward declaration
 
-class DLLIMPORTEXPORT Port
+class DLLIMPORTEXPORT Port ///TODO: Should be made virtual somehow OR Change Port into PowerPort
 {
     friend class Component;
     friend class ComponentSystem;
@@ -38,17 +38,49 @@ class DLLIMPORTEXPORT Port
 public:
     Port();
     Port(string portname, string node_type);
-    string &getNodeType();
-    Node &getNode();
-    Node *getNodePtr();
-    void setNode(Node* node_ptr);
+    string &getNodeType(); ///TODO: Move to protected
+    Node &getNode(); ///TODO: Move to protected
+    Node *getNodePtr(); ///TODO: Move to protected
+    virtual double ReadNode(const size_t idx);
+    virtual void WriteNode(const size_t idx, const double value);
     bool isConnected();
+
+protected:
+    string mPortType;
+    void setNode(Node* node_ptr);
 
 private:
     string mPortName, mNodeType;
     Node* mpNode;
     Component* mpComponent;
     bool mIsConnected;
+};
+
+class DLLIMPORTEXPORT PowerPort :public Port
+{
+public:
+    PowerPort();
+    PowerPort(string portname, string node_type);
+};
+
+
+class DLLIMPORTEXPORT ReadPort :public Port
+{
+public:
+    ReadPort();
+    ReadPort(string portname, string node_type);
+
+    void WriteNode(const size_t idx, const double value);
+};
+
+
+class DLLIMPORTEXPORT WritePort :public Port
+{
+public:
+    WritePort();
+    WritePort(string portname, string node_type);
+
+    double ReadNode(const size_t idx);
 };
 
 
@@ -89,7 +121,10 @@ public:
 
 protected:
     //void addPort(const size_t port_idx, Port port);
-    void addPort(const string portname, const string nodetype, const int id=-1);
+    void addPort(const string portname, const string nodetype, const int id=-1); ///TODO: Should be deleted
+    void addPowerPort(const string portname, const string nodetype, const int id=-1); ///TODO: Implement nicer, very small difference between addPort, addReadPort and addWritePort
+    void addReadPort(const string portname, const string nodetype, const int id=-1); ///TODO: Implement nicer, very small difference between addPort, addReadPort and addWritePort
+    void addWritePort(const string portname, const string nodetype, const int id=-1); ///TODO: Implement nicer, very small difference between addPort, addReadPort and addWritePort
     //void addMultiPort(const string portname, const string nodetype, const size_t nports, const size_t startctr=0);
 
     void addInnerPortSetNode(const string portname, Node &rNode);
