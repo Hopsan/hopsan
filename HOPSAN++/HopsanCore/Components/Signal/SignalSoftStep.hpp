@@ -79,7 +79,7 @@ public:
     void simulateOneTimestep()
     {
         //read fron nodes
-   		Node* p1_ptr = mPorts[out].getNodePtr();
+   		Node* p1_ptr = mPortPtrs[out]->getNodePtr();
 
         //Sinewave Equations
         double outputSignal;

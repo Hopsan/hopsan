@@ -127,6 +127,7 @@
 		<Unit filename="HopsanCore\Components\Signal\SignalSaturation.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalSineWave.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalSink.hpp" />
+		<Unit filename="HopsanCore\Components\Signal\SignalSoftStep.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalSource.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalSquareWave.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalStep.hpp" />
