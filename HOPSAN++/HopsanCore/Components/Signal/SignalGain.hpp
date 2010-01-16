@@ -1,12 +1,11 @@
-/*
- *  Gain.hpp
- *  HOPSAN++
- *
- *  Created by Björn Eriksson on 2009-01-05.
- *  Copyright 2010 LiU. All rights reserved.
- *
- */
-
+//!
+//! @file   SignalGain.hpp
+//! @author Björn Eriksson <bjorn.eriksson@liu.se>
+//! @date   2010-01-05
+//!
+//! @brief Contains a Signal Gain Component
+//!
+//$Id$
 
 #ifndef SIGNALGAIN_HPP_INCLUDED
 #define SIGNALGAIN_HPP_INCLUDED

@@ -1,11 +1,11 @@
-/*
- *  Delay.h
- *  HOPSAN++
- *
- *  Created by Björn Eriksson on 2009-12-19.
- *  Copyright 2009 LiU. All rights reserved.
- *
- */
+//!
+//! @file   Delay.h
+//! @author Björn Eriksson <bjorn.eriksson@liu.se>
+//! @date   2009-12-19
+//!
+//! @brief Contains the Core Utility Delay class
+//!
+//$Id$
 
 #ifndef DELAY_H_INCLUDED
 #define DELAY_H_INCLUDED

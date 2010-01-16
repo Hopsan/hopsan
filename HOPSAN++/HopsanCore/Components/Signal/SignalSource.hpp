@@ -1,12 +1,11 @@
-/*
- *  Source.hpp
- *  HOPSAN++
- *
- *  Created by Björn Eriksson on 2009-01-05.
- *  Copyright 2010 LiU. All rights reserved.
- *
- */
-
+//!
+//! @file   SignalSource.hpp
+//! @author Björn Eriksson <bjorn.eriksson@liu.se>
+//! @date   2010-01-05
+//!
+//! @brief Contains a Signal Source Component
+//!
+//$Id$
 
 #ifndef SIGNALSOURCE_HPP_INCLUDED
 #define SIGNALSOURCE_HPP_INCLUDED

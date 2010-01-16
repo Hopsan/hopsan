@@ -1,11 +1,11 @@
-/*
- *  TLMRlineR.hpp
- *  HOPSAN++
- *
- *  Created by Björn Eriksson on 2009-12-21.
- *  Copyright 2009 LiU. All rights reserved.
- *
- */
+//!
+//! @file   HydraulicTLMRLineR.hpp
+//! @author Björn Eriksson <bjorn.eriksson@liu.se>
+//! @date   2009-12-21
+//!
+//! @brief Contains a Hydraulic Transmission Line Component with Resistors in the ends
+//!
+//$Id$
 
 #ifndef HYDRAULICTLMRLINER_HPP_INCLUDED
 #define HYDRAULICTLMRLINER_HPP_INCLUDED

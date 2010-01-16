@@ -1,3 +1,12 @@
+//!
+//! @file   HydraulicPressureSource.hpp
+//! @author <FluMeS>
+//! @date   2009-12-21
+//!
+//! @brief Contains a Hydraulic Pressure Source Component of C-type
+//!
+//$Id$
+
 #ifndef HYDRAULICPRESSURESOURCE_HPP_INCLUDED
 #define HYDRAULICPRESSURESOURCE_HPP_INCLUDED
 

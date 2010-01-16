@@ -1,3 +1,12 @@
+//!
+//! @file   HydraulicVolume.hpp
+//! @author Björn Eriksson <bjorn.eriksson@liu.se>
+//! @date   2009-12-19
+//!
+//! @brief Contains a Hydraulic Volume Component
+//!
+//$Id$
+
 #ifndef HYDRAULICVOLUME_HPP_INCLUDED
 #define HYDRAULICVOLUME_HPP_INCLUDED
 

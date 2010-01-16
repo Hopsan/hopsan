@@ -1,3 +1,12 @@
+//!
+//! @file   HydraulicPressureSourceQ.hpp
+//! @author <FluMeS>
+//! @date   2009-12-21
+//!
+//! @brief Contains a Hydraulic Pressure Source Component of Q-type
+//!
+//$Id$
+
 #ifndef HYDRAULICPRESSURESOURCEQ_HPP_INCLUDED
 #define HYDRAULICPRESSURESOURCEQ_HPP_INCLUDED
 

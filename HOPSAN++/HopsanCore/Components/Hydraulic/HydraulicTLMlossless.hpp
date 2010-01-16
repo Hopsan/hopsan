@@ -1,11 +1,11 @@
-/*
- *  untitled.hpp
- *  HOPSAN++
- *
- *  Created by Björn Eriksson on 2009-12-19.
- *  Copyright 2009 LiU. All rights reserved.
- *
- */
+//!
+//! @file   HydraulicTLMlossless.hpp
+//! @author Björn Eriksson <bjorn.eriksson@liu.se>
+//! @date   2009-12-19
+//!
+//! @brief Contains a Hydraulic Lossless Transmission Line Component
+//!
+//$Id$
 
 #ifndef HYDRAULICTLMLOSSLESS_HPP_INCLUDED
 #define HYDRAULICTLMLOSSLESS_HPP_INCLUDED

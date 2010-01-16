@@ -1,12 +1,11 @@
-/*
- *  Sink.hpp
- *  HOPSAN++
- *
- *  Created by Björn Eriksson on 2009-01-05.
- *  Copyright 2010 LiU. All rights reserved.
- *
- */
-
+//!
+//! @file   SignalSink.hpp
+//! @author Björn Eriksson <bjorn.eriksson@liu.se>
+//! @date   2010-01-05
+//!
+//! @brief Contains a Signal Sink Component
+//!
+//$Id$
 
 #ifndef SIGNALSINK_HPP_INCLUDED
 #define SIGNALSINK_HPP_INCLUDED

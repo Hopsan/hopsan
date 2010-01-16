@@ -1,11 +1,11 @@
-/*
- *  Delay.cc
- *  HOPSAN++
- *
- *  Created by Björn Eriksson on 2009-12-19.
- *  Copyright 2009 LiU. All rights reserved.
- *
- */
+//!
+//! @file   Delay.cc
+//! @author Björn Eriksson <bjorn.eriksson@liu.se>
+//! @date   2009-12-19
+//!
+//! @brief Contains the Core Utility Delay class
+//!
+//$Id$
 
 #include <math.h>
 #include <iostream>
