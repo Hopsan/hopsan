@@ -10,8 +10,14 @@ using namespace std;
 
 typedef string NodeTypeT;
 
+class Port; //forward declaration
+
 class DLLIMPORTEXPORT Node
 {
+
+    friend class Component;
+    friend class ComponentSystem;
+
 ///TODO: Nodes should know their ports so a check can be performed by the node at connection time, the check should be virtual and implement different checks at different nodes.
 public:
     Node();
@@ -25,9 +31,12 @@ public:
     void logData(const double time);
     void saveLogData(string filename);
 
+    void setPort(Port *pPort);
+
 protected:
     NodeTypeT mNodeType;
     vector<double> mDataVector;
+    vector<Port*> mPortPtrs;
 
 private:
     string mName;

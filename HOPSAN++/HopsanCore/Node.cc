@@ -102,6 +102,11 @@ void Node::saveLogData(string filename)
     }
 }
 
+void Node::setPort(Port *pPort)
+{
+    mPortPtrs.push_back(pPort);
+}
+
 NodeFactory gCoreNodeFactory;
 DLLIMPORTEXPORT NodeFactory* getCoreNodeFactoryPtr()
 {

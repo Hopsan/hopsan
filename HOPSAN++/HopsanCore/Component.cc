@@ -55,7 +55,7 @@ void CompParameter::setValue(const double value)
 //Constructor
 Port::Port()
 {
-    mPortType = "Port";
+    mPortType = "PowerPort"; ///TODO: Workaround to get old comp to work, should be "Port"
     mpNode  = 0;
     mpComponent = 0;
     mIsConnected = false;
@@ -63,7 +63,7 @@ Port::Port()
 
 Port::Port(string portname, string node_type)
 {
-    mPortType = "Port";
+    mPortType = "PowerPort"; ///TODO: Workaround to get old comp to work, should be "Port"
     mPortName = portname;
     mNodeType = node_type;
     mpNode  = 0;
@@ -106,6 +106,16 @@ void Port::setNode(Node* node_ptr)
 bool Port::isConnected()
 {
     return mIsConnected;
+}
+
+string &Port::getPortType()
+{
+    return mPortType;
+}
+
+string &Port::getPortName()
+{
+    return mPortName;
 }
 
 //Constructor
@@ -572,16 +582,24 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
         assert(false);
     }
 
-    //check if both ports have the same node type specified
-    if (rComponent1.getPort(portname1).getNodeType() != rComponent2.getPort(portname2).getNodeType())
+    if (rComponent1.getPort(portname1).isConnected() && rComponent2.getPort(portname2).isConnected())
+    //Both already are connected to nodes
     {
-        cout << "You are trying to connect a " << rComponent1.getPort(portname1).getNodeType() << " to " << rComponent2.getPort(portname2).getNodeType() << endl;
-        cout << "raise Exception('component port nodetypes mismatch') or similar should be here" << endl;
-        assert(false);
+        //Do nothing, maybe raise exception?
+        cout << "Both component ports are already connected: " << rComponent1.getName() << ": " << portname1 << " and " << rComponent2.getName() << ": " << portname2 << endl;
     }
-
-    //Check if component1 is a System component containing Component2
-        if (&rComponent1 == &(rComponent2.getSystemparent()))
+    else
+    {
+        //check if both ports have the same node type specified
+        if (rComponent1.getPort(portname1).getNodeType() != rComponent2.getPort(portname2).getNodeType())
+        {
+            cout << "You are trying to connect a " << rComponent1.getPort(portname1).getNodeType() << " to " << rComponent2.getPort(portname2).getNodeType()  << " when connect: " << rComponent1.getName() << ": " << portname1 << " and " << rComponent2.getName() << ": " << portname2 << endl;
+            cout << "raise Exception('component port nodetypes mismatch') or similar should be here" << endl;
+            assert(false);
+        }
+        ///TODO: No error handling nor cecks are done here
+        //Check if component1 is a System component containing Component2
+        else if (&rComponent1 == &(rComponent2.getSystemparent()))
         {
             //Create an instance of the node specified in nodespecifications
             node_ptr = gCoreNodeFactory.CreateInstance(rComponent2.getPort(portname2).getNodeType());
@@ -603,26 +621,145 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             rComponent1.getPort(portname1).setNode(node_ptr);
             rComponent2.addSubNode(node_ptr);    //Component2 contains this node as subnode
         }
-        else   //Both components are on the same level
+        ///TODO: this maybe should be checked every time not only if same level, with some modification as i can connect to myself aswell
+        //Check so that both systems to connect have been added to this system
+        else if ((&rComponent1.getSystemparent() != (Component*)this) && ((&rComponent1.getSystemparent() != (Component*)this)) )
         {
-            ///TODO: this maybe should be checked every time not only if same level, with some modification as i can connect to myself aswell
-            //Check so that both systems to connect have been added to this system
-            if ((&rComponent1.getSystemparent() != (Component*)this) && ((&rComponent1.getSystemparent() != (Component*)this)) )
+            cout << "The two components, "<< rComponent1.getName() << " and " << rComponent2.getName() << ", "<< " to be connected are not contained within the connecting system" << endl;
+            assert(false);
+        }
+        else if (rComponent1.getPort(portname1).isConnected() || rComponent2.getPort(portname2).isConnected())
+        //One of them is connected to a node
+        {
+            if (rComponent1.getPort(portname1).isConnected())
+            //rComponent1 is connected to a node
             {
-                cout << "The two components to be connected are not contained within the connecting system" << endl;
-                assert(false);
-            }
+                node_ptr = rComponent1.getPort(portname1).getNodePtr();
+                // Check so the ports can be connected
+                if (connectionOK(node_ptr, rComponent1.getPort(portname1), rComponent2.getPort(portname2)) == false)
+                {
+                    cout << "Problem occured at connection" << rComponent1.getName() << " and " << rComponent2.getName() << endl;
+                    assert(false);
+                }
+                else
+                {
+                    //Set node in both components ports and add it to the parent system component
+                    rComponent2.getPort(portname2).setNode(node_ptr);
 
+                    //Add port pointers to node
+                    node_ptr->setPort(&rComponent2.getPort(portname2));
+                }
+            }
+            else
+            //rComponent2 is connected to a node
+            {
+                node_ptr = rComponent2.getPort(portname2).getNodePtr();
+                // Check so the ports can be connected
+                if (connectionOK(node_ptr, rComponent1.getPort(portname1), rComponent2.getPort(portname2)) == false)
+                {
+                    cout << "Problem occured at connection" << rComponent1.getName() << " and " << rComponent2.getName() << endl;
+                    assert(false);
+                }
+                else
+                {
+                    //Set node in both components ports and add it to the parent system component
+                    rComponent2.getPort(portname2).setNode(node_ptr);
+
+                    //Add port pointers to node
+                    node_ptr->setPort(&rComponent2.getPort(portname2));
+                }
+            }
+        }
+        else
+        //None of the components is connected
+        {
             //Create an instance of the node specified in nodespecifications
             node_ptr = gCoreNodeFactory.CreateInstance(rComponent1.getPort(portname1).getNodeType());
             cout << "Created NodeType: " << node_ptr->getNodeType() << endl;
+            // Check so the ports can be connected
+            if (connectionOK(node_ptr, rComponent1.getPort(portname1), rComponent2.getPort(portname2)) == false)
+            {
+                cout << "Problem occured at connection" << rComponent1.getName() << " and " << rComponent2.getName() << endl;
+                assert(false);
+            }
+            //rComponent1.getSystemparent().addSubNode(node_ptr); //doesnt work getSystemparent returns Component , addSubNode is in ComponentSystem
+            this->addSubNode(node_ptr);
+
             //Set node in both components ports and add it to the parent system component
             rComponent1.getPort(portname1).setNode(node_ptr);
             rComponent2.getPort(portname2).setNode(node_ptr);
-            //rComponent1.getSystemparent().addSubNode(node_ptr); //doesnt work getSystemparent returns Component , addSubNode is in ComponentSystem
-            this->addSubNode(node_ptr);
+
+            //Add port pointers to node
+            node_ptr->setPort(&rComponent1.getPort(portname1));
+            node_ptr->setPort(&rComponent2.getPort(portname2));
         }
+        cout << "Connected " << rComponent1.getName() << ": " << portname1 << " with " << rComponent2.getName() << ": " << portname2 << " sucessfully" << endl;
+    }
 }
+
+
+bool ComponentSystem::connectionOK(Node *pNode, Port &rPort1, Port &rPort2)
+{
+    size_t n_ReadPorts = 0;
+    size_t n_WritePorts = 0;
+    size_t n_PowerPorts = 0;
+
+    vector<Port*>::iterator it;
+
+    //Count the different kind of ports in the node
+    for (it=(*pNode).mPortPtrs.begin(); it!=(*pNode).mPortPtrs.end(); ++it)
+    {
+        if ((*it)->getPortType() == "ReadPort")
+        {
+            n_ReadPorts += 1;
+        }
+        if ((*it)->getPortType() == "WritePort")
+        {
+            n_WritePorts += 1;
+        }
+        if ((*it)->getPortType() == "PowerPort")
+        {
+            n_PowerPorts += 1;
+        }
+    }
+    //Check the kind of ports in the components subjected for connection
+    if ((rPort1.getPortType() == "ReadPort") || (rPort2.getPortType() == "ReadPort"))
+    {
+        n_ReadPorts += 1;
+    }
+    if ((rPort1.getPortType() == "WritePort") || (rPort2.getPortType() == "WritePort"))
+    {
+        n_WritePorts += 1;
+    }
+    if ((rPort1.getPortType() == "PowerPort") || (rPort2.getPortType() == "PowerPort"))
+    {
+        n_PowerPorts += 1;
+    }
+    //Check if there are some problems with the connection
+    if (n_PowerPorts > 2)
+    {
+        cout << "Trying to connect more than two PowerPorts to same node" << endl;
+        assert(false);
+    }
+    if (n_WritePorts > 1)
+    {
+        cout << "Trying to connect more than one WritePort to same node" << endl;
+        assert(false);
+    }
+    if ((n_PowerPorts > 0) && (n_WritePorts > 0))
+    {
+        cout << "Trying to connect WritePort and PowerPort to same node" << endl;
+        assert(false);
+    }
+    if ((n_PowerPorts == 0) && (n_WritePorts == 0))
+    {
+        cout << "Trying to connect only ReadPorts" << endl;
+        assert(false);
+    }
+    //It seems to be OK!
+    return true;
+}
+
 
 void ComponentSystem::simulate(const double startT, const double stopT)
 {

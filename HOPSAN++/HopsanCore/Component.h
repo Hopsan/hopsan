@@ -45,6 +45,9 @@ public:
     virtual void WriteNode(const size_t idx, const double value);
     bool isConnected();
 
+    string &getPortType();
+    string &getPortName();
+
 protected:
     string mPortType;
     void setNode(Node* node_ptr);
@@ -195,6 +198,8 @@ class DLLIMPORTEXPORT ComponentSystem :public Component
     NodeFactory mpNodeFactory;
 
     private:
+    bool connectionOK(Node *pNode, Port &rPort1, Port &rPort2);
+
 };
 
 typedef ClassFactory<string, Component> ComponentFactory;

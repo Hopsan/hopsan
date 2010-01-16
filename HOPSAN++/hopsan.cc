@@ -48,7 +48,7 @@ void test1()
 }
 
 
-void test2() //Test of the Delay utillity class
+void testDelay() //Test of the Delay utillity class
 {
 //	Delay d1(.15, .1); //delay .15 with sampletime .1
 	Delay d1(2); // delay 2 steps
@@ -1202,7 +1202,7 @@ int main()
     //testkarl();
 
 
-    //test2();
+    //testDelay();
 
 
     //test_fixed_pump();
@@ -1219,11 +1219,15 @@ int main()
 
     //testSineWave();
 
+
     //testPressureControlledValve();
+
 
     testTLMlumped();
 
+
     //testMechanic();
+
 
     //testCheckValve();
 

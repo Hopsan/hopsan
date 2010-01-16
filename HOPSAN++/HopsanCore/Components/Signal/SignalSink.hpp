@@ -31,7 +31,7 @@ public:
                   const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
     {
-        addPort("in", "NodeSignal", in);
+        addReadPort("in", "NodeSignal", in);
     }
 
 
