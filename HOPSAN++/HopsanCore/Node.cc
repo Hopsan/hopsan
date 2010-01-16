@@ -1,3 +1,12 @@
+//!
+//! @file   Node.cc
+//! @author <FluMeS>
+//! @date   2009-12-20
+//!
+//! @brief Contains Node base classes
+//!
+//$Id:
+
 #include <fstream>
 #include <cassert>
 #include <iostream>
