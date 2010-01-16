@@ -1,3 +1,11 @@
+//! @file   Node.h
+//! @author <FluMeS>
+//! @date   2009-12-20
+//!
+//! @brief Contains Node base classes
+//!
+//$Id$
+
 #ifndef NODE_H_INCLUDED
 #define NODE_H_INCLUDED
 
