@@ -101,10 +101,13 @@
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicAckumulator.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicCheckValve.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicFixedDisplacementPump.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicFlowSensor.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicFlowSourceQ.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicLaminarOrifice.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPowerSensor.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPressureControlledValve.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPressureReliefValve.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPressureSensor.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPressureSource.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPressureSourceQ.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicTLMRLineR.hpp" />
