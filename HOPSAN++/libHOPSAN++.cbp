@@ -150,6 +150,8 @@
 		<Unit filename="HopsanCore/Node.h" />
 		<Unit filename="HopsanCore/Nodes/Nodes.cc" />
 		<Unit filename="HopsanCore/Nodes/Nodes.h" />
+		<Unit filename="HopsanCore/Port.cc" />
+		<Unit filename="HopsanCore/Port.h" />
 		<Unit filename="HopsanCore/win32dll.h" />
 		<Extensions>
 			<envvars />
