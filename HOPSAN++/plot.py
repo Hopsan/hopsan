@@ -15,3 +15,4 @@ pylab.plotfile(filename, (0,1,2), checkrows=0, delimiter=' ', names=['Time', "Fl
 # Used for plotting Mechanical nodes:
 #pylab.plotfile(filename, (0,1,2), checkrows=0, delimiter=' ', names=['Time', "Velocity", "Force"]);
 pylab.show();
+
