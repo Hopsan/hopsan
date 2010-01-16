@@ -140,6 +140,9 @@ void testTLMlumped()
     HydraulicTLMRlineR lineR("line_right",    Zc, T/4.0, 0.0, R/8.0);
     HydraulicPressureSourceQ psourceR("ps_right_side", 1.0);
 
+    //SignalSink ssink("ssink");
+    //HydraulicPressureSensor psense("psense");
+
     //Add components
     simulationmodel.addComponent(qsourceL);
     simulationmodel.addComponent(lineL);
@@ -150,6 +153,9 @@ void testTLMlumped()
     simulationmodel.addComponent(orificeR);
     simulationmodel.addComponent(lineR);
     simulationmodel.addComponent(psourceR);
+
+    //simulationmodel.addComponent(psense);
+    //simulationmodel.addComponent(ssink);
 
     //List and set parameters
     lineLC.listParametersConsole();
@@ -164,6 +170,9 @@ void testTLMlumped()
     simulationmodel.connect(orificeR, "P2", lineR, "P1");
     simulationmodel.connect(lineR, "P2", psourceR, "P1");
 
+    //simulationmodel.connect(psense, "P1", lineL, "P1");
+    //simulationmodel.connect(psense, "out", ssink, "in");
+
     //Run simulation
     simulationmodel.preAllocateLogSpace(0.0, 2.0);
 
@@ -171,6 +180,7 @@ void testTLMlumped()
 
     //Test write to file
     lineL.getPort("P1").getNode().saveLogData("output.txt");
+    //psense.getPort("out").getNode().saveLogData("output2.txt");
 
 	//Finished
     cout << "testTLMlumped() Done!" << endl;

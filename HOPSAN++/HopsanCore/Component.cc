@@ -663,7 +663,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
                 else
                 {
                     //Set node in both components ports and add it to the parent system component
-                    rComponent2.getPort(portname2).setNode(node_ptr);
+                    rComponent1.getPort(portname1).setNode(node_ptr);
 
                     //Add port pointers to node
                     node_ptr->setPort(&rComponent2.getPort(portname2));
@@ -698,6 +698,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
 }
 
 
+//FIX!!! Om en av komponenterna redan sitter i noden!!!!
 bool ComponentSystem::connectionOK(Node *pNode, Port &rPort1, Port &rPort2)
 {
     size_t n_ReadPorts = 0;
