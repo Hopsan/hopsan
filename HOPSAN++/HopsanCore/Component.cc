@@ -790,8 +790,7 @@ void ComponentSystem::simulate(const double startT, const double stopT)
     }
 
     //Simulate
-    ///TODO: while (time < stopT) will not work sometimes the loop will run even if time == stopT probably due to numeric error
-	while (mTime < stopT)
+	while (mTime < stopT - this->getTimestep()/2.0) //minus halv a timestep is here to ensure that no numerical issues occure
     {
         if (mTime > stopT-0.01)
         {

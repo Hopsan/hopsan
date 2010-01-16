@@ -1,3 +1,12 @@
+//!
+//! @file   Component.h
+//! @author <FluMeS>
+//! @date   2009-12-20
+//!
+//! @brief Contains Component base classes as well as ports and parameters
+//!
+//$Id$
+
 #ifndef COMPONENT_H_INCLUDED
 #define COMPONENT_H_INCLUDED
 
@@ -179,7 +188,7 @@ public:
 
 class DLLIMPORTEXPORT ComponentSystem :public Component
 {
-    public:
+public:
     ComponentSystem(string name, double timestep=0.001);
     void addComponents(vector<Component*> components);
     void addComponent(Component &rComponent);
@@ -189,7 +198,7 @@ class DLLIMPORTEXPORT ComponentSystem :public Component
     void connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2);
     void simulate(const double startT, const double stopT);
 
-    protected:
+protected:
     vector<Component*> mSubComponentPtrs; //Problems with inheritance and casting?
     vector<Component*> mComponentSignalptrs;
     vector<Component*> mComponentQptrs;
@@ -197,7 +206,7 @@ class DLLIMPORTEXPORT ComponentSystem :public Component
 
     NodeFactory mpNodeFactory;
 
-    private:
+private:
     bool connectionOK(Node *pNode, Port &rPort1, Port &rPort2);
 
 };
