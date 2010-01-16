@@ -23,15 +23,13 @@ public:
     Node();
     NodeTypeT &getNodeType();
 
-    void setData(const size_t data_type, double data);
-    double getData(const size_t data_type);
-    double &getDataRef(const size_t data_type);
+    void setData(const size_t data_type, double data); ///TODO: Move to protected
+    double getData(const size_t data_type); ///TODO: Move to protected
+    double &getDataRef(const size_t data_type); ///TODO: Move to protected
 
     void preAllocateLogSpace(const size_t nSlots);
     void logData(const double time);
     void saveLogData(string filename);
-
-    void setPort(Port *pPort);
 
 protected:
     NodeTypeT mNodeType;
@@ -44,6 +42,8 @@ private:
     vector<vector<double> > mDataStorage;
     bool mLogSpaceAllocated;
     size_t mLogCtr;
+    void setPort(Port *pPort);
+    bool connectedToPort(Port *pPort);
 
 };
 

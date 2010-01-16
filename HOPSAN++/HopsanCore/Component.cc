@@ -698,7 +698,6 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
 }
 
 
-//FIX!!! Om en av komponenterna redan sitter i noden!!!!
 bool ComponentSystem::connectionOK(Node *pNode, Port &rPort1, Port &rPort2)
 {
     size_t n_ReadPorts = 0;
@@ -724,15 +723,16 @@ bool ComponentSystem::connectionOK(Node *pNode, Port &rPort1, Port &rPort2)
         }
     }
     //Check the kind of ports in the components subjected for connection
-    if ((rPort1.getPortType() == "ReadPort") || (rPort2.getPortType() == "ReadPort"))
+    //                                 This checks that rPort1 is not already connected to pNode
+    if (((rPort1.getPortType() == "ReadPort") && !(pNode->connectedToPort(&rPort1))) || ((rPort2.getPortType() == "ReadPort") && !(pNode->connectedToPort(&rPort2))))
     {
         n_ReadPorts += 1;
     }
-    if ((rPort1.getPortType() == "WritePort") || (rPort2.getPortType() == "WritePort"))
+    if (((rPort1.getPortType() == "WritePort") && !(pNode->connectedToPort(&rPort1))) || ((rPort2.getPortType() == "WritePort") && !(pNode->connectedToPort(&rPort2))))
     {
         n_WritePorts += 1;
     }
-    if ((rPort1.getPortType() == "PowerPort") || (rPort2.getPortType() == "PowerPort"))
+    if (((rPort1.getPortType() == "PowerPort") && !(pNode->connectedToPort(&rPort1))) || ((rPort2.getPortType() == "PowerPort") && !(pNode->connectedToPort(&rPort2))))
     {
         n_PowerPorts += 1;
     }

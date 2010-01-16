@@ -116,6 +116,19 @@ void Node::setPort(Port *pPort)
     mPortPtrs.push_back(pPort);
 }
 
+bool Node::connectedToPort(Port *pPort)
+{
+    vector<Port*>::iterator it;
+    for (it=mPortPtrs.begin(); it!=mPortPtrs.end(); ++it)
+    {
+        if (*it == pPort)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 NodeFactory gCoreNodeFactory;
 DLLIMPORTEXPORT NodeFactory* getCoreNodeFactoryPtr()
 {
