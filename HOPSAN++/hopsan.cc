@@ -1,3 +1,10 @@
+//!
+//! @file   hopsan.cc
+//! @author <FluMeS>
+//! @date   2009-12-10
+//!
+//! @brief Contains a Main Program Used for Testing the libHOPSANCORE
+//!
 //$Id$
 
 #include "HopsanCore.h"
