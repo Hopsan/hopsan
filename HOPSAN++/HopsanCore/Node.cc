@@ -5,7 +5,7 @@
 //!
 //! @brief Contains Node base classes
 //!
-//$Id:
+//$Id$
 
 #include <fstream>
 #include <cassert>
