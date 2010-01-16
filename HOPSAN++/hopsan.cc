@@ -1188,9 +1188,12 @@ int main()
 
     //testArithmetics();
 
+
     //test_signals_and_hydraulics();
 
+
     //test1();
+
 
     //cfact_ptr->RegisterCreatorFunction("ComponentExternalSink", ComponentExternalSink::Creator);
     //test_external_lib();
