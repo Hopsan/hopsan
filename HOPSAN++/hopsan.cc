@@ -397,61 +397,96 @@ void test_variable_pump()
 }
 
 
-//void testSignal()
-//{
-//	/*   Exempelsystem:
-//
-//	 2   |\ 3
-//	 o===| >===o
-//	     |/
-//    */
-//
-//    HopsanEssentials Hopsan;
-//
-//    #ifdef WIN32
-//    Hopsan.externalLoader.load("./libHydraulic.dll");
-//    #elif defined MAC
-//    Hopsan.externalLoader.load("/Users/bjoer37/svn/HOPSAN++/bin/Debug/libHydraulic.dylib");
-//    #else
-//    Hopsan.externalLoader.load("./bin/Debug/libHydraulic.so");
-//    #endif
-//
-//    cout << "afterload" << endl;
-//
-//	ComponentSystem simulationmodel("simulationmodel");
-//    //Create other components
-//    SignalSource sourceL("source_left", 1.0);
-//    SignalGain gainC("gain_center", 1.0);
-//    SignalSink sinkR("sink_right");
-//
-//    //Add components
-//    simulationmodel.addComponent(sourceL);
-//    simulationmodel.addComponent(gainC);
-//    simulationmodel.addComponent(sinkR);
-//
-//    //Connect components
-//    simulationmodel.connect(sourceL, "out", gainC, "in");
-//    simulationmodel.connect(gainC, "out", sinkR, "in");
-//
-//    //List and set parameters
-//    sourceL.listParametersConsole();
-//    gainC.listParametersConsole();
-//    sourceL.setParameter("Value", 2.0);
-//    gainC.setParameter("Gain", 3.0);
-//    sourceL.listParametersConsole();
-//    gainC.listParametersConsole();
-//
-//    //Run simulation
-//    simulationmodel.preAllocateLogSpace(0.0, 1.0);
-//
-//    simulationmodel.simulate(0.0, 1.0);
-//
-//    //Test write to file
-//    sinkR.getPort("in").getNode().saveLogData("output.txt");
-//
-//	//Finished
-//    cout << "testSignal() Done!" << endl;
-//}
+void testSignal()
+{
+	/*   Exempelsystem:
+
+	 2   |\ 3
+	 o===| >===o
+	     |/
+    */
+
+    HopsanEssentials Hopsan;
+
+	ComponentSystem simulationmodel("simulationmodel");
+    //Create other components
+    SignalSource sourceL("source_left", 1.0);
+    SignalGain gainC("gain_center", 1.0);
+    SignalSink sinkR("sink_right");
+
+    //Add components
+    simulationmodel.addComponent(sourceL);
+    simulationmodel.addComponent(gainC);
+    simulationmodel.addComponent(sinkR);
+
+    //Connect components
+    simulationmodel.connect(sourceL, "out", gainC, "in");
+    simulationmodel.connect(gainC, "out", sinkR, "in");
+
+    //List and set parameters
+    sourceL.listParametersConsole();
+    gainC.listParametersConsole();
+    sourceL.setParameter("Value", 2.0);
+    gainC.setParameter("Gain", 3.0);
+    sourceL.listParametersConsole();
+    gainC.listParametersConsole();
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0.0, 1.0);
+
+    simulationmodel.simulate(0.0, 1.0);
+
+    //Test write to file
+    sinkR.getPort("in").getNode().saveLogData("output.txt");
+
+	//Finished
+    cout << "testSignal() Done!" << endl;
+}
+
+
+void testIntegrator()
+{
+	/*   Exempelsystem:
+
+	 2   +---+
+	 o===|1/s|===o
+	     +---+
+    */
+
+    HopsanEssentials Hopsan;
+
+	ComponentSystem simulationmodel("simulationmodel");
+    //Create other components
+    SignalStep stepL("source_left", 5.0, -10.0, .5);
+    //SignalIntegrator intC("integrator_center");
+    SignalIntegratorLimited intC("integrator_center", -1.0, 1.0);
+    SignalSink sinkR("sink_right");
+
+    //Add components
+    simulationmodel.addComponent(stepL);
+    simulationmodel.addComponent(intC);
+    simulationmodel.addComponent(sinkR);
+
+    //Connect components
+    simulationmodel.connect(stepL, "out", intC, "in");
+    simulationmodel.connect(intC, "out", sinkR, "in");
+
+    //List and set parameters
+    stepL.listParametersConsole();
+    intC.listParametersConsole();
+    sinkR.listParametersConsole();
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0.0, 1.0);
+
+    simulationmodel.simulate(0.0, 1.0);
+
+    //Test write to file
+    sinkR.getPort("in").getNode().saveLogData("output.txt");
+
+	//Finished
+    cout << "testIntegrator() Done!" << endl;
+}
 
 
 void testExternalSignal()
@@ -1236,6 +1271,9 @@ int main()
     //testMicke();
 
 
+    testIntegrator();
+
+
     //testSignal();
 
 
@@ -1245,7 +1283,7 @@ int main()
     //testPressureControlledValve();
 
 
-    testTLMlumped();
+    //testTLMlumped();
 
 
     //testMechanic();

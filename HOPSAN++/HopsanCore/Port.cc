@@ -59,9 +59,9 @@ void Port::WriteNode(const size_t idx, const double value)
     return mpNode->setData(idx, value);
 }
 
-void Port::setNode(Node* node_ptr)
+void Port::setNode(Node* pNode)
 {
-    mpNode = node_ptr;
+    mpNode = pNode;
     mIsConnected = true;
 }
 

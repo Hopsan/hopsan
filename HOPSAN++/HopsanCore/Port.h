@@ -39,7 +39,7 @@ public:
 
 protected:
     string mPortType;
-    void setNode(Node* node_ptr);
+    void setNode(Node* pNode);
 
 private:
     string mPortName, mNodeType;

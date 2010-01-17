@@ -3,7 +3,7 @@
 //! @author <FluMeS>
 //! @date   2009-12-20
 //!
-//! @brief Contains Component base classes as well as ports and parameters
+//! @brief Contains Component base classes
 //!
 //$Id$
 

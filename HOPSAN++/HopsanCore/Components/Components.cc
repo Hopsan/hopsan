@@ -38,7 +38,8 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->RegisterCreatorFunction("SignalLP1Filter", SignalLP1Filter::Creator);
     cfact_ptr->RegisterCreatorFunction("SignalPulse", SignalPulse::Creator);
     cfact_ptr->RegisterCreatorFunction("SignalSoftStep", SignalSoftStep::Creator);
-
+    cfact_ptr->RegisterCreatorFunction("SignalIntegrator", SignalIntegrator::Creator);
+    cfact_ptr->RegisterCreatorFunction("SignalIntegratorLimited", SignalIntegratorLimited::Creator);
 
     //Mechanical components
     cfact_ptr->RegisterCreatorFunction("MechanicForceTransformer", MechanicForceTransformer::Creator);
