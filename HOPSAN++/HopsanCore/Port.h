@@ -19,9 +19,9 @@ using namespace std;
 class Component; //forward declaration
 class ComponentSystem;  //forward declaration
 
-class DLLIMPORTEXPORT Port ///TODO: Should be made virtual somehow OR Change Port into PowerPort
+class DLLIMPORTEXPORT Port ///TODO: Constructor should be made virtual OR Change Port into PowerPort
 {
-    friend class Component;
+    friend class Component; ///TODO: Investigate if USERS can access Port's protected and private members because of the friend thin, then it can not be friends here!
     friend class ComponentSystem;
 
 public:
@@ -30,8 +30,8 @@ public:
     string &getNodeType(); ///TODO: Move to protected
     Node &getNode(); ///TODO: Move to protected
     Node *getNodePtr(); ///TODO: Move to protected
-    virtual double readNode(const size_t idx);
-    virtual void writeNode(const size_t idx, const double value);
+    virtual double readNode(const size_t idx); ///TODO: Move to protected
+    virtual void writeNode(const size_t idx, const double value); ///TODO: Move to protected
     bool isConnected();
 
     string &getPortType();
