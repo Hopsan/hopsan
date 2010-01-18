@@ -43,10 +43,10 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double p = mPortPtrs[P1]->ReadNode(NodeHydraulic::PRESSURE);
+        double p = mPortPtrs[P1]->readNode(NodeHydraulic::PRESSURE);
 
         //Write new values to nodes
-        mPortPtrs[out]->WriteNode(NodeSignal::VALUE, p);
+        mPortPtrs[out]->writeNode(NodeSignal::VALUE, p);
     }
 };
 

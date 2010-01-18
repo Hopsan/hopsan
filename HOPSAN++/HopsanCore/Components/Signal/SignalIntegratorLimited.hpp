@@ -50,7 +50,7 @@ public:
 
 	void initialize()
 	{
-	    double u0 = mPortPtrs[in]->ReadNode(NodeSignal::VALUE);
+	    double u0 = mPortPtrs[in]->readNode(NodeSignal::VALUE);
 	    mDelayU.initializeValues(u0);
 	    mDelayY.initializeValues(max(min(mStartY, mMax), mMin));
 	}
@@ -59,7 +59,7 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double u = mPortPtrs[in]->ReadNode(NodeSignal::VALUE);
+        double u = mPortPtrs[in]->readNode(NodeSignal::VALUE);
 
         //Filter equations
         //Bilinear transform is used
@@ -67,16 +67,16 @@ public:
 
         if (y >= mMax)
         {
-            mPortPtrs[out]->WriteNode(NodeSignal::VALUE, mMax);
+            mPortPtrs[out]->writeNode(NodeSignal::VALUE, mMax);
         }
         else if (y <= mMin)
         {
-            mPortPtrs[out]->WriteNode(NodeSignal::VALUE, mMin);
+            mPortPtrs[out]->writeNode(NodeSignal::VALUE, mMin);
         }
         else
         {
             //Write new values to nodes
-            mPortPtrs[out]->WriteNode(NodeSignal::VALUE, y);
+            mPortPtrs[out]->writeNode(NodeSignal::VALUE, y);
 
             //Update filter:
             mDelayU.update(u);

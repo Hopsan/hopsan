@@ -49,8 +49,8 @@ public:
     void initialize()
     {
         //write to nodes
-        mPortPtrs[P1]->WriteNode(NodeHydraulic::PRESSURE, mStartPressure);
-        mPortPtrs[P1]->WriteNode(NodeHydraulic::MASSFLOW, mStartFlow);
+        mPortPtrs[P1]->writeNode(NodeHydraulic::PRESSURE, mStartPressure);
+        mPortPtrs[P1]->writeNode(NodeHydraulic::MASSFLOW, mStartFlow);
 
     }
 
@@ -61,7 +61,7 @@ public:
         double p;
         if (mPortPtrs[in]->isConnected())
         {
-            p = mPortPtrs[in]->ReadNode(NodeSignal::VALUE);         //We have a signal!
+            p = mPortPtrs[in]->readNode(NodeSignal::VALUE);         //We have a signal!
         }
         else
         {
@@ -69,8 +69,8 @@ public:
         }
 
         //Write new values to nodes
-        mPortPtrs[P1]->WriteNode(NodeHydraulic::WAVEVARIABLE, p);
-        mPortPtrs[P1]->WriteNode(NodeHydraulic::CHARIMP, mZc);
+        mPortPtrs[P1]->writeNode(NodeHydraulic::WAVEVARIABLE, p);
+        mPortPtrs[P1]->writeNode(NodeHydraulic::CHARIMP, mZc);
     }
 };
 

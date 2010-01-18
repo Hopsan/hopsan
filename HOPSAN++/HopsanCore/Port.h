@@ -3,7 +3,7 @@
 //! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2010-01-16
 //!
-//! @brief Contains Port base classes as well as Sub classes
+//! @brief Contains Port base class as well as Sub classes
 //!
 //$Id$
 
@@ -30,8 +30,8 @@ public:
     string &getNodeType(); ///TODO: Move to protected
     Node &getNode(); ///TODO: Move to protected
     Node *getNodePtr(); ///TODO: Move to protected
-    virtual double ReadNode(const size_t idx);
-    virtual void WriteNode(const size_t idx, const double value);
+    virtual double readNode(const size_t idx);
+    virtual void writeNode(const size_t idx, const double value);
     bool isConnected();
 
     string &getPortType();
@@ -62,7 +62,7 @@ public:
     ReadPort();
     ReadPort(string portname, string node_type);
 
-    void WriteNode(const size_t idx, const double value);
+    void writeNode(const size_t idx, const double value);
 };
 
 
@@ -72,7 +72,7 @@ public:
     WritePort();
     WritePort(string portname, string node_type);
 
-    double ReadNode(const size_t idx);
+    double readNode(const size_t idx);
 };
 
 #endif // PORT_H_INCLUDED

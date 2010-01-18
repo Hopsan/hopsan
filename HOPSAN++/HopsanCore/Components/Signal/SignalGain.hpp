@@ -49,13 +49,13 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double u = mPortPtrs[in]->ReadNode(NodeSignal::VALUE);
+        double u = mPortPtrs[in]->readNode(NodeSignal::VALUE);
 
         //Gain equations
 		double y = mGain*u;
 
         //Write new values to nodes
-        mPortPtrs[out]->WriteNode(NodeSignal::VALUE, y);
+        mPortPtrs[out]->writeNode(NodeSignal::VALUE, y);
     }
 };
 

@@ -63,24 +63,24 @@ public:
         mZc = mBulkmodulus/mVolume*mTimestep; //Need to be updated at simulation start since it is volume and bulk that are set.
 
         //Write to nodes
-        mPortPtrs[P1]->WriteNode(NodeHydraulic::MASSFLOW,     mStartFlow);
-        mPortPtrs[P1]->WriteNode(NodeHydraulic::PRESSURE,     mStartPressure);
-        mPortPtrs[P1]->WriteNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+mZc*mStartFlow);
-        mPortPtrs[P1]->WriteNode(NodeHydraulic::CHARIMP,      mZc);
-        mPortPtrs[P2]->WriteNode(NodeHydraulic::MASSFLOW,     mStartFlow);
-        mPortPtrs[P2]->WriteNode(NodeHydraulic::PRESSURE,     mStartPressure);
-        mPortPtrs[P2]->WriteNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+mZc*mStartFlow);
-        mPortPtrs[P2]->WriteNode(NodeHydraulic::CHARIMP,      mZc);
+        mPortPtrs[P1]->writeNode(NodeHydraulic::MASSFLOW,     mStartFlow);
+        mPortPtrs[P1]->writeNode(NodeHydraulic::PRESSURE,     mStartPressure);
+        mPortPtrs[P1]->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+mZc*mStartFlow);
+        mPortPtrs[P1]->writeNode(NodeHydraulic::CHARIMP,      mZc);
+        mPortPtrs[P2]->writeNode(NodeHydraulic::MASSFLOW,     mStartFlow);
+        mPortPtrs[P2]->writeNode(NodeHydraulic::PRESSURE,     mStartPressure);
+        mPortPtrs[P2]->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+mZc*mStartFlow);
+        mPortPtrs[P2]->writeNode(NodeHydraulic::CHARIMP,      mZc);
 	}
 
 
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double q1  = mPortPtrs[P1]->ReadNode(NodeHydraulic::MASSFLOW);
-        double c1  = mPortPtrs[P1]->ReadNode(NodeHydraulic::WAVEVARIABLE);
-        double q2  = mPortPtrs[P2]->ReadNode(NodeHydraulic::MASSFLOW);
-        double c2  = mPortPtrs[P2]->ReadNode(NodeHydraulic::WAVEVARIABLE);
+        double q1  = mPortPtrs[P1]->readNode(NodeHydraulic::MASSFLOW);
+        double c1  = mPortPtrs[P1]->readNode(NodeHydraulic::WAVEVARIABLE);
+        double q2  = mPortPtrs[P2]->readNode(NodeHydraulic::MASSFLOW);
+        double c2  = mPortPtrs[P2]->readNode(NodeHydraulic::WAVEVARIABLE);
 
         //Orifice equations
         double c10 = c2 + 2.0*mZc * q2;
@@ -89,10 +89,10 @@ public:
         c2 = mAlpha*c2 + (1.0-mAlpha)*c20;
 
         //Write new values to nodes
-        mPortPtrs[P1]->WriteNode(NodeHydraulic::WAVEVARIABLE, c1);
-        mPortPtrs[P2]->WriteNode(NodeHydraulic::WAVEVARIABLE, c2);
-        mPortPtrs[P1]->WriteNode(NodeHydraulic::CHARIMP,      mZc);
-        mPortPtrs[P2]->WriteNode(NodeHydraulic::CHARIMP,      mZc);
+        mPortPtrs[P1]->writeNode(NodeHydraulic::WAVEVARIABLE, c1);
+        mPortPtrs[P2]->writeNode(NodeHydraulic::WAVEVARIABLE, c2);
+        mPortPtrs[P1]->writeNode(NodeHydraulic::CHARIMP,      mZc);
+        mPortPtrs[P2]->writeNode(NodeHydraulic::CHARIMP,      mZc);
     }
 };
 

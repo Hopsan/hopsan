@@ -49,14 +49,14 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-		double c  = mPortPtrs[P1]->ReadNode(NodeHydraulic::WAVEVARIABLE);
-        double Zc = mPortPtrs[P1]->ReadNode(NodeHydraulic::CHARIMP);
+		double c  = mPortPtrs[P1]->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zc = mPortPtrs[P1]->readNode(NodeHydraulic::CHARIMP);
 
         //Flow source equations
         double q;
         if (mPortPtrs[in]->isConnected())
         {
-            q = mPortPtrs[in]->ReadNode(NodeSignal::VALUE);         //Control signal exist!
+            q = mPortPtrs[in]->readNode(NodeSignal::VALUE);         //Control signal exist!
         }
         else
         {
@@ -65,8 +65,8 @@ public:
         double p = c + mFlow*Zc;
 
         //Write new values to nodes
-        mPortPtrs[P1]->WriteNode(NodeHydraulic::MASSFLOW, q);
-        mPortPtrs[P1]->WriteNode(NodeHydraulic::PRESSURE, p);
+        mPortPtrs[P1]->writeNode(NodeHydraulic::MASSFLOW, q);
+        mPortPtrs[P1]->writeNode(NodeHydraulic::PRESSURE, p);
     }
 };
 

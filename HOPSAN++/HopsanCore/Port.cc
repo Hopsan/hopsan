@@ -3,7 +3,7 @@
 //! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2010-01-16
 //!
-//! @brief Contains Port base classes as well as Sub classes
+//! @brief Contains Port base class as well as Sub classes
 //!
 //$Id$
 
@@ -49,12 +49,12 @@ Node* Port::getNodePtr()
     return mpNode;
 }
 
-double Port::ReadNode(const size_t idx)
+double Port::readNode(const size_t idx)
 {
     return mpNode->getData(idx);
 }
 
-void Port::WriteNode(const size_t idx, const double value)
+void Port::writeNode(const size_t idx, const double value)
 {
     return mpNode->setData(idx, value);
 }
@@ -102,7 +102,7 @@ ReadPort::ReadPort(string portname, string node_type) : Port(portname, node_type
     mPortType = "ReadPort";
 }
 
-void ReadPort::WriteNode(const size_t idx, const double value)
+void ReadPort::writeNode(const size_t idx, const double value)
 {
     cout << "Could not write to port, this is a ReadPort" << endl;
     assert(false);
@@ -119,7 +119,7 @@ WritePort::WritePort(string portname, string node_type) : Port(portname, node_ty
     mPortType = "WritePort";
 }
 
-double WritePort::ReadNode(const size_t idx)
+double WritePort::readNode(const size_t idx)
 {
     cout << "Could not read from port, this is a WritePort" << endl;
     assert(false);

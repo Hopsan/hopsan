@@ -44,7 +44,7 @@ public:
 
 	void initialize()
 	{
-	    double u0 = mPortPtrs[in]->ReadNode(NodeSignal::VALUE);
+	    double u0 = mPortPtrs[in]->readNode(NodeSignal::VALUE);
 	    mDelayU.initializeValues(u0);
 	    mDelayY.initializeValues(mStartY);
 	    ///TODO: Write out values into node as well? (I think so) This is true for all components
@@ -54,14 +54,14 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double u = mPortPtrs[in]->ReadNode(NodeSignal::VALUE);
+        double u = mPortPtrs[in]->readNode(NodeSignal::VALUE);
 
         //Filter equation
         //Bilinear transform is used
 		double y = mDelayY.value() + mTimestep/2.0*(u + mDelayU.value());
 
         //Write new values to nodes
-        mPortPtrs[out]->WriteNode(NodeSignal::VALUE, y);
+        mPortPtrs[out]->writeNode(NodeSignal::VALUE, y);
 
         //Update filter:
         mDelayU.update(u);
