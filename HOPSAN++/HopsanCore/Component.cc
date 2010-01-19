@@ -322,14 +322,14 @@ Port &Component::getPort(const string portname)
     assert(false);
 }
 
-bool Component::getPort(const string portname, Port &rPort)
+bool Component::getPort(const string portname, Port *pPort)
 {
     vector<Port*>::iterator it;
     for (it=mPortPtrs.begin(); it!=mPortPtrs.end(); ++it)
     {
         if ((*it)->mPortName == portname)
         {
-            rPort = *(*it);
+            pPort = (*it);
             return true;
         }
     }
@@ -453,17 +453,19 @@ void ComponentSystem::logAllNodes(const double time)
 void ComponentSystem::connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2)
 {
     Node* node_ptr;
-    Port port1, port2;
+    Port* pPort1=0;
+    Port* pPort2=0;
+
     //First some error checking
 
     //Check if commponents have specified ports
-    if (!rComponent1.getPort(portname1, port1))
+    if (!rComponent1.getPort(portname1, pPort1))
     {
         //raise Exception('type of port does not exist')
         cout << "rComponent1: "<< rComponent1.getName() << " does not have a port with name " << portname1 << endl;
         assert(false);
     }
-    else if (!rComponent2.getPort(portname2, port2))
+    if (!rComponent2.getPort(portname2, pPort2)) //Not else if because pPort2 has to be set in getPort
     {
         //raise Exception('type of port does not exist')
         cout << "rComponent2: "<< rComponent2.getName() << " does not have a port with name " << portname2 << endl;

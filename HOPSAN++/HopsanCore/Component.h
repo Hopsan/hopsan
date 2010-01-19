@@ -73,7 +73,7 @@ public:
     ComponentSystem &getSystemparent();
     Port &getPortById(const size_t port_idx); ///TODO: this should not be public
     Port &getPort(const string portname);
-    bool getPort(const string portname, Port &rPort);
+    bool getPort(const string portname, Port *pPort);
 
 protected:
     //void addPort(const size_t port_idx, Port port);
