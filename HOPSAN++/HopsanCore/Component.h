@@ -77,7 +77,7 @@ public:
 
 protected:
     //void addPort(const size_t port_idx, Port port);
-    void addPort(const string portname, const string nodetype, const int id=-1); ///TODO: Should be deleted
+    void addPort(const string portname, const string nodetype, const int id=-1); ///TODO: Should be deleted after all components are converted
     void addPowerPort(const string portname, const string nodetype, const int id=-1); ///TODO: Implement nicer, very small difference between addPort, addReadPort and addWritePort
     void addReadPort(const string portname, const string nodetype, const int id=-1); ///TODO: Implement nicer, very small difference between addPort, addReadPort and addWritePort
     void addWritePort(const string portname, const string nodetype, const int id=-1); ///TODO: Implement nicer, very small difference between addPort, addReadPort and addWritePort

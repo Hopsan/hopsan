@@ -463,15 +463,13 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
         cout << "rComponent1: "<< rComponent1.getName() << " does not have a port with name " << portname1 << endl;
         assert(false);
     }
-
-    if (!rComponent2.getPort(portname2, port2))
+    else if (!rComponent2.getPort(portname2, port2))
     {
         //raise Exception('type of port does not exist')
         cout << "rComponent2: "<< rComponent2.getName() << " does not have a port with name " << portname2 << endl;
         assert(false);
     }
-
-    if (rComponent1.getPort(portname1).isConnected() && rComponent2.getPort(portname2).isConnected())
+    else if (rComponent1.getPort(portname1).isConnected() && rComponent2.getPort(portname2).isConnected())
     //Both already are connected to nodes
     {
         //Do nothing, maybe raise exception?
