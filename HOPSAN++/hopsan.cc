@@ -1271,7 +1271,7 @@ int main()
     //testMicke();
 
 
-    testIntegrator();
+    //testIntegrator();
 
 
     //testSignal();
@@ -1283,7 +1283,7 @@ int main()
     //testPressureControlledValve();
 
 
-    //testTLMlumped();
+    testTLMlumped();
 
 
     //testMechanic();

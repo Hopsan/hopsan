@@ -19,25 +19,27 @@ using namespace std;
 class Component; //forward declaration
 class ComponentSystem;  //forward declaration
 
-class DLLIMPORTEXPORT Port ///TODO: Constructor should be made virtual OR Change Port into PowerPort
+class DLLIMPORTEXPORT Port
 {
-    friend class Component; ///TODO: Investigate if USERS can access Port's protected and private members because of the friend thin, then it can not be friends here!
+    friend class Component;
     friend class ComponentSystem;
 
 public:
-    Port();
-    Port(string portname, string node_type);
-    string &getNodeType(); ///TODO: Move to protected
+    string &getNodeType();
     Node &getNode(); ///TODO: Move to protected
     Node *getNodePtr(); ///TODO: Move to protected
-    virtual double readNode(const size_t idx); ///TODO: Move to protected
-    virtual void writeNode(const size_t idx, const double value); ///TODO: Move to protected
+    virtual double readNode(const size_t idx);
+    virtual void writeNode(const size_t idx, const double value);
     bool isConnected();
 
     string &getPortType();
     string &getPortName();
 
 protected:
+    //Constructors
+    Port();
+    Port(string portname, string node_type);
+
     string mPortType;
     void setNode(Node* pNode);
 
@@ -50,7 +52,11 @@ private:
 
 class DLLIMPORTEXPORT PowerPort :public Port
 {
-public:
+    friend class Component;
+    friend class ComponentSystem;
+
+protected:
+    //Constructors
     PowerPort();
     PowerPort(string portname, string node_type);
 };
@@ -58,21 +64,31 @@ public:
 
 class DLLIMPORTEXPORT ReadPort :public Port
 {
+    friend class Component;
+    friend class ComponentSystem;
+
 public:
+    void writeNode(const size_t idx, const double value);
+
+protected:
+    //Constructors
     ReadPort();
     ReadPort(string portname, string node_type);
-
-    void writeNode(const size_t idx, const double value);
 };
 
 
 class DLLIMPORTEXPORT WritePort :public Port
 {
+    friend class Component;
+    friend class ComponentSystem;
+
 public:
+    double readNode(const size_t idx);
+
+protected:
+    //Constructors
     WritePort();
     WritePort(string portname, string node_type);
-
-    double readNode(const size_t idx);
 };
 
 #endif // PORT_H_INCLUDED

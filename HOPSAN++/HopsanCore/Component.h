@@ -3,7 +3,7 @@
 //! @author <FluMeS>
 //! @date   2009-12-20
 //!
-//! @brief Contains Component base classes
+//! @brief Contains Component base classes as well as Component Parameter class
 //!
 //$Id$
 
@@ -19,8 +19,9 @@ using namespace std;
 
 class DLLIMPORTEXPORT CompParameter
 {
+    friend class Component;
+
 public:
-    CompParameter(const string name, const string description, const string unit, double &rValue); //should maybe be a description field as well
     ///TODO: getting strings can (probably) be speed up by returning const references instead of copying strings
     string getName();
     string getDesc();
@@ -29,6 +30,8 @@ public:
     void setValue(const double value);
 
 private:
+    CompParameter(const string name, const string description, const string unit, double &rValue); //should maybe be a description field as well
+
     string mName;
     string mDescription;
     string mUnit;
