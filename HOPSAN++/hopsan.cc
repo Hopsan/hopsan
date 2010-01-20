@@ -1269,7 +1269,7 @@ void testAck()
     simulationmodel.simulate(0,10);
 
     //Test write to file
-    ack.getPort("P2").saveLogData("output.txt");
+    ack.getPort("out").saveLogData("output.txt");
 
     cout << "testAck() Done!" << endl;
 

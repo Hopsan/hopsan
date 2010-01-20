@@ -12,6 +12,7 @@
 #include <sstream>
 #include <cassert>
 #include <math.h>
+#include "Component.h"
 
 
 //Constructor
@@ -67,7 +68,15 @@ void Port::setNode(Node* pNode)
 
 void Port::saveLogData(string filename)
 {
-    mpNode->saveLogData(filename);
+    if (mpNode != 0)
+    {
+        mpNode->saveLogData(filename);
+    }
+    else
+    {
+        cout << mpComponent->getName() << "-port:" << mPortName << " can not log data, the Port has no Node connected" << endl;
+        assert(false);
+    }
 }
 
 bool Port::isConnected()
