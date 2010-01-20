@@ -70,11 +70,11 @@ public:
         mdeltah = damping;
         mTimestep = timestep;
 
-        addPort("PP", "NodeHydraulic", PP);
-        addPort("PT", "NodeHydraulic", PT);
-        addPort("PA", "NodeHydraulic", PA);
-        addPort("PB", "NodeHydraulic", PB);
-        addPort("PX", "NodeSignal", PX);
+        addPowerPort("PP", "NodeHydraulic", PP);
+        addPowerPort("PT", "NodeHydraulic", PT);
+        addPowerPort("PA", "NodeHydraulic", PA);
+        addPowerPort("PB", "NodeHydraulic", PB);
+        addPowerPort("PX", "NodeSignal", PX);
 
         registerParameter("Cq", "Flow Coefficient", "[-]", mCq);
         registerParameter("d", "Diameter", "[m]", md);
@@ -99,23 +99,16 @@ public:
     void simulateOneTimestep()
     {
 
-        //Get the nodes
-        Node* pp_ptr = mPortPtrs[PP]->getNodePtr();
-        Node* pt_ptr = mPortPtrs[PT]->getNodePtr();
-        Node* pa_ptr = mPortPtrs[PA]->getNodePtr();
-        Node* pb_ptr = mPortPtrs[PB]->getNodePtr();
-        Node* px_ptr = mPortPtrs[PX]->getNodePtr();
-
         //Get variable values from nodes
-        double cp  = pp_ptr->getData(NodeHydraulic::WAVEVARIABLE);
-        double Zcp = pp_ptr->getData(NodeHydraulic::CHARIMP);
-        double ct  = pt_ptr->getData(NodeHydraulic::WAVEVARIABLE);
-        double Zct = pt_ptr->getData(NodeHydraulic::CHARIMP);
-        double ca  = pa_ptr->getData(NodeHydraulic::WAVEVARIABLE);
-        double Zca = pa_ptr->getData(NodeHydraulic::CHARIMP);
-        double cb  = pb_ptr->getData(NodeHydraulic::WAVEVARIABLE);
-        double Zcb = pb_ptr->getData(NodeHydraulic::CHARIMP);
-        double xvin  = px_ptr->getData(NodeSignal::VALUE);
+        double cp  = mPortPtrs[PP]->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zcp = mPortPtrs[PP]->readNode(NodeHydraulic::CHARIMP);
+        double ct  = mPortPtrs[PT]->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zct = mPortPtrs[PT]->readNode(NodeHydraulic::CHARIMP);
+        double ca  = mPortPtrs[PA]->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zca = mPortPtrs[PA]->readNode(NodeHydraulic::CHARIMP);
+        double cb  = mPortPtrs[PB]->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zcb = mPortPtrs[PB]->readNode(NodeHydraulic::CHARIMP);
+        double xvin  = mPortPtrs[PX]->readNode(NodeSignal::VALUE);
 
         double xv = myFilter.getValue();
 
@@ -180,14 +173,14 @@ public:
 
         //Write new values to nodes
 
-        pp_ptr->setData(NodeHydraulic::PRESSURE, pp);
-        pp_ptr->setData(NodeHydraulic::MASSFLOW, qp);
-        pt_ptr->setData(NodeHydraulic::PRESSURE, pt);
-        pt_ptr->setData(NodeHydraulic::MASSFLOW, qt);
-        pa_ptr->setData(NodeHydraulic::PRESSURE, pa);
-        pa_ptr->setData(NodeHydraulic::MASSFLOW, qa);
-        pb_ptr->setData(NodeHydraulic::PRESSURE, pb);
-        pb_ptr->setData(NodeHydraulic::MASSFLOW, qb);
+        mPortPtrs[PP]->writeNode(NodeHydraulic::PRESSURE, pp);
+        mPortPtrs[PP]->writeNode(NodeHydraulic::MASSFLOW, qp);
+        mPortPtrs[PT]->writeNode(NodeHydraulic::PRESSURE, pt);
+        mPortPtrs[PT]->writeNode(NodeHydraulic::MASSFLOW, qt);
+        mPortPtrs[PA]->writeNode(NodeHydraulic::PRESSURE, pa);
+        mPortPtrs[PA]->writeNode(NodeHydraulic::MASSFLOW, qa);
+        mPortPtrs[PB]->writeNode(NodeHydraulic::PRESSURE, pb);
+        mPortPtrs[PB]->writeNode(NodeHydraulic::MASSFLOW, qb);
 
         //Update Filter:
         myFilter.update(xvin);

@@ -52,8 +52,8 @@ public:
         mStartFlowInternal      = 0.0;
 
 
-        addPort("P1", "NodeHydraulic", P1);     //External port
-        addPort("P2", "NodeHydraulic", P2);     //Internal "port"
+        addPowerPort("P1", "NodeHydraulic", P1);     //External port
+        addPowerPort("P2", "NodeHydraulic", P2);     //Internal "port"
 
         registerParameter("Pmin", "Minimum Internal Pressure", "Pa", mPmin);
         registerParameter("Vtot", "Total Volume", "m^3", mVtot);
@@ -90,13 +90,10 @@ public:
 
     void simulateOneTimestep()
     {
-        //Get the nodes
-        Node* p1_ptr = mPortPtrs[P1]->getNodePtr();
-        Node* p2_ptr = mPortPtrs[P2]->getNodePtr();
 
         //Get variable values from nodes
-        double c1  = p1_ptr->getData(NodeHydraulic::WAVEVARIABLE);
-        double Zc1 = p1_ptr->getData(NodeHydraulic::CHARIMP);
+        double c1 = mPortPtrs[P1]->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zc1 = mPortPtrs[P1]->readNode(NodeHydraulic::CHARIMP);
 
         //Ackumulator equations
 
@@ -138,10 +135,10 @@ public:
         mDelayedZc1.update(Zc1);
 
         //Write new values to nodes
-        p1_ptr->setData(NodeHydraulic::PRESSURE, p1);
-        p1_ptr->setData(NodeHydraulic::MASSFLOW, q1);
-        p2_ptr->setData(NodeHydraulic::PRESSURE, p2);
-        p2_ptr->setData(NodeHydraulic::MASSFLOW, q2);
+        mPortPtrs[P1]->writeNode(NodeHydraulic::PRESSURE, p1);
+        mPortPtrs[P1]->writeNode(NodeHydraulic::MASSFLOW, q1);
+        mPortPtrs[P2]->writeNode(NodeHydraulic::PRESSURE, p2);
+        mPortPtrs[P2]->writeNode(NodeHydraulic::MASSFLOW, q2);
     }
 };
 
