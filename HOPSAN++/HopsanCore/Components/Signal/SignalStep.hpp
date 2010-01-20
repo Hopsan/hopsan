@@ -26,8 +26,8 @@ class SignalStep : public ComponentSignal
 {
 
 private:
-    double mStartValue;
-    double mStepSize;
+    double mBaseValue;
+    double mAmplitude;
     double mStepTime;
     enum {out};
 
@@ -40,20 +40,20 @@ public:
 
 
     SignalStep(const string name,
-                          const double startvalue = 0.0,
-                          const double stepsize = 1.0,
+                          const double basevalue = 0.0,
+                          const double amplitude = 1.0,
                           const double steptime = 1.0,
                           const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
     {
-        mStartValue = startvalue;
-        mStepSize = stepsize;
+        mBaseValue = basevalue;
+        mAmplitude = amplitude;
         mStepTime = steptime;
 
         addWritePort("out", "NodeSignal", out);
 
-        registerParameter("StartValue", "Start Value", "-", mStartValue);
-        registerParameter("StepSize", "Final Value", "-", mStepSize);
+        registerParameter("BaseValue", "Base Value", "-", mBaseValue);
+        registerParameter("Amplitude", "Amplitude", "-", mAmplitude);
         registerParameter("StepTime", "Step Time", "-", mStepTime);
     }
 
@@ -70,11 +70,11 @@ public:
         double output;
         if (mTime < mStepTime)
         {
-            output = mStartValue;     //Before step
+            output = mBaseValue;     //Before step
         }
         else
         {
-            output = mStartValue + mStepSize;     //After step
+            output = mBaseValue + mAmplitude;     //After step
         }
 
         //Write new values to nodes
