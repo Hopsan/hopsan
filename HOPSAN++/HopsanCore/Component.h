@@ -73,7 +73,7 @@ public:
     ComponentSystem &getSystemparent();
     Port &getPortById(const size_t port_idx); ///TODO: this should not be public
     Port &getPort(const string portname);
-    bool getPort(const string portname, Port *pPort);
+    bool getPort(const string portname, Port* &prPort);
 
 protected:
     //void addPort(const size_t port_idx, Port port);
@@ -151,7 +151,7 @@ protected:
     NodeFactory mpNodeFactory;
 
 private:
-    bool connectionOK(Node *pNode, Port &rPort1, Port &rPort2);
+    bool connectionOK(Node *pNode, Port *pPort1, Port *pPort2);
 
 };
 

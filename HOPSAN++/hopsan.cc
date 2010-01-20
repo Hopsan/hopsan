@@ -1280,10 +1280,10 @@ int main()
     //testSineWave();
 
 
-    testPressureControlledValve();
+    //testPressureControlledValve();
 
 
-    //testTLMlumped();
+    testTLMlumped();
 
 
     //testMechanic();
