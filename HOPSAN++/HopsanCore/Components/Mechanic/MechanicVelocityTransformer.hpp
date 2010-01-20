@@ -1,3 +1,5 @@
+//$Id$
+
 #ifndef MECHANICVELOCITYTRANSFORMER_HPP_INCLUDED
 #define MECHANICVELOCITYTRANSFORMER_HPP_INCLUDED
 
@@ -23,8 +25,8 @@ public:
         //Set member attributes
 
 		//Add ports to the component
-        addPort("in", "NodeSignal", in);
-        addPort("out", "NodeMechanic", out);
+        addReadPort("in", "NodeSignal", in);
+        addPowerPort("out", "NodeMechanic", out);
 
         //Register changable parameters to the HOPSAN++ core
     }
@@ -36,14 +38,10 @@ public:
 
     void simulateOneTimestep()
     {
-        //Get the nodes
-		Node* p1_ptr = mPortPtrs[in]->getNodePtr();
-		Node* p2_ptr = mPortPtrs[out]->getNodePtr();
-
         //Get variable values from nodes
-        double signal  = p1_ptr->getData(NodeSignal::VALUE);
-        double c = p2_ptr->getData(NodeMechanic::WAVEVARIABLE);
-        double Zc = p2_ptr->getData(NodeMechanic::CHARIMP);
+        double signal  = mPortPtrs[in]->readNode(NodeSignal::VALUE);
+        double c = mPortPtrs[out]->readNode(NodeMechanic::WAVEVARIABLE);
+        double Zc = mPortPtrs[out]->readNode(NodeMechanic::CHARIMP);
 
 
         //Spring equations
@@ -51,8 +49,8 @@ public:
         double F = c + Zc*v;
 
         //Write new values to nodes
-        p2_ptr->setData(NodeMechanic::VELOCITY, v);
-        p2_ptr->setData(NodeMechanic::FORCE, F);
+        mPortPtrs[out]->writeNode(NodeMechanic::VELOCITY, v);
+        mPortPtrs[out]->writeNode(NodeMechanic::FORCE, F);
     }
 };
 

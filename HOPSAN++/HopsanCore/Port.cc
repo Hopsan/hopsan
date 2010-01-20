@@ -65,6 +65,11 @@ void Port::setNode(Node* pNode)
     mIsConnected = true;
 }
 
+void Port::saveLogData(string filename)
+{
+    mpNode->saveLogData(filename);
+}
+
 bool Port::isConnected()
 {
     return mIsConnected;

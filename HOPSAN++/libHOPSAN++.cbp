@@ -106,7 +106,6 @@
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicLaminarOrifice.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPowerSensor.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPressureControlledValve.hpp" />
-		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPressureReliefValve.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPressureSensor.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPressureSource.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPressureSourceQ.hpp" />

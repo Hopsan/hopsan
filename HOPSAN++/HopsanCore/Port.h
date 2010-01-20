@@ -25,13 +25,12 @@ class DLLIMPORTEXPORT Port
     friend class ComponentSystem;
 
 public:
-    string &getNodeType();
-    Node &getNode(); ///TODO: Move to protected
-    Node *getNodePtr(); ///TODO: Move to protected
     virtual double readNode(const size_t idx);
     virtual void writeNode(const size_t idx, const double value);
+    void saveLogData(string filename);
     bool isConnected();
 
+    string &getNodeType();
     string &getPortType();
     string &getPortName();
 
@@ -42,6 +41,8 @@ protected:
 
     string mPortType;
     void setNode(Node* pNode);
+    Node &getNode();
+    Node *getNodePtr();
 
 private:
     string mPortName, mNodeType;

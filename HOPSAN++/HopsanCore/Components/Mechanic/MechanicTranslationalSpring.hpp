@@ -1,3 +1,5 @@
+//$Id$
+
 #ifndef MECHANICTRANSLATIONALSPRING_HPP_INCLUDED
 #define MECHANICTRANSLATIONALSPRING_HPP_INCLUDED
 
@@ -28,8 +30,8 @@ public:
         mTimestep = timestep;
 
 		//Add ports to the component
-        addPort("P1", "NodeMechanic", P1);
-        addPort("P2", "NodeMechanic", P2);
+        addPowerPort("P1", "NodeMechanic", P1);
+        addPowerPort("P2", "NodeMechanic", P2);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("k", "Spring Coefficient", "[N/m]",  mk);
@@ -43,15 +45,11 @@ public:
 
     void simulateOneTimestep()
     {
-        //Get the nodes
-		Node* p1_ptr = mPortPtrs[P1]->getNodePtr();
-		Node* p2_ptr = mPortPtrs[P2]->getNodePtr();
-
         //Get variable values from nodes
-        double v1  = p1_ptr->getData(NodeMechanic::VELOCITY);
-        double v2  = p2_ptr->getData(NodeMechanic::VELOCITY);
-        double lastc1  = p1_ptr->getData(NodeMechanic::WAVEVARIABLE);
-        double lastc2  = p2_ptr->getData(NodeMechanic::WAVEVARIABLE);
+        double v1  = mPortPtrs[P1]->readNode(NodeMechanic::VELOCITY);
+        double v2  = mPortPtrs[P2]->readNode(NodeMechanic::VELOCITY);
+        double lastc1  = mPortPtrs[P1]->readNode(NodeMechanic::WAVEVARIABLE);
+        double lastc2  = mPortPtrs[P2]->readNode(NodeMechanic::WAVEVARIABLE);
 
         //Spring equations
         double Zc = mk * mTimestep;
@@ -59,10 +57,10 @@ public:
         double c2 = lastc1 + 2.0*Zc*v1;
 
         //Write new values to nodes
-        p1_ptr->setData(NodeMechanic::WAVEVARIABLE, c1);
-        p2_ptr->setData(NodeMechanic::WAVEVARIABLE, c2);
-        p1_ptr->setData(NodeMechanic::CHARIMP, Zc);
-        p2_ptr->setData(NodeMechanic::CHARIMP, Zc);
+        mPortPtrs[P1]->writeNode(NodeMechanic::WAVEVARIABLE, c1);
+        mPortPtrs[P2]->writeNode(NodeMechanic::WAVEVARIABLE, c2);
+        mPortPtrs[P1]->writeNode(NodeMechanic::CHARIMP, Zc);
+        mPortPtrs[P2]->writeNode(NodeMechanic::CHARIMP, Zc);
     }
 };
 

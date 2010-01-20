@@ -1,3 +1,5 @@
+//$Id$
+
 #ifndef MECHANICTRANSLATIONALMASS_HPP_INCLUDED
 #define MECHANICTRANSLATIONALMASS_HPP_INCLUDED
 
@@ -35,8 +37,8 @@ public:
         mTimestep = timestep;
 
 		//Add ports to the component
-        addPort("P1", "NodeMechanic", P1);
-        addPort("P2", "NodeMechanic", P2);
+        addPowerPort("P1", "NodeMechanic", P1);
+        addPowerPort("P2", "NodeMechanic", P2);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("Mass", "Mass", "[kg]",            mMass);
@@ -52,15 +54,11 @@ public:
 
     void simulateOneTimestep()
     {
-        //Get the nodes
-		Node* p1_ptr = mPortPtrs[P1]->getNodePtr();
-		Node* p2_ptr = mPortPtrs[P2]->getNodePtr();
-
         //Get variable values from nodes
-        double Zx1  = p1_ptr->getData(NodeMechanic::CHARIMP);
-        double c1  = p1_ptr->getData(NodeMechanic::WAVEVARIABLE);
-        double Zx2  = p2_ptr->getData(NodeMechanic::CHARIMP);
-        double c2  = p2_ptr->getData(NodeMechanic::WAVEVARIABLE);
+        double Zx1  = mPortPtrs[P1]->readNode(NodeMechanic::CHARIMP);
+        double c1  = mPortPtrs[P1]->readNode(NodeMechanic::WAVEVARIABLE);
+        double Zx2  = mPortPtrs[P2]->readNode(NodeMechanic::CHARIMP);
+        double c2  = mPortPtrs[P2]->readNode(NodeMechanic::WAVEVARIABLE);
 
         //Mass equations
         double num [] = {0.0, 1.0, 0.0};
@@ -72,10 +70,10 @@ public:
         double F2 = c2 + Zx2*v2;
 
         //Write new values to nodes
-        p1_ptr->setData(NodeMechanic::FORCE, F1);
-        p2_ptr->setData(NodeMechanic::FORCE, F2);
-        p1_ptr->setData(NodeMechanic::VELOCITY, v1);
-        p2_ptr->setData(NodeMechanic::VELOCITY, v2);
+        mPortPtrs[P1]->writeNode(NodeMechanic::FORCE, F1);
+        mPortPtrs[P2]->writeNode(NodeMechanic::FORCE, F2);
+        mPortPtrs[P1]->writeNode(NodeMechanic::VELOCITY, v1);
+        mPortPtrs[P2]->writeNode(NodeMechanic::VELOCITY, v2);
       //  p1_ptr->setData(NodeMechanic::POSITION, x1);
       //  p2_ptr->setData(NodeMechanic::POSITION, x2);
 

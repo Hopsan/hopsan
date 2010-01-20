@@ -51,7 +51,7 @@ void test1()
 
     //Test write to file
     TicToc filewritetimer("filewritetimer");
-    volumeC.getPort("P1").getNode().saveLogData("output.txt");
+    volumeC.getPort("P1").saveLogData("output.txt");
     filewritetimer.TocPrint();
     cout << "test1() Done!" << endl;
 }
@@ -104,7 +104,7 @@ void testTLM()
     simulationmodel.simulate(0.0, 1.0);
 
     //Test write to file
-    lineC.getPort("P1").getNode().saveLogData("output.txt");
+    lineC.getPort("P1").saveLogData("output.txt");
 
 	//Finished
     cout << "testTLM Done!" << endl;
@@ -179,8 +179,8 @@ void testTLMlumped()
     simulationmodel.simulate(0.0, 2.0);
 
     //Test write to file
-    lineL.getPort("P1").getNode().saveLogData("output.txt");
-    psense.getPort("out").getNode().saveLogData("output2.txt");
+    lineL.getPort("P1").saveLogData("output.txt");
+    psense.getPort("out").saveLogData("output2.txt");
 
 	//Finished
     cout << "testTLMlumped() Done!" << endl;
@@ -233,8 +233,8 @@ void test3()
     simulationmodel.simulate(0.0, 1.0);
 
     //Test write to file
-    lineC.getPort("P1").getNode().saveLogData("output.txt");
-    lineC.getPort("P2").getNode().saveLogData("output2.txt");
+    lineC.getPort("P1").saveLogData("output.txt");
+    lineC.getPort("P2").saveLogData("output2.txt");
 
 	//Finished
     cout << "test3() Done!" << endl;
@@ -295,7 +295,7 @@ void test_external_lib()
     simulationmodel.simulate(0,100);
 
     //Test write to file
-    volumeC->getPort("P1").getNode().saveLogData("output.txt");
+    volumeC->getPort("P1").saveLogData("output.txt");
 
     cout << "test_external_lib() Done!" << endl;
 
@@ -346,7 +346,7 @@ void test_fixed_pump()
     simulationmodel.simulate(0,100);
 
     //Test write to file
-    pump->getPort("P2").getNode().saveLogData("output.txt");
+    pump->getPort("P2").saveLogData("output.txt");
 
     cout << "test_fixed_pump() Done!" << endl;
 
@@ -390,7 +390,7 @@ void test_variable_pump()
     simulationmodel.simulate(0,100);
 
     //Test write to file
-    pump.getPort("P2").getNode().saveLogData("output.txt");
+    pump.getPort("P2").saveLogData("output.txt");
 
     cout << "test_variable_pump() Done!" << endl;
 
@@ -437,7 +437,7 @@ void testSignal()
     simulationmodel.simulate(0.0, 1.0);
 
     //Test write to file
-    sinkR.getPort("in").getNode().saveLogData("output.txt");
+    sinkR.getPort("in").saveLogData("output.txt");
 
 	//Finished
     cout << "testSignal() Done!" << endl;
@@ -482,7 +482,7 @@ void testIntegrator()
     simulationmodel.simulate(0.0, 1.0);
 
     //Test write to file
-    sinkR.getPort("in").getNode().saveLogData("output.txt");
+    sinkR.getPort("in").saveLogData("output.txt");
 
 	//Finished
     cout << "testIntegrator() Done!" << endl;
@@ -539,7 +539,7 @@ void testExternalSignal()
     simulationmodel.simulate(0.0, 1.0);
 
     //Test write to file
-    sinkR->getPort("in").getNode().saveLogData("output.txt");
+    sinkR->getPort("in").saveLogData("output.txt");
 
 	//Finished
     cout << "testSignal() Done!" << endl;
@@ -648,8 +648,8 @@ void testkarl()
     simulationmodel.simulate(0.0, 20.0);
 
     //Test write to file
-    valve->getPort("PA").getNode().saveLogData("output2.txt");
-    sinus->getPort("out").getNode().saveLogData("output.txt");
+    valve->getPort("PA").saveLogData("output2.txt");
+    sinus->getPort("out").saveLogData("output.txt");
 
 	//Finished
     cout << "testkarl() Done!" << endl;
@@ -705,7 +705,7 @@ void testExternalSignalStep()
     simulationmodel.simulate(0.0, 2.0);
 
     //Test write to file
-    sinkR->getPort("in").getNode().saveLogData("output.txt");
+    sinkR->getPort("in").saveLogData("output.txt");
 
 	//Finished
     cout << "testExternalSignalStep() Done!" << endl;
@@ -764,7 +764,7 @@ void testExternalSineWave()
     simulationmodel.simulate(0.0, 10.0);
 
     //Test write to file
-    sinkR->getPort("in").getNode().saveLogData("output.txt");
+    sinkR->getPort("in").saveLogData("output.txt");
 
 	//Finished
     cout << "testExternalSineWave() Done!" << endl;
@@ -813,7 +813,7 @@ void testSineWave()
     simulationmodel.simulate(0.0, 10.0);
 
     //Test write to file
-    sinkR.getPort("in").getNode().saveLogData("output.txt");
+    sinkR.getPort("in").saveLogData("output.txt");
 
 	//Finished
     cout << "testSineWave() Done!" << endl;
@@ -852,7 +852,7 @@ void testMicke()
     simulationmodel.simulate(0.0, 10.0);
 
     //Test write to file
-    sink.getPort("in").getNode().saveLogData("output.txt");
+    sink.getPort("in").saveLogData("output.txt");
 
 	//Finished
     cout << "testMicke() Done!" << endl;
@@ -912,7 +912,7 @@ void testExternalSquareWave()
     simulationmodel.simulate(0.0, 10.0);
 
     //Test write to file
-    sinkR->getPort("in").getNode().saveLogData("output.txt");
+    sinkR->getPort("in").saveLogData("output.txt");
 
 	//Finished
     cout << "testExternalSquareWave() Done!" << endl;
@@ -972,7 +972,7 @@ void testExternalRamp()
     simulationmodel.simulate(0.0, 10.0);
 
     //Test write to file
-    sinkR->getPort("in").getNode().saveLogData("output.txt");
+    sinkR->getPort("in").saveLogData("output.txt");
 
 	//Finished
     cout << "testExternalRamp() Done!" << endl;
@@ -1036,7 +1036,7 @@ void test_signals_and_hydraulics()
     simulationmodel.simulate(0,10);
 
     //Test write to file
-    orifice->getPort("P1").getNode().saveLogData("output.txt");
+    orifice->getPort("P1").saveLogData("output.txt");
 
     cout << "test_signals_and_hydraulics() Done!" << endl;
 
@@ -1092,7 +1092,7 @@ void testArithmetics()
     simulationmodel.simulate(0.0, 10.0);
 
     //Test write to file
-    sink->getPort("in").getNode().saveLogData("output.txt");
+    sink->getPort("in").saveLogData("output.txt");
 
 	//Finished
     cout << "testArithmetics() Done!" << endl;
@@ -1132,7 +1132,7 @@ void testCheckValve()
     simulationmodel.simulate(0,100);
 
     //Test write to file
-    volumeC.getPort("P2").getNode().saveLogData("output.txt");
+    volumeC.getPort("P2").saveLogData("output.txt");
 
     cout << "test_checkvalve() Done!" << endl;
 
@@ -1176,8 +1176,8 @@ void testMechanic()
     simulationmodel.simulate(0.0, 10.0);
 
     //Write to file
-    spring->getPort("P2").getNode().saveLogData("output.txt");
-    filter->getPort("out").getNode().saveLogData("output2.txt");
+    spring->getPort("P2").saveLogData("output.txt");
+    filter->getPort("out").saveLogData("output2.txt");
 
 	//Finished
     cout << "testMechanic() Done!" << endl;
@@ -1230,7 +1230,7 @@ void testPressureControlledValve()
     simulationmodel.simulate(0,3);
 
     //Test write to file
-    pValve.getPort("P_OPEN").getNode().saveLogData("output.txt");
+    pValve.getPort("P_OPEN").saveLogData("output.txt");
 
     cout << "test_pvalve() Done!" << endl;
 
@@ -1269,7 +1269,7 @@ void testAck()
     simulationmodel.simulate(0,10);
 
     //Test write to file
-    ack.getPort("P2").getNode().saveLogData("output.txt");
+    ack.getPort("P2").saveLogData("output.txt");
 
     cout << "testAck() Done!" << endl;
 
