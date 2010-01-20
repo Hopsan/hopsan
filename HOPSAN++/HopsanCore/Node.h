@@ -26,7 +26,6 @@ class DLLIMPORTEXPORT Node
     friend class Component;
     friend class ComponentSystem;
 
-///TODO: Nodes should know their ports so a check can be performed by the node at connection time, the check should be virtual and implement different checks at different nodes.
 public:
     //The user should never bother about Nodes
 

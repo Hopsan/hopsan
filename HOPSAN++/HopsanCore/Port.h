@@ -11,13 +11,11 @@
 #define PORT_H_INCLUDED
 
 #include "Node.h"
+#include "Component.h"
 #include "win32dll.h"
 #include <string>
 
 using namespace std;
-
-class Component; //forward declaration
-class ComponentSystem;  //forward declaration
 
 class DLLIMPORTEXPORT Port
 {
@@ -50,6 +48,7 @@ private:
     Component* mpComponent;
     bool mIsConnected;
 };
+
 
 class DLLIMPORTEXPORT PowerPort :public Port
 {

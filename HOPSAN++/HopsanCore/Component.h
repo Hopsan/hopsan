@@ -21,16 +21,16 @@ class DLLIMPORTEXPORT CompParameter
 {
     friend class Component;
 
-public:
+private:
+    CompParameter(const string name, const string description, const string unit, double &rValue); //should maybe be a description field as well
+
+    double getValue();
+    void setValue(const double value);
+
     ///TODO: getting strings can (probably) be speed up by returning const references instead of copying strings
     string getName();
     string getDesc();
     string getUnit();
-    double getValue();
-    void setValue(const double value);
-
-private:
-    CompParameter(const string name, const string description, const string unit, double &rValue); //should maybe be a description field as well
 
     string mName;
     string mDescription;
@@ -45,10 +45,6 @@ class DLLIMPORTEXPORT Component
     friend class ComponentSystem;
 
 public:
-    Component(string name, double timestep=0.001);
-    virtual ~Component(){};
-    virtual void initialize(); ///TODO: Default values are hard set
-    virtual void simulateOneTimestep();
     void simulate(const double startT, const double Ts);
 
     void setName(string name);
@@ -56,12 +52,13 @@ public:
 
     string &getType();
 
-    void registerParameter(const string name, const string description, const string unit, double &rValue);
     void listParametersConsole();
     double getParameter(const string name);
     void setParameter(const string name, const double value);
 
-    void setTimestep(const double timestep);
+    ComponentSystem &getSystemparent();
+
+    void setTimestep(const double timestep); ///TODO: Should it be possible to set timestep of a component? Should only be possible for a Systemcomponent
     double getTimestep();
 
     bool isComponentC();
@@ -69,34 +66,29 @@ public:
     bool isComponentSystem();
     bool isComponentSignal();
 
-    void setSystemparent(ComponentSystem &rComponentSystem); ///TODO: this should not be public
-    ComponentSystem &getSystemparent();
-    Port &getPortById(const size_t port_idx); ///TODO: this should not be public
     Port &getPort(const string portname);
-    bool getPort(const string portname, Port* &prPort);
 
 protected:
+    Component(string name, double timestep=0.001);
+    virtual ~Component(){};
+    virtual void initialize(); ///TODO: Default values are hard set
+    virtual void simulateOneTimestep();
+    void registerParameter(const string name, const string description, const string unit, double &rValue);
+
+    bool getPort(const string portname, Port* &prPort);
+    Port &getPortById(const size_t port_idx);
     //void addPort(const size_t port_idx, Port port);
-    void addPort(const string portname, const string nodetype, const int id=-1); ///TODO: Should be deleted after all components are converted
+    void addPort(const string portname, const string nodetype, const int id=-1); ///TODO: Should be deleted after subsystem is changed e.g. addInnerPort and so on
     void addPowerPort(const string portname, const string nodetype, const int id=-1); ///TODO: Implement nicer, very small difference between addPort, addReadPort and addWritePort
     void addReadPort(const string portname, const string nodetype, const int id=-1); ///TODO: Implement nicer, very small difference between addPort, addReadPort and addWritePort
     void addWritePort(const string portname, const string nodetype, const int id=-1); ///TODO: Implement nicer, very small difference between addPort, addReadPort and addWritePort
     //void addMultiPort(const string portname, const string nodetype, const size_t nports, const size_t startctr=0);
 
-    void addInnerPortSetNode(const string portname, Node &rNode);
-
-    void addSubNode(Node* node_ptr);
-
-
     string mType;
-    vector<Port*> mPortPtrs, mInnerPortPtrs;
-
-    vector<Node*> mSubNodePtrs;
-
-    vector<CompParameter> mParameters;
-
     double mTimestep;
     double mTime;
+
+    vector<Port*> mPortPtrs, mInnerPortPtrs;
 
     bool mIsComponentC;
     bool mIsComponentQ;
@@ -104,6 +96,16 @@ protected:
     bool mIsComponentSignal;
 
 private:
+    void setSystemparent(ComponentSystem &rComponentSystem);
+
+    void addInnerPortSetNode(const string portname, Node &rNode);
+
+    void addSubNode(Node* node_ptr);
+
+    vector<Node*> mSubNodePtrs;
+
+    vector<CompParameter> mParameters;
+
     string mName;
     ComponentSystem* mpSystemparent;
 };
@@ -111,21 +113,21 @@ private:
 
 class DLLIMPORTEXPORT ComponentSignal :public Component
 {
-public:
+protected:
     ComponentSignal(string name, double timestep=0.001);
 };
 
 
 class DLLIMPORTEXPORT ComponentC :public Component
 {
-public:
+protected:
     ComponentC(string name, double timestep=0.001);
 };
 
 
 class DLLIMPORTEXPORT ComponentQ :public Component
 {
-public:
+protected:
     ComponentQ(string name, double timestep=0.001);
 };
 
@@ -136,23 +138,21 @@ public:
     ComponentSystem(string name, double timestep=0.001);
     void addComponents(vector<Component*> components);
     void addComponent(Component &rComponent);
-    void addInnerPortSetNode(const string portname, Node &rNode);
-    void preAllocateLogSpace(const double startT, const double stopT);
-    void logAllNodes(const double time);
     void connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2);
     void simulate(const double startT, const double stopT);
+    void preAllocateLogSpace(const double startT, const double stopT);
+    void logAllNodes(const double time);
 
-protected:
+private:
+    void addInnerPortSetNode(const string portname, Node &rNode);
+    bool connectionOK(Node *pNode, Port *pPort1, Port *pPort2);
+
     vector<Component*> mSubComponentPtrs; //Problems with inheritance and casting?
     vector<Component*> mComponentSignalptrs;
     vector<Component*> mComponentQptrs;
     vector<Component*> mComponentCptrs;
 
     NodeFactory mpNodeFactory;
-
-private:
-    bool connectionOK(Node *pNode, Port *pPort1, Port *pPort2);
-
 };
 
 typedef ClassFactory<string, Component> ComponentFactory;

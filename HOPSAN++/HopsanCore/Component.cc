@@ -411,6 +411,7 @@ void ComponentSystem::addComponent(Component &rComponent)
 
 void Component::addInnerPortSetNode(const string portname, Node &rNode)
 {
+    ///TODO: reimplement with the new different port types
     ///TODO: handle trying to add multiple ports with same name or pos
     Port* new_port = new Port(portname, rNode.getNodeType());
     new_port->mpComponent = this;    //Set port owner

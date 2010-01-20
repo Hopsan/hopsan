@@ -1318,9 +1318,9 @@ int main()
 
     //testPressureControlledValve();
 
-    //testTLMlumped();
+    testTLMlumped();
 
-    testAck();
+    //testAck();
 
     //testMechanic();
 

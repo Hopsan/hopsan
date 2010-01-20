@@ -68,7 +68,6 @@ public:
         moverlap_bt = overlap_bt;
         momegah = resfrequency;
         mdeltah = damping;
-        mTimestep = timestep;
 
         addPowerPort("PP", "NodeHydraulic", PP);
         addPowerPort("PT", "NodeHydraulic", PT);
