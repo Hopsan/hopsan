@@ -172,7 +172,7 @@ public:
             xh = mPh / b1;
             //if (mTime == 0) { xs = mX0; }
             xsh = mHyst.getValue(xs, xh, mDelayedX0.value());
-            //mX0 = mFilterLP.filter(xsh);          //Filter is not working
+            mX0 = mFilterLP.getValue();          //Filter is not working
             mX0 = xsh;
             if (mX0 > mX0max)
             {
