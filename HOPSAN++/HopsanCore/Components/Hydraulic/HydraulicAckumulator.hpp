@@ -19,7 +19,7 @@ class HydraulicAckumulator : public ComponentQ
 private:
     double mPmin, mVtot, mVoil, mVgas, mBetae, mKappa, mKce, mStartPressure, mStartFlow;
     Delay mDelayedP2, mDelayedC1, mDelayedZc1, mDelayedQ2;
-    enum {P1, P2};
+    enum {P1, out};
 
 public:
     static Component *Creator()
@@ -51,7 +51,7 @@ public:
         mStartFlow              = startflow;
 
         addPowerPort("P1", "NodeHydraulic", P1);     //External port
-        addPowerPort("P2", "NodeHydraulic", P2);     //Internal "port"
+        addWritePort("out", "NodeSignal", out);     //Internal pressure output
 
         registerParameter("Pmin", "Minimum Internal Pressure", "Pa", mPmin);
         registerParameter("Vtot", "Total Volume", "m^3", mVtot);
@@ -66,7 +66,6 @@ public:
 
     void initialize()
     {
-        cout << "Begin Initialize" << endl;
         double p1 = mPortPtrs[P1]->readNode(NodeHydraulic::PRESSURE);
         double c1 = mPortPtrs[P1]->readNode(NodeHydraulic::WAVEVARIABLE);
         double Zc1 = mPortPtrs[P1]->readNode(NodeHydraulic::CHARIMP);
@@ -95,25 +94,26 @@ public:
         mDelayedP2.initializeValues(mStartPressure);
         mDelayedC1.initializeValues(c1);
         mDelayedZc1.initializeValues(Zc1);
-        cout << "End Initialize" << endl;
+
+        mDelayedP2.setStepDelay(1);
+        mDelayedC1.setStepDelay(1);
+        mDelayedZc1.setStepDelay(1);
+        mDelayedQ2.setStepDelay(1);
+
+        cout << "Start Pressure: " << mStartPressure << endl;;
     }
 
 
     void simulateOneTimestep()
     {
-        cout << "Begin Step" << endl;
         //Get variable values from nodes
         double c1 = mPortPtrs[P1]->readNode(NodeHydraulic::WAVEVARIABLE);
         double Zc1 = mPortPtrs[P1]->readNode(NodeHydraulic::CHARIMP);
 
         //Ackumulator equations
-        cout << "Declare Variables" << endl;
-
         double e0, ct;
         double p1,q1,q2;
         double p2 = mDelayedP2.value();
-
-        cout << "Begin Equations" << endl;
 
         e0 = mPmin * pow(mVtot, mKappa);
         ct = mVgas / (p2*mKappa) + (mVtot-mVgas) / mBetae;
@@ -122,7 +122,11 @@ public:
         p1 = c1 - Zc1*q2;
         p2 = p1 - q2/mKce;
 
-        cout << "Begin Cavitation Check" << endl;
+        if (mTime < 0.05)
+        {
+                cout << "p1 = " << p1 << ", p2 = " << p2 << ", q = " << q2 << ", ct = " << ct << endl;
+        }
+
 
         if (p1 < 0.0)       //Cavitation!
         {
@@ -136,6 +140,7 @@ public:
 
         if (p2 < mPmin)     //Too low pressure (ack cannot be less than empty)
         {
+            cout << "Empty!" << endl;
             mVgas = mVtot;
             q2 = 0.0;
             p1 = c1;
@@ -146,24 +151,24 @@ public:
         mVoil = mVtot - mVgas;
         q1 = -q2;
 
-        cout << "Equations Done" << endl;
+        if (mTime < 0.05)
+        {
+                cout << "Voil = " << mVoil << endl;
+        }
 
+        mDelayedP2.update(p2);
         mDelayedQ2.update(q2);
         mDelayedC1.update(c1);
         mDelayedZc1.update(Zc1);
 
-        cout << "Delay Updated" << endl << "p1 = " << p1 << ", q1 = " << q1 << ", p2 = " << p2 << ", q2 = " << q2 << endl;
-
         //Write new values to nodes
         mPortPtrs[P1]->writeNode(NodeHydraulic::PRESSURE, p1);
         mPortPtrs[P1]->writeNode(NodeHydraulic::MASSFLOW, q1);
+        if (mPortPtrs[out]->isConnected())
+        {
+            mPortPtrs[out]->writeNode(NodeSignal::VALUE, mVoil);
+        }
 
-        cout << "Port 1 writen" << endl;
-
-        mPortPtrs[P2]->writeNode(NodeHydraulic::PRESSURE, p2);
-        mPortPtrs[P2]->writeNode(NodeHydraulic::MASSFLOW, q2);
-
-        cout << "End Step" << endl;
     }
 };
 
