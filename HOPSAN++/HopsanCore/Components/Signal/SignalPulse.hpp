@@ -1,11 +1,11 @@
-/*
- *  SignalPulse.hpp
- *  HOPSAN++
- *
- *  Created by Robert Braun on 2010-01-14.
- *  Copyright 2010 LiU. All rights reserved.
- *
- */
+//!
+//! @file   SignalPulse.hpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-01-14
+//!
+//! @brief Contains a pulse signal generator
+//!
+//$Id$
 
 ////////////////////////////////////////////////
 //                    XXXXX       ↑           //

@@ -1,11 +1,11 @@
-/*
- *  HydraulicFixedDisplacementPump.hpp
- *  HOPSAN++
- *
- *  Created by Robert Braun on 2010-01-07.
- *  Copyright 2010 LiU. All rights reserved.
- *
- */
+//!
+//! @file   HydraulicFixedDisplacementPump.hpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-01-07
+//!
+//! @brief Contains a hydraulic pump with fixed displacement component
+//!
+//$Id$
 
 #ifndef HYDRAULICFIXEDDISPLACEMENTPUMP_HPP_INCLUDED
 #define HYDRAULICFIXEDDISPLACEMENTPUMP_HPP_INCLUDED

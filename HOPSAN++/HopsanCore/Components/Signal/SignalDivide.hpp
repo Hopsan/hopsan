@@ -1,11 +1,11 @@
-/*
- *  SignalDivide.hpp
- *  HOPSAN++
- *
- *  Created by Robert Braun on 2010-01-11.
- *  Copyright 2010 LiU. All rights reserved.
- *
- */
+//!
+//! @file   SignalDivide.hpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-01-11
+//!
+//! @brief Contains a mathematical division function
+//!
+//$Id$
 
 #ifndef SIGNALDIVIDE_HPP_INCLUDED
 #define SIGNALDIVIDE_HPP_INCLUDED

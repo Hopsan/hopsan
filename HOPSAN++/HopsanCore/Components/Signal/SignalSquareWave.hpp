@@ -1,11 +1,11 @@
-/*
- *  SignalSquareWave.hpp
- *  HOPSAN++
- *
- *  Created by Robert Braun on 2010-01-08.
- *  Copyright 2010 LiU. All rights reserved.
- *
- */
+//!
+//! @file   SignalSquareWave.hpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-01-08
+//!
+//! @brief Contains a square wave signal generator
+//!
+//$Id$
 
 ///////////////////////////////////////////////////////////
 //               ↑  XXXXX   XXXXX   XXXXX                //

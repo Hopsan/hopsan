@@ -1,11 +1,11 @@
-/*
- *  HydraulicCheckValve.hpp
- *  HOPSAN++
- *
- *  Created by Robert Braun on 2010-01-07.
- *  Copyright 2010 LiU. All rights reserved.
- *
- */
+//!
+//! @file   HydraulicCheckValve.hpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-01-07
+//!
+//! @brief Contains a Hydraulic Checkvalve component
+//!
+//$Id$
 
 #ifndef HYDRAULICCHECKVALVE_HPP_INCLUDED
 #define HYDRAULICCHECKVALVE_HPP_INCLUDED

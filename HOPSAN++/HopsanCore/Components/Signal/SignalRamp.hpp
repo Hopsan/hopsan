@@ -1,11 +1,11 @@
-/*
- *  SignalRamp.hpp
- *  HOPSAN++
- *
- *  Created by Robert Braun on 2010-01-08.
- *  Copyright 2010 LiU. All rights reserved.
- *
- */
+//!
+//! @file   SignalRamp.hpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-01-08
+//!
+//! @brief Contains a ramp signal generator
+//!
+//$Id$
 
 ///////////////////////////////////////////////////
 //                       StopTime                //

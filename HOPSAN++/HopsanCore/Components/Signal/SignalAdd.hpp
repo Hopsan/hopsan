@@ -1,11 +1,11 @@
-/*
- *  SignalAdd.hpp
- *  HOPSAN++
- *
- *  Created by Robert Braun on 2010-01-11.
- *  Copyright 2010 LiU. All rights reserved.
- *
- */
+//!
+//! @file   SignalAdd.hpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-01-11
+//!
+//! @brief Contains a mathematical summator component
+//!
+//$Id$
 
 #ifndef SIGNALADD_HPP_INCLUDED
 #define SIGNALADD_HPP_INCLUDED

@@ -1,11 +1,11 @@
-/*
- *  HydraulicPresssureControlledValve.hpp
- *  HOPSAN++
- *
- *  Created by Robert Braun on 2010-01-13.
- *  Copyright 2010 LiU. All rights reserved.
- *
- */
+//!
+//! @file   HydraulicPressureControlledValve.hpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-01-13
+//!
+//! @brief Contains a hydraulic pressure controlled valve with first order dynamics
+//!
+//$Id$
 
 #ifndef HYDRAULICPRESSURECONTROLLEDVALVE_HPP_INCLUDED
 #define HYDRAULICPRESSURECONTROLLEDVALVE_HPP_INCLUDED
