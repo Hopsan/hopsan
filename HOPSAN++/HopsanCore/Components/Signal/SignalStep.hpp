@@ -50,7 +50,7 @@ public:
         mStepSize = stepsize;
         mStepTime = steptime;
 
-        addPort("out", "NodeSignal", out);
+        addWritePort("out", "NodeSignal", out);
 
         registerParameter("StartValue", "Start Value", "-", mStartValue);
         registerParameter("StepSize", "Final Value", "-", mStepSize);
@@ -66,22 +66,19 @@ public:
 
     void simulateOneTimestep()
     {
-        //read fron nodes
-   		Node* p1_ptr = mPortPtrs[out]->getNodePtr();
-
         //Step Equations
-        double outputSignal;
+        double output;
         if (mTime < mStepTime)
         {
-            outputSignal = mStartValue;     //Before step
+            output = mStartValue;     //Before step
         }
         else
         {
-            outputSignal = mStartValue + mStepSize;     //After step
+            output = mStartValue + mStepSize;     //After step
         }
 
         //Write new values to nodes
-        p1_ptr->setData(NodeSignal::VALUE, outputSignal);
+        mPortPtrs[out]->writeNode(NodeSignal::VALUE, output);
     }
 };
 

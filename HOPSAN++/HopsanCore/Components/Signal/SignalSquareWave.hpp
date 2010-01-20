@@ -55,7 +55,7 @@ public:
         mAmplitude = amplitude;
         mBaseValue = basevalue;
 
-        addPort("out", "NodeSignal", out);
+        addWritePort("out", "NodeSignal", out);
 
         registerParameter("StartTime", "Start Time", "s", mStartTime);
         registerParameter("Frequency", "Frequencty", "Hz", mFrequency);
@@ -72,24 +72,21 @@ public:
 
     void simulateOneTimestep()
     {
-        //read fron nodes
-   		Node* p1_ptr = mPortPtrs[out]->getNodePtr();
-
         //Step Equations
-        double outputSignal;
+        double output;
         int relTimeInt;
         if (mTime < mStartTime)
         {
-            outputSignal = 0;
+            output = 0;
         }
         else
         {
             relTimeInt = ceil((mTime-mStartTime)*mFrequency);
-            outputSignal = mBaseValue + (mAmplitude * (relTimeInt % 2));
+            output = mBaseValue + (mAmplitude * (relTimeInt % 2));
         }
 
         //Write new values to nodes
-        p1_ptr->setData(NodeSignal::VALUE, outputSignal);
+        mPortPtrs[out]->writeNode(NodeSignal::VALUE, output);
     }
 };
 

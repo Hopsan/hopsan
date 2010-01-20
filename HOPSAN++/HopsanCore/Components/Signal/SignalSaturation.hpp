@@ -36,8 +36,8 @@ public:
         mUpperLimit = upperlimit;
         mLowerLimit = lowerlimit;
 
-        addPort("in", "NodeSignal", in);
-        addPort("out", "NodeSignal", out);
+        addReadPort("in", "NodeSignal", in);
+        addWritePort("out", "NodeSignal", out);
 
         registerParameter("UpperLimit", "Upper Limit", "-", mUpperLimit);
         registerParameter("LowerLimit", "Lower Limit", "-", mLowerLimit);
@@ -52,12 +52,8 @@ public:
 
     void simulateOneTimestep()
     {
-        //read fron nodes
-   		Node* p1_ptr = mPortPtrs[in]->getNodePtr();
-   		Node* p2_ptr = mPortPtrs[out]->getNodePtr();
-
         //Get variable values from nodes
-        double input = p1_ptr->getData(NodeSignal::VALUE);
+        double input = mPortPtrs[in]->readNode(NodeSignal::VALUE);
 
         //Gain equations
 		double output;
@@ -75,7 +71,8 @@ public:
 		}
 
         //Write new values to nodes
-        p2_ptr->setData(NodeSignal::VALUE, output);
+        mPortPtrs[out]->writeNode(NodeSignal::VALUE, output);
+
     }
 };
 

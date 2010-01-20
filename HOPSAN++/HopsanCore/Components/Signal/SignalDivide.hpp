@@ -29,9 +29,9 @@ public:
                           const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
     {
-        addPortRead("in1", "NodeSignal", in1);
-        addPortRead("in2", "NodeSignal", in2);
-        addPortWrite("out", "NodeSignal", out);
+        addReadPort("in1", "NodeSignal", in1);
+        addReadPort("in2", "NodeSignal", in2);
+        addWritePort("out", "NodeSignal", out);
     }
 
 
@@ -50,7 +50,7 @@ public:
         if (mPortPtrs[in1]->isConnected() && mPortPtrs[in2]->isConnected())       //Both ports connected
         {
             signal1 = mPortPtrs[in1]->readNode(NodeSignal::VALUE);
-            signal1 = mPortPtrs[in2]->readNode(NodeSignal::VALUE);
+            signal2 = mPortPtrs[in2]->readNode(NodeSignal::VALUE);
         }
         else if (mPortPtrs[in1]->isConnected() && !mPortPtrs[in2]->isConnected())       //Port 1 connected, port 2 disconnected (no division since no denominator)
         {
@@ -60,7 +60,7 @@ public:
         else if (!mPortPtrs[in1]->isConnected() && mPortPtrs[in2]->isConnected())       //Port 2 connected, port 1 disconnected (nothing to divide, return zero)
         {
             signal1 = 0;
-            signal1 = mPortPtrs[in2]->readNode(NodeSignal::VALUE);
+            signal2 = mPortPtrs[in2]->readNode(NodeSignal::VALUE);
         }
         else
         {

@@ -57,7 +57,7 @@ public:
         mStartTime = starttime;
         mStopTime = stoptime;
 
-        addPort("out", "NodeSignal", out);
+        addWritePort("out", "NodeSignal", out);
 
         registerParameter("BaseValue", "Base Value", "-", mBaseValue);
         registerParameter("Amplitude", "Amplitude", "-", mAmplitude);
@@ -74,27 +74,25 @@ public:
 
     void simulateOneTimestep()
     {
-        //read fron nodes
-   		Node* p1_ptr = mPortPtrs[out]->getNodePtr();
-
         //Step Equations
-        double outputSignal;
+        double output;
 
         if (mTime < mStartTime)
         {
-            outputSignal = mBaseValue;     //Before ramp
+            output = mBaseValue;     //Before ramp
         }
         else if (mTime >= mStartTime && mTime < mStopTime)
         {
-            outputSignal = ((mTime - mStartTime) / (mStopTime - mStartTime)) * mAmplitude + mBaseValue ;     //During ramp
+            output = ((mTime - mStartTime) / (mStopTime - mStartTime)) * mAmplitude + mBaseValue ;     //During ramp
         }
         else
         {
-            outputSignal = mBaseValue + mAmplitude;     //After ramp
+            output = mBaseValue + mAmplitude;     //After ramp
         }
 
         //Write new values to nodes
-        p1_ptr->setData(NodeSignal::VALUE, outputSignal);
+        mPortPtrs[out]->writeNode(NodeSignal::VALUE, output);
+
     }
 };
 

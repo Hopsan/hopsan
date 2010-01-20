@@ -34,7 +34,7 @@ public:
     {
         mValue = value;
 
-        addPort("out", "NodeSignal", out);
+        addWritePort("out", "NodeSignal", out);
 
         registerParameter("Value", "Värde", "-", mValue);
     }
@@ -48,11 +48,8 @@ public:
 
     void simulateOneTimestep()
     {
-        //read fron nodes
-   		Node* p1_ptr = mPortPtrs[out]->getNodePtr();
-
         //Write new values to nodes
-        p1_ptr->setData(NodeSignal::VALUE, mValue);
+        mPortPtrs[out]->writeNode(NodeSignal::VALUE, mValue);
     }
 };
 

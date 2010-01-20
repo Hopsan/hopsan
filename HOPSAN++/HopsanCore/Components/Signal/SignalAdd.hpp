@@ -50,7 +50,7 @@ public:
         if (mPortPtrs[in1]->isConnected() && mPortPtrs[in2]->isConnected())       //Both ports connected
         {
             signal1 = mPortPtrs[in1]->readNode(NodeSignal::VALUE);
-            signal1 = mPortPtrs[in2]->readNode(NodeSignal::VALUE);
+            signal2 = mPortPtrs[in2]->readNode(NodeSignal::VALUE);
 
         }
         else if (mPortPtrs[in1]->isConnected() && !mPortPtrs[in2]->isConnected())       //Port 1 connected, port 2 disconnected

@@ -46,11 +46,11 @@ public:
 
 
     SignalSineWave(const string name,
-                              const double starttime = 0.0,
-                              const double frequency = 1.0,
-                              const double amplitude = 1.0,
-                              const double offset = 0.0,
-                              const double timestep = 0.001)
+                   const double starttime = 0.0,
+                   const double frequency = 1.0,
+                   const double amplitude = 1.0,
+                   const double offset = 0.0,
+                   const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
     {
         mStartTime = starttime;
@@ -58,7 +58,7 @@ public:
         mAmplitude = amplitude;
         mOffset = offset;
 
-        addPort("out", "NodeSignal", out);
+        addWritePort("out", "NodeSignal", out);
 
         registerParameter("StartTime", "Start Time", "s", mStartTime);
         registerParameter("Frequency", "Frequencty", "Hz", mFrequency);
@@ -75,22 +75,21 @@ public:
 
     void simulateOneTimestep()
     {
-        //read fron nodes
-   		Node* p1_ptr = mPortPtrs[out]->getNodePtr();
 
         //Sinewave Equations
-        double outputSignal;
+        double output;
         if (mTime < mStartTime)
         {
-            outputSignal = 0.0;     //Before start
+            output = 0.0;     //Before start
         }
         else
         {
-            outputSignal = mAmplitude*sin((mTime-mStartTime)*mFrequency*2*3.14159265 - mOffset);
+            output = mAmplitude*sin((mTime-mStartTime)*mFrequency*2*3.14159265 - mOffset);
         }
 
         //Write new values to nodes
-        p1_ptr->setData(NodeSignal::VALUE, outputSignal);
+        mPortPtrs[out]->writeNode(NodeSignal::VALUE, output);
+
     }
 };
 
