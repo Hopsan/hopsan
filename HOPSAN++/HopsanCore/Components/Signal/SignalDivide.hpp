@@ -29,9 +29,9 @@ public:
                           const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
     {
-        addPort("in1", "NodeSignal", in1);
-        addPort("in2", "NodeSignal", in2);
-        addPort("out", "NodeSignal", out);
+        addPortRead("in1", "NodeSignal", in1);
+        addPortRead("in2", "NodeSignal", in2);
+        addPortWrite("out", "NodeSignal", out);
     }
 
 
@@ -43,28 +43,24 @@ public:
 
     void simulateOneTimestep()
     {
-        //read fron nodes
-   		Node* p1_ptr = mPortPtrs[in1]->getNodePtr();
-   		Node* p2_ptr = mPortPtrs[in2]->getNodePtr();
-   		Node* p3_ptr = mPortPtrs[out]->getNodePtr();
 
         //Get variable values from nodes
         double signal1, signal2;
 
         if (mPortPtrs[in1]->isConnected() && mPortPtrs[in2]->isConnected())       //Both ports connected
         {
-            signal1 = p1_ptr->getData(NodeSignal::VALUE);
-            signal2 = p2_ptr->getData(NodeSignal::VALUE);
+            signal1 = mPortPtrs[in1]->readNode(NodeSignal::VALUE);
+            signal1 = mPortPtrs[in2]->readNode(NodeSignal::VALUE);
         }
         else if (mPortPtrs[in1]->isConnected() && !mPortPtrs[in2]->isConnected())       //Port 1 connected, port 2 disconnected (no division since no denominator)
         {
-            signal1 = p1_ptr->getData(NodeSignal::VALUE);
+            signal1 = mPortPtrs[in1]->readNode(NodeSignal::VALUE);
             signal2 = 1;
         }
         else if (!mPortPtrs[in1]->isConnected() && mPortPtrs[in2]->isConnected())       //Port 2 connected, port 1 disconnected (nothing to divide, return zero)
         {
             signal1 = 0;
-            signal2 = p2_ptr->getData(NodeSignal::VALUE);
+            signal1 = mPortPtrs[in2]->readNode(NodeSignal::VALUE);
         }
         else
         {
@@ -74,10 +70,10 @@ public:
 
 
         //Gain equations
-		double out = signal1 / signal2;                         //TODO: Add division-by-zero check -> exception
+		double output = signal1 / signal2;                         //TODO: Add division-by-zero check -> exception
 
         //Write new values to nodes
-        p3_ptr->setData(NodeSignal::VALUE, out);
+        mPortPtrs[out]->writeNode(NodeSignal::VALUE, output);
     }
 };
 

@@ -29,8 +29,8 @@ public:
         mStartDead = startdead;
         mEndDead = enddead;
 
-        addPort("in", "NodeSignal", in);
-        addPort("out", "NodeSignal", out);
+        addReadPort("in", "NodeSignal", in);
+        addWritePort("out", "NodeSignal", out);
 
         registerParameter("StartDead", "Start of Dead Zone", "-", mStartDead);
         registerParameter("EndDead", "End of Dead Zone", "-", mEndDead);
@@ -43,12 +43,8 @@ public:
 
     void simulateOneTimestep()
     {
-        //read from nodes
-        Node* p1_ptr = mPortPtrs[in]->getNodePtr();
-        Node* p2_ptr = mPortPtrs[out]->getNodePtr();
-
         //get variable values from nodes
-        double input = p1_ptr->getData(NodeSignal::VALUE);
+        double input = mPortPtrs[in]->readNode(NodeSignal::VALUE);
 
         //deadzone equations
         double output;
@@ -67,8 +63,7 @@ public:
         }
 
         //write new values to node
-        p2_ptr->setData(NodeSignal::VALUE, output);
-
+        mPortPtrs[out]->writeNode(NodeSignal::VALUE, output);
     }
 };
 
