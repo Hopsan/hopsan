@@ -22,24 +22,24 @@ class Port; //forward declaration
 
 class DLLIMPORTEXPORT Node
 {
-
+    friend class Port;
     friend class Component;
     friend class ComponentSystem;
 
 ///TODO: Nodes should know their ports so a check can be performed by the node at connection time, the check should be virtual and implement different checks at different nodes.
 public:
-    void setData(const size_t data_type, double data); ///TODO: Move to protected
-    double getData(const size_t data_type); ///TODO: Move to protected
-    double &getDataRef(const size_t data_type); ///TODO: Move to protected
-
-    void preAllocateLogSpace(const size_t nSlots);
-    void logData(const double time);
-    void saveLogData(string filename);
+    //The user should never bother about Nodes
 
 protected:
     Node();
     NodeTypeT &getNodeType();
 
+    void preAllocateLogSpace(const size_t nSlots);
+    void logData(const double time);
+    void saveLogData(string filename);
+    void setData(const size_t data_type, double data);
+    double getData(const size_t data_type);
+    double &getDataRef(const size_t data_type);
     NodeTypeT mNodeType;
     vector<double> mDataVector;
     vector<Port*> mPortPtrs;
