@@ -1316,11 +1316,11 @@ int main()
 
     //testSineWave();
 
-    testPressureControlledValve();
+    //testPressureControlledValve();
 
     //testTLMlumped();
 
-    //testAck();
+    testAck();
 
     //testMechanic();
 

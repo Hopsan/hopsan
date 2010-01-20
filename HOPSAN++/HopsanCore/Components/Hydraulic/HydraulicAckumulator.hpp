@@ -18,7 +18,7 @@ class HydraulicAckumulator : public ComponentQ
 {
 private:
     double mPmin, mVtot, mVoil, mVgas, mBetae, mKappa, mKce, mStartPressure, mStartFlow;
-    Delay mDelayedP2, mDelayedC1, mDelayedZc1, mDelayedQ2, ;
+    Delay mDelayedP2, mDelayedC1, mDelayedZc1, mDelayedQ2;
     enum {P1, P2};
 
 public:
@@ -157,6 +157,9 @@ public:
         //Write new values to nodes
         mPortPtrs[P1]->writeNode(NodeHydraulic::PRESSURE, p1);
         mPortPtrs[P1]->writeNode(NodeHydraulic::MASSFLOW, q1);
+
+        cout << "Port 1 writen" << endl;
+
         mPortPtrs[P2]->writeNode(NodeHydraulic::PRESSURE, p2);
         mPortPtrs[P2]->writeNode(NodeHydraulic::MASSFLOW, q2);
 
