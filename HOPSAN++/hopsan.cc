@@ -1236,6 +1236,45 @@ void testPressureControlledValve()
 
 }
 
+void testAck()
+{
+    HopsanEssentials Hopsan;
+
+    //Create master component
+    ComponentSystem simulationmodel("simulationmodel");
+
+    //Create other components
+
+    HydraulicPressureSource psource("psource", 2.0e6);
+    HydraulicAckumulator ack("ack");
+    SignalStep step("step");
+
+    step.setParameter("BaseValue", 2e6);
+    step.setParameter("Amplitude", -1.9e6);
+    step.setParameter("StepTime", 5.0);
+    step.listParametersConsole();
+    ack.listParametersConsole();
+
+    //Add components
+    simulationmodel.addComponent(psource);
+    simulationmodel.addComponent(ack);
+    simulationmodel.addComponent(step);
+
+    //Connect components
+    simulationmodel.connect(psource, "P1", ack, "P1");
+    simulationmodel.connect(step, "out", psource, "in");
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0,10);
+    simulationmodel.simulate(0,10);
+
+    //Test write to file
+    ack.getPort("P2").getNode().saveLogData("output.txt");
+
+    cout << "testAck() Done!" << endl;
+
+}
+
 
 int main()
 {
@@ -1273,18 +1312,15 @@ int main()
 
     //testIntegrator();
 
-
     //testSignal();
-
 
     //testSineWave();
 
+    testPressureControlledValve();
 
-    //testPressureControlledValve();
+    //testTLMlumped();
 
-
-    testTLMlumped();
-
+    //testAck();
 
     //testMechanic();
 

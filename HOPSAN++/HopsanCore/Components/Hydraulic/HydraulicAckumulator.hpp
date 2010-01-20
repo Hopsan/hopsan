@@ -17,7 +17,7 @@
 class HydraulicAckumulator : public ComponentQ
 {
 private:
-    double mPmin, mVtot, mVoil, mVgas, mBetae, mKappa, mKce, mStartPressureInternal, mStartPressureExternal, mStartFlowExternal, mStartFlowInternal;
+    double mPmin, mVtot, mVoil, mVgas, mBetae, mKappa, mKce, mStartPressure, mStartFlow;
     Delay mDelayedP2, mDelayedC1, mDelayedZc1, mDelayedQ2, ;
     enum {P1, P2};
 
@@ -36,6 +36,7 @@ public:
                                 const double kappa      = 1.4,
                                 const double kce        = 0.0000000001,
                                 const double startpressure = 1000000.0,         //Start pressure, must beequal to or higher than pmin
+                                const double startflow = 0.0,                   //Initial flow into the accumulator
                                 const double timestep   = 0.001)
         : ComponentQ(name, timestep)
     {
@@ -46,11 +47,8 @@ public:
         mBetae                  = betae;
         mKappa                  = kappa;
         mKce                    = kce;
-        mStartPressureInternal  = startpressure;
-        mStartPressureExternal  = 100000.0;
-        mStartFlowExternal      = 0.0;
-        mStartFlowInternal      = 0.0;
-
+        mStartPressure          = startpressure;
+        mStartFlow              = startflow;
 
         addPowerPort("P1", "NodeHydraulic", P1);     //External port
         addPowerPort("P2", "NodeHydraulic", P2);     //Internal "port"
@@ -61,45 +59,61 @@ public:
         registerParameter("Betae", "Effective Bulk Modulus", "Pa", mBetae);
         registerParameter("Kappa", "Polytropic Exponent", "-", mKappa);
         registerParameter("Kce", "Flow-Pressure Coefficient", "(m^3/s)/Pa", mKce);
-        registerParameter("StartPressure", "Initial Internal Pressure", "Pa", mStartPressureInternal);
+        registerParameter("StartPressure", "Initial Internal Pressure", "Pa", mStartPressure);
+        registerParameter("StartFlow", "Initial Flow Into Ackumulator", "m^3/s", mStartFlow);
     }
 
 
     void initialize()
     {
-        if (mStartPressureInternal < mPmin)
+        cout << "Begin Initialize" << endl;
+        double p1 = mPortPtrs[P1]->readNode(NodeHydraulic::PRESSURE);
+        double c1 = mPortPtrs[P1]->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zc1 = mPortPtrs[P1]->readNode(NodeHydraulic::CHARIMP);
+
+        if (mStartPressure < mPmin)         //User has selected an initial pressure lower than the minimum pressure, so use minimum pressure instead
         {
-            mStartPressureInternal = mPmin;
-            mVgas = mVtot;
+            mStartPressure = mPmin;
+            if (mStartPressure < 0)         //User has selected a minimum pressure lower than zero, put it to zero
+            {
+                mStartPressure = 0;
+            }
+            mVgas = mVtot;                  //Pressure is minimum, so ackumulator is empty
             mVoil = 0;
-            mDelayedP2.initializeValues(mStartPressureInternal);
-            mDelayedC1.initializeValues(mStartPressureExternal);
-            mDelayedZc1.initializeValues(0);                        //This is a problem! Zc is not zero at the beginning, but we cannot know what it is...
-            mDelayedQ2.initializeValues(mStartFlowInternal);
+            mDelayedQ2.initializeValues(mStartFlow);        //"Previous" value for q2 first step
         }
         else
         {
-            mDelayedC1.initializeValues(mStartPressureExternal);
-            mDelayedZc1.initializeValues(0);                                     //Problem here too...
-            mDelayedQ2.initializeValues(mKce*(mStartPressureExternal-mStartPressureInternal));
-            mVgas = pow(mPmin*pow(mVtot, mKappa)/mStartPressureInternal, 1/mKappa);
+            if (p1 < 0.0)                               //Neighbour component has provided a presssure lower than zero, so put it so zero
+            {
+                p1 = 0.0;
+            }
+            mDelayedQ2.initializeValues(mKce*(p1-mStartPressure));              //"Previous" value for q2 first step, calculated with orifice equation
+            mVgas = pow(mPmin*pow(mVtot, mKappa)/mStartPressure, 1/mKappa);     //Initial gas volume, calculated from initial pressure
             mVoil = mVtot - mVgas;
         }
+        mDelayedP2.initializeValues(mStartPressure);
+        mDelayedC1.initializeValues(c1);
+        mDelayedZc1.initializeValues(Zc1);
+        cout << "End Initialize" << endl;
     }
 
 
     void simulateOneTimestep()
     {
-
+        cout << "Begin Step" << endl;
         //Get variable values from nodes
         double c1 = mPortPtrs[P1]->readNode(NodeHydraulic::WAVEVARIABLE);
         double Zc1 = mPortPtrs[P1]->readNode(NodeHydraulic::CHARIMP);
 
         //Ackumulator equations
+        cout << "Declare Variables" << endl;
 
         double e0, ct;
         double p1,q1,q2;
         double p2 = mDelayedP2.value();
+
+        cout << "Begin Equations" << endl;
 
         e0 = mPmin * pow(mVtot, mKappa);
         ct = mVgas / (p2*mKappa) + (mVtot-mVgas) / mBetae;
@@ -107,6 +121,8 @@ public:
               2*ct*mKce*(c1-mDelayedC1.value())) / (2*ct*(mKce*Zc1+1) + mKce*mTimestep);
         p1 = c1 - Zc1*q2;
         p2 = p1 - q2/mKce;
+
+        cout << "Begin Cavitation Check" << endl;
 
         if (p1 < 0.0)       //Cavitation!
         {
@@ -130,15 +146,21 @@ public:
         mVoil = mVtot - mVgas;
         q1 = -q2;
 
+        cout << "Equations Done" << endl;
+
         mDelayedQ2.update(q2);
         mDelayedC1.update(c1);
         mDelayedZc1.update(Zc1);
+
+        cout << "Delay Updated" << endl << "p1 = " << p1 << ", q1 = " << q1 << ", p2 = " << p2 << ", q2 = " << q2 << endl;
 
         //Write new values to nodes
         mPortPtrs[P1]->writeNode(NodeHydraulic::PRESSURE, p1);
         mPortPtrs[P1]->writeNode(NodeHydraulic::MASSFLOW, q1);
         mPortPtrs[P2]->writeNode(NodeHydraulic::PRESSURE, p2);
         mPortPtrs[P2]->writeNode(NodeHydraulic::MASSFLOW, q2);
+
+        cout << "End Step" << endl;
     }
 };
 
