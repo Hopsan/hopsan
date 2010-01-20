@@ -1230,7 +1230,7 @@ void testPressureControlledValve()
     simulationmodel.simulate(0,3);
 
     //Test write to file
-    pValve.getPort("P2").getNode().saveLogData("output.txt");
+    pValve.getPort("P_OPEN").getNode().saveLogData("output.txt");
 
     cout << "test_pvalve() Done!" << endl;
 
@@ -1280,10 +1280,10 @@ int main()
     //testSineWave();
 
 
-    //testPressureControlledValve();
+    testPressureControlledValve();
 
 
-    testTLMlumped();
+    //testTLMlumped();
 
 
     //testMechanic();

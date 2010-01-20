@@ -40,8 +40,8 @@ public:
         mDp = dp;
         mKcp = kcp;
 
-        addPort("P1", "NodeHydraulic", P1);
-        addPort("P2", "NodeHydraulic", P2);
+        addPowerPort("P1", "NodeHydraulic", P1);
+        addPowerPort("P2", "NodeHydraulic", P2);
 
         registerParameter("Speed", "Angular Velocity", "rad/s", mSpeed);
         registerParameter("Dp", "Displacement", "m^3/rev", mDp);
@@ -58,15 +58,11 @@ public:
 
     void simulateOneTimestep()
     {
-        //Get the nodes
-   		Node* p1_ptr = mPortPtrs[P1]->getNodePtr();
-   		Node* p2_ptr = mPortPtrs[P2]->getNodePtr();
-
         //Get variable values from nodes
-		double c1  = p1_ptr->getData(NodeHydraulic::WAVEVARIABLE);
-        double Zc1 = p1_ptr->getData(NodeHydraulic::CHARIMP);
-        double c2  = p2_ptr->getData(NodeHydraulic::WAVEVARIABLE);
-        double Zc2 = p2_ptr->getData(NodeHydraulic::CHARIMP);
+        double c1 = mPortPtrs[P1]->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zc1 = mPortPtrs[P1]->readNode(NodeHydraulic::CHARIMP);
+        double c2 = mPortPtrs[P2]->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zc2 = mPortPtrs[P2]->readNode(NodeHydraulic::CHARIMP);
 
         //Fixed Displacement Pump equations
 
@@ -104,10 +100,10 @@ public:
         }
 
         //Write new values to nodes
-        p1_ptr->setData(NodeHydraulic::MASSFLOW, q1);
-        p1_ptr->setData(NodeHydraulic::PRESSURE, p1);
-        p2_ptr->setData(NodeHydraulic::MASSFLOW, q2);
-        p2_ptr->setData(NodeHydraulic::PRESSURE, p2);
+        mPortPtrs[P1]->writeNode(NodeHydraulic::PRESSURE, p1);
+        mPortPtrs[P1]->writeNode(NodeHydraulic::MASSFLOW, q1);
+        mPortPtrs[P2]->writeNode(NodeHydraulic::PRESSURE, p2);
+        mPortPtrs[P2]->writeNode(NodeHydraulic::MASSFLOW, q2);
     }
 };
 
