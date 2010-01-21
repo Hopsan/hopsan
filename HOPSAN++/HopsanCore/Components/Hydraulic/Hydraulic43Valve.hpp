@@ -73,7 +73,7 @@ public:
         addPowerPort("PT", "NodeHydraulic", PT);
         addPowerPort("PA", "NodeHydraulic", PA);
         addPowerPort("PB", "NodeHydraulic", PB);
-        addPowerPort("PX", "NodeSignal", PX);
+        addReadPort("PX", "NodeSignal", PX);
 
         registerParameter("Cq", "Flow Coefficient", "[-]", mCq);
         registerParameter("d", "Diameter", "[m]", md);
