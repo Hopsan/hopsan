@@ -32,11 +32,13 @@ public:
     Delay(const double timeDelay, const double Ts, const double initValue=0.0);
     void initializeValues(const double initValue);
     void update(const double value);
-    void setStepDelay(const std::size_t stepDelay, const double initValue=0.0);
-    void setTimeDelay(const double timeDelay, const double Ts, const double initValue=0.0);
-	double value();
-	double value(const std::size_t idx);
+    void setStepDelay(const std::size_t stepDelay, double &rTime, const double initValue=0.0);
+    void setTimeDelay(const double timeDelay, const double Ts, double &rTime, const double initValue=0.0);
+	double value(double value);
+	double value(double value, const std::size_t idx);
 private:
+    double *mpTime;
+    double mLastTime;
     double mInitialValue;
 	double mFracStep;
 	std::size_t mStepDelay;

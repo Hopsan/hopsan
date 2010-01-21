@@ -24,7 +24,8 @@ Delay::Delay(const std::size_t stepDelay, const double initValue)
     mStepDelay = stepDelay;
     mFracStep = mStepDelay;
     mInitialValue = initValue;
-    mValues.resize(mStepDelay, mInitialValue);
+    mValues.resize(mStepDelay+1, mInitialValue);
+    mLastTime =0.0;
 }
 
 
@@ -34,7 +35,8 @@ Delay::Delay(const double timeDelay, const double Ts, const double initValue)
     //avrundar uppat
     mStepDelay = (std::size_t) ceil(((double) timeDelay)/Ts); ///TODO: kolla att det verkligen ar ratt
     mInitialValue = initValue;
-    mValues.resize(mStepDelay, mInitialValue);
+    mValues.resize(mStepDelay+1, mInitialValue);
+    mLastTime =0.0;
 }
 
 
@@ -42,17 +44,22 @@ void Delay::initializeValues(const double initValue)
 {
     mInitialValue = initValue;
     mValues.assign(mValues.size(), mInitialValue);
+    mLastTime =0.0;
 }
 
 
 void Delay::update(const double value)
 {
-    mValues.push_front(value);
-    mValues.pop_back();
+    if (mLastTime != *mpTime)
+    {
+        mValues.push_front(value);
+        mValues.pop_back();
+        mLastTime = *mpTime;
+    }
 }
 
 
-void Delay::setStepDelay(const std::size_t stepDelay, const double initValue)
+void Delay::setStepDelay(const std::size_t stepDelay, double &rTime, const double initValue)
 {
     mStepDelay = stepDelay;
     mFracStep = mStepDelay;
@@ -60,11 +67,12 @@ void Delay::setStepDelay(const std::size_t stepDelay, const double initValue)
     {
         mInitialValue = initValue;
     }
-    mValues.resize(mStepDelay, mInitialValue);
+    mValues.resize(mStepDelay+1, mInitialValue);
+    mpTime = &rTime;
 }
 
 
-void Delay::setTimeDelay(const double timeDelay, const double Ts, const double initValue)
+void Delay::setTimeDelay(const double timeDelay, const double Ts, double &rTime, const double initValue)
 {
     mFracStep = timeDelay/Ts;
     //avrundar uppat
@@ -73,12 +81,14 @@ void Delay::setTimeDelay(const double timeDelay, const double Ts, const double i
     {
         mInitialValue = initValue;
     }
-    mValues.resize(mStepDelay, mInitialValue);
+    mValues.resize(mStepDelay+1, mInitialValue);
+    mpTime = &rTime;
 }
 
 
-double Delay::value()
+double Delay::value(double value)
 {
+    update(value);
     if (mValues.empty())
     {
         return mInitialValue;
@@ -95,15 +105,16 @@ double Delay::value()
 }
 
 
-double Delay::value(const std::size_t idx) ///TODO: interpolera värden
+double Delay::value(double value, const std::size_t idx) ///TODO: interpolera värden
 {
-    if ((idx < 1) || (idx > mValues.size()))
+    update(value);
+    if ((idx < 0) || (idx > mValues.size()))
     {
         std::cout << "Indexed outside Delay-vector" << "  Index: " << idx << "  Length: " << mValues.size() << std::endl;
         assert(false);
     }
     else
     {
-        return mValues[idx-1]; // -1 because index 0 is last value
+        return mValues[idx];
     }
 }
