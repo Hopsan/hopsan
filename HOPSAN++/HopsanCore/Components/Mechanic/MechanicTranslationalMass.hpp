@@ -13,7 +13,7 @@ private:
     double mMass;
     double mB;
     double mk;
-    TransferFunction Filter;
+    TransferFunction mFilter;
     enum {P1, P2};
 
 public:
@@ -46,10 +46,13 @@ public:
         registerParameter("k", "Spring Coefficient", "[N/m]",  mk);
     }
 
-
 	void initialize()
     {
-    //Nothing to initialize
+        mFilter.initializeValues(0.0,0.0);
+        double num [] = {0.0, 1.0, 0.0};
+        double den [] = {mk, mB, mMass};
+        mFilter.setCoefficients(num, den, mTimestep);
+        mFilter.update(0);
     }
 
     void simulateOneTimestep()
@@ -63,11 +66,17 @@ public:
         //Mass equations
         double num [] = {0.0, 1.0, 0.0};
         double den [] = {mk, mB+Zx1+Zx2, mMass};
-        Filter.setCoefficients(num, den, mTimestep);
-        double v2 = Filter.getValue();
+
+        mFilter.setCoefficients(num, den, mTimestep);
+        double v2 = mFilter.getValue();
         double v1 = -v2;
         double F1 = c1 + Zx1*v1;
         double F2 = c2 + Zx2*v2;
+
+        if (mTime < 0.05)
+        {
+            cout << "F1 = " << F1 << ", v1 = " << v1 << endl;
+        }
 
         //Write new values to nodes
         mPortPtrs[P1]->writeNode(NodeMechanic::FORCE, F1);
@@ -78,7 +87,7 @@ public:
       //  p2_ptr->setData(NodeMechanic::POSITION, x2);
 
         //Update Filter:
-        Filter.update(c1-c2);
+        mFilter.update(c1-c2);
     }
 };
 
