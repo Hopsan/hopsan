@@ -59,10 +59,18 @@ void test1()
 
 void testDelay() //Test of the Delay utillity class
 {
-//	Delay d1(.15, .1); //delay .15 with sampletime .1
-	Delay d1(2); // delay 2 steps
+    double t=0.0;
+	Delay d1;
+	//d1.setStepDelay(3, t, 0.0); // delay 2 steps
+	d1.setTimeDelay(.15, .1, t, 19.0); //delay .15 with sampletime .1
+	d1.initializeValues(18.0);
 	for (int i=0; i < 11; ++i) {
-		cout << "Value: " << i << "    Delayed value: " << d1.value() << endl;
+	    t += 0.1;
+		d1.update(i);
+		d1.update(i);
+		cout << "Value: " << i << "    Delayed value: " << d1.value(i);
+		d1.update(i);
+		cout << "    Delayed value again: " << d1.value(i) << endl;
 		d1.update(i);
 	}
 }
@@ -1348,7 +1356,7 @@ int main()
     //testkarl();
 
 
-    //testDelay();
+    testDelay();
 
 
     //test_fixed_pump();
@@ -1376,7 +1384,7 @@ int main()
 
     //testCheckValve();
 
-    testCylinderQ();
+    //testCylinderQ();
 
 
     return 0;

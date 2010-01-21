@@ -32,10 +32,14 @@ public:
     Delay(const double timeDelay, const double Ts, const double initValue=0.0);
     void initializeValues(const double initValue);
     void update(const double value);
-    void setStepDelay(const std::size_t stepDelay, double &rTime, const double initValue=0.0);
-    void setTimeDelay(const double timeDelay, const double Ts, double &rTime, const double initValue=0.0);
+    void setStepDelay(const std::size_t stepDelay, double &rTime, const double initValue); ///TODO: Set back 0.0 as default on initValue
+    void setTimeDelay(const double timeDelay, const double Ts, double &rTime, const double initValue); ///TODO: Set back 0.0 as default on initValue
 	double value(double value);
 	double value(double value, const std::size_t idx);
+
+    void setStepDelay(const std::size_t stepDelay, const double initValue=0.0); ///TODO: Should be taken away soon!
+    void setTimeDelay(const double timeDelay, const double Ts, const double initValue=0.0); ///TODO: Should be taken away soon!
+	double value(); ///TODO: Should be taken away soon!
 private:
     double *mpTime;
     double mLastTime;

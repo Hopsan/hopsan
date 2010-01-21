@@ -54,11 +54,22 @@ void Delay::update(const double value)
     {
         mValues.push_front(value);
         mValues.pop_back();
+        ///TODO: UNCOMMENT NEXT LINE
         mLastTime = *mpTime;
     }
 }
 
 
+void Delay::setStepDelay(const std::size_t stepDelay, const double initValue) ///TODO: DELETE THIS
+{
+    mStepDelay = stepDelay;
+    mFracStep = mStepDelay;
+    if (initValue != 0)
+    {
+        mInitialValue = initValue;
+    }
+    mValues.resize(mStepDelay, mInitialValue);
+}
 void Delay::setStepDelay(const std::size_t stepDelay, double &rTime, const double initValue)
 {
     mStepDelay = stepDelay;
@@ -72,6 +83,17 @@ void Delay::setStepDelay(const std::size_t stepDelay, double &rTime, const doubl
 }
 
 
+void Delay::setTimeDelay(const double timeDelay, const double Ts, const double initValue) ///TODO: DELETE THIS
+{
+    mFracStep = timeDelay/Ts;
+    //avrundar uppat
+    mStepDelay = (std::size_t) ceil(((double) timeDelay)/Ts); ///TODO: kolla att det verkligen ar ratt
+    if (initValue != 0)
+    {
+        mInitialValue = initValue;
+    }
+    mValues.resize(mStepDelay, mInitialValue);
+}
 void Delay::setTimeDelay(const double timeDelay, const double Ts, double &rTime, const double initValue)
 {
     mFracStep = timeDelay/Ts;
@@ -86,6 +108,22 @@ void Delay::setTimeDelay(const double timeDelay, const double Ts, double &rTime,
 }
 
 
+double Delay::value() ///TODO: DELETE THIS
+{
+    if (mValues.empty())
+    {
+        return mInitialValue;
+    }
+    else if ((mFracStep < mStepDelay) && (mValues.size() >= 2))
+    {
+        return ((1 - (mStepDelay - mFracStep)) * mValues[mValues.size()-2] + (mStepDelay - mFracStep) * mValues.back()); //interpolerar
+    }
+    else
+    {
+        return mValues.back();
+    }
+
+}
 double Delay::value(double value)
 {
     update(value);
