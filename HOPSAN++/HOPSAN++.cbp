@@ -91,6 +91,7 @@
 		<Linker>
 			<Add library="libHOPSANCORE" />
 		</Linker>
+		<Unit filename="HopsanCore/CoreUtilities/Delay.cc" />
 		<Unit filename="HopsanCore/HopsanCore.h" />
 		<Unit filename="Utilities/TicToc.cc" />
 		<Unit filename="Utilities/TicToc.h" />
