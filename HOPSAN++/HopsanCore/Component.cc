@@ -493,9 +493,23 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             cout << "raise Exception('component port nodetypes mismatch') or similar should be here" << endl;
             assert(false);
         }
+        //Check so ...C-Q-C-Q-C... pattern is consistent
+        else if ((pPort1->getPortType() == "PowerPort") && (pPort2->getPortType() == "PowerPort"))
+        {
+            if ((pPort1->mpComponent->isComponentC()) && (pPort2->mpComponent->isComponentC()))
+            {
+                cout << "Both components, " << pPort1->mpComponent->getName() << " and " << pPort2->mpComponent->getName() << ", are of C-type" << endl;
+                assert(false);
+            }
+            else if ((pPort1->mpComponent->isComponentQ()) && (pPort2->mpComponent->isComponentQ()))
+            {
+                cout << "Both components, " << pPort1->mpComponent->getName() << " and " << pPort2->mpComponent->getName() << ", are of Q-type" << endl;
+                assert(false);
+            }
+        }
         ///TODO: No error handling nor cecks are done here
         //Check if component1 is a System component containing Component2
-        else if (&rComponent1 == &(rComponent2.getSystemparent()))
+        if (&rComponent1 == &(rComponent2.getSystemparent()))
         {
             //Create an instance of the node specified in nodespecifications
             node_ptr = gCoreNodeFactory.CreateInstance(pPort2->getNodeType());
