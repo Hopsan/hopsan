@@ -1278,7 +1278,7 @@ void testAck()
 }
 
 
-void testCylinderC()
+void testCylinderQ()
 {
     HopsanEssentials Hopsan;
 
@@ -1287,24 +1287,22 @@ void testCylinderC()
 
     //Create other components
 
-    HydraulicPressureSource psourceL("psourceL", 1.5e6);
-    HydraulicPressureSource psourceR("psourceR", 1.0e6);
-    HydraulicCylinderC cylinder("cylinder");
-    MechanicTranslationalMass mass("mass");
+    HydraulicPressureSource psourceL("psourceL", 1.0e6);
+    HydraulicPressureSource psourceR("psourceR", 1.1e6);
+    HydraulicCylinderQ cylinder("cylinder");
     MechanicForceTransformer fsource("fsource");
     SignalSource source1("source1", 0.0);
 
-    mass.setParameter("Mass", 100);
-    mass.listParametersConsole();
-    mass.setParameter("k", 100);
     psourceL.listParametersConsole();
     psourceR.listParametersConsole();
+    fsource.listParametersConsole();
+    cylinder.setParameter("Kl", 1.0);
+    cylinder.setParameter("Bl", 5.0);
 
     //Add components
     simulationmodel.addComponent(psourceL);
     simulationmodel.addComponent(psourceR);
     simulationmodel.addComponent(cylinder);
-    simulationmodel.addComponent(mass);
     simulationmodel.addComponent(fsource);
     simulationmodel.addComponent(source1);
 
@@ -1312,8 +1310,7 @@ void testCylinderC()
     //Connect components
     simulationmodel.connect(psourceL, "P1", cylinder, "P1");
     simulationmodel.connect(psourceR, "P1", cylinder, "P2");
-    simulationmodel.connect(mass, "P1", cylinder, "P3");
-    simulationmodel.connect(fsource, "out", mass, "P2");
+    simulationmodel.connect(fsource, "out", cylinder, "P3");
     simulationmodel.connect(source1, "out", fsource, "in");
 
 
@@ -1379,7 +1376,7 @@ int main()
 
     //testCheckValve();
 
-    testCylinderC();
+    testCylinderQ();
 
 
     return 0;

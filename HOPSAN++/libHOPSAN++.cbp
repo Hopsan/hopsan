@@ -101,6 +101,7 @@
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicAckumulator.hpp" />
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicCheckValve.hpp" />
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicCylinderC.hpp" />
+		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicCylinderQ.hpp" />
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicFixedDisplacementPump.hpp" />
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicFlowSensor.hpp" />
 		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicFlowSourceQ.hpp" />
@@ -126,6 +127,7 @@
 		<Unit filename="HopsanCore\Components\Signal\SignalIntegrator.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalIntegratorLimited.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalLP1Filter.hpp" />
+		<Unit filename="HopsanCore\Components\Signal\SignalLP2Filter.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalMultiply.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalPulse.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalRamp.hpp" />

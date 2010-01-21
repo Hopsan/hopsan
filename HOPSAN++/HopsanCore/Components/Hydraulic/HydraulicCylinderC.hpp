@@ -7,6 +7,8 @@
 //!
 //$Id$
 
+//Translated from pyHOPSAN, originally created by someone else
+
 #ifndef HYDRAULICCYLINDERC_HPP_INCLUDED
 #define HYDRAULICCYLINDERC_HPP_INCLUDED
 
@@ -117,7 +119,7 @@ public:
 
         //CylinderC equations
         double a = 0.9;
-        double delayedQ1prim = mArea1*mDelayedV.value();      //Tror inte dessa behövs...
+        double delayedQ1prim = mArea1*mDelayedV.value();
         double delayedQ2prim = -mArea2*mDelayedV.value();
 
             //Volume 1
@@ -140,6 +142,11 @@ public:
         mDelayedC1prim.update(c1prim);
         mDelayedC2prim.update(c2prim);
         mDelayedV.update(v);
+
+     //   if (mTime < 0.1)
+     //   {
+     //       cout << "p1 = " << p1 << ", p2 = " << p2 << ", q1 = " << q1 << endl;
+     //   }
 
         //Write new values to nodes
         mPortPtrs[P1]->writeNode(NodeHydraulic::WAVEVARIABLE, c1);
