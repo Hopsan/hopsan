@@ -139,6 +139,7 @@ public:
     void addComponents(vector<Component*> components);
     void addComponent(Component &rComponent);
     void connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2);
+    void connect(Port &rPort1, Port &rPort2);
     void simulate(const double startT, const double stopT);
     void preAllocateLogSpace(const double startT, const double stopT);
     void logAllNodes(const double time);

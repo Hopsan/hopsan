@@ -451,6 +451,12 @@ void ComponentSystem::logAllNodes(const double time)
     }
 }
 
+void ComponentSystem::connect(Port &rPort1, Port &rPort2)
+{
+    connect(*rPort1.mpComponent, rPort1.mPortName, *rPort2.mpComponent, rPort2.mPortName);
+}
+
+
 void ComponentSystem::connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2)
 {
     Node* node_ptr;

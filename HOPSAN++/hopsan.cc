@@ -161,12 +161,14 @@ void testTLMlumped()
     lineLC.listParametersConsole();
 
     //Connect components
-    simulationmodel.connect(qsourceL, "P1", lineL, "P1");
+//    simulationmodel.connect(qsourceL, "P1", lineL, "P1");
+    simulationmodel.connect(qsourceL.getPort("P1"), lineL.getPort("P1"));
     simulationmodel.connect(lineL, "P2", orificeL, "P1");
     simulationmodel.connect(orificeL, "P2", lineLC, "P1");
     simulationmodel.connect(lineLC, "P2", orificeC, "P1");
     simulationmodel.connect(orificeC, "P2", lineRC, "P1");
-    simulationmodel.connect(lineRC, "P2", orificeR, "P1");
+//    simulationmodel.connect(lineRC, "P2", orificeR, "P1");
+    simulationmodel.connect(lineRC.getPort("P2"), orificeR.getPort("P1"));
     simulationmodel.connect(orificeR, "P2", lineR, "P1");
     simulationmodel.connect(lineR, "P2", psourceR, "P1");
 
