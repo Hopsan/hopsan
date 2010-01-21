@@ -73,11 +73,6 @@ public:
         double F1 = c1 + Zx1*v1;
         double F2 = c2 + Zx2*v2;
 
-        if (mTime < 0.05)
-        {
-            cout << "F1 = " << F1 << ", v1 = " << v1 << endl;
-        }
-
         //Write new values to nodes
         mPortPtrs[P1]->writeNode(NodeMechanic::FORCE, F1);
         mPortPtrs[P2]->writeNode(NodeMechanic::FORCE, F2);
