@@ -24,6 +24,7 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr);
 #include "Hydraulic/HydraulicPressureSensor.hpp"
 #include "Hydraulic/HydraulicFlowSensor.hpp"
 #include "Hydraulic/HydraulicPowerSensor.hpp"
+#include "Hydraulic/HydraulicCylinderC.hpp"
 
 /* Signal Components */
 #include "Signal/SignalSource.hpp"
@@ -41,7 +42,7 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr);
 #include "Signal/SignalDeadZone.hpp"
 #include "Signal/SignalLP1Filter.hpp"
 #include "Signal/SignalPulse.hpp"
-//#include "Signal/SignalSoftStep.hpp"
+#include "Signal/SignalSoftStep.hpp"
 #include "Signal/SignalIntegrator.hpp"
 #include "Signal/SignalIntegratorLimited.hpp"
 

@@ -61,7 +61,7 @@ public:
         mAmplitude = amplitude;
         mFrequency = 3.141592653589/(mStopTime-mStartTime);       //omega = 2pi/T, T = (stoptime-starttime)*4
 
-        addPort("out", "NodeSignal", out);
+        addWritePort("out", "NodeSignal", out);
 
         registerParameter("StartTime", "Start Time", "s", mStartTime);
         registerParameter("StopTime", "Stop Time", "s", mStopTime);
@@ -78,26 +78,23 @@ public:
 
     void simulateOneTimestep()
     {
-        //read fron nodes
-   		Node* p1_ptr = mPortPtrs[out]->getNodePtr();
-
         //Sinewave Equations
-        double outputSignal;
+        double output;
         if (mTime < mStartTime)
         {
-            outputSignal = mBaseValue;     //Before start
+            output = mBaseValue;     //Before start
         }
         else if (mTime > mStartTime && mTime < mStopTime)
         {
-            outputSignal = mBaseValue + 0.5*mAmplitude*sin((mTime-mStartTime)*mFrequency - 3.141592653589/2) + mAmplitude*0.5;
+            output = mBaseValue + 0.5*mAmplitude*sin((mTime-mStartTime)*mFrequency - 3.141592653589/2) + mAmplitude*0.5;
         }
         else
         {
-            outputSignal = mBaseValue + mAmplitude;
+            output = mBaseValue + mAmplitude;
         }
 
         //Write new values to nodes
-        p1_ptr->setData(NodeSignal::VALUE, outputSignal);
+        mPortPtrs[out]->writeNode(NodeSignal::VALUE, output);
     }
 };
 

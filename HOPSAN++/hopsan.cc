@@ -1278,6 +1278,57 @@ void testAck()
 }
 
 
+void testCylinderC()
+{
+    HopsanEssentials Hopsan;
+
+    //Create master component
+    ComponentSystem simulationmodel("simulationmodel");
+
+    //Create other components
+
+    HydraulicPressureSource psourceL("psourceL", 1.5e6);
+    HydraulicPressureSource psourceR("psourceR", 1.0e6);
+    HydraulicCylinderC cylinder("cylinder");
+    MechanicTranslationalMass mass("mass");
+    MechanicForceTransformer fsource("fsource");
+    SignalSource source1("source1", 0.0);
+
+    mass.setParameter("Mass", 100);
+    mass.listParametersConsole();
+    mass.setParameter("k", 100);
+    psourceL.listParametersConsole();
+    psourceR.listParametersConsole();
+
+    //Add components
+    simulationmodel.addComponent(psourceL);
+    simulationmodel.addComponent(psourceR);
+    simulationmodel.addComponent(cylinder);
+    simulationmodel.addComponent(mass);
+    simulationmodel.addComponent(fsource);
+    simulationmodel.addComponent(source1);
+
+
+    //Connect components
+    simulationmodel.connect(psourceL, "P1", cylinder, "P1");
+    simulationmodel.connect(psourceR, "P1", cylinder, "P2");
+    simulationmodel.connect(mass, "P1", cylinder, "P3");
+    simulationmodel.connect(fsource, "out", mass, "P2");
+    simulationmodel.connect(source1, "out", fsource, "in");
+
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0,10);
+    simulationmodel.simulate(0,10);
+
+    //Test write to file
+    cylinder.getPort("P3").saveLogData("output.txt");
+
+    cout << "testCylinderC() Done!" << endl;
+
+}
+
+
 int main()
 {
 
@@ -1320,14 +1371,15 @@ int main()
 
     //testPressureControlledValve();
 
-    testTLMlumped();
+    //testTLMlumped();
 
     //testAck();
 
     //testMechanic();
 
-
     //testCheckValve();
+
+    testCylinderC();
 
 
     return 0;
