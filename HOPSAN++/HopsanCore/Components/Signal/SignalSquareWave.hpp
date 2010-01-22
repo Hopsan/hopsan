@@ -8,10 +8,10 @@
 //$Id$
 
 ///////////////////////////////////////////////////////////
-//               ↑  XXXXX   XXXXX   XXXXX                //
-//     Amplitude |  X   X   X   X   X   X                //
-//               ↓  X   XXXXX   XXXXX   XXX  ← BaseValue //
-//                  X                                    //
+//                ↑  XXXXX   XXXXX   XXXXX                //
+//      Amplitude |  X   X   X   X   X   X                //
+//                ↓  X   XXXXX   XXXXX   XXX  ← BaseValue //
+//                   X                                    //
 // Zero →  XXXXXXXXXXX                                   //
 //                                                       //
 //                   ↑                                   //
