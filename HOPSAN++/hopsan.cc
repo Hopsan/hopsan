@@ -57,7 +57,7 @@ void test1()
 }
 
 
-/*void testDelay() //Test of the Delay utillity class
+void testDelay() //Test of the Delay utillity class
 {
     double t=0.0;
 	Delay d1;
@@ -68,12 +68,12 @@ void test1()
 	    t += 0.1;
 		//d1.update(i);
 		//d1.update(i);
-		cout << "Value: " << i << "    Delayed value: " << d1.value(i) << endl;;
+		cout << "Value: " << i << "    Delayed value: " << d1.value(i);
 		//d1.update(i);
-		//cout << "    Delayed value again: " << d1.value(i) << endl;
+		cout << "    Delayed value again: " << d1.value(i) << endl;
 		//d1.update(i);
 	}
-}*/
+}
 
 
 void testTLM()
@@ -1408,7 +1408,7 @@ int main()
     //testkarl();
 
 
-    //testDelay();
+    testDelay();
 
 
     //test_fixed_pump();
@@ -1438,7 +1438,7 @@ int main()
 
     //testCylinderQ();
 
-    testPressureReliefValve();
+    //testPressureReliefValve();
 
 
     return 0;
