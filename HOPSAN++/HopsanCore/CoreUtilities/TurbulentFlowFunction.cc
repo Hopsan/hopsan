@@ -37,8 +37,3 @@ void TurbulentFlowFunction::setFlowCoefficient(double ks)
 {
     mKs = ks;
 }
-
-
-
-
-

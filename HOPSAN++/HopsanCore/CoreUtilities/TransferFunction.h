@@ -12,7 +12,7 @@ public:
     TransferFunction(double num [3], double den [3], double timestep);
     void update(double signal);
     void setCoefficients(double num [3], double den [3], double timestep);
-    double getValue();
+    double getValue(double value);
     void initialize(double initValueU, double initValueY, double &rTime);
 
 private:
