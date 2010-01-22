@@ -95,22 +95,22 @@ void Delay::setTimeDelay(const double timeDelay, const double Ts, const double i
 }
 
 
-double Delay::value() ///TODO: DELETE THIS
-{
-    if (mValues.empty())
-    {
-        return mInitialValue;
-    }
-    else if ((mFracStep < mStepDelay) && (mValues.size() >= 2))
-    {
-        return ((1 - (mStepDelay - mFracStep)) * mValues[mValues.size()-2] + (mStepDelay - mFracStep) * mValues.back()); //interpolerar
-    }
-    else
-    {
-        return mValues.back();
-    }
-
-}
+//double Delay::value() ///TODO: DELETE THIS
+//{
+//    if (mValues.empty())
+//    {
+//        return mInitialValue;
+//    }
+//    else if ((mFracStep < mStepDelay) && (mValues.size() >= 2))
+//    {
+//        return ((1 - (mStepDelay - mFracStep)) * mValues[mValues.size()-2] + (mStepDelay - mFracStep) * mValues.back()); //interpolerar
+//    }
+//    else
+//    {
+//        return mValues.back();
+//    }
+//
+//}
 double Delay::value(double value)
 {
     update(value);

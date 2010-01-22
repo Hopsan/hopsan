@@ -37,7 +37,6 @@ public:
 	double value(double value);
 	double value(double value, const std::size_t idx);
 
-	double value(); ///TODO: Should be taken away soon!
 private:
     double *mpTime;
     double mLastTime;
