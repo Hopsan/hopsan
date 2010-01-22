@@ -61,17 +61,17 @@ void test1()
 {
     double t=0.0;
 	Delay d1;
-	//d1.setStepDelay(3); // delay 2 steps
-	d1.setTimeDelay(.15, .1); //delay .15 with sampletime .1
+	d1.setStepDelay(2); // delay 2 steps
+	//d1.setTimeDelay(.15, .1); //delay .15 with sampletime .1
 	d1.initializeValues(18.0, t);
 	for (int i=0; i < 11; ++i) {
 	    t += 0.1;
-		d1.update(i);
-		d1.update(i);
-		cout << "Value: " << i << "    Delayed value: " << d1.value();
-		d1.update(i);
-		cout << "    Delayed value again: " << d1.value(i) << endl;
-		d1.update(i);
+		//d1.update(i);
+		//d1.update(i);
+		cout << "Value: " << i << "    Delayed value: " << d1.value(i) << endl;;
+		//d1.update(i);
+		//cout << "    Delayed value again: " << d1.value(i) << endl;
+		//d1.update(i);
 	}
 }*/
 

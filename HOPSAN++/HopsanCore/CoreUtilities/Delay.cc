@@ -101,6 +101,8 @@ void Delay::setTimeDelay(const double timeDelay, const double Ts, const double i
 
 double Delay::value()
 {
+    update(mValues.front());
+
     if (mValues.empty())
     {
         return mInitialValue;
