@@ -81,7 +81,7 @@ public:
         }
         else
         {
-            relTimeInt = ceil((mTime-mStartTime)*mFrequency);
+            relTimeInt = (int)ceil((mTime-mStartTime)*mFrequency);
             output = mBaseValue + (mAmplitude * (relTimeInt % 2));
         }
 
