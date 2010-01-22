@@ -92,7 +92,7 @@ public:
         mVelocityFilterLP2.initialize(cx1,cx2, mTime);
 
         mPositionFilterLP2.setCoefficients(posnum, den, mTimestep);
-        mVelocityFilterLP2.setCoefficients(posnum, den, mTimestep);
+        mVelocityFilterLP2.setCoefficients(velnum, den, mTimestep);
 
         mPositionFilterLP2.update(cx1-cx2);
         mVelocityFilterLP2.update(cx1-cx2);
@@ -129,9 +129,9 @@ public:
         //mVelocityFilterLP2.update(cx1-cx2);
         double v2 = mVelocityFilterLP2.getValue(cx1-cx2);
 
-        double x1 = -x2;
+        //double x1 = -x2;
         double v1 = -v2;
-        double F1 = cx1 + Zc1*v1;
+        //double F1 = cx1 + Zc1*v1;
         double F2 = cx2 + Zc2*v2;
 
             //Volumes
