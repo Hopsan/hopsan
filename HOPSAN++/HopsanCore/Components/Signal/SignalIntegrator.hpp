@@ -45,8 +45,8 @@ public:
 	void initialize()
 	{
 	    double u0 = mPortPtrs[in]->readNode(NodeSignal::VALUE);
-	    mDelayU.initializeValues(u0);
-	    mDelayY.initializeValues(mStartY);
+	    mDelayU.initializeValues(u0, mTime);
+	    mDelayY.initializeValues(mStartY, mTime);
 	    ///TODO: Write out values into node as well? (I think so) This is true for all components
 	}
 

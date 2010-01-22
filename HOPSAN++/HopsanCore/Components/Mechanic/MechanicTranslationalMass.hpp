@@ -48,7 +48,7 @@ public:
 
 	void initialize()
     {
-        mFilter.initializeValues(0.0,0.0);
+        mFilter.initializeValues(0.0,0.0, mTime);
         double num [] = {0.0, 1.0, 0.0};
         double den [] = {mk, mB, mMass};
         mFilter.setCoefficients(num, den, mTimestep);

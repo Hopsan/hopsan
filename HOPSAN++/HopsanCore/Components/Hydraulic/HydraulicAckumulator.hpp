@@ -79,7 +79,7 @@ public:
             }
             mVgas = mVtot;                  //Pressure is minimum, so ackumulator is empty
             mVoil = 0;
-            mDelayedQ2.initializeValues(mStartFlow);        //"Previous" value for q2 first step
+            mDelayedQ2.initializeValues(mStartFlow, mTime);        //"Previous" value for q2 first step
         }
         else
         {
@@ -87,13 +87,13 @@ public:
             {
                 p1 = 0.0;
             }
-            mDelayedQ2.initializeValues(mKce*(p1-mStartPressure));              //"Previous" value for q2 first step, calculated with orifice equation
+            mDelayedQ2.initializeValues(mKce*(p1-mStartPressure), mTime);              //"Previous" value for q2 first step, calculated with orifice equation
             mVgas = pow(mPmin*pow(mVtot, mKappa)/mStartPressure, 1/mKappa);     //Initial gas volume, calculated from initial pressure
             mVoil = mVtot - mVgas;
         }
-        mDelayedP2.initializeValues(mStartPressure);
-        mDelayedC1.initializeValues(c1);
-        mDelayedZc1.initializeValues(Zc1);
+        mDelayedP2.initializeValues(mStartPressure, mTime);
+        mDelayedC1.initializeValues(c1, mTime);
+        mDelayedZc1.initializeValues(Zc1, mTime);
 
         mDelayedP2.setStepDelay(1);
         mDelayedC1.setStepDelay(1);

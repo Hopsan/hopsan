@@ -88,8 +88,8 @@ public:
         double velnum [3] = {0.0, 1.0, 0.0};
         double den [3] = {mKl, mBl+Zx1+Zx2, mMass};
 
-        mPositionFilterLP2.initializeValues(cx1,cx2);
-        mVelocityFilterLP2.initializeValues(cx1,cx2);
+        mPositionFilterLP2.initializeValues(cx1,cx2, mTime);
+        mVelocityFilterLP2.initializeValues(cx1,cx2, mTime);
 
         mPositionFilterLP2.setCoefficients(posnum, den, mTimestep);
         mVelocityFilterLP2.setCoefficients(posnum, den, mTimestep);

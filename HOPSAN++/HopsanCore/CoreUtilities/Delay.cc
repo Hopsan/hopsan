@@ -26,6 +26,7 @@ Delay::Delay(const std::size_t stepDelay, const double initValue)
     mInitialValue = initValue;
     mValues.resize(mStepDelay+1, mInitialValue);
     mLastTime =0.0;
+    mIsInitialized = false;
 }
 
 
@@ -37,40 +38,37 @@ Delay::Delay(const double timeDelay, const double Ts, const double initValue)
     mInitialValue = initValue;
     mValues.resize(mStepDelay+1, mInitialValue);
     mLastTime =0.0;
+    mIsInitialized = false;
 }
 
 
-void Delay::initializeValues(const double initValue)
+void Delay::initializeValues(const double initValue, double &rTime)
 {
     mInitialValue = initValue;
     mValues.assign(mValues.size(), mInitialValue);
     mLastTime =0.0;
+    mpTime = &rTime;
+    mIsInitialized = true;
 }
 
 
 void Delay::update(const double value)
 {
-    if (mLastTime != *mpTime)
+    if (!mIsInitialized)
+    {
+        std::cout << "Delay function has to be initialized" << std::endl;
+        assert(false);
+    }
+    else if (mLastTime != *mpTime)
     {
         mValues.push_front(value);
         mValues.pop_back();
-        ///TODO: UNCOMMENT NEXT LINE
         mLastTime = *mpTime;
     }
 }
 
 
-void Delay::setStepDelay(const std::size_t stepDelay, const double initValue) ///TODO: DELETE THIS
-{
-    mStepDelay = stepDelay;
-    mFracStep = mStepDelay;
-    if (initValue != 0)
-    {
-        mInitialValue = initValue;
-    }
-    mValues.resize(mStepDelay, mInitialValue);
-}
-void Delay::setStepDelay(const std::size_t stepDelay, double &rTime, const double initValue)
+void Delay::setStepDelay(const std::size_t stepDelay, const double initValue)
 {
     mStepDelay = stepDelay;
     mFracStep = mStepDelay;
@@ -79,22 +77,10 @@ void Delay::setStepDelay(const std::size_t stepDelay, double &rTime, const doubl
         mInitialValue = initValue;
     }
     mValues.resize(mStepDelay+1, mInitialValue);
-    mpTime = &rTime;
 }
 
 
-void Delay::setTimeDelay(const double timeDelay, const double Ts, const double initValue) ///TODO: DELETE THIS
-{
-    mFracStep = timeDelay/Ts;
-    //avrundar uppat
-    mStepDelay = (std::size_t) ceil(((double) timeDelay)/Ts); ///TODO: kolla att det verkligen ar ratt
-    if (initValue != 0)
-    {
-        mInitialValue = initValue;
-    }
-    mValues.resize(mStepDelay, mInitialValue);
-}
-void Delay::setTimeDelay(const double timeDelay, const double Ts, double &rTime, const double initValue)
+void Delay::setTimeDelay(const double timeDelay, const double Ts, const double initValue)
 {
     mFracStep = timeDelay/Ts;
     //avrundar uppat
@@ -104,7 +90,6 @@ void Delay::setTimeDelay(const double timeDelay, const double Ts, double &rTime,
         mInitialValue = initValue;
     }
     mValues.resize(mStepDelay+1, mInitialValue);
-    mpTime = &rTime;
 }
 
 

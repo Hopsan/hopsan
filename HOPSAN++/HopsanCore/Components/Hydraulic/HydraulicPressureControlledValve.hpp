@@ -74,13 +74,13 @@ public:
         mX0 = 0.00001;
 
         mDelayedX0.setStepDelay(1);
-        mDelayedX0.initializeValues(0);
+        mDelayedX0.initializeValues(0, mTime);
 
         double wCutoff = 1 / mTao;      //Ska det vara Timestep/Tao?
         //double wCutoff = 100;     DEBUG
         double num [3] = {1.0, 0.0, 0.0};
         double den [3] = {1.0, 1.0/wCutoff, 0.0};
-        mFilterLP.initializeValues(0.0,0.0);
+        mFilterLP.initializeValues(0.0,0.0, mTime);
         mFilterLP.setCoefficients(num, den, mTimestep);
     }
 

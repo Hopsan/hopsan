@@ -65,10 +65,10 @@ double TransferFunction::getValue()
     return y0;
 }
 
-void TransferFunction::initializeValues(double initValueU, double initValueY)
+void TransferFunction::initializeValues(double initValueU, double initValueY, double &rTime)
 {
-    mDelayu.initializeValues(initValueU);
-    mDelayy.initializeValues(initValueY);
+    mDelayu.initializeValues(initValueU, rTime);
+    mDelayy.initializeValues(initValueY, rTime);
 }
 
 

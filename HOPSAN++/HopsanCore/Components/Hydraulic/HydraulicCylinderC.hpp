@@ -86,9 +86,9 @@ public:
 	void initialize()
     {
 
-        mDelayedC1prim.initializeValues(mStartPressure1);
-        mDelayedC2prim.initializeValues(mStartPressure2);
-        mDelayedV.initializeValues(mStartVelocity);
+        mDelayedC1prim.initializeValues(mStartPressure1, mTime);
+        mDelayedC2prim.initializeValues(mStartPressure2, mTime);
+        mDelayedV.initializeValues(mStartVelocity, mTime);
 
         mZx = mZc2*pow(mArea1,2) + mZc2*pow(mArea2,2) + mBp;
 
