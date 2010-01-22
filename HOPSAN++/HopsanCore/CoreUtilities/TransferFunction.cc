@@ -56,6 +56,8 @@ void TransferFunction::update(double signal)
         y0 = (b[0]*u0+b[1]*u1+b[2]*u2-a[1]*y1-a[2]*y2)/a[0];
 
         mLastTime = *mpTime;
+        mDelayu.update(u0);
+        mDelayy.update(y0);
     }
 }
 
@@ -74,7 +76,7 @@ void TransferFunction::setCoefficients(double num [3], double den [3], double ti
 
 double TransferFunction::getValue(double value)
 {
-    update(value);
+    //update(value);
     return y0;
 }
 
@@ -82,11 +84,11 @@ void TransferFunction::initialize(double initValueU, double initValueY, double &
 {
     mpTime = &rTime;
     mLastTime = 0.0;
-    for(int i=0; i<3; i++)
-    {
-      mnum[i] = 0.0;
-      mden[i] = 0.0;
-    }
+//    for(int i=0; i<3; i++)
+//    {
+//      mnum[i] = 0.0;
+//      mden[i] = 0.0;
+//    }
     mDelayu.initializeValues(initValueU, rTime);
     mDelayy.initializeValues(initValueY, rTime);
     mIsInitialized = true;
