@@ -16,6 +16,8 @@
 
 Delay::Delay()
 {
+    mLastTime =0.0;
+    mIsInitialized = false;
 }
 
 
