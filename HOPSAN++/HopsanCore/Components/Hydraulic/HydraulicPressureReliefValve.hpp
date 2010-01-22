@@ -210,7 +210,7 @@ public:
         mPortPtrs[P2]->writeNode(NodeHydraulic::PRESSURE, p2);
         mPortPtrs[P2]->writeNode(NodeHydraulic::MASSFLOW, q2);
 
-        //mFilterLP.update(xsh);
+        mFilterLP.update(xsh);
     }
 };
 
