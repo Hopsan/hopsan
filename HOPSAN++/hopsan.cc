@@ -1178,7 +1178,7 @@ void testMechanic()
     simulationmodel.connect(*filter, "in", *velocity, "out");
 
     force->setParameter("Value", 0.0);
-    velocity->setParameter("StepSize", 1.0);
+    velocity->setParameter("Amplitude", 1.0);
     spring->setParameter("k", 1.0e2);
     filter->setParameter("Frequency", 10);
 
@@ -1408,7 +1408,7 @@ int main()
     //testkarl();
 
 
-    testDelay();
+    //testDelay();
 
 
     //test_fixed_pump();
@@ -1432,7 +1432,7 @@ int main()
 
     //testAck();
 
-    //testMechanic();
+    testMechanic();
 
     //testCheckValve();
 
