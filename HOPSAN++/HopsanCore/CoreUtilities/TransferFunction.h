@@ -13,7 +13,7 @@ public:
     void update(double signal);
     void setCoefficients(double num [3], double den [3], double timestep);
     double getValue();
-    void initializeValues(double initValueU, double initValueY, double &rTime);
+    void initialize(double initValueU, double initValueY, double &rTime);
 
 private:
     double u0, u1, u2;
