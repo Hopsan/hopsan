@@ -129,7 +129,9 @@
 		<Unit filename="HopsanCore/Components/Signal/SignalDivide.hpp" />
 		<Unit filename="HopsanCore/Components/Signal/SignalGain.hpp" />
 		<Unit filename="HopsanCore/Components/Signal/SignalIntegrator.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalIntegrator2.hpp" />
 		<Unit filename="HopsanCore/Components/Signal/SignalIntegratorLimited.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalIntegratorLimited2.hpp" />
 		<Unit filename="HopsanCore/Components/Signal/SignalLP1Filter.hpp" />
 		<Unit filename="HopsanCore/Components/Signal/SignalLP2Filter.hpp" />
 		<Unit filename="HopsanCore/Components/Signal/SignalMultiply.hpp" />
@@ -143,11 +145,14 @@
 		<Unit filename="HopsanCore/Components/Signal/SignalSquareWave.hpp" />
 		<Unit filename="HopsanCore/Components/Signal/SignalStep.hpp" />
 		<Unit filename="HopsanCore/Components/Signal/SignalSubtract.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalTimeDelay.hpp" />
 		<Unit filename="HopsanCore/CoreUtilities/ClassFactory.h" />
 		<Unit filename="HopsanCore/CoreUtilities/Delay.cc" />
 		<Unit filename="HopsanCore/CoreUtilities/Delay.h" />
 		<Unit filename="HopsanCore/CoreUtilities/Integrator.cc" />
 		<Unit filename="HopsanCore/CoreUtilities/Integrator.h" />
+		<Unit filename="HopsanCore/CoreUtilities/IntegratorLimited.cc" />
+		<Unit filename="HopsanCore/CoreUtilities/IntegratorLimited.h" />
 		<Unit filename="HopsanCore/CoreUtilities/LoadExternal.cc" />
 		<Unit filename="HopsanCore/CoreUtilities/LoadExternal.h" />
 		<Unit filename="HopsanCore/CoreUtilities/TransferFunction.cc" />

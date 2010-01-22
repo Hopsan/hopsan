@@ -83,8 +83,8 @@ void TransferFunction::initialize(double initValueU, double initValueY, double &
 {
     mpTime = &rTime;
     mLastTime = 0.0;
-    mDelayu.initializeValues(initValueU, rTime);
-    mDelayy.initializeValues(initValueY, rTime);
+    mDelayu.initialize(rTime, initValueU);
+    mDelayy.initialize(rTime, initValueY);
     mIsInitialized = true;
 }
 

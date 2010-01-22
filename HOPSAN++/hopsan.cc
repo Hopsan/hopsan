@@ -63,7 +63,7 @@ void testDelay() //Test of the Delay utillity class
 	Delay d1;
 	d1.setStepDelay(2); // delay 2 steps
 	//d1.setTimeDelay(.15, .1); //delay .15 with sampletime .1
-	d1.initializeValues(18.0, t);
+	d1.initialize(t, 18.0);
 	for (int i=0; i < 11; ++i) {
 	    t += 0.1;
 		//d1.update(i);
@@ -469,7 +469,8 @@ void testIntegrator()
     //Create other components
     SignalStep stepL("source_left", 5.0, -10.0, .5);
     //SignalIntegrator intC("integrator_center");
-    SignalIntegratorLimited intC("integrator_center", -1.0, 1.0);
+    //SignalIntegratorLimited2 intC("integrator_center", -1.0, 1.0);
+    SignalTimeDelay intC("integrator_center", 0.1);
     SignalSink sinkR("sink_right");
 
     //Add components
@@ -1420,7 +1421,10 @@ int main()
     //testMicke();
 
 
-    //testIntegrator();
+    testIntegrator();
+
+    testDelay();
+
 
     //testSignal();
 

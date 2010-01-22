@@ -67,13 +67,13 @@ public:
         mPortPtrs[P2]->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+mZc*mStartFlow);
         mPortPtrs[P2]->writeNode(NodeHydraulic::CHARIMP,      mZc);
 
+		//Init delay
+        mDelayedC1.initialize(mTime, mStartPressure+mZc*mStartFlow);
+		mDelayedC2.initialize(mTime, mStartPressure+mZc*mStartFlow);
+
 		//Set external parameters
 		mDelayedC1.setTimeDelay(mTimeDelay-mTimestep, mTimestep); //-mTimestep sue to calc time
 		mDelayedC2.setTimeDelay(mTimeDelay-mTimestep, mTimestep);
-
-		//Init delay
-        mDelayedC1.initializeValues(mStartPressure+mZc*mStartFlow, mTime);
-		mDelayedC2.initializeValues(mStartPressure+mZc*mStartFlow, mTime);
 	}
 
 

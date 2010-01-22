@@ -30,7 +30,8 @@ public:
     Delay();
     Delay(const std::size_t stepDelay, const double initValue=0.0);
     Delay(const double timeDelay, const double Ts, const double initValue=0.0);
-    void initializeValues(const double initValue, double &rTime);
+    void initialize(double &rTime, const double initValue=0.0);
+    void initializeValues(const double initValue);
     void update(const double value);
     void setStepDelay(const std::size_t stepDelay, const double initValue=0.0);
     void setTimeDelay(const double timeDelay, const double Ts, const double initValue=0.0);

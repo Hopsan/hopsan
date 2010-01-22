@@ -71,7 +71,7 @@ public:
         mX0 = 0.00001;
 
         mDelayedX0.setStepDelay(1);
-        mDelayedX0.initializeValues(0.0, mTime);
+        mDelayedX0.initialize(mTime, 0.0);
 
         double wCutoff = 1 / mTao;      //Ska det vara Timestep/Tao?
         //double wCutoff = 100;     DEBUG

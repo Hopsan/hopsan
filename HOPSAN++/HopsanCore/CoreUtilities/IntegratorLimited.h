@@ -1,29 +1,30 @@
 //!
-//! @file   Integrator.h
+//! @file   IntegratorLimited.h
 //! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2010-01-22
 //!
-//! @brief Contains the Core Utility Integrator class
+//! @brief Contains the Core Utility Limited Integrator class
 //!
 //$Id$
 
-#ifndef INTEGRATOR_H_INCLUDED
-#define INTEGRATOR_H_INCLUDED
+#ifndef INTEGRATORLIMITED_H_INCLUDED
+#define INTEGRATORLIMITED_H_INCLUDED
 
 #include <deque>
 #include "win32dll.h"
 
-class DLLIMPORTEXPORT Integrator
+class DLLIMPORTEXPORT IntegratorLimited
 {
 public:
-    Integrator();
-    void initialize(double &rTime, double timestep, double u0, double y0);
+    IntegratorLimited();
+    void initialize(double &rTime, double timestep, double u0=0.0, double y0=0.0, double min=-1.5E+300, double max=1.5E+300);
     void initializeValues(double u0, double y0);
     void update(double u);
 	double value(double u);
 
 private:
     Delay mDelayU, mDelayY;
+    double mMin, mMax;
     double mTimeStep;
     double *mpTime;
     double mLastTime;

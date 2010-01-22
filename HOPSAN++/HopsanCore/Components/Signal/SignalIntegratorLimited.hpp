@@ -51,8 +51,8 @@ public:
 	void initialize()
 	{
 	    double u0 = mPortPtrs[in]->readNode(NodeSignal::VALUE);
-	    mDelayU.initializeValues(u0, mTime);
-	    mDelayY.initializeValues(max(min(mStartY, mMax), mMin), mTime);
+	    mDelayU.initialize(mTime, u0);
+	    mDelayY.initialize(mTime, max(min(mStartY, mMax), mMin));
 	}
 
 

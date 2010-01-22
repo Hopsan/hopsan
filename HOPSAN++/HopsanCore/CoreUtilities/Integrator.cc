@@ -19,10 +19,12 @@ Integrator::Integrator()
 }
 
 
-void Integrator::initializeValues(double u0, double y0, double timestep, double &rTime)
+void Integrator::initialize(double &rTime, double timestep, double u0, double y0)
 {
-    mDelayU.initializeValues(u0, rTime);
-    mDelayY.initializeValues(y0, rTime);
+    mDelayU.setStepDelay(1);
+    mDelayY.setStepDelay(1);
+    mDelayU.initialize(rTime, u0);
+    mDelayY.initialize(rTime, y0);
 
     mTimeStep = timestep;
     mpTime = &rTime;
@@ -30,7 +32,14 @@ void Integrator::initializeValues(double u0, double y0, double timestep, double 
 }
 
 
-void Integrator::update(double u, double  y)
+void Integrator::initializeValues(double u0, double y0)
+{
+    mDelayU.initializeValues(u0);
+    mDelayY.initializeValues(y0);
+}
+
+
+void Integrator::update(double u)
 {
     if (!mIsInitialized)
     {
@@ -41,7 +50,7 @@ void Integrator::update(double u, double  y)
     {
         //Filter equation
         //Bilinear transform is used
-		mDelayY.update(mDelayY.value(y) + mTimeStep/2.0*(u + mDelayU.value(u)));
+		mDelayY.update(mDelayY.value() + mTimeStep/2.0*(u + mDelayU.value()));
 		mDelayU.update(u);
 
         mLastTime = *mpTime;
@@ -49,11 +58,9 @@ void Integrator::update(double u, double  y)
 }
 
 
-double Integrator::value(double u, double y)
+double Integrator::value(double u)
 {
-    update(u, y);
-    mDelayU.update(u);
-    mDelayY.update(y);
+    update(u);
 
-    return mDelayY.value(y);
+    return mDelayY.value();
 }
