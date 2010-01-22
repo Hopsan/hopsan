@@ -62,8 +62,8 @@ void testDelay() //Test of the Delay utillity class
     double t=0.0;
 	Delay d1;
 	//d1.setStepDelay(3, t, 0.0); // delay 2 steps
-	d1.setTimeDelay(.15, .1, t, 19.0); //delay .15 with sampletime .1
-	d1.initializeValues(18.0);
+	d1.setTimeDelay(.15, .1, 19.0); //delay .15 with sampletime .1
+	d1.initializeValues(18.0, t);
 	for (int i=0; i < 11; ++i) {
 	    t += 0.1;
 		d1.update(i);
