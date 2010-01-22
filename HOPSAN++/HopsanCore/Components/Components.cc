@@ -22,6 +22,7 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->RegisterCreatorFunction("HydraulicPowerSensor", HydraulicPowerSensor::Creator);
     cfact_ptr->RegisterCreatorFunction("HydraulicCylinderC", HydraulicCylinderC::Creator);
     cfact_ptr->RegisterCreatorFunction("HydraulicCylinderQ", HydraulicCylinderQ::Creator);
+    cfact_ptr->RegisterCreatorFunction("HydraulicPressureReliefValve", HydraulicPressureReliefValve::Creator);
 
 
     //Signal components

@@ -57,7 +57,7 @@ void test1()
 }
 
 
-void testDelay() //Test of the Delay utillity class
+/*void testDelay() //Test of the Delay utillity class
 {
     double t=0.0;
 	Delay d1;
@@ -73,7 +73,7 @@ void testDelay() //Test of the Delay utillity class
 		cout << "    Delayed value again: " << d1.value(i) << endl;
 		d1.update(i);
 	}
-}
+}*/
 
 
 void testTLM()
@@ -1334,6 +1334,58 @@ void testCylinderQ()
 }
 
 
+
+void testPressureReliefValve()
+{
+    HopsanEssentials Hopsan;
+
+    //Create master component
+    ComponentSystem simulationmodel("simulationmodel");
+
+    //Create other components
+
+    HydraulicPressureSource psource1("ps1", 1.0e5);
+    HydraulicPressureSource psource2("ps2", 1.0e5);
+    //HydraulicFixedDisplacementPump pump("pump");
+    HydraulicPressureReliefValve prv("prv");
+    //HydraulicTLMRlineR line("line");
+    SignalRamp ramp("ramp");
+
+    //pump.setParameter("Speed", 5);
+    ramp.setParameter("BaseValue", 1.5e7);
+    ramp.setParameter("Amplitude", 0.0);
+    ramp.setParameter("StartTime", 2.0);
+    ramp.setParameter("StopTime", 6.0);
+    prv.setParameter("pref", 2.0e16);
+    //prv.listParametersConsole();
+
+
+    //Add components
+    simulationmodel.addComponent(psource1);
+    simulationmodel.addComponent(psource2);
+    simulationmodel.addComponent(prv);
+    simulationmodel.addComponent(ramp);
+    //simulationmodel.addComponent(pump);
+    //simulationmodel.addComponent(line);
+
+    //Connect components
+    simulationmodel.connect(psource1, "P1", prv, "P1");
+    simulationmodel.connect(prv, "P2", psource2, "P1");
+    simulationmodel.connect(ramp, "out", psource1, "in");
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0,10);
+    simulationmodel.simulate(0,10);
+
+    //Test write to file
+    prv.getPort("P1").saveLogData("output.txt");
+
+    cout << "test_prv() Done!" << endl;
+
+}
+
+
+
 int main()
 {
 
@@ -1356,7 +1408,7 @@ int main()
     //testkarl();
 
 
-    testDelay();
+    //testDelay();
 
 
     //test_fixed_pump();
@@ -1385,6 +1437,8 @@ int main()
     //testCheckValve();
 
     //testCylinderQ();
+
+    testPressureReliefValve();
 
 
     return 0;
