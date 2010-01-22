@@ -37,7 +37,7 @@ public:
 	void initialize()
     {
         double signal  = mPortPtrs[in]->readNode(NodeSignal::VALUE);
-        mInt.initializeValues(signal, 0.0, mTimestep, mTime);
+        mInt.initialize(mTime, mTimestep, signal, 0.0);
     }
 
     void simulateOneTimestep()
@@ -50,7 +50,7 @@ public:
 
         //Spring equations
         double v = signal;
-        double x = mInt.value(v, x);
+        double x = mInt.value(v);
         double F = c + Zc*v;
 
         //Write new values to nodes
