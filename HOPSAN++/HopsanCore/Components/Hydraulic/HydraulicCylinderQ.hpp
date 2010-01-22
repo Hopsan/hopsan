@@ -88,8 +88,8 @@ public:
         double velnum [3] = {0.0, 1.0, 0.0};
         double den [3] = {mKl, mBl+Zx1+Zx2, mMass};
 
-        mPositionFilterLP2.initializeValues(cx1,cx2, mTime);
-        mVelocityFilterLP2.initializeValues(cx1,cx2, mTime);
+        mPositionFilterLP2.initialize(cx1,cx2, mTime);
+        mVelocityFilterLP2.initialize(cx1,cx2, mTime);
 
         mPositionFilterLP2.setCoefficients(posnum, den, mTimestep);
         mVelocityFilterLP2.setCoefficients(posnum, den, mTimestep);
@@ -121,13 +121,13 @@ public:
 
         double posnum [3] = {1.0, 0.0, 0.0};
         mPositionFilterLP2.setCoefficients(posnum, den, mTimestep);
-        mPositionFilterLP2.update(cx1-cx2);                         //JÄTTEFULT!!!
-        double x2 = mPositionFilterLP2.getValue();
+        //mPositionFilterLP2.update(cx1-cx2);                         //JÄTTEFULT!!!
+        double x2 = mPositionFilterLP2.getValue(cx1-cx2);
 
         double velnum [3] = {0.0, 1.0, 0.0};
         mVelocityFilterLP2.setCoefficients(velnum, den, mTimestep);
-        mVelocityFilterLP2.update(cx1-cx2);
-        double v2 = mVelocityFilterLP2.getValue();
+        //mVelocityFilterLP2.update(cx1-cx2);
+        double v2 = mVelocityFilterLP2.getValue(cx1-cx2);
 
         double x1 = -x2;
         double v1 = -v2;

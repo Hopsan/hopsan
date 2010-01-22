@@ -80,7 +80,7 @@ public:
         //double wCutoff = 100;     DEBUG
         double num [3] = {1.0, 0.0, 0.0};
         double den [3] = {1.0, 1.0/wCutoff, 0.0};
-        mFilterLP.initializeValues(0.0,0.0, mTime);
+        mFilterLP.initialize(0.0,0.0, mTime);
         mFilterLP.setCoefficients(num, den, mTimestep);
     }
 
@@ -124,7 +124,7 @@ public:
         //cout << "xs = " << xs << endl;
         double xsh = mHyst.getValue(xs, xh, mDelayedX0.value(1));
         //cout << "xsh = " << xsh << endl;
-        mX0 = mFilterLP.getValue();          //Filter disabled because it's not working!
+        mX0 = mFilterLP.getValue(xsh);          //Filter disabled because it's not working!
         if (mTime < 0.1) { cout << "p1 = " << p1 << ", xs = " << xs << ", xsh = " << xsh << ", mDelayedX0 = " << mDelayedX0.value(1) << ", mX0 = " << mX0 << endl; }
         //cout << "mX0 = " << mX0 << endl;
         //mX0 = xsh;      //Debug, ta bort sen
@@ -172,8 +172,8 @@ public:
             xh = mPh / b1;
             //if (mTime == 0) { xs = mX0; }
             xsh = mHyst.getValue(xs, xh, mDelayedX0.value());
-            mX0 = mFilterLP.getValue();          //Filter is not working
-            mX0 = xsh;
+            mX0 = mFilterLP.getValue(xsh);          //Filter is not working
+            //mX0 = xsh;
             if (mX0 > mX0max)
             {
                 mX0 = mX0max;
@@ -202,7 +202,7 @@ public:
         mPortPtrs[P_OPEN]->writeNode(NodeHydraulic::PRESSURE, p_open);
         mPortPtrs[P_CLOSE]->writeNode(NodeHydraulic::PRESSURE, p_close);
 
-        mFilterLP.update(xsh);
+        //mFilterLP.update(xsh);
     }
 };
 

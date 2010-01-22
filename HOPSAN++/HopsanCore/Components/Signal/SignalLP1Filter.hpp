@@ -49,13 +49,13 @@ public:
         double u = mPortPtrs[in]->readNode(NodeSignal::VALUE);
 
         //Filter equations
-		double y = Filter.getValue();
+		double y = Filter.getValue(u);
 
         //Write new values to nodes
         mPortPtrs[out]->writeNode(NodeSignal::VALUE, y);
 
         //Update filter:
-        Filter.update(u);
+        //Filter.update(u);
     }
 };
 

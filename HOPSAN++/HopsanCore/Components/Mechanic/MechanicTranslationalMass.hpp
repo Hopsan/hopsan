@@ -48,7 +48,7 @@ public:
 
 	void initialize()
     {
-        mFilter.initializeValues(0.0,0.0, mTime);
+        mFilter.initialize(0.0,0.0, mTime);
         double num [] = {0.0, 1.0, 0.0};
         double den [] = {mk, mB, mMass};
         mFilter.setCoefficients(num, den, mTimestep);
@@ -68,7 +68,7 @@ public:
         double den [] = {mk, mB+Zx1+Zx2, mMass};
 
         mFilter.setCoefficients(num, den, mTimestep);
-        double v2 = mFilter.getValue();
+        double v2 = mFilter.getValue(c1-c2);
         double v1 = -v2;
         double F1 = c1 + Zx1*v1;
         double F2 = c2 + Zx2*v2;
@@ -82,7 +82,7 @@ public:
       //  p2_ptr->setData(NodeMechanic::POSITION, x2);
 
         //Update Filter:
-        mFilter.update(c1-c2);
+        //mFilter.update(c1-c2);
     }
 };
 

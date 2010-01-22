@@ -109,7 +109,7 @@ public:
         double Zcb = mPortPtrs[PB]->readNode(NodeHydraulic::CHARIMP);
         double xvin  = mPortPtrs[PX]->readNode(NodeSignal::VALUE);
 
-        double xv = myFilter.getValue();
+        double xv = myFilter.getValue(xvin);
 
         //Valve equations
         if (fabs(xv)>mxvmax)
@@ -182,7 +182,7 @@ public:
         mPortPtrs[PB]->writeNode(NodeHydraulic::MASSFLOW, qb);
 
         //Update Filter:
-        myFilter.update(xvin);
+        //myFilter.update(xvin);
     }
 };
 
