@@ -1,4 +1,6 @@
 #include <math.h>
+#include <iostream>
+#include <cassert>
 #include "TransferFunction.h"
 
 
@@ -17,11 +19,18 @@ TransferFunction::TransferFunction(double num [3], double den [3], double timest
     mLastTime = 0.0;
     mDelayu.setStepDelay(2);
     mDelayy.setStepDelay(2);
+    mIsInitialized = false;
 }
 
 void TransferFunction::update(double signal)
 {
-    if (mLastTime != *mpTime)
+    if (!mIsInitialized)
+    {
+        std::cout << "TransferFunction has to be initialized" << std::endl;
+        assert(false);
+    }
+
+    else if (mLastTime != *mpTime)
     {
       u2 = mDelayu.value(2); // Inc. idx +1
       u1 = mDelayu.value(1); // Inc. idx +1
@@ -80,6 +89,7 @@ void TransferFunction::initialize(double initValueU, double initValueY, double &
     }
     mDelayu.initializeValues(initValueU, rTime);
     mDelayy.initializeValues(initValueY, rTime);
+    mIsInitialized = true;
 }
 
 

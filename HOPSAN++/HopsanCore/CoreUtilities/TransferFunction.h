@@ -1,7 +1,6 @@
 #ifndef TRANSFERFUNCTION_H_INCLUDED
 #define TRANSFERFUNCTION_H_INCLUDED
 
-#include <deque>
 #include "win32dll.h"
 #include "Delay.h"
 
@@ -27,6 +26,7 @@ private:
 	double mTimestep;
     double *mpTime;
     double mLastTime;
+    bool mIsInitialized;
 };
 
 #endif // TRANSFERFUNCTION_H_INCLUDED
