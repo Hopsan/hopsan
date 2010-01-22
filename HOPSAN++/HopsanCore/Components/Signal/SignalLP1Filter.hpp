@@ -38,6 +38,7 @@ public:
 	{
 	    double num [3] = {1.0, 0.0, 0.0};
 	    double den [3] = {1.0, 1.0/mCofrequency, 0.0};
+	    Filter.initialize(0.0, 0.0, mTime);
         Filter.setCoefficients(num, den, mTimestep);
 	}
 
