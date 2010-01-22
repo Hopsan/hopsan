@@ -25,6 +25,8 @@ private:
 	double mnum [3];
 	double mden [3];
 	double mTimestep;
+    double *mpTime;
+    double mLastTime;
 };
 
 #endif // TRANSFERFUNCTION_H_INCLUDED
