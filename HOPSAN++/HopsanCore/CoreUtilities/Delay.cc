@@ -69,7 +69,7 @@ void Delay::update(const double value)
     }
     else
     {
-        ///TODO: skriv över aktuellt värde
+        mValues[0] = value;
     }
 }
 

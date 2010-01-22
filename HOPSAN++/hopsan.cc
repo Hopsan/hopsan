@@ -68,7 +68,7 @@ void testDelay() //Test of the Delay utillity class
 	    t += 0.1;
 		d1.update(i);
 		d1.update(i);
-		cout << "Value: " << i << "    Delayed value: " << d1.value(i);
+		cout << "Value: " << i << "    Delayed value: " << d1.value();
 		d1.update(i);
 		cout << "    Delayed value again: " << d1.value(i) << endl;
 		d1.update(i);
