@@ -14,6 +14,7 @@ private:
     double mB;
     double mk;
     TransferFunction mFilter;
+    Integrator mInt;
     enum {P1, P2};
 
 public:
@@ -52,6 +53,7 @@ public:
         double num [] = {0.0, 1.0, 0.0};
         double den [] = {mk, mB, mMass};
         mFilter.setCoefficients(num, den, mTimestep);
+        mInt.initializeValues(0.0,0.0, mTimestep, mTime);
         mFilter.update(0);
     }
 
@@ -70,6 +72,8 @@ public:
         mFilter.setCoefficients(num, den, mTimestep);
         double v2 = mFilter.getValue(c1-c2);
         double v1 = -v2;
+        double x2 = mInt.value(v2, x2);
+        double x1 = -x2;
         double F1 = c1 + Zx1*v1;
         double F2 = c2 + Zx2*v2;
 
@@ -78,9 +82,8 @@ public:
         mPortPtrs[P2]->writeNode(NodeMechanic::FORCE, F2);
         mPortPtrs[P1]->writeNode(NodeMechanic::VELOCITY, v1);
         mPortPtrs[P2]->writeNode(NodeMechanic::VELOCITY, v2);
-      //  p1_ptr->setData(NodeMechanic::POSITION, x1);
-      //  p2_ptr->setData(NodeMechanic::POSITION, x2);
-
+        mPortPtrs[P1]->writeNode(NodeMechanic::POSITION, x1);
+        mPortPtrs[P2]->writeNode(NodeMechanic::POSITION, x2);
         //Update Filter:
         //mFilter.update(c1-c2);
     }
