@@ -127,6 +127,7 @@
 		<Unit filename="HopsanCore/Components/Signal/SignalAdd.hpp" />
 		<Unit filename="HopsanCore/Components/Signal/SignalDeadZone.hpp" />
 		<Unit filename="HopsanCore/Components/Signal/SignalDivide.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalFirstOrderFilter.hpp" />
 		<Unit filename="HopsanCore/Components/Signal/SignalGain.hpp" />
 		<Unit filename="HopsanCore/Components/Signal/SignalIntegrator.hpp" />
 		<Unit filename="HopsanCore/Components/Signal/SignalIntegrator2.hpp" />
@@ -138,6 +139,7 @@
 		<Unit filename="HopsanCore/Components/Signal/SignalPulse.hpp" />
 		<Unit filename="HopsanCore/Components/Signal/SignalRamp.hpp" />
 		<Unit filename="HopsanCore/Components/Signal/SignalSaturation.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalSecondOrderFilter.hpp" />
 		<Unit filename="HopsanCore/Components/Signal/SignalSineWave.hpp" />
 		<Unit filename="HopsanCore/Components/Signal/SignalSink.hpp" />
 		<Unit filename="HopsanCore/Components/Signal/SignalSoftStep.hpp" />
