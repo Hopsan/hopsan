@@ -44,11 +44,6 @@ void SecondOrderFilter::setNumDen(double num[3], double den[3])
     mCoeffU[2] = -pow(mTimeStep, 2)*(8*num[0] - 6*pow(mTimeStep, 2)*num[2]);
     mCoeffU[3] = -pow(mTimeStep, 2)*(4*mTimeStep*num[1] - 4*pow(mTimeStep, 2)*num[2]);
     mCoeffU[4] = pow(mTimeStep, 2)*(num[2]*pow(mTimeStep, 2) - 2*num[1]*mTimeStep + 4*num[0]);
-cout << "U0 " << mCoeffU[0] << endl;
-cout << "U1 " << mCoeffU[1] << endl;
-cout << "U2 " << mCoeffU[2] << endl;
-cout << "U3 " << mCoeffU[3] << endl;
-cout << "U4 " << mCoeffU[4] << endl;
 
     mCoeffY[0] = pow(mTimeStep, 2.0)*(den[2]*pow(mTimeStep, 2.0) + 2*den[1]*mTimeStep + 4*den[0]);
     mCoeffY[1] = pow(mTimeStep, 2.0)*(4*den[2]*pow(mTimeStep, 2.0) + 4*den[1]*mTimeStep);

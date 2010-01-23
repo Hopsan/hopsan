@@ -13,6 +13,7 @@
 #include "HopsanCore.h"
 #include "FirstOrderFilter.h"
 
+
 FirstOrderFilter::FirstOrderFilter()
 {
     mLastTime = 0.0;

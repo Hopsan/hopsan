@@ -1404,6 +1404,48 @@ void testFilter()
 }
 
 
+void testSignalFilter()
+{
+    HopsanEssentials Hopsan;
+
+	ComponentSystem simulationmodel("simulationmodel");
+    //Create other components
+    SignalStep stepL("source_left", 0.0, 1.0, 1.0);
+    SignalSecondOrderFilter filter("Filter");
+    SignalSink sinkR("sink_right");
+
+    //Add components
+    simulationmodel.addComponent(stepL);
+    simulationmodel.addComponent(filter);
+    simulationmodel.addComponent(sinkR);
+
+    //Connect components
+    simulationmodel.connect(stepL, "out", filter, "in");
+    simulationmodel.connect(filter, "out", sinkR, "in");
+
+    //List and set parameters
+    stepL.listParametersConsole();
+    filter.setParameter("k", 1.0);
+    filter.setParameter("wnum", 1.0E+6);
+    filter.setParameter("wden", 2.0*3.14*1.0);
+    filter.setParameter("dnum", 1.0);
+    filter.setParameter("dden", 0.2);
+    filter.listParametersConsole();
+    sinkR.listParametersConsole();
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0.0, 5.0);
+
+    simulationmodel.simulate(0.0, 5.0);
+
+    //Test write to file
+    sinkR.getPort("in").saveLogData("output.txt");
+
+	//Finished
+    cout << "testSignalFilter() Done!" << endl;
+}
+
+
 
 int main()
 {
@@ -1462,7 +1504,7 @@ int main()
 
     //testPressureReliefValve();
 
-    testFilter();
+    testSignalFilter();
 
     return 0;
 }
