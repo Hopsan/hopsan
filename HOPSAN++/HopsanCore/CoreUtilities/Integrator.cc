@@ -64,3 +64,11 @@ double Integrator::value(double u)
 
     return mDelayY.value();
 }
+
+
+double Integrator::value()
+{
+    update(mDelayU.value(1));
+
+    return mDelayY.value();
+}

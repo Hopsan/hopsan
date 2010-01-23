@@ -145,12 +145,27 @@ double Delay::value(double value)
 }
 
 
-double Delay::value(double value, const std::size_t idx) ///TODO: interpolera värden
+double Delay::value(double value, const int idx) ///TODO: interpolera värden
 {
     update(value);
-    if ((idx < 0) || (idx > mValues.size()))
+    if (((size_t)idx < 0) || ((size_t)idx > mValues.size()))
     {
         std::cout << "Indexed outside Delay-vector" << "  Index: " << idx << "  Length: " << mValues.size() << std::endl;
+        assert(false);
+    }
+    else
+    {
+        return mValues[idx];
+    }
+}
+
+
+double Delay::value(const int idx) ///TODO: interpolera värden
+{
+    update(mValues.front());
+    if (((size_t)idx < 1) || ((size_t)idx > mValues.size()))
+    {
+        std::cout << "Indexed outside Delay-vector" << "  Index: " << idx << "  Delay vector index rage is " << "[1, " << mValues.size() << "]" << std::endl;
         assert(false);
     }
     else

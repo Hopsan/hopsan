@@ -13,18 +13,21 @@
 #include <deque>
 #include "win32dll.h"
 
-/*
- * Följande exempel fördröjer variablen var i 5 tidssteg
- *
- * Delay delayedVar(5); // instansiering av en fördröjning
- *
- * För att komma åt det fördröjda värdet:
- *
- * delayedVar.value()
- * delayedVar.update(var) // sista som sker i tidssteget
- */
 
 class DLLIMPORTEXPORT Delay
+//! @brief The Delay class delayes a variable in time
+//!
+//! Delay delayes a variable, the following example
+//! delay a variable 5 timesteps:
+//!
+//! Delay delayVar;
+//! delayVar.initialize(time);
+//! delayVar.setStepDelay(5);
+//!
+//! In every loop a Delay instance has to be called with
+//! an argument (a new value like "delayVar.value(newValue)"
+//! and/or it can be updated trough the call "delayVar.update(newValue)".
+//!
 {
 public:
     Delay();
@@ -35,9 +38,30 @@ public:
     void update(const double value);
     void setStepDelay(const std::size_t stepDelay, const double initValue=0.0);
     void setTimeDelay(const double timeDelay, const double Ts, const double initValue=0.0);
+    //! Returns the oldest delayed value and update with the last value.
 	double value();
+	//! Returns the delayed value at a specified index.
+	//! @param idx tell which value to return, 1 is the last timestep's value 2 is the value from two timsteps ago and so on.
+	//! @see value(const int idx)
+	//! @see value(double value)
+	//! @see value(double value, const int idx)
+	double value(const int idx);
+	///TODO: Split this value functions to different names, this is confusing and it is not possible to implement a overloaded function to access a value form a given time ago since time is also double
+    //!
+    //!
+    //! Returns the oldest delayed value and update with a new value.
+    //! @param value is the new value of the delayed variable.
+	//! @see value()
+	//! @see value(const int idx)
+	//! @see value(double value, const int idx)
 	double value(double value);
-	double value(double value, const std::size_t idx);
+    //! Returns the delayed value at a specified index and update with a new value.
+    //! @param value is the new value of the delayed variable.
+	//! @param idx tell which value to return, 1 is the last timestep's value 2 is the value from two timsteps ago and so on.
+	//! @see value()
+	//! @see value(const int idx)
+	//! @see value(double value)
+	double value(double value, const int idx);
 
 private:
     double *mpTime;

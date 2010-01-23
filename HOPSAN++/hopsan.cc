@@ -10,6 +10,8 @@
 #include "HopsanCore.h"
 #include "TicToc.h"
 #include "CoreUtilities/Delay.h"
+#include "CoreUtilities/FirstOrderFilter.h"
+#include "CoreUtilities/SecondOrderFilter.h"
 
 void test1()
 {
@@ -68,10 +70,10 @@ void testDelay() //Test of the Delay utillity class
 	    t += 0.1;
 		//d1.update(i);
 		//d1.update(i);
-		cout << "Value: " << i << "    Delayed value: " << d1.value(i);
+		cout << "Value: " << i << "    Delayed value: " << d1.value(1);
 		//d1.update(i);
-		cout << "    Delayed value again: " << d1.value(i) << endl;
-		//d1.update(i);
+		cout << "    Delayed value again: " << d1.value() << endl;
+		d1.update((double)i);
 	}
 }
 
@@ -1386,6 +1388,22 @@ void testPressureReliefValve()
 }
 
 
+void testFilter()
+{
+    double t=0.0;
+    double dt=0.001;
+    double num[3]={0, 0, 1};
+    double den[3]={1, 1, 1};
+	SecondOrderFilter tf;
+	tf.initialize(t, dt, num, den);
+	for (int i=0; i < 1001; ++i) {
+	    t += dt;
+		tf.update(1.0);
+		cout << "Value: " << 1.0 << "    Delayed value: " << tf.value() << endl;
+	}
+}
+
+
 
 int main()
 {
@@ -1421,9 +1439,9 @@ int main()
     //testMicke();
 
 
-    testIntegrator();
+    //testIntegrator();
 
-    testDelay();
+    //testDelay();
 
 
     //testSignal();
@@ -1436,7 +1454,7 @@ int main()
 
     //testAck();
 
-    testMechanic();
+    //testMechanic();
 
     //testCheckValve();
 
@@ -1444,6 +1462,7 @@ int main()
 
     //testPressureReliefValve();
 
+    testFilter();
 
     return 0;
 }

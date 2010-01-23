@@ -149,12 +149,16 @@
 		<Unit filename="HopsanCore/CoreUtilities/ClassFactory.h" />
 		<Unit filename="HopsanCore/CoreUtilities/Delay.cc" />
 		<Unit filename="HopsanCore/CoreUtilities/Delay.h" />
+		<Unit filename="HopsanCore/CoreUtilities/FirstOrderFilter.cc" />
+		<Unit filename="HopsanCore/CoreUtilities/FirstOrderFilter.h" />
 		<Unit filename="HopsanCore/CoreUtilities/Integrator.cc" />
 		<Unit filename="HopsanCore/CoreUtilities/Integrator.h" />
 		<Unit filename="HopsanCore/CoreUtilities/IntegratorLimited.cc" />
 		<Unit filename="HopsanCore/CoreUtilities/IntegratorLimited.h" />
 		<Unit filename="HopsanCore/CoreUtilities/LoadExternal.cc" />
 		<Unit filename="HopsanCore/CoreUtilities/LoadExternal.h" />
+		<Unit filename="HopsanCore/CoreUtilities/SecondOrderFilter.cc" />
+		<Unit filename="HopsanCore/CoreUtilities/SecondOrderFilter.h" />
 		<Unit filename="HopsanCore/CoreUtilities/TransferFunction.cc" />
 		<Unit filename="HopsanCore/CoreUtilities/TransferFunction.h" />
 		<Unit filename="HopsanCore/CoreUtilities/TurbulentFlowFunction.cc" />
