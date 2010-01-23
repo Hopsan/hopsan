@@ -77,7 +77,7 @@ void SecondOrderFilter::update(double u)
         //Filter equation
         //Bilinear transform is used
 
-        double y = 1.0/mCoeffY[0]*(mCoeffU[0]*u + mCoeffU[1]*mDelayU.value(u, 1) + mCoeffU[2]*mDelayU.value(u, 2) + mCoeffU[3]*mDelayU.value(u, 3) + mCoeffU[4]*mDelayU.value(u, 4) - (mCoeffY[1]*mDelayY.value(1)+ mCoeffY[2]*mDelayY.value(2)+ mCoeffY[3]*mDelayY.value(3)+ mCoeffY[4]*mDelayY.value(4)));
+        double y = 1.0/mCoeffY[0]*(mCoeffU[0]*u + mCoeffU[1]*mDelayU.valueIdx(u, 1) + mCoeffU[2]*mDelayU.valueIdx(u, 2) + mCoeffU[3]*mDelayU.valueIdx(u, 3) + mCoeffU[4]*mDelayU.valueIdx(u, 4) - (mCoeffY[1]*mDelayY.valueIdx(1)+ mCoeffY[2]*mDelayY.valueIdx(2)+ mCoeffY[3]*mDelayY.valueIdx(3)+ mCoeffY[4]*mDelayY.valueIdx(4)));
 
         if (y >= mMax)
         {

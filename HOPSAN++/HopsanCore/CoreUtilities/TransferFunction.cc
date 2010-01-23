@@ -34,11 +34,11 @@ void TransferFunction::update(double signal)
     {
 
       u0 = signal;
-      u1 = mDelayu.value(u0, 1); // Inc. idx +1
-      u2 = mDelayu.value(u0, 2); // Inc. idx +1
+      u1 = mDelayu.valueIdx(u0, 1); // Inc. idx +1
+      u2 = mDelayu.valueIdx(u0, 2); // Inc. idx +1
 
-      y2 = mDelayy.value(y0, 2); // Inc. idx +1
-      y1 = mDelayy.value(y0, 1); // Inc. idx +1
+      y2 = mDelayy.valueIdx(y0, 2); // Inc. idx +1
+      y1 = mDelayy.valueIdx(y0, 1); // Inc. idx +1
 
       b[0] = 4.0*mnum[2]+mnum[0]*pow(mTimestep,2.0)+2.0*mnum[1]*mTimestep;
       b[1] = -8.0*mnum[2]+2*mnum[0]*pow(mTimestep,2.0);

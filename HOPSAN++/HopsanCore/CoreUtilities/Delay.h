@@ -39,30 +39,33 @@ public:
     void setStepDelay(const std::size_t stepDelay, const double initValue=0.0);
     void setTimeDelay(const double timeDelay, const double Ts, const double initValue=0.0);
     //! Returns the oldest delayed value and update with the last value.
-	double value();
-	//! Returns the delayed value at a specified index.
-	//! @param idx tell which value to return, 1 is the last timestep's value 2 is the value from two timsteps ago and so on.
-	//! @see value(const int idx)
 	//! @see value(double value)
-	//! @see value(double value, const int idx)
-	double value(const int idx);
+	//! @see valueIdx(const int idx)
+	//! @see valueIdx(double value, const int idx)
+	double value();
 	///TODO: Split this value functions to different names, this is confusing and it is not possible to implement a overloaded function to access a value form a given time ago since time is also double
     //!
     //!
     //! Returns the oldest delayed value and update with a new value.
     //! @param value is the new value of the delayed variable.
 	//! @see value()
-	//! @see value(const int idx)
-	//! @see value(double value, const int idx)
+	//! @see valueIdx(const int idx)
+	//! @see valueIdx(double value, const int idx)
 	double value(double value);
+	//! Returns the delayed value at a specified index.
+	//! @param idx tell which value to return, 1 is the last timestep's value 2 is the value from two timsteps ago and so on.
+	//! @see value(double value)
+	//! @see valueIdx(const int idx)
+	//! @see valueIdx(double value, const int idx)
+	double valueIdx(const int idx);
     //! Returns the delayed value at a specified index and update with a new value.
     //! @param value is the new value of the delayed variable.
 	//! @param idx tell which value to return, 1 is the last timestep's value 2 is the value from two timsteps ago and so on.
 	//! @see value()
-	//! @see value(const int idx)
 	//! @see value(double value)
-	double value(double value, const int idx);
-
+	//! @see valueIdx(const int idx)
+	double valueIdx(double value, const int idx);
+    ///TODO: Implement void valueTime(double time); A function which returns delayed value of time
 private:
     double *mpTime;
     double mLastTime;

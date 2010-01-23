@@ -145,7 +145,7 @@ double Delay::value(double value)
 }
 
 
-double Delay::value(double value, const int idx) ///TODO: interpolera värden
+double Delay::valueIdx(double value, const int idx) ///TODO: interpolera värden
 {
     update(value);
     if (((size_t)idx < 0) || ((size_t)idx > mValues.size()))
@@ -160,7 +160,7 @@ double Delay::value(double value, const int idx) ///TODO: interpolera värden
 }
 
 
-double Delay::value(const int idx) ///TODO: interpolera värden
+double Delay::valueIdx(const int idx) ///TODO: interpolera värden
 {
     update(mValues.front());
     if (((size_t)idx < 1) || ((size_t)idx > mValues.size()))

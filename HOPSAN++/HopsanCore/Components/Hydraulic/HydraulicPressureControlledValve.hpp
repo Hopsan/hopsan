@@ -122,10 +122,10 @@ public:
 
         double xh = mPh/b1;
         //cout << "xs = " << xs << endl;
-        double xsh = mHyst.getValue(xs, xh, mDelayedX0.value(1));
+        double xsh = mHyst.getValue(xs, xh, mDelayedX0.valueIdx(1)); //Ska det vara 1 eller 1.0? Idx eller ej
         //cout << "xsh = " << xsh << endl;
         mX0 = mFilterLP.getValue(xsh);          //Filter disabled because it's not working!
-        if (mTime < 0.1) { cout << "p1 = " << p1 << ", xs = " << xs << ", xsh = " << xsh << ", mDelayedX0 = " << mDelayedX0.value(1) << ", mX0 = " << mX0 << endl; }
+        if (mTime < 0.1) { cout << "p1 = " << p1 << ", xs = " << xs << ", xsh = " << xsh << ", mDelayedX0 = " << mDelayedX0.valueIdx(1) << ", mX0 = " << mX0 << endl; }
         //cout << "mX0 = " << mX0 << endl;
         //mX0 = xsh;      //Debug, ta bort sen
         if (xsh > mX0max)
