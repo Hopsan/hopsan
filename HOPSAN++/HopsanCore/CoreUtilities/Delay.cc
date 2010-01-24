@@ -15,6 +15,9 @@
 
 Delay::Delay()
 {
+    mStepDelay = 1;
+    mInitialValue = 0.0;
+    mValues.resize(mStepDelay+1, mInitialValue);
     mLastTime =0.0;
     mIsInitialized = false;
 }

@@ -15,7 +15,7 @@
 
 
 class DLLIMPORTEXPORT Delay
-//! @brief The Delay class delayes a variable in time
+//! @brief The Delay class delayes a variable in time, some \f$\mbox{\LaTeX}\f$ example: \f$e^{\pi}=-1\f$
 //!
 //! Delay delayes a variable, the following example
 //! delay a variable 5 timesteps:

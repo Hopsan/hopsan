@@ -1388,6 +1388,132 @@ void testPressureReliefValve()
 }
 
 
+void testSevroSys()
+{
+    HopsanEssentials Hopsan;
+
+    //Create master component
+    ComponentSystem simulationmodel("simulationmodel");
+
+    //Create other components
+
+    HydraulicPressureSource ps1("ps1", 1.0E+6);
+    HydraulicPressureSource ps2("ps2", 1.0E+5);
+    //HydraulicLaminarOrifice o1("o1");
+    //HydraulicLaminarOrifice o2("o2");
+    //HydraulicVolume v("v");
+    Hydraulic43Valve valve("valve");
+    HydraulicCylinderC cyl("cyl");
+    MechanicTranslationalMass mass("mass");
+    MechanicForceTransformer f("F");
+    SignalSource fs("fs", 0.0);
+
+    MechanicPositionSensor msens("msens");
+    SignalSubtract sub("sub");
+    SignalStep ref("ref", 0.0, 1.0, 1.0);
+    SignalGain gain("gain");
+
+    //Add components
+    simulationmodel.addComponent(ps1);
+    simulationmodel.addComponent(ps2);
+    //simulationmodel.addComponent(o1);
+    //simulationmodel.addComponent(o2);
+    simulationmodel.addComponent(valve);
+    simulationmodel.addComponent(cyl);
+    simulationmodel.addComponent(mass);
+    simulationmodel.addComponent(f);
+    simulationmodel.addComponent(fs);
+
+    simulationmodel.addComponent(msens);
+    simulationmodel.addComponent(sub);
+    simulationmodel.addComponent(ref);
+    simulationmodel.addComponent(gain);
+
+    mass.setParameter("Mass", 0.1E+3);
+    cyl.setParameter("Area1", 0.1*0.1);
+    cyl.setParameter("Area2", 0.1*0.1);
+    cyl.setParameter("Bp", 10.0);
+    cyl.listParametersConsole();
+    mass.setParameter("B", 10.0);
+    mass.listParametersConsole();
+//    o1.setParameter("Kc", 1.0E-9);
+//    o2.setParameter("Kc", 1.0E-9);
+//    o1.listParametersConsole();
+    gain.setParameter("Gain", 1.0);
+
+    //Connect components
+    simulationmodel.connect(ps1.getPort("P1"), valve.getPort("PP"));
+    simulationmodel.connect(valve.getPort("PA"), cyl.getPort("P1"));
+    simulationmodel.connect(ps2.getPort("P1"), valve.getPort("PT"));
+    simulationmodel.connect(valve.getPort("PB"), cyl.getPort("P2"));
+    simulationmodel.connect(cyl.getPort("P3"), mass.getPort("P1"));
+    simulationmodel.connect(mass.getPort("P2"), f.getPort("out"));
+    simulationmodel.connect(f.getPort("in"), fs.getPort("out"));
+
+    simulationmodel.connect(msens.getPort("P1"), mass.getPort("P2"));
+    simulationmodel.connect(ref.getPort("out"), sub.getPort("in1"));
+    simulationmodel.connect(msens.getPort("out"), sub.getPort("in2"));
+    simulationmodel.connect(sub.getPort("out"), gain.getPort("in"));
+    simulationmodel.connect(gain.getPort("out"), valve.getPort("PX"));
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0,10.0);
+    simulationmodel.simulate(0,10.0);
+
+    //Test write to file
+    msens.getPort("P1").saveLogData("output.txt");
+
+    cout << "testServoSys() Done!" << endl;
+
+}
+
+
+void testMass()
+{
+    HopsanEssentials Hopsan;
+
+    //Create master component
+    ComponentSystem simulationmodel("simulationmodel");
+
+    //Create other components
+
+    MechanicTranslationalMass mass("mass");
+    MechanicForceTransformer f1("F1");
+    SignalStep fs1("fs1", 0.0, 1.0, 0.1);
+    MechanicForceTransformer f2("F2");
+    SignalSource fs2("fs2", 0.0);
+
+    //Add components
+    simulationmodel.addComponent(mass);
+    simulationmodel.addComponent(f1);
+    simulationmodel.addComponent(fs1);
+    simulationmodel.addComponent(f2);
+    simulationmodel.addComponent(fs2);
+
+    mass.setParameter("Mass", 1.0);
+    mass.setParameter("k", 4*3.14*3.14*4.0);
+    mass.setParameter("B", 0.1);
+    mass.listParametersConsole();
+    fs1.listParametersConsole();
+
+    //Connect components
+    simulationmodel.connect(mass.getPort("P1"), f2.getPort("out"));
+    simulationmodel.connect(f2.getPort("in"), fs2.getPort("out"));
+    simulationmodel.connect(mass.getPort("P2"), f1.getPort("out"));
+    simulationmodel.connect(f1.getPort("in"), fs1.getPort("out"));
+
+    //Run simulation
+    simulationmodel.preAllocateLogSpace(0,10.0);
+    simulationmodel.simulate(0,10.0);
+
+    //Test write to file
+    mass.getPort("P2").saveLogData("output.txt");
+
+    cout << "testMass() Done!" << endl;
+
+}
+
+
 void testFilter()
 {
     double t=0.0;
@@ -1504,7 +1630,11 @@ int main()
 
     //testPressureReliefValve();
 
-    testSignalFilter();
+    //testSignalFilter();
+
+    testSevroSys();
+
+    //testMass();
 
     return 0;
 }

@@ -86,6 +86,10 @@ public:
 	void initialize()
     {
 
+        mDelayedC1prim.setStepDelay(1);
+        mDelayedC2prim.setStepDelay(1);
+        mDelayedV.setStepDelay(1);
+
         mDelayedC1prim.initialize(mTime, mStartPressure1);
         mDelayedC2prim.initialize(mTime, mStartPressure2);
         mDelayedV.initialize(mTime, mStartVelocity);
@@ -103,8 +107,8 @@ public:
         mPortPtrs[P2]->writeNode(NodeHydraulic::CHARIMP,      mZc2);
         mPortPtrs[P3]->writeNode(NodeMechanic::POSITION,      mStartPosition);
         mPortPtrs[P3]->writeNode(NodeMechanic::VELOCITY,      mStartVelocity);
-        mPortPtrs[P3]->writeNode(NodeHydraulic::WAVEVARIABLE, mArea1*mStartPressure1 + mArea2*mStartPressure2);
-        mPortPtrs[P3]->writeNode(NodeHydraulic::CHARIMP,      mZx);
+        mPortPtrs[P3]->writeNode(NodeMechanic::WAVEVARIABLE, mArea1*mStartPressure1 + mArea2*mStartPressure2);
+        mPortPtrs[P3]->writeNode(NodeMechanic::CHARIMP,      mZx);
 	}
 
 
@@ -153,8 +157,8 @@ public:
         mPortPtrs[P1]->writeNode(NodeHydraulic::CHARIMP,      mZc1);
         mPortPtrs[P2]->writeNode(NodeHydraulic::WAVEVARIABLE, c2);
         mPortPtrs[P2]->writeNode(NodeHydraulic::CHARIMP,      mZc2);
-        mPortPtrs[P3]->writeNode(NodeHydraulic::WAVEVARIABLE, cx);
-        mPortPtrs[P3]->writeNode(NodeHydraulic::CHARIMP,      mZx);
+        mPortPtrs[P3]->writeNode(NodeMechanic::WAVEVARIABLE, cx);
+        mPortPtrs[P3]->writeNode(NodeMechanic::CHARIMP,      mZx);
     }
 };
 

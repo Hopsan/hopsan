@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include "HopsanCore.h"
-#include "CoreUtilities/TransferFunction.h"
+#include "CoreUtilities/SecondOrderFilter.h"
 #include "CoreUtilities/TurbulentFlowFunction.h"
 
 class Hydraulic43Valve : public ComponentQ
@@ -19,7 +19,7 @@ private:
     double moverlap_bt;
     double momegah;
     double mdeltah;
-    TransferFunction myFilter;
+    SecondOrderFilter myFilter;
     TurbulentFlowFunction mQturbpa;
     TurbulentFlowFunction mQturbpb;
     TurbulentFlowFunction mQturbat;
@@ -90,9 +90,9 @@ public:
 
     void initialize()
     {
-        double num [3] = {1.0, 0.0, 0.0};
-        double den [3] = {1.0, 2.0*mdeltah/momegah, 1.0/pow(momegah,2.0)};
-        myFilter.setCoefficients(num, den, mTimestep);
+        double num[3] = {0.0, 0.0, 1.0};
+        double den[3] = {1.0/pow(momegah,2.0), 2.0*mdeltah/momegah, 1.0};
+        myFilter.initialize(mTime, mTimestep, num, den);
     }
 
     void simulateOneTimestep()
@@ -109,7 +109,7 @@ public:
         double Zcb = mPortPtrs[PB]->readNode(NodeHydraulic::CHARIMP);
         double xvin  = mPortPtrs[PX]->readNode(NodeSignal::VALUE);
 
-        double xv = myFilter.getValue(xvin);
+        double xv = myFilter.value(xvin);
 
         //Valve equations
         if (fabs(xv)>mxvmax)

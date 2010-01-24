@@ -12,6 +12,7 @@
 
 #include <deque>
 #include "win32dll.h"
+#include "Delay.h"
 
 /*
             num[0]*s^2 + num[1]*s + num[2]
@@ -20,6 +21,13 @@
 */
 
 class DLLIMPORTEXPORT SecondOrderFilter
+//! @brief The SecondOrderFilter class implements a second order filter
+//!
+//! To declare a filter like \f[G=\frac{a_2 s^2 + a_1 s + a_0}{b_2 s^2 + b_1 s + b_0}\f]
+//! the syntax is myFilter.setNumDen(num, den)
+//! where \f$num=\{a_2, a_1, a_0\}\f$
+//! and \f$den=\{b_2, b_1, b_0\}\f$
+//!
 {
 public:
     SecondOrderFilter();

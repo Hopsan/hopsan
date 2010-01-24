@@ -13,7 +13,7 @@ private:
     double mMass;
     double mB;
     double mk;
-    TransferFunction mFilter;
+    SecondOrderFilter mFilter;
     Integrator mInt;
     enum {P1, P2};
 
@@ -49,12 +49,12 @@ public:
 
 	void initialize()
     {
-        mFilter.initialize(0.0,0.0, mTime);
+//        mFilter.initialize(0.0,0.0, mTime);
         double num [] = {0.0, 1.0, 0.0};
-        double den [] = {mk, mB, mMass};
-        mFilter.setCoefficients(num, den, mTimestep);
-        mInt.initialize(mTime, mTimestep, 0.0,0.0);
-        mFilter.update(0);
+        double den [] = {mMass, mB, mk};
+        mFilter.initialize(mTime, mTimestep, num, den);
+        mInt.initialize(mTime, mTimestep, 0.0, 0.0);
+//        mFilter.update(0);
     }
 
     void simulateOneTimestep()
@@ -66,11 +66,11 @@ public:
         double c2  = mPortPtrs[P2]->readNode(NodeMechanic::WAVEVARIABLE);
 
         //Mass equations
-        double num [] = {0.0, 1.0, 0.0};
-        double den [] = {mk, mB+Zx1+Zx2, mMass};
+        double num[3] = {0.0, 1.0, 0.0};
+        double den[3] = {mMass, mB+Zx1+Zx2, mk};
 
-        mFilter.setCoefficients(num, den, mTimestep);
-        double v2 = mFilter.getValue(c1-c2);
+        mFilter.setNumDen(num, den);
+        double v2 = mFilter.value(c1-c2);
         double v1 = -v2;
         double x2 = mInt.value(v2);
         double x1 = -x2;

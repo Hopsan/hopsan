@@ -20,6 +20,13 @@
 */
 
 class DLLIMPORTEXPORT FirstOrderFilter
+//! @brief The FirstOrderFilter class implements a first order filter
+//!
+//! To declare a filter like \f[G=\frac{a_1 s + a_0}{b_1 s + b_0}\f]
+//! the syntax is myFilter.setNumDen(num, den)
+//! where \f$num=\{a_1, a_0\}\f$
+//! and \f$den=\{b_1, b_0\}\f$
+//!
 {
 public:
     FirstOrderFilter();
