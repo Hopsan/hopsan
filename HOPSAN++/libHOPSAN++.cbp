@@ -117,6 +117,7 @@
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicTurbulentOrifice.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicVariableDisplacementPump.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicVolume.hpp" />
+		<Unit filename="HopsanCore/Components/HydraulicComponentTemplate.hpp" />
 		<Unit filename="HopsanCore/Components/Mechanic/MechanicForceSensor.hpp" />
 		<Unit filename="HopsanCore/Components/Mechanic/MechanicForceTransformer.hpp" />
 		<Unit filename="HopsanCore/Components/Mechanic/MechanicPositionSensor.hpp" />
