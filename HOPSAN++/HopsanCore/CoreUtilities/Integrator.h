@@ -17,7 +17,7 @@ class DLLIMPORTEXPORT Integrator
 {
 public:
     Integrator();
-    void initialize(double &rTime, double timestep, double u0, double y0);
+    void initialize(double &rTime, double timestep, double u0=0.0, double y0=0.0);
     void initializeValues(double u0, double y0);
     void update(double u);
 	double value(double u);

@@ -13,6 +13,13 @@
 #include "HopsanCore.h"
 #include "IntegratorLimited.h"
 
+//! @class IntegratorLimited
+//! @brief The IntegratorLimited class integrates a variable with limited output signal and wind-up protection
+//!
+//! The class implements
+//!  \f[y=\left\{\begin{array}{ll} y_{min} & \mbox{if } \int u \, dt + y_0 < y_{min} \\ y_{max} & \mbox{if } \int u \, dt + y_0 > y_{max} \\ \displaystyle{\int_{0}^{t} u \, dt + y_0} & \mbox{otherwise} \end{array} \right.\f]
+//!
+
 IntegratorLimited::IntegratorLimited()
 {
     mLastTime = 0.0;
@@ -39,6 +46,13 @@ void IntegratorLimited::initializeValues(double u0, double y0)
 {
     mDelayU.initializeValues(u0);
     mDelayY.initializeValues(y0);
+}
+
+
+void IntegratorLimited::setMinMax(double min, double max)
+{
+    mMin = min;
+    mMax = max;
 }
 
 
@@ -78,6 +92,14 @@ void IntegratorLimited::update(double u)
 double IntegratorLimited::value(double u)
 {
     update(u);
+
+    return mDelayY.value();
+}
+
+
+double IntegratorLimited::value()
+{
+    update(mDelayU.valueIdx(1));
 
     return mDelayY.value();
 }

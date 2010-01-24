@@ -15,57 +15,24 @@
 
 
 class DLLIMPORTEXPORT Delay
-//! @brief The Delay class delayes a variable in time, some \f$\mbox{\LaTeX}\f$ example: \f$e^{\pi}=-1\f$
-//!
-//! Delay delayes a variable, the following example
-//! delay a variable 5 timesteps:
-//!
-//! Delay delayVar;
-//! delayVar.initialize(time);
-//! delayVar.setStepDelay(5);
-//!
-//! In every loop a Delay instance has to be called with
-//! an argument (a new value like "delayVar.value(newValue)"
-//! and/or it can be updated trough the call "delayVar.update(newValue)".
-//!
 {
 public:
     Delay();
     Delay(const std::size_t stepDelay, const double initValue=0.0);
     Delay(const double timeDelay, const double Ts, const double initValue=0.0);
-    void initialize(double &rTime, const double initValue=0.0);
+    void initialize(double &rTime, const double initValue);
+    void initialize(double &rTime);
     void initializeValues(const double initValue);
     void update(const double value);
-    void setStepDelay(const std::size_t stepDelay, const double initValue=0.0);
-    void setTimeDelay(const double timeDelay, const double Ts, const double initValue=0.0);
-    //! Returns the oldest delayed value and update with the last value.
-	//! @see value(double value)
-	//! @see valueIdx(const int idx)
-	//! @see valueIdx(double value, const int idx)
+    void setStepDelay(const std::size_t stepDelay);
+    void setStepDelay(const std::size_t stepDelay, const double initValue);
+    void setTimeDelay(const double timeDelay, const double Ts);
+    void setTimeDelay(const double timeDelay, const double Ts, const double initValue);
 	double value();
-	///TODO: Split this value functions to different names, this is confusing and it is not possible to implement a overloaded function to access a value form a given time ago since time is also double
-    //!
-    //!
-    //! Returns the oldest delayed value and update with a new value.
-    //! @param value is the new value of the delayed variable.
-	//! @see value()
-	//! @see valueIdx(const int idx)
-	//! @see valueIdx(double value, const int idx)
 	double value(double value);
-	//! Returns the delayed value at a specified index.
-	//! @param idx tell which value to return, 1 is the last timestep's value 2 is the value from two timsteps ago and so on.
-	//! @see value(double value)
-	//! @see valueIdx(const int idx)
-	//! @see valueIdx(double value, const int idx)
 	double valueIdx(const int idx);
-    //! Returns the delayed value at a specified index and update with a new value.
-    //! @param value is the new value of the delayed variable.
-	//! @param idx tell which value to return, 1 is the last timestep's value 2 is the value from two timsteps ago and so on.
-	//! @see value()
-	//! @see value(double value)
-	//! @see valueIdx(const int idx)
 	double valueIdx(double value, const int idx);
-    ///TODO: Implement void valueTime(double time); A function which returns delayed value of time
+	///TODO: Implement void valueTime(double time); A function which returns delayed value of time
 private:
     double *mpTime;
     double mLastTime;

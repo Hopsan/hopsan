@@ -13,6 +13,14 @@
 #include "HopsanCore.h"
 #include "FirstOrderFilter.h"
 
+//! @class FirstOrderFilter
+//! @brief The FirstOrderFilter class implements a first order filter
+//!
+//! To declare a filter like \f[G=\frac{a_1 s + a_0}{b_1 s + b_0}\f]
+//! the syntax is myFilter.setNumDen(num, den)
+//! where \f$num=\{a_1, a_0\}\f$
+//! and \f$den=\{b_1, b_0\}\f$
+//!
 
 FirstOrderFilter::FirstOrderFilter()
 {
@@ -35,6 +43,13 @@ void FirstOrderFilter::initialize(double &rTime, double timestep, double num[2],
     mIsInitialized = true;
 
     setNumDen(num, den);
+}
+
+
+void FirstOrderFilter::setMinMax(double min, double max)
+{
+    mMin = min;
+    mMax = max;
 }
 
 

@@ -13,6 +13,15 @@
 #include "HopsanCore.h"
 #include "SecondOrderFilter.h"
 
+//! @class SecondOrderFilter
+//! @brief The SecondOrderFilter class implements a second order filter
+//!
+//! To declare a filter like \f[G=\frac{a_2 s^2 + a_1 s + a_0}{b_2 s^2 + b_1 s + b_0}\f]
+//! the syntax is myFilter.setNumDen(num, den)
+//! where \f$num=\{a_2, a_1, a_0\}\f$
+//! and \f$den=\{b_2, b_1, b_0\}\f$
+//!
+
 SecondOrderFilter::SecondOrderFilter()
 {
     mLastTime = 0.0;
@@ -50,6 +59,13 @@ void SecondOrderFilter::setNumDen(double num[3], double den[3])
     mCoeffY[2] = -pow(mTimeStep, 2.0)*(8*den[0] - 6*pow(mTimeStep, 2.0)*den[2]);
     mCoeffY[3] = -pow(mTimeStep, 2.0)*(4*mTimeStep*den[1] - 4*pow(mTimeStep, 2.0)*den[2]);
     mCoeffY[4] = pow(mTimeStep, 2.0)*(den[2]*pow(mTimeStep, 2.0) - 2*den[1]*mTimeStep + 4*den[0]);
+}
+
+
+void SecondOrderFilter::setMinMax(double min, double max)
+{
+    mMin = min;
+    mMax = max;
 }
 
 
@@ -103,7 +119,7 @@ double SecondOrderFilter::value(double u)
 
 double SecondOrderFilter::value()
 {
-    update(mDelayU.value(1));
+    update(mDelayU.valueIdx(1));
 
     return mDelayY.value();
 }

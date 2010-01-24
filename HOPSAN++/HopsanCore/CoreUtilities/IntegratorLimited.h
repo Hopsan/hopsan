@@ -19,8 +19,10 @@ public:
     IntegratorLimited();
     void initialize(double &rTime, double timestep, double u0=0.0, double y0=0.0, double min=-1.5E+300, double max=1.5E+300);
     void initializeValues(double u0, double y0);
+    void setMinMax(double min, double max);
     void update(double u);
 	double value(double u);
+	double value();
 
 private:
     Delay mDelayU, mDelayY;

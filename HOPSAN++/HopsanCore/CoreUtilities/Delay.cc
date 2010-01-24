@@ -12,6 +12,22 @@
 #include <cassert>
 #include "Delay.h"
 
+//! @class Delay
+//! @brief The Delay class delayes a variable in time (A \f$\mbox{\LaTeX}\f$ example: \f$e^{\pi}=-1\f$)
+//!
+//! Delay delayes a variable, the following example
+//! delay a variable 5 timesteps:
+//!
+//! Delay delayVar;
+//!
+//! delayVar.initialize(time);
+//!
+//! delayVar.setStepDelay(5);
+//!
+//! In every loop a Delay instance has to be called with
+//! an argument (a new value like "delayVar.value(newValue)"
+//! and/or it can be updated trough the call "delayVar.update(newValue)".
+//!
 
 Delay::Delay()
 {
@@ -41,7 +57,7 @@ Delay::Delay(const double timeDelay, const double Ts, const double initValue)
     mStepDelay = (std::size_t) ceil(((double) timeDelay)/Ts); ///TODO: kolla att det verkligen ar ratt
     mInitialValue = initValue;
     mValues.resize(mStepDelay+1, mInitialValue);
-    mLastTime =0.0;
+    mLastTime = 0.0;
     mIsInitialized = false;
 }
 
@@ -50,9 +66,15 @@ void Delay::initialize(double &rTime, const double initValue)
 {
     mInitialValue = initValue;
     mValues.assign(mValues.size(), mInitialValue);
-    mLastTime =0.0;
+    mLastTime = 0.0;
     mpTime = &rTime;
     mIsInitialized = true;
+}
+
+
+void Delay::initialize(double &rTime)
+{
+    initialize(rTime, mInitialValue);
 }
 
 
@@ -95,6 +117,12 @@ void Delay::setStepDelay(const std::size_t stepDelay, const double initValue)
 }
 
 
+void Delay::setStepDelay(const std::size_t stepDelay)
+{
+    setStepDelay(stepDelay, mInitialValue);
+}
+
+
 void Delay::setTimeDelay(const double timeDelay, const double Ts, const double initValue)
 {
     mFracStep = timeDelay/Ts;
@@ -108,7 +136,17 @@ void Delay::setTimeDelay(const double timeDelay, const double Ts, const double i
 }
 
 
+void Delay::setTimeDelay(const double timeDelay, const double Ts)
+{
+    setTimeDelay(timeDelay, Ts, mInitialValue);
+}
+
+
 double Delay::value()
+//! Returns the oldest delayed value and update with the last value.
+//! @see value(double value)
+//! @see valueIdx(const int idx)
+//! @see valueIdx(double value, const int idx)
 {
     update(mValues.front());
 
@@ -129,6 +167,11 @@ double Delay::value()
 
 
 double Delay::value(double value)
+//! Returns the oldest delayed value and update with a new value.
+//! @param value is the new value of the delayed variable.
+//! @see value()
+//! @see valueIdx(const int idx)
+//! @see valueIdx(double value, const int idx)
 {
     update(value);
     if (mValues.empty())
@@ -147,7 +190,14 @@ double Delay::value(double value)
 }
 
 
-double Delay::valueIdx(double value, const int idx) ///TODO: interpolera värden
+double Delay::valueIdx(double value, const int idx)
+//! Returns the delayed value at a specified index and update with a new value.
+//! \f[ [returnValue] = [delayedVariable] z^{-idx} \f]
+//! @param value is the new value of the delayed variable.
+//! @param idx tell which value to return, 1 is the last timestep's value 2 is the value from two timsteps ago and so on.
+//! @see value()
+//! @see value(double value)
+//! @see valueIdx(const int idx)
 {
     update(value);
     if (((size_t)idx < 0) || ((size_t)idx > mValues.size()))
@@ -163,6 +213,11 @@ double Delay::valueIdx(double value, const int idx) ///TODO: interpolera värden
 
 
 double Delay::valueIdx(const int idx) ///TODO: interpolera värden
+//! Returns the delayed value at a specified index.
+//! @param idx tell which value to return, 1 is the last timestep's value 2 is the value from two timsteps ago and so on.
+//! @see value(double value)
+//! @see valueIdx(const int idx)
+//! @see valueIdx(double value, const int idx)
 {
     update(mValues.front());
     if (((size_t)idx < 1) || ((size_t)idx > mValues.size()))
