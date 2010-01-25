@@ -83,6 +83,7 @@ void Component::simulate(const double startT, const double Ts)
         simulateOneTimestep();
         mTime += mTimestep;
     }
+    //cout << "simulate in: " << this->getName() << endl;
 }
 
 void Component::initialize()
@@ -768,7 +769,7 @@ void ComponentSystem::simulate(const double startT, const double stopT)
 
     //Simulate
     double stopTsafe = stopT - this->getTimestep()/2.0; //minus halv a timestep is here to ensure that no numerical issues occure
-    while (mTime < stopT - stopTsafe)
+    while (mTime < stopTsafe)
     {
         if (mTime > stopT-0.01)
         {
