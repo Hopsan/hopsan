@@ -1652,7 +1652,7 @@ void testSubSystem()
 
     //Test write to file
     TicToc filewritetimer("filewritetimer");
-    pVolumeC->getPort("P1").saveLogData("output.txt");
+    pPSourceL->getPort("P1").saveLogData("output.txt");
     filewritetimer.TocPrint();
     cout << "testSubSystem() Done!" << endl;
 }
@@ -1722,7 +1722,7 @@ int main()
 
     //testMass();
 
-    //testSubSystem();
+    //testSubSystem(); ///TODO: this one is not wokring yet, (but soon) /Peter
 
     return 0;
 }
