@@ -34,7 +34,7 @@ Port::Port(string portname, string node_type)
     mIsConnected = false;
 }
 
-string &Port::getNodeType()
+const string &Port::getNodeType()
 {
     return mNodeType;
 }
@@ -84,12 +84,12 @@ bool Port::isConnected()
     return mIsConnected;
 }
 
-string &Port::getPortType()
+const string &Port::getPortType()
 {
     return mPortType;
 }
 
-string &Port::getPortName()
+const string &Port::getPortName()
 {
     return mPortName;
 }

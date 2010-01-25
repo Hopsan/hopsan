@@ -31,9 +31,9 @@ public:
     void saveLogData(string filename);
     bool isConnected();
 
-    string &getNodeType();
-    string &getPortType();
-    string &getPortName();
+    const string &getNodeType();
+    const string &getPortType();
+    const string &getPortName();
 
 protected:
     //Constructors
