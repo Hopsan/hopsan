@@ -1,3 +1,11 @@
+//!
+//! @file   win32dll.h
+//! @author <peter.nordin@liu.se>
+//! @date   2009-12-26
+//!
+//! @brief Handles DLLIMPORT, DLLEXPORT and DLLIMPORTEXPORT for win32 dll support
+//!
+//$Id$
 #ifndef WIN32DLL_H_INCLUDED
 #define WIN32DLL_H_INCLUDED
 

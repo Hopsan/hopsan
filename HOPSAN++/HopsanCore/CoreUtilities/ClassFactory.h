@@ -1,3 +1,12 @@
+//!
+//! @file   ClassFactory.h
+//! @author <peter.nordin@liu.se>
+//! @date   2009-12-26
+//!
+//! @brief Contains template class ClassFactory for automatic object instantiation through key value
+//!
+//$Id$
+
 #ifndef CLASFACTORY_H_INCLUDED
 #define CLASFACTORY_H_INCLUDED
 
@@ -5,8 +14,12 @@
 #include <vector>
 #include <iostream>
 
-//This code is based on:
-//http://www.codeproject.com/KB/architecture/SimpleDynCreate.aspx
+//! @class ClassFactory
+//! @brief Template class for automatic object instantiation by key-value.
+//!
+//! This code is based on:
+//! http://www.codeproject.com/KB/architecture/SimpleDynCreate.aspx
+//!
 template <typename _Key, typename _Base, typename _Predicator = std::less<_Key> >
 class ClassFactory
 {

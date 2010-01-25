@@ -1,3 +1,15 @@
+//!
+//! @file   HopsanCore.h
+//! @author <peter.nordin@liu.se>
+//! @date   2010-01-06
+//!
+//! @brief Main HopsanCore include file
+//!
+//! Includes all necessary HopsanCore header files and contains the HopsanEssential class.
+//! One object of the class should be used in a main program to access HopsanCore component cretion functions, external lib loader and HopsanCore initialization.
+//!
+//$Id$
+
 #ifndef HOPSANCORE_H_INCLUDED
 #define HOPSANCORE_H_INCLUDED
 
@@ -7,7 +19,8 @@
 #include "Components/Components.h"
 #include <string>
 
-
+//! @class HopsanEssentials
+//! @brief This class gives access to HopsanCore Initialization, externalLib loading and ComponentCreation.
 class HopsanEssentials
 {
 private:
@@ -27,7 +40,6 @@ private:
 
 public:
     ///TODO: make sure this object can only be instansiated once either by singleton pattern or by assert flase if isInitialized
-
     LoadExternal externalLoader;
 
     HopsanEssentials()
@@ -47,6 +59,7 @@ public:
         mpComponentFactory->ClearFactory();
     }
 
+    //!Creates a component with the specified key-value and returns a pointer to this component.
     Component* CreateComponent(const string &rString)
     {
         return mpComponentFactory->CreateInstance(rString.c_str());
