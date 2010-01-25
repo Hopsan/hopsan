@@ -198,7 +198,7 @@ bool Component::isComponentSignal()
 //    mPortPtrs[port_idx] = port;
 //}
 
-void Component::addPort(const string portname, const string porttype, const NodeTypeT nodetype, const int id)
+Port* Component::addPort(const string portname, const string porttype, const NodeTypeT nodetype, const int id)
 {
     ///TODO: handle trying to add multiple ports with same name or pos
     Port* new_port = CreatePort(porttype);
@@ -220,6 +220,8 @@ void Component::addPort(const string portname, const string porttype, const Node
         //If no id specified push back
         mPortPtrs.push_back(new_port);     //Copy port into storage
     }
+
+    return new_port;
 }
 
 //void Component::addPort(const string portname, const string nodetype, const int id)
@@ -244,19 +246,19 @@ void Component::addPort(const string portname, const string porttype, const Node
 //    }
 //}
 
-void Component::addPowerPort(const string portname, const string nodetype, const int id)
+Port* Component::addPowerPort(const string portname, const string nodetype, const int id)
 {
-    addPort(portname, "PowerPort", nodetype, id);
+    return addPort(portname, "PowerPort", nodetype, id);
 }
 
-void Component::addReadPort(const string portname, const string nodetype, const int id)
+Port* Component::addReadPort(const string portname, const string nodetype, const int id)
 {
-    addPort(portname, "ReadPort", nodetype, id);
+    return addPort(portname, "ReadPort", nodetype, id);
 }
 
-void Component::addWritePort(const string portname, const string nodetype, const int id)
+Port* Component::addWritePort(const string portname, const string nodetype, const int id)
 {
-    addPort(portname, "WritePort", nodetype, id);
+    return addPort(portname, "WritePort", nodetype, id);
 }
 
 //void Component::addMultiPort(const string portname, const string nodetype, const size_t nports, const size_t startctr)
@@ -383,7 +385,7 @@ void ComponentSystem::addComponent(Component &rComponent)
 }
 
 //!TODO this should be in component system only, but its difficult to compile then
-void Component::addInnerPortSetNode(const string portname, const string porttype, Node* pNode)
+Port* Component::addInnerPortSetNode(const string portname, const string porttype, Node* pNode)
 {
     ///TODO: handle trying to add multiple ports with same name or pos
     Port* new_port = CreatePort(porttype);
@@ -392,6 +394,8 @@ void Component::addInnerPortSetNode(const string portname, const string porttype
     new_port->mpComponent = this;    //Set port owner
 
     mInnerPortPtrs.push_back(new_port);     //Copy port into storage
+
+    return new_port;
 }
 
 void Component::addSubNode(Node* node_ptr)
@@ -492,27 +496,32 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             //Create an instance of the node specified in nodespecifications
             pNode = gCoreNodeFactory.CreateInstance(pPort2->getNodeType());
             //add node to components and parent system
-            rComponent1.addInnerPortSetNode(portname1, pPort2->getPortType(), pNode); //Add and set inner port
-            rComponent1.addPort(portname1, pPort2->getNodeType(), pPort2->getNodeType()); //Add outer port
+            Port* pInnerPort = rComponent1.addInnerPortSetNode(portname1, pPort2->getPortType(), pNode); //Add and set inner port
+            Port* pOuterPort = rComponent1.addPort(portname1, pPort2->getNodeType(), pPort2->getNodeType()); //Add outer port
             pPort2->setNode(pNode);
+            pOuterPort->setNode(pNode);
+            pNode->setTransparentPort(pInnerPort);
+            pNode->setTransparentPort(pOuterPort);
             rComponent1.addSubNode(pNode);    //Component1 contains this node as subnode
         }
         //Check if component2 is a System component containing Component1
         else if (&rComponent2 == &(rComponent1.getSystemparent()))
         {
+            ///TODO: both these checks could be boken out into subfunction as the code is the same only swapped 1 with 2
             //Create an instance of the node specified in nodespecifications
             pNode = gCoreNodeFactory.CreateInstance(pPort1->getNodeType());
-            //NodeHydraulic* pNode = new NodeHydraulic();///TODO:
             //add node to parentsystem
-            rComponent2.addInnerPortSetNode(portname2, pPort1->getPortType(), pNode); //Add and set inner port
-            rComponent2.addPort(portname2, pPort1->getPortType(), pPort1->getNodeType()); //Add outer port
+            Port* pInnerPort = rComponent2.addInnerPortSetNode(portname2, pPort1->getPortType(), pNode); //Add and set inner port
+            Port* pOuterPort = rComponent2.addPort(portname2, pPort1->getPortType(), pPort1->getNodeType()); //Add outer port
             pPort1->setNode(pNode);
+            pOuterPort->setNode(pNode);
+            pNode->setTransparentPort(pInnerPort);
+            pNode->setTransparentPort(pOuterPort);
             rComponent2.addSubNode(pNode);    //Component2 contains this node as subnode
         }
-        ///TODO: this maybe should be checked every time not only if same level, with some modification as i can connect to myself aswell
-
         else
         {
+            ///TODO: this maybe should be checked every time not only if same level, with some modification as i can connect to myself aswell
             //Check so that both systems to connect have been added to this system
             if ((&rComponent1.getSystemparent() != (Component*)this) && ((&rComponent1.getSystemparent() != (Component*)this)) )
             {

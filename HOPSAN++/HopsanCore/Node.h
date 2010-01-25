@@ -42,6 +42,7 @@ protected:
     NodeTypeT mNodeType;
     vector<double> mDataVector;
     vector<Port*> mPortPtrs;
+    vector<Port*> mTransparentPortPtrs;
 
 private:
     string mName;
@@ -50,6 +51,7 @@ private:
     bool mLogSpaceAllocated;
     size_t mLogCtr;
     void setPort(Port *pPort);
+    void setTransparentPort(Port *pPort);
     bool connectedToPort(Port *pPort);
 
 };

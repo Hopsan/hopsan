@@ -8,7 +8,7 @@ class HydraulicLaminarOrifice : public ComponentQ
 {
 private:
     double mKc;
-    enum {P1, P2};
+    Port *mpP1, *mpP2;
 
 public:
     static Component *Creator()
@@ -24,8 +24,8 @@ public:
     {
         mKc = kc;
 
-        addPowerPort("P1", "NodeHydraulic", P1);
-        addPowerPort("P2", "NodeHydraulic", P2);
+        mpP1 = addPowerPort("P1", "NodeHydraulic");
+        mpP2 = addPowerPort("P2", "NodeHydraulic");
 
         registerParameter("Kc", "Pressure-Flow Coefficient", "[m^5/Ns]", mKc);
     }
@@ -40,10 +40,10 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double c1 = mPortPtrs[P1]->readNode(NodeHydraulic::WAVEVARIABLE);
-        double Zc1 = mPortPtrs[P1]->readNode(NodeHydraulic::CHARIMP);
-        double c2 = mPortPtrs[P2]->readNode(NodeHydraulic::WAVEVARIABLE);
-        double Zc2 = mPortPtrs[P2]->readNode(NodeHydraulic::CHARIMP);
+        double c1 = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
+        double c2 = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
 
         //Orifice equations
         double q2 = mKc*(c1-c2)/(1.0+mKc*(Zc1+Zc2));
@@ -52,10 +52,10 @@ public:
         double p2 = c2 + q2*Zc2;
 
         //Write new values to nodes
-        mPortPtrs[P1]->writeNode(NodeHydraulic::PRESSURE, p1);
-        mPortPtrs[P1]->writeNode(NodeHydraulic::MASSFLOW, q1);
-        mPortPtrs[P2]->writeNode(NodeHydraulic::PRESSURE, p2);
-        mPortPtrs[P2]->writeNode(NodeHydraulic::MASSFLOW, q2);
+        mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
+        mpP1->writeNode(NodeHydraulic::MASSFLOW, q1);
+        mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
+        mpP2->writeNode(NodeHydraulic::MASSFLOW, q2);
     }
 };
 

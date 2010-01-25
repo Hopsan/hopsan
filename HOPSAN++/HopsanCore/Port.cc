@@ -18,7 +18,7 @@
 //Constructor
 Port::Port()
 {
-    mPortType = "PowerPort"; ///TODO: Workaround to get old comp to work, should be "Port"
+    mPortType = "EmptyPort"; ///TODO: Workaround to get old comp to work, should be "Port"
     mpNode  = 0;
     mpComponent = 0;
     mIsConnected = false;
@@ -26,7 +26,7 @@ Port::Port()
 
 Port::Port(string portname, string node_type)
 {
-    mPortType = "PowerPort"; ///TODO: Workaround to get old comp to work, should be "Port"
+    mPortType = "Port"; ///TODO: Workaround to get old comp to work, should be "Port"
     mPortName = portname;
     mNodeType = node_type;
     mpNode  = 0;
@@ -144,6 +144,7 @@ double WritePort::readNode(const size_t idx)
 //!
 Port* CreatePort(const string &rPortType)
 {
+    ///TODO: maybe swap PortType to enums instead of strings (not really important)
     if (rPortType.c_str() == string("PowerPort"))
     {
         return new PowerPort();

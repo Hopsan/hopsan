@@ -19,6 +19,8 @@ Node::Node()
     mDataVector.clear();
     mDataStorage.clear();
     mTimeStorage.clear();
+    mPortPtrs.clear();
+    mTransparentPortPtrs.clear();
     mLogSpaceAllocated = false;
     mLogCtr = 0;
 }
@@ -114,6 +116,11 @@ void Node::saveLogData(string filename)
 void Node::setPort(Port *pPort)
 {
     mPortPtrs.push_back(pPort);
+}
+
+void Node::setTransparentPort(Port *pPort)
+{
+    mTransparentPortPtrs.push_back(pPort);
 }
 
 bool Node::connectedToPort(Port *pPort)

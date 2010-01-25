@@ -78,10 +78,10 @@ protected:
     bool getPort(const string portname, Port* &prPort);
     Port &getPortById(const size_t port_idx);
 
-    void addPort(const string portname, const string porttype, const NodeTypeT nodetype, const int id=-1);
-    void addPowerPort(const string portname, const string nodetype, const int id=-1);
-    void addReadPort(const string portname, const string nodetype, const int id=-1);
-    void addWritePort(const string portname, const string nodetype, const int id=-1);
+    Port* addPort(const string portname, const string porttype, const NodeTypeT nodetype, const int id=-1);
+    Port* addPowerPort(const string portname, const string nodetype, const int id=-1);
+    Port* addReadPort(const string portname, const string nodetype, const int id=-1);
+    Port* addWritePort(const string portname, const string nodetype, const int id=-1);
     //void addMultiPort(const string portname, const string nodetype, const size_t nports, const size_t startctr=0);
 
     string mType;
@@ -98,7 +98,7 @@ protected:
 private:
     void setSystemparent(ComponentSystem &rComponentSystem);
 
-    void addInnerPortSetNode(const string portname, const string porttype, Node* pNode);
+    Port* addInnerPortSetNode(const string portname, const string porttype, Node* pNode);
 
     void addSubNode(Node* node_ptr);
 
