@@ -29,7 +29,6 @@ public:
     void setNumDen(double num[2], double den[2]);
     void update(double u);
 	double value(double u);
-	double value();
 
 private:
     Delay mDelayU, mDelayY;

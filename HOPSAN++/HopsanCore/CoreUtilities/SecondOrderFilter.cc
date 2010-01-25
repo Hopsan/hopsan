@@ -115,11 +115,3 @@ double SecondOrderFilter::value(double u)
 
     return mDelayY.value();
 }
-
-
-double SecondOrderFilter::value()
-{
-    update(mDelayU.valueIdx(1));
-
-    return mDelayY.value();
-}

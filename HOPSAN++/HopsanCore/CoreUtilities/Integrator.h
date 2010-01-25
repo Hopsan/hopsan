@@ -21,7 +21,6 @@ public:
     void initializeValues(double u0, double y0);
     void update(double u);
 	double value(double u);
-	double value();
 
 private:
     Delay mDelayU, mDelayY;

@@ -95,11 +95,3 @@ double IntegratorLimited::value(double u)
 
     return mDelayY.value();
 }
-
-
-double IntegratorLimited::value()
-{
-    update(mDelayU.valueIdx(1));
-
-    return mDelayY.value();
-}

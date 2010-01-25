@@ -1389,7 +1389,7 @@ void testPressureReliefValve()
 }
 
 
-void testSevroSys()
+void testServoSys()
 {
     HopsanEssentials Hopsan;
 
@@ -1526,7 +1526,7 @@ void testFilter()
 	for (int i=0; i < 1001; ++i) {
 	    t += dt;
 		tf.update(1.0);
-		cout << "Value: " << 1.0 << "    Delayed value: " << tf.value() << endl;
+		cout << "Value: " << 1.0 << "    Delayed value: " << tf.value(1.0) << endl;
 	}
 }
 
@@ -1633,7 +1633,7 @@ int main()
 
     //testSignalFilter();
 
-    testSevroSys();
+    testServoSys();
 
     //testMass();
 

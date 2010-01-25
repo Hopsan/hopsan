@@ -111,11 +111,3 @@ double FirstOrderFilter::value(double u)
 
     return mDelayY.value();
 }
-
-
-double FirstOrderFilter::value()
-{
-    update(mDelayU.value(1));
-
-    return mDelayY.value();
-}
