@@ -67,6 +67,12 @@ Component::Component(string name, double timestep)
     registerParameter("Ts", "Sample time", "[s]",   mTimestep);
 }
 
+void Component::initialize(const double startT, const double stopT)
+{
+    cout << "Error! This function should only be used by system components, it should be overloded. For a component use initialize() instead" << endl;
+    assert(false);
+}
+
 void Component::simulate(const double startT, const double Ts)
 {
 //TODO: adjust self.timestep or simulation depending on Ts from system above (self.timestep should be multipla of Ts)
@@ -340,7 +346,7 @@ ComponentQ::ComponentQ(string name, double timestep) : Component(name, timestep)
 //Constructor
 ComponentSystem::ComponentSystem(string name, double timestep) : Component(name, timestep)
 {
-    mInnerPortPtrs.clear();
+    //mInnerPortPtrs.clear();
     mType = "ComponentSystem";
     mIsComponentSystem = true;
 }
@@ -384,19 +390,26 @@ void ComponentSystem::addComponent(Component &rComponent)
     addComponents(components);
 }
 
-//!TODO this should be in component system only, but its difficult to compile then
-Port* Component::addInnerPortSetNode(const string portname, const string porttype, Node* pNode)
+void ComponentSystem::addComponent(Component *pComponent)
 {
-    ///TODO: handle trying to add multiple ports with same name or pos
-    Port* new_port = CreatePort(porttype);
-    new_port->mPortName = portname;
-    new_port->mNodeType = pNode->getNodeType();
-    new_port->mpComponent = this;    //Set port owner
-
-    mInnerPortPtrs.push_back(new_port);     //Copy port into storage
-
-    return new_port;
+    vector<Component*> components;
+    components.push_back(pComponent);
+    addComponents(components);
 }
+
+////!TODO this should be in component system only, but its difficult to compile then
+//Port* Component::addInnerPortSetNode(const string portname, const string porttype, Node* pNode)
+//{
+//    ///TODO: handle trying to add multiple ports with same name or pos
+//    Port* new_port = CreatePort(porttype);
+//    new_port->mPortName = portname;
+//    new_port->mNodeType = pNode->getNodeType();
+//    new_port->mpComponent = this;    //Set port owner
+//
+//    mInnerPortPtrs.push_back(new_port);     //Copy port into storage
+//
+//    return new_port;
+//}
 
 void Component::addSubNode(Node* node_ptr)
 {
@@ -431,11 +444,50 @@ void ComponentSystem::logAllNodes(const double time)
     }
 }
 
+Port* ComponentSystem::addSystemPort(const string portname)
+{
+    NodeTypeT undefined_nodetype;
+    return addPort(portname, "SystemPort", undefined_nodetype);
+}
+
+//! Set the type C, Q, or S of the subsystem
+void ComponentSystem::setTypeCQS(const string cqs_type)
+{
+    ///TODO: should really try to figure out a better way to do this
+    ///TODO: need to do erro checking, and make sure that the specified type really is valid, first and last component should be of this type (i think)
+    if (cqs_type == string("C"))
+    {
+        mIsComponentC = true;
+        mIsComponentQ = false;
+        mIsComponentSignal = false;
+    }
+    else if (cqs_type == string("Q"))
+    {
+        mIsComponentC = false;
+        mIsComponentQ = true;
+        mIsComponentSignal = false;
+    }
+    else if (cqs_type == string("S"))
+    {
+        mIsComponentC = false;
+        mIsComponentQ = false;
+        mIsComponentSignal = true;
+    }
+    else
+    {
+        cout << "Error: Specified type _" << cqs_type << "_ does not exist!" << endl;
+    }
+}
+
 void ComponentSystem::connect(Port &rPort1, Port &rPort2)
 {
     connect(*rPort1.mpComponent, rPort1.mPortName, *rPort2.mpComponent, rPort2.mPortName);
 }
 
+void ComponentSystem::connect(Component *pComponent1, const string portname1, Component *pComponent2, const string portname2)
+{
+    connect(*pComponent1, portname1, *pComponent2, portname2);
+}
 
 void ComponentSystem::connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2)
 {
@@ -468,40 +520,18 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
     }
     else
     {
-        //check if both ports have the same node type specified
-        if (pPort1->getNodeType() != pPort2->getNodeType())
-        {
-            cout << "You are trying to connect a " << rComponent1.getPort(portname1).getNodeType() << " to " << rComponent2.getPort(portname2).getNodeType()  << " when connect: " << rComponent1.getName() << ": " << portname1 << " and " << rComponent2.getName() << ": " << portname2 << endl;
-            cout << "raise Exception('component port nodetypes mismatch') or similar should be here" << endl;
-            assert(false);
-        }
-        //Check so ...C-Q-C-Q-C... pattern is consistent
-        else if ((pPort1->getPortType() == "PowerPort") && (pPort2->getPortType() == "PowerPort"))
-        {
-            if ((pPort1->mpComponent->isComponentC()) && (pPort2->mpComponent->isComponentC()))
-            {
-                cout << "Both components, " << pPort1->mpComponent->getName() << " and " << pPort2->mpComponent->getName() << ", are of C-type" << endl;
-                assert(false);
-            }
-            else if ((pPort1->mpComponent->isComponentQ()) && (pPort2->mpComponent->isComponentQ()))
-            {
-                cout << "Both components, " << pPort1->mpComponent->getName() << " and " << pPort2->mpComponent->getName() << ", are of Q-type" << endl;
-                assert(false);
-            }
-        }
         ///TODO: No error handling nor checks are done here
         //Check if component1 is a System component containing Component2
         if (&rComponent1 == &(rComponent2.getSystemparent()))
         {
             //Create an instance of the node specified in nodespecifications
             pNode = gCoreNodeFactory.CreateInstance(pPort2->getNodeType());
+            //Set nodetype in the systemport (should be empty by default)
+            pPort1->mNodeType = pPort2->getNodeType();
             //add node to components and parent system
-            Port* pInnerPort = rComponent1.addInnerPortSetNode(portname1, pPort2->getPortType(), pNode); //Add and set inner port
-            Port* pOuterPort = rComponent1.addPort(portname1, pPort2->getNodeType(), pPort2->getNodeType()); //Add outer port
             pPort2->setNode(pNode);
-            pOuterPort->setNode(pNode);
-            pNode->setTransparentPort(pInnerPort);
-            pNode->setTransparentPort(pOuterPort);
+            pPort1->setNode(pNode);
+            pNode->setTransparentPort(pPort1);
             rComponent1.addSubNode(pNode);    //Component1 contains this node as subnode
         }
         //Check if component2 is a System component containing Component1
@@ -510,17 +540,38 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             ///TODO: both these checks could be boken out into subfunction as the code is the same only swapped 1 with 2
             //Create an instance of the node specified in nodespecifications
             pNode = gCoreNodeFactory.CreateInstance(pPort1->getNodeType());
-            //add node to parentsystem
-            Port* pInnerPort = rComponent2.addInnerPortSetNode(portname2, pPort1->getPortType(), pNode); //Add and set inner port
-            Port* pOuterPort = rComponent2.addPort(portname2, pPort1->getPortType(), pPort1->getNodeType()); //Add outer port
+            //Set nodetype in the systemport (should be empty by default)
+            pPort2->mNodeType = pPort1->getNodeType();
+            //add node to components and parentsystem
             pPort1->setNode(pNode);
-            pOuterPort->setNode(pNode);
-            pNode->setTransparentPort(pInnerPort);
-            pNode->setTransparentPort(pOuterPort);
+            pPort2->setNode(pNode);
+            pNode->setTransparentPort(pPort2);
             rComponent2.addSubNode(pNode);    //Component2 contains this node as subnode
         }
         else
         {
+            //check if both ports have the same node type specified
+            if (pPort1->getNodeType() != pPort2->getNodeType())
+            {
+                cout << "You are trying to connect a " << rComponent1.getPort(portname1).getNodeType() << " to " << rComponent2.getPort(portname2).getNodeType()  << " when connect: " << rComponent1.getName() << ": " << portname1 << " and " << rComponent2.getName() << ": " << portname2 << endl;
+                cout << "raise Exception('component port nodetypes mismatch') or similar should be here" << endl;
+                assert(false);
+            }
+            //Check so ...C-Q-C-Q-C... pattern is consistent
+            else if ((pPort1->getPortType() == "PowerPort") && (pPort2->getPortType() == "PowerPort"))
+            {
+                if ((pPort1->mpComponent->isComponentC()) && (pPort2->mpComponent->isComponentC()))
+                {
+                    cout << "Both components, " << pPort1->mpComponent->getName() << " and " << pPort2->mpComponent->getName() << ", are of C-type" << endl;
+                    assert(false);
+                }
+                else if ((pPort1->mpComponent->isComponentQ()) && (pPort2->mpComponent->isComponentQ()))
+                {
+                    cout << "Both components, " << pPort1->mpComponent->getName() << " and " << pPort2->mpComponent->getName() << ", are of Q-type" << endl;
+                    assert(false);
+                }
+            }
+
             ///TODO: this maybe should be checked every time not only if same level, with some modification as i can connect to myself aswell
             //Check so that both systems to connect have been added to this system
             if ((&rComponent1.getSystemparent() != (Component*)this) && ((&rComponent1.getSystemparent() != (Component*)this)) )
@@ -663,37 +714,61 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
     return true;
 }
 
-
-void ComponentSystem::simulate(const double startT, const double stopT)
+void ComponentSystem::initialize(const double startT, const double stopT)
 {
-    ///TODO: quick hack for now
-    mTime = startT;
+    //preAllocate local logspace
+    preAllocateLogSpace(startT, stopT);
 
-    ///TODO: problem with several subsystems
     //Init
-    for (size_t i=0; i<1; ++i)
+    //Signal components
+    for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
     {
-        //Signal components
-        for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
+        if (mComponentSignalptrs[s]->isComponentSystem())
+        {
+            mComponentSignalptrs[s]->initialize(startT, stopT);
+        }
+        else
         {
             mComponentSignalptrs[s]->initialize();
         }
+    }
 
-        //C components
-        for (size_t c=0; c < mComponentCptrs.size(); ++c)
+    //C components
+    for (size_t c=0; c < mComponentCptrs.size(); ++c)
+    {
+        if (mComponentCptrs[c]->isComponentSystem())
+        {
+            mComponentCptrs[c]->initialize(startT, stopT);
+        }
+        else
         {
             mComponentCptrs[c]->initialize();
         }
+    }
 
-        //Q components
-        for (size_t q=0; q < mComponentQptrs.size(); ++q)
+    //Q components
+    for (size_t q=0; q < mComponentQptrs.size(); ++q)
+    {
+        if (mComponentQptrs[q]->isComponentSystem())
+        {
+            mComponentQptrs[q]->initialize(startT,stopT);
+        }
+        else
         {
             mComponentQptrs[q]->initialize();
         }
+
     }
+}
+
+
+void ComponentSystem::simulate(const double startT, const double stopT)
+{
+    mTime = startT;
 
     //Simulate
-    while (mTime < stopT - this->getTimestep()/2.0) //minus halv a timestep is here to ensure that no numerical issues occure
+    double stopTsafe = stopT - this->getTimestep()/2.0; //minus halv a timestep is here to ensure that no numerical issues occure
+    while (mTime < stopT - stopTsafe)
     {
         if (mTime > stopT-0.01)
         {

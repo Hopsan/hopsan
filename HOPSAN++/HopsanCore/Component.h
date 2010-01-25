@@ -45,11 +45,11 @@ class DLLIMPORTEXPORT Component
     friend class ComponentSystem;
 
 public:
-    void simulate(const double startT, const double Ts);
+    virtual void initialize(const double startT, const double stopT);
+    virtual void simulate(const double startT, const double Ts);
 
     void setName(string name);
     const string &getName();
-
     const string &getType();
 
     void listParametersConsole();
@@ -87,26 +87,20 @@ protected:
     string mType;
     double mTimestep;
     double mTime;
-
-    vector<Port*> mPortPtrs, mInnerPortPtrs;
-
     bool mIsComponentC;
     bool mIsComponentQ;
     bool mIsComponentSystem;
     bool mIsComponentSignal;
+    vector<Port*> mPortPtrs;//, mInnerPortPtrs;
 
 private:
     void setSystemparent(ComponentSystem &rComponentSystem);
-
-    Port* addInnerPortSetNode(const string portname, const string porttype, Node* pNode);
-
+    //Port* addInnerPortSetNode(const string portname, const string porttype, Node* pNode);
     void addSubNode(Node* node_ptr);
 
-    vector<Node*> mSubNodePtrs;
-
-    vector<CompParameter> mParameters;
-
     string mName;
+    vector<Node*> mSubNodePtrs;
+    vector<CompParameter> mParameters;
     ComponentSystem* mpSystemparent;
 };
 
@@ -138,13 +132,18 @@ public:
     ComponentSystem(string name, double timestep=0.001);
     void addComponents(vector<Component*> components);
     void addComponent(Component &rComponent);
+    void addComponent(Component *pComponent);
     void connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2);
+    void connect(Component *pComponent1, const string portname1, Component *pComponent2, const string portname2);
     void connect(Port &rPort1, Port &rPort2);
     void simulate(const double startT, const double stopT);
-    void preAllocateLogSpace(const double startT, const double stopT);
+    void initialize(const double startT, const double stopT);
     void logAllNodes(const double time);
+    Port* addSystemPort(const string portname);
+    void setTypeCQS(const string cqs_type);
 
 private:
+    void preAllocateLogSpace(const double startT, const double stopT);
     //void addInnerPortSetNode(const string portname, const string porttype, Node* pNode);
     bool connectionOK(Node *pNode, Port *pPort1, Port *pPort2);
 

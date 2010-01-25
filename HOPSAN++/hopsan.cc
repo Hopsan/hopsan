@@ -42,7 +42,7 @@ void test1()
 
     //Run simulation
     TicToc prealloctimer("prealloctimer");
-    simulationmodel.preAllocateLogSpace(0, 10);
+    simulationmodel.initialize(0, 10);
     prealloctimer.TocPrint();
 
     TicToc simutimer("simutimer");
@@ -110,7 +110,7 @@ void testTLM()
     simulationmodel.connect(lineC, "P2", psourceR, "P1");
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0, 1.0);
+    simulationmodel.initialize(0, 1.0);
 
     simulationmodel.simulate(0.0, 1.0);
 
@@ -187,7 +187,7 @@ void testTLMlumped()
     simulationmodel.connect(psense, "out", ssink, "in");
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0.0, 2.0);
+    simulationmodel.initialize(0.0, 2.0);
 
     simulationmodel.simulate(0.0, 2.0);
 
@@ -241,7 +241,7 @@ void test3()
     psourceR.listParametersConsole();
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0.0, 1.0);
+    simulationmodel.initialize(0.0, 1.0);
 
     simulationmodel.simulate(0.0, 1.0);
 
@@ -304,7 +304,7 @@ void test_external_lib()
     orificeR->listParametersConsole();
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0, 100);
+    simulationmodel.initialize(0, 100);
     simulationmodel.simulate(0,100);
 
     //Test write to file
@@ -355,7 +355,7 @@ void test_fixed_pump()
     simulationmodel.connect(*volumeC, "P2", *psourceR, "P1");
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0, 100);
+    simulationmodel.initialize(0, 100);
     simulationmodel.simulate(0,100);
 
     //Test write to file
@@ -399,7 +399,7 @@ void test_variable_pump()
     simulationmodel.connect(volumeC, "P2", psourceR, "P1");
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0, 100);
+    simulationmodel.initialize(0, 100);
     simulationmodel.simulate(0,100);
 
     //Test write to file
@@ -445,7 +445,7 @@ void testSignal()
     gainC.listParametersConsole();
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0.0, 1.0);
+    simulationmodel.initialize(0.0, 1.0);
 
     simulationmodel.simulate(0.0, 1.0);
 
@@ -491,7 +491,7 @@ void testIntegrator()
     sinkR.listParametersConsole();
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0.0, 1.0);
+    simulationmodel.initialize(0.0, 1.0);
 
     simulationmodel.simulate(0.0, 1.0);
 
@@ -548,7 +548,7 @@ void testExternalSignal()
     gainC->listParametersConsole();
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0.0, 1.0);
+    simulationmodel.initialize(0.0, 1.0);
 
     simulationmodel.simulate(0.0, 1.0);
 
@@ -657,7 +657,7 @@ void testkarl()
     sinus->setParameter("Amplitude", 0.001);
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0.0, 20.0);
+    simulationmodel.initialize(0.0, 20.0);
 
     simulationmodel.simulate(0.0, 20.0);
 
@@ -714,7 +714,7 @@ void testExternalSignalStep()
     gainC->listParametersConsole();
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0.0, 2.0);
+    simulationmodel.initialize(0.0, 2.0);
 
     simulationmodel.simulate(0.0, 2.0);
 
@@ -773,7 +773,7 @@ void testExternalSineWave()
     gainC->listParametersConsole();
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0.0, 10.0);
+    simulationmodel.initialize(0.0, 10.0);
 
     simulationmodel.simulate(0.0, 10.0);
 
@@ -822,7 +822,7 @@ void testSineWave()
     gainC.listParametersConsole();
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0.0, 10.0);
+    simulationmodel.initialize(0.0, 10.0);
 
     simulationmodel.simulate(0.0, 10.0);
 
@@ -861,7 +861,7 @@ void testMicke()
     deadzone.setParameter("EndDead", 2.0);
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0.0, 10.0);
+    simulationmodel.initialize(0.0, 10.0);
 
     simulationmodel.simulate(0.0, 10.0);
 
@@ -921,7 +921,7 @@ void testExternalSquareWave()
     gainC->listParametersConsole();
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0.0, 10.0);
+    simulationmodel.initialize(0.0, 10.0);
 
     simulationmodel.simulate(0.0, 10.0);
 
@@ -981,7 +981,7 @@ void testExternalRamp()
     gainC->listParametersConsole();
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0.0, 10.0);
+    simulationmodel.initialize(0.0, 10.0);
 
     simulationmodel.simulate(0.0, 10.0);
 
@@ -1046,7 +1046,7 @@ void test_signals_and_hydraulics()
     simulationmodel.connect(*orifice, "P2", *psourceR, "P1");
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0, 10);
+    simulationmodel.initialize(0, 10);
     simulationmodel.simulate(0,10);
 
     //Test write to file
@@ -1101,7 +1101,7 @@ void testArithmetics()
     //source2->setParameter("Value", 3.0);
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0.0, 10.0);
+    simulationmodel.initialize(0.0, 10.0);
 
     simulationmodel.simulate(0.0, 10.0);
 
@@ -1142,7 +1142,7 @@ void testCheckValve()
     simulationmodel.connect(volumeC, "P2", psourceR, "P1");
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0, 100);
+    simulationmodel.initialize(0, 100);
     simulationmodel.simulate(0,100);
 
     //Test write to file
@@ -1186,7 +1186,7 @@ void testMechanic()
     spring->setParameter("k", 1.0e2);
     filter->setParameter("Frequency", 10);
 
-    simulationmodel.preAllocateLogSpace(0.0, 2.0);
+    simulationmodel.initialize(0.0, 2.0);
     simulationmodel.simulate(0.0, 2.0);
 
     //Write to file
@@ -1240,7 +1240,7 @@ void testPressureControlledValve()
     simulationmodel.connect(ramp, "out", psource_open, "in");
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0,3);
+    simulationmodel.initialize(0,3);
     simulationmodel.simulate(0,3);
 
     //Test write to file
@@ -1279,7 +1279,7 @@ void testAck()
     simulationmodel.connect(step, "out", psource, "in");
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0,10);
+    simulationmodel.initialize(0,10);
     simulationmodel.simulate(0,10);
 
     //Test write to file
@@ -1327,7 +1327,7 @@ void testCylinderQ()
 
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0,10);
+    simulationmodel.initialize(0,10);
     simulationmodel.simulate(0,10);
 
     //Test write to file
@@ -1378,7 +1378,7 @@ void testPressureReliefValve()
     simulationmodel.connect(ramp, "out", psource1, "in");
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0,10);
+    simulationmodel.initialize(0,10);
     simulationmodel.simulate(0,10);
 
     //Test write to file
@@ -1460,7 +1460,7 @@ void testServoSys()
 
     //Run simulation
     TicToc prealloctimer("prealloctimer");
-    simulationmodel.preAllocateLogSpace(0,10.0);
+    simulationmodel.initialize(0,10.0);
     prealloctimer.TocPrint();
 
     TicToc simutimer("simutimer");
@@ -1512,7 +1512,7 @@ void testMass()
     simulationmodel.connect(f1.getPort("in"), fs1.getPort("out"));
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0,10.0);
+    simulationmodel.initialize(0,10.0);
     simulationmodel.simulate(0,10.0);
 
     //Test write to file
@@ -1569,7 +1569,7 @@ void testSignalFilter()
     sinkR.listParametersConsole();
 
     //Run simulation
-    simulationmodel.preAllocateLogSpace(0.0, 5.0);
+    simulationmodel.initialize(0.0, 5.0);
 
     simulationmodel.simulate(0.0, 5.0);
 
@@ -1578,6 +1578,83 @@ void testSignalFilter()
 
 	//Finished
     cout << "testSignalFilter() Done!" << endl;
+}
+
+void testSubSystem()
+{
+    TicToc totaltimer("totaltimer");
+    HopsanEssentials Hopsan;
+
+    //===========Create subModel1===================================
+    ComponentSystem subModel1("subModel1");
+    Component* pOrificeL = Hopsan.CreateComponent("HydraulicLaminarOrifice");
+    pOrificeL->setName("orificeL");
+    pOrificeL->setParameter("Kc", 1e-12);
+
+    Component* pVolumeC = Hopsan.CreateComponent("HydraulicVolume");
+    pVolumeC->setName("volumeC");
+
+    Component* pOrificeR = Hopsan.CreateComponent("HydraulicLaminarOrifice");
+    pOrificeR->setName("orificeR");
+    pOrificeR->setParameter("Kc", 1e-12);
+
+    //Add components to subModel1
+    subModel1.addComponent(pOrificeL);
+    subModel1.addComponent(pVolumeC);
+    subModel1.addComponent(pOrificeR);
+
+    subModel1.addSystemPort("subP1");
+    subModel1.addSystemPort("subP2");
+
+    //Connect components in subModel1
+    subModel1.connect(&subModel1, "subP1" , pOrificeL, "P1");
+    subModel1.connect(pOrificeL, "P2", pVolumeC, "P1");
+    subModel1.connect(pVolumeC, "P2", pOrificeR, "P1");
+    subModel1.connect(pOrificeR, "P2" , &subModel1, "subP2");
+
+    //Decide submodel type
+    subModel1.setTypeCQS("Q");
+    //============================================================
+
+
+    //=============Create Main Simulation Model===================
+    ComponentSystem mainSimulationModel("mainSimulationModel");
+    mainSimulationModel.addComponent(&subModel1); //Add submodel1 to the main system
+
+    //Create other components
+    Component* pPSourceL = Hopsan.CreateComponent("HydraulicPressureSource");
+    pPSourceL->setName("PSourceL");
+    pPSourceL->setParameter("P", 10e5);
+
+    Component* pPSourceR = Hopsan.CreateComponent("HydraulicPressureSource");
+    pPSourceR->setName("PSourceR");
+    pPSourceR->setParameter("P", 0e5);
+
+    //Add components
+    mainSimulationModel.addComponent(pPSourceL);
+    mainSimulationModel.addComponent(pPSourceR);
+
+    //Connect components
+    mainSimulationModel.connect(pPSourceL, "P1", &subModel1, "subP1");
+    mainSimulationModel.connect(&subModel1, "subP2", pPSourceR, "P1");
+    //===============================================================
+
+    //Run simulation
+    TicToc prealloctimer("initializetimer");
+    mainSimulationModel.initialize(0, 10);
+    prealloctimer.TocPrint();
+
+    TicToc simutimer("simutimer");
+    mainSimulationModel.simulate(0,10);
+    simutimer.TocPrint();
+
+    totaltimer.TocPrint();
+
+    //Test write to file
+    TicToc filewritetimer("filewritetimer");
+    pVolumeC->getPort("P1").saveLogData("output.txt");
+    filewritetimer.TocPrint();
+    cout << "testSubSystem() Done!" << endl;
 }
 
 
@@ -1644,6 +1721,8 @@ int main()
     testServoSys();
 
     //testMass();
+
+    testSubSystem();
 
     return 0;
 }

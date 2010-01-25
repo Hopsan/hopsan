@@ -18,20 +18,22 @@
 //Constructor
 Port::Port()
 {
-    mPortType = "EmptyPort"; ///TODO: Workaround to get old comp to work, should be "Port"
+    mPortType = "EmptyPort";
     mpNode  = 0;
     mpComponent = 0;
     mIsConnected = false;
+    mIsSystemPort = false;
 }
 
 Port::Port(string portname, string node_type)
 {
-    mPortType = "Port"; ///TODO: Workaround to get old comp to work, should be "Port"
+    mPortType = "EmptyPort";
     mPortName = portname;
     mNodeType = node_type;
     mpNode  = 0;
     mpComponent = 0;
     mIsConnected = false;
+    mIsSystemPort = false;
 }
 
 const string &Port::getNodeType()
@@ -84,6 +86,11 @@ bool Port::isConnected()
     return mIsConnected;
 }
 
+bool Port::isSystemPort()
+{
+    return mIsSystemPort;
+}
+
 const string &Port::getPortType()
 {
     return mPortType;
@@ -92,6 +99,12 @@ const string &Port::getPortType()
 const string &Port::getPortName()
 {
     return mPortName;
+}
+
+SystemPort::SystemPort() : Port()
+{
+    mPortType = "SystemPort";
+    mIsSystemPort = true;
 }
 
 //Constructor
@@ -156,6 +169,10 @@ Port* CreatePort(const string &rPortType)
     else if (rPortType.c_str() == string("WritePort"))
     {
         return new WritePort();
+    }
+    else if (rPortType.c_str() == string("SystemPort"))
+    {
+        return new SystemPort();
     }
     else
     {

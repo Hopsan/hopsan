@@ -30,6 +30,7 @@ public:
     virtual void writeNode(const size_t idx, const double value);
     void saveLogData(string filename);
     bool isConnected();
+    bool isSystemPort();
 
     const string &getNodeType();
     const string &getPortType();
@@ -41,6 +42,8 @@ protected:
     Port(string portname, string node_type);
 
     PortTypeT mPortType;
+    bool mIsSystemPort;
+
     void setNode(Node* pNode);
     Node &getNode();
     Node *getNodePtr();
@@ -51,6 +54,18 @@ private:
     Node* mpNode;
     Component* mpComponent;
     bool mIsConnected;
+};
+
+
+class DLLIMPORTEXPORT SystemPort :public Port
+{
+    friend class Component;
+    friend class ComponentSystem;
+    friend Port* CreatePort(const string &rPortType);
+
+protected:
+    //Constructors
+    SystemPort();
 };
 
 
