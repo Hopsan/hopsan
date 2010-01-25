@@ -470,7 +470,7 @@ void testIntegrator()
 
 	ComponentSystem simulationmodel("simulationmodel");
     //Create other components
-    SignalStep stepL("source_left", 5.0, -10.0, .5);
+    SignalSineWave stepL("source_left");
     //SignalIntegrator intC("integrator_center");
     //SignalIntegratorLimited2 intC("integrator_center", -1.0, 1.0);
     SignalTimeDelay intC("integrator_center", 0.1);
@@ -496,7 +496,7 @@ void testIntegrator()
     simulationmodel.simulate(0.0, 1.0);
 
     //Test write to file
-    sinkR.getPort("in").saveLogData("output.txt");
+    intC.getPort("in").saveLogData("output.txt");
 
 	//Finished
     cout << "testIntegrator() Done!" << endl;
@@ -1186,11 +1186,11 @@ void testMechanic()
     spring->setParameter("k", 1.0e2);
     filter->setParameter("Frequency", 10);
 
-    simulationmodel.preAllocateLogSpace(0.0, 10.0);
-    simulationmodel.simulate(0.0, 10.0);
+    simulationmodel.preAllocateLogSpace(0.0, 2.0);
+    simulationmodel.simulate(0.0, 2.0);
 
     //Write to file
-    spring->getPort("P2").saveLogData("output.txt");
+    mass->getPort("P2").saveLogData("output.txt");
     filter->getPort("out").saveLogData("output2.txt");
 
 	//Finished
@@ -1392,6 +1392,7 @@ void testPressureReliefValve()
 void testServoSys()
 {
     HopsanEssentials Hopsan;
+    TicToc totaltimer("totaltimer");
 
     //Create master component
     ComponentSystem simulationmodel("simulationmodel");
@@ -1411,7 +1412,7 @@ void testServoSys()
 
     MechanicPositionSensor msens("msens");
     SignalSubtract sub("sub");
-    SignalStep ref("ref", 0.0, 1.0, 1.0);
+    SignalSineWave ref("ref", 1.0, 0.2);
     SignalGain gain("gain");
 
     //Add components
@@ -1458,12 +1459,19 @@ void testServoSys()
     simulationmodel.connect(gain.getPort("out"), valve.getPort("PX"));
 
     //Run simulation
+    TicToc prealloctimer("prealloctimer");
     simulationmodel.preAllocateLogSpace(0,10.0);
+    prealloctimer.TocPrint();
+
+    TicToc simutimer("simutimer");
     simulationmodel.simulate(0,10.0);
+    simutimer.TocPrint();
 
+    totaltimer.TocPrint();
     //Test write to file
+    TicToc filewritetimer("filewritetimer");
     msens.getPort("P1").saveLogData("output.txt");
-
+    filewritetimer.TocPrint();
     cout << "testServoSys() Done!" << endl;
 
 }
