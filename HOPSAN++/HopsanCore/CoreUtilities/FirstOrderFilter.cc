@@ -14,7 +14,7 @@
 #include "FirstOrderFilter.h"
 
 //! @class FirstOrderFilter
-//! @brief The FirstOrderFilter class implements a first order filter
+//! @brief The FirstOrderFilter class implements a first order filter using bilinear transform
 //!
 //! To declare a filter like \f[G=\frac{a_1 s + a_0}{b_1 s + b_0}\f]
 //! the syntax is myFilter.setNumDen(num, den)
@@ -108,6 +108,17 @@ void FirstOrderFilter::update(double u)
 double FirstOrderFilter::value(double u)
 {
     update(u);
+
+    return mDelayY.value();
+}
+
+
+double FirstOrderFilter::value()
+//! Observe that a call to this method has to be followed by another call to value(double u) or to update(double u)
+//! @return The filtered actual value.
+//! @see value(double u)
+{
+    update(mDelayU.valueIdx(1));
 
     return mDelayY.value();
 }

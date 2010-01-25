@@ -167,8 +167,9 @@ double Delay::value()
 
 
 double Delay::value(double value)
-//! Returns the oldest delayed value and update with a new value.
-//! @param value is the new value of the delayed variable.
+//! Get the oldest delayed value and update with a new value.
+//! @param[in] value is the new value of the delayed variable.
+//! @return The delayed value of the Delay object.
 //! @see value()
 //! @see valueIdx(const int idx)
 //! @see valueIdx(double value, const int idx)
@@ -191,10 +192,11 @@ double Delay::value(double value)
 
 
 double Delay::valueIdx(double value, const int idx)
-//! Returns the delayed value at a specified index and update with a new value.
+//! Get the delayed value at a specified index and update with a new value.
 //! \f[ [returnValue] = [delayedVariable] z^{-idx} \f]
 //! @param value is the new value of the delayed variable.
 //! @param idx tell which value to return, 1 is the last timestep's value 2 is the value from two timsteps ago and so on.
+//! @return The value delayed idx time steps of the Delay object.
 //! @see value()
 //! @see value(double value)
 //! @see valueIdx(const int idx)
@@ -213,8 +215,9 @@ double Delay::valueIdx(double value, const int idx)
 
 
 double Delay::valueIdx(const int idx) ///TODO: interpolera värden
-//! Returns the delayed value at a specified index.
+//! Get the delayed value at a specified index.
 //! @param idx tell which value to return, 1 is the last timestep's value 2 is the value from two timsteps ago and so on.
+//! @return The value delayed idx time steps of the Delay object.
 //! @see value(double value)
 //! @see valueIdx(const int idx)
 //! @see valueIdx(double value, const int idx)

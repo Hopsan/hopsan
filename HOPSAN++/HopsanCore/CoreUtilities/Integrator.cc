@@ -64,3 +64,14 @@ double Integrator::value(double u)
 
     return mDelayY.value();
 }
+
+
+double Integrator::value()
+//! Observe that a call to this method has to be followed by another call to value(double u) or to update(double u)
+//! @return The integrated actual value.
+//! @see value(double u)
+{
+    update(mDelayU.valueIdx(1));
+
+    return mDelayY.value();
+}

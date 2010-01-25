@@ -30,6 +30,7 @@ public:
     void setMinMax(double min, double max);
     void update(double u);
 	double value(double u);
+	double value();
 
 private:
     Delay mDelayU, mDelayY;

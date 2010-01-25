@@ -13,11 +13,31 @@
 #include "HopsanCore.h"
 #include "IntegratorLimited.h"
 
-//! @class IntegratorLimited
-//! @brief The IntegratorLimited class integrates a variable with limited output signal and wind-up protection
-//!
-//! The class implements
-//!  \f[y=\left\{\begin{array}{ll} y_{min} & \mbox{if } \int u \, dt + y_0 < y_{min} \\ y_{max} & \mbox{if } \int u \, dt + y_0 > y_{max} \\ \displaystyle{\int_{0}^{t} u \, dt + y_0} & \mbox{otherwise} \end{array} \right.\f]
+/*! @class IntegratorLimited
+ *  @brief The IntegratorLimited class implements a integrator using bilinear
+ *  transform which integrates a variable with limited output signal and wind-up protection
+ *
+ *  The class implements
+ *   \f[ y = \int_{0}^{t}
+ *     \left\{
+ *       \begin{array}{ll}
+ *         0 & \mbox{if } \int u \, dt + y_0 < y_{min} \\
+ *         0 & \mbox{if } \int u \, dt + y_0 > y_{max} \\
+ *         u & \mbox{otherwise}
+ *       \end{array}
+ *     \right. \, dt + y_0\f]
+ */
+/*   \f[ y =
+ *     \left\{
+ *       \begin{array}{ll}
+ *         y_{min} & \mbox{if } \int u \, dt + y_0 < y_{min} \\
+ *         y_{max} & \mbox{if } \int u \, dt + y_0 > y_{max} \\
+ *         \displaystyle{\int_{0}^{t} u \, dt + y_0} & \mbox{otherwise}
+ *       \end{array}
+ *     \right.\f]
+ */
+
+//  \f[y=\left\{\begin{array}{ll} y_{min} & \mbox{if } \int u \, dt + y_0 < y_{min} \\ y_{max} & \mbox{if } \int u \, dt + y_0 > y_{max} \\ \displaystyle{\int_{0}^{t} u \, dt + y_0} & \mbox{otherwise} \end{array} \right.\f]
 //!
 
 IntegratorLimited::IntegratorLimited()
@@ -92,6 +112,17 @@ void IntegratorLimited::update(double u)
 double IntegratorLimited::value(double u)
 {
     update(u);
+
+    return mDelayY.value();
+}
+
+
+double IntegratorLimited::value()
+//! Observe that a call to this method has to be followed by another call to value(double u) or to update(double u)
+//! @return The integrated actual value.
+//! @see value(double u)
+{
+    update(mDelayU.valueIdx(1));
 
     return mDelayY.value();
 }

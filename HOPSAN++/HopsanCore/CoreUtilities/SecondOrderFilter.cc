@@ -14,7 +14,7 @@
 #include "SecondOrderFilter.h"
 
 //! @class SecondOrderFilter
-//! @brief The SecondOrderFilter class implements a second order filter
+//! @brief The SecondOrderFilter class implements a second order filter using bilinear transform
 //!
 //! To declare a filter like \f[G=\frac{a_2 s^2 + a_1 s + a_0}{b_2 s^2 + b_1 s + b_0}\f]
 //! the syntax is myFilter.setNumDen(num, den)
@@ -112,6 +112,17 @@ void SecondOrderFilter::update(double u)
 double SecondOrderFilter::value(double u)
 {
     update(u);
+
+    return mDelayY.value();
+}
+
+
+double SecondOrderFilter::value()
+//! Observe that a call to this method has to be followed by another call to value(double u) or to update(double u)
+//! @return The filtered actual value.
+//! @see value(double u)
+{
+    update(mDelayU.valueIdx(1));
 
     return mDelayY.value();
 }
