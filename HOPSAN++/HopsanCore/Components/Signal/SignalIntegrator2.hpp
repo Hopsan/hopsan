@@ -6,7 +6,7 @@
 //! @brief Contains a Signal Integrator Component using CoreUtilities
 //!
 //$Id$
-
+d
 #ifndef SIGNALINTEGRATOR2_HPP_INCLUDED
 #define SIGNALINTEGRATOR2_HPP_INCLUDED
 
