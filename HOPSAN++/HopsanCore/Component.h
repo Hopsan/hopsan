@@ -16,7 +16,6 @@
 #include <string>
 
 using namespace std;
-Port* CreatePort(const string &rPortType);
 
 class DLLIMPORTEXPORT CompParameter
 {
@@ -78,8 +77,7 @@ protected:
 
     bool getPort(const string portname, Port* &prPort);
     Port &getPortById(const size_t port_idx);
-    //void addPort(const size_t port_idx, Port port);
-//    void addPort(const string portname, const string nodetype, const int id=-1); ///TODO: Should be deleted after subsystem is changed e.g. addInnerPort and so on
+
     void addPort(const string portname, const string porttype, const NodeTypeT nodetype, const int id=-1);
     void addPowerPort(const string portname, const string nodetype, const int id=-1);
     void addReadPort(const string portname, const string nodetype, const int id=-1);
