@@ -138,3 +138,27 @@ double WritePort::readNode(const size_t idx)
     cout << "Could not read from port, this is a WritePort" << endl;
     assert(false);
 }
+
+//!
+//! @brief Very simple port factory, no need to complicate things with the more advanced one as we will only have three port types.
+//!
+Port* CreatePort(const string &rPortType)
+{
+    if (rPortType.c_str() == string("PowerPort"))
+    {
+        return new PowerPort();
+    }
+    else if (rPortType.c_str() == string("ReadPort"))
+    {
+        return new ReadPort();
+    }
+    else if (rPortType.c_str() == string("WritePort"))
+    {
+        return new WritePort();
+    }
+    else
+    {
+        ///TODO: maybe defualt should be impossible
+        return new Port();
+    }
+}

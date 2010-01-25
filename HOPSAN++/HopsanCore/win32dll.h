@@ -6,6 +6,7 @@
 //! @brief Handles DLLIMPORT, DLLEXPORT and DLLIMPORTEXPORT for win32 dll support
 //!
 //$Id$
+
 #ifndef WIN32DLL_H_INCLUDED
 #define WIN32DLL_H_INCLUDED
 

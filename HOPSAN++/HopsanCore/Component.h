@@ -16,6 +16,7 @@
 #include <string>
 
 using namespace std;
+Port* CreatePort(const string &rPortType);
 
 class DLLIMPORTEXPORT CompParameter
 {
@@ -48,9 +49,9 @@ public:
     void simulate(const double startT, const double Ts);
 
     void setName(string name);
-    string &getName();
+    const string &getName();
 
-    string &getType();
+    const string &getType();
 
     void listParametersConsole();
     double getParameter(const string name);
@@ -78,10 +79,11 @@ protected:
     bool getPort(const string portname, Port* &prPort);
     Port &getPortById(const size_t port_idx);
     //void addPort(const size_t port_idx, Port port);
-    void addPort(const string portname, const string nodetype, const int id=-1); ///TODO: Should be deleted after subsystem is changed e.g. addInnerPort and so on
-    void addPowerPort(const string portname, const string nodetype, const int id=-1); ///TODO: Implement nicer, very small difference between addPort, addReadPort and addWritePort
-    void addReadPort(const string portname, const string nodetype, const int id=-1); ///TODO: Implement nicer, very small difference between addPort, addReadPort and addWritePort
-    void addWritePort(const string portname, const string nodetype, const int id=-1); ///TODO: Implement nicer, very small difference between addPort, addReadPort and addWritePort
+//    void addPort(const string portname, const string nodetype, const int id=-1); ///TODO: Should be deleted after subsystem is changed e.g. addInnerPort and so on
+    void addPort(const string portname, const string porttype, const NodeTypeT nodetype, const int id=-1);
+    void addPowerPort(const string portname, const string nodetype, const int id=-1);
+    void addReadPort(const string portname, const string nodetype, const int id=-1);
+    void addWritePort(const string portname, const string nodetype, const int id=-1);
     //void addMultiPort(const string portname, const string nodetype, const size_t nports, const size_t startctr=0);
 
     string mType;
@@ -98,7 +100,7 @@ protected:
 private:
     void setSystemparent(ComponentSystem &rComponentSystem);
 
-    void addInnerPortSetNode(const string portname, Node &rNode);
+    void addInnerPortSetNode(const string portname, const string porttype, Node* pNode);
 
     void addSubNode(Node* node_ptr);
 
@@ -145,7 +147,7 @@ public:
     void logAllNodes(const double time);
 
 private:
-    void addInnerPortSetNode(const string portname, Node &rNode);
+    //void addInnerPortSetNode(const string portname, const string porttype, Node* pNode);
     bool connectionOK(Node *pNode, Port *pPort1, Port *pPort2);
 
     vector<Component*> mSubComponentPtrs; //Problems with inheritance and casting?

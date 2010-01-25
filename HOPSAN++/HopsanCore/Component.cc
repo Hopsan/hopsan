@@ -96,12 +96,12 @@ void Component::setName(string name)
     mName = name;
 }
 
-string &Component::getName()
+const string &Component::getName()
 {
     return mName;
 }
 
-string &Component::getType()
+const string &Component::getType()
 {
     return mType;
 }
@@ -134,7 +134,7 @@ double Component::getParameter(const string name)
     }
     cout << "No such parameter" << endl;
     assert(false);
-	return 0.0;
+    return 0.0;
 }
 
 void Component::setParameter(const string name, const double value)
@@ -198,10 +198,12 @@ bool Component::isComponentSignal()
 //    mPortPtrs[port_idx] = port;
 //}
 
-void Component::addPowerPort(const string portname, const string nodetype, const int id)
+void Component::addPort(const string portname, const string porttype, const NodeTypeT nodetype, const int id)
 {
     ///TODO: handle trying to add multiple ports with same name or pos
-    Port* new_port = new PowerPort(portname, nodetype);
+    Port* new_port = CreatePort(porttype);
+    new_port->mPortName = portname;
+    new_port->mNodeType = nodetype;
     new_port->mpComponent = this;    //Set port owner
 
     if (id >= 0)
@@ -220,70 +222,41 @@ void Component::addPowerPort(const string portname, const string nodetype, const
     }
 }
 
-void Component::addPort(const string portname, const string nodetype, const int id)
-{
-    ///TODO: handle trying to add multiple ports with same name or pos
-    Port* new_port = new Port(portname, nodetype);
-    new_port->mpComponent = this;    //Set port owner
+//void Component::addPort(const string portname, const string nodetype, const int id)
+//{
+//    ///TODO: handle trying to add multiple ports with same name or pos
+//    Port* new_port = new Port(portname, nodetype);
+//    new_port->mpComponent = this;    //Set port owner
+//
+//    if (id >= 0)
+//    {
+//        //Instead of allways push_back, make it possible to add ports out of order
+//        if ((size_t)id+1 > mPortPtrs.size())
+//        {
+//            mPortPtrs.resize(id+1);
+//        }
+//        mPortPtrs[id] = new_port;
+//    }
+//    else
+//    {
+//        //If no id specified push back
+//        mPortPtrs.push_back(new_port);     //Copy port into storage
+//    }
+//}
 
-    if (id >= 0)
-    {
-        //Instead of allways push_back, make it possible to add ports out of order
-        if ((size_t)id+1 > mPortPtrs.size())
-        {
-            mPortPtrs.resize(id+1);
-        }
-        mPortPtrs[id] = new_port;
-    }
-    else
-    {
-        //If no id specified push back
-        mPortPtrs.push_back(new_port);     //Copy port into storage
-    }
+void Component::addPowerPort(const string portname, const string nodetype, const int id)
+{
+    addPort(portname, "PowerPort", nodetype, id);
 }
 
 void Component::addReadPort(const string portname, const string nodetype, const int id)
 {
-    ///TODO: handle trying to add multiple ports with same name or pos
-    Port* new_port = new ReadPort(portname, nodetype);
-    new_port->mpComponent = this;    //Set port owner
-
-    if (id >= 0)
-    {
-        //Instead of allways push_back, make it possible to add ports out of order
-        if ((size_t)id+1 > mPortPtrs.size())
-        {
-            mPortPtrs.resize(id+1);
-        }
-        mPortPtrs[id] = new_port;
-    }
-    else
-    {
-        //If no id specified push back
-        mPortPtrs.push_back(new_port);     //Copy port into storage
-    }
+    addPort(portname, "ReadPort", nodetype, id);
 }
 
 void Component::addWritePort(const string portname, const string nodetype, const int id)
 {
-    ///TODO: handle trying to add multiple ports with same name or pos
-    Port* new_port = new WritePort(portname, nodetype);
-    new_port->mpComponent = this;    //Set port owner
-
-    if (id >= 0)
-    {
-        //Instead of allways push_back, make it possible to add ports out of order
-        if ((size_t)id+1 > mPortPtrs.size())
-        {
-            mPortPtrs.resize(id+1);
-        }
-        mPortPtrs[id] = new_port;
-    }
-    else
-    {
-        //If no id specified push back
-        mPortPtrs.push_back(new_port);     //Copy port into storage
-    }
+    addPort(portname, "WritePort", nodetype, id);
 }
 
 //void Component::addMultiPort(const string portname, const string nodetype, const size_t nports, const size_t startctr)
@@ -409,12 +382,15 @@ void ComponentSystem::addComponent(Component &rComponent)
     addComponents(components);
 }
 
-void Component::addInnerPortSetNode(const string portname, Node &rNode)
+//!TODO this should be in component system only, but its difficult to compile then
+void Component::addInnerPortSetNode(const string portname, const string porttype, Node* pNode)
 {
-    ///TODO: reimplement with the new different port types
     ///TODO: handle trying to add multiple ports with same name or pos
-    Port* new_port = new Port(portname, rNode.getNodeType());
+    Port* new_port = CreatePort(porttype);
+    new_port->mPortName = portname;
+    new_port->mNodeType = pNode->getNodeType();
     new_port->mpComponent = this;    //Set port owner
+
     mInnerPortPtrs.push_back(new_port);     //Copy port into storage
 }
 
@@ -459,7 +435,7 @@ void ComponentSystem::connect(Port &rPort1, Port &rPort2)
 
 void ComponentSystem::connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2)
 {
-    Node* node_ptr;
+    Node* pNode;
     Port* pPort1;
     Port* pPort2;
 
@@ -472,14 +448,16 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
         cout << "rComponent1: "<< rComponent1.getName() << " does not have a port with name " << portname1 << endl;
         assert(false);
     }
+
     if (!rComponent2.getPort(portname2, pPort2)) //Not else if because pPort2 has to be set in getPort
     {
         //raise Exception('type of port does not exist')
         cout << "rComponent2: "<< rComponent2.getName() << " does not have a port with name " << portname2 << endl;
         assert(false);
     }
-    else if (pPort1->isConnected() && pPort2->isConnected())
-    //Both already are connected to nodes
+
+    if (pPort1->isConnected() && pPort2->isConnected())
+        //Both already are connected to nodes
     {
         //Do nothing, maybe raise exception?
         cout << "Both component ports are already connected: " << rComponent1.getName() << ": " << portname1 << " and " << rComponent2.getName() << ": " << portname2 << endl;
@@ -507,101 +485,106 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
                 assert(false);
             }
         }
-        ///TODO: No error handling nor cecks are done here
+        ///TODO: No error handling nor checks are done here
         //Check if component1 is a System component containing Component2
         if (&rComponent1 == &(rComponent2.getSystemparent()))
         {
             //Create an instance of the node specified in nodespecifications
-            node_ptr = gCoreNodeFactory.CreateInstance(pPort2->getNodeType());
+            pNode = gCoreNodeFactory.CreateInstance(pPort2->getNodeType());
             //add node to components and parent system
-            rComponent1.addInnerPortSetNode(portname1, *node_ptr); //Add and set inner port
-            rComponent1.addPort(portname1, pPort2->getNodeType()); //Add outer port
-            pPort2->setNode(node_ptr);
-            rComponent1.addSubNode(node_ptr);    //Component1 contains this node as subnode
+            rComponent1.addInnerPortSetNode(portname1, pPort2->getPortType(), pNode); //Add and set inner port
+            rComponent1.addPort(portname1, pPort2->getNodeType(), pPort2->getNodeType()); //Add outer port
+            pPort2->setNode(pNode);
+            rComponent1.addSubNode(pNode);    //Component1 contains this node as subnode
         }
         //Check if component2 is a System component containing Component1
         else if (&rComponent2 == &(rComponent1.getSystemparent()))
         {
             //Create an instance of the node specified in nodespecifications
-            node_ptr = gCoreNodeFactory.CreateInstance(pPort1->getNodeType());
-            //NodeHydraulic* node_ptr = new NodeHydraulic();///TODO:
+            pNode = gCoreNodeFactory.CreateInstance(pPort1->getNodeType());
+            //NodeHydraulic* pNode = new NodeHydraulic();///TODO:
             //add node to parentsystem
-            rComponent2.addInnerPortSetNode(portname2, *node_ptr); //Add and set inner port
-            rComponent2.addPort(portname2, pPort1->getNodeType()); //Add outer port
-            pPort1->setNode(node_ptr);
-            rComponent2.addSubNode(node_ptr);    //Component2 contains this node as subnode
+            rComponent2.addInnerPortSetNode(portname2, pPort1->getPortType(), pNode); //Add and set inner port
+            rComponent2.addPort(portname2, pPort1->getPortType(), pPort1->getNodeType()); //Add outer port
+            pPort1->setNode(pNode);
+            rComponent2.addSubNode(pNode);    //Component2 contains this node as subnode
         }
         ///TODO: this maybe should be checked every time not only if same level, with some modification as i can connect to myself aswell
-        //Check so that both systems to connect have been added to this system
-        else if ((&rComponent1.getSystemparent() != (Component*)this) && ((&rComponent1.getSystemparent() != (Component*)this)) )
-        {
-            cout << "The two components, "<< rComponent1.getName() << " and " << rComponent2.getName() << ", "<< " to be connected are not contained within the connecting system" << endl;
-            assert(false);
-        }
-        else if (pPort1->isConnected() || pPort2->isConnected())
-        //One of them is connected to a node
-        {
-            if (pPort1->isConnected())
-            //rComponent1 is connected to a node
-            {
-                node_ptr = pPort1->getNodePtr();
-                // Check so the ports can be connected
-                if (!connectionOK(node_ptr, pPort1, pPort2))
-                {
-                    cout << "Problem occured at connection" << rComponent1.getName() << " and " << rComponent2.getName() << endl;
-                    assert(false);
-                }
-                else
-                {
-                    //Set node in both components ports and add it to the parent system component
-                    pPort2->setNode(node_ptr);
 
-                    //Add port pointers to node
-                    node_ptr->setPort(pPort2);
-                }
-            }
-            else
-            //rComponent2 is connected to a node
-            {
-                node_ptr = pPort2->getNodePtr();
-                // Check so the ports can be connected
-                if (!connectionOK(node_ptr, pPort1, pPort2))
-                {
-                    cout << "Problem occured at connection" << rComponent1.getName() << " and " << rComponent2.getName() << endl;
-                    assert(false);
-                }
-                else
-                {
-                    //Set node in both components ports and add it to the parent system component
-                    pPort1->setNode(node_ptr);
-
-                    //Add port pointers to node
-                    node_ptr->setPort(pPort1);
-                }
-            }
-        }
         else
-        //None of the components is connected
         {
-            //Create an instance of the node specified in nodespecifications
-            node_ptr = gCoreNodeFactory.CreateInstance(pPort1->getNodeType());
-            cout << "Created NodeType: " << node_ptr->getNodeType() << endl;
-            // Check so the ports can be connected
-            if (!connectionOK(node_ptr, pPort1, pPort2))
+            //Check so that both systems to connect have been added to this system
+            if ((&rComponent1.getSystemparent() != (Component*)this) && ((&rComponent1.getSystemparent() != (Component*)this)) )
             {
-                cout << "Problem occured at connection" << rComponent1.getName() << " and " << rComponent2.getName() << endl;
+                cout << "The two components, "<< rComponent1.getName() << " and " << rComponent2.getName() << ", "<< " to be connected are not contained within the connecting system" << endl;
                 assert(false);
             }
-            //rComponent1.getSystemparent().addSubNode(node_ptr); //doesnt work getSystemparent returns Component , addSubNode is in ComponentSystem
-            this->addSubNode(node_ptr);
 
-            //Set node in both components ports and add it to the parent system component
-            pPort1->setNode(node_ptr);
-            pPort2->setNode(node_ptr);
+            //Check if One of them is connected to a node
+            if (pPort1->isConnected() || pPort2->isConnected())
+            {
+                //If rComponent1 is connected to a node
+                if (pPort1->isConnected())
+                {
+                    pNode = pPort1->getNodePtr();
+                    // Check so the ports can be connected
+                    if (!connectionOK(pNode, pPort1, pPort2))
+                    {
+                        cout << "Problem occured at connection" << rComponent1.getName() << " and " << rComponent2.getName() << endl;
+                        assert(false);
+                    }
+                    else
+                    {
+                        //Set node in both components ports and add it to the parent system component
+                        pPort2->setNode(pNode);
 
-            //Add port pointers to node
-            node_ptr->setPort(pPort1);
-            node_ptr->setPort(pPort2);
+                        //Add port pointers to node
+                        pNode->setPort(pPort2);
+                    }
+                }
+                //else rComponent2 is connected to a node
+                else
+                {
+                    pNode = pPort2->getNodePtr();
+                    // Check so the ports can be connected
+                    if (!connectionOK(pNode, pPort1, pPort2))
+                    {
+                        cout << "Problem occured at connection" << rComponent1.getName() << " and " << rComponent2.getName() << endl;
+                        assert(false);
+                    }
+                    else
+                    {
+                        //Set node in both components ports and add it to the parent system component
+                        pPort1->setNode(pNode);
+
+                        //Add port pointers to node
+                        pNode->setPort(pPort1);
+                    }
+                }
+            }
+            //else None of the components are connected
+            else
+            {
+                //Create an instance of the node specified in nodespecifications
+                pNode = gCoreNodeFactory.CreateInstance(pPort1->getNodeType());
+                cout << "Created NodeType: " << pNode->getNodeType() << endl;
+                // Check so the ports can be connected
+                if (!connectionOK(pNode, pPort1, pPort2))
+                {
+                    cout << "Problem occured at connection" << rComponent1.getName() << " and " << rComponent2.getName() << endl;
+                    assert(false);
+                }
+                //rComponent1.getSystemparent().addSubNode(pNode); //doesnt work getSystemparent returns Component , addSubNode is in ComponentSystem
+                this->addSubNode(pNode);
+
+                //Set node in both components ports and add it to the parent system component
+                pPort1->setNode(pNode);
+                pPort2->setNode(pNode);
+
+                //Add port pointers to node
+                pNode->setPort(pPort1);
+                pNode->setPort(pPort2);
+            }
         }
         cout << "Connected " << rComponent1.getName() << ": " << portname1 << " with " << rComponent2.getName() << ": " << portname2 << " sucessfully" << endl;
     }
@@ -678,30 +661,30 @@ void ComponentSystem::simulate(const double startT, const double stopT)
     mTime = startT;
 
     ///TODO: problem with several subsystems
-	//Init
-	for (size_t i=0; i<1; ++i)
-	{
-		//Signal components
-		for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
-		{
-			mComponentSignalptrs[s]->initialize();
-		}
+    //Init
+    for (size_t i=0; i<1; ++i)
+    {
+        //Signal components
+        for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
+        {
+            mComponentSignalptrs[s]->initialize();
+        }
 
-		//C components
-		for (size_t c=0; c < mComponentCptrs.size(); ++c)
-		{
-			mComponentCptrs[c]->initialize();
-		}
+        //C components
+        for (size_t c=0; c < mComponentCptrs.size(); ++c)
+        {
+            mComponentCptrs[c]->initialize();
+        }
 
-		//Q components
-		for (size_t q=0; q < mComponentQptrs.size(); ++q)
-		{
-			mComponentQptrs[q]->initialize();
-		}
+        //Q components
+        for (size_t q=0; q < mComponentQptrs.size(); ++q)
+        {
+            mComponentQptrs[q]->initialize();
+        }
     }
 
     //Simulate
-	while (mTime < stopT - this->getTimestep()/2.0) //minus halv a timestep is here to ensure that no numerical issues occure
+    while (mTime < stopT - this->getTimestep()/2.0) //minus halv a timestep is here to ensure that no numerical issues occure
     {
         if (mTime > stopT-0.01)
         {

@@ -17,10 +17,13 @@
 
 using namespace std;
 
+typedef string PortTypeT;
+
 class DLLIMPORTEXPORT Port
 {
     friend class Component;
     friend class ComponentSystem;
+    friend Port* CreatePort(const string &rPortType);
 
 public:
     virtual double readNode(const size_t idx);
@@ -37,13 +40,14 @@ protected:
     Port();
     Port(string portname, string node_type);
 
-    string mPortType;
+    PortTypeT mPortType;
     void setNode(Node* pNode);
     Node &getNode();
     Node *getNodePtr();
 
 private:
-    string mPortName, mNodeType;
+    string mPortName;
+    NodeTypeT mNodeType;
     Node* mpNode;
     Component* mpComponent;
     bool mIsConnected;
@@ -54,6 +58,7 @@ class DLLIMPORTEXPORT PowerPort :public Port
 {
     friend class Component;
     friend class ComponentSystem;
+    friend Port* CreatePort(const string &rPortType);
 
 protected:
     //Constructors
@@ -66,6 +71,7 @@ class DLLIMPORTEXPORT ReadPort :public Port
 {
     friend class Component;
     friend class ComponentSystem;
+    friend Port* CreatePort(const string &rPortType);
 
 public:
     void writeNode(const size_t idx, const double value);
@@ -81,6 +87,7 @@ class DLLIMPORTEXPORT WritePort :public Port
 {
     friend class Component;
     friend class ComponentSystem;
+    friend Port* CreatePort(const string &rPortType);
 
 public:
     double readNode(const size_t idx);
@@ -90,5 +97,7 @@ protected:
     WritePort();
     WritePort(string portname, string node_type);
 };
+
+Port* CreatePort(const string &rPortType);
 
 #endif // PORT_H_INCLUDED
