@@ -67,6 +67,7 @@ Component::Component(string name, double timestep)
     registerParameter("Ts", "Sample time", "[s]",   mTimestep);
 }
 
+//! Virtual Function, base version which gives you an error if you try to use it.
 void Component::initialize(const double startT, const double stopT)
 {
     cout << "Error! This function should only be used by system components, it should be overloded. For a component use initialize() instead" << endl;
@@ -412,11 +413,13 @@ void ComponentSystem::addComponent(Component *pComponent)
 //    return new_port;
 //}
 
+//! Adds a node as subnode to specified component
 void Component::addSubNode(Node* node_ptr)
 {
     mSubNodePtrs.push_back(node_ptr);
 }
 
+//! preAllocates log space (to speed up later access for log writing)
 void ComponentSystem::preAllocateLogSpace(const double startT, const double stopT)
 {
     ///TODO: make sure this calculation is EXACTLY correct
@@ -436,6 +439,7 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
 
 }
 
+//! Tells all subnodes contained within a system to store current data in log
 void ComponentSystem::logAllNodes(const double time)
 {
     vector<Node*>::iterator it;
@@ -445,6 +449,7 @@ void ComponentSystem::logAllNodes(const double time)
     }
 }
 
+//! Adds a transparent SubSystemPort
 Port* ComponentSystem::addSystemPort(const string portname)
 {
     NodeTypeT undefined_nodetype;
@@ -480,16 +485,19 @@ void ComponentSystem::setTypeCQS(const string cqs_type)
     }
 }
 
+//! Connect two ports to each other
 void ComponentSystem::connect(Port &rPort1, Port &rPort2)
 {
     connect(*rPort1.mpComponent, rPort1.mPortName, *rPort2.mpComponent, rPort2.mPortName);
 }
 
+//! Connect two components with specified ports to each other, pointer version
 void ComponentSystem::connect(Component *pComponent1, const string portname1, Component *pComponent2, const string portname2)
 {
     connect(*pComponent1, portname1, *pComponent2, portname2);
 }
 
+//! Connect two components with specified ports to each other, reference version
 void ComponentSystem::connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2)
 {
     Node* pNode;
@@ -716,6 +724,7 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
     return true;
 }
 
+//! Initializes a system component and all its contained components, also allocates log data memory
 void ComponentSystem::initialize(const double startT, const double stopT)
 {
     //preAllocate local logspace
