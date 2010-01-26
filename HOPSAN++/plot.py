@@ -27,7 +27,7 @@ elif header == "NodeSignal":
   captions=['Time', "Value"]
   colums=(0,1)
   print "Found SignalNode data"
-elif header == "NodeMechanical":
+elif header == "NodeMechanic":
   captions=['Time', "Velocity", "Force", "Position"]
   colums=(0,1,2,3)
   print "Found MechanicalNode data"
