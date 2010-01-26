@@ -22,7 +22,7 @@ Port::Port()
     mpNode  = 0;
     mpComponent = 0;
     mIsConnected = false;
-    mIsSystemPort = false;
+    //mIsSystemPort = false;
 }
 
 Port::Port(string portname, string node_type)
@@ -33,7 +33,7 @@ Port::Port(string portname, string node_type)
     mpNode  = 0;
     mpComponent = 0;
     mIsConnected = false;
-    mIsSystemPort = false;
+    //mIsSystemPort = false;
 }
 
 const string &Port::getNodeType()
@@ -86,10 +86,10 @@ bool Port::isConnected()
     return mIsConnected;
 }
 
-bool Port::isSystemPort()
-{
-    return mIsSystemPort;
-}
+//bool Port::isSystemPort()
+//{
+//    return mIsSystemPort;
+//}
 
 const string &Port::getPortType()
 {
@@ -104,7 +104,7 @@ const string &Port::getPortName()
 SystemPort::SystemPort() : Port()
 {
     mPortType = "SystemPort";
-    mIsSystemPort = true;
+    //mIsSystemPort = true;
 }
 
 //Constructor

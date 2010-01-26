@@ -1718,11 +1718,11 @@ int main()
 
     //testSignalFilter();
 
-    testServoSys();
+    //testServoSys();
 
     //testMass();
 
-    //testSubSystem(); ///TODO: this one is not wokring yet, (but soon) /Peter
+    testSubSystem(); ///TODO: this one is not wokring yet, (but soon) /Peter
 
     return 0;
 }

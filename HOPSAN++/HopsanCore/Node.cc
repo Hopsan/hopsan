@@ -20,7 +20,7 @@ Node::Node()
     mDataStorage.clear();
     mTimeStorage.clear();
     mPortPtrs.clear();
-    mTransparentPortPtrs.clear();
+    //mTransparentPortPtrs.clear();
     mLogSpaceAllocated = false;
     mLogCtr = 0;
 }
@@ -94,6 +94,8 @@ void Node::saveLogData(string filename)
     if (out_file.good())
     {
         assert(mTimeStorage.size() == mDataStorage.size());
+        //First write HEADER containing node type
+        out_file << mNodeType << endl;
         //Write log data to file
         for (size_t row=0; row<mTimeStorage.size(); ++row)
         {
@@ -118,10 +120,10 @@ void Node::setPort(Port *pPort)
     mPortPtrs.push_back(pPort);
 }
 
-void Node::setTransparentPort(Port *pPort)
-{
-    mTransparentPortPtrs.push_back(pPort);
-}
+//void Node::setTransparentPort(Port *pPort)
+//{
+//    mTransparentPortPtrs.push_back(pPort);
+//}
 
 bool Node::connectedToPort(Port *pPort)
 {

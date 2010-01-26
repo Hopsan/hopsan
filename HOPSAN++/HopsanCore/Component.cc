@@ -525,6 +525,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
         //Check if component1 is a System component containing Component2
         if (&rComponent1 == &(rComponent2.getSystemparent()))
         {
+            ///TODO: check so that the parent system port is a system port
             //Create an instance of the node specified in nodespecifications
             pNode = gCoreNodeFactory.CreateInstance(pPort2->getNodeType());
             //Set nodetype in the systemport (should be empty by default)
@@ -532,13 +533,13 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             //add node to components and parent system
             pPort2->setNode(pNode);
             pPort1->setNode(pNode);
-            pNode->setTransparentPort(pPort1);
+            pNode->setPort(pPort1);
             rComponent1.addSubNode(pNode);    //Component1 contains this node as subnode
         }
         //Check if component2 is a System component containing Component1
         else if (&rComponent2 == &(rComponent1.getSystemparent()))
         {
-            ///TODO: both these checks could be boken out into subfunction as the code is the same only swapped 1 with 2
+            //! @TODO: both these checks could be boken out into subfunction as the code is the same only swapped 1 with 2
             //Create an instance of the node specified in nodespecifications
             pNode = gCoreNodeFactory.CreateInstance(pPort1->getNodeType());
             //Set nodetype in the systemport (should be empty by default)
@@ -546,7 +547,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             //add node to components and parentsystem
             pPort1->setNode(pNode);
             pPort2->setNode(pNode);
-            pNode->setTransparentPort(pPort2);
+            pNode->setPort(pPort2);
             rComponent2.addSubNode(pNode);    //Component2 contains this node as subnode
         }
         else

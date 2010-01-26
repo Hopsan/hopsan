@@ -30,7 +30,7 @@ public:
     virtual void writeNode(const size_t idx, const double value);
     void saveLogData(string filename);
     bool isConnected();
-    bool isSystemPort();
+    //bool isSystemPort();
 
     const string &getNodeType();
     const string &getPortType();
@@ -42,7 +42,7 @@ protected:
     Port(string portname, string node_type);
 
     PortTypeT mPortType;
-    bool mIsSystemPort;
+    //bool mIsSystemPort;
 
     void setNode(Node* pNode);
     Node &getNode();
