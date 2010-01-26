@@ -89,16 +89,18 @@ void FirstOrderFilter::update(double u)
         if (y >= mMax)
         {
             mDelayY.update(mMax);
+        mDelayU.update(mMax);
         }
         else if (y <= mMin)
         {
             mDelayY.update(mMin);
+        mDelayU.update(mMin);
         }
         else
         {
             mDelayY.update(y);
-        }
         mDelayU.update(u);
+        }
 
         mLastTime = *mpTime;
     }
