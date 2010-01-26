@@ -89,20 +89,22 @@ void IntegratorLimited::update(double u)
         //Bilinear transform is used
 
         double y = mDelayY.value() + mTimeStep/2.0*(u + mDelayU.value());
-
-        if (y >= mMax)
+        //cout << "mMin: " << mMin << " mMax: " << mMax << " y: " << y << endl;
+        if (y > mMax)
         {
             mDelayY.update(mMax);
+            mDelayU.update(0.0);
         }
-        else if (y <= mMin)
+        else if (y < mMin)
         {
             mDelayY.update(mMin);
+            mDelayU.update(0.0);
         }
         else
         {
             mDelayY.update(y);
+            mDelayU.update(u);
         }
-        mDelayU.update(u);
 
         mLastTime = *mpTime;
     }

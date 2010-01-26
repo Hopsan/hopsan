@@ -90,19 +90,21 @@ void SecondOrderFilter::update(double u)
 
         double y = 1.0/mCoeffY[0]*(mCoeffU[0]*u + mCoeffU[1]*mDelayU.valueIdx(u, 1) + mCoeffU[2]*mDelayU.valueIdx(u, 2) + mCoeffU[3]*mDelayU.valueIdx(u, 3) + mCoeffU[4]*mDelayU.valueIdx(u, 4) - (mCoeffY[1]*mDelayY.valueIdx(1)+ mCoeffY[2]*mDelayY.valueIdx(2)+ mCoeffY[3]*mDelayY.valueIdx(3)+ mCoeffY[4]*mDelayY.valueIdx(4)));
 
-        if (y >= mMax)
+        if (y > mMax)
         {
             mDelayY.update(mMax);
+            mDelayU.update(mMax);
         }
-        else if (y <= mMin)
+        else if (y < mMin)
         {
             mDelayY.update(mMin);
+            mDelayU.update(mMin);
         }
         else
         {
             mDelayY.update(y);
+            mDelayU.update(u);
         }
-        mDelayU.update(u);
 
         mLastTime = *mpTime;
     }

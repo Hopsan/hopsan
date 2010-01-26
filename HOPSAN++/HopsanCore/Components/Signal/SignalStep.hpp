@@ -68,7 +68,7 @@ public:
     {
         //Step Equations
         double output;
-        if (mTime < mStepTime)
+        if (mTime <= mStepTime)
         {
             output = mBaseValue;     //Before step
         }

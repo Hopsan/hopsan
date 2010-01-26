@@ -472,8 +472,8 @@ void testIntegrator()
     //Create other components
     SignalSineWave stepL("source_left");
     //SignalIntegrator intC("integrator_center");
-    //SignalIntegratorLimited2 intC("integrator_center", -1.0, 1.0);
-    SignalTimeDelay intC("integrator_center", 0.1);
+    SignalIntegratorLimited2 intC("integrator_center", -0.2, 0.2);
+    //SignalTimeDelay intC("integrator_center", 0.1);
     SignalSink sinkR("sink_right");
 
     //Add components
@@ -496,7 +496,8 @@ void testIntegrator()
     simulationmodel.simulate(0.0, 1.0);
 
     //Test write to file
-    intC.getPort("in").saveLogData("output.txt");
+    //intC.getPort("in").saveLogData("output.txt");
+    sinkR.getPort("in").saveLogData("output.txt");
 
 	//Finished
     cout << "testIntegrator() Done!" << endl;
@@ -1545,8 +1546,8 @@ void testSignalFilter()
 
 	ComponentSystem simulationmodel("simulationmodel");
     //Create other components
-    SignalStep stepL("source_left", 0.0, 1.0, 1.0);
-    SignalSecondOrderFilter filter("Filter");
+    SignalStep stepL("source_left", 10.0, -9.0, 1.0);
+    SignalFirstOrderFilter filter("Filter", -2.0, 2.0);
     SignalSink sinkR("sink_right");
 
     //Add components
@@ -1562,9 +1563,9 @@ void testSignalFilter()
     stepL.listParametersConsole();
     filter.setParameter("k", 1.0);
     filter.setParameter("wnum", 1.0E+6);
-    filter.setParameter("wden", 2.0*3.14*1.0);
-    filter.setParameter("dnum", 1.0);
-    filter.setParameter("dden", 0.2);
+    filter.setParameter("wden", 2000.0); //varkar vara dubbla sampelfrekvensen det borjar bli overslangar
+    //filter.setParameter("dnum", 1.0);
+    //filter.setParameter("dden", 0.2);
     filter.listParametersConsole();
     sinkR.listParametersConsole();
 
@@ -1716,13 +1717,13 @@ int main()
 
     //testPressureReliefValve();
 
-    //testSignalFilter();
+    testSignalFilter();
 
     //testServoSys();
 
     //testMass();
 
-    testSubSystem();
+    //testSubSystem();
 
     return 0;
 }

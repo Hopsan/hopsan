@@ -86,20 +86,20 @@ void FirstOrderFilter::update(double u)
 
         double y = 1.0/mCoeffY[0]*(mCoeffU[0]*u + mCoeffU[1]*mDelayU.value(u) - mCoeffY[1]*mDelayY.value());
 
-        if (y >= mMax)
+        if (y > mMax)
         {
             mDelayY.update(mMax);
-        mDelayU.update(mMax);
+            mDelayU.update(mMax);
         }
-        else if (y <= mMin)
+        else if (y < mMin)
         {
             mDelayY.update(mMin);
-        mDelayU.update(mMin);
+            mDelayU.update(mMin);
         }
         else
         {
             mDelayY.update(y);
-        mDelayU.update(u);
+            mDelayU.update(u);
         }
 
         mLastTime = *mpTime;
