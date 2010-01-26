@@ -165,15 +165,15 @@ void Component::setParameter(const string name, const double value)
     }
 }
 
-void Component::setTimestep(const double timestep)
-{
-    mTimestep = timestep;
-}
+//void Component::setTimestep(const double timestep)
+//{
+//    mTimestep = timestep;
+//}
 
-double Component::getTimestep()
-{
-    return mTimestep;
-}
+//double Component::getTimestep()
+//{
+//    return mTimestep;
+//}
 
 bool Component::isComponentC()
 {
@@ -318,6 +318,11 @@ bool Component::getPort(const string portname, Port* &prPort)
         }
     }
     return false;
+}
+
+void Component::setTimestep(const double timestep)
+{
+    mTimestep = timestep;
 }
 
 ComponentSystem &Component::getSystemparent()
@@ -725,6 +730,92 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
     return true;
 }
 
+void ComponentSystem::setTimestep(const double timestep) // FIPPLAR MED NU, be
+{
+    mTimestep = timestep;
+
+    for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
+    {
+        if (mComponentSignalptrs[s]->isComponentSystem())
+        {
+            double& subTs = mComponentSignalptrs[s]->mTimestep;
+//cout << mComponentCptrs[c]->mName << ", mTimestep: "<< mComponentCptrs[c]->mTimestep << endl;
+
+            //If a subsystem's timestep is larger than this sytem's
+            //timestep change it to this system's timestep
+            if (subTs > timestep)
+            {
+                subTs = timestep;
+            }
+            else if ((timestep/subTs - floor(timestep/subTs)) > 0.0001)
+            {
+                //subTs should get the nearest multiple of timestep as possible,
+                //should only be changed to a smaller value
+                subTs = timestep/ceil(timestep/subTs);
+            }
+            mComponentSignalptrs[s]->setTimestep(subTs);
+        }
+        else
+        {
+            mComponentSignalptrs[s]->mTimestep = timestep;
+        }
+    }
+
+    //C components
+    for (size_t c=0; c < mComponentCptrs.size(); ++c)
+    {
+        if (mComponentCptrs[c]->isComponentSystem())
+        {
+            double& subTs = mComponentCptrs[c]->mTimestep;
+
+            //If a subsystem's timestep is larger than this sytem's
+            //timestep change it to this system's timestep
+            if (subTs > timestep)
+            {
+                subTs = timestep;
+            }
+            else if ((timestep/subTs - floor(timestep/subTs)) > 0.0001)
+            {
+                //subTs should get the nearest multiple of timestep as possible,
+                //should only be changed to a smaller value
+                subTs = timestep/ceil(timestep/subTs);
+            }
+            mComponentCptrs[c]->setTimestep(subTs);
+        }
+        else
+        {
+            mComponentCptrs[c]->mTimestep = timestep;
+        }
+    }
+
+    //Q components
+    for (size_t q=0; q < mComponentQptrs.size(); ++q)
+    {
+        if (mComponentQptrs[q]->isComponentSystem())
+        {
+            double& subTs = mComponentQptrs[q]->mTimestep;
+
+            //If a subsystem's timestep is larger than this sytem's
+            //timestep change it to this system's timestep
+            if (subTs > timestep)
+            {
+                subTs = timestep;
+            }
+            else if ((timestep/subTs - floor(timestep/subTs)) > 0.0001)
+            {
+                //subTs should get the nearest multiple of timestep as possible,
+                //should only be changed to a smaller value
+                subTs = timestep/ceil(timestep/subTs);
+            }
+            mComponentQptrs[q]->setTimestep(subTs);
+        }
+        else
+        {
+            mComponentQptrs[q]->mTimestep = timestep;
+        }
+    }
+}
+
 //! Initializes a system component and all its contained components, also allocates log data memory
 void ComponentSystem::initialize(const double startT, const double stopT)
 {
@@ -779,7 +870,7 @@ void ComponentSystem::simulate(const double startT, const double stopT)
     mTime = startT;
 
     //Simulate
-    double stopTsafe = stopT - this->getTimestep()/2.0; //minus halv a timestep is here to ensure that no numerical issues occure
+    double stopTsafe = stopT - this->mTimestep/2.0; //minus halv a timestep is here to ensure that no numerical issues occure
 
     while (mTime < stopTsafe)
     {

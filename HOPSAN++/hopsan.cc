@@ -1623,6 +1623,9 @@ void testSubSystem()
     mainSimulationModel.addComponent(&subModel1); //Add submodel1 to the main system
 
     //Create other components
+    Component* pStep = Hopsan.CreateComponent("SignalStep");
+    pStep->setParameter("BaseValue", 1e5);
+    pStep->setParameter("Amplitude", 9e5);
     Component* pPSourceL = Hopsan.CreateComponent("HydraulicPressureSource");
     pPSourceL->setName("PSourceL");
     pPSourceL->setParameter("P", 10e5);
@@ -1632,13 +1635,31 @@ void testSubSystem()
     pPSourceR->setParameter("P", 1e5);
 
     //Add components
+    mainSimulationModel.addComponent(pStep);
     mainSimulationModel.addComponent(pPSourceL);
     mainSimulationModel.addComponent(pPSourceR);
 
     //Connect components
+    mainSimulationModel.connect(pStep, "out", pPSourceL, "in");
     mainSimulationModel.connect(pPSourceL, "P1", &subModel1, "subP1");
     mainSimulationModel.connect(&subModel1, "subP2", pPSourceR, "P1");
     //===============================================================
+
+    pPSourceL->listParametersConsole();
+
+    pVolumeC->listParametersConsole();
+
+    ///TODO: (ibland) Fortfarande någon bugg som fumlar till antalet simueringar, antagligen jämförelse och/eller sättning av subTs
+    ///TODO: Behöver finnas en check i init, tex om man ändrat Ts för ett sub i mainsys -> kolla då att sub fortfarande är en multipel (kanske bara ska vara där och inte i setTs...)
+    mainSimulationModel.setTimestep(0.1);
+
+    pPSourceL->listParametersConsole();
+
+    pVolumeC->listParametersConsole();
+
+    mainSimulationModel.listParametersConsole();
+
+
 
     //Run simulation
     TicToc prealloctimer("initializetimer");
@@ -1653,7 +1674,8 @@ void testSubSystem()
 
     //Test write to file
     TicToc filewritetimer("filewritetimer");
-    pVolumeC->getPort("P1").saveLogData("output.txt");
+    //pVolumeC->getPort("P1").saveLogData("output.txt");
+    pStep->getPort("out").saveLogData("output.txt");
     filewritetimer.TocPrint();
     cout << "testSubSystem() Done!" << endl;
 }
@@ -1717,13 +1739,13 @@ int main()
 
     //testPressureReliefValve();
 
-    testSignalFilter();
+    //testSignalFilter();
 
     //testServoSys();
 
     //testMass();
 
-    //testSubSystem();
+    testSubSystem();
 
     return 0;
 }

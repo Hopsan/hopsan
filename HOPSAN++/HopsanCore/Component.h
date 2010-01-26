@@ -58,8 +58,8 @@ public:
 
     ComponentSystem &getSystemparent();
 
-    void setTimestep(const double timestep); ///TODO: Should it be possible to set timestep of a component? Should only be possible for a Systemcomponent
-    double getTimestep();
+    //void setTimestep(const double timestep); ///TODO: Should it be possible to set timestep of a component? Should only be possible for a Systemcomponent
+    //double getTimestep();
 
     bool isComponentC();
     bool isComponentQ();
@@ -83,6 +83,8 @@ protected:
     Port* addReadPort(const string portname, const string nodetype, const int id=-1);
     Port* addWritePort(const string portname, const string nodetype, const int id=-1);
     //void addMultiPort(const string portname, const string nodetype, const size_t nports, const size_t startctr=0);
+
+    virtual void setTimestep(const double timestep);
 
     string mType;
     double mTimestep;
@@ -141,6 +143,7 @@ public:
     void logAllNodes(const double time);
     Port* addSystemPort(const string portname);
     void setTypeCQS(const string cqs_type);
+    void setTimestep(const double timestep);
 
 private:
     void preAllocateLogSpace(const double startT, const double stopT);
