@@ -1628,7 +1628,7 @@ void testSubSystem()
 
     Component* pPSourceR = Hopsan.CreateComponent("HydraulicPressureSource");
     pPSourceR->setName("PSourceR");
-    pPSourceR->setParameter("P", 0e5);
+    pPSourceR->setParameter("P", 1e5);
 
     //Add components
     mainSimulationModel.addComponent(pPSourceL);
@@ -1652,7 +1652,7 @@ void testSubSystem()
 
     //Test write to file
     TicToc filewritetimer("filewritetimer");
-    pPSourceL->getPort("P1").saveLogData("output.txt");
+    pVolumeC->getPort("P1").saveLogData("output.txt");
     filewritetimer.TocPrint();
     cout << "testSubSystem() Done!" << endl;
 }
@@ -1722,7 +1722,7 @@ int main()
 
     //testMass();
 
-    testSubSystem(); ///TODO: this one is not wokring yet, (but soon) /Peter
+    testSubSystem();
 
     return 0;
 }

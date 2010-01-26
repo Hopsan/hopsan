@@ -60,11 +60,9 @@ void Node::preAllocateLogSpace(const size_t nSlots)
     mLogSpaceAllocated = true;
 }
 
+//! Copy current data vector into log storage, also adds current time
 void Node::logData(const double time)
 {
-    //Check if vectors are large enough, else alocate
-    //if
-
     if (mLogSpaceAllocated)
     {
         //cout << "mLogCtr: " << mLogCtr << endl;
@@ -73,7 +71,6 @@ void Node::logData(const double time)
         {
             mTimeStorage[mLogCtr] = time;
             mDataStorage[mLogCtr] = mDataVector;
-            //mDataStorage.push_back(mDataVector);
         }
         ++mLogCtr;
     }
@@ -83,7 +80,6 @@ void Node::logData(const double time)
         mTimeStorage.push_back(time);
         mDataStorage.push_back(mDataVector);
     }
-
 }
 
 void Node::saveLogData(string filename)

@@ -74,12 +74,13 @@ void Component::initialize(const double startT, const double stopT)
     assert(false);
 }
 
-void Component::simulate(const double startT, const double Ts)
+void Component::simulate(const double startT, const double stopT)
 {
 //TODO: adjust self.timestep or simulation depending on Ts from system above (self.timestep should be multipla of Ts)
-    double stopT = startT+Ts;
+    //double dT = stopT-startT;
+    double stopTsafe = stopT - mTimestep/2.0;
     mTime = startT;
-    while (mTime < stopT)
+    while (mTime < stopTsafe)
     {
         simulateOneTimestep();
         mTime += mTimestep;
@@ -772,20 +773,22 @@ void ComponentSystem::initialize(const double startT, const double stopT)
     }
 }
 
-
+//! The system component version of simulate
 void ComponentSystem::simulate(const double startT, const double stopT)
 {
     mTime = startT;
 
     //Simulate
     double stopTsafe = stopT - this->getTimestep()/2.0; //minus halv a timestep is here to ensure that no numerical issues occure
+
     while (mTime < stopTsafe)
     {
-        if (mTime > stopT-0.01)
-        {
-            //debug output for time in the last 0.01 second
-            cout <<"time: " << mTime << " stopT: " << stopT << endl;
-        }
+        //cout << this->getName() << ": starT: " << startT  << " stopT: " << stopT << " mTime: " << mTime << endl;
+//        if (mTime > stopT-0.01)
+//        {
+//            //debug output for time in the last 0.01 second
+//            cout << this->getName() << " time: " << mTime << " stopT: " << stopT << endl;
+//        }
 
         logAllNodes(mTime);
 
@@ -793,19 +796,19 @@ void ComponentSystem::simulate(const double startT, const double stopT)
         //Signal components
         for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
         {
-            mComponentSignalptrs[s]->simulate(mTime, mTimestep);
+            mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);
         }
 
         //C components
         for (size_t c=0; c < mComponentCptrs.size(); ++c)
         {
-            mComponentCptrs[c]->simulate(mTime, mTimestep);
+            mComponentCptrs[c]->simulate(mTime, mTime+mTimestep);
         }
 
         //Q components
         for (size_t q=0; q < mComponentQptrs.size(); ++q)
         {
-            mComponentQptrs[q]->simulate(mTime, mTimestep);
+            mComponentQptrs[q]->simulate(mTime, mTime+mTimestep);
         }
 
         mTime += mTimestep;
