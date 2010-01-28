@@ -1649,9 +1649,8 @@ void testSubSystem()
 
     pVolumeC->listParametersConsole();
 
-    ///TODO: (ibland) Fortfarande någon bugg som fumlar till antalet simueringar, antagligen jämförelse och/eller sättning av subTs
-    ///TODO: Behöver finnas en check i init, tex om man ändrat Ts för ett sub i mainsys -> kolla då att sub fortfarande är en multipel (kanske bara ska vara där och inte i setTs...)
-    mainSimulationModel.setTimestep(0.1);
+    subModel1.setTimestep(0.3);
+    mainSimulationModel.setTimestep(1.0);
 
     pPSourceL->listParametersConsole();
 
@@ -1666,6 +1665,10 @@ void testSubSystem()
     mainSimulationModel.initialize(0, 10);
     prealloctimer.TocPrint();
 
+    pPSourceL->listParametersConsole();
+
+    pVolumeC->listParametersConsole();
+
     TicToc simutimer("simutimer");
     mainSimulationModel.simulate(0,10);
     simutimer.TocPrint();
@@ -1674,8 +1677,8 @@ void testSubSystem()
 
     //Test write to file
     TicToc filewritetimer("filewritetimer");
-    //pVolumeC->getPort("P1").saveLogData("output.txt");
-    pStep->getPort("out").saveLogData("output.txt");
+    pVolumeC->getPort("P1").saveLogData("output.txt");
+    //pStep->getPort("out").saveLogData("output.txt");
     filewritetimer.TocPrint();
     cout << "testSubSystem() Done!" << endl;
 }

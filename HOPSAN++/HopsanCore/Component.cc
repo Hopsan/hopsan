@@ -736,6 +736,40 @@ void ComponentSystem::setTimestep(const double timestep) // FIPPLAR MED NU, be
 
     for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
     {
+        if (!(mComponentSignalptrs[s]->isComponentSystem()))
+        {
+            mComponentSignalptrs[s]->setTimestep(timestep);
+        }
+    }
+
+    //C components
+    for (size_t c=0; c < mComponentCptrs.size(); ++c)
+    {
+        if (!(mComponentCptrs[c]->isComponentSystem()))
+        {
+            mComponentCptrs[c]->setTimestep(timestep);
+        }
+    }
+
+    //Q components
+    for (size_t q=0; q < mComponentQptrs.size(); ++q)
+    {
+        if (!(mComponentQptrs[q]->isComponentSystem()))
+        {
+            mComponentQptrs[q]->setTimestep(timestep);
+        }
+    }
+}
+
+
+
+/*
+void ComponentSystem::setTimestep(const double timestep) // FIPPLAR MED NU, be
+{
+    mTimestep = timestep;
+
+    for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
+    {
         if (mComponentSignalptrs[s]->isComponentSystem())
         {
             double& subTs = mComponentSignalptrs[s]->mTimestep;
@@ -747,7 +781,8 @@ void ComponentSystem::setTimestep(const double timestep) // FIPPLAR MED NU, be
             {
                 subTs = timestep;
             }
-            else if ((timestep/subTs - floor(timestep/subTs)) > 0.0001)
+            //Check that subRs is a multiple of timestep
+            else if ((timestep/subTs - floor(timestep/subTs)) > 0.00001*subTs)
             {
                 //subTs should get the nearest multiple of timestep as possible,
                 //should only be changed to a smaller value
@@ -774,7 +809,7 @@ void ComponentSystem::setTimestep(const double timestep) // FIPPLAR MED NU, be
             {
                 subTs = timestep;
             }
-            else if ((timestep/subTs - floor(timestep/subTs)) > 0.0001)
+            else if ((timestep/subTs - floor(timestep/subTs)) > 0.00001*subTs)
             {
                 //subTs should get the nearest multiple of timestep as possible,
                 //should only be changed to a smaller value
@@ -801,7 +836,7 @@ void ComponentSystem::setTimestep(const double timestep) // FIPPLAR MED NU, be
             {
                 subTs = timestep;
             }
-            else if ((timestep/subTs - floor(timestep/subTs)) > 0.0001)
+            else if ((timestep/subTs - floor(timestep/subTs)) > 0.00001*subTs)
             {
                 //subTs should get the nearest multiple of timestep as possible,
                 //should only be changed to a smaller value
@@ -812,6 +847,39 @@ void ComponentSystem::setTimestep(const double timestep) // FIPPLAR MED NU, be
         else
         {
             mComponentQptrs[q]->mTimestep = timestep;
+        }
+    }
+}
+*/
+
+void ComponentSystem::adjustTimestep(double timestep, vector<Component*> componentPtrs)
+{
+    mTimestep = timestep;
+
+    for (size_t c=0; c < componentPtrs.size(); ++c)
+    {
+        if (componentPtrs[c]->isComponentSystem())
+        {
+            double subTs = componentPtrs[c]->mTimestep;
+//cout << componentPtrs[c]->mName << ", mTimestep: "<< componentPtrs[c]->mTimestep << endl;
+
+            //If a subsystem's timestep is larger than this sytem's
+            //timestep change it to this system's timestep
+            if (subTs > timestep)
+            {
+                subTs = timestep;
+            }
+            //Check that subRs is a multiple of timestep
+            else// if ((timestep/subTs - floor(timestep/subTs)) > 0.00001*subTs)
+            {
+                //subTs should get the nearest multiple of timestep as possible,
+                subTs = timestep/floor(timestep/subTs+0.5);
+            }
+            componentPtrs[c]->setTimestep(subTs);
+        }
+        else
+        {
+            componentPtrs[c]->setTimestep(timestep);
         }
     }
 }
@@ -826,6 +894,7 @@ void ComponentSystem::initialize(const double startT, const double stopT)
     //Signal components
     for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
     {
+        adjustTimestep(mTimestep, mComponentSignalptrs);
         if (mComponentSignalptrs[s]->isComponentSystem())
         {
             mComponentSignalptrs[s]->initialize(startT, stopT);
@@ -839,6 +908,7 @@ void ComponentSystem::initialize(const double startT, const double stopT)
     //C components
     for (size_t c=0; c < mComponentCptrs.size(); ++c)
     {
+        adjustTimestep(mTimestep, mComponentCptrs);
         if (mComponentCptrs[c]->isComponentSystem())
         {
             mComponentCptrs[c]->initialize(startT, stopT);
@@ -852,6 +922,7 @@ void ComponentSystem::initialize(const double startT, const double stopT)
     //Q components
     for (size_t q=0; q < mComponentQptrs.size(); ++q)
     {
+        adjustTimestep(mTimestep, mComponentQptrs);
         if (mComponentQptrs[q]->isComponentSystem())
         {
             mComponentQptrs[q]->initialize(startT,stopT);

@@ -146,6 +146,7 @@ public:
     void setTimestep(const double timestep);
 
 private:
+    void adjustTimestep(double timestep, vector<Component*> componentPtrs);
     void preAllocateLogSpace(const double startT, const double stopT);
     //void addInnerPortSetNode(const string portname, const string porttype, Node* pNode);
     bool connectionOK(Node *pNode, Port *pPort1, Port *pPort2);
