@@ -48,17 +48,17 @@ void SecondOrderFilter::initialize(double &rTime, double timestep, double num[3]
 
 void SecondOrderFilter::setNumDen(double num[3], double den[3])
 {
-    mCoeffU[0] = pow(mTimeStep, 2)*(num[2]*pow(mTimeStep, 2) + 2*num[1]*mTimeStep + 4*num[0]); //To newest U
-    mCoeffU[1] = pow(mTimeStep, 2)*(4*num[2]*pow(mTimeStep, 2) + 4*num[1]*mTimeStep);
+    mCoeffU[0] = pow(mTimeStep, 2)*(num[2]*pow(mTimeStep, 2) - 2*num[1]*mTimeStep + 4*num[0]);
+    mCoeffU[1] = -pow(mTimeStep, 2)*(4*mTimeStep*num[1] - 4*pow(mTimeStep, 2)*num[2]);
     mCoeffU[2] = -pow(mTimeStep, 2)*(8*num[0] - 6*pow(mTimeStep, 2)*num[2]);
-    mCoeffU[3] = -pow(mTimeStep, 2)*(4*mTimeStep*num[1] - 4*pow(mTimeStep, 2)*num[2]);
-    mCoeffU[4] = pow(mTimeStep, 2)*(num[2]*pow(mTimeStep, 2) - 2*num[1]*mTimeStep + 4*num[0]);
+    mCoeffU[3] = pow(mTimeStep, 2)*(4*num[2]*pow(mTimeStep, 2) + 4*num[1]*mTimeStep);
+    mCoeffU[4] = pow(mTimeStep, 2)*(num[2]*pow(mTimeStep, 2) + 2*num[1]*mTimeStep + 4*num[0]); //To newest U
 
-    mCoeffY[0] = pow(mTimeStep, 2.0)*(den[2]*pow(mTimeStep, 2.0) + 2*den[1]*mTimeStep + 4*den[0]);
-    mCoeffY[1] = pow(mTimeStep, 2.0)*(4*den[2]*pow(mTimeStep, 2.0) + 4*den[1]*mTimeStep);
+    mCoeffY[0] = pow(mTimeStep, 2.0)*(den[2]*pow(mTimeStep, 2.0) - 2*den[1]*mTimeStep + 4*den[0]);
+    mCoeffY[1] = -pow(mTimeStep, 2.0)*(4*mTimeStep*den[1] - 4*pow(mTimeStep, 2.0)*den[2]);
     mCoeffY[2] = -pow(mTimeStep, 2.0)*(8*den[0] - 6*pow(mTimeStep, 2.0)*den[2]);
-    mCoeffY[3] = -pow(mTimeStep, 2.0)*(4*mTimeStep*den[1] - 4*pow(mTimeStep, 2.0)*den[2]);
-    mCoeffY[4] = pow(mTimeStep, 2.0)*(den[2]*pow(mTimeStep, 2.0) - 2*den[1]*mTimeStep + 4*den[0]);
+    mCoeffY[3] = pow(mTimeStep, 2.0)*(4*den[2]*pow(mTimeStep, 2.0) + 4*den[1]*mTimeStep);
+    mCoeffY[4] = pow(mTimeStep, 2.0)*(den[2]*pow(mTimeStep, 2.0) + 2*den[1]*mTimeStep + 4*den[0]);
 }
 
 
@@ -88,17 +88,17 @@ void SecondOrderFilter::update(double u)
         //Filter equation
         //Bilinear transform is used
 
-        double y = 1.0/mCoeffY[0]*(mCoeffU[0]*u + mCoeffU[1]*mDelayU.valueIdx(u, 1) + mCoeffU[2]*mDelayU.valueIdx(u, 2) + mCoeffU[3]*mDelayU.valueIdx(u, 3) + mCoeffU[4]*mDelayU.valueIdx(u, 4) - (mCoeffY[1]*mDelayY.valueIdx(1)+ mCoeffY[2]*mDelayY.valueIdx(2)+ mCoeffY[3]*mDelayY.valueIdx(3)+ mCoeffY[4]*mDelayY.valueIdx(4)));
+        double y = 1.0/mCoeffY[4]*(mCoeffU[4]*u + mCoeffU[3]*mDelayU.valueIdx(u, 1) + mCoeffU[2]*mDelayU.valueIdx(u, 2) + mCoeffU[1]*mDelayU.valueIdx(u, 3) + mCoeffU[0]*mDelayU.valueIdx(u, 4) - (mCoeffY[3]*mDelayY.valueIdx(1)+ mCoeffY[2]*mDelayY.valueIdx(2)+ mCoeffY[1]*mDelayY.valueIdx(3)+ mCoeffY[0]*mDelayY.valueIdx(4)));
 
         if (y > mMax)
         {
             mDelayY.update(mMax);
-            mDelayU.update(mMax);
+            mDelayU.update(u);
         }
         else if (y < mMin)
         {
             mDelayY.update(mMin);
-            mDelayU.update(mMin);
+            mDelayU.update(u);
         }
         else
         {
