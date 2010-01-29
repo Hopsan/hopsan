@@ -1649,8 +1649,9 @@ void testSubSystem()
 
     pVolumeC->listParametersConsole();
 
-    subModel1.setTimestep(0.3);
-    mainSimulationModel.setTimestep(1.0);
+    subModel1.setDesiredTimestep(0.3);
+    mainSimulationModel.setDesiredTimestep(1.0);
+    mainSimulationModel.initialize(0, 10);
 
     pPSourceL->listParametersConsole();
 
@@ -1658,7 +1659,7 @@ void testSubSystem()
 
     mainSimulationModel.listParametersConsole();
 
-
+    mainSimulationModel.setDesiredTimestep(0.9);
 
     //Run simulation
     TicToc prealloctimer("initializetimer");
@@ -1670,7 +1671,7 @@ void testSubSystem()
     pVolumeC->listParametersConsole();
 
     TicToc simutimer("simutimer");
-    mainSimulationModel.simulate(0,10);
+    //mainSimulationModel.simulate(0,10);
     simutimer.TocPrint();
 
     totaltimer.TocPrint();

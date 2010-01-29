@@ -87,7 +87,7 @@ protected:
     virtual void setTimestep(const double timestep);
 
     string mType;
-    double mTimestep;
+    double mTimestep, mDesiredTimestep;
     double mTime;
     bool mIsComponentC;
     bool mIsComponentQ;
@@ -143,9 +143,10 @@ public:
     void logAllNodes(const double time);
     Port* addSystemPort(const string portname);
     void setTypeCQS(const string cqs_type);
-    void setTimestep(const double timestep);
+    void setDesiredTimestep(const double timestep);
 
 private:
+    void setTimestep(const double timestep);
     void adjustTimestep(double timestep, vector<Component*> componentPtrs);
     void preAllocateLogSpace(const double startT, const double stopT);
     //void addInnerPortSetNode(const string portname, const string porttype, Node* pNode);
