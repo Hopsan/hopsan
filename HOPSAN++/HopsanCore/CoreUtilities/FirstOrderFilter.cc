@@ -33,8 +33,8 @@ void FirstOrderFilter::initialize(double &rTime, double timestep, double num[2],
 {
     mMin = min;
     mMax = max;
-    mDelayU.setStepDelay(1);
-    mDelayY.setStepDelay(1);
+    mDelayU.setStepDelay(2);
+    mDelayY.setStepDelay(2);
     mDelayU.initialize(rTime, u0);
     mDelayY.initialize(rTime, std::max(std::min(y0, mMax), mMin));
 
@@ -55,12 +55,19 @@ void FirstOrderFilter::setMinMax(double min, double max)
 
 void FirstOrderFilter::setNumDen(double num[2], double den[2])
 {
-    mCoeffU[0] = num[1]*mTimeStep+2*num[0];
+    mCoeffU[0] = -mTimeStep*(2.0*num[0] - num[1]*mTimeStep);
+    mCoeffU[1] =  mTimeStep*(2.0*num[0] + num[1]*mTimeStep) - mTimeStep*(2.0*num[0] - num[1]*mTimeStep);
+    mCoeffU[2] =  mTimeStep*(2.0*num[0] + num[1]*mTimeStep);
+
+    mCoeffY[0] = -mTimeStep*(2.0*den[0] - den[1]*mTimeStep);
+    mCoeffY[1] =  mTimeStep*(2.0*den[0] + den[1]*mTimeStep) - mTimeStep*(2.0*den[0] - den[1]*mTimeStep);
+    mCoeffY[2] =  mTimeStep*(2.0*den[0] + den[1]*mTimeStep);
+/*    mCoeffU[0] = num[1]*mTimeStep+2*num[0];
     mCoeffU[1] = num[1]*mTimeStep-2*num[0];
 
     mCoeffY[0] = den[1]*mTimeStep+2*den[0];
     mCoeffY[1] = den[1]*mTimeStep-2*den[0];
-
+*/
 //    cout << mTimeStep << " " << mCoeffU[0] << " " << mCoeffU[1] << endl;
 }
 
@@ -84,17 +91,17 @@ void FirstOrderFilter::update(double u)
         //Filter equation
         //Bilinear transform is used
 
-        double y = 1.0/mCoeffY[0]*(mCoeffU[0]*u + mCoeffU[1]*mDelayU.value(u) - mCoeffY[1]*mDelayY.value());
+        double y = 1.0/mCoeffY[2]*(mCoeffU[2]*u + mCoeffU[1]*mDelayU.value(1) + mCoeffU[0]*mDelayU.value(u) - (mCoeffY[1]*mDelayY.value(1) + mCoeffY[0]*mDelayY.value()));
 
         if (y > mMax)
         {
             mDelayY.update(mMax);
-            mDelayU.update(mMax);
+            mDelayU.update(u);
         }
         else if (y < mMin)
         {
             mDelayY.update(mMin);
-            mDelayU.update(mMin);
+            mDelayU.update(u);
         }
         else
         {

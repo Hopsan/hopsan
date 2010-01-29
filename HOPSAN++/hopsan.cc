@@ -1546,7 +1546,7 @@ void testSignalFilter()
 
 	ComponentSystem simulationmodel("simulationmodel");
     //Create other components
-    SignalStep stepL("source_left", 10.0, -9.0, 1.0);
+    SignalStep stepL("source_left", 0.0, 1.0, 1.0);
     SignalFirstOrderFilter filter("Filter", -2.0, 2.0);
     SignalSink sinkR("sink_right");
 
@@ -1562,8 +1562,8 @@ void testSignalFilter()
     //List and set parameters
     stepL.listParametersConsole();
     filter.setParameter("k", 1.0);
-    filter.setParameter("wnum", 1.0E+6);
-    filter.setParameter("wden", 2000.0); //varkar vara dubbla sampelfrekvensen det borjar bli overslangar
+    filter.setParameter("wnum", 1.0);
+    filter.setParameter("wden", 100.0); //varkar vara dubbla sampelfrekvensen det borjar bli overslangar
     //filter.setParameter("dnum", 1.0);
     //filter.setParameter("dden", 0.2);
     filter.listParametersConsole();
