@@ -1547,7 +1547,7 @@ void testSignalFilter()
 	ComponentSystem simulationmodel("simulationmodel");
     //Create other components
     SignalStep stepL("source_left", 0.0, 1.0, 1.0);
-    SignalSecondOrderFilter filter("Filter", -2.0, 2.0);
+    SignalSecondOrderFilter filter("Filter");//, -2.0, 2.0);
     SignalSink sinkR("sink_right");
 
     //Add components
@@ -1562,10 +1562,10 @@ void testSignalFilter()
     //List and set parameters
     stepL.listParametersConsole();
     filter.setParameter("k", 1.0);
-    filter.setParameter("wnum", 1.0E+6);
-    filter.setParameter("wden", 1.0); //varkar vara dubbla sampelfrekvensen det borjar bli overslangar
-    filter.setParameter("dnum", 1.0);
-    filter.setParameter("dden", 0.2);
+    filter.setParameter("wnum", 10.0);
+    filter.setParameter("wden", 100.0); //varkar vara dubbla sampelfrekvensen det borjar bli overslangar
+    filter.setParameter("dnum", 0.2);
+    filter.setParameter("dden", 1.0);
     filter.listParametersConsole();
     sinkR.listParametersConsole();
 
@@ -1743,13 +1743,13 @@ int main()
 
     //testPressureReliefValve();
 
-    //testSignalFilter();
+    testSignalFilter();
 
     //testServoSys();
 
     //testMass();
 
-    testSubSystem();
+    //testSubSystem();
 
     return 0;
 }
