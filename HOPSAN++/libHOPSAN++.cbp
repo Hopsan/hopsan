@@ -112,6 +112,7 @@
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPressureSensor.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPressureSource.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPressureSourceQ.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicSubSysExample.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicTLMRLineR.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicTLMlossless.hpp" />
 		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicTurbulentOrifice.hpp" />
