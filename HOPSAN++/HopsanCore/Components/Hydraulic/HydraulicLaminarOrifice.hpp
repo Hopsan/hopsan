@@ -17,7 +17,7 @@ public:
         return new HydraulicLaminarOrifice("DefaultOrificeName");
     }
 
-    HydraulicLaminarOrifice(const string name,
+    HydraulicLaminarOrifice(const string name      = "DefaultOrificeName",
                              const double kc       = 1.0e-11,
                              const double timestep = 0.001)
         : ComponentQ(name, timestep)

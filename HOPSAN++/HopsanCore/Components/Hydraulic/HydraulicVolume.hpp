@@ -31,7 +31,7 @@ public:
         return new HydraulicVolume("DefaultVolumeName");
     }
 
-    HydraulicVolume(const string name,
+    HydraulicVolume(const string name        = "DefaultVolumeName",
                     const double volume      = 1.0e-3,
                     const double bulkmudulus = 1.0e9,
                     const double alpha       = 0.0,

@@ -1686,6 +1686,137 @@ void testSubSystem()
 }
 
 
+void testSubSystem2()
+{
+    TicToc totaltimer("totaltimer");
+    HopsanEssentials Hopsan;
+
+//    //===========Create subModel2===================================
+//    ComponentSystem subModel2("subModel2");
+//
+//    Component* pVolumeL = Hopsan.CreateComponent("HydraulicVolume");
+//    pVolumeL->setName("volumeL");
+//
+//    Component* pOrificeC = Hopsan.CreateComponent("HydraulicLaminarOrifice");
+//    pOrificeC->setName("orificeC");
+//    pOrificeC->setParameter("Kc", 1e-12);
+//
+//    Component* pVolumeR = Hopsan.CreateComponent("HydraulicVolume");
+//    pVolumeR->setName("volumeR");
+//
+//    //Add components to subModel2
+//    subModel2.addComponent(pVolumeL);
+//    subModel2.addComponent(pOrificeC);
+//    subModel2.addComponent(pVolumeR);
+//
+//    subModel2.addSystemPort("subP1");
+//    subModel2.addSystemPort("subP2");
+//
+//    //Connect components in subModel2
+//    subModel2.connect(&subModel2, "subP1" , pVolumeL, "P1");
+//    subModel2.connect(pVolumeL, "P2", pOrificeC, "P1");
+//    subModel2.connect(pOrificeC, "P2", pVolumeR, "P1");
+//    subModel2.connect(pVolumeR, "P2" , &subModel2, "subP2");
+//
+//    //Decide submodel type
+//    subModel2.setTypeCQS("C");
+//    //============================================================
+    HydraulicSubSysExample subsys("SubSys");
+
+    //===========Create subModel1===================================
+    ComponentSystem subModel1("subModel1");
+    Component* pOrificeL = Hopsan.CreateComponent("HydraulicLaminarOrifice");
+    pOrificeL->setName("orificeL");
+    pOrificeL->setParameter("Kc", 1e-12);
+
+    Component* pOrificeR = Hopsan.CreateComponent("HydraulicLaminarOrifice");
+    pOrificeR->setName("orificeR");
+    pOrificeR->setParameter("Kc", 1e-12);
+
+    //Add components to subModel1
+    subModel1.addComponent(pOrificeL);
+    subModel1.addComponent(&subsys);
+//    subModel1.addComponent(&subModel2);
+    subModel1.addComponent(pOrificeR);
+
+    subModel1.addSystemPort("subP1");
+    subModel1.addSystemPort("subP2");
+
+    //Connect components in subModel1
+    subModel1.connect(&subModel1, "subP1" , pOrificeL, "P1");
+//    subModel1.connect(pOrificeL, "P2", &subModel2, "subP1");
+//    subModel1.connect(&subModel2, "subP2", pOrificeR, "P1");
+    subModel1.connect(pOrificeL, "P2", &subsys, "subP1");
+    subModel1.connect(&subsys, "subP2", pOrificeR, "P1");
+    subModel1.connect(pOrificeR, "P2" , &subModel1, "subP2");
+
+    //Decide submodel type
+    subModel1.setTypeCQS("Q");
+    //============================================================
+
+    //=============Create Main Simulation Model===================
+    ComponentSystem mainSimulationModel("mainSimulationModel");
+    mainSimulationModel.addComponent(&subModel1); //Add submodel1 to the main system
+
+    //Create other components
+    Component* pStep = Hopsan.CreateComponent("SignalStep");
+    pStep->setParameter("BaseValue", 1e5);
+    pStep->setParameter("Amplitude", 9e5);
+    Component* pPSourceL = Hopsan.CreateComponent("HydraulicPressureSource");
+    pPSourceL->setName("PSourceL");
+    pPSourceL->setParameter("P", 10e5);
+
+    Component* pPSourceR = Hopsan.CreateComponent("HydraulicPressureSource");
+    pPSourceR->setName("PSourceR");
+    pPSourceR->setParameter("P", 1e5);
+
+    //Add components
+    mainSimulationModel.addComponent(pStep);
+    mainSimulationModel.addComponent(pPSourceL);
+    mainSimulationModel.addComponent(pPSourceR);
+
+    //Connect components
+    mainSimulationModel.connect(pStep, "out", pPSourceL, "in");
+    mainSimulationModel.connect(pPSourceL, "P1", &subModel1, "subP1");
+    mainSimulationModel.connect(&subModel1, "subP2", pPSourceR, "P1");
+    //===============================================================
+
+//    subModel2.listParametersConsole();
+    subsys.listParametersConsole();
+
+    subModel1.listParametersConsole();
+
+    subsys.setDesiredTimestep(-1);
+//    subModel2.setDesiredTimestep(-1);
+    subModel1.setDesiredTimestep(-1);
+    mainSimulationModel.setDesiredTimestep(0.01);
+
+    TicToc prealloctimer("initializetimer");
+    mainSimulationModel.initialize(0, 10);
+    prealloctimer.TocPrint();
+
+    subsys.listParametersConsole();
+//    subModel2.listParametersConsole();
+
+    subModel1.listParametersConsole();
+
+    mainSimulationModel.listParametersConsole();
+
+    //Run simulation
+    TicToc simutimer("simutimer");
+    mainSimulationModel.simulate(0,10);
+    simutimer.TocPrint();
+
+    totaltimer.TocPrint();
+
+    //Test write to file
+    TicToc filewritetimer("filewritetimer");
+    pOrificeL->getPort("P2").saveLogData("output.txt");
+    filewritetimer.TocPrint();
+    cout << "testSubSystem() Done!" << endl;
+}
+
+
 
 int main()
 {
@@ -1750,7 +1881,7 @@ int main()
 
     //testMass();
 
-    testSubSystem();
+    testSubSystem2();
 
     return 0;
 }
