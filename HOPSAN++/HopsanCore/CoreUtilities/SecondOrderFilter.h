@@ -33,9 +33,10 @@ public:
 	double value();
 
 private:
+    double mValue;
     Delay mDelayU, mDelayY;
-    double mCoeffU[5];
-    double mCoeffY[5];
+    double mCoeffU[3];
+    double mCoeffY[3];
     double mMin, mMax;
     double mTimeStep;
     double *mpTime;

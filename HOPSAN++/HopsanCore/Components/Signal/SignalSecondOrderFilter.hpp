@@ -54,7 +54,7 @@ public:
 
 	void initialize()
 	{
-	    double u0 = mPortPtrs[in]->readNode(NodeSignal::VALUE);
+//	    double u0 = mPortPtrs[in]->readNode(NodeSignal::VALUE);
 
         double num[3];
         double den[3];
@@ -66,7 +66,7 @@ public:
         den[1] = 2.0*mDden/mWden;
         den[2] = 1.0;
 
-	    mFilter.initialize(mTime, mTimestep, num, den, u0, mStartY, mMin, mMax);
+	    mFilter.initialize(mTime, mTimestep, num, den, mStartY, mStartY, mMin, mMax);
 	    ///TODO: Write out values into node as well? (I think so) This is true for all components
 	}
 
@@ -75,9 +75,6 @@ public:
     {
         //Get variable values from nodes
         double u = mPortPtrs[in]->readNode(NodeSignal::VALUE);
-
-        //Filter equation
-        //Get variable values from nodes
 
         //Write new values to nodes
         mPortPtrs[out]->writeNode(NodeSignal::VALUE, mFilter.value(u));

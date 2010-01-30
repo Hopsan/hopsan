@@ -24,7 +24,7 @@
 
 SecondOrderFilter::SecondOrderFilter()
 {
-    mLastTime = 0.0;
+    mLastTime = -1.0;
     mIsInitialized = false;
 }
 
@@ -33,8 +33,8 @@ void SecondOrderFilter::initialize(double &rTime, double timestep, double num[3]
 {
     mMin = min;
     mMax = max;
-    mDelayU.setStepDelay(4);
-    mDelayY.setStepDelay(4);
+    mDelayU.setStepDelay(2);
+    mDelayY.setStepDelay(2);
     mDelayU.initialize(rTime, u0);
     mDelayY.initialize(rTime, std::max(std::min(y0, mMax), mMin));
 
@@ -48,17 +48,30 @@ void SecondOrderFilter::initialize(double &rTime, double timestep, double num[3]
 
 void SecondOrderFilter::setNumDen(double num[3], double den[3])
 {
-    mCoeffU[0] = pow(mTimeStep, 2)*(num[2]*pow(mTimeStep, 2) - 2*num[1]*mTimeStep + 4*num[0]);
-    mCoeffU[1] = -pow(mTimeStep, 2)*(4*mTimeStep*num[1] - 4*pow(mTimeStep, 2)*num[2]);
-    mCoeffU[2] = -pow(mTimeStep, 2)*(8*num[0] - 6*pow(mTimeStep, 2)*num[2]);
-    mCoeffU[3] = pow(mTimeStep, 2)*(4*num[2]*pow(mTimeStep, 2) + 4*num[1]*mTimeStep);
-    mCoeffU[4] = pow(mTimeStep, 2)*(num[2]*pow(mTimeStep, 2) + 2*num[1]*mTimeStep + 4*num[0]); //To newest U
+//num =
+//(c*T^2*q^2 + 2*c*T^2*q + c*T^2 - 2*b*T*q^2 + 2*b*T + 4*a*q^2 - 8*a*q + 4*a)
+//den =
+//(C*T^2*q^2 + 2*C*T^2*q + C*T^2 - 2*B*T*q^2 + 2*B*T + 4*A*q^2 - 8*A*q + 4*A)
 
-    mCoeffY[0] = pow(mTimeStep, 2.0)*(den[2]*pow(mTimeStep, 2.0) - 2*den[1]*mTimeStep + 4*den[0]);
-    mCoeffY[1] = -pow(mTimeStep, 2.0)*(4*mTimeStep*den[1] - 4*pow(mTimeStep, 2.0)*den[2]);
-    mCoeffY[2] = -pow(mTimeStep, 2.0)*(8*den[0] - 6*pow(mTimeStep, 2.0)*den[2]);
-    mCoeffY[3] = pow(mTimeStep, 2.0)*(4*den[2]*pow(mTimeStep, 2.0) + 4*den[1]*mTimeStep);
-    mCoeffY[4] = pow(mTimeStep, 2.0)*(den[2]*pow(mTimeStep, 2.0) + 2*den[1]*mTimeStep + 4*den[0]);
+    mCoeffU[0] = num[2]*pow(mTimeStep, 2) - 2.0*num[1]*mTimeStep + 4.0*num[0];
+    mCoeffU[1] = 2.0*num[2]*pow(mTimeStep, 2) - 8.0*num[0];
+    mCoeffU[2] = num[2]*pow(mTimeStep, 2) + 2.0*num[1]*mTimeStep + 4.0*num[0];
+
+    mCoeffY[0] = den[2]*pow(mTimeStep, 2) - 2.0*den[1]*mTimeStep + 4.0*den[0];
+    mCoeffY[1] = 2.0*den[2]*pow(mTimeStep, 2) - 8.0*den[0];
+    mCoeffY[2] = den[2]*pow(mTimeStep, 2) + 2.0*den[1]*mTimeStep + 4.0*den[0];
+
+//    mCoeffU[0] = pow(mTimeStep, 2)*(num[2]*pow(mTimeStep, 2) - 2*num[1]*mTimeStep + 4*num[0]);
+//    mCoeffU[1] = -pow(mTimeStep, 2)*(4*mTimeStep*num[1] - 4*pow(mTimeStep, 2)*num[2]);
+//    mCoeffU[2] = -pow(mTimeStep, 2)*(8*num[0] - 6*pow(mTimeStep, 2)*num[2]);
+//    mCoeffU[3] = pow(mTimeStep, 2)*(4*num[2]*pow(mTimeStep, 2) + 4*num[1]*mTimeStep);
+//    mCoeffU[4] = pow(mTimeStep, 2)*(num[2]*pow(mTimeStep, 2) + 2*num[1]*mTimeStep + 4*num[0]); //To newest U
+//
+//    mCoeffY[0] = pow(mTimeStep, 2.0)*(den[2]*pow(mTimeStep, 2.0) - 2*den[1]*mTimeStep + 4*den[0]);
+//    mCoeffY[1] = -pow(mTimeStep, 2.0)*(4*mTimeStep*den[1] - 4*pow(mTimeStep, 2.0)*den[2]);
+//    mCoeffY[2] = -pow(mTimeStep, 2.0)*(8*den[0] - 6*pow(mTimeStep, 2.0)*den[2]);
+//    mCoeffY[3] = pow(mTimeStep, 2.0)*(4*den[2]*pow(mTimeStep, 2.0) + 4*den[1]*mTimeStep);
+//    mCoeffY[4] = pow(mTimeStep, 2.0)*(den[2]*pow(mTimeStep, 2.0) + 2*den[1]*mTimeStep + 4*den[0]);
 }
 
 
@@ -88,21 +101,23 @@ void SecondOrderFilter::update(double u)
         //Filter equation
         //Bilinear transform is used
 
-        double y = 1.0/mCoeffY[4]*(mCoeffU[4]*u + mCoeffU[3]*mDelayU.valueIdx(u, 1) + mCoeffU[2]*mDelayU.valueIdx(u, 2) + mCoeffU[1]*mDelayU.valueIdx(u, 3) + mCoeffU[0]*mDelayU.valueIdx(u, 4) - (mCoeffY[3]*mDelayY.valueIdx(1)+ mCoeffY[2]*mDelayY.valueIdx(2)+ mCoeffY[1]*mDelayY.valueIdx(3)+ mCoeffY[0]*mDelayY.valueIdx(4)));
+        mValue = 1.0/mCoeffY[2]*(mCoeffU[2]*u + mCoeffU[1]*mDelayU.valueIdx(u, 1) + mCoeffU[0]*mDelayU.value(u) - (mCoeffY[1]*mDelayY.valueIdx(1) + mCoeffY[0]*mDelayY.value()));
 
-        if (y > mMax)
+        if (mValue > mMax)
         {
-            mDelayY.update(mMax);
-            mDelayU.update(u);
+            mDelayY.initializeValues(mMax);
+            mDelayU.initializeValues(mMax);
+            mValue = mMax;
         }
-        else if (y < mMin)
+        else if (mValue < mMin)
         {
-            mDelayY.update(mMin);
-            mDelayU.update(u);
+            mDelayY.initializeValues(mMin);
+            mDelayU.initializeValues(mMin);
+            mValue = mMin;
         }
         else
         {
-            mDelayY.update(y);
+            mDelayY.update(mValue);
             mDelayU.update(u);
         }
 
@@ -115,7 +130,8 @@ double SecondOrderFilter::value(double u)
 {
     update(u);
 
-    return mDelayY.value();
+    return mValue;
+
 }
 
 
@@ -126,5 +142,5 @@ double SecondOrderFilter::value()
 {
     update(mDelayU.valueIdx(1));
 
-    return mDelayY.value();
+    return mValue;
 }

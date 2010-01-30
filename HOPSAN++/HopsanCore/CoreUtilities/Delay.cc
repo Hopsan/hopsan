@@ -34,7 +34,7 @@ Delay::Delay()
     mStepDelay = 1;
     mInitialValue = 0.0;
     mValues.resize(mStepDelay+1, mInitialValue);
-    mLastTime =0.0;
+    mLastTime =-1.0;
     mIsInitialized = false;
 }
 
@@ -45,7 +45,7 @@ Delay::Delay(const std::size_t stepDelay, const double initValue)
     mFracStep = mStepDelay;
     mInitialValue = initValue;
     mValues.resize(mStepDelay+1, mInitialValue);
-    mLastTime =0.0;
+    mLastTime =-1.0;
     mIsInitialized = false;
 }
 
@@ -57,7 +57,7 @@ Delay::Delay(const double timeDelay, const double Ts, const double initValue)
     mStepDelay = (std::size_t) ceil(((double) timeDelay)/Ts); ///TODO: kolla att det verkligen ar ratt
     mInitialValue = initValue;
     mValues.resize(mStepDelay+1, mInitialValue);
-    mLastTime = 0.0;
+    mLastTime = -1.0;
     mIsInitialized = false;
 }
 
@@ -66,7 +66,7 @@ void Delay::initialize(double &rTime, const double initValue)
 {
     mInitialValue = initValue;
     mValues.assign(mValues.size(), mInitialValue);
-    mLastTime = 0.0;
+    mLastTime = -1.0;
     mpTime = &rTime;
     mIsInitialized = true;
 }

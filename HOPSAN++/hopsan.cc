@@ -1546,8 +1546,9 @@ void testSignalFilter()
 
 	ComponentSystem simulationmodel("simulationmodel");
     //Create other components
-    SignalStep stepL("source_left", 0.0, 1.0, 1.0);
-    SignalSecondOrderFilter filter("Filter");//, -2.0, 2.0);
+//    SignalStep stepL("source_left", 0.0, 1.0, 0.0);
+    SignalSource stepL("source_left");
+    SignalSecondOrderFilter filter("Filter");//, 0.0, 1.2);
     SignalSink sinkR("sink_right");
 
     //Add components
@@ -1562,20 +1563,20 @@ void testSignalFilter()
     //List and set parameters
     stepL.listParametersConsole();
     filter.setParameter("k", 1.0);
-    filter.setParameter("wnum", 10.0);
-    filter.setParameter("wden", 100.0); //varkar vara dubbla sampelfrekvensen det borjar bli overslangar
-    filter.setParameter("dnum", 0.2);
-    filter.setParameter("dden", 1.0);
+    filter.setParameter("wnum", 1.0E+10);
+    filter.setParameter("wden", 100.0);
+    filter.setParameter("dnum", 1.0);
+    filter.setParameter("dden", 0.1);
     filter.listParametersConsole();
     sinkR.listParametersConsole();
 
     //Run simulation
-    simulationmodel.initialize(0.0, 5.0);
+    simulationmodel.initialize(0.0, 0.6);
 
-    simulationmodel.simulate(0.0, 5.0);
+    simulationmodel.simulate(0.0, 0.6);
 
     //Test write to file
-    sinkR.getPort("in").saveLogData("output.txt");
+    filter.getPort("out").saveLogData("output.txt");
 
 	//Finished
     cout << "testSignalFilter() Done!" << endl;
@@ -1649,7 +1650,7 @@ void testSubSystem()
 
     pVolumeC->listParametersConsole();
 
-    subModel1.setDesiredTimestep(0.3);
+    subModel1.setDesiredTimestep(-1.0);
     mainSimulationModel.setDesiredTimestep(1.0);
     mainSimulationModel.initialize(0, 10);
 
@@ -1659,7 +1660,7 @@ void testSubSystem()
 
     mainSimulationModel.listParametersConsole();
 
-    mainSimulationModel.setDesiredTimestep(0.9);
+    mainSimulationModel.setDesiredTimestep(0.01);
 
     //Run simulation
     TicToc prealloctimer("initializetimer");
@@ -1671,7 +1672,7 @@ void testSubSystem()
     pVolumeC->listParametersConsole();
 
     TicToc simutimer("simutimer");
-    //mainSimulationModel.simulate(0,10);
+    mainSimulationModel.simulate(0,10);
     simutimer.TocPrint();
 
     totaltimer.TocPrint();
@@ -1743,13 +1744,13 @@ int main()
 
     //testPressureReliefValve();
 
-    testSignalFilter();
+    //testSignalFilter();
 
     //testServoSys();
 
     //testMass();
 
-    //testSubSystem();
+    testSubSystem();
 
     return 0;
 }

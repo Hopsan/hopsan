@@ -42,7 +42,8 @@ public:
 
 	void initialize()
 	{
-        //Nothing to initilize
+	    //Initialize value to the node
+        mPortPtrs[out]->writeNode(NodeSignal::VALUE, mValue);
 	}
 
 

@@ -780,7 +780,7 @@ void ComponentSystem::adjustTimestep(double timestep, vector<Component*> compone
 
             //If a subsystem's timestep is larger than this sytem's
             //timestep change it to this system's timestep
-            if (subTs > timestep)
+            if ((subTs > timestep) || (subTs < -0.0))
             {
                 subTs = timestep;
             }
@@ -791,12 +791,12 @@ void ComponentSystem::adjustTimestep(double timestep, vector<Component*> compone
                 subTs = timestep/floor(timestep/subTs+0.5);
             }
             componentPtrs[c]->setTimestep(subTs);
-cout << componentPtrs[c]->mName << ", subTs: "<< subTs << endl;
+//cout << componentPtrs[c]->mName << ", subTs: "<< subTs << endl;
         }
         else
         {
             componentPtrs[c]->setTimestep(timestep);
-cout << componentPtrs[c]->mName << ", timestep: "<< timestep << endl;
+//cout << componentPtrs[c]->mName << ", timestep: "<< timestep << endl;
         }
     }
 }
