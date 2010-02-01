@@ -12,7 +12,7 @@
 
 #include <iostream>
 #include "HopsanCore.h"
-#include "CoreUtilities/TransferFunction.h"
+#include "CoreUtilities/FirstOrderFilter.h"
 #include "CoreUtilities/TurbulentFlowFunction.h"
 #include "CoreUtilities/ValveHysteresis.h"
 #include "CoreUtilities/Delay.h"
@@ -24,7 +24,7 @@ private:
     Delay mDelayedX0;
     TurbulentFlowFunction mTurb;
     ValveHysteresis mHyst;
-    TransferFunction mFilterLP;
+    FirstOrderFilter mFilterLP;
     enum {P1, P2};
 
 public:
@@ -51,9 +51,9 @@ public:
         mQnom = qnom;
         mPh = ph;
         mPnom = 7e6f;
-        mX0max = mQnom / sqrt(mQnom);
+        mX0max = mQnom / sqrt(mPnom);
         mCs = sqrt(mPnom) / mKcs;
-        mCf = 1 / (mKcf*sqrt(mPnom));
+        mCf = 1.0 / (mKcf*sqrt(mPnom));
 
         addPowerPort("P1", "NodeHydraulic", P1);
         addPowerPort("P2", "NodeHydraulic", P2);
@@ -76,12 +76,9 @@ public:
 
         double wCutoff = 1 / mTao;      //Ska det vara Timestep/Tao?
         //double wCutoff = 100;     DEBUG
-        double num [3] = {1.0, 0.0, 0.0};
-        double den [3] = {1.0, 1.0/wCutoff, 0.0};
-        mFilterLP.initialize(0.0,0.0, mTime);
-        mFilterLP.setCoefficients(num, den, mTimestep);
-
-
+        double num [2] = {0.0, 1.0};
+        double den [2] = {1.0/wCutoff, 1.0};
+        mFilterLP.initialize(mTime, mTimestep, num, den, 0.0, 0.0, 0.0, mX0max);
     }
 
     void simulateOneTimestep()
@@ -96,7 +93,7 @@ public:
         double c2  = mPortPtrs[P2]->readNode(NodeHydraulic::WAVEVARIABLE);
         double Zc2 = mPortPtrs[P2]->readNode(NodeHydraulic::CHARIMP);
 
-        //Equations
+        //PRV Equations
 
             //Help variable b1
         double b1 = mCs + (p1-p2)*mCf;
@@ -107,12 +104,11 @@ public:
 
             //Help variable gamma
         double gamma;
-        if (mTime > 1.99 && mTime < 2.01) { cout << "Zc1 = " << Zc1 << ", Zc2 = " << Zc2 << ", "; }
         if (p1>p2)
         {
-            if (sqrt(p1-p2)*2 + (Zc1+Zc2)*mX0 != 0.f)
+            if ( (sqrt(p1-p2)*2.0 + (Zc1+Zc2)*mX0) != 0.0 )
             {
-                gamma = sqrt(p1-p2)*2 / (sqrt(p1-p2)*2 + (Zc1+Zc2)*mX0);
+                gamma = sqrt(p1-p2)*2.0 / (sqrt(p1-p2)*2.0 + (Zc1+Zc2)*mX0);
             }
             else
             {
@@ -121,9 +117,9 @@ public:
         }
         else
         {
-            if (sqrt(p2-p1)*2 + (Zc1+Zc2)*mX0 != 0.f)
+            if ( (sqrt(p2-p1)*2.0 + (Zc1+Zc2)*mX0) != 0.0 )
             {
-                gamma = sqrt(p2-p1)*2 / (sqrt(p2-p1)*2 + (Zc1+Zc2)*mX0);
+                gamma = sqrt(p2-p1)*2.0 / (sqrt(p2-p1)*2.0 + (Zc1+Zc2)*mX0);
             }
             else
             {
@@ -133,33 +129,32 @@ public:
 
             //Help variable b2
         double b2;
-        if (p1 > p2)    { b2 = gamma*(Zc1+Zc2)*sqrt(p1-p2); }
-        else            { b2 = gamma*(Zc1+Zc2)*sqrt(p2-p1); }
-        if (b2 < 0.0)   { b2 = 0.0; }
-
+        if (p1 > p2)
+        {
+            b2 = gamma*(Zc1+Zc2)*sqrt(p1-p2);
+        }
+        else
+        {
+            b2 = gamma*(Zc1+Zc2)*sqrt(p2-p1);
+        }
+        if (b2 < 0.0)
+        {
+            b2 = 0.0;
+        }
 
             // Calculation of spool position
-        double xs = (gamma*(c1-c2) + b2*mX0/2 - mPref) / (b1+b2);
+        double xs = (gamma*(c1-c2) + b2*mX0/2.0 - mPref) / (b1+b2);
 
             //Hysteresis
         double xh = mPh / (b1+b2);                                  //Hysteresis width [m]
         double xsh = mHyst.getValue(xs, xh, mDelayedX0.value());
 
             //Filter
-        //double wCutoff = (b2 / b1 + 1) * mTimestep/mTao;                        //Cutoff frequency
-        double wCutoff = (b2 / b1 + 1) * 1/mTao;                        //Cutoff frequency
-        double num [3] = {1.0, 0.0, 0.0};
-        double den [3] = {1.0, 1.0/wCutoff, 0.0};
-        mFilterLP.setCoefficients(num,den,mTimestep);
-        mX0 = mFilterLP.getValue(xsh);
-        if (mX0 > mX0max)
-        {
-            mX0 = mX0max;
-        }
-        else if (mX0 < 0.0)
-        {
-            mX0 = 0.0;
-        }
+        double wCutoff = (1.0 + b2/b1) * 1.0/mTao;                //Cutoff frequency
+        double num [2] = {0.0, 1.0};
+        double den [2] = {1.0/wCutoff, 1.0};
+        mFilterLP.setNumDen(num,den);
+        mX0 = mFilterLP.value(xsh);
 
             //Turbulent flow equation
         mTurb.setFlowCoefficient(mX0);
@@ -168,41 +163,35 @@ public:
         p2 = c2+Zc2*q2;
         p1 = c1+Zc1*q1;
 
-        if (mTime > 1.99 && mTime < 2.01) { cout << endl; }
-
-        if (mTime > 1.9 && mTime < 2.1)
-        {
-            cout << "p1-p2 = " << (p1-p2) << ", xs = " << xs << ", xsh = " << xsh << ", wCutoff = " << wCutoff << ", x0 = " << mX0 << endl;
-        }
-
-
             // Cavitation
-        //    cav = 0;
-        //    if (*p1 < 0.0)
-        //    {
-        //        *c1 = 0.0;
-        //        *zc1 = 0.0;
-        //        cav = 1;
-        //    }
-        //    if (*p2 < 0.0)
-        //    {
-        //        *c2 = 0.0;
-        //        *zc2 = 0.0;
-        //        cav = 1;
-        //    }
-        //    if (cav)
-        //    {
-        //        xs = (*c1 - *c2 + b2 * *x0 / 2 - *pref) / (b1 + b2);
-        //        xsh = hyst(&xs, &xh, &x0d);
-        //        r1 = w01 * *time_step;
-        //        *x0 = lp1(&xsh, &r1, &c_b93, &x0max, &*time_step, &*time);
-        //        *q2 = qturb(&*x0, &*c1, &*c2, &*zc1, &*zc2);
-        //        *q1 = -*q2;
-        //        *p1 = *c1 + *zc1 * *q1;
-        //        *p2 = *c2 + *zc2 *  *q2;
-        //        if (*p1 < 0.0) { *p1 = 0.0; }
-        //        if (*p2 < 0.0) { *p2 = 0.0; }
-        //    }
+        bool cav = false;
+        if (p1 < 0.0)
+        {
+            c1 = 0.0;
+            Zc1 = 0.0;
+            cav = true;
+        }
+        if (p2 < 0.0)
+        {
+            c2 = 0.0;
+            Zc2 = 0.0;
+            cav = true;
+        }
+        if (cav)
+        {
+            xs = (c1-c2 + b2*mX0/2.0 - mPref) / (b1+b2);
+            xsh = mHyst.getValue(xs, xh, mDelayedX0.value());
+            mX0 = mFilterLP.value(xsh);
+
+            mTurb.setFlowCoefficient(mX0);
+            q2 = mTurb.getFlow(c1,c2,Zc1,Zc2);
+            q1 = -q2;
+            p2 = c2+Zc2*q2;
+            p1 = c1+Zc1*q1;
+
+            if (p1 < 0.0) { p1 = 0.0; }
+            if (p2 < 0.0) { p2 = 0.0; }
+        }
 
         //Write new values to nodes
 
@@ -211,7 +200,7 @@ public:
         mPortPtrs[P2]->writeNode(NodeHydraulic::PRESSURE, p2);
         mPortPtrs[P2]->writeNode(NodeHydraulic::MASSFLOW, q2);
 
-        mFilterLP.update(xsh);
+        mDelayedX0.update(mX0);
     }
 };
 
