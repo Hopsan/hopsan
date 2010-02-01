@@ -4,6 +4,7 @@
 #include "Component.h"
 #include "Nodes/Nodes.h"
 #include "math.h"
+#include "CoreUtilities/TurbulentFlowFunction.h"
 
 class HydraulicTurbulentOrifice : public ComponentQ
 {
@@ -24,6 +25,12 @@ private:
 //        return sign(x)*pow(pow(fabs(x),r)/(pow(fabs(x),(r/2))+pow(x0,r)),(1/r));
 //    }
 public:
+    static Component *Creator()
+    {
+        std::cout << "running orifice creator" << std::endl;
+        return new HydraulicLaminarOrifice("DefaultTurbulentOrificeName");
+    }
+
     HydraulicTurbulentOrifice(const string name,
                      const double Cq       = 0.67,
                      const double A        = 0.00001,

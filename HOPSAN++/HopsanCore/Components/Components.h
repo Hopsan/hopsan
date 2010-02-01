@@ -8,6 +8,7 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr);
 
 /* Hydraulic Components */
 #include "Hydraulic/HydraulicLaminarOrifice.hpp"
+#include "Hydraulic/HydraulicTurbulentOrifice.hpp"
 #include "Hydraulic/HydraulicVolume.hpp"
 #include "Hydraulic/HydraulicPressureSource.hpp"
 #include "Hydraulic/HydraulicFlowSourceQ.hpp"

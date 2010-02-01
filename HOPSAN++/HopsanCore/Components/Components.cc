@@ -7,6 +7,7 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr)
 {
     //Hydraulic components
     cfact_ptr->RegisterCreatorFunction("HydraulicLaminarOrifice", HydraulicLaminarOrifice::Creator);
+    cfact_ptr->RegisterCreatorFunction("HydraulicTurbulentOrifice", HydraulicTurbulentOrifice::Creator);
     cfact_ptr->RegisterCreatorFunction("HydraulicVolume", HydraulicVolume::Creator);
     cfact_ptr->RegisterCreatorFunction("HydraulicPressureSource", HydraulicPressureSource::Creator);
     cfact_ptr->RegisterCreatorFunction("HydraulicFlowSourceQ", HydraulicFlowSourceQ::Creator);

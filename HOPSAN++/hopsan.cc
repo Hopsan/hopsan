@@ -12,6 +12,10 @@
 #include "CoreUtilities/Delay.h"
 #include "CoreUtilities/FirstOrderFilter.h"
 #include "CoreUtilities/SecondOrderFilter.h"
+#include <iostream>
+#include <fstream>
+using namespace std;
+
 
 void test1()
 {
@@ -1821,6 +1825,64 @@ void testSubSystem2()
 }
 
 
+void testLoad()
+{
+    HopsanEssentials Hopsan;
+
+    //Create master component
+    ComponentSystem simulationmodel("simulationmodel");
+
+    //Create other components
+
+     string tempInput;
+     string componentName;
+     ifstream myfile ("model.txt");
+     while (! myfile.eof() )
+     {
+        getline (myfile,tempInput);
+        cout << tempInput;
+        componentName = tempInput;
+        }
+    myfile.close();
+
+    //HydraulicPressureSourceQ psource1("ps1", 1.0e5);
+    Component *psource1 = Hopsan.CreateComponent("HydraulicPressureSource");
+    Component *orifice = Hopsan.CreateComponent(componentName);
+    Component *psource2 = Hopsan.CreateComponent("HydraulicPressureSource");
+    SignalRamp ramp("ramp");
+
+    ramp.setParameter("BaseValue", 0);
+    ramp.setParameter("Amplitude", 3e7);
+    ramp.setParameter("StartTime", 0.0);
+    ramp.setParameter("StopTime", 3.0);
+    orifice->listParametersConsole();
+
+    //Add components
+    simulationmodel.addComponent(*psource1);
+    simulationmodel.addComponent(*psource2);
+    simulationmodel.addComponent(*orifice);
+    simulationmodel.addComponent(ramp);
+    //simulationmodel.addComponent(line);
+
+    //Connect components
+    simulationmodel.connect(*psource1, "P1", *orifice, "P1");
+    simulationmodel.connect(*orifice, "P2", *psource2, "P1");
+    simulationmodel.connect(ramp, "out", *psource1, "in");
+
+    //Run simulation
+    simulationmodel.initialize(0,10);
+    simulationmodel.simulate(0,10);
+
+    //Test write to file
+    orifice->getPort("P1").saveLogData("output.txt");
+
+    cout << "test_prv() Done!" << endl;
+
+}
+
+
+
+
 
 int main()
 {
@@ -1879,13 +1941,15 @@ int main()
 
     //testPressureReliefValve();
 
+    testLoad();
+
     //testSignalFilter();
 
     //testServoSys();
 
     //testMass();
 
-    testSubSystem2();
+    //testSubSystem2();
 
     return 0;
 }
