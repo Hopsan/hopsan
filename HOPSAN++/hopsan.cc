@@ -1349,19 +1349,21 @@ void testPressureReliefValve()
 
     //Create other components
 
-    HydraulicPressureSource psource1("ps1", 1.0e5);
+    HydraulicPressureSourceQ psource1("ps1", 1.0e5);
     HydraulicPressureSource psource2("ps2", 1.0e5);
     //HydraulicFixedDisplacementPump pump("pump");
     HydraulicPressureReliefValve prv("prv");
+    HydraulicVolume volume("volume");
     //HydraulicTLMRlineR line("line");
     SignalRamp ramp("ramp");
 
     //pump.setParameter("Speed", 5);
-    ramp.setParameter("BaseValue", 1.5e7);
-    ramp.setParameter("Amplitude", 0.0);
-    ramp.setParameter("StartTime", 2.0);
-    ramp.setParameter("StopTime", 6.0);
-    prv.setParameter("pref", 2.0e16);
+    ramp.setParameter("BaseValue", 0);
+    ramp.setParameter("Amplitude", 3e7);
+    ramp.setParameter("StartTime", 0.0);
+    ramp.setParameter("StopTime", 3.0);
+    prv.setParameter("pref", 2.0e7);
+    volume.setParameter("V", 0.000001);
     //prv.listParametersConsole();
 
 
@@ -1370,11 +1372,13 @@ void testPressureReliefValve()
     simulationmodel.addComponent(psource2);
     simulationmodel.addComponent(prv);
     simulationmodel.addComponent(ramp);
+    simulationmodel.addComponent(volume);
     //simulationmodel.addComponent(pump);
     //simulationmodel.addComponent(line);
 
     //Connect components
-    simulationmodel.connect(psource1, "P1", prv, "P1");
+    simulationmodel.connect(psource1, "P1", volume, "P1");
+    simulationmodel.connect(volume, "P2", prv, "P1");
     simulationmodel.connect(prv, "P2", psource2, "P1");
     simulationmodel.connect(ramp, "out", psource1, "in");
 
