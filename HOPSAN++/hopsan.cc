@@ -1841,7 +1841,7 @@ void testLoad()
 
     //Read data from file
 
-    typedef map<string, Component*> mapType;
+    typedef map<string, Component*> mapType;                            //File stuff, should maybe be cleaned up
 	mapType componentMap;
     string inputLine;
     string inputWord;
@@ -1849,18 +1849,26 @@ void testLoad()
     string plotComponent, plotPort;
     double startTime, stopTime;
 
-    ifstream modelFile ("model.txt");
+    string modelFileName;                                               //Select model file
+    cout << "Enter model filename: ";
+    cin >> modelFileName;
+    char *tempChar = new char[modelFileName.size()];
+    strcpy(tempChar, modelFileName.c_str());
+
+    ifstream modelFile (tempChar);
     while (! modelFile.eof() )
     {
-        getline(modelFile,inputLine);
+            //Read the line
+        getline(modelFile,inputLine);                                   //Read a line
         stringstream inputStream(inputLine);
-        while ( inputStream >> inputWord )                         //Read a line
+        while ( inputStream >> inputWord )
         {
-            wordQueue.push(inputWord);                             //Store each word in a queue
-            cout << "Read from model file: " << inputWord << endl;             //DEBUG
+            wordQueue.push(inputWord);                                  //Store each word in a queue
+            cout << "Read from model file: " << inputWord << endl;      //DEBUG
         }
 
-        if ( wordQueue.front() == "COMPONENT" )                     //Create a component
+            //Execute commands
+        if ( wordQueue.front() == "COMPONENT" )                         //Create a component
         {
             wordQueue.pop();
             Component *tempComponent = Hopsan.CreateComponent(wordQueue.front());
@@ -1869,7 +1877,7 @@ void testLoad()
             simulationmodel.addComponent(componentMap.find(wordQueue.front())->second);
             wordQueue.pop();
         }
-        else if ( wordQueue.front() == "CONNECT")                    //Connect components
+        else if ( wordQueue.front() == "CONNECT")                       //Connect components
         {
             wordQueue.pop();
             string firstComponent = wordQueue.front();
@@ -1882,12 +1890,6 @@ void testLoad()
             wordQueue.pop();
             simulationmodel.connect(*componentMap.find(firstComponent)->second, firstPort, *componentMap.find(secondComponent)->second, secondPort);
         }
-//        else if (wordQueue.front() == "ADD")                           //Add components to simulation model
-//        {
-//            wordQueue.pop();
-//            simulationmodel.addComponent(componentMap.find(wordQueue.front())->second);
-//            wordQueue.pop();
-//        }
         else if (wordQueue.front() == "SET")
         {
             wordQueue.pop();
@@ -1895,10 +1897,10 @@ void testLoad()
             wordQueue.pop();
             string parameterName = wordQueue.front();
             wordQueue.pop();
-            string tempString = wordQueue.front();                                 //
-            char *parameterValueString = new char[tempString.size()];               //  Conversion from string to double
-            strcpy(parameterValueString, tempString.c_str());                       //
-            double parameterValue = atof( parameterValueString );                  //
+            string tempString = wordQueue.front();                            //
+            char *parameterValueString = new char[tempString.size()];          //  Conversion from string to double
+            strcpy(parameterValueString, tempString.c_str());                  //
+            double parameterValue = atof( parameterValueString );             //
             wordQueue.pop();
             cout << "parameterName = _" << parameterName << "_\n";
             componentMap.find(componentName)->second->setParameter(parameterName, parameterValue);
@@ -1934,10 +1936,8 @@ void testLoad()
         {
             wordQueue.pop();
         }
-
     }
     modelFile.close();
-
 
     //Run simulation
     cout << "Simulating from " << startTime << " s to " << stopTime << "s\n";
@@ -1947,7 +1947,7 @@ void testLoad()
     //Test write to file
     componentMap.find(plotComponent)->second->getPort(plotPort).saveLogData("output.txt");
 
-    cout << "test_prv() Done!" << endl;
+    cout << "testLoad() Done!" << endl;
 
 }
 
