@@ -1866,6 +1866,7 @@ void testLoad()
             Component *tempComponent = Hopsan.CreateComponent(wordQueue.front());
             wordQueue.pop();
             componentMap.insert(pair<string, Component*>(wordQueue.front(), &*tempComponent));
+            simulationmodel.addComponent(componentMap.find(wordQueue.front())->second);
             wordQueue.pop();
         }
         else if ( wordQueue.front() == "CONNECT")                    //Connect components
@@ -1881,12 +1882,12 @@ void testLoad()
             wordQueue.pop();
             simulationmodel.connect(*componentMap.find(firstComponent)->second, firstPort, *componentMap.find(secondComponent)->second, secondPort);
         }
-        else if (wordQueue.front() == "ADD")                           //Add components to simulation model
-        {
-            wordQueue.pop();
-            simulationmodel.addComponent(componentMap.find(wordQueue.front())->second);
-            wordQueue.pop();
-        }
+//        else if (wordQueue.front() == "ADD")                           //Add components to simulation model
+//        {
+//            wordQueue.pop();
+//            simulationmodel.addComponent(componentMap.find(wordQueue.front())->second);
+//            wordQueue.pop();
+//        }
         else if (wordQueue.front() == "SET")
         {
             wordQueue.pop();

@@ -10,13 +10,7 @@ SET 			ramp 		StartTime		0.0
 SET 			ramp 		StopTime 		3.0
 SET 			prv 		pref 			2.0e7
 SET 			volume 		V 				0.0000001
-SET				orifice		Kc				0.0000000001
-ADD 			psource1
-ADD				orifice
-ADD 			volume
-ADD 			prv
-ADD 			psource2
-ADD 			ramp
+SET				orifice		Kc				0.00000001
 CONNECT 		psource1 	P1 		orifice		P1
 CONNECT 		orifice 	P2 		volume		P1
 CONNECT 		volume 		P2 		prv 		P1
