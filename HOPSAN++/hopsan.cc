@@ -14,6 +14,9 @@
 #include "CoreUtilities/SecondOrderFilter.h"
 #include <iostream>
 #include <fstream>
+#include <queue>
+#include <sstream>
+#include <cstdlib>
 using namespace std;
 
 
@@ -1670,6 +1673,7 @@ void testSubSystem()
 
     mainSimulationModel.setDesiredTimestep(0.01);
 
+
     //Run simulation
     TicToc prealloctimer("initializetimer");
     mainSimulationModel.initialize(0, 10);
@@ -1827,54 +1831,120 @@ void testSubSystem2()
 
 void testLoad()
 {
+
     HopsanEssentials Hopsan;
 
     //Create master component
+
     ComponentSystem simulationmodel("simulationmodel");
 
-    //Create other components
 
-     string tempInput;
-     string componentName;
-     ifstream myfile ("model.txt");
-     while (! myfile.eof() )
-     {
-        getline (myfile,tempInput);
-        cout << tempInput;
-        componentName = tempInput;
+    //Read data from file
+
+    typedef map<string, Component*> mapType;
+	mapType componentMap;
+    string inputLine;
+    string inputWord;
+    queue<string> wordQueue;
+    string plotComponent, plotPort;
+    double startTime, stopTime;
+
+    ifstream modelFile ("model.txt");
+    while (! modelFile.eof() )
+    {
+        getline(modelFile,inputLine);
+        stringstream inputStream(inputLine);
+        while ( inputStream >> inputWord )                         //Read a line
+        {
+            wordQueue.push(inputWord);                             //Store each word in a queue
+            cout << "Read from model file: " << inputWord << endl;             //DEBUG
         }
-    myfile.close();
 
-    //HydraulicPressureSourceQ psource1("ps1", 1.0e5);
-    Component *psource1 = Hopsan.CreateComponent("HydraulicPressureSource");
-    Component *orifice = Hopsan.CreateComponent(componentName);
-    Component *psource2 = Hopsan.CreateComponent("HydraulicPressureSource");
-    SignalRamp ramp("ramp");
+        if ( wordQueue.front() == "COMPONENT" )                     //Create a component
+        {
+            wordQueue.pop();
+            Component *tempComponent = Hopsan.CreateComponent(wordQueue.front());
+            wordQueue.pop();
+            componentMap.insert(pair<string, Component*>(wordQueue.front(), &*tempComponent));
+            wordQueue.pop();
+        }
+        else if ( wordQueue.front() == "CONNECT")                    //Connect components
+        {
+            wordQueue.pop();
+            string firstComponent = wordQueue.front();
+            wordQueue.pop();
+            string firstPort = wordQueue.front();
+            wordQueue.pop();
+            string secondComponent = wordQueue.front();
+            wordQueue.pop();
+            string secondPort = wordQueue.front();
+            wordQueue.pop();
+            simulationmodel.connect(*componentMap.find(firstComponent)->second, firstPort, *componentMap.find(secondComponent)->second, secondPort);
+        }
+        else if (wordQueue.front() == "ADD")                           //Add components to simulation model
+        {
+            wordQueue.pop();
+            simulationmodel.addComponent(componentMap.find(wordQueue.front())->second);
+            wordQueue.pop();
+        }
+        else if (wordQueue.front() == "SET")
+        {
+            wordQueue.pop();
+            string componentName = wordQueue.front();
+            wordQueue.pop();
+            string parameterName = wordQueue.front();
+            wordQueue.pop();
+            string tempString = wordQueue.front();                                 //
+            char *parameterValueString = new char[tempString.size()];               //  Conversion from string to double
+            strcpy(parameterValueString, tempString.c_str());                       //
+            double parameterValue = atof( parameterValueString );                  //
+            wordQueue.pop();
+            cout << "parameterName = _" << parameterName << "_\n";
+            componentMap.find(componentName)->second->setParameter(parameterName, parameterValue);
+        }
+        else if (wordQueue.front() == "SIMULATE")
+        {
+            wordQueue.pop();
+            string tempString = wordQueue.front();                            //
+            char *startTimeString = new char[tempString.size()];               //  Conversion from string to double
+            strcpy(startTimeString, tempString.c_str());                       //
+            startTime = atof( startTimeString );                              //
+            wordQueue.pop();
+            tempString = wordQueue.front();                                   //
+            char *stopTimeString = new char[tempString.size()];                //  Conversion from string to double
+            strcpy(stopTimeString, tempString.c_str());                        //
+            stopTime = atof( stopTimeString );                                //
+            wordQueue.pop();
+        }
+        else if (wordQueue.front() == "PLOT")
+        {
+            wordQueue.pop();
+            plotComponent = wordQueue.front();
+            wordQueue.pop();
+            plotPort = wordQueue.front();
+            wordQueue.pop();
+        }
+        else
+        {
+            cout << "Unidentified command in model file ignored.\n";
+        }
 
-    ramp.setParameter("BaseValue", 0);
-    ramp.setParameter("Amplitude", 3e7);
-    ramp.setParameter("StartTime", 0.0);
-    ramp.setParameter("StopTime", 3.0);
-    orifice->listParametersConsole();
+        while (! wordQueue.empty())               //Empty the word queue before reading next line
+        {
+            wordQueue.pop();
+        }
 
-    //Add components
-    simulationmodel.addComponent(*psource1);
-    simulationmodel.addComponent(*psource2);
-    simulationmodel.addComponent(*orifice);
-    simulationmodel.addComponent(ramp);
-    //simulationmodel.addComponent(line);
+    }
+    modelFile.close();
 
-    //Connect components
-    simulationmodel.connect(*psource1, "P1", *orifice, "P1");
-    simulationmodel.connect(*orifice, "P2", *psource2, "P1");
-    simulationmodel.connect(ramp, "out", *psource1, "in");
 
     //Run simulation
-    simulationmodel.initialize(0,10);
-    simulationmodel.simulate(0,10);
+    cout << "Simulating from " << startTime << " s to " << stopTime << "s\n";
+    simulationmodel.initialize(startTime,stopTime);
+    simulationmodel.simulate(startTime,stopTime);
 
     //Test write to file
-    orifice->getPort("P1").saveLogData("output.txt");
+    componentMap.find(plotComponent)->second->getPort(plotPort).saveLogData("output.txt");
 
     cout << "test_prv() Done!" << endl;
 
