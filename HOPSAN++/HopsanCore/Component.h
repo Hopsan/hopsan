@@ -132,7 +132,6 @@ class DLLIMPORTEXPORT ComponentSystem :public Component
 {
 public:
     ComponentSystem(string name="DefaultComponentSystemName", double timestep=0.001);
-    static Component* Creator();
     void addComponents(vector<Component*> components);
     void addComponent(Component &rComponent);
     void addComponent(Component *pComponent);

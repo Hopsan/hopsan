@@ -1596,7 +1596,8 @@ void testSubSystem()
     HopsanEssentials Hopsan;
 
     //===========Create subModel1===================================
-    ComponentSystem subModel1("subModel1");
+    ComponentSystem* pSubModel1 = Hopsan.CreateComponentSystem();
+    pSubModel1->setName("subModel1");
     Component* pOrificeL = Hopsan.CreateComponent("HydraulicLaminarOrifice");
     pOrificeL->setName("orificeL");
     pOrificeL->setParameter("Kc", 1e-12);
@@ -1609,27 +1610,28 @@ void testSubSystem()
     pOrificeR->setParameter("Kc", 1e-12);
 
     //Add components to subModel1
-    subModel1.addComponent(pOrificeL);
-    subModel1.addComponent(pVolumeC);
-    subModel1.addComponent(pOrificeR);
+    pSubModel1->addComponent(pOrificeL);
+    pSubModel1->addComponent(pVolumeC);
+    pSubModel1->addComponent(pOrificeR);
 
-    subModel1.addSystemPort("subP1");
-    subModel1.addSystemPort("subP2");
+    pSubModel1->addSystemPort("subP1");
+    pSubModel1->addSystemPort("subP2");
 
     //Connect components in subModel1
-    subModel1.connect(&subModel1, "subP1" , pOrificeL, "P1");
-    subModel1.connect(pOrificeL, "P2", pVolumeC, "P1");
-    subModel1.connect(pVolumeC, "P2", pOrificeR, "P1");
-    subModel1.connect(pOrificeR, "P2" , &subModel1, "subP2");
+    pSubModel1->connect(pSubModel1, "subP1" , pOrificeL, "P1");
+    pSubModel1->connect(pOrificeL, "P2", pVolumeC, "P1");
+    pSubModel1->connect(pVolumeC, "P2", pOrificeR, "P1");
+    pSubModel1->connect(pOrificeR, "P2" , pSubModel1, "subP2");
 
     //Decide submodel type
-    subModel1.setTypeCQS("Q");
+    pSubModel1->setTypeCQS("Q");
     //============================================================
 
 
     //=============Create Main Simulation Model===================
-    ComponentSystem mainSimulationModel("mainSimulationModel");
-    mainSimulationModel.addComponent(&subModel1); //Add submodel1 to the main system
+    ComponentSystem* pMainSimulationModel = Hopsan.CreateComponentSystem();
+    pMainSimulationModel->setName("mainSimulationModel");
+    pMainSimulationModel->addComponent(pSubModel1); //Add submodel1 to the main system
 
     //Create other components
     Component* pStep = Hopsan.CreateComponent("SignalStep");
@@ -1644,36 +1646,36 @@ void testSubSystem()
     pPSourceR->setParameter("P", 1e5);
 
     //Add components
-    mainSimulationModel.addComponent(pStep);
-    mainSimulationModel.addComponent(pPSourceL);
-    mainSimulationModel.addComponent(pPSourceR);
+    pMainSimulationModel->addComponent(pStep);
+    pMainSimulationModel->addComponent(pPSourceL);
+    pMainSimulationModel->addComponent(pPSourceR);
 
     //Connect components
-    mainSimulationModel.connect(pStep, "out", pPSourceL, "in");
-    mainSimulationModel.connect(pPSourceL, "P1", &subModel1, "subP1");
-    mainSimulationModel.connect(&subModel1, "subP2", pPSourceR, "P1");
+    pMainSimulationModel->connect(pStep, "out", pPSourceL, "in");
+    pMainSimulationModel->connect(pPSourceL, "P1", pSubModel1, "subP1");
+    pMainSimulationModel->connect(pSubModel1, "subP2", pPSourceR, "P1");
     //===============================================================
 
     pPSourceL->listParametersConsole();
 
     pVolumeC->listParametersConsole();
 
-    subModel1.setDesiredTimestep(-1.0);
-    mainSimulationModel.setDesiredTimestep(1.0);
-    mainSimulationModel.initialize(0, 10);
+    pSubModel1->setDesiredTimestep(-1.0);
+    pMainSimulationModel->setDesiredTimestep(1.0);
+    pMainSimulationModel->initialize(0, 10);
 
     pPSourceL->listParametersConsole();
 
     pVolumeC->listParametersConsole();
 
-    mainSimulationModel.listParametersConsole();
+    pMainSimulationModel->listParametersConsole();
 
-    mainSimulationModel.setDesiredTimestep(0.01);
+    pMainSimulationModel->setDesiredTimestep(0.01);
 
 
     //Run simulation
     TicToc prealloctimer("initializetimer");
-    mainSimulationModel.initialize(0, 10);
+    pMainSimulationModel->initialize(0, 10);
     prealloctimer.TocPrint();
 
     pPSourceL->listParametersConsole();
@@ -1681,7 +1683,7 @@ void testSubSystem()
     pVolumeC->listParametersConsole();
 
     TicToc simutimer("simutimer");
-    mainSimulationModel.simulate(0,10);
+    pMainSimulationModel->simulate(0,10);
     simutimer.TocPrint();
 
     totaltimer.TocPrint();
@@ -1822,7 +1824,7 @@ void testSubSystem2()
     TicToc filewritetimer("filewritetimer");
     pOrificeL->getPort("P2").saveLogData("output.txt");
     filewritetimer.TocPrint();
-    cout << "testSubSystem() Done!" << endl;
+    cout << "testSubSystem2() Done!" << endl;
 }
 
 
@@ -1987,13 +1989,15 @@ int main()
 
     //testPressureReliefValve();
 
-    testLoad();
+    //testLoad();
 
     //testSignalFilter();
 
     //testServoSys();
 
     //testMass();
+
+    testSubSystem();
 
     //testSubSystem2();
 

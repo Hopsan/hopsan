@@ -62,7 +62,13 @@ public:
     //!Creates a component with the specified key-value and returns a pointer to this component.
     Component* CreateComponent(const string &rString)
     {
-        return mpComponentFactory->CreateInstance(rString.c_str());
+            return mpComponentFactory->CreateInstance(rString.c_str());
+    }
+
+    //!TODO: for now a ugly special fix for component system, (It can not be created by the factory that only deals with Component* objects)
+    ComponentSystem* CreateComponentSystem()
+    {
+        return new ComponentSystem();
     }
 };
 
