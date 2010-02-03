@@ -24,8 +24,8 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running checkvalve creator" << std::endl;
-        return new HydraulicAckumulator("DefaultCheckValveName");
+        std::cout << "running ackumulator creator" << std::endl;
+        return new HydraulicAckumulator("DefaultAckumulatorName");
     }
 
     HydraulicAckumulator(const string name,
