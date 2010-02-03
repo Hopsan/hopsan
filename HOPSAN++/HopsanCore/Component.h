@@ -69,7 +69,7 @@ public:
     Port &getPort(const string portname);
 
 protected:
-    Component(string name, double timestep=0.001);
+    Component(string name="DefaultComponentName", double timestep=0.001);
     virtual ~Component(){};
     virtual void initialize(); ///TODO: Default values are hard set
     virtual void simulateOneTimestep();
@@ -131,7 +131,7 @@ protected:
 class DLLIMPORTEXPORT ComponentSystem :public Component
 {
 public:
-    ComponentSystem(string name, double timestep=0.001);
+    ComponentSystem(string name="DefaultComponentSystemName", double timestep=0.001);
     void addComponents(vector<Component*> components);
     void addComponent(Component &rComponent);
     void addComponent(Component *pComponent);
