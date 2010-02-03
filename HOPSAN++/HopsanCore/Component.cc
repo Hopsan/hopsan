@@ -359,6 +359,11 @@ ComponentSystem::ComponentSystem(string name, double timestep) : Component(name,
     mIsComponentSystem = true;
 }
 
+Component* ComponentSystem::Creator()
+{
+    return new ComponentSystem("DefaultComponentSystemName");
+}
+
 void ComponentSystem::addComponents(vector<Component*> components)
 {
     ///TODO: use iterator instead of idx loop
