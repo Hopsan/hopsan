@@ -1831,111 +1831,82 @@ void testSubSystem2()
 
 void testLoad()
 {
-
     HopsanEssentials Hopsan;
 
     //Create master component
-
     ComponentSystem simulationmodel("simulationmodel");
 
-
-    //Read data from file
-
+        //Read data from file
     typedef map<string, Component*> mapType;                            //File stuff, should maybe be cleaned up
 	mapType componentMap;
     string inputLine;
     string inputWord;
-    queue<string> wordQueue;
+
     string plotComponent, plotPort;
     double startTime, stopTime;
 
-    string modelFileName;                                               //Select model file
+    string modelFileName;                                               //Select model file and open it
     cout << "Enter model filename: ";
     cin >> modelFileName;
-    char *tempChar = new char[modelFileName.size()];
-    strcpy(tempChar, modelFileName.c_str());
-
-    ifstream modelFile (tempChar);
+    ifstream modelFile (modelFileName.c_str());
     while (! modelFile.eof() )
     {
             //Read the line
         getline(modelFile,inputLine);                                   //Read a line
         stringstream inputStream(inputLine);
-        while ( inputStream >> inputWord )
-        {
-            wordQueue.push(inputWord);                                  //Store each word in a queue
-            cout << "Read from model file: " << inputWord << endl;      //DEBUG
-        }
 
-            //Execute commands
-        if ( wordQueue.front() == "COMPONENT" )                         //Create a component
+            //Extract first word unless stream is empty
+        if ( inputStream >> inputWord )
         {
-            wordQueue.pop();
-            Component *tempComponent = Hopsan.CreateComponent(wordQueue.front());
-            wordQueue.pop();
-            componentMap.insert(pair<string, Component*>(wordQueue.front(), &*tempComponent));
-            simulationmodel.addComponent(componentMap.find(wordQueue.front())->second);
-            wordQueue.pop();
-        }
-        else if ( wordQueue.front() == "CONNECT")                       //Connect components
-        {
-            wordQueue.pop();
-            string firstComponent = wordQueue.front();
-            wordQueue.pop();
-            string firstPort = wordQueue.front();
-            wordQueue.pop();
-            string secondComponent = wordQueue.front();
-            wordQueue.pop();
-            string secondPort = wordQueue.front();
-            wordQueue.pop();
-            simulationmodel.connect(*componentMap.find(firstComponent)->second, firstPort, *componentMap.find(secondComponent)->second, secondPort);
-        }
-        else if (wordQueue.front() == "SET")
-        {
-            wordQueue.pop();
-            string componentName = wordQueue.front();
-            wordQueue.pop();
-            string parameterName = wordQueue.front();
-            wordQueue.pop();
-            string tempString = wordQueue.front();                            //
-            char *parameterValueString = new char[tempString.size()];          //  Conversion from string to double
-            strcpy(parameterValueString, tempString.c_str());                  //
-            double parameterValue = atof( parameterValueString );             //
-            wordQueue.pop();
-            cout << "parameterName = _" << parameterName << "_\n";
-            componentMap.find(componentName)->second->setParameter(parameterName, parameterValue);
-        }
-        else if (wordQueue.front() == "SIMULATE")
-        {
-            wordQueue.pop();
-            string tempString = wordQueue.front();                            //
-            char *startTimeString = new char[tempString.size()];               //  Conversion from string to double
-            strcpy(startTimeString, tempString.c_str());                       //
-            startTime = atof( startTimeString );                              //
-            wordQueue.pop();
-            tempString = wordQueue.front();                                   //
-            char *stopTimeString = new char[tempString.size()];                //  Conversion from string to double
-            strcpy(stopTimeString, tempString.c_str());                        //
-            stopTime = atof( stopTimeString );                                //
-            wordQueue.pop();
-        }
-        else if (wordQueue.front() == "PLOT")
-        {
-            wordQueue.pop();
-            plotComponent = wordQueue.front();
-            wordQueue.pop();
-            plotPort = wordQueue.front();
-            wordQueue.pop();
+                //Execute commands
+            if ( inputWord == "COMPONENT" )                         //Create a component
+            {
+                inputStream >> inputWord;
+                Component *tempComponent = Hopsan.CreateComponent(inputWord);
+                inputStream >> inputWord;
+                componentMap.insert(pair<string, Component*>(inputWord, &*tempComponent));
+                simulationmodel.addComponent(componentMap.find(inputWord)->second);
+            }
+            else if ( inputWord == "CONNECT" )                       //Connect components
+            {
+                string firstComponent, firstPort, secondComponent, secondPort;
+                inputStream >> firstComponent;
+                inputStream >> firstPort;
+                inputStream >> secondComponent;
+                inputStream >> secondPort;
+                simulationmodel.connect(*componentMap.find(firstComponent)->second, firstPort, *componentMap.find(secondComponent)->second, secondPort);
+            }
+            else if ( inputWord == "SET" )
+            {
+                string componentName, parameterName;
+                double parameterValue;
+                inputStream >> componentName;
+                inputStream >> parameterName;
+                inputStream >> parameterValue;
+                componentMap.find(componentName)->second->setParameter(parameterName, parameterValue);
+            }
+            else if ( inputWord == "SIMULATE" )
+            {
+                inputStream >> startTime;
+                inputStream >> stopTime;
+                cout << "Reading simulation parameters.\n";
+            }
+            else if ( inputWord == "PLOT" )
+            {
+                inputStream >> plotComponent;
+                inputStream >> plotPort;
+                cout << "Reading plotting parameters.\n";
+            }
+            else
+            {
+                cout << "Unidentified command in model file ignored.\n";
+            }
         }
         else
         {
-            cout << "Unidentified command in model file ignored.\n";
+            cout << "Ignoring empty line.\n";
         }
 
-        while (! wordQueue.empty())               //Empty the word queue before reading next line
-        {
-            wordQueue.pop();
-        }
     }
     modelFile.close();
 
@@ -1948,7 +1919,6 @@ void testLoad()
     componentMap.find(plotComponent)->second->getPort(plotPort).saveLogData("output.txt");
 
     cout << "testLoad() Done!" << endl;
-
 }
 
 
