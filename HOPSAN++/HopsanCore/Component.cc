@@ -405,6 +405,35 @@ void ComponentSystem::addComponent(Component *pComponent)
     addComponents(components);
 }
 
+Component* ComponentSystem::getComponent(string name)
+{
+    vector<Component*>::iterator it;
+    for (it=mComponentCptrs.begin(); it!=mComponentCptrs.end(); ++it)
+    {
+        if ((*it)->mName == name)
+        {
+            return *it;
+        }
+    }
+    for (it=mComponentQptrs.begin(); it!=mComponentQptrs.end(); ++it)
+    {
+        if ((*it)->mName == name)
+        {
+            return *it;
+        }
+    }
+    for (it=mComponentSignalptrs.begin(); it!=mComponentSignalptrs.end(); ++it)
+    {
+        if ((*it)->mName == name)
+        {
+            return *it;
+        }
+    }
+    cout << "Component not found in component system!";
+    assert(false);
+    //Todo: Cast exception if not found
+}
+
 ////!TODO this should be in component system only, but its difficult to compile then
 //Port* Component::addInnerPortSetNode(const string portname, const string porttype, Node* pNode)
 //{

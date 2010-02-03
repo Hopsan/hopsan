@@ -135,6 +135,7 @@ public:
     void addComponents(vector<Component*> components);
     void addComponent(Component &rComponent);
     void addComponent(Component *pComponent);
+    Component* getComponent(string name);
     void connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2);
     void connect(Component *pComponent1, const string portname1, Component *pComponent2, const string portname2);
     void connect(Port &rPort1, Port &rPort2);
