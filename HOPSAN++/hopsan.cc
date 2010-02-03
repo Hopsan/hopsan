@@ -12,11 +12,8 @@
 #include "CoreUtilities/Delay.h"
 #include "CoreUtilities/FirstOrderFilter.h"
 #include "CoreUtilities/SecondOrderFilter.h"
+#include "CoreUtilities/FileAccess.h"
 #include <iostream>
-#include <fstream>
-#include <queue>
-#include <sstream>
-#include <cstdlib>
 using namespace std;
 
 
@@ -1831,92 +1828,100 @@ void testSubSystem2()
 
 void testLoad()
 {
-    HopsanEssentials Hopsan;
+//    HopsanEssentials Hopsan;
+//
+//    //Create master component
+//    ComponentSystem simulationmodel("simulationmodel");
+//
+//        //Read data from file
+//    typedef map<string, Component*> mapType;                            //File stuff, should maybe be cleaned up
+//	mapType componentMap;
+//    string inputLine;
+//    string inputWord;
+//
+//    string plotComponent, plotPort;
+//    double startTime, stopTime;
+//
+//    ifstream modelFile (modelFileName.c_str());
+//    while (! modelFile.eof() )
+//    {
+//            //Read the line
+//        getline(modelFile,inputLine);                                   //Read a line
+//        stringstream inputStream(inputLine);
+//
+//            //Extract first word unless stream is empty
+//        if ( inputStream >> inputWord )
+//        {
+//                //Execute commands
+//            if ( inputWord == "COMPONENT" )                         //Create a component
+//            {
+//                inputStream >> inputWord;
+//                Component *tempComponent = Hopsan.CreateComponent(inputWord);
+//                inputStream >> inputWord;
+//                componentMap.insert(pair<string, Component*>(inputWord, &*tempComponent));
+//                simulationmodel.addComponent(componentMap.find(inputWord)->second);
+//            }
+//            else if ( inputWord == "CONNECT" )                       //Connect components
+//            {
+//                string firstComponent, firstPort, secondComponent, secondPort;
+//                inputStream >> firstComponent;
+//                inputStream >> firstPort;
+//                inputStream >> secondComponent;
+//                inputStream >> secondPort;
+//                simulationmodel.connect(*componentMap.find(firstComponent)->second, firstPort, *componentMap.find(secondComponent)->second, secondPort);
+//            }
+//            else if ( inputWord == "SET" )
+//            {
+//                string componentName, parameterName;
+//                double parameterValue;
+//                inputStream >> componentName;
+//                inputStream >> parameterName;
+//                inputStream >> parameterValue;
+//                componentMap.find(componentName)->second->setParameter(parameterName, parameterValue);
+//            }
+//            else if ( inputWord == "SIMULATE" )
+//            {
+//                inputStream >> startTime;
+//                inputStream >> stopTime;
+//                cout << "Reading simulation parameters.\n";
+//            }
+//            else if ( inputWord == "PLOT" )
+//            {
+//                inputStream >> plotComponent;
+//                inputStream >> plotPort;
+//                cout << "Reading plotting parameters.\n";
+//            }
+//            else
+//            {
+//                cout << "Unidentified command in model file ignored.\n";
+//            }
+//        }
+//        else
+//        {
+//            cout << "Ignoring empty line.\n";
+//        }
+//
+//    }
+//    modelFile.close();
 
-    //Create master component
-    ComponentSystem simulationmodel("simulationmodel");
 
-        //Read data from file
-    typedef map<string, Component*> mapType;                            //File stuff, should maybe be cleaned up
-	mapType componentMap;
-    string inputLine;
-    string inputWord;
-
-    string plotComponent, plotPort;
-    double startTime, stopTime;
-
+    FileAccess modelFile;
     string modelFileName;                                               //Select model file and open it
     cout << "Enter model filename: ";
     cin >> modelFileName;
-    ifstream modelFile (modelFileName.c_str());
-    while (! modelFile.eof() )
-    {
-            //Read the line
-        getline(modelFile,inputLine);                                   //Read a line
-        stringstream inputStream(inputLine);
-
-            //Extract first word unless stream is empty
-        if ( inputStream >> inputWord )
-        {
-                //Execute commands
-            if ( inputWord == "COMPONENT" )                         //Create a component
-            {
-                inputStream >> inputWord;
-                Component *tempComponent = Hopsan.CreateComponent(inputWord);
-                inputStream >> inputWord;
-                componentMap.insert(pair<string, Component*>(inputWord, &*tempComponent));
-                simulationmodel.addComponent(componentMap.find(inputWord)->second);
-            }
-            else if ( inputWord == "CONNECT" )                       //Connect components
-            {
-                string firstComponent, firstPort, secondComponent, secondPort;
-                inputStream >> firstComponent;
-                inputStream >> firstPort;
-                inputStream >> secondComponent;
-                inputStream >> secondPort;
-                simulationmodel.connect(*componentMap.find(firstComponent)->second, firstPort, *componentMap.find(secondComponent)->second, secondPort);
-            }
-            else if ( inputWord == "SET" )
-            {
-                string componentName, parameterName;
-                double parameterValue;
-                inputStream >> componentName;
-                inputStream >> parameterName;
-                inputStream >> parameterValue;
-                componentMap.find(componentName)->second->setParameter(parameterName, parameterValue);
-            }
-            else if ( inputWord == "SIMULATE" )
-            {
-                inputStream >> startTime;
-                inputStream >> stopTime;
-                cout << "Reading simulation parameters.\n";
-            }
-            else if ( inputWord == "PLOT" )
-            {
-                inputStream >> plotComponent;
-                inputStream >> plotPort;
-                cout << "Reading plotting parameters.\n";
-            }
-            else
-            {
-                cout << "Unidentified command in model file ignored.\n";
-            }
-        }
-        else
-        {
-            cout << "Ignoring empty line.\n";
-        }
-
-    }
-    modelFile.close();
+    modelFile.setFilename(modelFileName.c_str());
+    ComponentSystem simulationmodel("simulationmodel");
+    double startTime, stopTime;
+    string plotComponent, plotPort;
+    simulationmodel = modelFile.loadModel(&startTime, &stopTime, &plotComponent, &plotPort);
 
     //Run simulation
     cout << "Simulating from " << startTime << " s to " << stopTime << "s\n";
-    simulationmodel.initialize(startTime,stopTime);
-    simulationmodel.simulate(startTime,stopTime);
+    simulationmodel.initialize(startTime, stopTime);
+    simulationmodel.simulate(startTime, stopTime);
 
     //Test write to file
-    componentMap.find(plotComponent)->second->getPort(plotPort).saveLogData("output.txt");
+    simulationmodel.getComponent(plotComponent)->getPort(plotPort).saveLogData("output.txt");
 
     cout << "testLoad() Done!" << endl;
 }
