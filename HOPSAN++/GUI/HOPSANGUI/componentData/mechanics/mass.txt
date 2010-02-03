@@ -1,1 +1,2 @@
 NAME Mass
+ICON Mass.svg

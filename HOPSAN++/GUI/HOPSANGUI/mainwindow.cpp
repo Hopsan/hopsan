@@ -30,12 +30,16 @@ MainWindow::MainWindow(QWidget *parent)
     //Create a grid for the tabs
     tabgrid = new QGridLayout(tab);
 
-    //Create the tree for components
+    //Create the tree for components dir
     componentsTree = new TreeWidget();
-    componentsTree->setHeaderLabel("Components");
-    componentsTree->setColumnCount(2);
+    componentsTree->setHeaderLabel("Component Library");
+    componentsTree->setColumnCount(1);
 
-    //Add the toolbox and tabcontainer to the centralgrid
+    //Create the list for components representation
+    //componentsListWidgetHolder = new QFrame(this);
+    //centralgrid->addWidget(componentsListWidgetHolder,1,0);
+
+    //Add the tree and tabcontainer to the centralgrid
     centralgrid->addWidget(componentsTree,0,0);
     centralgrid->addWidget(projectTabs,0,1,5,1);
     centralgrid->setColumnMinimumWidth(0,120);
@@ -122,6 +126,13 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    delete projectTabs;
+    delete tab;
+    delete componentsTree;
+    delete menubar;
+    delete statusBar;
+    delete scene;
+    delete view;
 }
 
 void MainWindow::addProject()
@@ -132,6 +143,7 @@ void MainWindow::addProject()
     view->setScene(scene);
     this->tabgrid->addWidget(view,0,0);
     this->projectTabs->setTabText(0,"untitled");
+    view->show();
 
 }
 
@@ -145,14 +157,23 @@ void MainWindow::addLibs()
     fileName = QFileDialog::getOpenFileName(this,
      tr("Open Image"), "/home/jana", tr("Image Files (*.png *.jpg *.bmp)"));*/
 
+    QDir fileDialogOpenDir; //This dir object is used for setting the open directory of the QFileDialog, i.e. apps working dir
+
     libDir = QFileDialog::getExistingDirectory(this, tr("Choose Library Directory"),
-                                                 "/home",
+                                                 fileDialogOpenDir.currentPath(),
                                                  QFileDialog::ShowDirsOnly
                                                  | QFileDialog::DontResolveSymlinks);
 
-    QDir libDirObject(libDir);  //Create a QDir object
+    //If no directory is set, i.e. cancel is presses, do no more
+    if (libDir.isEmpty() == true)
+        return;
 
-    QTreeWidgetItem *libName = new QTreeWidgetItem(this->componentsTree);   //Create an item for the treewidget
+    QDir libDirObject(libDir);  //Create a QDir object that contains the info about the library direction
+
+    ListWidget *componentsList = new ListWidget(this);  //Creates a new listwidget every time a lib is loaded
+    centralgrid->addWidget(componentsList,1,0); //Place the listwidget
+
+    TreeWidgetItem *libName = new TreeWidgetItem(this->componentsTree,componentsList);   //Create an item for the treewidget
     libName->setText(0,libDirObject.dirName()); //set the name of the treeitem to component directorys name
 
     QStringList filters;        //Create a QStringList object that contains name filters
@@ -172,24 +193,22 @@ void MainWindow::addLibs()
         QTextStream inFile(&file);  //Create a QTextStream object to stream the content of each file
         while (!inFile.atEnd()) {
             QString line = inFile.readLine();   //line contains each row in the file
-            //std::cout << line.toLocal8Bit().constData() << std::endl;
-            QTreeWidgetItem *componentName = new QTreeWidgetItem(libName); //Create a new tree item for each component
-            componentName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
+            QListWidgetItem *listItem = new ListWidgetItem(componentsList);
 
             if (line.startsWith("NAME")){
-                componentName->setText(0,line.mid(5));
-               //std::cout << line.mid(5).toStdString() << std::endl;
+                listItem->setStatusTip(line.mid(5));
+
             }
 
             if (line.startsWith("ICON")){
                 QString iconPath = libDirObject.absolutePath() + "/" + line.mid(5);
                 QIcon icon(iconPath);
-                componentName->setIcon(1,icon);
+                listItem->setIcon(icon);
+                listItem->setData(Qt::UserRole,QVariant(iconPath));
             }
         }
         file.close();
 
     }
-
-
 }
+

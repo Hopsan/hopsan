@@ -16,10 +16,14 @@
 #include <QtCore/QDir>
 #include <QtCore/QStringList>
 #include <QtCore/QIODevice>
+#include <QListWidgetItem>
 
 #include "treewidget.h"
+#include "treewidgetitem.h"
 #include "graphicsview.h"
 #include "graphicsscene.h"
+#include "listwidget.h"
+#include "listwidgetitem.h"
 
 class MainWindow : public QMainWindow
 {
@@ -35,6 +39,7 @@ public:
     QWidget *tab;
     QGridLayout *tabgrid;
     TreeWidget *componentsTree;
+    //QFrame *componentsListWidgetHolder;
     QMenuBar *menubar;
     QMenu *menuFile;
     QMenu *menuNew;

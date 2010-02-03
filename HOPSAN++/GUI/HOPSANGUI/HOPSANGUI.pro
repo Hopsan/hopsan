@@ -8,8 +8,16 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     treewidget.cpp \
     graphicsview.cpp \
-    graphicsscene.cpp
+    graphicsscene.cpp \
+    componentguiclass.cpp \
+    treewidgetitem.cpp \
+    listwidget.cpp \
+    listwidgetitem.cpp
 HEADERS += mainwindow.h \
     treewidget.h \
     graphicsview.h \
-    graphicsscene.h
+    graphicsscene.h \
+    componentguiclass.h \
+    treewidgetitem.h \
+    listwidget.h \
+    listwidgetitem.h
