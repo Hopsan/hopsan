@@ -55,6 +55,7 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr);
 #include "Signal/SignalTimeDelay.hpp"
 #include "Signal/SignalFirstOrderFilter.hpp"
 #include "Signal/SignalSecondOrderFilter.hpp"
+#include "Signal/SignalHysteresis.hpp"
 
 /* Mechanical Components */
 #include "Mechanic/MechanicForceTransformer.hpp"

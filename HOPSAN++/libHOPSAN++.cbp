@@ -131,6 +131,7 @@
 		<Unit filename="HopsanCore\Components\Signal\SignalDivide.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalFirstOrderFilter.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalGain.hpp" />
+		<Unit filename="HopsanCore\Components\Signal\SignalHysteresis.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalIntegrator.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalIntegrator2.hpp" />
 		<Unit filename="HopsanCore\Components\Signal\SignalIntegratorLimited.hpp" />
