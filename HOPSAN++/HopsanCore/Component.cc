@@ -435,6 +435,7 @@ Component* ComponentSystem::getComponent(string name)
     //Todo: Cast exception if not found
 }
 
+
 ////!TODO this should be in component system only, but its difficult to compile then
 //Port* Component::addInnerPortSetNode(const string portname, const string porttype, Node* pNode)
 //{
@@ -458,6 +459,8 @@ void Component::addSubNode(Node* node_ptr)
 //! preAllocates log space (to speed up later access for log writing)
 void ComponentSystem::preAllocateLogSpace(const double startT, const double stopT)
 {
+    cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
+
     ///TODO: make sure this calculation is EXACTLY correct
     double dslots = ((double)(stopT-startT))/mTimestep;
     //std::cout << "dslots: " << dslots << std::endl;
@@ -468,6 +471,7 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
     vector<Node*>::iterator it;
     for (it=mSubNodePtrs.begin(); it!=mSubNodePtrs.end(); ++it)
     {
+        cout << "Debug 1, " << getName() << ", needed_slots = " << needed_slots << endl;
         (*it)->preAllocateLogSpace(needed_slots);
     }
 

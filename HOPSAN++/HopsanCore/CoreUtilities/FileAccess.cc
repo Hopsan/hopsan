@@ -34,8 +34,10 @@ ComponentSystem FileAccess::loadModel(double *startTime, double *stopTime, strin
     ComponentSystem mainModel("mainModel");
 
         //Read data from file
-    typedef map<string, Component*> mapType;                            //File stuff, should maybe be cleaned up
-	mapType componentMap;
+    typedef map<string, Component*> mapComponentType;
+    typedef map<string, ComponentSystem*> mapSystemType;
+	mapComponentType componentMap;
+	mapSystemType componentSystemMap;
     string inputLine;
     string inputWord;
 
@@ -50,24 +52,89 @@ ComponentSystem FileAccess::loadModel(double *startTime, double *stopTime, strin
         if ( inputStream >> inputWord )
         {
                 //Execute commands
-            if ( inputWord == "COMPONENT" )                         //Create a component
+
+            //----------- Create New SubSystem -----------//
+
+            if ( inputWord == "SUBSYSTEM" )
+            {
+                ComponentSystem *tempComponentSystem = new ComponentSystem();
+                inputStream >> inputWord;
+                tempComponentSystem->setName(inputWord);
+                componentSystemMap.insert(pair<string, ComponentSystem*>(inputWord, &*tempComponentSystem));
+                inputStream >> inputWord;
+                tempComponentSystem->setTypeCQS(inputWord);
+                if ( inputStream >> inputWord )
+                {
+                    componentSystemMap.find(inputWord)->second->addComponent(tempComponentSystem);      //Subsystem belongs to other subsystem
+                }
+                else
+                {
+                    mainModel.addComponent(tempComponentSystem);                 //Subsystem belongs to main system
+                }
+            }
+
+            //----------- Add Port To SubSystem -----------//
+
+            else if ( inputWord == "SYSTEMPORT")
+            {
+                string subSystemName, portName;Component* getComponent(string name);
+                inputStream >> subSystemName;
+                inputStream >> portName;
+                componentSystemMap.find(subSystemName)->second->addSystemPort(portName);
+            }
+
+            //----------- Create New Component -----------//
+
+            else if ( inputWord == "COMPONENT" )
             {
                 inputStream >> inputWord;
                 Component *tempComponent = Hopsan.CreateComponent(inputWord);
                 inputStream >> inputWord;
                 tempComponent->setName(inputWord);
                 componentMap.insert(pair<string, Component*>(inputWord, &*tempComponent));
-                mainModel.addComponent(componentMap.find(inputWord)->second);
+                if ( inputStream >> inputWord )
+                {
+                    componentSystemMap.find(inputWord)->second->addComponent(tempComponent);      //Componenet belongs to subsystem
+                }
+                else
+                {
+                    mainModel.addComponent(tempComponent);                 //Component belongs to main system
+                }
             }
-            else if ( inputWord == "CONNECT" )                       //Connect components
+
+            //----------- Connect Components -----------//
+
+            else if ( inputWord == "CONNECT" )
             {
                 string firstComponent, firstPort, secondComponent, secondPort;
                 inputStream >> firstComponent;
                 inputStream >> firstPort;
                 inputStream >> secondComponent;
                 inputStream >> secondPort;
-                mainModel.connect(*componentMap.find(firstComponent)->second, firstPort, *componentMap.find(secondComponent)->second, secondPort);
+
+                if ( componentMap.count(firstComponent) > 0 && componentMap.count(secondComponent) > 0 )        //Connecting two components
+                {
+                    componentMap.find(firstComponent)->second->getSystemparent().connect(*componentMap.find(firstComponent)->second, firstPort, *componentMap.find(secondComponent)->second, secondPort);
+                }
+                else if ( componentMap.count(firstComponent) > 0 && componentSystemMap.count(secondComponent) > 0 )     //Connecting component with subsystem
+                {
+                    componentMap.find(firstComponent)->second->getSystemparent().connect(*componentMap.find(firstComponent)->second, firstPort, *componentSystemMap.find(secondComponent)->second, secondPort);
+                }
+                else if ( componentSystemMap.count(firstComponent) > 0 && componentMap.count(secondComponent) > 0 )     //Connecting subsystem with component
+                {
+                   componentMap.find(secondComponent)->second->getSystemparent().connect(*componentSystemMap.find(firstComponent)->second, firstPort, *componentMap.find(secondComponent)->second, secondPort);
+                }
+                else  //Connecting subsystem with subsystem
+                {
+                     componentMap.find(firstComponent)->second->getSystemparent().connect(*componentSystemMap.find(firstComponent)->second, firstPort, *componentSystemMap.find(secondComponent)->second, secondPort);
+                }
+
+
+
             }
+
+            //----------- Set Parameter Value -----------//
+
             else if ( inputWord == "SET" )
             {
                 string componentName, parameterName;
@@ -77,24 +144,28 @@ ComponentSystem FileAccess::loadModel(double *startTime, double *stopTime, strin
                 inputStream >> parameterValue;
                 componentMap.find(componentName)->second->setParameter(parameterName, parameterValue);
             }
+
+            //----------- Set Simulation Parameters -----------//
+
             else if ( inputWord == "SIMULATE" )
             {
-                cout << "Debug!" << endl;
                 double temp;
                 inputStream >> temp;
-                cout << "Debug 2, temp = " << temp << endl;
                 *startTime = temp;
-                cout << "Debug 3!" << endl;
                 inputStream >> temp;
                 *stopTime = temp;
-                cout << "Reading simulation parameters.\n";
             }
+
+            //----------- Select Plotting Parameters -----------//
+
             else if ( inputWord == "PLOT" )
             {
                 inputStream >> *plotComponent;
                 inputStream >> *plotPort;
-                cout << "Reading plotting parameters.\n";
             }
+
+            //----------- Unrecognized Command -----------//
+
             else
             {
                 cout << "Unidentified command in model file ignored.\n";
@@ -102,7 +173,7 @@ ComponentSystem FileAccess::loadModel(double *startTime, double *stopTime, strin
         }
         else
         {
-            cout << "Ignoring empty line.\n";
+            //cout << "Ignoring empty line.\n";
         }
 
     }

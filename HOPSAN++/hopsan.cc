@@ -1830,99 +1830,26 @@ void testSubSystem2()
 
 void testLoad()
 {
-//    HopsanEssentials Hopsan;
-//
-//    //Create master component
-//    ComponentSystem simulationmodel("simulationmodel");
-//
-//        //Read data from file
-//    typedef map<string, Component*> mapType;                            //File stuff, should maybe be cleaned up
-//	mapType componentMap;
-//    string inputLine;
-//    string inputWord;
-//
-//    string plotComponent, plotPort;
-//    double startTime, stopTime;
-//
-//    ifstream modelFile (modelFileName.c_str());
-//    while (! modelFile.eof() )
-//    {
-//            //Read the line
-//        getline(modelFile,inputLine);                                   //Read a line
-//        stringstream inputStream(inputLine);
-//
-//            //Extract first word unless stream is empty
-//        if ( inputStream >> inputWord )
-//        {
-//                //Execute commands
-//            if ( inputWord == "COMPONENT" )                         //Create a component
-//            {
-//                inputStream >> inputWord;
-//                Component *tempComponent = Hopsan.CreateComponent(inputWord);
-//                inputStream >> inputWord;
-//                componentMap.insert(pair<string, Component*>(inputWord, &*tempComponent));
-//                simulationmodel.addComponent(componentMap.find(inputWord)->second);
-//            }
-//            else if ( inputWord == "CONNECT" )                       //Connect components
-//            {
-//                string firstComponent, firstPort, secondComponent, secondPort;
-//                inputStream >> firstComponent;
-//                inputStream >> firstPort;
-//                inputStream >> secondComponent;
-//                inputStream >> secondPort;
-//                simulationmodel.connect(*componentMap.find(firstComponent)->second, firstPort, *componentMap.find(secondComponent)->second, secondPort);
-//            }
-//            else if ( inputWord == "SET" )
-//            {
-//                string componentName, parameterName;
-//                double parameterValue;
-//                inputStream >> componentName;
-//                inputStream >> parameterName;
-//                inputStream >> parameterValue;
-//                componentMap.find(componentName)->second->setParameter(parameterName, parameterValue);
-//            }
-//            else if ( inputWord == "SIMULATE" )
-//            {
-//                inputStream >> startTime;
-//                inputStream >> stopTime;
-//                cout << "Reading simulation parameters.\n";
-//            }
-//            else if ( inputWord == "PLOT" )
-//            {
-//                inputStream >> plotComponent;
-//                inputStream >> plotPort;
-//                cout << "Reading plotting parameters.\n";
-//            }
-//            else
-//            {
-//                cout << "Unidentified command in model file ignored.\n";
-//            }
-//        }
-//        else
-//        {
-//            cout << "Ignoring empty line.\n";
-//        }
-//
-//    }
-//    modelFile.close();
-
-
-    FileAccess modelFile;
-    string modelFileName;                                               //Select model file and open it
+        //Select model file
+    string modelFileName;
     cout << "Enter model filename: ";
     cin >> modelFileName;
+    FileAccess modelFile;
     modelFile.setFilename(modelFileName.c_str());
+
+    cout << "Debug\n";
+
+        //Read from model file
     ComponentSystem simulationmodel("simulationmodel");
     double startTime, stopTime;
     string plotComponent, plotPort;
     simulationmodel = modelFile.loadModel(&startTime, &stopTime, &plotComponent, &plotPort);
 
-    //Run simulation
-    cout << "Simulating from " << startTime << " s to " << stopTime << "s\n";
+        //Run simulation
     simulationmodel.initialize(startTime, stopTime);
     simulationmodel.simulate(startTime, stopTime);
 
-    //Test write to file
+        //Test write to file
     simulationmodel.getComponent(plotComponent)->getPort(plotPort).saveLogData("output.txt");
 
     cout << "testLoad() Done!" << endl;
@@ -1989,7 +1916,7 @@ int main()
 
     //testPressureReliefValve();
 
-    //testLoad();
+    testLoad();
 
     //testSignalFilter();
 
@@ -1997,7 +1924,7 @@ int main()
 
     //testMass();
 
-    testSubSystem();
+    //testSubSystem();
 
     //testSubSystem2();
 
