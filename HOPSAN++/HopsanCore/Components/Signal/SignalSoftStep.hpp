@@ -1,11 +1,11 @@
-/*
- *  SignalSoftStep.hpp
- *  HOPSAN++
- *
- *  Created by Robert Braun on 2010-01-15.
- *  Copyright 2010 LiU. All rights reserved.
- *
- */
+//!
+//! @file   SignalSoftStep.hpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-01-15
+//!
+//! @brief Contains a soft step generator
+//!
+//$Id$
 
 ///////////////////////////////////////////////
 //                    StopTime               //
