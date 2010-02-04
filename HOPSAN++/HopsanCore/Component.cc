@@ -357,6 +357,7 @@ ComponentSystem::ComponentSystem(string name, double timestep) : Component(name,
     //mInnerPortPtrs.clear();
     mType = "ComponentSystem";
     mIsComponentSystem = true;
+    mDesiredTimestep = timestep;
 }
 
 void ComponentSystem::addComponents(vector<Component*> components)
