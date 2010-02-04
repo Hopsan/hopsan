@@ -5,7 +5,7 @@
 //!
 //! @brief Contains the file access functions
 //!
-//$Id:$
+//$Id$
 
 #include "FileAccess.h"
 #include "Component.h"
@@ -30,10 +30,18 @@ void FileAccess::setFilename(string filename)
 
 ComponentSystem FileAccess::loadModel(double *startTime, double *stopTime, string *plotComponent, string *plotPort)
 {
+        //Read from file
+    ifstream modelFile (mFilename.c_str());
+    if(!modelFile.is_open())
+    {
+        cout <<"Model file does not exist!\n";
+        assert(false);
+        //TODO: Cast an exception
+    }
+
+        //Necessary declarations
     HopsanEssentials Hopsan;
     ComponentSystem mainModel("mainModel");
-
-        //Read data from file
     typedef map<string, Component*> mapComponentType;
     typedef map<string, ComponentSystem*> mapSystemType;
 	mapComponentType componentMap;
@@ -41,7 +49,6 @@ ComponentSystem FileAccess::loadModel(double *startTime, double *stopTime, strin
     string inputLine;
     string inputWord;
 
-    ifstream modelFile (mFilename.c_str());
     while (! modelFile.eof() )
     {
             //Read the line
@@ -51,7 +58,6 @@ ComponentSystem FileAccess::loadModel(double *startTime, double *stopTime, strin
             //Extract first word unless stream is empty
         if ( inputStream >> inputWord )
         {
-                //Execute commands
 
             //----------- Create New SubSystem -----------//
 
@@ -128,11 +134,8 @@ ComponentSystem FileAccess::loadModel(double *startTime, double *stopTime, strin
                 {
                      componentMap.find(firstComponent)->second->getSystemparent().connect(*componentSystemMap.find(firstComponent)->second, firstPort, *componentSystemMap.find(secondComponent)->second, secondPort);
                 }
-
-
-
             }
-
+                //Execute commands
             //----------- Set Parameter Value -----------//
 
             else if ( inputWord == "SET" )

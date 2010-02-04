@@ -471,7 +471,6 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
     vector<Node*>::iterator it;
     for (it=mSubNodePtrs.begin(); it!=mSubNodePtrs.end(); ++it)
     {
-        cout << "Debug 1, " << getName() << ", needed_slots = " << needed_slots << endl;
         (*it)->preAllocateLogSpace(needed_slots);
     }
 
