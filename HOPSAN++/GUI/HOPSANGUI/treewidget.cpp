@@ -4,9 +4,9 @@
 TreeWidget::TreeWidget(QWidget *parent)
         : QTreeWidget(parent)
 {
-    this->setDragEnabled(true);
+    //this->setDragEnabled(true);
 
-    this->connect(this,SIGNAL(itemActivated(QTreeWidgetItem*,int)),SLOT(test(QTreeWidgetItem*,int)));
+    this->connect(this,SIGNAL(itemActivated(QTreeWidgetItem*,int)),SLOT(showList(QTreeWidgetItem*,int)));
 }
 
 TreeWidget::~TreeWidget()
@@ -45,7 +45,7 @@ TreeWidget::~TreeWidget()
 */
 
 
-void TreeWidget::mousePressEvent(QMouseEvent *event)
+/*void TreeWidget::mousePressEvent(QMouseEvent *event)
 {
     QTreeWidget::mousePressEvent(event);
 
@@ -85,17 +85,16 @@ void TreeWidget::mouseMoveEvent(QMouseEvent *event)
     //delete data;
     //delete mimeData;
     //delete item;
-}
+}*/
 
-void TreeWidget::test(QTreeWidgetItem *item,int num)
+void TreeWidget::showList(QTreeWidgetItem *item,int num)
 {
-    std::cout << item->text(0).toStdString() << std::endl;
-    if ( ((TreeWidgetItem*)item)->mlist->isVisible() == true)
-    {
-        ((TreeWidgetItem*)item)->mlist->hide();
+    QTreeWidgetItemIterator itemiterator(this);
+    while (*itemiterator) {
+        ((TreeWidgetItem*)(itemiterator.operator *()))->getList()->hide();
+        ++itemiterator;
     }
-    else
-    {
-        ((TreeWidgetItem*)item)->mlist->show();
-    }
+
+    ((TreeWidgetItem*)item)->getList()->show();
+
 }

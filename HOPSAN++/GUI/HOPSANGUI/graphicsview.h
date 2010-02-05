@@ -10,6 +10,9 @@
 #include <QIODevice>
 #include "componentguiclass.h"
 #include <QGraphicsSvgItem>
+#include <QPoint>
+#include <QCursor>
+#include <QWheelEvent>
 
 class GraphicsView : public QGraphicsView
 {
@@ -25,6 +28,8 @@ public:
 protected:
     virtual void dragMoveEvent(QDragMoveEvent *event);
     virtual void dropEvent(QDropEvent *event);
+    virtual void wheelEvent(QWheelEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
 };
 
 #endif // GRAPHICSVIEW_H

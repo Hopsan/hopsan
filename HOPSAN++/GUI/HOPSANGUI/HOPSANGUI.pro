@@ -12,7 +12,8 @@ SOURCES += main.cpp \
     componentguiclass.cpp \
     treewidgetitem.cpp \
     listwidget.cpp \
-    listwidgetitem.cpp
+    listwidgetitem.cpp \
+    graphicsrectitem.cpp
 HEADERS += mainwindow.h \
     treewidget.h \
     graphicsview.h \
@@ -20,4 +21,5 @@ HEADERS += mainwindow.h \
     componentguiclass.h \
     treewidgetitem.h \
     listwidget.h \
-    listwidgetitem.h
+    listwidgetitem.h \
+    graphicsrectitem.h

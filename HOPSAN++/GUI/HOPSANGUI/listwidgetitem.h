@@ -9,7 +9,15 @@ public:
     ListWidgetItem(QListWidget *parent = 0,int type = 1000);
     ~ListWidgetItem();
 
-    QString *iconDir;
+    void setIconPath(QString iconPath);
+    QString getIconPath();
+
+    void setNumberOfPorts(QString nrPorts);
+    QString getNumberOfPorts();
+
+private:
+    QString miconPath;
+    QString mnrPorts;
 };
 
 #endif // LISTWIDGETITEM_H

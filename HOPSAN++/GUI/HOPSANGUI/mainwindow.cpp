@@ -193,7 +193,8 @@ void MainWindow::addLibs()
         QTextStream inFile(&file);  //Create a QTextStream object to stream the content of each file
         while (!inFile.atEnd()) {
             QString line = inFile.readLine();   //line contains each row in the file
-            QListWidgetItem *listItem = new ListWidgetItem(componentsList);
+            //QListWidgetItem *listItem = new QListWidgetItem(componentsList);
+            ListWidgetItem *listItem = new ListWidgetItem(componentsList);
 
             if (line.startsWith("NAME")){
                 listItem->setStatusTip(line.mid(5));
@@ -204,7 +205,12 @@ void MainWindow::addLibs()
                 QString iconPath = libDirObject.absolutePath() + "/" + line.mid(5);
                 QIcon icon(iconPath);
                 listItem->setIcon(icon);
-                listItem->setData(Qt::UserRole,QVariant(iconPath));
+                //listItem->setData(Qt::UserRole,QVariant(iconPath));
+                listItem->setIconPath(iconPath);
+            }
+
+            if (line.startsWith("PORTS")){
+                listItem->setNumberOfPorts(line.mid(6));
             }
         }
         file.close();

@@ -1,10 +1,12 @@
 #include "graphicsview.h"
 #include <iostream>
+#include <math.h>
 
 GraphicsView::GraphicsView(QWidget *parent)
         : QGraphicsView(parent)
 {
     this->setAcceptDrops(true);
+    //this->setTransformationAnchor(QGraphicsView::NoAnchor);
 }
 
 GraphicsView::~GraphicsView()
@@ -33,17 +35,35 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
         QDataStream stream(data,QIODevice::ReadOnly);
 
-        QString text;
         QString iconDir;
         stream >> iconDir;
 
         event->accept();
 
-        std::cout << iconDir.toStdString() << std::endl;
-        guiComponent = new ComponentGuiClass(iconDir);
+        QCursor cursor;
+        QPoint position = this->mapFromGlobal(cursor.pos());
+
+        std::cout << "x=" << this->mapFromGlobal(cursor.pos()).x() << "  " << "y=" << this->mapFromGlobal(cursor.pos()).y() << std::endl;
+
+        guiComponent = new ComponentGuiClass(iconDir,position);
         this->scene()->addItem(guiComponent);
-        //std::cout << text.toStdString() << std::endl;
-        //std::cout << iconDir.toStdString() << std::endl;
+
         delete data;
     }
+}
+
+void GraphicsView::wheelEvent(QWheelEvent *event)
+{
+    if (event->modifiers() and Qt::ControlModifier)
+    {
+        qreal factor = pow(1.41,(-event->delta()/240.0));
+        this->scale(factor,factor);
+    }
+}
+
+void GraphicsView::mouseMoveEvent(QMouseEvent *event)
+{
+    QGraphicsView::mouseMoveEvent(event);
+    QCursor cursor;
+    std::cout << "X=" << this->mapFromGlobal(cursor.pos()).x() << "  " << "Y=" << this->mapFromGlobal(cursor.pos()).y() << std::endl;
 }

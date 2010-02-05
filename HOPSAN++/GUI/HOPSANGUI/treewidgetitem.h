@@ -13,6 +13,9 @@ public:
     TreeWidgetItem(QTreeWidgetItem *parent = 0, ListWidget *list = 0);
     ~TreeWidgetItem();
 
+    ListWidget *getList();
+
+private:
     ListWidget *mlist;
 
 };

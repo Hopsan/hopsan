@@ -15,3 +15,8 @@ TreeWidgetItem::TreeWidgetItem(QTreeWidgetItem *parent, ListWidget *list)
 TreeWidgetItem::~TreeWidgetItem()
 {
 }
+
+ListWidget* TreeWidgetItem::getList()
+{
+    return mlist;
+}

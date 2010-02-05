@@ -23,15 +23,15 @@ public:
     TreeWidget(QWidget *parent = 0);
     ~TreeWidget();
 
-    QPoint dragStartPosition;
+    //QPoint dragStartPosition;
 
 protected:
     //virtual void startDrag(Qt::DropActions);
-    virtual void mousePressEvent(QMouseEvent *event);
-    virtual void mouseMoveEvent(QMouseEvent *event);
+    //virtual void mousePressEvent(QMouseEvent *event);
+    //virtual void mouseMoveEvent(QMouseEvent *event);
 
 private slots:
-    void test(QTreeWidgetItem *item,int num);
+    void showList(QTreeWidgetItem *item,int num);
 };
 
 #endif // TREEWIDGET_H

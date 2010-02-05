@@ -37,7 +37,8 @@ void ListWidget::mouseMoveEvent(QMouseEvent *event)
 
     QListWidgetItem *item = this->currentItem();
 
-    stream << item->data(Qt::UserRole).toString();
+    //stream << item->data(Qt::UserRole).toString();
+    stream << ((ListWidgetItem*)item)->getIconPath();
 
     QString mimeType = "application/x-text";
 
@@ -46,6 +47,8 @@ void ListWidget::mouseMoveEvent(QMouseEvent *event)
 
     mimeData->setData(mimeType, *data);
     drag->setMimeData(mimeData);
+
+    drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()));
 
     Qt::DropAction dropAction = drag->exec(Qt::CopyAction | Qt::MoveAction);
 
