@@ -50,10 +50,13 @@ public:
 	void initialize()
     {
 //        mFilter.initialize(0.0,0.0, mTime);
+        double x1  = mPortPtrs[P1]->readNode(NodeMechanic::POSITION);
+        double v1  = mPortPtrs[P1]->readNode(NodeMechanic::VELOCITY);
+        cout << "x0 = " << x1 << endl;
         double num [] = {0.0, 1.0, 0.0};
         double den [] = {mMass, mB, mk};
         mFilter.initialize(mTime, mTimestep, num, den);
-        mInt.initialize(mTime, mTimestep, 0.0, 0.0);
+        mInt.initialize(mTime, mTimestep, -v1, -x1);
 //        mFilter.update(0);
     }
 

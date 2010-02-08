@@ -1,0 +1,30 @@
+COMPONENT HydraulicPressureSourceQ ps1
+COMPONENT HydraulicPressureSourceQ ps2
+COMPONENT HydraulicCylinderC cyl
+COMPONENT MechanicTranslationalMass mass
+COMPONENT MechanicForceTransformer f
+COMPONENT SignalSource fs
+
+SET ps1 P 110000
+SET ps2 P 100000
+SET fs Value 0.0
+SET mass Mass 10
+SET mass k 0.0
+SET mass B 0.0
+SET cyl Area1 0.001
+SET cyl Area2 0.001
+SET cyl Bp 0.0
+SET cyl Stroke 1.0
+SET cyl DeadVolume1 0.03
+SET cyl DeadVolume2 0.03
+SET cyl EquivalentMass 1000
+SET cyl x0 1.0
+
+CONNECT ps1 P1 cyl P1
+CONNECT ps2 P1 cyl P2
+CONNECT cyl P3 mass P1
+CONNECT mass P2 f out
+CONNECT fs out f in
+
+SIMULATE 0.0 5.0
+PLOT mass P1

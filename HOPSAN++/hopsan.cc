@@ -1837,8 +1837,6 @@ void testLoad()
     FileAccess modelFile;
     modelFile.setFilename(modelFileName.c_str());
 
-    cout << "Debug\n";
-
         //Read from model file
     ComponentSystem simulationmodel("simulationmodel");
     double startTime, stopTime;
