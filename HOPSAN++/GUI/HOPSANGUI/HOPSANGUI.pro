@@ -13,7 +13,8 @@ SOURCES += main.cpp \
     treewidgetitem.cpp \
     listwidget.cpp \
     listwidgetitem.cpp \
-    graphicsrectitem.cpp
+    graphicsrectitem.cpp \
+    ProjectTabWidget.cpp
 HEADERS += mainwindow.h \
     treewidget.h \
     graphicsview.h \
@@ -22,4 +23,5 @@ HEADERS += mainwindow.h \
     treewidgetitem.h \
     listwidget.h \
     listwidgetitem.h \
-    graphicsrectitem.h
+    graphicsrectitem.h \
+    ProjectTabWidget.h

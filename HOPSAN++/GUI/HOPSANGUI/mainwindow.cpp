@@ -20,15 +20,9 @@ MainWindow::MainWindow(QWidget *parent)
     centralgrid->setSpacing(10);
 
     //Create the main tab container, need at least one tab
-    projectTabs = new QTabWidget();
+    projectTabs = new ProjectTabWidget();
     projectTabs->setObjectName("projectTabs");
-
-    tab = new QWidget();
-    tab->setObjectName("tab");
-    projectTabs->addTab(tab,"");
-
-    //Create a grid for the tabs
-    tabgrid = new QGridLayout(tab);
+    projectTabs->addProjectTab();
 
     //Create the tree for components dir
     componentsTree = new TreeWidget();
@@ -88,6 +82,9 @@ MainWindow::MainWindow(QWidget *parent)
     actionClose = new QAction(this);
     actionClose->setText("Close");
 
+    actionSave = new QAction(this);
+    actionSave->setText("Save");
+
     actionProject = new QAction(this);
     actionProject->setText("Project");
 
@@ -102,6 +99,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     menuFile->addAction(menuNew->menuAction());
     menuFile->addAction(actionOpen);
+    menuFile->addAction(actionSave);
     menuFile->addSeparator();
     menuFile->addAction(actionClose);
 
@@ -117,10 +115,10 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     //Establish connections
+    this->connect(this->actionSave,SIGNAL(triggered()),projectTabs,SLOT(saveProjectTab()));
     this->connect(this->actionClose,SIGNAL(triggered()),SLOT(close()));
-    this->connect(this->actionProject,SIGNAL(triggered()),SLOT(addProject()));
+    this->connect(this->actionProject,SIGNAL(triggered()),projectTabs,SLOT(addProjectTab()));
     this->connect(this->actionLoadLibs,SIGNAL(triggered()),SLOT(addLibs()));
-
 
 }
 
@@ -135,17 +133,6 @@ MainWindow::~MainWindow()
     delete view;
 }
 
-void MainWindow::addProject()
-{
-    scene = new GraphicsScene();
-    view = new GraphicsView();
-
-    view->setScene(scene);
-    this->tabgrid->addWidget(view,0,0);
-    this->projectTabs->setTabText(0,"untitled");
-    view->show();
-
-}
 
 void MainWindow::addLibs()
 {

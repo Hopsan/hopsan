@@ -1,5 +1,14 @@
-#ifndef LIBRARYWIDGET2_H
-#define LIBRARYWIDGET2_H
+//!
+//! @file   LibraryWidget.h
+//! @author Björn Eriksson <bjorn.eriksson@liu.se>
+//! @date   2010-02-05
+//!
+//! @brief Contains classes for Library Widgets
+//!
+//$Id$
+
+#ifndef LIBRARYWIDGET_H
+#define LIBRARYWIDGET_H
 
 #include <QWidget>
 #include <QTreeWidget>
@@ -44,4 +53,4 @@ private slots:
 
 };
 
-#endif // LIBRARYWIDGET2_H
+#endif // LIBRARYWIDGET_H

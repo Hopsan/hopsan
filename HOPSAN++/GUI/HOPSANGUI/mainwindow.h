@@ -24,6 +24,7 @@
 #include "graphicsscene.h"
 #include "listwidget.h"
 #include "listwidgetitem.h"
+#include "ProjectTabWidget.h"
 
 class MainWindow : public QMainWindow
 {
@@ -35,7 +36,7 @@ public:
 
     QWidget *centralwidget;
     QGridLayout *centralgrid;
-    QTabWidget *projectTabs;
+    ProjectTabWidget *projectTabs;
     QWidget *tab;
     QGridLayout *tabgrid;
     TreeWidget *componentsTree;
@@ -47,6 +48,7 @@ public:
     QMenu *menuSimulation;
     QStatusBar *statusBar;
     QAction *actionOpen;
+    QAction *actionSave;
     QAction *actionClose;
     QAction *actionProject;
     QAction *actionLoadLibs;
@@ -58,7 +60,6 @@ public:
     GraphicsView *view;
 
 private slots:
-    void addProject();
     void addLibs();
 
 

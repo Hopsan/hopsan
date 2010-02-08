@@ -1,3 +1,12 @@
+//!
+//! @file   LibraryWidget.cpp
+//! @author Björn Eriksson <bjorn.eriksson@liu.se>
+//! @date   2010-02-05
+//!
+//! @brief Contains classes for Library Widgets
+//!
+//$Id$
+
 #include "LibraryWidget.h"
 #include <iostream>
 
