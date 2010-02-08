@@ -9,7 +9,7 @@
 
 #include <iostream>
 #include "ProjectTabWidget.h"
-#include <QtGui/QBoxLayout>
+#include <QBoxLayout>
 #include <QGraphicsSvgItem>
 #include <QGraphicsTextItem>
 #include "graphicsview.h"
@@ -121,7 +121,7 @@ void ProjectTabWidget::saveProjectTab()
 
 
 void ProjectTabWidget::closeProjectTab(int index)
-{std::cout << "dsad" << std::endl;
+{
     if (!(qobject_cast<ProjectTab *>(widget(index))->isSaved))
     {
         //statusBar->showMessage(QString("Project: ").append(projectTabs->tabText(index)).append(QString(" can not be closed since it is not saved")));

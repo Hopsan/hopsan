@@ -37,7 +37,7 @@ public:
     QWidget *centralwidget;
     QGridLayout *centralgrid;
     ProjectTabWidget *projectTabs;
-    QWidget *tab;
+    //QWidget *tab;
     QGridLayout *tabgrid;
     TreeWidget *componentsTree;
     //QFrame *componentsListWidgetHolder;
