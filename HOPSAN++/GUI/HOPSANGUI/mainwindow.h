@@ -20,8 +20,8 @@
 
 #include "treewidget.h"
 #include "treewidgetitem.h"
-#include "graphicsview.h"
-#include "graphicsscene.h"
+//#include "graphicsview.h"
+//#include "graphicsscene.h"
 #include "listwidget.h"
 #include "listwidgetitem.h"
 #include "ProjectTabWidget.h"

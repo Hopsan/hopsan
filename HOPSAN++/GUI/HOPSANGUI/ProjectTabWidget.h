@@ -10,34 +10,44 @@
 #ifndef PROJECTTABWIDGET_H
 #define PROJECTTABWIDGET_H
 
-//#include <QGraphicsView>
-//#include <QGraphicsScene>
-//#include <QDragMoveEvent>
-#include <QWidget>
+#include <QGraphicsView>
+#include <QGraphicsScene>
 #include <QGraphicsWidget>
 #include <QTabWidget>
 
-//class GraphicsScene : public QGraphicsScene
-//{
-//    Q_OBJECT
-//
-//public:
-//    GraphicsScene();
-//};
-//
-//
-//class GraphicsView : public QGraphicsView
-//{
-//    Q_OBJECT
-//
-//public:
-//    GraphicsView(QWidget *parent = 0);
-//
-//    void dragMoveEvent(QDragMoveEvent *event);
-//    void dropEvent(QDropEvent *event);
-//};
-//
-//
+
+class GraphicsScene : public QGraphicsScene
+{
+    Q_OBJECT
+
+public:
+    GraphicsScene();
+};
+
+
+class ComponentGuiClass; //Forward declaration
+
+class GraphicsView : public QGraphicsView
+{
+    Q_OBJECT
+
+public:
+    GraphicsView(QWidget *parent = 0);
+    ~GraphicsView();
+
+    //QByteArray *data;
+    //QDataStream *stream;
+    //QString *text;
+    ComponentGuiClass *guiComponent;
+
+protected:
+    virtual void dragMoveEvent(QDragMoveEvent *event);
+    virtual void dropEvent(QDropEvent *event);
+    virtual void wheelEvent(QWheelEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
+};
+
+
 //class Component : public QGraphicsWidget
 //{
 //    Q_OBJECT

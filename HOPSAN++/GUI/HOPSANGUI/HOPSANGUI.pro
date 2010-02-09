@@ -7,8 +7,6 @@ TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
     treewidget.cpp \
-    graphicsview.cpp \
-    graphicsscene.cpp \
     componentguiclass.cpp \
     treewidgetitem.cpp \
     listwidget.cpp \
@@ -17,8 +15,6 @@ SOURCES += main.cpp \
     ProjectTabWidget.cpp
 HEADERS += mainwindow.h \
     treewidget.h \
-    graphicsview.h \
-    graphicsscene.h \
     componentguiclass.h \
     treewidgetitem.h \
     listwidget.h \
