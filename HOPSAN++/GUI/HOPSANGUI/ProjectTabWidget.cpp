@@ -15,7 +15,7 @@
 #include <QBoxLayout>
 #include <QGraphicsSvgItem>
 #include <QGraphicsTextItem>
-
+#include <QMessageBox>
 
 GraphicsView::GraphicsView(QWidget *parent)
         : QGraphicsView(parent)
@@ -199,7 +199,34 @@ void ProjectTabWidget::closeProjectTab(int index)
 {
     if (!(qobject_cast<ProjectTab *>(widget(index))->isSaved))
     {
-        //statusBar->showMessage(QString("Project: ").append(projectTabs->tabText(index)).append(QString(" can not be closed since it is not saved")));
+        QMessageBox msgBox;
+        msgBox.setText("The model is not saved.");
+        msgBox.setInformativeText("Do you want to save your changes before closing?");
+        msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+        msgBox.setDefaultButton(QMessageBox::Save);
+
+        int answer = msgBox.exec();
+
+        switch (answer)
+        {
+        case QMessageBox::Save:
+            // Save was clicked
+            std::cout << "Save and close" << std::endl;
+            saveProjectTab();
+            removeTab(index);
+            break;
+        case QMessageBox::Discard:
+            // Don't Save was clicked
+            removeTab(index);
+            break;
+        case QMessageBox::Cancel:
+            // Cancel was clicked
+            std::cout << "Cancel closing" << std::endl;
+            break;
+        default:
+            // should never be reached
+            break;
+        }
     }
     else
     {
