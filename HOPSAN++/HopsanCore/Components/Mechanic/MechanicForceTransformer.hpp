@@ -9,6 +9,8 @@ class MechanicForceTransformer : public ComponentC
 {
 
 private:
+    double mStartPosition;
+    double mStartVelocity;
     enum {in, out};
 
 public:
@@ -19,21 +21,30 @@ public:
     }
 
     MechanicForceTransformer(const string name,
-                    const double timestep    = 0.001)
+                    const double timestep    = 0.001,
+                    const double startposition = 0.0,
+                    const double startvelocity = 0.0)
+
     : ComponentC(name, timestep)
     {
         //Set member attributes
+        mStartPosition = startposition;
+        mStartVelocity = startvelocity;
 
 		//Add ports to the component
         addReadPort("in", "NodeSignal", in);
         addPowerPort("out", "NodeMechanic", out);
 
         //Register changable parameters to the HOPSAN++ core
+        registerParameter("x0", "Initial Position", "[m]", mStartPosition);
+        registerParameter("v0", "Initial Velocity", "[m/s]", mStartVelocity);
     }
 
 
 	void initialize()
     {
+        mPortPtrs[out]->writeNode(NodeMechanic::POSITION, mStartPosition);
+        mPortPtrs[out]->writeNode(NodeMechanic::VELOCITY, mStartVelocity);
     }
 
     void simulateOneTimestep()
