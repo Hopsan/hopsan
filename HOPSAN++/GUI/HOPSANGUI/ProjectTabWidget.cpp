@@ -133,6 +133,11 @@ GraphicsScene::GraphicsScene()
 //    text->setPos(QPointF(-text->boundingRect().width()/2, icon->boundingRect().height()/2));
 //}
 
+//! @class ProjectTab
+//! @brief The ProjectTab class is a Widget to contain a simulation model
+//!
+//! ProjectTab contains a drawing space to create models.
+//!
 
 ProjectTab::ProjectTab(QWidget *parent)
     : QWidget(parent)
