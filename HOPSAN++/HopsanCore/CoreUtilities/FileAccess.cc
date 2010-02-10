@@ -10,6 +10,7 @@
 #include "FileAccess.h"
 #include "Component.h"
 #include <iostream>
+#include <cassert>
 #include "HopsanCore.h"
 
 
