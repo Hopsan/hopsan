@@ -178,8 +178,14 @@ void ProjectTabWidget::addProjectTab()
 
 void ProjectTabWidget::saveProjectTab()
 {
-    ProjectTab *currentTab = qobject_cast<ProjectTab *>(widget(currentIndex()));
-    QString tabName = tabText(currentIndex());
+    saveProjectTab(currentIndex());
+}
+
+
+void ProjectTabWidget::saveProjectTab(int index)
+{
+    ProjectTab *currentTab = qobject_cast<ProjectTab *>(widget(index));
+    QString tabName = tabText(index);
 
     if (currentTab->isSaved)
     {
@@ -188,16 +194,16 @@ void ProjectTabWidget::saveProjectTab()
     else
     {
         tabName.chop(1);
-        setTabText(currentIndex(), tabName);
+        setTabText(index, tabName);
         //statusBar->showMessage(QString("Project: ").append(tabName).append(QString(" saved")));
+        std::cout << qPrintable(QString("Project: ").append(tabName).append(QString(" saved"))) << std::endl;
         currentTab->isSaved = true;
     }
 }
 
 
-void ProjectTabWidget::closeProjectTab(int index)
-{std::cout << index << std::endl;
-    std::cout << qPrintable(tabText(index)) << std::endl;
+bool ProjectTabWidget::closeProjectTab(int index)
+{
     if (!(qobject_cast<ProjectTab *>(widget(index))->isSaved))
     {
         QString modelName;
@@ -216,20 +222,20 @@ void ProjectTabWidget::closeProjectTab(int index)
         case QMessageBox::Save:
             // Save was clicked
             std::cout << "Save and close" << std::endl;
-            saveProjectTab();
+            saveProjectTab(index);
             removeTab(index);
-            break;
+            return true;
         case QMessageBox::Discard:
             // Don't Save was clicked
             removeTab(index);
-            break;
+            return true;
         case QMessageBox::Cancel:
             // Cancel was clicked
             std::cout << "Cancel closing" << std::endl;
-            break;
+            return false;
         default:
             // should never be reached
-            break;
+            return false;
         }
     }
     else
@@ -241,12 +247,16 @@ void ProjectTabWidget::closeProjectTab(int index)
 }
 
 
-void ProjectTabWidget::closeAllProjectTabs()
+bool ProjectTabWidget::closeAllProjectTabs()
 {
     while(count() > 0)
     {
       setTabEnabled(count()-1, true);
-      closeProjectTab(count()-1);
+      if (!closeProjectTab(count()-1))
+      {
+          return false;
+      }
     }
+    return true;
 }
 
