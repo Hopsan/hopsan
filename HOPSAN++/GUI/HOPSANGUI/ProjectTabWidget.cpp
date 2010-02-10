@@ -139,6 +139,8 @@ GraphicsScene::GraphicsScene()
 //! ProjectTab contains a drawing space to create models.
 //!
 
+
+//! Constructor.
 ProjectTab::ProjectTab(QWidget *parent)
     : QWidget(parent)
 {
@@ -158,6 +160,13 @@ ProjectTab::ProjectTab(QWidget *parent)
 }
 
 
+//! @class ProjectTabWidget
+//! @brief The ProjectTabWidget class is a container class for ProjectTab class
+//!
+//! ProjectTabWidget contains ProjectTabWidget widgets.
+//!
+
+
 ProjectTabWidget::ProjectTabWidget(QWidget *parent)
         :   QTabWidget(parent)
 {
@@ -170,6 +179,8 @@ ProjectTabWidget::ProjectTabWidget(QWidget *parent)
 
 
 void ProjectTabWidget::addProjectTab()
+//! Adds a tab.
+//! @see closeProjectTab(int index)
 {
     //    std::cout << count() << std::endl;
     QString tabName;
