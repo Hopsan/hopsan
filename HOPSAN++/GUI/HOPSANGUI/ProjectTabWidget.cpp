@@ -251,11 +251,11 @@ bool ProjectTabWidget::closeAllProjectTabs()
 {
     while(count() > 0)
     {
-      setTabEnabled(count()-1, true);
-      if (!closeProjectTab(count()-1))
-      {
-          return false;
-      }
+        setCurrentIndex(count()-1);
+        if (!closeProjectTab(count()-1))
+        {
+            return false;
+        }
     }
     return true;
 }
