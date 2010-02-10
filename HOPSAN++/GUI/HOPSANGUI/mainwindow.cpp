@@ -193,6 +193,11 @@ void MainWindow::addLibs()
 }
 
 
+//! Event triggered re-implemented method that closes the main window.
+//! First all tabs (models) are closed, if the user do not push Cancel
+//! (closeAllProjectTabs then returns 'false') the event is accepted and
+//! the main window is closed.
+//! @param event contains information of the closing operation.
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (projectTabs->closeAllProjectTabs())

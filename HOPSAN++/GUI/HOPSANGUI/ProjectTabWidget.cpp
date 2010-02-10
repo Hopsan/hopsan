@@ -71,12 +71,11 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
         std::cout << "x=" << this->mapFromGlobal(cursor.pos()).x() << "  " << "y=" << this->mapFromGlobal(cursor.pos()).y() << std::endl;
 
-        guiComponent = new ComponentGuiClass(iconDir,position);
+        ComponentGuiClass *guiComponent = new ComponentGuiClass(iconDir,position);
         this->scene()->addItem(guiComponent);
 
         delete data;
 
-        (qobject_cast<ProjectTab *>(parent()))->hasChanged(); //Ugly!!!
     }
 }
 
@@ -118,7 +117,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 //void GraphicsView::dropEvent(QDropEvent *event)
 //{
 //    std::cout << "Släpper en komponent: " << qPrintable(event->mimeData()->text()) << std::endl;
-//
+//view
 //    QString componentName = event->mimeData()->text();
 //
 //    Component *comp = new Component(componentName);
@@ -128,9 +127,11 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 //}
 
 //! Constructor.
-GraphicsScene::GraphicsScene()
+//! @param parent defines a parent to the new instanced object.
+GraphicsScene::GraphicsScene(QObject *parent)
+        :   QGraphicsScene(parent)
 {
-
+    connect(this, SIGNAL(changed( const QList<QRectF> & )),this->parent(), SLOT(hasChanged()));
 }
 
 
@@ -161,9 +162,9 @@ ProjectTab::ProjectTab(QWidget *parent)
 {
     isSaved = false;
 
-    myParent = (qobject_cast<ProjectTabWidget *>(parent)); //Ugly!!!
+    pTabContainer = (qobject_cast<ProjectTabWidget *>(parent)); //Ugly!!!
 
-    GraphicsScene *scene = new GraphicsScene();
+    GraphicsScene *scene = new GraphicsScene(this);
     GraphicsView  *view  = new GraphicsView();
 
     view->setScene(scene);
@@ -179,15 +180,16 @@ ProjectTab::ProjectTab(QWidget *parent)
 }
 
 
-//! Should be called when a model has changed in some sense, e.g. a component added or a sinnection has changed.
+//! Should be called when a model has changed in some sense,
+//! e.g. a component added or a connection has changed.
 void ProjectTab::hasChanged()
 {
     if (isSaved)
     {
-        QString tabName = myParent->tabText(myParent->currentIndex()); //Ugly!!!
+        QString tabName = pTabContainer->tabText(pTabContainer->currentIndex()); //Ugly!!!
 
         tabName.append("*");
-        myParent->setTabText(myParent->currentIndex(), tabName);
+        pTabContainer->setTabText(pTabContainer->currentIndex(), tabName);
 
         isSaved = false;
     }
@@ -218,7 +220,6 @@ ProjectTabWidget::ProjectTabWidget(QWidget *parent)
 //! @see closeProjectTab(int index)
 void ProjectTabWidget::addProjectTab()
 {
-    //    std::cout << count() << std::endl;
     QString tabName;
     tabName.setNum(numberOfUntitledTabs);
     tabName = QString("Untitled").append(tabName).append(QString("*"));
@@ -246,10 +247,16 @@ void ProjectTabWidget::saveProjectTab(int index)
 
     if (currentTab->isSaved)
     {
+        //Nothing to do
         //statusBar->showMessage(QString("Project: ").append(tabName).append(QString(" is already saved")));
     }
     else
     {
+        /*Add some "saving code" in the future:
+         *
+         *
+         *
+         */
         tabName.chop(1);
         setTabText(index, tabName);
         //statusBar->showMessage(QString("Project: ").append(tabName).append(QString(" saved")));
@@ -310,8 +317,8 @@ bool ProjectTabWidget::closeProjectTab(int index)
 
 
 //! Closes all opened projects.
-//! @see closeProjectTab(int index)
 //! @return true if closing went ok. false if the user canceled the operation.
+//! @see closeProjectTab(int index)
 //! @see saveProjectTab()
 bool ProjectTabWidget::closeAllProjectTabs()
 {

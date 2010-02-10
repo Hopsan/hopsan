@@ -21,7 +21,8 @@ class GraphicsScene : public QGraphicsScene
     Q_OBJECT
 
 public:
-    GraphicsScene();
+    GraphicsScene(QObject *parent = 0);
+
 };
 
 
@@ -38,7 +39,6 @@ public:
     //QByteArray *data;
     //QDataStream *stream;
     //QString *text;
-    ComponentGuiClass *guiComponent;
 
 protected:
     virtual void dragMoveEvent(QDragMoveEvent *event);
@@ -69,7 +69,7 @@ public:
 
     bool isSaved;
 
-    ProjectTabWidget *myParent;
+    ProjectTabWidget *pTabContainer;
 
 public slots:
     void hasChanged();
