@@ -17,6 +17,9 @@
 #include <QGraphicsTextItem>
 #include <QMessageBox>
 
+
+//! Constructor.
+//! @param parent defines a parent to the new instanced object.
 GraphicsView::GraphicsView(QWidget *parent)
         : QGraphicsView(parent)
 {
@@ -25,12 +28,15 @@ GraphicsView::GraphicsView(QWidget *parent)
 }
 
 
+//! Destructor.
 GraphicsView::~GraphicsView()
 {
     //delete guiComponent; //Skumt att ta bort en guiComponent?
 }
 
 
+//! Defines what happens when moving an object in a GraphicsView.
+//! @param event contains information of the drag operation.
 void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 {
     if (event->mimeData()->hasFormat("application/x-text"))
@@ -44,6 +50,8 @@ void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 }
 
 
+//! Defines what happens when drop an object in a GraphicsView.
+//! @param event contains information of the drop operation.
 void GraphicsView::dropEvent(QDropEvent *event)
 {
     if (event->mimeData()->hasFormat("application/x-text"))
@@ -67,10 +75,14 @@ void GraphicsView::dropEvent(QDropEvent *event)
         this->scene()->addItem(guiComponent);
 
         delete data;
+
+        (qobject_cast<ProjectTab *>(parent()))->hasChanged(); //Ugly!!!
     }
 }
 
 
+//! Defines what happens when scrolling the mouse in a GraphicsView.
+//! @param event contains information of the scrolling operation.
 void GraphicsView::wheelEvent(QWheelEvent *event)
 {
     if (event->modifiers() and Qt::ControlModifier)
@@ -81,6 +93,8 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
 }
 
 
+//! Defines what happens when the mouse is moving in a GraphicsView.
+//! @param event contains information of the mouse moving operation.
 void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseMoveEvent(event);
@@ -113,7 +127,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 //
 //}
 
-
+//! Constructor.
 GraphicsScene::GraphicsScene()
 {
 
@@ -141,10 +155,13 @@ GraphicsScene::GraphicsScene()
 
 
 //! Constructor.
+//! @param parent defines a parent to the new instanced object.
 ProjectTab::ProjectTab(QWidget *parent)
     : QWidget(parent)
 {
     isSaved = false;
+
+    myParent = (qobject_cast<ProjectTabWidget *>(parent)); //Ugly!!!
 
     GraphicsScene *scene = new GraphicsScene();
     GraphicsView  *view  = new GraphicsView();
@@ -155,8 +172,25 @@ ProjectTab::ProjectTab(QWidget *parent)
     tabLayout->addWidget(view);
 //    addStretch(1);
 
+//    setWindowModified(true);
+
     setLayout(tabLayout);
 
+}
+
+
+//! Should be called when a model has changed in some sense, e.g. a component added or a sinnection has changed.
+void ProjectTab::hasChanged()
+{
+    if (isSaved)
+    {
+        QString tabName = myParent->tabText(myParent->currentIndex()); //Ugly!!!
+
+        tabName.append("*");
+        myParent->setTabText(myParent->currentIndex(), tabName);
+
+        isSaved = false;
+    }
 }
 
 
@@ -167,6 +201,8 @@ ProjectTab::ProjectTab(QWidget *parent)
 //!
 
 
+//! Constructor.
+//! @param parent defines a parent to the new instanced object.
 ProjectTabWidget::ProjectTabWidget(QWidget *parent)
         :   QTabWidget(parent)
 {
@@ -178,26 +214,31 @@ ProjectTabWidget::ProjectTabWidget(QWidget *parent)
 }
 
 
-void ProjectTabWidget::addProjectTab()
-//! Adds a tab.
+//! Adds a ProjectTab object (a new tab) to itself.
 //! @see closeProjectTab(int index)
+void ProjectTabWidget::addProjectTab()
 {
     //    std::cout << count() << std::endl;
     QString tabName;
     tabName.setNum(numberOfUntitledTabs);
     tabName = QString("Untitled").append(tabName).append(QString("*"));
-    addTab(new ProjectTab(), tabName);
+    addTab(new ProjectTab(this), tabName);
 
     numberOfUntitledTabs += 1;
 }
 
 
+//! Saves current project.
+//! @see saveProjectTab(int index)
 void ProjectTabWidget::saveProjectTab()
 {
     saveProjectTab(currentIndex());
 }
 
 
+//! Saves project at index.
+//! @param index defines which project to save.
+//! @see saveProjectTab()
 void ProjectTabWidget::saveProjectTab(int index)
 {
     ProjectTab *currentTab = qobject_cast<ProjectTab *>(widget(index));
@@ -218,6 +259,10 @@ void ProjectTabWidget::saveProjectTab(int index)
 }
 
 
+//! Closes current project.
+//! @param index defines which project to close.
+//! @return true if closing went ok. false if the user canceled the operation.
+//! @see closeAllProjectTabs()
 bool ProjectTabWidget::closeProjectTab(int index)
 {
     if (!(qobject_cast<ProjectTab *>(widget(index))->isSaved))
@@ -259,10 +304,15 @@ bool ProjectTabWidget::closeProjectTab(int index)
         std::cout << "Closing project: " << qPrintable(tabText(index)) << std::endl;
         //statusBar->showMessage(QString("Closing project: ").append(tabText(index)));
         removeTab(index);
+        return true;
     }
 }
 
 
+//! Closes all opened projects.
+//! @see closeProjectTab(int index)
+//! @return true if closing went ok. false if the user canceled the operation.
+//! @see saveProjectTab()
 bool ProjectTabWidget::closeAllProjectTabs()
 {
     while(count() > 0)

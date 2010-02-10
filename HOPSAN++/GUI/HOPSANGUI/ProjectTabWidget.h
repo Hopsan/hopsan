@@ -58,6 +58,8 @@ protected:
 //};
 
 
+class ProjectTabWidget;
+
 class ProjectTab : public QWidget
 {
     Q_OBJECT
@@ -66,6 +68,11 @@ public:
     ProjectTab(QWidget *parent = 0);
 
     bool isSaved;
+
+    ProjectTabWidget *myParent;
+
+public slots:
+    void hasChanged();
 
 };
 
