@@ -6,7 +6,8 @@
 class ListWidgetItem : public QListWidgetItem
 {
 public:
-    ListWidgetItem(QListWidget *parent = 0,int type = 1000);
+    ListWidgetItem(const QIcon &icon, const QString &text, QListWidget *parent = 0);
+    ListWidgetItem(const QListWidgetItem &other);
     ~ListWidgetItem();
 
     void setIconPath(QString iconPath);

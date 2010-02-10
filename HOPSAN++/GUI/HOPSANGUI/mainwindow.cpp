@@ -24,17 +24,11 @@ MainWindow::MainWindow(QWidget *parent)
     projectTabs->setObjectName("projectTabs");
     projectTabs->addProjectTab();
 
-    //Create the tree for components dir
-    componentsTree = new TreeWidget();
-    componentsTree->setHeaderLabel("Component Library");
-    componentsTree->setColumnCount(1);
-
-    //Create the list for components representation
-    //componentsListWidgetHolder = new QFrame(this);
-    //centralgrid->addWidget(componentsListWidgetHolder,1,0);
+    //Create the library for components representation
+    library = new LibraryWidget(this);
 
     //Add the tree and tabcontainer to the centralgrid
-    centralgrid->addWidget(componentsTree,0,0);
+    centralgrid->addWidget(library,0,0);
     centralgrid->addWidget(projectTabs,0,1,5,1);
     centralgrid->setColumnMinimumWidth(0,120);
     centralgrid->setColumnStretch(0,0);
@@ -126,7 +120,6 @@ MainWindow::~MainWindow()
 {
     delete projectTabs;
     //delete tab;
-    delete componentsTree;
     delete menubar;
     delete statusBar;
     delete scene;
@@ -157,11 +150,11 @@ void MainWindow::addLibs()
 
     QDir libDirObject(libDir);  //Create a QDir object that contains the info about the library direction
 
-    ListWidget *componentsList = new ListWidget(this);  //Creates a new listwidget every time a lib is loaded
-    centralgrid->addWidget(componentsList,1,0); //Place the listwidget
+    //Get the name for the library to be set in the tree
+    QString libName = libDirObject.dirName();
 
-    TreeWidgetItem *libName = new TreeWidgetItem(this->componentsTree,componentsList);   //Create an item for the treewidget
-    libName->setText(0,libDirObject.dirName()); //set the name of the treeitem to component directorys name
+    //Add the library to the tree
+    library->addLibrary(libName);
 
     QStringList filters;        //Create a QStringList object that contains name filters
     filters << "*.txt";         //Create the name filter
@@ -170,7 +163,10 @@ void MainWindow::addLibs()
     QStringList libList = libDirObject.entryList(); //Create a list with all name of the files in dir libDir
     for (int i = 0; i < libList.size(); ++i)    //Iterate over the file names
     {
-        //std::cout << libList.at(i).toLocal8Bit().constData() << std::endl;
+        //Set up needed variables
+        QString componentName;
+        QIcon icon;
+        QString iconPath;
 
         QString filename = libDirObject.absolutePath() + "/" + libList.at(i);
         QFile file(filename);   //Create a QFile object
@@ -180,28 +176,19 @@ void MainWindow::addLibs()
         QTextStream inFile(&file);  //Create a QTextStream object to stream the content of each file
         while (!inFile.atEnd()) {
             QString line = inFile.readLine();   //line contains each row in the file
-            //QListWidgetItem *listItem = new QListWidgetItem(componentsList);
-            ListWidgetItem *listItem = new ListWidgetItem(componentsList);
 
             if (line.startsWith("NAME")){
-                listItem->setStatusTip(line.mid(5));
-
+                componentName = line.mid(5);
             }
 
             if (line.startsWith("ICON")){
-                QString iconPath = libDirObject.absolutePath() + "/" + line.mid(5);
-                QIcon icon(iconPath);
-                listItem->setIcon(icon);
-                //listItem->setData(Qt::UserRole,QVariant(iconPath));
-                listItem->setIconPath(iconPath);
-            }
-
-            if (line.startsWith("PORTS")){
-                listItem->setNumberOfPorts(line.mid(6));
+                iconPath = libDirObject.absolutePath() + "/" + line.mid(5);
+                icon.addFile(iconPath);
             }
         }
         file.close();
-
+        //Add the component to the library
+        library->addComponent(libName,componentName,icon,iconPath);
     }
 }
 

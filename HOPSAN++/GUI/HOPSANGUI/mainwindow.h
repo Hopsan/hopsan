@@ -25,6 +25,7 @@
 #include "listwidget.h"
 #include "listwidgetitem.h"
 #include "ProjectTabWidget.h"
+#include "LibraryWidget.h"
 
 class MainWindow : public QMainWindow
 {
@@ -37,10 +38,8 @@ public:
     QWidget *centralwidget;
     QGridLayout *centralgrid;
     ProjectTabWidget *projectTabs;
-    //QWidget *tab;
     QGridLayout *tabgrid;
-    TreeWidget *componentsTree;
-    //QFrame *componentsListWidgetHolder;
+    LibraryWidget *library;
     QMenuBar *menubar;
     QMenu *menuFile;
     QMenu *menuNew;

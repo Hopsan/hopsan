@@ -15,6 +15,7 @@
 #include <QListWidget>
 #include <QVBoxLayout>
 #include <QMimeData>
+#include "listwidget.h"
 
 class LibraryContent : public QListWidget
 {
@@ -24,8 +25,13 @@ public:
     LibraryContent(QWidget *parent = 0);
 
 
-    QMimeData *mimeData(const QList<QListWidgetItem*> items) const;
+    //QMimeData *mimeData(const QList<QListWidgetItem*> items) const;
 
+protected:
+    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
+
+    QPoint dragStartPosition;
 };
 
 
@@ -44,8 +50,8 @@ public:
 
 //    void addLibrary(QString libraryName);
     void addLibrary(QString libraryName, QString parentLibraryName=QString());
-    void addComponent(QString libraryName, QString componentName, QIcon icon);
-    void addComponent(QString libraryName, QListWidgetItem *newComponent);
+    void addComponent(QString libraryName, QString componentName, QIcon icon, QString iconPath);
+    void addComponent(QString libraryName, ListWidgetItem *newComponent);
 
 private slots:
     void showLib(QTreeWidgetItem * item, int column);

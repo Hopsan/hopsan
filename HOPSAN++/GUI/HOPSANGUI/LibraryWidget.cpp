@@ -14,16 +14,57 @@ LibraryContent::LibraryContent(QWidget *parent)
     :   QListWidget(parent)
 {
     setViewMode(QListView::IconMode);
+    setAcceptDrops(false);
 }
 
-QMimeData *LibraryContent::mimeData(const QList<QListWidgetItem*> items) const
+/*QMimeData *LibraryContent::mimeData(const QList<QListWidgetItem*> items) const
 {
     QString mess = items.first()->text();
 
     QMimeData *mimeData = new QMimeData();
     mimeData->setText(mess);
     return mimeData;
+}*/
+
+void LibraryContent::mousePressEvent(QMouseEvent *event)
+{
+    QListWidget::mousePressEvent(event);
+
+    if (event->button() == Qt::LeftButton)
+        dragStartPosition = event->pos();
 }
+
+void LibraryContent::mouseMoveEvent(QMouseEvent *event)
+{
+
+    if (!(event->buttons() & Qt::LeftButton))
+        return;
+    if ((event->pos() - dragStartPosition).manhattanLength()
+         < QApplication::startDragDistance())
+        return;
+
+    QByteArray *data = new QByteArray;
+    QDataStream stream(data,QIODevice::WriteOnly);
+
+    QListWidgetItem *item = this->currentItem();
+
+    //stream << item->data(Qt::UserRole).toString();
+    stream << ((ListWidgetItem*)item)->getIconPath();
+
+    QString mimeType = "application/x-text";
+
+    QDrag *drag = new QDrag(this);
+    QMimeData *mimeData = new QMimeData;
+
+    mimeData->setData(mimeType, *data);
+    drag->setMimeData(mimeData);
+
+    drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()));
+
+    Qt::DropAction dropAction = drag->exec(Qt::CopyAction | Qt::MoveAction);
+
+}
+
 
 
 LibraryWidget::LibraryWidget(QWidget *parent)
@@ -95,15 +136,16 @@ void LibraryWidget::addLibrary(QString libraryName, QString parentLibraryName)
 }
 
 
-void LibraryWidget::addComponent(QString libraryName, QString componentName, QIcon icon)
+void LibraryWidget::addComponent(QString libraryName, QString componentName, QIcon icon, QString iconPath)
 {
-    QListWidgetItem *newComponent = new QListWidgetItem(icon, componentName);
+    ListWidgetItem *newComponent = new ListWidgetItem(icon, componentName);
+    newComponent->setIconPath(iconPath);
     addComponent(libraryName, newComponent);
 
 }
 
 
-void LibraryWidget::addComponent(QString libraryName, QListWidgetItem *newComponent)
+void LibraryWidget::addComponent(QString libraryName, ListWidgetItem *newComponent)
 {
     libraryMap.value(libraryName)->addItem(newComponent);
 
@@ -112,7 +154,7 @@ void LibraryWidget::addComponent(QString libraryName, QListWidgetItem *newCompon
     {
         if (((*it)->text(0) == libraryName) && ((*it)->parent()))
         {
-            QListWidgetItem *copyOfNewComponent = new QListWidgetItem(*newComponent); //A QListWidgetItem can only be in one list at the time, therefor a copy...
+            ListWidgetItem *copyOfNewComponent = new ListWidgetItem(*newComponent); //A QListWidgetItem can only be in one list at the time, therefor a copy...
             QString parentName = (*it)->parent()->text(0);
 
             addComponent(parentName, copyOfNewComponent); //Recursively
