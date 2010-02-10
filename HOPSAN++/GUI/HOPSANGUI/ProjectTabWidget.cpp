@@ -27,7 +27,7 @@ GraphicsView::GraphicsView(QWidget *parent)
 
 GraphicsView::~GraphicsView()
 {
-    delete guiComponent;
+    //delete guiComponent; //Skumt att ta bort en guiComponent?
 }
 
 
@@ -196,11 +196,15 @@ void ProjectTabWidget::saveProjectTab()
 
 
 void ProjectTabWidget::closeProjectTab(int index)
-{
+{std::cout << index << std::endl;
+    std::cout << qPrintable(tabText(index)) << std::endl;
     if (!(qobject_cast<ProjectTab *>(widget(index))->isSaved))
     {
+        QString modelName;
+        modelName = tabText(index);
+        modelName.chop(1);
         QMessageBox msgBox;
-        msgBox.setText("The model is not saved.");
+        msgBox.setText(QString("The model '").append(modelName).append("'").append(QString(" is not saved.")));
         msgBox.setInformativeText("Do you want to save your changes before closing?");
         msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
         msgBox.setDefaultButton(QMessageBox::Save);
@@ -235,3 +239,14 @@ void ProjectTabWidget::closeProjectTab(int index)
         removeTab(index);
     }
 }
+
+
+void ProjectTabWidget::closeAllProjectTabs()
+{
+    while(count() > 0)
+    {
+      setTabEnabled(count()-1, true);
+      closeProjectTab(count()-1);
+    }
+}
+

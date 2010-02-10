@@ -83,6 +83,7 @@ public slots:
     void addProjectTab();
     void saveProjectTab();
     void closeProjectTab(int index);
+    void closeAllProjectTabs();
 
 };
 

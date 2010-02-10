@@ -192,3 +192,11 @@ void MainWindow::addLibs()
     }
 }
 
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{std::cout << "innan" << std::endl;
+    projectTabs->closeAllProjectTabs();
+    event->accept();
+std::cout << "efter" << std::endl;
+}
+

@@ -58,6 +58,8 @@ public:
     GraphicsScene *scene;
     GraphicsView *view;
 
+    void closeEvent(QCloseEvent *event);
+
 private slots:
     void addLibs();
 
