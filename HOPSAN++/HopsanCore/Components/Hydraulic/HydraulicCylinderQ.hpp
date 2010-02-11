@@ -27,8 +27,9 @@ private:
     double mBp;
     double mBl;
     double mKl;
-    TransferFunction mPositionFilterLP2;
-    TransferFunction mVelocityFilterLP2;
+    double mTao;
+    SecondOrderFilter mPositionFilter;
+    SecondOrderFilter mVelocityFilter;
     enum {P1, P2, P3};
 
 public:
@@ -56,6 +57,7 @@ public:
         mBp     = bp;
         mBl     = bl;
         mKl     = kl;
+        mTao    = 3.0/2.0*mTimestep;        //Velocity filter time constant
 
         addPowerPort("P1", "NodeHydraulic", P1);
         addPowerPort("P2", "NodeHydraulic", P2);
@@ -74,6 +76,8 @@ public:
     {
         //Initialization of filters
 
+        double x2 = mPortPtrs[P3]->readNode(NodeMechanic::POSITION);
+        double v2 = mPortPtrs[P3]->readNode(NodeMechanic::VELOCITY);
         double c1 = mPortPtrs[P1]->readNode(NodeMechanic::WAVEVARIABLE);
         double Zc1 = mPortPtrs[P1]->readNode(NodeMechanic::CHARIMP);
         double c2 = mPortPtrs[P2]->readNode(NodeMechanic::WAVEVARIABLE);
@@ -83,21 +87,16 @@ public:
         double cx2 = mPortPtrs[P3]->readNode(NodeMechanic::WAVEVARIABLE);
         double Zx2 = mPortPtrs[P3]->readNode(NodeMechanic::CHARIMP);
 
-
-        double posnum [3] = {1.0, 0.0, 0.0};
+        double posnum [3] = {0.0, 0.0, 1.0};
+        double posden [3] = {mMass, mBl+Zx1+Zx2, mKl};
         double velnum [3] = {0.0, 1.0, 0.0};
-        double den [3] = {mKl, mBl+Zx1+Zx2, mMass};
+        double velden [3] = {0.0, mTao, 1.0};
+        mPositionFilter.initialize(mTime, mTimestep, posnum, posden, cx2, x2, 0.0, mStroke);
+        mVelocityFilter.initialize(mTime, mTimestep, velnum, velden, x2, v2);
 
-        mPositionFilterLP2.initialize(cx1,cx2, mTime);
-        mVelocityFilterLP2.initialize(cx1,cx2, mTime);
-
-        mPositionFilterLP2.setCoefficients(posnum, den, mTimestep);
-        mVelocityFilterLP2.setCoefficients(velnum, den, mTimestep);
-
-        mPositionFilterLP2.update(cx1-cx2);
-        mVelocityFilterLP2.update(cx1-cx2);
+        //mPositionFilter.update(cx1-cx2);
+        //mVelocityFilter.update(cx1-cx2);
     }
-
 
     void simulateOneTimestep()
     {
@@ -109,29 +108,24 @@ public:
         double cx2 = mPortPtrs[P3]->readNode(NodeHydraulic::WAVEVARIABLE);
         double Zx2 = mPortPtrs[P3]->readNode(NodeHydraulic::CHARIMP);
 
-
-        //CylinderC Equations
+        //CylinderCtest Equations
 
             //Internal mechanical port
         double cx1 = mArea1*c1 - mArea2*c2;
         double Zx1 = pow(mArea1,2)*Zc1 + pow(mArea2,2)*Zc2-mBp;
 
             //Piston
-        double den [3] = {mKl, mBl+Zx1+Zx2, mMass};
-
-        double posnum [3] = {1.0, 0.0, 0.0};
-        mPositionFilterLP2.setCoefficients(posnum, den, mTimestep);
-        //mPositionFilterLP2.update(cx1-cx2);                         //JÄTTEFULT!!!
-        double x2 = mPositionFilterLP2.getValue(cx1-cx2);
+        double posnum [3] = {0.0, 0.0, 1.0};
+        double posden [3] = {mMass, mBl+Zx1+Zx2, mKl};
+        mPositionFilter.setNumDen(posnum, posden);
+        double x2 = mPositionFilter.value(cx1-cx2);
 
         double velnum [3] = {0.0, 1.0, 0.0};
-        mVelocityFilterLP2.setCoefficients(velnum, den, mTimestep);
-        //mVelocityFilterLP2.update(cx1-cx2);
-        double v2 = mVelocityFilterLP2.getValue(cx1-cx2);
+        double velden [3] = {0.0, mTao, 1.0};
+        mVelocityFilter.setNumDen(velnum, velden);
+        double v2 = mVelocityFilter.value(x2);
 
-        //double x1 = -x2;
         double v1 = -v2;
-        //double F1 = cx1 + Zc1*v1;
         double F2 = cx2 + Zc2*v2;
 
             //Volumes
