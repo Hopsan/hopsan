@@ -53,6 +53,7 @@ public:
                    const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
     {
+        mTypeName = "SignalSineWave";
         mStartTime = starttime;
         mFrequency = frequency;
         mAmplitude = amplitude;

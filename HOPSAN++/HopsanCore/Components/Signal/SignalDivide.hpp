@@ -29,6 +29,8 @@ public:
                           const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
     {
+        mTypeName = "SignalDivide";
+
         addReadPort("in1", "NodeSignal", in1);
         addReadPort("in2", "NodeSignal", in2);
         addWritePort("out", "NodeSignal", out);

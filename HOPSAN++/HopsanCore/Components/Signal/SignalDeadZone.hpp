@@ -26,6 +26,7 @@ public:
                    const double timestep = 0.001)
     : ComponentSignal(name, timestep)
     {
+        mTypeName = "SignalDeadZone";
         mStartDead = startdead;
         mEndDead = enddead;
 

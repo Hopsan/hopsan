@@ -33,6 +33,7 @@ public:
                      const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
     {
+        mTypeName = "SignalSaturation";
         mUpperLimit = upperlimit;
         mLowerLimit = lowerlimit;
 

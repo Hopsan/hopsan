@@ -29,6 +29,8 @@ public:
                            const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
     {
+        mTypeName = "MechanicPositionSensor";
+
         addReadPort("P1", "NodeMechanic", P1);
         addWritePort("out", "NodeSignal", out);
     }

@@ -25,6 +25,7 @@ public:
     : ComponentQ(name, timestep)
     {
         //Set member attributes
+        mTypeName = "MechanicVelocityTransformer";
 
 		//Add ports to the component
         addReadPort("in", "NodeSignal", in);

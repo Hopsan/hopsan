@@ -36,6 +36,8 @@ public:
     const string &getPortType();
     const string &getPortName();
 
+    Node* getNodePublic();
+
 protected:
     //Constructors
     Port();

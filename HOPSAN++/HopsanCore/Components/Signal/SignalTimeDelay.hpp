@@ -32,6 +32,7 @@ public:
                     const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
     {
+        mTypeName = "SignalTimeDelay";
         mStartY = 0.0;
         mTimeDelay = timedelay;
 

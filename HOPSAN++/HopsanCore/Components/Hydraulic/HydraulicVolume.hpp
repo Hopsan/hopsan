@@ -39,6 +39,7 @@ public:
     : ComponentC(name, timestep)
     {
         //Set member attributes
+        mTypeName = "HydraulicVolume";
         mStartPressure = 0.0;
         mStartFlow     = 0.0;
         mBulkmodulus   = bulkmudulus;

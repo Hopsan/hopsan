@@ -31,6 +31,7 @@ public:
                          const double timestep = 0.001)
 	: ComponentQ(name, timestep)
     {
+        mTypeName = "HydraulicFlowSourceQ";
         mFlow = flow;
 
         addPowerPort("P1", "NodeHydraulic", P1);

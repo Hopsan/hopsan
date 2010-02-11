@@ -29,6 +29,8 @@ public:
                             const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
     {
+        mTypeName = "HydraulicPressureSensor";
+
         addReadPort("P1", "NodeHydraulic", P1);
         addWritePort("out", "NodeSignal", out);
     }

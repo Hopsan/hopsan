@@ -36,6 +36,7 @@ public:
                          const double timestep = 0.001)
 	: ComponentQ(name, timestep)
     {
+        mTypeName = "HydraulicFixedDisplacementPump";
         mSpeed = speed;
         mDp = dp;
         mKcp = kcp;

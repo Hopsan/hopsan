@@ -37,6 +37,7 @@ public:
                      const double timestep = 0.001)
     : ComponentQ(name, timestep)
     {
+        mTypeName = "HydraulicTurbulentOrificeName";
         mCq = Cq;
         mA = A;
         mKc = mCq*mA*sqrt(2.0/890.0);

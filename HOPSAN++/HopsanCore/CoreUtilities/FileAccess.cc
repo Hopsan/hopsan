@@ -84,7 +84,8 @@ ComponentSystem FileAccess::loadModel(double *startTime, double *stopTime, strin
 
             else if ( inputWord == "SYSTEMPORT")
             {
-                string subSystemName, portName;Component* getComponent(string name);
+                string subSystemName, portName;
+                //Component* getComponent(string name);
                 inputStream >> subSystemName;
                 inputStream >> portName;
                 componentSystemMap.find(subSystemName)->second->addSystemPort(portName);
@@ -194,6 +195,51 @@ ComponentSystem FileAccess::loadModel(string filename, double *startTime, double
 
 void FileAccess::saveModel(ComponentSystem mainModel)
 {
-    //Do something here!
+    ofstream modelFile ("savedmodel.txt");
+    map<string, string> mainComponentList = mainModel.getComponentNames();
+    map<string, string>::iterator it;
+    map<Port*, string> portList;
+
+    for(it = mainComponentList.begin(); it!=mainComponentList.end(); ++it)
+    {
+            //Write the create component line in the file
+        modelFile << "COMPONENT " << it->second << " " << it->first << "\n";
+        map<string,double> componentParameterList = mainModel.getComponent(it->first)->getParameterList();
+        map<string, double>::iterator itc;
+        for(itc = componentParameterList.begin(); itc!=componentParameterList.end(); ++itc)
+        {
+            modelFile << "SET " << it->first << " " << itc->first << " " << itc->second << "\n";
+        }
+
+            //Store all ports in a map, together with the name of the component they belong to (for use below)
+        vector <Port*> portPtrsVector = mainModel.getComponent(it->first)->getPortPtrVector();
+        vector <Port*>::iterator itp;
+        for (itp=portPtrsVector.begin(); itp!=portPtrsVector.end(); ++itp)
+        {
+            Port* tempPort = *itp;
+            portList.insert(pair<Port*,string>(*itp, it->first));
+        }
+    }
+
+        //Iterate through port map and figure out which ports share the same node, and then write the connect lines
+    map<Port*, string>::iterator itp;
+    for(itp = portList.begin(); itp != portList.end(); ++itp)
+    {
+        map<Port*, string>::iterator itp2;
+        for(itp2 = portList.begin(); itp2 != portList.end(); ++itp2)
+        {
+            Node *ptr1 = itp->first->getNodePublic();
+            Node *ptr2 = itp2->first->getNodePublic();
+            if (ptr1 == ptr2 && itp != itp2)
+            {
+                modelFile << "CONNECT " << itp->second << " " << itp->first->getPortName() << " " << itp2->second << " " << itp2->first->getPortName() << "\n";
+            }
+        }
+    }
+
+
+    modelFile.close();
+
+
     return;
 }

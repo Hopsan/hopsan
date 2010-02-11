@@ -26,6 +26,7 @@ public:
     : ComponentC(name, timestep)
     {
         //Set member attributes
+        mTypeName = "MechanicTranslationalSpring";
         mk   = springcoefficient;
         mTimestep = timestep;
 

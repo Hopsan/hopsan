@@ -58,6 +58,8 @@ public:
                              const double timestep   = 0.001)
         : ComponentQ(name, timestep)
     {
+
+        mTypeName = "Hydraulic43Valve";
         mCq = Cq;
         md = diameter;
         mf = fraction;

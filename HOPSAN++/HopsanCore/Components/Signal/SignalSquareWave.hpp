@@ -50,6 +50,7 @@ public:
                               const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
     {
+        mTypeName = "SignalSquareWave";
         mStartTime = starttime;
         mFrequency = frequency;
         mAmplitude = amplitude;

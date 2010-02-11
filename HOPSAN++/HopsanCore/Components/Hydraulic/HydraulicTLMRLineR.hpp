@@ -42,6 +42,7 @@ public:
 	: ComponentC(name, timestep)
     {
         //Set member attributes
+        mTypeName = "HydraulicTLMRlineR";
         mStartPressure = 1.0;
         mStartFlow     = 0.0;
         mTimeDelay     = timeDelay;

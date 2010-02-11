@@ -63,6 +63,7 @@ public:
     : ComponentC(name, timestep)
     {
         //Set member attributes
+        mTypeName = "HydraulicCylinderC";
         mStartPosition = startposition;
         mStartVelocity = startvelocity;
         mStartPressure1 = 0;

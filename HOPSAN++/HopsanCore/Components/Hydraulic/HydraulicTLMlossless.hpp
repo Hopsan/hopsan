@@ -38,6 +38,7 @@ public:
 	: ComponentC(name, timestep)
     {
         //Set member attributes
+        mTypeName = "HydraulicTLMlossless";
         mStartPressure = 1.0;
         mStartFlow     = 0.0;
         mTimeDelay     = timeDelay;

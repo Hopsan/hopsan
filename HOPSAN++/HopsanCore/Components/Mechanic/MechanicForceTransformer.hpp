@@ -28,6 +28,7 @@ public:
     : ComponentC(name, timestep)
     {
         //Set member attributes
+        mTypeName = "MechanicForceTransformer";
         mStartPosition = startposition;
         mStartVelocity = startvelocity;
 

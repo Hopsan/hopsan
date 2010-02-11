@@ -47,6 +47,11 @@ Node &Port::getNode()
     return *mpNode;
 }
 
+Node* Port::getNodePublic()
+{
+    return mpNode;
+}
+
 Node* Port::getNodePtr()
 {
     return mpNode;

@@ -34,6 +34,7 @@ public:
                                     const double timestep       = 0.001)
         : ComponentC(name, timestep)
     {
+        mTypeName = "HydraulicPressureSource";
         mStartPressure  = 0.0;
         mStartFlow      = 0.0;
         mPressure       = pressure;

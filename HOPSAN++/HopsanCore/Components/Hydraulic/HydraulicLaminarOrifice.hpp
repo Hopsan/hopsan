@@ -22,6 +22,7 @@ public:
                              const double timestep = 0.001)
         : ComponentQ(name, timestep)
     {
+        mTypeName = "HydraulicLaminarOrifice";
         mKc = kc;
 
         mpP1 = addPowerPort("P1", "NodeHydraulic");

@@ -32,6 +32,7 @@ public:
                     const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
     {
+        mTypeName = "SignalSource";
         mValue = value;
 
         addWritePort("out", "NodeSignal", out);

@@ -17,6 +17,8 @@
 
 using namespace std;
 
+//typedef map<string, string> componentNameMap;
+
 class DLLIMPORTEXPORT CompParameter
 {
     friend class Component;
@@ -51,10 +53,13 @@ public:
     void setName(string name);
     const string &getName();
     const string &getType();
+    const string &getTypeName();
 
     void listParametersConsole();
     double getParameter(const string name);
     void setParameter(const string name, const double value);
+    map<string, double> getParameterList();
+    vector<Port*> getPortPtrVector();
 
     ComponentSystem &getSystemparent();
 
@@ -87,6 +92,7 @@ protected:
     virtual void setTimestep(const double timestep);
 
     string mType;
+    string mTypeName;
     double mTimestep, mDesiredTimestep;
     double mTime;
     bool mIsComponentC;
@@ -145,6 +151,7 @@ public:
     Port* addSystemPort(const string portname);
     void setTypeCQS(const string cqs_type);
     void setDesiredTimestep(const double timestep);
+    map<string, string> getComponentNames();
 
 private:
     void setTimestep(const double timestep);
@@ -157,6 +164,7 @@ private:
     vector<Component*> mComponentSignalptrs;
     vector<Component*> mComponentQptrs;
     vector<Component*> mComponentCptrs;
+    map<string, string> mComponentNames;
 
     NodeFactory mpNodeFactory;
 };

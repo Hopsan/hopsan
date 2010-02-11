@@ -44,6 +44,7 @@ public:
                                      const double timestep   = 0.001)
         : ComponentQ(name, timestep)
     {
+        mTypeName = "HydraulicPressureReliefValve";
         mPref = pref;
         mTao = tao;
         mKcs = kcs;

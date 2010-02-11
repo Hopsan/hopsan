@@ -32,6 +32,7 @@ public:
     : ComponentQ(name, timestep)
     {
         //Set member attributes
+        mTypeName = "MechanicTranslationalMass";
         mMass = mass;
         mB    = viscousfriction;
         mk   = springcoefficient;

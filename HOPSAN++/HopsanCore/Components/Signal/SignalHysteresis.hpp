@@ -33,6 +33,7 @@ public:
                const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
     {
+        mTypeName = "SignalHysteresis";
         mHysteresisWidth = hysteresiswidth;
 
         addReadPort("in", "NodeSignal", in);

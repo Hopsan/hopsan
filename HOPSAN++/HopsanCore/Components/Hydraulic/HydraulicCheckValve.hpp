@@ -34,6 +34,7 @@ public:
                                 const double timestep = 0.001)
         : ComponentQ(name, timestep)
     {
+        mTypeName = "HydraulicCheckValve";
         mKs = ks;
 
         mpP1 = addPowerPort("P1", "NodeHydraulic");

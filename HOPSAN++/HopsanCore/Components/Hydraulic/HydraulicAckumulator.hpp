@@ -40,6 +40,7 @@ public:
                                 const double timestep   = 0.001)
         : ComponentQ(name, timestep)
     {
+        mTypeName = "HydraulicAckumulator";
         mPmin                   = pmin;
         mVtot                   = vtot;
         mVoil                   = voil;

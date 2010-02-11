@@ -36,6 +36,7 @@ public:
                             const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
     {
+        mTypeName = "SignalIntegratorLimited2";
         mStartY = 0.0;
 
         mMin = min;

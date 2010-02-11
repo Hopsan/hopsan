@@ -65,6 +65,7 @@ public:
                        const double timestep    = 0.001)
         : ComponentQ(name, timestep)
     {
+        mTypeName = "HydraulicCylinderQ";
         mArea1  = area1;
         mArea2  = area2;
         mStroke = stroke;

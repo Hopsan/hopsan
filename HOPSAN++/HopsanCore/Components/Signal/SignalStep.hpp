@@ -46,6 +46,7 @@ public:
                           const double timestep = 0.001)
 	: ComponentSignal(name, timestep)
     {
+        mTypeName = "SignalStep";
         mBaseValue = basevalue;
         mAmplitude = amplitude;
         mStepTime = steptime;

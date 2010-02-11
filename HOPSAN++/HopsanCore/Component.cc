@@ -115,6 +115,11 @@ const string &Component::getType()
     return mType;
 }
 
+const string &Component::getTypeName()
+{
+    return mTypeName;
+}
+
 void Component::registerParameter(const string name, const string description, const string unit, double &rValue)
 {
     ///TODO: handle trying to add multiple comppar with same name or pos
@@ -146,6 +151,16 @@ double Component::getParameter(const string name)
     return 0.0;
 }
 
+map<string, double> Component::getParameterList()
+{
+    map<string, double> parameterMap;
+    for (size_t i=0; i<mParameters.size(); ++i)
+    {
+        parameterMap.insert(pair<string, double>(mParameters[i].getName(), mParameters[i].getValue()));
+    }
+    return parameterMap;
+}
+
 void Component::setParameter(const string name, const double value)
 {
     bool notset = 1;
@@ -164,6 +179,12 @@ void Component::setParameter(const string name, const double value)
         assert(false);
     }
 }
+
+vector<Port*> Component::getPortPtrVector()
+{
+   return mPortPtrs;
+}
+
 
 //void Component::setTimestep(const double timestep)
 //{
@@ -387,6 +408,8 @@ void ComponentSystem::addComponents(vector<Component*> components)
             cout << "Trying to add module of other type than c, q or signal" << endl;
             assert(false);
         }
+
+        mComponentNames.insert(pair<string, string>(comp_ptr->getName(), comp_ptr->getTypeName()));
         comp_ptr->setSystemparent(*this);
     }
 }
@@ -408,31 +431,41 @@ void ComponentSystem::addComponent(Component *pComponent)
 
 Component* ComponentSystem::getComponent(string name)
 {
-    vector<Component*>::iterator it;
-    for (it=mComponentCptrs.begin(); it!=mComponentCptrs.end(); ++it)
+    //vector<Component*>::iterator it;
+    for (size_t s=0; s < mComponentCptrs.size(); ++s)
     {
-        if ((*it)->mName == name)
+        if (mComponentCptrs[s]->mName == name)
         {
-            return *it;
+            return mComponentCptrs[s];
         }
     }
-    for (it=mComponentQptrs.begin(); it!=mComponentQptrs.end(); ++it)
+
+    for (size_t s=0; s < mComponentQptrs.size(); ++s)
     {
-        if ((*it)->mName == name)
+        cout << "Comparing " << mComponentQptrs[s]->mName << " with " << name << endl;
+        if (mComponentQptrs[s]->mName == name)
         {
-            return *it;
+            return mComponentQptrs[s];
         }
     }
-    for (it=mComponentSignalptrs.begin(); it!=mComponentSignalptrs.end(); ++it)
+
+    for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
     {
-        if ((*it)->mName == name)
+        cout << "Comparing " << mComponentSignalptrs[s]->mName << " with " << name << endl;
+        if (mComponentSignalptrs[s]->mName == name)
         {
-            return *it;
+            return mComponentSignalptrs[s];
         }
     }
-    cout << "Component not found in component system!";
+    cout << "Component " << name << " not found in component system!";
     assert(false);
-    //Todo: Cast exception if not found
+    ///TODO: Cast exception if not found
+}
+
+
+map<string, string> ComponentSystem::getComponentNames()
+{
+    return mComponentNames;
 }
 
 
