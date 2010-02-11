@@ -14,6 +14,8 @@
 #include <QGraphicsScene>
 #include <QGraphicsWidget>
 #include <QTabWidget>
+#include <QStringList>
+#include <QGraphicsTextItem>
 
 
 class GraphicsScene : public QGraphicsScene

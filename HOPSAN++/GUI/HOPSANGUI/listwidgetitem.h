@@ -2,6 +2,7 @@
 #define LISTWIDGETITEM_H
 
 #include <QListWidgetItem>
+#include <QStringList>
 
 class ListWidgetItem : public QListWidgetItem
 {
@@ -10,15 +11,12 @@ public:
     ListWidgetItem(const QListWidgetItem &other);
     ~ListWidgetItem();
 
-    void setIconPath(QString iconPath);
-    QString getIconPath();
+    void setParameterData(QStringList list);
+    QStringList getParameterData();
 
-    void setNumberOfPorts(QString nrPorts);
-    QString getNumberOfPorts();
 
 private:
-    QString miconPath;
-    QString mnrPorts;
+    QStringList mparameterData;
 };
 
 #endif // LISTWIDGETITEM_H

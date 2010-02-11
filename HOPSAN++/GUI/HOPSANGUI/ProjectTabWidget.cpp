@@ -61,8 +61,11 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
         QDataStream stream(data,QIODevice::ReadOnly);
 
-        QString iconDir;
-        stream >> iconDir;
+        QStringList parameterData;
+        stream >> parameterData;
+
+        QString componentName = parameterData.at(0);
+        QString iconDir = parameterData.at(1);
 
         event->accept();
 
@@ -71,7 +74,8 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
         std::cout << "x=" << this->mapFromGlobal(cursor.pos()).x() << "  " << "y=" << this->mapFromGlobal(cursor.pos()).y() << std::endl;
 
-        ComponentGuiClass *guiComponent = new ComponentGuiClass(iconDir,position);
+        ComponentGuiClass *guiComponent = new ComponentGuiClass(iconDir,componentName,position);
+
         this->scene()->addItem(guiComponent);
 
         delete data;
@@ -100,6 +104,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
     QCursor cursor;
     std::cout << "X=" << this->mapFromGlobal(cursor.pos()).x() << "  " << "Y=" << this->mapFromGlobal(cursor.pos()).y() << std::endl;
 }
+
 
 
 //GraphicsView::GraphicsView(QWidget *parent)

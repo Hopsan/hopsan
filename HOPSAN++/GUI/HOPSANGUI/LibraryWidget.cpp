@@ -49,7 +49,7 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
     QListWidgetItem *item = this->currentItem();
 
     //stream << item->data(Qt::UserRole).toString();
-    stream << ((ListWidgetItem*)item)->getIconPath();
+    stream << ((ListWidgetItem*)item)->getParameterData();
 
     QString mimeType = "application/x-text";
 
@@ -136,10 +136,10 @@ void LibraryWidget::addLibrary(QString libraryName, QString parentLibraryName)
 }
 
 
-void LibraryWidget::addComponent(QString libraryName, QString componentName, QIcon icon, QString iconPath)
+void LibraryWidget::addComponent(QString libraryName, QString componentName, QIcon icon, QStringList list)
 {
     ListWidgetItem *newComponent = new ListWidgetItem(icon, componentName);
-    newComponent->setIconPath(iconPath);
+    newComponent->setParameterData(list);
     addComponent(libraryName, newComponent);
 
 }

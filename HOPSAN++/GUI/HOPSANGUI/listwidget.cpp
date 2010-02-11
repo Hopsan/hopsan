@@ -38,7 +38,7 @@ void ListWidget::mouseMoveEvent(QMouseEvent *event)
     QListWidgetItem *item = this->currentItem();
 
     //stream << item->data(Qt::UserRole).toString();
-    stream << ((ListWidgetItem*)item)->getIconPath();
+    stream << ((ListWidgetItem*)item)->getParameterData();
 
     QString mimeType = "application/x-text";
 

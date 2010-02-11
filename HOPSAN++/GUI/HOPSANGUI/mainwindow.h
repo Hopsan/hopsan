@@ -17,6 +17,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QIODevice>
 #include <QListWidgetItem>
+#include <QStringList>
 
 #include "treewidget.h"
 #include "treewidgetitem.h"

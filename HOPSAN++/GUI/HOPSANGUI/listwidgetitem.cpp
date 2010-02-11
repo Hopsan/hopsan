@@ -15,22 +15,14 @@ ListWidgetItem::~ListWidgetItem()
 }
 
 
-void ListWidgetItem::setIconPath(QString iconPath)
+void ListWidgetItem::setParameterData(QStringList list)
 {
-    miconPath = iconPath;
+    mparameterData = list;
 }
 
-QString ListWidgetItem::getIconPath()
+QStringList ListWidgetItem::getParameterData()
 {
-    return miconPath;
+    return mparameterData;
 }
 
-void ListWidgetItem::setNumberOfPorts(QString nrPorts)
-{
-    mnrPorts = nrPorts;
-}
 
-QString ListWidgetItem::getNumberOfPorts()
-{
-    return mnrPorts;
-}

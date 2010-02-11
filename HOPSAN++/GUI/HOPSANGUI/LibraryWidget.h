@@ -15,6 +15,7 @@
 #include <QListWidget>
 #include <QVBoxLayout>
 #include <QMimeData>
+#include <QStringList>
 #include "listwidget.h"
 
 class LibraryContent : public QListWidget
@@ -50,7 +51,7 @@ public:
 
 //    void addLibrary(QString libraryName);
     void addLibrary(QString libraryName, QString parentLibraryName=QString());
-    void addComponent(QString libraryName, QString componentName, QIcon icon, QString iconPath);
+    void addComponent(QString libraryName, QString componentName, QIcon icon, QStringList list);
     void addComponent(QString libraryName, ListWidgetItem *newComponent);
 
 private slots:

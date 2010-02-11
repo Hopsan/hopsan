@@ -164,6 +164,7 @@ void MainWindow::addLibs()
     for (int i = 0; i < libList.size(); ++i)    //Iterate over the file names
     {
         //Set up needed variables
+        QStringList parameterData;
         QString componentName;
         QIcon icon;
         QString iconPath;
@@ -187,8 +188,10 @@ void MainWindow::addLibs()
             }
         }
         file.close();
+        //Add data to the paremeterData list
+        parameterData << componentName << iconPath;
         //Add the component to the library
-        library->addComponent(libName,componentName,icon,iconPath);
+        library->addComponent(libName,componentName,icon,parameterData);
     }
 }
 
