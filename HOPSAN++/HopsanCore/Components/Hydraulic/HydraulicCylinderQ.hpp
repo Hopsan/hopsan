@@ -7,16 +7,6 @@
 //!
 //$Id$
 
-//Translated from pyHOPSAN, originally created by someone else
-
-#ifndef HYDRAULICCYLINDERQ_HPP_INCLUDED
-#define HYDRAULICCYLINDERQ_HPP_INCLUDED
-
-#include <iostream>
-#include "HopsanCore.h"
-//#include "math.h"
-//#include "CoreUtilities/TurbulentFlowFunction.h"
-
 ////////////////////////////////////////////////////////////////////////////////////
 //                                                                                //
 //   <--------------Stroke--------------->                                        //
@@ -33,6 +23,14 @@
 //     V p1,q1                         V p2,q2                                    //
 //                                                                                //
 ////////////////////////////////////////////////////////////////////////////////////
+
+#ifndef HYDRAULICCYLINDERQ_HPP_INCLUDED
+#define HYDRAULICCYLINDERQ_HPP_INCLUDED
+
+#include <iostream>
+#include "HopsanCore.h"
+//#include "math.h"
+//#include "CoreUtilities/TurbulentFlowFunction.h"
 
 class HydraulicCylinderQ : public ComponentQ
 {
