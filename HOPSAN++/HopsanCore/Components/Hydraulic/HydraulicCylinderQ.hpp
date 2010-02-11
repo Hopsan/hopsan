@@ -17,6 +17,23 @@
 //#include "math.h"
 //#include "CoreUtilities/TurbulentFlowFunction.h"
 
+////////////////////////////////////////////////////////////////////////////////////
+//                                                                                //
+//   <--------------Stroke--------------->                                        //
+//                                                                                //
+//   XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX                XXXXXXXX                //
+//   X       Area1  X  X  Area2          X               X        X               //
+//   X              X  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX        X               //
+//   X x1,v1,f1 <---O  X                                 X  Mass  O---> x2,v2,f2  //
+//   X              X  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX        X               //
+//   X              X  X                 X               X        X               //
+//   XXOXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXOXX                XXXXXXXX                //
+//     |                               |                                          //
+//     |                               |                                          //
+//     V p1,q1                         V p2,q2                                    //
+//                                                                                //
+////////////////////////////////////////////////////////////////////////////////////
+
 class HydraulicCylinderQ : public ComponentQ
 {
 private:
