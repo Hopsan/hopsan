@@ -36,6 +36,12 @@ Port::Port(string portname, string node_type)
     //mIsSystemPort = false;
 }
 
+//Destructor
+Port::~Port()
+{
+    //Nothing for now
+}
+
 const string &Port::getNodeType()
 {
     return mNodeType;

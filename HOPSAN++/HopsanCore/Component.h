@@ -45,7 +45,7 @@ class DLLIMPORTEXPORT Component
     friend class ComponentSystem;
 
 public:
-    //=====Public functions
+    //==========Public functions==========
     //Virtual functions
     virtual void initialize(const double startT, const double stopT);
     virtual void simulate(const double startT, const double Ts);
@@ -80,7 +80,7 @@ public:
     //double getTimestep();
 
 protected:
-    //=====Protected member functions
+    //==========Protected member functions==========
     //Constructor - Destructor
     Component(string name="DefaultComponentName", double timestep=0.001);
     virtual ~Component(){};
@@ -98,11 +98,10 @@ protected:
     Port* addPowerPort(const string portname, const string nodetype, const int id=-1);
     Port* addReadPort(const string portname, const string nodetype, const int id=-1);
     Port* addWritePort(const string portname, const string nodetype, const int id=-1);
-    //void addMultiPort(const string portname, const string nodetype, const size_t nports, const size_t startctr=0);
     bool getPort(const string portname, Port* &prPort);
     Port &getPortById(const size_t port_idx);
 
-    //=====Protected member variables
+    //==========Protected member variables==========
     string mTypeCQS;
     string mTypeName;
     double mTimestep, mDesiredTimestep;
@@ -127,6 +126,62 @@ private:
 };
 
 
+class DLLIMPORTEXPORT ComponentSystem :public Component
+{
+public:
+    //==========Public functions==========
+    //Constructor - Destructor
+    ComponentSystem(string name="DefaultComponentSystemName", double timestep=0.001);
+
+    //Set the subsystem CQS type
+    void setTypeCQS(const string cqs_type);
+
+    //adding components and system ports
+    void addComponents(vector<Component*> components);
+    void addComponent(Component &rComponent);
+    void addComponent(Component *pComponent);
+    Port* addSystemPort(const string portname);
+
+    //Getting added components and component names
+    Component* getComponent(string name);
+    ComponentSystem* getComponentSystem(string name);
+    map<string, string> getComponentNames();
+
+    //connecting components
+    void connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2);
+    void connect(Component *pComponent1, const string portname1, Component *pComponent2, const string portname2);
+    void connect(Port &rPort1, Port &rPort2);
+
+    //initializeand simulate
+    void initialize(const double startT, const double stopT);
+    void simulate(const double startT, const double stopT);
+
+    //Set desired timestep
+    void setDesiredTimestep(const double timestep);
+
+private:
+    //==========Private functions==========
+    //Time specific functions
+    void setTimestep(const double timestep);
+    void adjustTimestep(double timestep, vector<Component*> componentPtrs);
+
+    //log specific functions
+    void preAllocateLogSpace(const double startT, const double stopT);
+    void logAllNodes(const double time);
+
+    //Check if connection ok
+    bool connectionOK(Node *pNode, Port *pPort1, Port *pPort2);
+
+    //==========Prvate member variables==========
+    //vector<Component*> mSubComponentPtrs; //Problems with inheritance and casting?
+    vector<Component*> mComponentSignalptrs;
+    vector<Component*> mComponentQptrs;
+    vector<Component*> mComponentCptrs;
+    map<string, string> mComponentNames;
+
+    NodeFactory mpNodeFactory;
+};
+
 class DLLIMPORTEXPORT ComponentSignal :public Component
 {
 protected:
@@ -145,47 +200,6 @@ class DLLIMPORTEXPORT ComponentQ :public Component
 {
 protected:
     ComponentQ(string name, double timestep=0.001);
-};
-
-
-class DLLIMPORTEXPORT ComponentSystem :public Component
-{
-public:
-    ComponentSystem(string name="DefaultComponentSystemName", double timestep=0.001);
-    void addComponents(vector<Component*> components);
-    void addComponent(Component &rComponent);
-    void addComponent(Component *pComponent);
-
-    void connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2);
-    void connect(Component *pComponent1, const string portname1, Component *pComponent2, const string portname2);
-    void connect(Port &rPort1, Port &rPort2);
-    void simulate(const double startT, const double stopT);
-    void initialize(const double startT, const double stopT);
-
-    Port* addSystemPort(const string portname);
-    void setTypeCQS(const string cqs_type);
-    void setDesiredTimestep(const double timestep);
-
-    Component* getComponent(string name);
-    ComponentSystem* getComponentSystem(string name);
-    map<string, string> getComponentNames();
-
-private:
-    void logAllNodes(const double time);
-
-    void setTimestep(const double timestep);
-    void adjustTimestep(double timestep, vector<Component*> componentPtrs);
-    void preAllocateLogSpace(const double startT, const double stopT);
-    //void addInnerPortSetNode(const string portname, const string porttype, Node* pNode);
-    bool connectionOK(Node *pNode, Port *pPort1, Port *pPort2);
-
-    //vector<Component*> mSubComponentPtrs; //Problems with inheritance and casting?
-    vector<Component*> mComponentSignalptrs;
-    vector<Component*> mComponentQptrs;
-    vector<Component*> mComponentCptrs;
-    map<string, string> mComponentNames;
-
-    NodeFactory mpNodeFactory;
 };
 
 typedef ClassFactory<string, Component> ComponentFactory;

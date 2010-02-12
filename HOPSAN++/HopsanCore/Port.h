@@ -39,9 +39,10 @@ public:
     Node* getNodePublic();
 
 protected:
-    //Constructors
+    //Constructors - Destructors
     Port();
     Port(string portname, string node_type);
+    virtual ~Port();
 
     PortTypeT mPortType;
     //bool mIsSystemPort;
