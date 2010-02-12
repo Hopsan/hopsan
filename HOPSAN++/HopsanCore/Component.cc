@@ -377,6 +377,7 @@ ComponentSystem::ComponentSystem(string name, double timestep) : Component(name,
 {
     //mInnerPortPtrs.clear();
     mType = "ComponentSystem";
+    mTypeName = "ComponentSystem";
     mIsComponentSystem = true;
     mDesiredTimestep = timestep;
 }
@@ -442,7 +443,7 @@ Component* ComponentSystem::getComponent(string name)
 
     for (size_t s=0; s < mComponentQptrs.size(); ++s)
     {
-        cout << "Comparing " << mComponentQptrs[s]->mName << " with " << name << endl;
+        //cout << "Comparing " << mComponentQptrs[s]->mName << " with " << name << endl;
         if (mComponentQptrs[s]->mName == name)
         {
             return mComponentQptrs[s];
@@ -451,7 +452,7 @@ Component* ComponentSystem::getComponent(string name)
 
     for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
     {
-        cout << "Comparing " << mComponentSignalptrs[s]->mName << " with " << name << endl;
+        //cout << "Comparing " << mComponentSignalptrs[s]->mName << " with " << name << endl;
         if (mComponentSignalptrs[s]->mName == name)
         {
             return mComponentSignalptrs[s];

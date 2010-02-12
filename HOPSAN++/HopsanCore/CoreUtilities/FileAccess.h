@@ -33,6 +33,7 @@ public:
 private:
     string mFilename;
     ComponentSystem mModel;
+    void saveComponentSystem(ofstream& modelFile, ComponentSystem& motherModel, string motherSystemName);
 };
 
 #endif // FILEACCESS_INCLUDED

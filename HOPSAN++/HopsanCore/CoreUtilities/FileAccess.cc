@@ -195,16 +195,35 @@ ComponentSystem FileAccess::loadModel(string filename, double *startTime, double
 
 void FileAccess::saveModel(ComponentSystem mainModel)
 {
-    ofstream modelFile ("savedmodel.txt");
-    map<string, string> mainComponentList = mainModel.getComponentNames();
+    ofstream modelFile("savedmodel.txt");
+    saveComponentSystem(modelFile, mainModel, "");
+    modelFile.close();
+    return;
+}
+
+
+void FileAccess::saveComponentSystem(ofstream& modelFile, ComponentSystem& motherModel, string motherSystemName)
+{
+    map<string, string> mainComponentList = motherModel.getComponentNames();
     map<string, string>::iterator it;
     map<Port*, string> portList;
 
     for(it = mainComponentList.begin(); it!=mainComponentList.end(); ++it)
     {
-            //Write the create component line in the file
-        modelFile << "COMPONENT " << it->second << " " << it->first << "\n";
-        map<string,double> componentParameterList = mainModel.getComponent(it->first)->getParameterList();
+        if (it->second == "ComponentSystem")
+        {
+            modelFile << "SUBSYSTEM " << it->second << " " << it->first << "\n";
+            ///TODO: Skriv ut subsystemets portar
+            ///TODO: Fixa så man kan komma åt subsystem ur ett component system, så rekursiva anrop kan göras här
+            //saveComponentSystem(modelFile, motherModel.getComponent(it->second), motherSystemName + " " + it->first);
+        }
+        else
+        {
+                //Write the create component line in the file
+            modelFile << "COMPONENT " << it->second << " " << it->first << motherSystemName << "\n";
+        }
+
+        map<string,double> componentParameterList = motherModel.getComponent(it->first)->getParameterList();
         map<string, double>::iterator itc;
         for(itc = componentParameterList.begin(); itc!=componentParameterList.end(); ++itc)
         {
@@ -212,7 +231,7 @@ void FileAccess::saveModel(ComponentSystem mainModel)
         }
 
             //Store all ports in a map, together with the name of the component they belong to (for use below)
-        vector <Port*> portPtrsVector = mainModel.getComponent(it->first)->getPortPtrVector();
+        vector <Port*> portPtrsVector = motherModel.getComponent(it->first)->getPortPtrVector();
         vector <Port*>::iterator itp;
         for (itp=portPtrsVector.begin(); itp!=portPtrsVector.end(); ++itp)
         {
@@ -235,11 +254,6 @@ void FileAccess::saveModel(ComponentSystem mainModel)
                 modelFile << "CONNECT " << itp->second << " " << itp->first->getPortName() << " " << itp2->second << " " << itp2->first->getPortName() << "\n";
             }
         }
+        portList.erase(itp++);          //Increase itp by 1, then remove previous value from map to prevent double connection
     }
-
-
-    modelFile.close();
-
-
-    return;
 }
