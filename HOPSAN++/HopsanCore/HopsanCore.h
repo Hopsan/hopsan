@@ -19,7 +19,6 @@
 #include "Components/Components.h"
 #include <string>
 
-//! @class HopsanEssentials
 //! @brief This class gives access to HopsanCore Initialization, externalLib loading and ComponentCreation.
 class HopsanEssentials
 {

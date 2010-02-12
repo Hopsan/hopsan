@@ -6,6 +6,10 @@
 #include "math.h"
 #include "CoreUtilities/TurbulentFlowFunction.h"
 
+//!
+//! @brief A hydraulic turbulent orifice
+//! @ingroup Components
+//!
 class HydraulicTurbulentOrifice : public ComponentQ
 {
 private:

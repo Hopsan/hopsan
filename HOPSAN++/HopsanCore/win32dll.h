@@ -12,8 +12,19 @@
 
 #ifdef WIN32
 
+//! Spcifies that a function or class will only be exported on windows platforms
 #define DLLEXPORT __declspec(dllexport)
+//! Spcifies that a function or class will only be imported on windows platforms
 #define DLLIMPORT __declspec(dllimport)
+
+//!
+//! @def DLLIMPORTEXPORT
+//! @brief Will either be DLLIMPORT or DLLEXPORT depending on how the files are used when comiling.
+//!
+//! If the files are compiled as part of a lib it will be DLLEXPORT
+//! If the files are included as a lib they will be DLLIMPORT
+//! This only applies to Windows operation systems
+//!
 
 #ifdef DOCOREDLLEXPORT
 #define DLLIMPORTEXPORT DLLEXPORT /* DLL export */

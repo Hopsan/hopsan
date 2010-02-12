@@ -12,7 +12,6 @@
 //NodeTypeT NodeMechanic::iDummyId = NodeFactory::RegisterCreatorFunction("NodeMechanic", NodeMechanic::CreatorFunction);
 
 //!
-//! @fn register_nodes
 //! @brief Registers the creator function of all built in nodes
 //! @param [in,out] nfact_ptr A pointer the the node factory in wich to register the nodes
 //!

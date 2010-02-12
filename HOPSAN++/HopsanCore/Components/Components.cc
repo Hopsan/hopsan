@@ -9,7 +9,6 @@
 #include "Components.h"
 
 //!
-//! @fn register_components
 //! @brief Registers the creator function of all built in components
 //! @param [in,out] cfact_ptr A pointer the the component factory in wich to register the components
 //!

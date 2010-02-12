@@ -12,6 +12,10 @@
 
 #include "HopsanCore.h"
 
+//!
+//! @brief A hydraulic volume component
+//! @ingroup Components
+//!
 class HydraulicVolume : public ComponentC
 {
 

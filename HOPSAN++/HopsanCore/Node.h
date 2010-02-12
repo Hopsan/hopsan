@@ -29,30 +29,34 @@ public:
     //The user should never bother about Nodes
 
 protected:
+    //Protected member functions
     Node();
     NodeTypeT &getNodeType();
 
     void preAllocateLogSpace(const size_t nSlots);
     void logData(const double time);
     void saveLogData(string filename);
+
     void setData(const size_t data_type, double data);
     double getData(const size_t data_type);
     double &getDataRef(const size_t data_type);
+
+    //Protected member variables
     NodeTypeT mNodeType;
     vector<double> mDataVector;
     vector<Port*> mPortPtrs;
-    //vector<Port*> mTransparentPortPtrs;
 
 private:
+    //Private member fuctions
+    void setPort(Port *pPort);
+    bool connectedToPort(Port *pPort);
+
+    //Private member variables
     string mName;
     vector<double> mTimeStorage;
     vector<vector<double> > mDataStorage;
     bool mLogSpaceAllocated;
     size_t mLogCtr;
-    void setPort(Port *pPort);
-    //void setTransparentPort(Port *pPort);
-    bool connectedToPort(Port *pPort);
-
 };
 
 typedef ClassFactory<NodeTypeT, Node> NodeFactory;

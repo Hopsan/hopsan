@@ -16,7 +16,6 @@
 
 using namespace std;
 
-//! @class LoadExternal
 //! @brief This class handles loading and unloading of external component and node libs
 class DLLIMPORTEXPORT LoadExternal
 {

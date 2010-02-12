@@ -14,7 +14,7 @@
 #include <vector>
 #include <iostream>
 
-//! @class ClassFactory
+//!
 //! @brief Template class for automatic object instantiation by key-value.
 //!
 //! This code is based on:
