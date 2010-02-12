@@ -1,3 +1,9 @@
+//!
+//! @file   Components.h
+//! @author <FluMeS>
+//! @date   2010-01-08
+//! @brief Includes all built in components
+//!
 //$Id$
 
 #ifndef COMPONENTS_H_INCLUDED

@@ -12,9 +12,7 @@
 
 #include <string>
 #include "win32dll.h"
-
 #include "Component.h"
-
 
 using namespace std;
 
@@ -27,11 +25,8 @@ private:
     NodeFactory* mpNodeFactory;
 
 public:
-    //!LoadExternal Constructor
     LoadExternal();
-    //!This function loads a library with given path
     void load(string libpath);
-    //!This function sets the node and component factory pointers
     void setFactory(ComponentFactory* cfactory_ptr, NodeFactory* nfactory_ptr);
 };
 

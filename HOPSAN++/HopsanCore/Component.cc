@@ -7,6 +7,8 @@
 //!
 //$Id$
 
+//! @defgroup Components Components
+
 #include "Component.h"
 #include <iostream>
 #include <sstream>
@@ -485,20 +487,6 @@ map<string, string> ComponentSystem::getComponentNames()
 }
 
 
-////!TODO this should be in component system only, but its difficult to compile then
-//Port* Component::addInnerPortSetNode(const string portname, const string porttype, Node* pNode)
-//{
-//    ///TODO: handle trying to add multiple ports with same name or pos
-//    Port* new_port = CreatePort(porttype);
-//    new_port->mPortName = portname;
-//    new_port->mNodeType = pNode->getNodeType();
-//    new_port->mpComponent = this;    //Set port owner
-//
-//    mInnerPortPtrs.push_back(new_port);     //Copy port into storage
-//
-//    return new_port;
-//}
-
 //! Adds a node as subnode to specified component
 void Component::addSubNode(Node* node_ptr)
 {
@@ -540,8 +528,7 @@ void ComponentSystem::logAllNodes(const double time)
 //! Adds a transparent SubSystemPort
 Port* ComponentSystem::addSystemPort(const string portname)
 {
-    NodeTypeT undefined_nodetype;
-    return addPort(portname, "SystemPort", undefined_nodetype);
+    return addPort(portname, "SystemPort", "undefined_nodetype");
 }
 
 //! Set the type C, Q, or S of the subsystem

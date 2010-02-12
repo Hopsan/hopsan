@@ -17,11 +17,13 @@
 #include "dlfcn.h"
 #endif
 
+//!LoadExternal Constructor
 LoadExternal::LoadExternal()
 {
     //ctor
 }
 
+//!This function loads a library with given path
 void LoadExternal::load(string libpath)
 {
     //typedef void (*register_contents_t)(ComponentFactory::FactoryPairVectorT *factory_vector_ptr);
@@ -92,6 +94,7 @@ void LoadExternal::load(string libpath)
 
 }
 
+//!This function sets the node and component factory pointers
 void LoadExternal::setFactory(ComponentFactory* cfactory_ptr, NodeFactory* nfactory_ptr)
 {
     mpComponentFactory = cfactory_ptr;

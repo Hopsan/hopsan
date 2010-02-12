@@ -1,8 +1,18 @@
+//!
+//! @file   Components.cc
+//! @author <FluMeS>
+//! @date   2010-01-08
+//! @brief Contains the register_components function that registers all built in components
+//!
 //$Id$
 
 #include "Components.h"
 
-
+//!
+//! @fn register_components
+//! @brief Registers the creator function of all built in components
+//! @param [in,out] cfact_ptr A pointer the the component factory in wich to register the components
+//!
 DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr)
 {
     //Hydraulic components

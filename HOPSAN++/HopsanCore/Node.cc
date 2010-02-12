@@ -7,12 +7,17 @@
 //!
 //$Id$
 
+//! @defgroup Nodes Nodes
+//! @class Node
+//! @brief The Node base class
+//! @ingroup Nodes
+
 #include <fstream>
 #include <cassert>
 #include <iostream>
 #include "Node.h"
 
-//Node constructor
+//! Node base class constructor
 Node::Node()
 {
     mNodeType = "Node";
@@ -25,16 +30,29 @@ Node::Node()
     mLogCtr = 0;
 }
 
+//!
+//! @brief returns the node type
+//!
 NodeTypeT &Node::getNodeType()
 {
     return mNodeType;
 }
 
+//!
+//! @brief set data in node
+//! @param [in] data_type Identifier for the typ of node data to set
+//! @param [in] data The data value
+//!
 void Node::setData(const size_t data_type, double data)
 {
     mDataVector[data_type] = data;
 }
 
+//!
+//! @brief get data from node
+//! @param [in] data_type Identifier for the typ of node data to set
+//! @return The data value
+//!
 double Node::getData(const size_t data_type)
 {
     return mDataVector[data_type];
@@ -115,11 +133,6 @@ void Node::setPort(Port *pPort)
 {
     mPortPtrs.push_back(pPort);
 }
-
-//void Node::setTransparentPort(Port *pPort)
-//{
-//    mTransparentPortPtrs.push_back(pPort);
-//}
 
 bool Node::connectedToPort(Port *pPort)
 {

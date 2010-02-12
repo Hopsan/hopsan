@@ -1,3 +1,11 @@
+//!
+//! @file   Nodes.h
+//! @author <FluMeS>
+//! @date   2010-01-08
+//! @brief Contains all built in node types
+//!
+//$Id$
+
 #ifndef NODES_H_INCLUDED
 #define NODES_H_INCLUDED
 
@@ -5,6 +13,11 @@
 
 DLLIMPORTEXPORT void register_nodes(NodeFactory* nfact_ptr);
 
+//!
+//! @class NodeSignal
+//! @brief A signal node
+//! @ingroup Nodes
+//!
 class NodeSignal :public Node
 {
     friend void register_nodes(NodeFactory* nfact_ptr);
@@ -24,6 +37,11 @@ private:
 };
 
 
+//!
+//! @class NodeHydraulic
+//! @brief A hydraulic node
+//! @ingroup Nodes
+//!
 class NodeHydraulic :public Node
 {
     friend void register_nodes(NodeFactory* nfact_ptr);
@@ -42,6 +60,11 @@ private:
 };
 
 
+//!
+//! @class NodeMechanic
+//! @brief A mechanic node
+//! @ingroup Nodes
+//!
 class NodeMechanic :public Node
 {
     friend void register_nodes(NodeFactory* nfact_ptr);
