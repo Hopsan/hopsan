@@ -1,0 +1,25 @@
+SUBSYSTEM subModel1 Q
+SYSTEMPORT subModel1 subP1
+SYSTEMPORT subModel1 subP2
+
+COMPONENT HydraulicLaminarOrifice orificeL subModel1
+SET orificeL Kc 1e-12
+COMPONENT HydraulicVolume volumeC subModel1
+COMPONENT HydraulicLaminarOrifice orificeR subModel1
+SET orificeR Kc 1e-12
+
+CONNECT subModel1 subP1 orificeL P1
+CONNECT orificeL P2 volumeC P1
+CONNECT volumeC P2 orificeR P1
+CONNECT orificeR P2 subModel1 subP2
+
+COMPONENT SignalStep step
+COMPONENT HydraulicPressureSource psourceL
+COMPONENT HydraulicPressureSource psourceR
+
+CONNECT step out psourceL in
+CONNECT subModel1 subP1 psourceL P1
+CONNECT subModel1 subP2 psourceR P1
+
+SIMULATE 0 10
+PLOT volumeC P1
