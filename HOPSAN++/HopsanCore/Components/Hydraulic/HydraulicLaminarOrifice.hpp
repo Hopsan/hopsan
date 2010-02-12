@@ -4,6 +4,9 @@
 #include <iostream>
 #include "HopsanCore.h"
 
+//! @class HydraulicLaminarOrifice
+//! @brief A hydraulic laminar orifice model
+//! @ingroup components
 class HydraulicLaminarOrifice : public ComponentQ
 {
 private:
