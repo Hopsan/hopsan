@@ -63,6 +63,7 @@ Component::Component(string name, double timestep)
     mIsComponentQ = false;
     mIsComponentSystem = false;
     mIsComponentSignal = false;
+    mTypeCQS = "";
 
     registerParameter("Ts", "Sample time", "[s]",   mTimestep);
 }
@@ -110,9 +111,9 @@ const string &Component::getName()
     return mName;
 }
 
-const string &Component::getType()
+const string &Component::getTypeCQS()
 {
-    return mType;
+    return mTypeCQS;
 }
 
 const string &Component::getTypeName()
@@ -354,21 +355,21 @@ ComponentSystem &Component::getSystemparent()
 //constructor ComponentSignal
 ComponentSignal::ComponentSignal(string name, double timestep) : Component(name, timestep)
 {
-    mType = "ComponentSignal";
+    mTypeCQS = "S";
     mIsComponentSignal = true;
 }
 
 //constructor ComponentC
 ComponentC::ComponentC(string name, double timestep) : Component(name, timestep)
 {
-    mType = "ComponentC";
+    mTypeCQS = "C";
     mIsComponentC = true;
 }
 
 //Constructor ComponentQ
 ComponentQ::ComponentQ(string name, double timestep) : Component(name, timestep)
 {
-    mType = "ComponentQ";
+    mTypeCQS = "Q";
     mIsComponentQ = true;
 }
 
@@ -376,7 +377,6 @@ ComponentQ::ComponentQ(string name, double timestep) : Component(name, timestep)
 ComponentSystem::ComponentSystem(string name, double timestep) : Component(name, timestep)
 {
     //mInnerPortPtrs.clear();
-    mType = "ComponentSystem";
     mTypeName = "ComponentSystem";
     mIsComponentSystem = true;
     mDesiredTimestep = timestep;
@@ -551,18 +551,21 @@ void ComponentSystem::setTypeCQS(const string cqs_type)
     ///TODO: need to do erro checking, and make sure that the specified type really is valid, first and last component should be of this type (i think)
     if (cqs_type == string("C"))
     {
+        mTypeCQS = "C";
         mIsComponentC = true;
         mIsComponentQ = false;
         mIsComponentSignal = false;
     }
     else if (cqs_type == string("Q"))
     {
+        mTypeCQS = "Q";
         mIsComponentC = false;
         mIsComponentQ = true;
         mIsComponentSignal = false;
     }
     else if (cqs_type == string("S"))
     {
+        mTypeCQS = "S";
         mIsComponentC = false;
         mIsComponentQ = false;
         mIsComponentSignal = true;

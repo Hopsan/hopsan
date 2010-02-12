@@ -17,8 +17,6 @@
 
 using namespace std;
 
-//typedef map<string, string> componentNameMap;
-
 class DLLIMPORTEXPORT CompParameter
 {
     friend class Component;
@@ -47,51 +45,65 @@ class DLLIMPORTEXPORT Component
     friend class ComponentSystem;
 
 public:
+    //=====Public functions
+    //Virtual functions
     virtual void initialize(const double startT, const double stopT);
     virtual void simulate(const double startT, const double Ts);
 
+    //Name and type
     void setName(string name);
     const string &getName();
     const string &getType();
     const string &getTypeName();
+    const string &getTypeCQS();
 
+    //Parameters
     void listParametersConsole();
     double getParameter(const string name);
     void setParameter(const string name, const double value);
     map<string, double> getParameterList();
-    vector<Port*> getPortPtrVector();
 
+    //Ports
+    vector<Port*> getPortPtrVector();
+    Port &getPort(const string portname);
+
+    //System parent
     ComponentSystem &getSystemparent();
 
-    //void setTimestep(const double timestep); ///TODO: Should it be possible to set timestep of a component? Should only be possible for a Systemcomponent
-    //double getTimestep();
-
+    // Component type identification
     bool isComponentC();
     bool isComponentQ();
     bool isComponentSystem();
     bool isComponentSignal();
 
-    Port &getPort(const string portname);
+    //void setTimestep(const double timestep); ///TODO: Should it be possible to set timestep of a component? Should only be possible for a Systemcomponent
+    //double getTimestep();
 
 protected:
+    //=====Protected member functions
+    //Constructor - Destructor
     Component(string name="DefaultComponentName", double timestep=0.001);
     virtual ~Component(){};
+
+    //Virtual functions
     virtual void initialize(); ///TODO: Default values are hard set
     virtual void simulateOneTimestep();
+    virtual void setTimestep(const double timestep);
+
+    //Parameter functions
     void registerParameter(const string name, const string description, const string unit, double &rValue);
 
-    bool getPort(const string portname, Port* &prPort);
-    Port &getPortById(const size_t port_idx);
-
+    //Port functions
     Port* addPort(const string portname, const string porttype, const NodeTypeT nodetype, const int id=-1);
     Port* addPowerPort(const string portname, const string nodetype, const int id=-1);
     Port* addReadPort(const string portname, const string nodetype, const int id=-1);
     Port* addWritePort(const string portname, const string nodetype, const int id=-1);
     //void addMultiPort(const string portname, const string nodetype, const size_t nports, const size_t startctr=0);
+    bool getPort(const string portname, Port* &prPort);
+    Port &getPortById(const size_t port_idx);
 
-    virtual void setTimestep(const double timestep);
-
-    string mType;
+    //=====Protected member variables
+    string mTypeCQS;
     string mTypeName;
     double mTimestep, mDesiredTimestep;
     double mTime;
@@ -99,13 +111,15 @@ protected:
     bool mIsComponentQ;
     bool mIsComponentSystem;
     bool mIsComponentSignal;
-    vector<Port*> mPortPtrs;//, mInnerPortPtrs;
+    vector<Port*> mPortPtrs;
 
 private:
+    //Private member functions
     void setSystemparent(ComponentSystem &rComponentSystem);
     //Port* addInnerPortSetNode(const string portname, const string porttype, Node* pNode);
     void addSubNode(Node* node_ptr);
 
+    //Private member variables
     string mName;
     vector<Node*> mSubNodePtrs;
     vector<CompParameter> mParameters;
