@@ -1,6 +1,6 @@
 //!
 //! @file   Nodes.cc
-//! @author <FluMeS>
+//! @author FluMeS
 //! @date   2010-01-08
 //! @brief Contains the register_nodes function that registers all built in nodes
 //!

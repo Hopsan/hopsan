@@ -1,5 +1,5 @@
 //!
-//! @file   HydraulicSubSys.hpp
+//! @file   HydraulicSubSysExample.hpp
 //! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2010-01-30
 //!

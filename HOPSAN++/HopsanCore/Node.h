@@ -1,5 +1,5 @@
 //! @file   Node.h
-//! @author <FluMeS>
+//! @author FluMeS
 //! @date   2009-12-20
 //! @brief Contains Node base classes
 //!

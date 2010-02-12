@@ -1,6 +1,6 @@
 //!
 //! @file   Component.cc
-//! @author <FluMeS>
+//! @author FluMeS
 //! @date   2009-12-20
 //!
 //! @brief Contains Component base classes as well as Component Parameter class
@@ -625,7 +625,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
         //Check if component2 is a System component containing Component1
         else if (&rComponent2 == &(rComponent1.getSystemparent()))
         {
-            //! @TODO: both these checks could be boken out into subfunction as the code is the same only swapped 1 with 2
+            //! @todo both these checks could be boken out into subfunction as the code is the same only swapped 1 with 2
             //Create an instance of the node specified in nodespecifications
             pNode = gCoreNodeFactory.CreateInstance(pPort1->getNodeType());
             //Set nodetype in the systemport (should be empty by default)

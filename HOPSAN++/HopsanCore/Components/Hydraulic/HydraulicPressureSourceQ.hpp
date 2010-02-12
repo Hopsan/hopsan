@@ -1,6 +1,6 @@
 //!
 //! @file   HydraulicPressureSourceQ.hpp
-//! @author <FluMeS>
+//! @author FluMeS
 //! @date   2009-12-21
 //!
 //! @brief Contains a Hydraulic Pressure Source Component of Q-type

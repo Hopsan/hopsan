@@ -1,6 +1,6 @@
 //!
 //! @file   Nodes.h
-//! @author <FluMeS>
+//! @author FluMeS
 //! @date   2010-01-08
 //! @brief Contains all built in node types
 //!

@@ -1,6 +1,6 @@
 //!
 //! @file   Components.cc
-//! @author <FluMeS>
+//! @author FluMeS
 //! @date   2010-01-08
 //! @brief Contains the register_components function that registers all built in components
 //!

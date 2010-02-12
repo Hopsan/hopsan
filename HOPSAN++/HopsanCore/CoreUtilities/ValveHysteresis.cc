@@ -1,5 +1,5 @@
 //!
-//! @file   ValveHysteresis.hpp
+//! @file   ValveHysteresis.cc
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2010-01-13
 //!

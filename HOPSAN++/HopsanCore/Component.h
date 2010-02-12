@@ -1,6 +1,6 @@
 //!
 //! @file   Component.h
-//! @author <FluMeS>
+//! @author FluMeS
 //! @date   2009-12-20
 //!
 //! @brief Contains Component base classes as well as Component Parameter class
