@@ -464,6 +464,21 @@ Component* ComponentSystem::getComponent(string name)
 }
 
 
+ComponentSystem* ComponentSystem::getComponentSystem(string name)
+{
+    Component* temp_component_ptr = getComponent(name);
+    ComponentSystem* temp_compsys_ptr = dynamic_cast<ComponentSystem*>(temp_component_ptr);
+
+    if (temp_compsys_ptr == NULL)
+    {
+        cout << "dynamic cast failed, maybe " << name << " is not a component system" << endl;
+        assert(false);
+    }
+
+    return temp_compsys_ptr;
+}
+
+
 map<string, string> ComponentSystem::getComponentNames()
 {
     return mComponentNames;

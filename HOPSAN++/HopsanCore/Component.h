@@ -141,26 +141,31 @@ public:
     void addComponents(vector<Component*> components);
     void addComponent(Component &rComponent);
     void addComponent(Component *pComponent);
-    Component* getComponent(string name);
+
     void connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2);
     void connect(Component *pComponent1, const string portname1, Component *pComponent2, const string portname2);
     void connect(Port &rPort1, Port &rPort2);
     void simulate(const double startT, const double stopT);
     void initialize(const double startT, const double stopT);
-    void logAllNodes(const double time);
+
     Port* addSystemPort(const string portname);
     void setTypeCQS(const string cqs_type);
     void setDesiredTimestep(const double timestep);
+
+    Component* getComponent(string name);
+    ComponentSystem* getComponentSystem(string name);
     map<string, string> getComponentNames();
 
 private:
+    void logAllNodes(const double time);
+
     void setTimestep(const double timestep);
     void adjustTimestep(double timestep, vector<Component*> componentPtrs);
     void preAllocateLogSpace(const double startT, const double stopT);
     //void addInnerPortSetNode(const string portname, const string porttype, Node* pNode);
     bool connectionOK(Node *pNode, Port *pPort1, Port *pPort2);
 
-    vector<Component*> mSubComponentPtrs; //Problems with inheritance and casting?
+    //vector<Component*> mSubComponentPtrs; //Problems with inheritance and casting?
     vector<Component*> mComponentSignalptrs;
     vector<Component*> mComponentQptrs;
     vector<Component*> mComponentCptrs;
