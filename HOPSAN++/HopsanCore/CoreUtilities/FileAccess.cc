@@ -210,7 +210,8 @@ void FileAccess::saveComponentSystem(ofstream& modelFile, ComponentSystem& mothe
 
     for(it = mainComponentList.begin(); it!=mainComponentList.end(); ++it)
     {
-        if (it->second == "ComponentSystem")
+        //if (it->second == "ComponentSystem")
+        if(motherModel.getComponent(it->first)->isComponentSystem())
         {
             modelFile << "SUBSYSTEM " << it->second << " " << it->first << "\n";
             ///TODO: Skriv ut subsystemets portar
@@ -229,6 +230,7 @@ void FileAccess::saveComponentSystem(ofstream& modelFile, ComponentSystem& mothe
         {
             modelFile << "SET " << it->first << " " << itc->first << " " << itc->second << "\n";
         }
+
 
             //Store all ports in a map, together with the name of the component they belong to (for use below)
         vector <Port*> portPtrsVector = motherModel.getComponent(it->first)->getPortPtrVector();
