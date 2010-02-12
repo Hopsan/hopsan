@@ -59,6 +59,7 @@ ComponentSystem FileAccess::loadModel(double *startTime, double *stopTime, strin
             //Extract first word unless stream is empty
         if ( inputStream >> inputWord )
         {
+            cout << inputWord << endl;
 
             //----------- Create New SubSystem -----------//
 
@@ -67,6 +68,7 @@ ComponentSystem FileAccess::loadModel(double *startTime, double *stopTime, strin
                 ComponentSystem *tempComponentSystem = new ComponentSystem();
                 inputStream >> inputWord;
                 tempComponentSystem->setName(inputWord);
+                componentMap.insert(pair<string, Component*>(inputWord, &*tempComponentSystem));
                 componentSystemMap.insert(pair<string, ComponentSystem*>(inputWord, &*tempComponentSystem));
                 inputStream >> inputWord;
                 tempComponentSystem->setTypeCQS(inputWord);
@@ -193,10 +195,10 @@ ComponentSystem FileAccess::loadModel(string filename, double *startTime, double
     return loadModel(&*startTime, &*stopTime, &*plotComponent, &*plotPort);
 }
 
-void FileAccess::saveModel(ComponentSystem mainModel)
+void FileAccess::saveModel(ComponentSystem motherOfAllModels)
 {
     ofstream modelFile("savedmodel.txt");
-    saveComponentSystem(modelFile, mainModel, "");
+    saveComponentSystem(modelFile, motherOfAllModels, "");
     modelFile.close();
     return;
 }
@@ -213,10 +215,18 @@ void FileAccess::saveComponentSystem(ofstream& modelFile, ComponentSystem& mothe
         //if (it->second == "ComponentSystem")
         if(motherModel.getComponent(it->first)->isComponentSystem())
         {
-            modelFile << "SUBSYSTEM " << it->second << " " << it->first << "\n";
+            modelFile << "SUBSYSTEM " << " " << it->first << " " << motherModel.getComponentSystem(it->first)->getTypeCQS() << "\n";
+            vector<Port*> systemPorts = motherModel.getComponentSystem(it->first)->getPortPtrVector();
+            cout << "Subsystem has " << systemPorts.size() << " ports.\n";
+            vector<Port*>::iterator itp;
+            for (itp=systemPorts.begin(); itp!=systemPorts.end(); ++itp)
+            {
+                modelFile << "SYSTEMPORT " << it->first << " " << (*itp)->getPortName() << "\n";
+            }
+
             ///TODO: Skriv ut subsystemets portar
             ///TODO: Fixa så man kan komma åt subsystem ur ett component system, så rekursiva anrop kan göras här
-            //saveComponentSystem(modelFile, motherModel.getComponent(it->second), motherSystemName + " " + it->first);
+            saveComponentSystem(modelFile, *motherModel.getComponentSystem(it->first), motherSystemName + " " + it->first);
         }
         else
         {
@@ -237,22 +247,30 @@ void FileAccess::saveComponentSystem(ofstream& modelFile, ComponentSystem& mothe
         vector <Port*>::iterator itp;
         for (itp=portPtrsVector.begin(); itp!=portPtrsVector.end(); ++itp)
         {
-            Port* tempPort = *itp;
             portList.insert(pair<Port*,string>(*itp, it->first));
+        }
+        portPtrsVector = motherModel.getPortPtrVector();
+        for (itp=portPtrsVector.begin(); itp!=portPtrsVector.end(); ++itp)
+        {
+            portList.insert(pair<Port*,string>(*itp, motherModel.getName()));
         }
     }
 
+    cout << "Connecting in system " << motherModel.getName() << ", portList.size() = " << portList.size() << endl;
+
         //Iterate through port map and figure out which ports share the same node, and then write the connect lines
     map<Port*, string>::iterator itp;
-    for(itp = portList.begin(); itp != portList.end(); ++itp)
+    for(itp = portList.begin(); itp != portList.end();)
     {
         map<Port*, string>::iterator itp2;
         for(itp2 = portList.begin(); itp2 != portList.end(); ++itp2)
         {
+            cout << "Comparing nodes " << itp->second << " " << itp->first->getPortName() << " with " << itp2->second << " " << itp2->first->getPortName() << endl;
             Node *ptr1 = itp->first->getNodePublic();
             Node *ptr2 = itp2->first->getNodePublic();
             if (ptr1 == ptr2 && itp != itp2)
             {
+                cout << "Match!\n";
                 modelFile << "CONNECT " << itp->second << " " << itp->first->getPortName() << " " << itp2->second << " " << itp2->first->getPortName() << "\n";
             }
         }
