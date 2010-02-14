@@ -18,6 +18,7 @@
 #include <QtCore/QIODevice>
 #include <QListWidgetItem>
 #include <QStringList>
+#include <QDockWidget>
 
 #include "treewidget.h"
 #include "treewidgetitem.h"
@@ -27,6 +28,7 @@
 #include "listwidgetitem.h"
 #include "ProjectTabWidget.h"
 #include "LibraryWidget.h"
+//#include "plotwidget.h"
 
 class MainWindow : public QMainWindow
 {
@@ -46,6 +48,8 @@ public:
     QMenu *menuNew;
     QMenu *menuLibs;
     QMenu *menuSimulation;
+    QMenu *menuView;
+    QMenu *menuPlot;
     QStatusBar *statusBar;
     QAction *actionOpen;
     QAction *actionSave;
@@ -53,16 +57,20 @@ public:
     QAction *actionProject;
     QAction *actionLoadLibs;
     QAction *actionSimulate;
+    QAction *actionPlot;
 
     QString libDir;
 
     GraphicsScene *scene;
     GraphicsView *view;
 
+    //PlotWidget *plotwidget;
+
     void closeEvent(QCloseEvent *event);
 
 private slots:
     void addLibs();
+    //void plot();
 
 
 

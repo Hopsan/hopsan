@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     projectTabs->addProjectTab();
 
     //Create the library for components representation
-    library = new LibraryWidget(this);
+    /*library = new LibraryWidget(this);
 
     //Add the tree and tabcontainer to the centralgrid
     centralgrid->addWidget(library,0,0);
@@ -33,7 +33,16 @@ MainWindow::MainWindow(QWidget *parent)
     centralgrid->setColumnMinimumWidth(0,120);
     centralgrid->setColumnStretch(0,0);
     centralgrid->setColumnMinimumWidth(1,100);
-    centralgrid->setColumnStretch(1,10);
+    centralgrid->setColumnStretch(1,10);*/
+
+    //Create a dock for the componentslibrary
+    QDockWidget *dock = new QDockWidget(tr("Components"), this);
+    dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    library = new LibraryWidget(dock);
+    dock->setWidget(library);
+    addDockWidget(Qt::LeftDockWidgetArea, dock);
+
+    centralgrid->addWidget(projectTabs,0,0);
 
     centralwidget->setLayout(centralgrid);
 
@@ -62,6 +71,12 @@ MainWindow::MainWindow(QWidget *parent)
     menuSimulation->setObjectName("menuSimulation");
     menuSimulation->setTitle("&Simulation");
 
+    menuView = new QMenu(menubar);
+    menuView->setTitle("&View");
+
+    menuPlot = new QMenu(menubar);
+    menuPlot->setTitle("&Plot");
+
     this->setMenuBar(menubar);
 
     //Create the Statusbar
@@ -88,6 +103,9 @@ MainWindow::MainWindow(QWidget *parent)
     actionSimulate = new QAction(this);
     actionSimulate->setText("Simulate");
 
+    actionPlot = new QAction(this);
+    actionPlot->setText("Plot");
+
     //Add the actionbuttons to the menues
     menuNew->addAction(actionProject);
 
@@ -101,9 +119,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     menuSimulation->addAction(actionSimulate);
 
+    menuView->addAction(dock->toggleViewAction());
+
+    menuPlot->addAction(actionPlot);
+
     menubar->addAction(menuFile->menuAction());
     menubar->addAction(menuLibs->menuAction());
     menubar->addAction(menuSimulation->menuAction());
+    menubar->addAction(menuView->menuAction());
+    menubar->addAction(menuPlot->menuAction());
 
     QMetaObject::connectSlotsByName(this);
 
@@ -113,6 +137,8 @@ MainWindow::MainWindow(QWidget *parent)
     this->connect(this->actionClose,SIGNAL(triggered()),SLOT(close()));
     this->connect(this->actionProject,SIGNAL(triggered()),projectTabs,SLOT(addProjectTab()));
     this->connect(this->actionLoadLibs,SIGNAL(triggered()),SLOT(addLibs()));
+
+    //this->connect(this->actionPlot,SIGNAL(triggered()),SLOT(plot()));
 
 }
 
@@ -194,6 +220,12 @@ void MainWindow::addLibs()
         library->addComponent(libName,componentName,icon,parameterData);
     }
 }
+
+/*void MainWindow::plot()
+{
+    plotwidget = new PlotWidget(this);
+    plotwidget->show();
+}*/
 
 
 //! Event triggered re-implemented method that closes the main window.
