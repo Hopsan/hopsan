@@ -1848,9 +1848,9 @@ void testLoad()
     simulationmodel.simulate(startTime, stopTime);
 
         //Test write to file
-    //simulationmodel.getComponent(plotComponent)->getPort(plotPort).saveLogData("output.txt");
+    simulationmodel.getComponent(plotComponent)->getPort(plotPort).saveLogData("output.txt");
 
-    modelFile.saveModel(simulationmodel);
+    modelFile.saveModel("savedmodel.txt", simulationmodel, startTime, stopTime, plotComponent, plotPort);
 
     cout << "testLoad() Done!" << endl;
 }

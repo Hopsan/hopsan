@@ -28,7 +28,7 @@ public:
     void setFilename(string filename);
     ComponentSystem loadModel(double *startTime, double *stopTime, string *plotComponent, string *plotPort);
     ComponentSystem loadModel(string filename, double *startTime, double *stopTime, string *plotComponent, string *plotPort);
-    void saveModel(ComponentSystem mainModel);
+    void saveModel(string fileName, ComponentSystem mainModel, double startTime, double stopTime, string plotComponent, string plotPort);
 
 private:
     string mFilename;

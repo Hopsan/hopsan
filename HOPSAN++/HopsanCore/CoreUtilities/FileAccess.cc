@@ -195,10 +195,12 @@ ComponentSystem FileAccess::loadModel(string filename, double *startTime, double
     return loadModel(&*startTime, &*stopTime, &*plotComponent, &*plotPort);
 }
 
-void FileAccess::saveModel(ComponentSystem motherOfAllModels)
+void FileAccess::saveModel(string fileName, ComponentSystem motherOfAllModels, double startTime, double stopTime, string plotComponent, string plotPort)
 {
-    ofstream modelFile("savedmodel.txt");
+    ofstream modelFile(fileName.c_str());
     saveComponentSystem(modelFile, motherOfAllModels, "");
+    modelFile << "SIMULATE " << startTime << " " << stopTime << "\n";
+    modelFile << "PLOT " << plotComponent << " " << plotPort << "\n";
     modelFile.close();
     return;
 }
@@ -265,12 +267,10 @@ void FileAccess::saveComponentSystem(ofstream& modelFile, ComponentSystem& mothe
         map<Port*, string>::iterator itp2;
         for(itp2 = portList.begin(); itp2 != portList.end(); ++itp2)
         {
-            cout << "Comparing nodes " << itp->second << " " << itp->first->getPortName() << " with " << itp2->second << " " << itp2->first->getPortName() << endl;
             Node *ptr1 = itp->first->getNodePublic();
             Node *ptr2 = itp2->first->getNodePublic();
             if (ptr1 == ptr2 && itp != itp2)
             {
-                cout << "Match!\n";
                 modelFile << "CONNECT " << itp->second << " " << itp->first->getPortName() << " " << itp2->second << " " << itp2->first->getPortName() << "\n";
             }
         }
