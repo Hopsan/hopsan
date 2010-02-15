@@ -60,7 +60,7 @@ protected:
 //};
 
 
-class ProjectTabWidget;
+class ProjectTabWidget; //Forward declaration
 
 class ProjectTab : public QWidget
 {
@@ -79,12 +79,16 @@ public slots:
 };
 
 
+class HopsanEssentials; //Forward declaration
+
 class ProjectTabWidget : public QTabWidget
 {
     Q_OBJECT
 
 public:
     ProjectTabWidget(QWidget *parent = 0);
+
+    HopsanEssentials *Hopsan;
 
     size_t numberOfUntitledTabs;
 

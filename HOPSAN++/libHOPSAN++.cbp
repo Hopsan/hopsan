@@ -8,8 +8,8 @@
 		<Build>
 			<Target title="DebugWin32">
 				<Option platforms="Windows;" />
-				<Option output="bin\Debug\libHOPSANCORE" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Debug\" />
+				<Option output="bin/Debug/libHOPSANCORE" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -20,8 +20,8 @@
 			</Target>
 			<Target title="ReleaseWin32">
 				<Option platforms="Windows;" />
-				<Option output="bin\Release\libHOPSANCORE" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Release\" />
+				<Option output="bin/Release/libHOPSANCORE" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -35,8 +35,8 @@
 			</Target>
 			<Target title="DebugMAC">
 				<Option platforms="Mac;" />
-				<Option output="\Users\bjoer37\svn\HOPSAN++\bin\Debug\libHOPSANCORE" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Debug\" />
+				<Option output="/Users/bjoer37/svn/HOPSAN++/bin/Debug/libHOPSANCORE" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -52,12 +52,12 @@
 			</Target>
 			<Target title="DebugUnix">
 				<Option platforms="Unix;" />
-				<Option output="bin\Debug\libHOPSANCORE" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Debug\" />
-				<Option type="3" />
+				<Option output="bin/Debug/libHOPSANCORE" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj/Debug/" />
+				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
-				<Option createStaticLib="1" />
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-fPIC" />
@@ -69,8 +69,8 @@
 			</Target>
 			<Target title="ReleaseUnix">
 				<Option platforms="Unix;" />
-				<Option output="bin\Release\libHOPSANCORE" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Release\" />
+				<Option output="bin/Release/libHOPSANCORE" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -93,93 +93,93 @@
 		<Linker>
 			<Add option="-shared" />
 		</Linker>
-		<Unit filename="HopsanCore\Component.cc" />
-		<Unit filename="HopsanCore\Component.h" />
-		<Unit filename="HopsanCore\Components\Components.cc" />
-		<Unit filename="HopsanCore\Components\Components.h" />
-		<Unit filename="HopsanCore\Components\HydraulicComponentTemplate.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\Hydraulic43Valve.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicAckumulator.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicCheckValve.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicCylinderC.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicCylinderQ.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicFixedDisplacementPump.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicFlowSensor.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicFlowSourceQ.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicLaminarOrifice.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicPowerSensor.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicPressureControlledValve.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicPressureReliefValve.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicPressureSensor.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicPressureSource.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicPressureSourceQ.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicSubSysExample.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicTLMRLineR.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicTLMlossless.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicTurbulentOrifice.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicVariableDisplacementPump.hpp" />
-		<Unit filename="HopsanCore\Components\Hydraulic\HydraulicVolume.hpp" />
-		<Unit filename="HopsanCore\Components\Mechanic\MechanicForceSensor.hpp" />
-		<Unit filename="HopsanCore\Components\Mechanic\MechanicForceTransformer.hpp" />
-		<Unit filename="HopsanCore\Components\Mechanic\MechanicPositionSensor.hpp" />
-		<Unit filename="HopsanCore\Components\Mechanic\MechanicSpeedSensor.hpp" />
-		<Unit filename="HopsanCore\Components\Mechanic\MechanicTranslationalMass.hpp" />
-		<Unit filename="HopsanCore\Components\Mechanic\MechanicTranslationalSpring.hpp" />
-		<Unit filename="HopsanCore\Components\Mechanic\MechanicVelocityTransformer.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalAdd.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalDeadZone.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalDivide.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalFirstOrderFilter.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalGain.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalHysteresis.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalIntegrator.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalIntegrator2.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalIntegratorLimited.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalIntegratorLimited2.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalLP1Filter.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalLP2Filter.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalMultiply.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalPulse.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalRamp.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalSaturation.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalSecondOrderFilter.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalSineWave.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalSink.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalSoftStep.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalSource.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalSquareWave.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalStep.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalSubtract.hpp" />
-		<Unit filename="HopsanCore\Components\Signal\SignalTimeDelay.hpp" />
-		<Unit filename="HopsanCore\CoreUtilities\ClassFactory.h" />
-		<Unit filename="HopsanCore\CoreUtilities\Delay.cc" />
-		<Unit filename="HopsanCore\CoreUtilities\Delay.h" />
-		<Unit filename="HopsanCore\CoreUtilities\FileAccess.cc" />
-		<Unit filename="HopsanCore\CoreUtilities\FileAccess.h" />
-		<Unit filename="HopsanCore\CoreUtilities\FirstOrderFilter.cc" />
-		<Unit filename="HopsanCore\CoreUtilities\FirstOrderFilter.h" />
-		<Unit filename="HopsanCore\CoreUtilities\Integrator.cc" />
-		<Unit filename="HopsanCore\CoreUtilities\Integrator.h" />
-		<Unit filename="HopsanCore\CoreUtilities\IntegratorLimited.cc" />
-		<Unit filename="HopsanCore\CoreUtilities\IntegratorLimited.h" />
-		<Unit filename="HopsanCore\CoreUtilities\LoadExternal.cc" />
-		<Unit filename="HopsanCore\CoreUtilities\LoadExternal.h" />
-		<Unit filename="HopsanCore\CoreUtilities\SecondOrderFilter.cc" />
-		<Unit filename="HopsanCore\CoreUtilities\SecondOrderFilter.h" />
-		<Unit filename="HopsanCore\CoreUtilities\TransferFunction.cc" />
-		<Unit filename="HopsanCore\CoreUtilities\TransferFunction.h" />
-		<Unit filename="HopsanCore\CoreUtilities\TurbulentFlowFunction.cc" />
-		<Unit filename="HopsanCore\CoreUtilities\TurbulentFlowFunction.h" />
-		<Unit filename="HopsanCore\CoreUtilities\ValveHysteresis.cc" />
-		<Unit filename="HopsanCore\CoreUtilities\ValveHysteresis.h" />
-		<Unit filename="HopsanCore\HopsanCore.h" />
-		<Unit filename="HopsanCore\Node.cc" />
-		<Unit filename="HopsanCore\Node.h" />
-		<Unit filename="HopsanCore\Nodes\Nodes.cc" />
-		<Unit filename="HopsanCore\Nodes\Nodes.h" />
-		<Unit filename="HopsanCore\Port.cc" />
-		<Unit filename="HopsanCore\Port.h" />
-		<Unit filename="HopsanCore\win32dll.h" />
+		<Unit filename="HopsanCore/Component.cc" />
+		<Unit filename="HopsanCore/Component.h" />
+		<Unit filename="HopsanCore/Components/Components.cc" />
+		<Unit filename="HopsanCore/Components/Components.h" />
+		<Unit filename="HopsanCore/Components/Hydraulic/Hydraulic43Valve.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicAckumulator.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicCheckValve.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicCylinderC.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicCylinderQ.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicFixedDisplacementPump.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicFlowSensor.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicFlowSourceQ.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicLaminarOrifice.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPowerSensor.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPressureControlledValve.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPressureReliefValve.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPressureSensor.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPressureSource.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicPressureSourceQ.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicSubSysExample.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicTLMRLineR.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicTLMlossless.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicTurbulentOrifice.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicVariableDisplacementPump.hpp" />
+		<Unit filename="HopsanCore/Components/Hydraulic/HydraulicVolume.hpp" />
+		<Unit filename="HopsanCore/Components/HydraulicComponentTemplate.hpp" />
+		<Unit filename="HopsanCore/Components/Mechanic/MechanicForceSensor.hpp" />
+		<Unit filename="HopsanCore/Components/Mechanic/MechanicForceTransformer.hpp" />
+		<Unit filename="HopsanCore/Components/Mechanic/MechanicPositionSensor.hpp" />
+		<Unit filename="HopsanCore/Components/Mechanic/MechanicSpeedSensor.hpp" />
+		<Unit filename="HopsanCore/Components/Mechanic/MechanicTranslationalMass.hpp" />
+		<Unit filename="HopsanCore/Components/Mechanic/MechanicTranslationalSpring.hpp" />
+		<Unit filename="HopsanCore/Components/Mechanic/MechanicVelocityTransformer.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalAdd.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalDeadZone.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalDivide.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalFirstOrderFilter.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalGain.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalHysteresis.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalIntegrator.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalIntegrator2.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalIntegratorLimited.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalIntegratorLimited2.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalLP1Filter.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalLP2Filter.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalMultiply.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalPulse.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalRamp.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalSaturation.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalSecondOrderFilter.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalSineWave.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalSink.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalSoftStep.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalSource.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalSquareWave.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalStep.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalSubtract.hpp" />
+		<Unit filename="HopsanCore/Components/Signal/SignalTimeDelay.hpp" />
+		<Unit filename="HopsanCore/CoreUtilities/ClassFactory.h" />
+		<Unit filename="HopsanCore/CoreUtilities/Delay.cc" />
+		<Unit filename="HopsanCore/CoreUtilities/Delay.h" />
+		<Unit filename="HopsanCore/CoreUtilities/FileAccess.cc" />
+		<Unit filename="HopsanCore/CoreUtilities/FileAccess.h" />
+		<Unit filename="HopsanCore/CoreUtilities/FirstOrderFilter.cc" />
+		<Unit filename="HopsanCore/CoreUtilities/FirstOrderFilter.h" />
+		<Unit filename="HopsanCore/CoreUtilities/Integrator.cc" />
+		<Unit filename="HopsanCore/CoreUtilities/Integrator.h" />
+		<Unit filename="HopsanCore/CoreUtilities/IntegratorLimited.cc" />
+		<Unit filename="HopsanCore/CoreUtilities/IntegratorLimited.h" />
+		<Unit filename="HopsanCore/CoreUtilities/LoadExternal.cc" />
+		<Unit filename="HopsanCore/CoreUtilities/LoadExternal.h" />
+		<Unit filename="HopsanCore/CoreUtilities/SecondOrderFilter.cc" />
+		<Unit filename="HopsanCore/CoreUtilities/SecondOrderFilter.h" />
+		<Unit filename="HopsanCore/CoreUtilities/TransferFunction.cc" />
+		<Unit filename="HopsanCore/CoreUtilities/TransferFunction.h" />
+		<Unit filename="HopsanCore/CoreUtilities/TurbulentFlowFunction.cc" />
+		<Unit filename="HopsanCore/CoreUtilities/TurbulentFlowFunction.h" />
+		<Unit filename="HopsanCore/CoreUtilities/ValveHysteresis.cc" />
+		<Unit filename="HopsanCore/CoreUtilities/ValveHysteresis.h" />
+		<Unit filename="HopsanCore/HopsanCore.h" />
+		<Unit filename="HopsanCore/Node.cc" />
+		<Unit filename="HopsanCore/Node.h" />
+		<Unit filename="HopsanCore/Nodes/Nodes.cc" />
+		<Unit filename="HopsanCore/Nodes/Nodes.h" />
+		<Unit filename="HopsanCore/Port.cc" />
+		<Unit filename="HopsanCore/Port.h" />
+		<Unit filename="HopsanCore/win32dll.h" />
 		<Extensions>
 			<envvars />
 			<code_completion />

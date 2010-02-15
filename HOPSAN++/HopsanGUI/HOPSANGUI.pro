@@ -22,4 +22,9 @@ HEADERS += mainwindow.h \
     listwidgetitem.h \
     graphicsrectitem.h \
     ProjectTabWidget.h \
-    LibraryWidget.h
+    LibraryWidget.h \
+    ../HopsanCore/HopsanCore.h
+OTHER_FILES += 
+LIBS += ../bin/Debug/libHOPSANCORE.a
+INCLUDEPATH += ../HopsanCore \
+    ../bin/Debug
