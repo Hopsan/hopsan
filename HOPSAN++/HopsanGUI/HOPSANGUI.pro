@@ -25,6 +25,7 @@ HEADERS += mainwindow.h \
     LibraryWidget.h \
     ../HopsanCore/HopsanCore.h
 OTHER_FILES += 
+DEFINES += STATICCORE
 LIBS += ../bin/Debug/libHOPSANCORE.a
 INCLUDEPATH += ../HopsanCore \
     ../bin/Debug

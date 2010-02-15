@@ -26,11 +26,14 @@
 //! This only applies to Windows operation systems
 //!
 
-#ifdef DOCOREDLLEXPORT
+#ifdef STATICCORE
+#define DLLIMPORTEXPORT
+#elif defined DOCOREDLLEXPORT
 #define DLLIMPORTEXPORT DLLEXPORT /* DLL export */
 #else
 #define DLLIMPORTEXPORT DLLIMPORT /* EXE import */
 #endif
+
 
 #else
 //Define nothing on non WIN32 systems
