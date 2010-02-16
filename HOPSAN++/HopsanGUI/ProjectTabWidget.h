@@ -28,8 +28,6 @@ public:
 };
 
 
-class ComponentGuiClass; //Forward declaration
-
 class GraphicsView : public QGraphicsView
 {
     Q_OBJECT
