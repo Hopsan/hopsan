@@ -21,7 +21,7 @@
 #ifndef SIGNALSQUAREWAVE_HPP_INCLUDED
 #define SIGNALSQUAREWAVE_HPP_INCLUDED
 
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 #include "math.h"
 
 class SignalSquareWave : public ComponentSignal

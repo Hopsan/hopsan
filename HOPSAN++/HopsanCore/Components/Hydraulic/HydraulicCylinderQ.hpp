@@ -28,9 +28,7 @@
 #define HYDRAULICCYLINDERQ_HPP_INCLUDED
 
 #include <iostream>
-#include "HopsanCore.h"
-//#include "math.h"
-//#include "CoreUtilities/TurbulentFlowFunction.h"
+#include "../../ComponentEssentials.h"
 
 class HydraulicCylinderQ : public ComponentQ
 {

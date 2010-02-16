@@ -24,7 +24,7 @@
 #ifndef SIGNALRAMP_HPP_INCLUDED
 #define SIGNALRAMP_HPP_INCLUDED
 
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 class SignalRamp : public ComponentSignal
 {

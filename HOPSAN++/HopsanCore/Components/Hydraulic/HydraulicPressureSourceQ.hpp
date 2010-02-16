@@ -11,7 +11,7 @@
 #define HYDRAULICPRESSURESOURCEQ_HPP_INCLUDED
 
 #include <iostream>
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 class HydraulicPressureSourceQ : public ComponentQ
 {

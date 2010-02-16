@@ -1,7 +1,7 @@
 #ifndef SIGNALLP1FILTER_HPP_INCLUDED
 #define SIGNALLP1FILTER_HPP_INCLUDED
 
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 class SignalLP1Filter : public ComponentSignal
 {

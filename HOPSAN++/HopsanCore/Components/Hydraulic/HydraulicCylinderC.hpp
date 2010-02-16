@@ -12,7 +12,7 @@
 #ifndef HYDRAULICCYLINDERC_HPP_INCLUDED
 #define HYDRAULICCYLINDERC_HPP_INCLUDED
 
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 class HydraulicCylinderC : public ComponentC
 {

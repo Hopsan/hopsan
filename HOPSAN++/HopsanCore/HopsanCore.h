@@ -14,7 +14,6 @@
 #define HOPSANCORE_H_INCLUDED
 
 #include "CoreUtilities/LoadExternal.h"
-#include "Port.h"
 #include "Nodes/Nodes.h"
 #include "Components/Components.h"
 #include <string>

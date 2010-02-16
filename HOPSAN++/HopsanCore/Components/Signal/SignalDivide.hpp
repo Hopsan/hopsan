@@ -10,7 +10,7 @@
 #ifndef SIGNALDIVIDE_HPP_INCLUDED
 #define SIGNALDIVIDE_HPP_INCLUDED
 
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 class SignalDivide : public ComponentSignal
 {

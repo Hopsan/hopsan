@@ -11,7 +11,7 @@
 #define HYDRAULICCHECKACKUMULATOR_HPP_INCLUDED
 
 #include <iostream>
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 #include "math.h"
 
 class HydraulicAckumulator : public ComponentQ

@@ -10,7 +10,7 @@
 #ifndef SIGNALSATURATION_HPP_INCLUDED
 #define SIGNALSATURATION_HPP_INCLUDED
 
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 class SignalSaturation : public ComponentSignal
 {

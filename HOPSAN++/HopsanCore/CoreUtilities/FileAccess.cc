@@ -11,7 +11,7 @@
 #include "Component.h"
 #include <iostream>
 #include <cassert>
-#include "HopsanCore.h"
+#include "../HopsanCore.h"
 
 
 FileAccess::FileAccess()

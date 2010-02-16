@@ -11,10 +11,8 @@
 #define HYDRAULICTLMRLINER_HPP_INCLUDED
 
 #include <iostream>
-
-#include "Component.h"
-#include "Nodes/Nodes.h"
-#include "CoreUtilities/Delay.h"
+#include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 
 class HydraulicTLMRlineR : public ComponentC
 {

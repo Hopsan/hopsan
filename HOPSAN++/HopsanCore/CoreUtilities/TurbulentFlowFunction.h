@@ -13,7 +13,7 @@
 #define TURBULENTFLOWFUNCTION_H_INCLUDED
 
 #include <deque>
-#include "win32dll.h"
+#include "../win32dll.h"
 
 
 class DLLIMPORTEXPORT TurbulentFlowFunction

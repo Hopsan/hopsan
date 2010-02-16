@@ -11,8 +11,8 @@
 #define LOADEXTERNAL_H
 
 #include <string>
-#include "win32dll.h"
-#include "Component.h"
+#include "../win32dll.h"
+#include "../Component.h"
 
 using namespace std;
 

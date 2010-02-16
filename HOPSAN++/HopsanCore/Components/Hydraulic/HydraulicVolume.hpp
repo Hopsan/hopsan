@@ -10,7 +10,7 @@
 #ifndef HYDRAULICVOLUME_HPP_INCLUDED
 #define HYDRAULICVOLUME_HPP_INCLUDED
 
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 //!
 //! @brief A hydraulic volume component

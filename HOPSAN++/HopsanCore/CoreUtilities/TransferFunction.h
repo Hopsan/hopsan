@@ -1,7 +1,7 @@
 #ifndef TRANSFERFUNCTION_H_INCLUDED
 #define TRANSFERFUNCTION_H_INCLUDED
 
-#include "win32dll.h"
+#include "../win32dll.h"
 #include "Delay.h"
 
 class DLLIMPORTEXPORT TransferFunction

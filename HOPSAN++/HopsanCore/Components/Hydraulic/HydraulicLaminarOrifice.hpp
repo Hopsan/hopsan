@@ -2,7 +2,7 @@
 #define HYDRAULICLAMINARORIFICE_HPP_INCLUDED
 
 #include <iostream>
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 //!
 //! @brief A hydraulic laminar orifice component

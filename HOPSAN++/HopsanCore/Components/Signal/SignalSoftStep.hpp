@@ -25,7 +25,7 @@
 #ifndef SIGNALSOFTSTEP_HPP_INCLUDED
 #define SIGNALSOFTSTEP_HPP_INCLUDED
 
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 #include "math.h"
 
 class SignalSoftStep : public ComponentSignal

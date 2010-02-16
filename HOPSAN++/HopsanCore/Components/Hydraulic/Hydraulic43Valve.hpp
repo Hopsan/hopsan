@@ -2,9 +2,8 @@
 #define HYDRAULIC43VALVE_HPP_INCLUDED
 
 #include <iostream>
-#include "HopsanCore.h"
-#include "CoreUtilities/SecondOrderFilter.h"
-#include "CoreUtilities/TurbulentFlowFunction.h"
+#include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 
 class Hydraulic43Valve : public ComponentQ
 {

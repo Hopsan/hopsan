@@ -9,12 +9,12 @@
 
 //! @defgroup Components Components
 
-#include "Component.h"
 #include <iostream>
 #include <sstream>
 #include <cassert>
 #include <math.h>
-#include <Port.h>
+#include "Component.h"
+#include "Port.h"
 
 //Constructor
 CompParameter::CompParameter(const string name, const string description, const string unit, double &rValue)

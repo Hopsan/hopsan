@@ -11,9 +11,9 @@
 #define HYDRAULICCHECKVALVE_HPP_INCLUDED
 
 #include <iostream>
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 #include "math.h"
-#include "CoreUtilities/TurbulentFlowFunction.h"
 
 class HydraulicCheckValve : public ComponentQ
 {

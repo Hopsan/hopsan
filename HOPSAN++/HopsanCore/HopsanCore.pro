@@ -1,11 +1,13 @@
 # -------------------------------------------------
 # Project created by QtCreator 2010-02-16T15:57:03
 # -------------------------------------------------
-QT -= core gui
+QT -= core \
+    gui
 TARGET = HopsanCore
 TEMPLATE = lib
 CONFIG += dll
-#win32:DEFINES += STATICCORE
+
+# win32:DEFINES += STATICCORE
 win32:DEFINES += DOCOREDLLEXPORT
 DESTDIR = bin/debug
 SOURCES += Port.cc \
@@ -94,4 +96,6 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicCylinderC.hpp \
     Components/Hydraulic/HydraulicCheckValve.hpp \
     Components/Hydraulic/HydraulicAckumulator.hpp \
-    Components/Hydraulic/Hydraulic43Valve.hpp
+    Components/Hydraulic/Hydraulic43Valve.hpp \
+    ComponentEssentials.h \
+    ComponentUtilities.h

@@ -11,7 +11,7 @@
 #define FIRSTORDERFILTER_H_INCLUDED
 
 #include <deque>
-#include "win32dll.h"
+#include "../win32dll.h"
 
 /*
             num[0]*s + num[1]

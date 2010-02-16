@@ -1,7 +1,7 @@
 #ifndef SIGNALDEADZONE_HPP_INCLUDED
 #define SIGNALDEADZONE_HPP_INCLUDED
 
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 class SignalDeadZone : public ComponentSignal
 {

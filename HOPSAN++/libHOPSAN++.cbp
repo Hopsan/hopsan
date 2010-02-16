@@ -95,6 +95,8 @@
 		</Linker>
 		<Unit filename="HopsanCore\Component.cc" />
 		<Unit filename="HopsanCore\Component.h" />
+		<Unit filename="HopsanCore\ComponentEssentials.h" />
+		<Unit filename="HopsanCore\ComponentUtilities.h" />
 		<Unit filename="HopsanCore\Components\Components.cc" />
 		<Unit filename="HopsanCore\Components\Components.h" />
 		<Unit filename="HopsanCore\Components\HydraulicComponentTemplate.hpp" />

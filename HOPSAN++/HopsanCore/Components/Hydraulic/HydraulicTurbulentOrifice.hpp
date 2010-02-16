@@ -1,10 +1,9 @@
 #ifndef HYDRAULICTURBULENTORIFICE_HPP_INCLUDED
 #define HYDRAULICTURBULENTORIFICE_HPP_INCLUDED
 
-#include "Component.h"
-#include "Nodes/Nodes.h"
+#include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 #include "math.h"
-#include "CoreUtilities/TurbulentFlowFunction.h"
 
 //!
 //! @brief A hydraulic turbulent orifice

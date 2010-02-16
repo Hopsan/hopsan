@@ -11,11 +11,8 @@
 #define HYDRAULICPRESSURECONTROLLEDVALVE_HPP_INCLUDED
 
 #include <iostream>
-#include "HopsanCore.h"
-#include "CoreUtilities/TransferFunction.h"
-#include "CoreUtilities/TurbulentFlowFunction.h"
-#include "CoreUtilities/ValveHysteresis.h"
-#include "CoreUtilities/Delay.h"
+#include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 
 class HydraulicPressureControlledValve : public ComponentQ
 {

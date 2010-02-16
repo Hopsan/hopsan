@@ -10,7 +10,7 @@
 #include <iostream>
 #include <cassert>
 #include <math.h>
-#include "HopsanCore.h"
+#include "../HopsanCore.h"
 #include "IntegratorLimited.h"
 
 /*! @class IntegratorLimited

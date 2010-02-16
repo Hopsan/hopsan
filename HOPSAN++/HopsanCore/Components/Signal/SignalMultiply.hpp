@@ -10,7 +10,7 @@
 #ifndef SIGNALMULTIPLY_HPP_INCLUDED
 #define SIGNALMULTIPLY_HPP_INCLUDED
 
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 class SignalMultiply : public ComponentSignal
 {

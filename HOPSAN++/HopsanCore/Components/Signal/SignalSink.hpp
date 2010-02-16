@@ -10,7 +10,7 @@
 #ifndef SIGNALSINK_HPP_INCLUDED
 #define SIGNALSINK_HPP_INCLUDED
 
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 class SignalSink : public ComponentSignal
 {

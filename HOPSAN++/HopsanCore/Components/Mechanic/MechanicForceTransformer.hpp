@@ -3,7 +3,7 @@
 #ifndef MECHANICFORCETRANSFORMER_HPP_INCLUDED
 #define MECHANICFORCETRANSFORMER_HPP_INCLUDED
 
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 class MechanicForceTransformer : public ComponentC
 {

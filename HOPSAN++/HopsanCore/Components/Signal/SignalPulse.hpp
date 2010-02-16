@@ -19,7 +19,7 @@
 #ifndef SIGNALPULSE_HPP_INCLUDED
 #define SIGNALPULSE_HPP_INCLUDED
 
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 class SignalPulse : public ComponentSignal
 {

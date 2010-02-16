@@ -11,7 +11,7 @@
 #define SECONDORDERFILTER_H_INCLUDED
 
 #include <deque>
-#include "win32dll.h"
+#include "../win32dll.h"
 #include "Delay.h"
 
 /*

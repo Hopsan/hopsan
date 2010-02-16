@@ -20,7 +20,7 @@
 #ifndef SIGNALSTEP_HPP_INCLUDED
 #define SIGNALSTEP_HPP_INCLUDED
 
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 class SignalStep : public ComponentSignal
 {

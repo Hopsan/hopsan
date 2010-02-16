@@ -3,8 +3,8 @@
 #ifndef MECHANICVELOCITYTRANSFORMER_HPP_INCLUDED
 #define MECHANICVELOCITYTRANSFORMER_HPP_INCLUDED
 
-#include "HopsanCore.h"
-#include "CoreUtilities/Integrator.h"
+#include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 
 class MechanicVelocityTransformer : public ComponentQ
 {

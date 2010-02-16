@@ -11,7 +11,7 @@
 #define MECHANICFORCESENSOR_HPP_INCLUDED
 
 #include <iostream>
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 class MechanicForceSensor : public ComponentSignal
 {

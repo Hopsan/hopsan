@@ -10,7 +10,7 @@
 #ifndef SIGNALSOURCE_HPP_INCLUDED
 #define SIGNALSOURCE_HPP_INCLUDED
 
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 class SignalSource : public ComponentSignal
 {

@@ -9,7 +9,7 @@
 
 #include <iostream>
 #include <cassert>
-#include "HopsanCore.h"
+#include "../HopsanCore.h"
 #include "Integrator.h"
 
 Integrator::Integrator()

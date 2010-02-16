@@ -3,7 +3,7 @@
 #ifndef MECHANICTRANSLATIONALSPRING_HPP_INCLUDED
 #define MECHANICTRANSLATIONALSPRING_HPP_INCLUDED
 
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 class MechanicTranslationalSpring : public ComponentC
 {

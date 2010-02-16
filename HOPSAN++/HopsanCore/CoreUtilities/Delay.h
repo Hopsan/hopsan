@@ -11,7 +11,7 @@
 #define DELAY_H_INCLUDED
 
 #include <deque>
-#include "win32dll.h"
+#include "../win32dll.h"
 
 
 class DLLIMPORTEXPORT Delay

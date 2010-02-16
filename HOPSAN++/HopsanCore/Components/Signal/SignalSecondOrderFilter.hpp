@@ -10,8 +10,8 @@
 #ifndef SIGNALSECONORDERFILTER_HPP_INCLUDED
 #define SIGNALSECONORDERFILTER_HPP_INCLUDED
 
-#include "HopsanCore.h"
-#include "CoreUtilities/SecondOrderFilter.h"
+#include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 
 class SignalSecondOrderFilter : public ComponentSignal
 {

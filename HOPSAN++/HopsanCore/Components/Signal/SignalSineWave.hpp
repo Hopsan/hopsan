@@ -24,7 +24,7 @@
 #ifndef SIGNALSINEWAVE_HPP_INCLUDED
 #define SIGNALSINEWAVE_HPP_INCLUDED
 
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 #include "math.h"
 
 class SignalSineWave : public ComponentSignal

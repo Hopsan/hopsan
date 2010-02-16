@@ -8,7 +8,8 @@
 //$Id$
 
 #include "LoadExternal.h"
-#include "Component.h"
+#include "../Component.h"
+#include "../Node.h"
 #include <iostream>
 
 #ifdef WIN32

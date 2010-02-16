@@ -10,7 +10,7 @@
 #ifndef SIGNALTIMEDELAY_HPP_INCLUDED
 #define SIGNALTIMEDELAY_HPP_INCLUDED
 
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 class SignalTimeDelay : public ComponentSignal
 {

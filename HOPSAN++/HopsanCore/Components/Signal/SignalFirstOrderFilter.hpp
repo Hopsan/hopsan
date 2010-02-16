@@ -10,8 +10,8 @@
 #ifndef SIGNALFIRSTORDERFILTER_HPP_INCLUDED
 #define SIGNALFIRSTORDERFILTER_HPP_INCLUDED
 
-#include "HopsanCore.h"
-#include "CoreUtilities/FirstOrderFilter.h"
+#include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 
 class SignalFirstOrderFilter : public ComponentSignal
 {

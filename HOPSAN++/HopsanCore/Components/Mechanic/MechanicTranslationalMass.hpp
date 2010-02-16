@@ -3,8 +3,8 @@
 #ifndef MECHANICTRANSLATIONALMASS_HPP_INCLUDED
 #define MECHANICTRANSLATIONALMASS_HPP_INCLUDED
 
-#include "HopsanCore.h"
-#include "CoreUtilities/TransferFunction.h"
+#include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 
 class MechanicTranslationalMass : public ComponentQ
 {

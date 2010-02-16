@@ -10,9 +10,9 @@
 #ifndef FILEACCESS_H_INCLUDED
 #define FILEACCESS_H_INCLUDED
 
-#include "win32dll.h"
+#include "../win32dll.h"
 #include <string>
-#include "HopsanCore.h"
+#include "../HopsanCore.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>

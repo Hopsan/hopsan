@@ -11,7 +11,7 @@
 #define HYDRAULICPRESSURESOURCE_HPP_INCLUDED
 
 #include <iostream>
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 class HydraulicPressureSource : public ComponentC
 {

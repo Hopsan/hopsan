@@ -10,8 +10,8 @@
 #ifndef SIGNALINTEGRATOR2_HPP_INCLUDED
 #define SIGNALINTEGRATOR2_HPP_INCLUDED
 
-#include "HopsanCore.h"
-#include "CoreUtilities/Integrator.h"
+#include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 
 class SignalIntegrator2 : public ComponentSignal
 {

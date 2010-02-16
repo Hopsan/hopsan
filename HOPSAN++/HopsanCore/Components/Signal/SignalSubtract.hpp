@@ -10,7 +10,7 @@
 #ifndef SIGNALSUBTRACT_HPP_INCLUDED
 #define SIGNALSUBTRACT_HPP_INCLUDED
 
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 class SignalSubtract : public ComponentSignal
 {

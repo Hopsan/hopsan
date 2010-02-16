@@ -10,7 +10,7 @@
 #ifndef SIGNALHYSTERESIS_HPP_INCLUDED
 #define SIGNALHYSTERESIS_HPP_INCLUDED
 
-#include "HopsanCore.h"
+#include "../../ComponentEssentials.h"
 
 class SignalHysteresis : public ComponentSignal
 {
