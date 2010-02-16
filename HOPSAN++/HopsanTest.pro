@@ -6,6 +6,7 @@ TARGET = hopsantest
 TEMPLATE = app
 CONFIG += 
 INCLUDEPATH += HopsanCore Utilities
+DESTDIR = ./bin/debug
 # win32:DEFINES += STATICCORE
 #LIBS += -L./HopsanCore/bin/debug -lHopsanCore -Wl,-rpath,HopsanCore/bin/debug
 LIBS += -L./bin/debug -lHopsanCore
