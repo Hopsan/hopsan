@@ -145,11 +145,8 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete projectTabs;
-    //delete tab;
     delete menubar;
     delete statusBar;
-    delete scene;
-    delete view;
 }
 
 
