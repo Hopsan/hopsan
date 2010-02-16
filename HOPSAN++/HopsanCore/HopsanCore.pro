@@ -9,7 +9,9 @@ CONFIG += dll
 
 # win32:DEFINES += STATICCORE
 win32:DEFINES += DOCOREDLLEXPORT
-DESTDIR = bin/debug
+win32:DEFINES -= UNICODE
+DESTDIR = ../bin/debug
+
 SOURCES += Port.cc \
     Node.cc \
     Component.cc \

@@ -26,6 +26,7 @@ HEADERS += mainwindow.h \
     ../HopsanCore/HopsanCore.h
 OTHER_FILES += 
 #win32:DEFINES += STATICCORE
-DESTDIR = bin/debug
-LIBS += -L../HopsanCore/bin/debug -lHopsanCore -Wl,-rpath,../../../HopsanCore/bin/debug
+DESTDIR = ../bin/debug
+#LIBS += -L../HopsanCore/bin/debug -lHopsanCore -Wl,-rpath,../../../HopsanCore/bin/debug
+LIBS += -L../bin/debug -lHopsanCore
 INCLUDEPATH += ../HopsanCore

@@ -7,10 +7,10 @@
 //!
 //$Id$
 
-#include "FileAccess.h"
-#include "Component.h"
 #include <iostream>
 #include <cassert>
+#include "FileAccess.h"
+#include "../Component.h"
 #include "../HopsanCore.h"
 
 
