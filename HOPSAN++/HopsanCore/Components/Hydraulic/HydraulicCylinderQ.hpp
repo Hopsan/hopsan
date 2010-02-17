@@ -92,11 +92,11 @@ public:
 
         double x2 = mPortPtrs[P3]->readNode(NodeMechanic::POSITION);
         double v2 = mPortPtrs[P3]->readNode(NodeMechanic::VELOCITY);
-        double c1 = mPortPtrs[P1]->readNode(NodeMechanic::WAVEVARIABLE);
+        //double c1 = mPortPtrs[P1]->readNode(NodeMechanic::WAVEVARIABLE);
         double Zc1 = mPortPtrs[P1]->readNode(NodeMechanic::CHARIMP);
-        double c2 = mPortPtrs[P2]->readNode(NodeMechanic::WAVEVARIABLE);
+        //double c2 = mPortPtrs[P2]->readNode(NodeMechanic::WAVEVARIABLE);
         double Zc2 = mPortPtrs[P2]->readNode(NodeMechanic::CHARIMP);
-        double cx1 = mArea1*c1 - mArea2*c2;
+        //double cx1 = mArea1*c1 - mArea2*c2;
         double Zx1 = pow(mArea1,2)*Zc1 + pow(mArea2,2)*Zc2-mBp;
         double cx2 = mPortPtrs[P3]->readNode(NodeMechanic::WAVEVARIABLE);
         double Zx2 = mPortPtrs[P3]->readNode(NodeMechanic::CHARIMP);
