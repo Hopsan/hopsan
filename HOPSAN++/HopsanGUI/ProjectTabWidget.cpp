@@ -104,6 +104,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
     QGraphicsView::mouseMoveEvent(event);
     QCursor cursor;
     std::cout << "X=" << this->mapFromGlobal(cursor.pos()).x() << "  " << "Y=" << this->mapFromGlobal(cursor.pos()).y() << std::endl;
+    this->setBackgroundBrush(Qt::NoBrush);
 }
 
 
