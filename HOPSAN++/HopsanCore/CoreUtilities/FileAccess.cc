@@ -32,10 +32,11 @@ void FileAccess::setFilename(string filename)
 ComponentSystem FileAccess::loadModel(double *startTime, double *stopTime, string *plotComponent, string *plotPort)
 {
         //Read from file
+    cout << "Trying to open model: " << mFilename.c_str() << endl;
     ifstream modelFile (mFilename.c_str());
     if(!modelFile.is_open())
     {
-        cout <<"Model file does not exist!\n";
+        cout << "Model file does not exist!" << endl;
         assert(false);
         //TODO: Cast an exception
     }

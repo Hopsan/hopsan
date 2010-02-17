@@ -4,13 +4,15 @@
 QT -= core gui
 TARGET = hopsantest
 TEMPLATE = app
-CONFIG += 
+CONFIG += console
 INCLUDEPATH += HopsanCore Utilities
 DESTDIR = ./bin/debug
 # win32:DEFINES += STATICCORE
 #LIBS += -L./HopsanCore/bin/debug -lHopsanCore -Wl,-rpath,HopsanCore/bin/debug
 LIBS += -L./bin/debug -lHopsanCore
 unix:LIBS += -lrt -ldl
+
+win32:DEFINES -= UNICODE
 
 SOURCES += hopsan.cc \
     Utilities/TicToc.cc
