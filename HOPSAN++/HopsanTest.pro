@@ -1,19 +1,33 @@
 # -------------------------------------------------
-# Project created by QtCreator 2010-02-16T15:57:03
+# Global project options
 # -------------------------------------------------
 QT -= core gui
 TARGET = hopsantest
-TEMPLATE = app
-CONFIG += console
-INCLUDEPATH += HopsanCore Utilities
 DESTDIR = ./bin/debug
-# win32:DEFINES += STATICCORE
-#LIBS += -L./HopsanCore/bin/debug -lHopsanCore -Wl,-rpath,HopsanCore/bin/debug
+TEMPLATE = app
+
+#Compiler flags
+INCLUDEPATH += HopsanCore Utilities
+#DEFINES += STATICCORE
+
+#Linker flags
 LIBS += -L./bin/debug -lHopsanCore
-unix:LIBS += -lrt -ldl
 
-win32:DEFINES -= UNICODE
+# -------------------------------------------------
+# Platform specific additional project options
+# -------------------------------------------------
+win32 {
+    CONFIG += console
+    DEFINES -= UNICODE
+}
 
+unix {
+    LIBS += -lrt -ldl
+}
+
+# -------------------------------------------------
+# Project files
+# -------------------------------------------------
 SOURCES += hopsan.cc \
     Utilities/TicToc.cc
 HEADERS += Utilities/TicToc.h \
