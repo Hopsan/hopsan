@@ -1834,7 +1834,6 @@ void testLoad()
     string modelFileName;
     cout << "Enter model filename: ";
     cin >> modelFileName;
-    cout << "efter cin" << endl;
     FileAccess modelFile;
     modelFile.setFilename(modelFileName.c_str());
 
@@ -1842,7 +1841,6 @@ void testLoad()
     ComponentSystem simulationmodel("simulationmodel");
     double startTime, stopTime;
     string plotComponent, plotPort;
-    cout << "före loadmodel" << endl;
     simulationmodel = modelFile.loadModel(&startTime, &stopTime, &plotComponent, &plotPort);
 
         //Run simulation
