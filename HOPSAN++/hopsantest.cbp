@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="HOPSAN++" />
+		<Option title="hopsantest" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -94,7 +94,7 @@
 		<Unit filename="HopsanCore\HopsanCore.h" />
 		<Unit filename="Utilities\TicToc.cc" />
 		<Unit filename="Utilities\TicToc.h" />
-		<Unit filename="hopsan.cc" />
+		<Unit filename="hopsantest.cc" />
 		<Extensions>
 			<code_completion />
 			<envvars />
