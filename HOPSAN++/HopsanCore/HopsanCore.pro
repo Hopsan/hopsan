@@ -1,16 +1,24 @@
 # -------------------------------------------------
-# Project created by QtCreator 2010-02-16T15:57:03
+# Global project options
 # -------------------------------------------------
-QT -= core \
-    gui
+QT -= core gui
 TARGET = HopsanCore
 TEMPLATE = lib
 CONFIG += dll
+DESTDIR = ../bin/debug
+
+# -------------------------------------------------
+# Platform specific additional project options
+# -------------------------------------------------
 
 # win32:DEFINES += STATICCORE
 win32:DEFINES += DOCOREDLLEXPORT
 win32:DEFINES -= UNICODE
-DESTDIR = ../bin/debug
+
+
+# -------------------------------------------------
+# Project files
+# -------------------------------------------------
 
 SOURCES += Port.cc \
     Node.cc \
