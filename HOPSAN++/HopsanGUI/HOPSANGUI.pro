@@ -13,7 +13,8 @@ SOURCES += main.cpp \
     listwidgetitem.cpp \
     graphicsrectitem.cpp \
     ProjectTabWidget.cpp \
-    LibraryWidget.cpp
+    LibraryWidget.cpp \
+    GraphicsConnectorItem.cpp
 HEADERS += mainwindow.h \
     treewidget.h \
     componentguiclass.h \
@@ -23,10 +24,14 @@ HEADERS += mainwindow.h \
     graphicsrectitem.h \
     ProjectTabWidget.h \
     LibraryWidget.h \
-    ../HopsanCore/HopsanCore.h
+    ../HopsanCore/HopsanCore.h \
+    GraphicsConnectorItem.h
 OTHER_FILES += 
-#win32:DEFINES += STATICCORE
+
+# win32:DEFINES += STATICCORE
 DESTDIR = ../bin/debug
-#LIBS += -L../HopsanCore/bin/debug -lHopsanCore -Wl,-rpath,../../../HopsanCore/bin/debug
-LIBS += -L../bin/debug -lHopsanCore
+
+# LIBS += -L../HopsanCore/bin/debug -lHopsanCore -Wl,-rpath,../../../HopsanCore/bin/debug
+LIBS += -L../bin/debug \
+    -lHopsanCore
 INCLUDEPATH += ../HopsanCore

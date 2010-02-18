@@ -25,6 +25,7 @@ GraphicsView::GraphicsView(QWidget *parent)
         : QGraphicsView(parent)
 {
     this->setAcceptDrops(true);
+    this->creatingConnector = false;
     //this->setTransformationAnchor(QGraphicsView::NoAnchor);
 }
 
@@ -75,7 +76,9 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
         std::cout << "x=" << this->mapFromGlobal(cursor.pos()).x() << "  " << "y=" << this->mapFromGlobal(cursor.pos()).y() << std::endl;
 
-        ComponentGuiClass *guiComponent = new ComponentGuiClass(iconDir,componentName,position);
+        ComponentGuiClass *guiComponent = new ComponentGuiClass(iconDir,componentName,position,this);
+
+        guiComponent->setPos(event->pos());
 
         this->scene()->addItem(guiComponent);
 
@@ -105,8 +108,64 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
     QCursor cursor;
     std::cout << "X=" << this->mapFromGlobal(cursor.pos()).x() << "  " << "Y=" << this->mapFromGlobal(cursor.pos()).y() << std::endl;
     this->setBackgroundBrush(Qt::NoBrush);
+
+    if (this->creatingConnector)
+    {
+        QPointF newPos = this->mapToScene(event->pos());
+        qreal x2 = newPos.x();
+        qreal y2 = newPos.y();
+        line->setLine(line->startPos.x(), line->startPos.y(), x2, y2);
+        //qreal myLineWidth = 2.0;
+        //QColor myLineColor = QColor("black");
+         //= new GraphicsConnectorItem(lineH->startPos.x(), lineH->startPos.y(), lineH->startPos.x(), newPos.y(), myLineWidth, myLineColor);
+
+        //this->scene()->addItem(lineV);
+    }
 }
 
+
+void GraphicsView::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() != Qt::LeftButton)
+        return;
+
+    //case InsertLine:
+//        lineH = new QGraphicsLineItem(QLineF(event->x(), event->y(), event->x(), event->y()));
+//        lineV = new QGraphicsLineItem(QLineF(event->x(), event->y(), event->x(), event->y()));
+//        lineH->setPen(QPen(myLineColor, 2));
+//        lineV->setPen(QPen(myLineColor, 2));
+//        this->scene()->addItem(lineH);
+//        this->scene()->addItem(lineV);
+//        //break;
+
+        QGraphicsView::mousePressEvent(event);
+}
+
+
+void GraphicsView::addConnector(GraphicsRectItem *rect)
+{
+    if (!creatingConnector)
+    {
+        std::cout << "Adding connector";
+        QPointF oldPos = rect->mapToScene(rect->boundingRect().center());
+        qreal myLineWidth = 2.0;
+        QColor myLineColor = QColor("black");
+        line = new GraphicsConnectorItem(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), myLineWidth, myLineColor, rect);
+        //GraphicsConnectorItem *lineV = new GraphicsConnectorItem(oldPos.x(), 0.0, 0.0, 0.0, myLineWidth, myLineColor, rect);
+        this->scene()->addItem(line);
+        //this->scene()->addItem(lineV);
+        this->creatingConnector = true;
+    }
+    else
+    {
+        QPointF newPos = rect->mapToScene(rect->boundingRect().center());
+        qreal x2 = newPos.x();
+        qreal y2 = newPos.y();
+        line->setLine(line->startPos.x(), line->startPos.y(), x2, y2);
+        creatingConnector = false;
+        //HÄR SKA CONNECTSATSEN LIGGA
+    }
+}
 
 
 //GraphicsView::GraphicsView(QWidget *parent)

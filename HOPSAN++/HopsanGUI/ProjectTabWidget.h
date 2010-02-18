@@ -16,6 +16,7 @@
 #include <QTabWidget>
 #include <QStringList>
 #include <QGraphicsTextItem>
+#include "graphicsrectitem.h"
 
 
 class GraphicsScene : public QGraphicsScene
@@ -24,7 +25,7 @@ class GraphicsScene : public QGraphicsScene
 
 public:
     GraphicsScene(QObject *parent = 0);
-
+    qreal TestVar;
 };
 
 
@@ -35,6 +36,11 @@ class GraphicsView : public QGraphicsView
 public:
     GraphicsView(QWidget *parent = 0);
     ~GraphicsView();
+    bool creatingConnector;
+    GraphicsConnectorItem *line;
+
+public slots:
+    void addConnector(GraphicsRectItem *rect);
 
     //QByteArray *data;
     //QDataStream *stream;
@@ -45,6 +51,7 @@ protected:
     virtual void dropEvent(QDropEvent *event);
     virtual void wheelEvent(QWheelEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void mousePressEvent(QMouseEvent *event);
 };
 
 

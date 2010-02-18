@@ -1,12 +1,15 @@
 #include "componentguiclass.h"
 #include <iostream>
+#include "graphicsrectitem.h"
 
-ComponentGuiClass::ComponentGuiClass(const QString &fileName, QString componentName,QPoint position, QGraphicsItem *parent)
+ComponentGuiClass::ComponentGuiClass(const QString &fileName, QString componentName,QPoint position, QGraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
 
     //widget = new QWidget;
+
+    mParentView = parentView;
 
     QGraphicsSvgItem *icon = new QGraphicsSvgItem(fileName,this);
     icon->setPos(QPointF(-icon->boundingRect().width()/2, -icon->boundingRect().height()/2));
@@ -18,14 +21,23 @@ ComponentGuiClass::ComponentGuiClass(const QString &fileName, QString componentN
     text->setPos(QPointF(-text->boundingRect().width()/2, icon->boundingRect().height()/2));
     text->setTextInteractionFlags(Qt::TextEditable);
 
-    GraphicsRectItem *rectR = new GraphicsRectItem(icon->sceneBoundingRect().width()-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,icon);
+    GraphicsRectItem *rectR = new GraphicsRectItem(icon->sceneBoundingRect().width()-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),icon);
 
-    GraphicsRectItem *rectL = new GraphicsRectItem(-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,icon);
+    GraphicsRectItem *rectL = new GraphicsRectItem(-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),icon);
 
     //icon->setPos(QPointF(-icon->boundingRect().width()/2, -icon->boundingRect().height()/2));
+
+   // rectR->boundingRegion();
+
 }
 
 ComponentGuiClass::~ComponentGuiClass()
 {
     //delete widget;
+}
+
+
+QGraphicsView *ComponentGuiClass::getParentView()
+{
+    return mParentView;
 }
