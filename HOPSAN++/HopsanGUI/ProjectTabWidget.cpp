@@ -19,6 +19,8 @@
 #include <QMessageBox>
 
 
+
+
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
 GraphicsView::GraphicsView(QWidget *parent)
@@ -149,12 +151,14 @@ void GraphicsView::addConnector(GraphicsRectItem *rect)
         std::cout << "Adding connector";
         QPointF oldPos = rect->mapToScene(rect->boundingRect().center());
         qreal myLineWidth = 2.0;
-        QColor myLineColor = QColor("black");
+        QColor myLineColor = QColor("red");
         line = new GraphicsConnectorItem(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), myLineWidth, myLineColor, rect);
         //GraphicsConnectorItem *lineV = new GraphicsConnectorItem(oldPos.x(), 0.0, 0.0, 0.0, myLineWidth, myLineColor, rect);
         this->scene()->addItem(line);
         //this->scene()->addItem(lineV);
         this->creatingConnector = true;
+        line->setStartPort(rect);
+        //Connecta med componenet och kolla dess movement event istället kansake funkar??
     }
     else
     {
@@ -162,6 +166,9 @@ void GraphicsView::addConnector(GraphicsRectItem *rect)
         qreal x2 = newPos.x();
         qreal y2 = newPos.y();
         line->setLine(line->startPos.x(), line->startPos.y(), x2, y2);
+        rect->getComponent()->addConnector(line);
+        line->setEndPort(rect);
+
         creatingConnector = false;
         //HÄR SKA CONNECTSATSEN LIGGA
     }

@@ -13,10 +13,11 @@
 #include "componentguiclass.h"
 #include <iostream>
 
-GraphicsRectItem::GraphicsRectItem(qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, QGraphicsItem *parent)
+GraphicsRectItem::GraphicsRectItem(qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, ComponentGuiClass *component, QGraphicsItem *parent)
         : QGraphicsRectItem(x, y, width, height,parent)
 {
     mParentView = parentView;
+    mComponent = component;
     rectPos.setX(x);
     rectPos.setY(y);
     pRectParent = parent;
@@ -54,6 +55,11 @@ QGraphicsView *GraphicsRectItem::getParentView()
     return mParentView;
 }
 
+ComponentGuiClass *GraphicsRectItem::getComponent()
+{
+    return mComponent;
+}
+
 //void GraphicsRectItem::portClicked(GraphicsRectItem *item)
 //{
 //}
@@ -78,8 +84,4 @@ void GraphicsRectItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
     //this->scene()->addItem(&*lineV);
 
 }
-
-
-
-
 

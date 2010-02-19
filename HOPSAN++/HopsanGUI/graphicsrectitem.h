@@ -6,17 +6,20 @@
 #include <QBrush>
 #include <QGraphicsLineItem>
 #include <QGraphicsScene>
-#include "GraphicsConnectorItem.h"
+//#include "GraphicsConnectorItem.h"
 #include "componentguiclass.h"
+
+class ComponentGuiClass;        //Forwarad declaration
 
 class GraphicsRectItem : public QObject, public QGraphicsRectItem
 {
     Q_OBJECT
 public:
-    GraphicsRectItem(qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, QGraphicsItem *parent = 0);
+    GraphicsRectItem(qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, ComponentGuiClass *component, QGraphicsItem *parent = 0);
     ~GraphicsRectItem();
     QPointF rectPos;
     QGraphicsView *getParentView();
+    ComponentGuiClass *getComponent();
 
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
@@ -25,6 +28,7 @@ protected:
 
 signals:
     void portClicked(GraphicsRectItem *item);
+    void portMoved(GraphicsRectItem *item);
 
 private:
     QColor myLineColor;
@@ -33,6 +37,7 @@ private:
     QGraphicsLineItem *lineH;
     QGraphicsLineItem *lineV;
     QGraphicsView *mParentView;
+    ComponentGuiClass *mComponent;
 };
 
 #endif // GRAPHICSRECTITEM_H

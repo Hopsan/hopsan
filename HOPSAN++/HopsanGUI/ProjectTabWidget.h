@@ -17,6 +17,7 @@
 #include <QStringList>
 #include <QGraphicsTextItem>
 #include "graphicsrectitem.h"
+#include "graphicsconnectoritem.h"
 
 
 class GraphicsScene : public QGraphicsScene
@@ -52,6 +53,7 @@ protected:
     virtual void wheelEvent(QWheelEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void mousePressEvent(QMouseEvent *event);
+
 };
 
 
