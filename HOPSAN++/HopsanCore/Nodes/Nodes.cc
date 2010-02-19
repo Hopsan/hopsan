@@ -11,6 +11,13 @@
 //NodeTypeT NodeHydraulic::iDummyId = NodeFactory::RegisterCreatorFunction("NodeHydraulic", NodeHydraulic::CreatorFunction);
 //NodeTypeT NodeMechanic::iDummyId = NodeFactory::RegisterCreatorFunction("NodeMechanic", NodeMechanic::CreatorFunction);
 
+//! @defgroup HydraulicNode HydraulicNode
+//! @ingroup Nodes
+//! @defgroup MechanicalNode MechanicalNode
+//! @ingroup Nodes
+//! @defgroup SignalNode SignalNode
+//! @ingroup Nodes
+
 //!
 //! @brief Registers the creator function of all built in nodes
 //! @param [in,out] nfact_ptr A pointer the the node factory in wich to register the nodes

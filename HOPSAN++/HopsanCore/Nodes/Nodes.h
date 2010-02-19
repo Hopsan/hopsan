@@ -16,7 +16,7 @@ DLLIMPORTEXPORT void register_nodes(NodeFactory* nfact_ptr);
 //!
 //! @class NodeSignal
 //! @brief A signal node
-//! @ingroup Nodes
+//! @ingroup SignalNode
 //!
 class NodeSignal :public Node
 {
@@ -40,7 +40,7 @@ private:
 //!
 //! @class NodeHydraulic
 //! @brief A hydraulic node
-//! @ingroup Nodes
+//! @ingroup HydraulicNode
 //!
 class NodeHydraulic :public Node
 {
@@ -63,7 +63,7 @@ private:
 //!
 //! @class NodeMechanic
 //! @brief A mechanic node
-//! @ingroup Nodes
+//! @ingroup MechanicalNode
 //!
 class NodeMechanic :public Node
 {
