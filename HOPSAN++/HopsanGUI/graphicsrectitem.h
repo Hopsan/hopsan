@@ -21,6 +21,7 @@ public:
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
 signals:
     void portClicked(GraphicsRectItem *item);

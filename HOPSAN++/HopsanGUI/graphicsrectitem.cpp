@@ -41,6 +41,13 @@ void GraphicsRectItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     std::cout << "hovering over port\n";
 }
 
+void GraphicsRectItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+
+    QBrush brush(Qt::green);
+    this->setBrush(brush);
+}
+
 
 QGraphicsView *GraphicsRectItem::getParentView()
 {
@@ -57,7 +64,6 @@ void GraphicsRectItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
     //if (event->button() != Qt::LeftButton)
     //    return;
-
     emit portClicked(this);
     std::cout << "portClick emitted\n";
 
