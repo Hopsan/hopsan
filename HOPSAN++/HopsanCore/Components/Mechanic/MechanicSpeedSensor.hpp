@@ -13,6 +13,10 @@
 #include <iostream>
 #include "../../ComponentEssentials.h"
 
+//!
+//! @brief
+//! @ingroup MechanicalComponents
+//!
 class MechanicSpeedSensor : public ComponentSignal
 {
 private:

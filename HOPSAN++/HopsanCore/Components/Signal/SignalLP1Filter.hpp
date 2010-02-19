@@ -3,6 +3,10 @@
 
 #include "../../ComponentEssentials.h"
 
+//!
+//! @brief
+//! @ingroup SignalComponents
+//!
 class SignalLP1Filter : public ComponentSignal
 {
 

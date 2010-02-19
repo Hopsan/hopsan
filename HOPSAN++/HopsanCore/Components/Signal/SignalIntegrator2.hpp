@@ -13,6 +13,10 @@
 #include "../../ComponentEssentials.h"
 #include "../../ComponentUtilities.h"
 
+//!
+//! @brief
+//! @ingroup SignalComponents
+//!
 class SignalIntegrator2 : public ComponentSignal
 {
 

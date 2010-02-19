@@ -3,6 +3,10 @@
 
 #include "../../ComponentEssentials.h"
 
+//!
+//! @brief
+//! @ingroup SignalComponents
+//!
 class SignalDeadZone : public ComponentSignal
 {
 

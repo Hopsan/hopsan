@@ -12,6 +12,10 @@
 
 #include "../../ComponentEssentials.h"
 
+//!
+//! @brief
+//! @ingroup SignalComponents
+//!
 class SignalLP2Filter : public ComponentSignal
 {
 

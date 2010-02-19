@@ -14,6 +14,10 @@
 #include "../../ComponentEssentials.h"
 #include "../../ComponentUtilities.h"
 
+//!
+//! @brief
+//! @ingroup HydraulicComponents
+//!
 class HydraulicTLMRlineR : public ComponentC
 {
 

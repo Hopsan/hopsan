@@ -21,6 +21,10 @@
 
 #include "../../ComponentEssentials.h"
 
+//!
+//! @brief
+//! @ingroup SignalComponents
+//!
 class SignalPulse : public ComponentSignal
 {
 

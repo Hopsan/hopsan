@@ -15,6 +15,10 @@
 #include "../../ComponentUtilities.h"
 #include "math.h"
 
+//!
+//! @brief
+//! @ingroup HydraulicComponents
+//!
 class HydraulicCheckValve : public ComponentQ
 {
 private:

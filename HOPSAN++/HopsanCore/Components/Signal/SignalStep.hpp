@@ -22,6 +22,10 @@
 
 #include "../../ComponentEssentials.h"
 
+//!
+//! @brief
+//! @ingroup SignalComponents
+//!
 class SignalStep : public ComponentSignal
 {
 

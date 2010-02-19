@@ -14,6 +14,10 @@
 
 #include "../../ComponentEssentials.h"
 
+//!
+//! @brief
+//! @ingroup HydraulicComponents
+//!
 class HydraulicCylinderC : public ComponentC
 {
 

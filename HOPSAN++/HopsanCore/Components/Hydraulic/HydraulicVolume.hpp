@@ -14,7 +14,7 @@
 
 //!
 //! @brief A hydraulic volume component
-//! @ingroup Components
+//! @ingroup HydraulicComponents
 //!
 class HydraulicVolume : public ComponentC
 {

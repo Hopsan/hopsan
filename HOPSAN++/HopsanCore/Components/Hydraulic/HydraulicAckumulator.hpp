@@ -14,6 +14,10 @@
 #include "../../ComponentEssentials.h"
 #include "math.h"
 
+//!
+//! @brief
+//! @ingroup HydraulicComponents
+//!
 class HydraulicAckumulator : public ComponentQ
 {
 private:

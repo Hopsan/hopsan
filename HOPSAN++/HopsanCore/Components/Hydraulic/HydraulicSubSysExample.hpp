@@ -12,6 +12,10 @@
 
 #include "../../ComponentEssentials.h"
 
+//!
+//! @brief
+//! @ingroup HydraulicComponents
+//!
 class HydraulicSubSysExample : public ComponentSystem
 {
 

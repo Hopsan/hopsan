@@ -6,6 +6,10 @@
 #include "../../ComponentEssentials.h"
 #include "../../ComponentUtilities.h"
 
+//!
+//! @brief
+//! @ingroup MechanicalComponents
+//!
 class MechanicTranslationalMass : public ComponentQ
 {
 

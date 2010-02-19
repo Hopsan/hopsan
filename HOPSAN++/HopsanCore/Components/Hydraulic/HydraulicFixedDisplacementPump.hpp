@@ -13,6 +13,10 @@
 #include <iostream>
 #include "../../ComponentEssentials.h"
 
+//!
+//! @brief
+//! @ingroup HydraulicComponents
+//!
 class HydraulicFixedDisplacementPump : public ComponentQ
 {
 private:

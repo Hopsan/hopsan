@@ -12,6 +12,10 @@
 
 #include "../../ComponentEssentials.h"
 
+//!
+//! @brief
+//! @ingroup SignalComponents
+//!
 class SignalDivide : public ComponentSignal
 {
 

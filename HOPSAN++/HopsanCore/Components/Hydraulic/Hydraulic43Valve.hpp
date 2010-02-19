@@ -5,6 +5,10 @@
 #include "../../ComponentEssentials.h"
 #include "../../ComponentUtilities.h"
 
+//!
+//! @brief
+//! @ingroup HydraulicComponents
+//!
 class Hydraulic43Valve : public ComponentQ
 {
 private:

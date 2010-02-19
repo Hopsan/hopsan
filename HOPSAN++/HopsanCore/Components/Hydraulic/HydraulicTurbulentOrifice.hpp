@@ -7,7 +7,7 @@
 
 //!
 //! @brief A hydraulic turbulent orifice
-//! @ingroup Components
+//! @ingroup HydraulicComponents
 //!
 class HydraulicTurbulentOrifice : public ComponentQ
 {

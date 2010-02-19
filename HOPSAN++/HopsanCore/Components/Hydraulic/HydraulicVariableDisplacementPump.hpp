@@ -4,6 +4,10 @@
 #include <iostream>
 #include "../../ComponentEssentials.h"
 
+//!
+//! @brief
+//! @ingroup HydraulicComponents
+//!
 class HydraulicVariableDisplacementPump : public ComponentQ
 {
 private:

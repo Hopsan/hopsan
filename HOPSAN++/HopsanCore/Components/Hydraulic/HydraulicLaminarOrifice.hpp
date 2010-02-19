@@ -6,7 +6,7 @@
 
 //!
 //! @brief A hydraulic laminar orifice component
-//! @ingroup Components
+//! @ingroup HydraulicComponents
 //!
 class HydraulicLaminarOrifice : public ComponentQ
 {

@@ -24,6 +24,10 @@
 #include "../../ComponentEssentials.h"
 #include "math.h"
 
+//!
+//! @brief
+//! @ingroup SignalComponents
+//!
 class SignalSquareWave : public ComponentSignal
 {
 

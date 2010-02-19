@@ -30,6 +30,10 @@
 #include <iostream>
 #include "../../ComponentEssentials.h"
 
+//!
+//! @brief
+//! @ingroup HydraulicComponents
+//!
 class HydraulicCylinderQ : public ComponentQ
 {
 private:

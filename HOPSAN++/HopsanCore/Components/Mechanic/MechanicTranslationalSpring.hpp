@@ -5,6 +5,10 @@
 
 #include "../../ComponentEssentials.h"
 
+//!
+//! @brief
+//! @ingroup MechanicalComponents
+//!
 class MechanicTranslationalSpring : public ComponentC
 {
 

@@ -26,6 +26,10 @@
 
 #include "../../ComponentEssentials.h"
 
+//!
+//! @brief
+//! @ingroup SignalComponents
+//!
 class SignalRamp : public ComponentSignal
 {
 
