@@ -1,7 +1,7 @@
 #include "componentguiclass.h"
 #include <iostream>
 #include "graphicsrectitem.h"
-#include "graphicsconnectoritem.h"
+#include "GraphicsConnectorItem.h"
 #include <ostream>
 
 ComponentGuiClass::ComponentGuiClass(const QString &fileName, QString componentName,QPoint position, QGraphicsView *parentView, QGraphicsItem *parent)

@@ -17,7 +17,7 @@
 #include <QStringList>
 #include <QGraphicsTextItem>
 #include "graphicsrectitem.h"
-#include "graphicsconnectoritem.h"
+#include "GraphicsConnectorItem.h"
 
 
 class GraphicsScene : public QGraphicsScene

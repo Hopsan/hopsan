@@ -158,7 +158,7 @@ void GraphicsView::addConnector(GraphicsRectItem *rect)
         //this->scene()->addItem(lineV);
         this->creatingConnector = true;
         line->setStartPort(rect);
-        //Connecta med componenet och kolla dess movement event ist�llet kansake funkar??
+        //Connecta med componenet och kolla dess movement event istället kansake funkar??
     }
     else
     {
@@ -170,7 +170,7 @@ void GraphicsView::addConnector(GraphicsRectItem *rect)
         line->setEndPort(rect);
 
         creatingConnector = false;
-        //H�R SKA CONNECTSATSEN LIGGA
+        //HÄR SKA CONNECTSATSEN LIGGA
     }
 }
 
@@ -189,7 +189,7 @@ void GraphicsView::addConnector(GraphicsRectItem *rect)
 //
 //void GraphicsView::dropEvent(QDropEvent *event)
 //{
-//    std::cout << "Släpper en komponent: " << qPrintable(event->mimeData()->text()) << std::endl;
+//    std::cout << "SlĂ¤pper en komponent: " << qPrintable(event->mimeData()->text()) << std::endl;
 //view
 //    QString componentName = event->mimeData()->text();
 //
