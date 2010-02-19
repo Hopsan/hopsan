@@ -54,6 +54,8 @@ void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 }
 
 
+
+
 //! Defines what happens when drop an object in a GraphicsView.
 //! @param event contains information of the drop operation.
 void GraphicsView::dropEvent(QDropEvent *event)
@@ -101,6 +103,18 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
     }
 }
 
+void GraphicsView::keyPressEvent(QKeyEvent *event)
+{
+    if (event->modifiers() and Qt::ControlModifier)
+    {
+        this->setDragMode(QGraphicsView::ScrollHandDrag);
+    }
+}
+
+void GraphicsView::keyReleaseEvent(QKeyEvent *event)
+{
+    this->setDragMode(QGraphicsView::NoDrag);
+}
 
 //! Defines what happens when the mouse is moving in a GraphicsView.
 //! @param event contains information of the mouse moving operation.
@@ -129,8 +143,13 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() != Qt::LeftButton)
+    {
         return;
-
+    }
+    if (event->button() == Qt::RightButton)
+    {
+        this->scene()->removeItem(line);
+    }
     //case InsertLine:
 //        lineH = new QGraphicsLineItem(QLineF(event->x(), event->y(), event->x(), event->y()));
 //        lineV = new QGraphicsLineItem(QLineF(event->x(), event->y(), event->x(), event->y()));
