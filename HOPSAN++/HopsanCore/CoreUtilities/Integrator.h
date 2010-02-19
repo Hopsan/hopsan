@@ -12,6 +12,7 @@
 
 #include <deque>
 #include "../win32dll.h"
+#include "Delay.h"
 
 class DLLIMPORTEXPORT Integrator
 {

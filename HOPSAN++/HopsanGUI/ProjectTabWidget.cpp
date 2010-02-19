@@ -296,7 +296,7 @@ void ProjectTab::hasChanged()
 ProjectTabWidget::ProjectTabWidget(QWidget *parent)
         :   QTabWidget(parent)
 {
-    Hopsan = new HopsanEssentials();
+    HopsanEssentials* pHopsan = HopsanEssentials::getInstance();
 
     setTabsClosable(true);
     numberOfUntitledTabs = 0;

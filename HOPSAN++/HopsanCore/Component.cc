@@ -199,6 +199,12 @@ vector<Port*> Component::getPortPtrVector()
 //    return mTimestep;
 //}
 
+void Component::setDesiredTimestep(const double timestep)
+{
+    cout << "Warning this function setDesiredTimestep is only available on subsystem components" << endl;
+    assert(false);
+}
+
 bool Component::isComponentC()
 {
     return mIsComponentC;

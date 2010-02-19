@@ -49,6 +49,7 @@ public:
     //Virtual functions
     virtual void initialize(const double startT, const double stopT);
     virtual void simulate(const double startT, const double Ts);
+    virtual void setDesiredTimestep(const double timestep);
 
     //Name and type
     void setName(string name);

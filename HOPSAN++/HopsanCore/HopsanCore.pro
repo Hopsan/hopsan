@@ -1,7 +1,8 @@
 # -------------------------------------------------
 # Global project options
 # -------------------------------------------------
-QT -= core gui
+QT -= core \
+    gui
 TARGET = HopsanCore
 TEMPLATE = lib
 CONFIG += dll
@@ -10,16 +11,13 @@ DESTDIR = ../bin/debug
 # -------------------------------------------------
 # Platform specific additional project options
 # -------------------------------------------------
-
 # win32:DEFINES += STATICCORE
 win32:DEFINES += DOCOREDLLEXPORT
 win32:DEFINES -= UNICODE
 
-
 # -------------------------------------------------
 # Project files
 # -------------------------------------------------
-
 SOURCES += Port.cc \
     Node.cc \
     Component.cc \
@@ -34,7 +32,8 @@ SOURCES += Port.cc \
     CoreUtilities/FirstOrderFilter.cc \
     CoreUtilities/FileAccess.cc \
     CoreUtilities/Delay.cc \
-    Components/Components.cc
+    Components/Components.cc \
+    HopsanEssentials.cc
 HEADERS += win32dll.h \
     Port.h \
     Node.h \
@@ -108,4 +107,5 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicAckumulator.hpp \
     Components/Hydraulic/Hydraulic43Valve.hpp \
     ComponentEssentials.h \
-    ComponentUtilities.h
+    ComponentUtilities.h \
+    HopsanEssentials.h

@@ -12,6 +12,7 @@
 
 #include <deque>
 #include "../win32dll.h"
+#include "Delay.h"
 
 /*
             num[0]*s + num[1]

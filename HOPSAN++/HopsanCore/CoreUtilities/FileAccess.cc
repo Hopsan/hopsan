@@ -29,7 +29,7 @@ void FileAccess::setFilename(string filename)
     mFilename = filename;
 }
 
-ComponentSystem FileAccess::loadModel(double *startTime, double *stopTime, string *plotComponent, string *plotPort)
+ComponentSystem* FileAccess::loadModel(HopsanEssentials* pHopsan, double *startTime, double *stopTime, string *plotComponent, string *plotPort)
 {
         //Read from file
     cout << "Trying to open model: " << mFilename.c_str() << endl;
@@ -42,8 +42,7 @@ ComponentSystem FileAccess::loadModel(double *startTime, double *stopTime, strin
     }
 
         //Necessary declarations
-    HopsanEssentials Hopsan;
-    ComponentSystem mainModel("mainModel");
+    ComponentSystem* pMainModel = new ComponentSystem("mainModel");
     typedef map<string, Component*> mapComponentType;
     typedef map<string, ComponentSystem*> mapSystemType;
 	mapComponentType componentMap;
@@ -79,7 +78,7 @@ ComponentSystem FileAccess::loadModel(double *startTime, double *stopTime, strin
                 }
                 else
                 {
-                    mainModel.addComponent(tempComponentSystem);                 //Subsystem belongs to main system
+                    pMainModel->addComponent(tempComponentSystem);                 //Subsystem belongs to main system
                 }
             }
 
@@ -99,7 +98,7 @@ ComponentSystem FileAccess::loadModel(double *startTime, double *stopTime, strin
             else if ( inputWord == "COMPONENT" )
             {
                 inputStream >> inputWord;
-                Component *tempComponent = Hopsan.CreateComponent(inputWord);
+                Component *tempComponent = pHopsan->CreateComponent(inputWord);
                 inputStream >> inputWord;
                 tempComponent->setName(inputWord);
                 componentMap.insert(pair<string, Component*>(inputWord, &*tempComponent));
@@ -109,7 +108,7 @@ ComponentSystem FileAccess::loadModel(double *startTime, double *stopTime, strin
                 }
                 else
                 {
-                    mainModel.addComponent(tempComponent);                 //Component belongs to main system
+                    pMainModel->addComponent(tempComponent);                 //Component belongs to main system
                 }
             }
 
@@ -187,19 +186,19 @@ ComponentSystem FileAccess::loadModel(double *startTime, double *stopTime, strin
     }
     modelFile.close();
 
-    return mainModel;
+    return pMainModel;
 }
 
-ComponentSystem FileAccess::loadModel(string filename, double *startTime, double *stopTime, string *plotComponent, string *plotPort)
+ComponentSystem* FileAccess::loadModel(HopsanEssentials* pHopsan, string filename, double *startTime, double *stopTime, string *plotComponent, string *plotPort)
 {
     setFilename(filename);
-    return loadModel(&*startTime, &*stopTime, &*plotComponent, &*plotPort);
+    return loadModel(pHopsan, &*startTime, &*stopTime, &*plotComponent, &*plotPort);
 }
 
-void FileAccess::saveModel(string fileName, ComponentSystem motherOfAllModels, double startTime, double stopTime, string plotComponent, string plotPort)
+void FileAccess::saveModel(string fileName, ComponentSystem* pMotherOfAllModels, double startTime, double stopTime, string plotComponent, string plotPort)
 {
     ofstream modelFile(fileName.c_str());
-    saveComponentSystem(modelFile, motherOfAllModels, "");
+    saveComponentSystem(modelFile, pMotherOfAllModels, "");
     modelFile << "SIMULATE " << startTime << " " << stopTime << "\n";
     modelFile << "PLOT " << plotComponent << " " << plotPort << "\n";
     modelFile.close();
@@ -207,29 +206,29 @@ void FileAccess::saveModel(string fileName, ComponentSystem motherOfAllModels, d
 }
 
 
-void FileAccess::saveComponentSystem(ofstream& modelFile, ComponentSystem& motherModel, string motherSystemName)
+void FileAccess::saveComponentSystem(ofstream& modelFile, ComponentSystem* pMotherModel, string motherSystemName)
 {
-    map<string, string> mainComponentList = motherModel.getComponentNames();
+    map<string, string> mainComponentList = pMotherModel->getComponentNames();
     map<string, string>::iterator it;
     map<Port*, string> portList;
 
     for(it = mainComponentList.begin(); it!=mainComponentList.end(); ++it)
     {
         //if (it->second == "ComponentSystem")
-        if(motherModel.getComponent(it->first)->isComponentSystem())
+        if(pMotherModel->getComponent(it->first)->isComponentSystem())
         {
-            modelFile << "SUBSYSTEM " << " " << it->first << " " << motherModel.getComponentSystem(it->first)->getTypeCQS() << "\n";
-            vector<Port*> systemPorts = motherModel.getComponentSystem(it->first)->getPortPtrVector();
+            modelFile << "SUBSYSTEM " << " " << it->first << " " << pMotherModel->getComponentSystem(it->first)->getTypeCQS() << "\n";
+            vector<Port*> systemPorts = pMotherModel->getComponentSystem(it->first)->getPortPtrVector();
             cout << "Subsystem has " << systemPorts.size() << " ports.\n";
             vector<Port*>::iterator itp;
             for (itp=systemPorts.begin(); itp!=systemPorts.end(); ++itp)
             {
-                modelFile << "SYSTEMPORT " << it->first << " " << (*itp)->getPortName() << "\n";
+                modelFile << "SYSTEMPORT " << it->first << " " << (*itp)->getPortName() << endl;
             }
 
             ///TODO: Skriv ut subsystemets portar
             ///TODO: Fixa så man kan komma åt subsystem ur ett component system, så rekursiva anrop kan göras här
-            saveComponentSystem(modelFile, *motherModel.getComponentSystem(it->first), motherSystemName + " " + it->first);
+            saveComponentSystem(modelFile, pMotherModel->getComponentSystem(it->first), motherSystemName + " " + it->first);
         }
         else
         {
@@ -237,7 +236,7 @@ void FileAccess::saveComponentSystem(ofstream& modelFile, ComponentSystem& mothe
             modelFile << "COMPONENT " << it->second << " " << it->first << motherSystemName << "\n";
         }
 
-        map<string,double> componentParameterList = motherModel.getComponent(it->first)->getParameterList();
+        map<string,double> componentParameterList = pMotherModel->getComponent(it->first)->getParameterList();
         map<string, double>::iterator itc;
         for(itc = componentParameterList.begin(); itc!=componentParameterList.end(); ++itc)
         {
@@ -246,20 +245,20 @@ void FileAccess::saveComponentSystem(ofstream& modelFile, ComponentSystem& mothe
 
 
             //Store all ports in a map, together with the name of the component they belong to (for use below)
-        vector <Port*> portPtrsVector = motherModel.getComponent(it->first)->getPortPtrVector();
+        vector <Port*> portPtrsVector = pMotherModel->getComponent(it->first)->getPortPtrVector();
         vector <Port*>::iterator itp;
         for (itp=portPtrsVector.begin(); itp!=portPtrsVector.end(); ++itp)
         {
             portList.insert(pair<Port*,string>(*itp, it->first));
         }
-        portPtrsVector = motherModel.getPortPtrVector();
+        portPtrsVector = pMotherModel->getPortPtrVector();
         for (itp=portPtrsVector.begin(); itp!=portPtrsVector.end(); ++itp)
         {
-            portList.insert(pair<Port*,string>(*itp, motherModel.getName()));
+            portList.insert(pair<Port*,string>(*itp, pMotherModel->getName()));
         }
     }
 
-    cout << "Connecting in system " << motherModel.getName() << ", portList.size() = " << portList.size() << endl;
+    cout << "Connecting in system " << pMotherModel->getName() << ", portList.size() = " << portList.size() << endl;
 
         //Iterate through port map and figure out which ports share the same node, and then write the connect lines
     map<Port*, string>::iterator itp;
