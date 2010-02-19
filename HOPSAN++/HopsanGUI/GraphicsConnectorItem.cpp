@@ -1,14 +1,18 @@
 #include "GraphicsConnectorItem.h"
 
 GraphicsConnectorItem::GraphicsConnectorItem(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, QColor color, QGraphicsItem *parent, QGraphicsScene *scene)
-        : QGraphicsLineItem(x1, y1, x2, y2)
+        : QGraphicsWidget(parent)
 {
     this->startPos.setX(x1);
     this->startPos.setY(y1);
     this->endPos.setX(x2);
     this->endPos.setY(y2);
-    this->setPen(QPen(color, 2));
     this->mScene = scene;
+    mLine1 = new QGraphicsLineItem(0.0, 0.0, 0.0, 0.0, this);
+    mLine2 = new QGraphicsLineItem(0.0, 0.0, 0.0, 0.0, this);
+    this->setPen(QPen(color, 2));
+    //this->mScene->addItem(mLine1);
+   // this->mScene->addItem(mLine2);
 }
 
 GraphicsConnectorItem::~GraphicsConnectorItem()
@@ -45,17 +49,33 @@ GraphicsRectItem *GraphicsConnectorItem::getEndPort()
 
 void GraphicsConnectorItem::updatePos()
 {
-    QColor color = QColor("blue");
-    this->setPen(QPen(color, 2));
-    QPointF startPos = this->getStartPort()->pos();
-    QPointF endPos = this->getEndPort()->pos();
-    this->setLine(0.0, 0.0, endPos.x(), endPos.y());
+    this->drawLine(this->getStartPort()->pos(), this->getEndPort()->pos());
+//    QColor color = QColor("blue");
+//    this->setPen(QPen(color, 2));
+//    QPointF startPos = this->getStartPort()->pos();
+//    QPointF endPos = this->getEndPort()->pos();
+//    this->setLine(0.0, 0.0, endPos.x(), endPos.y());
 }
 
 
 void GraphicsConnectorItem::drawLine(QPointF startPos, QPointF endPos)
 {
-    //qreal x2 = endPos.x();
-    //qreal y2 = endPos.y();
-    //line->setLine(line->startPos.x(), line->startPos.y(), x2, y2);
+    startPos = this->mapFromScene(startPos);
+    endPos = this->mapFromScene(endPos);
+    if (abs(startPos.x()-endPos.x()) < abs(startPos.y()-endPos.y()))
+    {
+        mLine1->setLine(startPos.x(), startPos.y(), startPos.x(), endPos.y());
+        mLine2->setLine(startPos.x(), endPos.y(), endPos.x(), endPos.y());
+    }
+    else
+    {
+        mLine1->setLine(startPos.x(), startPos.y(), endPos.x(), startPos.y());
+        mLine2->setLine(endPos.x(), startPos.y(), endPos.x(), endPos.y());
+    }
+}
+
+void GraphicsConnectorItem::setPen(QPen pen)
+{
+    mLine1->setPen(pen);
+    mLine2->setPen(pen);
 }

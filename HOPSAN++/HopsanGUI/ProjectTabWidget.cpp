@@ -127,10 +127,8 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 
     if (this->creatingConnector)
     {
-        QPointF newPos = this->mapToScene(event->pos());
-        qreal x2 = newPos.x();
-        qreal y2 = newPos.y();
-        line->setLine(line->startPos.x(), line->startPos.y(), x2, y2);
+        //QPointF newPos = this->mapToScene(event->pos());
+        line->drawLine(line->startPos, this->mapToScene(event->pos()));
         //qreal myLineWidth = 2.0;
         //QColor myLineColor = QColor("black");
          //= new GraphicsConnectorItem(lineH->startPos.x(), lineH->startPos.y(), lineH->startPos.x(), newPos.y(), myLineWidth, myLineColor);
@@ -171,9 +169,9 @@ void GraphicsView::addConnector(GraphicsRectItem *rect)
         QPointF oldPos = rect->mapToScene(rect->boundingRect().center());
         qreal myLineWidth = 2.0;
         QColor myLineColor = QColor("red");
-        line = new GraphicsConnectorItem(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), myLineWidth, myLineColor, rect);
+        line = new GraphicsConnectorItem(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), myLineWidth, myLineColor, rect, this->scene());
         //GraphicsConnectorItem *lineV = new GraphicsConnectorItem(oldPos.x(), 0.0, 0.0, 0.0, myLineWidth, myLineColor, rect);
-        this->scene()->addItem(line);
+        //this->scene()->addItem(line);
         //this->scene()->addItem(lineV);
         this->creatingConnector = true;
         line->setStartPort(rect);
@@ -182,9 +180,7 @@ void GraphicsView::addConnector(GraphicsRectItem *rect)
     else
     {
         QPointF newPos = rect->mapToScene(rect->boundingRect().center());
-        qreal x2 = newPos.x();
-        qreal y2 = newPos.y();
-        line->setLine(line->startPos.x(), line->startPos.y(), x2, y2);
+        line->drawLine(line->startPos, newPos);
         rect->getComponent()->addConnector(line);
         line->setEndPort(rect);
 

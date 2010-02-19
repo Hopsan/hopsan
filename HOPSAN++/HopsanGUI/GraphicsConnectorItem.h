@@ -16,7 +16,7 @@
 
 class GraphicsRectItem;     //Forwarad declaration
 
-class GraphicsConnectorItem : public QObject, public QGraphicsLineItem
+class GraphicsConnectorItem : public QGraphicsWidget
 {
     Q_OBJECT
 public:
@@ -30,6 +30,7 @@ public:
     GraphicsRectItem *getStartPort();
     GraphicsRectItem *getEndPort();
     void drawLine(QPointF startPos, QPointF endPos);
+    void setPen(QPen pen);
 
 public slots:
     void updatePos();
@@ -41,6 +42,8 @@ private:
     GraphicsRectItem *mStartPort;
     GraphicsRectItem *mEndPort;
     QGraphicsScene *mScene;
+    QGraphicsLineItem *mLine1;
+    QGraphicsLineItem *mLine2;
 };
 
 #endif // GRAPHICSCONNECTORITEM_H
