@@ -69,6 +69,7 @@ public:
     void closeEvent(QCloseEvent *event);
 
 private slots:
+    void addLibs(QString libDir);
     void addLibs();
     //void plot();
 

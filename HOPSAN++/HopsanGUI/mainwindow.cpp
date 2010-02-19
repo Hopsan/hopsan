@@ -129,6 +129,8 @@ MainWindow::MainWindow(QWidget *parent)
     menubar->addAction(menuView->menuAction());
     menubar->addAction(menuPlot->menuAction());
 
+    addLibs("../../HopsanGUI/componentData/hydraulic");
+
     QMetaObject::connectSlotsByName(this);
 
 
@@ -150,23 +152,8 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::addLibs()
+void MainWindow::addLibs(QString libDir)
 {
-    /*QFileDialog dialog(this);
-    dialog.setFileMode(QFileDialog::Directory);
-    fileName = QFileDialog::getExistingDirectory();*/
-
-    /*Alt. way
-    fileName = QFileDialog::getOpenFileName(this,
-     tr("Open Image"), "/home/jana", tr("Image Files (*.png *.jpg *.bmp)"));*/
-
-    QDir fileDialogOpenDir; //This dir object is used for setting the open directory of the QFileDialog, i.e. apps working dir
-
-    libDir = QFileDialog::getExistingDirectory(this, tr("Choose Library Directory"),
-                                                 fileDialogOpenDir.currentPath(),
-                                                 QFileDialog::ShowDirsOnly
-                                                 | QFileDialog::DontResolveSymlinks);
-
     //If no directory is set, i.e. cancel is presses, do no more
     if (libDir.isEmpty() == true)
         return;
@@ -216,6 +203,27 @@ void MainWindow::addLibs()
         //Add the component to the library
         library->addComponent(libName,componentName,icon,parameterData);
     }
+}
+
+
+void MainWindow::addLibs()
+{
+    /*QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::Directory);
+    fileName = QFileDialog::getExistingDirectory();*/
+
+    /*Alt. way
+    fileName = QFileDialog::getOpenFileName(this,
+     tr("Open Image"), "/home/jana", tr("Image Files (*.png *.jpg *.bmp)"));*/
+
+    QDir fileDialogOpenDir; //This dir object is used for setting the open directory of the QFileDialog, i.e. apps working dir
+
+    libDir = QFileDialog::getExistingDirectory(this, tr("Choose Library Directory"),
+                                                 fileDialogOpenDir.currentPath(),
+                                                 QFileDialog::ShowDirsOnly
+                                                 | QFileDialog::DontResolveSymlinks);
+    addLibs(libDir);
+    //std::cout << qPrintable(libDir) << std::endl;
 }
 
 /*void MainWindow::plot()
