@@ -1,7 +1,7 @@
 #include "componentguiclass.h"
 #include <iostream>
 #include "graphicsrectitem.h"
-#include "GraphicsConnectorItem.h"
+#include "GUIConnector.h"
 #include <ostream>
 
 ComponentGuiClass::ComponentGuiClass(const QString &fileName, QString componentName,QPoint position, QGraphicsView *parentView, QGraphicsItem *parent)
@@ -43,7 +43,7 @@ QGraphicsView *ComponentGuiClass::getParentView()
     return mParentView;
 }
 
-void ComponentGuiClass::addConnector(GraphicsConnectorItem *item)
+void ComponentGuiClass::addConnector(GUIConnector *item)
 {
     mConnectors.push_back(item);
     connect(this,SIGNAL(componentMoved()),mConnectors.back(),SLOT(updatePos()));

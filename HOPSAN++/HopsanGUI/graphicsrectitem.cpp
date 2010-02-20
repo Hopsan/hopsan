@@ -44,7 +44,6 @@ void GraphicsRectItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
 void GraphicsRectItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-
     QBrush brush(Qt::green);
     this->setBrush(brush);
 }
@@ -77,8 +76,8 @@ void GraphicsRectItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 //    QPointF oldPos = this->mapToScene(this->boundingRect().center());
 //    myLineWidth = 2.0;
 //    myLineColor = QColor("black");
-//    GraphicsConnectorItem *lineH = new GraphicsConnectorItem(oldPos.x(), oldPos.y(), oldPos.x(), 0.0, myLineWidth, myLineColor, this);
-//    GraphicsConnectorItem *lineV = new GraphicsConnectorItem(oldPos.x(), 0.0, 0.0, 0.0, myLineWidth, myLineColor, this);
+//    GUIConnector *lineH = new GUIConnector(oldPos.x(), oldPos.y(), oldPos.x(), 0.0, myLineWidth, myLineColor, this);
+//    GUIConnector *lineV = new GUIConnector(oldPos.x(), 0.0, 0.0, 0.0, myLineWidth, myLineColor, this);
 
     //this->scene()->addItem(&*lineH);
     //this->scene()->addItem(&*lineV);

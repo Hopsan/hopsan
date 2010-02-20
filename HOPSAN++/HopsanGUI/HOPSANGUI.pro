@@ -14,7 +14,7 @@ SOURCES += main.cpp \
     graphicsrectitem.cpp \
     ProjectTabWidget.cpp \
     LibraryWidget.cpp \
-    GraphicsConnectorItem.cpp
+    GUIConnector.cpp
 HEADERS += mainwindow.h \
     treewidget.h \
     componentguiclass.h \
@@ -25,7 +25,7 @@ HEADERS += mainwindow.h \
     ProjectTabWidget.h \
     LibraryWidget.h \
     ../HopsanCore/HopsanCore.h \
-    GraphicsConnectorItem.h
+    GUIConnector.h
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE

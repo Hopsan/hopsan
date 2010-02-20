@@ -6,7 +6,7 @@
 #include <QBrush>
 #include <QGraphicsLineItem>
 #include <QGraphicsScene>
-//#include "GraphicsConnectorItem.h"
+//#include "GUIConnector.h"
 #include "componentguiclass.h"
 
 class ComponentGuiClass;        //Forwarad declaration

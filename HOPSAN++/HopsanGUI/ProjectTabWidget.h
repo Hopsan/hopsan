@@ -17,7 +17,7 @@
 #include <QStringList>
 #include <QGraphicsTextItem>
 #include "graphicsrectitem.h"
-#include "GraphicsConnectorItem.h"
+#include "GUIConnector.h"
 
 
 class GraphicsScene : public QGraphicsScene
@@ -38,7 +38,7 @@ public:
     GraphicsView(QWidget *parent = 0);
     ~GraphicsView();
     bool creatingConnector;
-    GraphicsConnectorItem *line;
+    GUIConnector *line;
 
 public slots:
     void addConnector(GraphicsRectItem *rect);

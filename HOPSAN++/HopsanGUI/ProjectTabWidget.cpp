@@ -9,7 +9,7 @@
 
 #include "ProjectTabWidget.h"
 #include "componentguiclass.h"
-#include "HopsanCore.h"
+//#include "HopsanCore.h"
 
 #include <iostream>
 #include <math.h>
@@ -127,13 +127,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 
     if (this->creatingConnector)
     {
-        //QPointF newPos = this->mapToScene(event->pos());
         line->drawLine(line->startPos, this->mapToScene(event->pos()));
-        //qreal myLineWidth = 2.0;
-        //QColor myLineColor = QColor("black");
-         //= new GraphicsConnectorItem(lineH->startPos.x(), lineH->startPos.y(), lineH->startPos.x(), newPos.y(), myLineWidth, myLineColor);
-
-        //this->scene()->addItem(lineV);
     }
 }
 
@@ -143,7 +137,14 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 
     if (event->button() == Qt::RightButton)
     {
-        line->removeLine();
+        if (line->getNumberOfLines() > 1)
+        {
+            line->removeLine(this->mapToScene(event->pos()));
+        }
+        else
+        {
+            this->scene()->removeItem(line);
+        }
     }
 
     if (event->button() != Qt::LeftButton)
@@ -176,13 +177,9 @@ void GraphicsView::addConnector(GraphicsRectItem *rect)
         QPointF oldPos = rect->mapToScene(rect->boundingRect().center());
         qreal myLineWidth = 2.0;
         QColor myLineColor = QColor("red");
-        line = new GraphicsConnectorItem(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), myLineWidth, myLineColor, rect, this->scene());
-        //GraphicsConnectorItem *lineV = new GraphicsConnectorItem(oldPos.x(), 0.0, 0.0, 0.0, myLineWidth, myLineColor, rect);
-        //this->scene()->addItem(line);
-        //this->scene()->addItem(lineV);
+        line = new GUIConnector(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), myLineWidth, myLineColor, rect, this->scene());
         this->creatingConnector = true;
         line->setStartPort(rect);
-        //Connecta med componenet och kolla dess movement event istället kansake funkar??
     }
     else
     {
@@ -303,7 +300,7 @@ void ProjectTab::hasChanged()
 ProjectTabWidget::ProjectTabWidget(QWidget *parent)
         :   QTabWidget(parent)
 {
-    HopsanEssentials* pHopsan = HopsanEssentials::getInstance();
+    //HopsanEssentials* pHopsan = HopsanEssentials::getInstance();
 
     setTabsClosable(true);
     numberOfUntitledTabs = 0;

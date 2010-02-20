@@ -1,5 +1,5 @@
-#ifndef GRAPHICSCONNECTORITEM_H
-#define GRAPHICSCONNECTORITEM_H
+#ifndef GUICONNECTOR_H
+#define GUICONNECTOR_H
 
 #include <QCursor>
 #include <QBrush>
@@ -11,18 +11,18 @@
 #include <QBrush>
 #include <QGraphicsLineItem>
 #include <QGraphicsScene>
-#include "GraphicsConnectorItem.h"
+#include "GUIConnector.h"
 #include "graphicsrectitem.h"
 #include <vector>
 
 class GraphicsRectItem;     //Forwarad declaration
 
-class GraphicsConnectorItem : public QGraphicsWidget
+class GUIConnector : public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    GraphicsConnectorItem(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, QColor color, QGraphicsItem *parent = 0, QGraphicsScene *scene = 0);
-    ~GraphicsConnectorItem();
+    GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, QColor color, QGraphicsItem *parent = 0, QGraphicsScene *scene = 0);
+    ~GUIConnector();
     QPointF startPos;
     QPointF endPos;
     //ComponentGuiClass* getPort();
@@ -32,8 +32,9 @@ public:
     GraphicsRectItem *getEndPort();
     void drawLine(QPointF startPos, QPointF endPos);
     void addLine();
-    void removeLine();
+    void removeLine(QPointF cursorPos);
     void setPen(QPen pen);
+    int getNumberOfLines();
 
 public slots:
     void updatePos();
@@ -52,4 +53,4 @@ private:
     //QGraphicsLineItem *mLine2;
 };
 
-#endif // GRAPHICSCONNECTORITEM_H
+#endif // GUICONNECTOR_H

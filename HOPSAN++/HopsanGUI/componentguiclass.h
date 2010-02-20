@@ -6,12 +6,12 @@
 #include <QGraphicsTextItem>
 #include <QWidget>
 #include <QGraphicsView>
-#include "GraphicsConnectorItem.h"
+#include "GUIConnector.h"
 #include <vector>
 #include <QGraphicsItem>
 
 
-class GraphicsConnectorItem;
+class GUIConnector;
 
 class ComponentGuiClass : public QGraphicsWidget
 {
@@ -20,7 +20,7 @@ public:
     ComponentGuiClass(const QString &fileName, QString componentName, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent = 0);
     ~ComponentGuiClass();
     QGraphicsView *getParentView();
-    void addConnector(GraphicsConnectorItem *item);
+    void addConnector(GUIConnector *item);
 
 protected:
     //virtual void moveEvent(QGraphicsItem::GraphicsItemChange);
@@ -31,7 +31,7 @@ signals:
 
 private:
     QGraphicsView *mParentView;
-    std::vector<GraphicsConnectorItem*> mConnectors;        //Inteded to store connectors for each component
+    std::vector<GUIConnector*> mConnectors;        //Inteded to store connectors for each component
     //QWidget *widget;
 };
 
