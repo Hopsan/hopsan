@@ -21,7 +21,7 @@ class GUIConnector : public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, QColor color, QGraphicsItem *parent = 0, QGraphicsScene *scene = 0);
+    GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, QColor color, QColor activecolor, QGraphicsItem *parent = 0, QGraphicsScene *scene = 0);
     ~GUIConnector();
     QPointF startPos;
     QPointF endPos;
@@ -35,6 +35,7 @@ public:
     void setPen(QPen pen);
     int getNumberOfLines();
     void setStraigth(bool var);
+    bool isStraigth();
 
 public slots:
     void updatePos();
@@ -48,7 +49,9 @@ private:
     GUIPort *mEndPort;
     QGraphicsScene *mScene;
     QGraphicsLineItem *mTempLine;
-    QColor mColor;
+    qreal mWidth;
+    QColor mPrimaryColor;
+    QColor mActiveColor;
     bool mStraigth;
 };
 

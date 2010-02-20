@@ -38,7 +38,6 @@ public:
     GraphicsView(QWidget *parent = 0);
     ~GraphicsView();
     bool creatingConnector;
-    GUIConnector *line;
 
 public slots:
     void addConnector(GUIPort *rect);
@@ -56,6 +55,8 @@ protected:
     virtual void keyPressEvent(QKeyEvent *event);
     virtual void keyReleaseEvent(QKeyEvent *event);
 
+private:
+    GUIConnector *mpTempConnector;
 };
 
 

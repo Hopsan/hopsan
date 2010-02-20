@@ -8,7 +8,8 @@
 //$Id$
 
 #include "ProjectTabWidget.h"
-#include "GUIComponent.h"/#include "HopsanCore.h"
+#include "GUIComponent.h"
+#include "HopsanCore.h"
 
 #include <iostream>
 #include <math.h>
@@ -106,7 +107,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         if (this->creatingConnector)                            //Straigth line function
         {
             QCursor cursor;
-            line->setStraigth(true);
+            mpTempConnector->setStraigth(true);
         }
     }
 }
@@ -116,7 +117,7 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
     this->setDragMode(QGraphicsView::NoDrag);
     if (this->creatingConnector)
     {
-        line->setStraigth(false);
+        mpTempConnector->setStraigth(false);
     }
 }
 
@@ -131,23 +132,22 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 
     if (this->creatingConnector)
     {
-        line->drawLine(line->startPos, this->mapToScene(event->pos()));
+        mpTempConnector->drawLine(mpTempConnector->startPos, this->mapToScene(event->pos()));
     }
 }
 
 
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
-
     if (event->button() == Qt::RightButton)
     {
-        if (line->getNumberOfLines() > 1)
+        if (mpTempConnector->getNumberOfLines() > 1)
         {
-            line->removeLine(this->mapToScene(event->pos()));
+            mpTempConnector->removeLine(this->mapToScene(event->pos()));
         }
         else
         {
-            this->scene()->removeItem(line);
+            this->scene()->removeItem(mpTempConnector);
             this->creatingConnector = false;
         }
         return;
@@ -159,7 +159,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     }
     if (this->creatingConnector)
     {
-        line->addLine();
+        mpTempConnector->addLine();
     }
 
     //case InsertLine:
@@ -175,26 +175,28 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 }
 
 
-void GraphicsView::addConnector(GUIPort *rect)
+void GraphicsView::addConnector(GUIPort *port)
 {
     if (!creatingConnector)
     {
         std::cout << "Adding connector";
-        QPointF oldPos = rect->mapToScene(rect->boundingRect().center());
+        QPointF oldPos = port->mapToScene(port->boundingRect().center());
         qreal myLineWidth = 2.0;
-        QColor myLineColor = QColor("red");
-        line = new GUIConnector(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), myLineWidth, myLineColor, rect, this->scene());
+        QColor myLineColor = QColor("black");
+        QColor myLineActiveColor = QColor("red");
+        mpTempConnector = new GUIConnector(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), myLineWidth, myLineColor, myLineActiveColor, port, this->scene());
         this->creatingConnector = true;
-        line->setStartPort(rect);
+        mpTempConnector->setStartPort(port);
     }
     else
     {
-        QPointF newPos = rect->mapToScene(rect->boundingRect().center());
-        line->drawLine(line->startPos, newPos);
-        rect->getComponent()->addConnector(line);
-        line->setEndPort(rect);
-
         creatingConnector = false;
+        mpTempConnector->removeLine(port->mapToScene(port->boundingRect().center()));
+        QPointF newPos = port->mapToScene(port->boundingRect().center());
+        mpTempConnector->drawLine(mpTempConnector->startPos, newPos);
+        port->getComponent()->addConnector(mpTempConnector);
+        mpTempConnector->setEndPort(port);
+
         //HÄR SKA CONNECTSATSEN LIGGA
     }
 }

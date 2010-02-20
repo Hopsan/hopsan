@@ -1,6 +1,6 @@
 #include "GUIConnector.h"
 
-GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, QColor color, QGraphicsItem *parent, QGraphicsScene *scene)
+GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, QColor color, QColor activecolor, QGraphicsItem *parent, QGraphicsScene *scene)
         : QGraphicsWidget(parent)
 {
     this->startPos.setX(x1);
@@ -8,10 +8,12 @@ GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, 
     this->endPos.setX(x2);
     this->endPos.setY(y2);
     this->mScene = scene;
-    this->mColor = color;
+    this->mPrimaryColor = color;
+    this->mActiveColor = activecolor;
+    this->mWidth = width;
     mTempLine = new QGraphicsLineItem(this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(), this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(), this);
     mLines.push_back(mTempLine);
-    this->setPen(QPen(color, 2));
+    this->setPen(QPen(mActiveColor, mWidth));
     this->mStraigth = false;
 }
 
@@ -24,8 +26,6 @@ void GUIConnector::SetEndPos(qreal x2, qreal y2)
     this->endPos.setX(x2);
     this->endPos.setY(y2);
 }
-
-
 
 void GUIConnector::setStartPort(GUIPort *port)
 {
@@ -51,7 +51,6 @@ void GUIConnector::updatePos()
 {
     this->drawLine(this->getStartPort()->pos(), this->getEndPort()->pos());
 }
-
 
 void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
 {
@@ -105,9 +104,9 @@ void GUIConnector::addLine()
                                       mLines[mLines.size()-1]->line().p2().x(),
                                       mLines[mLines.size()-1]->line().p2().y(),
                                       this);
-    mTempLine->setPen(QPen(mColor,2));
+    mTempLine->setPen(QPen(mActiveColor,mWidth));
     mLines.push_back(mTempLine);
-    mLines[mLines.size()-2]->setPen(QPen(QColor("black"),2));
+    mLines[mLines.size()-2]->setPen(QPen(mPrimaryColor,mWidth));
 }
 
 void GUIConnector::removeLine(QPointF cursorPos)
@@ -129,4 +128,10 @@ int GUIConnector::getNumberOfLines()
 void GUIConnector::setStraigth(bool var)
 {
     mStraigth = var;
+}
+
+
+bool GUIConnector::isStraigth()
+{
+    return mStraigth;
 }
