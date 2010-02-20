@@ -1,10 +1,10 @@
-#include "componentguiclass.h"
+#include "GUIComponent.h"
 #include <iostream>
 #include "GUIPort.h"
 #include "GUIConnector.h"
 #include <ostream>
 
-ComponentGuiClass::ComponentGuiClass(const QString &fileName, QString componentName,QPoint position, QGraphicsView *parentView, QGraphicsItem *parent)
+GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint position, QGraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
@@ -32,18 +32,18 @@ ComponentGuiClass::ComponentGuiClass(const QString &fileName, QString componentN
    // rectR->boundingRegion();
 }
 
-ComponentGuiClass::~ComponentGuiClass()
+GUIComponent::~GUIComponent()
 {
     //delete widget;
 }
 
 
-QGraphicsView *ComponentGuiClass::getParentView()
+QGraphicsView *GUIComponent::getParentView()
 {
     return mParentView;
 }
 
-void ComponentGuiClass::addConnector(GUIConnector *item)
+void GUIComponent::addConnector(GUIConnector *item)
 {
     mConnectors.push_back(item);
     connect(this,SIGNAL(componentMoved()),mConnectors.back(),SLOT(updatePos()));
@@ -51,7 +51,7 @@ void ComponentGuiClass::addConnector(GUIConnector *item)
     mConnectors.back()->setPen(QPen(color, 2));
 }
 
-//void ComponentGuiClass::moveEvent(QMoveEvent *event)
+//void GUIComponent::moveEvent(QMoveEvent *event)
 //{
 //    emit componentMoved();
 //    if (!mConnectors.empty())
@@ -62,7 +62,7 @@ void ComponentGuiClass::addConnector(GUIConnector *item)
 //}
 
 
-void ComponentGuiClass::moveEvent(QGraphicsItem::GraphicsItemChange *change)
+void GUIComponent::moveEvent(QGraphicsItem::GraphicsItemChange *change)
 {
     if (*change == QGraphicsItem::ItemPositionChange)
     {

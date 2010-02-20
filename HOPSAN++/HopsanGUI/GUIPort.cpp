@@ -10,10 +10,10 @@
 #include <QGraphicsRectItem>
 #include <QWidget>
 #include <QGraphicsItem>
-#include "componentguiclass.h"
+#include "GUIComponent.h"
 #include <iostream>
 
-GUIPort::GUIPort(qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, ComponentGuiClass *component, QGraphicsItem *parent)
+GUIPort::GUIPort(qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, GUIComponent *component, QGraphicsItem *parent)
         : QGraphicsRectItem(x, y, width, height,parent)
 {
     mParentView = parentView;
@@ -54,7 +54,7 @@ QGraphicsView *GUIPort::getParentView()
     return mParentView;
 }
 
-ComponentGuiClass *GUIPort::getComponent()
+GUIComponent *GUIPort::getComponent()
 {
     return mComponent;
 }

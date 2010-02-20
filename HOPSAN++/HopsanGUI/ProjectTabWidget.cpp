@@ -8,7 +8,7 @@
 //$Id$
 
 #include "ProjectTabWidget.h"
-#include "componentguiclass.h"
+#include "GUIComponent.h"
 //#include "HopsanCore.h"
 
 #include <iostream>
@@ -80,7 +80,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
         std::cout << "x=" << this->mapFromGlobal(cursor.pos()).x() << "  " << "y=" << this->mapFromGlobal(cursor.pos()).y() << std::endl;
 
-        ComponentGuiClass *guiComponent = new ComponentGuiClass(iconDir,componentName,position,this);
+        GUIComponent *guiComponent = new GUIComponent(iconDir,componentName,position,this);
 
         guiComponent->setPos(event->pos());
 

@@ -1,5 +1,5 @@
-#ifndef COMPONENTGUICLASS_H
-#define COMPONENTGUICLASS_H
+#ifndef GUICOMPONENT_H
+#define GUICOMPONENT_H
 
 #include <QGraphicsWidget>
 #include <QGraphicsSvgItem>
@@ -13,12 +13,12 @@
 
 class GUIConnector;
 
-class ComponentGuiClass : public QGraphicsWidget
+class GUIComponent : public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    ComponentGuiClass(const QString &fileName, QString componentName, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent = 0);
-    ~ComponentGuiClass();
+    GUIComponent(const QString &fileName, QString componentName, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent = 0);
+    ~GUIComponent();
     QGraphicsView *getParentView();
     void addConnector(GUIConnector *item);
 
@@ -35,4 +35,4 @@ private:
     //QWidget *widget;
 };
 
-#endif // COMPONENTGUICLASS_H
+#endif // GUICOMPONENT_H

@@ -7,19 +7,19 @@
 #include <QGraphicsLineItem>
 #include <QGraphicsScene>
 //#include "GUIConnector.h"
-#include "componentguiclass.h"
+#include "GUIComponent.h"
 
-class ComponentGuiClass;        //Forwarad declaration
+class GUIComponent;        //Forwarad declaration
 
 class GUIPort : public QObject, public QGraphicsRectItem
 {
     Q_OBJECT
 public:
-    GUIPort(qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, ComponentGuiClass *component, QGraphicsItem *parent = 0);
+    GUIPort(qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, GUIComponent *component, QGraphicsItem *parent = 0);
     ~GUIPort();
     QPointF rectPos;
     QGraphicsView *getParentView();
-    ComponentGuiClass *getComponent();
+    GUIComponent *getComponent();
 
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
@@ -37,7 +37,7 @@ private:
     QGraphicsLineItem *lineH;
     QGraphicsLineItem *lineV;
     QGraphicsView *mParentView;
-    ComponentGuiClass *mComponent;
+    GUIComponent *mComponent;
 };
 
 #endif // GUIPORT_H

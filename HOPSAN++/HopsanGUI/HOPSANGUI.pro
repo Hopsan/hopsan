@@ -7,17 +7,16 @@ TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
     treewidget.cpp \
-    componentguiclass.cpp \
     treewidgetitem.cpp \
     listwidget.cpp \
     listwidgetitem.cpp \
     ProjectTabWidget.cpp \
     LibraryWidget.cpp \
     GUIConnector.cpp \
-    GUIPort.cpp
+    GUIPort.cpp \
+    GUIComponent.cpp
 HEADERS += mainwindow.h \
     treewidget.h \
-    componentguiclass.h \
     treewidgetitem.h \
     listwidget.h \
     listwidgetitem.h \
@@ -25,7 +24,8 @@ HEADERS += mainwindow.h \
     LibraryWidget.h \
     ../HopsanCore/HopsanCore.h \
     GUIConnector.h \
-    GUIPort.h
+    GUIPort.h \
+    GUIComponent.h
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE

@@ -25,7 +25,7 @@ public:
     ~GUIConnector();
     QPointF startPos;
     QPointF endPos;
-    //ComponentGuiClass* getPort();
+    //GUIComponent* getPort();
     void setStartPort(GUIPort *port);
     void setEndPort(GUIPort *port);
     GUIPort *getStartPort();
