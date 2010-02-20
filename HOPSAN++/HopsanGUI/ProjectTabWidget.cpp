@@ -9,7 +9,7 @@
 
 #include "ProjectTabWidget.h"
 #include "GUIComponent.h"
-//#include "HopsanCore.h"
+#include "HopsanCore.h"
 
 #include <iostream>
 #include <math.h>
@@ -144,7 +144,9 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         else
         {
             this->scene()->removeItem(line);
+            this->creatingConnector = false;
         }
+        return;
     }
 
     if (event->button() != Qt::LeftButton)
@@ -300,7 +302,7 @@ void ProjectTab::hasChanged()
 ProjectTabWidget::ProjectTabWidget(QWidget *parent)
         :   QTabWidget(parent)
 {
-    //HopsanEssentials* pHopsan = HopsanEssentials::getInstance();
+    HopsanEssentials* pHopsan = HopsanEssentials::getInstance();
 
     setTabsClosable(true);
     numberOfUntitledTabs = 0;
