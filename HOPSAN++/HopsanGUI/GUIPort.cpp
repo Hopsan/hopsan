@@ -1,4 +1,4 @@
-#include "graphicsrectitem.h"
+#include "GUIPort.h"
 #include <QObject>
 #include <QGraphicsObject>
 #include <QGraphicsView>
@@ -13,7 +13,7 @@
 #include "componentguiclass.h"
 #include <iostream>
 
-GraphicsRectItem::GraphicsRectItem(qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, ComponentGuiClass *component, QGraphicsItem *parent)
+GUIPort::GUIPort(qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, ComponentGuiClass *component, QGraphicsItem *parent)
         : QGraphicsRectItem(x, y, width, height,parent)
 {
     mParentView = parentView;
@@ -26,14 +26,14 @@ GraphicsRectItem::GraphicsRectItem(qreal x, qreal y, qreal width, qreal height, 
     QBrush brush(Qt::green);
     this->setBrush(brush);
 
-    QObject::connect(this,SIGNAL(portClicked(GraphicsRectItem*)),this->getParentView(),SLOT(addConnector(GraphicsRectItem*)));
+    QObject::connect(this,SIGNAL(portClicked(GUIPort*)),this->getParentView(),SLOT(addConnector(GUIPort*)));
 }
 
-GraphicsRectItem::~GraphicsRectItem()
+GUIPort::~GUIPort()
 {
 }
 
-void GraphicsRectItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     //this->setCursor(Qt::CrossCursor);
     
@@ -42,29 +42,29 @@ void GraphicsRectItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     std::cout << "hovering over port\n";
 }
 
-void GraphicsRectItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     QBrush brush(Qt::green);
     this->setBrush(brush);
 }
 
 
-QGraphicsView *GraphicsRectItem::getParentView()
+QGraphicsView *GUIPort::getParentView()
 {
     return mParentView;
 }
 
-ComponentGuiClass *GraphicsRectItem::getComponent()
+ComponentGuiClass *GUIPort::getComponent()
 {
     return mComponent;
 }
 
-//void GraphicsRectItem::portClicked(GraphicsRectItem *item)
+//void GUIPort::portClicked(GUIPort *item)
 //{
 //}
 
 
-void GraphicsRectItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 
     //if (event->button() != Qt::LeftButton)

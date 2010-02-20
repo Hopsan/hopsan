@@ -16,7 +16,7 @@
 #include <QTabWidget>
 #include <QStringList>
 #include <QGraphicsTextItem>
-#include "graphicsrectitem.h"
+#include "GUIPort.h"
 #include "GUIConnector.h"
 
 
@@ -41,7 +41,7 @@ public:
     GUIConnector *line;
 
 public slots:
-    void addConnector(GraphicsRectItem *rect);
+    void addConnector(GUIPort *rect);
 
     //QByteArray *data;
     //QDataStream *stream;

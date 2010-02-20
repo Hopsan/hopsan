@@ -11,21 +11,21 @@ SOURCES += main.cpp \
     treewidgetitem.cpp \
     listwidget.cpp \
     listwidgetitem.cpp \
-    graphicsrectitem.cpp \
     ProjectTabWidget.cpp \
     LibraryWidget.cpp \
-    GUIConnector.cpp
+    GUIConnector.cpp \
+    GUIPort.cpp
 HEADERS += mainwindow.h \
     treewidget.h \
     componentguiclass.h \
     treewidgetitem.h \
     listwidget.h \
     listwidgetitem.h \
-    graphicsrectitem.h \
     ProjectTabWidget.h \
     LibraryWidget.h \
     ../HopsanCore/HopsanCore.h \
-    GUIConnector.h
+    GUIConnector.h \
+    GUIPort.h
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE

@@ -9,7 +9,7 @@
 
 #include "ProjectTabWidget.h"
 #include "componentguiclass.h"
-#include "HopsanCore.h"
+//#include "HopsanCore.h"
 
 #include <iostream>
 #include <math.h>
@@ -169,7 +169,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 }
 
 
-void GraphicsView::addConnector(GraphicsRectItem *rect)
+void GraphicsView::addConnector(GUIPort *rect)
 {
     if (!creatingConnector)
     {
@@ -300,7 +300,7 @@ void ProjectTab::hasChanged()
 ProjectTabWidget::ProjectTabWidget(QWidget *parent)
         :   QTabWidget(parent)
 {
-    HopsanEssentials* pHopsan = HopsanEssentials::getInstance();
+    //HopsanEssentials* pHopsan = HopsanEssentials::getInstance();
 
     setTabsClosable(true);
     numberOfUntitledTabs = 0;

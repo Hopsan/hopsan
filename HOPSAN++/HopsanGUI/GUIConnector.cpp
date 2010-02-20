@@ -32,22 +32,22 @@ void GUIConnector::SetEndPos(qreal x2, qreal y2)
 
 
 
-void GUIConnector::setStartPort(GraphicsRectItem *port)
+void GUIConnector::setStartPort(GUIPort *port)
 {
     this->mStartPort = port;
 }
 
-void GUIConnector::setEndPort(GraphicsRectItem *port)
+void GUIConnector::setEndPort(GUIPort *port)
 {
     this->mEndPort = port;
 }
 
-GraphicsRectItem *GUIConnector::getStartPort()
+GUIPort *GUIConnector::getStartPort()
 {
     return this->mStartPort;
 }
 
-GraphicsRectItem *GUIConnector::getEndPort()
+GUIPort *GUIConnector::getEndPort()
 {
     return this->mEndPort;
 }

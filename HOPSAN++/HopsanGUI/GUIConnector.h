@@ -12,10 +12,10 @@
 #include <QGraphicsLineItem>
 #include <QGraphicsScene>
 #include "GUIConnector.h"
-#include "graphicsrectitem.h"
+#include "GUIPort.h"
 #include <vector>
 
-class GraphicsRectItem;     //Forwarad declaration
+class GUIPort;     //Forwarad declaration
 
 class GUIConnector : public QGraphicsWidget
 {
@@ -26,10 +26,10 @@ public:
     QPointF startPos;
     QPointF endPos;
     //ComponentGuiClass* getPort();
-    void setStartPort(GraphicsRectItem *port);
-    void setEndPort(GraphicsRectItem *port);
-    GraphicsRectItem *getStartPort();
-    GraphicsRectItem *getEndPort();
+    void setStartPort(GUIPort *port);
+    void setEndPort(GUIPort *port);
+    GUIPort *getStartPort();
+    GUIPort *getEndPort();
     void drawLine(QPointF startPos, QPointF endPos);
     void addLine();
     void removeLine(QPointF cursorPos);
@@ -44,8 +44,8 @@ protected:
 
 private:
     std::vector<QGraphicsLineItem*> mLines;
-    GraphicsRectItem *mStartPort;
-    GraphicsRectItem *mEndPort;
+    GUIPort *mStartPort;
+    GUIPort *mEndPort;
     QGraphicsScene *mScene;
     QGraphicsLineItem *mTempLine;
     QColor mColor;

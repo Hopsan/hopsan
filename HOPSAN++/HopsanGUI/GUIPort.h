@@ -1,5 +1,5 @@
-#ifndef GRAPHICSRECTITEM_H
-#define GRAPHICSRECTITEM_H
+#ifndef GUIPORT_H
+#define GUIPORT_H
 
 #include <QGraphicsRectItem>
 #include <QCursor>
@@ -11,12 +11,12 @@
 
 class ComponentGuiClass;        //Forwarad declaration
 
-class GraphicsRectItem : public QObject, public QGraphicsRectItem
+class GUIPort : public QObject, public QGraphicsRectItem
 {
     Q_OBJECT
 public:
-    GraphicsRectItem(qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, ComponentGuiClass *component, QGraphicsItem *parent = 0);
-    ~GraphicsRectItem();
+    GUIPort(qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, ComponentGuiClass *component, QGraphicsItem *parent = 0);
+    ~GUIPort();
     QPointF rectPos;
     QGraphicsView *getParentView();
     ComponentGuiClass *getComponent();
@@ -27,8 +27,8 @@ protected:
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
 signals:
-    void portClicked(GraphicsRectItem *item);
-    void portMoved(GraphicsRectItem *item);
+    void portClicked(GUIPort *item);
+    void portMoved(GUIPort *item);
 
 private:
     QColor myLineColor;
@@ -40,4 +40,4 @@ private:
     ComponentGuiClass *mComponent;
 };
 
-#endif // GRAPHICSRECTITEM_H
+#endif // GUIPORT_H

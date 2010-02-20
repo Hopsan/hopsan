@@ -1,6 +1,6 @@
 #include "componentguiclass.h"
 #include <iostream>
-#include "graphicsrectitem.h"
+#include "GUIPort.h"
 #include "GUIConnector.h"
 #include <ostream>
 
@@ -23,9 +23,9 @@ ComponentGuiClass::ComponentGuiClass(const QString &fileName, QString componentN
     text->setPos(QPointF(-text->boundingRect().width()/2, icon->boundingRect().height()/2));
     text->setTextInteractionFlags(Qt::TextEditable);
 
-    GraphicsRectItem *rectR = new GraphicsRectItem(icon->sceneBoundingRect().width()-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),this,icon);
+    GUIPort *rectR = new GUIPort(icon->sceneBoundingRect().width()-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),this,icon);
 
-    GraphicsRectItem *rectL = new GraphicsRectItem(-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),this,icon);
+    GUIPort *rectL = new GUIPort(-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),this,icon);
 
     //icon->setPos(QPointF(-icon->boundingRect().width()/2, -icon->boundingRect().height()/2));
 
