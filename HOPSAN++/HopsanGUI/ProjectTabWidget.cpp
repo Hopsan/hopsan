@@ -9,7 +9,7 @@
 
 #include "ProjectTabWidget.h"
 #include "componentguiclass.h"
-//#include "HopsanCore.h"
+#include "HopsanCore.h"
 
 #include <iostream>
 #include <math.h>
@@ -300,7 +300,7 @@ void ProjectTab::hasChanged()
 ProjectTabWidget::ProjectTabWidget(QWidget *parent)
         :   QTabWidget(parent)
 {
-    //HopsanEssentials* pHopsan = HopsanEssentials::getInstance();
+    HopsanEssentials* pHopsan = HopsanEssentials::getInstance();
 
     setTabsClosable(true);
     numberOfUntitledTabs = 0;
