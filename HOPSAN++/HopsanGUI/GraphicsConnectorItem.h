@@ -13,6 +13,7 @@
 #include <QGraphicsScene>
 #include "GraphicsConnectorItem.h"
 #include "graphicsrectitem.h"
+#include <vector>
 
 class GraphicsRectItem;     //Forwarad declaration
 
@@ -30,6 +31,8 @@ public:
     GraphicsRectItem *getStartPort();
     GraphicsRectItem *getEndPort();
     void drawLine(QPointF startPos, QPointF endPos);
+    void addLine();
+    void removeLine();
     void setPen(QPen pen);
 
 public slots:
@@ -39,11 +42,14 @@ protected:
     virtual void SetEndPos(qreal x2, qreal y2);
 
 private:
+    std::vector<QGraphicsLineItem*> mLines;
     GraphicsRectItem *mStartPort;
     GraphicsRectItem *mEndPort;
     QGraphicsScene *mScene;
-    QGraphicsLineItem *mLine1;
-    QGraphicsLineItem *mLine2;
+    QGraphicsLineItem *mTempLine;
+    QColor mColor;
+    //QGraphicsLineItem *mLine1;
+    //QGraphicsLineItem *mLine2;
 };
 
 #endif // GRAPHICSCONNECTORITEM_H

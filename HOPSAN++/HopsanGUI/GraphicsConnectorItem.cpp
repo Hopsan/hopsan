@@ -8,8 +8,11 @@ GraphicsConnectorItem::GraphicsConnectorItem(qreal x1, qreal y1, qreal x2, qreal
     this->endPos.setX(x2);
     this->endPos.setY(y2);
     this->mScene = scene;
-    mLine1 = new QGraphicsLineItem(0.0, 0.0, 0.0, 0.0, this);
-    mLine2 = new QGraphicsLineItem(0.0, 0.0, 0.0, 0.0, this);
+    this->mColor = color;
+    mTempLine = new QGraphicsLineItem(this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(), this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(), this);
+    mLines.push_back(mTempLine);
+    mTempLine = new QGraphicsLineItem(this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(), this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(), this);
+    mLines.push_back(mTempLine);
     this->setPen(QPen(color, 2));
     //this->mScene->addItem(mLine1);
    // this->mScene->addItem(mLine2);
@@ -50,32 +53,53 @@ GraphicsRectItem *GraphicsConnectorItem::getEndPort()
 void GraphicsConnectorItem::updatePos()
 {
     this->drawLine(this->getStartPort()->pos(), this->getEndPort()->pos());
-//    QColor color = QColor("blue");
-//    this->setPen(QPen(color, 2));
-//    QPointF startPos = this->getStartPort()->pos();
-//    QPointF endPos = this->getEndPort()->pos();
-//    this->setLine(0.0, 0.0, endPos.x(), endPos.y());
 }
 
 
 void GraphicsConnectorItem::drawLine(QPointF startPos, QPointF endPos)
 {
     startPos = this->mapFromScene(startPos);
-    endPos = this->mapFromScene(endPos);
-    if (abs(startPos.x()-endPos.x()) < abs(startPos.y()-endPos.y()))
+    QPointF tempPos;
+    if (mLines.size() == 2)
     {
-        mLine1->setLine(startPos.x(), startPos.y(), startPos.x(), endPos.y());
-        mLine2->setLine(startPos.x(), endPos.y(), endPos.x(), endPos.y());
+        tempPos = mLines[mLines.size()-2]->line().p1();
     }
     else
     {
-        mLine1->setLine(startPos.x(), startPos.y(), endPos.x(), startPos.y());
-        mLine2->setLine(endPos.x(), startPos.y(), endPos.x(), endPos.y());
+        tempPos = mLines[mLines.size()-3]->line().p2();
+    }
+    endPos = this->mapFromScene(endPos);
+
+    if (abs(tempPos.x()-endPos.x()) < abs(tempPos.y()-endPos.y()))
+    {
+        mLines[mLines.size()-2]->setLine(tempPos.x(), tempPos.y(), tempPos.x(), endPos.y());
+        mLines[mLines.size()-1]->setLine(tempPos.x(), endPos.y(), endPos.x(), endPos.y());
+    }
+    else
+    {
+        mLines[mLines.size()-2]->setLine(tempPos.x(), tempPos.y(), endPos.x(), tempPos.y());
+        mLines[mLines.size()-1]->setLine(endPos.x(), tempPos.y(), endPos.x(), endPos.y());
     }
 }
 
 void GraphicsConnectorItem::setPen(QPen pen)
 {
-    mLine1->setPen(pen);
-    mLine2->setPen(pen);
+    for (std::size_t i=0; i!=mLines.size(); ++i )
+    {
+        mLines[i]->setPen(pen);
+    }
+}
+
+
+void GraphicsConnectorItem::addLine()
+{
+    mTempLine = new QGraphicsLineItem(0.0, 0.0, 0.0, 0.0, this);
+    mTempLine->setPen(QPen(mColor,2));
+    mLines.push_back(mTempLine);
+    mLines[mLines.size()-3]->setPen(QPen(QColor("black"),2));
+}
+
+void GraphicsConnectorItem::removeLine()
+{
+    mLines.pop_back();
 }

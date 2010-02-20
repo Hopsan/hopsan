@@ -140,14 +140,21 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
+
+    if (event->button() == Qt::RightButton)
+    {
+        line->removeLine();
+    }
+
     if (event->button() != Qt::LeftButton)
     {
         return;
     }
-    if (event->button() == Qt::RightButton)
+    if (this->creatingConnector)
     {
-        this->scene()->removeItem(line);
+        line->addLine();
     }
+
     //case InsertLine:
 //        lineH = new QGraphicsLineItem(QLineF(event->x(), event->y(), event->x(), event->y()));
 //        lineV = new QGraphicsLineItem(QLineF(event->x(), event->y(), event->x(), event->y()));
