@@ -25,7 +25,6 @@ public:
     ~GUIConnector();
     QPointF startPos;
     QPointF endPos;
-    //GUIComponent* getPort();
     void setStartPort(GUIPort *port);
     void setEndPort(GUIPort *port);
     GUIPort *getStartPort();
@@ -35,6 +34,7 @@ public:
     void removeLine(QPointF cursorPos);
     void setPen(QPen pen);
     int getNumberOfLines();
+    void setStraigth(bool var);
 
 public slots:
     void updatePos();
@@ -49,8 +49,7 @@ private:
     QGraphicsScene *mScene;
     QGraphicsLineItem *mTempLine;
     QColor mColor;
-    //QGraphicsLineItem *mLine1;
-    //QGraphicsLineItem *mLine2;
+    bool mStraigth;
 };
 
 #endif // GUICONNECTOR_H

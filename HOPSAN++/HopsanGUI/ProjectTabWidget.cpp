@@ -107,13 +107,22 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
     if (event->modifiers() and Qt::ControlModifier)
     {
-        this->setDragMode(QGraphicsView::ScrollHandDrag);
+        this->setDragMode(QGraphicsView::ScrollHandDrag);       //Zoom function
+        if (this->creatingConnector)                            //Straigth line function
+        {
+            QCursor cursor;
+            line->setStraigth(true);
+        }
     }
 }
 
 void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 {
     this->setDragMode(QGraphicsView::NoDrag);
+    if (this->creatingConnector)
+    {
+        line->setStraigth(false);
+    }
 }
 
 //! Defines what happens when the mouse is moving in a GraphicsView.

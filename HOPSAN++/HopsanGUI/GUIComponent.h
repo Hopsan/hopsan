@@ -32,7 +32,6 @@ signals:
 private:
     QGraphicsView *mParentView;
     std::vector<GUIConnector*> mConnectors;        //Inteded to store connectors for each component
-    //QWidget *widget;
 };
 
 #endif // GUICOMPONENT_H
