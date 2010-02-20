@@ -35,8 +35,7 @@ GUIPort::~GUIPort()
 
 void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-    //this->setCursor(Qt::CrossCursor);
-    
+    this->setCursor(Qt::CrossCursor);
     QBrush brush(Qt::blue);
     this->setBrush(brush);
     std::cout << "hovering over port\n";
@@ -46,6 +45,7 @@ void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     QBrush brush(Qt::green);
     this->setBrush(brush);
+    this->setCursor(Qt::ArrowCursor);
 }
 
 

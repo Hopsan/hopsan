@@ -8,8 +8,7 @@
 //$Id$
 
 #include "ProjectTabWidget.h"
-#include "GUIComponent.h"
-#include "HopsanCore.h"
+#include "GUIComponent.h"/#include "HopsanCore.h"
 
 #include <iostream>
 #include <math.h>
@@ -17,8 +16,6 @@
 #include <QGraphicsSvgItem>
 #include <QGraphicsTextItem>
 #include <QMessageBox>
-
-
 
 
 //! Constructor.
@@ -52,8 +49,6 @@ void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
         event->ignore();
     }
 }
-
-
 
 
 //! Defines what happens when drop an object in a GraphicsView.
