@@ -16,11 +16,11 @@ int main(int argc, char *argv[])
 
     MainWindow mainwindow;
 
-    QTimer::singleShot(2500, &splash, SLOT(close()));
-    //QTimer::singleShot(2600, &mainwindow, SLOT(show()));
+    QTimer::singleShot(500, &splash, SLOT(close()));
+    QTimer::singleShot(450, &mainwindow, SLOT(show()));
 
-    mainwindow.show();
-    splash.finish(&mainwindow);
+    //splash.finish(&mainwindow);
+
     return a.exec();
 
 
