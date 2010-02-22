@@ -271,7 +271,7 @@ ProjectTab::ProjectTab(QWidget *parent)
     pTabContainer = (qobject_cast<ProjectTabWidget *>(parent)); //Ugly!!!
 
     GraphicsScene *scene = new GraphicsScene(this);
-    GraphicsView  *view  = new GraphicsView();
+    GraphicsView  *view  = new GraphicsView(this);
 
     view->setScene(scene);
 
