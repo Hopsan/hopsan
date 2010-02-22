@@ -27,6 +27,7 @@ class GraphicsScene : public QGraphicsScene
 public:
     GraphicsScene(QObject *parent = 0);
     qreal TestVar;
+
 };
 
 

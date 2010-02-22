@@ -24,6 +24,8 @@
 GraphicsView::GraphicsView(QWidget *parent)
         : QGraphicsView(parent)
 {
+    this->setInteractive(true);
+    this->setEnabled(true);
     this->setAcceptDrops(true);
     this->creatingConnector = false;
     //this->setTransformationAnchor(QGraphicsView::NoAnchor);
@@ -71,14 +73,16 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
         event->accept();
 
-        QCursor cursor;
-        QPoint position = this->mapFromGlobal(cursor.pos());
+  //      QCursor cursor;
+//        QPoint position = this->mapFromScene(cursor.pos());
 
-        std::cout << "x=" << this->mapFromGlobal(cursor.pos()).x() << "  " << "y=" << this->mapFromGlobal(cursor.pos()).y() << std::endl;
+        QPoint position = event->pos();
+
+        std::cout << "x=" << position.x() << "  " << "y=" << position.y() << std::endl;
 
         GUIComponent *guiComponent = new GUIComponent(iconDir,componentName,position,this);
 
-        guiComponent->setPos(event->pos());
+        guiComponent->setPos(this->mapToScene(position));std::cout << guiComponent->parent() << std::endl;
 
         this->scene()->addItem(guiComponent);
 
@@ -127,7 +131,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseMoveEvent(event);
     QCursor cursor;
-    std::cout << "X=" << this->mapFromGlobal(cursor.pos()).x() << "  " << "Y=" << this->mapFromGlobal(cursor.pos()).y() << std::endl;
+    //std::cout << "X=" << this->mapFromGlobal(cursor.pos()).x() << "  " << "Y=" << this->mapFromGlobal(cursor.pos()).y() << std::endl;
     this->setBackgroundBrush(Qt::NoBrush);
 
     if (this->creatingConnector)

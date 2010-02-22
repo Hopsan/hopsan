@@ -7,6 +7,7 @@
 GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint position, QGraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
+    setPos(position);
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
 
     //widget = new QWidget;
@@ -19,6 +20,7 @@ GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint
     std::cout << componentName.toStdString() << std::endl;
 
     QGraphicsTextItem *text = new QGraphicsTextItem(componentName,this);
+    text->setTextInteractionFlags(Qt::TextEditorInteraction);
     text->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
     text->setPos(QPointF(-text->boundingRect().width()/2, icon->boundingRect().height()/2));
     text->setTextInteractionFlags(Qt::TextEditable);
