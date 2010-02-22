@@ -172,6 +172,8 @@
 		<Unit filename="HopsanCore\CoreUtilities\ValveHysteresis.cc" />
 		<Unit filename="HopsanCore\CoreUtilities\ValveHysteresis.h" />
 		<Unit filename="HopsanCore\HopsanCore.h" />
+		<Unit filename="HopsanCore\HopsanEssentials.cc" />
+		<Unit filename="HopsanCore\HopsanEssentials.h" />
 		<Unit filename="HopsanCore\Node.cc" />
 		<Unit filename="HopsanCore\Node.h" />
 		<Unit filename="HopsanCore\Nodes\Nodes.cc" />
