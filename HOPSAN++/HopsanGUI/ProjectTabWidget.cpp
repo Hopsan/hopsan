@@ -78,11 +78,12 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
         QPoint position = event->pos();
 
-        std::cout << "x=" << position.x() << "  " << "y=" << position.y() << std::endl;
+        std::cout << "GraphicsView: " << "x=" << position.x() << "  " << "y=" << position.y() << std::endl;
 
         GUIComponent *guiComponent = new GUIComponent(iconDir,componentName,position,this);
 
-        guiComponent->setPos(this->mapToScene(position));std::cout << guiComponent->parent() << std::endl;
+        guiComponent->setPos(this->mapToScene(position));
+        std::cout << "GraphicsView: " << guiComponent->parent() << std::endl;
 
         this->scene()->addItem(guiComponent);
 
@@ -183,7 +184,7 @@ void GraphicsView::addConnector(GUIPort *port)
 {
     if (!creatingConnector)
     {
-        std::cout << "Adding connector";
+        std::cout << "GraphicsView: " << "Adding connector";
         QPointF oldPos = port->mapToScene(port->boundingRect().center());
         qreal myLineWidth = 2.0;
         QColor myLineColor = QColor("black");
@@ -367,7 +368,7 @@ void ProjectTabWidget::saveProjectTab(int index)
         tabName.chop(1);
         setTabText(index, tabName);
         //statusBar->showMessage(QString("Project: ").append(tabName).append(QString(" saved")));
-        std::cout << qPrintable(QString("Project: ").append(tabName).append(QString(" saved"))) << std::endl;
+        std::cout << "ProjectTabWidget: " << qPrintable(QString("Project: ").append(tabName).append(QString(" saved"))) << std::endl;
         currentTab->isSaved = true;
     }
 }
@@ -396,7 +397,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
         {
         case QMessageBox::Save:
             // Save was clicked
-            std::cout << "Save and close" << std::endl;
+            std::cout << "ProjectTabWidget: " << "Save and close" << std::endl;
             saveProjectTab(index);
             removeTab(index);
             return true;
@@ -406,7 +407,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
             return true;
         case QMessageBox::Cancel:
             // Cancel was clicked
-            std::cout << "Cancel closing" << std::endl;
+            std::cout << "ProjectTabWidget: " << "Cancel closing" << std::endl;
             return false;
         default:
             // should never be reached
@@ -415,7 +416,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
     }
     else
     {
-        std::cout << "Closing project: " << qPrintable(tabText(index)) << std::endl;
+        std::cout << "ProjectTabWidget: " << "Closing project: " << qPrintable(tabText(index)) << std::endl;
         //statusBar->showMessage(QString("Closing project: ").append(tabText(index)));
         removeTab(index);
         return true;

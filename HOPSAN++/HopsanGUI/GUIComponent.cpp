@@ -16,8 +16,8 @@ GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint
 
     QGraphicsSvgItem *icon = new QGraphicsSvgItem(fileName,this);
     icon->setPos(QPointF(-icon->boundingRect().width()/2, -icon->boundingRect().height()/2));
-    std::cout << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
-    std::cout << componentName.toStdString() << std::endl;
+    std::cout << "GUIcomponent: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
+    std::cout << "GUIcomponent: " << componentName.toStdString() << std::endl;
 
     QGraphicsTextItem *text = new QGraphicsTextItem(componentName,this);
     text->setTextInteractionFlags(Qt::TextEditorInteraction);

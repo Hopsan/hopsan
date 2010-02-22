@@ -38,7 +38,7 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     this->setCursor(Qt::CrossCursor);
     QBrush brush(Qt::blue);
     this->setBrush(brush);
-    std::cout << "hovering over port\n";
+    std::cout << "GUIPort.cpp: " << "hovering over port\n";
 }
 
 void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
@@ -70,7 +70,7 @@ void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
     //if (event->button() != Qt::LeftButton)
     //    return;
     emit portClicked(this);
-    std::cout << "portClick emitted\n";
+    std::cout << "GUIPort.cpp: " << "portClick emitted\n";
 
 //    QPointF newPos(5.0, 5.0);
 //    QPointF oldPos = this->mapToScene(this->boundingRect().center());
