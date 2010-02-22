@@ -1,18 +1,20 @@
 #include "GUIConnector.h"
 
-GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, QColor color, QColor activecolor, QGraphicsItem *parent, QGraphicsScene *scene)
+GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, QColor color, QColor activecolor, QGraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
+    this->setPos(x1, y1);
+
     this->startPos.setX(x1);
     this->startPos.setY(y1);
     this->endPos.setX(x2);
     this->endPos.setY(y2);
-    this->mScene = scene;
+    this->mpParentView = parentView;
     this->mPrimaryColor = color;
     this->mActiveColor = activecolor;
     this->mWidth = width;
-    mTempLine = new QGraphicsLineItem(this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(), this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(), this);
-    mLines.push_back(mTempLine);
+    mpTempLine = new QGraphicsLineItem(this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(), this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(), this);
+    mLines.push_back(mpTempLine);
     this->setPen(QPen(mActiveColor, mWidth));
     this->mStraigth = false;
 }
@@ -29,22 +31,22 @@ void GUIConnector::SetEndPos(qreal x2, qreal y2)
 
 void GUIConnector::setStartPort(GUIPort *port)
 {
-    this->mStartPort = port;
+    this->mpStartPort = port;
 }
 
 void GUIConnector::setEndPort(GUIPort *port)
 {
-    this->mEndPort = port;
+    this->mpEndPort = port;
 }
 
 GUIPort *GUIConnector::getStartPort()
 {
-    return this->mStartPort;
+    return this->mpStartPort;
 }
 
 GUIPort *GUIConnector::getEndPort()
 {
-    return this->mEndPort;
+    return this->mpEndPort;
 }
 
 void GUIConnector::updatePos()
@@ -99,13 +101,13 @@ void GUIConnector::setPen(QPen pen)
 
 void GUIConnector::addLine()
 {
-    mTempLine = new QGraphicsLineItem(mLines[mLines.size()-1]->line().p2().x(),
+    mpTempLine = new QGraphicsLineItem(mLines[mLines.size()-1]->line().p2().x(),
                                       mLines[mLines.size()-1]->line().p2().y(),
                                       mLines[mLines.size()-1]->line().p2().x(),
                                       mLines[mLines.size()-1]->line().p2().y(),
                                       this);
-    mTempLine->setPen(QPen(mActiveColor,mWidth));
-    mLines.push_back(mTempLine);
+    mpTempLine->setPen(QPen(mActiveColor,mWidth));
+    mLines.push_back(mpTempLine);
     mLines[mLines.size()-2]->setPen(QPen(mPrimaryColor,mWidth));
 }
 

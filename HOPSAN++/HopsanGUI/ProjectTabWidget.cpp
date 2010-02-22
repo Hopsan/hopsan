@@ -188,7 +188,8 @@ void GraphicsView::addConnector(GUIPort *port)
         qreal myLineWidth = 2.0;
         QColor myLineColor = QColor("black");
         QColor myLineActiveColor = QColor("red");
-        mpTempConnector = new GUIConnector(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), myLineWidth, myLineColor, myLineActiveColor, port, this->scene());
+        mpTempConnector = new GUIConnector(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), myLineWidth, myLineColor, myLineActiveColor, this);
+        this->scene()->addItem(mpTempConnector);
         this->creatingConnector = true;
         mpTempConnector->setStartPort(port);
     }

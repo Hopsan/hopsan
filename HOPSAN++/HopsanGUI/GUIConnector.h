@@ -21,7 +21,7 @@ class GUIConnector : public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, QColor color, QColor activecolor, QGraphicsItem *parent = 0, QGraphicsScene *scene = 0);
+    GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, QColor color, QColor activecolor, QGraphicsView *parentView, QGraphicsItem *parent = 0);
     ~GUIConnector();
     QPointF startPos;
     QPointF endPos;
@@ -45,10 +45,10 @@ protected:
 
 private:
     std::vector<QGraphicsLineItem*> mLines;
-    GUIPort *mStartPort;
-    GUIPort *mEndPort;
-    QGraphicsScene *mScene;
-    QGraphicsLineItem *mTempLine;
+    GUIPort *mpStartPort;
+    GUIPort *mpEndPort;
+    QGraphicsView *mpParentView;
+    QGraphicsLineItem *mpTempLine;
     qreal mWidth;
     QColor mPrimaryColor;
     QColor mActiveColor;
