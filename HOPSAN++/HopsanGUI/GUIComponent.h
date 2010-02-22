@@ -1,3 +1,5 @@
+//$Id$
+
 #ifndef GUICOMPONENT_H
 #define GUICOMPONENT_H
 

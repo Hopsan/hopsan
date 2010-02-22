@@ -1,3 +1,5 @@
+//$Id$
+
 #include "GUIComponent.h"
 #include <iostream>
 #include "GUIPort.h"

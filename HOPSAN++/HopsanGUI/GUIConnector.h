@@ -1,3 +1,5 @@
+//$Id$
+
 #ifndef GUICONNECTOR_H
 #define GUICONNECTOR_H
 

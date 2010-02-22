@@ -1,3 +1,5 @@
+//$Id$
+
 #include "mainwindow.h"
 #include <iostream>
 #include <QtGui/QFileDialog>

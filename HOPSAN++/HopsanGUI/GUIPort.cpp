@@ -1,3 +1,5 @@
+//$Id$
+
 #include "GUIPort.h"
 #include <QObject>
 #include <QGraphicsObject>

@@ -1,3 +1,5 @@
+//$Id$
+
 #include "GUIConnector.h"
 
 GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, QColor color, QColor activecolor, QGraphicsView *parentView, QGraphicsItem *parent)
