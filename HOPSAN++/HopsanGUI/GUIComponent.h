@@ -30,7 +30,7 @@ signals:
     void componentMoved();
 
 private:
-    QGraphicsView *mParentView;
+    QGraphicsView *mpParentView;
     std::vector<GUIConnector*> mConnectors;        //Inteded to store connectors for each component
 };
 
