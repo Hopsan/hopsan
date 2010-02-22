@@ -1,3 +1,5 @@
+//$Id$
+
 #include <QtGui/QApplication>
 #include <QSplashScreen>
 #include <QTimer>
