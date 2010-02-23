@@ -5,12 +5,14 @@
 #include "GUIPort.h"
 #include "GUIConnector.h"
 #include <ostream>
+#include <assert.h>
+#include <QDebug>
 
 GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint position, QGraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
     setPos(position);
-    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
+    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges);
 
     //widget = new QWidget;
 
@@ -30,7 +32,6 @@ GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint
     GUIPort *rectR = new GUIPort(icon->sceneBoundingRect().width()-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),this,icon);
 
     GUIPort *rectL = new GUIPort(-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),this,icon);
-
     //icon->setPos(QPointF(-icon->boundingRect().width()/2, -icon->boundingRect().height()/2));
 
    // rectR->boundingRegion();
@@ -66,15 +67,8 @@ void GUIComponent::addConnector(GUIConnector *item)
 //}
 
 
-void GUIComponent::moveEvent(QGraphicsItem::GraphicsItemChange *change)
+void GUIComponent::moveEvent(QGraphicsSceneMoveEvent *event)
 {
-    if (*change == QGraphicsItem::ItemPositionChange)
-    {
-        emit componentMoved();
-        if (!mConnectors.empty())
-        {
-            QColor color = QColor("blue");
-            mConnectors.back()->setPen(QPen(color, 2));
-        }
-    }
+    emit componentMoved();
 }
+

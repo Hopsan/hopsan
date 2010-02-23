@@ -26,7 +26,7 @@ public:
 
 protected:
     //virtual void moveEvent(QGraphicsItem::GraphicsItemChange);
-    virtual void moveEvent(QGraphicsItem::GraphicsItemChange *change);
+    virtual void moveEvent(QGraphicsSceneMoveEvent *event);
 
 signals:
     void componentMoved();

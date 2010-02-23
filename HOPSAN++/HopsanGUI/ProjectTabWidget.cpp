@@ -17,6 +17,7 @@
 #include <QGraphicsSvgItem>
 #include <QGraphicsTextItem>
 #include <QMessageBox>
+#include <QDebug>
 
 
 //! Constructor.
@@ -146,14 +147,17 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::RightButton)
     {
-        if (mpTempConnector->getNumberOfLines() > 1)
+        if (this->creatingConnector)
         {
-            mpTempConnector->removeLine(this->mapToScene(event->pos()));
-        }
-        else
-        {
-            this->scene()->removeItem(mpTempConnector);
-            this->creatingConnector = false;
+            if (mpTempConnector->getNumberOfLines() > 1)
+            {
+                mpTempConnector->removeLine(this->mapToScene(event->pos()));
+            }
+            else
+            {
+                this->scene()->removeItem(mpTempConnector);
+                this->creatingConnector = false;
+            }
         }
         return;
     }
@@ -202,7 +206,6 @@ void GraphicsView::addConnector(GUIPort *port)
         mpTempConnector->drawLine(mpTempConnector->startPos, newPos);
         port->getComponent()->addConnector(mpTempConnector);
         mpTempConnector->setEndPort(port);
-
         //HÄR SKA CONNECTSATSEN LIGGA
     }
 }

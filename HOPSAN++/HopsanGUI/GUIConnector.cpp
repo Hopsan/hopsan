@@ -34,11 +34,13 @@ void GUIConnector::SetEndPos(qreal x2, qreal y2)
 void GUIConnector::setStartPort(GUIPort *port)
 {
     this->mpStartPort = port;
+    connect(this->mpStartPort->getComponent(),SIGNAL(componentMoved()),this,SLOT(updatePos()));
 }
 
 void GUIConnector::setEndPort(GUIPort *port)
 {
     this->mpEndPort = port;
+    connect(this->mpEndPort->getComponent(),SIGNAL(componentMoved()),this,SLOT(updatePos()));
 }
 
 GUIPort *GUIConnector::getStartPort()
@@ -53,7 +55,9 @@ GUIPort *GUIConnector::getEndPort()
 
 void GUIConnector::updatePos()
 {
-    this->drawLine(this->getStartPort()->pos(), this->getEndPort()->pos());
+    QPointF startPort = this->getStartPort()->mapToScene(this->getStartPort()->boundingRect().center());
+    QPointF endPort = this->getEndPort()->mapToScene(this->getEndPort()->boundingRect().center());
+    this->drawLine(startPort, endPort);
 }
 
 void GUIConnector::drawLine(QPointF startPos, QPointF endPos)

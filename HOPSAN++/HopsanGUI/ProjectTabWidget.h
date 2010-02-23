@@ -40,6 +40,9 @@ public:
     ~GraphicsView();
     bool creatingConnector;
 
+signals:
+    void draggingSomething();
+
 public slots:
     void addConnector(GUIPort *rect);
 
