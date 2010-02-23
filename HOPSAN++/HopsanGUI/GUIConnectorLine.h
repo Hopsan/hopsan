@@ -1,25 +1,27 @@
-//$Id: GUIConnector.h 862 2010-02-22 09:45:26Z bjoer $
+//$Id$
 
 #ifndef GUICONNECTORLINE_H
 #define GUICONNECTORLINE_H
 
-#include <QCursor>
-#include <QBrush>
-#include <QGraphicsScene>
+//Should be as few includes as possible in h-files
+#include <QPen>
+//#include <QCursor>
+//#include <QBrush>
+//#include <QGraphicsScene>
 #include <QGraphicsLineItem>
-#include <vector>
-#include <QGraphicsRectItem>
-#include <QCursor>
-#include <QBrush>
-#include <QGraphicsLineItem>
-#include <QGraphicsScene>
-#include "GUIConnector.h"
-#include "GUIPort.h"
-#include <vector>
-#include "GUIConnectorLine.h"
-#include "GUIConnector.h"
-#include <QGraphicsLineItem>
-#include <QGraphicsItem>
+//#include <vector>
+//#include <QGraphicsRectItem>
+//#include <QCursor>
+//#include <QBrush>
+//#include <QGraphicsLineItem>
+//#include <QGraphicsScene>
+//#include "GUIConnector.h"
+//#include "GUIPort.h"
+//#include <vector>
+//#include "GUIConnectorLine.h"
+//#include "GUIConnector.h"
+//#include <QGraphicsLineItem>
+//#include <QGraphicsItem>
 
 class GUIConnector;     //Forward declaration
 

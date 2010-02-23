@@ -4,8 +4,8 @@
 #define GUIPORT_H
 
 #include <QGraphicsRectItem>
-#include <QCursor>
-#include <QBrush>
+//#include <QCursor>
+//#include <QBrush>
 #include <QGraphicsLineItem>
 #include <QGraphicsScene>
 //#include "GUIConnector.h"

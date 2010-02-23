@@ -4,13 +4,13 @@
 #define GUICOMPONENT_H
 
 #include <QGraphicsWidget>
-#include <QGraphicsSvgItem>
-#include <QGraphicsTextItem>
-#include <QWidget>
+//#include <QGraphicsSvgItem>
+//#include <QGraphicsTextItem>
+//#include <QWidget>
 #include <QGraphicsView>
-#include "GUIConnector.h"
+//#include "GUIConnector.h"
 #include <vector>
-#include <QGraphicsItem>
+//#include <QGraphicsItem>
 
 
 class GUIConnector;

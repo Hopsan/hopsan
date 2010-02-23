@@ -10,6 +10,8 @@
 #include "ProjectTabWidget.h"
 #include "GUIComponent.h"
 #include "HopsanCore.h"
+#include "GUIPort.h"
+#include "GUIConnector.h"
 
 #include <iostream>
 #include <math.h>

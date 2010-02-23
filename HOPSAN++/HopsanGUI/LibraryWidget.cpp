@@ -10,6 +10,14 @@
 #include "LibraryWidget.h"
 #include <iostream>
 
+#include <QWidget>
+#include <QTreeWidget>
+#include <QListWidget>
+#include <QVBoxLayout>
+#include <QMimeData>
+#include <QStringList>
+#include "listwidget.h"
+
 LibraryContent::LibraryContent(QWidget *parent)
     :   QListWidget(parent)
 {

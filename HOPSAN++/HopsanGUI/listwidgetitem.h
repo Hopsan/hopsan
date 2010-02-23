@@ -16,7 +16,7 @@ public:
 
 
 private:
-    QStringList mparameterData;
+    QStringList mParameterData;
 };
 
 #endif // LISTWIDGETITEM_H

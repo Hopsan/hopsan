@@ -6,9 +6,6 @@ TARGET = HOPSANGUI
 TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
-    treewidget.cpp \
-    treewidgetitem.cpp \
-    listwidget.cpp \
     listwidgetitem.cpp \
     ProjectTabWidget.cpp \
     LibraryWidget.cpp \
@@ -17,9 +14,6 @@ SOURCES += main.cpp \
     GUIComponent.cpp \
     GUIConnectorLine.cpp
 HEADERS += mainwindow.h \
-    treewidget.h \
-    treewidgetitem.h \
-    listwidget.h \
     listwidgetitem.h \
     ProjectTabWidget.h \
     LibraryWidget.h \

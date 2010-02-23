@@ -17,12 +17,12 @@ ListWidgetItem::~ListWidgetItem()
 
 void ListWidgetItem::setParameterData(QStringList list)
 {
-    mparameterData = list;
+    mParameterData = list;
 }
 
 QStringList ListWidgetItem::getParameterData()
 {
-    return mparameterData;
+    return mParameterData;
 }
 
 

@@ -8,6 +8,14 @@
 #include <assert.h>
 #include <QDebug>
 
+#include <QGraphicsWidget>
+#include <QGraphicsSvgItem>
+#include <QGraphicsTextItem>
+#include <QWidget>
+#include <QGraphicsView>
+#include <vector>
+#include <QGraphicsItem>
+
 GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint position, QGraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {

@@ -3,6 +3,20 @@
 #include "GUIConnector.h"
 #include <QDebug>
 
+#include <QCursor>
+#include <QBrush>
+#include <QGraphicsScene>
+#include <QGraphicsLineItem>
+#include <QGraphicsRectItem>
+#include <QCursor>
+#include <QBrush>
+#include <QGraphicsLineItem>
+#include <QGraphicsScene>
+#include "GUIPort.h"
+#include <vector>
+#include "GUIConnectorLine.h"
+
+
 GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, QColor color, QColor activecolor, QGraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {

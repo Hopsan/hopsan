@@ -12,13 +12,11 @@
 
 #include <QGraphicsView>
 #include <QGraphicsScene>
-#include <QGraphicsWidget>
 #include <QTabWidget>
-#include <QStringList>
-#include <QGraphicsTextItem>
-#include "GUIPort.h"
-#include "GUIConnector.h"
 
+
+class GUIPort;
+class GUIConnector;
 
 class GraphicsScene : public QGraphicsScene
 {

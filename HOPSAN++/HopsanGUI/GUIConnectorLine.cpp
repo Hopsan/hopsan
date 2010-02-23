@@ -1,4 +1,4 @@
-//$Id: GUIConnector.cpp 868 2010-02-23 09:28:54Z robbr48 $
+//$Id$
 
 #include "GUIPort.h"
 #include <QObject>
