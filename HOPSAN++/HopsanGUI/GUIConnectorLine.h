@@ -22,6 +22,7 @@
 //#include "GUIConnector.h"
 //#include <QGraphicsLineItem>
 //#include <QGraphicsItem>
+#include <QGraphicsSceneMoveEvent>
 
 class GUIConnector;     //Forward declaration
 
