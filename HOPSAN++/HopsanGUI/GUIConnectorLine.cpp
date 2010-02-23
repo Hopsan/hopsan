@@ -24,6 +24,7 @@
 GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen primaryPen, QPen activePen, QGraphicsItem *parent)
         : QGraphicsLineItem(x1,y1,x2,y2,parent)
 {
+    setFlags(QGraphicsItem::ItemStacksBehindParent);
     //this->mParentConnector = parentConnector;
     this->mPrimaryPen = primaryPen;
     this->mActivePen = activePen;
@@ -43,4 +44,9 @@ void GUIConnectorLine::setActive(bool isActive)
     {
         this->setPen(mPrimaryPen);
     }
+}
+
+void GUIConnectorLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    emit lineClicked();
 }

@@ -16,12 +16,15 @@ GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, 
     this->mPrimaryColor = color;
     this->mActiveColor = activecolor;
     this->mWidth = width;
+    this->mIsActive = false;
+    this->mEndPortConnected = false;
     mpTempLine = new GUIConnectorLine(this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(),
                                       this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(),
                                       QPen(this->mPrimaryColor, this->mWidth), QPen(this->mActiveColor, this->mWidth), this);
     mLines.push_back(mpTempLine);
     this->setPen(QPen(mActiveColor, mWidth));
     this->mStraigth = false;
+    connect(this->mpParentView,SIGNAL(keyPressDelete()),this,SLOT(deleteMe()));
 }
 
 GUIConnector::~GUIConnector()
@@ -43,6 +46,7 @@ void GUIConnector::setStartPort(GUIPort *port)
 void GUIConnector::setEndPort(GUIPort *port)
 {
     this->mpEndPort = port;
+    this->mEndPortConnected = true;
     connect(this->mpEndPort->getComponent(),SIGNAL(componentMoved()),this,SLOT(updatePos()));
 }
 
@@ -61,6 +65,29 @@ void GUIConnector::updatePos()
     QPointF startPort = this->getStartPort()->mapToScene(this->getStartPort()->boundingRect().center());
     QPointF endPort = this->getEndPort()->mapToScene(this->getEndPort()->boundingRect().center());
     this->drawLine(startPort, endPort);
+}
+
+void GUIConnector::makeActive()
+{
+    if(this->mEndPortConnected)
+    {
+        if(!mIsActive)
+        {
+            mIsActive = true;
+            for (std::size_t i=0; i!=mLines.size(); ++i )
+            {
+                mLines[i]->setActive(true);
+            }
+        }
+        else
+        {
+            mIsActive = false;
+            for (std::size_t i=0; i!=mLines.size(); ++i )
+            {
+                mLines[i]->setActive(false);
+            }
+        }
+    }
 }
 
 void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
@@ -116,6 +143,7 @@ void GUIConnector::addLine()
     mpTempLine->setActive(true);
     mLines.push_back(mpTempLine);
     mLines[mLines.size()-2]->setActive(false);
+    connect(mLines[mLines.size()-1],SIGNAL(lineClicked()),this,SLOT(makeActive()));
 }
 
 void GUIConnector::removeLine(QPointF cursorPos)
@@ -164,7 +192,11 @@ QVariant GUIConnector::selectedEvent(GraphicsItemChange change, const QVariant &
 }
 
 
-void GUIConnector::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void GUIConnector::deleteMe()
 {
-    qDebug() << "Connector clicked!";
+    if(this->mIsActive && mLines.size() > 0)
+    {
+        mLines.clear();
+        this->scene()->removeItem(this);
+    }
 }

@@ -32,8 +32,10 @@ public:
     void setActive(bool isActive);
 
 signals:
+    void lineClicked();
 
 protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private:
     bool mIsActive;

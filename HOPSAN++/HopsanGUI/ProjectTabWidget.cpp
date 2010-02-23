@@ -116,6 +116,11 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             mpTempConnector->setStraigth(true);
         }
     }
+
+    if (event->key() == Qt::Key_Delete)
+    {
+        emit keyPressDelete();
+    }
 }
 
 void GraphicsView::keyReleaseEvent(QKeyEvent *event)

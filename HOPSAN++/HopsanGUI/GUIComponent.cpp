@@ -18,6 +18,7 @@ GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint
 
     mpParentView = parentView;
 
+    this->setZValue(10);
     QGraphicsSvgItem *icon = new QGraphicsSvgItem(fileName,this);
     icon->setPos(QPointF(-icon->boundingRect().width()/2, -icon->boundingRect().height()/2));
     std::cout << "GUIcomponent: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;

@@ -43,11 +43,11 @@ public:
 
 public slots:
     void updatePos();
+    void makeActive();
+    void deleteMe();
 
 protected:
     virtual void SetEndPos(qreal x2, qreal y2);
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    //virtual void selectedEvent(GraphicsItemChange change);
     QVariant selectedEvent(GraphicsItemChange change, const QVariant &value);
 
 private:
@@ -60,6 +60,8 @@ private:
     QColor mPrimaryColor;
     QColor mActiveColor;
     bool mStraigth;
+    bool mIsActive;
+    bool mEndPortConnected;
 };
 
 #endif // GUICONNECTOR_H
