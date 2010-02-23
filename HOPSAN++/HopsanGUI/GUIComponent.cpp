@@ -16,6 +16,10 @@
 #include <vector>
 #include <QGraphicsItem>
 
+#include <QGraphicsSceneMoveEvent>
+#include <QDebug>
+
+
 GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint position, QGraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
@@ -48,6 +52,13 @@ GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint
 
    // rectR->boundingRegion();
 
+}
+
+
+void GUIComponent::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
+{
+    qDebug() << "GUIComponent: " << "mouseReleaseEvent";
+    QGraphicsItem::mouseReleaseEvent(event);
 }
 
 

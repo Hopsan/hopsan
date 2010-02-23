@@ -24,6 +24,9 @@ public:
     QGraphicsView *getParentView();
     void addConnector(GUIConnector *item);
 
+    void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+
+
 protected:
     //virtual void moveEvent(QGraphicsItem::GraphicsItemChange);
     virtual void moveEvent(QGraphicsSceneMoveEvent *event);
