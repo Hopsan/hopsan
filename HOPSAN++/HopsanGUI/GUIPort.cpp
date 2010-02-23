@@ -62,27 +62,9 @@ GUIComponent *GUIPort::getComponent()
     return mComponent;
 }
 
-//void GUIPort::portClicked(GUIPort *item)
-//{
-//}
-
 
 void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-
-    //if (event->button() != Qt::LeftButton)
-    //    return;
     emit portClicked(this);
     std::cout << "GUIPort.cpp: " << "portClick emitted\n";
-
-//    QPointF newPos(5.0, 5.0);
-//    QPointF oldPos = this->mapToScene(this->boundingRect().center());
-//    myLineWidth = 2.0;
-//    myLineColor = QColor("black");
-//    GUIConnector *lineH = new GUIConnector(oldPos.x(), oldPos.y(), oldPos.x(), 0.0, myLineWidth, myLineColor, this);
-//    GUIConnector *lineV = new GUIConnector(oldPos.x(), 0.0, 0.0, 0.0, myLineWidth, myLineColor, this);
-
-    //this->scene()->addItem(&*lineH);
-    //this->scene()->addItem(&*lineV);
-
 }

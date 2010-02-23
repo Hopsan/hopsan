@@ -65,16 +65,6 @@ void GUIComponent::addConnector(GUIConnector *item)
     mConnectors.back()->setPen(QPen(color, 2));
 }
 
-//void GUIComponent::moveEvent(QMoveEvent *event)
-//{
-//    emit componentMoved();
-//    if (!mConnectors.empty())
-//    {
-//        QColor color = QColor("blue");
-//        mConnectors.back()->setPen(QPen(color, 2));
-//    }
-//}
-
 
 void GUIComponent::moveEvent(QGraphicsSceneMoveEvent *event)
 {
