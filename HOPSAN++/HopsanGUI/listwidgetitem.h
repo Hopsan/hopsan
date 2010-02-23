@@ -3,6 +3,8 @@
 
 #include <QListWidgetItem>
 //#include <QStringList>
+
+
 class QStringList;
 
 class ListWidgetItem : public QListWidgetItem
