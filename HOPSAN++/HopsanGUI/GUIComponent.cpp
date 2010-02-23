@@ -47,7 +47,9 @@ GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint
     //icon->setPos(QPointF(-icon->boundingRect().width()/2, -icon->boundingRect().height()/2));
 
    // rectR->boundingRegion();
+
 }
+
 
 GUIComponent::~GUIComponent()
 {

@@ -35,8 +35,6 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    qDebug() << "Is this written to consol in Windows??? (delete me!)";
-
     //Set the name and size of the main window
     this->setObjectName("MainWindow");
     this->resize(800,600);
