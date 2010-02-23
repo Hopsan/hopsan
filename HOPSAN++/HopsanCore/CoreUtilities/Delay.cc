@@ -202,7 +202,7 @@ double Delay::valueIdx(double value, const int idx)
 //! @see valueIdx(const int idx)
 {
     update(value);
-    if (((size_t)idx < 0) || ((size_t)idx > mValues.size()))
+    if ((idx < 0) || ((size_t)idx > mValues.size()))
     {
         std::cout << "Indexed outside Delay-vector" << "  Index: " << idx << "  Length: " << mValues.size() << std::endl;
         assert(false);

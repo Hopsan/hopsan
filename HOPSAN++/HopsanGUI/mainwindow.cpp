@@ -134,7 +134,9 @@ MainWindow::MainWindow(QWidget *parent)
     menubar->addAction(menuView->menuAction());
     menubar->addAction(menuPlot->menuAction());
 
-    addLibs("../../HopsanGUI/componentData/hydraulic");
+    //Load default libraries
+    library->addLibrary("User defined libraries");
+    addLibs("../../HopsanGUI/componentData/hydraulic");//This method should be in LibraryWidget and addLibs() may be here
 
     QMetaObject::connectSlotsByName(this);
 
@@ -157,7 +159,7 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::addLibs(QString libDir)
+void MainWindow::addLibs(QString libDir, QString parentLib)
 {
     //If no directory is set, i.e. cancel is presses, do no more
     if (libDir.isEmpty() == true)
@@ -169,7 +171,7 @@ void MainWindow::addLibs(QString libDir)
     QString libName = libDirObject.dirName();
 
     //Add the library to the tree
-    library->addLibrary(libName);
+    library->addLibrary(libName,parentLib);
 
     QStringList filters;        //Create a QStringList object that contains name filters
     filters << "*.txt";         //Create the name filter
@@ -227,7 +229,7 @@ void MainWindow::addLibs()
                                                  fileDialogOpenDir.currentPath(),
                                                  QFileDialog::ShowDirsOnly
                                                  | QFileDialog::DontResolveSymlinks);
-    addLibs(libDir);
+    addLibs(libDir,QString("User defined libraries"));
     //std::cout << qPrintable(libDir) << std::endl;
 }
 
