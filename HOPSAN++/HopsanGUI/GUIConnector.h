@@ -16,8 +16,10 @@
 #include "GUIConnector.h"
 #include "GUIPort.h"
 #include <vector>
+#include "GUIConnectorLine.h"
 
 class GUIPort;     //Forwarad declaration
+class GUIConnectorLine; //Forward  declaration
 
 class GUIConnector : public QGraphicsWidget
 {
@@ -44,13 +46,16 @@ public slots:
 
 protected:
     virtual void SetEndPos(qreal x2, qreal y2);
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    //virtual void selectedEvent(GraphicsItemChange change);
+    QVariant selectedEvent(GraphicsItemChange change, const QVariant &value);
 
 private:
-    std::vector<QGraphicsLineItem*> mLines;
+    std::vector<GUIConnectorLine*> mLines;
     GUIPort *mpStartPort;
     GUIPort *mpEndPort;
     QGraphicsView *mpParentView;
-    QGraphicsLineItem *mpTempLine;
+    GUIConnectorLine *mpTempLine;
     qreal mWidth;
     QColor mPrimaryColor;
     QColor mActiveColor;

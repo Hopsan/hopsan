@@ -1,12 +1,13 @@
 //$Id$
 
 #include "GUIConnector.h"
+#include <QDebug>
 
 GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, QColor color, QColor activecolor, QGraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
+    setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
     this->setPos(x1, y1);
-
     this->startPos.setX(x1);
     this->startPos.setY(y1);
     this->endPos.setX(x2);
@@ -15,7 +16,9 @@ GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, 
     this->mPrimaryColor = color;
     this->mActiveColor = activecolor;
     this->mWidth = width;
-    mpTempLine = new QGraphicsLineItem(this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(), this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(), this);
+    mpTempLine = new GUIConnectorLine(this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(),
+                                      this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(),
+                                      QPen(this->mPrimaryColor, this->mWidth), QPen(this->mActiveColor, this->mWidth), this);
     mLines.push_back(mpTempLine);
     this->setPen(QPen(mActiveColor, mWidth));
     this->mStraigth = false;
@@ -107,14 +110,12 @@ void GUIConnector::setPen(QPen pen)
 
 void GUIConnector::addLine()
 {
-    mpTempLine = new QGraphicsLineItem(mLines[mLines.size()-1]->line().p2().x(),
-                                      mLines[mLines.size()-1]->line().p2().y(),
-                                      mLines[mLines.size()-1]->line().p2().x(),
-                                      mLines[mLines.size()-1]->line().p2().y(),
-                                      this);
-    mpTempLine->setPen(QPen(mActiveColor,mWidth));
+    mpTempLine = new GUIConnectorLine(mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
+                                      mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
+                                      QPen(this->mPrimaryColor, this->mWidth), QPen(this->mActiveColor, this->mWidth), this);
+    mpTempLine->setActive(true);
     mLines.push_back(mpTempLine);
-    mLines[mLines.size()-2]->setPen(QPen(mPrimaryColor,mWidth));
+    mLines[mLines.size()-2]->setActive(false);
 }
 
 void GUIConnector::removeLine(QPointF cursorPos)
@@ -142,4 +143,28 @@ void GUIConnector::setStraigth(bool var)
 bool GUIConnector::isStraigth()
 {
     return mStraigth;
+}
+
+
+QVariant GUIConnector::selectedEvent(GraphicsItemChange change, const QVariant &value)
+{
+    if(change == QGraphicsItem::ItemSelectedChange)
+    {
+        qDebug() << "Selected state changed!";
+        if(this->isSelected())
+        {
+            this->setActive(true);
+        }
+        else
+        {
+            this->setActive(false);
+        }
+    }
+    return value;
+}
+
+
+void GUIConnector::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    qDebug() << "Connector clicked!";
 }
