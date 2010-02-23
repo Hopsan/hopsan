@@ -1,4 +1,5 @@
 #include "listwidgetitem.h"
+#include <QStringList>
 
 ListWidgetItem::ListWidgetItem(const QIcon &icon, const QString &text, QListWidget *parent)
         : QListWidgetItem(icon, text, parent)

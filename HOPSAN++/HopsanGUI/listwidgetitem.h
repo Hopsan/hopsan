@@ -2,7 +2,8 @@
 #define LISTWIDGETITEM_H
 
 #include <QListWidgetItem>
-#include <QStringList>
+//#include <QStringList>
+class QStringList;
 
 class ListWidgetItem : public QListWidgetItem
 {
