@@ -41,6 +41,7 @@ public:
 signals:
     void draggingSomething();
     void keyPressDelete();
+    void viewClicked();
 
 public slots:
     void addConnector(GUIPort *rect);

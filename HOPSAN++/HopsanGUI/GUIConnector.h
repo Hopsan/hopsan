@@ -27,7 +27,8 @@ class GUIConnector : public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, QColor color, QColor activecolor, QGraphicsView *parentView, QGraphicsItem *parent = 0);
+    GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, QColor color, QColor activecolor,
+                 QColor hoverColor, QGraphicsView *parentView, QGraphicsItem *parent = 0);
     ~GUIConnector();
     QPointF startPos;
     QPointF endPos;
@@ -45,7 +46,10 @@ public:
 
 public slots:
     void updatePos();
-    void makeActive();
+    void setActive();
+    void setPassive();
+    void setHovered();
+    void setUnHovered();
     void deleteMe();
     void updateLine(int);
 
@@ -62,6 +66,7 @@ private:
     qreal mWidth;
     QColor mPrimaryColor;
     QColor mActiveColor;
+    QColor mHoverColor;
     bool mStraigth;
     bool mIsActive;
     bool mEndPortConnected;

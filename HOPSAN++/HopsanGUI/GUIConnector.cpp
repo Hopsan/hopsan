@@ -17,7 +17,7 @@
 #include "GUIConnectorLine.h"
 
 
-GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, QColor color, QColor activecolor, QGraphicsView *parentView, QGraphicsItem *parent)
+GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, QColor color, QColor activecolor, QColor hovercolor, QGraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
     setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
@@ -29,17 +29,23 @@ GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, 
     this->mpParentView = parentView;
     this->mPrimaryColor = color;
     this->mActiveColor = activecolor;
+    this->mHoverColor = hovercolor;
     this->mWidth = width;
     this->mIsActive = false;
     this->mEndPortConnected = false;
     mpTempLine = new GUIConnectorLine(this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(),
                                       this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(),
-                                      QPen(this->mPrimaryColor, this->mWidth), QPen(this->mActiveColor, this->mWidth), 0, this);
+                                      QPen(this->mPrimaryColor, this->mWidth), QPen(this->mActiveColor, this->mWidth),
+                                      QPen(this->mHoverColor, this->mWidth), 0, this);
     mLines.push_back(mpTempLine);
-    connect(mLines[mLines.size()-1],SIGNAL(lineClicked()),this,SLOT(makeActive()));
+    connect(mLines[mLines.size()-1],SIGNAL(lineClicked()),this,SLOT(setActive()));
+    connect(mLines[mLines.size()-1],SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
+    connect(mLines[mLines.size()-1],SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
     this->setPen(QPen(mActiveColor, mWidth));
     this->mStraigth = false;
     connect(this->mpParentView,SIGNAL(keyPressDelete()),this,SLOT(deleteMe()));
+    connect(this->mpParentView,SIGNAL(viewClicked()),this,SLOT(setPassive()));
+
 }
 
 GUIConnector::~GUIConnector()
@@ -87,25 +93,48 @@ void GUIConnector::updatePos()
     this->drawLine(startPort, endPort);
 }
 
-void GUIConnector::makeActive()
+void GUIConnector::setActive()
 {
     if(this->mEndPortConnected)
     {
-        if(!mIsActive)
+        mIsActive = true;
+        for (std::size_t i=0; i!=mLines.size(); ++i )
         {
-            mIsActive = true;
-            for (std::size_t i=0; i!=mLines.size(); ++i )
-            {
-                mLines[i]->setActive(true);
-            }
+            mLines[i]->setActive();
         }
-        else
+    }
+}
+
+void GUIConnector::setPassive()
+{
+    if(this->mEndPortConnected)
+    {
+        mIsActive = false;
+        for (std::size_t i=0; i!=mLines.size(); ++i )
         {
-            mIsActive = false;
-            for (std::size_t i=0; i!=mLines.size(); ++i )
-            {
-                mLines[i]->setActive(false);
-            }
+            mLines[i]->setPassive();
+        }
+    }
+}
+
+void GUIConnector::setUnHovered()
+{
+    if(this->mEndPortConnected && !this->mIsActive)
+    {
+        for (std::size_t i=0; i!=mLines.size(); ++i )
+        {
+            mLines[i]->setPassive();
+        }
+    }
+}
+
+void GUIConnector::setHovered()
+{
+    if(this->mEndPortConnected && !this->mIsActive)
+    {
+        for (std::size_t i=0; i!=mLines.size(); ++i )
+        {
+            mLines[i]->setHovered();
         }
     }
 }
@@ -159,12 +188,15 @@ void GUIConnector::addLine()
 {
     mpTempLine = new GUIConnectorLine(mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
                                       mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
-                                      QPen(this->mPrimaryColor, this->mWidth), QPen(this->mActiveColor, this->mWidth), mLines.size(), this);
-    mpTempLine->setActive(true);
+                                      QPen(this->mPrimaryColor, this->mWidth), QPen(this->mActiveColor, this->mWidth),
+                                      QPen(this->mHoverColor, this->mWidth), mLines.size(), this);
+    mpTempLine->setActive();
     mLines.push_back(mpTempLine);
-    mLines[mLines.size()-2]->setActive(false);
-    connect(mLines[mLines.size()-1],SIGNAL(lineClicked()),this,SLOT(makeActive()));
+    mLines[mLines.size()-2]->setPassive();
+    connect(mLines[mLines.size()-1],SIGNAL(lineClicked()),this,SLOT(setActive()));
     connect(mLines[mLines.size()-1],SIGNAL(lineMoved(int)),this, SLOT(updateLine(int)));
+    connect(mLines[mLines.size()-1],SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
+    connect(mLines[mLines.size()-1],SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
 }
 
 void GUIConnector::removeLine(QPointF cursorPos)
@@ -192,24 +224,6 @@ void GUIConnector::setStraigth(bool var)
 bool GUIConnector::isStraigth()
 {
     return mStraigth;
-}
-
-
-QVariant GUIConnector::selectedEvent(GraphicsItemChange change, const QVariant &value)
-{
-    if(change == QGraphicsItem::ItemSelectedChange)
-    {
-        qDebug() << "Selected state changed!";
-        if(this->isSelected())
-        {
-            this->setActive(true);
-        }
-        else
-        {
-            this->setActive(false);
-        }
-    }
-    return value;
 }
 
 

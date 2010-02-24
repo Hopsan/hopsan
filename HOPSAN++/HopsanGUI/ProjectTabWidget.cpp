@@ -177,7 +177,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     {
         mpTempConnector->addLine();
     }
-
+    emit viewClicked();
     //case InsertLine:
 //        lineH = new QGraphicsLineItem(QLineF(event->x(), event->y(), event->x(), event->y()));
 //        lineV = new QGraphicsLineItem(QLineF(event->x(), event->y(), event->x(), event->y()));
@@ -200,7 +200,9 @@ void GraphicsView::addConnector(GUIPort *port)
         qreal myLineWidth = 2.0;
         QColor myLineColor = QColor("black");
         QColor myLineActiveColor = QColor("red");
-        mpTempConnector = new GUIConnector(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), myLineWidth, myLineColor, myLineActiveColor, this);
+        QColor myLineHoverColor = QColor("lightGray");
+        mpTempConnector = new GUIConnector(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), myLineWidth,
+                                           myLineColor, myLineActiveColor, myLineHoverColor, this);
         this->scene()->addItem(mpTempConnector);
         this->creatingConnector = true;
         mpTempConnector->setStartPort(port);

@@ -30,22 +30,29 @@ class GUIConnectorLine : public QObject, public QGraphicsLineItem
 {
     Q_OBJECT
 public:
-    GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen primaryPen, QPen activePen, int lineNumber, QGraphicsItem *parent = 0);
+    GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen primaryPen, QPen activePen, QPen hoverPen, int lineNumber, QGraphicsItem *parent = 0);
     ~GUIConnectorLine();
-    void setActive(bool isActive);
+    void setActive();
+    void setPassive();
+    void setHovered();
 
 signals:
     void lineClicked();
     void lineMoved(int);
+    void lineHoverEnter();
+    void lineHoverLeave();
 
 protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void moveEvent(QGraphicsSceneMoveEvent *event);
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    virtual void moveEvent(QGraphicsSceneMoveEvent *event);
+    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
 private:
     bool mIsActive;
     QPen mPrimaryPen;
     QPen mActivePen;
+    QPen mHoverPen;
     int mLineNumber;
 
 };
