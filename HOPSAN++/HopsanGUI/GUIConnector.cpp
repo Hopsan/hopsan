@@ -42,7 +42,7 @@ GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, 
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
     this->setPen(QPen(mActiveColor, mWidth));
-    this->mStraigth = false;
+    this->mStraigth = true;
     connect(this->mpParentView,SIGNAL(keyPressDelete()),this,SLOT(deleteMe()));
     connect(this->mpParentView,SIGNAL(viewClicked()),this,SLOT(setPassive()));
 
@@ -148,30 +148,73 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
                        startPos.y(),
                        mLines[0]->line().p2().x(),
                        mLines[0]->line().p2().y());
-    if (mStraigth)
+    if (mStraigth) //If straight lines are activated
     {
-        if (abs(mLines[mLines.size()-1]->line().p1().x()-endPos.x()) > abs(mLines[mLines.size()-1]->line().p1().y()-endPos.y()))
+        if (mLines.size()==1) //Special case for the first line
         {
-            mLines[mLines.size()-1]->setLine(mLines[mLines.size()-1]->line().p1().x(),
-                                             mLines[mLines.size()-1]->line().p1().y(),
-                                             endPos.x(),
-                                             mLines[mLines.size()-1]->line().p1().y());
+            //if (abs(mLines[mLines.size()-1]->line().p1().x()-endPos.x()) > abs(mLines[mLines.size()-1]->line().p1().y()-endPos.y()))
+            //{
+                mLines[mLines.size()-1]->setLine(mLines[mLines.size()-1]->line().p1().x(),
+                                                 mLines[mLines.size()-1]->line().p1().y(),
+                                                 endPos.x(),
+                                                 mLines[mLines.size()-1]->line().p1().y());
         }
-        else
+        else //After the first line
         {
-            mLines[mLines.size()-1]->setLine(mLines[mLines.size()-1]->line().p1().x(),
-                                             mLines[mLines.size()-1]->line().p1().y(),
-                                             mLines[mLines.size()-1]->line().p1().x(),
+            //If the previous line is horizontal:
+            if (mLines[mLines.size()-2]->line().p1().y() == (mLines[mLines.size()-2]->line().p2().y()))
+            {
+                //qDebug() << "Previous Line Horizontal";
+                mLines[mLines.size()-2]->setLine(mLines[mLines.size()-2]->line().p1().x(),
+                                                 mLines[mLines.size()-2]->line().p1().y(),
+                                                 endPos.x(),
+                                                 mLines[mLines.size()-2]->line().p2().y());
+            }
+
+            //If the previous line is vertical:
+            else if (mLines[mLines.size()-2]->line().p1().x() == (mLines[mLines.size()-2]->line().p2().x()))
+            {
+                mLines[mLines.size()-2]->setLine(mLines[mLines.size()-2]->line().p1().x(),
+                                                 mLines[mLines.size()-2]->line().p1().y(),
+                                                 mLines[mLines.size()-2]->line().p2().x(),
+                                                 endPos.y());
+            }
+            //If the previous line was not "straight":
+            else
+            {
+                if (abs(endPos.x()-mLines[mLines.size()-1]->line().p1().x())>abs(endPos.y()-mLines[mLines.size()-1]->line().p1().y()))
+                {
+                    mLines[mLines.size()-1]->setLine(mLines[mLines.size()-1]->line().p1().x(),
+                                                     mLines[mLines.size()-1]->line().p1().y(),
+                                                     endPos.x(),
+                                                     mLines[mLines.size()-1]->line().p2().y());
+
+                }
+                else
+                {
+                    mLines[mLines.size()-1]->setLine(mLines[mLines.size()-1]->line().p1().x(),
+                                                     mLines[mLines.size()-1]->line().p1().y(),
+                                                     mLines[mLines.size()-1]->line().p2().x(),
+                                                     endPos.y());
+                }
+            }
+
+            //Current line
+            mLines[mLines.size()-1]->setLine(mLines[mLines.size()-2]->line().p2().x(),
+                                             mLines[mLines.size()-2]->line().p2().y(),
+                                             endPos.x(),
                                              endPos.y());
         }
     }
-    else
+
+    else //If straight lines are inactivated
     {
         mLines[mLines.size()-1]->setLine(mLines[mLines.size()-1]->line().p1().x(),
                                          mLines[mLines.size()-1]->line().p1().y(),
                                          endPos.x(),
                                          endPos.y());
     }
+
 
 }
 
@@ -182,7 +225,6 @@ void GUIConnector::setPen(QPen pen)
         mLines[i]->setPen(pen);
     }
 }
-
 
 void GUIConnector::addLine()
 {

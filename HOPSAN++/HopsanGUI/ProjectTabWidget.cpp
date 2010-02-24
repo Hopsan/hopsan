@@ -115,7 +115,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         if (this->creatingConnector)                            //Straigth line function
         {
             QCursor cursor;
-            mpTempConnector->setStraigth(true);
+            mpTempConnector->setStraigth(false);
         }
     }
 
@@ -130,7 +130,7 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
     this->setDragMode(QGraphicsView::NoDrag);
     if (this->creatingConnector)
     {
-        mpTempConnector->setStraigth(false);
+        mpTempConnector->setStraigth(true);
     }
 }
 
