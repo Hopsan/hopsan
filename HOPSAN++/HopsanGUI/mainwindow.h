@@ -30,7 +30,7 @@
 //#include "listwidgetitem.h"
 //#include "ProjectTabWidget.h"
 //#include "LibraryWidget.h"
-//#include "plotwidget.h"
+#include "plotwidget.h"
 
 
 class QGridLayout;
@@ -79,14 +79,14 @@ public:
     GraphicsScene *scene;
     GraphicsView *view;
 
-    //PlotWidget *plotwidget;
+    //VariableListDialog *variableList;
 
     void closeEvent(QCloseEvent *event);
 
 private slots:
     void addLibs(QString libDir, QString parentLib=QString());
     void addLibs();
-    //void plot();
+    void plot();
 
 
 

@@ -65,11 +65,11 @@ MainWindow::MainWindow(QWidget *parent)
     centralgrid->setColumnStretch(1,10);*/
 
     //Create a dock for the componentslibrary
-    QDockWidget *dock = new QDockWidget(tr("Components"), this);
-    dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    library = new LibraryWidget(dock);
-    dock->setWidget(library);
-    addDockWidget(Qt::LeftDockWidgetArea, dock);
+    QDockWidget *libdock = new QDockWidget(tr("Components"), this);
+    libdock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    library = new LibraryWidget(libdock);
+    libdock->setWidget(library);
+    addDockWidget(Qt::LeftDockWidgetArea, libdock);
 
     centralgrid->addWidget(projectTabs,0,0);
 
@@ -148,7 +148,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     menuSimulation->addAction(actionSimulate);
 
-    menuView->addAction(dock->toggleViewAction());
+    menuView->addAction(libdock->toggleViewAction());
 
     menuPlot->addAction(actionPlot);
 
@@ -171,7 +171,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->connect(this->actionProject,SIGNAL(triggered()),projectTabs,SLOT(addProjectTab()));
     this->connect(this->actionLoadLibs,SIGNAL(triggered()),SLOT(addLibs()));
 
-    //this->connect(this->actionPlot,SIGNAL(triggered()),SLOT(plot()));
+    this->connect(this->actionPlot,SIGNAL(triggered()),SLOT(plot()));
 
 }
 
@@ -237,6 +237,7 @@ void MainWindow::addLibs(QString libDir, QString parentLib)
 }
 
 
+
 void MainWindow::addLibs()
 {
     /*QFileDialog dialog(this);
@@ -257,11 +258,17 @@ void MainWindow::addLibs()
     //std::cout << qPrintable(libDir) << std::endl;
 }
 
-/*void MainWindow::plot()
+void MainWindow::plot()
+
 {
-    plotwidget = new PlotWidget(this);
-    plotwidget->show();
-}*/
+    QDockWidget *varPlotDock = new QDockWidget(tr("Plot Variables"), this);
+    varPlotDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    VariableListDialog *variableList = new VariableListDialog(varPlotDock);
+    varPlotDock->setWidget(variableList);
+    //variableList->show();
+    addDockWidget(Qt::RightDockWidgetArea, varPlotDock);
+
+}
 
 
 //! Event triggered re-implemented method that closes the main window.
