@@ -119,15 +119,23 @@ void GUIComponent::moveEvent(QGraphicsSceneMoveEvent *event)
 GUIComponentTextItem::GUIComponentTextItem(const QString &text, QGraphicsItem *parent)
     :   QGraphicsTextItem(text, parent)
 {
+    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
     setTextInteractionFlags(Qt::TextEditorInteraction);
-    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
     //setTextInteractionFlags(Qt::TextEditable);
 }
 
 
-void GUIComponentTextItem::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
+void GUIComponentTextItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     qDebug() << "GUIComponentTextItem: " << "mouseReleaseEvent";
     emit textMoved(event);
     QGraphicsItem::mouseReleaseEvent(event);
 }
+
+
+void GUIComponentTextItem::keyReleaseEvent(QKeyEvent *event) //Vill inte...
+{
+    std::cout << "GUIComponentTextItem::keyPressEvent: " << event->key() << std::endl;
+    //QGraphicsItem::keyPressEvent(event);
+}
+

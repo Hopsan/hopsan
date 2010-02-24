@@ -55,7 +55,8 @@ class GUIComponentTextItem : public QGraphicsTextItem
 public:
     GUIComponentTextItem(const QString &text, QGraphicsItem *parent = 0);
 
-    void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
 
 signals:
     void textMoved(QGraphicsSceneMouseEvent * event);
