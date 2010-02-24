@@ -14,6 +14,8 @@
 
 
 class GUIConnector;
+class QGraphicsSvgItem;
+class GUIComponentTextItem;
 
 class GUIComponent : public QGraphicsWidget
 {
@@ -35,8 +37,29 @@ signals:
     void componentMoved();
 
 private:
+    QGraphicsSvgItem *icon;
+    GUIComponentTextItem *text;
+
     QGraphicsView *mpParentView;
     std::vector<GUIConnector*> mConnectors;        //Inteded to store connectors for each component
+
+private slots:
+    void fixTextPosition(QGraphicsSceneMouseEvent * event);
+
+};
+
+
+class GUIComponentTextItem : public QGraphicsTextItem
+{
+    Q_OBJECT
+public:
+    GUIComponentTextItem(const QString &text, QGraphicsItem *parent = 0);
+
+    void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+
+signals:
+    void textMoved(QGraphicsSceneMouseEvent * event);
+
 };
 
 #endif // GUICOMPONENT_H

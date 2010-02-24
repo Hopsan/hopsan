@@ -19,6 +19,7 @@
 #include <QGraphicsSceneMoveEvent>
 #include <QDebug>
 
+#include <math.h>
 
 GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint position, QGraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
@@ -31,7 +32,7 @@ GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint
     mpParentView = parentView;
 
     this->setZValue(10);
-    QGraphicsSvgItem *icon = new QGraphicsSvgItem(fileName,this);
+    icon = new QGraphicsSvgItem(fileName,this);
 //    icon->setPos(QPointF(-icon->boundingRect().width()/2, -icon->boundingRect().height()/2));
     std::cout << "GUIcomponent: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
     std::cout << "GUIcomponent: " << componentName.toStdString() << std::endl;
@@ -39,11 +40,8 @@ GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint
     //setWindowFlags(Qt::SplashScreen);//just to see the geometry
     setGeometry(0,0,icon->boundingRect().width(),icon->boundingRect().height());
 
-    QGraphicsTextItem *text = new QGraphicsTextItem(componentName,this);
-    text->setTextInteractionFlags(Qt::TextEditorInteraction);
-    text->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+    text = new GUIComponentTextItem(componentName,this);
     text->setPos(QPointF(icon->boundingRect().width()/2-text->boundingRect().width()/2, icon->boundingRect().height()));
-    //text->setTextInteractionFlags(Qt::TextEditable);
 
     GUIPort *rectR = new GUIPort(icon->sceneBoundingRect().width()-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),this,icon);
 
@@ -51,6 +49,36 @@ GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint
     //icon->setPos(QPointF(-icon->boundingRect().width()/2, -icon->boundingRect().height()/2));
 
    // rectR->boundingRegion();
+
+    connect(text, SIGNAL(textMoved(QGraphicsSceneMouseEvent *)), SLOT(fixTextPosition(QGraphicsSceneMouseEvent *)));
+}
+
+
+double dist(double x1,double y1, double x2, double y2)
+{
+    return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
+}
+void GUIComponent::fixTextPosition(QGraphicsSceneMouseEvent * event)
+{
+    double x1 = icon->boundingRect().width()/2-text->boundingRect().width()/2;
+    double y1 = icon->boundingRect().height();
+
+    double x2 = icon->boundingRect().width()/2-text->boundingRect().width()/2;
+    double y2 = -text->boundingRect().height();
+
+    double x = text->mapToParent(event->pos()).x();
+    double y = text->mapToParent(event->pos()).y();
+
+    if (dist(x,y, x1,y1) > dist(x,y, x2,y2))
+    {
+        text->setPos(x2,y2);
+    }
+    else
+    {
+        text->setPos(x1,y1);
+    }
+
+    std::cout << "GUIComponent::fixTextPosition, x: " << x << " y: " << y << std::endl;
 
 }
 
@@ -87,3 +115,19 @@ void GUIComponent::moveEvent(QGraphicsSceneMoveEvent *event)
     emit componentMoved();
 }
 
+
+GUIComponentTextItem::GUIComponentTextItem(const QString &text, QGraphicsItem *parent)
+    :   QGraphicsTextItem(text, parent)
+{
+    setTextInteractionFlags(Qt::TextEditorInteraction);
+    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+    //setTextInteractionFlags(Qt::TextEditable);
+}
+
+
+void GUIComponentTextItem::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
+{
+    qDebug() << "GUIComponentTextItem: " << "mouseReleaseEvent";
+    emit textMoved(event);
+    QGraphicsItem::mouseReleaseEvent(event);
+}
