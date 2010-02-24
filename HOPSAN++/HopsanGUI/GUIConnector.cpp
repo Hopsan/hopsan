@@ -247,8 +247,13 @@ void GUIConnector::removeLine(QPointF cursorPos)
     {
         this->scene()->removeItem(mLines.back());
         mLines.pop_back();
+        this->drawLine(this->mapToScene(mLines[0]->line().p1()), cursorPos);
     }
-    this->drawLine(this->mapToScene(mLines[0]->line().p1()), cursorPos);
+    else
+    {
+        this->scene()->removeItem(this);
+        delete(this);
+    }
 }
 
 int GUIConnector::getNumberOfLines()

@@ -156,15 +156,11 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     {
         if (this->creatingConnector)
         {
-            if (mpTempConnector->getNumberOfLines() > 1)
+            if (mpTempConnector->getNumberOfLines() < 2)
             {
-                mpTempConnector->removeLine(this->mapToScene(event->pos()));
-            }
-            else
-            {
-                this->scene()->removeItem(mpTempConnector);
                 this->creatingConnector = false;
             }
+            mpTempConnector->removeLine(this->mapToScene(event->pos()));
         }
         return;
     }
@@ -200,7 +196,7 @@ void GraphicsView::addConnector(GUIPort *port)
         qreal myLineWidth = 2.0;
         QColor myLineColor = QColor("black");
         QColor myLineActiveColor = QColor("red");
-        QColor myLineHoverColor = QColor("lightGray");
+        QColor myLineHoverColor = QColor("darkRed");
         mpTempConnector = new GUIConnector(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), myLineWidth,
                                            myLineColor, myLineActiveColor, myLineHoverColor, this);
         this->scene()->addItem(mpTempConnector);
