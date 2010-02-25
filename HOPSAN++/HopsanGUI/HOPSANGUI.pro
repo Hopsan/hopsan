@@ -28,20 +28,18 @@ OTHER_FILES +=
 
 # win32:DEFINES += STATICCORE
 DESTDIR = ../bin/debug
-
-unix:LIBS += -L../HopsanCore/bin/debug -lHopsanCore -Wl,-rpath,../../../HopsanCore/bin/debug
-
-unix:LIBS += -lqwt-qt4
-#-L/usr/share/doc/libqwt5-qt4 \
-
-unix:INCLUDEPATH += /usr/include/qwt-qt4/
-
 LIBS += -L../bin/debug \
     -lHopsanCore
-
 INCLUDEPATH += ../HopsanCore
 
+unix {
+    LIBS += -L../HopsanCore/bin/debug -lHopsanCore -Wl,-rpath,../../../HopsanCore/bin/debug
+    LIBS += -lqwt-qt4
+    INCLUDEPATH += /usr/include/qwt-qt4/
+}
 
 #Ingopath:
-win32:INCLUDEPATH += c:/temp_qwt/src
-win32:LIBS += c:/temp_qwt/lib/qwtd5.dll
+win32 {
+    INCLUDEPATH += c:/temp_qwt/src
+    LIBS += c:/temp_qwt/lib/qwtd5.dll
+}
