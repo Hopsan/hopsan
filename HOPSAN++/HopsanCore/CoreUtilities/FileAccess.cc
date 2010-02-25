@@ -124,19 +124,19 @@ ComponentSystem* FileAccess::loadModel(HopsanEssentials* pHopsan, double *startT
 
                 if ( componentMap.count(firstComponent) > 0 && componentMap.count(secondComponent) > 0 )        //Connecting two components
                 {
-                    componentMap.find(firstComponent)->second->getSystemparent().connect(*componentMap.find(firstComponent)->second, firstPort, *componentMap.find(secondComponent)->second, secondPort);
+                    componentMap.find(firstComponent)->second->getSystemParent().connect(*componentMap.find(firstComponent)->second, firstPort, *componentMap.find(secondComponent)->second, secondPort);
                 }
                 else if ( componentMap.count(firstComponent) > 0 && componentSystemMap.count(secondComponent) > 0 )     //Connecting component with subsystem
                 {
-                    componentMap.find(firstComponent)->second->getSystemparent().connect(*componentMap.find(firstComponent)->second, firstPort, *componentSystemMap.find(secondComponent)->second, secondPort);
+                    componentMap.find(firstComponent)->second->getSystemParent().connect(*componentMap.find(firstComponent)->second, firstPort, *componentSystemMap.find(secondComponent)->second, secondPort);
                 }
                 else if ( componentSystemMap.count(firstComponent) > 0 && componentMap.count(secondComponent) > 0 )     //Connecting subsystem with component
                 {
-                   componentMap.find(secondComponent)->second->getSystemparent().connect(*componentSystemMap.find(firstComponent)->second, firstPort, *componentMap.find(secondComponent)->second, secondPort);
+                   componentMap.find(secondComponent)->second->getSystemParent().connect(*componentSystemMap.find(firstComponent)->second, firstPort, *componentMap.find(secondComponent)->second, secondPort);
                 }
                 else  //Connecting subsystem with subsystem
                 {
-                     componentMap.find(firstComponent)->second->getSystemparent().connect(*componentSystemMap.find(firstComponent)->second, firstPort, *componentSystemMap.find(secondComponent)->second, secondPort);
+                     componentMap.find(firstComponent)->second->getSystemParent().connect(*componentSystemMap.find(firstComponent)->second, firstPort, *componentSystemMap.find(secondComponent)->second, secondPort);
                 }
             }
                 //Execute commands
@@ -208,17 +208,17 @@ void FileAccess::saveModel(string fileName, ComponentSystem* pMotherOfAllModels,
 
 void FileAccess::saveComponentSystem(ofstream& modelFile, ComponentSystem* pMotherModel, string motherSystemName)
 {
-    map<string, string> mainComponentList = pMotherModel->getComponentNames();
+    map<string, string> mainComponentList = pMotherModel->getSubComponentNamesAndTypes();
     map<string, string>::iterator it;
     map<Port*, string> portList;
 
     for(it = mainComponentList.begin(); it!=mainComponentList.end(); ++it)
     {
         //if (it->second == "ComponentSystem")
-        if(pMotherModel->getComponent(it->first)->isComponentSystem())
+        if(pMotherModel->getSubComponent(it->first)->isComponentSystem())
         {
-            modelFile << "SUBSYSTEM " << " " << it->first << " " << pMotherModel->getComponentSystem(it->first)->getTypeCQS() << "\n";
-            vector<Port*> systemPorts = pMotherModel->getComponentSystem(it->first)->getPortPtrVector();
+            modelFile << "SUBSYSTEM " << " " << it->first << " " << pMotherModel->getSubComponentSystem(it->first)->getTypeCQS() << "\n";
+            vector<Port*> systemPorts = pMotherModel->getSubComponentSystem(it->first)->getPortPtrVector();
             cout << "Subsystem has " << systemPorts.size() << " ports.\n";
             vector<Port*>::iterator itp;
             for (itp=systemPorts.begin(); itp!=systemPorts.end(); ++itp)
@@ -228,7 +228,7 @@ void FileAccess::saveComponentSystem(ofstream& modelFile, ComponentSystem* pMoth
 
             ///TODO: Skriv ut subsystemets portar
             ///TODO: Fixa så man kan komma åt subsystem ur ett component system, så rekursiva anrop kan göras här
-            saveComponentSystem(modelFile, pMotherModel->getComponentSystem(it->first), motherSystemName + " " + it->first);
+            saveComponentSystem(modelFile, pMotherModel->getSubComponentSystem(it->first), motherSystemName + " " + it->first);
         }
         else
         {
@@ -236,7 +236,7 @@ void FileAccess::saveComponentSystem(ofstream& modelFile, ComponentSystem* pMoth
             modelFile << "COMPONENT " << it->second << " " << it->first << motherSystemName << "\n";
         }
 
-        map<string,double> componentParameterList = pMotherModel->getComponent(it->first)->getParameterList();
+        map<string,double> componentParameterList = pMotherModel->getSubComponent(it->first)->getParameterList();
         map<string, double>::iterator itc;
         for(itc = componentParameterList.begin(); itc!=componentParameterList.end(); ++itc)
         {
@@ -245,7 +245,7 @@ void FileAccess::saveComponentSystem(ofstream& modelFile, ComponentSystem* pMoth
 
 
             //Store all ports in a map, together with the name of the component they belong to (for use below)
-        vector <Port*> portPtrsVector = pMotherModel->getComponent(it->first)->getPortPtrVector();
+        vector <Port*> portPtrsVector = pMotherModel->getSubComponent(it->first)->getPortPtrVector();
         vector <Port*>::iterator itp;
         for (itp=portPtrsVector.begin(); itp!=portPtrsVector.end(); ++itp)
         {

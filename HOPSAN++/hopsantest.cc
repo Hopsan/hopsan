@@ -9,9 +9,9 @@
 
 #include "HopsanCore.h"
 #include "TicToc.h"
-#include "CoreUtilities/Delay.h"
-#include "CoreUtilities/FirstOrderFilter.h"
-#include "CoreUtilities/SecondOrderFilter.h"
+#include "ComponentUtilities/Delay.h"
+#include "ComponentUtilities/FirstOrderFilter.h"
+#include "ComponentUtilities/SecondOrderFilter.h"
 #include "CoreUtilities/FileAccess.h"
 #include <iostream>
 using namespace std;
@@ -1852,7 +1852,7 @@ void testLoad()
     pSimulationModel->simulate(startTime, stopTime);
 
         //Test write to file
-    pSimulationModel->getComponent(plotComponent)->getPort(plotPort).saveLogData("output.txt");
+    pSimulationModel->getSubComponent(plotComponent)->getPort(plotPort).saveLogData("output.txt");
 
     modelFile.saveModel("savedmodel.txt", pSimulationModel, startTime, stopTime, plotComponent, plotPort);
 

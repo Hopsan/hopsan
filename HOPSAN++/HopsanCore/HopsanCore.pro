@@ -22,34 +22,26 @@ SOURCES += Port.cc \
     Node.cc \
     Component.cc \
     Nodes/Nodes.cc \
-    CoreUtilities/ValveHysteresis.cc \
-    CoreUtilities/TurbulentFlowFunction.cc \
-    CoreUtilities/TransferFunction.cc \
-    CoreUtilities/SecondOrderFilter.cc \
     CoreUtilities/LoadExternal.cc \
-    CoreUtilities/IntegratorLimited.cc \
-    CoreUtilities/Integrator.cc \
-    CoreUtilities/FirstOrderFilter.cc \
     CoreUtilities/FileAccess.cc \
-    CoreUtilities/Delay.cc \
     Components/Components.cc \
-    HopsanEssentials.cc
+    HopsanEssentials.cc \
+    ComponentUtilities/ValveHysteresis.cc \
+    ComponentUtilities/TurbulentFlowFunction.cc \
+    ComponentUtilities/TransferFunction.cc \
+    ComponentUtilities/SecondOrderFilter.cc \
+    ComponentUtilities/IntegratorLimited.cc \
+    ComponentUtilities/Integrator.cc \
+    ComponentUtilities/FirstOrderFilter.cc \
+    ComponentUtilities/Delay.cc
 HEADERS += win32dll.h \
     Port.h \
     Node.h \
     HopsanCore.h \
     Component.h \
     Nodes/Nodes.h \
-    CoreUtilities/ValveHysteresis.h \
-    CoreUtilities/TurbulentFlowFunction.h \
-    CoreUtilities/TransferFunction.h \
-    CoreUtilities/SecondOrderFilter.h \
     CoreUtilities/LoadExternal.h \
-    CoreUtilities/IntegratorLimited.h \
-    CoreUtilities/Integrator.h \
-    CoreUtilities/FirstOrderFilter.h \
     CoreUtilities/FileAccess.h \
-    CoreUtilities/Delay.h \
     CoreUtilities/ClassFactory.h \
     Components/HydraulicComponentTemplate.hpp \
     Components/Components.h \
@@ -108,4 +100,12 @@ HEADERS += win32dll.h \
     Components/Hydraulic/Hydraulic43Valve.hpp \
     ComponentEssentials.h \
     ComponentUtilities.h \
-    HopsanEssentials.h
+    HopsanEssentials.h \
+    ComponentUtilities/ValveHysteresis.h \
+    ComponentUtilities/TurbulentFlowFunction.h \
+    ComponentUtilities/TransferFunction.h \
+    ComponentUtilities/SecondOrderFilter.h \
+    ComponentUtilities/IntegratorLimited.h \
+    ComponentUtilities/Integrator.h \
+    ComponentUtilities/FirstOrderFilter.h \
+    ComponentUtilities/Delay.h

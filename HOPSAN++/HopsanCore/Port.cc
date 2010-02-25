@@ -164,7 +164,7 @@ double WritePort::readNode(const size_t idx)
 }
 
 //!
-//! @brief Very simple port factory, no need to complicate things with the more advanced one as we will only have three port types.
+//! @brief Very simple port factory, no need to complicate things with the more advanced one as we will only have four port types.
 //!
 Port* CreatePort(const string &rPortType)
 {

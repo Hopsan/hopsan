@@ -1,14 +1,14 @@
 #ifndef COMPONENTUTILITIES_H_INCLUDED
 #define COMPONENTUTILITIES_H_INCLUDED
 
-#include "CoreUtilities/Delay.h"
-#include "CoreUtilities/FirstOrderFilter.h"
-#include "CoreUtilities/Integrator.h"
-#include "CoreUtilities/IntegratorLimited.h"
-#include "CoreUtilities/SecondOrderFilter.h"
-#include "CoreUtilities/TransferFunction.h"
-#include "CoreUtilities/TurbulentFlowFunction.h"
-#include "CoreUtilities/ValveHysteresis.h"
+#include "ComponentUtilities/Delay.h"
+#include "ComponentUtilities/FirstOrderFilter.h"
+#include "ComponentUtilities/Integrator.h"
+#include "ComponentUtilities/IntegratorLimited.h"
+#include "ComponentUtilities/SecondOrderFilter.h"
+#include "ComponentUtilities/TransferFunction.h"
+#include "ComponentUtilities/TurbulentFlowFunction.h"
+#include "ComponentUtilities/ValveHysteresis.h"
 
 
 #endif // COMPONENTUTILITIES_H_INCLUDED

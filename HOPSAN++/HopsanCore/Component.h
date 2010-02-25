@@ -22,7 +22,7 @@ class DLLIMPORTEXPORT CompParameter
     friend class Component;
 
 private:
-    CompParameter(const string name, const string description, const string unit, double &rValue); //should maybe be a description field as well
+    CompParameter(const string name, const string description, const string unit, double &rValue);
 
     double getValue();
     void setValue(const double value);
@@ -54,7 +54,6 @@ public:
     //Name and type
     void setName(string name);
     const string &getName();
-    const string &getType();
     const string &getTypeName();
     const string &getTypeCQS();
 
@@ -69,7 +68,7 @@ public:
     Port &getPort(const string portname);
 
     //System parent
-    ComponentSystem &getSystemparent();
+    ComponentSystem &getSystemParent();
 
     // Component type identification
     bool isComponentC();
@@ -99,7 +98,7 @@ protected:
     Port* addPowerPort(const string portname, const string nodetype, const int id=-1);
     Port* addReadPort(const string portname, const string nodetype, const int id=-1);
     Port* addWritePort(const string portname, const string nodetype, const int id=-1);
-    bool getPort(const string portname, Port* &prPort);
+    bool getPort(const string portname, Port* &rpPort);
     Port &getPortById(const size_t port_idx);
 
     //==========Protected member variables==========
@@ -115,15 +114,12 @@ protected:
 
 private:
     //Private member functions
-    void setSystemparent(ComponentSystem &rComponentSystem);
-    //Port* addInnerPortSetNode(const string portname, const string porttype, Node* pNode);
-    void addSubNode(Node* node_ptr);
+    void setSystemParent(ComponentSystem &rComponentSystem);
 
     //Private member variables
     string mName;
-    vector<Node*> mSubNodePtrs;
     vector<CompParameter> mParameters;
-    ComponentSystem* mpSystemparent;
+    ComponentSystem* mpSystemParent;
 };
 
 
@@ -144,9 +140,9 @@ public:
     Port* addSystemPort(const string portname);
 
     //Getting added components and component names
-    Component* getComponent(string name);
-    ComponentSystem* getComponentSystem(string name);
-    map<string, string> getComponentNames();
+    Component* getSubComponent(string name);
+    ComponentSystem* getSubComponentSystem(string name);
+    const map<string, string>& getSubComponentNamesAndTypes();
 
     //connecting components
     void connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2);
@@ -173,12 +169,16 @@ private:
     //Check if connection ok
     bool connectionOK(Node *pNode, Port *pPort1, Port *pPort2);
 
+    //Add sub nodes
+    void addSubNode(Node* node_ptr);
+
     //==========Prvate member variables==========
     //vector<Component*> mSubComponentPtrs; //Problems with inheritance and casting?
     vector<Component*> mComponentSignalptrs;
     vector<Component*> mComponentQptrs;
     vector<Component*> mComponentCptrs;
-    map<string, string> mComponentNames;
+    vector<Node*> mSubNodePtrs;
+    map<string, string> mComponentNamesAndTypes;
 
     NodeFactory mpNodeFactory;
 };

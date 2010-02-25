@@ -60,7 +60,7 @@ private:
 };
 
 
-class DLLIMPORTEXPORT SystemPort :public Port
+class SystemPort :public Port
 {
     friend class Component;
     friend class ComponentSystem;
@@ -72,7 +72,7 @@ protected:
 };
 
 
-class DLLIMPORTEXPORT PowerPort :public Port
+class PowerPort :public Port
 {
     friend class Component;
     friend class ComponentSystem;
@@ -85,7 +85,7 @@ protected:
 };
 
 
-class DLLIMPORTEXPORT ReadPort :public Port
+class ReadPort :public Port
 {
     friend class Component;
     friend class ComponentSystem;
@@ -101,7 +101,7 @@ protected:
 };
 
 
-class DLLIMPORTEXPORT WritePort :public Port
+class WritePort :public Port
 {
     friend class Component;
     friend class ComponentSystem;

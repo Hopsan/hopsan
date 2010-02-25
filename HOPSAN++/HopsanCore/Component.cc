@@ -310,9 +310,9 @@ Port* Component::addWritePort(const string portname, const string nodetype, cons
 //    }
 //}
 
-void Component::setSystemparent(ComponentSystem &rComponentSystem)
+void Component::setSystemParent(ComponentSystem &rComponentSystem)
 {
-    mpSystemparent = &rComponentSystem;
+    mpSystemParent = &rComponentSystem;
 }
 
 Port &Component::getPortById(const size_t port_idx)
@@ -336,14 +336,14 @@ Port &Component::getPort(const string portname)
     assert(false);
 }
 
-bool Component::getPort(const string portname, Port* &prPort)
+bool Component::getPort(const string portname, Port* &rpPort)
 {
     vector<Port*>::iterator it;
     for (it=mPortPtrs.begin(); it!=mPortPtrs.end(); ++it)
     {
         if ((*it)->mPortName == portname)
         {
-            prPort = (*it);
+            rpPort = (*it);
             return true;
         }
     }
@@ -355,9 +355,9 @@ void Component::setTimestep(const double timestep)
     mTimestep = timestep;
 }
 
-ComponentSystem &Component::getSystemparent()
+ComponentSystem &Component::getSystemParent()
 {
-    return *mpSystemparent;
+    return *mpSystemParent;
 }
 
 //constructor ComponentSignal
@@ -418,8 +418,8 @@ void ComponentSystem::addComponents(vector<Component*> components)
             assert(false);
         }
 
-        mComponentNames.insert(pair<string, string>(comp_ptr->getName(), comp_ptr->getTypeName()));
-        comp_ptr->setSystemparent(*this);
+        mComponentNamesAndTypes.insert(pair<string, string>(comp_ptr->getName(), comp_ptr->getTypeName()));
+        comp_ptr->setSystemParent(*this);
     }
 }
 
@@ -438,7 +438,7 @@ void ComponentSystem::addComponent(Component *pComponent)
     addComponents(components);
 }
 
-Component* ComponentSystem::getComponent(string name)
+Component* ComponentSystem::getSubComponent(string name)
 {
     //vector<Component*>::iterator it;
     for (size_t s=0; s < mComponentCptrs.size(); ++s)
@@ -472,9 +472,9 @@ Component* ComponentSystem::getComponent(string name)
 }
 
 
-ComponentSystem* ComponentSystem::getComponentSystem(string name)
+ComponentSystem* ComponentSystem::getSubComponentSystem(string name)
 {
-    Component* temp_component_ptr = getComponent(name);
+    Component* temp_component_ptr = getSubComponent(name);
     ComponentSystem* temp_compsys_ptr = dynamic_cast<ComponentSystem*>(temp_component_ptr);
 
     if (temp_compsys_ptr == NULL)
@@ -487,14 +487,14 @@ ComponentSystem* ComponentSystem::getComponentSystem(string name)
 }
 
 
-map<string, string> ComponentSystem::getComponentNames()
+const map<string, string>& ComponentSystem::getSubComponentNamesAndTypes()
 {
-    return mComponentNames;
+    return mComponentNamesAndTypes;
 }
 
 
 //! Adds a node as subnode to specified component
-void Component::addSubNode(Node* node_ptr)
+void ComponentSystem::addSubNode(Node* node_ptr)
 {
     mSubNodePtrs.push_back(node_ptr);
 }
@@ -613,11 +613,11 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
     }
     else
     {
-        ///TODO: No error handling nor checks are done here
+        //! @todo No error handling nor checks are done here
         //Check if component1 is a System component containing Component2
-        if (&rComponent1 == &(rComponent2.getSystemparent()))
+        if (&rComponent1 == &(rComponent2.getSystemParent()))
         {
-            ///TODO: check so that the parent system port is a system port
+            //! @todo check so that the parent system port is a system port
             //Create an instance of the node specified in nodespecifications
             pNode = gCoreNodeFactory.CreateInstance(pPort2->getNodeType());
             //Set nodetype in the systemport (should be empty by default)
@@ -626,10 +626,10 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             pPort2->setNode(pNode);
             pPort1->setNode(pNode);
             pNode->setPort(pPort1);
-            rComponent1.addSubNode(pNode);    //Component1 contains this node as subnode
+            rComponent2.getSystemParent().addSubNode(pNode);    //Component1 will contain this node as subnode
         }
         //Check if component2 is a System component containing Component1
-        else if (&rComponent2 == &(rComponent1.getSystemparent()))
+        else if (&rComponent2 == &(rComponent1.getSystemParent()))
         {
             //! @todo both these checks could be boken out into subfunction as the code is the same only swapped 1 with 2
             //Create an instance of the node specified in nodespecifications
@@ -640,7 +640,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             pPort1->setNode(pNode);
             pPort2->setNode(pNode);
             pNode->setPort(pPort2);
-            rComponent2.addSubNode(pNode);    //Component2 contains this node as subnode
+            rComponent1.getSystemParent().addSubNode(pNode);    //Component2 will contain this node as subnode
         }
         else
         {
@@ -668,7 +668,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
 
             ///TODO: this maybe should be checked every time not only if same level, with some modification as i can connect to myself aswell
             //Check so that both systems to connect have been added to this system
-            if ((&rComponent1.getSystemparent() != (Component*)this) && ((&rComponent1.getSystemparent() != (Component*)this)) )
+            if ((&rComponent1.getSystemParent() != (Component*)this) && ((&rComponent1.getSystemParent() != (Component*)this)) )
             {
                 cout << "The two components, "<< rComponent1.getName() << " and " << rComponent2.getName() << ", "<< " to be connected are not contained within the connecting system" << endl;
                 assert(false);
@@ -743,6 +743,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
         cout << "Connected " << rComponent1.getName() << ": " << portname1 << " with " << rComponent2.getName() << ": " << portname2 << " sucessfully" << endl;
     }
 }
+
 
 
 bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)

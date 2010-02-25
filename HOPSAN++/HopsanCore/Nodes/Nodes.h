@@ -20,15 +20,11 @@ DLLIMPORTEXPORT void register_nodes(NodeFactory* nfact_ptr);
 //!
 class NodeSignal :public Node
 {
-    //friend void register_nodes(NodeFactory* nfact_ptr);
-
 public:
     enum {VALUE, DATALENGTH};
     static Node* CreatorFunction() {return new NodeSignal;}
 
 private:
-    //static NodeTypeT iDummyId;
-
     NodeSignal() : Node()
     {
         mNodeType = "NodeSignal";
@@ -44,14 +40,11 @@ private:
 //!
 class NodeHydraulic :public Node
 {
-    //friend void register_nodes(NodeFactory* nfact_ptr);
-
 public:
     enum {MASSFLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP, HEATFLOW, DATALENGTH};
     static Node* CreatorFunction() {return new NodeHydraulic;}
-private:
-    //static NodeTypeT iDummyId;
 
+private:
     NodeHydraulic() : Node()
     {
         mNodeType = "NodeHydraulic";
@@ -67,14 +60,11 @@ private:
 //!
 class NodeMechanic :public Node
 {
-    //friend void register_nodes(NodeFactory* nfact_ptr);
-
 public:
     enum {VELOCITY, FORCE, POSITION, WAVEVARIABLE, CHARIMP, DATALENGTH};
     static Node* CreatorFunction() {return new NodeMechanic;}
-private:
-    //static NodeTypeT iDummyId;
 
+private:
     NodeMechanic() : Node()
     {
         mNodeType = "NodeMechanic";
