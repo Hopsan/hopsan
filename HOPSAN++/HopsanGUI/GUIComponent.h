@@ -32,13 +32,13 @@ public:
 protected:
     //virtual void moveEvent(QGraphicsItem::GraphicsItemChange);
     virtual void moveEvent(QGraphicsSceneMoveEvent *event);
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 signals:
     void componentMoved();
 
 public slots:
      void deleteComponent();
-     void deselect();
 
 private:
     QGraphicsSvgItem *icon;

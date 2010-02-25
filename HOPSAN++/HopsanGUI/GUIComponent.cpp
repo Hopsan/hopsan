@@ -52,7 +52,6 @@ GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint
 
     connect(text, SIGNAL(textMoved(QGraphicsSceneMouseEvent *)), SLOT(fixTextPosition(QGraphicsSceneMouseEvent *)));
     connect(this->mpParentView,SIGNAL(keyPressDelete()),this,SLOT(deleteComponent()));
-    connect(this->mpParentView,SIGNAL(viewClicked()),this,SLOT(deselect()));
 
     mpSelectionBox = new QGraphicsRectItem(0,0,icon->boundingRect().width(),icon->boundingRect().height(),this);
     mpSelectionBox->setPen(QPen(QColor("red"),2));
@@ -92,13 +91,7 @@ void GUIComponent::fixTextPosition(QGraphicsSceneMouseEvent * event)
 void GUIComponent::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 {
     qDebug() << "GUIComponent: " << "mouseReleaseEvent";
-    mpSelectionBox->setVisible(true);
     QGraphicsItem::mouseReleaseEvent(event);
-}
-
-void GUIComponent::deselect()
-{
-    mpSelectionBox->setVisible(false);
 }
 
 GUIComponent::~GUIComponent()
@@ -133,6 +126,17 @@ void GUIComponent::deleteComponent()
     }
 }
 
+QVariant GUIComponent::itemChange(GraphicsItemChange change, const QVariant &value)
+{
+    if (change == QGraphicsItem::ItemSelectedChange)
+    {
+        qDebug() << "Component selected status = " << this->isSelected();
+        this->mpSelectionBox->setVisible(!this->isSelected());
+    }
+    return value;
+}
+
+
 
 GUIComponentTextItem::GUIComponentTextItem(const QString &text, QGraphicsItem *parent)
     :   QGraphicsTextItem(text, parent)
@@ -156,6 +160,8 @@ void GUIComponentTextItem::keyReleaseEvent(QKeyEvent *event) //Vill inte...
     std::cout << "GUIComponentTextItem::keyPressEvent: " << event->key() << std::endl;
     //QGraphicsItem::keyPressEvent(event);
 }
+
+
 
 
 
