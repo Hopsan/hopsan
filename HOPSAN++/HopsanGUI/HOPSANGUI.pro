@@ -24,7 +24,7 @@ HEADERS += mainwindow.h \
     GUIComponent.h \
     GUIConnectorLine.h \
     plotwidget.h
-OTHER_FILES += 
+OTHER_FILES +=
 
 # win32:DEFINES += STATICCORE
 DESTDIR = ../bin/debug
@@ -33,6 +33,9 @@ DESTDIR = ../bin/debug
 LIBS += -L../bin/debug \
     -lHopsanCore
 INCLUDEPATH += ../HopsanCore \
-    /usr/include/qwt-qt4/
-LIBS += -L/usr/share/doc/libqwt5-qt4 \
-    -lqwt-qt4
+#    /usr/include/qwt-qt4/
+#LIBS += -L/usr/share/doc/libqwt5-qt4 \
+ #   -lqwt-qt4
+#Ingopath:
+INCLUDEPATH += c:/temp_qwt/src
+LIBS += c:/temp_qwt/lib/qwtd5.dll

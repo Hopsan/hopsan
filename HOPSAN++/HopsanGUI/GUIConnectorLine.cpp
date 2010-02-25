@@ -31,6 +31,7 @@ GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen 
     this->mHoverPen = hoverPen;
     this->mLineNumber = lineNumber;
     this->setAcceptHoverEvents(true);
+
 }
 
 GUIConnectorLine::~GUIConnectorLine()

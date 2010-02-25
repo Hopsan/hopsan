@@ -36,6 +36,9 @@ protected:
 signals:
     void componentMoved();
 
+public slots:
+     void deleteComponent();
+
 private:
     QGraphicsSvgItem *icon;
     GUIComponentTextItem *text;

@@ -201,6 +201,7 @@ void GraphicsView::addConnector(GUIPort *port)
                                            myLineColor, myLineActiveColor, myLineHoverColor, this);
         this->scene()->addItem(mpTempConnector);
         this->creatingConnector = true;
+        port->getComponent()->addConnector(mpTempConnector);
         mpTempConnector->setStartPort(port);
     }
     else

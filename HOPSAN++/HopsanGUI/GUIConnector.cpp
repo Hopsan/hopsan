@@ -282,7 +282,6 @@ void GUIConnector::deleteMe()
         this->scene()->removeItem(this);
         delete(this);
     }
-
 }
 
 void GUIConnector::updateLine(int lineNumber)

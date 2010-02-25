@@ -25,7 +25,7 @@ GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint
         : QGraphicsWidget(parent)
 {
     setPos(position);
-    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges);
+    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
 
     //widget = new QWidget;
 
@@ -51,6 +51,7 @@ GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint
    // rectR->boundingRegion();
 
     connect(text, SIGNAL(textMoved(QGraphicsSceneMouseEvent *)), SLOT(fixTextPosition(QGraphicsSceneMouseEvent *)));
+    connect(this->mpParentView,SIGNAL(keyPressDelete()),this,SLOT(deleteComponent()));
 }
 
 
@@ -86,6 +87,14 @@ void GUIComponent::fixTextPosition(QGraphicsSceneMouseEvent * event)
 void GUIComponent::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 {
     qDebug() << "GUIComponent: " << "mouseReleaseEvent";
+    if(!this->isSelected())
+    {
+        this->setSelected(true);
+    }
+    else
+    {
+        this->setSelected(false);
+    }
     QGraphicsItem::mouseReleaseEvent(event);
 }
 
@@ -115,6 +124,16 @@ void GUIComponent::moveEvent(QGraphicsSceneMoveEvent *event)
     emit componentMoved();
 }
 
+void GUIComponent::deleteComponent()
+{
+    qDebug() << "Debug123\n";
+    if(this->isSelected())
+    {
+        this->scene()->removeItem(this);
+        delete(this);
+    }
+}
+
 
 GUIComponentTextItem::GUIComponentTextItem(const QString &text, QGraphicsItem *parent)
     :   QGraphicsTextItem(text, parent)
@@ -138,4 +157,6 @@ void GUIComponentTextItem::keyReleaseEvent(QKeyEvent *event) //Vill inte...
     std::cout << "GUIComponentTextItem::keyPressEvent: " << event->key() << std::endl;
     //QGraphicsItem::keyPressEvent(event);
 }
+
+
 
