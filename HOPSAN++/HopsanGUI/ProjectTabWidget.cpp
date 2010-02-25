@@ -112,10 +112,10 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     if (event->modifiers() and Qt::ControlModifier)
     {
         this->setDragMode(QGraphicsView::ScrollHandDrag);       //Zoom function
-        if (this->creatingConnector)                            //Straigth line function
+        if (this->creatingConnector)                            //Straight line function
         {
             QCursor cursor;
-            mpTempConnector->setStraigth(false);
+            mpTempConnector->setStraight(false);
         }
     }
 
@@ -130,7 +130,7 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
     this->setDragMode(QGraphicsView::NoDrag);
     if (this->creatingConnector)
     {
-        mpTempConnector->setStraigth(true);
+        mpTempConnector->setStraight(true);
     }
 }
 

@@ -42,7 +42,7 @@ GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, 
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
     this->setPen(QPen(mActiveColor, mWidth));
-    this->mStraigth = true;
+    this->mStraight = true;
     connect(this->mpParentView,SIGNAL(keyPressDelete()),this,SLOT(deleteMe()));
     connect(this->mpParentView,SIGNAL(viewClicked()),this,SLOT(setPassive()));
 
@@ -148,7 +148,7 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
                        startPos.y(),
                        mLines[0]->line().p2().x(),
                        mLines[0]->line().p2().y());
-    if (mStraigth) //If straight lines are activated
+    if (mStraight) //If straight lines are activated
     {
         if (mLines.size()==1) //Special case for the first line
         {
@@ -262,15 +262,15 @@ int GUIConnector::getNumberOfLines()
 }
 
 
-void GUIConnector::setStraigth(bool var)
+void GUIConnector::setStraight(bool var)
 {
-    mStraigth = var;
+    mStraight = var;
 }
 
 
-bool GUIConnector::isStraigth()
+bool GUIConnector::isStraight()
 {
-    return mStraigth;
+    return mStraight;
 }
 
 

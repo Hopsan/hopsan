@@ -41,8 +41,8 @@ public:
     void removeLine(QPointF cursorPos);
     void setPen(QPen pen);
     int getNumberOfLines();
-    void setStraigth(bool var);
-    bool isStraigth();
+    void setStraight(bool var);
+    bool isStraight();
 
 public slots:
     void updatePos();
@@ -67,7 +67,7 @@ private:
     QColor mPrimaryColor;
     QColor mActiveColor;
     QColor mHoverColor;
-    bool mStraigth;
+    bool mStraight;
     bool mIsActive;
     bool mEndPortConnected;
 };
