@@ -55,7 +55,7 @@ GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint
     connect(this->mpParentView,SIGNAL(viewClicked()),this,SLOT(deselect()));
 
     mpSelectionBox = new QGraphicsRectItem(0,0,icon->boundingRect().width(),icon->boundingRect().height(),this);
-    mpSelectionBox->setPen(QPen(QColor("red"),1));
+    mpSelectionBox->setPen(QPen(QColor("red"),2));
     mpSelectionBox->setVisible(false);
 }
 
