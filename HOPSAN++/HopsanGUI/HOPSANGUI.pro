@@ -33,7 +33,7 @@ LIBS += -L../bin/debug \
 INCLUDEPATH += ../HopsanCore
 
 unix {
-    LIBS += -L../HopsanCore/bin/debug -lHopsanCore -Wl,-rpath,../../../HopsanCore/bin/debug
+    LIBS += -Wl,-rpath,./
     LIBS += -lqwt-qt4
     INCLUDEPATH += /usr/include/qwt-qt4/
 }
