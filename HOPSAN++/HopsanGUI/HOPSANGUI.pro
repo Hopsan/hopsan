@@ -31,8 +31,8 @@ DESTDIR = ../bin/debug
 
 unix:LIBS += -L../HopsanCore/bin/debug -lHopsanCore -Wl,-rpath,../../../HopsanCore/bin/debug
 
-unix:LIBS += -L/usr/share/doc/libqwt5-qt4 \
-    -lqwt-qt4
+unix:LIBS += -lqwt-qt4
+#-L/usr/share/doc/libqwt5-qt4 \
 
 unix:INCLUDEPATH += /usr/include/qwt-qt4/
 
