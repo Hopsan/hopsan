@@ -52,6 +52,11 @@ GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint
 
     connect(text, SIGNAL(textMoved(QGraphicsSceneMouseEvent *)), SLOT(fixTextPosition(QGraphicsSceneMouseEvent *)));
     connect(this->mpParentView,SIGNAL(keyPressDelete()),this,SLOT(deleteComponent()));
+    connect(this->mpParentView,SIGNAL(viewClicked()),this,SLOT(deselect()));
+
+    mpSelectionBox = new QGraphicsRectItem(0,0,icon->boundingRect().width(),icon->boundingRect().height(),this);
+    mpSelectionBox->setPen(QPen(QColor("red"),1));
+    mpSelectionBox->setVisible(false);
 }
 
 
@@ -87,17 +92,14 @@ void GUIComponent::fixTextPosition(QGraphicsSceneMouseEvent * event)
 void GUIComponent::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 {
     qDebug() << "GUIComponent: " << "mouseReleaseEvent";
-    if(!this->isSelected())
-    {
-        this->setSelected(true);
-    }
-    else
-    {
-        this->setSelected(false);
-    }
+    mpSelectionBox->setVisible(true);
     QGraphicsItem::mouseReleaseEvent(event);
 }
 
+void GUIComponent::deselect()
+{
+    mpSelectionBox->setVisible(false);
+}
 
 GUIComponent::~GUIComponent()
 {
@@ -112,10 +114,7 @@ QGraphicsView *GUIComponent::getParentView()
 
 void GUIComponent::addConnector(GUIConnector *item)
 {
-    mConnectors.push_back(item);
-    connect(this,SIGNAL(componentMoved()),mConnectors.back(),SLOT(updatePos()));
-    QColor color = QColor("black");
-    mConnectors.back()->setPen(QPen(color, 2));
+    connect(this,SIGNAL(componentMoved()),item,SLOT(updatePos()));
 }
 
 

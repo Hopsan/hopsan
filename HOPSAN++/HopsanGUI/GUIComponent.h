@@ -38,13 +38,14 @@ signals:
 
 public slots:
      void deleteComponent();
+     void deselect();
 
 private:
     QGraphicsSvgItem *icon;
     GUIComponentTextItem *text;
-
     QGraphicsView *mpParentView;
-    std::vector<GUIConnector*> mConnectors;        //Inteded to store connectors for each component
+    QGraphicsRectItem *mpSelectionBox;
+    //std::vector<GUIConnector*> mConnectors;        //Inteded to store connectors for each component
 
 private slots:
     void fixTextPosition(QGraphicsSceneMouseEvent * event);
