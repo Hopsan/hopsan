@@ -52,10 +52,11 @@ public slots:
     void setUnHovered();
     void deleteMe();
     void updateLine(int);
+    void doSelect();
 
 protected:
     virtual void SetEndPos(qreal x2, qreal y2);
-    QVariant selectedEvent(GraphicsItemChange change, const QVariant &value);
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 private:
     std::vector<GUIConnectorLine*> mLines;
