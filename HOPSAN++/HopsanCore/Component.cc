@@ -169,7 +169,6 @@ void Component::setParameter(const string name, const double value)
     bool notset = 1;
     for (size_t i=0; i<mParameters.size(); ++i)
     {
-//        if (name.compare(mParameters[i].getName()) == 0)
         if (name == mParameters[i].getName())
         {
             mParameters[i].setValue(value);
@@ -225,17 +224,6 @@ bool Component::isComponentSignal()
     return mIsComponentSignal;
 }
 
-//void Component::addPort(const size_t port_idx, Port port)
-//{
-//    //Instead of push_back, make it possible to add ports out of order
-//    if (port_idx+1 > mPortPtrs.size())
-//    {
-//        mPortPtrs.resize(port_idx+1);
-//    }
-//
-//    port.mpComponent = this;    //Set port owner
-//    mPortPtrs[port_idx] = port;
-//}
 
 Port* Component::addPort(const string portname, const string porttype, const NodeTypeT nodetype, const int id)
 {
@@ -263,27 +251,6 @@ Port* Component::addPort(const string portname, const string porttype, const Nod
     return new_port;
 }
 
-//void Component::addPort(const string portname, const string nodetype, const int id)
-//{
-//    ///TODO: handle trying to add multiple ports with same name or pos
-//    Port* new_port = new Port(portname, nodetype);
-//    new_port->mpComponent = this;    //Set port owner
-//
-//    if (id >= 0)
-//    {
-//        //Instead of allways push_back, make it possible to add ports out of order
-//        if ((size_t)id+1 > mPortPtrs.size())
-//        {
-//            mPortPtrs.resize(id+1);
-//        }
-//        mPortPtrs[id] = new_port;
-//    }
-//    else
-//    {
-//        //If no id specified push back
-//        mPortPtrs.push_back(new_port);     //Copy port into storage
-//    }
-//}
 
 Port* Component::addPowerPort(const string portname, const string nodetype, const int id)
 {
@@ -384,7 +351,6 @@ ComponentQ::ComponentQ(string name, double timestep) : Component(name, timestep)
 //Constructor
 ComponentSystem::ComponentSystem(string name, double timestep) : Component(name, timestep)
 {
-    //mInnerPortPtrs.clear();
     mTypeName = "ComponentSystem";
     mIsComponentSystem = true;
     mDesiredTimestep = timestep;
@@ -396,13 +362,13 @@ void ComponentSystem::addComponents(vector<Component*> components)
     for (size_t idx=0; idx<components.size(); ++idx)
     {
         Component* comp_ptr = components[idx];
-        ///TODO: add subcomponent
-        //if (comp_ptr->getType() == (string)"ComponentC")
+        //! @todo add subcomponent
+        //! @todo what will happen if you change cqs type of subsystem after it has been added, maybe subsystems should be hardcoded c q or s type
+
         if (comp_ptr->isComponentC())
         {
             mComponentCptrs.push_back(comp_ptr);
         }
-        //else if (comp_ptr->getType() == (string)"ComponentQ")
         else if (comp_ptr->isComponentQ())
         {
             mComponentQptrs.push_back(comp_ptr);
