@@ -469,6 +469,7 @@ bool ProjectTabWidget::closeAllProjectTabs()
 
 
 #include "Port.h" //SKA BORT!!!
+//! Simulates the model in current open tab.
 void ProjectTabWidget::simulateCurrent()
 {std::cout << "KSAJDLAKJSD" << std::endl;
     ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
