@@ -26,6 +26,7 @@ GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint
 {
     setPos(position);
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
+    this->setAcceptHoverEvents(true);
 
     //widget = new QWidget;
 
@@ -120,11 +121,29 @@ void GUIComponent::deleteComponent()
     }
 }
 
+void GUIComponent::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    if(!this->isSelected())
+    {
+        this->mpSelectionBox->setPen(QPen(QColor("darkRed"),2));
+        this->mpSelectionBox->setVisible(true);
+    }
+}
+
+void GUIComponent::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+    if(!this->isSelected())
+    {
+        this->mpSelectionBox->setVisible(false);
+    }
+}
+
 QVariant GUIComponent::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == QGraphicsItem::ItemSelectedChange)
     {
         qDebug() << "Component selected status = " << this->isSelected();
+        this->mpSelectionBox->setPen(QPen(QColor("red"),2));
         this->mpSelectionBox->setVisible(!this->isSelected());
     }
     else if (change == QGraphicsItem::ItemPositionChange)
