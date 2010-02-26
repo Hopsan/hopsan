@@ -289,7 +289,7 @@ GraphicsScene::GraphicsScene(QObject *parent)
 ProjectTab::ProjectTab(QWidget *parent)
     : QWidget(parent)
 {
-    mpModel = new ComponentSystem("APA",0.001);
+    mpModel = new ComponentSystem("APA", 0.001); //HARD CODED name and timestep
     //mpModel = pTabContainer->pHopsan->CreateComponentSystem(); ///TODO: Segfaultar!!!
 
     isSaved = false;
@@ -467,3 +467,14 @@ bool ProjectTabWidget::closeAllProjectTabs()
     return true;
 }
 
+
+#include "Port.h" //SKA BORT!!!
+void ProjectTabWidget::simulateCurrent()
+{std::cout << "KSAJDLAKJSD" << std::endl;
+    ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
+
+    pCurrentTab->mpModel->initialize(0.0, 5.0); //HARD CODED
+    pCurrentTab->mpModel->simulate(0.0, 5.0); //HARD CODED
+    pCurrentTab->mpModel->getSubComponent("DefaultLaminarOrificeName")->getPort("P1").saveLogData("output.txt");
+
+}

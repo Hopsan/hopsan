@@ -117,6 +117,7 @@ public slots:
     void saveProjectTab(int index);
     bool closeProjectTab(int index);
     bool closeAllProjectTabs();
+    void simulateCurrent();
 
 };
 

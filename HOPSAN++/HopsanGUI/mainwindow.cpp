@@ -173,6 +173,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->connect(this->actionPlot,SIGNAL(triggered()),SLOT(plot()));
 
+    this->connect(this->actionSimulate,SIGNAL(triggered()),projectTabs,SLOT(simulateCurrent()));
+
 }
 
 MainWindow::~MainWindow()
