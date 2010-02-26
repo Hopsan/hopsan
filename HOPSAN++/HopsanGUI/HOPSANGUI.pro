@@ -13,7 +13,8 @@ SOURCES += main.cpp \
     GUIPort.cpp \
     GUIComponent.cpp \
     GUIConnectorLine.cpp \
-    plotwidget.cpp
+    plotwidget.cpp \
+    GUIComponentSelectionBox.cpp
 HEADERS += mainwindow.h \
     listwidgetitem.h \
     ProjectTabWidget.h \
@@ -23,23 +24,23 @@ HEADERS += mainwindow.h \
     GUIPort.h \
     GUIComponent.h \
     GUIConnectorLine.h \
-    plotwidget.h
-OTHER_FILES +=
+    plotwidget.h \
+    GUIComponentSelectionBox.h
+OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE
 DESTDIR = ../bin/debug
 LIBS += -L../bin/debug \
     -lHopsanCore
 INCLUDEPATH += ../HopsanCore
-
-unix {
+unix { 
     LIBS += -Wl,-rpath,./
     LIBS += -lqwt-qt4
     INCLUDEPATH += /usr/include/qwt-qt4/
 }
 
-#Ingopath:
-win32 {
+# Ingopath:
+win32 { 
     INCLUDEPATH += c:/temp_qwt/src
     LIBS += c:/temp_qwt/lib/qwtd5.dll
 }

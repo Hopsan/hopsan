@@ -11,11 +11,13 @@
 //#include "GUIConnector.h"
 #include <vector>
 //#include <QGraphicsItem>
+#include "GUIComponentSelectionBox.h"
 
 
 class GUIConnector;
 class QGraphicsSvgItem;
 class GUIComponentTextItem;
+class GUIComponentSelectionBox;
 
 class GUIComponent : public QGraphicsWidget
 {
@@ -25,7 +27,6 @@ public:
     ~GUIComponent();
     QGraphicsView *getParentView();
     void addConnector(GUIConnector *item);
-
     void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
 
 
@@ -44,7 +45,8 @@ private:
     QGraphicsSvgItem *icon;
     GUIComponentTextItem *text;
     QGraphicsView *mpParentView;
-    QGraphicsRectItem *mpSelectionBox;
+    GUIComponentSelectionBox *mpSelectionBox;
+    QGraphicsLineItem *mpTempLine;
     //std::vector<GUIConnector*> mConnectors;        //Inteded to store connectors for each component
 
 private slots:

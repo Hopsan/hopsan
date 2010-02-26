@@ -54,8 +54,8 @@ GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint
     connect(text, SIGNAL(textMoved(QGraphicsSceneMouseEvent *)), SLOT(fixTextPosition(QGraphicsSceneMouseEvent *)));
     connect(this->mpParentView,SIGNAL(keyPressDelete()),this,SLOT(deleteComponent()));
 
-    mpSelectionBox = new QGraphicsRectItem(0,0,icon->boundingRect().width(),icon->boundingRect().height(),this);
-    mpSelectionBox->setPen(QPen(QColor("red"),2));
+    mpSelectionBox = new GUIComponentSelectionBox(0,0,icon->boundingRect().width(),icon->boundingRect().height(),
+                                                  QPen(QColor("red"),2), QPen(QColor("darkRed"),2),this);
     mpSelectionBox->setVisible(false);
 }
 
@@ -125,8 +125,8 @@ void GUIComponent::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     if(!this->isSelected())
     {
-        this->mpSelectionBox->setPen(QPen(QColor("darkRed"),2));
-        this->mpSelectionBox->setVisible(true);
+        this->mpSelectionBox->setHovered();
+        //this->mpSelectionBox->setVisible(true);
     }
 }
 
@@ -134,7 +134,7 @@ void GUIComponent::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     if(!this->isSelected())
     {
-        this->mpSelectionBox->setVisible(false);
+        this->mpSelectionBox->setPassive();
     }
 }
 
@@ -143,8 +143,14 @@ QVariant GUIComponent::itemChange(GraphicsItemChange change, const QVariant &val
     if (change == QGraphicsItem::ItemSelectedChange)
     {
         qDebug() << "Component selected status = " << this->isSelected();
-        this->mpSelectionBox->setPen(QPen(QColor("red"),2));
-        this->mpSelectionBox->setVisible(!this->isSelected());
+        if (!this->isSelected())
+        {
+            this->mpSelectionBox->setActive();
+        }
+        else
+        {
+            this->mpSelectionBox->setPassive();
+        }
     }
     else if (change == QGraphicsItem::ItemPositionChange)
     {

@@ -16,7 +16,7 @@
 //#include "GUIConnector.h"
 //#include "GUIPort.h"
 #include <vector>
-//#include "GUIConnectorLine.h"
+#include "GUIConnectorLine.h"
 #include <QGraphicsWidget>
 #include <QGraphicsView>
 

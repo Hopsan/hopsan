@@ -20,6 +20,7 @@
 #include "GUIConnectorLine.h"
 #include <QDebug>
 
+class GUIConnectorLine;
 
 GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen primaryPen, QPen activePen, QPen hoverPen, int lineNumber, QGraphicsItem *parent)
         : QGraphicsLineItem(x1,y1,x2,y2,parent)
