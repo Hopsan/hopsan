@@ -156,9 +156,10 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     {
         if (this->creatingConnector)
         {
-            if (mpTempConnector->getNumberOfLines() < 2)
+            if (mpTempConnector->getNumberOfLines() < 3)
             {
                 this->creatingConnector = false;
+                mpTempConnector->removeLine(this->mapToScene(event->pos()));
             }
             mpTempConnector->removeLine(this->mapToScene(event->pos()));
         }
