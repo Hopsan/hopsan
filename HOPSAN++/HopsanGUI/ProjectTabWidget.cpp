@@ -27,6 +27,7 @@
 GraphicsView::GraphicsView(QWidget *parent)
         : QGraphicsView(parent)
 {
+    this->setDragMode(RubberBandDrag);
     this->setInteractive(true);
     this->setEnabled(true);
     this->setAcceptDrops(true);
@@ -127,7 +128,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 
 void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 {
-    this->setDragMode(QGraphicsView::NoDrag);
+    this->setDragMode(QGraphicsView::RubberBandDrag);
     if (this->creatingConnector)
     {
         mpTempConnector->setStraight(true);
