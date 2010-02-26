@@ -38,6 +38,8 @@ private:
     double* mpValue;
 };
 
+
+
 class ComponentSystem; //Forward declaration
 
 class DLLIMPORTEXPORT Component
@@ -122,6 +124,34 @@ private:
     ComponentSystem* mpSystemParent;
 };
 
+//!This is a helper class for SubComponentStorage containing some component info
+class SubComponentInfo
+{
+public:
+    SubComponentInfo(Component* pComponent);
+    string type;
+    string cqs_type;
+    int idx;
+};
+
+
+class SubComponentStorage
+{
+private:
+        map<string, SubComponentInfo> mSubComponentMap;
+
+
+public:
+    void add(Component* pComponent);
+    Component* get(string name);
+    void erase(string name);
+
+    //vector<Component*> mSubComponentPtrs; //Problems with inheritance and casting?
+    vector<Component*> mComponentSignalptrs;
+    vector<Component*> mComponentQptrs;
+    vector<Component*> mComponentCptrs;
+};
+
 
 class DLLIMPORTEXPORT ComponentSystem :public Component
 {
@@ -173,10 +203,8 @@ private:
     void addSubNode(Node* node_ptr);
 
     //==========Prvate member variables==========
-    //vector<Component*> mSubComponentPtrs; //Problems with inheritance and casting?
-    vector<Component*> mComponentSignalptrs;
-    vector<Component*> mComponentQptrs;
-    vector<Component*> mComponentCptrs;
+    SubComponentStorage mSubComponentStorage;
+
     vector<Node*> mSubNodePtrs;
     map<string, string> mComponentNamesAndTypes;
 

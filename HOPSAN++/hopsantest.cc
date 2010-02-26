@@ -1859,6 +1859,49 @@ void testLoad()
     cout << "testLoad() Done!" << endl;
 }
 
+void testUniqueNames()
+{
+    HopsanEssentials* pHopsan = HopsanEssentials::getInstance();
+    ComponentSystem* pMainSystem = pHopsan->CreateComponentSystem();
+    ComponentSystem* pSubSystem = pHopsan->CreateComponentSystem();
+    ComponentSystem* pSubSystem2 = pHopsan->CreateComponentSystem();
+    Component* ps = pHopsan->CreateComponent("HydraulicPressureSource");
+    Component* ps2 = pHopsan->CreateComponent("HydraulicPressureSource");
+    Component* ps3 = pHopsan->CreateComponent("HydraulicPressureSource");
+
+    ps->setName("apa");
+    ps2->setName("apa");
+    ps3->setName("apa_1");
+    pMainSystem->addComponent(ps);
+    pMainSystem->addComponent(ps2);
+    pMainSystem->addComponent(ps3);
+    cout << "names: " << ps->getName() << " " << ps2->getName() << " " << ps3->getName() << endl;
+
+    pSubSystem->addComponent(ps3);
+    pSubSystem->addComponent(ps2);
+    pSubSystem->addComponent(ps);
+    cout << "names: " << ps->getName() << " " << ps2->getName() << " " << ps3->getName() << endl;
+
+    ps->setName("apa_5");
+    ps2->setName("apa_5");
+    ps3->setName("apa_1");
+    pSubSystem2->addComponent(ps3);
+    pSubSystem2->addComponent(ps2);
+    pSubSystem2->addComponent(ps);
+    cout << "names: " << ps->getName() << " " << ps2->getName() << " " << ps3->getName() << endl;
+
+    ps->setName("apa_ko");
+    ps2->setName("apa_ko");
+    ps3->setName("apa_ko_1");
+    pSubSystem2->addComponent(ps3);
+    pSubSystem2->addComponent(ps2);
+    pSubSystem2->addComponent(ps);
+    cout << "names: " << ps->getName() << " " << ps2->getName() << " " << ps3->getName() << endl;
+
+    cout << "testUniqueNames() Done!" << endl;
+
+}
+
 
 
 
@@ -1920,7 +1963,7 @@ int main()
 
     //testPressureReliefValve();
 
-    testLoad();
+    //testLoad();
 
     //testSignalFilter();
 
@@ -1931,6 +1974,8 @@ int main()
     //testSubSystem();
 
     //testSubSystem2();
+
+    testUniqueNames();
 
     return 0;
 }
