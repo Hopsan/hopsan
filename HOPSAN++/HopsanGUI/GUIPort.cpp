@@ -1,5 +1,6 @@
 //$Id$
 
+#include "HopsanCore.h"
 #include "GUIPort.h"
 #include <QObject>
 #include <QGraphicsObject>
@@ -16,9 +17,11 @@
 #include <iostream>
 #include <QDebug>
 
-GUIPort::GUIPort(qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, GUIComponent *component, QGraphicsItem *parent)
+GUIPort::GUIPort(Port *kernelPort, qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, GUIComponent *component, QGraphicsItem *parent)
         : QGraphicsRectItem(x, y, width, height,parent)
 {
+    mpKernelPort = kernelPort;
+
     mParentView = parentView;
     mComponent = component;
     rectPos.setX(x);

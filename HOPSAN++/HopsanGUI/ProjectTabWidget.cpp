@@ -24,10 +24,14 @@
 
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
-GraphicsView::GraphicsView(QWidget *parent)
+GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, QWidget *parent)
         : QGraphicsView(parent)
 {
+    this->pHopsan = hopsan;
+    this->mpModel = model;
+
     this->setDragMode(RubberBandDrag);
+
     this->setInteractive(true);
     this->setEnabled(true);
     this->setAcceptDrops(true);
@@ -84,7 +88,11 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
         std::cout << "GraphicsView: " << "x=" << position.x() << "  " << "y=" << position.y() << std::endl;
 
-        GUIComponent *guiComponent = new GUIComponent(iconDir,componentName,position,this);
+        GUIComponent *guiComponent = new GUIComponent(pHopsan,iconDir,componentName,position,this);
+
+        //Kernel interface
+        qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->pKernelComponent);
+        //
 
         guiComponent->setPos(this->mapToScene(position));
         std::cout << "GraphicsView: " << guiComponent->parent() << std::endl;
@@ -214,6 +222,11 @@ void GraphicsView::addConnector(GUIPort *port)
         port->getComponent()->addConnector(mpTempConnector);
         mpTempConnector->setEndPort(port);
         //HÄR SKA CONNECTSATSEN LIGGA
+        //Kernel interface
+        Port *pPort1 = mpTempConnector->getStartPort()->mpKernelPort;
+        Port *pPort2 = mpTempConnector->getEndPort()->mpKernelPort;
+        mpModel->connect(*pPort1, *pPort2);
+        //
     }
 }
 
@@ -276,12 +289,15 @@ GraphicsScene::GraphicsScene(QObject *parent)
 ProjectTab::ProjectTab(QWidget *parent)
     : QWidget(parent)
 {
+    mpModel = new ComponentSystem("APA",0.001);
+    //mpModel = pTabContainer->pHopsan->CreateComponentSystem(); ///TODO: Segfaultar!!!
+
     isSaved = false;
 
     pTabContainer = (qobject_cast<ProjectTabWidget *>(parent)); //Ugly!!!
 
     GraphicsScene *scene = new GraphicsScene(this);
-    GraphicsView  *view  = new GraphicsView(this);
+    GraphicsView  *view  = new GraphicsView(pTabContainer->pHopsan, mpModel, this);
 
     view->setScene(scene);
 
@@ -324,7 +340,7 @@ void ProjectTab::hasChanged()
 ProjectTabWidget::ProjectTabWidget(QWidget *parent)
         :   QTabWidget(parent)
 {
-    HopsanEssentials* pHopsan = HopsanEssentials::getInstance();
+    pHopsan = HopsanEssentials::getInstance();
 
     setTabsClosable(true);
     numberOfUntitledTabs = 0;

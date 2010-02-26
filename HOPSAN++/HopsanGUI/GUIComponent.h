@@ -17,18 +17,22 @@
 class GUIConnector;
 class QGraphicsSvgItem;
 class GUIComponentTextItem;
+class HopsanEssentials;
+class Component;
 class GUIComponentSelectionBox;
 
 class GUIComponent : public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    GUIComponent(const QString &fileName, QString componentName, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent = 0);
+    GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QString componentName, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent = 0);
     ~GUIComponent();
     QGraphicsView *getParentView();
     void addConnector(GUIConnector *item);
     void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
 
+    //Kernel interface
+    Component *pKernelComponent;
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);

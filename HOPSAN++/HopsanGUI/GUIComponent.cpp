@@ -1,5 +1,6 @@
 //$Id$
 
+#include "HopsanCore.h"
 #include "GUIComponent.h"
 #include <iostream>
 #include "GUIPort.h"
@@ -21,9 +22,13 @@
 
 #include <math.h>
 
-GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint position, QGraphicsView *parentView, QGraphicsItem *parent)
+GUIComponent::GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QString componentName, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
+    // Kernal interface code
+    pKernelComponent = hopsan->CreateComponent(componentName.toStdString());
+    //
+
     setPos(position);
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
     this->setAcceptHoverEvents(true);
@@ -44,9 +49,11 @@ GUIComponent::GUIComponent(const QString &fileName, QString componentName,QPoint
     text = new GUIComponentTextItem(componentName,this);
     text->setPos(QPointF(icon->boundingRect().width()/2-text->boundingRect().width()/2, icon->boundingRect().height()));
 
-    GUIPort *rectR = new GUIPort(icon->sceneBoundingRect().width()-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),this,icon);
+    //UGLY UGLY HARD CODED PORT CONNECTION TO KERNEL...
+    GUIPort *rectR = new GUIPort(pKernelComponent->getPortPtrVector().at(0), icon->sceneBoundingRect().width()-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),this,icon);
 
-    GUIPort *rectL = new GUIPort(-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),this,icon);
+    GUIPort *rectL = new GUIPort(pKernelComponent->getPortPtrVector().at(1),-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),this,icon);
+
     //icon->setPos(QPointF(-icon->boundingRect().width()/2, -icon->boundingRect().height()/2));
 
    // rectR->boundingRegion();

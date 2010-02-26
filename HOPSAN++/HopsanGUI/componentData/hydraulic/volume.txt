@@ -1,2 +1,2 @@
-NAME Volume
+NAME HydraulicVolume
 ICON Volume.svg

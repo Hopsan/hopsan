@@ -29,12 +29,15 @@ public:
 };
 
 
+class HopsanEssentials; //Forward declaration
+class ComponentSystem;
+
 class GraphicsView : public QGraphicsView
 {
     Q_OBJECT
 
 public:
-    GraphicsView(QWidget *parent = 0);
+    GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, QWidget *parent = 0);
     ~GraphicsView();
     bool creatingConnector;
 
@@ -61,6 +64,8 @@ protected:
 
 private:
     GUIConnector *mpTempConnector;
+    HopsanEssentials *pHopsan;
+    ComponentSystem *mpModel;
 };
 
 
@@ -87,13 +92,13 @@ public:
 
     ProjectTabWidget *pTabContainer;
 
+    ComponentSystem *mpModel;
+
 public slots:
     void hasChanged();
 
 };
 
-
-class HopsanEssentials; //Forward declaration
 
 class ProjectTabWidget : public QTabWidget
 {
@@ -102,7 +107,7 @@ class ProjectTabWidget : public QTabWidget
 public:
     ProjectTabWidget(QWidget *parent = 0);
 
-    HopsanEssentials *Hopsan;
+    HopsanEssentials *pHopsan;
 
     size_t numberOfUntitledTabs;
 

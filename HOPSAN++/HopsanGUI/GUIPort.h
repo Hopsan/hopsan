@@ -12,16 +12,19 @@
 #include "GUIComponent.h"
 
 class GUIComponent;        //Forwarad declaration
+class Port;
 
 class GUIPort : public QObject, public QGraphicsRectItem
 {
     Q_OBJECT
 public:
-    GUIPort(qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, GUIComponent *component, QGraphicsItem *parent = 0);
+    GUIPort(Port *kernelPort, qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, GUIComponent *component, QGraphicsItem *parent = 0);
     ~GUIPort();
     QPointF rectPos;
     QGraphicsView *getParentView();
     GUIComponent *getComponent();
+
+    Port *mpKernelPort;
 
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
