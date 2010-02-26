@@ -195,12 +195,10 @@ void GraphicsView::addConnector(GUIPort *port)
     {
         std::cout << "GraphicsView: " << "Adding connector";
         QPointF oldPos = port->mapToScene(port->boundingRect().center());
-        qreal myLineWidth = 2.0;
-        QColor myLineColor = QColor("black");
-        QColor myLineActiveColor = QColor("red");
-        QColor myLineHoverColor = QColor("darkRed");
-        mpTempConnector = new GUIConnector(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), myLineWidth,
-                                           myLineColor, myLineActiveColor, myLineHoverColor, this);
+        QPen passivePen = QPen(QColor("black"),2);
+        QPen activePen = QPen(QColor("red"), 3);
+        QPen hoverPen = QPen(QColor("darkRed"),2);
+        mpTempConnector = new GUIConnector(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), passivePen, activePen, hoverPen, this);
         this->scene()->addItem(mpTempConnector);
         this->creatingConnector = true;
         port->getComponent()->addConnector(mpTempConnector);

@@ -17,7 +17,7 @@
 #include "GUIConnectorLine.h"
 
 
-GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, QColor color, QColor activecolor, QColor hovercolor, QGraphicsView *parentView, QGraphicsItem *parent)
+GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, QPen passivePen, QPen activePen, QPen hoverPen, QGraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
     setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
@@ -27,25 +27,21 @@ GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, 
     this->endPos.setX(x2);
     this->endPos.setY(y2);
     this->mpParentView = parentView;
-    this->mPrimaryColor = color;
-    this->mActiveColor = activecolor;
-    this->mHoverColor = hovercolor;
-    this->mWidth = width;
+    this->mPassivePen = passivePen;
+    this->mActivePen = activePen;
+    this->mHoverPen = hoverPen;
     this->mIsActive = false;
     this->mEndPortConnected = false;
     mpTempLine = new GUIConnectorLine(this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(),
                                       this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(),
-                                      QPen(this->mPrimaryColor, this->mWidth), QPen(this->mActiveColor, this->mWidth),
-                                      QPen(this->mHoverColor, this->mWidth), 0, this);
+                                      mPassivePen, mActivePen, mHoverPen, 0, this);
     mLines.push_back(mpTempLine);
     connect(mLines[mLines.size()-1],SIGNAL(lineClicked()),this,SLOT(doSelect()));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
-    this->setPen(QPen(mActiveColor, mWidth));
+    this->setActive();
     this->mStraight = true;
     connect(this->mpParentView,SIGNAL(keyPressDelete()),this,SLOT(deleteMeIfIMeIsActive()));
-    //connect(this->mpParentView,SIGNAL(viewClicked()),this,SLOT(setPassive()));
-
 }
 
 GUIConnector::~GUIConnector()
@@ -239,8 +235,7 @@ void GUIConnector::addLine()
 {
     mpTempLine = new GUIConnectorLine(mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
                                       mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
-                                      QPen(this->mPrimaryColor, this->mWidth), QPen(this->mActiveColor, this->mWidth),
-                                      QPen(this->mHoverColor, this->mWidth), mLines.size(), this);
+                                      mPassivePen, mActivePen, mHoverPen, mLines.size(), this);
     mpTempLine->setActive();
     mLines.push_back(mpTempLine);
     mLines[mLines.size()-2]->setPassive();
