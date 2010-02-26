@@ -110,12 +110,6 @@ void GUIComponent::addConnector(GUIConnector *item)
     connect(this,SIGNAL(componentMoved()),item,SLOT(updatePos()));
 }
 
-
-void GUIComponent::moveEvent(QGraphicsSceneMoveEvent *event)
-{
-    emit componentMoved();
-}
-
 void GUIComponent::deleteComponent()
 {
     qDebug() << "Debug123\n";
@@ -132,6 +126,10 @@ QVariant GUIComponent::itemChange(GraphicsItemChange change, const QVariant &val
     {
         qDebug() << "Component selected status = " << this->isSelected();
         this->mpSelectionBox->setVisible(!this->isSelected());
+    }
+    else if (change == QGraphicsItem::ItemPositionChange)
+    {
+        emit componentMoved();
     }
     return value;
 }
