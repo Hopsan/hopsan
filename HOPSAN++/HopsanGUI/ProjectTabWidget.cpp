@@ -203,6 +203,7 @@ void GraphicsView::addConnector(GUIPort *port)
         this->creatingConnector = true;
         port->getComponent()->addConnector(mpTempConnector);
         mpTempConnector->setStartPort(port);
+        mpTempConnector->addLine();
     }
     else
     {
