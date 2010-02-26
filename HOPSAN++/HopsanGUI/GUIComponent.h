@@ -37,6 +37,7 @@ protected:
 
 signals:
     void componentMoved();
+    void componentDeleted();
 
 public slots:
      void deleteComponent();

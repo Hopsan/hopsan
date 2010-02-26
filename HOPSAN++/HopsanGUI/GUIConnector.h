@@ -51,6 +51,7 @@ public slots:
     void setHovered();
     void setUnHovered();
     void deleteMe();
+    void deleteMeIfMeIsActive();
     void updateLine(int);
     void doSelect();
 

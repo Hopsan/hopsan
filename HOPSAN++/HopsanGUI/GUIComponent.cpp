@@ -116,6 +116,7 @@ void GUIComponent::deleteComponent()
     qDebug() << "Debug123\n";
     if(this->isSelected())
     {
+        emit componentDeleted();
         this->scene()->removeItem(this);
         delete(this);
     }

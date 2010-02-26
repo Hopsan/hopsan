@@ -43,7 +43,7 @@ GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, qreal width, 
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
     this->setPen(QPen(mActiveColor, mWidth));
     this->mStraight = true;
-    connect(this->mpParentView,SIGNAL(keyPressDelete()),this,SLOT(deleteMe()));
+    connect(this->mpParentView,SIGNAL(keyPressDelete()),this,SLOT(deleteMeIfIMeIsActive()));
     //connect(this->mpParentView,SIGNAL(viewClicked()),this,SLOT(setPassive()));
 
 }
@@ -62,6 +62,7 @@ void GUIConnector::setStartPort(GUIPort *port)
 {
     this->mpStartPort = port;
     connect(this->mpStartPort->getComponent(),SIGNAL(componentMoved()),this,SLOT(updatePos()));
+    connect(this->mpStartPort->getComponent(),SIGNAL(componentDeleted()),this,SLOT(deleteMe()));
 }
 
 void GUIConnector::setEndPort(GUIPort *port)
@@ -70,10 +71,8 @@ void GUIConnector::setEndPort(GUIPort *port)
     this->mEndPortConnected = true;
     connect(this->mpEndPort->getComponent(),SIGNAL(componentMoved()),this,SLOT(updatePos()));
 
-//    for (std::size_t i=1; i!=mLines.size()-1; ++i )
-//    {
-//        mLines[i]->setFlags(QGraphicsItem::ItemIsMovable);
-//    }
+    qDebug() << this->boundingRect().x() << " " << this->boundingRect().y() << " ";
+    connect(this->mpEndPort->getComponent(),SIGNAL(componentDeleted()),this,SLOT(deleteMe()));
 }
 
 GUIPort *GUIConnector::getStartPort()
@@ -283,8 +282,15 @@ bool GUIConnector::isStraight()
     return mStraight;
 }
 
-
 void GUIConnector::deleteMe()
+{
+    mLines.clear();
+    this->scene()->removeItem(this);
+    delete(this);
+}
+
+
+void GUIConnector::deleteMeIfMeIsActive()
 {
     if(this->mIsActive && mLines.size() > 0)
     {
