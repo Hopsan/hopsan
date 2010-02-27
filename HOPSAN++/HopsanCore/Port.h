@@ -29,6 +29,10 @@ public:
     virtual double readNode(const size_t idx);
     virtual void writeNode(const size_t idx, const double value);
     void saveLogData(string filename);
+
+    vector<double> *getTimeVectorPtr();
+    vector<vector<double> > *getDataVectorPtr();
+
     bool isConnected();
     //bool isSystemPort();
 

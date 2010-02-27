@@ -29,7 +29,6 @@ public:
     ~GUIComponent();
     QGraphicsView *getParentView();
     void addConnector(GUIConnector *item);
-    void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
 
     //Core interaction
     Component *pKernelComponent;
@@ -39,6 +38,7 @@ protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
 
 signals:
     void componentMoved();

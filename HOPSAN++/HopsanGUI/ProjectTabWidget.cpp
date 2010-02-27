@@ -76,7 +76,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
         QStringList parameterData;
         stream >> parameterData;
 
-        QString componentName = parameterData.at(0);
+        QString componentTypeName = parameterData.at(0);
         QString iconDir = parameterData.at(1);
 
         event->accept();
@@ -88,7 +88,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
         std::cout << "GraphicsView: " << "x=" << position.x() << "  " << "y=" << position.y() << std::endl;
 
-        GUIComponent *guiComponent = new GUIComponent(pHopsan,iconDir,componentName,position,this);
+        GUIComponent *guiComponent = new GUIComponent(pHopsan,iconDir,componentTypeName,position,this);
 
         //Core interaction
         qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->pKernelComponent);
@@ -172,14 +172,8 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
             }
             mpTempConnector->removeLine(this->mapToScene(event->pos()));
         }
-        return;
     }
-
-    if (event->button() != Qt::LeftButton)
-    {
-        return;
-    }
-    if (this->creatingConnector)
+    else if  ((event->button() == Qt::LeftButton) && (this->creatingConnector))
     {
         mpTempConnector->addLine();
     }
@@ -293,6 +287,9 @@ ProjectTab::ProjectTab(QWidget *parent)
 
     //Core interaction
     mpModel = pTabContainer->pHopsan->CreateComponentSystem();
+    mpModel->setName("APA");
+    mpModel->setDesiredTimestep(.001);
+    mpModel->setTypeCQS("S");
     //
 
     isSaved = false;

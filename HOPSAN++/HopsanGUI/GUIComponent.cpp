@@ -22,11 +22,11 @@
 
 #include <math.h>
 
-GUIComponent::GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QString componentName, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent)
+GUIComponent::GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QString componentTypeName, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
     //Core interaction
-    pKernelComponent = hopsan->CreateComponent(componentName.toStdString());
+    pKernelComponent = hopsan->CreateComponent(componentTypeName.toStdString());
     //
 
     setPos(position);
@@ -41,11 +41,12 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QS
     icon = new QGraphicsSvgItem(fileName,this);
 //    icon->setPos(QPointF(-icon->boundingRect().width()/2, -icon->boundingRect().height()/2));
     std::cout << "GUIcomponent: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
-    std::cout << "GUIcomponent: " << componentName.toStdString() << std::endl;
+    std::cout << "GUIcomponent: " << componentTypeName.toStdString() << std::endl;
 
     //setWindowFlags(Qt::SplashScreen);//just to see the geometry
     setGeometry(0,0,icon->boundingRect().width(),icon->boundingRect().height());
 
+    QString componentName = QString(QString::fromStdString(pKernelComponent->getName()));
     text = new GUIComponentTextItem(componentName,this);
     text->setPos(QPointF(icon->boundingRect().width()/2-text->boundingRect().width()/2, icon->boundingRect().height()));
 
@@ -102,6 +103,7 @@ void GUIComponent::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
     QGraphicsItem::mouseReleaseEvent(event);
 }
 
+
 GUIComponent::~GUIComponent()
 {
     //delete widget;
@@ -145,6 +147,7 @@ void GUIComponent::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
         this->mpSelectionBox->setPassive();
     }
 }
+
 
 QVariant GUIComponent::itemChange(GraphicsItemChange change, const QVariant &value)
 {

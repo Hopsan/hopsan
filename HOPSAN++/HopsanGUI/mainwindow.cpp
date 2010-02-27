@@ -260,8 +260,8 @@ void MainWindow::addLibs()
     //std::cout << qPrintable(libDir) << std::endl;
 }
 
-void MainWindow::plot()
 
+void MainWindow::plot()
 {
     QDockWidget *varPlotDock = new QDockWidget(tr("Plot Variables"), this);
     varPlotDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);

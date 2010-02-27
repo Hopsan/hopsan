@@ -92,6 +92,19 @@ void Port::saveLogData(string filename)
     }
 }
 
+
+vector<double> *Port::getTimeVectorPtr()
+{
+    return &(getNode().mTimeStorage);
+}
+
+
+vector<vector<double> > *Port::getDataVectorPtr()
+{
+    return &(getNode().mDataStorage);
+}
+
+
 bool Port::isConnected()
 {
     return mIsConnected;
