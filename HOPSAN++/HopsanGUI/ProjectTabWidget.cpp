@@ -90,7 +90,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
         GUIComponent *guiComponent = new GUIComponent(pHopsan,iconDir,componentName,position,this);
 
-        //Kernel interface
+        //Core interaction
         qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->pKernelComponent);
         //
 
@@ -221,8 +221,8 @@ void GraphicsView::addConnector(GUIPort *port)
         mpTempConnector->drawLine(mpTempConnector->startPos, newPos);
         port->getComponent()->addConnector(mpTempConnector);
         mpTempConnector->setEndPort(port);
-        //HÄR SKA CONNECTSATSEN LIGGA
-        //Kernel interface
+
+        //Core interaction
         Port *pPort1 = mpTempConnector->getStartPort()->mpKernelPort;
         Port *pPort2 = mpTempConnector->getEndPort()->mpKernelPort;
         mpModel->connect(*pPort1, *pPort2);
@@ -289,12 +289,13 @@ GraphicsScene::GraphicsScene(QObject *parent)
 ProjectTab::ProjectTab(QWidget *parent)
     : QWidget(parent)
 {
-    mpModel = new ComponentSystem("APA", 0.001); //HARD CODED name and timestep
-    //mpModel = pTabContainer->pHopsan->CreateComponentSystem(); ///TODO: Segfaultar!!!
+    pTabContainer = (qobject_cast<ProjectTabWidget *>(parent)); //Ugly!!!
+
+    //Core interaction
+    mpModel = pTabContainer->pHopsan->CreateComponentSystem();
+    //
 
     isSaved = false;
-
-    pTabContainer = (qobject_cast<ProjectTabWidget *>(parent)); //Ugly!!!
 
     GraphicsScene *scene = new GraphicsScene(this);
     GraphicsView  *view  = new GraphicsView(pTabContainer->pHopsan, mpModel, this);

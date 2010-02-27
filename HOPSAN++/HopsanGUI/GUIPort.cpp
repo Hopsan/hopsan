@@ -20,7 +20,9 @@
 GUIPort::GUIPort(Port *kernelPort, qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, GUIComponent *component, QGraphicsItem *parent)
         : QGraphicsRectItem(x, y, width, height,parent)
 {
+    //Core interaction
     mpKernelPort = kernelPort;
+    //
 
     mParentView = parentView;
     mComponent = component;

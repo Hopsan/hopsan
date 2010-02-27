@@ -31,8 +31,9 @@ public:
     void addConnector(GUIConnector *item);
     void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
 
-    //Kernel interface
+    //Core interaction
     Component *pKernelComponent;
+    //
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);

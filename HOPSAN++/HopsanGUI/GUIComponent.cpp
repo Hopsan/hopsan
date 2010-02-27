@@ -25,7 +25,7 @@
 GUIComponent::GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QString componentName, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
-    // Kernal interface code
+    //Core interaction
     pKernelComponent = hopsan->CreateComponent(componentName.toStdString());
     //
 
