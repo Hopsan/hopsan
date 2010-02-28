@@ -7,9 +7,9 @@
 //!
 //$Id$
 
+#include "HopsanCore.h"
 #include "ProjectTabWidget.h"
 #include "GUIComponent.h"
-#include "HopsanCore.h"
 #include "GUIPort.h"
 #include "GUIConnector.h"
 
@@ -466,7 +466,6 @@ bool ProjectTabWidget::closeAllProjectTabs()
 }
 
 
-#include "Port.h" //SKA BORT!!!
 //! Simulates the model in current open tab.
 void ProjectTabWidget::simulateCurrent()
 {

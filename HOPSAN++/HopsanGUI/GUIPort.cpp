@@ -86,7 +86,6 @@ void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
-#include "Port.h"
 void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
@@ -109,7 +108,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 }
 
 
-void GUIPort::plot() //VANSINNE!
+void GUIPort::plot() //En del vansinne i denna metoden...
 {
     std::cout << "GUIPort.cpp: " << "Plot()" << std::endl;
 
