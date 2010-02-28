@@ -18,13 +18,13 @@ class GUIPort : public QObject, public QGraphicsRectItem
 {
     Q_OBJECT
 public:
-    GUIPort(Port *kernelPort, qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, GUIComponent *component, QGraphicsItem *parent = 0);
+    GUIPort(Port *corePort, qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, GUIComponent *component, QGraphicsItem *parent = 0);
     ~GUIPort();
     QPointF rectPos;
     QGraphicsView *getParentView();
     GUIComponent *getComponent();
 
-    Port *mpKernelPort;
+    Port *mpCorePort;
 
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
@@ -45,8 +45,8 @@ private:
     QGraphicsItem *pRectParent;
     QGraphicsLineItem *lineH;
     QGraphicsLineItem *lineV;
-    QGraphicsView *mParentView;
-    GUIComponent *mComponent;
+    QGraphicsView *mpParentView;
+    GUIComponent *mpComponent;
 };
 
 #endif // GUIPORT_H

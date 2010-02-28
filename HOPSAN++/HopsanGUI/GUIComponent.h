@@ -20,6 +20,7 @@ class GUIComponentTextItem;
 class HopsanEssentials;
 class Component;
 class GUIComponentSelectionBox;
+class GUIPort;
 
 class GUIComponent : public QGraphicsWidget
 {
@@ -31,7 +32,7 @@ public:
     void addConnector(GUIConnector *item);
 
     //Core interaction
-    Component *pKernelComponent;
+    Component *mpCoreComponent;
     //
 
 protected:
@@ -54,6 +55,8 @@ private:
     GUIComponentSelectionBox *mpSelectionBox;
     QGraphicsLineItem *mpTempLine;
     //std::vector<GUIConnector*> mConnectors;        //Inteded to store connectors for each component
+
+    QList<GUIPort*> mPortListPtrs;
 
 private slots:
     void fixTextPosition(QGraphicsSceneMouseEvent * event);

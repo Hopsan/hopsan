@@ -64,7 +64,7 @@ protected:
 
 private:
     GUIConnector *mpTempConnector;
-    HopsanEssentials *pHopsan;
+    HopsanEssentials *mpHopsan;
     ComponentSystem *mpModel;
 };
 
@@ -90,7 +90,7 @@ public:
 
     bool isSaved;
 
-    ProjectTabWidget *pTabContainer;
+    ProjectTabWidget *mpTabContainer;
 
     ComponentSystem *mpModel;
 
@@ -107,9 +107,9 @@ class ProjectTabWidget : public QTabWidget
 public:
     ProjectTabWidget(QWidget *parent = 0);
 
-    HopsanEssentials *pHopsan;
+    HopsanEssentials *mpHopsan;
 
-    size_t numberOfUntitledTabs;
+    size_t mNumberOfUntitledTabs;
 
 public slots:
     void addProjectTab();

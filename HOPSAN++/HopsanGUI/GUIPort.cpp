@@ -20,15 +20,15 @@
 
 #include <QtGui>
 
-GUIPort::GUIPort(Port *kernelPort, qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, GUIComponent *component, QGraphicsItem *parent)
+GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, GUIComponent *component, QGraphicsItem *parent)
         : QGraphicsRectItem(x, y, width, height,parent)
 {
     //Core interaction
-    mpKernelPort = kernelPort;
+    mpCorePort = corePort;
     //
 
-    mParentView = parentView;
-    mComponent = component;
+    mpParentView = parentView;
+    mpComponent = component;
     rectPos.setX(x);
     rectPos.setY(y);
     pRectParent = parent;
@@ -62,12 +62,12 @@ void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 
 QGraphicsView *GUIPort::getParentView()
 {
-    return mParentView;
+    return mpParentView;
 }
 
 GUIComponent *GUIPort::getComponent()
 {
-    return mComponent;
+    return mpComponent;
 }
 
 
@@ -90,7 +90,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
 
-    if ((!(this->mpKernelPort->isConnected())) || (this->mpKernelPort->getTimeVectorPtr()->empty()))
+    if ((!(this->mpCorePort->isConnected())) || (this->mpCorePort->getTimeVectorPtr()->empty()))
     {
         event->ignore();
     }
@@ -112,15 +112,15 @@ void GUIPort::plot() //En del vansinne i denna metoden...
 {
     std::cout << "GUIPort.cpp: " << "Plot()" << std::endl;
 
-    size_t dataLength = this->mpKernelPort->getTimeVectorPtr()->size();
+    size_t dataLength = this->mpCorePort->getTimeVectorPtr()->size();
 
-    QVector<double> time = QVector<double>::fromStdVector(*(this->mpKernelPort->getTimeVectorPtr())); //Inte lampligt att skyffla data pa detta viset
-    QVector<double> y(dataLength);// = QVector<double>::fromStdVector((this->mpKernelPort->getDataVectorPtr()->at(1)));
+    QVector<double> time = QVector<double>::fromStdVector(*(this->mpCorePort->getTimeVectorPtr())); //Inte lampligt att skyffla data pa detta viset
+    QVector<double> y(dataLength);// = QVector<double>::fromStdVector((this->mpCorePort->getDataVectorPtr()->at(1)));
     
     for (int i = 0; i<dataLength; ++i) //Denna loop ar inte klokt
     {
-        //timeq[i] = this->mpKernelPort->getTimeVectorPtr()->at(i);
-        y[i] = (this->mpKernelPort->getDataVectorPtr()->at(i)).at(1);
+        //timeq[i] = this->mpCorePort->getTimeVectorPtr()->at(i);
+        y[i] = (this->mpCorePort->getDataVectorPtr()->at(i)).at(1);
     }
 
     PlotWidget *newPlot = new PlotWidget(time,y);

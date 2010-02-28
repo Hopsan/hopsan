@@ -26,7 +26,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QS
         : QGraphicsWidget(parent)
 {
     //Core interaction
-    pKernelComponent = hopsan->CreateComponent(componentTypeName.toStdString());
+    mpCoreComponent = hopsan->CreateComponent(componentTypeName.toStdString());
     //
 
     setPos(position);
@@ -46,14 +46,13 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QS
     //setWindowFlags(Qt::SplashScreen);//just to see the geometry
     setGeometry(0,0,icon->boundingRect().width(),icon->boundingRect().height());
 
-    QString componentName = QString(QString::fromStdString(pKernelComponent->getName()));
+    QString componentName = QString(QString::fromStdString(mpCoreComponent->getName()));
     text = new GUIComponentTextItem(componentName,this);
     text->setPos(QPointF(icon->boundingRect().width()/2-text->boundingRect().width()/2, icon->boundingRect().height()));
 
-    //UGLY UGLY HARD CODED PORT CONNECTION TO KERNEL...
-    GUIPort *rectR = new GUIPort(pKernelComponent->getPortPtrVector().at(0), icon->sceneBoundingRect().width()-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),this,icon);
-
-    GUIPort *rectL = new GUIPort(pKernelComponent->getPortPtrVector().at(1),-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),this,icon);
+    //UGLY UGLY HARD CODED PORT CONNECTION TO CORE...
+    mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(0), icon->sceneBoundingRect().width()-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),this,icon));
+    mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(1),-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),this,icon));
 
     //icon->setPos(QPointF(-icon->boundingRect().width()/2, -icon->boundingRect().height()/2));
 
@@ -138,6 +137,11 @@ void GUIComponent::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
         this->mpSelectionBox->setHovered();
         //this->mpSelectionBox->setVisible(true);
     }
+    QList<GUIPort*>::iterator i;
+    for (i = mPortListPtrs.begin(); i != mPortListPtrs.end(); ++i)
+    {
+        (*i)->show();
+    }
 }
 
 void GUIComponent::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
@@ -145,6 +149,11 @@ void GUIComponent::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     if(!this->isSelected())
     {
         this->mpSelectionBox->setPassive();
+    }
+    QList<GUIPort*>::iterator i;
+    for (i = mPortListPtrs.begin(); i != mPortListPtrs.end(); ++i)
+    {
+        (*i)->hide();
     }
 }
 

@@ -43,11 +43,11 @@ class LibraryWidget : public QWidget
 public:
     LibraryWidget(QWidget *parent = 0);
 
-    QTreeWidget *tree;
+    QTreeWidget *mpTree;
 
-    QMap<QString,QListWidget *> libraryMap;
+    QMap<QString,QListWidget *> mLibraryMapPtrs;
 
-    QVBoxLayout *grid;
+    QVBoxLayout *mpGrid;
 
 //    void addLibrary(QString libraryName);
     void addLibrary(QString libraryName, QString parentLibraryName=QString());

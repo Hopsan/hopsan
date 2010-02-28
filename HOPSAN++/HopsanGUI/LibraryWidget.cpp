@@ -78,17 +78,17 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
 LibraryWidget::LibraryWidget(QWidget *parent)
         :   QWidget(parent)
 {
-    tree = new QTreeWidget(this);
-    tree->setHeaderHidden(true);
-    tree->setColumnCount(1);
+    mpTree = new QTreeWidget(this);
+    mpTree->setHeaderHidden(true);
+    mpTree->setColumnCount(1);
 
-    grid = new QVBoxLayout(this);
+    mpGrid = new QVBoxLayout(this);
 
-    grid->addWidget(tree);
+    mpGrid->addWidget(mpTree);
 
-    setLayout(grid);
+    setLayout(mpGrid);
 
-    connect(tree, SIGNAL(itemClicked (QTreeWidgetItem*, int)), SLOT(showLib(QTreeWidgetItem*, int)));
+    connect(mpTree, SIGNAL(itemClicked (QTreeWidgetItem*, int)), SLOT(showLib(QTreeWidgetItem*, int)));
 
 }
 
@@ -118,24 +118,24 @@ void LibraryWidget::addLibrary(QString libraryName, QString parentLibraryName)
     LibraryContent *newLibContent = new LibraryContent((LibraryContent*)0);
     newLibContent->setDragEnabled(true);
     //newLibContent->setDropIndicatorShown(true);
-    libraryMap.insert(libraryName, newLibContent);
+    mLibraryMapPtrs.insert(libraryName, newLibContent);
 
-    grid->addWidget(newLibContent);
+    mpGrid->addWidget(newLibContent);
     newLibContent->hide();
 
     if (parentLibraryName.isEmpty())
     {
-        tree->insertTopLevelItem(0, newTreePost);
+        mpTree->insertTopLevelItem(0, newTreePost);
     }
     else
     {
-    QTreeWidgetItemIterator it(tree);
+    QTreeWidgetItemIterator it(mpTree);
     while (*it)
     {
         if ((*it)->text(0) == parentLibraryName)
         {
             (*it)->addChild(newTreePost);
-            tree->expandItem(*it);
+            mpTree->expandItem(*it);
         }
 
         ++it;
@@ -155,9 +155,9 @@ void LibraryWidget::addComponent(QString libraryName, QString componentName, QIc
 
 void LibraryWidget::addComponent(QString libraryName, ListWidgetItem *newComponent)
 {
-    libraryMap.value(libraryName)->addItem(newComponent);
+    mLibraryMapPtrs.value(libraryName)->addItem(newComponent);
 
-    QTreeWidgetItemIterator it(tree);
+    QTreeWidgetItemIterator it(mpTree);
     while (*it)
     {
         if (((*it)->text(0) == libraryName) && ((*it)->parent()))
@@ -179,9 +179,9 @@ void LibraryWidget::showLib(QTreeWidgetItem * item, int column)
     hideAllLib();
 
    QMap<QString, QListWidget *>::iterator lib;
-   for (lib = libraryMap.begin(); lib != libraryMap.end(); ++lib)
+   for (lib = mLibraryMapPtrs.begin(); lib != mLibraryMapPtrs.end(); ++lib)
     {
-        if (item->text(column) == libraryMap.key((*lib)))
+        if (item->text(column) == mLibraryMapPtrs.key((*lib)))
         {
             (*lib)->show();
         }
@@ -194,7 +194,7 @@ void LibraryWidget::showLib(QTreeWidgetItem * item, int column)
 void LibraryWidget::hideAllLib()
 {
     QMap<QString, QListWidget *>::iterator lib;
-    for (lib = libraryMap.begin(); lib != libraryMap.end(); ++lib)
+    for (lib = mLibraryMapPtrs.begin(); lib != mLibraryMapPtrs.end(); ++lib)
     {
         (*lib)->hide();
     }
