@@ -13,6 +13,7 @@
 #include <QGraphicsLineItem>
 #include <QGraphicsScene>
 #include "GUIPort.h"
+#include "assert.h"
 #include <vector>
 #include "GUIConnectorLine.h"
 
@@ -149,78 +150,48 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
     startPos = this->mapFromScene(startPos);
     endPos = this->mapFromScene(endPos);
 
-    mLines[0]->setLine(startPos.x(),
-                       startPos.y(),
-                       mLines[0]->line().p2().x(),
-                       mLines[0]->line().p2().y());
-    if (mStraight) //If straight lines are activated
+
+    //First two lines out of the component:
+    if (getNumberOfLines()<3)
     {
-        if (mLines.size()==1) //Special case for the first line
-        {
-            //if (abs(mLines[mLines.size()-1]->line().p1().x()-endPos.x()) > abs(mLines[mLines.size()-1]->line().p1().y()-endPos.y()))
-            //{
-                mLines[mLines.size()-1]->setLine(mLines[mLines.size()-1]->line().p1().x(),
-                                                 mLines[mLines.size()-1]->line().p1().y(),
-                                                 endPos.x(),
-                                                 mLines[mLines.size()-1]->line().p1().y());
-        }
-        else //After the first line
-        {
-            //If the previous line is horizontal:
-            if (mLines[mLines.size()-2]->line().p1().y() == (mLines[mLines.size()-2]->line().p2().y()))
-            {
-                //qDebug() << "Previous Line Horizontal";
-                mLines[mLines.size()-2]->setLine(mLines[mLines.size()-2]->line().p1().x(),
-                                                 mLines[mLines.size()-2]->line().p1().y(),
-                                                 endPos.x(),
-                                                 mLines[mLines.size()-2]->line().p2().y());
-            }
-
-            //If the previous line is vertical:
-            else if (mLines[mLines.size()-2]->line().p1().x() == (mLines[mLines.size()-2]->line().p2().x()))
-            {
-                mLines[mLines.size()-2]->setLine(mLines[mLines.size()-2]->line().p1().x(),
-                                                 mLines[mLines.size()-2]->line().p1().y(),
-                                                 mLines[mLines.size()-2]->line().p2().x(),
-                                                 endPos.y());
-            }
-            //If the previous line was not "straight":
-            else
-            {
-                if (abs(endPos.x()-mLines[mLines.size()-1]->line().p1().x())>abs(endPos.y()-mLines[mLines.size()-1]->line().p1().y()))
-                {
-                    mLines[mLines.size()-1]->setLine(mLines[mLines.size()-1]->line().p1().x(),
-                                                     mLines[mLines.size()-1]->line().p1().y(),
-                                                     endPos.x(),
-                                                     mLines[mLines.size()-1]->line().p2().y());
-
-                }
-                else
-                {
-                    mLines[mLines.size()-1]->setLine(mLines[mLines.size()-1]->line().p1().x(),
-                                                     mLines[mLines.size()-1]->line().p1().y(),
-                                                     mLines[mLines.size()-1]->line().p2().x(),
-                                                     endPos.y());
-                }
-            }
-
-            //Current line
-            mLines[mLines.size()-1]->setLine(mLines[mLines.size()-2]->line().p2().x(),
-                                             mLines[mLines.size()-2]->line().p2().y(),
-                                             endPos.x(),
-                                             endPos.y());
-        }
+        getLastLine()->setLine(startPos.x(),
+                               startPos.y(),
+                               endPos.x(),
+                               startPos.y());
+        getLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
+        getThisLine()->setGeometry(GUIConnectorLine::VERTICAL);
     }
-
-    else //If straight lines are inactivated
+    //If last line was vertical:
+    else if (getLastLine()->getGeometry()== GUIConnectorLine::VERTICAL and getThisLine()->getGeometry()!=GUIConnectorLine::DIAGONAL)
     {
-        mLines[mLines.size()-1]->setLine(mLines[mLines.size()-1]->line().p1().x(),
-                                         mLines[mLines.size()-1]->line().p1().y(),
-                                         endPos.x(),
-                                         endPos.y());
+        getLastLine()->setLine(getOldLine()->line().x2(),
+                               getOldLine()->line().y2(),
+                               getOldLine()->line().x2(),
+                               endPos.y());
+        getThisLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
     }
-
-
+    //If last line was horizontal:
+    else if (getLastLine()->getGeometry()==GUIConnectorLine::HORIZONTAL and getThisLine()->getGeometry()!=GUIConnectorLine::DIAGONAL)
+    {
+        getLastLine()->setLine(getOldLine()->line().x2(),
+                               getOldLine()->line().y2(),
+                               endPos.x(),
+                               getOldLine()->line().y2());
+        getThisLine()->setGeometry(GUIConnectorLine::VERTICAL);
+    }
+    //If the line is diagonal:
+//    if (getThisLine()->getGeometry()==GUIConnectorLine::DIAGONAL)
+//    {
+//        getThisLine()->setLine(getLastLine()->line().x2(),
+//                               getLastLine()->line().y2(),
+//                               endPos.x(),
+//                               endPos.y());
+//    }
+    //This Line:
+    getThisLine()->setLine(getLastLine()->line().x2(),
+                           getLastLine()->line().y2(),
+                           endPos.x(),
+                           endPos.y());
 }
 
 void GUIConnector::setPen(QPen pen)
@@ -243,11 +214,13 @@ void GUIConnector::addLine()
     connect(mLines[mLines.size()-1],SIGNAL(lineMoved(int)),this, SLOT(updateLine(int)));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
+
+
 }
 
 void GUIConnector::removeLine(QPointF cursorPos)
 {
-    if (mLines.size() > 1)
+    if (getNumberOfLines() > 2)
     {
         this->scene()->removeItem(mLines.back());
         mLines.pop_back();
@@ -255,6 +228,7 @@ void GUIConnector::removeLine(QPointF cursorPos)
     }
     else
     {
+
         this->scene()->removeItem(this);
         delete(this);
     }
@@ -308,6 +282,23 @@ void GUIConnector::updateLine(int lineNumber)
 }
 
 
+GUIConnectorLine *GUIConnector::getOldLine()
+{
+    return mLines[mLines.size()-3];
+}
+
+GUIConnectorLine *GUIConnector::getLastLine()
+{
+    return mLines[mLines.size()-2];
+}
+
+
+GUIConnectorLine *GUIConnector::getThisLine()
+{
+    return mLines[mLines.size()-1];
+}
+
+
 QVariant GUIConnector::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == QGraphicsItem::ItemSelectedChange)
@@ -324,3 +315,4 @@ QVariant GUIConnector::itemChange(GraphicsItemChange change, const QVariant &val
     }
     return value;
 }
+

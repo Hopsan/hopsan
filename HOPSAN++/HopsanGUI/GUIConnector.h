@@ -42,6 +42,9 @@ public:
     int getNumberOfLines();
     void setStraight(bool var);
     bool isStraight();
+    GUIConnectorLine *getOldLine();
+    GUIConnectorLine *getLastLine();
+    GUIConnectorLine *getThisLine();
 
 public slots:
     void updatePos();

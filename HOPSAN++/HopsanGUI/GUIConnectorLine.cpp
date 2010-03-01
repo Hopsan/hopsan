@@ -74,3 +74,15 @@ void GUIConnectorLine::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     emit lineHoverLeave();
 }
+
+GUIConnectorLine::geometryType GUIConnectorLine::getGeometry()
+{
+    return mGeometry;
+}
+
+void GUIConnectorLine::setGeometry(geometryType newgeometry)
+{
+    mGeometry=newgeometry;
+}
+
+

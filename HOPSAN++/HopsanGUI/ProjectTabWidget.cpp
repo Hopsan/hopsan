@@ -120,11 +120,11 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
     if (event->modifiers() and Qt::ControlModifier)
     {
-        this->setDragMode(QGraphicsView::ScrollHandDrag);       //Zoom function
+        //this->setDragMode(QGraphicsView::ScrollHandDrag);       //Zoom function
         if (this->creatingConnector)                            //Straight line function
         {
             QCursor cursor;
-            mpTempConnector->setStraight(false);
+            mpTempConnector->getThisLine()->setGeometry(GUIConnectorLine::DIAGONAL);
         }
     }
 
@@ -139,7 +139,14 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
     this->setDragMode(QGraphicsView::RubberBandDrag);
     if (this->creatingConnector)
     {
-        mpTempConnector->setStraight(true);
+        if (mpTempConnector->getLastLine()->getGeometry()==GUIConnectorLine::HORIZONTAL)
+        {
+           mpTempConnector->getThisLine()->setGeometry(GUIConnectorLine::VERTICAL);
+        }
+        else
+        {
+           mpTempConnector->getThisLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
+        }
     }
 }
 
@@ -168,13 +175,17 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
             if (mpTempConnector->getNumberOfLines() < 3)
             {
                 this->creatingConnector = false;
-                mpTempConnector->removeLine(this->mapToScene(event->pos()));
             }
             mpTempConnector->removeLine(this->mapToScene(event->pos()));
         }
     }
     else if  ((event->button() == Qt::LeftButton) && (this->creatingConnector))
     {
+        if (mpTempConnector->getThisLine()->getGeometry()==GUIConnectorLine::DIAGONAL)
+        {
+            mpTempConnector->addLine();
+            mpTempConnector->getThisLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
+        }
         mpTempConnector->addLine();
     }
     emit viewClicked();
@@ -473,6 +484,6 @@ void ProjectTabWidget::simulateCurrent()
 
     pCurrentTab->mpModel->initialize(0.0, 5.0); //HARD CODED
     pCurrentTab->mpModel->simulate(0.0, 5.0); //HARD CODED
-    pCurrentTab->mpModel->getSubComponent("DefaultLaminarOrificeName")->getPort("P1").saveLogData("output.txt");
+    //pCurrentTab->mpModel->getSubComponent("DefaultLaminarOrificeName")->getPort("P1").saveLogData("output.txt");
 
 }

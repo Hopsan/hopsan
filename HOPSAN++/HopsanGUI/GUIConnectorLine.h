@@ -35,6 +35,9 @@ public:
     void setActive();
     void setPassive();
     void setHovered();
+    enum geometryType {VERTICAL, HORIZONTAL, DIAGONAL};
+    geometryType getGeometry();
+    void setGeometry(geometryType geometry);
 
 signals:
     void lineClicked();
@@ -54,6 +57,8 @@ private:
     QPen mActivePen;
     QPen mHoverPen;
     int mLineNumber;
+    geometryType mGeometry;
+
 
 };
 
