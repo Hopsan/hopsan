@@ -36,16 +36,13 @@ private:
     QLabel *label;
     QLineEdit *lineEdit;
 
-    std::vector<QLabel*> labelList;
-    std::vector<QLineEdit*> lineEditList;
-    QCheckBox *caseCheckBox;
-    QCheckBox *fromStartCheckBox;
-    QCheckBox *wholeWordsCheckBox;
-    QCheckBox *searchSelectionCheckBox;
-    QCheckBox *backwardCheckBox;
+    std::vector<QLabel*> mVarVector;
+    std::vector<QLabel*> mDescriptionVector;
+    std::vector<QLabel*> mUnitVector;
+    std::vector<QLineEdit*> mValueVector;
     QDialogButtonBox *buttonBox;
-    QPushButton *findButton;
-    QPushButton *moreButton;
+    QPushButton *okButton;
+    QPushButton *cancelButton;
     QWidget *extension;
 };
 

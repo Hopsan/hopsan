@@ -26,35 +26,55 @@ ParameterDialog::ParameterDialog(Component *coreComponent, QWidget *parent)
 
     for ( it=paramVector.begin() ; it !=paramVector.end(); it++ )
     {
-        labelList.push_back(new QLabel(QString::fromStdString(it->getName())));
-        lineEditList.push_back(new QLineEdit());
-        lineEditList.back()->setValidator(new QDoubleValidator(-999.0, 999.0, 6, lineEditList.back()));
+        mVarVector.push_back(new QLabel(QString::fromStdString(it->getName())));
+        mVarVector.back()->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+        mDescriptionVector.push_back(new QLabel(QString::fromStdString(it->getDesc())));
+        mUnitVector.push_back(new QLabel(QString::fromStdString(it->getUnit())));
+
+        mValueVector.push_back(new QLineEdit());
+        mValueVector.back()->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mValueVector.back()));
+
         QString valueTxt;
         valueTxt.setNum(it->getValue(), 'g', 6 );
-        lineEditList.back()->setText(valueTxt);
-        labelList.back()->setBuddy(lineEditList.back());
+        mValueVector.back()->setText(valueTxt);
+
+        mVarVector.back()->setBuddy(mValueVector.back());
     }
-
-
-    findButton = new QPushButton(tr("&Ok"));
-    findButton->setDefault(true);
+    /*
+    std::vector<QLabel*> mVarVector;
+    std::vector<QLabel*> mDescriptionVector;
+    std::vector<QLabel*> mUnitVector;
+    std::vector<QLineEdit*> mValueVector;
+    */
+    okButton = new QPushButton(tr("&Ok"));
+    okButton->setDefault(true);
+    cancelButton = new QPushButton(tr("&Cancel"));
+    cancelButton->setDefault(false);
 
     buttonBox = new QDialogButtonBox(Qt::Vertical);
-    buttonBox->addButton(findButton, QDialogButtonBox::ActionRole);
+    buttonBox->addButton(okButton, QDialogButtonBox::ActionRole);
+    buttonBox->addButton(cancelButton, QDialogButtonBox::ActionRole);
 
-    connect(findButton, SIGNAL(pressed()), SLOT(setParameters()));
+    connect(okButton, SIGNAL(pressed()), SLOT(setParameters()));
+    connect(cancelButton, SIGNAL(pressed()), SLOT(close()));
 
     QVBoxLayout *topLeftLayout1 = new QVBoxLayout;
     QVBoxLayout *topLeftLayout2 = new QVBoxLayout;
-    for (size_t i=0 ; i <labelList.size(); ++i )
+    QVBoxLayout *topLeftLayout3 = new QVBoxLayout;
+    QVBoxLayout *topLeftLayout4 = new QVBoxLayout;
+    for (size_t i=0 ; i <mVarVector.size(); ++i )
     {
-        topLeftLayout1->addWidget(labelList[i]);
-        topLeftLayout2->addWidget(lineEditList[i]);
+        topLeftLayout1->addWidget(mDescriptionVector[i]);
+        topLeftLayout2->addWidget(mVarVector[i]);
+        topLeftLayout3->addWidget(mValueVector[i]);
+        topLeftLayout4->addWidget(mUnitVector[i]);
     }
 
     QHBoxLayout *leftLayout = new QHBoxLayout;
     leftLayout->addLayout(topLeftLayout1);
     leftLayout->addLayout(topLeftLayout2);
+    leftLayout->addLayout(topLeftLayout3);
+    leftLayout->addLayout(topLeftLayout4);
     leftLayout->addStretch(1);
 
     QGridLayout *mainLayout = new QGridLayout;
@@ -68,10 +88,10 @@ ParameterDialog::ParameterDialog(Component *coreComponent, QWidget *parent)
 
 void ParameterDialog::setParameters()
 {
-    for (size_t i=0 ; i < lineEditList.size(); ++i )
+    for (size_t i=0 ; i < mValueVector.size(); ++i )
     {
         bool ok;
-        mpCoreComponent->setParameter(labelList[i]->text().toStdString(), lineEditList[i]->text().toDouble(&ok));
+        mpCoreComponent->setParameter(mVarVector[i]->text().toStdString(), mValueVector[i]->text().toDouble(&ok));
         //std::cout << "i: " << i << qPrintable(labelList[i]->text()) << "  " << mpCoreComponent->getParameterVector().at(i).getName() << std::endl;
         if (!ok)
         {
