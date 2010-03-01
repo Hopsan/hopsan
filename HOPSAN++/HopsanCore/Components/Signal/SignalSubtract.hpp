@@ -26,7 +26,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running Subtraction creator" << std::endl;
-        return new SignalSubtract("DefaultSubtractName");
+        return new SignalSubtract("Subtract");
     }
 
     SignalSubtract(const string name,

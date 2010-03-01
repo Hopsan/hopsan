@@ -26,7 +26,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running Division creator" << std::endl;
-        return new SignalDivide("DefaultDivideName");
+        return new SignalDivide("Divide");
     }
 
     SignalDivide(const string name,

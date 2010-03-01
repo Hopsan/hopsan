@@ -22,7 +22,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running VariableDisplacementPump creator" << std::endl;
-        return new HydraulicVariableDisplacementPump("DefaultVariableDisplacementPumpName");
+        return new HydraulicVariableDisplacementPump("VariableDisplacementPump");
     }
 
     HydraulicVariableDisplacementPump(const string name,

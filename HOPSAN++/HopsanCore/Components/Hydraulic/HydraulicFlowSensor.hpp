@@ -26,7 +26,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running HydraulicFlowSensor creator" << std::endl;
-        return new HydraulicFlowSensor("DefaultFlowSensorName");
+        return new HydraulicFlowSensor("FlowSensor");
     }
 
     HydraulicFlowSensor(const string name,

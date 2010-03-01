@@ -25,7 +25,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running translational mass creator" << std::endl;
-        return new MechanicTranslationalMass("DefaultTranslationalMassName");
+        return new MechanicTranslationalMass("TranslationalMass");
     }
 
     MechanicTranslationalMass(const string name,

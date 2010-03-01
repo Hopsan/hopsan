@@ -27,7 +27,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running Gain creator" << std::endl;
-        return new SignalGain("DefaultGainName");
+        return new SignalGain("Gain");
     }
 
     SignalGain(const string name,

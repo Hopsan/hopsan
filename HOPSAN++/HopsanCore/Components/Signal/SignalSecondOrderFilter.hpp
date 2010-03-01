@@ -31,7 +31,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running Second Order Filter creator" << std::endl;
-        return new SignalSecondOrderFilter("DefaultFilterName");
+        return new SignalSecondOrderFilter("Filter");
     }
 
     SignalSecondOrderFilter(const string name,

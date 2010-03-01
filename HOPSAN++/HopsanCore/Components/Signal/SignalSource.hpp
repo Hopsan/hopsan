@@ -27,7 +27,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running Source creator" << std::endl;
-        return new SignalSource("DefaultSourceName");
+        return new SignalSource("Source");
     }
 
 

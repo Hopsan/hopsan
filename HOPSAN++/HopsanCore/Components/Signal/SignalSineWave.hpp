@@ -45,7 +45,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running Sinewave creator" << std::endl;
-        return new SignalSineWave("DefaultSineWaveName");
+        return new SignalSineWave("SineWave");
     }
 
 

@@ -42,7 +42,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running Squarewave creator" << std::endl;
-        return new SignalSquareWave("DefaultSquareWaveName");
+        return new SignalSquareWave("SquareWave");
     }
 
 

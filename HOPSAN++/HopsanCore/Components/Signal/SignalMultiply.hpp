@@ -26,7 +26,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running multiplication creator" << std::endl;
-        return new SignalMultiply("DefaultMultiplyName");
+        return new SignalMultiply("Multiply");
     }
 
     SignalMultiply(const string name,

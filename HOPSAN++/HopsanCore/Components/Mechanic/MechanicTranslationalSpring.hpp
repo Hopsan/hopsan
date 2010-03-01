@@ -21,7 +21,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running translational spring creator" << std::endl;
-        return new MechanicTranslationalSpring("DefaultTranslationalSpringName");
+        return new MechanicTranslationalSpring("TranslationalSpring");
     }
 
     MechanicTranslationalSpring(const string name,

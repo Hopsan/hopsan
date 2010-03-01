@@ -49,7 +49,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running cylinderc creator" << std::endl;
-        return new HydraulicCylinderC("DefaultCylinderCName");
+        return new HydraulicCylinderC("CylinderC");
     }
 
     HydraulicCylinderC(const string name,

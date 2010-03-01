@@ -20,7 +20,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running lp1 filter creator" << std::endl;
-        return new SignalLP1Filter("DefaultLP1FilterName");
+        return new SignalLP1Filter("LP1Filter");
     }
 
     SignalLP1Filter(const string name,

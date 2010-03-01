@@ -18,12 +18,12 @@ public:
     static Component *Creator()
     {
         std::cout << "running orifice creator" << std::endl;
-        return new HydraulicLaminarOrifice("DefaultLaminarOrificeName");
+        return new HydraulicLaminarOrifice("LaminarOrifice");
     }
 
-    HydraulicLaminarOrifice(const string name      = "DefaultOrificeName",
-                             const double kc       = 1.0e-11,
-                             const double timestep = 0.001)
+    HydraulicLaminarOrifice(const string name     = "LaminarOrifice",
+                            const double kc       = 1.0e-11,
+                            const double timestep = 0.001)
         : ComponentQ(name, timestep)
     {
         mTypeName = "HydraulicLaminarOrifice";

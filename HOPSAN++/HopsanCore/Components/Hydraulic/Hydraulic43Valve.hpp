@@ -44,7 +44,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running 4/3-valve creator" << std::endl;
-        return new Hydraulic43Valve("Default43ValveName");
+        return new Hydraulic43Valve("43Valve");
     }
 
     Hydraulic43Valve(const string name,

@@ -28,7 +28,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running Saturation creator" << std::endl;
-        return new SignalSaturation("DefaultSaturationName");
+        return new SignalSaturation("Saturation");
     }
 
     SignalSaturation(const string name,

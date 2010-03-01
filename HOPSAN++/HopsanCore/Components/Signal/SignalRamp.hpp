@@ -44,7 +44,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running ramp creator" << std::endl;
-        return new SignalRamp("DefaultRampName");
+        return new SignalRamp("Ramp");
     }
 
 

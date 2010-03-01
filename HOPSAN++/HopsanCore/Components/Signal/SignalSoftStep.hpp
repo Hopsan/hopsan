@@ -48,7 +48,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running softstep creator" << std::endl;
-        return new SignalSoftStep("DefaultSoftStepName");
+        return new SignalSoftStep("SoftStep");
     }
 
     SignalSoftStep(const string name,

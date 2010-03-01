@@ -29,7 +29,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running pressureSourceQ creator" << std::endl;
-        return new HydraulicPressureSourceQ("DefaultPressureSourceQName");
+        return new HydraulicPressureSourceQ("PressureSourceQ");
     }
 
     HydraulicPressureSourceQ(const string name,

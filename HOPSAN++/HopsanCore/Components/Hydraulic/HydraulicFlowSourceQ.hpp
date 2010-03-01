@@ -27,7 +27,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running flowsourceQ creator" << std::endl;
-        return new HydraulicFlowSourceQ("DefaultFlowSourceQName");
+        return new HydraulicFlowSourceQ("FlowSourceQ");
     }
 
     HydraulicFlowSourceQ(const string name,

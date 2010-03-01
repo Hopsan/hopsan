@@ -32,7 +32,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running PressureControlledValve creator" << std::endl;
-        return new HydraulicPressureControlledValve("DefaultPressureControlledValveName");
+        return new HydraulicPressureControlledValve("PressureControlledValve");
     }
 
     HydraulicPressureControlledValve(const string name,

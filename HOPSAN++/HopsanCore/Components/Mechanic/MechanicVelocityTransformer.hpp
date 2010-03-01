@@ -21,7 +21,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running velocity transformer creator" << std::endl;
-        return new MechanicVelocityTransformer("DefaultVelocityTransformerName");
+        return new MechanicVelocityTransformer("VelocityTransformer");
     }
 
     MechanicVelocityTransformer(const string name,

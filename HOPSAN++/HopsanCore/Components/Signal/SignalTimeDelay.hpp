@@ -28,7 +28,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running TimeDelay creator" << std::endl;
-        return new SignalTimeDelay("DefaultTimeDelayName");
+        return new SignalTimeDelay("TimeDelay");
     }
 
     SignalTimeDelay(const string name,

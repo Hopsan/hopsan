@@ -88,7 +88,7 @@ public:
 protected:
     //==========Protected member functions==========
     //Constructor - Destructor
-    Component(string name="DefaultComponentName", double timestep=0.001);
+    Component(string name="Component", double timestep=0.001);
     virtual ~Component(){};
 
     //Virtual functions
@@ -164,7 +164,7 @@ private:
 public:
     //==========Public functions==========
     //Constructor - Destructor
-    ComponentSystem(string name="DefaultComponentSystemName", double timestep=0.001);
+    ComponentSystem(string name="ComponentSystem", double timestep=0.001);
 
     //Set the subsystem CQS type
     void setTypeCQS(const string cqs_type);

@@ -29,7 +29,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running ackumulator creator" << std::endl;
-        return new HydraulicAckumulator("DefaultAckumulatorName");
+        return new HydraulicAckumulator("Ackumulator");
     }
 
     HydraulicAckumulator(const string name,

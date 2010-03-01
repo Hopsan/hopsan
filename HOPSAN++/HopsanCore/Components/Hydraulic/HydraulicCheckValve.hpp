@@ -30,7 +30,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running checkvalve creator" << std::endl;
-        return new HydraulicCheckValve("DefaultCheckValveName");
+        return new HydraulicCheckValve("CheckValve");
     }
 
     HydraulicCheckValve(const string name,

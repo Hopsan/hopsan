@@ -21,7 +21,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running DeadZone creator" << std::endl;
-        return new SignalDeadZone("DefaultDeadZoneName");
+        return new SignalDeadZone("DeadZone");
     }
 
     SignalDeadZone(const string name,

@@ -30,7 +30,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running pressuresource creator" << std::endl;
-        return new HydraulicPressureSource("DefaultPressureSourceName");
+        return new HydraulicPressureSource("PressureSource");
     }
 
     HydraulicPressureSource(const string name,

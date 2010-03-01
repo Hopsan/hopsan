@@ -28,7 +28,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running volume creator" << std::endl;
-        return new HydraulicSubSysExample("DefaultSubSysExample");
+        return new HydraulicSubSysExample("SubSysExample");
     }
 
     HydraulicSubSysExample(const string name,

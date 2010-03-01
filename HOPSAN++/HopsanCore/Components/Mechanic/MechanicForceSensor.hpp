@@ -26,7 +26,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running MechanicForceSensor creator" << std::endl;
-        return new MechanicForceSensor("DefaultForceSensorName");
+        return new MechanicForceSensor("ForceSensor");
     }
 
     MechanicForceSensor(const string name,

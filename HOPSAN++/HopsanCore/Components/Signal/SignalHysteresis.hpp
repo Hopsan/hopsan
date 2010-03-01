@@ -29,7 +29,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running Hysteresis creator" << std::endl;
-        return new SignalHysteresis("DefaultHysteresisName");
+        return new SignalHysteresis("Hysteresis");
     }
 
     SignalHysteresis(const string name,

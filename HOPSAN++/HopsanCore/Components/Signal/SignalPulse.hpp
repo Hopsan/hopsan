@@ -39,7 +39,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running Pulse creator" << std::endl;
-        return new SignalPulse("DefaultPulseName");
+        return new SignalPulse("Pulse");
     }
 
 

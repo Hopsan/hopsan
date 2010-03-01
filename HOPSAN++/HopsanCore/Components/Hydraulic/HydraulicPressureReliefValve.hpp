@@ -32,7 +32,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running PressureReliefValve creator" << std::endl;
-        return new HydraulicPressureReliefValve("DefaultPressureReliefValveName");
+        return new HydraulicPressureReliefValve("PressureReliefValve");
     }
 
     HydraulicPressureReliefValve(const string name,

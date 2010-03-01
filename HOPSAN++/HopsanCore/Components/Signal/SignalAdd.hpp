@@ -26,7 +26,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running Summation creator" << std::endl;
-        return new SignalAdd("DefaultAddName");
+        return new SignalAdd("Add");
     }
 
     SignalAdd(const string name,

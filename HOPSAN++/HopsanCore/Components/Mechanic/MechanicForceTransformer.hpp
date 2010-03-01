@@ -21,7 +21,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running force transformer creator" << std::endl;
-        return new MechanicForceTransformer("DefaultForceTransformerName");
+        return new MechanicForceTransformer("ForceTransformer");
     }
 
     MechanicForceTransformer(const string name,

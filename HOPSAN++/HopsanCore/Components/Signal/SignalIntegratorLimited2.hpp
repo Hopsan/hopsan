@@ -30,7 +30,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running Integrator creator" << std::endl;
-        return new SignalIntegrator2("DefaultIntegratorName");
+        return new SignalIntegrator2("Integrator");
     }
 
     SignalIntegratorLimited2(const string name,

@@ -39,7 +39,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running Step creator" << std::endl;
-        return new SignalStep("DefaultStepName");
+        return new SignalStep("Step");
     }
 
 

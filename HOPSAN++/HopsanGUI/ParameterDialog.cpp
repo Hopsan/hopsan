@@ -28,7 +28,7 @@ ParameterDialog::ParameterDialog(Component *coreComponent, QWidget *parent)
     {
         labelList.push_back(new QLabel(QString::fromStdString(it->getName())));
         lineEditList.push_back(new QLineEdit());
-        lineEditList.back()->setValidator(new QDoubleValidator(-999.0, 999.0, 2, lineEditList.back()));
+        lineEditList.back()->setValidator(new QDoubleValidator(-999.0, 999.0, 6, lineEditList.back()));
         QString valueTxt;
         valueTxt.setNum(it->getValue(), 'g', 6 );
         lineEditList.back()->setText(valueTxt);

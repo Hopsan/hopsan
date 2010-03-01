@@ -31,7 +31,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running First Order Filter creator" << std::endl;
-        return new SignalFirstOrderFilter("DefaultFilterName");
+        return new SignalFirstOrderFilter("Filter");
     }
 
     SignalFirstOrderFilter(const string name,

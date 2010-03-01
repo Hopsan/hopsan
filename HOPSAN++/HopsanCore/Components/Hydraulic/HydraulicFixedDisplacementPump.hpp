@@ -30,7 +30,7 @@ public:
     static Component *Creator()
     {
         std::cout << "running fixeddisplacementpump creator" << std::endl;
-        return new HydraulicFixedDisplacementPump("DefaultFixedDisplacementPumpName");
+        return new HydraulicFixedDisplacementPump("FixedDisplacementPump");
     }
 
     HydraulicFixedDisplacementPump(const string name,
