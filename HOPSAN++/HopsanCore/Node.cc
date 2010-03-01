@@ -144,11 +144,7 @@ void Node::removePort(Port *pPort)
             break;
         }
     }
-    if (it==mPortPtrs.end())
-    {
-        cout << "Error: You tried to remove a port poiner that did not exist in this node" << endl;
-        assert(false);
-    }
+    //! @todo some notification if you try to remove something that does not exist (can not check it==mPortPtrs.end() ) this check can be OK after an successfull erase
 }
 
 bool Node::connectedToPort(Port *pPort)

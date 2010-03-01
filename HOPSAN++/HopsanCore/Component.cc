@@ -764,11 +764,7 @@ void ComponentSystem::removeSubNode(Node* node_ptr)
             break;
         }
     }
-    if ( it == mSubNodePtrs.end() )
-    {
-        cout << "Error: you are trying to remove a node which does not exist in this system" << endl;
-        assert(false);
-    }
+    //! @todo some notification if you try to remove something that does not exist (can not check it==mSubNodePtrs.end() ) this check can be OK after an successfull erase
 }
 
 //! preAllocates log space (to speed up later access for log writing)
@@ -1082,15 +1078,19 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
 }
 
 //! Disconnects two ports and remove node if no one is using it any more
+//! @todo whay about system ports they are somewaht speciall
 void ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 {
     //! @todo some simple error handling (are the ports really connected and such)
     cout << "disconnecting " << pPort1->mpComponent->getName() << " " << pPort1->getPortName() << "  and  " << pPort2->mpComponent->getName() << " " << pPort2->getPortName() << endl;
 
     Node* node_ptr = pPort1->getNodePtr();
+    cout << "nPors in node: " << node_ptr->mPortPtrs.size() << endl;
     //Remove the ports from the node
     node_ptr->removePort(pPort1);
+    cout << "nPors in node after remove 1: " << node_ptr->mPortPtrs.size() << endl;
     node_ptr->removePort(pPort2);
+    cout << "nPors in node after remove 2: " << node_ptr->mPortPtrs.size() << endl;
     //Remove the node from the ports
     pPort1->clearNode();
     pPort2->clearNode();

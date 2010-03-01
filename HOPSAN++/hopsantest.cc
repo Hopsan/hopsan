@@ -1908,6 +1908,49 @@ void testUniqueNames()
 
 }
 
+void testDisconnect()
+{
+    HopsanEssentials* pHopsan = HopsanEssentials::getInstance();
+
+    //=============Create Main Simulation Model===================
+    ComponentSystem mainSimulationModel("mainSimulationModel");
+
+    //Create other components
+
+    Component* pPSourceL = pHopsan->CreateComponent("HydraulicPressureSource");
+    pPSourceL->setName("PSource");
+    pPSourceL->setParameter("P", 10e5);
+
+    Component* pPSourceR = pHopsan->CreateComponent("HydraulicPressureSource");
+    pPSourceR->setName("PSource");
+    pPSourceR->setParameter("P", 1e5);
+
+    Component* pOrifice = pHopsan->CreateComponent("HydraulicLaminarOrifice");
+    pOrifice->setName("orificeC");
+
+    //Add components
+    mainSimulationModel.addComponent(pOrifice);
+    mainSimulationModel.addComponent(pPSourceL);
+    mainSimulationModel.addComponent(pPSourceR);
+
+    //Connect components
+    mainSimulationModel.connect(pPSourceL, "P1", pOrifice, "P1");
+    mainSimulationModel.connect(pOrifice, "P2", pPSourceR, "P1");
+
+    mainSimulationModel.disconnect(&pPSourceL->getPort("P1"), &pOrifice->getPort("P1"));
+
+   //===============================================================
+
+    mainSimulationModel.setDesiredTimestep(0.01);
+    mainSimulationModel.initialize(0, 10);
+
+
+    //Run simulation
+    mainSimulationModel.simulate(0,10);
+
+    cout << "testDisconnect() Done!" << endl;
+}
+
 
 
 
@@ -1981,7 +2024,9 @@ int main()
 
     //testSubSystem2();
 
-    testUniqueNames();
+    //testUniqueNames();
+
+    testDisconnect();
 
     return 0;
 }
