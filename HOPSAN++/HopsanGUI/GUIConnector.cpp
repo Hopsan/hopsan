@@ -258,14 +258,18 @@ void GUIConnector::deleteMeIfMeIsActive()
 
 void GUIConnector::updateLine(int lineNumber)
 {
-    mLines[lineNumber-1]->setLine(mLines[lineNumber-1]->line().p1().x(),
-                                  mLines[lineNumber-1]->line().p1().y(),
-                                  mLines[lineNumber]->line().p1().x(),
-                                  mLines[lineNumber]->line().p1().x());
-    mLines[lineNumber+1]->setLine(mLines[lineNumber]->line().p2().x(),
-                                  mLines[lineNumber]->line().p2().y(),
-                                  mLines[lineNumber+1]->line().p2().x(),
-                                  mLines[lineNumber+1]->line().p2().x());
+    qDebug() << "Updating line: x = " << (mLines[lineNumber]->scenePos());
+    if (this->mEndPortConnected && lineNumber != 0 && lineNumber != mLines.size())
+    {
+        mLines[lineNumber-1]->setLine(mLines[lineNumber-1]->line().x1(),
+                                      mLines[lineNumber-1]->line().y1(),
+                                      mLines[lineNumber-1]->mapFromItem(mLines[lineNumber], mLines[lineNumber]->line().p1()).x(),
+                                      mLines[lineNumber-1]->mapFromItem(mLines[lineNumber], mLines[lineNumber]->line().p1()).y());
+        mLines[lineNumber+1]->setLine(mLines[lineNumber-1]->mapFromItem(mLines[lineNumber], mLines[lineNumber]->line().p2()).x(),
+                                      mLines[lineNumber-1]->mapFromItem(mLines[lineNumber], mLines[lineNumber]->line().p2()).y(),
+                                      mLines[lineNumber+1]->line().x2(),
+                                      mLines[lineNumber+1]->line().y2());
+    }
 }
 
 

@@ -25,7 +25,7 @@ class GUIConnectorLine;
 GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen primaryPen, QPen activePen, QPen hoverPen, int lineNumber, QGraphicsItem *parent)
         : QGraphicsLineItem(x1,y1,x2,y2,parent)
 {
-    setFlags(QGraphicsItem::ItemStacksBehindParent | QGraphicsItem::ItemSendsGeometryChanges);
+    setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemIsMovable);
     //this->mParentConnector = parentConnector;
     this->mPrimaryPen = primaryPen;
     this->mActivePen = activePen;
@@ -86,3 +86,24 @@ void GUIConnectorLine::setGeometry(geometryType newgeometry)
 }
 
 
+
+
+
+QVariant GUIConnectorLine::itemChange(GraphicsItemChange change, const QVariant &value)
+{
+    if (change == QGraphicsItem::ItemSelectedChange)
+    {
+//        qDebug() << "Line selection status changed\n";
+//        if(this->isSelected())
+//        {
+//            this->setSelected(false);
+//            emit lineSelected();
+//        }
+    }
+    else if (change == QGraphicsItem::ItemPositionChange)
+    {
+        qDebug() << "Line has moved\n";
+        emit lineMoved(this->mLineNumber);
+    }
+    return value;
+}
