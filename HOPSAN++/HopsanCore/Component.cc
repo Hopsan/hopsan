@@ -105,8 +105,40 @@ void Component::simulateOneTimestep()
 
 void Component::setName(string name)
 {
-    //! @todo stripp any trailing _ from the names (not that you usually would want a name to end with _, this is needed to avoid _ _ when suffix is added
-    mName = name;
+    //! @todo fix the trailing _ removal
+    //First strip any lonely trailing _ from the name (and give a warning)
+//    string::iterator lastchar = --(name.end());
+//    while (*lastchar == "_")
+//    {
+//        cout << "Warning underscore is not alowed in the end of a name (to avoid ugly collsion with name suffix)" << endl;
+//        name.erase(lastchar);
+//        lastchar = --(name.end());
+//    }
+
+    //If name same as before do nothing
+    if (name != mName)
+    {
+        //Do we have a system parent
+        if (mpSystemParent != 0)
+        {
+            //If the old name has not already been changed, let it decide our new name
+            //Need this to prevent risk of loop between rename and this function (rename cals this one again)
+            if (mpSystemParent->haveSubComponent(mName))
+            {
+                //Rename
+                mpSystemParent->renameSubComponent(mName, name);
+            }
+            else
+            {
+                mName = name;
+            }
+        }
+        else
+        {
+            //Ok no systemparent is set yet so lets set our own name
+            mName = name;
+        }
+    }
 }
 
 const string &Component::getName()
@@ -333,50 +365,51 @@ void Component::setTimestep(const double timestep)
     mTimestep = timestep;
 }
 
-SubComponentInfo::SubComponentInfo(Component* pComponent)
-{
-    type = pComponent->getTypeName();
-    cqs_type = pComponent->getTypeCQS();
-    idx = -1;
-}
 
-//! The subcomponent storage, Makes it easier to add (with auto unique name), erase and get components
-//! @todo quite ugly code for now
-void SubComponentStorage::add(Component* pComponent)
+string ComponentSystem::SubComponentStorage::modifyName(string name)
 {
-    //First check if the name already exists, in that case change the suffix
-    string tempname = pComponent->getName();
-    cout << "initial tempname: " << tempname << endl;
-
     size_t ctr = 1; //The suffix number
-    while(mSubComponentMap.count(tempname) != 0)
+    while(mSubComponentMap.count(name) != 0)
     {
         //strip suffix
-        size_t foundpos = tempname.rfind("_");
+        size_t foundpos = name.rfind("_");
         if (foundpos != string::npos)
         {
-            if (foundpos+1 < tempname.size())
+            if (foundpos+1 < name.size())
             {
-                unsigned char nr = tempname.at(foundpos+1);
+                unsigned char nr = name.at(foundpos+1);
                 cout << "nr after _: " << nr << endl;
                 //Check the ascii code for the charachter
                 if ((nr >= 48) && (nr <= 57))
                 {
                     //Is number lets assume that the _ found is the beginning of a suffix
-                    tempname.erase(foundpos, string::npos);
+                    name.erase(foundpos, string::npos);
                 }
             }
         }
-        cout << "ctr: " << ctr << " stripped tempname: " << tempname << endl;
+        cout << "ctr: " << ctr << " stripped tempname: " << name << endl;
 
         //add new suffix
         stringstream suffix;
         suffix << ctr;
-        tempname.append("_");
-        tempname.append(suffix.str());
+        name.append("_");
+        name.append(suffix.str());
         ++ctr;
-        cout << "ctr: " << ctr << " appended tempname: " << tempname << endl;
+        cout << "ctr: " << ctr << " appended tempname: " << name << endl;
     }
+    return name;
+}
+
+
+//! The subcomponent storage, Makes it easier to add (with auto unique name), erase and get components
+//! @todo quite ugly code for now
+void ComponentSystem::SubComponentStorage::add(Component* pComponent)
+{
+    //First check if the name already exists, in that case change the suffix
+    string tempname = pComponent->getName();
+    cout << "initial tempname: " << tempname << endl;
+
+    tempname = modifyName(tempname);
 
     //Add to the cqs component vectors, remember te idx for the info
     int idx;
@@ -403,13 +436,14 @@ void SubComponentStorage::add(Component* pComponent)
     }
 
     pComponent->setName(tempname);
-    SubComponentInfo info(pComponent);
+    SubComponentInfo info;
+    info.cqs_type = pComponent->getTypeCQS();
     info.idx = idx;
 
     mSubComponentMap.insert(pair<string, SubComponentInfo>(tempname, info));
 }
 
-Component* SubComponentStorage::get(string name)
+Component* ComponentSystem::SubComponentStorage::get(string name)
 {
     map<string, SubComponentInfo>::iterator it;
     it = mSubComponentMap.find(name);
@@ -441,7 +475,7 @@ Component* SubComponentStorage::get(string name)
     }
 }
 
-void SubComponentStorage::erase(string name)
+void ComponentSystem::SubComponentStorage::erase(string name)
 {
     map<string, SubComponentInfo>::iterator it;
     it = mSubComponentMap.find(name);
@@ -484,6 +518,61 @@ void SubComponentStorage::erase(string name)
     {
         //! @todo exception or similar instead
         cout << "The component you are trying to delete: " << name << " does not exist" << endl;
+        assert(false);
+    }
+}
+
+bool ComponentSystem::SubComponentStorage::have(string name)
+{
+    if (mSubComponentMap.count(name) > 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void ComponentSystem::SubComponentStorage::rename(string old_name, string new_name)
+{
+    //First find the post in the map where the old name resides, copy the data stored there
+    map<string, SubComponentInfo>::iterator it = mSubComponentMap.find(old_name);
+    SubComponentInfo info;
+    if (it != mSubComponentMap.end())
+    {
+        //If found erase old record
+        info = it->second;
+        mSubComponentMap.erase(it);
+
+        //insert new (with new name)
+        new_name = modifyName(new_name);
+        mSubComponentMap.insert(pair<string, SubComponentInfo>(new_name, info));
+
+        //No change the actual component name
+        //Note! we dont want to use setName here as that would create a rename loop
+        //! @todo it might be a good idea to rething all of this renaming stuff, right now its prety strange (but works)
+        if (info.cqs_type == "C")
+        {
+            mComponentCptrs[info.idx]->setName(new_name);
+        }
+        else if (info.cqs_type == "Q")
+        {
+            mComponentQptrs[info.idx]->setName(new_name);
+        }
+        else if (info.cqs_type == "S")
+        {
+            mComponentSignalptrs[info.idx]->setName(new_name);
+        }
+        else
+        {
+            cout << "Error not a C Q or S component (this should not happen" << endl;
+            assert(false);
+        }
+    }
+    else
+    {
+        cout << "Error now component with old_name: " << old_name << " found!" << endl;
         assert(false);
     }
 }
@@ -580,6 +669,11 @@ void ComponentSystem::addComponent(Component *pComponent)
     addComponents(components);
 }
 
+void ComponentSystem::renameSubComponent(string old_name, string new_name)
+{
+    mSubComponentStorage.rename(old_name, new_name);
+}
+
 //Component* ComponentSystem::getSubComponent(string name)
 //{
 //    //vector<Component*>::iterator it;
@@ -634,9 +728,22 @@ ComponentSystem* ComponentSystem::getSubComponentSystem(string name)
 }
 
 
-const map<string, string>& ComponentSystem::getSubComponentNamesAndTypes()
+vector<string> ComponentSystem::getSubComponentNames()
 {
-    return mComponentNamesAndTypes;
+    //! @todo for now create a vector of the component names, later maybe we should return a pointer to the real internal map
+    vector<string> names;
+    map<string, SubComponentStorage::SubComponentInfo>::iterator it;
+    for (it = mSubComponentStorage.mSubComponentMap.begin(); it != mSubComponentStorage.mSubComponentMap.end(); ++it)
+    {
+        names.push_back(it->first);
+    }
+
+    return names;
+}
+
+bool  ComponentSystem::haveSubComponent(string name)
+{
+    return mSubComponentStorage.have(name);
 }
 
 

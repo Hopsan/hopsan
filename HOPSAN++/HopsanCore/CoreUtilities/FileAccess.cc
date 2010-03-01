@@ -208,48 +208,45 @@ void FileAccess::saveModel(string fileName, ComponentSystem* pMotherOfAllModels,
 
 void FileAccess::saveComponentSystem(ofstream& modelFile, ComponentSystem* pMotherModel, string motherSystemName)
 {
-    map<string, string> mainComponentList = pMotherModel->getSubComponentNamesAndTypes();
-    map<string, string>::iterator it;
+    vector<string> mainComponentList = pMotherModel->getSubComponentNames();
+    vector<string>::iterator it;
     map<Port*, string> portList;
 
     for(it = mainComponentList.begin(); it!=mainComponentList.end(); ++it)
     {
-        //if (it->second == "ComponentSystem")
-        if(pMotherModel->getSubComponent(it->first)->isComponentSystem())
+        if(pMotherModel->getSubComponent(*it)->isComponentSystem())
         {
-            modelFile << "SUBSYSTEM " << " " << it->first << " " << pMotherModel->getSubComponentSystem(it->first)->getTypeCQS() << "\n";
-            vector<Port*> systemPorts = pMotherModel->getSubComponentSystem(it->first)->getPortPtrVector();
+            modelFile << "SUBSYSTEM " << " " << *it << " " << pMotherModel->getSubComponentSystem(*it)->getTypeCQS() << "\n";
+            vector<Port*> systemPorts = pMotherModel->getSubComponentSystem(*it)->getPortPtrVector();
             cout << "Subsystem has " << systemPorts.size() << " ports.\n";
             vector<Port*>::iterator itp;
             for (itp=systemPorts.begin(); itp!=systemPorts.end(); ++itp)
             {
-                modelFile << "SYSTEMPORT " << it->first << " " << (*itp)->getPortName() << endl;
+                modelFile << "SYSTEMPORT " << *it << " " << (*itp)->getPortName() << endl;
             }
 
-            ///TODO: Skriv ut subsystemets portar
-            ///TODO: Fixa så man kan komma åt subsystem ur ett component system, så rekursiva anrop kan göras här
-            saveComponentSystem(modelFile, pMotherModel->getSubComponentSystem(it->first), motherSystemName + " " + it->first);
+            saveComponentSystem(modelFile, pMotherModel->getSubComponentSystem(*it), motherSystemName + " " + *it);
         }
         else
         {
                 //Write the create component line in the file
-            modelFile << "COMPONENT " << it->second << " " << it->first << motherSystemName << "\n";
+            modelFile << "COMPONENT " << pMotherModel->getSubComponent(*it)->getTypeName() << " " << *it << motherSystemName << endl;
         }
 
-        map<string,double> componentParameterMap = pMotherModel->getSubComponent(it->first)->getParameterMap();
+        map<string, double> componentParameterMap = pMotherModel->getSubComponent(*it)->getParameterMap();
+
         map<string, double>::iterator itc;
         for(itc = componentParameterMap.begin(); itc!=componentParameterMap.end(); ++itc)
         {
-            modelFile << "SET " << it->first << " " << itc->first << " " << itc->second << "\n";
+            modelFile << "SET " << *it << " " << itc->first << " " << itc->second << "\n";
         }
 
-
             //Store all ports in a map, together with the name of the component they belong to (for use below)
-        vector <Port*> portPtrsVector = pMotherModel->getSubComponent(it->first)->getPortPtrVector();
+        vector <Port*> portPtrsVector = pMotherModel->getSubComponent(*it)->getPortPtrVector();
         vector <Port*>::iterator itp;
         for (itp=portPtrsVector.begin(); itp!=portPtrsVector.end(); ++itp)
         {
-            portList.insert(pair<Port*,string>(*itp, it->first));
+            portList.insert(pair<Port*,string>(*itp, *it));
         }
         portPtrsVector = pMotherModel->getPortPtrVector();
         for (itp=portPtrsVector.begin(); itp!=portPtrsVector.end(); ++itp)

@@ -126,37 +126,39 @@ private:
     ComponentSystem* mpSystemParent;
 };
 
-//!This is a helper class for SubComponentStorage containing some component info
-class SubComponentInfo
-{
-public:
-    SubComponentInfo(Component* pComponent);
-    string type;
-    string cqs_type;
-    int idx;
-};
-
-
-class SubComponentStorage
-{
-private:
-        map<string, SubComponentInfo> mSubComponentMap;
-
-
-public:
-    void add(Component* pComponent);
-    Component* get(string name);
-    void erase(string name);
-
-    //vector<Component*> mSubComponentPtrs; //Problems with inheritance and casting?
-    vector<Component*> mComponentSignalptrs;
-    vector<Component*> mComponentQptrs;
-    vector<Component*> mComponentCptrs;
-};
-
 
 class DLLIMPORTEXPORT ComponentSystem :public Component
 {
+private:
+    class SubComponentStorage
+    {
+        friend class ComponentSystem;
+    private:
+        //!This is a helper class for SubComponentStorage containing some component info
+        class SubComponentInfo
+        {
+        public:
+            string cqs_type;
+            int idx;
+        };
+
+        string modifyName(string name);
+
+        map<string, SubComponentInfo> mSubComponentMap;
+
+
+    public:
+        void add(Component* pComponent);
+        Component* get(string name);
+        void rename(string old_name, string new_name);
+        void erase(string name);
+        bool have(string name);
+
+        vector<Component*> mComponentSignalptrs;
+        vector<Component*> mComponentQptrs;
+        vector<Component*> mComponentCptrs;
+    };
+
 public:
     //==========Public functions==========
     //Constructor - Destructor
@@ -169,12 +171,14 @@ public:
     void addComponents(vector<Component*> components);
     void addComponent(Component &rComponent);
     void addComponent(Component *pComponent);
+    void renameSubComponent(string old_name, string new_name);
     Port* addSystemPort(const string portname);
 
     //Getting added components and component names
     Component* getSubComponent(string name);
     ComponentSystem* getSubComponentSystem(string name);
-    const map<string, string>& getSubComponentNamesAndTypes();
+    vector<string> getSubComponentNames();
+    bool haveSubComponent(string name);
 
     //connecting components
     void connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2);
@@ -206,10 +210,7 @@ private:
 
     //==========Prvate member variables==========
     SubComponentStorage mSubComponentStorage;
-
     vector<Node*> mSubNodePtrs;
-    map<string, string> mComponentNamesAndTypes;
-
     NodeFactory mpNodeFactory;
 };
 

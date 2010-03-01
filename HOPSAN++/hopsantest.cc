@@ -1898,6 +1898,11 @@ void testUniqueNames()
     pSubSystem2->addComponent(ps);
     cout << "names: " << ps->getName() << " " << ps2->getName() << " " << ps3->getName() << endl;
 
+    ps->setName("apa_ko_1");
+    ps2->setName("apa_ko_2");
+    ps3->setName("apa_ko");
+    cout << "names: " << ps->getName() << " " << ps2->getName() << " " << ps3->getName() << endl;
+
     cout << "testUniqueNames() Done!" << endl;
 
 }
