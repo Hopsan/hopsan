@@ -14,7 +14,8 @@ SOURCES += main.cpp \
     GUIComponent.cpp \
     GUIConnectorLine.cpp \
     plotwidget.cpp \
-    GUIComponentSelectionBox.cpp
+    GUIComponentSelectionBox.cpp \
+    ParameterDialog.cpp
 HEADERS += mainwindow.h \
     listwidgetitem.h \
     ProjectTabWidget.h \
@@ -25,7 +26,8 @@ HEADERS += mainwindow.h \
     GUIComponent.h \
     GUIConnectorLine.h \
     plotwidget.h \
-    GUIComponentSelectionBox.h
+    GUIComponentSelectionBox.h \
+    ParameterDialog.h
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE

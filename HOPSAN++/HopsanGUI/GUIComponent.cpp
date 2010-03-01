@@ -20,7 +20,7 @@
 #include <QGraphicsSceneMoveEvent>
 
 #include <math.h>
-
+#include "ParameterDialog.h"
 
 GUIComponent::GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QString componentTypeName, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
@@ -171,6 +171,8 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     for ( it=paramVector.begin() ; it !=paramVector.end(); it++ )
         qDebug() << QString::fromStdString(it->getName()) << ": " << it->getValue();
 
+    ParameterDialog *dialog = new ParameterDialog(mpCoreComponent);
+    dialog->exec();
 }
 
 
