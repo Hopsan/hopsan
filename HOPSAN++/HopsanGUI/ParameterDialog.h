@@ -1,3 +1,12 @@
+//!
+//! @file   ParameterDialog.h
+//! @author Björn Eriksson <bjorn.eriksson@liu.se>
+//! @date   2010-03-01
+//!
+//! @brief Contains a class for interact with paramters
+//!
+//$Id$
+
 #ifndef PARAMETERDIALOG_H
 #define PARAMETERDIALOG_H
 
