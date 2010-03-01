@@ -38,6 +38,7 @@ public:
     enum geometryType {VERTICAL, HORIZONTAL, DIAGONAL};
     geometryType getGeometry();
     void setGeometry(geometryType geometry);
+    int getLineNumber();
 
 signals:
     void lineClicked();

@@ -32,7 +32,6 @@ GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen 
     this->mHoverPen = hoverPen;
     this->mLineNumber = lineNumber;
     this->setAcceptHoverEvents(true);
-
 }
 
 GUIConnectorLine::~GUIConnectorLine()
@@ -85,9 +84,10 @@ void GUIConnectorLine::setGeometry(geometryType newgeometry)
     mGeometry=newgeometry;
 }
 
-
-
-
+int GUIConnectorLine::getLineNumber()
+{
+    return mLineNumber;
+}
 
 QVariant GUIConnectorLine::itemChange(GraphicsItemChange change, const QVariant &value)
 {
