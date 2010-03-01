@@ -14,6 +14,7 @@
 #include "CoreUtilities/ClassFactory.h"
 #include "win32dll.h"
 #include <string>
+#include <list>
 
 using namespace std;
 
@@ -63,7 +64,8 @@ public:
     void listParametersConsole();
     double getParameter(const string name);
     void setParameter(const string name, const double value);
-    map<string, double> getParameterList();
+    list<string> getParameterList();
+    map<string, double> getParameterMap();
 
     //Ports
     vector<Port*> getPortPtrVector();

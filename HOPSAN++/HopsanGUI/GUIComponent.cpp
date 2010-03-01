@@ -18,9 +18,9 @@
 #include <QGraphicsItem>
 
 #include <QGraphicsSceneMoveEvent>
-#include <QDebug>
 
 #include <math.h>
+
 
 GUIComponent::GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QString componentTypeName, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
@@ -144,6 +144,7 @@ void GUIComponent::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     }
 }
 
+
 void GUIComponent::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     if(!this->isSelected())
@@ -155,6 +156,21 @@ void GUIComponent::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     {
         (*i)->hide();
     }
+}
+
+
+void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+    std::cout << "GUIComponent.cpp: " << "contextMenuEvent " << std::endl;
+
+    list<string>::iterator it;
+
+    list<string> paramList = this->mpCoreComponent->getParameterList();
+
+    qDebug() << "This component has the following Parameters: ";
+    for ( it=paramList.begin() ; it !=paramList.end(); it++ )
+        qDebug() << QString::fromStdString(*it);
+
 }
 
 

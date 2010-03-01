@@ -155,7 +155,17 @@ double Component::getParameter(const string name)
     return 0.0;
 }
 
-map<string, double> Component::getParameterList()
+list<string> Component::getParameterList()
+{
+    list<string> parameterList;
+    for (size_t i=0; i<mParameters.size(); ++i)
+    {
+        parameterList.push_back(mParameters[i].getName());
+    }
+    return parameterList;
+}
+
+map<string, double> Component::getParameterMap()
 {
     map<string, double> parameterMap;
     for (size_t i=0; i<mParameters.size(); ++i)

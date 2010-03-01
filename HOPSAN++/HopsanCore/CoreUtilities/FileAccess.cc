@@ -236,9 +236,9 @@ void FileAccess::saveComponentSystem(ofstream& modelFile, ComponentSystem* pMoth
             modelFile << "COMPONENT " << it->second << " " << it->first << motherSystemName << "\n";
         }
 
-        map<string,double> componentParameterList = pMotherModel->getSubComponent(it->first)->getParameterList();
+        map<string,double> componentParameterMap = pMotherModel->getSubComponent(it->first)->getParameterMap();
         map<string, double>::iterator itc;
-        for(itc = componentParameterList.begin(); itc!=componentParameterList.end(); ++itc)
+        for(itc = componentParameterMap.begin(); itc!=componentParameterMap.end(); ++itc)
         {
             modelFile << "SET " << it->first << " " << itc->first << " " << itc->second << "\n";
         }

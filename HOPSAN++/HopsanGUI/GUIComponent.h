@@ -40,6 +40,7 @@ protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
 signals:
     void componentMoved();
