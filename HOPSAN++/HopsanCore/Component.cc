@@ -365,6 +365,7 @@ void Component::setTimestep(const double timestep)
 
 string ComponentSystem::SubComponentStorage::modifyName(string name)
 {
+    cout << "Modified name: " << name << "  was changed to:  ";
     size_t ctr = 1; //The suffix number
     while(mSubComponentMap.count(name) != 0)
     {
@@ -394,6 +395,7 @@ string ComponentSystem::SubComponentStorage::modifyName(string name)
         ++ctr;
         //cout << "ctr: " << ctr << " appended tempname: " << name << endl;
     }
+    cout << name << endl;
     return name;
 }
 
@@ -404,7 +406,7 @@ void ComponentSystem::SubComponentStorage::add(Component* pComponent)
 {
     //First check if the name already exists, in that case change the suffix
     string tempname = pComponent->getName();
-    cout << "initial tempname: " << tempname << endl;
+    //cout << "initial tempname: " << tempname << endl;
 
     tempname = modifyName(tempname);
 
@@ -873,6 +875,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
         assert(false);
     }
 
+    //! @todo this will be a problem if we want to connect sensors and such
     if (pPort1->isConnected() && pPort2->isConnected())
         //Both already are connected to nodes
     {
@@ -881,6 +884,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
     }
     else
     {
+        //! @todo must make sure that ONLY ONE poerport can be internally connected to systemports (no sensors or anything else) to amke stuff simpler
         //! @todo No error handling nor checks are done here
         //Check if component1 is a System component containing Component2
         if (&rComponent1 == &(rComponent2.getSystemParent()))
@@ -894,7 +898,11 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             pPort2->setNode(pNode);
             pPort1->setNode(pNode);
             pNode->setPort(pPort1);
+            pNode->setPort(pPort2);
             rComponent2.getSystemParent().addSubNode(pNode);    //Component1 will contain this node as subnode
+            //let the ports know about each other
+            pPort1->addConnectedPort(pPort2);
+            pPort2->addConnectedPort(pPort1);
         }
         //Check if component2 is a System component containing Component1
         else if (&rComponent2 == &(rComponent1.getSystemParent()))
@@ -908,7 +916,11 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             pPort1->setNode(pNode);
             pPort2->setNode(pNode);
             pNode->setPort(pPort2);
+            pNode->setPort(pPort1);
             rComponent1.getSystemParent().addSubNode(pNode);    //Component2 will contain this node as subnode
+            //let the ports know about each other
+            pPort1->addConnectedPort(pPort2);
+            pPort2->addConnectedPort(pPort1);
         }
         else
         {
@@ -934,7 +946,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
                 }
             }
 
-            ///TODO: this maybe should be checked every time not only if same level, with some modification as i can connect to myself aswell
+            //! @todo this maybe should be checked every time not only if same level, with some modification as i can connect to myself aswell
             //Check so that both systems to connect have been added to this system
             if ((&rComponent1.getSystemParent() != (Component*)this) && ((&rComponent1.getSystemParent() != (Component*)this)) )
             {
@@ -942,7 +954,7 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
                 assert(false);
             }
 
-            //Check if One of them is connected to a node
+            //Check if One of the ports already is connected to a node
             if (pPort1->isConnected() || pPort2->isConnected())
             {
                 //If rComponent1 is connected to a node
@@ -962,6 +974,11 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
 
                         //Add port pointers to node
                         pNode->setPort(pPort2);
+
+                        //let the ports know about each other
+                        pPort1->addConnectedPort(pPort2);
+                        pPort2->addConnectedPort(pPort1);
+
                     }
                 }
                 //else rComponent2 is connected to a node
@@ -981,6 +998,10 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
 
                         //Add port pointers to node
                         pNode->setPort(pPort1);
+
+                        //let the ports know about each other
+                        pPort1->addConnectedPort(pPort2);
+                        pPort2->addConnectedPort(pPort1);
                     }
                 }
             }
@@ -1006,6 +1027,10 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
                 //Add port pointers to node
                 pNode->setPort(pPort1);
                 pNode->setPort(pPort2);
+
+                //let the ports know about each other
+                pPort1->addConnectedPort(pPort2);
+                pPort2->addConnectedPort(pPort1);
             }
         }
         cout << "Connected " << rComponent1.getName() << ": " << portname1 << " with " << rComponent2.getName() << ": " << portname2 << " sucessfully" << endl;
@@ -1068,11 +1093,11 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
         cout << "Trying to connect WritePort and PowerPort to same node" << endl;
         assert(false);
     }
-    if ((n_PowerPorts == 0) && (n_WritePorts == 0))
-    {
-        cout << "Trying to connect only ReadPorts" << endl;
-        assert(false);
-    }
+//    if ((n_PowerPorts == 0) && (n_WritePorts == 0))
+//    {
+//        cout << "Trying to connect only ReadPorts" << endl;
+//        assert(false);
+//    }
     //It seems to be OK!
     return true;
 }
@@ -1085,15 +1110,34 @@ void ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
     cout << "disconnecting " << pPort1->mpComponent->getName() << " " << pPort1->getPortName() << "  and  " << pPort2->mpComponent->getName() << " " << pPort2->getPortName() << endl;
 
     Node* node_ptr = pPort1->getNodePtr();
-    cout << "nPors in node: " << node_ptr->mPortPtrs.size() << endl;
-    //Remove the ports from the node
-    node_ptr->removePort(pPort1);
-    cout << "nPors in node after remove 1: " << node_ptr->mPortPtrs.size() << endl;
-    node_ptr->removePort(pPort2);
-    cout << "nPors in node after remove 2: " << node_ptr->mPortPtrs.size() << endl;
-    //Remove the node from the ports
-    pPort1->clearNode();
-    pPort2->clearNode();
+    cout << "nPorts in node: " << node_ptr->mPortPtrs.size() << endl;
+
+    //Remove the port pointer from the node and clear the port if it is not used by someone else
+
+    //If we are only connected to one other port then clear the port and remove the pointer from the node
+    //! @todo we assume that the other port is the one we are disconnecting (should be true but check may be a good idea)
+    if (pPort1->mConnectedPorts.size() <= 1)
+    {
+        node_ptr->removePort(pPort1);
+        pPort1->clearConnection();
+    }
+    else
+    {
+        pPort1->eraseConnectedPort(pPort2);
+    }
+    cout << "nPorts in node after remove 1: " << node_ptr->mPortPtrs.size() << endl;
+
+    if (pPort2->mConnectedPorts.size() <= 1)
+    {
+        node_ptr->removePort(pPort2);
+        pPort2->clearConnection();
+    }
+    else
+    {
+        pPort2->eraseConnectedPort(pPort1);
+    }
+    cout << "nPorts in node after remove 2: " << node_ptr->mPortPtrs.size() << endl;
+
 
     //If no more connections exist, remove the entier node and free the memory
     if (node_ptr->mPortPtrs.size() == 0)

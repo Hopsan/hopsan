@@ -20,7 +20,7 @@ Port::Port()
 {
     mPortType = "EmptyPort";
     mpComponent = 0;
-    clearNode();
+    clearConnection();
 
 }
 
@@ -30,7 +30,7 @@ Port::Port(string portname, string node_type)
     mPortName = portname;
     mNodeType = node_type;
     mpComponent = 0;
-    clearNode();
+    clearConnection();
 }
 
 //Destructor
@@ -39,10 +39,11 @@ Port::~Port()
     //Nothing for now
 }
 
-void Port::clearNode()
+void Port::clearConnection()
 {
     //! @todo maybe should be virtual so that we may also clear node type in system ports
     mpNode = 0;
+    mConnectedPorts.clear();
     mIsConnected = false;
 }
 
@@ -81,6 +82,30 @@ void Port::setNode(Node* pNode)
 {
     mpNode = pNode;
     mIsConnected = true;
+}
+
+void Port::addConnectedPort(Port* pPort)
+{
+    mConnectedPorts.push_back(pPort);
+}
+
+void Port::eraseConnectedPort(Port* pPort)
+{
+    vector<Port*>::iterator it;
+    bool found = false;
+    for (it=mConnectedPorts.begin(); it!=mConnectedPorts.end(); ++it)
+    {
+        if (*it = pPort)
+        {
+            mConnectedPorts.erase(it);
+            found = true;
+            break;
+        }
+    }
+    if (!found)
+    {
+        cout << "Warning: You tried to erase port ptr that did not exist in the connected ports list" << endl;
+    }
 }
 
 void Port::saveLogData(string filename)

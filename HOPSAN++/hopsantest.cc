@@ -25,6 +25,8 @@ using namespace std;
 //    //Create master component
 //    ComponentSystem simulationmodel("simulationmodel");
 //    //Create other components
+//    psourceL = pHopsan->createCom
+//
 //    HydraulicPressureSource psourceL("ps_left_side", 10e5);
 //    HydraulicLaminarOrifice orificeL("orifice_left_side", 1e-12);
 //    HydraulicVolume volumeC("volume_center");
@@ -279,9 +281,9 @@ void test_external_lib()
     cout << "afterload" << endl;
 
     Component* psourceL = pHopsan->CreateComponent("HydraulicPressureSource");
-    Component* orificeL = pHopsan->CreateComponent("HydraulicOrifice");
+    Component* orificeL = pHopsan->CreateComponent("HydraulicLaminarOrifice");
     Component* volumeC = pHopsan->CreateComponent("HydraulicVolume");
-    Component* orificeR = pHopsan->CreateComponent("HydraulicOrifice");
+    Component* orificeR = pHopsan->CreateComponent("HydraulicLaminarOrifice");
     Component* psourceR = pHopsan->CreateComponent("HydraulicPressureSource");
     psourceL->setParameter("P", 10e5);
     orificeR->setName("right orifice");
@@ -312,7 +314,7 @@ void test_external_lib()
     simulationmodel.simulate(0,100);
 
     //Test write to file
-    volumeC->getPort("P1").saveLogData("output.txt");
+    psourceL->getPort("P1").saveLogData("output.txt");
 
     cout << "test_external_lib() Done!" << endl;
 
@@ -2027,6 +2029,8 @@ int main()
     //testUniqueNames();
 
     testDisconnect();
+
+    //test_external_lib();
 
     return 0;
 }

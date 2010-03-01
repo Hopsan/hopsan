@@ -75,6 +75,9 @@ void Node::preAllocateLogSpace(const size_t nSlots)
 //    }
     cout << "requestedSize: " << nSlots << " " << data_size << " Capacities: " << mTimeStorage.capacity() << " " << mDataStorage.capacity() << " " << mDataStorage[1].capacity() << " Size: " << mTimeStorage.size() << " " << mDataStorage.size() << " " << mDataStorage[1].size() << endl;
     mLogSpaceAllocated = true;
+
+    //Make sure the ctr is 0 if we simulate teh same model several times in a row
+    mLogCtr = 0;
 }
 
 //! Copy current data vector into log storage, also adds current time
@@ -130,21 +133,43 @@ void Node::saveLogData(string filename)
 
 void Node::setPort(Port *pPort)
 {
-    mPortPtrs.push_back(pPort);
+    //Prevent duplicate port registration that can happen if oter code is not doing what it is suposed to
+    //The other code (connect) will be easier to write if we handle this in here though
+    bool found = false;
+    vector<Port*>::iterator it;
+    for (it=mPortPtrs.begin(); it!=mPortPtrs.end(); ++it)
+    {
+        if (*it == pPort)
+        {
+            found = true;
+            break;
+        }
+    }
+
+    if (!found)
+    {
+        mPortPtrs.push_back(pPort);
+    }
 }
 
 void Node::removePort(Port *pPort)
 {
+    bool found = false;
     vector<Port*>::iterator it;
     for (it=mPortPtrs.begin(); it!=mPortPtrs.end(); ++it)
     {
         if (*it == pPort)
         {
             mPortPtrs.erase(it);
+            found = true;
             break;
         }
     }
-    //! @todo some notification if you try to remove something that does not exist (can not check it==mPortPtrs.end() ) this check can be OK after an successfull erase
+
+    if (!found)
+    {
+        cout << "Warning: you are trying to remove a Port that does not exist in this node  (does nothing)" << endl;
+    }
 }
 
 bool Node::connectedToPort(Port *pPort)

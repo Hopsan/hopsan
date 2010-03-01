@@ -58,9 +58,12 @@ private:
     NodeTypeT mNodeType;
     Node* mpNode;
     Component* mpComponent;
+    vector<Port*> mConnectedPorts;
     bool mIsConnected;
 
-    void clearNode();
+    void addConnectedPort(Port* pPort);
+    void eraseConnectedPort(Port* pPort);
+    void clearConnection();
 };
 
 
