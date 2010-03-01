@@ -71,7 +71,7 @@ void GUIConnector::setEndPort(GUIPort *port)
     connect(this->mpEndPort->getComponent(),SIGNAL(componentDeleted()),this,SLOT(deleteMe()));
     for(std::size_t i=1; i!=mLines.size()-1; ++i)
     {
-        mLines[i]->setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemIsMovable);
+        mLines[i]->setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemUsesExtendedStyleOption);
     }
 }
 
@@ -263,14 +263,36 @@ void GUIConnector::updateLine(int lineNumber)
     qDebug() << "Updating line: x = " << (mLines[lineNumber]->scenePos());
     if (this->mEndPortConnected && lineNumber != 0 && lineNumber != mLines.size())
     {
-        mLines[lineNumber-1]->setLine(mLines[lineNumber-1]->line().x1(),
-                                      mLines[lineNumber-1]->line().y1(),
-                                      mLines[lineNumber-1]->mapFromItem(mLines[lineNumber], mLines[lineNumber]->line().p1()).x(),
-                                      mLines[lineNumber-1]->mapFromItem(mLines[lineNumber], mLines[lineNumber]->line().p1()).y());
-        mLines[lineNumber+1]->setLine(mLines[lineNumber-1]->mapFromItem(mLines[lineNumber], mLines[lineNumber]->line().p2()).x(),
-                                      mLines[lineNumber-1]->mapFromItem(mLines[lineNumber], mLines[lineNumber]->line().p2()).y(),
-                                      mLines[lineNumber+1]->line().x2(),
-                                      mLines[lineNumber+1]->line().y2());
+        if(mLines[lineNumber]->getGeometry()==GUIConnectorLine::HORIZONTAL)
+        {
+            mLines[lineNumber]->setLine(mLines[lineNumber]->mapFromItem(mLines[lineNumber-1], mLines[lineNumber-1]->line().p2()).x(),
+                                        mLines[lineNumber]->line().y1(),
+                                        mLines[lineNumber]->mapFromItem(mLines[lineNumber+1], mLines[lineNumber+1]->line().p1()).x(),
+                                        mLines[lineNumber]->line().y2());
+            mLines[lineNumber-1]->setLine(mLines[lineNumber-1]->line().x1(),
+                                          mLines[lineNumber-1]->line().y1(),
+                                          mLines[lineNumber-1]->line().x2(),
+                                          mLines[lineNumber-1]->mapFromItem(mLines[lineNumber], mLines[lineNumber]->line().p1()).y());
+            mLines[lineNumber+1]->setLine(mLines[lineNumber+1]->line().x1(),
+                                          mLines[lineNumber+1]->mapFromItem(mLines[lineNumber], mLines[lineNumber]->line().p2()).y(),
+                                          mLines[lineNumber+1]->line().x2(),
+                                          mLines[lineNumber+1]->line().y2());
+        }
+        else if(mLines[lineNumber]->getGeometry()==GUIConnectorLine::VERTICAL)
+        {
+            mLines[lineNumber]->setLine(mLines[lineNumber]->line().x1(),
+                                        mLines[lineNumber]->mapFromItem(mLines[lineNumber-1], mLines[lineNumber-1]->line().p2()).y(),
+                                        mLines[lineNumber]->line().x2(),
+                                        mLines[lineNumber]->mapFromItem(mLines[lineNumber+1], mLines[lineNumber+1]->line().p1()).y());
+            mLines[lineNumber-1]->setLine(mLines[lineNumber-1]->line().x1(),
+                                          mLines[lineNumber-1]->line().y1(),
+                                          mLines[lineNumber-1]->mapFromItem(mLines[lineNumber], mLines[lineNumber]->line().p1()).x(),
+                                          mLines[lineNumber-1]->line().y2());
+            mLines[lineNumber+1]->setLine(mLines[lineNumber+1]->mapFromItem(mLines[lineNumber], mLines[lineNumber]->line().p2()).x(),
+                                          mLines[lineNumber+1]->line().y1(),
+                                          mLines[lineNumber+1]->line().x2(),
+                                          mLines[lineNumber+1]->line().y2());
+        }
     }
 }
 

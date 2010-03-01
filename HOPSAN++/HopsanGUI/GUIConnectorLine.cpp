@@ -25,7 +25,7 @@ class GUIConnectorLine;
 GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen primaryPen, QPen activePen, QPen hoverPen, int lineNumber, QGraphicsItem *parent)
         : QGraphicsLineItem(x1,y1,x2,y2,parent)
 {
-    setFlags(QGraphicsItem::ItemSendsGeometryChanges);
+    setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
     //this->mParentConnector = parentConnector;
     this->mPrimaryPen = primaryPen;
     this->mActivePen = activePen;
@@ -66,6 +66,14 @@ void GUIConnectorLine::moveEvent(QGraphicsSceneMoveEvent *event)
 
 void GUIConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
+    if(this->getGeometry()==GUIConnectorLine::VERTICAL)
+    {
+        this->setCursor(Qt::SizeHorCursor);
+    }
+    else if(this->getGeometry()==GUIConnectorLine::HORIZONTAL)
+    {
+           this->setCursor(Qt::SizeVerCursor);
+    }
     emit lineHoverEnter();
 }
 
