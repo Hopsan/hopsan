@@ -22,16 +22,18 @@ class DLLIMPORTEXPORT CompParameter
 {
     friend class Component;
 
-private:
-    CompParameter(const string name, const string description, const string unit, double &rValue);
-
-    double getValue();
-    void setValue(const double value);
-
+public:
     ///TODO: getting strings can (probably) be speed up by returning const references instead of copying strings
     string getName();
     string getDesc();
     string getUnit();
+
+    double getValue();
+
+private:
+    CompParameter(const string name, const string description, const string unit, double &rValue);
+
+    void setValue(const double value);
 
     string mName;
     string mDescription;
@@ -64,7 +66,7 @@ public:
     void listParametersConsole();
     double getParameter(const string name);
     void setParameter(const string name, const double value);
-    list<string> getParameterList();
+    vector<CompParameter> getParameterVector();
     map<string, double> getParameterMap();
 
     //Ports

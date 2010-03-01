@@ -163,13 +163,13 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     std::cout << "GUIComponent.cpp: " << "contextMenuEvent " << std::endl;
 
-    list<string>::iterator it;
+    vector<CompParameter>::iterator it;
 
-    list<string> paramList = this->mpCoreComponent->getParameterList();
+    vector<CompParameter> paramVector = this->mpCoreComponent->getParameterVector();
 
     qDebug() << "This component has the following Parameters: ";
-    for ( it=paramList.begin() ; it !=paramList.end(); it++ )
-        qDebug() << QString::fromStdString(*it);
+    for ( it=paramVector.begin() ; it !=paramVector.end(); it++ )
+        qDebug() << QString::fromStdString(it->getName()) << ": " << it->getValue();
 
 }
 
