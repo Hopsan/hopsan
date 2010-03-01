@@ -40,6 +40,8 @@ public:
     void removeLine(QPointF cursorPos);
     void setPen(QPen pen);
     int getNumberOfLines();
+    int getLineNumber();
+    GUIConnectorLine *getLine(int line);
     GUIConnectorLine *getOldLine();
     GUIConnectorLine *getLastLine();
     GUIConnectorLine *getThisLine();

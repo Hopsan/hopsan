@@ -153,8 +153,18 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
     startPos = this->mapFromScene(startPos);
     endPos = this->mapFromScene(endPos);
 
+    //////////////Only used when moving components:///////////////
+    getLine(0)->setLine(startPos.x(),
+                        startPos.y(),
+                        getLine(1)->line().x1(),
+                        startPos.y());
+    getLine(1)->setLine(getLine(0)->line().x2(),
+                        getLine(0)->line().y2(),
+                        getLine(1)->line().x2(),
+                        getLine(1)->line().y2());
+    //////////////////////////////////////////////////////////////
 
-    //First two lines out of the component:
+    //First line of the connector:
     if (getNumberOfLines()<3)
     {
         getLastLine()->setLine(startPos.x(),
@@ -164,6 +174,7 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
         getLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
         getThisLine()->setGeometry(GUIConnectorLine::VERTICAL);
     }
+
     //If last line was vertical:
     else if (getLastLine()->getGeometry()== GUIConnectorLine::VERTICAL and getThisLine()->getGeometry()!=GUIConnectorLine::DIAGONAL)
     {
@@ -182,6 +193,7 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
                                getOldLine()->line().y2());
         getThisLine()->setGeometry(GUIConnectorLine::VERTICAL);
     }
+
     //If the line is diagonal:
 //    if (getThisLine()->getGeometry()==GUIConnectorLine::DIAGONAL)
 //    {
@@ -190,6 +202,7 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
 //                               endPos.x(),
 //                               endPos.y());
 //    }
+
     //This Line:
     getThisLine()->setLine(getLastLine()->line().x2(),
                            getLastLine()->line().y2(),
@@ -311,6 +324,11 @@ GUIConnectorLine *GUIConnector::getLastLine()
 GUIConnectorLine *GUIConnector::getThisLine()
 {
     return mLines[mLines.size()-1];
+}
+
+GUIConnectorLine *GUIConnector::getLine(int line)
+{
+    return mLines[line];
 }
 
 
