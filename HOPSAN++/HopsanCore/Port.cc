@@ -19,10 +19,9 @@
 Port::Port()
 {
     mPortType = "EmptyPort";
-    mpNode  = 0;
     mpComponent = 0;
-    mIsConnected = false;
-    //mIsSystemPort = false;
+    clearNode();
+
 }
 
 Port::Port(string portname, string node_type)
@@ -30,16 +29,21 @@ Port::Port(string portname, string node_type)
     mPortType = "EmptyPort";
     mPortName = portname;
     mNodeType = node_type;
-    mpNode  = 0;
     mpComponent = 0;
-    mIsConnected = false;
-    //mIsSystemPort = false;
+    clearNode();
 }
 
 //Destructor
 Port::~Port()
 {
     //Nothing for now
+}
+
+void Port::clearNode()
+{
+    //! @todo maybe should be virtual so that we may also clear node type in system ports
+    mpNode = 0;
+    mIsConnected = false;
 }
 
 const string &Port::getNodeType()
@@ -110,11 +114,6 @@ bool Port::isConnected()
     return mIsConnected;
 }
 
-//bool Port::isSystemPort()
-//{
-//    return mIsSystemPort;
-//}
-
 const string &Port::getPortType()
 {
     return mPortType;
@@ -128,7 +127,6 @@ const string &Port::getPortName()
 SystemPort::SystemPort() : Port()
 {
     mPortType = "SystemPort";
-    //mIsSystemPort = true;
 }
 
 //Constructor

@@ -25,7 +25,6 @@ Node::Node()
     mDataStorage.clear();
     mTimeStorage.clear();
     mPortPtrs.clear();
-    //mTransparentPortPtrs.clear();
     mLogSpaceAllocated = false;
     mLogCtr = 0;
 }
@@ -132,6 +131,24 @@ void Node::saveLogData(string filename)
 void Node::setPort(Port *pPort)
 {
     mPortPtrs.push_back(pPort);
+}
+
+void Node::removePort(Port *pPort)
+{
+    vector<Port*>::iterator it;
+    for (it=mPortPtrs.begin(); it!=mPortPtrs.end(); ++it)
+    {
+        if (*it == pPort)
+        {
+            mPortPtrs.erase(it);
+            break;
+        }
+    }
+    if (it==mPortPtrs.end())
+    {
+        cout << "Error: You tried to remove a port poiner that did not exist in this node" << endl;
+        assert(false);
+    }
 }
 
 bool Node::connectedToPort(Port *pPort)

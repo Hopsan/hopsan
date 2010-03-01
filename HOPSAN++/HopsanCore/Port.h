@@ -34,7 +34,6 @@ public:
     vector<vector<double> > *getDataVectorPtr();
 
     bool isConnected();
-    //bool isSystemPort();
 
     const string &getNodeType();
     const string &getPortType();
@@ -49,7 +48,6 @@ protected:
     virtual ~Port();
 
     PortTypeT mPortType;
-    //bool mIsSystemPort;
 
     void setNode(Node* pNode);
     Node &getNode();
@@ -61,6 +59,8 @@ private:
     Node* mpNode;
     Component* mpComponent;
     bool mIsConnected;
+
+    void clearNode();
 };
 
 

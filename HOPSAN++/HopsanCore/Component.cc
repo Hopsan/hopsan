@@ -67,6 +67,8 @@ Component::Component(string name, double timestep)
     mIsComponentSignal = false;
     mTypeCQS = "";
 
+    mpSystemParent = 0;
+
     registerParameter("Ts", "Sample time", "[s]",   mTimestep);
 }
 
@@ -373,7 +375,7 @@ string ComponentSystem::SubComponentStorage::modifyName(string name)
             if (foundpos+1 < name.size())
             {
                 unsigned char nr = name.at(foundpos+1);
-                cout << "nr after _: " << nr << endl;
+                //cout << "nr after _: " << nr << endl;
                 //Check the ascii code for the charachter
                 if ((nr >= 48) && (nr <= 57))
                 {
@@ -382,7 +384,7 @@ string ComponentSystem::SubComponentStorage::modifyName(string name)
                 }
             }
         }
-        cout << "ctr: " << ctr << " stripped tempname: " << name << endl;
+        //cout << "ctr: " << ctr << " stripped tempname: " << name << endl;
 
         //add new suffix
         stringstream suffix;
@@ -390,7 +392,7 @@ string ComponentSystem::SubComponentStorage::modifyName(string name)
         name.append("_");
         name.append(suffix.str());
         ++ctr;
-        cout << "ctr: " << ctr << " appended tempname: " << name << endl;
+        //cout << "ctr: " << ctr << " appended tempname: " << name << endl;
     }
     return name;
 }
@@ -531,6 +533,7 @@ bool ComponentSystem::SubComponentStorage::have(string name)
 
 void ComponentSystem::SubComponentStorage::rename(string old_name, string new_name)
 {
+    cout << "Trying to rename: " << old_name << " to " << new_name << endl;
     //First find the post in the map where the old name resides, copy the data stored there
     map<string, SubComponentInfo>::iterator it = mSubComponentMap.find(old_name);
     SubComponentInfo info;
@@ -542,6 +545,7 @@ void ComponentSystem::SubComponentStorage::rename(string old_name, string new_na
 
         //insert new (with new name)
         new_name = modifyName(new_name);
+        cout << "new name is: " << new_name << endl;
         mSubComponentMap.insert(pair<string, SubComponentInfo>(new_name, info));
 
         //No change the actual component name
@@ -742,10 +746,29 @@ bool  ComponentSystem::haveSubComponent(string name)
 }
 
 
-//! Adds a node as subnode to specified component
+//! Adds a node as subnode in the system
 void ComponentSystem::addSubNode(Node* node_ptr)
 {
     mSubNodePtrs.push_back(node_ptr);
+}
+
+//! Removes a previously added node
+void ComponentSystem::removeSubNode(Node* node_ptr)
+{
+    vector<Node*>::iterator it;
+    for (it=mSubNodePtrs.begin(); it!=mSubNodePtrs.end(); ++it)
+    {
+        if (*it == node_ptr)
+        {
+            mSubNodePtrs.erase(it);
+            break;
+        }
+    }
+    if ( it == mSubNodePtrs.end() )
+    {
+        cout << "Error: you are trying to remove a node which does not exist in this system" << endl;
+        assert(false);
+    }
 }
 
 //! preAllocates log space (to speed up later access for log writing)
@@ -1056,6 +1079,30 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
     }
     //It seems to be OK!
     return true;
+}
+
+//! Disconnects two ports and remove node if no one is using it any more
+void ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
+{
+    //! @todo some simple error handling (are the ports really connected and such)
+    cout << "disconnecting " << pPort1->mpComponent->getName() << " " << pPort1->getPortName() << "  and  " << pPort2->mpComponent->getName() << " " << pPort2->getPortName() << endl;
+
+    Node* node_ptr = pPort1->getNodePtr();
+    //Remove the ports from the node
+    node_ptr->removePort(pPort1);
+    node_ptr->removePort(pPort2);
+    //Remove the node from the ports
+    pPort1->clearNode();
+    pPort2->clearNode();
+
+    //If no more connections exist, remove the entier node and free the memory
+    if (node_ptr->mPortPtrs.size() == 0)
+    {
+        cout << "No more connections to the node exists, deleteing the node" << endl;
+        removeSubNode(node_ptr);
+        delete node_ptr;
+        //! @todo maybe need to let the factory remove it insted of manually, in case of user supplied external nodes
+    }
 }
 
 void ComponentSystem::setDesiredTimestep(const double timestep) // FIPPLAR MED NU, be

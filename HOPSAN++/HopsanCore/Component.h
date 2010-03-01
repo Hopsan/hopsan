@@ -186,6 +186,7 @@ public:
     void connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2);
     void connect(Component *pComponent1, const string portname1, Component *pComponent2, const string portname2);
     void connect(Port &rPort1, Port &rPort2);
+    void disconnect(Port *pPort1, Port *pPort2);
 
     //initializeand simulate
     void initialize(const double startT, const double stopT);
@@ -207,8 +208,9 @@ private:
     //Check if connection ok
     bool connectionOK(Node *pNode, Port *pPort1, Port *pPort2);
 
-    //Add sub nodes
+    //Add adn Remove sub nodes
     void addSubNode(Node* node_ptr);
+    void removeSubNode(Node* node_ptr);
 
     //==========Prvate member variables==========
     SubComponentStorage mSubComponentStorage;

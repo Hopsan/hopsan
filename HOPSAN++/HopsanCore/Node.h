@@ -49,6 +49,7 @@ protected:
 private:
     //Private member fuctions
     void setPort(Port *pPort);
+    void removePort(Port *pPort);
     bool connectedToPort(Port *pPort);
 
     //Private member variables
