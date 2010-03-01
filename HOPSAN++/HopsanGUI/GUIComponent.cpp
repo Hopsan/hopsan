@@ -29,7 +29,6 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QS
     mpCoreComponent = hopsan->CreateComponent(componentTypeName.toStdString());
     //
 
-    setPos(position);
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
     this->setAcceptHoverEvents(true);
 
@@ -60,6 +59,8 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QS
 
     connect(text, SIGNAL(textMoved(QGraphicsSceneMouseEvent *)), SLOT(fixTextPosition(QGraphicsSceneMouseEvent *)));
     connect(this->mpParentView,SIGNAL(keyPressDelete()),this,SLOT(deleteComponent()));
+
+    setPos(position-QPoint(icon->boundingRect().width()/2, icon->boundingRect().height()/2));
 
     mpSelectionBox = new GUIComponentSelectionBox(0,0,icon->boundingRect().width(),icon->boundingRect().height(),
                                                   QPen(QColor("red"),3), QPen(QColor("darkRed"),2),this);

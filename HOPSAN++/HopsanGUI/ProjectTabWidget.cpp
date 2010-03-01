@@ -88,13 +88,13 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
         std::cout << "GraphicsView: " << "x=" << position.x() << "  " << "y=" << position.y() << std::endl;
 
-        GUIComponent *guiComponent = new GUIComponent(mpHopsan,iconDir,componentTypeName,position,this);
+        GUIComponent *guiComponent = new GUIComponent(mpHopsan,iconDir,componentTypeName,mapToScene(position).toPoint(),this);
 
         //Core interaction
         qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
         //
 
-        guiComponent->setPos(this->mapToScene(position));
+        //guiComponent->setPos(this->mapToScene(position));
         std::cout << "GraphicsView: " << guiComponent->parent() << std::endl;
 
         this->scene()->addItem(guiComponent);
