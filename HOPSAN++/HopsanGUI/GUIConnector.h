@@ -40,8 +40,6 @@ public:
     void removeLine(QPointF cursorPos);
     void setPen(QPen pen);
     int getNumberOfLines();
-    void setStraight(bool var);
-    bool isStraight();
     GUIConnectorLine *getOldLine();
     GUIConnectorLine *getLastLine();
     GUIConnectorLine *getThisLine();
@@ -70,7 +68,6 @@ private:
     QPen mPassivePen;
     QPen mActivePen;
     QPen mHoverPen;
-    bool mStraight;
     bool mIsActive;
     bool mEndPortConnected;
 };

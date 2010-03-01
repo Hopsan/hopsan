@@ -121,7 +121,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     if (event->modifiers() and Qt::ControlModifier)
     {
         //this->setDragMode(QGraphicsView::ScrollHandDrag);       //Zoom function
-        if (this->creatingConnector)                            //Straight line function
+        if (this->creatingConnector)
         {
             QCursor cursor;
             mpTempConnector->getThisLine()->setGeometry(GUIConnectorLine::DIAGONAL);

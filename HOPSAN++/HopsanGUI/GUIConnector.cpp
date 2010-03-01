@@ -41,7 +41,6 @@ GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, QPen passiveP
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
     this->setActive();
-    this->mStraight = true;
     connect(this->mpParentView,SIGNAL(keyPressDelete()),this,SLOT(deleteMeIfMeIsActive()));
 }
 
@@ -237,18 +236,6 @@ void GUIConnector::removeLine(QPointF cursorPos)
 int GUIConnector::getNumberOfLines()
 {
     return mLines.size();
-}
-
-
-void GUIConnector::setStraight(bool var)
-{
-    mStraight = var;
-}
-
-
-bool GUIConnector::isStraight()
-{
-    return mStraight;
 }
 
 void GUIConnector::deleteMe()
