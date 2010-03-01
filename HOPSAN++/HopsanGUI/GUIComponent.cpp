@@ -140,10 +140,7 @@ void GUIComponent::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     QList<GUIPort*>::iterator i;
     for (i = mPortListPtrs.begin(); i != mPortListPtrs.end(); ++i)
     {
-        if (!(*i)->mpCorePort->isConnected())
-        {
-            (*i)->show();
-        }
+        (*i)->show();
     }
 }
 
