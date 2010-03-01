@@ -69,6 +69,10 @@ void GUIConnector::setEndPort(GUIPort *port)
 
     qDebug() << this->boundingRect().x() << " " << this->boundingRect().y() << " ";
     connect(this->mpEndPort->getComponent(),SIGNAL(componentDeleted()),this,SLOT(deleteMe()));
+    for(std::size_t i=1; i!=mLines.size()-1; ++i)
+    {
+        mLines[i]->setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemIsMovable);
+    }
 }
 
 GUIPort *GUIConnector::getStartPort()
@@ -213,8 +217,6 @@ void GUIConnector::addLine()
     connect(mLines[mLines.size()-1],SIGNAL(lineMoved(int)),this, SLOT(updateLine(int)));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
-
-
 }
 
 void GUIConnector::removeLine(QPointF cursorPos)
