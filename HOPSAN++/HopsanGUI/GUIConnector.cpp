@@ -156,10 +156,10 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
     //////////////Only used when moving components:///////////////
     getLine(0)->setLine(startPos.x(),
                         startPos.y(),
-                        getLine(1)->line().x1(),
+                        getLine(0)->mapFromParent(getLine(1)->mapToParent(getLine(1)->line().p1())).x(),
                         startPos.y());
-    getLine(1)->setLine(getLine(0)->line().x2(),
-                        getLine(0)->line().y2(),
+    getLine(1)->setLine(getLine(1)->mapFromParent(getLine(0)->mapToParent(getLine(0)->line().p2())).x(),
+                        getLine(1)->mapFromParent(getLine(0)->mapToParent(getLine(0)->line().p2())).y(),
                         getLine(1)->line().x2(),
                         getLine(1)->line().y2());
     //////////////////////////////////////////////////////////////
@@ -178,19 +178,19 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
     //If last line was vertical:
     else if (getLastLine()->getGeometry()== GUIConnectorLine::VERTICAL and getThisLine()->getGeometry()!=GUIConnectorLine::DIAGONAL)
     {
-        getLastLine()->setLine(getOldLine()->line().x2(),
-                               getOldLine()->line().y2(),
-                               getOldLine()->line().x2(),
+        getLastLine()->setLine(getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).x(),
+                               getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).y(),
+                               getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).x(),
                                endPos.y());
         getThisLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
     }
     //If last line was horizontal:
     else if (getLastLine()->getGeometry()==GUIConnectorLine::HORIZONTAL and getThisLine()->getGeometry()!=GUIConnectorLine::DIAGONAL)
     {
-        getLastLine()->setLine(getOldLine()->line().x2(),
-                               getOldLine()->line().y2(),
+        getLastLine()->setLine(getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).x(),
+                               getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).y(),
                                endPos.x(),
-                               getOldLine()->line().y2());
+                               getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).y());
         getThisLine()->setGeometry(GUIConnectorLine::VERTICAL);
     }
 
@@ -204,8 +204,8 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
 //    }
 
     //This Line:
-    getThisLine()->setLine(getLastLine()->line().x2(),
-                           getLastLine()->line().y2(),
+    getThisLine()->setLine(getThisLine()->mapFromParent(getLastLine()->mapToParent(getLastLine()->line().p2())).x(),
+                           getThisLine()->mapFromParent(getLastLine()->mapToParent(getLastLine()->line().p2())).y(),
                            endPos.x(),
                            endPos.y());
 }
