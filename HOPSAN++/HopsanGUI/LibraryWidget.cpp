@@ -144,13 +144,13 @@ void LibraryWidget::addLibrary(QString libraryName, QString parentLibraryName)
 }
 
 
-void LibraryWidget::addComponent(QString libraryName, QString componentName, QIcon icon, QStringList list)
-{
-    ListWidgetItem *newComponent = new ListWidgetItem(icon, componentName);
-    newComponent->setParameterData(list);
-    addComponent(libraryName, newComponent);
-
-}
+//void LibraryWidget::addComponent(QString libraryName, QString componentName, QIcon icon, QStringList list)
+//{
+//    ListWidgetItem *newComponent = new ListWidgetItem(icon, componentName);
+//    newComponent->setParameterData(list);
+//    addComponent(libraryName, newComponent);
+//
+//}
 
 
 void LibraryWidget::addComponent(QString libraryName, ListWidgetItem *newComponent)

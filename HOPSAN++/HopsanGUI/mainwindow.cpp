@@ -236,8 +236,14 @@ void MainWindow::addLibs(QString libDir, QString parentLib)
         file.close();
         //Add data to the paremeterData list
         parameterData << componentName << iconPath;
+
+        ListWidgetItem *libcomp= new ListWidgetItem(icon,componentName);
+
+        libcomp->setParameterData(parameterData);
+
         //Add the component to the library
-        library->addComponent(libName,componentName,icon,parameterData);
+        //library->addComponent(libName,componentName,icon,parameterData);
+        library->addComponent(libName, libcomp);
     }
 }
 

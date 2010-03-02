@@ -51,7 +51,7 @@ public:
 
 //    void addLibrary(QString libraryName);
     void addLibrary(QString libraryName, QString parentLibraryName=QString());
-    void addComponent(QString libraryName, QString componentName, QIcon icon, QStringList list);
+    //void addComponent(QString libraryName, QString componentName, QIcon icon, QStringList list);
     void addComponent(QString libraryName, ListWidgetItem *newComponent);
 
 private slots:
