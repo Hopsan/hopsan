@@ -162,6 +162,8 @@ MainWindow::MainWindow(QWidget *parent)
     library->addLibrary("User defined libraries");
     addLibs("../../HopsanGUI/componentData/hydraulic");//This method should be in LibraryWidget and addLibs() may be here
     addLibs("../../HopsanGUI/componentData/hydraulic/sources","hydraulic");//This method should be in LibraryWidget and addLibs() may be here
+    addLibs("../../HopsanGUI/componentData/hydraulic/restrictors","hydraulic");//This method should be in LibraryWidget and addLibs() may be here
+    addLibs("../../HopsanGUI/componentData/hydraulic/volumes","hydraulic");//This method should be in LibraryWidget and addLibs() may be here
 
     QMetaObject::connectSlotsByName(this);
 
