@@ -239,6 +239,14 @@ void GraphicsView::addConnector(GUIPort *port)
     }
 }
 
+void GraphicsView::removeConnection(GUIConnector* pConnector)
+{
+    /// @todo some error handling both ports must exist and be connected to each other
+    //Core interaction
+    mpModel->disconnect(pConnector->getStartPort()->mpCorePort, pConnector->getEndPort()->mpCorePort);
+    //
+}
+
 
 //GraphicsView::GraphicsView(QWidget *parent)
 //        : QGraphicsView(parent)

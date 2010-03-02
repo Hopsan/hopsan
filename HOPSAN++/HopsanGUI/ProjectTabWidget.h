@@ -48,6 +48,7 @@ signals:
 
 public slots:
     void addConnector(GUIPort *rect);
+    void removeConnection(GUIConnector* pConnector);
 
     //QByteArray *data;
     //QDataStream *stream;
