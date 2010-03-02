@@ -100,7 +100,6 @@ void GraphicsView::dropEvent(QDropEvent *event)
         this->scene()->addItem(guiComponent);
 
         delete data;
-
     }
 }
 
@@ -132,6 +131,8 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     {
         emit keyPressDelete();
     }
+
+    QGraphicsView::keyPressEvent ( event );
 }
 
 void GraphicsView::keyReleaseEvent(QKeyEvent *event)
@@ -148,6 +149,8 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
            mpTempConnector->getThisLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
         }
     }
+
+    QGraphicsView::keyReleaseEvent ( event );
 }
 
 //! Defines what happens when the mouse is moving in a GraphicsView.

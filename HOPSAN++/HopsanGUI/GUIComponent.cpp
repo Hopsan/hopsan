@@ -45,9 +45,9 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QS
     //setWindowFlags(Qt::SplashScreen);//just to see the geometry
     setGeometry(0,0,icon->boundingRect().width(),icon->boundingRect().height());
 
-    QString componentName = QString(QString::fromStdString(mpCoreComponent->getName()));
-    text = new GUIComponentTextItem(componentName,this);
-    text->setPos(QPointF(icon->boundingRect().width()/2-text->boundingRect().width()/2, icon->boundingRect().height()));
+    QString componentName = QString::fromStdString(mpCoreComponent->getName());
+    mpNameText = new GUIComponentTextItem(componentName,this);
+    mpNameText->setPos(QPointF(icon->boundingRect().width()/2-mpNameText->boundingRect().width()/2, icon->boundingRect().height()));
 
     //UGLY UGLY HARD CODED PORT CONNECTION TO CORE...
     mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(0), icon->sceneBoundingRect().width()-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),this,icon));
@@ -57,7 +57,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QS
 
    // rectR->boundingRegion();
 
-    connect(text, SIGNAL(textMoved(QGraphicsSceneMouseEvent *)), SLOT(fixTextPosition(QGraphicsSceneMouseEvent *)));
+    connect(mpNameText, SIGNAL(textMoved(QGraphicsSceneMouseEvent *)), SLOT(fixTextPosition(QGraphicsSceneMouseEvent *)));
     connect(this->mpParentView,SIGNAL(keyPressDelete()),this,SLOT(deleteComponent()));
 
     setPos(position-QPoint(icon->boundingRect().width()/2, icon->boundingRect().height()/2));
@@ -72,24 +72,25 @@ double dist(double x1,double y1, double x2, double y2)
 {
     return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
 }
+
 void GUIComponent::fixTextPosition(QGraphicsSceneMouseEvent * event)
 {
-    double x1 = icon->boundingRect().width()/2-text->boundingRect().width()/2;
+    double x1 = icon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
     double y1 = icon->boundingRect().height();
 
-    double x2 = icon->boundingRect().width()/2-text->boundingRect().width()/2;
-    double y2 = -text->boundingRect().height();
+    double x2 = icon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
+    double y2 = -mpNameText->boundingRect().height();
 
-    double x = text->mapToParent(event->pos()).x();
-    double y = text->mapToParent(event->pos()).y();
+    double x = mpNameText->mapToParent(event->pos()).x();
+    double y = mpNameText->mapToParent(event->pos()).y();
 
     if (dist(x,y, x1,y1) > dist(x,y, x2,y2))
     {
-        text->setPos(x2,y2);
+        mpNameText->setPos(x2,y2);
     }
     else
     {
-        text->setPos(x1,y1);
+        mpNameText->setPos(x1,y1);
     }
 
     std::cout << "GUIComponent::fixTextPosition, x: " << x << " y: " << y << std::endl;
@@ -122,7 +123,7 @@ void GUIComponent::addConnector(GUIConnector *item)
 
 void GUIComponent::deleteComponent()
 {
-    qDebug() << "Debug123\n";
+    qDebug() << "GUIComponent:: inside delete component\n";
     if(this->isSelected())
     {
         emit componentDeleted();
@@ -205,7 +206,6 @@ GUIComponentTextItem::GUIComponentTextItem(const QString &text, QGraphicsItem *p
 {
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
     setTextInteractionFlags(Qt::TextEditorInteraction);
-    //setTextInteractionFlags(Qt::TextEditable);
 }
 
 
@@ -213,17 +213,13 @@ void GUIComponentTextItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     qDebug() << "GUIComponentTextItem: " << "mouseReleaseEvent";
     emit textMoved(event);
-    QGraphicsItem::mouseReleaseEvent(event);
+    QGraphicsTextItem::mouseReleaseEvent(event);
 }
 
-
-void GUIComponentTextItem::keyReleaseEvent(QKeyEvent *event) //Vill inte...
-{
-    std::cout << "GUIComponentTextItem::keyPressEvent: " << event->key() << std::endl;
-    //QGraphicsItem::keyPressEvent(event);
-}
-
-
-
-
-
+//void GUIComponentTextItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+//{
+//    qDebug() << "GUIComponentTextItem: " << "mousePressEvent";
+//    //QGraphicsItem::setFocus ();
+//    //QGraphicsItem::grabKeyboard ();
+//    QGraphicsTextItem::mousePressEvent(event);
+//}

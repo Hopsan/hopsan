@@ -51,7 +51,7 @@ public slots:
 
 private:
     QGraphicsSvgItem *icon;
-    GUIComponentTextItem *text;
+    GUIComponentTextItem *mpNameText;
     QGraphicsView *mpParentView;
     GUIComponentSelectionBox *mpSelectionBox;
     QGraphicsLineItem *mpTempLine;
@@ -71,8 +71,9 @@ class GUIComponentTextItem : public QGraphicsTextItem
 public:
     GUIComponentTextItem(const QString &text, QGraphicsItem *parent = 0);
 
+    //void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    void keyReleaseEvent(QKeyEvent *event);
+    //void keyReleaseEvent(QKeyEvent *event);
 
 signals:
     void textMoved(QGraphicsSceneMouseEvent * event);
