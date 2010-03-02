@@ -352,3 +352,8 @@ QVariant GUIConnector::itemChange(GraphicsItemChange change, const QVariant &val
     return value;
 }
 
+
+bool GUIConnector::endPortConnected()
+{
+    return mEndPortConnected;
+}

@@ -45,6 +45,7 @@ public:
     GUIConnectorLine *getOldLine();
     GUIConnectorLine *getLastLine();
     GUIConnectorLine *getThisLine();
+    bool endPortConnected();
 
 public slots:
     void updatePos();
