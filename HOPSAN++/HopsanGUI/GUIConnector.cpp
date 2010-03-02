@@ -152,14 +152,14 @@ void GUIConnector::setHovered()
 
 void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
 {
-    startPos = this->mapFromScene(startPos);
-    endPos = this->mapFromScene(endPos);
+    //startPos = this->mapFromScene(startPos);
+    //endPos = this->mapFromScene(endPos);
 
     //////////////Only used when moving components:///////////////
-    getLine(0)->setLine(startPos.x(),
-                        startPos.y(),
+    getLine(0)->setLine(getLine(0)->mapFromScene(startPos).x(),
+                        getLine(0)->mapFromScene(startPos).y(),
                         getLine(0)->mapFromParent(getLine(1)->mapToParent(getLine(1)->line().p1())).x(),
-                        startPos.y());
+                        getLine(0)->mapFromScene(startPos).y());
     getLine(1)->setLine(getLine(1)->mapFromParent(getLine(0)->mapToParent(getLine(0)->line().p2())).x(),
                         getLine(1)->mapFromParent(getLine(0)->mapToParent(getLine(0)->line().p2())).y(),
                         getLine(1)->line().x2(),
@@ -169,10 +169,10 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
     //First line of the connector:
     if (getNumberOfLines()<3 and getThisLine()->getGeometry()!=GUIConnectorLine::DIAGONAL)
     {
-        getLastLine()->setLine(startPos.x(),
-                               startPos.y(),
-                               endPos.x(),
-                               startPos.y());
+        getLastLine()->setLine(getLastLine()->mapFromScene(startPos).x(),
+                               getLastLine()->mapFromScene(startPos).y(),
+                               getLastLine()->mapFromScene(endPos).x(),
+                               getLastLine()->mapFromScene(startPos).y());
         getLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
         getThisLine()->setGeometry(GUIConnectorLine::VERTICAL);
     }
@@ -183,7 +183,7 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
         getLastLine()->setLine(getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).x(),
                                getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).y(),
                                getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).x(),
-                               endPos.y());
+                               getLastLine()->mapFromScene(endPos).y());
         getThisLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
     }
     //If last line was horizontal:
@@ -191,7 +191,7 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
     {
         getLastLine()->setLine(getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).x(),
                                getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).y(),
-                               endPos.x(),
+                               getLastLine()->mapFromScene(endPos).x(),
                                getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).y());
         getThisLine()->setGeometry(GUIConnectorLine::VERTICAL);
     }
@@ -208,8 +208,8 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
     //This Line:
     getThisLine()->setLine(getThisLine()->mapFromParent(getLastLine()->mapToParent(getLastLine()->line().p2())).x(),
                            getThisLine()->mapFromParent(getLastLine()->mapToParent(getLastLine()->line().p2())).y(),
-                           endPos.x(),
-                           endPos.y());
+                           getThisLine()->mapFromScene(endPos).x(),
+                           getThisLine()->mapFromScene(endPos).y());
 }
 
 void GUIConnector::setPen(QPen pen)
@@ -301,18 +301,19 @@ void GUIConnector::updateLine(int lineNumber)
         {
             getLine(lineNumber-1)->setLine(getLine(lineNumber-1)->line().x1(),
                                            getLine(lineNumber-1)->line().y1(),
-                                           getLine(lineNumber-1)->mapFromItem(getLine(lineNumber), getLine(lineNumber)->line().p1()).x(),
+                                           getLine(lineNumber-1)->mapFromParent(getLine(lineNumber)->mapToParent(getLine(lineNumber)->line().p1())).x(),
                                            getLine(lineNumber-1)->line().y2());
-            getLine(lineNumber+1)->setLine(getLine(lineNumber+1)->mapFromItem(getLine(lineNumber), getLine(lineNumber)->line().p2()).x(),
+            getLine(lineNumber+1)->setLine(getLine(lineNumber+1)->mapFromParent(getLine(lineNumber)->mapToParent(getLine(lineNumber)->line().p2())).x(),
                                            getLine(lineNumber+1)->line().y1(),
                                            getLine(lineNumber+1)->line().x2(),
                                            getLine(lineNumber+1)->line().y2());
             getLine(lineNumber)->setLine(getLine(lineNumber)->line().x1(),
-                                         getLine(lineNumber)->mapFromItem(getLine(lineNumber-1), getLine(lineNumber-1)->line().p2()).y(),
+                                         getLine(lineNumber)->mapFromParent(getLine(lineNumber-1)->mapToParent(getLine(lineNumber-1)->line().p2())).y(),
                                          getLine(lineNumber)->line().x2(),
-                                         getLine(lineNumber)->mapFromItem(getLine(lineNumber+1), getLine(lineNumber+1)->line().p1()).y());
+                                         getLine(lineNumber)->mapFromParent(getLine(lineNumber+1)->mapToParent(getLine(lineNumber+1)->line().p1())).y());
         }
     }
+    this->updatePos();
 }
 
 
