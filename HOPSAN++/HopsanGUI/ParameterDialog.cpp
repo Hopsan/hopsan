@@ -40,12 +40,7 @@ ParameterDialog::ParameterDialog(Component *coreComponent, QWidget *parent)
 
         mVarVector.back()->setBuddy(mValueVector.back());
     }
-    /*
-    std::vector<QLabel*> mVarVector;
-    std::vector<QLabel*> mDescriptionVector;
-    std::vector<QLabel*> mUnitVector;
-    std::vector<QLineEdit*> mValueVector;
-    */
+
     okButton = new QPushButton(tr("&Ok"));
     okButton->setDefault(true);
     cancelButton = new QPushButton(tr("&Cancel"));

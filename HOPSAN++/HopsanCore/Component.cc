@@ -69,7 +69,7 @@ Component::Component(string name, double timestep)
 
     mpSystemParent = 0;
 
-    registerParameter("Ts", "Sample time", "[s]",   mTimestep);
+    //registerParameter("Ts", "Sample time", "[s]",   mTimestep);
 }
 
 //! Virtual Function, base version which gives you an error if you try to use it.

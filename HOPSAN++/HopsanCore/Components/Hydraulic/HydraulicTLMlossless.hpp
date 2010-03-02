@@ -32,6 +32,12 @@ private:
     enum {P1, P2};
 
 public:
+    static Component *Creator()
+    {
+        std::cout << "running TLMlossless creator" << std::endl;
+        return new HydraulicTLMlossless("TLMlossless");
+    }
+
     HydraulicTLMlossless(const string name,
                          const double zc        = 1.0e9,
                          const double timeDelay = 0.1,
