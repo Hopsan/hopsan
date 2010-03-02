@@ -49,7 +49,6 @@ signals:
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    virtual void moveEvent(QGraphicsSceneMoveEvent *event);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);

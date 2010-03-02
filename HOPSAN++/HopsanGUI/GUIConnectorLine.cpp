@@ -58,12 +58,6 @@ void GUIConnectorLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
     emit lineClicked();
 }
 
-void GUIConnectorLine::moveEvent(QGraphicsSceneMoveEvent *event)
-{
-    qDebug() << "Moving line " << this->mLineNumber;
-    emit lineMoved(this->mLineNumber);
-}
-
 void GUIConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     if(this->getGeometry()==GUIConnectorLine::VERTICAL)
@@ -108,7 +102,7 @@ QVariant GUIConnectorLine::itemChange(GraphicsItemChange change, const QVariant 
 //            emit lineSelected();
 //        }
     }
-    else if (change == QGraphicsItem::ItemPositionChange)
+    else if (change == QGraphicsItem::ItemPositionHasChanged)
     {
         qDebug() << "Line has moved\n";
         emit lineMoved(this->mLineNumber);

@@ -265,46 +265,49 @@ void GUIConnector::deleteMeIfMeIsActive()
 {
     if(this->mIsActive && mLines.size() > 0)
     {
-        mLines.clear();
-        this->scene()->removeItem(this);
-        delete(this);
+        this->deleteMe();
     }
 }
 
 void GUIConnector::updateLine(int lineNumber)
 {
-    qDebug() << "Updating line: x = " << (mLines[lineNumber]->scenePos());
+    qDebug() << "Updating line: x = " << getLine(lineNumber)->line().x2();
     if (this->mEndPortConnected && lineNumber != 0 && lineNumber != mLines.size())
     {
-        if(mLines[lineNumber]->getGeometry()==GUIConnectorLine::HORIZONTAL)
+        if(getLine(lineNumber)->getGeometry()==GUIConnectorLine::HORIZONTAL)
         {
-            mLines[lineNumber]->setLine(mLines[lineNumber]->mapFromItem(mLines[lineNumber-1], mLines[lineNumber-1]->line().p2()).x(),
-                                        mLines[lineNumber]->line().y1(),
-                                        mLines[lineNumber]->mapFromItem(mLines[lineNumber+1], mLines[lineNumber+1]->line().p1()).x(),
-                                        mLines[lineNumber]->line().y2());
-            mLines[lineNumber-1]->setLine(mLines[lineNumber-1]->line().x1(),
-                                          mLines[lineNumber-1]->line().y1(),
-                                          mLines[lineNumber-1]->line().x2(),
-                                          mLines[lineNumber-1]->mapFromItem(mLines[lineNumber], mLines[lineNumber]->line().p1()).y());
-            mLines[lineNumber+1]->setLine(mLines[lineNumber+1]->line().x1(),
-                                          mLines[lineNumber+1]->mapFromItem(mLines[lineNumber], mLines[lineNumber]->line().p2()).y(),
-                                          mLines[lineNumber+1]->line().x2(),
-                                          mLines[lineNumber+1]->line().y2());
+//            getLine(0)->setLine(startPos.x(),
+//                                startPos.y(),
+//                                getLine(1)->line().x1(),
+//                                startPos.y());
+
+            getLine(lineNumber-1)->setLine(getLine(lineNumber-1)->line().x1(),
+                                          getLine(lineNumber-1)->line().y1(),
+                                          getLine(lineNumber-1)->line().x2(),
+                                          getLine(lineNumber-1)->mapFromParent(getLine(lineNumber)->mapToParent(getLine(lineNumber)->line().p1())).y());
+            getLine(lineNumber+1)->setLine(getLine(lineNumber+1)->line().x1(),
+                                          getLine(lineNumber+1)->mapFromParent(getLine(lineNumber)->mapToParent(getLine(lineNumber)->line().p2())).y(),
+                                          getLine(lineNumber+1)->line().x2(),
+                                          getLine(lineNumber+1)->line().y2());
+            getLine(lineNumber)->setLine(getLine(lineNumber)->mapFromParent(getLine(lineNumber-1)->mapToParent(getLine(lineNumber-1)->line().p2())).x(),
+                                        getLine(lineNumber)->line().y1(),
+                                        getLine(lineNumber)->mapFromParent(getLine(lineNumber+1)->mapToParent(getLine(lineNumber+1)->line().p1())).x(),
+                                        getLine(lineNumber)->line().y2());
         }
-        else if(mLines[lineNumber]->getGeometry()==GUIConnectorLine::VERTICAL)
+        else if(getLine(lineNumber)->getGeometry()==GUIConnectorLine::VERTICAL)
         {
-            mLines[lineNumber]->setLine(mLines[lineNumber]->line().x1(),
-                                        mLines[lineNumber]->mapFromItem(mLines[lineNumber-1], mLines[lineNumber-1]->line().p2()).y(),
-                                        mLines[lineNumber]->line().x2(),
-                                        mLines[lineNumber]->mapFromItem(mLines[lineNumber+1], mLines[lineNumber+1]->line().p1()).y());
-            mLines[lineNumber-1]->setLine(mLines[lineNumber-1]->line().x1(),
-                                          mLines[lineNumber-1]->line().y1(),
-                                          mLines[lineNumber-1]->mapFromItem(mLines[lineNumber], mLines[lineNumber]->line().p1()).x(),
-                                          mLines[lineNumber-1]->line().y2());
-            mLines[lineNumber+1]->setLine(mLines[lineNumber+1]->mapFromItem(mLines[lineNumber], mLines[lineNumber]->line().p2()).x(),
-                                          mLines[lineNumber+1]->line().y1(),
-                                          mLines[lineNumber+1]->line().x2(),
-                                          mLines[lineNumber+1]->line().y2());
+            getLine(lineNumber)->setLine(getLine(lineNumber)->line().x1(),
+                                        getLine(lineNumber)->mapFromItem(getLine(lineNumber-1), getLine(lineNumber-1)->line().p2()).y(),
+                                        getLine(lineNumber)->line().x2(),
+                                        getLine(lineNumber)->mapFromItem(getLine(lineNumber+1), getLine(lineNumber+1)->line().p1()).y());
+            getLine(lineNumber-1)->setLine(getLine(lineNumber-1)->line().x1(),
+                                          getLine(lineNumber-1)->line().y1(),
+                                          getLine(lineNumber-1)->mapFromItem(getLine(lineNumber), getLine(lineNumber)->line().p1()).x(),
+                                          getLine(lineNumber-1)->line().y2());
+            getLine(lineNumber+1)->setLine(getLine(lineNumber+1)->mapFromItem(getLine(lineNumber), getLine(lineNumber)->line().p2()).x(),
+                                          getLine(lineNumber+1)->line().y1(),
+                                          getLine(lineNumber+1)->line().x2(),
+                                          getLine(lineNumber+1)->line().y2());
         }
     }
 }
