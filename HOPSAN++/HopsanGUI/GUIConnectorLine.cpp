@@ -32,6 +32,7 @@ GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen 
     this->mHoverPen = hoverPen;
     this->mLineNumber = lineNumber;
     this->setAcceptHoverEvents(true);
+    this->mParentConnectorEndPortConnected = false;
 }
 
 GUIConnectorLine::~GUIConnectorLine()
@@ -60,11 +61,11 @@ void GUIConnectorLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void GUIConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-    if(this->getGeometry()==GUIConnectorLine::VERTICAL)
+    if(this->mParentConnectorEndPortConnected && this->getGeometry()==GUIConnectorLine::VERTICAL)
     {
         this->setCursor(Qt::SizeHorCursor);
     }
-    else if(this->getGeometry()==GUIConnectorLine::HORIZONTAL)
+    else if(this->mParentConnectorEndPortConnected && this->getGeometry()==GUIConnectorLine::HORIZONTAL)
     {
            this->setCursor(Qt::SizeVerCursor);
     }
@@ -108,4 +109,9 @@ QVariant GUIConnectorLine::itemChange(GraphicsItemChange change, const QVariant 
         emit lineMoved(this->mLineNumber);
     }
     return value;
+}
+
+void GUIConnectorLine::setConnected()
+{
+    mParentConnectorEndPortConnected = true;
 }

@@ -40,6 +40,9 @@ public:
     void setGeometry(geometryType geometry);
     int getLineNumber();
 
+public slots:
+    void setConnected();
+
 signals:
     void lineClicked();
     void lineMoved(int);
@@ -60,7 +63,7 @@ private:
     QPen mHoverPen;
     int mLineNumber;
     geometryType mGeometry;
-
+    bool mParentConnectorEndPortConnected;
 
 };
 

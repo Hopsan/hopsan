@@ -45,7 +45,6 @@ public:
     GUIConnectorLine *getOldLine();
     GUIConnectorLine *getLastLine();
     GUIConnectorLine *getThisLine();
-    bool endPortConnected();
 
 public slots:
     void updatePos();
@@ -57,6 +56,9 @@ public slots:
     void deleteMeIfMeIsActive();
     void updateLine(int);
     void doSelect();
+
+signals:
+    void endPortConnected();
 
 protected:
     virtual void SetEndPos(qreal x2, qreal y2);

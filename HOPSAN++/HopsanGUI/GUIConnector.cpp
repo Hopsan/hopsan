@@ -42,6 +42,7 @@ GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, QPen passiveP
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
     this->setActive();
     connect(this->mpParentView,SIGNAL(keyPressDelete()),this,SLOT(deleteMeIfMeIsActive()));
+    connect(this,SIGNAL(endPortConnected()),mLines[mLines.size()-1],SLOT(setConnected()));
 }
 
 GUIConnector::~GUIConnector()
@@ -73,6 +74,7 @@ void GUIConnector::setEndPort(GUIPort *port)
     {
         mLines[i]->setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemUsesExtendedStyleOption);
     }
+    emit endPortConnected();
 }
 
 GUIPort *GUIConnector::getStartPort()
@@ -230,6 +232,7 @@ void GUIConnector::addLine()
     connect(mLines[mLines.size()-1],SIGNAL(lineMoved(int)),this, SLOT(updateLine(int)));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
+    connect(this,SIGNAL(endPortConnected()),mLines[mLines.size()-1],SLOT(setConnected()));
 }
 
 void GUIConnector::removeLine(QPointF cursorPos)
@@ -282,32 +285,32 @@ void GUIConnector::updateLine(int lineNumber)
 //                                startPos.y());
 
             getLine(lineNumber-1)->setLine(getLine(lineNumber-1)->line().x1(),
-                                          getLine(lineNumber-1)->line().y1(),
-                                          getLine(lineNumber-1)->line().x2(),
-                                          getLine(lineNumber-1)->mapFromParent(getLine(lineNumber)->mapToParent(getLine(lineNumber)->line().p1())).y());
+                                           getLine(lineNumber-1)->line().y1(),
+                                           getLine(lineNumber-1)->line().x2(),
+                                           getLine(lineNumber-1)->mapFromParent(getLine(lineNumber)->mapToParent(getLine(lineNumber)->line().p1())).y());
             getLine(lineNumber+1)->setLine(getLine(lineNumber+1)->line().x1(),
-                                          getLine(lineNumber+1)->mapFromParent(getLine(lineNumber)->mapToParent(getLine(lineNumber)->line().p2())).y(),
-                                          getLine(lineNumber+1)->line().x2(),
-                                          getLine(lineNumber+1)->line().y2());
+                                           getLine(lineNumber+1)->mapFromParent(getLine(lineNumber)->mapToParent(getLine(lineNumber)->line().p2())).y(),
+                                           getLine(lineNumber+1)->line().x2(),
+                                           getLine(lineNumber+1)->line().y2());
             getLine(lineNumber)->setLine(getLine(lineNumber)->mapFromParent(getLine(lineNumber-1)->mapToParent(getLine(lineNumber-1)->line().p2())).x(),
-                                        getLine(lineNumber)->line().y1(),
-                                        getLine(lineNumber)->mapFromParent(getLine(lineNumber+1)->mapToParent(getLine(lineNumber+1)->line().p1())).x(),
-                                        getLine(lineNumber)->line().y2());
+                                         getLine(lineNumber)->line().y1(),
+                                         getLine(lineNumber)->mapFromParent(getLine(lineNumber+1)->mapToParent(getLine(lineNumber+1)->line().p1())).x(),
+                                         getLine(lineNumber)->line().y2());
         }
         else if(getLine(lineNumber)->getGeometry()==GUIConnectorLine::VERTICAL)
         {
-            getLine(lineNumber)->setLine(getLine(lineNumber)->line().x1(),
-                                        getLine(lineNumber)->mapFromItem(getLine(lineNumber-1), getLine(lineNumber-1)->line().p2()).y(),
-                                        getLine(lineNumber)->line().x2(),
-                                        getLine(lineNumber)->mapFromItem(getLine(lineNumber+1), getLine(lineNumber+1)->line().p1()).y());
             getLine(lineNumber-1)->setLine(getLine(lineNumber-1)->line().x1(),
-                                          getLine(lineNumber-1)->line().y1(),
-                                          getLine(lineNumber-1)->mapFromItem(getLine(lineNumber), getLine(lineNumber)->line().p1()).x(),
-                                          getLine(lineNumber-1)->line().y2());
+                                           getLine(lineNumber-1)->line().y1(),
+                                           getLine(lineNumber-1)->mapFromItem(getLine(lineNumber), getLine(lineNumber)->line().p1()).x(),
+                                           getLine(lineNumber-1)->line().y2());
             getLine(lineNumber+1)->setLine(getLine(lineNumber+1)->mapFromItem(getLine(lineNumber), getLine(lineNumber)->line().p2()).x(),
-                                          getLine(lineNumber+1)->line().y1(),
-                                          getLine(lineNumber+1)->line().x2(),
-                                          getLine(lineNumber+1)->line().y2());
+                                           getLine(lineNumber+1)->line().y1(),
+                                           getLine(lineNumber+1)->line().x2(),
+                                           getLine(lineNumber+1)->line().y2());
+            getLine(lineNumber)->setLine(getLine(lineNumber)->line().x1(),
+                                         getLine(lineNumber)->mapFromItem(getLine(lineNumber-1), getLine(lineNumber-1)->line().p2()).y(),
+                                         getLine(lineNumber)->line().x2(),
+                                         getLine(lineNumber)->mapFromItem(getLine(lineNumber+1), getLine(lineNumber+1)->line().p1()).y());
         }
     }
 }
@@ -350,10 +353,4 @@ QVariant GUIConnector::itemChange(GraphicsItemChange change, const QVariant &val
         }
     }
     return value;
-}
-
-
-bool GUIConnector::endPortConnected()
-{
-    return mEndPortConnected;
 }
