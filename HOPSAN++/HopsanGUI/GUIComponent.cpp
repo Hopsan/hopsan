@@ -56,7 +56,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QS
 
    // rectR->boundingRegion();
 
-    connect(mpNameText, SIGNAL(textMoved(QGraphicsSceneMouseEvent *)), SLOT(fixTextPosition(QGraphicsSceneMouseEvent *)));
+    connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(fixTextPosition(QPointF)));
     connect(this->mpParentView,SIGNAL(keyPressDelete()),this,SLOT(deleteComponent()));
 
     setPos(position-QPoint(icon->boundingRect().width()/2, icon->boundingRect().height()/2));
@@ -72,7 +72,7 @@ double dist(double x1,double y1, double x2, double y2)
     return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
 }
 
-void GUIComponent::fixTextPosition(QGraphicsSceneMouseEvent * event)
+void GUIComponent::fixTextPosition(QPointF pos)
 {
     double x1 = icon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
     double y1 = icon->boundingRect().height();
@@ -80,8 +80,8 @@ void GUIComponent::fixTextPosition(QGraphicsSceneMouseEvent * event)
     double x2 = icon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
     double y2 = -mpNameText->boundingRect().height();
 
-    double x = mpNameText->mapToParent(event->pos()).x();
-    double y = mpNameText->mapToParent(event->pos()).y();
+    double x = mpNameText->mapToParent(pos).x();
+    double y = mpNameText->mapToParent(pos).y();
 
     if (dist(x,y, x1,y1) > dist(x,y, x2,y2))
     {
@@ -216,13 +216,15 @@ GUIComponentNameTextItem::GUIComponentNameTextItem(Component* pCoreComponent, QG
 void GUIComponentNameTextItem::refreshName()
 {
     setPlainText(QString::fromStdString(mpCoreComponent->getName()));
+    //Adjust the position of the text
+    emit textMoved(pos());
 }
 
 
 void GUIComponentNameTextItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     qDebug() << "GUIComponentTextItem: " << "mouseReleaseEvent";
-    emit textMoved(event);
+    emit textMoved(event->pos());
     QGraphicsTextItem::mouseReleaseEvent(event);
 }
 
@@ -231,10 +233,8 @@ void GUIComponentNameTextItem::focusOutEvent(QFocusEvent *event)
     qDebug() << "GUIComponentTextItem: " << "focusOutEvent";
     //Try to set the new name
     mpCoreComponent->setName(toPlainText().toStdString());
-    //refresh teh display name (it may be different from the one you wanted)
+    //refresh the display name (it may be different from the one you wanted)
     refreshName();
-    //Adjust the position of the text
-    //emit textMoved(event);
 
     QGraphicsTextItem::focusOutEvent(event);
 }

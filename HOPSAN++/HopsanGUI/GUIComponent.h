@@ -61,7 +61,7 @@ private:
     QList<GUIPort*> mPortListPtrs;
 
 private slots:
-    void fixTextPosition(QGraphicsSceneMouseEvent * event);
+    void fixTextPosition(QPointF pos);
 
 };
 
@@ -76,13 +76,11 @@ public:
     GUIComponentNameTextItem(Component* pCoreComponent, QGraphicsItem *parent = 0);
     void refreshName();
 
-    //void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    //void keyReleaseEvent(QKeyEvent *event);
     void focusOutEvent(QFocusEvent *event);
 
 signals:
-    void textMoved(QGraphicsSceneMouseEvent * event);
+    void textMoved(QPointF pos);
 
 };
 
