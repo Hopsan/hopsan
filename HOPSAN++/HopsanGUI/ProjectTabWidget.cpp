@@ -92,6 +92,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
         //Core interaction
         qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
+        guiComponent->refreshName();
         //
 
         //guiComponent->setPos(this->mapToScene(position));

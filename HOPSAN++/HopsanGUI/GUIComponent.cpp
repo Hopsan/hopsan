@@ -45,8 +45,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QS
     //setWindowFlags(Qt::SplashScreen);//just to see the geometry
     setGeometry(0,0,icon->boundingRect().width(),icon->boundingRect().height());
 
-    QString componentName = QString::fromStdString(mpCoreComponent->getName());
-    mpNameText = new GUIComponentTextItem(componentName,this);
+    mpNameText = new GUIComponentNameTextItem(mpCoreComponent, this);
     mpNameText->setPos(QPointF(icon->boundingRect().width()/2-mpNameText->boundingRect().width()/2, icon->boundingRect().height()));
 
     //UGLY UGLY HARD CODED PORT CONNECTION TO CORE...
@@ -119,6 +118,11 @@ QGraphicsView *GUIComponent::getParentView()
 void GUIComponent::addConnector(GUIConnector *item)
 {
     connect(this,SIGNAL(componentMoved()),item,SLOT(updatePos()));
+}
+
+void GUIComponent::refreshName()
+{
+    mpNameText->refreshName();
 }
 
 void GUIComponent::deleteComponent()
@@ -201,19 +205,38 @@ QVariant GUIComponent::itemChange(GraphicsItemChange change, const QVariant &val
 
 
 
-GUIComponentTextItem::GUIComponentTextItem(const QString &text, QGraphicsItem *parent)
-    :   QGraphicsTextItem(text, parent)
+GUIComponentNameTextItem::GUIComponentNameTextItem(Component* pCoreComponent, QGraphicsItem *parent)
+    :   QGraphicsTextItem(QString::fromStdString(pCoreComponent->getName()), parent)
 {
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
     setTextInteractionFlags(Qt::TextEditorInteraction);
+    mpCoreComponent = pCoreComponent;
+}
+
+void GUIComponentNameTextItem::refreshName()
+{
+    setPlainText(QString::fromStdString(mpCoreComponent->getName()));
 }
 
 
-void GUIComponentTextItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+void GUIComponentNameTextItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     qDebug() << "GUIComponentTextItem: " << "mouseReleaseEvent";
     emit textMoved(event);
     QGraphicsTextItem::mouseReleaseEvent(event);
+}
+
+void GUIComponentNameTextItem::focusOutEvent(QFocusEvent *event)
+{
+    qDebug() << "GUIComponentTextItem: " << "focusOutEvent";
+    //Try to set the new name
+    mpCoreComponent->setName(toPlainText().toStdString());
+    //refresh teh display name (it may be different from the one you wanted)
+    refreshName();
+    //Adjust the position of the text
+    //emit textMoved(event);
+
+    QGraphicsTextItem::focusOutEvent(event);
 }
 
 //void GUIComponentTextItem::mousePressEvent(QGraphicsSceneMouseEvent *event)

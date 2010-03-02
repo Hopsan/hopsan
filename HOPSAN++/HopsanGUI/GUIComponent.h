@@ -16,7 +16,7 @@
 
 class GUIConnector;
 class QGraphicsSvgItem;
-class GUIComponentTextItem;
+class GUIComponentNameTextItem;
 class HopsanEssentials;
 class Component;
 class GUIComponentSelectionBox;
@@ -30,6 +30,7 @@ public:
     ~GUIComponent();
     QGraphicsView *getParentView();
     void addConnector(GUIConnector *item);
+    void refreshName();
 
     //Core interaction
     Component *mpCoreComponent;
@@ -51,7 +52,7 @@ public slots:
 
 private:
     QGraphicsSvgItem *icon;
-    GUIComponentTextItem *mpNameText;
+    GUIComponentNameTextItem *mpNameText;
     QGraphicsView *mpParentView;
     GUIComponentSelectionBox *mpSelectionBox;
     QGraphicsLineItem *mpTempLine;
@@ -65,15 +66,20 @@ private slots:
 };
 
 
-class GUIComponentTextItem : public QGraphicsTextItem
+class GUIComponentNameTextItem : public QGraphicsTextItem
 {
     Q_OBJECT
+private:
+    Component* mpCoreComponent;
+
 public:
-    GUIComponentTextItem(const QString &text, QGraphicsItem *parent = 0);
+    GUIComponentNameTextItem(Component* pCoreComponent, QGraphicsItem *parent = 0);
+    void refreshName();
 
     //void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     //void keyReleaseEvent(QKeyEvent *event);
+    void focusOutEvent(QFocusEvent *event);
 
 signals:
     void textMoved(QGraphicsSceneMouseEvent * event);
