@@ -165,7 +165,7 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
     //////////////////////////////////////////////////////////////
 
     //First line of the connector:
-    if (getNumberOfLines()<3)
+    if (getNumberOfLines()<3 and getThisLine()->getGeometry()!=GUIConnectorLine::DIAGONAL)
     {
         getLastLine()->setLine(startPos.x(),
                                startPos.y(),
