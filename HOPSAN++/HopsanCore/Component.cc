@@ -670,9 +670,28 @@ void ComponentSystem::addComponent(Component *pComponent)
     addComponents(components);
 }
 
+//! Rename a sub component and automatically fix unique names
 void ComponentSystem::renameSubComponent(string old_name, string new_name)
 {
     mSubComponentStorage.rename(old_name, new_name);
+}
+
+//! Remove a dub component from a system, can aslo be used to actually delete the component
+//! @param[in] name The name of the component to remove from he system
+//! @param[in] doDelete Set this to true if the component should be deleted after remval
+void ComponentSystem::removeSubComponent(string name, bool doDelete)
+{
+    //! @todo disconnect all ports before erase from system
+    Component* c_ptr = getSubComponent(name);
+    //vector<Port*> connectedPorts
+
+    //Erase from storage
+    mSubComponentStorage.erase(name);
+
+    if (doDelete)
+    {
+        delete c_ptr; //! @todo can I really delete here or do I need to use the factory for external components
+    }
 }
 
 //Component* ComponentSystem::getSubComponent(string name)

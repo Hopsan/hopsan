@@ -169,11 +169,15 @@ public:
     //Set the subsystem CQS type
     void setTypeCQS(const string cqs_type);
 
-    //adding components and system ports
+    //adding removing and renaming components
     void addComponents(vector<Component*> components);
     void addComponent(Component &rComponent);
     void addComponent(Component *pComponent);
     void renameSubComponent(string old_name, string new_name);
+    void removeSubComponent(string name, bool doDelete=false);
+
+
+    //Add system ports
     Port* addSystemPort(const string portname);
 
     //Getting added components and component names
