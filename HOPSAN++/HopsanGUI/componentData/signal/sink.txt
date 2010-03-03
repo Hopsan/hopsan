@@ -1,0 +1,6 @@
+NAME SignalSink
+ICON Sink.svg
+PORTS 1
+.5
+1
+

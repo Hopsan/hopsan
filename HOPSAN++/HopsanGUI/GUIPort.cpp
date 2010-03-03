@@ -97,18 +97,36 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     else
     {
         QMenu menu;
-        QAction *plotAction = menu.addAction("Plot");
-        QAction *selectedAction = menu.exec(event->screenPos());
-
-        if (selectedAction == plotAction)
+        if (mpCorePort->getNodeType() =="NodeHydraulic")
         {
-            plot();
+            QAction *plotPressureAction = menu.addAction("Plot pressure");
+            QAction *plotFlowAction = menu.addAction("Plot flow");
+            QAction *selectedAction = menu.exec(event->screenPos());
+
+            if (selectedAction == plotFlowAction)
+            {
+                plot(0);
+            }
+            if (selectedAction == plotPressureAction)
+            {
+                plot(1);
+            }
+        }
+        if (mpCorePort->getNodeType() =="NodeSignal")
+        {
+            QAction *plotSignalAction = menu.addAction("Plot signal value");
+            QAction *selectedAction = menu.exec(event->screenPos());
+
+            if (selectedAction == plotSignalAction)
+            {
+                plot(0);
+            }
         }
     }
 }
 
 
-void GUIPort::plot() //En del vansinne i denna metoden...
+void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
 {
     std::cout << "GUIPort.cpp: " << "Plot()" << std::endl;
 
@@ -117,10 +135,10 @@ void GUIPort::plot() //En del vansinne i denna metoden...
     QVector<double> time = QVector<double>::fromStdVector(*(this->mpCorePort->getTimeVectorPtr())); //Inte lampligt att skyffla data pa detta viset
     QVector<double> y(dataLength);// = QVector<double>::fromStdVector((this->mpCorePort->getDataVectorPtr()->at(1)));
     
-    for (int i = 0; i<dataLength; ++i) //Denna loop ar inte klokt
+    for (int i = 0; i<dataLength; ++i) //Denna loop ar inte klok
     {
         //timeq[i] = this->mpCorePort->getTimeVectorPtr()->at(i);
-        y[i] = (this->mpCorePort->getDataVectorPtr()->at(i)).at(1);
+        y[i] = (this->mpCorePort->getDataVectorPtr()->at(i)).at(nVar);
     }
 
     PlotWidget *newPlot = new PlotWidget(time,y);

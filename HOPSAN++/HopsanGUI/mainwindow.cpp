@@ -161,11 +161,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Load default libraries
     library->addLibrary("User defined libraries");
-    library->addLibrary("hydraulic");
-    addLibs("../../HopsanGUI/componentData/hydraulic/sources","hydraulic");//This method should be in LibraryWidget and addLibs() may be here
-    addLibs("../../HopsanGUI/componentData/hydraulic/restrictors","hydraulic");//This method should be in LibraryWidget and addLibs() may be here
-    addLibs("../../HopsanGUI/componentData/hydraulic/volumes","hydraulic");//This method should be in LibraryWidget and addLibs() may be here
-    addLibs("../../HopsanGUI/componentData/hydraulic/actuators","hydraulic");//This method should be in LibraryWidget and addLibs() may be here
+    library->addLibrary("Hydraulic");
+    addLibs("../../HopsanGUI/componentData/hydraulic/sources","Hydraulic");//This method should be in LibraryWidget and addLibs() may be here
+    addLibs("../../HopsanGUI/componentData/hydraulic/restrictors","Hydraulic");//This method should be in LibraryWidget and addLibs() may be here
+    addLibs("../../HopsanGUI/componentData/hydraulic/volumes","Hydraulic");//This method should be in LibraryWidget and addLibs() may be here
+    addLibs("../../HopsanGUI/componentData/hydraulic/actuators","Hydraulic");//This method should be in LibraryWidget and addLibs() may be here
+
+    addLibs("../../HopsanGUI/componentData/signal");//This method should be in LibraryWidget and addLibs() may be here
 
     QMetaObject::connectSlotsByName(this);
 

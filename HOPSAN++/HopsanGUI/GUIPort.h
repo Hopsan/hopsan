@@ -33,7 +33,7 @@ protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
     //protected slots:
-    void plot();
+    void plot(size_t plotFlowAction);
 
 signals:
     void portClicked(GUIPort *item);
