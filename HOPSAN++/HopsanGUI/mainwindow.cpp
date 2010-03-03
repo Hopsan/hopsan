@@ -49,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent)
     centralgrid->setSpacing(10);
 
     //Create the main tab container, need at least one tab
-    projectTabs = new ProjectTabWidget();
+    projectTabs = new ProjectTabWidget(this);
     projectTabs->setObjectName("projectTabs");
     projectTabs->addProjectTab();
 
@@ -267,7 +267,7 @@ void MainWindow::addLibs(QString libDir, QString parentLib)
 
         //Add the component to the library
         //library->addComponent(libName,componentName,icon,parameterData);
-        library->addComponent(libName, libcomp);
+        library->addComponent(libName, libcomp, parameterData);
     }
 }
 

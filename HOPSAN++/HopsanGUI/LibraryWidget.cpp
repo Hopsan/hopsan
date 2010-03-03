@@ -11,6 +11,7 @@
 
 #include "LibraryWidget.h"
 #include "listwidget.h"
+#include <map>
 
 
 //! Constructor.
@@ -157,10 +158,9 @@ void LibraryWidget::addLibrary(QString libraryName, QString parentLibraryName)
 //! Adds a library to the library widget.
 //! @param libraryName is the name of the library where the component should be added.
 //! @see addComponent(QString libraryName, QString parentLibraryName)
-void LibraryWidget::addComponent(QString libraryName, ListWidgetItem *newComponent)
+void LibraryWidget::addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList parameterData)
 {
     mLibraryMapPtrs.value(libraryName)->addItem(newComponent);
-
     QTreeWidgetItemIterator it(mpTree);
     while (*it)
     {
@@ -168,13 +168,11 @@ void LibraryWidget::addComponent(QString libraryName, ListWidgetItem *newCompone
         {
             ListWidgetItem *copyOfNewComponent = new ListWidgetItem(*newComponent); //A QListWidgetItem can only be in one list at the time, therefor a copy...
             QString parentName = (*it)->parent()->text(0);
-
-            addComponent(parentName, copyOfNewComponent); //Recursively
+            addComponent(parentName, copyOfNewComponent, parameterData); //Recursively
         }
-
         ++it;
     }
-
+    mParameterMap.insert(std::pair<QString, QStringList>(parameterData.at(0), parameterData));
 }
 
 
@@ -198,6 +196,11 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
 
 }
 
+
+QStringList LibraryWidget::getParameterData(QString componentType)
+{
+    return mParameterMap.find(componentType)->second;
+}
 
 //! Hide all libraries.
 //! @see showLib(QTreeWidgetItem *item, int column)

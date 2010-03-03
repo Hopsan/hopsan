@@ -13,8 +13,16 @@
 #include "GUIComponent.h"
 #include "GUIPort.h"
 #include "GUIConnector.h"
+#include "LibraryWidget.h"
+#include "mainwindow.h"
 
 #include <QtGui>
+
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <cstdlib>
 
 
 //! Constructor.
@@ -86,20 +94,8 @@ void GraphicsView::dropEvent(QDropEvent *event)
 //        GUIComponent *guiComponent = new GUIComponent(mpHopsan,iconDir,componentTypeName,mapToScene(position).toPoint(),this);
       //  GUIComponent *guiComponent = new GUIComponent(mpHopsan,parameterData,mapToScene(position).toPoint(),this);
 
-        this->addComponent(parameterData, this->mapToScene(position).toPoint());
-
-
-//        GUIComponent *guiComponent = new GUIComponent(mpHopsan,iconDir,componentTypeName,mapToScene(position).toPoint(),this);
-//
-//        //Core interaction
-//        qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
-//        guiComponent->refreshName();
-//        //
-//
-//        //guiComponent->setPos(this->mapToScene(position));
-//        std::cout << "GraphicsView: " << guiComponent->parent() << std::endl;
-//
-//        this->scene()->addItem(guiComponent);
+        //this->addComponent(parameterData, this->mapToScene(position).toPoint());
+        this->addComponent(parameterData.at(0), this->mapToScene(position).toPoint());
 
         delete data;
     }
@@ -108,6 +104,25 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
 void GraphicsView::addComponent(QStringList parameterData, QPoint position)
 {
+    GUIComponent *guiComponent = new GUIComponent(mpHopsan,parameterData,position,this);
+
+    //Core interaction
+    qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
+    guiComponent->refreshName();
+    //
+
+    //guiComponent->setPos(this->mapToScene(position));
+    qDebug() << "GraphicsView: " << guiComponent->parent();
+
+    this->scene()->addItem(guiComponent);
+}
+
+
+void GraphicsView::addComponent(QString parameterType, QPoint position)
+{
+    MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
+    LibraryWidget *pLibrary = pMainWindow->library;
+    QStringList parameterData = pLibrary->getParameterData(parameterType);
     GUIComponent *guiComponent = new GUIComponent(mpHopsan,parameterData,position,this);
 
     //Core interaction
@@ -337,6 +352,8 @@ ProjectTab::ProjectTab(QWidget *parent)
     GraphicsScene *scene = new GraphicsScene(this);
     GraphicsView  *view  = new GraphicsView(mpTabContainer->mpHopsan, mpModel, this);
 
+    mpView = view;
+
     view->setScene(scene);
 
     QVBoxLayout *tabLayout = new QVBoxLayout;
@@ -349,6 +366,11 @@ ProjectTab::ProjectTab(QWidget *parent)
 
 }
 
+
+GraphicsView *ProjectTab::getView()
+{
+    return mpView;
+}
 
 //! Should be called when a model has changed in some sense,
 //! e.g. a component added or a connection has changed.
@@ -522,14 +544,43 @@ void ProjectTabWidget::loadModel()
 {
     QDir fileDialogOpenDir;
 
-    QString modelFile = QFileDialog::getOpenFileName(this, tr("Choose Model File"),
-                                                     fileDialogOpenDir.currentPath(),
-                                                     tr("Hopsan Model Files (*.hmf)"));
-    qDebug() << "Opening model file: " << modelFile;
+    QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Model File"),
+                                                         fileDialogOpenDir.currentPath(),
+                                                         tr("Hopsan Model Files (*.hmf)"));
+    qDebug() << "Opening model file: " << modelFileName.toStdString().c_str();
 
-   // QString libDir = QFileDialog::getExistingDirectory(this, tr("Choose Model File"),
-  //                                               fileDialogOpenDir.currentPath(),
-//                                                 QFileDialog::DontResolveSymlinks);
-    //addLibs(libDir,QString("User defined libraries"));
-    //std::cout << qPrintable(libDir) << std::endl;
+    std::ifstream modelFile (modelFileName.toStdString().c_str());
+
+        //Necessary declarations
+    //ComponentSystem* pMainModel = new ComponentSystem("mainModel");
+    //typedef map<string, Component*> mapComponentType;
+    //typedef map<string, ComponentSystem*> mapSystemType;
+    //mapComponentType componentMap;
+    //mapSystemType componentSystemMap;
+    string inputLine;
+    string inputWord;
+
+    while (! modelFile.eof() )
+    {
+        this->addTab(new ProjectTab(this), modelFileName);
+        ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
+
+            //Read the line
+        getline(modelFile,inputLine);                                   //Read a line
+        stringstream inputStream(inputLine);
+
+            //Extract first word unless stream is empty
+        if ( inputStream >> inputWord )
+        {
+            qDebug() << QString(inputWord.c_str());
+
+            //----------- Create New SubSystem -----------//
+
+            if ( inputWord == "COMPONENT" )
+            {
+                inputStream >> inputWord;
+                //pCurrentTab->getView()->addComponent()
+            }
+        }
+    }
 }

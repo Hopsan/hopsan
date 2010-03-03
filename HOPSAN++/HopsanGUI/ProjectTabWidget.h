@@ -48,6 +48,7 @@ signals:
 
 public slots:
     void addComponent(QStringList parameterData, QPoint position);
+    void addComponent(QString parameterType, QPoint position);
     void addConnector(GUIPort *rect);
     void removeConnection(GUIConnector* pConnector);
 
@@ -89,15 +90,16 @@ class ProjectTab : public QWidget
 
 public:
     ProjectTab(QWidget *parent = 0);
-
     bool isSaved;
-
     ProjectTabWidget *mpTabContainer;
-
     ComponentSystem *mpModel;
+    GraphicsView *getView();
 
 public slots:
     void hasChanged();
+
+private:
+    GraphicsView *mpView;
 
 };
 

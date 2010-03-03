@@ -11,6 +11,9 @@
 #define LIBRARYWIDGET_H
 
 #include <QListWidget>
+#include <QStringList>
+#include <string>
+#include <map>
 
 class QWidget;
 class QTreeWidget;
@@ -52,11 +55,15 @@ public:
 //    void addLibrary(QString libraryName);
     void addLibrary(QString libraryName, QString parentLibraryName=QString());
     //void addComponent(QString libraryName, QString componentName, QIcon icon, QStringList list);
-    void addComponent(QString libraryName, ListWidgetItem *newComponent);
+    void addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList parameterData);
+    QStringList getParameterData(QString);
 
 private slots:
     void showLib(QTreeWidgetItem * item, int column);
     void hideAllLib();
+
+private:
+    std::map<QString, QStringList> mParameterMap;
 
 };
 
