@@ -1,3 +1,5 @@
+//$Id$
+
 #ifndef LISTWIDGETITEM_H
 #define LISTWIDGETITEM_H
 

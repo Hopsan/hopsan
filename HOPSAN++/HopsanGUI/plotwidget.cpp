@@ -1,3 +1,4 @@
+//$Id$
 #include "plotwidget.h"
 
 PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, QWidget *parent)
