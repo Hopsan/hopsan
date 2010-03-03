@@ -93,7 +93,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
 //        GUIComponent *guiComponent = new GUIComponent(mpHopsan,iconDir,componentTypeName,mapToScene(position).toPoint(),this);
       //  GUIComponent *guiComponent = new GUIComponent(mpHopsan,parameterData,mapToScene(position).toPoint(),this);
 
-        this->addComponent(iconDir, parameterData, this->mapToScene(position).toPoint());
+        this->addComponent(parameterData, this->mapToScene(position).toPoint());
 
 
 //        GUIComponent *guiComponent = new GUIComponent(mpHopsan,iconDir,componentTypeName,mapToScene(position).toPoint(),this);
@@ -113,7 +113,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
 }
 
 
-void GraphicsView::addComponent(QString iconDir, QStringList parameterData, QPoint position)
+void GraphicsView::addComponent(QStringList parameterData, QPoint position)
 {
     GUIComponent *guiComponent = new GUIComponent(mpHopsan,parameterData,position,this);
 
