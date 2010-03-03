@@ -1,8 +1,8 @@
 NAME HydraulicFlowSourceQ
 ICON FlowSource.svg
 PORTS 2
-.5
-.5
 1
+.5
+.5
 .5
 
