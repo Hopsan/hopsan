@@ -1,2 +1,8 @@
 NAME HydraulicPressureSourceQ
 ICON PressureSource.svg
+PORTS 2
+.5
+.5
+1
+.5
+

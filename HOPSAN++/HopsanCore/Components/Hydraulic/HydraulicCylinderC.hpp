@@ -13,6 +13,7 @@
 #define HYDRAULICCYLINDERC_HPP_INCLUDED
 
 #include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 
 //!
 //! @brief

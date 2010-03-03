@@ -22,6 +22,53 @@
 #include <math.h>
 #include "ParameterDialog.h"
 
+GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent)
+        : QGraphicsWidget(parent)
+{
+    QString componentTypeName = parameterData.at(0);
+    QString fileName = parameterData.at(1);
+    size_t nPorts = parameterData.at(2).toInt();
+
+    //Core interaction
+    mpCoreComponent = hopsan->CreateComponent(componentTypeName.toStdString());
+    //
+
+    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
+    this->setAcceptHoverEvents(true);
+
+    mpParentView = parentView;
+
+    this->setZValue(10);
+    icon = new QGraphicsSvgItem(fileName,this);
+
+    std::cout << "GUIcomponent: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
+    std::cout << "GUIcomponent: " << componentTypeName.toStdString() << std::endl;
+
+    setGeometry(0,0,icon->boundingRect().width(),icon->boundingRect().height());
+
+    mpNameText = new GUIComponentNameTextItem(mpCoreComponent, this);
+    mpNameText->setPos(QPointF(icon->boundingRect().width()/2-mpNameText->boundingRect().width()/2, icon->boundingRect().height()));
+
+    //Sets the ports
+    for (size_t i = 0; i < nPorts; ++i)
+    {
+        double x = parameterData.at(3+2*i).toDouble();
+        double y = parameterData.at(4+2*i).toDouble();
+        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*icon->sceneBoundingRect().width()-5,y*icon->sceneBoundingRect().height()-5,10.0,10.0,this->getParentView(),this,icon));
+    }
+
+    connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(fixTextPosition(QPointF)));
+    connect(this->mpParentView,SIGNAL(keyPressDelete()),this,SLOT(deleteComponent()));
+
+    setPos(position-QPoint(icon->boundingRect().width()/2, icon->boundingRect().height()/2));
+
+    mpSelectionBox = new GUIComponentSelectionBox(0,0,icon->boundingRect().width(),icon->boundingRect().height(),
+                                                  QPen(QColor("red"),3), QPen(QColor("darkRed"),2),this);
+    mpSelectionBox->setVisible(false);
+}
+
+
+
 GUIComponent::GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QString componentTypeName, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {

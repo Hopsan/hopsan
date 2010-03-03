@@ -1,0 +1,11 @@
+NAME HydraulicCylinderC
+ICON Cylinder.svg
+PORTS 3
+.05
+1
+.55
+1
+1
+.5
+
+

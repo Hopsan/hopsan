@@ -1,2 +1,8 @@
 NAME HydraulicTLMlossless
 ICON TLM.svg
+PORTS 2
+0
+.5
+1
+.5
+

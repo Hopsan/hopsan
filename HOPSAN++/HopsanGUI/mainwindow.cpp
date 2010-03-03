@@ -161,10 +161,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Load default libraries
     library->addLibrary("User defined libraries");
-    addLibs("../../HopsanGUI/componentData/hydraulic");//This method should be in LibraryWidget and addLibs() may be here
+    library->addLibrary("hydraulic");
     addLibs("../../HopsanGUI/componentData/hydraulic/sources","hydraulic");//This method should be in LibraryWidget and addLibs() may be here
     addLibs("../../HopsanGUI/componentData/hydraulic/restrictors","hydraulic");//This method should be in LibraryWidget and addLibs() may be here
     addLibs("../../HopsanGUI/componentData/hydraulic/volumes","hydraulic");//This method should be in LibraryWidget and addLibs() may be here
+    addLibs("../../HopsanGUI/componentData/hydraulic/actuators","hydraulic");//This method should be in LibraryWidget and addLibs() may be here
 
     QMetaObject::connectSlotsByName(this);
 
@@ -216,6 +217,9 @@ void MainWindow::addLibs(QString libDir, QString parentLib)
         QString componentName;
         QIcon icon;
         QString iconPath;
+        QString nPorts;
+        QString portPosX;
+        QString portPosY;
 
         QString filename = libDirObject.absolutePath() + "/" + libList.at(i);
         QFile file(filename);   //Create a QFile object
@@ -226,21 +230,39 @@ void MainWindow::addLibs(QString libDir, QString parentLib)
         while (!inFile.atEnd()) {
             QString line = inFile.readLine();   //line contains each row in the file
 
-            if (line.startsWith("NAME")){
+            if (line.startsWith("NAME"))
+            {
                 componentName = line.mid(5);
+                parameterData << componentName;
             }
 
-            if (line.startsWith("ICON")){
+            if (line.startsWith("ICON"))
+            {
                 iconPath = libDirObject.absolutePath() + "/" + line.mid(5);
                 icon.addFile(iconPath);
+                parameterData << iconPath;
+            }
+            if (line.startsWith("PORTS"))
+            {
+                nPorts = line.mid(6);
+                parameterData << nPorts;
+                for (size_t i = 0; i < nPorts.toInt(); ++i)
+                {
+                    line = inFile.readLine();
+                    portPosX = line.mid(0);
+                    line = inFile.readLine();
+                    portPosY = line.mid(0);
+                    std::cout << qPrintable(componentName) << " x: " << qPrintable(portPosX) << " y: " << qPrintable(portPosY) << std::endl;
+                    parameterData << portPosX << portPosY;
+                }
             }
         }
         file.close();
         //Add data to the paremeterData list
-        parameterData << componentName << iconPath;
+  //      parameterData << componentName << iconPath;
 
         ListWidgetItem *libcomp= new ListWidgetItem(icon,componentName);
-
+      //  std::cout << parameterData.size() << std::endl;
         libcomp->setParameterData(parameterData);
 
         //Add the component to the library

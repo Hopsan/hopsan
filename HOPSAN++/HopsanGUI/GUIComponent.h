@@ -26,6 +26,7 @@ class GUIComponent : public QGraphicsWidget
 {
     Q_OBJECT
 public:
+    GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent = 0);
     GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QString componentName, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent = 0);
     ~GUIComponent();
     QGraphicsView *getParentView();
