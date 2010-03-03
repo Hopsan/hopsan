@@ -31,6 +31,7 @@ public:
     QGraphicsView *getParentView();
     void addConnector(GUIConnector *item);
     void refreshName();
+    void showPorts(bool visible);
 
     //Core interaction
     Component *mpCoreComponent;

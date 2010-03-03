@@ -52,6 +52,8 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QS
     mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(0), icon->sceneBoundingRect().width()-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),this,icon));
     mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(1),-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),this,icon));
 
+    this->showPorts(false);
+
     //icon->setPos(QPointF(-icon->boundingRect().width()/2, -icon->boundingRect().height()/2));
 
    // rectR->boundingRegion();
@@ -143,11 +145,7 @@ void GUIComponent::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
         this->mpSelectionBox->setHovered();
         //this->mpSelectionBox->setVisible(true);
     }
-    QList<GUIPort*>::iterator i;
-    for (i = mPortListPtrs.begin(); i != mPortListPtrs.end(); ++i)
-    {
-        (*i)->show();
-    }
+    this->showPorts(true);
 }
 
 
@@ -157,11 +155,7 @@ void GUIComponent::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     {
         this->mpSelectionBox->setPassive();
     }
-    QList<GUIPort*>::iterator i;
-    for (i = mPortListPtrs.begin(); i != mPortListPtrs.end(); ++i)
-    {
-        (*i)->hide();
-    }
+    this->showPorts(false);
 }
 
 
@@ -201,6 +195,24 @@ QVariant GUIComponent::itemChange(GraphicsItemChange change, const QVariant &val
         emit componentMoved();
     }
     return value;
+}
+
+
+void GUIComponent::showPorts(bool visible)
+{
+    QList<GUIPort*>::iterator i;
+    if(visible)
+    {
+        for (i = mPortListPtrs.begin(); i != mPortListPtrs.end(); ++i)
+        {
+            (*i)->show();
+        }
+    }
+    else
+        for (i = mPortListPtrs.begin(); i != mPortListPtrs.end(); ++i)
+        {
+            (*i)->hide();
+        }
 }
 
 
