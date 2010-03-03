@@ -31,6 +31,7 @@
 //#include "ProjectTabWidget.h"
 //#include "LibraryWidget.h"
 #include "plotwidget.h"
+#include <QPlainTextEdit>
 
 
 class QGridLayout;
@@ -65,6 +66,7 @@ public:
     QMenu *menuSimulation;
     QMenu *menuView;
     QMenu *menuPlot;
+    QPlainTextEdit *mpMessageWindow;
     QStatusBar *statusBar;
     QAction *actionOpen;
     QAction *actionSave;

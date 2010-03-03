@@ -64,6 +64,18 @@ MainWindow::MainWindow(QWidget *parent)
     centralgrid->setColumnMinimumWidth(1,100);
     centralgrid->setColumnStretch(1,10);*/
 
+    //Create a dock for the Message Window
+    QDockWidget *messagedock = new QDockWidget(tr("Messages"), this);
+    messagedock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
+    mpMessageWindow = new QPlainTextEdit(this);
+    mpMessageWindow->setReadOnly(true);
+    messagedock->setWidget(mpMessageWindow);
+    addDockWidget(Qt::BottomDockWidgetArea, messagedock);
+    mpMessageWindow->setPlainText("test text");
+    mpMessageWindow->setPlainText("test text2");
+    mpMessageWindow->appendPlainText("test text 3");
+
+
     //Create a dock for the componentslibrary
     QDockWidget *libdock = new QDockWidget(tr("Components"), this);
     libdock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
