@@ -14,6 +14,7 @@
 #include "Port.h"
 #include "Component.h"
 #include "CoreUtilities/LoadExternal.h"
+#include "CoreUtilities/HopsanCoreMessageHandler.h"
 
 //! @brief This class gives access to HopsanCore Initialization, externalLib loading and ComponentCreation.
 //!
@@ -30,12 +31,16 @@ private:
     static HopsanEssentials* mpInstance;
     NodeFactory* mpNodeFactory;
     ComponentFactory* mpComponentFactory;
+    HopsanCoreMessageHandler* mpMessageHandler;
 
     void Initialize();
     HopsanEssentials();
 
 public:
     LoadExternal externalLoader;
+    HopsanCoreMessage getMessage();
+    size_t checkMessage();
+
 
     static HopsanEssentials* getInstance();
     ~HopsanEssentials();

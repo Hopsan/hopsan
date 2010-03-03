@@ -33,7 +33,8 @@ SOURCES += Port.cc \
     ComponentUtilities/IntegratorLimited.cc \
     ComponentUtilities/Integrator.cc \
     ComponentUtilities/FirstOrderFilter.cc \
-    ComponentUtilities/Delay.cc
+    ComponentUtilities/Delay.cc \
+    CoreUtilities/HopsanCoreMessageHandler.cc
 HEADERS += win32dll.h \
     Port.h \
     Node.h \
@@ -108,4 +109,5 @@ HEADERS += win32dll.h \
     ComponentUtilities/IntegratorLimited.h \
     ComponentUtilities/Integrator.h \
     ComponentUtilities/FirstOrderFilter.h \
-    ComponentUtilities/Delay.h
+    ComponentUtilities/Delay.h \
+    CoreUtilities/HopsanCoreMessageHandler.h
