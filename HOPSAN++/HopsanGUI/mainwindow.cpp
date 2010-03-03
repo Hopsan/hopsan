@@ -145,6 +145,7 @@ MainWindow::MainWindow(QWidget *parent)
     menuFile->addAction(actionClose);
 
     menuLibs->addAction(actionLoadLibs);
+    menuLibs->addAction(actionOpen);
 
     menuSimulation->addAction(actionSimulate);
 
@@ -173,6 +174,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->connect(this->actionClose,SIGNAL(triggered()),SLOT(close()));
     this->connect(this->actionProject,SIGNAL(triggered()),projectTabs,SLOT(addProjectTab()));
     this->connect(this->actionLoadLibs,SIGNAL(triggered()),SLOT(addLibs()));
+    this->connect(this->actionOpen,SIGNAL(triggered()),projectTabs,SLOT(loadModel()));
 
     this->connect(this->actionPlot,SIGNAL(triggered()),SLOT(plot()));
 

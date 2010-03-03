@@ -120,6 +120,7 @@ public slots:
     bool closeProjectTab(int index);
     bool closeAllProjectTabs();
     void simulateCurrent();
+    void loadModel();
 
 };
 

@@ -20,6 +20,8 @@
 #include <QGraphicsTextItem>
 #include <QMessageBox>
 #include <QDebug>
+#include <QDir>
+#include <QFileDialog>
 
 
 //! Constructor.
@@ -517,4 +519,21 @@ void ProjectTabWidget::simulateCurrent()
     pCurrentTab->mpModel->simulate(0.0, 5.0); //HARD CODED
     //pCurrentTab->mpModel->getSubComponent("DefaultLaminarOrificeName")->getPort("P1").saveLogData("output.txt");
 
+}
+
+
+void ProjectTabWidget::loadModel()
+{
+    QDir fileDialogOpenDir;
+
+    QString modelFile = QFileDialog::getOpenFileName(this, tr("Choose Model File"),
+                                                     fileDialogOpenDir.currentPath(),
+                                                     tr("Hopsan Model Files (*.hmf)"));
+    qDebug() << "Opening model file: " << modelFile;
+
+   // QString libDir = QFileDialog::getExistingDirectory(this, tr("Choose Model File"),
+  //                                               fileDialogOpenDir.currentPath(),
+//                                                 QFileDialog::DontResolveSymlinks);
+    //addLibs(libDir,QString("User defined libraries"));
+    //std::cout << qPrintable(libDir) << std::endl;
 }
