@@ -7,21 +7,14 @@
 //!
 //$Id$
 
+
 #include "HopsanCore.h"
 #include "ProjectTabWidget.h"
 #include "GUIComponent.h"
 #include "GUIPort.h"
 #include "GUIConnector.h"
 
-#include <iostream>
-#include <math.h>
-#include <QBoxLayout>
-#include <QGraphicsSvgItem>
-#include <QGraphicsTextItem>
-#include <QMessageBox>
-#include <QDebug>
-#include <QDir>
-#include <QFileDialog>
+#include <QtGui>
 
 
 //! Constructor.

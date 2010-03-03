@@ -7,17 +7,14 @@
 //!
 //$Id$
 
-#include "LibraryWidget.h"
-#include <iostream>
+#include <QtGui>
 
-#include <QWidget>
-#include <QTreeWidget>
-#include <QListWidget>
-#include <QVBoxLayout>
-#include <QMimeData>
-#include <QStringList>
+#include "LibraryWidget.h"
 #include "listwidget.h"
 
+
+//! Constructor.
+//! @param parent defines a parent to the new instanced object.
 LibraryContent::LibraryContent(QWidget *parent)
     :   QListWidget(parent)
 {
@@ -74,7 +71,8 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
 }
 
 
-
+//! Constructor.
+//! @param parent defines a parent to the new instanced object.
 LibraryWidget::LibraryWidget(QWidget *parent)
         :   QWidget(parent)
 {
@@ -109,7 +107,10 @@ LibraryWidget::LibraryWidget(QWidget *parent)
 //
 //}
 
-
+//! Adds a library to the library widget.
+//! @param libraryName is the name of the new library.
+//! @param parentLibraryName is the name of an eventually parent library.
+//! @see addComponent(QString libraryName, ListWidgetItem *newComponent)
 void LibraryWidget::addLibrary(QString libraryName, QString parentLibraryName)
 {
     QTreeWidgetItem *newTreePost = new QTreeWidgetItem((QTreeWidget*)0);
@@ -153,6 +154,9 @@ void LibraryWidget::addLibrary(QString libraryName, QString parentLibraryName)
 //}
 
 
+//! Adds a library to the library widget.
+//! @param libraryName is the name of the library where the component should be added.
+//! @see addComponent(QString libraryName, QString parentLibraryName)
 void LibraryWidget::addComponent(QString libraryName, ListWidgetItem *newComponent)
 {
     mLibraryMapPtrs.value(libraryName)->addItem(newComponent);
@@ -174,7 +178,11 @@ void LibraryWidget::addComponent(QString libraryName, ListWidgetItem *newCompone
 }
 
 
-void LibraryWidget::showLib(QTreeWidgetItem * item, int column)
+//! Makes a library visible.
+//! @param item is the library to show.
+//! @param column is the position of the library name in the tree.
+//! @see hideAllLib()
+void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
 {
     hideAllLib();
 
@@ -191,6 +199,8 @@ void LibraryWidget::showLib(QTreeWidgetItem * item, int column)
 }
 
 
+//! Hide all libraries.
+//! @see showLib(QTreeWidgetItem *item, int column)
 void LibraryWidget::hideAllLib()
 {
     QMap<QString, QListWidget *>::iterator lib;

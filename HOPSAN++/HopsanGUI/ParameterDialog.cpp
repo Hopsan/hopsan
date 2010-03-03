@@ -8,13 +8,15 @@
 //$Id$
 
 #include <QtGui>
-#include <vector>
-#include <list>
 #include <cassert>
 
 #include "ParameterDialog.h"
 #include "HopsanCore.h"
 
+
+//! Constructor.
+//! @param coreComponent is a ponter to the core component.
+//! @param parent defines a parent to the new instanced object.
 ParameterDialog::ParameterDialog(Component *coreComponent, QWidget *parent)
     : QDialog(parent)
 {
@@ -81,6 +83,7 @@ ParameterDialog::ParameterDialog(Component *coreComponent, QWidget *parent)
     setWindowTitle(tr("Parameters"));
 }
 
+//! Sets the parameters in the core component. Read the values from the dialog and write them into the core component.
 void ParameterDialog::setParameters()
 {
     for (size_t i=0 ; i < mValueVector.size(); ++i )
