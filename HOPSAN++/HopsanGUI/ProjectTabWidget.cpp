@@ -542,9 +542,6 @@ void ProjectTabWidget::simulateCurrent()
 
 void ProjectTabWidget::loadModel()
 {
-    this->addTab(new ProjectTab(this), modelFileName);
-    ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
-
     QDir fileDialogOpenDir;
 
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Model File"),
@@ -553,6 +550,9 @@ void ProjectTabWidget::loadModel()
     qDebug() << "Opening model file: " << modelFileName.toStdString().c_str();
 
     std::ifstream modelFile (modelFileName.toStdString().c_str());
+
+    this->addTab(new ProjectTab(this), modelFileName);
+    ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
 
         //Necessary declarations
     string inputLine;
