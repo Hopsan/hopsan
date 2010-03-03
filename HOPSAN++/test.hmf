@@ -1,2 +1,3 @@
 COMPONENT HydraulicPressureSource psource1 150 150
 COMPONENT HydraulicCylinderC cylinder1 250 280
+CONNECT psource1 p1 cylinder1 p2 VERTICAL 50 HORIZONTAL 100 VERTICAL 30 DIAGONAL 30 40

@@ -542,6 +542,9 @@ void ProjectTabWidget::simulateCurrent()
 
 void ProjectTabWidget::loadModel()
 {
+    this->addTab(new ProjectTab(this), modelFileName);
+    ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
+
     QDir fileDialogOpenDir;
 
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Model File"),
@@ -552,11 +555,6 @@ void ProjectTabWidget::loadModel()
     std::ifstream modelFile (modelFileName.toStdString().c_str());
 
         //Necessary declarations
-    //ComponentSystem* pMainModel = new ComponentSystem("mainModel");
-    //typedef map<string, Component*> mapComponentType;
-    //typedef map<string, ComponentSystem*> mapSystemType;
-    //mapComponentType componentMap;
-    //mapSystemType componentSystemMap;
     string inputLine;
     string inputWord;
     string componentType;
@@ -565,9 +563,6 @@ void ProjectTabWidget::loadModel()
 
     while (! modelFile.eof() )
     {
-        this->addTab(new ProjectTab(this), modelFileName);
-        ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
-
             //Read the line
         getline(modelFile,inputLine);                                   //Read a line
         stringstream inputStream(inputLine);
@@ -585,10 +580,6 @@ void ProjectTabWidget::loadModel()
                 inputStream >> componentName;
                 inputStream >> posX;
                 inputStream >> posY;
-                qDebug() << QString(componentType.c_str());
-                qDebug() << QString(componentName.c_str());
-                qDebug() << posX << ", " << posY;
-
                 pCurrentTab->getView()->addComponent(QString(componentType.c_str()), QPoint(posX, posY));
             }
         }
