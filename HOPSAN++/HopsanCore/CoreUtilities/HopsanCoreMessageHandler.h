@@ -43,7 +43,7 @@ public:
 
 };
 
-extern HopsanCoreMessageHandler gHopsanCoreMessageHandler;
+extern HopsanCoreMessageHandler gCoreMessageHandler;
 DLLIMPORTEXPORT HopsanCoreMessageHandler* getCoreMessageHandlerPtr();
 
 #endif // HOPSANCOREMESSAGEHANDLER_H

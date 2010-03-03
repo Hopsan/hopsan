@@ -15,6 +15,7 @@
 #include <math.h>
 #include "Component.h"
 #include "Port.h"
+#include "CoreUtilities/HopsanCoreMessageHandler.h"
 
 //Constructor
 CompParameter::CompParameter(const string name, const string description, const string unit, double &rValue)
@@ -855,51 +856,58 @@ void ComponentSystem::setTypeCQS(const string cqs_type)
     else
     {
         cout << "Error: Specified type _" << cqs_type << "_ does not exist!" << endl;
+        gCoreMessageHandler.addWarningMessage("Specified type: " + cqs_type + " does not exist!, System CQStype unchanged");
     }
 }
 
 //! Connect two ports to each other
-void ComponentSystem::connect(Port &rPort1, Port &rPort2)
+bool ComponentSystem::connect(Port &rPort1, Port &rPort2)
 {
-    connect(*rPort1.mpComponent, rPort1.mPortName, *rPort2.mpComponent, rPort2.mPortName);
+    return connect(*rPort1.mpComponent, rPort1.mPortName, *rPort2.mpComponent, rPort2.mPortName);
 }
 
 //! Connect two components with specified ports to each other, pointer version
-void ComponentSystem::connect(Component *pComponent1, const string portname1, Component *pComponent2, const string portname2)
+bool ComponentSystem::connect(Component *pComponent1, const string portname1, Component *pComponent2, const string portname2)
 {
-    connect(*pComponent1, portname1, *pComponent2, portname2);
+    return connect(*pComponent1, portname1, *pComponent2, portname2);
 }
 
 //! Connect two components with specified ports to each other, reference version
-void ComponentSystem::connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2)
+bool ComponentSystem::connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2)
 {
     Node* pNode;
     Port* pPort1;
     Port* pPort2;
 
     //First some error checking
+    stringstream ss; //Error string stream
 
     //Check if commponents have specified ports
     if (!rComponent1.getPort(portname1, pPort1))
     {
-        //raise Exception('type of port does not exist')
-        cout << "rComponent1: "<< rComponent1.getName() << " does not have a port with name " << portname1 << endl;
-        assert(false);
+        ss << "rComponent1: "<< rComponent1.getName() << " does not have a port with name " << portname1;
+        cout << ss.str() << endl;
+        gCoreMessageHandler.addErrorMessage(ss.str());
+        return false;
     }
 
     if (!rComponent2.getPort(portname2, pPort2)) //Not else if because pPort2 has to be set in getPort
     {
         //raise Exception('type of port does not exist')
-        cout << "rComponent2: "<< rComponent2.getName() << " does not have a port with name " << portname2 << endl;
-        assert(false);
+        ss << "rComponent2: "<< rComponent2.getName() << " does not have a port with name " << portname2;
+        cout << ss.str() << endl;
+        gCoreMessageHandler.addErrorMessage(ss.str());
+        return false;
     }
 
     //! @todo this will be a problem if we want to connect sensors and such
     if (pPort1->isConnected() && pPort2->isConnected())
         //Both already are connected to nodes
     {
-        //Do nothing, maybe raise exception?
-        cout << "Both component ports are already connected: " << rComponent1.getName() << ": " << portname1 << " and " << rComponent2.getName() << ": " << portname2 << endl;
+        ss << "Both component ports are already connected: " << rComponent1.getName() << ": " << portname1 << " and " << rComponent2.getName() << ": " << portname2;
+        cout << ss.str() << endl;
+        gCoreMessageHandler.addWarningMessage(ss.str());
+        return false;
     }
     else
     {
@@ -946,22 +954,27 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             //check if both ports have the same node type specified
             if (pPort1->getNodeType() != pPort2->getNodeType())
             {
-                cout << "You are trying to connect a " << rComponent1.getPort(portname1).getNodeType() << " to " << rComponent2.getPort(portname2).getNodeType()  << " when connect: " << rComponent1.getName() << ": " << portname1 << " and " << rComponent2.getName() << ": " << portname2 << endl;
-                cout << "raise Exception('component port nodetypes mismatch') or similar should be here" << endl;
-                assert(false);
+                ss << "You are trying to connect a " << rComponent1.getPort(portname1).getNodeType() << " to " << rComponent2.getPort(portname2).getNodeType()  << " when connecting: " << rComponent1.getName() << ": " << portname1 << " and " << rComponent2.getName() << ": " << portname2;
+                cout << ss.str() << endl;
+                gCoreMessageHandler.addErrorMessage(ss.str());
+                return false;
             }
             //Check so ...C-Q-C-Q-C... pattern is consistent
             else if ((pPort1->getPortType() == "PowerPort") && (pPort2->getPortType() == "PowerPort"))
             {
                 if ((pPort1->mpComponent->isComponentC()) && (pPort2->mpComponent->isComponentC()))
                 {
-                    cout << "Both components, " << pPort1->mpComponent->getName() << " and " << pPort2->mpComponent->getName() << ", are of C-type" << endl;
-                    assert(false);
+                    ss << "Both components, " << pPort1->mpComponent->getName() << " and " << pPort2->mpComponent->getName() << ", are of C-type";
+                    cout << ss.str() << endl;
+                    gCoreMessageHandler.addErrorMessage(ss.str());
+                    return false;
                 }
                 else if ((pPort1->mpComponent->isComponentQ()) && (pPort2->mpComponent->isComponentQ()))
                 {
-                    cout << "Both components, " << pPort1->mpComponent->getName() << " and " << pPort2->mpComponent->getName() << ", are of Q-type" << endl;
-                    assert(false);
+                    ss << "Both components, " << pPort1->mpComponent->getName() << " and " << pPort2->mpComponent->getName() << ", are of Q-type";
+                    cout << ss.str() << endl;
+                    gCoreMessageHandler.addErrorMessage(ss.str());
+                    return false;
                 }
             }
 
@@ -969,8 +982,10 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             //Check so that both systems to connect have been added to this system
             if ((&rComponent1.getSystemParent() != (Component*)this) && ((&rComponent1.getSystemParent() != (Component*)this)) )
             {
-                cout << "The two components, "<< rComponent1.getName() << " and " << rComponent2.getName() << ", "<< " to be connected are not contained within the connecting system" << endl;
-                assert(false);
+                ss << "The two components, "<< rComponent1.getName() << " and " << rComponent2.getName() << ", "<< " to be connected are not contained within the connecting system";
+                cout << ss.str() << endl;
+                gCoreMessageHandler.addErrorMessage(ss.str());
+                return false;
             }
 
             //Check if One of the ports already is connected to a node
@@ -983,8 +998,10 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
                     // Check so the ports can be connected
                     if (!connectionOK(pNode, pPort1, pPort2))
                     {
-                        cout << "Problem occured at connection" << rComponent1.getName() << " and " << rComponent2.getName() << endl;
-                        assert(false);
+                        ss << "Problem occured at connection" << rComponent1.getName() << " and " << rComponent2.getName();
+                        cout << ss.str() << endl;
+                        gCoreMessageHandler.addErrorMessage(ss.str());
+                        return false;
                     }
                     else
                     {
@@ -1007,8 +1024,10 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
                     // Check so the ports can be connected
                     if (!connectionOK(pNode, pPort1, pPort2))
                     {
-                        cout << "Problem occured at connection" << rComponent1.getName() << " and " << rComponent2.getName() << endl;
-                        assert(false);
+                        ss << "Problem occured at connection" << rComponent1.getName() << " and " << rComponent2.getName();
+                        cout << ss.str() << endl;
+                        gCoreMessageHandler.addErrorMessage(ss.str());
+                        return false;
                     }
                     else
                     {
@@ -1033,8 +1052,10 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
                 // Check so the ports can be connected
                 if (!connectionOK(pNode, pPort1, pPort2))
                 {
-                    cout << "Problem occured at connection" << rComponent1.getName() << " and " << rComponent2.getName() << endl;
-                    assert(false);
+                    ss << "Problem occured at connection" << rComponent1.getName() << " and " << rComponent2.getName();
+                    cout << ss.str() << endl;
+                    gCoreMessageHandler.addErrorMessage(ss.str());
+                    return false;
                 }
                 //rComponent1.getSystemparent().addSubNode(pNode); //doesnt work getSystemparent returns Component , addSubNode is in ComponentSystem
                 this->addSubNode(pNode);
@@ -1052,8 +1073,11 @@ void ComponentSystem::connect(Component &rComponent1, const string portname1, Co
                 pPort2->addConnectedPort(pPort1);
             }
         }
-        cout << "Connected " << rComponent1.getName() << ": " << portname1 << " with " << rComponent2.getName() << ": " << portname2 << " sucessfully" << endl;
     }
+    ss << "Connected " << rComponent1.getName() << ": " << portname1 << " with " << rComponent2.getName() << ": " << portname2 << " sucessfully";
+    cout << ss.str() << endl;
+    gCoreMessageHandler.addInfoMessage(ss.str());
+    return true;
 }
 
 

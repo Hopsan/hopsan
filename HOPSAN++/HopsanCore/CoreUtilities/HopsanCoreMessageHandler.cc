@@ -66,8 +66,8 @@ size_t HopsanCoreMessageHandler::nWaitingMessages()
     return mMessageQueue.size();
 }
 
-HopsanCoreMessageHandler gHopsanCoreMessageHandler;
+HopsanCoreMessageHandler gCoreMessageHandler;
 DLLIMPORTEXPORT HopsanCoreMessageHandler* getCoreMessageHandlerPtr()
 {
-    return &gHopsanCoreMessageHandler;
+    return &gCoreMessageHandler;
 }

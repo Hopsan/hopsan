@@ -266,7 +266,11 @@ void GraphicsView::addConnector(GUIPort *port)
         //Core interaction
         Port *pPort1 = mpTempConnector->getStartPort()->mpCorePort;
         Port *pPort2 = mpTempConnector->getEndPort()->mpCorePort;
-        mpModel->connect(*pPort1, *pPort2);
+        bool sucess = mpModel->connect(*pPort1, *pPort2);
+        if (!sucess)
+        {
+            qDebug() << "!!!!!!!FAILED TO CONNECT SHOULD REMOVE CONNECTOR OR SOMETING, the fail reason should be visible in the message window (need to be coded)";
+        }
         //
     }
 }
