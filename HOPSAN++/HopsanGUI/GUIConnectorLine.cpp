@@ -94,14 +94,14 @@ int GUIConnectorLine::getLineNumber()
 
 QVariant GUIConnectorLine::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    if (change == QGraphicsItem::ItemSelectedChange)
+    if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
-//        qDebug() << "Line selection status changed\n";
-//        if(this->isSelected())
-//        {
-//            this->setSelected(false);
-//            emit lineSelected();
-//        }
+        qDebug() << "Line selection status changed\n";
+        if(this->isSelected())
+        {
+            this->setSelected(false);
+            emit lineSelected();
+        }
     }
     else if (change == QGraphicsItem::ItemPositionHasChanged)
     {

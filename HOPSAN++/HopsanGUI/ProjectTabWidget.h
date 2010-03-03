@@ -47,6 +47,7 @@ signals:
     void viewClicked();
 
 public slots:
+    void addComponent(QString iconDir, QString componentTypeName, QPoint position);
     void addConnector(GUIPort *rect);
     void removeConnection(GUIConnector* pConnector);
 

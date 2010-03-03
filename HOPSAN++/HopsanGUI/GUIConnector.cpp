@@ -72,7 +72,7 @@ void GUIConnector::setEndPort(GUIPort *port)
     connect(this->mpEndPort->getComponent(),SIGNAL(componentDeleted()),this,SLOT(deleteMe()));
     for(std::size_t i=1; i!=mLines.size()-1; ++i)
     {
-        mLines[i]->setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemUsesExtendedStyleOption);
+        mLines[i]->setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemUsesExtendedStyleOption | QGraphicsItem::ItemIsSelectable);
     }
     emit endPortConnected();
 }

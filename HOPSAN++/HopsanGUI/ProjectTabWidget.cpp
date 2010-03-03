@@ -86,22 +86,41 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
         QPoint position = event->pos();
 
-        std::cout << "GraphicsView: " << "x=" << position.x() << "  " << "y=" << position.y() << std::endl;
+        qDebug() << "GraphicsView: " << "x=" << position.x() << "  " << "y=" << position.y();
 
-        GUIComponent *guiComponent = new GUIComponent(mpHopsan,iconDir,componentTypeName,mapToScene(position).toPoint(),this);
+        this->addComponent(iconDir, componentTypeName, this->mapToScene(position).toPoint());
 
-        //Core interaction
-        qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
-        guiComponent->refreshName();
-        //
 
-        //guiComponent->setPos(this->mapToScene(position));
-        std::cout << "GraphicsView: " << guiComponent->parent() << std::endl;
-
-        this->scene()->addItem(guiComponent);
+//        GUIComponent *guiComponent = new GUIComponent(mpHopsan,iconDir,componentTypeName,mapToScene(position).toPoint(),this);
+//
+//        //Core interaction
+//        qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
+//        guiComponent->refreshName();
+//        //
+//
+//        //guiComponent->setPos(this->mapToScene(position));
+//        std::cout << "GraphicsView: " << guiComponent->parent() << std::endl;
+//
+//        this->scene()->addItem(guiComponent);
 
         delete data;
     }
+}
+
+
+void GraphicsView::addComponent(QString iconDir, QString componentTypeName, QPoint position)
+{
+    GUIComponent *guiComponent = new GUIComponent(mpHopsan,iconDir,componentTypeName,position,this);
+
+    //Core interaction
+    qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
+    guiComponent->refreshName();
+    //
+
+    //guiComponent->setPos(this->mapToScene(position));
+    qDebug() << "GraphicsView: " << guiComponent->parent();
+
+    this->scene()->addItem(guiComponent);
 }
 
 
