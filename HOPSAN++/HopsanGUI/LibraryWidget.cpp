@@ -173,6 +173,7 @@ void LibraryWidget::addComponent(QString libraryName, ListWidgetItem *newCompone
         ++it;
     }
     mParameterMap.insert(std::pair<QString, QStringList>(parameterData.at(0), parameterData));
+    qDebug() << "Mapping parameters for component: " << parameterData.at(0);
 }
 
 

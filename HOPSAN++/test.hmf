@@ -1,0 +1,2 @@
+COMPONENT HydraulicPressureSource psource1 150 150
+COMPONENT HydraulicCylinderC cylinder1 250 280

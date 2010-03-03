@@ -559,6 +559,9 @@ void ProjectTabWidget::loadModel()
     //mapSystemType componentSystemMap;
     string inputLine;
     string inputWord;
+    string componentType;
+    string componentName;
+    int posX, posY;
 
     while (! modelFile.eof() )
     {
@@ -578,8 +581,15 @@ void ProjectTabWidget::loadModel()
 
             if ( inputWord == "COMPONENT" )
             {
-                inputStream >> inputWord;
-                //pCurrentTab->getView()->addComponent()
+                inputStream >> componentType;
+                inputStream >> componentName;
+                inputStream >> posX;
+                inputStream >> posY;
+                qDebug() << QString(componentType.c_str());
+                qDebug() << QString(componentName.c_str());
+                qDebug() << posX << ", " << posY;
+
+                pCurrentTab->getView()->addComponent(QString(componentType.c_str()), QPoint(posX, posY));
             }
         }
     }
