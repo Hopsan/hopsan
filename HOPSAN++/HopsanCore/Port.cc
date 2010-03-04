@@ -95,7 +95,7 @@ void Port::eraseConnectedPort(Port* pPort)
     bool found = false;
     for (it=mConnectedPorts.begin(); it!=mConnectedPorts.end(); ++it)
     {
-        if (*it = pPort)
+        if (*it == pPort)
         {
             mConnectedPorts.erase(it);
             found = true;

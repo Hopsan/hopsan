@@ -12,11 +12,11 @@
 
 #include <queue>
 #include <string>
-#include "win32dll.h"
+#include "../win32dll.h"
 
 using namespace std;
 
-DLLIMPORTEXPORT class HopsanCoreMessage
+class DLLIMPORTEXPORT HopsanCoreMessage
 {
 public:
     enum MessageTypes {INFO, WARNING, ERROR};
@@ -25,7 +25,7 @@ public:
     string message;
 };
 
-DLLIMPORTEXPORT class HopsanCoreMessageHandler
+class DLLIMPORTEXPORT HopsanCoreMessageHandler
 {
 private:
     queue<HopsanCoreMessage> mMessageQueue;
