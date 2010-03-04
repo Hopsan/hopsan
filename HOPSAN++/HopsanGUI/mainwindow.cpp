@@ -262,7 +262,7 @@ void MainWindow::addLibs(QString libDir, QString parentLib)
             {
                 nPorts = line.mid(6);
                 parameterData << nPorts;
-                for (size_t i = 0; i < nPorts.toInt(); ++i)
+                for (int i = 0; i < nPorts.toInt(); ++i)
                 {
                     line = inFile.readLine();
                     portPosX = line.mid(0);
