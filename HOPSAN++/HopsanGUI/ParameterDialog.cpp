@@ -89,12 +89,15 @@ void ParameterDialog::setParameters()
     for (size_t i=0 ; i < mValueVector.size(); ++i )
     {
         bool ok;
-        mpCoreComponent->setParameter(mVarVector[i]->text().toStdString(), mValueVector[i]->text().toDouble(&ok));
+        double newValue = mValueVector[i]->text().toDouble(&ok);
         //std::cout << "i: " << i << qPrintable(labelList[i]->text()) << "  " << mpCoreComponent->getParameterVector().at(i).getName() << std::endl;
         if (!ok)
         {
-            assert(false);
+            std::cout << "ParameterDialog::setParameters(): You must give a correct value for '" << mVarVector[i]->text().toStdString() << "'', putz. Try again!" << std::endl;
+            //this->parent()->parent()->parent()
+            return;
         }
+        mpCoreComponent->setParameter(mVarVector[i]->text().toStdString(), newValue);
     }
     std::cout << "Parameters updated." << std::endl;
     this->close();
