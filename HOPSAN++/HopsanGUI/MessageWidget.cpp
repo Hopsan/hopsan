@@ -1,10 +1,30 @@
 #include "MessageWidget.h"
 
 MessageWidget::MessageWidget(QWidget *pParent)
-    : QPlainTextEdit(pParent)
+    : QTextEdit(pParent)
 {
     mpHopsanCore = 0;
 
+}
+
+void MessageWidget::setMessageColor(int type)
+{
+    if (type == HopsanCoreMessage::ERROR)
+    {
+        setTextColor("RED");
+    }
+    else if (type == HopsanCoreMessage::WARNING)
+    {
+        setTextColor("ORANGE");
+    }
+    else if (type == HopsanCoreMessage::INFO)
+    {
+        setTextColor("GREEN");
+    }
+    else
+    {
+        setTextColor("BLACK");
+    }
 }
 
 void MessageWidget::setHopsanCorePtr(HopsanEssentials* pHopsanCore)
@@ -23,8 +43,8 @@ void MessageWidget::printCoreMessages()
             msg = mpHopsanCore->getMessage();
             if (true) //! @todo Debug level rules
             {
-                //! @todo coloring depending on type maybe
-                appendPlainText(QString::fromStdString(msg.message));
+                setMessageColor(msg.type);
+                append(QString::fromStdString(msg.message));
             }
         }
     }
@@ -37,7 +57,8 @@ void MessageWidget::printCoreMessages()
 void MessageWidget::printGUIMessage(QString message)
 {
     //! @todo make better
-    appendPlainText(message);
+    setMessageColor(-1);
+    append(message);
 }
 
 void MessageWidget::checkMessages()

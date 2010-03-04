@@ -4,11 +4,12 @@
 #include <QPlainTextEdit>
 #include "HopsanCore.h"
 
-class MessageWidget : public QPlainTextEdit
+class MessageWidget : public QTextEdit
 {
     Q_OBJECT
 private:
     HopsanEssentials *mpHopsanCore;
+    void setMessageColor(int type);
 
 public:
     MessageWidget(QWidget *pParent=0);
