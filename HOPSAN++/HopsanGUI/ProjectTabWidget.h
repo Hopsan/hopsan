@@ -90,7 +90,7 @@ class ProjectTab : public QWidget
 
 public:
     ProjectTab(QWidget *parent = 0);
-    bool isSaved;
+    bool mIsSaved;
     ProjectTabWidget *mpTabContainer;
     ComponentSystem *mpModel;
     GraphicsView *getView();
@@ -116,7 +116,8 @@ public:
     size_t mNumberOfUntitledTabs;
 
 public slots:
-    void addProjectTab();
+    void addProjectTab(ProjectTab *projectTab, QString tabName="Untitled");
+    void addNewProjectTab(QString tabName="Untitled");
     void saveProjectTab();
     void saveProjectTab(int index);
     bool closeProjectTab(int index);

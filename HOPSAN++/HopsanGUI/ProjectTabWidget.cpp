@@ -351,7 +351,7 @@ ProjectTab::ProjectTab(QWidget *parent)
     mpModel->setTypeCQS("S");
     //
 
-    isSaved = false;
+    mIsSaved = true;
 
     GraphicsScene *scene = new GraphicsScene(this);
     GraphicsView  *view  = new GraphicsView(mpTabContainer->mpHopsan, mpModel, this);
@@ -380,14 +380,14 @@ GraphicsView *ProjectTab::getView()
 //! e.g. a component added or a connection has changed.
 void ProjectTab::hasChanged()
 {
-    if (isSaved)
+    if (mIsSaved)
     {
         QString tabName = mpTabContainer->tabText(mpTabContainer->currentIndex()); //Ugly!!!
 
         tabName.append("*");
         mpTabContainer->setTabText(mpTabContainer->currentIndex(), tabName);
 
-        isSaved = false;
+        mIsSaved = false;
     }
 }
 
@@ -414,16 +414,27 @@ ProjectTabWidget::ProjectTabWidget(QWidget *parent)
 }
 
 
+//! Adds an existing ProjectTab object to itself.
+//! @see closeProjectTab(int index)
+void ProjectTabWidget::addProjectTab(ProjectTab *projectTab, QString tabName)
+{
+    projectTab->setParent(this);
+
+    addTab(projectTab, tabName);
+    setCurrentWidget(projectTab);
+}
+
+
 //! Adds a ProjectTab object (a new tab) to itself.
 //! @see closeProjectTab(int index)
-void ProjectTabWidget::addProjectTab()
+void ProjectTabWidget::addNewProjectTab(QString tabName)
 {
-    QString tabName;
-    tabName.setNum(mNumberOfUntitledTabs);
-    tabName = QString("Untitled").append(tabName).append(QString("*"));
+    tabName.append(QString::number(mNumberOfUntitledTabs));
 
     ProjectTab *newTab = new ProjectTab(this);
-    addTab(newTab, tabName);
+    newTab->mIsSaved = false;
+
+    addTab(newTab, tabName.append(QString("*")));
     setCurrentWidget(newTab);
 
     mNumberOfUntitledTabs += 1;
@@ -446,7 +457,7 @@ void ProjectTabWidget::saveProjectTab(int index)
     ProjectTab *currentTab = qobject_cast<ProjectTab *>(widget(index));
     QString tabName = tabText(index);
 
-    if (currentTab->isSaved)
+    if (currentTab->mIsSaved)
     {
         //Nothing to do
         //statusBar->showMessage(QString("Project: ").append(tabName).append(QString(" is already saved")));
@@ -462,7 +473,7 @@ void ProjectTabWidget::saveProjectTab(int index)
         setTabText(index, tabName);
         //statusBar->showMessage(QString("Project: ").append(tabName).append(QString(" saved")));
         std::cout << "ProjectTabWidget: " << qPrintable(QString("Project: ").append(tabName).append(QString(" saved"))) << std::endl;
-        currentTab->isSaved = true;
+        currentTab->mIsSaved = true;
     }
 }
 
@@ -473,7 +484,7 @@ void ProjectTabWidget::saveProjectTab(int index)
 //! @see closeAllProjectTabs()
 bool ProjectTabWidget::closeProjectTab(int index)
 {
-    if (!(qobject_cast<ProjectTab *>(widget(index))->isSaved))
+    if (!(qobject_cast<ProjectTab *>(widget(index))->mIsSaved))
     {
         QString modelName;
         modelName = tabText(index);
@@ -558,7 +569,9 @@ void ProjectTabWidget::loadModel()
 
     std::ifstream modelFile (modelFileName.toStdString().c_str());
 
-    this->addTab(new ProjectTab(this), modelFileName);
+    QFileInfo fileInfo(modelFileName);
+
+    this->addProjectTab(new ProjectTab(this), fileInfo.fileName());
     ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
 
         //Necessary declarations

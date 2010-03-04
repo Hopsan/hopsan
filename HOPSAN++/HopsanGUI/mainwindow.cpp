@@ -53,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent)
     //Create the main tab container, need at least one tab
     projectTabs = new ProjectTabWidget(this);
     projectTabs->setObjectName("projectTabs");
-    projectTabs->addProjectTab();
+    projectTabs->addNewProjectTab();
 
     //Create the library for components representation
     /*library = new LibraryWidget(this);
@@ -189,7 +189,7 @@ MainWindow::MainWindow(QWidget *parent)
     //Establish connections
     this->connect(this->actionSave,SIGNAL(triggered()),projectTabs,SLOT(saveProjectTab()));
     this->connect(this->actionClose,SIGNAL(triggered()),SLOT(close()));
-    this->connect(this->actionProject,SIGNAL(triggered()),projectTabs,SLOT(addProjectTab()));
+    this->connect(this->actionProject,SIGNAL(triggered()),projectTabs,SLOT(addNewProjectTab()));
     this->connect(this->actionLoadLibs,SIGNAL(triggered()),SLOT(addLibs()));
     this->connect(this->actionOpen,SIGNAL(triggered()),projectTabs,SLOT(loadModel()));
 
