@@ -3,7 +3,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QtGui/QMainWindow>
 //#include <QtGui/QWidget>
 //#include <QtGui/QGridLayout>
 //#include <QtGui/QTabWidget>
@@ -30,8 +29,11 @@
 //#include "listwidgetitem.h"
 //#include "ProjectTabWidget.h"
 //#include "LibraryWidget.h"
+//#include <QPlainTextEdit>
+
+#include <QMainWindow>
+
 #include "plotwidget.h"
-#include <QPlainTextEdit>
 
 
 class QGridLayout;
@@ -40,6 +42,7 @@ class QMenu;
 class QStatusBar;
 class QAction;
 class QString;
+class QPlainTextEdit;
 class ProjectTabWidget;
 class GraphicsView;
 class GraphicsScene;

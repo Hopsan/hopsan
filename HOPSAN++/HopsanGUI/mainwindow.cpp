@@ -1,30 +1,32 @@
 //$Id$
 
-#include "mainwindow.h"
+//#include <QtGui/QFileDialog>
+//#include <QtCore/QTextStream>
+//#include <QDebug>
+//
+//#include <QtGui/QMainWindow>
+//#include <QtGui/QWidget>
+//#include <QtGui/QGridLayout>
+//#include <QtGui/QTabWidget>
+//#include <QtGui/QTreeWidget>
+//#include <QtGui/QTreeWidgetItem>
+//#include <QtGui/QMenuBar>
+//#include <QtGui/QMenu>
+//#include <QtGui/QStatusBar>
+//#include <QtGui/QAction>
+//#include <QtCore/QMetaObject>
+//#include <QtCore/QString>
+//#include <QtCore/QDir>
+//#include <QtCore/QStringList>
+//#include <QtCore/QIODevice>
+//#include <QListWidgetItem>
+//#include <QStringList>
+//#include <QDockWidget>
+
 #include <iostream>
-#include <QtGui/QFileDialog>
-#include <QtCore/QTextStream>
-#include <QDebug>
+#include <QtGui>
 
-#include <QtGui/QMainWindow>
-#include <QtGui/QWidget>
-#include <QtGui/QGridLayout>
-#include <QtGui/QTabWidget>
-#include <QtGui/QTreeWidget>
-#include <QtGui/QTreeWidgetItem>
-#include <QtGui/QMenuBar>
-#include <QtGui/QMenu>
-#include <QtGui/QStatusBar>
-#include <QtGui/QAction>
-#include <QtCore/QMetaObject>
-#include <QtCore/QString>
-#include <QtCore/QDir>
-#include <QtCore/QStringList>
-#include <QtCore/QIODevice>
-#include <QListWidgetItem>
-#include <QStringList>
-#include <QDockWidget>
-
+#include "mainwindow.h"
 #include "treewidget.h"
 #include "treewidgetitem.h"
 #include "listwidget.h"
