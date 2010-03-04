@@ -15,7 +15,8 @@ SOURCES += main.cpp \
     GUIConnectorLine.cpp \
     plotwidget.cpp \
     GUIComponentSelectionBox.cpp \
-    ParameterDialog.cpp
+    ParameterDialog.cpp \
+    MessageWidget.cpp
 HEADERS += mainwindow.h \
     listwidgetitem.h \
     ProjectTabWidget.h \
@@ -27,7 +28,8 @@ HEADERS += mainwindow.h \
     GUIConnectorLine.h \
     plotwidget.h \
     GUIComponentSelectionBox.h \
-    ParameterDialog.h
+    ParameterDialog.h \
+    MessageWidget.h
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE
@@ -40,12 +42,11 @@ unix {
     LIBS += -lqwt-qt4
     INCLUDEPATH += /usr/include/qwt-qt4/
 }
-
-
-win32 {
+win32 { 
     # Ingopath:
     INCLUDEPATH += c:/temp_qwt/src
     LIBS += -Lc:/temp_qwt/lib
+    
     # make install path ("c:\Qwt-5.2.1-svn\lib" need to be added in windows PATH env variable)
     INCLUDEPATH += c:\Qwt-5.2.1-svn\include
     LIBS += -Lc:\Qwt-5.2.1-svn\lib

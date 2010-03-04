@@ -40,6 +40,9 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, QWi
     this->setAcceptDrops(true);
     this->creatingConnector = false;
     //this->setTransformationAnchor(QGraphicsView::NoAnchor);
+
+    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent())); //Ugly!!!
+    connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 }
 
 
@@ -109,6 +112,7 @@ void GraphicsView::addComponent(QStringList parameterData, QPoint position)
     //Core interaction
     qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
     guiComponent->refreshName();
+    emit checkMessages();
     //
 
     //guiComponent->setPos(this->mapToScene(position));
@@ -128,6 +132,7 @@ void GraphicsView::addComponent(QString parameterType, QPoint position)
     //Core interaction
     qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
     guiComponent->refreshName();
+    emit checkMessages();
     //
 
     //guiComponent->setPos(this->mapToScene(position));
@@ -271,6 +276,7 @@ void GraphicsView::addConnector(GUIPort *port)
         {
             qDebug() << "!!!!!!!FAILED TO CONNECT SHOULD REMOVE CONNECTOR OR SOMETING, the fail reason should be visible in the message window (need to be coded)";
         }
+        emit checkMessages();
         //
     }
 }
@@ -280,6 +286,7 @@ void GraphicsView::removeConnection(GUIConnector* pConnector)
     /// @todo some error handling both ports must exist and be connected to each other
     //Core interaction
     mpModel->disconnect(pConnector->getStartPort()->mpCorePort, pConnector->getEndPort()->mpCorePort);
+    emit checkMessages();
     //
 }
 
@@ -344,11 +351,15 @@ ProjectTab::ProjectTab(QWidget *parent)
 {
     mpTabContainer = (qobject_cast<ProjectTabWidget *>(parent)); //Ugly!!!
 
+    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent())); //Ugly!!!
+    connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
+
     //Core interaction
     mpModel = mpTabContainer->mpHopsan->CreateComponentSystem();
     mpModel->setName("APA");
     mpModel->setDesiredTimestep(.001);
     mpModel->setTypeCQS("S");
+    emit checkMessages();
     //
 
     mIsSaved = true;
@@ -405,6 +416,11 @@ ProjectTabWidget::ProjectTabWidget(QWidget *parent)
         :   QTabWidget(parent)
 {
     mpHopsan = HopsanEssentials::getInstance();
+
+    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent)); //Ugly!!!
+    pMainWindow->mpMessageWidget->setHopsanCorePtr(mpHopsan);
+    connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
+
 
     setTabsClosable(true);
     mNumberOfUntitledTabs = 0;
@@ -554,6 +570,7 @@ void ProjectTabWidget::simulateCurrent()
     pCurrentTab->mpModel->initialize(0.0, 5.0); //HARD CODED
     pCurrentTab->mpModel->simulate(0.0, 5.0); //HARD CODED
     //pCurrentTab->mpModel->getSubComponent("DefaultLaminarOrificeName")->getPort("P1").saveLogData("output.txt");
+    emit checkMessages();
 
 }
 

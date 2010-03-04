@@ -34,6 +34,7 @@
 #include <QMainWindow>
 
 #include "plotwidget.h"
+#include "MessageWidget.h"
 
 
 class QGridLayout;
@@ -69,7 +70,7 @@ public:
     QMenu *menuSimulation;
     QMenu *menuView;
     QMenu *menuPlot;
-    QPlainTextEdit *mpMessageWindow;
+    MessageWidget *mpMessageWidget;
     QStatusBar *statusBar;
     QAction *actionOpen;
     QAction *actionSave;

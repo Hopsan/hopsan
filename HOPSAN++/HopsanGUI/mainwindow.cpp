@@ -50,6 +50,14 @@ MainWindow::MainWindow(QWidget *parent)
     centralgrid = new QGridLayout(centralwidget);
     centralgrid->setSpacing(10);
 
+    //Create a dock for the MessageWidget
+    QDockWidget *messagedock = new QDockWidget(tr("Messages"), this);
+    messagedock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
+    mpMessageWidget = new MessageWidget(this);
+    mpMessageWidget->setReadOnly(true);
+    messagedock->setWidget(mpMessageWidget);
+    addDockWidget(Qt::BottomDockWidgetArea, messagedock);
+
     //Create the main tab container, need at least one tab
     projectTabs = new ProjectTabWidget(this);
     projectTabs->setObjectName("projectTabs");
@@ -65,18 +73,6 @@ MainWindow::MainWindow(QWidget *parent)
     centralgrid->setColumnStretch(0,0);
     centralgrid->setColumnMinimumWidth(1,100);
     centralgrid->setColumnStretch(1,10);*/
-
-    //Create a dock for the Message Window
-    QDockWidget *messagedock = new QDockWidget(tr("Messages"), this);
-    messagedock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
-    mpMessageWindow = new QPlainTextEdit(this);
-    mpMessageWindow->setReadOnly(true);
-    messagedock->setWidget(mpMessageWindow);
-    addDockWidget(Qt::BottomDockWidgetArea, messagedock);
-    mpMessageWindow->setPlainText("test text");
-    mpMessageWindow->setPlainText("test text2");
-    mpMessageWindow->appendPlainText("test text 3");
-
 
     //Create a dock for the componentslibrary
     QDockWidget *libdock = new QDockWidget(tr("Components"), this);

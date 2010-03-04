@@ -14,6 +14,8 @@
 #include <QGraphicsScene>
 #include <QTabWidget>
 
+#include <MessageWidget.h>
+
 
 class GUIPort;
 class GUIConnector;
@@ -45,6 +47,7 @@ signals:
     void draggingSomething();
     void keyPressDelete();
     void viewClicked();
+    void checkMessages();
 
 public slots:
     void addComponent(QStringList parameterData, QPoint position);
@@ -98,6 +101,9 @@ public:
 public slots:
     void hasChanged();
 
+signals:
+    void checkMessages();
+
 private:
     GraphicsView *mpView;
 
@@ -124,6 +130,9 @@ public slots:
     bool closeAllProjectTabs();
     void simulateCurrent();
     void loadModel();
+
+signals:
+    void checkMessages();
 
 };
 
