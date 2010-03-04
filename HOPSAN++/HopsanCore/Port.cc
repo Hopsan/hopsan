@@ -108,6 +108,11 @@ void Port::eraseConnectedPort(Port* pPort)
     }
 }
 
+vector<Port*> &Port::getConnectedPorts()
+{
+    return mConnectedPorts;
+}
+
 void Port::saveLogData(string filename)
 {
     if (mpNode != 0)

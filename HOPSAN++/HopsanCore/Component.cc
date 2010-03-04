@@ -677,18 +677,37 @@ void ComponentSystem::renameSubComponent(string old_name, string new_name)
     mSubComponentStorage.rename(old_name, new_name);
 }
 
-//! Remove a dub component from a system, can aslo be used to actually delete the component
-//! @param[in] name The name of the component to remove from he system
-//! @param[in] doDelete Set this to true if the component should be deleted after remval
+//! Remove a dub component from a system, can also be used to actually delete the component
+//! @param[in] name The name of the component to remove from the system
+//! @param[in] doDelete Set this to true if the component should be deleted after removal
 void ComponentSystem::removeSubComponent(string name, bool doDelete)
 {
-    //! @todo disconnect all ports before erase from system
     Component* c_ptr = getSubComponent(name);
-    //vector<Port*> connectedPorts
+    removeSubComponent(c_ptr, doDelete);
+}
+
+//! Remove a sub component from a system, can also be used to actually delete the component
+//! @param[in] c_ptr A pointer to the component to remove
+//! @param[in] doDelete Set this to true if the component should be deleted after removal
+void ComponentSystem::removeSubComponent(Component* c_ptr, bool doDelete)
+{
+
+    //Disconnect all ports before erase from system
+    vector<Port*>::iterator ports_it, conn_ports_it;
+    for (ports_it = c_ptr->mPortPtrs.begin(); ports_it != c_ptr->mPortPtrs.begin(); ++ports_it)
+    {
+        vector<Port*> connected_ports = (*ports_it)->getConnectedPorts(); //Get a copy of the connected ports ptr vector
+        //We can not use an iterator directly connected to the vector inside the port as this will be changed by the disconnect calls
+        for (conn_ports_it = connected_ports.begin(); conn_ports_it != connected_ports.end(); ++conn_ports_it)
+        {
+            disconnect(*ports_it, *conn_ports_it);
+        }
+    }
 
     //Erase from storage
-    mSubComponentStorage.erase(name);
+    mSubComponentStorage.erase(c_ptr->getName());
 
+    //Shall we also delete the component completely
     if (doDelete)
     {
         delete c_ptr; //! @todo can I really delete here or do I need to use the factory for external components

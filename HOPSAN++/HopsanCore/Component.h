@@ -176,6 +176,8 @@ public:
     void addComponent(Component *pComponent);
     void renameSubComponent(string old_name, string new_name);
     void removeSubComponent(string name, bool doDelete=false);
+    void removeSubComponent(Component *pComponent, bool doDelete=false);
+
 
 
     //Add system ports

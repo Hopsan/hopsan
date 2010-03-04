@@ -63,6 +63,7 @@ private:
 
     void addConnectedPort(Port* pPort);
     void eraseConnectedPort(Port* pPort);
+    vector<Port*> &getConnectedPorts();
     void clearConnection();
 };
 
