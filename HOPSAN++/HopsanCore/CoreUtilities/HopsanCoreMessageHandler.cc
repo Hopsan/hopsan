@@ -10,7 +10,7 @@
 
 HopsanCoreMessageHandler::HopsanCoreMessageHandler()
 {
-    //! @todo max message length
+    mMaxQueueSize = 20;
 }
 
 void HopsanCoreMessageHandler::addMessage(int type, string preFix, string message, int debuglevel)
@@ -20,10 +20,11 @@ void HopsanCoreMessageHandler::addMessage(int type, string preFix, string messag
     msg.debuglevel = debuglevel;
     msg.message = preFix + message;
     mMessageQueue.push(msg);
-//    if (tolong)
-//    {
-//        mMessageQueue.pop();
-//    }
+    if (mMessageQueue.size() > mMaxQueueSize)
+    {
+        //If the que is to long delete old unhandled messages
+        mMessageQueue.pop();
+    }
 }
 
 

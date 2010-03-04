@@ -30,6 +30,7 @@ DLLIMPORTEXPORT class HopsanCoreMessageHandler
 private:
     queue<HopsanCoreMessage> mMessageQueue;
     void addMessage(int type, string preFix, string message, int debuglevel=0);
+    size_t mMaxQueueSize;
 
 public:
     HopsanCoreMessageHandler();
