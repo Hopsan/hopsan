@@ -12,6 +12,7 @@
 
 #include "ParameterDialog.h"
 #include "HopsanCore.h"
+#include "mainwindow.h"
 
 
 //! Constructor.
@@ -82,7 +83,7 @@ ParameterDialog::ParameterDialog(Component *coreComponent, QWidget *parent)
 
     setWindowTitle(tr("Parameters"));
 }
-
+#include "GUIComponent.h"
 //! Sets the parameters in the core component. Read the values from the dialog and write them into the core component.
 void ParameterDialog::setParameters()
 {
@@ -93,8 +94,8 @@ void ParameterDialog::setParameters()
         //std::cout << "i: " << i << qPrintable(labelList[i]->text()) << "  " << mpCoreComponent->getParameterVector().at(i).getName() << std::endl;
         if (!ok)
         {
-            std::cout << "ParameterDialog::setParameters(): You must give a correct value for '" << mVarVector[i]->text().toStdString() << "'', putz. Try again!" << std::endl;
-            //this->parent()->parent()->parent()
+            MessageWidget *messageWidget = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent()->parent())->mpMessageWidget;
+            messageWidget->printGUIMessage(QString("ParameterDialog::setParameters(): You must give a correct value for '").append(mVarVector[i]->text()).append(QString("', putz. Try again!")));
             return;
         }
         mpCoreComponent->setParameter(mVarVector[i]->text().toStdString(), newValue);

@@ -50,7 +50,7 @@ signals:
     void checkMessages();
 
 public slots:
-    void addComponent(QStringList parameterData, QPoint position);
+    //void addComponent(QStringList parameterData, QPoint position);
     void addComponent(QString parameterType, QPoint position);
     void addConnector(GUIPort *rect);
     void removeConnection(GUIConnector* pConnector);

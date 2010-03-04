@@ -218,7 +218,7 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     for ( it=paramVector.begin() ; it !=paramVector.end(); it++ )
         qDebug() << QString::fromStdString(it->getName()) << ": " << it->getValue();
 
-    ParameterDialog *dialog = new ParameterDialog(mpCoreComponent);
+    ParameterDialog *dialog = new ParameterDialog(mpCoreComponent,this->mpParentView);
     dialog->exec();
 }
 

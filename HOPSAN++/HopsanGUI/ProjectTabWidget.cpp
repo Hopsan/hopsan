@@ -105,21 +105,21 @@ void GraphicsView::dropEvent(QDropEvent *event)
 }
 
 
-void GraphicsView::addComponent(QStringList parameterData, QPoint position)
-{
-    GUIComponent *guiComponent = new GUIComponent(mpHopsan,parameterData,position,this);
-
-    //Core interaction
-    qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
-    guiComponent->refreshName();
-    emit checkMessages();
-    //
-
-    //guiComponent->setPos(this->mapToScene(position));
-    qDebug() << "GraphicsView: " << guiComponent->parent();
-
-    this->scene()->addItem(guiComponent);
-}
+//void GraphicsView::addComponent(QStringList parameterData, QPoint position)
+//{
+//    GUIComponent *guiComponent = new GUIComponent(mpHopsan,parameterData,position,this);
+//
+//    //Core interaction
+//    qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
+//    guiComponent->refreshName();
+//    emit checkMessages();
+//    //
+//
+//    //guiComponent->setPos(this->mapToScene(position));
+//    qDebug() << "GraphicsView: " << guiComponent->parent();
+//
+//    this->scene()->addItem(guiComponent);
+//}
 
 
 void GraphicsView::addComponent(QString parameterType, QPoint position)
