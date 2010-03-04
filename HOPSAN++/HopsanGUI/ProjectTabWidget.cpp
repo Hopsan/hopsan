@@ -421,7 +421,10 @@ void ProjectTabWidget::addProjectTab()
     QString tabName;
     tabName.setNum(mNumberOfUntitledTabs);
     tabName = QString("Untitled").append(tabName).append(QString("*"));
-    addTab(new ProjectTab(this), tabName);
+
+    ProjectTab *newTab = new ProjectTab(this);
+    addTab(newTab, tabName);
+    setCurrentWidget(newTab);
 
     mNumberOfUntitledTabs += 1;
 }
