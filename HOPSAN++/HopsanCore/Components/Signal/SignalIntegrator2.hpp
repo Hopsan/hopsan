@@ -50,7 +50,7 @@ public:
 	{
 	    double u0 = mPortPtrs[in]->readNode(NodeSignal::VALUE);
 	    mIntegrator.initialize(mTime, mTimestep, u0, mStartY);
-	    ///TODO: Write out values into node as well? (I think so) This is true for all components
+            //! @todo Write out values into node as well? (I think so) This is true for all components
 	}
 
 

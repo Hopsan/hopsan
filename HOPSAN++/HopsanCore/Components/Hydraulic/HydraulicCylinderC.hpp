@@ -186,7 +186,7 @@ public:
 
 
             //End of stroke simulation
-        //TODO: Verify these equation
+        //! @todo Verify these equation
         //--------------------------------------------------------------------------------------//
           double cxSpring, cxSpring0, ZxSpring;
         //double Zx0 = 0.01*mEquivalentMass/mTimestep;

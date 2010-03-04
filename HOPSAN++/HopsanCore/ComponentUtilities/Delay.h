@@ -32,7 +32,7 @@ public:
 	double value(double value);
 	double valueIdx(const int idx);
 	double valueIdx(double value, const int idx);
-	///TODO: Implement void valueTime(double time); A function which returns delayed value of time
+        //! @todo Implement void valueTime(double time); A function which returns delayed value of time
 private:
     double *mpTime;
     double mLastTime;

@@ -51,7 +51,7 @@ public:
 	{
 	    mDelay.initialize(mTime, mStartY);
         mDelay.setTimeDelay(mTimeDelay, mTimestep, mStartY);
-	    ///TODO: Write out values into node as well? (I think so) This is true for all components
+            //! @todo Write out values into node as well? (I think so) This is true for all components
 	}
 
 

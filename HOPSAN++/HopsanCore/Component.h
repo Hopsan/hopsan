@@ -23,7 +23,7 @@ class DLLIMPORTEXPORT CompParameter
     friend class Component;
 
 public:
-    ///TODO: getting strings can (probably) be speed up by returning const references instead of copying strings
+    //! @todo getting strings can (probably) be speed up by returning const references instead of copying strings
     string getName();
     string getDesc();
     string getUnit();
@@ -82,7 +82,8 @@ public:
     bool isComponentSystem();
     bool isComponentSignal();
 
-    //void setTimestep(const double timestep); ///TODO: Should it be possible to set timestep of a component? Should only be possible for a Systemcomponent
+    //! @todo Should it be possible to set timestep of a component? Should only be possible for a Systemcomponent
+    //void setTimestep(const double timestep);
     //double getTimestep();
 
 protected:
@@ -92,7 +93,7 @@ protected:
     virtual ~Component(){};
 
     //Virtual functions
-    virtual void initialize(); ///TODO: Default values are hard set
+    virtual void initialize(); //! @todo Default values are hard set
     virtual void simulateOneTimestep();
     virtual void setTimestep(const double timestep);
 

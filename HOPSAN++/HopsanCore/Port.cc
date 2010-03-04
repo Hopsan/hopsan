@@ -54,7 +54,7 @@ const string &Port::getNodeType()
 
 Node &Port::getNode()
 {
-    ///TODO: error handle if 0
+    //! @todo error handle if 0
     return *mpNode;
 }
 
@@ -204,7 +204,7 @@ double WritePort::readNode(const size_t idx)
 //!
 Port* CreatePort(const string &rPortType)
 {
-    ///TODO: maybe swap PortType to enums instead of strings (not really important)
+    //! @todo maybe swap PortType to enums instead of strings (not really important)
     if (rPortType.c_str() == string("PowerPort"))
     {
         return new PowerPort();
@@ -223,7 +223,7 @@ Port* CreatePort(const string &rPortType)
     }
     else
     {
-        ///TODO: maybe defualt should be impossible
+        //! @todo maybe defualt should be impossible
         return new Port();
     }
 }

@@ -72,7 +72,7 @@ public:
 //        den[1] = 1.0;
 
 	    mFilter.initialize(mTime, mTimestep, num, den, mStartY, mStartY, mMin, mMax);
-	    ///TODO: Write out values into node as well? (I think so) This is true for all components
+            //! @todo Write out values into node as well? (I think so) This is true for all components
 	}
 
 

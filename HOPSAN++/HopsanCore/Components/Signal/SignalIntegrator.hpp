@@ -52,7 +52,7 @@ public:
 	    double u0 = mPortPtrs[in]->readNode(NodeSignal::VALUE);
 	    mDelayU.initialize(mTime, u0);
 	    mDelayY.initialize(mTime, mStartY);
-	    ///TODO: Write out values into node as well? (I think so) This is true for all components
+            //! @todo Write out values into node as well? (I think so) This is true for all components
 	}
 
 

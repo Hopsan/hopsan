@@ -54,7 +54,7 @@ Delay::Delay(const double timeDelay, const double Ts, const double initValue)
 {
     mFracStep = timeDelay/Ts;
     //avrundar uppat
-    mStepDelay = (std::size_t) ceil(((double) timeDelay)/Ts); ///TODO: kolla att det verkligen ar ratt
+    mStepDelay = (std::size_t) ceil(((double) timeDelay)/Ts); //! @todo kolla att det verkligen ar ratt
     mInitialValue = initValue;
     mValues.resize(mStepDelay+1, mInitialValue);
     mLastTime = -1.0;
@@ -127,7 +127,7 @@ void Delay::setTimeDelay(const double timeDelay, const double Ts, const double i
 {
     mFracStep = timeDelay/Ts;
     //avrundar uppat
-    mStepDelay = (std::size_t) ceil(((double) timeDelay)/Ts); ///TODO: kolla att det verkligen ar ratt
+    mStepDelay = (std::size_t) ceil(((double) timeDelay)/Ts); //! @todo kolla att det verkligen ar ratt
     if (initValue != 0)
     {
         mInitialValue = initValue;
@@ -214,7 +214,7 @@ double Delay::valueIdx(double value, const int idx)
 }
 
 
-double Delay::valueIdx(const int idx) ///TODO: interpolera värden
+double Delay::valueIdx(const int idx) //! @todo interpolera värden
 //! Get the delayed value at a specified index.
 //! @param idx tell which value to return, 1 is the last timestep's value 2 is the value from two timsteps ago and so on.
 //! @return The value delayed idx time steps of the Delay object.

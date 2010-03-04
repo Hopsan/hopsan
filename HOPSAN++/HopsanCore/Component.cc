@@ -82,7 +82,7 @@ void Component::initialize(const double startT, const double stopT)
 
 void Component::simulate(const double startT, const double stopT)
 {
-//TODO: adjust self.timestep or simulation depending on Ts from system above (self.timestep should be multipla of Ts)
+//! @todo adjust self.timestep or simulation depending on Ts from system above (self.timestep should be multipla of Ts)
     //double dT = stopT-startT;
     double stopTsafe = stopT - mTimestep/2.0;
     mTime = startT;
@@ -161,7 +161,7 @@ const string &Component::getTypeName()
 
 void Component::registerParameter(const string name, const string description, const string unit, double &rValue)
 {
-    ///TODO: handle trying to add multiple comppar with same name or pos
+    //! @todo handle trying to add multiple comppar with same name or pos
     CompParameter new_comppar(name, description, unit, rValue);
     mParameters.push_back(new_comppar); //Copy parameters into storage
 }
@@ -268,7 +268,7 @@ bool Component::isComponentSignal()
 
 Port* Component::addPort(const string portname, const string porttype, const NodeTypeT nodetype, const int id)
 {
-    ///TODO: handle trying to add multiple ports with same name or pos
+    //! @todo handle trying to add multiple ports with same name or pos
     Port* new_port = CreatePort(porttype);
     new_port->mPortName = portname;
     new_port->mNodeType = nodetype;
@@ -325,7 +325,7 @@ void Component::setSystemParent(ComponentSystem &rComponentSystem)
 
 Port &Component::getPortById(const size_t port_idx)
 {
-    ///TODO: error handle if request outside of vector
+    //! @todo error handle if request outside of vector
     return *mPortPtrs[port_idx];
 }
 
@@ -339,7 +339,7 @@ Port &Component::getPort(const string portname)
             return *(*it);
         }
     }
-    ///TODO: cast not found exception
+   //! @todo cast not found exception
     cout << "specified port: " << portname << " not found" << endl;
     assert(false);
 }
@@ -430,7 +430,7 @@ void ComponentSystem::SubComponentStorage::add(Component* pComponent)
     }
     else
     {
-        ///TODO: use exception instead
+        //! @todo use exception instead
         cout << "Trying to add module of other type than c, q or signal" << endl;
         assert(false);
     }
@@ -648,7 +648,7 @@ ComponentSystem::ComponentSystem(string name, double timestep) : Component(name,
 
 void ComponentSystem::addComponents(vector<Component*> components)
 {
-    ///TODO: use iterator instead of idx loop (not really necessary)
+    //! @todo use iterator instead of idx loop (not really necessary)
     for (size_t idx=0; idx<components.size(); ++idx)
     {
         mSubComponentStorage.add(components[idx]);
@@ -794,7 +794,7 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
 {
     cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
 
-    ///TODO: make sure this calculation is EXACTLY correct
+    //! @todo make sure this calculation is EXACTLY correct
     double dslots = ((double)(stopT-startT))/mTimestep;
     //std::cout << "dslots: " << dslots << std::endl;
     size_t needed_slots = (size_t)(dslots+0.5); //Round to nearest
@@ -807,7 +807,7 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
         (*it)->preAllocateLogSpace(needed_slots);
     }
 
-    ///TODO: Call allocate for subsubsystems
+    //! @todo Call allocate for subsubsystems
 
 }
 
@@ -830,8 +830,8 @@ Port* ComponentSystem::addSystemPort(const string portname)
 //! Set the type C, Q, or S of the subsystem
 void ComponentSystem::setTypeCQS(const string cqs_type)
 {
-    ///TODO: should really try to figure out a better way to do this
-    ///TODO: need to do erro checking, and make sure that the specified type really is valid, first and last component should be of this type (i think)
+    //! @todo should really try to figure out a better way to do this
+    //! @todo need to do erro checking, and make sure that the specified type really is valid, first and last component should be of this type (i think)
     if (cqs_type == string("C"))
     {
         mTypeCQS = "C";
@@ -1417,7 +1417,7 @@ void ComponentSystem::simulate(const double startT, const double stopT)
 
         logAllNodes(mTime);
 
-        ///TODO: maybe use iterators instead
+        //! @todo maybe use iterators instead
         //Signal components
         for (size_t s=0; s < mSubComponentStorage.mComponentSignalptrs.size(); ++s)
         {

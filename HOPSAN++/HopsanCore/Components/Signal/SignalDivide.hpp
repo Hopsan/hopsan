@@ -76,7 +76,7 @@ public:
 
 
         //Gain equations
-		double output = signal1 / signal2;                         //TODO: Add division-by-zero check -> exception
+                double output = signal1 / signal2;                         //! @todo Add division-by-zero check -> exception
 
         //Write new values to nodes
         mPortPtrs[out]->writeNode(NodeSignal::VALUE, output);

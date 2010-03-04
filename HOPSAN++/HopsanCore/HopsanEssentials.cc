@@ -52,7 +52,7 @@ HopsanEssentials* HopsanEssentials::getInstance()
 HopsanEssentials::~HopsanEssentials()
 {
     //Clear the factories
-    ///TODO: need to make sure that every one has destoyed all components/nodes before we unregister them, it probably cant be done from inside here
+    //! @todo need to make sure that every one has destoyed all components/nodes before we unregister them, it probably cant be done from inside here
     std::cout << "Clearing factories" << std::endl;
     mpNodeFactory->ClearFactory();
     mpComponentFactory->ClearFactory();
@@ -66,7 +66,7 @@ Component* HopsanEssentials::CreateComponent(const string &rString)
         return mpComponentFactory->CreateInstance(rString.c_str());
 }
 
-//!TODO: for now a ugly special fix for component system, (It can not be created by the factory that only deals with Component* objects)
+//! @todo for now a ugly special fix for component system, (It can not be created by the factory that only deals with Component* objects)
 ComponentSystem* HopsanEssentials::CreateComponentSystem()
 {
     return new ComponentSystem();

@@ -86,7 +86,7 @@ void Node::logData(const double time)
     if (mLogSpaceAllocated)
     {
         //cout << "mLogCtr: " << mLogCtr << endl;
-        ///TODO: this if check should not be needed if everything else is working
+        //! @todo this if check should not be needed if everything else is working
         if (mLogCtr < mTimeStorage.size())
         {
             mTimeStorage[mLogCtr] = time;
@@ -96,7 +96,7 @@ void Node::logData(const double time)
     }
     else
     {
-        ///TODO: for now always append
+        //! @todo for now always append
         mTimeStorage.push_back(time);
         mDataStorage.push_back(mDataVector);
     }

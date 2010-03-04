@@ -10,7 +10,7 @@
 
 HopsanCoreMessageHandler::HopsanCoreMessageHandler()
 {
-    /// todo max message length
+    //! @todo max message length
 }
 
 void HopsanCoreMessageHandler::addMessage(int type, string preFix, string message, int debuglevel)

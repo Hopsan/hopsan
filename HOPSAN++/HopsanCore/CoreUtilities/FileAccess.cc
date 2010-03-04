@@ -38,7 +38,7 @@ ComponentSystem* FileAccess::loadModel(HopsanEssentials* pHopsan, double *startT
     {
         cout << "Model file does not exist!" << endl;
         assert(false);
-        //TODO: Cast an exception
+        //! @todo Cast an exception
     }
 
         //Necessary declarations
