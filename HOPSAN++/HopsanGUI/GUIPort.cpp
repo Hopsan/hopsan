@@ -127,7 +127,7 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
         y[i] = (this->mpCorePort->getDataVectorPtr()->at(i)).at(nVar);
     }
 
-    PlotWidget *newPlot = new PlotWidget(time,y,mpComponent->getParentView());
+    PlotWidget *newPlot = new PlotWidget(time,y,mpComponent->mpParentGraphicsView);
     newPlot->show();
 
 }

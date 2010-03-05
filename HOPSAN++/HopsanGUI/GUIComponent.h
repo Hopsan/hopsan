@@ -12,8 +12,10 @@
 #include <vector>
 //#include <QGraphicsItem>
 #include "GUIComponentSelectionBox.h"
+#include "ProjectTabWidget.h"
 
-
+class GraphicsScene;
+class GraphicsView;
 class GUIConnector;
 class QGraphicsSvgItem;
 class GUIComponentNameTextItem;
@@ -26,14 +28,17 @@ class GUIComponent : public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent = 0);
+    GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
     //GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QString componentName, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent = 0);
     ~GUIComponent();
-    QGraphicsView *getParentView();
+    //QGraphicsView *getParentView();
     void addConnector(GUIConnector *item);
     void refreshName();
     void showPorts(bool visible);
     GUIPort *getPort(int number);
+
+    GraphicsScene *mpParentGraphicsScene;
+    GraphicsView *mpParentGraphicsView;
 
     //Core interaction
     Component *mpCoreComponent;
@@ -56,7 +61,6 @@ public slots:
 private:
     QGraphicsSvgItem *icon;
     GUIComponentNameTextItem *mpNameText;
-    QGraphicsView *mpParentView;
     GUIComponentSelectionBox *mpSelectionBox;
     QGraphicsLineItem *mpTempLine;
     //std::vector<GUIConnector*> mConnectors;        //Inteded to store connectors for each component

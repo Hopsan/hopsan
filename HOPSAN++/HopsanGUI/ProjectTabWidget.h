@@ -37,6 +37,7 @@ public:
 
 class HopsanEssentials; //Forward declaration
 class ComponentSystem;
+class GUIComponent;
 
 class GraphicsView : public QGraphicsView
 {
@@ -59,7 +60,7 @@ signals:
 
 public slots:
     //void addComponent(QStringList parameterData, QPoint position);
-    void addComponent(QString parameterType, QPoint position, QString name);
+    //void addComponent(QString parameterType, QPoint position, QString name);
     void addComponent(QString parameterType, QPoint position);
     void addConnector(GUIPort *pPort);
     void removeConnection(GUIConnector* pConnector);
