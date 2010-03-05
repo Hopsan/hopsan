@@ -13,6 +13,7 @@
 
 #include "LibraryWidget.h"
 #include "listwidget.h"
+#include "mainwindow.h"
 
 
 //! Constructor.
@@ -67,9 +68,11 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
 
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
-LibraryWidget::LibraryWidget(QWidget *parent)
+LibraryWidget::LibraryWidget(MainWindow *parent)
         :   QWidget(parent)
 {
+    mpParentMainWindow = parent;
+
     mpTree = new QTreeWidget(this);
     mpTree->setHeaderHidden(true);
     mpTree->setColumnCount(1);

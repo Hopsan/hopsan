@@ -42,13 +42,16 @@ protected:
 };
 
 
+class MainWindow;
+
 class LibraryWidget : public QWidget
 {
     Q_OBJECT
 
-
 public:
-    LibraryWidget(QWidget *parent = 0);
+    LibraryWidget(MainWindow *parent = 0);
+
+    MainWindow *mpParentMainWindow;
 
     QTreeWidget *mpTree;
 

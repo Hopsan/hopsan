@@ -65,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
     //Create a dock for the componentslibrary
     QDockWidget *libdock = new QDockWidget(tr("Components"), this);
     libdock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    library = new LibraryWidget(libdock);
+    library = new LibraryWidget(this);
     libdock->setWidget(library);
     addDockWidget(Qt::LeftDockWidgetArea, libdock);
 
