@@ -46,6 +46,7 @@ class LibraryWidget : public QWidget
 {
     Q_OBJECT
 
+
 public:
     LibraryWidget(QWidget *parent = 0);
 
