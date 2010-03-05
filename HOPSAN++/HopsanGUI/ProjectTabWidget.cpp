@@ -122,6 +122,29 @@ void GraphicsView::dropEvent(QDropEvent *event)
 //}
 
 
+void GraphicsView::addComponent(QString parameterType, QPoint position, QString componentName)
+{
+    MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
+    LibraryWidget *pLibrary = pMainWindow->library;
+    QStringList parameterData = pLibrary->getParameterData(parameterType);
+    GUIComponent *guiComponent = new GUIComponent(mpHopsan,parameterData,position,this);
+    guiComponent->mpCoreComponent->setName(componentName.toStdString());
+
+    //Core interaction
+    qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
+    guiComponent->refreshName();
+    emit checkMessages();
+    //
+
+    //guiComponent->setPos(this->mapToScene(position));
+    qDebug() << "GraphicsView: " << guiComponent->parent();
+
+     //mLibraryMapPtrs.insert(libraryName, newLibContent);
+    //this->mComponentMap.insert()
+    this->scene()->addItem(guiComponent);
+}
+
+
 void GraphicsView::addComponent(QString parameterType, QPoint position)
 {
     MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
@@ -138,6 +161,8 @@ void GraphicsView::addComponent(QString parameterType, QPoint position)
     //guiComponent->setPos(this->mapToScene(position));
     qDebug() << "GraphicsView: " << guiComponent->parent();
 
+     //mLibraryMapPtrs.insert(libraryName, newLibContent);
+    //this->mComponentMap.insert()
     this->scene()->addItem(guiComponent);
 }
 
@@ -280,6 +305,7 @@ void GraphicsView::addConnector(GUIPort *port)
         //
     }
 }
+
 
 void GraphicsView::removeConnection(GUIConnector* pConnector)
 {
@@ -596,6 +622,7 @@ void ProjectTabWidget::loadModel()
     string inputWord;
     string componentType;
     string componentName;
+    string startComponentName, endComponentName, startPortNumber, endPortNumber;
     int posX, posY;
 
     while (! modelFile.eof() )
@@ -617,7 +644,27 @@ void ProjectTabWidget::loadModel()
                 inputStream >> componentName;
                 inputStream >> posX;
                 inputStream >> posY;
-                pCurrentTab->getView()->addComponent(QString(componentType.c_str()), QPoint(posX, posY));
+                pCurrentTab->getView()->addComponent(QString(componentType.c_str()), QPoint(posX, posY), QString(componentName.c_str()));
+            }
+            if ( inputWord == "CONNECT" )
+            {
+                inputStream >> startComponentName;
+                inputStream >> startPortNumber;
+                inputStream >> endComponentName;
+                inputStream >> endPortNumber;
+                //this->addConnector()
+                while(inputStream >> inputWord)
+                {
+                    if(inputWord == "VERTICAL")
+                    {
+                    }
+                    else if (inputWord == "HORIZONTAL")
+                    {
+                    }
+                    else
+                    {
+                    }
+                }
             }
         }
     }

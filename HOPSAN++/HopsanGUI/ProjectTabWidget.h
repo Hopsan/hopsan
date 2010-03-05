@@ -13,8 +13,10 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QTabWidget>
+#include <map>
 
 #include "MessageWidget.h"
+#include "GUIComponent.h"
 
 
 class GUIPort;
@@ -51,6 +53,7 @@ signals:
 
 public slots:
     //void addComponent(QStringList parameterData, QPoint position);
+    void addComponent(QString parameterType, QPoint position, QString name);
     void addComponent(QString parameterType, QPoint position);
     void addConnector(GUIPort *rect);
     void removeConnection(GUIConnector* pConnector);
@@ -72,8 +75,8 @@ private:
     GUIConnector *mpTempConnector;
     HopsanEssentials *mpHopsan;
     ComponentSystem *mpModel;
+    std::map<QString, GUIComponent*> mComponentMap;
 };
-
 
 //class Component : public QGraphicsWidget
 //{
