@@ -14,7 +14,7 @@
 #include <QGraphicsScene>
 #include <QTabWidget>
 
-#include <MessageWidget.h>
+#include "MessageWidget.h"
 
 
 class GUIPort;
