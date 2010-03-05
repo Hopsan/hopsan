@@ -657,7 +657,7 @@ void ProjectTabWidget::loadModel()
                     pTempConnector->drawLine(pTempConnector->startPos, newPos);
                     endPort->getComponent()->addConnector(pTempConnector);
                     pTempConnector->setEndPort(endPort);
-                    pCurrentView->creatingConnector = false;
+                    pCurrentView->mIsCreatingConnector = false;
                 }
             }
         }
