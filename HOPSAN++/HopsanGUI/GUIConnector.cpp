@@ -231,6 +231,39 @@ void GUIConnector::addLine()
     connect(this,SIGNAL(endPortConnected()),mLines[mLines.size()-1],SLOT(setConnected()));
 }
 
+void GUIConnector::addFixedLine(int length, int heigth, GUIConnectorLine::geometryType geometry)
+{
+    if(geometry == GUIConnectorLine::HORIZONTAL)
+    {
+        qDebug() << "HORIZONTAL from" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y();
+        mpTempLine = new GUIConnectorLine(mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
+                                          mLines[mLines.size()-1]->line().p2().x()+length, mLines[mLines.size()-1]->line().p2().y(),
+                                          mPassivePen, mActivePen, mHoverPen, mLines.size(), this);
+    }
+    else if(geometry == GUIConnectorLine::VERTICAL)
+    {
+        qDebug() << "VERTICAL from" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y();
+        mpTempLine = new GUIConnectorLine(mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
+                                          mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y()+heigth,
+                                          mPassivePen, mActivePen, mHoverPen, mLines.size(), this);
+    }
+    else if(geometry == GUIConnectorLine::DIAGONAL)
+    {
+        mpTempLine = new GUIConnectorLine(mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
+                                          mLines[mLines.size()-1]->line().p2().x()+length, mLines[mLines.size()-1]->line().p2().y()+heigth,
+                                          mPassivePen, mActivePen, mHoverPen, mLines.size(), this);
+    }
+    mpTempLine->setGeometry(geometry);
+    mpTempLine->setActive();
+    mLines.push_back(mpTempLine);
+    mLines[mLines.size()-2]->setPassive();
+    connect(mLines[mLines.size()-1],SIGNAL(lineClicked()),this,SLOT(doSelect()));
+    connect(mLines[mLines.size()-1],SIGNAL(lineMoved(int)),this, SLOT(updateLine(int)));
+    connect(mLines[mLines.size()-1],SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
+    connect(mLines[mLines.size()-1],SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
+    connect(this,SIGNAL(endPortConnected()),mLines[mLines.size()-1],SLOT(setConnected()));
+}
+
 void GUIConnector::removeLine(QPointF cursorPos)
 {
     if (getNumberOfLines() > 2)

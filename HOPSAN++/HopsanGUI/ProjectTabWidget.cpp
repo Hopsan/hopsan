@@ -107,6 +107,26 @@ void GraphicsView::dropEvent(QDropEvent *event)
 }
 
 
+//void GraphicsView::addComponent(QStringList parameterData, QPoint position)
+//{
+//    GUIComponent *guiComponent = new GUIComponent(mpHopsan,parameterData,position,this);
+//
+//    //Core interaction
+//    qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
+//    guiComponent->refreshName();
+//    emit checkMessages();
+//    //
+//
+//    //guiComponent->setPos(this->mapToScene(position));
+//    qDebug() << "GraphicsView: " << guiComponent->parent();
+//
+//    this->scene()->addItem(guiComponent);
+//}
+GUIConnector *GraphicsView::getTempConnector()
+{
+    return this->mpTempConnector;
+}
+
 void GraphicsView::addComponent(QString parameterType, QPoint position, QString componentName)
 {
     MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
@@ -583,6 +603,7 @@ void ProjectTabWidget::loadModel()
     string componentName;
     string startComponentName, endComponentName;
     int startPortNumber, endPortNumber;
+    int length, heigth;
     int posX, posY;
 
     while (! modelFile.eof() )
@@ -608,22 +629,44 @@ void ProjectTabWidget::loadModel()
             }
             if ( inputWord == "CONNECT" )
             {
+                GraphicsView *pCurrentView = pCurrentTab->getView();
                 inputStream >> startComponentName;
                 inputStream >> startPortNumber;
                 inputStream >> endComponentName;
                 inputStream >> endPortNumber;
-                pCurrentTab->getView()->addConnector(pCurrentTab->getView()->getComponent(QString(startComponentName.c_str()))->getPort(startPortNumber));
+                pCurrentView->addConnector(pCurrentView->getComponent(QString(startComponentName.c_str()))->getPort(startPortNumber));
+                GUIConnector *pTempConnector = pCurrentView->getTempConnector();
+                pCurrentView->scene()->addItem(pTempConnector);
                 while(inputStream >> inputWord)
                 {
                     if(inputWord == "VERTICAL")
                     {
+                        inputStream >> heigth;
+                        pTempConnector->getThisLine()->setGeometry(GUIConnectorLine::VERTICAL);
+                        pTempConnector->addFixedLine(0, heigth, GUIConnectorLine::VERTICAL);
                     }
                     else if (inputWord == "HORIZONTAL")
                     {
+                        inputStream >> length;
+                        pTempConnector->getThisLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
+                        pTempConnector->addFixedLine(length, 0, GUIConnectorLine::HORIZONTAL);
+                    }
+                    else if (inputWord == "DIAGONAL")
+                    {
+                        inputStream >> length;
+                        inputStream >> heigth;
+                        pTempConnector->getThisLine()->setGeometry(GUIConnectorLine::DIAGONAL);
+                        pTempConnector->addFixedLine(length, heigth, GUIConnectorLine::DIAGONAL);
                     }
                     else
                     {
                     }
+                    GUIPort *endPort = pCurrentView->getComponent(QString(endComponentName.c_str()))->getPort(endPortNumber);
+                    QPointF newPos = endPort->mapToScene(endPort->boundingRect().center());
+                    pTempConnector->drawLine(pTempConnector->startPos, newPos);
+                    endPort->getComponent()->addConnector(pTempConnector);
+                    pTempConnector->setEndPort(endPort);
+                    pCurrentView->creatingConnector = false;
                 }
             }
         }

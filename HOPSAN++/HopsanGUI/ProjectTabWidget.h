@@ -47,6 +47,7 @@ public:
     ~GraphicsView();
     bool creatingConnector;
     GUIComponent *getComponent(QString name);
+    GUIConnector *getTempConnector();
 
     ProjectTab *mpParentProjectTab;
 

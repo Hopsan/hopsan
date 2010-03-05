@@ -24,6 +24,7 @@ public:
     GUIPort *getEndPort();
     void drawLine(QPointF startPos, QPointF endPos);
     void addLine();
+    void addFixedLine(int length, int heigth, GUIConnectorLine::geometryType geometry);
     void removeLine(QPointF cursorPos);
     void setPen(QPen pen);
     int getNumberOfLines();
