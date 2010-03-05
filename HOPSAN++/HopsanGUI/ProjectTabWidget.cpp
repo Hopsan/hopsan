@@ -363,15 +363,15 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 
     mIsSaved = true;
 
-    GraphicsScene *scene = new GraphicsScene(this);
-    GraphicsView  *view  = new GraphicsView(mpParentProjectTabWidget->mpHopsan, mpModel, this);
+    mpGraphicsScene = new GraphicsScene(this);
+    mpGraphicsView  = new GraphicsView(mpParentProjectTabWidget->mpHopsan, mpModel, this);
 
-    mpView = view;
+    //mpView = view;
 
-    view->setScene(scene);
+    mpGraphicsView->setScene(mpGraphicsScene);
 
     QVBoxLayout *tabLayout = new QVBoxLayout;
-    tabLayout->addWidget(view);
+    tabLayout->addWidget(mpGraphicsView);
 //    addStretch(1);
 
 //    setWindowModified(true);
@@ -380,11 +380,6 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 
 }
 
-
-GraphicsView *ProjectTab::getView()
-{
-    return mpView;
-}
 
 //! Should be called when a model has changed in some sense,
 //! e.g. a component added or a connection has changed.
@@ -621,11 +616,11 @@ void ProjectTabWidget::loadModel()
                 inputStream >> componentName;
                 inputStream >> posX;
                 inputStream >> posY;
-                pCurrentTab->getView()->addComponent(QString(componentType.c_str()), QPoint(posX, posY), QString(componentName.c_str()));
+                pCurrentTab->mpGraphicsView->addComponent(QString(componentType.c_str()), QPoint(posX, posY), QString(componentName.c_str()));
             }
             if ( inputWord == "CONNECT" )
             {
-                GraphicsView *pCurrentView = pCurrentTab->getView();
+                GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
                 inputStream >> startComponentName;
                 inputStream >> startPortNumber;
                 inputStream >> endComponentName;

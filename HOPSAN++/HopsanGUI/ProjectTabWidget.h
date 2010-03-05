@@ -96,16 +96,15 @@ public:
     bool mIsSaved;
     ProjectTabWidget *mpParentProjectTabWidget;
     ComponentSystem *mpModel;
-    GraphicsView *getView();
+
+    GraphicsView *mpGraphicsView;
+    GraphicsScene *mpGraphicsScene;
 
 public slots:
     void hasChanged();
 
 signals:
     void checkMessages();
-
-private:
-    GraphicsView *mpView;
 
 };
 
