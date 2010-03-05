@@ -153,12 +153,13 @@ GUIConnector *GraphicsView::getTempConnector()
 void GraphicsView::addComponent(QString parameterType, QPoint position)
 {
     MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
-    LibraryWidget *pLibrary = pMainWindow->library;
+    LibraryWidget *pLibrary = pMainWindow->mpLibrary;
     QStringList parameterData = pLibrary->getParameterData(parameterType);
     GUIComponent *guiComponent = new GUIComponent(mpHopsan,parameterData,position,this->mpParentProjectTab->mpGraphicsScene);
 
     //Core interaction
-    qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
+    this->mpParentProjectTab->mpComponentSystem->addComponent(guiComponent->mpCoreComponent);
+    //    qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
     guiComponent->refreshName();
     emit checkMessages();
     //
@@ -354,17 +355,17 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
     //Core interaction
-    mpModel = mpParentProjectTabWidget->mpHopsan->CreateComponentSystem();
-    mpModel->setName("APA");
-    mpModel->setDesiredTimestep(.001);
-    mpModel->setTypeCQS("S");
+    mpComponentSystem = mpParentProjectTabWidget->mpHopsan->CreateComponentSystem();
+    mpComponentSystem->setName("APA");
+    mpComponentSystem->setDesiredTimestep(.001);
+    mpComponentSystem->setTypeCQS("S");
     emit checkMessages();
     //
 
     mIsSaved = true;
 
     mpGraphicsScene = new GraphicsScene(this);
-    mpGraphicsView  = new GraphicsView(mpParentProjectTabWidget->mpHopsan, mpModel, this);
+    mpGraphicsView  = new GraphicsView(mpParentProjectTabWidget->mpHopsan, mpComponentSystem, this);
 
     //mpView = view;
 
@@ -563,8 +564,8 @@ void ProjectTabWidget::simulateCurrent()
 {
     ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
 
-    pCurrentTab->mpModel->initialize(0.0, 5.0); //HARD CODED
-    pCurrentTab->mpModel->simulate(0.0, 5.0); //HARD CODED
+    pCurrentTab->mpComponentSystem->initialize(0.0, 5.0); //HARD CODED
+    pCurrentTab->mpComponentSystem->simulate(0.0, 5.0); //HARD CODED
     //pCurrentTab->mpModel->getSubComponent("DefaultLaminarOrificeName")->getPort("P1").saveLogData("output.txt");
     emit checkMessages();
 

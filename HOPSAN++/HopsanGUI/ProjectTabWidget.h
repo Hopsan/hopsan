@@ -96,7 +96,7 @@ public:
     ProjectTab(ProjectTabWidget *parent = 0);
     bool mIsSaved;
     ProjectTabWidget *mpParentProjectTabWidget;
-    ComponentSystem *mpModel;
+    ComponentSystem *mpComponentSystem;
 
     GraphicsView *mpGraphicsView;
     GraphicsScene *mpGraphicsScene;

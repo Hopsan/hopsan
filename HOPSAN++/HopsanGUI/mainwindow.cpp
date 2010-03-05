@@ -43,12 +43,12 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle("HOPSAN NG");
 
     //Create a centralwidget for the main window
-    centralwidget = new QWidget(this);
-    centralwidget->setObjectName("centralwidget");
+    mpCentralwidget = new QWidget(this);
+    mpCentralwidget->setObjectName("centralwidget");
 
     //Create a grid on the centralwidget
-    centralgrid = new QGridLayout(centralwidget);
-    centralgrid->setSpacing(10);
+    mpCentralgrid = new QGridLayout(mpCentralwidget);
+    mpCentralgrid->setSpacing(10);
 
     //Create a dock for the MessageWidget
     QDockWidget *messagedock = new QDockWidget(tr("Messages"), this);
@@ -59,24 +59,24 @@ MainWindow::MainWindow(QWidget *parent)
     addDockWidget(Qt::BottomDockWidgetArea, messagedock);
 
     //Create the main tab container, need at least one tab
-    projectTabs = new ProjectTabWidget(this);
-    projectTabs->setObjectName("projectTabs");
+    mpProjectTabs = new ProjectTabWidget(this);
+    mpProjectTabs->setObjectName("projectTabs");
 
     //Create a dock for the componentslibrary
     QDockWidget *libdock = new QDockWidget(tr("Components"), this);
     libdock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    library = new LibraryWidget(this);
-    libdock->setWidget(library);
+    mpLibrary = new LibraryWidget(this);
+    libdock->setWidget(mpLibrary);
     addDockWidget(Qt::LeftDockWidgetArea, libdock);
 
-    centralgrid->addWidget(projectTabs,0,0);
+    mpCentralgrid->addWidget(mpProjectTabs,0,0);
 
-    centralwidget->setLayout(centralgrid);
+    mpCentralwidget->setLayout(mpCentralgrid);
 
     //Set the centralwidget
-    this->setCentralWidget(centralwidget);
+    this->setCentralWidget(mpCentralwidget);
 
-    projectTabs->addNewProjectTab();
+    mpProjectTabs->addNewProjectTab();
 
     //Create the menubar
     menubar = new QMenuBar();
@@ -160,35 +160,35 @@ MainWindow::MainWindow(QWidget *parent)
     menubar->addAction(menuPlot->menuAction());
 
     //Load default libraries
-    library->addEmptyLibrary("User defined libraries");
+    mpLibrary->addEmptyLibrary("User defined libraries");
 
-    library->addEmptyLibrary("Hydraulic");
-    library->addLibrary("../../HopsanGUI/componentData/hydraulic/sources","Hydraulic");
-    library->addLibrary("../../HopsanGUI/componentData/hydraulic/restrictors","Hydraulic");
-    library->addLibrary("../../HopsanGUI/componentData/hydraulic/volumes","Hydraulic");
-    library->addLibrary("../../HopsanGUI/componentData/hydraulic/actuators","Hydraulic");
+    mpLibrary->addEmptyLibrary("Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/sources","Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/restrictors","Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/volumes","Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/actuators","Hydraulic");
 
-    library->addLibrary("../../HopsanGUI/componentData/signal");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/signal");
 
     QMetaObject::connectSlotsByName(this);
 
 
     //Establish connections
-    this->connect(this->actionSave,SIGNAL(triggered()),projectTabs,SLOT(saveProjectTab()));
+    this->connect(this->actionSave,SIGNAL(triggered()),mpProjectTabs,SLOT(saveProjectTab()));
     this->connect(this->actionClose,SIGNAL(triggered()),SLOT(close()));
-    this->connect(this->actionProject,SIGNAL(triggered()),projectTabs,SLOT(addNewProjectTab()));
-    this->connect(this->actionLoadLibs,SIGNAL(triggered()),library,SLOT(addLibrary()));
-    this->connect(this->actionOpen,SIGNAL(triggered()),projectTabs,SLOT(loadModel()));
+    this->connect(this->actionProject,SIGNAL(triggered()),mpProjectTabs,SLOT(addNewProjectTab()));
+    this->connect(this->actionLoadLibs,SIGNAL(triggered()),mpLibrary,SLOT(addLibrary()));
+    this->connect(this->actionOpen,SIGNAL(triggered()),mpProjectTabs,SLOT(loadModel()));
 
     this->connect(this->actionPlot,SIGNAL(triggered()),SLOT(plot()));
 
-    this->connect(this->actionSimulate,SIGNAL(triggered()),projectTabs,SLOT(simulateCurrent()));
+    this->connect(this->actionSimulate,SIGNAL(triggered()),mpProjectTabs,SLOT(simulateCurrent()));
 
 }
 
 MainWindow::~MainWindow()
 {
-    delete projectTabs;
+    delete mpProjectTabs;
     delete menubar;
     delete statusBar;
 }
@@ -213,7 +213,7 @@ void MainWindow::plot()
 //! @param event contains information of the closing operation.
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if (projectTabs->closeAllProjectTabs())
+    if (mpProjectTabs->closeAllProjectTabs())
     {
         event->accept();
     }

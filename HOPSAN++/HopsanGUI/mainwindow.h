@@ -58,11 +58,11 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    QWidget *centralwidget;
-    QGridLayout *centralgrid;
-    ProjectTabWidget *projectTabs;
-    QGridLayout *tabgrid;
-    LibraryWidget *library;
+    QWidget *mpCentralwidget;
+    QGridLayout *mpCentralgrid;
+    ProjectTabWidget *mpProjectTabs;
+    QGridLayout *mpTabgrid;
+    LibraryWidget *mpLibrary;
     QMenuBar *menubar;
     QMenu *menuFile;
     QMenu *menuNew;
