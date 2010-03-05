@@ -82,8 +82,8 @@ public:
 
     //QString libDir;
 
-    GraphicsScene *scene;
-    GraphicsView *view;
+    //GraphicsScene *scene;
+    //GraphicsView *view;
 
     //VariableListDialog *variableList;
 
