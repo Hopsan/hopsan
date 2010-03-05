@@ -27,9 +27,11 @@
 
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
-GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, QWidget *parent)
+GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, ProjectTab *parent)
         : QGraphicsView(parent)
 {
+    mpParentProjectTab = parent;
+
     this->mpHopsan = hopsan;
     this->mpModel = model;
 
@@ -103,23 +105,6 @@ void GraphicsView::dropEvent(QDropEvent *event)
         delete data;
     }
 }
-
-
-//void GraphicsView::addComponent(QStringList parameterData, QPoint position)
-//{
-//    GUIComponent *guiComponent = new GUIComponent(mpHopsan,parameterData,position,this);
-//
-//    //Core interaction
-//    qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
-//    guiComponent->refreshName();
-//    emit checkMessages();
-//    //
-//
-//    //guiComponent->setPos(this->mapToScene(position));
-//    qDebug() << "GraphicsView: " << guiComponent->parent();
-//
-//    this->scene()->addItem(guiComponent);
-//}
 
 
 void GraphicsView::addComponent(QString parameterType, QPoint position, QString componentName)
@@ -321,51 +306,16 @@ void GraphicsView::removeConnection(GUIConnector* pConnector)
 }
 
 
-//GraphicsView::GraphicsView(QWidget *parent)
-//        : QGraphicsView(parent)
-//{
-//    this->setAcceptDrops(true);
-//}
-//
-//void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
-//{
-//    std::cout << "Drar runt lite med en komponent: " << qPrintable(event->mimeData()->text()) << std::endl;
-//}
-//
-//
-//void GraphicsView::dropEvent(QDropEvent *event)
-//{
-//    std::cout << "SlĂ¤pper en komponent: " << qPrintable(event->mimeData()->text()) << std::endl;
-//view
-//    QString componentName = event->mimeData()->text();
-//
-//    Component *comp = new Component(componentName);
-//    this->scene()->addItem(comp);
-//    comp->setPos(event->pos() + QPoint(-comp->boundingRect().width()/2, -comp->boundingRect().height()/2)); //Funkar inge vidare...
-//
-//}
-
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
-GraphicsScene::GraphicsScene(QObject *parent)
+GraphicsScene::GraphicsScene(ProjectTab *parent)
         :   QGraphicsScene(parent)
 {
+    mpParentProjectTab = parent;
     connect(this, SIGNAL(changed( const QList<QRectF> & )),this->parent(), SLOT(hasChanged()));
 }
 
 
-//Component::Component(QString componentName, QGraphicsItem *parent)
-//    :   QGraphicsWidget(parent)
-//{
-//    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
-//
-//    QGraphicsSvgItem *icon = new QGraphicsSvgItem("../../../cool.svg", this);
-//    icon->setPos(QPointF(-icon->boundingRect().width()/2, -icon->boundingRect().height()/2));
-//
-//    QGraphicsTextItem *text = new QGraphicsTextItem(componentName, this);
-//    text->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
-//    text->setPos(QPointF(-text->boundingRect().width()/2, icon->boundingRect().height()/2));
-//}
 
 //! @class ProjectTab
 //! @brief The ProjectTab class is a Widget to contain a simulation model
@@ -376,16 +326,16 @@ GraphicsScene::GraphicsScene(QObject *parent)
 
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
-ProjectTab::ProjectTab(QWidget *parent)
+ProjectTab::ProjectTab(ProjectTabWidget *parent)
     : QWidget(parent)
 {
-    mpTabContainer = (qobject_cast<ProjectTabWidget *>(parent)); //Ugly!!!
+    mpParentProjectTabWidget = parent;
 
     MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent())); //Ugly!!!
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
     //Core interaction
-    mpModel = mpTabContainer->mpHopsan->CreateComponentSystem();
+    mpModel = mpParentProjectTabWidget->mpHopsan->CreateComponentSystem();
     mpModel->setName("APA");
     mpModel->setDesiredTimestep(.001);
     mpModel->setTypeCQS("S");
@@ -395,7 +345,7 @@ ProjectTab::ProjectTab(QWidget *parent)
     mIsSaved = true;
 
     GraphicsScene *scene = new GraphicsScene(this);
-    GraphicsView  *view  = new GraphicsView(mpTabContainer->mpHopsan, mpModel, this);
+    GraphicsView  *view  = new GraphicsView(mpParentProjectTabWidget->mpHopsan, mpModel, this);
 
     mpView = view;
 
@@ -423,10 +373,10 @@ void ProjectTab::hasChanged()
 {
     if (mIsSaved)
     {
-        QString tabName = mpTabContainer->tabText(mpTabContainer->currentIndex()); //Ugly!!!
+        QString tabName = mpParentProjectTabWidget->tabText(mpParentProjectTabWidget->currentIndex());
 
         tabName.append("*");
-        mpTabContainer->setTabText(mpTabContainer->currentIndex(), tabName);
+        mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
 
         mIsSaved = false;
     }
@@ -442,9 +392,11 @@ void ProjectTab::hasChanged()
 
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
-ProjectTabWidget::ProjectTabWidget(QWidget *parent)
+ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
         :   QTabWidget(parent)
 {
+    mpParentMainWindow = parent;
+
     mpHopsan = HopsanEssentials::getInstance();
 
     MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent)); //Ugly!!!

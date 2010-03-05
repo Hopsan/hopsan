@@ -21,15 +21,17 @@
 
 class GUIPort;
 class GUIConnector;
+class ProjectTab;
 
 class GraphicsScene : public QGraphicsScene
 {
     Q_OBJECT
 
 public:
-    GraphicsScene(QObject *parent = 0);
+    GraphicsScene(ProjectTab *parent = 0);
     qreal TestVar;
 
+    ProjectTab *mpParentProjectTab;
 };
 
 
@@ -41,10 +43,12 @@ class GraphicsView : public QGraphicsView
     Q_OBJECT
 
 public:
-    GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, QWidget *parent = 0);
+    GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, ProjectTab *parent = 0);
     ~GraphicsView();
     bool creatingConnector;
     GUIComponent *getComponent(QString name);
+
+    ProjectTab *mpParentProjectTab;
 
 signals:
     void draggingSomething();
@@ -79,15 +83,6 @@ private:
     QMap<QString, GUIComponent *> mComponentMap;
 };
 
-//class Component : public QGraphicsWidget
-//{
-//    Q_OBJECT
-//
-//public:
-//    Component(QString componentName, QGraphicsItem *parent = 0);
-//
-//};
-
 
 class ProjectTabWidget; //Forward declaration
 
@@ -96,9 +91,9 @@ class ProjectTab : public QWidget
     Q_OBJECT
 
 public:
-    ProjectTab(QWidget *parent = 0);
+    ProjectTab(ProjectTabWidget *parent = 0);
     bool mIsSaved;
-    ProjectTabWidget *mpTabContainer;
+    ProjectTabWidget *mpParentProjectTabWidget;
     ComponentSystem *mpModel;
     GraphicsView *getView();
 
@@ -114,12 +109,16 @@ private:
 };
 
 
+class MainWindow;
+
 class ProjectTabWidget : public QTabWidget
 {
     Q_OBJECT
 
 public:
-    ProjectTabWidget(QWidget *parent = 0);
+    ProjectTabWidget(MainWindow *parent = 0);
+
+    MainWindow *mpParentMainWindow;
 
     HopsanEssentials *mpHopsan;
 
