@@ -40,7 +40,7 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     this->setInteractive(true);
     this->setEnabled(true);
     this->setAcceptDrops(true);
-    this->creatingConnector = false;
+    this->mIsCreatingConnector = false;
     //this->setTransformationAnchor(QGraphicsView::NoAnchor);
 
     MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent()->parent())); //Ugly!!!
@@ -188,7 +188,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     if (event->modifiers() and Qt::ControlModifier)
     {
         //this->setDragMode(QGraphicsView::ScrollHandDrag);       //Zoom function
-        if (this->creatingConnector)
+        if (this->mIsCreatingConnector)
         {
             QCursor cursor;
             mpTempConnector->getThisLine()->setGeometry(GUIConnectorLine::DIAGONAL);
@@ -206,7 +206,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 {
     this->setDragMode(QGraphicsView::RubberBandDrag);
-    if (this->creatingConnector)
+    if (this->mIsCreatingConnector)
     {
         if (mpTempConnector->getLastLine()->getGeometry()==GUIConnectorLine::HORIZONTAL)
         {
@@ -230,7 +230,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
     //std::cout << "X=" << this->mapFromGlobal(cursor.pos()).x() << "  " << "Y=" << this->mapFromGlobal(cursor.pos()).y() << std::endl;
     this->setBackgroundBrush(Qt::NoBrush);
 
-    if (this->creatingConnector)
+    if (this->mIsCreatingConnector)
     {
         mpTempConnector->drawLine(mpTempConnector->startPos, this->mapToScene(event->pos()));
     }
@@ -241,16 +241,16 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::RightButton)
     {
-        if (this->creatingConnector)
+        if (this->mIsCreatingConnector)
         {
             if (mpTempConnector->getNumberOfLines() < 3)
             {
-                this->creatingConnector = false;
+                this->mIsCreatingConnector = false;
             }
             mpTempConnector->removeLine(this->mapToScene(event->pos()));
         }
     }
-    else if  ((event->button() == Qt::LeftButton) && (this->creatingConnector))
+    else if  ((event->button() == Qt::LeftButton) && (this->mIsCreatingConnector))
     {
         if (mpTempConnector->getThisLine()->getGeometry()==GUIConnectorLine::DIAGONAL)
         {
@@ -279,7 +279,7 @@ GUIComponent *GraphicsView::getComponent(QString name)
 
 void GraphicsView::addConnector(GUIPort *pPort)
 {
-    if (!creatingConnector)
+    if (!mIsCreatingConnector)
     {
         std::cout << "GraphicsView: " << "Adding connector";
         QPointF oldPos = pPort->mapToScene(pPort->boundingRect().center());
@@ -288,30 +288,26 @@ void GraphicsView::addConnector(GUIPort *pPort)
         QPen hoverPen = QPen(QColor("darkRed"),2);
         mpTempConnector = new GUIConnector(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), passivePen, activePen, hoverPen, this);
         this->scene()->addItem(mpTempConnector);
-        this->creatingConnector = true;
+        this->mIsCreatingConnector = true;
         pPort->getComponent()->addConnector(mpTempConnector);
         mpTempConnector->setStartPort(pPort);
         mpTempConnector->addLine();
     }
     else
     {
+        //! @todo This will lead to crash if you click to fast to moany times on the same port
+        mpTempConnector->removeLine(pPort->mapToScene(pPort->boundingRect().center()));
         //Core interaction
         Port *start_port = mpTempConnector->getStartPort()->mpCorePort;
-        //Port *pPort2 = port;//mpTempConnector->getEndPort()->mpCorePort;
         Port *end_port = pPort->mpCorePort;
         bool sucess = mpModel->connect(start_port, end_port);
         if (sucess)
         {
-            creatingConnector = false;
-            mpTempConnector->removeLine(pPort->mapToScene(pPort->boundingRect().center()));
+            mIsCreatingConnector = false;
             QPointF newPos = pPort->mapToScene(pPort->boundingRect().center());
             mpTempConnector->drawLine(mpTempConnector->startPos, newPos);
             pPort->getComponent()->addConnector(mpTempConnector);
             mpTempConnector->setEndPort(pPort);
-        }
-        else
-        {
-            qDebug() << "!!!!!!!FAILED TO CONNECT SHOULD REMOVE CONNECTOR OR SOMETING, the fail reason should be visible in the message window (need to be coded)";
         }
         emit checkMessages();
         //

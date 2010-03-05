@@ -45,7 +45,7 @@ class GraphicsView : public QGraphicsView
 public:
     GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, ProjectTab *parent = 0);
     ~GraphicsView();
-    bool creatingConnector;
+    bool mIsCreatingConnector;
     GUIComponent *getComponent(QString name);
     GUIConnector *getTempConnector();
 

@@ -925,6 +925,13 @@ bool ComponentSystem::connect(Component &rComponent1, const string portname1, Co
         return false;
     }
 
+    if (pPort1 == pPort2)
+    {
+        ss << "You can not connect the port to it self";
+        gCoreMessageHandler.addErrorMessage(ss.str());
+        return false;
+    }
+
     //! @todo this will be a problem if we want to connect sensors and such
     if (pPort1->isConnected() && pPort2->isConnected())
         //Both already are connected to nodes
