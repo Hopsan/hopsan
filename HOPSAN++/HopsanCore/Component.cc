@@ -879,7 +879,13 @@ void ComponentSystem::setTypeCQS(const string cqs_type)
     }
 }
 
-//! Connect two ports to each other
+//! Connect two ports to each other ptr version
+bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
+{
+    return connect(pPort1->mpComponent, pPort1->mPortName, pPort2->mpComponent, pPort2->mPortName);
+}
+
+//! Connect two ports to each other ref version
 bool ComponentSystem::connect(Port &rPort1, Port &rPort2)
 {
     return connect(*rPort1.mpComponent, rPort1.mPortName, *rPort2.mpComponent, rPort2.mPortName);

@@ -257,36 +257,39 @@ GUIComponent *GraphicsView::getComponent(QString name)
     return mComponentMap.find(name).value();
 }
 
-void GraphicsView::addConnector(GUIPort *port)
+void GraphicsView::addConnector(GUIPort *pPort)
 {
     if (!creatingConnector)
     {
         std::cout << "GraphicsView: " << "Adding connector";
-        QPointF oldPos = port->mapToScene(port->boundingRect().center());
+        QPointF oldPos = pPort->mapToScene(pPort->boundingRect().center());
         QPen passivePen = QPen(QColor("black"),2);
         QPen activePen = QPen(QColor("red"), 3);
         QPen hoverPen = QPen(QColor("darkRed"),2);
         mpTempConnector = new GUIConnector(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), passivePen, activePen, hoverPen, this);
         this->scene()->addItem(mpTempConnector);
         this->creatingConnector = true;
-        port->getComponent()->addConnector(mpTempConnector);
-        mpTempConnector->setStartPort(port);
+        pPort->getComponent()->addConnector(mpTempConnector);
+        mpTempConnector->setStartPort(pPort);
         mpTempConnector->addLine();
     }
     else
     {
-        creatingConnector = false;
-        mpTempConnector->removeLine(port->mapToScene(port->boundingRect().center()));
-        QPointF newPos = port->mapToScene(port->boundingRect().center());
-        mpTempConnector->drawLine(mpTempConnector->startPos, newPos);
-        port->getComponent()->addConnector(mpTempConnector);
-        mpTempConnector->setEndPort(port);
-
         //Core interaction
-        Port *pPort1 = mpTempConnector->getStartPort()->mpCorePort;
-        Port *pPort2 = mpTempConnector->getEndPort()->mpCorePort;
-        bool sucess = mpModel->connect(*pPort1, *pPort2);
-        if (!sucess)
+        Port *start_port = mpTempConnector->getStartPort()->mpCorePort;
+        //Port *pPort2 = port;//mpTempConnector->getEndPort()->mpCorePort;
+        Port *end_port = pPort->mpCorePort;
+        bool sucess = mpModel->connect(start_port, end_port);
+        if (sucess)
+        {
+            creatingConnector = false;
+            mpTempConnector->removeLine(pPort->mapToScene(pPort->boundingRect().center()));
+            QPointF newPos = pPort->mapToScene(pPort->boundingRect().center());
+            mpTempConnector->drawLine(mpTempConnector->startPos, newPos);
+            pPort->getComponent()->addConnector(mpTempConnector);
+            mpTempConnector->setEndPort(pPort);
+        }
+        else
         {
             qDebug() << "!!!!!!!FAILED TO CONNECT SHOULD REMOVE CONNECTOR OR SOMETING, the fail reason should be visible in the message window (need to be coded)";
         }

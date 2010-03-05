@@ -193,6 +193,7 @@ public:
     bool connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2);
     bool connect(Component *pComponent1, const string portname1, Component *pComponent2, const string portname2);
     bool connect(Port &rPort1, Port &rPort2);
+    bool connect(Port *pPort1, Port *pPort2);
     void disconnect(Port *pPort1, Port *pPort2);
 
     //initializeand simulate
