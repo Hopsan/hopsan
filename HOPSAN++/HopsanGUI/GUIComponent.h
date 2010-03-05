@@ -33,6 +33,7 @@ public:
     void addConnector(GUIConnector *item);
     void refreshName();
     void showPorts(bool visible);
+    GUIPort *getPort(int number);
 
     //Core interaction
     Component *mpCoreComponent;

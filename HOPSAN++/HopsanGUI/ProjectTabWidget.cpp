@@ -140,7 +140,7 @@ void GraphicsView::addComponent(QString parameterType, QPoint position, QString 
     qDebug() << "GraphicsView: " << guiComponent->parent();
 
      //mLibraryMapPtrs.insert(libraryName, newLibContent);
-    //this->mComponentMap.insert()
+    this->mComponentMap.insert(componentName, guiComponent);
     this->scene()->addItem(guiComponent);
 }
 
@@ -267,6 +267,10 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         QGraphicsView::mousePressEvent(event);
 }
 
+GUIComponent *GraphicsView::getComponent(QString name)
+{
+    return mComponentMap.find(name).value();
+}
 
 void GraphicsView::addConnector(GUIPort *port)
 {
@@ -622,7 +626,8 @@ void ProjectTabWidget::loadModel()
     string inputWord;
     string componentType;
     string componentName;
-    string startComponentName, endComponentName, startPortNumber, endPortNumber;
+    string startComponentName, endComponentName;
+    int startPortNumber, endPortNumber;
     int posX, posY;
 
     while (! modelFile.eof() )
@@ -652,7 +657,7 @@ void ProjectTabWidget::loadModel()
                 inputStream >> startPortNumber;
                 inputStream >> endComponentName;
                 inputStream >> endPortNumber;
-                //this->addConnector()
+                pCurrentTab->getView()->addConnector(pCurrentTab->getView()->getComponent(QString(startComponentName.c_str()))->getPort(startPortNumber));
                 while(inputStream >> inputWord)
                 {
                     if(inputWord == "VERTICAL")

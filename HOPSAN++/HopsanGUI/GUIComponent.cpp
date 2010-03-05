@@ -174,6 +174,11 @@ void GUIComponent::refreshName()
     mpNameText->refreshName();
 }
 
+GUIPort *GUIComponent::getPort(int number)
+{
+    return this->mPortListPtrs[number];
+}
+
 void GUIComponent::deleteComponent()
 {
     qDebug() << "GUIComponent:: inside delete component\n";

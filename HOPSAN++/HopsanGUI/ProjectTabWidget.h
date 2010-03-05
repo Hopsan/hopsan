@@ -44,6 +44,7 @@ public:
     GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, QWidget *parent = 0);
     ~GraphicsView();
     bool creatingConnector;
+    GUIComponent *getComponent(QString name);
 
 signals:
     void draggingSomething();
@@ -75,7 +76,7 @@ private:
     GUIConnector *mpTempConnector;
     HopsanEssentials *mpHopsan;
     ComponentSystem *mpModel;
-    std::map<QString, GUIComponent*> mComponentMap;
+    QMap<QString, GUIComponent *> mComponentMap;
 };
 
 //class Component : public QGraphicsWidget
