@@ -63,17 +63,6 @@ MainWindow::MainWindow(QWidget *parent)
     projectTabs->setObjectName("projectTabs");
     projectTabs->addNewProjectTab();
 
-    //Create the library for components representation
-    /*library = new LibraryWidget(this);
-
-    //Add the tree and tabcontainer to the centralgrid
-    centralgrid->addWidget(library,0,0);
-    centralgrid->addWidget(projectTabs,0,1,5,1);
-    centralgrid->setColumnMinimumWidth(0,120);
-    centralgrid->setColumnStretch(0,0);
-    centralgrid->setColumnMinimumWidth(1,100);
-    centralgrid->setColumnStretch(1,10);*/
-
     //Create a dock for the componentslibrary
     QDockWidget *libdock = new QDockWidget(tr("Components"), this);
     libdock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -170,14 +159,15 @@ MainWindow::MainWindow(QWidget *parent)
     menubar->addAction(menuPlot->menuAction());
 
     //Load default libraries
-    library->addLibrary("User defined libraries");
-    library->addLibrary("Hydraulic");
-    addLibs("../../HopsanGUI/componentData/hydraulic/sources","Hydraulic");//This method should be in LibraryWidget and addLibs() may be here
-    addLibs("../../HopsanGUI/componentData/hydraulic/restrictors","Hydraulic");//This method should be in LibraryWidget and addLibs() may be here
-    addLibs("../../HopsanGUI/componentData/hydraulic/volumes","Hydraulic");//This method should be in LibraryWidget and addLibs() may be here
-    addLibs("../../HopsanGUI/componentData/hydraulic/actuators","Hydraulic");//This method should be in LibraryWidget and addLibs() may be here
+    library->addEmptyLibrary("User defined libraries");
 
-    addLibs("../../HopsanGUI/componentData/signal");//This method should be in LibraryWidget and addLibs() may be here
+    library->addEmptyLibrary("Hydraulic");
+    library->addLibrary("../../HopsanGUI/componentData/hydraulic/sources","Hydraulic");
+    library->addLibrary("../../HopsanGUI/componentData/hydraulic/restrictors","Hydraulic");
+    library->addLibrary("../../HopsanGUI/componentData/hydraulic/volumes","Hydraulic");
+    library->addLibrary("../../HopsanGUI/componentData/hydraulic/actuators","Hydraulic");
+
+    library->addLibrary("../../HopsanGUI/componentData/signal");
 
     QMetaObject::connectSlotsByName(this);
 
@@ -186,7 +176,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->connect(this->actionSave,SIGNAL(triggered()),projectTabs,SLOT(saveProjectTab()));
     this->connect(this->actionClose,SIGNAL(triggered()),SLOT(close()));
     this->connect(this->actionProject,SIGNAL(triggered()),projectTabs,SLOT(addNewProjectTab()));
-    this->connect(this->actionLoadLibs,SIGNAL(triggered()),SLOT(addLibs()));
+    this->connect(this->actionLoadLibs,SIGNAL(triggered()),library,SLOT(addLibrary()));
     this->connect(this->actionOpen,SIGNAL(triggered()),projectTabs,SLOT(loadModel()));
 
     this->connect(this->actionPlot,SIGNAL(triggered()),SLOT(plot()));
@@ -200,109 +190,6 @@ MainWindow::~MainWindow()
     delete projectTabs;
     delete menubar;
     delete statusBar;
-}
-
-
-void MainWindow::addLibs(QString libDir, QString parentLib)
-{
-    //If no directory is set, i.e. cancel is presses, do no more
-    if (libDir.isEmpty() == true)
-        return;
-
-    QDir libDirObject(libDir);  //Create a QDir object that contains the info about the library direction
-
-    //Get the name for the library to be set in the tree
-    QString libName = libDirObject.dirName();
-
-    //Add the library to the tree
-    library->addLibrary(libName,parentLib);
-
-    QStringList filters;        //Create a QStringList object that contains name filters
-    filters << "*.txt";         //Create the name filter
-    libDirObject.setNameFilters(filters);       //Set the name filter
-
-    QStringList libList = libDirObject.entryList(); //Create a list with all name of the files in dir libDir
-    for (int i = 0; i < libList.size(); ++i)    //Iterate over the file names
-    {
-        //Set up needed variables
-        QStringList parameterData;
-        QString componentName;
-        QIcon icon;
-        QString iconPath;
-        QString nPorts;
-        QString portPosX;
-        QString portPosY;
-
-        QString filename = libDirObject.absolutePath() + "/" + libList.at(i);
-        QFile file(filename);   //Create a QFile object
-        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open each file
-            return;
-
-        QTextStream inFile(&file);  //Create a QTextStream object to stream the content of each file
-        while (!inFile.atEnd()) {
-            QString line = inFile.readLine();   //line contains each row in the file
-
-            if (line.startsWith("NAME"))
-            {
-                componentName = line.mid(5);
-                parameterData << componentName;
-            }
-
-            if (line.startsWith("ICON"))
-            {
-                iconPath = libDirObject.absolutePath() + "/" + line.mid(5);
-                icon.addFile(iconPath);
-                parameterData << iconPath;
-            }
-            if (line.startsWith("PORTS"))
-            {
-                nPorts = line.mid(6);
-                parameterData << nPorts;
-                for (int i = 0; i < nPorts.toInt(); ++i)
-                {
-                    line = inFile.readLine();
-                    portPosX = line.mid(0);
-                    line = inFile.readLine();
-                    portPosY = line.mid(0);
-                    std::cout << qPrintable(componentName) << " x: " << qPrintable(portPosX) << " y: " << qPrintable(portPosY) << std::endl;
-                    parameterData << portPosX << portPosY;
-                }
-            }
-        }
-        file.close();
-        //Add data to the paremeterData list
-  //      parameterData << componentName << iconPath;
-
-        ListWidgetItem *libcomp= new ListWidgetItem(icon,componentName);
-      //  std::cout << parameterData.size() << std::endl;
-        libcomp->setParameterData(parameterData);
-
-        //Add the component to the library
-        //library->addComponent(libName,componentName,icon,parameterData);
-        library->addComponent(libName, libcomp, parameterData);
-    }
-}
-
-
-
-void MainWindow::addLibs()
-{
-    /*QFileDialog dialog(this);
-    dialog.setFileMode(QFileDialog::Directory);
-    fileName = QFileDialog::getExistingDirectory();*/
-
-    /*Alt. way
-    fileName = QFileDialog::getOpenFileName(this,
-     tr("Open Image"), "/home/jana", tr("Image Files (*.png *.jpg *.bmp)"));*/
-
-    QDir fileDialogOpenDir; //This dir object is used for setting the open directory of the QFileDialog, i.e. apps working dir
-
-    libDir = QFileDialog::getExistingDirectory(this, tr("Choose Library Directory"),
-                                                 fileDialogOpenDir.currentPath(),
-                                                 QFileDialog::ShowDirsOnly
-                                                 | QFileDialog::DontResolveSymlinks);
-    addLibs(libDir,QString("User defined libraries"));
-    //std::cout << qPrintable(libDir) << std::endl;
 }
 
 

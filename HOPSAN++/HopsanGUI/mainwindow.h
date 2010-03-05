@@ -80,7 +80,7 @@ public:
     QAction *actionSimulate;
     QAction *actionPlot;
 
-    QString libDir;
+    //QString libDir;
 
     GraphicsScene *scene;
     GraphicsView *view;
@@ -90,8 +90,8 @@ public:
     void closeEvent(QCloseEvent *event);
 
 private slots:
-    void addLibs(QString libDir, QString parentLib=QString());
-    void addLibs();
+    //void addLibs(QString libDir, QString parentLib=QString());
+    //void addLibs();
     void plot();
 
 

@@ -52,11 +52,13 @@ public:
 
     QVBoxLayout *mpGrid;
 
-//    void addLibrary(QString libraryName);
-    void addLibrary(QString libraryName, QString parentLibraryName=QString());
-    //void addComponent(QString libraryName, QString componentName, QIcon icon, QStringList list);
+    void addEmptyLibrary(QString libraryName, QString parentLibraryName=QString());
+    void addLibrary(QString libDir, QString parentLib=QString());
     void addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList parameterData);
     QStringList getParameterData(QString);
+
+public slots:
+    void addLibrary();
 
 private slots:
     void showLib(QTreeWidgetItem * item, int column);

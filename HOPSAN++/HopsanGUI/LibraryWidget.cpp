@@ -8,10 +8,11 @@
 //$Id$
 
 #include <QtGui>
+#include <map>
+#include <iostream>
 
 #include "LibraryWidget.h"
 #include "listwidget.h"
-#include <map>
 
 
 //! Constructor.
@@ -23,14 +24,6 @@ LibraryContent::LibraryContent(QWidget *parent)
     setAcceptDrops(false);
 }
 
-/*QMimeData *LibraryContent::mimeData(const QList<QListWidgetItem*> items) const
-{
-    QString mess = items.first()->text();
-
-    QMimeData *mimeData = new QMimeData();
-    mimeData->setText(mess);
-    return mimeData;
-}*/
 
 void LibraryContent::mousePressEvent(QMouseEvent *event)
 {
@@ -92,27 +85,13 @@ LibraryWidget::LibraryWidget(QWidget *parent)
 }
 
 
-//void LibraryWidget::addLibrary(QString libraryName)
-//{
-//    QTreeWidgetItem *newTreePost = new QTreeWidgetItem((QTreeWidget*)0);
-//    newTreePost->setText(0, QString(libraryName));
-//    tree->insertTopLevelItem(0, newTreePost);
-//
-//    LibraryContent *newLibContent = new LibraryContent((LibraryContent*)0);
-//    newLibContent->setDragEnabled(true);
-//    //newLibContent->setDropIndicatorShown(true);
-//    libraryMap.insert(libraryName, newLibContent);
-//
-//    grid->addWidget(newLibContent);
-//    newLibContent->hide();
-//
-//}
-
-//! Adds a library to the library widget.
+//! Adds an empty library to the library widget.
 //! @param libraryName is the name of the new library.
 //! @param parentLibraryName is the name of an eventually parent library.
-//! @see addComponent(QString libraryName, ListWidgetItem *newComponent)
-void LibraryWidget::addLibrary(QString libraryName, QString parentLibraryName)
+//! @see addLibrary(QString libDir, QString parentLib)
+//! @see addLibrary()
+//! @see addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList parameterData)
+void LibraryWidget::addEmptyLibrary(QString libraryName, QString parentLibraryName)
 {
     QTreeWidgetItem *newTreePost = new QTreeWidgetItem((QTreeWidget*)0);
     newTreePost->setText(0, QString(libraryName));
@@ -146,18 +125,120 @@ void LibraryWidget::addLibrary(QString libraryName, QString parentLibraryName)
 }
 
 
-//void LibraryWidget::addComponent(QString libraryName, QString componentName, QIcon icon, QStringList list)
-//{
-//    ListWidgetItem *newComponent = new ListWidgetItem(icon, componentName);
-//    newComponent->setParameterData(list);
-//    addComponent(libraryName, newComponent);
-//
-//}
+//! Adds a library to the library widget.
+//! @param libDir is the library directory.
+//! @param parentLib is the name of an eventually parent library.
+//! @see addEmptyLibrary(QString libraryName, QString parentLibraryName)
+//! @see addLibrary()
+//! @see addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList parameterData)
+void LibraryWidget::addLibrary(QString libDir, QString parentLib)
+{
+    //If no directory is set, i.e. cancel is presses, do no more
+    if (libDir.isEmpty() == true)
+        return;
+
+    QDir libDirObject(libDir);  //Create a QDir object that contains the info about the library direction
+
+    //Get the name for the library to be set in the tree
+    QString libName = libDirObject.dirName();
+
+    //Add the library to the tree
+    addEmptyLibrary(libName,parentLib);
+
+    QStringList filters;        //Create a QStringList object that contains name filters
+    filters << "*.txt";         //Create the name filter
+    libDirObject.setNameFilters(filters);       //Set the name filter
+
+    QStringList libList = libDirObject.entryList(); //Create a list with all name of the files in dir libDir
+    for (int i = 0; i < libList.size(); ++i)    //Iterate over the file names
+    {
+        //Set up needed variables
+        QStringList parameterData;
+        QString componentName;
+        QIcon icon;
+        QString iconPath;
+        QString nPorts;
+        QString portPosX;
+        QString portPosY;
+
+        QString filename = libDirObject.absolutePath() + "/" + libList.at(i);
+        QFile file(filename);   //Create a QFile object
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open each file
+            return;
+
+        QTextStream inFile(&file);  //Create a QTextStream object to stream the content of each file
+        while (!inFile.atEnd()) {
+            QString line = inFile.readLine();   //line contains each row in the file
+
+            if (line.startsWith("NAME"))
+            {
+                componentName = line.mid(5);
+                parameterData << componentName;
+            }
+
+            if (line.startsWith("ICON"))
+            {
+                iconPath = libDirObject.absolutePath() + "/" + line.mid(5);
+                icon.addFile(iconPath);
+                parameterData << iconPath;
+            }
+            if (line.startsWith("PORTS"))
+            {
+                nPorts = line.mid(6);
+                parameterData << nPorts;
+                for (int i = 0; i < nPorts.toInt(); ++i)
+                {
+                    line = inFile.readLine();
+                    portPosX = line.mid(0);
+                    line = inFile.readLine();
+                    portPosY = line.mid(0);
+                    std::cout << qPrintable(componentName) << " x: " << qPrintable(portPosX) << " y: " << qPrintable(portPosY) << std::endl;
+                    parameterData << portPosX << portPosY;
+                }
+            }
+        }
+        file.close();
+        //Add data to the paremeterData list
+  //      parameterData << componentName << iconPath;
+
+        ListWidgetItem *libcomp= new ListWidgetItem(icon,componentName);
+      //  std::cout << parameterData.size() << std::endl;
+        libcomp->setParameterData(parameterData);
+
+        //Add the component to the library
+        //library->addComponent(libName,componentName,icon,parameterData);
+        addComponent(libName, libcomp, parameterData);
+    }
+}
+
+
+//! Let the user to point out a library and adds it to the library widget.
+//! @see addEmptyLibrary(QString libraryName, QString parentLibraryName)
+//! @see addLibrary(QString libDir, QString parentLib)
+//! @see addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList parameterData)
+void LibraryWidget::addLibrary()
+{
+    /*QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::Directory);
+    fileName = QFileDialog::getExistingDirectory();*/
+
+    /*Alt. way
+    fileName = QFileDialog::getOpenFileName(this,
+     tr("Open Image"), "/home/jana", tr("Image Files (*.png *.jpg *.bmp)"));*/
+
+    QDir fileDialogOpenDir; //This dir object is used for setting the open directory of the QFileDialog, i.e. apps working dir
+
+    QString libDir = QFileDialog::getExistingDirectory(this, tr("Choose Library Directory"),
+                                                 fileDialogOpenDir.currentPath(),
+                                                 QFileDialog::ShowDirsOnly
+                                                 | QFileDialog::DontResolveSymlinks);
+    addLibrary(libDir,QString("User defined libraries"));
+    //std::cout << qPrintable(libDir) << std::endl;
+}
 
 
 //! Adds a library to the library widget.
 //! @param libraryName is the name of the library where the component should be added.
-//! @see addComponent(QString libraryName, QString parentLibraryName)
 void LibraryWidget::addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList parameterData)
 {
     mLibraryMapPtrs.value(libraryName)->addItem(newComponent);
