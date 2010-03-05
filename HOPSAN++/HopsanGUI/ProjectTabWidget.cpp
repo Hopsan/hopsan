@@ -41,7 +41,7 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, QWi
     this->creatingConnector = false;
     //this->setTransformationAnchor(QGraphicsView::NoAnchor);
 
-    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent())); //Ugly!!!
+    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent()->parent())); //Ugly!!!
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 }
 
@@ -351,7 +351,7 @@ ProjectTab::ProjectTab(QWidget *parent)
 {
     mpTabContainer = (qobject_cast<ProjectTabWidget *>(parent)); //Ugly!!!
 
-    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent())); //Ugly!!!
+    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent())); //Ugly!!!
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
     //Core interaction

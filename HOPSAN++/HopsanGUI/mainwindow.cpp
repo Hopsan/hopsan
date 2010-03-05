@@ -61,7 +61,6 @@ MainWindow::MainWindow(QWidget *parent)
     //Create the main tab container, need at least one tab
     projectTabs = new ProjectTabWidget(this);
     projectTabs->setObjectName("projectTabs");
-    projectTabs->addNewProjectTab();
 
     //Create a dock for the componentslibrary
     QDockWidget *libdock = new QDockWidget(tr("Components"), this);
@@ -76,6 +75,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Set the centralwidget
     this->setCentralWidget(centralwidget);
+
+    projectTabs->addNewProjectTab();
 
     //Create the menubar
     menubar = new QMenuBar();
