@@ -1,6 +1,8 @@
 //$Id$
 
 #include "GUIComponentSelectionBox.h"
+#include "GUIComponent.h"
+
 #include <QGraphicsObject>
 #include <QGraphicsItem>
 #include <QObject>
@@ -8,9 +10,11 @@
 #include <QGraphicsLineItem>
 
 
-GUIComponentSelectionBox::GUIComponentSelectionBox(qreal x1, qreal y1, qreal x2, qreal y2, QPen activePen, QPen hoverPen, QGraphicsItem *parent)
+GUIComponentSelectionBox::GUIComponentSelectionBox(qreal x1, qreal y1, qreal x2, qreal y2, QPen activePen, QPen hoverPen, GUIComponent *parent)
         : QGraphicsItemGroup(parent)
 {
+    mpParentGUIComponent = parent;
+
     this->mActivePen = activePen;
     this->mHoverPen = hoverPen;
 
