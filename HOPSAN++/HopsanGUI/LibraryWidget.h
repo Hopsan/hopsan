@@ -10,15 +10,18 @@
 #ifndef LIBRARYWIDGET_H
 #define LIBRARYWIDGET_H
 
-#include <QListWidget>
-#include <QStringList>
 #include <string>
 #include <map>
+#include <QListWidget>
+#include <QStringList>
+#include <QTreeWidget>
+#include <QVBoxLayout>
 
-class QWidget;
-class QTreeWidget;
-class QTreeWidgetItem;
-class QVBoxLayout;
+
+//class QWidget;
+//class QTreeWidget;
+//class QTreeWidgetItem;
+//class QVBoxLayout;
 class ListWidgetItem;
 
 class LibraryContent : public QListWidget

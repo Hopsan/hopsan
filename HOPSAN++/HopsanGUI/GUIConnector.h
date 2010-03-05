@@ -3,25 +3,12 @@
 #ifndef GUICONNECTOR_H
 #define GUICONNECTOR_H
 
-//#include <QCursor>
-//#include <QBrush>
-//#include <QGraphicsScene>
-//#include <QGraphicsLineItem>
-//#include <vector>
-//#include <QGraphicsRectItem>
-//#include <QCursor>
-//#include <QBrush>
-//#include <QGraphicsLineItem>
-//#include <QGraphicsScene>
-//#include "GUIConnector.h"
-//#include "GUIPort.h"
+
 #include <vector>
-#include "GUIConnectorLine.h"
 #include <QGraphicsWidget>
 #include <QGraphicsView>
-
-class GUIPort;     //Forwarad declaration
-class GUIConnectorLine; //Forward  declaration
+#include "GUIPort.h"
+#include "GUIConnectorLine.h"
 
 class GUIConnector : public QGraphicsWidget
 {

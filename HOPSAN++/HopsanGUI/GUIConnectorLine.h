@@ -3,28 +3,9 @@
 #ifndef GUICONNECTORLINE_H
 #define GUICONNECTORLINE_H
 
-//Should be as few includes as possible in h-files
 #include <QPen>
-//#include <QCursor>
-//#include <QBrush>
-//#include <QGraphicsScene>
 #include <QGraphicsLineItem>
-//#include <vector>
-//#include <QGraphicsRectItem>
-//#include <QCursor>
-//#include <QBrush>
-//#include <QGraphicsLineItem>
-//#include <QGraphicsScene>
-//#include "GUIConnector.h"
-//#include "GUIPort.h"
-//#include <vector>
-//#include "GUIConnectorLine.h"
-//#include "GUIConnector.h"
-//#include <QGraphicsLineItem>
-//#include <QGraphicsItem>
 #include <QGraphicsSceneMoveEvent>
-
-class GUIConnector;     //Forward declaration
 
 class GUIConnectorLine : public QObject, public QGraphicsLineItem
 {

@@ -12,11 +12,7 @@
 #include <QBrush>
 #include <QGraphicsLineItem>
 #include <QGraphicsScene>
-#include "GUIPort.h"
-#include "assert.h"
 #include <vector>
-#include "GUIConnectorLine.h"
-
 
 GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, QPen passivePen, QPen activePen, QPen hoverPen, QGraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)

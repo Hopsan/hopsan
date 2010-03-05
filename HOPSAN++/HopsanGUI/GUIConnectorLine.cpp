@@ -1,6 +1,5 @@
 //$Id$
 
-#include "GUIPort.h"
 #include <QObject>
 #include <QGraphicsObject>
 #include <QGraphicsView>
@@ -12,15 +11,14 @@
 #include <QGraphicsRectItem>
 #include <QWidget>
 #include <QGraphicsItem>
-#include "GUIComponent.h"
 #include <iostream>
 #include <QDebug>
 #include <QGraphicsLineItem>
 #include <QGraphicsItem>
-#include "GUIConnectorLine.h"
 #include <QDebug>
 
-class GUIConnectorLine;
+#include "GUIConnectorLine.h"
+
 
 GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen primaryPen, QPen activePen, QPen hoverPen, int lineNumber, QGraphicsItem *parent)
         : QGraphicsLineItem(x1,y1,x2,y2,parent)

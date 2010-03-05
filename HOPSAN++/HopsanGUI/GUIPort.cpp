@@ -1,26 +1,10 @@
 //$Id$
 
-#include "HopsanCore.h"
+//#include "HopsanCore.h"
 #include "GUIPort.h"
-#include "GUIComponent.h"
 #include "plotwidget.h"
 
 #include <QtGui>
-
-/*#include <QObject>
-#include <QGraphicsObject>
-#include <QGraphicsView>
-#include <QGraphicsScene>
-#include <QGraphicsWidget>
-#include <QTabWidget>
-#include <QStringList>
-#include <QGraphicsTextItem>
-#include <QGraphicsRectItem>
-#include <QWidget>
-#include <QGraphicsItem>
-#include <iostream>
-#include <QDebug>*/
-
 
 GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, GUIComponent *component, QGraphicsItem *parent)
         : QGraphicsRectItem(x, y, width, height,parent)

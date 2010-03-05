@@ -4,15 +4,10 @@
 #define GUIPORT_H
 
 #include <QGraphicsRectItem>
-//#include <QCursor>
-//#include <QBrush>
 #include <QGraphicsLineItem>
 #include <QGraphicsScene>
-//#include "GUIConnector.h"
 #include "GUIComponent.h"
-
-class GUIComponent;        //Forwarad declaration
-class Port;
+#include "HopsanCore.h"
 
 class GUIPort : public QObject, public QGraphicsRectItem
 {
