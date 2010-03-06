@@ -70,6 +70,8 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
                 iconPath = "../../HopsanGUI/MechanicPortC.svg";
             else if (mpCoreComponent->getTypeCQS() == "Q")
                 iconPath = "../../HopsanGUI/MechanicPortQ.svg";
+            else
+                iconPath = "../../HopsanGUI/MechanicPort.svg";
         }
         else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeHydraulic")
         {
@@ -77,6 +79,8 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
                 iconPath = "../../HopsanGUI/HydraulicPortC.svg";
             else if (mpCoreComponent->getTypeCQS() == "Q")
                 iconPath = "../../HopsanGUI/HydraulicPortQ.svg";
+            else
+                iconPath = "../../HopsanGUI/HydraulicPort.svg";
         }
         else
             assert(false);

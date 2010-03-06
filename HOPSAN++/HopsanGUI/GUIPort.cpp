@@ -35,7 +35,7 @@ GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, 
     //QBrush brush(Qt::green);
     //this->setBrush(brush);
 
-    mMag = 4.0;
+    mMag = 1.6180339887;
     mIsMag = false;
 
     QObject::connect(this,SIGNAL(portClicked(GUIPort*)),this->getParentView(),SLOT(addConnector(GUIPort*)));
