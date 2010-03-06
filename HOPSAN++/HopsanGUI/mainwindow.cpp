@@ -170,6 +170,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     mpLibrary->addLibrary("../../HopsanGUI/componentData/signal");
 
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/mechanic");
+
     QMetaObject::connectSlotsByName(this);
 
 

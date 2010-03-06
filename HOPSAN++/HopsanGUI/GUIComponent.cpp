@@ -61,13 +61,23 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
         QString iconPath;
         if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeSignal")
             if (mpCoreComponent->getPortPtrVector().at(i)->getPortType() == "ReadPort")
-                iconPath = ":/SignalPort_read.svg";
+                iconPath = "../../HopsanGUI/SignalPort_read.svg";
             else
-                iconPath = ":/SignalPort_write.svg";
+                iconPath = "../../HopsanGUI/SignalPort_write.svg";
         else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeMechanic")
-            iconPath = ":/MechanicPort.svg";
+        {
+            if (mpCoreComponent->getTypeCQS() == "C")
+                iconPath = "../../HopsanGUI/MechanicPortC.svg";
+            else if (mpCoreComponent->getTypeCQS() == "Q")
+                iconPath = "../../HopsanGUI/MechanicPortQ.svg";
+        }
         else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeHydraulic")
-            iconPath = ":/HydraulicPort.svg";
+        {
+            if (mpCoreComponent->getTypeCQS() == "C")
+                iconPath = "../../HopsanGUI/HydraulicPortC.svg";
+            else if (mpCoreComponent->getTypeCQS() == "Q")
+                iconPath = "../../HopsanGUI/HydraulicPortQ.svg";
+        }
         else
             assert(false);
         mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,this));//mpIcon));
