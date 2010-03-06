@@ -1,8 +1,11 @@
 #include "MessageWidget.h"
+#include "mainwindow.h"
 
-MessageWidget::MessageWidget(QWidget *pParent)
+
+MessageWidget::MessageWidget(MainWindow *pParent)
     : QTextEdit(pParent)
 {
+    mpParentMainWindow = pParent;
     mpHopsanCore = 0;
 
 }
