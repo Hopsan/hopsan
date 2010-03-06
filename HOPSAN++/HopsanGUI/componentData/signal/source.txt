@@ -1,0 +1,7 @@
+NAME SignalSource
+ICON Source.svg
+PORTS 1
+1
+.5
+0
+
