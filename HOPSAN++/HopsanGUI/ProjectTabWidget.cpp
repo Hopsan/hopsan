@@ -309,6 +309,9 @@ void GraphicsView::addConnector(GUIPort *pPort)
             mpTempConnector->drawLine(mpTempConnector->startPos, newPos);
             pPort->getComponent()->addConnector(mpTempConnector);
             mpTempConnector->setEndPort(pPort);
+
+            mpTempConnector->getStartPort()->hide();
+            mpTempConnector->getEndPort()->hide();
         }
         emit checkMessages();
         //

@@ -41,30 +41,41 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
     this->setAcceptHoverEvents(true);
 
     this->setZValue(10);
-    icon = new QGraphicsSvgItem(fileName,this);
+    mpIcon = new QGraphicsSvgItem(fileName,this);
 
     std::cout << "GUIcomponent: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
     std::cout << "GUIcomponent: " << componentTypeName.toStdString() << std::endl;
 
-    setGeometry(0,0,icon->boundingRect().width(),icon->boundingRect().height());
+    setGeometry(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height());
 
     mpNameText = new GUIComponentNameTextItem(mpCoreComponent, this);
-    mpNameText->setPos(QPointF(icon->boundingRect().width()/2-mpNameText->boundingRect().width()/2, icon->boundingRect().height()));
+    mpNameText->setPos(QPointF(mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2, mpIcon->boundingRect().height()));
 
     //Sets the ports
     for (size_t i = 0; i < nPorts; ++i)
     {
         double x = parameterData.at(3+2*i).toDouble();
         double y = parameterData.at(4+2*i).toDouble();
-        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*icon->sceneBoundingRect().width()-5,y*icon->sceneBoundingRect().height()-5,10.0,10.0,mpParentGraphicsView,this,icon));
+
+        QString iconPath;
+        if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeSignal")
+            iconPath = ":/SignalPort.svg";
+        else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeMechanic")
+            iconPath = ":/MechanicPort.svg";
+        else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeHydraulic")
+            iconPath = ":/HydraulicPort.svg";
+        else
+            assert(false);
+        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),iconPath,this));//mpIcon));
+
     }
 
     connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(fixTextPosition(QPointF)));
     connect(this->mpParentGraphicsView,SIGNAL(keyPressDelete()),this,SLOT(deleteComponent()));
 
-    setPos(position-QPoint(icon->boundingRect().width()/2, icon->boundingRect().height()/2));
+    setPos(position-QPoint(mpIcon->boundingRect().width()/2, mpIcon->boundingRect().height()/2));
 
-    mpSelectionBox = new GUIComponentSelectionBox(0,0,icon->boundingRect().width(),icon->boundingRect().height(),
+    mpSelectionBox = new GUIComponentSelectionBox(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height(),
                                                   QPen(QColor("red"),3), QPen(QColor("darkRed"),2),this);
     mpSelectionBox->setVisible(false);
 }
@@ -125,10 +136,10 @@ double dist(double x1,double y1, double x2, double y2)
 
 void GUIComponent::fixTextPosition(QPointF pos)
 {
-    double x1 = icon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
-    double y1 = icon->boundingRect().height();
+    double x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
+    double y1 = mpIcon->boundingRect().height();
 
-    double x2 = icon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
+    double x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
     double y2 = -mpNameText->boundingRect().height();
 
     double x = mpNameText->mapToParent(pos).x();
@@ -209,7 +220,7 @@ void GUIComponent::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     {
         this->mpSelectionBox->setPassive();
     }
-    this->showPorts(false);
+    //this->showPorts(false);
 }
 
 
@@ -265,6 +276,7 @@ void GUIComponent::showPorts(bool visible)
     else
         for (i = mPortListPtrs.begin(); i != mPortListPtrs.end(); ++i)
         {
+//        if ((*i)->mpCorePort->isConnected())
             (*i)->hide();
         }
 }

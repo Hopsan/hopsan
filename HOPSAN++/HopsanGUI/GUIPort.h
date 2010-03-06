@@ -3,17 +3,17 @@
 #ifndef GUIPORT_H
 #define GUIPORT_H
 
-#include <QGraphicsRectItem>
+#include <QGraphicsSvgItem>
 #include <QGraphicsLineItem>
 #include <QGraphicsScene>
 #include "GUIComponent.h"
 #include "HopsanCore.h"
 
-class GUIPort : public QObject, public QGraphicsRectItem
+class GUIPort :public QGraphicsSvgItem
 {
     Q_OBJECT
 public:
-    GUIPort(Port *corePort, qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, GUIComponent *component, QGraphicsItem *parent = 0);
+    GUIPort(Port *corePort, qreal x, qreal y, QString iconPath, GUIComponent *parent = 0);
     ~GUIPort();
     QPointF rectPos;
     QGraphicsView *getParentView();
@@ -37,11 +37,12 @@ signals:
 private:
     QColor myLineColor;
     qreal myLineWidth;
-    QGraphicsItem *pRectParent;
+    //QGraphicsItem *pRectParent;
     QGraphicsLineItem *lineH;
     QGraphicsLineItem *lineV;
     QGraphicsView *mpParentView;
-    GUIComponent *mpComponent;
+    GUIComponent *mpParentComponent;
+    qreal mMag;
 };
 
 #endif // GUIPORT_H

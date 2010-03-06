@@ -52,3 +52,4 @@ win32 {
     LIBS += -Lc:\Qwt-5.2.1-svn\lib
     LIBS += -lqwtd5
 }
+RESOURCES += PortIcons.qrc

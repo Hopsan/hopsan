@@ -59,7 +59,7 @@ public slots:
      void deleteComponent();
 
 private:
-    QGraphicsSvgItem *icon;
+    QGraphicsSvgItem *mpIcon;
     GUIComponentNameTextItem *mpNameText;
     GUIComponentSelectionBox *mpSelectionBox;
     QGraphicsLineItem *mpTempLine;

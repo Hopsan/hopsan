@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>HydraulicPort.svg</file>
+        <file>SignalPort.svg</file>
+        <file>MechanicPort.svg</file>
+    </qresource>
+</RCC>

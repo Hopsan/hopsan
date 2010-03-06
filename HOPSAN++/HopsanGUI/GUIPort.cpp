@@ -6,22 +6,25 @@
 
 #include <QtGui>
 
-GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal width, qreal height, QGraphicsView *parentView, GUIComponent *component, QGraphicsItem *parent)
-        : QGraphicsRectItem(x, y, width, height,parent)
+GUIPort::GUIPort(Port *corePort, qreal x, qreal y, QString iconPath,GUIComponent *parent)
+    : QGraphicsSvgItem(iconPath,parent)
 {
     //Core interaction
     mpCorePort = corePort;
     //
 
-    mpParentView = parentView;
-    mpComponent = component;
-    rectPos.setX(x);
-    rectPos.setY(y);
-    pRectParent = parent;
+    this->
+
+    mpParentView = parent->mpParentGraphicsView;
+    mpParentComponent = parent;
+    setPos(x-this->boundingRect().width()/2,y-this->boundingRect().height()/2);
+//    pRectParent = parent;
     this->setAcceptHoverEvents(true);
 
-    QBrush brush(Qt::green);
-    this->setBrush(brush);
+    //QBrush brush(Qt::green);
+    //this->setBrush(brush);
+
+    mMag = 4.0;
 
     QObject::connect(this,SIGNAL(portClicked(GUIPort*)),this->getParentView(),SLOT(addConnector(GUIPort*)));
 }
@@ -34,15 +37,19 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     this->setCursor(Qt::CrossCursor);
     QBrush brush(Qt::blue);
-    this->setBrush(brush);
+    //this->setBrush(brush);
     std::cout << "GUIPort.cpp: " << "hovering over port" << std::endl;
+    this->scale(mMag, mMag);
+    this->moveBy(-(mMag-1)*boundingRect().width()/2, -(mMag-1)*boundingRect().height()/2);
 }
 
 void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     QBrush brush(Qt::green);
-    this->setBrush(brush);
+    //this->setBrush(brush);
     this->setCursor(Qt::ArrowCursor);
+    this->moveBy((mMag-1)*boundingRect().width()/2, (mMag-1)*boundingRect().height()/2);
+    this->scale(1/mMag,1/mMag);
 }
 
 
@@ -53,7 +60,7 @@ QGraphicsView *GUIPort::getParentView()
 
 GUIComponent *GUIPort::getComponent()
 {
-    return mpComponent;
+    return mpParentComponent;
 }
 
 
@@ -127,7 +134,7 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
         y[i] = (this->mpCorePort->getDataVectorPtr()->at(i)).at(nVar);
     }
 
-    PlotWidget *newPlot = new PlotWidget(time,y,mpComponent->mpParentGraphicsView);
+    PlotWidget *newPlot = new PlotWidget(time,y,mpParentComponent->mpParentGraphicsView);
     newPlot->show();
 
 }
