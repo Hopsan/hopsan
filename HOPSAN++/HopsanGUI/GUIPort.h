@@ -18,6 +18,7 @@ public:
     QPointF rectPos;
     QGraphicsView *getParentView();
     GUIComponent *getComponent();
+    void magnify(bool blowup);
 
     Port *mpCorePort;
 

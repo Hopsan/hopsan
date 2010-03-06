@@ -43,13 +43,25 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     QBrush brush(Qt::blue);
     //this->setBrush(brush);
     std::cout << "GUIPort.cpp: " << "hovering over port" << std::endl;
-    if (!mIsMag)
+    magnify(true);
+    QGraphicsSvgItem::hoverEnterEvent(event);
+}
+
+void GUIPort::magnify(bool blowup)
+{
+    if ((!blowup) && (mIsMag))
+    {
+        this->moveBy((mMag-1)*boundingRect().width()/2, (mMag-1)*boundingRect().height()/2);
+        this->scale(1/mMag,1/mMag);
+        mIsMag = false;
+    }
+    else if ((blowup) && (!mIsMag))
     {
         this->scale(mMag, mMag);
         this->moveBy(-(mMag-1)*boundingRect().width()/2, -(mMag-1)*boundingRect().height()/2);
         mIsMag = true;
     }
-    QGraphicsSvgItem::hoverEnterEvent(event);
+
 }
 
 void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
@@ -57,12 +69,7 @@ void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     QBrush brush(Qt::green);
     //this->setBrush(brush);
     this->setCursor(Qt::ArrowCursor);
-    if (mIsMag)
-    {
-        this->moveBy((mMag-1)*boundingRect().width()/2, (mMag-1)*boundingRect().height()/2);
-        this->scale(1/mMag,1/mMag);
-        mIsMag = false;
-    }
+    magnify(false);
     QGraphicsSvgItem::hoverLeaveEvent(event);
 }
 
@@ -90,6 +97,8 @@ void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
     {
         std::cout << "GUIPort.cpp: " << "RightClick" << std::endl;
     }
+    magnify(false);
+    QGraphicsSvgItem::mousePressEvent(event);
 }
 
 
