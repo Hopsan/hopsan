@@ -321,7 +321,7 @@ void GraphicsView::addConnector(GUIPort *pPort)
 
 void GraphicsView::removeConnection(GUIConnector* pConnector)
 {
-    /// @todo some error handling both ports must exist and be connected to each other
+    //! @todo some error handling both ports must exist and be connected to each other
     //Core interaction
     mpModel->disconnect(pConnector->getStartPort()->mpCorePort, pConnector->getEndPort()->mpCorePort);
     emit checkMessages();
