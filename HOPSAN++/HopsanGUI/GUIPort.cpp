@@ -6,7 +6,15 @@
 
 #include <QtGui>
 
-GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath,GUIComponent *parent)
+
+//! Constructor.
+//! @param corePort a pointer to the corresponing port in Core.
+//! @param x the x-coord. of where the port should be placed.
+//! @param y the y-coord. of where the port should be placed.
+//! @param rot how the port should be rotated.
+//! @param iconPath a string with the path to the svg-figure representing the port.
+//! @param parent the port's parent, the component it is a part of.
+GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, GUIComponent *parent)
     : QGraphicsSvgItem(iconPath,parent)
 {
     //Core interaction
@@ -33,9 +41,11 @@ GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath,G
     QObject::connect(this,SIGNAL(portClicked(GUIPort*)),this->getParentView(),SLOT(addConnector(GUIPort*)));
 }
 
+
 GUIPort::~GUIPort()
 {
 }
+
 
 void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
@@ -47,6 +57,9 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 //    QGraphicsSvgItem::hoverEnterEvent(event);
 }
 
+
+//! Magnify the port with a class mebmer factor 'mMag'. Is used i.e. at hovering over disconnected port.
+//! @param blowup says if the port should be magnified or not.
 void GUIPort::magnify(bool blowup)
 {
     if ((!blowup) && (mIsMag))
@@ -64,6 +77,7 @@ void GUIPort::magnify(bool blowup)
 
 }
 
+
 void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     QBrush brush(Qt::green);
@@ -78,6 +92,7 @@ QGraphicsView *GUIPort::getParentView()
 {
     return mpParentView;
 }
+
 
 GUIComponent *GUIPort::getComponent()
 {
@@ -142,6 +157,8 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 }
 
 
+//! Plots the varable number 'nVar' in the node the port is connected to.
+//! @param nVar tells which variable to plot.
 void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
 {
     std::cout << "GUIPort.cpp: " << "Plot()" << std::endl;
