@@ -14,7 +14,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.47pre4 r22446"
-   sodipodi:docname="drawing.svg">
+   sodipodi:docname="HydraulicPort.svg">
   <defs
      id="defs4">
     <inkscape:perspective
@@ -32,9 +32,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="14.1398"
-     inkscape:cx="6.9096504"
-     inkscape:cy="25.035719"
+     inkscape:zoom="17.7"
+     inkscape:cx="-3.5339083"
+     inkscape:cy="8.9462286"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -61,7 +61,7 @@
      id="layer1"
      transform="translate(-356.39287,-588.82649)">
     <rect
-       style="fill:#00ff00;stroke:#000000;stroke-width:0.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#01ff01;stroke:#000000;stroke-width:0.50000000000000000;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;fill-opacity:1"
        id="rect2815"
        width="9.5"
        height="9.5"

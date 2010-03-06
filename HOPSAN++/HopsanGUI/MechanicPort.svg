@@ -14,7 +14,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.47pre4 r22446"
-   sodipodi:docname="SignalPort.svg">
+   sodipodi:docname="MechanicPort.svg">
   <defs
      id="defs4">
     <inkscape:perspective
@@ -62,7 +62,7 @@
      transform="translate(-356.39287,-588.82649)">
     <path
        sodipodi:type="arc"
-       style="fill:#0000ff;fill-opacity:0.56950672000000002;stroke:#000000;stroke-width:0.27916721000000000;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#0000ff;fill-opacity:1;stroke:#000000;stroke-width:0.27916721000000000;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="path3619"
        sodipodi:cx="7.1075969"
        sodipodi:cy="7.2771893"

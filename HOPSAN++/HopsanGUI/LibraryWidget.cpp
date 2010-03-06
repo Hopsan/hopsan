@@ -163,6 +163,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
         QString nPorts;
         QString portPosX;
         QString portPosY;
+        QString portRot;
 
         QString filename = libDirObject.absolutePath() + "/" + libList.at(i);
         QFile file(filename);   //Create a QFile object
@@ -195,8 +196,10 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
                     portPosX = line.mid(0);
                     line = inFile.readLine();
                     portPosY = line.mid(0);
-                    std::cout << qPrintable(componentName) << " x: " << qPrintable(portPosX) << " y: " << qPrintable(portPosY) << std::endl;
-                    parameterData << portPosX << portPosY;
+                    line = inFile.readLine();
+                    portRot = line.mid(0);
+                    std::cout << qPrintable(componentName) << " x: " << qPrintable(portPosX) << " y: " << qPrintable(portPosY) << " rot: " << qPrintable(portRot) << std::endl;
+                    parameterData << portPosX << portPosY << portRot;
                 }
             }
         }

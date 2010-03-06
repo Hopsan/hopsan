@@ -54,19 +54,23 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
     //Sets the ports
     for (size_t i = 0; i < nPorts; ++i)
     {
-        double x = parameterData.at(3+2*i).toDouble();
-        double y = parameterData.at(4+2*i).toDouble();
+        double x = parameterData.at(3+3*i).toDouble();
+        double y = parameterData.at(4+3*i).toDouble();
+        double rot = parameterData.at(5+3*i).toDouble();
 
         QString iconPath;
         if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeSignal")
-            iconPath = ":/SignalPort.svg";
+            if (mpCoreComponent->getPortPtrVector().at(i)->getPortType() == "ReadPort")
+                iconPath = ":/SignalPort_read.svg";
+            else
+                iconPath = ":/SignalPort_write.svg";
         else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeMechanic")
             iconPath = ":/MechanicPort.svg";
         else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeHydraulic")
             iconPath = ":/HydraulicPort.svg";
         else
             assert(false);
-        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),iconPath,this));//mpIcon));
+        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,this));//mpIcon));
 
     }
 
@@ -220,7 +224,7 @@ void GUIComponent::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     {
         this->mpSelectionBox->setPassive();
     }
-    //this->showPorts(false);
+    this->showPorts(false);
 }
 
 
@@ -276,7 +280,7 @@ void GUIComponent::showPorts(bool visible)
     else
         for (i = mPortListPtrs.begin(); i != mPortListPtrs.end(); ++i)
         {
-//        if ((*i)->mpCorePort->isConnected())
+        if ((*i)->mpCorePort->isConnected())
             (*i)->hide();
         }
 }

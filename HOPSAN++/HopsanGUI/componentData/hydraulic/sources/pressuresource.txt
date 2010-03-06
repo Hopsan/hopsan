@@ -3,6 +3,8 @@ ICON PressureSource.svg
 PORTS 2
 1
 .5
+0
+0
 .5
-.5
+0
 

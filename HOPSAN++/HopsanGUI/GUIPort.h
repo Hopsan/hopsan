@@ -13,7 +13,7 @@ class GUIPort :public QGraphicsSvgItem
 {
     Q_OBJECT
 public:
-    GUIPort(Port *corePort, qreal x, qreal y, QString iconPath, GUIComponent *parent = 0);
+    GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, GUIComponent *parent = 0);
     ~GUIPort();
     QPointF rectPos;
     QGraphicsView *getParentView();
@@ -43,6 +43,7 @@ private:
     QGraphicsView *mpParentView;
     GUIComponent *mpParentComponent;
     qreal mMag;
+    bool mIsMag;
 };
 
 #endif // GUIPORT_H
