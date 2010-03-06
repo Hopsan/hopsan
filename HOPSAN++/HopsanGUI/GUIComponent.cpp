@@ -67,7 +67,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
         else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeMechanic")
         {
             if (mpCoreComponent->getTypeCQS() == "C")
-                iconPath = "../../HopsanGUI/porticons/porticons/MechanicPortC.svg";
+                iconPath = "../../HopsanGUI/porticons/MechanicPortC.svg";
             else if (mpCoreComponent->getTypeCQS() == "Q")
                 iconPath = "../../HopsanGUI/porticons/MechanicPortQ.svg";
             else

@@ -14,7 +14,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.47pre4 r22446"
-   sodipodi:docname="MechanicPort.svg">
+   sodipodi:docname="MechanicPortQ.svg">
   <defs
      id="defs4">
     <inkscape:perspective
@@ -24,6 +24,20 @@
        inkscape:vp_z="744.09448 : 526.18109 : 1"
        inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
        id="perspective10" />
+    <inkscape:perspective
+       id="perspective2826"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3612"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -51,7 +65,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -62,21 +76,24 @@
      transform="translate(-356.39287,-588.82649)">
     <path
        sodipodi:type="arc"
-       style="fill:#0000ff;fill-opacity:1;stroke:#000000;stroke-width:0.27916721000000000;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#00baff;fill-opacity:1;stroke:#000000;stroke-width:0.27916721;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="path3619"
        sodipodi:cx="7.1075969"
        sodipodi:cy="7.2771893"
        sodipodi:rx="2.6520884"
        sodipodi:ry="2.6520884"
-       d="m 9.7596853,7.2771893 c 0,1.4647079 -1.1873804,2.6520884 -2.6520884,2.6520884 -1.464708,0 -2.6520884,-1.1873805 -2.6520884,-2.6520884 0,-1.464708 1.1873804,-2.6520884 2.6520884,-2.6520884 1.464708,0 2.6520884,1.1873804 2.6520884,2.6520884 z"
+       d="m 9.7596853,7.2771893 a 2.6520884,2.6520884 0 1 1 -5.3041768,0 2.6520884,2.6520884 0 1 1 5.3041768,0 z"
        transform="matrix(1.7910414,0,0,1.7910414,348.66287,580.79274)" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 358.19653,597.02278 6.39266,-6.39265"
-       id="path3678" />
-    <path
-       id="path4190"
-       d="m 364.58919,597.02278 -6.39266,-6.39265"
-       style="fill:none;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="358.39615"
+       y="595.89807"
+       id="text2814"><tspan
+         sodipodi:role="line"
+         id="tspan2816"
+         x="358.39615"
+         y="595.89807"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Apple Garamond Light;-inkscape-font-specification:'Apple Garamond Light,'">Q</tspan></text>
   </g>
 </svg>

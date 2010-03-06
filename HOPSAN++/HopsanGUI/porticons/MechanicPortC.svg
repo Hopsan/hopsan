@@ -33,8 +33,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="35.399999"
-     inkscape:cx="4.7047557"
-     inkscape:cy="6.1692269"
+     inkscape:cx="1.7493929"
+     inkscape:cy="5.5637423"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -62,7 +62,7 @@
      transform="translate(-356.39287,-588.82649)">
     <path
        sodipodi:type="arc"
-       style="fill:#0000ff;fill-opacity:1;stroke:#000000;stroke-width:0.27916721000000000;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#00baff;fill-opacity:1;stroke:#000000;stroke-width:0.27916721000000000;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="path3619"
        sodipodi:cx="7.1075969"
        sodipodi:cy="7.2771893"
@@ -70,15 +70,16 @@
        sodipodi:ry="2.6520884"
        d="m 9.7596853,7.2771893 c 0,1.4647079 -1.1873804,2.6520884 -2.6520884,2.6520884 -1.464708,0 -2.6520884,-1.1873805 -2.6520884,-2.6520884 0,-1.464708 1.1873804,-2.6520884 2.6520884,-2.6520884 1.464708,0 2.6520884,1.1873804 2.6520884,2.6520884 z"
        transform="matrix(1.7910414,0,0,1.7910414,348.66287,580.79274)" />
-    <path
-       sodipodi:type="arc"
-       style="fill:#000000;fill-opacity:1;stroke:none"
-       id="path3676"
-       sodipodi:cx="-3.4887006"
-       sodipodi:cy="5.3813558"
-       sodipodi:rx="0.74858761"
-       sodipodi:ry="0.74858761"
-       d="m -2.740113,5.3813558 a 0.74858761,0.74858761 0 1 1 -1.4971752,0 0.74858761,0.74858761 0 1 1 1.4971752,0 z"
-       transform="matrix(3.3396225,0,0,3.3396225,373.04381,575.85479)" />
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="358.49741"
+       y="596.89148"
+       id="text2814"><tspan
+         sodipodi:role="line"
+         id="tspan2816"
+         x="358.49741"
+         y="596.89148"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Apple Garamond Light;-inkscape-font-specification:'Apple Garamond Light,'">C</tspan></text>
   </g>
 </svg>

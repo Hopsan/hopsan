@@ -24,6 +24,13 @@
        inkscape:vp_z="744.09448 : 526.18109 : 1"
        inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
        id="perspective10" />
+    <inkscape:perspective
+       id="perspective2841"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -67,15 +74,16 @@
        height="9.5"
        x="356.64288"
        y="589.07648" />
-    <path
-       sodipodi:type="arc"
-       style="fill:#000000;fill-opacity:1;stroke:none"
-       id="path3585"
-       sodipodi:cx="-0.67796612"
-       sodipodi:cy="7.5141244"
-       sodipodi:rx="3.6723163"
-       sodipodi:ry="3.6723163"
-       d="m 2.9943502,7.5141244 a 3.6723163,3.6723163 0 1 1 -7.3446326,0 3.6723163,3.6723163 0 1 1 7.3446326,0 z"
-       transform="matrix(0.68076924,0,0,0.68076924,361.85441,588.71111)" />
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="358.69849"
+       y="596.83569"
+       id="text2815"><tspan
+         sodipodi:role="line"
+         id="tspan2817"
+         x="358.69849"
+         y="596.83569"
+         style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Apple Garamond Light;-inkscape-font-specification:'Apple Garamond Light,'">C</tspan></text>
   </g>
 </svg>
