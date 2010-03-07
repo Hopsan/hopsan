@@ -62,6 +62,7 @@ private:
     QGraphicsSvgItem *mpIcon;
     GUIComponentNameTextItem *mpNameText;
     GUIComponentSelectionBox *mpSelectionBox;
+    double mTextOffset;
     QGraphicsLineItem *mpTempLine;
     //std::vector<GUIConnector*> mConnectors;        //Inteded to store connectors for each component
 
@@ -84,6 +85,7 @@ public:
     void refreshName();
 
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void focusOutEvent(QFocusEvent *event);
 
 signals:

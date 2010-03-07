@@ -29,6 +29,8 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
     mpParentGraphicsScene->addItem(this);
     mpParentGraphicsView = mpParentGraphicsScene->mpParentProjectTab->mpGraphicsView;
 
+    mTextOffset = 1.1;
+
     QString componentTypeName = parameterData.at(0);
     QString fileName = parameterData.at(1);
     size_t nPorts = parameterData.at(2).toInt();
@@ -49,7 +51,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
     setGeometry(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height());
 
     mpNameText = new GUIComponentNameTextItem(mpCoreComponent, this);
-    mpNameText->setPos(QPointF(mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2, mpIcon->boundingRect().height()));
+    mpNameText->setPos(QPointF(mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2, mTextOffset*mpIcon->boundingRect().height()));
 
     //Sets the ports
     for (size_t i = 0; i < nPorts; ++i)
@@ -160,10 +162,10 @@ double dist(double x1,double y1, double x2, double y2)
 void GUIComponent::fixTextPosition(QPointF pos)
 {
     double x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
-    double y1 = mpIcon->boundingRect().height();
+    double y1 = mTextOffset*mpIcon->boundingRect().height();
 
     double x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
-    double y2 = -mpNameText->boundingRect().height();
+    double y2 = -mTextOffset*mpNameText->boundingRect().height();
 
     double x = mpNameText->mapToParent(pos).x();
     double y = mpNameText->mapToParent(pos).y();
@@ -310,7 +312,7 @@ GUIComponentNameTextItem::GUIComponentNameTextItem(Component* pCoreComponent, QG
     :   QGraphicsTextItem(QString::fromStdString(pCoreComponent->getName()), parent)
 {
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
-    setTextInteractionFlags(Qt::TextEditorInteraction);
+    //setTextInteractionFlags(Qt::TextEditorInteraction);
     mpCoreComponent = pCoreComponent;
 }
 
@@ -319,6 +321,12 @@ void GUIComponentNameTextItem::refreshName()
     setPlainText(QString::fromStdString(mpCoreComponent->getName()));
     //Adjust the position of the text
     emit textMoved(pos());
+}
+
+
+void GUIComponentNameTextItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    setTextInteractionFlags(Qt::TextEditorInteraction);
 }
 
 
@@ -336,6 +344,8 @@ void GUIComponentNameTextItem::focusOutEvent(QFocusEvent *event)
     mpCoreComponent->setName(toPlainText().toStdString());
     //refresh the display name (it may be different from the one you wanted)
     refreshName();
+
+    setTextInteractionFlags(Qt::NoTextInteraction);
 
     QGraphicsTextItem::focusOutEvent(event);
 }
