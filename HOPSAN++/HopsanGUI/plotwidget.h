@@ -26,11 +26,17 @@
 #include <QMainWindow>
 #include <QColor>
 
+
+class VariablePlot;
+
 class PlotWidget : public QMainWindow
 {
     Q_OBJECT
 public:
     PlotWidget(QVector<double> xarray, QVector<double> yarray, QWidget *parent = 0);
+
+    QwtPlotCurve *mpCurve;
+    VariablePlot *mpVariablePlot;
 
     QwtPlotZoomer *zoomer;
     QwtPlotPanner *panner;

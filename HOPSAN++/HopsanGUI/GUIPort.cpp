@@ -174,7 +174,37 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
         y[i] = (this->mpCorePort->getDataVectorPtr()->at(i)).at(nVar);
     }
 
+    QString title;
+    QString xlabel;
+    QString ylabel;
+
+    if (mpCorePort->getNodeType() == "NodeHydraulic")
+    {
+        if (nVar == 0)
+        {
+            title.append("Flow");
+            ylabel.append("Flow, [m^3/s]");
+        }
+        else if (nVar == 1)
+        {
+            title.append("Pressure");
+            ylabel.append("Pressure, [Pa]");
+        }
+    }
+    else if (mpCorePort->getNodeType() == "NodeSignal")
+    {
+            title.append("Signal value");
+            ylabel.append("Value, [-]");
+    }
+
+    title.append(" at component: ").append(QString::fromStdString(mpParentComponent->mpCoreComponent->getName())).append(", port: ").append(QString::fromStdString(mpCorePort->getPortName()));
+    xlabel.append("Time, [s]");
+
     PlotWidget *newPlot = new PlotWidget(time,y,mpParentComponent->mpParentGraphicsView);
+
+    newPlot->mpVariablePlot->setTitle(title);
+    newPlot->mpVariablePlot->setAxisTitle(VariablePlot::yLeft, ylabel);
+    newPlot->mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xlabel);
     newPlot->show();
 
 }

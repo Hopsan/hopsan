@@ -13,15 +13,15 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, QWidget *
     //Create the plot
 
     QString title = "Two Curves";
-    VariablePlot *varPlot = new VariablePlot(centralwidget);
+    mpVariablePlot = new VariablePlot(centralwidget);
 
     // Create and add curves to the plot
-    QwtPlotCurve *curve = new QwtPlotCurve("Curve 1");
+    mpCurve = new QwtPlotCurve("Curve 1");
     QwtArrayData data(xarray,yarray);
-    curve->setData(data);
-    curve->attach(varPlot);
-    curve->setRenderHint(QwtPlotItem::RenderAntialiased);
-    varPlot->replot();
+    mpCurve->setData(data);
+    mpCurve->attach(mpVariablePlot);
+    mpCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
+    mpVariablePlot->replot();
 
     //Create the close button
     QDialogButtonBox *buttonbox = new QDialogButtonBox(QDialogButtonBox::Close);
@@ -31,7 +31,7 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, QWidget *
 //    grid->addWidget(buttonbox,1,0);
 //
 //    centralwidget->setLayout(grid);
-    this->setCentralWidget(varPlot);
+    this->setCentralWidget(mpVariablePlot);
 
     //Create toolbar and toolbutton
     QToolBar *toolBar = new QToolBar(this);
@@ -45,7 +45,7 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, QWidget *
     addToolBar(toolBar);
 
     //Zoom
-    zoomer = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, varPlot->canvas());
+    zoomer = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpVariablePlot->canvas());
     zoomer->setSelectionFlags(QwtPicker::DragSelection | QwtPicker::CornerToCorner);
     zoomer->setRubberBand(QwtPicker::RectRubberBand);
     zoomer->setRubberBandPen(QColor(Qt::green));
@@ -55,7 +55,7 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, QWidget *
     zoomer->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
 
     //Panner
-    panner = new QwtPlotPanner(varPlot->canvas());
+    panner = new QwtPlotPanner(mpVariablePlot->canvas());
     panner->setMouseButton(Qt::MidButton);
 
     enableZoom(false);
