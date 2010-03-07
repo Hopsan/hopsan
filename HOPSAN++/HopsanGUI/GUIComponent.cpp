@@ -58,32 +58,37 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
         double y = parameterData.at(4+3*i).toDouble();
         double rot = parameterData.at(5+3*i).toDouble();
 
-        QString iconPath;
+        QString iconPath("../../HopsanGUI/porticons/");
         if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeSignal")
+        {
+            iconPath.append("SignalPort");
             if (mpCoreComponent->getPortPtrVector().at(i)->getPortType() == "ReadPort")
-                iconPath = "../../HopsanGUI/porticons/SignalPort_read.svg";
+                iconPath.append("_read");
             else
-                iconPath = "../../HopsanGUI/porticons/SignalPort_write.svg";
+                iconPath.append("_write");
+        }
         else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeMechanic")
         {
+            iconPath.append("MechanicPort");
             if (mpCoreComponent->getTypeCQS() == "C")
-                iconPath = "../../HopsanGUI/porticons/MechanicPortC.svg";
+                iconPath.append("C");
             else if (mpCoreComponent->getTypeCQS() == "Q")
-                iconPath = "../../HopsanGUI/porticons/MechanicPortQ.svg";
-            else
-                iconPath = "../../HopsanGUI/porticons/MechanicPort.svg";
+                iconPath.append("Q");
         }
         else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeHydraulic")
         {
+            iconPath.append("HydraulicPort");
             if (mpCoreComponent->getTypeCQS() == "C")
-                iconPath = "../../HopsanGUI/porticons/HydraulicPortC.svg";
+                iconPath.append("C");
             else if (mpCoreComponent->getTypeCQS() == "Q")
-                iconPath = "../../HopsanGUI/porticons/HydraulicPortQ.svg";
-            else
-                iconPath = "../../HopsanGUI/porticons/HydraulicPort.svg";
+                iconPath.append("Q");
         }
         else
+        {
             assert(false);
+        }
+        iconPath.append(".svg");
+
         mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,this));//mpIcon));
 
     }

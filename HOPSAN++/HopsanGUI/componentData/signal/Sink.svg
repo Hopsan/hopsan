@@ -14,7 +14,7 @@
    id="svg3336"
    sodipodi:version="0.32"
    inkscape:version="0.47pre4 r22446"
-   sodipodi:docname="PressureSensor.svg"
+   sodipodi:docname="Sink.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
   <defs
@@ -89,14 +89,14 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="7.9195959"
-     inkscape:cx="5.71828"
-     inkscape:cy="14.219644"
+     inkscape:zoom="14.460211"
+     inkscape:cx="12.458437"
+     inkscape:cy="9.8396307"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1280"
-     inkscape:window-height="951"
+     inkscape:window-width="1274"
+     inkscape:window-height="942"
      inkscape:window-x="0"
      inkscape:window-y="24"
      showguides="true"
@@ -128,32 +128,11 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(-211.82785,-381.42102)">
-    <rect
-       style="fill:none;stroke:#000000;stroke-width:1.49999988;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       id="rect3623"
-       width="30.430845"
-       height="22.98097"
-       x="212.57785"
-       y="382.17102" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 18.814091,22.971294 16.036172,0"
-       id="path3625"
-       transform="translate(201.21364,370.18514)" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 22.602163,27.51698 7.449875,0"
-       id="path3627"
-       transform="translate(201.21364,370.18514)" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 25.380083,31.55759 1.767767,0"
-       id="path3630"
-       transform="translate(201.21364,370.18514)" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 26.832177,22.971294 0,-8.586297"
-       id="path3632"
-       transform="translate(201.21364,370.18514)" />
+       d="m 0,11.98097 c 11.146019,0.771842 10.406788,-6.3541232 14.907924,-4.8299742 4.498533,1.5232686 -0.439952,11.4038632 3.417536,12.2157612 4.753958,1.000581 3.214638,-6.386038 12.656107,-5.950632"
+       id="path2826"
+       transform="translate(211.82785,381.42102)"
+       sodipodi:nodetypes="cssc" />
   </g>
 </svg>
