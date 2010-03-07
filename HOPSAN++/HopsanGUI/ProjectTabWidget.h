@@ -60,7 +60,7 @@ signals:
 
 public slots:
     //void addComponent(QStringList parameterData, QPoint position);
-    //void addComponent(QString parameterType, QPoint position, QString name);
+    void addComponent(QString parameterType, QPoint position, QString name);
     void addComponent(QString parameterType, QPoint position);
     void addConnector(GUIPort *pPort);
     void removeConnection(GUIConnector* pConnector);

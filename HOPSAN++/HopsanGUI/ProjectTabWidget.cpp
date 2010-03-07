@@ -127,27 +127,26 @@ GUIConnector *GraphicsView::getTempConnector()
     return this->mpTempConnector;
 }
 
-//void GraphicsView::addComponent(QString parameterType, QPoint position, QString componentName)
-//{
-//    MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
-//    LibraryWidget *pLibrary = pMainWindow->library;
-//    QStringList parameterData = pLibrary->getParameterData(parameterType);
-//    GUIComponent *guiComponent = new GUIComponent(mpHopsan,parameterData,position,this->mpParentProjectTab->mpGraphicsScene);
-//    guiComponent->mpCoreComponent->setName(componentName.toStdString());
-//
-//    //Core interaction
-//    qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
-//    guiComponent->refreshName();
-//    emit checkMessages();
-//    //
-//
-//    //guiComponent->setPos(this->mapToScene(position));
-//    qDebug() << "GraphicsView: " << guiComponent->parent();
-//
-//     //mLibraryMapPtrs.insert(libraryName, newLibContent);
-//    this->mComponentMap.insert(componentName, guiComponent);
-//    //APAthis->scene()->addItem(guiComponent);
-//}
+void GraphicsView::addComponent(QString parameterType, QPoint position, QString componentName)
+{
+    MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
+    LibraryWidget *pLibrary = pMainWindow->mpLibrary;
+    QStringList parameterData = pLibrary->getParameterData(parameterType);
+    GUIComponent *guiComponent = new GUIComponent(mpHopsan,parameterData,position,this->mpParentProjectTab->mpGraphicsScene);
+    guiComponent->mpCoreComponent->setName(componentName.toStdString());
+
+    //Core interaction
+    this->mpParentProjectTab->mpComponentSystem->addComponent(guiComponent->mpCoreComponent);
+    guiComponent->refreshName();
+    emit checkMessages();
+
+    //guiComponent->setPos(this->mapToScene(position));
+    qDebug() << "GraphicsView: " << guiComponent->parent();
+
+     //mLibraryMapPtrs.insert(libraryName, newLibContent);
+    this->mComponentMap.insert(componentName, guiComponent);
+    //APAthis->scene()->addItem(guiComponent);
+}
 
 
 void GraphicsView::addComponent(QString parameterType, QPoint position)
@@ -275,6 +274,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 
 GUIComponent *GraphicsView::getComponent(QString name)
 {
+    qDebug() << mComponentMap.size();
     return mComponentMap.find(name).value();
 }
 
@@ -624,7 +624,7 @@ void ProjectTabWidget::loadModel()
                 inputStream >> componentName;
                 inputStream >> posX;
                 inputStream >> posY;
-                pCurrentTab->mpGraphicsView->addComponent(QString(componentType.c_str()), QPoint(posX, posY));//, QString(componentName.c_str()));
+                pCurrentTab->mpGraphicsView->addComponent(QString(componentType.c_str()), QPoint(posX, posY), QString(componentName.c_str()));
             }
             if ( inputWord == "CONNECT" )
             {
@@ -633,9 +633,13 @@ void ProjectTabWidget::loadModel()
                 inputStream >> startPortNumber;
                 inputStream >> endComponentName;
                 inputStream >> endPortNumber;
+                qDebug() << "DEBUG1";
                 pCurrentView->addConnector(pCurrentView->getComponent(QString(startComponentName.c_str()))->getPort(startPortNumber));
+                qDebug() << "DEBUG2";
                 GUIConnector *pTempConnector = pCurrentView->getTempConnector();
+                qDebug() << "DEBUG3";
                 pCurrentView->scene()->addItem(pTempConnector);
+                qDebug() << "DEBUG4";
                 while(inputStream >> inputWord)
                 {
                     if(inputWord == "VERTICAL")
