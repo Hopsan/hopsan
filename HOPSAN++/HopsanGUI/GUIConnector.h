@@ -43,7 +43,7 @@ public slots:
     void deleteMe();
     void deleteMeIfMeIsActive();
     void updateLine(int);
-    void doSelect();
+    void doSelect(bool lineSelected);
 
 signals:
     void endPortConnected();

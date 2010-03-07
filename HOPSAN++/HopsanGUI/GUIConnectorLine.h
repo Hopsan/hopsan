@@ -29,7 +29,7 @@ signals:
     void lineMoved(int);
     void lineHoverEnter();
     void lineHoverLeave();
-    void lineSelected();
+    void lineSelected(bool isSelected);
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
