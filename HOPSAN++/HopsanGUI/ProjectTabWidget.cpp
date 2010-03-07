@@ -583,6 +583,9 @@ void ProjectTabWidget::loadModel()
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Model File"),
                                                          fileDialogOpenDir.currentPath(),
                                                          tr("Hopsan Model Files (*.hmf)"));
+    if (modelFileName.isEmpty())
+        return;
+
     qDebug() << "Opening model file: " << modelFileName.toStdString().c_str();
 
     std::ifstream modelFile (modelFileName.toStdString().c_str());

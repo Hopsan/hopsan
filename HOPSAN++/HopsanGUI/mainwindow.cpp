@@ -145,7 +145,7 @@ MainWindow::MainWindow(QWidget *parent)
     menuFile->addAction(actionClose);
 
     menuLibs->addAction(actionLoadLibs);
-    menuLibs->addAction(actionOpen);
+    //menuLibs->addAction(actionOpen);
 
     menuSimulation->addAction(actionSimulate);
 
