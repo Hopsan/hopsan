@@ -1141,51 +1141,58 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
 //! @todo whay about system ports they are somewaht speciall
 void ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 {
-    //! @todo some simple error handling (are the ports really connected and such)
-    cout << "disconnecting " << pPort1->mpComponent->getName() << " " << pPort1->getPortName() << "  and  " << pPort2->mpComponent->getName() << " " << pPort2->getPortName() << endl;
-
-    Node* node_ptr = pPort1->getNodePtr();
-    cout << "nPorts in node: " << node_ptr->mPortPtrs.size() << endl;
-
-    //Remove the port pointer from the node and clear the port if it is not used by someone else
-
-    //If we are only connected to one other port then clear the port and remove the pointer from the node
-    //! @todo we assume that the other port is the one we are disconnecting (should be true but check may be a good idea)
-    if (pPort1->mConnectedPorts.size() <= 1)
-    {
-        node_ptr->removePort(pPort1);
-        pPort1->clearConnection();
-    }
-    else
-    {
-        pPort1->eraseConnectedPort(pPort2);
-    }
-    cout << "nPorts in node after remove 1: " << node_ptr->mPortPtrs.size() << endl;
-
-    if (pPort2->mConnectedPorts.size() <= 1)
-    {
-        node_ptr->removePort(pPort2);
-        pPort2->clearConnection();
-    }
-    else
-    {
-        pPort2->eraseConnectedPort(pPort1);
-    }
-    cout << "nPorts in node after remove 2: " << node_ptr->mPortPtrs.size() << endl;
-
     stringstream ss;
-    ss << "Disconnected: "<< pPort1->mpComponent->getName() << " and " << pPort2->mpComponent->getName();
-    cout << ss.str() << endl;
-    gCoreMessageHandler.addInfoMessage(ss.str());
-
-
-    //If no more connections exist, remove the entier node and free the memory
-    if (node_ptr->mPortPtrs.size() == 0)
+    //! @todo some more advanced error handling (are the ports really connected to each other and such)
+    if (pPort1->isConnected() && pPort2->isConnected())
     {
-        cout << "No more connections to the node exists, deleteing the node" << endl;
-        removeSubNode(node_ptr);
-        delete node_ptr;
-        //! @todo maybe need to let the factory remove it insted of manually, in case of user supplied external nodes
+        cout << "disconnecting " << pPort1->mpComponent->getName() << " " << pPort1->getPortName() << "  and  " << pPort2->mpComponent->getName() << " " << pPort2->getPortName() << endl;
+
+        Node* node_ptr = pPort1->getNodePtr();
+        cout << "nPorts in node: " << node_ptr->mPortPtrs.size() << endl;
+
+        //Remove the port pointer from the node and clear the port if it is not used by someone else
+
+        //If we are only connected to one other port then clear the port and remove the pointer from the node
+        //! @todo we assume that the other port is the one we are disconnecting (should be true but check may be a good idea)
+        if (pPort1->mConnectedPorts.size() <= 1)
+        {
+            node_ptr->removePort(pPort1);
+            pPort1->clearConnection();
+        }
+        else
+        {
+            pPort1->eraseConnectedPort(pPort2);
+        }
+        cout << "nPorts in node after remove 1: " << node_ptr->mPortPtrs.size() << endl;
+
+        if (pPort2->mConnectedPorts.size() <= 1)
+        {
+            node_ptr->removePort(pPort2);
+            pPort2->clearConnection();
+        }
+        else
+        {
+            pPort2->eraseConnectedPort(pPort1);
+        }
+        cout << "nPorts in node after remove 2: " << node_ptr->mPortPtrs.size() << endl;
+
+        ss << "Disconnected: "<< pPort1->mpComponent->getName() << " and " << pPort2->mpComponent->getName();
+        cout << ss.str() << endl;
+        gCoreMessageHandler.addInfoMessage(ss.str());
+
+
+        //If no more connections exist, remove the entier node and free the memory
+        if (node_ptr->mPortPtrs.size() == 0)
+        {
+            cout << "No more connections to the node exists, deleteing the node" << endl;
+            removeSubNode(node_ptr);
+            delete node_ptr;
+            //! @todo maybe need to let the factory remove it insted of manually, in case of user supplied external nodes
+        }
+    }
+    else
+    {
+        gCoreMessageHandler.addInfoMessage("The ports dont seem to be connected, (does nothing)", 1);
     }
 }
 
