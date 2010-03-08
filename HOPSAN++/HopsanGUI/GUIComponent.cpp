@@ -223,10 +223,26 @@ QString GUIComponent::getName()
 }
 
 //! This function sets the desired component name
-void GUIComponent::setName(QString name)
+void GUIComponent::setName(QString newName)
 {
-    mpCoreComponent->setName(name.toStdString());
-    refreshName();
+    QString oldName = getName();
+    //If name same as before do nothing
+    if (newName != oldName)
+    {
+        //If the old name has not already been changed, let it decide our new name
+        //Need this to prevent risk of loop between rename and this function (rename cals this one again)
+        if (mpParentGraphicsView->haveComponent(oldName))
+        {
+            //Rename
+            mpParentGraphicsView->renameComponent(oldName, newName);
+        }
+        else
+        {
+            //Set name for real
+            mpCoreComponent->setName(newName.toStdString());
+            refreshName();
+        }
+    }
 }
 
 GUIPort *GUIComponent::getPort(int number)

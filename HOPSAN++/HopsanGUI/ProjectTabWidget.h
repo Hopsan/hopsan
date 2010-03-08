@@ -62,6 +62,8 @@ public slots:
     //void addComponent(QStringList parameterData, QPoint position);
     void addComponent(QString parameterType, QPoint position, QString name=QString());
     void deleteComponent(QString componentName);
+    bool haveComponent(QString name);
+    void renameComponent(QString oldName, QString newName);
 
     void addConnector(GUIPort *pPort);
     void removeConnector(GUIConnector* pConnector);

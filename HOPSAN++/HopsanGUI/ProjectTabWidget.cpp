@@ -159,12 +159,54 @@ void GraphicsView::deleteComponent(QString componentName)
     //qDebug() << "In delete component";
     QMap<QString, GUIComponent *>::iterator it;
     it = mComponentMap.find(componentName);
-    GUIComponent* c_ptr = it.value();
-    mComponentMap.erase(it);
-    c_ptr->mpCoreComponent->getSystemParent()->removeSubComponent(c_ptr->mpCoreComponent, true);
-    scene()->removeItem(c_ptr);
-    delete(c_ptr);
-    emit checkMessages();
+    if (it != mComponentMap.end())
+    {
+        GUIComponent* c_ptr = it.value();
+        mComponentMap.erase(it);
+        c_ptr->mpCoreComponent->getSystemParent()->removeSubComponent(c_ptr->mpCoreComponent, true);
+        scene()->removeItem(c_ptr);
+        delete(c_ptr);
+        emit checkMessages();
+    }
+    else
+    {
+        qDebug() << "In delete component: could not find component with name " << componentName;
+    }
+}
+
+//! This function is used to rename a GUI Component (including key rename in component map)
+void GraphicsView::renameComponent(QString oldName, QString newName)
+{
+    //First find record with old name
+    QMap<QString, GUIComponent *>::iterator it = mComponentMap.find(oldName);
+    if (it != mComponentMap.end())
+    {
+        //Make a backup copy
+        GUIComponent* c_ptr = it.value();
+        //Erase old record
+        mComponentMap.erase(it);
+        //Rename (core rename will be handled by core)
+        c_ptr->setName(newName);
+        //Re insert
+        mComponentMap.insert(c_ptr->getName(), c_ptr);
+        qDebug() << "GUI rename: " << oldName << " " << c_ptr->getName();
+    }
+    else
+    {
+        qDebug() << "Old name: " << oldName << " not found";
+    }
+}
+
+bool GraphicsView::haveComponent(QString name)
+{
+    if (mComponentMap.count(name) > 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 
