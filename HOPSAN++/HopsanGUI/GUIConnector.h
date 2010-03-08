@@ -50,7 +50,6 @@ signals:
 
 protected:
     virtual void SetEndPos(qreal x2, qreal y2);
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 private:
     std::vector<GUIConnectorLine*> mLines;

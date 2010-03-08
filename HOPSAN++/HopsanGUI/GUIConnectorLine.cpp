@@ -94,7 +94,7 @@ QVariant GUIConnectorLine::itemChange(GraphicsItemChange change, const QVariant 
 {
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
-        qDebug() << "Line selection status changed\n";
+        qDebug() << "Line selection status = " << this->isSelected();
         emit lineSelected(this->isSelected());
     }
     else if (change == QGraphicsItem::ItemPositionHasChanged)

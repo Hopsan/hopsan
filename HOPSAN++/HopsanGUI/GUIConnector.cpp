@@ -17,7 +17,7 @@
 GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, QPen passivePen, QPen activePen, QPen hoverPen, GraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
-    setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
+    setFlags(QGraphicsItem::ItemIsFocusable);
     this->setPos(x1, y1);
     this->startPos.setX(x1);
     this->startPos.setY(y1);
@@ -34,7 +34,6 @@ GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, QPen passiveP
                                       mPassivePen, mActivePen, mHoverPen, 0, this);
     mLines.push_back(mpTempLine);
     connect(mLines[mLines.size()-1],SIGNAL(lineSelected(bool)),this,SLOT(doSelect(bool)));
-    connect(mLines[mLines.size()-1],SIGNAL(lineClicked()),this,SLOT(doSelect()));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
     this->setActive();
@@ -99,8 +98,16 @@ void GUIConnector::doSelect(bool lineSelected)
 {
     if(this->mEndPortConnected)     //Non-finished lines shall not be selectable
     {
-        this->setSelected(lineSelected);
-        qDebug() << "doSelect()" << lineSelected;
+        if(lineSelected)
+        {
+            this->setActive();
+            qDebug() << "Activating line";
+        }
+        else
+        {
+            this->setPassive();
+            qDebug() << "Passivating line";
+        }
     }
 }
 
@@ -230,7 +237,6 @@ void GUIConnector::addLine()
     mLines.push_back(mpTempLine);
     mLines[mLines.size()-2]->setPassive();
     connect(mLines[mLines.size()-1],SIGNAL(lineSelected(bool)),this,SLOT(doSelect(bool)));
-    //connect(mLines[mLines.size()-1],SIGNAL(lineClicked()),this,SLOT(doSelect()));
     connect(mLines[mLines.size()-1],SIGNAL(lineMoved(int)),this, SLOT(updateLine(int)));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
@@ -263,7 +269,7 @@ void GUIConnector::addFixedLine(int length, int heigth, GUIConnectorLine::geomet
     mpTempLine->setActive();
     mLines.push_back(mpTempLine);
     mLines[mLines.size()-2]->setPassive();
-    connect(mLines[mLines.size()-1],SIGNAL(lineClicked(bool)),this,SLOT(doSelect(bool)));
+    connect(mLines[mLines.size()-1],SIGNAL(lineSelected(bool)),this,SLOT(doSelect(bool)));
     connect(mLines[mLines.size()-1],SIGNAL(lineMoved(int)),this, SLOT(updateLine(int)));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
@@ -312,11 +318,6 @@ void GUIConnector::updateLine(int lineNumber)
     {
         if(getLine(lineNumber)->getGeometry()==GUIConnectorLine::HORIZONTAL)
         {
-//            getLine(0)->setLine(startPos.x(),
-//                                startPos.y(),
-//                                getLine(1)->line().x1(),
-//                                startPos.y());
-
             getLine(lineNumber-1)->setLine(getLine(lineNumber-1)->line().x1(),
                                            getLine(lineNumber-1)->line().y1(),
                                            getLine(lineNumber-1)->line().x2(),
@@ -369,22 +370,4 @@ GUIConnectorLine *GUIConnector::getThisLine()
 GUIConnectorLine *GUIConnector::getLine(int line)
 {
     return mLines[line];
-}
-
-
-QVariant GUIConnector::itemChange(GraphicsItemChange change, const QVariant &value)
-{
-    if (change == QGraphicsItem::ItemSelectedHasChanged)
-    {
-        qDebug() << "Connector selection status = " << this->isSelected();
-        if(!this->isSelected())
-        {
-            this->setPassive();
-        }
-        else
-        {
-            this->setActive();
-        }
-    }
-    return value;
 }
