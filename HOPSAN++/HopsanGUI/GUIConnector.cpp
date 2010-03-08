@@ -34,7 +34,7 @@ GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, QPen passiveP
                                       mPassivePen, mActivePen, mHoverPen, 0, this);
     mLines.push_back(mpTempLine);
     connect(mLines[mLines.size()-1],SIGNAL(lineSelected(bool)),this,SLOT(doSelect(bool)));
-    //connect(mLines[mLines.size()-1],SIGNAL(lineClicked()),this,SLOT(doSelect()));
+    connect(mLines[mLines.size()-1],SIGNAL(lineClicked()),this,SLOT(doSelect()));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
     this->setActive();
@@ -71,6 +71,8 @@ void GUIConnector::setEndPort(GUIPort *port)
     {
         mLines[i]->setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemUsesExtendedStyleOption | QGraphicsItem::ItemIsSelectable);
     }
+    mLines[0]->setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption | QGraphicsItem::ItemIsSelectable);
+    mLines[mLines.size()-1]->setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption | QGraphicsItem::ItemIsSelectable);
     emit endPortConnected();
 }
 
