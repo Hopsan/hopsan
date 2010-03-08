@@ -1154,18 +1154,18 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
     //Check if there are some problems with the connection
     if (n_PowerPorts > 2)
     {
-        cout << "Trying to connect more than two PowerPorts to same node" << endl;
-        assert(false);
+        gCoreMessageHandler.addErrorMessage("Trying to connect more than two PowerPorts to same node");
+        return false;
     }
     if (n_WritePorts > 1)
     {
-        cout << "Trying to connect more than one WritePort to same node" << endl;
-        assert(false);
+        gCoreMessageHandler.addErrorMessage("Trying to connect more than one WritePort to same node");
+        return false;
     }
     if ((n_PowerPorts > 0) && (n_WritePorts > 0))
     {
-        cout << "Trying to connect WritePort and PowerPort to same node" << endl;
-        assert(false);
+        gCoreMessageHandler.addErrorMessage("Trying to connect WritePort and PowerPort to same node");
+        return false;
     }
 //    if ((n_PowerPorts == 0) && (n_WritePorts == 0))
 //    {
