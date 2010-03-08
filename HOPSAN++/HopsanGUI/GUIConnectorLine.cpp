@@ -16,7 +16,7 @@
 #include <QGraphicsLineItem>
 #include <QGraphicsItem>
 #include <QDebug>
-
+#include <QStyleOptionGraphicsItem>
 #include "GUIConnectorLine.h"
 
 
@@ -35,6 +35,13 @@ GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen 
 
 GUIConnectorLine::~GUIConnectorLine()
 {
+}
+
+void GUIConnectorLine::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w)
+{
+    QStyleOptionGraphicsItem *_o = const_cast<QStyleOptionGraphicsItem*>(o);
+    _o->state &= ~QStyle::State_Selected;
+    QGraphicsLineItem::paint(p,_o,w);
 }
 
 void GUIConnectorLine::setActive()
@@ -59,13 +66,16 @@ void GUIConnectorLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void GUIConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-    if(this->mParentConnectorEndPortConnected && this->getGeometry()==GUIConnectorLine::VERTICAL)
+    if(this->flags().testFlag((QGraphicsItem::ItemIsMovable)))
     {
-        this->setCursor(Qt::SizeHorCursor);
-    }
-    else if(this->mParentConnectorEndPortConnected && this->getGeometry()==GUIConnectorLine::HORIZONTAL)
-    {
-           this->setCursor(Qt::SizeVerCursor);
+        if(this->mParentConnectorEndPortConnected && this->getGeometry()==GUIConnectorLine::VERTICAL)
+        {
+            this->setCursor(Qt::SizeHorCursor);
+        }
+        else if(this->mParentConnectorEndPortConnected && this->getGeometry()==GUIConnectorLine::HORIZONTAL)
+        {
+               this->setCursor(Qt::SizeVerCursor);
+        }
     }
     emit lineHoverEnter();
 }

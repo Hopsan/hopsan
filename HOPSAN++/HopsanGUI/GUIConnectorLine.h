@@ -20,6 +20,7 @@ public:
     geometryType getGeometry();
     void setGeometry(geometryType geometry);
     int getLineNumber();
+    void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w);
 
 public slots:
     void setConnected();
