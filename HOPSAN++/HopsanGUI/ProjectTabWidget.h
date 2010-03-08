@@ -64,7 +64,7 @@ public slots:
     void deleteComponent(QString componentName);
 
     void addConnector(GUIPort *pPort);
-    void removeConnection(GUIConnector* pConnector);
+    void removeConnector(GUIConnector* pConnector);
 
     //QByteArray *data;
     //QDataStream *stream;

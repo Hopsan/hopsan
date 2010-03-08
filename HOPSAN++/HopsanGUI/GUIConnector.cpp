@@ -14,7 +14,7 @@
 #include <QGraphicsScene>
 #include <vector>
 
-GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, QPen passivePen, QPen activePen, QPen hoverPen, QGraphicsView *parentView, QGraphicsItem *parent)
+GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, QPen passivePen, QPen activePen, QPen hoverPen, GraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
     setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
@@ -44,6 +44,8 @@ GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, QPen passiveP
 
 GUIConnector::~GUIConnector()
 {
+    mLines.clear();
+    //! @todo more cleanup
 }
 
 void GUIConnector::SetEndPos(qreal x2, qreal y2)
@@ -291,9 +293,7 @@ int GUIConnector::getNumberOfLines()
 
 void GUIConnector::deleteMe()
 {
-    mLines.clear();
-    this->scene()->removeItem(this);
-    delete(this);
+    mpParentView->removeConnector(this);
 }
 
 

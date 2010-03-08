@@ -315,13 +315,15 @@ void GraphicsView::addConnector(GUIPort *pPort)
 }
 
 
-void GraphicsView::removeConnection(GUIConnector* pConnector)
+void GraphicsView::removeConnector(GUIConnector* pConnector)
 {
     //! @todo some error handling both ports must exist and be connected to each other
     //Core interaction
     mpModel->disconnect(pConnector->getStartPort()->mpCorePort, pConnector->getEndPort()->mpCorePort);
     emit checkMessages();
     //
+    scene()->removeItem(pConnector);
+    delete pConnector;
 }
 
 
