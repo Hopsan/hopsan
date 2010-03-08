@@ -54,7 +54,7 @@
      inkscape:cx="28.731106"
      inkscape:cy="32.15747"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="text2821"
      showgrid="false"
      inkscape:window-width="1274"
      inkscape:window-height="942"
@@ -96,16 +96,13 @@
        x="203.61275"
        y="374.97369"
        ry="6.4397225" />
-    <text
-       xml:space="preserve"
+    <g
        style="font-size:36px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-       x="212.37257"
-       y="409.55695"
-       id="text2821"><tspan
-         sodipodi:role="line"
-         id="tspan2823"
-         x="212.37257"
-         y="409.55695"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Times New Roman;-inkscape-font-specification:'Times New Roman,'">M</tspan></text>
+       id="text2821">
+      <path
+         d="m 227.10304,409.55695 -9.21093,-20.05664 0,15.92578 c -1e-5,1.46484 0.15819,2.3789 0.4746,2.74218 0.43359,0.49219 1.11914,0.73829 2.05665,0.73829 l 0.84375,0 0,0.65039 -8.29688,0 0,-0.65039 0.84375,0 c 1.00781,0 1.72265,-0.30469 2.14453,-0.91407 0.25781,-0.375 0.38672,-1.23046 0.38672,-2.5664 l 0,-15.57422 c 0,-1.05467 -0.11719,-1.81639 -0.35156,-2.28516 -0.16407,-0.33982 -0.46876,-0.62107 -0.91406,-0.84375 -0.4336,-0.23435 -1.13673,-0.35154 -2.10938,-0.35156 l 0,-0.65039 6.75,0 8.64844,18.65039 8.50781,-18.65039 6.75,0 0,0.65039 -0.82617,0 c -1.01956,2e-5 -1.74026,0.30471 -2.16211,0.91406 -0.25784,0.37502 -0.38675,1.23049 -0.38672,2.56641 l 0,15.57422 c -3e-5,1.46484 0.16403,2.3789 0.49219,2.74218 0.43356,0.49219 1.11911,0.73829 2.05664,0.73829 l 0.82617,0 0,0.65039 -10.125,0 0,-0.65039 0.84375,0 c 1.01951,0 1.73435,-0.30469 2.14453,-0.91407 0.25779,-0.375 0.3867,-1.23046 0.38672,-2.5664 l 0,-15.92578 -9.19336,20.05664 -0.58008,0"
+         style="font-variant:normal;font-stretch:normal;font-family:Times New Roman;-inkscape-font-specification:'Times New Roman,'"
+         id="path2819" />
+    </g>
   </g>
 </svg>
