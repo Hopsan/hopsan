@@ -40,7 +40,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
     //
 
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
-    setFocusPolicy(Qt::ClickFocus);
+    setFocusPolicy(Qt::StrongFocus);
     this->setAcceptHoverEvents(true);
 
     this->setZValue(10);
@@ -196,6 +196,7 @@ void GUIComponent::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
 GUIComponent::~GUIComponent()
 {
     //delete widget;
+    emit componentDeleted();
 }
 
 
