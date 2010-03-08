@@ -696,7 +696,8 @@ void ProjectTabWidget::saveModel()
     QMap<QString, GUIComponent *>::iterator it;
     for(it = pCurrentView->mComponentMap.begin(); it!=pCurrentView->mComponentMap.end(); ++it)
     {
-        modelFile << "COMPONENT " << it.value()->getTypeName().toStdString() << " " << it.key().toStdString() << std::endl;
+        modelFile << "COMPONENT " << it.value()->getTypeName().toStdString() << " " << it.key().toStdString()
+                  << " " << it.value()->x() << " " << it.value()->y() << std::endl;
     }
 
 }
