@@ -16,6 +16,7 @@
 #include "LibraryWidget.h"
 #include "mainwindow.h"
 #include "SimulationSetupWidget.h"
+#include "MessageWidget.h"
 
 #include <QtGui>
 
@@ -623,8 +624,11 @@ bool ProjectTabWidget::closeAllProjectTabs()
 //! Simulates the model in current open tab.
 void ProjectTabWidget::simulateCurrent()
 {
-    if (!currentWidget()) //Avoid crash if no tab is open at simulation time
+    if (!currentWidget())
+    {
+        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("There is no open system to simulate"));
         return;
+    }
 
     ProjectTab *pCurrentTab = getCurrentTab();
 
