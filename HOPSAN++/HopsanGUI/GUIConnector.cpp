@@ -98,7 +98,7 @@ void GUIConnector::doSelect(bool lineSelected)
     if(this->mEndPortConnected)     //Non-finished lines shall not be selectable
     {
         this->setSelected(lineSelected);
-        qDebug() << "doSelect()";
+        qDebug() << "doSelect()" << lineSelected;
     }
 }
 
@@ -374,7 +374,7 @@ GUIConnectorLine *GUIConnector::getLine(int line)
 
 QVariant GUIConnector::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    if (change == QGraphicsItem::ItemSelectedChange)
+    if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
         qDebug() << "Connector selection status = " << this->isSelected();
         if(!this->isSelected())

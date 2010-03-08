@@ -294,10 +294,10 @@ void GUIComponent::keyPressEvent( QKeyEvent *event )
 
 QVariant GUIComponent::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    if (change == QGraphicsItem::ItemSelectedChange)
+    if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
         qDebug() << "Component selected status = " << this->isSelected();
-        if (!this->isSelected())
+        if (this->isSelected())
         {
             this->mpSelectionBox->setActive();
         }
