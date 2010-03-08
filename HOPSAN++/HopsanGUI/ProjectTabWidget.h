@@ -49,8 +49,8 @@ public:
     bool mIsCreatingConnector;
     GUIComponent *getComponent(QString name);
     GUIConnector *getTempConnector();
-
     ProjectTab *mpParentProjectTab;
+    QMap<QString, GUIComponent *> mComponentMap;
 
 signals:
     void draggingSomething();
@@ -84,8 +84,7 @@ private:
     HopsanEssentials *mpHopsan;
     ComponentSystem *mpModel;
     //! @todo QMap no good means problem if we rename need to loop around the rename like in coore
-    QMap<QString, GUIComponent *> mComponentMap;
-};
+ };
 
 
 class ProjectTabWidget; //Forward declaration
@@ -136,6 +135,7 @@ public slots:
     bool closeAllProjectTabs();
     void simulateCurrent();
     void loadModel();
+    void saveModel();
 
 signals:
     void checkMessages();

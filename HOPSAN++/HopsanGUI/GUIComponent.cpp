@@ -31,12 +31,12 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
 
     mTextOffset = 1.1;
 
-    QString componentTypeName = parameterData.at(0);
+    mComponentTypeName = parameterData.at(0);
     QString fileName = parameterData.at(1);
     size_t nPorts = parameterData.at(2).toInt();
 
     //Core interaction
-    mpCoreComponent = hopsan->CreateComponent(componentTypeName.toStdString());
+    mpCoreComponent = hopsan->CreateComponent(mComponentTypeName.toStdString());
     //
 
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
@@ -47,7 +47,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
     mpIcon = new QGraphicsSvgItem(fileName,this);
 
     std::cout << "GUIcomponent: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
-    std::cout << "GUIcomponent: " << componentTypeName.toStdString() << std::endl;
+    std::cout << "GUIcomponent: " << mComponentTypeName.toStdString() << std::endl;
 
     setGeometry(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height());
 
@@ -245,6 +245,13 @@ GUIPort *GUIComponent::getPort(int number)
 //        delete(this);
 //    }
 //}
+
+
+QString GUIComponent::getTypeName()
+{
+    return this->mComponentTypeName;
+}
+
 
 void GUIComponent::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {

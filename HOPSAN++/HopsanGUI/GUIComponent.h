@@ -37,6 +37,7 @@ public:
     void refreshName();
     QString getName();
     void setName(QString name);
+    QString getTypeName();
 
     void showPorts(bool visible);
     GUIPort *getPort(int number);
@@ -72,6 +73,7 @@ private:
     //std::vector<GUIConnector*> mConnectors;        //Inteded to store connectors for each component
 
     QList<GUIPort*> mPortListPtrs;
+    QString mComponentTypeName;
 
 private slots:
     void fixTextPosition(QPointF pos);

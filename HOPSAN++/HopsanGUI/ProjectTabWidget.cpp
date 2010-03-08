@@ -494,6 +494,7 @@ void ProjectTabWidget::saveProjectTab(int index)
         std::cout << "ProjectTabWidget: " << qPrintable(QString("Project: ").append(tabName).append(QString(" saved"))) << std::endl;
         currentTab->mIsSaved = true;
     }
+    this->saveModel();
 }
 
 
@@ -677,3 +678,26 @@ void ProjectTabWidget::loadModel()
         }
     }
 }
+
+
+
+void ProjectTabWidget::saveModel()
+{
+    ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
+    GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
+
+    QDir fileDialogSaveDir;
+    QString modelFileName = QFileDialog::getSaveFileName(this, tr("Save Model File"),
+                                                         fileDialogSaveDir.currentPath(),
+                                                         tr("Hopsan Model Files (*.hmf)"));
+    std::ofstream modelFile (modelFileName.toStdString().c_str());
+    QFileInfo fileInfo(modelFileName);
+
+    QMap<QString, GUIComponent *>::iterator it;
+    for(it = pCurrentView->mComponentMap.begin(); it!=pCurrentView->mComponentMap.end(); ++it)
+    {
+        modelFile << "COMPONENT " << it.value()->getTypeName().toStdString() << " " << it.key().toStdString() << std::endl;
+    }
+
+}
+
