@@ -17,7 +17,7 @@ SOURCES += main.cpp \
     GUIComponentSelectionBox.cpp \
     ParameterDialog.cpp \
     MessageWidget.cpp \
-    simulationsetupwidget.cpp
+    SimulationSetupWidget.cpp
 HEADERS += mainwindow.h \
     listwidgetitem.h \
     ProjectTabWidget.h \
@@ -31,7 +31,7 @@ HEADERS += mainwindow.h \
     GUIComponentSelectionBox.h \
     ParameterDialog.h \
     MessageWidget.h \
-    simulationsetupwidget.h
+    SimulationSetupWidget.h
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE

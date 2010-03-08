@@ -15,7 +15,7 @@
 #include "GUIConnector.h"
 #include "LibraryWidget.h"
 #include "mainwindow.h"
-#include "simulationsetupwidget.h"
+#include "SimulationSetupWidget.h"
 
 #include <QtGui>
 
@@ -412,7 +412,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     //
 
     double timeStep = mpComponentSystem->getDesiredTimeStep();
-    mpParentProjectTabWidget->mpParentMainWindow->mpSimulationGroup->setTimeStepLabel(timeStep);
+    mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->setTimeStepLabel(timeStep);
 
     mIsSaved = true;
 
@@ -628,8 +628,8 @@ void ProjectTabWidget::simulateCurrent()
 
     ProjectTab *pCurrentTab = getCurrentTab();
 
-    double startTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->mpSimulationGroup->getStartTimeLabel();
-    double finishTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->mpSimulationGroup->getFinishTimeLabel();
+    double startTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getStartTimeLabel();
+    double finishTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getFinishTimeLabel();
 
     pCurrentTab->mpComponentSystem->initialize(startTime, finishTime);
     pCurrentTab->mpComponentSystem->simulate(startTime, finishTime);

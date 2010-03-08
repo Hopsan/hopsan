@@ -37,7 +37,7 @@ public:
     ProjectTabWidget *mpProjectTabs;
     QGridLayout *mpTabgrid;
     LibraryWidget *mpLibrary;
-    SimulationSetupWidget *mpSimulationGroup;
+    SimulationSetupWidget *mpSimulationSetupWidget;
     QMenuBar *menubar;
     QMenu *menuFile;
     QMenu *menuNew;

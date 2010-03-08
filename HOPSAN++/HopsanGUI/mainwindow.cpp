@@ -33,7 +33,7 @@
 #include "listwidgetitem.h"
 #include "ProjectTabWidget.h"
 #include "LibraryWidget.h"
-#include "simulationsetupwidget.h"
+#include "SimulationSetupWidget.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -59,8 +59,8 @@ MainWindow::MainWindow(QWidget *parent)
     messagedock->setWidget(mpMessageWidget);
     addDockWidget(Qt::BottomDockWidgetArea, messagedock);
 
-    //Create a simulation group
-    mpSimulationGroup = new SimulationSetupWidget(tr("Simulation setup"), this);
+    //Create a SimulationSetupWidget
+    mpSimulationSetupWidget = new SimulationSetupWidget(tr("Simulation setup"), this);
 
     //Create the main tab container, need at least one tab
     mpProjectTabs = new ProjectTabWidget(this);
@@ -73,7 +73,7 @@ MainWindow::MainWindow(QWidget *parent)
     libdock->setWidget(mpLibrary);
     addDockWidget(Qt::LeftDockWidgetArea, libdock);
 
-    mpCentralgrid->addWidget(mpSimulationGroup,0,0);
+    mpCentralgrid->addWidget(mpSimulationSetupWidget,0,0);
     mpCentralgrid->addWidget(mpProjectTabs,1,0);
 
     mpCentralwidget->setLayout(mpCentralgrid);
@@ -190,7 +190,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->connect(this->actionPlot,SIGNAL(triggered()),SLOT(plot()));
 
     this->connect(this->actionSimulate,SIGNAL(triggered()),mpProjectTabs,SLOT(simulateCurrent()));
-    connect(mpSimulationGroup->mpSimulateButton, SIGNAL(released()), mpProjectTabs, SLOT(simulateCurrent()));
+    connect(mpSimulationSetupWidget->mpSimulateButton, SIGNAL(released()), mpProjectTabs, SLOT(simulateCurrent()));
 
 }
 

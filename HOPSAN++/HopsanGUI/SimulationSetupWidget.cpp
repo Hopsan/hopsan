@@ -9,7 +9,7 @@
 
 #include <iostream>
 #include <QtGui>
-#include "simulationsetupwidget.h"
+#include "SimulationSetupWidget.h"
 #include "mainwindow.h"
 #include "ProjectTabWidget.h"
 
