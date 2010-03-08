@@ -137,17 +137,17 @@ private:
     {
         friend class ComponentSystem;
     private:
-        //!This is a helper class for SubComponentStorage containing some component info
-        class SubComponentInfo
-        {
-        public:
-            string cqs_type;
-            int idx;
-        };
+//        //!This is a helper class for SubComponentStorage containing some component info
+//        class SubComponentInfo
+//        {
+//        public:
+//            string cqs_type;
+//            int idx;
+//        };
 
         string modifyName(string name);
 
-        map<string, SubComponentInfo> mSubComponentMap;
+        map<string, Component*> mSubComponentMap;
 
 
     public:

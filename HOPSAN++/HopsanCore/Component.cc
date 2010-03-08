@@ -406,70 +406,41 @@ string ComponentSystem::SubComponentStorage::modifyName(string name)
 void ComponentSystem::SubComponentStorage::add(Component* pComponent)
 {
     //First check if the name already exists, in that case change the suffix
-    string tempname = pComponent->getName();
-    //cout << "initial tempname: " << tempname << endl;
-
-    tempname = modifyName(tempname);
+    string modname = modifyName(pComponent->getName());
+    pComponent->setName(modname);
 
     //Add to the cqs component vectors, remember te idx for the info
-    int idx;
     if (pComponent->isComponentC())
     {
         mComponentCptrs.push_back(pComponent);
-        idx = mComponentCptrs.size()-1;
     }
     else if (pComponent->isComponentQ())
     {
         mComponentQptrs.push_back(pComponent);
-        idx = mComponentQptrs.size()-1;
     }
     else if (pComponent->isComponentSignal())
     {
         mComponentSignalptrs.push_back(pComponent);
-        idx = mComponentSignalptrs.size()-1;
     }
     else
     {
-        //! @todo use exception instead
         cout << "Trying to add module of other type than c, q or signal" << endl;
         assert(false);
     }
 
-    pComponent->setName(tempname);
-    SubComponentInfo info;
-    info.cqs_type = pComponent->getTypeCQS();
-    info.idx = idx;
-
-    mSubComponentMap.insert(pair<string, SubComponentInfo>(tempname, info));
+    mSubComponentMap.insert(pair<string, Component*>(modname, pComponent));
 }
 
 Component* ComponentSystem::SubComponentStorage::get(string name)
 {
-    map<string, SubComponentInfo>::iterator it;
+    map<string, Component*>::iterator it;
     it = mSubComponentMap.find(name);
     if (it != mSubComponentMap.end())
     {
-        if (it->second.cqs_type == "C")
-        {
-            return mComponentCptrs[it->second.idx];
-        }
-        else if (it->second.cqs_type == "Q")
-        {
-            return mComponentQptrs[it->second.idx];
-        }
-        else if (it->second.cqs_type == "S")
-        {
-            return mComponentSignalptrs[it->second.idx];
-        }
-        else
-        {
-            cout << "This should not happen neither C Q or S type is set in the info" << endl;
-            assert(false);
-        }
+        return it->second;
     }
     else
     {
-        //! @todo exception or similar instead
         cout << "The component you requested: " << name << " does not exist" << endl;
         assert(false);
     }
@@ -477,40 +448,47 @@ Component* ComponentSystem::SubComponentStorage::get(string name)
 
 void ComponentSystem::SubComponentStorage::erase(string name)
 {
-    map<string, SubComponentInfo>::iterator it;
+    map<string, Component*>::iterator it;
     it = mSubComponentMap.find(name);
     if (it != mSubComponentMap.end())
     {
-        if (it->second.cqs_type == "C")
+        vector<Component*>::iterator cit; //Component iterator
+        if (it->second->isComponentC())
         {
-            vector<Component*>::iterator cit = mComponentCptrs.begin();
-            for (int i=0; i < it->second.idx; ++i)
+            for (cit = mComponentCptrs.begin(); cit != mComponentCptrs.end(); ++cit)
             {
-                ++cit;
+                if ( (*cit)->getName() == name )
+                {
+                    mComponentCptrs.erase(cit);
+                    break;
+                }
             }
-            mComponentCptrs.erase(cit);
         }
-        else if (it->second.cqs_type == "Q")
+        else if (it->second->isComponentQ())
         {
-            vector<Component*>::iterator cit = mComponentQptrs.begin();
-            for (int i=0; i < it->second.idx; ++i)
+            for (cit = mComponentQptrs.begin(); cit != mComponentQptrs.end(); ++cit)
             {
-                ++cit;
+                if ( (*cit)->getName() == name )
+                {
+                    mComponentQptrs.erase(cit);
+                    break;
+                }
             }
-            mComponentQptrs.erase(cit);
         }
-        else if (it->second.cqs_type == "S")
+        else if (it->second->isComponentSignal())
         {
-            vector<Component*>::iterator cit = mComponentSignalptrs.begin();
-            for (int i=0; i < it->second.idx; ++i)
+            for (cit = mComponentSignalptrs.begin(); cit != mComponentSignalptrs.end(); ++cit)
             {
-                ++cit;
+                if ( (*cit)->getName() == name )
+                {
+                    mComponentSignalptrs.erase(cit);
+                    break;
+                }
             }
-            mComponentSignalptrs.erase(cit);
         }
         else
         {
-            cout << "This should not happen neither C Q or S type is set in the info" << endl;
+            cout << "This should not happen neither C Q or S type" << endl;
             assert(false);
         }
     }
@@ -538,43 +516,26 @@ void ComponentSystem::SubComponentStorage::rename(string old_name, string new_na
 {
     cout << "Trying to rename: " << old_name << " to " << new_name << endl;
     //First find the post in the map where the old name resides, copy the data stored there
-    map<string, SubComponentInfo>::iterator it = mSubComponentMap.find(old_name);
-    SubComponentInfo info;
+    map<string, Component*>::iterator it = mSubComponentMap.find(old_name);
+    Component* temp_c_ptr;
     if (it != mSubComponentMap.end())
     {
         //If found erase old record
-        info = it->second;
+        temp_c_ptr = it->second;
         mSubComponentMap.erase(it);
 
         //insert new (with new name)
         new_name = modifyName(new_name);
         cout << "new name is: " << new_name << endl;
-        mSubComponentMap.insert(pair<string, SubComponentInfo>(new_name, info));
+        mSubComponentMap.insert(pair<string, Component*>(new_name, temp_c_ptr));
 
         //No change the actual component name
-        //Note! we dont want to use setName here as that would create a rename loop
-        //! @todo it might be a good idea to rething all of this renaming stuff, right now its prety strange (but works)
-        if (info.cqs_type == "C")
-        {
-            mComponentCptrs[info.idx]->setName(new_name);
-        }
-        else if (info.cqs_type == "Q")
-        {
-            mComponentQptrs[info.idx]->setName(new_name);
-        }
-        else if (info.cqs_type == "S")
-        {
-            mComponentSignalptrs[info.idx]->setName(new_name);
-        }
-        else
-        {
-            cout << "Error not a C Q or S component (this should not happen" << endl;
-            assert(false);
-        }
+        //! @todo it might be a good idea to rething all of this renaming stuff, right now its prety strange (but works), setname loop
+        temp_c_ptr->setName(new_name);
     }
     else
     {
-        cout << "Error now component with old_name: " << old_name << " found!" << endl;
+        cout << "Error no component with old_name: " << old_name << " found!" << endl;
         assert(false);
     }
 }
@@ -771,7 +732,7 @@ vector<string> ComponentSystem::getSubComponentNames()
 {
     //! @todo for now create a vector of the component names, later maybe we should return a pointer to the real internal map
     vector<string> names;
-    map<string, SubComponentStorage::SubComponentInfo>::iterator it;
+    map<string, Component*>::iterator it;
     for (it = mSubComponentStorage.mSubComponentMap.begin(); it != mSubComponentStorage.mSubComponentMap.end(); ++it)
     {
         names.push_back(it->first);
