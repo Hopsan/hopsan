@@ -60,8 +60,9 @@ signals:
 
 public slots:
     //void addComponent(QStringList parameterData, QPoint position);
-    void addComponent(QString parameterType, QPoint position, QString name);
-    void addComponent(QString parameterType, QPoint position);
+    void addComponent(QString parameterType, QPoint position, QString name=QString());
+    void deleteComponent(QString componentName);
+
     void addConnector(GUIPort *pPort);
     void removeConnection(GUIConnector* pConnector);
 
@@ -82,6 +83,7 @@ private:
     GUIConnector *mpTempConnector;
     HopsanEssentials *mpHopsan;
     ComponentSystem *mpModel;
+    //! @todo QMap no good means problem if we rename need to loop around the rename like in coore
     QMap<QString, GUIComponent *> mComponentMap;
 };
 

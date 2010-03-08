@@ -33,7 +33,11 @@ public:
     ~GUIComponent();
     //QGraphicsView *getParentView();
     void addConnector(GUIConnector *item);
+
     void refreshName();
+    QString getName();
+    void setName(QString name);
+
     void showPorts(bool visible);
     GUIPort *getPort(int number);
 
@@ -50,13 +54,14 @@ protected:
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+    void keyPressEvent( QKeyEvent *event );
 
 signals:
     void componentMoved();
     void componentDeleted();
 
 public slots:
-     void deleteComponent();
+     //void deleteComponent();
 
 private:
     QGraphicsSvgItem *mpIcon;
@@ -78,11 +83,10 @@ class GUIComponentNameTextItem : public QGraphicsTextItem
 {
     Q_OBJECT
 private:
-    Component* mpCoreComponent;
+    GUIComponent* mpParentGUIComponent;
 
 public:
-    GUIComponentNameTextItem(Component* pCoreComponent, QGraphicsItem *parent = 0);
-    void refreshName();
+    GUIComponentNameTextItem(GUIComponent *pParent);
 
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);

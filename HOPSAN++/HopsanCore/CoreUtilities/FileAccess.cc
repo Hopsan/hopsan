@@ -124,19 +124,19 @@ ComponentSystem* FileAccess::loadModel(HopsanEssentials* pHopsan, double *startT
 
                 if ( componentMap.count(firstComponent) > 0 && componentMap.count(secondComponent) > 0 )        //Connecting two components
                 {
-                    componentMap.find(firstComponent)->second->getSystemParent().connect(*componentMap.find(firstComponent)->second, firstPort, *componentMap.find(secondComponent)->second, secondPort);
+                    componentMap.find(firstComponent)->second->getSystemParent()->connect(*componentMap.find(firstComponent)->second, firstPort, *componentMap.find(secondComponent)->second, secondPort);
                 }
                 else if ( componentMap.count(firstComponent) > 0 && componentSystemMap.count(secondComponent) > 0 )     //Connecting component with subsystem
                 {
-                    componentMap.find(firstComponent)->second->getSystemParent().connect(*componentMap.find(firstComponent)->second, firstPort, *componentSystemMap.find(secondComponent)->second, secondPort);
+                    componentMap.find(firstComponent)->second->getSystemParent()->connect(*componentMap.find(firstComponent)->second, firstPort, *componentSystemMap.find(secondComponent)->second, secondPort);
                 }
                 else if ( componentSystemMap.count(firstComponent) > 0 && componentMap.count(secondComponent) > 0 )     //Connecting subsystem with component
                 {
-                   componentMap.find(secondComponent)->second->getSystemParent().connect(*componentSystemMap.find(firstComponent)->second, firstPort, *componentMap.find(secondComponent)->second, secondPort);
+                   componentMap.find(secondComponent)->second->getSystemParent()->connect(*componentSystemMap.find(firstComponent)->second, firstPort, *componentMap.find(secondComponent)->second, secondPort);
                 }
                 else  //Connecting subsystem with subsystem
                 {
-                     componentMap.find(firstComponent)->second->getSystemParent().connect(*componentSystemMap.find(firstComponent)->second, firstPort, *componentSystemMap.find(secondComponent)->second, secondPort);
+                     componentMap.find(firstComponent)->second->getSystemParent()->connect(*componentSystemMap.find(firstComponent)->second, firstPort, *componentSystemMap.find(secondComponent)->second, secondPort);
                 }
             }
                 //Execute commands

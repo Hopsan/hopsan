@@ -74,7 +74,7 @@ public:
     Port &getPort(const string portname);
 
     //System parent
-    ComponentSystem &getSystemParent();
+    ComponentSystem *getSystemParent();
 
     // Component type identification
     bool isComponentC();

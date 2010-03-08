@@ -127,48 +127,44 @@ GUIConnector *GraphicsView::getTempConnector()
     return this->mpTempConnector;
 }
 
-void GraphicsView::addComponent(QString parameterType, QPoint position, QString componentName)
+void GraphicsView::addComponent(QString parameterType, QPoint position, QString name)
 {
     MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
     LibraryWidget *pLibrary = pMainWindow->mpLibrary;
     QStringList parameterData = pLibrary->getParameterData(parameterType);
-    GUIComponent *guiComponent = new GUIComponent(mpHopsan,parameterData,position,this->mpParentProjectTab->mpGraphicsScene);
-    guiComponent->mpCoreComponent->setName(componentName.toStdString());
+    GUIComponent *pGuiComponent = new GUIComponent(mpHopsan,parameterData,position,this->mpParentProjectTab->mpGraphicsScene);
+    if (!name.isEmpty())
+    {
+        pGuiComponent->setName(name);
+    }
 
     //Core interaction
-    this->mpParentProjectTab->mpComponentSystem->addComponent(guiComponent->mpCoreComponent);
-    guiComponent->refreshName();
-    emit checkMessages();
-
-    //guiComponent->setPos(this->mapToScene(position));
-    qDebug() << "GraphicsView: " << guiComponent->parent();
-
-     //mLibraryMapPtrs.insert(libraryName, newLibContent);
-    this->mComponentMap.insert(componentName, guiComponent);
-    //APAthis->scene()->addItem(guiComponent);
-}
-
-
-void GraphicsView::addComponent(QString parameterType, QPoint position)
-{
-    MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
-    LibraryWidget *pLibrary = pMainWindow->mpLibrary;
-    QStringList parameterData = pLibrary->getParameterData(parameterType);
-    GUIComponent *guiComponent = new GUIComponent(mpHopsan,parameterData,position,this->mpParentProjectTab->mpGraphicsScene);
-
-    //Core interaction
-    this->mpParentProjectTab->mpComponentSystem->addComponent(guiComponent->mpCoreComponent);
+    this->mpParentProjectTab->mpComponentSystem->addComponent(pGuiComponent->mpCoreComponent);
     //    qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
-    guiComponent->refreshName();
+    pGuiComponent->refreshName();
     emit checkMessages();
     //
 
     //guiComponent->setPos(this->mapToScene(position));
-    qDebug() << "GraphicsView: " << guiComponent->parent();
+    qDebug() << "GraphicsView: " << pGuiComponent->parent();
 
      //mLibraryMapPtrs.insert(libraryName, newLibContent);
     //this->mComponentMap.insert()
+    this->mComponentMap.insert(pGuiComponent->getName(), pGuiComponent);
     //APAthis->scene()->addItem(guiComponent);
+}
+
+void GraphicsView::deleteComponent(QString componentName)
+{
+    qDebug() << "In delete component";
+    QMap<QString, GUIComponent *>::iterator it;
+    it = mComponentMap.find(componentName);
+    GUIComponent* c_ptr = it.value();
+    mComponentMap.erase(it);
+    c_ptr->mpCoreComponent->getSystemParent()->removeSubComponent(c_ptr->mpCoreComponent, true);
+    scene()->removeItem(c_ptr);
+    delete(c_ptr);
+    emit checkMessages();
 }
 
 

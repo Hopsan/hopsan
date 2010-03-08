@@ -579,9 +579,9 @@ void ComponentSystem::SubComponentStorage::rename(string old_name, string new_na
     }
 }
 
-ComponentSystem &Component::getSystemParent()
+ComponentSystem *Component::getSystemParent()
 {
-    return *mpSystemParent;
+    return mpSystemParent;
 }
 
 //constructor ComponentSignal
@@ -691,10 +691,9 @@ void ComponentSystem::removeSubComponent(string name, bool doDelete)
 //! @param[in] doDelete Set this to true if the component should be deleted after removal
 void ComponentSystem::removeSubComponent(Component* c_ptr, bool doDelete)
 {
-
     //Disconnect all ports before erase from system
     vector<Port*>::iterator ports_it, conn_ports_it;
-    for (ports_it = c_ptr->mPortPtrs.begin(); ports_it != c_ptr->mPortPtrs.begin(); ++ports_it)
+    for (ports_it = c_ptr->mPortPtrs.begin(); ports_it != c_ptr->mPortPtrs.end(); ++ports_it)
     {
         vector<Port*> connected_ports = (*ports_it)->getConnectedPorts(); //Get a copy of the connected ports ptr vector
         //We can not use an iterator directly connected to the vector inside the port as this will be changed by the disconnect calls
@@ -946,7 +945,7 @@ bool ComponentSystem::connect(Component &rComponent1, const string portname1, Co
         //! @todo must make sure that ONLY ONE poerport can be internally connected to systemports (no sensors or anything else) to amke stuff simpler
         //! @todo No error handling nor checks are done here
         //Check if component1 is a System component containing Component2
-        if (&rComponent1 == &(rComponent2.getSystemParent()))
+        if (&rComponent1 == rComponent2.getSystemParent())
         {
             //! @todo check so that the parent system port is a system port
             //Create an instance of the node specified in nodespecifications
@@ -958,13 +957,13 @@ bool ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             pPort1->setNode(pNode);
             pNode->setPort(pPort1);
             pNode->setPort(pPort2);
-            rComponent2.getSystemParent().addSubNode(pNode);    //Component1 will contain this node as subnode
+            rComponent2.getSystemParent()->addSubNode(pNode);    //Component1 will contain this node as subnode
             //let the ports know about each other
             pPort1->addConnectedPort(pPort2);
             pPort2->addConnectedPort(pPort1);
         }
         //Check if component2 is a System component containing Component1
-        else if (&rComponent2 == &(rComponent1.getSystemParent()))
+        else if (&rComponent2 == rComponent1.getSystemParent())
         {
             //! @todo both these checks could be boken out into subfunction as the code is the same only swapped 1 with 2
             //Create an instance of the node specified in nodespecifications
@@ -976,7 +975,7 @@ bool ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             pPort2->setNode(pNode);
             pNode->setPort(pPort2);
             pNode->setPort(pPort1);
-            rComponent1.getSystemParent().addSubNode(pNode);    //Component2 will contain this node as subnode
+            rComponent1.getSystemParent()->addSubNode(pNode);    //Component2 will contain this node as subnode
             //let the ports know about each other
             pPort1->addConnectedPort(pPort2);
             pPort2->addConnectedPort(pPort1);
@@ -1012,7 +1011,7 @@ bool ComponentSystem::connect(Component &rComponent1, const string portname1, Co
 
             //! @todo this maybe should be checked every time not only if same level, with some modification as i can connect to myself aswell
             //Check so that both systems to connect have been added to this system
-            if ((&rComponent1.getSystemParent() != (Component*)this) && ((&rComponent1.getSystemParent() != (Component*)this)) )
+            if ((rComponent1.getSystemParent() != (Component*)this) && ((rComponent1.getSystemParent() != (Component*)this)) )
             {
                 ss << "The two components, "<< rComponent1.getName() << " and " << rComponent2.getName() << ", "<< " to be connected are not contained within the connecting system";
                 cout << ss.str() << endl;
@@ -1212,6 +1211,11 @@ void ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
         pPort2->eraseConnectedPort(pPort1);
     }
     cout << "nPorts in node after remove 2: " << node_ptr->mPortPtrs.size() << endl;
+
+    stringstream ss;
+    ss << "Disconnected: "<< pPort1->mpComponent->getName() << " and " << pPort2->mpComponent->getName();
+    cout << ss.str() << endl;
+    gCoreMessageHandler.addInfoMessage(ss.str());
 
 
     //If no more connections exist, remove the entier node and free the memory
