@@ -16,7 +16,6 @@
 #include <map>
 
 #include "MessageWidget.h"
-#include "GUIComponent.h"
 
 
 class GUIPort;
@@ -121,6 +120,8 @@ class ProjectTabWidget : public QTabWidget
 
 public:
     ProjectTabWidget(MainWindow *parent = 0);
+
+    ProjectTab *getCurrentTab();
 
     MainWindow *mpParentMainWindow;
 

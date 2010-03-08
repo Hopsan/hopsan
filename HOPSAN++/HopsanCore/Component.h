@@ -203,6 +203,9 @@ public:
     //Set desired timestep
     void setDesiredTimestep(const double timestep);
 
+    //Get desired timestep
+    double getDesiredTimeStep();
+
 private:
     //==========Private functions==========
     //Time specific functions

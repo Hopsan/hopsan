@@ -10,24 +10,28 @@
 #include <iostream>
 #include <QtGui>
 #include "simulationsetupwidget.h"
+#include "mainwindow.h"
+#include "ProjectTabWidget.h"
 
 
 //! Constructor.
 //! @param title is the title of the group box.
 //! @param parent defines a parent to the new instanced object.
-SimulationSetupWidget::SimulationSetupWidget(const QString &title, QWidget *parent)
+SimulationSetupWidget::SimulationSetupWidget(const QString &title, MainWindow *parent)
     : QGroupBox(title, parent)
 {
     //mpGroupBox = new QGroupBox(title, this);
 
+    mpParentMainWindow = parent;
+
     mpSimulationLayout = new QHBoxLayout;
-    mpStartTimeLabel = new QLineEdit;
+    mpStartTimeLabel = new QLineEdit("0.0");
     mpStartTimeLabel->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
     mpStartTimeLabel->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mpStartTimeLabel));
-    mpTimeStepLabel = new QLineEdit;
+    mpTimeStepLabel = new QLineEdit("0.001");
     mpTimeStepLabel->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
     mpTimeStepLabel->setValidator(new QDoubleValidator(0.0, 999.0, 6, mpStartTimeLabel));
-    mpFinishTimeLabel = new QLineEdit;
+    mpFinishTimeLabel = new QLineEdit("10.0");
     mpFinishTimeLabel->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
     mpFinishTimeLabel->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mpFinishTimeLabel));
     mpTimeLabelDeliminator1 = new QLabel(tr("::"));
@@ -45,35 +49,113 @@ SimulationSetupWidget::SimulationSetupWidget(const QString &title, QWidget *pare
 
     this->setLayout(mpSimulationLayout);
 
-    connect(mpFinishTimeLabel, SIGNAL(editingFinished()), SLOT(fixFinishTime()));
-    connect(mpTimeStepLabel, SIGNAL(editingFinished()), SLOT(fixTimeStep()));
+    connect(mpStartTimeLabel, SIGNAL(editingFinished()), SLOT(fixLabelValues()));
+    connect(mpTimeStepLabel, SIGNAL(editingFinished()), SLOT(fixLabelValues()));
+    connect(mpFinishTimeLabel, SIGNAL(editingFinished()), SLOT(fixLabelValues()));
 
 }
 
+
+//! Make sure the values make sens.
+//! @see fixTimeStep()
+void SimulationSetupWidget::fixLabelValues()
+{
+    fixFinishTime();
+    fixTimeStep();
+}
+
+
 //! Make sure that the timestep is in the right range i.e. not larger than the simulation time.
+//! @see fixFinishTime()
+//! @see fixLabelValues()
 void SimulationSetupWidget::fixTimeStep()
 {
     //! @todo Maybe more checks, i.e. the time step should be even divided into the simulation time.
-    double startTime = mpStartTimeLabel->text().toDouble();
-    double timeStep = mpTimeStepLabel->text().toDouble();
-    double finishTime = mpFinishTimeLabel->text().toDouble();
-    if (timeStep > (finishTime - startTime))
-    {
-        QString valueTxt;
-        valueTxt.setNum(finishTime - startTime, 'g', 6 );
-        mpTimeStepLabel->setText(valueTxt);
-    }
+    if (getTimeStepLabel() > (getFinishTimeLabel() - getStartTimeLabel()))
+        setTimeStepLabel(getFinishTimeLabel() - getStartTimeLabel());
+
+    if (mpParentMainWindow->mpProjectTabs->getCurrentTab()) //crashes if not if statement if no tabs are there...
+        mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpComponentSystem->setDesiredTimestep(getTimeStepLabel());
 
 }
 
 
 //! Make sure that the finishs time of the simulation is not smaller than start time.
+//! @see fixTimeStep()
+//! @see fixLabelValues()
 void SimulationSetupWidget::fixFinishTime()
 {
-    double startTime = mpStartTimeLabel->text().toDouble();
-    double finishTime = mpFinishTimeLabel->text().toDouble();
-    if (finishTime < startTime)
-        mpFinishTimeLabel->setText(mpStartTimeLabel->text());
+    if (getFinishTimeLabel() < getStartTimeLabel())
+        setFinishTimeLabel(getStartTimeLabel());
 
 }
 
+
+//! Sets a new value to a label.
+//! @param lineEdit is a pointer to the label which should change
+//! @param value is the new value
+void SimulationSetupWidget::setValue(QLineEdit *lineEdit, double value)
+{
+    QString valueTxt;
+    valueTxt.setNum(value, 'g', 6 );
+    lineEdit->setText(valueTxt);
+    fixTimeStep();
+    fixFinishTime();
+}
+
+
+//! Sets a new startvalue.
+//! @param startTime is the new value
+void SimulationSetupWidget::setStartTimeLabel(double startTime)
+{
+    setValue(mpStartTimeLabel, startTime);
+}
+
+
+//! Sets a new timestep.
+//! @param timeStep is the new value
+void SimulationSetupWidget::setTimeStepLabel(double timeStep)
+{
+    setValue(mpTimeStepLabel, timeStep);
+}
+
+
+//! Sets a new finish value.
+//! @param finishTime is the new value
+void SimulationSetupWidget::setFinishTimeLabel(double finishTime)
+{
+    setValue(mpFinishTimeLabel, finishTime);
+}
+
+
+//! Acess function to the value of a label.
+//! @param lineEdit is the linedit to read
+//! @returns the value of the lineedit
+double SimulationSetupWidget::getValue(QLineEdit *lineEdit)
+{
+    return lineEdit->text().toDouble();
+}
+
+
+//! Acess function to the starttimelabel value.
+//! @returns the starttime value
+double SimulationSetupWidget::getStartTimeLabel()
+{
+    return getValue(mpStartTimeLabel);
+}
+
+
+//! Acess function to the timesteplabel value.
+//! @returns the timestep value
+double SimulationSetupWidget::getTimeStepLabel()
+{
+    return getValue(mpTimeStepLabel);
+}
+
+
+//! Acess function to the finishlabel value.
+//! @returns the finish value
+double SimulationSetupWidget::getFinishTimeLabel()
+{
+    return getValue(mpFinishTimeLabel);
+}

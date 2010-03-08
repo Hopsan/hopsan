@@ -15,6 +15,7 @@
 #include "GUIConnector.h"
 #include "LibraryWidget.h"
 #include "mainwindow.h"
+#include "simulationsetupwidget.h"
 
 #include <QtGui>
 
@@ -410,6 +411,9 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     emit checkMessages();
     //
 
+    double timeStep = mpComponentSystem->getDesiredTimeStep();
+    mpParentProjectTabWidget->mpParentMainWindow->mpSimulationGroup->setTimeStepLabel(timeStep);
+
     mIsSaved = true;
 
     mpGraphicsScene = new GraphicsScene(this);
@@ -472,6 +476,14 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
 
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(closeProjectTab(int)));
 
+}
+
+
+//! Access current tabwidget.
+//! @return the current tabwidget
+ProjectTab *ProjectTabWidget::getCurrentTab()
+{
+    return qobject_cast<ProjectTab *>(currentWidget());
 }
 
 
@@ -611,10 +623,16 @@ bool ProjectTabWidget::closeAllProjectTabs()
 //! Simulates the model in current open tab.
 void ProjectTabWidget::simulateCurrent()
 {
-    ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
+    if (!currentWidget()) //Avoid crash if no tab is open at simulation time
+        return;
 
-    pCurrentTab->mpComponentSystem->initialize(0.0, 5.0); //HARD CODED
-    pCurrentTab->mpComponentSystem->simulate(0.0, 5.0); //HARD CODED
+    ProjectTab *pCurrentTab = getCurrentTab();
+
+    double startTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->mpSimulationGroup->getStartTimeLabel();
+    double finishTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->mpSimulationGroup->getFinishTimeLabel();
+
+    pCurrentTab->mpComponentSystem->initialize(startTime, finishTime);
+    pCurrentTab->mpComponentSystem->simulate(startTime, finishTime);
     //pCurrentTab->mpModel->getSubComponent("DefaultLaminarOrificeName")->getPort("P1").saveLogData("output.txt");
     emit checkMessages();
 

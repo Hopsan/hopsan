@@ -574,6 +574,10 @@ ComponentSystem::ComponentSystem(string name, double timestep) : Component(name,
     mDesiredTimestep = timestep;
 }
 
+double ComponentSystem::getDesiredTimeStep()
+{
+    return mDesiredTimestep;
+}
 //void ComponentSystem::addComponents(vector<Component*> components)
 //{
 //    ///TODO: use iterator instead of idx loop

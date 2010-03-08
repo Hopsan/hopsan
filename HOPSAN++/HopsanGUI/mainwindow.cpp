@@ -59,12 +59,12 @@ MainWindow::MainWindow(QWidget *parent)
     messagedock->setWidget(mpMessageWidget);
     addDockWidget(Qt::BottomDockWidgetArea, messagedock);
 
+    //Create a simulation group
+    mpSimulationGroup = new SimulationSetupWidget(tr("Simulation setup"), this);
+
     //Create the main tab container, need at least one tab
     mpProjectTabs = new ProjectTabWidget(this);
     mpProjectTabs->setObjectName("projectTabs");
-
-    //Create a simulation group
-    mpSimulationGroup = new SimulationSetupWidget(tr("Simulation setup"), this);
 
     //Create a dock for the componentslibrary
     QDockWidget *libdock = new QDockWidget(tr("Components"), this);
@@ -190,6 +190,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->connect(this->actionPlot,SIGNAL(triggered()),SLOT(plot()));
 
     this->connect(this->actionSimulate,SIGNAL(triggered()),mpProjectTabs,SLOT(simulateCurrent()));
+    connect(mpSimulationGroup->mpSimulateButton, SIGNAL(released()), mpProjectTabs, SLOT(simulateCurrent()));
 
 }
 
