@@ -3,15 +3,15 @@
 #include "GUIConnector.h"
 #include <QDebug>
 
-#include <QCursor>
-#include <QBrush>
-#include <QGraphicsScene>
-#include <QGraphicsLineItem>
-#include <QGraphicsRectItem>
-#include <QCursor>
-#include <QBrush>
-#include <QGraphicsLineItem>
-#include <QGraphicsScene>
+//#include <QCursor>
+//#include <QBrush>
+//#include <QGraphicsScene>
+//#include <QGraphicsLineItem>
+//#include <QGraphicsRectItem>
+//#include <QCursor>
+//#include <QBrush>
+//#include <QGraphicsLineItem>
+//#include <QGraphicsScene>
 #include <vector>
 
 GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, QPen passivePen, QPen activePen, QPen hoverPen, GraphicsView *parentView, QGraphicsItem *parent)
@@ -114,9 +114,9 @@ void GUIConnector::doSelect(bool lineSelected)
 
 void GUIConnector::setActive()
 {
+    connect(this->mpParentView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
     if(this->mEndPortConnected)
     {
-        connect(this->mpParentView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
         mIsActive = true;
         for (std::size_t i=0; i!=mLines.size(); ++i )
         {
@@ -128,9 +128,9 @@ void GUIConnector::setActive()
 
 void GUIConnector::setPassive()
 {
+    disconnect(this->mpParentView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
     if(this->mEndPortConnected)
     {
-        disconnect(SIGNAL(keyPressDelete()));
         mIsActive = false;
         for (std::size_t i=0; i!=mLines.size(); ++i )
         {

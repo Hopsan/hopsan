@@ -156,7 +156,7 @@ void GraphicsView::addComponent(QString parameterType, QPoint position, QString 
 
 void GraphicsView::deleteComponent(QString componentName)
 {
-    qDebug() << "In delete component";
+    //qDebug() << "In delete component";
     QMap<QString, GUIComponent *>::iterator it;
     it = mComponentMap.find(componentName);
     GUIComponent* c_ptr = it.value();

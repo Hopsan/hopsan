@@ -4,13 +4,8 @@
 #define GUICOMPONENT_H
 
 #include <QGraphicsWidget>
-//#include <QGraphicsSvgItem>
-//#include <QGraphicsTextItem>
-//#include <QWidget>
 #include <QGraphicsView>
-//#include "GUIConnector.h"
 #include <vector>
-//#include <QGraphicsItem>
 #include "GUIComponentSelectionBox.h"
 #include "ProjectTabWidget.h"
 
@@ -53,16 +48,16 @@ protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
-    void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+    //void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-    void keyPressEvent( QKeyEvent *event );
+    //void keyPressEvent( QKeyEvent *event );
 
 signals:
     void componentMoved();
     void componentDeleted();
 
 public slots:
-     //void deleteComponent();
+     void deleteMe();
 
 private:
     QGraphicsSvgItem *mpIcon;

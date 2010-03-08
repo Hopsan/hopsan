@@ -1,26 +1,25 @@
 //$Id$
 
-#include "HopsanCore.h"
-#include "GUIComponent.h"
 #include <iostream>
-#include "GUIPort.h"
-#include "GUIConnector.h"
 #include <ostream>
 #include <assert.h>
-#include <QDebug>
+#include <vector>
+#include <math.h>
 
+#include <QDebug>
 #include <QGraphicsWidget>
 #include <QGraphicsSvgItem>
 #include <QGraphicsTextItem>
 #include <QWidget>
 #include <QGraphicsView>
-#include <vector>
 #include <QGraphicsItem>
-
 #include <QGraphicsSceneMoveEvent>
 
-#include <math.h>
+#include "HopsanCore.h"
+#include "GUIComponent.h"
 #include "ParameterDialog.h"
+#include "GUIPort.h"
+#include "GUIConnector.h"
 
 GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
@@ -40,7 +39,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
     //
 
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
-    setFocusPolicy(Qt::StrongFocus);
+    //setFocusPolicy(Qt::StrongFocus);
     this->setAcceptHoverEvents(true);
 
     this->setZValue(10);
@@ -186,11 +185,11 @@ void GUIComponent::fixTextPosition(QPointF pos)
 }
 
 
-void GUIComponent::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
-{
-    qDebug() << "GUIComponent: " << "mouseReleaseEvent";
-    QGraphicsItem::mouseReleaseEvent(event);
-}
+//void GUIComponent::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
+//{
+//    //qDebug() << "GUIComponent: " << "mouseReleaseEvent";
+//    QGraphicsItem::mouseReleaseEvent(event);
+//}
 
 
 GUIComponent::~GUIComponent()
@@ -207,7 +206,7 @@ GUIComponent::~GUIComponent()
 
 void GUIComponent::addConnector(GUIConnector *item)
 {
-    connect(this,SIGNAL(componentMoved()),item,SLOT(updatePos()));
+    connect(this, SIGNAL(componentMoved()), item, SLOT(updatePos()));
 }
 
 //! This function refreshes the displayed name (HopsanCore may have changed it)
@@ -235,16 +234,17 @@ GUIPort *GUIComponent::getPort(int number)
     return this->mPortListPtrs[number];
 }
 
-//void GUIComponent::deleteComponent()
-//{
-//    qDebug() << "GUIComponent:: inside delete component\n";
+void GUIComponent::deleteMe()
+{
+    qDebug() << "GUIComponent:: inside delete component";
 //    if(this->isSelected())
 //    {
 //        emit componentDeleted();
 //        this->scene()->removeItem(this);
 //        delete(this);
 //    }
-//}
+    mpParentGraphicsView->deleteComponent(this->getName());
+}
 
 
 QString GUIComponent::getTypeName()
@@ -290,14 +290,14 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     dialog->exec();
 }
 
-void GUIComponent::keyPressEvent( QKeyEvent *event )
-{
-    if (event->key() == Qt::Key_Delete)
-    {
-        //please delete me
-        mpParentGraphicsView->deleteComponent(this->getName());
-    }
-}
+//void GUIComponent::keyPressEvent( QKeyEvent *event )
+//{
+//    if (event->key() == Qt::Key_Delete)
+//    {
+//        //please delete me
+//        mpParentGraphicsView->deleteComponent(this->getName());
+//    }
+//}
 
 
 QVariant GUIComponent::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -308,9 +308,11 @@ QVariant GUIComponent::itemChange(GraphicsItemChange change, const QVariant &val
         if (this->isSelected())
         {
             this->mpSelectionBox->setActive();
+            connect(this->mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
         }
         else
         {
+            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             this->mpSelectionBox->setPassive();
         }
     }

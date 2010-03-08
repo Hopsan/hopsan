@@ -6,9 +6,9 @@
 
 #include <vector>
 #include <QGraphicsWidget>
-#include <QGraphicsView>
 #include "GUIPort.h"
 #include "GUIConnectorLine.h"
+
 
 class GUIConnector : public QGraphicsWidget
 {
