@@ -33,6 +33,7 @@
 #include "listwidgetitem.h"
 #include "ProjectTabWidget.h"
 #include "LibraryWidget.h"
+#include "simulationsetupwidget.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -62,6 +63,9 @@ MainWindow::MainWindow(QWidget *parent)
     mpProjectTabs = new ProjectTabWidget(this);
     mpProjectTabs->setObjectName("projectTabs");
 
+    //Create a simulation group
+    mpSimulationGroup = new SimulationSetupWidget(tr("Simulation setup"), this);
+
     //Create a dock for the componentslibrary
     QDockWidget *libdock = new QDockWidget(tr("Components"), this);
     libdock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -69,7 +73,8 @@ MainWindow::MainWindow(QWidget *parent)
     libdock->setWidget(mpLibrary);
     addDockWidget(Qt::LeftDockWidgetArea, libdock);
 
-    mpCentralgrid->addWidget(mpProjectTabs,0,0);
+    mpCentralgrid->addWidget(mpSimulationGroup,0,0);
+    mpCentralgrid->addWidget(mpProjectTabs,1,0);
 
     mpCentralwidget->setLayout(mpCentralgrid);
 

@@ -3,34 +3,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-//#include <QtGui/QWidget>
-//#include <QtGui/QGridLayout>
-//#include <QtGui/QTabWidget>
-//#include <QtGui/QTreeWidget>
-//#include <QtGui/QTreeWidgetItem>
-//#include <QtGui/QMenuBar>
-//#include <QtGui/QMenu>
-//#include <QtGui/QStatusBar>
-//#include <QtGui/QAction>
-//#include <QtCore/QMetaObject>
-//#include <QtCore/QString>
-//#include <QtCore/QDir>
-//#include <QtCore/QStringList>
-//#include <QtCore/QIODevice>
-//#include <QListWidgetItem>
-//#include <QStringList>
-//#include <QDockWidget>
-
-//#include "treewidget.h"
-//#include "treewidgetitem.h"
-//#include "graphicsview.h"
-//#include "graphicsscene.h"
-//#include "listwidget.h"
-//#include "listwidgetitem.h"
-//#include "ProjectTabWidget.h"
-//#include "LibraryWidget.h"
-//#include <QPlainTextEdit>
-
 #include <QMainWindow>
 
 #include "plotwidget.h"
@@ -38,12 +10,14 @@
 
 
 class QGridLayout;
+class QHBoxLayout;
 class QMenuBar;
 class QMenu;
 class QStatusBar;
 class QAction;
 class QString;
 class QPlainTextEdit;
+class SimulationSetupWidget;
 class ProjectTabWidget;
 class GraphicsView;
 class GraphicsScene;
@@ -63,6 +37,7 @@ public:
     ProjectTabWidget *mpProjectTabs;
     QGridLayout *mpTabgrid;
     LibraryWidget *mpLibrary;
+    SimulationSetupWidget *mpSimulationGroup;
     QMenuBar *menubar;
     QMenu *menuFile;
     QMenu *menuNew;
