@@ -270,7 +270,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 
 GUIComponent *GraphicsView::getComponent(QString name)
 {
-    qDebug() << mComponentMap.size();
+    //qDebug() << mComponentMap.size();
     return mComponentMap.find(name).value();
 }
 
@@ -284,11 +284,15 @@ void GraphicsView::addConnector(GUIPort *pPort)
         QPen activePen = QPen(QColor("red"), 3);
         QPen hoverPen = QPen(QColor("darkRed"),2);
         mpTempConnector = new GUIConnector(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), passivePen, activePen, hoverPen, this);
+        qDebug() << "DEBUG 0.3";
         this->scene()->addItem(mpTempConnector);
+        qDebug() << "DEBUG 0.4";
         this->mIsCreatingConnector = true;
         pPort->getComponent()->addConnector(mpTempConnector);
         mpTempConnector->setStartPort(pPort);
+        qDebug() << "DEBUG 0.5";
         mpTempConnector->addLine();
+        qDebug() << "DEBUG 0.6";
     }
     else
     {
@@ -631,44 +635,44 @@ void ProjectTabWidget::loadModel()
                 inputStream >> startPortNumber;
                 inputStream >> endComponentName;
                 inputStream >> endPortNumber;
-                qDebug() << "DEBUG1";
+                qDebug() << "DEBUG 0";
                 pCurrentView->addConnector(pCurrentView->getComponent(QString(startComponentName.c_str()))->getPort(startPortNumber));
-                qDebug() << "DEBUG2";
+                qDebug() << "DEBUG 1";
                 GUIConnector *pTempConnector = pCurrentView->getTempConnector();
-                qDebug() << "DEBUG3";
+                qDebug() << "DEBUG 2";
                 pCurrentView->scene()->addItem(pTempConnector);
-                qDebug() << "DEBUG4";
                 while(inputStream >> inputWord)
                 {
                     if(inputWord == "VERTICAL")
                     {
                         inputStream >> heigth;
-                        pTempConnector->getThisLine()->setGeometry(GUIConnectorLine::VERTICAL);
+                        qDebug() << "Heigth = " << heigth;
+                        //pTempConnector->getThisLine()->setGeometry(GUIConnectorLine::VERTICAL);
                         pTempConnector->addFixedLine(0, heigth, GUIConnectorLine::VERTICAL);
                     }
                     else if (inputWord == "HORIZONTAL")
                     {
                         inputStream >> length;
-                        pTempConnector->getThisLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
+                       // pTempConnector->getThisLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
                         pTempConnector->addFixedLine(length, 0, GUIConnectorLine::HORIZONTAL);
                     }
                     else if (inputWord == "DIAGONAL")
                     {
                         inputStream >> length;
                         inputStream >> heigth;
-                        pTempConnector->getThisLine()->setGeometry(GUIConnectorLine::DIAGONAL);
+                        //pTempConnector->getThisLine()->setGeometry(GUIConnectorLine::DIAGONAL);
                         pTempConnector->addFixedLine(length, heigth, GUIConnectorLine::DIAGONAL);
                     }
                     else
                     {
                     }
-                    GUIPort *endPort = pCurrentView->getComponent(QString(endComponentName.c_str()))->getPort(endPortNumber);
-                    QPointF newPos = endPort->mapToScene(endPort->boundingRect().center());
-                    pTempConnector->drawLine(pTempConnector->startPos, newPos);
-                    endPort->getComponent()->addConnector(pTempConnector);
-                    pTempConnector->setEndPort(endPort);
-                    pCurrentView->mIsCreatingConnector = false;
                 }
+                GUIPort *endPort = pCurrentView->getComponent(QString(endComponentName.c_str()))->getPort(endPortNumber);
+                QPointF newPos = endPort->mapToScene(endPort->boundingRect().center());
+                pTempConnector->drawLine(pTempConnector->startPos, newPos);
+                endPort->getComponent()->addConnector(pTempConnector);
+                pTempConnector->setEndPort(endPort);
+                pCurrentView->mIsCreatingConnector = false;
             }
         }
     }

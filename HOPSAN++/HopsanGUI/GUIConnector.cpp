@@ -75,6 +75,7 @@ void GUIConnector::setEndPort(GUIPort *port)
     mLines[0]->setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption | QGraphicsItem::ItemIsSelectable);
     mLines[mLines.size()-1]->setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption | QGraphicsItem::ItemIsSelectable);
     emit endPortConnected();
+    this->setPassive();
 }
 
 GUIPort *GUIConnector::getStartPort()
@@ -248,19 +249,26 @@ void GUIConnector::addFixedLine(int length, int heigth, GUIConnectorLine::geomet
     if(geometry == GUIConnectorLine::HORIZONTAL)
     {
         qDebug() << "HORIZONTAL from" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y();
+        qDebug() << "HORIZONTAL to" << mLines[mLines.size()-1]->line().p2().x()+length << mLines[mLines.size()-1]->line().p2().y();
+        QPointF endPos = mapToScene(mLines[mLines.size()-1]->line().p2());
+        endPos.setX(endPos.x()+length);
+        endPos = mapFromScene(endPos);
         mpTempLine = new GUIConnectorLine(mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
-                                          mLines[mLines.size()-1]->line().p2().x()+length, mLines[mLines.size()-1]->line().p2().y(),
+                                          endPos.x(), endPos.y(),
                                           mPassivePen, mActivePen, mHoverPen, mLines.size(), this);
     }
     else if(geometry == GUIConnectorLine::VERTICAL)
     {
         qDebug() << "VERTICAL from" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y();
+        qDebug() << "VERTICAL to" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y()+heigth;
         mpTempLine = new GUIConnectorLine(mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
                                           mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y()+heigth,
                                           mPassivePen, mActivePen, mHoverPen, mLines.size(), this);
     }
     else if(geometry == GUIConnectorLine::DIAGONAL)
     {
+        qDebug() << "DIAGONAL from" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y();
+        qDebug() << "DIAGONAL to" << mLines[mLines.size()-1]->line().p2().x()+length << mLines[mLines.size()-1]->line().p2().y()+heigth;
         mpTempLine = new GUIConnectorLine(mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
                                           mLines[mLines.size()-1]->line().p2().x()+length, mLines[mLines.size()-1]->line().p2().y()+heigth,
                                           mPassivePen, mActivePen, mHoverPen, mLines.size(), this);
