@@ -39,7 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     //Set the name and size of the main window
     this->setObjectName("MainWindow");
-    this->resize(800,600);
+    this->resize(1024,768);
     this->setWindowTitle("HOPSAN NG");
 
     //Create a centralwidget for the main window
