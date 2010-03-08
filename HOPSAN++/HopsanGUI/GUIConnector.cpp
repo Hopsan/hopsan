@@ -37,7 +37,7 @@ GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, QPen passiveP
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
     this->setActive();
-    connect(this->mpParentView,SIGNAL(keyPressDelete()),this,SLOT(deleteMeIfMeIsActive()));
+    //connect(this->mpParentView, SIGNAL(keyPressDelete()), this, SLOT(deleteMeIfMeIsActive()));
     connect(this,SIGNAL(endPortConnected()),mLines[mLines.size()-1],SLOT(setConnected()));
 }
 
@@ -116,6 +116,7 @@ void GUIConnector::setActive()
 {
     if(this->mEndPortConnected)
     {
+        connect(this->mpParentView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
         mIsActive = true;
         for (std::size_t i=0; i!=mLines.size(); ++i )
         {
@@ -129,6 +130,7 @@ void GUIConnector::setPassive()
 {
     if(this->mEndPortConnected)
     {
+        disconnect(SIGNAL(keyPressDelete()));
         mIsActive = false;
         for (std::size_t i=0; i!=mLines.size(); ++i )
         {
@@ -311,13 +313,13 @@ void GUIConnector::deleteMe()
 }
 
 
-void GUIConnector::deleteMeIfMeIsActive()
-{
-    if(this->mIsActive && mLines.size() > 0)
-    {
-        this->deleteMe();
-    }
-}
+//void GUIConnector::deleteMeIfMeIsActive()
+//{
+//    if(this->mIsActive && mLines.size() > 0)
+//    {
+//        this->deleteMe();
+//    }
+//}
 
 void GUIConnector::updateLine(int lineNumber)
 {

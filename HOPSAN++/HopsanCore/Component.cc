@@ -1192,7 +1192,7 @@ void ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
     }
     else
     {
-        gCoreMessageHandler.addInfoMessage("The ports dont seem to be connected, (does nothing)", 1);
+        gCoreMessageHandler.addWarningMessage("At least one of the ports do not seem to be connected, (does nothing)", 1);
     }
 }
 
