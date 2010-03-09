@@ -680,6 +680,7 @@ void ProjectTabWidget::simulateCurrent()
     initProgress.setWindowModality(Qt::WindowModal);
     InitializationThread actualInitialization(pCurrentTab->mpComponentSystem, startTime, finishTime, this);
     actualInitialization.start();
+    actualInitialization.setPriority(QThread::TimeCriticalPriority);
     size_t i=0;
     while (actualInitialization.isRunning())
     {
@@ -699,14 +700,20 @@ void ProjectTabWidget::simulateCurrent()
         simProgress.setWindowModality(Qt::WindowModal);
         SimulationThread actualSimulation(pCurrentTab->mpComponentSystem, startTime, finishTime, this);
         actualSimulation.start();
+        actualSimulation.setPriority(QThread::TimeCriticalPriority);
         while (actualSimulation.isRunning())
         {
             simProgress.setValue((size_t)(*pCoreComponentTime/dt * nSteps));
             if (simProgress.wasCanceled())
             {
-                actualSimulation.terminate();
+                actualSimulation.terminate(); //! @todo not a good idea to terninate here
                 break;
             }
+//            QWaitCondition w; //Not good, it makes the event loop to sleep... but it works
+//            QMutex sleepmutex;
+//            sleepmutex.lock();
+//            w.wait(&sleepmutex, 500);
+//            sleepmutex.unlock();
         }
         simProgress.setValue(nSteps);
         actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
