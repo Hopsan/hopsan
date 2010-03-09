@@ -18,7 +18,8 @@ SOURCES += main.cpp \
     ParameterDialog.cpp \
     MessageWidget.cpp \
     SimulationSetupWidget.cpp \
-    SimulationThread.cpp
+    SimulationThread.cpp \
+    InitializationThread.cpp
 HEADERS += mainwindow.h \
     listwidgetitem.h \
     ProjectTabWidget.h \
@@ -33,7 +34,8 @@ HEADERS += mainwindow.h \
     ParameterDialog.h \
     MessageWidget.h \
     SimulationSetupWidget.h \
-    SimulationThread.h
+    SimulationThread.h \
+    InitializationThread.h
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE

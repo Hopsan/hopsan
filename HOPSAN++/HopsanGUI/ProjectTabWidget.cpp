@@ -18,7 +18,7 @@
 #include "SimulationSetupWidget.h"
 #include "MessageWidget.h"
 #include "SimulationThread.h"
-
+#include "InitializationThread.h"
 #include <QtGui>
 
 #include <string>
@@ -658,21 +658,44 @@ void ProjectTabWidget::simulateCurrent()
 
     double *pCoreComponentTime = pCurrentTab->mpComponentSystem->getTimePtr();
     QString timeTxt;
-    SimulationThread actualSimulation(pCurrentTab->mpComponentSystem, startTime, finishTime, this);
-    actualSimulation.start();
     double dt = finishTime - startTime;
     size_t nSteps = dt/pCurrentTab->mpComponentSystem->getDesiredTimeStep();
-    QProgressDialog simProgress("Simulating...", "&Abort simulation", 0, nSteps, this);
-    simProgress.setWindowModality(Qt::WindowModal);
-    while (actualSimulation.isRunning())
-    {
-        simProgress.setValue((size_t)(*pCoreComponentTime/dt * nSteps));
-        if (simProgress.wasCanceled())
-            break;
-    }
-    simProgress.setValue(nSteps);
-    actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
 
+    QProgressDialog initProgress("Initialize simulation...", "&Abort initialization", 0, 0, this);
+    initProgress.setWindowModality(Qt::WindowModal);
+    InitializationThread actualInitialization(pCurrentTab->mpComponentSystem, startTime, finishTime, this);
+    actualInitialization.start();
+    size_t i=0;
+    while (actualInitialization.isRunning())
+    {
+        initProgress.setValue(i++);
+        if (initProgress.wasCanceled())
+        {
+            actualInitialization.terminate(); //! @todo not a good idea to terninate here
+            break;
+        }
+    }
+    initProgress.setValue(i);
+    actualInitialization.wait(); //Make sure actualSimulation do not goes out of scope during simulation
+
+    if (!initProgress.wasCanceled())
+    {
+        QProgressDialog simProgress("Simulating...", "&Abort simulation", 0, nSteps, this);
+        simProgress.setWindowModality(Qt::WindowModal);
+        SimulationThread actualSimulation(pCurrentTab->mpComponentSystem, startTime, finishTime, this);
+        actualSimulation.start();
+        while (actualSimulation.isRunning())
+        {
+            simProgress.setValue((size_t)(*pCoreComponentTime/dt * nSteps));
+            if (simProgress.wasCanceled())
+            {
+                actualSimulation.terminate();
+                break;
+            }
+        }
+        simProgress.setValue(nSteps);
+        actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
+    }
     emit checkMessages();
 
 }

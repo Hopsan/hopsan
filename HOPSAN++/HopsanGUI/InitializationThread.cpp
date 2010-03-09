@@ -1,14 +1,14 @@
 //!
-//! @file   SimulationThread.cpp
+//! @file   InitializationThread.cpp
 //! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2010-03-09
 //!
-//! @brief Contains a class for simulation in a separate class
+//! @brief Contains a class for Initializing in a separate thread
 //!
 //$Id$
 
 
-#include "SimulationThread.h"
+#include "InitializationThread.h"
 #include "HopsanCore.h"
 #include "ProjectTabWidget.h"
 #include "mainwindow.h"
@@ -26,7 +26,7 @@
 //! @param startTime is the start time for the simulation.
 //! @param finishTime is the finish time for the simulation.
 //! @param parent is the parent of the thread, the a ProjectTabWidget
-SimulationThread::SimulationThread(ComponentSystem *pComponentSystem, double startTime, double finishTime, ProjectTabWidget *parent)
+InitializationThread::InitializationThread(ComponentSystem *pComponentSystem, double startTime, double finishTime, ProjectTabWidget *parent)
 {
     mpParentProjectTabWidget = parent;
     mpComponentSystem = pComponentSystem;
@@ -37,9 +37,9 @@ SimulationThread::SimulationThread(ComponentSystem *pComponentSystem, double sta
 
 
 //! Implements the task for the thread.
-void SimulationThread::run()
+void InitializationThread::run()
 {
-    mpComponentSystem->simulate(mStartTime, mFinishTime);
+    mpComponentSystem->initialize(mStartTime, mFinishTime);
 
     //exec(); //Is used if one want to run an event loop in this thread.
 }
