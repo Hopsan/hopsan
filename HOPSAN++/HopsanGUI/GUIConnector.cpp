@@ -255,16 +255,6 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
 }
 
 
-//This function is probably never used
-//void GUIConnector::setPen(QPen pen)
-//{
-//    for (std::size_t i=0; i!=mLines.size(); ++i )
-//    {
-//        mLines[i]->setPen(pen);
-//    }
-//}
-
-
 //! Adds a new line at the end of the connector. Used when creating lines manually in the view.
 //! @see addFixedLine(int length, int heigth, GUIConnectorLine::geometryType geometry)
 void GUIConnector::addLine()

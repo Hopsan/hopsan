@@ -49,6 +49,7 @@ public:
     QStatusBar *statusBar;
     QAction *actionOpen;
     QAction *actionSave;
+    QAction *actionSaveAs;
     QAction *actionClose;
     QAction *actionProject;
     QAction *actionLoadLibs;

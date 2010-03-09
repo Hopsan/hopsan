@@ -128,6 +128,9 @@ MainWindow::MainWindow(QWidget *parent)
     actionSave = new QAction(this);
     actionSave->setText("Save");
 
+    actionSaveAs = new QAction(this);
+    actionSaveAs->setText("Save As");
+
     actionProject = new QAction(this);
     actionProject->setText("Project");
 
@@ -146,6 +149,7 @@ MainWindow::MainWindow(QWidget *parent)
     menuFile->addAction(menuNew->menuAction());
     menuFile->addAction(actionOpen);
     menuFile->addAction(actionSave);
+    menuFile->addAction(actionSaveAs);
     menuFile->addSeparator();
     menuFile->addAction(actionClose);
 
@@ -182,6 +186,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Establish connections
     this->connect(this->actionSave,SIGNAL(triggered()),mpProjectTabs,SLOT(saveProjectTab()));
+    this->connect(this->actionSaveAs,SIGNAL(triggered()),mpProjectTabs,SLOT(saveProjectTabAs()));
     this->connect(this->actionClose,SIGNAL(triggered()),SLOT(close()));
     this->connect(this->actionProject,SIGNAL(triggered()),mpProjectTabs,SLOT(addNewProjectTab()));
     this->connect(this->actionLoadLibs,SIGNAL(triggered()),mpLibrary,SLOT(addLibrary()));

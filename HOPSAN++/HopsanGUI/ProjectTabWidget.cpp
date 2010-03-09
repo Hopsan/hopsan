@@ -390,11 +390,15 @@ void GraphicsView::removeConnector(GUIConnector* pConnector)
     delete pConnector;
 }
 
+ComponentSystem *GraphicsView::getModelPointer()
+{
+    return this->mpModel;
+}
+
 
 //! @class GraphicsScene
 //! @brief The GraphicsScene class is a container for graphicsl components in a simulationmodel.
 //!
-
 
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
@@ -540,14 +544,21 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
 //! @see saveProjectTab(int index)
 void ProjectTabWidget::saveProjectTab()
 {
-    saveProjectTab(currentIndex());
+    saveProjectTab(currentIndex(), false);
+}
+
+//! Saves current project to a new model file.
+//! @see saveProjectTab(int index)
+void ProjectTabWidget::saveProjectTabAs()
+{
+    saveProjectTab(currentIndex(), true);
 }
 
 
 //! Saves project at index.
 //! @param index defines which project to save.
 //! @see saveProjectTab()
-void ProjectTabWidget::saveProjectTab(int index)
+void ProjectTabWidget::saveProjectTab(int index, bool saveAs)
 {
     ProjectTab *currentTab = qobject_cast<ProjectTab *>(widget(index));
     QString tabName = tabText(index);
@@ -570,7 +581,7 @@ void ProjectTabWidget::saveProjectTab(int index)
         std::cout << "ProjectTabWidget: " << qPrintable(QString("Project: ").append(tabName).append(QString(" saved"))) << std::endl;
         currentTab->mIsSaved = true;
     }
-    this->saveModel();
+    this->saveModel(saveAs);
 }
 
 
@@ -598,7 +609,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
         case QMessageBox::Save:
             // Save was clicked
             std::cout << "ProjectTabWidget: " << "Save and close" << std::endl;
-            saveProjectTab(index);
+            saveProjectTab(index, false);
             removeTab(index);
             return true;
         case QMessageBox::Discard:
@@ -797,14 +808,17 @@ void ProjectTabWidget::loadModel()
                 pTempConnector->drawLine(pTempConnector->startPos, newPos);
                 endPort->getComponent()->addConnector(pTempConnector);
                 pTempConnector->setEndPort(endPort);
+                pTempConnector->getStartPort()->hide();
+                pTempConnector->getEndPort()->hide();
                 pCurrentView->mIsCreatingConnector = false;
 
                 std::stringstream tempStream;
                 tempStream << startPort->getComponent()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
                               endPort->getComponent()->getName().toStdString() << " " << endPort->getPortNumber();
                 pCurrentView->mConnectionMap.insert(QString(tempStream.str().c_str()), pTempConnector);
-
+                bool success = pCurrentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
             }
+
         }
     }
 }
@@ -812,13 +826,13 @@ void ProjectTabWidget::loadModel()
 
 //! Saves the model in the active project tab to a model file.
 //! @see saveProjectTab()
-void ProjectTabWidget::saveModel()
+void ProjectTabWidget::saveModel(bool saveAs)
 {
     ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
     GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
 
     QString modelFileName;
-    if(pCurrentTab->mModelFileName.isEmpty())
+    if(pCurrentTab->mModelFileName.isEmpty() | saveAs)
     {
         QDir fileDialogSaveDir;
         modelFileName = QFileDialog::getSaveFileName(this, tr("Save Model File"),

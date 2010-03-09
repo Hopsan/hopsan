@@ -51,6 +51,7 @@ public:
     ProjectTab *mpParentProjectTab;
     QMap<QString, GUIComponent *> mComponentMap;
     QMap<QString, GUIConnector *> mConnectionMap;
+    ComponentSystem *getModelPointer();
 
 signals:
     void draggingSomething();
@@ -135,12 +136,13 @@ public slots:
     void addProjectTab(ProjectTab *projectTab, QString tabName="Untitled");
     void addNewProjectTab(QString tabName="Untitled");
     void saveProjectTab();
-    void saveProjectTab(int index);
+    void saveProjectTabAs();
+    void saveProjectTab(int index, bool saveAs);
     bool closeProjectTab(int index);
     bool closeAllProjectTabs();
     void simulateCurrent();
     void loadModel();
-    void saveModel();
+    void saveModel(bool saveAs);
 
 signals:
     void checkMessages();
