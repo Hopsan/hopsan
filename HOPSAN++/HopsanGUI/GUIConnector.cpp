@@ -48,12 +48,18 @@ GUIConnector::~GUIConnector()
     //! @todo more cleanup
 }
 
-void GUIConnector::SetEndPos(qreal x2, qreal y2)
-{
-    this->endPos.setX(x2);
-    this->endPos.setY(y2);
-}
 
+//TODO: This function appears to be unused. Should probably be deleted.
+//void GUIConnector::SetEndPos(qreal x2, qreal y2)
+//{
+//    this->endPos.setX(x2);
+//    this->endPos.setY(y2);
+//}
+
+//! Sets the pointer to the start port of a connector.
+//! @see setEndPort(GUIPort *port)
+//! @see getStartPort()
+//! @see getEndPort()
 void GUIConnector::setStartPort(GUIPort *port)
 {
     this->mpStartPort = port;
@@ -61,6 +67,10 @@ void GUIConnector::setStartPort(GUIPort *port)
     connect(this->mpStartPort->getComponent(),SIGNAL(componentDeleted()),this,SLOT(deleteMe()));
 }
 
+//! Sets the pointer to the end port of a connector, and executes the final tasks before creation of the connetor is complete. Then flags that the end port is connected.
+//! @see setStartPort(GUIPort *port)
+//! @see getStartPort()
+//! @see getEndPort()
 void GUIConnector::setEndPort(GUIPort *port)
 {
     this->mpEndPort = port;
@@ -79,16 +89,29 @@ void GUIConnector::setEndPort(GUIPort *port)
     this->setPassive();
 }
 
+//! Returns the pointer to the start port of a connector.
+//! @see setStartPort(GUIPort *port)
+//! @see setEndPort(GUIPort *port)
+//! @see getEndPort()
 GUIPort *GUIConnector::getStartPort()
 {
     return this->mpStartPort;
 }
 
+//! Returns the pointer to the end port of a connector.
+//! @see setStartPort(GUIPort *port)
+//! @see setEndPort(GUIPort *port)
+//! @see getStartPort()
 GUIPort *GUIConnector::getEndPort()
 {
     return this->mpEndPort;
 }
 
+//! Updates the first and last two lines of a connector with respect to start and end positions.
+//! @see setStartPort(GUIPort *port)
+//! @see setEndPort(GUIPort *port)
+//! @see getStartPort()
+//! @see getEndPort()
 void GUIConnector::updatePos()
 {
     QPointF startPort = this->getStartPort()->mapToScene(this->getStartPort()->boundingRect().center());
@@ -96,6 +119,9 @@ void GUIConnector::updatePos()
     this->drawLine(startPort, endPort);
 }
 
+//! Slot that activates a connector if a line is selected.
+//! @see setActive()
+//! @see setPassive()
 void GUIConnector::doSelect(bool lineSelected)
 {
     if(this->mEndPortConnected)     //Non-finished lines shall not be selectable
@@ -113,6 +139,8 @@ void GUIConnector::doSelect(bool lineSelected)
     }
 }
 
+//! Activates a connector, activates each line and connects delete function with delete key.
+//! @see setPassive()
 void GUIConnector::setActive()
 {
     connect(this->mpParentView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
@@ -127,6 +155,8 @@ void GUIConnector::setActive()
     }
 }
 
+//! Deactivates a connector, deactivates each line and disconnects delete function with delete key.
+//! @see setActive()
 void GUIConnector::setPassive()
 {
     disconnect(this->mpParentView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
@@ -140,6 +170,9 @@ void GUIConnector::setPassive()
     }
 }
 
+//! Changes connector style back to normal if it is not active. Used when mouse stops hovering a line.
+//! @see setHovered()
+//! @see setPassive()
 void GUIConnector::setUnHovered()
 {
     if(this->mEndPortConnected && !this->mIsActive)
@@ -151,6 +184,8 @@ void GUIConnector::setUnHovered()
     }
 }
 
+//! Changes connector style to hovered if it is not active. Used when mouse starts hovering a line.
+//! @see setUnHovered()
 void GUIConnector::setHovered()
 {
     if(this->mEndPortConnected && !this->mIsActive)

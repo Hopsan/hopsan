@@ -673,7 +673,7 @@ void ProjectTabWidget::simulateCurrent()
 
 }
 
-
+//! Loads a model from a file and opens it in a new project tab.
 void ProjectTabWidget::loadModel()
 {
     QDir fileDialogOpenDir;
@@ -783,7 +783,8 @@ void ProjectTabWidget::loadModel()
 }
 
 
-
+//! Saves the model in the active project tab to a model file.
+//! @see saveProjectTab()
 void ProjectTabWidget::saveModel()
 {
     ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
