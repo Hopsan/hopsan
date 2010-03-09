@@ -38,7 +38,7 @@ ParameterDialog::ParameterDialog(Component *coreComponent, QWidget *parent)
     {
         mVarVector.push_back(new QLabel(QString::fromStdString(it->getName())));
         mVarVector.back()->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-        mDescriptionVector.push_back(new QLabel(QString::fromStdString(it->getDesc())));
+        mDescriptionVector.push_back(new QLabel(QString::fromStdString(it->getDesc()).append(", ")));
         mUnitVector.push_back(new QLabel(QString::fromStdString(it->getUnit())));
 
         mValueVector.push_back(new QLineEdit());

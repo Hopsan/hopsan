@@ -266,6 +266,12 @@ bool Component::isComponentSignal()
 }
 
 
+double *Component::getTimePtr()
+{
+    return &mTime;
+}
+
+
 Port* Component::addPort(const string portname, const string porttype, const NodeTypeT nodetype, const int id)
 {
     //! @todo handle trying to add multiple ports with same name or pos
