@@ -27,6 +27,11 @@
 #include <cstdlib>
 
 
+//! @class GraphicsView
+//! @brief The GraphicsView class is a class which display the content of a scene of components.
+//!
+
+
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
 GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, ProjectTab *parent)
@@ -378,6 +383,11 @@ void GraphicsView::removeConnector(GUIConnector* pConnector)
 }
 
 
+//! @class GraphicsScene
+//! @brief The GraphicsScene class is a container for graphicsl components in a simulationmodel.
+//!
+
+
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
 GraphicsScene::GraphicsScene(ProjectTab *parent)
@@ -387,7 +397,6 @@ GraphicsScene::GraphicsScene(ProjectTab *parent)
     setSceneRect(0.0, 0.0, 800.0, 600.0);
     connect(this, SIGNAL(changed( const QList<QRectF> & )),this->parent(), SLOT(hasChanged()));
 }
-
 
 
 //! @class ProjectTab

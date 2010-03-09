@@ -16,6 +16,13 @@
 #include "mainwindow.h"
 
 
+//! @class LibraryWidget
+//! @brief The LibraryWidget class is a class which store and display component libraries.
+//!
+//! This class is a widget whisch can be included in the main window.
+//!
+
+
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
 LibraryContent::LibraryContent(QWidget *parent)

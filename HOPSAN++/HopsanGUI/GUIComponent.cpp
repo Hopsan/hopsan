@@ -291,10 +291,8 @@ void GUIComponent::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 }
 
 
-void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+void GUIComponent::openParameterDialog()
 {
-    std::cout << "GUIComponent.cpp: " << "contextMenuEvent " << std::endl;
-
     vector<CompParameter>::iterator it;
 
     vector<CompParameter> paramVector = this->mpCoreComponent->getParameterVector();
@@ -305,6 +303,24 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
     ParameterDialog *dialog = new ParameterDialog(mpCoreComponent,mpParentGraphicsView);
     dialog->exec();
+}
+
+
+void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    std::cout << "GUIComponent.cpp: " << "mouseDoubleClickEvent " << std::endl;
+
+    openParameterDialog();
+
+}
+
+
+void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+    std::cout << "GUIComponent.cpp: " << "contextMenuEvent " << std::endl;
+
+    openParameterDialog();
+
 }
 
 //void GUIComponent::keyPressEvent( QKeyEvent *event )

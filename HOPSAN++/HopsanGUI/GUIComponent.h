@@ -51,6 +51,8 @@ protected:
     //void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     //void keyPressEvent( QKeyEvent *event );
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void openParameterDialog();
 
 signals:
     void componentMoved();

@@ -14,6 +14,13 @@
 #include "ProjectTabWidget.h"
 
 
+//! @class SimulationSetupWidget
+//! @brief The SimulationSetupWidget class is a Widget used to interact with simulation times.
+//!
+//! It contains textboxes which the user use to setup simulations with (start, stop and timestep).
+//!
+
+
 //! Constructor.
 //! @param title is the title of the group box.
 //! @param parent defines a parent to the new instanced object.

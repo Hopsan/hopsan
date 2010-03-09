@@ -15,6 +15,13 @@
 #include "mainwindow.h"
 
 
+//! @class ParameterDialog
+//! @brief The ParameterDialog class is a Widget used to interact with component parameters.
+//!
+//! It read and write parameters to the core components.
+//!
+
+
 //! Constructor.
 //! @param coreComponent is a ponter to the core component.
 //! @param parent defines a parent to the new instanced object.
