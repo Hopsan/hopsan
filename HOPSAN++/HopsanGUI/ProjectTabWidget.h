@@ -50,6 +50,7 @@ public:
     GUIConnector *getTempConnector();
     ProjectTab *mpParentProjectTab;
     QMap<QString, GUIComponent *> mComponentMap;
+    QMap<QString, GUIConnector *> mConnectionMap;
 
 signals:
     void draggingSomething();

@@ -31,6 +31,8 @@ GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen 
     this->mLineNumber = lineNumber;
     this->setAcceptHoverEvents(true);
     this->mParentConnectorEndPortConnected = false;
+    this->startPos = QPointF(x1,y1);
+    this->endPos = QPointF(x2,y2);
 }
 
 GUIConnectorLine::~GUIConnectorLine()

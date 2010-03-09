@@ -19,6 +19,7 @@ public:
     QGraphicsView *getParentView();
     GUIComponent *getComponent();
     void magnify(bool blowup);
+    int getPortNumber();
 
     Port *mpCorePort;
 

@@ -341,9 +341,9 @@ void GraphicsView::addConnector(GUIPort *pPort)
         qDebug() << "DEBUG 0.4";
         this->mIsCreatingConnector = true;
         pPort->getComponent()->addConnector(mpTempConnector);
+        mpTempConnector->addLine();
         mpTempConnector->setStartPort(pPort);
         qDebug() << "DEBUG 0.5";
-        mpTempConnector->addLine();
         qDebug() << "DEBUG 0.6";
     }
     else
@@ -364,6 +364,13 @@ void GraphicsView::addConnector(GUIPort *pPort)
 
             mpTempConnector->getStartPort()->hide();
             mpTempConnector->getEndPort()->hide();
+
+            std::stringstream tempStream;
+            tempStream << mpTempConnector->getStartPort()->getComponent()->getName().toStdString() << " " << mpTempConnector->getStartPort()->getPortNumber() << " " <<
+                          mpTempConnector->getEndPort()->getComponent()->getName().toStdString() << " " << mpTempConnector->getEndPort()->getPortNumber();
+            this->mConnectionMap.insert(QString(tempStream.str().c_str()), mpTempConnector);
+
+            //qDebug() << mConnectionVector.last();
         }
         emit checkMessages();
         //
@@ -724,7 +731,8 @@ void ProjectTabWidget::loadModel()
                 inputStream >> endComponentName;
                 inputStream >> endPortNumber;
                 qDebug() << "DEBUG 0";
-                pCurrentView->addConnector(pCurrentView->getComponent(QString(startComponentName.c_str()))->getPort(startPortNumber));
+                GUIPort *startPort = pCurrentView->getComponent(QString(startComponentName.c_str()))->getPort(startPortNumber);
+                pCurrentView->addConnector(startPort);
                 qDebug() << "DEBUG 1";
                 GUIConnector *pTempConnector = pCurrentView->getTempConnector();
                 qDebug() << "DEBUG 2";
@@ -761,6 +769,12 @@ void ProjectTabWidget::loadModel()
                 endPort->getComponent()->addConnector(pTempConnector);
                 pTempConnector->setEndPort(endPort);
                 pCurrentView->mIsCreatingConnector = false;
+
+                std::stringstream tempStream;
+                tempStream << startPort->getComponent()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
+                              endPort->getComponent()->getName().toStdString() << " " << endPort->getPortNumber();
+                pCurrentView->mConnectionMap.insert(QString(tempStream.str().c_str()), pTempConnector);
+
             }
         }
     }
@@ -789,5 +803,34 @@ void ProjectTabWidget::saveModel()
         //<< " " << it.value()->mapToScene(it.value()->pos()).x() << " " << it.value()->mapToScene(it.value()->pos()).y() << std::endl;
     }
 
+    QMap<QString, GUIConnector *>::iterator it2;
+    for(it2 = pCurrentView->mConnectionMap.begin(); it2!=pCurrentView->mConnectionMap.end(); ++it2)
+    {
+
+
+        modelFile << "CONNECT " << it2.key().toStdString();
+
+                //std::vector<GUIConnectorLine*> mLines;
+        for(int i = 0; i!=it2.value()->mLines.size(); ++i)
+        {
+            int geometry = it2.value()->mLines[i]->getGeometry();
+            switch (geometry)
+            {
+                case 0:
+                    modelFile << " VERTICAL " << (it2.value()->mLines[i]->endPos.y()-it2.value()->mLines[i]->startPos.y());
+                    break;
+                case 1:
+                    modelFile << " HORIZONTAL " << (it2.value()->mLines[i]->endPos.x()-it2.value()->mLines[i]->startPos.x());
+                    break;
+                case 2:
+                    modelFile << " DIAGONAL" << (it2.value()->mLines[i]->endPos.x()-it2.value()->mLines[i]->startPos.x()) << (it2.value()->mLines[i]->endPos.y()-it2.value()->mLines[i]->startPos.y());
+                    break;
+            }
+
+        }
+
+        modelFile << "\n";
+
+    }
 }
 

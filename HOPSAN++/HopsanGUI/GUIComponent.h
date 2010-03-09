@@ -34,6 +34,8 @@ public:
     void setName(QString name);
     QString getTypeName();
 
+    int getPortNumber(GUIPort *);
+
     void showPorts(bool visible);
     GUIPort *getPort(int number);
 

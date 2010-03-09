@@ -33,6 +33,7 @@ public:
     GUIConnectorLine *getOldLine();
     GUIConnectorLine *getLastLine();
     GUIConnectorLine *getThisLine();
+    std::vector<GUIConnectorLine*> mLines;
 
 public slots:
     void updatePos();
@@ -52,7 +53,6 @@ protected:
     virtual void SetEndPos(qreal x2, qreal y2);
 
 private:
-    std::vector<GUIConnectorLine*> mLines;
     GUIPort *mpStartPort;
     GUIPort *mpEndPort;
     GraphicsView *mpParentView;

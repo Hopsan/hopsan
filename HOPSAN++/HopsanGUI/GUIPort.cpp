@@ -208,3 +208,9 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
     newPlot->show();
 
 }
+
+
+int GUIPort::getPortNumber()
+{
+    return this->getComponent()->getPortNumber(this);
+}

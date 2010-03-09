@@ -376,6 +376,21 @@ void GUIComponent::showPorts(bool visible)
 }
 
 
+int GUIComponent::getPortNumber(GUIPort *port)
+{
+    for (int i = 0; i != mPortListPtrs.size(); ++i)
+    {
+        qDebug() << "Checking port " << i;
+        if(port == mPortListPtrs.value(i))
+        {
+            qDebug() << "Match!";
+            return i;
+        }
+    }
+    assert(false);      //Todo: Cast exception
+}
+
+
 GUIComponentNameTextItem::GUIComponentNameTextItem(GUIComponent *pParent)
     :   QGraphicsTextItem(pParent)
 {

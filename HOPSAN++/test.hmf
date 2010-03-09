@@ -3,7 +3,7 @@ COMPONENT HydraulicLaminarOrifice orifice1 300 350
 COMPONENT HydraulicPressureSource psource2 150 500
 COMPONENT HydraulicLaminarOrifice orifice2 300 500
 COMPONENT HydraulicCylinderC agda75 450 200
-CONNECT psource1 0 orifice1 0
-CONNECT orifice1 1 agda75 0
-CONNECT psource2 0 orifice2 0
+CONNECT psource1 0 orifice1 0 HORIZONTAL 100 VERTICAL 200
+CONNECT orifice1 1 agda75 0 HORIZONTAL 100 VERTICAL 200
+CONNECT psource2 0 orifice2 0 HORIZONTAL 100 VERTICAL 200
 CONNECT orifice2 1 agda75 1 HORIZONTAL 500 VERTICAL -40 HORIZONTAL -300 VERTICAL 100
