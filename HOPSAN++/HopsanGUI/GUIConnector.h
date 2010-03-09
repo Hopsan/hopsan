@@ -50,7 +50,7 @@ signals:
     void endPortConnected();
 
 protected:
-    virtual void SetEndPos(qreal x2, qreal y2);
+    //virtual void SetEndPos(qreal x2, qreal y2);
 
 private:
     GUIPort *mpStartPort;
