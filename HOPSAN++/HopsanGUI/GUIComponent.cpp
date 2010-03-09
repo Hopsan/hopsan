@@ -249,11 +249,15 @@ void GUIComponent::setName(QString newName)
     }
 }
 
+//! Returns the port with the specified number.
+//! @see getPortNumber(GUIPort *port)
 GUIPort *GUIComponent::getPort(int number)
 {
     return this->mPortListPtrs[number];
 }
 
+
+//! Tells the component to ask its parent to delete it.
 void GUIComponent::deleteMe()
 {
     qDebug() << "GUIComponent:: inside delete component";
@@ -267,12 +271,13 @@ void GUIComponent::deleteMe()
 }
 
 
+//! Returns a string with the component type.
 QString GUIComponent::getTypeName()
 {
     return this->mComponentTypeName;
 }
 
-
+//! Event when mouse cursor enters component icon.
 void GUIComponent::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     if(!this->isSelected())
@@ -284,6 +289,7 @@ void GUIComponent::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 }
 
 
+//! Event when mouse cursor leaves component icon.
 void GUIComponent::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     if(!this->isSelected())
@@ -309,6 +315,7 @@ void GUIComponent::openParameterDialog()
 }
 
 
+//! Event when double clicking on component icon.
 void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     std::cout << "GUIComponent.cpp: " << "mouseDoubleClickEvent " << std::endl;
@@ -316,6 +323,7 @@ void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     openParameterDialog();
 
 }
+
 
 
 void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
@@ -335,17 +343,8 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 //    }
 //}
 
-//
-//void GUIComponent::keyPressEvent( QKeyEvent *event )
-//{
-//    if (event->key() == Qt::Key_R)
-//    {
-//        qDebug() << "Rotate";
-//        this->setRotation(this->rotation()+90);
-//    }
-//}
 
-
+//! Handles item change events.
 QVariant GUIComponent::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == QGraphicsItem::ItemSelectedHasChanged)
@@ -372,6 +371,7 @@ QVariant GUIComponent::itemChange(GraphicsItemChange change, const QVariant &val
 }
 
 
+//! Shows or hides the port, depending on the input boolean and whether or not they are connected.
 void GUIComponent::showPorts(bool visible)
 {
     QList<GUIPort*>::iterator i;
@@ -391,6 +391,8 @@ void GUIComponent::showPorts(bool visible)
 }
 
 
+//! Figures out the number of a component port by using a pointer to the port.
+//! @see getPort(int number)
 int GUIComponent::getPortNumber(GUIPort *port)
 {
     for (int i = 0; i != mPortListPtrs.size(); ++i)
@@ -406,6 +408,7 @@ int GUIComponent::getPortNumber(GUIPort *port)
 }
 
 
+//! Rotates a component 90 degrees clockwise, and tells the connectors that the component has moved.
 void GUIComponent::rotate()
 {
     this->setTransformOriginPoint(this->boundingRect().center());
@@ -414,33 +417,37 @@ void GUIComponent::rotate()
 }
 
 
+//! Returns an integer that describes the position of the component name text.
+//! @see setNameTextPos(int textPos)
+//! @see fixTextPosition(QPointF pos)
 int GUIComponent::getNameTextPos()
 {
     return mpNameTextPos;
 }\
 
+
+//! Updates the name text position, and moves the text to the correct position.
+//! @see getNameTextPos()
+//! @see fixTextPosition(QPointF pos)
 void GUIComponent::setNameTextPos(int textPos)
 {
-mpNameTextPos = textPos;
+    mpNameTextPos = textPos;
 
-double x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
-double y1 = mTextOffset*mpIcon->boundingRect().height();
+    double x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
+    double y1 = mTextOffset*mpIcon->boundingRect().height();
 
-double x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
-double y2 = -mTextOffset*mpNameText->boundingRect().height();
+    double x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
+    double y2 = -mTextOffset*mpNameText->boundingRect().height();
 
-switch(textPos)
-{
-case 0:
-    mpNameText->setPos(x2,y2);
-    break;
-case 1:
-    mpNameText->setPos(x1,y1);
-    break;
-}
-
-
-
+    switch(textPos)
+    {
+    case 0:
+        mpNameText->setPos(x2,y2);
+        break;
+    case 1:
+        mpNameText->setPos(x1,y1);
+        break;
+    }
 }
 
 GUIComponentNameTextItem::GUIComponentNameTextItem(GUIComponent *pParent)

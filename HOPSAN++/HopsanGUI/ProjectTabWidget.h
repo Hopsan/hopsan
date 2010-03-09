@@ -54,7 +54,6 @@ public:
     ComponentSystem *getModelPointer();
 
 signals:
-    void draggingSomething();
     void keyPressDelete();
     void keyPressR();
     void viewClicked();

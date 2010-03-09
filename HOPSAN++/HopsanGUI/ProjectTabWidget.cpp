@@ -136,6 +136,11 @@ GUIConnector *GraphicsView::getTempConnector()
     return this->mpTempConnector;
 }
 
+
+//! Adds a new component to the GraphicsView.
+//! @param parameterType is a string defining the type of component.
+//! @param position is the position where the component will be created.
+//! @param name will be the name of the component.
 void GraphicsView::addComponent(QString parameterType, QPoint position, QString name)
 {
     qDebug() << "Request to add component at (" << position.x() << " " << position.y() << ")";
@@ -166,6 +171,9 @@ void GraphicsView::addComponent(QString parameterType, QPoint position, QString 
     qDebug() << "Component created at (" << pGuiComponent->x() << " " << pGuiComponent->y() << ")";
 }
 
+
+//! Delete componenet with specified name
+//! @param componentName is the name of the componenet to delete
 void GraphicsView::deleteComponent(QString componentName)
 {
     //qDebug() << "In delete component";
@@ -209,6 +217,8 @@ void GraphicsView::renameComponent(QString oldName, QString newName)
     }
 }
 
+
+//! Tells whether or not a component with specified name exist in the GraphicsView
 bool GraphicsView::haveComponent(QString name)
 {
     if (mComponentMap.count(name) > 0)
@@ -257,6 +267,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     QGraphicsView::keyPressEvent ( event );
 }
 
+
 void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 {
     this->setDragMode(QGraphicsView::RubberBandDrag);
@@ -275,6 +286,7 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
     QGraphicsView::keyReleaseEvent ( event );
 }
 
+
 //! Defines what happens when the mouse is moving in a GraphicsView.
 //! @param event contains information of the mouse moving operation.
 void GraphicsView::mouseMoveEvent(QMouseEvent *event)
@@ -291,6 +303,8 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 }
 
 
+//! Defines what happens when clicking in a GraphicsView.
+//! @param event contains information of the mouse click operation.
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::RightButton)
@@ -314,24 +328,20 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         mpTempConnector->addLine();
     }
     emit viewClicked();
-    //case InsertLine:
-//        lineH = new QGraphicsLineItem(QLineF(event->x(), event->y(), event->x(), event->y()));
-//        lineV = new QGraphicsLineItem(QLineF(event->x(), event->y(), event->x(), event->y()));
-//        lineH->setPen(QPen(myLineColor, 2));
-//        lineV->setPen(QPen(myLineColor, 2));
-//        this->scene()->addItem(lineH);
-//        this->scene()->addItem(lineV);
-//        //break;
-
-        QGraphicsView::mousePressEvent(event);
+    QGraphicsView::mousePressEvent(event);
 }
 
+
+//! Returns a pointer to the component with specified name.
 GUIComponent *GraphicsView::getComponent(QString name)
 {
     //qDebug() << mComponentMap.size();
     return mComponentMap.find(name).value();
+    //! @todo Cast exception or something if component is not found
 }
 
+
+//! Begin creation of connector or complete creation of connector depending on the mIsCreatingConnector boolean.
 void GraphicsView::addConnector(GUIPort *pPort)
 {
     if (!mIsCreatingConnector)
@@ -730,6 +740,7 @@ void ProjectTabWidget::simulateCurrent()
 }
 
 //! Loads a model from a file and opens it in a new project tab.
+//! @see saveModel(bool saveAs)
 void ProjectTabWidget::loadModel()
 {
     QDir fileDialogOpenDir;
@@ -846,7 +857,9 @@ void ProjectTabWidget::loadModel()
 
 
 //! Saves the model in the active project tab to a model file.
+//! @param saveAs tells whether or not an already existing file name shall be used
 //! @see saveProjectTab()
+//! @see loadModel()
 void ProjectTabWidget::saveModel(bool saveAs)
 {
     ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());

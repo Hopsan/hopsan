@@ -14,6 +14,17 @@
 //#include <QGraphicsScene>
 #include <vector>
 
+
+//! Constructor.
+//! @param x1 is the x-coordinate of the start position.
+//! @param y1 is the y-coordinate of the start position.
+//! @param x2 is the x-coordinate of the end position.
+//! @param y2 is the y-coordinate of the end position.
+//! @param passivePen defines the default width and color of the line.
+//! @param activePen defines the width and color of the line when it is selected.
+//! @param hoverPen defines the width and color of the line when hovered by the mouse cursor.
+//! @param *parentView is a pointer to the GraphicsView the connector belongs to.
+//! @param parent is the parent of the port.
 GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, QPen passivePen, QPen activePen, QPen hoverPen, GraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
@@ -42,6 +53,7 @@ GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, QPen passiveP
     connect(this,SIGNAL(endPortConnected()),mLines[mLines.size()-1],SLOT(setConnected()));
 }
 
+//! Destructor.
 GUIConnector::~GUIConnector()
 {
     mLines.clear();
@@ -50,6 +62,7 @@ GUIConnector::~GUIConnector()
 
 
 //! Sets the pointer to the start port of a connector.
+//! @param *port is the pointer to the new start port.
 //! @see setEndPort(GUIPort *port)
 //! @see getStartPort()
 //! @see getEndPort()
@@ -62,6 +75,7 @@ void GUIConnector::setStartPort(GUIPort *port)
 
 
 //! Sets the pointer to the end port of a connector, and executes the final tasks before creation of the connetor is complete. Then flags that the end port is connected.
+//! @param *port is the pointer to the new end port.
 //! @see setStartPort(GUIPort *port)
 //! @see getStartPort()
 //! @see getEndPort()
@@ -118,6 +132,7 @@ void GUIConnector::updatePos()
 
 
 //! Slot that activates a connector if a line is selected.
+//! @param lineSelected tells whether the signal was induced by selection or deselection of a line.
 //! @see setActive()
 //! @see setPassive()
 void GUIConnector::doSelect(bool lineSelected)
@@ -200,11 +215,11 @@ void GUIConnector::setHovered()
 
 
 //! Updates the first and last two lines of a connector with respect to start position, end position and the geometry of the lines.
+//! @param startPos is the new start position of the connector.
+//! @param endPos is the new end pospition of the connector.
 //! @see updateLine(int lineNumber)
 void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
 {
-    //startPos = this->mapFromScene(startPos);
-    //endPos = this->mapFromScene(endPos);
 
     //////////////Only used when moving components:///////////////
     getLine(0)->setLine(getLine(0)->mapFromScene(startPos).x(),
@@ -256,7 +271,7 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
 
 
 //! Adds a new line at the end of the connector. Used when creating lines manually in the view.
-//! @see addFixedLine(int length, int heigth, GUIConnectorLine::geometryType geometry)
+//! @see addFixedLine(int length, int height, GUIConnectorLine::geometryType geometry)
 void GUIConnector::addLine()
 {
     mpTempLine = new GUIConnectorLine(mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
@@ -273,9 +288,12 @@ void GUIConnector::addLine()
 }
 
 
-//! Adds a line with specified geometry and length/heigth at the end of the connector. Used when loading connectors from a model file.
+//! Adds a line with specified geometry and length/height at the end of the connector. Used when loading connectors from a model file.
+//! @param length is the size of the line in the y-direction. Not used for vertical lines.
+//! @param height is the size of the line in the x-direction. Not used for horizontal lines.
+//! @param geometry defines whether the line is horizontal, vertical or diagonal.
 //! @see addLine()
-void GUIConnector::addFixedLine(int length, int heigth, GUIConnectorLine::geometryType geometry)
+void GUIConnector::addFixedLine(int length, int height, GUIConnectorLine::geometryType geometry)
 {
     //If only two lines exist and if this check has not been done before, we are at the beginning.
     //Therefore we must remove the automatically created lines, and used the connector start
@@ -303,10 +321,10 @@ void GUIConnector::addFixedLine(int length, int heigth, GUIConnectorLine::geomet
         else if(geometry == GUIConnectorLine::VERTICAL)
         {
             qDebug() << "VERTICAL from" <<      this->startPos.x() <<       this->startPos.y();
-            qDebug() << "VERTICAL to" <<        this->startPos.x() <<       this->startPos.y()+heigth;
+            qDebug() << "VERTICAL to" <<        this->startPos.x() <<       this->startPos.y()+height;
             QPointF tempStartPos = mapFromScene(this->startPos);
             QPointF tempEndPos = this->startPos;
-            tempEndPos.setY(tempEndPos.y()+heigth);
+            tempEndPos.setY(tempEndPos.y()+height);
             tempEndPos = mapFromScene(tempEndPos);
             this->mLines.front()->setLine(      tempStartPos.x(),       tempStartPos.y(),
                                                 tempEndPos.x(),         tempEndPos.y());
@@ -316,11 +334,11 @@ void GUIConnector::addFixedLine(int length, int heigth, GUIConnectorLine::geomet
         else if(geometry == GUIConnectorLine::DIAGONAL)
         {
                 qDebug() << "DIAGONAL from" <<  this->startPos.x() <<           this->startPos.y();
-                qDebug() << "DIAGONAL to" <<    this->startPos.x()+length <<    this->startPos.y()+heigth;
+                qDebug() << "DIAGONAL to" <<    this->startPos.x()+length <<    this->startPos.y()+height;
                 QPointF tempStartPos = mapFromScene(this->startPos);
                 QPointF tempEndPos = this->startPos;
-                tempEndPos.setX(tempEndPos.x()+heigth);
-                tempEndPos.setY(tempEndPos.y()+heigth);
+                tempEndPos.setX(tempEndPos.x()+height);
+                tempEndPos.setY(tempEndPos.y()+height);
                 tempEndPos = mapFromScene(tempEndPos);
                 this->mLines.front()->setLine(      tempStartPos.x(),       tempStartPos.y(),
                                                     tempEndPos.x(),         tempEndPos.y());
@@ -348,9 +366,9 @@ void GUIConnector::addFixedLine(int length, int heigth, GUIConnectorLine::geomet
         else if(geometry == GUIConnectorLine::VERTICAL)
         {
             qDebug() << "VERTICAL from" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y();
-            qDebug() << "VERTICAL to" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y()+heigth;
+            qDebug() << "VERTICAL to" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y()+height;
             QPointF tempEndPos = mapToScene(mLines[mLines.size()-1]->line().p2());
-            tempEndPos.setY(tempEndPos.y()+heigth);
+            tempEndPos.setY(tempEndPos.y()+height);
             tempEndPos = mapFromScene(tempEndPos);
             mpTempLine = new GUIConnectorLine(mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
                                               tempEndPos.x(), tempEndPos.y(),
@@ -359,10 +377,10 @@ void GUIConnector::addFixedLine(int length, int heigth, GUIConnectorLine::geomet
         else if(geometry == GUIConnectorLine::DIAGONAL)
         {
             qDebug() << "DIAGONAL from" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y();
-            qDebug() << "DIAGONAL to" << mLines[mLines.size()-1]->line().p2().x()+length << mLines[mLines.size()-1]->line().p2().y()+heigth;
+            qDebug() << "DIAGONAL to" << mLines[mLines.size()-1]->line().p2().x()+length << mLines[mLines.size()-1]->line().p2().y()+height;
             QPointF tempEndPos = mapToScene(mLines[mLines.size()-1]->line().p2());
             tempEndPos.setX(tempEndPos.x()+length);
-            tempEndPos.setY(tempEndPos.y()+heigth);
+            tempEndPos.setY(tempEndPos.y()+height);
             tempEndPos = mapFromScene(tempEndPos);
             mpTempLine = new GUIConnectorLine(mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
                                               tempEndPos.x(), tempEndPos.y(),
@@ -382,6 +400,7 @@ void GUIConnector::addFixedLine(int length, int heigth, GUIConnectorLine::geomet
 
 
 //! Removes last line from a connector and updates it, or removes the entire connector if only two lines remains. Used when right clicking during line creation.
+//! @param cursorPos is the current cursor position. The end of the connector shall point here.
 void GUIConnector::removeLine(QPointF cursorPos)
 {
     if (getNumberOfLines() > 2)
@@ -411,6 +430,7 @@ void GUIConnector::deleteMe()
 }
 
 //! Updates the lines before and after the specified lines. Used to make lines follow each other when they are moved.
+//! @param lineNumber is the number of the line that has moved.
 //! @see updatePos()
 //! @see drawLine(QPointF startPos, QPointF endPos)
 void GUIConnector::updateLine(int lineNumber)
@@ -484,6 +504,7 @@ GUIConnectorLine *GUIConnector::getThisLine()
 
 
 //! Returns the line with specified number.
+//! @param line is the number of the wanted line.
 //! @see getOldLine()
 //! @see getLastLine()
 //! @see getThisLine()
