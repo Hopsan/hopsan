@@ -131,6 +131,7 @@ GUIConnector *GraphicsView::getTempConnector()
 
 void GraphicsView::addComponent(QString parameterType, QPoint position, QString name)
 {
+    qDebug() << "Request to add component at (" << position.x() << " " << position.y() << ")";
     MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
     LibraryWidget *pLibrary = pMainWindow->mpLibrary;
     QStringList parameterData = pLibrary->getParameterData(parameterType);
@@ -154,6 +155,8 @@ void GraphicsView::addComponent(QString parameterType, QPoint position, QString 
     //this->mComponentMap.insert()
     this->mComponentMap.insert(pGuiComponent->getName(), pGuiComponent);
     //APAthis->scene()->addItem(guiComponent);
+
+    qDebug() << "Component created at (" << pGuiComponent->x() << " " << pGuiComponent->y() << ")";
 }
 
 void GraphicsView::deleteComponent(QString componentName)
@@ -267,7 +270,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseMoveEvent(event);
     QCursor cursor;
-    //std::cout << "X=" << this->mapFromGlobal(cursor.pos()).x() << "  " << "Y=" << this->mapFromGlobal(cursor.pos()).y() << std::endl;
+    qDebug() << "X=" << this->mapFromGlobal(cursor.pos()).x() << "  " << "Y=" << this->mapFromGlobal(cursor.pos()).y();
     this->setBackgroundBrush(Qt::NoBrush);
 
     if (this->mIsCreatingConnector)
@@ -760,8 +763,10 @@ void ProjectTabWidget::saveModel()
     QMap<QString, GUIComponent *>::iterator it;
     for(it = pCurrentView->mComponentMap.begin(); it!=pCurrentView->mComponentMap.end(); ++it)
     {
+        QPointF pos = it.value()->mapToScene(it.value()->boundingRect().center());
         modelFile << "COMPONENT " << it.value()->getTypeName().toStdString() << " " << it.key().toStdString()
-                  << " " << it.value()->x() << " " << it.value()->y() << std::endl;
+                  << " " << pos.x() << " " << pos.y() << std::endl;
+        //<< " " << it.value()->mapToScene(it.value()->pos()).x() << " " << it.value()->mapToScene(it.value()->pos()).y() << std::endl;
     }
 
 }
