@@ -693,9 +693,9 @@ void ProjectTabWidget::simulateCurrent()
     progressBar.setWindowTitle(tr("Simulate!"));
 
     InitializationThread actualInitialization(pCurrentTab->mpComponentSystem, startTime, finishTime, this);
+    size_t i=0;
     actualInitialization.start();
     actualInitialization.setPriority(QThread::TimeCriticalPriority);
-    size_t i=0;
     while (actualInitialization.isRunning())
     {
         progressBar.setValue(i++);
@@ -854,6 +854,7 @@ void ProjectTabWidget::loadModel()
 
         }
     }
+    emit checkMessages();
 }
 
 
