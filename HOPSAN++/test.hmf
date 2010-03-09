@@ -1,15 +1,15 @@
-COMPONENT MechanicForceTransformer ForceTransformer 804 160
-COMPONENT SignalSource Source 621 105
-COMPONENT MechanicTranslationalMass TranslationalMass 606 181
-COMPONENT HydraulicCylinderC agda75 450 200
-COMPONENT HydraulicLaminarOrifice orifice1 300 350
-COMPONENT HydraulicLaminarOrifice orifice2 300 500
-COMPONENT HydraulicPressureSource psource1 150 350
-COMPONENT HydraulicPressureSource psource2 150 500
-CONNECT ForceTransformer 1 TranslationalMass 1 HORIZONTAL 36 VERTICAL 77 HORIZONTAL -169 VERTICAL -56 HORIZONTAL -65
+COMPONENT MechanicForceTransformer ForceTransformer 555 260
+COMPONENT SignalSource Source 372 205
+COMPONENT MechanicTranslationalMass TranslationalMass 357 281
+COMPONENT HydraulicCylinderC agda75 198 196
+COMPONENT HydraulicLaminarOrifice orifice1 55 258
+COMPONENT HydraulicLaminarOrifice orifice2 55 358
+COMPONENT HydraulicPressureSource psource1 -95 258
+COMPONENT HydraulicPressureSource psource2 -95 358
+CONNECT ForceTransformer 1 TranslationalMass 1 HORIZONTAL 36 VERTICAL 70 HORIZONTAL -169 VERTICAL -49 HORIZONTAL -65
 CONNECT Source 0 ForceTransformer 0 HORIZONTAL 141 VERTICAL 55
-CONNECT agda75 2 TranslationalMass 0 HORIZONTAL 38 VERTICAL -19 HORIZONTAL 47.5
-CONNECT orifice1 1 agda75 0 HORIZONTAL 84.4 VERTICAL -127
-CONNECT orifice2 1 agda75 1 HORIZONTAL 500 VERTICAL -40 HORIZONTAL -371.6 VERTICAL -237
+CONNECT agda75 2 TranslationalMass 0 HORIZONTAL 38 VERTICAL 85 HORIZONTAL 50.5
+CONNECT orifice1 1 agda75 0 HORIZONTAL 77.4 VERTICAL -39
+CONNECT orifice2 1 agda75 1 HORIZONTAL 121.4 VERTICAL -139
 CONNECT psource1 0 orifice1 0 HORIZONTAL 97.5 VERTICAL 0
 CONNECT psource2 0 orifice2 0 HORIZONTAL 97.5 VERTICAL 0

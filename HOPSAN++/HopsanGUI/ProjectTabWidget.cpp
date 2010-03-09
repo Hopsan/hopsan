@@ -49,6 +49,7 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     this->setEnabled(true);
     this->setAcceptDrops(true);
     this->mIsCreatingConnector = false;
+    this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     //this->setTransformationAnchor(QGraphicsView::NoAnchor);
 
     MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent()->parent())); //Ugly!!!
