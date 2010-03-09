@@ -677,35 +677,40 @@ void ProjectTabWidget::simulateCurrent()
     double dt = finishTime - startTime;
     size_t nSteps = dt/pCurrentTab->mpComponentSystem->getDesiredTimeStep();
 
-    QProgressDialog initProgress("Initialize simulation...", "&Abort initialization", 0, 0, this);
-    initProgress.setWindowModality(Qt::WindowModal);
+    QProgressDialog progressBar(tr("Initialize simulation..."), tr("&Abort initialization"), 0, 0, this);
+    std::cout << progressBar.geometry().width() << " " << progressBar.geometry().height() << std::endl;
+    progressBar.setWindowModality(Qt::WindowModal);
+    progressBar.setWindowTitle(tr("Simulate!"));
+
     InitializationThread actualInitialization(pCurrentTab->mpComponentSystem, startTime, finishTime, this);
     actualInitialization.start();
     actualInitialization.setPriority(QThread::TimeCriticalPriority);
     size_t i=0;
     while (actualInitialization.isRunning())
     {
-        initProgress.setValue(i++);
-        if (initProgress.wasCanceled())
+        progressBar.setValue(i++);
+        if (progressBar.wasCanceled())
         {
             actualInitialization.terminate(); //! @todo not a good idea to terninate here
             break;
         }
     }
-    initProgress.setValue(i);
+    progressBar.setValue(i);
     actualInitialization.wait(); //Make sure actualSimulation do not goes out of scope during simulation
 
-    if (!initProgress.wasCanceled())
+    if (!progressBar.wasCanceled())
     {
-        QProgressDialog simProgress("Simulating...", "&Abort simulation", 0, nSteps, this);
-        simProgress.setWindowModality(Qt::WindowModal);
         SimulationThread actualSimulation(pCurrentTab->mpComponentSystem, startTime, finishTime, this);
         actualSimulation.start();
         actualSimulation.setPriority(QThread::TimeCriticalPriority);
+        progressBar.setLabelText(tr("Running simulation..."));
+        progressBar.setCancelButtonText(tr("&Abort simulation"));
+        progressBar.setMinimum(0);
+        progressBar.setMaximum(nSteps);
         while (actualSimulation.isRunning())
         {
-            simProgress.setValue((size_t)(*pCoreComponentTime/dt * nSteps));
-            if (simProgress.wasCanceled())
+            progressBar.setValue((size_t)(*pCoreComponentTime/dt * nSteps));
+            if (progressBar.wasCanceled())
             {
                 actualSimulation.terminate(); //! @todo not a good idea to terninate here
                 break;
@@ -716,9 +721,10 @@ void ProjectTabWidget::simulateCurrent()
 //            w.wait(&sleepmutex, 500);
 //            sleepmutex.unlock();
         }
-        simProgress.setValue(nSteps);
+        progressBar.setValue(nSteps);
         actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
     }
+
     emit checkMessages();
 
 }
