@@ -39,6 +39,8 @@ GUIConnectorLine::~GUIConnectorLine()
 {
 }
 
+
+//! Reimplementation of paint function. Removes the ugly dotted selection box.
 void GUIConnectorLine::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w)
 {
     QStyleOptionGraphicsItem *_o = const_cast<QStyleOptionGraphicsItem*>(o);
@@ -46,26 +48,44 @@ void GUIConnectorLine::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWi
     QGraphicsLineItem::paint(p,_o,w);
 }
 
+
+//! Changes the style of the line to active
+//! @see setPassive()
+//! @see setHovered()
 void GUIConnectorLine::setActive()
 {
         this->setPen(mActivePen);
 }
 
+
+//! Changes the style of the line to default
+//! @see setActive()
+//! @see setHovered()
 void GUIConnectorLine::setPassive()
 {
         this->setPen(mPrimaryPen);
 }
 
+
+//! Changes the style of the line to hovered
+//! @see setActive()
+//! @see setPassive()
 void GUIConnectorLine::setHovered()
 {
         this->setPen(mHoverPen);
 }
 
+
+
+//! Emits line clicked signal
 void GUIConnectorLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     emit lineClicked();
 }
 
+
+//! Emits hover enter signal and changes cursor if line is modifyable
+//! @see hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 void GUIConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     if(this->flags().testFlag((QGraphicsItem::ItemIsMovable)))
@@ -82,26 +102,39 @@ void GUIConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     emit lineHoverEnter();
 }
 
+
+//! Emits hover leave event
+//! @see hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 void GUIConnectorLine::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     emit lineHoverLeave();
 }
 
+
+//! Returns the type of geometry (vertical, horizontal or diagonal) of the line
+//! @see setGeometry(geometryType newgeometry)
 GUIConnectorLine::geometryType GUIConnectorLine::getGeometry()
 {
     return mGeometry;
 }
 
+
+//! Sets the type of geometry (vertical, horizontal or diagonal) of the line
+//! @see getGeometry()
 void GUIConnectorLine::setGeometry(geometryType newgeometry)
 {
     mGeometry=newgeometry;
 }
 
+
+//! Returns the number of the line in the connector
 int GUIConnectorLine::getLineNumber()
 {
     return mLineNumber;
 }
 
+
+//! Emits selected and moved signals
 QVariant GUIConnectorLine::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == QGraphicsItem::ItemSelectedHasChanged)
@@ -117,11 +150,15 @@ QVariant GUIConnectorLine::itemChange(GraphicsItemChange change, const QVariant 
     return value;
 }
 
+
+//! Tells the line that its parent connector has been connected at both ends
 void GUIConnectorLine::setConnected()
 {
     mParentConnectorEndPortConnected = true;
 }
 
+
+//! Reimplementation of setLine; stores the start and end positions before changing them
 void GUIConnectorLine::setLine(qreal x1, qreal y1, qreal x2, qreal y2)
 {
     this->startPos = QPointF(x1,y1);
