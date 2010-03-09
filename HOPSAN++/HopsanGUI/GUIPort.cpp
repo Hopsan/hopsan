@@ -46,18 +46,6 @@ GUIPort::~GUIPort()
 {
 }
 
-
-void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
-{
-    this->setCursor(Qt::CrossCursor);
-    QBrush brush(Qt::blue);
-    //this->setBrush(brush);
-    std::cout << "GUIPort.cpp: " << "hovering over port" << std::endl;
-    magnify(true);
-//    QGraphicsSvgItem::hoverEnterEvent(event);
-}
-
-
 //! Magnify the port with a class mebmer factor 'mMag'. Is used i.e. at hovering over disconnected port.
 //! @param blowup says if the port should be magnified or not.
 void GUIPort::magnify(bool blowup)
@@ -74,10 +62,22 @@ void GUIPort::magnify(bool blowup)
         this->moveBy(-(mMag-1)*boundingRect().width()/2, -(mMag-1)*boundingRect().height()/2);
         mIsMag = true;
     }
-
 }
 
 
+//! Defines what happens when mouse cursor begins to hover a port.
+//! @param *event defines the mouse event.
+void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    this->setCursor(Qt::CrossCursor);
+    QBrush brush(Qt::blue);
+    std::cout << "GUIPort.cpp: " << "hovering over port" << std::endl;
+    magnify(true);
+}
+
+
+//! Defines what happens when mouse cursor stops hovering a port.
+//! @param *event defines the mouse event.
 void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     QBrush brush(Qt::green);
@@ -88,18 +88,8 @@ void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 }
 
 
-QGraphicsView *GUIPort::getParentView()
-{
-    return mpParentView;
-}
-
-
-GUIComponent *GUIPort::getComponent()
-{
-    return mpParentComponent;
-}
-
-
+//! Defines what happens when clicking on a port.
+//! @param *event defines the mouse event.
 void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     //QGraphicsItem::mousePressEvent(event); //Don't work if this is called
@@ -113,7 +103,6 @@ void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
         std::cout << "GUIPort.cpp: " << "RightClick" << std::endl;
     }
     magnify(false);
- //   QGraphicsSvgItem::mousePressEvent(event);
 }
 
 
@@ -154,6 +143,20 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
             }
         }
     }
+}
+
+
+//! Returns a pointer to the GraphicsView that the port belongs to.
+QGraphicsView *GUIPort::getParentView()
+{
+    return mpParentView;
+}
+
+
+//! Returns a pointer to the GUIComponent the port belongs to.
+GUIComponent *GUIPort::getComponent()
+{
+    return mpParentComponent;
 }
 
 
@@ -209,7 +212,7 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
 
 }
 
-
+//! Returns the number of the port by calling the equivalent function in the parent component.
 int GUIPort::getPortNumber()
 {
     return this->getComponent()->getPortNumber(this);

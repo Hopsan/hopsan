@@ -10,6 +10,14 @@
 #include <QGraphicsLineItem>
 
 
+//! Constructor.
+//! @param x1 is the x-coordinate of the top left corner of the parent component.
+//! @param y1 is the y-coordinate of the top left corner of the parent component.
+//! @param x2 is the x-coordinate of the bottom right corner of the parent component.
+//! @param y2 is the y-coordinate of the bottom right corner of the parent component.
+//! @param activePen defines the width and color of the box when the parent component is selected.
+//! @param hoverPen defines the width and color of the box when the parent component is hovered by the mouse cursor.
+//! @param *parent defines the parent object.
 GUIComponentSelectionBox::GUIComponentSelectionBox(qreal x1, qreal y1, qreal x2, qreal y2, QPen activePen, QPen hoverPen, GUIComponent *parent)
         : QGraphicsItemGroup(parent)
 {
@@ -37,10 +45,15 @@ GUIComponentSelectionBox::GUIComponentSelectionBox(qreal x1, qreal y1, qreal x2,
 }
 
 
+//! Destructor.
 GUIComponentSelectionBox::~GUIComponentSelectionBox()
 {
 }
 
+
+//! Tells the box to become visible and use active style.
+//! @see setPassive();
+//! @see setHovered();
 void GUIComponentSelectionBox::setActive()
 {
 
@@ -51,11 +64,19 @@ void GUIComponentSelectionBox::setActive()
     }
 }
 
+
+//! Tells the box to become invisible.
+//! @see setActive();
+//! @see setHovered();
 void GUIComponentSelectionBox::setPassive()
 {
     this->setVisible(false);
 }
 
+
+//! Tells the box to become visible and use hovered style.
+//! @see setActive();
+//! @see setPassive();
 void GUIComponentSelectionBox::setHovered()
 {
     this->setVisible(true);
