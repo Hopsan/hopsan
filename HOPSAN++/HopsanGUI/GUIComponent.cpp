@@ -332,6 +332,16 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 //    }
 //}
 
+//
+//void GUIComponent::keyPressEvent( QKeyEvent *event )
+//{
+//    if (event->key() == Qt::Key_R)
+//    {
+//        qDebug() << "Rotate";
+//        this->setRotation(this->rotation()+90);
+//    }
+//}
+
 
 QVariant GUIComponent::itemChange(GraphicsItemChange change, const QVariant &value)
 {
@@ -342,10 +352,12 @@ QVariant GUIComponent::itemChange(GraphicsItemChange change, const QVariant &val
         {
             this->mpSelectionBox->setActive();
             connect(this->mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+            connect(this->mpParentGraphicsView, SIGNAL(keyPressR()), this, SLOT(rotate()));
         }
         else
         {
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressR()), this, SLOT(rotate()));
             this->mpSelectionBox->setPassive();
         }
     }
@@ -388,6 +400,14 @@ int GUIComponent::getPortNumber(GUIPort *port)
         }
     }
     assert(false);      //Todo: Cast exception
+}
+
+
+void GUIComponent::rotate()
+{
+    this->setTransformOriginPoint(this->boundingRect().center());
+    this->setRotation(this->rotation()+90);
+    emit componentMoved();
 }
 
 

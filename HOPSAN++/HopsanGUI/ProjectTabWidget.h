@@ -56,6 +56,7 @@ public:
 signals:
     void draggingSomething();
     void keyPressDelete();
+    void keyPressR();
     void viewClicked();
     void checkMessages();
 

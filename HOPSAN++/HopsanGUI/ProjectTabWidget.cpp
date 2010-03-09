@@ -248,6 +248,10 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     {
         emit keyPressDelete();
     }
+    if (event->key() == Qt::Key_R)
+    {
+        emit keyPressR();
+    }
 
     QGraphicsView::keyPressEvent ( event );
 }
