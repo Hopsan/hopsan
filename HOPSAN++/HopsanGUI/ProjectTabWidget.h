@@ -98,6 +98,7 @@ class ProjectTab : public QWidget
 public:
     ProjectTab(ProjectTabWidget *parent = 0);
     bool mIsSaved;
+    QString mModelFileName;
     ProjectTabWidget *mpParentProjectTabWidget;
     ComponentSystem *mpComponentSystem;
 

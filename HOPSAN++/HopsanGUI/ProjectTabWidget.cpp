@@ -436,6 +436,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->setTimeStepLabel(timeStep);
 
     mIsSaved = true;
+    mModelFileName.clear();
 
     mpGraphicsScene = new GraphicsScene(this);
     mpGraphicsView  = new GraphicsView(mpParentProjectTabWidget->mpHopsan, mpComponentSystem, this);
@@ -691,6 +692,7 @@ void ProjectTabWidget::loadModel()
 
     this->addProjectTab(new ProjectTab(this), fileInfo.fileName());
     ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
+    pCurrentTab->mModelFileName = modelFileName;
 
         //Necessary declarations
     string inputLine;
@@ -787,10 +789,19 @@ void ProjectTabWidget::saveModel()
     ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
     GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
 
-    QDir fileDialogSaveDir;
-    QString modelFileName = QFileDialog::getSaveFileName(this, tr("Save Model File"),
-                                                         fileDialogSaveDir.currentPath(),
-                                                         tr("Hopsan Model Files (*.hmf)"));
+    QString modelFileName;
+    if(pCurrentTab->mModelFileName.isEmpty())
+    {
+        QDir fileDialogSaveDir;
+        modelFileName = QFileDialog::getSaveFileName(this, tr("Save Model File"),
+                                                             fileDialogSaveDir.currentPath(),
+                                                             tr("Hopsan Model Files (*.hmf)"));
+        pCurrentTab->mModelFileName = modelFileName;
+    }
+    else
+    {
+        modelFileName = pCurrentTab->mModelFileName;
+    }
     std::ofstream modelFile (modelFileName.toStdString().c_str());
     QFileInfo fileInfo(modelFileName);
 
@@ -822,9 +833,7 @@ void ProjectTabWidget::saveModel()
                     modelFile << " DIAGONAL" << (it2.value()->mLines[i]->endPos.x()-it2.value()->mLines[i]->startPos.x()) << (it2.value()->mLines[i]->endPos.y()-it2.value()->mLines[i]->startPos.y());
                     break;
             }
-
         }
-
         modelFile << "\n";
 
     }
