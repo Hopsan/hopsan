@@ -25,6 +25,7 @@
 #include <QToolButton>
 #include <QMainWindow>
 #include <QColor>
+#include <qwt_legend.h>
 
 
 class VariablePlot;

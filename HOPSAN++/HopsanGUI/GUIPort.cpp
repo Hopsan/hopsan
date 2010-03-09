@@ -205,9 +205,12 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
 
     PlotWidget *newPlot = new PlotWidget(time,y,mpParentComponent->mpParentGraphicsView);
 
-    newPlot->mpVariablePlot->setTitle(title);
+    //newPlot->mpVariablePlot->setTitle(title);
+    newPlot->mpCurve->setTitle(title);
     newPlot->mpVariablePlot->setAxisTitle(VariablePlot::yLeft, ylabel);
     newPlot->mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xlabel);
+    newPlot->mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
+
     newPlot->show();
 
 }

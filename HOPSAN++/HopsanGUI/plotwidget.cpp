@@ -1,6 +1,7 @@
 //$Id$
 #include "plotwidget.h"
 
+
 PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, QWidget *parent)
         : QMainWindow(parent)//QWidget(parent,Qt::Window)
 {
