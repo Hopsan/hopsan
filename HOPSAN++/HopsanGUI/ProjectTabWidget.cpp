@@ -276,7 +276,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseMoveEvent(event);
     QCursor cursor;
-    qDebug() << "X=" << this->mapFromGlobal(cursor.pos()).x() << "  " << "Y=" << this->mapFromGlobal(cursor.pos()).y();
+    //qDebug() << "X=" << this->mapFromGlobal(cursor.pos()).x() << "  " << "Y=" << this->mapFromGlobal(cursor.pos()).y();
     this->setBackgroundBrush(Qt::NoBrush);
 
     if (this->mIsCreatingConnector)
@@ -806,11 +806,7 @@ void ProjectTabWidget::saveModel()
     QMap<QString, GUIConnector *>::iterator it2;
     for(it2 = pCurrentView->mConnectionMap.begin(); it2!=pCurrentView->mConnectionMap.end(); ++it2)
     {
-
-
         modelFile << "CONNECT " << it2.key().toStdString();
-
-                //std::vector<GUIConnectorLine*> mLines;
         for(int i = 0; i!=it2.value()->mLines.size(); ++i)
         {
             int geometry = it2.value()->mLines[i]->getGeometry();

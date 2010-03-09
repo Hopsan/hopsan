@@ -62,6 +62,7 @@ private:
     QPen mHoverPen;
     bool mIsActive;
     bool mEndPortConnected;
+    bool mFirstFixedLineAdded;
 };
 
 #endif // GUICONNECTOR_H

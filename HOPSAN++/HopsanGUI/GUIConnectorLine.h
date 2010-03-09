@@ -23,6 +23,7 @@ public:
     void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w);
     QPointF startPos;
     QPointF endPos;
+    void setLine(qreal x1, qreal y1, qreal x2, qreal y2);
 
 public slots:
     void setConnected();

@@ -121,3 +121,10 @@ void GUIConnectorLine::setConnected()
 {
     mParentConnectorEndPortConnected = true;
 }
+
+void GUIConnectorLine::setLine(qreal x1, qreal y1, qreal x2, qreal y2)
+{
+    this->startPos = QPointF(x1,y1);
+    this->endPos = QPointF(x2,y2);
+    QGraphicsLineItem::setLine(x1,y1,x2,y2);
+}

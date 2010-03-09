@@ -29,6 +29,7 @@ GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, QPen passiveP
     this->mHoverPen = hoverPen;
     this->mIsActive = false;
     this->mEndPortConnected = false;
+    this->mFirstFixedLineAdded = false;
     mpTempLine = new GUIConnectorLine(this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(),
                                       this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(),
                                       mPassivePen, mActivePen, mHoverPen, 0, this);
@@ -248,42 +249,103 @@ void GUIConnector::addLine()
 
 void GUIConnector::addFixedLine(int length, int heigth, GUIConnectorLine::geometryType geometry)
 {
-    if(geometry == GUIConnectorLine::HORIZONTAL)
+    if(this->mLines.size() == 2 && !mFirstFixedLineAdded)
     {
-        qDebug() << "HORIZONTAL from" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y();
-        qDebug() << "HORIZONTAL to" << mLines[mLines.size()-1]->line().p2().x()+length << mLines[mLines.size()-1]->line().p2().y();
-        QPointF endPos = mapToScene(mLines[mLines.size()-1]->line().p2());
-        endPos.setX(endPos.x()+length);
-        endPos = mapFromScene(endPos);
-        mpTempLine = new GUIConnectorLine(mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
-                                          endPos.x(), endPos.y(),
-                                          mPassivePen, mActivePen, mHoverPen, mLines.size(), this);
+        qDebug() << "First line";
+        this->scene()->removeItem(mLines.back());
+        mLines.pop_back();
+        mFirstFixedLineAdded = true;
+
+        if(geometry == GUIConnectorLine::HORIZONTAL)
+        {
+            qDebug() << "HORIZONTAL from" <<    this->startPos.x() <<        this->startPos.y();
+            qDebug() << "HORIZONTAL to" <<      this->startPos.x()+length << this->startPos.y();
+            QPointF tempStartPos = mapFromScene(this->startPos);
+            QPointF tempEndPos = this->startPos;
+            tempEndPos.setX(tempEndPos.x()+length);
+            tempEndPos = mapFromScene(tempEndPos);
+            this->mLines.front()->setLine(      tempStartPos.x(),       tempStartPos.y(),
+                                                tempEndPos.x(),         tempEndPos.y());
+            this->mLines.front()->startPos = tempStartPos;
+            this->mLines.front()->endPos = tempEndPos;
+        }
+        else if(geometry == GUIConnectorLine::VERTICAL)
+        {
+            qDebug() << "VERTICAL from" <<      this->startPos.x() <<       this->startPos.y();
+            qDebug() << "VERTICAL to" <<        this->startPos.x() <<       this->startPos.y()+heigth;
+            QPointF tempStartPos = mapFromScene(this->startPos);
+            QPointF tempEndPos = this->startPos;
+            tempEndPos.setY(tempEndPos.y()+heigth);
+            tempEndPos = mapFromScene(tempEndPos);
+            this->mLines.front()->setLine(      tempStartPos.x(),       tempStartPos.y(),
+                                                tempEndPos.x(),         tempEndPos.y());
+            this->mLines.front()->startPos = tempStartPos;
+            this->mLines.front()->endPos = tempEndPos;
+        }
+        else if(geometry == GUIConnectorLine::DIAGONAL)
+        {
+                qDebug() << "DIAGONAL from" <<  this->startPos.x() <<           this->startPos.y();
+                qDebug() << "DIAGONAL to" <<    this->startPos.x()+length <<    this->startPos.y()+heigth;
+                QPointF tempStartPos = mapFromScene(this->startPos);
+                QPointF tempEndPos = this->startPos;
+                tempEndPos.setX(tempEndPos.x()+heigth);
+                tempEndPos.setY(tempEndPos.y()+heigth);
+                tempEndPos = mapFromScene(tempEndPos);
+                this->mLines.front()->setLine(      tempStartPos.x(),       tempStartPos.y(),
+                                                    tempEndPos.x(),         tempEndPos.y());
+                this->mLines.front()->startPos = tempStartPos;
+                this->mLines.front()->endPos = tempEndPos;
+        }
+        this->mLines.front()->setGeometry(geometry);
+        this->mLines.front()->setActive();
     }
-    else if(geometry == GUIConnectorLine::VERTICAL)
+    else
     {
-        qDebug() << "VERTICAL from" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y();
-        qDebug() << "VERTICAL to" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y()+heigth;
-        mpTempLine = new GUIConnectorLine(mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
-                                          mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y()+heigth,
-                                          mPassivePen, mActivePen, mHoverPen, mLines.size(), this);
+        if(geometry == GUIConnectorLine::HORIZONTAL)
+        {
+            qDebug() << "HORIZONTAL from" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y();
+            qDebug() << "HORIZONTAL to" << mLines[mLines.size()-1]->line().p2().x()+length << mLines[mLines.size()-1]->line().p2().y();
+            QPointF tempEndPos = mapToScene(mLines[mLines.size()-1]->line().p2());
+            tempEndPos.setX(tempEndPos.x()+length);
+            tempEndPos = mapFromScene(tempEndPos);
+            mpTempLine = new GUIConnectorLine(mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
+                                              tempEndPos.x(), tempEndPos.y(),
+                                              mPassivePen, mActivePen, mHoverPen, mLines.size(), this);
+        }
+        else if(geometry == GUIConnectorLine::VERTICAL)
+        {
+            qDebug() << "VERTICAL from" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y();
+            qDebug() << "VERTICAL to" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y()+heigth;
+            QPointF tempEndPos = mapToScene(mLines[mLines.size()-1]->line().p2());
+            tempEndPos.setY(tempEndPos.y()+heigth);
+            tempEndPos = mapFromScene(tempEndPos);
+            mpTempLine = new GUIConnectorLine(mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
+                                              tempEndPos.x(), tempEndPos.y(),
+                                              mPassivePen, mActivePen, mHoverPen, mLines.size(), this);
+        }
+        else if(geometry == GUIConnectorLine::DIAGONAL)
+        {
+            qDebug() << "DIAGONAL from" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y();
+            qDebug() << "DIAGONAL to" << mLines[mLines.size()-1]->line().p2().x()+length << mLines[mLines.size()-1]->line().p2().y()+heigth;
+            QPointF tempEndPos = mapToScene(mLines[mLines.size()-1]->line().p2());
+            tempEndPos.setX(tempEndPos.x()+length);
+            tempEndPos.setY(tempEndPos.y()+heigth);
+            tempEndPos = mapFromScene(tempEndPos);
+            mpTempLine = new GUIConnectorLine(mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
+                                              tempEndPos.x(), tempEndPos.y(),
+                                              mPassivePen, mActivePen, mHoverPen, mLines.size(), this);
+        }
+
+        mpTempLine->setGeometry(geometry);
+        mpTempLine->setActive();
+        mLines.push_back(mpTempLine);
+        mLines[mLines.size()-2]->setPassive();
+        connect(mLines[mLines.size()-1],SIGNAL(lineSelected(bool)),this,SLOT(doSelect(bool)));
+        connect(mLines[mLines.size()-1],SIGNAL(lineMoved(int)),this, SLOT(updateLine(int)));
+        connect(mLines[mLines.size()-1],SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
+        connect(mLines[mLines.size()-1],SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
+        connect(this,SIGNAL(endPortConnected()),mLines[mLines.size()-1],SLOT(setConnected()));
     }
-    else if(geometry == GUIConnectorLine::DIAGONAL)
-    {
-        qDebug() << "DIAGONAL from" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y();
-        qDebug() << "DIAGONAL to" << mLines[mLines.size()-1]->line().p2().x()+length << mLines[mLines.size()-1]->line().p2().y()+heigth;
-        mpTempLine = new GUIConnectorLine(mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
-                                          mLines[mLines.size()-1]->line().p2().x()+length, mLines[mLines.size()-1]->line().p2().y()+heigth,
-                                          mPassivePen, mActivePen, mHoverPen, mLines.size(), this);
-    }
-    mpTempLine->setGeometry(geometry);
-    mpTempLine->setActive();
-    mLines.push_back(mpTempLine);
-    mLines[mLines.size()-2]->setPassive();
-    connect(mLines[mLines.size()-1],SIGNAL(lineSelected(bool)),this,SLOT(doSelect(bool)));
-    connect(mLines[mLines.size()-1],SIGNAL(lineMoved(int)),this, SLOT(updateLine(int)));
-    connect(mLines[mLines.size()-1],SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
-    connect(mLines[mLines.size()-1],SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
-    connect(this,SIGNAL(endPortConnected()),mLines[mLines.size()-1],SLOT(setConnected()));
 }
 
 void GUIConnector::removeLine(QPointF cursorPos)
