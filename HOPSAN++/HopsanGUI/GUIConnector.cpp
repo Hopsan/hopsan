@@ -49,13 +49,6 @@ GUIConnector::~GUIConnector()
 }
 
 
-//TODO: This function appears to be unused. Should probably be deleted.
-//void GUIConnector::SetEndPos(qreal x2, qreal y2)
-//{
-//    this->endPos.setX(x2);
-//    this->endPos.setY(y2);
-//}
-
 //! Sets the pointer to the start port of a connector.
 //! @see setEndPort(GUIPort *port)
 //! @see getStartPort()
@@ -66,6 +59,7 @@ void GUIConnector::setStartPort(GUIPort *port)
     connect(this->mpStartPort->getComponent(),SIGNAL(componentMoved()),this,SLOT(updatePos()));
     connect(this->mpStartPort->getComponent(),SIGNAL(componentDeleted()),this,SLOT(deleteMe()));
 }
+
 
 //! Sets the pointer to the end port of a connector, and executes the final tasks before creation of the connetor is complete. Then flags that the end port is connected.
 //! @see setStartPort(GUIPort *port)
@@ -89,6 +83,7 @@ void GUIConnector::setEndPort(GUIPort *port)
     this->setPassive();
 }
 
+
 //! Returns the pointer to the start port of a connector.
 //! @see setStartPort(GUIPort *port)
 //! @see setEndPort(GUIPort *port)
@@ -97,6 +92,7 @@ GUIPort *GUIConnector::getStartPort()
 {
     return this->mpStartPort;
 }
+
 
 //! Returns the pointer to the end port of a connector.
 //! @see setStartPort(GUIPort *port)
@@ -107,7 +103,8 @@ GUIPort *GUIConnector::getEndPort()
     return this->mpEndPort;
 }
 
-//! Updates the first and last two lines of a connector with respect to start and end positions.
+
+//! Updates an already finished connector with start and end positions from its ports by using the drawLine function. Used to make connectors follow the components as they move.
 //! @see setStartPort(GUIPort *port)
 //! @see setEndPort(GUIPort *port)
 //! @see getStartPort()
@@ -118,6 +115,7 @@ void GUIConnector::updatePos()
     QPointF endPort = this->getEndPort()->mapToScene(this->getEndPort()->boundingRect().center());
     this->drawLine(startPort, endPort);
 }
+
 
 //! Slot that activates a connector if a line is selected.
 //! @see setActive()
@@ -139,6 +137,7 @@ void GUIConnector::doSelect(bool lineSelected)
     }
 }
 
+
 //! Activates a connector, activates each line and connects delete function with delete key.
 //! @see setPassive()
 void GUIConnector::setActive()
@@ -154,6 +153,7 @@ void GUIConnector::setActive()
         qDebug() << "setActive()";
     }
 }
+
 
 //! Deactivates a connector, deactivates each line and disconnects delete function with delete key.
 //! @see setActive()
@@ -184,6 +184,7 @@ void GUIConnector::setUnHovered()
     }
 }
 
+
 //! Changes connector style to hovered if it is not active. Used when mouse starts hovering a line.
 //! @see setUnHovered()
 void GUIConnector::setHovered()
@@ -197,6 +198,9 @@ void GUIConnector::setHovered()
     }
 }
 
+
+//! Updates the first and last two lines of a connector with respect to start position, end position and the geometry of the lines.
+//! @see updateLine(int lineNumber)
 void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
 {
     //startPos = this->mapFromScene(startPos);
@@ -243,15 +247,6 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
         getThisLine()->setGeometry(GUIConnectorLine::VERTICAL);
     }
 
-    //If the line is diagonal:
-//    if (getThisLine()->getGeometry()==GUIConnectorLine::DIAGONAL)
-//    {
-//        getThisLine()->setLine(getLastLine()->line().x2(),
-//                               getLastLine()->line().y2(),
-//                               endPos.x(),
-//                               endPos.y());
-//    }
-
     //This Line:
     getThisLine()->setLine(getThisLine()->mapFromParent(getLastLine()->mapToParent(getLastLine()->line().p2())).x(),
                            getThisLine()->mapFromParent(getLastLine()->mapToParent(getLastLine()->line().p2())).y(),
@@ -259,14 +254,19 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
                            getThisLine()->mapFromScene(endPos).y());
 }
 
-void GUIConnector::setPen(QPen pen)
-{
-    for (std::size_t i=0; i!=mLines.size(); ++i )
-    {
-        mLines[i]->setPen(pen);
-    }
-}
 
+//This function is probably never used
+//void GUIConnector::setPen(QPen pen)
+//{
+//    for (std::size_t i=0; i!=mLines.size(); ++i )
+//    {
+//        mLines[i]->setPen(pen);
+//    }
+//}
+
+
+//! Adds a new line at the end of the connector. Used when creating lines manually in the view.
+//! @see addFixedLine(int length, int heigth, GUIConnectorLine::geometryType geometry)
 void GUIConnector::addLine()
 {
     mpTempLine = new GUIConnectorLine(mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
@@ -282,8 +282,14 @@ void GUIConnector::addLine()
     connect(this,SIGNAL(endPortConnected()),mLines[mLines.size()-1],SLOT(setConnected()));
 }
 
+
+//! Adds a line with specified geometry and length/heigth at the end of the connector. Used when loading connectors from a model file.
+//! @see addLine()
 void GUIConnector::addFixedLine(int length, int heigth, GUIConnectorLine::geometryType geometry)
 {
+    //If only two lines exist and if this check has not been done before, we are at the beginning.
+    //Therefore we must remove the automatically created lines, and used the connector start
+    //position as the line start position.
     if(this->mLines.size() == 2 && !mFirstFixedLineAdded)
     {
         qDebug() << "First line";
@@ -335,6 +341,8 @@ void GUIConnector::addFixedLine(int length, int heigth, GUIConnectorLine::geomet
         this->mLines.front()->setActive();
     }
     else
+    //We are not at the beginning. Keep the previous lines and add a new one, with the end position of the
+    //previous line as start position for the new one.
     {
         if(geometry == GUIConnectorLine::HORIZONTAL)
         {
@@ -370,7 +378,6 @@ void GUIConnector::addFixedLine(int length, int heigth, GUIConnectorLine::geomet
                                               tempEndPos.x(), tempEndPos.y(),
                                               mPassivePen, mActivePen, mHoverPen, mLines.size(), this);
         }
-
         mpTempLine->setGeometry(geometry);
         mpTempLine->setActive();
         mLines.push_back(mpTempLine);
@@ -383,6 +390,8 @@ void GUIConnector::addFixedLine(int length, int heigth, GUIConnectorLine::geomet
     }
 }
 
+
+//! Removes last line from a connector and updates it, or removes the entire connector if only two lines remains. Used when right clicking during line creation.
 void GUIConnector::removeLine(QPointF cursorPos)
 {
     if (getNumberOfLines() > 2)
@@ -399,25 +408,21 @@ void GUIConnector::removeLine(QPointF cursorPos)
     }
 }
 
+//! Returns the number of lines in a connector.
 int GUIConnector::getNumberOfLines()
 {
     return mLines.size();
 }
 
+//! Asks my parent to delete myself
 void GUIConnector::deleteMe()
 {
     mpParentView->removeConnector(this);
 }
 
-
-//void GUIConnector::deleteMeIfMeIsActive()
-//{
-//    if(this->mIsActive && mLines.size() > 0)
-//    {
-//        this->deleteMe();
-//    }
-//}
-
+//! Updates the lines before and after the specified lines. Used to make lines follow each other when they are moved.
+//! @see updatePos()
+//! @see drawLine(QPointF startPos, QPointF endPos)
 void GUIConnector::updateLine(int lineNumber)
 {
     qDebug() << "Updating line: x = " << getLine(lineNumber)->line().x2();
@@ -458,22 +463,40 @@ void GUIConnector::updateLine(int lineNumber)
 }
 
 
+//! Returns the third last line of the connector.
+//! @see getLastLine()
+//! @see getThisLine()
+//! @see getLine(int line)
 GUIConnectorLine *GUIConnector::getOldLine()
 {
     return mLines[mLines.size()-3];
 }
 
+
+//! Returns the second last line of the connector.
+//! @see getOldLine()
+//! @see getThisLine()
+//! @see getLine(int line)
 GUIConnectorLine *GUIConnector::getLastLine()
 {
     return mLines[mLines.size()-2];
 }
 
 
+//! Returns the last line of the connector.
+//! @see getOldLine()
+//! @see getLastLine()
+//! @see getLine(int line)
 GUIConnectorLine *GUIConnector::getThisLine()
 {
     return mLines[mLines.size()-1];
 }
 
+
+//! Returns the line with specified number.
+//! @see getOldLine()
+//! @see getLastLine()
+//! @see getThisLine()
 GUIConnectorLine *GUIConnector::getLine(int line)
 {
     return mLines[line];

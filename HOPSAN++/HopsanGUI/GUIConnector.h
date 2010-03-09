@@ -49,9 +49,6 @@ public slots:
 signals:
     void endPortConnected();
 
-protected:
-    //virtual void SetEndPos(qreal x2, qreal y2);
-
 private:
     GUIPort *mpStartPort;
     GUIPort *mpEndPort;
