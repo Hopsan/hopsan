@@ -642,7 +642,7 @@ bool ProjectTabWidget::closeAllProjectTabs()
 }
 
 
-//! Simulates the model in current open tab.
+//! Simulates the model in current open tab in a separate thread, the GUI runs a progressbar parallel to the simulation.
 void ProjectTabWidget::simulateCurrent()
 {
     if (!currentWidget())
@@ -656,17 +656,21 @@ void ProjectTabWidget::simulateCurrent()
     double startTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getStartTimeLabel();
     double finishTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getFinishTimeLabel();
 
-
     double *pCoreComponentTime = pCurrentTab->mpComponentSystem->getTimePtr();
     QString timeTxt;
     SimulationThread actualSimulation(pCurrentTab->mpComponentSystem, startTime, finishTime, this);
     actualSimulation.start();
+    double dt = finishTime - startTime;
+    size_t nSteps = dt/pCurrentTab->mpComponentSystem->getDesiredTimeStep();
+    QProgressDialog simProgress("Simulating...", "&Abort simulation", 0, nSteps, this);
+    simProgress.setWindowModality(Qt::WindowModal);
     while (actualSimulation.isRunning())
     {
-        timeTxt.setNum(*pCoreComponentTime, 'g', 6);
-        mpParentMainWindow->mpMessageWidget->printGUIMessage(timeTxt.insert(0, "mpComponentSystem::mTime from SimulationThread: "));
-        std::cout << timeTxt.toStdString() << std::endl;
+        simProgress.setValue((size_t)(*pCoreComponentTime/dt * nSteps));
+        if (simProgress.wasCanceled())
+            break;
     }
+    simProgress.setValue(nSteps);
     actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
 
     emit checkMessages();
