@@ -17,6 +17,7 @@
 #include "mainwindow.h"
 #include "SimulationSetupWidget.h"
 #include "MessageWidget.h"
+#include "SimulationThread.h"
 
 #include <QtGui>
 
@@ -655,19 +656,18 @@ void ProjectTabWidget::simulateCurrent()
     double finishTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getFinishTimeLabel();
 
 
-    //Tanken är att köra simuleringen i en egen tråd och sedan köra en loop i guit som läser på pCoreComponentTime
     double *pCoreComponentTime = pCurrentTab->mpComponentSystem->getTimePtr();
     QString timeTxt;
-    timeTxt.setNum(*pCoreComponentTime, 'g', 6);
-    mpParentMainWindow->mpMessageWidget->printGUIMessage(timeTxt.insert(0, "Innan simulering, mpComponentSystem::mTime = ").append(" (for future progressbar...)"));
+    SimulationThread actualSimulation(pCurrentTab->mpComponentSystem, startTime, finishTime, this);
+    actualSimulation.start();
+    while (actualSimulation.isRunning())
+    {
+        timeTxt.setNum(*pCoreComponentTime, 'g', 6);
+        mpParentMainWindow->mpMessageWidget->printGUIMessage(timeTxt.insert(0, "mpComponentSystem::mTime from SimulationThread: "));
+        std::cout << timeTxt.toStdString() << std::endl;
+    }
+    actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
 
-    pCurrentTab->mpComponentSystem->initialize(startTime, finishTime);
-    pCurrentTab->mpComponentSystem->simulate(startTime, finishTime);
-
-    timeTxt.setNum(*pCoreComponentTime, 'g', 6);
-    mpParentMainWindow->mpMessageWidget->printGUIMessage(timeTxt.insert(0, "Efter simulering, mpComponentSystem::mTime = ").append(" (for future progressbar...)"));
-
-    //pCurrentTab->mpModel->getSubComponent("DefaultLaminarOrificeName")->getPort("P1").saveLogData("output.txt");
     emit checkMessages();
 
 }
