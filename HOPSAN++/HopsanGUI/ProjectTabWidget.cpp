@@ -735,6 +735,7 @@ void ProjectTabWidget::simulateCurrent()
         actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
     }
 
+    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulated '").append(QString::fromStdString(pCurrentTab->mpComponentSystem->getName())).append(tr("' successfully!"))));
     emit checkMessages();
 
 }
