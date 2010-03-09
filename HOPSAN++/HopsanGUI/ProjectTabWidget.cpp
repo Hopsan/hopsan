@@ -753,6 +753,7 @@ void ProjectTabWidget::loadModel()
     int startPortNumber, endPortNumber;
     int length, heigth;
     int posX, posY;
+    int nameTextPos;
 
     while (! modelFile.eof() )
     {
@@ -773,7 +774,9 @@ void ProjectTabWidget::loadModel()
                 inputStream >> componentName;
                 inputStream >> posX;
                 inputStream >> posY;
+                inputStream >> nameTextPos;
                 pCurrentTab->mpGraphicsView->addComponent(QString(componentType.c_str()), QPoint(posX, posY), QString(componentName.c_str()));
+                pCurrentTab->mpGraphicsView->getComponent(QString(componentName.c_str()))->setNameTextPos(nameTextPos);
             }
             if ( inputWord == "CONNECT" )
             {
@@ -864,7 +867,7 @@ void ProjectTabWidget::saveModel(bool saveAs)
     {
         QPointF pos = it.value()->mapToScene(it.value()->boundingRect().center());
         modelFile << "COMPONENT " << it.value()->getTypeName().toStdString() << " " << it.key().toStdString()
-                  << " " << pos.x() << " " << pos.y() << std::endl;
+                  << " " << pos.x() << " " << pos.y() << " " << it.value()->getNameTextPos() << std::endl;
         //<< " " << it.value()->mapToScene(it.value()->pos()).x() << " " << it.value()->mapToScene(it.value()->pos()).y() << std::endl;
     }
 

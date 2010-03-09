@@ -53,6 +53,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
     mpNameText = new GUIComponentNameTextItem(this);
     refreshName(); //Make sure name window is correct size for center positioning
     mpNameText->setPos(QPointF(mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2, mTextOffset*mpIcon->boundingRect().height()));
+    mpNameTextPos = 1;
 
     //Sets the ports
     for (size_t i = 0; i < nPorts; ++i)
@@ -175,10 +176,12 @@ void GUIComponent::fixTextPosition(QPointF pos)
     if (dist(x,y, x1,y1) > dist(x,y, x2,y2))
     {
         mpNameText->setPos(x2,y2);
+        mpNameTextPos = 0;
     }
     else
     {
         mpNameText->setPos(x1,y1);
+        mpNameTextPos = 1;
     }
 
     std::cout << "GUIComponent::fixTextPosition, x: " << x << " y: " << y << std::endl;
@@ -410,6 +413,35 @@ void GUIComponent::rotate()
     emit componentMoved();
 }
 
+
+int GUIComponent::getNameTextPos()
+{
+    return mpNameTextPos;
+}\
+
+void GUIComponent::setNameTextPos(int textPos)
+{
+mpNameTextPos = textPos;
+
+double x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
+double y1 = mTextOffset*mpIcon->boundingRect().height();
+
+double x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
+double y2 = -mTextOffset*mpNameText->boundingRect().height();
+
+switch(textPos)
+{
+case 0:
+    mpNameText->setPos(x2,y2);
+    break;
+case 1:
+    mpNameText->setPos(x1,y1);
+    break;
+}
+
+
+
+}
 
 GUIComponentNameTextItem::GUIComponentNameTextItem(GUIComponent *pParent)
     :   QGraphicsTextItem(pParent)

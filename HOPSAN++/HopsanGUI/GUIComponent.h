@@ -35,6 +35,8 @@ public:
     QString getTypeName();
 
     int getPortNumber(GUIPort *);
+    int getNameTextPos();
+    void setNameTextPos(int);
 
     void showPorts(bool visible);
     GUIPort *getPort(int number);
@@ -74,6 +76,7 @@ private:
 
     QList<GUIPort*> mPortListPtrs;
     QString mComponentTypeName;
+    int mpNameTextPos;
 
 private slots:
     void fixTextPosition(QPointF pos);
