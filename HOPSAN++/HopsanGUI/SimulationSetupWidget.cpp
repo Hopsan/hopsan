@@ -45,7 +45,7 @@ SimulationSetupWidget::SimulationSetupWidget(const QString &title, MainWindow *p
     mpTimeLabelDeliminator2 = new QLabel(tr("::"));
     mpSimulateButton = new QPushButton(tr("Simulate!"));
 
-    mpSimulationLayout->addStretch(1);
+    //mpSimulationLayout->addStretch(1);
     mpSimulationLayout->addWidget(mpStartTimeLabel);
     mpSimulationLayout->addWidget(mpTimeLabelDeliminator1);
     mpSimulationLayout->addWidget(mpTimeStepLabel);
