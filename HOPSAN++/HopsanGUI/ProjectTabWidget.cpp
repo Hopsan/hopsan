@@ -57,6 +57,21 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
 }
 
 
+void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
+{
+    if (QGraphicsItem *item = itemAt(event->pos()))
+    {
+        qDebug() << "You righet clicked on a comonent";
+        QGraphicsView::contextMenuEvent(event);
+    }
+    else
+    {
+        qDebug() << "You didn't right click on an component.";
+    }
+
+}
+
+
 //! Destructor.
 GraphicsView::~GraphicsView()
 {

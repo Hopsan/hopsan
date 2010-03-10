@@ -30,6 +30,8 @@ LibraryContent::LibraryContent(QWidget *parent)
 {
     setViewMode(QListView::IconMode);
     setAcceptDrops(false);
+    setResizeMode(QListView::Adjust);
+    //setIconSize(QSize(25,25));
 }
 
 

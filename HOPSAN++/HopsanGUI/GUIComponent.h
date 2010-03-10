@@ -76,7 +76,7 @@ private:
 
     QList<GUIPort*> mPortListPtrs;
     QString mComponentTypeName;
-    int mpNameTextPos;
+    int mNameTextPos;
 
 private slots:
     void fixTextPosition(QPointF pos);

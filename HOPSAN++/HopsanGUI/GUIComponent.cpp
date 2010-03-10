@@ -7,7 +7,7 @@
 #include <math.h>
 
 #include <QDebug>
-#include <QGraphicsWidget>
+#include <QtGui>
 #include <QGraphicsSvgItem>
 #include <QGraphicsTextItem>
 #include <QWidget>
@@ -52,9 +52,13 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
 
     mpNameText = new GUIComponentNameTextItem(this);
     refreshName(); //Make sure name window is correct size for center positioning
-    mpNameText->setPos(QPointF(mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2, mTextOffset*mpIcon->boundingRect().height()));
-    mpNameTextPos = 1;
-    this->setNameTextPos(mpNameTextPos);
+    //mpNameText->setPos(QPointF(mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2, mTextOffset*mpIcon->boundingRect().height()));
+    mNameTextPos = 0;
+    this->setNameTextPos(mNameTextPos);
+
+    mpSelectionBox = new GUIComponentSelectionBox(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height(),
+                                                  QPen(QColor("red"),2*1.6180339887499), QPen(QColor("darkRed"),2*1.6180339887499),this);
+    mpSelectionBox->setVisible(false);
 
     //Sets the ports
     for (size_t i = 0; i < nPorts; ++i)
@@ -103,10 +107,6 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
 
     //setPos(position-QPoint(mpIcon->boundingRect().width()/2, mpIcon->boundingRect().height()/2));
     setPos(position.x()-mpIcon->boundingRect().width()/2,position.y()-mpIcon->boundingRect().height()/2);
-
-    mpSelectionBox = new GUIComponentSelectionBox(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height(),
-                                                  QPen(QColor("red"),2*1.6180339887499), QPen(QColor("darkRed"),2*1.6180339887499),this);
-    mpSelectionBox->setVisible(false);
 }
 
 
@@ -206,12 +206,12 @@ void GUIComponent::fixTextPosition(QPointF pos)
     if (dist(x,y, x1,y1) > dist(x,y, x2,y2))
     {
         mpNameText->setPos(x2,y2);
-        mpNameTextPos = 0;
+        mNameTextPos = 0;
     }
     else
     {
         mpNameText->setPos(x1,y1);
-        mpNameTextPos = 1;
+        mNameTextPos = 1;
     }
 
     std::cout << "GUIComponent::fixTextPosition, x: " << x << " y: " << y << std::endl;
@@ -358,9 +358,23 @@ void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
-    std::cout << "GUIComponent.cpp: " << "contextMenuEvent " << std::endl;
+        QMenu menu;
 
-    openParameterDialog();
+        QAction *groupAction = menu.addAction(tr("Group components"));
+        QAction *parameterAction = menu.addAction(tr("Change parameters"));
+        //menu.insertSeparator(parameterAction);
+
+        QAction *selectedAction = menu.exec(event->screenPos());
+
+        if (selectedAction == parameterAction)
+        {
+            openParameterDialog();
+        }
+        else if (selectedAction == groupAction)
+        {
+            qDebug() << "Group selected components (to be implemented...)";
+        }
+
 
 }
 
@@ -377,9 +391,11 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 //! Handles item change events.
 QVariant GUIComponent::itemChange(GraphicsItemChange change, const QVariant &value)
 {
+    QGraphicsWidget::itemChange(change, value);
+
+    qDebug() << "Component selected status = " << this->isSelected();
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
-        qDebug() << "Component selected status = " << this->isSelected();
         if (this->isSelected())
         {
             this->mpSelectionBox->setActive();
@@ -441,7 +457,7 @@ int GUIComponent::getPortNumber(GUIPort *port)
 //! Rotates a component 90 degrees clockwise, and tells the connectors that the component has moved.
 void GUIComponent::rotate()
 {
-    int tempNameTextPos = mpNameTextPos;
+    int temNameTextPos = mNameTextPos;
     this->setTransformOriginPoint(this->boundingRect().center());
     this->setRotation(this->rotation()+90);
     if (this->rotation() == 360)
@@ -450,7 +466,7 @@ void GUIComponent::rotate()
     }
     this->mpNameText->setRotation(-this->rotation());
     this->fixTextPosition(this->mpNameText->pos());
-    this->setNameTextPos(tempNameTextPos);
+    this->setNameTextPos(temNameTextPos);
     emit componentMoved();
 }
 
@@ -460,7 +476,7 @@ void GUIComponent::rotate()
 //! @see fixTextPosition(QPointF pos)
 int GUIComponent::getNameTextPos()
 {
-    return mpNameTextPos;
+    return mNameTextPos;
 }\
 
 
@@ -469,7 +485,7 @@ int GUIComponent::getNameTextPos()
 //! @see fixTextPosition(QPointF pos)
 void GUIComponent::setNameTextPos(int textPos)
 {
-    mpNameTextPos = textPos;
+    mNameTextPos = textPos;
 
     double x1,x2,y1,y2;
 

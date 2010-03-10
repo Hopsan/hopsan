@@ -159,6 +159,7 @@ MainWindow::MainWindow(QWidget *parent)
     menuSimulation->addAction(actionSimulate);
 
     menuView->addAction(libdock->toggleViewAction());
+    menuView->addAction(messagedock->toggleViewAction());
 
     menuPlot->addAction(actionPlot);
 

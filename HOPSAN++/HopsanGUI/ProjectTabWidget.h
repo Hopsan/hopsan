@@ -82,6 +82,8 @@ protected:
     virtual void keyPressEvent(QKeyEvent *event);
     virtual void keyReleaseEvent(QKeyEvent *event);
 
+    void contextMenuEvent ( QContextMenuEvent * event );
+
 private:
     GUIConnector *mpTempConnector;
     HopsanEssentials *mpHopsan;

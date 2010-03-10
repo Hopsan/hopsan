@@ -11,8 +11,7 @@ int main(int argc, char *argv[])
     QPixmap pixmap("../../HopsanGUI/splash.png");
     QSplashScreen splash(pixmap);
     splash.show();
-
-    splash.raise();
+    //splash.raise();
 
     MainWindow mainwindow;
 

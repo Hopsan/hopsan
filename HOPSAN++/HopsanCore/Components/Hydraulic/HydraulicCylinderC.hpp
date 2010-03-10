@@ -97,8 +97,6 @@ public:
         registerParameter("EquivalentMass", "Equivalent Load Mass", "[kg]", mEquivalentMass);
         registerParameter("DeadVolume1", "Dead Volume in Chamber 1", "[m^3]", mDeadVolume1);
         registerParameter("DeadVolume2", "Dead Volume in Chamber 2", "[m^3]", mDeadVolume2);
-        registerParameter("Volume1", "Cylinder Volume 1", "[m^3]", mVolume1);
-        registerParameter("Volume2", "Cylinder Volume 2", "[m^3]", mVolume2);
         registerParameter("Bp", "Damping Coefficient", "[Ns/m]", mBp);
         registerParameter("Betae", "Bulk Modulus", "[Pa]", mBetae);
     }
