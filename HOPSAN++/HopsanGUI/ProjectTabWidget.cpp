@@ -351,7 +351,7 @@ void GraphicsView::addConnector(GUIPort *pPort)
         QPointF oldPos = pPort->mapToScene(pPort->boundingRect().center());
         QPen passivePen = QPen(QColor("black"),2);
         QPen activePen = QPen(QColor("red"), 2*1.6180339887499);
-        QPen hoverPen = QPen(QColor("darkRed"),2);
+        QPen hoverPen = QPen(QColor("darkRed"),2*1.6180339887499);
         mpTempConnector = new GUIConnector(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), passivePen, activePen, hoverPen, this);
         qDebug() << "DEBUG 0.3";
         this->scene()->addItem(mpTempConnector);

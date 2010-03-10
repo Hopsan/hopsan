@@ -22,25 +22,31 @@ GUIComponentSelectionBox::GUIComponentSelectionBox(qreal x1, qreal y1, qreal x2,
         : QGraphicsItemGroup(parent)
 {
     mpParentGUIComponent = parent;
+    qreal b = 5;
+    qreal a = b*mpParentGUIComponent->boundingRect().width()/mpParentGUIComponent->boundingRect().height();
+    x1 = x1-3;
+    y1 = y1-3;
+    x2 = x2+3;
+    y2 = y2+3;
 
     this->mActivePen = activePen;
     this->mHoverPen = hoverPen;
 
-    QGraphicsLineItem *tempLine = new QGraphicsLineItem(x1,y1+5,x1,y1,this);
+    QGraphicsLineItem *tempLine = new QGraphicsLineItem(x1,y1+b,x1,y1,this);
     mLines.push_back(tempLine);
-    tempLine = new QGraphicsLineItem(x1,y1,x1+5,y1,this);
+    tempLine = new QGraphicsLineItem(x1,y1,x1+a,y1,this);
     mLines.push_back(tempLine);
-    tempLine = new QGraphicsLineItem(x2-5,y1,x2,y1,this);
+    tempLine = new QGraphicsLineItem(x2-a,y1,x2,y1,this);
     mLines.push_back(tempLine);
-    tempLine = new QGraphicsLineItem(x2,y1,x2,y1+5,this);
+    tempLine = new QGraphicsLineItem(x2,y1,x2,y1+b,this);
     mLines.push_back(tempLine);
-    tempLine = new QGraphicsLineItem(x1+5,y2,x1,y2,this);
+    tempLine = new QGraphicsLineItem(x1+a,y2,x1,y2,this);
     mLines.push_back(tempLine);
-    tempLine = new QGraphicsLineItem(x1,y2-5,x1,y2,this);
+    tempLine = new QGraphicsLineItem(x1,y2-b,x1,y2,this);
     mLines.push_back(tempLine);
-    tempLine = new QGraphicsLineItem(x2,y2-5,x2,y2,this);
+    tempLine = new QGraphicsLineItem(x2,y2-b,x2,y2,this);
     mLines.push_back(tempLine);
-    tempLine = new QGraphicsLineItem(x2,y2,x2-5,y2,this);
+    tempLine = new QGraphicsLineItem(x2,y2,x2-a,y2,this);
     mLines.push_back(tempLine);
 }
 

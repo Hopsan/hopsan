@@ -105,7 +105,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
     setPos(position.x()-mpIcon->boundingRect().width()/2,position.y()-mpIcon->boundingRect().height()/2);
 
     mpSelectionBox = new GUIComponentSelectionBox(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height(),
-                                                  QPen(QColor("red"),2*1.6180339887499), QPen(QColor("darkRed"),2),this);
+                                                  QPen(QColor("red"),2*1.6180339887499), QPen(QColor("darkRed"),2*1.6180339887499),this);
     mpSelectionBox->setVisible(false);
 }
 
