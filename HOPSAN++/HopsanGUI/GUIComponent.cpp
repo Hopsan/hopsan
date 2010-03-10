@@ -28,7 +28,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
     mpParentGraphicsScene->addItem(this);
     mpParentGraphicsView = mpParentGraphicsScene->mpParentProjectTab->mpGraphicsView;
 
-    mTextOffset = 1.1;
+    mTextOffset = 5.0;
 
     mComponentTypeName = parameterData.at(0);
     QString fileName = parameterData.at(1);
@@ -54,6 +54,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
     refreshName(); //Make sure name window is correct size for center positioning
     mpNameText->setPos(QPointF(mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2, mTextOffset*mpIcon->boundingRect().height()));
     mpNameTextPos = 1;
+    this->setNameTextPos(mpNameTextPos);
 
     //Sets the ports
     for (size_t i = 0; i < nPorts; ++i)
@@ -104,7 +105,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
     setPos(position.x()-mpIcon->boundingRect().width()/2,position.y()-mpIcon->boundingRect().height()/2);
 
     mpSelectionBox = new GUIComponentSelectionBox(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height(),
-                                                  QPen(QColor("red"),3), QPen(QColor("darkRed"),2),this);
+                                                  QPen(QColor("red"),2*1.6180339887499), QPen(QColor("darkRed"),2),this);
     mpSelectionBox->setVisible(false);
 }
 
@@ -164,11 +165,40 @@ double dist(double x1,double y1, double x2, double y2)
 
 void GUIComponent::fixTextPosition(QPointF pos)
 {
-    double x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
-    double y1 = mTextOffset*mpIcon->boundingRect().height();
+    double x1,x2,y1,y2;
 
-    double x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
-    double y2 = -mTextOffset*mpNameText->boundingRect().height();
+    if(this->rotation() == 0)
+    {
+        qDebug() << "Debug 1, rotation = " << this->rotation();
+        x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
+        y1 = -mpNameText->boundingRect().height() - mTextOffset;  //mTextOffset*
+        x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
+        y2 = mpIcon->boundingRect().height() + mTextOffset;// - mpNameText->boundingRect().height()/2;
+    }
+    else if(this->rotation() == 180)
+    {
+        qDebug() << "Debug 2, rotation = " << this->rotation();
+        x1 = mpIcon->boundingRect().width()/2+mpNameText->boundingRect().width()/2;
+        y1 = mpIcon->boundingRect().height() + mpNameText->boundingRect().height() + mTextOffset;
+        x2 = mpIcon->boundingRect().width()/2+mpNameText->boundingRect().width()/2;
+        y2 = -mTextOffset;
+    }
+    else if(this->rotation() == 90)
+    {
+        qDebug() << "Debug 3, rotation = " << this->rotation();
+        x1 = -mpNameText->boundingRect().height() - mTextOffset;
+        y1 = mpIcon->boundingRect().height()/2 + mpNameText->boundingRect().width()/2;
+        x2 = mpIcon->boundingRect().width() + mTextOffset;
+        y2 = mpIcon->boundingRect().height()/2 + mpNameText->boundingRect().width()/2;
+    }
+    else if(this->rotation() == 270)
+    {
+        qDebug() << "Debug 4, rotation = " << this->rotation();
+        x1 = mpIcon->boundingRect().width() + mpNameText->boundingRect().height() + mTextOffset;
+        y1 = mpIcon->boundingRect().height()/2 - mpNameText->boundingRect().width()/2;
+        x2 = -mTextOffset;
+        y2 = mpIcon->boundingRect().height()/2 - mpNameText->boundingRect().width()/2;
+    }
 
     double x = mpNameText->mapToParent(pos).x();
     double y = mpNameText->mapToParent(pos).y();
@@ -411,8 +441,16 @@ int GUIComponent::getPortNumber(GUIPort *port)
 //! Rotates a component 90 degrees clockwise, and tells the connectors that the component has moved.
 void GUIComponent::rotate()
 {
+    int tempNameTextPos = mpNameTextPos;
     this->setTransformOriginPoint(this->boundingRect().center());
     this->setRotation(this->rotation()+90);
+    if (this->rotation() == 360)
+    {
+        this->setRotation(0);
+    }
+    this->mpNameText->setRotation(-this->rotation());
+    this->fixTextPosition(this->mpNameText->pos());
+    this->setNameTextPos(tempNameTextPos);
     emit componentMoved();
 }
 
@@ -433,11 +471,40 @@ void GUIComponent::setNameTextPos(int textPos)
 {
     mpNameTextPos = textPos;
 
-    double x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
-    double y1 = mTextOffset*mpIcon->boundingRect().height();
+    double x1,x2,y1,y2;
 
-    double x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
-    double y2 = -mTextOffset*mpNameText->boundingRect().height();
+    if(this->rotation() == 0)
+    {
+        qDebug() << "Debug 1, rotation = " << this->rotation();
+        x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
+        y1 = -mpNameText->boundingRect().height() - mTextOffset;  //mTextOffset*
+        x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
+        y2 = mpIcon->boundingRect().height() + mTextOffset;// - mpNameText->boundingRect().height()/2;
+    }
+    else if(this->rotation() == 180)
+    {
+        qDebug() << "Debug 2, rotation = " << this->rotation();
+        x1 = mpIcon->boundingRect().width()/2+mpNameText->boundingRect().width()/2;
+        y1 = mpIcon->boundingRect().height() + mpNameText->boundingRect().height() + mTextOffset;
+        x2 = mpIcon->boundingRect().width()/2+mpNameText->boundingRect().width()/2;
+        y2 = -mTextOffset;
+    }
+    else if(this->rotation() == 90)
+    {
+        qDebug() << "Debug 3, rotation = " << this->rotation();
+        x1 = -mpNameText->boundingRect().height() - mTextOffset;
+        y1 = mpIcon->boundingRect().height()/2 + mpNameText->boundingRect().width()/2;
+        x2 = mpIcon->boundingRect().width() + mTextOffset;
+        y2 = mpIcon->boundingRect().height()/2 + mpNameText->boundingRect().width()/2;
+    }
+    else if(this->rotation() == 270)
+    {
+        qDebug() << "Debug 4, rotation = " << this->rotation();
+        x1 = mpIcon->boundingRect().width() + mpNameText->boundingRect().height() + mTextOffset;
+        y1 = mpIcon->boundingRect().height()/2 - mpNameText->boundingRect().width()/2;
+        x2 = -mTextOffset;
+        y2 = mpIcon->boundingRect().height()/2 - mpNameText->boundingRect().width()/2;
+    }
 
     switch(textPos)
     {
