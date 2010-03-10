@@ -33,6 +33,7 @@ GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen 
     this->mParentConnectorEndPortConnected = false;
     this->startPos = QPointF(x1,y1);
     this->endPos = QPointF(x2,y2);
+    this->setGeometry(GUIConnectorLine::HORIZONTAL);
 }
 
 GUIConnectorLine::~GUIConnectorLine()
