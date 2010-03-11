@@ -175,7 +175,6 @@ void GUIConnectorLine::addEndArrow()
 {
     qreal arrowSize = 15.0;
     qreal arrowAngle = 0.5;
-    qreal Pi = 3.1415;
     qreal angle = atan2((this->endPos.y()-this->startPos.y()), (this->endPos.x()-this->startPos.x()));
     qDebug() << "Angle = " << angle;
     qDebug() << this->endPos.y() << this->startPos.y() << this->endPos.x() << this->startPos.x();
@@ -199,7 +198,6 @@ void GUIConnectorLine::addStartArrow()
 {
     qreal arrowSize = 15.0;
     qreal arrowAngle = 0.5;
-    qreal Pi = 3.1415;
     qreal angle = atan2((this->endPos.y()-this->startPos.y()), (this->endPos.x()-this->startPos.x()));
     qDebug() << "Angle = " << angle;
     qDebug() << this->endPos.y() << this->startPos.y() << this->endPos.x() << this->startPos.x();
@@ -223,8 +221,11 @@ void GUIConnectorLine::setPen (const QPen &pen)
     QGraphicsLineItem::setPen(pen);
     if(this->mHasArrow)
     {
-        mArrowLine1->setPen(this->pen());
-        mArrowLine2->setPen(this->pen());
+        QPen tempPen = this->pen();
+        tempPen = QPen(tempPen.color(), tempPen.width(), Qt::SolidLine);
+        mArrowLine1->setPen(tempPen);
+        mArrowLine2->setPen(tempPen);
+        mArrowLine1->line();
     }
 }
 
