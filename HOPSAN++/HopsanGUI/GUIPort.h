@@ -13,14 +13,15 @@ class GUIPort :public QGraphicsSvgItem
 {
     Q_OBJECT
 public:
-    GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, GUIComponent *parent = 0);
+    enum portType {POWER, READ, WRITE};
+    GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, GUIPort::portType type, GUIComponent *parent = 0);
     ~GUIPort();
     QPointF rectPos;
     QGraphicsView *getParentView();
     GUIComponent *getComponent();
     void magnify(bool blowup);
     int getPortNumber();
-
+    portType getPortType();
     Port *mpCorePort;
 
 protected:
@@ -46,6 +47,7 @@ private:
     GUIComponent *mpParentComponent;
     qreal mMag;
     bool mIsMag;
+    GUIPort::portType mType;
 };
 
 #endif // GUIPORT_H

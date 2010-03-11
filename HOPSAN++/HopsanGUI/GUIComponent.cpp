@@ -61,6 +61,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
     mpSelectionBox->setVisible(false);
 
     //Sets the ports
+    GUIPort::portType type;
     for (size_t i = 0; i < nPorts; ++i)
     {
         double x = parameterData.at(3+3*i).toDouble();
@@ -72,12 +73,19 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
         {
             iconPath.append("SignalPort");
             if (mpCoreComponent->getPortPtrVector().at(i)->getPortType() == "ReadPort")
+            {
                 iconPath.append("_read");
+                type = GUIPort::READ;
+            }
             else
+            {
                 iconPath.append("_write");
+                type = GUIPort::WRITE;
+            }
         }
         else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeMechanic")
         {
+            type = GUIPort::POWER;
             iconPath.append("MechanicPort");
             if (mpCoreComponent->getTypeCQS() == "C")
                 iconPath.append("C");
@@ -86,6 +94,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
         }
         else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeHydraulic")
         {
+            type = GUIPort::POWER;
             iconPath.append("HydraulicPort");
             if (mpCoreComponent->getTypeCQS() == "C")
                 iconPath.append("C");
@@ -98,7 +107,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
         }
         iconPath.append(".svg");
 
-        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,this));//mpIcon));
+        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,type,this));//mpIcon));
 
     }
 

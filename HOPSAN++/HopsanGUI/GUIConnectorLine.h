@@ -24,6 +24,9 @@ public:
     QPointF startPos;
     QPointF endPos;
     void setLine(qreal x1, qreal y1, qreal x2, qreal y2);
+    void addEndArrow();
+    void addStartArrow();
+    void setPen(const QPen &pen);
 
 public slots:
     void setConnected();
@@ -49,6 +52,9 @@ private:
     int mLineNumber;
     geometryType mGeometry;
     bool mParentConnectorEndPortConnected;
+    QGraphicsLineItem *mArrowLine1;
+    QGraphicsLineItem *mArrowLine2;
+    bool mHasArrow;
 
 };
 

@@ -93,6 +93,14 @@ void GUIConnector::setEndPort(GUIPort *port)
     }
     mLines[0]->setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption | QGraphicsItem::ItemIsSelectable);
     mLines[mLines.size()-1]->setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption | QGraphicsItem::ItemIsSelectable);
+    if(port->getPortType() == GUIPort::READ)
+    {
+        this->getThisLine()->addEndArrow();
+    }
+    else if(port->getPortType() == GUIPort::WRITE)
+    {
+        this->mLines[0]->addStartArrow();
+    }
     emit endPortConnected();
     this->setPassive();
 }

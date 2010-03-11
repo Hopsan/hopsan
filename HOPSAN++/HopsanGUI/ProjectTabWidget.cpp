@@ -262,7 +262,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
     if (event->modifiers() and Qt::ControlModifier)
     {
-        //this->setDragMode(QGraphicsView::ScrollHandDrag);       //Zoom function
+        this->setDragMode(QGraphicsView::ScrollHandDrag);       //Zoom function
         if (this->mIsCreatingConnector)
         {
             qDebug() << "blabla";
@@ -364,9 +364,21 @@ void GraphicsView::addConnector(GUIPort *pPort)
     {
         std::cout << "GraphicsView: " << "Adding connector";
         QPointF oldPos = pPort->mapToScene(pPort->boundingRect().center());
-        QPen passivePen = QPen(QColor("black"),2);
-        QPen activePen = QPen(QColor("red"), 2*1.6180339887499);
-        QPen hoverPen = QPen(QColor("darkRed"),2*1.6180339887499);
+
+        QPen passivePen,activePen,hoverPen;
+        if(pPort->getPortType() == GUIPort::POWER)
+        {
+            passivePen = QPen(QColor("black"),2, Qt::SolidLine, Qt::RoundCap);
+            activePen = QPen(QColor("red"), 3, Qt::SolidLine, Qt::RoundCap);                    //1.6180339887499
+            hoverPen = QPen(QColor("darkRed"),3, Qt::SolidLine, Qt::RoundCap);
+        }
+        else if((pPort->getPortType() == GUIPort::READ) | (pPort->getPortType() == GUIPort::WRITE))
+        {
+            passivePen = QPen(QColor("blue"),1, Qt::DashLine);
+            activePen = QPen(QColor("red"), 2, Qt::DashLine);
+            hoverPen = QPen(QColor("darkRed"),2, Qt::DashLine);
+        }
+
         mpTempConnector = new GUIConnector(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), passivePen, activePen, hoverPen, this);
         qDebug() << "DEBUG 0.3";
         this->scene()->addItem(mpTempConnector);

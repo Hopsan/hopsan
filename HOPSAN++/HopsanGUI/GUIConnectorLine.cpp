@@ -18,6 +18,8 @@
 #include <QDebug>
 #include <QStyleOptionGraphicsItem>
 #include "GUIConnectorLine.h"
+#include <QPointF>
+#include <math.h>
 
 
 GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen primaryPen, QPen activePen, QPen hoverPen, int lineNumber, QGraphicsItem *parent)
@@ -34,6 +36,7 @@ GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen 
     this->startPos = QPointF(x1,y1);
     this->endPos = QPointF(x2,y2);
     this->setGeometry(GUIConnectorLine::HORIZONTAL);
+    this->mHasArrow = false;
 }
 
 GUIConnectorLine::~GUIConnectorLine()
@@ -166,3 +169,62 @@ void GUIConnectorLine::setLine(qreal x1, qreal y1, qreal x2, qreal y2)
     this->endPos = QPointF(x2,y2);
     QGraphicsLineItem::setLine(x1,y1,x2,y2);
 }
+
+
+void GUIConnectorLine::addEndArrow()
+{
+    qreal arrowSize = 15.0;
+    qreal arrowAngle = 0.5;
+    qreal Pi = 3.1415;
+    qreal angle = atan2((this->endPos.y()-this->startPos.y()), (this->endPos.x()-this->startPos.x()));
+    qDebug() << "Angle = " << angle;
+    qDebug() << this->endPos.y() << this->startPos.y() << this->endPos.x() << this->startPos.x();
+    mArrowLine1 = new QGraphicsLineItem(this->endPos.x(),
+                                        this->endPos.y(),
+                                        this->endPos.x()-arrowSize*cos(angle+arrowAngle),
+                                        this->endPos.y()-arrowSize*sin(angle+arrowAngle), this);
+    mArrowLine2 = new QGraphicsLineItem(this->endPos.x(),
+                                        this->endPos.y(),
+                                        this->endPos.x()-arrowSize*cos(angle-arrowAngle),
+                                        this->endPos.y()-arrowSize*sin(angle-arrowAngle), this);
+    mArrowLine1->setPen(this->pen());
+    mArrowLine2->setPen(this->pen());
+    mArrowLine1->show();
+    mArrowLine2->show();
+    this->mHasArrow = true;
+}
+
+
+void GUIConnectorLine::addStartArrow()
+{
+    qreal arrowSize = 15.0;
+    qreal arrowAngle = 0.5;
+    qreal Pi = 3.1415;
+    qreal angle = atan2((this->endPos.y()-this->startPos.y()), (this->endPos.x()-this->startPos.x()));
+    qDebug() << "Angle = " << angle;
+    qDebug() << this->endPos.y() << this->startPos.y() << this->endPos.x() << this->startPos.x();
+    mArrowLine1 = new QGraphicsLineItem(this->startPos.x(),
+                                        this->startPos.y(),
+                                        this->startPos.x()+arrowSize*cos(angle+arrowAngle),
+                                        this->startPos.y()+arrowSize*sin(angle+arrowAngle), this);
+    mArrowLine2 = new QGraphicsLineItem(this->startPos.x(),
+                                        this->startPos.y(),
+                                        this->startPos.x()+arrowSize*cos(angle-arrowAngle),
+                                        this->startPos.y()+arrowSize*sin(angle-arrowAngle), this);
+    mArrowLine1->setPen(this->pen());
+    mArrowLine2->setPen(this->pen());
+    mArrowLine1->show();
+    mArrowLine2->show();
+    this->mHasArrow = true;
+}
+
+void GUIConnectorLine::setPen (const QPen &pen)
+{
+    QGraphicsLineItem::setPen(pen);
+    if(this->mHasArrow)
+    {
+        mArrowLine1->setPen(this->pen());
+        mArrowLine2->setPen(this->pen());
+    }
+}
+
