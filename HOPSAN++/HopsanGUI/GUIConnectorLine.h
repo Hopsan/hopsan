@@ -54,7 +54,10 @@ private:
     bool mParentConnectorEndPortConnected;
     QGraphicsLineItem *mArrowLine1;
     QGraphicsLineItem *mArrowLine2;
-    bool mHasArrow;
+    bool mHasStartArrow;
+    bool mHasEndArrow;
+    qreal mArrowSize;
+    qreal mArrowAngle;
 
 };
 

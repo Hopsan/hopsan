@@ -22,11 +22,20 @@
 #include <math.h>
 
 
+//! Constructor.
+//! @param x1 is the x-coordinate of the start position of the line.
+//! @param y1 is the y-coordinate of the start position of the line.
+//! @param x2 is the x-coordinate of the end position of the line.
+//! @param y2 is the y-coordinate of the end position of the line.
+//! @param primaryPen defines the default color and width of the line.
+//! @param activePen defines the color and width of the line when it is selected.
+//! @param hoverPen defines the color and width of the line when it is hovered by the mouse cursor.
+//! @param lineNumber is the number of the line in the connector.
+//! @param *parent is a pointer to the parent object.
 GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen primaryPen, QPen activePen, QPen hoverPen, int lineNumber, QGraphicsItem *parent)
         : QGraphicsLineItem(x1,y1,x2,y2,parent)
 {
     setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
-    //this->mParentConnector = parentConnector;
     this->mPrimaryPen = primaryPen;
     this->mActivePen = activePen;
     this->mHoverPen = hoverPen;
@@ -36,7 +45,10 @@ GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen 
     this->startPos = QPointF(x1,y1);
     this->endPos = QPointF(x2,y2);
     this->setGeometry(GUIConnectorLine::HORIZONTAL);
-    this->mHasArrow = false;
+    this->mHasStartArrow = false;
+    this->mHasEndArrow = false;
+    this->mArrowSize = 10.0;
+    this->mArrowAngle = 0.6;
 }
 
 GUIConnectorLine::~GUIConnectorLine()
@@ -53,7 +65,7 @@ void GUIConnectorLine::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWi
 }
 
 
-//! Changes the style of the line to active
+//! Changes the style of the line to active.
 //! @see setPassive()
 //! @see setHovered()
 void GUIConnectorLine::setActive()
@@ -62,7 +74,7 @@ void GUIConnectorLine::setActive()
 }
 
 
-//! Changes the style of the line to default
+//! Changes the style of the line to default.
 //! @see setActive()
 //! @see setHovered()
 void GUIConnectorLine::setPassive()
@@ -71,7 +83,7 @@ void GUIConnectorLine::setPassive()
 }
 
 
-//! Changes the style of the line to hovered
+//! Changes the style of the line to hovered.
 //! @see setActive()
 //! @see setPassive()
 void GUIConnectorLine::setHovered()
@@ -80,15 +92,14 @@ void GUIConnectorLine::setHovered()
 }
 
 
-
-//! Emits line clicked signal
+//! Defines what shall happen if the line is clicked.
 void GUIConnectorLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     emit lineClicked();
 }
 
 
-//! Emits hover enter signal and changes cursor if line is modifyable
+//! Devines what shall happen if the mouse cursor enters the line. Change cursor if the line is movable.
 //! @see hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 void GUIConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
@@ -100,14 +111,14 @@ void GUIConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
         }
         else if(this->mParentConnectorEndPortConnected && this->getGeometry()==GUIConnectorLine::HORIZONTAL)
         {
-               this->setCursor(Qt::SizeVerCursor);
+            this->setCursor(Qt::SizeVerCursor);
         }
     }
     emit lineHoverEnter();
 }
 
 
-//! Emits hover leave event
+//! Defines what shall happen when mouse cursor leaves the line.
 //! @see hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 void GUIConnectorLine::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
@@ -115,7 +126,7 @@ void GUIConnectorLine::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 }
 
 
-//! Returns the type of geometry (vertical, horizontal or diagonal) of the line
+//! Returns the type of geometry (vertical, horizontal or diagonal) of the line.
 //! @see setGeometry(geometryType newgeometry)
 GUIConnectorLine::geometryType GUIConnectorLine::getGeometry()
 {
@@ -123,7 +134,7 @@ GUIConnectorLine::geometryType GUIConnectorLine::getGeometry()
 }
 
 
-//! Sets the type of geometry (vertical, horizontal or diagonal) of the line
+//! Sets the type of geometry (vertical, horizontal or diagonal) of the line.
 //! @see getGeometry()
 void GUIConnectorLine::setGeometry(geometryType newgeometry)
 {
@@ -131,14 +142,14 @@ void GUIConnectorLine::setGeometry(geometryType newgeometry)
 }
 
 
-//! Returns the number of the line in the connector
+//! Returns the number of the line in the connector.
 int GUIConnectorLine::getLineNumber()
 {
     return mLineNumber;
 }
 
 
-//! Emits selected and moved signals
+//! Defines what shall happen if the line is selected or moved.
 QVariant GUIConnectorLine::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == QGraphicsItem::ItemSelectedHasChanged)
@@ -163,63 +174,71 @@ void GUIConnectorLine::setConnected()
 
 
 //! Reimplementation of setLine; stores the start and end positions before changing them
+//! @param x1 is the x-coordinate of the start position.
+//! @param y1 is the y-coordinate of the start position.
+//! @param x2 is the x-coordinate of the end position.
+//! @param y2 is the y-coordinate of the end position.
 void GUIConnectorLine::setLine(qreal x1, qreal y1, qreal x2, qreal y2)
 {
     this->startPos = QPointF(x1,y1);
     this->endPos = QPointF(x2,y2);
+    if(this->mHasEndArrow)
+    {
+        delete(this->mArrowLine1);
+        delete(this->mArrowLine2);
+        this->addEndArrow();
+    }
+    else if(this->mHasStartArrow)
+    {
+        delete(this->mArrowLine1);
+        delete(this->mArrowLine2);
+        this->addStartArrow();
+    }
     QGraphicsLineItem::setLine(x1,y1,x2,y2);
 }
 
 
+//! Adds an arrow at the end of the line.
+//! @see addStartArrow()
 void GUIConnectorLine::addEndArrow()
 {
-    qreal arrowSize = 15.0;
-    qreal arrowAngle = 0.5;
     qreal angle = atan2((this->endPos.y()-this->startPos.y()), (this->endPos.x()-this->startPos.x()));
-    qDebug() << "Angle = " << angle;
-    qDebug() << this->endPos.y() << this->startPos.y() << this->endPos.x() << this->startPos.x();
     mArrowLine1 = new QGraphicsLineItem(this->endPos.x(),
                                         this->endPos.y(),
-                                        this->endPos.x()-arrowSize*cos(angle+arrowAngle),
-                                        this->endPos.y()-arrowSize*sin(angle+arrowAngle), this);
+                                        this->endPos.x()-mArrowSize*cos(angle+mArrowAngle),
+                                        this->endPos.y()-mArrowSize*sin(angle+mArrowAngle), this);
     mArrowLine2 = new QGraphicsLineItem(this->endPos.x(),
                                         this->endPos.y(),
-                                        this->endPos.x()-arrowSize*cos(angle-arrowAngle),
-                                        this->endPos.y()-arrowSize*sin(angle-arrowAngle), this);
-    mArrowLine1->setPen(this->pen());
-    mArrowLine2->setPen(this->pen());
-    mArrowLine1->show();
-    mArrowLine2->show();
-    this->mHasArrow = true;
+                                        this->endPos.x()-mArrowSize*cos(angle-mArrowAngle),
+                                        this->endPos.y()-mArrowSize*sin(angle-mArrowAngle), this);
+    this->setPen(this->pen());
+    this->mHasEndArrow = true;
 }
 
 
+//! Adds an arrow at the start of the line.
+//! @see addEndArrow()
 void GUIConnectorLine::addStartArrow()
 {
-    qreal arrowSize = 15.0;
-    qreal arrowAngle = 0.5;
     qreal angle = atan2((this->endPos.y()-this->startPos.y()), (this->endPos.x()-this->startPos.x()));
-    qDebug() << "Angle = " << angle;
-    qDebug() << this->endPos.y() << this->startPos.y() << this->endPos.x() << this->startPos.x();
     mArrowLine1 = new QGraphicsLineItem(this->startPos.x(),
                                         this->startPos.y(),
-                                        this->startPos.x()+arrowSize*cos(angle+arrowAngle),
-                                        this->startPos.y()+arrowSize*sin(angle+arrowAngle), this);
+                                        this->startPos.x()+mArrowSize*cos(angle+mArrowAngle),
+                                        this->startPos.y()+mArrowSize*sin(angle+mArrowAngle), this);
     mArrowLine2 = new QGraphicsLineItem(this->startPos.x(),
                                         this->startPos.y(),
-                                        this->startPos.x()+arrowSize*cos(angle-arrowAngle),
-                                        this->startPos.y()+arrowSize*sin(angle-arrowAngle), this);
-    mArrowLine1->setPen(this->pen());
-    mArrowLine2->setPen(this->pen());
-    mArrowLine1->show();
-    mArrowLine2->show();
-    this->mHasArrow = true;
+                                        this->startPos.x()+mArrowSize*cos(angle-mArrowAngle),
+                                        this->startPos.y()+mArrowSize*sin(angle-mArrowAngle), this);
+    this->setPen(this->pen());
+    this->mHasStartArrow = true;
 }
 
+
+//! Reimplementation of inherited setPen function to include arrow pen too.
 void GUIConnectorLine::setPen (const QPen &pen)
 {
     QGraphicsLineItem::setPen(pen);
-    if(this->mHasArrow)
+    if(this->mHasStartArrow | this->mHasEndArrow)       //Update arrow lines two, but ignore dashes
     {
         QPen tempPen = this->pen();
         tempPen = QPen(tempPen.color(), tempPen.width(), Qt::SolidLine);
@@ -228,4 +247,3 @@ void GUIConnectorLine::setPen (const QPen &pen)
         mArrowLine1->line();
     }
 }
-

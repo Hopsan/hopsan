@@ -20,6 +20,7 @@
 #include "SimulationThread.h"
 #include "InitializationThread.h"
 #include <QtGui>
+#include <QSizePolicy>
 
 #include <string>
 #include <iostream>
@@ -50,6 +51,8 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     this->setAcceptDrops(true);
     this->mIsCreatingConnector = false;
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    //this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     //this->setTransformationAnchor(QGraphicsView::NoAnchor);
 
     MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent()->parent())); //Ugly!!!
