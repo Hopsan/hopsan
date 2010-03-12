@@ -476,6 +476,11 @@ void GUIComponent::rotate()
     this->mpNameText->setRotation(-this->rotation());
     this->fixTextPosition(this->mpNameText->pos());
     this->setNameTextPos(temNameTextPos);
+    for (int i = 0; i != mPortListPtrs.size(); ++i)
+    {
+        mPortListPtrs.value(i)->setRotation(-this->rotation());
+    }
+
     emit componentMoved();
 }
 
