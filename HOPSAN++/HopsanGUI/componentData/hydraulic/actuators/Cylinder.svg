@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -9,12 +8,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="88.476402"
-   height="46.890938"
+   width="129.94507"
+   height="47.700939"
    id="svg2531"
    sodipodi:version="0.32"
-   inkscape:version="0.47pre4 r22446"
-   sodipodi:docname="Volume.svg"
+   inkscape:version="0.46"
+   sodipodi:docname="Cylinder.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
   <defs
@@ -37,16 +36,16 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="3.959798"
-     inkscape:cx="108.21115"
-     inkscape:cy="53.726898"
+     inkscape:zoom="1.979899"
+     inkscape:cx="114.30765"
+     inkscape:cy="65.124613"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1592"
      inkscape:window-height="977"
-     inkscape:window-x="0"
-     inkscape:window-y="25"
+     inkscape:window-x="66"
+     inkscape:window-y="39"
      inkscape:window-maximized="0" />
   <metadata
      id="metadata2536">
@@ -56,7 +55,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -64,33 +63,33 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-350.04751,-488.9167)">
+     transform="translate(-349.64248,-488.5117)">
     <rect
        ry="0"
-       y="-405.30902"
+       y="-439.14911"
        x="489.8067"
-       height="54.371521"
+       height="88.211632"
        width="45.110939"
        id="rect4023"
-       style="fill:none;stroke:#000000;stroke-width:1.77999997;stroke-linecap:butt;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:none;stroke:#000000;stroke-width:2.58999991;stroke-linecap:butt;stroke-miterlimit:10.43299961;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        transform="matrix(0,1,-1,0,0,0)" />
     <rect
        transform="matrix(0,1,-1,0,0,0)"
-       style="fill:#ffffff;stroke:#000000;stroke-width:1.77999996999999999;stroke-linecap:butt;stroke-miterlimit:10.43299960999999954;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#ffffff;stroke:#000000;stroke-width:2.58999991;stroke-linecap:butt;stroke-miterlimit:10.43299961;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect2815"
        width="10.765753"
-       height="59.927361"
+       height="101.09107"
        x="506.97928"
-       y="-437.12881"
+       y="-478.29254"
        ry="0" />
     <rect
        transform="matrix(0,1,-1,0,0,0)"
-       style="fill:#ffffff;stroke:#000000;stroke-width:1.77999996999999999;stroke-linecap:butt;stroke-miterlimit:10.43299960999999954;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="fill:#ffffff;stroke:#000000;stroke-width:2.58999991;stroke-linecap:butt;stroke-miterlimit:10.43299961;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect2813"
        width="45.110939"
        height="8.662118"
        x="489.8067"
-       y="-378.53998"
+       y="-379.29761"
        ry="0" />
   </g>
 </svg>
