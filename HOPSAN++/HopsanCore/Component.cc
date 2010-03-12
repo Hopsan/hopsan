@@ -784,7 +784,7 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
     cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
 
     //! @todo make sure this calculation is EXACTLY correct
-    double dslots = ((double)(stopT-startT))/mTimestep;
+    double dslots = (stopT-startT)/mTimestep;
     //std::cout << "dslots: " << dslots << std::endl;
     size_t needed_slots = (size_t)(dslots+0.5); //Round to nearest
     //size_t needed_slots = ((double)(stopT-startT))/mTimestep;
@@ -1110,15 +1110,15 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
     }
     //Check the kind of ports in the components subjected for connection
     //                                 This checks that rPort1 is not already connected to pNode
-    if (((pPort1->getPortType() == "ReadPort") && !(pNode->connectedToPort(pPort1))) || ((pPort2->getPortType() == "ReadPort") && !(pNode->connectedToPort(pPort2))))
+    if (((pPort1->getPortType() == "ReadPort") && !(pNode->isConnectedToPort(pPort1))) || ((pPort2->getPortType() == "ReadPort") && !(pNode->isConnectedToPort(pPort2))))
     {
         n_ReadPorts += 1;
     }
-    if (((pPort1->getPortType() == "WritePort") && !(pNode->connectedToPort(pPort1))) || ((pPort2->getPortType() == "WritePort") && !(pNode->connectedToPort(pPort2))))
+    if (((pPort1->getPortType() == "WritePort") && !(pNode->isConnectedToPort(pPort1))) || ((pPort2->getPortType() == "WritePort") && !(pNode->isConnectedToPort(pPort2))))
     {
         n_WritePorts += 1;
     }
-    if (((pPort1->getPortType() == "PowerPort") && !(pNode->connectedToPort(pPort1))) || ((pPort2->getPortType() == "PowerPort") && !(pNode->connectedToPort(pPort2))))
+    if (((pPort1->getPortType() == "PowerPort") && !(pNode->isConnectedToPort(pPort1))) || ((pPort2->getPortType() == "PowerPort") && !(pNode->isConnectedToPort(pPort2))))
     {
         n_PowerPorts += 1;
     }
@@ -1138,11 +1138,12 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
         gCoreMessageHandler.addErrorMessage("Trying to connect WritePort and PowerPort to same node");
         return false;
     }
-//    if ((n_PowerPorts == 0) && (n_WritePorts == 0))
-//    {
-//        cout << "Trying to connect only ReadPorts" << endl;
-//        assert(false);
-//    }
+    if ((n_PowerPorts == 0) && (n_WritePorts == 0))
+    {
+        cout << "Trying to connect only ReadPorts" << endl;
+        gCoreMessageHandler.addErrorMessage("Trying to connect only ReadPorts");
+        return false;
+    }
     //It seems to be OK!
     return true;
 }

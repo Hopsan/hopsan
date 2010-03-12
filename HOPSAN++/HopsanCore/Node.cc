@@ -67,12 +67,7 @@ void Node::preAllocateLogSpace(const size_t nSlots)
     size_t data_size = mDataVector.size();
     mTimeStorage.resize(nSlots);
     mDataStorage.resize(nSlots, vector<double>(data_size));
-    //mDataStorage.reserve(nSlots);
-//    vector<vector<double> >::iterator it;
-//    for (it=mDataStorage.begin(); it!=mDataStorage.end(); ++it)
-//    {
-//        it->reserve(data_size);
-//    }
+
     cout << "requestedSize: " << nSlots << " " << data_size << " Capacities: " << mTimeStorage.capacity() << " " << mDataStorage.capacity() << " " << mDataStorage[1].capacity() << " Size: " << mTimeStorage.size() << " " << mDataStorage.size() << " " << mDataStorage[1].size() << endl;
     mLogSpaceAllocated = true;
 
@@ -143,6 +138,7 @@ void Node::setPort(Port *pPort)
         {
             found = true;
             break;
+            cout << "Warning: you are trying to add a Port that does already exist in this node  (does nothing)" << endl;
         }
     }
 
@@ -172,7 +168,7 @@ void Node::removePort(Port *pPort)
     }
 }
 
-bool Node::connectedToPort(Port *pPort)
+bool Node::isConnectedToPort(Port *pPort)
 {
     vector<Port*>::iterator it;
     for (it=mPortPtrs.begin(); it!=mPortPtrs.end(); ++it)
