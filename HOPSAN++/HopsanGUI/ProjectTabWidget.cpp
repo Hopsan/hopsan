@@ -803,6 +803,7 @@ void ProjectTabWidget::loadModel()
     int length, heigth;
     int posX, posY;
     int nameTextPos;
+    qreal rotation;
 
     while (! modelFile.eof() )
     {
@@ -823,9 +824,15 @@ void ProjectTabWidget::loadModel()
                 inputStream >> componentName;
                 inputStream >> posX;
                 inputStream >> posY;
+                inputStream >> rotation;
                 inputStream >> nameTextPos;
                 pCurrentTab->mpGraphicsView->addComponent(QString(componentType.c_str()), QPoint(posX, posY), QString(componentName.c_str()));
                 pCurrentTab->mpGraphicsView->getComponent(QString(componentName.c_str()))->setNameTextPos(nameTextPos);
+                while(pCurrentTab->mpGraphicsView->getComponent(QString(componentName.c_str()))->rotation() != rotation)
+                {
+                    pCurrentTab->mpGraphicsView->getComponent(QString(componentName.c_str()))->rotate();
+                }
+
             }
             if ( inputWord == "CONNECT" )
             {
@@ -919,7 +926,7 @@ void ProjectTabWidget::saveModel(bool saveAs)
     {
         QPointF pos = it.value()->mapToScene(it.value()->boundingRect().center());
         modelFile << "COMPONENT " << it.value()->getTypeName().toStdString() << " " << it.key().toStdString()
-                  << " " << pos.x() << " " << pos.y() << " " << it.value()->getNameTextPos() << std::endl;
+                  << " " << pos.x() << " " << pos.y() << " " << it.value()->rotation() << " " << it.value()->getNameTextPos() << std::endl;
         //<< " " << it.value()->mapToScene(it.value()->pos()).x() << " " << it.value()->mapToScene(it.value()->pos()).y() << std::endl;
     }
 
