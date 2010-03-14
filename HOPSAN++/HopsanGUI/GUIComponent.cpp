@@ -6,6 +6,7 @@
 #include <vector>
 #include <math.h>
 
+#include <QObject>
 #include <QDebug>
 #include <QtGui>
 #include <QGraphicsSvgItem>
@@ -257,6 +258,7 @@ void GUIComponent::refreshName()
 {
     mpNameText->setPlainText(getName());
     //Adjust the position of the text
+    this->fixTextPosition(this->mpNameText->pos());
 }
 
 //! This function returns the current component name
@@ -349,7 +351,7 @@ void GUIComponent::openParameterDialog()
     for ( it=paramVector.begin() ; it !=paramVector.end(); it++ )
         qDebug() << QString::fromStdString(it->getName()) << ": " << it->getValue();
 
-    ParameterDialog *dialog = new ParameterDialog(mpCoreComponent,mpParentGraphicsView);
+    ParameterDialog *dialog = new ParameterDialog(this,mpParentGraphicsView);
     dialog->exec();
 }
 
@@ -369,7 +371,10 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
         QMenu menu;
 
-        QAction *groupAction = menu.addAction(tr("Group components"));
+        QAction *groupAction;
+        if (!mpParentGraphicsScene->selectedItems().empty())
+            groupAction = menu.addAction(tr("Group components"));
+
         QAction *parameterAction = menu.addAction(tr("Change parameters"));
         //menu.insertSeparator(parameterAction);
 
@@ -381,7 +386,12 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         }
         else if (selectedAction == groupAction)
         {
-            qDebug() << "Group selected components (to be implemented...)";
+            qDebug() << "Group selected components (to be implemented...)" << "Selected components: ";
+            for (size_t i=0; i < mpParentGraphicsScene->selectedItems().size(); ++i)
+            {
+                GUIComponent* tmp = (GUIComponent*)(mpParentGraphicsScene->selectedItems().at(i));
+                qDebug() << QString::fromStdString(tmp->mpCoreComponent->getName());
+            }
         }
 
 
@@ -551,7 +561,8 @@ void GUIComponent::setNameTextPos(int textPos)
 GUIComponentNameTextItem::GUIComponentNameTextItem(GUIComponent *pParent)
     :   QGraphicsTextItem(pParent)
 {
-    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
+    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable);
+//    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
     //setTextInteractionFlags(Qt::TextEditorInteraction);
     mpParentGUIComponent = pParent;
 }

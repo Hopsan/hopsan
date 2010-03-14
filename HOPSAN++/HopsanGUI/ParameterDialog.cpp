@@ -13,6 +13,7 @@
 #include "ParameterDialog.h"
 #include "HopsanCore.h"
 #include "mainwindow.h"
+#include "GUIComponent.h"
 
 
 //! @class ParameterDialog
@@ -25,14 +26,17 @@
 //! Constructor.
 //! @param coreComponent is a ponter to the core component.
 //! @param parent defines a parent to the new instanced object.
-ParameterDialog::ParameterDialog(Component *coreComponent, QWidget *parent)
+ParameterDialog::ParameterDialog(GUIComponent *guiComponent, QWidget *parent)
     : QDialog(parent)
 {
-    mpCoreComponent = coreComponent;
+    mpGuiComponent = guiComponent;
+    mpCoreComponent = mpGuiComponent->mpCoreComponent;
 
     std::vector<CompParameter>::iterator it;
 
     vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
+
+    mpNameEdit = new QLineEdit(QString::fromStdString(mpCoreComponent->getName()));
 
     for ( it=paramVector.begin() ; it !=paramVector.end(); it++ )
     {
@@ -63,6 +67,11 @@ ParameterDialog::ParameterDialog(Component *coreComponent, QWidget *parent)
     connect(okButton, SIGNAL(pressed()), SLOT(setParameters()));
     connect(cancelButton, SIGNAL(pressed()), SLOT(close()));
 
+    QHBoxLayout *pNameLayout = new QHBoxLayout;
+    QLabel *pNameLabel = new QLabel("Name: ");
+    pNameLayout->addWidget(pNameLabel);
+    pNameLayout->addWidget(mpNameEdit);
+
     QVBoxLayout *topLeftLayout1 = new QVBoxLayout;
     QVBoxLayout *topLeftLayout2 = new QVBoxLayout;
     QVBoxLayout *topLeftLayout3 = new QVBoxLayout;
@@ -84,7 +93,8 @@ ParameterDialog::ParameterDialog(Component *coreComponent, QWidget *parent)
 
     QGridLayout *mainLayout = new QGridLayout;
     mainLayout->setSizeConstraint(QLayout::SetFixedSize);
-    mainLayout->addLayout(leftLayout, 0, 0);
+    mainLayout->addLayout(pNameLayout,0, 0);
+    mainLayout->addLayout(leftLayout, 1, 0);
     mainLayout->addWidget(buttonBox, 0, 1);
     setLayout(mainLayout);
 
@@ -94,6 +104,11 @@ ParameterDialog::ParameterDialog(Component *coreComponent, QWidget *parent)
 //! Sets the parameters in the core component. Read the values from the dialog and write them into the core component.
 void ParameterDialog::setParameters()
 {
+    mpCoreComponent->setName(mpNameEdit->text().toStdString());
+    mpGuiComponent->refreshName();
+
+    qDebug() << mpNameEdit->text();
+
     for (size_t i=0 ; i < mValueVector.size(); ++i )
     {
         bool ok;

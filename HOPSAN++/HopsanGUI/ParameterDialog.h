@@ -18,6 +18,7 @@ class QGroupBox;
 class QLabel;
 class QLineEdit;
 class QPushButton;
+class GUIComponent;
 class Component;
 
 class ParameterDialog : public QDialog
@@ -25,17 +26,19 @@ class ParameterDialog : public QDialog
     Q_OBJECT
 
 public:
-    ParameterDialog(Component *coreComponent, QWidget *parent = 0);
+    ParameterDialog(GUIComponent *guiComponent, QWidget *parent = 0);
 
 protected slots:
     void setParameters();
 
 private:
+    GUIComponent *mpGuiComponent;
     Component *mpCoreComponent;
 
     QLabel *label;
     QLineEdit *lineEdit;
 
+    QLineEdit *mpNameEdit;
     std::vector<QLabel*> mVarVector;
     std::vector<QLabel*> mDescriptionVector;
     std::vector<QLabel*> mUnitVector;
