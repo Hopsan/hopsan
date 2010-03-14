@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -12,7 +13,7 @@
    height="47.700939"
    id="svg2531"
    sodipodi:version="0.32"
-   inkscape:version="0.46"
+   inkscape:version="0.47 r22583"
    sodipodi:docname="Cylinder.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
@@ -36,9 +37,9 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.979899"
-     inkscape:cx="114.30765"
-     inkscape:cy="65.124613"
+     inkscape:zoom="3.959798"
+     inkscape:cx="-21.231043"
+     inkscape:cy="42.277327"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -71,11 +72,11 @@
        height="88.211632"
        width="45.110939"
        id="rect4023"
-       style="fill:none;stroke:#000000;stroke-width:2.58999991;stroke-linecap:butt;stroke-miterlimit:10.43299961;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        transform="matrix(0,1,-1,0,0,0)" />
     <rect
        transform="matrix(0,1,-1,0,0,0)"
-       style="fill:#ffffff;stroke:#000000;stroke-width:2.58999991;stroke-linecap:butt;stroke-miterlimit:10.43299961;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:#ffffff;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect2815"
        width="10.765753"
        height="101.09107"
@@ -84,12 +85,12 @@
        ry="0" />
     <rect
        transform="matrix(0,1,-1,0,0,0)"
-       style="fill:#ffffff;stroke:#000000;stroke-width:2.58999991;stroke-linecap:butt;stroke-miterlimit:10.43299961;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:#ffffff;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-miterlimit:10.43299961;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect2813"
-       width="45.110939"
-       height="8.662118"
-       x="489.8067"
-       y="-379.29761"
+       width="44.888798"
+       height="10.764567"
+       x="489.91779"
+       y="-378.85947"
        ry="0" />
   </g>
 </svg>

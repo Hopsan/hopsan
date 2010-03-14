@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -12,7 +13,7 @@
    height="38.253658"
    id="svg3336"
    sodipodi:version="0.32"
-   inkscape:version="0.46"
+   inkscape:version="0.47 r22583"
    sodipodi:docname="PressureSource.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
@@ -49,20 +50,21 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.2"
-     inkscape:cx="19.581213"
-     inkscape:cy="33.574888"
+     inkscape:zoom="7.919596"
+     inkscape:cx="35.193602"
+     inkscape:cy="31.370429"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1680"
+     inkscape:window-width="1664"
      inkscape:window-height="977"
      inkscape:window-x="0"
      inkscape:window-y="39"
      showguides="true"
      inkscape:snap-global="true"
      inkscape:snap-intersection-line-segments="true"
-     inkscape:snap-center="true">
+     inkscape:snap-center="true"
+     inkscape:window-maximized="0">
     <inkscape:grid
        type="xygrid"
        id="grid2405"
@@ -86,18 +88,18 @@
      id="layer1"
      transform="translate(-208.66162,-377.6331)">
     <path
-       transform="matrix(0.2046276,0,0,0.2013271,160.26135,333.01013)"
-       d="M 417.14286,316.64789 A 87.14286,88.571426 0 1 1 242.85714,316.64789 A 87.14286,88.571426 0 1 1 417.14286,316.64789 z"
+       transform="matrix(0.17652453,0,0,0.17367731,169.53536,341.76538)"
+       d="m 417.14286,316.64789 a 87.14286,88.571426 0 1 1 -174.28572,0 87.14286,88.571426 0 1 1 174.28572,0 z"
        sodipodi:ry="88.571426"
        sodipodi:rx="87.14286"
        sodipodi:cy="316.64789"
        sodipodi:cx="330"
        id="path2160"
-       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:12.76046658;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;stroke:#000000;stroke-width:11.42236233;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        sodipodi:type="arc" />
     <text
        xml:space="preserve"
-       style="font-size:27.45308304px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:119.00000572%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+       style="font-size:27.45308304px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:119.00000572%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
        x="218.17049"
        y="406.58566"
        id="text3353"
