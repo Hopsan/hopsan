@@ -14,7 +14,8 @@ class GUIPort :public QGraphicsSvgItem
     Q_OBJECT
 public:
     enum portType {POWER, READ, WRITE};
-    GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, GUIPort::portType type, GUIComponent *parent = 0);
+    enum portDirectionType {VERTICAL, HORIZONTAL};
+    GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, GUIPort::portType type, GUIPort::portDirectionType portDirection, GUIComponent *parent = 0);
     ~GUIPort();
     QPointF rectPos;
     QGraphicsView *getParentView();
@@ -23,6 +24,8 @@ public:
     int getPortNumber();
     portType getPortType();
     Port *mpCorePort;
+    portDirectionType getPortDirection();
+    void setPortDirection(GUIPort::portDirectionType direction);
 
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
@@ -48,6 +51,8 @@ private:
     qreal mMag;
     bool mIsMag;
     GUIPort::portType mType;
+    portDirectionType mPortDirection;
+
 };
 
 #endif // GUIPORT_H

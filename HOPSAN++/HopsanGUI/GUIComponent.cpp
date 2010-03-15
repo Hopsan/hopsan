@@ -108,7 +108,12 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
         }
         iconPath.append(".svg");
 
-        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,type,this));//mpIcon));
+        GUIPort::portDirectionType direction;
+        if((rot == 0) | (rot == 180))
+            direction = GUIPort::HORIZONTAL;
+        else
+            direction = GUIPort::VERTICAL;
+        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,type,direction,this));//mpIcon));
 
     }
 
@@ -488,6 +493,10 @@ void GUIComponent::rotate()
     this->setNameTextPos(temNameTextPos);
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
+        if(mPortListPtrs.value(i)->getPortDirection() == GUIPort::VERTICAL)
+            mPortListPtrs.value(i)->setPortDirection(GUIPort::HORIZONTAL);
+        else
+            mPortListPtrs.value(i)->setPortDirection(GUIPort::VERTICAL);
         if (mPortListPtrs.value(i)->getPortType() == GUIPort::POWER)
             mPortListPtrs.value(i)->setRotation(-this->rotation());
     }

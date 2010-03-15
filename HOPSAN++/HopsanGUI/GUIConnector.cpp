@@ -12,8 +12,8 @@
 //#include <QBrush>
 //#include <QGraphicsLineItem>
 //#include <QGraphicsScene>
+#include "GUIPort.h"
 #include <vector>
-
 
 //! Constructor.
 //! @param x1 is the x-coordinate of the start position.
@@ -230,25 +230,50 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
 {
 
     //////////////Only used when moving components:///////////////
-    getLine(0)->setLine(getLine(0)->mapFromScene(startPos).x(),
-                        getLine(0)->mapFromScene(startPos).y(),
-                        getLine(0)->mapFromParent(getLine(1)->mapToParent(getLine(1)->line().p1())).x(),
-                        getLine(0)->mapFromScene(startPos).y());
-    getLine(1)->setLine(getLine(1)->mapFromParent(getLine(0)->mapToParent(getLine(0)->line().p2())).x(),
-                        getLine(1)->mapFromParent(getLine(0)->mapToParent(getLine(0)->line().p2())).y(),
-                        getLine(1)->line().x2(),
-                        getLine(1)->line().y2());
+    if(this->getStartPort()->getPortDirection() == GUIPort::HORIZONTAL)
+    {
+        getLine(0)->setLine(getLine(0)->mapFromScene(startPos).x(),
+                            getLine(0)->mapFromScene(startPos).y(),
+                            getLine(0)->mapFromParent(getLine(1)->mapToParent(getLine(1)->line().p1())).x(),
+                            getLine(0)->mapFromScene(startPos).y());
+        getLine(1)->setLine(getLine(1)->mapFromParent(getLine(0)->mapToParent(getLine(0)->line().p2())).x(),
+                            getLine(1)->mapFromParent(getLine(0)->mapToParent(getLine(0)->line().p2())).y(),
+                            getLine(1)->line().x2(),
+                            getLine(1)->line().y2());
+    }
+    else
+    {
+        getLine(0)->setLine(getLine(0)->mapFromScene(startPos).x(),
+                            getLine(0)->mapFromScene(startPos).y(),
+                            getLine(0)->mapFromScene(startPos).x(),
+                            getLine(0)->mapFromParent(getLine(1)->mapToParent(getLine(1)->line().p1())).y());
+        getLine(1)->setLine(getLine(1)->mapFromParent(getLine(0)->mapToParent(getLine(0)->line().p2())).x(),
+                            getLine(1)->mapFromParent(getLine(0)->mapToParent(getLine(0)->line().p2())).y(),
+                            getLine(1)->line().x2(),
+                            getLine(1)->line().y2());
+    }
     //////////////////////////////////////////////////////////////
 
     //First line of the connector:
-    if (getNumberOfLines()<3 and getThisLine()->getGeometry()!=GUIConnectorLine::DIAGONAL)
+    if (getNumberOfLines()<3 and getStartPort()->getPortDirection() == GUIPort::HORIZONTAL and getThisLine()->getGeometry()!=GUIConnectorLine::DIAGONAL)
     {
+        qDebug() << "First port is horizontal!";
         getLastLine()->setLine(getLastLine()->mapFromScene(startPos).x(),
                                getLastLine()->mapFromScene(startPos).y(),
                                getLastLine()->mapFromScene(endPos).x(),
                                getLastLine()->mapFromScene(startPos).y());
         getLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
         getThisLine()->setGeometry(GUIConnectorLine::VERTICAL);
+    }
+    else if (getNumberOfLines()<3 and getStartPort()->getPortDirection() == GUIPort::VERTICAL and getThisLine()->getGeometry()!=GUIConnectorLine::DIAGONAL)
+    {
+        qDebug() << "First port is vertical!";
+        getLastLine()->setLine(getLastLine()->mapFromScene(startPos).x(),
+                               getLastLine()->mapFromScene(startPos).y(),
+                               getLastLine()->mapFromScene(startPos).x(),
+                               getLastLine()->mapFromScene(endPos).y());
+        getLastLine()->setGeometry(GUIConnectorLine::VERTICAL);
+        getThisLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
     }
 
     //If last line was vertical:
