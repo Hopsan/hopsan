@@ -232,9 +232,10 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
     //////////////Only used when moving components:///////////////
     if(this->getStartPort()->getPortDirection() == GUIPort::HORIZONTAL)
     {
+        qDebug() << "Hi!";
         getLine(0)->setLine(getLine(0)->mapFromScene(startPos).x(),
                             getLine(0)->mapFromScene(startPos).y(),
-                            getLine(0)->mapFromParent(getLine(1)->mapToParent(getLine(1)->line().p1())).x(),
+                            getLine(0)->mapFromParent(getLine(1)->mapToParent(getLine(1)->line().p2())).x(),
                             getLine(0)->mapFromScene(startPos).y());
         getLine(1)->setLine(getLine(1)->mapFromParent(getLine(0)->mapToParent(getLine(0)->line().p2())).x(),
                             getLine(1)->mapFromParent(getLine(0)->mapToParent(getLine(0)->line().p2())).y(),
@@ -243,10 +244,11 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
     }
     else
     {
+        qDebug() << "Ha!";
         getLine(0)->setLine(getLine(0)->mapFromScene(startPos).x(),
                             getLine(0)->mapFromScene(startPos).y(),
                             getLine(0)->mapFromScene(startPos).x(),
-                            getLine(0)->mapFromParent(getLine(1)->mapToParent(getLine(1)->line().p1())).y());
+                            getLine(0)->mapFromParent(getLine(1)->mapToParent(getLine(1)->line().p2())).y());
         getLine(1)->setLine(getLine(1)->mapFromParent(getLine(0)->mapToParent(getLine(0)->line().p2())).x(),
                             getLine(1)->mapFromParent(getLine(0)->mapToParent(getLine(0)->line().p2())).y(),
                             getLine(1)->line().x2(),
@@ -294,6 +296,31 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
                                getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).y());
         getThisLine()->setGeometry(GUIConnectorLine::VERTICAL);
     }
+
+    //If last line is connected and end line is horizontal
+    if (getNumberOfLines()>2 and mEndPortConnected and getEndPort()->getPortDirection() == GUIPort::VERTICAL)
+    {
+        qDebug() << "Hej Kaj!";
+        getLastLine()->setLine(getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).x(),
+                               getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).y(),
+                               getLastLine()->mapFromScene(endPos).x(),
+                               getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).y());
+        getThisLine()->setGeometry(GUIConnectorLine::VERTICAL);
+        getLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
+    }
+    //If last line is connected and end line is vertical
+    else if (getNumberOfLines()>2 and mEndPortConnected and getEndPort()->getPortDirection() == GUIPort::HORIZONTAL)
+    {
+        qDebug() << "Hallå Börje!";
+        getLastLine()->setLine(getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).x(),
+                               getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).y(),
+                               getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).x(),
+                               getLastLine()->mapFromScene(endPos).y());
+        getThisLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
+        getLastLine()->setGeometry(GUIConnectorLine::VERTICAL);
+    }
+
+    qDebug() << "mEndPortConnected = " << mEndPortConnected;
 
     //This Line:
     getThisLine()->setLine(getThisLine()->mapFromParent(getLastLine()->mapToParent(getLastLine()->line().p2())).x(),
