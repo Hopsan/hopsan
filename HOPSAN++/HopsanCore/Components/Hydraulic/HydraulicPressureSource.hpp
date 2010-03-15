@@ -63,18 +63,18 @@ public:
     void simulateOneTimestep()
     {
         //Pressure source equation
-        double p;
+        double c;
         if (mPortPtrs[in]->isConnected())
         {
-            p = mPortPtrs[in]->readNode(NodeSignal::VALUE);         //We have a signal!
+            c = mPortPtrs[in]->readNode(NodeSignal::VALUE);         //We have a signal!
         }
         else
         {
-            p = mPressure;                                  //No signal, use internal parameter
+            c = mPressure;                                  //No signal, use internal parameter
         }
 
         //Write new values to nodes
-        mPortPtrs[P1]->writeNode(NodeHydraulic::WAVEVARIABLE, p);
+        mPortPtrs[P1]->writeNode(NodeHydraulic::WAVEVARIABLE, c);
         mPortPtrs[P1]->writeNode(NodeHydraulic::CHARIMP, mZc);
     }
 };
