@@ -282,6 +282,14 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     {
         emit keyPressR();
     }
+    if (event->key() == Qt::Key_Escape)
+    {
+        if(this->mIsCreatingConnector)
+        {
+            delete(mpTempConnector);
+            mIsCreatingConnector = false;
+        }
+    }
 
     QGraphicsView::keyPressEvent ( event );
 }
