@@ -33,7 +33,13 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
 
     mComponentTypeName = parameterData.at(0);
     QString fileName = parameterData.at(1);
-    size_t nPorts = parameterData.at(2).toInt();
+    QString iconRotationBehaviour = parameterData.at(2);
+    qDebug() << "iconRotationBehaviour = " << iconRotationBehaviour;
+    if(iconRotationBehaviour == "ON")
+        this->mIconRotation = true;
+    else
+        this->mIconRotation = false;
+    size_t nPorts = parameterData.at(3).toInt();
 
     //Core interaction
     mpCoreComponent = hopsan->CreateComponent(mComponentTypeName.toStdString());
@@ -65,9 +71,9 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
     GUIPort::portType type;
     for (size_t i = 0; i < nPorts; ++i)
     {
-        double x = parameterData.at(3+3*i).toDouble();
-        double y = parameterData.at(4+3*i).toDouble();
-        double rot = parameterData.at(5+3*i).toDouble();
+        double x = parameterData.at(4+3*i).toDouble();
+        double y = parameterData.at(5+3*i).toDouble();
+        double rot = parameterData.at(6+3*i).toDouble();
 
         QString iconPath("../../HopsanGUI/porticons/");
         if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeSignal")
@@ -482,7 +488,7 @@ int GUIComponent::getPortNumber(GUIPort *port)
 void GUIComponent::rotate()
 {
     int temNameTextPos = mNameTextPos;
-    this->setTransformOriginPoint(this->boundingRect().center());
+    this->setTransformOriginPoint(this->mpIcon->boundingRect().center());
     this->setRotation(this->rotation()+90);
     if (this->rotation() == 360)
     {
@@ -500,7 +506,28 @@ void GUIComponent::rotate()
         if (mPortListPtrs.value(i)->getPortType() == GUIPort::POWER)
             mPortListPtrs.value(i)->setRotation(-this->rotation());
     }
+    if(!this->mIconRotation)
+    {
+        this->mpIcon->setRotation(-this->rotation());
+        if(this->rotation() == 0)
+        {
+            this->mpIcon->setPos(0,0);
+        }
+        else if(this->rotation() == 90)
+        {
+            this->mpIcon->setPos(0,this->boundingRect().height());
+        }
+        else if(this->rotation() == 180)
+        {
+            this->mpIcon->setPos(this->boundingRect().width(),this->boundingRect().height());
+        }
+        else if(this->rotation() == 270)
+        {
+            this->mpIcon->setPos(this->boundingRect().width(),0);
+        }
 
+        //this->mpIcon->setPos(this->boundingRect().center());
+    }
     emit componentMoved();
 }
 

@@ -1,5 +1,6 @@
 NAME MechanicTranslationalMass
 ICON Mass.svg
+ICONROTATION ON
 PORTS 2
 0
 .5

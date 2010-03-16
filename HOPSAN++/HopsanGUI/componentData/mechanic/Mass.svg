@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -9,11 +8,11 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="53.149601"
-   height="53.149601"
+   width="64.720001"
+   height="40"
    id="svg3336"
    sodipodi:version="0.32"
-   inkscape:version="0.47pre4 r22446"
+   inkscape:version="0.46"
    sodipodi:docname="Mass.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
@@ -51,15 +50,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="7.9195959"
-     inkscape:cx="28.731106"
+     inkscape:cx="21.14765"
      inkscape:cy="32.15747"
      inkscape:document-units="px"
-     inkscape:current-layer="text2821"
+     inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1274"
      inkscape:window-height="942"
-     inkscape:window-x="0"
-     inkscape:window-y="24"
+     inkscape:window-x="30"
+     inkscape:window-y="76"
      showguides="true"
      inkscape:snap-global="true"
      inkscape:snap-intersection-line-segments="true"
@@ -87,22 +86,31 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-201.21364,-370.18514)">
+     transform="translate(-203.61275,-380.30429)">
     <rect
        style="fill:#000000;fill-opacity:1;stroke:none"
        id="rect2819"
-       width="49.371204"
-       height="45.330597"
+       width="64.720001"
+       height="40"
        x="203.61275"
-       y="374.97369"
-       ry="6.4397225" />
+       y="380.30429"
+       ry="6.4397225"
+       rx="6.439723" />
     <g
        style="font-size:36px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-       id="text2821">
-      <path
-         d="m 227.10304,409.55695 -9.21093,-20.05664 0,15.92578 c -1e-5,1.46484 0.15819,2.3789 0.4746,2.74218 0.43359,0.49219 1.11914,0.73829 2.05665,0.73829 l 0.84375,0 0,0.65039 -8.29688,0 0,-0.65039 0.84375,0 c 1.00781,0 1.72265,-0.30469 2.14453,-0.91407 0.25781,-0.375 0.38672,-1.23046 0.38672,-2.5664 l 0,-15.57422 c 0,-1.05467 -0.11719,-1.81639 -0.35156,-2.28516 -0.16407,-0.33982 -0.46876,-0.62107 -0.91406,-0.84375 -0.4336,-0.23435 -1.13673,-0.35154 -2.10938,-0.35156 l 0,-0.65039 6.75,0 8.64844,18.65039 8.50781,-18.65039 6.75,0 0,0.65039 -0.82617,0 c -1.01956,2e-5 -1.74026,0.30471 -2.16211,0.91406 -0.25784,0.37502 -0.38675,1.23049 -0.38672,2.56641 l 0,15.57422 c -3e-5,1.46484 0.16403,2.3789 0.49219,2.74218 0.43356,0.49219 1.11911,0.73829 2.05664,0.73829 l 0.82617,0 0,0.65039 -10.125,0 0,-0.65039 0.84375,0 c 1.01951,0 1.73435,-0.30469 2.14453,-0.91407 0.25779,-0.375 0.3867,-1.23046 0.38672,-2.5664 l 0,-15.92578 -9.19336,20.05664 -0.58008,0"
-         style="font-variant:normal;font-stretch:normal;font-family:Times New Roman;-inkscape-font-specification:'Times New Roman,'"
-         id="path2819" />
+       id="text2821"
+       transform="translate(9.6898041,1.7236023)">
+      <text
+         xml:space="preserve"
+         style="font-size:36px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         x="211.31517"
+         y="411.46545"
+         id="text6808"><tspan
+           sodipodi:role="line"
+           id="tspan6810"
+           x="211.31517"
+           y="411.46545"
+           style="font-size:36px;fill:#ffffff;fill-opacity:1">M</tspan></text>
     </g>
   </g>
 </svg>

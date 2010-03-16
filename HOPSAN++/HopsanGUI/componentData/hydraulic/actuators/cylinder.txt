@@ -1,10 +1,11 @@
 NAME HydraulicCylinderC
 ICON Cylinder.svg
+ICONROTATION ON
 PORTS 3
 .05
 1
 90
-.64
+.615
 1
 90
 1

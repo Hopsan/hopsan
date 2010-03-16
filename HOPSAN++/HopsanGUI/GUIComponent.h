@@ -77,6 +77,7 @@ private:
     QList<GUIPort*> mPortListPtrs;
     QString mComponentTypeName;
     int mNameTextPos;
+    bool mIconRotation;
 
 private slots:
     void fixTextPosition(QPointF pos);

@@ -1,5 +1,6 @@
 NAME HydraulicLaminarOrifice
 ICON Orifice.svg
+ICONROTATION ON
 PORTS 2
 0
 .5

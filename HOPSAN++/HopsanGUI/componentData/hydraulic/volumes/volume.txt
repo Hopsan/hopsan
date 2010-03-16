@@ -1,5 +1,6 @@
 NAME HydraulicVolume
 ICON Volume.svg
+ICONROTATION ON
 PORTS 2
 0
 .5

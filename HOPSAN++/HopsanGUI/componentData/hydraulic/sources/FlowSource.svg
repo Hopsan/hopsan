@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -9,16 +8,24 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="33.273533"
-   height="33.273533"
+   width="24.999998"
+   height="24.999998"
    id="svg3336"
    sodipodi:version="0.32"
-   inkscape:version="0.47 r22583"
+   inkscape:version="0.46"
    sodipodi:docname="FlowSource.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
   <defs
-     id="defs3338" />
+     id="defs3338">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 16.636766 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="33.273533 : 16.636766 : 1"
+       inkscape:persp3d-origin="16.636766 : 11.091178 : 1"
+       id="perspective5362" />
+  </defs>
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -30,7 +37,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="7.9195959"
-     inkscape:cx="-18.623999"
+     inkscape:cx="-39.016454"
      inkscape:cy="29.385063"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -68,27 +75,28 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-203.57689,-387.69798)">
+     transform="translate(-203.57689,-395.97151)">
     <path
-       transform="matrix(0.1794383,0,0,0.17654414,160.99902,348.43242)"
-       d="m 417.14286,316.64789 c 0,48.91665 -39.01519,88.57142 -87.14286,88.57142 -48.12767,0 -87.14286,-39.65477 -87.14286,-88.57142 0,-48.91665 39.01519,-88.57143 87.14286,-88.57143 48.12767,0 87.14286,39.65478 87.14286,88.57143 z"
+       transform="matrix(0.1319672,0,0,0.1298387,172.52771,367.35836)"
+       d="M 417.14286,316.64789 A 87.14286,88.571426 0 1 1 242.85714,316.64789 A 87.14286,88.571426 0 1 1 417.14286,316.64789 z"
        sodipodi:ry="88.571426"
        sodipodi:rx="87.14286"
        sodipodi:cy="316.64789"
        sodipodi:cx="330"
        id="path2160"
-       style="fill:none;stroke:#000000;stroke-width:11.2368803;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="font-weight:bold;fill:none;stroke:#000000;stroke-width:15.27899933;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        sodipodi:type="arc" />
     <text
        xml:space="preserve"
-       style="font-size:21.48251724px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:119.00000572%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
-       x="211.79057"
-       y="411.56201"
+       style="font-size:18px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:119.00000572%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
+       x="209.01927"
+       y="414.52716"
        id="text3353"
        sodipodi:linespacing="119.00001%"><tspan
          sodipodi:role="line"
          id="tspan3355"
-         x="211.79057"
-         y="411.56201">Q</tspan></text>
+         x="209.01927"
+         y="414.52716"
+         style="font-size:18px;font-weight:normal">Q</tspan></text>
   </g>
 </svg>
