@@ -447,7 +447,7 @@ QVariant GUIComponent::itemChange(GraphicsItemChange change, const QVariant &val
             this->mpSelectionBox->setPassive();
         }
     }
-    else if (change == QGraphicsItem::ItemPositionChange)
+    else if (change == QGraphicsItem::ItemPositionHasChanged)
     {
         emit componentMoved();
     }

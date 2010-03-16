@@ -1,10 +1,6 @@
 NAME HydraulicPressureSensor
 ICON PressureSensor.svg
 PORTS 2
-.5
-1
-270
-.5
-0
-270
+0.5 1.0 270
+0.5 0.0 270
 

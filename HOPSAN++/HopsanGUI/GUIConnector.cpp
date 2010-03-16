@@ -2,38 +2,9 @@
 
 #include "GUIConnector.h"
 #include <QDebug>
-
-//#include <QCursor>
-//#include <QBrush>
-//#include <QGraphicsScene>
-//#include <QGraphicsLineItem>
-//#include <QGraphicsRectItem>
-//#include <QCursor>
-//#include <QBrush>
-//#include <QGraphicsLineItem>
-//#include <QGraphicsScene>
 #include "GUIPort.h"
 #include <vector>
-
-//#include <QObject>
-//#include <QGraphicsObject>
-//#include <QGraphicsView>
-//#include <QGraphicsScene>
-//#include <QGraphicsWidget>
-//#include <QTabWidget>
-//#include <QStringList>
-//#include <QGraphicsTextItem>
-//#include <QGraphicsRectItem>
-//#include <QWidget>
-//#include <QGraphicsItem>
-//#include <iostream>
-//#include <QDebug>
-//#include <QGraphicsLineItem>
-//#include <QGraphicsItem>
-//#include <QDebug>
 #include <QStyleOptionGraphicsItem>
-//#include "GUIConnectorLine.h"
-//#include <QPointF>
 #include <math.h>
 
 //! Constructor.
