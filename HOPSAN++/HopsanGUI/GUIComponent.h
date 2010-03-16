@@ -65,6 +65,10 @@ signals:
 public slots:
      void deleteMe();
      void rotate();
+     void moveUp();
+     void moveDown();
+     void moveLeft();
+     void moveRight();
 
 private:
     QGraphicsSvgItem *mpIcon;

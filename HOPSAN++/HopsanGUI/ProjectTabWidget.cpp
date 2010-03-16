@@ -278,7 +278,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     {
         emit keyPressDelete();
     }
-    if (event->key() == Qt::Key_R)
+    if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_R)
     {
         emit keyPressR();
     }
@@ -290,6 +290,24 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             mIsCreatingConnector = false;
         }
     }
+    if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Up)
+    {
+        qDebug() << "keyPressUp()";
+        emit keyPressUp();
+    }
+    if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Down)
+    {
+        emit keyPressDown();
+    }
+    if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Left)
+    {
+        emit keyPressLeft();
+    }
+    if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Right)
+    {
+        emit keyPressRight();
+    }
+
 
     QGraphicsView::keyPressEvent ( event );
 }

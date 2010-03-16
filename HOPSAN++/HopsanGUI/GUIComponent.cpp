@@ -431,11 +431,19 @@ QVariant GUIComponent::itemChange(GraphicsItemChange change, const QVariant &val
             this->mpSelectionBox->setActive();
             connect(this->mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             connect(this->mpParentGraphicsView, SIGNAL(keyPressR()), this, SLOT(rotate()));
+            connect(this->mpParentGraphicsView, SIGNAL(keyPressUp()), this, SLOT(moveUp()));
+            connect(this->mpParentGraphicsView, SIGNAL(keyPressDown()), this, SLOT(moveDown()));
+            connect(this->mpParentGraphicsView, SIGNAL(keyPressLeft()), this, SLOT(moveLeft()));
+            connect(this->mpParentGraphicsView, SIGNAL(keyPressRight()), this, SLOT(moveRight()));
         }
         else
         {
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressR()), this, SLOT(rotate()));
+            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressUp()), this, SLOT(moveUp()));
+            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressDown()), this, SLOT(moveDown()));
+            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressLeft()), this, SLOT(moveLeft()));
+            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressRight()), this, SLOT(moveRight()));
             this->mpSelectionBox->setPassive();
         }
     }
@@ -529,6 +537,47 @@ void GUIComponent::rotate()
         //this->mpIcon->setPos(this->boundingRect().center());
     }
     emit componentMoved();
+}
+
+
+//! Slot that moves component one pixel upwards
+//! @see moveDown()
+//! @see moveLeft()
+//! @see moveRight()
+void GUIComponent::moveUp()
+{
+    qDebug() << "moveUp()";
+    this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()-1);
+}
+
+
+//! Slot that moves component one pixel downwards
+//! @see moveUp()
+//! @see moveLeft()
+//! @see moveRight()
+void GUIComponent::moveDown()
+{
+    this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()+1);
+}
+
+
+//! Slot that moves component one pixel leftwards
+//! @see moveUp()
+//! @see moveDown()
+//! @see moveRight()
+void GUIComponent::moveLeft()
+{
+    this->setPos(this->mapFromScene(this->mapToScene(this->pos())).x()-1, this->pos().y());
+}
+
+
+//! Slot that moves component one pixel rightwards
+//! @see moveUp()
+//! @see moveDown()
+//! @see moveLeft()
+void GUIComponent::moveRight()
+{
+    this->setPos(this->mapFromScene(this->mapToScene(this->pos())).x()+1, this->pos().y());
 }
 
 
