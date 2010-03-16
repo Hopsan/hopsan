@@ -373,8 +373,8 @@ void Component::setTimestep(const double timestep)
 
 string ComponentSystem::SubComponentStorage::modifyName(string name)
 {
-    cout << "Modified name: " << name << "  was changed to:  ";
-    gCoreMessageHandler.addWarningMessage("Modified name: " + name);
+    //cout << "Modified name: " << name << "  was changed to:  ";
+    //gCoreMessageHandler.addWarningMessage("Modified name: " + name);
     size_t ctr = 1; //The suffix number
     while(mSubComponentMap.count(name) != 0)
     {
@@ -404,8 +404,8 @@ string ComponentSystem::SubComponentStorage::modifyName(string name)
         ++ctr;
         //cout << "ctr: " << ctr << " appended tempname: " << name << endl;
     }
-    cout << name << endl;
-    gCoreMessageHandler.addWarningMessage("Changed to: " + name);
+    //cout << name << endl;
+    //gCoreMessageHandler.addWarningMessage("Changed to: " + name);
     return name;
 }
 
@@ -416,6 +416,12 @@ void ComponentSystem::SubComponentStorage::add(Component* pComponent)
 {
     //First check if the name already exists, in that case change the suffix
     string modname = modifyName(pComponent->getName());
+    //If name change, notify
+    if (modname != pComponent->getName())
+    {
+        cout << "Modified name: " << pComponent->getName() << "  was changed to: " << modname << endl;
+        gCoreMessageHandler.addInfoMessage("Name was modified from: {" + pComponent->getName() + "} to: {" + modname + "}", 3);
+    }
     pComponent->setName(modname);
 
     //Add to the cqs component vectors, remember te idx for the info
@@ -883,7 +889,7 @@ bool ComponentSystem::connect(Component &rComponent1, const string portname1, Co
     //Check if commponents have specified ports
     if (!rComponent1.getPort(portname1, pPort1))
     {
-        ss << "rComponent1: "<< rComponent1.getName() << " does not have a port with name " << portname1;
+        ss << "Component: "<< rComponent1.getName() << " does not have a port named " << portname1;
         cout << ss.str() << endl;
         gCoreMessageHandler.addErrorMessage(ss.str());
         return false;
@@ -892,7 +898,7 @@ bool ComponentSystem::connect(Component &rComponent1, const string portname1, Co
     if (!rComponent2.getPort(portname2, pPort2)) //Not else if because pPort2 has to be set in getPort
     {
         //raise Exception('type of port does not exist')
-        ss << "rComponent2: "<< rComponent2.getName() << " does not have a port with name " << portname2;
+        ss << "Component: "<< rComponent2.getName() << " does not have a port named " << portname2;
         cout << ss.str() << endl;
         gCoreMessageHandler.addErrorMessage(ss.str());
         return false;
@@ -900,7 +906,7 @@ bool ComponentSystem::connect(Component &rComponent1, const string portname1, Co
 
     if (pPort1 == pPort2)
     {
-        ss << "You can not connect the port to it self";
+        ss << "You can not connect a port to it self";
         gCoreMessageHandler.addErrorMessage(ss.str());
         return false;
     }
@@ -959,7 +965,7 @@ bool ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             //check if both ports have the same node type specified
             if (pPort1->getNodeType() != pPort2->getNodeType())
             {
-                ss << "You are trying to connect a " << rComponent1.getPort(portname1).getNodeType() << " to " << rComponent2.getPort(portname2).getNodeType()  << " when connecting: " << rComponent1.getName() << ": " << portname1 << " and " << rComponent2.getName() << ": " << portname2;
+                ss << "You can not connect a {" << rComponent1.getPort(portname1).getNodeType() << "} port to a {" << rComponent2.getPort(portname2).getNodeType()  << "} port." << std::endl << "When connecting: {" << rComponent1.getName() << "::" << portname1 << "} to {" << rComponent2.getName() << "::" << portname2 << "}";
                 cout << ss.str() << endl;
                 gCoreMessageHandler.addErrorMessage(ss.str());
                 return false;
@@ -969,14 +975,14 @@ bool ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             {
                 if ((pPort1->mpComponent->isComponentC()) && (pPort2->mpComponent->isComponentC()))
                 {
-                    ss << "Both components, " << pPort1->mpComponent->getName() << " and " << pPort2->mpComponent->getName() << ", are of C-type";
+                    ss << "Both components, {" << pPort1->mpComponent->getName() << "} and {" << pPort2->mpComponent->getName() << "}, are of C-type";
                     cout << ss.str() << endl;
                     gCoreMessageHandler.addErrorMessage(ss.str());
                     return false;
                 }
                 else if ((pPort1->mpComponent->isComponentQ()) && (pPort2->mpComponent->isComponentQ()))
                 {
-                    ss << "Both components, " << pPort1->mpComponent->getName() << " and " << pPort2->mpComponent->getName() << ", are of Q-type";
+                    ss << "Both components, {" << pPort1->mpComponent->getName() << "} and {" << pPort2->mpComponent->getName() << "}, are of Q-type";
                     cout << ss.str() << endl;
                     gCoreMessageHandler.addErrorMessage(ss.str());
                     return false;
@@ -987,7 +993,7 @@ bool ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             //Check so that both systems to connect have been added to this system
             if ((rComponent1.getSystemParent() != (Component*)this) && ((rComponent1.getSystemParent() != (Component*)this)) )
             {
-                ss << "The two components, "<< rComponent1.getName() << " and " << rComponent2.getName() << ", "<< " to be connected are not contained within the connecting system";
+                ss << "The components, {"<< rComponent1.getName() << "} and {" << rComponent2.getName() << "}, "<< "must belong to the same subsystem";
                 cout << ss.str() << endl;
                 gCoreMessageHandler.addErrorMessage(ss.str());
                 return false;
@@ -1079,7 +1085,7 @@ bool ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             }
         }
     }
-    ss << "Connected " << rComponent1.getName() << ": " << portname1 << " with " << rComponent2.getName() << ": " << portname2 << " sucessfully";
+    ss << "Connected: {" << rComponent1.getName() << "::" << portname1 << "} and {" << rComponent2.getName() << "::" << portname2 << "}";
     cout << ss.str() << endl;
     gCoreMessageHandler.addInfoMessage(ss.str());
     return true;
@@ -1190,7 +1196,7 @@ void ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
         }
         cout << "nPorts in node after remove 2: " << node_ptr->mPortPtrs.size() << endl;
 
-        ss << "Disconnected: "<< pPort1->mpComponent->getName() << " and " << pPort2->mpComponent->getName();
+        ss << "Disconnected: {"<< pPort1->mpComponent->getName() << "::" << pPort1->getPortName() << "} and {" << pPort2->mpComponent->getName() << "::" << pPort2->getPortName() << "}";
         cout << ss.str() << endl;
         gCoreMessageHandler.addInfoMessage(ss.str());
 
@@ -1206,7 +1212,7 @@ void ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
     }
     else
     {
-        gCoreMessageHandler.addWarningMessage("At least one of the ports do not seem to be connected, (does nothing)", 1);
+        gCoreMessageHandler.addWarningMessage("In disconnect: At least one of the ports do not seem to be connected, (does nothing)", 1);
     }
 }
 
