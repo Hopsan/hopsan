@@ -232,6 +232,7 @@ void GraphicsView::renameComponent(QString oldName, QString newName)
     {
         qDebug() << "Old name: " << oldName << " not found";
     }
+    emit checkMessages();
 }
 
 

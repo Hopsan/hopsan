@@ -373,6 +373,7 @@ void Component::setTimestep(const double timestep)
 
 string ComponentSystem::SubComponentStorage::modifyName(string name)
 {
+    string oldname = name;
     //cout << "Modified name: " << name << "  was changed to:  ";
     //gCoreMessageHandler.addWarningMessage("Modified name: " + name);
     size_t ctr = 1; //The suffix number
@@ -406,6 +407,12 @@ string ComponentSystem::SubComponentStorage::modifyName(string name)
     }
     //cout << name << endl;
     //gCoreMessageHandler.addWarningMessage("Changed to: " + name);
+    //If name change, notify
+    if (oldname != name)
+    {
+        cout << "Modified name: " << oldname << "  was changed to: " << name << endl;
+        gCoreMessageHandler.addInfoMessage("Name was automatically adjusted from the requested: {" + oldname + "} to: {" + name + "}", 3);
+    }
     return name;
 }
 
@@ -416,12 +423,6 @@ void ComponentSystem::SubComponentStorage::add(Component* pComponent)
 {
     //First check if the name already exists, in that case change the suffix
     string modname = modifyName(pComponent->getName());
-    //If name change, notify
-    if (modname != pComponent->getName())
-    {
-        cout << "Modified name: " << pComponent->getName() << "  was changed to: " << modname << endl;
-        gCoreMessageHandler.addInfoMessage("Name was modified from: {" + pComponent->getName() + "} to: {" + modname + "}", 3);
-    }
     pComponent->setName(modname);
 
     //Add to the cqs component vectors, remember te idx for the info
@@ -446,25 +447,25 @@ void ComponentSystem::SubComponentStorage::add(Component* pComponent)
     mSubComponentMap.insert(pair<string, Component*>(modname, pComponent));
 }
 
-Component* ComponentSystem::SubComponentStorage::get(string name)
+Component* ComponentSystem::SubComponentStorage::get(const string &rName)
 {
     map<string, Component*>::iterator it;
-    it = mSubComponentMap.find(name);
+    it = mSubComponentMap.find(rName);
     if (it != mSubComponentMap.end())
     {
         return it->second;
     }
     else
     {
-        cout << "The component you requested: " << name << " does not exist" << endl;
+        cout << "The component you requested: " << rName << " does not exist" << endl;
         assert(false);
     }
 }
 
-void ComponentSystem::SubComponentStorage::erase(string name)
+void ComponentSystem::SubComponentStorage::erase(const string &rName)
 {
     map<string, Component*>::iterator it;
-    it = mSubComponentMap.find(name);
+    it = mSubComponentMap.find(rName);
     if (it != mSubComponentMap.end())
     {
         vector<Component*>::iterator cit; //Component iterator
@@ -472,7 +473,7 @@ void ComponentSystem::SubComponentStorage::erase(string name)
         {
             for (cit = mComponentCptrs.begin(); cit != mComponentCptrs.end(); ++cit)
             {
-                if ( (*cit)->getName() == name )
+                if ( (*cit)->getName() == rName )
                 {
                     mComponentCptrs.erase(cit);
                     break;
@@ -483,7 +484,7 @@ void ComponentSystem::SubComponentStorage::erase(string name)
         {
             for (cit = mComponentQptrs.begin(); cit != mComponentQptrs.end(); ++cit)
             {
-                if ( (*cit)->getName() == name )
+                if ( (*cit)->getName() == rName )
                 {
                     mComponentQptrs.erase(cit);
                     break;
@@ -494,7 +495,7 @@ void ComponentSystem::SubComponentStorage::erase(string name)
         {
             for (cit = mComponentSignalptrs.begin(); cit != mComponentSignalptrs.end(); ++cit)
             {
-                if ( (*cit)->getName() == name )
+                if ( (*cit)->getName() == rName )
                 {
                     mComponentSignalptrs.erase(cit);
                     break;
@@ -510,14 +511,14 @@ void ComponentSystem::SubComponentStorage::erase(string name)
     else
     {
         //! @todo exception or similar instead
-        cout << "The component you are trying to delete: " << name << " does not exist" << endl;
+        cout << "The component you are trying to delete: " << rName << " does not exist" << endl;
         assert(false);
     }
 }
 
-bool ComponentSystem::SubComponentStorage::have(string name)
+bool ComponentSystem::SubComponentStorage::have(const string &rName)
 {
-    if (mSubComponentMap.count(name) > 0)
+    if (mSubComponentMap.count(rName) > 0)
     {
         return true;
     }
@@ -527,11 +528,11 @@ bool ComponentSystem::SubComponentStorage::have(string name)
     }
 }
 
-void ComponentSystem::SubComponentStorage::rename(string old_name, string new_name)
+void ComponentSystem::SubComponentStorage::rename(const string &rOldName, const string &rNewName)
 {
-    cout << "Trying to rename: " << old_name << " to " << new_name << endl;
+    //cout << "Trying to rename: " << old_name << " to " << new_name << endl;
     //First find the post in the map where the old name resides, copy the data stored there
-    map<string, Component*>::iterator it = mSubComponentMap.find(old_name);
+    map<string, Component*>::iterator it = mSubComponentMap.find(rOldName);
     Component* temp_c_ptr;
     if (it != mSubComponentMap.end())
     {
@@ -540,17 +541,18 @@ void ComponentSystem::SubComponentStorage::rename(string old_name, string new_na
         mSubComponentMap.erase(it);
 
         //insert new (with new name)
-        new_name = modifyName(new_name);
-        cout << "new name is: " << new_name << endl;
-        mSubComponentMap.insert(pair<string, Component*>(new_name, temp_c_ptr));
+        string mod_new_name = modifyName(rNewName);
 
-        //No change the actual component name
+        //cout << "new name is: " << mod_name << endl;
+        mSubComponentMap.insert(pair<string, Component*>(mod_new_name, temp_c_ptr));
+
+        //Now change the actual component name
         //! @todo it might be a good idea to rething all of this renaming stuff, right now its prety strange (but works), setname loop
-        temp_c_ptr->setName(new_name);
+        temp_c_ptr->setName(mod_new_name);
     }
     else
     {
-        cout << "Error no component with old_name: " << old_name << " found!" << endl;
+        cout << "Error no component with old_name: " << rOldName << " found!" << endl;
         assert(false);
     }
 }

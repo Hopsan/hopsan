@@ -153,10 +153,10 @@ private:
 
     public:
         void add(Component* pComponent);
-        Component* get(string name);
-        void rename(string old_name, string new_name);
-        void erase(string name);
-        bool have(string name);
+        Component* get(const string &rName);
+        void rename(const string &rOldName, const string &rNewName);
+        void erase(const string &rName);
+        bool have(const string &rName);
 
         vector<Component*> mComponentSignalptrs;
         vector<Component*> mComponentQptrs;
