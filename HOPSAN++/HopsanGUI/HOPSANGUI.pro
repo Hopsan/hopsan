@@ -12,9 +12,7 @@ SOURCES += main.cpp \
     GUIConnector.cpp \
     GUIPort.cpp \
     GUIComponent.cpp \
-    GUIConnectorLine.cpp \
     plotwidget.cpp \
-    GUIComponentSelectionBox.cpp \
     ParameterDialog.cpp \
     MessageWidget.cpp \
     SimulationSetupWidget.cpp \
@@ -28,9 +26,7 @@ HEADERS += mainwindow.h \
     GUIConnector.h \
     GUIPort.h \
     GUIComponent.h \
-    GUIConnectorLine.h \
     plotwidget.h \
-    GUIComponentSelectionBox.h \
     ParameterDialog.h \
     MessageWidget.h \
     SimulationSetupWidget.h \
