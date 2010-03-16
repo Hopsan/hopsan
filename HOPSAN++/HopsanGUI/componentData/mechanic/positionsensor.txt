@@ -1,0 +1,11 @@
+NAME MechanicPositionSensor
+ICON positionsensor.svg
+ICONROTATION ON
+PORTS 2
+.5
+1
+90
+.5
+0
+270
+

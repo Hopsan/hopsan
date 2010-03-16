@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -9,11 +8,11 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="31.930845"
-   height="24.48097"
+   width="25"
+   height="10.520544"
    id="svg3336"
    sodipodi:version="0.32"
-   inkscape:version="0.47pre4 r22446"
+   inkscape:version="0.46"
    sodipodi:docname="Sink.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
@@ -29,7 +28,7 @@
       <path
          id="path3629"
          style="font-size:12px;fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
-         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.01601326 L 8.7185884,-4.0017078 C 6.97309,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 L 8.7185878,4.0337352 z"
          transform="scale(-0.6,-0.6)" />
     </marker>
     <marker
@@ -41,7 +40,7 @@
        style="overflow:visible">
       <path
          id="path3667"
-         d="m -2.5,-1 c 0,2.76 -2.24,5 -5,5 -2.76,0 -5,-2.24 -5,-5 0,-2.76 2.24,-5 5,-5 2.76,0 5,2.24 5,5 z"
+         d="M -2.5,-1 C -2.5,1.76 -4.74,4 -7.5,4 C -10.26,4 -12.5,1.76 -12.5,-1 C -12.5,-3.76 -10.26,-6 -7.5,-6 C -4.74,-6 -2.5,-3.76 -2.5,-1 z"
          style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none;marker-end:none"
          transform="matrix(0.4,0,0,0.4,2.96,0.4)" />
     </marker>
@@ -54,7 +53,7 @@
        style="overflow:visible">
       <path
          id="path3664"
-         d="m -2.5,-1 c 0,2.76 -2.24,5 -5,5 -2.76,0 -5,-2.24 -5,-5 0,-2.76 2.24,-5 5,-5 2.76,0 5,2.24 5,5 z"
+         d="M -2.5,-1 C -2.5,1.76 -4.74,4 -7.5,4 C -10.26,4 -12.5,1.76 -12.5,-1 C -12.5,-3.76 -10.26,-6 -7.5,-6 C -4.74,-6 -2.5,-3.76 -2.5,-1 z"
          style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none;marker-end:none"
          transform="matrix(0.8,0,0,0.8,5.92,0.8)" />
     </marker>
@@ -68,7 +67,7 @@
       <path
          transform="scale(0.8,0.8)"
          style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
-         d="m 5.77,0 -8.65,5 0,-10 8.65,5 z"
+         d="M 5.77,0 L -2.88,5 L -2.88,-5 L 5.77,0 z"
          id="path8118" />
     </marker>
     <inkscape:perspective
@@ -90,15 +89,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="14.460211"
-     inkscape:cx="12.458437"
+     inkscape:cx="1.2898586"
      inkscape:cy="9.8396307"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1274"
      inkscape:window-height="942"
-     inkscape:window-x="0"
-     inkscape:window-y="24"
+     inkscape:window-x="22"
+     inkscape:window-y="29"
      showguides="true"
      inkscape:snap-global="true"
      inkscape:snap-intersection-line-segments="true"
@@ -127,12 +126,11 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-211.82785,-381.42102)">
+     transform="translate(-210.82784,-391.24337)">
     <path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 0,11.98097 c 11.146019,0.771842 10.406788,-6.3541232 14.907924,-4.8299742 4.498533,1.5232686 -0.439952,11.4038632 3.417536,12.2157612 4.753958,1.000581 3.214638,-6.386038 12.656107,-5.950632"
+       style="fill:none;stroke:#000000;stroke-width:1.99999988;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 211.82784,396.32984 C 217.33618,396.40821 216.61947,391.96837 220.12894,392.25684 C 223.53769,392.53702 222.23154,400.35367 226.05464,400.74391 C 229.70335,401.11636 227.81872,396.15936 234.82784,396.47666"
        id="path2826"
-       transform="translate(211.82785,381.42102)"
        sodipodi:nodetypes="cssc" />
   </g>
 </svg>

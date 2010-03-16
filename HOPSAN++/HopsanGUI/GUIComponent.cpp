@@ -679,3 +679,11 @@ void GUIComponentNameTextItem::focusOutEvent(QFocusEvent *event)
 
     QGraphicsTextItem::focusOutEvent(event);
 }
+
+
+
+
+//QGraphicsColorizeEffect *graphicsColor = new QGraphicsColorizeEffect;
+//graphicsColor ->setColor(Qt::red);
+//graphicsColor->setEnabled(true);
+//this->mpIcon->setGraphicsEffect(graphicsColor);
