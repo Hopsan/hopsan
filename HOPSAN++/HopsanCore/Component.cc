@@ -17,6 +17,7 @@
 #include "Port.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 
+
 //Constructor
 CompParameter::CompParameter(const string name, const string description, const string unit, double &rValue)
 {
@@ -373,6 +374,7 @@ void Component::setTimestep(const double timestep)
 string ComponentSystem::SubComponentStorage::modifyName(string name)
 {
     cout << "Modified name: " << name << "  was changed to:  ";
+    gCoreMessageHandler.addWarningMessage("Modified name: " + name);
     size_t ctr = 1; //The suffix number
     while(mSubComponentMap.count(name) != 0)
     {
@@ -403,6 +405,7 @@ string ComponentSystem::SubComponentStorage::modifyName(string name)
         //cout << "ctr: " << ctr << " appended tempname: " << name << endl;
     }
     cout << name << endl;
+    gCoreMessageHandler.addWarningMessage("Changed to: " + name);
     return name;
 }
 

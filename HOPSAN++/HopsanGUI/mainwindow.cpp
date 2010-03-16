@@ -199,7 +199,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->connect(this->actionSimulate,SIGNAL(triggered()),mpProjectTabs,SLOT(simulateCurrent()));
     connect(mpSimulationSetupWidget->mpSimulateButton, SIGNAL(released()), mpProjectTabs, SLOT(simulateCurrent()));
-
 }
 
 MainWindow::~MainWindow()

@@ -43,17 +43,16 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
 
     this->mpHopsan = hopsan;
     this->mpModel = model;
-
     this->setDragMode(RubberBandDrag);
-
     this->setInteractive(true);
     this->setEnabled(true);
     this->setAcceptDrops(true);
     this->mIsCreatingConnector = false;
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-    //this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    //this->setTransformationAnchor(QGraphicsView::NoAnchor);
+    this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    this->setSceneRect(0,0,2500,5000);
+    this->centerOn(this->sceneRect().center());
 
     MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent()->parent())); //Ugly!!!
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
@@ -953,7 +952,6 @@ void ProjectTabWidget::saveModel(bool saveAs)
         QPointF pos = it.value()->mapToScene(it.value()->boundingRect().center());
         modelFile << "COMPONENT " << it.value()->getTypeName().toStdString() << " " << it.key().toStdString()
                   << " " << pos.x() << " " << pos.y() << " " << it.value()->rotation() << " " << it.value()->getNameTextPos() << std::endl;
-        //<< " " << it.value()->mapToScene(it.value()->pos()).x() << " " << it.value()->mapToScene(it.value()->pos()).y() << std::endl;
     }
 
     QMap<QString, GUIConnector *>::iterator it2;

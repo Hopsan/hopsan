@@ -488,7 +488,7 @@ int GUIComponent::getPortNumber(GUIPort *port)
             return i;
         }
     }
-    assert(false);      //Todo: Cast exception
+    assert(false);      /// @todo: Cast exception
 }
 
 
