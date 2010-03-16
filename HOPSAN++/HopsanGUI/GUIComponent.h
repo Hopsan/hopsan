@@ -6,7 +6,7 @@
 #include <QGraphicsWidget>
 #include <QGraphicsView>
 #include <vector>
-#include "GUIComponentSelectionBox.h"
+#include "GUIComponent.h"
 #include "ProjectTabWidget.h"
 
 class GraphicsScene;

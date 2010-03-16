@@ -208,12 +208,15 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
                 parameterData << nPorts;
                 for (int i = 0; i < nPorts.toInt(); ++i)
                 {
-                    line = inFile.readLine();
-                    portPosX = line.mid(0);
-                    line = inFile.readLine();
-                    portPosY = line.mid(0);
-                    line = inFile.readLine();
-                    portRot = line.mid(0);
+                    inFile >> portPosX;
+                    inFile >> portPosY;
+                    inFile >> portRot;
+//                    line = inFile.readLine();
+//                    portPosX = line.mid(0);
+//                    line = inFile.readLine();
+//                    portPosY = line.mid(0);
+//                    line = inFile.readLine();
+//                    portRot = line.mid(0);
                     std::cout << qPrintable(componentName) << " x: " << qPrintable(portPosX) << " y: " << qPrintable(portPosY) << " rot: " << qPrintable(portRot) << std::endl;
                     parameterData << portPosX << portPosY << portRot;
                 }

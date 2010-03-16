@@ -10,7 +10,7 @@
 #include <QGraphicsLineItem>
 #include <QGraphicsSceneMoveEvent>
 #include "GUIPort.h"
-#include "GUIConnectorLine.h"
+#include "GUIConnector.h"
 
 
 class GUIConnectorLine : public QObject, public QGraphicsLineItem
