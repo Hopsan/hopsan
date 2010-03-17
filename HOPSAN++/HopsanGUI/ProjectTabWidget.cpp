@@ -276,15 +276,10 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             mpTempConnector->getLastLine()->setGeometry(GUIConnectorLine::DIAGONAL);
         }
     }
-
     if (event->key() == Qt::Key_Delete)
-    {
         emit keyPressDelete();
-    }
     if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_R)
-    {
         emit keyPressR();
-    }
     if (event->key() == Qt::Key_Escape)
     {
         if(this->mIsCreatingConnector)
@@ -299,25 +294,17 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         emit keyPressUp();
     }
     if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Down)
-    {
         emit keyPressDown();
-    }
     if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Left)
-    {
         emit keyPressLeft();
-    }
     if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Right)
-    {
         emit keyPressRight();
-    }
+    if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_X)
+        this->cutSelected();
     if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_C)
-    {
         this->copySelected();
-    }
     if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_V)
-    {
         this->paste();
-    }
 
     QGraphicsView::keyPressEvent ( event );
 }
@@ -477,6 +464,19 @@ void GraphicsView::removeConnector(GUIConnector* pConnector)
 ComponentSystem *GraphicsView::getModelPointer()
 {
     return this->mpModel;
+}
+
+
+void GraphicsView::cutSelected()
+{
+    qDebug() << "Cut!";
+    this->copySelected();
+
+    QMap<QString, GUIComponent *>::iterator it;
+    for(it = this->mComponentMap.begin(); it!=this->mComponentMap.end(); ++it)
+    {
+        this->deleteComponent(it.value()->getName());
+    }
 }
 
 

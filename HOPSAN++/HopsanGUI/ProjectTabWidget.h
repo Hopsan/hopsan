@@ -72,6 +72,7 @@ public slots:
 
     void addConnector(GUIPort *pPort);
     void removeConnector(GUIConnector* pConnector);
+    void cutSelected();
     void copySelected();
     void paste();
 

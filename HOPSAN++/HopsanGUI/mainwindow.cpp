@@ -164,7 +164,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     menuView->addAction(libdock->toggleViewAction());
     menuView->addAction(messagedock->toggleViewAction());
-    menuView->addAction(editToolBar->toggleViewAction());
+    menuView->addAction(fileToolBar->toggleViewAction());
+    menuView->addAction(clipboardToolBar->toggleViewAction());
+    menuView->addAction(simToolBar->toggleViewAction());
 
     menuPlot->addAction(actionPlot);
 
@@ -268,6 +270,11 @@ void MainWindow::createActions()
     saveAsAction->setStatusTip(tr("Save Model File As"));
     connect(saveAsAction, SIGNAL(triggered()), mpProjectTabs,SLOT(saveProjectTabAs()));
 
+    cutAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_33.png"), tr("&Cut"), this);
+    cutAction->setShortcut(tr("Cut"));
+    cutAction->setStatusTip(tr("Cut Selection"));
+    connect(cutAction, SIGNAL(triggered()), this->mpProjectTabs->getCurrentTab()->mpGraphicsView,SLOT(cutSelected()));
+
     copyAction = new QAction(QIcon("../../HopsanGUI/icons/copy.png"), tr("&Copy"), this);
     copyAction->setShortcut(tr("Copy"));
     copyAction->setStatusTip(tr("Copy Selection"));
@@ -292,16 +299,21 @@ void MainWindow::createActions()
 
 void MainWindow::createToolbars()
 {
-    editToolBar = addToolBar(tr("Tools"));
-    editToolBar->setAllowedAreas(Qt::TopToolBarArea);
-    editToolBar->addAction(newAction);
-    editToolBar->addAction(openAction);
-    editToolBar->addAction(saveAction);
-    editToolBar->addAction(saveAsAction);
-    editToolBar->addAction(copyAction);
-    editToolBar->addAction(pasteAction);
-    editToolBar->addAction(simulateAction);
-    editToolBar->addAction(plotAction);
-    //editToolBar->addAction(toFrontAction);
-    //editToolBar->addAction(sendBackAction);
+    fileToolBar = addToolBar(tr("File Toolbar"));
+    fileToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    fileToolBar->addAction(newAction);
+    fileToolBar->addAction(openAction);
+    fileToolBar->addAction(saveAction);
+    fileToolBar->addAction(saveAsAction);
+
+    clipboardToolBar = addToolBar(tr("Clipboard Toolbar"));
+    clipboardToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    clipboardToolBar->addAction(cutAction);
+    clipboardToolBar->addAction(copyAction);
+    clipboardToolBar->addAction(pasteAction);
+
+    simToolBar = addToolBar(tr("Simulation Toolbar"));
+    simToolBar->addAction(simulateAction);
+    simToolBar->addAction(plotAction);
+
 }
