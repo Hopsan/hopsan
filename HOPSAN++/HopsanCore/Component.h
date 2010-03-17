@@ -54,6 +54,7 @@ public:
     //Virtual functions
     virtual void initialize(const double startT, const double stopT);
     virtual void simulate(const double startT, const double Ts);
+    virtual void finalize(const double startT, const double Ts);
     virtual void setDesiredTimestep(const double timestep);
 
     //Name and type
@@ -96,6 +97,7 @@ protected:
     //Virtual functions
     virtual void initialize(); //! @todo Default values are hard set
     virtual void simulateOneTimestep();
+    virtual void finalize();
     virtual void setTimestep(const double timestep);
 
     //Parameter functions
@@ -200,6 +202,7 @@ public:
     //initializeand simulate
     void initialize(const double startT, const double stopT);
     void simulate(const double startT, const double stopT);
+    void finalize(const double startT, const double stopT);
 
     //Set desired timestep
     void setDesiredTimestep(const double timestep);

@@ -40,6 +40,7 @@ SimulationThread::SimulationThread(ComponentSystem *pComponentSystem, double sta
 void SimulationThread::run()
 {
     mpComponentSystem->simulate(mStartTime, mFinishTime);
+    mpComponentSystem->finalize(mStartTime, mFinishTime);
 
     //exec(); //Is used if one want to run an event loop in this thread.
 }

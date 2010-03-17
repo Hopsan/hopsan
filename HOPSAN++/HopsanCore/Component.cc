@@ -81,6 +81,13 @@ void Component::initialize(const double startT, const double stopT)
     assert(false);
 }
 
+//! Virtual Function, base version which gives you an error if you try to use it.
+void Component::finalize(const double startT, const double stopT)
+{
+    cout << "Error! This function should only be used by system components, it should be overloded. For a component use finalize() instead" << endl;
+    assert(false);
+}
+
 void Component::simulate(const double startT, const double stopT)
 {
 //! @todo adjust self.timestep or simulation depending on Ts from system above (self.timestep should be multipla of Ts)
@@ -105,6 +112,12 @@ void Component::simulateOneTimestep()
 {
     cout << "Warning! You should implement your own method" << endl;
     assert(false);
+}
+
+void Component::finalize()
+{
+    cout << "Warning! You should implement your own finalize() method" << endl;
+    //assert(false);
 }
 
 void Component::setName(string name)
@@ -1463,6 +1476,53 @@ void ComponentSystem::simulate(const double startT, const double stopT)
         }
 
         mTime += mTimestep;
+    }
+}
+
+//! Finalizes a system component and all its contained components
+void ComponentSystem::finalize(const double startT, const double stopT)
+{
+    //! @todo take the final simulation step is suitable here
+
+    //Finalize
+    //Signal components
+    for (size_t s=0; s < mSubComponentStorage.mComponentSignalptrs.size(); ++s)
+    {
+        if (mSubComponentStorage.mComponentSignalptrs[s]->isComponentSystem())
+        {
+            mSubComponentStorage.mComponentSignalptrs[s]->finalize(startT, stopT);
+        }
+        else
+        {
+            mSubComponentStorage.mComponentSignalptrs[s]->finalize();
+        }
+    }
+
+    //C components
+    for (size_t c=0; c < mSubComponentStorage.mComponentCptrs.size(); ++c)
+    {
+        if (mSubComponentStorage.mComponentCptrs[c]->isComponentSystem())
+        {
+            mSubComponentStorage.mComponentCptrs[c]->finalize(startT, stopT);
+        }
+        else
+        {
+            mSubComponentStorage.mComponentCptrs[c]->finalize();
+        }
+    }
+
+    //Q components
+    for (size_t q=0; q < mSubComponentStorage.mComponentQptrs.size(); ++q)
+    {
+        if (mSubComponentStorage.mComponentQptrs[q]->isComponentSystem())
+        {
+            mSubComponentStorage.mComponentQptrs[q]->finalize(startT,stopT);
+        }
+        else
+        {
+            mSubComponentStorage.mComponentQptrs[q]->finalize();
+        }
+
     }
 }
 
