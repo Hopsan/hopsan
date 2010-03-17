@@ -20,30 +20,37 @@
 GUIConnector::GUIConnector(qreal x1, qreal y1, qreal x2, qreal y2, QPen passivePen, QPen activePen, QPen hoverPen, GraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
+    this->mpParentView = parentView;
+
     setFlags(QGraphicsItem::ItemIsFocusable);
+
     this->setPos(x1, y1);
     this->startPos.setX(x1);
     this->startPos.setY(y1);
     this->endPos.setX(x2);
     this->endPos.setY(y2);
-    this->mpParentView = parentView;
+
     this->mPassivePen = passivePen;
     this->mActivePen = activePen;
     this->mHoverPen = hoverPen;
-    this->mIsActive = false;
+
     this->mEndPortConnected = false;
     this->mFirstFixedLineAdded = false;
+
+        //Add first line
     mpTempLine = new GUIConnectorLine(this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(),
                                       this->mapFromScene(startPos).x(), this->mapFromScene(startPos).y(),
                                       mPassivePen, mActivePen, mHoverPen, 0, this);
     mLines.push_back(mpTempLine);
+
+    this->setActive();
+
     connect(mLines[mLines.size()-1],SIGNAL(lineSelected(bool)),this,SLOT(doSelect(bool)));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
     connect(mLines[mLines.size()-1],SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
-    this->setActive();
-    //connect(this->mpParentView, SIGNAL(keyPressDelete()), this, SLOT(deleteMeIfMeIsActive()));
     connect(this,SIGNAL(endPortConnected()),mLines[mLines.size()-1],SLOT(setConnected()));
 }
+
 
 //! Destructor.
 GUIConnector::~GUIConnector()
@@ -73,26 +80,23 @@ void GUIConnector::setStartPort(GUIPort *port)
 //! @see getEndPort()
 void GUIConnector::setEndPort(GUIPort *port)
 {
-    this->mpEndPort = port;
     this->mEndPortConnected = true;
+    this->mpEndPort = port;
     connect(this->mpEndPort->getComponent(),SIGNAL(componentMoved()),this,SLOT(updatePos()));
-
-    qDebug() << this->boundingRect().x() << " " << this->boundingRect().y() << " ";
     connect(this->mpEndPort->getComponent(),SIGNAL(componentDeleted()),this,SLOT(deleteMe()));
+
+        //Make all lines selectable and all lines except first and last movable
     for(std::size_t i=1; i!=mLines.size()-1; ++i)
-    {
-        mLines[i]->setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemUsesExtendedStyleOption | QGraphicsItem::ItemIsSelectable);
-    }
-    mLines[0]->setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption | QGraphicsItem::ItemIsSelectable);
-    mLines[mLines.size()-1]->setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption | QGraphicsItem::ItemIsSelectable);
+        mLines[i]->setFlag(QGraphicsItem::ItemIsMovable, true);
+    for(std::size_t i=0; i!=mLines.size(); ++i)
+        mLines[i]->setFlag(QGraphicsItem::ItemIsSelectable, true);
+
+        //Add arrow to the connector if it is of signal type
     if(port->getPortType() == GUIPort::READ)
-    {
-        this->getThisLine()->addEndArrow();
-    }
+        this->getLastLine()->addEndArrow();
     else if(port->getPortType() == GUIPort::WRITE)
-    {
         this->mLines[0]->addStartArrow();
-    }
+
     emit endPortConnected();
     this->setPassive();
 }
@@ -118,7 +122,7 @@ GUIPort *GUIConnector::getEndPort()
 }
 
 
-//! Updates an already finished connector with start and end positions from its ports by using the drawLine function. Used to make connectors follow the components as they move.
+//! Updates an already finished connector with start and end positions from its ports by using the updateConnector function. Used to make connectors follow the components as they move.
 //! @see setStartPort(GUIPort *port)
 //! @see setEndPort(GUIPort *port)
 //! @see getStartPort()
@@ -127,11 +131,11 @@ void GUIConnector::updatePos()
 {
     QPointF startPort = this->getStartPort()->mapToScene(this->getStartPort()->boundingRect().center());
     QPointF endPort = this->getEndPort()->mapToScene(this->getEndPort()->boundingRect().center());
-    this->drawLine(startPort, endPort);
+    this->updateConnector(startPort, endPort);
 }
 
 
-//! Slot that activates a connector if a line is selected.
+//! Slot that activates or deactivates the connector if one of its lines is selected or deselected.
 //! @param lineSelected tells whether the signal was induced by selection or deselection of a line.
 //! @see setActive()
 //! @see setPassive()
@@ -214,17 +218,16 @@ void GUIConnector::setHovered()
 }
 
 
-//! Updates the first and last two lines of a connector with respect to start position, end position and the geometry of the lines.
+//! Updates the first two and last two lines of a connector with respect to start position, end position and the geometry of the lines.
 //! @param startPos is the new start position of the connector.
 //! @param endPos is the new end pospition of the connector.
 //! @see updateLine(int lineNumber)
-void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
+void GUIConnector::updateConnector(QPointF startPos, QPointF endPos)
 {
 
-    //////////////Only used when moving components:///////////////
-    if(this->getStartPort()->getPortDirection() == GUIPort::HORIZONTAL)
+        //Update first two lines with respect to start position and angle of start port
+    if (this->getStartPort()->getPortDirection() == GUIPort::HORIZONTAL)
     {
-        qDebug() << "Hi!";
         getLine(0)->setLine(getLine(0)->mapFromScene(startPos).x(),
                             getLine(0)->mapFromScene(startPos).y(),
                             getLine(0)->mapFromParent(getLine(1)->mapToParent(getLine(1)->line().p2())).x(),
@@ -234,9 +237,8 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
                             getLine(1)->line().x2(),
                             getLine(1)->line().y2());
     }
-    else
+    else if (this->getStartPort()->getPortDirection() == GUIPort::VERTICAL)
     {
-        qDebug() << "Ha!";
         getLine(0)->setLine(getLine(0)->mapFromScene(startPos).x(),
                             getLine(0)->mapFromScene(startPos).y(),
                             getLine(0)->mapFromScene(startPos).x(),
@@ -246,85 +248,76 @@ void GUIConnector::drawLine(QPointF startPos, QPointF endPos)
                             getLine(1)->line().x2(),
                             getLine(1)->line().y2());
     }
-    //////////////////////////////////////////////////////////////
 
-    //First line of the connector:
-    if (getNumberOfLines()<3 and getStartPort()->getPortDirection() == GUIPort::HORIZONTAL and getThisLine()->getGeometry()!=GUIConnectorLine::DIAGONAL)
+        //If connector only has two lines
+    if (getNumberOfLines()<3 and getStartPort()->getPortDirection() == GUIPort::HORIZONTAL and getLastLine()->getGeometry()!=GUIConnectorLine::DIAGONAL)
     {
-        qDebug() << "First port is horizontal!";
-        getLastLine()->setLine(getLastLine()->mapFromScene(startPos).x(),
-                               getLastLine()->mapFromScene(startPos).y(),
-                               getLastLine()->mapFromScene(endPos).x(),
-                               getLastLine()->mapFromScene(startPos).y());
-        getLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
-        getThisLine()->setGeometry(GUIConnectorLine::VERTICAL);
-    }
-    else if (getNumberOfLines()<3 and getStartPort()->getPortDirection() == GUIPort::VERTICAL and getThisLine()->getGeometry()!=GUIConnectorLine::DIAGONAL)
-    {
-        qDebug() << "First port is vertical!";
-        getLastLine()->setLine(getLastLine()->mapFromScene(startPos).x(),
-                               getLastLine()->mapFromScene(startPos).y(),
-                               getLastLine()->mapFromScene(startPos).x(),
-                               getLastLine()->mapFromScene(endPos).y());
+        getSecondLastLine()->setLine(getSecondLastLine()->mapFromScene(startPos).x(),
+                               getSecondLastLine()->mapFromScene(startPos).y(),
+                               getSecondLastLine()->mapFromScene(endPos).x(),
+                               getSecondLastLine()->mapFromScene(startPos).y());
+        getSecondLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
         getLastLine()->setGeometry(GUIConnectorLine::VERTICAL);
-        getThisLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
+    }
+    else if (getNumberOfLines()<3 and getStartPort()->getPortDirection() == GUIPort::VERTICAL and getLastLine()->getGeometry()!=GUIConnectorLine::DIAGONAL)
+    {
+        getSecondLastLine()->setLine(getSecondLastLine()->mapFromScene(startPos).x(),
+                               getSecondLastLine()->mapFromScene(startPos).y(),
+                               getSecondLastLine()->mapFromScene(startPos).x(),
+                               getSecondLastLine()->mapFromScene(endPos).y());
+        getSecondLastLine()->setGeometry(GUIConnectorLine::VERTICAL);
+        getLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
     }
 
-    //If last line was vertical:
-    else if (getLastLine()->getGeometry()== GUIConnectorLine::VERTICAL and getThisLine()->getGeometry()!=GUIConnectorLine::DIAGONAL)
+        //If connector has more than two lines
+    else if (getSecondLastLine()->getGeometry()== GUIConnectorLine::VERTICAL and getLastLine()->getGeometry()!=GUIConnectorLine::DIAGONAL)
     {
-        getLastLine()->setLine(getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).x(),
-                               getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).y(),
-                               getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).x(),
-                               getLastLine()->mapFromScene(endPos).y());
-        getThisLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
+        getSecondLastLine()->setLine(getSecondLastLine()->mapFromParent(getThirdLastLine()->mapToParent(getThirdLastLine()->line().p2())).x(),
+                               getSecondLastLine()->mapFromParent(getThirdLastLine()->mapToParent(getThirdLastLine()->line().p2())).y(),
+                               getSecondLastLine()->mapFromParent(getThirdLastLine()->mapToParent(getThirdLastLine()->line().p2())).x(),
+                               getSecondLastLine()->mapFromScene(endPos).y());
+        getLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
     }
-    //If last line was horizontal:
-    else if (getLastLine()->getGeometry()==GUIConnectorLine::HORIZONTAL and getThisLine()->getGeometry()!=GUIConnectorLine::DIAGONAL)
+    else if (getSecondLastLine()->getGeometry()==GUIConnectorLine::HORIZONTAL and getLastLine()->getGeometry()!=GUIConnectorLine::DIAGONAL)
     {
-        getLastLine()->setLine(getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).x(),
-                               getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).y(),
-                               getLastLine()->mapFromScene(endPos).x(),
-                               getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).y());
-        getThisLine()->setGeometry(GUIConnectorLine::VERTICAL);
+        getSecondLastLine()->setLine(getSecondLastLine()->mapFromParent(getThirdLastLine()->mapToParent(getThirdLastLine()->line().p2())).x(),
+                               getSecondLastLine()->mapFromParent(getThirdLastLine()->mapToParent(getThirdLastLine()->line().p2())).y(),
+                               getSecondLastLine()->mapFromScene(endPos).x(),
+                               getSecondLastLine()->mapFromParent(getThirdLastLine()->mapToParent(getThirdLastLine()->line().p2())).y());
+        getLastLine()->setGeometry(GUIConnectorLine::VERTICAL);
     }
 
-    //If last line is connected and end line is horizontal
+        //Update second last line with respect to end position and angle of end port (but only if end port is connected)
     if (getNumberOfLines()>2 and mEndPortConnected and getEndPort()->getPortDirection() == GUIPort::VERTICAL)
     {
-        qDebug() << "Hej Kaj!";
-        getLastLine()->setLine(getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).x(),
-                               getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).y(),
-                               getLastLine()->mapFromScene(endPos).x(),
-                               getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).y());
-        getThisLine()->setGeometry(GUIConnectorLine::VERTICAL);
-        getLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
+        getSecondLastLine()->setLine(getSecondLastLine()->mapFromParent(getThirdLastLine()->mapToParent(getThirdLastLine()->line().p2())).x(),
+                               getSecondLastLine()->mapFromParent(getThirdLastLine()->mapToParent(getThirdLastLine()->line().p2())).y(),
+                               getSecondLastLine()->mapFromScene(endPos).x(),
+                               getSecondLastLine()->mapFromParent(getThirdLastLine()->mapToParent(getThirdLastLine()->line().p2())).y());
+        getLastLine()->setGeometry(GUIConnectorLine::VERTICAL);
+        getSecondLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
     }
-    //If last line is connected and end line is vertical
     else if (getNumberOfLines()>2 and mEndPortConnected and getEndPort()->getPortDirection() == GUIPort::HORIZONTAL)
     {
-        qDebug() << "Hallå Börje!";
-        getLastLine()->setLine(getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).x(),
-                               getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).y(),
-                               getLastLine()->mapFromParent(getOldLine()->mapToParent(getOldLine()->line().p2())).x(),
-                               getLastLine()->mapFromScene(endPos).y());
-        getThisLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
-        getLastLine()->setGeometry(GUIConnectorLine::VERTICAL);
+        getSecondLastLine()->setLine(getSecondLastLine()->mapFromParent(getThirdLastLine()->mapToParent(getThirdLastLine()->line().p2())).x(),
+                               getSecondLastLine()->mapFromParent(getThirdLastLine()->mapToParent(getThirdLastLine()->line().p2())).y(),
+                               getSecondLastLine()->mapFromParent(getThirdLastLine()->mapToParent(getThirdLastLine()->line().p2())).x(),
+                               getSecondLastLine()->mapFromScene(endPos).y());
+        getLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
+        getSecondLastLine()->setGeometry(GUIConnectorLine::VERTICAL);
     }
 
-    qDebug() << "mEndPortConnected = " << mEndPortConnected;
-
-    //This Line:
-    getThisLine()->setLine(getThisLine()->mapFromParent(getLastLine()->mapToParent(getLastLine()->line().p2())).x(),
-                           getThisLine()->mapFromParent(getLastLine()->mapToParent(getLastLine()->line().p2())).y(),
-                           getThisLine()->mapFromScene(endPos).x(),
-                           getThisLine()->mapFromScene(endPos).y());
+        //Update last line with respect to end position
+    getLastLine()->setLine(getLastLine()->mapFromParent(getSecondLastLine()->mapToParent(getSecondLastLine()->line().p2())).x(),
+                           getLastLine()->mapFromParent(getSecondLastLine()->mapToParent(getSecondLastLine()->line().p2())).y(),
+                           getLastLine()->mapFromScene(endPos).x(),
+                           getLastLine()->mapFromScene(endPos).y());
 }
 
 
-//! Adds a new line at the end of the connector. Used when creating lines manually in the view.
+//! Adds a new line with no specified end position. Used when creating lines manually.
 //! @see addFixedLine(int length, int height, GUIConnectorLine::geometryType geometry)
-void GUIConnector::addLine()
+void GUIConnector::addFreeLine()
 {
     mpTempLine = new GUIConnectorLine(mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
                                       mLines[mLines.size()-1]->line().p2().x(), mLines[mLines.size()-1]->line().p2().y(),
@@ -344,7 +337,7 @@ void GUIConnector::addLine()
 //! @param length is the size of the line in the y-direction. Not used for vertical lines.
 //! @param height is the size of the line in the x-direction. Not used for horizontal lines.
 //! @param geometry defines whether the line is horizontal, vertical or diagonal.
-//! @see addLine()
+//! @see addFreeLine()
 void GUIConnector::addFixedLine(int length, int height, GUIConnectorLine::geometryType geometry)
 {
     //If only two lines exist and if this check has not been done before, we are at the beginning.
@@ -457,13 +450,13 @@ void GUIConnector::removeLine(QPointF cursorPos)
 {
     if (getNumberOfLines() > 2)
     {
+        qDebug() << "Removing line!";
         this->scene()->removeItem(mLines.back());
         mLines.pop_back();
-        this->drawLine(this->mapToScene(mLines[0]->line().p1()), cursorPos);
+        this->updateConnector(this->mapToScene(mLines[0]->line().p1()), cursorPos);
     }
     else
     {
-
         this->scene()->removeItem(this);
         delete(this);
     }
@@ -484,7 +477,7 @@ void GUIConnector::deleteMe()
 //! Updates the lines before and after the specified lines. Used to make lines follow each other when they are moved.
 //! @param lineNumber is the number of the line that has moved.
 //! @see updatePos()
-//! @see drawLine(QPointF startPos, QPointF endPos)
+//! @see updateConnector(QPointF startPos, QPointF endPos)
 void GUIConnector::updateLine(int lineNumber)
 {
     qDebug() << "Updating line: x = " << getLine(lineNumber)->line().x2();
@@ -526,30 +519,30 @@ void GUIConnector::updateLine(int lineNumber)
 
 
 //! Returns the third last line of the connector.
+//! @see getSecondLastLine()
 //! @see getLastLine()
-//! @see getThisLine()
 //! @see getLine(int line)
-GUIConnectorLine *GUIConnector::getOldLine()
+GUIConnectorLine *GUIConnector::getThirdLastLine()
 {
     return mLines[mLines.size()-3];
 }
 
 
 //! Returns the second last line of the connector.
-//! @see getOldLine()
-//! @see getThisLine()
+//! @see getThirdLastLine()
+//! @see getLastLine()
 //! @see getLine(int line)
-GUIConnectorLine *GUIConnector::getLastLine()
+GUIConnectorLine *GUIConnector::getSecondLastLine()
 {
     return mLines[mLines.size()-2];
 }
 
 
 //! Returns the last line of the connector.
-//! @see getOldLine()
-//! @see getLastLine()
+//! @see getThirdLastLine()
+//! @see getSecondLastLine()
 //! @see getLine(int line)
-GUIConnectorLine *GUIConnector::getThisLine()
+GUIConnectorLine *GUIConnector::getLastLine()
 {
     return mLines[mLines.size()-1];
 }
@@ -557,9 +550,9 @@ GUIConnectorLine *GUIConnector::getThisLine()
 
 //! Returns the line with specified number.
 //! @param line is the number of the wanted line.
-//! @see getOldLine()
+//! @see getThirdLastLine()
+//! @see getSecondLastLine()
 //! @see getLastLine()
-//! @see getThisLine()
 GUIConnectorLine *GUIConnector::getLine(int line)
 {
     return mLines[line];
@@ -598,6 +591,8 @@ GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen 
     this->mArrowAngle = 0.6;
 }
 
+
+//! Destructor
 GUIConnectorLine::~GUIConnectorLine()
 {
 }

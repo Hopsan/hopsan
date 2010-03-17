@@ -19,20 +19,21 @@ class GUIConnectorLine : public QObject, public QGraphicsLineItem
 public:
     GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen primaryPen, QPen activePen, QPen hoverPen, int lineNumber, QGraphicsItem *parent = 0);
     ~GUIConnectorLine();
+
+    enum geometryType {VERTICAL, HORIZONTAL, DIAGONAL};
+    QPointF startPos;
+    QPointF endPos;
+    void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w);
+    void addEndArrow();
+    void addStartArrow();
     void setActive();
     void setPassive();
     void setHovered();
-    enum geometryType {VERTICAL, HORIZONTAL, DIAGONAL};
-    geometryType getGeometry();
     void setGeometry(geometryType geometry);
-    int getLineNumber();
-    void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w);
-    QPointF startPos;
-    QPointF endPos;
     void setLine(qreal x1, qreal y1, qreal x2, qreal y2);
-    void addEndArrow();
-    void addStartArrow();
     void setPen(const QPen &pen);
+    int getLineNumber();
+    geometryType getGeometry();
 
 public slots:
     void setConnected();
@@ -52,19 +53,18 @@ protected:
 
 private:
     bool mIsActive;
+    bool mParentConnectorEndPortConnected;
+    bool mHasStartArrow;
+    bool mHasEndArrow;
     QPen mPrimaryPen;
     QPen mActivePen;
     QPen mHoverPen;
     int mLineNumber;
     geometryType mGeometry;
-    bool mParentConnectorEndPortConnected;
     QGraphicsLineItem *mArrowLine1;
     QGraphicsLineItem *mArrowLine2;
-    bool mHasStartArrow;
-    bool mHasEndArrow;
     qreal mArrowSize;
     qreal mArrowAngle;
-
 };
 
 
@@ -76,22 +76,22 @@ public:
     ~GUIConnector();
     QPointF startPos;
     QPointF endPos;
+    std::vector<GUIConnectorLine*> mLines;
+    void addFreeLine();
+    void addFixedLine(int length, int heigth, GUIConnectorLine::geometryType geometry);
+    void updateConnector(QPointF startPos, QPointF endPos);
+    void removeLine(QPointF cursorPos);
     void setStartPort(GUIPort *port);
     void setEndPort(GUIPort *port);
-    GUIPort *getStartPort();
-    GUIPort *getEndPort();
-    void drawLine(QPointF startPos, QPointF endPos);
-    void addLine();
-    void addFixedLine(int length, int heigth, GUIConnectorLine::geometryType geometry);
-    void removeLine(QPointF cursorPos);
     void setPen(QPen pen);
     int getNumberOfLines();
     int getLineNumber();
+    GUIPort *getStartPort();
+    GUIPort *getEndPort();
     GUIConnectorLine *getLine(int line);
-    GUIConnectorLine *getOldLine();
+    GUIConnectorLine *getThirdLastLine();
+    GUIConnectorLine *getSecondLastLine();
     GUIConnectorLine *getLastLine();
-    GUIConnectorLine *getThisLine();
-    std::vector<GUIConnectorLine*> mLines;
 
 public slots:
     void updatePos();
@@ -108,16 +108,16 @@ signals:
     void endPortConnected();
 
 private:
+    bool mIsActive;
+    bool mEndPortConnected;
+    bool mFirstFixedLineAdded;
+    QPen mPassivePen;
+    QPen mActivePen;
+    QPen mHoverPen;
     GUIPort *mpStartPort;
     GUIPort *mpEndPort;
     GraphicsView *mpParentView;
     GUIConnectorLine *mpTempLine;
-    QPen mPassivePen;
-    QPen mActivePen;
-    QPen mHoverPen;
-    bool mIsActive;
-    bool mEndPortConnected;
-    bool mFirstFixedLineAdded;
 };
 
 #endif // GUICONNECTOR_H

@@ -51,7 +51,7 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    this->setSceneRect(0,0,2500,5000);
+    this->setSceneRect(0,0,5000,5000);
     this->centerOn(this->sceneRect().center());
 
     MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent()->parent())); //Ugly!!!
@@ -61,16 +61,18 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
 
 void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 {
-    if (QGraphicsItem *item = itemAt(event->pos()))
+    if(!this->mIsCreatingConnector)
     {
-        qDebug() << "You righet clicked on a comonent";
-        QGraphicsView::contextMenuEvent(event);
+        if (QGraphicsItem *item = itemAt(event->pos()))
+        {
+            qDebug() << "You righet clicked on a comonent";
+            QGraphicsView::contextMenuEvent(event);
+        }
+        else
+        {
+            qDebug() << "You didn't right click on an component.";
+        }
     }
-    else
-    {
-        qDebug() << "You didn't right click on an component.";
-    }
-
 }
 
 
@@ -270,7 +272,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         {
             qDebug() << "blabla";
             QCursor cursor;
-            mpTempConnector->getThisLine()->setGeometry(GUIConnectorLine::DIAGONAL);
+            mpTempConnector->getLastLine()->setGeometry(GUIConnectorLine::DIAGONAL);
         }
     }
 
@@ -320,11 +322,11 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
     {
         if (mpTempConnector->getLastLine()->getGeometry()==GUIConnectorLine::HORIZONTAL)
         {
-           mpTempConnector->getThisLine()->setGeometry(GUIConnectorLine::VERTICAL);
+           mpTempConnector->getLastLine()->setGeometry(GUIConnectorLine::VERTICAL);
         }
         else
         {
-           mpTempConnector->getThisLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
+           mpTempConnector->getLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
         }
     }
 
@@ -342,9 +344,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
     this->setBackgroundBrush(Qt::NoBrush);
 
     if (this->mIsCreatingConnector)
-    {
-        mpTempConnector->drawLine(mpTempConnector->startPos, this->mapToScene(event->pos()));
-    }
+        mpTempConnector->updateConnector(mpTempConnector->startPos, this->mapToScene(event->pos()));
 }
 
 
@@ -354,23 +354,27 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::RightButton)
     {
+        qDebug() << "You right clicked!";
         if (this->mIsCreatingConnector)
         {
             if (mpTempConnector->getNumberOfLines() < 3)
-            {
                 this->mIsCreatingConnector = false;
-            }
             mpTempConnector->removeLine(this->mapToScene(event->pos()));
+            if(mIsCreatingConnector)
+            {
+                qDebug() << "updateConnector()";
+                mpTempConnector->updateConnector(mpTempConnector->startPos, this->mapToScene(event->pos()));
+            }
         }
     }
     else if  ((event->button() == Qt::LeftButton) && (this->mIsCreatingConnector))
     {
-        if (mpTempConnector->getThisLine()->getGeometry()==GUIConnectorLine::DIAGONAL)
+        if (mpTempConnector->getLastLine()->getGeometry()==GUIConnectorLine::DIAGONAL)
         {
-            mpTempConnector->addLine();
-            mpTempConnector->getThisLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
+            mpTempConnector->addFreeLine();
+            mpTempConnector->getLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
         }
-        mpTempConnector->addLine();
+        mpTempConnector->addFreeLine();
     }
     emit viewClicked();
     QGraphicsView::mousePressEvent(event);
@@ -414,7 +418,7 @@ void GraphicsView::addConnector(GUIPort *pPort)
         qDebug() << "DEBUG 0.4";
         this->mIsCreatingConnector = true;
         pPort->getComponent()->addConnector(mpTempConnector);
-        mpTempConnector->addLine();
+        mpTempConnector->addFreeLine();
         mpTempConnector->setStartPort(pPort);
         qDebug() << "DEBUG 0.5";
         qDebug() << "DEBUG 0.6";
@@ -431,7 +435,7 @@ void GraphicsView::addConnector(GUIPort *pPort)
         {
             mIsCreatingConnector = false;
             QPointF newPos = pPort->mapToScene(pPort->boundingRect().center());
-            mpTempConnector->drawLine(mpTempConnector->startPos, newPos);
+            mpTempConnector->updateConnector(mpTempConnector->startPos, newPos);
             pPort->getComponent()->addConnector(mpTempConnector);
             mpTempConnector->setEndPort(pPort);
 
@@ -880,20 +884,20 @@ void ProjectTabWidget::loadModel()
                     {
                         inputStream >> heigth;
                         qDebug() << "Heigth = " << heigth;
-                        //pTempConnector->getThisLine()->setGeometry(GUIConnectorLine::VERTICAL);
+                        //pTempConnector->getLastLine()->setGeometry(GUIConnectorLine::VERTICAL);
                         pTempConnector->addFixedLine(0, heigth, GUIConnectorLine::VERTICAL);
                     }
                     else if (inputWord == "HORIZONTAL")
                     {
                         inputStream >> length;
-                       // pTempConnector->getThisLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
+                       // pTempConnector->getLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
                         pTempConnector->addFixedLine(length, 0, GUIConnectorLine::HORIZONTAL);
                     }
                     else if (inputWord == "DIAGONAL")
                     {
                         inputStream >> length;
                         inputStream >> heigth;
-                        //pTempConnector->getThisLine()->setGeometry(GUIConnectorLine::DIAGONAL);
+                        //pTempConnector->getLastLine()->setGeometry(GUIConnectorLine::DIAGONAL);
                         pTempConnector->addFixedLine(length, heigth, GUIConnectorLine::DIAGONAL);
                     }
                     else
@@ -902,7 +906,7 @@ void ProjectTabWidget::loadModel()
                 }
                 GUIPort *endPort = pCurrentView->getComponent(QString(endComponentName.c_str()))->getPort(endPortNumber);
                 QPointF newPos = endPort->mapToScene(endPort->boundingRect().center());
-                pTempConnector->drawLine(pTempConnector->startPos, newPos);
+                pTempConnector->updateConnector(pTempConnector->startPos, newPos);
                 endPort->getComponent()->addConnector(pTempConnector);
                 pTempConnector->setEndPort(endPort);
                 pTempConnector->getStartPort()->hide();
