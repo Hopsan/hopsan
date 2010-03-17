@@ -160,7 +160,7 @@ GUIConnector *GraphicsView::getTempConnector()
 //! @param parameterType is a string defining the type of component.
 //! @param position is the position where the component will be created.
 //! @param name will be the name of the component.
-void GraphicsView::addComponent(QString parameterType, QPoint position, QString name)
+void GraphicsView::addComponent(QString parameterType, QPoint position, QString name, bool startSelected)
 {
     qDebug() << "Request to add component at (" << position.x() << " " << position.y() << ")";
     MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
@@ -168,9 +168,9 @@ void GraphicsView::addComponent(QString parameterType, QPoint position, QString 
     QStringList parameterData = pLibrary->getParameterData(parameterType);
     GUIComponent *pGuiComponent = new GUIComponent(mpHopsan,parameterData,position,this->mpParentProjectTab->mpGraphicsScene);
     if (!name.isEmpty())
-    {
         pGuiComponent->setName(name);
-    }
+
+    pGuiComponent->setSelected(startSelected);
 
     //Core interaction
     this->mpParentProjectTab->mpComponentSystem->addComponent(pGuiComponent->mpCoreComponent);
@@ -234,6 +234,7 @@ void GraphicsView::renameComponent(QString oldName, QString newName)
     {
         qDebug() << "Old name: " << oldName << " not found";
     }
+
     emit checkMessages();
 }
 
@@ -309,7 +310,14 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     {
         emit keyPressRight();
     }
-
+    if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_C)
+    {
+        this->copySelected();
+    }
+    if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_V)
+    {
+        this->paste();
+    }
 
     QGraphicsView::keyPressEvent ( event );
 }
@@ -469,6 +477,68 @@ void GraphicsView::removeConnector(GUIConnector* pConnector)
 ComponentSystem *GraphicsView::getModelPointer()
 {
     return this->mpModel;
+}
+
+
+void GraphicsView::copySelected()
+{
+    qDebug() << "Copy!";
+    this->mCopyData.clear();
+
+    QMap<QString, GUIComponent *>::iterator it;
+    for(it = this->mComponentMap.begin(); it!=this->mComponentMap.end(); ++it)
+    {
+        if (it.value()->isSelected())
+        {
+            mCopyData << "COMPONENT";
+            mCopyData << it.value()->getTypeName();
+            qDebug() << "Writing: " << it.value()->getTypeName();
+            mCopyData << it.value()->getName();
+            qDebug() << "Writing: " << it.value()->getName();
+            mCopyDataPos << it.value()->pos();
+         }
+    }
+}
+
+void GraphicsView::paste()
+{
+    qDebug() << "Paste!";
+    QMap<QString, GUIComponent *>::iterator it;
+
+    QMap<QString, GUIConnector *>::iterator it2;
+
+        //Deselect all components
+    for(it = this->mComponentMap.begin(); it!=this->mComponentMap.end(); ++it)
+    {
+        it.value()->setSelected(false);
+    }
+
+        //Deselect all connectors
+    for(it2 = this->mConnectionMap.begin(); it2!=this->mConnectionMap.end(); ++it2)
+    {
+        it2.value()->doSelect(false);
+    }
+
+    QString tempString;
+    QString componentName;
+    QString componentType;
+    int j = 0;
+    for(int i = 0; i!=mCopyData.size(); ++i)
+    {
+        tempString = mCopyData[i];
+        qDebug() << "Reading: " << tempString;
+        if(tempString == "COMPONENT")
+        {
+            ++i;
+            componentType = mCopyData[i];
+            qDebug() << "2Reading: " << componentType;
+            ++i;
+            componentName = mCopyData[i];
+            qDebug() << "3Reading: " << componentName;
+            this->addComponent(componentType, mCopyDataPos[j].toPoint(), componentName, true);
+            ++j;
+        }
+    }
 }
 
 

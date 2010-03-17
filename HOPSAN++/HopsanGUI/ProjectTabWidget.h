@@ -65,13 +65,15 @@ signals:
 
 public slots:
     //void addComponent(QStringList parameterData, QPoint position);
-    void addComponent(QString parameterType, QPoint position, QString name=QString());
+    void addComponent(QString parameterType, QPoint position, QString name=QString(), bool startSelected = false);
     void deleteComponent(QString componentName);
     bool haveComponent(QString name);
     void renameComponent(QString oldName, QString newName);
 
     void addConnector(GUIPort *pPort);
     void removeConnector(GUIConnector* pConnector);
+    void copySelected();
+    void paste();
 
     //QByteArray *data;
     //QDataStream *stream;
@@ -92,6 +94,8 @@ private:
     GUIConnector *mpTempConnector;
     HopsanEssentials *mpHopsan;
     ComponentSystem *mpModel;
+    QStringList mCopyData;
+    QList<QPointF> mCopyDataPos;
     //! @todo QMap no good means problem if we rename need to loop around the rename like in coore
  };
 

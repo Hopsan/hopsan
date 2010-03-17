@@ -423,7 +423,7 @@ QVariant GUIComponent::itemChange(GraphicsItemChange change, const QVariant &val
 {
     QGraphicsWidget::itemChange(change, value);
 
-    qDebug() << "Component selected status = " << this->isSelected();
+    //qDebug() << "Component selected status = " << this->isSelected();
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
         if (this->isSelected())

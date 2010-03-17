@@ -185,6 +185,7 @@ void GUIConnector::setPassive()
         for (std::size_t i=0; i!=mLines.size(); ++i )
         {
             mLines[i]->setPassive();
+            mLines[i]->setSelected(false);       //OBS! Kanske inte blir bra...
         }
     }
 }
