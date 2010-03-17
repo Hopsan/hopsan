@@ -143,6 +143,10 @@ MainWindow::MainWindow(QWidget *parent)
     actionPlot = new QAction(this);
     actionPlot->setText("Plot");
 
+
+    this->createActions();
+    this->createToolbars();
+
     //Add the actionbuttons to the menues
     menuNew->addAction(actionProject);
 
@@ -160,6 +164,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     menuView->addAction(libdock->toggleViewAction());
     menuView->addAction(messagedock->toggleViewAction());
+    menuView->addAction(editToolBar->toggleViewAction());
 
     menuPlot->addAction(actionPlot);
 
@@ -199,9 +204,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->connect(this->actionSimulate,SIGNAL(triggered()),mpProjectTabs,SLOT(simulateCurrent()));
     connect(mpSimulationSetupWidget->mpSimulateButton, SIGNAL(released()), mpProjectTabs, SLOT(simulateCurrent()));
-
-    this->createActions();
-    this->createToolbars();
 }
 
 MainWindow::~MainWindow()
@@ -266,6 +268,16 @@ void MainWindow::createActions()
     saveAsAction->setStatusTip(tr("Save Model File As"));
     connect(saveAsAction, SIGNAL(triggered()), mpProjectTabs,SLOT(saveProjectTabAs()));
 
+    copyAction = new QAction(QIcon("../../HopsanGUI/icons/copy.png"), tr("&Copy"), this);
+    copyAction->setShortcut(tr("Copy"));
+    copyAction->setStatusTip(tr("Copy Selection"));
+    connect(copyAction, SIGNAL(triggered()), this->mpProjectTabs->getCurrentTab()->mpGraphicsView,SLOT(copySelected()));
+
+    pasteAction = new QAction(QIcon("../../HopsanGUI/icons/paste.png"), tr("&Paste"), this);
+    pasteAction->setShortcut(tr("Paste"));
+    pasteAction->setStatusTip(tr("Paste Selection"));
+    connect(pasteAction, SIGNAL(triggered()), this->mpProjectTabs->getCurrentTab()->mpGraphicsView,SLOT(paste()));
+
     simulateAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_27.png"), tr("&Simulate"), this);
     simulateAction->setShortcut(tr("Simulate"));
     simulateAction->setStatusTip(tr("Simulate Current Project"));
@@ -280,11 +292,14 @@ void MainWindow::createActions()
 
 void MainWindow::createToolbars()
 {
-    editToolBar = addToolBar(tr("Edit"));
+    editToolBar = addToolBar(tr("Tools"));
+    editToolBar->setAllowedAreas(Qt::TopToolBarArea);
     editToolBar->addAction(newAction);
     editToolBar->addAction(openAction);
     editToolBar->addAction(saveAction);
     editToolBar->addAction(saveAsAction);
+    editToolBar->addAction(copyAction);
+    editToolBar->addAction(pasteAction);
     editToolBar->addAction(simulateAction);
     editToolBar->addAction(plotAction);
     //editToolBar->addAction(toFrontAction);

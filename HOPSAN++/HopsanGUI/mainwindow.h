@@ -61,8 +61,11 @@ public:
     QAction *openAction;
     QAction *saveAction;
     QAction *saveAsAction;
+    QAction *copyAction;
+    QAction *pasteAction;
     QAction *simulateAction;
     QAction *plotAction;
+
     QToolBar *editToolBar;
 
     //QString libDir;
