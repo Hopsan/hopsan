@@ -199,6 +199,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->connect(this->actionSimulate,SIGNAL(triggered()),mpProjectTabs,SLOT(simulateCurrent()));
     connect(mpSimulationSetupWidget->mpSimulateButton, SIGNAL(released()), mpProjectTabs, SLOT(simulateCurrent()));
+
+    this->createActions();
+    this->createToolbars();
 }
 
 MainWindow::~MainWindow()
@@ -238,3 +241,52 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 }
 
+
+
+void MainWindow::createActions()
+{
+
+    newAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_39.png"), tr("&New"), this);
+    newAction->setShortcut(tr("New"));
+    newAction->setStatusTip(tr("Create New Project"));
+    connect(newAction, SIGNAL(triggered()), mpProjectTabs,SLOT(addNewProjectTab()));
+
+    openAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_13.png"), tr("&Open"), this);
+    openAction->setShortcut(tr("Open"));
+    openAction->setStatusTip(tr("Load Model File"));
+    connect(openAction, SIGNAL(triggered()), mpProjectTabs,SLOT(loadModel()));
+
+    saveAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_11.png"), tr("&Save"), this);
+    saveAction->setShortcut(tr("Save"));
+    saveAction->setStatusTip(tr("Save Model File"));
+    connect(saveAction, SIGNAL(triggered()), mpProjectTabs,SLOT(saveProjectTab()));
+
+    saveAsAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_12.png"), tr("&Save As"), this);
+    saveAsAction->setShortcut(tr("Save As"));
+    saveAsAction->setStatusTip(tr("Save Model File As"));
+    connect(saveAsAction, SIGNAL(triggered()), mpProjectTabs,SLOT(saveProjectTabAs()));
+
+    simulateAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_27.png"), tr("&Simulate"), this);
+    simulateAction->setShortcut(tr("Simulate"));
+    simulateAction->setStatusTip(tr("Simulate Current Project"));
+    connect(simulateAction, SIGNAL(triggered()), mpProjectTabs,SLOT(simulateCurrent()));
+
+    plotAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_20.png"), tr("&Plot"), this);
+    plotAction->setShortcut(tr("Plot"));
+    plotAction->setStatusTip(tr("Plot Something"));
+    connect(plotAction, SIGNAL(triggered()), this,SLOT(plot()));
+}
+
+
+void MainWindow::createToolbars()
+{
+    editToolBar = addToolBar(tr("Edit"));
+    editToolBar->addAction(newAction);
+    editToolBar->addAction(openAction);
+    editToolBar->addAction(saveAction);
+    editToolBar->addAction(saveAsAction);
+    editToolBar->addAction(simulateAction);
+    editToolBar->addAction(plotAction);
+    //editToolBar->addAction(toFrontAction);
+    //editToolBar->addAction(sendBackAction);
+}

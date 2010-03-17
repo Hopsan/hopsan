@@ -56,6 +56,15 @@ public:
     QAction *actionSimulate;
     QAction *actionPlot;
 
+
+    QAction *newAction;
+    QAction *openAction;
+    QAction *saveAction;
+    QAction *saveAsAction;
+    QAction *simulateAction;
+    QAction *plotAction;
+    QToolBar *editToolBar;
+
     //QString libDir;
 
     //GraphicsScene *scene;
@@ -70,6 +79,9 @@ private slots:
     //void addLibs();
     void plot();
 
+private:
+    void createActions();
+    void createToolbars();
 
 
 };
