@@ -198,6 +198,16 @@ void GraphicsView::deleteComponent(QString componentName)
     //qDebug() << "In delete component";
     QMap<QString, GUIComponent *>::iterator it;
     it = mComponentMap.find(componentName);
+
+    QMap<QString, GUIConnector *>::iterator it2;
+    for(it2 = this->mConnectionMap.begin(); it2!=this->mConnectionMap.end(); ++it2)
+    {
+        if(it2.key().contains(componentName))
+            mConnectionMap.erase(it2);
+        if(mConnectionMap.empty())
+            break;
+    }
+
     if (it != mComponentMap.end())
     {
         GUIComponent* c_ptr = it.value();
@@ -305,6 +315,8 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         this->copySelected();
     if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_V)
         this->paste();
+    if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_A)
+        this->selectAll();
 
     QGraphicsView::keyPressEvent ( event );
 }
@@ -461,6 +473,24 @@ void GraphicsView::removeConnector(GUIConnector* pConnector)
     delete pConnector;
 }
 
+
+void GraphicsView::selectAll()
+{
+        //Select all components
+    QMap<QString, GUIComponent *>::iterator it;
+    for(it = this->mComponentMap.begin(); it!=this->mComponentMap.end(); ++it)
+    {
+        it.value()->setSelected(true);
+    }
+        //Deselect all connectors
+    QMap<QString, GUIConnector *>::iterator it2;
+    for(it2 = this->mConnectionMap.begin(); it2!=this->mConnectionMap.end(); ++it2)
+    {
+        it2.value()->doSelect(true);
+    }
+}
+
+
 ComponentSystem *GraphicsView::getModelPointer()
 {
     return this->mpModel;
@@ -472,11 +502,15 @@ void GraphicsView::cutSelected()
     qDebug() << "Cut!";
     this->copySelected();
 
-    QMap<QString, GUIComponent *>::iterator it;
-    for(it = this->mComponentMap.begin(); it!=this->mComponentMap.end(); ++it)
-    {
-        this->deleteComponent(it.value()->getName());
-    }
+    emit keyPressDelete();
+//    QMap<QString, GUIComponent *>::iterator it;
+//    for(it = this->mComponentMap.begin(); it!=this->mComponentMap.end(); ++it)
+//    {
+//        if(it.value()->isSelected())
+//            this->deleteComponent(it.value()->getName());
+//        if(mComponentMap.empty())
+//            break;
+//    }
 }
 
 

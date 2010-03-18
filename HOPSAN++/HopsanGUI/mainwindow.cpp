@@ -270,7 +270,7 @@ void MainWindow::createActions()
     saveAsAction->setStatusTip(tr("Save Model File As"));
     connect(saveAsAction, SIGNAL(triggered()), mpProjectTabs,SLOT(saveProjectTabAs()));
 
-    cutAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_33.png"), tr("&Cut"), this);
+    cutAction = new QAction(QIcon("../../HopsanGUI/icons/cut.png"), tr("&Cut"), this);
     cutAction->setShortcut(tr("Cut"));
     cutAction->setStatusTip(tr("Cut Selection"));
     connect(cutAction, SIGNAL(triggered()), this->mpProjectTabs->getCurrentTab()->mpGraphicsView,SLOT(cutSelected()));

@@ -75,6 +75,7 @@ public slots:
     void cutSelected();
     void copySelected();
     void paste();
+    void selectAll();
 
     //QByteArray *data;
     //QDataStream *stream;
