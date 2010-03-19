@@ -23,7 +23,7 @@ private:
     double mCofrequency;
     double mTimestep;
     TransferFunction Filter;
-    enum {in, out};
+    Port *mpIn, *mpOut;
 
 public:
     static Component *Creator()
@@ -41,8 +41,8 @@ public:
         mCofrequency = cofrequency;
         mTimestep = timestep;
 
-        addReadPort("in", "NodeSignal", in);
-        addWritePort("out", "NodeSignal", out);
+        mpIn = addReadPort("in", "NodeSignal");
+        mpOut = addWritePort("out", "NodeSignal");
 
         registerParameter("Frequency", "Cut-Off Frequency", "[rad/s]", mCofrequency);
     }
@@ -60,13 +60,13 @@ public:
     {
 
         //Get variable values from nodes
-        double u = mPortPtrs[in]->readNode(NodeSignal::VALUE);
+        double u = mpIn->readNode(NodeSignal::VALUE);
 
         //Filter equations
 		double y = Filter.getValue(u);
 
         //Write new values to nodes
-        mPortPtrs[out]->writeNode(NodeSignal::VALUE, y);
+        mpOut->writeNode(NodeSignal::VALUE, y);
 
         //Update filter:
         //Filter.update(u);

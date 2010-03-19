@@ -23,7 +23,7 @@ private:
     double mHysteresisWidth;
     Delay mDelayedInput;
     ValveHysteresis mHyst;
-    enum {in, out};
+    Port *mpIn, *mpOut;
 
 public:
     static Component *Creator()
@@ -40,8 +40,8 @@ public:
         mTypeName = "SignalHysteresis";
         mHysteresisWidth = hysteresiswidth;
 
-        addReadPort("in", "NodeSignal", in);
-        addWritePort("out", "NodeSignal", out);
+        mpIn = addReadPort("in", "NodeSignal");
+        mpOut = addWritePort("out", "NodeSignal");
 
         registerParameter("HysteresisWidth", "Width of the Hysteresis", "-", mHysteresisWidth);
     }
@@ -56,14 +56,14 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double input = mPortPtrs[in]->readNode(NodeSignal::VALUE);
+        double input = mpIn->readNode(NodeSignal::VALUE);
 
         //Hysteresis equations
         double output = mHyst.getValue(input, mHysteresisWidth, mDelayedInput.value());
         mDelayedInput.update(output);
 
         //Write new values to nodes
-        mPortPtrs[out]->writeNode(NodeSignal::VALUE, output);
+        mpOut->writeNode(NodeSignal::VALUE, output);
     }
 };
 

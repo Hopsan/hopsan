@@ -38,7 +38,7 @@ private:
     double mAmplitude;
     double mStartTime;
     double mStopTime;
-    enum {out};
+    Port *mpOut;
 
 public:
     static Component *Creator()
@@ -62,7 +62,7 @@ public:
         mStartTime = starttime;
         mStopTime = stoptime;
 
-        addWritePort("out", "NodeSignal", out);
+        mpOut = addWritePort("out", "NodeSignal");
 
         registerParameter("BaseValue", "Base Value", "-", mBaseValue);
         registerParameter("Amplitude", "Amplitude", "-", mAmplitude);
@@ -96,7 +96,7 @@ public:
         }
 
         //Write new values to nodes
-        mPortPtrs[out]->writeNode(NodeSignal::VALUE, output);
+        mpOut->writeNode(NodeSignal::VALUE, output);
 
     }
 };

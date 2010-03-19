@@ -42,7 +42,7 @@ private:
     double mAmplitude;
     double mFrequency;
     double mOffset;
-    enum {out};
+    Port *mpOut;
 
 public:
     static Component *Creator()
@@ -66,7 +66,7 @@ public:
         mAmplitude = amplitude;
         mFrequency = 3.141592653589/(mStopTime-mStartTime);       //omega = 2pi/T, T = (stoptime-starttime)*4
 
-        addWritePort("out", "NodeSignal", out);
+        mpOut = addWritePort("out", "NodeSignal");
 
         registerParameter("StartTime", "Start Time", "s", mStartTime);
         registerParameter("StopTime", "Stop Time", "s", mStopTime);
@@ -99,7 +99,7 @@ public:
         }
 
         //Write new values to nodes
-        mPortPtrs[out]->writeNode(NodeSignal::VALUE, output);
+        mpOut->writeNode(NodeSignal::VALUE, output);
     }
 };
 

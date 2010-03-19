@@ -22,7 +22,7 @@ class SignalSaturation : public ComponentSignal
 private:
     double mUpperLimit;
     double mLowerLimit;
-    enum {in, out};
+    Port *mpIn, *mpOut;
 
 public:
     static Component *Creator()
@@ -41,8 +41,8 @@ public:
         mUpperLimit = upperlimit;
         mLowerLimit = lowerlimit;
 
-        addReadPort("in", "NodeSignal", in);
-        addWritePort("out", "NodeSignal", out);
+        mpIn = addReadPort("in", "NodeSignal");
+        mpOut = addWritePort("out", "NodeSignal");
 
         registerParameter("UpperLimit", "Upper Limit", "-", mUpperLimit);
         registerParameter("LowerLimit", "Lower Limit", "-", mLowerLimit);
@@ -58,7 +58,7 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double input = mPortPtrs[in]->readNode(NodeSignal::VALUE);
+        double input = mpIn->readNode(NodeSignal::VALUE);
 
         //Gain equations
 		double output;
@@ -76,7 +76,7 @@ public:
 		}
 
         //Write new values to nodes
-        mPortPtrs[out]->writeNode(NodeSignal::VALUE, output);
+        mpOut->writeNode(NodeSignal::VALUE, output);
 
     }
 };

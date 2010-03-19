@@ -20,7 +20,7 @@ class SignalSubtract : public ComponentSignal
 {
 
 private:
-    enum {in1, in2, out};
+    Port *mpIn1, *mpIn2, *mpOut;
 
 public:
     static Component *Creator()
@@ -35,9 +35,9 @@ public:
     {
         mTypeName = "SignalSubtract";
 
-        addReadPort("in1", "NodeSignal", in1);
-        addReadPort("in2", "NodeSignal", in2);
-        addWritePort("out", "NodeSignal", out);
+        mpIn1 = addReadPort("in1", "NodeSignal");
+        mpIn2 = addReadPort("in2", "NodeSignal");
+        mpOut = addWritePort("out", "NodeSignal");
     }
 
 
@@ -52,20 +52,20 @@ public:
         //Get variable values from nodes
         double signal1, signal2;
 
-        if (mPortPtrs[in1]->isConnected() && mPortPtrs[in2]->isConnected())       //Both ports connected
+        if (mpIn1->isConnected() && mpIn2->isConnected())       //Both ports connected
         {
-            signal1 = mPortPtrs[in1]->readNode(NodeSignal::VALUE);
-            signal2 = mPortPtrs[in2]->readNode(NodeSignal::VALUE);
+            signal1 = mpIn1->readNode(NodeSignal::VALUE);
+            signal2 = mpIn2->readNode(NodeSignal::VALUE);
         }
-        else if (mPortPtrs[in1]->isConnected() && !mPortPtrs[in2]->isConnected())       //Port 1 connected, port 2 disconnected
+        else if (mpIn1->isConnected() && !mpIn2->isConnected())       //Port 1 connected, port 2 disconnected
         {
-            signal1 = mPortPtrs[in1]->readNode(NodeSignal::VALUE);
+            signal1 = mpIn1->readNode(NodeSignal::VALUE);
             signal2 = 0;
         }
-        else if (!mPortPtrs[in1]->isConnected() && mPortPtrs[in2]->isConnected())       //Port 2 connected, port 1 disconnected
+        else if (!mpIn1->isConnected() && mpIn2->isConnected())       //Port 2 connected, port 1 disconnected
         {
             signal1 = 0;
-            signal2 = mPortPtrs[in2]->readNode(NodeSignal::VALUE);
+            signal2 = mpIn2->readNode(NodeSignal::VALUE);
         }
         else
         {
@@ -78,7 +78,7 @@ public:
 		double output = signal1 - signal2;
 
         //Write new values to nodes
-        mPortPtrs[out]->writeNode(NodeSignal::VALUE, output);
+        mpOut->writeNode(NodeSignal::VALUE, output);
     }
 };
 
