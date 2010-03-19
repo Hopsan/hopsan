@@ -3,7 +3,7 @@
 //! @author Karl Pettersson
 //! @date   2009-12-21
 //!
-//! @brief Contains a Hydraulic Turbulent Orifice of Q-type
+//! @brief Contains a Hydraulic Turbulent Orifice
 //! @ingroup HydraulicComponents
 //!
 #ifndef HYDRAULICTURBULENTORIFICE_HPP_INCLUDED
@@ -12,7 +12,10 @@
 #include "../../ComponentEssentials.h"
 #include "../../ComponentUtilities.h"
 #include "math.h"
-
+//!
+//! @brief Hydraulic orifice with turbulent flow of Q-Type. Uses TurbulentFlowFunction to calculate the flow.
+//! @ingroup HydraulicComponents
+//!
 class HydraulicTurbulentOrifice : public ComponentQ
 {
 private:
