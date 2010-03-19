@@ -121,12 +121,15 @@ MainWindow::MainWindow(QWidget *parent)
     //Create the actionsbuttons
     actionOpen = new QAction(this);
     actionOpen->setText("Open");
+    actionOpen->setShortcut(QKeySequence("Ctrl+o"));
 
     actionClose = new QAction(this);
     actionClose->setText("Close");
+    actionClose->setShortcut(QKeySequence("Ctrl+c"));
 
     actionSave = new QAction(this);
     actionSave->setText("Save");
+    actionSave->setShortcut(QKeySequence("Ctrl+s"));
 
     actionSaveAs = new QAction(this);
     actionSaveAs->setText("Save As");
@@ -139,6 +142,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     actionSimulate = new QAction(this);
     actionSimulate->setText("Simulate");
+    actionSimulate->setShortcut(Qt::Key_F9);
 
     actionPlot = new QAction(this);
     actionPlot->setText("Plot");
