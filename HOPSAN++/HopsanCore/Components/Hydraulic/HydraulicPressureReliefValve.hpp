@@ -26,7 +26,7 @@ private:
     TurbulentFlowFunction mTurb;
     ValveHysteresis mHyst;
     FirstOrderFilter mFilterLP;
-    enum {P1, P2};
+    Port *mpP1, *mpP2;
 
 public:
     static Component *Creator()
@@ -57,8 +57,8 @@ public:
         mCs = sqrt(mPnom) / mKcs;
         mCf = 1.0 / (mKcf*sqrt(mPnom));
 
-        addPowerPort("P1", "NodeHydraulic", P1);
-        addPowerPort("P2", "NodeHydraulic", P2);
+        mpP1 = addPowerPort("P1", "NodeHydraulic");
+        mpP2 = addPowerPort("P2", "NodeHydraulic");
 
         registerParameter("pref", "Reference Opening Pressure", "[Pa]", mPref);
         registerParameter("tao", "Time Constant of Spool", "[s]", mTao);
@@ -86,14 +86,14 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double p1 = mPortPtrs[P1]->readNode(NodeHydraulic::PRESSURE);
-        double q1 = mPortPtrs[P1]->readNode(NodeHydraulic::MASSFLOW);
-        double c1  = mPortPtrs[P1]->readNode(NodeHydraulic::WAVEVARIABLE);
-        double Zc1 = mPortPtrs[P1]->readNode(NodeHydraulic::CHARIMP);
-        double p2 = mPortPtrs[P2]->readNode(NodeHydraulic::PRESSURE);
-        double q2 = mPortPtrs[P2]->readNode(NodeHydraulic::MASSFLOW);
-        double c2  = mPortPtrs[P2]->readNode(NodeHydraulic::WAVEVARIABLE);
-        double Zc2 = mPortPtrs[P2]->readNode(NodeHydraulic::CHARIMP);
+        double p1 = mpP1->readNode(NodeHydraulic::PRESSURE);
+        double q1 = mpP1->readNode(NodeHydraulic::MASSFLOW);
+        double c1  = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
+        double p2 = mpP2->readNode(NodeHydraulic::PRESSURE);
+        double q2 = mpP2->readNode(NodeHydraulic::MASSFLOW);
+        double c2  = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
 
         //PRV Equations
 
@@ -197,10 +197,10 @@ public:
 
         //Write new values to nodes
 
-        mPortPtrs[P1]->writeNode(NodeHydraulic::PRESSURE, p1);
-        mPortPtrs[P1]->writeNode(NodeHydraulic::MASSFLOW, q1);
-        mPortPtrs[P2]->writeNode(NodeHydraulic::PRESSURE, p2);
-        mPortPtrs[P2]->writeNode(NodeHydraulic::MASSFLOW, q2);
+        mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
+        mpP1->writeNode(NodeHydraulic::MASSFLOW, q1);
+        mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
+        mpP2->writeNode(NodeHydraulic::MASSFLOW, q2);
 
         mDelayedX0.update(mX0);
     }

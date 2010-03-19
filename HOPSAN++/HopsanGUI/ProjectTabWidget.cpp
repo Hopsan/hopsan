@@ -409,12 +409,14 @@ void GraphicsView::addConnector(GUIPort *pPort)
         QPen passivePen,activePen,hoverPen;
         if(pPort->getPortType() == Port::POWERPORT)
         {
+            qDebug() << "Hej!";
             passivePen = QPen(QColor("black"),2, Qt::SolidLine, Qt::RoundCap);
             activePen = QPen(QColor("red"), 3, Qt::SolidLine, Qt::RoundCap);                    //1.6180339887499
             hoverPen = QPen(QColor("darkRed"),3, Qt::SolidLine, Qt::RoundCap);
         }
         else if((pPort->getPortType() == Port::READPORT) | (pPort->getPortType() == Port::WRITEPORT))
         {
+            qDebug() << "Haj!";
             passivePen = QPen(QColor("blue"),1, Qt::DashLine);
             activePen = QPen(QColor("red"), 2, Qt::DashLine);
             hoverPen = QPen(QColor("darkRed"),2, Qt::DashLine);
@@ -532,7 +534,42 @@ void GraphicsView::copySelected()
             mCopyData << it.value()->getName();
             qDebug() << "Writing: " << it.value()->getName();
             mCopyDataPos << it.value()->pos();
-         }
+        }
+    }
+
+    QMap<QString, GUIConnector *>::iterator it2;
+    for(it2 = this->mConnectionMap.begin(); it2!=this->mConnectionMap.end(); ++it2)
+    {
+        stringstream connectionStream(it2.key().toStdString());
+        std::string name1, port1, name2, port2;
+        connectionStream >> name1;
+        connectionStream >> port1;
+        connectionStream >> name2;
+        connectionStream >> port2;
+        if(mComponentMap.find(QString(name1.c_str())).value()->isSelected() and mComponentMap.find(QString(name2.c_str())).value()->isSelected())
+        {
+            qDebug() << "Copying connection between" << QString(name1.c_str()) << " and " <<QString(name2.c_str()) << ".";
+
+//            mCopyData << "CONNECT " << it2.key().toStdString().c_str();
+//            for(int i = 0; i!=it2.value()->mLines.size(); ++i)
+//            {
+//                int geometry = it2.value()->mLines[i]->getGeometry();
+//                switch (geometry)
+//                {
+//                    case 0:
+//                        mCopyData << " VERTICAL " << (it2.value()->mLines[i]->endPos.y()-it2.value()->mLines[i]->startPos.y());
+//                        break;
+//                    case 1:
+//                        mCopyData << " HORIZONTAL " << (it2.value()->mLines[i]->endPos.x()-it2.value()->mLines[i]->startPos.x());
+//                        break;
+//                    case 2:
+//                        mCopyData << " DIAGONAL" << (it2.value()->mLines[i]->endPos.x()-it2.value()->mLines[i]->startPos.x()) << (it2.value()->mLines[i]->endPos.y()-it2.value()->mLines[i]->startPos.y());
+//                        break;
+//                }
+//            }
+//            mCopyData << "\n";
+
+        }
     }
 }
 

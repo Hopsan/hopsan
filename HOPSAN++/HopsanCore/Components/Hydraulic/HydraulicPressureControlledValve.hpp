@@ -26,7 +26,7 @@ private:
     TurbulentFlowFunction mTurb;
     ValveHysteresis mHyst;
     TransferFunction mFilterLP;
-    enum {P1, P2, P_OPEN, P_CLOSE};
+    Port *mpP1, *mpP2, *mpP_OPEN, *mpP_CLOSE;
 
 public:
     static Component *Creator()
@@ -57,10 +57,10 @@ public:
         mCf = 1/(mKcf * sqrt(mPnom));
         mX0max = mQnom/sqrt(mPnom);
 
-        addPowerPort("P1", "NodeHydraulic", P1);
-        addPowerPort("P2", "NodeHydraulic", P2);
-        addPowerPort("P_OPEN", "NodeHydraulic", P_OPEN);
-        addPowerPort("P_CLOSE", "NodeHydraulic", P_CLOSE);
+        addPowerPort("P1", "NodeHydraulic");
+        addPowerPort("P2", "NodeHydraulic");
+        addPowerPort("P_OPEN", "NodeHydraulic");
+        addPowerPort("P_CLOSE", "NodeHydraulic");
 
         registerParameter("pref", "Reference Opening Pressure", "[Pa]", mPref);
         registerParameter("tao", "Time Constant of Spool", "[s]", mTao);
@@ -89,20 +89,20 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double p1 = mPortPtrs[P1]->readNode(NodeHydraulic::PRESSURE);
-        double q1 = mPortPtrs[P1]->readNode(NodeHydraulic::MASSFLOW);
-        double c1  = mPortPtrs[P1]->readNode(NodeHydraulic::WAVEVARIABLE);
-        double Zc1 = mPortPtrs[P1]->readNode(NodeHydraulic::CHARIMP);
-        double p2 = mPortPtrs[P2]->readNode(NodeHydraulic::PRESSURE);
-        double q2 = mPortPtrs[P2]->readNode(NodeHydraulic::MASSFLOW);
-        double c2  = mPortPtrs[P2]->readNode(NodeHydraulic::WAVEVARIABLE);
-        double Zc2 = mPortPtrs[P2]->readNode(NodeHydraulic::CHARIMP);
-        double p_open = mPortPtrs[P_OPEN]->readNode(NodeHydraulic::PRESSURE);
-        double q_open = mPortPtrs[P_OPEN]->readNode(NodeHydraulic::MASSFLOW);
-        double c_open = mPortPtrs[P_OPEN]->readNode(NodeHydraulic::WAVEVARIABLE);
-        double p_close = mPortPtrs[P_CLOSE]->readNode(NodeHydraulic::PRESSURE);
-        double q_close = mPortPtrs[P_CLOSE]->readNode(NodeHydraulic::MASSFLOW);
-        double c_close = mPortPtrs[P_CLOSE]->readNode(NodeHydraulic::WAVEVARIABLE);
+        double p1 = mpP1->readNode(NodeHydraulic::PRESSURE);
+        double q1 = mpP1->readNode(NodeHydraulic::MASSFLOW);
+        double c1  = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
+        double p2 = mpP2->readNode(NodeHydraulic::PRESSURE);
+        double q2 = mpP2->readNode(NodeHydraulic::MASSFLOW);
+        double c2  = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
+        double p_open = mpP_OPEN->readNode(NodeHydraulic::PRESSURE);
+        double q_open = mpP_OPEN->readNode(NodeHydraulic::MASSFLOW);
+        double c_open = mpP_OPEN->readNode(NodeHydraulic::WAVEVARIABLE);
+        double p_close = mpP_CLOSE->readNode(NodeHydraulic::PRESSURE);
+        double q_close = mpP_CLOSE->readNode(NodeHydraulic::MASSFLOW);
+        double c_close = mpP_CLOSE->readNode(NodeHydraulic::WAVEVARIABLE);
 
         //Equations
 
@@ -197,12 +197,12 @@ public:
 
         //Write new values to nodes
 
-        mPortPtrs[P1]->writeNode(NodeHydraulic::PRESSURE, p1);
-        mPortPtrs[P1]->writeNode(NodeHydraulic::MASSFLOW, q1);
-        mPortPtrs[P2]->writeNode(NodeHydraulic::PRESSURE, p2);
-        mPortPtrs[P2]->writeNode(NodeHydraulic::MASSFLOW, q2);
-        mPortPtrs[P_OPEN]->writeNode(NodeHydraulic::PRESSURE, p_open);
-        mPortPtrs[P_CLOSE]->writeNode(NodeHydraulic::PRESSURE, p_close);
+        mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
+        mpP1->writeNode(NodeHydraulic::MASSFLOW, q1);
+        mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
+        mpP2->writeNode(NodeHydraulic::MASSFLOW, q2);
+        mpP_OPEN->writeNode(NodeHydraulic::PRESSURE, p_open);
+        mpP_CLOSE->writeNode(NodeHydraulic::PRESSURE, p_close);
 
         //mFilterLP.update(xsh);
     }

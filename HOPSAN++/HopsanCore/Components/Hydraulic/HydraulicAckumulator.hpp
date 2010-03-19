@@ -23,7 +23,7 @@ class HydraulicAckumulator : public ComponentQ
 private:
     double mPmin, mVtot, mVoil, mVgas, mBetae, mKappa, mKce, mStartPressure, mStartFlow;
     Delay mDelayedP2, mDelayedC1, mDelayedZc1, mDelayedQ2;
-    enum {P1, out};
+    Port *mpP1, *mpOut;
 
 public:
     static Component *Creator()
@@ -55,8 +55,8 @@ public:
         mStartPressure          = startpressure;
         mStartFlow              = startflow;
 
-        addPowerPort("P1", "NodeHydraulic", P1);     //External port
-        addWritePort("out", "NodeSignal", out);     //Internal pressure output
+        mpP1 = addPowerPort("P1", "NodeHydraulic");     //External port
+        mpOut = addWritePort("out", "NodeSignal");     //Internal pressure output
 
         registerParameter("Pmin", "Minimum Internal Pressure", "Pa", mPmin);
         registerParameter("Vtot", "Total Volume", "m^3", mVtot);
@@ -71,9 +71,9 @@ public:
 
     void initialize()
     {
-        double p1 = mPortPtrs[P1]->readNode(NodeHydraulic::PRESSURE);
-        double c1 = mPortPtrs[P1]->readNode(NodeHydraulic::WAVEVARIABLE);
-        double Zc1 = mPortPtrs[P1]->readNode(NodeHydraulic::CHARIMP);
+        double p1 = mpP1->readNode(NodeHydraulic::PRESSURE);
+        double c1 = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
 
         if (mStartPressure < mPmin)         //User has selected an initial pressure lower than the minimum pressure, so use minimum pressure instead
         {
@@ -112,8 +112,8 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double c1 = mPortPtrs[P1]->readNode(NodeHydraulic::WAVEVARIABLE);
-        double Zc1 = mPortPtrs[P1]->readNode(NodeHydraulic::CHARIMP);
+        double c1 = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
 
         //Ackumulator equations
         double e0, ct;
@@ -167,11 +167,11 @@ public:
         mDelayedZc1.update(Zc1);
 
         //Write new values to nodes
-        mPortPtrs[P1]->writeNode(NodeHydraulic::PRESSURE, p1);
-        mPortPtrs[P1]->writeNode(NodeHydraulic::MASSFLOW, q1);
-        if (mPortPtrs[out]->isConnected())
+        mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
+        mpP1->writeNode(NodeHydraulic::MASSFLOW, q1);
+        if (mpOut->isConnected())
         {
-            mPortPtrs[out]->writeNode(NodeSignal::VALUE, mVoil);
+            mpOut->writeNode(NodeSignal::VALUE, mVoil);
         }
 
     }

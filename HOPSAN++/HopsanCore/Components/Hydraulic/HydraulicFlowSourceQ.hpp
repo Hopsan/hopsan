@@ -38,8 +38,8 @@ public:
         mTypeName = "HydraulicFlowSourceQ";
         mFlow = flow;
 
-        addPowerPort("P1", "NodeHydraulic", P1);
-        addReadPort("in", "NodeSignal", in);
+        addPowerPort("P1", "NodeHydraulic");
+        addReadPort("in", "NodeSignal");
 
         registerParameter("Flow", "Flöde", "m^3/s", mFlow);
     }

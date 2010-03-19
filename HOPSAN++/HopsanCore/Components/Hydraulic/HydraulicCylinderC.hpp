@@ -44,7 +44,7 @@ private:
     double mZx;
     double mAlfaSpring;
     Delay mDelayedC1prim, mDelayedC2prim, mDelayedV, mDelayedCxSpring;
-    enum {P1, P2, P3};
+    Port *mpP1, *mpP2, *mpP3;
 
 public:
     static Component *Creator()
@@ -84,9 +84,9 @@ public:
         mAlfaSpring = 0.5;
 
         //Add ports to the component
-        addPowerPort("P1", "NodeHydraulic", P1);
-        addPowerPort("P2", "NodeHydraulic", P2);
-        addPowerPort("P3", "NodeMechanic", P3);
+        mpP1 = addPowerPort("P1", "NodeHydraulic");
+        mpP2 = addPowerPort("P2", "NodeHydraulic");
+        mpP3 = addPowerPort("P3", "NodeMechanic");
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("x0", "Initial Position", "[m]", mStartPosition);
@@ -122,18 +122,18 @@ public:
         mZc2 = mBetae/mVolume2*mTimestep;
 
         //Write to nodes
-        mPortPtrs[P1]->writeNode(NodeHydraulic::MASSFLOW,     mStartVelocity*mArea1);
-        mPortPtrs[P1]->writeNode(NodeHydraulic::PRESSURE,     mStartPressure1);
-        mPortPtrs[P1]->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure1 + mZc1*mStartVelocity*mArea1);
-        mPortPtrs[P1]->writeNode(NodeHydraulic::CHARIMP,      mZc1);
-        mPortPtrs[P2]->writeNode(NodeHydraulic::MASSFLOW,     mStartVelocity*mArea2);
-        mPortPtrs[P2]->writeNode(NodeHydraulic::PRESSURE,     mStartPressure2);
-        mPortPtrs[P2]->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure2 + mZc1*mStartVelocity*mArea2);
-        mPortPtrs[P2]->writeNode(NodeHydraulic::CHARIMP,      mZc2);
-        mPortPtrs[P3]->writeNode(NodeMechanic::POSITION,      mStartPosition-mStroke);
-        mPortPtrs[P3]->writeNode(NodeMechanic::VELOCITY,      -mStartVelocity);
-        mPortPtrs[P3]->writeNode(NodeMechanic::WAVEVARIABLE, mArea1*mStartPressure1 + mArea2*mStartPressure2);
-        mPortPtrs[P3]->writeNode(NodeMechanic::CHARIMP,      mZx);
+        mpP1->writeNode(NodeHydraulic::MASSFLOW,     mStartVelocity*mArea1);
+        mpP1->writeNode(NodeHydraulic::PRESSURE,     mStartPressure1);
+        mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure1 + mZc1*mStartVelocity*mArea1);
+        mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc1);
+        mpP2->writeNode(NodeHydraulic::MASSFLOW,     mStartVelocity*mArea2);
+        mpP2->writeNode(NodeHydraulic::PRESSURE,     mStartPressure2);
+        mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure2 + mZc1*mStartVelocity*mArea2);
+        mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc2);
+        mpP3->writeNode(NodeMechanic::POSITION,      mStartPosition-mStroke);
+        mpP3->writeNode(NodeMechanic::VELOCITY,      -mStartVelocity);
+        mpP3->writeNode(NodeMechanic::WAVEVARIABLE, mArea1*mStartPressure1 + mArea2*mStartPressure2);
+        mpP3->writeNode(NodeMechanic::CHARIMP,      mZx);
 	}
 
     void simulateOneTimestep()
