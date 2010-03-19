@@ -3,7 +3,7 @@
 
 
 PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, QWidget *parent)
-        : QMainWindow(parent)//QWidget(parent,Qt::Window)
+    : QMainWindow(parent)//QWidget(parent,Qt::Window)
 {
     this->setAttribute(Qt::WA_DeleteOnClose);
 
@@ -14,6 +14,7 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, QWidget *
     //Create the plot
 
     QString title = "Two Curves";
+    //VariablePlot *varPlot = new VariablePlot(this);
     mpVariablePlot = new VariablePlot(centralwidget);
 
     // Create and add curves to the plot
@@ -37,12 +38,20 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, QWidget *
     //Create toolbar and toolbutton
     QToolBar *toolBar = new QToolBar(this);
 
-    QToolButton *btnZoom = new QToolButton(toolBar);
+    btnZoom = new QToolButton(toolBar);
     btnZoom->setText("Zoom");
     btnZoom->setIcon(QIcon("../../HopsanGUI/icons/zoom.png"));
     btnZoom->setCheckable(true);
     btnZoom->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolBar->addWidget(btnZoom);
+
+    btnPan = new QToolButton(toolBar);
+    btnPan->setText("Pan");
+    btnPan->setIcon(QIcon("../../HopsanGUI/icons/pan.png"));
+    btnPan->setCheckable(true);
+    btnPan->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    toolBar->addWidget(btnPan);
+
     addToolBar(toolBar);
 
     //Zoom
@@ -64,6 +73,8 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, QWidget *
     //Establish signal and slots connections
     connect(buttonbox, SIGNAL(rejected()), this, SLOT(close()));
     connect(btnZoom,SIGNAL(toggled(bool)),SLOT(enableZoom(bool)));
+    connect(btnPan,SIGNAL(toggled(bool)),SLOT(enablePan(bool)));
+
 
     resize(600,600);
 }
@@ -74,12 +85,24 @@ void PlotWidget::enableZoom(bool on)
     zoomer->zoom(0);
 
     panner->setEnabled(on);
+    panner->setMouseButton(Qt::MidButton);
+
+    btnPan->setChecked(false);
+}
+
+void PlotWidget::enablePan(bool on)
+{
+    panner->setEnabled(on);
+    panner->setMouseButton(Qt::LeftButton);
+
+    btnZoom->setChecked(false);
 }
 
 
 VariablePlot::VariablePlot(QWidget *parent)
         : QwtPlot(parent)
 {
+    this->setAcceptDrops(true);
     //Set color for plot background
     setCanvasBackground(QColor(Qt::white));
 
@@ -99,6 +122,40 @@ VariablePlot::VariablePlot(QWidget *parent)
 //    d_mrk1->attach(this);
 
     setAutoReplot(true);
+}
+
+void VariablePlot::dragMoveEvent(QDragMoveEvent *event)
+{
+    std::cout << "apa" << std::endl;
+    if (event->mimeData()->hasFormat("application/x-plotvariable"))
+    {
+        event->accept();
+    }
+    else
+    {
+        event->ignore();
+    }
+}
+
+void VariablePlot::dropEvent(QDropEvent *event)
+{
+    if (event->mimeData()->hasFormat("application/x-plotvariable"))
+    {
+        QByteArray *data = new QByteArray;
+        *data = event->mimeData()->data("application/x-plotvariable");
+
+        QDataStream stream(data,QIODevice::ReadOnly);
+
+        QString functionname;
+        stream >> functionname;
+
+        event->accept();
+
+        std::cout << functionname.toStdString();
+
+        delete data;
+
+    }
 }
 
 
@@ -130,10 +187,48 @@ void VariableList::createPlot(QListWidgetItem *item)
     yarray[0] = 0.0;
     yarray[1] = 10.0*n;
 
-    PlotWidget *plotwidget = new PlotWidget(xarray,yarray);
+    PlotWidget *plotwidget = new PlotWidget(xarray,yarray,this);
     plotwidget->show();
 
     std::cout << item->text().toStdString() << std::endl;
+}
+
+void VariableList::mousePressEvent(QMouseEvent *event)
+{
+    QListWidget::mousePressEvent(event);
+
+    if (event->button() == Qt::LeftButton)
+        dragStartPosition = event->pos();
+}
+
+void VariableList::mouseMoveEvent(QMouseEvent *event)
+{
+
+    if (!(event->buttons() & Qt::LeftButton))
+        return;
+    if ((event->pos() - dragStartPosition).manhattanLength()
+         < QApplication::startDragDistance())
+        return;
+
+    QByteArray *data = new QByteArray;
+    QDataStream stream(data,QIODevice::WriteOnly);
+
+    QListWidgetItem *item = this->currentItem();
+
+    stream << item->text();
+
+    QString mimeType = "application/x-plotvariable";
+
+    QDrag *drag = new QDrag(this);
+    QMimeData *mimeData = new QMimeData;
+
+    mimeData->setData(mimeType, *data);
+    drag->setMimeData(mimeData);
+
+    drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()));
+
+    Qt::DropAction dropAction = drag->exec(Qt::CopyAction | Qt::MoveAction);
+
 }
 
 

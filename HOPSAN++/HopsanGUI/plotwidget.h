@@ -25,6 +25,9 @@
 #include <QToolButton>
 #include <QMainWindow>
 #include <QColor>
+#include <QMouseEvent>
+#include <QApplication>
+#include <QDragMoveEvent>
 #include <qwt_legend.h>
 
 
@@ -42,8 +45,12 @@ public:
     QwtPlotZoomer *zoomer;
     QwtPlotPanner *panner;
 
+    QToolButton *btnZoom;
+    QToolButton *btnPan;
+
 private slots:
     void enableZoom(bool);
+    void enablePan(bool);
 };
 
 
@@ -51,6 +58,11 @@ class VariablePlot : public QwtPlot
 {
 public:
     VariablePlot(QWidget *parent = 0);
+
+protected:
+    virtual void dragMoveEvent(QDragMoveEvent *event);
+    virtual void dropEvent(QDropEvent *event);
+
 };
 
 
@@ -61,8 +73,15 @@ class VariableList : public QListWidget
     VariableList(QWidget *parent = 0);
     QMap<QString, int> map;
 
+protected:
+    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
+
+    QPoint dragStartPosition;
+
  private slots:
     void createPlot(QListWidgetItem *item);
+
 };
 
 
