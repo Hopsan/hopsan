@@ -27,8 +27,8 @@ private:
     double mTimeDelay;
     double mAlpha;
     double mZc;
-	Delay mDelayedC1;
-	Delay mDelayedC2;
+    Delay mDelayedC1;
+    Delay mDelayedC2;
     Port *mpP1, *mpP2;
 
 public:
@@ -51,20 +51,20 @@ public:
         mStartFlow     = 0.0;
         mTimeDelay     = timeDelay;
         mZc            = zc;
-		mAlpha         = alpha;
+        mAlpha         = alpha;
 
-		//Add ports to the component
+        //Add ports to the component
         mpP1 = addPowerPort("P1", "NodeHydraulic");
         mpP2 = addPowerPort("P2", "NodeHydraulic");
 
         //Register changable parameters to the HOPSAN++ core
-        registerParameter("TD", "Tidsfördröjning", "s",   mTimeDelay);
-        registerParameter("a", "Lågpasskoeficient", "-", mAlpha);
+        registerParameter("TD", "Time delay", "s",   mTimeDelay);
+        registerParameter("a", "Low pass coeficient", "-", mAlpha);
         registerParameter("Zc", "Impedans", "Ns/m^5",  mZc);
     }
 
 
-	void initialize()
+    void initialize()
     {
         //Write to nodes
         mpP1->writeNode(NodeHydraulic::MASSFLOW,     mStartFlow);
@@ -76,17 +76,17 @@ public:
         mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+mZc*mStartFlow);
         mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc);
 
-		//Init delay
+        //Init delay
         mDelayedC1.initialize(mTime, mStartPressure+mZc*mStartFlow);
-		mDelayedC2.initialize(mTime, mStartPressure+mZc*mStartFlow);
+        mDelayedC2.initialize(mTime, mStartPressure+mZc*mStartFlow);
 
-		//Set external parameters
-		mDelayedC1.setTimeDelay(mTimeDelay-mTimestep, mTimestep); //-mTimestep sue to calc time
-		mDelayedC2.setTimeDelay(mTimeDelay-mTimestep, mTimestep);
-	}
+        //Set external parameters
+        mDelayedC1.setTimeDelay(mTimeDelay-mTimestep, mTimestep); //-mTimestep sue to calc time
+        mDelayedC2.setTimeDelay(mTimeDelay-mTimestep, mTimestep);
+}
 
 
-	void simulateOneTimestep()
+    void simulateOneTimestep()
     {
         //Get variable values from nodes
         double q1 = mpP1->readNode(NodeHydraulic::MASSFLOW);
@@ -109,8 +109,8 @@ public:
         mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc);
 
         //Update the delayed variabels
-		mDelayedC1.update(c1);
-		mDelayedC2.update(c2);
+        mDelayedC1.update(c1);
+        mDelayedC2.update(c2);
     }
 };
 

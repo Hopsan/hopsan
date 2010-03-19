@@ -21,9 +21,9 @@ private:
     double mUserVariable1;
     double mUserVariable2;
     double mUserVariable3;
-	Delay mUserDelayedVariable1;
-	Delay mUserDelayedVariable2;
-	SecondOrderFilter mUserFilter1;
+    Delay mUserDelayedVariable1;
+    Delay mUserDelayedVariable2;
+    SecondOrderFilter mUserFilter1;
     Port *mpPORT1, *mpPORT1;
 
 public:
@@ -38,7 +38,7 @@ public:
         mUserVariable2 = userVariable2;
         mUserVariable3 = 42.0;
 
-		//Add ports to the component
+        //Add ports to the component
         addPowerPort("PORT1", "NodeHydraulic", PORT1);
         addPowerPort("PORT2", "NodeHydraulic", PORT2);
 
@@ -48,7 +48,7 @@ public:
     }
 
 
-	void initialize()
+    void initialize()
     {
         //Write to nodes
         mpPORT1->writeNode(NodeHydraulic::MASSFLOW,     0.0);
@@ -60,7 +60,7 @@ public:
         mpPORT2->writeNode(NodeHydraulic::WAVEVARIABLE, 0.0);
         mpPORT2->writeNode(NodeHydraulic::CHARIMP,      0.0);
 
-		//Init delay
+        //Init delay
         mUserDelayedVariable1.initialize(mTime, 0.0);
         mUserDelayedVariable2.initialize(mTime, 13.0);
 
@@ -70,13 +70,13 @@ public:
         double den = {2.0, 1.0, 1.0};
         mUserFilter1.setNumDen(num, den);
 
-		//Set external parameters
-		mUserDelayedVariable1.setStepDelay(18);
-		mUserDelayedVariable2.setTimeDelay(3.48, mTimestep);
-	}
+        //Set external parameters
+        mUserDelayedVariable1.setStepDelay(18);
+        mUserDelayedVariable2.setTimeDelay(3.48, mTimestep);
+    }
 
 
-	void simulateOneTimestep()
+    void simulateOneTimestep()
     {
         //Get variable values from nodes
         double q1 = mpPORT1->readNode(NodeHydraulic::MASSFLOW);

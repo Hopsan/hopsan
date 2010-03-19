@@ -57,8 +57,8 @@ public:
     }
 
 
-	void initialize()
-	{
+    void initialize()
+    {
 //	    double u0 = mpIn->readNode(NodeSignal::VALUE);
 
         double num[3];
@@ -71,9 +71,9 @@ public:
         den[1] = 2.0*mDden/mWden;
         den[2] = 1.0;
 
-	    mFilter.initialize(mTime, mTimestep, num, den, mStartY, mStartY, mMin, mMax);
-            //! @todo Write out values into node as well? (I think so) This is true for all components
-	}
+        mFilter.initialize(mTime, mTimestep, num, den, mStartY, mStartY, mMin, mMax);
+        //! @todo Write out values into node as well? (I think so) This is true for all components
+    }
 
 
     void simulateOneTimestep()

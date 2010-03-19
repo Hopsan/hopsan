@@ -55,8 +55,8 @@ public:
     }
 
 
-	void initialize()
-	{
+    void initialize()
+    {
 //	    double u0 = mPortPtrs[in]->readNode(NodeSignal::VALUE);
 
         double num[2];
@@ -73,15 +73,13 @@ public:
 
 	    mFilter.initialize(mTime, mTimestep, num, den, mStartY, mStartY, mMin, mMax);
             //! @todo Write out values into node as well? (I think so) This is true for all components
-	}
+    }
 
 
     void simulateOneTimestep()
     {
         //Get variable values from nodes
         double u = mpIn->readNode(NodeSignal::VALUE);
-
-//cout << "mTime: " << mTime << "  u: " << u << "  y: " << mFilter.value(u) << endl;
 
         //Write new values to nodes
         mpOut->writeNode(NodeSignal::VALUE, mFilter.value(u));

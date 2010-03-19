@@ -34,7 +34,7 @@ public:
     SignalTimeDelay(const string name,
                     const double timedelay = 1.0,
                     const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+                        : ComponentSignal(name, timestep)
     {
         mTypeName = "SignalTimeDelay";
         mStartY = 0.0;
@@ -47,12 +47,12 @@ public:
     }
 
 
-	void initialize()
-	{
-	    mDelay.initialize(mTime, mStartY);
-            mDelay.setTimeDelay(mTimeDelay, mTimestep, mStartY);
-            //! @todo Write out values into node as well? (I think so) This is true for all components
-	}
+    void initialize()
+    {
+        mDelay.initialize(mTime, mStartY);
+        mDelay.setTimeDelay(mTimeDelay, mTimestep, mStartY);
+        //! @todo Write out values into node as well? (I think so) This is true for all components
+    }
 
 
     void simulateOneTimestep()

@@ -53,12 +53,12 @@ public:
     }
 
 
-	void initialize()
-	{
-            double u0 = mpIn->readNode(NodeSignal::VALUE);
-	    mDelayU.initialize(mTime, u0);
-	    mDelayY.initialize(mTime, max(min(mStartY, mMax), mMin));
-	}
+    void initialize()
+    {
+        double u0 = mpIn->readNode(NodeSignal::VALUE);
+        mDelayU.initialize(mTime, u0);
+        mDelayY.initialize(mTime, max(min(mStartY, mMax), mMin));
+    }
 
 
     void simulateOneTimestep()

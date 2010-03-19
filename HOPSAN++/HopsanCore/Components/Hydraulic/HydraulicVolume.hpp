@@ -49,21 +49,21 @@ public:
         mBulkmodulus   = bulkmudulus;
         mVolume        = volume;
         mZc            = mBulkmodulus/mVolume*mTimestep;
-		mAlpha         = alpha;
+        mAlpha         = alpha;
 
-		//Add ports to the component
+        //Add ports to the component
         mpP1 = addPowerPort("P1", "NodeHydraulic");
         mpP2 = addPowerPort("P2", "NodeHydraulic");
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("V", "Volume", "[m^3]",            mVolume);
         registerParameter("Be", "Bulkmodulus", "[Pa]", mBulkmodulus);
-        registerParameter("a", "LowPass coeficient to dampen standing delayline waves", "[-]",  mAlpha);
+        registerParameter("a", "Low pass coeficient to dampen standing delayline waves", "[-]",  mAlpha);
         registerParameter("Zc", "Impedans", "[Ns/m^5]",   mZc);
     }
 
 
-	void initialize()
+    void initialize()
     {
         mZc = mBulkmodulus/mVolume*mTimestep; //Need to be updated at simulation start since it is volume and bulk that are set.
 
@@ -76,7 +76,7 @@ public:
         mpP2->writeNode(NodeHydraulic::PRESSURE,     mStartPressure);
         mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+mZc*mStartFlow);
         mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc);
-	}
+    }
 
 
     void simulateOneTimestep()

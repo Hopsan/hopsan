@@ -29,18 +29,18 @@ private:
     double mZc;
     double mR1;
     double mR2;
-	Delay mDelayedC1;
-	Delay mDelayedC2;
+    Delay mDelayedC1;
+    Delay mDelayedC2;
     Port *mpP1, *mpP2;
 
 public:
     HydraulicTLMRlineR(const string name,
-                     const double zc        = 1.0e9,
-                     const double timeDelay = 0.1,
-                     const double r1        = 0.5,
-                     const double r2        = 0.5,
-                     const double alpha     = 0.0,
-                     const double timestep  = 0.001)
+                       const double zc        = 1.0e9,
+                       const double timeDelay = 0.1,
+                       const double r1        = 0.5,
+                       const double r2        = 0.5,
+                       const double alpha     = 0.0,
+                       const double timestep  = 0.001)
 	: ComponentC(name, timestep)
     {
         //Set member attributes
@@ -53,20 +53,20 @@ public:
         mR1            = r1;
         mR2            = r2;
 
-		//Add ports to the component
+        //Add ports to the component
         mpP1 = addPowerPort("P1", "NodeHydraulic");
         mpP2 = addPowerPort("P2", "NodeHydraulic");
 
         //Register changable parameters to the HOPSAN++ core
-        registerParameter("TD", "Tidsfördröjning", "s",   mTimeDelay);
-        registerParameter("a", "Lågpasskoeficient", "-", mAlpha);
+        registerParameter("TD", "Time delay", "s",   mTimeDelay);
+        registerParameter("a", "Low pass coefficient", "-", mAlpha);
         registerParameter("Zc", "Impedans", "Ns/m^5",  mZc);
         registerParameter("R1", "Resistans 1", "Ns/m^5",  mR1);
         registerParameter("R2", "Resistans 2", "Ns/m^5",  mR2);
     }
 
 
-	void initialize()
+    void initialize()
     {
         //Write to nodes
         mpP1->writeNode(NodeHydraulic::MASSFLOW,     mStartFlow);
@@ -78,17 +78,17 @@ public:
         mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+(mZc+mR2)*mStartFlow);
         mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc+mR2);
 
-		//Init delay
+        //Init delay
         mDelayedC1.initialize(mTime, mStartPressure+(mZc+mR1)*mStartFlow);
-		mDelayedC2.initialize(mTime, mStartPressure+(mZc+mR2)*mStartFlow);
+        mDelayedC2.initialize(mTime, mStartPressure+(mZc+mR2)*mStartFlow);
 
-		//Set external parameters
-		mDelayedC1.setTimeDelay(mTimeDelay-mTimestep, mTimestep); //-mTimestep sue to calc time
-		mDelayedC2.setTimeDelay(mTimeDelay-mTimestep, mTimestep);
-	}
+        //Set external parameters
+        mDelayedC1.setTimeDelay(mTimeDelay-mTimestep, mTimestep); //-mTimestep sue to calc time
+        mDelayedC2.setTimeDelay(mTimeDelay-mTimestep, mTimestep);
+    }
 
 
-	void simulateOneTimestep()
+    void simulateOneTimestep()
     {
         //Get variable values from nodes
         double q1 = mpP1->readNode(NodeHydraulic::MASSFLOW);
@@ -111,8 +111,8 @@ public:
         mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc+mR2);
 
         //Update the delayed variabels
-		mDelayedC1.update(c1);
-		mDelayedC2.update(c2);
+        mDelayedC1.update(c1);
+        mDelayedC2.update(c2);
     }
 };
 

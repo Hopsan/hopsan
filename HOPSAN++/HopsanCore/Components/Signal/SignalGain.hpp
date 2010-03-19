@@ -41,14 +41,14 @@ public:
         mpIn = addReadPort("in", "NodeSignal");
         mpOut = addWritePort("out", "NodeSignal");
 
-        registerParameter("Gain", "Förstärkning", "-", mGain);
+        registerParameter("Gain", "Gain value", "-", mGain);
     }
 
 
-	void initialize()
-	{
+    void initialize()
+    {
         //Nothing to initilize
-	}
+    }
 
 
     void simulateOneTimestep()
@@ -57,7 +57,7 @@ public:
         double u = mpIn->readNode(NodeSignal::VALUE);
 
         //Gain equations
-		double y = mGain*u;
+        double y = mGain*u;
 
         //Write new values to nodes
         mpOut->writeNode(NodeSignal::VALUE, y);

@@ -32,9 +32,9 @@ public:
 
 
     SignalSource(const string name,
-                    const double value    = 1.0,
-                    const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+                 const double value    = 1.0,
+                 const double timestep = 0.001)
+                     : ComponentSignal(name, timestep)
     {
         mTypeName = "SignalSource";
         mValue = value;
@@ -45,11 +45,11 @@ public:
     }
 
 
-	void initialize()
-	{
-	    //Initialize value to the node
+    void initialize()
+    {
+        //Initialize value to the node
         mpOut->writeNode(NodeSignal::VALUE, mValue);
-	}
+    }
 
 
     void simulateOneTimestep()
