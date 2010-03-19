@@ -1,0 +1,7 @@
+NAME HydraulicVariableDisplacementPump
+ICON variablepump.svg
+ICONROTATION ON
+PORTS 3
+0.4820 0.9583 90
+0.4820 0.0764 270
+1.0000 0.0000 135
