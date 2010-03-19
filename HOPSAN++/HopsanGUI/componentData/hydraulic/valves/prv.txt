@@ -1,0 +1,6 @@
+NAME HydraulicPressureReliefValve
+ICON prv.svg
+ICONROTATION ON
+PORTS 2
+0,4855 0,2771 90
+0,4855 1.0000 270
