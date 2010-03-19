@@ -14,7 +14,6 @@ private:
     double mSpeed;             // rad/s
     double mDp;
     double mKcp;
-    double mEps;
 
     Port *mpP1, *mpP2, *mpIn;
 
@@ -88,7 +87,7 @@ public:
         }
         if (cav)
         {
-            q2 = ( mDp*mSpeed*mEps/(2.0*pi) + mKcp*(c1-c2) ) / ( (Zc1+Zc2)*mKcp+1 );
+            q2 = ( mDp*mSpeed*eps/(2.0*pi) + mKcp*(c1-c2) ) / ( (Zc1+Zc2)*mKcp+1 );
             q1 = -q2;
             p1 = c1 + Zc1 * q1;
             p2 = c2 + Zc2 * q2;
