@@ -21,7 +21,7 @@ class HydraulicFlowSourceQ : public ComponentQ
 {
 private:
     double mFlow;
-    Port *mpP1, *mpP2;
+    Port *mpIn, *mpP2;
 
 public:
     static Component *Creator()
