@@ -20,7 +20,7 @@
 class HydraulicFlowSensor : public ComponentSignal
 {
 private:
-    enum {P1,out};
+    Port *mpP1, *mpOut;
 
 public:
     static Component *Creator()
@@ -35,8 +35,8 @@ public:
     {
         mTypeName = "HydraulicFlowSensor";
 
-        addReadPort("P1", "NodeHydraulic");
-        addWritePort("out", "NodeSignal");
+        mpP1 = addReadPort("P1", "NodeHydraulic");
+        mpOut = addWritePort("out", "NodeSignal");
     }
 
 
@@ -49,10 +49,10 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double q = mPortPtrs[P1]->readNode(NodeHydraulic::MASSFLOW);
+        double q = mpP1->readNode(NodeHydraulic::MASSFLOW);
 
         //Write new values to nodes
-        mPortPtrs[out]->writeNode(NodeSignal::VALUE, q);
+        mpOut->writeNode(NodeSignal::VALUE, q);
     }
 };
 

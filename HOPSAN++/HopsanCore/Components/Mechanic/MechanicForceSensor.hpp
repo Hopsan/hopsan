@@ -20,7 +20,6 @@
 class MechanicForceSensor : public ComponentSignal
 {
 private:
-    //enum {P1,out};
     Port *mpP1, *mpOut;
 
 public:
