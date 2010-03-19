@@ -317,6 +317,7 @@ void MainWindow::createToolbars()
     clipboardToolBar->addAction(pasteAction);
 
     simToolBar = addToolBar(tr("Simulation Toolbar"));
+    simToolBar->setAllowedAreas(Qt::TopToolBarArea);
     simToolBar->addAction(simulateAction);
     simToolBar->addAction(plotAction);
 
