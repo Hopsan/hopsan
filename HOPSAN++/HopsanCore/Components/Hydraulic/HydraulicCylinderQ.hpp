@@ -94,16 +94,16 @@ public:
     {
         //Initialization of filters
 
-        double x2 = mPortPtrs[P3]->readNode(NodeMechanic::POSITION);
-        double v2 = mPortPtrs[P3]->readNode(NodeMechanic::VELOCITY);
+        double x2 = mpP3->readNode(NodeMechanic::POSITION);
+        double v2 = mpP3->readNode(NodeMechanic::VELOCITY);
         //double c1 = mPortPtrs[P1]->readNode(NodeMechanic::WAVEVARIABLE);
-        double Zc1 = mPortPtrs[P1]->readNode(NodeMechanic::CHARIMP);
+        double Zc1 = mpP1->readNode(NodeMechanic::CHARIMP);
         //double c2 = mPortPtrs[P2]->readNode(NodeMechanic::WAVEVARIABLE);
-        double Zc2 = mPortPtrs[P2]->readNode(NodeMechanic::CHARIMP);
+        double Zc2 = mpP2->readNode(NodeMechanic::CHARIMP);
         //double cx1 = mArea1*c1 - mArea2*c2;
         double Zx1 = pow(mArea1,2)*Zc1 + pow(mArea2,2)*Zc2-mBp;
-        double cx2 = mPortPtrs[P3]->readNode(NodeMechanic::WAVEVARIABLE);
-        double Zx2 = mPortPtrs[P3]->readNode(NodeMechanic::CHARIMP);
+        double cx2 = mpP3->readNode(NodeMechanic::WAVEVARIABLE);
+        double Zx2 = mpP3->readNode(NodeMechanic::CHARIMP);
 
         double posnum [3] = {0.0, 0.0, 1.0};
         double posden [3] = {mMass, mBl+Zx1+Zx2, mKl};

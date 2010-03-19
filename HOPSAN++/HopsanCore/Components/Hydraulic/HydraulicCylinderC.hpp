@@ -139,12 +139,12 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double q1  = mPortPtrs[P1]->readNode(NodeHydraulic::MASSFLOW);
-        double c1  = mPortPtrs[P1]->readNode(NodeHydraulic::WAVEVARIABLE);
-        double q2  = mPortPtrs[P2]->readNode(NodeHydraulic::MASSFLOW);
-        double c2  = mPortPtrs[P2]->readNode(NodeHydraulic::WAVEVARIABLE);
-        double x   = mPortPtrs[P3]->readNode(NodeMechanic::POSITION);
-        double v   = mPortPtrs[P3]->readNode(NodeMechanic::VELOCITY);
+        double q1  = mpP1->readNode(NodeHydraulic::MASSFLOW);
+        double c1  = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
+        double q2  = mpP2->readNode(NodeHydraulic::MASSFLOW);
+        double c2  = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
+        double x   = mpP3->readNode(NodeMechanic::POSITION);
+        double v   = mpP3->readNode(NodeMechanic::VELOCITY);
         double xPiston = x + mStroke;
         double vPiston = -v;
 
@@ -239,12 +239,12 @@ public:
         mDelayedCxSpring.update(cxSpring);
 
         //Write new values to nodes
-        mPortPtrs[P1]->writeNode(NodeHydraulic::WAVEVARIABLE, c1);
-        mPortPtrs[P1]->writeNode(NodeHydraulic::CHARIMP,      mZc1);
-        mPortPtrs[P2]->writeNode(NodeHydraulic::WAVEVARIABLE, c2);
-        mPortPtrs[P2]->writeNode(NodeHydraulic::CHARIMP,      mZc2);
-        mPortPtrs[P3]->writeNode(NodeMechanic::WAVEVARIABLE, cx);
-        mPortPtrs[P3]->writeNode(NodeMechanic::CHARIMP,      mZx);
+        mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, c1);
+        mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc1);
+        mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, c2);
+        mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc2);
+        mpP3->writeNode(NodeMechanic::WAVEVARIABLE, cx);
+        mpP3->writeNode(NodeMechanic::CHARIMP,      mZx);
     }
 };
 
