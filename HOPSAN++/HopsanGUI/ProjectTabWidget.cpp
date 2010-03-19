@@ -280,12 +280,14 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
     if (event->modifiers() and Qt::ControlModifier)
     {
-        this->setDragMode(QGraphicsView::ScrollHandDrag);       //Zoom function
         if (this->mIsCreatingConnector)
         {
-            qDebug() << "blabla";
             QCursor cursor;
             mpTempConnector->getLastLine()->setGeometry(GUIConnectorLine::DIAGONAL);
+        }
+        else
+        {
+            this->setDragMode(QGraphicsView::ScrollHandDrag);
         }
     }
     if (event->key() == Qt::Key_Delete)
