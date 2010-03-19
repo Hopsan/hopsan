@@ -407,13 +407,13 @@ void GraphicsView::addConnector(GUIPort *pPort)
         QPointF oldPos = pPort->mapToScene(pPort->boundingRect().center());
 
         QPen passivePen,activePen,hoverPen;
-        if(pPort->getPortType() == GUIPort::POWER)
+        if(pPort->getPortType() == Port::POWERPORT)
         {
             passivePen = QPen(QColor("black"),2, Qt::SolidLine, Qt::RoundCap);
             activePen = QPen(QColor("red"), 3, Qt::SolidLine, Qt::RoundCap);                    //1.6180339887499
             hoverPen = QPen(QColor("darkRed"),3, Qt::SolidLine, Qt::RoundCap);
         }
-        else if((pPort->getPortType() == GUIPort::READ) | (pPort->getPortType() == GUIPort::WRITE))
+        else if((pPort->getPortType() == Port::READPORT) | (pPort->getPortType() == Port::WRITEPORT))
         {
             passivePen = QPen(QColor("blue"),1, Qt::DashLine);
             activePen = QPen(QColor("red"), 2, Qt::DashLine);

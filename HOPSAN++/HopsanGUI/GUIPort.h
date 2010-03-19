@@ -13,16 +13,16 @@ class GUIPort :public QGraphicsSvgItem
 {
     Q_OBJECT
 public:
-    enum portType {POWER, READ, WRITE};
+    //enum portType {POWER, READ, WRITE};
     enum portDirectionType {VERTICAL, HORIZONTAL};
-    GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, GUIPort::portType type, GUIPort::portDirectionType portDirection, GUIComponent *parent = 0);
+    GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, Port::PORTTYPE type, GUIPort::portDirectionType portDirection, GUIComponent *parent = 0);
     ~GUIPort();
     QPointF rectPos;
     QGraphicsView *getParentView();
     GUIComponent *getComponent();
     void magnify(bool blowup);
     int getPortNumber();
-    portType getPortType();
+    Port::PORTTYPE getPortType();
     Port *mpCorePort;
     portDirectionType getPortDirection();
     void setPortDirection(GUIPort::portDirectionType direction);
@@ -50,7 +50,7 @@ private:
     GUIComponent *mpParentComponent;
     qreal mMag;
     bool mIsMag;
-    GUIPort::portType mType;
+    //GUIPort::portType mType;
     portDirectionType mPortDirection;
 
 };

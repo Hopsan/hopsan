@@ -14,7 +14,6 @@
 #include <cassert>
 #include <math.h>
 #include "Component.h"
-#include "Port.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 
 
@@ -67,7 +66,8 @@ Component::Component(string name, double timestep)
     mIsComponentQ = false;
     mIsComponentSystem = false;
     mIsComponentSignal = false;
-    mTypeCQS = "";
+    //mTypeCQS = "";
+    mTypeCQS = Component::NOCQSTYPE;
 
     mpSystemParent = 0;
 
@@ -163,9 +163,32 @@ const string &Component::getName()
     return mName;
 }
 
-const string &Component::getTypeCQS()
+//const string &Component::getTypeCQS()
+//{
+//    return mTypeCQS;
+//}
+
+Component::typeCQS Component::getTypeCQS()
 {
     return mTypeCQS;
+}
+
+string Component::getTypeCQSString(typeCQS type)
+{
+    switch (type)
+    {
+    case C :
+        return "C";
+        break;
+    case Q :
+        return "Q";
+        break;
+    case S :
+        return "S";
+        break;
+    default :
+        return "Invalid CQS Type";
+    }
 }
 
 const string &Component::getTypeName()
@@ -286,9 +309,10 @@ double *Component::getTimePtr()
 }
 
 
-Port* Component::addPort(const string portname, const string porttype, const NodeTypeT nodetype, const int id)
+Port* Component::addPort(const string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype, const int id)
 {
     //! @todo handle trying to add multiple ports with same name or pos
+    //! @todo id should not be necessary as we wont use enums to point out which port is which
     Port* new_port = CreatePort(porttype);
     new_port->mPortName = portname;
     new_port->mNodeType = nodetype;
@@ -315,17 +339,17 @@ Port* Component::addPort(const string portname, const string porttype, const Nod
 
 Port* Component::addPowerPort(const string portname, const string nodetype, const int id)
 {
-    return addPort(portname, "PowerPort", nodetype, id);
+    return addPort(portname, Port::POWERPORT, nodetype, id);
 }
 
 Port* Component::addReadPort(const string portname, const string nodetype, const int id)
 {
-    return addPort(portname, "ReadPort", nodetype, id);
+    return addPort(portname, Port::READPORT, nodetype, id);
 }
 
 Port* Component::addWritePort(const string portname, const string nodetype, const int id)
 {
-    return addPort(portname, "WritePort", nodetype, id);
+    return addPort(portname, Port::WRITEPORT, nodetype, id);
 }
 
 //void Component::addMultiPort(const string portname, const string nodetype, const size_t nports, const size_t startctr)
@@ -520,6 +544,7 @@ void ComponentSystem::SubComponentStorage::erase(const string &rName)
             cout << "This should not happen neither C Q or S type" << endl;
             assert(false);
         }
+        mSubComponentMap.erase(it);
     }
     else
     {
@@ -578,21 +603,24 @@ ComponentSystem *Component::getSystemParent()
 //constructor ComponentSignal
 ComponentSignal::ComponentSignal(string name, double timestep) : Component(name, timestep)
 {
-    mTypeCQS = "S";
+    //mTypeCQS = "S";
+    mTypeCQS = Component::S;
     mIsComponentSignal = true;
 }
 
 //constructor ComponentC
 ComponentC::ComponentC(string name, double timestep) : Component(name, timestep)
 {
-    mTypeCQS = "C";
+    //mTypeCQS = "C";
+    mTypeCQS = Component::C;
     mIsComponentC = true;
 }
 
 //Constructor ComponentQ
 ComponentQ::ComponentQ(string name, double timestep) : Component(name, timestep)
 {
-    mTypeCQS = "Q";
+    //mTypeCQS = "Q";
+    mTypeCQS = Component::Q;
     mIsComponentQ = true;
 }
 
@@ -837,39 +865,63 @@ void ComponentSystem::logAllNodes(const double time)
 //! Adds a transparent SubSystemPort
 Port* ComponentSystem::addSystemPort(const string portname)
 {
-    return addPort(portname, "SystemPort", "undefined_nodetype");
+    return addPort(portname, Port::SYSTEMPORT, "undefined_nodetype");
 }
 
-//! Set the type C, Q, or S of the subsystem
+//! Set the type C, Q, or S of the subsystem by using string
 void ComponentSystem::setTypeCQS(const string cqs_type)
 {
-    //! @todo should really try to figure out a better way to do this
-    //! @todo need to do erro checking, and make sure that the specified type really is valid, first and last component should be of this type (i think)
     if (cqs_type == string("C"))
     {
-        mTypeCQS = "C";
-        mIsComponentC = true;
-        mIsComponentQ = false;
-        mIsComponentSignal = false;
+        setTypeCQS(Component::C);
     }
     else if (cqs_type == string("Q"))
     {
-        mTypeCQS = "Q";
-        mIsComponentC = false;
-        mIsComponentQ = true;
-        mIsComponentSignal = false;
+        setTypeCQS(Component::Q);
     }
     else if (cqs_type == string("S"))
     {
-        mTypeCQS = "S";
-        mIsComponentC = false;
-        mIsComponentQ = false;
-        mIsComponentSignal = true;
+        setTypeCQS(Component::S);
     }
     else
     {
         cout << "Error: Specified type _" << cqs_type << "_ does not exist!" << endl;
         gCoreMessageHandler.addWarningMessage("Specified type: " + cqs_type + " does not exist!, System CQStype unchanged");
+    }
+}
+
+//! Set the type C, Q, or S of the subsystem
+void ComponentSystem::setTypeCQS(typeCQS cqs_type)
+{
+        //! @todo should really try to figure out a better way to do this
+        //! @todo need to do erro checking, and make sure that the specified type really is valid, first and last component should be of this type (i think)
+
+    switch (cqs_type)
+    {
+    case Component::C :
+        mTypeCQS = Component::C;
+        mIsComponentC = true;
+        mIsComponentQ = false;
+        mIsComponentSignal = false;
+        break;
+
+    case Component::Q :
+        mTypeCQS = Component::Q;
+        mIsComponentC = false;
+        mIsComponentQ = true;
+        mIsComponentSignal = false;
+        break;
+
+    case Component::S :
+        mTypeCQS = Component::S;
+        mIsComponentC = false;
+        mIsComponentQ = false;
+        mIsComponentSignal = true;
+        break;
+
+    default :
+        cout << "Error: Specified type _" << getTypeCQSString(cqs_type) << "_ does not exist!" << endl;
+        gCoreMessageHandler.addWarningMessage("Specified type: " + getTypeCQSString(cqs_type) + " does not exist!, System CQStype unchanged");
     }
 }
 
@@ -986,7 +1038,7 @@ bool ComponentSystem::connect(Component &rComponent1, const string portname1, Co
                 return false;
             }
             //Check so ...C-Q-C-Q-C... pattern is consistent
-            else if ((pPort1->getPortType() == "PowerPort") && (pPort2->getPortType() == "PowerPort"))
+            else if ((pPort1->getPortType() == Port::POWERPORT) && (pPort2->getPortType() == Port::POWERPORT))
             {
                 if ((pPort1->mpComponent->isComponentC()) && (pPort2->mpComponent->isComponentC()))
                 {
@@ -1119,30 +1171,30 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
     //Count the different kind of ports in the node
     for (it=(*pNode).mPortPtrs.begin(); it!=(*pNode).mPortPtrs.end(); ++it)
     {
-        if ((*it)->getPortType() == "ReadPort")
+        if ((*it)->getPortType() == Port::READPORT)
         {
             n_ReadPorts += 1;
         }
-        if ((*it)->getPortType() == "WritePort")
+        if ((*it)->getPortType() == Port::WRITEPORT)
         {
             n_WritePorts += 1;
         }
-        if ((*it)->getPortType() == "PowerPort")
+        if ((*it)->getPortType() == Port::POWERPORT)
         {
             n_PowerPorts += 1;
         }
     }
     //Check the kind of ports in the components subjected for connection
     //                                 This checks that rPort1 is not already connected to pNode
-    if (((pPort1->getPortType() == "ReadPort") && !(pNode->isConnectedToPort(pPort1))) || ((pPort2->getPortType() == "ReadPort") && !(pNode->isConnectedToPort(pPort2))))
+    if (((pPort1->getPortType() == Port::READPORT) && !(pNode->isConnectedToPort(pPort1))) || ((pPort2->getPortType() == Port::READPORT) && !(pNode->isConnectedToPort(pPort2))))
     {
         n_ReadPorts += 1;
     }
-    if (((pPort1->getPortType() == "WritePort") && !(pNode->isConnectedToPort(pPort1))) || ((pPort2->getPortType() == "WritePort") && !(pNode->isConnectedToPort(pPort2))))
+    if (((pPort1->getPortType() == Port::WRITEPORT) && !(pNode->isConnectedToPort(pPort1))) || ((pPort2->getPortType() == Port::WRITEPORT) && !(pNode->isConnectedToPort(pPort2))))
     {
         n_WritePorts += 1;
     }
-    if (((pPort1->getPortType() == "PowerPort") && !(pNode->isConnectedToPort(pPort1))) || ((pPort2->getPortType() == "PowerPort") && !(pNode->isConnectedToPort(pPort2))))
+    if (((pPort1->getPortType() == Port::POWERPORT) && !(pNode->isConnectedToPort(pPort1))) || ((pPort2->getPortType() == Port::POWERPORT) && !(pNode->isConnectedToPort(pPort2))))
     {
         n_PowerPorts += 1;
     }

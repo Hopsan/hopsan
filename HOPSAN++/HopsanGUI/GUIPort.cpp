@@ -14,7 +14,7 @@
 //! @param rot how the port should be rotated.
 //! @param iconPath a string with the path to the svg-figure representing the port.
 //! @param parent the port's parent, the component it is a part of.
-GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, portType type, portDirectionType portDirection, GUIComponent *parent)
+GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, Port::PORTTYPE type, portDirectionType portDirection, GUIComponent *parent)
     : QGraphicsSvgItem(iconPath,parent)
 {
     //Core interaction
@@ -24,13 +24,13 @@ GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, 
     mpParentView = parent->mpParentGraphicsView;
     mpParentComponent = parent;
 
-    mType = type;
+    //mType = type;
     mPortDirection = portDirection;
 
     setTransformOriginPoint(boundingRect().width()/2,boundingRect().height()/2);
 
     setPos(x-this->boundingRect().width()/2,y-this->boundingRect().height()/2);
-    if(this->getPortType() == GUIPort::POWER)
+    if(this->getPortType() == Port::POWERPORT)
         this->setRotation(0.0);
     else
         this->setRotation(rot);
@@ -227,10 +227,10 @@ int GUIPort::getPortNumber()
     return this->getComponent()->getPortNumber(this);
 }
 
-
-GUIPort::portType GUIPort::getPortType()
+//! Wrapper for the Core getPortType() function
+Port::PORTTYPE GUIPort::getPortType()
 {
-    return this->mType;
+    return mpCorePort->getPortType();
 }
 
 

@@ -11,6 +11,7 @@
 #define COMPONENT_H_INCLUDED
 
 #include "Node.h"
+#include "Port.h"
 #include "CoreUtilities/ClassFactory.h"
 #include "win32dll.h"
 #include <string>
@@ -50,6 +51,7 @@ class DLLIMPORTEXPORT Component
     friend class ComponentSystem;
 
 public:
+    enum typeCQS {C, Q, S, NOCQSTYPE};
     //==========Public functions==========
     //Virtual functions
     virtual void initialize(const double startT, const double stopT);
@@ -61,7 +63,9 @@ public:
     void setName(string name);
     const string &getName();
     const string &getTypeName();
-    const string &getTypeCQS();
+    //const string &getTypeCQS();
+    typeCQS getTypeCQS();
+    string getTypeCQSString(typeCQS type);
 
     //Parameters
     void listParametersConsole();
@@ -104,7 +108,7 @@ protected:
     void registerParameter(const string name, const string description, const string unit, double &rValue);
 
     //Port functions
-    Port* addPort(const string portname, const string porttype, const NodeTypeT nodetype, const int id=-1);
+    Port* addPort(const string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype, const int id=-1);
     Port* addPowerPort(const string portname, const string nodetype, const int id=-1);
     Port* addReadPort(const string portname, const string nodetype, const int id=-1);
     Port* addWritePort(const string portname, const string nodetype, const int id=-1);
@@ -112,7 +116,8 @@ protected:
     Port &getPortById(const size_t port_idx);
 
     //==========Protected member variables==========
-    string mTypeCQS;
+    //string mTypeCQS;
+    typeCQS mTypeCQS;
     string mTypeName;
     double mTimestep, mDesiredTimestep;
     double mTime;
@@ -172,6 +177,7 @@ public:
 
     //Set the subsystem CQS type
     void setTypeCQS(const string cqs_type);
+    void setTypeCQS(typeCQS cqs_type);
 
     //adding removing and renaming components
     void addComponents(vector<Component*> components);

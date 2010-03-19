@@ -11,21 +11,30 @@
 #define PORT_H_INCLUDED
 
 #include "Node.h"
-#include "Component.h"
 #include "win32dll.h"
 #include <string>
 
 using namespace std;
 
-typedef string PortTypeT;
+//typedef string PortTypeT;
+
+//Forward declarations
+class Component;
+class ComponentSystem;
 
 class DLLIMPORTEXPORT Port
 {
     friend class Component;
     friend class ComponentSystem;
-    friend Port* CreatePort(const string &rPortType);
 
 public:
+    enum PORTTYPE {POWERPORT, READPORT, WRITEPORT, SYSTEMPORT, UNDEFINEDPORT};
+
+    //Constructors - Destructors
+    Port();
+    Port(string portname, string node_type);
+    virtual ~Port();
+
     virtual double readNode(const size_t idx);
     virtual void writeNode(const size_t idx, const double value);
     void saveLogData(string filename);
@@ -36,18 +45,16 @@ public:
     bool isConnected();
 
     const string &getNodeType();
-    const string &getPortType();
+    //const string &getPortType();
+    PORTTYPE getPortType();
     const string &getPortName();
 
     Node* getNodePublic();
 
 protected:
-    //Constructors - Destructors
-    Port();
-    Port(string portname, string node_type);
-    virtual ~Port();
 
-    PortTypeT mPortType;
+    //PortTypeT mPortType;
+    PORTTYPE mPortType;
 
     void setNode(Node* pNode);
     Node &getNode();
@@ -72,9 +79,9 @@ class SystemPort :public Port
 {
     friend class Component;
     friend class ComponentSystem;
-    friend Port* CreatePort(const string &rPortType);
+    //friend Port* CreatePort(const string &rPortType);
 
-protected:
+public:
     //Constructors
     SystemPort();
 };
@@ -84,9 +91,9 @@ class PowerPort :public Port
 {
     friend class Component;
     friend class ComponentSystem;
-    friend Port* CreatePort(const string &rPortType);
+    //friend Port* CreatePort(const string &rPortType);
 
-protected:
+public:
     //Constructors
     PowerPort();
     PowerPort(string portname, string node_type);
@@ -97,15 +104,14 @@ class ReadPort :public Port
 {
     friend class Component;
     friend class ComponentSystem;
-    friend Port* CreatePort(const string &rPortType);
+    //friend Port* CreatePort(const string &rPortType);
 
 public:
-    void writeNode(const size_t idx, const double value);
-
-protected:
     //Constructors
     ReadPort();
     ReadPort(string portname, string node_type);
+
+    void writeNode(const size_t idx, const double value);
 };
 
 
@@ -113,17 +119,17 @@ class WritePort :public Port
 {
     friend class Component;
     friend class ComponentSystem;
-    friend Port* CreatePort(const string &rPortType);
+    //friend Port* CreatePort(const string &rPortType);
 
 public:
-    double readNode(const size_t idx);
-
-protected:
     //Constructors
     WritePort();
     WritePort(string portname, string node_type);
+
+    double readNode(const size_t idx);
 };
 
-Port* CreatePort(const string &rPortType);
+//Port* CreatePort(const string &rPortType);
+Port* CreatePort(Port::PORTTYPE type);
 
 #endif // PORT_H_INCLUDED

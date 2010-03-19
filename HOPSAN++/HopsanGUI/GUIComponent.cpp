@@ -68,44 +68,43 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
     mpSelectionBox->setVisible(false);
 
     //Sets the ports
-    GUIPort::portType type;
+    //GUIPort::portType type;
+    Port::PORTTYPE porttype;
     for (size_t i = 0; i < nPorts; ++i)
     {
         double x = parameterData.at(4+3*i).toDouble();
         double y = parameterData.at(5+3*i).toDouble();
         double rot = parameterData.at(6+3*i).toDouble();
 
+        porttype = mpCoreComponent->getPortPtrVector().at(i)->getPortType();
+
         QString iconPath("../../HopsanGUI/porticons/");
         if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeSignal")
         {
             iconPath.append("SignalPort");
-            if (mpCoreComponent->getPortPtrVector().at(i)->getPortType() == "ReadPort")
+            if ( porttype == Port::READPORT)
             {
                 iconPath.append("_read");
-                type = GUIPort::READ;
             }
             else
             {
                 iconPath.append("_write");
-                type = GUIPort::WRITE;
             }
         }
         else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeMechanic")
         {
-            type = GUIPort::POWER;
             iconPath.append("MechanicPort");
-            if (mpCoreComponent->getTypeCQS() == "C")
+            if (mpCoreComponent->getTypeCQS() == Component::C)
                 iconPath.append("C");
-            else if (mpCoreComponent->getTypeCQS() == "Q")
+            else if (mpCoreComponent->getTypeCQS() == Component::Q)
                 iconPath.append("Q");
         }
         else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeHydraulic")
         {
-            type = GUIPort::POWER;
             iconPath.append("HydraulicPort");
-            if (mpCoreComponent->getTypeCQS() == "C")
+            if (mpCoreComponent->getTypeCQS() == Component::C)
                 iconPath.append("C");
-            else if (mpCoreComponent->getTypeCQS() == "Q")
+            else if (mpCoreComponent->getTypeCQS() == Component::Q)
                 iconPath.append("Q");
         }
         else
@@ -119,7 +118,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
             direction = GUIPort::HORIZONTAL;
         else
             direction = GUIPort::VERTICAL;
-        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,type,direction,this));//mpIcon));
+        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,porttype,direction,this));//mpIcon));
 
     }
 
@@ -511,7 +510,7 @@ void GUIComponent::rotate()
             mPortListPtrs.value(i)->setPortDirection(GUIPort::HORIZONTAL);
         else
             mPortListPtrs.value(i)->setPortDirection(GUIPort::VERTICAL);
-        if (mPortListPtrs.value(i)->getPortType() == GUIPort::POWER)
+        if (mPortListPtrs.value(i)->getPortType() == Port::POWERPORT)
             mPortListPtrs.value(i)->setRotation(-this->rotation());
     }
     if(!this->mIconRotation)

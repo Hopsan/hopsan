@@ -18,7 +18,8 @@
 //Constructor
 Port::Port()
 {
-    mPortType = "EmptyPort";
+    //mPortType = "EmptyPort";
+    mPortType = UNDEFINEDPORT;
     mpComponent = 0;
     clearConnection();
 
@@ -26,7 +27,8 @@ Port::Port()
 
 Port::Port(string portname, string node_type)
 {
-    mPortType = "EmptyPort";
+    //mPortType = "EmptyPort";
+    mPortType = UNDEFINEDPORT;
     mPortName = portname;
     mNodeType = node_type;
     mpComponent = 0;
@@ -144,7 +146,12 @@ bool Port::isConnected()
     return mIsConnected;
 }
 
-const string &Port::getPortType()
+//const string &Port::getPortType()
+//{
+//    return mPortType;
+//}
+
+Port::PORTTYPE Port::getPortType()
 {
     return mPortType;
 }
@@ -156,29 +163,34 @@ const string &Port::getPortName()
 
 SystemPort::SystemPort() : Port()
 {
-    mPortType = "SystemPort";
+    //mPortType = "SystemPort";
+    mPortType = SYSTEMPORT;
 }
 
 //Constructor
 PowerPort::PowerPort() : Port()
 {
-    mPortType = "PowerPort";
+    //mPortType = "PowerPort";
+    mPortType = POWERPORT;
 }
 
 PowerPort::PowerPort(string portname, string node_type) : Port(portname, node_type)
 {
-    mPortType = "PowerPort";
+    //mPortType = "PowerPort";
+    mPortType = POWERPORT;
 }
 
 //Constructor
 ReadPort::ReadPort() : Port()
 {
-    mPortType = "ReadPort";
+    //mPortType = "ReadPort";
+    mPortType = READPORT;
 }
 
 ReadPort::ReadPort(string portname, string node_type) : Port(portname, node_type)
 {
-    mPortType = "ReadPort";
+    //mPortType = "ReadPort";
+    mPortType = READPORT;
 }
 
 void ReadPort::writeNode(const size_t idx, const double value)
@@ -190,12 +202,14 @@ void ReadPort::writeNode(const size_t idx, const double value)
 //Constructor
 WritePort::WritePort() : Port()
 {
-    mPortType = "WritePort";
+    //mPortType = "WritePort";
+    mPortType = WRITEPORT;
 }
 
 WritePort::WritePort(string portname, string node_type) : Port(portname, node_type)
 {
-    mPortType = "WritePort";
+    //mPortType = "WritePort";
+    mPortType = WRITEPORT;
 }
 
 double WritePort::readNode(const size_t idx)
@@ -204,31 +218,56 @@ double WritePort::readNode(const size_t idx)
     assert(false);
 }
 
+////!
+////! @brief Very simple port factory, no need to complicate things with the more advanced one as we will only have four port types.
+////!
+//Port* CreatePort(const string &rPortType)
+//{
+//    //! @todo maybe swap PortType to enums instead of strings (not really important)
+//    if (rPortType.c_str() == string("PowerPort"))
+//    {
+//        return new PowerPort();
+//    }
+//    else if (rPortType.c_str() == string("ReadPort"))
+//    {
+//        return new ReadPort();
+//    }
+//    else if (rPortType.c_str() == string("WritePort"))
+//    {
+//        return new WritePort();
+//    }
+//    else if (rPortType.c_str() == string("SystemPort"))
+//    {
+//        return new SystemPort();
+//    }
+//    else
+//    {
+//        //! @todo maybe defualt should be impossible
+//        return new Port();
+//    }
+//}
+
 //!
 //! @brief Very simple port factory, no need to complicate things with the more advanced one as we will only have four port types.
 //!
-Port* CreatePort(const string &rPortType)
+Port* CreatePort(Port::PORTTYPE type)
 {
-    //! @todo maybe swap PortType to enums instead of strings (not really important)
-    if (rPortType.c_str() == string("PowerPort"))
+    switch (type)
     {
+    case Port::POWERPORT :
         return new PowerPort();
-    }
-    else if (rPortType.c_str() == string("ReadPort"))
-    {
-        return new ReadPort();
-    }
-    else if (rPortType.c_str() == string("WritePort"))
-    {
+        break;
+    case Port::WRITEPORT :
         return new WritePort();
-    }
-    else if (rPortType.c_str() == string("SystemPort"))
-    {
+        break;
+    case Port::READPORT :
+        return new ReadPort();
+        break;
+    case Port::SYSTEMPORT :
         return new SystemPort();
-    }
-    else
-    {
-        //! @todo maybe defualt should be impossible
-        return new Port();
+        break;
+    default :
+       //! @todo maybe defualt should be impossible
+       return new Port();
     }
 }
