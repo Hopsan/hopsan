@@ -108,12 +108,12 @@ protected:
     void registerParameter(const string name, const string description, const string unit, double &rValue);
 
     //Port functions
-    Port* addPort(const string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype, const int id=-1);
-    Port* addPowerPort(const string portname, const string nodetype, const int id=-1);
-    Port* addReadPort(const string portname, const string nodetype, const int id=-1);
-    Port* addWritePort(const string portname, const string nodetype, const int id=-1);
+    Port* addPort(const string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype);
+    Port* addPowerPort(const string portname, const string nodetype);
+    Port* addReadPort(const string portname, const string nodetype);
+    Port* addWritePort(const string portname, const string nodetype);
     bool getPort(const string portname, Port* &rpPort);
-    Port &getPortById(const size_t port_idx);
+    //Port &getPortById(const size_t port_idx);
 
     //==========Protected member variables==========
     //string mTypeCQS;

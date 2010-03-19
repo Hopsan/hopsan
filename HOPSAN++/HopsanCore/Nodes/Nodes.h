@@ -25,13 +25,12 @@ public:
     static Node* CreatorFunction() {return new NodeSignal;}
 
 private:
-    NodeSignal() : Node()
+    NodeSignal() : Node(DATALENGTH)
     {
         mNodeType = "NodeSignal";
-        mDataVector.resize(DATALENGTH,0.0);
+        setDataNameAndUnit(VALUE, "Value", "-");
     }
 };
-
 
 //!
 //! @class NodeHydraulic
@@ -45,13 +44,17 @@ public:
     static Node* CreatorFunction() {return new NodeHydraulic;}
 
 private:
-    NodeHydraulic() : Node()
+    NodeHydraulic() : Node(DATALENGTH)
     {
         mNodeType = "NodeHydraulic";
-        mDataVector.resize(DATALENGTH,0.0);
+        setDataNameAndUnit(MASSFLOW, "MassFlow", "Kg/m^3");
+        setDataNameAndUnit(PRESSURE, "Pressure", "Pa");
+        setDataNameAndUnit(TEMPERATURE, "Temperature", "?");
+        setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?");
+        setDataNameAndUnit(CHARIMP, "CharImp", "?");
+        setDataNameAndUnit(HEATFLOW, "HeatFlow", "?");
     }
 };
-
 
 //!
 //! @class NodeMechanic
@@ -65,10 +68,14 @@ public:
     static Node* CreatorFunction() {return new NodeMechanic;}
 
 private:
-    NodeMechanic() : Node()
+    NodeMechanic() : Node(DATALENGTH)
     {
         mNodeType = "NodeMechanic";
-        mDataVector.resize(DATALENGTH,0.0);
+        setDataNameAndUnit(VELOCITY, "Velocity", "m/s");
+        setDataNameAndUnit(FORCE, "Force", "N");
+        setDataNameAndUnit(POSITION, "Position", "m");
+        setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?");
+        setDataNameAndUnit(CHARIMP, "CharImp", "?");
     }
 };
 

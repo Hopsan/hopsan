@@ -18,15 +18,26 @@
 #include "Node.h"
 
 //! Node base class constructor
-Node::Node()
+Node::Node(size_t datalength)
 {
     mNodeType = "Node";
     mDataVector.clear();
     mDataStorage.clear();
     mTimeStorage.clear();
     mPortPtrs.clear();
+
+    //Resize
+    mDataVector.resize(datalength,0.0);
+    mDataNames.resize(datalength,"");
+    mDataUnits.resize(datalength,"");
+
     mLogSpaceAllocated = false;
     mLogCtr = 0;
+
+    //Default log node allways
+    mDoLog = true;
+    mLogTimeDt = 0.0;
+    mLastLogTime = -10e10; //! @todo Find better value like -inf or nearby
 }
 
 //!
@@ -62,13 +73,79 @@ double &Node::getDataRef(const size_t data_type)
     return mDataVector[data_type];
 }
 
-void Node::preAllocateLogSpace(const size_t nSlots)
+void Node::setDataNameAndUnit(size_t id, string name, string unit)
+{
+    mDataNames[id] = name;
+    mDataUnits[id] = unit;
+}
+
+string Node::getDataName(size_t id)
+{
+    return mDataNames[id];
+}
+
+string Node::getDataUnit(size_t id)
+{
+    return mDataUnits[id];
+}
+
+string getDataName(size_t id);
+string getDataUnit(size_t id);
+
+void Node::setLogSettingsNSamples(int nSamples, double start, double stop, double sampletime)
+{
+    double totaltime = stop - start;
+    mLogTimeDt = totaltime / (double)nSamples;
+
+    mLogSlots = (size_t)((stop-start)/mLogTimeDt+0.5); //Round to nearest
+
+    mLogTimeDt -= sampletime/2.0; //This is needed to avoid rounding problems in = comparison
+    //! @todo Maybe round to neerest nice time number
+}
+
+void Node::setLogSettingsSkipFactor(double factor, double start, double stop,  double sampletime)
+{
+    //! @todo make sure factor is not less then 1.0
+    //! @todo maybe only use integer factors
+    mLogTimeDt = sampletime * factor;
+
+    mLogSlots = (size_t)((stop-start)/mLogTimeDt+0.5); //Round to nearest
+
+    mLogTimeDt -= sampletime/2.0; //This is needed to avoid rounding problems in = comparison
+    //! @todo Maybe round to neerest nice time number
+}
+
+void Node::setLogSettingsSampleTime(double log_dt, double start, double stop,  double sampletime)
+{
+    //! @todo make sure that we dont have log_dt lower than sampletime ( we cant log more then we calc
+    mLogTimeDt = log_dt;
+
+    mLogSlots = (size_t)((stop-start)/log_dt+0.5); //Round to nearest
+
+    mLogTimeDt -= sampletime/2.0; //This is needed to avoid rounding problems in = comparison
+    //! @todo Maybe round to neerest nice time number
+}
+
+//void Node::preAllocateLogSpace(const size_t nSlots)
+//{
+//    size_t data_size = mDataVector.size();
+//    mTimeStorage.resize(nSlots);
+//    mDataStorage.resize(nSlots, vector<double>(data_size));
+//
+//    cout << "requestedSize: " << nSlots << " " << data_size << " Capacities: " << mTimeStorage.capacity() << " " << mDataStorage.capacity() << " " << mDataStorage[1].capacity() << " Size: " << mTimeStorage.size() << " " << mDataStorage.size() << " " << mDataStorage[1].size() << endl;
+//    mLogSpaceAllocated = true;
+//
+//    //Make sure the ctr is 0 if we simulate teh same model several times in a row
+//    mLogCtr = 0;
+//}
+
+void Node::preAllocateLogSpace()
 {
     size_t data_size = mDataVector.size();
-    mTimeStorage.resize(nSlots);
-    mDataStorage.resize(nSlots, vector<double>(data_size));
+    mTimeStorage.resize(mLogSlots);
+    mDataStorage.resize(mLogSlots, vector<double>(data_size));
 
-    cout << "requestedSize: " << nSlots << " " << data_size << " Capacities: " << mTimeStorage.capacity() << " " << mDataStorage.capacity() << " " << mDataStorage[1].capacity() << " Size: " << mTimeStorage.size() << " " << mDataStorage.size() << " " << mDataStorage[1].size() << endl;
+    cout << "requestedSize: " << mLogSlots << " " << data_size << " Capacities: " << mTimeStorage.capacity() << " " << mDataStorage.capacity() << " " << mDataStorage[1].capacity() << " Size: " << mTimeStorage.size() << " " << mDataStorage.size() << " " << mDataStorage[1].size() << endl;
     mLogSpaceAllocated = true;
 
     //Make sure the ctr is 0 if we simulate teh same model several times in a row
@@ -78,22 +155,31 @@ void Node::preAllocateLogSpace(const size_t nSlots)
 //! Copy current data vector into log storage, also adds current time
 void Node::logData(const double time)
 {
-    if (mLogSpaceAllocated)
+    if (mDoLog)
     {
-        //cout << "mLogCtr: " << mLogCtr << endl;
-        //! @todo this if check should not be needed if everything else is working
-        if (mLogCtr < mTimeStorage.size())
+        //! @todo Danger comparing doubles
+        //! @todo Mayb can use mLogTimeDt = -1 instead of bool to avoid extra comparison
+        if (time >= mLastLogTime+mLogTimeDt)
         {
-            mTimeStorage[mLogCtr] = time;
-            mDataStorage[mLogCtr] = mDataVector;
+            if (mLogSpaceAllocated)
+            {
+                //cout << "mLogCtr: " << mLogCtr << endl;
+                //! @todo this if check should not be needed if everything else is working
+                if (mLogCtr < mTimeStorage.size())
+                {
+                    mTimeStorage[mLogCtr] = time;
+                    mDataStorage[mLogCtr] = mDataVector;
+                }
+                ++mLogCtr;
+            }
+            else
+            {
+                //! @todo for now always append
+                mTimeStorage.push_back(time);
+                mDataStorage.push_back(mDataVector);
+            }
+            mLastLogTime = time;
         }
-        ++mLogCtr;
-    }
-    else
-    {
-        //! @todo for now always append
-        mTimeStorage.push_back(time);
-        mDataStorage.push_back(mDataVector);
     }
 }
 
@@ -179,6 +265,16 @@ bool Node::isConnectedToPort(Port *pPort)
         }
     }
     return false;
+}
+
+void Node::enableLog()
+{
+    mDoLog = true;
+}
+
+void Node::disableLog()
+{
+    mDoLog = false;
 }
 
 NodeFactory gCoreNodeFactory;

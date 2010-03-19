@@ -309,7 +309,7 @@ double *Component::getTimePtr()
 }
 
 
-Port* Component::addPort(const string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype, const int id)
+Port* Component::addPort(const string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype)
 {
     //! @todo handle trying to add multiple ports with same name or pos
     //! @todo id should not be necessary as we wont use enums to point out which port is which
@@ -318,60 +318,50 @@ Port* Component::addPort(const string portname, Port::PORTTYPE porttype, const N
     new_port->mNodeType = nodetype;
     new_port->mpComponent = this;    //Set port owner
 
-    if (id >= 0)
-    {
-        //Instead of allways push_back, make it possible to add ports out of order
-        if ((size_t)id+1 > mPortPtrs.size())
-        {
-            mPortPtrs.resize(id+1);
-        }
-        mPortPtrs[id] = new_port;
-    }
-    else
-    {
+//    if (id >= 0)
+//    {
+//        //Instead of allways push_back, make it possible to add ports out of order
+//        if ((size_t)id+1 > mPortPtrs.size())
+//        {
+//            mPortPtrs.resize(id+1);
+//        }
+//        mPortPtrs[id] = new_port;
+//    }
+//    else
+//    {
         //If no id specified push back
-        mPortPtrs.push_back(new_port);     //Copy port into storage
-    }
+        mPortPtrs.push_back(new_port);     //Push port into storage
+//    }
 
     return new_port;
 }
 
 
-Port* Component::addPowerPort(const string portname, const string nodetype, const int id)
+Port* Component::addPowerPort(const string portname, const string nodetype)
 {
-    return addPort(portname, Port::POWERPORT, nodetype, id);
+    return addPort(portname, Port::POWERPORT, nodetype);
 }
 
-Port* Component::addReadPort(const string portname, const string nodetype, const int id)
+Port* Component::addReadPort(const string portname, const string nodetype)
 {
-    return addPort(portname, Port::READPORT, nodetype, id);
+    return addPort(portname, Port::READPORT, nodetype);
 }
 
-Port* Component::addWritePort(const string portname, const string nodetype, const int id)
+Port* Component::addWritePort(const string portname, const string nodetype)
 {
-    return addPort(portname, Port::WRITEPORT, nodetype, id);
+    return addPort(portname, Port::WRITEPORT, nodetype);
 }
-
-//void Component::addMultiPort(const string portname, const string nodetype, const size_t nports, const size_t startctr)
-//{
-//    for (size_t idx=startctr; idx < nports+startctr; ++idx)
-//    {
-//        sstream ss;
-//        ss << portname << idx;
-//        addPort(ss.str(), nodetype);
-//    }
-//}
 
 void Component::setSystemParent(ComponentSystem &rComponentSystem)
 {
     mpSystemParent = &rComponentSystem;
 }
 
-Port &Component::getPortById(const size_t port_idx)
-{
-    //! @todo error handle if request outside of vector
-    return *mPortPtrs[port_idx];
-}
+//Port &Component::getPortById(const size_t port_idx)
+//{
+//    //! @todo error handle if request outside of vector
+//    return *mPortPtrs[port_idx];
+//}
 
 Port &Component::getPort(const string portname)
 {
@@ -837,7 +827,7 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
 
     //! @todo make sure this calculation is EXACTLY correct
     double dslots = (stopT-startT)/mTimestep;
-    //std::cout << "dslots: " << dslots << std::endl;
+    std::cout << "dslots: " << dslots << std::endl;
     size_t needed_slots = (size_t)(dslots+0.5); //Round to nearest
     //size_t needed_slots = ((double)(stopT-startT))/mTimestep;
 
@@ -845,7 +835,8 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
     vector<Node*>::iterator it;
     for (it=mSubNodePtrs.begin(); it!=mSubNodePtrs.end(); ++it)
     {
-        (*it)->preAllocateLogSpace(needed_slots);
+        //(*it)->preAllocateLogSpace(needed_slots);
+        (*it)->preAllocateLogSpace();
     }
 
     //! @todo Call allocate for subsubsystems
@@ -1441,6 +1432,11 @@ void ComponentSystem::adjustTimestep(double timestep, vector<Component*> compone
 void ComponentSystem::initialize(const double startT, const double stopT)
 {
     //preAllocate local logspace
+    //! @todo this is an ugly quit hack test
+    for (int i=0; i<mSubNodePtrs.size(); ++i)
+    {
+        mSubNodePtrs[i]->setLogSettingsNSamples(1024, startT, stopT, mTimestep);
+    }
     preAllocateLogSpace(startT, stopT);
 
     adjustTimestep(mTimestep, mSubComponentStorage.mComponentSignalptrs);

@@ -30,16 +30,24 @@ public:
 
 protected:
     //Protected member functions
-    Node();
+    Node(size_t datalength);
     NodeTypeT &getNodeType();
 
-    void preAllocateLogSpace(const size_t nSlots);
+    void setLogSettingsNSamples(int nSamples, double start, double stop, double sampletime);
+    void setLogSettingsSkipFactor(double factor, double start, double stop, double sampletime);
+    void setLogSettingsSampleTime(double log_dt, double start, double stop, double sampletime);
+    //void preAllocateLogSpace(const size_t nSlots);
+    void preAllocateLogSpace();
     void logData(const double time);
     void saveLogData(string filename);
 
     void setData(const size_t data_type, double data);
     double getData(const size_t data_type);
     double &getDataRef(const size_t data_type);
+
+    void setDataNameAndUnit(size_t id, string name, string unit);
+    string getDataName(size_t id);
+    string getDataUnit(size_t id);
 
     //Protected member variables
     NodeTypeT mNodeType;
@@ -51,12 +59,22 @@ private:
     void setPort(Port *pPort);
     void removePort(Port *pPort);
     bool isConnectedToPort(Port *pPort);
+    void enableLog();
+    void disableLog();
 
     //Private member variables
     string mName;
+    vector<string> mDataNames;
+    vector<string> mDataUnits;
+    
+    //Log specific
     vector<double> mTimeStorage;
     vector<vector<double> > mDataStorage;
     bool mLogSpaceAllocated;
+    bool mDoLog;
+    double mLogTimeDt;
+    double mLastLogTime;
+    size_t mLogSlots;
     size_t mLogCtr;
 };
 
