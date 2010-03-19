@@ -221,6 +221,7 @@ void GraphicsView::deleteComponent(QString componentName)
     {
         qDebug() << "In delete component: could not find component with name " << componentName;
     }
+    this->setBackgroundBrush(Qt::NoBrush);
 }
 
 //! This function is used to rename a GUI Component (including key rename in component map)
