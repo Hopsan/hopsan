@@ -29,7 +29,6 @@ public:
                          const double speed = 125.0,
                          const double dp = 0.00005,
                          const double kcp = 0.0,
-                         const double eps = 1.0,
                          const double timestep = 0.001)
 	: ComponentQ(name, timestep)
     {
@@ -37,7 +36,6 @@ public:
         mSpeed = speed;
         mDp = dp;
         mKcp = kcp;
-        mEps = eps;
 
         mpP1 = addPowerPort("P1", "NodeHydraulic");
         mpP2 = addPowerPort("P2", "NodeHydraulic");
@@ -46,7 +44,6 @@ public:
         registerParameter("Speed", "Angular Velocity", "rad/s", mSpeed);
         registerParameter("Dp", "Displacement", "m^3/rev", mDp);
         registerParameter("Kcp", "Leakage Coefficient", "(m^3/s)/Pa", mKcp);
-        registerParameter("eps", "Swivel Angle", "-", mEps);
 
     }
 
@@ -64,10 +61,11 @@ public:
         double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
         double c2 = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
         double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
+        double eps = mpIn->readNode(NodeSignal::VALUE);
 
         //Variable Displacement Pump equations
 
-        double q2 = ( mDp*mSpeed*mEps/(2.0*M_PI) + mKcp*(c1-c2) ) / ( (Zc1+Zc2)*mKcp+1 );
+        double q2 = ( mDp*mSpeed*eps/(2.0*M_PI) + mKcp*(c1-c2) ) / ( (Zc1+Zc2)*mKcp+1 );
         double q1 = -q2;
         double p2 = c2 + Zc2*q2;
         double p1 = c1 + Zc1*q1;
