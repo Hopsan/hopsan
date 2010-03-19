@@ -20,7 +20,7 @@ class SignalSink : public ComponentSignal
 {
 
 private:
-    enum {in};
+    Port *mpIn;
 
 public:
     static Component *Creator()
@@ -36,7 +36,7 @@ public:
     {
         mTypeName = "SignalSink";
 
-        addReadPort("in", "NodeSignal", in);
+        mpIn = addReadPort("in", "NodeSignal");
     }
 
 

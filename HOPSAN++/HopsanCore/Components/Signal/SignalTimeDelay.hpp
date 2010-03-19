@@ -22,7 +22,7 @@ class SignalTimeDelay : public ComponentSignal
 private:
     double mStartY, mTimeDelay;
     Delay mDelay;
-    enum {in, out};
+    Port *mpIn, *mpOut;
 
 public:
     static Component *Creator()
@@ -42,15 +42,15 @@ public:
 
         registerParameter("TD", "Time delay", "s", mTimeDelay);
 
-        addReadPort("in", "NodeSignal", in);
-        addWritePort("out", "NodeSignal", out);
+        mpIn = addReadPort("in", "NodeSignal");
+        mpOut = addWritePort("out", "NodeSignal");
     }
 
 
 	void initialize()
 	{
 	    mDelay.initialize(mTime, mStartY);
-        mDelay.setTimeDelay(mTimeDelay, mTimestep, mStartY);
+            mDelay.setTimeDelay(mTimeDelay, mTimestep, mStartY);
             //! @todo Write out values into node as well? (I think so) This is true for all components
 	}
 
@@ -58,10 +58,10 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double u = mPortPtrs[in]->readNode(NodeSignal::VALUE);
-mDelay.update(u);
+        double u = mpIn->readNode(NodeSignal::VALUE);
+        mDelay.update(u);
         //Write new values to nodes
-        mPortPtrs[out]->writeNode(NodeSignal::VALUE, mDelay.value(u));
+        mpOut->writeNode(NodeSignal::VALUE, mDelay.value(u));
     }
 };
 

@@ -24,7 +24,7 @@ private:
 	Delay mUserDelayedVariable1;
 	Delay mUserDelayedVariable2;
 	SecondOrderFilter mUserFilter1;
-    enum {PORT1, PORT2};
+    Port *mpPORT1, *mpPORT1;
 
 public:
     HydraulicComponentTemplate(const string ComponentName,
@@ -51,14 +51,14 @@ public:
 	void initialize()
     {
         //Write to nodes
-        mPortPtrs[PORT1]->writeNode(NodeHydraulic::MASSFLOW,     0.0);
-        mPortPtrs[PORT1]->writeNode(NodeHydraulic::PRESSURE,     mUserVariable3);
-        mPortPtrs[PORT1]->writeNode(NodeHydraulic::WAVEVARIABLE, 0.0);
-        mPortPtrs[PORT1]->writeNode(NodeHydraulic::CHARIMP,      0.0);
-        mPortPtrs[PORT2]->writeNode(NodeHydraulic::MASSFLOW,     0.0);
-        mPortPtrs[PORT2]->writeNode(NodeHydraulic::PRESSURE,     0.0);
-        mPortPtrs[PORT2]->writeNode(NodeHydraulic::WAVEVARIABLE, 0.0);
-        mPortPtrs[PORT2]->writeNode(NodeHydraulic::CHARIMP,      0.0);
+        mpPORT1->writeNode(NodeHydraulic::MASSFLOW,     0.0);
+        mpPORT1->writeNode(NodeHydraulic::PRESSURE,     mUserVariable3);
+        mpPORT1->writeNode(NodeHydraulic::WAVEVARIABLE, 0.0);
+        mpPORT1->writeNode(NodeHydraulic::CHARIMP,      0.0);
+        mpPORT2->writeNode(NodeHydraulic::MASSFLOW,     0.0);
+        mpPORT2->writeNode(NodeHydraulic::PRESSURE,     0.0);
+        mpPORT2->writeNode(NodeHydraulic::WAVEVARIABLE, 0.0);
+        mpPORT2->writeNode(NodeHydraulic::CHARIMP,      0.0);
 
 		//Init delay
         mUserDelayedVariable1.initialize(mTime, 0.0);
@@ -79,10 +79,10 @@ public:
 	void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double q1 = mPortPtrs[PORT1]->readNode(NodeHydraulic::MASSFLOW);
-        double p1 = mPortPtrs[PORT1]->readNode(NodeHydraulic::PRESSURE);
-        double q2 = mPortPtrs[PORT2]->readNode(NodeHydraulic::MASSFLOW);
-        double p2 = mPortPtrs[PORT2]->readNode(NodeHydraulic::PRESSURE);
+        double q1 = mpPORT1->readNode(NodeHydraulic::MASSFLOW);
+        double p1 = mpPORT1->readNode(NodeHydraulic::PRESSURE);
+        double q2 = mpPORT2->readNode(NodeHydraulic::MASSFLOW);
+        double p2 = mpPORT2->readNode(NodeHydraulic::PRESSURE);
 
         //Equations
         double c1  = mUserVariable1*q1 + p1;
@@ -91,10 +91,10 @@ public:
         double zc2 = mUserFilter1.value(c1);
 
         //Write new values to nodes
-        mPortPtrs[PORT1]->writeNode(NodeHydraulic::WAVEVARIABLE, c1);
-        mPortPtrs[PORT1]->writeNode(NodeHydraulic::CHARIMP,      zc1);
-        mPortPtrs[PORT2]->writeNode(NodeHydraulic::WAVEVARIABLE, c2);
-        mPortPtrs[PORT2]->writeNode(NodeHydraulic::CHARIMP,      zc2);
+        mpPORT1->writeNode(NodeHydraulic::WAVEVARIABLE, c1);
+        mpPORT1->writeNode(NodeHydraulic::CHARIMP,      zc1);
+        mpPORT2->writeNode(NodeHydraulic::WAVEVARIABLE, c2);
+        mpPORT2->writeNode(NodeHydraulic::CHARIMP,      zc2);
    }
 };
 

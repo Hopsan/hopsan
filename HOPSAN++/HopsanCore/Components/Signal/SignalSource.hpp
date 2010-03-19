@@ -21,7 +21,7 @@ class SignalSource : public ComponentSignal
 
 private:
     double mValue;
-    enum {out};
+    Port *mpOut;
 
 public:
     static Component *Creator()
@@ -39,7 +39,7 @@ public:
         mTypeName = "SignalSource";
         mValue = value;
 
-        addWritePort("out", "NodeSignal", out);
+        mpOut = addWritePort("out", "NodeSignal");
 
         registerParameter("Value", "Värde", "-", mValue);
     }
@@ -48,14 +48,14 @@ public:
 	void initialize()
 	{
 	    //Initialize value to the node
-        mPortPtrs[out]->writeNode(NodeSignal::VALUE, mValue);
+        mpOut->writeNode(NodeSignal::VALUE, mValue);
 	}
 
 
     void simulateOneTimestep()
     {
         //Write new values to nodes
-        mPortPtrs[out]->writeNode(NodeSignal::VALUE, mValue);
+        mpOut->writeNode(NodeSignal::VALUE, mValue);
     }
 };
 

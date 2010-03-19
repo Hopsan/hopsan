@@ -27,6 +27,7 @@
 #include <fstream>
 #include <sstream>
 #include <cstdlib>
+#include <cassert>
 
 
 //! @class GraphicsView
@@ -1062,6 +1063,11 @@ void ProjectTabWidget::loadModel()
                               endPort->getComponent()->getName().toStdString() << " " << endPort->getPortNumber();
                 pCurrentView->mConnectionMap.insert(QString(tempStream.str().c_str()), pTempConnector);
                 bool success = pCurrentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
+                if (!success)
+                {
+                    cout << "Unsuccessful connection try" << endl;
+                    assert(false);
+                }
             }
 
         }
@@ -1107,7 +1113,7 @@ void ProjectTabWidget::saveModel(bool saveAs)
     for(it2 = pCurrentView->mConnectionMap.begin(); it2!=pCurrentView->mConnectionMap.end(); ++it2)
     {
         modelFile << "CONNECT " << it2.key().toStdString();
-        for(int i = 0; i!=it2.value()->mLines.size(); ++i)
+        for(size_t i = 0; i!=it2.value()->mLines.size(); ++i)
         {
             int geometry = it2.value()->mLines[i]->getGeometry();
             switch (geometry)

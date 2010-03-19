@@ -29,7 +29,7 @@ private:
     double mZc;
 	Delay mDelayedC1;
 	Delay mDelayedC2;
-    enum {P1, P2};
+    Port *mpP1, *mpP2;
 
 public:
     static Component *Creator()
@@ -54,8 +54,8 @@ public:
 		mAlpha         = alpha;
 
 		//Add ports to the component
-        addPowerPort("P1", "NodeHydraulic", P1);
-        addPowerPort("P2", "NodeHydraulic", P2);
+        mpP1 = addPowerPort("P1", "NodeHydraulic");
+        mpP2 = addPowerPort("P2", "NodeHydraulic");
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("TD", "Tidsfördröjning", "s",   mTimeDelay);
@@ -67,14 +67,14 @@ public:
 	void initialize()
     {
         //Write to nodes
-        mPortPtrs[P1]->writeNode(NodeHydraulic::MASSFLOW,     mStartFlow);
-        mPortPtrs[P1]->writeNode(NodeHydraulic::PRESSURE,     mStartPressure);
-        mPortPtrs[P1]->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+mZc*mStartFlow);
-        mPortPtrs[P1]->writeNode(NodeHydraulic::CHARIMP,      mZc);
-        mPortPtrs[P2]->writeNode(NodeHydraulic::MASSFLOW,     mStartFlow);
-        mPortPtrs[P2]->writeNode(NodeHydraulic::PRESSURE,     mStartPressure);
-        mPortPtrs[P2]->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+mZc*mStartFlow);
-        mPortPtrs[P2]->writeNode(NodeHydraulic::CHARIMP,      mZc);
+        mpP1->writeNode(NodeHydraulic::MASSFLOW,     mStartFlow);
+        mpP1->writeNode(NodeHydraulic::PRESSURE,     mStartPressure);
+        mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+mZc*mStartFlow);
+        mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc);
+        mpP2->writeNode(NodeHydraulic::MASSFLOW,     mStartFlow);
+        mpP2->writeNode(NodeHydraulic::PRESSURE,     mStartPressure);
+        mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+mZc*mStartFlow);
+        mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc);
 
 		//Init delay
         mDelayedC1.initialize(mTime, mStartPressure+mZc*mStartFlow);
@@ -89,12 +89,12 @@ public:
 	void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double q1 = mPortPtrs[P1]->readNode(NodeHydraulic::MASSFLOW);
-        double p1 = mPortPtrs[P1]->readNode(NodeHydraulic::PRESSURE);
-        double q2 = mPortPtrs[P2]->readNode(NodeHydraulic::MASSFLOW);
-        double p2 = mPortPtrs[P2]->readNode(NodeHydraulic::PRESSURE);
-        double c1 = mPortPtrs[P1]->readNode(NodeHydraulic::WAVEVARIABLE);
-        double c2 = mPortPtrs[P2]->readNode(NodeHydraulic::WAVEVARIABLE);
+        double q1 = mpP1->readNode(NodeHydraulic::MASSFLOW);
+        double p1 = mpP1->readNode(NodeHydraulic::PRESSURE);
+        double q2 = mpP2->readNode(NodeHydraulic::MASSFLOW);
+        double p2 = mpP2->readNode(NodeHydraulic::PRESSURE);
+        double c1 = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
+        double c2 = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
 
         //Delay Line equations
         double c10 = p2 + mZc * q2;
@@ -103,10 +103,10 @@ public:
         c2  = mAlpha*c2 + (1.0-mAlpha)*c20;
 
         //Write new values to nodes
-        mPortPtrs[P1]->writeNode(NodeHydraulic::WAVEVARIABLE, mDelayedC1.value(c1));
-        mPortPtrs[P1]->writeNode(NodeHydraulic::CHARIMP,      mZc);
-        mPortPtrs[P2]->writeNode(NodeHydraulic::WAVEVARIABLE, mDelayedC2.value(c1));
-        mPortPtrs[P2]->writeNode(NodeHydraulic::CHARIMP,      mZc);
+        mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, mDelayedC1.value(c1));
+        mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc);
+        mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, mDelayedC2.value(c1));
+        mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc);
 
         //Update the delayed variabels
 		mDelayedC1.update(c1);

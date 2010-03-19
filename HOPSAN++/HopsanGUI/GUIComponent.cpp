@@ -397,7 +397,7 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         else if (selectedAction == groupAction)
         {
             qDebug() << "Group selected components (to be implemented...)" << "Selected components: ";
-            for (size_t i=0; i < mpParentGraphicsScene->selectedItems().size(); ++i)
+            for (int i=0; i < mpParentGraphicsScene->selectedItems().size(); ++i)
             {
                 GUIComponent* tmp = (GUIComponent*)(mpParentGraphicsScene->selectedItems().at(i));
                 qDebug() << QString::fromStdString(tmp->mpCoreComponent->getName());

@@ -24,7 +24,7 @@ private:
     IntegratorLimited mIntegrator;
     double mStartY;
     double mMin, mMax;
-    enum {in, out};
+    Port *mpIn, *mpOut;
 
 public:
     static Component *Creator()
@@ -45,14 +45,14 @@ public:
         mMin = min;
         mMax = max;
 
-        addReadPort("in", "NodeSignal", in);
-        addWritePort("out", "NodeSignal", out);
+        mpIn = addReadPort("in", "NodeSignal");
+        mpOut = addWritePort("out", "NodeSignal");
     }
 
 
 	void initialize()
 	{
-	    double u0 = mPortPtrs[in]->readNode(NodeSignal::VALUE);
+            double u0 = mpIn->readNode(NodeSignal::VALUE);
 
 	    mIntegrator.initialize(mTime, mTimestep, u0, mStartY, mMin, mMax);
             //! @todo Write out values into node as well? (I think so) This is true for all components
@@ -62,13 +62,13 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double u = mPortPtrs[in]->readNode(NodeSignal::VALUE);
+        double u = mpIn->readNode(NodeSignal::VALUE);
 
         //Filter equation
         //Get variable values from nodes
 
         //Write new values to nodes
-        mPortPtrs[out]->writeNode(NodeSignal::VALUE, mIntegrator.value(u));
+        mpOut->writeNode(NodeSignal::VALUE, mIntegrator.value(u));
     }
 };
 

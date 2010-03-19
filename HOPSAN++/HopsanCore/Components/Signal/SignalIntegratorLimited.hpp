@@ -24,7 +24,7 @@ private:
     double mMin, mMax;
     Delay mDelayU;
     Delay mDelayY;
-    enum {in, out};
+    Port *mpIn, *mpOut;
 
 public:
     static Component *Creator()
@@ -48,14 +48,14 @@ public:
         mDelayU.setStepDelay(1);
         mDelayY.setStepDelay(1);
 
-        addReadPort("in", "NodeSignal", in);
-        addWritePort("out", "NodeSignal", out);
+        mpIn = addReadPort("in", "NodeSignal");
+        mpOut = addWritePort("out", "NodeSignal");
     }
 
 
 	void initialize()
 	{
-	    double u0 = mPortPtrs[in]->readNode(NodeSignal::VALUE);
+            double u0 = mpIn->readNode(NodeSignal::VALUE);
 	    mDelayU.initialize(mTime, u0);
 	    mDelayY.initialize(mTime, max(min(mStartY, mMax), mMin));
 	}
@@ -64,24 +64,24 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double u = mPortPtrs[in]->readNode(NodeSignal::VALUE);
+        double u = mpIn->readNode(NodeSignal::VALUE);
 
         //Filter equations
         //Bilinear transform is used
-		double y = mDelayY.value() + mTimestep/2.0*(u + mDelayU.value());
+        double y = mDelayY.value() + mTimestep/2.0*(u + mDelayU.value());
 
         if (y >= mMax)
         {
-            mPortPtrs[out]->writeNode(NodeSignal::VALUE, mMax);
+            mpOut->writeNode(NodeSignal::VALUE, mMax);
         }
         else if (y <= mMin)
         {
-            mPortPtrs[out]->writeNode(NodeSignal::VALUE, mMin);
+            mpOut->writeNode(NodeSignal::VALUE, mMin);
         }
         else
         {
             //Write new values to nodes
-            mPortPtrs[out]->writeNode(NodeSignal::VALUE, y);
+            mpOut->writeNode(NodeSignal::VALUE, y);
 
             //Update filter:
             mDelayU.update(u);

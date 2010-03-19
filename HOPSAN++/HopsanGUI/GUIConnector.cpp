@@ -483,7 +483,7 @@ void GUIConnector::deleteMe()
 void GUIConnector::updateLine(int lineNumber)
 {
     qDebug() << "Updating line: x = " << getLine(lineNumber)->line().x2();
-    if (this->mEndPortConnected && lineNumber != 0 && lineNumber != mLines.size())
+    if (this->mEndPortConnected && lineNumber != 0 && (size_t)lineNumber != mLines.size())
     {
         if(getLine(lineNumber)->getGeometry()==GUIConnectorLine::HORIZONTAL)
         {

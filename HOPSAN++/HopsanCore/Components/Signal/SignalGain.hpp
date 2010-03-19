@@ -21,7 +21,7 @@ class SignalGain : public ComponentSignal
 
 private:
     double mGain;
-    enum {in, out};
+    Port *mpIn, *mpOut;
 
 public:
     static Component *Creator()
@@ -38,8 +38,8 @@ public:
         mTypeName = "SignalGain";
         mGain = gain;
 
-        addReadPort("in", "NodeSignal", in);
-        addWritePort("out", "NodeSignal", out);
+        mpIn = addReadPort("in", "NodeSignal");
+        mpOut = addWritePort("out", "NodeSignal");
 
         registerParameter("Gain", "Förstärkning", "-", mGain);
     }
@@ -54,13 +54,13 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double u = mPortPtrs[in]->readNode(NodeSignal::VALUE);
+        double u = mpIn->readNode(NodeSignal::VALUE);
 
         //Gain equations
 		double y = mGain*u;
 
         //Write new values to nodes
-        mPortPtrs[out]->writeNode(NodeSignal::VALUE, y);
+        mpOut->writeNode(NodeSignal::VALUE, y);
     }
 };
 

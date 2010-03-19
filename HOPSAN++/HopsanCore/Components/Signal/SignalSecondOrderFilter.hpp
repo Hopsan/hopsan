@@ -25,7 +25,7 @@ private:
     double mWnum, mDnum, mWden, mDden, mK;
     double mStartY;
     double mMin, mMax;
-    enum {in, out};
+    Port *mpIn, *mpOut;
 
 public:
     static Component *Creator()
@@ -46,8 +46,8 @@ public:
         mMin = min;
         mMax = max;
 
-        addReadPort("in", "NodeSignal", in);
-        addWritePort("out", "NodeSignal", out);
+        mpIn = addReadPort("in", "NodeSignal");
+        mpOut = addWritePort("out", "NodeSignal");
 
         registerParameter("k", "Gain", "-", mK);
         registerParameter("wnum", "Numerator break frequency", "rad/s", mWnum);
@@ -59,7 +59,7 @@ public:
 
 	void initialize()
 	{
-//	    double u0 = mPortPtrs[in]->readNode(NodeSignal::VALUE);
+//	    double u0 = mpIn->readNode(NodeSignal::VALUE);
 
         double num[3];
         double den[3];
@@ -79,10 +79,10 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double u = mPortPtrs[in]->readNode(NodeSignal::VALUE);
+        double u = mpIn->readNode(NodeSignal::VALUE);
 
         //Write new values to nodes
-        mPortPtrs[out]->writeNode(NodeSignal::VALUE, mFilter.value(u));
+        mpOut->writeNode(NodeSignal::VALUE, mFilter.value(u));
     }
 };
 

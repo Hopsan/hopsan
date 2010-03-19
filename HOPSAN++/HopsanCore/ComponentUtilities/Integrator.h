@@ -29,7 +29,7 @@ private:
     double mTimeStep;
     double *mpTime;
     double mLastTime;
-	bool mIsInitialized;
+    bool mIsInitialized;
 };
 
 #endif // INTEGRATOR_H_INCLUDED
