@@ -59,7 +59,7 @@ public:
         registerParameter("V", "Volume", "[m^3]",            mVolume);
         registerParameter("Be", "Bulkmodulus", "[Pa]", mBulkmodulus);
         registerParameter("a", "Low pass coeficient to dampen standing delayline waves", "[-]",  mAlpha);
-        registerParameter("Zc", "Impedans", "[Ns/m^5]",   mZc);
+        registerParameter("Zc", "Impedance", "[Ns/m^5]",   mZc);
     }
 
 

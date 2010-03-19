@@ -64,7 +64,7 @@ public:
         mStopTime = stoptime;
         mBaseValue = basevalue;
         mAmplitude = amplitude;
-        mFrequency = 3.141592653589/(mStopTime-mStartTime);       //omega = 2pi/T, T = (stoptime-starttime)*4
+        mFrequency = pi/(mStopTime-mStartTime);       //omega = 2pi/T, T = (stoptime-starttime)*4
 
         mpOut = addWritePort("out", "NodeSignal");
 

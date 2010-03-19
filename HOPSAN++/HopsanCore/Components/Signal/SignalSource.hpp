@@ -41,7 +41,7 @@ public:
 
         mpOut = addWritePort("out", "NodeSignal");
 
-        registerParameter("Value", "Värde", "-", mValue);
+        registerParameter("Value", "Source Value", "-", mValue);
     }
 
 

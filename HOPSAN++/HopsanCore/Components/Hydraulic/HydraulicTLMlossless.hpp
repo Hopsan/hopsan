@@ -60,7 +60,7 @@ public:
         //Register changable parameters to the HOPSAN++ core
         registerParameter("TD", "Time delay", "s",   mTimeDelay);
         registerParameter("a", "Low pass coeficient", "-", mAlpha);
-        registerParameter("Zc", "Impedans", "Ns/m^5",  mZc);
+        registerParameter("Zc", "Impedance", "Ns/m^5",  mZc);
     }
 
 
