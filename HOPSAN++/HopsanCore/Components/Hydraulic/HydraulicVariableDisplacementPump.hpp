@@ -16,12 +16,12 @@ private:
     double mKcp;
     double mEps;
 
-    enum {P1,P2,in};
+    Port *mpP1, *mpP2, *mpIn;
 
 public:
     static Component *Creator()
     {
-        std::cout << "running VariableDisplacementPump creator" << std::endl;
+        //std::cout << "running VariableDisplacementPump creator" << std::endl;
         return new HydraulicVariableDisplacementPump("VariableDisplacementPump");
     }
 
@@ -39,9 +39,9 @@ public:
         mKcp = kcp;
         mEps = eps;
 
-        addPowerPort("P1", "NodeHydraulic", P1);
-        addPowerPort("P2", "NodeHydraulic", P2);
-        addReadPort("in", "NodeSignal", in);
+        mpP1 = addPowerPort("P1", "NodeHydraulic");
+        mpP2 = addPowerPort("P2", "NodeHydraulic");
+        mpIn = addReadPort("in", "NodeSignal");
 
         registerParameter("Speed", "Angular Velocity", "rad/s", mSpeed);
         registerParameter("Dp", "Displacement", "m^3/rev", mDp);
@@ -60,10 +60,10 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double c1 = mPortPtrs[P1]->readNode(NodeHydraulic::WAVEVARIABLE);
-        double Zc1 = mPortPtrs[P1]->readNode(NodeHydraulic::CHARIMP);
-        double c2 = mPortPtrs[P2]->readNode(NodeHydraulic::WAVEVARIABLE);
-        double Zc2 = mPortPtrs[P2]->readNode(NodeHydraulic::CHARIMP);
+        double c1 = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
+        double c2 = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
 
         //Variable Displacement Pump equations
 
@@ -99,10 +99,10 @@ public:
         }
 
         //Write new values to nodes
-        mPortPtrs[P1]->writeNode(NodeHydraulic::PRESSURE, p1);
-        mPortPtrs[P1]->writeNode(NodeHydraulic::MASSFLOW, q1);
-        mPortPtrs[P2]->writeNode(NodeHydraulic::PRESSURE, p2);
-        mPortPtrs[P2]->writeNode(NodeHydraulic::MASSFLOW, q2);
+        mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
+        mpP1->writeNode(NodeHydraulic::MASSFLOW, q1);
+        mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
+        mpP2->writeNode(NodeHydraulic::MASSFLOW, q2);
     }
 };
 
