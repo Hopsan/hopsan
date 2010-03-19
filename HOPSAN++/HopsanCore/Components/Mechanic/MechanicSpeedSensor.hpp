@@ -20,12 +20,12 @@
 class MechanicSpeedSensor : public ComponentSignal
 {
 private:
-    enum {P1,out};
+    Port *mpP1, *mpOut;
 
 public:
     static Component *Creator()
     {
-        std::cout << "running MechanicSpeedSensor creator" << std::endl;
+        //std::cout << "running MechanicSpeedSensor creator" << std::endl;
         return new MechanicSpeedSensor("SpeedSensor");
     }
 
@@ -35,8 +35,8 @@ public:
     {
         mTypeName = "MechanicSpeedSensor";
 
-        addReadPort("P1", "NodeMechanic", P1);
-        addWritePort("out", "NodeSignal", out);
+        mpP1 = addReadPort("P1", "NodeMechanic");
+        mpOut = addWritePort("out", "NodeSignal");
     }
 
 
@@ -49,10 +49,10 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double v = mPortPtrs[P1]->readNode(NodeMechanic::VELOCITY);
+        double v = mpP1->readNode(NodeMechanic::VELOCITY);
 
         //Write new values to nodes
-        mPortPtrs[out]->writeNode(NodeSignal::VALUE, v);
+        mpOut->writeNode(NodeSignal::VALUE, v);
     }
 };
 

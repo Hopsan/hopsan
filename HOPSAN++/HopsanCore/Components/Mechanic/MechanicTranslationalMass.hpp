@@ -19,12 +19,12 @@ private:
     double mk;
     SecondOrderFilter mFilter;
     Integrator mInt;
-    enum {P1, P2};
+    Port *mpP1, *mpP2;
 
 public:
     static Component *Creator()
     {
-        std::cout << "running translational mass creator" << std::endl;
+        //std::cout << "running translational mass creator" << std::endl;
         return new MechanicTranslationalMass("TranslationalMass");
     }
 
@@ -43,8 +43,8 @@ public:
         mTimestep = timestep;
 
 		//Add ports to the component
-        addPowerPort("P1", "NodeMechanic", P1);
-        addPowerPort("P2", "NodeMechanic", P2);
+        mpP1 = addPowerPort("P1", "NodeMechanic");
+        mpP2 = addPowerPort("P2", "NodeMechanic");
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("Mass", "Mass", "[kg]",            mMass);
@@ -55,8 +55,8 @@ public:
 	void initialize()
     {
 //        mFilter.initialize(0.0,0.0, mTime);
-        double x1  = mPortPtrs[P1]->readNode(NodeMechanic::POSITION);
-        double v1  = mPortPtrs[P1]->readNode(NodeMechanic::VELOCITY);
+        double x1  = mpP1->readNode(NodeMechanic::POSITION);
+        double v1  = mpP1->readNode(NodeMechanic::VELOCITY);
         cout << "x0 = " << x1 << endl;
         double num [] = {0.0, 1.0, 0.0};
         double den [] = {mMass, mB, mk};
@@ -68,10 +68,10 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double Zx1  = mPortPtrs[P1]->readNode(NodeMechanic::CHARIMP);
-        double c1  = mPortPtrs[P1]->readNode(NodeMechanic::WAVEVARIABLE);
-        double Zx2  = mPortPtrs[P2]->readNode(NodeMechanic::CHARIMP);
-        double c2  = mPortPtrs[P2]->readNode(NodeMechanic::WAVEVARIABLE);
+        double Zx1  = mpP1->readNode(NodeMechanic::CHARIMP);
+        double c1  = mpP1->readNode(NodeMechanic::WAVEVARIABLE);
+        double Zx2  = mpP2->readNode(NodeMechanic::CHARIMP);
+        double c2  = mpP2->readNode(NodeMechanic::WAVEVARIABLE);
 
         //Mass equations
         double num[3] = {0.0, 1.0, 0.0};
@@ -86,12 +86,12 @@ public:
         double F2 = c2 + Zx2*v2;
 
         //Write new values to nodes
-        mPortPtrs[P1]->writeNode(NodeMechanic::FORCE, F1);
-        mPortPtrs[P2]->writeNode(NodeMechanic::FORCE, F2);
-        mPortPtrs[P1]->writeNode(NodeMechanic::VELOCITY, v1);
-        mPortPtrs[P2]->writeNode(NodeMechanic::VELOCITY, v2);
-        mPortPtrs[P1]->writeNode(NodeMechanic::POSITION, x1);
-        mPortPtrs[P2]->writeNode(NodeMechanic::POSITION, x2);
+        mpP1->writeNode(NodeMechanic::FORCE, F1);
+        mpP2->writeNode(NodeMechanic::FORCE, F2);
+        mpP1->writeNode(NodeMechanic::VELOCITY, v1);
+        mpP2->writeNode(NodeMechanic::VELOCITY, v2);
+        mpP1->writeNode(NodeMechanic::POSITION, x1);
+        mpP2->writeNode(NodeMechanic::POSITION, x2);
         //Update Filter:
         //mFilter.update(c1-c2);
     }

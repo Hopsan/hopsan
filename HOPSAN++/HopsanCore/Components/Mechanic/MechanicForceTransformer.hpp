@@ -15,12 +15,12 @@ class MechanicForceTransformer : public ComponentC
 private:
     double mStartPosition;
     double mStartVelocity;
-    enum {in, out};
+    Port *mpIn, *mpOut;
 
 public:
     static Component *Creator()
     {
-        std::cout << "running force transformer creator" << std::endl;
+        //std::cout << "running force transformer creator" << std::endl;
         return new MechanicForceTransformer("ForceTransformer");
     }
 
@@ -37,8 +37,8 @@ public:
         mStartVelocity = startvelocity;
 
 		//Add ports to the component
-        addReadPort("in", "NodeSignal", in);
-        addPowerPort("out", "NodeMechanic", out);
+        mpIn = addReadPort("in", "NodeSignal");
+        mpOut = addPowerPort("out", "NodeMechanic");
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("x0", "Initial Position", "[m]", mStartPosition);
@@ -48,22 +48,22 @@ public:
 
 	void initialize()
     {
-        mPortPtrs[out]->writeNode(NodeMechanic::POSITION, mStartPosition);
-        mPortPtrs[out]->writeNode(NodeMechanic::VELOCITY, mStartVelocity);
+        mpOut->writeNode(NodeMechanic::POSITION, mStartPosition);
+        mpOut->writeNode(NodeMechanic::VELOCITY, mStartVelocity);
     }
 
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double signal  = mPortPtrs[in]->readNode(NodeSignal::VALUE);
+        double signal  = mpIn->readNode(NodeSignal::VALUE);
 
         //Spring equations
         double c = signal;
         double Zc = 0.0;
 
         //Write new values to nodes
-        mPortPtrs[out]->writeNode(NodeMechanic::WAVEVARIABLE, c);
-        mPortPtrs[out]->writeNode(NodeMechanic::CHARIMP, Zc);
+        mpOut->writeNode(NodeMechanic::WAVEVARIABLE, c);
+        mpOut->writeNode(NodeMechanic::CHARIMP, Zc);
     }
 };
 

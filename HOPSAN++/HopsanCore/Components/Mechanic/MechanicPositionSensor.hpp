@@ -20,12 +20,13 @@
 class MechanicPositionSensor : public ComponentSignal
 {
 private:
-    enum {P1,out};
+    Port *mpP1, *mpOut;
+
 
 public:
     static Component *Creator()
     {
-        std::cout << "running MechanicPositionSensor creator" << std::endl;
+        //std::cout << "running MechanicPositionSensor creator" << std::endl;
         return new MechanicPositionSensor("PositionSensor");
     }
 
@@ -35,8 +36,8 @@ public:
     {
         mTypeName = "MechanicPositionSensor";
 
-        addReadPort("P1", "NodeMechanic", P1);
-        addWritePort("out", "NodeSignal", out);
+        mpP1 = addReadPort("P1", "NodeMechanic");
+        mpOut = addWritePort("out", "NodeSignal");
     }
 
 
@@ -49,10 +50,10 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double x = mPortPtrs[P1]->readNode(NodeMechanic::POSITION);
+        double x = mpP1->readNode(NodeMechanic::POSITION);
 
         //Write new values to nodes
-        mPortPtrs[out]->writeNode(NodeSignal::VALUE, x);
+        mpOut->writeNode(NodeSignal::VALUE, x);
     }
 };
 

@@ -14,13 +14,13 @@ class MechanicVelocityTransformer : public ComponentQ
 {
 
 private:
-    enum {in, out};
     Integrator mInt;
+    Port *mpIn, *mpOut;
 
 public:
     static Component *Creator()
     {
-        std::cout << "running velocity transformer creator" << std::endl;
+        //std::cout << "running velocity transformer creator" << std::endl;
         return new MechanicVelocityTransformer("VelocityTransformer");
     }
 
@@ -32,8 +32,8 @@ public:
         mTypeName = "MechanicVelocityTransformer";
 
 		//Add ports to the component
-        addReadPort("in", "NodeSignal", in);
-        addPowerPort("out", "NodeMechanic", out);
+        mpIn = addReadPort("in", "NodeSignal");
+        mpOut = addPowerPort("out", "NodeMechanic");
 
         //Register changable parameters to the HOPSAN++ core
     }
@@ -41,16 +41,16 @@ public:
 
 	void initialize()
     {
-        double signal  = mPortPtrs[in]->readNode(NodeSignal::VALUE);
+        double signal  = mpIn->readNode(NodeSignal::VALUE);
         mInt.initialize(mTime, mTimestep, signal, 0.0);
     }
 
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double signal  = mPortPtrs[in]->readNode(NodeSignal::VALUE);
-        double c = mPortPtrs[out]->readNode(NodeMechanic::WAVEVARIABLE);
-        double Zc = mPortPtrs[out]->readNode(NodeMechanic::CHARIMP);
+        double signal  = mpIn->readNode(NodeSignal::VALUE);
+        double c =mpOut->readNode(NodeMechanic::WAVEVARIABLE);
+        double Zc =mpOut->readNode(NodeMechanic::CHARIMP);
 
 
         //Spring equations
@@ -59,9 +59,9 @@ public:
         double F = c + Zc*v;
 
         //Write new values to nodes
-        mPortPtrs[out]->writeNode(NodeMechanic::POSITION, x);
-        mPortPtrs[out]->writeNode(NodeMechanic::VELOCITY, v);
-        mPortPtrs[out]->writeNode(NodeMechanic::FORCE, F);
+       mpOut->writeNode(NodeMechanic::POSITION, x);
+       mpOut->writeNode(NodeMechanic::VELOCITY, v);
+       mpOut->writeNode(NodeMechanic::FORCE, F);
     }
 };
 

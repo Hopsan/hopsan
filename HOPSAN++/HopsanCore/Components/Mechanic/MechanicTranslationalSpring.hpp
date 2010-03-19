@@ -15,12 +15,12 @@ class MechanicTranslationalSpring : public ComponentC
 private:
     double mk;
     double mTimestep;
-    enum {P1, P2};
+    Port *mpP1, *mpP2;
 
 public:
     static Component *Creator()
     {
-        std::cout << "running translational spring creator" << std::endl;
+        //std::cout << "running translational spring creator" << std::endl;
         return new MechanicTranslationalSpring("TranslationalSpring");
     }
 
@@ -35,8 +35,8 @@ public:
         mTimestep = timestep;
 
 		//Add ports to the component
-        addPowerPort("P1", "NodeMechanic", P1);
-        addPowerPort("P2", "NodeMechanic", P2);
+        mpP1 = addPowerPort("P1", "NodeMechanic");
+        mpP2 = addPowerPort("P2", "NodeMechanic");
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("k", "Spring Coefficient", "[N/m]",  mk);
@@ -51,10 +51,10 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double v1  = mPortPtrs[P1]->readNode(NodeMechanic::VELOCITY);
-        double v2  = mPortPtrs[P2]->readNode(NodeMechanic::VELOCITY);
-        double lastc1  = mPortPtrs[P1]->readNode(NodeMechanic::WAVEVARIABLE);
-        double lastc2  = mPortPtrs[P2]->readNode(NodeMechanic::WAVEVARIABLE);
+        double v1  = mpP1->readNode(NodeMechanic::VELOCITY);
+        double v2  = mpP2->readNode(NodeMechanic::VELOCITY);
+        double lastc1  = mpP1->readNode(NodeMechanic::WAVEVARIABLE);
+        double lastc2  = mpP2->readNode(NodeMechanic::WAVEVARIABLE);
 
         //Spring equations
         double Zc = mk * mTimestep;
@@ -62,10 +62,10 @@ public:
         double c2 = lastc1 + 2.0*Zc*v1;
 
         //Write new values to nodes
-        mPortPtrs[P1]->writeNode(NodeMechanic::WAVEVARIABLE, c1);
-        mPortPtrs[P2]->writeNode(NodeMechanic::WAVEVARIABLE, c2);
-        mPortPtrs[P1]->writeNode(NodeMechanic::CHARIMP, Zc);
-        mPortPtrs[P2]->writeNode(NodeMechanic::CHARIMP, Zc);
+        mpP1->writeNode(NodeMechanic::WAVEVARIABLE, c1);
+        mpP2->writeNode(NodeMechanic::WAVEVARIABLE, c2);
+        mpP1->writeNode(NodeMechanic::CHARIMP, Zc);
+        mpP2->writeNode(NodeMechanic::CHARIMP, Zc);
     }
 };
 
