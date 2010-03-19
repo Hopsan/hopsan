@@ -24,12 +24,11 @@ private:
     double mStartFlow;
     double mZc;
     double mPressure;
-    enum {P1,in};
+    Port *mpIn, *mpP1;
 
 public:
     static Component *Creator()
     {
-        std::cout << "running pressuresource creator" << std::endl;
         return new HydraulicPressureSource("PressureSource");
     }
 
@@ -44,8 +43,9 @@ public:
         mPressure       = pressure;
         mZc             = 0.0;
 
-        addPowerPort("P1", "NodeHydraulic", P1);
-        addReadPort("in", "NodeSignal", in);
+        mpIn = addReadPort("In", "NodeSignal");
+        mpP1 = addPowerPort("P1", "NodeHydraulic");
+
 
         registerParameter("P", "Pressure", "Pa", mPressure);
     }
@@ -54,8 +54,8 @@ public:
     void initialize()
     {
         //write to nodes
-        mPortPtrs[P1]->writeNode(NodeHydraulic::PRESSURE, mStartPressure);
-        mPortPtrs[P1]->writeNode(NodeHydraulic::MASSFLOW, mStartFlow);
+        mpP1->writeNode(NodeHydraulic::PRESSURE, mStartPressure);
+        mpP1->writeNode(NodeHydraulic::MASSFLOW, mStartFlow);
 
     }
 
@@ -64,9 +64,9 @@ public:
     {
         //Pressure source equation
         double c;
-        if (mPortPtrs[in]->isConnected())
+        if (mpIn->isConnected())
         {
-            c = mPortPtrs[in]->readNode(NodeSignal::VALUE);         //We have a signal!
+            c = mpIn->readNode(NodeSignal::VALUE);         //We have a signal!
         }
         else
         {
@@ -74,8 +74,8 @@ public:
         }
 
         //Write new values to nodes
-        mPortPtrs[P1]->writeNode(NodeHydraulic::WAVEVARIABLE, c);
-        mPortPtrs[P1]->writeNode(NodeHydraulic::CHARIMP, mZc);
+        mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, c);
+        mpP1->writeNode(NodeHydraulic::CHARIMP, mZc);
     }
 };
 
