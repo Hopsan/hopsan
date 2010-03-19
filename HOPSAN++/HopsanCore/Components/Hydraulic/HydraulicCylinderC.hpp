@@ -90,7 +90,7 @@ public:
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("x0", "Initial Position", "[m]", mStartPosition);
-        registerParameter("v0", "Initial  Velocity", "[m]", mStartVelocity);
+        registerParameter("v0", "Initial Velocity", "[m]", mStartVelocity);
         registerParameter("Area1", "Piston Area 1", "[m^2]", mArea1);
         registerParameter("Area2", "Piston Area 2", "[m^2]", mArea2);
         registerParameter("Stroke", "Stroke", "[m]", mStroke);

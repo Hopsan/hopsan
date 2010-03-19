@@ -44,7 +44,7 @@ public:
         mpIn = addReadPort("in", "NodeSignal");
         mpP1 = addPowerPort("P1", "NodeHydraulic");
 
-        registerParameter("P", "Tryck", "Pa", mPressure);
+        registerParameter("P", "Default pressure", "Pa", mPressure);
     }
 
 
