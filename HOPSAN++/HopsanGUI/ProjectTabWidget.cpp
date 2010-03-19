@@ -369,7 +369,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
             mpTempConnector->removeLine(this->mapToScene(event->pos()));
             if(mIsCreatingConnector)
             {
-                qDebug() << "updateConnector()";
+                this->setBackgroundBrush(Qt::NoBrush);
                 mpTempConnector->updateConnector(mpTempConnector->startPos, this->mapToScene(event->pos()));
             }
         }
@@ -511,6 +511,7 @@ void GraphicsView::cutSelected()
 //        if(mComponentMap.empty())
 //            break;
 //    }
+    this->setBackgroundBrush(Qt::NoBrush);
 }
 
 
@@ -573,6 +574,7 @@ void GraphicsView::paste()
             ++j;
         }
     }
+    this->setBackgroundBrush(Qt::NoBrush);
 }
 
 
