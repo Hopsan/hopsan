@@ -1,3 +1,9 @@
+//!
+//! @file   Hydraulic43Valve.hpp
+//! @author Karl Pettersson <karl.pettersson@liu.se>
+//! @date   2010-01-12
+//!
+//! @brief Contains a hydraulic 4/3-valve of Q-type
 #ifndef HYDRAULIC43VALVE_HPP_INCLUDED
 #define HYDRAULIC43VALVE_HPP_INCLUDED
 
@@ -6,7 +12,7 @@
 #include "../../ComponentUtilities.h"
 
 //!
-//! @brief
+//! @brief Hydraulic 4/3-valve (closed centre) of Q-type.
 //! @ingroup HydraulicComponents
 //!
 class Hydraulic43Valve : public ComponentQ
@@ -28,7 +34,7 @@ private:
     TurbulentFlowFunction mQturbat;
     TurbulentFlowFunction mQturbbt;
     #define pi 3.14159
-    enum {PP, PT, PA, PB, PX};
+    Port *mpPP, *mpPT, *mpPA, *mpPB, *mpIn;
     double sign(double x)
     {
         if (x>=0.0)
@@ -43,7 +49,6 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running 4/3-valve creator" << std::endl;
         return new Hydraulic43Valve("43Valve");
     }
 
@@ -74,11 +79,11 @@ public:
         momegah = resfrequency;
         mdeltah = damping;
 
-        addPowerPort("PP", "NodeHydraulic", PP);
-        addPowerPort("PT", "NodeHydraulic", PT);
-        addPowerPort("PA", "NodeHydraulic", PA);
-        addPowerPort("PB", "NodeHydraulic", PB);
-        addReadPort("PX", "NodeSignal", PX);
+        mpPP = addPowerPort("PP", "NodeHydraulic");
+        mpPT = addPowerPort("PT", "NodeHydraulic");
+        mpPA = addPowerPort("PA", "NodeHydraulic");
+        mpPB = addPowerPort("PB", "NodeHydraulic");
+        mpIn = addReadPort("PX", "NodeSignal");
 
         registerParameter("Cq", "Flow Coefficient", "[-]", mCq);
         registerParameter("d", "Diameter", "[m]", md);
@@ -92,7 +97,6 @@ public:
         registerParameter("deltah", "Damping Factor", "[-]", mdeltah);
     }
 
-
     void initialize()
     {
         double num[3] = {0.0, 0.0, 1.0};
@@ -104,15 +108,15 @@ public:
     {
 
         //Get variable values from nodes
-        double cp  = mPortPtrs[PP]->readNode(NodeHydraulic::WAVEVARIABLE);
-        double Zcp = mPortPtrs[PP]->readNode(NodeHydraulic::CHARIMP);
-        double ct  = mPortPtrs[PT]->readNode(NodeHydraulic::WAVEVARIABLE);
-        double Zct = mPortPtrs[PT]->readNode(NodeHydraulic::CHARIMP);
-        double ca  = mPortPtrs[PA]->readNode(NodeHydraulic::WAVEVARIABLE);
-        double Zca = mPortPtrs[PA]->readNode(NodeHydraulic::CHARIMP);
-        double cb  = mPortPtrs[PB]->readNode(NodeHydraulic::WAVEVARIABLE);
-        double Zcb = mPortPtrs[PB]->readNode(NodeHydraulic::CHARIMP);
-        double xvin  = mPortPtrs[PX]->readNode(NodeSignal::VALUE);
+        double cp  = mpPP->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zcp = mpPP->readNode(NodeHydraulic::CHARIMP);
+        double ct  = mpPT->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zct = mpPT->readNode(NodeHydraulic::CHARIMP);
+        double ca  = mpPA->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zca = mpPA->readNode(NodeHydraulic::CHARIMP);
+        double cb  = mpPB->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zcb = mpPB->readNode(NodeHydraulic::CHARIMP);
+        double xvin  = mpIn->readNode(NodeSignal::VALUE);
 
         double xv = myFilter.value(xvin);
 
@@ -148,12 +152,6 @@ public:
 //        double qat = 0.5*pow(Kcat,2.0)*(Zca+Zct)+sigsqrl(pow(Kcat,2.0)*(ca-ct)+0.25*pow(Kcat,4.0)*pow(Zca+Zct,2.0));
 //        double qbt = 0.5*pow(Kcbt,2.0)*(Zcb+Zct)+sigsqrl(pow(Kcbt,2.0)*(cb-ct)+0.25*pow(Kcbt,4.0)*pow(Zcb+Zct,2.0));
 
-        //Without siqsqrl
-//        double qpa = 0.5*pow(Kcpa,2.0)*(Zcp+Zca)+sqrt(pow(Kcpa,2.0)*(cp-ca)+0.25*pow(Kcpa,4.0)*pow(Zcp+Zca,2.0))*sign(pow(Kcpa,2.0)*(cp-ca)+0.25*pow(Kcpa,4.0)*pow(Zcp+Zca,2.0));
-//        double qpb = 0.5*pow(Kcpb,2.0)*(Zcp+Zcb)+sqrt(pow(Kcpb,2.0)*(cp-cb)+0.25*pow(Kcpb,4.0)*pow(Zcp+Zcb,2.0))*sign(pow(Kcpb,2.0)*(cp-cb)+0.25*pow(Kcpb,4.0)*pow(Zcp+Zcb,2.0));
-//        double qat = 0.5*pow(Kcat,2.0)*(Zca+Zct)+sqrt(pow(Kcat,2.0)*(ca-ct)+0.25*pow(Kcat,4.0)*pow(Zca+Zct,2.0))*sign(pow(Kcat,2.0)*(ca-ct)+0.25*pow(Kcat,4.0)*pow(Zca+Zct,2.0));
-//        double qbt = 0.5*pow(Kcbt,2.0)*(Zcb+Zct)+sqrt(pow(Kcbt,2.0)*(cb-ct)+0.25*pow(Kcbt,4.0)*pow(Zcb+Zct,2.0))*sign(pow(Kcbt,2.0)*(cb-ct)+0.25*pow(Kcbt,4.0)*pow(Zcb+Zct,2.0));
-
         double qp, qa, qb, qt;
         if (xv >= 0.0)
         {
@@ -177,17 +175,14 @@ public:
 
         //Write new values to nodes
 
-        mPortPtrs[PP]->writeNode(NodeHydraulic::PRESSURE, pp);
-        mPortPtrs[PP]->writeNode(NodeHydraulic::MASSFLOW, qp);
-        mPortPtrs[PT]->writeNode(NodeHydraulic::PRESSURE, pt);
-        mPortPtrs[PT]->writeNode(NodeHydraulic::MASSFLOW, qt);
-        mPortPtrs[PA]->writeNode(NodeHydraulic::PRESSURE, pa);
-        mPortPtrs[PA]->writeNode(NodeHydraulic::MASSFLOW, qa);
-        mPortPtrs[PB]->writeNode(NodeHydraulic::PRESSURE, pb);
-        mPortPtrs[PB]->writeNode(NodeHydraulic::MASSFLOW, qb);
-
-        //Update Filter:
-        //myFilter.update(xvin);
+        mpPP->writeNode(NodeHydraulic::PRESSURE, pp);
+        mpPP->writeNode(NodeHydraulic::MASSFLOW, qp);
+        mpPT->writeNode(NodeHydraulic::PRESSURE, pt);
+        mpPT->writeNode(NodeHydraulic::MASSFLOW, qt);
+        mpPA->writeNode(NodeHydraulic::PRESSURE, pa);
+        mpPA->writeNode(NodeHydraulic::MASSFLOW, qa);
+        mpPB->writeNode(NodeHydraulic::PRESSURE, pb);
+        mpPB->writeNode(NodeHydraulic::MASSFLOW, qb);
     }
 };
 
