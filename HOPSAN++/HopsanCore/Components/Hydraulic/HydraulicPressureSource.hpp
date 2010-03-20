@@ -20,7 +20,7 @@
 class HydraulicPressureSource : public ComponentC
 {
 private:
-    double mStartPressure;
+    //double mStartPressure;
     double mStartFlow;
     double mZc;
     double mPressure;
@@ -37,7 +37,7 @@ public:
         : ComponentC(name)
     {
         mTypeName = "HydraulicPressureSource";
-        mStartPressure  = 0.0;
+        //mStartPressure  = 0.0;
         mStartFlow      = 0.0;
         mPressure       = pressure;
         mZc             = 0.0;
@@ -51,7 +51,7 @@ public:
     void initialize()
     {
         //write to nodes
-        mpP1->writeNode(NodeHydraulic::PRESSURE, mStartPressure);
+        mpP1->writeNode(NodeHydraulic::PRESSURE, mPressure);
         mpP1->writeNode(NodeHydraulic::MASSFLOW, mStartFlow);
     }
 

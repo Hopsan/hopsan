@@ -1491,7 +1491,7 @@ void ComponentSystem::simulate(const double startT, const double stopT)
     mTime = startT;
 
     //Simulate
-    double stopTsafe = stopT - this->mTimestep/2.0; //minus halv a timestep is here to ensure that no numerical issues occure
+    double stopTsafe = stopT - mTimestep/2.0; //minus halv a timestep is here to ensure that no numerical issues occure
 
     while (mTime < stopTsafe)
     {
