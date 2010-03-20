@@ -93,6 +93,9 @@ public:
     GUIConnectorLine *getSecondLastLine();
     GUIConnectorLine *getLastLine();
 
+    enum { Type = UserType + 2 };
+    int type() const;
+
 public slots:
     void updatePos();
     void setActive();
@@ -118,6 +121,7 @@ private:
     GUIPort *mpEndPort;
     GraphicsView *mpParentView;
     GUIConnectorLine *mpTempLine;
+
 };
 
 #endif // GUICONNECTOR_H

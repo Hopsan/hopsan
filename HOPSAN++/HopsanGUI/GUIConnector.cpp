@@ -561,6 +561,11 @@ GUIConnectorLine *GUIConnector::getLine(int line)
 }
 
 
+int GUIConnector::type() const
+{
+    return Type;
+}
+
 
 
 

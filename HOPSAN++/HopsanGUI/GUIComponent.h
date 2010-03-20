@@ -44,6 +44,9 @@ public:
     GraphicsScene *mpParentGraphicsScene;
     GraphicsView *mpParentGraphicsView;
 
+    enum { Type = UserType + 1 };
+    int type() const;
+
     //Core interaction
     Component *mpCoreComponent;
     //
@@ -57,6 +60,7 @@ protected:
     //void keyPressEvent( QKeyEvent *event );
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void openParameterDialog();
+    void groupComponents(QList<QGraphicsItem*> compList);
 
 signals:
     void componentMoved();

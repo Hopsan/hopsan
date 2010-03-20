@@ -18,6 +18,7 @@
 
 #include "HopsanCore.h"
 #include "GUIComponent.h"
+#include "mainwindow.h"
 #include "ParameterDialog.h"
 #include "GUIPort.h"
 #include "GUIConnector.h"
@@ -176,6 +177,12 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
 //                                                  QPen(QColor("red"),3), QPen(QColor("darkRed"),2),this);
 //    mpSelectionBox->setVisible(false);
 //}
+
+
+int GUIComponent::type() const
+{
+    return Type;
+}
 
 
 double dist(double x1,double y1, double x2, double y2)
@@ -351,21 +358,6 @@ void GUIComponent::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 }
 
 
-void GUIComponent::openParameterDialog()
-{
-    vector<CompParameter>::iterator it;
-
-    vector<CompParameter> paramVector = this->mpCoreComponent->getParameterVector();
-
-    qDebug() << "This component has the following Parameters: ";
-    for ( it=paramVector.begin() ; it !=paramVector.end(); it++ )
-        qDebug() << QString::fromStdString(it->getName()) << ": " << it->getValue();
-
-    ParameterDialog *dialog = new ParameterDialog(this,mpParentGraphicsView);
-    dialog->exec();
-}
-
-
 //! Event when double clicking on component icon.
 void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -396,16 +388,42 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         }
         else if (selectedAction == groupAction)
         {
-            qDebug() << "Group selected components (to be implemented...)" << "Selected components: ";
-            for (int i=0; i < mpParentGraphicsScene->selectedItems().size(); ++i)
-            {
-                GUIComponent* tmp = (GUIComponent*)(mpParentGraphicsScene->selectedItems().at(i));
-                qDebug() << QString::fromStdString(tmp->mpCoreComponent->getName());
-            }
+            groupComponents(mpParentGraphicsScene->selectedItems());
         }
 
-
 }
+
+
+void GUIComponent::openParameterDialog()
+{
+    vector<CompParameter>::iterator it;
+
+    vector<CompParameter> paramVector = this->mpCoreComponent->getParameterVector();
+
+    qDebug() << "This component has the following Parameters: ";
+    for ( it=paramVector.begin() ; it !=paramVector.end(); it++ )
+        qDebug() << QString::fromStdString(it->getName()) << ": " << it->getValue();
+
+    ParameterDialog *dialog = new ParameterDialog(this,mpParentGraphicsView);
+    dialog->exec();
+}
+
+
+void GUIComponent::groupComponents(QList<QGraphicsItem*> compList)
+{
+    //Borde nog ligga i projecttab så man kan rodda med scenerna
+    MessageWidget *pMessageWidget = mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget;
+    pMessageWidget->printGUIMessage("Group selected components (implementing in progress...) Selected components: ");
+    for (int i=0; i < compList.size(); ++i)
+    {
+        GUIComponent *pComponent = qgraphicsitem_cast<GUIComponent*>(compList.at(i));
+        if (pComponent)
+        {
+            pMessageWidget->printGUIMessage(QString::fromStdString(pComponent->mpCoreComponent->getName()));
+        }
+    }
+}
+
 
 //void GUIComponent::keyPressEvent( QKeyEvent *event )
 //{
