@@ -44,10 +44,10 @@ public:
     }
 
 
-	void initialize()
-	{
+    void initialize()
+    {
         //Nothing to initilize
-	}
+    }
 
 
     void simulateOneTimestep()
@@ -66,7 +66,7 @@ public:
         {
             q = mFlow;              //No control signal, use parameter...
         }
-        double p = c + mFlow*Zc;
+        double p = c + q*Zc;
 
         //Write new values to nodes
         mpP1->writeNode(NodeHydraulic::MASSFLOW, q);
