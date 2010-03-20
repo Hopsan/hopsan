@@ -29,14 +29,12 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running checkvalve creator" << std::endl;
         return new HydraulicCheckValve("CheckValve");
     }
 
     HydraulicCheckValve(const string name,
-                                const double ks       = 0.000000025,
-                                const double timestep = 0.001)
-        : ComponentQ(name, timestep)
+                        const double ks       = 0.000000025)
+        : ComponentQ(name)
     {
         mTypeName = "HydraulicCheckValve";
         mKs = ks;

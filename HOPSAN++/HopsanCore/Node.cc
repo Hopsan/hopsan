@@ -89,17 +89,13 @@ string Node::getDataUnit(size_t id)
     return mDataUnits[id];
 }
 
-string getDataName(size_t id);
-string getDataUnit(size_t id);
-
+//! This function will set log data slots for preallocation and logDt based on the number of samples that should be loged
 void Node::setLogSettingsNSamples(int nSamples, double start, double stop, double sampletime)
 {
-    double totaltime = stop - start;
-    mLogTimeDt = totaltime / (double)nSamples;
-
-    mLogSlots = (size_t)((stop-start)/mLogTimeDt+0.5); //Round to nearest
-
-    mLogTimeDt -= sampletime/2.0; //This is needed to avoid rounding problems in = comparison
+    mLogSlots = nSamples;
+    mLogTimeDt = (stop - start) / (double)nSamples;
+    mLastLogTime = start-mLogTimeDt;
+    //mLogTimeDt -= sampletime/2.0; //This is needed to avoid rounding problems in = comparison
     //! @todo Maybe round to neerest nice time number
 }
 
@@ -108,10 +104,10 @@ void Node::setLogSettingsSkipFactor(double factor, double start, double stop,  d
     //! @todo make sure factor is not less then 1.0
     //! @todo maybe only use integer factors
     mLogTimeDt = sampletime * factor;
-
+    mLastLogTime = start-mLogTimeDt;
     mLogSlots = (size_t)((stop-start)/mLogTimeDt+0.5); //Round to nearest
 
-    mLogTimeDt -= sampletime/2.0; //This is needed to avoid rounding problems in = comparison
+    //mLogTimeDt -= sampletime/2.0; //This is needed to avoid rounding problems in = comparison
     //! @todo Maybe round to neerest nice time number
 }
 
@@ -119,10 +115,10 @@ void Node::setLogSettingsSampleTime(double log_dt, double start, double stop,  d
 {
     //! @todo make sure that we dont have log_dt lower than sampletime ( we cant log more then we calc
     mLogTimeDt = log_dt;
-
+    mLastLogTime = start-mLogTimeDt;
     mLogSlots = (size_t)((stop-start)/log_dt+0.5); //Round to nearest
 
-    mLogTimeDt -= sampletime/2.0; //This is needed to avoid rounding problems in = comparison
+    //mLogTimeDt -= sampletime/2.0; //This is needed to avoid rounding problems in = comparison
     //! @todo Maybe round to neerest nice time number
 }
 
@@ -158,8 +154,9 @@ void Node::logData(const double time)
     if (mDoLog)
     {
         //! @todo Danger comparing doubles
-        //! @todo Mayb can use mLogTimeDt = -1 instead of bool to avoid extra comparison
-        if (time >= mLastLogTime+mLogTimeDt)
+        //! @todo Mayb can use mLogTimeDt = -1 (or similar) instead of bool to avoid extra comparison
+        //! @todo is this correct, Subtract a tenth of logDt to avoid numerical problem with double >= double
+        if (time >= mLastLogTime+mLogTimeDt-mLogTimeDt/10.0)
         {
             if (mLogSpaceAllocated)
             {
@@ -178,7 +175,8 @@ void Node::logData(const double time)
                 mTimeStorage.push_back(time);
                 mDataStorage.push_back(mDataVector);
             }
-            mLastLogTime = time;
+            //mLastLogTime = time;
+            mLastLogTime = mLastLogTime+mLogTimeDt; //Cant use time directly as this may mean that not all log slots will be filled
         }
     }
 }
