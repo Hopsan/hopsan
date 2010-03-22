@@ -73,6 +73,8 @@ public slots:
      void moveDown();
      void moveLeft();
      void moveRight();
+     void hideName();
+     void showName();
 
 private:
     QGraphicsSvgItem *mpIcon;

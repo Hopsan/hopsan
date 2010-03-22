@@ -120,7 +120,6 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
         else
             direction = GUIPort::VERTICAL;
         mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,porttype,direction,this));//mpIcon));
-
     }
 
     connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(fixTextPosition(QPointF)));
@@ -380,6 +379,10 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         QAction *parameterAction = menu.addAction(tr("Change parameters"));
         //menu.insertSeparator(parameterAction);
 
+        QAction *showNameAction = menu.addAction(tr("Show name"));
+        showNameAction->setCheckable(true);
+        showNameAction->setChecked(this->mpNameText->isVisible());
+
         QAction *selectedAction = menu.exec(event->screenPos());
 
         if (selectedAction == parameterAction)
@@ -389,6 +392,17 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         else if (selectedAction == groupAction)
         {
             groupComponents(mpParentGraphicsScene->selectedItems());
+        }
+        else if (selectedAction == showNameAction)
+        {
+            if(this->mpNameText->isVisible())
+            {
+                this->hideName();
+            }
+            else
+            {
+                this->showName();
+            }
         }
 
 }
@@ -659,6 +673,17 @@ void GUIComponent::setNameTextPos(int textPos)
         break;
     }
 }
+
+void GUIComponent::hideName()
+{
+    this->mpNameText->setVisible(false);
+}
+
+void GUIComponent::showName()
+{
+    this->mpNameText->setVisible(true);
+}
+
 
 GUIComponentNameTextItem::GUIComponentNameTextItem(GUIComponent *pParent)
     :   QGraphicsTextItem(pParent)
