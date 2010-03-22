@@ -158,6 +158,16 @@ void Port::getNodeDataNamesAndUnits(vector<string> &rNames, vector<string> &rUni
     mpNode->getDataNamesAndUnits(rNames, rUnits);
 }
 
+//! @brief Get node data name and unit for specific node data
+//! @param [in] dataid The node data id
+//! @param [in,out] rName This vector will contain the names
+//! @param [in,out] rUnit This vector will contain the units
+void Port::getNodeDataNameAndUnit(const size_t dataid, string &rName, string &rUnit)
+{
+    rName = mpNode->getDataName(dataid);
+    rUnit = mpNode->getDataUnit(dataid);
+}
+
 
 vector<double> *Port::getTimeVectorPtr()
 {

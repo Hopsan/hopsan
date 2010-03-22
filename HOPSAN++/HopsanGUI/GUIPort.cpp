@@ -189,16 +189,20 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
 
     if (mpCorePort->getNodeType() == "NodeHydraulic")
     {
-        if (nVar == 0)
-        {
-            title.append("Flow");
-            ylabel.append("Flow, [m^3/s]");
-        }
-        else if (nVar == 1)
-        {
-            title.append("Pressure");
-            ylabel.append("Pressure, [Pa]");
-        }
+        string name, unit;
+        mpCorePort->getNodeDataNameAndUnit(nVar, name, unit);
+        title.append(QString::fromStdString(name));
+        ylabel.append(QString::fromStdString(name) + ", [" + QString::fromStdString(unit) + "]");
+//        if (nVar == 0)
+//        {
+//            title.append("Flow");
+//            ylabel.append("Flow, [m^3/s]");
+//        }
+//        else if (nVar == 1)
+//        {
+//            title.append("Pressure");
+//            ylabel.append("Pressure, [Pa]");
+//        }
     }
     else if (mpCorePort->getNodeType() == "NodeSignal")
     {
