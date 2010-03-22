@@ -24,7 +24,7 @@ class DLLIMPORTEXPORT CompParameter
     friend class Component;
 
 public:
-    //! @todo getting strings can (probably) be speed up by returning const references instead of copying strings
+    //! @todo getting strings can (maybe, dont really know) be speed up by returning const references instead of copying strings
     string getName();
     string getDesc();
     string getUnit();
@@ -113,7 +113,6 @@ protected:
     Port* addReadPort(const string portname, const string nodetype);
     Port* addWritePort(const string portname, const string nodetype);
     bool getPort(const string portname, Port* &rpPort);
-    //Port &getPortById(const size_t port_idx);
 
     //==========Protected member variables==========
     //string mTypeCQS;
@@ -125,7 +124,6 @@ protected:
     bool mIsComponentQ;
     bool mIsComponentSystem;
     bool mIsComponentSignal;
-    vector<Port*> mPortPtrs;
 
 private:
     //Private member functions
@@ -134,6 +132,7 @@ private:
     //Private member variables
     string mName;
     vector<CompParameter> mParameters;
+    vector<Port*> mPortPtrs;
     ComponentSystem* mpSystemParent;
 };
 
@@ -145,18 +144,8 @@ private:
     {
         friend class ComponentSystem;
     private:
-//        //!This is a helper class for SubComponentStorage containing some component info
-//        class SubComponentInfo
-//        {
-//        public:
-//            string cqs_type;
-//            int idx;
-//        };
-
         string modifyName(string name);
-
         map<string, Component*> mSubComponentMap;
-
 
     public:
         void add(Component* pComponent);
@@ -186,8 +175,6 @@ public:
     void renameSubComponent(string old_name, string new_name);
     void removeSubComponent(string name, bool doDelete=false);
     void removeSubComponent(Component *pComponent, bool doDelete=false);
-
-
 
     //Add system ports
     Port* addSystemPort(const string portname);
