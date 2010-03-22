@@ -1435,7 +1435,7 @@ void ComponentSystem::initialize(const double startT, const double stopT)
     //! @todo this is an ugly quit hack test
     for (int i=0; i<mSubNodePtrs.size(); ++i)
     {
-        mSubNodePtrs[i]->setLogSettingsNSamples(1024, startT, stopT, mTimestep);
+        mSubNodePtrs[i]->setLogSettingsNSamples(1024, startT, stopT);
     }
     preAllocateLogSpace(startT, stopT);
 

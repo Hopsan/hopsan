@@ -18,26 +18,30 @@
 #include "Node.h"
 
 //! Node base class constructor
+//! @param [in] datalength The length of the data vector
 Node::Node(size_t datalength)
 {
-    mNodeType = "Node";
+    //Make sure clear (should not really be needed)
     mDataVector.clear();
     mDataStorage.clear();
     mTimeStorage.clear();
     mPortPtrs.clear();
+
+    //Sett initial node type
+    mNodeType = "UndefinedNode";
 
     //Resize
     mDataVector.resize(datalength,0.0);
     mDataNames.resize(datalength,"");
     mDataUnits.resize(datalength,"");
 
+    //Set log specific variables
     mLogSpaceAllocated = false;
     mLogCtr = 0;
-
     //Default log node allways
     mDoLog = true;
     mLogTimeDt = 0.0;
-    mLastLogTime = -10e10; //! @todo Find better value like -inf or nearby
+    mLastLogTime = 0.0; //Initial valus should not matter, will be overwritten when selecting log amount
 }
 
 //!
@@ -60,7 +64,7 @@ void Node::setData(const size_t data_type, double data)
 
 //!
 //! @brief get data from node
-//! @param [in] data_type Identifier for the typ of node data to set
+//! @param [in] data_type Identifier for the type of node data to get
 //! @return The data value
 //!
 double Node::getData(const size_t data_type)
@@ -68,6 +72,11 @@ double Node::getData(const size_t data_type)
     return mDataVector[data_type];
 }
 
+//!
+//! @brief get data reference from node, (Dont us this function, It may be removed)
+//! @param [in] data_type Identifier for the type of node data to get
+//! @return A reference to the data value
+//!
 double &Node::getDataRef(const size_t data_type)
 {
     return mDataVector[data_type];
@@ -107,37 +116,35 @@ void Node::getDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits)
     rUnits = mDataUnits;
 }
 
-//! This function will set log data slots for preallocation and logDt based on the number of samples that should be loged
-void Node::setLogSettingsNSamples(int nSamples, double start, double stop, double sampletime)
+//! This function will set the number of log data slots for preallocation and logDt based on the number of samples that should be loged
+//! @param [in] nSamples The desired number of log data samples
+void Node::setLogSettingsNSamples(size_t nSamples, double start, double stop)
 {
     mLogSlots = nSamples;
     mLogTimeDt = (stop - start) / (double)nSamples;
     mLastLogTime = start-mLogTimeDt;
-    //mLogTimeDt -= sampletime/2.0; //This is needed to avoid rounding problems in = comparison
-    //! @todo Maybe round to neerest nice time number
 }
 
+//! This function will set the number of log data slots for preallocation and logDt based on a skip factor to the sample time
+//! @param [in] factor The timestep skip factor
 void Node::setLogSettingsSkipFactor(double factor, double start, double stop,  double sampletime)
 {
-    //! @todo make sure factor is not less then 1.0
     //! @todo maybe only use integer factors
+    //make sure factor is not less then 1.0
+    factor = max(1.0, factor);
     mLogTimeDt = sampletime * factor;
     mLastLogTime = start-mLogTimeDt;
     mLogSlots = (size_t)((stop-start)/mLogTimeDt+0.5); //Round to nearest
-
-    //mLogTimeDt -= sampletime/2.0; //This is needed to avoid rounding problems in = comparison
-    //! @todo Maybe round to neerest nice time number
 }
 
+//! This function will set the number of log data slots for preallocation and logDt
+//! @param [in] log_dt The desired log timestep
 void Node::setLogSettingsSampleTime(double log_dt, double start, double stop,  double sampletime)
 {
     //! @todo make sure that we dont have log_dt lower than sampletime ( we cant log more then we calc
     mLogTimeDt = log_dt;
     mLastLogTime = start-mLogTimeDt;
     mLogSlots = (size_t)((stop-start)/log_dt+0.5); //Round to nearest
-
-    //mLogTimeDt -= sampletime/2.0; //This is needed to avoid rounding problems in = comparison
-    //! @todo Maybe round to neerest nice time number
 }
 
 //void Node::preAllocateLogSpace(const size_t nSlots)
@@ -153,6 +160,7 @@ void Node::setLogSettingsSampleTime(double log_dt, double start, double stop,  d
 //    mLogCtr = 0;
 //}
 
+//! Pre allocate memory for the needed amount of log data
 void Node::preAllocateLogSpace()
 {
     size_t data_size = mDataVector.size();
@@ -162,7 +170,7 @@ void Node::preAllocateLogSpace()
     cout << "requestedSize: " << mLogSlots << " " << data_size << " Capacities: " << mTimeStorage.capacity() << " " << mDataStorage.capacity() << " " << mDataStorage[1].capacity() << " Size: " << mTimeStorage.size() << " " << mDataStorage.size() << " " << mDataStorage[1].size() << endl;
     mLogSpaceAllocated = true;
 
-    //Make sure the ctr is 0 if we simulate teh same model several times in a row
+    //Make sure the ctr is 0 if we simulate the same model several times in a row
     mLogCtr = 0;
 }
 
@@ -182,7 +190,7 @@ void Node::logData(const double time)
                 //! @todo this if check should not be needed if everything else is working
                 if (mLogCtr < mTimeStorage.size())
                 {
-                    mTimeStorage[mLogCtr] = time;
+                    mTimeStorage[mLogCtr] = time;   //We log the "real"  simulation time for the sample
                     mDataStorage[mLogCtr] = mDataVector;
                 }
                 ++mLogCtr;
@@ -190,15 +198,16 @@ void Node::logData(const double time)
             else
             {
                 //! @todo for now always append
-                mTimeStorage.push_back(time);
+                mTimeStorage.push_back(time);   //We log the "real"  simulation time for the sample
                 mDataStorage.push_back(mDataVector);
             }
             //mLastLogTime = time;
-            mLastLogTime = mLastLogTime+mLogTimeDt; //Cant use time directly as this may mean that not all log slots will be filled
+            mLastLogTime = mLastLogTime+mLogTimeDt; //Can not use "real" time directly as this may mean that not all log slots will be filled
         }
     }
 }
 
+//! debug function to dump loged node data to a file
 void Node::saveLogData(string filename)
 {
     ofstream out_file;
@@ -228,6 +237,8 @@ void Node::saveLogData(string filename)
     }
 }
 
+//! Adds a pointer to a port connected to this node
+//! @param [in] pPort The port pointer
 void Node::setPort(Port *pPort)
 {
     //Prevent duplicate port registration that can happen if oter code is not doing what it is suposed to
@@ -250,6 +261,8 @@ void Node::setPort(Port *pPort)
     }
 }
 
+//! Removes a port poniter from this node
+//! @param [in] pPort The port pointer to be removed
 void Node::removePort(Port *pPort)
 {
     bool found = false;
@@ -270,6 +283,9 @@ void Node::removePort(Port *pPort)
     }
 }
 
+//! Check if a specified port is connected to this node
+//! @param [in] pPort The port pointer to find
+//! @return Is specified port connected (true or false)
 bool Node::isConnectedToPort(Port *pPort)
 {
     vector<Port*>::iterator it;
@@ -283,11 +299,13 @@ bool Node::isConnectedToPort(Port *pPort)
     return false;
 }
 
+//! Enable node data logging
 void Node::enableLog()
 {
     mDoLog = true;
 }
 
+//! Disable node data logging
 void Node::disableLog()
 {
     mDoLog = false;
