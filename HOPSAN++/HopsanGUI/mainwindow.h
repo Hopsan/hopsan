@@ -70,6 +70,7 @@ public:
     QToolBar *fileToolBar;
     QToolBar *clipboardToolBar;
     QToolBar *simToolBar;
+    QToolBar *mpSimulationToolBar;
 
 
     //QString libDir;

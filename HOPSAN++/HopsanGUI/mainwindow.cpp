@@ -73,8 +73,8 @@ MainWindow::MainWindow(QWidget *parent)
     libdock->setWidget(mpLibrary);
     addDockWidget(Qt::LeftDockWidgetArea, libdock);
 
-    mpCentralgrid->addWidget(mpSimulationSetupWidget,0,0);
-    mpCentralgrid->addWidget(mpProjectTabs,1,0);
+    //mpCentralgrid->addWidget(mpSimulationSetupWidget,0,0);
+    mpCentralgrid->addWidget(mpProjectTabs,0,0);
 
     mpCentralwidget->setLayout(mpCentralgrid);
 
@@ -320,5 +320,9 @@ void MainWindow::createToolbars()
     simToolBar->setAllowedAreas(Qt::TopToolBarArea);
     simToolBar->addAction(simulateAction);
     simToolBar->addAction(plotAction);
+
+    mpSimulationToolBar = addToolBar(tr("Simulation"));
+    mpSimulationToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    mpSimulationToolBar->addWidget(mpSimulationSetupWidget);
 
 }
