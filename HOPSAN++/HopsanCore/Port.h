@@ -37,8 +37,9 @@ public:
 
     virtual double readNode(const size_t idx);
     virtual void writeNode(const size_t idx, const double value);
-    void saveLogData(string filename);
 
+    void saveLogData(string filename);
+    void getNodeDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits);
     vector<double> *getTimeVectorPtr();
     vector<vector<double> > *getDataVectorPtr();
 

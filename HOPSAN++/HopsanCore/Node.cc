@@ -73,20 +73,38 @@ double &Node::getDataRef(const size_t data_type)
     return mDataVector[data_type];
 }
 
+//! Set data name and unit for a specified data variable
+//! @param [in] id This is the ENUM data id
+//! @param [in,out] name The variable name
+//! @param [in,out] unit The variable unit
 void Node::setDataNameAndUnit(size_t id, string name, string unit)
 {
     mDataNames[id] = name;
     mDataUnits[id] = unit;
 }
 
+//! Get a specific data name
+//! @param [in] id This is the ENUM data id
 string Node::getDataName(size_t id)
 {
     return mDataNames[id];
 }
 
+//! Get a specific data unit
+//! @param [in] id This is the ENUM data id
 string Node::getDataUnit(size_t id)
 {
     return mDataUnits[id];
+}
+
+
+//! Get all data names and units
+//! @param [in,out] rNames This vector will contain the names
+//! @param [in,out] rUnits This vector will contain the units
+void Node::getDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits)
+{
+    rNames = mDataNames;
+    rUnits = mDataUnits;
 }
 
 //! This function will set log data slots for preallocation and logDt based on the number of samples that should be loged

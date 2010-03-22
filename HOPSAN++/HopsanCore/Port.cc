@@ -128,6 +128,14 @@ void Port::saveLogData(string filename)
     }
 }
 
+//! Get all data names and units from the connected node
+//! @param [in,out] rNames This vector will contain the names
+//! @param [in,out] rUnits This vector will contain the units
+void Port::getNodeDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits)
+{
+    mpNode->getDataNamesAndUnits(rNames, rUnits);
+}
+
 
 vector<double> *Port::getTimeVectorPtr()
 {
