@@ -1,0 +1,8 @@
+NAME HydraulicPressureControlledValve
+ICON pvalve.svg
+ICONROTATION ON
+PORTS 4
+0.3478 0.0000 90
+0.3478 1.0000 270
+0.0000 0.7500 180
+0.6957 0.7500 0

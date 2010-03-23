@@ -185,6 +185,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     mpLibrary->addEmptyLibrary("Hydraulic");
     mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/sources","Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/sensors","Hydraulic");
     mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/restrictors","Hydraulic");
     mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/volumes","Hydraulic");
     mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/actuators","Hydraulic");

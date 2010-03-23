@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -10,10 +9,10 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="25.000004"
-   height="32.477715"
+   height="25.000004"
    id="svg2385"
    sodipodi:version="0.32"
-   inkscape:version="0.47pre4 r22446"
+   inkscape:version="0.46"
    version="1.0"
    sodipodi:docname="positionsensor.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
@@ -45,8 +44,8 @@
      showgrid="false"
      inkscape:window-width="1274"
      inkscape:window-height="942"
-     inkscape:window-x="0"
-     inkscape:window-y="24"
+     inkscape:window-x="44"
+     inkscape:window-y="58"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata2390">
@@ -72,7 +71,7 @@
        sodipodi:cy="513.07648"
        sodipodi:rx="63.57143"
        sodipodi:ry="63.57143"
-       d="m 218.57143,513.07648 c 0,35.10953 -28.4619,63.57143 -63.57143,63.57143 -35.10953,0 -63.57143,-28.4619 -63.57143,-63.57143 0,-35.10953 28.4619,-63.57143 63.57143,-63.57143 35.10953,0 63.57143,28.4619 63.57143,63.57143 z"
+       d="M 218.57143,513.07648 A 63.57143,63.57143 0 1 1 91.42857,513.07648 A 63.57143,63.57143 0 1 1 218.57143,513.07648 z"
        transform="matrix(0.1808989,0,0,0.1808989,341.70638,467.95795)" />
     <text
        xml:space="preserve"
