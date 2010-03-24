@@ -272,9 +272,12 @@ void LibraryWidget::addComponent(QString libraryName, QString parentLibraryName,
     {
         if (((*it)->text(0) == libraryName) && ((*it)->parent()))
         {
-            ListWidgetItem *copyOfNewComponent = new ListWidgetItem(*newComponent); //A QListWidgetItem can only be in one list at the time, therefor a copy...
-            QString parentName = (*it)->parent()->text(0);
-            addComponent(parentLibraryName, "", copyOfNewComponent, parameterData); //Recursively
+            if((*it)->parent()->text(0) == parentLibraryName)
+            {
+                ListWidgetItem *copyOfNewComponent = new ListWidgetItem(*newComponent); //A QListWidgetItem can only be in one list at the time, therefor a copy...
+                //QString parentName = (*it)->parent()->text(0);
+                addComponent(parentLibraryName, "", copyOfNewComponent, parameterData); //Recursively
+            }
         }
         ++it;
     }
