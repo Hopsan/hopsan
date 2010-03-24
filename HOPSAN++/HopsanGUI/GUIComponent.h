@@ -29,10 +29,10 @@ public:
     //QGraphicsView *getParentView();
     void addConnector(GUIConnector *item);
 
-    void refreshName();
     QString getName();
-    void setName(QString name);
     QString getTypeName();
+    void refreshName();
+    void setName(QString name, bool doOnlyLocalRename=false);
 
     int getPortNumber(GUIPort *);
     int getNameTextPos();

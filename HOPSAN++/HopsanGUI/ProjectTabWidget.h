@@ -64,7 +64,6 @@ signals:
     void checkMessages();
 
 public slots:
-    //void addComponent(QStringList parameterData, QPoint position);
     void addComponent(QString parameterType, QPoint position, QString name=QString(), bool startSelected = false);
     void deleteComponent(QString componentName);
     bool haveComponent(QString name);

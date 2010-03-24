@@ -136,21 +136,6 @@ void GraphicsView::dropEvent(QDropEvent *event)
 }
 
 
-//void GraphicsView::addComponent(QStringList parameterData, QPoint position)
-//{
-//    GUIComponent *guiComponent = new GUIComponent(mpHopsan,parameterData,position,this);
-//
-//    //Core interaction
-//    qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
-//    guiComponent->refreshName();
-//    emit checkMessages();
-//    //
-//
-//    //guiComponent->setPos(this->mapToScene(position));
-//    qDebug() << "GraphicsView: " << guiComponent->parent();
-//
-//    this->scene()->addItem(guiComponent);
-//}
 GUIConnector *GraphicsView::getTempConnector()
 {
     return this->mpTempConnector;
@@ -164,20 +149,30 @@ GUIConnector *GraphicsView::getTempConnector()
 void GraphicsView::addComponent(QString parameterType, QPoint position, QString name, bool startSelected)
 {
     qDebug() << "Request to add component at (" << position.x() << " " << position.y() << ")";
+
     MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
     LibraryWidget *pLibrary = pMainWindow->mpLibrary;
     QStringList parameterData = pLibrary->getParameterData(parameterType);
-    GUIComponent *pGuiComponent = new GUIComponent(mpHopsan,parameterData,position,this->mpParentProjectTab->mpGraphicsScene);
+
+    GUIComponent *pGuiComponent = new GUIComponent(mpHopsan, parameterData, position, this->mpParentProjectTab->mpGraphicsScene);
+
+    qDebug() << "=====================Get initial name: " << pGuiComponent->getName() << "requested: " << name;
     if (!name.isEmpty())
-        pGuiComponent->setName(name);
+    {
+        qDebug() << "name not empty, setting to: " << name;
+        //Set name, do NOT try to do smart rename. (If component already exist with new component default name that other component would be renamed)
+        pGuiComponent->setName(name, true);
+    }
 
     pGuiComponent->setSelected(startSelected);
 
     //Core interaction
+    qDebug() << "=====================Get name before add: " << pGuiComponent->getName();
     this->mpParentProjectTab->mpComponentSystem->addComponent(pGuiComponent->mpCoreComponent);
     //    qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
     pGuiComponent->refreshName();
     emit checkMessages();
+    qDebug() << "=====================Get name after add: " << pGuiComponent->getName();
     //
 
     //guiComponent->setPos(this->mapToScene(position));
@@ -236,8 +231,8 @@ void GraphicsView::renameComponent(QString oldName, QString newName)
         GUIComponent* c_ptr = it.value();
         //Erase old record
         mComponentMap.erase(it);
-        //Rename (core rename will be handled by core)
-        c_ptr->setName(newName);
+        //Rename (core rename will be handled by core), here we force a core only rename (true) so that we dont get stuck in a loop (as rename might be called again)
+        c_ptr->setName(newName, true);
         //Re insert
         mComponentMap.insert(c_ptr->getName(), c_ptr);
         qDebug() << "GUI rename: " << oldName << " " << c_ptr->getName();

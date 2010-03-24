@@ -283,25 +283,33 @@ QString GUIComponent::getName()
     return QString::fromStdString(mpCoreComponent->getName());
 }
 
-//! This function sets the desired component name
-void GUIComponent::setName(QString newName)
+//! @brief This function sets the desired component name
+//! @param [in] newName The new name
+//! @param [in] doOnlyCoreRename This is an unfortunate quickhack, need to be able to force setName without calling rename in some very special situations, dont use this if you dont know that you have to
+void GUIComponent::setName(QString newName, bool doOnlyCoreRename)
 {
     QString oldName = getName();
     //If name same as before do nothing
     if (newName != oldName)
     {
-        //If the old name has not already been changed, let it decide our new name
-        //Need this to prevent risk of loop between rename and this function (rename cals this one again)
-        if (mpParentGraphicsView->haveComponent(oldName))
+        //This does not work when we load systems, the default name (oldNAme) may already be in the graphicsView and an incorrect rename will be triggered
+//        if (mpParentGraphicsView->haveComponent(oldName))
+//        {
+//            //Rename
+//            mpParentGraphicsView->renameComponent(oldName, newName);
+//        }
+
+        //Check if we want to avoid trying to rename in the graphics view map
+        if (doOnlyCoreRename)
         {
-            //Rename
-            mpParentGraphicsView->renameComponent(oldName, newName);
+            //Set name in core component,
+            mpCoreComponent->setName(newName.toStdString());
+            refreshName();
         }
         else
         {
-            //Set name for real
-            mpCoreComponent->setName(newName.toStdString());
-            refreshName();
+            //Rename
+            mpParentGraphicsView->renameComponent(oldName, newName);
         }
     }
 }
@@ -711,7 +719,7 @@ void GUIComponentNameTextItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event
 void GUIComponentNameTextItem::focusOutEvent(QFocusEvent *event)
 {
     qDebug() << "GUIComponentTextItem: " << "focusOutEvent";
-    //Try to set the new name
+    //Try to set the new name, the rename function in parent view will be called
     mpParentGUIComponent->setName(toPlainText());
     //refresh the display name (it may be different from the one you wanted)
     mpParentGUIComponent->refreshName();
