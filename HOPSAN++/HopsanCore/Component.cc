@@ -467,20 +467,18 @@ void ComponentSystem::SubComponentStorage::add(Component* pComponent)
     pComponent->setName(modname);
 
     //Add to the cqs component vectors
-    if (pComponent->isComponentC())
+    switch (pComponent->getTypeCQS())
     {
+    case Component::C :
         mComponentCptrs.push_back(pComponent);
-    }
-    else if (pComponent->isComponentQ())
-    {
+        break;
+    case Component::Q :
         mComponentQptrs.push_back(pComponent);
-    }
-    else if (pComponent->isComponentSignal())
-    {
+        break;
+    case Component::S :
         mComponentSignalptrs.push_back(pComponent);
-    }
-    else
-    {
+        break;
+    default :
         cout << "Trying to add module of other type than c, q or signal" << endl;
         assert(false);
     }
@@ -510,8 +508,9 @@ void ComponentSystem::SubComponentStorage::erase(const string &rName)
     if (it != mSubComponentMap.end())
     {
         vector<Component*>::iterator cit; //Component iterator
-        if (it->second->isComponentC())
+        switch (it->second->getTypeCQS())
         {
+        case Component::C :
             for (cit = mComponentCptrs.begin(); cit != mComponentCptrs.end(); ++cit)
             {
                 if ( (*cit)->getName() == rName )
@@ -520,9 +519,8 @@ void ComponentSystem::SubComponentStorage::erase(const string &rName)
                     break;
                 }
             }
-        }
-        else if (it->second->isComponentQ())
-        {
+            break;
+        case Component::Q :
             for (cit = mComponentQptrs.begin(); cit != mComponentQptrs.end(); ++cit)
             {
                 if ( (*cit)->getName() == rName )
@@ -531,9 +529,8 @@ void ComponentSystem::SubComponentStorage::erase(const string &rName)
                     break;
                 }
             }
-        }
-        else if (it->second->isComponentSignal())
-        {
+            break;
+        case Component::S :
             for (cit = mComponentSignalptrs.begin(); cit != mComponentSignalptrs.end(); ++cit)
             {
                 if ( (*cit)->getName() == rName )
@@ -542,12 +539,12 @@ void ComponentSystem::SubComponentStorage::erase(const string &rName)
                     break;
                 }
             }
-        }
-        else
-        {
+            break;
+        default :
             cout << "This should not happen neither C Q or S type" << endl;
             assert(false);
         }
+
         mSubComponentMap.erase(it);
     }
     else
