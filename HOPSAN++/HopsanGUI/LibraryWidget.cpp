@@ -111,7 +111,7 @@ void LibraryWidget::addEmptyLibrary(QString libraryName, QString parentLibraryNa
     LibraryContent *newLibContent = new LibraryContent((LibraryContent*)0);
     newLibContent->setDragEnabled(true);
     //newLibContent->setDropIndicatorShown(true);
-    mLibraryMapPtrs.insert(libraryName, newLibContent);
+    mLibraryMapPtrs.insert(parentLibraryName + libraryName, newLibContent);
 
     mpGrid->addWidget(newLibContent);
     newLibContent->hide();
@@ -232,7 +232,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
 
         //Add the component to the library
         //library->addComponent(libName,componentName,icon,parameterData);
-        addComponent(libName, libcomp, parameterData);
+        addComponent(libName, parentLib, libcomp, parameterData);
     }
 }
 
@@ -264,9 +264,9 @@ void LibraryWidget::addLibrary()
 
 //! Adds a library to the library widget.
 //! @param libraryName is the name of the library where the component should be added.
-void LibraryWidget::addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList parameterData)
+void LibraryWidget::addComponent(QString libraryName, QString parentLibraryName, ListWidgetItem *newComponent, QStringList parameterData)
 {
-    mLibraryMapPtrs.value(libraryName)->addItem(newComponent);
+    mLibraryMapPtrs.value(parentLibraryName + libraryName)->addItem(newComponent);
     QTreeWidgetItemIterator it(mpTree);
     while (*it)
     {
@@ -274,7 +274,7 @@ void LibraryWidget::addComponent(QString libraryName, ListWidgetItem *newCompone
         {
             ListWidgetItem *copyOfNewComponent = new ListWidgetItem(*newComponent); //A QListWidgetItem can only be in one list at the time, therefor a copy...
             QString parentName = (*it)->parent()->text(0);
-            addComponent(parentName, copyOfNewComponent, parameterData); //Recursively
+            addComponent(parentLibraryName, "", copyOfNewComponent, parameterData); //Recursively
         }
         ++it;
     }
@@ -294,9 +294,22 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
    QMap<QString, QListWidget *>::iterator lib;
    for (lib = mLibraryMapPtrs.begin(); lib != mLibraryMapPtrs.end(); ++lib)
     {
-        if (item->text(column) == mLibraryMapPtrs.key((*lib)))
+        //Not top level list widget, so check if it has the correct parent
+        if(item->text(column).size() != mLibraryMapPtrs.key((*lib)).size())
         {
-            (*lib)->show();
+            if (item->text(column) == mLibraryMapPtrs.key((*lib)).right(item->text(column).size()) &&
+                item->parent()->text(column) == mLibraryMapPtrs.key((*lib)).left(item->parent()->text(column).size()))
+            {
+                (*lib)->show();
+            }
+        }
+        else
+        //Top level widget, don't check parent (would lead to a segmentation fault since it does not exist)
+        {
+            if (item->text(column) == mLibraryMapPtrs.key((*lib)).right(item->text(column).size()))
+            {
+                (*lib)->show();
+            }
         }
 
     }

@@ -61,7 +61,7 @@ public:
 
     void addEmptyLibrary(QString libraryName, QString parentLibraryName=QString());
     void addLibrary(QString libDir, QString parentLib=QString());
-    void addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList parameterData);
+    void addComponent(QString libraryName, QString parentLibraryName, ListWidgetItem *newComponent, QStringList parameterData);
     QStringList getParameterData(QString);
 
 public slots:
