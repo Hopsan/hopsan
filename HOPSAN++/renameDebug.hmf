@@ -1,0 +1,5 @@
+COMPONENT HydraulicLaminarOrifice LaminarOrifice 1581 2326 0 0
+COMPONENT HydraulicPressureSource PressureSource 1481 2413 0 0
+COMPONENT HydraulicPressureSource PressureSource_1 1687 2258 180 0
+CONNECT LaminarOrifice 1 PressureSource_1 1 HORIZONTAL 67.5 VERTICAL -68
+CONNECT PressureSource 1 LaminarOrifice 0 HORIZONTAL 61.5 VERTICAL -87
