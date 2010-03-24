@@ -120,7 +120,16 @@ void Component::finalize()
     //assert(false);
 }
 
-void Component::setName(string name)
+//!
+//! @brief Set the desired component name
+//! @param [in] name The desired component name
+//! @param [in] doOnlyLocalRename Only use this if you know what you are doing, default: false
+//!
+//! Set the desired component name, if name is already taken in a subsystem the desired name will be modified with a suffix.
+//! If you set doOnlyLocalRename to true, the smart rename will not be atempted, avoid doing this as the component storage map will not be updated on anme change
+//! This is a somewhat ugly fix for some special situations where we want to make sure that a smart rename is not atempted
+//!
+void Component::setName(string name, bool doOnlyLocalRename)
 {
     //! @todo fix the trailing _ removal
     //First strip any lonely trailing _ from the name (and give a warning)
@@ -138,16 +147,15 @@ void Component::setName(string name)
         //Do we have a system parent
         if (mpSystemParent != 0)
         {
-            //If the old name has not already been changed, let it decide our new name
             //Need this to prevent risk of loop between rename and this function (rename cals this one again)
-            if (mpSystemParent->haveSubComponent(mName))
+            if (doOnlyLocalRename)
             {
-                //Rename
-                mpSystemParent->renameSubComponent(mName, name);
+                mName = name;
             }
             else
             {
-                mName = name;
+                //Do smart rename (to prevent same names)
+                mpSystemParent->renameSubComponent(mName, name);
             }
         }
         else
@@ -158,6 +166,7 @@ void Component::setName(string name)
     }
 }
 
+//! Get the component name
 const string &Component::getName()
 {
     return mName;
@@ -168,11 +177,14 @@ const string &Component::getName()
 //    return mTypeCQS;
 //}
 
+//! Get the C, Q or S type of the component as enum
 Component::typeCQS Component::getTypeCQS()
 {
     return mTypeCQS;
 }
 
+//! Convert the C, Q or S type from enum to string
+//! @todo This function may not need to be meber in Component, (maybe enum should be free aswell)
 string Component::getTypeCQSString(typeCQS type)
 {
     switch (type)
@@ -191,14 +203,16 @@ string Component::getTypeCQSString(typeCQS type)
     }
 }
 
+//! Get the type name of the component
 const string &Component::getTypeName()
 {
     return mTypeName;
 }
 
+//! Register a parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
 void Component::registerParameter(const string name, const string description, const string unit, double &rValue)
 {
-    //! @todo handle trying to add multiple comppar with same name or pos
+    //! @todo handle trying to add multiple comppar with same name
     CompParameter new_comppar(name, description, unit, rValue);
     mParameters.push_back(new_comppar); //Copy parameters into storage
 }
@@ -452,7 +466,7 @@ void ComponentSystem::SubComponentStorage::add(Component* pComponent)
     string modname = modifyName(pComponent->getName());
     pComponent->setName(modname);
 
-    //Add to the cqs component vectors, remember te idx for the info
+    //Add to the cqs component vectors
     if (pComponent->isComponentC())
     {
         mComponentCptrs.push_back(pComponent);

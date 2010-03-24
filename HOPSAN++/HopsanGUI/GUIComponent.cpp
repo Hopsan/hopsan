@@ -283,9 +283,14 @@ QString GUIComponent::getName()
     return QString::fromStdString(mpCoreComponent->getName());
 }
 
+//!
 //! @brief This function sets the desired component name
 //! @param [in] newName The new name
-//! @param [in] doOnlyCoreRename This is an unfortunate quickhack, need to be able to force setName without calling rename in some very special situations, dont use this if you dont know that you have to
+//! @param [in] doOnlyCoreRename  Dont use this if you dont know what you are doing
+//!
+//! The desired new name will be sent to the the core component and may be modified. Rename will be called in the graphics view to make sure that the guicomponent map key value is up to date.
+//! doOnlyCoreRename is a somewhat ugly hack, we need to be able to force setName without calling rename in some very special situations, it defaults to false
+//!
 void GUIComponent::setName(QString newName, bool doOnlyCoreRename)
 {
     QString oldName = getName();

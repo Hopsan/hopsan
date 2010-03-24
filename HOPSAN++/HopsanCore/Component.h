@@ -60,7 +60,7 @@ public:
     virtual void setDesiredTimestep(const double timestep);
 
     //Name and type
-    void setName(string name);
+    void setName(string name, bool doOnlyLocalRename=false);
     const string &getName();
     const string &getTypeName();
     //const string &getTypeCQS();
