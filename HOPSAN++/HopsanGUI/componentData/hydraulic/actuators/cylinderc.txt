@@ -1,9 +1,0 @@
-NAME HydraulicCylinderC
-ICON Cylinderc.svg
-ICONROTATION ON
-PORTS 3
-0.050 1.000	90
-0.615 1.000	90
-1.000 0.500 0
-
-
