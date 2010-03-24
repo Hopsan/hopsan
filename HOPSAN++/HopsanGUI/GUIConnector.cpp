@@ -92,9 +92,9 @@ void GUIConnector::setEndPort(GUIPort *port)
         mLines[i]->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
         //Add arrow to the connector if it is of signal type
-    if(port->getPortType() == Port::READPORT)
+    if(port->getPortType() == Port::READPORT && port->mpCorePort->getNodeType() == "NodeSignal")
         this->getLastLine()->addEndArrow();
-    else if(port->getPortType() == Port::WRITEPORT)
+    else if(port->getPortType() == Port::WRITEPORT && port->mpCorePort->getNodeType() == "NodeSignal")
         this->mLines[0]->addStartArrow();
 
     emit endPortConnected();

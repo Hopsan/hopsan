@@ -125,7 +125,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     actionClose = new QAction(this);
     actionClose->setText("Close");
-    actionClose->setShortcut(QKeySequence("Ctrl+c"));
+    actionClose->setShortcut(QKeySequence("Ctrl+q"));
 
     actionSave = new QAction(this);
     actionSave->setText("Save");
@@ -133,6 +133,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     actionSaveAs = new QAction(this);
     actionSaveAs->setText("Save As");
+    actionSaveAs->setShortcut(QKeySequence("Ctrl+Alt+s"));
 
     actionProject = new QAction(this);
     actionProject->setText("Project");

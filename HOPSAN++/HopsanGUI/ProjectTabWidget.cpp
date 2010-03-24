@@ -405,31 +405,25 @@ void GraphicsView::addConnector(GUIPort *pPort)
         QPointF oldPos = pPort->mapToScene(pPort->boundingRect().center());
 
         QPen passivePen,activePen,hoverPen;
-        if(pPort->getPortType() == Port::POWERPORT)
+        if(pPort->mpCorePort->getNodeType() == "NodeHydraulic" | pPort->mpCorePort->getNodeType() == "NodeMechanic")
         {
-            qDebug() << "Hej!";
             passivePen = QPen(QColor("black"),2, Qt::SolidLine, Qt::RoundCap);
             activePen = QPen(QColor("red"), 3, Qt::SolidLine, Qt::RoundCap);                    //1.6180339887499
             hoverPen = QPen(QColor("darkRed"),3, Qt::SolidLine, Qt::RoundCap);
         }
-        else if((pPort->getPortType() == Port::READPORT) | (pPort->getPortType() == Port::WRITEPORT))
+        else if(pPort->mpCorePort->getNodeType() == "NodeSignal")
         {
-            qDebug() << "Haj!";
             passivePen = QPen(QColor("blue"),1, Qt::DashLine);
             activePen = QPen(QColor("red"), 2, Qt::DashLine);
             hoverPen = QPen(QColor("darkRed"),2, Qt::DashLine);
         }
 
         mpTempConnector = new GUIConnector(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), passivePen, activePen, hoverPen, this);
-        qDebug() << "DEBUG 0.3";
         this->scene()->addItem(mpTempConnector);
-        qDebug() << "DEBUG 0.4";
         this->mIsCreatingConnector = true;
         pPort->getComponent()->addConnector(mpTempConnector);
         mpTempConnector->addFreeLine();
         mpTempConnector->setStartPort(pPort);
-        qDebug() << "DEBUG 0.5";
-        qDebug() << "DEBUG 0.6";
     }
     else
     {
