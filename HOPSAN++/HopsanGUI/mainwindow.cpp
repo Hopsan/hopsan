@@ -59,19 +59,23 @@ MainWindow::MainWindow(QWidget *parent)
     messagedock->setWidget(mpMessageWidget);
     addDockWidget(Qt::BottomDockWidgetArea, messagedock);
 
-    //Create a SimulationSetupWidget
-    mpSimulationSetupWidget = new SimulationSetupWidget(tr("Simulation setup"), this);
-
-    //Create the main tab container, need at least one tab
-    mpProjectTabs = new ProjectTabWidget(this);
-    mpProjectTabs->setObjectName("projectTabs");
-
     //Create a dock for the componentslibrary
     QDockWidget *libdock = new QDockWidget(tr("Components"), this);
     libdock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     mpLibrary = new LibraryWidget(this);
     libdock->setWidget(mpLibrary);
     addDockWidget(Qt::LeftDockWidgetArea, libdock);
+
+    //Set dock widget corner owner
+    setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
+    //setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
+
+    //Create a SimulationSetupWidget
+    mpSimulationSetupWidget = new SimulationSetupWidget(tr("Simulation setup"), this);
+
+    //Create the main tab container, need at least one tab
+    mpProjectTabs = new ProjectTabWidget(this);
+    mpProjectTabs->setObjectName("projectTabs");
 
     //mpCentralgrid->addWidget(mpSimulationSetupWidget,0,0);
     mpCentralgrid->addWidget(mpProjectTabs,0,0);
