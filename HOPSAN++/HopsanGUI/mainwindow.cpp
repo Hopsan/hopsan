@@ -42,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setObjectName("MainWindow");
     this->resize(1024,768);
     this->setWindowTitle("HOPSAN NG");
+    this->setWindowIcon(QIcon("../../HopsanGUI/icons/hopsan.ico"));
 
     //Create a centralwidget for the main window
     mpCentralwidget = new QWidget(this);
@@ -264,7 +265,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 }
 
 
-
+//! Defines the actions used by the toolbars
 void MainWindow::createActions()
 {
 
@@ -315,6 +316,8 @@ void MainWindow::createActions()
 }
 
 
+
+//! Creates the toolbars
 void MainWindow::createToolbars()
 {
     fileToolBar = addToolBar(tr("File Toolbar"));
