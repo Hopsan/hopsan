@@ -16,8 +16,6 @@
 
 using namespace std;
 
-//typedef string PortTypeT;
-
 //Forward declarations
 class Component;
 class ComponentSystem;
@@ -47,7 +45,6 @@ public:
     bool isConnected();
 
     const string &getNodeType();
-    //const string &getPortType();
     PORTTYPE getPortType();
     const string &getPortName();
 
@@ -55,7 +52,6 @@ public:
 
 protected:
 
-    //PortTypeT mPortType;
     PORTTYPE mPortType;
 
     void setNode(Node* pNode);
@@ -81,7 +77,6 @@ class SystemPort :public Port
 {
     friend class Component;
     friend class ComponentSystem;
-    //friend Port* CreatePort(const string &rPortType);
 
 public:
     //Constructors
@@ -93,7 +88,6 @@ class PowerPort :public Port
 {
     friend class Component;
     friend class ComponentSystem;
-    //friend Port* CreatePort(const string &rPortType);
 
 public:
     //Constructors
@@ -106,7 +100,6 @@ class ReadPort :public Port
 {
     friend class Component;
     friend class ComponentSystem;
-    //friend Port* CreatePort(const string &rPortType);
 
 public:
     //Constructors
@@ -121,7 +114,6 @@ class WritePort :public Port
 {
     friend class Component;
     friend class ComponentSystem;
-    //friend Port* CreatePort(const string &rPortType);
 
 public:
     //Constructors
@@ -131,7 +123,6 @@ public:
     double readNode(const size_t idx);
 };
 
-//Port* CreatePort(const string &rPortType);
 Port* CreatePort(Port::PORTTYPE type);
 
 #endif // PORT_H_INCLUDED

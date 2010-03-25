@@ -18,17 +18,14 @@
 //! Port base class constructor
 Port::Port()
 {
-    //mPortType = "EmptyPort";
     mPortType = UNDEFINEDPORT;
     mpComponent = 0;
     clearConnection();
-
 }
 
 //! Port base class constructor
 Port::Port(string portname, string node_type)
 {
-    //mPortType = "EmptyPort";
     mPortType = UNDEFINEDPORT;
     mPortName = portname;
     mNodeType = node_type;
@@ -186,11 +183,6 @@ bool Port::isConnected()
     return mIsConnected;
 }
 
-//const string &Port::getPortType()
-//{
-//    return mPortType;
-//}
-
 //! Get the port type
 Port::PORTTYPE Port::getPortType()
 {
@@ -206,34 +198,29 @@ const string &Port::getPortName()
 //! SystemPort constructor
 SystemPort::SystemPort() : Port()
 {
-    //mPortType = "SystemPort";
     mPortType = SYSTEMPORT;
 }
 
 //! PowerPort constructor
 PowerPort::PowerPort() : Port()
 {
-    //mPortType = "PowerPort";
     mPortType = POWERPORT;
 }
 
 //! PowerPort constructor
 PowerPort::PowerPort(string portname, string node_type) : Port(portname, node_type)
 {
-    //mPortType = "PowerPort";
     mPortType = POWERPORT;
 }
 
 //Constructor
 ReadPort::ReadPort() : Port()
 {
-    //mPortType = "ReadPort";
     mPortType = READPORT;
 }
 
 ReadPort::ReadPort(string portname, string node_type) : Port(portname, node_type)
 {
-    //mPortType = "ReadPort";
     mPortType = READPORT;
 }
 
@@ -246,13 +233,11 @@ void ReadPort::writeNode(const size_t idx, const double value)
 //Constructor
 WritePort::WritePort() : Port()
 {
-    //mPortType = "WritePort";
     mPortType = WRITEPORT;
 }
 
 WritePort::WritePort(string portname, string node_type) : Port(portname, node_type)
 {
-    //mPortType = "WritePort";
     mPortType = WRITEPORT;
 }
 
@@ -261,35 +246,6 @@ double WritePort::readNode(const size_t idx)
     cout << "Could not read from port, this is a WritePort" << endl;
     assert(false);
 }
-
-////!
-////! @brief Very simple port factory, no need to complicate things with the more advanced one as we will only have four port types.
-////!
-//Port* CreatePort(const string &rPortType)
-//{
-//    //! @todo maybe swap PortType to enums instead of strings (not really important)
-//    if (rPortType.c_str() == string("PowerPort"))
-//    {
-//        return new PowerPort();
-//    }
-//    else if (rPortType.c_str() == string("ReadPort"))
-//    {
-//        return new ReadPort();
-//    }
-//    else if (rPortType.c_str() == string("WritePort"))
-//    {
-//        return new WritePort();
-//    }
-//    else if (rPortType.c_str() == string("SystemPort"))
-//    {
-//        return new SystemPort();
-//    }
-//    else
-//    {
-//        //! @todo maybe defualt should be impossible
-//        return new Port();
-//    }
-//}
 
 //!
 //! @brief Very simple port factory, no need to complicate things with the more advanced one as we will only have a few fixed port types.
