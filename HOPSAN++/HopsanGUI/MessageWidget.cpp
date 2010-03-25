@@ -10,6 +10,14 @@ MessageWidget::MessageWidget(MainWindow *pParent)
 
 }
 
+QSize MessageWidget::sizeHint() const
+{
+    QSize size = QTextEdit::sizeHint();
+    //Set very small height. A minimum apperantly stops at resonable size.
+    size.rheight() = 48; //pixels
+    return size;
+}
+
 void MessageWidget::setMessageColor(int type)
 {
     if (type == HopsanCoreMessage::ERROR)
