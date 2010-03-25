@@ -152,7 +152,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
     QDir libDirObject(libDir);  //Create a QDir object that contains the info about the library direction
 
     //Get the name for the library to be set in the tree
-    QString libName = libDirObject.dirName();
+    QString libName = QString(libDirObject.dirName().left(1).toUpper() + libDirObject.dirName().right(libDirObject.dirName().size()-1));
 
     //Add the library to the tree
     addEmptyLibrary(libName,parentLib);

@@ -189,13 +189,13 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addEmptyLibrary("User defined libraries");
 
     mpLibrary->addEmptyLibrary("Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/Sources","Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/Sensors","Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/Restrictors","Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/Volumes","Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/Actuators","Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/Valves","Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/Pumps","Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/sources","Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/sensors","Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/restrictors","Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/volumes","Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/actuators","Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/valves","Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/pumps","Hydraulic");
 
     mpLibrary->addEmptyLibrary("Signal");
     mpLibrary->addLibrary("../../HopsanGUI/componentData/signal/Sources","Signal");
