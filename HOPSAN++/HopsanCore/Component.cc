@@ -1443,7 +1443,7 @@ void ComponentSystem::initialize(const double startT, const double stopT)
 {
     //preAllocate local logspace
     //! @todo this is an ugly quit hack test
-    for (int i=0; i<mSubNodePtrs.size(); ++i)
+    for (size_t i=0; i<mSubNodePtrs.size(); ++i)
     {
         mSubNodePtrs[i]->setLogSettingsNSamples(1024, startT, stopT);
     }
