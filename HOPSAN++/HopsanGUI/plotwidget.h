@@ -29,6 +29,8 @@
 #include <QApplication>
 #include <QDragMoveEvent>
 #include <qwt_legend.h>
+#include <QFileDialog>
+#include <QSvgGenerator>
 
 
 class VariablePlot;
@@ -47,10 +49,12 @@ public:
 
     QToolButton *btnZoom;
     QToolButton *btnPan;
+    QToolButton *btnSVG;
 
 private slots:
     void enableZoom(bool);
     void enablePan(bool);
+    void exportSVG();
 };
 
 

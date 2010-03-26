@@ -52,6 +52,12 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, QWidget *
     btnPan->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolBar->addWidget(btnPan);
 
+    btnSVG = new QToolButton(toolBar);
+    btnSVG->setText("svg");
+    btnSVG->setIcon(QIcon("../../HopsanGUI/icons/save_svg.png"));
+    btnSVG->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    toolBar->addWidget(btnSVG);
+
     addToolBar(toolBar);
 
     //Zoom
@@ -74,6 +80,7 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, QWidget *
     connect(buttonbox, SIGNAL(rejected()), this, SLOT(close()));
     connect(btnZoom,SIGNAL(toggled(bool)),SLOT(enableZoom(bool)));
     connect(btnPan,SIGNAL(toggled(bool)),SLOT(enablePan(bool)));
+    connect(btnSVG,SIGNAL(clicked()),SLOT(exportSVG()));
 
 
     resize(600,600);
@@ -96,6 +103,25 @@ void PlotWidget::enablePan(bool on)
     panner->setMouseButton(Qt::LeftButton);
 
     btnZoom->setChecked(false);
+}
+
+void PlotWidget::exportSVG()
+{
+#ifdef QT_SVG_LIB
+#ifndef QT_NO_FILEDIALOG
+     QString fileName = QFileDialog::getSaveFileName(
+        this, "Export File Name", QString(),
+        "SVG Documents (*.svg)");
+#endif
+    if ( !fileName.isEmpty() )
+    {
+        QSvgGenerator generator;
+        generator.setFileName(fileName);
+        generator.setSize(QSize(800, 600));
+
+        mpVariablePlot->print(generator);
+    }
+#endif
 }
 
 
