@@ -585,9 +585,9 @@ void ComponentSystem::SubComponentStorage::rename(const string &rOldName, const 
         //cout << "new name is: " << mod_name << endl;
         mSubComponentMap.insert(pair<string, Component*>(mod_new_name, temp_c_ptr));
 
-        //Now change the actual component name
+        //Now change the actual component name, without trying to do rename (we are in rename now, would cause infinite loop)
         //! @todo it might be a good idea to rething all of this renaming stuff, right now its prety strange (but works), setname loop
-        temp_c_ptr->setName(mod_new_name);
+        temp_c_ptr->setName(mod_new_name, true);
     }
     else
     {
