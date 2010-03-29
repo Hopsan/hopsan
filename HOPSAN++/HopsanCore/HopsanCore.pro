@@ -110,4 +110,5 @@ HEADERS += win32dll.h \
     ComponentUtilities/Integrator.h \
     ComponentUtilities/FirstOrderFilter.h \
     ComponentUtilities/Delay.h \
-    CoreUtilities/HopsanCoreMessageHandler.h
+    CoreUtilities/HopsanCoreMessageHandler.h \
+    version.h

@@ -31,7 +31,8 @@ HEADERS += mainwindow.h \
     MessageWidget.h \
     SimulationSetupWidget.h \
     SimulationThread.h \
-    InitializationThread.h
+    InitializationThread.h \
+    version.h
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE
@@ -54,4 +55,4 @@ win32 {
     LIBS += -Lc:\Qwt-5.2.1-svn\lib
     LIBS += -lqwtd5
 }
-RESOURCES +=
+RESOURCES += 

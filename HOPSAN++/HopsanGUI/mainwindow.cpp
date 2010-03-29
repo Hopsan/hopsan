@@ -34,6 +34,7 @@
 #include "ProjectTabWidget.h"
 #include "LibraryWidget.h"
 #include "SimulationSetupWidget.h"
+#include "version.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -59,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpMessageWidget->setReadOnly(true);
     messagedock->setWidget(mpMessageWidget);
     addDockWidget(Qt::BottomDockWidgetArea, messagedock);
+    mpMessageWidget->printGUIMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
 
     //Create a dock for the componentslibrary
     QDockWidget *libdock = new QDockWidget(tr("Components"), this);

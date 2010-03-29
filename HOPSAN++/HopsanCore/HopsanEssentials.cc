@@ -10,6 +10,7 @@
 #include "HopsanEssentials.h"
 #include "Components/Components.h"
 #include "Nodes/Nodes.h"
+#include "version.h"
 
 //Set the stacic start values
 bool HopsanEssentials::mHasInstance = false;
@@ -24,6 +25,7 @@ void HopsanEssentials::Initialize()
 
 
     //Do some other stuff
+    mpMessageHandler->addInfoMessage("HopsanCore, Version: " + string(HOPSANCOREVERSION));
 }
 
 HopsanEssentials::HopsanEssentials()
