@@ -436,9 +436,13 @@ void GUIComponent::openParameterDialog()
 }
 
 
-void GUIComponent::groupComponents(QList<QGraphicsItem*> compList)
+void GUIComponent::groupComponents(QList<QGraphicsItem*> compList) //Inte alls klart
 {
     //Borde nog ligga i projecttab så man kan rodda med scenerna
+
+    QList<GUIComponent*> GUICompList;
+    QList<GUIConnector*> GUIConnList;
+
     MessageWidget *pMessageWidget = mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget;
     pMessageWidget->printGUIMessage("Group selected components (implementing in progress...) Selected components: ");
     for (int i=0; i < compList.size(); ++i)
@@ -446,9 +450,31 @@ void GUIComponent::groupComponents(QList<QGraphicsItem*> compList)
         GUIComponent *pComponent = qgraphicsitem_cast<GUIComponent*>(compList.at(i));
         if (pComponent)
         {
-            pMessageWidget->printGUIMessage(QString::fromStdString(pComponent->mpCoreComponent->getName()));
+            GUICompList.append(pComponent);
+
+            QMap<QString, GUIConnector *>::iterator it;
+            for(it = this->mpParentGraphicsView->mConnectionMap.begin(); it!=this->mpParentGraphicsView->mConnectionMap.end(); ++it)
+            {
+                if(it.key().contains(pComponent->getName()))
+                    if((compList.contains(it.value()->getStartPort()->getComponent())) && (compList.contains(it.value()->getEndPort()->getComponent())))
+                        GUIConnList.append(it.value());
+
+                if(this->mpParentGraphicsView->mConnectionMap.empty())
+                    break;
+            }
         }
     }
+
+    GraphicsScene *pSubScene = new GraphicsScene(this->mpParentGraphicsScene->mpParentProjectTab);
+    for (int i=0; i < GUICompList.size(); ++i)
+    {
+        pSubScene->addItem(GUICompList.at(i));
+    }
+    for (int i=0; i < GUIConnList.size(); ++i)
+    {
+        pSubScene->addItem(GUIConnList.at(i));
+    }
+    this->mpParentGraphicsView->setScene(pSubScene);
 }
 
 

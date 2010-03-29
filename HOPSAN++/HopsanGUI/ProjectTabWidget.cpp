@@ -3,7 +3,7 @@
 //! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2010-02-05
 //!
-//! @brief Contains classes for Project Tabs
+//! @brief Contain classes for Project Tabs
 //!
 //$Id$
 
@@ -55,7 +55,8 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     this->setSceneRect(0,0,5000,5000);
     this->centerOn(this->sceneRect().center());
 
-    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent()->parent())); //Ugly!!!
+    MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+//    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent()->parent())); //Ugly!!!
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 }
 

@@ -3,7 +3,7 @@
 //! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2010-02-05
 //!
-//! @brief Contains classes for Project Tabs
+//! @brief Contain classes for Project Tabs
 //!
 //$Id$
 
@@ -48,6 +48,8 @@ public:
     bool mIsCreatingConnector;
     GUIComponent *getComponent(QString name);
     GUIConnector *getTempConnector();
+    HopsanEssentials *mpHopsan;
+    ComponentSystem *mpModel;
     ProjectTab *mpParentProjectTab;
     QMap<QString, GUIComponent *> mComponentMap;
     QMap<QString, GUIConnector *> mConnectionMap;
@@ -93,8 +95,6 @@ protected:
 
 private:
     GUIConnector *mpTempConnector;
-    HopsanEssentials *mpHopsan;
-    ComponentSystem *mpModel;
     QStringList mCopyData;
     QList<QPointF> mCopyDataPos;
     //! @todo QMap no good means problem if we rename need to loop around the rename like in coore
