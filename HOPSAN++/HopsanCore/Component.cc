@@ -670,6 +670,13 @@ double ComponentSystem::getDesiredTimeStep()
 //    }
 //}
 
+//! Sets a bool which is looked at in initialization and simulation loops.
+//! This method can be used by users e.g. GUIs to stop an started initializatiion/simulation process
+void ComponentSystem::stop()
+{
+    mStop = true;
+}
+
 void ComponentSystem::addComponents(vector<Component*> components)
 {
     //! @todo use iterator instead of idx loop (not really necessary)
@@ -1441,10 +1448,15 @@ void ComponentSystem::adjustTimestep(double timestep, vector<Component*> compone
 //! Initializes a system component and all its contained components, also allocates log data memory
 void ComponentSystem::initialize(const double startT, const double stopT)
 {
+    mStop = false; //This variable can not be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
+
     //preAllocate local logspace
     //! @todo this is an ugly quit hack test
     for (size_t i=0; i<mSubNodePtrs.size(); ++i)
     {
+        if (mStop)
+            break;
+
         mSubNodePtrs[i]->setLogSettingsNSamples(1024, startT, stopT);
     }
     preAllocateLogSpace(startT, stopT);
@@ -1457,6 +1469,9 @@ void ComponentSystem::initialize(const double startT, const double stopT)
     //Signal components
     for (size_t s=0; s < mSubComponentStorage.mComponentSignalptrs.size(); ++s)
     {
+        if (mStop)
+            break;
+
         if (mSubComponentStorage.mComponentSignalptrs[s]->isComponentSystem())
         {
             mSubComponentStorage.mComponentSignalptrs[s]->initialize(startT, stopT);
@@ -1470,6 +1485,9 @@ void ComponentSystem::initialize(const double startT, const double stopT)
     //C components
     for (size_t c=0; c < mSubComponentStorage.mComponentCptrs.size(); ++c)
     {
+        if (mStop)
+            break;
+
         if (mSubComponentStorage.mComponentCptrs[c]->isComponentSystem())
         {
             mSubComponentStorage.mComponentCptrs[c]->initialize(startT, stopT);
@@ -1483,6 +1501,9 @@ void ComponentSystem::initialize(const double startT, const double stopT)
     //Q components
     for (size_t q=0; q < mSubComponentStorage.mComponentQptrs.size(); ++q)
     {
+        if (mStop)
+            break;
+
         if (mSubComponentStorage.mComponentQptrs[q]->isComponentSystem())
         {
             mSubComponentStorage.mComponentQptrs[q]->initialize(startT,stopT);
@@ -1498,12 +1519,14 @@ void ComponentSystem::initialize(const double startT, const double stopT)
 //! The system component version of simulate
 void ComponentSystem::simulate(const double startT, const double stopT)
 {
+    mStop = false; //This variable can not be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
+
     mTime = startT;
 
     //Simulate
     double stopTsafe = stopT - mTimestep/2.0; //minus halv a timestep is here to ensure that no numerical issues occure
 
-    while (mTime < stopTsafe)
+    while ((mTime < stopTsafe) && (!mStop))
     {
         //cout << this->getName() << ": starT: " << startT  << " stopT: " << stopT << " mTime: " << mTime << endl;
 //        if (mTime > stopT-0.01)

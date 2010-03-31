@@ -899,8 +899,7 @@ void ProjectTabWidget::simulateCurrent()
         progressBar.setValue(i++);
         if (progressBar.wasCanceled())
         {
-            actualInitialization.terminate(); //! @todo not a good idea to terninate here
-            break;
+            pCurrentTab->mpComponentSystem->stop();
         }
     }
     progressBar.setValue(i);
@@ -920,20 +919,18 @@ void ProjectTabWidget::simulateCurrent()
             progressBar.setValue((size_t)(*pCoreComponentTime/dt * nSteps));
             if (progressBar.wasCanceled())
             {
-                actualSimulation.terminate(); //! @todo not a good idea to terninate here
-                break;
+                pCurrentTab->mpComponentSystem->stop();
             }
-//            QWaitCondition w; //Not good, it makes the event loop to sleep... but it works
-//            QMutex sleepmutex;
-//            sleepmutex.lock();
-//            w.wait(&sleepmutex, 500);
-//            sleepmutex.unlock();
         }
-        progressBar.setValue(nSteps);
+        progressBar.setValue((size_t)(*pCoreComponentTime/dt * nSteps));
         actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
     }
 
-    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulated '").append(QString::fromStdString(pCurrentTab->mpComponentSystem->getName())).append(tr("' successfully!"))));
+    if (progressBar.wasCanceled())
+        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(QString::fromStdString(pCurrentTab->mpComponentSystem->getName())).append(tr("' was terminated!"))));
+    else
+        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulated '").append(QString::fromStdString(pCurrentTab->mpComponentSystem->getName())).append(tr("' successfully!"))));
+
     emit checkMessages();
 
 }

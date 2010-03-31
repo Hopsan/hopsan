@@ -203,6 +203,9 @@ public:
     //Get desired timestep
     double getDesiredTimeStep();
 
+    //Stop a running init or simulation
+    void stop();
+
 private:
     //==========Private functions==========
     //Time specific functions
@@ -224,6 +227,8 @@ private:
     SubComponentStorage mSubComponentStorage;
     vector<Node*> mSubNodePtrs;
     NodeFactory mpNodeFactory;
+
+    bool mStop;
 };
 
 class DLLIMPORTEXPORT ComponentSignal :public Component
