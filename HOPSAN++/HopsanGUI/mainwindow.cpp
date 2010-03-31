@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle("HOPSAN NG");
     this->setWindowIcon(QIcon("../../HopsanGUI/icons/hopsan.ico"));
 
-    mpPreferenceWidget = new PreferenceWidget();
+    mpPreferenceWidget = new PreferenceWidget(this);
 
     //Create a centralwidget for the main window
     mpCentralwidget = new QWidget(this);
