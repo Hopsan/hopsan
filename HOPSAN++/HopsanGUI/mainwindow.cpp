@@ -45,6 +45,8 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle("HOPSAN NG");
     this->setWindowIcon(QIcon("../../HopsanGUI/icons/hopsan.ico"));
 
+    mpPreferenceWidget = new PreferenceWidget();
+
     //Create a centralwidget for the main window
     mpCentralwidget = new QWidget(this);
     mpCentralwidget->setObjectName("centralwidget");
@@ -142,6 +144,10 @@ MainWindow::MainWindow(QWidget *parent)
     actionSaveAs->setText("Save As");
     actionSaveAs->setShortcut(QKeySequence("Ctrl+Alt+s"));
 
+    actionPreferences = new QAction(this);
+    actionPreferences->setText("Model Preferences");
+    actionPreferences->setShortcut(QKeySequence("Ctrl+Alt+p"));
+
     actionProject = new QAction(this);
     actionProject->setText("Project");
 
@@ -166,6 +172,8 @@ MainWindow::MainWindow(QWidget *parent)
     menuFile->addAction(actionOpen);
     menuFile->addAction(actionSave);
     menuFile->addAction(actionSaveAs);
+    menuFile->addSeparator();
+    menuFile->addAction(actionPreferences);
     menuFile->addSeparator();
     menuFile->addAction(actionClose);
 
@@ -222,6 +230,8 @@ MainWindow::MainWindow(QWidget *parent)
     this->connect(this->actionProject,SIGNAL(triggered()),mpProjectTabs,SLOT(addNewProjectTab()));
     this->connect(this->actionLoadLibs,SIGNAL(triggered()),mpLibrary,SLOT(addLibrary()));
     this->connect(this->actionOpen,SIGNAL(triggered()),mpProjectTabs,SLOT(loadModel()));
+    this->connect(this->actionPreferences,SIGNAL(triggered()),this,SLOT(openPreferences()));
+
 
     this->connect(this->actionPlot,SIGNAL(triggered()),SLOT(plot()));
 
@@ -344,4 +354,10 @@ void MainWindow::createToolbars()
     mpSimulationToolBar->setAllowedAreas(Qt::TopToolBarArea);
     mpSimulationToolBar->addWidget(mpSimulationSetupWidget);
 
+}
+
+
+void MainWindow::openPreferences()
+{
+    this->mpPreferenceWidget->show();
 }
