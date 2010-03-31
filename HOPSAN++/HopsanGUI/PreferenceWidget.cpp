@@ -5,7 +5,7 @@
 #include "PreferenceWidget.h"
 
 PreferenceWidget::PreferenceWidget(QWidget *parent)
-    : QMainWindow(parent)
+    : QMainWindow(parent,Qt::Tool)
 {
     //Set the name and size of the main window
     this->setObjectName("PreferenceWidget");
