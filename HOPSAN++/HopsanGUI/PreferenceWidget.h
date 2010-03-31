@@ -1,4 +1,4 @@
-//$Id:$
+//$Id$
 
 #ifndef PREFERENCEWIDGET_H
 #define PREFERENCEWIDGET_H
