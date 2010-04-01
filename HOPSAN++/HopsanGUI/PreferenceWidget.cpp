@@ -21,7 +21,7 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
 
     isoCheckBox = new QCheckBox(tr("Use ISO graphics"));
     isoCheckBox->setCheckable(true);
-    isoCheckBox->setChecked(isoBool);
+    isoCheckBox->setChecked(false);
 
     cancelButton = new QPushButton(tr("&Cancel"));
     cancelButton->setAutoDefault(false);

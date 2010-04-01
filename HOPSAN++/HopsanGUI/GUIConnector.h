@@ -32,6 +32,7 @@ public:
     void setGeometry(geometryType geometry);
     void setLine(qreal x1, qreal y1, qreal x2, qreal y2);
     void setPen(const QPen &pen);
+    void setPens(QPen activePen, QPen primaryPen, QPen hoverPen);
     int getLineNumber();
     geometryType getGeometry();
 
@@ -83,7 +84,7 @@ public:
     void removeLine(QPointF cursorPos);
     void setStartPort(GUIPort *port);
     void setEndPort(GUIPort *port);
-    void setPen(QPen pen);
+    void setPens(QPen activePen, QPen primaryPen, QPen hoverPen);
     int getNumberOfLines();
     int getLineNumber();
     GUIPort *getStartPort();

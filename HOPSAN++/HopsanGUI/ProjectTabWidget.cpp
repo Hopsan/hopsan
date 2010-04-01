@@ -1129,4 +1129,45 @@ void ProjectTabWidget::setIsoGraphics(bool value)
 {
     this->getCurrentTab()->useIsoGraphics = value;
     qDebug() << "Use ISO graphics = " << value;
+
+    QPen passivePen,activePen,hoverPen;
+    ProjectTab *pCurrentTab = getCurrentTab();
+    GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
+    QMap<QString, GUIConnector *>::iterator it;
+    for(it = pCurrentView->mConnectionMap.begin(); it!=pCurrentView->mConnectionMap.end(); ++it)
+    {
+        if(value)
+        {
+            if((it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeHydraulic") | (it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeMechanic"))
+            {
+                passivePen = QPen(QColor("black"),1, Qt::SolidLine, Qt::RoundCap);
+                activePen = QPen(QColor("red"), 2, Qt::SolidLine, Qt::RoundCap);                    //1.6180339887499
+                hoverPen = QPen(QColor("darkRed"),2, Qt::SolidLine, Qt::RoundCap);
+            }
+            else if(it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeSignal")
+            {
+                passivePen = QPen(QColor("blue"),1, Qt::DashLine);
+                activePen = QPen(QColor("red"), 2, Qt::DashLine);
+                hoverPen = QPen(QColor("darkRed"),2, Qt::DashLine);
+            }
+        }
+        else
+        {
+            if((it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeHydraulic") | (it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeMechanic"))
+            {
+                passivePen = QPen(QColor("black"),2, Qt::SolidLine, Qt::RoundCap);
+                activePen = QPen(QColor("red"), 3, Qt::SolidLine, Qt::RoundCap);                    //1.6180339887499
+                hoverPen = QPen(QColor("darkRed"),3, Qt::SolidLine, Qt::RoundCap);
+            }
+            else if(it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeSignal")
+            {
+                passivePen = QPen(QColor("blue"),1, Qt::DashLine);
+                activePen = QPen(QColor("red"), 2, Qt::DashLine);
+                hoverPen = QPen(QColor("darkRed"),2, Qt::DashLine);
+            }
+        }
+
+        it.value()->setPens(activePen, passivePen, hoverPen);
+
+    }
 }

@@ -205,7 +205,6 @@ void GUIConnector::setUnHovered()
     }
 }
 
-
 //! Changes connector style to hovered if it is not active. Used when mouse starts hovering a line.
 //! @see setUnHovered()
 void GUIConnector::setHovered()
@@ -216,6 +215,15 @@ void GUIConnector::setHovered()
         {
             mLines[i]->setHovered();
         }
+    }
+}
+
+
+void GUIConnector::setPens(QPen activePen, QPen primaryPen, QPen hoverPen)
+{
+    for (std::size_t i=0; i!=mLines.size(); ++i )
+    {
+        mLines[i]->setPens(activePen, primaryPen, hoverPen);
     }
 }
 
@@ -797,3 +805,11 @@ void GUIConnectorLine::setPen (const QPen &pen)
     }
 }
 
+
+void GUIConnectorLine::setPens(QPen activePen, QPen primaryPen, QPen hoverPen)
+{
+    mActivePen = activePen;
+    mPrimaryPen = primaryPen;
+    mHoverPen = hoverPen;
+    this->setPassive();
+}
