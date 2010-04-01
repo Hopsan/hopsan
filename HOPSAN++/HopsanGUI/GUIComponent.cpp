@@ -23,7 +23,7 @@
 #include "GUIPort.h"
 #include "GUIConnector.h"
 
-GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
+GUIObject::GUIObject(QPoint position, QString iconPath, GraphicsScene *scene, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
     mpParentGraphicsScene = scene;
@@ -32,26 +32,12 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
 
     mTextOffset = 5.0;
 
-    mComponentTypeName = parameterData.at(0);
-    QString fileName = parameterData.at(1);
-    QString iconRotationBehaviour = parameterData.at(2);
-    qDebug() << "iconRotationBehaviour = " << iconRotationBehaviour;
-    if(iconRotationBehaviour == "ON")
-        this->mIconRotation = true;
-    else
-        this->mIconRotation = false;
-    size_t nPorts = parameterData.at(3).toInt();
-
-    //Core interaction
-    mpCoreComponent = hopsan->CreateComponent(mComponentTypeName.toStdString());
-    //
-
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
     //setFocusPolicy(Qt::StrongFocus);
     this->setAcceptHoverEvents(true);
 
     this->setZValue(10);
-    mpIcon = new QGraphicsSvgItem(fileName,this);
+    mpIcon = new QGraphicsSvgItem(iconPath,this);
 
     std::cout << "GUIcomponent: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
     std::cout << "GUIcomponent: " << mComponentTypeName.toStdString() << std::endl;
@@ -59,7 +45,6 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
     setGeometry(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height());
 
     mpNameText = new GUIComponentNameTextItem(this);
-    refreshName(); //Make sure name window is correct size for center positioning
     //mpNameText->setPos(QPointF(mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2, mTextOffset*mpIcon->boundingRect().height()));
     mNameTextPos = 0;
     this->setNameTextPos(mNameTextPos);
@@ -67,60 +52,6 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
     mpSelectionBox = new GUIComponentSelectionBox(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height(),
                                                   QPen(QColor("red"),2*1.6180339887499), QPen(QColor("darkRed"),2*1.6180339887499),this);
     mpSelectionBox->setVisible(false);
-
-    //Sets the ports
-    //GUIPort::portType type;
-    Port::PORTTYPE porttype;
-    for (size_t i = 0; i < nPorts; ++i)
-    {
-        double x = parameterData.at(4+3*i).toDouble();
-        double y = parameterData.at(5+3*i).toDouble();
-        double rot = parameterData.at(6+3*i).toDouble();
-
-        porttype = mpCoreComponent->getPortPtrVector().at(i)->getPortType();
-
-        QString iconPath("../../HopsanGUI/porticons/");
-        if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeSignal")
-        {
-            iconPath.append("SignalPort");
-            if ( porttype == Port::READPORT)
-            {
-                iconPath.append("_read");
-            }
-            else
-            {
-                iconPath.append("_write");
-            }
-        }
-        else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeMechanic")
-        {
-            iconPath.append("MechanicPort");
-            if (mpCoreComponent->getTypeCQS() == Component::C)
-                iconPath.append("C");
-            else if (mpCoreComponent->getTypeCQS() == Component::Q)
-                iconPath.append("Q");
-        }
-        else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeHydraulic")
-        {
-            iconPath.append("HydraulicPort");
-            if (mpCoreComponent->getTypeCQS() == Component::C)
-                iconPath.append("C");
-            else if (mpCoreComponent->getTypeCQS() == Component::Q)
-                iconPath.append("Q");
-        }
-        else
-        {
-            assert(false);
-        }
-        iconPath.append(".svg");
-
-        GUIPort::portDirectionType direction;
-        if((rot == 0) | (rot == 180))
-            direction = GUIPort::HORIZONTAL;
-        else
-            direction = GUIPort::VERTICAL;
-        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,porttype,direction,this));//mpIcon));
-    }
 
     connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(fixTextPosition(QPointF)));
     //connect(this->mpParentGraphicsView,SIGNAL(keyPressDelete()),this,SLOT(deleteComponent()));
@@ -178,7 +109,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
 //}
 
 
-int GUIComponent::type() const
+int GUIObject::type() const
 {
     return Type;
 }
@@ -189,7 +120,7 @@ double dist(double x1,double y1, double x2, double y2)
     return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
 }
 
-void GUIComponent::fixTextPosition(QPointF pos)
+void GUIObject::fixTextPosition(QPointF pos)
 {
     double x1,x2,y1,y2;
 
@@ -252,7 +183,7 @@ void GUIComponent::fixTextPosition(QPointF pos)
 //}
 
 
-GUIComponent::~GUIComponent()
+GUIObject::~GUIObject()
 {
     //delete widget;
     emit componentDeleted();
@@ -264,13 +195,13 @@ GUIComponent::~GUIComponent()
 //    return mpParentView;
 //}
 
-void GUIComponent::addConnector(GUIConnector *item)
+void GUIObject::addConnector(GUIConnector *item)
 {
     connect(this, SIGNAL(componentMoved()), item, SLOT(updatePos()));
 }
 
 //! This function refreshes the displayed name (HopsanCore may have changed it)
-void GUIComponent::refreshName()
+void GUIObject::refreshName()
 {
     mpNameText->setPlainText(getName());
     //Adjust the position of the text
@@ -278,9 +209,20 @@ void GUIComponent::refreshName()
 }
 
 //! This function returns the current component name
+QString GUIObject::getName()
+{
+    return this->mpNameText->toPlainText();
+}
+
+//! This function returns the current component name
 QString GUIComponent::getName()
 {
     return QString::fromStdString(mpCoreComponent->getName());
+}
+
+void GUIObject::setName(QString newName, bool doOnlyCoreRename)
+{
+
 }
 
 //!
@@ -321,7 +263,7 @@ void GUIComponent::setName(QString newName, bool doOnlyCoreRename)
 
 //! Returns the port with the specified number.
 //! @see getPortNumber(GUIPort *port)
-GUIPort *GUIComponent::getPort(int number)
+GUIPort *GUIObject::getPort(int number)
 {
     return this->mPortListPtrs[number];
 }
@@ -342,13 +284,13 @@ void GUIComponent::deleteMe()
 
 
 //! Returns a string with the component type.
-QString GUIComponent::getTypeName()
+QString GUIObject::getTypeName()
 {
     return this->mComponentTypeName;
 }
 
 //! Event when mouse cursor enters component icon.
-void GUIComponent::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+void GUIObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     if(!this->isSelected())
     {
@@ -360,7 +302,7 @@ void GUIComponent::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
 
 //! Event when mouse cursor leaves component icon.
-void GUIComponent::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+void GUIObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     if(!this->isSelected())
     {
@@ -436,7 +378,7 @@ void GUIComponent::openParameterDialog()
 }
 
 
-void GUIComponent::groupComponents(QList<QGraphicsItem*> compList) //Inte alls klart
+void GUIObject::groupComponents(QList<QGraphicsItem*> compList) //Inte alls klart
 {
     //Borde nog ligga i projecttab så man kan rodda med scenerna
 
@@ -489,7 +431,7 @@ void GUIComponent::groupComponents(QList<QGraphicsItem*> compList) //Inte alls k
 
 
 //! Handles item change events.
-QVariant GUIComponent::itemChange(GraphicsItemChange change, const QVariant &value)
+QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     QGraphicsWidget::itemChange(change, value);
 
@@ -526,7 +468,7 @@ QVariant GUIComponent::itemChange(GraphicsItemChange change, const QVariant &val
 
 
 //! Shows or hides the port, depending on the input boolean and whether or not they are connected.
-void GUIComponent::showPorts(bool visible)
+void GUIObject::showPorts(bool visible)
 {
     QList<GUIPort*>::iterator i;
     if(visible)
@@ -547,7 +489,7 @@ void GUIComponent::showPorts(bool visible)
 
 //! Figures out the number of a component port by using a pointer to the port.
 //! @see getPort(int number)
-int GUIComponent::getPortNumber(GUIPort *port)
+int GUIObject::getPortNumber(GUIPort *port)
 {
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
@@ -563,7 +505,7 @@ int GUIComponent::getPortNumber(GUIPort *port)
 
 
 //! Rotates a component 90 degrees clockwise, and tells the connectors that the component has moved.
-void GUIComponent::rotate()
+void GUIObject::rotate()
 {
     int temNameTextPos = mNameTextPos;
     this->setTransformOriginPoint(this->mpIcon->boundingRect().center());
@@ -614,7 +556,7 @@ void GUIComponent::rotate()
 //! @see moveDown()
 //! @see moveLeft()
 //! @see moveRight()
-void GUIComponent::moveUp()
+void GUIObject::moveUp()
 {
     qDebug() << "moveUp()";
     this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()-1);
@@ -625,7 +567,7 @@ void GUIComponent::moveUp()
 //! @see moveUp()
 //! @see moveLeft()
 //! @see moveRight()
-void GUIComponent::moveDown()
+void GUIObject::moveDown()
 {
     this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()+1);
 }
@@ -635,7 +577,7 @@ void GUIComponent::moveDown()
 //! @see moveUp()
 //! @see moveDown()
 //! @see moveRight()
-void GUIComponent::moveLeft()
+void GUIObject::moveLeft()
 {
     this->setPos(this->mapFromScene(this->mapToScene(this->pos())).x()-1, this->pos().y());
 }
@@ -645,7 +587,7 @@ void GUIComponent::moveLeft()
 //! @see moveUp()
 //! @see moveDown()
 //! @see moveLeft()
-void GUIComponent::moveRight()
+void GUIObject::moveRight()
 {
     this->setPos(this->mapFromScene(this->mapToScene(this->pos())).x()+1, this->pos().y());
 }
@@ -654,7 +596,7 @@ void GUIComponent::moveRight()
 //! Returns an integer that describes the position of the component name text.
 //! @see setNameTextPos(int textPos)
 //! @see fixTextPosition(QPointF pos)
-int GUIComponent::getNameTextPos()
+int GUIObject::getNameTextPos()
 {
     return mNameTextPos;
 }\
@@ -663,7 +605,7 @@ int GUIComponent::getNameTextPos()
 //! Updates the name text position, and moves the text to the correct position.
 //! @see getNameTextPos()
 //! @see fixTextPosition(QPointF pos)
-void GUIComponent::setNameTextPos(int textPos)
+void GUIObject::setNameTextPos(int textPos)
 {
     mNameTextPos = textPos;
 
@@ -713,18 +655,95 @@ void GUIComponent::setNameTextPos(int textPos)
     }
 }
 
-void GUIComponent::hideName()
+void GUIObject::hideName()
 {
     this->mpNameText->setVisible(false);
 }
 
-void GUIComponent::showName()
+void GUIObject::showName()
 {
     this->mpNameText->setVisible(true);
 }
 
 
-GUIComponentNameTextItem::GUIComponentNameTextItem(GUIComponent *pParent)
+GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
+    : GUIObject(position, parameterData.at(1),scene, parent)
+{
+    mComponentTypeName = parameterData.at(0);
+    //QString fileName = parameterData.at(1);
+    QString iconRotationBehaviour = parameterData.at(2);
+    qDebug() << "iconRotationBehaviour = " << iconRotationBehaviour;
+    if(iconRotationBehaviour == "ON")
+        this->mIconRotation = true;
+    else
+        this->mIconRotation = false;
+    size_t nPorts = parameterData.at(3).toInt();
+
+    //Core interaction
+    mpCoreComponent = hopsan->CreateComponent(mComponentTypeName.toStdString());
+    //
+
+    //Sets the ports
+    //GUIPort::portType type;
+    Port::PORTTYPE porttype;
+    for (size_t i = 0; i < nPorts; ++i)
+    {
+        double x = parameterData.at(4+3*i).toDouble();
+        double y = parameterData.at(5+3*i).toDouble();
+        double rot = parameterData.at(6+3*i).toDouble();
+
+        porttype = mpCoreComponent->getPortPtrVector().at(i)->getPortType();
+
+        QString iconPath("../../HopsanGUI/porticons/");
+        if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeSignal")
+        {
+            iconPath.append("SignalPort");
+            if ( porttype == Port::READPORT)
+            {
+                iconPath.append("_read");
+            }
+            else
+            {
+                iconPath.append("_write");
+            }
+        }
+        else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeMechanic")
+        {
+            iconPath.append("MechanicPort");
+            if (mpCoreComponent->getTypeCQS() == Component::C)
+                iconPath.append("C");
+            else if (mpCoreComponent->getTypeCQS() == Component::Q)
+                iconPath.append("Q");
+        }
+        else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeHydraulic")
+        {
+            iconPath.append("HydraulicPort");
+            if (mpCoreComponent->getTypeCQS() == Component::C)
+                iconPath.append("C");
+            else if (mpCoreComponent->getTypeCQS() == Component::Q)
+                iconPath.append("Q");
+        }
+        else
+        {
+            assert(false);
+        }
+        iconPath.append(".svg");
+
+        GUIPort::portDirectionType direction;
+        if((rot == 0) | (rot == 180))
+            direction = GUIPort::HORIZONTAL;
+        else
+            direction = GUIPort::VERTICAL;
+        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,porttype,direction,this));//mpIcon));
+    }
+
+    refreshName(); //Make sure name window is correct size for center positioning
+
+
+}
+
+
+GUIComponentNameTextItem::GUIComponentNameTextItem(GUIObject *pParent)
     :   QGraphicsTextItem(pParent)
 {
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable);
@@ -772,7 +791,7 @@ void GUIComponentNameTextItem::focusOutEvent(QFocusEvent *event)
 //! @param activePen defines the width and color of the box when the parent component is selected.
 //! @param hoverPen defines the width and color of the box when the parent component is hovered by the mouse cursor.
 //! @param *parent defines the parent object.
-GUIComponentSelectionBox::GUIComponentSelectionBox(qreal x1, qreal y1, qreal x2, qreal y2, QPen activePen, QPen hoverPen, GUIComponent *parent)
+GUIComponentSelectionBox::GUIComponentSelectionBox(qreal x1, qreal y1, qreal x2, qreal y2, QPen activePen, QPen hoverPen, GUIObject *parent)
         : QGraphicsItemGroup(parent)
 {
     mpParentGUIComponent = parent;

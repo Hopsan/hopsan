@@ -19,13 +19,13 @@ class Component;
 class GUIComponentSelectionBox;
 class GUIPort;
 
-class GUIComponent : public QGraphicsWidget
+class GUIObject : public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
-    //GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QString componentName, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent = 0);
-    ~GUIComponent();
+    GUIObject(QPoint position, QString iconPath, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    //GUIObject(HopsanEssentials *hopsan, const QString &fileName, QString componentName, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent = 0);
+    ~GUIObject();
     //QGraphicsView *getParentView();
     void addConnector(GUIConnector *item);
 
@@ -46,20 +46,20 @@ public:
 
     enum { Type = UserType + 1 };
     int type() const;
-
-    //Core interaction
-    Component *mpCoreComponent;
-    //
+//
+//    //Core interaction
+//    Component *mpCoreComponent;
+//    //
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     //void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+//    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     //void keyPressEvent( QKeyEvent *event );
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    void openParameterDialog();
+//    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+//    void openParameterDialog();
     void groupComponents(QList<QGraphicsItem*> compList);
 
 signals:
@@ -67,7 +67,7 @@ signals:
     void componentDeleted();
 
 public slots:
-     void deleteMe();
+//     void deleteMe();
      void rotate();
      void moveUp();
      void moveDown();
@@ -76,7 +76,7 @@ public slots:
      void hideName();
      void showName();
 
-private:
+protected:
     QGraphicsSvgItem *mpIcon;
     GUIComponentNameTextItem *mpNameText;
     GUIComponentSelectionBox *mpSelectionBox;
@@ -89,9 +89,32 @@ private:
     int mNameTextPos;
     bool mIconRotation;
 
-private slots:
+protected slots:
     void fixTextPosition(QPointF pos);
 
+};
+
+
+class GUIComponent : public GUIObject
+{
+    Q_OBJECT
+public:
+    GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+
+    //Core interaction
+    Component *mpCoreComponent;
+    //
+
+    QString getName();
+    void setName(QString name, bool doOnlyLocalRename=false);
+
+protected:
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+    void openParameterDialog();
+
+public slots:
+     void deleteMe();
 };
 
 
@@ -99,10 +122,10 @@ class GUIComponentNameTextItem : public QGraphicsTextItem
 {
     Q_OBJECT
 private:
-    GUIComponent* mpParentGUIComponent;
+    GUIObject* mpParentGUIComponent;
 
 public:
-    GUIComponentNameTextItem(GUIComponent *pParent);
+    GUIComponentNameTextItem(GUIObject *pParent);
 
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -119,13 +142,13 @@ class GUIComponentSelectionBox : public QObject, public QGraphicsItemGroup
 {
     Q_OBJECT
 public:
-    GUIComponentSelectionBox(qreal x1, qreal y1, qreal x2, qreal y2, QPen activePen, QPen hoverPen, GUIComponent *parent = 0);
+    GUIComponentSelectionBox(qreal x1, qreal y1, qreal x2, qreal y2, QPen activePen, QPen hoverPen, GUIObject *parent = 0);
     ~GUIComponentSelectionBox();
     void setActive();
     void setPassive();
     void setHovered();
 
-    GUIComponent *mpParentGUIComponent;
+    GUIObject *mpParentGUIComponent;
 
 private:
     std::vector<QGraphicsLineItem*> mLines;

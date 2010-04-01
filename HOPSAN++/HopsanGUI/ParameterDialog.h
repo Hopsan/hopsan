@@ -18,6 +18,7 @@ class QGroupBox;
 class QLabel;
 class QLineEdit;
 class QPushButton;
+class GUIObject;
 class GUIComponent;
 class Component;
 
