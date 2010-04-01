@@ -21,6 +21,7 @@
 #include "InitializationThread.h"
 #include <QtGui>
 #include <QSizePolicy>
+#include "version.h"
 
 #include <string>
 #include <iostream>
@@ -1124,6 +1125,14 @@ void ProjectTabWidget::saveModel(bool saveAs)
     std::ofstream modelFile (modelFileName.toStdString().c_str());
     QFileInfo fileInfo(modelFileName);
 
+    modelFile << "--------------------------------------------------------------" << std::endl;
+    modelFile << "-------------------  HOPSAN NG MODEL FILE  -------------------" << std::endl;
+    modelFile << "--------------------------------------------------------------" << std::endl;
+    modelFile << "HOPSANGUIVERSION " << HOPSANGUIVERSION << std::endl;
+    modelFile << "HOPSANGUIMODELFILEVERSION " << HOPSANGUIMODELFILEVERSION << std::endl;
+    modelFile << "HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION " << HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION << std::endl;
+    modelFile << "--------------------------------------------------------------" << std::endl;
+
     QMap<QString, GUIComponent *>::iterator it;
     for(it = pCurrentView->mComponentMap.begin(); it!=pCurrentView->mComponentMap.end(); ++it)
     {
@@ -1131,6 +1140,8 @@ void ProjectTabWidget::saveModel(bool saveAs)
         modelFile << "COMPONENT " << it.value()->getTypeName().toStdString() << " " << it.key().toStdString()
                   << " " << pos.x() << " " << pos.y() << " " << it.value()->rotation() << " " << it.value()->getNameTextPos() << std::endl;
     }
+
+    modelFile << "--------------------------------------------------------------" << std::endl;
 
     QMap<QString, GUIConnector *>::iterator it2;
     for(it2 = pCurrentView->mConnectionMap.begin(); it2!=pCurrentView->mConnectionMap.end(); ++it2)
@@ -1153,8 +1164,8 @@ void ProjectTabWidget::saveModel(bool saveAs)
             }
         }
         modelFile << "\n";
-
     }
+    modelFile << "--------------------------------------------------------------" << std::endl;
 }
 
 
