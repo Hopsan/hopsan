@@ -106,6 +106,7 @@ public:
 
     QString getName();
     void setName(QString name, bool doOnlyLocalRename=false);
+    void refreshName();
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);

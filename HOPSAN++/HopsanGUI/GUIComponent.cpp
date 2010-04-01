@@ -208,6 +208,14 @@ void GUIObject::refreshName()
     this->fixTextPosition(this->mpNameText->pos());
 }
 
+//! This function refreshes the displayed name (HopsanCore may have changed it)
+void GUIComponent::refreshName()
+{
+    mpNameText->setPlainText(getName());
+    //Adjust the position of the text
+    this->fixTextPosition(this->mpNameText->pos());
+}
+
 //! This function returns the current component name
 QString GUIObject::getName()
 {
@@ -222,7 +230,7 @@ QString GUIComponent::getName()
 
 void GUIObject::setName(QString newName, bool doOnlyCoreRename)
 {
-
+    std::cout << "ALKFJLAKJFLFAKJ" << std::endl;
 }
 
 //!
