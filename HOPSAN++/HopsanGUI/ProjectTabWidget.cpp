@@ -57,9 +57,27 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     this->mBackgroundColor = QColor(Qt::white);
     this->setBackgroundBrush(mBackgroundColor);
 
+    this->createActions();
+    this->createMenus();
+
     MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 //    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent()->parent())); //Ugly!!!
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
+    connect(this->systemPortAction, SIGNAL(triggered()), SLOT(addSystemPort()));
+}
+
+void GraphicsView::createMenus()
+{
+    menuInsert = new QMenu(this);
+    menuInsert->setObjectName("menuInsert");
+    menuInsert->setTitle("Insert");
+    menuInsert->addAction(systemPortAction);
+}
+
+void GraphicsView::createActions()
+{
+    systemPortAction = new QAction(this);
+    systemPortAction->setText("System Port");
 }
 
 
@@ -75,6 +93,10 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
         else
         {
             qDebug() << "You didn't right click on an component.";
+            QMenu menu(this);
+            menu.addMenu(menuInsert);
+            menu.exec(event->globalPos());
+
         }
     }
 }
@@ -262,6 +284,11 @@ bool GraphicsView::haveComponent(QString name)
     }
 }
 
+void GraphicsView::addSystemPort()
+{
+    qDebug() <<"Adding system port";
+}
+
 
 //! Defines what happens when scrolling the mouse in a GraphicsView.
 //! @param event contains information of the scrolling operation.
@@ -378,11 +405,11 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     }
     else if  ((event->button() == Qt::LeftButton) && (this->mIsCreatingConnector))
     {
-        if (mpTempConnector->getLastLine()->getGeometry()==GUIConnectorLine::DIAGONAL)
-        {
-            mpTempConnector->addFreeLine();
-            mpTempConnector->getLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
-        }
+        //if (mpTempConnector->getLastLine()->getGeometry()==GUIConnectorLine::DIAGONAL)
+        //{
+        //    mpTempConnector->addFreeLine();
+        //    mpTempConnector->getLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
+        //}
         mpTempConnector->addFreeLine();
     }
     emit viewClicked();

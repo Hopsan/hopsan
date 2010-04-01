@@ -54,6 +54,8 @@ public:
     QMap<QString, GUIComponent *> mComponentMap;
     QMap<QString, GUIConnector *> mConnectionMap;
     ComponentSystem *getModelPointer();
+    QAction *systemPortAction;
+    QMenu *menuInsert;
     QColor mBackgroundColor;
 
 signals:
@@ -71,6 +73,7 @@ public slots:
     void deleteComponent(QString componentName);
     bool haveComponent(QString name);
     void renameComponent(QString oldName, QString newName);
+    void addSystemPort();
 
     void addConnector(GUIPort *pPort);
     void removeConnector(GUIConnector* pConnector);
@@ -99,6 +102,8 @@ private:
     QStringList mCopyData;
     QList<QPointF> mCopyDataPos;
     //! @todo QMap no good means problem if we rename need to loop around the rename like in coore
+    void createActions();
+    void createMenus();
  };
 
 
