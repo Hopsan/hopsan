@@ -56,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpCentralgrid->setSpacing(10);
 
     //Create a dock for the MessageWidget
-    QDockWidget *messagedock = new QDockWidget(tr("Messages"), this);
+    messagedock = new QDockWidget(tr("Messages"), this);
     messagedock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
     mpMessageWidget = new MessageWidget(this);
     mpMessageWidget->setReadOnly(true);
@@ -65,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpMessageWidget->printGUIMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
 
     //Create a dock for the componentslibrary
-    QDockWidget *libdock = new QDockWidget(tr("Components"), this);
+    libdock = new QDockWidget(tr("Components"), this);
     libdock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     mpLibrary = new LibraryWidget(this);
     libdock->setWidget(mpLibrary);
@@ -92,119 +92,16 @@ MainWindow::MainWindow(QWidget *parent)
 
     mpProjectTabs->addNewProjectTab();
 
-    //Create the menubar
-    menubar = new QMenuBar();
-    menubar->setGeometry(QRect(0,0,800,25));
-    menubar->setObjectName("menubar");
-
-    //Create the menues
-    menuFile = new QMenu(menubar);
-    menuFile->setObjectName("menuFile");
-    menuFile->setTitle("&File");
-
-    menuNew = new QMenu(menubar);
-    menuNew->setObjectName("menuNew");
-    menuNew->setTitle("New");
-
-    //menuLibs = new QMenu(menubar);
-    //menuLibs->setObjectName("menuLibs");
-    //menuLibs->setTitle("&Libraries");
-
-    menuSimulation = new QMenu(menubar);
-    menuSimulation->setObjectName("menuSimulation");
-    menuSimulation->setTitle("&Simulation");
-
-    menuView = new QMenu(menubar);
-    menuView->setTitle("&View");
-
-    menuTools = new QMenu(menubar);
-    menuTools->setTitle("&Tools");
-
-    menuPlot = new QMenu(menubar);
-    menuPlot->setTitle("&Plot");
-
-    this->setMenuBar(menubar);
-
     //Create the Statusbar
     statusBar = new QStatusBar();
     statusBar->setObjectName("statusBar");
     this->setStatusBar(statusBar);
 
-    //Create the actionsbuttons
-    actionOpen = new QAction(this);
-    actionOpen->setText("Open");
-    actionOpen->setShortcut(QKeySequence("Ctrl+o"));
-
-    actionClose = new QAction(this);
-    actionClose->setText("Close");
-    actionClose->setShortcut(QKeySequence("Ctrl+q"));
-
-    actionSave = new QAction(this);
-    actionSave->setText("Save");
-    actionSave->setShortcut(QKeySequence("Ctrl+s"));
-
-    actionSaveAs = new QAction(this);
-    actionSaveAs->setText("Save As");
-    actionSaveAs->setShortcut(QKeySequence("Ctrl+Alt+s"));
-
-    actionPreferences = new QAction(this);
-    actionPreferences->setText("Model Preferences");
-    actionPreferences->setShortcut(QKeySequence("Ctrl+Alt+p"));
-
-    actionOptions = new QAction(this);
-    actionOptions->setText("Options");
-
-    actionProject = new QAction(this);
-    actionProject->setText("Project");
-
-    actionLoadLibs = new QAction(this);
-    actionLoadLibs->setText("Load Libraries");
-
-    actionSimulate = new QAction(this);
-    actionSimulate->setText("Simulate");
-    actionSimulate->setShortcut(Qt::Key_F9);
-
-    actionPlot = new QAction(this);
-    actionPlot->setText("Plot");
-
-
     this->createActions();
     this->createToolbars();
+    this->createMenus();
 
-    //Add the actionbuttons to the menues
-    menuNew->addAction(actionProject);
 
-    menuFile->addAction(menuNew->menuAction());
-    menuFile->addAction(actionOpen);
-    menuFile->addAction(actionSave);
-    menuFile->addAction(actionSaveAs);
-    menuFile->addSeparator();
-    menuFile->addAction(actionLoadLibs);
-    menuFile->addSeparator();
-    menuFile->addAction(actionPreferences);
-    menuFile->addSeparator();
-    menuFile->addAction(actionClose);
-
-    //menuLibs->addAction(actionLoadLibs);
-    //menuLibs->addAction(actionOpen);
-
-    menuSimulation->addAction(actionSimulate);
-
-    menuView->addAction(libdock->toggleViewAction());
-    menuView->addAction(messagedock->toggleViewAction());
-    menuView->addAction(fileToolBar->toggleViewAction());
-    menuView->addAction(clipboardToolBar->toggleViewAction());
-    menuView->addAction(simToolBar->toggleViewAction());
-
-    menuTools->addAction(actionOptions);
-
-    menuPlot->addAction(actionPlot);
-
-    menubar->addAction(menuFile->menuAction());
-    menubar->addAction(menuView->menuAction());
-    menubar->addAction(menuTools->menuAction());
-    menubar->addAction(menuSimulation->menuAction());
-    menubar->addAction(menuPlot->menuAction());
 
     //Load default libraries
     mpLibrary->addEmptyLibrary("User defined libraries");
@@ -240,21 +137,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     QMetaObject::connectSlotsByName(this);
 
-
-    //Establish connections
-    this->connect(this->actionSave,SIGNAL(triggered()),mpProjectTabs,SLOT(saveProjectTab()));
-    this->connect(this->actionSaveAs,SIGNAL(triggered()),mpProjectTabs,SLOT(saveProjectTabAs()));
-    this->connect(this->actionClose,SIGNAL(triggered()),SLOT(close()));
-    this->connect(this->actionProject,SIGNAL(triggered()),mpProjectTabs,SLOT(addNewProjectTab()));
-    this->connect(this->actionLoadLibs,SIGNAL(triggered()),mpLibrary,SLOT(addLibrary()));
-    this->connect(this->actionOpen,SIGNAL(triggered()),mpProjectTabs,SLOT(loadModel()));
-    this->connect(this->actionPreferences,SIGNAL(triggered()),this,SLOT(openPreferences()));
-    this->connect(this->actionOptions,SIGNAL(triggered()),this,SLOT(openOptions()));
-
-
-    this->connect(this->actionPlot,SIGNAL(triggered()),SLOT(plot()));
-
-    this->connect(this->actionSimulate,SIGNAL(triggered()),mpProjectTabs,SLOT(simulateCurrent()));
     connect(mpSimulationSetupWidget->mpSimulateButton, SIGNAL(released()), mpProjectTabs, SLOT(simulateCurrent()));
 }
 
@@ -306,19 +188,24 @@ void MainWindow::createActions()
     connect(newAction, SIGNAL(triggered()), mpProjectTabs,SLOT(addNewProjectTab()));
 
     openAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_13.png"), tr("&Open"), this);
-    openAction->setShortcut(tr("Open"));
+    openAction->setShortcut(QKeySequence("Ctrl+o"));
     openAction->setStatusTip(tr("Load Model File"));
     connect(openAction, SIGNAL(triggered()), mpProjectTabs,SLOT(loadModel()));
 
     saveAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_11.png"), tr("&Save"), this);
-    saveAction->setShortcut(tr("Save"));
+    saveAction->setShortcut(QKeySequence("Ctrl+s"));
     saveAction->setStatusTip(tr("Save Model File"));
     connect(saveAction, SIGNAL(triggered()), mpProjectTabs,SLOT(saveProjectTab()));
 
     saveAsAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_12.png"), tr("&Save As"), this);
-    saveAsAction->setShortcut(tr("Save As"));
+    saveAction->setShortcut(QKeySequence("Ctrl+Alt+s"));
     saveAsAction->setStatusTip(tr("Save Model File As"));
     connect(saveAsAction, SIGNAL(triggered()), mpProjectTabs,SLOT(saveProjectTabAs()));
+
+    closeAction = new QAction(this);
+    closeAction->setText("Close");
+    closeAction->setShortcut(QKeySequence("Ctrl+q"));
+    connect(this->closeAction,SIGNAL(triggered()),SLOT(close()));
 
     cutAction = new QAction(QIcon("../../HopsanGUI/icons/cut.png"), tr("&Cut"), this);
     cutAction->setShortcut(tr("Cut"));
@@ -344,9 +231,95 @@ void MainWindow::createActions()
     plotAction->setShortcut(tr("Plot"));
     plotAction->setStatusTip(tr("Plot Something"));
     connect(plotAction, SIGNAL(triggered()), this,SLOT(plot()));
+
+    loadLibsAction = new QAction(this);
+    loadLibsAction->setText("Load Libraries");
+    connect(loadLibsAction,SIGNAL(triggered()),mpLibrary,SLOT(addLibrary()));
+
+    preferencesAction = new QAction(QIcon("../../HopsanGUI/icons/preferences.png"), tr("&Model Preferences"), this);
+    preferencesAction->setText("Model Preferences");
+    preferencesAction->setShortcut(QKeySequence("Ctrl+Alt+p"));
+    connect(preferencesAction,SIGNAL(triggered()),this,SLOT(openPreferences()));
+
+    optionsAction = new QAction(QIcon("../../HopsanGUI/icons/options.png"), tr("&Options"), this);
+    optionsAction->setText("Options");
+    connect(optionsAction,SIGNAL(triggered()),this,SLOT(openOptions()));
 }
 
 
+//! Creates the menus
+void MainWindow::createMenus()
+{
+    //Create the menubar
+    menubar = new QMenuBar();
+    menubar->setGeometry(QRect(0,0,800,25));
+    menubar->setObjectName("menubar");
+
+    //Create the menues
+    menuFile = new QMenu(menubar);
+    menuFile->setObjectName("menuFile");
+    menuFile->setTitle("&File");
+
+    menuNew = new QMenu(menubar);
+    menuNew->setObjectName("menuNew");
+    menuNew->setTitle("New");
+
+    menuSimulation = new QMenu(menubar);
+    menuSimulation->setObjectName("menuSimulation");
+    menuSimulation->setTitle("&Simulation");
+
+    menuEdit = new QMenu(menubar);
+    menuEdit->setTitle("&Edit");
+
+    menuView = new QMenu(menubar);
+    menuView->setTitle("&View");
+
+    menuTools = new QMenu(menubar);
+    menuTools->setTitle("&Tools");
+
+    menuPlot = new QMenu(menubar);
+    menuPlot->setTitle("&Plot");
+
+    this->setMenuBar(menubar);
+
+    //Add the actionbuttons to the menues
+    newAction->setText("Project");
+    menuNew->addAction(newAction);
+
+    menuFile->addAction(menuNew->menuAction());
+    menuFile->addAction(openAction);
+    menuFile->addAction(saveAction);
+    menuFile->addAction(saveAsAction);
+    menuFile->addSeparator();
+    menuFile->addAction(loadLibsAction);
+    menuFile->addSeparator();
+    menuFile->addAction(preferencesAction);
+    menuFile->addSeparator();
+    menuFile->addAction(closeAction);
+
+    menuSimulation->addAction(simulateAction);
+
+    menuEdit->addAction(copyAction);
+    menuEdit->addAction(cutAction);
+    menuEdit->addAction(pasteAction);
+
+    menuView->addAction(libdock->toggleViewAction());
+    menuView->addAction(messagedock->toggleViewAction());
+    menuView->addAction(fileToolBar->toggleViewAction());
+    menuView->addAction(clipboardToolBar->toggleViewAction());
+    menuView->addAction(simToolBar->toggleViewAction());
+
+    menuTools->addAction(optionsAction);
+
+    menuPlot->addAction(plotAction);
+
+    menubar->addAction(menuFile->menuAction());
+    menubar->addAction(menuEdit->menuAction());
+    menubar->addAction(menuView->menuAction());
+    menubar->addAction(menuTools->menuAction());
+    menubar->addAction(menuSimulation->menuAction());
+    menubar->addAction(menuPlot->menuAction());
+}
 
 //! Creates the toolbars
 void MainWindow::createToolbars()
@@ -363,16 +336,17 @@ void MainWindow::createToolbars()
     clipboardToolBar->addAction(cutAction);
     clipboardToolBar->addAction(copyAction);
     clipboardToolBar->addAction(pasteAction);
+    clipboardToolBar->addAction(optionsAction);
 
     simToolBar = addToolBar(tr("Simulation Toolbar"));
     simToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    simToolBar->addAction(preferencesAction);
     simToolBar->addAction(simulateAction);
     simToolBar->addAction(plotAction);
 
     mpSimulationToolBar = addToolBar(tr("Simulation"));
     mpSimulationToolBar->setAllowedAreas(Qt::TopToolBarArea);
     mpSimulationToolBar->addWidget(mpSimulationSetupWidget);
-
 }
 
 

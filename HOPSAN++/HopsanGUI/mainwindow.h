@@ -49,32 +49,26 @@ public:
     QMenu *menuNew;
     QMenu *menuLibs;
     QMenu *menuSimulation;
+    QMenu *menuEdit;
     QMenu *menuView;
     QMenu *menuTools;
     QMenu *menuPlot;
     MessageWidget *mpMessageWidget;
     QStatusBar *statusBar;
-    QAction *actionOpen;
-    QAction *actionSave;
-    QAction *actionSaveAs;
-    QAction *actionClose;
-    QAction *actionProject;
-    QAction *actionLoadLibs;
-    QAction *actionSimulate;
-    QAction *actionPlot;
-    QAction *actionPreferences;
-    QAction *actionOptions;
-
 
     QAction *newAction;
     QAction *openAction;
     QAction *saveAction;
     QAction *saveAsAction;
+    QAction *closeAction;
     QAction *cutAction;
     QAction *copyAction;
     QAction *pasteAction;
     QAction *simulateAction;
     QAction *plotAction;
+    QAction *loadLibsAction;
+    QAction *preferencesAction;
+    QAction *optionsAction;
 
     QToolBar *fileToolBar;
     QToolBar *clipboardToolBar;
@@ -100,7 +94,10 @@ private slots:
 
 private:
     void createActions();
+    void createMenus();
     void createToolbars();
+    QDockWidget *messagedock;
+    QDockWidget *libdock;
 
 
 };
