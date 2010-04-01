@@ -24,19 +24,17 @@ class GUIObject : public QGraphicsWidget
     Q_OBJECT
 public:
     GUIObject(QPoint position, QString iconPath, GraphicsScene *scene, QGraphicsItem *parent = 0);
-    //GUIObject(HopsanEssentials *hopsan, const QString &fileName, QString componentName, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent = 0);
     ~GUIObject();
     //QGraphicsView *getParentView();
     void addConnector(GUIConnector *item);
 
-    QString getName();
-    QString getTypeName();
+    virtual QString getName();
     void refreshName();
-    void setName(QString name, bool doOnlyLocalRename=false);
+    virtual void setName(QString name, bool doOnlyLocalRename=false);
 
-    int getPortNumber(GUIPort *);
+    int getPortNumber(GUIPort *port);
     int getNameTextPos();
-    void setNameTextPos(int);
+    void setNameTextPos(int textPos);
 
     void showPorts(bool visible);
     GUIPort *getPort(int number);
@@ -44,22 +42,13 @@ public:
     GraphicsScene *mpParentGraphicsScene;
     GraphicsView *mpParentGraphicsView;
 
-    enum { Type = UserType + 1 };
+    enum { Type = UserType + 2 };
     int type() const;
-//
-//    //Core interaction
-//    Component *mpCoreComponent;
-//    //
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
-    //void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
-//    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-    //void keyPressEvent( QKeyEvent *event );
-//    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-//    void openParameterDialog();
     void groupComponents(QList<QGraphicsItem*> compList);
 
 signals:
@@ -85,7 +74,6 @@ protected:
     //std::vector<GUIConnector*> mConnectors;        //Inteded to store connectors for each component
 
     QList<GUIPort*> mPortListPtrs;
-    QString mComponentTypeName;
     int mNameTextPos;
     bool mIconRotation;
 
@@ -106,12 +94,17 @@ public:
 
     QString getName();
     void setName(QString name, bool doOnlyLocalRename=false);
-    void refreshName();
+    QString getTypeName();
+
+    enum { Type = UserType + 3 };
+    int type() const;
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void openParameterDialog();
+
+    QString mComponentTypeName;
 
 public slots:
      void deleteMe();

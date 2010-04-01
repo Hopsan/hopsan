@@ -40,7 +40,6 @@ GUIObject::GUIObject(QPoint position, QString iconPath, GraphicsScene *scene, QG
     mpIcon = new QGraphicsSvgItem(iconPath,this);
 
     std::cout << "GUIcomponent: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
-    std::cout << "GUIcomponent: " << mComponentTypeName.toStdString() << std::endl;
 
     setGeometry(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height());
 
@@ -110,6 +109,12 @@ GUIObject::GUIObject(QPoint position, QString iconPath, GraphicsScene *scene, QG
 
 
 int GUIObject::type() const
+{
+    return Type;
+}
+
+
+int GUIComponent::type() const
 {
     return Type;
 }
@@ -208,13 +213,6 @@ void GUIObject::refreshName()
     this->fixTextPosition(this->mpNameText->pos());
 }
 
-//! This function refreshes the displayed name (HopsanCore may have changed it)
-void GUIComponent::refreshName()
-{
-    mpNameText->setPlainText(getName());
-    //Adjust the position of the text
-    this->fixTextPosition(this->mpNameText->pos());
-}
 
 //! This function returns the current component name
 QString GUIObject::getName()
@@ -230,7 +228,7 @@ QString GUIComponent::getName()
 
 void GUIObject::setName(QString newName, bool doOnlyCoreRename)
 {
-    std::cout << "ALKFJLAKJFLFAKJ" << std::endl;
+    mpNameText->setPlainText(newName);
 }
 
 //!
@@ -292,7 +290,7 @@ void GUIComponent::deleteMe()
 
 
 //! Returns a string with the component type.
-QString GUIObject::getTypeName()
+QString GUIComponent::getTypeName()
 {
     return this->mComponentTypeName;
 }
@@ -747,6 +745,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
 
     refreshName(); //Make sure name window is correct size for center positioning
 
+    std::cout << "GUIcomponent: " << mComponentTypeName.toStdString() << std::endl;
 
 }
 

@@ -94,7 +94,7 @@ public:
     GUIConnectorLine *getSecondLastLine();
     GUIConnectorLine *getLastLine();
 
-    enum { Type = UserType + 2 };
+    enum { Type = UserType + 1 };
     int type() const;
 
 public slots:
