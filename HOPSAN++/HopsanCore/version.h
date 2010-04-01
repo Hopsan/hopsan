@@ -2,5 +2,6 @@
 #define VERSION_H
 
 #define HOPSANCOREVERSION "0.0.1"
+#define HOPSANCOREMODELFILEVERSION "0.1"
 
 #endif // VERSION_H
