@@ -111,6 +111,7 @@ public:
     ProjectTab(ProjectTabWidget *parent = 0);
     bool mIsSaved;
     QString mModelFileName;
+    bool useIsoGraphics;
     ProjectTabWidget *mpParentProjectTabWidget;
     ComponentSystem *mpComponentSystem;
 
@@ -154,6 +155,7 @@ public slots:
     void simulateCurrent();
     void loadModel();
     void saveModel(bool saveAs);
+    void setIsoGraphics(bool value);
 
 signals:
     void checkMessages();

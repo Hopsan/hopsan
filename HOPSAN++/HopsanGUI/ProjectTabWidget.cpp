@@ -1123,3 +1123,10 @@ void ProjectTabWidget::saveModel(bool saveAs)
     }
 }
 
+
+
+void ProjectTabWidget::setIsoGraphics(bool value)
+{
+    this->getCurrentTab()->useIsoGraphics = value;
+    qDebug() << "Use ISO graphics = " << value;
+}

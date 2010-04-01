@@ -3,19 +3,35 @@
 #ifndef PREFERENCEWIDGET_H
 #define PREFERENCEWIDGET_H
 
-#include <QMainWindow>
+#include <QDialog>
+#include <QCheckBox>
+#include <QDialogButtonBox>
+#include "mainwindow.h"
 
-class PreferenceWidget : public QMainWindow
+class MainWindow;
+
+class PreferenceWidget : public QDialog
 {
     Q_OBJECT
 
 public:
-    PreferenceWidget(QWidget *parent = 0);
+    PreferenceWidget(MainWindow *parent = 0);
     ~PreferenceWidget();
 
+    MainWindow *mpParentMainWindow;
+
+    bool isoBool;
+    QCheckBox *isoCheckBox;
+    QPushButton *cancelButton;
+    QPushButton *applyButton;
+    QPushButton *okButton;
+    QDialogButtonBox *buttonBox;
+
     QWidget *mpCentralwidget;
-//    QGridLayout *mpCentralgrid;
-//    QGridLayout *mpTabgrid;
+
+
+public slots:
+    void updateValues();
 };
 
 #endif // PREFERENCEWIDGET_H
