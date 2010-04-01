@@ -45,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowIcon(QIcon("../../HopsanGUI/icons/hopsan.ico"));
 
     mpPreferenceWidget = new PreferenceWidget(this);
+    mpOptionsWidget = new OptionsWidget(this);
 
     //Create a centralwidget for the main window
     mpCentralwidget = new QWidget(this);
@@ -105,9 +106,9 @@ MainWindow::MainWindow(QWidget *parent)
     menuNew->setObjectName("menuNew");
     menuNew->setTitle("New");
 
-    menuLibs = new QMenu(menubar);
-    menuLibs->setObjectName("menuLibs");
-    menuLibs->setTitle("&Libraries");
+    //menuLibs = new QMenu(menubar);
+    //menuLibs->setObjectName("menuLibs");
+    //menuLibs->setTitle("&Libraries");
 
     menuSimulation = new QMenu(menubar);
     menuSimulation->setObjectName("menuSimulation");
@@ -115,6 +116,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     menuView = new QMenu(menubar);
     menuView->setTitle("&View");
+
+    menuTools = new QMenu(menubar);
+    menuTools->setTitle("&Tools");
 
     menuPlot = new QMenu(menubar);
     menuPlot->setTitle("&Plot");
@@ -147,6 +151,9 @@ MainWindow::MainWindow(QWidget *parent)
     actionPreferences->setText("Model Preferences");
     actionPreferences->setShortcut(QKeySequence("Ctrl+Alt+p"));
 
+    actionOptions = new QAction(this);
+    actionOptions->setText("Options");
+
     actionProject = new QAction(this);
     actionProject->setText("Project");
 
@@ -172,11 +179,13 @@ MainWindow::MainWindow(QWidget *parent)
     menuFile->addAction(actionSave);
     menuFile->addAction(actionSaveAs);
     menuFile->addSeparator();
+    menuFile->addAction(actionLoadLibs);
+    menuFile->addSeparator();
     menuFile->addAction(actionPreferences);
     menuFile->addSeparator();
     menuFile->addAction(actionClose);
 
-    menuLibs->addAction(actionLoadLibs);
+    //menuLibs->addAction(actionLoadLibs);
     //menuLibs->addAction(actionOpen);
 
     menuSimulation->addAction(actionSimulate);
@@ -187,12 +196,14 @@ MainWindow::MainWindow(QWidget *parent)
     menuView->addAction(clipboardToolBar->toggleViewAction());
     menuView->addAction(simToolBar->toggleViewAction());
 
+    menuTools->addAction(actionOptions);
+
     menuPlot->addAction(actionPlot);
 
     menubar->addAction(menuFile->menuAction());
-    menubar->addAction(menuLibs->menuAction());
-    menubar->addAction(menuSimulation->menuAction());
     menubar->addAction(menuView->menuAction());
+    menubar->addAction(menuTools->menuAction());
+    menubar->addAction(menuSimulation->menuAction());
     menubar->addAction(menuPlot->menuAction());
 
     //Load default libraries
@@ -238,6 +249,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->connect(this->actionLoadLibs,SIGNAL(triggered()),mpLibrary,SLOT(addLibrary()));
     this->connect(this->actionOpen,SIGNAL(triggered()),mpProjectTabs,SLOT(loadModel()));
     this->connect(this->actionPreferences,SIGNAL(triggered()),this,SLOT(openPreferences()));
+    this->connect(this->actionOptions,SIGNAL(triggered()),this,SLOT(openOptions()));
 
 
     this->connect(this->actionPlot,SIGNAL(triggered()),SLOT(plot()));
@@ -367,4 +379,9 @@ void MainWindow::createToolbars()
 void MainWindow::openPreferences()
 {
     this->mpPreferenceWidget->show();
+}
+
+void MainWindow::openOptions()
+{
+    this->mpOptionsWidget->show();
 }

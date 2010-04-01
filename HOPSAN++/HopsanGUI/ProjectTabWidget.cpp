@@ -54,6 +54,8 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     this->setSceneRect(0,0,5000,5000);
     this->centerOn(this->sceneRect().center());
+    this->mBackgroundColor = QColor(Qt::white);
+    this->setBackgroundBrush(mBackgroundColor);
 
     MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 //    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent()->parent())); //Ugly!!!
@@ -218,7 +220,7 @@ void GraphicsView::deleteComponent(QString componentName)
     {
         qDebug() << "In delete component: could not find component with name " << componentName;
     }
-    this->setBackgroundBrush(Qt::NoBrush);
+    this->setBackgroundBrush(mBackgroundColor);
 }
 
 //! This function is used to rename a GUI Component (including key rename in component map)
@@ -348,7 +350,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
     QGraphicsView::mouseMoveEvent(event);
     QCursor cursor;
     //qDebug() << "X=" << this->mapFromGlobal(cursor.pos()).x() << "  " << "Y=" << this->mapFromGlobal(cursor.pos()).y();
-    this->setBackgroundBrush(Qt::NoBrush);
+    this->setBackgroundBrush(mBackgroundColor);
 
     if (this->mIsCreatingConnector)
         mpTempConnector->updateConnector(mpTempConnector->startPos, this->mapToScene(event->pos()));
@@ -369,7 +371,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
             mpTempConnector->removeLine(this->mapToScene(event->pos()));
             if(mIsCreatingConnector)
             {
-                this->setBackgroundBrush(Qt::NoBrush);
+                this->setBackgroundBrush(mBackgroundColor);
                 mpTempConnector->updateConnector(mpTempConnector->startPos, this->mapToScene(event->pos()));
             }
         }
@@ -507,7 +509,7 @@ void GraphicsView::cutSelected()
 //        if(mComponentMap.empty())
 //            break;
 //    }
-    this->setBackgroundBrush(Qt::NoBrush);
+    this->setBackgroundBrush(mBackgroundColor);
 }
 
 
@@ -605,7 +607,7 @@ void GraphicsView::paste()
             ++j;
         }
     }
-    this->setBackgroundBrush(Qt::NoBrush);
+    this->setBackgroundBrush(mBackgroundColor);
 }
 
 

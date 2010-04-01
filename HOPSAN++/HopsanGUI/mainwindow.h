@@ -8,6 +8,7 @@
 #include "plotwidget.h"
 #include "MessageWidget.h"
 #include "PreferenceWidget.h"
+#include "OptionsWidget.h"
 
 
 class QGridLayout;
@@ -24,6 +25,7 @@ class GraphicsView;
 class GraphicsScene;
 class LibraryWidget;
 class PreferenceWidget;
+class OptionsWidget;
 
 
 class MainWindow : public QMainWindow
@@ -40,6 +42,7 @@ public:
     QGridLayout *mpTabgrid;
     LibraryWidget *mpLibrary;
     SimulationSetupWidget *mpSimulationSetupWidget;
+    OptionsWidget *mpOptionsWidget;
     PreferenceWidget *mpPreferenceWidget;
     QMenuBar *menubar;
     QMenu *menuFile;
@@ -47,6 +50,7 @@ public:
     QMenu *menuLibs;
     QMenu *menuSimulation;
     QMenu *menuView;
+    QMenu *menuTools;
     QMenu *menuPlot;
     MessageWidget *mpMessageWidget;
     QStatusBar *statusBar;
@@ -59,6 +63,7 @@ public:
     QAction *actionSimulate;
     QAction *actionPlot;
     QAction *actionPreferences;
+    QAction *actionOptions;
 
 
     QAction *newAction;
@@ -91,6 +96,7 @@ private slots:
     //void addLibs();
     void plot();
     void openPreferences();
+    void openOptions();
 
 private:
     void createActions();

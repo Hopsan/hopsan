@@ -54,6 +54,7 @@ public:
     QMap<QString, GUIComponent *> mComponentMap;
     QMap<QString, GUIConnector *> mConnectionMap;
     ComponentSystem *getModelPointer();
+    QColor mBackgroundColor;
 
 signals:
     void keyPressDelete();
