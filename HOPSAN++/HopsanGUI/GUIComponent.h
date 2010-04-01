@@ -94,7 +94,6 @@ protected slots:
 
 };
 
-
 class GUIComponent : public GUIObject
 {
     Q_OBJECT
@@ -154,6 +153,20 @@ private:
     std::vector<QGraphicsLineItem*> mLines;
     QPen mActivePen;
     QPen mHoverPen;
+};
+
+
+
+class GUISubsystem : public GUIObject
+{
+    Q_OBJECT
+public:
+    GUISubsystem(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+
+private:
+    QString mModelFilePath;
+    QString mGraphicsFilePath;
+    bool   mIsEmbedded;
 };
 
 #endif // GUICOMPONENT_H

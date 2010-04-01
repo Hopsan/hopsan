@@ -22,6 +22,37 @@
 //! This class is a widget whisch can be included in the main window.
 //!
 
+#include <QStringList>
+#include <QtGui>
+
+LibraryContentItem::LibraryContentItem(const QIcon &icon, const QString &text, QListWidget *parent)
+        : QListWidgetItem(icon, text, parent)
+{
+    QFont font;
+    font.setPixelSize(8);
+    this->setFont(font);
+}
+
+LibraryContentItem::LibraryContentItem(const QListWidgetItem &other)
+        : QListWidgetItem(other)
+{
+}
+
+LibraryContentItem::~LibraryContentItem()
+{
+}
+
+
+void LibraryContentItem::setAppearanceData(QStringList list)
+{
+    mAppearanceData = list;
+}
+
+QStringList LibraryContentItem::getAppearanceData()
+{
+    return mAppearanceData;
+}
+
 
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
@@ -58,7 +89,7 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
     QListWidgetItem *item = this->currentItem();
 
     //stream << item->data(Qt::UserRole).toString();
-    stream << ((ListWidgetItem*)item)->getParameterData();
+    stream << ((LibraryContentItem*)item)->getAppearanceData();
 
     QString mimeType = "application/x-text";
 
@@ -226,9 +257,9 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
         //Add data to the paremeterData list
   //      parameterData << componentName << iconPath;
 
-        ListWidgetItem *libcomp= new ListWidgetItem(icon,componentName);
+        LibraryContentItem *libcomp= new LibraryContentItem(icon,componentName);
       //  std::cout << parameterData.size() << std::endl;
-        libcomp->setParameterData(parameterData);
+        libcomp->setAppearanceData(parameterData);
 
         //Add the component to the library
         //library->addComponent(libName,componentName,icon,parameterData);
@@ -264,7 +295,7 @@ void LibraryWidget::addLibrary()
 
 //! Adds a library to the library widget.
 //! @param libraryName is the name of the library where the component should be added.
-void LibraryWidget::addComponent(QString libraryName, QString parentLibraryName, ListWidgetItem *newComponent, QStringList parameterData)
+void LibraryWidget::addComponent(QString libraryName, QString parentLibraryName, LibraryContentItem *newComponent, QStringList appearanceData)
 {
     mLibraryMapPtrs.value(parentLibraryName + libraryName)->addItem(newComponent);
     QTreeWidgetItemIterator it(mpTree);
@@ -274,15 +305,15 @@ void LibraryWidget::addComponent(QString libraryName, QString parentLibraryName,
         {
             if((*it)->parent()->text(0) == parentLibraryName)      //Only add component if in the correct set of libraries
             {
-                ListWidgetItem *copyOfNewComponent = new ListWidgetItem(*newComponent); //A QListWidgetItem can only be in one list at the time, therefor a copy...
+                LibraryContentItem *copyOfNewComponent = new LibraryContentItem(*newComponent); //A QListWidgetItem can only be in one list at the time, therefor a copy...
                 //QString parentName = (*it)->parent()->text(0);
-                addComponent(parentLibraryName, "", copyOfNewComponent, parameterData); //Recursively
+                addComponent(parentLibraryName, "", copyOfNewComponent, appearanceData); //Recursively
             }
         }
         ++it;
     }
-    mParameterMap.insert(std::pair<QString, QStringList>(parameterData.at(0), parameterData));
-    qDebug() << "Mapping parameters for component: " << parameterData.at(0);
+    mAppearanceDataMap.insert(std::pair<QString, QStringList>(appearanceData.at(0), appearanceData));
+    qDebug() << "Mapping parameters for component: " << appearanceData.at(0);
 }
 
 
@@ -320,9 +351,9 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
 }
 
 
-QStringList LibraryWidget::getParameterData(QString componentType)
+QStringList LibraryWidget::getAppearanceData(QString componentType)
 {
-    return mParameterMap.find(componentType)->second;
+    return mAppearanceDataMap.find(componentType)->second;
 }
 
 //! Hide all libraries.

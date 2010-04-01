@@ -22,7 +22,27 @@
 //class QTreeWidget;
 //class QTreeWidgetItem;
 //class QVBoxLayout;
-class ListWidgetItem;
+class LibraryContentItem;
+
+#include <QListWidgetItem>
+//#include <QStringList>
+
+
+class QStringList;
+
+class LibraryContentItem : public QListWidgetItem
+{
+public:
+    LibraryContentItem(const QIcon &icon, const QString &text, QListWidget *parent = 0);
+    LibraryContentItem(const QListWidgetItem &other);
+    ~LibraryContentItem();
+
+    void setAppearanceData(QStringList list);
+    QStringList getAppearanceData();
+
+private:
+    QStringList mAppearanceData;
+};
 
 class LibraryContent : public QListWidget
 {
@@ -61,8 +81,8 @@ public:
 
     void addEmptyLibrary(QString libraryName, QString parentLibraryName=QString());
     void addLibrary(QString libDir, QString parentLib=QString());
-    void addComponent(QString libraryName, QString parentLibraryName, ListWidgetItem *newComponent, QStringList parameterData);
-    QStringList getParameterData(QString);
+    void addComponent(QString libraryName, QString parentLibraryName, LibraryContentItem *newComponent, QStringList parameterData);
+    QStringList getAppearanceData(QString);
 
 public slots:
     void addLibrary();
@@ -72,7 +92,7 @@ private slots:
     void hideAllLib();
 
 private:
-    std::map<QString, QStringList> mParameterMap;
+    std::map<QString, QStringList> mAppearanceDataMap;
 
 };
 

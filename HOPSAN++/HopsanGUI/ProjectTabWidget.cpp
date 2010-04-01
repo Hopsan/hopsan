@@ -111,11 +111,11 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
         QDataStream stream(data,QIODevice::ReadOnly);
 
-        QStringList parameterData;
-        stream >> parameterData;
+        QStringList appearanceData;
+        stream >> appearanceData;
 
-        QString componentTypeName = parameterData.at(0);
-        QString iconDir = parameterData.at(1);
+        QString componentTypeName = appearanceData.at(0);
+        QString iconDir = appearanceData.at(1);
 
         event->accept();
 
@@ -127,10 +127,10 @@ void GraphicsView::dropEvent(QDropEvent *event)
         qDebug() << "GraphicsView: " << "x=" << position.x() << "  " << "y=" << position.y();
 
 //        GUIComponent *guiComponent = new GUIComponent(mpHopsan,iconDir,componentTypeName,mapToScene(position).toPoint(),this);
-      //  GUIComponent *guiComponent = new GUIComponent(mpHopsan,parameterData,mapToScene(position).toPoint(),this);
+      //  GUIComponent *guiComponent = new GUIComponent(mpHopsan,appearanceData,mapToScene(position).toPoint(),this);
 
-        //this->addComponent(parameterData, this->mapToScene(position).toPoint());
-        this->addComponent(parameterData.at(0), this->mapToScene(position).toPoint());
+        //this->addComponent(appearanceData, this->mapToScene(position).toPoint());
+        this->addComponent(appearanceData.at(0), this->mapToScene(position).toPoint());
 
         delete data;
     }
@@ -144,18 +144,18 @@ GUIConnector *GraphicsView::getTempConnector()
 
 
 //! Adds a new component to the GraphicsView.
-//! @param parameterType is a string defining the type of component.
+//! @param componentType is a string defining the type of component.
 //! @param position is the position where the component will be created.
 //! @param name will be the name of the component.
-void GraphicsView::addComponent(QString parameterType, QPoint position, QString name, bool startSelected)
+void GraphicsView::addComponent(QString componentType, QPoint position, QString name, bool startSelected)
 {
     qDebug() << "Request to add component at (" << position.x() << " " << position.y() << ")";
 
     MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
     LibraryWidget *pLibrary = pMainWindow->mpLibrary;
-    QStringList parameterData = pLibrary->getParameterData(parameterType);
+    QStringList appearanceData = pLibrary->getAppearanceData(componentType);
 
-    GUIComponent *pGuiComponent = new GUIComponent(mpHopsan, parameterData, position, this->mpParentProjectTab->mpGraphicsScene);
+    GUIComponent *pGuiComponent = new GUIComponent(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
 
     qDebug() << "=====================Get initial name: " << pGuiComponent->getName() << "requested: " << name;
     if (!name.isEmpty())

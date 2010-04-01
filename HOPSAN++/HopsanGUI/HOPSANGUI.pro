@@ -6,7 +6,6 @@ TARGET = HOPSANGUI
 TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
-    listwidgetitem.cpp \
     ProjectTabWidget.cpp \
     LibraryWidget.cpp \
     GUIConnector.cpp \
@@ -20,7 +19,6 @@ SOURCES += main.cpp \
     InitializationThread.cpp \
     PreferenceWidget.cpp
 HEADERS += mainwindow.h \
-    listwidgetitem.h \
     ProjectTabWidget.h \
     LibraryWidget.h \
     ../HopsanCore/HopsanCore.h \

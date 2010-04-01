@@ -220,6 +220,14 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary("../../HopsanGUI/componentData/mechanic/Springs & Dampers","Mechanic");
     mpLibrary->addLibrary("../../HopsanGUI/componentData/mechanic/Sensors","Mechanic");
 
+    mpLibrary->addEmptyLibrary("SubSystem");
+    QIcon icon;
+    LibraryContentItem *pLibsubcomp = new LibraryContentItem(icon,"SubSystem");
+    QStringList appearanceData;
+    appearanceData << "SubSystem";
+    mpLibrary->addComponent("", "SubSystem", pLibsubcomp, appearanceData);
+
+
     QMetaObject::connectSlotsByName(this);
 
 
