@@ -2,8 +2,8 @@
 -------------------  HOPSAN NG MODEL FILE  -------------------
 --------------------------------------------------------------
 HOPSANGUIVERSION 0.0.1
-HOPSANGUIMODELFILEVERSION 0.1
-HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION 0.1
+HOPSANGUIMODELFILEVERSION 0.2
+HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION 0.0
 --------------------------------------------------------------
 COMPONENT Hydraulic43Valve 43Valve 2479 2489 0 0
 COMPONENT MechanicForceTransformer ForceTransformer 2730 2390 180 1

@@ -245,8 +245,6 @@ void GraphicsView::addGUIObject(QString componentType, QStringList appearanceDat
 //! @param name will be the name of the component.
 void GraphicsView::addComponent(QString componentType, QPoint position, QString name, bool startSelected)
 {
-    qDebug() << "Request to add component at (" << position.x() << " " << position.y() << ")";
-
     MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
     LibraryWidget *pLibrary = pMainWindow->mpLibrary;
     QStringList appearanceData = pLibrary->getAppearanceData(componentType);
@@ -280,7 +278,6 @@ void GraphicsView::addComponent(QString componentType, QPoint position, QString 
     this->mGUIObjectMap.insert(pGuiComponent->getName(), pGuiComponent);
     //APAthis->scene()->addItem(guiComponent);
 
-    qDebug() << "Component created at (" << pGuiComponent->x() << " " << pGuiComponent->y() << ")";
 }
 
 
@@ -408,7 +405,6 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     }
     if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Up)
     {
-        qDebug() << "keyPressUp()";
         emit keyPressUp();
     }
     if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Down)
@@ -603,7 +599,6 @@ ComponentSystem *GraphicsView::getModelPointer()
 
 void GraphicsView::cutSelected()
 {
-    qDebug() << "Cut!";
     this->copySelected();
 
     emit keyPressDelete();
@@ -621,7 +616,6 @@ void GraphicsView::cutSelected()
 
 void GraphicsView::copySelected()
 {
-    qDebug() << "Copy!";
     this->mCopyData.clear();
 
     QMap<QString, GUIObject *>::iterator it;
@@ -631,9 +625,7 @@ void GraphicsView::copySelected()
         {
             mCopyData << "COMPONENT";
             mCopyData << it.value()->getTypeName();
-            qDebug() << "Writing: " << it.value()->getTypeName();
             mCopyData << it.value()->getName();
-            qDebug() << "Writing: " << it.value()->getName();
             mCopyDataPos << it.value()->pos();
         }
     }
@@ -676,7 +668,6 @@ void GraphicsView::copySelected()
 
 void GraphicsView::paste()
 {
-    qDebug() << "Paste!";
     QMap<QString, GUIObject*>::iterator it;
     QMap<QString, GUIConnector*>::iterator it2;
 
@@ -699,15 +690,12 @@ void GraphicsView::paste()
     for(int i = 0; i!=mCopyData.size(); ++i)
     {
         tempString = mCopyData[i];
-        qDebug() << "Reading: " << tempString;
         if(tempString == "COMPONENT")
         {
             ++i;
             componentType = mCopyData[i];
-            qDebug() << "2Reading: " << componentType;
             ++i;
             componentName = mCopyData[i];
-            qDebug() << "3Reading: " << componentName;
             this->addComponent(componentType, mCopyDataPos[j].toPoint(), componentName, true);
             ++j;
         }
@@ -1054,7 +1042,6 @@ void ProjectTabWidget::loadModel()
     if (modelFileName.isEmpty())
         return;
 
-    qDebug() << "Opening model file: " << modelFileName.toStdString().c_str();
 
     std::ifstream modelFile (modelFileName.toStdString().c_str());
 
@@ -1075,6 +1062,7 @@ void ProjectTabWidget::loadModel()
     int posX, posY;
     int nameTextPos;
     qreal rotation;
+    string tempString;
 
     while (! modelFile.eof() )
     {
@@ -1085,9 +1073,45 @@ void ProjectTabWidget::loadModel()
             //Extract first word unless stream is empty
         if ( inputStream >> inputWord )
         {
-            qDebug() << QString(inputWord.c_str());
-
             //----------- Create New SubSystem -----------//
+
+            if ( inputWord == "HOPSANGUIVERSION")
+            {
+                inputStream >> tempString;
+                if(QString(tempString.c_str()) > QString(HOPSANGUIVERSION))
+                {
+                    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("Warning: File was saved in newer version of Hopsan"));
+                }
+                else if(QString(tempString.c_str()) < QString(HOPSANGUIVERSION))
+                {
+                    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("Warning: File was saved in older version of Hopsan"));
+                }
+            }
+            else if ( inputWord == "HOPSANGUIMODELFILEVERSION")
+            {
+                inputStream >> tempString;
+                if(QString(tempString.c_str()) > QString(HOPSANGUIMODELFILEVERSION))
+                {
+                    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("Warning: File was saved in newer version of Hopsan"));
+                }
+                else if(QString(tempString.c_str()) < QString(HOPSANGUIMODELFILEVERSION))
+                {
+                    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("Warning: File was saved in older version of Hopsan"));
+                }
+            }
+            else if ( inputWord == "HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION")
+            {
+                inputStream >> tempString;
+                if(QString(tempString.c_str()) > QString(HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION))
+                {
+                    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("Warning: File was saved in newer version of Hopsan"));
+                }
+                else if(QString(tempString.c_str()) < QString(HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION))
+                {
+                    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("Warning: File was saved in older version of Hopsan"));
+                }
+            }
+
 
             if ( inputWord == "COMPONENT" )
             {
@@ -1115,33 +1139,26 @@ void ProjectTabWidget::loadModel()
                 inputStream >> startPortNumber;
                 inputStream >> endComponentName;
                 inputStream >> endPortNumber;
-                qDebug() << "DEBUG 0";
                 GUIPort *startPort = pCurrentView->getGUIObject(QString(startComponentName.c_str()))->getPort(startPortNumber);
                 pCurrentView->addConnector(startPort);
-                qDebug() << "DEBUG 1";
                 GUIConnector *pTempConnector = pCurrentView->getTempConnector();
-                qDebug() << "DEBUG 2";
                 pCurrentView->scene()->addItem(pTempConnector);
                 while(inputStream >> inputWord)
                 {
                     if(inputWord == "VERTICAL")
                     {
                         inputStream >> heigth;
-                        qDebug() << "Heigth = " << heigth;
-                        //pTempConnector->getLastLine()->setGeometry(GUIConnectorLine::VERTICAL);
                         pTempConnector->addFixedLine(0, heigth, GUIConnectorLine::VERTICAL);
                     }
                     else if (inputWord == "HORIZONTAL")
                     {
                         inputStream >> length;
-                       // pTempConnector->getLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
                         pTempConnector->addFixedLine(length, 0, GUIConnectorLine::HORIZONTAL);
                     }
                     else if (inputWord == "DIAGONAL")
                     {
                         inputStream >> length;
                         inputStream >> heigth;
-                        //pTempConnector->getLastLine()->setGeometry(GUIConnectorLine::DIAGONAL);
                         pTempConnector->addFixedLine(length, heigth, GUIConnectorLine::DIAGONAL);
                     }
                     else
@@ -1164,7 +1181,7 @@ void ProjectTabWidget::loadModel()
                 bool success = pCurrentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
                 if (!success)
                 {
-                    cout << "Unsuccessful connection try" << endl;
+                    qDebug() << "Unsuccessful connection try" << endl;
                     assert(false);
                 }
             }

@@ -146,12 +146,10 @@ void GUIConnector::doSelect(bool lineSelected)
         if(lineSelected)
         {
             this->setActive();
-            qDebug() << "Activating line";
         }
         else
         {
             this->setPassive();
-            qDebug() << "Passivating line";
         }
     }
 }
@@ -170,7 +168,6 @@ void GUIConnector::setActive()
             mLines[i]->setActive();
             mLines[i]->setSelected(true);
         }
-        qDebug() << "setActive()";
     }
 }
 
@@ -355,15 +352,12 @@ void GUIConnector::addFixedLine(int length, int height, GUIConnectorLine::geomet
     //position as the line start position.
     if(this->mLines.size() == 2 && !mFirstFixedLineAdded)
     {
-        qDebug() << "First line";
         this->scene()->removeItem(mLines.back());
         mLines.pop_back();
         mFirstFixedLineAdded = true;
 
         if(geometry == GUIConnectorLine::HORIZONTAL)
         {
-            qDebug() << "HORIZONTAL from" <<    this->startPos.x() <<        this->startPos.y();
-            qDebug() << "HORIZONTAL to" <<      this->startPos.x()+length << this->startPos.y();
             QPointF tempStartPos = mapFromScene(this->startPos);
             QPointF tempEndPos = this->startPos;
             tempEndPos.setX(tempEndPos.x()+length);
@@ -375,8 +369,6 @@ void GUIConnector::addFixedLine(int length, int height, GUIConnectorLine::geomet
         }
         else if(geometry == GUIConnectorLine::VERTICAL)
         {
-            qDebug() << "VERTICAL from" <<      this->startPos.x() <<       this->startPos.y();
-            qDebug() << "VERTICAL to" <<        this->startPos.x() <<       this->startPos.y()+height;
             QPointF tempStartPos = mapFromScene(this->startPos);
             QPointF tempEndPos = this->startPos;
             tempEndPos.setY(tempEndPos.y()+height);
@@ -388,8 +380,6 @@ void GUIConnector::addFixedLine(int length, int height, GUIConnectorLine::geomet
         }
         else if(geometry == GUIConnectorLine::DIAGONAL)
         {
-                qDebug() << "DIAGONAL from" <<  this->startPos.x() <<           this->startPos.y();
-                qDebug() << "DIAGONAL to" <<    this->startPos.x()+length <<    this->startPos.y()+height;
                 QPointF tempStartPos = mapFromScene(this->startPos);
                 QPointF tempEndPos = this->startPos;
                 tempEndPos.setX(tempEndPos.x()+height);
@@ -409,8 +399,6 @@ void GUIConnector::addFixedLine(int length, int height, GUIConnectorLine::geomet
     {
         if(geometry == GUIConnectorLine::HORIZONTAL)
         {
-            qDebug() << "HORIZONTAL from" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y();
-            qDebug() << "HORIZONTAL to" << mLines[mLines.size()-1]->line().p2().x()+length << mLines[mLines.size()-1]->line().p2().y();
             QPointF tempEndPos = mapToScene(mLines[mLines.size()-1]->line().p2());
             tempEndPos.setX(tempEndPos.x()+length);
             tempEndPos = mapFromScene(tempEndPos);
@@ -420,8 +408,6 @@ void GUIConnector::addFixedLine(int length, int height, GUIConnectorLine::geomet
         }
         else if(geometry == GUIConnectorLine::VERTICAL)
         {
-            qDebug() << "VERTICAL from" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y();
-            qDebug() << "VERTICAL to" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y()+height;
             QPointF tempEndPos = mapToScene(mLines[mLines.size()-1]->line().p2());
             tempEndPos.setY(tempEndPos.y()+height);
             tempEndPos = mapFromScene(tempEndPos);
@@ -431,8 +417,6 @@ void GUIConnector::addFixedLine(int length, int height, GUIConnectorLine::geomet
         }
         else if(geometry == GUIConnectorLine::DIAGONAL)
         {
-            qDebug() << "DIAGONAL from" << mLines[mLines.size()-1]->line().p2().x() << mLines[mLines.size()-1]->line().p2().y();
-            qDebug() << "DIAGONAL to" << mLines[mLines.size()-1]->line().p2().x()+length << mLines[mLines.size()-1]->line().p2().y()+height;
             QPointF tempEndPos = mapToScene(mLines[mLines.size()-1]->line().p2());
             tempEndPos.setX(tempEndPos.x()+length);
             tempEndPos.setY(tempEndPos.y()+height);
@@ -460,7 +444,6 @@ void GUIConnector::removeLine(QPointF cursorPos)
 {
     if (getNumberOfLines() > 2)
     {
-        qDebug() << "Removing line!";
         this->scene()->removeItem(mLines.back());
         mLines.pop_back();
         this->updateConnector(this->mapToScene(mLines[0]->line().p1()), cursorPos);
@@ -490,8 +473,7 @@ void GUIConnector::deleteMe()
 //! @see updateConnector(QPointF startPos, QPointF endPos)
 void GUIConnector::updateLine(int lineNumber)
 {
-    qDebug() << "Updating line: x = " << getLine(lineNumber)->line().x2();
-    if (this->mEndPortConnected && lineNumber != 0 && (size_t)lineNumber != mLines.size())
+   if (this->mEndPortConnected && lineNumber != 0 && (size_t)lineNumber != mLines.size())
     {
         if(getLine(lineNumber)->getGeometry()==GUIConnectorLine::HORIZONTAL)
         {
@@ -711,12 +693,10 @@ QVariant GUIConnectorLine::itemChange(GraphicsItemChange change, const QVariant 
 {
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
-        qDebug() << "Line selection status = " << this->isSelected();
-        emit lineSelected(this->isSelected());
+         emit lineSelected(this->isSelected());
     }
     else if (change == QGraphicsItem::ItemPositionHasChanged)
     {
-        qDebug() << "Line has moved\n";
         emit lineMoved(this->mLineNumber);
     }
     return value;
