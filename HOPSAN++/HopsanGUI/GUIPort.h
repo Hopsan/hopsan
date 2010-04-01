@@ -6,7 +6,7 @@
 #include <QGraphicsSvgItem>
 #include <QGraphicsLineItem>
 #include <QGraphicsScene>
-#include "GUIComponent.h"
+#include "GUIObject.h"
 #include "HopsanCore.h"
 
 class GUIPort :public QGraphicsSvgItem

@@ -13,7 +13,7 @@
 #include "ParameterDialog.h"
 #include "HopsanCore.h"
 #include "mainwindow.h"
-#include "GUIComponent.h"
+#include "GUIObject.h"
 
 
 //! @class ParameterDialog
@@ -100,7 +100,7 @@ ParameterDialog::ParameterDialog(GUIComponent *guiComponent, QWidget *parent)
 
     setWindowTitle(tr("Parameters"));
 }
-#include "GUIComponent.h"
+#include "GUIObject.h"
 //! Sets the parameters in the core component. Read the values from the dialog and write them into the core component.
 void ParameterDialog::setParameters()
 {

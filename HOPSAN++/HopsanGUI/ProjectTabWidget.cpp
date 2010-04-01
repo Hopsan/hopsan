@@ -10,7 +10,7 @@
 
 #include "HopsanCore.h"
 #include "ProjectTabWidget.h"
-#include "GUIComponent.h"
+#include "GUIObject.h"
 #include "GUIPort.h"
 #include "GUIConnector.h"
 #include "LibraryWidget.h"

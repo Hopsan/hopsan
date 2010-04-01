@@ -10,7 +10,6 @@ SOURCES += main.cpp \
     LibraryWidget.cpp \
     GUIConnector.cpp \
     GUIPort.cpp \
-    GUIComponent.cpp \
     plotwidget.cpp \
     ParameterDialog.cpp \
     MessageWidget.cpp \
@@ -18,14 +17,14 @@ SOURCES += main.cpp \
     SimulationThread.cpp \
     InitializationThread.cpp \
     PreferenceWidget.cpp \
-    OptionsWidget.cpp
+    OptionsWidget.cpp \
+    GUIObject.cpp
 HEADERS += mainwindow.h \
     ProjectTabWidget.h \
     LibraryWidget.h \
     ../HopsanCore/HopsanCore.h \
     GUIConnector.h \
     GUIPort.h \
-    GUIComponent.h \
     plotwidget.h \
     ParameterDialog.h \
     MessageWidget.h \
@@ -34,7 +33,8 @@ HEADERS += mainwindow.h \
     InitializationThread.h \
     version.h \
     PreferenceWidget.h \
-    OptionsWidget.h
+    OptionsWidget.h \
+    GUIObject.h
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE

@@ -17,7 +17,7 @@
 #include <QGraphicsSceneMoveEvent>
 
 #include "HopsanCore.h"
-#include "GUIComponent.h"
+#include "GUIObject.h"
 #include "mainwindow.h"
 #include "ParameterDialog.h"
 #include "GUIPort.h"
@@ -140,6 +140,7 @@ void GUIObject::fixTextPosition(QPointF pos)
 
     if(this->rotation() == 0)
     {
+        qDebug() << "Debug 1, rotation = " << this->rotation();
         x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
         y1 = -mpNameText->boundingRect().height() - mTextOffset;  //mTextOffset*
         x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
@@ -147,6 +148,7 @@ void GUIObject::fixTextPosition(QPointF pos)
     }
     else if(this->rotation() == 180)
     {
+        qDebug() << "Debug 2, rotation = " << this->rotation();
         x1 = mpIcon->boundingRect().width()/2+mpNameText->boundingRect().width()/2;
         y1 = mpIcon->boundingRect().height() + mpNameText->boundingRect().height() + mTextOffset;
         x2 = mpIcon->boundingRect().width()/2+mpNameText->boundingRect().width()/2;
@@ -154,6 +156,7 @@ void GUIObject::fixTextPosition(QPointF pos)
     }
     else if(this->rotation() == 90)
     {
+        qDebug() << "Debug 3, rotation = " << this->rotation();
         x1 = -mpNameText->boundingRect().height() - mTextOffset;
         y1 = mpIcon->boundingRect().height()/2 + mpNameText->boundingRect().width()/2;
         x2 = mpIcon->boundingRect().width() + mTextOffset;
@@ -161,6 +164,7 @@ void GUIObject::fixTextPosition(QPointF pos)
     }
     else if(this->rotation() == 270)
     {
+        qDebug() << "Debug 4, rotation = " << this->rotation();
         x1 = mpIcon->boundingRect().width() + mpNameText->boundingRect().height() + mTextOffset;
         y1 = mpIcon->boundingRect().height()/2 - mpNameText->boundingRect().width()/2;
         x2 = -mTextOffset;
@@ -184,6 +188,13 @@ void GUIObject::fixTextPosition(QPointF pos)
     std::cout << "GUIComponent::fixTextPosition, x: " << x << " y: " << y << std::endl;
 
 }
+
+
+//void GUIComponent::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event )
+//{
+//    //qDebug() << "GUIComponent: " << "mouseReleaseEvent";
+//    QGraphicsItem::mouseReleaseEvent(event);
+//}
 
 
 GUIObject::~GUIObject()
@@ -268,7 +279,7 @@ void GUIComponent::setName(QString newName, bool doOnlyCoreRename)
         else
         {
             //Rename
-            mpParentGraphicsView->renameGUIObject(oldName, newName);
+            mpParentGraphicsView->renameComponent(oldName, newName);
         }
     }
 }
@@ -280,23 +291,18 @@ GUIPort *GUIObject::getPort(int number)
     return this->mPortListPtrs[number];
 }
 
-Component* GUIObject::getHopsanCoreComponentPtr()
-{
-    cout << "This function should only be available in GUIComponent" << endl;
-    assert(false);
-}
-
-ComponentSystem* GUIObject::getHopsanCoreSystemComponentPtr()
-{
-    cout << "This function should only be available in GUISubsystem" << endl;
-    assert(false);
-}
-
 
 //! Tells the component to ask its parent to delete it.
 void GUIComponent::deleteMe()
 {
-    mpParentGraphicsView->deleteGUIObject(this->getName());
+    qDebug() << "GUIComponent:: inside delete component";
+//    if(this->isSelected())
+//    {
+//        emit componentDeleted();
+//        this->scene()->removeItem(this);
+//        delete(this);
+//    }
+    mpParentGraphicsView->deleteComponent(this->getName());
 }
 
 
@@ -517,6 +523,7 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     QGraphicsWidget::itemChange(change, value);
 
+    //qDebug() << "Component selected status = " << this->isSelected();
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
         if (this->isSelected())
@@ -574,8 +581,10 @@ int GUIObject::getPortNumber(GUIPort *port)
 {
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
+        qDebug() << "Checking port " << i;
         if(port == mPortListPtrs.value(i))
         {
+            qDebug() << "Match!";
             return i;
         }
     }
@@ -637,6 +646,7 @@ void GUIObject::rotate()
 //! @see moveRight()
 void GUIObject::moveUp()
 {
+    qDebug() << "moveUp()";
     this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()-1);
 }
 
@@ -691,6 +701,7 @@ void GUIObject::setNameTextPos(int textPos)
 
     if(this->rotation() == 0)
     {
+        qDebug() << "Debug 1, rotation = " << this->rotation();
         x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
         y1 = -mpNameText->boundingRect().height() - mTextOffset;  //mTextOffset*
         x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
@@ -698,6 +709,7 @@ void GUIObject::setNameTextPos(int textPos)
     }
     else if(this->rotation() == 180)
     {
+        qDebug() << "Debug 2, rotation = " << this->rotation();
         x1 = mpIcon->boundingRect().width()/2+mpNameText->boundingRect().width()/2;
         y1 = mpIcon->boundingRect().height() + mpNameText->boundingRect().height() + mTextOffset;
         x2 = mpIcon->boundingRect().width()/2+mpNameText->boundingRect().width()/2;
@@ -705,6 +717,7 @@ void GUIObject::setNameTextPos(int textPos)
     }
     else if(this->rotation() == 90)
     {
+        qDebug() << "Debug 3, rotation = " << this->rotation();
         x1 = -mpNameText->boundingRect().height() - mTextOffset;
         y1 = mpIcon->boundingRect().height()/2 + mpNameText->boundingRect().width()/2;
         x2 = mpIcon->boundingRect().width() + mTextOffset;
@@ -712,6 +725,7 @@ void GUIObject::setNameTextPos(int textPos)
     }
     else if(this->rotation() == 270)
     {
+        qDebug() << "Debug 4, rotation = " << this->rotation();
         x1 = mpIcon->boundingRect().width() + mpNameText->boundingRect().height() + mTextOffset;
         y1 = mpIcon->boundingRect().height()/2 - mpNameText->boundingRect().width()/2;
         x2 = -mTextOffset;
@@ -746,6 +760,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
     mComponentTypeName = parameterData.at(0);
     //QString fileName = parameterData.at(1);
     QString iconRotationBehaviour = parameterData.at(2);
+    qDebug() << "iconRotationBehaviour = " << iconRotationBehaviour;
     if(iconRotationBehaviour == "ON")
         this->mIconRotation = true;
     else
@@ -835,12 +850,14 @@ void GUIComponentNameTextItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e
 
 void GUIComponentNameTextItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+    qDebug() << "GUIComponentTextItem: " << "mouseReleaseEvent";
     emit textMoved(event->pos());
     QGraphicsTextItem::mouseReleaseEvent(event);
 }
 
 void GUIComponentNameTextItem::focusOutEvent(QFocusEvent *event)
 {
+    qDebug() << "GUIComponentTextItem: " << "focusOutEvent";
     //Try to set the new name, the rename function in parent view will be called
     mpParentGUIComponent->setName(toPlainText());
     //refresh the display name (it may be different from the one you wanted)
@@ -937,48 +954,6 @@ void GUIComponentSelectionBox::setHovered()
     }
 }
 
-
-GUISubsystem::GUISubsystem(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
-        : GUIObject(position, parameterData.at(1), scene, parent)
-{
-    //Do something nice
-}
-
-GUISystemPort::GUISystemPort(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
-        : GUIObject(position, parameterData.at(1), scene, parent)
-{
-    //Do something nice
-}
-
-//! Dummy
-QString GUIObject::getTypeName()
-{
-
-    assert(false);
-}
-
-//! Returns a string with the GUIObject type.
-QString GUISystemPort::getTypeName()
-{
-    return "SystemPort";
-}
-
-//! Returns a string with the sub system type.
-QString GUISubsystem::getTypeName()
-{
-    //! @todo is this OK should really ask the subsystem but result should be subsystem i think
-    return "Subsystem";
-}
-
-Component* GUIComponent::getHopsanCoreComponentPtr()
-{
-    return mpCoreComponent;
-}
-
-ComponentSystem* GUISubsystem::getHopsanCoreSystemComponentPtr()
-{
-    return 0;
-}
 
 //QGraphicsColorizeEffect *graphicsColor = new QGraphicsColorizeEffect;
 //graphicsColor ->setColor(Qt::red);
