@@ -111,6 +111,34 @@ public slots:
 };
 
 
+class GUIGroup : public GUIObject
+{
+    Q_OBJECT
+public:
+    GUIGroup(QList<QGraphicsItem*> compList, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+
+//    QString getName();
+//    void setName(QString name, bool doOnlyLocalRename=false);
+
+    enum { Type = UserType + 4 };
+    int type() const;
+
+protected:
+    GraphicsScene *mpGroupScene;
+
+//    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+//    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+//    void openParameterDialog();
+//
+//    QString mComponentTypeName;
+//
+//    GraphicsScene *mpGroupScene;
+//
+//public slots:
+//     void deleteMe();
+};
+
+
 class GUIComponentNameTextItem : public QGraphicsTextItem
 {
     Q_OBJECT

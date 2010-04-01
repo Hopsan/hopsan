@@ -120,6 +120,12 @@ int GUIComponent::type() const
 }
 
 
+int GUIGroup::type() const
+{
+    return Type;
+}
+
+
 double dist(double x1,double y1, double x2, double y2)
 {
     return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
@@ -352,7 +358,9 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         }
         else if (selectedAction == groupAction)
         {
-            groupComponents(mpParentGraphicsScene->selectedItems());
+            //groupComponents(mpParentGraphicsScene->selectedItems());
+            GUIGroup *pGroup = new GUIGroup(mpParentGraphicsScene->selectedItems(), QPoint(2500,2500), mpParentGraphicsScene);
+            this->mpParentGraphicsScene->addItem(pGroup);
         }
         else if (selectedAction == showNameAction)
         {
@@ -423,6 +431,50 @@ void GUIObject::groupComponents(QList<QGraphicsItem*> compList) //Inte alls klar
         pSubScene->addItem(GUIConnList.at(i));
     }
     this->mpParentGraphicsView->setScene(pSubScene);
+}
+
+
+GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
+    :   GUIObject(position, QString("../../HopsanGUI/subsystemtmp.svg"), scene, parent)
+{
+    QList<GUIComponent*> GUICompList;
+    QList<GUIConnector*> GUIConnList;
+
+    this->setName(QString("ApGrupp"));
+    this->refreshName();
+
+    MessageWidget *pMessageWidget = scene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget;
+    pMessageWidget->printGUIMessage("Group selected components (implementing in progress...) Selected components: ");
+    for (int i=0; i < compList.size(); ++i)
+    {
+        GUIComponent *pComponent = qgraphicsitem_cast<GUIComponent*>(compList.at(i));
+        if (pComponent)
+        {
+            GUICompList.append(pComponent);
+
+            QMap<QString, GUIConnector *>::iterator it;
+            for(it = this->mpParentGraphicsView->mConnectionMap.begin(); it!=this->mpParentGraphicsView->mConnectionMap.end(); ++it)
+            {
+                if(it.key().contains(pComponent->getName()))
+                    if((compList.contains(it.value()->getStartPort()->getComponent())) && (compList.contains(it.value()->getEndPort()->getComponent())))
+                        GUIConnList.append(it.value());
+
+                if(this->mpParentGraphicsView->mConnectionMap.empty())
+                    break;
+            }
+        }
+    }
+
+    mpGroupScene = new GraphicsScene(this->mpParentGraphicsScene->mpParentProjectTab);
+    for (int i=0; i < GUICompList.size(); ++i)
+    {
+        mpGroupScene->addItem(GUICompList.at(i));
+    }
+    for (int i=0; i < GUIConnList.size(); ++i)
+    {
+        mpGroupScene->addItem(GUIConnList.at(i));
+    }
+    //this->mpParentGraphicsView->setScene(mpGroupScene);
 }
 
 
