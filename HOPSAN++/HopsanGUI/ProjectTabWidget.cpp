@@ -63,7 +63,7 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 //    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent()->parent())); //Ugly!!!
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
-    connect(this->systemPortAction, SIGNAL(triggered()), SLOT(addSystemPort()));
+    connect(this->systemPortAction, SIGNAL(triggered()), SLOT(systemPortSlot()));
 }
 
 void GraphicsView::createMenus()
@@ -96,7 +96,6 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
             QMenu menu(this);
             menu.addMenu(menuInsert);
             menu.exec(event->globalPos());
-
         }
     }
 }
@@ -211,6 +210,18 @@ void GraphicsView::addComponent(QString componentType, QPoint position, QString 
     qDebug() << "Component created at (" << pGuiComponent->x() << " " << pGuiComponent->y() << ")";
 }
 
+void GraphicsView::addSystemPort(QPoint position, QString name, bool startSelected)
+{
+    qDebug() <<"Adding a system port";
+
+}
+
+void GraphicsView::systemPortSlot()
+{
+      QCursor cursor;
+      QPoint position = this->mapFromScene(cursor.pos());
+      addSystemPort(position);
+}
 
 //! Delete componenet with specified name
 //! @param componentName is the name of the componenet to delete
@@ -283,12 +294,6 @@ bool GraphicsView::haveComponent(QString name)
         return false;
     }
 }
-
-void GraphicsView::addSystemPort()
-{
-    qDebug() <<"Adding system port";
-}
-
 
 //! Defines what happens when scrolling the mouse in a GraphicsView.
 //! @param event contains information of the scrolling operation.

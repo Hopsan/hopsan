@@ -67,13 +67,14 @@ signals:
     void keyPressRight();
     void viewClicked();
     void checkMessages();
+    void systemPortSignal(QPoint position);
 
 public slots:
     void addComponent(QString parameterType, QPoint position, QString name=QString(), bool startSelected = false);
     void deleteComponent(QString componentName);
     bool haveComponent(QString name);
     void renameComponent(QString oldName, QString newName);
-    void addSystemPort();
+    void systemPortSlot();
 
     void addConnector(GUIPort *pPort);
     void removeConnector(GUIConnector* pConnector);
@@ -104,6 +105,7 @@ private:
     //! @todo QMap no good means problem if we rename need to loop around the rename like in coore
     void createActions();
     void createMenus();
+    void addSystemPort(QPoint position, QString name=QString(), bool startSelected = false);
  };
 
 
