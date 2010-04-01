@@ -4,7 +4,6 @@
 #include <QListWidget>
 #include <QMouseEvent>
 #include <QApplication>
-#include "listwidgetitem.h"
 
 class ListWidget : public QListWidget
 {

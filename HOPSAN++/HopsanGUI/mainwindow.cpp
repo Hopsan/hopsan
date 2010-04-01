@@ -30,7 +30,6 @@
 #include "treewidget.h"
 #include "treewidgetitem.h"
 #include "listwidget.h"
-#include "listwidgetitem.h"
 #include "ProjectTabWidget.h"
 #include "LibraryWidget.h"
 #include "SimulationSetupWidget.h"
