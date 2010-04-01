@@ -279,7 +279,7 @@ void GUIComponent::setName(QString newName, bool doOnlyCoreRename)
         else
         {
             //Rename
-            mpParentGraphicsView->renameComponent(oldName, newName);
+            mpParentGraphicsView->renameGUIObject(oldName, newName);
         }
     }
 }
@@ -289,6 +289,18 @@ void GUIComponent::setName(QString newName, bool doOnlyCoreRename)
 GUIPort *GUIObject::getPort(int number)
 {
     return this->mPortListPtrs[number];
+}
+
+Component* GUIObject::getHopsanCoreComponentPtr()
+{
+    cout << "This function should only be available in GUIComponent" << endl;
+    assert(false);
+}
+
+ComponentSystem* GUIObject::getHopsanCoreSystemComponentPtr()
+{
+    cout << "This function should only be available in GUISubsystem" << endl;
+    assert(false);
 }
 
 
@@ -302,7 +314,7 @@ void GUIComponent::deleteMe()
 //        this->scene()->removeItem(this);
 //        delete(this);
 //    }
-    mpParentGraphicsView->deleteComponent(this->getName());
+    mpParentGraphicsView->deleteGUIObject(this->getName());
 }
 
 
@@ -954,6 +966,48 @@ void GUIComponentSelectionBox::setHovered()
     }
 }
 
+
+GUISubsystem::GUISubsystem(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
+        : GUIObject(position, parameterData.at(1), scene, parent)
+{
+    //Do something nice
+}
+
+GUISystemPort::GUISystemPort(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
+        : GUIObject(position, parameterData.at(1), scene, parent)
+{
+    //Do something nice
+}
+
+//! Dummy
+QString GUIObject::getTypeName()
+{
+
+    assert(false);
+}
+
+//! Returns a string with the GUIObject type.
+QString GUISystemPort::getTypeName()
+{
+    return "SystemPort";
+}
+
+//! Returns a string with the sub system type.
+QString GUISubsystem::getTypeName()
+{
+    //! @todo is this OK should really ask the subsystem but result should be subsystem i think
+    return "Subsystem";
+}
+
+Component* GUIComponent::getHopsanCoreComponentPtr()
+{
+    return mpCoreComponent;
+}
+
+ComponentSystem* GUISubsystem::getHopsanCoreSystemComponentPtr()
+{
+    return 0;
+}
 
 //QGraphicsColorizeEffect *graphicsColor = new QGraphicsColorizeEffect;
 //graphicsColor ->setColor(Qt::red);

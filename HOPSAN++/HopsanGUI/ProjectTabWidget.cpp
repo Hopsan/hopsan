@@ -154,7 +154,10 @@ void GraphicsView::dropEvent(QDropEvent *event)
       //  GUIComponent *guiComponent = new GUIComponent(mpHopsan,appearanceData,mapToScene(position).toPoint(),this);
 
         //this->addComponent(appearanceData, this->mapToScene(position).toPoint());
-        this->addComponent(appearanceData.at(0), this->mapToScene(position).toPoint());
+
+        //this->addComponent(appearanceData.at(0), this->mapToScene(position).toPoint());
+        this->addGUIObject(appearanceData.at(0), appearanceData, this->mapToScene(position).toPoint());
+
 
         delete data;
     }
@@ -166,6 +169,75 @@ GUIConnector *GraphicsView::getTempConnector()
     return this->mpTempConnector;
 }
 
+//! @brief Temporary addSubSystem functin should be same later on
+//! Adds a new component to the GraphicsView.
+//! @param componentType is a string defining the type of component.
+//! @param position is the position where the component will be created.
+//! @param name will be the name of the component.
+void GraphicsView::addGUIObject(QString componentType, QStringList appearanceData, QPoint position, QString name, bool startSelected)
+{
+    qDebug() << "Request to add gui object at (" << position.x() << " " << position.y() << ")";
+
+    //MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
+
+    GUIObject *pGuiObject;
+    if (componentType == "Subsystem")
+    {
+        pGuiObject = new GUISubsystem(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+    }
+    if (componentType == "SystemPort")
+    {
+        pGuiObject = new GUISystemPort(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+    }
+    else //Assume some component type
+    {
+        pGuiObject = new GUIComponent(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+    }
+
+    qDebug() << "=====================Get initial name: " << pGuiObject->getName() << "requested: " << name;
+    if (!name.isEmpty())
+    {
+        qDebug() << "name not empty, setting to: " << name;
+        //Set name, do NOT try to do smart rename. (If component already exist with new component default name that other component would be renamed)
+        pGuiObject->setName(name, true);
+    }
+
+    //Core interaction
+    qDebug() << "=====================Get name before add: " << pGuiObject->getName();
+    if (componentType == "SystemPort")
+    {
+        mpParentProjectTab->mpComponentSystem->addSystemPort(pGuiObject->getName().toStdString());
+    }
+    else
+    {
+
+        if (componentType == "Subsystem")
+        {
+            GUISubsystem *pSys = qobject_cast<GUISubsystem *>(pGuiObject);
+            this->mpParentProjectTab->mpComponentSystem->addComponent(pSys->getHopsanCoreSystemComponentPtr());
+        }
+        else
+        {
+            GUIComponent *pComp = qobject_cast<GUIComponent *>(pGuiObject);
+            this->mpParentProjectTab->mpComponentSystem->addComponent(pComp->getHopsanCoreComponentPtr());
+        }
+
+        pGuiObject->refreshName();
+    }
+    emit checkMessages();
+    qDebug() << "=====================Get name after add: " << pGuiObject->getName();
+    //
+
+    pGuiObject->setSelected(startSelected);
+
+    //guiComponent->setPos(this->mapToScene(position));
+    //qDebug() << "GraphicsView: " << pGuiObject->parent();
+
+    this->mGUIObjectMap.insert(pGuiObject->getName(), pGuiObject);
+
+    qDebug() << "GUI Object created at (" << pGuiObject->x() << " " << pGuiObject->y() << ")";
+
+}
 
 //! Adds a new component to the GraphicsView.
 //! @param componentType is a string defining the type of component.
@@ -205,11 +277,12 @@ void GraphicsView::addComponent(QString componentType, QPoint position, QString 
 
      //mLibraryMapPtrs.insert(libraryName, newLibContent);
     //this->mComponentMap.insert()
-    this->mComponentMap.insert(pGuiComponent->getName(), pGuiComponent);
+    this->mGUIObjectMap.insert(pGuiComponent->getName(), pGuiComponent);
     //APAthis->scene()->addItem(guiComponent);
 
     qDebug() << "Component created at (" << pGuiComponent->x() << " " << pGuiComponent->y() << ")";
 }
+
 
 void GraphicsView::addSystemPort(QPoint position, QString name, bool startSelected)
 {
@@ -226,11 +299,11 @@ void GraphicsView::systemPortSlot()
 
 //! Delete componenet with specified name
 //! @param componentName is the name of the componenet to delete
-void GraphicsView::deleteComponent(QString componentName)
+void GraphicsView::deleteGUIObject(QString componentName)
 {
     //qDebug() << "In delete component";
-    QMap<QString, GUIComponent *>::iterator it;
-    it = mComponentMap.find(componentName);
+    QMap<QString, GUIObject *>::iterator it;
+    it = mGUIObjectMap.find(componentName);
 
     QMap<QString, GUIConnector *>::iterator it2;
     for(it2 = this->mConnectionMap.begin(); it2!=this->mConnectionMap.end(); ++it2)
@@ -241,11 +314,11 @@ void GraphicsView::deleteComponent(QString componentName)
             break;
     }
 
-    if (it != mComponentMap.end())
+    if (it != mGUIObjectMap.end())
     {
-        GUIComponent* c_ptr = it.value();
-        mComponentMap.erase(it);
-        c_ptr->mpCoreComponent->getSystemParent()->removeSubComponent(c_ptr->mpCoreComponent, true);
+        GUIObject* c_ptr = it.value();
+        mGUIObjectMap.erase(it);
+        //c_ptr->mpCoreComponent->getSystemParent()->removeSubComponent(c_ptr->mpCoreComponent, true);
         scene()->removeItem(c_ptr);
         delete(c_ptr);
         emit checkMessages();
@@ -258,20 +331,20 @@ void GraphicsView::deleteComponent(QString componentName)
 }
 
 //! This function is used to rename a GUI Component (including key rename in component map)
-void GraphicsView::renameComponent(QString oldName, QString newName)
+void GraphicsView::renameGUIObject(QString oldName, QString newName)
 {
     //First find record with old name
-    QMap<QString, GUIComponent *>::iterator it = mComponentMap.find(oldName);
-    if (it != mComponentMap.end())
+    QMap<QString, GUIObject *>::iterator it = mGUIObjectMap.find(oldName);
+    if (it != mGUIObjectMap.end())
     {
         //Make a backup copy
-        GUIComponent* c_ptr = it.value();
+        GUIObject* c_ptr = it.value();
         //Erase old record
-        mComponentMap.erase(it);
+        mGUIObjectMap.erase(it);
         //Rename (core rename will be handled by core), here we force a core only rename (true) so that we dont get stuck in a loop (as rename might be called again)
         c_ptr->setName(newName, true);
         //Re insert
-        mComponentMap.insert(c_ptr->getName(), c_ptr);
+        mGUIObjectMap.insert(c_ptr->getName(), c_ptr);
         qDebug() << "GUI rename: " << oldName << " " << c_ptr->getName();
     }
     else
@@ -284,9 +357,9 @@ void GraphicsView::renameComponent(QString oldName, QString newName)
 
 
 //! Tells whether or not a component with specified name exist in the GraphicsView
-bool GraphicsView::haveComponent(QString name)
+bool GraphicsView::haveGUIObject(QString name)
 {
-    if (mComponentMap.count(name) > 0)
+    if (mGUIObjectMap.count(name) > 0)
     {
         return true;
     }
@@ -424,10 +497,10 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 
 
 //! Returns a pointer to the component with specified name.
-GUIComponent *GraphicsView::getComponent(QString name)
+GUIObject *GraphicsView::getGUIObject(QString name)
 {
     //qDebug() << mComponentMap.size();
-    return mComponentMap.find(name).value();
+    return mGUIObjectMap.find(name).value();
     //! @todo Cast exception or something if component is not found
 }
 
@@ -508,13 +581,13 @@ void GraphicsView::removeConnector(GUIConnector* pConnector)
 void GraphicsView::selectAll()
 {
         //Select all components
-    QMap<QString, GUIComponent *>::iterator it;
-    for(it = this->mComponentMap.begin(); it!=this->mComponentMap.end(); ++it)
+    QMap<QString, GUIObject *>::iterator it;
+    for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
     {
         it.value()->setSelected(true);
     }
         //Deselect all connectors
-    QMap<QString, GUIConnector *>::iterator it2;
+    QMap<QString, GUIConnector*>::iterator it2;
     for(it2 = this->mConnectionMap.begin(); it2!=this->mConnectionMap.end(); ++it2)
     {
         it2.value()->doSelect(true);
@@ -551,8 +624,8 @@ void GraphicsView::copySelected()
     qDebug() << "Copy!";
     this->mCopyData.clear();
 
-    QMap<QString, GUIComponent *>::iterator it;
-    for(it = this->mComponentMap.begin(); it!=this->mComponentMap.end(); ++it)
+    QMap<QString, GUIObject *>::iterator it;
+    for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
     {
         if (it.value()->isSelected())
         {
@@ -574,7 +647,7 @@ void GraphicsView::copySelected()
         connectionStream >> port1;
         connectionStream >> name2;
         connectionStream >> port2;
-        if(mComponentMap.find(QString(name1.c_str())).value()->isSelected() and mComponentMap.find(QString(name2.c_str())).value()->isSelected())
+        if(mGUIObjectMap.find(QString(name1.c_str())).value()->isSelected() and mGUIObjectMap.find(QString(name2.c_str())).value()->isSelected())
         {
             qDebug() << "Copying connection between" << QString(name1.c_str()) << " and " <<QString(name2.c_str()) << ".";
 
@@ -604,12 +677,11 @@ void GraphicsView::copySelected()
 void GraphicsView::paste()
 {
     qDebug() << "Paste!";
-    QMap<QString, GUIComponent *>::iterator it;
-
-    QMap<QString, GUIConnector *>::iterator it2;
+    QMap<QString, GUIObject*>::iterator it;
+    QMap<QString, GUIConnector*>::iterator it2;
 
         //Deselect all components
-    for(it = this->mComponentMap.begin(); it!=this->mComponentMap.end(); ++it)
+    for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
     {
         it.value()->setSelected(false);
     }
@@ -1025,11 +1097,14 @@ void ProjectTabWidget::loadModel()
                 inputStream >> posY;
                 inputStream >> rotation;
                 inputStream >> nameTextPos;
-                pCurrentTab->mpGraphicsView->addComponent(QString(componentType.c_str()), QPoint(posX, posY), QString(componentName.c_str()));
-                pCurrentTab->mpGraphicsView->getComponent(QString(componentName.c_str()))->setNameTextPos(nameTextPos);
-                while(pCurrentTab->mpGraphicsView->getComponent(QString(componentName.c_str()))->rotation() != rotation)
+
+                //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
+                QStringList appearanceData = mpParentMainWindow->mpLibrary->getAppearanceData(QString(componentType.c_str()));
+                pCurrentTab->mpGraphicsView->addGUIObject(QString(componentType.c_str()), appearanceData, QPoint(posX, posY), QString(componentName.c_str()));
+                pCurrentTab->mpGraphicsView->getGUIObject(QString(componentName.c_str()))->setNameTextPos(nameTextPos);
+                while(pCurrentTab->mpGraphicsView->getGUIObject(QString(componentName.c_str()))->rotation() != rotation)
                 {
-                    pCurrentTab->mpGraphicsView->getComponent(QString(componentName.c_str()))->rotate();
+                    pCurrentTab->mpGraphicsView->getGUIObject(QString(componentName.c_str()))->rotate();
                 }
 
             }
@@ -1041,7 +1116,7 @@ void ProjectTabWidget::loadModel()
                 inputStream >> endComponentName;
                 inputStream >> endPortNumber;
                 qDebug() << "DEBUG 0";
-                GUIPort *startPort = pCurrentView->getComponent(QString(startComponentName.c_str()))->getPort(startPortNumber);
+                GUIPort *startPort = pCurrentView->getGUIObject(QString(startComponentName.c_str()))->getPort(startPortNumber);
                 pCurrentView->addConnector(startPort);
                 qDebug() << "DEBUG 1";
                 GUIConnector *pTempConnector = pCurrentView->getTempConnector();
@@ -1073,7 +1148,7 @@ void ProjectTabWidget::loadModel()
                     {
                     }
                 }
-                GUIPort *endPort = pCurrentView->getComponent(QString(endComponentName.c_str()))->getPort(endPortNumber);
+                GUIPort *endPort = pCurrentView->getGUIObject(QString(endComponentName.c_str()))->getPort(endPortNumber);
                 QPointF newPos = endPort->mapToScene(endPort->boundingRect().center());
                 pTempConnector->updateConnector(pTempConnector->startPos, newPos);
                 endPort->getComponent()->addConnector(pTempConnector);
@@ -1133,8 +1208,8 @@ void ProjectTabWidget::saveModel(bool saveAs)
     modelFile << "HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION " << HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION << std::endl;
     modelFile << "--------------------------------------------------------------" << std::endl;
 
-    QMap<QString, GUIComponent *>::iterator it;
-    for(it = pCurrentView->mComponentMap.begin(); it!=pCurrentView->mComponentMap.end(); ++it)
+    QMap<QString, GUIObject*>::iterator it;
+    for(it = pCurrentView->mGUIObjectMap.begin(); it!=pCurrentView->mGUIObjectMap.end(); ++it)
     {
         QPointF pos = it.value()->mapToScene(it.value()->boundingRect().center());
         modelFile << "COMPONENT " << it.value()->getTypeName().toStdString() << " " << it.key().toStdString()

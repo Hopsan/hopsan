@@ -326,12 +326,13 @@ double *Component::getTimePtr()
 Port* Component::addPort(const string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype)
 {
     //! @todo handle trying to add multiple ports with same name or pos
-    //! @todo id should not be necessary as we wont use enums to point out which port is which
+
     Port* new_port = CreatePort(porttype);
     new_port->mPortName = portname;
     new_port->mNodeType = nodetype;
     new_port->mpComponent = this;    //Set port owner
 
+//      //! @todo id should not be necessary as we wont use enums to point out which port is which
 //    if (id >= 0)
 //    {
 //        //Instead of allways push_back, make it possible to add ports out of order

@@ -37,6 +37,7 @@ public:
 class HopsanEssentials; //Forward declaration
 class ComponentSystem;
 class GUIComponent;
+class GUIObject;
 
 class GraphicsView : public QGraphicsView
 {
@@ -46,12 +47,12 @@ public:
     GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, ProjectTab *parent = 0);
     ~GraphicsView();
     bool mIsCreatingConnector;
-    GUIComponent *getComponent(QString name);
+    GUIObject *getGUIObject(QString name);
     GUIConnector *getTempConnector();
     HopsanEssentials *mpHopsan;
     ComponentSystem *mpModel;
     ProjectTab *mpParentProjectTab;
-    QMap<QString, GUIComponent *> mComponentMap;
+    QMap<QString, GUIObject *> mGUIObjectMap;
     QMap<QString, GUIConnector *> mConnectionMap;
     ComponentSystem *getModelPointer();
     QAction *systemPortAction;
@@ -70,10 +71,11 @@ signals:
     void systemPortSignal(QPoint position);
 
 public slots:
-    void addComponent(QString parameterType, QPoint position, QString name=QString(), bool startSelected = false);
-    void deleteComponent(QString componentName);
-    bool haveComponent(QString name);
-    void renameComponent(QString oldName, QString newName);
+    void addGUIObject(QString componentType, QStringList appearanceData, QPoint position, QString name=QString(), bool startSelected=false);
+    void addComponent(QString componentType, QPoint position, QString name=QString(), bool startSelected = false);
+    void deleteGUIObject(QString componentName);
+    bool haveGUIObject(QString name);
+    void renameGUIObject(QString oldName, QString newName);
     void systemPortSlot();
 
     void addConnector(GUIPort *pPort);

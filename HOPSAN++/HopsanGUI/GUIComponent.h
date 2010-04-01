@@ -31,6 +31,7 @@ public:
     virtual QString getName();
     void refreshName();
     virtual void setName(QString name, bool doOnlyLocalRename=false);
+    virtual QString getTypeName();
 
     int getPortNumber(GUIPort *port);
     int getNameTextPos();
@@ -42,6 +43,11 @@ public:
 
     GraphicsScene *mpParentGraphicsScene;
     GraphicsView *mpParentGraphicsView;
+
+    //Core interaction
+    virtual Component* getHopsanCoreComponentPtr();
+    virtual ComponentSystem* getHopsanCoreSystemComponentPtr();
+
 
     enum { Type = UserType + 2 };
     int type() const;
@@ -95,6 +101,7 @@ public:
     GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
 
     //Core interaction
+    Component* getHopsanCoreComponentPtr();
     Component *mpCoreComponent;
     //
 
@@ -190,11 +197,24 @@ class GUISubsystem : public GUIObject
     Q_OBJECT
 public:
     GUISubsystem(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    ComponentSystem* getHopsanCoreSystemComponentPtr();
+    QString getTypeName();
 
 private:
     QString mModelFilePath;
     QString mGraphicsFilePath;
     bool   mIsEmbedded;
+    ComponentSystem *mpCoreComponentSystem;
+};
+
+class GUISystemPort : public GUIObject
+{
+    Q_OBJECT
+public:
+    GUISystemPort(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    QString getTypeName();
+private:
+
 };
 
 #endif // GUICOMPONENT_H
