@@ -359,7 +359,7 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         else if (selectedAction == groupAction)
         {
             //groupComponents(mpParentGraphicsScene->selectedItems());
-            GUIGroup *pGroup = new GUIGroup(mpParentGraphicsScene->selectedItems(), QPoint(2500,2500), mpParentGraphicsScene);
+            GUIGroup *pGroup = new GUIGroup(mpParentGraphicsScene->selectedItems(), mpParentGraphicsScene);
             this->mpParentGraphicsScene->addItem(pGroup);
         }
         else if (selectedAction == showNameAction)
@@ -392,50 +392,50 @@ void GUIComponent::openParameterDialog()
 }
 
 
-void GUIObject::groupComponents(QList<QGraphicsItem*> compList) //Inte alls klart
-{
-    //Borde nog ligga i projecttab så man kan rodda med scenerna
+//void GUIObject::groupComponents(QList<QGraphicsItem*> compList) //Inte alls klart
+//{
+//    //Borde nog ligga i projecttab så man kan rodda med scenerna
+//
+//    QList<GUIComponent*> GUICompList;
+//    QList<GUIConnector*> GUIConnList;
+//
+//    MessageWidget *pMessageWidget = mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget;
+//    pMessageWidget->printGUIMessage("Group selected components (implementing in progress...) Selected components: ");
+//    for (int i=0; i < compList.size(); ++i)
+//    {
+//        GUIComponent *pComponent = qgraphicsitem_cast<GUIComponent*>(compList.at(i));
+//        if (pComponent)
+//        {
+//            GUICompList.append(pComponent);
+//
+//            QMap<QString, GUIConnector *>::iterator it;
+//            for(it = this->mpParentGraphicsView->mConnectionMap.begin(); it!=this->mpParentGraphicsView->mConnectionMap.end(); ++it)
+//            {
+//                if(it.key().contains(pComponent->getName()))
+//                    if((compList.contains(it.value()->getStartPort()->getComponent())) && (compList.contains(it.value()->getEndPort()->getComponent())))
+//                        GUIConnList.append(it.value());
+//
+//                if(this->mpParentGraphicsView->mConnectionMap.empty())
+//                    break;
+//            }
+//        }
+//    }
+//
+//    GraphicsScene *pSubScene = new GraphicsScene(this->mpParentGraphicsScene->mpParentProjectTab);
+//    for (int i=0; i < GUICompList.size(); ++i)
+//    {
+//        pSubScene->addItem(GUICompList.at(i));
+//    }
+//    for (int i=0; i < GUIConnList.size(); ++i)
+//    {
+//        pSubScene->addItem(GUIConnList.at(i));
+//    }
+//    this->mpParentGraphicsView->setScene(pSubScene);
+//}
 
-    QList<GUIComponent*> GUICompList;
-    QList<GUIConnector*> GUIConnList;
 
-    MessageWidget *pMessageWidget = mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget;
-    pMessageWidget->printGUIMessage("Group selected components (implementing in progress...) Selected components: ");
-    for (int i=0; i < compList.size(); ++i)
-    {
-        GUIComponent *pComponent = qgraphicsitem_cast<GUIComponent*>(compList.at(i));
-        if (pComponent)
-        {
-            GUICompList.append(pComponent);
-
-            QMap<QString, GUIConnector *>::iterator it;
-            for(it = this->mpParentGraphicsView->mConnectionMap.begin(); it!=this->mpParentGraphicsView->mConnectionMap.end(); ++it)
-            {
-                if(it.key().contains(pComponent->getName()))
-                    if((compList.contains(it.value()->getStartPort()->getComponent())) && (compList.contains(it.value()->getEndPort()->getComponent())))
-                        GUIConnList.append(it.value());
-
-                if(this->mpParentGraphicsView->mConnectionMap.empty())
-                    break;
-            }
-        }
-    }
-
-    GraphicsScene *pSubScene = new GraphicsScene(this->mpParentGraphicsScene->mpParentProjectTab);
-    for (int i=0; i < GUICompList.size(); ++i)
-    {
-        pSubScene->addItem(GUICompList.at(i));
-    }
-    for (int i=0; i < GUIConnList.size(); ++i)
-    {
-        pSubScene->addItem(GUIConnList.at(i));
-    }
-    this->mpParentGraphicsView->setScene(pSubScene);
-}
-
-
-GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
-    :   GUIObject(position, QString("../../HopsanGUI/subsystemtmp.svg"), scene, parent)
+GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GraphicsScene *scene, QGraphicsItem *parent)
+    :   GUIObject(QPoint(0.0,0.0), QString("../../HopsanGUI/subsystemtmp.svg"), scene, parent)
 {
     QList<GUIComponent*> GUICompList;
     QList<GUIConnector*> GUIConnList;
@@ -465,15 +465,34 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, QPoint position, GraphicsScen
         }
     }
 
+    double xMin = GUICompList.at(0)->x()+GUICompList.at(0)->rect().width()/2.0,
+           xMax = GUICompList.at(0)->x()+GUICompList.at(0)->rect().width()/2.0,
+           yMin = GUICompList.at(0)->y()+GUICompList.at(0)->rect().height()/2.0,
+           yMax = GUICompList.at(0)->y()+GUICompList.at(0)->rect().height()/2.0;
+
     mpGroupScene = new GraphicsScene(this->mpParentGraphicsScene->mpParentProjectTab);
     for (int i=0; i < GUICompList.size(); ++i)
     {
         mpGroupScene->addItem(GUICompList.at(i));
+
+        //Find the rect for the selscted items
+        if (GUICompList.at(i)->x()+GUICompList.at(i)->rect().width()/2.0 < xMin)
+            xMin = GUICompList.at(i)->x()+GUICompList.at(i)->rect().width()/2.0;
+        if (GUICompList.at(i)->x()+GUICompList.at(i)->rect().width()/2.0 > xMax)
+            xMax = GUICompList.at(i)->x()+GUICompList.at(i)->rect().width()/2.0;
+        if (GUICompList.at(i)->y()+GUICompList.at(i)->rect().height()/2.0 < yMin)
+            yMin = GUICompList.at(i)->y()+GUICompList.at(i)->rect().height()/2.0;
+        if (GUICompList.at(i)->y()+GUICompList.at(i)->rect().height()/2.0 > yMax)
+            yMax = GUICompList.at(i)->y()+GUICompList.at(i)->rect().height()/2.0;
     }
     for (int i=0; i < GUIConnList.size(); ++i)
     {
         mpGroupScene->addItem(GUIConnList.at(i));
     }
+
+    //Fix the position for the group item
+    this->setPos((xMax+xMin)/2.0-this->rect().width()/2.0,(yMax+yMin)/2.0-this->rect().height()/2.0);
+
     //this->mpParentGraphicsView->setScene(mpGroupScene);
 }
 

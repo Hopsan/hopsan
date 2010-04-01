@@ -115,7 +115,7 @@ class GUIGroup : public GUIObject
 {
     Q_OBJECT
 public:
-    GUIGroup(QList<QGraphicsItem*> compList, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    GUIGroup(QList<QGraphicsItem*> compList, GraphicsScene *scene, QGraphicsItem *parent = 0);
 
 //    QString getName();
 //    void setName(QString name, bool doOnlyLocalRename=false);
