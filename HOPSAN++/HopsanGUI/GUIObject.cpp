@@ -292,6 +292,12 @@ ComponentSystem* GUIObject::getHopsanCoreSystemComponentPtr()
     assert(false);
 }
 
+void GUIObject::deleteInHopsanCore()
+{
+    cout << "Virtual dummy function" << endl;
+    assert(false);
+}
+
 
 //! Tells the component to ask its parent to delete it.
 void GUIComponent::deleteMe()
@@ -968,6 +974,16 @@ QString GUISubsystem::getTypeName()
 {
     //! @todo is this OK should really ask the subsystem but result should be subsystem i think
     return "Subsystem";
+}
+
+void GUIComponent::deleteInHopsanCore()
+{
+    mpCoreComponent->getSystemParent()->removeSubComponent(mpCoreComponent, true);
+}
+
+void GUISubsystem::deleteInHopsanCore()
+{
+    mpCoreComponentSystem->getSystemParent()->removeSubComponent(mpCoreComponentSystem, true);
 }
 
 Component* GUIComponent::getHopsanCoreComponentPtr()

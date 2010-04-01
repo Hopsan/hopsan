@@ -313,11 +313,11 @@ void GraphicsView::deleteGUIObject(QString componentName)
 
     if (it != mGUIObjectMap.end())
     {
-        GUIObject* c_ptr = it.value();
+        GUIObject* obj_ptr = it.value();
         mGUIObjectMap.erase(it);
-        //c_ptr->mpCoreComponent->getSystemParent()->removeSubComponent(c_ptr->mpCoreComponent, true);
-        scene()->removeItem(c_ptr);
-        delete(c_ptr);
+        obj_ptr->deleteInHopsanCore();
+        scene()->removeItem(obj_ptr);
+        delete(obj_ptr);
         emit checkMessages();
     }
     else
@@ -335,14 +335,14 @@ void GraphicsView::renameGUIObject(QString oldName, QString newName)
     if (it != mGUIObjectMap.end())
     {
         //Make a backup copy
-        GUIObject* c_ptr = it.value();
+        GUIObject* obj_ptr = it.value();
         //Erase old record
         mGUIObjectMap.erase(it);
         //Rename (core rename will be handled by core), here we force a core only rename (true) so that we dont get stuck in a loop (as rename might be called again)
-        c_ptr->setName(newName, true);
+        obj_ptr->setName(newName, true);
         //Re insert
-        mGUIObjectMap.insert(c_ptr->getName(), c_ptr);
-        qDebug() << "GUI rename: " << oldName << " " << c_ptr->getName();
+        mGUIObjectMap.insert(obj_ptr->getName(), obj_ptr);
+        qDebug() << "GUI rename: " << oldName << " " << obj_ptr->getName();
     }
     else
     {

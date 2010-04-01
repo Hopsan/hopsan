@@ -46,6 +46,7 @@ public:
     //Core interaction
     virtual Component* getHopsanCoreComponentPtr();
     virtual ComponentSystem* getHopsanCoreSystemComponentPtr();
+    virtual void deleteInHopsanCore();
 
 
     enum { Type = UserType + 2 };
@@ -107,6 +108,7 @@ public:
     QString getName();
     void setName(QString name, bool doOnlyLocalRename=false);
     QString getTypeName();
+    void deleteInHopsanCore();
 
     enum { Type = UserType + 3 };
     int type() const;
@@ -198,6 +200,7 @@ public:
     GUISubsystem(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
     ComponentSystem* getHopsanCoreSystemComponentPtr();
     QString getTypeName();
+    void deleteInHopsanCore();
 
 private:
     QString mModelFilePath;
