@@ -35,6 +35,7 @@ public:
     int getPortNumber(GUIPort *port);
     int getNameTextPos();
     void setNameTextPos(int textPos);
+    void setIcon(bool useIso);
 
     void showPorts(bool visible);
     GUIPort *getPort(int number);
@@ -67,6 +68,7 @@ public slots:
 
 protected:
     QGraphicsSvgItem *mpIcon;
+    bool hasIsoIcon;
     GUIComponentNameTextItem *mpNameText;
     GUIComponentSelectionBox *mpSelectionBox;
     double mTextOffset;
@@ -79,6 +81,10 @@ protected:
 
 protected slots:
     void fixTextPosition(QPointF pos);
+
+private:
+    QString mIconPath;
+    QString mIsoIconPath;
 
 };
 

@@ -8,12 +8,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="53.785709"
-   height="23.581034"
+   width="40.242222"
+   height="23.327471"
    id="svg3336"
    sodipodi:version="0.32"
    inkscape:version="0.46"
-   sodipodi:docname="Orifice.svg"
+   sodipodi:docname="laminarorifice.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
   <defs
@@ -28,7 +28,7 @@
       <path
          transform="scale(0.8,0.8)"
          style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
-         d="m 5.77,0 -8.65,5 0,-10 8.65,5 z"
+         d="M 5.77,0 L -2.88,5 L -2.88,-5 L 5.77,0 z"
          id="path8118" />
     </marker>
     <inkscape:perspective
@@ -56,17 +56,36 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="7.9195959"
-     inkscape:cx="-11.680338"
-     inkscape:cy="14.013985"
+     inkscape:zoom="8.0000004"
+     inkscape:cx="17.110939"
+     inkscape:cy="-4.1936938"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1664"
-     inkscape:window-height="977"
-     inkscape:window-x="8"
-     inkscape:window-y="39"
-     inkscape:window-maximized="0" />
+     inkscape:window-width="1280"
+     inkscape:window-height="698"
+     inkscape:window-x="0"
+     inkscape:window-y="29"
+     inkscape:window-maximized="0"
+     showguides="true"
+     inkscape:guide-bbox="true">
+    <sodipodi:guide
+       orientation="0,1"
+       position="14.4375,15.5"
+       id="guide3163" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="7.5,19.734375"
+       id="guide3165" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="37.520854,20.903844"
+       id="guide3173" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="11.595446,5.4966504"
+       id="guide3177" />
+  </sodipodi:namedview>
   <metadata
      id="metadata3341">
     <rdf:RDF>
@@ -82,36 +101,20 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-451.85715,-486.4738)">
+     transform="translate(-458.62889,-487.89379)">
     <path
-       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 452.85715,498.26432 51.78571,0"
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 459.12889,499.55753 L 498.37111,499.55753"
        id="path2385" />
     <path
-       sodipodi:type="arc"
-       style="fill:none;stroke:#000000;stroke-width:2.20577478;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       id="path2387"
-       sodipodi:cx="290"
-       sodipodi:cy="565.2193"
-       sodipodi:rx="13.928572"
-       sodipodi:ry="13.928572"
-       d="M 303.92857,565.2193 A 13.928572,13.928572 0 0 1 279.72031,574.61787"
-       sodipodi:start="0"
-       sodipodi:end="2.4009408"
-       sodipodi:open="true"
-       transform="matrix(1.0360017,0.2688014,-0.4043944,0.6886312,406.89127,16.785361)" />
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 464.07103,488.43799 C 472.41613,495.83159 484.76692,496.03938 493.42897,488.39379"
+       id="path3171"
+       sodipodi:nodetypes="cc" />
     <path
-       sodipodi:type="arc"
-       style="fill:none;stroke:#000000;stroke-width:2.20577478;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       id="path5275"
-       sodipodi:cx="290"
-       sodipodi:cy="565.2193"
-       sodipodi:rx="13.928572"
-       sodipodi:ry="13.928572"
-       d="M 303.92857,565.2193 A 13.928572,13.928572 0 0 1 279.72031,574.61787"
-       sodipodi:start="0"
-       sodipodi:end="2.4009408"
-       sodipodi:open="true"
-       transform="matrix(-1.0360017,-0.2688014,0.4043944,-0.6886312,550.60874,979.74284)" />
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 464.07103,510.67707 C 472.41612,503.28347 484.76691,503.07567 493.42897,510.72126"
+       id="path3175"
+       sodipodi:nodetypes="cc" />
   </g>
 </svg>

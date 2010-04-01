@@ -32,12 +32,15 @@ GUIObject::GUIObject(QPoint position, QString iconPath, GraphicsScene *scene, QG
 
     mTextOffset = 5.0;
 
+    this->hasIsoIcon = false;
+
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
     //setFocusPolicy(Qt::StrongFocus);
     this->setAcceptHoverEvents(true);
 
     this->setZValue(10);
     mpIcon = new QGraphicsSvgItem(iconPath,this);
+    mIconPath = iconPath;
 
     std::cout << "GUIcomponent: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
 
@@ -236,6 +239,14 @@ void GUIObject::setName(QString newName, bool doOnlyCoreRename)
 {
     mpNameText->setPlainText(newName);
 }
+
+
+//GUIObject::setIcon(bool useIso)
+//{
+//    //if(useIso)
+//    //    this->mpIcon->
+//}
+
 
 //!
 //! @brief This function sets the desired component name
