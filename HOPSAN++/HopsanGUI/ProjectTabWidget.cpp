@@ -512,15 +512,15 @@ void GraphicsView::addConnector(GUIPort *pPort)
         QPen passivePen,activePen,hoverPen;
         if((pPort->mpCorePort->getNodeType() == "NodeHydraulic") | (pPort->mpCorePort->getNodeType() == "NodeMechanic"))
         {
-            passivePen = QPen(QColor("black"),1, Qt::SolidLine, Qt::FlatCap);
-            activePen = QPen(QColor("red"), 2, Qt::SolidLine, Qt::FlatCap);
-            hoverPen = QPen(QColor("darkRed"),2, Qt::SolidLine, Qt::FlatCap);
+            passivePen = QPen(QColor("black"),1, Qt::SolidLine, Qt::RoundCap);
+            activePen = QPen(QColor("red"), 2, Qt::SolidLine, Qt::RoundCap);
+            hoverPen = QPen(QColor("darkRed"),2, Qt::SolidLine, Qt::RoundCap);
         }
         else if(pPort->mpCorePort->getNodeType() == "NodeSignal")
         {
-            passivePen = QPen(QColor("blue"),1, Qt::DashLine);
-            activePen = QPen(QColor("red"), 2, Qt::DashLine);
-            hoverPen = QPen(QColor("darkRed"),2, Qt::DashLine);
+            passivePen = QPen(QColor("blue"),1, Qt::DashLine, Qt::RoundCap);
+            activePen = QPen(QColor("red"), 2, Qt::DashLine, Qt::RoundCap);
+            hoverPen = QPen(QColor("darkRed"),2, Qt::DashLine, Qt::RoundCap);
         }
 
         mpTempConnector = new GUIConnector(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), passivePen, activePen, hoverPen, this);
@@ -1082,11 +1082,11 @@ void ProjectTabWidget::loadModel()
                 inputStream >> tempString;
                 if(QString(tempString.c_str()) > QString(HOPSANGUIVERSION))
                 {
-                    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("Warning: File was saved in newer version of Hopsan"));
+                    mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
                 }
                 else if(QString(tempString.c_str()) < QString(HOPSANGUIVERSION))
                 {
-                    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("Warning: File was saved in older version of Hopsan"));
+                    mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
                 }
             }
             else if ( inputWord == "HOPSANGUIMODELFILEVERSION")
@@ -1094,23 +1094,24 @@ void ProjectTabWidget::loadModel()
                 inputStream >> tempString;
                 if(QString(tempString.c_str()) > QString(HOPSANGUIMODELFILEVERSION))
                 {
-                    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("Warning: File was saved in newer version of Hopsan"));
+                    mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
                 }
                 else if(QString(tempString.c_str()) < QString(HOPSANGUIMODELFILEVERSION))
                 {
-                    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("Warning: File was saved in older version of Hopsan"));
+                    mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
                 }
             }
             else if ( inputWord == "HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION")
             {
                 inputStream >> tempString;
+                qDebug() << inputWord.c_str() << " " << tempString.c_str();
                 if(QString(tempString.c_str()) > QString(HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION))
                 {
-                    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("Warning: File was saved in newer version of Hopsan"));
+                    mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
                 }
                 else if(QString(tempString.c_str()) < QString(HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION))
                 {
-                    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("Warning: File was saved in older version of Hopsan"));
+                    mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
                 }
             }
 

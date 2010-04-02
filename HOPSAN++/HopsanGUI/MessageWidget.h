@@ -19,6 +19,9 @@ public:
     void setHopsanCorePtr(HopsanEssentials *pHopsanCore);
     void printCoreMessages();
     void printGUIMessage(QString message);
+    void printGUIErrorMessage(QString message);
+    void printGUIWarningMessage(QString message);
+    void printGUIInfoMessage(QString message);
     QSize sizeHint() const;
 
     MainWindow *mpParentMainWindow;

@@ -72,6 +72,27 @@ void MessageWidget::printGUIMessage(QString message)
     append(message);
 }
 
+void MessageWidget::printGUIErrorMessage(QString message)
+{
+    //! @todo make better
+    setMessageColor(HopsanCoreMessage::ERROR);
+    append(message);
+}
+
+void MessageWidget::printGUIWarningMessage(QString message)
+{
+    //! @todo make better
+    setMessageColor(HopsanCoreMessage::WARNING);
+    append(message);
+}
+
+void MessageWidget::printGUIInfoMessage(QString message)
+{
+    //! @todo make better
+    setMessageColor(HopsanCoreMessage::INFO);
+    append(message);
+}
+
 void MessageWidget::checkMessages()
 {
     printCoreMessages();
