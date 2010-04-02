@@ -2,8 +2,8 @@
 -------------------  HOPSAN NG MODEL FILE  -------------------
 --------------------------------------------------------------
 HOPSANGUIVERSION 0.0.1
-HOPSANGUIMODELFILEVERSION 0.2
-HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION 0.0
+HOPSANGUIMODELFILEVERSION 0.1
+HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION 0.1
 --------------------------------------------------------------
 COMPONENT Hydraulic43Valve 43Valve 2479 2489 0 0
 COMPONENT MechanicForceTransformer ForceTransformer 2730 2390 180 1
@@ -18,8 +18,8 @@ COMPONENT HydraulicVolume Volume_1 2416 2577 0 0
 COMPONENT HydraulicCylinderC agda75 2502 2391 0 1
 COMPONENT HydraulicLaminarOrifice orifice1 2324 2577 0 1
 COMPONENT HydraulicLaminarOrifice orifice2 2324 2649 0 1
-COMPONENT HydraulicPressureSource psource1 2239 2577 0 0
-COMPONENT HydraulicPressureSource psource2 2237 2649 0 0
+COMPONENT HydraulicPressureSource psource1 2239 2577 90 0
+COMPONENT HydraulicPressureSource psource2 2237 2649 90 0
 --------------------------------------------------------------
 CONNECT 43Valve 2 agda75 0 VERTICAL -19 HORIZONTAL -42.0198 VERTICAL -34
 CONNECT 43Valve 3 agda75 1 VERTICAL -15 HORIZONTAL 17.5652 VERTICAL -38
@@ -30,11 +30,11 @@ CONNECT SineWave 0 Subtract 0 HORIZONTAL 45 VERTICAL 31 HORIZONTAL 48.5
 CONNECT Source_1 0 ForceTransformer 0 VERTICAL 29.5 HORIZONTAL -68.5
 CONNECT Subtract 2 Gain 0 HORIZONTAL 23 VERTICAL 0 HORIZONTAL 22
 CONNECT TranslationalMass 1 ForceTransformer 1 HORIZONTAL 43.5 VERTICAL 0
-CONNECT Volume 1 43Valve 1 HORIZONTAL 70.4962 VERTICAL -135
-CONNECT Volume_1 1 43Valve 0 HORIZONTAL 53.494 VERTICAL -63
+CONNECT Volume 1 43Valve 1 HORIZONTAL 50.9962 VERTICAL -135
+CONNECT Volume_1 1 43Valve 0 HORIZONTAL 33.994 VERTICAL -63
 CONNECT agda75 2 TranslationalMass 0 HORIZONTAL 41.5 VERTICAL -1
-CONNECT orifice1 1 Volume_1 0 HORIZONTAL 52 VERTICAL 0
-CONNECT orifice2 1 Volume 0 HORIZONTAL 55 VERTICAL 0
-CONNECT psource1 1 orifice1 0 HORIZONTAL 53 VERTICAL 0
-CONNECT psource2 1 orifice2 0 HORIZONTAL 55 VERTICAL 0
+CONNECT orifice1 1 Volume_1 0 HORIZONTAL 32.5 VERTICAL 0
+CONNECT orifice2 1 Volume 0 HORIZONTAL 35.5 VERTICAL 0
+CONNECT psource1 1 orifice1 0 HORIZONTAL 56.5 VERTICAL 0
+CONNECT psource2 1 orifice2 0 HORIZONTAL 58.5 VERTICAL 0
 --------------------------------------------------------------

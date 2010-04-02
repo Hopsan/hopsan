@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -8,11 +9,11 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="24.999998"
-   height="24.999998"
+   width="20"
+   height="17.320509"
    id="svg3336"
    sodipodi:version="0.32"
-   inkscape:version="0.46"
+   inkscape:version="0.47 r22583"
    sodipodi:docname="PressureSource.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
@@ -28,15 +29,15 @@
       <path
          transform="scale(0.8,0.8)"
          style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
-         d="M 5.77,0 L -2.88,5 L -2.88,-5 L 5.77,0 z"
+         d="m 5.77,0 -8.65,5 0,-10 8.65,5 z"
          id="path8118" />
     </marker>
     <inkscape:perspective
        sodipodi:type="inkscape:persp3d"
-       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_x="-0.31831148 : 525.26285 : 1"
        inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_z="744.09448 : 526.18109 : 1"
-       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       inkscape:vp_z="743.77617 : 525.26285 : 1"
+       inkscape:persp3d-origin="371.72893 : 349.86915 : 1"
        id="perspective3344" />
   </defs>
   <sodipodi:namedview
@@ -50,8 +51,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="7.919596"
-     inkscape:cx="17.360466"
-     inkscape:cy="28.626451"
+     inkscape:cx="-2.65582"
+     inkscape:cy="20.028722"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -87,27 +88,22 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-211.4056,-388.1428)">
+     transform="translate(-211.72391,-387.22456)">
     <path
-       transform="matrix(0.1319672,0,0,0.1298387,180.35642,359.52965)"
-       d="M 417.14286,316.64789 A 87.14286,88.571426 0 1 1 242.85714,316.64789 A 87.14286,88.571426 0 1 1 417.14286,316.64789 z"
-       sodipodi:ry="88.571426"
-       sodipodi:rx="87.14286"
-       sodipodi:cy="316.64789"
-       sodipodi:cx="330"
-       id="path2160"
-       style="fill:none;stroke:#000000;stroke-width:15.27900124;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       sodipodi:type="arc" />
-    <text
-       xml:space="preserve"
-       style="font-size:18px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:119.00000572%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
-       x="218.35704"
-       y="407.08517"
-       id="text3353"
-       sodipodi:linespacing="119.00001%"><tspan
-         sodipodi:role="line"
-         id="tspan3355"
-         x="218.35704"
-         y="407.08517">P</tspan></text>
+       sodipodi:type="star"
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="path3612"
+       sodipodi:sides="3"
+       sodipodi:cx="-6.1871843"
+       sodipodi:cy="-8.0824976"
+       sodipodi:r1="19.17004"
+       sodipodi:r2="9.5850201"
+       sodipodi:arg1="0.52359878"
+       sodipodi:arg2="1.5707963"
+       inkscape:flatsided="false"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="m 10.414557,1.5025225 -16.6017411,0 -16.6017419,-1e-7 8.300871,-14.3775294 8.3008708,-14.377531 8.3008706,14.37753 8.3008706,14.3775305 z"
+       transform="matrix(0.60234644,0,0,0.60234644,225.45074,403.64003)" />
   </g>
 </svg>

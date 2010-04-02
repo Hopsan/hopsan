@@ -1,7 +1,7 @@
 NAME HydraulicPressureSource
 ICON PressureSource.svg
-ICONROTATION OFF
+ICONROTATION ON
 PORTS 2
-0.0 0.5 0
-1.0 0.5 0
+0.5 1.0 270
+0.5 0.0 90
 

@@ -512,9 +512,9 @@ void GraphicsView::addConnector(GUIPort *pPort)
         QPen passivePen,activePen,hoverPen;
         if((pPort->mpCorePort->getNodeType() == "NodeHydraulic") | (pPort->mpCorePort->getNodeType() == "NodeMechanic"))
         {
-            passivePen = QPen(QColor("black"),2, Qt::SolidLine, Qt::RoundCap);
-            activePen = QPen(QColor("red"), 3, Qt::SolidLine, Qt::RoundCap);                    //1.6180339887499
-            hoverPen = QPen(QColor("darkRed"),3, Qt::SolidLine, Qt::RoundCap);
+            passivePen = QPen(QColor("black"),1, Qt::SolidLine, Qt::FlatCap);
+            activePen = QPen(QColor("red"), 2, Qt::SolidLine, Qt::FlatCap);
+            hoverPen = QPen(QColor("darkRed"),2, Qt::SolidLine, Qt::FlatCap);
         }
         else if(pPort->mpCorePort->getNodeType() == "NodeSignal")
         {
@@ -764,6 +764,8 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 //    setWindowModified(true);
 
     setLayout(tabLayout);
+
+    this->useIsoGraphics = true;
 
 }
 
@@ -1264,6 +1266,7 @@ void ProjectTabWidget::saveModel(bool saveAs)
 
 void ProjectTabWidget::setIsoGraphics(bool value)
 {
+    qDebug() << "Debug X1";
     this->getCurrentTab()->useIsoGraphics = value;
     qDebug() << "Use ISO graphics = " << value;
 

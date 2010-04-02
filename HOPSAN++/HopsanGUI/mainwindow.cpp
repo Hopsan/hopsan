@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setObjectName("MainWindow");
     this->resize(1024,768);
     this->setWindowTitle("HOPSAN NG");
-    this->setWindowIcon(QIcon("../../HopsanGUI/icons/hopsan.ico"));
+    this->setWindowIcon(QIcon("../../HopsanGUI/icons/hopsan.png"));
 
     mpPreferenceWidget = new PreferenceWidget(this);
     mpOptionsWidget = new OptionsWidget(this);
