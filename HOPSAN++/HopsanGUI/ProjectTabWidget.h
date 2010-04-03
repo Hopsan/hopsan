@@ -84,6 +84,7 @@ public slots:
     void copySelected();
     void paste();
     void selectAll();
+    void setScale(const QString &scale);
 
     //QByteArray *data;
     //QDataStream *stream;

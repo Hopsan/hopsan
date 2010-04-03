@@ -90,7 +90,7 @@ MainWindow::MainWindow(QWidget *parent)
     //Set the centralwidget
     this->setCentralWidget(mpCentralwidget);
 
-    mpProjectTabs->addNewProjectTab();
+
 
     //Create the Statusbar
     statusBar = new QStatusBar();
@@ -101,7 +101,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->createToolbars();
     this->createMenus();
 
-
+    mpProjectTabs->addNewProjectTab();
 
     //Load default libraries
     mpLibrary->addEmptyLibrary("User defined libraries");
@@ -212,17 +212,14 @@ void MainWindow::createActions()
     cutAction = new QAction(QIcon("../../HopsanGUI/icons/cut.png"), tr("&Cut"), this);
     cutAction->setShortcut(tr("Cut"));
     cutAction->setStatusTip(tr("Cut Selection"));
-    connect(cutAction, SIGNAL(triggered()), this->mpProjectTabs->getCurrentTab()->mpGraphicsView,SLOT(cutSelected()));
 
     copyAction = new QAction(QIcon("../../HopsanGUI/icons/copy.png"), tr("&Copy"), this);
     copyAction->setShortcut(tr("Copy"));
     copyAction->setStatusTip(tr("Copy Selection"));
-    connect(copyAction, SIGNAL(triggered()), this->mpProjectTabs->getCurrentTab()->mpGraphicsView,SLOT(copySelected()));
 
     pasteAction = new QAction(QIcon("../../HopsanGUI/icons/paste.png"), tr("&Paste"), this);
     pasteAction->setShortcut(tr("Paste"));
     pasteAction->setStatusTip(tr("Paste Selection"));
-    connect(pasteAction, SIGNAL(triggered()), this->mpProjectTabs->getCurrentTab()->mpGraphicsView,SLOT(paste()));
 
     simulateAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_27.png"), tr("&Simulate"), this);
     simulateAction->setShortcut(tr("Simulate"));
@@ -326,6 +323,12 @@ void MainWindow::createMenus()
 //! Creates the toolbars
 void MainWindow::createToolbars()
 {
+    viewScaleCombo = new QComboBox;
+    QStringList scales;
+    scales << tr("50%") << tr("75%") << tr("100%") << tr("125%") << tr("150%");
+    viewScaleCombo->addItems(scales);
+    viewScaleCombo->setCurrentIndex(2);
+
     fileToolBar = addToolBar(tr("File Toolbar"));
     fileToolBar->setAllowedAreas(Qt::TopToolBarArea);
     fileToolBar->addAction(newAction);
@@ -342,6 +345,7 @@ void MainWindow::createToolbars()
 
     simToolBar = addToolBar(tr("Simulation Toolbar"));
     simToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    simToolBar->addWidget(viewScaleCombo);
     simToolBar->addAction(preferencesAction);
     simToolBar->addAction(simulateAction);
     simToolBar->addAction(plotAction);

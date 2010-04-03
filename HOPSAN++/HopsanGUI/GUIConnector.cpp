@@ -166,7 +166,7 @@ void GUIConnector::setActive()
         for (std::size_t i=0; i!=mLines.size(); ++i )
         {
             mLines[i]->setActive();
-            mLines[i]->setSelected(true);
+            //mLines[i]->setSelected(true);         //???
         }
     }
 }

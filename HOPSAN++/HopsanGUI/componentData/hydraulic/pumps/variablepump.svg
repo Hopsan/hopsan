@@ -51,9 +51,9 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6568543"
-     inkscape:cx="70.684635"
-     inkscape:cy="57.071573"
+     inkscape:zoom="4"
+     inkscape:cx="76.898061"
+     inkscape:cy="28.08277"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -63,7 +63,16 @@
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      showguides="true"
-     inkscape:guide-bbox="true" />
+     inkscape:guide-bbox="true">
+    <sodipodi:guide
+       orientation="1,0"
+       position="60.011719,99.664063"
+       id="guide3632" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="-1.21875,50.03125"
+       id="guide3634" />
+  </sodipodi:namedview>
   <metadata
      id="metadata4573">
     <rdf:RDF>

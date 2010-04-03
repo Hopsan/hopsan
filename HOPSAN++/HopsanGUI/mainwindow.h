@@ -9,6 +9,7 @@
 #include "MessageWidget.h"
 #include "PreferenceWidget.h"
 #include "OptionsWidget.h"
+#include <QComboBox>
 
 
 class QGridLayout;
@@ -74,6 +75,8 @@ public:
     QToolBar *clipboardToolBar;
     QToolBar *simToolBar;
     QToolBar *mpSimulationToolBar;
+
+    QComboBox *viewScaleCombo;
 
 
     //QString libDir;

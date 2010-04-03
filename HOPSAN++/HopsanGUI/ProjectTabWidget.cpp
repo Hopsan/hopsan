@@ -65,6 +65,11 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
 //    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent()->parent())); //Ugly!!!
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
     connect(this->systemPortAction, SIGNAL(triggered()), SLOT(systemPortSlot()));
+    connect(pMainWindow->viewScaleCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(setScale(QString)));
+    connect(pMainWindow->cutAction, SIGNAL(triggered()), this,SLOT(cutSelected()));
+    connect(pMainWindow->copyAction, SIGNAL(triggered()), this,SLOT(copySelected()));
+    connect(pMainWindow->pasteAction, SIGNAL(triggered()), this,SLOT(paste()));
+
 }
 
 void GraphicsView::createMenus()
@@ -703,6 +708,17 @@ void GraphicsView::paste()
     this->setBackgroundBrush(mBackgroundColor);
 }
 
+void GraphicsView::setScale(const QString &scale)
+{
+    double newScale = scale.left(scale.indexOf(tr("%"))).toDouble() / 100.0;
+    QMatrix oldMatrix = this->matrix();
+    this->resetMatrix();
+    this->translate(oldMatrix.dx(), oldMatrix.dy());
+    this->scale(newScale, newScale);
+}
+
+
+
 
 //! @class GraphicsScene
 //! @brief The GraphicsScene class is a container for graphicsl components in a simulationmodel.
@@ -1039,7 +1055,7 @@ void ProjectTabWidget::loadModel()
     QDir fileDialogOpenDir;
 
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Model File"),
-                                                         fileDialogOpenDir.currentPath(),
+                                                         fileDialogOpenDir.currentPath() + QString("/../.."),
                                                          tr("Hopsan Model Files (*.hmf)"));
     if (modelFileName.isEmpty())
         return;
