@@ -85,6 +85,7 @@ public:
     {
         //Sinewave Equations
         double output;
+        mFrequency = pi/(mStopTime-mStartTime);
         if (mTime < mStartTime)
         {
             output = mBaseValue;     //Before start
