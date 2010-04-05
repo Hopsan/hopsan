@@ -133,7 +133,9 @@ MainWindow::MainWindow(QWidget *parent)
     QIcon icon;
     LibraryContentItem *pLibsubcomp = new LibraryContentItem(icon,"SubSystem");
     QStringList appearanceData;
-    appearanceData << "SubSystem";
+    appearanceData << "Subsystem";
+    appearanceData << " "; //Icon path
+    pLibsubcomp->setAppearanceData(appearanceData);
     mpLibrary->addComponent("", "SubSystem", pLibsubcomp, appearanceData);
     //------------------------------------------------------------------------------------
 

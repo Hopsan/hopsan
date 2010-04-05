@@ -133,8 +133,10 @@ void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 //! @param event contains information of the drop operation.
 void GraphicsView::dropEvent(QDropEvent *event)
 {
+    qDebug() << "dropEvent";
     if (event->mimeData()->hasFormat("application/x-text"))
     {
+        qDebug() << "dropEvent: hasFormat";
         QByteArray *data = new QByteArray;
         *data = event->mimeData()->data("application/x-text");
 
@@ -143,8 +145,10 @@ void GraphicsView::dropEvent(QDropEvent *event)
         QStringList appearanceData;
         stream >> appearanceData;
 
-        QString componentTypeName = appearanceData.at(0);
-        QString iconDir = appearanceData.at(1);
+        qDebug() << appearanceData;
+
+//        QString componentTypeName = appearanceData.at(0);
+//        QString iconDir = appearanceData.at(1);
 
         event->accept();
 
@@ -188,14 +192,17 @@ void GraphicsView::addGUIObject(QString componentType, QStringList appearanceDat
     GUIObject *pGuiObject;
     if (componentType == "Subsystem")
     {
+        qDebug() << "Creating GUISubsystem";
         pGuiObject = new GUISubsystem(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
     }
-    if (componentType == "SystemPort")
+    else if (componentType == "SystemPort")
     {
+        qDebug() << "Creating GUISystemPort";
         pGuiObject = new GUISystemPort(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
     }
     else //Assume some component type
     {
+        qDebug() << "Creating GUIComponent";
         pGuiObject = new GUIComponent(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
     }
 

@@ -90,6 +90,7 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
 
     //stream << item->data(Qt::UserRole).toString();
     stream << ((LibraryContentItem*)item)->getAppearanceData();
+    qDebug() << "moving: appearanceData: " << ((LibraryContentItem*)item)->getAppearanceData();
 
     QString mimeType = "application/x-text";
 
@@ -133,7 +134,7 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
 //! @param parentLibraryName is the name of an eventually parent library.
 //! @see addLibrary(QString libDir, QString parentLib)
 //! @see addLibrary()
-//! @see addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList parameterData)
+//! @see addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList appearanceData)
 void LibraryWidget::addEmptyLibrary(QString libraryName, QString parentLibraryName)
 {
     QTreeWidgetItem *newTreePost = new QTreeWidgetItem((QTreeWidget*)0);
@@ -173,7 +174,7 @@ void LibraryWidget::addEmptyLibrary(QString libraryName, QString parentLibraryNa
 //! @param parentLib is the name of an eventually parent library.
 //! @see addEmptyLibrary(QString libraryName, QString parentLibraryName)
 //! @see addLibrary()
-//! @see addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList parameterData)
+//! @see addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList appearanceData)
 void LibraryWidget::addLibrary(QString libDir, QString parentLib)
 {
     //If no directory is set, i.e. cancel is presses, do no more
@@ -196,7 +197,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
     for (int i = 0; i < libList.size(); ++i)    //Iterate over the file names
     {
         //Set up needed variables
-        QStringList parameterData;
+        QStringList appearanceData;
         QString componentName;
         QIcon icon;
         QString iconPath;
@@ -218,25 +219,25 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
             if (line.startsWith("NAME"))
             {
                 componentName = line.mid(5);
-                parameterData << componentName;
+                appearanceData << componentName;
             }
 
             if (line.startsWith("ICONROTATION"))
             {
                 iconRotationBehaviour = line.mid(13);
-                parameterData << iconRotationBehaviour;
+                appearanceData << iconRotationBehaviour;
             }
             else if (line.startsWith("ICON"))
             {
                 iconPath = libDirObject.absolutePath() + "/" + line.mid(5);
                 icon.addFile(iconPath);
-                parameterData << iconPath;
+                appearanceData << iconPath;
             }
 
             if (line.startsWith("PORTS"))
             {
                 nPorts = line.mid(6);
-                parameterData << nPorts;
+                appearanceData << nPorts;
                 for (int i = 0; i < nPorts.toInt(); ++i)
                 {
                     inFile >> portPosX;
@@ -249,21 +250,21 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
 //                    line = inFile.readLine();
 //                    portRot = line.mid(0);
                     std::cout << qPrintable(componentName) << " x: " << qPrintable(portPosX) << " y: " << qPrintable(portPosY) << " rot: " << qPrintable(portRot) << std::endl;
-                    parameterData << portPosX << portPosY << portRot;
+                    appearanceData << portPosX << portPosY << portRot;
                 }
             }
         }
         file.close();
         //Add data to the paremeterData list
-  //      parameterData << componentName << iconPath;
+  //      appearanceData << componentName << iconPath;
 
         LibraryContentItem *libcomp= new LibraryContentItem(icon,componentName);
-      //  std::cout << parameterData.size() << std::endl;
-        libcomp->setAppearanceData(parameterData);
+      //  std::cout << appearanceData.size() << std::endl;
+        libcomp->setAppearanceData(appearanceData);
 
         //Add the component to the library
-        //library->addComponent(libName,componentName,icon,parameterData);
-        addComponent(libName, parentLib, libcomp, parameterData);
+        //library->addComponent(libName,componentName,icon,appearanceData);
+        addComponent(libName, parentLib, libcomp, appearanceData);
     }
 }
 
@@ -271,7 +272,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
 //! Let the user to point out a library and adds it to the library widget.
 //! @see addEmptyLibrary(QString libraryName, QString parentLibraryName)
 //! @see addLibrary(QString libDir, QString parentLib)
-//! @see addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList parameterData)
+//! @see addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList appearanceData)
 void LibraryWidget::addLibrary()
 {
     /*QFileDialog dialog(this);
@@ -353,6 +354,13 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
 
 QStringList LibraryWidget::getAppearanceData(QString componentType)
 {
+    qDebug() << "LibraryWidget::getAppearanceData: " + componentType;
+    if (mAppearanceDataMap.count(componentType) == 0)
+    {
+        qDebug() << "Trying to fetch appearanceData for " + componentType + " which does not appear to exit in the Map, returning empty data";
+        mpParentMainWindow->mpMessageWidget->printGUIWarningMessage("Trying to fetch appearanceData for " + componentType + " which does not appear to exit in the Map, returning empty data");
+    }
+
     return mAppearanceDataMap.find(componentType)->second;
 }
 
