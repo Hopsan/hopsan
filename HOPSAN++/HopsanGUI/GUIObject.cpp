@@ -23,6 +23,12 @@
 #include "GUIPort.h"
 #include "GUIConnector.h"
 
+
+double dist(double x1,double y1, double x2, double y2)
+{
+    return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
+}
+
 GUIObject::GUIObject(QPoint position, QString iconPath, GraphicsScene *scene, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
@@ -123,11 +129,6 @@ int GUIObject::type() const
 }
 
 
-double dist(double x1,double y1, double x2, double y2)
-{
-    return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
-}
-
 void GUIObject::fixTextPosition(QPointF pos)
 {
     double x1,x2,y1,y2;
@@ -211,12 +212,6 @@ void GUIObject::deleteInHopsanCore()
     assert(false);
 }
 
-//! This function returns the current component name
-QString GUIComponent::getName()
-{
-    return QString::fromStdString(mpCoreComponent->getName());
-}
-
 void GUIObject::setName(QString newName, bool doOnlyCoreRename)
 {
     mpNameText->setPlainText(newName);
@@ -246,44 +241,6 @@ ComponentSystem* GUIObject::getHopsanCoreSystemComponentPtr()
 {
     cout << "This function should only be available in GUISubsystem" << endl;
     assert(false);
-}
-
-
-
-//!
-//! @brief This function sets the desired component name
-//! @param [in] newName The new name
-//! @param [in] doOnlyCoreRename  Dont use this if you dont know what you are doing
-//!
-//! The desired new name will be sent to the the core component and may be modified. Rename will be called in the graphics view to make sure that the guicomponent map key value is up to date.
-//! doOnlyCoreRename is a somewhat ugly hack, we need to be able to force setName without calling rename in some very special situations, it defaults to false
-//!
-void GUIComponent::setName(QString newName, bool doOnlyCoreRename)
-{
-    QString oldName = getName();
-    //If name same as before do nothing
-    if (newName != oldName)
-    {
-        //This does not work when we load systems, the default name (oldNAme) may already be in the graphicsView and an incorrect rename will be triggered
-//        if (mpParentGraphicsView->haveComponent(oldName))
-//        {
-//            //Rename
-//            mpParentGraphicsView->renameComponent(oldName, newName);
-//        }
-
-        //Check if we want to avoid trying to rename in the graphics view map
-        if (doOnlyCoreRename)
-        {
-            //Set name in core component,
-            mpCoreComponent->setName(newName.toStdString());
-            refreshName();
-        }
-        else
-        {
-            //Rename
-            mpParentGraphicsView->renameGUIObject(oldName, newName);
-        }
-    }
 }
 
 
@@ -537,288 +494,11 @@ void GUIObject::showName()
 }
 
 
-
-//! Event when double clicking on component icon.
-void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+//! Dummy
+QString GUIObject::getTypeName()
 {
-    std::cout << "GUIComponent.cpp: " << "mouseDoubleClickEvent " << std::endl;
 
-    openParameterDialog();
-
-}
-
-//! Tells the component to ask its parent to delete it.
-void GUIComponent::deleteMe()
-{
-    mpParentGraphicsView->deleteGUIObject(this->getName());
-}
-
-
-//! Returns a string with the component type.
-QString GUIComponent::getTypeName()
-{
-    return this->mComponentTypeName;
-}
-
-void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
-{
-        QMenu menu;
-
-        QAction *groupAction;
-        if (!mpParentGraphicsScene->selectedItems().empty())
-            groupAction = menu.addAction(tr("Group components"));
-
-        QAction *parameterAction = menu.addAction(tr("Change parameters"));
-        //menu.insertSeparator(parameterAction);
-
-        QAction *showNameAction = menu.addAction(tr("Show name"));
-        showNameAction->setCheckable(true);
-        showNameAction->setChecked(this->mpNameText->isVisible());
-
-        QAction *selectedAction = menu.exec(event->screenPos());
-
-        if (selectedAction == parameterAction)
-        {
-            openParameterDialog();
-        }
-        else if (selectedAction == groupAction)
-        {
-            //groupComponents(mpParentGraphicsScene->selectedItems());
-            GUIGroup *pGroup = new GUIGroup(mpParentGraphicsScene->selectedItems(), mpParentGraphicsScene);
-            this->mpParentGraphicsScene->addItem(pGroup);
-        }
-        else if (selectedAction == showNameAction)
-        {
-            if(this->mpNameText->isVisible())
-            {
-                this->hideName();
-            }
-            else
-            {
-                this->showName();
-            }
-        }
-
-}
-
-
-void GUIComponent::openParameterDialog()
-{
-    vector<CompParameter>::iterator it;
-
-    vector<CompParameter> paramVector = this->mpCoreComponent->getParameterVector();
-
-    qDebug() << "This component has the following Parameters: ";
-    for ( it=paramVector.begin() ; it !=paramVector.end(); it++ )
-        qDebug() << QString::fromStdString(it->getName()) << ": " << it->getValue();
-
-    ParameterDialog *dialog = new ParameterDialog(this,mpParentGraphicsView);
-    dialog->exec();
-}
-
-
-//void GUIObject::groupComponents(QList<QGraphicsItem*> compList) //Inte alls klart
-//{
-//    //Borde nog ligga i projecttab så man kan rodda med scenerna
-//
-//    QList<GUIComponent*> GUICompList;
-//    QList<GUIConnector*> GUIConnList;
-//
-//    MessageWidget *pMessageWidget = mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget;
-//    pMessageWidget->printGUIMessage("Group selected components (implementing in progress...) Selected components: ");
-//    for (int i=0; i < compList.size(); ++i)
-//    {
-//        GUIComponent *pComponent = qgraphicsitem_cast<GUIComponent*>(compList.at(i));
-//        if (pComponent)
-//        {
-//            GUICompList.append(pComponent);
-//
-//            QMap<QString, GUIConnector *>::iterator it;
-//            for(it = this->mpParentGraphicsView->mConnectionMap.begin(); it!=this->mpParentGraphicsView->mConnectionMap.end(); ++it)
-//            {
-//                if(it.key().contains(pComponent->getName()))
-//                    if((compList.contains(it.value()->getStartPort()->getComponent())) && (compList.contains(it.value()->getEndPort()->getComponent())))
-//                        GUIConnList.append(it.value());
-//
-//                if(this->mpParentGraphicsView->mConnectionMap.empty())
-//                    break;
-//            }
-//        }
-//    }
-//
-//    GraphicsScene *pSubScene = new GraphicsScene(this->mpParentGraphicsScene->mpParentProjectTab);
-//    for (int i=0; i < GUICompList.size(); ++i)
-//    {
-//        pSubScene->addItem(GUICompList.at(i));
-//    }
-//    for (int i=0; i < GUIConnList.size(); ++i)
-//    {
-//        pSubScene->addItem(GUIConnList.at(i));
-//    }
-//    this->mpParentGraphicsView->setScene(pSubScene);
-//}
-
-int GUIComponent::type() const
-{
-    return Type;
-}
-
-
-int GUIGroup::type() const
-{
-    return Type;
-}
-
-
-GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GraphicsScene *scene, QGraphicsItem *parent)
-    :   GUIObject(QPoint(0.0,0.0), QString("../../HopsanGUI/subsystemtmp.svg"), scene, parent)
-{
-    QList<GUIComponent*> GUICompList;
-    QList<GUIConnector*> GUIConnList;
-
-    this->setName(QString("ApGrupp"));
-    this->refreshName();
-
-    MessageWidget *pMessageWidget = scene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget;
-    pMessageWidget->printGUIMessage("Group selected components (implementing in progress...) Selected components: ");
-    for (int i=0; i < compList.size(); ++i)
-    {
-        GUIComponent *pComponent = qgraphicsitem_cast<GUIComponent*>(compList.at(i));
-        if (pComponent)
-        {
-            GUICompList.append(pComponent);
-
-            QMap<QString, GUIConnector *>::iterator it;
-            for(it = this->mpParentGraphicsView->mConnectionMap.begin(); it!=this->mpParentGraphicsView->mConnectionMap.end(); ++it)
-            {
-                if(it.key().contains(pComponent->getName()))
-                    if((compList.contains(it.value()->getStartPort()->getComponent())) && (compList.contains(it.value()->getEndPort()->getComponent())))
-                        GUIConnList.append(it.value());
-
-                if(this->mpParentGraphicsView->mConnectionMap.empty())
-                    break;
-            }
-        }
-    }
-
-    double xMin = GUICompList.at(0)->x()+GUICompList.at(0)->rect().width()/2.0,
-           xMax = GUICompList.at(0)->x()+GUICompList.at(0)->rect().width()/2.0,
-           yMin = GUICompList.at(0)->y()+GUICompList.at(0)->rect().height()/2.0,
-           yMax = GUICompList.at(0)->y()+GUICompList.at(0)->rect().height()/2.0;
-
-    mpGroupScene = new GraphicsScene(this->mpParentGraphicsScene->mpParentProjectTab);
-    for (int i=0; i < GUICompList.size(); ++i)
-    {
-        mpGroupScene->addItem(GUICompList.at(i));
-
-        //Find the rect for the selscted items
-        if (GUICompList.at(i)->x()+GUICompList.at(i)->rect().width()/2.0 < xMin)
-            xMin = GUICompList.at(i)->x()+GUICompList.at(i)->rect().width()/2.0;
-        if (GUICompList.at(i)->x()+GUICompList.at(i)->rect().width()/2.0 > xMax)
-            xMax = GUICompList.at(i)->x()+GUICompList.at(i)->rect().width()/2.0;
-        if (GUICompList.at(i)->y()+GUICompList.at(i)->rect().height()/2.0 < yMin)
-            yMin = GUICompList.at(i)->y()+GUICompList.at(i)->rect().height()/2.0;
-        if (GUICompList.at(i)->y()+GUICompList.at(i)->rect().height()/2.0 > yMax)
-            yMax = GUICompList.at(i)->y()+GUICompList.at(i)->rect().height()/2.0;
-    }
-    for (int i=0; i < GUIConnList.size(); ++i)
-    {
-        mpGroupScene->addItem(GUIConnList.at(i));
-    }
-
-    //Fix the position for the group item
-    this->setPos((xMax+xMin)/2.0-this->rect().width()/2.0,(yMax+yMin)/2.0-this->rect().height()/2.0);
-
-    //this->mpParentGraphicsView->setScene(mpGroupScene);
-}
-
-
-//void GUIComponent::keyPressEvent( QKeyEvent *event )
-//{
-//    if (event->key() == Qt::Key_Delete)
-//    {
-//        //please delete me
-//        mpParentGraphicsView->deleteComponent(this->getName());
-//    }
-//}
-
-
-
-
-GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
-    : GUIObject(position, parameterData.at(1),scene, parent)
-{
-    mComponentTypeName = parameterData.at(0);
-    //QString fileName = parameterData.at(1);
-    QString iconRotationBehaviour = parameterData.at(2);
-    if(iconRotationBehaviour == "ON")
-        this->mIconRotation = true;
-    else
-        this->mIconRotation = false;
-    size_t nPorts = parameterData.at(3).toInt();
-
-    //Core interaction
-    mpCoreComponent = hopsan->CreateComponent(mComponentTypeName.toStdString());
-    //
-
-    //Sets the ports
-    //GUIPort::portType type;
-    Port::PORTTYPE porttype;
-    for (size_t i = 0; i < nPorts; ++i)
-    {
-        double x = parameterData.at(4+3*i).toDouble();
-        double y = parameterData.at(5+3*i).toDouble();
-        double rot = parameterData.at(6+3*i).toDouble();
-
-        porttype = mpCoreComponent->getPortPtrVector().at(i)->getPortType();
-
-        QString iconPath("../../HopsanGUI/porticons/");
-        if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeSignal")
-        {
-            iconPath.append("SignalPort");
-            if ( porttype == Port::READPORT)
-            {
-                iconPath.append("_read");
-            }
-            else
-            {
-                iconPath.append("_write");
-            }
-        }
-        else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeMechanic")
-        {
-            iconPath.append("MechanicPort");
-            if (mpCoreComponent->getTypeCQS() == Component::C)
-                iconPath.append("C");
-            else if (mpCoreComponent->getTypeCQS() == Component::Q)
-                iconPath.append("Q");
-        }
-        else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeHydraulic")
-        {
-            iconPath.append("HydraulicPort");
-            if (mpCoreComponent->getTypeCQS() == Component::C)
-                iconPath.append("C");
-            else if (mpCoreComponent->getTypeCQS() == Component::Q)
-                iconPath.append("Q");
-        }
-        else
-        {
-            assert(false);
-        }
-        iconPath.append(".svg");
-
-        GUIPort::portDirectionType direction;
-        if((rot == 0) | (rot == 180))
-            direction = GUIPort::HORIZONTAL;
-        else
-            direction = GUIPort::VERTICAL;
-        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,porttype,direction,this));//mpIcon));
-    }
-
-    refreshName(); //Make sure name window is correct size for center positioning
-
-    std::cout << "GUIcomponent: " << mComponentTypeName.toStdString() << std::endl;
-
+    assert(false);
 }
 
 
@@ -942,6 +622,275 @@ void GUIObjectSelectionBox::setHovered()
     }
 }
 
+//void GUIObject::groupComponents(QList<QGraphicsItem*> compList) //Inte alls klart
+//{
+//    //Borde nog ligga i projecttab så man kan rodda med scenerna
+//
+//    QList<GUIComponent*> GUICompList;
+//    QList<GUIConnector*> GUIConnList;
+//
+//    MessageWidget *pMessageWidget = mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget;
+//    pMessageWidget->printGUIMessage("Group selected components (implementing in progress...) Selected components: ");
+//    for (int i=0; i < compList.size(); ++i)
+//    {
+//        GUIComponent *pComponent = qgraphicsitem_cast<GUIComponent*>(compList.at(i));
+//        if (pComponent)
+//        {
+//            GUICompList.append(pComponent);
+//
+//            QMap<QString, GUIConnector *>::iterator it;
+//            for(it = this->mpParentGraphicsView->mConnectionMap.begin(); it!=this->mpParentGraphicsView->mConnectionMap.end(); ++it)
+//            {
+//                if(it.key().contains(pComponent->getName()))
+//                    if((compList.contains(it.value()->getStartPort()->getComponent())) && (compList.contains(it.value()->getEndPort()->getComponent())))
+//                        GUIConnList.append(it.value());
+//
+//                if(this->mpParentGraphicsView->mConnectionMap.empty())
+//                    break;
+//            }
+//        }
+//    }
+//
+//    GraphicsScene *pSubScene = new GraphicsScene(this->mpParentGraphicsScene->mpParentProjectTab);
+//    for (int i=0; i < GUICompList.size(); ++i)
+//    {
+//        pSubScene->addItem(GUICompList.at(i));
+//    }
+//    for (int i=0; i < GUIConnList.size(); ++i)
+//    {
+//        pSubScene->addItem(GUIConnList.at(i));
+//    }
+//    this->mpParentGraphicsView->setScene(pSubScene);
+//}
+
+int GUIComponent::type() const
+{
+    return Type;
+}
+
+
+//void GUIComponent::keyPressEvent( QKeyEvent *event )
+//{
+//    if (event->key() == Qt::Key_Delete)
+//    {
+//        //please delete me
+//        mpParentGraphicsView->deleteComponent(this->getName());
+//    }
+//}
+
+
+
+
+GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
+    : GUIObject(position, parameterData.at(1),scene, parent)
+{
+    mComponentTypeName = parameterData.at(0);
+    //QString fileName = parameterData.at(1);
+    QString iconRotationBehaviour = parameterData.at(2);
+    if(iconRotationBehaviour == "ON")
+        this->mIconRotation = true;
+    else
+        this->mIconRotation = false;
+    size_t nPorts = parameterData.at(3).toInt();
+
+    //Core interaction
+    mpCoreComponent = hopsan->CreateComponent(mComponentTypeName.toStdString());
+    //
+
+    //Sets the ports
+    //GUIPort::portType type;
+    Port::PORTTYPE porttype;
+    for (size_t i = 0; i < nPorts; ++i)
+    {
+        double x = parameterData.at(4+3*i).toDouble();
+        double y = parameterData.at(5+3*i).toDouble();
+        double rot = parameterData.at(6+3*i).toDouble();
+
+        porttype = mpCoreComponent->getPortPtrVector().at(i)->getPortType();
+
+        QString iconPath("../../HopsanGUI/porticons/");
+        if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeSignal")
+        {
+            iconPath.append("SignalPort");
+            if ( porttype == Port::READPORT)
+            {
+                iconPath.append("_read");
+            }
+            else
+            {
+                iconPath.append("_write");
+            }
+        }
+        else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeMechanic")
+        {
+            iconPath.append("MechanicPort");
+            if (mpCoreComponent->getTypeCQS() == Component::C)
+                iconPath.append("C");
+            else if (mpCoreComponent->getTypeCQS() == Component::Q)
+                iconPath.append("Q");
+        }
+        else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeHydraulic")
+        {
+            iconPath.append("HydraulicPort");
+            if (mpCoreComponent->getTypeCQS() == Component::C)
+                iconPath.append("C");
+            else if (mpCoreComponent->getTypeCQS() == Component::Q)
+                iconPath.append("Q");
+        }
+        else
+        {
+            assert(false);
+        }
+        iconPath.append(".svg");
+
+        GUIPort::portDirectionType direction;
+        if((rot == 0) | (rot == 180))
+            direction = GUIPort::HORIZONTAL;
+        else
+            direction = GUIPort::VERTICAL;
+        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,porttype,direction,this));//mpIcon));
+    }
+
+    refreshName(); //Make sure name window is correct size for center positioning
+
+    std::cout << "GUIcomponent: " << mComponentTypeName.toStdString() << std::endl;
+
+}
+
+
+//! This function returns the current component name
+QString GUIComponent::getName()
+{
+    return QString::fromStdString(mpCoreComponent->getName());
+}
+
+//!
+//! @brief This function sets the desired component name
+//! @param [in] newName The new name
+//! @param [in] doOnlyCoreRename  Dont use this if you dont know what you are doing
+//!
+//! The desired new name will be sent to the the core component and may be modified. Rename will be called in the graphics view to make sure that the guicomponent map key value is up to date.
+//! doOnlyCoreRename is a somewhat ugly hack, we need to be able to force setName without calling rename in some very special situations, it defaults to false
+//!
+void GUIComponent::setName(QString newName, bool doOnlyCoreRename)
+{
+    QString oldName = getName();
+    //If name same as before do nothing
+    if (newName != oldName)
+    {
+        //This does not work when we load systems, the default name (oldNAme) may already be in the graphicsView and an incorrect rename will be triggered
+//        if (mpParentGraphicsView->haveComponent(oldName))
+//        {
+//            //Rename
+//            mpParentGraphicsView->renameComponent(oldName, newName);
+//        }
+
+        //Check if we want to avoid trying to rename in the graphics view map
+        if (doOnlyCoreRename)
+        {
+            //Set name in core component,
+            mpCoreComponent->setName(newName.toStdString());
+            refreshName();
+        }
+        else
+        {
+            //Rename
+            mpParentGraphicsView->renameGUIObject(oldName, newName);
+        }
+    }
+}
+
+
+
+//! Event when double clicking on component icon.
+void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    std::cout << "GUIComponent.cpp: " << "mouseDoubleClickEvent " << std::endl;
+
+    openParameterDialog();
+
+}
+
+//! Tells the component to ask its parent to delete it.
+void GUIComponent::deleteMe()
+{
+    mpParentGraphicsView->deleteGUIObject(this->getName());
+}
+
+
+//! Returns a string with the component type.
+QString GUIComponent::getTypeName()
+{
+    return this->mComponentTypeName;
+}
+
+void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+        QMenu menu;
+
+        QAction *groupAction;
+        if (!mpParentGraphicsScene->selectedItems().empty())
+            groupAction = menu.addAction(tr("Group components"));
+
+        QAction *parameterAction = menu.addAction(tr("Change parameters"));
+        //menu.insertSeparator(parameterAction);
+
+        QAction *showNameAction = menu.addAction(tr("Show name"));
+        showNameAction->setCheckable(true);
+        showNameAction->setChecked(this->mpNameText->isVisible());
+
+        QAction *selectedAction = menu.exec(event->screenPos());
+
+        if (selectedAction == parameterAction)
+        {
+            openParameterDialog();
+        }
+        else if (selectedAction == groupAction)
+        {
+            //groupComponents(mpParentGraphicsScene->selectedItems());
+            GUIGroup *pGroup = new GUIGroup(mpParentGraphicsScene->selectedItems(), mpParentGraphicsScene);
+            this->mpParentGraphicsScene->addItem(pGroup);
+        }
+        else if (selectedAction == showNameAction)
+        {
+            if(this->mpNameText->isVisible())
+            {
+                this->hideName();
+            }
+            else
+            {
+                this->showName();
+            }
+        }
+
+}
+
+
+void GUIComponent::openParameterDialog()
+{
+    vector<CompParameter>::iterator it;
+
+    vector<CompParameter> paramVector = this->mpCoreComponent->getParameterVector();
+
+    qDebug() << "This component has the following Parameters: ";
+    for ( it=paramVector.begin() ; it !=paramVector.end(); it++ )
+        qDebug() << QString::fromStdString(it->getName()) << ": " << it->getValue();
+
+    ParameterDialog *dialog = new ParameterDialog(this,mpParentGraphicsView);
+    dialog->exec();
+}
+
+Component* GUIComponent::getHopsanCoreComponentPtr()
+{
+    return mpCoreComponent;
+}
+
+
+void GUIComponent::deleteInHopsanCore()
+{
+    mpCoreComponent->getSystemParent()->removeSubComponent(mpCoreComponent, true);
+}
+
 
 GUISubsystem::GUISubsystem(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
         : GUIObject(position, parameterData.at(1), scene, parent)
@@ -949,24 +898,7 @@ GUISubsystem::GUISubsystem(HopsanEssentials *hopsan, QStringList parameterData, 
     //Do something nice
 }
 
-GUISystemPort::GUISystemPort(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
-        : GUIObject(position, parameterData.at(1), scene, parent)
-{
-    //Do something nice
-}
 
-//! Dummy
-QString GUIObject::getTypeName()
-{
-
-    assert(false);
-}
-
-//! Returns a string with the GUIObject type.
-QString GUISystemPort::getTypeName()
-{
-    return "SystemPort";
-}
 
 //! Returns a string with the sub system type.
 QString GUISubsystem::getTypeName()
@@ -975,25 +907,100 @@ QString GUISubsystem::getTypeName()
     return "Subsystem";
 }
 
-void GUIComponent::deleteInHopsanCore()
-{
-    mpCoreComponent->getSystemParent()->removeSubComponent(mpCoreComponent, true);
-}
 
 void GUISubsystem::deleteInHopsanCore()
 {
     mpCoreComponentSystem->getSystemParent()->removeSubComponent(mpCoreComponentSystem, true);
 }
 
-Component* GUIComponent::getHopsanCoreComponentPtr()
-{
-    return mpCoreComponent;
-}
 
 ComponentSystem* GUISubsystem::getHopsanCoreSystemComponentPtr()
 {
     return 0;
 }
+
+GUISystemPort::GUISystemPort(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
+        : GUIObject(position, parameterData.at(1), scene, parent)
+{
+    //Do something nice
+}
+
+
+//! Returns a string with the GUIObject type.
+QString GUISystemPort::getTypeName()
+{
+    return "SystemPort";
+}
+
+
+int GUIGroup::type() const
+{
+    return Type;
+}
+
+
+GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GraphicsScene *scene, QGraphicsItem *parent)
+    :   GUIObject(QPoint(0.0,0.0), QString("../../HopsanGUI/subsystemtmp.svg"), scene, parent)
+{
+    QList<GUIComponent*> GUICompList;
+    QList<GUIConnector*> GUIConnList;
+
+    this->setName(QString("ApGrupp"));
+    this->refreshName();
+
+    MessageWidget *pMessageWidget = scene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget;
+    pMessageWidget->printGUIMessage("Group selected components (implementing in progress...) Selected components: ");
+    for (int i=0; i < compList.size(); ++i)
+    {
+        GUIComponent *pComponent = qgraphicsitem_cast<GUIComponent*>(compList.at(i));
+        if (pComponent)
+        {
+            GUICompList.append(pComponent);
+
+            QMap<QString, GUIConnector *>::iterator it;
+            for(it = this->mpParentGraphicsView->mConnectionMap.begin(); it!=this->mpParentGraphicsView->mConnectionMap.end(); ++it)
+            {
+                if(it.key().contains(pComponent->getName()))
+                    if((compList.contains(it.value()->getStartPort()->getComponent())) && (compList.contains(it.value()->getEndPort()->getComponent())))
+                        GUIConnList.append(it.value());
+
+                if(this->mpParentGraphicsView->mConnectionMap.empty())
+                    break;
+            }
+        }
+    }
+
+    double xMin = GUICompList.at(0)->x()+GUICompList.at(0)->rect().width()/2.0,
+           xMax = GUICompList.at(0)->x()+GUICompList.at(0)->rect().width()/2.0,
+           yMin = GUICompList.at(0)->y()+GUICompList.at(0)->rect().height()/2.0,
+           yMax = GUICompList.at(0)->y()+GUICompList.at(0)->rect().height()/2.0;
+
+    mpGroupScene = new GraphicsScene(this->mpParentGraphicsScene->mpParentProjectTab);
+    for (int i=0; i < GUICompList.size(); ++i)
+    {
+        mpGroupScene->addItem(GUICompList.at(i));
+
+        //Find the rect for the selscted items
+        if (GUICompList.at(i)->x()+GUICompList.at(i)->rect().width()/2.0 < xMin)
+            xMin = GUICompList.at(i)->x()+GUICompList.at(i)->rect().width()/2.0;
+        if (GUICompList.at(i)->x()+GUICompList.at(i)->rect().width()/2.0 > xMax)
+            xMax = GUICompList.at(i)->x()+GUICompList.at(i)->rect().width()/2.0;
+        if (GUICompList.at(i)->y()+GUICompList.at(i)->rect().height()/2.0 < yMin)
+            yMin = GUICompList.at(i)->y()+GUICompList.at(i)->rect().height()/2.0;
+        if (GUICompList.at(i)->y()+GUICompList.at(i)->rect().height()/2.0 > yMax)
+            yMax = GUICompList.at(i)->y()+GUICompList.at(i)->rect().height()/2.0;
+    }
+    for (int i=0; i < GUIConnList.size(); ++i)
+    {
+        mpGroupScene->addItem(GUIConnList.at(i));
+    }
+
+    //Fix the position for the group item
+    this->setPos((xMax+xMin)/2.0-this->rect().width()/2.0,(yMax+yMin)/2.0-this->rect().height()/2.0);
+
+    //this->mpParentGraphicsView->setScene(mpGroupScene);
+}
+
 
 //QGraphicsColorizeEffect *graphicsColor = new QGraphicsColorizeEffect;
 //graphicsColor ->setColor(Qt::red);
