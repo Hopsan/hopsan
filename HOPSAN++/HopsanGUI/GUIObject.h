@@ -12,10 +12,10 @@ class GraphicsScene;
 class GraphicsView;
 class GUIConnector;
 class QGraphicsSvgItem;
-class GUIComponentNameTextItem;
+class GUIObjectDisplayName;
 class HopsanEssentials;
 class Component;
-class GUIComponentSelectionBox;
+class GUIObjectSelectionBox;
 class GUIPort;
 
 class GUIObject : public QGraphicsWidget
@@ -75,8 +75,8 @@ public slots:
 protected:
     QGraphicsSvgItem *mpIcon;
     bool hasIsoIcon;
-    GUIComponentNameTextItem *mpNameText;
-    GUIComponentSelectionBox *mpSelectionBox;
+    GUIObjectDisplayName *mpNameText;
+    GUIObjectSelectionBox *mpSelectionBox;
     double mTextOffset;
     QGraphicsLineItem *mpTempLine;
     //std::vector<GUIConnector*> mConnectors;        //Inteded to store connectors for each component
@@ -93,6 +93,45 @@ private:
     QString mIsoIconPath;
 
 };
+
+class GUIObjectDisplayName : public QGraphicsTextItem
+{
+    Q_OBJECT
+private:
+    GUIObject* mpParentGUIComponent;
+
+public:
+    GUIObjectDisplayName(GUIObject *pParent);
+
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void focusOutEvent(QFocusEvent *event);
+
+signals:
+    void textMoved(QPointF pos);
+
+};
+
+
+
+class GUIObjectSelectionBox : public QObject, public QGraphicsItemGroup
+{
+    Q_OBJECT
+public:
+    GUIObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal y2, QPen activePen, QPen hoverPen, GUIObject *parent = 0);
+    ~GUIObjectSelectionBox();
+    void setActive();
+    void setPassive();
+    void setHovered();
+
+    GUIObject *mpParentGUIObject;
+
+private:
+    std::vector<QGraphicsLineItem*> mLines;
+    QPen mActivePen;
+    QPen mHoverPen;
+};
+
 
 class GUIComponent : public GUIObject
 {
@@ -124,6 +163,32 @@ public slots:
      void deleteMe();
 };
 
+class GUISubsystem : public GUIObject
+{
+    Q_OBJECT
+public:
+    GUISubsystem(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    ComponentSystem* getHopsanCoreSystemComponentPtr();
+    QString getTypeName();
+    void deleteInHopsanCore();
+
+private:
+    QString mModelFilePath;
+    QString mGraphicsFilePath;
+    bool   mIsEmbedded;
+    ComponentSystem *mpCoreComponentSystem;
+};
+
+class GUISystemPort : public GUIObject
+{
+    Q_OBJECT
+public:
+    GUISystemPort(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    QString getTypeName();
+private:
+
+};
+
 
 class GUIGroup : public GUIObject
 {
@@ -150,73 +215,6 @@ protected:
 //
 //public slots:
 //     void deleteMe();
-};
-
-
-class GUIComponentNameTextItem : public QGraphicsTextItem
-{
-    Q_OBJECT
-private:
-    GUIObject* mpParentGUIComponent;
-
-public:
-    GUIComponentNameTextItem(GUIObject *pParent);
-
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    void focusOutEvent(QFocusEvent *event);
-
-signals:
-    void textMoved(QPointF pos);
-
-};
-
-
-
-class GUIComponentSelectionBox : public QObject, public QGraphicsItemGroup
-{
-    Q_OBJECT
-public:
-    GUIComponentSelectionBox(qreal x1, qreal y1, qreal x2, qreal y2, QPen activePen, QPen hoverPen, GUIObject *parent = 0);
-    ~GUIComponentSelectionBox();
-    void setActive();
-    void setPassive();
-    void setHovered();
-
-    GUIObject *mpParentGUIComponent;
-
-private:
-    std::vector<QGraphicsLineItem*> mLines;
-    QPen mActivePen;
-    QPen mHoverPen;
-};
-
-
-
-class GUISubsystem : public GUIObject
-{
-    Q_OBJECT
-public:
-    GUISubsystem(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
-    ComponentSystem* getHopsanCoreSystemComponentPtr();
-    QString getTypeName();
-    void deleteInHopsanCore();
-
-private:
-    QString mModelFilePath;
-    QString mGraphicsFilePath;
-    bool   mIsEmbedded;
-    ComponentSystem *mpCoreComponentSystem;
-};
-
-class GUISystemPort : public GUIObject
-{
-    Q_OBJECT
-public:
-    GUISystemPort(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
-    QString getTypeName();
-private:
-
 };
 
 #endif // GUIOBJECT_H
