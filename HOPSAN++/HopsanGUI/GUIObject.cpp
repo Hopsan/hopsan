@@ -622,6 +622,12 @@ void GUIObjectSelectionBox::setHovered()
     }
 }
 
+//! Tells the component to ask its parent to delete it.
+void GUIObject::deleteMe()
+{
+    mpParentGraphicsView->deleteGUIObject(this->getName());
+}
+
 //void GUIObject::groupComponents(QList<QGraphicsItem*> compList) //Inte alls klart
 //{
 //    //Borde nog ligga i projecttab så man kan rodda med scenerna
@@ -811,12 +817,6 @@ void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 }
 
-//! Tells the component to ask its parent to delete it.
-void GUIComponent::deleteMe()
-{
-    mpParentGraphicsView->deleteGUIObject(this->getName());
-}
-
 
 //! Returns a string with the component type.
 QString GUIComponent::getTypeName()
@@ -895,9 +895,125 @@ void GUIComponent::deleteInHopsanCore()
 GUISubsystem::GUISubsystem(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
         : GUIObject(position, parameterData.at(1), scene, parent)
 {
-    //Do something nice
+    //Core interaction
+    mpCoreComponentSystem = hopsan->CreateComponentSystem();
+    //mpCoreComponentSystem->setName("unnamed");
+    //
+
+//    mComponentTypeName = parameterData.at(0);
+//    //QString fileName = parameterData.at(1);
+//    QString iconRotationBehaviour = parameterData.at(2);
+//    if(iconRotationBehaviour == "ON")
+//        this->mIconRotation = true;
+//    else
+//        this->mIconRotation = false;
+//    size_t nPorts = parameterData.at(3).toInt();
+//
+//
+//
+//    //Sets the ports
+//    //! @todo should break this out and make it reusable
+//    //GUIPort::portType type;
+//    Port::PORTTYPE porttype;
+//    for (size_t i = 0; i < nPorts; ++i)
+//    {
+//        double x = parameterData.at(4+3*i).toDouble();
+//        double y = parameterData.at(5+3*i).toDouble();
+//        double rot = parameterData.at(6+3*i).toDouble();
+//
+//        porttype = mpCoreComponent->getPortPtrVector().at(i)->getPortType();
+//
+//        QString iconPath("../../HopsanGUI/porticons/");
+//        if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeSignal")
+//        {
+//            iconPath.append("SignalPort");
+//            if ( porttype == Port::READPORT)
+//            {
+//                iconPath.append("_read");
+//            }
+//            else
+//            {
+//                iconPath.append("_write");
+//            }
+//        }
+//        else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeMechanic")
+//        {
+//            iconPath.append("MechanicPort");
+//            if (mpCoreComponent->getTypeCQS() == Component::C)
+//                iconPath.append("C");
+//            else if (mpCoreComponent->getTypeCQS() == Component::Q)
+//                iconPath.append("Q");
+//        }
+//        else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeHydraulic")
+//        {
+//            iconPath.append("HydraulicPort");
+//            if (mpCoreComponent->getTypeCQS() == Component::C)
+//                iconPath.append("C");
+//            else if (mpCoreComponent->getTypeCQS() == Component::Q)
+//                iconPath.append("Q");
+//        }
+//        else
+//        {
+//            assert(false);
+//        }
+//        iconPath.append(".svg");
+//
+//        GUIPort::portDirectionType direction;
+//        if((rot == 0) | (rot == 180))
+//            direction = GUIPort::HORIZONTAL;
+//        else
+//            direction = GUIPort::VERTICAL;
+//        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,porttype,direction,this));//mpIcon));
+//    }
+
+    refreshName(); //Make sure name window is correct size for center positioning
+
+//    std::cout << "GUISubsystem: " << mComponentTypeName.toStdString() << std::endl;
 }
 
+//! This function returns the current subsystem name
+QString GUISubsystem::getName()
+{
+    return QString::fromStdString(mpCoreComponentSystem->getName());
+}
+
+//!
+//! @brief This function sets the desired subsystem name
+//! @param [in] newName The new name
+//! @param [in] doOnlyCoreRename  Dont use this if you dont know what you are doing
+//!
+//! @todo This function is almost exactly identical to the one for GUIcomponents need to make sure that we dont dublicate functions like this, maybe this should be directly in GUIObject
+//!
+//! The desired new name will be sent to the the core component and may be modified. Rename will be called in the graphics view to make sure that the guicomponent map key value is up to date.
+//! doOnlyCoreRename is a somewhat ugly hack, we need to be able to force setName without calling rename in some very special situations, it defaults to false
+//!
+void GUISubsystem::setName(QString newName, bool doOnlyCoreRename)
+{
+    QString oldName = getName();
+    //If name same as before do nothing
+    if (newName != oldName)
+    {
+        //This does not work when we load systems, the default name (oldNAme) may already be in the graphicsView and an incorrect rename will be triggered
+//        if (mpParentGraphicsView->haveComponent(oldName))
+//        {
+//            //Rename
+//            mpParentGraphicsView->renameComponent(oldName, newName);
+//        }
+
+        //Check if we want to avoid trying to rename in the graphics view map
+        if (doOnlyCoreRename)
+        {
+            //Set name in core component,
+            mpCoreComponentSystem->setName(newName.toStdString());
+            refreshName();
+        }
+        else
+        {
+            //Rename
+            mpParentGraphicsView->renameGUIObject(oldName, newName);
+        }
+    }
+}
 
 
 //! Returns a string with the sub system type.
@@ -916,7 +1032,7 @@ void GUISubsystem::deleteInHopsanCore()
 
 ComponentSystem* GUISubsystem::getHopsanCoreSystemComponentPtr()
 {
-    return 0;
+    return mpCoreComponentSystem;
 }
 
 GUISystemPort::GUISystemPort(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)

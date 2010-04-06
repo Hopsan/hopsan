@@ -35,22 +35,24 @@ class LibraryContentItem : public QListWidgetItem
 public:
     LibraryContentItem(const QIcon &icon, const QString &text, QListWidget *parent = 0);
     LibraryContentItem(const QListWidgetItem &other);
-    ~LibraryContentItem();
+//    ~LibraryContentItem();
 
-    void setAppearanceData(QStringList list);
-    QStringList getAppearanceData();
+//    void setAppearanceData(QStringList list);
+//    QStringList getAppearanceData();
 
 private:
-    QStringList mAppearanceData;
+//    QStringList mAppearanceData;
 };
+
+//Forward declaration
+class LibraryWidget;
 
 class LibraryContent : public QListWidget
 {
     Q_OBJECT
 
 public:
-    LibraryContent(QWidget *parent = 0);
-
+    LibraryContent(LibraryContent *pParentLibraryContent, LibraryWidget *pParentLibraryWidget);
 
     //QMimeData *mimeData(const QList<QListWidgetItem*> items) const;
 
@@ -59,6 +61,7 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
 
     QPoint dragStartPosition;
+    LibraryWidget *mpParentLibraryWidget;
 };
 
 

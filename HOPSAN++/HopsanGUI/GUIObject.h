@@ -63,7 +63,7 @@ signals:
     void componentDeleted();
 
 public slots:
-//     void deleteMe();
+     void deleteMe();
      void rotate();
      void moveUp();
      void moveDown();
@@ -160,7 +160,7 @@ protected:
     QString mComponentTypeName;
 
 public slots:
-     void deleteMe();
+
 };
 
 class GUISubsystem : public GUIObject
@@ -169,6 +169,8 @@ class GUISubsystem : public GUIObject
 public:
     GUISubsystem(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
     ComponentSystem* getHopsanCoreSystemComponentPtr();
+    QString getName();
+    void setName(QString newName, bool doOnlyCoreRename);
     QString getTypeName();
     void deleteInHopsanCore();
 

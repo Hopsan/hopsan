@@ -245,52 +245,57 @@ void GraphicsView::addGUIObject(QString componentType, QStringList appearanceDat
     //guiComponent->setPos(this->mapToScene(position));
     //qDebug() << "GraphicsView: " << pGuiObject->parent();
 
-    this->mGUIObjectMap.insert(pGuiObject->getName(), pGuiObject);
-
-    qDebug() << "GUI Object created at (" << pGuiObject->x() << " " << pGuiObject->y() << ")";
-
-}
-
-//! Adds a new component to the GraphicsView.
-//! @param componentType is a string defining the type of component.
-//! @param position is the position where the component will be created.
-//! @param name will be the name of the component.
-void GraphicsView::addComponent(QString componentType, QPoint position, QString name, bool startSelected)
-{
-    MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
-    LibraryWidget *pLibrary = pMainWindow->mpLibrary;
-    QStringList appearanceData = pLibrary->getAppearanceData(componentType);
-
-    GUIComponent *pGuiComponent = new GUIComponent(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
-
-    qDebug() << "=====================Get initial name: " << pGuiComponent->getName() << "requested: " << name;
-    if (!name.isEmpty())
+    if ( mGUIObjectMap.contains(pGuiObject->getName()) )
     {
-        qDebug() << "name not empty, setting to: " << name;
-        //Set name, do NOT try to do smart rename. (If component already exist with new component default name that other component would be renamed)
-        pGuiComponent->setName(name, true);
+        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Trying to add component with name: " + pGuiObject->getName() + " that already exist in GUIObjectMap, (Not adding)");
     }
-
-    pGuiComponent->setSelected(startSelected);
-
-    //Core interaction
-    qDebug() << "=====================Get name before add: " << pGuiComponent->getName();
-    this->mpParentProjectTab->mpComponentSystem->addComponent(pGuiComponent->mpCoreComponent);
-    //    qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
-    pGuiComponent->refreshName();
-    emit checkMessages();
-    qDebug() << "=====================Get name after add: " << pGuiComponent->getName();
-    //
-
-    //guiComponent->setPos(this->mapToScene(position));
-    qDebug() << "GraphicsView: " << pGuiComponent->parent();
-
-     //mLibraryMapPtrs.insert(libraryName, newLibContent);
-    //this->mComponentMap.insert()
-    this->mGUIObjectMap.insert(pGuiComponent->getName(), pGuiComponent);
-    //APAthis->scene()->addItem(guiComponent);
-
+    else
+    {
+        mGUIObjectMap.insert(pGuiObject->getName(), pGuiObject);
+        qDebug() << "GUI Object created at (" << pGuiObject->x() << " " << pGuiObject->y() << ")";
+    }
 }
+
+////! Adds a new component to the GraphicsView.
+////! @param componentType is a string defining the type of component.
+////! @param position is the position where the component will be created.
+////! @param name will be the name of the component.
+//void GraphicsView::addComponent(QString componentType, QPoint position, QString name, bool startSelected)
+//{
+//    MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
+//    LibraryWidget *pLibrary = pMainWindow->mpLibrary;
+//    QStringList appearanceData = pLibrary->getAppearanceData(componentType);
+//
+//    GUIComponent *pGuiComponent = new GUIComponent(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+//
+//    qDebug() << "=====================Get initial name: " << pGuiComponent->getName() << "requested: " << name;
+//    if (!name.isEmpty())
+//    {
+//        qDebug() << "name not empty, setting to: " << name;
+//        //Set name, do NOT try to do smart rename. (If component already exist with new component default name that other component would be renamed)
+//        pGuiComponent->setName(name, true);
+//    }
+//
+//    pGuiComponent->setSelected(startSelected);
+//
+//    //Core interaction
+//    qDebug() << "=====================Get name before add: " << pGuiComponent->getName();
+//    this->mpParentProjectTab->mpComponentSystem->addComponent(pGuiComponent->mpCoreComponent);
+//    //    qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
+//    pGuiComponent->refreshName();
+//    emit checkMessages();
+//    qDebug() << "=====================Get name after add: " << pGuiComponent->getName();
+//    //
+//
+//    //guiComponent->setPos(this->mapToScene(position));
+//    qDebug() << "GraphicsView: " << pGuiComponent->parent();
+//
+//    //mLibraryMapPtrs.insert(libraryName, newLibContent);
+//    //this->mComponentMap.insert()
+//    this->mGUIObjectMap.insert(pGuiComponent->getName(), pGuiComponent);
+//    //APAthis->scene()->addItem(guiComponent);
+//
+//}
 
 
 void GraphicsView::addSystemPort(QPoint position, QString name, bool startSelected)
@@ -306,18 +311,18 @@ void GraphicsView::systemPortSlot()
       addSystemPort(position);
 }
 
-//! Delete componenet with specified name
-//! @param componentName is the name of the componenet to delete
-void GraphicsView::deleteGUIObject(QString componentName)
+//! Delete GUIObject with specified name
+//! @param objectName is the name of the componenet to delete
+void GraphicsView::deleteGUIObject(QString objectName)
 {
     //qDebug() << "In delete component";
     QMap<QString, GUIObject *>::iterator it;
-    it = mGUIObjectMap.find(componentName);
+    it = mGUIObjectMap.find(objectName);
 
     QMap<QString, GUIConnector *>::iterator it2;
     for(it2 = this->mConnectionMap.begin(); it2!=this->mConnectionMap.end(); ++it2)
     {
-        if(it2.key().contains(componentName))
+        if(it2.key().contains(objectName))
             mConnectionMap.erase(it2);
         if(mConnectionMap.empty())
             break;
@@ -334,7 +339,7 @@ void GraphicsView::deleteGUIObject(QString componentName)
     }
     else
     {
-        qDebug() << "In delete component: could not find component with name " << componentName;
+        qDebug() << "In delete GUIObject: could not find object with name " << objectName;
     }
     this->setBackgroundBrush(mBackgroundColor);
 }
@@ -708,7 +713,8 @@ void GraphicsView::paste()
             componentType = mCopyData[i];
             ++i;
             componentName = mCopyData[i];
-            this->addComponent(componentType, mCopyDataPos[j].toPoint(), componentName, true);
+            QStringList appearanceData = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
+            this->addGUIObject(componentType, appearanceData, mCopyDataPos[j].toPoint(), componentName, true);
             ++j;
         }
     }

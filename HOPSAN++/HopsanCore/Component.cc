@@ -480,8 +480,8 @@ void ComponentSystem::SubComponentStorage::add(Component* pComponent)
         mComponentSignalptrs.push_back(pComponent);
         break;
     default :
-        cout << "Trying to add module of other type than c, q or signal" << endl;
-        assert(false);
+        gCoreMessageHandler.addErrorMessage("Trying to add module not specified as c, q or signal type, (Not added)");
+        return;
     }
 
     mSubComponentMap.insert(pair<string, Component*>(modname, pComponent));
@@ -550,9 +550,7 @@ void ComponentSystem::SubComponentStorage::erase(const string &rName)
     }
     else
     {
-        //! @todo exception or similar instead
-        cout << "The component you are trying to delete: " << rName << " does not exist" << endl;
-        assert(false);
+        gCoreMessageHandler.addErrorMessage("The component you are trying to delete: " + rName + " does not exist (Does Nothing)");
     }
 }
 

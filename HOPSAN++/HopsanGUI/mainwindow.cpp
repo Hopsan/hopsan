@@ -129,14 +129,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     //-------------------------------------------------------------------------------------
     //! @todo This is QDcode, needs to be rewritten in some better way
-    mpLibrary->addEmptyLibrary("SubSystem");
+    mpLibrary->addEmptyLibrary("Subsystem");
     QIcon icon;
-    LibraryContentItem *pLibsubcomp = new LibraryContentItem(icon,"SubSystem");
+    LibraryContentItem *pLibsubcomp = new LibraryContentItem(icon,"Subsystem");
     QStringList appearanceData;
     appearanceData << "Subsystem";
-    appearanceData << " "; //Icon path
-    pLibsubcomp->setAppearanceData(appearanceData);
-    mpLibrary->addComponent("", "SubSystem", pLibsubcomp, appearanceData);
+    appearanceData << QString("../../HopsanGUI/subsystemtmp.svg"); //Icon path
+    //pLibsubcomp->setAppearanceData(appearanceData);
+    mpLibrary->addComponent("", "Subsystem", pLibsubcomp, appearanceData);
     //------------------------------------------------------------------------------------
 
     QMetaObject::connectSlotsByName(this);

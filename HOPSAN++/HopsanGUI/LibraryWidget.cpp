@@ -38,27 +38,28 @@ LibraryContentItem::LibraryContentItem(const QListWidgetItem &other)
 {
 }
 
-LibraryContentItem::~LibraryContentItem()
-{
-}
+//LibraryContentItem::~LibraryContentItem()
+//{
+//}
 
 
-void LibraryContentItem::setAppearanceData(QStringList list)
-{
-    mAppearanceData = list;
-}
-
-QStringList LibraryContentItem::getAppearanceData()
-{
-    return mAppearanceData;
-}
+//void LibraryContentItem::setAppearanceData(QStringList list)
+//{
+//    mAppearanceData = list;
+//}
+//
+//QStringList LibraryContentItem::getAppearanceData()
+//{
+//    return mAppearanceData;
+//}
 
 
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
-LibraryContent::LibraryContent(QWidget *parent)
-    :   QListWidget(parent)
+LibraryContent::LibraryContent(LibraryContent *pParentLibraryContent, LibraryWidget *pParentLibraryWidget)
+    :   QListWidget(pParentLibraryContent)
 {
+    mpParentLibraryWidget = pParentLibraryWidget;
     setViewMode(QListView::IconMode);
     setAcceptDrops(false);
     setResizeMode(QListView::Adjust);
@@ -77,20 +78,22 @@ void LibraryContent::mousePressEvent(QMouseEvent *event)
 void LibraryContent::mouseMoveEvent(QMouseEvent *event)
 {
 
-    if (!(event->buttons() & Qt::LeftButton))
+    if ( !(event->buttons() & Qt::LeftButton) )
         return;
-    if ((event->pos() - dragStartPosition).manhattanLength()
-         < QApplication::startDragDistance())
+    if ( (event->pos() - dragStartPosition).manhattanLength() < QApplication::startDragDistance() )
         return;
 
     QByteArray *data = new QByteArray;
-    QDataStream stream(data,QIODevice::WriteOnly);
+    QDataStream stream(data, QIODevice::WriteOnly);
 
-    QListWidgetItem *item = this->currentItem();
+    QListWidgetItem *pItem = this->currentItem();
 
     //stream << item->data(Qt::UserRole).toString();
-    stream << ((LibraryContentItem*)item)->getAppearanceData();
-    qDebug() << "moving: appearanceData: " << ((LibraryContentItem*)item)->getAppearanceData();
+    //stream << ((LibraryContentItem*)item)->getAppearanceData();
+    //qDebug() << "moving: appearanceData: " << ((LibraryContentItem*)item)->getAppearanceData();
+
+    stream << mpParentLibraryWidget->getAppearanceData(pItem->text());
+    qDebug() << "moving: appearanceData: " << mpParentLibraryWidget->getAppearanceData(pItem->text());
 
     QString mimeType = "application/x-text";
 
@@ -140,7 +143,7 @@ void LibraryWidget::addEmptyLibrary(QString libraryName, QString parentLibraryNa
     QTreeWidgetItem *newTreePost = new QTreeWidgetItem((QTreeWidget*)0);
     newTreePost->setText(0, QString(libraryName));
 
-    LibraryContent *newLibContent = new LibraryContent((LibraryContent*)0);
+    LibraryContent *newLibContent = new LibraryContent((LibraryContent*)0, this);
     newLibContent->setDragEnabled(true);
     //newLibContent->setDropIndicatorShown(true);
     mLibraryMapPtrs.insert(parentLibraryName + libraryName, newLibContent);
@@ -154,17 +157,17 @@ void LibraryWidget::addEmptyLibrary(QString libraryName, QString parentLibraryNa
     }
     else
     {
-    QTreeWidgetItemIterator it(mpTree);
-    while (*it)
-    {
-        if ((*it)->text(0) == parentLibraryName)
+        QTreeWidgetItemIterator it(mpTree);
+        while (*it)
         {
-            (*it)->addChild(newTreePost);
-            mpTree->expandItem(*it);
-        }
+            if ((*it)->text(0) == parentLibraryName)
+            {
+                (*it)->addChild(newTreePost);
+                mpTree->expandItem(*it);
+            }
 
-        ++it;
-    }
+            ++it;
+        }
     }
 }
 
@@ -260,7 +263,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
 
         LibraryContentItem *libcomp= new LibraryContentItem(icon,componentName);
       //  std::cout << appearanceData.size() << std::endl;
-        libcomp->setAppearanceData(appearanceData);
+        //libcomp->setAppearanceData(appearanceData);
 
         //Add the component to the library
         //library->addComponent(libName,componentName,icon,appearanceData);
@@ -357,8 +360,8 @@ QStringList LibraryWidget::getAppearanceData(QString componentType)
     qDebug() << "LibraryWidget::getAppearanceData: " + componentType;
     if (mAppearanceDataMap.count(componentType) == 0)
     {
-        qDebug() << "Trying to fetch appearanceData for " + componentType + " which does not appear to exit in the Map, returning empty data";
-        mpParentMainWindow->mpMessageWidget->printGUIWarningMessage("Trying to fetch appearanceData for " + componentType + " which does not appear to exit in the Map, returning empty data");
+        qDebug() << "Trying to fetch appearanceData for " + componentType + " which does not appear to exist in the Map, returning empty data";
+        mpParentMainWindow->mpMessageWidget->printGUIWarningMessage("Trying to fetch appearanceData for " + componentType + " which does not appear to exist in the Map, returning empty data");
     }
 
     return mAppearanceDataMap.find(componentType)->second;
