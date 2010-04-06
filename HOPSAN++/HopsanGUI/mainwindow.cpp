@@ -245,6 +245,9 @@ void MainWindow::createActions()
     optionsAction = new QAction(QIcon("../../HopsanGUI/icons/options.png"), tr("&Options"), this);
     optionsAction->setText("Options");
     connect(optionsAction,SIGNAL(triggered()),this,SLOT(openOptions()));
+
+    resetZoomAction = new QAction(QIcon("../../HopsanGUI/icons/zoom100.png"), tr("&Reset Zoom"), this);
+    resetZoomAction->setText("Reset Zoom");
 }
 
 
@@ -325,11 +328,11 @@ void MainWindow::createMenus()
 //! Creates the toolbars
 void MainWindow::createToolbars()
 {
-    viewScaleCombo = new QComboBox;
-    QStringList scales;
-    scales << tr("50%") << tr("75%") << tr("100%") << tr("125%") << tr("150%");
-    viewScaleCombo->addItems(scales);
-    viewScaleCombo->setCurrentIndex(2);
+    //viewScaleCombo = new QComboBox;
+    //QStringList scales;
+    //scales << tr("50%") << tr("75%") << tr("100%") << tr("125%") << tr("150%");
+    //viewScaleCombo->addItems(scales);
+    //viewScaleCombo->setCurrentIndex(2);
 
     fileToolBar = addToolBar(tr("File Toolbar"));
     fileToolBar->setAllowedAreas(Qt::TopToolBarArea);
@@ -347,7 +350,8 @@ void MainWindow::createToolbars()
 
     simToolBar = addToolBar(tr("Simulation Toolbar"));
     simToolBar->setAllowedAreas(Qt::TopToolBarArea);
-    simToolBar->addWidget(viewScaleCombo);
+    //simToolBar->addWidget(viewScaleCombo);
+    simToolBar->addAction(resetZoomAction);
     simToolBar->addAction(preferencesAction);
     simToolBar->addAction(simulateAction);
     simToolBar->addAction(plotAction);

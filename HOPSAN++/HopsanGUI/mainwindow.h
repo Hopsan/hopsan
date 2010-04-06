@@ -70,13 +70,14 @@ public:
     QAction *loadLibsAction;
     QAction *preferencesAction;
     QAction *optionsAction;
+    QAction *resetZoomAction;
 
     QToolBar *fileToolBar;
     QToolBar *clipboardToolBar;
     QToolBar *simToolBar;
     QToolBar *mpSimulationToolBar;
 
-    QComboBox *viewScaleCombo;
+    //QComboBox *viewScaleCombo;
 
 
     //QString libDir;

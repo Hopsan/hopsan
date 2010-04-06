@@ -65,7 +65,8 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
 //    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent()->parent())); //Ugly!!!
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
     connect(this->systemPortAction, SIGNAL(triggered()), SLOT(systemPortSlot()));
-    connect(pMainWindow->viewScaleCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(setScale(QString)));
+    //connect(pMainWindow->viewScaleCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(setScale(QString)));
+    connect(pMainWindow->resetZoomAction, SIGNAL(triggered()), this,SLOT(resetZoom()));
     connect(pMainWindow->cutAction, SIGNAL(triggered()), this,SLOT(cutSelected()));
     connect(pMainWindow->copyAction, SIGNAL(triggered()), this,SLOT(copySelected()));
     connect(pMainWindow->pasteAction, SIGNAL(triggered()), this,SLOT(paste()));
@@ -731,6 +732,10 @@ void GraphicsView::setScale(const QString &scale)
 }
 
 
+void GraphicsView::resetZoom()
+{
+    this->resetMatrix();
+}
 
 
 //! @class GraphicsScene

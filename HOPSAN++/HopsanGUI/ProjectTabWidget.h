@@ -85,6 +85,7 @@ public slots:
     void paste();
     void selectAll();
     void setScale(const QString &scale);
+    void resetZoom();
 
     //QByteArray *data;
     //QDataStream *stream;
