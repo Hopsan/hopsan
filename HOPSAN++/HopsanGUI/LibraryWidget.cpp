@@ -16,15 +16,22 @@
 #include "mainwindow.h"
 
 
-//! @class LibraryWidget
-//! @brief The LibraryWidget class is a class which store and display component libraries.
+//! @class LibraryContentItem
+//! @brief The LibraryContentItem contains the typename and icon to show in the library when selecting component or other guiobjects
 //!
-//! This class is a widget whisch can be included in the main window.
+//! The LibraryContentItem only contains the typename and icon to show in the library when selecting component or other guiobjects.
+//! The actual appearance of the GUIObject after drag and drop is stored in a Map in the LibraryWidget
 //!
 
-#include <QStringList>
+//! @class LibraryWidget
+//! @brief The LibraryWidget class is a class which store and display component libraries and other GUIObjects.
+//!
+//! This class is a widget that can be be included in the main window. It contains among other things a Map with appearance data for all loaded components and other GUIObjects.
+//!
+
 #include <QtGui>
 
+//! @brief Constructor
 LibraryContentItem::LibraryContentItem(const QIcon &icon, const QString &text, QListWidget *parent)
         : QListWidgetItem(icon, text, parent)
 {
@@ -33,25 +40,11 @@ LibraryContentItem::LibraryContentItem(const QIcon &icon, const QString &text, Q
     this->setFont(font);
 }
 
+//! @brief Copy Constructor
 LibraryContentItem::LibraryContentItem(const QListWidgetItem &other)
         : QListWidgetItem(other)
 {
 }
-
-//LibraryContentItem::~LibraryContentItem()
-//{
-//}
-
-
-//void LibraryContentItem::setAppearanceData(QStringList list)
-//{
-//    mAppearanceData = list;
-//}
-//
-//QStringList LibraryContentItem::getAppearanceData()
-//{
-//    return mAppearanceData;
-//}
 
 
 //! Constructor.

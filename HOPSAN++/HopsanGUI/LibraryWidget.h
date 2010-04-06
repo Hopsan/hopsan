@@ -18,30 +18,19 @@
 #include <QVBoxLayout>
 
 
-//class QWidget;
-//class QTreeWidget;
-//class QTreeWidgetItem;
-//class QVBoxLayout;
 class LibraryContentItem;
 
 #include <QListWidgetItem>
-//#include <QStringList>
-
-
-class QStringList;
+#include <QStringList>
 
 class LibraryContentItem : public QListWidgetItem
 {
 public:
     LibraryContentItem(const QIcon &icon, const QString &text, QListWidget *parent = 0);
     LibraryContentItem(const QListWidgetItem &other);
-//    ~LibraryContentItem();
-
-//    void setAppearanceData(QStringList list);
-//    QStringList getAppearanceData();
 
 private:
-//    QStringList mAppearanceData;
+
 };
 
 //Forward declaration
@@ -72,20 +61,18 @@ class LibraryWidget : public QWidget
     Q_OBJECT
 
 public:
+    //Member functions
     LibraryWidget(MainWindow *parent = 0);
-
-    MainWindow *mpParentMainWindow;
-
-    QTreeWidget *mpTree;
-
-    QMap<QString,QListWidget *> mLibraryMapPtrs;
-
-    QVBoxLayout *mpGrid;
-
     void addEmptyLibrary(QString libraryName, QString parentLibraryName=QString());
     void addLibrary(QString libDir, QString parentLib=QString());
     void addComponent(QString libraryName, QString parentLibraryName, LibraryContentItem *newComponent, QStringList parameterData);
     QStringList getAppearanceData(QString);
+
+    //Member variables
+    MainWindow *mpParentMainWindow;
+    QTreeWidget *mpTree;
+    QMap<QString, QListWidget *> mLibraryMapPtrs;
+    QVBoxLayout *mpGrid;
 
 public slots:
     void addLibrary();
