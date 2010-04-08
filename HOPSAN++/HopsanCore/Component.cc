@@ -1345,13 +1345,13 @@ void ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
     }
 }
 
-void ComponentSystem::setDesiredTimestep(const double timestep) // FIPPLAR MED NU, be
+void ComponentSystem::setDesiredTimestep(const double timestep)
 {
     mDesiredTimestep = timestep;
     setTimestep(timestep);
 }
 
-//void ComponentSystem::setTimestep(const double timestep) // FIPPLAR MED NU, be
+//void ComponentSystem::setTimestep(const double timestep)
 //{
 //    mTimestep = timestep;
 //
@@ -1382,7 +1382,7 @@ void ComponentSystem::setDesiredTimestep(const double timestep) // FIPPLAR MED N
 //    }
 //}
 
-void ComponentSystem::setTimestep(const double timestep) // FIPPLAR MED NU, be
+void ComponentSystem::setTimestep(const double timestep)
 {
     mTimestep = timestep;
 
