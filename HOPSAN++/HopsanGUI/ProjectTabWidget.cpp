@@ -388,7 +388,7 @@ bool GraphicsView::haveGUIObject(QString name)
 //! @param event contains information of the scrolling operation.
 void GraphicsView::wheelEvent(QWheelEvent *event)
 {
-    if (event->modifiers() and Qt::ControlModifier)
+    if (event->modifiers() and (Qt::ControlModifier or Qt::Key_Alt))
     {
         qreal factor = pow(1.41,(-event->delta()/240.0));
         this->scale(factor,factor);
