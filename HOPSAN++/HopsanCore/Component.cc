@@ -172,10 +172,6 @@ const string &Component::getName()
     return mName;
 }
 
-//const string &Component::getTypeCQS()
-//{
-//    return mTypeCQS;
-//}
 
 //! Get the C, Q or S type of the component as enum
 Component::typeCQS Component::getTypeCQS()
@@ -197,6 +193,9 @@ string Component::getTypeCQSString(typeCQS type)
         break;
     case S :
         return "S";
+        break;
+    case NOCQSTYPE :
+        return "NOCQSTYPE";
         break;
     default :
         return "Invalid CQS Type";
@@ -279,16 +278,6 @@ vector<Port*> Component::getPortPtrVector()
    return mPortPtrs;
 }
 
-
-//void Component::setTimestep(const double timestep)
-//{
-//    mTimestep = timestep;
-//}
-
-//double Component::getTimestep()
-//{
-//    return mTimestep;
-//}
 
 void Component::setDesiredTimestep(const double timestep)
 {
@@ -450,6 +439,7 @@ string ComponentSystem::SubComponentStorage::modifyName(string name)
     //cout << name << endl;
     //gCoreMessageHandler.addWarningMessage("Changed to: " + name);
     //If name change, notify
+    //! @todo maybe this notification should not be inside this function but after its use
     if (oldname != name)
     {
         cout << "Modified name: " << oldname << "  was changed to: " << name << endl;
@@ -479,8 +469,11 @@ void ComponentSystem::SubComponentStorage::add(Component* pComponent)
     case Component::S :
         mComponentSignalptrs.push_back(pComponent);
         break;
+    case Component::NOCQSTYPE :
+        mComponentUndefinedptrs.push_back(pComponent);
+        break;
     default :
-        gCoreMessageHandler.addErrorMessage("Trying to add module not specified as c, q or signal type, (Not added)");
+            gCoreMessageHandler.addErrorMessage("Trying to add module with unspecified CQS type: " + pComponent->getTypeCQSString(pComponent->getTypeCQS())  + ", (Not added)");
         return;
     }
 
@@ -502,7 +495,7 @@ Component* ComponentSystem::SubComponentStorage::get(const string &rName)
     }
 }
 
-void ComponentSystem::SubComponentStorage::erase(const string &rName)
+void ComponentSystem::SubComponentStorage::remove(const string &rName)
 {
     map<string, Component*>::iterator it;
     it = mSubComponentMap.find(rName);
@@ -541,6 +534,16 @@ void ComponentSystem::SubComponentStorage::erase(const string &rName)
                 }
             }
             break;
+        case Component::NOCQSTYPE :
+            for (cit = mComponentUndefinedptrs.begin(); cit != mComponentUndefinedptrs.end(); ++cit)
+            {
+                if ( (*cit)->getName() == rName )
+                {
+                    mComponentUndefinedptrs.erase(cit);
+                    break;
+                }
+            }
+            break;
         default :
             cout << "This should not happen neither C Q or S type" << endl;
             assert(false);
@@ -550,7 +553,7 @@ void ComponentSystem::SubComponentStorage::erase(const string &rName)
     }
     else
     {
-        gCoreMessageHandler.addErrorMessage("The component you are trying to delete: " + rName + " does not exist (Does Nothing)");
+        gCoreMessageHandler.addErrorMessage("The component you are trying to remove: " + rName + " does not exist (Does Nothing)");
     }
 }
 
@@ -593,6 +596,38 @@ void ComponentSystem::SubComponentStorage::rename(const string &rOldName, const 
         cout << "Error no component with old_name: " << rOldName << " found!" << endl;
         assert(false);
     }
+}
+
+//! @brief Change the cqs type of a stored subsystem component
+bool ComponentSystem::SubComponentStorage::changeTypeCQS(const string &rName, const typeCQS newType)
+{
+    Component* tmpptr;
+    //First get the component ptr and check if we are requesting new type
+    tmpptr = get(rName);
+    if (newType != tmpptr->getTypeCQS())
+    {
+        //check that it is a system component, in that case change the cqs type
+        if ( tmpptr->isComponentSystem() )
+        {
+            //Cast to system ptr
+            //! @todo should have a member function that return systemcomponent ptrs
+            ComponentSystem* tmpsysptr = dynamic_cast<ComponentSystem*>(tmpptr);
+
+            //Remove old version
+            remove(rName);
+
+            //Change cqsType localy in the subcomponent, make sure to set true to avoid looping back to this rename
+            tmpsysptr->setTypeCQS(newType, true);
+
+            //readd to system
+            add(tmpsysptr);
+        }
+        else
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 ComponentSystem *Component::getSystemParent()
@@ -733,8 +768,8 @@ void ComponentSystem::removeSubComponent(Component* c_ptr, bool doDelete)
         }
     }
 
-    //Erase from storage
-    mSubComponentStorage.erase(c_ptr->getName());
+    //Remove from storage
+    mSubComponentStorage.remove(c_ptr->getName());
 
     //Shall we also delete the component completely
     if (doDelete)
@@ -876,19 +911,19 @@ Port* ComponentSystem::addSystemPort(const string portname)
 }
 
 //! Set the type C, Q, or S of the subsystem by using string
-void ComponentSystem::setTypeCQS(const string cqs_type)
+void ComponentSystem::setTypeCQS(const string cqs_type, bool doOnlyLocalSet)
 {
     if (cqs_type == string("C"))
     {
-        setTypeCQS(Component::C);
+        setTypeCQS(Component::C, doOnlyLocalSet);
     }
     else if (cqs_type == string("Q"))
     {
-        setTypeCQS(Component::Q);
+        setTypeCQS(Component::Q, doOnlyLocalSet);
     }
     else if (cqs_type == string("S"))
     {
-        setTypeCQS(Component::S);
+        setTypeCQS(Component::S, doOnlyLocalSet);
     }
     else
     {
@@ -898,37 +933,57 @@ void ComponentSystem::setTypeCQS(const string cqs_type)
 }
 
 //! Set the type C, Q, or S of the subsystem
-void ComponentSystem::setTypeCQS(typeCQS cqs_type)
+void ComponentSystem::setTypeCQS(typeCQS cqs_type, bool doOnlyLocalSet)
 {
-        //! @todo should really try to figure out a better way to do this
-        //! @todo need to do erro checking, and make sure that the specified type really is valid, first and last component should be of this type (i think)
+    //! @todo should really try to figure out a better way to do this
+    //! @todo need to do erro checking, and make sure that the specified type really is valid, first and last component should be of this type (i think)
 
-    switch (cqs_type)
+    //If type same as before do nothing
+    if (cqs_type !=  mTypeCQS)
     {
-    case Component::C :
-        mTypeCQS = Component::C;
-        mIsComponentC = true;
-        mIsComponentQ = false;
-        mIsComponentSignal = false;
-        break;
+        //Do we have a system parent
+        if ( (mpSystemParent != 0) && (!doOnlyLocalSet) )
+        {
+            //Request change by our parent (som parent cahnges are neeeded)
+            mpSystemParent->mSubComponentStorage.changeTypeCQS(mName, cqs_type);
+        }
+        else
+        {
+            switch (cqs_type)
+            {
+            case Component::C :
+                mTypeCQS = Component::C;
+                mIsComponentC = true;
+                mIsComponentQ = false;
+                mIsComponentSignal = false;
+                break;
 
-    case Component::Q :
-        mTypeCQS = Component::Q;
-        mIsComponentC = false;
-        mIsComponentQ = true;
-        mIsComponentSignal = false;
-        break;
+            case Component::Q :
+                mTypeCQS = Component::Q;
+                mIsComponentC = false;
+                mIsComponentQ = true;
+                mIsComponentSignal = false;
+                break;
 
-    case Component::S :
-        mTypeCQS = Component::S;
-        mIsComponentC = false;
-        mIsComponentQ = false;
-        mIsComponentSignal = true;
-        break;
+            case Component::S :
+                mTypeCQS = Component::S;
+                mIsComponentC = false;
+                mIsComponentQ = false;
+                mIsComponentSignal = true;
+                break;
 
-    default :
-        cout << "Error: Specified type _" << getTypeCQSString(cqs_type) << "_ does not exist!" << endl;
-        gCoreMessageHandler.addWarningMessage("Specified type: " + getTypeCQSString(cqs_type) + " does not exist!, System CQStype unchanged");
+            case Component::NOCQSTYPE :
+                mTypeCQS = Component::NOCQSTYPE;
+                mIsComponentC = false;
+                mIsComponentQ = false;
+                mIsComponentSignal = false;
+                break;
+
+            default :
+                cout << "Error: Specified type _" << getTypeCQSString(cqs_type) << "_ does not exist!" << endl;
+                gCoreMessageHandler.addWarningMessage("Specified type: " + getTypeCQSString(cqs_type) + " does not exist!, System CQStype unchanged");
+            }
+        }
     }
 }
 

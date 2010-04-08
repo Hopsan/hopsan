@@ -130,12 +130,12 @@ MainWindow::MainWindow(QWidget *parent)
     //-------------------------------------------------------------------------------------
     //! @todo This is QDcode, needs to be rewritten in some better way
     mpLibrary->addEmptyLibrary("Subsystem");
-    QIcon icon;
-    LibraryContentItem *pLibsubcomp = new LibraryContentItem(icon,"Subsystem");
     QStringList appearanceData;
     appearanceData << "Subsystem";
     appearanceData << QString("../../HopsanGUI/subsystemtmp.svg"); //Icon path
-    //pLibsubcomp->setAppearanceData(appearanceData);
+    QIcon icon;
+    icon.addFile("../../HopsanGUI/subsystemtmp.svg");
+    LibraryContentItem *pLibsubcomp = new LibraryContentItem(icon,"Subsystem");
     mpLibrary->addComponent("", "Subsystem", pLibsubcomp, appearanceData);
     //------------------------------------------------------------------------------------
 

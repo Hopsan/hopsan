@@ -151,12 +151,14 @@ private:
         void add(Component* pComponent);
         Component* get(const string &rName);
         void rename(const string &rOldName, const string &rNewName);
-        void erase(const string &rName);
+        void remove(const string &rName);
         bool have(const string &rName);
+        bool changeTypeCQS(const string &rName, const typeCQS newType);
 
         vector<Component*> mComponentSignalptrs;
         vector<Component*> mComponentQptrs;
         vector<Component*> mComponentCptrs;
+        vector<Component*> mComponentUndefinedptrs;
     };
 
 public:
@@ -165,8 +167,8 @@ public:
     ComponentSystem(string name="ComponentSystem", double timestep=0.001);
 
     //Set the subsystem CQS type
-    void setTypeCQS(const string cqs_type);
-    void setTypeCQS(typeCQS cqs_type);
+    void setTypeCQS(const string cqs_type, bool doOnlyLocalSet=false);
+    void setTypeCQS(typeCQS cqs_type, bool doOnlyLocalSet=false);
 
     //adding removing and renaming components
     void addComponents(vector<Component*> components);
@@ -219,7 +221,7 @@ private:
     //Check if connection ok
     bool connectionOK(Node *pNode, Port *pPort1, Port *pPort2);
 
-    //Add adn Remove sub nodes
+    //Add and Remove sub nodes
     void addSubNode(Node* node_ptr);
     void removeSubNode(Node* node_ptr);
 
