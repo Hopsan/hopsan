@@ -20,7 +20,9 @@ class QLineEdit;
 class QPushButton;
 class GUIObject;
 class GUIComponent;
+class GUISubsystem;
 class Component;
+class ComponentSystem;
 
 class ParameterDialog : public QDialog
 {
@@ -28,18 +30,24 @@ class ParameterDialog : public QDialog
 
 public:
     ParameterDialog(GUIComponent *guiComponent, QWidget *parent = 0);
+    ParameterDialog(GUISubsystem *pGUISubsystem, QWidget *parent = 0);
 
 protected slots:
     void setParameters();
 
 private:
     GUIComponent *mpGuiComponent;
+    GUISubsystem *mpGUISubsystem;
     Component *mpCoreComponent;
+    ComponentSystem *mpCoreComponentSystem;
+
+    void createEditStuff();
 
     QLabel *label;
     QLineEdit *lineEdit;
 
     QLineEdit *mpNameEdit;
+    QLineEdit *mpCQSEdit;
     std::vector<QLabel*> mVarVector;
     std::vector<QLabel*> mDescriptionVector;
     std::vector<QLabel*> mUnitVector;

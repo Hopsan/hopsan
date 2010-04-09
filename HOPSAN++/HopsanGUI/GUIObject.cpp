@@ -233,7 +233,7 @@ GUIPort *GUIObject::getPort(int number)
 
 Component* GUIObject::getHopsanCoreComponentPtr()
 {
-    cout << "This function should only be available in GUIComponent" << endl;
+    cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
     assert(false);
 }
 
@@ -862,7 +862,6 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
                 this->showName();
             }
         }
-
 }
 
 
@@ -1023,20 +1022,86 @@ QString GUISubsystem::getTypeName()
     return "Subsystem";
 }
 
+void GUISubsystem::setTypeCQS(QString typestring)
+{
+    mpCoreComponentSystem->setTypeCQS(typestring.toStdString());
+}
+
+QString GUISubsystem::getTypeCQS()
+{
+    return QString::fromStdString(mpCoreComponentSystem->getTypeCQSString(mpCoreComponentSystem->getTypeCQS()));
+}
 
 void GUISubsystem::deleteInHopsanCore()
 {
     mpCoreComponentSystem->getSystemParent()->removeSubComponent(mpCoreComponentSystem, true);
 }
 
-
+//! @brief Get a ComponentSystem ptr version of the Core component system ptr
 ComponentSystem* GUISubsystem::getHopsanCoreSystemComponentPtr()
 {
     return mpCoreComponentSystem;
 }
 
+//! @brief Get a Component ptr version of the Core component system ptr
+Component* GUISubsystem::getHopsanCoreComponentPtr()
+{
+    //Should be autmatically cast
+    return mpCoreComponentSystem;
+}
+
+
+//! @todo Maybe should try to reduce multiple copys of same functions with other GUIObjects
+void GUISubsystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+        QMenu menu;
+
+        QAction *groupAction;
+        if (!mpParentGraphicsScene->selectedItems().empty())
+            groupAction = menu.addAction(tr("Group components"));
+
+        QAction *parameterAction = menu.addAction(tr("Change parameters"));
+        //menu.insertSeparator(parameterAction);
+
+        QAction *showNameAction = menu.addAction(tr("Show name"));
+        showNameAction->setCheckable(true);
+        showNameAction->setChecked(this->mpNameText->isVisible());
+
+        QAction *selectedAction = menu.exec(event->screenPos());
+
+        if (selectedAction == parameterAction)
+        {
+            openParameterDialog();
+        }
+        else if (selectedAction == groupAction)
+        {
+            //groupComponents(mpParentGraphicsScene->selectedItems());
+            GUIGroup *pGroup = new GUIGroup(mpParentGraphicsScene->selectedItems(), mpParentGraphicsScene);
+            this->mpParentGraphicsScene->addItem(pGroup);
+        }
+        else if (selectedAction == showNameAction)
+        {
+            if(this->mpNameText->isVisible())
+            {
+                this->hideName();
+            }
+            else
+            {
+                this->showName();
+            }
+        }
+}
+
+void GUISubsystem::openParameterDialog()
+{
+    ParameterDialog *dialog = new ParameterDialog(this, mpParentGraphicsView);
+    dialog->exec();
+}
+
+
 GUISystemPort::GUISystemPort(HopsanEssentials *hopsan, QStringList appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
         : GUIObject(position, appearanceData.at(1), scene, parent)
+
 {
     //Do something nice
 }

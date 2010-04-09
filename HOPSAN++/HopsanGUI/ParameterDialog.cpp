@@ -30,14 +30,30 @@ ParameterDialog::ParameterDialog(GUIComponent *guiComponent, QWidget *parent)
     : QDialog(parent)
 {
     mpGuiComponent = guiComponent;
-    mpCoreComponent = mpGuiComponent->mpCoreComponent;
+    mpGUISubsystem = 0;
+    mpCoreComponent = mpGuiComponent->getHopsanCoreComponentPtr();
+    mpCoreComponentSystem = 0;
 
-    std::vector<CompParameter>::iterator it;
+    createEditStuff();
+}
 
-    vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
 
+ParameterDialog::ParameterDialog(GUISubsystem *pGUISubsystem, QWidget *parent)     : QDialog(parent)
+{
+    mpGuiComponent = 0;
+    mpGUISubsystem = pGUISubsystem;
+    mpCoreComponentSystem = pGUISubsystem->getHopsanCoreSystemComponentPtr();
+    mpCoreComponent = mpGUISubsystem->getHopsanCoreComponentPtr();
+
+    createEditStuff();
+}
+
+void ParameterDialog::createEditStuff()
+{
     mpNameEdit = new QLineEdit(QString::fromStdString(mpCoreComponent->getName()));
 
+    std::vector<CompParameter>::iterator it;
+    vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
     for ( it=paramVector.begin() ; it !=paramVector.end(); it++ )
     {
         mVarVector.push_back(new QLabel(QString::fromStdString(it->getName())));
@@ -72,6 +88,16 @@ ParameterDialog::ParameterDialog(GUIComponent *guiComponent, QWidget *parent)
     pNameLayout->addWidget(pNameLabel);
     pNameLayout->addWidget(mpNameEdit);
 
+    QHBoxLayout *pCQSLayout;
+    if (mpGUISubsystem != 0)
+    {
+        mpCQSEdit = new QLineEdit(mpGUISubsystem->getTypeCQS());
+        pCQSLayout = new QHBoxLayout;
+        QLabel *pCQSLabel = new QLabel("CQS: ");
+        pCQSLayout->addWidget(pCQSLabel);
+        pCQSLayout->addWidget(mpCQSEdit);
+    }
+
     QVBoxLayout *topLeftLayout1 = new QVBoxLayout;
     QVBoxLayout *topLeftLayout2 = new QVBoxLayout;
     QVBoxLayout *topLeftLayout3 = new QVBoxLayout;
@@ -93,13 +119,22 @@ ParameterDialog::ParameterDialog(GUIComponent *guiComponent, QWidget *parent)
 
     QGridLayout *mainLayout = new QGridLayout;
     mainLayout->setSizeConstraint(QLayout::SetFixedSize);
-    mainLayout->addLayout(pNameLayout,0, 0);
-    mainLayout->addLayout(leftLayout, 1, 0);
-    mainLayout->addWidget(buttonBox, 0, 1);
+    int lr = 0; //Layout row
+    mainLayout->addLayout(pNameLayout, lr, 0);
+    mainLayout->addWidget(buttonBox, lr, 1);
+    ++lr;
+    if (mpGUISubsystem != 0)
+    {
+        mainLayout->addLayout(pCQSLayout, lr, 0);
+        ++lr;
+    }
+    mainLayout->addLayout(leftLayout, lr, 0);
     setLayout(mainLayout);
 
     setWindowTitle(tr("Parameters"));
 }
+
+
 #include "GUIObject.h"
 //! Sets the parameters in the core component. Read the values from the dialog and write them into the core component.
 void ParameterDialog::setParameters()

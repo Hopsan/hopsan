@@ -168,11 +168,20 @@ class GUISubsystem : public GUIObject
     Q_OBJECT
 public:
     GUISubsystem(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+
+    Component* getHopsanCoreComponentPtr();
     ComponentSystem* getHopsanCoreSystemComponentPtr();
-    QString getName();
-    void setName(QString newName, bool doOnlyCoreRename);
-    QString getTypeName();
     void deleteInHopsanCore();
+
+    QString getName();
+    QString getTypeName();
+    void setName(QString newName, bool doOnlyCoreRename);
+    void setTypeCQS(QString typestring);
+    QString getTypeCQS();
+
+protected:
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+    void openParameterDialog();
 
 private:
     QString mModelFilePath;

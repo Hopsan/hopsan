@@ -316,7 +316,7 @@ void GraphicsView::systemPortSlot()
 //! @param objectName is the name of the componenet to delete
 void GraphicsView::deleteGUIObject(QString objectName)
 {
-    //qDebug() << "In delete component";
+    //qDebug() << "In deleteGUIObject";
     QMap<QString, GUIObject *>::iterator it;
     it = mGUIObjectMap.find(objectName);
 
