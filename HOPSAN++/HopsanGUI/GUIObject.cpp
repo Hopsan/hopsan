@@ -1035,8 +1035,8 @@ ComponentSystem* GUISubsystem::getHopsanCoreSystemComponentPtr()
     return mpCoreComponentSystem;
 }
 
-GUISystemPort::GUISystemPort(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
-        : GUIObject(position, parameterData.at(1), scene, parent)
+GUISystemPort::GUISystemPort(HopsanEssentials *hopsan, QStringList appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
+        : GUIObject(position, appearanceData.at(1), scene, parent)
 {
     //Do something nice
 }

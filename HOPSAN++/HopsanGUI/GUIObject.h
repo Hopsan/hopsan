@@ -185,7 +185,7 @@ class GUISystemPort : public GUIObject
 {
     Q_OBJECT
 public:
-    GUISystemPort(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    GUISystemPort(HopsanEssentials *hopsan, QStringList appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
     QString getTypeName();
 private:
 
