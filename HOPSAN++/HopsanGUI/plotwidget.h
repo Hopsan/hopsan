@@ -46,15 +46,18 @@ public:
 
     QwtPlotZoomer *zoomer;
     QwtPlotPanner *panner;
+    QwtPlotGrid *grid;
 
     QToolButton *btnZoom;
     QToolButton *btnPan;
     QToolButton *btnSVG;
+    QToolButton *btnGrid;
 
 private slots:
     void enableZoom(bool);
     void enablePan(bool);
     void exportSVG();
+    void enableGrid(bool);
 };
 
 

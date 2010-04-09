@@ -58,6 +58,13 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, QWidget *
     btnSVG->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolBar->addWidget(btnSVG);
 
+    btnGrid = new QToolButton(toolBar);
+    btnGrid->setText("Grid");
+    btnGrid->setIcon(QIcon("../../HopsanGUI/icons/grid.png"));
+    btnGrid->setCheckable(true);
+    btnGrid->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    toolBar->addWidget(btnGrid);
+
     addToolBar(toolBar);
 
     //Zoom
@@ -74,6 +81,15 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, QWidget *
     panner = new QwtPlotPanner(mpVariablePlot->canvas());
     panner->setMouseButton(Qt::MidButton);
 
+    //grid
+    grid = new QwtPlotGrid;
+    grid->enableXMin(true);
+    grid->enableYMin(true);
+    grid->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
+    grid->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
+    grid->attach(mpVariablePlot);
+    grid->hide();;
+
     enableZoom(false);
 
     //Establish signal and slots connections
@@ -81,6 +97,7 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, QWidget *
     connect(btnZoom,SIGNAL(toggled(bool)),SLOT(enableZoom(bool)));
     connect(btnPan,SIGNAL(toggled(bool)),SLOT(enablePan(bool)));
     connect(btnSVG,SIGNAL(clicked()),SLOT(exportSVG()));
+    connect(btnGrid,SIGNAL(toggled(bool)),SLOT(enableGrid(bool)));
 
 
     resize(600,600);
@@ -103,6 +120,19 @@ void PlotWidget::enablePan(bool on)
     panner->setMouseButton(Qt::LeftButton);
 
     btnZoom->setChecked(false);
+}
+
+void PlotWidget::enableGrid(bool on)
+{
+    if (on)
+    {
+        grid->show();
+    }
+    else
+    {
+        grid->hide();
+    }
+
 }
 
 void PlotWidget::exportSVG()
@@ -131,14 +161,6 @@ VariablePlot::VariablePlot(QWidget *parent)
     this->setAcceptDrops(true);
     //Set color for plot background
     setCanvasBackground(QColor(Qt::white));
-
-    //grid
-    QwtPlotGrid *grid = new QwtPlotGrid;
-    grid->enableXMin(true);
-    grid->enableYMin(true);
-    grid->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
-    grid->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
-    grid->attach(this);
 
 //    QwtPlotMarker *d_mrk1 = new QwtPlotMarker();
 //    d_mrk1->setValue(0.0, 0.0);
