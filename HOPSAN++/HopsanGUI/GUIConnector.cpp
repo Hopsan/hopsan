@@ -35,6 +35,8 @@ GUIConnector::GUIConnector(QPointF startpos, QPen passivePen, QPen activePen, QP
     this->mEndPortConnected = false;
 
     this->drawConnector();
+
+    this->mMakingDiagonal = false;
 }
 
 
@@ -303,6 +305,16 @@ GUIConnectorLine *GUIConnector::getThirdLastLine()
 }
 
 
+bool GUIConnector::isConnected()
+{
+    return mEndPortConnected;
+}
+
+bool GUIConnector::isMakingDiagonal()
+{
+    return mMakingDiagonal;
+}
+
 void GUIConnector::drawConnector()
 {
     qDebug() << "drawConnector()";
@@ -356,6 +368,7 @@ void GUIConnector::drawConnector()
     {
         delete(mpLines.back());
         mpLines.pop_back();
+        this->scene()->update();
     }
 }
 
@@ -525,6 +538,7 @@ void GUIConnector::makeDiagonal(bool enable)
         removePoint();
         mGeometries.back() = GUIConnector::DIAGONAL;
         drawConnector();
+        mMakingDiagonal = true;
     }
     else
     {
@@ -535,6 +549,7 @@ void GUIConnector::makeDiagonal(bool enable)
         QCursor cursor;
         addPoint(cursor.pos());
         drawConnector();
+        mMakingDiagonal = false;
     }
 }
 

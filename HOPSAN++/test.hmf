@@ -2,39 +2,24 @@
 -------------------  HOPSAN NG MODEL FILE  -------------------
 --------------------------------------------------------------
 HOPSANGUIVERSION 0.0.1
-HOPSANGUIMODELFILEVERSION 0.2
-HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION 0.0
+HOPSANGUIMODELFILEVERSION 0.1
+HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION 0.1
 --------------------------------------------------------------
-COMPONENT Hydraulic43Valve 43Valve 2479 2489 0 0
-COMPONENT MechanicForceTransformer ForceTransformer 2730 2390 180 1
-COMPONENT SignalGain Gain 2340 2489 0 0
-COMPONENT MechanicPositionSensor PositionSensor 2541 2313 270 1
-COMPONENT SignalSineWave SineWave 2144 2458 0 0
-COMPONENT SignalSource Source_1 2818 2348 90 1
-COMPONENT SignalSubtract Subtract 2270 2489 0 0
-COMPONENT MechanicTranslationalMass TranslationalMass 2635 2390 0 0
-COMPONENT HydraulicVolume Volume 2419 2649 0 0
-COMPONENT HydraulicVolume Volume_1 2416 2577 0 0
-COMPONENT HydraulicCylinderC agda75 2502 2391 0 1
-COMPONENT HydraulicLaminarOrifice orifice1 2324 2577 0 1
-COMPONENT HydraulicLaminarOrifice orifice2 2324 2649 0 1
-COMPONENT HydraulicPressureSource psource1 2239 2577 90 0
-COMPONENT HydraulicPressureSource psource2 2237 2649 90 0
+COMPONENT Hydraulic43Valve 43Valve 2598 2380 0 0
+COMPONENT HydraulicCylinderC CylinderC 2633 2265 0 0
+COMPONENT HydraulicLaminarOrifice LaminarOrifice 2382 2465 90 0
+COMPONENT HydraulicLaminarOrifice LaminarOrifice_1 2381 2543 90 0
+COMPONENT HydraulicPressureSource PressureSource 2277 2465 90 0
+COMPONENT HydraulicPressureSource PressureSource_1 2278 2543 90 0
+COMPONENT HydraulicVolume Volume 2512 2465 0 0
+COMPONENT HydraulicVolume Volume_1 2513 2543 0 0
 --------------------------------------------------------------
-CONNECT 43Valve 2 agda75 0 VERTICAL -19 HORIZONTAL -42.0198 VERTICAL -34
-CONNECT 43Valve 3 agda75 1 VERTICAL -15 HORIZONTAL 17.5652 VERTICAL -38
-CONNECT Gain 1 43Valve 4 HORIZONTAL 17 VERTICAL 10 HORIZONTAL 30
-CONNECT PositionSensor 0 TranslationalMass 0 HORIZONTAL 49.5 VERTICAL 77
-CONNECT PositionSensor 1 Subtract 1 HORIZONTAL -258.5 VERTICAL 163.5
-CONNECT SineWave 0 Subtract 0 HORIZONTAL 45 VERTICAL 31 HORIZONTAL 48.5
-CONNECT Source_1 0 ForceTransformer 0 VERTICAL 29.5 HORIZONTAL -68.5
-CONNECT Subtract 2 Gain 0 HORIZONTAL 23 VERTICAL 0 HORIZONTAL 22
-CONNECT TranslationalMass 1 ForceTransformer 1 HORIZONTAL 43.5 VERTICAL 0
-CONNECT Volume 1 43Valve 1 HORIZONTAL 50.9962 VERTICAL -135
-CONNECT Volume_1 1 43Valve 0 HORIZONTAL 33.994 VERTICAL -63
-CONNECT agda75 2 TranslationalMass 0 HORIZONTAL 41.5 VERTICAL -1
-CONNECT orifice1 1 Volume_1 0 HORIZONTAL 32.5 VERTICAL 0
-CONNECT orifice2 1 Volume 0 HORIZONTAL 35.5 VERTICAL 0
-CONNECT psource1 1 orifice1 0 HORIZONTAL 56.5 VERTICAL 0
-CONNECT psource2 1 orifice2 0 HORIZONTAL 58.5 VERTICAL 0
+CONNECT 43Valve 2 CylinderC 0 2608.49 2355 2608.49 2333 2578.47 2333 2578.47 2285
+CONNECT 43Valve 3 CylinderC 1 2628.5 2355 2628.5 2333 2658.06 2333 2658.06 2285
+CONNECT LaminarOrifice 0 Volume 0 2416.5 2465 2430 2465 2430 2465 2452 2465
+CONNECT LaminarOrifice_1 0 Volume_1 0 2415.5 2543 2430 2543 2430 2543 2453 2543
+CONNECT PressureSource 1 LaminarOrifice 1 2285.5 2465 2325 2465 2325 2465 2347.5 2465
+CONNECT PressureSource_1 1 LaminarOrifice_1 1 2286.5 2543 2328 2543 2328 2543 2346.5 2543
+CONNECT Volume 1 43Valve 0 2572 2465 2608.49 2465 2608.49 2405
+CONNECT Volume_1 1 43Valve 1 2573 2543 2628.5 2543 2628.5 2405
 --------------------------------------------------------------

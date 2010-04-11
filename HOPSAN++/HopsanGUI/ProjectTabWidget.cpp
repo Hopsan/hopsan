@@ -488,13 +488,16 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     {
         if (this->mIsCreatingConnector)
         {
-            if (mpTempConnector->getNumberOfLines() < 3)
-                this->mIsCreatingConnector = false;
+            if((mpTempConnector->getNumberOfLines() == 1 and mpTempConnector->isMakingDiagonal()) or (mpTempConnector->getNumberOfLines() == 2 and !mpTempConnector->isMakingDiagonal()))
+            {
+                mIsCreatingConnector = false;
+            }
             mpTempConnector->removePoint(true);
             if(mIsCreatingConnector)
             {
-                this->setBackgroundBrush(mBackgroundColor);
                 mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
+                mpTempConnector->drawConnector();
+                this->setBackgroundBrush(mBackgroundColor);
             }
         }
     }
@@ -593,8 +596,11 @@ void GraphicsView::removeConnector(GUIConnector* pConnector)
 {
     //! @todo some error handling both ports must exist and be connected to each other
     //Core interaction
-    mpModel->disconnect(pConnector->getStartPort()->mpCorePort, pConnector->getEndPort()->mpCorePort);
-    emit checkMessages();
+    if(pConnector->isConnected())
+    {
+        mpModel->disconnect(pConnector->getStartPort()->mpCorePort, pConnector->getEndPort()->mpCorePort);
+        emit checkMessages();
+    }
     //
     scene()->removeItem(pConnector);
     delete pConnector;

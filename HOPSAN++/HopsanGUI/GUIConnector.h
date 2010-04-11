@@ -23,7 +23,6 @@ public:
 
     enum geometryType {VERTICAL, HORIZONTAL, DIAGONAL};
     enum { Type = UserType + 1 };           //Va tusan gör den här?!
-    //int type() const;
 
     void addPoint(QPointF point);
     void removePoint(bool deleteIfEmpty = false);
@@ -40,7 +39,8 @@ public:
     GUIConnectorLine *getLastLine();
     GUIConnectorLine *getSecondLastLine();
     GUIConnectorLine *getThirdLastLine();
-
+    bool isConnected();
+    bool isMakingDiagonal();
 
 public slots:
     void drawConnector();
@@ -61,6 +61,7 @@ signals:
 private:
     bool mIsActive;
     bool mEndPortConnected;
+    bool mMakingDiagonal;
     QPen mPassivePen;
     QPen mActivePen;
     QPen mHoverPen;
