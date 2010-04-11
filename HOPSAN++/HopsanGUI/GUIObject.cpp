@@ -188,7 +188,7 @@ void GUIObject::fixTextPosition(QPointF pos)
 
 void GUIObject::addConnector(GUIConnector *item)
 {
-    connect(this, SIGNAL(componentMoved()), item, SLOT(updatePos()));
+    connect(this, SIGNAL(componentMoved()), item, SLOT(drawConnector()));
 }
 
 //! This function refreshes the displayed name (HopsanCore may have changed it)

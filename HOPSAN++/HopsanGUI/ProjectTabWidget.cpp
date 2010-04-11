@@ -402,7 +402,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         if (this->mIsCreatingConnector)
         {
             QCursor cursor;
-            mpTempConnector->getLastLine()->setGeometry(GUIConnectorLine::DIAGONAL);
+            mpTempConnector->makeDiagonal(true);
         }
         else
         {
@@ -447,17 +447,17 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 {
     this->setDragMode(QGraphicsView::RubberBandDrag);
-    if (this->mIsCreatingConnector)
-    {
-        if (mpTempConnector->getLastLine()->getGeometry()==GUIConnectorLine::HORIZONTAL)
-        {
-           mpTempConnector->getLastLine()->setGeometry(GUIConnectorLine::VERTICAL);
-        }
-        else
-        {
-           mpTempConnector->getLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
-        }
-    }
+//    if (this->mIsCreatingConnector)
+//    {
+//        if (mpTempConnector->getLastLine()->getGeometry()==GUIConnector::HORIZONTAL)
+//        {
+//           mpTempConnector->getLastLine()->setGeometry(GUIConnector::VERTICAL);
+//        }
+//        else
+//        {
+//           mpTempConnector->getLastLine()->setGeometry(GUIConnector::HORIZONTAL);
+//        }
+//    }
 
     QGraphicsView::keyReleaseEvent ( event );
 }
@@ -473,7 +473,10 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
     this->setBackgroundBrush(mBackgroundColor);
 
     if (this->mIsCreatingConnector)
-        mpTempConnector->updateConnector(mpTempConnector->startPos, this->mapToScene(event->pos()));
+    {
+        mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
+        mpTempConnector->drawConnector();
+    }
 }
 
 
@@ -483,16 +486,15 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::RightButton)
     {
-        qDebug() << "You right clicked!";
         if (this->mIsCreatingConnector)
         {
             if (mpTempConnector->getNumberOfLines() < 3)
                 this->mIsCreatingConnector = false;
-            mpTempConnector->removeLine(this->mapToScene(event->pos()));
+            mpTempConnector->removePoint(true);
             if(mIsCreatingConnector)
             {
                 this->setBackgroundBrush(mBackgroundColor);
-                mpTempConnector->updateConnector(mpTempConnector->startPos, this->mapToScene(event->pos()));
+                mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
             }
         }
     }
@@ -503,7 +505,8 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         //    mpTempConnector->addFreeLine();
         //    mpTempConnector->getLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
         //}
-        mpTempConnector->addFreeLine();
+        mpTempConnector->addPoint(this->mapToScene(event->pos()));
+        //mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
     }
     emit viewClicked();
     QGraphicsView::mousePressEvent(event);
@@ -541,26 +544,32 @@ void GraphicsView::addConnector(GUIPort *pPort)
             hoverPen = QPen(QColor("darkRed"),2, Qt::DashLine, Qt::RoundCap);
         }
 
-        mpTempConnector = new GUIConnector(oldPos.x(), oldPos.y(), oldPos.x(), oldPos.y(), passivePen, activePen, hoverPen, this);
+        mpTempConnector = new GUIConnector(oldPos, passivePen, activePen, hoverPen, this);
         this->scene()->addItem(mpTempConnector);
         this->mIsCreatingConnector = true;
         pPort->getComponent()->addConnector(mpTempConnector);
-        mpTempConnector->addFreeLine();
+
+        QCursor cursor;
+
         mpTempConnector->setStartPort(pPort);
+        mpTempConnector->addPoint(oldPos);
+        mpTempConnector->addPoint(oldPos);
+        mpTempConnector->drawConnector();
+        //mpTempConnector->updateEndPoint(this->mapToScene(cursor.pos()));
     }
     else
     {
         //! @todo This will lead to crash if you click to fast to moany times on the same port
-        mpTempConnector->removeLine(pPort->mapToScene(pPort->boundingRect().center()));
+        //mpTempConnector->removePoint();
         //Core interaction
         Port *start_port = mpTempConnector->getStartPort()->mpCorePort;
         Port *end_port = pPort->mpCorePort;
-        bool sucess = mpModel->connect(start_port, end_port);
-        if (sucess)
+        bool success = mpModel->connect(start_port, end_port);
+        if (success)
         {
             mIsCreatingConnector = false;
             QPointF newPos = pPort->mapToScene(pPort->boundingRect().center());
-            mpTempConnector->updateConnector(mpTempConnector->startPos, newPos);
+            mpTempConnector->updateEndPoint(newPos);
             pPort->getComponent()->addConnector(mpTempConnector);
             mpTempConnector->setEndPort(pPort);
 
@@ -604,7 +613,7 @@ void GraphicsView::selectAll()
     QMap<QString, GUIConnector*>::iterator it2;
     for(it2 = this->mConnectionMap.begin(); it2!=this->mConnectionMap.end(); ++it2)
     {
-        it2.value()->doSelect(true);
+        it2.value()->doSelect(true, -1);
     }
 }
 
@@ -662,19 +671,19 @@ void GraphicsView::copySelected()
             qDebug() << "Copying connection between" << QString(name1.c_str()) << " and " <<QString(name2.c_str()) << ".";
 
 //            mCopyData << "CONNECT " << it2.key().toStdString().c_str();
-//            for(int i = 0; i!=it2.value()->mLines.size(); ++i)
+//            for(int i = 0; i!=it2.value()->mpLines.size(); ++i)
 //            {
-//                int geometry = it2.value()->mLines[i]->getGeometry();
+//                int geometry = it2.value()->mpLines[i]->getGeometry();
 //                switch (geometry)
 //                {
 //                    case 0:
-//                        mCopyData << " VERTICAL " << (it2.value()->mLines[i]->endPos.y()-it2.value()->mLines[i]->startPos.y());
+//                        mCopyData << " VERTICAL " << (it2.value()->mpLines[i]->endPos.y()-it2.value()->mpLines[i]->startPos.y());
 //                        break;
 //                    case 1:
-//                        mCopyData << " HORIZONTAL " << (it2.value()->mLines[i]->endPos.x()-it2.value()->mLines[i]->startPos.x());
+//                        mCopyData << " HORIZONTAL " << (it2.value()->mpLines[i]->endPos.x()-it2.value()->mpLines[i]->startPos.x());
 //                        break;
 //                    case 2:
-//                        mCopyData << " DIAGONAL" << (it2.value()->mLines[i]->endPos.x()-it2.value()->mLines[i]->startPos.x()) << (it2.value()->mLines[i]->endPos.y()-it2.value()->mLines[i]->startPos.y());
+//                        mCopyData << " DIAGONAL" << (it2.value()->mpLines[i]->endPos.x()-it2.value()->mpLines[i]->startPos.x()) << (it2.value()->mpLines[i]->endPos.y()-it2.value()->mpLines[i]->startPos.y());
 //                        break;
 //                }
 //            }
@@ -698,7 +707,7 @@ void GraphicsView::paste()
         //Deselect all connectors
     for(it2 = this->mConnectionMap.begin(); it2!=this->mConnectionMap.end(); ++it2)
     {
-        it2.value()->doSelect(false);
+        it2.value()->doSelect(false, -1);
     }
 
     QString tempString;
@@ -1177,39 +1186,33 @@ void ProjectTabWidget::loadModel()
                 inputStream >> endComponentName;
                 inputStream >> endPortNumber;
                 GUIPort *startPort = pCurrentView->getGUIObject(QString(startComponentName.c_str()))->getPort(startPortNumber);
-                pCurrentView->addConnector(startPort);
-                GUIConnector *pTempConnector = pCurrentView->getTempConnector();
-                pCurrentView->scene()->addItem(pTempConnector);
-                while(inputStream >> inputWord)
-                {
-                    if(inputWord == "VERTICAL")
-                    {
-                        inputStream >> heigth;
-                        pTempConnector->addFixedLine(0, heigth, GUIConnectorLine::VERTICAL);
-                    }
-                    else if (inputWord == "HORIZONTAL")
-                    {
-                        inputStream >> length;
-                        pTempConnector->addFixedLine(length, 0, GUIConnectorLine::HORIZONTAL);
-                    }
-                    else if (inputWord == "DIAGONAL")
-                    {
-                        inputStream >> length;
-                        inputStream >> heigth;
-                        pTempConnector->addFixedLine(length, heigth, GUIConnectorLine::DIAGONAL);
-                    }
-                    else
-                    {
-                    }
-                }
                 GUIPort *endPort = pCurrentView->getGUIObject(QString(endComponentName.c_str()))->getPort(endPortNumber);
-                QPointF newPos = endPort->mapToScene(endPort->boundingRect().center());
-                pTempConnector->updateConnector(pTempConnector->startPos, newPos);
-                endPort->getComponent()->addConnector(pTempConnector);
-                pTempConnector->setEndPort(endPort);
-                pTempConnector->getStartPort()->hide();
-                pTempConnector->getEndPort()->hide();
-                pCurrentView->mIsCreatingConnector = false;
+
+                std::vector<QPointF> tempPointVector;
+                qreal tempX, tempY;
+                while(inputStream.good())
+                {
+                    inputStream >> tempX;
+                    inputStream >> tempY;
+                    tempPointVector.push_back(QPointF(tempX, tempY));
+                }
+
+                QPen passivePen,activePen,hoverPen;
+                if((startPort->mpCorePort->getNodeType() == "NodeHydraulic") | (startPort->mpCorePort->getNodeType() == "NodeMechanic"))
+                {
+                    passivePen = QPen(QColor("black"),1, Qt::SolidLine, Qt::RoundCap);
+                    activePen = QPen(QColor("red"), 2, Qt::SolidLine, Qt::RoundCap);
+                    hoverPen = QPen(QColor("darkRed"),2, Qt::SolidLine, Qt::RoundCap);
+                }
+                else if(startPort->mpCorePort->getNodeType() == "NodeSignal")
+                {
+                    passivePen = QPen(QColor("blue"),1, Qt::DashLine, Qt::RoundCap);
+                    activePen = QPen(QColor("red"), 2, Qt::DashLine, Qt::RoundCap);
+                    hoverPen = QPen(QColor("darkRed"),2, Qt::DashLine, Qt::RoundCap);
+                }
+
+                GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, passivePen, activePen, hoverPen, pCurrentView);
+                pCurrentView->scene()->addItem(pTempConnector);
 
                 std::stringstream tempStream;
                 tempStream << startPort->getComponent()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
@@ -1276,21 +1279,9 @@ void ProjectTabWidget::saveModel(bool saveAs)
     for(it2 = pCurrentView->mConnectionMap.begin(); it2!=pCurrentView->mConnectionMap.end(); ++it2)
     {
         modelFile << "CONNECT " << it2.key().toStdString();
-        for(size_t i = 0; i!=it2.value()->mLines.size(); ++i)
+        for(size_t i = 0; i!=it2.value()->getPointsVector().size(); ++i)
         {
-            int geometry = it2.value()->mLines[i]->getGeometry();
-            switch (geometry)
-            {
-                case 0:
-                    modelFile << " VERTICAL " << (it2.value()->mLines[i]->endPos.y()-it2.value()->mLines[i]->startPos.y());
-                    break;
-                case 1:
-                    modelFile << " HORIZONTAL " << (it2.value()->mLines[i]->endPos.x()-it2.value()->mLines[i]->startPos.x());
-                    break;
-                case 2:
-                    modelFile << " DIAGONAL" << (it2.value()->mLines[i]->endPos.x()-it2.value()->mLines[i]->startPos.x()) << (it2.value()->mLines[i]->endPos.y()-it2.value()->mLines[i]->startPos.y());
-                    break;
-            }
+            modelFile << " " << it2.value()->getPointsVector()[i].x() << " " << it2.value()->getPointsVector()[i].y();
         }
         modelFile << "\n";
     }
