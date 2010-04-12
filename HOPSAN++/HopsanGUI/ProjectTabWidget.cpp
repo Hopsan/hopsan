@@ -428,6 +428,8 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         {
             QCursor cursor;
             mpTempConnector->makeDiagonal(true);
+            mpTempConnector->drawConnector();
+            this->setBackgroundBrush(mBackgroundColor);
         }
         else
         {
@@ -441,6 +443,13 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 
 void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 {
+    if(event->key() == Qt::Key_Control and mIsCreatingConnector)
+    {
+        mpTempConnector->makeDiagonal(false);
+        mpTempConnector->drawConnector();
+        this->setBackgroundBrush(mBackgroundColor);
+    }
+
     this->setDragMode(QGraphicsView::RubberBandDrag);
 
     QGraphicsView::keyReleaseEvent ( event );
@@ -1177,6 +1186,7 @@ void ProjectTabWidget::loadModel()
                     tempPointVector.push_back(QPointF(tempX, tempY));
                 }
 
+                //! @todo: Store pen styles as members in GraphicsView, both for ISO and user defined versions.
                 QPen passivePen,activePen,hoverPen;
                 if((startPort->mpCorePort->getNodeType() == "NodeHydraulic") | (startPort->mpCorePort->getNodeType() == "NodeMechanic"))
                 {

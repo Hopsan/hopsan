@@ -533,21 +533,36 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
 
 void GUIConnector::makeDiagonal(bool enable)
 {
+    QCursor cursor;
     if(enable)
     {
         mMakingDiagonal = true;
         removePoint();
         mGeometries.back() = GUIConnector::DIAGONAL;
+        mPoints.back() = mpParentView->mapToScene(mpParentView->mapFromGlobal(cursor.pos()));
         drawConnector();
     }
     else
     {
         if(mGeometries[mGeometries.size()-2] == GUIConnector::HORIZONTAL)
+        {
             mGeometries.back() = GUIConnector::VERTICAL;
+            mPoints.back() = QPointF(mPoints.back().x(), mPoints[mPoints.size()-2].y());
+        }
         else if(mGeometries[mGeometries.size()-2] == GUIConnector::VERTICAL)
+        {
             mGeometries.back() = GUIConnector::HORIZONTAL;
-        QCursor cursor;
-        addPoint(cursor.pos());
+            mPoints.back() = QPointF(mPoints[mPoints.size()-2].x(), mPoints.back().y());
+        }
+        else if(mGeometries[mGeometries.size()-2] == GUIConnector::DIAGONAL)
+        {
+            if(abs(mPoints[mPoints.size()-2].x() - mPoints[mPoints.size()-3].x()) > abs(mPoints[mPoints.size()-2].y() - mPoints[mPoints.size()-3].y()))
+                mGeometries.back() = GUIConnector::HORIZONTAL;
+            else
+                mGeometries.back() = GUIConnector::VERTICAL;
+            mPoints.back() = QPointF(mPoints[mPoints.size()-2].x(), mPoints.back().y());
+        }
+        addPoint(mpParentView->mapToScene(mpParentView->mapFromGlobal(cursor.pos())));
         drawConnector();
         mMakingDiagonal = false;
     }
