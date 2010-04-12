@@ -90,16 +90,12 @@ void GraphicsView::createActions()
 
 void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 {
-    if(!this->mIsCreatingConnector)
+    if(!mIsCreatingConnector)
     {
         if (QGraphicsItem *item = itemAt(event->pos()))
-        {
-            qDebug() << "You righet clicked on a comonent";
             QGraphicsView::contextMenuEvent(event);
-        }
         else
         {
-            qDebug() << "You didn't right click on an component.";
             QMenu menu(this);
             menu.addMenu(menuInsert);
             menu.exec(event->globalPos());
@@ -397,7 +393,36 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
 
 void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
-    if (event->modifiers() and Qt::ControlModifier)
+
+    if (event->key() == Qt::Key_Delete)
+        emit keyPressDelete();
+    else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_R)
+        emit keyPressR();
+    else if (event->key() == Qt::Key_Escape)
+    {
+        if(this->mIsCreatingConnector)
+        {
+            delete(mpTempConnector);
+            mIsCreatingConnector = false;
+        }
+    }
+    else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Up)
+        emit keyPressUp();
+    else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Down)
+        emit keyPressDown();
+    else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Left)
+        emit keyPressLeft();
+    else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Right)
+        emit keyPressRight();
+    else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_X)
+        this->cutSelected();
+    else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_C)
+        this->copySelected();
+    else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_V)
+        this->paste();
+    else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_A)
+        this->selectAll();
+    else if (event->modifiers() and Qt::ControlModifier)
     {
         if (this->mIsCreatingConnector)
         {
@@ -409,55 +434,14 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             this->setDragMode(QGraphicsView::ScrollHandDrag);
         }
     }
-    if (event->key() == Qt::Key_Delete)
-        emit keyPressDelete();
-    if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_R)
-        emit keyPressR();
-    if (event->key() == Qt::Key_Escape)
-    {
-        if(this->mIsCreatingConnector)
-        {
-            delete(mpTempConnector);
-            mIsCreatingConnector = false;
-        }
-    }
-    if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Up)
-    {
-        emit keyPressUp();
-    }
-    if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Down)
-        emit keyPressDown();
-    if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Left)
-        emit keyPressLeft();
-    if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Right)
-        emit keyPressRight();
-    if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_X)
-        this->cutSelected();
-    if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_C)
-        this->copySelected();
-    if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_V)
-        this->paste();
-    if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_A)
-        this->selectAll();
-
-    QGraphicsView::keyPressEvent ( event );
+    else
+        QGraphicsView::keyPressEvent ( event );
 }
 
 
 void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 {
     this->setDragMode(QGraphicsView::RubberBandDrag);
-//    if (this->mIsCreatingConnector)
-//    {
-//        if (mpTempConnector->getLastLine()->getGeometry()==GUIConnector::HORIZONTAL)
-//        {
-//           mpTempConnector->getLastLine()->setGeometry(GUIConnector::VERTICAL);
-//        }
-//        else
-//        {
-//           mpTempConnector->getLastLine()->setGeometry(GUIConnector::HORIZONTAL);
-//        }
-//    }
 
     QGraphicsView::keyReleaseEvent ( event );
 }
@@ -484,35 +468,25 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 //! @param event contains information of the mouse click operation.
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::RightButton)
+    emit viewClicked();
+
+    if (event->button() == Qt::RightButton and this->mIsCreatingConnector)
     {
-        if (this->mIsCreatingConnector)
+        if((mpTempConnector->getNumberOfLines() == 1 and mpTempConnector->isMakingDiagonal()) or (mpTempConnector->getNumberOfLines() == 2 and !mpTempConnector->isMakingDiagonal()))
+            mIsCreatingConnector = false;
+        mpTempConnector->removePoint(true);
+        if(mIsCreatingConnector)
         {
-            if((mpTempConnector->getNumberOfLines() == 1 and mpTempConnector->isMakingDiagonal()) or (mpTempConnector->getNumberOfLines() == 2 and !mpTempConnector->isMakingDiagonal()))
-            {
-                mIsCreatingConnector = false;
-            }
-            mpTempConnector->removePoint(true);
-            if(mIsCreatingConnector)
-            {
-                mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
-                mpTempConnector->drawConnector();
-                this->setBackgroundBrush(mBackgroundColor);
-            }
+            mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
+            mpTempConnector->drawConnector();
+            this->setBackgroundBrush(mBackgroundColor);
         }
+        qDebug() << "mIsCreatingConnector = " << mIsCreatingConnector;
     }
     else if  ((event->button() == Qt::LeftButton) && (this->mIsCreatingConnector))
-    {
-        //if (mpTempConnector->getLastLine()->getGeometry()==GUIConnectorLine::DIAGONAL)
-        //{
-        //    mpTempConnector->addFreeLine();
-        //    mpTempConnector->getLastLine()->setGeometry(GUIConnectorLine::HORIZONTAL);
-        //}
         mpTempConnector->addPoint(this->mapToScene(event->pos()));
-        //mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
-    }
-    emit viewClicked();
-    QGraphicsView::mousePressEvent(event);
+    else
+        QGraphicsView::mousePressEvent(event);
 }
 
 
@@ -1219,6 +1193,10 @@ void ProjectTabWidget::loadModel()
 
                 GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, passivePen, activePen, hoverPen, pCurrentView);
                 pCurrentView->scene()->addItem(pTempConnector);
+
+                    //Hide connected ports
+                startPort->hide();
+                endPort->hide();
 
                 std::stringstream tempStream;
                 tempStream << startPort->getComponent()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
