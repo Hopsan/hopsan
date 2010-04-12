@@ -600,6 +600,8 @@ void GraphicsView::removeConnector(GUIConnector* pConnector)
     }
     //
     scene()->removeItem(pConnector);
+    pConnector->getStartPort()->show();
+    pConnector->getEndPort()->show();
     delete pConnector;
 }
 

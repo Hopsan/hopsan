@@ -17,19 +17,20 @@ class GUIConnector : public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    GUIConnector(QPointF startpos, QPen passivePen, QPen activePen, QPen hoverPen, GraphicsView *parentView, QGraphicsItem *parent = 0);
-    GUIConnector(GUIPort *startPort, GUIPort *endPort, std::vector<QPointF> mPoints, QPen passivePen, QPen activePen, QPen hoverPen, GraphicsView *parentView, QGraphicsItem *parent = 0);
+    GUIConnector(QPointF startpos, QPen primaryPen, QPen activePen, QPen hoverPen, GraphicsView *parentView, QGraphicsItem *parent = 0);
+    GUIConnector(GUIPort *startPort, GUIPort *endPort, std::vector<QPointF> mPoints, QPen primaryPen, QPen activePen, QPen hoverPen, GraphicsView *parentView, QGraphicsItem *parent = 0);
     ~GUIConnector();
 
     enum geometryType {VERTICAL, HORIZONTAL, DIAGONAL};
     enum { Type = UserType + 1 };           //Va tusan gör den här?!
+
+
 
     void addPoint(QPointF point);
     void removePoint(bool deleteIfEmpty = false);
     void setStartPort(GUIPort *port);
     void setEndPort(GUIPort *port);
     void setPens(QPen activePen, QPen primaryPen, QPen hoverPen);
-
     int getNumberOfLines();
     GUIConnector::geometryType getGeometry(int lineNumber);
     std::vector<QPointF> getPointsVector();
@@ -41,6 +42,7 @@ public:
     GUIConnectorLine *getThirdLastLine();
     bool isConnected();
     bool isMakingDiagonal();
+
 
 public slots:
     void drawConnector();
@@ -62,7 +64,7 @@ private:
     bool mIsActive;
     bool mEndPortConnected;
     bool mMakingDiagonal;
-    QPen mPassivePen;
+    QPen mPrimaryPen;
     QPen mActivePen;
     QPen mHoverPen;
     GUIPort *mpStartPort;
