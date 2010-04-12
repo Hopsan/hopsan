@@ -57,7 +57,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, std::vector<QPo
     mPoints = points;
 
         //Setup the geometries vector based on the point geometry
-    for(int i=0; i != mPoints.size()-1; ++i)
+    for(std::size_t i=0; i != mPoints.size()-1; ++i)
     {
         if(mPoints[i].x() == mPoints[i+1].x())
             mGeometries.push_back(GUIConnector::HORIZONTAL);
@@ -73,7 +73,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, std::vector<QPo
     connect(this->mpEndPort->getComponent(),SIGNAL(componentDeleted()),this,SLOT(deleteMe()));
 
         //Create the lines, so that drawConnector has something to work with
-    for(int i = 0; i != mPoints.size()-1; ++i)
+    for(std::size_t i = 0; i != mPoints.size()-1; ++i)
     {
         mpTempLine = new GUIConnectorLine(mapFromScene(mPoints[i]).x(), mapFromScene(mPoints[i]).y(),
                                           mapFromScene(mPoints[i+1]).x(), mapFromScene(mPoints[i+1]).y(),
@@ -215,11 +215,11 @@ void GUIConnector::setEndPort(GUIPort *port)
 
 
 
-void GUIConnector::setPens(QPen activePen, QPen primaryPen, QPen hoverPen)
+void GUIConnector::setPens(QPen primaryPen, QPen activePen, QPen hoverPen)
 {
     for (std::size_t i=0; i!=mpLines.size(); ++i )
     {
-        mpLines[i]->setPens(activePen, primaryPen, hoverPen);
+        mpLines[i]->setPens(primaryPen, activePen, hoverPen);
     }
 }
 
@@ -330,7 +330,7 @@ void GUIConnector::drawConnector()
         mpLines.clear();
         if(mPoints.size() > 1)
         {
-            for(int i = 0; i != mPoints.size()-1; ++i)
+            for(std::size_t i = 0; i != mPoints.size()-1; ++i)
             {
                 mpTempLine = new GUIConnectorLine(mapFromScene(mPoints[i]).x(), mapFromScene(mPoints[i]).y(),
                                                   mapFromScene(mPoints[i+1]).x(), mapFromScene(mPoints[i+1]).y(),
@@ -357,7 +357,7 @@ void GUIConnector::drawConnector()
         updateEndPoint(getEndPort()->mapToScene(getEndPort()->boundingRect().center()));
 
             //Redraw the lines based on the mPoints vector
-        for(int i = 0; i != mPoints.size()-1; ++i)
+        for(std::size_t i = 0; i != mPoints.size()-1; ++i)
         {
             mpLines[i]->setLine(mapFromScene(mPoints[i]), mapFromScene(mPoints[i+1]));
         }
@@ -517,9 +517,9 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
        if(lineSelected)
        {
            this->setActive();
-           for (int i=0; i != mpLines.size(); ++i)
+           for (std::size_t i=0; i != mpLines.size(); ++i)
            {
-               if(i != lineNumber)
+               if(i != (std::size_t)lineNumber)
                    mpLines[i]->setSelected(false);
            }
        }
@@ -784,10 +784,10 @@ void GUIConnectorLine::setPen (const QPen &pen)
 }
 
 
-void GUIConnectorLine::setPens(QPen activePen, QPen primaryPen, QPen hoverPen)
+void GUIConnectorLine::setPens(QPen primaryPen, QPen activePen, QPen hoverPen)
 {
-    mActivePen = activePen;
     mPrimaryPen = primaryPen;
+    mActivePen = activePen;
     mHoverPen = hoverPen;
     this->setPassive();
 }

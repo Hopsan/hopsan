@@ -57,9 +57,24 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     this->centerOn(this->sceneRect().center());
     this->mBackgroundColor = QColor(Qt::white);
     this->setBackgroundBrush(mBackgroundColor);
-
     this->createActions();
     this->createMenus();
+
+    mPrimaryPenPowerIso = QPen(QColor("black"),1, Qt::SolidLine, Qt::RoundCap);
+    mActivePenPowerIso = QPen(QColor("red"), 2, Qt::SolidLine, Qt::RoundCap);
+    mHoverPenPowerIso = QPen(QColor("darkRed"),2, Qt::SolidLine, Qt::RoundCap);
+
+    mPrimaryPenSignalIso = QPen(QColor("blue"),1, Qt::DashLine);
+    mActivePenSignalIso = QPen(QColor("red"), 2, Qt::DashLine);
+    mHoverPenSignalIso = QPen(QColor("darkRed"),2, Qt::DashLine);
+
+    mPrimaryPenPowerUser = QPen(QColor("black"),2, Qt::SolidLine, Qt::RoundCap);
+    mActivePenPowerUser = QPen(QColor("red"), 3, Qt::SolidLine, Qt::RoundCap);
+    mHoverPenPowerUser = QPen(QColor("darkRed"),3, Qt::SolidLine, Qt::RoundCap);
+
+    mPrimaryPenSignalUser = QPen(QColor("blue"),1, Qt::DashLine);
+    mActivePenSignalUser = QPen(QColor("red"), 2, Qt::DashLine);
+    mHoverPenSignalUser = QPen(QColor("darkRed"),2, Qt::DashLine);
 
     MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 //    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent()->parent())); //Ugly!!!
@@ -494,8 +509,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     }
     else if  ((event->button() == Qt::LeftButton) && (this->mIsCreatingConnector))
         mpTempConnector->addPoint(this->mapToScene(event->pos()));
-    else
-        QGraphicsView::mousePressEvent(event);
+    QGraphicsView::mousePressEvent(event);
 }
 
 
@@ -516,21 +530,20 @@ void GraphicsView::addConnector(GUIPort *pPort)
         std::cout << "GraphicsView: " << "Adding connector";
         QPointF oldPos = pPort->mapToScene(pPort->boundingRect().center());
 
-        QPen passivePen,activePen,hoverPen;
-        if((pPort->mpCorePort->getNodeType() == "NodeHydraulic") | (pPort->mpCorePort->getNodeType() == "NodeMechanic"))
+        if(this->mpParentProjectTab->useIsoGraphics)
         {
-            passivePen = QPen(QColor("black"),1, Qt::SolidLine, Qt::RoundCap);
-            activePen = QPen(QColor("red"), 2, Qt::SolidLine, Qt::RoundCap);
-            hoverPen = QPen(QColor("darkRed"),2, Qt::SolidLine, Qt::RoundCap);
+            if((pPort->mpCorePort->getNodeType() == "NodeHydraulic") | (pPort->mpCorePort->getNodeType() == "NodeMechanic"))
+                mpTempConnector = new GUIConnector(oldPos, getPen("Primary", "Power", "Iso"), getPen("Active", "Power", "Iso"), getPen("Hover", "Power", "Iso"), this);
+            else if(pPort->mpCorePort->getNodeType() == "NodeSignal")
+                mpTempConnector = new GUIConnector(oldPos, getPen("Primary", "Signal", "Iso"), getPen("Active", "Signal", "Iso"), getPen("Hover", "Signal", "Iso"), this);
         }
-        else if(pPort->mpCorePort->getNodeType() == "NodeSignal")
+        else
         {
-            passivePen = QPen(QColor("blue"),1, Qt::DashLine, Qt::RoundCap);
-            activePen = QPen(QColor("red"), 2, Qt::DashLine, Qt::RoundCap);
-            hoverPen = QPen(QColor("darkRed"),2, Qt::DashLine, Qt::RoundCap);
+            if((pPort->mpCorePort->getNodeType() == "NodeHydraulic") | (pPort->mpCorePort->getNodeType() == "NodeMechanic"))
+                mpTempConnector = new GUIConnector(oldPos, getPen("Primary", "Power", "User"), getPen("Active", "Power", "User"), getPen("Hover", "Power", "User"), this);
+            else if(pPort->mpCorePort->getNodeType() == "NodeSignal")
+                mpTempConnector = new GUIConnector(oldPos, getPen("Primary", "Signal", "User"), getPen("Active", "Signal", "User"), getPen("Hover", "Signal", "User"), this);
         }
-
-        mpTempConnector = new GUIConnector(oldPos, passivePen, activePen, hoverPen, this);
         this->scene()->addItem(mpTempConnector);
         this->mIsCreatingConnector = true;
         pPort->getComponent()->addConnector(mpTempConnector);
@@ -548,6 +561,7 @@ void GraphicsView::addConnector(GUIPort *pPort)
         //! @todo This will lead to crash if you click to fast to moany times on the same port
         //mpTempConnector->removePoint();
         //Core interaction
+        qDebug() << "Closing connector";
         Port *start_port = mpTempConnector->getStartPort()->mpCorePort;
         Port *end_port = pPort->mpCorePort;
         bool success = mpModel->connect(start_port, end_port);
@@ -733,6 +747,63 @@ void GraphicsView::setScale(const QString &scale)
 void GraphicsView::resetZoom()
 {
     this->resetMatrix();
+}
+
+
+//! Get function for primary pen style
+QPen GraphicsView::getPen(QString situation, QString type, QString style)
+{
+    if(situation == "Primary")
+    {
+        if(type == "Power")
+        {
+            if(style == "Iso")
+                return mPrimaryPenPowerIso;
+            if(style == "User")
+                return mPrimaryPenPowerUser;
+        }
+        if(type == "Signal")
+        {
+            if(style == "Iso")
+                return mPrimaryPenSignalIso;
+            if(style == "User")
+                return mPrimaryPenSignalUser;
+        }
+    }
+    else if(situation == "Active")
+    {
+        if(type == "Power")
+        {
+            if(style == "Iso")
+                return mActivePenPowerIso;
+            if(style == "User")
+                return mActivePenPowerUser;
+        }
+        if(type == "Signal")
+        {
+            if(style == "Iso")
+                return mActivePenSignalIso;
+            if(style == "User")
+                return mActivePenSignalUser;
+        }
+    }
+    else if(situation == "Hover")
+    {
+        if(type == "Power")
+        {
+            if(style == "Iso")
+                return mHoverPenPowerIso;
+            if(style == "User")
+                return mHoverPenPowerUser;
+        }
+        if(type == "Signal")
+        {
+            if(style == "Iso")
+                return mHoverPenSignalIso;
+            if(style == "User")
+                return mHoverPenSignalUser;
+        }
+    }
 }
 
 
@@ -1186,22 +1257,18 @@ void ProjectTabWidget::loadModel()
                     tempPointVector.push_back(QPointF(tempX, tempY));
                 }
 
-                //! @todo: Store pen styles as members in GraphicsView, both for ISO and user defined versions.
-                QPen passivePen,activePen,hoverPen;
+                //! @todo: Store useIso bool in model file and pick the correct line styles when loading
+                GUIConnector *pTempConnector;
                 if((startPort->mpCorePort->getNodeType() == "NodeHydraulic") | (startPort->mpCorePort->getNodeType() == "NodeMechanic"))
-                {
-                    passivePen = QPen(QColor("black"),1, Qt::SolidLine, Qt::RoundCap);
-                    activePen = QPen(QColor("red"), 2, Qt::SolidLine, Qt::RoundCap);
-                    hoverPen = QPen(QColor("darkRed"),2, Qt::SolidLine, Qt::RoundCap);
-                }
+                    pTempConnector = new GUIConnector(startPort, endPort, tempPointVector,
+                                                      pCurrentView->getPen("Primary", "Power", "Iso"),
+                                                      pCurrentView->getPen("Active", "Power", "Iso"),
+                                                      pCurrentView->getPen("Hover", "Power", "Iso"), pCurrentView);
                 else if(startPort->mpCorePort->getNodeType() == "NodeSignal")
-                {
-                    passivePen = QPen(QColor("blue"),1, Qt::DashLine, Qt::RoundCap);
-                    activePen = QPen(QColor("red"), 2, Qt::DashLine, Qt::RoundCap);
-                    hoverPen = QPen(QColor("darkRed"),2, Qt::DashLine, Qt::RoundCap);
-                }
-
-                GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, passivePen, activePen, hoverPen, pCurrentView);
+                    pTempConnector = new GUIConnector(startPort, endPort, tempPointVector,
+                                                      pCurrentView->getPen("Primary", "Signal", "Iso"),
+                                                      pCurrentView->getPen("Active", "Signal", "Iso"),
+                                                      pCurrentView->getPen("Hover", "Signal", "Iso"), pCurrentView);
                 pCurrentView->scene()->addItem(pTempConnector);
 
                     //Hide connected ports
@@ -1290,7 +1357,6 @@ void ProjectTabWidget::setIsoGraphics(bool value)
     this->getCurrentTab()->useIsoGraphics = value;
     qDebug() << "Use ISO graphics = " << value;
 
-    QPen passivePen,activePen,hoverPen;
     ProjectTab *pCurrentTab = getCurrentTab();
     GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
     QMap<QString, GUIConnector *>::iterator it;
@@ -1299,35 +1365,24 @@ void ProjectTabWidget::setIsoGraphics(bool value)
         if(value)
         {
             if((it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeHydraulic") | (it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeMechanic"))
-            {
-                passivePen = QPen(QColor("black"),1, Qt::SolidLine, Qt::RoundCap);
-                activePen = QPen(QColor("red"), 2, Qt::SolidLine, Qt::RoundCap);                    //1.6180339887499
-                hoverPen = QPen(QColor("darkRed"),2, Qt::SolidLine, Qt::RoundCap);
-            }
+                it.value()->setPens(pCurrentView->getPen("Primary", "Power", "Iso"),
+                                    pCurrentView->getPen("Active", "Power", "Iso"),
+                                    pCurrentView->getPen("Hover", "Power", "Iso"));
             else if(it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeSignal")
-            {
-                passivePen = QPen(QColor("blue"),1, Qt::DashLine);
-                activePen = QPen(QColor("red"), 2, Qt::DashLine);
-                hoverPen = QPen(QColor("darkRed"),2, Qt::DashLine);
-            }
+                it.value()->setPens(pCurrentView->getPen("Primary", "Signal", "Iso"),
+                                    pCurrentView->getPen("Active", "Signal", "Iso"),
+                                    pCurrentView->getPen("Hover", "Signal", "Iso"));
         }
         else
         {
             if((it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeHydraulic") | (it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeMechanic"))
-            {
-                passivePen = QPen(QColor("black"),2, Qt::SolidLine, Qt::RoundCap);
-                activePen = QPen(QColor("red"), 3, Qt::SolidLine, Qt::RoundCap);                    //1.6180339887499
-                hoverPen = QPen(QColor("darkRed"),3, Qt::SolidLine, Qt::RoundCap);
-            }
+                it.value()->setPens(pCurrentView->getPen("Primary", "Power", "User"),
+                                    pCurrentView->getPen("Active", "Power", "User"),
+                                    pCurrentView->getPen("Hover", "Power", "User"));
             else if(it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeSignal")
-            {
-                passivePen = QPen(QColor("blue"),1, Qt::DashLine);
-                activePen = QPen(QColor("red"), 2, Qt::DashLine);
-                hoverPen = QPen(QColor("darkRed"),2, Qt::DashLine);
-            }
+                it.value()->setPens(pCurrentView->getPen("Primary", "Signal", "User"),
+                                    pCurrentView->getPen("Active", "Signal", "User"),
+                                    pCurrentView->getPen("Hover", "Signal", "User"));
         }
-
-        it.value()->setPens(activePen, passivePen, hoverPen);
-
     }
 }
