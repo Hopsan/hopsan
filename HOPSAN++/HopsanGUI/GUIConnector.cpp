@@ -207,8 +207,11 @@ void GUIConnector::setEndPort(GUIPort *port)
     connect(this->mpEndPort->getComponent(),SIGNAL(componentDeleted()),this,SLOT(deleteMe()));
 
         //Make all lines selectable and all lines except first and last movable
-    for(std::size_t i=1; i!=mpLines.size()-1; ++i)
-        mpLines[i]->setFlag(QGraphicsItem::ItemIsMovable, true);
+    if(mpLines.size() > 1)
+    {
+        for(std::size_t i=1; i!=mpLines.size()-1; ++i)
+            mpLines[i]->setFlag(QGraphicsItem::ItemIsMovable, true);
+    }
     for(std::size_t i=0; i!=mpLines.size(); ++i)
         mpLines[i]->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
