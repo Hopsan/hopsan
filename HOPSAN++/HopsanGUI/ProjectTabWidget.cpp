@@ -254,6 +254,9 @@ void GraphicsView::addGUIObject(QString componentType, QStringList appearanceDat
 
     pGuiObject->setSelected(startSelected);
 
+    pGuiObject->setIcon(!this->mpParentProjectTab->useIsoGraphics);
+
+
     //guiComponent->setPos(this->mapToScene(position));
     //qDebug() << "GraphicsView: " << pGuiObject->parent();
 
@@ -859,8 +862,6 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mpGraphicsScene = new GraphicsScene(this);
     mpGraphicsView  = new GraphicsView(mpParentProjectTabWidget->mpHopsan, mpComponentSystem, this);
 
-    //mpView = view;
-
     mpGraphicsView->setScene(mpGraphicsScene);
 
     QVBoxLayout *tabLayout = new QVBoxLayout;
@@ -879,7 +880,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 
     setLayout(tabLayout);
 
-    this->useIsoGraphics = true;
+    this->useIsoGraphics = false;
 
 }
 
@@ -1270,16 +1271,19 @@ void ProjectTabWidget::loadModel()
 
                 //! @todo: Store useIso bool in model file and pick the correct line styles when loading
                 GUIConnector *pTempConnector;
+
+                QString type, style;
                 if((startPort->mpCorePort->getNodeType() == "NodeHydraulic") | (startPort->mpCorePort->getNodeType() == "NodeMechanic"))
-                    pTempConnector = new GUIConnector(startPort, endPort, tempPointVector,
-                                                      pCurrentView->getPen("Primary", "Power", "Iso"),
-                                                      pCurrentView->getPen("Active", "Power", "Iso"),
-                                                      pCurrentView->getPen("Hover", "Power", "Iso"), pCurrentView);
+                    type = "Power";
                 else if(startPort->mpCorePort->getNodeType() == "NodeSignal")
-                    pTempConnector = new GUIConnector(startPort, endPort, tempPointVector,
-                                                      pCurrentView->getPen("Primary", "Signal", "Iso"),
-                                                      pCurrentView->getPen("Active", "Signal", "Iso"),
-                                                      pCurrentView->getPen("Hover", "Signal", "Iso"), pCurrentView);
+                    type = "Signal";
+                if(pCurrentTab->useIsoGraphics)
+                    style = "Iso";
+                else
+                    style = "User";
+                pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, pCurrentView->getPen("Primary", type, style),
+                                                  pCurrentView->getPen("Active", type, style), pCurrentView->getPen("Hover", type, style), pCurrentView);
+
                 pCurrentView->scene()->addItem(pTempConnector);
 
                     //Hide connected ports
@@ -1364,7 +1368,7 @@ void ProjectTabWidget::saveModel(bool saveAs)
 
 void ProjectTabWidget::setIsoGraphics(bool value)
 {
-    this->getCurrentTab()->useIsoGraphics = value;
+    this->getCurrentTab()->useIsoGraphics = !value;
 
     ProjectTab *pCurrentTab = getCurrentTab();
     GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
