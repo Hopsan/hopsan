@@ -1,6 +1,6 @@
 NAME HydraulicTLMlossless
-ISOICON TLM.svg
-NOUSERICON
+ISOICON tlm_iso.svg
+USERICON tlm_user.svg
 ICONROTATION ON
 PORTS 2
 0.0 0.5 0

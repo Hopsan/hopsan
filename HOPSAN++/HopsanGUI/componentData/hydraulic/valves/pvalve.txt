@@ -1,6 +1,6 @@
 NAME HydraulicPressureControlledValve
-ISOICON pvalve.svg
-NOUSERICON
+ISOICON pvalve_iso.svg
+USERICON pvalve_user.svg
 ICONROTATION ON
 PORTS 4
 0.0000 0.3750 180

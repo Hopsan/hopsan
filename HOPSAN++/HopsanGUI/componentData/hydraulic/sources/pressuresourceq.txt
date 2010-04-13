@@ -1,5 +1,5 @@
 NAME HydraulicPressureSourceQ
-ISOICON PressureSource.svg
+ISOICON pressuresource_iso.svg
 NOUSERICON
 ICONROTATION ON
 PORTS 2
