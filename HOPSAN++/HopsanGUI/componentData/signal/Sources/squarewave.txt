@@ -1,6 +1,5 @@
 NAME SignalSquareWave
 ISOICON squarewave.svg
-NOUSERICON
 ICONROTATION ON
 PORTS 1
 1.0 0.5 0

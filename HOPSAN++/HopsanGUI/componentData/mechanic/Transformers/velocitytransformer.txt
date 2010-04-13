@@ -1,6 +1,5 @@
 NAME MechanicVelocityTransformer
 ISOICON velocitytransformer.svg
-NOUSERICON
 ICONROTATION ON
 PORTS 2
 0.0 0.5 0

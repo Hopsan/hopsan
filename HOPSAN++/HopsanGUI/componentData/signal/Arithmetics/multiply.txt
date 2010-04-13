@@ -1,6 +1,5 @@
 NAME SignalMultiply
 ISOICON multiply.svg
-NOUSERICON
 ICONROTATION ON
 PORTS 3
 0.0 0.5 0

@@ -1,6 +1,6 @@
 NAME HydraulicPressureSourceQ
 ISOICON pressuresource_iso.svg
-NOUSERICON
+USERICON pressuresource_user.svg
 ICONROTATION ON
 PORTS 2
 0.5 1.0 270

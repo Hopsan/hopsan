@@ -209,6 +209,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open each file
             return;
 
+        userIconPath = QString("");
         QTextStream inFile(&file);  //Create a QTextStream object to stream the content of each file
         while (!inFile.atEnd()) {
             QString line = inFile.readLine();   //line contains each row in the file
@@ -219,12 +220,6 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
                 appearanceData << componentName;
             }
 
-            if (line.startsWith("ICONROTATION"))
-            {
-                iconRotationBehaviour = line.mid(13);
-                appearanceData << iconRotationBehaviour;
-            }
-
             if (line.startsWith("ISOICON"))
             {
                 isoIconPath = libDirObject.absolutePath() + "/" + line.mid(8);
@@ -232,16 +227,16 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
                 appearanceData << isoIconPath;
             }
 
-            if (line.startsWith("NOUSERICON"))
-            {
-                userIconPath = QString("");
-                appearanceData << userIconPath;
-            }
-
             if (line.startsWith("USERICON"))
             {
                 userIconPath = libDirObject.absolutePath() + "/" + line.mid(9);
-                appearanceData << userIconPath;
+            }
+
+            if (line.startsWith("ICONROTATION"))
+            {
+                appearanceData << userIconPath;     //This is stupid, but it must somehow be executed after USERICON even in case there is not USERICON
+                iconRotationBehaviour = line.mid(13);
+                appearanceData << iconRotationBehaviour;
             }
 
             if (line.startsWith("PORTS"))

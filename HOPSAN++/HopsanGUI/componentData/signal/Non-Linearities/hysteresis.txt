@@ -1,6 +1,5 @@
 NAME SignalHysteresis
 ISOICON hysteresis.svg
-NOUSERICON
 ICONROTATION ON
 PORTS 2
 0.0 0.5 0
