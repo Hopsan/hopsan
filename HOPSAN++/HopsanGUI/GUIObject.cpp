@@ -233,6 +233,28 @@ void GUIObject::setIcon(bool useIso)
         mpIcon = new QGraphicsSvgItem(this->mIconPath,this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
     }
+
+    if(!this->mIconRotation)
+    {
+        this->mpIcon->setRotation(-this->rotation());
+        if(this->rotation() == 0)
+        {
+            this->mpIcon->setPos(0,0);
+        }
+        else if(this->rotation() == 90)
+        {
+            this->mpIcon->setPos(0,this->boundingRect().height());
+        }
+        else if(this->rotation() == 180)
+        {
+            this->mpIcon->setPos(this->boundingRect().width(),this->boundingRect().height());
+        }
+        else if(this->rotation() == 270)
+        {
+            this->mpIcon->setPos(this->boundingRect().width(),0);
+        }
+    }
+
 }
 
 //! Returns the port with the specified number.
