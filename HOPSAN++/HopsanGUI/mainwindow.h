@@ -71,6 +71,8 @@ public:
     QAction *preferencesAction;
     QAction *optionsAction;
     QAction *resetZoomAction;
+    QAction *hideNamesAction;
+    QAction *showNamesAction;
 
     QToolBar *fileToolBar;
     QToolBar *clipboardToolBar;

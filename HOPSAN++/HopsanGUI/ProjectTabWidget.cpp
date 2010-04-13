@@ -85,6 +85,8 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     connect(pMainWindow->cutAction, SIGNAL(triggered()), this,SLOT(cutSelected()));
     connect(pMainWindow->copyAction, SIGNAL(triggered()), this,SLOT(copySelected()));
     connect(pMainWindow->pasteAction, SIGNAL(triggered()), this,SLOT(paste()));
+    connect(pMainWindow->hideNamesAction,SIGNAL(triggered()),this, SLOT(hideNames()));
+    connect(pMainWindow->showNamesAction,SIGNAL(triggered()),this, SLOT(showNames()));
 
 }
 
@@ -756,6 +758,26 @@ void GraphicsView::resetZoom()
 }
 
 
+void GraphicsView::hideNames()
+{
+    QMap<QString, GUIObject *>::iterator it;
+    for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
+    {
+        it.value()->hideName();
+    }
+}
+
+
+void GraphicsView::showNames()
+{
+    QMap<QString, GUIObject *>::iterator it;
+    for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
+    {
+        it.value()->showName();
+    }
+}
+
+
 //! Get function for primary pen style
 QPen GraphicsView::getPen(QString situation, QString type, QString style)
 {
@@ -1299,6 +1321,9 @@ void ProjectTabWidget::loadModel()
                     //Hide connected ports
                 startPort->hide();
                 endPort->hide();
+
+                connect(startPort->getComponent(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+                connect(endPort->getComponent(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
 
                 std::stringstream tempStream;
                 tempStream << startPort->getComponent()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<

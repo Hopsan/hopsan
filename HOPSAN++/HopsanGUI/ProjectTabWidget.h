@@ -85,6 +85,8 @@ public slots:
     void selectAll();
     void setScale(const QString &scale);
     void resetZoom();
+    void hideNames();
+    void showNames();
 
 
 protected:

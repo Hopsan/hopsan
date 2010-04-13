@@ -248,6 +248,12 @@ void MainWindow::createActions()
 
     resetZoomAction = new QAction(QIcon("../../HopsanGUI/icons/zoom100.png"), tr("&Reset Zoom"), this);
     resetZoomAction->setText("Reset Zoom");
+
+    hideNamesAction = new QAction(QIcon("../../HopsanGUI/icons/hidenames.png"), tr("&Reset Zoom"), this);
+    hideNamesAction->setText("Hide All Component Names");
+
+    showNamesAction = new QAction(QIcon("../../HopsanGUI/icons/shownames.png"), tr("&Reset Zoom"), this);
+    showNamesAction->setText("Show All Component Names");
 }
 
 
@@ -352,6 +358,8 @@ void MainWindow::createToolbars()
     simToolBar->setAllowedAreas(Qt::TopToolBarArea);
     //simToolBar->addWidget(viewScaleCombo);
     simToolBar->addAction(resetZoomAction);
+    simToolBar->addAction(hideNamesAction);
+    simToolBar->addAction(showNamesAction);
     simToolBar->addAction(preferencesAction);
     simToolBar->addAction(simulateAction);
     simToolBar->addAction(plotAction);
