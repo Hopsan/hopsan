@@ -23,6 +23,8 @@ class LibraryContentItem;
 #include <QListWidgetItem>
 #include <QStringList>
 
+
+//Här borde en funktion finnas som växlar mellan iso-ikon och user-ikon
 class LibraryContentItem : public QListWidgetItem
 {
 public:

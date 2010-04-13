@@ -5,21 +5,79 @@ HOPSANGUIVERSION 0.0.1
 HOPSANGUIMODELFILEVERSION 0.1
 HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION 0.1
 --------------------------------------------------------------
-COMPONENT Hydraulic43Valve 43Valve 2598 2380 0 0
-COMPONENT HydraulicCylinderC CylinderC 2633 2265 0 0
-COMPONENT HydraulicLaminarOrifice LaminarOrifice 2382 2465 90 0
-COMPONENT HydraulicLaminarOrifice LaminarOrifice_1 2381 2543 90 0
-COMPONENT HydraulicPressureSource PressureSource 2277 2465 90 0
-COMPONENT HydraulicPressureSource PressureSource_1 2278 2543 90 0
-COMPONENT HydraulicVolume Volume 2512 2465 0 0
-COMPONENT HydraulicVolume Volume_1 2513 2543 0 0
+COMPONENT Hydraulic43Valve 43Valve 2605 2505 0 0
+PARAMETER 43Valve Cq 0.67
+PARAMETER 43Valve d 0.01
+PARAMETER 43Valve f 1
+PARAMETER 43Valve xvmax 0.01
+PARAMETER 43Valve overlap_pa 0
+PARAMETER 43Valve overlap_pb 0
+PARAMETER 43Valve overlap_at 0
+PARAMETER 43Valve overlap_pa 0
+PARAMETER 43Valve omegah 100
+PARAMETER 43Valve deltah 0
+COMPONENT HydraulicCylinderC CylinderC 2637 2413 0 0
+PARAMETER CylinderC x0 0
+PARAMETER CylinderC v0 0
+PARAMETER CylinderC Area1 0.001
+PARAMETER CylinderC Area2 0.001
+PARAMETER CylinderC Stroke 3.4
+PARAMETER CylinderC EquivalentMass 1000
+PARAMETER CylinderC DeadVolume1 0.01
+PARAMETER CylinderC DeadVolume2 0.01
+PARAMETER CylinderC Bp 10
+PARAMETER CylinderC Betae 1e+009
+COMPONENT MechanicForceTransformer ForceTransformer 2879 2412 180 0
+PARAMETER ForceTransformer x0 0
+PARAMETER ForceTransformer v0 0
+COMPONENT SignalGain Gain 2364 2466 0 0
+PARAMETER Gain Gain 1
+COMPONENT HydraulicLaminarOrifice LaminarOrifice 2389 2590 90 0
+PARAMETER LaminarOrifice Kc 1e-011
+COMPONENT HydraulicLaminarOrifice LaminarOrifice_1 2388 2668 90 0
+PARAMETER LaminarOrifice_1 Kc 1e-011
+COMPONENT MechanicPositionSensor PositionSensor 2727 2311 0 0
+COMPONENT HydraulicPressureSource PressureSource 2284 2590 90 0
+PARAMETER PressureSource P 100000
+COMPONENT HydraulicPressureSource PressureSource_1 2285 2668 90 0
+PARAMETER PressureSource_1 P 100000
+COMPONENT SignalSoftStep SoftStep 2079 2366 0 0
+PARAMETER SoftStep StartTime 1
+PARAMETER SoftStep StopTime 2
+PARAMETER SoftStep BaseValue 0
+PARAMETER SoftStep Amplitude 1
+COMPONENT SignalSource Source 2977 2412 180 0
+PARAMETER Source Value 1
+COMPONENT SignalSubtract Subtract 2236 2427 0 0
+COMPONENT MechanicTranslationalMass TranslationalMass 2778 2412 0 0
+PARAMETER TranslationalMass Mass 1
+PARAMETER TranslationalMass B 10
+PARAMETER TranslationalMass k 0
+COMPONENT HydraulicVolume Volume 2519 2590 0 0
+PARAMETER Volume V 0.001
+PARAMETER Volume Be 1e+009
+PARAMETER Volume a 0
+PARAMETER Volume Zc 1e+009
+COMPONENT HydraulicVolume Volume_1 2520 2668 0 0
+PARAMETER Volume_1 V 0.001
+PARAMETER Volume_1 Be 1e+009
+PARAMETER Volume_1 a 0
+PARAMETER Volume_1 Zc 1e+009
 --------------------------------------------------------------
-CONNECT 43Valve 2 CylinderC 0 2608.49 2355 2608.49 2333 2578.47 2333 2578.47 2285
-CONNECT 43Valve 3 CylinderC 1 2628.5 2355 2628.5 2333 2658.06 2333 2658.06 2285
-CONNECT LaminarOrifice 0 Volume 0 2416.5 2465 2430 2465 2430 2465 2452 2465
-CONNECT LaminarOrifice_1 0 Volume_1 0 2415.5 2543 2430 2543 2430 2543 2453 2543
-CONNECT PressureSource 1 LaminarOrifice 1 2285.5 2465 2325 2465 2325 2465 2347.5 2465
-CONNECT PressureSource_1 1 LaminarOrifice_1 1 2286.5 2543 2328 2543 2328 2543 2346.5 2543
-CONNECT Volume 1 43Valve 0 2572 2465 2608.49 2465 2608.49 2405
-CONNECT Volume_1 1 43Valve 1 2573 2543 2628.5 2543 2628.5 2405
+CONNECT 43Valve 2 CylinderC 0 2615.08 2480 2615.08 2465 2582.47 2465 2582.47 2433
+CONNECT 43Valve 3 CylinderC 1 2634.97 2480 2634.97 2465 2662.06 2465 2662.06 2433
+CONNECT CylinderC 2 TranslationalMass 0 2696.5 2413 2746 2413 2746 2412
+CONNECT ForceTransformer 1 TranslationalMass 1 2859.5 2412 2810 2412 2810 2412
+CONNECT Gain 1 43Valve 4 2376.5 2466 2447 2466 2525.5 2515
+CONNECT LaminarOrifice 0 Volume 0 2423.5 2590 2430 2590 2430 2590 2459 2590
+CONNECT LaminarOrifice_1 0 Volume_1 0 2422.5 2668 2430 2668 2430 2668 2460 2668
+CONNECT PositionSensor 0 TranslationalMass 0 2727 2323.5 2727 2359 2746 2412
+CONNECT PositionSensor 1 Subtract 1 2727 2298.5 2727 2274 2289 2274 2236 2414.5
+CONNECT PressureSource 1 LaminarOrifice 1 2292.5 2590 2325 2590 2325 2590 2354.5 2590
+CONNECT PressureSource_1 1 LaminarOrifice_1 1 2293.5 2668 2328 2668 2328 2668 2353.5 2668
+CONNECT SoftStep 0 Subtract 0 2099 2366 2168 2396 2168 2427 2223.5 2427
+CONNECT Source 0 ForceTransformer 0 2964.5 2412 2934 2412 2934 2412 2898.5 2412
+CONNECT Subtract 2 Gain 0 2248.5 2427 2285 2427 2351.5 2466
+CONNECT Volume 1 43Valve 0 2579 2590 2615.08 2590 2615.08 2530
+CONNECT Volume_1 1 43Valve 1 2580 2668 2634.97 2668 2634.97 2530
 --------------------------------------------------------------

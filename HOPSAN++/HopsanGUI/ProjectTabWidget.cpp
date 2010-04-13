@@ -1169,17 +1169,14 @@ void ProjectTabWidget::loadModel()
     pCurrentTab->mModelFileName = modelFileName;
 
         //Necessary declarations
-    string inputLine;
-    string inputWord;
-    string componentType;
-    string componentName;
-    string startComponentName, endComponentName;
+    string inputLine, inputWord, componentType, componentName, startComponentName, endComponentName, parameterName;
     int startPortNumber, endPortNumber;
     //int length, heigth;
     int posX, posY;
     int nameTextPos;
     qreal rotation;
     string tempString;
+    double parameterValue;
 
     while (! modelFile.eof() )
     {
@@ -1250,6 +1247,19 @@ void ProjectTabWidget::loadModel()
                 }
 
             }
+
+
+            if ( inputWord == "PARAMETER" )
+            {
+                inputStream >> componentName;
+                inputStream >> parameterName;
+                inputStream >> parameterValue;
+
+                Component *mpCoreComponent = pCurrentTab->mpGraphicsView->mGUIObjectMap.find(QString(componentName.c_str())).value()->getHopsanCoreComponentPtr();
+                mpCoreComponent->setParameter(parameterName, parameterValue);
+            }
+
+
             if ( inputWord == "CONNECT" )
             {
                 GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
@@ -1347,6 +1357,16 @@ void ProjectTabWidget::saveModel(bool saveAs)
         QPointF pos = it.value()->mapToScene(it.value()->boundingRect().center());
         modelFile << "COMPONENT " << it.value()->getTypeName().toStdString() << " " << it.key().toStdString()
                   << " " << pos.x() << " " << pos.y() << " " << it.value()->rotation() << " " << it.value()->getNameTextPos() << std::endl;
+
+        Component *mpCoreComponent = it.value()->getHopsanCoreComponentPtr();
+        vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
+        std::vector<CompParameter>::iterator itp;
+        for ( itp=paramVector.begin() ; itp !=paramVector.end(); ++itp )
+        {
+            modelFile << "PARAMETER " << it.key().toStdString() << " " << itp->getName().c_str() << " " << itp->getValue() << "\n";
+            //qDebug() << it.key() << " - " << itp->getName().c_str() << " - " << itp->getValue();
+        }
+
     }
 
     modelFile << "--------------------------------------------------------------" << std::endl;
@@ -1363,6 +1383,7 @@ void ProjectTabWidget::saveModel(bool saveAs)
     }
     modelFile << "--------------------------------------------------------------" << std::endl;
 }
+
 
 
 
