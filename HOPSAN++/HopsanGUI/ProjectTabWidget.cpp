@@ -864,8 +864,16 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mpGraphicsView->setScene(mpGraphicsScene);
 
     QVBoxLayout *tabLayout = new QVBoxLayout;
+
+//    //BE donar med detta lite
+//    QTextEdit *texttmp = new QTextEdit("dfsdf",this);
+//    texttmp->setTextInteractionFlags(Qt::NoTextInteraction);
+//    tabLayout->addWidget(texttmp);
+//    //
+
     tabLayout->addWidget(mpGraphicsView);
-//    addStretch(1);
+
+   //    addStretch(1);
 
 //    setWindowModified(true);
 

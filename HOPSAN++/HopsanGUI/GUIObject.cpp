@@ -1145,7 +1145,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GraphicsScene *scene, QGraphi
     QList<GUIComponent*> GUICompList;
     QList<GUIConnector*> GUIConnList;
 
-    this->setName(QString("ApGrupp"));
+    this->setName(QString("Grupp_test"));
     this->refreshName();
 
     MessageWidget *pMessageWidget = scene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget;
