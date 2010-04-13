@@ -13,7 +13,7 @@
    id="svg2531"
    sodipodi:version="0.32"
    inkscape:version="0.46"
-   sodipodi:docname="Cylinderq.svg"
+   sodipodi:docname="cylinderq_iso.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
   <defs
@@ -44,8 +44,8 @@
      showgrid="false"
      inkscape:window-width="1280"
      inkscape:window-height="698"
-     inkscape:window-x="-4"
-     inkscape:window-y="-4"
+     inkscape:window-x="22"
+     inkscape:window-y="29"
      inkscape:window-maximized="0"
      showguides="true"
      inkscape:guide-bbox="true">
@@ -72,12 +72,21 @@
      id="layer1"
      transform="translate(-349.93753,-496.21265)">
     <rect
-       ry="0"
-       y="-429.43753"
-       x="496.71265"
-       height="79"
+       transform="matrix(0,1,-1,0,0,0)"
+       style="fill:#ffffff;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:10.43299961;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2813"
        width="39"
-       id="rect4023"
+       height="19"
+       x="496.71265"
+       y="-380.43753"
+       ry="0" />
+    <rect
+       ry="0"
+       y="-439.43753"
+       x="496.71265"
+       height="89"
+       width="39"
+       id="rect2709"
        style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:10.43299961;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        transform="matrix(0,1,-1,0,0,0)" />
     <rect
@@ -88,15 +97,6 @@
        height="89"
        x="511.71265"
        y="-469.43753"
-       ry="0" />
-    <rect
-       transform="matrix(0,1,-1,0,0,0)"
-       style="fill:#ffffff;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:10.43299961;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       id="rect2813"
-       width="39"
-       height="19"
-       x="496.71265"
-       y="-380.43753"
        ry="0" />
     <rect
        style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-miterlimit:10.43299961;stroke-dasharray:none"

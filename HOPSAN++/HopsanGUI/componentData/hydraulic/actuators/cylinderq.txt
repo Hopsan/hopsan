@@ -1,6 +1,6 @@
 NAME HydraulicCylinderQ
-ISOICON Cylinderq.svg
-NOUSERICON
+ISOICON cylinderq_iso.svg
+USERICON cylinderq_user.svg
 ICONROTATION ON
 PORTS 3
 0,0274 1.000	90

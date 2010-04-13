@@ -1,6 +1,6 @@
 NAME HydraulicVariableDisplacementPump
-ISOICON variablepump.svg
-NOUSERICON
+ISOICON variablepump_iso.svg
+USERICON variablepump_user.svg
 ICONROTATION ON
 PORTS 3
 0.5741 1.0000 90

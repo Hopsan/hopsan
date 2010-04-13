@@ -1,6 +1,6 @@
 NAME HydraulicLaminarOrifice
-ISOICON laminarorifice.svg
-NOUSERICON
+ISOICON laminarorifice_iso.svg
+USERICON laminarorifice_user.svg
 ICONROTATION ON
 PORTS 2
 0.5 0.0 90
