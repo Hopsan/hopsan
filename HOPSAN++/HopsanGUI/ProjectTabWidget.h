@@ -73,12 +73,10 @@ signals:
 
 public slots:
     void addGUIObject(QString componentType, QStringList appearanceData, QPoint position, QString name=QString(), bool startSelected=false);
-    //void addComponent(QString componentType, QPoint position, QString name=QString(), bool startSelected = false);
     void deleteGUIObject(QString componentName);
     bool haveGUIObject(QString name);
     void renameGUIObject(QString oldName, QString newName);
     void systemPortSlot();
-
     void addConnector(GUIPort *pPort);
     void removeConnector(GUIConnector* pConnector);
     void cutSelected();
@@ -88,9 +86,6 @@ public slots:
     void setScale(const QString &scale);
     void resetZoom();
 
-    //QByteArray *data;
-    //QDataStream *stream;
-    //QString *text;
 
 protected:
     virtual void dragMoveEvent(QDragMoveEvent *event);

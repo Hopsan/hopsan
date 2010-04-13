@@ -1,5 +1,6 @@
 NAME SignalRamp
-ICON ramp.svg
+ISOICON ramp.svg
+NOUSERICON
 ICONROTATION ON
 PORTS 1
 1.0 0.5 0

@@ -1,5 +1,6 @@
 NAME SignalPulse
-ICON pulse.svg
+ISOICON pulse.svg
+NOUSERICON
 ICONROTATION ON
 PORTS 1
 1.0 0.5 0

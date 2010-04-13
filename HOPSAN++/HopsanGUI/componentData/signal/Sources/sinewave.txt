@@ -1,5 +1,6 @@
 NAME SignalSineWave
-ICON sinewave.svg
+ISOICON sinewave.svg
+NOUSERICON
 ICONROTATION ON
 PORTS 1
 1.0 0.5 0

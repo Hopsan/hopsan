@@ -597,11 +597,12 @@ void GraphicsView::removeConnector(GUIConnector* pConnector)
     {
         mpModel->disconnect(pConnector->getStartPort()->mpCorePort, pConnector->getEndPort()->mpCorePort);
         emit checkMessages();
+        pConnector->getEndPort()->show();
     }
     //
     scene()->removeItem(pConnector);
     pConnector->getStartPort()->show();
-    pConnector->getEndPort()->show();
+
     delete pConnector;
 }
 
@@ -1165,7 +1166,7 @@ void ProjectTabWidget::loadModel()
     string componentName;
     string startComponentName, endComponentName;
     int startPortNumber, endPortNumber;
-    int length, heigth;
+    //int length, heigth;
     int posX, posY;
     int nameTextPos;
     qreal rotation;
@@ -1355,16 +1356,14 @@ void ProjectTabWidget::saveModel(bool saveAs)
 
 void ProjectTabWidget::setIsoGraphics(bool value)
 {
-    qDebug() << "Debug X1";
     this->getCurrentTab()->useIsoGraphics = value;
-    qDebug() << "Use ISO graphics = " << value;
 
     ProjectTab *pCurrentTab = getCurrentTab();
     GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
     QMap<QString, GUIConnector *>::iterator it;
     for(it = pCurrentView->mConnectionMap.begin(); it!=pCurrentView->mConnectionMap.end(); ++it)
     {
-        if(value)
+        if(!value)
         {
             if((it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeHydraulic") | (it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeMechanic"))
                 it.value()->setPens(pCurrentView->getPen("Primary", "Power", "Iso"),
@@ -1386,5 +1385,11 @@ void ProjectTabWidget::setIsoGraphics(bool value)
                                     pCurrentView->getPen("Active", "Signal", "User"),
                                     pCurrentView->getPen("Hover", "Signal", "User"));
         }
+    }
+
+    QMap<QString, GUIObject*>::iterator it2;
+    for(it2 = pCurrentView->mGUIObjectMap.begin(); it2!=pCurrentView->mGUIObjectMap.end(); ++it2)
+    {
+        it2.value()->setIcon(value);
     }
 }

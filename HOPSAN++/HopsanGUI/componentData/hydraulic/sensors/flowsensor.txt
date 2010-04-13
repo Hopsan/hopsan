@@ -1,5 +1,6 @@
 NAME HydraulicFlowSensor
-ICON flowsensor.svg
+ISOICON flowsensor.svg
+NOUSERICON
 ICONROTATION ON
 PORTS 2
 0.5 1.0 90

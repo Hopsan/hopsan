@@ -1,5 +1,6 @@
 NAME MechanicForceSensor
-ICON forcesensor.svg
+ISOICON forcesensor.svg
+NOUSERICON
 ICONROTATION ON
 PORTS 2
 0.5 1.0 90

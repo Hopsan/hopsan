@@ -29,7 +29,7 @@ double dist(double x1,double y1, double x2, double y2)
     return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
 }
 
-GUIObject::GUIObject(QPoint position, QString iconPath, GraphicsScene *scene, QGraphicsItem *parent)
+GUIObject::GUIObject(QPoint position, QString iconPath, QString isoIconPath, GraphicsScene *scene, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
     mpParentGraphicsScene = scene;
@@ -38,7 +38,7 @@ GUIObject::GUIObject(QPoint position, QString iconPath, GraphicsScene *scene, QG
 
     mTextOffset = 5.0;
 
-    this->hasIsoIcon = false;
+    mHasIsoIcon = false;
 
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
     //setFocusPolicy(Qt::StrongFocus);
@@ -47,6 +47,7 @@ GUIObject::GUIObject(QPoint position, QString iconPath, GraphicsScene *scene, QG
     this->setZValue(10);
     mpIcon = new QGraphicsSvgItem(iconPath,this);
     mIconPath = iconPath;
+    qDebug() << "Setting icon to " << iconPath;
 
     std::cout << "GUIcomponent: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
 
@@ -218,11 +219,21 @@ void GUIObject::setName(QString newName, bool doOnlyCoreRename)
 }
 
 
-//GUIObject::setIcon(bool useIso)
-//{
-//    //if(useIso)
-//    //    this->mpIcon->
-//}
+void GUIObject::setIcon(bool useIso)
+{
+    if(useIso and mHasIsoIcon)
+    {
+        delete(mpIcon);
+        mpIcon = new QGraphicsSvgItem(mIsoIconPath,this);
+        mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
+    }
+    else
+    {
+        delete(mpIcon);
+        mpIcon = new QGraphicsSvgItem(this->mIconPath,this);
+        mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
+    }
+}
 
 //! Returns the port with the specified number.
 //! @see getPortNumber(GUIPort *port)
@@ -688,16 +699,24 @@ int GUIComponent::type() const
 
 
 GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
-    : GUIObject(position, parameterData.at(1),scene, parent)
+    : GUIObject(position, parameterData.at(1), parameterData.at(2), scene, parent)
 {
     mComponentTypeName = parameterData.at(0);
     //QString fileName = parameterData.at(1);
-    QString iconRotationBehaviour = parameterData.at(2);
+    mIsoIconPath = parameterData.at(2);
+    QString iconRotationBehaviour = parameterData.at(3);
     if(iconRotationBehaviour == "ON")
         this->mIconRotation = true;
     else
         this->mIconRotation = false;
-    size_t nPorts = parameterData.at(3).toInt();
+    size_t nPorts = parameterData.at(4).toInt();
+
+    qDebug() << "TypeName: " << mComponentTypeName << ", parameterData.at(2) = " << parameterData.at(2);
+
+    if(mIsoIconPath == "")
+        mHasIsoIcon = false;
+    else
+        mHasIsoIcon = true;
 
     //Core interaction
     mpCoreComponent = hopsan->CreateComponent(mComponentTypeName.toStdString());
@@ -708,9 +727,9 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
     Port::PORTTYPE porttype;
     for (size_t i = 0; i < nPorts; ++i)
     {
-        double x = parameterData.at(4+3*i).toDouble();
-        double y = parameterData.at(5+3*i).toDouble();
-        double rot = parameterData.at(6+3*i).toDouble();
+        double x = parameterData.at(5+3*i).toDouble();
+        double y = parameterData.at(6+3*i).toDouble();
+        double rot = parameterData.at(7+3*i).toDouble();
 
         porttype = mpCoreComponent->getPortPtrVector().at(i)->getPortType();
 
@@ -892,7 +911,7 @@ void GUIComponent::deleteInHopsanCore()
 
 
 GUISubsystem::GUISubsystem(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
-        : GUIObject(position, parameterData.at(1), scene, parent)
+        : GUIObject(position, parameterData.at(1), parameterData.at(2), scene, parent)
 {
     //Core interaction
     mpCoreComponentSystem = hopsan->CreateComponentSystem();
@@ -1100,7 +1119,7 @@ void GUISubsystem::openParameterDialog()
 
 
 GUISystemPort::GUISystemPort(HopsanEssentials *hopsan, QStringList appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
-        : GUIObject(position, appearanceData.at(1), scene, parent)
+        : GUIObject(position, appearanceData.at(1), appearanceData.at(2), scene, parent)
 
 {
     //Do something nice
@@ -1121,7 +1140,7 @@ int GUIGroup::type() const
 
 
 GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GraphicsScene *scene, QGraphicsItem *parent)
-    :   GUIObject(QPoint(0.0,0.0), QString("../../HopsanGUI/subsystemtmp.svg"), scene, parent)
+    :   GUIObject(QPoint(0.0,0.0), QString("../../HopsanGUI/subsystemtmp.svg"), QString(""), scene, parent)
 {
     QList<GUIComponent*> GUICompList;
     QList<GUIConnector*> GUIConnList;

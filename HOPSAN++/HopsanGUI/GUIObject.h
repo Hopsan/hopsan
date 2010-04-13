@@ -22,7 +22,7 @@ class GUIObject : public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    GUIObject(QPoint position, QString iconPath, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    GUIObject(QPoint position, QString iconPath, QString isoIconPath = "", GraphicsScene *scene = 0, QGraphicsItem *parent = 0);
     ~GUIObject();
     //QGraphicsView *getParentView();
     void addConnector(GUIConnector *item);
@@ -35,7 +35,6 @@ public:
     int getPortNumber(GUIPort *port);
     int getNameTextPos();
     void setNameTextPos(int textPos);
-    void setIcon(bool useIso);
 
     void showPorts(bool visible);
     GUIPort *getPort(int number);
@@ -71,14 +70,17 @@ public slots:
      void moveRight();
      void hideName();
      void showName();
+     void setIcon(bool useIso);
 
 protected:
     QGraphicsSvgItem *mpIcon;
-    bool hasIsoIcon;
+    bool mHasIsoIcon;
     GUIObjectDisplayName *mpNameText;
     GUIObjectSelectionBox *mpSelectionBox;
     double mTextOffset;
     QGraphicsLineItem *mpTempLine;
+    QString mIconPath;
+    QString mIsoIconPath;
     //std::vector<GUIConnector*> mConnectors;        //Inteded to store connectors for each component
 
     QList<GUIPort*> mPortListPtrs;
@@ -87,10 +89,6 @@ protected:
 
 protected slots:
     void fixTextPosition(QPointF pos);
-
-private:
-    QString mIconPath;
-    QString mIsoIconPath;
 
 };
 

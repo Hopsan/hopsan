@@ -1,5 +1,6 @@
 NAME HydraulicCylinderC
-ICON Cylinderc.svg
+ISOICON Cylinderc.svg
+NOUSERICON
 ICONROTATION ON
 PORTS 3
 0.0418 1.000	90

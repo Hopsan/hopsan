@@ -196,7 +196,8 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
         QStringList appearanceData;
         QString componentName;
         QIcon icon;
-        QString iconPath;
+        QString isoIconPath;
+        QString userIconPath;
         QString iconRotationBehaviour;
         QString nPorts;
         QString portPosX;
@@ -223,11 +224,24 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
                 iconRotationBehaviour = line.mid(13);
                 appearanceData << iconRotationBehaviour;
             }
-            else if (line.startsWith("ICON"))
+
+            if (line.startsWith("ISOICON"))
             {
-                iconPath = libDirObject.absolutePath() + "/" + line.mid(5);
-                icon.addFile(iconPath);
-                appearanceData << iconPath;
+                isoIconPath = libDirObject.absolutePath() + "/" + line.mid(8);
+                icon.addFile(isoIconPath);
+                appearanceData << isoIconPath;
+            }
+
+            if (line.startsWith("NOUSERICON"))
+            {
+                userIconPath = QString("");
+                appearanceData << userIconPath;
+            }
+
+            if (line.startsWith("USERICON"))
+            {
+                userIconPath = libDirObject.absolutePath() + "/" + line.mid(9);
+                appearanceData << userIconPath;
             }
 
             if (line.startsWith("PORTS"))

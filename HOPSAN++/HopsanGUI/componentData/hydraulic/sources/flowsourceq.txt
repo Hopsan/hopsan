@@ -1,7 +1,7 @@
 NAME HydraulicFlowSourceQ
-ICON FlowSource.svg
+ISOICON FlowSource.svg
+NOUSERICON
 ICONROTATION OFF
 PORTS 2
 0.0 0.5 0
 1.0 0.5 0
-

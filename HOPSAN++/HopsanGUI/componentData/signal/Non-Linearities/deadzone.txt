@@ -1,5 +1,6 @@
 NAME SignalDeadZone
-ICON deadzone.svg
+ISOICON deadzone.svg
+NOUSERICON
 ICONROTATION ON
 PORTS 2
 0.0 0.5 0

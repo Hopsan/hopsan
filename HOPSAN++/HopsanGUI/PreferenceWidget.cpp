@@ -32,7 +32,7 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
 
     connect(cancelButton, SIGNAL(pressed()), this, SLOT(reject()));
     connect(okButton, SIGNAL(pressed()), this, SLOT(updateValues()));
-    connect(isoCheckBox, SIGNAL(pressed(bool)), this, SLOT(setIsoBool(bool)));
+    //connect(isoCheckBox, SIGNAL(pressed(bool)), this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView, SLOT(setIsoGraphics(bool)));
 
 
     QGridLayout *mainLayout = new QGridLayout;
@@ -52,7 +52,7 @@ PreferenceWidget::~PreferenceWidget()
 
 void PreferenceWidget::updateValues()
 {
-    this->mpParentMainWindow->mpProjectTabs->setIsoGraphics(isoCheckBox->isChecked());
+    this->mpParentMainWindow->mpProjectTabs->setIsoGraphics(!isoCheckBox->isChecked());
     //this->isoBool = this->isoCheckBox->isChecked();
     //qDebug() << isoBool;
     this->accept();

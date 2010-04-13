@@ -167,6 +167,7 @@ void GUIConnector::removePoint(bool deleteIfEmpty)
     qDebug() << "mPoints.size() = " << mPoints.size();
     mPoints.pop_back();
     mGeometries.pop_back();
+
     if(mPoints.size() == 2 and !mMakingDiagonal)
     {
         mPoints.pop_back();

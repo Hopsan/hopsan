@@ -1,5 +1,6 @@
 NAME SignalAdd
-ICON add.svg
+ISOICON add.svg
+NOUSERICON
 ICONROTATION ON
 PORTS 3
 0.0 0.5 0
