@@ -724,20 +724,20 @@ int GUIComponent::type() const
 
 
 
-GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
-    : GUIObject(position, parameterData.at(1), parameterData.at(2), scene, parent)
+GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
+    : GUIObject(position, appearanceData.at(1), appearanceData.at(2), scene, parent)
 {
-    mComponentTypeName = parameterData.at(0);
-    //QString fileName = parameterData.at(1);
-    mIsoIconPath = parameterData.at(2);
-    QString iconRotationBehaviour = parameterData.at(3);
+    mComponentTypeName = appearanceData.at(0);
+    //QString fileName = appearanceData.at(1);
+    mIsoIconPath = appearanceData.at(2);
+    QString iconRotationBehaviour = appearanceData.at(3);
     if(iconRotationBehaviour == "ON")
         this->mIconRotation = true;
     else
         this->mIconRotation = false;
-    size_t nPorts = parameterData.at(4).toInt();
+    size_t nPorts = appearanceData.at(4).toInt();
 
-    qDebug() << "TypeName: " << mComponentTypeName << ", parameterData.at(2) = " << parameterData.at(2);
+    qDebug() << "TypeName: " << mComponentTypeName << ", appearanceData.at(2) = " << appearanceData.at(2);
 
     if(mIsoIconPath == "")
         mHasIsoIcon = false;
@@ -753,9 +753,9 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, 
     Port::PORTTYPE porttype;
     for (size_t i = 0; i < nPorts; ++i)
     {
-        double x = parameterData.at(5+3*i).toDouble();
-        double y = parameterData.at(6+3*i).toDouble();
-        double rot = parameterData.at(7+3*i).toDouble();
+        double x = appearanceData.at(5+3*i).toDouble();
+        double y = appearanceData.at(6+3*i).toDouble();
+        double rot = appearanceData.at(7+3*i).toDouble();
 
         porttype = mpCoreComponent->getPortPtrVector().at(i)->getPortType();
 
@@ -936,22 +936,22 @@ void GUIComponent::deleteInHopsanCore()
 }
 
 
-GUISubsystem::GUISubsystem(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
-        : GUIObject(position, parameterData.at(1), parameterData.at(2), scene, parent)
+GUISubsystem::GUISubsystem(HopsanEssentials *hopsan, QStringList appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
+        : GUIObject(position, appearanceData.at(1), appearanceData.at(2), scene, parent)
 {
     //Core interaction
     mpCoreComponentSystem = hopsan->CreateComponentSystem();
     //mpCoreComponentSystem->setName("unnamed");
     //
 
-//    mComponentTypeName = parameterData.at(0);
-//    //QString fileName = parameterData.at(1);
-//    QString iconRotationBehaviour = parameterData.at(2);
+//    mComponentTypeName = appearanceData.at(0);
+//    //QString fileName = appearanceData.at(1);
+//    QString iconRotationBehaviour = appearanceData.at(2);
 //    if(iconRotationBehaviour == "ON")
 //        this->mIconRotation = true;
 //    else
 //        this->mIconRotation = false;
-//    size_t nPorts = parameterData.at(3).toInt();
+//    size_t nPorts = appearanceData.at(3).toInt();
 //
 //
 //
@@ -961,9 +961,9 @@ GUISubsystem::GUISubsystem(HopsanEssentials *hopsan, QStringList parameterData, 
 //    Port::PORTTYPE porttype;
 //    for (size_t i = 0; i < nPorts; ++i)
 //    {
-//        double x = parameterData.at(4+3*i).toDouble();
-//        double y = parameterData.at(5+3*i).toDouble();
-//        double rot = parameterData.at(6+3*i).toDouble();
+//        double x = appearanceData.at(4+3*i).toDouble();
+//        double y = appearanceData.at(5+3*i).toDouble();
+//        double rot = appearanceData.at(6+3*i).toDouble();
 //
 //        porttype = mpCoreComponent->getPortPtrVector().at(i)->getPortType();
 //

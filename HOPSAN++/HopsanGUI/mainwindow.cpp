@@ -133,6 +133,7 @@ MainWindow::MainWindow(QWidget *parent)
     QStringList appearanceData;
     appearanceData << "Subsystem";
     appearanceData << QString("../../HopsanGUI/subsystemtmp.svg"); //Icon path
+    appearanceData << "";
     QIcon icon;
     icon.addFile("../../HopsanGUI/subsystemtmp.svg");
     LibraryContentItem *pLibsubcomp = new LibraryContentItem(icon,"Subsystem");

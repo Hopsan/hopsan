@@ -135,7 +135,7 @@ class GUIComponent : public GUIObject
 {
     Q_OBJECT
 public:
-    GUIComponent(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    GUIComponent(HopsanEssentials *hopsan, QStringList appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
 
     //Core interaction
     Component* getHopsanCoreComponentPtr();
@@ -165,7 +165,7 @@ class GUISubsystem : public GUIObject
 {
     Q_OBJECT
 public:
-    GUISubsystem(HopsanEssentials *hopsan, QStringList parameterData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    GUISubsystem(HopsanEssentials *hopsan, QStringList appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
 
     Component* getHopsanCoreComponentPtr();
     ComponentSystem* getHopsanCoreSystemComponentPtr();
