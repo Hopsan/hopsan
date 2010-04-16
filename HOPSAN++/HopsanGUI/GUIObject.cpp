@@ -1074,7 +1074,7 @@ void GUISubsystem::setTypeCQS(QString typestring)
 
 QString GUISubsystem::getTypeCQS()
 {
-    return QString::fromStdString(mpCoreComponentSystem->getTypeCQSString(mpCoreComponentSystem->getTypeCQS()));
+    return QString::fromStdString(mpCoreComponentSystem->getTypeCQSString());
 }
 
 void GUISubsystem::deleteInHopsanCore()

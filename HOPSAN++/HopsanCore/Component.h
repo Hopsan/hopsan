@@ -65,7 +65,8 @@ public:
     const string &getTypeName();
     //const string &getTypeCQS();
     typeCQS getTypeCQS();
-    string getTypeCQSString(typeCQS type);
+    string getTypeCQSString();
+    string convertTypeCQS2String(typeCQS type);
 
     //Parameters
     void listParametersConsole();

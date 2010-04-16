@@ -180,10 +180,32 @@ Component::typeCQS Component::getTypeCQS()
 }
 
 //! Convert the C, Q or S type from enum to string
-//! @todo This function may not need to be meber in Component, (maybe enum should be free aswell)
-string Component::getTypeCQSString(typeCQS type)
+//! @todo This function may not need to be meber in Component, (maybe enum should be free aswell), this function may be completely useless
+string Component::convertTypeCQS2String(typeCQS type)
 {
     switch (type)
+    {
+    case C :
+        return "C";
+        break;
+    case Q :
+        return "Q";
+        break;
+    case S :
+        return "S";
+        break;
+    case NOCQSTYPE :
+        return "NOCQSTYPE";
+        break;
+    default :
+        return "Invalid CQS Type";
+    }
+}
+
+//! Get the CQStype as string
+string Component::getTypeCQSString()
+{
+    switch (mTypeCQS)
     {
     case C :
         return "C";
@@ -473,7 +495,7 @@ void ComponentSystem::SubComponentStorage::add(Component* pComponent)
         mComponentUndefinedptrs.push_back(pComponent);
         break;
     default :
-            gCoreMessageHandler.addErrorMessage("Trying to add module with unspecified CQS type: " + pComponent->getTypeCQSString(pComponent->getTypeCQS())  + ", (Not added)");
+            gCoreMessageHandler.addErrorMessage("Trying to add module with unspecified CQS type: " + pComponent->getTypeCQSString()  + ", (Not added)");
         return;
     }
 
@@ -980,8 +1002,8 @@ void ComponentSystem::setTypeCQS(typeCQS cqs_type, bool doOnlyLocalSet)
                 break;
 
             default :
-                cout << "Error: Specified type _" << getTypeCQSString(cqs_type) << "_ does not exist!" << endl;
-                gCoreMessageHandler.addWarningMessage("Specified type: " + getTypeCQSString(cqs_type) + " does not exist!, System CQStype unchanged");
+                cout << "Error: Specified type _" << getTypeCQSString() << "_ does not exist!" << endl;
+                gCoreMessageHandler.addWarningMessage("Specified type: " + getTypeCQSString() + " does not exist!, System CQStype unchanged");
             }
         }
     }

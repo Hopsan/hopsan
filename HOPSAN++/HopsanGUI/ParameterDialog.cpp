@@ -91,7 +91,7 @@ void ParameterDialog::createEditStuff()
     QHBoxLayout *pCQSLayout;
     if (isGUISubsystem)
     {
-        mpCQSEdit = new QLineEdit(QString::fromStdString(mpCoreComponentSystem->getTypeCQSString(mpCoreComponentSystem->getTypeCQS())));
+        mpCQSEdit = new QLineEdit(QString::fromStdString(mpCoreComponentSystem->getTypeCQSString()));
         pCQSLayout = new QHBoxLayout;
         QLabel *pCQSLabel = new QLabel("CQS: ");
         pCQSLayout->addWidget(pCQSLabel);
