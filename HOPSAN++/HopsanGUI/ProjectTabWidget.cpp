@@ -79,7 +79,7 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 //    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent()->parent())); //Ugly!!!
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
-    connect(this->systemPortAction, SIGNAL(triggered()), SLOT(systemPortSlot()));
+    connect(this->systemPortAction, SIGNAL(triggered()), SLOT(addSystemPort()));
     //connect(pMainWindow->viewScaleCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(setScale(QString)));
     connect(pMainWindow->resetZoomAction, SIGNAL(triggered()), this,SLOT(resetZoom()));
     connect(pMainWindow->cutAction, SIGNAL(triggered()), this,SLOT(cutSelected()));
@@ -321,11 +321,16 @@ void GraphicsView::addSystemPort(QPoint position, QString name, bool startSelect
 
 }
 
-void GraphicsView::systemPortSlot()
+void GraphicsView::addSystemPort()
 {
       QCursor cursor;
-      QPoint position = this->mapFromScene(cursor.pos());
-      addSystemPort(position);
+      //position = this->mapFromScene(cursor.pos());
+      QPoint position = QPoint(2300,2400);
+      QStringList appearanceData;
+      appearanceData << "SystemPort";
+      appearanceData << QString("../../HopsanGUI/systemporttmp.svg");
+      appearanceData << "";
+      addGUIObject(QString("SystemPort"), appearanceData, position);
 }
 
 //! Delete GUIObject with specified name

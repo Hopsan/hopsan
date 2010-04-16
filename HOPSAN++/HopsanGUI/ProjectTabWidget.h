@@ -76,7 +76,7 @@ public slots:
     void deleteGUIObject(QString componentName);
     bool haveGUIObject(QString name);
     void renameGUIObject(QString oldName, QString newName);
-    void systemPortSlot();
+    void addSystemPort();
     void addConnector(GUIPort *pPort);
     void removeConnector(GUIConnector* pConnector);
     void cutSelected();
