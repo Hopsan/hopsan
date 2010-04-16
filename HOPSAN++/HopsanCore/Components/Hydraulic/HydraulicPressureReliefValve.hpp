@@ -36,13 +36,13 @@ public:
     }
 
     HydraulicPressureReliefValve(const string name,
-                                     const double pref       = 2000000,
-                                     const double tao        = 0.01,
-                                     const double kcs        = 0.00000001,
-                                     const double kcf        = 0.00000001,
-                                     const double qnom       = 0.001,
-                                     const double ph         = 500000,
-                                     const double timestep   = 0.001)
+                                 const double pref       = 2000000,
+                                 const double tao        = 0.01,
+                                 const double kcs        = 0.00000001,
+                                 const double kcf        = 0.00000001,
+                                 const double qnom       = 0.001,
+                                 const double ph         = 500000,
+                                 const double timestep   = 0.001)
         : ComponentQ(name, timestep)
     {
         mTypeName = "HydraulicPressureReliefValve";
@@ -97,14 +97,14 @@ public:
 
         //PRV Equations
 
-            //Help variable b1
+        //Help variable b1
         double b1 = mCs + (p1-p2)*mCf;
         if ( (p1-p2)*mCf < 0.0 )
         {
             b1 = mCs;
         }
 
-            //Help variable gamma
+        //Help variable gamma
         double gamma;
         if (p1>p2)
         {
@@ -129,7 +129,7 @@ public:
             }
         }
 
-            //Help variable b2
+        //Help variable b2
         double b2;
         if (p1 > p2)
         {
@@ -144,28 +144,28 @@ public:
             b2 = 0.0;
         }
 
-            // Calculation of spool position
+        // Calculation of spool position
         double xs = (gamma*(c1-c2) + b2*mX0/2.0 - mPref) / (b1+b2);
 
-            //Hysteresis
+        //Hysteresis
         double xh = mPh / (b1+b2);                                  //Hysteresis width [m]
         double xsh = mHyst.getValue(xs, xh, mDelayedX0.value());
 
-            //Filter
+        //Filter
         double wCutoff = (1.0 + b2/b1) * 1.0/mTao;                //Cutoff frequency
         double num [2] = {0.0, 1.0};
         double den [2] = {1.0/wCutoff, 1.0};
         mFilterLP.setNumDen(num,den);
         mX0 = mFilterLP.value(xsh);
 
-            //Turbulent flow equation
+        //Turbulent flow equation
         mTurb.setFlowCoefficient(mX0);
         q2 = mTurb.getFlow(c1,c2,Zc1,Zc2);
         q1 = -q2;
         p2 = c2+Zc2*q2;
         p1 = c1+Zc1*q1;
 
-            // Cavitation
+        // Cavitation
         bool cav = false;
         if (p1 < 0.0)
         {
