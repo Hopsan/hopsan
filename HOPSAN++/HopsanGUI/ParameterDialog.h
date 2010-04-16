@@ -29,15 +29,15 @@ class ParameterDialog : public QDialog
     Q_OBJECT
 
 public:
-    ParameterDialog(GUIComponent *guiComponent, QWidget *parent = 0);
+    ParameterDialog(GUIComponent *pGUIComponent, QWidget *parent = 0);
     ParameterDialog(GUISubsystem *pGUISubsystem, QWidget *parent = 0);
 
 protected slots:
     void setParameters();
 
 private:
-    GUIComponent *mpGuiComponent;
-    GUISubsystem *mpGUISubsystem;
+    GUIObject    *mpGUIObject;
+    bool isGUISubsystem;
     Component *mpCoreComponent;
     ComponentSystem *mpCoreComponentSystem;
 

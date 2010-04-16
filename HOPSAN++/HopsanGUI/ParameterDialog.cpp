@@ -26,12 +26,12 @@
 //! Constructor.
 //! @param coreComponent is a ponter to the core component.
 //! @param parent defines a parent to the new instanced object.
-ParameterDialog::ParameterDialog(GUIComponent *guiComponent, QWidget *parent)
+ParameterDialog::ParameterDialog(GUIComponent *pGUIComponent, QWidget *parent)
     : QDialog(parent)
 {
-    mpGuiComponent = guiComponent;
-    mpGUISubsystem = 0;
-    mpCoreComponent = mpGuiComponent->getHopsanCoreComponentPtr();
+    mpGUIObject = pGUIComponent;
+    isGUISubsystem = false;
+    mpCoreComponent = pGUIComponent->getHopsanCoreComponentPtr();
     mpCoreComponentSystem = 0;
 
     createEditStuff();
@@ -40,17 +40,17 @@ ParameterDialog::ParameterDialog(GUIComponent *guiComponent, QWidget *parent)
 
 ParameterDialog::ParameterDialog(GUISubsystem *pGUISubsystem, QWidget *parent)     : QDialog(parent)
 {
-    mpGuiComponent = 0;
-    mpGUISubsystem = pGUISubsystem;
+    mpGUIObject = pGUISubsystem;
+    isGUISubsystem = true;
     mpCoreComponentSystem = pGUISubsystem->getHopsanCoreSystemComponentPtr();
-    mpCoreComponent = mpGUISubsystem->getHopsanCoreComponentPtr();
+    mpCoreComponent = pGUISubsystem->getHopsanCoreComponentPtr();
 
     createEditStuff();
 }
 
 void ParameterDialog::createEditStuff()
 {
-    mpNameEdit = new QLineEdit(QString::fromStdString(mpCoreComponent->getName()));
+    mpNameEdit = new QLineEdit(mpGUIObject->getName());
 
     std::vector<CompParameter>::iterator it;
     vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
@@ -89,9 +89,9 @@ void ParameterDialog::createEditStuff()
     pNameLayout->addWidget(mpNameEdit);
 
     QHBoxLayout *pCQSLayout;
-    if (mpGUISubsystem != 0)
+    if (isGUISubsystem)
     {
-        mpCQSEdit = new QLineEdit(mpGUISubsystem->getTypeCQS());
+        mpCQSEdit = new QLineEdit(QString::fromStdString(mpCoreComponentSystem->getTypeCQSString(mpCoreComponentSystem->getTypeCQS())));
         pCQSLayout = new QHBoxLayout;
         QLabel *pCQSLabel = new QLabel("CQS: ");
         pCQSLayout->addWidget(pCQSLabel);
@@ -123,7 +123,7 @@ void ParameterDialog::createEditStuff()
     mainLayout->addLayout(pNameLayout, lr, 0);
     mainLayout->addWidget(buttonBox, lr, 1);
     ++lr;
-    if (mpGUISubsystem != 0)
+    if (isGUISubsystem)
     {
         mainLayout->addLayout(pCQSLayout, lr, 0);
         ++lr;
@@ -139,8 +139,8 @@ void ParameterDialog::createEditStuff()
 //! Sets the parameters in the core component. Read the values from the dialog and write them into the core component.
 void ParameterDialog::setParameters()
 {
-    mpGuiComponent->setName(mpNameEdit->text());
-    mpGuiComponent->refreshName();
+    mpGUIObject->setName(mpNameEdit->text());
+    mpGUIObject->refreshName();
 
     qDebug() << mpNameEdit->text();
 
