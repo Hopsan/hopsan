@@ -138,6 +138,15 @@ MainWindow::MainWindow(QWidget *parent)
     icon.addFile("../../HopsanGUI/subsystemtmp.svg");
     LibraryContentItem *pLibsubcomp = new LibraryContentItem(icon,"Subsystem");
     mpLibrary->addComponent("", "Subsystem", pLibsubcomp, appearanceData);
+
+    QStringList appearanceData2;
+    appearanceData2 << "SystemPort";
+    appearanceData2 << QString("../../HopsanGUI/systemporttmp.svg"); //Icon path
+    appearanceData2 << "";
+    QIcon icon2;
+    icon.addFile("../../HopsanGUI/systemporttmp.svg");
+    LibraryContentItem *pLibsystport = new LibraryContentItem(icon,"SystemPort");
+    mpLibrary->addComponent("", "Subsystem", pLibsystport, appearanceData2);
     //------------------------------------------------------------------------------------
 
     QMetaObject::connectSlotsByName(this);
