@@ -314,23 +314,18 @@ void GraphicsView::addGUIObject(QString componentType, QStringList appearanceDat
 //
 //}
 
-
-void GraphicsView::addSystemPort(QPoint position, QString name, bool startSelected)
-{
-    qDebug() <<"Adding a system port";
-
-}
-
 void GraphicsView::addSystemPort()
 {
-      QCursor cursor;
-      //position = this->mapFromScene(cursor.pos());
-      QPoint position = QPoint(2300,2400);
-      QStringList appearanceData;
-      appearanceData << "SystemPort";
-      appearanceData << QString("../../HopsanGUI/systemporttmp.svg");
-      appearanceData << "";
-      addGUIObject(QString("SystemPort"), appearanceData, position);
+    qDebug() <<"Adding a system port";
+    QCursor cursor;
+    QPointF position = this->mapToScene(this->mapFromGlobal(cursor.pos()));
+    this->setBackgroundBrush(mBackgroundColor);
+    //QPoint position = QPoint(2300,2400);
+    QStringList appearanceData;
+    appearanceData << "SystemPort";
+    appearanceData << QString("../../HopsanGUI/systemporttmp.svg");
+    appearanceData << "";
+    addGUIObject(QString("SystemPort"), appearanceData, position.toPoint());
 }
 
 //! Delete GUIObject with specified name
