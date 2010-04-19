@@ -78,6 +78,10 @@ MainWindow::MainWindow(QWidget *parent)
     //Create a SimulationSetupWidget
     mpSimulationSetupWidget = new SimulationSetupWidget(tr("Simulation setup"), this);
 
+    this->createActions();
+    this->createToolbars();
+    this->createMenus();
+
     //Create the main tab container, need at least one tab
     mpProjectTabs = new ProjectTabWidget(this);
     mpProjectTabs->setObjectName("projectTabs");
@@ -96,10 +100,6 @@ MainWindow::MainWindow(QWidget *parent)
     statusBar = new QStatusBar();
     statusBar->setObjectName("statusBar");
     this->setStatusBar(statusBar);
-
-    this->createActions();
-    this->createToolbars();
-    this->createMenus();
 
     mpProjectTabs->addNewProjectTab();
 
@@ -199,22 +199,21 @@ void MainWindow::createActions()
     newAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_39.png"), tr("&New"), this);
     newAction->setShortcut(tr("New"));
     newAction->setStatusTip(tr("Create New Project"));
-    connect(newAction, SIGNAL(triggered()), mpProjectTabs,SLOT(addNewProjectTab()));
+
 
     openAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_13.png"), tr("&Open"), this);
     openAction->setShortcut(QKeySequence("Ctrl+o"));
     openAction->setStatusTip(tr("Load Model File"));
-    connect(openAction, SIGNAL(triggered()), mpProjectTabs,SLOT(loadModel()));
+
 
     saveAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_11.png"), tr("&Save"), this);
     saveAction->setShortcut(QKeySequence("Ctrl+s"));
     saveAction->setStatusTip(tr("Save Model File"));
-    connect(saveAction, SIGNAL(triggered()), mpProjectTabs,SLOT(saveProjectTab()));
 
     saveAsAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_12.png"), tr("&Save As"), this);
     saveAction->setShortcut(QKeySequence("Ctrl+Alt+s"));
     saveAsAction->setStatusTip(tr("Save Model File As"));
-    connect(saveAsAction, SIGNAL(triggered()), mpProjectTabs,SLOT(saveProjectTabAs()));
+
 
     closeAction = new QAction(this);
     closeAction->setText("Close");
@@ -236,7 +235,6 @@ void MainWindow::createActions()
     simulateAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_27.png"), tr("&Simulate"), this);
     simulateAction->setShortcut(tr("Simulate"));
     simulateAction->setStatusTip(tr("Simulate Current Project"));
-    connect(simulateAction, SIGNAL(triggered()), mpProjectTabs,SLOT(simulateCurrent()));
 
     plotAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_20.png"), tr("&Plot"), this);
     plotAction->setShortcut(tr("Plot"));
@@ -258,6 +256,12 @@ void MainWindow::createActions()
 
     resetZoomAction = new QAction(QIcon("../../HopsanGUI/icons/zoom100.png"), tr("&Reset Zoom"), this);
     resetZoomAction->setText("Reset Zoom");
+
+    zoomInAction = new QAction(QIcon("../../HopsanGUI/icons/zoomIn.png"), tr("&Zoom In"), this);
+    zoomInAction->setText("Zoom In");
+
+    zoomOutAction = new QAction(QIcon("../../HopsanGUI/icons/zoomOut.png"), tr("&Zoom Out"), this);
+    zoomOutAction->setText("Zoom Out");
 
     hideNamesAction = new QAction(QIcon("../../HopsanGUI/icons/hidenames.png"), tr("&Reset Zoom"), this);
     hideNamesAction->setText("Hide All Component Names");
@@ -367,12 +371,17 @@ void MainWindow::createToolbars()
     simToolBar = addToolBar(tr("Simulation Toolbar"));
     simToolBar->setAllowedAreas(Qt::TopToolBarArea);
     //simToolBar->addWidget(viewScaleCombo);
-    simToolBar->addAction(resetZoomAction);
-    simToolBar->addAction(hideNamesAction);
-    simToolBar->addAction(showNamesAction);
     simToolBar->addAction(preferencesAction);
     simToolBar->addAction(simulateAction);
     simToolBar->addAction(plotAction);
+
+    viewToolBar = addToolBar(tr("View Toolbar"));
+    viewToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    viewToolBar->addAction(resetZoomAction);
+    viewToolBar->addAction(zoomInAction);
+    viewToolBar->addAction(zoomOutAction);
+    viewToolBar->addAction(hideNamesAction);
+    viewToolBar->addAction(showNamesAction);
 
     mpSimulationToolBar = addToolBar(tr("Simulation"));
     mpSimulationToolBar->setAllowedAreas(Qt::TopToolBarArea);

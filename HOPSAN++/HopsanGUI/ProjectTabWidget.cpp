@@ -77,16 +77,12 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     mHoverPenSignalUser = QPen(QColor("darkRed"),2, Qt::DashLine);
 
     MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
-//    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent()->parent())); //Ugly!!!
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
     connect(this->systemPortAction, SIGNAL(triggered()), SLOT(addSystemPort()));
-    //connect(pMainWindow->viewScaleCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(setScale(QString)));
-    connect(pMainWindow->resetZoomAction, SIGNAL(triggered()), this,SLOT(resetZoom()));
     connect(pMainWindow->cutAction, SIGNAL(triggered()), this,SLOT(cutSelected()));
     connect(pMainWindow->copyAction, SIGNAL(triggered()), this,SLOT(copySelected()));
     connect(pMainWindow->pasteAction, SIGNAL(triggered()), this,SLOT(paste()));
-    connect(pMainWindow->hideNamesAction,SIGNAL(triggered()),this, SLOT(hideNames()));
-    connect(pMainWindow->showNamesAction,SIGNAL(triggered()),this, SLOT(showNames()));
+
 
 }
 
@@ -758,6 +754,18 @@ void GraphicsView::resetZoom()
 }
 
 
+void GraphicsView::zoomIn()
+{
+    this->scale(1.15, 1.15);
+}
+
+
+void GraphicsView::zoomOut()
+{
+    this->scale(1/1.15, 1/1.15);
+}
+
+
 void GraphicsView::hideNames()
 {
     QMap<QString, GUIObject *>::iterator it;
@@ -936,24 +944,32 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
         :   QTabWidget(parent)
 {
     mpParentMainWindow = parent;
-
     mpHopsan = HopsanEssentials::getInstance();
 
     MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent)); //Ugly!!!
     pMainWindow->mpMessageWidget->setHopsanCorePtr(mpHopsan);
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
-
     setTabsClosable(true);
     mNumberOfUntitledTabs = 0;
 
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(closeProjectTab(int)));
 
+    connect(pMainWindow->newAction, SIGNAL(triggered()), this,SLOT(addNewProjectTab()));
+    connect(pMainWindow->openAction, SIGNAL(triggered()), this,SLOT(loadModel()));
+    connect(pMainWindow->saveAction, SIGNAL(triggered()), this,SLOT(saveProjectTab()));
+    connect(pMainWindow->saveAsAction, SIGNAL(triggered()), this,SLOT(saveProjectTabAs()));
+    connect(pMainWindow->simulateAction, SIGNAL(triggered()), this,SLOT(simulateCurrent()));
+    connect(pMainWindow->resetZoomAction, SIGNAL(triggered()),this,SLOT(resetZoom()));
+    connect(pMainWindow->zoomInAction, SIGNAL(triggered()),this,SLOT(zoomIn()));
+    connect(pMainWindow->zoomOutAction, SIGNAL(triggered()),this,SLOT(zoomOut()));
+    connect(pMainWindow->hideNamesAction,SIGNAL(triggered()),this, SLOT(hideNames()));
+    connect(pMainWindow->showNamesAction,SIGNAL(triggered()),this, SLOT(showNames()));
+
 }
 
 
-//! Access current tabwidget.
-//! @return the current tabwidget
+//! Returns a pointer to the currently active project tab
 ProjectTab *ProjectTabWidget::getCurrentTab()
 {
     return qobject_cast<ProjectTab *>(currentWidget());
@@ -1450,4 +1466,31 @@ void ProjectTabWidget::setIsoGraphics(bool value)
     {
         it2.value()->setIcon(value);
     }
+}
+
+
+
+void ProjectTabWidget::resetZoom()
+{
+    this->getCurrentTab()->mpGraphicsView->resetZoom();
+}
+
+void ProjectTabWidget::zoomIn()
+{
+    this->getCurrentTab()->mpGraphicsView->zoomIn();
+}
+
+void ProjectTabWidget::zoomOut()
+{
+    this->getCurrentTab()->mpGraphicsView->zoomOut();
+}
+
+void ProjectTabWidget::hideNames()
+{
+    this->getCurrentTab()->mpGraphicsView->hideNames();
+}
+
+void ProjectTabWidget::showNames()
+{
+    this->getCurrentTab()->mpGraphicsView->showNames();
 }

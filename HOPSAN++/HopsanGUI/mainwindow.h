@@ -71,6 +71,8 @@ public:
     QAction *preferencesAction;
     QAction *optionsAction;
     QAction *resetZoomAction;
+    QAction *zoomInAction;
+    QAction *zoomOutAction;
     QAction *hideNamesAction;
     QAction *showNamesAction;
 
@@ -78,6 +80,7 @@ public:
     QToolBar *clipboardToolBar;
     QToolBar *simToolBar;
     QToolBar *mpSimulationToolBar;
+    QToolBar *viewToolBar;
 
     //QComboBox *viewScaleCombo;
 

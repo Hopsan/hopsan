@@ -85,6 +85,8 @@ public slots:
     void selectAll();
     void setScale(const QString &scale);
     void resetZoom();
+    void zoomIn();
+    void zoomOut();
     void hideNames();
     void showNames();
 
@@ -178,6 +180,11 @@ public slots:
     void loadModel();
     void saveModel(bool saveAs);
     void setIsoGraphics(bool value);
+    void resetZoom();
+    void zoomIn();
+    void zoomOut();
+    void hideNames();
+    void showNames();
 
 signals:
     void checkMessages();
