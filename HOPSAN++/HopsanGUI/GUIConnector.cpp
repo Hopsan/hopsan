@@ -812,6 +812,7 @@ void GUIConnectorLine::setPen (const QPen &pen)
 }
 
 
+//! Set function for all three pen styles (primary, active and hover).
 void GUIConnectorLine::setPens(QPen primaryPen, QPen activePen, QPen hoverPen)
 {
     mPrimaryPen = primaryPen;

@@ -35,6 +35,8 @@
 #include "SimulationSetupWidget.h"
 #include "version.h"
 
+
+//! Constructor
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
@@ -154,6 +156,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mpSimulationSetupWidget->mpSimulateButton, SIGNAL(released()), mpProjectTabs, SLOT(simulateCurrent()));
 }
 
+
+//! Destructor
 MainWindow::~MainWindow()
 {
     delete mpProjectTabs;
@@ -162,6 +166,7 @@ MainWindow::~MainWindow()
 }
 
 
+//! Opens the plot widget.
 void MainWindow::plot()
 {
     QDockWidget *varPlotDock = new QDockWidget(tr("Plot Variables"), this);
@@ -389,11 +394,14 @@ void MainWindow::createToolbars()
 }
 
 
+//! Opens the model preference widget.
 void MainWindow::openPreferences()
 {
     this->mpPreferenceWidget->show();
 }
 
+
+//! Opens the options widget.
 void MainWindow::openOptions()
 {
     this->mpOptionsWidget->show();

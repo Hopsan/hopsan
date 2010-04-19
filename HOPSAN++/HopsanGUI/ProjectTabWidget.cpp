@@ -748,24 +748,35 @@ void GraphicsView::setScale(const QString &scale)
 }
 
 
+//! Resets zoom factor to 100%.
+//! @see zoomIn()
+//! @see zoomOut()
 void GraphicsView::resetZoom()
 {
     this->resetMatrix();
 }
 
 
+//! Increases zoom factor by 15%.
+//! @see resetZoom()
+//! @see zoomOut()
 void GraphicsView::zoomIn()
 {
     this->scale(1.15, 1.15);
 }
 
 
+//! Decreases zoom factor by 13.04% (1 - 1/1.15).
+//! @see resetZoom()
+//! @see zoomIn()
 void GraphicsView::zoomOut()
 {
     this->scale(1/1.15, 1/1.15);
 }
 
 
+//! Hides all component names.
+//! @see showNames()
 void GraphicsView::hideNames()
 {
     QMap<QString, GUIObject *>::iterator it;
@@ -776,6 +787,8 @@ void GraphicsView::hideNames()
 }
 
 
+//! Shows all component names.
+//! @see hideNames()
 void GraphicsView::showNames()
 {
     QMap<QString, GUIObject *>::iterator it;
@@ -1426,8 +1439,8 @@ void ProjectTabWidget::saveModel(bool saveAs)
 }
 
 
-
-
+//! Tells the current tab to change to or from ISO graphics.
+//! @param value is true if ISO should be activated and false if it should be deactivated.
 void ProjectTabWidget::setIsoGraphics(bool value)
 {
     this->getCurrentTab()->useIsoGraphics = !value;
@@ -1469,27 +1482,43 @@ void ProjectTabWidget::setIsoGraphics(bool value)
 }
 
 
-
+//! Tells the current tab to reset zoom to 100%.
+//! @see zoomIn()
+//! @see zoomOut()
 void ProjectTabWidget::resetZoom()
 {
     this->getCurrentTab()->mpGraphicsView->resetZoom();
 }
 
+
+//! Tells the current tab to increase its zoom factor.
+//! @see resetZoom()
+//! @see zoomOut()
 void ProjectTabWidget::zoomIn()
 {
     this->getCurrentTab()->mpGraphicsView->zoomIn();
 }
 
+
+//! Tells the current tab to decrease its zoom factor.
+//! @see resetZoom()
+//! @see zoomIn()
 void ProjectTabWidget::zoomOut()
 {
     this->getCurrentTab()->mpGraphicsView->zoomOut();
 }
 
+
+//! Tells the current tab to hide all component names.
+//! @see showNames()
 void ProjectTabWidget::hideNames()
 {
     this->getCurrentTab()->mpGraphicsView->hideNames();
 }
 
+
+//! Tells the current tab to show all component names.
+//! @see hideNames()
 void ProjectTabWidget::showNames()
 {
     this->getCurrentTab()->mpGraphicsView->showNames();

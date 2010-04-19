@@ -35,6 +35,8 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr);
 #include "Hydraulic/HydraulicCylinderQ.hpp"
 #include "Hydraulic/HydraulicPressureReliefValve.hpp"
 #include "Hydraulic/HydraulicSubSysExample.hpp"
+#include "Hydraulic/HydraulicTankC.hpp"
+
 
 /* Signal Components */
 #include "Signal/SignalSource.hpp"

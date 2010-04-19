@@ -111,4 +111,5 @@ HEADERS += win32dll.h \
     ComponentUtilities/FirstOrderFilter.h \
     ComponentUtilities/Delay.h \
     CoreUtilities/HopsanCoreMessageHandler.h \
-    version.h
+    version.h \
+    Components/Hydraulic/HydraulicTankC.hpp

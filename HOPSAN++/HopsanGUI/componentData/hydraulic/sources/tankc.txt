@@ -1,0 +1,6 @@
+NAME HydraulicTankC
+ISOICON tank_iso.svg
+USERICON tank_user.svg
+ICONROTATION ON
+PORTS 1
+0.5000 0.000 90
