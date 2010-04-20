@@ -112,4 +112,5 @@ HEADERS += win32dll.h \
     ComponentUtilities/Delay.h \
     CoreUtilities/HopsanCoreMessageHandler.h \
     version.h \
-    Components/Hydraulic/HydraulicTankC.hpp
+    Components/Hydraulic/HydraulicTankC.hpp \
+    Components/Hydraulic/HydraulicAlternativePRV.hpp

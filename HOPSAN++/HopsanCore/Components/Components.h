@@ -36,6 +36,8 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr);
 #include "Hydraulic/HydraulicPressureReliefValve.hpp"
 #include "Hydraulic/HydraulicSubSysExample.hpp"
 #include "Hydraulic/HydraulicTankC.hpp"
+#include "Hydraulic/HydraulicAlternativePRV.hpp"
+
 
 
 /* Signal Components */
