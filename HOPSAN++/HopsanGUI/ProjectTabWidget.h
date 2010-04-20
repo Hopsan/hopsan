@@ -72,7 +72,7 @@ signals:
     void systemPortSignal(QPoint position);
 
 public slots:
-    void addGUIObject(QString componentType, QStringList appearanceData, QPoint position, QString name=QString(), bool startSelected=false);
+    void addGUIObject(QString componentType, QStringList appearanceData, QPoint position, qreal rotation = 0, QString name=QString(), bool startSelected=false);
     void deleteGUIObject(QString componentName);
     bool haveGUIObject(QString name);
     void renameGUIObject(QString oldName, QString newName);
@@ -105,6 +105,7 @@ protected:
 private:
     GUIConnector *mpTempConnector;
     QStringList mCopyData;
+    QList<int> mCopyDataRot;
     QList<QPointF> mCopyDataPos;
     //! @todo QMap no good means problem if we rename need to loop around the rename like in coore
     void createActions();

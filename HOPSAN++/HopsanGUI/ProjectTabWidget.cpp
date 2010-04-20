@@ -193,7 +193,7 @@ GUIConnector *GraphicsView::getTempConnector()
 //! @param componentType is a string defining the type of component.
 //! @param position is the position where the component will be created.
 //! @param name will be the name of the component.
-void GraphicsView::addGUIObject(QString componentType, QStringList appearanceData, QPoint position, QString name, bool startSelected)
+void GraphicsView::addGUIObject(QString componentType, QStringList appearanceData, QPoint position, qreal rotation, QString name, bool startSelected)
 {
     qDebug() << "Request to add gui object at (" << position.x() << " " << position.y() << ")";
 
@@ -254,6 +254,10 @@ void GraphicsView::addGUIObject(QString componentType, QStringList appearanceDat
 
     pGuiObject->setIcon(!this->mpParentProjectTab->useIsoGraphics);
 
+    while (pGuiObject->rotation() != rotation)
+    {
+        pGuiObject->rotate();
+    }
 
     //guiComponent->setPos(this->mapToScene(position));
     //qDebug() << "GraphicsView: " << pGuiObject->parent();
@@ -631,26 +635,25 @@ ComponentSystem *GraphicsView::getModelPointer()
 }
 
 
+//! Copies the selected components, and then deletes them.
+//! @see copySelected()
+//! @see paste()
 void GraphicsView::cutSelected()
 {
     this->copySelected();
-
-    emit keyPressDelete();
-//    QMap<QString, GUIComponent *>::iterator it;
-//    for(it = this->mComponentMap.begin(); it!=this->mComponentMap.end(); ++it)
-//    {
-//        if(it.value()->isSelected())
-//            this->deleteComponent(it.value()->getName());
-//        if(mComponentMap.empty())
-//            break;
-//    }
+    emit keyPressDelete();      //Ugly...
     this->setBackgroundBrush(mBackgroundColor);
 }
 
 
+//! Puts the selected components in the copy stack, and their positions in the copy position stack.
+//! @see cutSelected()
+//! @see paste()
 void GraphicsView::copySelected()
 {
-    this->mCopyData.clear();
+    mCopyData.clear();
+    mCopyDataRot.clear();
+    mCopyDataPos.clear();
 
     QMap<QString, GUIObject *>::iterator it;
     for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
@@ -660,7 +663,8 @@ void GraphicsView::copySelected()
             mCopyData << "COMPONENT";
             mCopyData << it.value()->getTypeName();
             mCopyData << it.value()->getName();
-            mCopyDataPos << it.value()->pos();
+            mCopyDataRot << it.value()->rotation();
+            mCopyDataPos << it.value()->mapToScene(it.value()->boundingRect().center());
         }
     }
 
@@ -700,6 +704,10 @@ void GraphicsView::copySelected()
     }
 }
 
+
+//! Creates each item in the copy stack, and places it on its respective position in the position copy stack.
+//! @see cutSelected()
+//! @see copySelected()
 void GraphicsView::paste()
 {
     QMap<QString, GUIObject*>::iterator it;
@@ -730,8 +738,9 @@ void GraphicsView::paste()
             componentType = mCopyData[i];
             ++i;
             componentName = mCopyData[i];
+            QPoint tempPos = QPoint(mCopyDataPos[j].toPoint().x()-25, mCopyDataPos[j].toPoint().y()-25);
             QStringList appearanceData = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
-            this->addGUIObject(componentType, appearanceData, mCopyDataPos[j].toPoint(), componentName, true);
+            this->addGUIObject(componentType, appearanceData, tempPos, mCopyDataRot[j], componentName, true);
             ++j;
         }
     }
@@ -1290,7 +1299,7 @@ void ProjectTabWidget::loadModel()
 
                 //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
                 QStringList appearanceData = mpParentMainWindow->mpLibrary->getAppearanceData(QString(componentType.c_str()));
-                pCurrentTab->mpGraphicsView->addGUIObject(QString(componentType.c_str()), appearanceData, QPoint(posX, posY), QString(componentName.c_str()));
+                pCurrentTab->mpGraphicsView->addGUIObject(QString(componentType.c_str()), appearanceData, QPoint(posX, posY), 0, QString(componentName.c_str()));
                 pCurrentTab->mpGraphicsView->getGUIObject(QString(componentName.c_str()))->setNameTextPos(nameTextPos);
                 while(pCurrentTab->mpGraphicsView->getGUIObject(QString(componentName.c_str()))->rotation() != rotation)
                 {
