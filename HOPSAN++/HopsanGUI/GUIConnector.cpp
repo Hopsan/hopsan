@@ -683,6 +683,7 @@ void GUIConnectorLine::setHovered()
 void GUIConnectorLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     emit lineClicked();
+    QGraphicsLineItem::mousePressEvent(event);
 }
 
 
