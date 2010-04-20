@@ -506,22 +506,29 @@ void GUIConnector::makeDiagonal(bool enable)
 //! @see setPassive()
 void GUIConnector::doSelect(bool lineSelected, int lineNumber)
 {
-   if(this->mEndPortConnected)     //Non-finished lines shall not be selectable
-   {
-       if(lineSelected)
-       {
-           this->setActive();
-           for (std::size_t i=0; i != mpLines.size(); ++i)
-           {
+    if(this->mEndPortConnected)     //Non-finished lines shall not be selectable
+    {
+        if(lineSelected)
+        {
+            this->setActive();
+            for (std::size_t i=0; i != mpLines.size(); ++i)
+            {
                if(i != (std::size_t)lineNumber)
                    mpLines[i]->setSelected(false);
-           }
+            }
+        }
+        else
+        {
+        bool noneSelected = true;
+            for (std::size_t i=0; i != mpLines.size(); ++i)
+            {
+               if(mpLines[i]->isSelected())
+                   noneSelected = false;
+            }
+            if(noneSelected)
+                this->setPassive();
        }
-       else
-       {
-           this->setPassive();
-       }
-   }
+    }
 }
 
 
@@ -672,6 +679,7 @@ void GUIConnectorLine::setHovered()
 
 
 //! Defines what shall happen if the line is clicked.
+//! @todo Check if this is really needed. It is not used anywhere.
 void GUIConnectorLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     emit lineClicked();
@@ -720,7 +728,7 @@ QVariant GUIConnectorLine::itemChange(GraphicsItemChange change, const QVariant 
     {
          emit lineSelected(this->isSelected(), this->mLineNumber);
     }
-    else if (change == QGraphicsItem::ItemPositionHasChanged)
+    if (change == QGraphicsItem::ItemPositionHasChanged)
     {
         emit lineMoved(this->mLineNumber);
     }
