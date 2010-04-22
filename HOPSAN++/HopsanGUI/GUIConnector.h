@@ -42,6 +42,7 @@ public:
     GUIConnectorLine *getThirdLastLine();
     bool isConnected();
     bool isMakingDiagonal();
+    bool isActive();
 
 
 public slots:

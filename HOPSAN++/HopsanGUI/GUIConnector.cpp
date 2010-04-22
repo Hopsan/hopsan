@@ -337,6 +337,13 @@ bool GUIConnector::isMakingDiagonal()
 }
 
 
+//! Returns true if the connector is active ("selected").
+bool GUIConnector::isActive()
+{
+    return mIsActive;
+}
+
+
 //! Draws lines between the points in the mPoints vector, and stores them in the mpLines vector.
 void GUIConnector::drawConnector()
 {

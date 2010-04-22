@@ -30,7 +30,6 @@
 #include <cstdlib>
 #include <cassert>
 
-
 //! @class GraphicsView
 //! @brief The GraphicsView class is a class which display the content of a scene of components.
 //!
@@ -199,77 +198,77 @@ void GraphicsView::addGUIObject(QString componentType, QStringList appearanceDat
 
     //MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
 
-    GUIObject *pGuiObject;
+
     if (componentType == "Subsystem")
     {
         qDebug() << "Creating GUISubsystem";
-        pGuiObject = new GUISubsystem(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+        mpTempGUIObject = new GUISubsystem(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
     }
     else if (componentType == "SystemPort")
     {
         qDebug() << "Creating GUISystemPort";
-        pGuiObject = new GUISystemPort(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+        mpTempGUIObject = new GUISystemPort(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
     }
     else //Assume some component type
     {
         qDebug() << "Creating GUIComponent";
-        pGuiObject = new GUIComponent(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+        mpTempGUIObject = new GUIComponent(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
     }
 
-    qDebug() << "=====================Get initial name: " << pGuiObject->getName() << "requested: " << name;
+    qDebug() << "=====================Get initial name: " << mpTempGUIObject->getName() << "requested: " << name;
     if (!name.isEmpty())
     {
         qDebug() << "name not empty, setting to: " << name;
         //Set name, do NOT try to do smart rename. (If component already exist with new component default name that other component would be renamed)
-        pGuiObject->setName(name, true);
+        mpTempGUIObject->setName(name, true);
     }
 
     //Core interaction
-    qDebug() << "=====================Get name before add: " << pGuiObject->getName();
+    qDebug() << "=====================Get name before add: " << mpTempGUIObject->getName();
     if (componentType == "SystemPort")
     {
-        mpParentProjectTab->mpComponentSystem->addSystemPort(pGuiObject->getName().toStdString());
+        mpParentProjectTab->mpComponentSystem->addSystemPort(mpTempGUIObject->getName().toStdString());
     }
     else
     {
 
         if (componentType == "Subsystem")
         {
-            GUISubsystem *pSys = qobject_cast<GUISubsystem *>(pGuiObject);
+            GUISubsystem *pSys = qobject_cast<GUISubsystem *>(mpTempGUIObject);
             this->mpParentProjectTab->mpComponentSystem->addComponent(pSys->getHopsanCoreSystemComponentPtr());
         }
         else
         {
-            GUIComponent *pComp = qobject_cast<GUIComponent *>(pGuiObject);
+            GUIComponent *pComp = qobject_cast<GUIComponent *>(mpTempGUIObject);
             this->mpParentProjectTab->mpComponentSystem->addComponent(pComp->getHopsanCoreComponentPtr());
         }
 
-        pGuiObject->refreshName();
+        mpTempGUIObject->refreshName();
     }
     emit checkMessages();
-    qDebug() << "=====================Get name after add: " << pGuiObject->getName();
+    qDebug() << "=====================Get name after add: " << mpTempGUIObject->getName();
     //
 
-    pGuiObject->setSelected(startSelected);
+    mpTempGUIObject->setSelected(startSelected);
 
-    pGuiObject->setIcon(!this->mpParentProjectTab->useIsoGraphics);
+    mpTempGUIObject->setIcon(!this->mpParentProjectTab->useIsoGraphics);
 
-    while (pGuiObject->rotation() != rotation)
+    while (mpTempGUIObject->rotation() != rotation)
     {
-        pGuiObject->rotate();
+        mpTempGUIObject->rotate();
     }
 
     //guiComponent->setPos(this->mapToScene(position));
-    //qDebug() << "GraphicsView: " << pGuiObject->parent();
+    //qDebug() << "GraphicsView: " << mpTempGUIObject->parent();
 
-    if ( mGUIObjectMap.contains(pGuiObject->getName()) )
+    if ( mGUIObjectMap.contains(mpTempGUIObject->getName()) )
     {
-        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Trying to add component with name: " + pGuiObject->getName() + " that already exist in GUIObjectMap, (Not adding)");
+        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Trying to add component with name: " + mpTempGUIObject->getName() + " that already exist in GUIObjectMap, (Not adding)");
     }
     else
     {
-        mGUIObjectMap.insert(pGuiObject->getName(), pGuiObject);
-        qDebug() << "GUI Object created at (" << pGuiObject->x() << " " << pGuiObject->y() << ")";
+        mGUIObjectMap.insert(mpTempGUIObject->getName(), mpTempGUIObject);
+        qDebug() << "GUI Object created at (" << mpTempGUIObject->x() << " " << mpTempGUIObject->y() << ")";
     }
 }
 
@@ -671,35 +670,19 @@ void GraphicsView::copySelected()
     QMap<QString, GUIConnector *>::iterator it2;
     for(it2 = this->mConnectionMap.begin(); it2!=this->mConnectionMap.end(); ++it2)
     {
-        stringstream connectionStream(it2.key().toStdString());
-        std::string name1, port1, name2, port2;
-        connectionStream >> name1;
-        connectionStream >> port1;
-        connectionStream >> name2;
-        connectionStream >> port2;
-        if(mGUIObjectMap.find(QString(name1.c_str())).value()->isSelected() and mGUIObjectMap.find(QString(name2.c_str())).value()->isSelected())
+        if(it2.value()->getStartPort()->getComponent()->isSelected() and it2.value()->getEndPort()->getComponent()->isSelected() and it2.value()->isActive())
         {
-            qDebug() << "Copying connection between" << QString(name1.c_str()) << " and " <<QString(name2.c_str()) << ".";
+            qDebug() << "Copying connection between" << it2.value()->getStartPort()->getComponent()->getName() << " and " << it2.value()->getStartPort()->getComponent()->getName() << ".";
 
-//            mCopyData << "CONNECT " << it2.key().toStdString().c_str();
-//            for(int i = 0; i!=it2.value()->mpLines.size(); ++i)
-//            {
-//                int geometry = it2.value()->mpLines[i]->getGeometry();
-//                switch (geometry)
-//                {
-//                    case 0:
-//                        mCopyData << " VERTICAL " << (it2.value()->mpLines[i]->endPos.y()-it2.value()->mpLines[i]->startPos.y());
-//                        break;
-//                    case 1:
-//                        mCopyData << " HORIZONTAL " << (it2.value()->mpLines[i]->endPos.x()-it2.value()->mpLines[i]->startPos.x());
-//                        break;
-//                    case 2:
-//                        mCopyData << " DIAGONAL" << (it2.value()->mpLines[i]->endPos.x()-it2.value()->mpLines[i]->startPos.x()) << (it2.value()->mpLines[i]->endPos.y()-it2.value()->mpLines[i]->startPos.y());
-//                        break;
-//                }
-//            }
-//            mCopyData << "\n";
+            mCopyData << "CONNECT" << it2.key().toStdString().c_str();
 
+            for(size_t i = 0; i!=it2.value()->getPointsVector().size(); ++i)
+            {
+                mCopyDataPos << it2.value()->getPointsVector()[i];
+                mCopyData << "POINT";
+            }
+
+            mCopyData << "ENDCONNECT";
         }
     }
 }
@@ -725,10 +708,13 @@ void GraphicsView::paste()
         it2.value()->doSelect(false, -1);
     }
 
+    QMap<QString, QString> renameMap;       //Used to track name changes, so that connectors will know what components are called
     QString tempString;
     QString componentName;
     QString componentType;
-    int j = 0;
+    string startComponentName, endComponentName;
+    int startPortNumber, endPortNumber;
+    int j = 0;      //Used for calculating which rotation and position to use
     for(int i = 0; i!=mCopyData.size(); ++i)
     {
         tempString = mCopyData[i];
@@ -742,6 +728,70 @@ void GraphicsView::paste()
             QStringList appearanceData = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
             this->addGUIObject(componentType, appearanceData, tempPos, mCopyDataRot[j], componentName, true);
             ++j;
+            renameMap.insert(componentName, mpTempGUIObject->getName());
+        }
+        else if(tempString == "CONNECT")
+        {
+            qDebug() << "CONNECT";
+            ++i;
+            std::stringstream tempStream(mCopyData[i].toStdString().c_str());
+            tempStream >> startComponentName;
+            tempStream >> startPortNumber;
+            tempStream >> endComponentName;
+            tempStream >> endPortNumber;
+
+            startComponentName = renameMap.find(QString(startComponentName.c_str())).value().toStdString();
+            endComponentName = renameMap.find(QString(endComponentName.c_str())).value().toStdString();
+
+            //qDebug() << QString(startComponentName.c_str()) << QString(startPortNumber.c_str()) << QString(endComponentName.c_str()) << QString(endPortNumber.c_str());
+
+            ++i;
+
+            GUIPort *startPort = this->getGUIObject(QString(startComponentName.c_str()))->getPort(startPortNumber);
+            GUIPort *endPort = this->getGUIObject(QString(endComponentName.c_str()))->getPort(endPortNumber);
+
+            std::vector<QPointF> tempPointVector;
+            qreal tempX, tempY;
+            while(mCopyData[i] != "ENDCONNECT")
+            {
+                tempPointVector.push_back(QPointF(mCopyDataPos[j].x()-25, mCopyDataPos[j].y()-25));
+                ++i;
+                ++j;
+            }
+
+            GUIConnector *pTempConnector;
+
+            QString type, style;
+            if((startPort->mpCorePort->getNodeType() == "NodeHydraulic") | (startPort->mpCorePort->getNodeType() == "NodeMechanic"))
+                type = "Power";
+            else if(startPort->mpCorePort->getNodeType() == "NodeSignal")
+                type = "Signal";
+            if(mpParentProjectTab->useIsoGraphics)
+                style = "Iso";
+            else
+                style = "User";
+            pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, this->getPen("Primary", type, style),
+                                              this->getPen("Active", type, style), this->getPen("Hover", type, style), this);
+
+            this->scene()->addItem(pTempConnector);
+
+                //Hide connected ports
+            startPort->hide();
+            endPort->hide();
+
+            connect(startPort->getComponent(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+            connect(endPort->getComponent(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+
+            std::stringstream tempStream2;
+            tempStream2 << startPort->getComponent()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
+                          endPort->getComponent()->getName().toStdString() << " " << endPort->getPortNumber();
+            this->mConnectionMap.insert(QString(tempStream2.str().c_str()), pTempConnector);
+            bool success = this->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
+            if (!success)
+            {
+                qDebug() << "Unsuccessful connection try" << endl;
+                assert(false);
+            }
         }
     }
     this->setBackgroundBrush(mBackgroundColor);

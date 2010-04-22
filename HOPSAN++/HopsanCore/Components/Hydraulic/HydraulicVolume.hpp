@@ -48,7 +48,6 @@ public:
         mStartFlow     = 0.0;
         mBulkmodulus   = bulkmudulus;
         mVolume        = volume;
-        mZc            = mBulkmodulus/mVolume*mTimestep;
         mAlpha         = alpha;
 
         //Add ports to the component
@@ -59,7 +58,6 @@ public:
         registerParameter("V", "Volume", "[m^3]",            mVolume);
         registerParameter("Be", "Bulkmodulus", "[Pa]", mBulkmodulus);
         registerParameter("a", "Low pass coeficient to dampen standing delayline waves", "[-]",  mAlpha);
-        registerParameter("Zc", "Impedance", "[Ns/m^5]",   mZc);
     }
 
 
@@ -87,7 +85,7 @@ public:
         double q2  = mpP2->readNode(NodeHydraulic::MASSFLOW);
         double c2  = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
 
-        //Orifice equations
+        //Volume equations
         double c10 = c2 + 2.0*mZc * q2;
         double c20 = c1 + 2.0*mZc * q1;
         c1 = mAlpha*c1 + (1.0-mAlpha)*c10;

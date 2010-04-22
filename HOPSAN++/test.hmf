@@ -57,12 +57,10 @@ COMPONENT HydraulicVolume Volume 2515 2640 0 0
 PARAMETER Volume V 0.001
 PARAMETER Volume Be 1e+009
 PARAMETER Volume a 0
-PARAMETER Volume Zc 1e+009
 COMPONENT HydraulicVolume Volume_1 2516 2718 0 0
 PARAMETER Volume_1 V 0.001
 PARAMETER Volume_1 Be 1e+009
 PARAMETER Volume_1 a 0
-PARAMETER Volume_1 Zc 1e+009
 --------------------------------------------------------------
 CONNECT 43Valve 2 CylinderC 0 2610.08 2530 2610.08 2465 2582.47 2465 2582.47 2432
 CONNECT 43Valve 3 CylinderC 1 2629.97 2530 2629.97 2465 2662.06 2465 2662.06 2432

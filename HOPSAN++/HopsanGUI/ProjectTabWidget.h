@@ -103,6 +103,7 @@ protected:
     void contextMenuEvent ( QContextMenuEvent * event );
 
 private:
+    GUIObject *mpTempGUIObject;
     GUIConnector *mpTempConnector;
     QStringList mCopyData;
     QList<int> mCopyDataRot;

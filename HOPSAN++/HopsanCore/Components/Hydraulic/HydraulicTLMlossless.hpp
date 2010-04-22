@@ -82,7 +82,7 @@ public:
         mDelayedC2.initialize(mTime, mStartPressure+mZc*mStartFlow);
 
         //Set external parameters
-        mDelayedC1.setTimeDelay(mTimeDelay-mTimestep, mTimestep); //-mTimestep sue to calc time
+        mDelayedC1.setTimeDelay(mTimeDelay-mTimestep, mTimestep); //-mTimestep due to calc time
         mDelayedC2.setTimeDelay(mTimeDelay-mTimestep, mTimestep);
 }
 
@@ -106,7 +106,7 @@ public:
         //Write new values to nodes
         mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, mDelayedC1.value(c1));
         mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc);
-        mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, mDelayedC2.value(c1));
+        mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, mDelayedC2.value(c1)); //! @todo Kolla upp om det ska vara c1 här
         mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc);
 
         //Update the delayed variabels

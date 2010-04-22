@@ -107,7 +107,7 @@ public:
         //Write new values to nodes
         mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, mDelayedC1.value(c1));
         mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc+mR1);
-        mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, mDelayedC2.value(c1));
+        mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, mDelayedC2.value(c1));  //! @todo Kolla upp om det ska vara c1 här
         mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc+mR2);
 
         //Update the delayed variabels
