@@ -315,6 +315,8 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
             connect(this->mpParentGraphicsView, SIGNAL(keyPressDown()), this, SLOT(moveDown()));
             connect(this->mpParentGraphicsView, SIGNAL(keyPressLeft()), this, SLOT(moveLeft()));
             connect(this->mpParentGraphicsView, SIGNAL(keyPressRight()), this, SLOT(moveRight()));
+            emit componentSelected();
+            qDebug() << "emit comonentSelected()";
         }
         else
         {

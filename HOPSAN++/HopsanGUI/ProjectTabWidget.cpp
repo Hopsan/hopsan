@@ -774,6 +774,7 @@ void GraphicsView::paste()
                                               this->getPen("Active", type, style), this->getPen("Hover", type, style), this);
 
             this->scene()->addItem(pTempConnector);
+            pTempConnector->selectIfBothComponentsSelected();
 
                 //Hide connected ports
             startPort->hide();

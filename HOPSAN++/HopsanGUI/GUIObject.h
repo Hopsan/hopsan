@@ -60,6 +60,7 @@ protected:
 signals:
     void componentMoved();
     void componentDeleted();
+    void componentSelected();
 
 public slots:
      void deleteMe();

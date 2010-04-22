@@ -52,6 +52,8 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, std::vector<QPo
     setFlags(QGraphicsItem::ItemIsFocusable);
     mpStartPort = startPort;
     mpEndPort = endPort;
+    connect(this->mpStartPort->getComponent(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
+    connect(this->mpEndPort->getComponent(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
     QPointF startPos = getStartPort()->mapToScene(getStartPort()->boundingRect().center());
     this->setPos(startPos);
 
@@ -190,6 +192,7 @@ void GUIConnector::setStartPort(GUIPort *port)
 {
     this->mpStartPort = port;
     connect(this->mpStartPort->getComponent(),SIGNAL(componentDeleted()),this,SLOT(deleteMe()));
+    connect(this->mpStartPort->getComponent(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
 }
 
 
@@ -205,6 +208,7 @@ void GUIConnector::setEndPort(GUIPort *port)
     this->removePoint();        //Remove the extra point that is created by the mouse click event when clicking on the port
     this->updateEndPoint(port->mapToScene(port->boundingRect().center()));
     connect(this->mpEndPort->getComponent(),SIGNAL(componentDeleted()),this,SLOT(deleteMe()));
+    connect(this->mpEndPort->getComponent(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
 
         //Make all lines selectable and all lines except first and last movable
     if(mpLines.size() > 1)
@@ -520,13 +524,13 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
             this->setActive();
             for (std::size_t i=0; i != mpLines.size(); ++i)
             {
-               if(i != (std::size_t)lineNumber)
+               if(i != (std::size_t)lineNumber)     //I think this means that only one line in a connector can be selected at one time
                    mpLines[i]->setSelected(false);
             }
         }
         else
         {
-        bool noneSelected = true;
+            bool noneSelected = true;
             for (std::size_t i=0; i != mpLines.size(); ++i)
             {
                if(mpLines[i]->isSelected())
@@ -535,6 +539,18 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
             if(noneSelected)
                 this->setPassive();
        }
+    }
+}
+
+
+//! Slot that selects a connector if both its components are selected.
+//! @see doSelect(bool lineSelected, int lineNumber)
+void GUIConnector::selectIfBothComponentsSelected()
+{
+    if(mEndPortConnected and mpStartPort->getComponent()->isSelected() and mpEndPort->getComponent()->isSelected())
+    {
+        this->mpLines[0]->setSelected(true);
+        doSelect(true,0);
     }
 }
 

@@ -52,6 +52,7 @@ public slots:
     void updateLine(int);
     void makeDiagonal(bool diagonal);
     void doSelect(bool lineSelected, int lineNumber);
+    void selectIfBothComponentsSelected();
     void setActive();
     void setPassive();
     void setHovered();
