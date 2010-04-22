@@ -18,7 +18,8 @@ SOURCES += main.cpp \
     InitializationThread.cpp \
     PreferenceWidget.cpp \
     OptionsWidget.cpp \
-    GUIObject.cpp
+    GUIObject.cpp \
+    AppearanceData.cc
 HEADERS += mainwindow.h \
     ProjectTabWidget.h \
     LibraryWidget.h \
@@ -34,7 +35,8 @@ HEADERS += mainwindow.h \
     version.h \
     PreferenceWidget.h \
     OptionsWidget.h \
-    GUIObject.h
+    GUIObject.h \
+    AppearanceData.h
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE
