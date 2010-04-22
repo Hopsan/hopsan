@@ -15,7 +15,9 @@
 #include <fstream>
 #include <cassert>
 #include <iostream>
+#include <sstream>
 #include "Node.h"
+#include "CoreUtilities/HopsanCoreMessageHandler.h"
 
 //! Node base class constructor
 //! @param [in] datalength The length of the data vector
@@ -118,10 +120,23 @@ void Node::getDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits)
 
 //! This function will set the number of log data slots for preallocation and logDt based on the number of samples that should be loged
 //! @param [in] nSamples The desired number of log data samples
-void Node::setLogSettingsNSamples(size_t nSamples, double start, double stop)
+void Node::setLogSettingsNSamples(size_t nSamples, double start, double stop, double sampletime)
 {
-    mLogSlots = nSamples;
-    mLogTimeDt = (stop - start) / (double)nSamples;
+    //make sure we dont try to log more samples than we will simulate
+    //! @todo may need som rounding tricks here
+    if ( ((stop - start) / sampletime) < nSamples )
+    {
+        mLogSlots = ((stop - start) / sampletime);
+        std::stringstream ss;
+        ss << "You requested nSamples: " << nSamples << ". This is more than total simulation samples, limiting to: " << mLogSlots;
+        gCoreMessageHandler.addWarningMessage(ss.str());
+    }
+    else
+    {
+        mLogSlots = nSamples;
+    }
+
+    mLogTimeDt = (stop - start) / (double)mLogSlots;
     mLastLogTime = start-mLogTimeDt;
 }
 

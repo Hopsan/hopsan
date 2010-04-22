@@ -33,7 +33,7 @@ protected:
     Node(size_t datalength);
     NodeTypeT &getNodeType();
 
-    void setLogSettingsNSamples(size_t nSamples, double start, double stop);
+    void setLogSettingsNSamples(size_t nSamples, double start, double stop, double sampletime);
     void setLogSettingsSkipFactor(double factor, double start, double stop, double sampletime);
     void setLogSettingsSampleTime(double log_dt, double start, double stop, double sampletime);
     //void preAllocateLogSpace(const size_t nSlots);

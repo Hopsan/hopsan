@@ -899,18 +899,20 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
 {
     cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
 
-    //! @todo make sure this calculation is EXACTLY correct
-    double dslots = (stopT-startT)/mTimestep;
-    std::cout << "All dslots: " << dslots << std::endl;
-    //size_t needed_slots = (size_t)(dslots+0.5); //Round to nearest
-
     //First allocate memory for own subnodes
     vector<Node*>::iterator it;
     for (it=mSubNodePtrs.begin(); it!=mSubNodePtrs.end(); ++it)
     {
+        if (mStop)
+            break;
+
+        //! @todo this is an ugly quit hack test
+        (*it)->setLogSettingsNSamples(1024, startT, stopT, mTimestep);
         //(*it)->preAllocateLogSpace(needed_slots);
         (*it)->preAllocateLogSpace();
     }
+
+
 
     //! @todo Call allocate for subsubsystems
 
@@ -1527,14 +1529,6 @@ void ComponentSystem::initialize(const double startT, const double stopT)
     mStop = false; //This variable can not be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
 
     //preAllocate local logspace
-    //! @todo this is an ugly quit hack test
-    for (size_t i=0; i<mSubNodePtrs.size(); ++i)
-    {
-        if (mStop)
-            break;
-
-        mSubNodePtrs[i]->setLogSettingsNSamples(1024, startT, stopT);
-    }
     preAllocateLogSpace(startT, stopT);
 
     adjustTimestep(mTimestep, mSubComponentStorage.mComponentSignalptrs);

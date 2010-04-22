@@ -176,12 +176,22 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
 
     QVector<double> time = QVector<double>::fromStdVector(*(this->mpCorePort->getTimeVectorPtr())); //Inte lampligt att skyffla data pa detta viset
     QVector<double> y(dataLength);// = QVector<double>::fromStdVector((this->mpCorePort->getDataVectorPtr()->at(1)));
+
+    qDebug() << "Time size: " << time.size() << " last time: " << *time.end() << " datalength: " << dataLength << "y.size(): " << y.size();
+    qDebug() << "time[0]: " << time[0] << " time[last-1]: " << time[time.size()-2] << " time[last]: " << time[time.size()-1];
+
+    for (size_t i = 0; i<time.size(); ++i)
+    {
+        //qDebug() << time[i];
+    }
     
     for (size_t i = 0; i<dataLength; ++i) //Denna loop ar inte klok
     {
         //timeq[i] = this->mpCorePort->getTimeVectorPtr()->at(i);
         y[i] = (this->mpCorePort->getDataVectorPtr()->at(i)).at(nVar);
     }
+
+    qDebug() << "y[0]: " << y[0] << " y[last-1]: " << y[y.size()-2] << " y[last]: " << y[y.size()-1];
 
     QString title;
     QString xlabel;

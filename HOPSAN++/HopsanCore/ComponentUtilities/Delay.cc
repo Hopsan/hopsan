@@ -156,7 +156,7 @@ double Delay::value()
     }
     else if ((mFracStep < mStepDelay) && (mValues.size() >= 2))
     {
-        return ((1 - (mStepDelay - mFracStep)) * mValues[mValues.size()-2] + (mStepDelay - mFracStep) * mValues.back()); //interpolerar
+        return ((1.0 - (mStepDelay - mFracStep)) * mValues[mValues.size()-2] + (mStepDelay - mFracStep) * mValues.back()); //interpolerar
     }
     else
     {
@@ -181,7 +181,7 @@ double Delay::value(double value)
     }
     else if ((mFracStep < mStepDelay) && (mValues.size() >= 2))
     {
-        return ((1 - (mStepDelay - mFracStep)) * mValues[mValues.size()-2] + (mStepDelay - mFracStep) * mValues.back()); //interpolerar
+        return ((1.0 - (mStepDelay - mFracStep)) * mValues[mValues.size()-2] + (mStepDelay - mFracStep) * mValues.back()); //interpolerar
     }
     else
     {

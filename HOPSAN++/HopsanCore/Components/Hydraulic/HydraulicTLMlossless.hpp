@@ -34,7 +34,7 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running TLMlossless creator" << std::endl;
+        //std::cout << "running TLMlossless creator" << std::endl;
         return new HydraulicTLMlossless("TLMlossless");
     }
 
@@ -47,7 +47,7 @@ public:
     {
         //Set member attributes
         mTypeName = "HydraulicTLMlossless";
-        mStartPressure = 1.0;
+        mStartPressure = 100000.0;
         mStartFlow     = 0.0;
         mTimeDelay     = timeDelay;
         mZc            = zc;
@@ -61,6 +61,7 @@ public:
         registerParameter("TD", "Time delay", "s",   mTimeDelay);
         registerParameter("a", "Low pass coeficient", "-", mAlpha);
         registerParameter("Zc", "Impedance", "Ns/m^5",  mZc);
+        registerParameter("startP", "Initial pressure", "Pa", mStartPressure);
     }
 
 
