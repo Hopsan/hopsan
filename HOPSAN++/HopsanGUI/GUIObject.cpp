@@ -327,6 +327,8 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
         {
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressR()), this, SLOT(rotate()));
+            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlA()), this, SLOT(flipVertical()));
+            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlS()), this, SLOT(flipHorizontal()));
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressUp()), this, SLOT(moveUp()));
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressDown()), this, SLOT(moveDown()));
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressLeft()), this, SLOT(moveLeft()));

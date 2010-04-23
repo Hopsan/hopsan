@@ -524,9 +524,12 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 //! Returns a pointer to the component with specified name.
 GUIObject *GraphicsView::getGUIObject(QString name)
 {
-    //qDebug() << mComponentMap.size();
+    if(!mGUIObjectMap.contains(name))
+    {
+        qDebug() << "Request for pointer to non-existing component" << endl;
+        assert(false);
+    }
     return mGUIObjectMap.find(name).value();
-    //! @todo Cast exception or something if component is not found
 }
 
 
@@ -566,7 +569,6 @@ void GraphicsView::addConnector(GUIPort *pPort)
     }
     else
     {
-        //! @todo This will lead to crash if you click to fast to moany times on the same port
         //mpTempConnector->removePoint();
         //Core interaction
         qDebug() << "Closing connector";

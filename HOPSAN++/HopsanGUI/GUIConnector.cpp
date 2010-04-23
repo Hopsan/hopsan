@@ -203,6 +203,7 @@ void GUIConnector::setStartPort(GUIPort *port)
 //! @see getEndPort()
 void GUIConnector::setEndPort(GUIPort *port)
 {
+    //! @todo Make connectors add one extra line if end port has wrong direction, and move the line X points outwards from the component.
     this->mEndPortConnected = true;
     this->mpEndPort = port;
     this->removePoint();        //Remove the extra point that is created by the mouse click event when clicking on the port
