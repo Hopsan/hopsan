@@ -57,6 +57,8 @@ public:
     MessageWidget *mpMessageWidget;
     QStatusBar *statusBar;
 
+    QPushButton *mpBackButton;
+
     QAction *newAction;
     QAction *openAction;
     QAction *saveAction;

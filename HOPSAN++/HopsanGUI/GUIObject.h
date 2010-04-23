@@ -216,7 +216,13 @@ public:
     int type() const;
 
 protected:
+    GraphicsScene *mpParentScene;
     GraphicsScene *mpGroupScene;
+
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
+public slots:
+    void showParent();
 
 //    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 //    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);

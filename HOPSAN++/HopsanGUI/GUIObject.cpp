@@ -1251,6 +1251,8 @@ int GUIGroup::type() const
 GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GraphicsScene *scene, QGraphicsItem *parent)
     :   GUIObject(QPoint(0.0,0.0), QString("../../HopsanGUI/subsystemtmp.svg"), QString(""), scene, parent)
 {
+    mpParentScene = scene;
+
     QList<GUIComponent*> GUICompList;
     QList<GUIConnector*> GUIConnList;
 
@@ -1307,9 +1309,34 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GraphicsScene *scene, QGraphi
     //Fix the position for the group item
     this->setPos((xMax+xMin)/2.0-this->rect().width()/2.0,(yMax+yMin)/2.0-this->rect().height()/2.0);
 
-    //this->mpParentGraphicsView->setScene(mpGroupScene);
+    this->mpParentGraphicsView->setScene(mpGroupScene);
+
+    this->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton->show();
+
+    connect(this->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
+
 }
 
+void GUIGroup::showParent()
+{
+    this->mpParentGraphicsView->setScene(mpParentScene);
+
+    disconnect(this->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
+
+    this->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton->hide();
+
+}
+
+void GUIGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGraphicsItem::mouseDoubleClickEvent(event);
+    this->mpParentGraphicsView->setScene(mpGroupScene);
+
+    this->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton->show();
+
+    connect(this->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
+
+}
 
 //QGraphicsColorizeEffect *graphicsColor = new QGraphicsColorizeEffect;
 //graphicsColor ->setColor(Qt::red);

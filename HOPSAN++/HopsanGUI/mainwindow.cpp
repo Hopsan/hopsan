@@ -89,7 +89,10 @@ MainWindow::MainWindow(QWidget *parent)
     mpProjectTabs->setObjectName("projectTabs");
 
     //mpCentralgrid->addWidget(mpSimulationSetupWidget,0,0);
-    mpCentralgrid->addWidget(mpProjectTabs,0,0);
+    mpBackButton = new QPushButton("Back");
+    mpCentralgrid->addWidget(mpBackButton,0,0);
+    mpCentralgrid->addWidget(mpProjectTabs,1,0);
+    mpBackButton->hide();
 
     mpCentralwidget->setLayout(mpCentralgrid);
 
