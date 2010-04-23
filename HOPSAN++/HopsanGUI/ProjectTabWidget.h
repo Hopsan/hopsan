@@ -74,7 +74,7 @@ signals:
     void systemPortSignal(QPoint position);
 
 public slots:
-    void addGUIObject(QString componentType, QStringList appearanceData, QPoint position, qreal rotation = 0, QString name=QString(), bool startSelected=false);
+    void addGUIObject(QString componentType, QStringList appearanceData, QPoint position, qreal rotation = 0, QString name=QString(), bool startSelected=true);
     void deleteGUIObject(QString componentName);
     bool haveGUIObject(QString name);
     void renameGUIObject(QString oldName, QString newName);

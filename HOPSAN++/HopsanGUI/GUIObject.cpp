@@ -309,6 +309,7 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
 
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
+        qDebug() << "Selection has changed";
         if (this->isSelected())
         {
             this->mpSelectionBox->setActive();
@@ -375,6 +376,7 @@ int GUIObject::getPortNumber(GUIPort *port)
             return i;
         }
     }
+    qDebug() << "Request for port number of non-existing port.";
     assert(false);      /// @todo: Cast exception
 }
 

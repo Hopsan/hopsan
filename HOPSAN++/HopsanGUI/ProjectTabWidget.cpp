@@ -249,8 +249,6 @@ void GraphicsView::addGUIObject(QString componentType, QStringList appearanceDat
     qDebug() << "=====================Get name after add: " << mpTempGUIObject->getName();
     //
 
-    mpTempGUIObject->setSelected(startSelected);
-
     mpTempGUIObject->setIcon(!this->mpParentProjectTab->useIsoGraphics);
 
     while (mpTempGUIObject->rotation() != rotation)
@@ -270,6 +268,15 @@ void GraphicsView::addGUIObject(QString componentType, QStringList appearanceDat
         mGUIObjectMap.insert(mpTempGUIObject->getName(), mpTempGUIObject);
         qDebug() << "GUI Object created at (" << mpTempGUIObject->x() << " " << mpTempGUIObject->y() << ")";
     }
+
+        //Deselect all other comonents
+    QMap<QString, GUIObject *>::iterator it;
+    for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
+    {
+        it.value()->setSelected(false);
+    }
+    mpTempGUIObject->setSelected(startSelected);
+    this->grabKeyboard();
 }
 
 ////! Adds a new component to the GraphicsView.
