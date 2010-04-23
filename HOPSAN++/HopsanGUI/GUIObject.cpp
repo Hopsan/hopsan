@@ -67,6 +67,9 @@ GUIObject::GUIObject(QPoint position, QString iconPath, QString isoIconPath, Gra
 
     //setPos(position-QPoint(mpIcon->boundingRect().width()/2, mpIcon->boundingRect().height()/2));
     setPos(position.x()-mpIcon->boundingRect().width()/2,position.y()-mpIcon->boundingRect().height()/2);
+
+    mIsFlippedVertical = false;
+    mIsFlippedHorizontal = false;
 }
 
 
@@ -311,6 +314,8 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
             this->mpSelectionBox->setActive();
             connect(this->mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             connect(this->mpParentGraphicsView, SIGNAL(keyPressR()), this, SLOT(rotate()));
+            connect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlA()), this, SLOT(flipVertical()));
+            connect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlS()), this, SLOT(flipHorizontal()));
             connect(this->mpParentGraphicsView, SIGNAL(keyPressUp()), this, SLOT(moveUp()));
             connect(this->mpParentGraphicsView, SIGNAL(keyPressDown()), this, SLOT(moveDown()));
             connect(this->mpParentGraphicsView, SIGNAL(keyPressLeft()), this, SLOT(moveLeft()));
@@ -461,6 +466,78 @@ void GUIObject::moveRight()
 {
     this->setPos(this->mapFromScene(this->mapToScene(this->pos())).x()+1, this->pos().y());
     mpParentGraphicsView->setBackgroundBrush(mpParentGraphicsView->mBackgroundColor);
+}
+
+
+//! @todo Fix name text position when flipping components
+
+//! Slot that flips the object vertically.
+//! @see flipHorizontal()
+void GUIObject::flipVertical()
+{
+        //Flip the entire widget
+    this->scale(1, -1);
+    if(mIsFlippedVertical)
+    {
+        this->moveBy(0,-this->boundingRect().height());
+        mIsFlippedVertical = false;
+    }
+    else
+    {
+        this->moveBy(0,this->boundingRect().height());
+        mIsFlippedVertical = true;
+    }
+        //"Un-flip" the text field
+    this->mpNameText->scale(1, -1);
+    if(mIsFlippedVertical)
+        mpNameText->moveBy(0,mpNameText->boundingRect().height());
+    else
+        mpNameText->moveBy(0,-mpNameText->boundingRect().height());
+
+        //"Un-flip" the ports
+    for (int i = 0; i != mPortListPtrs.size(); ++i)
+    {
+        mPortListPtrs.value(i)->scale(1, -1);
+        if(mIsFlippedVertical)
+            mPortListPtrs.value(i)->moveBy(0,mPortListPtrs.value(i)->boundingRect().height());
+        else
+            mPortListPtrs.value(i)->moveBy(0,-mPortListPtrs.value(i)->boundingRect().height());
+    }
+}
+
+
+//! Slot that flips the object horizontally.
+//! @see flipVertical()
+void GUIObject::flipHorizontal()
+{
+        //Flip the entire widget
+    this->scale(-1, 1);
+    if(mIsFlippedHorizontal)
+    {
+        this->moveBy(-this->boundingRect().width(),0);
+        mIsFlippedHorizontal = false;
+    }
+    else
+    {
+        this->moveBy(this->boundingRect().width(),0);
+        mIsFlippedHorizontal = true;
+    }
+        //"Un-flip" the text field
+    this->mpNameText->scale(-1, 1);
+    if(mIsFlippedHorizontal)
+        mpNameText->moveBy(mpNameText->boundingRect().width(),0);
+    else
+        mpNameText->moveBy(-mpNameText->boundingRect().width(),0);
+
+        //"Un-flip" the ports
+    for (int i = 0; i != mPortListPtrs.size(); ++i)
+    {
+        mPortListPtrs.value(i)->scale(-1, 1);
+        if(mIsFlippedHorizontal)
+            mPortListPtrs.value(i)->moveBy(mPortListPtrs.value(i)->boundingRect().width(),0);
+        else
+            mPortListPtrs.value(i)->moveBy(-mPortListPtrs.value(i)->boundingRect().width(),0);
+    }
 }
 
 

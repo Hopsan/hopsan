@@ -69,6 +69,8 @@ public slots:
      void moveDown();
      void moveLeft();
      void moveRight();
+     void flipVertical();
+     void flipHorizontal();
      void hideName();
      void showName();
      void setIcon(bool useIso);
@@ -83,10 +85,11 @@ protected:
     QString mIconPath;
     QString mIsoIconPath;
     //std::vector<GUIConnector*> mConnectors;        //Inteded to store connectors for each component
-
     QList<GUIPort*> mPortListPtrs;
     int mNameTextPos;
     bool mIconRotation;
+    bool mIsFlippedVertical;
+    bool mIsFlippedHorizontal;
 
 protected slots:
     void fixTextPosition(QPointF pos);

@@ -63,6 +63,8 @@ public:
 signals:
     void keyPressDelete();
     void keyPressR();
+    void keyPressCtrlA();
+    void keyPressCtrlS();
     void keyPressUp();
     void keyPressDown();
     void keyPressLeft();

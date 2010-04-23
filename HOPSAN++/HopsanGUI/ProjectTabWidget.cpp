@@ -439,6 +439,10 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         this->copySelected();
     else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_V)
         this->paste();
+    else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_A)
+        emit keyPressCtrlA();
+    else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_S)
+        emit keyPressCtrlS();
     else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_A)
         this->selectAll();
     else if (event->modifiers() and Qt::ControlModifier)
