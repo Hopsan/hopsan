@@ -389,9 +389,18 @@ void GUIConnector::drawConnector()
     }
     else
     {
-            //Retrieve start and end points from ports in case components have moved
-        updateStartPoint(getStartPort()->mapToScene(getStartPort()->boundingRect().center()));
-        updateEndPoint(getEndPort()->mapToScene(getEndPort()->boundingRect().center()));
+        if(mpStartPort->getComponent()->isSelected() and mpEndPort->getComponent()->isSelected() and this->isActive())
+        {
+                //Both components and connector are selected, so move whole connector along with components
+            moveAllPoints(getStartPort()->mapToScene(getStartPort()->boundingRect().center()).x()-mPoints[0].x(),
+                          getStartPort()->mapToScene(getStartPort()->boundingRect().center()).y()-mPoints[0].y());
+        }
+        else
+        {
+                //Retrieve start and end points from ports in case components have moved
+            updateStartPoint(getStartPort()->mapToScene(getStartPort()->boundingRect().center()));
+            updateEndPoint(getEndPort()->mapToScene(getEndPort()->boundingRect().center()));
+        }
 
             //Redraw the lines based on the mPoints vector
         for(std::size_t i = 0; i != mPoints.size()-1; ++i)
@@ -469,6 +478,14 @@ void GUIConnector::updateLine(int lineNumber)
     drawConnector();
 }
 
+
+void GUIConnector::moveAllPoints(qreal offsetX, qreal offsetY)
+{
+    for(int i=0; i != mPoints.size(); ++i)
+    {
+        mPoints[i] = QPointF(mPoints[i].x()+offsetX, mPoints[i].y()+offsetY);
+    }
+}
 
 //! Tells the connector to create one diagonal lines instead of the last two horizontal/vertical, or to return to horizontal/diagonal mode.
 //! @param enable indicates whether diagonal mode shall be enabled or disabled.

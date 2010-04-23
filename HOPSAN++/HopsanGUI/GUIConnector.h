@@ -49,6 +49,7 @@ public slots:
     void drawConnector();
     void updateStartPoint(QPointF point);
     void updateEndPoint(QPointF point);
+    void moveAllPoints(qreal offsetX, qreal offsetY);
     void updateLine(int);
     void makeDiagonal(bool diagonal);
     void doSelect(bool lineSelected, int lineNumber);
