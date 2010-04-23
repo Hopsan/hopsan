@@ -40,6 +40,20 @@ LibraryContentItem::LibraryContentItem(const QIcon &icon, const QString &text, Q
     this->setFont(font);
 }
 
+LibraryContentItem::LibraryContentItem(AppearanceData *pAppearanceData, QListWidget *pParent)
+        : QListWidgetItem(pAppearanceData->getTypeName(), pParent)
+{
+    //Set font
+    QFont font;
+    font.setPixelSize(8);
+    this->setFont(font);
+
+    //Set Icon
+    QIcon icon;
+    icon.addFile(pAppearanceData->getBasePath() + pAppearanceData->getIconPath());
+    setIcon(icon);
+}
+
 //! @brief Copy Constructor
 LibraryContentItem::LibraryContentItem(const QListWidgetItem &other)
         : QListWidgetItem(other)
@@ -211,6 +225,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
 
         userIconPath = QString("");
         QTextStream inFile(&file);  //Create a QTextStream object to stream the content of each file
+
         while (!inFile.atEnd()) {
             QString line = inFile.readLine();   //line contains each row in the file
 
@@ -263,7 +278,12 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
         //Add data to the paremeterData list
   //      appearanceData << componentName << iconPath;
 
-        LibraryContentItem *libcomp= new LibraryContentItem(icon,componentName);
+//        pAppearanceData = new AppearanceData;
+//        *pAppearanceData << inFile;
+//        pAppearanceData->setBasePath(libDirObject.absolutePath() + "/");
+//        LibraryContentItem *libcomp= new LibraryContentItem(pAppearanceData);
+
+        LibraryContentItem *libcomp= new LibraryContentItem(icon, componentName);
       //  std::cout << appearanceData.size() << std::endl;
         //libcomp->setAppearanceData(appearanceData);
 

@@ -74,3 +74,38 @@ QTextStream& operator <<(QTextStream &os, const AppearanceData &rData)
 
     return os;
 }
+
+QString AppearanceData::getTypeName()
+{
+    return mTypeName;
+}
+
+QString AppearanceData::getIconPath()
+{
+    return mIconPath;
+}
+
+QString AppearanceData::getIconPathISO()
+{
+    return mIconPathISO;
+}
+
+QString AppearanceData::getIconRotationBehaviour()
+{
+    return mIconRotationBehaviour;
+}
+
+QPointF AppearanceData::getNameTextPos()
+{
+    return mNameTextPos;
+}
+
+QString AppearanceData::getBasePath()
+{
+    return mBasePath;
+}
+
+void AppearanceData::setBasePath(QString path)
+{
+    mBasePath = path;
+}

@@ -24,9 +24,12 @@ public:
     QString getTypeName();
     QString getIconPath();
     QString getIconPathISO();
-    qreal getRotation();
+    QString getIconRotationBehaviour();
     QPointF getNameTextPos();
     QVector<PortAppearance> &getPortAppearanceVector();
+
+    QString getBasePath();
+    void setBasePath(QString path);
 
     friend QTextStream& operator >>(QTextStream &is, AppearanceData &rData);
     friend QTextStream& operator <<(QTextStream &os, const AppearanceData &rData);
@@ -40,6 +43,9 @@ private:
     size_t mnPorts;
     QPointF mNameTextPos;
     QVector<PortAppearance> mPortAppearanceVector;
+
+    //BaseDir for path strings, mayb should not be stored in here
+    QString mBasePath;
 
 
 };

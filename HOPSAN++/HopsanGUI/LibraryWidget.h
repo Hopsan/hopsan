@@ -16,6 +16,7 @@
 #include <QStringList>
 #include <QTreeWidget>
 #include <QVBoxLayout>
+#include "AppearanceData.h"
 
 
 class LibraryContentItem;
@@ -29,9 +30,11 @@ class LibraryContentItem : public QListWidgetItem
 {
 public:
     LibraryContentItem(const QIcon &icon, const QString &text, QListWidget *parent = 0);
+    LibraryContentItem(AppearanceData *pAppearanceData, QListWidget *parent = 0);
     LibraryContentItem(const QListWidgetItem &other);
 
 private:
+    AppearanceData *mpAppearanceData;
 
 };
 
