@@ -276,7 +276,7 @@ void GraphicsView::addGUIObject(QString componentType, QStringList appearanceDat
         it.value()->setSelected(false);
     }
     mpTempGUIObject->setSelected(startSelected);
-    this->grabKeyboard();
+    this->setFocus(Qt::OtherFocusReason);
 }
 
 ////! Adds a new component to the GraphicsView.
