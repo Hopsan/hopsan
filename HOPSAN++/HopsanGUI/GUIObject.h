@@ -88,8 +88,7 @@ protected:
     QList<GUIPort*> mPortListPtrs;
     int mNameTextPos;
     bool mIconRotation;
-    bool mIsFlippedVertical;
-    bool mIsFlippedHorizontal;
+    bool mIsFlipped;
 
 protected slots:
     void fixTextPosition(QPointF pos);

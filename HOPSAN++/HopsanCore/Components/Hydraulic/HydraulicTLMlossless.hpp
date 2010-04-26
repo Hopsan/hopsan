@@ -62,6 +62,7 @@ public:
         registerParameter("a", "Low pass coeficient", "-", mAlpha);
         registerParameter("Zc", "Impedance", "Ns/m^5",  mZc);
         registerParameter("startP", "Initial pressure", "Pa", mStartPressure);
+        registerParameter("startQ", "Initial FLow", "m^3/s", mStartFlow);
     }
 
 

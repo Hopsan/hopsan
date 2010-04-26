@@ -68,8 +68,7 @@ GUIObject::GUIObject(QPoint position, QString iconPath, QString isoIconPath, Gra
     //setPos(position-QPoint(mpIcon->boundingRect().width()/2, mpIcon->boundingRect().height()/2));
     setPos(position.x()-mpIcon->boundingRect().width()/2,position.y()-mpIcon->boundingRect().height()/2);
 
-    mIsFlippedVertical = false;
-    mIsFlippedHorizontal = false;
+    mIsFlipped = false;
 }
 
 
@@ -384,6 +383,7 @@ int GUIObject::getPortNumber(GUIPort *port)
 //! Rotates a component 90 degrees clockwise, and tells the connectors that the component has moved.
 void GUIObject::rotate()
 {
+    //! @todo Figure out why ports move to the wrong position sometimes
     int temNameTextPos = mNameTextPos;
     this->setTransformOriginPoint(this->mpIcon->boundingRect().center());
     this->setRotation(this->rotation()+90);
@@ -401,7 +401,16 @@ void GUIObject::rotate()
         else
             mPortListPtrs.value(i)->setPortDirection(GUIPort::VERTICAL);
         if (mPortListPtrs.value(i)->getPortType() == Port::POWERPORT)
-            mPortListPtrs.value(i)->setRotation(-this->rotation());
+        {
+            if(mIsFlipped)
+            {
+                mPortListPtrs.value(i)->setRotation(this->rotation());
+            }
+            else
+            {
+                mPortListPtrs.value(i)->setRotation(-this->rotation());
+            }
+        }
     }
     if(!this->mIconRotation)
     {
@@ -479,34 +488,9 @@ void GUIObject::moveRight()
 //! @see flipHorizontal()
 void GUIObject::flipVertical()
 {
-        //Flip the entire widget
-    this->scale(1, -1);
-    if(mIsFlippedVertical)
-    {
-        this->moveBy(0,-this->boundingRect().height());
-        mIsFlippedVertical = false;
-    }
-    else
-    {
-        this->moveBy(0,this->boundingRect().height());
-        mIsFlippedVertical = true;
-    }
-        //"Un-flip" the text field
-    this->mpNameText->scale(1, -1);
-    if(mIsFlippedVertical)
-        mpNameText->moveBy(0,mpNameText->boundingRect().height());
-    else
-        mpNameText->moveBy(0,-mpNameText->boundingRect().height());
-
-        //"Un-flip" the ports
-    for (int i = 0; i != mPortListPtrs.size(); ++i)
-    {
-        mPortListPtrs.value(i)->scale(1, -1);
-        if(mIsFlippedVertical)
-            mPortListPtrs.value(i)->moveBy(0,mPortListPtrs.value(i)->boundingRect().height());
-        else
-            mPortListPtrs.value(i)->moveBy(0,-mPortListPtrs.value(i)->boundingRect().height());
-    }
+    this->rotate();
+    this->rotate();
+    this->flipHorizontal();
 }
 
 
@@ -514,21 +498,22 @@ void GUIObject::flipVertical()
 //! @see flipVertical()
 void GUIObject::flipHorizontal()
 {
+    qDebug() << "Rotation = " << this->rotation();
         //Flip the entire widget
     this->scale(-1, 1);
-    if(mIsFlippedHorizontal)
+    if(mIsFlipped)
     {
         this->moveBy(-this->boundingRect().width(),0);
-        mIsFlippedHorizontal = false;
+        mIsFlipped = false;
     }
     else
     {
         this->moveBy(this->boundingRect().width(),0);
-        mIsFlippedHorizontal = true;
+        mIsFlipped = true;
     }
         //"Un-flip" the text field
     this->mpNameText->scale(-1, 1);
-    if(mIsFlippedHorizontal)
+    if(mIsFlipped)
         mpNameText->moveBy(mpNameText->boundingRect().width(),0);
     else
         mpNameText->moveBy(-mpNameText->boundingRect().width(),0);
@@ -536,11 +521,32 @@ void GUIObject::flipHorizontal()
         //"Un-flip" the ports
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
-        mPortListPtrs.value(i)->scale(-1, 1);
-        if(mIsFlippedHorizontal)
-            mPortListPtrs.value(i)->moveBy(mPortListPtrs.value(i)->boundingRect().width(),0);
+        if(this->rotation() == 90 or this->rotation() == 270)
+        {
+            mPortListPtrs.value(i)->scale(1,-1);
+            if(mIsFlipped)
+            {
+                if(mIsFlipped)
+                    mPortListPtrs.value(i)->moveBy(0,mPortListPtrs.value(i)->boundingRect().height());
+                else
+                    mPortListPtrs.value(i)->moveBy(0,-mPortListPtrs.value(i)->boundingRect().height());
+            }
+            else
+            {
+                if(mIsFlipped)
+                    mPortListPtrs.value(i)->moveBy(0,mPortListPtrs.value(i)->boundingRect().height());
+                else
+                    mPortListPtrs.value(i)->moveBy(0,-mPortListPtrs.value(i)->boundingRect().height());
+            }
+        }
         else
-            mPortListPtrs.value(i)->moveBy(-mPortListPtrs.value(i)->boundingRect().width(),0);
+        {
+            mPortListPtrs.value(i)->scale(-1,1);
+            if(mIsFlipped)
+                mPortListPtrs.value(i)->moveBy(mPortListPtrs.value(i)->boundingRect().width(),0);
+            else
+                mPortListPtrs.value(i)->moveBy(-mPortListPtrs.value(i)->boundingRect().width(),0);
+        }
     }
 }
 
