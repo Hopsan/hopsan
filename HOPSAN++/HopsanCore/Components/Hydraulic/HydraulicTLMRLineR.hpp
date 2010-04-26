@@ -1,6 +1,6 @@
 //!
 //! @file   HydraulicTLMRLineR.hpp
-//! @author Björn Eriksson <bjorn.eriksson@liu.se>
+//! @author BjÃ¶rn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2009-12-21
 //!
 //! @brief Contains a Hydraulic Transmission Line Component with Resistors in the ends
