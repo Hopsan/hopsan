@@ -271,11 +271,17 @@ void MainWindow::createActions()
     zoomOutAction = new QAction(QIcon("../../HopsanGUI/icons/zoomOut.png"), tr("&Zoom Out"), this);
     zoomOutAction->setText("Zoom Out");
 
-    hideNamesAction = new QAction(QIcon("../../HopsanGUI/icons/hidenames.png"), tr("&Reset Zoom"), this);
+    hideNamesAction = new QAction(QIcon("../../HopsanGUI/icons/hidenames.png"), tr("&Hide All Component Names"), this);
     hideNamesAction->setText("Hide All Component Names");
 
-    showNamesAction = new QAction(QIcon("../../HopsanGUI/icons/shownames.png"), tr("&Reset Zoom"), this);
+    showNamesAction = new QAction(QIcon("../../HopsanGUI/icons/shownames.png"), tr("&Show All Component Names"), this);
     showNamesAction->setText("Show All Component Names");
+
+    hidePortsAction = new QAction(QIcon("../../HopsanGUI/icons/hideports.png"), tr("&Hide All Ports"), this);
+    hidePortsAction->setText("Hide All Ports");
+
+    showPortsAction = new QAction(QIcon("../../HopsanGUI/icons/showports.png"), tr("&Show All Ports"), this);
+    showPortsAction->setText("Show All Ports");
 }
 
 
@@ -390,6 +396,8 @@ void MainWindow::createToolbars()
     viewToolBar->addAction(zoomOutAction);
     viewToolBar->addAction(hideNamesAction);
     viewToolBar->addAction(showNamesAction);
+    viewToolBar->addAction(hidePortsAction);
+    viewToolBar->addAction(showPortsAction);
 
     mpSimulationToolBar = addToolBar(tr("Simulation"));
     mpSimulationToolBar->setAllowedAreas(Qt::TopToolBarArea);

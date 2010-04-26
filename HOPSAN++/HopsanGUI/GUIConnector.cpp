@@ -52,6 +52,8 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, std::vector<QPo
     setFlags(QGraphicsItem::ItemIsFocusable);
     mpStartPort = startPort;
     mpEndPort = endPort;
+    mpStartPort->isConnected = true;
+    mpEndPort->isConnected = true;
     connect(this->mpStartPort->getComponent(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
     connect(this->mpEndPort->getComponent(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
     QPointF startPos = getStartPort()->mapToScene(getStartPort()->boundingRect().center());
@@ -190,7 +192,8 @@ void GUIConnector::removePoint(bool deleteIfEmpty)
 //! @see getEndPort()
 void GUIConnector::setStartPort(GUIPort *port)
 {
-    this->mpStartPort = port;
+    mpStartPort = port;
+    mpStartPort->isConnected = true;
     connect(this->mpStartPort->getComponent(),SIGNAL(componentDeleted()),this,SLOT(deleteMe()));
     connect(this->mpStartPort->getComponent(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
 }
@@ -204,8 +207,9 @@ void GUIConnector::setStartPort(GUIPort *port)
 void GUIConnector::setEndPort(GUIPort *port)
 {
     //! @todo Make connectors add one extra line if end port has wrong direction, and move the line X points outwards from the component.
-    this->mEndPortConnected = true;
-    this->mpEndPort = port;
+    mEndPortConnected = true;
+    mpEndPort = port;
+    mpEndPort->isConnected = true;
     this->removePoint();        //Remove the extra point that is created by the mouse click event when clicking on the port
     this->updateEndPoint(port->mapToScene(port->boundingRect().center()));
     connect(this->mpEndPort->getComponent(),SIGNAL(componentDeleted()),this,SLOT(deleteMe()));

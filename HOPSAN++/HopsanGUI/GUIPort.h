@@ -27,6 +27,11 @@ public:
     Port *mpCorePort;
     portDirectionType getPortDirection();
     void setPortDirection(GUIPort::portDirectionType direction);
+    bool isConnected;
+
+public slots:
+    void hideIfNotConnected();
+    void showIfNotConnected();
 
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);

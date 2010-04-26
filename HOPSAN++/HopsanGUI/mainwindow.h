@@ -77,6 +77,8 @@ public:
     QAction *zoomOutAction;
     QAction *hideNamesAction;
     QAction *showNamesAction;
+    QAction *hidePortsAction;
+    QAction *showPortsAction;
 
     QToolBar *fileToolBar;
     QToolBar *clipboardToolBar;

@@ -615,11 +615,12 @@ void GraphicsView::removeConnector(GUIConnector* pConnector)
         mpModel->disconnect(pConnector->getStartPort()->mpCorePort, pConnector->getEndPort()->mpCorePort);
         emit checkMessages();
         pConnector->getEndPort()->show();
+        pConnector->getEndPort()->isConnected = false;
     }
     //
     scene()->removeItem(pConnector);
     pConnector->getStartPort()->show();
-
+    pConnector->getStartPort()->isConnected = false;
     delete pConnector;
 }
 

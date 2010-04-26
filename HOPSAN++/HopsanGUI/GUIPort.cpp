@@ -3,6 +3,7 @@
 //#include "HopsanCore.h"
 #include "GUIPort.h"
 #include "plotwidget.h"
+#include "mainwindow.h"
 
 #include <QtGui>
 
@@ -49,8 +50,12 @@ GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, 
 
     mMag = 1.6180339887;
     mIsMag = false;
+    isConnected = false;
 
-    QObject::connect(this,SIGNAL(portClicked(GUIPort*)),this->getParentView(),SLOT(addConnector(GUIPort*)));
+    MainWindow *pMainWindow = mpParentComponent->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+    connect(this,SIGNAL(portClicked(GUIPort*)),this->getParentView(),SLOT(addConnector(GUIPort*)));
+    connect(pMainWindow->hidePortsAction,SIGNAL(triggered()),this, SLOT(hideIfNotConnected()));
+    connect(pMainWindow->showPortsAction,SIGNAL(triggered()),this, SLOT(showIfNotConnected()));
 }
 
 
@@ -301,4 +306,23 @@ GUIPort::portDirectionType GUIPort::getPortDirection()
 void GUIPort::setPortDirection(GUIPort::portDirectionType direction)
 {
     this->mPortDirection = direction;
+}
+
+
+
+void GUIPort::hideIfNotConnected()
+{
+    if(!isConnected)
+    {
+        this->hide();
+    }
+}
+
+
+void GUIPort::showIfNotConnected()
+{
+    if(!isConnected)
+    {
+        this->show();
+    }
 }
