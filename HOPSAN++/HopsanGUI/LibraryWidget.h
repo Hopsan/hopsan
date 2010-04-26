@@ -29,9 +29,10 @@ class LibraryContentItem;
 class LibraryContentItem : public QListWidgetItem
 {
 public:
-    LibraryContentItem(const QIcon &icon, const QString &text, QListWidget *parent = 0);
+    //LibraryContentItem(const QIcon &icon, const QString &text, QListWidget *parent = 0);
     LibraryContentItem(AppearanceData *pAppearanceData, QListWidget *parent = 0);
     LibraryContentItem(const QListWidgetItem &other);
+    AppearanceData *getAppearanceData();
 
 private:
     AppearanceData *mpAppearanceData;
@@ -71,7 +72,8 @@ public:
     void addEmptyLibrary(QString libraryName, QString parentLibraryName=QString());
     void addLibrary(QString libDir, QString parentLib=QString());
     void addComponent(QString libraryName, QString parentLibraryName, LibraryContentItem *newComponent, QStringList parameterData);
-    QStringList getAppearanceData(QString);
+    void addLibraryContentItem(QString libraryName, QString parentLibraryName, LibraryContentItem *newComponent);
+    AppearanceData *getAppearanceData(QString componentType);
 
     //Member variables
     MainWindow *mpParentMainWindow;
@@ -87,7 +89,7 @@ private slots:
     void hideAllLib();
 
 private:
-    std::map<QString, QStringList> mAppearanceDataMap;
+    QMap<QString, AppearanceData*> mAppearanceDataMap;
 
 };
 

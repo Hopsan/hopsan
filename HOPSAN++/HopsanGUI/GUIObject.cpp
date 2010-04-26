@@ -29,7 +29,7 @@ double dist(double x1,double y1, double x2, double y2)
     return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
 }
 
-GUIObject::GUIObject(QPoint position, QString iconPath, QString isoIconPath, GraphicsScene *scene, QGraphicsItem *parent)
+GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsScene *scene, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
     mpParentGraphicsScene = scene;
@@ -45,9 +45,29 @@ GUIObject::GUIObject(QPoint position, QString iconPath, QString isoIconPath, Gra
     this->setAcceptHoverEvents(true);
 
     this->setZValue(10);
-    mpIcon = new QGraphicsSvgItem(iconPath,this);
-    mIconPath = iconPath;
-    qDebug() << "Setting icon to " << iconPath;
+
+    //Make a local copy of the appearance data (that can safely be modified if needed)
+    mAppearanceData = appearanceData;
+    if (!mAppearanceData.getIconPath().isEmpty())
+    {
+        mIconPath = mAppearanceData.getBasePath() + mAppearanceData.getIconPath();
+        mpIcon = new QGraphicsSvgItem(mIconPath, this);
+        qDebug() << "Setting icon to: " << mIconPath;
+    }
+    else if (!mAppearanceData.getIconPathISO().isEmpty())
+    {
+        mIsoIconPath = mAppearanceData.getBasePath() + mAppearanceData.getIconPathISO();
+        mpIcon = new QGraphicsSvgItem(mIsoIconPath, this);
+        qDebug() << "Setting icon to ISO:  " << mIsoIconPath;
+    }
+    else
+    {
+        mIconPath = ""; //!< @todo Some default noname icon if icon missing
+    }
+
+
+    //! @todo maybe save a appearanceData copy or pointer in every component instead of incon path directly
+
 
     std::cout << "GUIcomponent: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
 
@@ -857,38 +877,44 @@ int GUIComponent::type() const
 
 
 
-GUIComponent::GUIComponent(HopsanEssentials *hopsan, QStringList appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
-    : GUIObject(position, appearanceData.at(1), appearanceData.at(2), scene, parent)
+GUIComponent::GUIComponent(HopsanEssentials *hopsan, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
+    : GUIObject(position, appearanceData, scene, parent)
 {
-    mComponentTypeName = appearanceData.at(0);
-    //QString fileName = appearanceData.at(1);
-    mIsoIconPath = appearanceData.at(2);
-    QString iconRotationBehaviour = appearanceData.at(3);
+    mComponentTypeName = appearanceData.getTypeName();
+
+    if(!appearanceData.getIconPathISO().isEmpty())
+    {
+        mHasIsoIcon = true;
+        mIsoIconPath = appearanceData.getBasePath() + appearanceData.getIconPathISO();
+    }
+    else
+    {
+        mHasIsoIcon = false;
+        mIsoIconPath = "";
+    }
+
+    QString iconRotationBehaviour = appearanceData.getIconRotationBehaviour();
     if(iconRotationBehaviour == "ON")
         this->mIconRotation = true;
     else
         this->mIconRotation = false;
-    size_t nPorts = appearanceData.at(4).toInt();
+    size_t nPorts = appearanceData.getNumberOfPorts();
 
-    qDebug() << "TypeName: " << mComponentTypeName << ", appearanceData.at(2) = " << appearanceData.at(2);
-
-    if(mIsoIconPath == "")
-        mHasIsoIcon = false;
-    else
-        mHasIsoIcon = true;
+    //qDebug() << "TypeName: " << mComponentTypeName << ", appearanceData.at(2) = " << appearanceData.at(2);
 
     //Core interaction
     mpCoreComponent = hopsan->CreateComponent(mComponentTypeName.toStdString());
     //
 
     //Sets the ports
-    //GUIPort::portType type;
+    //! @todo Mybe should not copy the vector maybe shoule use reference access every time
+    QVector<PortAppearance> portappvec = appearanceData.getPortAppearanceVector();
     Port::PORTTYPE porttype;
     for (size_t i = 0; i < nPorts; ++i)
     {
-        double x = appearanceData.at(5+3*i).toDouble();
-        double y = appearanceData.at(6+3*i).toDouble();
-        double rot = appearanceData.at(7+3*i).toDouble();
+        qreal x = portappvec[i].x;
+        qreal y = portappvec[i].y;
+        qreal rot = portappvec[i].rot;
 
         porttype = mpCoreComponent->getPortPtrVector().at(i)->getPortType();
 
@@ -1026,7 +1052,10 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         else if (selectedAction == groupAction)
         {
             //groupComponents(mpParentGraphicsScene->selectedItems());
-            GUIGroup *pGroup = new GUIGroup(mpParentGraphicsScene->selectedItems(), mpParentGraphicsScene);
+            AppearanceData appdata;
+            appdata.setIconPath("subsystemtmp.svg");
+            appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
+            GUIGroup *pGroup = new GUIGroup(mpParentGraphicsScene->selectedItems(), appdata, mpParentGraphicsScene);
             this->mpParentGraphicsScene->addItem(pGroup);
         }
         else if (selectedAction == showNameAction)
@@ -1069,8 +1098,8 @@ void GUIComponent::deleteInHopsanCore()
 }
 
 
-GUISubsystem::GUISubsystem(HopsanEssentials *hopsan, QStringList appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
-        : GUIObject(position, appearanceData.at(1), appearanceData.at(2), scene, parent)
+GUISubsystem::GUISubsystem(HopsanEssentials *hopsan, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
+        : GUIObject(position, appearanceData, scene, parent)
 {
     //Core interaction
     mpCoreComponentSystem = hopsan->CreateComponentSystem();
@@ -1254,7 +1283,10 @@ void GUISubsystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         else if (selectedAction == groupAction)
         {
             //groupComponents(mpParentGraphicsScene->selectedItems());
-            GUIGroup *pGroup = new GUIGroup(mpParentGraphicsScene->selectedItems(), mpParentGraphicsScene);
+            AppearanceData appdata;
+            appdata.setIconPath("subsystemtmp.svg");
+            appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
+            GUIGroup *pGroup = new GUIGroup(mpParentGraphicsScene->selectedItems(), appdata, mpParentGraphicsScene);
             this->mpParentGraphicsScene->addItem(pGroup);
         }
         else if (selectedAction == showNameAction)
@@ -1277,8 +1309,8 @@ void GUISubsystem::openParameterDialog()
 }
 
 
-GUISystemPort::GUISystemPort(HopsanEssentials *hopsan, QStringList appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
-        : GUIObject(position, appearanceData.at(1), appearanceData.at(2), scene, parent)
+GUISystemPort::GUISystemPort(HopsanEssentials *hopsan, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
+        : GUIObject(position, appearanceData, scene, parent)
 
 {
     //Do something nice
@@ -1298,8 +1330,8 @@ int GUIGroup::type() const
 }
 
 
-GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GraphicsScene *scene, QGraphicsItem *parent)
-    :   GUIObject(QPoint(0.0,0.0), QString("../../HopsanGUI/subsystemtmp.svg"), QString(""), scene, parent)
+GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData, GraphicsScene *scene, QGraphicsItem *parent)
+    :   GUIObject(QPoint(0.0,0.0), appearanceData, scene, parent)
 {
     mpParentScene = scene;
 

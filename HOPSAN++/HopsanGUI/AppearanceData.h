@@ -21,15 +21,21 @@ class AppearanceData
 {
 public:
     AppearanceData();
+    void setTypeName(QString name);
+    void setBasePath(QString path);
+    void setIconPath(QString path);
+    void setIconPathISO(QString path);
+
     QString getTypeName();
     QString getIconPath();
     QString getIconPathISO();
     QString getIconRotationBehaviour();
     QPointF getNameTextPos();
+    size_t  getNumberOfPorts();
     QVector<PortAppearance> &getPortAppearanceVector();
 
     QString getBasePath();
-    void setBasePath(QString path);
+
 
     friend QTextStream& operator >>(QTextStream &is, AppearanceData &rData);
     friend QTextStream& operator <<(QTextStream &os, const AppearanceData &rData);

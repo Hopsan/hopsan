@@ -116,18 +116,19 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 }
 
 
-//! Destructor.
-GraphicsView::~GraphicsView()
-{
-    //delete guiComponent; //Skumt att ta bort en guiComponent?
-}
+////! Destructor.
+//GraphicsView::~GraphicsView()
+//{
+//
+//}
 
 
 //! Defines what happens when moving an object in a GraphicsView.
 //! @param event contains information of the drag operation.
 void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 {
-    if (event->mimeData()->hasFormat("application/x-text"))
+    //if (event->mimeData()->hasFormat("application/x-text"))
+    if (event->mimeData()->hasText())
     {
         event->accept();
     }
@@ -138,46 +139,40 @@ void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 }
 
 
+
 //! Defines what happens when drop an object in a GraphicsView.
 //! @param event contains information of the drop operation.
 void GraphicsView::dropEvent(QDropEvent *event)
 {
     qDebug() << "dropEvent";
-    if (event->mimeData()->hasFormat("application/x-text"))
+    //if (event->mimeData()->hasFormat("application/x-text"))
+    if (event->mimeData()->hasText())
     {
-        qDebug() << "dropEvent: hasFormat";
-        QByteArray *data = new QByteArray;
-        *data = event->mimeData()->data("application/x-text");
+        qDebug() << "dropEvent: hasText";
+        //QByteArray *data = new QByteArray;
+        //*data = event->mimeData()->data("application/x-text");
 
-        QDataStream stream(data,QIODevice::ReadOnly);
+        QString datastr =  event->mimeData()->text();
+        QTextStream stream(&datastr, QIODevice::ReadOnly);
 
-        QStringList appearanceData;
+        qDebug() << "drop string: \n" << datastr;
+
+        AppearanceData appearanceData;
         stream >> appearanceData;
 
-        qDebug() << appearanceData;
+        //! @todo Check if appearnaceData OK otherwihse do not add
 
-//        QString componentTypeName = appearanceData.at(0);
-//        QString iconDir = appearanceData.at(1);
+        //qDebug() << "Drop appearanceData: " <<  appearanceData;
 
         event->accept();
 
-  //      QCursor cursor;
-//        QPoint position = this->mapFromScene(cursor.pos());
 
         QPoint position = event->pos();
-
         qDebug() << "GraphicsView: " << "x=" << position.x() << "  " << "y=" << position.y();
 
-//        GUIComponent *guiComponent = new GUIComponent(mpHopsan,iconDir,componentTypeName,mapToScene(position).toPoint(),this);
-      //  GUIComponent *guiComponent = new GUIComponent(mpHopsan,appearanceData,mapToScene(position).toPoint(),this);
+        this->addGUIObject(appearanceData.getTypeName(), appearanceData, this->mapToScene(position).toPoint());
 
-        //this->addComponent(appearanceData, this->mapToScene(position).toPoint());
-
-        //this->addComponent(appearanceData.at(0), this->mapToScene(position).toPoint());
-        this->addGUIObject(appearanceData.at(0), appearanceData, this->mapToScene(position).toPoint());
-
-
-        delete data;
+        //delete data;
     }
 }
 
@@ -187,24 +182,25 @@ GUIConnector *GraphicsView::getTempConnector()
     return this->mpTempConnector;
 }
 
+
 //! @brief Temporary addSubSystem functin should be same later on
 //! Adds a new component to the GraphicsView.
 //! @param componentType is a string defining the type of component.
 //! @param position is the position where the component will be created.
 //! @param name will be the name of the component.
-void GraphicsView::addGUIObject(QString componentType, QStringList appearanceData, QPoint position, qreal rotation, QString name, bool startSelected)
+void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appearanceData, QPoint position, qreal rotation, QString name, bool startSelected)
 {
     qDebug() << "Request to add gui object at (" << position.x() << " " << position.y() << ")";
 
     //MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
 
 
-    if (componentType == "Subsystem")
+    if (componentTypeName == "Subsystem")
     {
         qDebug() << "Creating GUISubsystem";
         mpTempGUIObject = new GUISubsystem(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
     }
-    else if (componentType == "SystemPort")
+    else if (componentTypeName == "SystemPort")
     {
         qDebug() << "Creating GUISystemPort";
         mpTempGUIObject = new GUISystemPort(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
@@ -225,14 +221,14 @@ void GraphicsView::addGUIObject(QString componentType, QStringList appearanceDat
 
     //Core interaction
     qDebug() << "=====================Get name before add: " << mpTempGUIObject->getName();
-    if (componentType == "SystemPort")
+    if (componentTypeName == "SystemPort")
     {
         mpParentProjectTab->mpComponentSystem->addSystemPort(mpTempGUIObject->getName().toStdString());
     }
     else
     {
 
-        if (componentType == "Subsystem")
+        if (componentTypeName == "Subsystem")
         {
             GUISubsystem *pSys = qobject_cast<GUISubsystem *>(mpTempGUIObject);
             this->mpParentProjectTab->mpComponentSystem->addComponent(pSys->getHopsanCoreSystemComponentPtr());
@@ -327,10 +323,14 @@ void GraphicsView::addSystemPort()
     QPointF position = this->mapToScene(this->mapFromGlobal(cursor.pos()));
     this->setBackgroundBrush(mBackgroundColor);
     //QPoint position = QPoint(2300,2400);
-    QStringList appearanceData;
-    appearanceData << "SystemPort";
-    appearanceData << QString("../../HopsanGUI/systemporttmp.svg");
-    appearanceData << "";
+
+    AppearanceData appearanceData;
+    QTextStream appstream;
+
+    appstream << "TypeName SystemPort";
+    appstream << "ICONPATH ../../HopsanGUI/systemporttmp.svg";
+    appstream >> appearanceData;
+
     addGUIObject(QString("SystemPort"), appearanceData, position.toPoint());
 }
 
@@ -739,7 +739,7 @@ void GraphicsView::paste()
             ++i;
             componentName = mCopyData[i];
             QPoint tempPos = QPoint(mCopyDataPos[j].toPoint().x()-25, mCopyDataPos[j].toPoint().y()-25);
-            QStringList appearanceData = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
+            AppearanceData appearanceData = *mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
             this->addGUIObject(componentType, appearanceData, tempPos, mCopyDataRot[j], componentName, true);
             ++j;
             renameMap.insert(componentName, mpTempGUIObject->getName());
@@ -1363,7 +1363,7 @@ void ProjectTabWidget::loadModel()
                 inputStream >> nameTextPos;
 
                 //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
-                QStringList appearanceData = mpParentMainWindow->mpLibrary->getAppearanceData(QString(componentType.c_str()));
+                AppearanceData appearanceData = *mpParentMainWindow->mpLibrary->getAppearanceData(QString(componentType.c_str()));
                 pCurrentTab->mpGraphicsView->addGUIObject(QString(componentType.c_str()), appearanceData, QPoint(posX, posY), 0, QString(componentName.c_str()));
                 pCurrentTab->mpGraphicsView->getGUIObject(QString(componentName.c_str()))->setNameTextPos(nameTextPos);
                 while(pCurrentTab->mpGraphicsView->getGUIObject(QString(componentName.c_str()))->rotation() != rotation)

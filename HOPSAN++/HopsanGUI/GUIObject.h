@@ -22,9 +22,9 @@ class GUIObject : public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    GUIObject(QPoint position, QString iconPath, QString isoIconPath = "", GraphicsScene *scene = 0, QGraphicsItem *parent = 0);
+    GUIObject(QPoint position, AppearanceData appearanceData, GraphicsScene *scene = 0, QGraphicsItem *parent = 0);
     ~GUIObject();
-    //QGraphicsView *getParentView();
+
     void addConnector(GUIConnector *item);
 
     virtual QString getName();
@@ -88,6 +88,7 @@ protected:
     int mNameTextPos;
     bool mIconRotation;
     bool mIsFlipped;
+    AppearanceData mAppearanceData;
 
 protected slots:
     void fixTextPosition(QPointF pos);
@@ -137,7 +138,7 @@ class GUIComponent : public GUIObject
 {
     Q_OBJECT
 public:
-    GUIComponent(HopsanEssentials *hopsan, QStringList appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    GUIComponent(HopsanEssentials *hopsan, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
 
     //Core interaction
     Component* getHopsanCoreComponentPtr();
@@ -167,7 +168,7 @@ class GUISubsystem : public GUIObject
 {
     Q_OBJECT
 public:
-    GUISubsystem(HopsanEssentials *hopsan, QStringList appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    GUISubsystem(HopsanEssentials *hopsan, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
 
     Component* getHopsanCoreComponentPtr();
     ComponentSystem* getHopsanCoreSystemComponentPtr();
@@ -194,7 +195,7 @@ class GUISystemPort : public GUIObject
 {
     Q_OBJECT
 public:
-    GUISystemPort(HopsanEssentials *hopsan, QStringList appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    GUISystemPort(HopsanEssentials *hopsan, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
     QString getTypeName();
 private:
 
@@ -205,7 +206,7 @@ class GUIGroup : public GUIObject
 {
     Q_OBJECT
 public:
-    GUIGroup(QList<QGraphicsItem*> compList, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData, GraphicsScene *scene, QGraphicsItem *parent = 0);
 
 //    QString getName();
 //    void setName(QString name, bool doOnlyLocalRename=false);

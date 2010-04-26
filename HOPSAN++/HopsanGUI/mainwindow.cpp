@@ -135,23 +135,21 @@ MainWindow::MainWindow(QWidget *parent)
     //-------------------------------------------------------------------------------------
     //! @todo This is QDcode, needs to be rewritten in some better way
     mpLibrary->addEmptyLibrary("Subsystem");
-    QStringList appearanceData;
-    appearanceData << "Subsystem";
-    appearanceData << QString("../../HopsanGUI/subsystemtmp.svg"); //Icon path
-    appearanceData << "";
-    QIcon icon;
-    icon.addFile("../../HopsanGUI/subsystemtmp.svg");
-    LibraryContentItem *pLibsubcomp = new LibraryContentItem(icon,"Subsystem");
-    mpLibrary->addComponent("", "Subsystem", pLibsubcomp, appearanceData);
+    AppearanceData *pAppData = new AppearanceData;
+    pAppData->setBasePath("../../HopsanGUI/"); //!< @todo THIS IS BAD
+    pAppData->setTypeName("Subsystem");
+    pAppData->setIconPath("subsystemtmp.svg");
 
-    QStringList appearanceData2;
-    appearanceData2 << "SystemPort";
-    appearanceData2 << QString("../../HopsanGUI/systemporttmp.svg"); //Icon path
-    appearanceData2 << "";
-    QIcon icon2;
-    icon.addFile("../../HopsanGUI/systemporttmp.svg");
-    LibraryContentItem *pLibsystport = new LibraryContentItem(icon,"SystemPort");
-    mpLibrary->addComponent("", "Subsystem", pLibsystport, appearanceData2);
+    LibraryContentItem *pLibsubcomp = new LibraryContentItem(pAppData);
+    mpLibrary->addLibraryContentItem("", "Subsystem", pLibsubcomp);
+
+    AppearanceData *pAppData2 = new AppearanceData;
+    pAppData2->setBasePath("../../HopsanGUI/"); //!< @todo THIS IS BAD
+    pAppData2->setTypeName("SystemPort");
+    pAppData2->setIconPath("systemporttmp.svg"); //Icon path
+
+    LibraryContentItem *pLibsystport = new LibraryContentItem(pAppData2);
+    mpLibrary->addLibraryContentItem("", "Subsystem", pLibsystport);
     //------------------------------------------------------------------------------------
 
     QMetaObject::connectSlotsByName(this);

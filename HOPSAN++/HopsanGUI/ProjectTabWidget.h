@@ -16,6 +16,7 @@
 #include <map>
 
 #include "MessageWidget.h"
+#include "AppearanceData.h"
 
 
 class GUIPort;
@@ -45,7 +46,7 @@ class GraphicsView : public QGraphicsView
 
 public:
     GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, ProjectTab *parent = 0);
-    ~GraphicsView();
+    //~GraphicsView();
     bool mIsCreatingConnector;
     GUIObject *getGUIObject(QString name);
     GUIConnector *getTempConnector();
@@ -74,7 +75,7 @@ signals:
     void systemPortSignal(QPoint position);
 
 public slots:
-    void addGUIObject(QString componentType, QStringList appearanceData, QPoint position, qreal rotation = 0, QString name=QString(), bool startSelected=true);
+    void addGUIObject(QString componentTypeName, AppearanceData appearanceData, QPoint position, qreal rotation = 0, QString name=QString(), bool startSelected=true);
     void deleteGUIObject(QString componentName);
     bool haveGUIObject(QString name);
     void renameGUIObject(QString oldName, QString newName);
