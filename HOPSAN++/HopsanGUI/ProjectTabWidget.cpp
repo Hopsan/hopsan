@@ -1441,6 +1441,13 @@ void ProjectTabWidget::loadModel()
 
         }
     }
+        //Deselect all comonents
+    GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
+    QMap<QString, GUIObject *>::iterator it;
+    for(it = pCurrentView->mGUIObjectMap.begin(); it!=pCurrentView->mGUIObjectMap.end(); ++it)
+    {
+        it.value()->setSelected(false);
+    }
     emit checkMessages();
 }
 

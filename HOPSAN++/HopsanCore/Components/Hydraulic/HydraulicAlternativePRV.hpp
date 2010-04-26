@@ -21,11 +21,11 @@
 class HydraulicAlternativePRV : public ComponentQ
 {
 private:
-    double mX0, mPref, mCq, mW, mSpoolDiameter, mFrac, mPilotArea, mK, mC, mXhyst, mXmax, mFs;
+    double mX0, mPref, mCq, mW, mSpoolDiameter, mFrac, mPilotArea, mK, mC, mMass, mXhyst, mXmax, mFs;
     Delay mDelayedX0;
     TurbulentFlowFunction mTurb;
     ValveHysteresis mHyst;
-    FirstOrderFilter mFilter;
+    SecondOrderFilter mFilter;
     Port *mpP1, *mpP2;
 
 public:
@@ -43,6 +43,7 @@ public:
                                  const double pilotarea     = 0.001,
                                  const double k             = 1e6,
                                  const double c             = 1000,
+                                 const double mass          = 0.05,
                                  const double xhyst         = 0.0,
                                  const double xmax          = 0.001,
                                  const double timestep      = 0.001)
@@ -57,6 +58,7 @@ public:
         mPilotArea = pilotarea;
         mK = k;
         mC = c;
+        mMass = mass;
         mXhyst = xhyst;
         mXmax = xmax;
         mFs = mPilotArea * mPref;   //Spring preload
@@ -71,6 +73,7 @@ public:
         registerParameter("pilotarea", "Working Area of Pilot Pressure", "[m^2]", mPilotArea);
         registerParameter("k", "Steady State Characheristics of Spring", "[N/m]", mK);
         registerParameter("c", "Steady State Damping Coefficient", "[Ns/m]", mC);
+        registerParameter("m", "Ineretia of Spool", "kg", mMass);
         registerParameter("xhyst", "Hysteresis of Spool Position", "[m]", mXhyst);
         registerParameter("xmax", "Maximum Spool Position", "[m]", mXmax);
     }
@@ -85,8 +88,8 @@ public:
 
         //double p1 = mpP1->readNode(NodeHydraulic::PRESSURE);
 
-        double num [2] = {1.0, 0.0};
-        double den [2] = {mK, mC};
+        double num [3] = {1.0, 0.0, 0.0};
+        double den [3] = {mK, mC, mMass};
         mFilter.initialize(mTime, mTimestep, num, den, 0.0, 0.0, 0.0, 1.0);
     }
 
@@ -109,8 +112,8 @@ public:
 
         double p1 = c1 + q1*Zc1;
         double Ftot = p1*mPilotArea - mFs;      //Sum of forces in x direction
-        double num [2] = {1.0, 0.0};
-        double den [2] = {mK, mC};
+        double num [3] = {1.0, 0.0, 0.0};
+        double den [3] = {mK, mC, mMass};
         mFilter.setNumDen(num,den);
         double x0 = mFilter.value(Ftot);            //Filter function
         double x0h = mHyst.getValue(x0, mXhyst, mDelayedX0.value());            //Hysteresis
@@ -141,8 +144,8 @@ public:
                 //Calculation of Spool Position
             double p1 = c1 + q1*Zc1;
             double Ftot = p1*mPilotArea - mFs;      //Sum of forces in x direction
-            double num [2] = {1.0, 0.0};
-            double den [2] = {mK, mC};
+            double num [3] = {1.0, 0.0, 0.0};
+            double den [3] = {mK, mC, mMass};
             mFilter.setNumDen(num,den);
             double x0 = mFilter.value(Ftot);            //Filter function
             double x0h = mHyst.getValue(x0, mXhyst, mDelayedX0.value());            //Hysteresis

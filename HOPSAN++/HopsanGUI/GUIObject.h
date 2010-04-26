@@ -47,7 +47,6 @@ public:
     virtual ComponentSystem* getHopsanCoreSystemComponentPtr();
     virtual void deleteInHopsanCore();
 
-
     enum { Type = UserType + 2 };
     int type() const;
 

@@ -136,33 +136,67 @@ void GUIObject::fixTextPosition(QPointF pos)
 {
     double x1,x2,y1,y2;
 
-    if(this->rotation() == 0)
+    if(!mIsFlipped)
     {
-        x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
-        y1 = -mpNameText->boundingRect().height() - mTextOffset;  //mTextOffset*
-        x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
-        y2 = mpIcon->boundingRect().height() + mTextOffset;// - mpNameText->boundingRect().height()/2;
+        if(this->rotation() == 0)
+        {
+            x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
+            y1 = -mpNameText->boundingRect().height() - mTextOffset;  //mTextOffset*
+            x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
+            y2 = mpIcon->boundingRect().height() + mTextOffset;// - mpNameText->boundingRect().height()/2;
+        }
+        else if(this->rotation() == 180)
+        {
+            x1 = mpIcon->boundingRect().width()/2+mpNameText->boundingRect().width()/2;
+            y1 = mpIcon->boundingRect().height() + mpNameText->boundingRect().height() + mTextOffset;
+            x2 = mpIcon->boundingRect().width()/2+mpNameText->boundingRect().width()/2;
+            y2 = -mTextOffset;
+        }
+        else if(this->rotation() == 90)
+        {
+            x1 = -mpNameText->boundingRect().height() - mTextOffset;
+            y1 = mpIcon->boundingRect().height()/2 + mpNameText->boundingRect().width()/2;
+            x2 = mpIcon->boundingRect().width() + mTextOffset;
+            y2 = mpIcon->boundingRect().height()/2 + mpNameText->boundingRect().width()/2;
+        }
+        else if(this->rotation() == 270)
+        {
+            x1 = mpIcon->boundingRect().width() + mpNameText->boundingRect().height() + mTextOffset;
+            y1 = mpIcon->boundingRect().height()/2 - mpNameText->boundingRect().width()/2;
+            x2 = -mTextOffset;
+            y2 = mpIcon->boundingRect().height()/2 - mpNameText->boundingRect().width()/2;
+        }
     }
-    else if(this->rotation() == 180)
+    else
     {
-        x1 = mpIcon->boundingRect().width()/2+mpNameText->boundingRect().width()/2;
-        y1 = mpIcon->boundingRect().height() + mpNameText->boundingRect().height() + mTextOffset;
-        x2 = mpIcon->boundingRect().width()/2+mpNameText->boundingRect().width()/2;
-        y2 = -mTextOffset;
-    }
-    else if(this->rotation() == 90)
-    {
-        x1 = -mpNameText->boundingRect().height() - mTextOffset;
-        y1 = mpIcon->boundingRect().height()/2 + mpNameText->boundingRect().width()/2;
-        x2 = mpIcon->boundingRect().width() + mTextOffset;
-        y2 = mpIcon->boundingRect().height()/2 + mpNameText->boundingRect().width()/2;
-    }
-    else if(this->rotation() == 270)
-    {
-        x1 = mpIcon->boundingRect().width() + mpNameText->boundingRect().height() + mTextOffset;
-        y1 = mpIcon->boundingRect().height()/2 - mpNameText->boundingRect().width()/2;
-        x2 = -mTextOffset;
-        y2 = mpIcon->boundingRect().height()/2 - mpNameText->boundingRect().width()/2;
+        if(this->rotation() == 0)
+        {
+            x1 = mpIcon->boundingRect().width()/2+mpNameText->boundingRect().width()/2;
+            y1 = -mpNameText->boundingRect().height() - mTextOffset;  //mTextOffset*
+            x2 = mpIcon->boundingRect().width()/2+mpNameText->boundingRect().width()/2;
+            y2 = mpIcon->boundingRect().height() + mTextOffset;// - mpNameText->boundingRect().height()/2;
+        }
+        else if(this->rotation() == 180)
+        {
+            x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
+            y1 = mpIcon->boundingRect().height() + mpNameText->boundingRect().height() + mTextOffset;
+            x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
+            y2 = -mTextOffset;
+        }
+        else if(this->rotation() == 90)
+        {
+            x1 = -mpNameText->boundingRect().height() - mTextOffset;
+            y1 = mpIcon->boundingRect().height()/2 - mpNameText->boundingRect().width()/2;
+            x2 = mpIcon->boundingRect().width() + mTextOffset;
+            y2 = mpIcon->boundingRect().height()/2 - mpNameText->boundingRect().width()/2;
+        }
+        else if(this->rotation() == 270)
+        {
+            x1 = mpIcon->boundingRect().width() + mpNameText->boundingRect().height() + mTextOffset;
+            y1 = mpIcon->boundingRect().height()/2 + mpNameText->boundingRect().width()/2;
+            x2 = -mTextOffset;
+            y2 = mpIcon->boundingRect().height()/2 + mpNameText->boundingRect().width()/2;
+        }
     }
 
     double x = mpNameText->mapToParent(pos).x();
@@ -179,7 +213,7 @@ void GUIObject::fixTextPosition(QPointF pos)
         mNameTextPos = 1;
     }
 
-    std::cout << "GUIComponent::fixTextPosition, x: " << x << " y: " << y << std::endl;
+    qDebug() << "GUIComponent::fixTextPosition, x: " << x << " y: " << y;
 
 }
 
@@ -391,9 +425,16 @@ void GUIObject::rotate()
     {
         this->setRotation(0);
     }
-    this->mpNameText->setRotation(-this->rotation());
+    if(mIsFlipped)
+    {
+        this->mpNameText->setRotation(this->rotation());
+    }
+    else
+    {
+        this->mpNameText->setRotation(-this->rotation());
+    }
     this->fixTextPosition(this->mpNameText->pos());
-    this->setNameTextPos(temNameTextPos);
+    //this->setNameTextPos(temNameTextPos);
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
         if(mPortListPtrs.value(i)->getPortDirection() == GUIPort::VERTICAL)
@@ -498,7 +539,7 @@ void GUIObject::flipVertical()
 //! @see flipVertical()
 void GUIObject::flipHorizontal()
 {
-    qDebug() << "Rotation = " << this->rotation();
+    qDebug() << "Rotation = " << this->rotation() << ", mIsFlipped = " << mIsFlipped;
         //Flip the entire widget
     this->scale(-1, 1);
     if(mIsFlipped)
@@ -512,11 +553,55 @@ void GUIObject::flipHorizontal()
         mIsFlipped = true;
     }
         //"Un-flip" the text field
-    this->mpNameText->scale(-1, 1);
-    if(mIsFlipped)
-        mpNameText->moveBy(mpNameText->boundingRect().width(),0);
-    else
-        mpNameText->moveBy(-mpNameText->boundingRect().width(),0);
+    if(this->rotation() == 0)
+    {
+        this->mpNameText->scale(-1, 1);
+        if(mIsFlipped)
+        {
+            mpNameText->moveBy(mpNameText->boundingRect().width(),0);
+        }
+        else
+        {
+            mpNameText->moveBy(-mpNameText->boundingRect().width(),0);
+        }
+    }
+    else if(this->rotation() == 90)
+    {
+        this->mpNameText->scale(1,-1);
+        if(mIsFlipped)
+        {
+            mpNameText->moveBy(0,-mpNameText->boundingRect().width());
+        }
+        else
+        {
+            mpNameText->moveBy(0,mpNameText->boundingRect().width());
+        }
+    }
+    else if(this->rotation() == 180)
+    {
+        this->mpNameText->scale(-1, 1);
+        if(mIsFlipped)
+        {
+            mpNameText->moveBy(-mpNameText->boundingRect().width(),0);
+        }
+        else
+        {
+            mpNameText->moveBy(mpNameText->boundingRect().width(),0);
+        }
+    }
+    else if(this->rotation() == 270)
+    {
+        this->mpNameText->scale(1,-1);
+        if(mIsFlipped)
+        {
+            mpNameText->moveBy(0,mpNameText->boundingRect().width());
+        }
+        else
+        {
+            mpNameText->moveBy(0,-mpNameText->boundingRect().width());
+        }
+    }
+
 
         //"Un-flip" the ports
     for (int i = 0; i != mPortListPtrs.size(); ++i)
@@ -524,20 +609,7 @@ void GUIObject::flipHorizontal()
         if(this->rotation() == 90 or this->rotation() == 270)
         {
             mPortListPtrs.value(i)->scale(1,-1);
-            if(mIsFlipped)
-            {
-                if(mIsFlipped)
-                    mPortListPtrs.value(i)->moveBy(0,mPortListPtrs.value(i)->boundingRect().height());
-                else
-                    mPortListPtrs.value(i)->moveBy(0,-mPortListPtrs.value(i)->boundingRect().height());
-            }
-            else
-            {
-                if(mIsFlipped)
-                    mPortListPtrs.value(i)->moveBy(0,mPortListPtrs.value(i)->boundingRect().height());
-                else
-                    mPortListPtrs.value(i)->moveBy(0,-mPortListPtrs.value(i)->boundingRect().height());
-            }
+            mPortListPtrs.value(i)->translate(0, -mPortListPtrs.value(i)->boundingRect().width());
         }
         else
         {
