@@ -63,6 +63,7 @@ GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsSce
     else
     {
         mIconPath = ""; //!< @todo Some default noname icon if icon missing
+        mIsoIconPath = "";
     }
 
 
@@ -97,53 +98,6 @@ GUIObject::~GUIObject()
     //delete widget;
     emit componentDeleted();
 }
-
-
-//GUIComponent::GUIComponent(HopsanEssentials *hopsan, const QString &fileName, QString componentTypeName, QPoint position, QGraphicsView *parentView, QGraphicsItem *parent)
-//        : QGraphicsWidget(parent)
-//{
-//    //Core interaction
-//    mpCoreComponent = hopsan->CreateComponent(componentTypeName.toStdString());
-//    //
-//
-//    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
-//    this->setAcceptHoverEvents(true);
-//
-//    //widget = new QWidget;
-//
-//    mpParentView = parentView;
-//
-//    this->setZValue(10);
-//    icon = new QGraphicsSvgItem(fileName,this);
-////    icon->setPos(QPointF(-icon->boundingRect().width()/2, -icon->boundingRect().height()/2));
-//    std::cout << "GUIcomponent: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
-//    std::cout << "GUIcomponent: " << componentTypeName.toStdString() << std::endl;
-//
-//    //setWindowFlags(Qt::SplashScreen);//just to see the geometry
-//    setGeometry(0,0,icon->boundingRect().width(),icon->boundingRect().height());
-//
-//    mpNameText = new GUIComponentNameTextItem(mpCoreComponent, this);
-//    mpNameText->setPos(QPointF(icon->boundingRect().width()/2-mpNameText->boundingRect().width()/2, icon->boundingRect().height()));
-//
-//    //UGLY UGLY HARD CODED PORT CONNECTION TO CORE...
-//    mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(0), icon->sceneBoundingRect().width()-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),this,icon));
-//    mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(1),-5,icon->sceneBoundingRect().height()/2-5,10.0,10.0,this->getParentView(),this,icon));
-//
-//    this->showPorts(false);
-//
-//    //icon->setPos(QPointF(-icon->boundingRect().width()/2, -icon->boundingRect().height()/2));
-//
-//   // rectR->boundingRegion();
-//
-//    connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(fixTextPosition(QPointF)));
-//    connect(this->mpParentView,SIGNAL(keyPressDelete()),this,SLOT(deleteComponent()));
-//
-//    setPos(position-QPoint(icon->boundingRect().width()/2, icon->boundingRect().height()/2));
-//
-//    mpSelectionBox = new GUIComponentSelectionBox(0,0,icon->boundingRect().width(),icon->boundingRect().height(),
-//                                                  QPen(QColor("red"),3), QPen(QColor("darkRed"),2),this);
-//    mpSelectionBox->setVisible(false);
-//}
 
 
 int GUIObject::type() const
@@ -280,14 +234,16 @@ void GUIObject::setIcon(bool useIso)
     if(useIso and mHasIsoIcon)
     {
         delete(mpIcon);
-        mpIcon = new QGraphicsSvgItem(mIsoIconPath,this);
+        mpIcon = new QGraphicsSvgItem(mIsoIconPath, this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
+        qDebug() << "Changing to ISO icon";
     }
     else
     {
         delete(mpIcon);
-        mpIcon = new QGraphicsSvgItem(this->mIconPath,this);
+        mpIcon = new QGraphicsSvgItem(this->mIconPath, this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
+        qDebug() << "Changing to user icon";
     }
 
     if(!this->mIconRotation)
@@ -898,15 +854,13 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, AppearanceData appearanceDa
         this->mIconRotation = true;
     else
         this->mIconRotation = false;
-    size_t nPorts = appearanceData.getNumberOfPorts();
-
-    //qDebug() << "TypeName: " << mComponentTypeName << ", appearanceData.at(2) = " << appearanceData.at(2);
 
     //Core interaction
     mpCoreComponent = hopsan->CreateComponent(mComponentTypeName.toStdString());
     //
 
     //Sets the ports
+    size_t nPorts = appearanceData.getNumberOfPorts();
     //! @todo Mybe should not copy the vector maybe shoule use reference access every time
     QVector<PortAppearance> portappvec = appearanceData.getPortAppearanceVector();
     Port::PORTTYPE porttype;
@@ -964,7 +918,6 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, AppearanceData appearanceDa
     refreshName(); //Make sure name window is correct size for center positioning
 
     std::cout << "GUIcomponent: " << mComponentTypeName.toStdString() << std::endl;
-
 }
 
 

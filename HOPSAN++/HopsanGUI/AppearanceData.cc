@@ -12,56 +12,8 @@ AppearanceData::AppearanceData()
 
 QTextStream& operator >>(QTextStream &is, AppearanceData &rData)
 {
-    QString command;
-
-    while (!is.atEnd())
-    {
-        //! @todo make sure we dont read any file hader if that exist # in the begining
-        //! @todo need som error handling here if file stream has incorect data
-        is >> command; //Read the command word
-
-        if (command == "NAME")
-        {
-            rData.mTypeName = is.readLine().trimmed();
-        }
-        else if (command == "ISOICON")
-        {
-            rData.mIconPathISO = is.readLine().trimmed();
-        }
-        else if (command == "USERICON")
-        {
-            rData.mIconPath = is.readLine().trimmed();
-        }
-        else if (command == "ICONROTATION")
-        {
-            rData.mIconRotationBehaviour = is.readLine().trimmed();
-        }
-        else if (command == "PORTS")
-        {
-            is >> rData.mnPorts;
-
-            for (size_t i=0; i<rData.mnPorts; ++i)
-            {
-                PortAppearance portapp;
-
-                is >> portapp.x;
-                is >> portapp.y;
-                is >> portapp.rot;
-
-                rData.mPortAppearanceVector.push_back(portapp);
-                //std::cout << qPrintable(componentName) << " x: " << qPrintable(portPosX) << " y: " << qPrintable(portPosY) << " rot: " << qPrintable(portRot) << std::endl;
-            }
-        }
-        else if (command == "BASEPATH")
-        {
-            rData.mBasePath = is.readLine().trimmed();
-        }
-        else
-        {
-            qDebug() << "appearanceData: Incorrect command: " + command;
-        }
-    }
-
+    //! @todo handle returned error indication
+    bool sucess = rData.setAppearanceData(is);
     return is;
 }
 
@@ -69,6 +21,7 @@ QTextStream& operator <<(QTextStream &os, const AppearanceData &rData)
 {
     //! @todo maybe write header here (probaly not a good place, better somewhere else)
     //! @todo find out how to make newline in qt instead of "\n"
+    //! @todo do not write emtpy info
     os << "NAME " << rData.mTypeName << "\n";
     //os << "BASEPATH " << rData.getBasePath() << "\n"; //Base path is computer dependant
     os << "ISOICON " << rData.mIconPathISO << "\n";
@@ -123,6 +76,67 @@ QVector<PortAppearance> &AppearanceData::getPortAppearanceVector()
 QString AppearanceData::getBasePath()
 {
     return mBasePath;
+}
+
+bool AppearanceData::setAppearanceData(QTextStream &is)
+{
+    QString command;
+    bool sucess = true;
+
+    while (!is.atEnd())
+    {
+        //! @todo make sure we dont read any file hader if that exist # in the begining
+        //! @todo need som error handling here if file stream has incorect data
+        is >> command; //Read the command word
+
+        if (command == "NAME")
+        {
+            mTypeName = is.readLine().trimmed();
+        }
+        else if (command == "ISOICON")
+        {
+            mIconPathISO = is.readLine().trimmed();
+        }
+        else if (command == "USERICON")
+        {
+            mIconPath = is.readLine().trimmed();
+        }
+        else if (command == "ICONROTATION")
+        {
+            mIconRotationBehaviour = is.readLine().trimmed();
+        }
+        else if (command == "PORTS")
+        {
+            is >> mnPorts;
+
+            for (size_t i=0; i<mnPorts; ++i)
+            {
+                PortAppearance portapp;
+
+                is >> portapp.x;
+                is >> portapp.y;
+                is >> portapp.rot;
+                //is.readLine(); //Clear the line ending
+
+                mPortAppearanceVector.push_back(portapp);
+                //std::cout << qPrintable(componentName) << " x: " << qPrintable(portPosX) << " y: " << qPrintable(portPosY) << " rot: " << qPrintable(portRot) << std::endl;
+            }
+        }
+        else if (command == "BASEPATH")
+        {
+            mBasePath = is.readLine().trimmed();
+        }
+        else
+        {
+            //Ignore empty lines
+            if (!command.isEmpty())
+            {
+                qDebug() << "appearanceData: Incorrect command: " + command;
+                sucess = false;
+            }
+        }
+    }
+    return sucess;
 }
 
 void AppearanceData::setTypeName(QString name)

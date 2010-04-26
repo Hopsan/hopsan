@@ -113,22 +113,16 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
     //stream out appearance data and extra basepath info
     stream << *(mpParentLibraryWidget->getAppearanceData(pItem->text()));
     stream << "BASEPATH " << mpParentLibraryWidget->getAppearanceData(pItem->text())->getBasePath();
-    //qDebug() << "moving: appearanceData: " << *(mpParentLibraryWidget->getAppearanceData2(pItem->text()));
 
     QDrag *drag = new QDrag(this);
     QMimeData *mimeData = new QMimeData;
-    //QString mimeType = "application/x-text";
-
-    //mimeData->setData(mimeType, *data);
     drag->setMimeData(mimeData);
-
     mimeData->setText(datastr);
 
     qDebug() << "Debug stream: " << mimeData->text();
 
     drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()));
     drag->exec(Qt::CopyAction | Qt::MoveAction);
-
     //Qt::DropAction dropAction = drag->exec(Qt::CopyAction | Qt::MoveAction);
 }
 
@@ -222,18 +216,6 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
     QStringList libList = libDirObject.entryList(); //Create a list with all name of the files in dir libDir
     for (int i = 0; i < libList.size(); ++i)    //Iterate over the file names
     {
-        //Set up needed variables
-        QStringList appearanceData;
-        QString componentName;
-        QIcon icon;
-        QString isoIconPath;
-        QString userIconPath;
-        QString iconRotationBehaviour;
-        QString nPorts;
-        QString portPosX;
-        QString portPosY;
-        QString portRot;
-
         QString filename = libDirObject.absolutePath() + "/" + libList.at(i);
         QFile file(filename);   //Create a QFile object
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open each file
@@ -242,75 +224,29 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
             return;
         }
 
-
-        //userIconPath = QString("");
         QTextStream inFile(&file);  //Create a QTextStream object to stream the content of each file
 
-//        while (!inFile.atEnd()) {
-//            QString line = inFile.readLine();   //line contains each row in the file
-//
-//            if (line.startsWith("NAME"))
-//            {
-//                componentName = line.mid(5);
-//                appearanceData << componentName;
-//            }
-//
-//            if (line.startsWith("ISOICON"))
-//            {
-//                isoIconPath = libDirObject.absolutePath() + "/" + line.mid(8);
-//                icon.addFile(isoIconPath);
-//                appearanceData << isoIconPath;
-//            }
-//
-//            if (line.startsWith("USERICON"))
-//            {
-//                userIconPath = libDirObject.absolutePath() + "/" + line.mid(9);
-//            }
-//
-//            if (line.startsWith("ICONROTATION"))
-//            {
-//                appearanceData << userIconPath;     //This is stupid, but it must somehow be executed after USERICON even in case there is not USERICON
-//                iconRotationBehaviour = line.mid(13);
-//                appearanceData << iconRotationBehaviour;
-//            }
-//
-//            if (line.startsWith("PORTS"))
-//            {
-//                nPorts = line.mid(6);
-//                appearanceData << nPorts;
-//                for (int i = 0; i < nPorts.toInt(); ++i)
-//                {
-//                    inFile >> portPosX;
-//                    inFile >> portPosY;
-//                    inFile >> portRot;
-////                    line = inFile.readLine();
-////                    portPosX = line.mid(0);
-////                    line = inFile.readLine();
-////                    portPosY = line.mid(0);
-////                    line = inFile.readLine();
-////                    portRot = line.mid(0);
-//                    std::cout << qPrintable(componentName) << " x: " << qPrintable(portPosX) << " y: " << qPrintable(portPosY) << " rot: " << qPrintable(portRot) << std::endl;
-//                    appearanceData << portPosX << portPosY << portRot;
-//                }
-//            }
-//        }
-
-        //Add data to the paremeterData list
-  //      appearanceData << componentName << iconPath;
-
         AppearanceData *pAppearanceData = new AppearanceData;
-        inFile >> *pAppearanceData;
+        bool sucess = pAppearanceData->setAppearanceData(inFile); //Read appearance from file
         pAppearanceData->setBasePath(libDirObject.absolutePath() + "/");
-        LibraryContentItem *libcomp= new LibraryContentItem(pAppearanceData);
 
+        if (sucess)
+        {
+            //Create library content item
+            LibraryContentItem *libcomp= new LibraryContentItem(pAppearanceData);
+
+            //Add the component to the library
+            addLibraryContentItem(libName, parentLib, libcomp);
+            qDebug() << "Loaded item: " << pAppearanceData->getTypeName();
+        }
+        else
+        {
+            qDebug() << "Error reading appearanceFile: " << filename;
+            mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Failure when reading appearanceData file: " + filename);
+        }
+
+        //Close file
         file.close();
-        //LibraryContentItem *libcomp= new LibraryContentItem(icon, componentName);
-      //  std::cout << appearanceData.size() << std::endl;
-        //libcomp->setAppearanceData(appearanceData);
-
-        //Add the component to the library
-        //library->addComponent(libName,componentName,icon,appearanceData);
-        addLibraryContentItem(libName, parentLib, libcomp);
     }
 }
 
@@ -359,7 +295,6 @@ void LibraryWidget::addLibraryContentItem(QString libraryName, QString parentLib
         ++it;
     }
     mAppearanceDataMap.insert(newComponent->getAppearanceData()->getTypeName(), newComponent->getAppearanceData());
-    qDebug() << "Mapping parameters for component: " << newComponent->getAppearanceData()->getTypeName();
 }
 
 
@@ -369,7 +304,7 @@ void LibraryWidget::addLibraryContentItem(QString libraryName, QString parentLib
 //! @see hideAllLib()
 void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
 {
-    hideAllLib();
+   hideAllLib();
 
    QMap<QString, QListWidget *>::iterator lib;
    for (lib = mLibraryMapPtrs.begin(); lib != mLibraryMapPtrs.end(); ++lib)

@@ -245,7 +245,7 @@ void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appear
     qDebug() << "=====================Get name after add: " << mpTempGUIObject->getName();
     //
 
-    mpTempGUIObject->setIcon(!this->mpParentProjectTab->useIsoGraphics);
+    mpTempGUIObject->setIcon(this->mpParentProjectTab->useIsoGraphics);
 
     while (mpTempGUIObject->rotation() != rotation)
     {
@@ -1524,14 +1524,14 @@ void ProjectTabWidget::saveModel(bool saveAs)
 //! @param value is true if ISO should be activated and false if it should be deactivated.
 void ProjectTabWidget::setIsoGraphics(bool value)
 {
-    this->getCurrentTab()->useIsoGraphics = !value;
+    this->getCurrentTab()->useIsoGraphics = value;
 
     ProjectTab *pCurrentTab = getCurrentTab();
     GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
     QMap<QString, GUIConnector *>::iterator it;
     for(it = pCurrentView->mConnectionMap.begin(); it!=pCurrentView->mConnectionMap.end(); ++it)
     {
-        if(!value)
+        if(value)
         {
             if((it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeHydraulic") | (it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeMechanic"))
                 it.value()->setPens(pCurrentView->getPen("Primary", "Power", "Iso"),

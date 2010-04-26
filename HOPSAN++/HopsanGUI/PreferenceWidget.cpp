@@ -52,7 +52,7 @@ PreferenceWidget::~PreferenceWidget()
 
 void PreferenceWidget::updateValues()
 {
-    this->mpParentMainWindow->mpProjectTabs->setIsoGraphics(!isoCheckBox->isChecked());
+    this->mpParentMainWindow->mpProjectTabs->setIsoGraphics(isoCheckBox->isChecked());
     //this->isoBool = this->isoCheckBox->isChecked();
     //qDebug() << isoBool;
     this->accept();
