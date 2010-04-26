@@ -17,6 +17,8 @@
 GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, Port::PORTTYPE type, portDirectionType portDirection, GUIComponent *parent)
     : QGraphicsSvgItem(iconPath,parent)
 {
+
+
     //Core interaction
     mpCorePort = corePort;
     //
@@ -29,7 +31,11 @@ GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, 
 
     setTransformOriginPoint(boundingRect().width()/2,boundingRect().height()/2);
 
-    setPos(x-this->boundingRect().width()/2,y-this->boundingRect().height()/2);
+    mX = x;
+    mY = y;
+
+    updatePosition();
+
     if(this->getPortType() == Port::POWERPORT)
         this->setRotation(0.0);
     else
@@ -81,6 +87,18 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     magnify(true);
 }
 
+
+void GUIPort::updatePosition()
+{
+    if(mpParentComponent->rotation() == 0)
+        setPos(mX-this->boundingRect().width()/2,mY-this->boundingRect().height()/2);
+    else if(mpParentComponent->rotation() == 90)
+        setPos(mX-this->boundingRect().width()/2,mY+this->boundingRect().height()/2);
+    else if(mpParentComponent->rotation() == 180)
+        setPos(mX+this->boundingRect().width()/2,mY+this->boundingRect().height()/2);
+    else
+        setPos(mX+this->boundingRect().width()/2,mY-this->boundingRect().height()/2);
+}
 
 //! Defines what happens when mouse cursor stops hovering a port.
 //! @param *event defines the mouse event.

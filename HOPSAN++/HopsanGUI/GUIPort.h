@@ -17,6 +17,7 @@ public:
     enum portDirectionType {VERTICAL, HORIZONTAL};
     GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, Port::PORTTYPE type, GUIPort::portDirectionType portDirection, GUIComponent *parent = 0);
     ~GUIPort();
+    void updatePosition();
     QPointF rectPos;
     QGraphicsView *getParentView();
     GUIComponent *getComponent();
@@ -52,6 +53,8 @@ private:
     bool mIsMag;
     //GUIPort::portType mType;
     portDirectionType mPortDirection;
+    qreal mX;
+    qreal mY;
 
 };
 

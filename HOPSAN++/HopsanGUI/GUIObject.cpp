@@ -417,24 +417,17 @@ int GUIObject::getPortNumber(GUIPort *port)
 //! Rotates a component 90 degrees clockwise, and tells the connectors that the component has moved.
 void GUIObject::rotate()
 {
-    //! @todo Figure out why ports move to the wrong position sometimes
-    int temNameTextPos = mNameTextPos;
+
+    //int temNameTextPos = mNameTextPos;
     this->setTransformOriginPoint(this->mpIcon->boundingRect().center());
     this->setRotation(this->rotation()+90);
     if (this->rotation() == 360)
     {
         this->setRotation(0);
     }
-    if(mIsFlipped)
-    {
-        this->mpNameText->setRotation(this->rotation());
-    }
-    else
-    {
-        this->mpNameText->setRotation(-this->rotation());
-    }
+
     this->fixTextPosition(this->mpNameText->pos());
-    //this->setNameTextPos(temNameTextPos);
+
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
         if(mPortListPtrs.value(i)->getPortDirection() == GUIPort::VERTICAL)
@@ -443,16 +436,27 @@ void GUIObject::rotate()
             mPortListPtrs.value(i)->setPortDirection(GUIPort::VERTICAL);
         if (mPortListPtrs.value(i)->getPortType() == Port::POWERPORT)
         {
-            if(mIsFlipped)
-            {
-                mPortListPtrs.value(i)->setRotation(this->rotation());
-            }
-            else
-            {
-                mPortListPtrs.value(i)->setRotation(-this->rotation());
-            }
+            qDebug() << "rotation() = " << rotation() << " and mIsFlipped = " << mIsFlipped;
+            if(this->rotation() == 0 and !mIsFlipped)
+                mPortListPtrs.value(i)->setRotation(0);
+            else if(this->rotation() == 0 and mIsFlipped)
+                mPortListPtrs.value(i)->setRotation(180);
+            else if(this->rotation() == 90 and !mIsFlipped)
+                mPortListPtrs.value(i)->setRotation(270);
+            else if(this->rotation() == 90 and mIsFlipped)
+                mPortListPtrs.value(i)->setRotation(90);
+            else if(this->rotation() == 180 and !mIsFlipped)
+                mPortListPtrs.value(i)->setRotation(180);
+            else if(this->rotation() == 180 and mIsFlipped)
+                mPortListPtrs.value(i)->setRotation(0);
+            else if(this->rotation() == 270 and !mIsFlipped)
+                mPortListPtrs.value(i)->setRotation(90);
+            else if(this->rotation() == 270 and mIsFlipped)
+                mPortListPtrs.value(i)->setRotation(270);
         }
+        //mPortListPtrs[i]->updatePosition();
     }
+
     if(!this->mIconRotation)
     {
         this->mpIcon->setRotation(-this->rotation());
@@ -475,6 +479,7 @@ void GUIObject::rotate()
 
         //this->mpIcon->setPos(this->boundingRect().center());
     }
+
     emit componentMoved();
 }
 
@@ -539,7 +544,24 @@ void GUIObject::flipVertical()
 //! @see flipVertical()
 void GUIObject::flipHorizontal()
 {
-    qDebug() << "Rotation = " << this->rotation() << ", mIsFlipped = " << mIsFlipped;
+    for (int i = 0; i != mPortListPtrs.size(); ++i)
+    {
+        if(mPortListPtrs[i]->getPortType() == Port::READPORT or mPortListPtrs[i]->getPortType() == Port::WRITEPORT)
+        {
+            if(this->rotation() == 90 or this->rotation() == 270)
+            {
+                mPortListPtrs.value(i)->scale(1,-1);
+                mPortListPtrs.value(i)->translate(0, -mPortListPtrs.value(i)->boundingRect().width());
+            }
+            else
+            {
+                mPortListPtrs.value(i)->scale(-1,1);
+                mPortListPtrs.value(i)->translate(-mPortListPtrs.value(i)->boundingRect().width(), 0);
+            }
+
+        }
+    }
+
         //Flip the entire widget
     this->scale(-1, 1);
     if(mIsFlipped)
@@ -552,56 +574,8 @@ void GUIObject::flipHorizontal()
         this->moveBy(this->boundingRect().width(),0);
         mIsFlipped = true;
     }
-        //"Un-flip" the text field
-    if(this->rotation() == 0)
-    {
-        this->mpNameText->scale(-1, 1);
-        if(mIsFlipped)
-        {
-            mpNameText->moveBy(mpNameText->boundingRect().width(),0);
-        }
-        else
-        {
-            mpNameText->moveBy(-mpNameText->boundingRect().width(),0);
-        }
-    }
-    else if(this->rotation() == 90)
-    {
-        this->mpNameText->scale(1,-1);
-        if(mIsFlipped)
-        {
-            mpNameText->moveBy(0,-mpNameText->boundingRect().width());
-        }
-        else
-        {
-            mpNameText->moveBy(0,mpNameText->boundingRect().width());
-        }
-    }
-    else if(this->rotation() == 180)
-    {
-        this->mpNameText->scale(-1, 1);
-        if(mIsFlipped)
-        {
-            mpNameText->moveBy(-mpNameText->boundingRect().width(),0);
-        }
-        else
-        {
-            mpNameText->moveBy(mpNameText->boundingRect().width(),0);
-        }
-    }
-    else if(this->rotation() == 270)
-    {
-        this->mpNameText->scale(1,-1);
-        if(mIsFlipped)
-        {
-            mpNameText->moveBy(0,mpNameText->boundingRect().width());
-        }
-        else
-        {
-            mpNameText->moveBy(0,-mpNameText->boundingRect().width());
-        }
-    }
 
+    this->fixTextPosition(this->mpNameText->pos());
 
         //"Un-flip" the ports
     for (int i = 0; i != mPortListPtrs.size(); ++i)
@@ -614,10 +588,7 @@ void GUIObject::flipHorizontal()
         else
         {
             mPortListPtrs.value(i)->scale(-1,1);
-            if(mIsFlipped)
-                mPortListPtrs.value(i)->moveBy(mPortListPtrs.value(i)->boundingRect().width(),0);
-            else
-                mPortListPtrs.value(i)->moveBy(-mPortListPtrs.value(i)->boundingRect().width(),0);
+            mPortListPtrs.value(i)->translate(-mPortListPtrs.value(i)->boundingRect().width(), 0);
         }
     }
 }
@@ -703,16 +674,15 @@ QString GUIObject::getTypeName()
 GUIObjectDisplayName::GUIObjectDisplayName(GUIObject *pParent)
     :   QGraphicsTextItem(pParent)
 {
-    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable);
-//    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
-    //setTextInteractionFlags(Qt::TextEditorInteraction);
     mpParentGUIComponent = pParent;
+    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIgnoresTransformations);
 }
 
 
 void GUIObjectDisplayName::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     setTextInteractionFlags(Qt::TextEditorInteraction);
+    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIgnoresTransformations);
 }
 
 
@@ -720,6 +690,7 @@ void GUIObjectDisplayName::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     emit textMoved(event->pos());
     QGraphicsTextItem::mouseReleaseEvent(event);
+    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIgnoresTransformations);
 }
 
 void GUIObjectDisplayName::focusOutEvent(QFocusEvent *event)
@@ -733,6 +704,7 @@ void GUIObjectDisplayName::focusOutEvent(QFocusEvent *event)
     setTextInteractionFlags(Qt::NoTextInteraction);
 
     QGraphicsTextItem::focusOutEvent(event);
+    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIgnoresTransformations);
 }
 
 
