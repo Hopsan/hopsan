@@ -210,7 +210,39 @@ void GUIConnector::setEndPort(GUIPort *port)
     mEndPortConnected = true;
     mpEndPort = port;
     mpEndPort->isConnected = true;
-    this->removePoint();        //Remove the extra point that is created by the mouse click event when clicking on the port
+    if(mpEndPort->getPortDirection() == GUIPort::HORIZONTAL and mGeometries.back() == GUIConnector::HORIZONTAL or
+       mpEndPort->getPortDirection() == GUIPort::VERTICAL and mGeometries.back() == GUIConnector::VERTICAL)
+    {
+            //Wrong direction of last line, so remove last point. It will be fine.
+        this->removePoint();
+    }
+    else
+    {
+            //Move second last line a bit outwards from the component
+        if(mpEndPort->getPortDirection() == GUIPort::HORIZONTAL and mpEndPort->getComponent()->mapToScene(mpEndPort->getComponent()->boundingRect().center()).x() > mapToScene(mpEndPort->pos()).x())
+        {
+            mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-2].x() - 20, mPoints[mPoints.size()-2].y());
+            mPoints[mPoints.size()-3] = QPointF(mPoints[mPoints.size()-3].x() - 20, mPoints[mPoints.size()-3].y());
+        }
+        else if(mpEndPort->getPortDirection() == GUIPort::HORIZONTAL and mpEndPort->getComponent()->mapToScene(mpEndPort->getComponent()->boundingRect().center()).x() < mapToScene(mpEndPort->pos()).x())
+        {
+            mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-2].x() + 20, mPoints[mPoints.size()-2].y());
+            mPoints[mPoints.size()-3] = QPointF(mPoints[mPoints.size()-3].x() + 20, mPoints[mPoints.size()-3].y());
+        }
+        else if(mpEndPort->getPortDirection() == GUIPort::VERTICAL and mpEndPort->getComponent()->mapToScene(mpEndPort->getComponent()->boundingRect().center()).y() > mapToScene(mpEndPort->pos()).y())
+        {
+            mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-2].x(), mPoints[mPoints.size()-2].y() - 20);
+            mPoints[mPoints.size()-3] = QPointF(mPoints[mPoints.size()-3].x(), mPoints[mPoints.size()-3].y() - 20);
+        }
+        else if(mpEndPort->getPortDirection() == GUIPort::VERTICAL and mpEndPort->getComponent()->mapToScene(mpEndPort->getComponent()->boundingRect().center()).y() < mapToScene(mpEndPort->pos()).y())
+        {
+            mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-2].x(), mPoints[mPoints.size()-2].y() + 20);
+            mPoints[mPoints.size()-3] = QPointF(mPoints[mPoints.size()-3].x(), mPoints[mPoints.size()-3].y() + 20);
+        }
+        this->drawConnector();
+        this->mpParentView->setBackgroundBrush(this->mpParentView->mBackgroundColor);
+    }
+
     this->updateEndPoint(port->mapToScene(port->boundingRect().center()));
     connect(this->mpEndPort->getComponent(),SIGNAL(componentDeleted()),this,SLOT(deleteMe()));
     connect(this->mpEndPort->getComponent(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
