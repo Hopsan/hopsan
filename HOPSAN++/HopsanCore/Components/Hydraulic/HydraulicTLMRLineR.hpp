@@ -1,6 +1,6 @@
 //!
 //! @file   HydraulicTLMRLineR.hpp
-//! @author BjÃ¶rn Eriksson <bjorn.eriksson@liu.se>
+//! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2009-12-21
 //!
 //! @brief Contains a Hydraulic Transmission Line Component with Resistors in the ends
@@ -107,7 +107,7 @@ public:
         //Write new values to nodes
         mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, mDelayedC1.value(c1));
         mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc+mR1);
-        mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, mDelayedC2.value(c1));  //! @todo Kolla upp om det ska vara c1 här
+        mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, mDelayedC2.value(c2));
         mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc+mR2);
 
         //Update the delayed variabels
