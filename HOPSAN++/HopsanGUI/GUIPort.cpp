@@ -138,6 +138,26 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
                 plot(1);
             }
         }
+        if (mpCorePort->getNodeType() =="NodeMechanic")
+        {
+            QAction *plotVelocityAction = menu.addAction("Plot velocity");
+            QAction *plotForceAction = menu.addAction("Plot force");
+            QAction *plotPositionAction = menu.addAction("Plot position");
+            QAction *selectedAction = menu.exec(event->screenPos());
+
+            if (selectedAction == plotVelocityAction)
+            {
+                plot(0);
+            }
+            if (selectedAction == plotForceAction)
+            {
+                plot(1);
+            }
+            if (selectedAction == plotPositionAction)
+            {
+                plot(2);
+            }
+        }
         if (mpCorePort->getNodeType() =="NodeSignal")
         {
             QAction *plotSignalAction = menu.addAction("Plot signal value");
@@ -197,12 +217,8 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
     QString xlabel;
     QString ylabel;
 
-    if (mpCorePort->getNodeType() == "NodeHydraulic")
-    {
-        string name, unit;
-        mpCorePort->getNodeDataNameAndUnit(nVar, name, unit);
-        title.append(QString::fromStdString(name));
-        ylabel.append(QString::fromStdString(name) + ", [" + QString::fromStdString(unit) + "]");
+//    if (mpCorePort->getNodeType() == "NodeHydraulic")
+//    {
 //        if (nVar == 0)
 //        {
 //            title.append("Flow");
@@ -213,12 +229,23 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
 //            title.append("Pressure");
 //            ylabel.append("Pressure, [Pa]");
 //        }
-    }
-    else if (mpCorePort->getNodeType() == "NodeSignal")
-    {
-            title.append("Signal value");
-            ylabel.append("Value, [-]");
-    }
+//    }
+//    if (mpCorePort->getNodeType() == "NodeMechanic")
+//    {
+//        string name, unit;
+//        mpCorePort->getNodeDataNameAndUnit(nVar, name, unit);
+//        title.append(QString::fromStdString(name));
+//        ylabel.append(QString::fromStdString(name) + ", [" + QString::fromStdString(unit) + "]");
+//    }
+//    else if (mpCorePort->getNodeType() == "NodeSignal")
+//    {
+//            title.append("Signal value");
+//            ylabel.append("Value, [-]");
+//    }
+    string name, unit;
+    mpCorePort->getNodeDataNameAndUnit(nVar, name, unit);
+    title.append(QString::fromStdString(name));
+    ylabel.append(QString::fromStdString(name) + ", [" + QString::fromStdString(unit) + "]");
 
     title.append(" at component: ").append(QString::fromStdString(mpParentComponent->mpCoreComponent->getName())).append(", port: ").append(QString::fromStdString(mpCorePort->getPortName()));
     xlabel.append("Time, [s]");
