@@ -63,10 +63,10 @@ public:
     }
 
 
-	void initialize()
-	{
-        //Nothing to initilize
-	}
+    void initialize()
+    {
+        mpOut->writeNode(NodeSignal::VALUE, mBaseValue);
+    }
 
 
     void simulateOneTimestep()

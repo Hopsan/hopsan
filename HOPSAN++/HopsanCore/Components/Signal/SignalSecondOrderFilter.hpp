@@ -46,6 +46,12 @@ public:
         mMin = min;
         mMax = max;
 
+        mK = 1.0;
+        mWnum = 1e10;
+        mDnum = 1.0;
+        mWden = 1.0*2.0*3.1415;
+        mDden = 0.7;
+
         mpIn = addReadPort("in", "NodeSignal");
         mpOut = addWritePort("out", "NodeSignal");
 
@@ -54,6 +60,8 @@ public:
         registerParameter("dnum", "Numerator damp coefficient", "-", mDnum);
         registerParameter("wden", "Denumerator break frequency", "rad/s", mWden);
         registerParameter("dden", "Numerator damp coefficient", "-", mDden);
+        registerParameter("min", "Lower limit for output", "-", mMin);
+        registerParameter("max", "Upper limit for output", "-", mMax);
     }
 
 
@@ -72,7 +80,9 @@ public:
         den[2] = 1.0;
 
         mFilter.initialize(mTime, mTimestep, num, den, mStartY, mStartY, mMin, mMax);
-        //! @todo Write out values into node as well? (I think so) This is true for all components
+
+        //Writes out the value for time "zero"
+        mpOut->writeNode(NodeSignal::VALUE, mStartY);
     }
 
 

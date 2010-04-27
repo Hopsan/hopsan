@@ -964,7 +964,6 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 
     //Core interaction
     mpComponentSystem = mpParentProjectTabWidget->mpHopsan->CreateComponentSystem();
-    mpComponentSystem->setName("APA");
     mpComponentSystem->setDesiredTimestep(.001);
     mpComponentSystem->setTypeCQS("S");
     emit checkMessages();
@@ -1082,6 +1081,8 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
 
     ProjectTab *newTab = new ProjectTab(this);
     newTab->mIsSaved = false;
+
+    newTab->mpComponentSystem->setName(tabName.toStdString());
 
     addTab(newTab, tabName.append(QString("*")));
     setCurrentWidget(newTab);
@@ -1305,11 +1306,11 @@ void ProjectTabWidget::loadModel()
 
     while (! modelFile.eof() )
     {
-            //Read the line
+        //Read the line
         getline(modelFile,inputLine);                                   //Read a line
         stringstream inputStream(inputLine);
 
-            //Extract first word unless stream is empty
+        //Extract first word unless stream is empty
         if ( inputStream >> inputWord )
         {
             //----------- Create New SubSystem -----------//
@@ -1421,7 +1422,7 @@ void ProjectTabWidget::loadModel()
 
                 pCurrentView->scene()->addItem(pTempConnector);
 
-                    //Hide connected ports
+                //Hide connected ports
                 startPort->hide();
                 endPort->hide();
 
@@ -1439,16 +1440,19 @@ void ProjectTabWidget::loadModel()
                     assert(false);
                 }
             }
-
         }
     }
-        //Deselect all comonents
+    //Deselect all comonents
     GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
     QMap<QString, GUIObject *>::iterator it;
     for(it = pCurrentView->mGUIObjectMap.begin(); it!=pCurrentView->mGUIObjectMap.end(); ++it)
     {
         it.value()->setSelected(false);
     }
+
+    //Sets the file name as model name
+    pCurrentView->getModelPointer()->setName(fileInfo.fileName().toStdString());
+
     emit checkMessages();
 }
 
@@ -1517,6 +1521,10 @@ void ProjectTabWidget::saveModel(bool saveAs)
         modelFile << "\n";
     }
     modelFile << "--------------------------------------------------------------" << std::endl;
+
+    //Sets the model name
+    pCurrentTab->mpComponentSystem->setName(fileInfo.fileName().toStdString());
+    this->setTabText(this->currentIndex(), fileInfo.fileName());
 }
 
 

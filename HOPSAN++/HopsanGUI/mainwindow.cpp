@@ -125,6 +125,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary("../../HopsanGUI/componentData/signal/Sinks","Signal");
     mpLibrary->addLibrary("../../HopsanGUI/componentData/signal/Arithmetics","Signal");
     mpLibrary->addLibrary("../../HopsanGUI/componentData/signal/Non-Linearities","Signal");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/signal/Filters","Signal");
 
     mpLibrary->addEmptyLibrary("Mechanic");
     mpLibrary->addLibrary("../../HopsanGUI/componentData/mechanic/Transformers","Mechanic");

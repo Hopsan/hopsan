@@ -26,7 +26,7 @@ private:
     TurbulentFlowFunction mTurb;
     ValveHysteresis mHyst;
     SecondOrderFilter mFilter;
-    Port *mpP1, *mpP2;
+    Port *mpP1, *mpP2, *mpX;
 
 public:
     static Component *Creator()
@@ -36,17 +36,17 @@ public:
     }
 
     HydraulicAlternativePRV(const string name,
-                                 const double pref          = 20000000,
-                                 const double cq            = 0.67,
-                                 const double spooldiameter = 0.01,
-                                 const double frac          = 1.0,
-                                 const double pilotarea     = 0.001,
-                                 const double k             = 1e6,
-                                 const double c             = 1000,
-                                 const double mass          = 0.05,
-                                 const double xhyst         = 0.0,
-                                 const double xmax          = 0.001,
-                                 const double timestep      = 0.001)
+                            const double pref          = 20000000,
+                            const double cq            = 0.67,
+                            const double spooldiameter = 0.01,
+                            const double frac          = 1.0,
+                            const double pilotarea     = 0.001,
+                            const double k             = 1e6,
+                            const double c             = 1000,
+                            const double mass          = 0.05,
+                            const double xhyst         = 0.0,
+                            const double xmax          = 0.001,
+                            const double timestep      = 0.001)
         : ComponentQ(name, timestep)
     {
         mTypeName = "HydraulicAlternativePRV";
@@ -65,6 +65,7 @@ public:
 
         mpP1 = addPowerPort("P1", "NodeHydraulic");
         mpP2 = addPowerPort("P2", "NodeHydraulic");
+        mpX  = addWritePort("X", "NodeSignal");
 
         registerParameter("pref", "Reference Opening Pressure", "[Pa]", mPref);
         registerParameter("cq", "Flow Coefficient", "[-]", mCq);
@@ -86,45 +87,47 @@ public:
         mDelayedX0.setStepDelay(1);
         mDelayedX0.initialize(mTime, 0.0);
 
-        //double p1 = mpP1->readNode(NodeHydraulic::PRESSURE);
+        double num[3];
+        double den[3];
+        num[0] = 0.0;
+        num[1] = 0.0;
+        num[2] = 1.0;
+        den[0] = mMass;
+        den[1] = mC;
+        den[2] = mK;
 
-        double num [3] = {1.0, 0.0, 0.0};
-        double den [3] = {mK, mC, mMass};
-        mFilter.initialize(mTime, mTimestep, num, den, 0.0, 0.0, 0.0, 1.0);
+        mFilter.initialize(mTime, mTimestep, num, den, 0.0, 0.0, 0.0, mXmax);
     }
 
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        //double p1 = mpP1->readNode(NodeHydraulic::PRESSURE);
-        double q1 = mpP1->readNode(NodeHydraulic::MASSFLOW);
         double c1  = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
         double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
-        double p2 = mpP2->readNode(NodeHydraulic::PRESSURE);
-        double q2 = mpP2->readNode(NodeHydraulic::MASSFLOW);
         double c2  = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
         double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
 
         //PRV Equations
 
-            //Calculation of Spool Position
         mFs = mPilotArea*mPref;
 
+        double q1 = mpP1->readNode(NodeHydraulic::MASSFLOW); //Needed to calculate p1 for the force equilibrium
         double p1 = c1 + q1*Zc1;
-        double Ftot = p1*mPilotArea - mFs;      //Sum of forces in x direction
-        double num [3] = {1.0, 0.0, 0.0};
-        double den [3] = {mK, mC, mMass};
-        mFilter.setNumDen(num,den);
-        double x0 = mFilter.value(Ftot);            //Filter function
-        double x0h = mHyst.getValue(x0, mXhyst, mDelayedX0.value());            //Hysteresis
+
+        double Ftot = p1*mPilotArea - mFs;      //Sum of forces in x direction beside from spring coeff and viscous friction
+        double x0 = mFilter.value(Ftot);        //Filter function G = 1/(mMass*s^2 + mC*s + mK)
+        double x0h = mHyst.getValue(x0, mXhyst, mDelayedX0.value()); //Hysteresis
 
         //Turbulent flow equation
         mTurb.setFlowCoefficient(mCq*mW*x0);
-        q2 = mTurb.getFlow(c1,c2,Zc1,Zc2);
-        q1 = -q2;
-        p2 = c2+Zc2*q2;
-        p1 = c1+Zc1*q1;
 
+        double q2 = mTurb.getFlow(c1,c2,Zc1,Zc2);
+        q1 = -q2;
+
+        p1 = c1 + Zc1*q1;
+        double p2 = c2 + Zc2*q2;
+
+/*Kör utan kaviataion nu i början när vi jämför med OpenModelica
         // Cavitation
         bool cav = false;
         if (p1 < 0.0)
@@ -160,13 +163,16 @@ public:
             if (p1 < 0.0) { p1 = 0.0; }
             if (p2 < 0.0) { p2 = 0.0; }
         }
-
+*/
         //Write new values to nodes
 
         mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
         mpP1->writeNode(NodeHydraulic::MASSFLOW, q1);
         mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
         mpP2->writeNode(NodeHydraulic::MASSFLOW, q2);
+
+        if(mpX->isConnected())
+            mpX->writeNode(NodeSignal::VALUE, x0);
 
         mDelayedX0.update(x0h);  //Ska vara x0h
 
