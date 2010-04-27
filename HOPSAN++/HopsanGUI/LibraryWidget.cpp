@@ -31,36 +31,17 @@
 
 #include <QtGui>
 
-////! @brief Constructor
-//LibraryContentItem::LibraryContentItem(const QIcon &icon, const QString &text, QListWidget *parent)
-//        : QListWidgetItem(icon, text, parent)
-//{
-//    QFont font;
-//    font.setPixelSize(8);
-//    this->setFont(font);
-//}
-
+//! Constructor
 LibraryContentItem::LibraryContentItem(AppearanceData *pAppearanceData, QListWidget *pParent)
-        : QListWidgetItem(pAppearanceData->getTypeName(), pParent)
+        : QListWidgetItem(pAppearanceData->getTypeName(), pParent, QListWidgetItem::UserType)
 {
     //Set font
     QFont font;
     font.setPixelSize(8);
     this->setFont(font);
 
-    //Set Icon, prefere user, if its empty use iso
-    QIcon icon;
-    if ( pAppearanceData->getIconPath().isEmpty() )
-    {
-        icon.addFile(pAppearanceData->getBasePath() + pAppearanceData->getIconPathISO());
-    }
-    else
-    {
-        icon.addFile(pAppearanceData->getBasePath() + pAppearanceData->getIconPath());
-    }
-    setIcon(icon);
-
     mpAppearanceData = pAppearanceData;
+    selectIcon(false);
 }
 
 //! @brief Copy Constructor
@@ -69,9 +50,47 @@ LibraryContentItem::LibraryContentItem(const QListWidgetItem &other)
 {
 }
 
+//! @brief Get a pointer to appearanceData
 AppearanceData *LibraryContentItem::getAppearanceData()
 {
     return mpAppearanceData;
+}
+
+//! @brief Selects and loads either user or ISO icon
+//! @param [in] useIso Select wheter to use user (false) or iso (true) icon
+void LibraryContentItem::selectIcon(bool useIso)
+{
+    //Set Icon, prefere user, if its empty use iso
+    QIcon icon;
+ 
+    //! @todo to speedup we might find out som of this stuff when we load appearanceData, so that we dont have to check every time, (dont know if necessary)
+    if ( !mpAppearanceData->getIconPath().isEmpty() && !useIso )
+    {
+        //Use user icon
+        icon.addFile(mpAppearanceData->getBasePath() + mpAppearanceData->getIconPath());
+    }
+    else if ( !mpAppearanceData->getIconPathISO().isEmpty() && useIso )
+    {
+        //use iso icon
+        icon.addFile(mpAppearanceData->getBasePath() + mpAppearanceData->getIconPathISO());
+    }
+    else if ( mpAppearanceData->getIconPath().isEmpty() && !mpAppearanceData->getIconPathISO().isEmpty() )
+    {
+        //Want user icon but not available, use iso icon
+        icon.addFile(mpAppearanceData->getBasePath() + mpAppearanceData->getIconPathISO());
+    }
+    else if ( !mpAppearanceData->getIconPath().isEmpty() && mpAppearanceData->getIconPathISO().isEmpty() )
+    {
+        //Want ISO icon but not available, Use user icon
+        icon.addFile(mpAppearanceData->getBasePath() + mpAppearanceData->getIconPath());
+    }
+    else
+    {
+        //No icon available use som noname icon
+        icon.addFile("som noname file"); //!< @todo Fix this, noname library icon
+    }
+
+    setIcon(icon);
 }
 
 
@@ -163,7 +182,7 @@ void LibraryWidget::addEmptyLibrary(QString libraryName, QString parentLibraryNa
     LibraryContent *newLibContent = new LibraryContent((LibraryContent*)0, this);
     newLibContent->setDragEnabled(true);
     //newLibContent->setDropIndicatorShown(true);
-    mLibraryMapPtrs.insert(parentLibraryName + libraryName, newLibContent);
+    mLibraryContentMapPtrs.insert(parentLibraryName + libraryName, newLibContent);
 
     mpGrid->addWidget(newLibContent);
     newLibContent->hide();
@@ -280,7 +299,7 @@ void LibraryWidget::addLibrary()
 //! @param libraryName is the name of the library where the component should be added.
 void LibraryWidget::addLibraryContentItem(QString libraryName, QString parentLibraryName, LibraryContentItem *newComponent)
 {
-    mLibraryMapPtrs.value(parentLibraryName + libraryName)->addItem(newComponent);
+    mLibraryContentMapPtrs.value(parentLibraryName + libraryName)->addItem(newComponent);
     QTreeWidgetItemIterator it(mpTree);
     while (*it)
     {
@@ -306,14 +325,14 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
 {
    hideAllLib();
 
-   QMap<QString, QListWidget *>::iterator lib;
-   for (lib = mLibraryMapPtrs.begin(); lib != mLibraryMapPtrs.end(); ++lib)
-    {
+   QMap<QString, LibraryContent*>::iterator lib;
+   for (lib = mLibraryContentMapPtrs.begin(); lib != mLibraryContentMapPtrs.end(); ++lib)
+   {
         //Not top level list widget, so check if it has the correct parent
-        if(item->text(column).size() != mLibraryMapPtrs.key((*lib)).size())
+        if(item->text(column).size() != mLibraryContentMapPtrs.key((*lib)).size())
         {
-            if (item->text(column) == mLibraryMapPtrs.key((*lib)).right(item->text(column).size()) &&
-                item->parent()->text(column) == mLibraryMapPtrs.key((*lib)).left(item->parent()->text(column).size()))
+            if (item->text(column) == mLibraryContentMapPtrs.key((*lib)).right(item->text(column).size()) &&
+                item->parent()->text(column) == mLibraryContentMapPtrs.key((*lib)).left(item->parent()->text(column).size()))
             {
                 (*lib)->show();
             }
@@ -321,7 +340,7 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
         else
         //Top level widget, don't check parent (would lead to a segmentation fault since it does not exist)
         {
-            if (item->text(column) == mLibraryMapPtrs.key((*lib)).right(item->text(column).size()))
+            if (item->text(column) == mLibraryContentMapPtrs.key((*lib)).right(item->text(column).size()))
             {
                 (*lib)->show();
             }
@@ -346,10 +365,24 @@ AppearanceData *LibraryWidget::getAppearanceData(QString componentType)
 //! @see showLib(QTreeWidgetItem *item, int column)
 void LibraryWidget::hideAllLib()
 {
-    QMap<QString, QListWidget *>::iterator lib;
-    for (lib = mLibraryMapPtrs.begin(); lib != mLibraryMapPtrs.end(); ++lib)
+    QMap<QString, LibraryContent*>::iterator lib;
+    for (lib = mLibraryContentMapPtrs.begin(); lib != mLibraryContentMapPtrs.end(); ++lib)
     {
         (*lib)->hide();
     }
+}
 
+void LibraryWidget::useIsoGraphics(bool useISO)
+{
+    QMap<QString, LibraryContent*>::iterator lib;
+    for (lib = mLibraryContentMapPtrs.begin(); lib != mLibraryContentMapPtrs.end(); ++lib)
+    {
+        for (size_t i=0; i<(*lib)->count(); i++)
+        {
+            //! @todo q casting will not work in this cas need to rewrite and use some otehr way
+            //LibraryContentItem* libcontit =
+            //qobject_cast<LibraryContentItem*>( (*lib)->item(i) )->selectIcon(useISO);
+            //libcontit->selectIcon(useISO);
+        }
+    }
 }

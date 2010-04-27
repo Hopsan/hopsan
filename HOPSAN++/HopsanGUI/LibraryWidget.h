@@ -29,10 +29,12 @@ class LibraryContentItem;
 class LibraryContentItem : public QListWidgetItem
 {
 public:
-    //LibraryContentItem(const QIcon &icon, const QString &text, QListWidget *parent = 0);
     LibraryContentItem(AppearanceData *pAppearanceData, QListWidget *parent = 0);
     LibraryContentItem(const QListWidgetItem &other);
     AppearanceData *getAppearanceData();
+
+//public slots:
+    void selectIcon(bool useIso=false);
 
 private:
     AppearanceData *mpAppearanceData;
@@ -48,8 +50,6 @@ class LibraryContent : public QListWidget
 
 public:
     LibraryContent(LibraryContent *pParentLibraryContent, LibraryWidget *pParentLibraryWidget);
-
-    //QMimeData *mimeData(const QList<QListWidgetItem*> items) const;
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
@@ -71,25 +71,24 @@ public:
     LibraryWidget(MainWindow *parent = 0);
     void addEmptyLibrary(QString libraryName, QString parentLibraryName=QString());
     void addLibrary(QString libDir, QString parentLib=QString());
-    void addComponent(QString libraryName, QString parentLibraryName, LibraryContentItem *newComponent, QStringList parameterData);
     void addLibraryContentItem(QString libraryName, QString parentLibraryName, LibraryContentItem *newComponent);
     AppearanceData *getAppearanceData(QString componentType);
 
-    //Member variables
-    MainWindow *mpParentMainWindow;
-    QTreeWidget *mpTree;
-    QMap<QString, QListWidget *> mLibraryMapPtrs;
-    QVBoxLayout *mpGrid;
-
 public slots:
     void addLibrary();
+    void useIsoGraphics(bool useISO);
 
 private slots:
     void showLib(QTreeWidgetItem * item, int column);
     void hideAllLib();
 
 private:
+    //Member variables
+    MainWindow *mpParentMainWindow;
     QMap<QString, AppearanceData*> mAppearanceDataMap;
+    QTreeWidget *mpTree;
+    QMap<QString, LibraryContent*> mLibraryContentMapPtrs;
+    QVBoxLayout *mpGrid;
 
 };
 
