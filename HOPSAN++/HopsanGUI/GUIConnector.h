@@ -12,6 +12,8 @@
 #include "GUIConnector.h"
 
 class GUIConnectorLine;
+class GraphicsView;
+class GUIPort;
 
 class GUIConnector : public QGraphicsWidget
 {

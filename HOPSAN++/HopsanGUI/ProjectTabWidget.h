@@ -17,11 +17,13 @@
 
 #include "MessageWidget.h"
 #include "AppearanceData.h"
+#include "UndoStack.h"
 
 
 class GUIPort;
 class GUIConnector;
 class ProjectTab;
+class UndoStack;
 
 class GraphicsScene : public QGraphicsScene
 {
@@ -67,6 +69,7 @@ signals:
     void keyPressR();
     void keyPressCtrlA();
     void keyPressCtrlS();
+    void keyPressCtrlZ();
     void keyPressUp();
     void keyPressDown();
     void keyPressLeft();
@@ -94,7 +97,7 @@ public slots:
     void hideNames();
     void showNames();
     void hidePorts(bool doIt);
-    //void unHidePorts();
+    void undo();
 
 protected:
     virtual void dragMoveEvent(QDragMoveEvent *event);
@@ -129,6 +132,7 @@ private:
     QPen mPrimaryPenSignalIso;
     QPen mActivePenSignalIso;
     QPen mHoverPenSignalIso;
+    UndoStack *undoStack;
  };
 
 

@@ -9,6 +9,8 @@
 #include "GUIObject.h"
 #include "HopsanCore.h"
 
+class GUIComponent;
+
 class GUIPort :public QGraphicsSvgItem
 {
     Q_OBJECT

@@ -76,6 +76,8 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     mActivePenSignalUser = QPen(QColor("red"), 2, Qt::DashLine);
     mHoverPenSignalUser = QPen(QColor("darkRed"),2, Qt::DashLine);
 
+    undoStack = new UndoStack(this);
+
     MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
     connect(this->systemPortAction, SIGNAL(triggered()), SLOT(addSystemPort()));
@@ -83,7 +85,7 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     connect(pMainWindow->copyAction, SIGNAL(triggered()), this,SLOT(copySelected()));
     connect(pMainWindow->pasteAction, SIGNAL(triggered()), this,SLOT(paste()));
     connect(pMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this,SLOT(hidePorts(bool)));
-    //connect(pMainWindow->showPortsAction, SIGNAL(triggered()), this,SLOT(unHidePorts()));
+    connect(this, SIGNAL(keyPressCtrlZ()), this, SLOT(undo()));
 }
 
 void GraphicsView::createMenus()
@@ -339,9 +341,10 @@ void GraphicsView::addSystemPort()
 //! @param objectName is the name of the componenet to delete
 void GraphicsView::deleteGUIObject(QString objectName)
 {
-    //qDebug() << "In deleteGUIObject";
+        //qDebug() << "In deleteGUIObject";
     QMap<QString, GUIObject *>::iterator it;
     it = mGUIObjectMap.find(objectName);
+    undoStack->store(it.value());
 
     QMap<QString, GUIConnector *>::iterator it2;
     for(it2 = this->mConnectionMap.begin(); it2!=this->mConnectionMap.end(); ++it2)
@@ -451,6 +454,8 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         emit keyPressCtrlA();
     else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_S)
         emit keyPressCtrlS();
+    else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Z)
+        emit keyPressCtrlZ();
     else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_A)
         this->selectAll();
     else if (event->modifiers() and Qt::ControlModifier)
@@ -882,12 +887,12 @@ void GraphicsView::hidePorts(bool doIt)
 }
 
 
-////! Slot that sets hide poprts flag to false
-////! @see hidePorts()
-//void GraphicsView::unHidePorts()
-//{
-//    mPortsHidden = false;
-//}
+//! Slot that tells the undoStack to execute one undo step
+void GraphicsView::undo()
+{
+    qDebug() << "Preparing to undo!";
+    undoStack->undoOneStep();
+}
 
 
 //! Get function for primary pen style
