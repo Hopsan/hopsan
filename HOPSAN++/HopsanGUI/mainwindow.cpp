@@ -280,9 +280,7 @@ void MainWindow::createActions()
     hidePortsIcon.addFile("../../HopsanGUI/icons/hideports.png", QSize(), QIcon::Normal, QIcon::On);
     hidePortsAction = new QAction(hidePortsIcon, tr("&Hide All Ports"), this);
     hidePortsAction->setText("Hide All Ports");
-
-    showPortsAction = new QAction(QIcon("../../HopsanGUI/icons/showports.png"), tr("&Show All Ports"), this);
-    showPortsAction->setText("Show All Ports");
+    hidePortsAction->setCheckable(true);
 }
 
 
@@ -398,7 +396,6 @@ void MainWindow::createToolbars()
     viewToolBar->addAction(hideNamesAction);
     viewToolBar->addAction(showNamesAction);
     viewToolBar->addAction(hidePortsAction);
-    viewToolBar->addAction(showPortsAction);
 
     mpSimulationToolBar = addToolBar(tr("Simulation"));
     mpSimulationToolBar->setAllowedAreas(Qt::TopToolBarArea);

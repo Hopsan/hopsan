@@ -55,8 +55,8 @@ GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, 
 
     MainWindow *pMainWindow = mpParentComponent->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
     connect(this,SIGNAL(portClicked(GUIPort*)),this->getParentView(),SLOT(addConnector(GUIPort*)));
-    connect(pMainWindow->hidePortsAction,SIGNAL(triggered()),this, SLOT(hideIfNotConnected()));
-    connect(pMainWindow->showPortsAction,SIGNAL(triggered()),this, SLOT(showIfNotConnected()));
+    connect(pMainWindow->hidePortsAction,SIGNAL(triggered(bool)),this, SLOT(hideIfNotConnected(bool)));
+    //connect(pMainWindow->showPortsAction,SIGNAL(triggered()),this, SLOT(showIfNotConnected()));
 }
 
 
@@ -311,18 +311,13 @@ void GUIPort::setPortDirection(GUIPort::portDirectionType direction)
 
 
 
-void GUIPort::hideIfNotConnected()
+void GUIPort::hideIfNotConnected(bool justDoIt)
 {
-    if(!isConnected)
+    if(!isConnected and justDoIt)
     {
         this->hide();
     }
-}
-
-
-void GUIPort::showIfNotConnected()
-{
-    if(!isConnected)
+    else if(!isConnected and !justDoIt)
     {
         this->show();
     }

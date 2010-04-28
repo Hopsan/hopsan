@@ -93,8 +93,8 @@ public slots:
     void zoomOut();
     void hideNames();
     void showNames();
-    void hidePorts();
-    void unHidePorts();
+    void hidePorts(bool doIt);
+    //void unHidePorts();
 
 protected:
     virtual void dragMoveEvent(QDragMoveEvent *event);

@@ -30,8 +30,7 @@ public:
     bool isConnected;
 
 public slots:
-    void hideIfNotConnected();
-    void showIfNotConnected();
+    void hideIfNotConnected(bool justDoIt);
 
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);

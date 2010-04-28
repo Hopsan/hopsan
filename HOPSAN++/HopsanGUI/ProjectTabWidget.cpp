@@ -82,8 +82,8 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     connect(pMainWindow->cutAction, SIGNAL(triggered()), this,SLOT(cutSelected()));
     connect(pMainWindow->copyAction, SIGNAL(triggered()), this,SLOT(copySelected()));
     connect(pMainWindow->pasteAction, SIGNAL(triggered()), this,SLOT(paste()));
-    connect(pMainWindow->hidePortsAction, SIGNAL(triggered()), this,SLOT(hidePorts()));
-    connect(pMainWindow->showPortsAction, SIGNAL(triggered()), this,SLOT(unHidePorts()));
+    connect(pMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this,SLOT(hidePorts(bool)));
+    //connect(pMainWindow->showPortsAction, SIGNAL(triggered()), this,SLOT(unHidePorts()));
 }
 
 void GraphicsView::createMenus()
@@ -876,18 +876,18 @@ void GraphicsView::showNames()
 
 //! Slot that sets hide ports flag to true
 //! @see unHidePorts()
-void GraphicsView::hidePorts()
+void GraphicsView::hidePorts(bool doIt)
 {
-    mPortsHidden = true;
+    mPortsHidden = doIt;
 }
 
 
-//! Slot that sets hide poprts flag to false
-//! @see hidePorts()
-void GraphicsView::unHidePorts()
-{
-    mPortsHidden = false;
-}
+////! Slot that sets hide poprts flag to false
+////! @see hidePorts()
+//void GraphicsView::unHidePorts()
+//{
+//    mPortsHidden = false;
+//}
 
 
 //! Get function for primary pen style
