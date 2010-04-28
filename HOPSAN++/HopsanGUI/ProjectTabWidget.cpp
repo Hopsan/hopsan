@@ -49,6 +49,7 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     this->setEnabled(true);
     this->setAcceptDrops(true);
     this->mIsCreatingConnector = false;
+    this->mPortsHidden = false;
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -81,8 +82,8 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     connect(pMainWindow->cutAction, SIGNAL(triggered()), this,SLOT(cutSelected()));
     connect(pMainWindow->copyAction, SIGNAL(triggered()), this,SLOT(copySelected()));
     connect(pMainWindow->pasteAction, SIGNAL(triggered()), this,SLOT(paste()));
-
-
+    connect(pMainWindow->hidePortsAction, SIGNAL(triggered()), this,SLOT(hidePorts()));
+    connect(pMainWindow->showPortsAction, SIGNAL(triggered()), this,SLOT(unHidePorts()));
 }
 
 void GraphicsView::createMenus()
@@ -870,6 +871,22 @@ void GraphicsView::showNames()
     {
         it.value()->showName();
     }
+}
+
+
+//! Slot that sets hide ports flag to true
+//! @see unHidePorts()
+void GraphicsView::hidePorts()
+{
+    mPortsHidden = true;
+}
+
+
+//! Slot that sets hide poprts flag to false
+//! @see hidePorts()
+void GraphicsView::unHidePorts()
+{
+    mPortsHidden = false;
 }
 
 

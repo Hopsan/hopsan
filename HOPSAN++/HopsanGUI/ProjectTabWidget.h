@@ -48,6 +48,7 @@ public:
     GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, ProjectTab *parent = 0);
     //~GraphicsView();
     bool mIsCreatingConnector;
+    bool mPortsHidden;
     GUIObject *getGUIObject(QString name);
     GUIConnector *getTempConnector();
     HopsanEssentials *mpHopsan;
@@ -92,7 +93,8 @@ public slots:
     void zoomOut();
     void hideNames();
     void showNames();
-
+    void hidePorts();
+    void unHidePorts();
 
 protected:
     virtual void dragMoveEvent(QDragMoveEvent *event);

@@ -276,7 +276,9 @@ void MainWindow::createActions()
     showNamesAction = new QAction(QIcon("../../HopsanGUI/icons/shownames.png"), tr("&Show All Component Names"), this);
     showNamesAction->setText("Show All Component Names");
 
-    hidePortsAction = new QAction(QIcon("../../HopsanGUI/icons/hideports.png"), tr("&Hide All Ports"), this);
+    QIcon hidePortsIcon;
+    hidePortsIcon.addFile("../../HopsanGUI/icons/hideports.png", QSize(), QIcon::Normal, QIcon::On);
+    hidePortsAction = new QAction(hidePortsIcon, tr("&Hide All Ports"), this);
     hidePortsAction->setText("Hide All Ports");
 
     showPortsAction = new QAction(QIcon("../../HopsanGUI/icons/showports.png"), tr("&Show All Ports"), this);

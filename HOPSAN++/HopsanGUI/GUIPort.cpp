@@ -30,7 +30,8 @@ GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, 
     //mType = type;
     mPortDirection = portDirection;
 
-    setTransformOriginPoint(boundingRect().width()/2,boundingRect().height()/2);
+    //setTransformOriginPoint(boundingRect().width()/2,boundingRect().height()/2);
+    setTransformOriginPoint(boundingRect().center());
 
     mX = x;
     mY = y;
