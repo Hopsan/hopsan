@@ -37,13 +37,16 @@ void UndoStack::clear()
 //! Adds a new post to the stack
 void UndoStack::newPost()
 {
-    //Not implemented yet
+    ++mCurrentStackPosition;
+    mStack.append(QStringList());
 }
 
 
 //! Will undo the changes registered in the last stack position, and switch stack pointer one step back
 void UndoStack::undoOneStep()
 {
+    if(!(mCurrentStackPosition == 0 and mStack[0].empty()))
+    {
     qDebug() << "Undo!" << mStack[mCurrentStackPosition].size() << " undo steps found.";
     string undoWord;
     for(int i = 0; i != mStack[mCurrentStackPosition].size(); ++i)
@@ -80,9 +83,10 @@ void UndoStack::undoOneStep()
             }
         }
     }
-    mStack.clear();
-    mStack.append(QStringList());
+    mStack.pop_back();
+    --mCurrentStackPosition;
     mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
+    }
 }
 
 
@@ -96,8 +100,7 @@ void UndoStack::redoOneStep()
 //! Store function for component
 void UndoStack::store(GUIObject *item)
 {
-    mStack.clear();
-    mStack.append(QStringList());
+    newPost();
     QPointF pos = item->mapToScene(item->boundingRect().center());
     std::stringstream tempStringStream;
     //std::string tempString;

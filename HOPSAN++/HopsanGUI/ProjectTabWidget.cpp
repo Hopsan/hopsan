@@ -105,7 +105,7 @@ void GraphicsView::createActions()
 
 void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 {
-    if(!mIsCreatingConnector)
+    if(!mIsCreatingConnector and !mJustStoppedCreatingConnector)
     {
         if (QGraphicsItem *item = itemAt(event->pos()))
             QGraphicsView::contextMenuEvent(event);
@@ -115,6 +115,7 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
             menu.addMenu(menuInsert);
             menu.exec(event->globalPos());
         }
+        mJustStoppedCreatingConnector = true;
     }
 }
 
@@ -514,11 +515,15 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
     emit viewClicked();
+    mJustStoppedCreatingConnector = false;
 
     if (event->button() == Qt::RightButton and this->mIsCreatingConnector)
     {
         if((mpTempConnector->getNumberOfLines() == 1 and mpTempConnector->isMakingDiagonal()) or (mpTempConnector->getNumberOfLines() == 2 and !mpTempConnector->isMakingDiagonal()))
+        {
             mIsCreatingConnector = false;
+            mJustStoppedCreatingConnector = true;
+        }
         mpTempConnector->removePoint(true);
         if(mIsCreatingConnector)
         {
@@ -529,7 +534,9 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         qDebug() << "mIsCreatingConnector = " << mIsCreatingConnector;
     }
     else if  ((event->button() == Qt::LeftButton) && (this->mIsCreatingConnector))
+    {
         mpTempConnector->addPoint(this->mapToScene(event->pos()));
+    }
     QGraphicsView::mousePressEvent(event);
 }
 

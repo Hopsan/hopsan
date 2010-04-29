@@ -133,6 +133,7 @@ private:
     QPen mActivePenSignalIso;
     QPen mHoverPenSignalIso;
     UndoStack *undoStack;
+    bool mJustStoppedCreatingConnector;
  };
 
 
