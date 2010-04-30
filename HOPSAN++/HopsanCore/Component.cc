@@ -1002,7 +1002,15 @@ void ComponentSystem::logAllNodes(const double time)
 //! Adds a transparent SubSystemPort
 Port* ComponentSystem::addSystemPort(const string portname)
 {
-    return addPort(portname, Port::SYSTEMPORT, "undefined_nodetype");
+    if (portname.empty())
+    {
+        //Force default portname p, if nothing else specified
+        return addPort("p", Port::SYSTEMPORT, "undefined_nodetype");
+    }
+    else
+    {
+        return addPort(portname, Port::SYSTEMPORT, "undefined_nodetype");
+    }
 }
 
 //! Rename system port

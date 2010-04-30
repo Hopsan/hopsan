@@ -201,13 +201,13 @@ void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appear
         qDebug() << "Creating GUISubsystem";
         GUISubsystem *pSys = new GUISubsystem(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
         this->mpParentProjectTab->mpComponentSystem->addComponent(pSys->getHopsanCoreSystemComponentPtr()); //core interaction
+
         mpTempGUIObject = pSys;
     }
     else if (componentTypeName == "SystemPort")
     {
         qDebug() << "Creating GUISystemPort";
-        Port* pCorePort = mpParentProjectTab->mpComponentSystem->addSystemPort(name.toStdString()); //core interaction
-        mpTempGUIObject = new GUISystemPort(mpParentProjectTab->mpComponentSystem, pCorePort, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+        mpTempGUIObject = new GUISystemPort(mpParentProjectTab->mpComponentSystem, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
     }
     else //Assume some standard component type
     {

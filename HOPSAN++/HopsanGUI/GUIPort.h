@@ -17,20 +17,20 @@ class GUIPort :public QGraphicsSvgItem
 {
     Q_OBJECT
 public:
-    //enum portType {POWER, READ, WRITE};
     enum portDirectionType {VERTICAL, HORIZONTAL};
     GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, Port::PORTTYPE type, GUIPort::portDirectionType portDirection, GUIObject *parent = 0);
     ~GUIPort();
     void updatePosition();
-    QPointF rectPos;
     QGraphicsView *getParentView();
     GUIComponent *getComponent();
     void magnify(bool blowup);
+    portDirectionType getPortDirection();
+    void setPortDirection(GUIPort::portDirectionType direction);
+
+    QPointF rectPos;
     int getPortNumber();
     Port::PORTTYPE getPortType();
     Port *mpCorePort;
-    portDirectionType getPortDirection();
-    void setPortDirection(GUIPort::portDirectionType direction);
     bool isConnected;
 
 public slots:

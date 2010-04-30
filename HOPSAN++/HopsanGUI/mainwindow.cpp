@@ -148,6 +148,9 @@ MainWindow::MainWindow(QWidget *parent)
     pAppData2->setBasePath("../../HopsanGUI/"); //!< @todo THIS IS BAD
     pAppData2->setTypeName("SystemPort");
     pAppData2->setIconPath("systemporttmp.svg"); //Icon path
+    QString portstr("PORTS 1\n 0.5 0.5 0");
+    QTextStream portstream(&portstr);
+    portstream >> *pAppData2;
 
     LibraryContentItem *pLibsystport = new LibraryContentItem(pAppData2);
     mpLibrary->addLibraryContentItem("", "Subsystem", pLibsystport);

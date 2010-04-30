@@ -1272,39 +1272,40 @@ void GUISubsystem::openParameterDialog()
 }
 
 
-GUISystemPort::GUISystemPort(ComponentSystem* pCoreComponentSystem, Port* pCorePort, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
+GUISystemPort::GUISystemPort(ComponentSystem* pCoreComponentSystem, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
         : GUIObject(position, appearanceData, scene, parent)
 
 {
     //Set the core system pointer
     mpCoreComponentSystem = pCoreComponentSystem;
+    Port* pCorePort = mpCoreComponentSystem->addSystemPort(""); //core interaction, noname for now
 
     //Set the graphical gui port
     //Sets the ports
     //! @todo This code need to be more generalized adn be used in the same way everywhere ports are to be visible
 
-    size_t nPorts = appearanceData.getNumberOfPorts();
+
     //! @todo Mybe should not copy the vector maybe shoule use reference access every time
     QVector<PortAppearance> portappvec = appearanceData.getPortAppearanceVector();
     Port::PORTTYPE porttype;
     size_t i = 0;
-        qreal x = portappvec[i].x;
-        qreal y = portappvec[i].y;
-        qreal rot = portappvec[i].rot;
 
-        //porttype = mpCoreComponent->getPortPtrVector().at(i)->getPortType();
+    qreal x = portappvec[i].x;
+    qreal y = portappvec[i].y;
+    qreal rot = portappvec[i].rot;
 
-        QString iconPath("../../HopsanGUI/porticons/");
-        iconPath.append("BlankPort");
-        iconPath.append(".svg");
+    //porttype = mpCoreComponent->getPortPtrVector().at(i)->getPortType();
 
-        GUIPort::portDirectionType direction;
-        if((rot == 0) | (rot == 180))
-            direction = GUIPort::HORIZONTAL;
-        else
-            direction = GUIPort::VERTICAL;
+    QString iconPath("../../HopsanGUI/porticons/");
+    iconPath.append("SystemPort.svg");
 
-        mpGuiPort = new GUIPort(pCorePort, x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), rot, iconPath, porttype, direction, this);
+    GUIPort::portDirectionType direction;
+    if((rot == 0) | (rot == 180))
+        direction = GUIPort::HORIZONTAL;
+    else
+        direction = GUIPort::VERTICAL;
+
+    mpGuiPort = new GUIPort(pCorePort, x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), rot, iconPath, porttype, direction, this);
 
 }
 
@@ -1341,6 +1342,12 @@ void GUISystemPort::setName(QString newName, bool doOnlyCoreRename)
 QString GUISystemPort::getName()
 {
     return QString::fromStdString(mpGuiPort->mpCorePort->getPortName());
+}
+
+//! Delete the system port in the core
+void GUISystemPort::deleteInHopsanCore()
+{
+
 }
 
 
