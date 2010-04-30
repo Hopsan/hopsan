@@ -195,15 +195,22 @@ void UndoStack::registerDeletedObject(GUIObject *item)
     qDebug() << "Saving: " << tempStringStream.str().c_str();
     mStack[mCurrentStackPosition].insert(0,QString(tempStringStream.str().c_str()));
 
-    Component *mpCoreComponent = item->getHopsanCoreComponentPtr();
-    vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
-    std::vector<CompParameter>::iterator itp;
-    for ( itp=paramVector.begin() ; itp !=paramVector.end(); ++itp )
+    qDebug() << "item->type():" << item->type();
+    //! @todo ugly quickhack for now dont save parameters for systemport or group
+    //! @todo Group typename probably not correct
+    //! @todo maybe the save functin should be part of every object (so it can write its own text)
+    if ( (item->getTypeName() != "SystemPort") && (item->getTypeName() != "Group") )
     {
-        tempStringStream.str("");
-        tempStringStream << "PARAMETER " << item->getName().toStdString() << " " << itp->getName().c_str() << " " << itp->getValue() << "\n";
-        qDebug() << "Saving: " << tempStringStream.str().c_str();
-        mStack[mCurrentStackPosition].insert(0,QString(tempStringStream.str().c_str()));
+        Component *mpCoreComponent = item->getHopsanCoreComponentPtr();
+        vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
+        std::vector<CompParameter>::iterator itp;
+        for ( itp=paramVector.begin() ; itp !=paramVector.end(); ++itp )
+        {
+            tempStringStream.str("");
+            tempStringStream << "PARAMETER " << item->getName().toStdString() << " " << itp->getName().c_str() << " " << itp->getValue() << "\n";
+            qDebug() << "Saving: " << tempStringStream.str().c_str();
+            mStack[mCurrentStackPosition].insert(0,QString(tempStringStream.str().c_str()));
+        }
     }
 }
 

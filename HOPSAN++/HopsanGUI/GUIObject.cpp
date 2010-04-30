@@ -656,7 +656,7 @@ GUIObjectDisplayName::GUIObjectDisplayName(GUIObject *pParent)
 
 GUIObjectDisplayName::~GUIObjectDisplayName()
 {
-    qDebug() << "Deleting name!";
+    qDebug() << "In GUIObjectDisplayName Destructor!";
 }
 
 void GUIObjectDisplayName::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
@@ -819,10 +819,10 @@ void GUIObject::deleteMe()
 //    this->mpParentGraphicsView->setScene(pSubScene);
 //}
 
-int GUIComponent::type() const
-{
-    return Type;
-}
+//int GUIComponent::type() const
+//{
+//    return Type;
+//}
 
 
 //void GUIComponent::keyPressEvent( QKeyEvent *event )
@@ -1347,14 +1347,15 @@ QString GUISystemPort::getName()
 //! Delete the system port in the core
 void GUISystemPort::deleteInHopsanCore()
 {
-
+    qDebug() << "In GUISystemPort::deleteInHopsanCore";
+    mpCoreComponentSystem->deleteSystemPort(mpGuiPort->mpCorePort->getPortName());
 }
 
 
-int GUIGroup::type() const
-{
-    return Type;
-}
+//int GUIGroup::type() const
+//{
+//    return Type;
+//}
 
 
 GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData, GraphicsScene *scene, QGraphicsItem *parent)

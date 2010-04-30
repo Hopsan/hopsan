@@ -152,8 +152,8 @@ public:
     QString getTypeName();
     void deleteInHopsanCore();
 
-    enum { Type = UserType + 3 };
-    int type() const;
+    //enum { Type = UserType + 3 };
+    //int type() const;
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -182,6 +182,9 @@ public:
     void setTypeCQS(QString typestring);
     QString getTypeCQS();
 
+    //enum { Type = UserType + 4 };
+    //int type() const;
+
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void openParameterDialog();
@@ -202,6 +205,10 @@ public:
     void setName(QString newName, bool doOnlyCoreRename);
     QString getName();
     void deleteInHopsanCore();
+
+    //enum { Type = UserType + 5 };
+    //int type() const;
+
 private:
     ComponentSystem *mpCoreComponentSystem;
     GUIPort *mpGuiPort;
@@ -218,8 +225,8 @@ public:
 //    QString getName();
 //    void setName(QString name, bool doOnlyLocalRename=false);
 
-    enum { Type = UserType + 4 };
-    int type() const;
+    //enum { Type = UserType + 6 };
+    //int type() const;
 
 protected:
     GraphicsScene *mpParentScene;
