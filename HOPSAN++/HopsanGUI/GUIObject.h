@@ -195,9 +195,14 @@ class GUISystemPort : public GUIObject
 {
     Q_OBJECT
 public:
-    GUISystemPort(HopsanEssentials *hopsan, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    GUISystemPort(ComponentSystem* pCoreComponentSystem, Port* pCorePort, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
     QString getTypeName();
+    void setName(QString newName, bool doOnlyCoreRename);
+    QString getName();
 private:
+    ComponentSystem *mpCoreComponentSystem;
+    Port *mpCorePort; //hmm kanske inte
+    GUIPort *mpGuiPort;
 
 };
 

@@ -77,7 +77,7 @@ public:
 
     //Ports
     vector<Port*> getPortPtrVector();
-    Port &getPort(const string portname);
+    Port *getPort(const string portname);
 
     //System parent
     ComponentSystem *getSystemParent();
@@ -114,6 +114,8 @@ protected:
     Port* addReadPort(const string portname, const string nodetype);
     Port* addWritePort(const string portname, const string nodetype);
     bool getPort(const string portname, Port* &rpPort);
+    void renamePort(const string oldname, const string newname);
+    void deletePort(const string name);
 
     //==========Protected member variables==========
     //string mTypeCQS;
@@ -133,7 +135,7 @@ private:
     //Private member variables
     string mName;
     vector<CompParameter> mParameters;
-    vector<Port*> mPortPtrs;
+    map<string, Port*> mPortPtrMap;
     ComponentSystem* mpSystemParent;
 };
 
@@ -181,6 +183,8 @@ public:
 
     //Add system ports
     Port* addSystemPort(const string portname);
+    void renameSystemPort(const string oldname, const string newname);
+    void deleteSystemPort(const string name);
 
     //Getting added components and component names
     Component* getSubComponent(string name);

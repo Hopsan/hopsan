@@ -9,6 +9,8 @@
 #include "GUIObject.h"
 #include "HopsanCore.h"
 
+//Forward declaration
+class GUIObject;
 class GUIComponent;
 
 class GUIPort :public QGraphicsSvgItem
@@ -17,7 +19,7 @@ class GUIPort :public QGraphicsSvgItem
 public:
     //enum portType {POWER, READ, WRITE};
     enum portDirectionType {VERTICAL, HORIZONTAL};
-    GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, Port::PORTTYPE type, GUIPort::portDirectionType portDirection, GUIComponent *parent = 0);
+    GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, Port::PORTTYPE type, GUIPort::portDirectionType portDirection, GUIObject *parent = 0);
     ~GUIPort();
     void updatePosition();
     QPointF rectPos;
@@ -54,7 +56,7 @@ private:
     QGraphicsLineItem *lineH;
     QGraphicsLineItem *lineV;
     QGraphicsView *mpParentView;
-    GUIComponent *mpParentComponent;
+    GUIObject *mpParentGuiObject;
     qreal mMag;
     bool mIsMag;
     //GUIPort::portType mType;

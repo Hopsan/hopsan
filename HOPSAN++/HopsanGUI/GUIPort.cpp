@@ -15,7 +15,7 @@
 //! @param rot how the port should be rotated.
 //! @param iconPath a string with the path to the svg-figure representing the port.
 //! @param parent the port's parent, the component it is a part of.
-GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, Port::PORTTYPE type, portDirectionType portDirection, GUIComponent *parent)
+GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, Port::PORTTYPE type, portDirectionType portDirection, GUIObject *parent)
     : QGraphicsSvgItem(iconPath,parent)
 {
 
@@ -25,7 +25,7 @@ GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, 
     //
 
     mpParentView = parent->mpParentGraphicsView;
-    mpParentComponent = parent;
+    mpParentGuiObject = parent;
 
     //mType = type;
     mPortDirection = portDirection;
@@ -53,7 +53,7 @@ GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, 
     mIsMag = false;
     isConnected = false;
 
-    MainWindow *pMainWindow = mpParentComponent->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+    MainWindow *pMainWindow = mpParentGuiObject->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
     connect(this,SIGNAL(portClicked(GUIPort*)),this->getParentView(),SLOT(addConnector(GUIPort*)));
     connect(pMainWindow->hidePortsAction,SIGNAL(triggered(bool)),this, SLOT(hideIfNotConnected(bool)));
     //connect(pMainWindow->showPortsAction,SIGNAL(triggered()),this, SLOT(showIfNotConnected()));
@@ -96,11 +96,11 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
 void GUIPort::updatePosition()
 {
-    if(mpParentComponent->rotation() == 0)
+    if(mpParentGuiObject->rotation() == 0)
         setPos(mX-this->boundingRect().width()/2,mY-this->boundingRect().height()/2);
-    else if(mpParentComponent->rotation() == 90)
+    else if(mpParentGuiObject->rotation() == 90)
         setPos(mX-this->boundingRect().width()/2,mY+this->boundingRect().height()/2);
-    else if(mpParentComponent->rotation() == 180)
+    else if(mpParentGuiObject->rotation() == 180)
         setPos(mX+this->boundingRect().width()/2,mY+this->boundingRect().height()/2);
     else
         setPos(mX+this->boundingRect().width()/2,mY-this->boundingRect().height()/2);
@@ -206,7 +206,9 @@ QGraphicsView *GUIPort::getParentView()
 //! Returns a pointer to the GUIComponent the port belongs to.
 GUIComponent *GUIPort::getComponent()
 {
-    return mpParentComponent;
+    //! @todo Thiss will crash if not GUIComponent should be GUI object may need to change code elsewhere
+    GUIComponent* ptr = qobject_cast<GUIComponent*>(mpParentGuiObject);
+    return ptr;
 }
 
 
@@ -271,10 +273,11 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
     title.append(QString::fromStdString(name));
     ylabel.append(QString::fromStdString(name) + ", [" + QString::fromStdString(unit) + "]");
 
-    title.append(" at component: ").append(QString::fromStdString(mpParentComponent->mpCoreComponent->getName())).append(", port: ").append(QString::fromStdString(mpCorePort->getPortName()));
+    //! @todo need to comment this out  for now  fix later
+    //title.append(" at component: ").append(QString::fromStdString(mpParentComponent->mpCoreComponent->getName())).append(", port: ").append(QString::fromStdString(mpCorePort->getPortName()));
     xlabel.append("Time, [s]");
 
-    PlotWidget *newPlot = new PlotWidget(time,y,mpParentComponent->mpParentGraphicsView);
+    PlotWidget *newPlot = new PlotWidget(time,y,mpParentGuiObject->mpParentGraphicsView);
 
     //newPlot->mpVariablePlot->setTitle(title);
     newPlot->mpCurve->setTitle(title);

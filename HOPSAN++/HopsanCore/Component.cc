@@ -16,6 +16,57 @@
 #include "Component.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 
+//! @brief Helper function to create a unique name among names from a Map
+template<typename MapType>
+string modifyName(MapType &rMap, string name)
+{
+    //Make sure naem is not empty
+    if (name.empty())
+    {
+        name = "empty_name";
+    }
+
+    size_t ctr = 1; //The suffix number
+    while(rMap.count(name) != 0)
+    {
+        //strip suffix
+        size_t foundpos = name.rfind("_");
+        if (foundpos != string::npos)
+        {
+            if (foundpos+1 < name.size())
+            {
+                unsigned char nr = name.at(foundpos+1);
+                //cout << "nr after _: " << nr << endl;
+                //Check the ascii code for the charachter
+                if ((nr >= 48) && (nr <= 57))
+                {
+                    //Is number lets assume that the _ found is the beginning of a suffix
+                    name.erase(foundpos, string::npos);
+                }
+            }
+        }
+        //cout << "ctr: " << ctr << " stripped tempname: " << name << endl;
+
+        //add new suffix
+        stringstream suffix;
+        suffix << ctr;
+        name.append("_");
+        name.append(suffix.str());
+        ++ctr;
+        //cout << "ctr: " << ctr << " appended tempname: " << name << endl;
+    }
+    //cout << name << endl;
+
+//    //If name change, notify
+//    //! @todo maybe this notification should not be inside this function but after its use
+//    if (oldname != name)
+//    {
+//        cout << "Modified name: " << oldname << "  was changed to: " << name << endl;
+//        gCoreMessageHandler.addInfoMessage("Name was automatically adjusted from the requested: {" + oldname + "} to: {" + name + "}", 3);
+//    }
+    return name;
+}
+
 
 //Constructor
 CompParameter::CompParameter(const string name, const string description, const string unit, double &rValue)
@@ -295,9 +346,19 @@ void Component::setParameter(const string name, const double value)
     }
 }
 
+//! @todo Maby not have this function, solve in some other nicer way
 vector<Port*> Component::getPortPtrVector()
 {
-   return mPortPtrs;
+    vector<Port*> vec;
+    vec.clear();
+    map<string, Port*>::iterator ports_it;
+
+    //Copy every port pointer
+    for (ports_it = mPortPtrMap.begin(); ports_it != mPortPtrMap.end(); ++ports_it)
+    {
+        vec.push_back(ports_it->second);
+    }
+    return vec;
 }
 
 
@@ -334,49 +395,90 @@ double *Component::getTimePtr()
 }
 
 
+//! @brief Adds a port to the component
+//! @param [in] portname The desired name of the port (may be automatically changed)
+//! @param [in] porttype The type of port
+//! @param [in] nodetype The type of node that must be connected to the port
 Port* Component::addPort(const string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype)
 {
-    //! @todo handle trying to add multiple ports with same name or pos
-
     Port* new_port = CreatePort(porttype);
-    new_port->mPortName = portname;
     new_port->mNodeType = nodetype;
     new_port->mpComponent = this;    //Set port owner
 
-//      //! @todo id should not be necessary as we wont use enums to point out which port is which
-//    if (id >= 0)
-//    {
-//        //Instead of allways push_back, make it possible to add ports out of order
-//        if ((size_t)id+1 > mPortPtrs.size())
-//        {
-//            mPortPtrs.resize(id+1);
-//        }
-//        mPortPtrs[id] = new_port;
-//    }
-//    else
-//    {
-        //If no id specified push back
-        mPortPtrs.push_back(new_port);     //Push port into storage
-//    }
+    //Make sure name is unique before insert
+    string newname = modifyName< map<string, Port*> >(mPortPtrMap, portname);
+    new_port->mPortName = newname;
+
+    mPortPtrMap.insert(pair<string, Port*>(newname, new_port));
+
+    //Signal autmatic name change
+    if (newname != portname)
+    {
+        gCoreMessageHandler.addInfoMessage("Automatically changed name of added port from: {" + portname + "} to {" + newname + "}", 1);
+    }
 
     return new_port;
 }
 
-
+//! @brief Convenience method to add a PowerPort
+//! @param [in] porttype The type of port
+//! @param [in] nodetype The type of node that must be connected to the port
 Port* Component::addPowerPort(const string portname, const string nodetype)
 {
     return addPort(portname, Port::POWERPORT, nodetype);
 }
 
+//! @brief Convenience method to add a ReadPort
+//! @param [in] porttype The type of port
+//! @param [in] nodetype The type of node that must be connected to the port
 Port* Component::addReadPort(const string portname, const string nodetype)
 {
     return addPort(portname, Port::READPORT, nodetype);
 }
 
+//! @brief Convenience method to add a WritePort
+//! @param [in] porttype The type of port
+//! @param [in] nodetype The type of node that must be connected to the port
 Port* Component::addWritePort(const string portname, const string nodetype)
 {
     return addPort(portname, Port::WRITEPORT, nodetype);
 }
+
+//! @todo this could be a template function to use with all rename in map
+void Component::renamePort(const string oldname, const string newname)
+{
+    if (mPortPtrMap.count(oldname) != 0)
+    {
+        Port* temp_port_ptr;
+        map<string, Port*>::iterator it;
+
+        it = mPortPtrMap.find(oldname); //Find iterator to port
+        temp_port_ptr = it->second;     //Backup copy of port ptr
+        mPortPtrMap.erase(it);          //Erase old value
+        string modnewname = modifyName< map<string, Port*> >(mPortPtrMap, newname); //Make sure new name is unique
+        temp_port_ptr->mPortName = modnewname;  //Set new name in port
+        mPortPtrMap.insert(pair<string, Port*>(modnewname, temp_port_ptr)); //Re add to map
+    }
+    else
+    {
+        gCoreMessageHandler.addWarningMessage("Trying to rename port {" + oldname + "}, but not found", 1);
+    }
+}
+
+void Component::deletePort(const string name)
+{
+    map<string, Port*>::iterator it;
+    it = mPortPtrMap.find(name);
+    if (it != mPortPtrMap.end())
+    {
+        mPortPtrMap.erase(it);
+    }
+    else
+    {
+        gCoreMessageHandler.addWarningMessage("Trying to delete port {" + name + "}, but not found", 1);
+    }
+}
+
 
 void Component::setSystemParent(ComponentSystem &rComponentSystem)
 {
@@ -389,33 +491,32 @@ void Component::setSystemParent(ComponentSystem &rComponentSystem)
 //    return *mPortPtrs[port_idx];
 //}
 
-Port &Component::getPort(const string portname)
+Port *Component::getPort(const string portname)
 {
-    vector<Port*>::iterator it;
-    for (it=mPortPtrs.begin(); it!=mPortPtrs.end(); ++it)
+    map<string, Port*>::iterator it;
+    it = mPortPtrMap.find(portname);
+    if (it != mPortPtrMap.end())
     {
-        if ((*it)->mPortName == portname)
-        {
-            return *(*it);
-        }
+        return it->second;
     }
-   //! @todo cast not found exception
-    cout << "specified port: " << portname << " not found" << endl;
-    assert(false);
+    else
+    {
+        gCoreMessageHandler.addWarningMessage("Trying to get port {" + portname + "}, but not found, pointer invalid", 1);
+        return 0;
+    }
 }
 
 bool Component::getPort(const string portname, Port* &rpPort)
 {
-    vector<Port*>::iterator it;
-    for (it=mPortPtrs.begin(); it!=mPortPtrs.end(); ++it)
+    rpPort = getPort(portname);
+    if (rpPort != 0)
     {
-        if ((*it)->mPortName == portname)
-        {
-            rpPort = (*it);
-            return true;
-        }
+        return true;
     }
-    return false;
+    else
+    {
+        return false;
+    }
 }
 
 void Component::setTimestep(const double timestep)
@@ -693,38 +794,7 @@ double ComponentSystem::getDesiredTimeStep()
 {
     return mDesiredTimestep;
 }
-//void ComponentSystem::addComponents(vector<Component*> components)
-//{
-//    ///TODO: use iterator instead of idx loop
-//    for (size_t idx=0; idx<components.size(); ++idx)
-//    {
-//        Component* comp_ptr = components[idx];
-//        //! @todo add subcomponent
-//        //! @todo what will happen if you change cqs type of subsystem after it has been added, maybe subsystems should be hardcoded c q or s type
-//
-//        if (comp_ptr->isComponentC())
-//        {
-//            mComponentCptrs.push_back(comp_ptr);
-//        }
-//        else if (comp_ptr->isComponentQ())
-//        {
-//            mComponentQptrs.push_back(comp_ptr);
-//        }
-//        else if (comp_ptr->isComponentSignal())
-//        {
-//            mComponentSignalptrs.push_back(comp_ptr);
-//        }
-//        else
-//        {
-//            ///TODO: use exception instead
-//            cout << "Trying to add module of other type than c, q or signal" << endl;
-//            assert(false);
-//        }
-//
-//        mComponentNamesAndTypes.insert(pair<string, string>(comp_ptr->getName(), comp_ptr->getTypeName()));
-//        comp_ptr->setSystemParent(*this);
-//    }
-//}
+
 
 //! Sets a bool which is looked at in initialization and simulation loops.
 //! This method can be used by users e.g. GUIs to stop an started initializatiion/simulation process
@@ -779,14 +849,15 @@ void ComponentSystem::removeSubComponent(string name, bool doDelete)
 void ComponentSystem::removeSubComponent(Component* c_ptr, bool doDelete)
 {
     //Disconnect all ports before erase from system
-    vector<Port*>::iterator ports_it, conn_ports_it;
-    for (ports_it = c_ptr->mPortPtrs.begin(); ports_it != c_ptr->mPortPtrs.end(); ++ports_it)
+    map<string, Port*>::iterator ports_it;
+    vector<Port*>::iterator conn_ports_it;
+    for (ports_it = c_ptr->mPortPtrMap.begin(); ports_it != c_ptr->mPortPtrMap.end(); ++ports_it)
     {
-        vector<Port*> connected_ports = (*ports_it)->getConnectedPorts(); //Get a copy of the connected ports ptr vector
+        vector<Port*> connected_ports = ports_it->second->getConnectedPorts(); //Get a copy of the connected ports ptr vector
         //We can not use an iterator directly connected to the vector inside the port as this will be changed by the disconnect calls
         for (conn_ports_it = connected_ports.begin(); conn_ports_it != connected_ports.end(); ++conn_ports_it)
         {
-            disconnect(*ports_it, *conn_ports_it);
+            disconnect(ports_it->second, *conn_ports_it);
         }
     }
 
@@ -932,6 +1003,18 @@ void ComponentSystem::logAllNodes(const double time)
 Port* ComponentSystem::addSystemPort(const string portname)
 {
     return addPort(portname, Port::SYSTEMPORT, "undefined_nodetype");
+}
+
+//! Rename system port
+void ComponentSystem::renameSystemPort(const string oldname, const string newname)
+{
+    renamePort(oldname,newname);
+}
+
+//! delete System prot
+void ComponentSystem::deleteSystemPort(const string name)
+{
+    deletePort(name);
 }
 
 //! Set the type C, Q, or S of the subsystem by using string
@@ -1118,7 +1201,7 @@ bool ComponentSystem::connect(Component &rComponent1, const string portname1, Co
             //check if both ports have the same node type specified
             if (pPort1->getNodeType() != pPort2->getNodeType())
             {
-                ss << "You can not connect a {" << rComponent1.getPort(portname1).getNodeType() << "} port to a {" << rComponent2.getPort(portname2).getNodeType()  << "} port." << std::endl << "When connecting: {" << rComponent1.getName() << "::" << portname1 << "} to {" << rComponent2.getName() << "::" << portname2 << "}";
+                ss << "You can not connect a {" << rComponent1.getPort(portname1)->getNodeType() << "} port to a {" << rComponent2.getPort(portname2)->getNodeType()  << "} port." << std::endl << "When connecting: {" << rComponent1.getName() << "::" << portname1 << "} to {" << rComponent2.getName() << "::" << portname2 << "}";
                 cout << ss.str() << endl;
                 gCoreMessageHandler.addErrorMessage(ss.str());
                 return false;

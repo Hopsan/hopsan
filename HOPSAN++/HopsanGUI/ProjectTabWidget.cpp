@@ -196,23 +196,25 @@ void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appear
 {
     qDebug() << "Request to add gui object at (" << position.x() << " " << position.y() << ")";
 
-    //MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
-
-
     if (componentTypeName == "Subsystem")
     {
         qDebug() << "Creating GUISubsystem";
-        mpTempGUIObject = new GUISubsystem(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+        GUISubsystem *pSys = new GUISubsystem(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+        this->mpParentProjectTab->mpComponentSystem->addComponent(pSys->getHopsanCoreSystemComponentPtr()); //core interaction
+        mpTempGUIObject = pSys;
     }
     else if (componentTypeName == "SystemPort")
     {
         qDebug() << "Creating GUISystemPort";
-        mpTempGUIObject = new GUISystemPort(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+        Port* pCorePort = mpParentProjectTab->mpComponentSystem->addSystemPort(name.toStdString()); //core interaction
+        mpTempGUIObject = new GUISystemPort(mpParentProjectTab->mpComponentSystem, pCorePort, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
     }
-    else //Assume some component type
+    else //Assume some standard component type
     {
         qDebug() << "Creating GUIComponent";
-        mpTempGUIObject = new GUIComponent(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+        GUIComponent *pComp = new GUIComponent(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+        this->mpParentProjectTab->mpComponentSystem->addComponent(pComp->getHopsanCoreComponentPtr()); //core interaction
+        mpTempGUIObject = pComp;
     }
 
     qDebug() << "=====================Get initial name: " << mpTempGUIObject->getName() << "requested: " << name;
@@ -223,28 +225,7 @@ void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appear
         mpTempGUIObject->setName(name, true);
     }
 
-    //Core interaction
-    qDebug() << "=====================Get name before add: " << mpTempGUIObject->getName();
-    if (componentTypeName == "SystemPort")
-    {
-        mpParentProjectTab->mpComponentSystem->addSystemPort(mpTempGUIObject->getName().toStdString());
-    }
-    else
-    {
-
-        if (componentTypeName == "Subsystem")
-        {
-            GUISubsystem *pSys = qobject_cast<GUISubsystem *>(mpTempGUIObject);
-            this->mpParentProjectTab->mpComponentSystem->addComponent(pSys->getHopsanCoreSystemComponentPtr());
-        }
-        else
-        {
-            GUIComponent *pComp = qobject_cast<GUIComponent *>(mpTempGUIObject);
-            this->mpParentProjectTab->mpComponentSystem->addComponent(pComp->getHopsanCoreComponentPtr());
-        }
-
-        mpTempGUIObject->refreshName();
-    }
+    mpTempGUIObject->refreshName();
     emit checkMessages();
     qDebug() << "=====================Get name after add: " << mpTempGUIObject->getName();
     //
