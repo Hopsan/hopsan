@@ -17,8 +17,8 @@ class UndoStack
 public:
     UndoStack(GraphicsView *parentView);
     ~UndoStack();
-    void store(GUIObject *item);
-    void store(GUIConnector *item);
+    void registerDeletedObject(GUIObject *item);
+    void registerDeletedConnector(GUIConnector *item);
     void clear();
     void newPost();
     void undoOneStep();

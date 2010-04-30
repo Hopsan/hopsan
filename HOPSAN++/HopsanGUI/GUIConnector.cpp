@@ -120,7 +120,24 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, std::vector<QPo
 //! Destructor.
 GUIConnector::~GUIConnector()
 {
-    mpLines.clear();
+    //qDebug() << this->getNumberOfLines();
+
+    mpParentView->undoStack->registerDeletedConnector(this);
+
+//    QMap<QString, GUIConnector *>::iterator it;
+//    for(it = mpParentView->mConnectionMap.begin(); it!=mpParentView->mConnectionMap.end(); ++it)
+//    {
+//        if(mpParentView->mConnectionMap.empty())
+//        {
+//            break;
+//        }
+//        else if(it.value() = this)
+//        {
+//            mpParentView->mConnectionMap.erase(it);
+//        }
+//    }
+
+    //mpLines.clear();
     //! @todo more cleanup
 }
 
@@ -366,7 +383,8 @@ GUIConnectorLine *GUIConnector::getThirdLastLine()
 //! Returns true if the connector is connected at both ends, otherwise false.
 bool GUIConnector::isConnected()
 {
-    return mEndPortConnected;
+    qDebug() << "Entering isConnected()";
+    return (getStartPort()->isConnected and getEndPort()->isConnected);
 }
 
 

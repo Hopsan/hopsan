@@ -323,19 +323,26 @@ void GraphicsView::addSystemPort()
 //! @param objectName is the name of the componenet to delete
 void GraphicsView::deleteGUIObject(QString objectName)
 {
-        //qDebug() << "In deleteGUIObject";
     QMap<QString, GUIObject *>::iterator it;
     it = mGUIObjectMap.find(objectName);
-    undoStack->store(it.value());
 
-    QMap<QString, GUIConnector *>::iterator it2;
-    for(it2 = this->mConnectionMap.begin(); it2!=this->mConnectionMap.end(); ++it2)
+    QMap<QString, GUIConnector *>::iterator it2 = mConnectionMap.begin();
+    while(it2 != mConnectionMap.end())
     {
-        if(it2.key().contains(objectName))
-            mConnectionMap.erase(it2);
-        if(mConnectionMap.empty())
-            break;
+        if(it2.key().contains(objectName + " "))
+        {
+            this->removeConnector(it2.value());
+            it2 = mConnectionMap.begin();   //Restart iteration if map has changed
+        }
+        else
+        {
+            ++it2;
+        }
     }
+
+        //Register removal of connector in undo stack (must be done after removal of connectors or the order of the commands in the undo stack will be wrong!)
+    this->undoStack->registerDeletedObject(it.value());
+
 
     if (it != mGUIObjectMap.end())
     {
@@ -406,6 +413,7 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
 void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
 
+    undoStack->newPost();
     if (event->key() == Qt::Key_Delete)
         emit keyPressDelete();
     else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_R)
@@ -495,6 +503,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 //! @param event contains information of the mouse click operation.
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
+    undoStack->newPost();
     emit viewClicked();
     mJustStoppedCreatingConnector = false;
 
@@ -602,21 +611,48 @@ void GraphicsView::addConnector(GUIPort *pPort)
 
 void GraphicsView::removeConnector(GUIConnector* pConnector)
 {
-    //! @todo some error handling both ports must exist and be connected to each other
-    //Core interaction
-    if(pConnector->isConnected())
+    qDebug() << "Entering removeConnector()";
+    bool doDelete = false;
+    QMap<QString, GUIConnector *>::iterator it2;
+    for(it2 = this->mConnectionMap.begin(); it2!=this->mConnectionMap.end(); ++it2)
     {
-        mpModel->disconnect(pConnector->getStartPort()->mpCorePort, pConnector->getEndPort()->mpCorePort);
-        emit checkMessages();
-        pConnector->getEndPort()->show();
-        pConnector->getEndPort()->isConnected = false;
+        if(it2.value() == pConnector)
+        {
+             //! @todo some error handling both ports must exist and be connected to each other
+             //Core interaction
+             if(pConnector->isConnected())
+             {
+                 qDebug() << "Debug 1a";
+                 mpModel->disconnect(pConnector->getStartPort()->mpCorePort, pConnector->getEndPort()->mpCorePort);
+                 qDebug() << "Debug 1b";
+                 emit checkMessages();
+                 qDebug() << "Debug 1c";
+                 pConnector->getEndPort()->show();
+                 qDebug() << "Debug 1d";
+                 pConnector->getEndPort()->isConnected = false;
+                 qDebug() << "Debug 1e";
+             }
+             //
+             //qDebug() << "Debug 2";
+             scene()->removeItem(pConnector);
+             pConnector->getStartPort()->show();
+             pConnector->getStartPort()->isConnected = false;
+             qDebug() << "Deleting connector between " << pConnector->getStartPort()->getComponent()->getName() << " and " << pConnector->getEndPort()->getComponent()->getName();
+             delete pConnector;
+             doDelete = true;
+             break;
+        }
+        if(mConnectionMap.empty())
+            break;
     }
-    //
-    scene()->removeItem(pConnector);
-    pConnector->getStartPort()->show();
-    pConnector->getStartPort()->isConnected = false;
-    delete pConnector;
+    if(doDelete)
+    {
+        qDebug() << "doDelete";
+        mConnectionMap.erase(it2);
+        qDebug() << "didDelete";
+    }
 }
+
 
 
 void GraphicsView::selectAll()

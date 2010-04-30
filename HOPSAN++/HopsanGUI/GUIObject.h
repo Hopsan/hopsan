@@ -103,6 +103,7 @@ private:
 
 public:
     GUIObjectDisplayName(GUIObject *pParent);
+    ~GUIObjectDisplayName();
 
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -139,6 +140,7 @@ class GUIComponent : public GUIObject
     Q_OBJECT
 public:
     GUIComponent(HopsanEssentials *hopsan, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    ~GUIComponent();
 
     //Core interaction
     Component* getHopsanCoreComponentPtr();

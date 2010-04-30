@@ -642,7 +642,7 @@ void GUIObject::showName()
 //! Dummy
 QString GUIObject::getTypeName()
 {
-
+    qDebug() << "In dummy version of getTypeName()";
     assert(false);
 }
 
@@ -654,6 +654,10 @@ GUIObjectDisplayName::GUIObjectDisplayName(GUIObject *pParent)
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIgnoresTransformations);
 }
 
+GUIObjectDisplayName::~GUIObjectDisplayName()
+{
+    qDebug() << "Deleting name!";
+}
 
 void GUIObjectDisplayName::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -918,6 +922,12 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, AppearanceData appearanceDa
     refreshName(); //Make sure name window is correct size for center positioning
 
     std::cout << "GUIcomponent: " << mComponentTypeName.toStdString() << std::endl;
+}
+
+
+
+GUIComponent::~GUIComponent()
+{
 }
 
 

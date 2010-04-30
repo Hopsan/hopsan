@@ -63,6 +63,7 @@ public:
     QMenu *menuInsert;
     QColor mBackgroundColor;
     QPen getPen(QString situation, QString type, QString style);
+    UndoStack *undoStack;
 
 signals:
     void keyPressDelete();
@@ -132,7 +133,6 @@ private:
     QPen mPrimaryPenSignalIso;
     QPen mActivePenSignalIso;
     QPen mHoverPenSignalIso;
-    UndoStack *undoStack;
     bool mJustStoppedCreatingConnector;
  };
 
