@@ -798,7 +798,7 @@ void GUIObject::deleteMe()
 //            for(it = this->mpParentGraphicsView->mConnectionMap.begin(); it!=this->mpParentGraphicsView->mConnectionMap.end(); ++it)
 //            {
 //                if(it.key().contains(pComponent->getName()))
-//                    if((compList.contains(it.value()->getStartPort()->getComponent())) && (compList.contains(it.value()->getEndPort()->getComponent())))
+//                    if((compList.contains(it.value()->getStartPort()->getGuiObject())) && (compList.contains(it.value()->getEndPort()->getGuiObject())))
 //                        GUIConnList.append(it.value());
 //
 //                if(this->mpParentGraphicsView->mConnectionMap.empty())
@@ -1305,8 +1305,9 @@ GUISystemPort::GUISystemPort(ComponentSystem* pCoreComponentSystem, AppearanceDa
     else
         direction = GUIPort::VERTICAL;
 
+    //! @todo maybe dont need both (maybe port list enough)
     mpGuiPort = new GUIPort(pCorePort, x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), rot, iconPath, porttype, direction, this);
-
+    mPortListPtrs.append(mpGuiPort);
 }
 
 
@@ -1382,7 +1383,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
             for(it = this->mpParentGraphicsView->mConnectionMap.begin(); it!=this->mpParentGraphicsView->mConnectionMap.end(); ++it)
             {
                 if(it.key().contains(pComponent->getName()))
-                    if((compList.contains(it.value()->getStartPort()->getComponent())) && (compList.contains(it.value()->getEndPort()->getComponent())))
+                    if((compList.contains(it.value()->getStartPort()->getGuiObject())) && (compList.contains(it.value()->getEndPort()->getGuiObject())))
                         GUIConnList.append(it.value());
 
                 if(this->mpParentGraphicsView->mConnectionMap.empty())

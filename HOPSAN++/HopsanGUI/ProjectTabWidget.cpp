@@ -567,7 +567,7 @@ void GraphicsView::addConnector(GUIPort *pPort)
         }
         this->scene()->addItem(mpTempConnector);
         this->mIsCreatingConnector = true;
-        pPort->getComponent()->addConnector(mpTempConnector);
+        pPort->getGuiObject()->addConnector(mpTempConnector);
 
         QCursor cursor;
 
@@ -590,15 +590,15 @@ void GraphicsView::addConnector(GUIPort *pPort)
             mIsCreatingConnector = false;
             QPointF newPos = pPort->mapToScene(pPort->boundingRect().center());
             mpTempConnector->updateEndPoint(newPos);
-            pPort->getComponent()->addConnector(mpTempConnector);
+            pPort->getGuiObject()->addConnector(mpTempConnector);
             mpTempConnector->setEndPort(pPort);
 
             mpTempConnector->getStartPort()->hide();
             mpTempConnector->getEndPort()->hide();
 
             std::stringstream tempStream;
-            tempStream << mpTempConnector->getStartPort()->getComponent()->getName().toStdString() << " " << mpTempConnector->getStartPort()->getPortNumber() << " " <<
-                          mpTempConnector->getEndPort()->getComponent()->getName().toStdString() << " " << mpTempConnector->getEndPort()->getPortNumber();
+            tempStream << mpTempConnector->getStartPort()->getGuiObject()->getName().toStdString() << " " << mpTempConnector->getStartPort()->getPortNumber() << " " <<
+                          mpTempConnector->getEndPort()->getGuiObject()->getName().toStdString() << " " << mpTempConnector->getEndPort()->getPortNumber();
             this->mConnectionMap.insert(QString(tempStream.str().c_str()), mpTempConnector);
 
             //qDebug() << mConnectionVector.last();
@@ -637,7 +637,7 @@ void GraphicsView::removeConnector(GUIConnector* pConnector)
              scene()->removeItem(pConnector);
              pConnector->getStartPort()->show();
              pConnector->getStartPort()->isConnected = false;
-             qDebug() << "Deleting connector between " << pConnector->getStartPort()->getComponent()->getName() << " and " << pConnector->getEndPort()->getComponent()->getName();
+             qDebug() << "Deleting connector between " << pConnector->getStartPort()->getGuiObject()->getName() << " and " << pConnector->getEndPort()->getGuiObject()->getName();
              delete pConnector;
              doDelete = true;
              break;
@@ -714,9 +714,9 @@ void GraphicsView::copySelected()
     QMap<QString, GUIConnector *>::iterator it2;
     for(it2 = this->mConnectionMap.begin(); it2!=this->mConnectionMap.end(); ++it2)
     {
-        if(it2.value()->getStartPort()->getComponent()->isSelected() and it2.value()->getEndPort()->getComponent()->isSelected() and it2.value()->isActive())
+        if(it2.value()->getStartPort()->getGuiObject()->isSelected() and it2.value()->getEndPort()->getGuiObject()->isSelected() and it2.value()->isActive())
         {
-            qDebug() << "Copying connection between" << it2.value()->getStartPort()->getComponent()->getName() << " and " << it2.value()->getStartPort()->getComponent()->getName() << ".";
+            qDebug() << "Copying connection between" << it2.value()->getStartPort()->getGuiObject()->getName() << " and " << it2.value()->getStartPort()->getGuiObject()->getName() << ".";
 
             mCopyData << "CONNECT" << it2.key().toStdString().c_str();
 
@@ -824,12 +824,12 @@ void GraphicsView::paste()
             startPort->hide();
             endPort->hide();
 
-            connect(startPort->getComponent(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
-            connect(endPort->getComponent(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+            connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+            connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
 
             std::stringstream tempStream2;
-            tempStream2 << startPort->getComponent()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
-                          endPort->getComponent()->getName().toStdString() << " " << endPort->getPortNumber();
+            tempStream2 << startPort->getGuiObject()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
+                          endPort->getGuiObject()->getName().toStdString() << " " << endPort->getPortNumber();
             this->mConnectionMap.insert(QString(tempStream2.str().c_str()), pTempConnector);
             bool success = this->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
             if (!success)
@@ -1472,12 +1472,12 @@ void ProjectTabWidget::loadModel()
                 startPort->hide();
                 endPort->hide();
 
-                connect(startPort->getComponent(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
-                connect(endPort->getComponent(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+                connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+                connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
 
                 std::stringstream tempStream;
-                tempStream << startPort->getComponent()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
-                              endPort->getComponent()->getName().toStdString() << " " << endPort->getPortNumber();
+                tempStream << startPort->getGuiObject()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
+                              endPort->getGuiObject()->getName().toStdString() << " " << endPort->getPortNumber();
                 pCurrentView->mConnectionMap.insert(QString(tempStream.str().c_str()), pTempConnector);
                 bool success = pCurrentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
                 if (!success)

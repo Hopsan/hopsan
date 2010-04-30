@@ -204,11 +204,12 @@ QGraphicsView *GUIPort::getParentView()
 
 
 //! Returns a pointer to the GUIComponent the port belongs to.
-GUIComponent *GUIPort::getComponent()
+GUIObject *GUIPort::getGuiObject()
 {
     //! @todo Thiss will crash if not GUIComponent should be GUI object may need to change code elsewhere
-    GUIComponent* ptr = qobject_cast<GUIComponent*>(mpParentGuiObject);
-    return ptr;
+//    GUIComponent* ptr = qobject_cast<GUIComponent*>(mpParentGuiObject);
+//    return ptr;
+    return mpParentGuiObject;
 }
 
 
@@ -292,7 +293,7 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
 //! Returns the number of the port by calling the equivalent function in the parent component.
 int GUIPort::getPortNumber()
 {
-    return this->getComponent()->getPortNumber(this);
+    return this->getGuiObject()->getPortNumber(this);
 }
 
 //! Wrapper for the Core getPortType() function

@@ -148,12 +148,12 @@ void UndoStack::undoOneStep()
                 startPort->hide();
                 endPort->hide();
 
-                GUIObject::connect(startPort->getComponent(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
-                GUIObject::connect(endPort->getComponent(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+                GUIObject::connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+                GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
 
                 std::stringstream tempStream;
-                tempStream << startPort->getComponent()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
-                              endPort->getComponent()->getName().toStdString() << " " << endPort->getPortNumber();
+                tempStream << startPort->getGuiObject()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
+                              endPort->getGuiObject()->getName().toStdString() << " " << endPort->getPortNumber();
                 mpParentView->mConnectionMap.insert(QString(tempStream.str().c_str()), pTempConnector);
                 bool success = mpParentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
                 if (!success)

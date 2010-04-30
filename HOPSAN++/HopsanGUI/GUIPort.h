@@ -22,7 +22,7 @@ public:
     ~GUIPort();
     void updatePosition();
     QGraphicsView *getParentView();
-    GUIComponent *getComponent();
+    GUIObject *getGuiObject();
     void magnify(bool blowup);
     portDirectionType getPortDirection();
     void setPortDirection(GUIPort::portDirectionType direction);
