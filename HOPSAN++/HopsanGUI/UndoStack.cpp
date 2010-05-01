@@ -62,7 +62,6 @@ void UndoStack::undoOneStep()
         for(int i = 0; i != mStack[mCurrentStackPosition].size(); ++i)
         {
             stringstream undoStream(mStack[mCurrentStackPosition][i].toStdString().c_str());
-            stringstream doLaterStream;
             if ( undoStream >> undoWord )
             {
                 if( undoWord == "COMPONENT" )
@@ -89,6 +88,7 @@ void UndoStack::undoOneStep()
                     {
                         mpParentView->getGUIObject(QString(componentName.c_str()))->rotate();
                     }
+                    mStack[mCurrentStackPosition].pop_front();      //addGUIObject will register the creation in the stack, so it must be removed to avoid an endless loop
                 }
                 else if ( undoWord == "CONNECT" )
                 {
@@ -162,9 +162,26 @@ void UndoStack::undoOneStep()
                     delete(item);
                     mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
                 }
+                else if(undoWord == "DISCONNECT")
+                {
+                    string startComponentName;
+                    string startPortNumber;
+                    string endComponentName;
+                    string endPortNumber;
+                    undoStream >> startComponentName;
+                    undoStream >> startPortNumber;
+                    undoStream >> endComponentName;
+                    undoStream >> endPortNumber;
+
+                    QString connectionString = QString(QString(startComponentName.c_str()) + " " + QString(startPortNumber.c_str()) + " " +
+                                                       QString(endComponentName.c_str()) + " " + QString(endPortNumber.c_str()));
+
+                    GUIConnector *item = mpParentView->mConnectionMap.find(connectionString).value();
+                    mpParentView->removeConnector(item);
+                }
             }
         }
-        mStack[mCurrentStackPosition] = QStringList();
+        mStack[mCurrentStackPosition] = QStringList();      //Empty curren stack position
         mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
     }
 }
@@ -203,6 +220,7 @@ void UndoStack::registerDeletedObject(GUIObject *item)
             mStack[mCurrentStackPosition].insert(0,QString(tempStringStream.str().c_str()));
         }
     }
+    qDebug() << "Adding " << QString(tempStringStream.str().c_str());
 }
 
 
@@ -226,6 +244,7 @@ void UndoStack::registerDeletedConnector(GUIConnector *item)
         tempStringStream << " " << it2.value()->getPointsVector()[i].x() << " " << it2.value()->getPointsVector()[i].y();
     }
     mStack[mCurrentStackPosition].insert(0,QString(tempStringStream.str().c_str()));
+    qDebug() << "Adding " << QString(tempStringStream.str().c_str());
 }
 
 
@@ -240,7 +259,19 @@ void UndoStack::registerAddedObject(QString itemName)
 
 void UndoStack::registerAddedConnector(GUIConnector *item)
 {
-    //Not implemented yet
+    std::stringstream tempStringStream;
+    QMap<QString, GUIConnector *>::iterator it2;
+    for(it2 = mpParentView->mConnectionMap.begin(); it2!=mpParentView->mConnectionMap.end(); ++it2)
+    {
+        if(it2.value() == item)
+        {
+            break;
+        }
+    }
+
+    tempStringStream << "DISCONNECT " << it2.key().toStdString();
+    mStack[mCurrentStackPosition].insert(0,QString(tempStringStream.str().c_str()));
+    qDebug() << "Adding " << QString(tempStringStream.str().c_str());
 }
 
 

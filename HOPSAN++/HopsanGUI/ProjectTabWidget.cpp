@@ -152,6 +152,8 @@ void GraphicsView::dropEvent(QDropEvent *event)
     //if (event->mimeData()->hasFormat("application/x-text"))
     if (event->mimeData()->hasText())
     {
+        undoStack->newPost();
+
         qDebug() << "dropEvent: hasText";
         //QByteArray *data = new QByteArray;
         //*data = event->mimeData()->data("application/x-text");
@@ -175,8 +177,6 @@ void GraphicsView::dropEvent(QDropEvent *event)
         qDebug() << "GraphicsView: " << "x=" << position.x() << "  " << "y=" << position.y();
 
         this->addGUIObject(appearanceData.getTypeName(), appearanceData, this->mapToScene(position).toPoint());
-
-        //delete data;
     }
 }
 
@@ -540,6 +540,7 @@ GUIObject *GraphicsView::getGUIObject(QString name)
 //! Begin creation of connector or complete creation of connector depending on the mIsCreatingConnector boolean.
 void GraphicsView::addConnector(GUIPort *pPort)
 {
+        //When clicking start port
     if (!mIsCreatingConnector)
     {
         std::cout << "GraphicsView: " << "Adding connector";
@@ -569,13 +570,12 @@ void GraphicsView::addConnector(GUIPort *pPort)
         mpTempConnector->addPoint(oldPos);
         mpTempConnector->addPoint(oldPos);
         mpTempConnector->drawConnector();
-        //mpTempConnector->updateEndPoint(this->mapToScene(cursor.pos()));
     }
+
+        //When clicking end port
     else
     {
-        //mpTempConnector->removePoint();
         //Core interaction
-        qDebug() << "Closing connector";
         Port *start_port = mpTempConnector->getStartPort()->mpCorePort;
         Port *end_port = pPort->mpCorePort;
         bool success = mpModel->connect(start_port, end_port);
@@ -594,18 +594,17 @@ void GraphicsView::addConnector(GUIPort *pPort)
             tempStream << mpTempConnector->getStartPort()->getGuiObject()->getName().toStdString() << " " << mpTempConnector->getStartPort()->getPortNumber() << " " <<
                           mpTempConnector->getEndPort()->getGuiObject()->getName().toStdString() << " " << mpTempConnector->getEndPort()->getPortNumber();
             this->mConnectionMap.insert(QString(tempStream.str().c_str()), mpTempConnector);
-
-            //qDebug() << mConnectionVector.last();
         }
         emit checkMessages();
         //
+
+        undoStack->registerAddedConnector(mpTempConnector);
     }
 }
 
 
 void GraphicsView::removeConnector(GUIConnector* pConnector)
 {
-    qDebug() << "Entering removeConnector()";
     bool doDelete = false;
     QMap<QString, GUIConnector *>::iterator it2;
     for(it2 = this->mConnectionMap.begin(); it2!=this->mConnectionMap.end(); ++it2)
@@ -616,22 +615,15 @@ void GraphicsView::removeConnector(GUIConnector* pConnector)
              //Core interaction
              if(pConnector->isConnected())
              {
-                 qDebug() << "Debug 1a";
                  mpModel->disconnect(pConnector->getStartPort()->mpCorePort, pConnector->getEndPort()->mpCorePort);
-                 qDebug() << "Debug 1b";
                  emit checkMessages();
-                 qDebug() << "Debug 1c";
                  pConnector->getEndPort()->show();
-                 qDebug() << "Debug 1d";
                  pConnector->getEndPort()->isConnected = false;
-                 qDebug() << "Debug 1e";
              }
              //
-             //qDebug() << "Debug 2";
              scene()->removeItem(pConnector);
              pConnector->getStartPort()->show();
              pConnector->getStartPort()->isConnected = false;
-             qDebug() << "Deleting connector between " << pConnector->getStartPort()->getGuiObject()->getName() << " and " << pConnector->getEndPort()->getGuiObject()->getName();
              delete pConnector;
              doDelete = true;
              break;
@@ -641,9 +633,7 @@ void GraphicsView::removeConnector(GUIConnector* pConnector)
     }
     if(doDelete)
     {
-        qDebug() << "doDelete";
         mConnectionMap.erase(it2);
-        qDebug() << "didDelete";
     }
 }
 
@@ -905,10 +895,9 @@ void GraphicsView::hidePorts(bool doIt)
 }
 
 
-//! Slot that tells the undoStack to execute one undo step
+//! Slot that tells the undoStack to execute one undo step. Necessary because the undo stack is not a QT object and cannot use its own slots.
 void GraphicsView::undo()
 {
-    qDebug() << "Preparing to undo!";
     undoStack->undoOneStep();
 }
 
