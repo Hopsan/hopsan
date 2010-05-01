@@ -351,7 +351,7 @@ vector<Port*> Component::getPortPtrVector()
 {
     vector<Port*> vec;
     vec.clear();
-    map<string, Port*>::iterator ports_it;
+    PortPtrMapT::iterator ports_it;
 
     //Copy every port pointer
     for (ports_it = mPortPtrMap.begin(); ports_it != mPortPtrMap.end(); ++ports_it)
@@ -406,10 +406,10 @@ Port* Component::addPort(const string portname, Port::PORTTYPE porttype, const N
     new_port->mpComponent = this;    //Set port owner
 
     //Make sure name is unique before insert
-    string newname = modifyName< map<string, Port*> >(mPortPtrMap, portname);
+    string newname = modifyName<PortPtrMapT>(mPortPtrMap, portname);
     new_port->mPortName = newname;
 
-    mPortPtrMap.insert(pair<string, Port*>(newname, new_port));
+    mPortPtrMap.insert(PortPtrPairT(newname, new_port));
 
     //Signal autmatic name change
     if (newname != portname)
@@ -450,14 +450,14 @@ void Component::renamePort(const string oldname, const string newname)
     if (mPortPtrMap.count(oldname) != 0)
     {
         Port* temp_port_ptr;
-        map<string, Port*>::iterator it;
+        PortPtrMapT::iterator it;
 
         it = mPortPtrMap.find(oldname); //Find iterator to port
         temp_port_ptr = it->second;     //Backup copy of port ptr
         mPortPtrMap.erase(it);          //Erase old value
-        string modnewname = modifyName< map<string, Port*> >(mPortPtrMap, newname); //Make sure new name is unique
+        string modnewname = modifyName<PortPtrMapT>(mPortPtrMap, newname); //Make sure new name is unique
         temp_port_ptr->mPortName = modnewname;  //Set new name in port
-        mPortPtrMap.insert(pair<string, Port*>(modnewname, temp_port_ptr)); //Re add to map
+        mPortPtrMap.insert(PortPtrPairT(modnewname, temp_port_ptr)); //Re add to map
     }
     else
     {
@@ -467,7 +467,7 @@ void Component::renamePort(const string oldname, const string newname)
 
 void Component::deletePort(const string name)
 {
-    map<string, Port*>::iterator it;
+    PortPtrMapT::iterator it;
     it = mPortPtrMap.find(name);
     if (it != mPortPtrMap.end())
     {
@@ -493,7 +493,7 @@ void Component::setSystemParent(ComponentSystem &rComponentSystem)
 
 Port *Component::getPort(const string portname)
 {
-    map<string, Port*>::iterator it;
+    PortPtrMapT::iterator it;
     it = mPortPtrMap.find(portname);
     if (it != mPortPtrMap.end())
     {
@@ -525,59 +525,12 @@ void Component::setTimestep(const double timestep)
 }
 
 
-string ComponentSystem::SubComponentStorage::modifyName(string name)
-{
-    string oldname = name;
-    //cout << "Modified name: " << name << "  was changed to:  ";
-    //gCoreMessageHandler.addWarningMessage("Modified name: " + name);
-    size_t ctr = 1; //The suffix number
-    while(mSubComponentMap.count(name) != 0)
-    {
-        //strip suffix
-        size_t foundpos = name.rfind("_");
-        if (foundpos != string::npos)
-        {
-            if (foundpos+1 < name.size())
-            {
-                unsigned char nr = name.at(foundpos+1);
-                //cout << "nr after _: " << nr << endl;
-                //Check the ascii code for the charachter
-                if ((nr >= 48) && (nr <= 57))
-                {
-                    //Is number lets assume that the _ found is the beginning of a suffix
-                    name.erase(foundpos, string::npos);
-                }
-            }
-        }
-        //cout << "ctr: " << ctr << " stripped tempname: " << name << endl;
-
-        //add new suffix
-        stringstream suffix;
-        suffix << ctr;
-        name.append("_");
-        name.append(suffix.str());
-        ++ctr;
-        //cout << "ctr: " << ctr << " appended tempname: " << name << endl;
-    }
-    //cout << name << endl;
-    //gCoreMessageHandler.addWarningMessage("Changed to: " + name);
-    //If name change, notify
-    //! @todo maybe this notification should not be inside this function but after its use
-    if (oldname != name)
-    {
-        cout << "Modified name: " << oldname << "  was changed to: " << name << endl;
-        gCoreMessageHandler.addInfoMessage("Name was automatically adjusted from the requested: {" + oldname + "} to: {" + name + "}", 3);
-    }
-    return name;
-}
-
-
 //! The subcomponent storage, Makes it easier to add (with auto unique name), erase and get components
 //! @todo quite ugly code for now
 void ComponentSystem::SubComponentStorage::add(Component* pComponent)
 {
     //First check if the name already exists, in that case change the suffix
-    string modname = modifyName(pComponent->getName());
+    string modname = modifyName<SubComponentMapT>(mSubComponentMap, pComponent->getName());
     pComponent->setName(modname);
 
     //Add to the cqs component vectors
@@ -705,7 +658,7 @@ void ComponentSystem::SubComponentStorage::rename(const string &rOldName, const 
         mSubComponentMap.erase(it);
 
         //insert new (with new name)
-        string mod_new_name = modifyName(rNewName);
+        string mod_new_name = modifyName<SubComponentMapT>(mSubComponentMap, rNewName);
 
         //cout << "new name is: " << mod_name << endl;
         mSubComponentMap.insert(pair<string, Component*>(mod_new_name, temp_c_ptr));
@@ -849,7 +802,7 @@ void ComponentSystem::removeSubComponent(string name, bool doDelete)
 void ComponentSystem::removeSubComponent(Component* c_ptr, bool doDelete)
 {
     //Disconnect all ports before erase from system
-    map<string, Port*>::iterator ports_it;
+    PortPtrMapT::iterator ports_it;
     vector<Port*>::iterator conn_ports_it;
     for (ports_it = c_ptr->mPortPtrMap.begin(); ports_it != c_ptr->mPortPtrMap.end(); ++ports_it)
     {
@@ -871,38 +824,6 @@ void ComponentSystem::removeSubComponent(Component* c_ptr, bool doDelete)
     }
 }
 
-//Component* ComponentSystem::getSubComponent(string name)
-//{
-//    //vector<Component*>::iterator it;
-//    for (size_t s=0; s < mComponentCptrs.size(); ++s)
-//    {
-//        if (mComponentCptrs[s]->mName == name)
-//        {
-//            return mComponentCptrs[s];
-//        }
-//    }
-//
-//    for (size_t s=0; s < mComponentQptrs.size(); ++s)
-//    {
-//        //cout << "Comparing " << mComponentQptrs[s]->mName << " with " << name << endl;
-//        if (mComponentQptrs[s]->mName == name)
-//        {
-//            return mComponentQptrs[s];
-//        }
-//    }
-//
-//    for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
-//    {
-//        //cout << "Comparing " << mComponentSignalptrs[s]->mName << " with " << name << endl;
-//        if (mComponentSignalptrs[s]->mName == name)
-//        {
-//            return mComponentSignalptrs[s];
-//        }
-//    }
-//    cout << "Component " << name << " not found in component system!";
-//    assert(false);
-//    ///TODO: Cast exception if not found
-//}
 
 Component* ComponentSystem::getSubComponent(string name)
 {

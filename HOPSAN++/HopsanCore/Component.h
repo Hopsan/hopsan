@@ -135,8 +135,11 @@ private:
     //Private member variables
     string mName;
     vector<CompParameter> mParameters;
-    map<string, Port*> mPortPtrMap;
     ComponentSystem* mpSystemParent;
+    typedef map<string, Port*> PortPtrMapT;
+    typedef pair<string, Port*> PortPtrPairT;
+    PortPtrMapT mPortPtrMap;
+
 };
 
 
@@ -147,8 +150,8 @@ private:
     {
         friend class ComponentSystem;
     private:
-        string modifyName(string name);
-        map<string, Component*> mSubComponentMap;
+        typedef map<string, Component*> SubComponentMapT;
+        SubComponentMapT mSubComponentMap;
 
     public:
         void add(Component* pComponent);
