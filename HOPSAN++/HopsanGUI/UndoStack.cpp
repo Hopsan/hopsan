@@ -31,14 +31,15 @@ UndoStack::~UndoStack()
 //! Clears all contents in the stack
 void UndoStack::clear()
 {
-    //Not implemented yet (not sure if it is needed)
+    mStack.clear();
+    mCurrentStackPosition = 0;
+    mStack.append(QStringList());
 }
 
 
 //! Adds a new post to the stack
 void UndoStack::newPost()
 {
-    qDebug() << "newPost(), stack position = " << mCurrentStackPosition << ", stack size = " << mStack.size();
     if(!mStack[mCurrentStackPosition].empty())
     {
         ++mCurrentStackPosition;
@@ -52,150 +53,141 @@ void UndoStack::undoOneStep()
 {
     while(mStack[mCurrentStackPosition].empty() and mCurrentStackPosition != 0)
     {
-        qDebug() << "Popping back";
         mStack.pop_back();
         --mCurrentStackPosition;
     }
     if(!(mCurrentStackPosition == 0 and mStack[0].empty()))
     {
-    qDebug() << "Undo!" << mStack[mCurrentStackPosition].size() << " undo steps found.";
-    string undoWord;
-    for(int i = 0; i != mStack[mCurrentStackPosition].size(); ++i)
-    {
-        qDebug() << "Executing step " << i << ".";
-        stringstream undoStream(mStack[mCurrentStackPosition][i].toStdString().c_str());
-        stringstream doLaterStream;
-        if ( undoStream >> undoWord )
+        string undoWord;
+        for(int i = 0; i != mStack[mCurrentStackPosition].size(); ++i)
         {
-            qDebug() << "Reading: " << undoWord.c_str();
-            if ( undoWord == "COMPONENT" )
+            stringstream undoStream(mStack[mCurrentStackPosition][i].toStdString().c_str());
+            stringstream doLaterStream;
+            if ( undoStream >> undoWord )
             {
-                string componentType;
-                undoStream >> componentType;
-                string componentName;
-                undoStream >> componentName;
-                string tempString;
-                undoStream >> tempString;
-                int posX = QString(tempString.c_str()).toInt();
-                undoStream >> tempString;
-                int posY = QString(tempString.c_str()).toInt();
-                undoStream >> tempString;
-                qreal rotation = QString(tempString.c_str()).toDouble();
-                undoStream >> tempString;
-                int nameTextPos = QString(tempString.c_str()).toInt();
-
-                //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
-                AppearanceData appearanceData = *mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(QString(componentType.c_str()));
-                mpParentView->addGUIObject(QString(componentType.c_str()), appearanceData, QPoint(posX, posY), 0, QString(componentName.c_str()));
-                mpParentView->getGUIObject(QString(componentName.c_str()))->setNameTextPos(nameTextPos);
-                while(mpParentView->getGUIObject(QString(componentName.c_str()))->rotation() != rotation)
+                if( undoWord == "COMPONENT" )
                 {
-                    mpParentView->getGUIObject(QString(componentName.c_str()))->rotate();
-                }
-            }
-            if ( undoWord == "CONNECT" )
-            {
-                string startComponentName;
-                undoStream >> startComponentName;
-                string tempString;
-                undoStream >> tempString;
-                int startPortNumber = QString(tempString.c_str()).toInt();
-                string endComponentName;
-                undoStream >> endComponentName;
-                undoStream >> tempString;
-                int endPortNumber = QString(tempString.c_str()).toInt();
-
-                    //If components have not been created, move connector command to the bottom of the stack and quit this stuff
-                if(!mpParentView->mGUIObjectMap.contains(QString(startComponentName.c_str())) or !mpParentView->mGUIObjectMap.contains(QString(endComponentName.c_str())))
-                {
-                    qDebug() << "Components not created!";
-                    //doLaterStack << "CONNECT" << startComponentName
-                    //mStack[mCurrentStackPosition].append(QString(tempStringStream.str().c_str()));
-                }
-
-                GUIPort *startPort = mpParentView->getGUIObject(QString(startComponentName.c_str()))->getPort(startPortNumber);
-                GUIPort *endPort = mpParentView->getGUIObject(QString(endComponentName.c_str()))->getPort(endPortNumber);
-
-                std::vector<QPointF> tempPointVector;
-                qreal tempX, tempY;
-                while(undoStream.good())
-                {
+                    string componentType;
+                    undoStream >> componentType;
+                    string componentName;
+                    undoStream >> componentName;
+                    string tempString;
                     undoStream >> tempString;
-                    tempX = QString(tempString.c_str()).toDouble();
+                    int posX = QString(tempString.c_str()).toInt();
                     undoStream >> tempString;
-                    tempY = QString(tempString.c_str()).toDouble();
-                    tempPointVector.push_back(QPointF(tempX, tempY));
+                    int posY = QString(tempString.c_str()).toInt();
+                    undoStream >> tempString;
+                    qreal rotation = QString(tempString.c_str()).toDouble();
+                    undoStream >> tempString;
+                    int nameTextPos = QString(tempString.c_str()).toInt();
+
+                    //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
+                    AppearanceData appearanceData = *mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(QString(componentType.c_str()));
+                    mpParentView->addGUIObject(QString(componentType.c_str()), appearanceData, QPoint(posX, posY), 0, QString(componentName.c_str()));
+                    mpParentView->getGUIObject(QString(componentName.c_str()))->setNameTextPos(nameTextPos);
+                    while(mpParentView->getGUIObject(QString(componentName.c_str()))->rotation() != rotation)
+                    {
+                        mpParentView->getGUIObject(QString(componentName.c_str()))->rotate();
+                    }
                 }
-
-                //! @todo: Store useIso bool in model file and pick the correct line styles when loading
-                GUIConnector *pTempConnector;
-
-                QString type, style;
-                if((startPort->mpCorePort->getNodeType() == "NodeHydraulic") | (startPort->mpCorePort->getNodeType() == "NodeMechanic"))
-                    type = "Power";
-                else if(startPort->mpCorePort->getNodeType() == "NodeSignal")
-                    type = "Signal";
-                if(mpParentView->mpParentProjectTab->useIsoGraphics)
-                    style = "Iso";
-                else
-                    style = "User";
-                pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, mpParentView->getPen("Primary", type, style),
-                                                  mpParentView->getPen("Active", type, style), mpParentView->getPen("Hover", type, style), mpParentView);
-
-                mpParentView->scene()->addItem(pTempConnector);
-
-                //Hide connected ports
-                startPort->hide();
-                endPort->hide();
-
-                GUIObject::connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
-                GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
-
-                std::stringstream tempStream;
-                tempStream << startPort->getGuiObject()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
-                              endPort->getGuiObject()->getName().toStdString() << " " << endPort->getPortNumber();
-                mpParentView->mConnectionMap.insert(QString(tempStream.str().c_str()), pTempConnector);
-                bool success = mpParentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
-                if (!success)
+                else if ( undoWord == "CONNECT" )
                 {
-                    qDebug() << "Unsuccessful connection try" << endl;
-                    assert(false);
+                    string startComponentName;
+                    undoStream >> startComponentName;
+                    string tempString;
+                    undoStream >> tempString;
+                    int startPortNumber = QString(tempString.c_str()).toInt();
+                    string endComponentName;
+                    undoStream >> endComponentName;
+                    undoStream >> tempString;
+                    int endPortNumber = QString(tempString.c_str()).toInt();
+
+                    GUIPort *startPort = mpParentView->getGUIObject(QString(startComponentName.c_str()))->getPort(startPortNumber);
+                    GUIPort *endPort = mpParentView->getGUIObject(QString(endComponentName.c_str()))->getPort(endPortNumber);
+
+                    std::vector<QPointF> tempPointVector;
+                    qreal tempX, tempY;
+                    while(undoStream.good())
+                    {
+                        undoStream >> tempString;
+                        tempX = QString(tempString.c_str()).toDouble();
+                        undoStream >> tempString;
+                        tempY = QString(tempString.c_str()).toDouble();
+                        tempPointVector.push_back(QPointF(tempX, tempY));
+                    }
+
+                    //! @todo: Store useIso bool in model file and pick the correct line styles when loading
+                    GUIConnector *pTempConnector;
+
+                    QString type, style;
+                    if((startPort->mpCorePort->getNodeType() == "NodeHydraulic") | (startPort->mpCorePort->getNodeType() == "NodeMechanic"))
+                        type = "Power";
+                    else if(startPort->mpCorePort->getNodeType() == "NodeSignal")
+                        type = "Signal";
+                    if(mpParentView->mpParentProjectTab->useIsoGraphics)
+                        style = "Iso";
+                    else
+                        style = "User";
+                    pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, mpParentView->getPen("Primary", type, style),
+                                                      mpParentView->getPen("Active", type, style), mpParentView->getPen("Hover", type, style), mpParentView);
+
+                    mpParentView->scene()->addItem(pTempConnector);
+
+                    //Hide connected ports
+                    startPort->hide();
+                    endPort->hide();
+
+                    GUIObject::connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+                    GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+
+                    std::stringstream tempStream;
+                    tempStream << startPort->getGuiObject()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
+                                  endPort->getGuiObject()->getName().toStdString() << " " << endPort->getPortNumber();
+                    mpParentView->mConnectionMap.insert(QString(tempStream.str().c_str()), pTempConnector);
+                    bool success = mpParentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
+                    if (!success)
+                    {
+                        qDebug() << "Unsuccessful connection try" << endl;
+                        assert(false);
+                    }
+                }
+                else if(undoWord == "DELETEOBJECT")
+                {
+                    string itemName;
+                    undoStream >> itemName;
+                    GUIObject* item = mpParentView->mGUIObjectMap.find(QString(itemName.c_str())).value();
+                    mpParentView->mGUIObjectMap.erase(mpParentView->mGUIObjectMap.find(QString(itemName.c_str())));
+                    item->deleteInHopsanCore();
+                    mpParentView->scene()->removeItem(item);
+                    delete(item);
+                    mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
                 }
             }
         }
-        
-        
-    }
-    mStack[mCurrentStackPosition] = QStringList();
-    mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
+        mStack[mCurrentStackPosition] = QStringList();
+        mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
     }
 }
 
 
-//! Will redo the previously undone changes if they exist, and switch stack pointer one step forward
+//! Will redo the previously undone changes if they exist, and re-add the undo command to the undo stack.
 void UndoStack::redoOneStep()
 {
     //Not implemented yet
 }
 
 
-//! Store function for component
+//! Register function for component
+//! @param item is a pointer to the component about to be deleted.
 void UndoStack::registerDeletedObject(GUIObject *item)
 {
-    qDebug() << "In store(object)";
     QPointF pos = item->mapToScene(item->boundingRect().center());
     std::stringstream tempStringStream;
     //std::string tempString;
-    //qDebug() << item->getTypeName();
-    qDebug() << item->getName();
-    qDebug() << item->getNameTextPos();
-    qDebug() << item->rotation();
     tempStringStream << "COMPONENT " << item->getTypeName().toStdString() << " " << item->getName().toStdString()
             << " " << pos.x() << " " << pos.y() << " " << item->rotation() << " " << item->getNameTextPos();
-    qDebug() << "Saving: " << tempStringStream.str().c_str();
     mStack[mCurrentStackPosition].insert(0,QString(tempStringStream.str().c_str()));
 
-    qDebug() << "item->type():" << item->type();
     //! @todo ugly quickhack for now dont save parameters for systemport or group
     //! @todo Group typename probably not correct
     //! @todo maybe the save functin should be part of every object (so it can write its own text)
@@ -208,24 +200,22 @@ void UndoStack::registerDeletedObject(GUIObject *item)
         {
             tempStringStream.str("");
             tempStringStream << "PARAMETER " << item->getName().toStdString() << " " << itp->getName().c_str() << " " << itp->getValue() << "\n";
-            qDebug() << "Saving: " << tempStringStream.str().c_str();
             mStack[mCurrentStackPosition].insert(0,QString(tempStringStream.str().c_str()));
         }
     }
 }
 
 
-//! Store function for connectors
+//! Register function for connectors
+//! @param item is a pointer to the connector about to be deleted.
 void UndoStack::registerDeletedConnector(GUIConnector *item)
 {
-    qDebug() << "In store(connector)";
     std::stringstream tempStringStream;
     QMap<QString, GUIConnector *>::iterator it2;
     for(it2 = mpParentView->mConnectionMap.begin(); it2!=mpParentView->mConnectionMap.end(); ++it2)
     {
         if(it2.value() == item)
         {
-            qDebug() << "Match!";
             break;
         }
     }
@@ -236,5 +226,25 @@ void UndoStack::registerDeletedConnector(GUIConnector *item)
         tempStringStream << " " << it2.value()->getPointsVector()[i].x() << " " << it2.value()->getPointsVector()[i].y();
     }
     mStack[mCurrentStackPosition].insert(0,QString(tempStringStream.str().c_str()));
-    qDebug() << "Saving: " << tempStringStream.str().c_str();
+}
+
+
+//! Register function for added objects
+//! @param itemName is the name of the added object
+void UndoStack::registerAddedObject(QString itemName)
+{
+    mStack[mCurrentStackPosition].insert(0,QString("DELETEOBJECT " + itemName));
+    qDebug() << "Adding " << QString("DELETEOBJECT " + itemName);
+}
+
+
+void UndoStack::registerAddedConnector(GUIConnector *item)
+{
+    //Not implemented yet
+}
+
+
+void UndoStack::registerObjectNameChange(GUIObject *item)
+{
+    //Not implemented yet
 }

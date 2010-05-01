@@ -19,6 +19,9 @@ public:
     ~UndoStack();
     void registerDeletedObject(GUIObject *item);
     void registerDeletedConnector(GUIConnector *item);
+    void registerAddedObject(QString itemName);
+    void registerAddedConnector(GUIConnector *item);
+    void registerObjectNameChange(GUIObject *item);
     void clear();
     void newPost();
     void undoOneStep();

@@ -85,7 +85,7 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     connect(pMainWindow->copyAction, SIGNAL(triggered()), this,SLOT(copySelected()));
     connect(pMainWindow->pasteAction, SIGNAL(triggered()), this,SLOT(paste()));
     connect(pMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this,SLOT(hidePorts(bool)));
-    connect(this, SIGNAL(keyPressCtrlZ()), this, SLOT(undo()));
+    connect(pMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
 }
 
 void GraphicsView::createMenus()
@@ -258,6 +258,8 @@ void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appear
     }
     mpTempGUIObject->setSelected(startSelected);
     this->setFocus(Qt::OtherFocusReason);
+
+    undoStack->registerAddedObject(mpTempGUIObject->getName());
 }
 
 ////! Adds a new component to the GraphicsView.
@@ -434,18 +436,10 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         emit keyPressLeft();
     else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Right)
         emit keyPressRight();
-    else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_X)
-        this->cutSelected();
-    else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_C)
-        this->copySelected();
-    else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_V)
-        this->paste();
     else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_A)
         emit keyPressCtrlA();
     else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_S)
         emit keyPressCtrlS();
-    else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Z)
-        emit keyPressCtrlZ();
     else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_A)
         this->selectAll();
     else if (event->modifiers() and Qt::ControlModifier)
@@ -1498,6 +1492,8 @@ void ProjectTabWidget::loadModel()
 
     //Sets the file name as model name
     pCurrentView->getModelPointer()->setName(fileInfo.fileName().toStdString());
+
+    pCurrentView->undoStack->clear();
 
     emit checkMessages();
 }

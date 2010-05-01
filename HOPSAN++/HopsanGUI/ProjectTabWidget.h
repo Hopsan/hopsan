@@ -70,7 +70,6 @@ signals:
     void keyPressR();
     void keyPressCtrlA();
     void keyPressCtrlS();
-    void keyPressCtrlZ();
     void keyPressUp();
     void keyPressDown();
     void keyPressLeft();

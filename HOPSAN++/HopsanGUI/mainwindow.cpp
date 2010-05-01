@@ -230,16 +230,26 @@ void MainWindow::createActions()
     closeAction->setShortcut(QKeySequence("Ctrl+q"));
     connect(this->closeAction,SIGNAL(triggered()),SLOT(close()));
 
+    undoAction = new QAction(QIcon("../../HopsanGUI/icons/undo.png"), tr("&Undo"), this);
+    undoAction->setText("Undo");
+    undoAction->setShortcut(QKeySequence(tr("Ctrl+z")));
+    undoAction->setStatusTip(tr("Undo One Step"));
+
+    redoAction = new QAction(QIcon("../../HopsanGUI/icons/redo.png"), tr("&Redo"), this);
+    redoAction->setText("Redo");
+    redoAction->setShortcut(QKeySequence(tr("Ctrl+Shift+z")));
+    redoAction->setStatusTip(tr("Redo One Step"));
+
     cutAction = new QAction(QIcon("../../HopsanGUI/icons/cut.png"), tr("&Cut"), this);
-    cutAction->setShortcut(tr("Cut"));
+    cutAction->setShortcut(tr("Ctrl+x"));
     cutAction->setStatusTip(tr("Cut Selection"));
 
     copyAction = new QAction(QIcon("../../HopsanGUI/icons/copy.png"), tr("&Copy"), this);
-    copyAction->setShortcut(tr("Copy"));
+    copyAction->setShortcut(tr("Ctrl+c"));
     copyAction->setStatusTip(tr("Copy Selection"));
 
     pasteAction = new QAction(QIcon("../../HopsanGUI/icons/paste.png"), tr("&Paste"), this);
-    pasteAction->setShortcut(tr("Paste"));
+    pasteAction->setShortcut(tr("Ctrl+v"));
     pasteAction->setStatusTip(tr("Paste Selection"));
 
     simulateAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_27.png"), tr("&Simulate"), this);
@@ -339,6 +349,9 @@ void MainWindow::createMenus()
 
     menuSimulation->addAction(simulateAction);
 
+    menuEdit->addAction(undoAction);
+    menuEdit->addAction(redoAction);
+    menuEdit->addSeparator();
     menuEdit->addAction(copyAction);
     menuEdit->addAction(cutAction);
     menuEdit->addAction(pasteAction);
@@ -346,7 +359,7 @@ void MainWindow::createMenus()
     menuView->addAction(libdock->toggleViewAction());
     menuView->addAction(messagedock->toggleViewAction());
     menuView->addAction(fileToolBar->toggleViewAction());
-    menuView->addAction(clipboardToolBar->toggleViewAction());
+    menuView->addAction(editToolBar->toggleViewAction());
     menuView->addAction(simToolBar->toggleViewAction());
 
     menuTools->addAction(optionsAction);
@@ -355,10 +368,10 @@ void MainWindow::createMenus()
 
     menubar->addAction(menuFile->menuAction());
     menubar->addAction(menuEdit->menuAction());
-    menubar->addAction(menuView->menuAction());
     menubar->addAction(menuTools->menuAction());
     menubar->addAction(menuSimulation->menuAction());
     menubar->addAction(menuPlot->menuAction());
+    menubar->addAction(menuView->menuAction());
 }
 
 //! Creates the toolbars
@@ -377,12 +390,14 @@ void MainWindow::createToolbars()
     fileToolBar->addAction(saveAction);
     fileToolBar->addAction(saveAsAction);
 
-    clipboardToolBar = addToolBar(tr("Clipboard Toolbar"));
-    clipboardToolBar->setAllowedAreas(Qt::TopToolBarArea);
-    clipboardToolBar->addAction(cutAction);
-    clipboardToolBar->addAction(copyAction);
-    clipboardToolBar->addAction(pasteAction);
-    clipboardToolBar->addAction(optionsAction);
+    editToolBar = addToolBar(tr("Clipboard Toolbar"));
+    editToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    editToolBar->addAction(cutAction);
+    editToolBar->addAction(copyAction);
+    editToolBar->addAction(pasteAction);
+    editToolBar->addAction(undoAction);
+    editToolBar->addAction(redoAction);
+    editToolBar->addAction(optionsAction);
 
     simToolBar = addToolBar(tr("Simulation Toolbar"));
     simToolBar->setAllowedAreas(Qt::TopToolBarArea);

@@ -64,6 +64,8 @@ public:
     QAction *saveAction;
     QAction *saveAsAction;
     QAction *closeAction;
+    QAction *undoAction;
+    QAction *redoAction;
     QAction *cutAction;
     QAction *copyAction;
     QAction *pasteAction;
@@ -81,7 +83,7 @@ public:
     QAction *showPortsAction;
 
     QToolBar *fileToolBar;
-    QToolBar *clipboardToolBar;
+    QToolBar *editToolBar;
     QToolBar *simToolBar;
     QToolBar *mpSimulationToolBar;
     QToolBar *viewToolBar;
