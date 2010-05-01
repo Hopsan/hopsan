@@ -21,7 +21,7 @@ public:
     void registerDeletedConnector(GUIConnector *item);
     void registerAddedObject(QString itemName);
     void registerAddedConnector(GUIConnector *item);
-    void registerObjectNameChange(GUIObject *item);
+    void registerRenameObject(QString oldName, QString newName);
     void clear();
     void newPost();
     void undoOneStep();

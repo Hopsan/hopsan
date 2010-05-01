@@ -384,6 +384,8 @@ void GraphicsView::renameGUIObject(QString oldName, QString newName)
         qDebug() << "Old name: " << oldName << " not found";
     }
 
+    undoStack->registerRenameObject(oldName, newName);
+
     emit checkMessages();
 }
 

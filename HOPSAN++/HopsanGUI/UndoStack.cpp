@@ -179,6 +179,18 @@ void UndoStack::undoOneStep()
                     GUIConnector *item = mpParentView->mConnectionMap.find(connectionString).value();
                     mpParentView->removeConnector(item);
                 }
+                else if(undoWord == "RENAMEOBJECT")
+                {
+                    string oldName;
+                    string newName;
+                    undoStream >> oldName;
+                    undoStream >> newName;
+
+                    GUIObject* obj_ptr = mpParentView->mGUIObjectMap.find(QString(newName.c_str())).value();
+                    mpParentView->mGUIObjectMap.erase(mpParentView->mGUIObjectMap.find(QString(newName.c_str())));
+                    obj_ptr->setName(QString(oldName.c_str()), true);
+                    mpParentView->mGUIObjectMap.insert(obj_ptr->getName(), obj_ptr);
+                }
             }
         }
         mStack[mCurrentStackPosition] = QStringList();      //Empty curren stack position
@@ -248,7 +260,7 @@ void UndoStack::registerDeletedConnector(GUIConnector *item)
 }
 
 
-//! Register function for added objects
+//! Register function for added objects.
 //! @param itemName is the name of the added object
 void UndoStack::registerAddedObject(QString itemName)
 {
@@ -257,6 +269,8 @@ void UndoStack::registerAddedObject(QString itemName)
 }
 
 
+//! Register function for added connectors.
+//! @param item is a pointer to the added connector.
 void UndoStack::registerAddedConnector(GUIConnector *item)
 {
     std::stringstream tempStringStream;
@@ -275,7 +289,12 @@ void UndoStack::registerAddedConnector(GUIConnector *item)
 }
 
 
-void UndoStack::registerObjectNameChange(GUIObject *item)
+//! Registser function for renaming an object.
+//! @param oldName is a string with the old name.
+//! @param newName is a string with the new name.
+void UndoStack::registerRenameObject(QString oldName, QString newName)
 {
-    //Not implemented yet
+    //! @todo Spaces in names won't work with the streaming. Replace them with something here and then replace back when undoing.
+    mStack[mCurrentStackPosition].insert(0,QString("RENAMEOBJECT " + oldName + " " + newName));
+    qDebug() << "Adding " << QString("RENAMEOBJECT " + oldName + " " + newName);
 }
