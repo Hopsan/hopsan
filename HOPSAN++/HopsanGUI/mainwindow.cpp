@@ -139,7 +139,7 @@ MainWindow::MainWindow(QWidget *parent)
     AppearanceData *pAppData = new AppearanceData;
     pAppData->setBasePath("../../HopsanGUI/"); //!< @todo THIS IS BAD
     pAppData->setTypeName("Subsystem");
-    pAppData->setIconPath("subsystemtmp.svg");
+    pAppData->setIconPathUser("subsystemtmp.svg");
 
     LibraryContentItem *pLibsubcomp = new LibraryContentItem(pAppData);
     mpLibrary->addLibraryContentItem("", "Subsystem", pLibsubcomp);
@@ -147,7 +147,7 @@ MainWindow::MainWindow(QWidget *parent)
     AppearanceData *pAppData2 = new AppearanceData;
     pAppData2->setBasePath("../../HopsanGUI/"); //!< @todo THIS IS BAD
     pAppData2->setTypeName("SystemPort");
-    pAppData2->setIconPath("systemporttmp.svg"); //Icon path
+    pAppData2->setIconPathUser("systemporttmp.svg"); //Icon path
     QString portstr("PORTS 1\n 0.5 0.5 0");
     QTextStream portstream(&portstr);
     portstream >> *pAppData2;

@@ -1,3 +1,12 @@
+//!
+//! @file   AppearanceData.h
+//! @author Peter Nordin <peter.nordin@liu.se>
+//! @date   2010-04-22
+//!
+//! @brief Contains appearance data to be used by guiobjects and library widget
+//!
+//$Id
+
 #ifndef APPEARANCEDATA_H
 #define APPEARANCEDATA_H
 
@@ -23,16 +32,20 @@ public:
     AppearanceData();
     void setTypeName(QString name);
     void setBasePath(QString path);
-    void setIconPath(QString path);
+    void setIconPathUser(QString path);
     void setIconPathISO(QString path);
 
     QString getTypeName();
-    QString getIconPath();
+    QString getFullIconPath(bool useIso=false);
+    QString getIconPathUser();
     QString getIconPathISO();
     QString getIconRotationBehaviour();
     QPointF getNameTextPos();
     size_t  getNumberOfPorts();
     QVector<PortAppearance> &getPortAppearanceVector();
+
+    bool haveIsoIcon();
+    bool haveUserIcon();
 
     QString getBasePath();
 
@@ -44,7 +57,7 @@ public:
 
 private:
     QString mTypeName;
-    QString mIconPath;
+    QString mIconPathUser;
     QString mIconPathISO;
     QString mIconRotationBehaviour;
     qreal mRotation;

@@ -76,13 +76,10 @@ public slots:
 
 protected:
     QGraphicsSvgItem *mpIcon;
-    bool mHasIsoIcon;
     GUIObjectDisplayName *mpNameText;
     GUIObjectSelectionBox *mpSelectionBox;
     double mTextOffset;
     QGraphicsLineItem *mpTempLine;
-    QString mIconPath;
-    QString mIsoIconPath;
     //std::vector<GUIConnector*> mConnectors;        //Inteded to store connectors for each component
     QList<GUIPort*> mPortListPtrs;
     int mNameTextPos;

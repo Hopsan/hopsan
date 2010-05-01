@@ -63,32 +63,33 @@ void LibraryContentItem::selectIcon(bool useIso)
     //Set Icon, prefere user, if its empty use iso
     QIcon icon;
  
-    //! @todo to speedup we might find out som of this stuff when we load appearanceData, so that we dont have to check every time, (dont know if necessary)
-    if ( !mpAppearanceData->getIconPath().isEmpty() && !useIso )
-    {
-        //Use user icon
-        icon.addFile(mpAppearanceData->getBasePath() + mpAppearanceData->getIconPath());
-    }
-    else if ( !mpAppearanceData->getIconPathISO().isEmpty() && useIso )
-    {
-        //use iso icon
-        icon.addFile(mpAppearanceData->getBasePath() + mpAppearanceData->getIconPathISO());
-    }
-    else if ( mpAppearanceData->getIconPath().isEmpty() && !mpAppearanceData->getIconPathISO().isEmpty() )
-    {
-        //Want user icon but not available, use iso icon
-        icon.addFile(mpAppearanceData->getBasePath() + mpAppearanceData->getIconPathISO());
-    }
-    else if ( !mpAppearanceData->getIconPath().isEmpty() && mpAppearanceData->getIconPathISO().isEmpty() )
-    {
-        //Want ISO icon but not available, Use user icon
-        icon.addFile(mpAppearanceData->getBasePath() + mpAppearanceData->getIconPath());
-    }
-    else
-    {
-        //No icon available use som noname icon
-        icon.addFile("som noname file"); //!< @todo Fix this, noname library icon
-    }
+//    //! @todo to speedup we might find out som of this stuff when we load appearanceData, so that we dont have to check every time, (dont know if necessary)
+//    if ( !mpAppearanceData->getIconPath().isEmpty() && !useIso )
+//    {
+//        //Use user icon
+//        icon.addFile(mpAppearanceData->getBasePath() + mpAppearanceData->getIconPath());
+//    }
+//    else if ( !mpAppearanceData->getIconPathISO().isEmpty() && useIso )
+//    {
+//        //use iso icon
+//        icon.addFile(mpAppearanceData->getBasePath() + mpAppearanceData->getIconPathISO());
+//    }
+//    else if ( mpAppearanceData->getIconPath().isEmpty() && !mpAppearanceData->getIconPathISO().isEmpty() )
+//    {
+//        //Want user icon but not available, use iso icon
+//        icon.addFile(mpAppearanceData->getBasePath() + mpAppearanceData->getIconPathISO());
+//    }
+//    else if ( !mpAppearanceData->getIconPath().isEmpty() && mpAppearanceData->getIconPathISO().isEmpty() )
+//    {
+//        //Want ISO icon but not available, Use user icon
+//        icon.addFile(mpAppearanceData->getBasePath() + mpAppearanceData->getIconPath());
+//    }
+//    else
+//    {
+//        //No icon available use som noname icon
+//        icon.addFile("som noname file"); //!< @todo Fix this, noname library icon
+//    }
+    icon.addFile(mpAppearanceData->getFullIconPath(useIso));
 
     setIcon(icon);
 }

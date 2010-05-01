@@ -38,8 +38,6 @@ GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsSce
 
     mTextOffset = 5.0;
 
-    mHasIsoIcon = false;
-
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
     //setFocusPolicy(Qt::StrongFocus);
     this->setAcceptHoverEvents(true);
@@ -48,26 +46,8 @@ GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsSce
 
     //Make a local copy of the appearance data (that can safely be modified if needed)
     mAppearanceData = appearanceData;
-    if (!mAppearanceData.getIconPath().isEmpty())
-    {
-        mIconPath = mAppearanceData.getBasePath() + mAppearanceData.getIconPath();
-        mpIcon = new QGraphicsSvgItem(mIconPath, this);
-        qDebug() << "Setting icon to: " << mIconPath;
-    }
-    else if (!mAppearanceData.getIconPathISO().isEmpty())
-    {
-        mIsoIconPath = mAppearanceData.getBasePath() + mAppearanceData.getIconPathISO();
-        mpIcon = new QGraphicsSvgItem(mIsoIconPath, this);
-        qDebug() << "Setting icon to ISO:  " << mIsoIconPath;
-    }
-    else
-    {
-        mIconPath = ""; //!< @todo Some default noname icon if icon missing
-        mIsoIconPath = "";
-    }
-
-
-    //! @todo maybe save a appearanceData copy or pointer in every component instead of incon path directly
+    mpIcon = 0; //Set to null ptr initially
+    setIcon(false); //Use user icon initially
 
 
     std::cout << "GUIcomponent: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
@@ -231,20 +211,31 @@ void GUIObject::setName(QString newName, bool doOnlyCoreRename)
 
 void GUIObject::setIcon(bool useIso)
 {
-    if(useIso and mHasIsoIcon)
+    QGraphicsSvgItem *tmp = mpIcon;
+    if(useIso and mAppearanceData.haveIsoIcon())
     {
-        delete(mpIcon);
-        mpIcon = new QGraphicsSvgItem(mIsoIconPath, this);
+
+        mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(true) , this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
         qDebug() << "Changing to ISO icon";
     }
     else
     {
-        delete(mpIcon);
-        mpIcon = new QGraphicsSvgItem(this->mIconPath, this);
+        mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(false), this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
         qDebug() << "Changing to user icon";
     }
+
+    //Delete old icon if it exist;
+    if (tmp != 0)
+    {
+        delete(tmp);
+    }
+
+    if(mAppearanceData.getIconRotationBehaviour() == "ON")
+        this->mIconRotation = true;
+    else
+        this->mIconRotation = false;
 
     if(!this->mIconRotation)
     {
@@ -841,24 +832,6 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, AppearanceData appearanceDa
     : GUIObject(position, appearanceData, scene, parent)
 {
     mComponentTypeName = appearanceData.getTypeName();
-
-    if(!appearanceData.getIconPathISO().isEmpty())
-    {
-        mHasIsoIcon = true;
-        mIsoIconPath = appearanceData.getBasePath() + appearanceData.getIconPathISO();
-    }
-    else
-    {
-        mHasIsoIcon = false;
-        mIsoIconPath = "";
-    }
-
-    QString iconRotationBehaviour = appearanceData.getIconRotationBehaviour();
-    if(iconRotationBehaviour == "ON")
-        this->mIconRotation = true;
-    else
-        this->mIconRotation = false;
-
     //Core interaction
     mpCoreComponent = hopsan->CreateComponent(mComponentTypeName.toStdString());
     //
@@ -866,6 +839,7 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, AppearanceData appearanceDa
     //Sets the ports
     size_t nPorts = appearanceData.getNumberOfPorts();
     //! @todo Mybe should not copy the vector maybe shoule use reference access every time
+    //! @todo This code needs to be broken out into a sub function
     QVector<PortAppearance> portappvec = appearanceData.getPortAppearanceVector();
     Port::PORTTYPE porttype;
     for (size_t i = 0; i < nPorts; ++i)
@@ -1016,7 +990,7 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         {
             //groupComponents(mpParentGraphicsScene->selectedItems());
             AppearanceData appdata;
-            appdata.setIconPath("subsystemtmp.svg");
+            appdata.setIconPathUser("subsystemtmp.svg");
             appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
             GUIGroup *pGroup = new GUIGroup(mpParentGraphicsScene->selectedItems(), appdata, mpParentGraphicsScene);
             this->mpParentGraphicsScene->addItem(pGroup);
@@ -1247,7 +1221,7 @@ void GUISubsystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         {
             //groupComponents(mpParentGraphicsScene->selectedItems());
             AppearanceData appdata;
-            appdata.setIconPath("subsystemtmp.svg");
+            appdata.setIconPathUser("subsystemtmp.svg");
             appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
             GUIGroup *pGroup = new GUIGroup(mpParentGraphicsScene->selectedItems(), appdata, mpParentGraphicsScene);
             this->mpParentGraphicsScene->addItem(pGroup);

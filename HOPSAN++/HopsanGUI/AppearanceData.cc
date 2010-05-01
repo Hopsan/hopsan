@@ -1,3 +1,12 @@
+//!
+//! @file   AppearanceData.cpp
+//! @author Peter Nordin <peter.nordin@liu.se>
+//! @date   2010-04-22
+//!
+//! @brief Contains appearance data to be used by guiobjects and library widget
+//!
+//$Id
+
 #include "AppearanceData.h"
 #include "qdebug.h"
 
@@ -25,7 +34,7 @@ QTextStream& operator <<(QTextStream &os, const AppearanceData &rData)
     os << "NAME " << rData.mTypeName << "\n";
     //os << "BASEPATH " << rData.getBasePath() << "\n"; //Base path is computer dependant
     os << "ISOICON " << rData.mIconPathISO << "\n";
-    os << "USERICON " << rData.mIconPath << "\n";
+    os << "USERICON " << rData.mIconPathUser << "\n";
     os << "ICONROTATION " << rData.mIconRotationBehaviour << "\n";
     os << "PORTS " << rData.mnPorts << "\n";
     for (size_t i=0; i<rData.mnPorts; ++i)
@@ -43,9 +52,38 @@ QString AppearanceData::getTypeName()
     return mTypeName;
 }
 
-QString AppearanceData::getIconPath()
+QString AppearanceData::getFullIconPath(bool useIso)
 {
-    return mIconPath;
+    if ( !mIconPathUser.isEmpty() && !useIso )
+    {
+        //Use user icon
+        return mBasePath + mIconPathUser;
+    }
+    else if ( !mIconPathISO.isEmpty() && useIso )
+    {
+        //use iso icon
+        return mBasePath + mIconPathISO;
+    }
+    else if ( mIconPathUser.isEmpty() && !mIconPathISO.isEmpty() )
+    {
+        //Want user icon but not available, use iso icon
+        return mBasePath + mIconPathISO;
+    }
+    else if ( !mIconPathUser.isEmpty() && mIconPathISO.isEmpty() )
+    {
+        //Want ISO icon but not available, Use user icon
+        return mBasePath + mIconPathUser;
+    }
+    else
+    {
+        //No icon available use som noname icon
+        return "som noname file"; //!< @todo Fix this, Empty icon
+    }
+}
+
+QString AppearanceData::getIconPathUser()
+{
+    return mIconPathUser;
 }
 
 QString AppearanceData::getIconPathISO()
@@ -99,7 +137,7 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
         }
         else if (command == "USERICON")
         {
-            mIconPath = is.readLine().trimmed();
+            mIconPathUser = is.readLine().trimmed();
         }
         else if (command == "ICONROTATION")
         {
@@ -149,12 +187,22 @@ void AppearanceData::setBasePath(QString path)
     mBasePath = path;
 }
 
-void AppearanceData::setIconPath(QString path)
+void AppearanceData::setIconPathUser(QString path)
 {
-    mIconPath = path;
+    mIconPathUser = path;
 }
 
 void AppearanceData::setIconPathISO(QString path)
 {
     mIconPathISO = path;
+}
+
+bool AppearanceData::haveIsoIcon()
+{
+    return !mIconPathISO.isEmpty();
+}
+
+bool AppearanceData::haveUserIcon()
+{
+    return !mIconPathUser.isEmpty();
 }
