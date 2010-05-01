@@ -19,8 +19,8 @@ SOURCES += main.cpp \
     PreferenceWidget.cpp \
     OptionsWidget.cpp \
     GUIObject.cpp \
-    AppearanceData.cc \
-    UndoStack.cpp
+    UndoStack.cpp \
+    AppearanceData.cpp
 HEADERS += mainwindow.h \
     ProjectTabWidget.h \
     LibraryWidget.h \

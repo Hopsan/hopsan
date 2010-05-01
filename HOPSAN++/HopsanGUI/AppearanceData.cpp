@@ -5,7 +5,7 @@
 //!
 //! @brief Contains appearance data to be used by guiobjects and library widget
 //!
-//$Id
+//Id
 
 #include "AppearanceData.h"
 #include "qdebug.h"

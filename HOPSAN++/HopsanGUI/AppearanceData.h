@@ -5,7 +5,7 @@
 //!
 //! @brief Contains appearance data to be used by guiobjects and library widget
 //!
-//$Id
+//Id
 
 #ifndef APPEARANCEDATA_H
 #define APPEARANCEDATA_H
