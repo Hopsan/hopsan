@@ -328,17 +328,13 @@ void GraphicsView::deleteGUIObject(QString objectName)
     QMap<QString, GUIObject *>::iterator it;
     it = mGUIObjectMap.find(objectName);
 
-    QMap<QString, GUIConnector *>::iterator it2 = mConnectionMap.begin();
-    while(it2 != mConnectionMap.end())
+    for(int i = 0; i != mConnectorVector.size(); ++i)
     {
-        if(it2.key().contains(objectName + " "))
+        if((mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == objectName) or
+           (mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == objectName))
         {
-            this->removeConnector(it2.value());
-            it2 = mConnectionMap.begin();   //Restart iteration if map has changed
-        }
-        else
-        {
-            ++it2;
+            this->removeConnector(mConnectorVector[i]);
+            i= 0;   //Restart iteration if map has changed
         }
     }
 
@@ -592,10 +588,10 @@ void GraphicsView::addConnector(GUIPort *pPort)
             mpTempConnector->getStartPort()->hide();
             mpTempConnector->getEndPort()->hide();
 
-            std::stringstream tempStream;
-            tempStream << mpTempConnector->getStartPort()->getGuiObject()->getName().toStdString() << " " << mpTempConnector->getStartPort()->getPortNumber() << " " <<
-                          mpTempConnector->getEndPort()->getGuiObject()->getName().toStdString() << " " << mpTempConnector->getEndPort()->getPortNumber();
-            this->mConnectionMap.insert(QString(tempStream.str().c_str()), mpTempConnector);
+//            std::stringstream tempStream;
+//            tempStream << mpTempConnector->getStartPort()->getGuiObject()->getName().toStdString() << " " << mpTempConnector->getStartPort()->getPortNumber() << " " <<
+//                          mpTempConnector->getEndPort()->getGuiObject()->getName().toStdString() << " " << mpTempConnector->getEndPort()->getPortNumber();
+            this->mConnectorVector.append(mpTempConnector);
         }
         emit checkMessages();
         //
@@ -608,10 +604,10 @@ void GraphicsView::addConnector(GUIPort *pPort)
 void GraphicsView::removeConnector(GUIConnector* pConnector)
 {
     bool doDelete = false;
-    QMap<QString, GUIConnector *>::iterator it2;
-    for(it2 = this->mConnectionMap.begin(); it2!=this->mConnectionMap.end(); ++it2)
+    int i;
+    for(i = 0; i != mConnectorVector.size(); ++i)
     {
-        if(it2.value() == pConnector)
+        if(mConnectorVector[i] == pConnector)
         {
              //! @todo some error handling both ports must exist and be connected to each other
              //Core interaction
@@ -630,12 +626,12 @@ void GraphicsView::removeConnector(GUIConnector* pConnector)
              doDelete = true;
              break;
         }
-        if(mConnectionMap.empty())
+        if(mConnectorVector.empty())
             break;
     }
     if(doDelete)
     {
-        mConnectionMap.erase(it2);
+        mConnectorVector.remove(i);
     }
 }
 
@@ -651,9 +647,9 @@ void GraphicsView::selectAll()
     }
         //Deselect all connectors
     QMap<QString, GUIConnector*>::iterator it2;
-    for(it2 = this->mConnectionMap.begin(); it2!=this->mConnectionMap.end(); ++it2)
+    for(int i = 0; i != mConnectorVector.size(); ++i)
     {
-        it2.value()->doSelect(true, -1);
+        mConnectorVector[i]->doSelect(true, -1);
     }
 }
 
@@ -698,17 +694,23 @@ void GraphicsView::copySelected()
     }
 
     QMap<QString, GUIConnector *>::iterator it2;
-    for(it2 = this->mConnectionMap.begin(); it2!=this->mConnectionMap.end(); ++it2)
+    for(int i = 0; i != mConnectorVector.size(); ++i)
     {
-        if(it2.value()->getStartPort()->getGuiObject()->isSelected() and it2.value()->getEndPort()->getGuiObject()->isSelected() and it2.value()->isActive())
+        if(mConnectorVector[i]->getStartPort()->getGuiObject()->isSelected() and mConnectorVector[i]->getEndPort()->getGuiObject()->isSelected() and mConnectorVector[i]->isActive())
         {
-            qDebug() << "Copying connection between" << it2.value()->getStartPort()->getGuiObject()->getName() << " and " << it2.value()->getStartPort()->getGuiObject()->getName() << ".";
+            qDebug() << "Copying connection between" << mConnectorVector[i]->getStartPort()->getGuiObject()->getName() << " and " << mConnectorVector[i]->getStartPort()->getGuiObject()->getName() << ".";
 
-            mCopyData << "CONNECT" << it2.key().toStdString().c_str();
-
-            for(size_t i = 0; i!=it2.value()->getPointsVector().size(); ++i)
+            QString startPortNumberString;
+            QString endPortNumberString;
+            startPortNumberString.setNum(mConnectorVector[i]->getStartPort()->getPortNumber());
+            endPortNumberString.setNum(mConnectorVector[i]->getEndPort()->getPortNumber());
+            mCopyData << "CONNECT" << QString(mConnectorVector[i]->getStartPort()->getGuiObject()->getName() + " " + startPortNumberString + " "
+                                              + mConnectorVector[i]->getEndPort()->getGuiObject()->getName() + " " + endPortNumberString);
+            qDebug() << "Saved " << QString(mConnectorVector[i]->getStartPort()->getGuiObject()->getName() + " " + startPortNumberString + " "
+                                            + mConnectorVector[i]->getEndPort()->getGuiObject()->getName() + " " + endPortNumberString);
+            for(size_t j = 0; j != mConnectorVector[i]->getPointsVector().size(); ++j)
             {
-                mCopyDataPos << it2.value()->getPointsVector()[i];
+                mCopyDataPos << mConnectorVector[i]->getPointsVector()[j];
                 mCopyData << "POINT";
             }
 
@@ -733,9 +735,9 @@ void GraphicsView::paste()
     }
 
         //Deselect all connectors
-    for(it2 = this->mConnectionMap.begin(); it2!=this->mConnectionMap.end(); ++it2)
+    for(int i = 0; i != mConnectorVector.size(); ++i)
     {
-        it2.value()->doSelect(false, -1);
+        mConnectorVector[i]->doSelect(false, -1);
     }
 
     QMap<QString, QString> renameMap;       //Used to track name changes, so that connectors will know what components are called
@@ -813,10 +815,10 @@ void GraphicsView::paste()
             connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
             connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
 
-            std::stringstream tempStream2;
-            tempStream2 << startPort->getGuiObject()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
-                          endPort->getGuiObject()->getName().toStdString() << " " << endPort->getPortNumber();
-            this->mConnectionMap.insert(QString(tempStream2.str().c_str()), pTempConnector);
+            //std::stringstream tempStream2;
+            //tempStream2 << startPort->getGuiObject()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
+            //              endPort->getGuiObject()->getName().toStdString() << " " << endPort->getPortNumber();
+            mConnectorVector.append(pTempConnector);
             bool success = this->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
             if (!success)
             {
@@ -1463,7 +1465,7 @@ void ProjectTabWidget::loadModel()
                 std::stringstream tempStream;
                 tempStream << startPort->getGuiObject()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
                               endPort->getGuiObject()->getName().toStdString() << " " << endPort->getPortNumber();
-                pCurrentView->mConnectionMap.insert(QString(tempStream.str().c_str()), pTempConnector);
+                pCurrentView->mConnectorVector.append(pTempConnector);
                 bool success = pCurrentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
                 if (!success)
                 {
@@ -1543,13 +1545,21 @@ void ProjectTabWidget::saveModel(bool saveAs)
 
     modelFile << "--------------------------------------------------------------" << std::endl;
 
-    QMap<QString, GUIConnector *>::iterator it2;
-    for(it2 = pCurrentView->mConnectionMap.begin(); it2!=pCurrentView->mConnectionMap.end(); ++it2)
+   // QMap<QString, GUIConnector *>::iterator it2;
+    int i;
+    for(i = 0; i != pCurrentView->mConnectorVector.size(); ++i)
     {
-        modelFile << "CONNECT " << it2.key().toStdString();
-        for(size_t i = 0; i!=it2.value()->getPointsVector().size(); ++i)
+        QString startPortNumberString;
+        QString endPortNumberString;
+        startPortNumberString.setNum(pCurrentView->mConnectorVector[i]->getStartPort()->getPortNumber());
+        endPortNumberString.setNum(pCurrentView->mConnectorVector[i]->getEndPort()->getPortNumber());
+        modelFile << "CONNECT " << QString(pCurrentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() + " " +
+                                           startPortNumberString + " " +
+                                           pCurrentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() + " " +
+                                           endPortNumberString).toStdString();
+        for(size_t j = 0; j != pCurrentView->mConnectorVector[i]->getPointsVector().size(); ++j)
         {
-            modelFile << " " << it2.value()->getPointsVector()[i].x() << " " << it2.value()->getPointsVector()[i].y();
+            modelFile << " " << pCurrentView->mConnectorVector[i]->getPointsVector()[j].x() << " " << pCurrentView->mConnectorVector[i]->getPointsVector()[j].y();
         }
         modelFile << "\n";
     }
@@ -1570,29 +1580,29 @@ void ProjectTabWidget::setIsoGraphics(bool value)
     ProjectTab *pCurrentTab = getCurrentTab();
     GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
     QMap<QString, GUIConnector *>::iterator it;
-    for(it = pCurrentView->mConnectionMap.begin(); it!=pCurrentView->mConnectionMap.end(); ++it)
+    for(size_t i = 0; i!=pCurrentView->mConnectorVector[i]->getPointsVector().size(); ++i)
     {
         if(value)
         {
-            if((it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeHydraulic") | (it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeMechanic"))
-                it.value()->setPens(pCurrentView->getPen("Primary", "Power", "Iso"),
-                                    pCurrentView->getPen("Active", "Power", "Iso"),
-                                    pCurrentView->getPen("Hover", "Power", "Iso"));
-            else if(it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeSignal")
-                it.value()->setPens(pCurrentView->getPen("Primary", "Signal", "Iso"),
-                                    pCurrentView->getPen("Active", "Signal", "Iso"),
-                                    pCurrentView->getPen("Hover", "Signal", "Iso"));
+            if((pCurrentView->mConnectorVector[i]->getEndPort()->mpCorePort->getNodeType() == "NodeHydraulic") | (pCurrentView->mConnectorVector[i]->getEndPort()->mpCorePort->getNodeType() == "NodeMechanic"))
+                pCurrentView->mConnectorVector[i]->setPens(pCurrentView->getPen("Primary", "Power", "Iso"),
+                                                           pCurrentView->getPen("Active", "Power", "Iso"),
+                                                           pCurrentView->getPen("Hover", "Power", "Iso"));
+            else if(pCurrentView->mConnectorVector[i]->getEndPort()->mpCorePort->getNodeType() == "NodeSignal")
+                    pCurrentView->mConnectorVector[i]->setPens(pCurrentView->getPen("Primary", "Signal", "Iso"),
+                                                               pCurrentView->getPen("Active", "Signal", "Iso"),
+                                                               pCurrentView->getPen("Hover", "Signal", "Iso"));
         }
         else
         {
-            if((it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeHydraulic") | (it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeMechanic"))
-                it.value()->setPens(pCurrentView->getPen("Primary", "Power", "User"),
-                                    pCurrentView->getPen("Active", "Power", "User"),
-                                    pCurrentView->getPen("Hover", "Power", "User"));
-            else if(it.value()->getEndPort()->mpCorePort->getNodeType() == "NodeSignal")
-                it.value()->setPens(pCurrentView->getPen("Primary", "Signal", "User"),
-                                    pCurrentView->getPen("Active", "Signal", "User"),
-                                    pCurrentView->getPen("Hover", "Signal", "User"));
+            if((pCurrentView->mConnectorVector[i]->getEndPort()->mpCorePort->getNodeType() == "NodeHydraulic") | (pCurrentView->mConnectorVector[i]->getEndPort()->mpCorePort->getNodeType() == "NodeMechanic"))
+                pCurrentView->mConnectorVector[i]->setPens(pCurrentView->getPen("Primary", "Power", "User"),
+                                                           pCurrentView->getPen("Active", "Power", "User"),
+                                                           pCurrentView->getPen("Hover", "Power", "User"));
+            else if(pCurrentView->mConnectorVector[i]->getEndPort()->mpCorePort->getNodeType() == "NodeSignal")
+                pCurrentView->mConnectorVector[i]->setPens(pCurrentView->getPen("Primary", "Signal", "User"),
+                                                           pCurrentView->getPen("Active", "Signal", "User"),
+                                                           pCurrentView->getPen("Hover", "Signal", "User"));
         }
     }
 

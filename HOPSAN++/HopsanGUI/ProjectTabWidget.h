@@ -57,7 +57,7 @@ public:
     ComponentSystem *mpModel;
     ProjectTab *mpParentProjectTab;
     QMap<QString, GUIObject *> mGUIObjectMap;
-    QMap<QString, GUIConnector *> mConnectionMap;
+    QVector<GUIConnector *> mConnectorVector;
     ComponentSystem *getModelPointer();
     QAction *systemPortAction;
     QMenu *menuInsert;

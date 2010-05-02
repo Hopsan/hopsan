@@ -125,15 +125,15 @@ GUIConnector::~GUIConnector()
     mpParentView->undoStack->registerDeletedConnector(this);
 
 //    QMap<QString, GUIConnector *>::iterator it;
-//    for(it = mpParentView->mConnectionMap.begin(); it!=mpParentView->mConnectionMap.end(); ++it)
+//    for(it = mpParentView->mConnectorVector.begin(); it!=mpParentView->mConnectorVector.end(); ++it)
 //    {
-//        if(mpParentView->mConnectionMap.empty())
+//        if(mpParentView->mConnectorVector.empty())
 //        {
 //            break;
 //        }
 //        else if(it.value() = this)
 //        {
-//            mpParentView->mConnectionMap.erase(it);
+//            mpParentView->mConnectorVector.erase(it);
 //        }
 //    }
 

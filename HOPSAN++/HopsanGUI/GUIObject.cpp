@@ -786,13 +786,13 @@ void GUIObject::deleteMe()
 //            GUICompList.append(pComponent);
 //
 //            QMap<QString, GUIConnector *>::iterator it;
-//            for(it = this->mpParentGraphicsView->mConnectionMap.begin(); it!=this->mpParentGraphicsView->mConnectionMap.end(); ++it)
+//            for(it = this->mpParentGraphicsView->mConnectorVector.begin(); it!=this->mpParentGraphicsView->mConnectorVector.end(); ++it)
 //            {
 //                if(it.key().contains(pComponent->getName()))
 //                    if((compList.contains(it.value()->getStartPort()->getGuiObject())) && (compList.contains(it.value()->getEndPort()->getGuiObject())))
 //                        GUIConnList.append(it.value());
 //
-//                if(this->mpParentGraphicsView->mConnectionMap.empty())
+//                if(this->mpParentGraphicsView->mConnectorVector.empty())
 //                    break;
 //            }
 //        }
@@ -1354,14 +1354,21 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
             GUICompList.append(pComponent);
 
             QMap<QString, GUIConnector *>::iterator it;
-            for(it = this->mpParentGraphicsView->mConnectionMap.begin(); it!=this->mpParentGraphicsView->mConnectionMap.end(); ++it)
+            for(int i = 0; i != mpParentGraphicsView->mConnectorVector.size(); ++i)
             {
-                if(it.key().contains(pComponent->getName()))
-                    if((compList.contains(it.value()->getStartPort()->getGuiObject())) && (compList.contains(it.value()->getEndPort()->getGuiObject())))
+                if((mpParentGraphicsView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == pComponent->getName()) or
+                   (mpParentGraphicsView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == pComponent->getName()))
+                {
+                    if((compList.contains(mpParentGraphicsView->mConnectorVector[i]->getStartPort()->getGuiObject())) and
+                       (compList.contains(mpParentGraphicsView->mConnectorVector[i]->getEndPort()->getGuiObject())))
+                    {
                         GUIConnList.append(it.value());
-
-                if(this->mpParentGraphicsView->mConnectionMap.empty())
+                    }
+                }
+                if(this->mpParentGraphicsView->mConnectorVector.empty())
+                {
                     break;
+                }
             }
         }
     }

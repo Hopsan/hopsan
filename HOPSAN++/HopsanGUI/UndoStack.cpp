@@ -143,7 +143,7 @@ void UndoStack::undoOneStep()
                     std::stringstream tempStream;
                     tempStream << startPort->getGuiObject()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
                                   endPort->getGuiObject()->getName().toStdString() << " " << endPort->getPortNumber();
-                    mpParentView->mConnectionMap.insert(QString(tempStream.str().c_str()), pTempConnector);
+                    mpParentView->mConnectorVector.append(pTempConnector);
                     bool success = mpParentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
                     if (!success)
                     {
@@ -173,10 +173,25 @@ void UndoStack::undoOneStep()
                     undoStream >> endComponentName;
                     undoStream >> endPortNumber;
 
-                    QString connectionString = QString(QString(startComponentName.c_str()) + " " + QString(startPortNumber.c_str()) + " " +
-                                                       QString(endComponentName.c_str()) + " " + QString(endPortNumber.c_str()));
-
-                    GUIConnector *item = mpParentView->mConnectionMap.find(connectionString).value();
+                        // Lookup the pointer to the connector to remove from the connector vector
+                    GUIConnector *item;
+                    for(int i = 0; i != mpParentView->mConnectorVector.size(); ++i)
+                    {
+                        if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == QString(startComponentName.c_str())) and
+                           (mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber() == QString(startPortNumber.c_str()).toInt()) and
+                           (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == QString(endComponentName.c_str())) and
+                           (mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber() == QString(endPortNumber.c_str()).toInt()))
+                        {
+                            item = mpParentView->mConnectorVector[i];
+                        }
+                        else if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == QString(endComponentName.c_str())) and
+                                (mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber() == QString(endPortNumber.c_str()).toInt()) and
+                                (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == QString(startComponentName.c_str())) and
+                                (mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber() == QString(startPortNumber.c_str()).toInt()))
+                        {
+                            item = mpParentView->mConnectorVector[i];
+                        }
+                    }
                     mpParentView->removeConnector(item);
                 }
                 else if(undoWord == "RENAMEOBJECT")
@@ -241,19 +256,27 @@ void UndoStack::registerDeletedObject(GUIObject *item)
 void UndoStack::registerDeletedConnector(GUIConnector *item)
 {
     std::stringstream tempStringStream;
-    QMap<QString, GUIConnector *>::iterator it2;
-    for(it2 = mpParentView->mConnectionMap.begin(); it2!=mpParentView->mConnectionMap.end(); ++it2)
+
+    int i;
+    for(i = 0; i != mpParentView->mConnectorVector.size(); ++i)
     {
-        if(it2.value() == item)
+        if(mpParentView->mConnectorVector[i] == item)
         {
             break;
         }
     }
 
-    tempStringStream << "CONNECT " << it2.key().toStdString();
-    for(size_t i = 0; i!=it2.value()->getPointsVector().size(); ++i)
+    QString startPortNumberString;
+    QString endPortNumberString;
+    startPortNumberString.setNum(mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber());
+    endPortNumberString.setNum(mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber());
+    tempStringStream << "CONNECT " << QString(mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() + " " +
+                                              startPortNumberString + " " +
+                                              mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() + " " +
+                                              endPortNumberString).toStdString();
+    for(size_t j = 0; j != mpParentView->mConnectorVector[i]->getPointsVector().size(); ++j)
     {
-        tempStringStream << " " << it2.value()->getPointsVector()[i].x() << " " << it2.value()->getPointsVector()[i].y();
+        tempStringStream << " " << mpParentView->mConnectorVector[i]->getPointsVector()[j].x() << " " << mpParentView->mConnectorVector[i]->getPointsVector()[j].y();
     }
     mStack[mCurrentStackPosition].insert(0,QString(tempStringStream.str().c_str()));
     qDebug() << "Adding " << QString(tempStringStream.str().c_str());
@@ -274,16 +297,22 @@ void UndoStack::registerAddedObject(QString itemName)
 void UndoStack::registerAddedConnector(GUIConnector *item)
 {
     std::stringstream tempStringStream;
-    QMap<QString, GUIConnector *>::iterator it2;
-    for(it2 = mpParentView->mConnectionMap.begin(); it2!=mpParentView->mConnectionMap.end(); ++it2)
+    int i;
+    for(i = 0; i != mpParentView->mConnectorVector.size(); ++i)
     {
-        if(it2.value() == item)
+        if(mpParentView->mConnectorVector[i] == item)
         {
             break;
         }
     }
-
-    tempStringStream << "DISCONNECT " << it2.key().toStdString();
+    QString startPortNumberString;
+    QString endPortNumberString;
+    startPortNumberString.setNum(mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber());
+    endPortNumberString.setNum(mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber());
+    tempStringStream << "DISCONNECT " << QString(mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() + " " +
+                                                 startPortNumberString + " " +
+                                                 mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() + " " +
+                                                 endPortNumberString).toStdString();
     mStack[mCurrentStackPosition].insert(0,QString(tempStringStream.str().c_str()));
     qDebug() << "Adding " << QString(tempStringStream.str().c_str());
 }

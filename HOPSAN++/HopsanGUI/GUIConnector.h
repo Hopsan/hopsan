@@ -46,7 +46,6 @@ public:
     bool isMakingDiagonal();
     bool isActive();
 
-
 public slots:
     void drawConnector();
     void updateStartPoint(QPointF point);
