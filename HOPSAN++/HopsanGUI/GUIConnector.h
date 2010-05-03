@@ -26,8 +26,6 @@ public:
     enum geometryType {VERTICAL, HORIZONTAL, DIAGONAL};
     enum { Type = UserType + 1 };           //Va tusan gör den här?!
 
-
-
     void addPoint(QPointF point);
     void removePoint(bool deleteIfEmpty = false);
     void setStartPort(GUIPort *port);
@@ -45,6 +43,7 @@ public:
     bool isConnected();
     bool isMakingDiagonal();
     bool isActive();
+    GraphicsView *mpParentView;
 
 public slots:
     void drawConnector();
@@ -73,7 +72,6 @@ private:
     QPen mHoverPen;
     GUIPort *mpStartPort;
     GUIPort *mpEndPort;
-    GraphicsView *mpParentView;
     GUIConnectorLine *mpTempLine;
     std::vector<GUIConnectorLine*> mpLines;
     std::vector<QPointF> mPoints;
@@ -116,6 +114,7 @@ signals:
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
@@ -134,6 +133,7 @@ private:
     QGraphicsLineItem *mArrowLine2;
     qreal mArrowSize;
     qreal mArrowAngle;
+    QPointF mOldPos;
 };
 
 #endif // GUICONNECTOR_H

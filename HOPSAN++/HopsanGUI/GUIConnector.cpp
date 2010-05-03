@@ -1,5 +1,6 @@
 //$Id$
 
+#include <QtGui>
 #include "GUIConnector.h"
 #include <QDebug>
 #include "GUIPort.h"
@@ -773,14 +774,27 @@ void GUIConnectorLine::setHovered()
 }
 
 
-//! Defines what shall happen if the line is clicked.
-//! @todo Check if this is really needed. It is not used anywhere.
+//! Defines what shall happen if a mouse key is pressed while hovering a connector line.
 void GUIConnectorLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    emit lineClicked();
+    //emit lineClicked();
+    if(event->button() == Qt::LeftButton)
+    {
+        mOldPos = this->pos();
+    }
     QGraphicsLineItem::mousePressEvent(event);
 }
 
+
+//! Defines what shall happen if a mouse key is released while hovering a connector line.
+void GUIConnectorLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    if((this->pos() != mOldPos) and (event->button() == Qt::LeftButton))
+    {
+        mpParentGUIConnector->mpParentView->undoStack->registerModifiedConnector(mOldPos, mpParentGUIConnector, getLineNumber());
+    }
+    QGraphicsLineItem::mouseReleaseEvent(event);
+}
 
 //! Devines what shall happen if the mouse cursor enters the line. Change cursor if the line is movable.
 //! @see hoverLeaveEvent(QGraphicsSceneHoverEvent *event)

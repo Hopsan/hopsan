@@ -206,6 +206,65 @@ void UndoStack::undoOneStep()
                     obj_ptr->setName(QString(oldName.c_str()), true);
                     mpParentView->mGUIObjectMap.insert(obj_ptr->getName(), obj_ptr);
                 }
+                else if(undoWord == "MODIFIEDCONNECTOR")
+                {
+                    string tempString;
+                    qreal oldX;
+                    qreal oldY;
+                    string startComponentName;
+                    string startPortNumber;
+                    string endComponentName;
+                    string endPortNumber;
+                    int lineNumber;
+
+                    undoStream >> tempString;
+                    oldX = QString(tempString.c_str()).toFloat();
+                    undoStream >> tempString;
+                    oldY = QString(tempString.c_str()).toFloat();
+                    undoStream >> startComponentName;
+                    undoStream >> startPortNumber;
+                    undoStream >> endComponentName;
+                    undoStream >> endPortNumber;
+                    undoStream >> tempString;
+                    lineNumber = QString(tempString.c_str()).toInt();
+
+                        //Fetch the pointer to the connector
+                    GUIConnector *item;
+                    for(int i = 0; i != mpParentView->mConnectorVector.size(); ++i)
+                    {
+                        if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == QString(startComponentName.c_str())) and
+                           (mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber() == QString(startPortNumber.c_str()).toInt()) and
+                           (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == QString(endComponentName.c_str())) and
+                           (mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber() == QString(endPortNumber.c_str()).toInt()))
+                        {
+                            item = mpParentView->mConnectorVector[i];
+                        }
+                        else if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == QString(endComponentName.c_str())) and
+                                (mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber() == QString(endPortNumber.c_str()).toInt()) and
+                                (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == QString(startComponentName.c_str())) and
+                                (mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber() == QString(startPortNumber.c_str()).toInt()))
+                        {
+                            item = mpParentView->mConnectorVector[i];
+                        }
+                    }
+
+                    item->getLine(lineNumber)->setPos(QPointF(oldX, oldY));
+                    item->updateLine(lineNumber);
+                }
+                else if(undoWord == "MOVEDOBJECT")
+                {
+                    string tempString;
+                    qreal oldX;
+                    qreal oldY;
+                    string objectName;
+                    undoStream >> tempString;
+                    oldX = QString(tempString.c_str()).toFloat();
+                    undoStream >> tempString;
+                    oldY = QString(tempString.c_str()).toFloat();
+                    undoStream >> objectName;
+
+                    mpParentView->getGUIObject(QString(objectName.c_str()))->setPos(QPointF(oldX, oldY));
+                }
             }
         }
         mStack[mCurrentStackPosition] = QStringList();      //Empty curren stack position
@@ -326,4 +385,59 @@ void UndoStack::registerRenameObject(QString oldName, QString newName)
     //! @todo Spaces in names won't work with the streaming. Replace them with something here and then replace back when undoing.
     mStack[mCurrentStackPosition].insert(0,QString("RENAMEOBJECT " + oldName + " " + newName));
     qDebug() << "Adding " << QString("RENAMEOBJECT " + oldName + " " + newName);
+}
+
+
+//! Register function for moving a line in a connector.
+//! @param oldPos is the position before the line was moved.
+//! @param item is a pointer to the connector.
+//! @param lineNumber is the number of the line that was moved.
+void UndoStack::registerModifiedConnector(QPointF oldPos, GUIConnector *item, int lineNumber)
+{
+    int i;
+    for(i = 0; i != mpParentView->mConnectorVector.size(); ++i)
+    {
+        if(mpParentView->mConnectorVector[i] == item)
+        {
+            break;
+        }
+    }
+
+    QString oldXString;
+    QString oldYString;
+    //QString newXString;
+    //QString newYString;
+    QString lineNumberString;
+    QString startPortNumberString;
+    QString endPortNumberString;
+    oldXString.setNum(oldPos.x());
+    oldYString.setNum(oldPos.y());
+    //newXString.setNum(newPos.x());
+    //newYString.setNum(newPos.y());
+    lineNumberString.setNum(lineNumber);
+    startPortNumberString.setNum(mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber());
+    endPortNumberString.setNum(mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber());
+
+    mStack[mCurrentStackPosition].insert(0,QString("MODIFIEDCONNECTOR " + oldXString + " " + oldYString + " " +
+                                                   mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() + " " + startPortNumberString + " " +
+                                                   mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() + " " + endPortNumberString + " " +
+                                                   lineNumberString));
+    qDebug() << "Adding " << QString("MODIFIEDCONNECTOR " + oldXString + " " + oldYString + " " +
+                                     mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() + " " + startPortNumberString + " " +
+                                     mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() + " " + endPortNumberString + " " +
+                                     lineNumberString);
+}
+
+
+//! Register function for moving an object.
+//! @param oldPos is the position of the object before it was moved.
+//! @param objectName is the name of the object.
+void UndoStack::registerMovedObject(QPointF oldPos, QString objectName)
+{
+    QString oldXString;
+    QString oldYString;
+    oldXString.setNum(oldPos.x());
+    oldYString.setNum(oldPos.y());
+    mStack[mCurrentStackPosition].insert(0,QString("MOVEDOBJECT " + oldXString + " " + oldYString + " " + objectName));
+    qDebug() << "Adding " << QString("MOVEDOBJECT " + oldXString + " " + oldYString + " " + objectName);
 }

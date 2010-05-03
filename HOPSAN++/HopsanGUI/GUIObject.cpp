@@ -297,10 +297,33 @@ void GUIObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     if(!this->isSelected())
     {
-        this->mpSelectionBox->setPassive();
+        mpSelectionBox->setPassive();
     }
     this->showPorts(false);
 }
+
+
+//! Defines what shall happen if a mouse key is pressed while hovering an object.
+void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(event->button() == Qt::LeftButton)
+    {
+        mOldPos = this->pos();
+    }
+    QGraphicsWidget::mousePressEvent(event);
+}
+
+
+//! Defines what shall happen if a mouse key is released while hovering an object.
+void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    if((mOldPos != this->pos()) and (event->button() == Qt::LeftButton))
+    {
+        mpParentGraphicsView->undoStack->registerMovedObject(mOldPos, this->getName());
+    }
+    QGraphicsWidget::mouseReleaseEvent(event);
+}
+
 
 //! Handles item change events.
 QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)

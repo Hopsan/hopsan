@@ -52,9 +52,11 @@ public:
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
-    void groupComponents(QList<QGraphicsItem*> compList);
+
 
 signals:
     void componentMoved();
@@ -75,6 +77,7 @@ public slots:
      void setIcon(bool useIso);
 
 protected:
+    void groupComponents(QList<QGraphicsItem*> compList);
     QGraphicsSvgItem *mpIcon;
     GUIObjectDisplayName *mpNameText;
     GUIObjectSelectionBox *mpSelectionBox;
@@ -86,6 +89,7 @@ protected:
     bool mIconRotation;
     bool mIsFlipped;
     AppearanceData mAppearanceData;
+    QPointF mOldPos;
 
 protected slots:
     void fixTextPosition(QPointF pos);
