@@ -23,9 +23,8 @@ public:
     void registerAddedConnector(GUIConnector *item);
     void registerRenameObject(QString oldName, QString newName);
     void registerModifiedConnector(QPointF oldPos, QPointF newPos, GUIConnector *item, int lineNumber);
-    void registerMovedObject(QPointF oldPos, QString objectName);
+    void registerMovedObject(QPointF oldPos, QPointF newPos, QString objectName);
     void clear();
-    void clearRedo();
     void newPost();
     void newRedoPost();
     void undoOneStep();

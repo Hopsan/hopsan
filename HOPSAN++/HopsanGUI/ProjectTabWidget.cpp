@@ -86,6 +86,7 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     connect(pMainWindow->pasteAction, SIGNAL(triggered()), this,SLOT(paste()));
     connect(pMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this,SLOT(hidePorts(bool)));
     connect(pMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
+    connect(pMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
 }
 
 void GraphicsView::createMenus()
@@ -911,9 +912,20 @@ void GraphicsView::hidePorts(bool doIt)
 
 
 //! Slot that tells the undoStack to execute one undo step. Necessary because the undo stack is not a QT object and cannot use its own slots.
+//! @see redo()
 void GraphicsView::undo()
 {
+    qDebug() << "Debug 2131";
     undoStack->undoOneStep();
+    qDebug() << "Debug 2132";
+}
+
+
+//! Slot that tells the undoStack to execute one redo step. Necessary because the redo stack is not a QT object and cannot use its own slots.
+//! @see undo()
+void GraphicsView::redo()
+{
+    undoStack->redoOneStep();
 }
 
 

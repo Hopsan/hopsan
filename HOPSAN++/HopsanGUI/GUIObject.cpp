@@ -336,7 +336,7 @@ void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     if((mOldPos != this->pos()) and (event->button() == Qt::LeftButton))
     {
-        mpParentGraphicsView->undoStack->registerMovedObject(mOldPos, this->getName());
+        mpParentGraphicsView->undoStack->registerMovedObject(mOldPos, this->pos(), this->getName());
     }
     QGraphicsWidget::mouseReleaseEvent(event);
 }

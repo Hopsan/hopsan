@@ -237,7 +237,7 @@ void MainWindow::createActions()
 
     redoAction = new QAction(QIcon("../../HopsanGUI/icons/redo.png"), tr("&Redo"), this);
     redoAction->setText("Redo");
-    redoAction->setShortcut(QKeySequence(tr("Ctrl+Shift+z")));
+    redoAction->setShortcut(QKeySequence(tr("Ctrl+y")));
     redoAction->setStatusTip(tr("Redo One Step"));
 
     cutAction = new QAction(QIcon("../../HopsanGUI/icons/cut.png"), tr("&Cut"), this);

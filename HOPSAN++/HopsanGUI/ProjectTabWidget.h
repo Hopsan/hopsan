@@ -98,6 +98,7 @@ public slots:
     void showNames();
     void hidePorts(bool doIt);
     void undo();
+    void redo();
 
 protected:
     virtual void dragMoveEvent(QDragMoveEvent *event);
