@@ -25,7 +25,7 @@ PARAMETER Volume V 0.003
 PARAMETER Volume Be 1e+009
 PARAMETER Volume a 0
 --------------------------------------------------------------
-CONNECT FlowSourceQ 1 Volume 0 2238 2345 2245 2345 2245 2345 2278 2345
-CONNECT PressureSource 0 AlternativePRV 1 2441 2467.5 2441 2465 2441 2465 2441 2459
-CONNECT Volume 1 AlternativePRV 0 2398 2345 2441 2345 2441 2379
+CONNECT FlowSourceQ P1 Volume P1 2238 2345 2245 2345 2245 2345 2278 2345
+CONNECT PressureSource P1 AlternativePRV P2 2441 2467.5 2441 2465 2441 2465 2441 2459
+CONNECT Volume P2 AlternativePRV P1 2398 2345 2441 2345 2441 2379
 --------------------------------------------------------------
