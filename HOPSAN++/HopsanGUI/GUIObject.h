@@ -38,6 +38,7 @@ public:
 
     void showPorts(bool visible);
     GUIPort *getPort(int number);
+    GUIPort *getPort(QString name);
 
     GraphicsScene *mpParentGraphicsScene;
     GraphicsView *mpParentGraphicsView;
@@ -85,6 +86,7 @@ protected:
     QGraphicsLineItem *mpTempLine;
     //std::vector<GUIConnector*> mConnectors;        //Inteded to store connectors for each component
     QList<GUIPort*> mPortListPtrs;
+    QMap<QString, GUIPort*> mGuiPortPtrMap;
     int mNameTextPos;
     bool mIconRotation;
     bool mIsFlipped;

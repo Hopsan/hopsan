@@ -269,6 +269,21 @@ GUIPort *GUIObject::getPort(int number)
     return this->mPortListPtrs[number];
 }
 
+//! Returns the port with the specified name.
+GUIPort *GUIObject::getPort(QString name)
+{
+    //! @todo use the a guiport map instead
+    for (int i=0; i<mPortListPtrs.size(); ++i)
+    {
+        if (mPortListPtrs[i]->getName() == name)
+        {
+            return mPortListPtrs[i];
+        }
+    }
+
+    return 0;
+}
+
 Component* GUIObject::getHopsanCoreComponentPtr()
 {
     cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;

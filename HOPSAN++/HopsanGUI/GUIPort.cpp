@@ -313,6 +313,10 @@ void GUIPort::setPortDirection(GUIPort::portDirectionType direction)
     this->mPortDirection = direction;
 }
 
+QString GUIPort::getName()
+{
+    return QString::fromStdString(mpCorePort->getPortName());
+}
 
 
 void GUIPort::hideIfNotConnected(bool justDoIt)

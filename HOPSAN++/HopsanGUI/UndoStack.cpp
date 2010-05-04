@@ -130,7 +130,7 @@ void UndoStack::undoOneStep()
                 GUIPort *startPort = mpParentView->getGUIObject(startComponentName)->getPort(startPortNumber);
                 GUIPort *endPort = mpParentView->getGUIObject(endComponentName)->getPort(endPortNumber);
 
-                std::vector<QPointF> tempPointVector;
+                QVector<QPointF> tempPointVector;
                 qreal tempX, tempY;
                 for(int j = 5; j != mStack[mCurrentStackPosition][i].size(); ++j)
                 {

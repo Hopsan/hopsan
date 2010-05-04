@@ -26,6 +26,7 @@ public:
     void magnify(bool blowup);
     portDirectionType getPortDirection();
     void setPortDirection(GUIPort::portDirectionType direction);
+    QString getName();
 
     QPointF rectPos;
     int getPortNumber();

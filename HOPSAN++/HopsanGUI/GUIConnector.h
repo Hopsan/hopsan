@@ -20,7 +20,7 @@ class GUIConnector : public QGraphicsWidget
     Q_OBJECT
 public:
     GUIConnector(QPointF startpos, QPen primaryPen, QPen activePen, QPen hoverPen, GraphicsView *parentView, QGraphicsItem *parent = 0);
-    GUIConnector(GUIPort *startPort, GUIPort *endPort, std::vector<QPointF> mPoints, QPen primaryPen, QPen activePen, QPen hoverPen, GraphicsView *parentView, QGraphicsItem *parent = 0);
+    GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> mPoints, QPen primaryPen, QPen activePen, QPen hoverPen, GraphicsView *parentView, QGraphicsItem *parent = 0);
     ~GUIConnector();
 
     enum geometryType {VERTICAL, HORIZONTAL, DIAGONAL};
@@ -33,7 +33,7 @@ public:
     void setPens(QPen activePen, QPen primaryPen, QPen hoverPen);
     int getNumberOfLines();
     GUIConnector::geometryType getGeometry(int lineNumber);
-    std::vector<QPointF> getPointsVector();
+    QVector<QPointF> getPointsVector();
     GUIPort *getStartPort();
     GUIPort *getEndPort();
     GUIConnectorLine *getLine(int line);
@@ -74,7 +74,7 @@ private:
     GUIPort *mpEndPort;
     GUIConnectorLine *mpTempLine;
     std::vector<GUIConnectorLine*> mpLines;
-    std::vector<QPointF> mPoints;
+    QVector<QPointF> mPoints;
     std::vector<geometryType> mGeometries;
 
 };

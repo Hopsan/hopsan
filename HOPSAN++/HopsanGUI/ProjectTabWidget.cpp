@@ -793,7 +793,7 @@ void GraphicsView::paste()
             GUIPort *startPort = this->getGUIObject(QString(startComponentName.c_str()))->getPort(startPortNumber);
             GUIPort *endPort = this->getGUIObject(QString(endComponentName.c_str()))->getPort(endPortNumber);
 
-            std::vector<QPointF> tempPointVector;
+            QVector<QPointF> tempPointVector;
             qreal tempX, tempY;
             while(mCopyData[i] != "ENDCONNECT")
             {
@@ -1329,160 +1329,162 @@ void ProjectTabWidget::loadModel()
     if (modelFileName.isEmpty())
         return;
 
+    QFile file(modelFileName);   //Create a QFile object
+    QFileInfo fileInfo(file);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
+    {
+        qDebug() << "Failed to open file or not a text file: " + modelFileName;
+        return;
+    }
+    QTextStream inputStream(&file);  //Create a QTextStream object to stream the content of file
 
-    std::ifstream modelFile (modelFileName.toStdString().c_str());
-
-    QFileInfo fileInfo(modelFileName);
 
     this->addProjectTab(new ProjectTab(this), fileInfo.fileName());
     ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
     pCurrentTab->mModelFileName = modelFileName;
 
         //Necessary declarations
-    string inputLine, inputWord, componentType, componentName, startComponentName, endComponentName, parameterName;
-    int startPortNumber, endPortNumber;
+    QString inputWord, componentType, componentName, startComponentName, endComponentName, parameterName, startPortName, endPortName, tempString;
     //int length, heigth;
     int posX, posY;
     int nameTextPos;
     qreal rotation;
-    string tempString;
     double parameterValue;
 
-    while (! modelFile.eof() )
+    while ( !inputStream.atEnd() )
     {
-        //Read the line
-        getline(modelFile,inputLine);                                   //Read a line
-        stringstream inputStream(inputLine);
+        //Extract first word on line
+        inputStream >> inputWord;
 
-        //Extract first word unless stream is empty
-        if ( inputStream >> inputWord )
+        //----------- Create New SubSystem -----------//
+
+        if ( inputWord == "HOPSANGUIVERSION")
         {
-            //----------- Create New SubSystem -----------//
-
-            if ( inputWord == "HOPSANGUIVERSION")
+            inputStream >> tempString;
+            if(tempString > QString(HOPSANGUIVERSION))
             {
-                inputStream >> tempString;
-                if(QString(tempString.c_str()) > QString(HOPSANGUIVERSION))
-                {
-                    mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
-                }
-                else if(QString(tempString.c_str()) < QString(HOPSANGUIVERSION))
-                {
-                    mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
-                }
+                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
             }
-            else if ( inputWord == "HOPSANGUIMODELFILEVERSION")
+            else if(tempString < QString(HOPSANGUIVERSION))
             {
-                inputStream >> tempString;
-                if(QString(tempString.c_str()) > QString(HOPSANGUIMODELFILEVERSION))
-                {
-                    mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
-                }
-                else if(QString(tempString.c_str()) < QString(HOPSANGUIMODELFILEVERSION))
-                {
-                    mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
-                }
+                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
             }
-            else if ( inputWord == "HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION")
+        }
+        else if ( inputWord == "HOPSANGUIMODELFILEVERSION")
+        {
+            inputStream >> tempString;
+            if(tempString > QString(HOPSANGUIMODELFILEVERSION))
             {
-                inputStream >> tempString;
-                qDebug() << inputWord.c_str() << " " << tempString.c_str();
-                if(QString(tempString.c_str()) > QString(HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION))
-                {
-                    mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
-                }
-                else if(QString(tempString.c_str()) < QString(HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION))
-                {
-                    mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
-                }
+                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
             }
-
-
-            if ( inputWord == "COMPONENT" )
+            else if(tempString < QString(HOPSANGUIMODELFILEVERSION))
             {
-                inputStream >> componentType;
-                inputStream >> componentName;
-                inputStream >> posX;
-                inputStream >> posY;
-                inputStream >> rotation;
-                inputStream >> nameTextPos;
+                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
+            }
+        }
+        else if ( inputWord == "HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION")
+        {
+            inputStream >> tempString;
+            qDebug() << inputWord << " " << tempString;
+            if(tempString > QString(HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION))
+            {
+                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
+            }
+            else if(tempString < QString(HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION))
+            {
+                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
+            }
+        }
 
-                //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
-                AppearanceData appearanceData = *mpParentMainWindow->mpLibrary->getAppearanceData(QString(componentType.c_str()));
-                pCurrentTab->mpGraphicsView->addGUIObject(QString(componentType.c_str()), appearanceData, QPoint(posX, posY), 0, QString(componentName.c_str()));
-                pCurrentTab->mpGraphicsView->getGUIObject(QString(componentName.c_str()))->setNameTextPos(nameTextPos);
-                while(pCurrentTab->mpGraphicsView->getGUIObject(QString(componentName.c_str()))->rotation() != rotation)
-                {
-                    pCurrentTab->mpGraphicsView->getGUIObject(QString(componentName.c_str()))->rotate();
-                }
 
+        if ( inputWord == "COMPONENT" )
+        {
+            inputStream >> componentType;
+            inputStream >> componentName;
+            inputStream >> posX;
+            inputStream >> posY;
+            inputStream >> rotation;
+            inputStream >> nameTextPos;
+
+            //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
+            AppearanceData appearanceData = *mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
+            pCurrentTab->mpGraphicsView->addGUIObject(componentType, appearanceData, QPoint(posX, posY), 0, componentName);
+            pCurrentTab->mpGraphicsView->getGUIObject(componentName)->setNameTextPos(nameTextPos);
+            while(pCurrentTab->mpGraphicsView->getGUIObject(componentName)->rotation() != rotation)
+            {
+                pCurrentTab->mpGraphicsView->getGUIObject(componentName)->rotate();
             }
 
+        }
 
-            if ( inputWord == "PARAMETER" )
+
+        if ( inputWord == "PARAMETER" )
+        {
+            inputStream >> componentName;
+            inputStream >> parameterName;
+            inputStream >> parameterValue;
+
+            //! @todo wrap this up in a gui object function
+            Component *mpCoreComponent = pCurrentTab->mpGraphicsView->mGUIObjectMap.find(componentName).value()->getHopsanCoreComponentPtr();
+            mpCoreComponent->setParameter(parameterName.toStdString(), parameterValue);
+        }
+
+
+        if ( inputWord == "CONNECT" )
+        {
+            GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
+            inputStream >> startComponentName;
+            inputStream >> startPortName;
+            inputStream >> endComponentName;
+            inputStream >> endPortName;
+            GUIPort *startPort = pCurrentView->getGUIObject(startComponentName)->getPort(startPortName);
+            GUIPort *endPort = pCurrentView->getGUIObject(endComponentName)->getPort(endPortName);
+
+            QVector<QPointF> tempPointVector;
+            qreal tempX, tempY;
+
+            QString restOfLineString = inputStream.readLine();
+            QTextStream restOfLineStream(&restOfLineString);
+            while( !restOfLineStream.atEnd() )
             {
-                inputStream >> componentName;
-                inputStream >> parameterName;
-                inputStream >> parameterValue;
-
-                Component *mpCoreComponent = pCurrentTab->mpGraphicsView->mGUIObjectMap.find(QString(componentName.c_str())).value()->getHopsanCoreComponentPtr();
-                mpCoreComponent->setParameter(parameterName, parameterValue);
+                restOfLineStream >> tempX;
+                restOfLineStream >> tempY;
+                tempPointVector.push_back(QPointF(tempX, tempY));
             }
 
+            //! @todo: Store useIso bool in model file and pick the correct line styles when loading
+            GUIConnector *pTempConnector;
 
-            if ( inputWord == "CONNECT" )
+            QString type, style;
+            if((startPort->mpCorePort->getNodeType() == "NodeHydraulic") | (startPort->mpCorePort->getNodeType() == "NodeMechanic"))
+                type = "Power";
+            else if(startPort->mpCorePort->getNodeType() == "NodeSignal")
+                type = "Signal";
+            if(pCurrentTab->useIsoGraphics)
+                style = "Iso";
+            else
+                style = "User";
+            pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, pCurrentView->getPen("Primary", type, style),
+                                              pCurrentView->getPen("Active", type, style), pCurrentView->getPen("Hover", type, style), pCurrentView);
+
+            pCurrentView->scene()->addItem(pTempConnector);
+
+            //Hide connected ports
+            startPort->hide();
+            endPort->hide();
+
+            connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+            connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+
+//                std::stringstream tempStream;
+//                tempStream << startPort->getGuiObject()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
+//                              endPort->getGuiObject()->getName().toStdString() << " " << endPort->getPortNumber();
+            pCurrentView->mConnectorVector.append(pTempConnector);
+            bool success = pCurrentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
+            if (!success)
             {
-                GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
-                inputStream >> startComponentName;
-                inputStream >> startPortNumber;
-                inputStream >> endComponentName;
-                inputStream >> endPortNumber;
-                GUIPort *startPort = pCurrentView->getGUIObject(QString(startComponentName.c_str()))->getPort(startPortNumber);
-                GUIPort *endPort = pCurrentView->getGUIObject(QString(endComponentName.c_str()))->getPort(endPortNumber);
-
-                std::vector<QPointF> tempPointVector;
-                qreal tempX, tempY;
-                while(inputStream.good())
-                {
-                    inputStream >> tempX;
-                    inputStream >> tempY;
-                    tempPointVector.push_back(QPointF(tempX, tempY));
-                }
-
-                //! @todo: Store useIso bool in model file and pick the correct line styles when loading
-                GUIConnector *pTempConnector;
-
-                QString type, style;
-                if((startPort->mpCorePort->getNodeType() == "NodeHydraulic") | (startPort->mpCorePort->getNodeType() == "NodeMechanic"))
-                    type = "Power";
-                else if(startPort->mpCorePort->getNodeType() == "NodeSignal")
-                    type = "Signal";
-                if(pCurrentTab->useIsoGraphics)
-                    style = "Iso";
-                else
-                    style = "User";
-                pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, pCurrentView->getPen("Primary", type, style),
-                                                  pCurrentView->getPen("Active", type, style), pCurrentView->getPen("Hover", type, style), pCurrentView);
-
-                pCurrentView->scene()->addItem(pTempConnector);
-
-                //Hide connected ports
-                startPort->hide();
-                endPort->hide();
-
-                connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
-                connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
-
-                std::stringstream tempStream;
-                tempStream << startPort->getGuiObject()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
-                              endPort->getGuiObject()->getName().toStdString() << " " << endPort->getPortNumber();
-                pCurrentView->mConnectorVector.append(pTempConnector);
-                bool success = pCurrentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
-                if (!success)
-                {
-                    qDebug() << "Unsuccessful connection try" << endl;
-                    assert(false);
-                }
+                qDebug() << "Unsuccessful connection try" << endl;
+                assert(false);
             }
         }
     }
@@ -1525,56 +1527,59 @@ void ProjectTabWidget::saveModel(bool saveAs)
     {
         modelFileName = pCurrentTab->mModelFileName;
     }
-    std::ofstream modelFile (modelFileName.toStdString().c_str());
-    QFileInfo fileInfo(modelFileName);
 
-    modelFile << "--------------------------------------------------------------" << std::endl;
-    modelFile << "-------------------  HOPSAN NG MODEL FILE  -------------------" << std::endl;
-    modelFile << "--------------------------------------------------------------" << std::endl;
-    modelFile << "HOPSANGUIVERSION " << HOPSANGUIVERSION << std::endl;
-    modelFile << "HOPSANGUIMODELFILEVERSION " << HOPSANGUIMODELFILEVERSION << std::endl;
-    modelFile << "HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION " << HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION << std::endl;
-    modelFile << "--------------------------------------------------------------" << std::endl;
+    QFile file(modelFileName);   //Create a QFile object
+    QFileInfo fileInfo(file);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+    {
+        qDebug() << "Failed to open file for writing: " + modelFileName;
+        return;
+    }
+    QTextStream modelFile(&file);  //Create a QTextStream object to stream the content of file
+
+    modelFile << "--------------------------------------------------------------\n";
+    modelFile << "-------------------  HOPSAN NG MODEL FILE  -------------------\n";
+    modelFile << "--------------------------------------------------------------\n";
+    modelFile << "HOPSANGUIVERSION " << HOPSANGUIVERSION << "\n";
+    modelFile << "HOPSANGUIMODELFILEVERSION " << HOPSANGUIMODELFILEVERSION << "\n";
+    modelFile << "HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION " << HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION << "\n";
+    modelFile << "--------------------------------------------------------------\n";
 
     QMap<QString, GUIObject*>::iterator it;
     for(it = pCurrentView->mGUIObjectMap.begin(); it!=pCurrentView->mGUIObjectMap.end(); ++it)
     {
         QPointF pos = it.value()->mapToScene(it.value()->boundingRect().center());
-        modelFile << "COMPONENT " << it.value()->getTypeName().toStdString() << " " << it.key().toStdString()
-                  << " " << pos.x() << " " << pos.y() << " " << it.value()->rotation() << " " << it.value()->getNameTextPos() << std::endl;
+        modelFile << "COMPONENT " << it.value()->getTypeName() << " " << it.key() << " "
+                  << pos.x() << " " << pos.y() << " " << it.value()->rotation() << " " << it.value()->getNameTextPos() << "\n";
 
+        //! @todo wrap this in the gui object (don wnat to access core directly here)
         Component *mpCoreComponent = it.value()->getHopsanCoreComponentPtr();
         vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
         std::vector<CompParameter>::iterator itp;
         for ( itp=paramVector.begin() ; itp !=paramVector.end(); ++itp )
         {
-            modelFile << "PARAMETER " << it.key().toStdString() << " " << itp->getName().c_str() << " " << itp->getValue() << "\n";
+            modelFile << "PARAMETER " << it.key() << " " << QString::fromStdString(itp->getName()) << " " << itp->getValue() << "\n";
             //qDebug() << it.key() << " - " << itp->getName().c_str() << " - " << itp->getValue();
         }
 
     }
 
-    modelFile << "--------------------------------------------------------------" << std::endl;
+    modelFile << "--------------------------------------------------------------\n";
 
    // QMap<QString, GUIConnector *>::iterator it2;
-    int i;
-    for(i = 0; i != pCurrentView->mConnectorVector.size(); ++i)
+    for(int i = 0; i != pCurrentView->mConnectorVector.size(); ++i)
     {
-        QString startPortNumberString;
-        QString endPortNumberString;
-        startPortNumberString.setNum(pCurrentView->mConnectorVector[i]->getStartPort()->getPortNumber());
-        endPortNumberString.setNum(pCurrentView->mConnectorVector[i]->getEndPort()->getPortNumber());
-        modelFile << "CONNECT " << QString(pCurrentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() + " " +
-                                           startPortNumberString + " " +
-                                           pCurrentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() + " " +
-                                           endPortNumberString).toStdString();
+        QString startPortName  = pCurrentView->mConnectorVector[i]->getStartPort()->getName();
+        QString endPortName = pCurrentView->mConnectorVector[i]->getEndPort()->getName();
+        modelFile << "CONNECT " << QString(pCurrentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() + " " + startPortName + " " +
+                                           pCurrentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() + " " + endPortName);
         for(size_t j = 0; j != pCurrentView->mConnectorVector[i]->getPointsVector().size(); ++j)
         {
             modelFile << " " << pCurrentView->mConnectorVector[i]->getPointsVector()[j].x() << " " << pCurrentView->mConnectorVector[i]->getPointsVector()[j].y();
         }
         modelFile << "\n";
     }
-    modelFile << "--------------------------------------------------------------" << std::endl;
+    modelFile << "--------------------------------------------------------------\n";
 
     //Sets the model name
     pCurrentTab->mpComponentSystem->setName(fileInfo.fileName().toStdString());

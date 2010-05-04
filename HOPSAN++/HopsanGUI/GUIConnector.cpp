@@ -47,7 +47,7 @@ GUIConnector::GUIConnector(QPointF startpos, QPen primaryPen, QPen activePen, QP
 //! @param hoverPen defines the width and color of the line when hovered by the mouse cursor.
 //! @param *parentView is a pointer to the GraphicsView the connector belongs to.
 //! @param parent is the parent of the port.
-GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, std::vector<QPointF> points, QPen primaryPen, QPen activePen, QPen hoverPen, GraphicsView *parentView, QGraphicsItem *parent)
+GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, QPen primaryPen, QPen activePen, QPen hoverPen, GraphicsView *parentView, QGraphicsItem *parent)
 {
     this->mpParentView = parentView;
     setFlags(QGraphicsItem::ItemIsFocusable);
@@ -314,7 +314,7 @@ GUIConnector::geometryType GUIConnector::getGeometry(int lineNumber)
 
 
 //! Returns the point vector used by the connector.
-std::vector<QPointF> GUIConnector::getPointsVector()
+QVector<QPointF> GUIConnector::getPointsVector()
 {
     return mPoints;
 }
