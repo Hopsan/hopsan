@@ -205,7 +205,9 @@ void GUIObject::deleteInHopsanCore()
 
 void GUIObject::setName(QString newName, bool doOnlyCoreRename)
 {
+    mpParentGraphicsView->mGUIObjectMap.erase(mpParentGraphicsView->mGUIObjectMap.find(this->getName()));
     mpNameText->setPlainText(newName);
+    mpParentGraphicsView->mGUIObjectMap.insert(this->getName(), this);
 }
 
 

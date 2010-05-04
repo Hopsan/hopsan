@@ -330,24 +330,34 @@ void GraphicsView::deleteGUIObject(QString objectName)
 
     for(int i = 0; i != mConnectorVector.size(); ++i)
     {
+        if(i > mConnectorVector.size())
+        {
+            break;
+        }
         if((mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == objectName) or
            (mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == objectName))
         {
             this->removeConnector(mConnectorVector[i]);
+            qDebug() << "Debug 0";
             i= 0;   //Restart iteration if map has changed
         }
     }
-
+    qDebug() << "Debug 0";
         //Register removal of connector in undo stack (must be done after removal of connectors or the order of the commands in the undo stack will be wrong!)
     this->undoStack->registerDeletedObject(it.value());
 
-
+    qDebug() << "Debug 1";
     if (it != mGUIObjectMap.end())
     {
+        qDebug() << "Debug 1";
         GUIObject* obj_ptr = it.value();
+        qDebug() << "Debug 1";
         mGUIObjectMap.erase(it);
+        qDebug() << "Debug 1";
         obj_ptr->deleteInHopsanCore();
+        qDebug() << "Debug 1";
         scene()->removeItem(obj_ptr);
+        qDebug() << "Debug 1";
         delete(obj_ptr);
         emit checkMessages();
     }
@@ -356,6 +366,7 @@ void GraphicsView::deleteGUIObject(QString objectName)
         qDebug() << "In delete GUIObject: could not find object with name " << objectName;
     }
     this->setBackgroundBrush(mBackgroundColor);
+    qDebug() << "Debug 1";
 }
 
 //! This function is used to rename a GUI Component (including key rename in component map)
