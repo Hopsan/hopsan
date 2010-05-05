@@ -80,7 +80,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     mEndPortConnected = true;
     emit endPortConnected();
     this->setPassive();
-    connect(this->mpEndPort->getGuiObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMe()));
+    connect(this->mpEndPort->getGuiObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
 
         //Create the lines, so that drawConnector has something to work with
     for(std::size_t i = 0; i != mPoints.size()-1; ++i)
@@ -198,7 +198,7 @@ void GUIConnector::removePoint(bool deleteIfEmpty)
     drawConnector();
     if(mPoints.size() == 1 && deleteIfEmpty)
     {
-        deleteMe();
+        deleteMeWithNoUndo();
     }
 }
 
@@ -212,7 +212,7 @@ void GUIConnector::setStartPort(GUIPort *port)
 {
     mpStartPort = port;
     mpStartPort->isConnected = true;
-    connect(this->mpStartPort->getGuiObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMe()));
+    connect(this->mpStartPort->getGuiObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
     connect(this->mpStartPort->getGuiObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
 }
 
@@ -262,7 +262,7 @@ void GUIConnector::setEndPort(GUIPort *port)
     }
 
     this->updateEndPoint(port->mapToScene(port->boundingRect().center()));
-    connect(this->mpEndPort->getGuiObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMe()));
+    connect(this->mpEndPort->getGuiObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
     connect(this->mpEndPort->getGuiObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
 
         //Make all lines selectable and all lines except first and last movable
@@ -691,9 +691,15 @@ void GUIConnector::setUnHovered()
 }
 
 
-//! Asks my parent to delete myself
-//! @todo This must sometimes register undo and sometimes not. Figure out how to fix that.
+//! Asks my parent to delete myself.
 void GUIConnector::deleteMe()
+{
+    mpParentView->removeConnector(this, false);
+}
+
+
+//! Asks my parent to delete myself, and tells it to not add me to the undo stack.
+void GUIConnector::deleteMeWithNoUndo()
 {
     mpParentView->removeConnector(this, true);
 }

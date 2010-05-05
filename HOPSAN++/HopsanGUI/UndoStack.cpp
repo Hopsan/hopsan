@@ -41,6 +41,8 @@ void UndoStack::clear()
 //! Adds a new post to the stack
 void UndoStack::newPost()
 {
+    qDebug() << "newPost()";
+
     int tempSize = mStack.size()-1;
     for(int i = mCurrentStackPosition; i != tempSize; ++i)
     {
@@ -518,6 +520,8 @@ void UndoStack::registerAddedObject(GUIObject *item)
 //! @param item is a pointer to the added connector.
 void UndoStack::registerAddedConnector(GUIConnector *item)
 {
+    qDebug() << "registerAddedConnector()";
+
     QStringList tempStringList;
     int i;
     for(i = 0; i != mpParentView->mConnectorVector.size(); ++i)

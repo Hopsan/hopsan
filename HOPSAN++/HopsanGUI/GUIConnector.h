@@ -59,6 +59,7 @@ public slots:
     void setHovered();
     void setUnHovered();
     void deleteMe();
+    void deleteMeWithNoUndo();
 
 signals:
     void endPortConnected();
