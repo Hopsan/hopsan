@@ -1439,9 +1439,7 @@ void ProjectTabWidget::loadModel()
             inputStream >> parameterName;
             inputStream >> parameterValue;
 
-            //! @todo wrap this up in a gui object function
-            Component *mpCoreComponent = pCurrentTab->mpGraphicsView->mGUIObjectMap.find(componentName).value()->getHopsanCoreComponentPtr();
-            mpCoreComponent->setParameter(parameterName.toStdString(), parameterValue);
+            pCurrentTab->mpGraphicsView->mGUIObjectMap.find(componentName).value()->setParameter(parameterName, parameterValue);
         }
 
 

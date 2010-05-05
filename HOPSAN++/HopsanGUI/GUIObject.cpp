@@ -280,6 +280,12 @@ GUIPort *GUIObject::getPort(QString name)
     return 0;
 }
 
+void GUIObject::setParameter(QString name, double value)
+{
+    cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
+    assert(false);
+}
+
 Component* GUIObject::getHopsanCoreComponentPtr()
 {
     cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
@@ -1007,6 +1013,12 @@ void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 QString GUIComponent::getTypeName()
 {
     return this->mComponentTypeName;
+}
+
+//! @brief Set a parameter value, wrapps hopsan core
+void GUIComponent::setParameter(QString name, double value)
+{
+    mpCoreComponent->setParameter(name.toStdString(), value);
 }
 
 void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)

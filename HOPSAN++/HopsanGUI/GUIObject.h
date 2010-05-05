@@ -40,6 +40,8 @@ public:
     GUIPort *getPort(int number);
     GUIPort *getPort(QString name);
 
+    virtual void setParameter(QString name, double value);
+
     GraphicsScene *mpParentGraphicsScene;
     GraphicsView *mpParentGraphicsView;
 
@@ -149,6 +151,8 @@ public:
     Component* getHopsanCoreComponentPtr();
     Component *mpCoreComponent;
     //
+
+    void setParameter(QString name, double value);
 
     QString getName();
     void setName(QString name, bool doOnlyLocalRename=false);
