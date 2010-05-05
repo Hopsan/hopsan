@@ -2,6 +2,5 @@ NAME HydraulicFixedDisplacementPump
 ISOICON fixedpump_iso.svg
 USERICON fixedpump_user.svg
 ICONROTATION ON
-PORTS 2
-0.6667 1.0 90
-0.6667 0.0 270
+PORT "P1" 0.6667 1.0 90
+PORT "P2" 0.6667 0.0 270

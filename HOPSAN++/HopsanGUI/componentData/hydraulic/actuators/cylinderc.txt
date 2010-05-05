@@ -2,7 +2,6 @@ NAME HydraulicCylinderC
 ISOICON cylinderc_iso.svg
 USERICON cylinderc_user.svg
 ICONROTATION ON
-PORTS 3
-0.0418 1.000 90
-0.7106 1.000 90
-1.000  0.500 0
+PORT "P1" 0.0418 1.000 90
+PORT "P2" 0.7106 1.000 90
+PORT "P3" 1.000  0.500 0
