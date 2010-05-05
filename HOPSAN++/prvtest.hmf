@@ -5,27 +5,27 @@ HOPSANGUIVERSION 0.0.1
 HOPSANGUIMODELFILEVERSION 0.1
 HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION 0.1
 --------------------------------------------------------------
-COMPONENT HydraulicAlternativePRV AlternativePRV 2443 2419 0 0
-PARAMETER AlternativePRV pref 1e+007
-PARAMETER AlternativePRV cq 0.67
-PARAMETER AlternativePRV spooldiameter 0.02
-PARAMETER AlternativePRV frac 1
-PARAMETER AlternativePRV pilotarea 0.0001
-PARAMETER AlternativePRV k 30000
-PARAMETER AlternativePRV c 0
-PARAMETER AlternativePRV m 0.05
-PARAMETER AlternativePRV xhyst 0
-PARAMETER AlternativePRV xmax 0.01
-COMPONENT HydraulicFlowSourceQ FlowSourceQ 2226 2345 0 0
-PARAMETER FlowSourceQ Flow 2e-005
-COMPONENT HydraulicTankC PressureSource 2441 2482 0 0
-PARAMETER PressureSource P 100000
-COMPONENT HydraulicVolume Volume 2338 2345 0 1
-PARAMETER Volume V 0.003
-PARAMETER Volume Be 1e+009
-PARAMETER Volume a 0
+COMPONENT HydraulicAlternativePRV "AlternativePRV" 2443 2419 0 0
+PARAMETER "AlternativePRV" pref 1e+07
+PARAMETER "AlternativePRV" cq 0.67
+PARAMETER "AlternativePRV" spooldiameter 0.02
+PARAMETER "AlternativePRV" frac 1
+PARAMETER "AlternativePRV" pilotarea 0.0001
+PARAMETER "AlternativePRV" k 30000
+PARAMETER "AlternativePRV" c 0
+PARAMETER "AlternativePRV" m 0.05
+PARAMETER "AlternativePRV" xhyst 0
+PARAMETER "AlternativePRV" xmax 0.01
+COMPONENT HydraulicFlowSourceQ "FlowSourceQ" 2226 2345 0 0
+PARAMETER "FlowSourceQ" Flow 2e-05
+COMPONENT HydraulicTankC "PressureSource" 2441 2482 0 0
+PARAMETER "PressureSource" P 100000
+COMPONENT HydraulicVolume "Volume" 2338 2345 0 1
+PARAMETER "Volume" V 0.003
+PARAMETER "Volume" Be 1e+09
+PARAMETER "Volume" a 0
 --------------------------------------------------------------
-CONNECT FlowSourceQ P1 Volume P1 2238 2345 2245 2345 2245 2345 2278 2345
-CONNECT PressureSource P1 AlternativePRV P2 2441 2467.5 2441 2465 2441 2465 2441 2459
-CONNECT Volume P2 AlternativePRV P1 2398 2345 2441 2345 2441 2379
+CONNECT "FlowSourceQ" "P1" "Volume" "P1" 2238 2345 2245 2345 2245 2345 2278 2345
+CONNECT "PressureSource" "P1" "AlternativePRV" "P2" 2441 2467.5 2441 2465 2441 2465 2441 2459
+CONNECT "Volume" "P2" "AlternativePRV" "P1" 2398 2345 2441 2345 2441 2379
 --------------------------------------------------------------

@@ -22,6 +22,7 @@
 #include <QtGui>
 #include <QSizePolicy>
 #include "version.h"
+#include "GUIUtilities.h"
 
 #include <string>
 #include <iostream>
@@ -1414,7 +1415,7 @@ void ProjectTabWidget::loadModel()
         if ( inputWord == "COMPONENT" )
         {
             inputStream >> componentType;
-            inputStream >> componentName;
+            componentName = readName(inputStream);  //Now read the name, assume that the name is contained within quotes signs, "name"
             inputStream >> posX;
             inputStream >> posY;
             inputStream >> rotation;
@@ -1434,7 +1435,7 @@ void ProjectTabWidget::loadModel()
 
         if ( inputWord == "PARAMETER" )
         {
-            inputStream >> componentName;
+            componentName = readName(inputStream);
             inputStream >> parameterName;
             inputStream >> parameterValue;
 
@@ -1447,10 +1448,10 @@ void ProjectTabWidget::loadModel()
         if ( inputWord == "CONNECT" )
         {
             GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
-            inputStream >> startComponentName;
-            inputStream >> startPortName;
-            inputStream >> endComponentName;
-            inputStream >> endPortName;
+            startComponentName = readName(inputStream);
+            startPortName = readName(inputStream);
+            endComponentName = readName(inputStream);
+            endPortName = readName(inputStream);
             GUIPort *startPort = pCurrentView->getGUIObject(startComponentName)->getPort(startPortName);
             GUIPort *endPort = pCurrentView->getGUIObject(endComponentName)->getPort(endPortName);
 
@@ -1563,7 +1564,7 @@ void ProjectTabWidget::saveModel(bool saveAs)
     for(it = pCurrentView->mGUIObjectMap.begin(); it!=pCurrentView->mGUIObjectMap.end(); ++it)
     {
         QPointF pos = it.value()->mapToScene(it.value()->boundingRect().center());
-        modelFile << "COMPONENT " << it.value()->getTypeName() << " " << it.key() << " "
+        modelFile << "COMPONENT " << it.value()->getTypeName() << " " << addQuotes(it.value()->getName()) << " "
                   << pos.x() << " " << pos.y() << " " << it.value()->rotation() << " " << it.value()->getNameTextPos() << "\n";
 
         //! @todo wrap this in the gui object (don wnat to access core directly here)
@@ -1572,7 +1573,7 @@ void ProjectTabWidget::saveModel(bool saveAs)
         std::vector<CompParameter>::iterator itp;
         for ( itp=paramVector.begin() ; itp !=paramVector.end(); ++itp )
         {
-            modelFile << "PARAMETER " << it.key() << " " << QString::fromStdString(itp->getName()) << " " << itp->getValue() << "\n";
+            modelFile << "PARAMETER " << addQuotes(it.key()) << " " << QString::fromStdString(itp->getName()) << " " << itp->getValue() << "\n";
             //qDebug() << it.key() << " - " << itp->getName().c_str() << " - " << itp->getValue();
         }
 
@@ -1585,8 +1586,8 @@ void ProjectTabWidget::saveModel(bool saveAs)
     {
         QString startPortName  = pCurrentView->mConnectorVector[i]->getStartPort()->getName();
         QString endPortName = pCurrentView->mConnectorVector[i]->getEndPort()->getName();
-        modelFile << "CONNECT " << QString(pCurrentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() + " " + startPortName + " " +
-                                           pCurrentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() + " " + endPortName);
+        modelFile << "CONNECT " << QString(addQuotes(pCurrentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName()) + " " + addQuotes(startPortName) + " " +
+                                           addQuotes(pCurrentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName()) + " " + addQuotes(endPortName));
         for(size_t j = 0; j != pCurrentView->mConnectorVector[i]->getPointsVector().size(); ++j)
         {
             modelFile << " " << pCurrentView->mConnectorVector[i]->getPointsVector()[j].x() << " " << pCurrentView->mConnectorVector[i]->getPointsVector()[j].y();
