@@ -38,11 +38,6 @@ GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, 
 
     updatePosition();
 
-    if(this->getPortType() == Port::POWERPORT)
-        this->setRotation(0.0);
-    else
-        this->setRotation(rot);
-
 //    pRectParent = parent;
     this->setAcceptHoverEvents(true);
 
@@ -50,12 +45,23 @@ GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, 
     //this->setBrush(brush);
 
     mpPortLabel = new QGraphicsTextItem(this);
-    QString label("<p> <span style=\"background-color:yellow\">");
+    QString label("<p><span style=\"background-color:lightyellow\">");
     label.append(this->getName()).append("</span></p>");
     mpPortLabel->setHtml(label);
     mpPortLabel->setTextInteractionFlags(Qt::NoTextInteraction);
     mpPortLabel->hide();
     mpPortLabel->setPos(5,5);
+
+    if(this->getPortType() == Port::POWERPORT)
+    {
+        this->setRotation(0.0);
+        mpPortLabel->setRotation(0.0);
+    }
+    else
+    {
+        this->setRotation(rot);
+        mpPortLabel->setRotation(-rot);
+    }
 
     mMag = 1.6180339887;
     mIsMag = false;
@@ -102,6 +108,8 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     std::cout << "GUIPort.cpp: " << "hovering over port" << std::endl;
     magnify(true);
 
+    mpPortLabel->setRotation(-this->mpParentGuiObject->rotation()-this->rotation());
+    //qDebug() << "label: " << mpPortLabel->rotation() << " this: " << this->rotation();
     mpPortLabel->show();
 }
 
