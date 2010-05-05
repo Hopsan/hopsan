@@ -53,8 +53,9 @@ GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, 
     QString label("<p> <span style=\"background-color:yellow\">");
     label.append(this->getName()).append("</span></p>");
     mpPortLabel->setHtml(label);
+    mpPortLabel->setTextInteractionFlags(Qt::NoTextInteraction);
     mpPortLabel->hide();
-    //mpPortLabel->setPos();
+    mpPortLabel->setPos(5,5);
 
     mMag = 1.6180339887;
     mIsMag = false;
@@ -79,12 +80,14 @@ void GUIPort::magnify(bool blowup)
     {
         this->moveBy((mMag-1)*boundingRect().width()/2, (mMag-1)*boundingRect().height()/2);
         this->scale(1/mMag,1/mMag);
+        this->mpPortLabel->scale(mMag,mMag);
         mIsMag = false;
     }
     else if ((blowup) && (!mIsMag))
     {
         this->scale(mMag, mMag);
         this->moveBy(-(mMag-1)*boundingRect().width()/2, -(mMag-1)*boundingRect().height()/2);
+        this->mpPortLabel->scale(1/mMag,1/mMag);
         mIsMag = true;
     }
 }
