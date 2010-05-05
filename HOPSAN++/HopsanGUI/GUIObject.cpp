@@ -166,9 +166,6 @@ void GUIObject::fixTextPosition(QPointF pos)
         mpNameText->setPos(x1,y1);
         mNameTextPos = 1;
     }
-
-    qDebug() << "GUIComponent::fixTextPosition, x: " << x << " y: " << y;
-
 }
 
 
@@ -219,13 +216,11 @@ void GUIObject::setIcon(bool useIso)
 
         mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(true) , this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
-        qDebug() << "Changing to ISO icon";
     }
     else
     {
         mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(false), this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
-        qDebug() << "Changing to user icon";
     }
 
     //Delete old icon if it exist;
@@ -349,7 +344,6 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
 
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
-        qDebug() << "Selection has changed";
         if (this->isSelected())
         {
             this->mpSelectionBox->setActive();
@@ -362,7 +356,6 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
             connect(this->mpParentGraphicsView, SIGNAL(keyPressLeft()), this, SLOT(moveLeft()));
             connect(this->mpParentGraphicsView, SIGNAL(keyPressRight()), this, SLOT(moveRight()));
             emit componentSelected();
-            qDebug() << "emit comonentSelected()";
         }
         else
         {
@@ -443,7 +436,6 @@ void GUIObject::rotate()
             mPortListPtrs.value(i)->setPortDirection(GUIPort::VERTICAL);
         if (mPortListPtrs.value(i)->getPortType() == Port::POWERPORT)
         {
-            qDebug() << "rotation() = " << rotation() << " and mIsFlipped = " << mIsFlipped;
             if(this->rotation() == 0 and !mIsFlipped)
                 mPortListPtrs.value(i)->setRotation(0);
             else if(this->rotation() == 0 and mIsFlipped)
@@ -673,7 +665,6 @@ void GUIObject::showName()
 //! Dummy
 QString GUIObject::getTypeName()
 {
-    qDebug() << "In dummy version of getTypeName()";
     assert(false);
 }
 
@@ -687,7 +678,6 @@ GUIObjectDisplayName::GUIObjectDisplayName(GUIObject *pParent)
 
 GUIObjectDisplayName::~GUIObjectDisplayName()
 {
-    qDebug() << "In GUIObjectDisplayName Destructor!";
 }
 
 void GUIObjectDisplayName::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)

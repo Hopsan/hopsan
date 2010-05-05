@@ -79,13 +79,13 @@ signals:
     void systemPortSignal(QPoint position);
 
 public slots:
-    void addGUIObject(QString componentTypeName, AppearanceData appearanceData, QPoint position, qreal rotation = 0, QString name=QString(), bool startSelected=true);
+    void addGUIObject(QString componentTypeName, AppearanceData appearanceData, QPoint position, qreal rotation = 0, QString name=QString(), bool startSelected=true, bool doNotRegisterUndo = false);
     void deleteGUIObject(QString componentName);
     bool haveGUIObject(QString name);
     void renameGUIObject(QString oldName, QString newName);
     void addSystemPort();
-    void addConnector(GUIPort *pPort);
-    void removeConnector(GUIConnector* pConnector);
+    void addConnector(GUIPort *pPort, bool doNotRegisterUndo = false);
+    void removeConnector(GUIConnector* pConnector, bool doNotRegisterUndo = false);
     void cutSelected();
     void copySelected();
     void paste();

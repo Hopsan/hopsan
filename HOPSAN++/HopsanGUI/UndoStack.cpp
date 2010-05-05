@@ -95,7 +95,7 @@ void UndoStack::undoOneStep()
         for(int i = 0; i != mStack[undoPosition].size(); ++i)
         {
             qDebug() << "undoOneStep(), Reading:  " << mStack[undoPosition][i][0];
-            if( mStack[undoPosition][i][0] == "COMPONENT" )
+            if( mStack[undoPosition][i][0] == "DELETEDOBJECT" )
             {
                 QString componentType = mStack[undoPosition][i][1];
                 QString componentName = mStack[undoPosition][i][2];
@@ -106,16 +106,14 @@ void UndoStack::undoOneStep()
 
                 //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
                 AppearanceData appearanceData = *mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
-                mpParentView->addGUIObject(componentType, appearanceData, QPoint(posX, posY), 0, componentName);
+                mpParentView->addGUIObject(componentType, appearanceData, QPoint(posX, posY), 0, componentName, false, true);
                 mpParentView->getGUIObject(componentName)->setNameTextPos(nameTextPos);
                 while(mpParentView->getGUIObject(componentName)->rotation() != rotation)
                 {
                     mpParentView->getGUIObject(componentName)->rotate();
                 }
-                mStack[mCurrentStackPosition].pop_front();      //addGUIObject will register the creation in the stack, so it must be removed to avoid an endless loop
-                //mRedoStack[mCurrentRedoStackPosition].insert(0,QString("DELETEOBJECT" + ))
             }
-            else if ( mStack[undoPosition][i][0] == "CONNECT" )
+            else if ( mStack[undoPosition][i][0] == "DELETEDCONNECTOR" )
             {
                 QString startComponentName = mStack[undoPosition][i][1];
                 int startPortNumber = mStack[undoPosition][i][2].toInt();
@@ -166,9 +164,10 @@ void UndoStack::undoOneStep()
                     assert(false);
                 }
             }
-            else if( mStack[undoPosition][i][0] == "DELETEOBJECT" )
+            else if( mStack[undoPosition][i][0] == "ADDEDOBJECT" )
             {
-                QString itemName = mStack[undoPosition][i][1];
+                QString itemName = mStack[undoPosition][i][2];
+
                 GUIObject* item = mpParentView->mGUIObjectMap.find(itemName).value();
                 mpParentView->mGUIObjectMap.erase(mpParentView->mGUIObjectMap.find(itemName));
                 item->deleteInHopsanCore();
@@ -176,7 +175,7 @@ void UndoStack::undoOneStep()
                 delete(item);
                 mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
             }
-            else if( mStack[undoPosition][i][0] == "DISCONNECT" )
+            else if( mStack[undoPosition][i][0] == "ADDEDCONNECTOR" )
             {
                 QString startComponentName = mStack[undoPosition][i][1];
                 int startPortNumber = mStack[undoPosition][i][2].toInt();
@@ -202,10 +201,10 @@ void UndoStack::undoOneStep()
                         item = mpParentView->mConnectorVector[i];
                     }
                 }
-                mpParentView->removeConnector(item);
-                mStack[undoPosition].pop_front();
+                mpParentView->removeConnector(item, true);
+                //mStack[undoPosition].pop_front();
             }
-            else if( mStack[undoPosition][i][0] == "RENAMEOBJECT" )
+            else if( mStack[undoPosition][i][0] == "RENAMEDOBJECT" )
             {
                 QString oldName = mStack[undoPosition][i][1];
                 QString newName = mStack[undoPosition][i][2];
@@ -274,12 +273,13 @@ void UndoStack::undoOneStep()
 //! Will redo the previously undone changes if they exist, and re-add the undo command to the undo stack.
 void UndoStack::redoOneStep()
 {
-    if(mCurrentStackPosition > -1 and mCurrentStackPosition != mStack.size()-1 and !mStack[mCurrentStackPosition+1].empty())
+    if( (mCurrentStackPosition != mStack.size()-1) and (!mStack[mCurrentStackPosition+1].empty()) )
     {
         ++mCurrentStackPosition;
         for(int i = 0; i != mStack[mCurrentStackPosition].size(); ++i)
         {
-            if( mStack[mCurrentStackPosition][i][0] == "COMPONENT" )
+            qDebug() << "Reading: " << mStack[mCurrentStackPosition][i][0];
+            if( mStack[mCurrentStackPosition][i][0] == "DELETEDOBJECT" )
             {
                 QString componentName = mStack[mCurrentStackPosition][i][2];
 
@@ -290,17 +290,112 @@ void UndoStack::redoOneStep()
                 delete(item);
                 mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
             }
-            else if ( mStack[mCurrentStackPosition][i][0] == "CONNECT" )
+            else if ( mStack[mCurrentStackPosition][i][0] == "DELETEDCONNECTOR" )
             {
+                QString startComponentName = mStack[mCurrentStackPosition][i][1];
+                int startPortNumber = mStack[mCurrentStackPosition][i][2].toInt();
+                QString endComponentName = mStack[mCurrentStackPosition][i][3];
+                int endPortNumber = mStack[mCurrentStackPosition][i][4].toInt();
+
+                    // Lookup the pointer to the connector to remove from the connector vector
+                GUIConnector *item;
+                for(int i = 0; i != mpParentView->mConnectorVector.size(); ++i)
+                {
+                    if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == startComponentName) and
+                       (mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber() == startPortNumber) and
+                       (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == endComponentName) and
+                       (mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber() == endPortNumber))
+                    {
+                        item = mpParentView->mConnectorVector[i];
+                    }
+                    else if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == endComponentName) and
+                            (mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber() == endPortNumber) and
+                            (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == startComponentName) and
+                            (mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber() == startPortNumber))
+                    {
+                        item = mpParentView->mConnectorVector[i];
+                    }
+                }
+                mpParentView->removeConnector(item, true);
+                //mStack[undoPosition].pop_front();
             }
-            else if( mStack[mCurrentStackPosition][i][0] == "DELETEOBJECT" )
+            else if( mStack[mCurrentStackPosition][i][0] == "ADDEDOBJECT" )
             {
-                //! @todo DELETEOBJECT function must have all the parameters as COMPONENT, so it can be redo:ed
+                QString componentType = mStack[mCurrentStackPosition][i][1];
+                QString componentName = mStack[mCurrentStackPosition][i][2];
+                int posX = mStack[mCurrentStackPosition][i][3].toInt();
+                int posY = mStack[mCurrentStackPosition][i][4].toInt();
+                qreal rotation = mStack[mCurrentStackPosition][i][5].toDouble();
+                int nameTextPos = mStack[mCurrentStackPosition][i][6].toInt();
+
+                //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
+                AppearanceData appearanceData = *mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
+                mpParentView->addGUIObject(componentType, appearanceData, QPoint(posX, posY), 0, componentName, false, true);
+                mpParentView->getGUIObject(componentName)->setNameTextPos(nameTextPos);
+                while(mpParentView->getGUIObject(componentName)->rotation() != rotation)
+                {
+                    mpParentView->getGUIObject(componentName)->rotate();
+                }
             }
-            else if( mStack[mCurrentStackPosition][i][0] == "DISCONNECT" )
+            else if( mStack[mCurrentStackPosition][i][0] == "ADDEDCONNECTOR" )
             {
+                QString startComponentName = mStack[mCurrentStackPosition][i][1];
+                int startPortNumber = mStack[mCurrentStackPosition][i][2].toInt();
+                QString endComponentName = mStack[mCurrentStackPosition][i][3];;
+                int endPortNumber = mStack[mCurrentStackPosition][i][4].toInt();
+                qDebug() << "2002";
+                GUIPort *startPort = mpParentView->getGUIObject(startComponentName)->getPort(startPortNumber);
+                GUIPort *endPort = mpParentView->getGUIObject(endComponentName)->getPort(endPortNumber);
+                qDebug() << "2003";
+
+                QVector<QPointF> tempPointVector;
+                qreal tempX, tempY;
+                for(int j = 5; j != mStack[mCurrentStackPosition][i].size(); ++j)
+                {
+                    tempX = mStack[mCurrentStackPosition][i][j].toDouble();
+                    tempY = mStack[mCurrentStackPosition][i][j+1].toDouble();
+                    tempPointVector.push_back(QPointF(tempX, tempY));
+                    ++j;
+                }
+                qDebug() << "2004";
+
+                //! @todo: Store useIso bool in model file and pick the correct line styles when loading
+                GUIConnector *pTempConnector;
+
+                QString type, style;
+                if((startPort->mpCorePort->getNodeType() == "NodeHydraulic") | (startPort->mpCorePort->getNodeType() == "NodeMechanic"))
+                    type = "Power";
+                else if(startPort->mpCorePort->getNodeType() == "NodeSignal")
+                    type = "Signal";
+                if(mpParentView->mpParentProjectTab->useIsoGraphics)
+                    style = "Iso";
+                else
+                    style = "User";
+                qDebug() << "2005";
+
+                pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, mpParentView->getPen("Primary", type, style),
+                                                  mpParentView->getPen("Active", type, style), mpParentView->getPen("Hover", type, style), mpParentView);
+                qDebug() << "2006";
+
+                mpParentView->scene()->addItem(pTempConnector);
+
+                startPort->hide();
+                endPort->hide();
+                qDebug() << "2007";
+
+                GUIObject::connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+                GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+                qDebug() << "2008";
+
+                mpParentView->mConnectorVector.append(pTempConnector);
+                bool success = mpParentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
+                if (!success)
+                {
+                    qDebug() << "Unsuccessful connection try" << endl;
+                    assert(false);
+                }
             }
-            else if( mStack[mCurrentStackPosition][i][0] == "RENAMEOBJECT" )
+            else if( mStack[mCurrentStackPosition][i][0] == "RENAMEDOBJECT" )
             {
                 QString oldName = mStack[mCurrentStackPosition][i][1];
                 QString newName = mStack[mCurrentStackPosition][i][2];
@@ -312,6 +407,40 @@ void UndoStack::redoOneStep()
             }
             else if( mStack[mCurrentStackPosition][i][0] == "MODIFIEDCONNECTOR" )
             {
+                qreal oldX =                    mStack[mCurrentStackPosition][i][1].toDouble();
+                qreal oldY =                    mStack[mCurrentStackPosition][i][2].toDouble();
+                qreal newX =                    mStack[mCurrentStackPosition][i][3].toDouble();
+                qreal newY =                    mStack[mCurrentStackPosition][i][4].toDouble();
+                QString startComponentName =    mStack[mCurrentStackPosition][i][5];
+                int startPortNumber =           mStack[mCurrentStackPosition][i][6].toInt();
+                QString endComponentName =      mStack[mCurrentStackPosition][i][7];
+                int endPortNumber =             mStack[mCurrentStackPosition][i][8].toInt();
+                int lineNumber =                mStack[mCurrentStackPosition][i][9].toInt();
+
+                    //Fetch the pointer to the connector
+                GUIConnector *item;
+                for(int i = 0; i != mpParentView->mConnectorVector.size(); ++i)
+                {
+                    if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == startComponentName) and
+                       (mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber() == startPortNumber) and
+                       (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == endComponentName) and
+                       (mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber() == endPortNumber))
+                    {
+                        item = mpParentView->mConnectorVector[i];
+                    }
+                    else if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == endComponentName) and
+                            (mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber() == endPortNumber) and
+                            (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == startComponentName) and
+                            (mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber() == startPortNumber))
+                    {
+                        item = mpParentView->mConnectorVector[i];
+                    }
+                }
+                qreal dX = newX-oldX;
+                qreal dY = newY-oldY;
+
+                item->getLine(lineNumber)->setPos(QPointF(item->getLine(lineNumber)->pos().x()+dX, item->getLine(lineNumber)->pos().y()+dY));
+                item->updateLine(lineNumber);
             }
             else if( mStack[mCurrentStackPosition][i][0] == "MOVEDOBJECT" )
             {
@@ -325,6 +454,7 @@ void UndoStack::redoOneStep()
             }
         }
         mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
+        qDebug() << "DEBUG 1006";
     }
 
 }
@@ -346,7 +476,7 @@ void UndoStack::registerDeletedObject(GUIObject *item)
     yPosString.setNum(pos.y());
     rotationString.setNum(item->rotation());
     nameTextPosString.setNum(item->getNameTextPos());
-    tempStringList << "COMPONENT" << item->getTypeName() << item->getName() << xPosString << yPosString << rotationString << nameTextPosString;
+    tempStringList << "DELETEDOBJECT" << item->getTypeName() << item->getName() << xPosString << yPosString << rotationString << nameTextPosString;
     mStack[mCurrentStackPosition].insert(0,tempStringList);
 
     //! @todo ugly quickhack for now dont save parameters for systemport or group
@@ -366,7 +496,6 @@ void UndoStack::registerDeletedObject(GUIObject *item)
             mStack[mCurrentStackPosition].insert(0,tempStringList);
         }
     }
-    //qDebug() << "Adding " << QString(tempStringStream.str().c_str());
 }
 
 
@@ -381,7 +510,7 @@ void UndoStack::registerDeletedConnector(GUIConnector *item)
     QString endPortNumberString;
     startPortNumberString.setNum(item->getStartPort()->getPortNumber());
     endPortNumberString.setNum(item->getEndPort()->getPortNumber());
-    tempStringList << "CONNECT" << item->getStartPort()->getGuiObject()->getName() << startPortNumberString <<
+    tempStringList << "DELETEDCONNECTOR" << item->getStartPort()->getGuiObject()->getName() << startPortNumberString <<
                                    item->getEndPort()->getGuiObject()->getName() << endPortNumberString;
     QString xString, yString;
     for(size_t j = 0; j != item->getPointsVector().size(); ++j)
@@ -391,20 +520,27 @@ void UndoStack::registerDeletedConnector(GUIConnector *item)
         tempStringList << xString << yString;
     }
     mStack[mCurrentStackPosition].insert(0,tempStringList);
-    //qDebug() << "Adding " << QString(tempStringStream.str().c_str());
 }
 
 
 //! Register function for added objects.
 //! @param itemName is the name of the added object
-void UndoStack::registerAddedObject(QString itemName)
+void UndoStack::registerAddedObject(GUIObject *item)
 {
     qDebug() << "registerAddedObject()";
 
+    QPointF pos = item->mapToScene(item->boundingRect().center());
     QStringList tempStringList;
-    tempStringList << "DELETEOBJECT" << itemName;
+    QString xPosString;
+    QString yPosString;
+    QString rotationString;
+    QString nameTextPosString;
+    xPosString.setNum(pos.x());
+    yPosString.setNum(pos.y());
+    rotationString.setNum(item->rotation());
+    nameTextPosString.setNum(item->getNameTextPos());
+    tempStringList << "ADDEDOBJECT" << item->getTypeName() << item->getName() << xPosString << yPosString << rotationString << nameTextPosString;
     mStack[mCurrentStackPosition].insert(0,tempStringList);
-//    qDebug() << "Adding " << QString("DELETEOBJECT " + itemName);
 }
 
 
@@ -427,8 +563,15 @@ void UndoStack::registerAddedConnector(GUIConnector *item)
     QString endPortNumberString;
     startPortNumberString.setNum(item->getStartPort()->getPortNumber());
     endPortNumberString.setNum(item->getEndPort()->getPortNumber());
-    tempStringList << "DISCONNECT" << item->getStartPort()->getGuiObject()->getName() << startPortNumberString <<
+    tempStringList << "ADDEDCONNECTOR" << item->getStartPort()->getGuiObject()->getName() << startPortNumberString <<
                                       item->getEndPort()->getGuiObject()->getName() << endPortNumberString;
+    QString xString, yString;
+    for(size_t j = 0; j != item->getPointsVector().size(); ++j)
+    {
+        xString.setNum(item->getPointsVector()[j].x());
+        yString.setNum(item->getPointsVector()[j].y());
+        tempStringList << xString << yString;
+    }
     mStack[mCurrentStackPosition].insert(0,tempStringList);
 }
 
@@ -441,7 +584,7 @@ void UndoStack::registerRenameObject(QString oldName, QString newName)
     qDebug() << "registserRenameObject()";
 
     QStringList tempStringList;
-    tempStringList << "RENAMEOBJECT" << oldName << newName;
+    tempStringList << "RENAMEDOBJECT" << oldName << newName;
     mStack[mCurrentStackPosition].insert(0,tempStringList);
 }
 

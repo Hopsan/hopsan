@@ -149,20 +149,19 @@ void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 //! @param event contains information of the drop operation.
 void GraphicsView::dropEvent(QDropEvent *event)
 {
-    qDebug() << "dropEvent";
     //if (event->mimeData()->hasFormat("application/x-text"))
     if (event->mimeData()->hasText())
     {
         undoStack->newPost();
 
-        qDebug() << "dropEvent: hasText";
+        //qDebug() << "dropEvent: hasText";
         //QByteArray *data = new QByteArray;
         //*data = event->mimeData()->data("application/x-text");
 
         QString datastr =  event->mimeData()->text();
         QTextStream stream(&datastr, QIODevice::ReadOnly);
 
-        qDebug() << "drop string: \n" << datastr;
+        //qDebug() << "drop string: \n" << datastr;
 
         AppearanceData appearanceData;
         stream >> appearanceData;
@@ -175,7 +174,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
 
         QPoint position = event->pos();
-        qDebug() << "GraphicsView: " << "x=" << position.x() << "  " << "y=" << position.y();
+        //qDebug() << "GraphicsView: " << "x=" << position.x() << "  " << "y=" << position.y();
 
         this->addGUIObject(appearanceData.getTypeName(), appearanceData, this->mapToScene(position).toPoint());
     }
@@ -193,13 +192,10 @@ GUIConnector *GraphicsView::getTempConnector()
 //! @param componentType is a string defining the type of component.
 //! @param position is the position where the component will be created.
 //! @param name will be the name of the component.
-void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appearanceData, QPoint position, qreal rotation, QString name, bool startSelected)
+void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appearanceData, QPoint position, qreal rotation, QString name, bool startSelected, bool doNotRegisterUndo)
 {
-    qDebug() << "Request to add gui object at (" << position.x() << " " << position.y() << ")";
-
     if (componentTypeName == "Subsystem")
     {
-        qDebug() << "Creating GUISubsystem";
         GUISubsystem *pSys = new GUISubsystem(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
         this->mpParentProjectTab->mpComponentSystem->addComponent(pSys->getHopsanCoreSystemComponentPtr()); //core interaction
 
@@ -207,18 +203,16 @@ void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appear
     }
     else if (componentTypeName == "SystemPort")
     {
-        qDebug() << "Creating GUISystemPort";
         mpTempGUIObject = new GUISystemPort(mpParentProjectTab->mpComponentSystem, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
     }
     else //Assume some standard component type
     {
-        qDebug() << "Creating GUIComponent";
         GUIComponent *pComp = new GUIComponent(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
         this->mpParentProjectTab->mpComponentSystem->addComponent(pComp->getHopsanCoreComponentPtr()); //core interaction
         mpTempGUIObject = pComp;
     }
 
-    qDebug() << "=====================Get initial name: " << mpTempGUIObject->getName() << "requested: " << name;
+    //qDebug() << "=====================Get initial name: " << mpTempGUIObject->getName() << "requested: " << name;
     if (!name.isEmpty())
     {
         qDebug() << "name not empty, setting to: " << name;
@@ -228,7 +222,7 @@ void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appear
 
     mpTempGUIObject->refreshName();
     emit checkMessages();
-    qDebug() << "=====================Get name after add: " << mpTempGUIObject->getName();
+    //qDebug() << "=====================Get name after add: " << mpTempGUIObject->getName();
     //
 
     mpTempGUIObject->setIcon(this->mpParentProjectTab->useIsoGraphics);
@@ -248,7 +242,7 @@ void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appear
     else
     {
         mGUIObjectMap.insert(mpTempGUIObject->getName(), mpTempGUIObject);
-        qDebug() << "GUI Object created at (" << mpTempGUIObject->x() << " " << mpTempGUIObject->y() << ")";
+        //qDebug() << "GUI Object created at (" << mpTempGUIObject->x() << " " << mpTempGUIObject->y() << ")";
     }
 
         //Deselect all other comonents
@@ -260,7 +254,10 @@ void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appear
     mpTempGUIObject->setSelected(startSelected);
     this->setFocus(Qt::OtherFocusReason);
 
-    undoStack->registerAddedObject(mpTempGUIObject->getName());
+    if(!doNotRegisterUndo)
+    {
+        undoStack->registerAddedObject(mpTempGUIObject);
+    }
 }
 
 ////! Adds a new component to the GraphicsView.
@@ -548,7 +545,7 @@ GUIObject *GraphicsView::getGUIObject(QString name)
 
 
 //! Begin creation of connector or complete creation of connector depending on the mIsCreatingConnector boolean.
-void GraphicsView::addConnector(GUIPort *pPort)
+void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
 {
         //When clicking start port
     if (!mIsCreatingConnector)
@@ -607,16 +604,23 @@ void GraphicsView::addConnector(GUIPort *pPort)
         }
         emit checkMessages();
         //
-
-        undoStack->registerAddedConnector(mpTempConnector);
+        if(!doNotRegisterUndo)
+        {
+            undoStack->registerAddedConnector(mpTempConnector);
+        }
     }
 }
 
 
-void GraphicsView::removeConnector(GUIConnector* pConnector)
+void GraphicsView::removeConnector(GUIConnector* pConnector, bool doNotRegisterUndo)
 {
     bool doDelete = false;
     int i;
+
+    if(!doNotRegisterUndo)
+    {
+        undoStack->registerDeletedConnector(pConnector);
+    }
     for(i = 0; i != mConnectorVector.size(); ++i)
     {
         if(mConnectorVector[i] == pConnector)
@@ -644,7 +648,7 @@ void GraphicsView::removeConnector(GUIConnector* pConnector)
     if(doDelete)
     {
         mConnectorVector.remove(i);
-    }
+    }    
 }
 
 
@@ -915,9 +919,7 @@ void GraphicsView::hidePorts(bool doIt)
 //! @see redo()
 void GraphicsView::undo()
 {
-    qDebug() << "Debug 2131";
     undoStack->undoOneStep();
-    qDebug() << "Debug 2132";
 }
 
 

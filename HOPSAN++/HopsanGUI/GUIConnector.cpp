@@ -60,11 +60,15 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     QPointF startPos = getStartPort()->mapToScene(getStartPort()->boundingRect().center());
     this->setPos(startPos);
 
+    qDebug() << "3001";
+
+
         //Set pen styles
     this->mPrimaryPen = primaryPen;
     this->mActivePen = activePen;
     this->mHoverPen = hoverPen;
     mPoints = points;
+    qDebug() << "3002, mPoints.size() = " << mPoints.size();
 
         //Setup the geometries vector based on the point geometry
     for(std::size_t i=0; i != mPoints.size()-1; ++i)
@@ -77,10 +81,15 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
             mGeometries.push_back(GUIConnector::DIAGONAL);
     }
 
+    qDebug() << "3003";
+
     mEndPortConnected = true;
     emit endPortConnected();
     this->setPassive();
     connect(this->mpEndPort->getGuiObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMe()));
+
+    qDebug() << "3004";
+
 
         //Create the lines, so that drawConnector has something to work with
     for(std::size_t i = 0; i != mPoints.size()-1; ++i)
@@ -99,6 +108,8 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
         connect(this,SIGNAL(endPortConnected()),mpTempLine,SLOT(setConnected()));
     }
 
+    qDebug() << "3005";
+
     this->drawConnector();
 
         //Make all lines selectable and all lines except first and last movable
@@ -107,11 +118,17 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     for(std::size_t i=0; i!=mpLines.size(); ++i)
         mpLines[i]->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
+    qDebug() << "3006";
+
+
       //Add arrow to the connector if it is of signal type
     if(mpEndPort->getPortType() == Port::READPORT && mpEndPort->mpCorePort->getNodeType() == "NodeSignal")
         this->getLastLine()->addEndArrow();
     else if(mpEndPort->getPortType() == Port::WRITEPORT && mpEndPort->mpCorePort->getNodeType() == "NodeSignal")
         this->mpLines[0]->addStartArrow();
+
+    qDebug() << "3007";
+
 
     mpStartPort->getGuiObject()->addConnector(this);
     mpEndPort->getGuiObject()->addConnector(this);
@@ -123,7 +140,7 @@ GUIConnector::~GUIConnector()
 {
     //qDebug() << this->getNumberOfLines();
 
-    mpParentView->undoStack->registerDeletedConnector(this);
+    //mpParentView->undoStack->registerDeletedConnector(this);
 
 //    QMap<QString, GUIConnector *>::iterator it;
 //    for(it = mpParentView->mConnectorVector.begin(); it!=mpParentView->mConnectorVector.end(); ++it)

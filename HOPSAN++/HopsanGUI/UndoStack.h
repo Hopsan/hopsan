@@ -19,7 +19,7 @@ public:
     ~UndoStack();
     void registerDeletedObject(GUIObject *item);
     void registerDeletedConnector(GUIConnector *item);
-    void registerAddedObject(QString itemName);
+    void registerAddedObject(GUIObject *item);
     void registerAddedConnector(GUIConnector *item);
     void registerRenameObject(QString oldName, QString newName);
     void registerModifiedConnector(QPointF oldPos, QPointF newPos, GUIConnector *item, int lineNumber);
