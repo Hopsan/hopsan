@@ -23,6 +23,7 @@
 #include "ParameterDialog.h"
 #include "GUIPort.h"
 #include "GUIConnector.h"
+#include "GUIUtilities.h"
 
 
 double dist(double x1,double y1, double x2, double y2)
@@ -296,6 +297,22 @@ ComponentSystem* GUIObject::getHopsanCoreSystemComponentPtr()
 {
     cout << "This function should only be available in GUISubsystem" << endl;
     assert(false);
+}
+
+//! @brief Save GuiObject to a text stream
+void GUIObject::saveToTextStream(QTextStream &rStream)
+{
+    QPointF pos = mapToScene(boundingRect().center());
+    rStream << "COMPONENT " << getTypeName() << " " << addQuotes(getName()) << " "
+            << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << "\n";
+
+//    vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
+//    std::vector<CompParameter>::iterator pit;
+//    for ( pit=paramVector.begin() ; pit !=paramVector.end(); ++pit )
+//    {
+//        rStream << "PARAMETER " << addQuotes(it.key()) << " " << QString::fromStdString(itp->getName()) << " " << itp->getValue() << "\n";
+//        //qDebug() << it.key() << " - " << itp->getName().c_str() << " - " << itp->getValue();
+//    }
 }
 
 
@@ -1088,6 +1105,23 @@ Component* GUIComponent::getHopsanCoreComponentPtr()
 void GUIComponent::deleteInHopsanCore()
 {
     mpCoreComponent->getSystemParent()->removeSubComponent(mpCoreComponent, true);
+}
+
+//! @brief Save GuiObject to a text stream
+void GUIComponent::saveToTextStream(QTextStream &rStream)
+{
+//    QPointF pos = mapToScene(boundingRect().center());
+//    rStream << "COMPONENT " << getTypeName() << " " << addQuotes(it.value()->getName()) << " "
+//            << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << "\n";
+    GUIObject::saveToTextStream(rStream);
+
+    vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
+    std::vector<CompParameter>::iterator pit;
+    for ( pit=paramVector.begin() ; pit !=paramVector.end(); ++pit )
+    {
+        rStream << "PARAMETER " << addQuotes(getName()) << " " << QString::fromStdString(pit->getName()) << " " << pit->getValue() << "\n";
+        //qDebug() << it.key() << " - " << itp->getName().c_str() << " - " << itp->getValue();
+    }
 }
 
 

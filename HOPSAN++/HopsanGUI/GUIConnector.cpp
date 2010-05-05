@@ -7,6 +7,7 @@
 #include <vector>
 #include <QStyleOptionGraphicsItem>
 #include <math.h>
+#include "GUIUtilities.h"
 
 //! Constructor.
 //! @param startpos defines the start position of the connector, normally the center of the starting port.
@@ -401,6 +402,20 @@ bool GUIConnector::isMakingDiagonal()
 bool GUIConnector::isActive()
 {
     return mIsActive;
+}
+
+void GUIConnector::saveToTextStream(QTextStream &rStream)
+{
+    QString startObjName = getStartPort()->getGuiObject()->getName();
+    QString endObjName = getEndPort()->getGuiObject()->getName();
+    QString startPortName  = getStartPort()->getName();
+    QString endPortName = getEndPort()->getName();
+    rStream << "CONNECT " << ( addQuotes(startObjName) + " " + addQuotes(startPortName) + " " + addQuotes(endObjName) + " " + addQuotes(endPortName) );
+    for(size_t j = 0; j != mPoints.size(); ++j)
+    {
+        rStream << " " << mPoints[j].x() << " " << mPoints[j].y();
+    }
+    rStream << "\n";
 }
 
 

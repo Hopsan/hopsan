@@ -45,6 +45,8 @@ public:
     GraphicsScene *mpParentGraphicsScene;
     GraphicsView *mpParentGraphicsView;
 
+    virtual void saveToTextStream(QTextStream &rStream);
+
     //Core interaction
     virtual Component* getHopsanCoreComponentPtr();
     virtual ComponentSystem* getHopsanCoreSystemComponentPtr();
@@ -153,6 +155,8 @@ public:
     //
 
     void setParameter(QString name, double value);
+
+    void saveToTextStream(QTextStream &rStream);
 
     QString getName();
     void setName(QString name, bool doOnlyLocalRename=false);

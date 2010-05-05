@@ -1561,19 +1561,20 @@ void ProjectTabWidget::saveModel(bool saveAs)
     QMap<QString, GUIObject*>::iterator it;
     for(it = pCurrentView->mGUIObjectMap.begin(); it!=pCurrentView->mGUIObjectMap.end(); ++it)
     {
-        QPointF pos = it.value()->mapToScene(it.value()->boundingRect().center());
-        modelFile << "COMPONENT " << it.value()->getTypeName() << " " << addQuotes(it.value()->getName()) << " "
-                  << pos.x() << " " << pos.y() << " " << it.value()->rotation() << " " << it.value()->getNameTextPos() << "\n";
-
-        //! @todo wrap this in the gui object (don wnat to access core directly here)
-        Component *mpCoreComponent = it.value()->getHopsanCoreComponentPtr();
-        vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
-        std::vector<CompParameter>::iterator itp;
-        for ( itp=paramVector.begin() ; itp !=paramVector.end(); ++itp )
-        {
-            modelFile << "PARAMETER " << addQuotes(it.key()) << " " << QString::fromStdString(itp->getName()) << " " << itp->getValue() << "\n";
-            //qDebug() << it.key() << " - " << itp->getName().c_str() << " - " << itp->getValue();
-        }
+//        QPointF pos = it.value()->mapToScene(it.value()->boundingRect().center());
+//        modelFile << "COMPONENT " << it.value()->getTypeName() << " " << addQuotes(it.value()->getName()) << " "
+//                  << pos.x() << " " << pos.y() << " " << it.value()->rotation() << " " << it.value()->getNameTextPos() << "\n";
+//
+//        //! @todo wrap this in the gui object (don wnat to access core directly here)
+//        Component *mpCoreComponent = it.value()->getHopsanCoreComponentPtr();
+//        vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
+//        std::vector<CompParameter>::iterator itp;
+//        for ( itp=paramVector.begin() ; itp !=paramVector.end(); ++itp )
+//        {
+//            modelFile << "PARAMETER " << addQuotes(it.key()) << " " << QString::fromStdString(itp->getName()) << " " << itp->getValue() << "\n";
+//            //qDebug() << it.key() << " - " << itp->getName().c_str() << " - " << itp->getValue();
+//        }
+        it.value()->saveToTextStream(modelFile);
 
     }
 
@@ -1582,20 +1583,21 @@ void ProjectTabWidget::saveModel(bool saveAs)
    // QMap<QString, GUIConnector *>::iterator it2;
     for(int i = 0; i != pCurrentView->mConnectorVector.size(); ++i)
     {
-        QString startPortName  = pCurrentView->mConnectorVector[i]->getStartPort()->getName();
-        QString endPortName = pCurrentView->mConnectorVector[i]->getEndPort()->getName();
-        modelFile << "CONNECT " << QString(addQuotes(pCurrentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName()) + " " + addQuotes(startPortName) + " " +
-                                           addQuotes(pCurrentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName()) + " " + addQuotes(endPortName));
-        for(size_t j = 0; j != pCurrentView->mConnectorVector[i]->getPointsVector().size(); ++j)
-        {
-            modelFile << " " << pCurrentView->mConnectorVector[i]->getPointsVector()[j].x() << " " << pCurrentView->mConnectorVector[i]->getPointsVector()[j].y();
-        }
-        modelFile << "\n";
+//        QString startPortName  = pCurrentView->mConnectorVector[i]->getStartPort()->getName();
+//        QString endPortName = pCurrentView->mConnectorVector[i]->getEndPort()->getName();
+//        modelFile << "CONNECT " << QString(addQuotes(pCurrentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName()) + " " + addQuotes(startPortName) + " " +
+//                                           addQuotes(pCurrentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName()) + " " + addQuotes(endPortName));
+//        for(size_t j = 0; j != pCurrentView->mConnectorVector[i]->getPointsVector().size(); ++j)
+//        {
+//            modelFile << " " << pCurrentView->mConnectorVector[i]->getPointsVector()[j].x() << " " << pCurrentView->mConnectorVector[i]->getPointsVector()[j].y();
+//        }
+//        modelFile << "\n";
+        pCurrentView->mConnectorVector[i]->saveToTextStream(modelFile);
     }
     modelFile << "--------------------------------------------------------------\n";
 
     //Sets the model name
-    pCurrentTab->mpComponentSystem->setName(fileInfo.fileName().toStdString());
+    pCurrentTab->mpComponentSystem->setName(fileInfo.fileName().toStdString()); //!< @todo BAD should not be core access here
     this->setTabText(this->currentIndex(), fileInfo.fileName());
 }
 

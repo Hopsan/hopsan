@@ -43,6 +43,7 @@ public:
     bool isConnected();
     bool isMakingDiagonal();
     bool isActive();
+    void saveToTextStream(QTextStream &rStream);
     GraphicsView *mpParentView;
 
 public slots:
