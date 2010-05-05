@@ -83,7 +83,7 @@ public:
         mpPT = addPowerPort("PT", "NodeHydraulic");
         mpPA = addPowerPort("PA", "NodeHydraulic");
         mpPB = addPowerPort("PB", "NodeHydraulic");
-        mpIn = addReadPort("PX", "NodeSignal");
+        mpIn = addReadPort("in", "NodeSignal");
 
         registerParameter("Cq", "Flow Coefficient", "[-]", mCq);
         registerParameter("d", "Diameter", "[m]", md);
