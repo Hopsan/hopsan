@@ -694,7 +694,7 @@ void GUIConnector::setUnHovered()
 //! Asks my parent to delete myself
 void GUIConnector::deleteMe()
 {
-    mpParentView->removeConnector(this);
+    mpParentView->removeConnector(this, true);
 }
 
 

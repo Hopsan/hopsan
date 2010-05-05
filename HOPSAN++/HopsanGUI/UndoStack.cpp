@@ -261,6 +261,7 @@ void UndoStack::redoOneStep()
         ++mCurrentStackPosition;
         for(int i = 0; i != mStack[mCurrentStackPosition].size(); ++i)
         {
+            qDebug() << "REDO: " << mStack[mCurrentStackPosition][i][0];
             if( mStack[mCurrentStackPosition][i][0] == "DELETEDOBJECT" )
             {
                 QString componentName = mStack[mCurrentStackPosition][i][2];
