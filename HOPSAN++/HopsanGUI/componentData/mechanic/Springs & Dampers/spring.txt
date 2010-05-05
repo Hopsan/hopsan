@@ -2,6 +2,5 @@ NAME MechanicTranslationalSpring
 ISOICON spring_iso.svg
 USERICON spring_user.svg
 ICONROTATION ON
-PORTS 2
-0.0 0.5 0
-1.0 0.5 0
+PORT "P1" 0.0 0.5 0
+PORT "P2" 1.0 0.5 0

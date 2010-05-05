@@ -2,7 +2,6 @@ NAME MechanicTranslationalMass
 ISOICON mass_iso.svg
 USERICON mass_user.svg
 ICONROTATION ON
-PORTS 2
-0.0 0.5 0
-1.0 0.5 0
+PORT "P1" 0.0 0.5 0
+PORT "P2" 1.0 0.5 0
 
