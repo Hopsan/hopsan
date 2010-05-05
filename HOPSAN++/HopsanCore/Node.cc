@@ -44,6 +44,7 @@ Node::Node(size_t datalength)
     mDoLog = true;
     mLogTimeDt = 0.0;
     mLastLogTime = 0.0; //Initial valus should not matter, will be overwritten when selecting log amount
+    mLogSlots = 0;
 }
 
 //!
