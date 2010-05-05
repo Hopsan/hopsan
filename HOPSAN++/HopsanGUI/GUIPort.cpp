@@ -49,6 +49,13 @@ GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, 
     //QBrush brush(Qt::green);
     //this->setBrush(brush);
 
+    mpPortLabel = new QGraphicsTextItem(this);
+    QString label("<p> <span style=\"background-color:yellow\">");
+    label.append(this->getName()).append("</span></p>");
+    mpPortLabel->setHtml(label);
+    mpPortLabel->hide();
+    //mpPortLabel->setPos();
+
     mMag = 1.6180339887;
     mIsMag = false;
     isConnected = false;
@@ -91,6 +98,8 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     QBrush brush(Qt::blue);
     std::cout << "GUIPort.cpp: " << "hovering over port" << std::endl;
     magnify(true);
+
+    mpPortLabel->show();
 }
 
 
@@ -115,6 +124,8 @@ void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     this->setCursor(Qt::ArrowCursor);
     magnify(false);
  //   QGraphicsSvgItem::hoverLeaveEvent(event);
+
+    mpPortLabel->hide();
 }
 
 

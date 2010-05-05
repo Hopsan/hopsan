@@ -5,6 +5,7 @@
 
 #include <QGraphicsSvgItem>
 #include <QGraphicsLineItem>
+#include <QGraphicsTextItem>
 #include <QGraphicsScene>
 #include "GUIObject.h"
 #include "HopsanCore.h"
@@ -58,6 +59,7 @@ private:
     QGraphicsLineItem *lineV;
     QGraphicsView *mpParentView;
     GUIObject *mpParentGuiObject;
+    QGraphicsTextItem *mpPortLabel;
     qreal mMag;
     bool mIsMag;
     //GUIPort::portType mType;
