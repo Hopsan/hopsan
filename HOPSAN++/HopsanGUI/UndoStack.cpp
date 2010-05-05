@@ -41,16 +41,12 @@ void UndoStack::clear()
 //! Adds a new post to the stack
 void UndoStack::newPost()
 {
-    qDebug() << "newPost():  mCurrentStackPosition = " << mCurrentStackPosition << ",  mStack.size() = " << mStack.size();
-
     int tempSize = mStack.size()-1;
     for(int i = mCurrentStackPosition; i != tempSize; ++i)
     {
         qDebug() << i;
         mStack.pop_back();
     }
-
-    qDebug() << "Finished poping in newPost():  mCurrentStackPosition = " << mCurrentStackPosition << ",  mStack.size() = " << mStack.size();
 
     if(mCurrentStackPosition < 0)
     {
@@ -64,20 +60,12 @@ void UndoStack::newPost()
         mStack.append(tempList);
         ++mCurrentStackPosition;
     }
-
-    qDebug() << "Leaving newPost():  mCurrentStackPosition = " << mCurrentStackPosition << ",  mStack.size() = " << mStack.size();
 }
 
 
 //! Will undo the changes registered in the last stack position, and switch stack pointer one step back
 void UndoStack::undoOneStep()
 {
-    qDebug() << "undoOneStep():  mCurrentStackPosition = " << mCurrentStackPosition << ",  mStack.size() = " << mStack.size();
-
-//    qDebug() << "Hej!";
-//    qDebug() << "mCurrentStackPosition = " << mCurrentStackPosition << ", mStack.size() = " << mStack.size();
-
-
     int undoPosition = mCurrentStackPosition;
     if(mCurrentStackPosition < 0)
     {
@@ -88,13 +76,10 @@ void UndoStack::undoOneStep()
         undoPosition = mCurrentStackPosition - 1;
     }
 
-//    qDebug() << "undoPosition = " << undoPosition << ", mStack.size() = " << mStack.size();
-
     if(undoPosition > -1)
     {
         for(int i = 0; i != mStack[undoPosition].size(); ++i)
         {
-            qDebug() << "undoOneStep(), Reading:  " << mStack[undoPosition][i][0];
             if( mStack[undoPosition][i][0] == "DELETEDOBJECT" )
             {
                 QString componentType = mStack[undoPosition][i][1];
@@ -264,8 +249,6 @@ void UndoStack::undoOneStep()
         }
         mCurrentStackPosition = undoPosition - 1;
         mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
-
-        qDebug() << "Leaving undoOneStep():  mCurrentStackPosition = " << mCurrentStackPosition << ",  mStack.size() = " << mStack.size();
     }
 }
 
@@ -278,7 +261,6 @@ void UndoStack::redoOneStep()
         ++mCurrentStackPosition;
         for(int i = 0; i != mStack[mCurrentStackPosition].size(); ++i)
         {
-            qDebug() << "Reading: " << mStack[mCurrentStackPosition][i][0];
             if( mStack[mCurrentStackPosition][i][0] == "DELETEDOBJECT" )
             {
                 QString componentName = mStack[mCurrentStackPosition][i][2];
@@ -343,10 +325,8 @@ void UndoStack::redoOneStep()
                 int startPortNumber = mStack[mCurrentStackPosition][i][2].toInt();
                 QString endComponentName = mStack[mCurrentStackPosition][i][3];;
                 int endPortNumber = mStack[mCurrentStackPosition][i][4].toInt();
-                qDebug() << "2002";
                 GUIPort *startPort = mpParentView->getGUIObject(startComponentName)->getPort(startPortNumber);
                 GUIPort *endPort = mpParentView->getGUIObject(endComponentName)->getPort(endPortNumber);
-                qDebug() << "2003";
 
                 QVector<QPointF> tempPointVector;
                 qreal tempX, tempY;
@@ -357,7 +337,6 @@ void UndoStack::redoOneStep()
                     tempPointVector.push_back(QPointF(tempX, tempY));
                     ++j;
                 }
-                qDebug() << "2004";
 
                 //! @todo: Store useIso bool in model file and pick the correct line styles when loading
                 GUIConnector *pTempConnector;
@@ -371,21 +350,17 @@ void UndoStack::redoOneStep()
                     style = "Iso";
                 else
                     style = "User";
-                qDebug() << "2005";
 
                 pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, mpParentView->getPen("Primary", type, style),
                                                   mpParentView->getPen("Active", type, style), mpParentView->getPen("Hover", type, style), mpParentView);
-                qDebug() << "2006";
 
                 mpParentView->scene()->addItem(pTempConnector);
 
                 startPort->hide();
                 endPort->hide();
-                qDebug() << "2007";
 
                 GUIObject::connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
                 GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
-                qDebug() << "2008";
 
                 mpParentView->mConnectorVector.append(pTempConnector);
                 bool success = mpParentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
@@ -454,7 +429,6 @@ void UndoStack::redoOneStep()
             }
         }
         mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
-        qDebug() << "DEBUG 1006";
     }
 
 }
@@ -464,7 +438,6 @@ void UndoStack::redoOneStep()
 //! @param item is a pointer to the component about to be deleted.
 void UndoStack::registerDeletedObject(GUIObject *item)
 {
-    qDebug() << "registerDeletedObject()";
 
     QPointF pos = item->mapToScene(item->boundingRect().center());
     QStringList tempStringList;
@@ -503,8 +476,6 @@ void UndoStack::registerDeletedObject(GUIObject *item)
 //! @param item is a pointer to the connector about to be deleted.
 void UndoStack::registerDeletedConnector(GUIConnector *item)
 {
-    qDebug() << "registerDeletedConnector()";
-
     QStringList tempStringList;
     QString startPortNumberString;
     QString endPortNumberString;
@@ -527,8 +498,6 @@ void UndoStack::registerDeletedConnector(GUIConnector *item)
 //! @param itemName is the name of the added object
 void UndoStack::registerAddedObject(GUIObject *item)
 {
-    qDebug() << "registerAddedObject()";
-
     QPointF pos = item->mapToScene(item->boundingRect().center());
     QStringList tempStringList;
     QString xPosString;
@@ -548,8 +517,6 @@ void UndoStack::registerAddedObject(GUIObject *item)
 //! @param item is a pointer to the added connector.
 void UndoStack::registerAddedConnector(GUIConnector *item)
 {
-    qDebug() << "registerAddedConnector()";
-
     QStringList tempStringList;
     int i;
     for(i = 0; i != mpParentView->mConnectorVector.size(); ++i)
@@ -581,8 +548,6 @@ void UndoStack::registerAddedConnector(GUIConnector *item)
 //! @param newName is a string with the new name.
 void UndoStack::registerRenameObject(QString oldName, QString newName)
 {
-    qDebug() << "registserRenameObject()";
-
     QStringList tempStringList;
     tempStringList << "RENAMEDOBJECT" << oldName << newName;
     mStack[mCurrentStackPosition].insert(0,tempStringList);
@@ -595,8 +560,6 @@ void UndoStack::registerRenameObject(QString oldName, QString newName)
 //! @param lineNumber is the number of the line that was moved.
 void UndoStack::registerModifiedConnector(QPointF oldPos, QPointF newPos, GUIConnector *item, int lineNumber)
 {
-    qDebug() << "registerModifiedConnector()";
-
     QString oldXString;
     QString oldYString;
     QString newXString;
@@ -625,8 +588,6 @@ void UndoStack::registerModifiedConnector(QPointF oldPos, QPointF newPos, GUICon
 //! @param objectName is the name of the object.
 void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString objectName)
 {
-    qDebug() << "registerMovedObject()";
-
     QString oldXString;
     QString oldYString;
     QString newXString;
