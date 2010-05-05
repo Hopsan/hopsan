@@ -162,18 +162,39 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
         else if (command == "PORT")
             //New style:
         {
-            QString tmp;
+            QString readStr;
 
-            is >> tmp;
-            tmp=tmp.trimmed();
-            qDebug() << tmp;
+            is >> readStr;
+            //readStr=readStr.trimmed();
 
             //! @todo Fix the \" thing
             QString portName;
-            portName = tmp.mid(1);
-            portName.chop(1);
+            if(readStr.trimmed().at(0) != '\"')
+            {
+                qDebug() << "FEL I PORTNAMN";
+                return false;
+            }
+            else if(readStr.trimmed().at(readStr.size()-1) != '\"')
+            {
+                while(readStr.trimmed().at(readStr.size()-1) != '\"')
+                {
+                    if(readStr.trimmed().at(readStr.size()-1) == '\n')
+                    {
+                        qDebug() << "OFULLSTANDIGT PORTNAMN";
+                        return false;
+                    }
+                    //readStr.append(" ");
+                    QString tmpStr;
+                    is >> tmpStr;
+                    readStr.append(tmpStr);
+                }
+                //qDebug() << readStr;
+            }
+            readStr=readStr.trimmed();
 
-            qDebug() << "New style! " << portName;
+            portName = readStr.mid(1);
+            portName.chop(1);
+            qDebug() << portName;
 
             PortAppearance portapp;
 
@@ -183,8 +204,6 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
 
             mPortAppearanceMap.insert(portName, portapp);
             //                mPortAppearanceVector.push_back(portapp);
-            qDebug() << "Map size: " << mPortAppearanceMap.size();
-            //                qDebug() << "Vector size: " << mPortAppearanceVector.size();
 
         }
         else if (command == "PORTS") //Old style:
@@ -194,7 +213,6 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
 
             is >> tmp;
             tmp=tmp.trimmed();
-            qDebug() << tmp;
 
             mnPorts = tmp.toInt();
 
