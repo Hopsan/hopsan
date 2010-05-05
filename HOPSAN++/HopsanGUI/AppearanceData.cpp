@@ -162,12 +162,16 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
         else if (command == "PORT")
             //New style:
         {
+            QString lineStr = is.readLine();
+//            qDebug() << "Read line: " << lineStr;
+
             QString readStr;
 
-            is >> readStr;
-            //readStr=readStr.trimmed();
+            QTextStream portStream(&lineStr);
 
-            //! @todo Fix the \" thing
+            portStream >> readStr;
+//            qDebug() << "Read word: " << readStr;
+
             QString portName;
             if(readStr.trimmed().at(0) != '\"')
             {
@@ -176,31 +180,45 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
             }
             else if(readStr.trimmed().at(readStr.size()-1) != '\"')
             {
-                while(readStr.trimmed().at(readStr.size()-1) != '\"')
+                while((readStr.trimmed().at(readStr.size()-1) != '\"') || (portStream.atEnd()))
                 {
-                    if(readStr.trimmed().at(readStr.size()-1) == '\n')
+                    if(portStream.atEnd())
                     {
-                        qDebug() << "OFULLSTANDIGT PORTNAMN";
+                        qDebug() << "OFULLSTANDIGT PORTNAMN: " << readStr;
                         return false;
                     }
                     //readStr.append(" ");
                     QString tmpStr;
-                    is >> tmpStr;
-                    readStr.append(tmpStr);
+                    portStream >> tmpStr;
+                    readStr.append(" ").append(tmpStr);
                 }
-                //qDebug() << readStr;
             }
             readStr=readStr.trimmed();
 
             portName = readStr.mid(1);
             portName.chop(1);
-            qDebug() << portName;
+//            qDebug() << "Final port name: " << portName;
 
             PortAppearance portapp;
 
-            is >> portapp.x;
-            is >> portapp.y;
-            is >> portapp.rot;
+            if(portStream.atEnd())
+            {
+                qDebug() << "SAKNAS DATA";
+                return false;
+            }
+            portStream >> portapp.x;
+            if(portStream.atEnd())
+            {
+                qDebug() << "SAKNAS DATA";
+                return false;
+            }
+            portStream >> portapp.y;
+            if(portStream.atEnd())
+            {
+                qDebug() << "SAKNAS DATA";
+                return false;
+            }
+            portStream >> portapp.rot;
 
             mPortAppearanceMap.insert(portName, portapp);
             //                mPortAppearanceVector.push_back(portapp);
