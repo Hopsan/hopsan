@@ -2,7 +2,6 @@ NAME HydraulicFlowSensor
 ISOICON flowsensor_iso.svg
 USERICON flowsensor_user.svg
 ICONROTATION ON
-PORTS 2
-0.5 1.0 90
-0.5 0.0 270
+PORT "P1" 0.5 1.0 90
+PORT "out" 0.5 0.0 270
 
