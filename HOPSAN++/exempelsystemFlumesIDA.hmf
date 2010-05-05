@@ -17,7 +17,7 @@ PARAMETER "AlternativePRV" m 0.1
 PARAMETER "AlternativePRV" xhyst 0
 PARAMETER "AlternativePRV" xmax 0.001
 COMPONENT HydraulicFlowSourceQ "FlowSourceQ" 2226 2345 0 0
-PARAMETER FlowSourceQ Flow 1e-05
+PARAMETER "FlowSourceQ" Flow 1e-05
 COMPONENT HydraulicTankC "PressureSource" 2441 2482 0 0
 PARAMETER "PressureSource" P 100000
 COMPONENT SignalSink "Sink" 2556 2405 0 0
