@@ -1468,8 +1468,9 @@ void ProjectTabWidget::loadModel()
             //! @todo: Store useIso bool in model file and pick the correct line styles when loading
             GUIConnector *pTempConnector;
 
+            //! @todo Avoid core access here, shoudl make this a function that can be called later if we change iso/user graphics mode
             QString type, style;
-            if((startPort->mpCorePort->getNodeType() == "NodeHydraulic") | (startPort->mpCorePort->getNodeType() == "NodeMechanic"))
+            if((startPort->mpCorePort->getNodeType() == "NodeHydraulic") || (startPort->mpCorePort->getNodeType() == "NodeMechanic"))
                 type = "Power";
             else if(startPort->mpCorePort->getNodeType() == "NodeSignal")
                 type = "Signal";
@@ -1493,11 +1494,11 @@ void ProjectTabWidget::loadModel()
 //                tempStream << startPort->getGuiObject()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
 //                              endPort->getGuiObject()->getName().toStdString() << " " << endPort->getPortNumber();
             pCurrentView->mConnectorVector.append(pTempConnector);
-            bool success = pCurrentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
+            bool success = pCurrentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort); //This is core access
             if (!success)
             {
                 qDebug() << "Unsuccessful connection try" << endl;
-                assert(false);
+                assert(false); //!< @todo Do not assert here, clean up instead
             }
         }
     }
@@ -1510,7 +1511,7 @@ void ProjectTabWidget::loadModel()
     }
 
     //Sets the file name as model name
-    pCurrentView->getModelPointer()->setName(fileInfo.fileName().toStdString());
+    pCurrentView->getModelPointer()->setName(fileInfo.fileName().toStdString()); //! @todo This is core access maybe should try to access some other way
 
     pCurrentView->undoStack->clear();
 
@@ -1597,7 +1598,7 @@ void ProjectTabWidget::saveModel(bool saveAs)
     modelFile << "--------------------------------------------------------------\n";
 
     //Sets the model name
-    pCurrentTab->mpComponentSystem->setName(fileInfo.fileName().toStdString()); //!< @todo BAD should not be core access here
+    pCurrentTab->mpComponentSystem->setName(fileInfo.fileName().toStdString()); //!< @todo BAD should not be core access here, find some other way to encapsule
     this->setTabText(this->currentIndex(), fileInfo.fileName());
 }
 
