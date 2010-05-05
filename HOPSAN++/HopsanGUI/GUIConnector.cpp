@@ -692,6 +692,7 @@ void GUIConnector::setUnHovered()
 
 
 //! Asks my parent to delete myself
+//! @todo This must sometimes register undo and sometimes not. Figure out how to fix that.
 void GUIConnector::deleteMe()
 {
     mpParentView->removeConnector(this, true);

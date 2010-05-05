@@ -1610,7 +1610,7 @@ void ProjectTabWidget::setIsoGraphics(bool value)
     ProjectTab *pCurrentTab = getCurrentTab();
     GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
     QMap<QString, GUIConnector *>::iterator it;
-    for(size_t i = 0; i!=pCurrentView->mConnectorVector[i]->getPointsVector().size(); ++i)
+    for(size_t i = 0; i!=pCurrentView->mConnectorVector.size(); ++i)
     {
         if(value)
         {
