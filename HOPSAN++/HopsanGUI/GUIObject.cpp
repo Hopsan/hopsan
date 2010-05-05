@@ -7,6 +7,7 @@
 #include <math.h>
 
 #include <QObject>
+#include <QMap>
 #include <QDebug>
 #include <QtGui>
 #include <QGraphicsSvgItem>
@@ -870,18 +871,28 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, AppearanceData appearanceDa
     size_t nPorts = appearanceData.getNumberOfPorts();
     //! @todo Mybe should not copy the vector maybe shoule use reference access every time
     //! @todo This code needs to be broken out into a sub function
-    QVector<PortAppearance> portappvec = appearanceData.getPortAppearanceVector();
+//    QVector<PortAppearance> portappvec = appearanceData.getPortAppearanceVector();
     Port::PORTTYPE porttype;
-    for (size_t i = 0; i < nPorts; ++i)
+
+    QMap<QString, PortAppearance> map;
+    map = appearanceData.getPortAppearanceMap();
+    QMap<QString, PortAppearance>::iterator i;
+    for (i = map.begin(); i != map.end(); ++i)
+//    for (size_t i = 0; i < nPorts; ++i)
     {
-        qreal x = portappvec[i].x;
-        qreal y = portappvec[i].y;
-        qreal rot = portappvec[i].rot;
+//        qreal x = portappvec[i].x;
+        qreal x = i.value().x;
+//        qreal y = portappvec[i].y;
+        qreal y = i.value().y;
+//        qreal rot = portappvec[i].rot;
+        qreal rot = i.value().rot;
 
-        porttype = mpCoreComponent->getPortPtrVector().at(i)->getPortType();
-
+//        porttype = mpCoreComponent->getPortPtrVector().at(i)->getPortType();
+        porttype = mpCoreComponent->getPort(i.key().toStdString())->getPortType();
+qDebug() << i.key();
         QString iconPath("../../HopsanGUI/porticons/");
-        if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeSignal")
+//        if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeSignal")
+        if (mpCoreComponent->getPort(i.key().toStdString())->getNodeType() == "NodeSignal")
         {
             iconPath.append("SignalPort");
             if ( porttype == Port::READPORT)
@@ -893,7 +904,8 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, AppearanceData appearanceDa
                 iconPath.append("_write");
             }
         }
-        else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeMechanic")
+//        else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeMechanic")
+        else if (mpCoreComponent->getPort(i.key().toStdString())->getNodeType() == "NodeMechanic")
         {
             iconPath.append("MechanicPort");
             if (mpCoreComponent->getTypeCQS() == Component::C)
@@ -901,7 +913,8 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, AppearanceData appearanceDa
             else if (mpCoreComponent->getTypeCQS() == Component::Q)
                 iconPath.append("Q");
         }
-        else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeHydraulic")
+//        else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeHydraulic")
+        else if (mpCoreComponent->getPort(i.key().toStdString())->getNodeType() == "NodeHydraulic")
         {
             iconPath.append("HydraulicPort");
             if (mpCoreComponent->getTypeCQS() == Component::C)
@@ -920,7 +933,8 @@ GUIComponent::GUIComponent(HopsanEssentials *hopsan, AppearanceData appearanceDa
             direction = GUIPort::HORIZONTAL;
         else
             direction = GUIPort::VERTICAL;
-        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,porttype,direction,this));//mpIcon));
+//        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,porttype,direction,this));//mpIcon));
+        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPort(i.key().toStdString()), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,porttype,direction,this));//mpIcon));
     }
 
     refreshName(); //Make sure name window is correct size for center positioning
@@ -1290,13 +1304,23 @@ GUISystemPort::GUISystemPort(ComponentSystem* pCoreComponentSystem, AppearanceDa
 
 
     //! @todo Mybe should not copy the vector maybe shoule use reference access every time
-    QVector<PortAppearance> portappvec = appearanceData.getPortAppearanceVector();
+//    QVector<PortAppearance> portappvec = appearanceData.getPortAppearanceVector();
     Port::PORTTYPE porttype;
-    size_t i = 0;
 
-    qreal x = portappvec[i].x;
-    qreal y = portappvec[i].y;
-    qreal rot = portappvec[i].rot;
+    QMap<QString, PortAppearance> map;
+    map = appearanceData.getPortAppearanceMap();
+    QMap<QString, PortAppearance>::iterator i;
+    qreal x;
+    qreal y;
+    qreal rot;
+    for (i = map.begin(); i != map.end(); ++i)
+    {
+//        size_t i = 0;
+
+        x = i.value().x;
+        y = i.value().y;
+        rot = i.value().rot;
+    }
 
     //porttype = mpCoreComponent->getPortPtrVector().at(i)->getPortType();
 

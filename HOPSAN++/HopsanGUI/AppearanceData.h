@@ -17,6 +17,7 @@
 #include <QString>
 #include <QPointF>
 #include <QVector>
+#include <QMap>
 
 class PortAppearance
 {
@@ -42,7 +43,8 @@ public:
     QString getIconRotationBehaviour();
     QPointF getNameTextPos();
     size_t  getNumberOfPorts();
-    QVector<PortAppearance> &getPortAppearanceVector();
+//    QVector<PortAppearance> &getPortAppearanceVector();
+    QMap<QString, PortAppearance> &getPortAppearanceMap();
 
     bool haveIsoIcon();
     bool haveUserIcon();
@@ -63,7 +65,8 @@ private:
     qreal mRotation;
     size_t mnPorts;
     QPointF mNameTextPos;
-    QVector<PortAppearance> mPortAppearanceVector;
+//    QVector<PortAppearance> mPortAppearanceVector;
+    QMap<QString, PortAppearance> mPortAppearanceMap;
 
     //BaseDir for path strings, mayb should not be stored in here
     QString mBasePath;

@@ -14,8 +14,8 @@ AppearanceData::AppearanceData()
 {
     //Assume all strings default to ""
     mnPorts = 0;
-    mPortAppearanceVector.clear();
-
+//    mPortAppearanceVector.clear(); //! @todo should be deleted everywhere
+    mPortAppearanceMap.clear();
 }
 
 
@@ -36,14 +36,24 @@ QTextStream& operator <<(QTextStream &os, const AppearanceData &rData)
     os << "ISOICON " << rData.mIconPathISO << "\n";
     os << "USERICON " << rData.mIconPathUser << "\n";
     os << "ICONROTATION " << rData.mIconRotationBehaviour << "\n";
-    os << "PORTS " << rData.mnPorts << "\n";
-    for (size_t i=0; i<rData.mnPorts; ++i)
+//    os << "PORTS " << rData.mnPorts << "\n";
+//    for (size_t i=0; i<rData.mnPorts; ++i)
+//    {
+//        os << rData.mPortAppearanceVector[i].x << " "
+//           << rData.mPortAppearanceVector[i].y << " "
+//           << rData.mPortAppearanceVector[i].rot << "\n";
+//    }
+    QMap<QString, PortAppearance> map;
+    map = rData.mPortAppearanceMap;
+    QMap<QString, PortAppearance>::iterator i;
+    for (i = map.begin(); i != map.end(); ++i)
     {
-        os << rData.mPortAppearanceVector[i].x << " "
-           << rData.mPortAppearanceVector[i].y << " "
-           << rData.mPortAppearanceVector[i].rot << "\n";
+        os << "PORT " << " \""
+           << i.key() << "\" "
+           << i.value().x << " "
+           << i.value().y << " "
+           << i.value().rot << "\n";
     }
-
     return os;
 }
 
@@ -106,10 +116,16 @@ size_t AppearanceData::getNumberOfPorts()
     return mnPorts;
 }
 
-QVector<PortAppearance> &AppearanceData::getPortAppearanceVector()
+//QVector<PortAppearance> &AppearanceData::getPortAppearanceVector()
+//{
+//    return mPortAppearanceVector;
+//}
+
+QMap<QString, PortAppearance> &AppearanceData::getPortAppearanceMap()
 {
-    return mPortAppearanceVector;
+    return mPortAppearanceMap;
 }
+
 
 QString AppearanceData::getBasePath()
 {
@@ -143,9 +159,44 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
         {
             mIconRotationBehaviour = is.readLine().trimmed();
         }
-        else if (command == "PORTS")
+        else if (command == "PORT")
+            //New style:
         {
-            is >> mnPorts;
+            QString tmp;
+
+            is >> tmp;
+            tmp=tmp.trimmed();
+            qDebug() << tmp;
+
+            //! @todo Fix the \" thing
+            QString portName;
+            portName = tmp.mid(1);
+            portName.chop(1);
+
+            qDebug() << "New style! " << portName;
+
+            PortAppearance portapp;
+
+            is >> portapp.x;
+            is >> portapp.y;
+            is >> portapp.rot;
+
+            mPortAppearanceMap.insert(portName, portapp);
+            //                mPortAppearanceVector.push_back(portapp);
+            qDebug() << "Map size: " << mPortAppearanceMap.size();
+            //                qDebug() << "Vector size: " << mPortAppearanceVector.size();
+
+        }
+        else if (command == "PORTS") //Old style:
+            //! @todo delete when component-txt:s are re-done
+        {
+            QString tmp;
+
+            is >> tmp;
+            tmp=tmp.trimmed();
+            qDebug() << tmp;
+
+            mnPorts = tmp.toInt();
 
             for (size_t i=0; i<mnPorts; ++i)
             {
@@ -156,7 +207,8 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
                 is >> portapp.rot;
                 //is.readLine(); //Clear the line ending
 
-                mPortAppearanceVector.push_back(portapp);
+                mPortAppearanceMap.insert(tmp, portapp);
+                //                    mPortAppearanceVector.push_back(portapp);
                 //std::cout << qPrintable(componentName) << " x: " << qPrintable(portPosX) << " y: " << qPrintable(portPosY) << " rot: " << qPrintable(portRot) << std::endl;
             }
         }
