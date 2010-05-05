@@ -1,8 +1,7 @@
 NAME SignalDivide
 ISOICON divide.svg
 ICONROTATION ON
-PORTS 3
-0.0 0.5 0
-0.5 0.0 90
-1.0 0.5 0
+PORT "in1" 0.0 0.5 0
+PORT "in2" 0.5 0.0 90
+PORT "out" 1.0 0.5 0
 

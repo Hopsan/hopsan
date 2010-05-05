@@ -1,6 +1,5 @@
 NAME SignalSink
 USERICON Sink.svg
 ICONROTATION ON
-PORTS 1
-0.0 0.5 0
+PORT "in" 0.0 0.5 0
 
