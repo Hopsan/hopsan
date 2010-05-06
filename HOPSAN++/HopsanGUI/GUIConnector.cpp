@@ -89,7 +89,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
         mpTempLine = new GUIConnectorLine(mapFromScene(mPoints[i]).x(), mapFromScene(mPoints[i]).y(),
                                           mapFromScene(mPoints[i+1]).x(), mapFromScene(mPoints[i+1]).y(),
                                           primaryPen, activePen, hoverPen, i, this);
-        qDebug() << "Creating line from " << mPoints[i].x() << ", " << mPoints[i].y() << " to " << mPoints[i+1].x() << " " << mPoints[i+1].y();
+        //qDebug() << "Creating line from " << mPoints[i].x() << ", " << mPoints[i].y() << " to " << mPoints[i+1].x() << " " << mPoints[i+1].y();
         mpLines.push_back(mpTempLine);
         mpTempLine->setConnected();
         mpTempLine->setPassive();
@@ -385,7 +385,7 @@ GUIConnectorLine *GUIConnector::getThirdLastLine()
 //! Returns true if the connector is connected at both ends, otherwise false.
 bool GUIConnector::isConnected()
 {
-    qDebug() << "Entering isConnected()";
+    //qDebug() << "Entering isConnected()";
     return (getStartPort()->isConnected and getEndPort()->isConnected);
 }
 

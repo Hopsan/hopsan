@@ -6,13 +6,14 @@
 #include "ProjectTabWidget.h"
 #include "GUIObject.h"
 #include "GUIConnector.h"
+#include <QTableWidget>
 
     //Forward Declarations
 class GUIObject;
 class GraphicsView;
 class GUIConnector;
 
-class UndoStack
+class UndoStack : public QObject
 {
 public:
     UndoStack(GraphicsView *parentView);
@@ -26,7 +27,8 @@ public:
     void registerMovedObject(QPointF oldPos, QPointF newPos, QString objectName);
     void clear();
     void newPost();
-    void newRedoPost();
+    void insertPost(QStringList(list));
+    //void newRedoPost();
     void undoOneStep();
     void redoOneStep();
 

@@ -1370,7 +1370,7 @@ void ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
         //If no more connections exist, remove the entier node and free the memory
         if (node_ptr->mPortPtrs.size() == 0)
         {
-            cout << "No more connections to the node exists, deleteing the node" << endl;
+            cout << "No more connections to the node exists, deleteing the node";
             removeSubNode(node_ptr);
             delete node_ptr;
             //! @todo maybe need to let the factory remove it insted of manually, in case of user supplied external nodes

@@ -13,7 +13,7 @@
 class AppearanceData;
 
 //! Constructor.
-UndoStack::UndoStack(GraphicsView *parentView)
+UndoStack::UndoStack(GraphicsView *parentView) : QObject()
 {
     mpParentView = parentView;
     clear();
@@ -65,23 +65,39 @@ void UndoStack::newPost()
 }
 
 
+//! Inserts an undopost to the current stack position
+void UndoStack::insertPost(QStringList(list))
+{
+    mStack[mCurrentStackPosition].insert(0,list);
+    qDebug() << "Inserting:  " << list.first();
+}
+
+
 //! Will undo the changes registered in the last stack position, and switch stack pointer one step back
 void UndoStack::undoOneStep()
 {
+    qDebug() << "undoOneStep(), mCurrentStackPosition = " << mCurrentStackPosition << ", mStack.size() = " << mStack.size();
+
     int undoPosition = mCurrentStackPosition;
     if(mCurrentStackPosition < 0)
     {
         undoPosition = -1;
     }
-    else if(mStack[mCurrentStackPosition].empty() and mCurrentStackPosition != 0)
+    else
     {
-        undoPosition = mCurrentStackPosition - 1;
+        while(mStack[undoPosition].empty() and undoPosition != 0)
+        {
+            --undoPosition;
+        }
     }
+
+    qDebug() << "undoOneStep(), undoPosition = " << undoPosition << ", mStack.size() = " << mStack.size();
 
     if(undoPosition > -1)
     {
         for(int i = 0; i != mStack[undoPosition].size(); ++i)
         {
+            qDebug() << "UNDO: " << mStack[undoPosition][i][0];
             if( mStack[undoPosition][i][0] == "DELETEDOBJECT" )
             {
                 QString componentType = mStack[undoPosition][i][1];
@@ -453,7 +469,7 @@ void UndoStack::registerDeletedObject(GUIObject *item)
     rotationString.setNum(item->rotation());
     nameTextPosString.setNum(item->getNameTextPos());
     tempStringList << "DELETEDOBJECT" << item->getTypeName() << item->getName() << xPosString << yPosString << rotationString << nameTextPosString;
-    mStack[mCurrentStackPosition].insert(0,tempStringList);
+    this->insertPost(tempStringList);
 
     //! @todo ugly quickhack for now dont save parameters for systemport or group
     //! @todo Group typename probably not correct
@@ -469,7 +485,7 @@ void UndoStack::registerDeletedObject(GUIObject *item)
             valueString.setNum(itp->getValue());
             tempStringList.clear();
             tempStringList << "PARAMETER" << item->getName() << QString(itp->getName().c_str()) << valueString;
-            mStack[mCurrentStackPosition].insert(0,tempStringList);
+            this->insertPost(tempStringList);
         }
     }
 }
@@ -493,7 +509,7 @@ void UndoStack::registerDeletedConnector(GUIConnector *item)
         yString.setNum(item->getPointsVector()[j].y());
         tempStringList << xString << yString;
     }
-    mStack[mCurrentStackPosition].insert(0,tempStringList);
+    this->insertPost(tempStringList);
 }
 
 
@@ -512,7 +528,7 @@ void UndoStack::registerAddedObject(GUIObject *item)
     rotationString.setNum(item->rotation());
     nameTextPosString.setNum(item->getNameTextPos());
     tempStringList << "ADDEDOBJECT" << item->getTypeName() << item->getName() << xPosString << yPosString << rotationString << nameTextPosString;
-    mStack[mCurrentStackPosition].insert(0,tempStringList);
+    this->insertPost(tempStringList);
 }
 
 
@@ -544,7 +560,7 @@ void UndoStack::registerAddedConnector(GUIConnector *item)
         yString.setNum(item->getPointsVector()[j].y());
         tempStringList << xString << yString;
     }
-    mStack[mCurrentStackPosition].insert(0,tempStringList);
+    this->insertPost(tempStringList);
 }
 
 
@@ -555,7 +571,7 @@ void UndoStack::registerRenameObject(QString oldName, QString newName)
 {
     QStringList tempStringList;
     tempStringList << "RENAMEDOBJECT" << oldName << newName;
-    mStack[mCurrentStackPosition].insert(0,tempStringList);
+    this->insertPost(tempStringList);
 }
 
 
@@ -584,7 +600,7 @@ void UndoStack::registerModifiedConnector(QPointF oldPos, QPointF newPos, GUICon
     QStringList tempStringList;
     tempStringList << "MODIFIEDCONNECTOR" << oldXString << oldYString << newXString << newYString << item->getStartPort()->getGuiObject()->getName() << startPortNumberString <<
                       item->getEndPort()->getGuiObject()->getName() << endPortNumberString << lineNumberString;
-    mStack[mCurrentStackPosition].insert(0,tempStringList);
+    this->insertPost(tempStringList);
 }
 
 
@@ -605,5 +621,5 @@ void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString obje
     QStringList tempStringList;
 
     tempStringList << "MOVEDOBJECT" << oldXString << oldYString << newXString << newYString << objectName;
-    mStack[mCurrentStackPosition].insert(0,tempStringList);
+    this->insertPost(tempStringList);
 }
