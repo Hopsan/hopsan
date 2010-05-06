@@ -70,7 +70,7 @@ signals:
 
 public slots:
      void deleteMe();
-     void rotate();
+     void rotate(bool doNotRegisterUndo = false);
      void moveUp();
      void moveDown();
      void moveLeft();

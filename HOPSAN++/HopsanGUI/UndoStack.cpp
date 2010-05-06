@@ -264,6 +264,13 @@ void UndoStack::undoOneStep()
 
                 mpParentView->getGUIObject(objectName)->setPos(QPointF(oldX, oldY));
             }
+            else if( mStack[undoPosition][i][0] == "ROTATEDOBJECT" )
+            {
+                QString objectName = mStack[undoPosition][i][1];
+                mpParentView->getGUIObject(objectName)->rotate(true);
+                mpParentView->getGUIObject(objectName)->rotate(true);
+                mpParentView->getGUIObject(objectName)->rotate(true);
+            }
         }
         mCurrentStackPosition = undoPosition - 1;
         mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
@@ -445,6 +452,11 @@ void UndoStack::redoOneStep()
 
                 mpParentView->getGUIObject(objectName)->setPos(QPointF(newX, newY));
             }
+            else if( mStack[mCurrentStackPosition][i][0] == "ROTATEDOBJECT" )
+            {
+                QString objectName = mStack[mCurrentStackPosition][i][1];
+                mpParentView->getGUIObject(objectName)->rotate(true);
+            }
         }
         mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
     }
@@ -620,5 +632,15 @@ void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString obje
     QStringList tempStringList;
 
     tempStringList << "MOVEDOBJECT" << oldXString << oldYString << newXString << newYString << objectName;
+    this->insertPost(tempStringList);
+}
+
+
+//! Register function for rotating an object.
+//! @param item is a pointer to the object.
+void UndoStack::registerRotatedObject(GUIObject *item)
+{
+    QStringList tempStringList;
+    tempStringList << "ROTATEDOBJECT" << item->getName();
     this->insertPost(tempStringList);
 }

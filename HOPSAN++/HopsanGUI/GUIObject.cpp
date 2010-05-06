@@ -439,7 +439,7 @@ int GUIObject::getPortNumber(GUIPort *port)
 
 
 //! Rotates a component 90 degrees clockwise, and tells the connectors that the component has moved.
-void GUIObject::rotate()
+void GUIObject::rotate(bool doNotRegisterUndo)
 {
 
     //int temNameTextPos = mNameTextPos;
@@ -501,6 +501,11 @@ void GUIObject::rotate()
         }
 
         //this->mpIcon->setPos(this->boundingRect().center());
+    }
+
+    if(!doNotRegisterUndo)
+    {
+        mpParentGraphicsView->undoStack->registerRotatedObject(this);
     }
 
     emit componentMoved();
