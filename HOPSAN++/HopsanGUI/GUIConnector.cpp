@@ -155,22 +155,18 @@ void GUIConnector::addPoint(QPointF point)
     if(getNumberOfLines() == 0 && getStartPort()->getPortDirection() == GUIPort::VERTICAL)
     {
         mGeometries.push_back(GUIConnector::HORIZONTAL);
-        qDebug() << "Setting first connector to HORIZONTAL";
     }
     else if(getNumberOfLines() == 0 && getStartPort()->getPortDirection() == GUIPort::HORIZONTAL)
     {
         mGeometries.push_back(GUIConnector::VERTICAL);
-        qDebug() << "Setting first connector to VERTICAL";
     }
     else if(getNumberOfLines() != 0 && mGeometries.back() == GUIConnector::HORIZONTAL)
     {
         mGeometries.push_back(GUIConnector::VERTICAL);
-        qDebug() << "Last was HORIZONTAL, setting to VERTICAL";
     }
     else if(getNumberOfLines() != 0 && mGeometries.back() == GUIConnector::VERTICAL)
     {
         mGeometries.push_back(GUIConnector::HORIZONTAL);
-        qDebug() << "Last was VERTICAL, setting to HORIZONTAL";
     }
     else if(getNumberOfLines() != 0 && mGeometries.back() == GUIConnector::DIAGONAL)
     {
@@ -187,7 +183,6 @@ void GUIConnector::addPoint(QPointF point)
 //! @see addPoint(QPointF point)
 void GUIConnector::removePoint(bool deleteIfEmpty)
 {
-    qDebug() << "mPoints.size() = " << mPoints.size();
     mPoints.pop_back();
     mGeometries.pop_back();
 
@@ -531,7 +526,6 @@ void GUIConnector::updateEndPoint(QPointF point)
 //! @param lineNumber is the number of the line that has moved.
 void GUIConnector::updateLine(int lineNumber)
 {
-    qDebug() << "updateLine(), lineNumber = " << lineNumber;
    if ((mEndPortConnected) && (lineNumber != 0) && (lineNumber != mpLines.size()))
     {
         if(mGeometries[lineNumber] == GUIConnector::HORIZONTAL)

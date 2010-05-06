@@ -76,7 +76,7 @@ void UndoStack::insertPost(QStringList(list))
 //! Will undo the changes registered in the last stack position, and switch stack pointer one step back
 void UndoStack::undoOneStep()
 {
-    qDebug() << "undoOneStep(), mCurrentStackPosition = " << mCurrentStackPosition << ", mStack.size() = " << mStack.size();
+    //qDebug() << "undoOneStep(), mCurrentStackPosition = " << mCurrentStackPosition << ", mStack.size() = " << mStack.size();
 
     int undoPosition = mCurrentStackPosition;
     if(mCurrentStackPosition < 0)
@@ -91,7 +91,7 @@ void UndoStack::undoOneStep()
         }
     }
 
-    qDebug() << "undoOneStep(), undoPosition = " << undoPosition << ", mStack.size() = " << mStack.size();
+    //qDebug() << "undoOneStep(), undoPosition = " << undoPosition << ", mStack.size() = " << mStack.size();
 
     if(undoPosition > -1)
     {
@@ -277,13 +277,12 @@ void UndoStack::redoOneStep()
     if( (mCurrentStackPosition != mStack.size()-1) and (!mStack[mCurrentStackPosition+1].empty()) )
     {
         ++mCurrentStackPosition;
-        for(int i = 0; i != mStack[mCurrentStackPosition].size(); ++i)
+        for(int i = mStack[mCurrentStackPosition].size()-1; i != -1; --i)
         {
             qDebug() << "REDO: " << mStack[mCurrentStackPosition][i][0];
             if( mStack[mCurrentStackPosition][i][0] == "DELETEDOBJECT" )
             {
                 QString componentName = mStack[mCurrentStackPosition][i][2];
-
                 GUIObject* item = mpParentView->mGUIObjectMap.find(componentName).value();
                 mpParentView->mGUIObjectMap.erase(mpParentView->mGUIObjectMap.find(componentName));
                 item->deleteInHopsanCore();
