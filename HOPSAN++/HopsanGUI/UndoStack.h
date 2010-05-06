@@ -18,6 +18,8 @@ class GUIConnector;
 
 class UndoStack : public QObject
 {
+//friend class undoWidget;
+
 public:
     UndoStack(GraphicsView *parentView);
     ~UndoStack();
@@ -36,11 +38,10 @@ public:
     void undoOneStep();
     void redoOneStep();
 
-private:
-    QList< QList<QStringList> > mStack;
-    QList< QList<QStringList> > mRedoStack;
+    QList< QList<QStringList> > mStack; //! @todo These two shall not be public, but for some reason friend class doesn't work...
     int mCurrentStackPosition;
-    int mCurrentRedoStackPosition;
+
+private:
     GraphicsView *mpParentView;
 };
 
@@ -54,10 +55,14 @@ public:
     MainWindow *mpParentMainWindow;
 
     QTableWidget *mUndoTable;
+    QList< QList<QStringList> > mTempStack;
 
-    //QPushButton *cancelButton;
-    //QPushButton *applyButton;
-    QPushButton *okButton;
+    QPushButton *hideButton;
+    QPushButton *undoButton;
+    QPushButton *redoButton;
+
+    void show();
+    void refreshList();
 };
 
 

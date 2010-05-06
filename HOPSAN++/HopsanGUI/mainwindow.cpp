@@ -49,7 +49,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     mpPreferenceWidget = new PreferenceWidget(this);
     mpOptionsWidget = new OptionsWidget(this);
-    mpUndoWidget = new UndoWidget(this);
 
     //Create a centralwidget for the main window
     mpCentralwidget = new QWidget(this);
@@ -109,6 +108,8 @@ MainWindow::MainWindow(QWidget *parent)
     this->setStatusBar(statusBar);
 
     mpProjectTabs->addNewProjectTab();
+
+    mpUndoWidget = new UndoWidget(this);
 
     //Load default libraries
     mpLibrary->addEmptyLibrary("User defined libraries");

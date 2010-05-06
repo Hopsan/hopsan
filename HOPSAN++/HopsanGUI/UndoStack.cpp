@@ -70,6 +70,8 @@ void UndoStack::insertPost(QStringList(list))
 {
     mStack[mCurrentStackPosition].insert(0,list);
     qDebug() << "Inserting:  " << list.first();
+
+    mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
 }
 
 
@@ -275,6 +277,7 @@ void UndoStack::undoOneStep()
         mCurrentStackPosition = undoPosition - 1;
         mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
     }
+    mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
 }
 
 
@@ -460,7 +463,7 @@ void UndoStack::redoOneStep()
         }
         mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
     }
-
+    mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
 }
 
 
@@ -659,23 +662,96 @@ UndoWidget::UndoWidget(MainWindow *parent)
     this->setWindowTitle("Undo Stack");
 
 
-    okButton = new QPushButton(tr("&Done"));
-    okButton->setAutoDefault(true);
+    hideButton = new QPushButton(tr("&Hide"));
+    hideButton->setAutoDefault(true);
+    connect(hideButton, SIGNAL(pressed()), this, SLOT(hide()));
 
-    mUndoTable = new QTableWidget(20,1);
+    redoButton = new QPushButton(tr("&Redo"));
+    redoButton->setAutoDefault(true);
+    connect(redoButton, SIGNAL(pressed()), this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView, SLOT(redo()));
+
+    undoButton = new QPushButton(tr("&Undo"));
+    undoButton->setAutoDefault(true);
+    connect(undoButton, SIGNAL(pressed()), this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView, SLOT(undo()));
+
+    mUndoTable = new QTableWidget(0,1);
     mUndoTable->setBaseSize(200, 500);
-    mUndoTable->setColumnWidth(0, 170);
+    mUndoTable->setColumnWidth(0, 400);
+    //mUndoTable->
+
 
     QGridLayout *mainLayout = new QGridLayout;
     //mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
     mainLayout->setColumnMinimumWidth(0,200);
     //mainLayout->setRowMinimumHeight(1,500);
-    //mainLayout->addLayout(topLeftLayout, 0, 0);
-    mainLayout->addWidget(mUndoTable, 1, 0);
+    //mainLayout->addLayout(topLeftLayout, 0, 0, 3, 1);
+    mainLayout->addWidget(mUndoTable, 0, 0, 1, 3);
+    mainLayout->addWidget(undoButton, 1, 0);
+    mainLayout->addWidget(redoButton, 1, 1);
+    mainLayout->addWidget(hideButton, 1, 2);
     //mainLayout->addWidget(extension, 1, 0, 1, 2);
     setLayout(mainLayout);
 }
 
 UndoWidget::~UndoWidget()
 {
+}
+
+
+void UndoWidget::show()
+{
+    refreshList();
+    QDialog::show();
+}
+
+
+void UndoWidget::refreshList()
+{
+    mTempStack = this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->undoStack->mStack;
+    //mTempStack = this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->undoStack->mStack.size;
+    QTableWidgetItem *item;
+
+    mUndoTable->clear();
+    mUndoTable->setRowCount(0);
+
+    int x = 0;
+
+    for(int i = mTempStack.size()-1; i != -1; --i)
+    {
+        for(int j = mTempStack[i].size()-1; j != -1; --j)
+        {
+            item = new QTableWidgetItem();
+            mUndoTable->insertRow(x);
+            item->setText(mTempStack[i][j][0]);
+
+            if(i > mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->undoStack->mCurrentStackPosition)
+            {
+                if (i%2 == 0)
+                {
+                    item->setBackgroundColor(QColor("lightgray"));
+                }
+                else
+                {
+                    item->setBackgroundColor(QColor("silver"));
+                }
+            }
+            else if(i < mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->undoStack->mCurrentStackPosition)
+            {
+                if (i%2 == 0)
+                {
+                    item->setBackgroundColor(QColor("white"));
+                }
+                else
+                {
+                    item->setBackgroundColor(QColor("antiquewhite"));
+                }
+            }
+            else
+            {
+                item->setBackgroundColor(QColor("lightgreen"));
+            }
+            mUndoTable->setItem(x,0,item);
+            ++x;
+        }
+    }
 }
