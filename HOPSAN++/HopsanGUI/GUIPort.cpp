@@ -49,8 +49,8 @@ GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, 
     label.append(this->getName()).append("</span></p>");
     mpPortLabel->setHtml(label);
     mpPortLabel->setTextInteractionFlags(Qt::NoTextInteraction);
+    mpPortLabel->setPos(7.0,7.0);
     mpPortLabel->hide();
-    mpPortLabel->setPos(5,5);
 
     if(this->getPortType() == Port::POWERPORT)
     {
@@ -103,6 +103,8 @@ void GUIPort::magnify(bool blowup)
 //! @param *event defines the mouse event.
 void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
+    QGraphicsSvgItem::hoverEnterEvent(event);
+
     this->setCursor(Qt::CrossCursor);
     QBrush brush(Qt::blue);
     std::cout << "GUIPort.cpp: " << "hovering over port" << std::endl;
@@ -110,6 +112,7 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
     mpPortLabel->setRotation(-this->mpParentGuiObject->rotation()-this->rotation());
     //qDebug() << "label: " << mpPortLabel->rotation() << " this: " << this->rotation();
+    this->setZValue(1.0);
     mpPortLabel->show();
 }
 
@@ -130,13 +133,15 @@ void GUIPort::updatePosition()
 //! @param *event defines the mouse event.
 void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
+    QGraphicsSvgItem::hoverLeaveEvent(event);
+
     QBrush brush(Qt::green);
     //this->setBrush(brush);
     this->setCursor(Qt::ArrowCursor);
     magnify(false);
- //   QGraphicsSvgItem::hoverLeaveEvent(event);
 
     mpPortLabel->hide();
+    this->setZValue(0.0);
 }
 
 
