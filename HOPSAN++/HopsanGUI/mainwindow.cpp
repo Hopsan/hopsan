@@ -34,6 +34,7 @@
 #include "LibraryWidget.h"
 #include "SimulationSetupWidget.h"
 #include "version.h"
+#include "UndoStack.h"
 
 
 //! Constructor
@@ -48,6 +49,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     mpPreferenceWidget = new PreferenceWidget(this);
     mpOptionsWidget = new OptionsWidget(this);
+    mpUndoWidget = new UndoWidget(this);
 
     //Create a centralwidget for the main window
     mpCentralwidget = new QWidget(this);
@@ -240,6 +242,10 @@ void MainWindow::createActions()
     redoAction->setShortcut(QKeySequence(tr("Ctrl+y")));
     redoAction->setStatusTip(tr("Redo One Step"));
 
+    openUndoAction = new QAction(tr("&Undo History"), this);
+    openUndoAction->setText("Undo History");
+    connect(openUndoAction,SIGNAL(triggered()),this,SLOT(openUndo()));
+
     cutAction = new QAction(QIcon("../../HopsanGUI/icons/cut.png"), tr("&Cut"), this);
     cutAction->setShortcut(tr("Ctrl+x"));
     cutAction->setStatusTip(tr("Cut Selection"));
@@ -351,6 +357,7 @@ void MainWindow::createMenus()
 
     menuEdit->addAction(undoAction);
     menuEdit->addAction(redoAction);
+    menuEdit->addAction(openUndoAction);
     menuEdit->addSeparator();
     menuEdit->addAction(copyAction);
     menuEdit->addAction(cutAction);
@@ -432,4 +439,11 @@ void MainWindow::openPreferences()
 void MainWindow::openOptions()
 {
     this->mpOptionsWidget->show();
+}
+
+
+//! Opens the undo widget.
+void MainWindow::openUndo()
+{
+    this->mpUndoWidget->show();
 }

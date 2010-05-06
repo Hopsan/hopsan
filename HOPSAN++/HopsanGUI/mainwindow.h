@@ -9,7 +9,9 @@
 #include "MessageWidget.h"
 #include "PreferenceWidget.h"
 #include "OptionsWidget.h"
+#include "UndoStack.h"
 #include <QComboBox>
+
 
 
 class QGridLayout;
@@ -45,6 +47,7 @@ public:
     SimulationSetupWidget *mpSimulationSetupWidget;
     OptionsWidget *mpOptionsWidget;
     PreferenceWidget *mpPreferenceWidget;
+    UndoWidget *mpUndoWidget;
     QMenuBar *menubar;
     QMenu *menuFile;
     QMenu *menuNew;
@@ -66,6 +69,7 @@ public:
     QAction *closeAction;
     QAction *undoAction;
     QAction *redoAction;
+    QAction *openUndoAction;
     QAction *cutAction;
     QAction *copyAction;
     QAction *pasteAction;
@@ -106,6 +110,7 @@ private slots:
     void plot();
     void openPreferences();
     void openOptions();
+    void openUndo();
 
 private:
     void createActions();

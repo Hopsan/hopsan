@@ -7,6 +7,9 @@
 #include "GUIObject.h"
 #include "GUIConnector.h"
 #include <QTableWidget>
+#include <QPushButton>
+#include <QDialog>
+#include <QTableWidget>
 
     //Forward Declarations
 class GUIObject;
@@ -40,5 +43,22 @@ private:
     int mCurrentRedoStackPosition;
     GraphicsView *mpParentView;
 };
+
+
+class UndoWidget : public QDialog
+{
+public:
+    UndoWidget(MainWindow *parent = 0);
+    ~UndoWidget();
+
+    MainWindow *mpParentMainWindow;
+
+    QTableWidget *mUndoTable;
+
+    //QPushButton *cancelButton;
+    //QPushButton *applyButton;
+    QPushButton *okButton;
+};
+
 
 #endif // UNDOSTACK_H

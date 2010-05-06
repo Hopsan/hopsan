@@ -644,3 +644,38 @@ void UndoStack::registerRotatedObject(GUIObject *item)
     tempStringList << "ROTATEDOBJECT" << item->getName();
     this->insertPost(tempStringList);
 }
+
+
+
+
+
+UndoWidget::UndoWidget(MainWindow *parent)
+    : QDialog(parent)
+{
+    this->mpParentMainWindow = parent;
+    //Set the name and size of the main window
+    this->setObjectName("UndoWidget");
+    this->resize(200,500);
+    this->setWindowTitle("Undo Stack");
+
+
+    okButton = new QPushButton(tr("&Done"));
+    okButton->setAutoDefault(true);
+
+    mUndoTable = new QTableWidget(20,1);
+    mUndoTable->setBaseSize(200, 500);
+    mUndoTable->setColumnWidth(0, 170);
+
+    QGridLayout *mainLayout = new QGridLayout;
+    //mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
+    mainLayout->setColumnMinimumWidth(0,200);
+    //mainLayout->setRowMinimumHeight(1,500);
+    //mainLayout->addLayout(topLeftLayout, 0, 0);
+    mainLayout->addWidget(mUndoTable, 1, 0);
+    //mainLayout->addWidget(extension, 1, 0, 1, 2);
+    setLayout(mainLayout);
+}
+
+UndoWidget::~UndoWidget()
+{
+}
