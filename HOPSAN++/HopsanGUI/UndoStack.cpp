@@ -16,7 +16,8 @@ class AppearanceData;
 UndoStack::UndoStack(GraphicsView *parentView) : QObject()
 {
     mpParentView = parentView;
-    clear();
+    mCurrentStackPosition = -1;
+    mStack.clear();
 }
 
 
@@ -41,8 +42,6 @@ void UndoStack::clear()
 //! Adds a new post to the stack
 void UndoStack::newPost()
 {
-    qDebug() << "newPost()";
-
     int tempSize = mStack.size()-1;
     for(int i = mCurrentStackPosition; i != tempSize; ++i)
     {
@@ -62,6 +61,7 @@ void UndoStack::newPost()
         mStack.append(tempList);
         ++mCurrentStackPosition;
     }
+    mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
 }
 
 
@@ -69,8 +69,6 @@ void UndoStack::newPost()
 void UndoStack::insertPost(QStringList(list))
 {
     mStack[mCurrentStackPosition].insert(0,list);
-    qDebug() << "Inserting:  " << list.first();
-
     mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
 }
 
@@ -658,9 +656,8 @@ UndoWidget::UndoWidget(MainWindow *parent)
     this->mpParentMainWindow = parent;
     //Set the name and size of the main window
     this->setObjectName("UndoWidget");
-    this->resize(200,500);
+    this->resize(400,500);
     this->setWindowTitle("Undo History");
-
 
     hideButton = new QPushButton(tr("&Hide"));
     hideButton->setAutoDefault(true);
@@ -668,27 +665,31 @@ UndoWidget::UndoWidget(MainWindow *parent)
 
     redoButton = new QPushButton(tr("&Redo"));
     redoButton->setAutoDefault(true);
-    connect(redoButton, SIGNAL(pressed()), this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView, SLOT(redo()));
+    connect(redoButton, SIGNAL(pressed()), mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView, SLOT(redo()));
 
     undoButton = new QPushButton(tr("&Undo"));
     undoButton->setAutoDefault(true);
-    connect(undoButton, SIGNAL(pressed()), this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView, SLOT(undo()));
+    connect(undoButton, SIGNAL(pressed()), mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView, SLOT(undo()));
+
+    clearButton = new QPushButton(tr("&Clear"));
+    clearButton->setAutoDefault(true);
+    //connect(clearButton, SIGNAL(pressed()), mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->undoStack, SLOT(clear()))
 
     mUndoTable = new QTableWidget(0,1);
-    mUndoTable->setBaseSize(200, 500);
+    mUndoTable->setBaseSize(400, 500);
     mUndoTable->setColumnWidth(0, 400);
     //mUndoTable->
 
-
     QGridLayout *mainLayout = new QGridLayout;
     //mainLayout->setSizeConstraint(QLayout::SetMaximumSize);
-    mainLayout->setColumnMinimumWidth(0,200);
+    //mainLayout->setColumnMinimumWidth(0,200);
     //mainLayout->setRowMinimumHeight(1,500);
     //mainLayout->addLayout(topLeftLayout, 0, 0, 3, 1);
-    mainLayout->addWidget(mUndoTable, 0, 0, 1, 3);
+    mainLayout->addWidget(mUndoTable, 0, 0, 1, 4);
     mainLayout->addWidget(undoButton, 1, 0);
     mainLayout->addWidget(redoButton, 1, 1);
-    mainLayout->addWidget(hideButton, 1, 2);
+    mainLayout->addWidget(clearButton, 1, 2);
+    mainLayout->addWidget(hideButton, 1, 3);
     //mainLayout->addWidget(extension, 1, 0, 1, 2);
     setLayout(mainLayout);
 }
@@ -723,7 +724,7 @@ void UndoWidget::refreshList()
         for(int j = mTempStack[i].size()-1; j != -1; --j)
         {
             item = new QTableWidgetItem();
-
+            item->setFlags(!Qt::ItemIsEditable);
                 // Translate the command words into better looking explanations
             if (mTempStack[i][j][0] == "DELETEDOBJECT")
             {
@@ -767,17 +768,6 @@ void UndoWidget::refreshList()
             {
                 if (i%2 == 0)
                 {
-                    item->setBackgroundColor(QColor("lightgray"));
-                }
-                else
-                {
-                    item->setBackgroundColor(QColor("silver"));
-                }
-            }
-            else if(i < mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->undoStack->mCurrentStackPosition)
-            {
-                if (i%2 == 0)
-                {
                     item->setBackgroundColor(QColor("white"));
                 }
                 else
@@ -785,9 +775,26 @@ void UndoWidget::refreshList()
                     item->setBackgroundColor(QColor("antiquewhite"));
                 }
             }
+            else if(i < mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->undoStack->mCurrentStackPosition)
+            {
+                if (i%2 == 0)
+                {
+                    item->setBackgroundColor(QColor("white"));
+                    item->setTextColor(QColor("black"));
+                }
+                else
+                {
+                    item->setBackgroundColor(QColor("antiquewhite"));
+                    item->setTextColor(QColor("black"));
+                }
+            }
             else
             {
                 item->setBackgroundColor(QColor("lightgreen"));
+                item->setTextColor(QColor("black"));
+                QFont tempFont = item->font();
+                tempFont.setBold(true);
+                item->setFont(tempFont);
             }
 
                 //Insert a new line in the table and display the action

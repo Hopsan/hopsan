@@ -108,10 +108,9 @@ MainWindow::MainWindow(QWidget *parent)
     this->setStatusBar(statusBar);
 
     mpProjectTabs->addNewProjectTab();
-
     mpUndoWidget = new UndoWidget(this);
 
-    //Load default libraries
+        //Load default libraries
     mpLibrary->addEmptyLibrary("User defined libraries");
 
     mpLibrary->addEmptyLibrary("Hydraulic");
