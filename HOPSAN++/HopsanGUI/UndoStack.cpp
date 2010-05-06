@@ -651,7 +651,7 @@ void UndoStack::registerRotatedObject(GUIObject *item)
 
 
 
-
+//! Construtor.
 UndoWidget::UndoWidget(MainWindow *parent)
     : QDialog(parent)
 {
@@ -659,7 +659,7 @@ UndoWidget::UndoWidget(MainWindow *parent)
     //Set the name and size of the main window
     this->setObjectName("UndoWidget");
     this->resize(200,500);
-    this->setWindowTitle("Undo Stack");
+    this->setWindowTitle("Undo History");
 
 
     hideButton = new QPushButton(tr("&Hide"));
@@ -698,6 +698,7 @@ UndoWidget::~UndoWidget()
 }
 
 
+//! Reimplementation of show function, which updates the list every time before the widget is displayed.
 void UndoWidget::show()
 {
     refreshList();
@@ -705,6 +706,7 @@ void UndoWidget::show()
 }
 
 
+//! Refresh function for the list. Reads from the current undo stack and displays the results in a table.
 void UndoWidget::refreshList()
 {
     mTempStack = this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->undoStack->mStack;
@@ -721,9 +723,46 @@ void UndoWidget::refreshList()
         for(int j = mTempStack[i].size()-1; j != -1; --j)
         {
             item = new QTableWidgetItem();
-            mUndoTable->insertRow(x);
-            item->setText(mTempStack[i][j][0]);
 
+                // Translate the command words into better looking explanations
+            if (mTempStack[i][j][0] == "DELETEDOBJECT")
+            {
+                item->setText("Deleted Object");
+            }
+            else if (mTempStack[i][j][0] == "DELETEDCONNECTOR")
+            {
+                item->setText("Deleted Connector");
+            }
+            else if (mTempStack[i][j][0] == "ADDEDOBJECT")
+            {
+                item->setText("Added Object");
+            }
+            else if (mTempStack[i][j][0] == "ADDEDCONNECTOR")
+            {
+                item->setText("Added Connector");
+            }
+            else if (mTempStack[i][j][0] == "RENAMEDOBJECT")
+            {
+                item->setText("Renamed Object");
+            }
+            else if (mTempStack[i][j][0] == "MODIFIEDCONNECTOR")
+            {
+                item->setText("Modified Connector");
+            }
+            else if (mTempStack[i][j][0] == "MOVEDOBJECT")
+            {
+                item->setText("Moved Object");
+            }
+            else if (mTempStack[i][j][0] == "ROTATEDOBJECT")
+            {
+                item->setText("Rotated Object");
+            }
+            else
+            {
+                item->setText(mTempStack[i][j][0]);
+            }
+
+                // Figure out which color to use.
             if(i > mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->undoStack->mCurrentStackPosition)
             {
                 if (i%2 == 0)
@@ -750,8 +789,14 @@ void UndoWidget::refreshList()
             {
                 item->setBackgroundColor(QColor("lightgreen"));
             }
-            mUndoTable->setItem(x,0,item);
-            ++x;
+
+                //Insert a new line in the table and display the action
+            if(mTempStack[i][j][0] != "PARAMETER")                              //Don't show parameter lines, because they "belong" to the object lines.
+            {
+                mUndoTable->insertRow(x);
+                mUndoTable->setItem(x,0,item);
+                ++x;
+            }
         }
     }
 }
