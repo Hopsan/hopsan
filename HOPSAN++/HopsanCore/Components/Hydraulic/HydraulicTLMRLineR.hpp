@@ -18,7 +18,7 @@
 //! @brief
 //! @ingroup HydraulicComponents
 //!
-class HydraulicTLMRLineR : public ComponentC
+class HydraulicTLMRlineR : public ComponentC
 {
 
 private:
@@ -36,13 +36,13 @@ private:
 public:
     static Component *Creator()
     {
-        return new HydraulicTLMRLineR("TLMRlineR");
+        return new HydraulicTLMRlineR("TLMRlineR");
     }
 
     HydraulicTLMRlineR(const string name) : ComponentC(name)
     {
         //Set member attributes
-        mTypeName = "HydraulicTLMRLineR";
+        mTypeName = "HydraulicTLMRlineR";
         mStartPressure = 1.0;
         mStartFlow     = 0.0;
         mTimeDelay     = 0.1;
