@@ -39,9 +39,9 @@ public:
 
         orificeC->setParameter("Kc", 1e-12);
 
-        addComponent(*volumeL);
-        addComponent(*orificeC);
-        addComponent(*volumeR);
+        addComponent(volumeL);
+        addComponent(orificeC);
+        addComponent(volumeR);
 
         addSystemPort("subP1");
         addSystemPort("subP2");
