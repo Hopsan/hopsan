@@ -34,7 +34,8 @@ SOURCES += Port.cc \
     ComponentUtilities/Integrator.cc \
     ComponentUtilities/FirstOrderFilter.cc \
     ComponentUtilities/Delay.cc \
-    CoreUtilities/HopsanCoreMessageHandler.cc
+    CoreUtilities/HopsanCoreMessageHandler.cc \
+    ComponentUtilities/AuxiliarySimulationFunctions.cpp
 HEADERS += win32dll.h \
     Port.h \
     Node.h \
@@ -113,4 +114,5 @@ HEADERS += win32dll.h \
     CoreUtilities/HopsanCoreMessageHandler.h \
     version.h \
     Components/Hydraulic/HydraulicTankC.hpp \
-    Components/Hydraulic/HydraulicAlternativePRV.hpp
+    Components/Hydraulic/HydraulicAlternativePRV.hpp \
+    ComponentUtilities/AuxiliarySimulationFunctions.h

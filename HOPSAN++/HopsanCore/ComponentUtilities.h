@@ -10,5 +10,6 @@
 #include "ComponentUtilities/TurbulentFlowFunction.h"
 #include "ComponentUtilities/ValveHysteresis.h"
 
+#include "ComponentUtilities/AuxiliarySimulationFunctions.h"
 
 #endif // COMPONENTUTILITIES_H_INCLUDED

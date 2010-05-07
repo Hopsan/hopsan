@@ -161,7 +161,6 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
             mIconRotationBehaviour = is.readLine().trimmed();
         }
         else if (command == "PORT")
-            //New style:
         {
             QString lineStr = is.readLine();
 //            qDebug() << "Read line: " << lineStr;
@@ -169,9 +168,6 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
             QString readStr;
 
             QTextStream portStream(&lineStr);
-
-//            portStream >> readStr;
-//            qDebug() << "Read word: " << readStr;
 
             QString portName=readName(portStream);
             if(portName == "")
