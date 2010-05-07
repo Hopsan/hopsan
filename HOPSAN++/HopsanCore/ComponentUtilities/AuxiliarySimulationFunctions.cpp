@@ -1,3 +1,4 @@
+//$Id$
 
 //! Multiplies the value by two.
 //! @param[in] input is the value to multiply.
