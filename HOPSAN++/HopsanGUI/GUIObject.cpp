@@ -898,36 +898,28 @@ void GUIObject::deleteMe()
 GUIComponent::GUIComponent(HopsanEssentials *hopsan, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
     : GUIObject(position, appearanceData, scene, parent)
 {
-    mComponentTypeName = appearanceData.getTypeName();
+    mComponentTypeName = mAppearanceData.getTypeName();
     //Core interaction
     mpCoreComponent = hopsan->CreateComponent(mComponentTypeName.toStdString());
     //
 
     //Sets the ports
-    size_t nPorts = appearanceData.getNumberOfPorts();
     //! @todo Mybe should not copy the vector maybe shoule use reference access every time
     //! @todo This code needs to be broken out into a sub function
 //    QVector<PortAppearance> portappvec = appearanceData.getPortAppearanceVector();
     Port::PORTTYPE porttype;
 
-    QMap<QString, PortAppearance> map;
-    map = appearanceData.getPortAppearanceMap();
-    QMap<QString, PortAppearance>::iterator i;
-    for (i = map.begin(); i != map.end(); ++i)
-//    for (size_t i = 0; i < nPorts; ++i)
+    PortAppearanceMapT::iterator i;
+    for (i = mAppearanceData.getPortAppearanceMap().begin(); i != mAppearanceData.getPortAppearanceMap().end(); ++i)
     {
-//        qreal x = portappvec[i].x;
         qreal x = i.value().x;
-//        qreal y = portappvec[i].y;
         qreal y = i.value().y;
-//        qreal rot = portappvec[i].rot;
         qreal rot = i.value().rot;
 
-//        porttype = mpCoreComponent->getPortPtrVector().at(i)->getPortType();
         porttype = mpCoreComponent->getPort(i.key().toStdString())->getPortType();
-qDebug() << i.key();
+        qDebug() << i.key();
         QString iconPath("../../HopsanGUI/porticons/");
-//        if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeSignal")
+
         if (mpCoreComponent->getPort(i.key().toStdString())->getNodeType() == "NodeSignal")
         {
             iconPath.append("SignalPort");
@@ -940,7 +932,6 @@ qDebug() << i.key();
                 iconPath.append("_write");
             }
         }
-//        else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeMechanic")
         else if (mpCoreComponent->getPort(i.key().toStdString())->getNodeType() == "NodeMechanic")
         {
             iconPath.append("MechanicPort");
@@ -949,7 +940,6 @@ qDebug() << i.key();
             else if (mpCoreComponent->getTypeCQS() == Component::Q)
                 iconPath.append("Q");
         }
-//        else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeHydraulic")
         else if (mpCoreComponent->getPort(i.key().toStdString())->getNodeType() == "NodeHydraulic")
         {
             iconPath.append("HydraulicPort");
@@ -969,8 +959,8 @@ qDebug() << i.key();
             direction = GUIPort::HORIZONTAL;
         else
             direction = GUIPort::VERTICAL;
-//        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,porttype,direction,this));//mpIcon));
-        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPort(i.key().toStdString()), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,porttype,direction,this));//mpIcon));
+
+        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPort(i.key().toStdString()), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,porttype,direction,this));
     }
 
     refreshName(); //Make sure name window is correct size for center positioning

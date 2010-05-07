@@ -14,8 +14,6 @@
 AppearanceData::AppearanceData()
 {
     //Assume all strings default to ""
-    mnPorts = 0;
-//    mPortAppearanceVector.clear(); //! @todo should be deleted everywhere
     mPortAppearanceMap.clear();
 }
 
@@ -27,33 +25,33 @@ QTextStream& operator >>(QTextStream &is, AppearanceData &rData)
     return is;
 }
 
-QTextStream& operator <<(QTextStream &os, const AppearanceData &rData)
+QTextStream& operator <<(QTextStream &os, AppearanceData &rData)
 {
     //! @todo maybe write header here (probaly not a good place, better somewhere else)
     //! @todo find out how to make newline in qt instead of "\n"
-    //! @todo do not write emtpy info
     os << "NAME " << rData.mTypeName << "\n";
     //os << "BASEPATH " << rData.getBasePath() << "\n"; //Base path is computer dependant
-    os << "ISOICON " << rData.mIconPathISO << "\n";
-    os << "USERICON " << rData.mIconPathUser << "\n";
-    os << "ICONROTATION " << rData.mIconRotationBehaviour << "\n";
-//    os << "PORTS " << rData.mnPorts << "\n";
-//    for (size_t i=0; i<rData.mnPorts; ++i)
-//    {
-//        os << rData.mPortAppearanceVector[i].x << " "
-//           << rData.mPortAppearanceVector[i].y << " "
-//           << rData.mPortAppearanceVector[i].rot << "\n";
-//    }
-    QMap<QString, PortAppearance> map;
-    map = rData.mPortAppearanceMap;
-    QMap<QString, PortAppearance>::iterator i;
-    for (i = map.begin(); i != map.end(); ++i)
+    if (!rData.mIconPathISO.isEmpty())
+    {
+        os << "ISOICON " << rData.mIconPathISO << "\n";
+    }
+    if (!rData.mIconPathUser.isEmpty())
+    {
+        os << "USERICON " << rData.mIconPathUser << "\n";
+    }
+    if (!rData.mIconRotationBehaviour.isEmpty())
+    {
+        os << "ICONROTATION " << rData.mIconRotationBehaviour << "\n";
+    }
+
+    PortAppearanceMapT::iterator it;
+    for (it = rData.mPortAppearanceMap.begin(); it != rData.mPortAppearanceMap.end(); ++it)
     {
         os << "PORT " << " \""
-           << i.key() << "\" "
-           << i.value().x << " "
-           << i.value().y << " "
-           << i.value().rot << "\n";
+           << it.key() << "\" "
+           << it.value().x << " "
+           << it.value().y << " "
+           << it.value().rot << "\n";
     }
     return os;
 }
@@ -112,17 +110,12 @@ QPointF AppearanceData::getNameTextPos()
     return mNameTextPos;
 }
 
-size_t AppearanceData::getNumberOfPorts()
-{
-    return mnPorts;
-}
-
-//QVector<PortAppearance> &AppearanceData::getPortAppearanceVector()
+//size_t AppearanceData::getNumberOfPorts()
 //{
-//    return mPortAppearanceVector;
+//    return mnPorts;
 //}
 
-QMap<QString, PortAppearance> &AppearanceData::getPortAppearanceMap()
+PortAppearanceMapT &AppearanceData::getPortAppearanceMap()
 {
     return mPortAppearanceMap;
 }
@@ -163,43 +156,13 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
         else if (command == "PORT")
         {
             QString lineStr = is.readLine();
-//            qDebug() << "Read line: " << lineStr;
-
-            QString readStr;
-
             QTextStream portStream(&lineStr);
-
             QString portName=readName(portStream);
             if(portName == "")
             {
                 qDebug() << "FEL I PORTNAMN";
                 return false;
             }
-//            if(readStr.trimmed().at(0) != '\"')
-//            {
-//                qDebug() << "FEL I PORTNAMN";
-//                return false;
-//            }
-//            else if(readStr.trimmed().at(readStr.size()-1) != '\"')
-//            {
-//                while((readStr.trimmed().at(readStr.size()-1) != '\"') || (portStream.atEnd()))
-//                {
-//                    if(portStream.atEnd())
-//                    {
-//                        qDebug() << "OFULLSTANDIGT PORTNAMN: " << readStr;
-//                        return false;
-//                    }
-//                    //readStr.append(" ");
-//                    QString tmpStr;
-//                    portStream >> tmpStr;
-//                    readStr.append(" ").append(tmpStr);
-//                }
-//            }
-//            readStr=readStr.trimmed();
-//
-//            portName = readStr.mid(1);
-//            portName.chop(1);
-//            qDebug() << "Final port name: " << portName;
 
             PortAppearance portapp;
 
@@ -223,33 +186,7 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
             portStream >> portapp.rot;
 
             mPortAppearanceMap.insert(portName, portapp);
-            //                mPortAppearanceVector.push_back(portapp);
-
         }
-//        else if (command == "PORTS") //Old style:
-//            //! @todo delete when component-txt:s are re-done
-//        {
-//            QString tmp;
-//
-//            is >> tmp;
-//            tmp=tmp.trimmed();
-//
-//            mnPorts = tmp.toInt();
-//
-//            for (size_t i=0; i<mnPorts; ++i)
-//            {
-//                PortAppearance portapp;
-//
-//                is >> portapp.x;
-//                is >> portapp.y;
-//                is >> portapp.rot;
-//                //is.readLine(); //Clear the line ending
-//
-//                mPortAppearanceMap.insert(tmp, portapp);
-//                //                    mPortAppearanceVector.push_back(portapp);
-//                //std::cout << qPrintable(componentName) << " x: " << qPrintable(portPosX) << " y: " << qPrintable(portPosY) << " rot: " << qPrintable(portRot) << std::endl;
-//            }
-//        }
         else if (command == "BASEPATH")
         {
             mBasePath = is.readLine().trimmed();

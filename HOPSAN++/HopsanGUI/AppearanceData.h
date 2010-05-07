@@ -27,6 +27,8 @@ public:
     qreal rot;
 };
 
+typedef QMap<QString, PortAppearance> PortAppearanceMapT;
+
 class AppearanceData
 {
 public:
@@ -43,8 +45,7 @@ public:
     QString getIconRotationBehaviour();
     QPointF getNameTextPos();
     size_t  getNumberOfPorts();
-//    QVector<PortAppearance> &getPortAppearanceVector();
-    QMap<QString, PortAppearance> &getPortAppearanceMap();
+    PortAppearanceMapT &getPortAppearanceMap();
 
     bool haveIsoIcon();
     bool haveUserIcon();
@@ -53,9 +54,8 @@ public:
 
     bool setAppearanceData(QTextStream &is);
 
-
     friend QTextStream& operator >>(QTextStream &is, AppearanceData &rData);
-    friend QTextStream& operator <<(QTextStream &os, const AppearanceData &rData);
+    friend QTextStream& operator <<(QTextStream &os, AppearanceData &rData);
 
 private:
     QString mTypeName;
@@ -63,10 +63,9 @@ private:
     QString mIconPathISO;
     QString mIconRotationBehaviour;
     qreal mRotation;
-    size_t mnPorts;
     QPointF mNameTextPos;
-//    QVector<PortAppearance> mPortAppearanceVector;
-    QMap<QString, PortAppearance> mPortAppearanceMap;
+
+    PortAppearanceMapT mPortAppearanceMap;
 
     //BaseDir for path strings, mayb should not be stored in here
     QString mBasePath;
@@ -74,6 +73,10 @@ private:
     bool mIsOK;
 
 
+
+
 };
+
+
 
 #endif // APPEARANCEDATA_H
