@@ -135,28 +135,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary("../../HopsanGUI/componentData/mechanic/Springs & Dampers","Mechanic");
     mpLibrary->addLibrary("../../HopsanGUI/componentData/mechanic/Sensors","Mechanic");
 
-    //-------------------------------------------------------------------------------------
-    //! @todo This is QDcode, needs to be rewritten in some better way
-    mpLibrary->addEmptyLibrary("Subsystem");
-    AppearanceData *pAppData = new AppearanceData;
-    pAppData->setBasePath("../../HopsanGUI/"); //!< @todo THIS IS BAD
-    pAppData->setTypeName("Subsystem");
-    pAppData->setIconPathUser("subsystemtmp.svg");
-
-    LibraryContentItem *pLibsubcomp = new LibraryContentItem(pAppData);
-    mpLibrary->addLibraryContentItem("", "Subsystem", pLibsubcomp);
-
-    AppearanceData *pAppData2 = new AppearanceData;
-    pAppData2->setBasePath("../../HopsanGUI/"); //!< @todo THIS IS BAD
-    pAppData2->setTypeName("SystemPort");
-    pAppData2->setIconPathUser("systemporttmp.svg"); //Icon path
-    QString portstr("PORT \"sysp\" 0.5 0.5 0");
-    QTextStream portstream(&portstr);
-    portstream >> *pAppData2;
-
-    LibraryContentItem *pLibsystport = new LibraryContentItem(pAppData2);
-    mpLibrary->addLibraryContentItem("", "Subsystem", pLibsystport);
-    //------------------------------------------------------------------------------------
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/Subsystem");
 
     QMetaObject::connectSlotsByName(this);
 
