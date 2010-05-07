@@ -115,9 +115,9 @@ protected:
 private:
     GUIObject *mpTempGUIObject;
     GUIConnector *mpTempConnector;
-    QStringList mCopyData;
-    QList<int> mCopyDataRot;
-    QList<QPointF> mCopyDataPos;
+    QList<QStringList> mCopyData;
+    //QList<int> mCopyDataRot;
+    //QList<QPointF> mCopyDataPos;
     //! @todo QMap no good means problem if we rename need to loop around the rename like in coore
     void createActions();
     void createMenus();

@@ -696,44 +696,41 @@ void GraphicsView::cutSelected()
 void GraphicsView::copySelected()
 {
     mCopyData.clear();
-    mCopyDataRot.clear();
-    mCopyDataPos.clear();
+    //mCopyDataRot.clear();
+    //mCopyDataPos.clear();
 
     QMap<QString, GUIObject *>::iterator it;
     for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
     {
         if (it.value()->isSelected())
         {
-            mCopyData << "COMPONENT";
-            mCopyData << it.value()->getTypeName();
-            mCopyData << it.value()->getName();
-            mCopyDataRot << it.value()->rotation();
-            mCopyDataPos << it.value()->mapToScene(it.value()->boundingRect().center());
+            QStringList tempStringList;
+            QString stringRotation, stringX, stringY;
+            stringRotation.setNum(it.value()->rotation());
+            stringX.setNum(it.value()->mapToScene(it.value()->boundingRect().center()).x());
+            stringY.setNum(it.value()->mapToScene(it.value()->boundingRect().center()).y());
+            tempStringList << "COMPONENT" << it.value()->getTypeName() << it.value()->getName() << stringRotation << stringX << stringY;
+            mCopyData.append(tempStringList);
         }
     }
 
-    QMap<QString, GUIConnector *>::iterator it2;
     for(int i = 0; i != mConnectorVector.size(); ++i)
     {
         if(mConnectorVector[i]->getStartPort()->getGuiObject()->isSelected() and mConnectorVector[i]->getEndPort()->getGuiObject()->isSelected() and mConnectorVector[i]->isActive())
         {
-            qDebug() << "Copying connection between" << mConnectorVector[i]->getStartPort()->getGuiObject()->getName() << " and " << mConnectorVector[i]->getStartPort()->getGuiObject()->getName() << ".";
+            QStringList tempStringList;
+            tempStringList << "CONNECT" << mConnectorVector[i]->getStartPort()->getGuiObject()->getName() << mConnectorVector[i]->getStartPort()->getName() <<
+                                           mConnectorVector[i]->getEndPort()->getGuiObject()->getName() << mConnectorVector[i]->getEndPort()->getName();
 
-            QString startPortNumberString;
-            QString endPortNumberString;
-            startPortNumberString.setNum(mConnectorVector[i]->getStartPort()->getPortNumber());
-            endPortNumberString.setNum(mConnectorVector[i]->getEndPort()->getPortNumber());
-            mCopyData << "CONNECT" << QString(mConnectorVector[i]->getStartPort()->getGuiObject()->getName() + " " + startPortNumberString + " "
-                                              + mConnectorVector[i]->getEndPort()->getGuiObject()->getName() + " " + endPortNumberString);
-            qDebug() << "Saved " << QString(mConnectorVector[i]->getStartPort()->getGuiObject()->getName() + " " + startPortNumberString + " "
-                                            + mConnectorVector[i]->getEndPort()->getGuiObject()->getName() + " " + endPortNumberString);
+            QString stringX, stringY;
             for(size_t j = 0; j != mConnectorVector[i]->getPointsVector().size(); ++j)
             {
-                mCopyDataPos << mConnectorVector[i]->getPointsVector()[j];
-                mCopyData << "POINT";
+                stringX.setNum(mConnectorVector[i]->getPointsVector()[j].x());
+                stringY.setNum(mConnectorVector[i]->getPointsVector()[j].y());
+                tempStringList << stringX << stringY;
             }
 
-            mCopyData << "ENDCONNECT";
+            mCopyData.append(tempStringList);
         }
     }
 }
@@ -745,7 +742,6 @@ void GraphicsView::copySelected()
 void GraphicsView::paste()
 {
     QMap<QString, GUIObject*>::iterator it;
-    QMap<QString, GUIConnector*>::iterator it2;
 
         //Deselect all components
     for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
@@ -763,50 +759,42 @@ void GraphicsView::paste()
     QString tempString;
     QString componentName;
     QString componentType;
-    string startComponentName, endComponentName;
-    int startPortNumber, endPortNumber;
+    QString startComponentName, endComponentName;
+    QString startPortName, endPortName;
     int j = 0;      //Used for calculating which rotation and position to use
     for(int i = 0; i!=mCopyData.size(); ++i)
     {
-        tempString = mCopyData[i];
-        if(tempString == "COMPONENT")
+        if(mCopyData[i][0] == "COMPONENT")
         {
-            ++i;
-            componentType = mCopyData[i];
-            ++i;
-            componentName = mCopyData[i];
-            QPoint tempPos = QPoint(mCopyDataPos[j].toPoint().x()-25, mCopyDataPos[j].toPoint().y()-25);
+            componentType = mCopyData[i][1];
+            componentName = mCopyData[i][2];
+            int tempRotation = mCopyData[i][3].toInt();
+            qreal tempX = mCopyData[i][4].toDouble();
+            qreal tempY = mCopyData[i][5].toDouble();
+           
             AppearanceData appearanceData = *mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
-            this->addGUIObject(componentType, appearanceData, tempPos, mCopyDataRot[j], componentName, true);
+            this->addGUIObject(componentType, appearanceData, QPoint(tempX-50, tempY-50), tempRotation, componentName, true);
             ++j;
             renameMap.insert(componentName, mpTempGUIObject->getName());
         }
-        else if(tempString == "CONNECT")
+        else if(mCopyData[i][0] == "CONNECT")
         {
-            qDebug() << "CONNECT";
-            ++i;
-            std::stringstream tempStream(mCopyData[i].toStdString().c_str());
-            tempStream >> startComponentName;
-            tempStream >> startPortNumber;
-            tempStream >> endComponentName;
-            tempStream >> endPortNumber;
+            startComponentName = mCopyData[i][1];
+            startPortName = mCopyData[i][2];
+            endComponentName = mCopyData[i][3];
+            endPortName = mCopyData[i][4];
 
-            startComponentName = renameMap.find(QString(startComponentName.c_str())).value().toStdString();
-            endComponentName = renameMap.find(QString(endComponentName.c_str())).value().toStdString();
+            startComponentName = renameMap.find(startComponentName).value();
+            endComponentName = renameMap.find(endComponentName).value();
 
-            //qDebug() << QString(startComponentName.c_str()) << QString(startPortNumber.c_str()) << QString(endComponentName.c_str()) << QString(endPortNumber.c_str());
-
-            ++i;
-
-            GUIPort *startPort = this->getGUIObject(QString(startComponentName.c_str()))->getPort(startPortNumber);
-            GUIPort *endPort = this->getGUIObject(QString(endComponentName.c_str()))->getPort(endPortNumber);
+            GUIPort *startPort = this->getGUIObject(startComponentName)->getPort(startPortName);
+            GUIPort *endPort = this->getGUIObject(endComponentName)->getPort(endPortName);
 
             QVector<QPointF> tempPointVector;
             qreal tempX, tempY;
-            while(mCopyData[i] != "ENDCONNECT")
+            for(j = 5; j != mCopyData[i].size(); ++j)
             {
-                tempPointVector.push_back(QPointF(mCopyDataPos[j].x()-25, mCopyDataPos[j].y()-25));
-                ++i;
+                tempPointVector.push_back(QPointF(mCopyData[i][j].toDouble()-50, mCopyData[i][j+1].toDouble()-50));
                 ++j;
             }
 
@@ -844,6 +832,7 @@ void GraphicsView::paste()
                 qDebug() << "Unsuccessful connection try" << endl;
                 assert(false);
             }
+        pTempConnector->setActive();
         }
     }
     this->setBackgroundBrush(mBackgroundColor);
