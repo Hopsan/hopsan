@@ -89,6 +89,9 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     connect(pMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this,SLOT(hidePorts(bool)));
     connect(pMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
     connect(pMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
+    connect(pMainWindow->mpUndoWidget->undoButton, SIGNAL(pressed()), this, SLOT(undo()));
+    connect(pMainWindow->mpUndoWidget->redoButton, SIGNAL(pressed()), this, SLOT(redo()));
+    connect(pMainWindow->mpUndoWidget->clearButton, SIGNAL(pressed()), this, SLOT(clearUndo()));
 }
 
 void GraphicsView::createMenus()
@@ -914,6 +917,7 @@ void GraphicsView::hidePorts(bool doIt)
 
 //! Slot that tells the undoStack to execute one undo step. Necessary because the undo stack is not a QT object and cannot use its own slots.
 //! @see redo()
+//! @see clearUndo()
 void GraphicsView::undo()
 {
     undoStack->undoOneStep();
@@ -922,9 +926,18 @@ void GraphicsView::undo()
 
 //! Slot that tells the undoStack to execute one redo step. Necessary because the redo stack is not a QT object and cannot use its own slots.
 //! @see undo()
+//! @see clearUndo()
 void GraphicsView::redo()
 {
     undoStack->redoOneStep();
+}
+
+//! Slot that tells the undoStack to clear itself. Necessary because the redo stack is not a QT object and cannot use its own slots.
+//! @see undo()
+//! @see redo()
+void GraphicsView::clearUndo()
+{
+    undoStack->clear();
 }
 
 
@@ -1353,6 +1366,7 @@ void ProjectTabWidget::loadModel()
     this->addProjectTab(new ProjectTab(this), fileInfo.fileName());
     ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
     pCurrentTab->mModelFileName = modelFileName;
+    pCurrentTab->mpGraphicsView->undoStack->newPost();
 
         //Necessary declarations
     QString inputWord, componentType, componentName, startComponentName, endComponentName, parameterName, startPortName, endPortName, tempString;

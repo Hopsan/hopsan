@@ -107,8 +107,8 @@ MainWindow::MainWindow(QWidget *parent)
     statusBar->setObjectName("statusBar");
     this->setStatusBar(statusBar);
 
-    mpProjectTabs->addNewProjectTab();
     mpUndoWidget = new UndoWidget(this);
+    mpProjectTabs->addNewProjectTab();
 
         //Load default libraries
     mpLibrary->addEmptyLibrary("User defined libraries");

@@ -665,15 +665,12 @@ UndoWidget::UndoWidget(MainWindow *parent)
 
     redoButton = new QPushButton(tr("&Redo"));
     redoButton->setAutoDefault(true);
-    connect(redoButton, SIGNAL(pressed()), mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView, SLOT(redo()));
 
     undoButton = new QPushButton(tr("&Undo"));
     undoButton->setAutoDefault(true);
-    connect(undoButton, SIGNAL(pressed()), mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView, SLOT(undo()));
 
     clearButton = new QPushButton(tr("&Clear"));
     clearButton->setAutoDefault(true);
-    //connect(clearButton, SIGNAL(pressed()), mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->undoStack, SLOT(clear()))
 
     mUndoTable = new QTableWidget(0,1);
     mUndoTable->setBaseSize(400, 500);
