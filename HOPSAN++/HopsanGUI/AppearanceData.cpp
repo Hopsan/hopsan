@@ -224,30 +224,30 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
             //                mPortAppearanceVector.push_back(portapp);
 
         }
-        else if (command == "PORTS") //Old style:
-            //! @todo delete when component-txt:s are re-done
-        {
-            QString tmp;
-
-            is >> tmp;
-            tmp=tmp.trimmed();
-
-            mnPorts = tmp.toInt();
-
-            for (size_t i=0; i<mnPorts; ++i)
-            {
-                PortAppearance portapp;
-
-                is >> portapp.x;
-                is >> portapp.y;
-                is >> portapp.rot;
-                //is.readLine(); //Clear the line ending
-
-                mPortAppearanceMap.insert(tmp, portapp);
-                //                    mPortAppearanceVector.push_back(portapp);
-                //std::cout << qPrintable(componentName) << " x: " << qPrintable(portPosX) << " y: " << qPrintable(portPosY) << " rot: " << qPrintable(portRot) << std::endl;
-            }
-        }
+//        else if (command == "PORTS") //Old style:
+//            //! @todo delete when component-txt:s are re-done
+//        {
+//            QString tmp;
+//
+//            is >> tmp;
+//            tmp=tmp.trimmed();
+//
+//            mnPorts = tmp.toInt();
+//
+//            for (size_t i=0; i<mnPorts; ++i)
+//            {
+//                PortAppearance portapp;
+//
+//                is >> portapp.x;
+//                is >> portapp.y;
+//                is >> portapp.rot;
+//                //is.readLine(); //Clear the line ending
+//
+//                mPortAppearanceMap.insert(tmp, portapp);
+//                //                    mPortAppearanceVector.push_back(portapp);
+//                //std::cout << qPrintable(componentName) << " x: " << qPrintable(portPosX) << " y: " << qPrintable(portPosY) << " rot: " << qPrintable(portRot) << std::endl;
+//            }
+//        }
         else if (command == "BASEPATH")
         {
             mBasePath = is.readLine().trimmed();
