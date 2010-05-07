@@ -15,26 +15,22 @@
 //! @param rot how the port should be rotated.
 //! @param iconPath a string with the path to the svg-figure representing the port.
 //! @param parent the port's parent, the component it is a part of.
-GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, Port::PORTTYPE type, portDirectionType portDirection, GUIObject *parent)
-    : QGraphicsSvgItem(iconPath,parent)
+GUIPort::GUIPort(Port *corePort, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent)
+    : QGraphicsSvgItem(pPortAppearance->iconPath, pParent)
 {
-
-
-    //Core interaction
+    //*****Core Interaction*****
     mpCorePort = corePort;
-    //
+    //**************************
 
-    mpParentView = parent->mpParentGraphicsView;
-    mpParentGuiObject = parent;
-
-    //mType = type;
-    mPortDirection = portDirection;
+    mpParentView = pParent->mpParentGraphicsView;
+    mpParentGuiObject = pParent;
+    mpPortAppearance = pPortAppearance;
 
     //setTransformOriginPoint(boundingRect().width()/2,boundingRect().height()/2);
     setTransformOriginPoint(boundingRect().center());
 
-    mX = x;
-    mY = y;
+    mXpos = xpos;
+    mYpos = ypos;
 
     updatePosition();
 
@@ -59,8 +55,8 @@ GUIPort::GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, 
     }
     else
     {
-        this->setRotation(rot);
-        mpPortLabel->setRotation(-rot);
+        this->setRotation(mpPortAppearance->rot);
+        mpPortLabel->setRotation(-mpPortAppearance->rot);
     }
 
     mMag = 1.6180339887;
@@ -120,13 +116,13 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 void GUIPort::updatePosition()
 {
     if(mpParentGuiObject->rotation() == 0)
-        setPos(mX-this->boundingRect().width()/2,mY-this->boundingRect().height()/2);
+        setPos(mXpos-this->boundingRect().width()/2.0, mYpos-this->boundingRect().height()/2.0);
     else if(mpParentGuiObject->rotation() == 90)
-        setPos(mX-this->boundingRect().width()/2,mY+this->boundingRect().height()/2);
+        setPos(mXpos-this->boundingRect().width()/2.0, mYpos+this->boundingRect().height()/2.0);
     else if(mpParentGuiObject->rotation() == 180)
-        setPos(mX+this->boundingRect().width()/2,mY+this->boundingRect().height()/2);
+        setPos(mXpos+this->boundingRect().width()/2.0, mYpos+this->boundingRect().height()/2.0);
     else
-        setPos(mX+this->boundingRect().width()/2,mY-this->boundingRect().height()/2);
+        setPos(mXpos+this->boundingRect().width()/2.0, mYpos-this->boundingRect().height()/2.0);
 }
 
 //! Defines what happens when mouse cursor stops hovering a port.
@@ -330,14 +326,14 @@ Port::PORTTYPE GUIPort::getPortType()
 }
 
 
-GUIPort::portDirectionType GUIPort::getPortDirection()
+PortAppearance::portDirectionType GUIPort::getPortDirection()
 {
-    return this->mPortDirection;
+    return mpPortAppearance->direction;
 }
 
-void GUIPort::setPortDirection(GUIPort::portDirectionType direction)
+void GUIPort::setPortDirection(PortAppearance::portDirectionType direction)
 {
-    this->mPortDirection = direction;
+    mpPortAppearance->direction = direction;
 }
 
 QString GUIPort::getName()

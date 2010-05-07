@@ -152,11 +152,11 @@ void GUIConnector::addPoint(QPointF point)
     //point = this->mapFromScene(point);
     mPoints.push_back(point);
 
-    if(getNumberOfLines() == 0 && getStartPort()->getPortDirection() == GUIPort::VERTICAL)
+    if(getNumberOfLines() == 0 && getStartPort()->getPortDirection() == PortAppearance::VERTICAL)
     {
         mGeometries.push_back(GUIConnector::HORIZONTAL);
     }
-    else if(getNumberOfLines() == 0 && getStartPort()->getPortDirection() == GUIPort::HORIZONTAL)
+    else if(getNumberOfLines() == 0 && getStartPort()->getPortDirection() == PortAppearance::HORIZONTAL)
     {
         mGeometries.push_back(GUIConnector::VERTICAL);
     }
@@ -224,8 +224,8 @@ void GUIConnector::setEndPort(GUIPort *port)
     mEndPortConnected = true;
     mpEndPort = port;
     mpEndPort->isConnected = true;
-    if(mpEndPort->getPortDirection() == GUIPort::HORIZONTAL and mGeometries.back() == GUIConnector::HORIZONTAL or
-       mpEndPort->getPortDirection() == GUIPort::VERTICAL and mGeometries.back() == GUIConnector::VERTICAL)
+    if(mpEndPort->getPortDirection() == PortAppearance::HORIZONTAL and mGeometries.back() == GUIConnector::HORIZONTAL or
+       mpEndPort->getPortDirection() == PortAppearance::VERTICAL and mGeometries.back() == GUIConnector::VERTICAL)
     {
             //Wrong direction of last line, so remove last point. It will be fine.
         this->removePoint();
@@ -233,22 +233,22 @@ void GUIConnector::setEndPort(GUIPort *port)
     else
     {
             //Move second last line a bit outwards from the component
-        if(mpEndPort->getPortDirection() == GUIPort::HORIZONTAL and mpEndPort->getGuiObject()->mapToScene(mpEndPort->getGuiObject()->boundingRect().center()).x() > mapToScene(mpEndPort->pos()).x())
+        if(mpEndPort->getPortDirection() == PortAppearance::HORIZONTAL and mpEndPort->getGuiObject()->mapToScene(mpEndPort->getGuiObject()->boundingRect().center()).x() > mapToScene(mpEndPort->pos()).x())
         {
             mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-2].x() - 20, mPoints[mPoints.size()-2].y());
             mPoints[mPoints.size()-3] = QPointF(mPoints[mPoints.size()-3].x() - 20, mPoints[mPoints.size()-3].y());
         }
-        else if(mpEndPort->getPortDirection() == GUIPort::HORIZONTAL and mpEndPort->getGuiObject()->mapToScene(mpEndPort->getGuiObject()->boundingRect().center()).x() < mapToScene(mpEndPort->pos()).x())
+        else if(mpEndPort->getPortDirection() == PortAppearance::HORIZONTAL and mpEndPort->getGuiObject()->mapToScene(mpEndPort->getGuiObject()->boundingRect().center()).x() < mapToScene(mpEndPort->pos()).x())
         {
             mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-2].x() + 20, mPoints[mPoints.size()-2].y());
             mPoints[mPoints.size()-3] = QPointF(mPoints[mPoints.size()-3].x() + 20, mPoints[mPoints.size()-3].y());
         }
-        else if(mpEndPort->getPortDirection() == GUIPort::VERTICAL and mpEndPort->getGuiObject()->mapToScene(mpEndPort->getGuiObject()->boundingRect().center()).y() > mapToScene(mpEndPort->pos()).y())
+        else if(mpEndPort->getPortDirection() == PortAppearance::VERTICAL and mpEndPort->getGuiObject()->mapToScene(mpEndPort->getGuiObject()->boundingRect().center()).y() > mapToScene(mpEndPort->pos()).y())
         {
             mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-2].x(), mPoints[mPoints.size()-2].y() - 20);
             mPoints[mPoints.size()-3] = QPointF(mPoints[mPoints.size()-3].x(), mPoints[mPoints.size()-3].y() - 20);
         }
-        else if(mpEndPort->getPortDirection() == GUIPort::VERTICAL and mpEndPort->getGuiObject()->mapToScene(mpEndPort->getGuiObject()->boundingRect().center()).y() < mapToScene(mpEndPort->pos()).y())
+        else if(mpEndPort->getPortDirection() == PortAppearance::VERTICAL and mpEndPort->getGuiObject()->mapToScene(mpEndPort->getGuiObject()->boundingRect().center()).y() < mapToScene(mpEndPort->pos()).y())
         {
             mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-2].x(), mPoints[mPoints.size()-2].y() + 20);
             mPoints[mPoints.size()-3] = QPointF(mPoints[mPoints.size()-3].x(), mPoints[mPoints.size()-3].y() + 20);

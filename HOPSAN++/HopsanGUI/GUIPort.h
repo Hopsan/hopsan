@@ -9,6 +9,7 @@
 #include <QGraphicsScene>
 #include "GUIObject.h"
 #include "HopsanCore.h"
+#include "AppearanceData.h"
 
 //Forward declaration
 class GUIObject;
@@ -18,15 +19,15 @@ class GUIPort :public QGraphicsSvgItem
 {
     Q_OBJECT
 public:
-    enum portDirectionType {VERTICAL, HORIZONTAL};
-    GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, Port::PORTTYPE type, GUIPort::portDirectionType portDirection, GUIObject *parent = 0);
+    //GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, Port::PORTTYPE type, GUIPort::portDirectionType portDirection, GUIObject *parent = 0);
+    GUIPort(Port *corePort, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent = 0);
     ~GUIPort();
     void updatePosition();
     QGraphicsView *getParentView();
     GUIObject *getGuiObject();
     void magnify(bool blowup);
-    portDirectionType getPortDirection();
-    void setPortDirection(GUIPort::portDirectionType direction);
+    PortAppearance::portDirectionType getPortDirection();
+    void setPortDirection(PortAppearance::portDirectionType direction);
     QString getName();
 
     QPointF rectPos;
@@ -63,9 +64,10 @@ private:
     qreal mMag;
     bool mIsMag;
     //GUIPort::portType mType;
-    portDirectionType mPortDirection;
-    qreal mX;
-    qreal mY;
+
+    PortAppearance *mpPortAppearance;
+    qreal mXpos;
+    qreal mYpos;
 
 };
 

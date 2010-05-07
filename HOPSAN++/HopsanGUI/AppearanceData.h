@@ -22,9 +22,14 @@
 class PortAppearance
 {
 public:
+    enum portDirectionType {VERTICAL, HORIZONTAL};
+    void selectPortIcon(QString cqstype, QString porttype, QString nodetype);
+
     qreal x;
     qreal y;
     qreal rot;
+    QString iconPath;
+    portDirectionType direction;
 };
 
 typedef QMap<QString, PortAppearance> PortAppearanceMapT;

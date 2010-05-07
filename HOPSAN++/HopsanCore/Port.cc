@@ -189,6 +189,29 @@ Port::PORTTYPE Port::getPortType()
     return mPortType;
 }
 
+//! @brief Get the port type as a string
+//! @todo this can probably be made some other better way, mayb let port type lie ooutside port class
+string Port::getPortTypeString()
+{
+    switch (mPortType)
+    {
+    case POWERPORT :
+        return "POWERPORT";
+        break;
+    case READPORT :
+        return "READPORT";
+        break;
+    case WRITEPORT :
+        return "WRITEPORT";
+        break;
+    case SYSTEMPORT :
+        return "SYSTEMPORT";
+        break;
+    default :
+        return "UNDEFINEDPORT";
+    }
+}
+
 //! Get the port name
 const string &Port::getPortName()
 {

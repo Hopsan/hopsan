@@ -11,6 +11,56 @@
 #include "qdebug.h"
 #include "GUIUtilities.h"
 
+//! @brief Contains hardcoded appearance for different hopsancore ports
+//! @todo maybe this should be placed in som more generic external .txt file in som way
+void PortAppearance::selectPortIcon(QString CQSType, QString porttype, QString nodetype)
+{
+    iconPath.clear();
+    iconPath.append("../../HopsanGUI/porticons/"); //!< @todo Not very goood to have this hardcoded everywhere (should be decidet on runtime or something or at least be global or defined)
+    if (nodetype == "NodeSignal")
+    {
+        iconPath.append("SignalPort");
+        if ( porttype == "READPORT")
+        {
+            iconPath.append("_read");
+        }
+        else
+        {
+            iconPath.append("_write");
+        }
+    }
+    else if (nodetype == "NodeMechanic")
+    {
+        iconPath.append("MechanicPort");
+        if (CQSType == "C")
+        {
+            iconPath.append("C");
+        }
+        else if (CQSType == "Q")
+        {
+            iconPath.append("Q");
+        }
+    }
+    else if (nodetype == "NodeHydraulic")
+    {
+        iconPath.append("HydraulicPort");
+        if (CQSType == "C")
+        {
+            iconPath.append("C");
+        }
+        else if (CQSType == "Q")
+        {
+            iconPath.append("Q");
+        }
+    }
+    else
+    {
+        //SystemPort is a blank port (that is why we use it here)
+        iconPath.append("SystemPort");
+    }
+    iconPath.append(".svg");
+}
+
 AppearanceData::AppearanceData()
 {
     //Assume all strings default to ""
@@ -110,10 +160,6 @@ QPointF AppearanceData::getNameTextPos()
     return mNameTextPos;
 }
 
-//size_t AppearanceData::getNumberOfPorts()
-//{
-//    return mnPorts;
-//}
 
 PortAppearanceMapT &AppearanceData::getPortAppearanceMap()
 {
@@ -184,6 +230,15 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
                 return false;
             }
             portStream >> portapp.rot;
+
+            if( (portapp.rot == 0) || (portapp.rot == 180) )
+            {
+                portapp.direction = PortAppearance::HORIZONTAL;
+            }
+            else
+            {
+                portapp.direction = PortAppearance::VERTICAL;
+            }
 
             mPortAppearanceMap.insert(portName, portapp);
         }

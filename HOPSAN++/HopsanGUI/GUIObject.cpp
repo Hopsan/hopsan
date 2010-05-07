@@ -454,10 +454,10 @@ void GUIObject::rotate(bool doNotRegisterUndo)
 
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
-        if(mPortListPtrs.value(i)->getPortDirection() == GUIPort::VERTICAL)
-            mPortListPtrs.value(i)->setPortDirection(GUIPort::HORIZONTAL);
+        if(mPortListPtrs.value(i)->getPortDirection() == PortAppearance::VERTICAL)
+            mPortListPtrs.value(i)->setPortDirection(PortAppearance::HORIZONTAL);
         else
-            mPortListPtrs.value(i)->setPortDirection(GUIPort::VERTICAL);
+            mPortListPtrs.value(i)->setPortDirection(PortAppearance::VERTICAL);
         if (mPortListPtrs.value(i)->getPortType() == Port::POWERPORT)
         {
             if(this->rotation() == 0 and !mIsFlipped)
@@ -898,69 +898,29 @@ void GUIObject::deleteMe()
 GUIComponent::GUIComponent(HopsanEssentials *hopsan, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
     : GUIObject(position, appearanceData, scene, parent)
 {
-    mComponentTypeName = mAppearanceData.getTypeName();
-    //Core interaction
-    mpCoreComponent = hopsan->CreateComponent(mComponentTypeName.toStdString());
-    //
+    //*****Core Interaction*****
+    mpCoreComponent = hopsan->CreateComponent(mAppearanceData.getTypeName().toStdString());
+    QString cqsType = QString::fromStdString(mpCoreComponent->getTypeCQSString());
+    //**************************
 
     //Sets the ports
-    //! @todo Mybe should not copy the vector maybe shoule use reference access every time
-    //! @todo This code needs to be broken out into a sub function
-//    QVector<PortAppearance> portappvec = appearanceData.getPortAppearanceVector();
-    Port::PORTTYPE porttype;
-
     PortAppearanceMapT::iterator i;
     for (i = mAppearanceData.getPortAppearanceMap().begin(); i != mAppearanceData.getPortAppearanceMap().end(); ++i)
     {
+        //*****Core Interaction*****
+        QString nodeType = QString::fromStdString(mpCoreComponent->getPort(i.key().toStdString())->getNodeType());
+        QString portType = QString::fromStdString(mpCoreComponent->getPort(i.key().toStdString())->getPortTypeString());
+        //**************************
+        i.value().selectPortIcon(cqsType, portType, nodeType);
+        qDebug() << i.key();
+
         qreal x = i.value().x;
         qreal y = i.value().y;
-        qreal rot = i.value().rot;
 
-        porttype = mpCoreComponent->getPort(i.key().toStdString())->getPortType();
-        qDebug() << i.key();
-        QString iconPath("../../HopsanGUI/porticons/");
-
-        if (mpCoreComponent->getPort(i.key().toStdString())->getNodeType() == "NodeSignal")
-        {
-            iconPath.append("SignalPort");
-            if ( porttype == Port::READPORT)
-            {
-                iconPath.append("_read");
-            }
-            else
-            {
-                iconPath.append("_write");
-            }
-        }
-        else if (mpCoreComponent->getPort(i.key().toStdString())->getNodeType() == "NodeMechanic")
-        {
-            iconPath.append("MechanicPort");
-            if (mpCoreComponent->getTypeCQS() == Component::C)
-                iconPath.append("C");
-            else if (mpCoreComponent->getTypeCQS() == Component::Q)
-                iconPath.append("Q");
-        }
-        else if (mpCoreComponent->getPort(i.key().toStdString())->getNodeType() == "NodeHydraulic")
-        {
-            iconPath.append("HydraulicPort");
-            if (mpCoreComponent->getTypeCQS() == Component::C)
-                iconPath.append("C");
-            else if (mpCoreComponent->getTypeCQS() == Component::Q)
-                iconPath.append("Q");
-        }
-        else
-        {
-            assert(false);
-        }
-        iconPath.append(".svg");
-
-        GUIPort::portDirectionType direction;
-        if((rot == 0) | (rot == 180))
-            direction = GUIPort::HORIZONTAL;
-        else
-            direction = GUIPort::VERTICAL;
-
-        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPort(i.key().toStdString()), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,porttype,direction,this));
+        //*****Core Interaction*****
+        GUIPort *pNewPort = new GUIPort(mpCoreComponent->getPort(i.key().toStdString()), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
+        //**************************
+        mPortListPtrs.append(pNewPort);
     }
 
     refreshName(); //Make sure name window is correct size for center positioning
@@ -1344,47 +1304,26 @@ GUISystemPort::GUISystemPort(ComponentSystem* pCoreComponentSystem, AppearanceDa
 
 {
     //Set the core system pointer
+    //*****Core Interaction*****
     mpCoreComponentSystem = pCoreComponentSystem;
-    Port* pCorePort = mpCoreComponentSystem->addSystemPort(""); //core interaction, noname for now
+    //**************************
 
-    //Set the graphical gui port
     //Sets the ports
-    //! @todo This code need to be more generalized adn be used in the same way everywhere ports are to be visible
-
-
-    //! @todo Mybe should not copy the vector maybe shoule use reference access every time
-//    QVector<PortAppearance> portappvec = appearanceData.getPortAppearanceVector();
-    Port::PORTTYPE porttype;
-
-    QMap<QString, PortAppearance> map;
-    map = appearanceData.getPortAppearanceMap();
-    QMap<QString, PortAppearance>::iterator i;
-    qreal x;
-    qreal y;
-    qreal rot;
-    for (i = map.begin(); i != map.end(); ++i)
+    //! @todo Only one port in system ports could simplify this
+    PortAppearanceMapT::iterator i;
+    for (i = mAppearanceData.getPortAppearanceMap().begin(); i != mAppearanceData.getPortAppearanceMap().end(); ++i)
     {
-//        size_t i = 0;
+        qreal x = i.value().x;
+        qreal y = i.value().y;
 
-        x = i.value().x;
-        y = i.value().y;
-        rot = i.value().rot;
+        //*****Core Interaction*****
+        //Systemports do not exit in the model by default and hav to be created
+        Port* pCorePort = mpCoreComponentSystem->addSystemPort(i.key().toStdString());
+        //**************************
+
+        mpGuiPort = new GUIPort(pCorePort, x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
+        mPortListPtrs.append(mpGuiPort);
     }
-
-    //porttype = mpCoreComponent->getPortPtrVector().at(i)->getPortType();
-
-    QString iconPath("../../HopsanGUI/porticons/");
-    iconPath.append("SystemPort.svg");
-
-    GUIPort::portDirectionType direction;
-    if((rot == 0) | (rot == 180))
-        direction = GUIPort::HORIZONTAL;
-    else
-        direction = GUIPort::VERTICAL;
-
-    //! @todo maybe dont need both (maybe port list enough)
-    mpGuiPort = new GUIPort(pCorePort, x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), rot, iconPath, porttype, direction, this);
-    mPortListPtrs.append(mpGuiPort);
 }
 
 
