@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -9,12 +8,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="120.00006"
-   height="40.001484"
+   width="50"
+   height="30"
    id="svg2531"
    sodipodi:version="0.32"
-   inkscape:version="0.47 r22583"
-   sodipodi:docname="Volume.svg"
+   inkscape:version="0.46"
+   sodipodi:docname="volume_iso.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
   <defs
@@ -59,15 +58,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="8"
-     inkscape:cx="51.440883"
+     inkscape:cx="36.503383"
      inkscape:cy="17.318968"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1664"
-     inkscape:window-height="977"
+     inkscape:window-width="1280"
+     inkscape:window-height="778"
      inkscape:window-x="0"
-     inkscape:window-y="23"
+     inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:snap-page="false" />
   <metadata
@@ -86,51 +85,9 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(-315.32157,-484.09572)">
-    <g
-       id="g3600"
-       transform="matrix(0,1,-1,0,879.40729,128.78564)">
-      <path
-         transform="matrix(0.6056175,0,0,0.58498534,164.17431,144.5431)"
-         sodipodi:open="true"
-         sodipodi:end="9.4335046"
-         sodipodi:start="6.2744587"
-         d="m 380.82629,649.66171 c 0.15518,17.78212 -14.13428,32.32318 -31.9164,32.47836 -17.78213,0.15519 -32.32319,-14.13428 -32.47837,-31.9164 -0.002,-0.18732 -0.002,-0.37465 0,-0.56196"
-         sodipodi:ry="32.198612"
-         sodipodi:rx="32.198612"
-         sodipodi:cy="649.94269"
-         sodipodi:cx="348.62891"
-         id="path4247"
-         style="fill:none;stroke:#000000;stroke-width:1.67990279;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-         sodipodi:type="arc" />
-      <path
-         transform="matrix(0.60561833,0,0,0.58498696,164.17405,103.23491)"
-         sodipodi:open="true"
-         sodipodi:end="6.291912"
-         sodipodi:start="3.132866"
-         d="m 316.43152,650.22367 c -0.15518,-17.78212 14.13428,-32.32319 31.9164,-32.47837 17.78213,-0.15518 32.32319,14.13428 32.47837,31.91641 0.002,0.18731 0.002,0.37464 0,0.56196"
-         sodipodi:ry="32.198612"
-         sodipodi:rx="32.198612"
-         sodipodi:cy="649.94269"
-         sodipodi:cx="348.62891"
-         id="path4247-5"
-         style="fill:none;stroke:#000000;stroke-width:1.67980909;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-         sodipodi:type="arc" />
-      <path
-         id="path4304"
-         d="m 355.8114,523.60393 0,-38.9999"
-         style="fill:none;stroke:#000000;stroke-width:1.00004911;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-      <path
-         id="path4304-1"
-         d="m 394.81138,523.60384 0,-38.99926"
-         style="fill:none;stroke:#000000;stroke-width:1.00037456;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
-    </g>
     <path
-       style="fill:none;stroke:#000000;stroke-width:1.00033641;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.75;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       d="m 315.82174,504.1077 19.41574,0"
+       style="fill:none;stroke:#000000;stroke-width:1.00033641;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.75;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 315.82174,499.09572 L 364.8214,499.09572"
        id="path3646-4-1" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:1.0003382;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:3.75;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       d="m 415.40442,504.10775 19.41574,0"
-       id="path3646-4-1-1" />
   </g>
 </svg>
