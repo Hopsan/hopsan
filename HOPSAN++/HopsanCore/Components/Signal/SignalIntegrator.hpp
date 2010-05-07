@@ -28,13 +28,10 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running Integrator creator" << std::endl;
         return new SignalIntegrator("Integrator");
     }
 
-    SignalIntegrator(const string name,
-                     const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    SignalIntegrator(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalIntegrator";
         mStartY = 0.0;

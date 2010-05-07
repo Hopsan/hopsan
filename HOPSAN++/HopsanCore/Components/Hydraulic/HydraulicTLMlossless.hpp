@@ -34,24 +34,18 @@ private:
 public:
     static Component *Creator()
     {
-        //std::cout << "running TLMlossless creator" << std::endl;
         return new HydraulicTLMlossless("TLMlossless");
     }
 
-    HydraulicTLMlossless(const string name,
-                         const double zc        = 1.0e9,
-                         const double timeDelay = 0.1,
-                         const double alpha     = 0.0,
-                         const double timestep  = 0.001)
-	: ComponentC(name, timestep)
+    HydraulicTLMlossless(const string name) : ComponentC(name)
     {
         //Set member attributes
         mTypeName = "HydraulicTLMlossless";
         mStartPressure = 100000.0;
         mStartFlow     = 0.0;
-        mTimeDelay     = timeDelay;
-        mZc            = zc;
-        mAlpha         = alpha;
+        mTimeDelay     = 0.1;
+        mZc            = 1.0e9;
+        mAlpha         = 0.0;
 
         //Add ports to the component
         mpP1 = addPowerPort("P1", "NodeHydraulic");
@@ -85,7 +79,7 @@ public:
         //Set external parameters
         mDelayedC1.setTimeDelay(mTimeDelay-mTimestep, mTimestep); //-mTimestep due to calc time
         mDelayedC2.setTimeDelay(mTimeDelay-mTimestep, mTimestep);
-}
+    }
 
 
     void simulateOneTimestep()

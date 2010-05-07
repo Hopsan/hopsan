@@ -14,27 +14,20 @@ private:
     double mSpeed;             // rad/s
     double mDp;
     double mKcp;
-
     Port *mpP1, *mpP2, *mpIn;
 
 public:
     static Component *Creator()
     {
-        //std::cout << "running VariableDisplacementPump creator" << std::endl;
         return new HydraulicVariableDisplacementPump("VariableDisplacementPump");
     }
 
-    HydraulicVariableDisplacementPump(const string name,
-                         const double speed = 125.0,
-                         const double dp = 0.00005,
-                         const double kcp = 0.0,
-                         const double timestep = 0.001)
-	: ComponentQ(name, timestep)
+    HydraulicVariableDisplacementPump(const string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicVariableDisplacementPump";
-        mSpeed = speed;
-        mDp = dp;
-        mKcp = kcp;
+        mSpeed = 125.0;
+        mDp = 0.00005;
+        mKcp = 0.0;
 
         mpP1 = addPowerPort("P1", "NodeHydraulic");
         mpP2 = addPowerPort("P2", "NodeHydraulic");
@@ -43,14 +36,13 @@ public:
         registerParameter("Speed", "Angular Velocity", "rad/s", mSpeed);
         registerParameter("Dp", "Displacement", "m^3/rev", mDp);
         registerParameter("Kcp", "Leakage Coefficient", "(m^3/s)/Pa", mKcp);
-
     }
 
 
-	void initialize()
-	{
+    void initialize()
+    {
         //Nothing to initilize
-	}
+    }
 
 
     void simulateOneTimestep()

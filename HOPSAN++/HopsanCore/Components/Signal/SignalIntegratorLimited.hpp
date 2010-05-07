@@ -29,21 +29,16 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running IntegratorLimited creator" << std::endl;
         return new SignalIntegratorLimited("IntegratorLimited");
     }
 
-    SignalIntegratorLimited(const string name,
-                            const double min = -1.5E+300,
-                            const double max =  1.5E+300,
-                            const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    SignalIntegratorLimited(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalIntegratorLimited";
         mStartY = 0.0;
 
-        mMin = min;
-        mMax = max;
+        mMin = -1.5E+300;
+        mMax = 1.5E+300;
 
         mDelayU.setStepDelay(1);
         mDelayY.setStepDelay(1);

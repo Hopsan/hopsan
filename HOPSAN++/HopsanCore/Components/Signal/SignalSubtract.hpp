@@ -25,13 +25,10 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running Subtraction creator" << std::endl;
         return new SignalSubtract("Subtract");
     }
 
-    SignalSubtract(const string name,
-                   const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    SignalSubtract(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalSubtract";
 
@@ -41,10 +38,10 @@ public:
     }
 
 
-	void initialize()
-	{
+    void initialize()
+    {
         //Nothing to initilize
-	}
+    }
 
 
     void simulateOneTimestep()
@@ -75,7 +72,7 @@ public:
 
 
         //Gain equations
-		double output = signal1 - signal2;
+        double output = signal1 - signal2;
 
         //Write new values to nodes
         mpOut->writeNode(NodeSignal::VALUE, output);

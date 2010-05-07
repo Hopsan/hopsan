@@ -28,18 +28,14 @@ private:
 public:
     static Component *Creator()
     {
-        return new HydraulicLaminarOrifice("TurbulentOrifice");
+        return new HydraulicTurbulentOrifice("TurbulentOrifice");
     }
 
-    HydraulicTurbulentOrifice(const string name,
-                     const double Cq       = 0.67,
-                     const double A        = 0.00001,
-                     const double timestep = 0.001)
-    : ComponentQ(name, timestep)
+    HydraulicTurbulentOrifice(const string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicTurbulentOrificeName";
-        mCq = Cq;
-        mA = A;
+        mCq = 0.67;
+        mA = 0.00001;
         mKc = mCq*mA*sqrt(2.0/890.0);
 
         mpP1 = addPowerPort("P1", "NodeHydraulic");
@@ -54,6 +50,7 @@ public:
     {
 		qTurb.setFlowCoefficient(mKc);
     }
+
 
     void simulateOneTimestep()
     {

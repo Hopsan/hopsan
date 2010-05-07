@@ -44,24 +44,16 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running Sinewave creator" << std::endl;
         return new SignalSineWave("SineWave");
     }
 
-
-    SignalSineWave(const string name,
-                   const double starttime = 0.0,
-                   const double frequency = 1.0,
-                   const double amplitude = 1.0,
-                   const double offset = 0.0,
-                   const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    SignalSineWave(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalSineWave";
-        mStartTime = starttime;
-        mFrequency = frequency;
-        mAmplitude = amplitude;
-        mOffset = offset;
+        mStartTime = 0.0;
+        mFrequency = 1.0;
+        mAmplitude = 1.0;
+        mOffset = 0.0;
 
         mpOut = addWritePort("out", "NodeSignal");
 
@@ -72,10 +64,10 @@ public:
     }
 
 
-	void initialize()
-	{
+    void initialize()
+    {
         //Nothing to initilize
-	}
+    }
 
 
     void simulateOneTimestep()
@@ -94,7 +86,6 @@ public:
 
         //Write new values to nodes
         mpOut->writeNode(NodeSignal::VALUE, output);
-
     }
 };
 

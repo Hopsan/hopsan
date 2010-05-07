@@ -52,32 +52,19 @@ public:
         return new Hydraulic43Valve("43Valve");
     }
 
-    Hydraulic43Valve(const string name,
-                             const double Cq         = 0.67,
-                             const double fraction   = 1.0,
-                             const double diameter   = 0.01,
-                             const double xvmax      = 0.01,
-                             const double overlap_pa = 0.0,
-                             const double overlap_pb = 0.0,
-                             const double overlap_at = 0.0,
-                             const double overlap_bt = 0.0,
-                             const double resfrequency = 100.0,
-                             const double damping = 0.0,
-                             const double timestep   = 0.001)
-        : ComponentQ(name, timestep)
+    Hydraulic43Valve(const string name) : ComponentQ(name)
     {
-
         mTypeName = "Hydraulic43Valve";
-        mCq = Cq;
-        md = diameter;
-        mf = fraction;
-        mxvmax = xvmax;
-        moverlap_pa = overlap_pa;
-        moverlap_pb = overlap_pb;
-        moverlap_at = overlap_at;
-        moverlap_bt = overlap_bt;
-        momegah = resfrequency;
-        mdeltah = damping;
+        mCq = 0.67;
+        md = 0.01;
+        mf = 1.0;
+        mxvmax = 0.01;
+        moverlap_pa = 0.0;
+        moverlap_pb = 0.0;
+        moverlap_at = 0.0;
+        moverlap_bt = 0.0;
+        momegah = 100.0;
+        mdeltah = 0.0;
 
         mpPP = addPowerPort("PP", "NodeHydraulic");
         mpPT = addPowerPort("PT", "NodeHydraulic");
@@ -97,6 +84,7 @@ public:
         registerParameter("deltah", "Damping Factor", "[-]", mdeltah);
     }
 
+
     void initialize()
     {
         double num[3] = {0.0, 0.0, 1.0};
@@ -104,9 +92,9 @@ public:
         myFilter.initialize(mTime, mTimestep, num, den);
     }
 
+
     void simulateOneTimestep()
     {
-
         //Get variable values from nodes
         double cp  = mpPP->readNode(NodeHydraulic::WAVEVARIABLE);
         double Zcp = mpPP->readNode(NodeHydraulic::CHARIMP);

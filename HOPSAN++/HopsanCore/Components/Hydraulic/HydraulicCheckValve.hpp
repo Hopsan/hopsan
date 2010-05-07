@@ -32,12 +32,10 @@ public:
         return new HydraulicCheckValve("CheckValve");
     }
 
-    HydraulicCheckValve(const string name,
-                        const double ks       = 0.000000025)
-        : ComponentQ(name)
+    HydraulicCheckValve(const string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicCheckValve";
-        mKs = ks;
+        mKs = 0.000000025;
 
         mpP1 = addPowerPort("P1", "NodeHydraulic");
         mpP2 = addPowerPort("P2", "NodeHydraulic");

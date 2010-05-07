@@ -31,36 +31,23 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running AlternativePRV creator" << std::endl;
         return new HydraulicAlternativePRV("AlternativePRV");
     }
 
-    HydraulicAlternativePRV(const string name,
-                            const double pref          = 20000000,
-                            const double cq            = 0.67,
-                            const double spooldiameter = 0.01,
-                            const double frac          = 1.0,
-                            const double pilotarea     = 0.001,
-                            const double k             = 1e6,
-                            const double c             = 1000,
-                            const double mass          = 0.05,
-                            const double xhyst         = 0.0,
-                            const double xmax          = 0.001,
-                            const double timestep      = 0.001)
-        : ComponentQ(name, timestep)
+    HydraulicAlternativePRV(const string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicAlternativePRV";
-        mPref = pref;
-        mCq = cq;
-        mSpoolDiameter = spooldiameter;
-        mFrac = frac;
+        mPref = 20000000;
+        mCq = 0.67;
+        mSpoolDiameter = 0.01;
+        mFrac = 1.0;
         mW = mSpoolDiameter*mFrac;
-        mPilotArea = pilotarea;
-        mK = k;
-        mC = c;
-        mMass = mass;
-        mXhyst = xhyst;
-        mXmax = xmax;
+        mPilotArea = 0.001;
+        mK = 1e6;
+        mC = 1000;
+        mMass = 0.05;
+        mXhyst = 0.0;
+        mXmax = 0.001;
         mFs = mPilotArea * mPref;   //Spring preload
 
         mpP1 = addPowerPort("P1", "NodeHydraulic");
@@ -175,7 +162,6 @@ public:
             mpX->writeNode(NodeSignal::VALUE, x0);
 
         mDelayedX0.update(x0h);  //Ska vara x0h
-
     }
 };
 

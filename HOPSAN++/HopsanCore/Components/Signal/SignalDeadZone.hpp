@@ -20,19 +20,14 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running DeadZone creator" << std::endl;
         return new SignalDeadZone("DeadZone");
     }
 
-    SignalDeadZone(const string name,
-                   const double startdead = -1.0,
-                   const double enddead = 1.0,
-                   const double timestep = 0.001)
-    : ComponentSignal(name, timestep)
+    SignalDeadZone(const string name) : ComponentSignal(name, timestep)
     {
         mTypeName = "SignalDeadZone";
-        mStartDead = startdead;
-        mEndDead = enddead;
+        mStartDead = -1.0;
+        mEndDead = 1.0;
 
         mpIn = addReadPort("in", "NodeSignal");
         mpOut = addWritePort("out", "NodeSignal");
@@ -41,10 +36,10 @@ public:
         registerParameter("EndDead", "End of Dead Zone", "-", mEndDead);
     }
 
-	void initialize()
-	{
+    void initialize()
+    {
         //Nothing to initilize
-	}
+    }
 
     void simulateOneTimestep()
     {

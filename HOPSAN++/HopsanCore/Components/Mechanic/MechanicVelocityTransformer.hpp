@@ -20,18 +20,15 @@ private:
 public:
     static Component *Creator()
     {
-        //std::cout << "running velocity transformer creator" << std::endl;
         return new MechanicVelocityTransformer("VelocityTransformer");
     }
 
-    MechanicVelocityTransformer(const string name,
-                    const double timestep    = 0.001)
-    : ComponentQ(name, timestep)
+    MechanicVelocityTransformer(const string name) : ComponentQ(name)
     {
         //Set member attributes
         mTypeName = "MechanicVelocityTransformer";
 
-		//Add ports to the component
+        //Add ports to the component
         mpIn = addReadPort("in", "NodeSignal");
         mpOut = addPowerPort("out", "NodeMechanic");
 
@@ -39,11 +36,12 @@ public:
     }
 
 
-	void initialize()
+    void initialize()
     {
         double signal  = mpIn->readNode(NodeSignal::VALUE);
         mInt.initialize(mTime, mTimestep, signal, 0.0);
     }
+
 
     void simulateOneTimestep()
     {
@@ -52,16 +50,15 @@ public:
         double c =mpOut->readNode(NodeMechanic::WAVEVARIABLE);
         double Zc =mpOut->readNode(NodeMechanic::CHARIMP);
 
-
         //Spring equations
         double v = signal;
         double x = mInt.value(v);
         double F = c + Zc*v;
 
         //Write new values to nodes
-       mpOut->writeNode(NodeMechanic::POSITION, x);
-       mpOut->writeNode(NodeMechanic::VELOCITY, v);
-       mpOut->writeNode(NodeMechanic::FORCE, F);
+        mpOut->writeNode(NodeMechanic::POSITION, x);
+        mpOut->writeNode(NodeMechanic::VELOCITY, v);
+        mpOut->writeNode(NodeMechanic::FORCE, F);
     }
 };
 

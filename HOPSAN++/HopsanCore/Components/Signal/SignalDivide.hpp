@@ -25,13 +25,10 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running Division creator" << std::endl;
         return new SignalDivide("Divide");
     }
 
-    SignalDivide(const string name,
-                          const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    SignalDivide(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalDivide";
 
@@ -41,10 +38,10 @@ public:
     }
 
 
-	void initialize()
-	{
+    void initialize()
+    {
         //Nothing to initilize
-	}
+    }
 
 
     void simulateOneTimestep()
@@ -76,7 +73,7 @@ public:
 
 
         //Gain equations
-                double output = signal1 / signal2;                         //! @todo Add division-by-zero check -> exception
+        double output = signal1 / signal2;                         //! @todo Add division-by-zero check -> exception
 
         //Write new values to nodes
         mpOut->writeNode(NodeSignal::VALUE, output);

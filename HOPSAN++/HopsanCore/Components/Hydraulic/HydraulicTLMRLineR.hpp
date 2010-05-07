@@ -18,7 +18,7 @@
 //! @brief
 //! @ingroup HydraulicComponents
 //!
-class HydraulicTLMRlineR : public ComponentC
+class HydraulicTLMRLineR : public ComponentC
 {
 
 private:
@@ -34,24 +34,22 @@ private:
     Port *mpP1, *mpP2;
 
 public:
-    HydraulicTLMRlineR(const string name,
-                       const double zc        = 1.0e9,
-                       const double timeDelay = 0.1,
-                       const double r1        = 0.5,
-                       const double r2        = 0.5,
-                       const double alpha     = 0.0,
-                       const double timestep  = 0.001)
-	: ComponentC(name, timestep)
+    static Component *Creator()
+    {
+        return new HydraulicTLMRLineR("TLMRlineR");
+    }
+
+    HydraulicTLMRlineR(const string name) : ComponentC(name)
     {
         //Set member attributes
-        mTypeName = "HydraulicTLMRlineR";
+        mTypeName = "HydraulicTLMRLineR";
         mStartPressure = 1.0;
         mStartFlow     = 0.0;
-        mTimeDelay     = timeDelay;
-        mZc            = zc;
-        mAlpha         = alpha;
-        mR1            = r1;
-        mR2            = r2;
+        mTimeDelay     = 0.1;
+        mZc            = 1.0e9;
+        mAlpha         = 0.0;
+        mR1            = 0.5;
+        mR2            = 0.5;
 
         //Add ports to the component
         mpP1 = addPowerPort("P1", "NodeHydraulic");

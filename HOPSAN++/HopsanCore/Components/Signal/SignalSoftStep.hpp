@@ -47,23 +47,16 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running softstep creator" << std::endl;
         return new SignalSoftStep("SoftStep");
     }
 
-    SignalSoftStep(const string name,
-                   const double starttime = 1.0,
-                   const double stoptime = 2.0,
-                   const double basevalue = 0.0,
-                   const double amplitude = 1.0,
-                   const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    SignalSoftStep(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalSoftStep";
-        mStartTime = starttime;
-        mStopTime = stoptime;
-        mBaseValue = basevalue;
-        mAmplitude = amplitude;
+        mStartTime = 1.0;
+        mStopTime = 2.0;
+        mBaseValue = 0.0;
+        mAmplitude = 1.0;
         mFrequency = pi/(mStopTime-mStartTime);       //omega = 2pi/T, T = (stoptime-starttime)*4
 
         mpOut = addWritePort("out", "NodeSignal");
@@ -75,10 +68,10 @@ public:
     }
 
 
-	void initialize()
-	{
+    void initialize()
+    {
         //Nothing to initilize
-	}
+    }
 
 
     void simulateOneTimestep()

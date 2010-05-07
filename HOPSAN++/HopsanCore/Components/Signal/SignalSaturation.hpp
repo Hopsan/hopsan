@@ -27,19 +27,14 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running Saturation creator" << std::endl;
         return new SignalSaturation("Saturation");
     }
 
-    SignalSaturation(const string name,
-                     const double upperlimit = 1.0,
-                     const double lowerlimit = -1.0,
-                     const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    SignalSaturation(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalSaturation";
-        mUpperLimit = upperlimit;
-        mLowerLimit = lowerlimit;
+        mUpperLimit = 1.0;
+        mLowerLimit = -1.0;
 
         mpIn = addReadPort("in", "NodeSignal");
         mpOut = addWritePort("out", "NodeSignal");
@@ -49,10 +44,10 @@ public:
     }
 
 
-	void initialize()
-	{
+    void initialize()
+    {
         //Nothing to initilize
-	}
+    }
 
 
     void simulateOneTimestep()
@@ -77,7 +72,6 @@ public:
 
         //Write new values to nodes
         mpOut->writeNode(NodeSignal::VALUE, output);
-
     }
 };
 

@@ -25,13 +25,10 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running HydraulicFlowSensor creator" << std::endl;
         return new HydraulicFlowSensor("FlowSensor");
     }
 
-    HydraulicFlowSensor(const string name,
-                        const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    HydraulicFlowSensor(const string name) : ComponentSignal(name)
     {
         mTypeName = "HydraulicFlowSensor";
 

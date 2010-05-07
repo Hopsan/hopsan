@@ -20,23 +20,17 @@ private:
 public:
     static Component *Creator()
     {
-        //std::cout << "running force transformer creator" << std::endl;
         return new MechanicForceTransformer("ForceTransformer");
     }
 
-    MechanicForceTransformer(const string name,
-                    const double timestep    = 0.001,
-                    const double startposition = 0.0,
-                    const double startvelocity = 0.0)
-
-    : ComponentC(name, timestep)
+    MechanicForceTransformer(const string name) : ComponentC(name)
     {
         //Set member attributes
         mTypeName = "MechanicForceTransformer";
-        mStartPosition = startposition;
-        mStartVelocity = startvelocity;
+        mStartPosition = 0.0;
+        mStartVelocity = 0.0;
 
-		//Add ports to the component
+        //Add ports to the component
         mpIn = addReadPort("in", "NodeSignal");
         mpOut = addPowerPort("out", "NodeMechanic");
 
@@ -46,11 +40,12 @@ public:
     }
 
 
-	void initialize()
+    void initialize()
     {
         mpOut->writeNode(NodeMechanic::POSITION, mStartPosition);
         mpOut->writeNode(NodeMechanic::VELOCITY, mStartVelocity);
     }
+
 
     void simulateOneTimestep()
     {

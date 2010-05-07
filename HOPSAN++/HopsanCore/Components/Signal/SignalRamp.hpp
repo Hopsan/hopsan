@@ -43,24 +43,16 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running ramp creator" << std::endl;
         return new SignalRamp("Ramp");
     }
 
-
-    SignalRamp(const string name,
-                          const double basevalue = 0.0,
-                          const double amplitude = 1.0,
-                          const double starttime = 1.0,
-                          const double stoptime = 2.0,
-                          const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    SignalRamp(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalRamp";
-        mBaseValue = basevalue;
-        mAmplitude = amplitude;
-        mStartTime = starttime;
-        mStopTime = stoptime;
+        mBaseValue = 0.0;
+        mAmplitude = 1.0;
+        mStartTime = 1.0;
+        mStopTime = 2.0;
 
         mpOut = addWritePort("out", "NodeSignal");
 
@@ -71,10 +63,10 @@ public:
     }
 
 
-	void initialize()
-	{
+    void initialize()
+    {
         //Nothing to initilize
-	}
+    }
 
 
     void simulateOneTimestep()

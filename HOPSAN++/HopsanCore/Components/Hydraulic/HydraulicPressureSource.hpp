@@ -32,14 +32,12 @@ public:
         return new HydraulicPressureSource("PressureSource");
     }
 
-    HydraulicPressureSource(const string name,
-                            const double pressure       = 1.0e5)
-        : ComponentC(name)
+    HydraulicPressureSource(const string name) : ComponentC(name)
     {
         mTypeName = "HydraulicPressureSource";
         //mStartPressure  = 0.0;
         mStartFlow      = 0.0;
-        mPressure       = pressure;
+        mPressure       = 1.0e5;
         mZc             = 0.0;
 
         mpIn = addReadPort("In", "NodeSignal");
@@ -48,12 +46,14 @@ public:
         registerParameter("P", "Default pressure", "Pa", mPressure);
     }
 
+
     void initialize()
     {
         //write to nodes
         mpP1->writeNode(NodeHydraulic::PRESSURE, mPressure);
         mpP1->writeNode(NodeHydraulic::MASSFLOW, mStartFlow);
     }
+
 
     void simulateOneTimestep()
     {

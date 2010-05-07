@@ -26,13 +26,10 @@ private:
 public:
     static Component *Creator()
     {
-        //std::cout << "running MechanicPositionSensor creator" << std::endl;
         return new MechanicPositionSensor("PositionSensor");
     }
 
-    MechanicPositionSensor(const string name,
-                           const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    MechanicPositionSensor(const string name) : ComponentSignal(name)
     {
         mTypeName = "MechanicPositionSensor";
 

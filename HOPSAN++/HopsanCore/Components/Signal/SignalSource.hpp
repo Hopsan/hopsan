@@ -26,18 +26,13 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running Source creator" << std::endl;
         return new SignalSource("Source");
     }
 
-
-    SignalSource(const string name,
-                 const double value    = 1.0,
-                 const double timestep = 0.001)
-                     : ComponentSignal(name, timestep)
+    SignalSource(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalSource";
-        mValue = value;
+        mValue = 1.0;
 
         mpOut = addWritePort("out", "NodeSignal");
 

@@ -31,27 +31,18 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running PressureReliefValve creator" << std::endl;
         return new HydraulicPressureReliefValve("PressureReliefValve");
     }
 
-    HydraulicPressureReliefValve(const string name,
-                                 const double pref       = 2000000,
-                                 const double tao        = 0.01,
-                                 const double kcs        = 0.00000001,
-                                 const double kcf        = 0.00000001,
-                                 const double qnom       = 0.001,
-                                 const double ph         = 500000,
-                                 const double timestep   = 0.001)
-        : ComponentQ(name, timestep)
+    HydraulicPressureReliefValve(const string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicPressureReliefValve";
-        mPref = pref;
-        mTao = tao;
-        mKcs = kcs;
-        mKcf = kcf;
-        mQnom = qnom;
-        mPh = ph;
+        mPref = 2000000;
+        mTao = 0.01;
+        mKcs = 0.00000001;
+        mKcf = 0.00000001;
+        mQnom = 0.001;
+        mPh = 500000;
         mPnom = 7e6f;
         mX0max = mQnom / sqrt(mPnom);
         mCs = sqrt(mPnom) / mKcs;
@@ -81,6 +72,7 @@ public:
         double den [2] = {1.0/wCutoff, 1.0};
         mFilterLP.initialize(mTime, mTimestep, num, den, 0.0, 0.0, 0.0, mX0max);
     }
+
 
     void simulateOneTimestep()
     {

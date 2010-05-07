@@ -24,25 +24,18 @@ private:
 public:
     static Component *Creator()
     {
-        //std::cout << "running translational mass creator" << std::endl;
         return new MechanicTranslationalMass("TranslationalMass");
     }
 
-    MechanicTranslationalMass(const string name,
-                    const double mass      = 1.0,
-                    const double viscousfriction = 10,
-                    const double springcoefficient = 0.0,
-                    const double timestep    = 0.001)
-    : ComponentQ(name, timestep)
+    MechanicTranslationalMass(const string name) : ComponentQ(name)
     {
         //Set member attributes
         mTypeName = "MechanicTranslationalMass";
-        mMass = mass;
-        mB    = viscousfriction;
-        mk   = springcoefficient;
-        mTimestep = timestep;
+        mMass = 1.0;
+        mB    = 10;
+        mk   = 0.0;
 
-		//Add ports to the component
+        //Add ports to the component
         mpP1 = addPowerPort("P1", "NodeMechanic");
         mpP2 = addPowerPort("P2", "NodeMechanic");
 
@@ -52,18 +45,20 @@ public:
         registerParameter("k", "Spring Coefficient", "[N/m]",  mk);
     }
 
-	void initialize()
+
+    void initialize()
     {
-//        mFilter.initialize(0.0,0.0, mTime);
+        //mFilter.initialize(0.0,0.0, mTime);
         double x1  = mpP1->readNode(NodeMechanic::POSITION);
         double v1  = mpP1->readNode(NodeMechanic::VELOCITY);
-        cout << "x0 = " << x1 << endl;
+        //cout << "x0 = " << x1 << endl;
         double num [] = {0.0, 1.0, 0.0};
         double den [] = {mMass, mB, mk};
         mFilter.initialize(mTime, mTimestep, num, den);
         mInt.initialize(mTime, mTimestep, -v1, -x1);
-//        mFilter.update(0);
+        //mFilter.update(0);
     }
+
 
     void simulateOneTimestep()
     {

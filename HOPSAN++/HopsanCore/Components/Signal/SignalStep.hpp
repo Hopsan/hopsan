@@ -38,22 +38,15 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running Step creator" << std::endl;
         return new SignalStep("Step");
     }
 
-
-    SignalStep(const string name,
-                          const double basevalue = 0.0,
-                          const double amplitude = 1.0,
-                          const double steptime = 1.0,
-                          const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    SignalStep(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalStep";
-        mBaseValue = basevalue;
-        mAmplitude = amplitude;
-        mStepTime = steptime;
+        mBaseValue = 0.0;
+        mAmplitude = 1.0;
+        mStepTime = 1.0;
 
         mpOut = addWritePort("out", "NodeSignal");
 

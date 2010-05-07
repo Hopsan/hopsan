@@ -30,21 +30,16 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running First Order Filter creator" << std::endl;
         return new SignalFirstOrderFilter("Filter");
     }
 
-    SignalFirstOrderFilter(const string name,
-                           const double min = -1.5E+300,
-                           const double max =  1.5E+300,
-                           const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    SignalFirstOrderFilter(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalFirstOrderFilter";
         mStartY = 0.0;
 
-        mMin = min;
-        mMax = max;
+        mMin = -1.5E+300;
+        mMax = 1.5E+300;
 
         mpIn = addReadPort("in", "NodeSignal");
         mpOut = addWritePort("out", "NodeSignal");
@@ -57,7 +52,7 @@ public:
 
     void initialize()
     {
-//	    double u0 = mPortPtrs[in]->readNode(NodeSignal::VALUE);
+        //double u0 = mPortPtrs[in]->readNode(NodeSignal::VALUE);
 
         double num[2];
         double den[2];
@@ -66,13 +61,13 @@ public:
         num[1] = mK;
         den[0] = 1.0/mWden;
         den[1] = 1.0;
-//        num[0] = 0.0;
-//        num[1] = 1.0;
-//        den[0] = 1.0E-10;
-//        den[1] = 1.0;
+        //num[0] = 0.0;
+        //num[1] = 1.0;
+        //den[0] = 1.0E-10;
+        //den[1] = 1.0;
 
-	    mFilter.initialize(mTime, mTimestep, num, den, mStartY, mStartY, mMin, mMax);
-            //! @todo Write out values into node as well? (I think so) This is true for all components
+        mFilter.initialize(mTime, mTimestep, num, den, mStartY, mStartY, mMin, mMax);
+        //! @todo Write out values into node as well? (I think so) This is true for all components
     }
 
 

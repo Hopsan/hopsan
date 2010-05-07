@@ -29,13 +29,10 @@ public:
         return new HydraulicFlowSourceQ("FlowSourceQ");
     }
 
-    HydraulicFlowSourceQ(const string name,
-                         const double flow     = 1.0e-3,
-                         const double timestep = 0.001)
-	: ComponentQ(name, timestep)
+    HydraulicFlowSourceQ(const string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicFlowSourceQ";
-        mFlow = flow;
+        mFlow = 1.0e-3;
 
         mpIn = addReadPort("in", "NodeSignal");
         mpP1 = addPowerPort("P1", "NodeHydraulic");

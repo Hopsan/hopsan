@@ -31,24 +31,18 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running volume creator" << std::endl;
         return new HydraulicVolume("Volume");
     }
 
-    HydraulicVolume(const string name        = "Volume",
-                    const double volume      = 1.0e-3,
-                    const double bulkmudulus = 1.0e9,
-                    const double alpha       = 0.0,
-                    const double timestep    = 0.001)
-    : ComponentC(name, timestep)
+    HydraulicVolume(const string name) : ComponentC(name)
     {
         //Set member attributes
         mTypeName = "HydraulicVolume";
         mStartPressure = 0.0;
         mStartFlow     = 0.0;
-        mBulkmodulus   = bulkmudulus;
-        mVolume        = volume;
-        mAlpha         = alpha;
+        mBulkmodulus   = 1.0e9;
+        mVolume        = 1.0e-3;
+        mAlpha         = 0.0;
 
         //Add ports to the component
         mpP1 = addPowerPort("P1", "NodeHydraulic");

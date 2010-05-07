@@ -25,14 +25,10 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running Sink creator" << std::endl;
         return new SignalSink("Sink");
     }
 
-
-    SignalSink(const string name,
-                  const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    SignalSink(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalSink";
 

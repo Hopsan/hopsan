@@ -27,18 +27,14 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running TimeDelay creator" << std::endl;
         return new SignalTimeDelay("TimeDelay");
     }
 
-    SignalTimeDelay(const string name,
-                    const double timedelay = 1.0,
-                    const double timestep = 0.001)
-                        : ComponentSignal(name, timestep)
+    SignalTimeDelay(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalTimeDelay";
         mStartY = 0.0;
-        mTimeDelay = timedelay;
+        mTimeDelay = 1.0;
 
         registerParameter("TD", "Time delay", "s", mTimeDelay);
 

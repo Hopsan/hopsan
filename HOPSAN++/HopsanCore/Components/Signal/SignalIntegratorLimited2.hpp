@@ -29,21 +29,16 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running Integrator creator" << std::endl;
-        return new SignalIntegrator2("Integrator");
+        return new SignalIntegratorLimited2("Integrator");
     }
 
-    SignalIntegratorLimited2(const string name,
-                            const double min = -1.5E+300,
-                            const double max =  1.5E+300,
-                            const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    SignalIntegratorLimited2(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalIntegratorLimited2";
         mStartY = 0.0;
 
-        mMin = min;
-        mMax = max;
+        mMin = -1.5E+300;
+        mMax = 1.5E+300;
 
         mpIn = addReadPort("in", "NodeSignal");
         mpOut = addWritePort("out", "NodeSignal");

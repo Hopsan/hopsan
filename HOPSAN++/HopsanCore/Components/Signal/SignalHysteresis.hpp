@@ -28,17 +28,13 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running Hysteresis creator" << std::endl;
         return new SignalHysteresis("Hysteresis");
     }
 
-    SignalHysteresis(const string name,
-               const double hysteresiswidth = 1.0,
-               const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    SignalHysteresis(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalHysteresis";
-        mHysteresisWidth = hysteresiswidth;
+        mHysteresisWidth = 1.0;
 
         mpIn = addReadPort("in", "NodeSignal");
         mpOut = addWritePort("out", "NodeSignal");
@@ -46,11 +42,12 @@ public:
         registerParameter("HysteresisWidth", "Width of the Hysteresis", "-", mHysteresisWidth);
     }
 
-	void initialize()
-	{
+
+    void initialize()
+    {
         mDelayedInput.initialize(mTime, 0.0);
         mDelayedInput.setStepDelay(1);
-	}
+    }
 
 
     void simulateOneTimestep()

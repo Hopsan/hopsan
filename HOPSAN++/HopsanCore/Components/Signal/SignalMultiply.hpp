@@ -25,13 +25,10 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running multiplication creator" << std::endl;
         return new SignalMultiply("Multiply");
     }
 
-    SignalMultiply(const string name,
-              const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    SignalMultiply(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalMultiply";
 
@@ -41,10 +38,10 @@ public:
     }
 
 
-	void initialize()
-	{
+    void initialize()
+    {
         //Nothing to initilize
-	}
+    }
 
 
     void simulateOneTimestep()

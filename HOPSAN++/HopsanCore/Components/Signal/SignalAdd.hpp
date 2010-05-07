@@ -25,13 +25,10 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running Summation creator" << std::endl;
         return new SignalAdd("Add");
     }
 
-    SignalAdd(const string name,
-                          const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    SignalAdd(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalAdd";
 
@@ -41,10 +38,10 @@ public:
     }
 
 
-	void initialize()
-	{
+    void initialize()
+    {
         //Nothing to initilize
-	}
+    }
 
 
     void simulateOneTimestep()
@@ -77,7 +74,7 @@ public:
 
 
         //Gain equations
-		double output = signal1 + signal2;
+        double output = signal1 + signal2;
 
         //Write new values to nodes
         mpOut->writeNode(NodeSignal::VALUE, output);

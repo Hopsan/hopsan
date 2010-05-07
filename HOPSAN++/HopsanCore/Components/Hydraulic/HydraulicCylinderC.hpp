@@ -49,38 +49,25 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running cylinderc creator" << std::endl;
         return new HydraulicCylinderC("CylinderC");
     }
 
-    HydraulicCylinderC(const string name,
-                       const double startposition   = 0.0,
-                       const double startvelocity   = 0.0,
-                       const double area1           = 1.0e-3,
-                       const double area2           = 1.0e-3,
-                       const double stroke          = 1.0,
-                       const double equivalentmass  = 1000.0,
-                       const double deadvolume1     = 0.01,//3.0e-4,
-                       const double deadvolume2     = 0.01,//3.0e-4,
-                       const double bp              = 10,
-                       const double betae           = 1.0e9,
-                       const double timestep        = 0.001)
-    : ComponentC(name, timestep)
+    HydraulicCylinderC(const string name) : ComponentC(name)
     {
         //Set member attributes
         mTypeName = "HydraulicCylinderC";
-        mStartPosition = startposition;
-        mStartVelocity = startvelocity;
+        mStartPosition = 0.0;
+        mStartVelocity = 0.0;
         mStartPressure1 = 0;
         mStartPressure2 = 0;
-        mArea1 = area1;
-        mArea2 = area2;
-        mStroke = stroke;
-        mEquivalentMass = equivalentmass;
-        mDeadVolume1 = deadvolume1;
-        mDeadVolume2 = deadvolume2;
-        mBp = bp;
-        mBetae = betae;
+        mArea1 = 1.0e-3;
+        mArea2 = 1.0e-3;
+        mStroke = 1.0;
+        mEquivalentMass = 1000.0;
+        mDeadVolume1 = 0.01;            //3.0e-4;
+        mDeadVolume2 = 0.01;            //3.0e-4;
+        mBp = 10;
+        mBetae = 1.0e9;
         mAlfaSpring = 0.5;
 
         //Add ports to the component
@@ -101,7 +88,8 @@ public:
         registerParameter("Betae", "Bulk Modulus", "[Pa]", mBetae);
     }
 
-	void initialize()
+
+    void initialize()
     {
         cout << "Startposition = " << mStartPosition << endl;
         mDelayedC1prim.setStepDelay(1);
@@ -134,7 +122,8 @@ public:
         mpP3->writeNode(NodeMechanic::VELOCITY,      -mStartVelocity);
         mpP3->writeNode(NodeMechanic::WAVEVARIABLE, mArea1*mStartPressure1 + mArea2*mStartPressure2);
         mpP3->writeNode(NodeMechanic::CHARIMP,      mZx);
-	}
+    }
+
 
     void simulateOneTimestep()
     {
@@ -249,9 +238,3 @@ public:
 };
 
 #endif // HYDRAULICCYLINDERC_HPP_INCLUDED
-
-
-
-
-
-

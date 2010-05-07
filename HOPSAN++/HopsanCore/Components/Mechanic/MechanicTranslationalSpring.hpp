@@ -20,21 +20,16 @@ private:
 public:
     static Component *Creator()
     {
-        //std::cout << "running translational spring creator" << std::endl;
         return new MechanicTranslationalSpring("TranslationalSpring");
     }
 
-    MechanicTranslationalSpring(const string name,
-                    const double springcoefficient = 100.0,
-                    const double timestep    = 0.001)
-    : ComponentC(name, timestep)
+    MechanicTranslationalSpring(const string name) : ComponentC(name)
     {
         //Set member attributes
         mTypeName = "MechanicTranslationalSpring";
-        mk   = springcoefficient;
-        mTimestep = timestep;
+        mk   = 100.0;
 
-		//Add ports to the component
+        //Add ports to the component
         mpP1 = addPowerPort("P1", "NodeMechanic");
         mpP2 = addPowerPort("P2", "NodeMechanic");
 
@@ -43,10 +38,11 @@ public:
     }
 
 
-	void initialize()
+    void initialize()
     {
-
+        //Nothing to initialize
     }
+
 
     void simulateOneTimestep()
     {

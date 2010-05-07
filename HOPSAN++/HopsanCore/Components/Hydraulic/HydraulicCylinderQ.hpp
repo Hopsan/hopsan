@@ -52,30 +52,20 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running cylinderq creator" << std::endl;
         return new HydraulicCylinderQ("CylinderQ");
     }
 
-    HydraulicCylinderQ(const string name,
-                       const double area1       = 0.0001,
-                       const double area2       = 0.0001,
-                       const double stroke      = 0.01,
-                       const double bp          = 0.0,
-                       const double mass        = 0.05,
-                       const double bl          = 0,
-                       const double kl          = 1000,
-                       const double timestep    = 0.001)
-        : ComponentQ(name, timestep)
+    HydraulicCylinderQ(const string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicCylinderQ";
-        mArea1  = area1;
-        mArea2  = area2;
-        mStroke = stroke;
-        mMass   = mass;
-        mBp     = bp;
-        mBl     = bl;
-        mKl     = kl;
-        mTao    = 3.0/2.0*mTimestep;        //Velocity filter time constant
+        mArea1  = 0.0001;
+        mArea2  = 0.0001;
+        mStroke = 0.01;
+        mMass   = 0.05;
+        mBp     = 0.0;
+        mBl     = 0;
+        mKl     = 1000;
+        mTao    = 3.0/2.0*mTimestep;        //Velocity filter time constant, should be in initialize?
 
         mpP1 = addPowerPort("P1", "NodeHydraulic");
         mpP2 = addPowerPort("P2", "NodeHydraulic");
@@ -89,6 +79,7 @@ public:
         registerParameter("Bl", "Viscous Friction of Load", "Ns/m", mBl);
         registerParameter("Kl", "Stiffness of Load", "N/m", mKl);
     }
+
 
     void initialize()
     {
@@ -115,6 +106,7 @@ public:
         //mPositionFilter.update(cx1-cx2);
         //mVelocityFilter.update(cx1-cx2);
     }
+
 
     void simulateOneTimestep()
     {

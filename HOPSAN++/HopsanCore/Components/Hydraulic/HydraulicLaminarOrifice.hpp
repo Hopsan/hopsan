@@ -17,17 +17,13 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running orifice creator" << std::endl;
         return new HydraulicLaminarOrifice("LaminarOrifice");
     }
 
-    HydraulicLaminarOrifice(const string name     = "LaminarOrifice",
-                            const double kc       = 1.0e-11,
-                            const double timestep = 0.001)
-        : ComponentQ(name, timestep)
+    HydraulicLaminarOrifice(const string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicLaminarOrifice";
-        mKc = kc;
+        mKc = 1.0e-11;
 
         mpP1 = addPowerPort("P1", "NodeHydraulic");
         mpP2 = addPowerPort("P2", "NodeHydraulic");

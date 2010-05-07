@@ -26,17 +26,13 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running Gain creator" << std::endl;
         return new SignalGain("Gain");
     }
 
-    SignalGain(const string name,
-                          const double gain     = 1.0,
-                          const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    SignalGain(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalGain";
-        mGain = gain;
+        mGain = 1.0;
 
         mpIn = addReadPort("in", "NodeSignal");
         mpOut = addWritePort("out", "NodeSignal");

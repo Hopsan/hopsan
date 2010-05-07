@@ -27,13 +27,10 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running volume creator" << std::endl;
         return new HydraulicSubSysExample("SubSysExample");
     }
 
-    HydraulicSubSysExample(const string name,
-                           const double timestep    = 0.001)
-    : ComponentSystem(name, timestep)
+    HydraulicSubSysExample(const string name) : ComponentSystem(name)
     {
         volumeL.setName("volumeL");
         orificeC.setName("orificeC");

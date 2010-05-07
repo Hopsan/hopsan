@@ -28,18 +28,13 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running lp2 filter creator" << std::endl;
         return new SignalLP2Filter("LP2Filter");
     }
 
-    SignalLP2Filter(const string name,
-                 const double cofrequency = 100,
-                 const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    SignalLP2Filter(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalLP2Filter";
-        mCofrequency = cofrequency;
-        mTimestep = timestep;
+        mCofrequency = 100;
 
         mpIn = addReadPort("in", "NodeSignal");
         mpOut = addWritePort("out", "NodeSignal");
@@ -48,12 +43,12 @@ public:
     }
 
 
-	void initialize()
-	{
-	    double num [3] = {1.0, 0.0, 0.0};
-	    double den [3] = {1.0, 2.0/mCofrequency, 1.0/pow(mCofrequency,2)};
+    void initialize()
+    {
+        double num [3] = {1.0, 0.0, 0.0};
+        double den [3] = {1.0, 2.0/mCofrequency, 1.0/pow(mCofrequency,2)};
         Filter.setCoefficients(num, den, mTimestep);
-	}
+    }
 
 
     void simulateOneTimestep()

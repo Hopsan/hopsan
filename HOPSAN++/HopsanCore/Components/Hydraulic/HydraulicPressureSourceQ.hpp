@@ -31,15 +31,12 @@ public:
         return new HydraulicPressureSourceQ("PressureSourceQ");
     }
 
-    HydraulicPressureSourceQ(const string name,
-                             const double pressure = 1.0e5,
-                             const double timestep = 0.001)
-	: ComponentQ(name, timestep)
+    HydraulicPressureSourceQ(const string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicPressureSourceQ";
         mStartPressure = 0.0;
         mStartFlow     = 0.0;
-        mPressure      = pressure;
+        mPressure      = 1.0e5;
 
         mpIn = addReadPort("in", "NodeSignal");
         mpP1 = addPowerPort("P1", "NodeHydraulic");
@@ -48,10 +45,10 @@ public:
     }
 
 
-	void initialize()
-	{
+    void initialize()
+    {
         //Nothing to initilize
-	}
+    }
 
 
     void simulateOneTimestep()

@@ -41,24 +41,16 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running Squarewave creator" << std::endl;
         return new SignalSquareWave("SquareWave");
     }
 
-
-    SignalSquareWave(const string name,
-                              const double starttime = 0.0,
-                              const double frequency = 1.0,
-                              const double amplitude = 1.0,
-                              const double basevalue = 0.0,
-                              const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    SignalSquareWave(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalSquareWave";
-        mStartTime = starttime;
-        mFrequency = frequency;
-        mAmplitude = amplitude;
-        mBaseValue = basevalue;
+        mStartTime = 0.0;
+        mFrequency = 1.0;
+        mAmplitude = 1.0;
+        mBaseValue = 0.0;
 
         mpOut = addWritePort("out", "NodeSignal");
 
@@ -69,10 +61,10 @@ public:
     }
 
 
-	void initialize()
-	{
+    void initialize()
+    {
         //Nothing to initilize
-	}
+    }
 
 
     void simulateOneTimestep()

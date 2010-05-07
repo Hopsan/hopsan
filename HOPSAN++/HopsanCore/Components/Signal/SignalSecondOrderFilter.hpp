@@ -34,17 +34,13 @@ public:
         return new SignalSecondOrderFilter("Filter");
     }
 
-    SignalSecondOrderFilter(const string name,
-                            const double min = -1.5E+300,
-                            const double max =  1.5E+300,
-                            const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    SignalSecondOrderFilter(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalSecondOrderFilter";
         mStartY = 0.0;
 
-        mMin = min;
-        mMax = max;
+        mMin = -1.5E+300;
+        mMax = 1.5E+300;
 
         mK = 1.0;
         mWnum = 1e10;
@@ -67,7 +63,7 @@ public:
 
     void initialize()
     {
-//	    double u0 = mpIn->readNode(NodeSignal::VALUE);
+        //double u0 = mpIn->readNode(NodeSignal::VALUE);
 
         double num[3];
         double den[3];

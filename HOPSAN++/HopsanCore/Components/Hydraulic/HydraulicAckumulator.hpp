@@ -28,32 +28,21 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running ackumulator creator" << std::endl;
         return new HydraulicAckumulator("Ackumulator");
     }
 
-    HydraulicAckumulator(const string name,
-                                const double pmin       = 1000000.0,
-                                const double vtot       = 0.005,
-                                const double voil       = 0.0,
-                                const double betae      = 1000000000.0,
-                                const double kappa      = 1.4,
-                                const double kce        = 0.0000000001,
-                                const double startpressure = 1000000.0,         //Start pressure, must beequal to or higher than pmin
-                                const double startflow = 0.0,                   //Initial flow into the accumulator
-                                const double timestep   = 0.001)
-        : ComponentQ(name, timestep)
+    HydraulicAckumulator(const string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicAckumulator";
-        mPmin                   = pmin;
-        mVtot                   = vtot;
-        mVoil                   = voil;
-        mVgas                   = vtot-voil;
-        mBetae                  = betae;
-        mKappa                  = kappa;
-        mKce                    = kce;
-        mStartPressure          = startpressure;
-        mStartFlow              = startflow;
+        mPmin                   = 1000000.0;
+        mVtot                   = 0.005;
+        mVoil                   = 0.0;
+        mVgas                   = mVtot-mVoil;
+        mBetae                  = 1000000000.0;
+        mKappa                  = 1.4;
+        mKce                    = 0.0000000001;
+        mStartPressure          = 1000000.0;             //Start pressure, must beequal to or higher than pmin
+        mStartFlow              = 0.0;                   //Initial flow into the accumulator
 
         mpP1 = addPowerPort("P1", "NodeHydraulic");     //External port
         mpOut = addWritePort("out", "NodeSignal");     //Internal pressure output
@@ -173,7 +162,6 @@ public:
         {
             mpOut->writeNode(NodeSignal::VALUE, mVoil);
         }
-
     }
 };
 

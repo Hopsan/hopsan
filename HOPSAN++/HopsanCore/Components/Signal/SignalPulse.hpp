@@ -38,24 +38,16 @@ private:
 public:
     static Component *Creator()
     {
-        std::cout << "running Pulse creator" << std::endl;
         return new SignalPulse("Pulse");
     }
 
-
-    SignalPulse(const string name,
-                          const double basevalue = 0.0,
-                          const double starttime = 1.0,
-                          const double stoptime = 2.0,
-                          const double amplitude = 1.0,
-                          const double timestep = 0.001)
-	: ComponentSignal(name, timestep)
+    SignalPulse(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalPulse";
-        mBaseValue = basevalue;
-        mStartTime = starttime;
-        mStopTime = stoptime;
-        mAmplitude = amplitude;
+        mBaseValue = 0.0;
+        mStartTime = 1.0;
+        mStopTime = 2.0;
+        mAmplitude = 1.0;
 
         mpOut = addWritePort("out", "NodeSignal");
 
@@ -66,10 +58,10 @@ public:
     }
 
 
-	void initialize()
-	{
+    void initialize()
+    {
         //Nothing to initilize
-	}
+    }
 
 
     void simulateOneTimestep()
