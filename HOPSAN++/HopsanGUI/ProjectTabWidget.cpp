@@ -433,6 +433,10 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             mIsCreatingConnector = false;
         }
     }
+    else if(event->modifiers() and Qt::ControlModifier and Qt::ShiftModifier and event->key() == Qt::Key_Left)
+        emit keyPressCtrlShiftLeft();
+    else if(event->modifiers() and Qt::ControlModifier and Qt::ShiftModifier and event->key() == Qt::Key_Right)
+        emit keyPressCtrlShiftRight();
     else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Up)
         emit keyPressUp();
     else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Down)
@@ -441,10 +445,6 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         emit keyPressLeft();
     else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Right)
         emit keyPressRight();
-    else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_A)
-        emit keyPressCtrlA();
-    else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_S)
-        emit keyPressCtrlS();
     else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_A)
         this->selectAll();
     else if (event->modifiers() and Qt::ControlModifier)
@@ -466,8 +466,11 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 }
 
 
+//! Defines what shall happen when a key is released.
+//! @param event contains information about the keypress operation.
 void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 {
+        // Releasing ctrl key while creating a connector means return from diagonal mode to orthogonal mode.
     if(event->key() == Qt::Key_Control and mIsCreatingConnector)
     {
         mpTempConnector->makeDiagonal(false);
@@ -486,10 +489,10 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseMoveEvent(event);
-    QCursor cursor;
-    //qDebug() << "X=" << this->mapFromGlobal(cursor.pos()).x() << "  " << "Y=" << this->mapFromGlobal(cursor.pos()).y();
-    this->setBackgroundBrush(mBackgroundColor);
 
+    this->setBackgroundBrush(mBackgroundColor);     //Refresh the viewport
+
+        //If creating connector, the end port shall be updated to the mouse position.
     if (this->mIsCreatingConnector)
     {
         mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
@@ -542,7 +545,9 @@ GUIObject *GraphicsView::getGUIObject(QString name)
 }
 
 
-//! Begin creation of connector or complete creation of connector depending on the mIsCreatingConnector boolean.
+//! Begins creation of connector or complete creation of connector depending on the mIsCreatingConnector flag.
+//! @param pPort is a pointer to the clicked port, either start or end depending on the mIsCreatingConnector flag.
+//! @param doNotRegisterUndo is true if the added connector shall not be registered in the undo stack, for example if this function is called by a redo function.
 void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
 {
         //When clicking start port
@@ -595,9 +600,6 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
             mpTempConnector->getStartPort()->hide();
             mpTempConnector->getEndPort()->hide();
 
-//            std::stringstream tempStream;
-//            tempStream << mpTempConnector->getStartPort()->getGuiObject()->getName().toStdString() << " " << mpTempConnector->getStartPort()->getPortNumber() << " " <<
-//                          mpTempConnector->getEndPort()->getGuiObject()->getName().toStdString() << " " << mpTempConnector->getEndPort()->getPortNumber();
             this->mConnectorVector.append(mpTempConnector);
         }
         emit checkMessages();
@@ -610,10 +612,11 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
 }
 
 
+//! Removes the connector from the model.
+//! @param pConnector is a pointer to the connector to remove.
+//! @param doNotRegisterUndo is true if the removal of the connector shall not be registered in the undo stack, for example if this function is called by a redo-function.
 void GraphicsView::removeConnector(GUIConnector* pConnector, bool doNotRegisterUndo)
 {
-    qDebug() << "removeConnector()";
-
     bool doDelete = false;
     int i;
 
@@ -652,7 +655,7 @@ void GraphicsView::removeConnector(GUIConnector* pConnector, bool doNotRegisterU
 }
 
 
-
+//! Selects all objects and connectors.
 void GraphicsView::selectAll()
 {
         //Select all components

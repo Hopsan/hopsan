@@ -373,8 +373,8 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
             this->mpSelectionBox->setActive();
             connect(this->mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             connect(this->mpParentGraphicsView, SIGNAL(keyPressR()), this, SLOT(rotate()));
-            connect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlA()), this, SLOT(flipVertical()));
-            connect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlS()), this, SLOT(flipHorizontal()));
+            connect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlShiftLeft()), this, SLOT(flipVertical()));
+            connect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlShiftRight()), this, SLOT(flipHorizontal()));
             connect(this->mpParentGraphicsView, SIGNAL(keyPressUp()), this, SLOT(moveUp()));
             connect(this->mpParentGraphicsView, SIGNAL(keyPressDown()), this, SLOT(moveDown()));
             connect(this->mpParentGraphicsView, SIGNAL(keyPressLeft()), this, SLOT(moveLeft()));
@@ -385,8 +385,8 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
         {
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressR()), this, SLOT(rotate()));
-            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlA()), this, SLOT(flipVertical()));
-            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlS()), this, SLOT(flipHorizontal()));
+            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlShiftLeft()), this, SLOT(flipVertical()));
+            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlShiftRight()), this, SLOT(flipHorizontal()));
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressUp()), this, SLOT(moveUp()));
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressDown()), this, SLOT(moveDown()));
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressLeft()), this, SLOT(moveLeft()));
