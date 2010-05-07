@@ -9,6 +9,7 @@
 
 #include "AppearanceData.h"
 #include "qdebug.h"
+#include "GUIUtilities.h"
 
 AppearanceData::AppearanceData()
 {
@@ -169,34 +170,39 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
 
             QTextStream portStream(&lineStr);
 
-            portStream >> readStr;
+//            portStream >> readStr;
 //            qDebug() << "Read word: " << readStr;
 
-            QString portName;
-            if(readStr.trimmed().at(0) != '\"')
+            QString portName=readName(portStream);
+            if(portName == "")
             {
                 qDebug() << "FEL I PORTNAMN";
                 return false;
             }
-            else if(readStr.trimmed().at(readStr.size()-1) != '\"')
-            {
-                while((readStr.trimmed().at(readStr.size()-1) != '\"') || (portStream.atEnd()))
-                {
-                    if(portStream.atEnd())
-                    {
-                        qDebug() << "OFULLSTANDIGT PORTNAMN: " << readStr;
-                        return false;
-                    }
-                    //readStr.append(" ");
-                    QString tmpStr;
-                    portStream >> tmpStr;
-                    readStr.append(" ").append(tmpStr);
-                }
-            }
-            readStr=readStr.trimmed();
-
-            portName = readStr.mid(1);
-            portName.chop(1);
+//            if(readStr.trimmed().at(0) != '\"')
+//            {
+//                qDebug() << "FEL I PORTNAMN";
+//                return false;
+//            }
+//            else if(readStr.trimmed().at(readStr.size()-1) != '\"')
+//            {
+//                while((readStr.trimmed().at(readStr.size()-1) != '\"') || (portStream.atEnd()))
+//                {
+//                    if(portStream.atEnd())
+//                    {
+//                        qDebug() << "OFULLSTANDIGT PORTNAMN: " << readStr;
+//                        return false;
+//                    }
+//                    //readStr.append(" ");
+//                    QString tmpStr;
+//                    portStream >> tmpStr;
+//                    readStr.append(" ").append(tmpStr);
+//                }
+//            }
+//            readStr=readStr.trimmed();
+//
+//            portName = readStr.mid(1);
+//            portName.chop(1);
 //            qDebug() << "Final port name: " << portName;
 
             PortAppearance portapp;
