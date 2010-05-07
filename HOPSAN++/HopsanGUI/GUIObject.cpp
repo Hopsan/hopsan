@@ -560,17 +560,22 @@ void GUIObject::moveRight()
 
 //! Slot that flips the object vertically.
 //! @see flipHorizontal()
-void GUIObject::flipVertical()
+void GUIObject::flipVertical(bool doNotRegisterUndo)
 {
-    this->rotate();
-    this->rotate();
-    this->flipHorizontal();
+    this->rotate(true);
+    this->rotate(true);
+    this->flipHorizontal(true);
+    if(!doNotRegisterUndo)
+    {
+        mpParentGraphicsView->undoStack->registerVerticalFlip(this);
+
+    }
 }
 
 
 //! Slot that flips the object horizontally.
 //! @see flipVertical()
-void GUIObject::flipHorizontal()
+void GUIObject::flipHorizontal(bool doNotRegisterUndo)
 {
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
@@ -586,7 +591,6 @@ void GUIObject::flipHorizontal()
                 mPortListPtrs.value(i)->scale(-1,1);
                 mPortListPtrs.value(i)->translate(-mPortListPtrs.value(i)->boundingRect().width(), 0);
             }
-
         }
     }
 
@@ -618,6 +622,10 @@ void GUIObject::flipHorizontal()
             mPortListPtrs.value(i)->scale(-1,1);
             mPortListPtrs.value(i)->translate(-mPortListPtrs.value(i)->boundingRect().width(), 0);
         }
+    }
+    if(!doNotRegisterUndo)
+    {
+        mpParentGraphicsView->undoStack->registerHorizontalFlip(this);
     }
 }
 

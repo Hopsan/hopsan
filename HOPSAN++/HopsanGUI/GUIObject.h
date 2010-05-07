@@ -75,8 +75,8 @@ public slots:
      void moveDown();
      void moveLeft();
      void moveRight();
-     void flipVertical();
-     void flipHorizontal();
+     void flipVertical(bool doNotRegisterUndo = false);
+     void flipHorizontal(bool doNotRegisterUndo = false);
      void hideName();
      void showName();
      void setIcon(bool useIso);

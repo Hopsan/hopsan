@@ -271,6 +271,16 @@ void UndoStack::undoOneStep()
                 mpParentView->getGUIObject(objectName)->rotate(true);
                 mpParentView->getGUIObject(objectName)->rotate(true);
             }
+            else if( mStack[undoPosition][i][0] == "VERTICALFLIP" )
+            {
+                QString objectName = mStack[undoPosition][i][1];
+                mpParentView->getGUIObject(objectName)->flipVertical(true);
+            }
+            else if( mStack[undoPosition][i][0] == "HORIZONTALFLIP" )
+            {
+                QString objectName = mStack[undoPosition][i][1];
+                mpParentView->getGUIObject(objectName)->flipHorizontal(true);
+            }
         }
         mCurrentStackPosition = undoPosition - 1;
         mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
@@ -647,6 +657,24 @@ void UndoStack::registerRotatedObject(GUIObject *item)
 }
 
 
+//! Register function for vertical flip of an object.
+//! @param item is a pointer to the object.
+void UndoStack::registerVerticalFlip(GUIObject *item)
+{
+    QStringList tempStringList;
+    tempStringList << "VERTICALFLIP" << item->getName();
+    this->insertPost(tempStringList);
+}
+
+
+//! Register function for horizontal flip of an object.
+//! @param item is a pointer to the object.
+void UndoStack::registerHorizontalFlip(GUIObject *item)
+{
+    QStringList tempStringList;
+    tempStringList << "HORIZONTALFLIP" << item->getName();
+    this->insertPost(tempStringList);
+}
 
 
 //! Construtor.
@@ -675,6 +703,9 @@ UndoWidget::UndoWidget(MainWindow *parent)
     mUndoTable = new QTableWidget(0,1);
     mUndoTable->setBaseSize(400, 500);
     mUndoTable->setColumnWidth(0, 400);
+    mUndoTable->horizontalHeader()->setStretchLastSection(true);
+    mUndoTable->horizontalHeader()->hide();
+
     //mUndoTable->
 
     QGridLayout *mainLayout = new QGridLayout;
@@ -716,6 +747,35 @@ void UndoWidget::refreshList()
 
     int x = 0;
 
+    if(mTempStack.empty())
+    {
+        item = new QTableWidgetItem();
+        item->setFlags(!Qt::ItemIsEditable);
+        item->setText("No undo history found.");
+        item->setBackgroundColor(QColor("white"));
+        mUndoTable->insertRow(x);
+        mUndoTable->setItem(x,0,item);
+        ++x;
+        mUndoTable->verticalHeader()->hide();
+        item->setTextAlignment(Qt::AlignCenter);
+    }
+    else if(mTempStack[0].empty())
+    {
+        item = new QTableWidgetItem();
+        item->setFlags(!Qt::ItemIsEditable);
+        item->setText("No undo history found.");
+        item->setBackgroundColor(QColor("white"));
+        mUndoTable->insertRow(x);
+        mUndoTable->setItem(x,0,item);
+        ++x;
+        mUndoTable->verticalHeader()->hide();
+        item->setTextAlignment(Qt::AlignCenter);
+    }
+    else
+    {
+        mUndoTable->verticalHeader()->show();
+    }
+
     for(int i = mTempStack.size()-1; i != -1; --i)
     {
         for(int j = mTempStack[i].size()-1; j != -1; --j)
@@ -754,6 +814,14 @@ void UndoWidget::refreshList()
             else if (mTempStack[i][j][0] == "ROTATEDOBJECT")
             {
                 item->setText("Rotated Object");
+            }
+            else if (mTempStack[i][j][0] == "VERTICALFLIP")
+            {
+                item->setText("Flipped Vertical");
+            }
+            else if (mTempStack[i][j][0] == "HORIZONTALFLIP")
+            {
+                item->setText("Flipped Horizontal");
             }
             else
             {

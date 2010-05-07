@@ -31,6 +31,8 @@ public:
     void registerModifiedConnector(QPointF oldPos, QPointF newPos, GUIConnector *item, int lineNumber);
     void registerMovedObject(QPointF oldPos, QPointF newPos, QString objectName);
     void registerRotatedObject(GUIObject *item);
+    void registerVerticalFlip(GUIObject *item);
+    void registerHorizontalFlip(GUIObject *item);
     void clear();
     void newPost();
     void insertPost(QStringList(list));
