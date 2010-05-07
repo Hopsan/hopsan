@@ -1030,7 +1030,8 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 {
     mpParentProjectTabWidget = parent;
 
-    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent())); //Ugly!!!
+    MainWindow *pMainWindow = mpParentProjectTabWidget->mpParentMainWindow;
+    //MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent())); //Ugly!!!
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
     //Core interaction
@@ -1458,6 +1459,7 @@ void ProjectTabWidget::loadModel()
 
         if ( inputWord == "CONNECT" )
         {
+
             GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
             startComponentName = readName(inputStream);
             startPortName = readName(inputStream);
@@ -1466,52 +1468,52 @@ void ProjectTabWidget::loadModel()
             GUIPort *startPort = pCurrentView->getGUIObject(startComponentName)->getPort(startPortName);
             GUIPort *endPort = pCurrentView->getGUIObject(endComponentName)->getPort(endPortName);
 
-            QVector<QPointF> tempPointVector;
-            qreal tempX, tempY;
-
-            QString restOfLineString = inputStream.readLine();
-            QTextStream restOfLineStream(&restOfLineString);
-            while( !restOfLineStream.atEnd() )
-            {
-                restOfLineStream >> tempX;
-                restOfLineStream >> tempY;
-                tempPointVector.push_back(QPointF(tempX, tempY));
-            }
-
-            //! @todo: Store useIso bool in model file and pick the correct line styles when loading
-            GUIConnector *pTempConnector;
-
-            //! @todo Avoid core access here, shoudl make this a function that can be called later if we change iso/user graphics mode
-            QString type, style;
-            if((startPort->mpCorePort->getNodeType() == "NodeHydraulic") || (startPort->mpCorePort->getNodeType() == "NodeMechanic"))
-                type = "Power";
-            else if(startPort->mpCorePort->getNodeType() == "NodeSignal")
-                type = "Signal";
-            if(pCurrentTab->useIsoGraphics)
-                style = "Iso";
-            else
-                style = "User";
-            pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, pCurrentView->getPen("Primary", type, style),
-                                              pCurrentView->getPen("Active", type, style), pCurrentView->getPen("Hover", type, style), pCurrentView);
-
-            pCurrentView->scene()->addItem(pTempConnector);
-
-            //Hide connected ports
-            startPort->hide();
-            endPort->hide();
-
-            connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
-            connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
-
-//                std::stringstream tempStream;
-//                tempStream << startPort->getGuiObject()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
-//                              endPort->getGuiObject()->getName().toStdString() << " " << endPort->getPortNumber();
-            pCurrentView->mConnectorVector.append(pTempConnector);
             bool success = pCurrentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort); //This is core access
             if (!success)
             {
                 qDebug() << "Unsuccessful connection try" << endl;
-                assert(false); //!< @todo Do not assert here, clean up instead
+            }
+            else
+            {
+
+                QVector<QPointF> tempPointVector;
+                qreal tempX, tempY;
+
+                QString restOfLineString = inputStream.readLine();
+                QTextStream restOfLineStream(&restOfLineString);
+                while( !restOfLineStream.atEnd() )
+                {
+                    restOfLineStream >> tempX;
+                    restOfLineStream >> tempY;
+                    tempPointVector.push_back(QPointF(tempX, tempY));
+                }
+
+                //! @todo: Store useIso bool in model file and pick the correct line styles when loading
+                GUIConnector *pTempConnector;
+
+                //! @todo Avoid core access here, shoudl make this a function that can be called later if we change iso/user graphics mode
+                QString type, style;
+                if((startPort->mpCorePort->getNodeType() == "NodeHydraulic") || (startPort->mpCorePort->getNodeType() == "NodeMechanic"))
+                    type = "Power";
+                else if(startPort->mpCorePort->getNodeType() == "NodeSignal")
+                    type = "Signal";
+                if(pCurrentTab->useIsoGraphics)
+                    style = "Iso";
+                else
+                    style = "User";
+                pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, pCurrentView->getPen("Primary", type, style),
+                                                  pCurrentView->getPen("Active", type, style), pCurrentView->getPen("Hover", type, style), pCurrentView);
+
+                pCurrentView->scene()->addItem(pTempConnector);
+
+                //Hide connected ports
+                startPort->hide();
+                endPort->hide();
+
+                connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+                connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+
+                pCurrentView->mConnectorVector.append(pTempConnector);
             }
         }
     }

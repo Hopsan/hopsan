@@ -113,7 +113,7 @@ void UndoStack::undoOneStep()
                 mpParentView->getGUIObject(componentName)->setNameTextPos(nameTextPos);
                 while(mpParentView->getGUIObject(componentName)->rotation() != rotation)
                 {
-                    mpParentView->getGUIObject(componentName)->rotate();
+                    mpParentView->getGUIObject(componentName)->rotate(true);
                 }
             }
             else if ( mStack[undoPosition][i][0] == "DELETEDCONNECTOR" )
