@@ -1,6 +1,5 @@
 NAME MechanicPositionSensor
-ISOICON positionsensor_iso.svg
-USERICON positionsensor_user.svg
+ISOICON positionsensor.svg
 ICONROTATION ON
 PORT "P1" 0.5 1.0 90
 PORT "out" 0.5 0.0 270
