@@ -342,9 +342,14 @@ void GUIObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 //! Defines what shall happen if a mouse key is pressed while hovering an object.
 void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+        //Store old positions for all components, in case more than one is selected
     if(event->button() == Qt::LeftButton)
     {
-        mOldPos = this->pos();
+        QMap<QString, GUIObject *>::iterator it;
+        for(it = mpParentGraphicsView->mGUIObjectMap.begin(); it != mpParentGraphicsView->mGUIObjectMap.end(); ++it)
+        {
+            it.value()->mOldPos = it.value()->pos();
+        }
     }
     QGraphicsWidget::mousePressEvent(event);
 }
@@ -353,10 +358,16 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 //! Defines what shall happen if a mouse key is released while hovering an object.
 void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    if((mOldPos != this->pos()) and (event->button() == Qt::LeftButton))
+    QMap<QString, GUIObject *>::iterator it;
+    for(it = mpParentGraphicsView->mGUIObjectMap.begin(); it != mpParentGraphicsView->mGUIObjectMap.end(); ++it)
     {
-        mpParentGraphicsView->undoStack->registerMovedObject(mOldPos, this->pos(), this->getName());
+        if((it.value()->mOldPos != it.value()->pos()) and (event->button() == Qt::LeftButton))
+        {
+            mpParentGraphicsView->undoStack->registerMovedObject(it.value()->mOldPos, it.value()->pos(), it.value()->getName());
+        }
     }
+
+
     QGraphicsWidget::mouseReleaseEvent(event);
 }
 
