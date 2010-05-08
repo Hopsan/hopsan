@@ -1316,6 +1316,8 @@ GUISystemPort::GUISystemPort(ComponentSystem* pCoreComponentSystem, AppearanceDa
         qreal x = i.value().x;
         qreal y = i.value().y;
 
+        i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
+
         //*****Core Interaction*****
         //Systemports do not exit in the model by default and hav to be created
         Port* pCorePort = mpCoreComponentSystem->addSystemPort(i.key().toStdString());

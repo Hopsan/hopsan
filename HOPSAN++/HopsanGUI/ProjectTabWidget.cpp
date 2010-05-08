@@ -556,6 +556,7 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
         std::cout << "GraphicsView: " << "Adding connector";
         QPointF oldPos = pPort->mapToScene(pPort->boundingRect().center());
 
+        //! @todo We can not determine appearcne of connector based on first port clicked, This will fail when we are connecting system ports and are selecting the system port first
         if(this->mpParentProjectTab->useIsoGraphics)
         {
             if((pPort->mpCorePort->getNodeType() == "NodeHydraulic") | (pPort->mpCorePort->getNodeType() == "NodeMechanic"))
