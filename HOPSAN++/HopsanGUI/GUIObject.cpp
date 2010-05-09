@@ -1003,7 +1003,8 @@ void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 //! Returns a string with the component type.
 QString GUIComponent::getTypeName()
 {
-    return this->mComponentTypeName;
+//    return this->mComponentTypeName;
+    return mAppearanceData.getTypeName();
 }
 
 //! @brief Set a parameter value, wrapps hopsan core

@@ -101,6 +101,7 @@ void UndoStack::undoOneStep()
             if( mStack[undoPosition][i][0] == "DELETEDOBJECT" )
             {
                 QString componentType = mStack[undoPosition][i][1];
+                qDebug() << "componentType = " << componentType;
                 QString componentName = mStack[undoPosition][i][2];
                 int posX = mStack[undoPosition][i][3].toInt();
                 int posY = mStack[undoPosition][i][4].toInt();
@@ -347,7 +348,9 @@ void UndoStack::redoOneStep()
                 int nameTextPos = mStack[mCurrentStackPosition][i][6].toInt();
 
                 //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
+                qDebug() << "Debug 1";
                 AppearanceData appearanceData = *mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
+                qDebug() << "Debug 2";
                 mpParentView->addGUIObject(componentType, appearanceData, QPoint(posX, posY), 0, componentName, false, true);
                 mpParentView->getGUIObject(componentName)->setNameTextPos(nameTextPos);
                 while(mpParentView->getGUIObject(componentName)->rotation() != rotation)
@@ -475,7 +478,7 @@ void UndoStack::redoOneStep()
 }
 
 
-//! Register function for component
+//! Register function for deleted objects
 //! @param item is a pointer to the component about to be deleted.
 void UndoStack::registerDeletedObject(GUIObject *item)
 {
@@ -491,6 +494,7 @@ void UndoStack::registerDeletedObject(GUIObject *item)
     rotationString.setNum(item->rotation());
     nameTextPosString.setNum(item->getNameTextPos());
     tempStringList << "DELETEDOBJECT" << item->getTypeName() << item->getName() << xPosString << yPosString << rotationString << nameTextPosString;
+    qDebug() << "typeName = " << item->getTypeName();
     this->insertPost(tempStringList);
 
     //! @todo ugly quickhack for now dont save parameters for systemport or group
@@ -687,9 +691,9 @@ UndoWidget::UndoWidget(MainWindow *parent)
     this->resize(400,500);
     this->setWindowTitle("Undo History");
 
-    hideButton = new QPushButton(tr("&Hide"));
-    hideButton->setAutoDefault(true);
-    connect(hideButton, SIGNAL(pressed()), this, SLOT(hide()));
+//    hideButton = new QPushButton(tr("&Hide"));
+//    hideButton->setAutoDefault(true);
+//    connect(hideButton, SIGNAL(pressed()), this, SLOT(hide()));
 
     redoButton = new QPushButton(tr("&Redo"));
     redoButton->setAutoDefault(true);
@@ -717,7 +721,7 @@ UndoWidget::UndoWidget(MainWindow *parent)
     mainLayout->addWidget(undoButton, 1, 0);
     mainLayout->addWidget(redoButton, 1, 1);
     mainLayout->addWidget(clearButton, 1, 2);
-    mainLayout->addWidget(hideButton, 1, 3);
+    //mainLayout->addWidget(hideButton, 1, 3);
     //mainLayout->addWidget(extension, 1, 0, 1, 2);
     setLayout(mainLayout);
 }

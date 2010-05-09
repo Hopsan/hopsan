@@ -424,5 +424,15 @@ void MainWindow::openOptions()
 //! Opens the undo widget.
 void MainWindow::openUndo()
 {
-    this->mpUndoWidget->show();
+    //this->mpUndoWidget->show();
+
+    QDockWidget *undoDock = new QDockWidget(tr("Undo History"), this);
+    undoDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    //VariableListDialog *variableList = new VariableListDialog(varPlotDock);
+
+    undoDock->setWidget(mpUndoWidget);
+    //variableList->show();
+    addDockWidget(Qt::RightDockWidgetArea, undoDock);
+
+    mpUndoWidget->refreshList();
 }
