@@ -336,6 +336,7 @@ void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appear
 //
 //}
 
+//! @brief A function that ads a system port to the current system
 void GraphicsView::addSystemPort()
 {
     qDebug() <<"Adding a system port";
@@ -633,6 +634,7 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
         std::cout << "GraphicsView: " << "Adding connector";
         QPointF oldPos = pPort->mapToScene(pPort->boundingRect().center());
 
+        //*****Core Interaction*****
         //! @todo We can not determine appearcne of connector based on first port clicked, This will fail when we are connecting system ports and are selecting the system port first
         if(this->mpParentProjectTab->useIsoGraphics)
         {
@@ -648,6 +650,7 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
             else if(pPort->mpCorePort->getNodeType() == "NodeSignal")
                 mpTempConnector = new GUIConnector(oldPos, getPen("Primary", "Signal", "User"), getPen("Active", "Signal", "User"), getPen("Hover", "Signal", "User"), this);
         }
+        //**************************
         this->scene()->addItem(mpTempConnector);
         this->mIsCreatingConnector = true;
         pPort->getGuiObject()->addConnector(mpTempConnector);
@@ -663,7 +666,7 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
         //When clicking end port
     else
     {
-        //Core interaction
+        //*****Core Interaction*****
         Port *start_port = mpTempConnector->getStartPort()->mpCorePort;
         Port *end_port = pPort->mpCorePort;
         bool success = mpCoreComponentSystem->connect(start_port, end_port);
@@ -681,7 +684,8 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
             this->mConnectorVector.append(mpTempConnector);
         }
         emit checkMessages();
-        //
+        //**************************
+
 
         undoStack->newPost();
         if(!doNotRegisterUndo)
@@ -1103,12 +1107,12 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     //MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent())); //Ugly!!!
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
-    //Core interaction
+    //*****Core Interaction*****
     mpCoreComponentSystem = mpParentProjectTabWidget->mpHopsanCore->CreateComponentSystem();
     mpCoreComponentSystem->setDesiredTimestep(.001);
     mpCoreComponentSystem->setTypeCQS("S");
     emit checkMessages();
-    //
+    //**************************
 
     double timeStep = mpCoreComponentSystem->getDesiredTimeStep();
     mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->setTimeStepLabel(timeStep);
