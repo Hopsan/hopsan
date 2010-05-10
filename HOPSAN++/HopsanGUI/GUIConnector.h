@@ -44,7 +44,7 @@ public:
     bool isMakingDiagonal();
     bool isActive();
     void saveToTextStream(QTextStream &rStream);
-    GraphicsView *mpParentView;
+    GraphicsView *mpParentGraphicsView;
 
 public slots:
     void drawConnector();

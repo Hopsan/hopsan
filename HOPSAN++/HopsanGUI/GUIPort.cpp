@@ -22,7 +22,7 @@ GUIPort::GUIPort(Port *corePort, qreal xpos, qreal ypos, PortAppearance* pPortAp
     mpCorePort = corePort;
     //**************************
 
-    mpParentView = pParent->mpParentGraphicsView;
+    mpParentGraphicsView = pParent->mpParentGraphicsView;
     mpParentGuiObject = pParent;
     mpPortAppearance = pPortAppearance;
 
@@ -222,7 +222,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 //! Returns a pointer to the GraphicsView that the port belongs to.
 QGraphicsView *GUIPort::getParentView()
 {
-    return mpParentView;
+    return mpParentGraphicsView;
 }
 
 

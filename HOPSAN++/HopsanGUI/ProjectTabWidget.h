@@ -68,8 +68,8 @@ public:
 signals:
     void keyPressDelete();
     void keyPressR();
-    void keyPressCtrlShiftLeft();
-    void keyPressCtrlShiftRight();
+    void keyPressShiftLeft();
+    void keyPressShiftRight();
     void keyPressUp();
     void keyPressDown();
     void keyPressLeft();
@@ -119,6 +119,8 @@ private:
     //QList<int> mCopyDataRot;
     //QList<QPointF> mCopyDataPos;
     //! @todo QMap no good means problem if we rename need to loop around the rename like in coore
+    bool isObjectSelected();
+    bool isConnectorSelected();
     void createActions();
     void createMenus();
     void addSystemPort(QPoint position, QString name=QString(), bool startSelected = false);

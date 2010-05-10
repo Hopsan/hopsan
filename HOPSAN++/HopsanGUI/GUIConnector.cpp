@@ -19,7 +19,7 @@
 GUIConnector::GUIConnector(QPointF startpos, QPen primaryPen, QPen activePen, QPen hoverPen, GraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
-    this->mpParentView = parentView;
+    this->mpParentGraphicsView = parentView;
 
     setFlags(QGraphicsItem::ItemIsFocusable);
 
@@ -50,7 +50,7 @@ GUIConnector::GUIConnector(QPointF startpos, QPen primaryPen, QPen activePen, QP
 //! @param parent is the parent of the port.
 GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, QPen primaryPen, QPen activePen, QPen hoverPen, GraphicsView *parentView, QGraphicsItem *parent)
 {
-    this->mpParentView = parentView;
+    this->mpParentGraphicsView = parentView;
     setFlags(QGraphicsItem::ItemIsFocusable);
     mpStartPort = startPort;
     mpEndPort = endPort;
@@ -124,18 +124,18 @@ GUIConnector::~GUIConnector()
 {
     //qDebug() << this->getNumberOfLines();
 
-    //mpParentView->undoStack->registerDeletedConnector(this);
+    //mpParentGraphicsView->undoStack->registerDeletedConnector(this);
 
 //    QMap<QString, GUIConnector *>::iterator it;
-//    for(it = mpParentView->mConnectorVector.begin(); it!=mpParentView->mConnectorVector.end(); ++it)
+//    for(it = mpParentGraphicsView->mConnectorVector.begin(); it!=mpParentGraphicsView->mConnectorVector.end(); ++it)
 //    {
-//        if(mpParentView->mConnectorVector.empty())
+//        if(mpParentGraphicsView->mConnectorVector.empty())
 //        {
 //            break;
 //        }
 //        else if(it.value() = this)
 //        {
-//            mpParentView->mConnectorVector.erase(it);
+//            mpParentGraphicsView->mConnectorVector.erase(it);
 //        }
 //    }
 
@@ -254,7 +254,7 @@ void GUIConnector::setEndPort(GUIPort *port)
             mPoints[mPoints.size()-3] = QPointF(mPoints[mPoints.size()-3].x(), mPoints[mPoints.size()-3].y() + 20);
         }
         this->drawConnector();
-        this->mpParentView->setBackgroundBrush(this->mpParentView->mBackgroundColor);
+        this->mpParentGraphicsView->setBackgroundBrush(this->mpParentGraphicsView->mBackgroundColor);
     }
 
     this->updateEndPoint(port->mapToScene(port->boundingRect().center()));
@@ -563,7 +563,7 @@ void GUIConnector::makeDiagonal(bool enable)
         mMakingDiagonal = true;
         removePoint();
         mGeometries.back() = GUIConnector::DIAGONAL;
-        mPoints.back() = mpParentView->mapToScene(mpParentView->mapFromGlobal(cursor.pos()));
+        mPoints.back() = mpParentGraphicsView->mapToScene(mpParentGraphicsView->mapFromGlobal(cursor.pos()));
         drawConnector();
     }
     else
@@ -586,7 +586,7 @@ void GUIConnector::makeDiagonal(bool enable)
                 mGeometries.back() = GUIConnector::VERTICAL;
             mPoints.back() = QPointF(mPoints[mPoints.size()-2].x(), mPoints.back().y());
         }
-        addPoint(mpParentView->mapToScene(mpParentView->mapFromGlobal(cursor.pos())));
+        addPoint(mpParentGraphicsView->mapToScene(mpParentGraphicsView->mapFromGlobal(cursor.pos())));
         drawConnector();
         mMakingDiagonal = false;
     }
@@ -641,7 +641,7 @@ void GUIConnector::selectIfBothComponentsSelected()
 //! @see setPassive()
 void GUIConnector::setActive()
 {
-    connect(this->mpParentView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+    connect(this->mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
     if(this->mEndPortConnected)
     {
         mIsActive = true;
@@ -658,7 +658,7 @@ void GUIConnector::setActive()
 //! @see setActive()
 void GUIConnector::setPassive()
 {
-    disconnect(this->mpParentView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+    disconnect(this->mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
     if(this->mEndPortConnected)
     {
         mIsActive = false;
@@ -703,14 +703,14 @@ void GUIConnector::setUnHovered()
 //! Asks my parent to delete myself.
 void GUIConnector::deleteMe()
 {
-    mpParentView->removeConnector(this, false);
+    mpParentGraphicsView->removeConnector(this, false);
 }
 
 
 //! Asks my parent to delete myself, and tells it to not add me to the undo stack.
 void GUIConnector::deleteMeWithNoUndo()
 {
-    mpParentView->removeConnector(this, true);
+    mpParentGraphicsView->removeConnector(this, true);
 }
 
 
@@ -807,7 +807,8 @@ void GUIConnectorLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     if((this->pos() != mOldPos) and (event->button() == Qt::LeftButton))
     {
-        mpParentGUIConnector->mpParentView->undoStack->registerModifiedConnector(mOldPos, this->pos(), mpParentGUIConnector, getLineNumber());
+        mpParentGUIConnector->mpParentGraphicsView->undoStack->newPost();
+        mpParentGUIConnector->mpParentGraphicsView->undoStack->registerModifiedConnector(mOldPos, this->pos(), mpParentGUIConnector, getLineNumber());
     }
     QGraphicsLineItem::mouseReleaseEvent(event);
 }

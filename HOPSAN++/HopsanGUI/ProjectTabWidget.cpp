@@ -94,6 +94,36 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
     connect(pMainWindow->mpUndoWidget->clearButton, SIGNAL(pressed()), this, SLOT(clearUndo()));
 }
 
+
+//! @todo Finish this!
+bool GraphicsView::isObjectSelected()
+{
+    QMap<QString, GUIObject *>::iterator it;
+    for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
+    {
+        if(it.value()->isSelected())
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+//! @todo Finish this!
+bool GraphicsView::isConnectorSelected()
+{
+    for(int i = 0; i != mConnectorVector.size(); ++i)
+    {
+        if (mConnectorVector[i]->isActive())
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+
 void GraphicsView::createMenus()
 {
     menuInsert = new QMenu(this);
@@ -420,11 +450,22 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
 void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
 
-    undoStack->newPost();
     if (event->key() == Qt::Key_Delete)
+    {
+        if(isObjectSelected() or isConnectorSelected())
+        {
+            undoStack->newPost();
+        }
         emit keyPressDelete();
+    }
     else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_R)
+    {
+        if(isObjectSelected())
+        {
+            undoStack->newPost();
+        }
         emit keyPressR();
+    }
     else if (event->key() == Qt::Key_Escape)
     {
         if(this->mIsCreatingConnector)
@@ -433,25 +474,61 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             mIsCreatingConnector = false;
         }
     }
-    else if(event->modifiers() and Qt::ControlModifier and Qt::ShiftModifier and event->key() == Qt::Key_Left)
-        emit keyPressCtrlShiftLeft();
-    else if(event->modifiers() and Qt::ControlModifier and Qt::ShiftModifier and event->key() == Qt::Key_Right)
-        emit keyPressCtrlShiftRight();
+    else if(event->modifiers() and Qt::ShiftModifier and event->key() == Qt::Key_Left)
+    {
+        if(isObjectSelected())
+        {
+            undoStack->newPost();
+        }
+        emit keyPressShiftLeft();
+    }
+    else if(event->modifiers() and Qt::ShiftModifier and event->key() == Qt::Key_Right)
+    {
+        if(isObjectSelected())
+        {
+            undoStack->newPost();
+        }
+        emit keyPressShiftRight();
+    }
     else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Up)
+    {
+        if(isObjectSelected())
+        {
+            undoStack->newPost();
+        }
         emit keyPressUp();
+    }
     else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Down)
+    {
+        if(isObjectSelected())
+        {
+            undoStack->newPost();
+        }
         emit keyPressDown();
+    }
     else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Left)
+    {
+        if(isObjectSelected())
+        {
+            undoStack->newPost();
+        }
         emit keyPressLeft();
+    }
     else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Right)
+    {
+        if(isObjectSelected())
+        {
+            undoStack->newPost();
+        }
         emit keyPressRight();
+    }
     else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_A)
         this->selectAll();
     else if (event->modifiers() and Qt::ControlModifier)
     {
         if (this->mIsCreatingConnector)
         {
-            QCursor cursor;
+            //QCursor cursor;
             mpTempConnector->makeDiagonal(true);
             mpTempConnector->drawConnector();
             this->setBackgroundBrush(mBackgroundColor);
@@ -505,7 +582,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 //! @param event contains information of the mouse click operation.
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
-    undoStack->newPost();
+    //undoStack->newPost();       //! @todo: This will trigger unnecessary clear redo stack
     emit viewClicked();
     mJustStoppedCreatingConnector = false;
 
@@ -605,6 +682,8 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
         }
         emit checkMessages();
         //
+
+        undoStack->newPost();
         if(!doNotRegisterUndo)
         {
             undoStack->registerAddedConnector(mpTempConnector);

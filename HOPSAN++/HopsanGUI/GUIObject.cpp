@@ -360,14 +360,19 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QMap<QString, GUIObject *>::iterator it;
+    bool alreadyClearedRedo = false;
     for(it = mpParentGraphicsView->mGUIObjectMap.begin(); it != mpParentGraphicsView->mGUIObjectMap.end(); ++it)
     {
         if((it.value()->mOldPos != it.value()->pos()) and (event->button() == Qt::LeftButton))
         {
+            if(!alreadyClearedRedo)
+            {
+                mpParentGraphicsView->undoStack->newPost();
+                alreadyClearedRedo = true;
+            }
             mpParentGraphicsView->undoStack->registerMovedObject(it.value()->mOldPos, it.value()->pos(), it.value()->getName());
         }
     }
-
 
     QGraphicsWidget::mouseReleaseEvent(event);
 }
@@ -385,8 +390,8 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
             this->mpSelectionBox->setActive();
             connect(this->mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             connect(this->mpParentGraphicsView, SIGNAL(keyPressR()), this, SLOT(rotate()));
-            connect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlShiftLeft()), this, SLOT(flipVertical()));
-            connect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlShiftRight()), this, SLOT(flipHorizontal()));
+            connect(this->mpParentGraphicsView, SIGNAL(keyPressShiftLeft()), this, SLOT(flipVertical()));
+            connect(this->mpParentGraphicsView, SIGNAL(keyPressShiftRight()), this, SLOT(flipHorizontal()));
             connect(this->mpParentGraphicsView, SIGNAL(keyPressUp()), this, SLOT(moveUp()));
             connect(this->mpParentGraphicsView, SIGNAL(keyPressDown()), this, SLOT(moveDown()));
             connect(this->mpParentGraphicsView, SIGNAL(keyPressLeft()), this, SLOT(moveLeft()));
@@ -397,8 +402,8 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
         {
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressR()), this, SLOT(rotate()));
-            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlShiftLeft()), this, SLOT(flipVertical()));
-            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlShiftRight()), this, SLOT(flipHorizontal()));
+            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressShiftLeft()), this, SLOT(flipVertical()));
+            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressShiftRight()), this, SLOT(flipHorizontal()));
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressUp()), this, SLOT(moveUp()));
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressDown()), this, SLOT(moveDown()));
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressLeft()), this, SLOT(moveLeft()));

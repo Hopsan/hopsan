@@ -58,7 +58,7 @@ private:
     //QGraphicsItem *pRectParent;
     QGraphicsLineItem *lineH;
     QGraphicsLineItem *lineV;
-    QGraphicsView *mpParentView;
+    QGraphicsView *mpParentGraphicsView;
     GUIObject *mpParentGuiObject;
     QGraphicsTextItem *mpPortLabel;
     qreal mMag;
