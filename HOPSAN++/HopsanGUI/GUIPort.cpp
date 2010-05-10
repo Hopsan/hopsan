@@ -15,11 +15,11 @@
 //! @param rot how the port should be rotated.
 //! @param iconPath a string with the path to the svg-figure representing the port.
 //! @param parent the port's parent, the component it is a part of.
-GUIPort::GUIPort(Port *corePort, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent)
+GUIPort::GUIPort(Port *pCorePort, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent)
     : QGraphicsSvgItem(pPortAppearance->iconPath, pParent)
 {
     //*****Core Interaction*****
-    mpCorePort = corePort;
+    mpCorePort = pCorePort;
     //**************************
 
     mpParentGraphicsView = pParent->mpParentGraphicsView;
@@ -48,7 +48,9 @@ GUIPort::GUIPort(Port *corePort, qreal xpos, qreal ypos, PortAppearance* pPortAp
     mpPortLabel->setPos(7.0,7.0);
     mpPortLabel->hide();
 
+    //*****Core Interaction*****
     if(this->getPortType() == Port::POWERPORT)
+    //**************************
     {
         this->setRotation(0.0);
         mpPortLabel->setRotation(0.0);
@@ -163,14 +165,19 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
 
+    //*****Core Interaction*****
     if ((!(this->mpCorePort->isConnected())) || (this->mpCorePort->getTimeVectorPtr()->empty()))
+    //**************************
     {
         event->ignore();
     }
     else
     {
         QMenu menu;
+
+        //*****Core Interaction*****
         if (mpCorePort->getNodeType() =="NodeHydraulic")
+        //**************************
         {
             QAction *plotPressureAction = menu.addAction("Plot pressure");
             QAction *plotFlowAction = menu.addAction("Plot flow");
@@ -185,7 +192,9 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
                 plot(1);
             }
         }
+        //*****Core Interaction*****
         if (mpCorePort->getNodeType() =="NodeMechanic")
+        //**************************
         {
             QAction *plotVelocityAction = menu.addAction("Plot velocity");
             QAction *plotForceAction = menu.addAction("Plot force");
@@ -205,7 +214,9 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
                 plot(2);
             }
         }
+        //*****Core Interaction*****
         if (mpCorePort->getNodeType() =="NodeSignal")
+        //**************************
         {
             QAction *plotSignalAction = menu.addAction("Plot signal value");
             QAction *selectedAction = menu.exec(event->screenPos());
@@ -242,10 +253,12 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
 {
     std::cout << "GUIPort.cpp: " << "Plot()" << std::endl;
 
+    //*****Core Interaction*****
     size_t dataLength = this->mpCorePort->getTimeVectorPtr()->size();
 
     QVector<double> time = QVector<double>::fromStdVector(*(this->mpCorePort->getTimeVectorPtr())); //Inte lampligt att skyffla data pa detta viset
     QVector<double> y(dataLength);// = QVector<double>::fromStdVector((this->mpCorePort->getDataVectorPtr()->at(1)));
+    //**************************
 
     qDebug() << "Time size: " << time.size() << " last time: " << *time.end() << " datalength: " << dataLength << "y.size(): " << y.size();
     qDebug() << "time[0]: " << time[0] << " time[last-1]: " << time[time.size()-2] << " time[last]: " << time[time.size()-1];
@@ -257,8 +270,10 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
     
     for (size_t i = 0; i<dataLength; ++i) //Denna loop ar inte klok
     {
+        //*****Core Interaction*****
         //timeq[i] = this->mpCorePort->getTimeVectorPtr()->at(i);
         y[i] = (this->mpCorePort->getDataVectorPtr()->at(i)).at(nVar);
+        //**************************
     }
 
     qDebug() << "y[0]: " << y[0] << " y[last-1]: " << y[y.size()-2] << " y[last]: " << y[y.size()-1];
@@ -322,7 +337,9 @@ int GUIPort::getPortNumber()
 //! Wrapper for the Core getPortType() function
 Port::PORTTYPE GUIPort::getPortType()
 {
+    //*****Core Interaction*****
     return mpCorePort->getPortType();
+    //**************************
 }
 
 
@@ -338,7 +355,9 @@ void GUIPort::setPortDirection(PortAppearance::portDirectionType direction)
 
 QString GUIPort::getName()
 {
+    //*****Core Interaction*****
     return QString::fromStdString(mpCorePort->getPortName());
+    //**************************
 }
 
 

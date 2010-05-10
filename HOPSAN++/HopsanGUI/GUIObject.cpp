@@ -433,7 +433,9 @@ void GUIObject::showPorts(bool visible)
     else
         for (i = mPortListPtrs.begin(); i != mPortListPtrs.end(); ++i)
         {
+        //*****Core Interaction*****
         if ((*i)->mpCorePort->isConnected() or mpParentGraphicsView->mPortsHidden)
+        //**************************
             (*i)->hide();
         }
 }
@@ -451,14 +453,13 @@ int GUIObject::getPortNumber(GUIPort *port)
         }
     }
     qDebug() << "Request for port number of non-existing port.";
-    assert(false);      /// @todo: Cast exception
+    assert(false);      /// @todo: Trough exception
 }
 
 
 //! Rotates a component 90 degrees clockwise, and tells the connectors that the component has moved.
 void GUIObject::rotate(bool doNotRegisterUndo)
 {
-
     //int temNameTextPos = mNameTextPos;
     this->setTransformOriginPoint(this->mpIcon->boundingRect().center());
     this->setRotation(this->rotation()+90);
@@ -596,7 +597,9 @@ void GUIObject::flipHorizontal(bool doNotRegisterUndo)
 {
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
+        //*****Core Interaction*****
         if(mPortListPtrs[i]->getPortType() == Port::READPORT or mPortListPtrs[i]->getPortType() == Port::WRITEPORT)
+        //**************************
         {
             if(this->rotation() == 90 or this->rotation() == 270)
             {
@@ -611,7 +614,7 @@ void GUIObject::flipHorizontal(bool doNotRegisterUndo)
         }
     }
 
-        //Flip the entire widget
+    //Flip the entire widget
     this->scale(-1, 1);
     if(mIsFlipped)
     {
@@ -982,8 +985,10 @@ void GUIComponent::setName(QString newName, bool doOnlyCoreRename)
         //Check if we want to avoid trying to rename in the graphics view map
         if (doOnlyCoreRename)
         {
+            //*****Core Interaction*****
             //Set name in core component,
             mpCoreComponent->setName(newName.toStdString());
+            //**************************
             refreshName();
         }
         else
@@ -1016,7 +1021,9 @@ QString GUIComponent::getTypeName()
 //! @brief Set a parameter value, wrapps hopsan core
 void GUIComponent::setParameter(QString name, double value)
 {
+    //*****Core Interaction*****
     mpCoreComponent->setParameter(name.toStdString(), value);
+    //**************************
 }
 
 void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
@@ -1067,7 +1074,9 @@ void GUIComponent::openParameterDialog()
 {
     vector<CompParameter>::iterator it;
 
+    //*****Core Interaction*****
     vector<CompParameter> paramVector = this->mpCoreComponent->getParameterVector();
+    //**************************
 
     qDebug() << "This component has the following Parameters: ";
     for ( it=paramVector.begin() ; it !=paramVector.end(); it++ )
@@ -1079,13 +1088,17 @@ void GUIComponent::openParameterDialog()
 
 Component* GUIComponent::getHopsanCoreComponentPtr()
 {
+    //*****Core Interaction*****
     return mpCoreComponent;
+    //**************************
 }
 
 
 void GUIComponent::deleteInHopsanCore()
 {
+    //*****Core Interaction*****
     mpCoreComponent->getSystemParent()->removeSubComponent(mpCoreComponent, true);
+    //**************************
 }
 
 //! @brief Save GuiObject to a text stream
@@ -1096,6 +1109,7 @@ void GUIComponent::saveToTextStream(QTextStream &rStream)
 //            << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << "\n";
     GUIObject::saveToTextStream(rStream);
 
+    //*****Core Interaction*****
     vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
     std::vector<CompParameter>::iterator pit;
     for ( pit=paramVector.begin() ; pit !=paramVector.end(); ++pit )
@@ -1103,16 +1117,17 @@ void GUIComponent::saveToTextStream(QTextStream &rStream)
         rStream << "PARAMETER " << addQuotes(getName()) << " " << QString::fromStdString(pit->getName()) << " " << pit->getValue() << "\n";
         //qDebug() << it.key() << " - " << itp->getName().c_str() << " - " << itp->getValue();
     }
+    //**************************
 }
 
 
 GUISubsystem::GUISubsystem(HopsanEssentials *hopsan, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
         : GUIObject(position, appearanceData, scene, parent)
 {
-    //Core interaction
+    //*****Core Interaction*****
     mpCoreComponentSystem = hopsan->CreateComponentSystem();
     //mpCoreComponentSystem->setName("unnamed");
-    //
+    //**************************
 
 //    mComponentTypeName = appearanceData.at(0);
 //    //QString fileName = appearanceData.at(1);
@@ -1188,7 +1203,9 @@ GUISubsystem::GUISubsystem(HopsanEssentials *hopsan, AppearanceData appearanceDa
 //! This function returns the current subsystem name
 QString GUISubsystem::getName()
 {
+    //*****Core Interaction*****
     return QString::fromStdString(mpCoreComponentSystem->getName());
+    //**************************
 }
 
 //!
@@ -1217,8 +1234,10 @@ void GUISubsystem::setName(QString newName, bool doOnlyCoreRename)
         //Check if we want to avoid trying to rename in the graphics view map
         if (doOnlyCoreRename)
         {
+            //*****Core Interaction*****
             //Set name in core component,
             mpCoreComponentSystem->setName(newName.toStdString());
+            //**************************
             refreshName();
         }
         else
@@ -1239,30 +1258,40 @@ QString GUISubsystem::getTypeName()
 
 void GUISubsystem::setTypeCQS(QString typestring)
 {
+    //*****Core Interaction*****
     mpCoreComponentSystem->setTypeCQS(typestring.toStdString());
+    //**************************
 }
 
 QString GUISubsystem::getTypeCQS()
 {
+    //*****Core Interaction*****
     return QString::fromStdString(mpCoreComponentSystem->getTypeCQSString());
+    //**************************
 }
 
 void GUISubsystem::deleteInHopsanCore()
 {
+    //*****Core Interaction*****
     mpCoreComponentSystem->getSystemParent()->removeSubComponent(mpCoreComponentSystem, true);
+    //**************************
 }
 
 //! @brief Get a ComponentSystem ptr version of the Core component system ptr
 ComponentSystem* GUISubsystem::getHopsanCoreSystemComponentPtr()
 {
+    //*****Core Interaction*****
     return mpCoreComponentSystem;
+    //**************************
 }
 
 //! @brief Get a Component ptr version of the Core component system ptr
 Component* GUISubsystem::getHopsanCoreComponentPtr()
 {
+    //*****Core Interaction*****
     //Should be autmatically cast
     return mpCoreComponentSystem;
+    //**************************
 }
 
 
@@ -1321,8 +1350,8 @@ GUISystemPort::GUISystemPort(ComponentSystem* pCoreComponentSystem, AppearanceDa
         : GUIObject(position, appearanceData, scene, parent)
 
 {
-    //Set the core system pointer
     //*****Core Interaction*****
+    //Set the core system pointer
     mpCoreComponentSystem = pCoreComponentSystem;
     //**************************
 
@@ -1363,8 +1392,10 @@ void GUISystemPort::setName(QString newName, bool doOnlyCoreRename)
         //Check if we want to avoid trying to rename in the graphics view map
         if (doOnlyCoreRename)
         {
+            //*****Core Interaction*****
             //Set name in core component,
             mpCoreComponentSystem->renameSystemPort(oldName.toStdString(), newName.toStdString());
+            //**************************
             refreshName();
         }
         else
@@ -1378,14 +1409,18 @@ void GUISystemPort::setName(QString newName, bool doOnlyCoreRename)
 //! This function returns the current GuiSystemPort name
 QString GUISystemPort::getName()
 {
+    //*****Core Interaction*****
     return QString::fromStdString(mpGuiPort->mpCorePort->getPortName());
+    //**************************
 }
 
 //! Delete the system port in the core
 void GUISystemPort::deleteInHopsanCore()
 {
     qDebug() << "In GUISystemPort::deleteInHopsanCore";
+    //*****Core Interaction*****
     mpCoreComponentSystem->deleteSystemPort(mpGuiPort->mpCorePort->getPortName());
+    //**************************
 }
 
 

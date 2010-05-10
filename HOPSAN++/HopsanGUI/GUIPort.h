@@ -20,7 +20,7 @@ class GUIPort :public QGraphicsSvgItem
     Q_OBJECT
 public:
     //GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, Port::PORTTYPE type, GUIPort::portDirectionType portDirection, GUIObject *parent = 0);
-    GUIPort(Port *corePort, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent = 0);
+    GUIPort(Port *pCorePort, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent = 0);
     ~GUIPort();
     void updatePosition();
     QGraphicsView *getParentView();
@@ -32,8 +32,12 @@ public:
 
     QPointF rectPos;
     int getPortNumber();
+
+    //*****Core Interaction*****
     Port::PORTTYPE getPortType();
     Port *mpCorePort;
+    //**************************
+
     bool isConnected;
 
 public slots:

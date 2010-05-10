@@ -47,10 +47,11 @@ public:
 
     virtual void saveToTextStream(QTextStream &rStream);
 
-    //Core interaction
+    //*****Core Interaction*****
     virtual Component* getHopsanCoreComponentPtr();
     virtual ComponentSystem* getHopsanCoreSystemComponentPtr();
     virtual void deleteInHopsanCore();
+    //**************************
 
     enum { Type = UserType + 2 };
     int type() const;
