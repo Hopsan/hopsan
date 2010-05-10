@@ -820,8 +820,8 @@ void GraphicsView::paste()
             startPort->hide();
             endPort->hide();
 
-            connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
-            connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+            connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+            connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
 
             //std::stringstream tempStream2;
             //tempStream2 << startPort->getGuiObject()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
@@ -1500,8 +1500,8 @@ void ProjectTabWidget::loadModel()
                 startPort->hide();
                 endPort->hide();
 
-                connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
-                connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+                connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+                connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
 
                 pCurrentView->mConnectorVector.append(pTempConnector);
             }

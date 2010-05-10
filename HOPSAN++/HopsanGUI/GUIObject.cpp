@@ -77,6 +77,7 @@ GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsSce
 
 GUIObject::~GUIObject()
 {
+    //! @todo This will lead to crash when closing program since undo stack may not exist. Fix it.
     //delete widget;
     emit componentDeleted();
 }

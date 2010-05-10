@@ -717,7 +717,7 @@ UndoWidget::UndoWidget(MainWindow *parent)
     //mainLayout->setColumnMinimumWidth(0,200);
     //mainLayout->setRowMinimumHeight(1,500);
     //mainLayout->addLayout(topLeftLayout, 0, 0, 3, 1);
-    mainLayout->addWidget(mUndoTable, 0, 0, 1, 4);
+    mainLayout->addWidget(mUndoTable, 0, 0, 1, 3);
     mainLayout->addWidget(undoButton, 1, 0);
     mainLayout->addWidget(redoButton, 1, 1);
     mainLayout->addWidget(clearButton, 1, 2);
