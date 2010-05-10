@@ -476,7 +476,7 @@ void GUIObject::rotate(bool doNotRegisterUndo)
             mPortListPtrs.value(i)->setPortDirection(PortAppearance::HORIZONTAL);
         else
             mPortListPtrs.value(i)->setPortDirection(PortAppearance::VERTICAL);
-        if (mPortListPtrs.value(i)->getPortType() == Port::POWERPORT)
+        if (mPortListPtrs.value(i)->getPortTypeEnum() == Port::POWERPORT)
         {
             if(this->rotation() == 0 and !mIsFlipped)
                 mPortListPtrs.value(i)->setRotation(0);
@@ -599,7 +599,7 @@ void GUIObject::flipHorizontal(bool doNotRegisterUndo)
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
         //*****Core Interaction*****
-        if(mPortListPtrs[i]->getPortType() == Port::READPORT or mPortListPtrs[i]->getPortType() == Port::WRITEPORT)
+        if(mPortListPtrs[i]->getPortTypeEnum() == Port::READPORT or mPortListPtrs[i]->getPortTypeEnum() == Port::WRITEPORT)
         //**************************
         {
             if(this->rotation() == 90 or this->rotation() == 270)

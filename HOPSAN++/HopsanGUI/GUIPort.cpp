@@ -49,7 +49,7 @@ GUIPort::GUIPort(Port *pCorePort, qreal xpos, qreal ypos, PortAppearance* pPortA
     mpPortLabel->hide();
 
     //*****Core Interaction*****
-    if(this->getPortType() == Port::POWERPORT)
+    if(this->getPortTypeEnum() == Port::POWERPORT)
     //**************************
     {
         this->setRotation(0.0);
@@ -305,6 +305,7 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
 
 }
 
+
 //! Returns the number of the port by calling the equivalent function in the parent component.
 int GUIPort::getPortNumber()
 {
@@ -312,10 +313,29 @@ int GUIPort::getPortNumber()
 }
 
 //! Wrapper for the Core getPortType() function
-Port::PORTTYPE GUIPort::getPortType()
+//! @todo remove this method and only use strings in the future
+Port::PORTTYPE GUIPort::getPortTypeEnum()
 {
     //*****Core Interaction*****
     return mpCorePort->getPortType();
+    //**************************
+}
+
+
+//! Wrapper for the Core getPortTypeString() function
+QString GUIPort::getPortType()
+{
+    //*****Core Interaction*****
+    return QString::fromStdString(mpCorePort->getPortTypeString());
+    //**************************
+}
+
+
+//! Wrapper for the Core getNodeType() function
+QString GUIPort::getNodeType()
+{
+    //*****Core Interaction*****
+    return QString::fromStdString(mpCorePort->getNodeType());
     //**************************
 }
 

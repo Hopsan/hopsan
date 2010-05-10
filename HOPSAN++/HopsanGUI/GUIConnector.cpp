@@ -109,9 +109,9 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
         mpLines[i]->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
       //Add arrow to the connector if it is of signal type
-    if(mpEndPort->getPortType() == Port::READPORT && mpEndPort->mpCorePort->getNodeType() == "NodeSignal")
+    if(mpEndPort->getPortTypeEnum() == Port::READPORT && mpEndPort->getNodeType() == "NodeSignal")
         this->getLastLine()->addEndArrow();
-    else if(mpEndPort->getPortType() == Port::WRITEPORT && mpEndPort->mpCorePort->getNodeType() == "NodeSignal")
+    else if(mpEndPort->getPortTypeEnum() == Port::WRITEPORT && mpEndPort->getNodeType() == "NodeSignal")
         this->mpLines[0]->addStartArrow();
 
     mpStartPort->getGuiObject()->addConnector(this);
@@ -271,9 +271,9 @@ void GUIConnector::setEndPort(GUIPort *port)
         mpLines[i]->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
         //Add arrow to the connector if it is of signal type
-    if(port->getPortType() == Port::READPORT && port->mpCorePort->getNodeType() == "NodeSignal")
+    if(port->getPortTypeEnum() == Port::READPORT && port->getNodeType() == "NodeSignal")
         this->getLastLine()->addEndArrow();
-    else if(port->getPortType() == Port::WRITEPORT && port->mpCorePort->getNodeType() == "NodeSignal")
+    else if(port->getPortTypeEnum() == Port::WRITEPORT && port->getNodeType() == "NodeSignal")
         this->mpLines[0]->addStartArrow();
 
     emit endPortConnected();

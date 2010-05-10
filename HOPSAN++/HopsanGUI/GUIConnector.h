@@ -24,7 +24,7 @@ public:
     ~GUIConnector();
 
     enum geometryType {VERTICAL, HORIZONTAL, DIAGONAL};
-    enum { Type = UserType + 1 };           //Va tusan gör den här?!
+    enum { Type = UserType + 1 };           //Va tusan gör den här?! -Det du!
 
     void addPoint(QPointF point);
     void removePoint(bool deleteIfEmpty = false);
