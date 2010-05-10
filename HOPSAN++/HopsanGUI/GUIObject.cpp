@@ -460,7 +460,7 @@ int GUIObject::getPortNumber(GUIPort *port)
 //! Rotates a component 90 degrees clockwise, and tells the connectors that the component has moved.
 void GUIObject::rotate(bool doNotRegisterUndo)
 {
-    //int temNameTextPos = mNameTextPos;
+    int tempNameTextPos = mNameTextPos;
     this->setTransformOriginPoint(this->mpIcon->boundingRect().center());
     this->setRotation(this->rotation()+90);
     if (this->rotation() == 360)
@@ -496,6 +496,7 @@ void GUIObject::rotate(bool doNotRegisterUndo)
                 mPortListPtrs.value(i)->setRotation(270);
         }
         //mPortListPtrs[i]->updatePosition();
+        setNameTextPos(tempNameTextPos);
     }
 
     if(!this->mIconRotation)

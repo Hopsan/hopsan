@@ -157,8 +157,8 @@ void UndoStack::undoOneStep()
                 startPort->hide();
                 endPort->hide();
 
-                GUIObject::connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
-                GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+                GUIObject::connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+                GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
 
                 mpParentView->mConnectorVector.append(pTempConnector);
                 bool success = mpParentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
@@ -398,8 +398,8 @@ void UndoStack::redoOneStep()
                 startPort->hide();
                 endPort->hide();
 
-                GUIObject::connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
-                GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMe()));
+                GUIObject::connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+                GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
 
                 mpParentView->mConnectorVector.append(pTempConnector);
                 bool success = mpParentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
@@ -482,7 +482,7 @@ void UndoStack::redoOneStep()
 //! @param item is a pointer to the component about to be deleted.
 void UndoStack::registerDeletedObject(GUIObject *item)
 {
-
+    qDebug() << "registerDeletedObject()";
     QPointF pos = item->mapToScene(item->boundingRect().center());
     QStringList tempStringList;
     QString xPosString;
@@ -521,6 +521,7 @@ void UndoStack::registerDeletedObject(GUIObject *item)
 //! @param item is a pointer to the connector about to be deleted.
 void UndoStack::registerDeletedConnector(GUIConnector *item)
 {
+    qDebug() << "registerDeletedConnector()";
     QStringList tempStringList;
     QString startPortNumberString;
     QString endPortNumberString;

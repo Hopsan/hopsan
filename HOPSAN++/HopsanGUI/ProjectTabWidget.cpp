@@ -359,6 +359,7 @@ void GraphicsView::addSystemPort()
 //! @param objectName is the name of the componenet to delete
 void GraphicsView::deleteGUIObject(QString objectName)
 {
+    qDebug() << "deleteGUIObject()";
     QMap<QString, GUIObject *>::iterator it;
     it = mGUIObjectMap.find(objectName);
 
@@ -701,6 +702,8 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
 //! @param doNotRegisterUndo is true if the removal of the connector shall not be registered in the undo stack, for example if this function is called by a redo-function.
 void GraphicsView::removeConnector(GUIConnector* pConnector, bool doNotRegisterUndo)
 {
+    qDebug() << "removeConnector()" << "doNotRegisterUndo = " << doNotRegisterUndo;
+
     bool doDelete = false;
     int i;
 

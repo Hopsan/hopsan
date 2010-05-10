@@ -703,6 +703,7 @@ void GUIConnector::setUnHovered()
 //! Asks my parent to delete myself.
 void GUIConnector::deleteMe()
 {
+    qDebug() << "deleteMe()";
     mpParentGraphicsView->removeConnector(this, false);
 }
 
