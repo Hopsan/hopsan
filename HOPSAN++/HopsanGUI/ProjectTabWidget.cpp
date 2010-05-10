@@ -713,7 +713,7 @@ void GraphicsView::removeConnector(GUIConnector* pConnector, bool doNotRegisterU
         if(mConnectorVector[i] == pConnector)
         {
              //! @todo some error handling both ports must exist and be connected to each other
-             //Core interaction
+             //*****Core Interaction*****
              if(pConnector->isConnected())
              {
                  mpCoreComponentSystem->disconnect(pConnector->getStartPort()->mpCorePort, pConnector->getEndPort()->mpCorePort);
@@ -721,7 +721,7 @@ void GraphicsView::removeConnector(GUIConnector* pConnector, bool doNotRegisterU
                  pConnector->getEndPort()->show();
                  pConnector->getEndPort()->isConnected = false;
              }
-             //
+             //**************************
              scene()->removeItem(pConnector);
              pConnector->getStartPort()->show();
              pConnector->getStartPort()->isConnected = false;
@@ -777,6 +777,7 @@ void GraphicsView::cutSelected()
 //! Puts the selected components in the copy stack, and their positions in the copy position stack.
 //! @see cutSelected()
 //! @see paste()
+//! @todo What about paramter values
 void GraphicsView::copySelected()
 {
     mCopyData.clear();
@@ -793,7 +794,7 @@ void GraphicsView::copySelected()
             stringRotation.setNum(it.value()->rotation());
             stringX.setNum(it.value()->mapToScene(it.value()->boundingRect().center()).x());
             stringY.setNum(it.value()->mapToScene(it.value()->boundingRect().center()).y());
-            tempStringList << "COMPONENT" << it.value()->getTypeName() << it.value()->getName() << stringRotation << stringX << stringY;
+            tempStringList << "COMPONENT" << it.value()->getTypeName() << it.value()->getName() << stringRotation << stringX << stringY; //!< @todo Why not use the save function or similar
             mCopyData.append(tempStringList);
         }
     }
@@ -804,7 +805,7 @@ void GraphicsView::copySelected()
         {
             QStringList tempStringList;
             tempStringList << "CONNECT" << mConnectorVector[i]->getStartPort()->getGuiObject()->getName() << mConnectorVector[i]->getStartPort()->getName() <<
-                                           mConnectorVector[i]->getEndPort()->getGuiObject()->getName() << mConnectorVector[i]->getEndPort()->getName();
+                                           mConnectorVector[i]->getEndPort()->getGuiObject()->getName() << mConnectorVector[i]->getEndPort()->getName(); //!< @todo Why not use the save function or similar
 
             QString stringX, stringY;
             for(size_t j = 0; j != mConnectorVector[i]->getPointsVector().size(); ++j)
@@ -846,6 +847,7 @@ void GraphicsView::paste()
     QString startComponentName, endComponentName;
     QString startPortName, endPortName;
     int j = 0;      //Used for calculating which rotation and position to use
+    //! @todo Could we not use some common load function for the stuff bellow
     for(int i = 0; i!=mCopyData.size(); ++i)
     {
         if(mCopyData[i][0] == "COMPONENT")
@@ -884,6 +886,7 @@ void GraphicsView::paste()
 
             GUIConnector *pTempConnector;
 
+            //*****Core Interaction*****
             QString type, style;
             if((startPort->mpCorePort->getNodeType() == "NodeHydraulic") | (startPort->mpCorePort->getNodeType() == "NodeMechanic"))
                 type = "Power";
@@ -893,6 +896,7 @@ void GraphicsView::paste()
                 style = "Iso";
             else
                 style = "User";
+            //**************************
             pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, this->getPen("Primary", type, style),
                                               this->getPen("Active", type, style), this->getPen("Hover", type, style), this);
 
@@ -910,12 +914,14 @@ void GraphicsView::paste()
             //tempStream2 << startPort->getGuiObject()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
             //              endPort->getGuiObject()->getName().toStdString() << " " << endPort->getPortNumber();
             mConnectorVector.append(pTempConnector);
+            //*****Core Interaction*****
             bool success = this->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
             if (!success)
             {
                 qDebug() << "Unsuccessful connection try" << endl;
                 assert(false);
             }
+            //**************************
         pTempConnector->setActive();
         }
     }
@@ -1018,6 +1024,7 @@ void GraphicsView::clearUndo()
 
 
 //! Get function for primary pen style
+//! @todo Hardcoded appearacne stuff (should be in appearacedata or maybe loaded from external file (not prio 1)
 QPen GraphicsView::getPen(QString situation, QString type, QString style)
 {
     if(situation == "Primary")
@@ -1104,7 +1111,6 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mpParentProjectTabWidget = parent;
 
     MainWindow *pMainWindow = mpParentProjectTabWidget->mpParentMainWindow;
-    //MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent->parent()->parent())); //Ugly!!!
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
     //*****Core Interaction*****
@@ -1112,9 +1118,9 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mpCoreComponentSystem->setDesiredTimestep(.001);
     mpCoreComponentSystem->setTypeCQS("S");
     emit checkMessages();
-    //**************************
 
     double timeStep = mpCoreComponentSystem->getDesiredTimeStep();
+    //**************************
     mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->setTimeStepLabel(timeStep);
 
     mIsSaved = true;
@@ -1127,17 +1133,10 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 
     QVBoxLayout *tabLayout = new QVBoxLayout;
 
-//    //BE donar med detta lite
-//    QTextEdit *texttmp = new QTextEdit("dfsdf",this);
-//    texttmp->setTextInteractionFlags(Qt::NoTextInteraction);
-//    tabLayout->addWidget(texttmp);
-//    //
-
     tabLayout->addWidget(mpGraphicsView);
 
-   //    addStretch(1);
-
-//    setWindowModified(true);
+    //    addStretch(1);
+    //    setWindowModified(true);
 
     setLayout(tabLayout);
 
@@ -1175,7 +1174,9 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
         :   QTabWidget(parent)
 {
     mpParentMainWindow = parent;
+    //*****Core Interaction*****
     mpHopsanCore = HopsanEssentials::getInstance();
+    //**************************
 
     MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent)); //Ugly!!!
     pMainWindow->mpMessageWidget->setHopsanCorePtr(mpHopsanCore);
@@ -1227,7 +1228,9 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
     ProjectTab *newTab = new ProjectTab(this);
     newTab->mIsSaved = false;
 
+    //*****Core Interaction*****
     newTab->mpCoreComponentSystem->setName(tabName.toStdString());
+    //**************************
 
     addTab(newTab, tabName.append(QString("*")));
     setCurrentWidget(newTab);
@@ -1360,10 +1363,12 @@ void ProjectTabWidget::simulateCurrent()
 
     ProjectTab *pCurrentTab = getCurrentTab();
 
+    //*****Core Interaction*****
     double startTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getStartTimeLabel();
     double finishTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getFinishTimeLabel();
-
+    
     double *pCoreComponentTime = pCurrentTab->mpCoreComponentSystem->getTimePtr();
+    //**************************
     QString timeTxt;
     double dt = finishTime - startTime;
     size_t nSteps = dt/pCurrentTab->mpCoreComponentSystem->getDesiredTimeStep();
@@ -1373,6 +1378,7 @@ void ProjectTabWidget::simulateCurrent()
     progressBar.setWindowModality(Qt::WindowModal);
     progressBar.setWindowTitle(tr("Simulate!"));
 
+    //*****Core Interaction*****
     InitializationThread actualInitialization(pCurrentTab->mpCoreComponentSystem, startTime, finishTime, this);
     size_t i=0;
     actualInitialization.start();
@@ -1415,6 +1421,7 @@ void ProjectTabWidget::simulateCurrent()
         mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulated '").append(QString::fromStdString(pCurrentTab->mpCoreComponentSystem->getName())).append(tr("' successfully!"))));
 
     emit checkMessages();
+    //***************************
 
 }
 
@@ -1423,7 +1430,6 @@ void ProjectTabWidget::simulateCurrent()
 void ProjectTabWidget::loadModel()
 {
     QDir fileDialogOpenDir;
-
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Model File"),
                                                          fileDialogOpenDir.currentPath() + QString("/../.."),
                                                          tr("Hopsan Model Files (*.hmf)"));
@@ -1541,7 +1547,9 @@ void ProjectTabWidget::loadModel()
             GUIPort *startPort = pCurrentView->getGUIObject(startComponentName)->getPort(startPortName);
             GUIPort *endPort = pCurrentView->getGUIObject(endComponentName)->getPort(endPortName);
 
+            //*****Core Interaction*****
             bool success = pCurrentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort); //This is core access
+            //**************************
             if (!success)
             {
                 qDebug() << "Unsuccessful connection try" << endl;
@@ -1565,6 +1573,7 @@ void ProjectTabWidget::loadModel()
                 GUIConnector *pTempConnector;
 
                 //! @todo Avoid core access here, shoudl make this a function that can be called later if we change iso/user graphics mode
+                //*****Core Interaction*****
                 QString type, style;
                 if((startPort->mpCorePort->getNodeType() == "NodeHydraulic") || (startPort->mpCorePort->getNodeType() == "NodeMechanic"))
                     type = "Power";
@@ -1574,6 +1583,7 @@ void ProjectTabWidget::loadModel()
                     style = "Iso";
                 else
                     style = "User";
+                //***************************
                 pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, pCurrentView->getPen("Primary", type, style),
                                                   pCurrentView->getPen("Active", type, style), pCurrentView->getPen("Hover", type, style), pCurrentView);
 
@@ -1599,7 +1609,9 @@ void ProjectTabWidget::loadModel()
     }
 
     //Sets the file name as model name
+    //*****Core Interaction*****
     pCurrentView->getModelPointer()->setName(fileInfo.fileName().toStdString()); //! @todo This is core access maybe should try to access some other way
+    //**************************
 
     pCurrentView->undoStack->clear();
 
@@ -1686,23 +1698,28 @@ void ProjectTabWidget::saveModel(bool saveAs)
     modelFile << "--------------------------------------------------------------\n";
 
     //Sets the model name
+    //*****Core Interaction*****
     pCurrentTab->mpCoreComponentSystem->setName(fileInfo.fileName().toStdString()); //!< @todo BAD should not be core access here, find some other way to encapsule
+    //**************************
     this->setTabText(this->currentIndex(), fileInfo.fileName());
 }
 
 
 //! Tells the current tab to change to or from ISO graphics.
 //! @param value is true if ISO should be activated and false if it should be deactivated.
-void ProjectTabWidget::setIsoGraphics(bool value)
+//! @todo Break out the guiconnector appearance stuff into a separate general function
+void ProjectTabWidget::setIsoGraphics(bool useISO)
 {
-    this->getCurrentTab()->useIsoGraphics = value;
+    this->getCurrentTab()->useIsoGraphics = useISO;
 
     ProjectTab *pCurrentTab = getCurrentTab();
     GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
     QMap<QString, GUIConnector *>::iterator it;
+    //*****Core Interaction*****
+    //! @todo dont do this appearance stuff here, also dontdo core access
     for(size_t i = 0; i!=pCurrentView->mConnectorVector.size(); ++i)
     {
-        if(value)
+        if(useISO)
         {
             if((pCurrentView->mConnectorVector[i]->getEndPort()->mpCorePort->getNodeType() == "NodeHydraulic") | (pCurrentView->mConnectorVector[i]->getEndPort()->mpCorePort->getNodeType() == "NodeMechanic"))
                 pCurrentView->mConnectorVector[i]->setPens(pCurrentView->getPen("Primary", "Power", "Iso"),
@@ -1725,11 +1742,12 @@ void ProjectTabWidget::setIsoGraphics(bool value)
                                                            pCurrentView->getPen("Hover", "Signal", "User"));
         }
     }
+    //***************************
 
     QMap<QString, GUIObject*>::iterator it2;
     for(it2 = pCurrentView->mGUIObjectMap.begin(); it2!=pCurrentView->mGUIObjectMap.end(); ++it2)
     {
-        it2.value()->setIcon(value);
+        it2.value()->setIcon(useISO);
     }
 }
 
