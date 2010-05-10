@@ -211,8 +211,8 @@ VariableList::VariableList(QWidget *parent)
         : QListWidget(parent)
 {
     //Populate the list
-    QListWidgetItem *sinus = new QListWidgetItem(tr("linear1"),this);
-    QListWidgetItem *cosinus = new QListWidgetItem(tr("linear2"),this);
+    //QListWidgetItem *sinus = new QListWidgetItem(tr("linear1"),this);
+    //QListWidgetItem *cosinus = new QListWidgetItem(tr("linear2"),this);
 
     // Store values for two functions, only for testing
 
@@ -275,7 +275,7 @@ void VariableList::mouseMoveEvent(QMouseEvent *event)
 
     drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()));
 
-    Qt::DropAction dropAction = drag->exec(Qt::CopyAction | Qt::MoveAction);
+    //Qt::DropAction dropAction = drag->exec(Qt::CopyAction | Qt::MoveAction);
 
 }
 

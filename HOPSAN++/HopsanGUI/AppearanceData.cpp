@@ -71,7 +71,7 @@ AppearanceData::AppearanceData()
 QTextStream& operator >>(QTextStream &is, AppearanceData &rData)
 {
     //! @todo handle returned error indication
-    bool sucess = rData.setAppearanceData(is);
+    //bool sucess = rData.setAppearanceData(is);
     return is;
 }
 

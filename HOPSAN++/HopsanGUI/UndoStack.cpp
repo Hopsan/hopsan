@@ -259,8 +259,8 @@ void UndoStack::undoOneStep()
             {
                 qreal oldX = mStack[undoPosition][i][1].toDouble();
                 qreal oldY = mStack[undoPosition][i][2].toDouble();
-                qreal newX = mStack[undoPosition][i][3].toDouble();
-                qreal newY = mStack[undoPosition][i][4].toDouble();
+                //qreal newX = mStack[undoPosition][i][3].toDouble();
+                //qreal newY = mStack[undoPosition][i][4].toDouble();
                 QString objectName = mStack[undoPosition][i][5];
 
                 mpParentView->getGUIObject(objectName)->setPos(QPointF(oldX, oldY));
@@ -458,8 +458,8 @@ void UndoStack::redoOneStep()
             }
             else if( mStack[mCurrentStackPosition][i][0] == "MOVEDOBJECT" )
             {
-                qreal oldX = mStack[mCurrentStackPosition][i][1].toDouble();
-                qreal oldY = mStack[mCurrentStackPosition][i][2].toDouble();
+                //qreal oldX = mStack[mCurrentStackPosition][i][1].toDouble();
+                //qreal oldY = mStack[mCurrentStackPosition][i][2].toDouble();
                 qreal newX = mStack[mCurrentStackPosition][i][3].toDouble();
                 qreal newY = mStack[mCurrentStackPosition][i][4].toDouble();
                 QString objectName = mStack[mCurrentStackPosition][i][5];
@@ -530,7 +530,7 @@ void UndoStack::registerDeletedConnector(GUIConnector *item)
     tempStringList << "DELETEDCONNECTOR" << item->getStartPort()->getGuiObject()->getName() << startPortNumberString <<
                                    item->getEndPort()->getGuiObject()->getName() << endPortNumberString;
     QString xString, yString;
-    for(size_t j = 0; j != item->getPointsVector().size(); ++j)
+    for(int j = 0; j != item->getPointsVector().size(); ++j)
     {
         xString.setNum(item->getPointsVector()[j].x());
         yString.setNum(item->getPointsVector()[j].y());
@@ -581,7 +581,7 @@ void UndoStack::registerAddedConnector(GUIConnector *item)
     tempStringList << "ADDEDCONNECTOR" << item->getStartPort()->getGuiObject()->getName() << startPortNumberString <<
                                       item->getEndPort()->getGuiObject()->getName() << endPortNumberString;
     QString xString, yString;
-    for(size_t j = 0; j != item->getPointsVector().size(); ++j)
+    for(int j = 0; j != item->getPointsVector().size(); ++j)
     {
         xString.setNum(item->getPointsVector()[j].x());
         yString.setNum(item->getPointsVector()[j].y());

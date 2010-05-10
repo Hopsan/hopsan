@@ -68,7 +68,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     mPoints = points;
 
         //Setup the geometries vector based on the point geometry
-    for(std::size_t i=0; i != mPoints.size()-1; ++i)
+    for(int i=0; i != mPoints.size()-1; ++i)
     {
         if(mPoints[i].x() == mPoints[i+1].x())
             mGeometries.push_back(GUIConnector::HORIZONTAL);
@@ -84,7 +84,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     connect(this->mpEndPort->getGuiObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
 
         //Create the lines, so that drawConnector has something to work with
-    for(std::size_t i = 0; i != mPoints.size()-1; ++i)
+    for(int i = 0; i != mPoints.size()-1; ++i)
     {
         mpTempLine = new GUIConnectorLine(mapFromScene(mPoints[i]).x(), mapFromScene(mPoints[i]).y(),
                                           mapFromScene(mPoints[i+1]).x(), mapFromScene(mPoints[i+1]).y(),
@@ -224,8 +224,8 @@ void GUIConnector::setEndPort(GUIPort *port)
     mEndPortConnected = true;
     mpEndPort = port;
     mpEndPort->isConnected = true;
-    if((mpEndPort->getPortDirection() == PortAppearance::HORIZONTAL) and (mGeometries.back() == GUIConnector::HORIZONTAL) or
-       (mpEndPort->getPortDirection() == PortAppearance::VERTICAL) and (mGeometries.back() == GUIConnector::VERTICAL))
+    if( ((mpEndPort->getPortDirection() == PortAppearance::HORIZONTAL) and (mGeometries.back() == GUIConnector::HORIZONTAL)) or
+        ((mpEndPort->getPortDirection() == PortAppearance::VERTICAL) and (mGeometries.back() == GUIConnector::VERTICAL)) )
     {
             //Wrong direction of last line, so remove last point. It will be fine.
         this->removePoint();
@@ -406,7 +406,7 @@ void GUIConnector::saveToTextStream(QTextStream &rStream)
     QString startPortName  = getStartPort()->getName();
     QString endPortName = getEndPort()->getName();
     rStream << "CONNECT " << ( addQuotes(startObjName) + " " + addQuotes(startPortName) + " " + addQuotes(endObjName) + " " + addQuotes(endPortName) );
-    for(size_t j = 0; j != mPoints.size(); ++j)
+    for(int j = 0; j != mPoints.size(); ++j)
     {
         rStream << " " << mPoints[j].x() << " " << mPoints[j].y();
     }
@@ -433,7 +433,7 @@ void GUIConnector::drawConnector()
             //Create new lines from the mPoints vector
         if(mPoints.size() > 1)
         {
-            for(std::size_t i = 0; i != mPoints.size()-1; ++i)
+            for(int i = 0; i != mPoints.size()-1; ++i)
             {
                 mpTempLine = new GUIConnectorLine(mapFromScene(mPoints[i]).x(), mapFromScene(mPoints[i]).y(),
                                                   mapFromScene(mPoints[i+1]).x(), mapFromScene(mPoints[i+1]).y(),
@@ -469,14 +469,14 @@ void GUIConnector::drawConnector()
         }
 
             //Redraw the lines based on the mPoints vector
-        for(std::size_t i = 0; i != mPoints.size()-1; ++i)
+        for(int i = 0; i != mPoints.size()-1; ++i)
         {
             mpLines[i]->setLine(mapFromScene(mPoints[i]), mapFromScene(mPoints[i+1]));
         }
     }
 
         //Remove the extra lines if there are too many
-    while(mPoints.size() < mpLines.size()+1)
+    while(mPoints.size() < int(mpLines.size()+1))
     {
         delete(mpLines.back());
         mpLines.pop_back();
@@ -526,7 +526,7 @@ void GUIConnector::updateEndPoint(QPointF point)
 //! @param lineNumber is the number of the line that has moved.
 void GUIConnector::updateLine(int lineNumber)
 {
-   if ((mEndPortConnected) && (lineNumber != 0) && (lineNumber != mpLines.size()))
+   if ((mEndPortConnected) && (lineNumber != 0) && (lineNumber != int(mpLines.size())))
     {
         if(mGeometries[lineNumber] == GUIConnector::HORIZONTAL)
         {

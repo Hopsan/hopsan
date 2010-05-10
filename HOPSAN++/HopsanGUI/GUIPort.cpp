@@ -263,7 +263,7 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
     qDebug() << "Time size: " << time.size() << " last time: " << *time.end() << " datalength: " << dataLength << "y.size(): " << y.size();
     qDebug() << "time[0]: " << time[0] << " time[last-1]: " << time[time.size()-2] << " time[last]: " << time[time.size()-1];
 
-    for (size_t i = 0; i<time.size(); ++i)
+    for (int i = 0; i<time.size(); ++i)
     {
         //qDebug() << time[i];
     }

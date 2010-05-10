@@ -702,8 +702,6 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
 //! @param doNotRegisterUndo is true if the removal of the connector shall not be registered in the undo stack, for example if this function is called by a redo-function.
 void GraphicsView::removeConnector(GUIConnector* pConnector, bool doNotRegisterUndo)
 {
-    qDebug() << "removeConnector()" << "doNotRegisterUndo = " << doNotRegisterUndo;
-
     bool doDelete = false;
     int i;
 
@@ -811,7 +809,7 @@ void GraphicsView::copySelected()
                                            mConnectorVector[i]->getEndPort()->getGuiObject()->getName() << mConnectorVector[i]->getEndPort()->getName(); //!< @todo Why not use the save function or similar
 
             QString stringX, stringY;
-            for(size_t j = 0; j != mConnectorVector[i]->getPointsVector().size(); ++j)
+            for(int j = 0; j != mConnectorVector[i]->getPointsVector().size(); ++j)
             {
                 stringX.setNum(mConnectorVector[i]->getPointsVector()[j].x());
                 stringY.setNum(mConnectorVector[i]->getPointsVector()[j].y());
@@ -880,7 +878,7 @@ void GraphicsView::paste()
             GUIPort *endPort = this->getGUIObject(endComponentName)->getPort(endPortName);
 
             QVector<QPointF> tempPointVector;
-            qreal tempX, tempY;
+            //qreal tempX, tempY;
             for(j = 5; j != mCopyData[i].size(); ++j)
             {
                 tempPointVector.push_back(QPointF(mCopyData[i][j].toDouble()-50, mCopyData[i][j+1].toDouble()-50));
@@ -1720,7 +1718,7 @@ void ProjectTabWidget::setIsoGraphics(bool useISO)
     QMap<QString, GUIConnector *>::iterator it;
     //*****Core Interaction*****
     //! @todo dont do this appearance stuff here, also dontdo core access
-    for(size_t i = 0; i!=pCurrentView->mConnectorVector.size(); ++i)
+    for(int i = 0; i!=pCurrentView->mConnectorVector.size(); ++i)
     {
         if(useISO)
         {

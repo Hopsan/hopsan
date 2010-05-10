@@ -124,7 +124,7 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
     if ( (event->pos() - dragStartPosition).manhattanLength() < QApplication::startDragDistance() )
         return;
 
-    QByteArray *data = new QByteArray;
+    //QByteArray *data = new QByteArray;
     QString datastr;
     QTextStream stream(&datastr);//, QIODevice::WriteOnly);
 
@@ -378,7 +378,7 @@ void LibraryWidget::useIsoGraphics(bool useISO)
     QMap<QString, LibraryContent*>::iterator lib;
     for (lib = mLibraryContentMapPtrs.begin(); lib != mLibraryContentMapPtrs.end(); ++lib)
     {
-        for (size_t i=0; i<(*lib)->count(); i++)
+        for (int i=0; i<(*lib)->count(); i++)
         {
             //! @todo q casting will not work in this cas need to rewrite and use some otehr way
             //LibraryContentItem* libcontit =
