@@ -13,7 +13,7 @@
    id="svg3336"
    sodipodi:version="0.32"
    inkscape:version="0.46"
-   sodipodi:docname="Mass.svg"
+   sodipodi:docname="mass_iso.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
   <defs
@@ -49,16 +49,16 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="7.9195959"
-     inkscape:cx="21.14765"
-     inkscape:cy="32.15747"
+     inkscape:zoom="3.959798"
+     inkscape:cx="5.8271681"
+     inkscape:cy="6.7688412"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1274"
-     inkscape:window-height="942"
-     inkscape:window-x="30"
-     inkscape:window-y="76"
+     inkscape:window-width="1280"
+     inkscape:window-height="698"
+     inkscape:window-x="-4"
+     inkscape:window-y="-4"
      showguides="true"
      inkscape:snap-global="true"
      inkscape:snap-intersection-line-segments="true"
@@ -88,16 +88,16 @@
      id="layer1"
      transform="translate(-203.61275,-380.30429)">
     <rect
-       style="fill:#000000;fill-opacity:1;stroke:none"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect2819"
-       width="64.720001"
-       height="40"
-       x="203.61275"
-       y="380.30429"
+       width="63.719997"
+       height="39"
+       x="204.11275"
+       y="380.80429"
        ry="6.4397225"
-       rx="6.439723" />
+       rx="6.4397225" />
     <g
-       style="font-size:36px;font-style:normal;font-weight:normal;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       style="font-size:36px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
        id="text2821"
        transform="translate(9.6898041,1.7236023)">
       <text
@@ -110,7 +110,19 @@
            id="tspan6810"
            x="211.31517"
            y="411.46545"
-           style="font-size:36px;fill:#ffffff;fill-opacity:1">M</tspan></text>
+           style="font-size:36px;fill:#000000;fill-opacity:1" /></text>
     </g>
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Verdana;-inkscape-font-specification:Verdana"
+       x="223.73642"
+       y="409.10898"
+       id="text3168"
+       sodipodi:linespacing="100%"><tspan
+         sodipodi:role="line"
+         id="tspan3170"
+         x="223.73642"
+         y="409.10898"
+         style="font-size:28px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr;text-anchor:start;font-family:Calibri;-inkscape-font-specification:Calibri">M</tspan></text>
   </g>
 </svg>
