@@ -47,7 +47,7 @@ class GraphicsView : public QGraphicsView
     Q_OBJECT
 
 public:
-    GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, ProjectTab *parent = 0);
+    GraphicsView(HopsanEssentials *pHopsanCore, ComponentSystem *pCoreComponentSystem, ProjectTab *parent = 0);
     //~GraphicsView();
     bool mIsCreatingConnector;
     bool mPortsHidden;

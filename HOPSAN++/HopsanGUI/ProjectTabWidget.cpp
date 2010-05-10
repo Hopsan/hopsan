@@ -38,13 +38,13 @@
 
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
-GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, ProjectTab *parent)
+GraphicsView::GraphicsView(HopsanEssentials *pHopsanCore, ComponentSystem *pCoreComponentSystem, ProjectTab *parent)
         : QGraphicsView(parent)
 {
     mpParentProjectTab = parent;
 
-    this->mpHopsanCore = hopsan;
-    this->mpCoreComponentSystem = model;
+    this->mpHopsanCore = pHopsanCore;
+    this->mpCoreComponentSystem = pCoreComponentSystem;
     this->setDragMode(RubberBandDrag);
     this->setInteractive(true);
     this->setEnabled(true);
