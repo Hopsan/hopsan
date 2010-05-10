@@ -43,8 +43,8 @@ GraphicsView::GraphicsView(HopsanEssentials *hopsan, ComponentSystem *model, Pro
 {
     mpParentProjectTab = parent;
 
-    this->mpHopsan = hopsan;
-    this->mpModel = model;
+    this->mpHopsanCore = hopsan;
+    this->mpCoreComponentSystem = model;
     this->setDragMode(RubberBandDrag);
     this->setInteractive(true);
     this->setEnabled(true);
@@ -231,19 +231,19 @@ void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appear
 {
     if (componentTypeName == "Subsystem")
     {
-        GUISubsystem *pSys = new GUISubsystem(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
-        this->mpParentProjectTab->mpComponentSystem->addComponent(pSys->getHopsanCoreSystemComponentPtr()); //core interaction
+        GUISubsystem *pSys = new GUISubsystem(mpHopsanCore, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+        this->mpParentProjectTab->mpCoreComponentSystem->addComponent(pSys->getHopsanCoreSystemComponentPtr()); //core interaction
 
         mpTempGUIObject = pSys;
     }
     else if (componentTypeName == "SystemPort")
     {
-        mpTempGUIObject = new GUISystemPort(mpParentProjectTab->mpComponentSystem, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+        mpTempGUIObject = new GUISystemPort(mpParentProjectTab->mpCoreComponentSystem, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
     }
     else //Assume some standard component type
     {
-        GUIComponent *pComp = new GUIComponent(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
-        this->mpParentProjectTab->mpComponentSystem->addComponent(pComp->getHopsanCoreComponentPtr()); //core interaction
+        GUIComponent *pComp = new GUIComponent(mpHopsanCore, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+        this->mpParentProjectTab->mpCoreComponentSystem->addComponent(pComp->getHopsanCoreComponentPtr()); //core interaction
         mpTempGUIObject = pComp;
     }
 
@@ -666,7 +666,7 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
         //Core interaction
         Port *start_port = mpTempConnector->getStartPort()->mpCorePort;
         Port *end_port = pPort->mpCorePort;
-        bool success = mpModel->connect(start_port, end_port);
+        bool success = mpCoreComponentSystem->connect(start_port, end_port);
         if (success)
         {
             mIsCreatingConnector = false;
@@ -712,7 +712,7 @@ void GraphicsView::removeConnector(GUIConnector* pConnector, bool doNotRegisterU
              //Core interaction
              if(pConnector->isConnected())
              {
-                 mpModel->disconnect(pConnector->getStartPort()->mpCorePort, pConnector->getEndPort()->mpCorePort);
+                 mpCoreComponentSystem->disconnect(pConnector->getStartPort()->mpCorePort, pConnector->getEndPort()->mpCorePort);
                  emit checkMessages();
                  pConnector->getEndPort()->show();
                  pConnector->getEndPort()->isConnected = false;
@@ -755,7 +755,7 @@ void GraphicsView::selectAll()
 
 ComponentSystem *GraphicsView::getModelPointer()
 {
-    return this->mpModel;
+    return this->mpCoreComponentSystem;
 }
 
 
@@ -1104,20 +1104,20 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
     //Core interaction
-    mpComponentSystem = mpParentProjectTabWidget->mpHopsan->CreateComponentSystem();
-    mpComponentSystem->setDesiredTimestep(.001);
-    mpComponentSystem->setTypeCQS("S");
+    mpCoreComponentSystem = mpParentProjectTabWidget->mpHopsanCore->CreateComponentSystem();
+    mpCoreComponentSystem->setDesiredTimestep(.001);
+    mpCoreComponentSystem->setTypeCQS("S");
     emit checkMessages();
     //
 
-    double timeStep = mpComponentSystem->getDesiredTimeStep();
+    double timeStep = mpCoreComponentSystem->getDesiredTimeStep();
     mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->setTimeStepLabel(timeStep);
 
     mIsSaved = true;
     mModelFileName.clear();
 
     mpGraphicsScene = new GraphicsScene(this);
-    mpGraphicsView  = new GraphicsView(mpParentProjectTabWidget->mpHopsan, mpComponentSystem, this);
+    mpGraphicsView  = new GraphicsView(mpParentProjectTabWidget->mpHopsanCore, mpCoreComponentSystem, this);
 
     mpGraphicsView->setScene(mpGraphicsScene);
 
@@ -1171,10 +1171,10 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
         :   QTabWidget(parent)
 {
     mpParentMainWindow = parent;
-    mpHopsan = HopsanEssentials::getInstance();
+    mpHopsanCore = HopsanEssentials::getInstance();
 
     MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent)); //Ugly!!!
-    pMainWindow->mpMessageWidget->setHopsanCorePtr(mpHopsan);
+    pMainWindow->mpMessageWidget->setHopsanCorePtr(mpHopsanCore);
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
     setTabsClosable(true);
@@ -1223,7 +1223,7 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
     ProjectTab *newTab = new ProjectTab(this);
     newTab->mIsSaved = false;
 
-    newTab->mpComponentSystem->setName(tabName.toStdString());
+    newTab->mpCoreComponentSystem->setName(tabName.toStdString());
 
     addTab(newTab, tabName.append(QString("*")));
     setCurrentWidget(newTab);
@@ -1359,17 +1359,17 @@ void ProjectTabWidget::simulateCurrent()
     double startTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getStartTimeLabel();
     double finishTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getFinishTimeLabel();
 
-    double *pCoreComponentTime = pCurrentTab->mpComponentSystem->getTimePtr();
+    double *pCoreComponentTime = pCurrentTab->mpCoreComponentSystem->getTimePtr();
     QString timeTxt;
     double dt = finishTime - startTime;
-    size_t nSteps = dt/pCurrentTab->mpComponentSystem->getDesiredTimeStep();
+    size_t nSteps = dt/pCurrentTab->mpCoreComponentSystem->getDesiredTimeStep();
 
     QProgressDialog progressBar(tr("Initialize simulation..."), tr("&Abort initialization"), 0, 0, this);
     std::cout << progressBar.geometry().width() << " " << progressBar.geometry().height() << std::endl;
     progressBar.setWindowModality(Qt::WindowModal);
     progressBar.setWindowTitle(tr("Simulate!"));
 
-    InitializationThread actualInitialization(pCurrentTab->mpComponentSystem, startTime, finishTime, this);
+    InitializationThread actualInitialization(pCurrentTab->mpCoreComponentSystem, startTime, finishTime, this);
     size_t i=0;
     actualInitialization.start();
     actualInitialization.setPriority(QThread::TimeCriticalPriority);
@@ -1378,7 +1378,7 @@ void ProjectTabWidget::simulateCurrent()
         progressBar.setValue(i++);
         if (progressBar.wasCanceled())
         {
-            pCurrentTab->mpComponentSystem->stop();
+            pCurrentTab->mpCoreComponentSystem->stop();
         }
     }
     progressBar.setValue(i);
@@ -1386,7 +1386,7 @@ void ProjectTabWidget::simulateCurrent()
 
     if (!progressBar.wasCanceled())
     {
-        SimulationThread actualSimulation(pCurrentTab->mpComponentSystem, startTime, finishTime, this);
+        SimulationThread actualSimulation(pCurrentTab->mpCoreComponentSystem, startTime, finishTime, this);
         actualSimulation.start();
         actualSimulation.setPriority(QThread::TimeCriticalPriority);
         progressBar.setLabelText(tr("Running simulation..."));
@@ -1398,7 +1398,7 @@ void ProjectTabWidget::simulateCurrent()
             progressBar.setValue((size_t)(*pCoreComponentTime/dt * nSteps));
             if (progressBar.wasCanceled())
             {
-                pCurrentTab->mpComponentSystem->stop();
+                pCurrentTab->mpCoreComponentSystem->stop();
             }
         }
         progressBar.setValue((size_t)(*pCoreComponentTime/dt * nSteps));
@@ -1406,9 +1406,9 @@ void ProjectTabWidget::simulateCurrent()
     }
 
     if (progressBar.wasCanceled())
-        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(QString::fromStdString(pCurrentTab->mpComponentSystem->getName())).append(tr("' was terminated!"))));
+        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(QString::fromStdString(pCurrentTab->mpCoreComponentSystem->getName())).append(tr("' was terminated!"))));
     else
-        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulated '").append(QString::fromStdString(pCurrentTab->mpComponentSystem->getName())).append(tr("' successfully!"))));
+        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulated '").append(QString::fromStdString(pCurrentTab->mpCoreComponentSystem->getName())).append(tr("' successfully!"))));
 
     emit checkMessages();
 
@@ -1682,7 +1682,7 @@ void ProjectTabWidget::saveModel(bool saveAs)
     modelFile << "--------------------------------------------------------------\n";
 
     //Sets the model name
-    pCurrentTab->mpComponentSystem->setName(fileInfo.fileName().toStdString()); //!< @todo BAD should not be core access here, find some other way to encapsule
+    pCurrentTab->mpCoreComponentSystem->setName(fileInfo.fileName().toStdString()); //!< @todo BAD should not be core access here, find some other way to encapsule
     this->setTabText(this->currentIndex(), fileInfo.fileName());
 }
 

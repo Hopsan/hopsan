@@ -82,7 +82,7 @@ void SimulationSetupWidget::fixTimeStep()
         setTimeStepLabel(getFinishTimeLabel() - getStartTimeLabel());
 
     if (mpParentMainWindow->mpProjectTabs->getCurrentTab()) //crashes if not if statement if no tabs are there...
-        mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpComponentSystem->setDesiredTimestep(getTimeStepLabel());
+        mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpCoreComponentSystem->setDesiredTimestep(getTimeStepLabel());
 
 }
 

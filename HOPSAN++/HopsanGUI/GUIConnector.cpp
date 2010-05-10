@@ -224,8 +224,8 @@ void GUIConnector::setEndPort(GUIPort *port)
     mEndPortConnected = true;
     mpEndPort = port;
     mpEndPort->isConnected = true;
-    if(mpEndPort->getPortDirection() == PortAppearance::HORIZONTAL and mGeometries.back() == GUIConnector::HORIZONTAL or
-       mpEndPort->getPortDirection() == PortAppearance::VERTICAL and mGeometries.back() == GUIConnector::VERTICAL)
+    if((mpEndPort->getPortDirection() == PortAppearance::HORIZONTAL) and (mGeometries.back() == GUIConnector::HORIZONTAL) or
+       (mpEndPort->getPortDirection() == PortAppearance::VERTICAL) and (mGeometries.back() == GUIConnector::VERTICAL))
     {
             //Wrong direction of last line, so remove last point. It will be fine.
         this->removePoint();

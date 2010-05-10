@@ -53,8 +53,8 @@ public:
     bool mPortsHidden;
     GUIObject *getGUIObject(QString name);
     GUIConnector *getTempConnector();
-    HopsanEssentials *mpHopsan;
-    ComponentSystem *mpModel;
+    HopsanEssentials *mpHopsanCore;
+    ComponentSystem *mpCoreComponentSystem;
     ProjectTab *mpParentProjectTab;
     QMap<QString, GUIObject *> mGUIObjectMap;
     QVector<GUIConnector *> mConnectorVector;
@@ -152,7 +152,7 @@ public:
     QString mModelFileName;
     bool useIsoGraphics;
     ProjectTabWidget *mpParentProjectTabWidget;
-    ComponentSystem *mpComponentSystem;
+    ComponentSystem *mpCoreComponentSystem;
 
     GraphicsView *mpGraphicsView;
     GraphicsScene *mpGraphicsScene;
@@ -179,7 +179,7 @@ public:
 
     MainWindow *mpParentMainWindow;
 
-    HopsanEssentials *mpHopsan;
+    HopsanEssentials *mpHopsanCore;
 
     size_t mNumberOfUntitledTabs;
 
