@@ -20,10 +20,12 @@ class ProjectTabWidget;
 class InitializationThread : public QThread
 {
 public:
-    InitializationThread(ComponentSystem *pComponentSystem, double startTime, double finishTime, ProjectTabWidget *parent);
+    InitializationThread(ComponentSystem *pCoreComponentSystem, double startTime, double finishTime, ProjectTabWidget *parent);
 
     ProjectTabWidget *mpParentProjectTabWidget;
-    ComponentSystem *mpComponentSystem;
+    //*****Core Interaction*****
+    ComponentSystem *mpCoreComponentSystem;
+    //**************************
 
 protected:
     void run();

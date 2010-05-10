@@ -26,11 +26,11 @@
 //! @param startTime is the start time for the initialization.
 //! @param finishTime is the finish time for the initialization.
 //! @param parent is the parent of the thread, the a ProjectTabWidget
-InitializationThread::InitializationThread(ComponentSystem *pComponentSystem, double startTime, double finishTime, ProjectTabWidget *parent)
+InitializationThread::InitializationThread(ComponentSystem *pCoreComponentSystem, double startTime, double finishTime, ProjectTabWidget *parent)
 {
     mpParentProjectTabWidget = parent;
     //*****Core Interaction*****
-    mpComponentSystem = pComponentSystem;
+    mpCoreComponentSystem = pCoreComponentSystem;
     //**************************
     mStartTime = startTime;
     mFinishTime = finishTime;
@@ -42,7 +42,7 @@ InitializationThread::InitializationThread(ComponentSystem *pComponentSystem, do
 void InitializationThread::run()
 {
     //*****Core Interaction*****
-    mpComponentSystem->initialize(mStartTime, mFinishTime);
+    mpCoreComponentSystem->initialize(mStartTime, mFinishTime);
     //**************************
 
     //exec(); //Is used if one want to run an event loop in this thread.

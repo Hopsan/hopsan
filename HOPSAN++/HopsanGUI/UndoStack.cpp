@@ -161,7 +161,7 @@ void UndoStack::undoOneStep()
                 GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
 
                 mpParentView->mConnectorVector.append(pTempConnector);
-                bool success = mpParentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
+                bool success = mpParentView->getCoreComponentSystem()->connect(startPort->mpCorePort, endPort->mpCorePort);
                 if (!success)
                 {
                     qDebug() << "Unsuccessful connection try" << endl;
@@ -402,7 +402,7 @@ void UndoStack::redoOneStep()
                 GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
 
                 mpParentView->mConnectorVector.append(pTempConnector);
-                bool success = mpParentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
+                bool success = mpParentView->getCoreComponentSystem()->connect(startPort->mpCorePort, endPort->mpCorePort);
                 if (!success)
                 {
                     qDebug() << "Unsuccessful connection try" << endl;

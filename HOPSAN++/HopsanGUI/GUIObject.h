@@ -150,10 +150,10 @@ public:
     GUIComponent(HopsanEssentials *hopsan, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
     ~GUIComponent();
 
-    //Core interaction
+    //*****Core Interaction*****
     Component* getHopsanCoreComponentPtr();
     Component *mpCoreComponent;
-    //
+    //**************************
 
     void setParameter(QString name, double value);
 
@@ -184,8 +184,10 @@ class GUISubsystem : public GUIObject
 public:
     GUISubsystem(HopsanEssentials *hopsan, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
 
+    //*****Core Interaction*****
     Component* getHopsanCoreComponentPtr();
     ComponentSystem* getHopsanCoreSystemComponentPtr();
+    //**************************
     void deleteInHopsanCore();
 
     QString getName();

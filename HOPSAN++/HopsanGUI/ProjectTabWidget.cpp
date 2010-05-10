@@ -43,8 +43,10 @@ GraphicsView::GraphicsView(HopsanEssentials *pHopsanCore, ComponentSystem *pCore
 {
     mpParentProjectTab = parent;
 
+    //*****Core Interaction*****
     this->mpHopsanCore = pHopsanCore;
     this->mpCoreComponentSystem = pCoreComponentSystem;
+    //**************************
     this->setDragMode(RubberBandDrag);
     this->setInteractive(true);
     this->setEnabled(true);
@@ -231,19 +233,24 @@ void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appear
 {
     if (componentTypeName == "Subsystem")
     {
+        //*****Core Interaction*****
         GUISubsystem *pSys = new GUISubsystem(mpHopsanCore, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
         this->mpParentProjectTab->mpCoreComponentSystem->addComponent(pSys->getHopsanCoreSystemComponentPtr()); //core interaction
-
+        //**************************
         mpTempGUIObject = pSys;
     }
     else if (componentTypeName == "SystemPort")
     {
+        //*****Core Interaction*****
         mpTempGUIObject = new GUISystemPort(mpParentProjectTab->mpCoreComponentSystem, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+        //**************************
     }
     else //Assume some standard component type
     {
+        //*****Core Interaction*****
         GUIComponent *pComp = new GUIComponent(mpHopsanCore, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
         this->mpParentProjectTab->mpCoreComponentSystem->addComponent(pComp->getHopsanCoreComponentPtr()); //core interaction
+        //**************************
         mpTempGUIObject = pComp;
     }
 
@@ -559,7 +566,7 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 
     this->setDragMode(QGraphicsView::RubberBandDrag);
 
-    QGraphicsView::keyReleaseEvent ( event );
+    QGraphicsView::keyReleaseEvent(event);
 }
 
 
@@ -639,16 +646,16 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
         //! @todo We can not determine appearcne of connector based on first port clicked, This will fail when we are connecting system ports and are selecting the system port first
         if(this->mpParentProjectTab->useIsoGraphics)
         {
-            if((pPort->mpCorePort->getNodeType() == "NodeHydraulic") | (pPort->mpCorePort->getNodeType() == "NodeMechanic"))
+            if((pPort->getNodeType() == "NodeHydraulic") | (pPort->getNodeType() == "NodeMechanic"))
                 mpTempConnector = new GUIConnector(oldPos, getPen("Primary", "Power", "Iso"), getPen("Active", "Power", "Iso"), getPen("Hover", "Power", "Iso"), this);
-            else if(pPort->mpCorePort->getNodeType() == "NodeSignal")
+            else if(pPort->getNodeType() == "NodeSignal")
                 mpTempConnector = new GUIConnector(oldPos, getPen("Primary", "Signal", "Iso"), getPen("Active", "Signal", "Iso"), getPen("Hover", "Signal", "Iso"), this);
         }
         else
         {
-            if((pPort->mpCorePort->getNodeType() == "NodeHydraulic") | (pPort->mpCorePort->getNodeType() == "NodeMechanic"))
+            if((pPort->getNodeType() == "NodeHydraulic") | (pPort->getNodeType() == "NodeMechanic"))
                 mpTempConnector = new GUIConnector(oldPos, getPen("Primary", "Power", "User"), getPen("Active", "Power", "User"), getPen("Hover", "Power", "User"), this);
-            else if(pPort->mpCorePort->getNodeType() == "NodeSignal")
+            else if(pPort->getNodeType() == "NodeSignal")
                 mpTempConnector = new GUIConnector(oldPos, getPen("Primary", "Signal", "User"), getPen("Active", "Signal", "User"), getPen("Hover", "Signal", "User"), this);
         }
         //**************************
@@ -758,9 +765,11 @@ void GraphicsView::selectAll()
 }
 
 
-ComponentSystem *GraphicsView::getModelPointer()
+ComponentSystem *GraphicsView::getCoreComponentSystem()
 {
+    //*****Core Interaction*****
     return this->mpCoreComponentSystem;
+    //**************************
 }
 
 
@@ -916,7 +925,7 @@ void GraphicsView::paste()
             //              endPort->getGuiObject()->getName().toStdString() << " " << endPort->getPortNumber();
             mConnectorVector.append(pTempConnector);
             //*****Core Interaction*****
-            bool success = this->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort);
+            bool success = this->getCoreComponentSystem()->connect(startPort->mpCorePort, endPort->mpCorePort);
             if (!success)
             {
                 qDebug() << "Unsuccessful connection try" << endl;
@@ -1128,7 +1137,9 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mModelFileName.clear();
 
     mpGraphicsScene = new GraphicsScene(this);
+    //*****Core Interaction*****
     mpGraphicsView  = new GraphicsView(mpParentProjectTabWidget->mpHopsanCore, mpCoreComponentSystem, this);
+    //**************************
 
     mpGraphicsView->setScene(mpGraphicsScene);
 
@@ -1180,7 +1191,9 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     //**************************
 
     MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent)); //Ugly!!!
+    //*****Core Interaction*****
     pMainWindow->mpMessageWidget->setHopsanCorePtr(mpHopsanCore);
+    //**************************
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
     setTabsClosable(true);
@@ -1549,7 +1562,7 @@ void ProjectTabWidget::loadModel()
             GUIPort *endPort = pCurrentView->getGUIObject(endComponentName)->getPort(endPortName);
 
             //*****Core Interaction*****
-            bool success = pCurrentView->getModelPointer()->connect(startPort->mpCorePort, endPort->mpCorePort); //This is core access
+            bool success = pCurrentView->getCoreComponentSystem()->connect(startPort->mpCorePort, endPort->mpCorePort); //This is core access
             //**************************
             if (!success)
             {
@@ -1611,7 +1624,7 @@ void ProjectTabWidget::loadModel()
 
     //Sets the file name as model name
     //*****Core Interaction*****
-    pCurrentView->getModelPointer()->setName(fileInfo.fileName().toStdString()); //! @todo This is core access maybe should try to access some other way
+    pCurrentView->getCoreComponentSystem()->setName(fileInfo.fileName().toStdString()); //! @todo This is core access maybe should try to access some other way
     //**************************
 
     pCurrentView->undoStack->clear();

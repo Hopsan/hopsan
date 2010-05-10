@@ -38,8 +38,10 @@ protected slots:
 private:
     GUIObject    *mpGUIObject;
     bool isGUISubsystem;
+    //*****Core Interaction*****
     Component *mpCoreComponent;
     ComponentSystem *mpCoreComponentSystem;
+    //**************************
 
     void createEditStuff();
 
