@@ -141,9 +141,9 @@ void UndoStack::undoOneStep()
                 GUIConnector *pTempConnector;
 
                 QString type, style;
-                if((startPort->mpCorePort->getNodeType() == "NodeHydraulic") | (startPort->mpCorePort->getNodeType() == "NodeMechanic"))
+                if((startPort->getNodeType() == "NodeHydraulic") | (startPort->getNodeType() == "NodeMechanic"))
                     type = "Power";
-                else if(startPort->mpCorePort->getNodeType() == "NodeSignal")
+                else if(startPort->getNodeType() == "NodeSignal")
                     type = "Signal";
                 if(mpParentView->mpParentProjectTab->useIsoGraphics)
                     style = "Iso";
@@ -161,7 +161,9 @@ void UndoStack::undoOneStep()
                 GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
 
                 mpParentView->mConnectorVector.append(pTempConnector);
+                //*****Core Interaction*****
                 bool success = mpParentView->getCoreComponentSystem()->connect(startPort->mpCorePort, endPort->mpCorePort);
+                //**************************
                 if (!success)
                 {
                     qDebug() << "Unsuccessful connection try" << endl;
@@ -381,9 +383,9 @@ void UndoStack::redoOneStep()
                 GUIConnector *pTempConnector;
 
                 QString type, style;
-                if((startPort->mpCorePort->getNodeType() == "NodeHydraulic") | (startPort->mpCorePort->getNodeType() == "NodeMechanic"))
+                if((startPort->getNodeType() == "NodeHydraulic") | (startPort->getNodeType() == "NodeMechanic"))
                     type = "Power";
-                else if(startPort->mpCorePort->getNodeType() == "NodeSignal")
+                else if(startPort->getNodeType() == "NodeSignal")
                     type = "Signal";
                 if(mpParentView->mpParentProjectTab->useIsoGraphics)
                     style = "Iso";
@@ -502,8 +504,10 @@ void UndoStack::registerDeletedObject(GUIObject *item)
     //! @todo maybe the save functin should be part of every object (so it can write its own text)
     if ( (item->getTypeName() != "SystemPort") && (item->getTypeName() != "Group") )
     {
+        //*****Core Interaction*****
         Component *mpCoreComponent = item->getHopsanCoreComponentPtr();
         vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
+        //**************************
         std::vector<CompParameter>::iterator itp;
         for ( itp=paramVector.begin() ; itp !=paramVector.end(); ++itp )
         {
