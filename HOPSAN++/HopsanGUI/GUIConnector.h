@@ -3,13 +3,12 @@
 #ifndef GUICONNECTOR_H
 #define GUICONNECTOR_H
 
-#include <vector>
 #include <QGraphicsWidget>
 #include <QPen>
 #include <QGraphicsLineItem>
 #include <QGraphicsSceneMoveEvent>
 #include "GUIPort.h"
-#include "GUIConnector.h"
+#include "AppearanceData.h"
 
 class GUIConnectorLine;
 class GraphicsView;
@@ -19,8 +18,8 @@ class GUIConnector : public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    GUIConnector(QPointF startpos, QPen primaryPen, QPen activePen, QPen hoverPen, GraphicsView *parentView, QGraphicsItem *parent = 0);
-    GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> mPoints, QPen primaryPen, QPen activePen, QPen hoverPen, GraphicsView *parentView, QGraphicsItem *parent = 0);
+    GUIConnector(QPointF startpos, GUIConnectorAppearance *pConnApp, GraphicsView *parentView, QGraphicsItem *parent = 0);
+    GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> mPoints, GUIConnectorAppearance *pConnApp, GraphicsView *parentView, QGraphicsItem *parent = 0);
     ~GUIConnector();
 
     enum geometryType {VERTICAL, HORIZONTAL, DIAGONAL};
@@ -47,6 +46,7 @@ public:
     GraphicsView *mpParentGraphicsView;
 
 public slots:
+    void setIsoStyle(bool useISO);
     void drawConnector();
     void updateStartPoint(QPointF point);
     void updateEndPoint(QPointF point);
@@ -69,15 +69,14 @@ private:
     bool mIsActive;
     bool mEndPortConnected;
     bool mMakingDiagonal;
-    QPen mPrimaryPen;
-    QPen mActivePen;
-    QPen mHoverPen;
+
+    GUIConnectorAppearance *mpGUIConnectorAppearance;
     GUIPort *mpStartPort;
     GUIPort *mpEndPort;
     GUIConnectorLine *mpTempLine;
-    std::vector<GUIConnectorLine*> mpLines;
+    QVector<GUIConnectorLine*> mpLines;
     QVector<QPointF> mPoints;
-    std::vector<geometryType> mGeometries;
+    QVector<geometryType> mGeometries;
 
 };
 
@@ -86,7 +85,7 @@ class GUIConnectorLine : public QObject, public QGraphicsLineItem
 {
     Q_OBJECT
 public:
-    GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen primaryPen, QPen activePen, QPen hoverPen, int lineNumber, GUIConnector *parent = 0);
+    GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, GUIConnectorAppearance *pConnApp, int lineNumber, GUIConnector *parent = 0);
     ~GUIConnectorLine();
 
     GUIConnector *mpParentGUIConnector;
@@ -100,11 +99,12 @@ public:
     void setHovered();
     void setGeometry(GUIConnector::geometryType geometry);
     void setLine(QPointF pos1, QPointF pos2);
-    void setPen(const QPen &pen);
-    void setPens(QPen activePen, QPen primaryPen, QPen hoverPen);
+//    void setPen(const QPen &pen);
+//    void setPens(QPen activePen, QPen primaryPen, QPen hoverPen);
     int getLineNumber();
 
 public slots:
+
     void setConnected();
 
 signals:
@@ -122,14 +122,14 @@ protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 private:
+    void setPen(const QPen &pen);
+
     bool mIsActive;
     bool mParentConnectorEndPortConnected;
     bool mHasStartArrow;
     bool mHasEndArrow;
-    QPen mPrimaryPen;
-    QPen mActivePen;
-    QPen mHoverPen;
     int mLineNumber;
+    GUIConnectorAppearance *mpConnectorAppearance;
     GUIConnector::geometryType mGeometry;
     QGraphicsLineItem *mArrowLine1;
     QGraphicsLineItem *mArrowLine2;

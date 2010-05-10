@@ -10,14 +10,42 @@
 #ifndef APPEARANCEDATA_H
 #define APPEARANCEDATA_H
 
-#include <iostream>
-//#include <QTextIStream>
-//#include <QTextOStream>
 #include <QTextStream>
 #include <QString>
 #include <QPointF>
 #include <QVector>
 #include <QMap>
+#include <QPen>
+
+class GUIConnectorAppearance
+{
+public:
+    //GUIConnectorAppearance();
+    GUIConnectorAppearance(QString porttype, bool useISO);
+    void setType(const QString porttype);
+    void setIsoStyle(bool useISO);
+    void setTypeAndIsoStyle(QString porttype, bool useISO);
+    QPen getPen(QString situation, QString type, bool useISO);
+    QPen getPen(QString situation);
+
+private:
+    QPen mPrimaryPenPowerUser;
+    QPen mActivePenPowerUser;
+    QPen mHoverPenPowerUser;
+    QPen mPrimaryPenSignalUser;
+    QPen mActivePenSignalUser;
+    QPen mHoverPenSignalUser;
+    QPen mPrimaryPenPowerIso;
+    QPen mActivePenPowerIso;
+    QPen mHoverPenPowerIso;
+    QPen mPrimaryPenSignalIso;
+    QPen mActivePenSignalIso;
+    QPen mHoverPenSignalIso;
+
+    QString mConnectorType;
+    bool mUseISOStyle;
+
+};
 
 class PortAppearance
 {

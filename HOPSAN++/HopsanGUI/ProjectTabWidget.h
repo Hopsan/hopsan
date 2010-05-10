@@ -64,7 +64,7 @@ public:
     QAction *systemPortAction;
     QMenu *menuInsert;
     QColor mBackgroundColor;
-    QPen getPen(QString situation, QString type, QString style);
+    //QPen getPen(QString situation, QString type, QString style);
     UndoStack *undoStack;
 
 signals:
@@ -126,18 +126,18 @@ private:
     void createActions();
     void createMenus();
     void addSystemPort(QPoint position, QString name=QString(), bool startSelected = false);
-    QPen mPrimaryPenPowerUser;
-    QPen mActivePenPowerUser;
-    QPen mHoverPenPowerUser;
-    QPen mPrimaryPenSignalUser;
-    QPen mActivePenSignalUser;
-    QPen mHoverPenSignalUser;
-    QPen mPrimaryPenPowerIso;
-    QPen mActivePenPowerIso;
-    QPen mHoverPenPowerIso;
-    QPen mPrimaryPenSignalIso;
-    QPen mActivePenSignalIso;
-    QPen mHoverPenSignalIso;
+//    QPen mPrimaryPenPowerUser;
+//    QPen mActivePenPowerUser;
+//    QPen mHoverPenPowerUser;
+//    QPen mPrimaryPenSignalUser;
+//    QPen mActivePenSignalUser;
+//    QPen mHoverPenSignalUser;
+//    QPen mPrimaryPenPowerIso;
+//    QPen mActivePenPowerIso;
+//    QPen mHoverPenPowerIso;
+//    QPen mPrimaryPenSignalIso;
+//    QPen mActivePenSignalIso;
+//    QPen mHoverPenSignalIso;
     bool mJustStoppedCreatingConnector;
  };
 

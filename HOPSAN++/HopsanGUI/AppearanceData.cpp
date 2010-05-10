@@ -11,6 +11,144 @@
 #include "qdebug.h"
 #include "GUIUtilities.h"
 
+GUIConnectorAppearance::GUIConnectorAppearance(QString type, bool useISO)
+{
+    //! @todo Dont set these here should be set once when the program starts, should be possible to change appearance by config
+    //Sets the hardcoded connector pen appearance
+    mPrimaryPenPowerIso = QPen(QColor("black"),1, Qt::SolidLine, Qt::RoundCap);
+    mActivePenPowerIso = QPen(QColor("red"), 2, Qt::SolidLine, Qt::RoundCap);
+    mHoverPenPowerIso = QPen(QColor("darkRed"),2, Qt::SolidLine, Qt::RoundCap);
+
+    mPrimaryPenSignalIso = QPen(QColor("blue"),1, Qt::DashLine);
+    mActivePenSignalIso = QPen(QColor("red"), 2, Qt::DashLine);
+    mHoverPenSignalIso = QPen(QColor("darkRed"),2, Qt::DashLine);
+
+    mPrimaryPenPowerUser = QPen(QColor("black"),2, Qt::SolidLine, Qt::RoundCap);
+    mActivePenPowerUser = QPen(QColor("red"), 3, Qt::SolidLine, Qt::RoundCap);
+    mHoverPenPowerUser = QPen(QColor("darkRed"),3, Qt::SolidLine, Qt::RoundCap);
+
+    mPrimaryPenSignalUser = QPen(QColor("blue"),1, Qt::DashLine);
+    mActivePenSignalUser = QPen(QColor("red"), 2, Qt::DashLine);
+    mHoverPenSignalUser = QPen(QColor("darkRed"),2, Qt::DashLine);
+
+    //Set the connector type and style
+    setTypeAndIsoStyle(type, useISO);     //Need to use set type instead of setting directly as setType narrows types down to power or signal
+}
+
+void GUIConnectorAppearance::setType(const QString type)
+{
+    if (type == "POWERPORT")
+    {
+        mConnectorType = "Power";
+    }
+    else
+    {
+        //! @todo Mybe should not yust assume signalport here might not be correct
+        //Assume signal port (read or write)
+        mConnectorType = "Signal";
+    }
+}
+
+void GUIConnectorAppearance::setIsoStyle(bool useISO)
+{
+    mUseISOStyle = useISO;
+}
+
+void GUIConnectorAppearance::setTypeAndIsoStyle(QString porttype, bool useISO)
+{
+    setType(porttype);
+    setIsoStyle(useISO);
+}
+
+QPen GUIConnectorAppearance::getPen(QString situation)
+{
+    return getPen(situation, mConnectorType, mUseISOStyle);
+}
+
+//! Get function for primary pen style
+//! @todo Hardcoded appearance stuff (should maybe be loaded from external file (not prio 1)
+QPen GUIConnectorAppearance::getPen(QString situation, QString type, bool useISO)
+{
+    if(situation == "Primary")
+    {
+        if(type == "Power")
+        {
+            if (useISO)
+            {
+                return mPrimaryPenPowerIso;
+            }
+            else
+            {
+                return mPrimaryPenPowerUser;
+            }
+        }
+        if(type == "Signal")
+        {
+            if (useISO)
+            {
+                return mPrimaryPenSignalIso;
+            }
+            else
+            {
+                return mPrimaryPenSignalUser;
+            }
+        }
+    }
+    else if(situation == "Active")
+    {
+        if(type == "Power")
+        {
+            if (useISO)
+            {
+                return mActivePenPowerIso;
+            }
+            else
+            {
+                return mActivePenPowerUser;
+            }
+        }
+        if(type == "Signal")
+        {
+            if (useISO)
+            {
+                return mActivePenSignalIso;
+            }
+            else
+            {
+                return mActivePenSignalUser;
+            }
+        }
+    }
+    else if(situation == "Hover")
+    {
+        if(type == "Power")
+        {
+            if (useISO)
+            {
+                return mHoverPenPowerIso;
+            }
+            else
+            {
+                return mHoverPenPowerUser;
+            }
+        }
+        if(type == "Signal")
+        {
+            if (useISO)
+            {
+                return mHoverPenSignalIso;
+            }
+            else
+            {
+                return mHoverPenSignalUser;
+            }
+        }
+    }
+    //! @todo Return some other default noname pen
+    qDebug() << "ERROR no such connector appearance: " << situation << " " <<  type << " ISOstyle: " << useISO;
+
+}
+
 //! @brief Contains hardcoded appearance for different hopsancore ports
 //! @todo maybe this should be placed in som more generic external .txt file in som way
 void PortAppearance::selectPortIcon(QString CQSType, QString porttype, QString nodetype)
@@ -71,7 +209,8 @@ AppearanceData::AppearanceData()
 QTextStream& operator >>(QTextStream &is, AppearanceData &rData)
 {
     //! @todo handle returned error indication
-    //bool sucess = rData.setAppearanceData(is);
+    bool sucess = rData.setAppearanceData(is);
+    sucess = sucess;
     return is;
 }
 

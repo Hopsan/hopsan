@@ -63,21 +63,7 @@ GraphicsView::GraphicsView(HopsanEssentials *pHopsanCore, ComponentSystem *pCore
     this->createActions();
     this->createMenus();
 
-    mPrimaryPenPowerIso = QPen(QColor("black"),1, Qt::SolidLine, Qt::RoundCap);
-    mActivePenPowerIso = QPen(QColor("red"), 2, Qt::SolidLine, Qt::RoundCap);
-    mHoverPenPowerIso = QPen(QColor("darkRed"),2, Qt::SolidLine, Qt::RoundCap);
 
-    mPrimaryPenSignalIso = QPen(QColor("blue"),1, Qt::DashLine);
-    mActivePenSignalIso = QPen(QColor("red"), 2, Qt::DashLine);
-    mHoverPenSignalIso = QPen(QColor("darkRed"),2, Qt::DashLine);
-
-    mPrimaryPenPowerUser = QPen(QColor("black"),2, Qt::SolidLine, Qt::RoundCap);
-    mActivePenPowerUser = QPen(QColor("red"), 3, Qt::SolidLine, Qt::RoundCap);
-    mHoverPenPowerUser = QPen(QColor("darkRed"),3, Qt::SolidLine, Qt::RoundCap);
-
-    mPrimaryPenSignalUser = QPen(QColor("blue"),1, Qt::DashLine);
-    mActivePenSignalUser = QPen(QColor("red"), 2, Qt::DashLine);
-    mHoverPenSignalUser = QPen(QColor("darkRed"),2, Qt::DashLine);
 
     undoStack = new UndoStack(this);
     //undoStack->show();
@@ -642,23 +628,9 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
         std::cout << "GraphicsView: " << "Adding connector";
         QPointF oldPos = pPort->mapToScene(pPort->boundingRect().center());
 
-        //*****Core Interaction*****
-        //! @todo We can not determine appearcne of connector based on first port clicked, This will fail when we are connecting system ports and are selecting the system port first
-        if(this->mpParentProjectTab->useIsoGraphics)
-        {
-            if((pPort->getNodeType() == "NodeHydraulic") | (pPort->getNodeType() == "NodeMechanic"))
-                mpTempConnector = new GUIConnector(oldPos, getPen("Primary", "Power", "Iso"), getPen("Active", "Power", "Iso"), getPen("Hover", "Power", "Iso"), this);
-            else if(pPort->getNodeType() == "NodeSignal")
-                mpTempConnector = new GUIConnector(oldPos, getPen("Primary", "Signal", "Iso"), getPen("Active", "Signal", "Iso"), getPen("Hover", "Signal", "Iso"), this);
-        }
-        else
-        {
-            if((pPort->getNodeType() == "NodeHydraulic") | (pPort->getNodeType() == "NodeMechanic"))
-                mpTempConnector = new GUIConnector(oldPos, getPen("Primary", "Power", "User"), getPen("Active", "Power", "User"), getPen("Hover", "Power", "User"), this);
-            else if(pPort->getNodeType() == "NodeSignal")
-                mpTempConnector = new GUIConnector(oldPos, getPen("Primary", "Signal", "User"), getPen("Active", "Signal", "User"), getPen("Hover", "Signal", "User"), this);
-        }
-        //**************************
+        GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(pPort->getPortType(), this->mpParentProjectTab->useIsoGraphics);
+        mpTempConnector = new GUIConnector(oldPos, pConnApp, this);
+
         this->scene()->addItem(mpTempConnector);
         this->mIsCreatingConnector = true;
         pPort->getGuiObject()->addConnector(mpTempConnector);
@@ -894,21 +866,8 @@ void GraphicsView::paste()
                 ++j;
             }
 
-            GUIConnector *pTempConnector;
-
-            //*****Core Interaction*****
-            QString type, style;
-            if((startPort->mpCorePort->getNodeType() == "NodeHydraulic") | (startPort->mpCorePort->getNodeType() == "NodeMechanic"))
-                type = "Power";
-            else if(startPort->mpCorePort->getNodeType() == "NodeSignal")
-                type = "Signal";
-            if(mpParentProjectTab->useIsoGraphics)
-                style = "Iso";
-            else
-                style = "User";
-            //**************************
-            pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, this->getPen("Primary", type, style),
-                                              this->getPen("Active", type, style), this->getPen("Hover", type, style), this);
+            GUIConnectorAppearance *conapp = new GUIConnectorAppearance(startPort->getPortType(), mpParentProjectTab->useIsoGraphics); //Decide port appearance
+            GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, conapp, this);
 
             this->scene()->addItem(pTempConnector);
             pTempConnector->selectIfBothComponentsSelected();
@@ -920,9 +879,6 @@ void GraphicsView::paste()
             connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
             connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
 
-            //std::stringstream tempStream2;
-            //tempStream2 << startPort->getGuiObject()->getName().toStdString() << " " << startPort->getPortNumber() << " " <<
-            //              endPort->getGuiObject()->getName().toStdString() << " " << endPort->getPortNumber();
             mConnectorVector.append(pTempConnector);
             //*****Core Interaction*****
             bool success = this->getCoreComponentSystem()->connect(startPort->mpCorePort, endPort->mpCorePort);
@@ -1033,62 +989,7 @@ void GraphicsView::clearUndo()
 }
 
 
-//! Get function for primary pen style
-//! @todo Hardcoded appearacne stuff (should be in appearacedata or maybe loaded from external file (not prio 1)
-QPen GraphicsView::getPen(QString situation, QString type, QString style)
-{
-    if(situation == "Primary")
-    {
-        if(type == "Power")
-        {
-            if(style == "Iso")
-                return mPrimaryPenPowerIso;
-            if(style == "User")
-                return mPrimaryPenPowerUser;
-        }
-        if(type == "Signal")
-        {
-            if(style == "Iso")
-                return mPrimaryPenSignalIso;
-            if(style == "User")
-                return mPrimaryPenSignalUser;
-        }
-    }
-    else if(situation == "Active")
-    {
-        if(type == "Power")
-        {
-            if(style == "Iso")
-                return mActivePenPowerIso;
-            if(style == "User")
-                return mActivePenPowerUser;
-        }
-        if(type == "Signal")
-        {
-            if(style == "Iso")
-                return mActivePenSignalIso;
-            if(style == "User")
-                return mActivePenSignalUser;
-        }
-    }
-    else if(situation == "Hover")
-    {
-        if(type == "Power")
-        {
-            if(style == "Iso")
-                return mHoverPenPowerIso;
-            if(style == "User")
-                return mHoverPenPowerUser;
-        }
-        if(type == "Signal")
-        {
-            if(style == "Iso")
-                return mHoverPenSignalIso;
-            if(style == "User")
-                return mHoverPenSignalUser;
-        }
-    }
-}
+
 
 
 //! @class GraphicsScene
@@ -1570,7 +1471,6 @@ void ProjectTabWidget::loadModel()
             }
             else
             {
-
                 QVector<QPointF> tempPointVector;
                 qreal tempX, tempY;
 
@@ -1584,22 +1484,8 @@ void ProjectTabWidget::loadModel()
                 }
 
                 //! @todo: Store useIso bool in model file and pick the correct line styles when loading
-                GUIConnector *pTempConnector;
-
-                //! @todo Avoid core access here, shoudl make this a function that can be called later if we change iso/user graphics mode
-                //*****Core Interaction*****
-                QString type, style;
-                if((startPort->mpCorePort->getNodeType() == "NodeHydraulic") || (startPort->mpCorePort->getNodeType() == "NodeMechanic"))
-                    type = "Power";
-                else if(startPort->mpCorePort->getNodeType() == "NodeSignal")
-                    type = "Signal";
-                if(pCurrentTab->useIsoGraphics)
-                    style = "Iso";
-                else
-                    style = "User";
-                //***************************
-                pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, pCurrentView->getPen("Primary", type, style),
-                                                  pCurrentView->getPen("Active", type, style), pCurrentView->getPen("Hover", type, style), pCurrentView);
+                GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), pCurrentTab->useIsoGraphics);
+                GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, pConnApp, pCurrentView);
 
                 pCurrentView->scene()->addItem(pTempConnector);
 
@@ -1728,35 +1614,13 @@ void ProjectTabWidget::setIsoGraphics(bool useISO)
 
     ProjectTab *pCurrentTab = getCurrentTab();
     GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
-    QMap<QString, GUIConnector *>::iterator it;
-    //*****Core Interaction*****
-    //! @todo dont do this appearance stuff here, also dontdo core access
+    //QMap<QString, GUIConnector *>::iterator it;
+
     for(int i = 0; i!=pCurrentView->mConnectorVector.size(); ++i)
     {
-        if(useISO)
-        {
-            if((pCurrentView->mConnectorVector[i]->getEndPort()->mpCorePort->getNodeType() == "NodeHydraulic") | (pCurrentView->mConnectorVector[i]->getEndPort()->mpCorePort->getNodeType() == "NodeMechanic"))
-                pCurrentView->mConnectorVector[i]->setPens(pCurrentView->getPen("Primary", "Power", "Iso"),
-                                                           pCurrentView->getPen("Active", "Power", "Iso"),
-                                                           pCurrentView->getPen("Hover", "Power", "Iso"));
-            else if(pCurrentView->mConnectorVector[i]->getEndPort()->mpCorePort->getNodeType() == "NodeSignal")
-                    pCurrentView->mConnectorVector[i]->setPens(pCurrentView->getPen("Primary", "Signal", "Iso"),
-                                                               pCurrentView->getPen("Active", "Signal", "Iso"),
-                                                               pCurrentView->getPen("Hover", "Signal", "Iso"));
-        }
-        else
-        {
-            if((pCurrentView->mConnectorVector[i]->getEndPort()->mpCorePort->getNodeType() == "NodeHydraulic") | (pCurrentView->mConnectorVector[i]->getEndPort()->mpCorePort->getNodeType() == "NodeMechanic"))
-                pCurrentView->mConnectorVector[i]->setPens(pCurrentView->getPen("Primary", "Power", "User"),
-                                                           pCurrentView->getPen("Active", "Power", "User"),
-                                                           pCurrentView->getPen("Hover", "Power", "User"));
-            else if(pCurrentView->mConnectorVector[i]->getEndPort()->mpCorePort->getNodeType() == "NodeSignal")
-                pCurrentView->mConnectorVector[i]->setPens(pCurrentView->getPen("Primary", "Signal", "User"),
-                                                           pCurrentView->getPen("Active", "Signal", "User"),
-                                                           pCurrentView->getPen("Hover", "Signal", "User"));
-        }
+        pCurrentView->mConnectorVector[i]->setIsoStyle(useISO);
     }
-    //***************************
+
 
     QMap<QString, GUIObject*>::iterator it2;
     for(it2 = pCurrentView->mGUIObjectMap.begin(); it2!=pCurrentView->mGUIObjectMap.end(); ++it2)

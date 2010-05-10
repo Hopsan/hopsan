@@ -16,7 +16,7 @@
 //! @param hoverPen defines the width and color of the line when hovered by the mouse cursor.
 //! @param *parentView is a pointer to the GraphicsView the connector belongs to.
 //! @param parent is the parent of the port.
-GUIConnector::GUIConnector(QPointF startpos, QPen primaryPen, QPen activePen, QPen hoverPen, GraphicsView *parentView, QGraphicsItem *parent)
+GUIConnector::GUIConnector(QPointF startpos, GUIConnectorAppearance *pConnApp, GraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
     this->mpParentGraphicsView = parentView;
@@ -27,9 +27,7 @@ GUIConnector::GUIConnector(QPointF startpos, QPen primaryPen, QPen activePen, QP
 
     this->updateStartPoint(startpos);
 
-    this->mPrimaryPen = primaryPen;
-    this->mActivePen = activePen;
-    this->mHoverPen = hoverPen;
+    mpGUIConnectorAppearance = pConnApp;
 
     this->mEndPortConnected = false;
 
@@ -48,7 +46,7 @@ GUIConnector::GUIConnector(QPointF startpos, QPen primaryPen, QPen activePen, QP
 //! @param hoverPen defines the width and color of the line when hovered by the mouse cursor.
 //! @param *parentView is a pointer to the GraphicsView the connector belongs to.
 //! @param parent is the parent of the port.
-GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, QPen primaryPen, QPen activePen, QPen hoverPen, GraphicsView *parentView, QGraphicsItem *parent)
+GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, GUIConnectorAppearance *pConnApp, GraphicsView *parentView, QGraphicsItem *parent)
 {
     this->mpParentGraphicsView = parentView;
     setFlags(QGraphicsItem::ItemIsFocusable);
@@ -61,10 +59,11 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     QPointF startPos = getStartPort()->mapToScene(getStartPort()->boundingRect().center());
     this->setPos(startPos);
 
-        //Set pen styles
-    this->mPrimaryPen = primaryPen;
-    this->mActivePen = activePen;
-    this->mHoverPen = hoverPen;
+    mpGUIConnectorAppearance = pConnApp;
+//        //Set pen styles
+//    this->mPrimaryPen = primaryPen;
+//    this->mActivePen = activePen;
+//    this->mHoverPen = hoverPen;
     mPoints = points;
 
         //Setup the geometries vector based on the point geometry
@@ -88,7 +87,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     {
         mpTempLine = new GUIConnectorLine(mapFromScene(mPoints[i]).x(), mapFromScene(mPoints[i]).y(),
                                           mapFromScene(mPoints[i+1]).x(), mapFromScene(mPoints[i+1]).y(),
-                                          primaryPen, activePen, hoverPen, i, this);
+                                          mpGUIConnectorAppearance, i, this);
         //qDebug() << "Creating line from " << mPoints[i].x() << ", " << mPoints[i].y() << " to " << mPoints[i+1].x() << " " << mPoints[i+1].y();
         mpLines.push_back(mpTempLine);
         mpTempLine->setConnected();
@@ -103,9 +102,9 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     this->drawConnector();
 
         //Make all lines selectable and all lines except first and last movable
-    for(std::size_t i=1; i!=mpLines.size()-1; ++i)
+    for(int i=1; i!=mpLines.size()-1; ++i)
         mpLines[i]->setFlag(QGraphicsItem::ItemIsMovable, true);
-    for(std::size_t i=0; i!=mpLines.size(); ++i)
+    for(int i=0; i!=mpLines.size(); ++i)
         mpLines[i]->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
       //Add arrow to the connector if it is of signal type
@@ -141,6 +140,7 @@ GUIConnector::~GUIConnector()
 
     //mpLines.clear();
     //! @todo more cleanup
+    delete mpGUIConnectorAppearance;
 }
 
 
@@ -281,15 +281,25 @@ void GUIConnector::setEndPort(GUIPort *port)
 }
 
 
-//! Cycles all lines and gives them the specified pen styles.
-//! @param primaryPen defines the default width and color of the line.
-//! @param activePen defines the width and color of the line when it is selected.
-//! @param hoverPen defines the width and color of the line when hovered by the mouse cursor.
-void GUIConnector::setPens(QPen primaryPen, QPen activePen, QPen hoverPen)
+////! Cycles all lines and gives them the specified pen styles.
+////! @param primaryPen defines the default width and color of the line.
+////! @param activePen defines the width and color of the line when it is selected.
+////! @param hoverPen defines the width and color of the line when hovered by the mouse cursor.
+//void GUIConnector::setPens(QPen primaryPen, QPen activePen, QPen hoverPen)
+//{
+//    for (std::size_t i=0; i!=mpLines.size(); ++i )
+//    {
+//        mpLines[i]->setPens(primaryPen, activePen, hoverPen);
+//    }
+//}
+
+void GUIConnector::setIsoStyle(bool useISO)
 {
+    mpGUIConnectorAppearance->setIsoStyle(useISO);
     for (std::size_t i=0; i!=mpLines.size(); ++i )
     {
-        mpLines[i]->setPens(primaryPen, activePen, hoverPen);
+        //Refresh each line by setting to passive (primary) appearance
+        mpLines[i]->setPassive();
     }
 }
 
@@ -437,7 +447,7 @@ void GUIConnector::drawConnector()
             {
                 mpTempLine = new GUIConnectorLine(mapFromScene(mPoints[i]).x(), mapFromScene(mPoints[i]).y(),
                                                   mapFromScene(mPoints[i+1]).x(), mapFromScene(mPoints[i+1]).y(),
-                                                  mPrimaryPen, mActivePen, mHoverPen, mpLines.size(), this);
+                                                  mpGUIConnectorAppearance, mpLines.size(), this);
                 mpTempLine->setPassive();
                 connect(mpTempLine,SIGNAL(lineSelected(bool, int)),this,SLOT(doSelect(bool, int)));
                 connect(mpTempLine,SIGNAL(lineMoved(int)),this, SLOT(updateLine(int)));
@@ -604,7 +614,7 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
         if(lineSelected)
         {
             this->setActive();
-            for (std::size_t i=0; i != mpLines.size(); ++i)
+            for (int i=0; i != mpLines.size(); ++i)
             {
                if(i != (std::size_t)lineNumber)     //I think this means that only one line in a connector can be selected at one time
                    mpLines[i]->setSelected(false);
@@ -613,7 +623,7 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
         else
         {
             bool noneSelected = true;
-            for (std::size_t i=0; i != mpLines.size(); ++i)
+            for (int i=0; i != mpLines.size(); ++i)
             {
                if(mpLines[i]->isSelected())
                    noneSelected = false;
@@ -723,19 +733,18 @@ void GUIConnector::deleteMeWithNoUndo()
 //! @param y1 is the y-coordinate of the start position of the line.
 //! @param x2 is the x-coordinate of the end position of the line.
 //! @param y2 is the y-coordinate of the end position of the line.
-//! @param primaryPen defines the default color and width of the line.
-//! @param activePen defines the color and width of the line when it is selected.
-//! @param hoverPen defines the color and width of the line when it is hovered by the mouse cursor.
+////! @param primaryPen defines the default color and width of the line.
+////! @param activePen defines the color and width of the line when it is selected.
+////! @param hoverPen defines the color and width of the line when it is hovered by the mouse cursor.
+//! @param pConnApp A pointer to the connector appearance data, containing pens
 //! @param lineNumber is the number of the line in the connector.
 //! @param *parent is a pointer to the parent object.
-GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, QPen primaryPen, QPen activePen, QPen hoverPen, int lineNumber, GUIConnector *parent)
+GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, GUIConnectorAppearance* pConnApp, int lineNumber, GUIConnector *parent)
         : QGraphicsLineItem(x1,y1,x2,y2,parent)
 {
     mpParentGUIConnector = parent;
     setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
-    this->mPrimaryPen = primaryPen;
-    this->mActivePen = activePen;
-    this->mHoverPen = hoverPen;
+    mpConnectorAppearance = pConnApp;
     this->mLineNumber = lineNumber;
     this->setAcceptHoverEvents(true);
     this->mParentConnectorEndPortConnected = false;
@@ -769,7 +778,7 @@ void GUIConnectorLine::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWi
 //! @see setHovered()
 void GUIConnectorLine::setActive()
 {
-        this->setPen(mActivePen);
+        this->setPen(mpConnectorAppearance->getPen("Active"));
 }
 
 
@@ -778,7 +787,7 @@ void GUIConnectorLine::setActive()
 //! @see setHovered()
 void GUIConnectorLine::setPassive()
 {
-        this->setPen(mPrimaryPen);
+        this->setPen(mpConnectorAppearance->getPen("Primary"));
 }
 
 
@@ -787,7 +796,7 @@ void GUIConnectorLine::setPassive()
 //! @see setPassive()
 void GUIConnectorLine::setHovered()
 {
-        this->setPen(mHoverPen);
+        this->setPen(mpConnectorAppearance->getPen("Hover"));
 }
 
 
@@ -948,11 +957,11 @@ void GUIConnectorLine::setPen (const QPen &pen)
 }
 
 
-//! Set function for all three pen styles (primary, active and hover).
-void GUIConnectorLine::setPens(QPen primaryPen, QPen activePen, QPen hoverPen)
-{
-    mPrimaryPen = primaryPen;
-    mActivePen = activePen;
-    mHoverPen = hoverPen;
-    this->setPassive();
-}
+////! Set function for all three pen styles (primary, active and hover).
+//void GUIConnectorLine::setPens(QPen primaryPen, QPen activePen, QPen hoverPen)
+//{
+//    mPrimaryPen = primaryPen;
+//    mActivePen = activePen;
+//    mHoverPen = hoverPen;
+//    this->setPassive();
+//}

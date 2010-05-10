@@ -138,19 +138,8 @@ void UndoStack::undoOneStep()
                 }
 
                 //! @todo: Store useIso bool in model file and pick the correct line styles when loading
-                GUIConnector *pTempConnector;
-
-                QString type, style;
-                if((startPort->getNodeType() == "NodeHydraulic") | (startPort->getNodeType() == "NodeMechanic"))
-                    type = "Power";
-                else if(startPort->getNodeType() == "NodeSignal")
-                    type = "Signal";
-                if(mpParentView->mpParentProjectTab->useIsoGraphics)
-                    style = "Iso";
-                else
-                    style = "User";
-                pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, mpParentView->getPen("Primary", type, style),
-                                                  mpParentView->getPen("Active", type, style), mpParentView->getPen("Hover", type, style), mpParentView);
+                GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), mpParentView->mpParentProjectTab->useIsoGraphics);
+                GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, pConnApp, mpParentView);
 
                 mpParentView->scene()->addItem(pTempConnector);
 
@@ -380,20 +369,8 @@ void UndoStack::redoOneStep()
                 }
 
                 //! @todo: Store useIso bool in model file and pick the correct line styles when loading
-                GUIConnector *pTempConnector;
-
-                QString type, style;
-                if((startPort->getNodeType() == "NodeHydraulic") | (startPort->getNodeType() == "NodeMechanic"))
-                    type = "Power";
-                else if(startPort->getNodeType() == "NodeSignal")
-                    type = "Signal";
-                if(mpParentView->mpParentProjectTab->useIsoGraphics)
-                    style = "Iso";
-                else
-                    style = "User";
-
-                pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, mpParentView->getPen("Primary", type, style),
-                                                  mpParentView->getPen("Active", type, style), mpParentView->getPen("Hover", type, style), mpParentView);
+                GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), mpParentView->mpParentProjectTab->useIsoGraphics);
+                GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, pConnApp, mpParentView);
 
                 mpParentView->scene()->addItem(pTempConnector);
 
