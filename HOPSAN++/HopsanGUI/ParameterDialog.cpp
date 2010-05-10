@@ -31,8 +31,10 @@ ParameterDialog::ParameterDialog(GUIComponent *pGUIComponent, QWidget *parent)
 {
     mpGUIObject = pGUIComponent;
     isGUISubsystem = false;
+    //*****Core Interaction*****
     mpCoreComponent = pGUIComponent->getHopsanCoreComponentPtr();
     mpCoreComponentSystem = 0;
+    //**************************
 
     createEditStuff();
 }
@@ -42,8 +44,10 @@ ParameterDialog::ParameterDialog(GUISubsystem *pGUISubsystem, QWidget *parent)  
 {
     mpGUIObject = pGUISubsystem;
     isGUISubsystem = true;
+    //*****Core Interaction*****
     mpCoreComponentSystem = pGUISubsystem->getHopsanCoreSystemComponentPtr();
     mpCoreComponent = pGUISubsystem->getHopsanCoreComponentPtr();
+    //**************************
 
     createEditStuff();
 }
@@ -52,6 +56,7 @@ void ParameterDialog::createEditStuff()
 {
     mpNameEdit = new QLineEdit(mpGUIObject->getName());
 
+    //*****Core Interaction*****
     std::vector<CompParameter>::iterator it;
     vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
     for ( it=paramVector.begin() ; it !=paramVector.end(); it++ )
@@ -70,6 +75,7 @@ void ParameterDialog::createEditStuff()
 
         mVarVector.back()->setBuddy(mValueVector.back());
     }
+   //***************************
 
     okButton = new QPushButton(tr("&Ok"));
     okButton->setDefault(true);
@@ -91,9 +97,13 @@ void ParameterDialog::createEditStuff()
     QHBoxLayout *pCQSLayout;
     if (isGUISubsystem)
     {
+        //*****Core Interaction*****
         mpCQSEdit = new QLineEdit(QString::fromStdString(mpCoreComponentSystem->getTypeCQSString()));
+        //**************************
         pCQSLayout = new QHBoxLayout;
+        //*****Core Interaction*****
         QLabel *pCQSLabel = new QLabel("CQS: ");
+        //**************************
         pCQSLayout->addWidget(pCQSLabel);
         pCQSLayout->addWidget(mpCQSEdit);
     }
@@ -155,7 +165,9 @@ void ParameterDialog::setParameters()
             messageWidget->printGUIMessage(QString("ParameterDialog::setParameters(): You must give a correct value for '").append(mVarVector[i]->text()).append(QString("', putz. Try again!")));
             return;
         }
+        //*****Core Interaction*****
         mpCoreComponent->setParameter(mVarVector[i]->text().toStdString(), newValue);
+        //**************************
     }
     std::cout << "Parameters updated." << std::endl;
     this->close();

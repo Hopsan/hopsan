@@ -29,7 +29,9 @@
 InitializationThread::InitializationThread(ComponentSystem *pComponentSystem, double startTime, double finishTime, ProjectTabWidget *parent)
 {
     mpParentProjectTabWidget = parent;
+    //*****Core Interaction*****
     mpComponentSystem = pComponentSystem;
+    //**************************
     mStartTime = startTime;
     mFinishTime = finishTime;
 
@@ -39,7 +41,9 @@ InitializationThread::InitializationThread(ComponentSystem *pComponentSystem, do
 //! Implements the task for the thread.
 void InitializationThread::run()
 {
+    //*****Core Interaction*****
     mpComponentSystem->initialize(mStartTime, mFinishTime);
+    //**************************
 
     //exec(); //Is used if one want to run an event loop in this thread.
 }

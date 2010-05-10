@@ -6,7 +6,9 @@ MessageWidget::MessageWidget(MainWindow *pParent)
     : QTextEdit(pParent)
 {
     mpParentMainWindow = pParent;
+    //*****Core Interaction*****
     mpHopsanCore = 0;
+    //**************************
 
 }
 
@@ -40,11 +42,14 @@ void MessageWidget::setMessageColor(int type)
 
 void MessageWidget::setHopsanCorePtr(HopsanEssentials* pHopsanCore)
 {
+    //*****Core Interaction*****
     mpHopsanCore = pHopsanCore;
+    //**************************
 }
 
 void MessageWidget::printCoreMessages()
 {
+    //*****Core Interaction*****
     HopsanCoreMessage msg;
     if (mpHopsanCore != 0)
     {
@@ -63,6 +68,7 @@ void MessageWidget::printCoreMessages()
     {
         printGUIMessage("The hopsan core pointer is not set, can not get core messages");
     }
+    //**************************
 }
 
 void MessageWidget::printGUIMessage(QString message)
