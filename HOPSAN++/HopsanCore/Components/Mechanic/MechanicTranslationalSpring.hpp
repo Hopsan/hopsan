@@ -14,7 +14,6 @@ class MechanicTranslationalSpring : public ComponentC
 
 private:
     double mk;
-    double mTimestep;
     Port *mpP1, *mpP2;
 
 public:
@@ -40,7 +39,8 @@ public:
 
     void initialize()
     {
-        //Nothing to initialize
+        mpP1->writeNode(NodeMechanic::VELOCITY, 0.0);
+        mpP2->writeNode(NodeMechanic::FORCE, 0.0);
     }
 
 
