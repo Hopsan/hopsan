@@ -6,16 +6,8 @@
 #include <vector>
 #include <math.h>
 
-#include <QObject>
-#include <QMap>
-#include <QDebug>
 #include <QtGui>
-#include <QGraphicsSvgItem>
-#include <QGraphicsTextItem>
-#include <QWidget>
-#include <QGraphicsView>
-#include <QGraphicsItem>
-#include <QGraphicsSceneMoveEvent>
+#include <QtCore>
 
 #include "HopsanCore.h"
 #include "GUIObject.h"
@@ -1102,6 +1094,13 @@ void GUIComponent::deleteInHopsanCore()
     //**************************
 }
 
+
+int GUIComponent::type() const
+{
+    return Type;
+}
+
+
 //! @brief Save GuiObject to a text stream
 void GUIComponent::saveToTextStream(QTextStream &rStream)
 {
@@ -1271,6 +1270,13 @@ QString GUISubsystem::getTypeCQS()
     //**************************
 }
 
+
+int GUISubsystem::type() const
+{
+    return Type;
+}
+
+
 void GUISubsystem::deleteInHopsanCore()
 {
     //*****Core Interaction*****
@@ -1415,6 +1421,13 @@ QString GUISystemPort::getName()
     //**************************
 }
 
+
+int GUISystemPort::type() const
+{
+    return Type;
+}
+
+
 //! Delete the system port in the core
 void GUISystemPort::deleteInHopsanCore()
 {
@@ -1425,10 +1438,10 @@ void GUISystemPort::deleteInHopsanCore()
 }
 
 
-//int GUIGroup::type() const
-//{
-//    return Type;
-//}
+int GUIGroup::type() const
+{
+    return Type;
+}
 
 
 GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData, GraphicsScene *scene, QGraphicsItem *parent)

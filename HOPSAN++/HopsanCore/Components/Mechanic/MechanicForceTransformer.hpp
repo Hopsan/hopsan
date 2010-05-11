@@ -15,6 +15,7 @@ class MechanicForceTransformer : public ComponentC
 private:
     double mStartPosition;
     double mStartVelocity;
+    double mSignal;
     Port *mpIn, *mpOut;
 
 public:
@@ -29,6 +30,7 @@ public:
         mTypeName = "MechanicForceTransformer";
         mStartPosition = 0.0;
         mStartVelocity = 0.0;
+        mSignal = 0.0;
 
         //Add ports to the component
         mpIn = addReadPort("in", "NodeSignal");
@@ -37,6 +39,7 @@ public:
         //Register changable parameters to the HOPSAN++ core
         registerParameter("x0", "Initial Position", "[m]", mStartPosition);
         registerParameter("v0", "Initial Velocity", "[m/s]", mStartVelocity);
+        registerParameter("Force", "Generated force", "[N]", mSignal);
     }
 
 
@@ -44,13 +47,19 @@ public:
     {
         mpOut->writeNode(NodeMechanic::POSITION, mStartPosition);
         mpOut->writeNode(NodeMechanic::VELOCITY, mStartVelocity);
+        mpOut->writeNode(NodeMechanic::CHARIMP, 0.0);
+        mpOut->writeNode(NodeMechanic::WAVEVARIABLE, 0.0);
     }
 
 
     void simulateOneTimestep()
     {
+        double signal;
         //Get variable values from nodes
-        double signal  = mpIn->readNode(NodeSignal::VALUE);
+        if(mpIn->isConnected())
+            signal  = mpIn->readNode(NodeSignal::VALUE);
+        else
+            signal = mSignal;
 
         //Spring equations
         double c = signal;

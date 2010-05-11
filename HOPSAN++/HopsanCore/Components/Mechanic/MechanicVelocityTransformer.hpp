@@ -14,6 +14,7 @@ class MechanicVelocityTransformer : public ComponentQ
 {
 
 private:
+    double mSignal;
     Integrator mInt;
     Port *mpIn, *mpOut;
 
@@ -25,6 +26,8 @@ public:
 
     MechanicVelocityTransformer(const string name) : ComponentQ(name)
     {
+        mSignal = 0.0;
+
         //Set member attributes
         mTypeName = "MechanicVelocityTransformer";
 
@@ -33,20 +36,29 @@ public:
         mpOut = addPowerPort("out", "NodeMechanic");
 
         //Register changable parameters to the HOPSAN++ core
+        registerParameter("Speed", "Generated speed", "[m/s]", mSignal);
     }
 
 
     void initialize()
     {
-        double signal  = mpIn->readNode(NodeSignal::VALUE);
+        double signal;
+        if(mpIn->isConnected())
+            signal  = mpIn->readNode(NodeSignal::VALUE);
+        else
+            signal = mSignal;
         mInt.initialize(mTime, mTimestep, signal, 0.0);
     }
 
 
     void simulateOneTimestep()
     {
+        double signal;
         //Get variable values from nodes
-        double signal  = mpIn->readNode(NodeSignal::VALUE);
+        if(mpIn->isConnected())
+            signal  = mpIn->readNode(NodeSignal::VALUE);
+        else
+            signal = mSignal;
         double c =mpOut->readNode(NodeMechanic::WAVEVARIABLE);
         double Zc =mpOut->readNode(NodeMechanic::CHARIMP);
 

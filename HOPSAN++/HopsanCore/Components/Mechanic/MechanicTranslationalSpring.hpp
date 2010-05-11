@@ -40,7 +40,13 @@ public:
     void initialize()
     {
         mpP1->writeNode(NodeMechanic::VELOCITY, 0.0);
+        mpP1->writeNode(NodeMechanic::FORCE, 0.0);
+        mpP1->writeNode(NodeMechanic::CHARIMP, mk * mTimestep);
+        mpP1->writeNode(NodeMechanic::WAVEVARIABLE, 0.0);
+        mpP2->writeNode(NodeMechanic::VELOCITY, 0.0);
         mpP2->writeNode(NodeMechanic::FORCE, 0.0);
+        mpP2->writeNode(NodeMechanic::CHARIMP, mk * mTimestep);
+        mpP2->writeNode(NodeMechanic::WAVEVARIABLE, 0.0);
     }
 
 

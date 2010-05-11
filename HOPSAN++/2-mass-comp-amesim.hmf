@@ -8,10 +8,7 @@ HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION 0.1
 COMPONENT MechanicForceTransformer "ForceTransformer" 2240 2393 0 1
 PARAMETER "ForceTransformer" x0 0
 PARAMETER "ForceTransformer" v0 1
-COMPONENT SignalSource "Source" 2165 2393 0 0
-PARAMETER "Source" Value 0
-COMPONENT SignalSource "Source_1" 2772 2393 180 1
-PARAMETER "Source_1" Value 0
+PARAMETER "ForceTransformer" Force 0
 COMPONENT MechanicTranslationalMass "TranslationalMass" 2332 2393 0 0
 PARAMETER "TranslationalMass" Mass 100
 PARAMETER "TranslationalMass" B 0
@@ -25,12 +22,11 @@ PARAMETER "TranslationalSpring" k 100000
 COMPONENT MechanicTranslationalSpring "TranslationalSpring_1" 2426 2393 0 1
 PARAMETER "TranslationalSpring_1" k 100000
 COMPONENT MechanicVelocityTransformer "VelocityTransformer" 2693 2393 180 0
+PARAMETER "VelocityTransformer" Speed 0
 --------------------------------------------------------------
 CONNECT "VelocityTransformer" "out" "TranslationalSpring" "P2" 2673.5 2393 2653 2393 2653 2393 2633.5 2393
 CONNECT "TranslationalSpring" "P1" "TranslationalMass_1" "P2" 2600.5 2393 2522 2393 2522 2393 2550 2393
 CONNECT "TranslationalSpring_1" "P2" "TranslationalMass_1" "P1" 2442.5 2393 2467 2393 2467 2393 2486 2393
 CONNECT "TranslationalMass" "P2" "TranslationalSpring_1" "P1" 2364 2393 2385 2393 2385 2393 2409.5 2393
 CONNECT "ForceTransformer" "out" "TranslationalMass" "P1" 2259.5 2393 2282 2393 2282 2393 2300 2393
-CONNECT "Source" "out" "ForceTransformer" "in" 2177.5 2393 2197 2393 2197 2393 2220.5 2393
-CONNECT "Source_1" "out" "VelocityTransformer" "in" 2759.5 2393 2735 2393 2735 2393 2712.5 2393
 --------------------------------------------------------------

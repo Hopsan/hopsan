@@ -51,10 +51,11 @@ public:
         //mFilter.initialize(0.0,0.0, mTime);
         double x1  = mpP1->readNode(NodeMechanic::POSITION);
         double v1  = mpP1->readNode(NodeMechanic::VELOCITY);
+        double F1  = mpP1->readNode(NodeMechanic::FORCE);
         //cout << "x0 = " << x1 << endl;
         double num [] = {0.0, 1.0, 0.0};
         double den [] = {mMass, mB, mk};
-        mFilter.initialize(mTime, mTimestep, num, den);
+        mFilter.initialize(mTime, mTimestep, num, den, -F1, -v1);
         mInt.initialize(mTime, mTimestep, -v1, -x1);
         //mFilter.update(0);
     }
