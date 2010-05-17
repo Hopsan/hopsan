@@ -293,7 +293,8 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
     //title.append(" at component: ").append(QString::fromStdString(mpParentComponent->mpCoreComponent->getName())).append(", port: ").append(QString::fromStdString(mpCorePort->getPortName()));
     xlabel.append("Time, [s]");
 
-    PlotWidget *newPlot = new PlotWidget(time,y,mpParentGuiObject->mpParentGraphicsView);
+    //PlotWidget *newPlot = new PlotWidget(time,y,mpParentGuiObject->mpParentGraphicsView);
+    PlotWidget *newPlot = new PlotWidget(time,y,mpParentGuiObject->mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow);
 
     //newPlot->mpVariablePlot->setTitle(title);
     newPlot->mpCurve->setTitle(title);

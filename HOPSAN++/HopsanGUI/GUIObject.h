@@ -55,6 +55,8 @@ public:
 
     enum { Type = UserType + 2 };
     int type() const;
+    QList<GUIPort*> mPortListPtrs;
+    //QMap<QString, GUIPort*> mGuiPortPtrMap;
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
@@ -90,8 +92,6 @@ protected:
     double mTextOffset;
     QGraphicsLineItem *mpTempLine;
     //std::vector<GUIConnector*> mConnectors;        //Inteded to store connectors for each component
-    QList<GUIPort*> mPortListPtrs;
-    QMap<QString, GUIPort*> mGuiPortPtrMap;
     int mNameTextPos;
     bool mIconRotation;
     bool mIsFlipped;

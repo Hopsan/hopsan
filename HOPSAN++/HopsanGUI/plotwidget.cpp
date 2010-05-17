@@ -1,13 +1,17 @@
 //$Id$
 #include "plotwidget.h"
+#include <QDebug>
 
 
-PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, QWidget *parent)
+PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindow *parent)
     : QMainWindow(parent)//QWidget(parent,Qt::Window)
 {
     this->setAttribute(Qt::WA_DeleteOnClose);
 
     QWidget *centralwidget = new QWidget(this);
+
+    mpParentMainWindow = parent;
+    mpCurrentGraphicsView = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView;
 
     //QGridLayout *grid = new QGridLayout(this);
 
@@ -207,9 +211,29 @@ void VariablePlot::dropEvent(QDropEvent *event)
 }
 
 
-VariableList::VariableList(QWidget *parent)
+VariableList::VariableList(MainWindow *parent)
         : QListWidget(parent)
 {
+
+    mpParentMainWindow = parent;
+    mpCurrentView = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView;
+
+    //if ((!(this->mpCorePort->isConnected())) || (this->mpCorePort->getTimeVectorPtr()->empty()))
+
+    qDebug() << "Debug0";
+    QMap<QString, GUIObject *>::iterator it;
+    QListWidgetItem *tempListWidget;
+    for(it = mpCurrentView->mGUIObjectMap.begin(); it!=mpCurrentView->mGUIObjectMap.end(); ++it)
+    {
+        qDebug() << "Debug1";
+        QList<GUIPort*>::iterator itp;
+        for(itp = it.value()->mPortListPtrs.begin(); itp !=it.value()->mPortListPtrs.end(); ++itp)
+        {
+            qDebug() << "Debug2";
+            tempListWidget = new QListWidgetItem(it.key() + " " +(*itp)->getName(), this);
+        }
+    }
+
     //Populate the list
     //QListWidgetItem *sinus = new QListWidgetItem(tr("linear1"),this);
     //QListWidgetItem *cosinus = new QListWidgetItem(tr("linear2"),this);
@@ -230,12 +254,8 @@ void VariableList::createPlot(QListWidgetItem *item)
 
     QVector<double> xarray(2);
     QVector<double> yarray(2);
-    xarray[0] = 0.0;
-    xarray[1] = 10.0*n;
-    yarray[0] = 0.0;
-    yarray[1] = 10.0*n;
 
-    PlotWidget *plotwidget = new PlotWidget(xarray,yarray,this);
+    PlotWidget *plotwidget = new PlotWidget(xarray,yarray,this->mpParentMainWindow);
     plotwidget->show();
 
     std::cout << item->text().toStdString() << std::endl;
@@ -280,14 +300,16 @@ void VariableList::mouseMoveEvent(QMouseEvent *event)
 }
 
 
-VariableListDialog::VariableListDialog(QWidget *parent)
+VariableListDialog::VariableListDialog(MainWindow *parent)
         : QWidget(parent)
 {
+    mpParentMainWindow = parent;
+
     //Create a grid
     QGridLayout *grid = new QGridLayout(this);
 
     //Create the plotvariables list
-    VariableList *varList = new VariableList(this);
+    VariableList *varList = new VariableList(mpParentMainWindow);
 
     grid->addWidget(varList,0,0);
 }

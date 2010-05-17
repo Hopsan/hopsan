@@ -3,6 +3,7 @@
 #ifndef PLOTWIDGET_H
 #define PLOTWIDGET_H
 
+#include "mainwindow.h"
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include <qwt_data.h>
@@ -33,16 +34,20 @@
 #include <QSvgGenerator>
 
 
+class MainWindow;
 class VariablePlot;
+class GraphicsView;
 
 class PlotWidget : public QMainWindow
 {
     Q_OBJECT
 public:
-    PlotWidget(QVector<double> xarray, QVector<double> yarray, QWidget *parent = 0);
+    PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindow *parent);
 
     QwtPlotCurve *mpCurve;
     VariablePlot *mpVariablePlot;
+    MainWindow *mpParentMainWindow;
+    GraphicsView *mpCurrentGraphicsView;
 
     QwtPlotZoomer *zoomer;
     QwtPlotPanner *panner;
@@ -77,8 +82,10 @@ class VariableList : public QListWidget
 {
     Q_OBJECT
  public:
-    VariableList(QWidget *parent = 0);
+    VariableList(MainWindow *parent = 0);
     QMap<QString, int> map;
+    MainWindow *mpParentMainWindow;
+    GraphicsView *mpCurrentView;
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
@@ -88,7 +95,6 @@ protected:
 
  private slots:
     void createPlot(QListWidgetItem *item);
-
 };
 
 
@@ -96,7 +102,9 @@ class VariableListDialog : public QWidget
 {
     Q_OBJECT
 public:
-    VariableListDialog(QWidget *parent = 0);
+    VariableListDialog(MainWindow *parent = 0);
+private:
+    MainWindow *mpParentMainWindow;
 };
 
 #endif // PLOTWIDGET_H

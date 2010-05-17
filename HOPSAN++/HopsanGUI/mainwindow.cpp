@@ -134,7 +134,7 @@ void MainWindow::plot()
 {
     QDockWidget *varPlotDock = new QDockWidget(tr("Plot Variables"), this);
     varPlotDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    VariableListDialog *variableList = new VariableListDialog(varPlotDock);
+    VariableListDialog *variableList = new VariableListDialog(this);
     varPlotDock->setWidget(variableList);
     //variableList->show();
     addDockWidget(Qt::RightDockWidgetArea, varPlotDock);
