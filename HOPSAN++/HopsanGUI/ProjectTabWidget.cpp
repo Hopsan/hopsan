@@ -23,6 +23,7 @@
 #include <QSizePolicy>
 #include "version.h"
 #include "GUIUtilities.h"
+#include <QMap>
 
 #include <string>
 #include <iostream>
@@ -63,7 +64,7 @@ GraphicsView::GraphicsView(HopsanEssentials *pHopsanCore, ComponentSystem *pCore
     this->createActions();
     this->createMenus();
 
-
+    mpCopyData = new QString;
 
     undoStack = new UndoStack(this);
     //undoStack->show();
@@ -762,22 +763,21 @@ void GraphicsView::cutSelected()
 //! @todo What about paramter values
 void GraphicsView::copySelected()
 {
-    mCopyData.clear();
-    //mCopyDataRot.clear();
-    //mCopyDataPos.clear();
+    delete(mpCopyData);
+    mpCopyData = new QString;
+
+    QTextStream copyStream;
+    copyStream.setString(mpCopyData);
+    //copyStream.readAll();
+    //copyStreamRot.clear();
+    //copyStreamPos.clear();
 
     QMap<QString, GUIObject *>::iterator it;
     for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
     {
         if (it.value()->isSelected())
         {
-            QStringList tempStringList;
-            QString stringRotation, stringX, stringY;
-            stringRotation.setNum(it.value()->rotation());
-            stringX.setNum(it.value()->mapToScene(it.value()->boundingRect().center()).x());
-            stringY.setNum(it.value()->mapToScene(it.value()->boundingRect().center()).y());
-            tempStringList << "COMPONENT" << it.value()->getTypeName() << it.value()->getName() << stringRotation << stringX << stringY; //!< @todo Why not use the save function or similar
-            mCopyData.append(tempStringList);
+            it.value()->saveToTextStream(copyStream);
         }
     }
 
@@ -785,19 +785,7 @@ void GraphicsView::copySelected()
     {
         if(mConnectorVector[i]->getStartPort()->getGuiObject()->isSelected() and mConnectorVector[i]->getEndPort()->getGuiObject()->isSelected() and mConnectorVector[i]->isActive())
         {
-            QStringList tempStringList;
-            tempStringList << "CONNECT" << mConnectorVector[i]->getStartPort()->getGuiObject()->getName() << mConnectorVector[i]->getStartPort()->getName() <<
-                                           mConnectorVector[i]->getEndPort()->getGuiObject()->getName() << mConnectorVector[i]->getEndPort()->getName(); //!< @todo Why not use the save function or similar
-
-            QString stringX, stringY;
-            for(int j = 0; j != mConnectorVector[i]->getPointsVector().size(); ++j)
-            {
-                stringX.setNum(mConnectorVector[i]->getPointsVector()[j].x());
-                stringY.setNum(mConnectorVector[i]->getPointsVector()[j].y());
-                tempStringList << stringX << stringY;
-            }
-
-            mCopyData.append(tempStringList);
+            mConnectorVector[i]->saveToTextStream(copyStream);
         }
     }
 }
@@ -808,9 +796,13 @@ void GraphicsView::copySelected()
 //! @see copySelected()
 void GraphicsView::paste()
 {
-    QMap<QString, GUIObject*>::iterator it;
+    qDebug() << "mpCopyData = " << *mpCopyData;
+
+    QTextStream copyStream;
+    copyStream.setString(mpCopyData);
 
         //Deselect all components
+    QMap<QString, GUIObject*>::iterator it;
     for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
     {
         it.value()->setSelected(false);
@@ -820,77 +812,105 @@ void GraphicsView::paste()
     for(int i = 0; i != mConnectorVector.size(); ++i)
     {
         mConnectorVector[i]->doSelect(false, -1);
+        mConnectorVector[i]->setPassive();
     }
 
     QMap<QString, QString> renameMap;       //Used to track name changes, so that connectors will know what components are called
-    QString tempString;
+    QString inputWord;
     QString componentName;
     QString componentType;
     QString startComponentName, endComponentName;
     QString startPortName, endPortName;
-    int j = 0;      //Used for calculating which rotation and position to use
+    QString parameterName;
+    qreal parameterValue;
+
     //! @todo Could we not use some common load function for the stuff bellow
-    for(int i = 0; i!=mCopyData.size(); ++i)
+
+    while ( !copyStream.atEnd() )
     {
-        if(mCopyData[i][0] == "COMPONENT")
+        //Extract first word on line
+        copyStream >> inputWord;
+
+        if(inputWord == "COMPONENT")
         {
-            componentType = mCopyData[i][1];
-            componentName = mCopyData[i][2];
-            int tempRotation = mCopyData[i][3].toInt();
-            qreal tempX = mCopyData[i][4].toDouble();
-            qreal tempY = mCopyData[i][5].toDouble();
-           
+            qreal posX, posY, rotation, nameTextPos;
+            copyStream >> componentType;
+            componentName = readName(copyStream);  //Now read the name, assume that the name is contained within quotes signs, "name"
+            copyStream >> posX;
+            copyStream >> posY;
+            copyStream >> rotation;
+            copyStream >> nameTextPos;
+
             AppearanceData appearanceData = *mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
-            this->addGUIObject(componentType, appearanceData, QPoint(tempX-50, tempY-50), tempRotation, componentName, true);
-            ++j;
+            this->addGUIObject(componentType, appearanceData, QPoint(posX-50, posY-50), rotation, componentName, true);
+            mpTempGUIObject->setNameTextPos(nameTextPos);
             renameMap.insert(componentName, mpTempGUIObject->getName());
+            mpTempGUIObject->setSelected(true);
         }
-        else if(mCopyData[i][0] == "CONNECT")
+        else if(inputWord == "CONNECT")
         {
-            startComponentName = mCopyData[i][1];
-            startPortName = mCopyData[i][2];
-            endComponentName = mCopyData[i][3];
-            endPortName = mCopyData[i][4];
-
-            startComponentName = renameMap.find(startComponentName).value();
-            endComponentName = renameMap.find(endComponentName).value();
-
+            startComponentName = renameMap.find(readName(copyStream)).value();
+            startPortName = readName(copyStream);
+            endComponentName = renameMap.find(readName(copyStream)).value();
+            endPortName = readName(copyStream);
             GUIPort *startPort = this->getGUIObject(startComponentName)->getPort(startPortName);
             GUIPort *endPort = this->getGUIObject(endComponentName)->getPort(endPortName);
 
-            QVector<QPointF> tempPointVector;
-            //qreal tempX, tempY;
-            for(j = 5; j != mCopyData[i].size(); ++j)
-            {
-                tempPointVector.push_back(QPointF(mCopyData[i][j].toDouble()-50, mCopyData[i][j+1].toDouble()-50));
-                ++j;
-            }
-
-            GUIConnectorAppearance *conapp = new GUIConnectorAppearance(startPort->getPortType(), mpParentProjectTab->useIsoGraphics); //Decide port appearance
-            GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, conapp, this);
-
-            this->scene()->addItem(pTempConnector);
-            pTempConnector->selectIfBothComponentsSelected();
-
-                //Hide connected ports
-            startPort->hide();
-            endPort->hide();
-
-            connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-            connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-
-            mConnectorVector.append(pTempConnector);
             //*****Core Interaction*****
-            bool success = this->getCoreComponentSystem()->connect(startPort->mpCorePort, endPort->mpCorePort);
+            bool success = this->getCoreComponentSystem()->connect(startPort->mpCorePort, endPort->mpCorePort); //This is core access
+            //**************************
             if (!success)
             {
                 qDebug() << "Unsuccessful connection try" << endl;
-                assert(false);
             }
-            //**************************
-        pTempConnector->setActive();
+            else
+            {
+                QVector<QPointF> tempPointVector;
+                qreal tempX, tempY;
+
+                QString restOfLineString = copyStream.readLine();
+                QTextStream restOfLineStream(&restOfLineString);
+                while( !restOfLineStream.atEnd() )
+                {
+                    restOfLineStream >> tempX;
+                    restOfLineStream >> tempY;
+                    tempPointVector.push_back(QPointF(tempX-50, tempY-50));
+                }
+
+                //! @todo: Store useIso bool in model file and pick the correct line styles when loading
+                GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), this->mpParentProjectTab->useIsoGraphics);
+                GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, pConnApp, this);
+
+                this->scene()->addItem(pTempConnector);
+
+                //Hide connected ports
+                startPort->hide();
+                endPort->hide();
+
+                connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+                connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+
+                this->mConnectorVector.append(pTempConnector);
+            }
+        }
+
+        else if ( inputWord == "PARAMETER" )
+        {
+            componentName = renameMap.find(readName(copyStream)).value();
+            copyStream >> parameterName;
+            copyStream >> parameterValue;
+
+            this->mGUIObjectMap.find(componentName).value()->setParameter(parameterName, parameterValue);
         }
     }
+
+        //Select all pasted comonents
+    QMap<QString, QString>::iterator itn;
+    for(itn = renameMap.begin(); itn != renameMap.end(); ++itn)
+    {
+        this->mGUIObjectMap.find(itn.value()).value()->setSelected(true);
+    }
+
     this->setBackgroundBrush(mBackgroundColor);
 }
 

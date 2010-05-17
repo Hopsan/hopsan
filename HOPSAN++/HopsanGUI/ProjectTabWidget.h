@@ -117,9 +117,7 @@ protected:
 private:
     GUIObject *mpTempGUIObject;
     GUIConnector *mpTempConnector;
-    QList<QStringList> mCopyData;
-    //QList<int> mCopyDataRot;
-    //QList<QPointF> mCopyDataPos;
+    QString *mpCopyData;
     //! @todo QMap no good means problem if we rename need to loop around the rename like in coore
     bool isObjectSelected();
     bool isConnectorSelected();

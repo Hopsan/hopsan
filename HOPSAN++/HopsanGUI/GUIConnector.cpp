@@ -626,10 +626,14 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
             for (int i=0; i != mpLines.size(); ++i)
             {
                if(mpLines[i]->isSelected())
+                {
                    noneSelected = false;
+               }
             }
             if(noneSelected)
+            {
                 this->setPassive();
+            }
        }
     }
 }
