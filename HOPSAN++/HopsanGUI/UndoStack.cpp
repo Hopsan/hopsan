@@ -381,7 +381,9 @@ void UndoStack::redoOneStep()
                 GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
 
                 mpParentView->mConnectorVector.append(pTempConnector);
+                //*****Core Interaction*****
                 bool success = mpParentView->getCoreComponentSystem()->connect(startPort->mpCorePort, endPort->mpCorePort);
+                //**************************
                 if (!success)
                 {
                     qDebug() << "Unsuccessful connection try" << endl;
@@ -484,7 +486,6 @@ void UndoStack::registerDeletedObject(GUIObject *item)
         //*****Core Interaction*****
         Component *mpCoreComponent = item->getHopsanCoreComponentPtr();
         vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
-        //**************************
         std::vector<CompParameter>::iterator itp;
         for ( itp=paramVector.begin() ; itp !=paramVector.end(); ++itp )
         {
@@ -494,6 +495,7 @@ void UndoStack::registerDeletedObject(GUIObject *item)
             tempStringList << "PARAMETER" << item->getName() << QString(itp->getName().c_str()) << valueString;
             this->insertPost(tempStringList);
         }
+        //**************************
     }
 }
 
