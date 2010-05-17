@@ -1419,6 +1419,26 @@ void ProjectTabWidget::loadModel()
             }
         }
 
+        if ( inputWord == "STARTTIME" )
+        {
+            double startTime;
+            inputStream >> startTime;
+            mpParentMainWindow->mpSimulationSetupWidget->setStartTimeLabel(startTime);
+        }
+
+        if ( inputWord == "TIMESTEP" )
+        {
+            double timeStep;
+            inputStream >> timeStep;
+            mpParentMainWindow->mpSimulationSetupWidget->setTimeStepLabel(timeStep);
+        }
+
+        if ( inputWord == "FINISHTIME" )
+        {
+            double finishTime;
+            inputStream >> finishTime;
+            mpParentMainWindow->mpSimulationSetupWidget->setFinishTimeLabel(finishTime);
+        }
 
         if ( inputWord == "COMPONENT" )
         {
@@ -1557,6 +1577,11 @@ void ProjectTabWidget::saveModel(bool saveAs)
     modelFile << "HOPSANGUIVERSION " << HOPSANGUIVERSION << "\n";
     modelFile << "HOPSANGUIMODELFILEVERSION " << HOPSANGUIMODELFILEVERSION << "\n";
     modelFile << "HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION " << HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION << "\n";
+    modelFile << "--------------------------------------------------------------\n";
+
+    modelFile << "STARTTIME " << mpParentMainWindow->mpSimulationSetupWidget->getStartTimeLabel() << "\n";
+    modelFile << "TIMESTEP " << mpParentMainWindow->mpSimulationSetupWidget->getTimeStepLabel() << "\n";
+    modelFile << "FINISHTIME " << mpParentMainWindow->mpSimulationSetupWidget->getFinishTimeLabel() << "\n";
     modelFile << "--------------------------------------------------------------\n";
 
     QMap<QString, GUIObject*>::iterator it;
