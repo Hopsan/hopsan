@@ -83,7 +83,9 @@ class VariableList : public QListWidget
     Q_OBJECT
  public:
     VariableList(MainWindow *parent = 0);
-    QMap<QString, int> map;
+    //QMap<QString, int> map;
+    QMap< QString, QVector<double> > xMap;
+    QMap< QString, QVector<double> > yMap;
     MainWindow *mpParentMainWindow;
     GraphicsView *mpCurrentView;
 

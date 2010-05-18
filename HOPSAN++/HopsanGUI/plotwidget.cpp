@@ -214,23 +214,109 @@ void VariablePlot::dropEvent(QDropEvent *event)
 VariableList::VariableList(MainWindow *parent)
         : QListWidget(parent)
 {
-
+    qDebug() << "dsada";
     mpParentMainWindow = parent;
     mpCurrentView = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView;
-
+    qDebug() << "erwq";
     //if ((!(this->mpCorePort->isConnected())) || (this->mpCorePort->getTimeVectorPtr()->empty()))
 
-    qDebug() << "Debug0";
+    xMap.clear();
+    yMap.clear();
+    QVector<double> y;
+    qDebug() << "dsfsdaga";
     QMap<QString, GUIObject *>::iterator it;
     QListWidgetItem *tempListWidget;
+    qDebug() << "wqer";
     for(it = mpCurrentView->mGUIObjectMap.begin(); it!=mpCurrentView->mGUIObjectMap.end(); ++it)
     {
-        qDebug() << "Debug1";
+        //qDebug() << "Gorilla";
         QList<GUIPort*>::iterator itp;
+        //qDebug() << "Blaj";
         for(itp = it.value()->mPortListPtrs.begin(); itp !=it.value()->mPortListPtrs.end(); ++itp)
         {
-            qDebug() << "Debug2";
-            tempListWidget = new QListWidgetItem(it.key() + " " +(*itp)->getName(), this);
+           qDebug() << "Writing plot stuff for " << it.value()->getName() << " " << (*itp)->getName();
+            // qDebug() << "tjo";
+            y.clear();
+            //qDebug() << "Bamse";
+           // qDebug() << "Varmkorv";
+
+            //qDebug() << "Julafton";
+
+            //*****Core Interaction*****
+            if ((*itp)->mpCorePort->getNodeType() =="NodeHydraulic")
+            {
+                size_t dataLength = (*itp)->mpCorePort->getTimeVectorPtr()->size();
+                QVector<double> time = QVector<double>::fromStdVector(*((*itp)->mpCorePort->getTimeVectorPtr()));
+                //qDebug() << "hoj";
+                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Flow", this);
+                //qDebug() << "hoj 1";
+                for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
+                {
+                    y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(0));
+                }
+                //qDebug() << "hoj 2";
+                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Flow", time);
+                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Flow", y);
+                
+                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Pressure", this);
+                for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
+                {
+                    y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(1));
+                }
+                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Pressure", time);
+                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Pressure", y);
+            }
+            if ((*itp)->mpCorePort->getNodeType() =="NodeMechanic")
+            {
+                size_t dataLength = (*itp)->mpCorePort->getTimeVectorPtr()->size();
+                QVector<double> time = QVector<double>::fromStdVector(*((*itp)->mpCorePort->getTimeVectorPtr()));
+                //qDebug() << "hej";
+                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Velocity", this);
+                for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
+                {
+                    y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(0));
+                }
+                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Velocity", time);
+                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Velocity", y);
+                
+                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Force", this);
+                for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
+                {
+                    y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(1));
+                }
+                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Force", time);
+                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Force", y);
+                
+                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Position", this);
+                for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
+                {
+                    y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(2));
+                }
+                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Position", time);
+                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Position", y);
+            }
+            if ((*itp)->mpCorePort->getNodeType() =="NodeSignal")
+            {
+                if((*itp)->mpCorePort->isConnected())
+                {
+                    //qDebug() << "size = " << (*itp)->mpCorePort->getTimeVectorPtr()->size();
+                    size_t dataLength = (*itp)->mpCorePort->getTimeVectorPtr()->size();
+                    QVector<double> time = QVector<double>::fromStdVector(*((*itp)->mpCorePort->getTimeVectorPtr()));
+                    //qDebug() << "haj";
+                    tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Signal", this);
+                    //qDebug() << "haj 1";
+                    for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
+                    {
+                        y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(0));
+                    }
+                    //qDebug() << "haj 2";
+                    xMap.insert(it.key() + ", " + (*itp)->getName() + ", Signal", time);
+                    //qDebug() << "haj 3";
+                    yMap.insert(it.key() + ", " + (*itp)->getName() + ", Signal", y);
+                    //qDebug() << "haj 4";
+                }
+            }
+            //**************************
         }
     }
 
@@ -240,22 +326,24 @@ VariableList::VariableList(MainWindow *parent)
 
     // Store values for two functions, only for testing
 
-    map["linear1"] = 1.0;
+    //map["linear1"] = 1.0;
 
-    map["linear2"] = 2.0;
+    //map["linear2"] = 2.0;
+
+    qDebug() << "Orangutang";
 
     connect(this,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(createPlot(QListWidgetItem*)));
 }
 
 void VariableList::createPlot(QListWidgetItem *item)
 {
-    double n = map.value(item->text());
-    std::cout << n << std::endl;
+    //double n = map.value(item->text());
+    //std::cout << n << std::endl;
 
-    QVector<double> xarray(2);
-    QVector<double> yarray(2);
+//    QVector<double> xarray(2);
+  //  QVector<double> yarray(2);
 
-    PlotWidget *plotwidget = new PlotWidget(xarray,yarray,this->mpParentMainWindow);
+    PlotWidget *plotwidget = new PlotWidget(xMap.find(item->text()).value(),yMap.find(item->text()).value(),this->mpParentMainWindow);
     plotwidget->show();
 
     std::cout << item->text().toStdString() << std::endl;

@@ -470,7 +470,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             mIsCreatingConnector = false;
         }
     }
-    else if(event->modifiers() and Qt::ShiftModifier and event->key() == Qt::Key_Left)
+    else if(Qt::ShiftModifier and event->key() == Qt::Key_Left)
     {
         if(isObjectSelected())
         {
@@ -478,7 +478,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         emit keyPressShiftLeft();
     }
-    else if(event->modifiers() and Qt::ShiftModifier and event->key() == Qt::Key_Right)
+    else if(Qt::ShiftModifier and event->key() == Qt::Key_Right)
     {
         if(isObjectSelected())
         {
@@ -486,7 +486,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         emit keyPressShiftRight();
     }
-    else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Up)
+    else if(Qt::ControlModifier and event->key() == Qt::Key_Up)
     {
         if(isObjectSelected())
         {
@@ -494,7 +494,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         emit keyPressUp();
     }
-    else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Down)
+    else if(Qt::ControlModifier and event->key() == Qt::Key_Down)
     {
         if(isObjectSelected())
         {
