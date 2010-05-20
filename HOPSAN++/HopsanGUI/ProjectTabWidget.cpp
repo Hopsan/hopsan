@@ -44,9 +44,6 @@ GraphicsView::GraphicsView(ProjectTab *parent)
 {
     mpParentProjectTab = parent;
 
-    //*****Core Interaction*****
-    mpHopsanCore = HopsanEssentials::getInstance();
-    //**************************
     this->setDragMode(RubberBandDrag);
     this->setInteractive(true);
     this->setEnabled(true);
@@ -695,14 +692,6 @@ void GraphicsView::selectAll()
 }
 
 
-ComponentSystem *GraphicsView::getCoreComponentSystem()
-{
-    //*****Core Interaction*****
-    return this->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem;
-    //**************************
-}
-
-
 //! Copies the selected components, and then deletes them.
 //! @see copySelected()
 //! @see paste()
@@ -1257,7 +1246,9 @@ void ProjectTabWidget::simulateCurrent()
     
     QString timeTxt;
     double dt = finishTime - startTime;
-    size_t nSteps = dt/pCurrentTab->mpCoreComponentSystem->getDesiredTimeStep();
+    //*****Core Interaction*****
+    size_t nSteps = dt/pCurrentTab->mGUIRootSystem.mpCoreComponentSystem->getDesiredTimeStep();
+    //**************************
 
     QProgressDialog progressBar(tr("Initialize simulation..."), tr("&Abort initialization"), 0, 0, this);
     std::cout << progressBar.geometry().width() << " " << progressBar.geometry().height() << std::endl;
