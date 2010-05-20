@@ -234,7 +234,7 @@ VariableList::VariableList(MainWindow *parent)
         //qDebug() << "Blaj";
         for(itp = it.value()->mPortListPtrs.begin(); itp !=it.value()->mPortListPtrs.end(); ++itp)
         {
-           qDebug() << "Writing plot stuff for " << it.value()->getName() << " " << (*itp)->getName();
+            qDebug() << "Writing plot stuff for " << it.value()->getName() << " " << (*itp)->getName();
             // qDebug() << "tjo";
             y.clear();
             //qDebug() << "Bamse";
@@ -258,6 +258,8 @@ VariableList::VariableList(MainWindow *parent)
                 xMap.insert(it.key() + ", " + (*itp)->getName() + ", Flow", time);
                 yMap.insert(it.key() + ", " + (*itp)->getName() + ", Flow", y);
                 
+                y.clear();
+
                 tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Pressure", this);
                 for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
                 {
@@ -278,6 +280,8 @@ VariableList::VariableList(MainWindow *parent)
                 }
                 xMap.insert(it.key() + ", " + (*itp)->getName() + ", Velocity", time);
                 yMap.insert(it.key() + ", " + (*itp)->getName() + ", Velocity", y);
+
+                y.clear();
                 
                 tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Force", this);
                 for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
@@ -287,6 +291,8 @@ VariableList::VariableList(MainWindow *parent)
                 xMap.insert(it.key() + ", " + (*itp)->getName() + ", Force", time);
                 yMap.insert(it.key() + ", " + (*itp)->getName() + ", Force", y);
                 
+                y.clear();
+
                 tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Position", this);
                 for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
                 {
