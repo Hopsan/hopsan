@@ -2,4 +2,4 @@ NAME MechanicForceTransformer
 ISOICON forcetransformer.svg
 ICONROTATION ON
 PORT "in" 0.0 0.5 0
-PORT "out" 1.0 0.5 0
+PORT "P1" 1.0 0.5 0

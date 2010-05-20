@@ -16,7 +16,7 @@ private:
     double mStartPosition;
     double mStartVelocity;
     double mSignal;
-    Port *mpIn, *mpOut;
+    Port *mpIn, *mpP1;
 
 public:
     static Component *Creator()
@@ -34,7 +34,7 @@ public:
 
         //Add ports to the component
         mpIn = addReadPort("in", "NodeSignal");
-        mpOut = addPowerPort("out", "NodeMechanic");
+        mpP1 = addPowerPort("P1", "NodeMechanic");
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("x0", "Initial Position", "[m]", mStartPosition);
@@ -45,10 +45,10 @@ public:
 
     void initialize()
     {
-        mpOut->writeNode(NodeMechanic::POSITION, mStartPosition);
-        mpOut->writeNode(NodeMechanic::VELOCITY, mStartVelocity);
-        mpOut->writeNode(NodeMechanic::CHARIMP, 0.0);
-        mpOut->writeNode(NodeMechanic::WAVEVARIABLE, 0.0);
+        mpP1->writeNode(NodeMechanic::POSITION, mStartPosition);
+        mpP1->writeNode(NodeMechanic::VELOCITY, mStartVelocity);
+        mpP1->writeNode(NodeMechanic::CHARIMP, 0.0);
+        mpP1->writeNode(NodeMechanic::WAVEVARIABLE, 0.0);
     }
 
 
@@ -66,8 +66,8 @@ public:
         double Zc = 0.0;
 
         //Write new values to nodes
-        mpOut->writeNode(NodeMechanic::WAVEVARIABLE, c);
-        mpOut->writeNode(NodeMechanic::CHARIMP, Zc);
+        mpP1->writeNode(NodeMechanic::WAVEVARIABLE, c);
+        mpP1->writeNode(NodeMechanic::CHARIMP, Zc);
     }
 };
 
