@@ -1047,7 +1047,8 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
     //*****Core Interaction*****
-    mpCoreComponentSystem = mpParentProjectTabWidget->mpHopsanCore->CreateComponentSystem();
+    mGUIRootSystem.mpCoreComponentSystem = mpParentProjectTabWidget->mpHopsanCore->CreateComponentSystem();
+    mpCoreComponentSystem = mGUIRootSystem.mpCoreComponentSystem; //Quick hack
     mpCoreComponentSystem->setDesiredTimestep(.001);
     mpCoreComponentSystem->setTypeCQS("S");
     emit checkMessages();
