@@ -39,14 +39,13 @@
 
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
-GraphicsView::GraphicsView(HopsanEssentials *pHopsanCore, ComponentSystem *pCoreComponentSystem, ProjectTab *parent)
+GraphicsView::GraphicsView(ProjectTab *parent)
         : QGraphicsView(parent)
 {
     mpParentProjectTab = parent;
 
     //*****Core Interaction*****
-    this->mpHopsanCore = pHopsanCore;
-    this->mpCoreComponentSystem = pCoreComponentSystem;
+    mpHopsanCore = HopsanEssentials::getInstance();
     //**************************
     this->setDragMode(RubberBandDrag);
     this->setInteractive(true);
@@ -220,23 +219,24 @@ void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appear
 {
     if (componentTypeName == "Subsystem")
     {
+        GUISubsystem *pSys = new GUISubsystem(appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
         //*****Core Interaction*****
-        GUISubsystem *pSys = new GUISubsystem(mpHopsanCore, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
-        this->mpParentProjectTab->mpCoreComponentSystem->addComponent(pSys->getHopsanCoreSystemComponentPtr()); //core interaction
+        this->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->addComponent(pSys->getHopsanCoreSystemComponentPtr()); //core interaction
         //**************************
         mpTempGUIObject = pSys;
     }
     else if (componentTypeName == "SystemPort")
     {
         //*****Core Interaction*****
-        mpTempGUIObject = new GUISystemPort(mpParentProjectTab->mpCoreComponentSystem, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+        mpTempGUIObject = new GUISystemPort(mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
         //**************************
     }
     else //Assume some standard component type
     {
+
+        GUIComponent *pComp = new GUIComponent(appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
         //*****Core Interaction*****
-        GUIComponent *pComp = new GUIComponent(mpHopsanCore, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
-        this->mpParentProjectTab->mpCoreComponentSystem->addComponent(pComp->getHopsanCoreComponentPtr()); //core interaction
+        this->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->addComponent(pComp->getHopsanCoreComponentPtr()); //core interaction
         //**************************
         mpTempGUIObject = pComp;
     }
@@ -698,7 +698,7 @@ void GraphicsView::selectAll()
 ComponentSystem *GraphicsView::getCoreComponentSystem()
 {
     //*****Core Interaction*****
-    return this->mpCoreComponentSystem;
+    return this->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem;
     //**************************
 }
 
@@ -999,12 +999,11 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     MainWindow *pMainWindow = mpParentProjectTabWidget->mpParentMainWindow;
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
-    //*****Core Interaction*****
-    mGUIRootSystem.mpCoreComponentSystem = mpParentProjectTabWidget->mpHopsanCore->CreateComponentSystem();
-    mpCoreComponentSystem = mGUIRootSystem.mpCoreComponentSystem; //Quick hack
-    //**************************
-    mGUIRootSystem.setTypeCQS("S");
+    HopsanEssentials *hopsanCore = HopsanEssentials::getInstance();
+    mGUIRootSystem.mpCoreComponentSystem = hopsanCore->CreateComponentSystem();
     mGUIRootSystem.setDesiredTimeStep(.001);
+    mGUIRootSystem.setTypeCQS("S");
+
 
     emit checkMessages();
 
@@ -1016,9 +1015,8 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mModelFileName.clear();
 
     mpGraphicsScene = new GraphicsScene(this);
-    //*****Core Interaction*****
-    mpGraphicsView  = new GraphicsView(mpParentProjectTabWidget->mpHopsanCore, mpCoreComponentSystem, this);
-    //**************************
+
+    mpGraphicsView  = new GraphicsView(this);
 
     mpGraphicsView->setScene(mpGraphicsScene);
 
@@ -1267,7 +1265,7 @@ void ProjectTabWidget::simulateCurrent()
     progressBar.setWindowTitle(tr("Simulate!"));
 
     //*****Core Interaction*****
-    InitializationThread actualInitialization(pCurrentTab->mpCoreComponentSystem, startTime, finishTime, this);
+    InitializationThread actualInitialization(pCurrentTab->mGUIRootSystem.mpCoreComponentSystem, startTime, finishTime, this);
     //**************************
     size_t i=0;
     actualInitialization.start();
@@ -1286,7 +1284,7 @@ void ProjectTabWidget::simulateCurrent()
     if (!progressBar.wasCanceled())
     {
         //*****Core Interaction*****
-        SimulationThread actualSimulation(pCurrentTab->mpCoreComponentSystem, startTime, finishTime, this);
+        SimulationThread actualSimulation(pCurrentTab->mGUIRootSystem.mpCoreComponentSystem, startTime, finishTime, this);
         //**************************
         actualSimulation.start();
         actualSimulation.setPriority(QThread::TimeCriticalPriority);

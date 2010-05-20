@@ -147,7 +147,7 @@ class GUIComponent : public GUIObject
 {
     Q_OBJECT
 public:
-    GUIComponent(HopsanEssentials *hopsan, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    GUIComponent(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
     ~GUIComponent();
 
     //*****Core Interaction*****
@@ -176,13 +176,15 @@ protected:
 
 public slots:
 
+private:
+    HopsanEssentials *mpHopsanCore;
 };
 
 class GUISubsystem : public GUIObject
 {
     Q_OBJECT
 public:
-    GUISubsystem(HopsanEssentials *hopsan, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    GUISubsystem(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
 
     //*****Core Interaction*****
     Component* getHopsanCoreComponentPtr();
@@ -208,6 +210,7 @@ private:
     QString mGraphicsFilePath;
     bool   mIsEmbedded;
     ComponentSystem *mpCoreComponentSystem;
+    HopsanEssentials *mpHopsanCore;
 };
 
 class GUISystemPort : public GUIObject

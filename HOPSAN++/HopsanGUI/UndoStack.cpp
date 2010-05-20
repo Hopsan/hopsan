@@ -486,6 +486,7 @@ void UndoStack::registerDeletedObject(GUIObject *item)
         //*****Core Interaction*****
         Component *mpCoreComponent = item->getHopsanCoreComponentPtr();
         vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
+        //**************************
         std::vector<CompParameter>::iterator itp;
         for ( itp=paramVector.begin() ; itp !=paramVector.end(); ++itp )
         {
@@ -495,7 +496,6 @@ void UndoStack::registerDeletedObject(GUIObject *item)
             tempStringList << "PARAMETER" << item->getName() << QString(itp->getName().c_str()) << valueString;
             this->insertPost(tempStringList);
         }
-        //**************************
     }
 }
 

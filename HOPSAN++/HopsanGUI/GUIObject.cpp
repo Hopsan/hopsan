@@ -908,11 +908,12 @@ void GUIObject::deleteMe()
 
 
 
-GUIComponent::GUIComponent(HopsanEssentials *hopsan, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
+GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
     : GUIObject(position, appearanceData, scene, parent)
 {
     //*****Core Interaction*****
-    mpCoreComponent = hopsan->CreateComponent(mAppearanceData.getTypeName().toStdString());
+    mpHopsanCore = HopsanEssentials::getInstance();
+    mpCoreComponent = mpHopsanCore->CreateComponent(mAppearanceData.getTypeName().toStdString());
     QString cqsType = QString::fromStdString(mpCoreComponent->getTypeCQSString());
     //**************************
 
@@ -1121,11 +1122,12 @@ void GUIComponent::saveToTextStream(QTextStream &rStream)
 }
 
 
-GUISubsystem::GUISubsystem(HopsanEssentials *hopsan, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
+GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
         : GUIObject(position, appearanceData, scene, parent)
 {
     //*****Core Interaction*****
-    mpCoreComponentSystem = hopsan->CreateComponentSystem();
+    mpHopsanCore = HopsanEssentials::getInstance();
+    mpCoreComponentSystem = mpHopsanCore->CreateComponentSystem();
     //mpCoreComponentSystem->setName("unnamed");
     //**************************
 
