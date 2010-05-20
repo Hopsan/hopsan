@@ -127,36 +127,37 @@ void UndoStack::undoOneStep()
                 GUIPort *startPort = mpParentView->getGUIObject(startComponentName)->getPort(startPortNumber);
                 GUIPort *endPort = mpParentView->getGUIObject(endComponentName)->getPort(endPortNumber);
 
-                QVector<QPointF> tempPointVector;
-                qreal tempX, tempY;
-                for(int j = 5; j != mStack[undoPosition][i].size(); ++j)
-                {
-                    tempX = mStack[undoPosition][i][j].toDouble();
-                    tempY = mStack[undoPosition][i][j+1].toDouble();
-                    tempPointVector.push_back(QPointF(tempX, tempY));
-                    ++j;
-                }
-
-                //! @todo: Store useIso bool in model file and pick the correct line styles when loading
-                GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), mpParentView->mpParentProjectTab->useIsoGraphics);
-                GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, pConnApp, mpParentView);
-
-                mpParentView->scene()->addItem(pTempConnector);
-
-                startPort->hide();
-                endPort->hide();
-
-                GUIObject::connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-                GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-
-                mpParentView->mConnectorVector.append(pTempConnector);
-
                 qDebug() << "Names: " << startComponentName << " " << startPort->getName() << " " << endComponentName << " " << endPort->getName();
                 bool success = mpParentView->mpParentProjectTab->mGUIRootSystem.connect( startComponentName, startPort->getName(), endComponentName, endPort->getName() );
-                if (!success)
+                if (success)
                 {
-                    qDebug() << "Unsuccessful connection try" << endl;
-                    assert(false);
+                    QVector<QPointF> tempPointVector;
+                    qreal tempX, tempY;
+                    for(int j = 5; j != mStack[undoPosition][i].size(); ++j)
+                    {
+                        tempX = mStack[undoPosition][i][j].toDouble();
+                        tempY = mStack[undoPosition][i][j+1].toDouble();
+                        tempPointVector.push_back(QPointF(tempX, tempY));
+                        ++j;
+                    }
+
+                    //! @todo: Store useIso bool in model file and pick the correct line styles when loading
+                    GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), mpParentView->mpParentProjectTab->useIsoGraphics);
+                    GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, pConnApp, mpParentView);
+
+                    mpParentView->scene()->addItem(pTempConnector);
+
+                    startPort->hide();
+                    endPort->hide();
+
+                    GUIObject::connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+                    GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+
+                    mpParentView->mConnectorVector.append(pTempConnector);
+                }
+                else
+                {
+                    qDebug() << "Unsuccessful connection atempt" << endl;
                 }
             }
             else if( mStack[undoPosition][i][0] == "ADDEDOBJECT" )
@@ -358,36 +359,38 @@ void UndoStack::redoOneStep()
                 GUIPort *startPort = mpParentView->getGUIObject(startComponentName)->getPort(startPortNumber);
                 GUIPort *endPort = mpParentView->getGUIObject(endComponentName)->getPort(endPortNumber);
 
-                QVector<QPointF> tempPointVector;
-                qreal tempX, tempY;
-                for(int j = 5; j != mStack[mCurrentStackPosition][i].size(); ++j)
-                {
-                    tempX = mStack[mCurrentStackPosition][i][j].toDouble();
-                    tempY = mStack[mCurrentStackPosition][i][j+1].toDouble();
-                    tempPointVector.push_back(QPointF(tempX, tempY));
-                    ++j;
-                }
-
-                //! @todo: Store useIso bool in model file and pick the correct line styles when loading
-                GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), mpParentView->mpParentProjectTab->useIsoGraphics);
-                GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, pConnApp, mpParentView);
-
-                mpParentView->scene()->addItem(pTempConnector);
-
-                startPort->hide();
-                endPort->hide();
-
-                GUIObject::connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-                GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-
-                mpParentView->mConnectorVector.append(pTempConnector);
-
                 qDebug() << "Names: " << startComponentName << " " << startPort->getName() << " " << endComponentName << " " << endPort->getName();
                 bool success = mpParentView->mpParentProjectTab->mGUIRootSystem.connect( startComponentName, startPort->getName(), endComponentName, endPort->getName() );
-                if (!success)
+                if (success)
                 {
-                    qDebug() << "Unsuccessful connection try" << endl;
-                    assert(false);
+                    QVector<QPointF> tempPointVector;
+                    qreal tempX, tempY;
+                    for(int j = 5; j != mStack[mCurrentStackPosition][i].size(); ++j)
+                    {
+                        tempX = mStack[mCurrentStackPosition][i][j].toDouble();
+                        tempY = mStack[mCurrentStackPosition][i][j+1].toDouble();
+                        tempPointVector.push_back(QPointF(tempX, tempY));
+                        ++j;
+                    }
+
+                    //! @todo: Store useIso bool in model file and pick the correct line styles when loading
+                    GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), mpParentView->mpParentProjectTab->useIsoGraphics);
+                    GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, pConnApp, mpParentView);
+
+                    mpParentView->scene()->addItem(pTempConnector);
+
+                    startPort->hide();
+                    endPort->hide();
+
+                    GUIObject::connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+                    GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+
+                    mpParentView->mConnectorVector.append(pTempConnector);
+
+                }
+                else
+                {
+                    qDebug() << "Unsuccessful connection atempt" << endl;
                 }
             }
             else if( mStack[mCurrentStackPosition][i][0] == "RENAMEDOBJECT" )
