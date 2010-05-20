@@ -21,7 +21,8 @@ SOURCES += main.cpp \
     GUIObject.cpp \
     UndoStack.cpp \
     AppearanceData.cpp \
-    GUIUtilities.cc
+    GUIUtilities.cc \
+    GUIRootSystem.cpp
 HEADERS += mainwindow.h \
     ProjectTabWidget.h \
     LibraryWidget.h \
@@ -40,7 +41,8 @@ HEADERS += mainwindow.h \
     GUIObject.h \
     AppearanceData.h \
     UndoStack.h \
-    GUIUtilities.h
+    GUIUtilities.h \
+    GUIRootSystem.h
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE

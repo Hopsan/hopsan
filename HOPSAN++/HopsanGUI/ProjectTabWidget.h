@@ -15,6 +15,8 @@
 #include <QTabWidget>
 #include <map>
 
+#include "GUIRootSystem.h"
+
 #include "MessageWidget.h"
 #include "AppearanceData.h"
 #include "UndoStack.h"
@@ -155,6 +157,7 @@ public:
     //*****Core Interaction*****
     ComponentSystem *mpCoreComponentSystem;
     //**************************
+    GUIRootSystem mGUIRootSystem;
     GraphicsView *mpGraphicsView;
     GraphicsScene *mpGraphicsScene;
 
