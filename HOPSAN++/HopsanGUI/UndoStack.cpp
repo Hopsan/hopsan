@@ -150,9 +150,9 @@ void UndoStack::undoOneStep()
                 GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
 
                 mpParentView->mConnectorVector.append(pTempConnector);
-                //*****Core Interaction*****
-                bool success = mpParentView->getCoreComponentSystem()->connect(startPort->mpCorePort, endPort->mpCorePort);
-                //**************************
+
+                qDebug() << "Names: " << startComponentName << " " << startPort->getName() << " " << endComponentName << " " << endPort->getName();
+                bool success = mpParentView->mpParentProjectTab->mGUIRootSystem.connect( startComponentName, startPort->getName(), endComponentName, endPort->getName() );
                 if (!success)
                 {
                     qDebug() << "Unsuccessful connection try" << endl;
@@ -381,9 +381,9 @@ void UndoStack::redoOneStep()
                 GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
 
                 mpParentView->mConnectorVector.append(pTempConnector);
-                //*****Core Interaction*****
-                bool success = mpParentView->getCoreComponentSystem()->connect(startPort->mpCorePort, endPort->mpCorePort);
-                //**************************
+
+                qDebug() << "Names: " << startComponentName << " " << startPort->getName() << " " << endComponentName << " " << endPort->getName();
+                bool success = mpParentView->mpParentProjectTab->mGUIRootSystem.connect( startComponentName, startPort->getName(), endComponentName, endPort->getName() );
                 if (!success)
                 {
                     qDebug() << "Unsuccessful connection try" << endl;
