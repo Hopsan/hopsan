@@ -218,6 +218,12 @@ const string &Port::getPortName()
     return mPortName;
 }
 
+//! Get the name of the commponent that the port is attached to
+const string &Port::getComponentName()
+{
+    mpComponent->getName();
+}
+
 //! SystemPort constructor
 SystemPort::SystemPort() : Port()
 {

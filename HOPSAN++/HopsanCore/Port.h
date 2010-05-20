@@ -48,6 +48,7 @@ public:
     PORTTYPE getPortType();
     string getPortTypeString();
     const string &getPortName();
+    const string &getComponentName();
 
     Node* getNodePublic();
 

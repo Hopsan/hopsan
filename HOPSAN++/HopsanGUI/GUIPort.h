@@ -29,6 +29,7 @@ public:
     PortAppearance::portDirectionType getPortDirection();
     void setPortDirection(PortAppearance::portDirectionType direction);
     QString getName();
+    QString getGUIComponentName();
 
     QPointF rectPos;
     int getPortNumber();

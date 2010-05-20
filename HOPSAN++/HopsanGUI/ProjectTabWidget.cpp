@@ -647,10 +647,13 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
         //When clicking end port
     else
     {
-        //*****Core Interaction*****
-        Port *start_port = mpTempConnector->getStartPort()->mpCorePort;
-        Port *end_port = pPort->mpCorePort;
-        bool success = mpCoreComponentSystem->connect(start_port, end_port);
+        ////*****Core Interaction*****
+        //Port *start_port = mpTempConnector->getStartPort()->mpCorePort;
+        //Port *end_port = pPort->mpCorePort;
+        //bool success = mpCoreComponentSystem->connect(start_port, end_port);
+        GUIPort *pStartPort = mpTempConnector->getStartPort();
+
+        bool success = mpParentProjectTab->mGUIRootSystem.connect(pStartPort->getGUIComponentName(), pStartPort->getName(), pPort->getGUIComponentName(), pPort->getName() );
         if (success)
         {
             mIsCreatingConnector = false;
@@ -671,7 +674,7 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
             }
         }
         emit checkMessages();
-        //**************************
+        ////**************************
 
 
 
@@ -696,15 +699,18 @@ void GraphicsView::removeConnector(GUIConnector* pConnector, bool doNotRegisterU
         if(mConnectorVector[i] == pConnector)
         {
              //! @todo some error handling both ports must exist and be connected to each other
-             //*****Core Interaction*****
+             ////*****Core Interaction*****
              if(pConnector->isConnected())
              {
-                 mpCoreComponentSystem->disconnect(pConnector->getStartPort()->mpCorePort, pConnector->getEndPort()->mpCorePort);
+                 //mpCoreComponentSystem->disconnect(pConnector->getStartPort()->mpCorePort, pConnector->getEndPort()->mpCorePort);
+                 GUIPort *pStartP = pConnector->getStartPort();
+                 GUIPort *pEndP = pConnector->getEndPort();
+                 mpParentProjectTab->mGUIRootSystem.disconnect(pStartP->getGUIComponentName(), pStartP->getName(), pEndP->getGUIComponentName(), pEndP->getName());
                  emit checkMessages();
                  pConnector->getEndPort()->show();
                  pConnector->getEndPort()->isConnected = false;
              }
-             //**************************
+             ////**************************
              scene()->removeItem(pConnector);
              pConnector->getStartPort()->show();
              pConnector->getStartPort()->isConnected = false;
@@ -859,8 +865,9 @@ void GraphicsView::paste()
             GUIPort *endPort = this->getGUIObject(endComponentName)->getPort(endPortName);
 
             //*****Core Interaction*****
-            bool success = this->getCoreComponentSystem()->connect(startPort->mpCorePort, endPort->mpCorePort); //This is core access
+            //bool success = this->getCoreComponentSystem()->connect(startPort->mpCorePort, endPort->mpCorePort); //This is core access
             //**************************
+            bool success = mpParentProjectTab->mGUIRootSystem.connect(startComponentName, startPortName, endComponentName, endPortName);
             if (!success)
             {
                 qDebug() << "Unsuccessful connection try" << endl;
@@ -1505,9 +1512,10 @@ void ProjectTabWidget::loadModel()
             GUIPort *startPort = pCurrentView->getGUIObject(startComponentName)->getPort(startPortName);
             GUIPort *endPort = pCurrentView->getGUIObject(endComponentName)->getPort(endPortName);
 
-            //*****Core Interaction*****
-            bool success = pCurrentView->getCoreComponentSystem()->connect(startPort->mpCorePort, endPort->mpCorePort); //This is core access
-            //**************************
+//            //*****Core Interaction*****
+//            bool success = pCurrentView->getCoreComponentSystem()->connect(startPort->mpCorePort, endPort->mpCorePort); //This is core access
+//            //**************************
+            bool success = pCurrentTab->mGUIRootSystem.connect(startComponentName, startPortName, endComponentName, endPortName);
             if (!success)
             {
                 qDebug() << "Unsuccessful connection try" << endl;

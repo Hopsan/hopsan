@@ -358,6 +358,13 @@ QString GUIPort::getName()
     //**************************
 }
 
+QString GUIPort::getGUIComponentName()
+{
+    //*****Core Interaction*****
+    return QString::fromStdString(mpCorePort->getComponentName());
+    //**************************
+}
+
 
 void GUIPort::hideIfNotConnected(bool justDoIt)
 {
