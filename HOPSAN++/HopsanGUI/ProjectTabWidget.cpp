@@ -289,46 +289,6 @@ void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appear
     }
 }
 
-////! Adds a new component to the GraphicsView.
-////! @param componentType is a string defining the type of component.
-////! @param position is the position where the component will be created.
-////! @param name will be the name of the component.
-//void GraphicsView::addComponent(QString componentType, QPoint position, QString name, bool startSelected)
-//{
-//    MainWindow *pMainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent());
-//    LibraryWidget *pLibrary = pMainWindow->mpLibrary;
-//    QStringList appearanceData = pLibrary->getAppearanceData(componentType);
-//
-//    GUIComponent *pGuiComponent = new GUIComponent(mpHopsan, appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
-//
-//    qDebug() << "=====================Get initial name: " << pGuiComponent->getName() << "requested: " << name;
-//    if (!name.isEmpty())
-//    {
-//        qDebug() << "name not empty, setting to: " << name;
-//        //Set name, do NOT try to do smart rename. (If component already exist with new component default name that other component would be renamed)
-//        pGuiComponent->setName(name, true);
-//    }
-//
-//    pGuiComponent->setSelected(startSelected);
-//
-//    //Core interaction
-//    qDebug() << "=====================Get name before add: " << pGuiComponent->getName();
-//    this->mpParentProjectTab->mpComponentSystem->addComponent(pGuiComponent->mpCoreComponent);
-//    //    qobject_cast<ProjectTab *>(this->parent())->mpModel->addComponent(guiComponent->mpCoreComponent);
-//    pGuiComponent->refreshName();
-//    emit checkMessages();
-//    qDebug() << "=====================Get name after add: " << pGuiComponent->getName();
-//    //
-//
-//    //guiComponent->setPos(this->mapToScene(position));
-//    qDebug() << "GraphicsView: " << pGuiComponent->parent();
-//
-//    //mLibraryMapPtrs.insert(libraryName, newLibContent);
-//    //this->mComponentMap.insert()
-//    this->mGUIObjectMap.insert(pGuiComponent->getName(), pGuiComponent);
-//    //APAthis->scene()->addItem(guiComponent);
-//
-//}
 
 //! @brief A function that ads a system port to the current system
 void GraphicsView::addSystemPort()
@@ -647,10 +607,6 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
         //When clicking end port
     else
     {
-        ////*****Core Interaction*****
-        //Port *start_port = mpTempConnector->getStartPort()->mpCorePort;
-        //Port *end_port = pPort->mpCorePort;
-        //bool success = mpCoreComponentSystem->connect(start_port, end_port);
         GUIPort *pStartPort = mpTempConnector->getStartPort();
 
         bool success = mpParentProjectTab->mGUIRootSystem.connect(pStartPort->getGUIComponentName(), pStartPort->getName(), pPort->getGUIComponentName(), pPort->getName() );
@@ -674,11 +630,7 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
             }
         }
         emit checkMessages();
-        ////**************************
-
-
-
-    }
+     }
 }
 
 
@@ -699,10 +651,8 @@ void GraphicsView::removeConnector(GUIConnector* pConnector, bool doNotRegisterU
         if(mConnectorVector[i] == pConnector)
         {
              //! @todo some error handling both ports must exist and be connected to each other
-             ////*****Core Interaction*****
              if(pConnector->isConnected())
              {
-                 //mpCoreComponentSystem->disconnect(pConnector->getStartPort()->mpCorePort, pConnector->getEndPort()->mpCorePort);
                  GUIPort *pStartP = pConnector->getStartPort();
                  GUIPort *pEndP = pConnector->getEndPort();
                  mpParentProjectTab->mGUIRootSystem.disconnect(pStartP->getGUIComponentName(), pStartP->getName(), pEndP->getGUIComponentName(), pEndP->getName());
@@ -710,7 +660,6 @@ void GraphicsView::removeConnector(GUIConnector* pConnector, bool doNotRegisterU
                  pConnector->getEndPort()->show();
                  pConnector->getEndPort()->isConnected = false;
              }
-             ////**************************
              scene()->removeItem(pConnector);
              pConnector->getStartPort()->show();
              pConnector->getStartPort()->isConnected = false;
@@ -864,9 +813,6 @@ void GraphicsView::paste()
             GUIPort *startPort = this->getGUIObject(startComponentName)->getPort(startPortName);
             GUIPort *endPort = this->getGUIObject(endComponentName)->getPort(endPortName);
 
-            //*****Core Interaction*****
-            //bool success = this->getCoreComponentSystem()->connect(startPort->mpCorePort, endPort->mpCorePort); //This is core access
-            //**************************
             bool success = mpParentProjectTab->mGUIRootSystem.connect(startComponentName, startPortName, endComponentName, endPortName);
             if (!success)
             {
@@ -1510,9 +1456,6 @@ void ProjectTabWidget::loadModel()
             GUIPort *startPort = pCurrentView->getGUIObject(startComponentName)->getPort(startPortName);
             GUIPort *endPort = pCurrentView->getGUIObject(endComponentName)->getPort(endPortName);
 
-//            //*****Core Interaction*****
-//            bool success = pCurrentView->getCoreComponentSystem()->connect(startPort->mpCorePort, endPort->mpCorePort); //This is core access
-//            //**************************
             bool success = pCurrentTab->mGUIRootSystem.connect(startComponentName, startPortName, endComponentName, endPortName);
             if (!success)
             {
