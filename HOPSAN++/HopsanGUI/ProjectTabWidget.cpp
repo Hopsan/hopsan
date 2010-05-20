@@ -1056,12 +1056,14 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     //*****Core Interaction*****
     mGUIRootSystem.mpCoreComponentSystem = mpParentProjectTabWidget->mpHopsanCore->CreateComponentSystem();
     mpCoreComponentSystem = mGUIRootSystem.mpCoreComponentSystem; //Quick hack
-    mpCoreComponentSystem->setDesiredTimestep(.001);
-    mpCoreComponentSystem->setTypeCQS("S");
+    //**************************
+    mGUIRootSystem.setTypeCQS("S");
+    mGUIRootSystem.setDesiredTimeStep(.001);
+
     emit checkMessages();
 
-    double timeStep = mpCoreComponentSystem->getDesiredTimeStep();
-    //**************************
+    double timeStep = mGUIRootSystem.getDesiredTimeStep();
+
     mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->setTimeStepLabel(timeStep);
 
     mIsSaved = true;
@@ -1173,9 +1175,7 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
     ProjectTab *newTab = new ProjectTab(this);
     newTab->mIsSaved = false;
 
-    //*****Core Interaction*****
-    newTab->mpCoreComponentSystem->setName(tabName.toStdString());
-    //**************************
+    newTab->mGUIRootSystem.setName(tabName.toStdString());
 
     addTab(newTab, tabName.append(QString("*")));
     setCurrentWidget(newTab);
@@ -1308,12 +1308,9 @@ void ProjectTabWidget::simulateCurrent()
 
     ProjectTab *pCurrentTab = getCurrentTab();
 
-    //*****Core Interaction*****
     double startTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getStartTimeLabel();
     double finishTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getFinishTimeLabel();
     
-    double *pCoreComponentTime = pCurrentTab->mpCoreComponentSystem->getTimePtr();
-    //**************************
     QString timeTxt;
     double dt = finishTime - startTime;
     size_t nSteps = dt/pCurrentTab->mpCoreComponentSystem->getDesiredTimeStep();
@@ -1325,6 +1322,7 @@ void ProjectTabWidget::simulateCurrent()
 
     //*****Core Interaction*****
     InitializationThread actualInitialization(pCurrentTab->mpCoreComponentSystem, startTime, finishTime, this);
+    //**************************
     size_t i=0;
     actualInitialization.start();
     actualInitialization.setPriority(QThread::TimeCriticalPriority);
@@ -1333,7 +1331,7 @@ void ProjectTabWidget::simulateCurrent()
         progressBar.setValue(i++);
         if (progressBar.wasCanceled())
         {
-            pCurrentTab->mpCoreComponentSystem->stop();
+            pCurrentTab->mGUIRootSystem.stop();
         }
     }
     progressBar.setValue(i);
@@ -1341,7 +1339,9 @@ void ProjectTabWidget::simulateCurrent()
 
     if (!progressBar.wasCanceled())
     {
+        //*****Core Interaction*****
         SimulationThread actualSimulation(pCurrentTab->mpCoreComponentSystem, startTime, finishTime, this);
+        //**************************
         actualSimulation.start();
         actualSimulation.setPriority(QThread::TimeCriticalPriority);
         progressBar.setLabelText(tr("Running simulation..."));
@@ -1350,24 +1350,22 @@ void ProjectTabWidget::simulateCurrent()
         progressBar.setMaximum(nSteps);
         while (actualSimulation.isRunning())
         {
-            progressBar.setValue((size_t)(*pCoreComponentTime/dt * nSteps));
+            progressBar.setValue((size_t)(getCurrentTab()->mGUIRootSystem.getCurrentTime()/dt * nSteps));
             if (progressBar.wasCanceled())
             {
-                pCurrentTab->mpCoreComponentSystem->stop();
+                pCurrentTab->mGUIRootSystem.stop();
             }
         }
-        progressBar.setValue((size_t)(*pCoreComponentTime/dt * nSteps));
+        progressBar.setValue((size_t)(getCurrentTab()->mGUIRootSystem.getCurrentTime()/dt * nSteps));
         actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
     }
 
     if (progressBar.wasCanceled())
-        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(QString::fromStdString(pCurrentTab->mpCoreComponentSystem->getName())).append(tr("' was terminated!"))));
+        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(QString::fromStdString(pCurrentTab->mGUIRootSystem.getName())).append(tr("' was terminated!"))));
     else
-        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulated '").append(QString::fromStdString(pCurrentTab->mpCoreComponentSystem->getName())).append(tr("' successfully!"))));
+        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulated '").append(QString::fromStdString(pCurrentTab->mGUIRootSystem.getName())).append(tr("' successfully!"))));
 
     emit checkMessages();
-    //***************************
-
 }
 
 //! Loads a model from a file and opens it in a new project tab.
@@ -1560,9 +1558,7 @@ void ProjectTabWidget::loadModel()
     }
 
     //Sets the file name as model name
-    //*****Core Interaction*****
-    pCurrentView->getCoreComponentSystem()->setName(fileInfo.fileName().toStdString()); //! @todo This is core access maybe should try to access some other way
-    //**************************
+    getCurrentTab()->mGUIRootSystem.setName(fileInfo.fileName().toStdString());
 
     pCurrentView->undoStack->clear();
 
@@ -1654,9 +1650,7 @@ void ProjectTabWidget::saveModel(bool saveAs)
     modelFile << "--------------------------------------------------------------\n";
 
     //Sets the model name
-    //*****Core Interaction*****
-    pCurrentTab->mpCoreComponentSystem->setName(fileInfo.fileName().toStdString()); //!< @todo BAD should not be core access here, find some other way to encapsule
-    //**************************
+    pCurrentTab->mGUIRootSystem.setName(fileInfo.fileName().toStdString());
     this->setTabText(this->currentIndex(), fileInfo.fileName());
 }
 
