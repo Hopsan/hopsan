@@ -470,21 +470,21 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             mIsCreatingConnector = false;
         }
     }
-    else if(Qt::ShiftModifier and event->key() == Qt::Key_Left)
+    else if(Qt::ShiftModifier and event->key() == Qt::Key_K)
     {
         if(isObjectSelected())
         {
             undoStack->newPost();
         }
-        emit keyPressShiftLeft();
+        emit keyPressShiftK();
     }
-    else if(Qt::ShiftModifier and event->key() == Qt::Key_Right)
+    else if(Qt::ShiftModifier and event->key() == Qt::Key_L)
     {
         if(isObjectSelected())
         {
             undoStack->newPost();
         }
-        emit keyPressShiftRight();
+        emit keyPressShiftL();
     }
     else if(Qt::ControlModifier and event->key() == Qt::Key_Up)
     {
@@ -492,7 +492,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         {
             undoStack->newPost();
         }
-        emit keyPressUp();
+        emit keyPressCtrlUp();
     }
     else if(Qt::ControlModifier and event->key() == Qt::Key_Down)
     {
@@ -500,7 +500,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         {
             undoStack->newPost();
         }
-        emit keyPressDown();
+        emit keyPressCtrlDown();
     }
     else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Left)
     {
@@ -508,7 +508,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         {
             undoStack->newPost();
         }
-        emit keyPressLeft();
+        emit keyPressCtrlLeft();
     }
     else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Right)
     {
@@ -516,7 +516,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         {
             undoStack->newPost();
         }
-        emit keyPressRight();
+        emit keyPressCtrlRight();
     }
     else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_A)
         this->selectAll();

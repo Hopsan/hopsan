@@ -72,12 +72,12 @@ public:
 signals:
     void keyPressDelete();
     void keyPressR();
-    void keyPressShiftLeft();
-    void keyPressShiftRight();
-    void keyPressUp();
-    void keyPressDown();
-    void keyPressLeft();
-    void keyPressRight();
+    void keyPressShiftK();
+    void keyPressShiftL();
+    void keyPressCtrlUp();
+    void keyPressCtrlDown();
+    void keyPressCtrlLeft();
+    void keyPressCtrlRight();
     void viewClicked();
     void checkMessages();
     void systemPortSignal(QPoint position);
