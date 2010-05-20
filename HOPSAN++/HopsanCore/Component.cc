@@ -1042,7 +1042,14 @@ bool ComponentSystem::connect(Component *pComponent1, const string portname1, Co
     return connect(*pComponent1, portname1, *pComponent2, portname2);
 }
 
+//! Connect two commponents string version
+bool ComponentSystem::connect(string compname1, string portname1, string compname2, string portname2)
+{
+    connect( *getSubComponent(compname1), portname1, *getSubComponent(compname2), portname2 );
+}
+
 //! Connect two components with specified ports to each other, reference version
+//! @todo Cleanup this connect madness only 1 or two alternatives maybe string version default (or pointer version)
 bool ComponentSystem::connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2)
 {
     Node* pNode;
@@ -1321,6 +1328,13 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
     }
     //It seems to be OK!
     return true;
+}
+
+//! @brief Disconnect two ports, string version
+//! @todo maybe clean up and have one (or maybe ok with two dissconnect functions)
+bool ComponentSystem::disconnect(string compname1, string portname1, string compname2, string portname2)
+{
+    disconnect( getSubComponent(compname1)->getPort(portname1), getSubComponent(compname2)->getPort(portname2) );
 }
 
 //! Disconnects two ports and remove node if no one is using it any more
