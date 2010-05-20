@@ -1,6 +1,8 @@
 //$Id$
 #include "plotwidget.h"
 #include <QDebug>
+#include <QSpinBox>
+#include <QColorDialog>
 
 
 PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindow *parent)
@@ -28,6 +30,8 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindo
     mpCurve->attach(mpVariablePlot);
     mpCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
     mpVariablePlot->replot();
+
+
 
     //Create the close button
     QDialogButtonBox *buttonbox = new QDialogButtonBox(QDialogButtonBox::Close);
@@ -69,6 +73,24 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindo
     btnGrid->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolBar->addWidget(btnGrid);
 
+    btnSize = new QSpinBox(toolBar);
+    //btnSize->set("Line Width");
+    btnSize->setRange(1,10);
+    btnSize->setSingleStep(1);
+    toolBar->addWidget(btnSize);
+
+    btnColor = new QToolButton(toolBar);
+    btnColor->setText("Line Color");
+    btnColor->setIcon(QIcon("../../HopsanGUI/icons/palette.png"));
+    btnColor->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    toolBar->addWidget(btnColor);
+
+    btnBackgroundColor = new QToolButton(toolBar);
+    btnBackgroundColor->setText("Canvas Color");
+    btnBackgroundColor->setIcon(QIcon("../../HopsanGUI/icons/palette.png"));
+    btnBackgroundColor->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    toolBar->addWidget(btnBackgroundColor);
+
     addToolBar(toolBar);
 
     //Zoom
@@ -92,7 +114,7 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindo
     grid->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
     grid->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
     grid->attach(mpVariablePlot);
-    grid->hide();;
+    grid->hide();
 
     enableZoom(false);
 
@@ -102,7 +124,9 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindo
     connect(btnPan,SIGNAL(toggled(bool)),SLOT(enablePan(bool)));
     connect(btnSVG,SIGNAL(clicked()),SLOT(exportSVG()));
     connect(btnGrid,SIGNAL(toggled(bool)),SLOT(enableGrid(bool)));
-
+    connect(btnSize,SIGNAL(valueChanged(int)),this, SLOT(setSize(int)));
+    connect(btnColor,SIGNAL(clicked()),this,SLOT(setColor()));
+    connect(btnBackgroundColor,SIGNAL(clicked()),this,SLOT(setBackgroundColor()));
 
     resize(600,600);
 }
@@ -158,6 +182,32 @@ void PlotWidget::exportSVG()
 #endif
 }
 
+void PlotWidget::setSize(int size)
+{
+    mpCurve->setPen(QPen(mpCurve->pen().color(),size));
+}
+
+void PlotWidget::setColor()
+{
+    QColor color = QColorDialog::getColor(Qt::black, this);
+    if (color.isValid())
+    {
+        mpCurve->setPen(QPen(color, mpCurve->pen().width()));
+        //colorLabel->setText(color.name());
+        //colorLabel->setPalette(QPalette(color));
+        //colorLabel->setAutoFillBackground(true);
+    }
+}
+
+void PlotWidget::setBackgroundColor()
+{
+    QColor color = QColorDialog::getColor(Qt::black, this);
+    if (color.isValid())
+    {
+        mpVariablePlot->setCanvasBackground(color);
+        mpVariablePlot->replot();
+    }
+}
 
 VariablePlot::VariablePlot(QWidget *parent)
         : QwtPlot(parent)

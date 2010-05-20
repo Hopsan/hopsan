@@ -32,6 +32,7 @@
 #include <qwt_legend.h>
 #include <QFileDialog>
 #include <QSvgGenerator>
+#include <QSpinBox>
 
 
 class MainWindow;
@@ -57,12 +58,18 @@ public:
     QToolButton *btnPan;
     QToolButton *btnSVG;
     QToolButton *btnGrid;
+    QSpinBox *btnSize;
+    QToolButton *btnColor;
+    QToolButton *btnBackgroundColor;
 
 private slots:
     void enableZoom(bool);
     void enablePan(bool);
     void exportSVG();
     void enableGrid(bool);
+    void setSize(int);
+    void setColor();
+    void setBackgroundColor();
 };
 
 

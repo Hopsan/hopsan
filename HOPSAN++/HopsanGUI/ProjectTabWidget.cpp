@@ -663,16 +663,18 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
             mpTempConnector->getEndPort()->hide();
 
             this->mConnectorVector.append(mpTempConnector);
+
+            undoStack->newPost();
+            if(!doNotRegisterUndo)
+            {
+                undoStack->registerAddedConnector(mpTempConnector);
+            }
         }
         emit checkMessages();
         //**************************
 
 
-        undoStack->newPost();
-        if(!doNotRegisterUndo)
-        {
-            undoStack->registerAddedConnector(mpTempConnector);
-        }
+
     }
 }
 
