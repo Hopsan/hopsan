@@ -1045,7 +1045,7 @@ bool ComponentSystem::connect(Component *pComponent1, const string portname1, Co
 //! Connect two commponents string version
 bool ComponentSystem::connect(string compname1, string portname1, string compname2, string portname2)
 {
-    connect( *getSubComponent(compname1), portname1, *getSubComponent(compname2), portname2 );
+    return connect( *getSubComponent(compname1), portname1, *getSubComponent(compname2), portname2 );
 }
 
 //! Connect two components with specified ports to each other, reference version
