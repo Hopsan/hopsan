@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QSpinBox>
 #include <QColorDialog>
+#include <QLabel>
 
 
 PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindow *parent)
@@ -73,10 +74,16 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindo
     btnGrid->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolBar->addWidget(btnGrid);
 
-    btnSize = new QSpinBox(toolBar);
+    btnSize = new QToolBar(tr("Size Spinbox"));
+    QLabel *sizeLabel = new QLabel(tr("Line Width"));
+    sizeSpinBox = new QSpinBox(toolBar);
     //btnSize->set("Line Width");
-    btnSize->setRange(1,10);
-    btnSize->setSingleStep(1);
+    sizeSpinBox->setRange(1,10);
+    sizeSpinBox->setSingleStep(1);
+    sizeSpinBox->setSuffix(" pt");
+    btnSize->setOrientation(Qt::Vertical);
+    btnSize->addWidget(sizeLabel);
+    btnSize->addWidget(sizeSpinBox);
     toolBar->addWidget(btnSize);
 
     btnColor = new QToolButton(toolBar);
@@ -124,7 +131,7 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindo
     connect(btnPan,SIGNAL(toggled(bool)),SLOT(enablePan(bool)));
     connect(btnSVG,SIGNAL(clicked()),SLOT(exportSVG()));
     connect(btnGrid,SIGNAL(toggled(bool)),SLOT(enableGrid(bool)));
-    connect(btnSize,SIGNAL(valueChanged(int)),this, SLOT(setSize(int)));
+    connect(sizeSpinBox,SIGNAL(valueChanged(int)),this, SLOT(setSize(int)));
     connect(btnColor,SIGNAL(clicked()),this,SLOT(setColor()));
     connect(btnBackgroundColor,SIGNAL(clicked()),this,SLOT(setBackgroundColor()));
 
@@ -201,7 +208,7 @@ void PlotWidget::setColor()
 
 void PlotWidget::setBackgroundColor()
 {
-    QColor color = QColorDialog::getColor(Qt::black, this);
+    QColor color = QColorDialog::getColor(Qt::white, this);
     if (color.isValid())
     {
         mpVariablePlot->setCanvasBackground(color);

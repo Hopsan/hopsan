@@ -58,7 +58,8 @@ public:
     QToolButton *btnPan;
     QToolButton *btnSVG;
     QToolButton *btnGrid;
-    QSpinBox *btnSize;
+    QToolBar *btnSize;
+    QSpinBox *sizeSpinBox;
     QToolButton *btnColor;
     QToolButton *btnBackgroundColor;
 
