@@ -48,9 +48,7 @@ GUIPort::GUIPort(Port *pCorePort, qreal xpos, qreal ypos, PortAppearance* pPortA
     mpPortLabel->setPos(7.0,7.0);
     mpPortLabel->hide();
 
-    //*****Core Interaction*****
-    if(this->getPortTypeEnum() == Port::POWERPORT)
-    //**************************
+    if(this->getPortType() == "POWERPORT")
     {
         this->setRotation(0.0);
         mpPortLabel->setRotation(0.0);
@@ -175,9 +173,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         QMenu menu;
 
-        //*****Core Interaction*****
-        if (mpCorePort->getNodeType() =="NodeHydraulic")
-        //**************************
+        if (this->getNodeType() =="NodeHydraulic")
         {
             QAction *plotPressureAction = menu.addAction("Plot pressure");
             QAction *plotFlowAction = menu.addAction("Plot flow");
@@ -192,9 +188,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
                 plot(1);
             }
         }
-        //*****Core Interaction*****
-        if (mpCorePort->getNodeType() =="NodeMechanic")
-        //**************************
+        if (this->getNodeType() =="NodeMechanic")
         {
             QAction *plotVelocityAction = menu.addAction("Plot velocity");
             QAction *plotForceAction = menu.addAction("Plot force");
@@ -214,9 +208,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
                 plot(2);
             }
         }
-        //*****Core Interaction*****
-        if (mpCorePort->getNodeType() =="NodeSignal")
-        //**************************
+        if (this->getNodeType() =="NodeSignal")
         {
             QAction *plotSignalAction = menu.addAction("Plot signal value");
             QAction *selectedAction = menu.exec(event->screenPos());
@@ -311,15 +303,6 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
 int GUIPort::getPortNumber()
 {
     return this->getGuiObject()->getPortNumber(this);
-}
-
-//! Wrapper for the Core getPortType() function
-//! @todo remove this method and only use strings in the future
-Port::PORTTYPE GUIPort::getPortTypeEnum()
-{
-    //*****Core Interaction*****
-    return mpCorePort->getPortType();
-    //**************************
 }
 
 

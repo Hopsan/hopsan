@@ -463,7 +463,7 @@ void GUIObject::rotate(bool doNotRegisterUndo)
             mPortListPtrs.value(i)->setPortDirection(PortAppearance::HORIZONTAL);
         else
             mPortListPtrs.value(i)->setPortDirection(PortAppearance::VERTICAL);
-        if (mPortListPtrs.value(i)->getPortTypeEnum() == Port::POWERPORT)
+        if (mPortListPtrs.value(i)->getPortType() == "POWERPORT")
         {
             if(this->rotation() == 0 and !mIsFlipped)
                 mPortListPtrs.value(i)->setRotation(0);
@@ -909,16 +909,16 @@ GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, Graph
     mpHopsanCore = HopsanEssentials::getInstance();
     mpCoreComponent = mpHopsanCore->CreateComponent(mAppearanceData.getTypeName().toStdString());
     QString cqsType = QString::fromStdString(mpCoreComponent->getTypeCQSString());
+    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->addComponent(getHopsanCoreComponentPtr());
     //**************************
+
 
     //Sets the ports
     PortAppearanceMapT::iterator i;
     for (i = mAppearanceData.getPortAppearanceMap().begin(); i != mAppearanceData.getPortAppearanceMap().end(); ++i)
     {
-        //*****Core Interaction*****
-        QString nodeType = QString::fromStdString(mpCoreComponent->getPort(i.key().toStdString())->getNodeType());
-        QString portType = QString::fromStdString(mpCoreComponent->getPort(i.key().toStdString())->getPortTypeString());
-        //**************************
+        QString nodeType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getNodeType(this->getName(), i.key());
+        QString portType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPortType(this->getName(), i.key());
         i.value().selectPortIcon(cqsType, portType, nodeType);
         qDebug() << i.key();
 
@@ -946,7 +946,9 @@ GUIComponent::~GUIComponent()
 //! This function returns the current component name
 QString GUIComponent::getName()
 {
+    //*****Core Interaction*****
     return QString::fromStdString(mpCoreComponent->getName());
+    //***************************
 }
 
 //!
@@ -1122,6 +1124,7 @@ GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, Graph
     //*****Core Interaction*****
     mpHopsanCore = HopsanEssentials::getInstance();
     mpCoreComponentSystem = mpHopsanCore->CreateComponentSystem();
+    this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->addComponent(this->getHopsanCoreSystemComponentPtr());
     //mpCoreComponentSystem->setName("unnamed");
     //**************************
 
@@ -1349,13 +1352,13 @@ void GUISubsystem::openParameterDialog()
 }
 
 
-GUISystemPort::GUISystemPort(ComponentSystem* pCoreComponentSystem, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
+GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
         : GUIObject(position, appearanceData, scene, parent)
 
 {
     //*****Core Interaction*****
     //Set the core system pointer
-    mpCoreComponentSystem = pCoreComponentSystem;
+    mpCoreComponentSystem = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem;
     //**************************
 
     //Sets the ports

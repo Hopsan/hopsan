@@ -38,7 +38,6 @@ public:
     QString getPortType();
     QString getNodeType();
     //*****Core Interaction*****
-    Port::PORTTYPE getPortTypeEnum();
     Port *mpCorePort;
     //**************************
 

@@ -217,7 +217,7 @@ class GUISystemPort : public GUIObject
 {
     Q_OBJECT
 public:
-    GUISystemPort(ComponentSystem* pCoreComponentSystem, AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    GUISystemPort(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
     QString getTypeName();
     void setName(QString newName, bool doOnlyCoreRename);
     QString getName();
