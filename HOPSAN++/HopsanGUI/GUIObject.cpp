@@ -420,10 +420,10 @@ void GUIObject::showPorts(bool visible)
     else
         for (i = mPortListPtrs.begin(); i != mPortListPtrs.end(); ++i)
         {
-        //*****Core Interaction*****
-        if ((*i)->mpCorePort->isConnected() or mpParentGraphicsView->mPortsHidden)
-        //**************************
-            (*i)->hide();
+            if ((*i)->isConnected or mpParentGraphicsView->mPortsHidden)
+            {
+                (*i)->hide();
+            }
         }
 }
 

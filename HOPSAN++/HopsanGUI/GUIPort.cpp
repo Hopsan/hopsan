@@ -163,9 +163,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
 
-    //*****Core Interaction*****
-    if ((!(this->mpCorePort->isConnected())) || (this->mpCorePort->getTimeVectorPtr()->empty()))
-    //**************************
+    if ((!this->isConnected) || (this->mpCorePort->getTimeVectorPtr()->empty()))
     {
         event->ignore();
     }
@@ -339,9 +337,7 @@ QString GUIPort::getName()
 
 QString GUIPort::getGUIComponentName()
 {
-    //*****Core Interaction*****
-    return QString::fromStdString(mpCorePort->getComponentName());
-    //**************************
+    return this->mpParentGuiObject->getName();
 }
 
 
