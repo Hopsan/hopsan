@@ -41,13 +41,13 @@ public:
 
     QWidget *mpCentralwidget;
     QGridLayout *mpCentralgrid;
+    UndoWidget *mpUndoWidget;
     ProjectTabWidget *mpProjectTabs;
     QGridLayout *mpTabgrid;
     LibraryWidget *mpLibrary;
     SimulationSetupWidget *mpSimulationSetupWidget;
     OptionsWidget *mpOptionsWidget;
     PreferenceWidget *mpPreferenceWidget;
-    UndoWidget *mpUndoWidget;
     QMenuBar *menubar;
     QMenu *menuFile;
     QMenu *menuNew;

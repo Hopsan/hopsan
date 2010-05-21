@@ -164,11 +164,6 @@ void GUIObject::fixTextPosition(QPointF pos)
 }
 
 
-//QGraphicsView *GUIComponent::getParentView()
-//{
-//    return mpParentView;
-//}
-
 void GUIObject::addConnector(GUIConnector *item)
 {
     connect(this, SIGNAL(componentMoved()), item, SLOT(drawConnector()));
@@ -590,9 +585,8 @@ void GUIObject::flipHorizontal(bool doNotRegisterUndo)
 {
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
-        //*****Core Interaction*****
-        if(mPortListPtrs[i]->getPortTypeEnum() == Port::READPORT or mPortListPtrs[i]->getPortTypeEnum() == Port::WRITEPORT)
-        //**************************
+        //if(mPortListPtrs[i]->getPortTypeEnum() == Port::READPORT or mPortListPtrs[i]->getPortTypeEnum() == Port::WRITEPORT)
+        if(mPortListPtrs[i]->getPortType() == "READPORT" or mPortListPtrs[i]->getPortType() == "WRITEPORT")
         {
             if(this->rotation() == 90 or this->rotation() == 270)
             {

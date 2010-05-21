@@ -1,4 +1,5 @@
 #include "GUIRootSystem.h"
+#include <QString>
 
 GUIRootSystem::GUIRootSystem()
 {
@@ -52,4 +53,14 @@ double GUIRootSystem::getCurrentTime()
 void GUIRootSystem::stop()
 {
     mpCoreComponentSystem->stop();
+}
+
+QString GUIRootSystem::getPortType(QString componentName, QString portName)
+{
+    return QString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getPort(portName.toStdString())->getPortTypeString().c_str());
+}
+
+QString GUIRootSystem::getNodeType(QString componentName, QString portName)
+{
+    return QString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getPort(portName.toStdString())->getNodeType().c_str());
 }

@@ -231,7 +231,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 
 //! Returns a pointer to the GraphicsView that the port belongs to.
-QGraphicsView *GUIPort::getParentView()
+GraphicsView *GUIPort::getParentView()
 {
     return mpParentGraphicsView;
 }
@@ -326,18 +326,14 @@ Port::PORTTYPE GUIPort::getPortTypeEnum()
 //! Wrapper for the Core getPortTypeString() function
 QString GUIPort::getPortType()
 {
-    //*****Core Interaction*****
-    return QString::fromStdString(mpCorePort->getPortTypeString());
-    //**************************
+    return this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPortType(mpParentGuiObject->getName(), this->getName());
 }
 
 
 //! Wrapper for the Core getNodeType() function
 QString GUIPort::getNodeType()
 {
-    //*****Core Interaction*****
-    return QString::fromStdString(mpCorePort->getNodeType());
-    //**************************
+    return this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getNodeType(mpParentGuiObject->getName(), this->getName());
 }
 
 

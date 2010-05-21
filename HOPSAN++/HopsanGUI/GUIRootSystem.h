@@ -17,6 +17,8 @@ public:
     string getName();
     double getCurrentTime();
     void stop();
+    QString getPortType(QString componentName, QString portName);
+    QString getNodeType(QString componentName, QString portName);
 
 //private:
     //*****Core Interaction*****
