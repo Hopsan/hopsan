@@ -331,7 +331,7 @@ void GUIPort::setPortDirection(PortAppearance::portDirectionType direction)
 QString GUIPort::getName()
 {
     //*****Core Interaction*****
-    return QString::fromStdString(mpCorePort->getPortName());
+    return QString::fromStdString(mpCorePort->getPortName());       //This must change so that ports now their own names
     //**************************
 }
 

@@ -13,12 +13,17 @@ public:
     void setDesiredTimeStep(double timestep);
     double getDesiredTimeStep();
     void setTypeCQS(const string cqs_type, bool doOnlyLocalSet=false);
-    void setName(string name, bool doOnlyLocalRename=false);
+    QString getTypeCQS();
+    void setSystemName(string name, bool doOnlyLocalRename=false);
+    void setName(string componentName, string name, bool doOnlyLocalRename=false);
     string getName();
     double getCurrentTime();
     void stop();
     QString getPortType(QString componentName, QString portName);
     QString getNodeType(QString componentName, QString portName);
+    void setParameter(QString componentName, QString parameterName, double value);
+    void removeSubComponent(QString componentName, bool doDelete);
+    void removeSystem();
 
 //private:
     //*****Core Interaction*****

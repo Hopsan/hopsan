@@ -1042,14 +1042,13 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
         :   QTabWidget(parent)
 {
     mpParentMainWindow = parent;
+
     //*****Core Interaction*****
     mpHopsanCore = HopsanEssentials::getInstance();
-    //**************************
-
     MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent)); //Ugly!!!
-    //*****Core Interaction*****
     pMainWindow->mpMessageWidget->setHopsanCorePtr(mpHopsanCore);
     //**************************
+
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
     setTabsClosable(true);
@@ -1098,7 +1097,7 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
     ProjectTab *newTab = new ProjectTab(this);
     newTab->mIsSaved = false;
 
-    newTab->mGUIRootSystem.setName(tabName.toStdString());
+    newTab->mGUIRootSystem.setSystemName(tabName.toStdString());
 
     addTab(newTab, tabName.append(QString("*")));
     setCurrentWidget(newTab);
@@ -1236,9 +1235,7 @@ void ProjectTabWidget::simulateCurrent()
     
     QString timeTxt;
     double dt = finishTime - startTime;
-    //*****Core Interaction*****
-    size_t nSteps = dt/pCurrentTab->mGUIRootSystem.mpCoreComponentSystem->getDesiredTimeStep();
-    //**************************
+    size_t nSteps = dt/pCurrentTab->mGUIRootSystem.getDesiredTimeStep();
 
     QProgressDialog progressBar(tr("Initialize simulation..."), tr("&Abort initialization"), 0, 0, this);
     std::cout << progressBar.geometry().width() << " " << progressBar.geometry().height() << std::endl;
@@ -1480,7 +1477,7 @@ void ProjectTabWidget::loadModel()
     }
 
     //Sets the file name as model name
-    getCurrentTab()->mGUIRootSystem.setName(fileInfo.fileName().toStdString());
+    getCurrentTab()->mGUIRootSystem.setSystemName(fileInfo.fileName().toStdString());
 
     pCurrentView->undoStack->clear();
 
@@ -1572,7 +1569,7 @@ void ProjectTabWidget::saveModel(bool saveAs)
     modelFile << "--------------------------------------------------------------\n";
 
     //Sets the model name
-    pCurrentTab->mGUIRootSystem.setName(fileInfo.fileName().toStdString());
+    pCurrentTab->mGUIRootSystem.setSystemName(fileInfo.fileName().toStdString());
     this->setTabText(this->currentIndex(), fileInfo.fileName());
 }
 

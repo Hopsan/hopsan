@@ -25,19 +25,29 @@ void GUIRootSystem::setDesiredTimeStep(double timestep)
     mpCoreComponentSystem->setDesiredTimestep(timestep);
 }
 
-void GUIRootSystem::setTypeCQS(const string cqs_type, bool doOnlyLocalSet)
-{
-    mpCoreComponentSystem->setTypeCQS(cqs_type, doOnlyLocalSet);
-}
-
 double GUIRootSystem::getDesiredTimeStep()
 {
     return mpCoreComponentSystem->getDesiredTimeStep();
 }
 
-void GUIRootSystem::setName(string name, bool doOnlyLocalRename)
+void GUIRootSystem::setTypeCQS(const string cqs_type, bool doOnlyLocalSet)
+{
+    mpCoreComponentSystem->setTypeCQS(cqs_type, doOnlyLocalSet);
+}
+
+QString GUIRootSystem::getTypeCQS()
+{
+    return QString::fromStdString(mpCoreComponentSystem->getTypeCQSString());
+}
+
+void GUIRootSystem::setSystemName(string name, bool doOnlyLocalRename)
 {
     mpCoreComponentSystem->setName(name, doOnlyLocalRename);
+}
+
+void GUIRootSystem::setName(string componentName, string name, bool doOnlyLocalRename)
+{
+    mpCoreComponentSystem->getSubComponent(componentName)->setName(name, doOnlyLocalRename);
 }
 
 string GUIRootSystem::getName()
@@ -63,4 +73,19 @@ QString GUIRootSystem::getPortType(QString componentName, QString portName)
 QString GUIRootSystem::getNodeType(QString componentName, QString portName)
 {
     return QString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getPort(portName.toStdString())->getNodeType().c_str());
+}
+
+void GUIRootSystem::setParameter(QString componentName, QString parameterName, double value)
+{
+    mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameter(parameterName.toStdString(), value);
+}
+
+void GUIRootSystem::removeSubComponent(QString componentName, bool doDelete)
+{
+    mpCoreComponentSystem->removeSubComponent(mpCoreComponentSystem->getSubComponent(componentName.toStdString()), doDelete);
+}
+
+void GUIRootSystem::removeSystem()
+{
+    mpCoreComponentSystem->getSystemParent()->removeSubComponent(mpCoreComponentSystem, true);
 }

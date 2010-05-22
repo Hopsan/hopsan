@@ -975,10 +975,7 @@ void GUIComponent::setName(QString newName, bool doOnlyCoreRename)
         //Check if we want to avoid trying to rename in the graphics view map
         if (doOnlyCoreRename)
         {
-            //*****Core Interaction*****
-            //Set name in core component,
-            mpCoreComponent->setName(newName.toStdString());
-            //**************************
+            mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setName(this->getName().toStdString(), newName.toStdString());
             refreshName();
         }
         else
@@ -1011,9 +1008,7 @@ QString GUIComponent::getTypeName()
 //! @brief Set a parameter value, wrapps hopsan core
 void GUIComponent::setParameter(QString name, double value)
 {
-    //*****Core Interaction*****
-    mpCoreComponent->setParameter(name.toStdString(), value);
-    //**************************
+    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setParameter(this->getName(), name, value);
 }
 
 void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
@@ -1086,9 +1081,7 @@ Component* GUIComponent::getHopsanCoreComponentPtr()
 
 void GUIComponent::deleteInHopsanCore()
 {
-    //*****Core Interaction*****
-    mpCoreComponent->getSystemParent()->removeSubComponent(mpCoreComponent, true);
-    //**************************
+    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.removeSubComponent(this->getName(), true);
 }
 
 
@@ -1125,7 +1118,6 @@ GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, Graph
     mpHopsanCore = HopsanEssentials::getInstance();
     mpCoreComponentSystem = mpHopsanCore->CreateComponentSystem();
     this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->addComponent(this->getHopsanCoreSystemComponentPtr());
-    //mpCoreComponentSystem->setName("unnamed");
     //**************************
 
 //    mComponentTypeName = appearanceData.at(0);
@@ -1202,9 +1194,7 @@ GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, Graph
 //! This function returns the current subsystem name
 QString GUISubsystem::getName()
 {
-    //*****Core Interaction*****
-    return QString::fromStdString(mpCoreComponentSystem->getName());
-    //**************************
+    return QString::fromStdString(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getName());
 }
 
 //!
@@ -1233,10 +1223,7 @@ void GUISubsystem::setName(QString newName, bool doOnlyCoreRename)
         //Check if we want to avoid trying to rename in the graphics view map
         if (doOnlyCoreRename)
         {
-            //*****Core Interaction*****
-            //Set name in core component,
-            mpCoreComponentSystem->setName(newName.toStdString());
-            //**************************
+            mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setSystemName(newName.toStdString());
             refreshName();
         }
         else
@@ -1257,16 +1244,12 @@ QString GUISubsystem::getTypeName()
 
 void GUISubsystem::setTypeCQS(QString typestring)
 {
-    //*****Core Interaction*****
-    mpCoreComponentSystem->setTypeCQS(typestring.toStdString());
-    //**************************
+    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setTypeCQS(typestring.toStdString());
 }
 
 QString GUISubsystem::getTypeCQS()
 {
-    //*****Core Interaction*****
-    return QString::fromStdString(mpCoreComponentSystem->getTypeCQSString());
-    //**************************
+    return mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTypeCQS();
 }
 
 
