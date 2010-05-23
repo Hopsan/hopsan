@@ -26,12 +26,12 @@
 //! @param startTime is the start time for the simulation.
 //! @param finishTime is the finish time for the simulation.
 //! @param parent is the parent of the thread, the a ProjectTabWidget
-SimulationThread::SimulationThread(ComponentSystem *pCoreComponentSystem, double startTime, double finishTime, ProjectTabWidget *parent)
+SimulationThread::SimulationThread(GUIRootSystem *pGUIRootSystem, double startTime, double finishTime, ProjectTabWidget *parent)
 {
     mpParentProjectTabWidget = parent;
-    //*****Core Interaction*****
-    mpCoreComponentSystem = pCoreComponentSystem;
-    //**************************
+
+    mpGUIRootSystem = pGUIRootSystem;
+
     mStartTime = startTime;
     mFinishTime = finishTime;
 
@@ -41,10 +41,8 @@ SimulationThread::SimulationThread(ComponentSystem *pCoreComponentSystem, double
 //! Implements the task for the thread.
 void SimulationThread::run()
 {
-    //*****Core Interaction*****
-    mpCoreComponentSystem->simulate(mStartTime, mFinishTime);
-    mpCoreComponentSystem->finalize(mStartTime, mFinishTime);
-    //**************************
+    mpGUIRootSystem->simulate(mStartTime, mFinishTime);
+    mpGUIRootSystem->finalize(mStartTime, mFinishTime);
 
     //exec(); //Is used if one want to run an event loop in this thread.
 }

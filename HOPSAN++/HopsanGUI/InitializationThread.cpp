@@ -9,7 +9,6 @@
 
 
 #include "InitializationThread.h"
-#include "HopsanCore.h"
 #include "ProjectTabWidget.h"
 #include "mainwindow.h"
 
@@ -26,12 +25,12 @@
 //! @param startTime is the start time for the initialization.
 //! @param finishTime is the finish time for the initialization.
 //! @param parent is the parent of the thread, the a ProjectTabWidget
-InitializationThread::InitializationThread(ComponentSystem *pCoreComponentSystem, double startTime, double finishTime, ProjectTabWidget *parent)
+InitializationThread::InitializationThread(GUIRootSystem *pGUIRootSystem, double startTime, double finishTime, ProjectTabWidget *parent)
 {
     mpParentProjectTabWidget = parent;
-    //*****Core Interaction*****
-    mpCoreComponentSystem = pCoreComponentSystem;
-    //**************************
+
+    mpGUIRootSystem = pGUIRootSystem;
+
     mStartTime = startTime;
     mFinishTime = finishTime;
 
@@ -41,9 +40,7 @@ InitializationThread::InitializationThread(ComponentSystem *pCoreComponentSystem
 //! Implements the task for the thread.
 void InitializationThread::run()
 {
-    //*****Core Interaction*****
-    mpCoreComponentSystem->initialize(mStartTime, mFinishTime);
-    //**************************
+    mpGUIRootSystem->initialize(mStartTime, mFinishTime);
 
     //exec(); //Is used if one want to run an event loop in this thread.
 }

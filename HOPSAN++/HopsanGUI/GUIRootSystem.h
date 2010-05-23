@@ -25,6 +25,9 @@ public:
     void removeSubComponent(QString componentName, bool doDelete);
     void removeSystem();
     vector<double> getTimeVector(QString componentName, QString portName);
+    void initialize(double mStartTime, double mFinishTime);
+    void simulate(double mStartTime, double mFinishTime);
+    void finalize(double mStartTime, double mFinishTime);
 
 //private:
     //*****Core Interaction*****

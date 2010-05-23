@@ -12,6 +12,7 @@
 #define INITIALIZATIONTHREAD_H
 
 #include <QThread>
+#include "GUIRootSystem.h"
 
 
 class ComponentSystem;
@@ -20,12 +21,11 @@ class ProjectTabWidget;
 class InitializationThread : public QThread
 {
 public:
-    InitializationThread(ComponentSystem *pCoreComponentSystem, double startTime, double finishTime, ProjectTabWidget *parent);
+    InitializationThread(GUIRootSystem *pGUIRootSystem, double startTime, double finishTime, ProjectTabWidget *parent);
 
     ProjectTabWidget *mpParentProjectTabWidget;
-    //*****Core Interaction*****
-    ComponentSystem *mpCoreComponentSystem;
-    //**************************
+
+    GUIRootSystem *mpGUIRootSystem;
 
 protected:
     void run();

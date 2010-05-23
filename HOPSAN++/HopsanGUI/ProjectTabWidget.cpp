@@ -1242,9 +1242,8 @@ void ProjectTabWidget::simulateCurrent()
     progressBar.setWindowModality(Qt::WindowModal);
     progressBar.setWindowTitle(tr("Simulate!"));
 
-    //*****Core Interaction*****
-    InitializationThread actualInitialization(pCurrentTab->mGUIRootSystem.mpCoreComponentSystem, startTime, finishTime, this);
-    //**************************
+    InitializationThread actualInitialization(&(pCurrentTab->mGUIRootSystem), startTime, finishTime, this);
+
     size_t i=0;
     actualInitialization.start();
     actualInitialization.setPriority(QThread::TimeCriticalPriority);
@@ -1261,9 +1260,7 @@ void ProjectTabWidget::simulateCurrent()
 
     if (!progressBar.wasCanceled())
     {
-        //*****Core Interaction*****
-        SimulationThread actualSimulation(pCurrentTab->mGUIRootSystem.mpCoreComponentSystem, startTime, finishTime, this);
-        //**************************
+        SimulationThread actualSimulation(&(pCurrentTab->mGUIRootSystem), startTime, finishTime, this);
         actualSimulation.start();
         actualSimulation.setPriority(QThread::TimeCriticalPriority);
         progressBar.setLabelText(tr("Running simulation..."));

@@ -28,5 +28,5 @@ CONNECT "VelocityTransformer" "out" "TranslationalSpring" "P2" 2673.5 2393 2653 
 CONNECT "TranslationalSpring" "P1" "TranslationalMass_1" "P2" 2600.5 2393 2522 2393 2522 2393 2550 2393
 CONNECT "TranslationalSpring_1" "P2" "TranslationalMass_1" "P1" 2442.5 2393 2467 2393 2467 2393 2486 2393
 CONNECT "TranslationalMass" "P2" "TranslationalSpring_1" "P1" 2364 2393 2385 2393 2385 2393 2409.5 2393
-CONNECT "ForceTransformer" "out" "TranslationalMass" "P1" 2259.5 2393 2282 2393 2282 2393 2300 2393
+CONNECT "ForceTransformer" "P1" "TranslationalMass" "P1" 2259.5 2393 2282 2393 2282 2393 2300 2393
 --------------------------------------------------------------

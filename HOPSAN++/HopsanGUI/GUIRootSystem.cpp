@@ -95,3 +95,21 @@ vector<double> GUIRootSystem::getTimeVector(QString componentName, QString portN
 {
     return *(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getPort(portName.toStdString())->getTimeVectorPtr());
 }
+
+
+void GUIRootSystem::initialize(double mStartTime, double mFinishTime)
+{
+    mpCoreComponentSystem->initialize(mStartTime, mFinishTime);
+}
+
+
+void GUIRootSystem::simulate(double mStartTime, double mFinishTime)
+{
+    mpCoreComponentSystem->simulate(mStartTime, mFinishTime);
+}
+
+
+void GUIRootSystem::finalize(double mStartTime, double mFinishTime)
+{
+    mpCoreComponentSystem->finalize(mStartTime, mFinishTime);
+}

@@ -12,6 +12,7 @@
 #define SIMULATIONTHREAD_H
 
 #include <QThread>
+#include "GUIRootSystem.h"
 
 
 class ComponentSystem;
@@ -20,12 +21,11 @@ class ProjectTabWidget;
 class SimulationThread : public QThread
 {
 public:
-    SimulationThread(ComponentSystem *pCoreComponentSystem, double startTime, double finishTime, ProjectTabWidget *parent);
+    SimulationThread(GUIRootSystem *pGUIRootSystem, double startTime, double finishTime, ProjectTabWidget *parent);
 
     ProjectTabWidget *mpParentProjectTabWidget;
-    //*****Core Interaction*****
-    ComponentSystem *mpCoreComponentSystem;
-    //**************************
+
+    GUIRootSystem *mpGUIRootSystem;
 
 protected:
     void run();
