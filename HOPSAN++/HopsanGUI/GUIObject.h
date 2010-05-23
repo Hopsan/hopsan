@@ -56,7 +56,6 @@ public:
 
     //*****Core Interaction*****
     virtual Component* getHopsanCoreComponentPtr();
-    virtual ComponentSystem* getHopsanCoreSystemComponentPtr();
     //**************************
 
     virtual void deleteInHopsanCore();
@@ -160,7 +159,7 @@ public:
 
     //*****Core Interaction*****
     Component* getHopsanCoreComponentPtr();
-    Component *mpCoreComponent;
+    Component *mpCoreComponent; //Should be private
     //**************************
 
     QVector<QString> getParameterNames();
@@ -201,7 +200,6 @@ public:
 
     //*****Core Interaction*****
     Component* getHopsanCoreComponentPtr();
-    ComponentSystem* getHopsanCoreSystemComponentPtr();
     //**************************
     void deleteInHopsanCore();
 
@@ -224,8 +222,10 @@ private:
     QString mModelFilePath;
     QString mGraphicsFilePath;
     bool   mIsEmbedded;
+    //*****Core Interaction*****
     ComponentSystem *mpCoreComponentSystem;
     HopsanEssentials *mpHopsanCore;
+    //**************************
 };
 
 class GUISystemPort : public GUIObject

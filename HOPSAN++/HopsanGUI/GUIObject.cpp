@@ -293,12 +293,6 @@ Component* GUIObject::getHopsanCoreComponentPtr()
     assert(false);
 }
 
-ComponentSystem* GUIObject::getHopsanCoreSystemComponentPtr()
-{
-    cout << "This function should only be available in GUISubsystem" << endl;
-    assert(false);
-}
-
 //! @brief Save GuiObject to a text stream
 void GUIObject::saveToTextStream(QTextStream &rStream)
 {
@@ -1168,7 +1162,7 @@ GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, Graph
     //*****Core Interaction*****
     mpHopsanCore = HopsanEssentials::getInstance();
     mpCoreComponentSystem = mpHopsanCore->CreateComponentSystem();
-    this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->addComponent(this->getHopsanCoreSystemComponentPtr());
+    this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->addComponent(this->getHopsanCoreComponentPtr());
     //**************************
 
 //    mComponentTypeName = appearanceData.at(0);
@@ -1333,14 +1327,6 @@ int GUISubsystem::type() const
 void GUISubsystem::deleteInHopsanCore()
 {
     mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.removeSystem();
-}
-
-//! @brief Get a ComponentSystem ptr version of the Core component system ptr
-ComponentSystem* GUISubsystem::getHopsanCoreSystemComponentPtr()
-{
-    //*****Core Interaction*****
-    return mpCoreComponentSystem;
-    //**************************
 }
 
 //! @brief Get a Component ptr version of the Core component system ptr
