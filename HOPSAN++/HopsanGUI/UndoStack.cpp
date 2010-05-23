@@ -486,12 +486,12 @@ void UndoStack::registerDeletedObject(GUIObject *item)
     //! @todo maybe the save functin should be part of every object (so it can write its own text)
     if ( (item->getTypeName() != "SystemPort") && (item->getTypeName() != "Group") )
     {
-        QVector<QString> param_names = item->getParamterNames();
+        QVector<QString> param_names = item->getParameterNames();
         QVector<QString>::iterator pit;
         for ( pit=param_names.begin() ; pit !=param_names.end(); ++pit )
         {
             QString tempVal;
-            tempVal.setNum(item->getParameter(*pit)); //Fetch parameter value to string
+            tempVal.setNum(item->getParameterValue(*pit)); //Fetch parameter value to string
             tempStringList.clear();
             tempStringList << "PARAMETER" << item->getName() << *pit << tempVal;
             this->insertPost(tempStringList);

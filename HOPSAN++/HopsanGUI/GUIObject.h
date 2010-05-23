@@ -7,6 +7,7 @@
 #include <QGraphicsView>
 #include <vector>
 #include "ProjectTabWidget.h"
+#include <assert.h>
 
 class GraphicsScene;
 class GraphicsView;
@@ -40,9 +41,11 @@ public:
     GUIPort *getPort(int number);
     GUIPort *getPort(QString name);
 
-    virtual QVector<QString> getParamterNames();
-    virtual double getParameter(QString name);
-    virtual void setParameter(QString name, double value);
+    virtual QVector<QString> getParameterNames();
+    virtual QString getParameterUnit(QString name) {assert(false);}; //Only availible in GUIComponent for now
+    virtual QString getParameterDescription(QString name) {assert(false);}; //Only availible in GUIComponent for now
+    virtual double getParameterValue(QString name);
+    virtual void setParameterValue(QString name, double value);
 
 
     GraphicsScene *mpParentGraphicsScene;
@@ -53,8 +56,9 @@ public:
     //*****Core Interaction*****
     virtual Component* getHopsanCoreComponentPtr();
     virtual ComponentSystem* getHopsanCoreSystemComponentPtr();
-    virtual void deleteInHopsanCore();
     //**************************
+
+    virtual void deleteInHopsanCore();
 
     enum { Type = UserType + 2 };
     int type() const;
@@ -94,7 +98,7 @@ protected:
     GUIObjectSelectionBox *mpSelectionBox;
     double mTextOffset;
     QGraphicsLineItem *mpTempLine;
-    //std::vector<GUIConnector*> mConnectors;        //Inteded to store connectors for each component
+
     int mNameTextPos;
     bool mIconRotation;
     bool mIsFlipped;
@@ -158,9 +162,11 @@ public:
     Component *mpCoreComponent;
     //**************************
 
-    QVector<QString> getParamterNames();
-    double getParameter(QString name);
-    void setParameter(QString name, double value);
+    QVector<QString> getParameterNames();
+    QString getParameterUnit(QString name);
+    QString getParameterDescription(QString name);
+    double getParameterValue(QString name);
+    void setParameterValue(QString name, double value);
 
     void saveToTextStream(QTextStream &rStream);
 

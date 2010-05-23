@@ -834,7 +834,7 @@ void GraphicsView::paste()
             copyStream >> parameterName;
             copyStream >> parameterValue;
 
-            this->mGUIObjectMap.find(componentName).value()->setParameter(parameterName, parameterValue);
+            this->mGUIObjectMap.find(componentName).value()->setParameterValue(parameterName, parameterValue);
         }
     }
 
@@ -1411,7 +1411,7 @@ void ProjectTabWidget::loadModel()
             inputStream >> parameterName;
             inputStream >> parameterValue;
 
-            pCurrentTab->mpGraphicsView->mGUIObjectMap.find(componentName).value()->setParameter(parameterName, parameterValue);
+            pCurrentTab->mpGraphicsView->mGUIObjectMap.find(componentName).value()->setParameterValue(parameterName, parameterValue);
         }
 
 

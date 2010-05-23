@@ -269,19 +269,19 @@ GUIPort *GUIObject::getPort(QString name)
     return 0;
 }
 
-double GUIObject::getParameter(QString name)
+double GUIObject::getParameterValue(QString name)
 {
     cout << "This function should only be available in GUIComponent" << endl;
     assert(false);
 }
 
-QVector<QString> GUIObject::getParamterNames()
+QVector<QString> GUIObject::getParameterNames()
 {
     cout << "This function should only be available in GUIComponent" << endl;
     assert(false);
 }
 
-void GUIObject::setParameter(QString name, double value)
+void GUIObject::setParameterValue(QString name, double value)
 {
     cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
     assert(false);
@@ -1015,7 +1015,7 @@ QString GUIComponent::getTypeName()
 }
 
 //! @brief Get a vector with the names of the available parameters
-QVector<QString> GUIComponent::getParamterNames()
+QVector<QString> GUIComponent::getParameterNames()
 {
    QVector<QString> names;
    //*****Core Interaction*****
@@ -1029,13 +1029,29 @@ QVector<QString> GUIComponent::getParamterNames()
     return names;
 }
 
-double GUIComponent::getParameter(QString name)
+QString GUIComponent::getParameterUnit(QString name)
 {
-    return mpCoreComponent->getParameter(name.toStdString());
+    //*****Core Interaction*****
+    return QString::fromStdString(mpCoreComponent->getParameterUnit(name.toStdString()));
+    //**************************
+}
+
+QString GUIComponent::getParameterDescription(QString name)
+{
+    //*****Core Interaction*****
+    return QString::fromStdString(mpCoreComponent->getParameterDescription(name.toStdString()));
+    //**************************
+}
+
+double GUIComponent::getParameterValue(QString name)
+{
+    //*****Core Interaction*****
+    return mpCoreComponent->getParameterValue(name.toStdString());
+    //**************************
 }
 
 //! @brief Set a parameter value, wrapps hopsan core
-void GUIComponent::setParameter(QString name, double value)
+void GUIComponent::setParameterValue(QString name, double value)
 {
     mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setParameter(this->getName(), name, value);
 }

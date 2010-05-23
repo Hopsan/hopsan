@@ -32,7 +32,6 @@ ParameterDialog::ParameterDialog(GUIComponent *pGUIComponent, QWidget *parent)
     mpGUIObject = pGUIComponent;
     isGUISubsystem = false;
     //*****Core Interaction*****
-    mpCoreComponent = pGUIComponent->getHopsanCoreComponentPtr();
     mpCoreComponentSystem = 0;
     //**************************
 
@@ -46,7 +45,6 @@ ParameterDialog::ParameterDialog(GUISubsystem *pGUISubsystem, QWidget *parent)  
     isGUISubsystem = true;
     //*****Core Interaction*****
     mpCoreComponentSystem = pGUISubsystem->getHopsanCoreSystemComponentPtr();
-    mpCoreComponent = pGUISubsystem->getHopsanCoreComponentPtr();
     //**************************
 
     createEditStuff();
@@ -56,26 +54,25 @@ void ParameterDialog::createEditStuff()
 {
     mpNameEdit = new QLineEdit(mpGUIObject->getName());
 
-    //*****Core Interaction*****
-    std::vector<CompParameter>::iterator it;
-    vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
-    for ( it=paramVector.begin() ; it !=paramVector.end(); it++ )
+    QVector<QString> parnames = mpGUIObject->getParameterNames();
+    QVector<QString>::iterator pit;
+    for ( pit=parnames.begin(); pit!=parnames.end(); ++pit )
     {
-        mVarVector.push_back(new QLabel(QString::fromStdString(it->getName())));
+        mVarVector.push_back(new QLabel(*pit));
         mVarVector.back()->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-        mDescriptionVector.push_back(new QLabel(QString::fromStdString(it->getDesc()).append(", ")));
-        mUnitVector.push_back(new QLabel(QString::fromStdString(it->getUnit())));
+        mDescriptionVector.push_back(new QLabel(mpGUIObject->getParameterDescription(*pit).append(", ")));
+        mUnitVector.push_back(new QLabel(mpGUIObject->getParameterUnit(*pit)));
 
         mValueVector.push_back(new QLineEdit());
         mValueVector.back()->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mValueVector.back()));
 
         QString valueTxt;
-        valueTxt.setNum(it->getValue(), 'g', 6 );
+        valueTxt.setNum(mpGUIObject->getParameterValue(*pit), 'g', 6 );
         mValueVector.back()->setText(valueTxt);
 
         mVarVector.back()->setBuddy(mValueVector.back());
+
     }
-   //***************************
 
     okButton = new QPushButton(tr("&Ok"));
     okButton->setDefault(true);
@@ -97,11 +94,9 @@ void ParameterDialog::createEditStuff()
     QHBoxLayout *pCQSLayout;
     if (isGUISubsystem)
     {
-        //*****Core Interaction*****
-        mpCQSEdit = new QLineEdit(QString::fromStdString(mpCoreComponentSystem->getTypeCQSString()));
-        //**************************
         pCQSLayout = new QHBoxLayout;
         //*****Core Interaction*****
+        mpCQSEdit = new QLineEdit(QString::fromStdString(mpCoreComponentSystem->getTypeCQSString()));
         QLabel *pCQSLabel = new QLabel("CQS: ");
         //**************************
         pCQSLayout->addWidget(pCQSLabel);
@@ -145,7 +140,6 @@ void ParameterDialog::createEditStuff()
 }
 
 
-#include "GUIObject.h"
 //! Sets the parameters in the core component. Read the values from the dialog and write them into the core component.
 void ParameterDialog::setParameters()
 {
@@ -158,14 +152,13 @@ void ParameterDialog::setParameters()
     {
         bool ok;
         double newValue = mValueVector[i]->text().toDouble(&ok);
-        //std::cout << "i: " << i << qPrintable(labelList[i]->text()) << "  " << mpCoreComponent->getParameterVector().at(i).getName() << std::endl;
         if (!ok)
         {
             MessageWidget *messageWidget = qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent()->parent())->mpMessageWidget;
             messageWidget->printGUIMessage(QString("ParameterDialog::setParameters(): You must give a correct value for '").append(mVarVector[i]->text()).append(QString("', putz. Try again!")));
             return;
         }
-        mpGUIObject->setParameter(mVarVector[i]->text(), newValue);
+        mpGUIObject->setParameterValue(mVarVector[i]->text(), newValue);
     }
     std::cout << "Parameters updated." << std::endl;
     this->close();

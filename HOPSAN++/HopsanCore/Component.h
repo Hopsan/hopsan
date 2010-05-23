@@ -70,7 +70,9 @@ public:
 
     //Parameters
     void listParametersConsole();
-    double getParameter(const string name);
+    const string getParameterUnit(const string name);
+    const string getParameterDescription(const string name);
+    double getParameterValue(const string name);
     void setParameter(const string name, const double value);
     vector<CompParameter> getParameterVector();
     map<string, double> getParameterMap();

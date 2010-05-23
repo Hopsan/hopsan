@@ -299,7 +299,7 @@ void Component::listParametersConsole()
     cout <<"-----------------------------------------------" << endl;
 }
 
-double Component::getParameter(const string name)
+double Component::getParameterValue(const string name)
 {
     for (size_t i=0; i<mParameters.size(); ++i)
     {
@@ -311,6 +311,32 @@ double Component::getParameter(const string name)
     cout << "No such parameter" << endl;
     assert(false);
     return 0.0;
+}
+
+const string Component::getParameterUnit(const string name)
+{
+    for (size_t i=0; i<mParameters.size(); ++i)
+    {
+        if (mParameters[i].getName() == name)
+        {
+            return mParameters[i].getUnit();
+        }
+    }
+    cout << "No such parameter" << endl;
+    assert(false);
+}
+
+const string Component::getParameterDescription(const string name)
+{
+    for (size_t i=0; i<mParameters.size(); ++i)
+    {
+        if (mParameters[i].getName() == name)
+        {
+            return mParameters[i].getDesc();
+        }
+    }
+    cout << "No such parameter" << endl;
+    assert(false);
 }
 
 vector<CompParameter> Component::getParameterVector()
