@@ -31,9 +31,6 @@ ParameterDialog::ParameterDialog(GUIComponent *pGUIComponent, QWidget *parent)
 {
     mpGUIObject = pGUIComponent;
     isGUISubsystem = false;
-    //*****Core Interaction*****
-    mpCoreComponentSystem = 0;
-    //**************************
 
     createEditStuff();
 }
@@ -43,9 +40,6 @@ ParameterDialog::ParameterDialog(GUISubsystem *pGUISubsystem, QWidget *parent)  
 {
     mpGUIObject = pGUISubsystem;
     isGUISubsystem = true;
-    //*****Core Interaction*****
-    mpCoreComponentSystem = pGUISubsystem->getHopsanCoreSystemComponentPtr();
-    //**************************
 
     createEditStuff();
 }
@@ -95,10 +89,11 @@ void ParameterDialog::createEditStuff()
     if (isGUISubsystem)
     {
         pCQSLayout = new QHBoxLayout;
-        //*****Core Interaction*****
-        mpCQSEdit = new QLineEdit(QString::fromStdString(mpCoreComponentSystem->getTypeCQSString()));
+        //This is very hopsan specific (or actually TLM specific)
+        mpCQSEdit = new QLineEdit(mpGUIObject->getTypeCQS());
         QLabel *pCQSLabel = new QLabel("CQS: ");
-        //**************************
+        //! @todo We never set the cqs type
+
         pCQSLayout->addWidget(pCQSLabel);
         pCQSLayout->addWidget(mpCQSEdit);
     }

@@ -32,6 +32,7 @@ public:
     void refreshName();
     virtual void setName(QString name, bool doOnlyLocalRename=false);
     virtual QString getTypeName();
+    virtual QString getTypeCQS() {assert(false);}; //Only available in GUISystemComponent adn GuiComponent for now
 
     int getPortNumber(GUIPort *port);
     int getNameTextPos();
@@ -173,6 +174,7 @@ public:
     QString getName();
     void setName(QString name, bool doOnlyLocalRename=false);
     QString getTypeName();
+    QString getTypeCQS();
     void deleteInHopsanCore();
 
     enum { Type = UserType + 3 };
@@ -208,6 +210,8 @@ public:
     void setName(QString newName, bool doOnlyCoreRename);
     void setTypeCQS(QString typestring);
     QString getTypeCQS();
+
+    QVector<QString> getParameterNames();
 
     enum { Type = UserType + 4 };
     int type() const;

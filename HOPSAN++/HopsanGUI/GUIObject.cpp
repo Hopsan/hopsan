@@ -1014,7 +1014,13 @@ QString GUIComponent::getTypeName()
     return mAppearanceData.getTypeName();
 }
 
+QString GUIComponent::getTypeCQS()
+{
+    return QString::fromStdString(mpCoreComponent->getTypeCQSString());
+}
+
 //! @brief Get a vector with the names of the available parameters
+//! @todo Should be handled by hopsan core
 QVector<QString> GUIComponent::getParameterNames()
 {
    QVector<QString> names;
@@ -1289,12 +1295,32 @@ QString GUISubsystem::getTypeName()
 
 void GUISubsystem::setTypeCQS(QString typestring)
 {
-    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setTypeCQS(typestring.toStdString());
+    //mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setTypeCQS(typestring.toStdString()); //ehhh this will set the CQS type for the paren system (the root even) we want to set this partiular systems CQS type
+    //*****Core Interaction*****
+    return mpCoreComponentSystem->setTypeCQS(typestring.toStdString());
+    //**************************
 }
 
 QString GUISubsystem::getTypeCQS()
 {
-    return mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTypeCQS();
+    //return mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTypeCQS();  //ehhh this will get the CQS type for the paren system (the root even) we want this partiular systems CQS type
+    //*****Core Interaction*****
+    return QString::fromStdString(mpCoreComponentSystem->getTypeCQSString());
+    //**************************
+}
+
+QVector<QString> GUISubsystem::getParameterNames()
+{
+    QVector<QString> names;
+    //*****Core Interaction*****
+     vector<CompParameter> paramVector = mpCoreComponentSystem->getParameterVector();
+     std::vector<CompParameter>::iterator itp;
+     for ( itp=paramVector.begin() ; itp !=paramVector.end(); ++itp )
+     {
+         names.push_back(QString::fromStdString(itp->getName()));
+     }
+     //**************************
+     return names;
 }
 
 
