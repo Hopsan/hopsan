@@ -1241,7 +1241,8 @@ void ProjectTabWidget::simulateCurrent()
 
     size_t i=0;
     actualInitialization.start();
-    actualInitialization.setPriority(QThread::TimeCriticalPriority);
+//    actualInitialization.setPriority(QThread::TimeCriticalPriority); //No bar appears in Windows with this prio
+    actualInitialization.setPriority(QThread::HighestPriority);
     while (actualInitialization.isRunning())
     {
         progressBar.setValue(i++);
@@ -1257,7 +1258,8 @@ void ProjectTabWidget::simulateCurrent()
     {
         SimulationThread actualSimulation(&(pCurrentTab->mGUIRootSystem), startTime, finishTime, this);
         actualSimulation.start();
-        actualSimulation.setPriority(QThread::TimeCriticalPriority);
+//        actualSimulation.setPriority(QThread::TimeCriticalPriority); //No bar appears in Windows with this prio
+        actualSimulation.setPriority(QThread::HighestPriority);
         progressBar.setLabelText(tr("Running simulation..."));
         progressBar.setCancelButtonText(tr("&Abort simulation"));
         progressBar.setMinimum(0);
