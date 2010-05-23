@@ -69,6 +69,11 @@ public:
         mpP1->writeNode(NodeHydraulic::MASSFLOW, q);
         mpP1->writeNode(NodeHydraulic::PRESSURE, p);
     }
+
+    void finalize()
+    {
+
+    }
 };
 
 #endif // HYDRAULICFLOWSOURCEQ_HPP_INCLUDED

@@ -60,6 +60,11 @@ public:
         mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, mPressure);
         mpP1->writeNode(NodeHydraulic::CHARIMP, mZc);
     }
+
+    void finalize()
+    {
+
+    }
 };
 
 #endif // HYDRAULICTANKC_HPP_INCLUDED

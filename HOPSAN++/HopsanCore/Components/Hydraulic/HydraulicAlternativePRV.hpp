@@ -28,6 +28,8 @@ private:
     SecondOrderFilter mFilter;
     Port *mpP1, *mpP2, *mpX;
 
+    double debug,tid1,tid2;
+
 public:
     static Component *Creator()
     {
@@ -41,14 +43,12 @@ public:
         mCq = 0.67;
         mSpoolDiameter = 0.01;
         mFrac = 1.0;
-        mW = mSpoolDiameter*mFrac;
         mPilotArea = 0.001;
         mK = 1e6;
         mC = 1000;
         mMass = 0.05;
         mXhyst = 0.0;
         mXmax = 0.001;
-        mFs = mPilotArea * mPref;   //Spring preload
 
         mpP1 = addPowerPort("P1", "NodeHydraulic");
         mpP2 = addPowerPort("P2", "NodeHydraulic");
@@ -64,12 +64,21 @@ public:
         registerParameter("m", "Ineretia of Spool", "kg", mMass);
         registerParameter("xhyst", "Hysteresis of Spool Position", "[m]", mXhyst);
         registerParameter("xmax", "Maximum Spool Position", "[m]", mXmax);
+
+        tid1 = 0.0;
+        tid2 = 0.01;
+        debug = 0;
+        registerParameter("debug", "debug", "[-]", debug);
+        registerParameter("t1", "debug", "[-]", tid1);
+        registerParameter("t2", "debug", "[-]", tid2);
     }
 
 
     void initialize()
     {
         mX0 = 0.00001;
+        mW = mSpoolDiameter*mFrac;
+        mFs = mPilotArea * mPref;   //Spring preload
 
         mDelayedX0.setStepDelay(1);
         mDelayedX0.initialize(mTime, 0.0);
@@ -84,6 +93,9 @@ public:
         den[2] = mK;
 
         mFilter.initialize(mTime, mTimestep, num, den, 0.0, 0.0, 0.0, mXmax);
+
+        if(mpX->isConnected())
+            mpX->writeNode(NodeSignal::VALUE, 0.0);
     }
 
     void simulateOneTimestep()
@@ -102,7 +114,12 @@ public:
         double p1 = c1 + q1*Zc1;
 
         double Ftot = p1*mPilotArea - mFs;      //Sum of forces in x direction beside from spring coeff and viscous friction
-        double x0 = mFilter.value(Ftot);        //Filter function G = 1/(mMass*s^2 + mC*s + mK)
+  //      double x0 = mFilter.value(Ftot);        //Filter function G = 1/(mMass*s^2 + mC*s + mK)
+        double x0 = Ftot/mK;                    //No filter function G = 1/mK
+        if(x0>mXmax)                            //No filter function G = 1/mK
+            x0=mXmax;                           //No filter function G = 1/mK
+        if(x0<0.0)                              //No filter function G = 1/mK
+            x0=0.0;                             //No filter function G = 1/mK
         double x0h = mHyst.getValue(x0, mXhyst, mDelayedX0.value()); //Hysteresis
 
         //Turbulent flow equation
@@ -151,6 +168,8 @@ public:
             if (p2 < 0.0) { p2 = 0.0; }
         }
 */
+        if ((mTime>tid1) && (mTime<tid2) && (debug > 0.5))
+            std::cout << this->getName() << ": " << std::endl << "mTime: " << mTime << "   p1: " << p1 << "   c1: " << c1 << "   Zc1: " << Zc1  << "   q1: " << q1 << "   p2: " << p2  << "   c2: " << c2 << "   Zc2: " << Zc2  << "   q2: " << q2 << "   x0: " << x0 << std::endl;
         //Write new values to nodes
 
         mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
@@ -162,6 +181,11 @@ public:
             mpX->writeNode(NodeSignal::VALUE, x0);
 
         mDelayedX0.update(x0h);  //Ska vara x0h
+    }
+
+    void finalize()
+    {
+
     }
 };
 

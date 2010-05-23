@@ -46,6 +46,11 @@ public:
     {
         //Nothing to do
     }
+
+    void finalize()
+    {
+
+    }
 };
 
 #endif // SIGNALSINK_HPP_INCLUDED
