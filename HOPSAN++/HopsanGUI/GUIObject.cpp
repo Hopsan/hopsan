@@ -947,7 +947,7 @@ GUIComponent::~GUIComponent()
 QString GUIComponent::getName()
 {
     //*****Core Interaction*****
-    return QString::fromStdString(mpCoreComponent->getName());
+    return QString::fromStdString(mpCoreComponent->getName());  //! @todo This must change so that GUI components know their own names. You can't ask core for a component name if you don't know the name of the component, because the core won't know which component you are asking about.
     //***************************
 }
 

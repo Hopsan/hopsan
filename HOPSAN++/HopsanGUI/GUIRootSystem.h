@@ -24,6 +24,7 @@ public:
     void setParameter(QString componentName, QString parameterName, double value);
     void removeSubComponent(QString componentName, bool doDelete);
     void removeSystem();
+    vector<double> getTimeVector(QString componentName, QString portName);
 
 //private:
     //*****Core Interaction*****

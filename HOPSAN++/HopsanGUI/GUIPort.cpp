@@ -243,12 +243,9 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
 {
     std::cout << "GUIPort.cpp: " << "Plot()" << std::endl;
 
-    //*****Core Interaction*****
-    size_t dataLength = this->mpCorePort->getTimeVectorPtr()->size();
-
-    QVector<double> time = QVector<double>::fromStdVector(*(this->mpCorePort->getTimeVectorPtr())); //Inte lampligt att skyffla data pa detta viset
+    size_t dataLength = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTimeVector(mpParentGuiObject->getName(), this->getName()).size();
+    QVector<double> time = QVector<double>::fromStdVector(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTimeVector(mpParentGuiObject->getName(), this->getName()));
     QVector<double> y(dataLength);// = QVector<double>::fromStdVector((this->mpCorePort->getDataVectorPtr()->at(1)));
-    //**************************
 
     qDebug() << "Time size: " << time.size() << " last time: " << *time.end() << " datalength: " << dataLength << "y.size(): " << y.size();
     qDebug() << "time[0]: " << time[0] << " time[last-1]: " << time[time.size()-2] << " time[last]: " << time[time.size()-1];
@@ -273,9 +270,11 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
     QString ylabel;
 
     string name, unit;
+
     //*****Core Interaction*****
-    mpCorePort->getNodeDataNameAndUnit(nVar, name, unit);
+    mpCorePort->getNodeDataNameAndUnit(nVar, name, unit);       //! @todo There is some problem here...
     //**************************
+
     title.append(QString::fromStdString(name));
     ylabel.append(QString::fromStdString(name) + ", [" + QString::fromStdString(unit) + "]");
 
@@ -293,7 +292,6 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
     newPlot->mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
 
     newPlot->show();
-
 }
 
 
@@ -331,7 +329,7 @@ void GUIPort::setPortDirection(PortAppearance::portDirectionType direction)
 QString GUIPort::getName()
 {
     //*****Core Interaction*****
-    return QString::fromStdString(mpCorePort->getPortName());       //This must change so that ports now their own names
+    return QString::fromStdString(mpCorePort->getPortName());       //! @todo This must change so that GUI ports know their own names. You can't ask core for a port name if you don't know the name of the port, because the core won't know which port you are asking about.
     //**************************
 }
 

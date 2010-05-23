@@ -89,3 +89,9 @@ void GUIRootSystem::removeSystem()
 {
     mpCoreComponentSystem->getSystemParent()->removeSubComponent(mpCoreComponentSystem, true);
 }
+
+
+vector<double> GUIRootSystem::getTimeVector(QString componentName, QString portName)
+{
+    return *(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getPort(portName.toStdString())->getTimeVectorPtr());
+}
