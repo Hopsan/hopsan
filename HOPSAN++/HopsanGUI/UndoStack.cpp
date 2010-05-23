@@ -486,17 +486,14 @@ void UndoStack::registerDeletedObject(GUIObject *item)
     //! @todo maybe the save functin should be part of every object (so it can write its own text)
     if ( (item->getTypeName() != "SystemPort") && (item->getTypeName() != "Group") )
     {
-        //*****Core Interaction*****
-        Component *mpCoreComponent = item->getHopsanCoreComponentPtr();
-        vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
-        //**************************
-        std::vector<CompParameter>::iterator itp;
-        for ( itp=paramVector.begin() ; itp !=paramVector.end(); ++itp )
+        QVector<QString> param_names = item->getParamterNames();
+        QVector<QString>::iterator pit;
+        for ( pit=param_names.begin() ; pit !=param_names.end(); ++pit )
         {
-            QString valueString;
-            valueString.setNum(itp->getValue());
+            QString tempVal;
+            tempVal.setNum(item->getParameter(*pit)); //Fetch parameter value to string
             tempStringList.clear();
-            tempStringList << "PARAMETER" << item->getName() << QString(itp->getName().c_str()) << valueString;
+            tempStringList << "PARAMETER" << item->getName() << *pit << tempVal;
             this->insertPost(tempStringList);
         }
     }

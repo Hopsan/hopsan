@@ -40,7 +40,10 @@ public:
     GUIPort *getPort(int number);
     GUIPort *getPort(QString name);
 
+    virtual QVector<QString> getParamterNames();
+    virtual double getParameter(QString name);
     virtual void setParameter(QString name, double value);
+
 
     GraphicsScene *mpParentGraphicsScene;
     GraphicsView *mpParentGraphicsView;
@@ -155,6 +158,8 @@ public:
     Component *mpCoreComponent;
     //**************************
 
+    QVector<QString> getParamterNames();
+    double getParameter(QString name);
     void setParameter(QString name, double value);
 
     void saveToTextStream(QTextStream &rStream);

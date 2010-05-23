@@ -165,9 +165,7 @@ void ParameterDialog::setParameters()
             messageWidget->printGUIMessage(QString("ParameterDialog::setParameters(): You must give a correct value for '").append(mVarVector[i]->text()).append(QString("', putz. Try again!")));
             return;
         }
-        //*****Core Interaction*****
-        mpCoreComponent->setParameter(mVarVector[i]->text().toStdString(), newValue);
-        //**************************
+        mpGUIObject->setParameter(mVarVector[i]->text(), newValue);
     }
     std::cout << "Parameters updated." << std::endl;
     this->close();

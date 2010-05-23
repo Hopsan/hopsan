@@ -269,6 +269,18 @@ GUIPort *GUIObject::getPort(QString name)
     return 0;
 }
 
+double GUIObject::getParameter(QString name)
+{
+    cout << "This function should only be available in GUIComponent" << endl;
+    assert(false);
+}
+
+QVector<QString> GUIObject::getParamterNames()
+{
+    cout << "This function should only be available in GUIComponent" << endl;
+    assert(false);
+}
+
 void GUIObject::setParameter(QString name, double value)
 {
     cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
@@ -1000,6 +1012,26 @@ QString GUIComponent::getTypeName()
 {
 //    return this->mComponentTypeName;
     return mAppearanceData.getTypeName();
+}
+
+//! @brief Get a vector with the names of the available parameters
+QVector<QString> GUIComponent::getParamterNames()
+{
+   QVector<QString> names;
+   //*****Core Interaction*****
+    vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
+    std::vector<CompParameter>::iterator itp;
+    for ( itp=paramVector.begin() ; itp !=paramVector.end(); ++itp )
+    {
+        names.push_back(QString::fromStdString(itp->getName()));
+    }
+    //**************************
+    return names;
+}
+
+double GUIComponent::getParameter(QString name)
+{
+    return mpCoreComponent->getParameter(name.toStdString());
 }
 
 //! @brief Set a parameter value, wrapps hopsan core
