@@ -1044,11 +1044,6 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     mpParentMainWindow = parent;
     MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent)); //Ugly!!!
 
-    //*****Core Interaction*****
-    mpHopsanCore = HopsanEssentials::getInstance();
-    pMainWindow->mpMessageWidget->setHopsanCorePtr(mpHopsanCore);
-    //**************************
-
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
     setTabsClosable(true);

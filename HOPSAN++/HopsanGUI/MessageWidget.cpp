@@ -7,7 +7,7 @@ MessageWidget::MessageWidget(MainWindow *pParent)
 {
     mpParentMainWindow = pParent;
     //*****Core Interaction*****
-    mpHopsanCore = 0;
+    mpHopsanCore = HopsanEssentials::getInstance();
     //**************************
 
 }
@@ -40,12 +40,6 @@ void MessageWidget::setMessageColor(int type)
     }
 }
 
-void MessageWidget::setHopsanCorePtr(HopsanEssentials* pHopsanCore)
-{
-    //*****Core Interaction*****
-    mpHopsanCore = pHopsanCore;
-    //**************************
-}
 
 void MessageWidget::printCoreMessages()
 {

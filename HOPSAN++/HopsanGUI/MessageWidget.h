@@ -11,12 +11,13 @@ class MessageWidget : public QTextEdit
 {
     Q_OBJECT
 private:
+    //*****Core Interaction*****
     HopsanEssentials *mpHopsanCore;
+    //**************************
     void setMessageColor(int type);
 
 public:
     MessageWidget(MainWindow *pParent=0);
-    void setHopsanCorePtr(HopsanEssentials *pHopsanCore);
     void printCoreMessages();
     void printGUIMessage(QString message);
     void printGUIErrorMessage(QString message);

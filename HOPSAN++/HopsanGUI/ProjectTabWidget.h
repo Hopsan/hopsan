@@ -161,13 +161,7 @@ public:
     ProjectTabWidget(MainWindow *parent = 0);
 
     ProjectTab *getCurrentTab();
-
     MainWindow *mpParentMainWindow;
-
-    //*****Core Interaction*****
-    HopsanEssentials *mpHopsanCore;
-    //**************************
-
     size_t mNumberOfUntitledTabs;
 
 public slots:
