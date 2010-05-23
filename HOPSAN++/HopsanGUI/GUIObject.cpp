@@ -908,10 +908,9 @@ GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, Graph
     //*****Core Interaction*****
     mpHopsanCore = HopsanEssentials::getInstance();
     mpCoreComponent = mpHopsanCore->CreateComponent(mAppearanceData.getTypeName().toStdString());
-    QString cqsType = QString::fromStdString(mpCoreComponent->getTypeCQSString());
     mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->addComponent(getHopsanCoreComponentPtr());
     //**************************
-
+    QString cqsType = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTypeCQS(this->getName());
 
     //Sets the ports
     PortAppearanceMapT::iterator i;
@@ -925,9 +924,7 @@ GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, Graph
         qreal x = i.value().x;
         qreal y = i.value().y;
 
-        //*****Core Interaction*****
-        GUIPort *pNewPort = new GUIPort(mpCoreComponent->getPort(i.key().toStdString()), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
-        //**************************
+        GUIPort *pNewPort = new GUIPort(i.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
         mPortListPtrs.append(pNewPort);
     }
 
@@ -1261,9 +1258,7 @@ int GUISubsystem::type() const
 
 void GUISubsystem::deleteInHopsanCore()
 {
-    //*****Core Interaction*****
-    mpCoreComponentSystem->getSystemParent()->removeSubComponent(mpCoreComponentSystem, true);
-    //**************************
+    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.removeSystem();
 }
 
 //! @brief Get a ComponentSystem ptr version of the Core component system ptr
@@ -1354,12 +1349,7 @@ GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, Gra
 
         i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
 
-        //*****Core Interaction*****
-        //Systemports do not exit in the model by default and hav to be created
-        Port* pCorePort = mpCoreComponentSystem->addSystemPort(i.key().toStdString());
-        //**************************
-
-        mpGuiPort = new GUIPort(pCorePort, x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
+        mpGuiPort = new GUIPort(i.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
         mPortListPtrs.append(mpGuiPort);
     }
 }

@@ -40,6 +40,11 @@ QString GUIRootSystem::getTypeCQS()
     return QString::fromStdString(mpCoreComponentSystem->getTypeCQSString());
 }
 
+QString GUIRootSystem::getTypeCQS(QString componentName)
+{
+    return QString::fromStdString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getTypeCQSString());
+}
+
 void GUIRootSystem::setSystemName(string name, bool doOnlyLocalRename)
 {
     mpCoreComponentSystem->setName(name, doOnlyLocalRename);

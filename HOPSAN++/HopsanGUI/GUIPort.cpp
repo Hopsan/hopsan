@@ -15,16 +15,16 @@
 //! @param rot how the port should be rotated.
 //! @param iconPath a string with the path to the svg-figure representing the port.
 //! @param parent the port's parent, the component it is a part of.
-GUIPort::GUIPort(Port *pCorePort, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent)
+GUIPort::GUIPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent)
     : QGraphicsSvgItem(pPortAppearance->iconPath, pParent)
 {
-    //*****Core Interaction*****
-    mpCorePort = pCorePort;
-    //**************************
-
     mpParentGraphicsView = pParent->mpParentGraphicsView;
     mpParentGuiObject = pParent;
     mpPortAppearance = pPortAppearance;
+
+    //*****Core Interaction*****
+    mpCorePort = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->getSubComponent(mpParentGuiObject->getName().toStdString())->getPort(name.toStdString());
+    //**************************
 
     //setTransformOriginPoint(boundingRect().width()/2,boundingRect().height()/2);
     setTransformOriginPoint(boundingRect().center());

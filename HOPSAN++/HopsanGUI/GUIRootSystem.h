@@ -14,6 +14,7 @@ public:
     double getDesiredTimeStep();
     void setTypeCQS(const string cqs_type, bool doOnlyLocalSet=false);
     QString getTypeCQS();
+    QString getTypeCQS(QString componentName);
     void setSystemName(string name, bool doOnlyLocalRename=false);
     void setName(string componentName, string name, bool doOnlyLocalRename=false);
     string getName();
