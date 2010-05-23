@@ -1042,10 +1042,10 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
         :   QTabWidget(parent)
 {
     mpParentMainWindow = parent;
+    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent)); //Ugly!!!
 
     //*****Core Interaction*****
     mpHopsanCore = HopsanEssentials::getInstance();
-    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent)); //Ugly!!!
     pMainWindow->mpMessageWidget->setHopsanCorePtr(mpHopsanCore);
     //**************************
 
