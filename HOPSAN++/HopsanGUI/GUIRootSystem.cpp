@@ -92,6 +92,7 @@ void GUIRootSystem::removeSubComponent(QString componentName, bool doDelete)
 
 void GUIRootSystem::removeSystem()
 {
+    //This wont work, the root system does not have a system parnet = NULL pointer = CRASH
     mpCoreComponentSystem->getSystemParent()->removeSubComponent(mpCoreComponentSystem, true);
 }
 

@@ -24,6 +24,7 @@ GUIPort::GUIPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppe
 
     //*****Core Interaction*****
     mpCorePort = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->getSubComponent(mpParentGuiObject->getName().toStdString())->getPort(name.toStdString());
+    //! @todo this does not work here we assume that the parent is a component, if it is a system port it will not be found and we can not get the core port pointer = CRASH
     //**************************
 
     //setTransformOriginPoint(boundingRect().width()/2,boundingRect().height()/2);

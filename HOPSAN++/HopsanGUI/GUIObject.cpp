@@ -1326,7 +1326,11 @@ int GUISubsystem::type() const
 
 void GUISubsystem::deleteInHopsanCore()
 {
-    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.removeSystem();
+    //mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.removeSystem(); //No this will do something wierd
+    //*****Core Interaction*****
+    mpCoreComponentSystem->getSystemParent()->removeSubComponent(mpCoreComponentSystem, true);
+    //**************************
+
 }
 
 //! @brief Get a Component ptr version of the Core component system ptr
