@@ -74,9 +74,6 @@ public:
 
     QString getPortType();
     QString getNodeType();
-    //*****Core Interaction*****
-    //Port *mpCorePort;
-    //**************************
 
     bool isConnected;
 
@@ -99,7 +96,7 @@ signals:
 private:
     QColor myLineColor;
     qreal myLineWidth;
-    //QGraphicsItem *pRectParent;
+
     QGraphicsLineItem *lineH;
     QGraphicsLineItem *lineV;
     GraphicsView *mpParentGraphicsView;
@@ -107,7 +104,6 @@ private:
     QGraphicsTextItem *mpPortLabel;
     qreal mMag;
     bool mIsMag;
-    //GUIPort::portType mType;
 
     PortAppearance *mpPortAppearance;
     qreal mXpos;

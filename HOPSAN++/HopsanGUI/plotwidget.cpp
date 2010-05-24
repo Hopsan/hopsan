@@ -337,6 +337,7 @@ VariableList::VariableList(MainWindow *parent)
 
             //qDebug() << "Julafton";
 
+             //! @todo This stuff is completely mad, should ask the core about available data names and units, not hardcoded
             //*****Core Interaction*****
 //            if ((*itp)->mpCorePort->getNodeType() =="NodeHydraulic")
 //            {

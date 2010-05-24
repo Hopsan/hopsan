@@ -38,7 +38,6 @@
 
 //$Id$
 
-//#include "HopsanCore.h"
 #include "GUIPort.h"
 #include "plotwidget.h"
 #include "mainwindow.h"
@@ -59,11 +58,6 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPort
     mpParentGraphicsView = pParent->mpParentGraphicsView;
     mpParentGuiObject = pParent;
     mpPortAppearance = pPortAppearance;
-
-    //*****Core Interaction*****
-    //mpCorePort = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->getSubComponent(mpParentGuiObject->getName().toStdString())->getPort(portName.toStdString());
-    //! @todo this does not work here we assume that the parent is a component, if it is a system port it will not be found and we can not get the core port pointer = CRASH
-    //**************************
 
     this->name = portName;
 
@@ -211,7 +205,8 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     else
     {
         QMenu menu;
-
+        //! @todo this bellow is complete madness. hardcoded hopsan specific stuff, must be rewritten, not sure if it should even be here
+        //! @todo we do not need hardcoded stuff we can ask the core about what variables are available
         if (this->getNodeType() =="NodeHydraulic")
         {
             QAction *plotPressureAction = menu.addAction("Plot pressure");
@@ -220,7 +215,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
             if (selectedAction == plotFlowAction)
             {
-                plot("Flow");
+                plot("MassFlow");
             }
             if (selectedAction == plotPressureAction)
             {
@@ -277,21 +272,12 @@ GUIObject *GUIPort::getGuiObject()
 
 //! Plots the varable number 'nVar' in the node the port is connected to.
 //! @param nVar tells which variable to plot.
+//! @todo If dataUnit not supplied no unit will be shown, we should maybe lookup the unit if not supplid, or allways look it up, or demand that it is supplied
 void GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna metoden...
 {
     std::cout << "GUIPort.cpp: " << "Plot()" << std::endl;
 
-    //size_t dataLength = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTimeVector(mpParentGuiObject->getName(), this->getName()).size();
     QVector<double> time = QVector<double>::fromStdVector(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTimeVector(mpParentGuiObject->getName(), this->getName()));
-    //QVector<double> y(dataLength);// = QVector<double>::fromStdVector((this->mpCorePort->getDataVectorPtr()->at(1)));
-
-//    for (size_t i = 0; i<dataLength; ++i) //Denna loop ar inte klok
-//    {
-//        //*****Core Interaction*****
-//        //timeq[i] = this->mpCorePort->getTimeVectorPtr()->at(i);
-//        y[i] = (this->mpCorePort->getDataVectorPtr()->at(i)).at(nVar);
-//        //**************************
-//    }
     QVector<double> y;
     mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPlotData(mpParentGuiObject->getName(), this->getName(), dataName, y);
 
@@ -360,12 +346,10 @@ void GUIPort::setPortDirection(PortAppearance::portDirectionType direction)
     mpPortAppearance->direction = direction;
 }
 
+//! @todo this wont work with systemports, we can change the name on systemports, this name variable will not be updated
 QString GUIPort::getName()
 {
     return this->name;
-    //*****Core Interaction*****
-    //return QString::fromStdString(mpCorePort->getPortName());       //! @todo This must change so that GUI ports know their own names. You can't ask core for a port name if you don't know the name of the port, because the core won't know which port you are asking about.
-    //**************************
 }
 
 QString GUIPort::getGUIComponentName()
