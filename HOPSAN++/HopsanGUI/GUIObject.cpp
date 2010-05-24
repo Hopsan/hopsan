@@ -1146,9 +1146,6 @@ GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, Graph
         : GUIObject(position, appearanceData, scene, parent)
 {
     this->mName = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createSubSystem();
-    //*****Core Interaction*****
-    mpCoreComponentSystem = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->getSubComponentSystem(mName.toStdString());
-    //**************************
 
     refreshName(); //Make sure name window is correct size for center positioning
 
@@ -1220,18 +1217,7 @@ QString GUISubsystem::getTypeCQS()
 
 QVector<QString> GUISubsystem::getParameterNames()
 {
-    QVector<QString> names;
-    //*****Core Interaction*****
-    vector<string> core_names = mpCoreComponentSystem->getParameterNames();
-    vector<string>::iterator nit;
-    //Copy and cast to qt datatypes
-    for ( nit=core_names.begin(); nit!=core_names.end(); ++nit)
-    {
-        names.push_back(QString::fromStdString(*nit));
-    }
-    //**************************
-
-    return names;
+    return mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getParameterNames(this->getName());
 }
 
 
