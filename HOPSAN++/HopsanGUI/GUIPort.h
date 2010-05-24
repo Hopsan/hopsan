@@ -46,12 +46,12 @@
 #include <QGraphicsTextItem>
 #include <QGraphicsScene>
 #include "GUIObject.h"
-#include "HopsanCore.h"
 #include "AppearanceData.h"
 
 //Forward declaration
 class GUIObject;
 class GUIComponent;
+class GUIRootSystem;
 class GraphicsView;
 
 class GUIPort :public QGraphicsSvgItem
@@ -66,7 +66,10 @@ public:
     void magnify(bool blowup);
     PortAppearance::portDirectionType getPortDirection();
     void setPortDirection(PortAppearance::portDirectionType direction);
+    void setGUIRootSystemPtr(GUIRootSystem *pGUIRootSystem);
+
     QString getName();
+    void setDisplayName(const QString name);
     QString getGUIComponentName();
 
     QPointF rectPos;
@@ -101,6 +104,7 @@ private:
     QGraphicsLineItem *lineV;
     GraphicsView *mpParentGraphicsView;
     GUIObject *mpParentGuiObject;
+    GUIRootSystem *mpGUIRootSystem;
     QGraphicsTextItem *mpPortLabel;
     qreal mMag;
     bool mIsMag;

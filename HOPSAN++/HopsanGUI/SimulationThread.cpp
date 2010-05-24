@@ -47,7 +47,6 @@
 
 
 #include "SimulationThread.h"
-#include "HopsanCore.h"
 #include "ProjectTabWidget.h"
 #include "mainwindow.h"
 

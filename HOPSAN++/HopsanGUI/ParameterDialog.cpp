@@ -49,7 +49,6 @@
 #include <cassert>
 
 #include "ParameterDialog.h"
-#include "HopsanCore.h"
 #include "mainwindow.h"
 #include "GUIObject.h"
 

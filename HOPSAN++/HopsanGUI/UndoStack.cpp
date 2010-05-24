@@ -40,7 +40,6 @@
 //#include <QObject>
 #include "UndoStack.h"
 #include "GUIObject.h"
-#include "HopsanCore.h"
 #include <sstream>
 #include <QDebug>
 #include "AppearanceData.h"

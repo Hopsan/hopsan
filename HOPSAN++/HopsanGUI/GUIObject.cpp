@@ -48,7 +48,6 @@
 #include <QtCore>
 #include <QVector>
 
-#include "HopsanCore.h"
 #include "GUIObject.h"
 #include "mainwindow.h"
 #include "ParameterDialog.h"
@@ -222,6 +221,7 @@ QString GUIObject::getName()
 {
     return mName;
 }
+
 
 void GUIObject::deleteInHopsanCore()
 {
@@ -1279,6 +1279,7 @@ GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, Gra
         i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
 
         mpGuiPort = new GUIPort(i.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
+        mpGuiPort->setGUIRootSystemPtr(&mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem); //Use this to indicate the the actual parent component is teh root system instead of the systemport gui object
         mPortListPtrs.append(mpGuiPort);
     }
 }
@@ -1303,6 +1304,7 @@ void GUISystemPort::setName(QString newName, bool doOnlyCoreRename)
             //Set name in core component, Also set the current name to the resulting one (might have been changed)
             mName = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.renameSystemPort(oldName, newName);
             refreshDisplayName();
+            mpGuiPort->setDisplayName(mName); //change the actual gui port name
         }
         else
         {

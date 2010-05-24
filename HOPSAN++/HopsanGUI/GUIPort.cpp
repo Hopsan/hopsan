@@ -58,6 +58,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPort
     mpParentGraphicsView = pParent->mpParentGraphicsView;
     mpParentGuiObject = pParent;
     mpPortAppearance = pPortAppearance;
+    mpGUIRootSystem = 0; //Assume not a systemport
 
     this->name = portName;
 
@@ -198,7 +199,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
 
-    if ((!this->isConnected) || (this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTimeVector(this->getGuiObject()->getName(), this->getName()).empty()))
+    if ((!this->isConnected) || (this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTimeVector(getGUIComponentName(), this->getName()).empty()))
     {
         event->ignore();
     }
@@ -277,9 +278,9 @@ void GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
 {
     std::cout << "GUIPort.cpp: " << "Plot()" << std::endl;
 
-    QVector<double> time = QVector<double>::fromStdVector(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTimeVector(mpParentGuiObject->getName(), this->getName()));
+    QVector<double> time = QVector<double>::fromStdVector(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTimeVector(getGUIComponentName(), this->getName()));
     QVector<double> y;
-    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPlotData(mpParentGuiObject->getName(), this->getName(), dataName, y);
+    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPlotData(getGUIComponentName(), this->getName(), dataName, y);
 
     qDebug() << "Time size: " << time.size() << " last time: " << *time.end() << " " << "y.size(): " << y.size();
     qDebug() << "time[0]: " << time[0] << " time[last-1]: " << time[time.size()-2] << " time[last]: " << time[time.size()-1];
@@ -325,14 +326,14 @@ int GUIPort::getPortNumber()
 //! Wrapper for the Core getPortTypeString() function
 QString GUIPort::getPortType()
 {
-    return this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPortType(mpParentGuiObject->getName(), this->getName());
+    return this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPortType(getGUIComponentName(), this->getName());
 }
 
 
 //! Wrapper for the Core getNodeType() function
 QString GUIPort::getNodeType()
 {
-    return this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getNodeType(mpParentGuiObject->getName(), this->getName());
+    return this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getNodeType(getGUIComponentName(), this->getName());
 }
 
 
@@ -346,15 +347,36 @@ void GUIPort::setPortDirection(PortAppearance::portDirectionType direction)
     mpPortAppearance->direction = direction;
 }
 
-//! @todo this wont work with systemports, we can change the name on systemports, this name variable will not be updated
+
+//! @brief Sets a pointer to the GUIRootSystem, usefull for systemports
+void GUIPort::setGUIRootSystemPtr(GUIRootSystem *pGUIRootSystem)
+{
+    mpGUIRootSystem = pGUIRootSystem;
+}
+
+
 QString GUIPort::getName()
 {
     return this->name;
 }
 
+void GUIPort::setDisplayName(const QString name)
+{
+    this->name = name;
+}
+
+//! Get the name of the GUIComponent or GUISubsystem that the port is connected to, This is not necessarily the same as the parent GUIObject name (SystemPorts)
+//! @todo this is a very ugly way of handeling system ports should try to think of something better
 QString GUIPort::getGUIComponentName()
 {
-    return this->mpParentGuiObject->getName();
+    if (mpGUIRootSystem == 0)
+    {
+        return mpParentGuiObject->getName();
+    }
+    else
+    {
+        return mpGUIRootSystem->getName();
+    }
 }
 
 
