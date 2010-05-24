@@ -91,11 +91,6 @@ public:
     GraphicsView *mpParentGraphicsView;
 
     virtual void saveToTextStream(QTextStream &rStream);
-
-    //*****Core Interaction*****
-    virtual Component* getHopsanCoreComponentPtr();
-    //**************************
-
     virtual void deleteInHopsanCore();
 
     enum { Type = UserType + 2 };
@@ -196,11 +191,6 @@ public:
     GUIComponent(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
     ~GUIComponent();
 
-    //*****Core Interaction*****
-    Component* getHopsanCoreComponentPtr();
-    Component *mpCoreComponent; //Should be private
-    //**************************
-
     QVector<QString> getParameterNames();
     QString getParameterUnit(QString name);
     QString getParameterDescription(QString name);
@@ -237,9 +227,6 @@ class GUISubsystem : public GUIObject
 public:
     GUISubsystem(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
 
-    //*****Core Interaction*****
-    Component* getHopsanCoreComponentPtr();
-    //**************************
     void deleteInHopsanCore();
 
     QString getName();

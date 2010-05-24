@@ -1561,21 +1561,7 @@ void ProjectTabWidget::saveModel(bool saveAs)
     QMap<QString, GUIObject*>::iterator it;
     for(it = pCurrentView->mGUIObjectMap.begin(); it!=pCurrentView->mGUIObjectMap.end(); ++it)
     {
-//        QPointF pos = it.value()->mapToScene(it.value()->boundingRect().center());
-//        modelFile << "COMPONENT " << it.value()->getTypeName() << " " << addQuotes(it.value()->getName()) << " "
-//                  << pos.x() << " " << pos.y() << " " << it.value()->rotation() << " " << it.value()->getNameTextPos() << "\n";
-//
-//        //! @todo wrap this in the gui object (don wnat to access core directly here)
-//        Component *mpCoreComponent = it.value()->getHopsanCoreComponentPtr();
-//        vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
-//        std::vector<CompParameter>::iterator itp;
-//        for ( itp=paramVector.begin() ; itp !=paramVector.end(); ++itp )
-//        {
-//            modelFile << "PARAMETER " << addQuotes(it.key()) << " " << QString::fromStdString(itp->getName()) << " " << itp->getValue() << "\n";
-//            //qDebug() << it.key() << " - " << itp->getName().c_str() << " - " << itp->getValue();
-//        }
         it.value()->saveToTextStream(modelFile);
-
     }
 
     modelFile << "--------------------------------------------------------------\n";

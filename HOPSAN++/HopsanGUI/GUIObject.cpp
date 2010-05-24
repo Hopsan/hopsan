@@ -46,6 +46,7 @@
 
 #include <QtGui>
 #include <QtCore>
+#include <QVector>
 
 #include "HopsanCore.h"
 #include "GUIObject.h"
@@ -325,11 +326,6 @@ void GUIObject::setParameterValue(QString name, double value)
     assert(false);
 }
 
-Component* GUIObject::getHopsanCoreComponentPtr()
-{
-    cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
-    assert(false);
-}
 
 //! @brief Save GuiObject to a text stream
 void GUIObject::saveToTextStream(QTextStream &rStream)
@@ -950,14 +946,8 @@ GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, Graph
     : GUIObject(position, appearanceData, scene, parent)
 {
     mName = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createComponent(mAppearanceData.getTypeName());
-    //*****Core Interaction*****
-    mpCoreComponent = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->getSubComponent(mName.toStdString());
-    //**************************
-
 
     QString cqsType = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTypeCQS(this->getName());
-
-
 
     //Sets the ports
     PortAppearanceMapT::iterator i;
@@ -1121,13 +1111,6 @@ void GUIComponent::openParameterDialog()
     dialog->exec();
 }
 
-Component* GUIComponent::getHopsanCoreComponentPtr()
-{
-    //*****Core Interaction*****
-    return mpCoreComponent;
-    //**************************
-}
-
 
 void GUIComponent::deleteInHopsanCore()
 {
@@ -1149,15 +1132,13 @@ void GUIComponent::saveToTextStream(QTextStream &rStream)
 //            << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << "\n";
     GUIObject::saveToTextStream(rStream);
 
-    //*****Core Interaction*****
-    vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
-    std::vector<CompParameter>::iterator pit;
-    for ( pit=paramVector.begin() ; pit !=paramVector.end(); ++pit )
+    QVector<QString> parameterNames = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getParameterNames(this->getName());
+    QVector<QString>::iterator pit;
+    for(pit = parameterNames.begin(); pit != parameterNames.end(); ++pit)
     {
-        rStream << "PARAMETER " << addQuotes(getName()) << " " << QString::fromStdString(pit->getName()) << " " << pit->getValue() << "\n";
-        //qDebug() << it.key() << " - " << itp->getName().c_str() << " - " << itp->getValue();
+        rStream << "PARAMETER " << addQuotes(getName()) << " " << (*pit) << " " <<
+                mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getParameterValue(this->getName(), (*pit)) << "\n";
     }
-    //**************************
 }
 
 
@@ -1263,15 +1244,6 @@ int GUISubsystem::type() const
 void GUISubsystem::deleteInHopsanCore()
 {
     mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.removeSystem(this->getName()); //No this will do something wierd
-}
-
-//! @brief Get a Component ptr version of the Core component system ptr
-Component* GUISubsystem::getHopsanCoreComponentPtr()
-{
-    //*****Core Interaction*****
-    //Should be autmatically cast
-    return mpCoreComponentSystem;
-    //**************************
 }
 
 
