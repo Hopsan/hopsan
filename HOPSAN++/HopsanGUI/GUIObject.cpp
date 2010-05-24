@@ -1333,6 +1333,7 @@ GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, Gra
     //*****Core Interaction*****
     //Set the core system pointer
     mpCoreComponentSystem = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem;
+    mName = QString::fromStdString(mpCoreComponentSystem->addSystemPort("SysPort")->getPortName());
     //**************************
 
     //Sets the ports

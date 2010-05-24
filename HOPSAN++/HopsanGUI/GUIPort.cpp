@@ -47,7 +47,7 @@
 
 
 //! Constructor.
-//! @param corePort a pointer to the corresponing port in Core.
+//! @param portName The name of the port
 //! @param x the x-coord. of where the port should be placed.
 //! @param y the y-coord. of where the port should be placed.
 //! @param rot how the port should be rotated.
