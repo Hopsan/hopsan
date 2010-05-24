@@ -1126,7 +1126,7 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
     ProjectTab *newTab = new ProjectTab(this);
     newTab->mIsSaved = false;
 
-    newTab->mGUIRootSystem.setRootSystemName(tabName.toStdString());
+    newTab->mGUIRootSystem.setRootSystemName(tabName);
 
     addTab(newTab, tabName.append(QString("*")));
     setCurrentWidget(newTab);
@@ -1505,7 +1505,7 @@ void ProjectTabWidget::loadModel()
     }
 
     //Sets the file name as model name
-    getCurrentTab()->mGUIRootSystem.setRootSystemName(fileInfo.fileName().toStdString());
+    getCurrentTab()->mGUIRootSystem.setRootSystemName(fileInfo.fileName());
 
     pCurrentView->undoStack->clear();
 
@@ -1583,7 +1583,7 @@ void ProjectTabWidget::saveModel(bool saveAs)
     modelFile << "--------------------------------------------------------------\n";
 
     //Sets the model name
-    pCurrentTab->mGUIRootSystem.setRootSystemName(fileInfo.fileName().toStdString());
+    pCurrentTab->mGUIRootSystem.setRootSystemName(fileInfo.fileName());
     this->setTabText(this->currentIndex(), fileInfo.fileName());
 }
 

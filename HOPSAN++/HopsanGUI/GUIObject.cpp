@@ -990,7 +990,7 @@ void GUIComponent::setName(QString newName, bool doOnlyCoreRename)
         //Check if we want to avoid trying to rename in the graphics view map
         if (doOnlyCoreRename)
         {
-            this->mName = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setName(this->getName().toStdString(), newName.toStdString());
+            this->mName = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setName(this->getName(), newName);
             refreshDisplayName();
         }
         else
@@ -1163,7 +1163,7 @@ void GUISubsystem::setName(QString newName, bool doOnlyCoreRename)
         //Check if we want to avoid trying to rename in the graphics view map
         if (doOnlyCoreRename)
         {
-            mName = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setSystemName(oldName.toStdString(), newName.toStdString());
+            mName = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setSystemName(oldName, newName);
             refreshDisplayName();
         }
         else
@@ -1206,7 +1206,7 @@ int GUISubsystem::type() const
 
 void GUISubsystem::deleteInHopsanCore()
 {
-    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.removeSystem(this->getName()); //No this will do something wierd
+    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.removeSubComponent(this->getName(), true);
 }
 
 
@@ -1265,9 +1265,6 @@ GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, Gra
         : GUIObject(position, appearanceData, scene, parent)
 
 {
-    //Set the core system pointer
-    mName = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.addSystemPort("SysPort");
-
     //Sets the ports
     //! @todo Only one port in system ports could simplify this
     PortAppearanceMapT::iterator i;
@@ -1278,8 +1275,11 @@ GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, Gra
 
         i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
 
-        mpGuiPort = new GUIPort(i.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
-        mpGuiPort->setGUIRootSystemPtr(&mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem); //Use this to indicate the the actual parent component is teh root system instead of the systemport gui object
+        mName = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.addSystemPort(i.key());
+
+        //We supply ptr to rootsystem to indicate that this is a systemport
+        //! @todo this is a very bad way of doing this (ptr to rootsystem for systemport), really need to figure out some better way
+        mpGuiPort = new GUIPort(i.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this, &(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem));
         mPortListPtrs.append(mpGuiPort);
     }
 }

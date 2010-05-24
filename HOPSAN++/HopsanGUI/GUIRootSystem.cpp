@@ -70,9 +70,9 @@ double GUIRootSystem::getDesiredTimeStep()
     return mpCoreComponentSystem->getDesiredTimeStep();
 }
 
-void GUIRootSystem::setRootTypeCQS(const string cqs_type, bool doOnlyLocalSet)
+void GUIRootSystem::setRootTypeCQS(const QString cqs_type, bool doOnlyLocalSet)
 {
-    mpCoreComponentSystem->setTypeCQS(cqs_type, doOnlyLocalSet);
+    mpCoreComponentSystem->setTypeCQS(cqs_type.toStdString(), doOnlyLocalSet);
 }
 
 void GUIRootSystem::setSystemTypeCQS(QString systemName, const string cqs_type, bool doOnlyLocalSet)
@@ -87,30 +87,31 @@ QString GUIRootSystem::getSystemTypeCQS(QString systemName)
 
 QString GUIRootSystem::getTypeCQS(QString componentName)
 {
-    return QString::fromStdString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getTypeCQSString());
+    return QString::fromStdString(mpCoreComponentSystem->getComponent(componentName.toStdString())->getTypeCQSString());
 }
 
-void GUIRootSystem::setRootSystemName(string name, bool doOnlyLocalRename)
+void GUIRootSystem::setRootSystemName(QString name, bool doOnlyLocalRename)
 {
-    mpCoreComponentSystem->setName(name, doOnlyLocalRename);
+    mpCoreComponentSystem->setName(name.toStdString(), doOnlyLocalRename);
 }
 
-QString GUIRootSystem::setSystemName(string systemname, string name, bool doOnlyLocalRename)
+QString GUIRootSystem::setSystemName(QString systemname, QString name, bool doOnlyLocalRename)
 {
-    ComponentSystem *pTempComponentSystem = mpCoreComponentSystem->getSubComponentSystem(systemname);
-    pTempComponentSystem->setName(name, doOnlyLocalRename);
+    ComponentSystem *pTempComponentSystem = mpCoreComponentSystem->getSubComponentSystem(systemname.toStdString());
+    pTempComponentSystem->setName(name.toStdString(), doOnlyLocalRename);
     return QString::fromStdString(pTempComponentSystem->getName());
 }
 
-QString GUIRootSystem::setName(string componentName, string name, bool doOnlyLocalRename)
+QString GUIRootSystem::setName(QString componentName, QString name, bool doOnlyLocalRename)
 {
-    Component *pTempComponent = mpCoreComponentSystem->getSubComponent(componentName);
-    pTempComponent->setName(name, doOnlyLocalRename);
+    Component *pTempComponent = mpCoreComponentSystem->getComponent(componentName.toStdString());
+    pTempComponent->setName(name.toStdString(), doOnlyLocalRename);
     return QString::fromStdString(pTempComponent->getName());
 }
 
 QString GUIRootSystem::getName()
 {
+    qDebug() << "getNAme from core root: " << QString::fromStdString(mpCoreComponentSystem->getName());
     return QString::fromStdString(mpCoreComponentSystem->getName());
 }
 
@@ -126,33 +127,34 @@ void GUIRootSystem::stop()
 
 QString GUIRootSystem::getPortType(QString componentName, QString portName)
 {
-    return QString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getPort(portName.toStdString())->getPortTypeString().c_str());
+    qDebug() << "name for port fetch " << componentName << " " << portName;
+    return QString(mpCoreComponentSystem->getComponent(componentName.toStdString())->getPort(portName.toStdString())->getPortTypeString().c_str());
 }
 
 QString GUIRootSystem::getNodeType(QString componentName, QString portName)
 {
-    return QString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getPort(portName.toStdString())->getNodeType().c_str());
+    return QString(mpCoreComponentSystem->getComponent(componentName.toStdString())->getPort(portName.toStdString())->getNodeType().c_str());
 }
 
 void GUIRootSystem::setParameter(QString componentName, QString parameterName, double value)
 {
-    mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), value);
+    mpCoreComponentSystem->getComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), value);
 }
 
 void GUIRootSystem::removeSubComponent(QString componentName, bool doDelete)
 {
-    mpCoreComponentSystem->removeSubComponent(mpCoreComponentSystem->getSubComponent(componentName.toStdString()), doDelete);
+    mpCoreComponentSystem->removeSubComponent(componentName.toStdString(), doDelete);
 }
 
-void GUIRootSystem::removeSystem(QString name)
-{
-    mpCoreComponentSystem->removeSubComponent(mpCoreComponentSystem->getSubComponentSystem(name.toStdString()), true);
-}
+//void GUIRootSystem::removeSystem(QString name)
+//{
+//    mpCoreComponentSystem->removeSubComponent(mpCoreComponentSystem->getSubComponentSystem(name.toStdString()), true);
+//}
 
 
 vector<double> GUIRootSystem::getTimeVector(QString componentName, QString portName)
 {
-    return *(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getPort(portName.toStdString())->getTimeVectorPtr());
+    return *(mpCoreComponentSystem->getComponent(componentName.toStdString())->getPort(portName.toStdString())->getTimeVectorPtr());
 }
 
 
@@ -191,7 +193,7 @@ QVector<QString> GUIRootSystem::getParameterNames(QString componentName)
 {
     QVector<QString> names;
     //*****Core Interaction*****
-    vector<string> core_names = mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterNames();
+    vector<string> core_names = mpCoreComponentSystem->getComponent(componentName.toStdString())->getParameterNames();
     vector<string>::iterator nit;
     //Copy and cast to qt datatypes
     for ( nit=core_names.begin(); nit!=core_names.end(); ++nit)
@@ -205,17 +207,17 @@ QVector<QString> GUIRootSystem::getParameterNames(QString componentName)
 
 QString GUIRootSystem::getParameterUnit(QString componentName, QString parameterName)
 {
-    return QString::fromStdString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterUnit(parameterName.toStdString()));
+    return QString::fromStdString(mpCoreComponentSystem->getComponent(componentName.toStdString())->getParameterUnit(parameterName.toStdString()));
 }
 
 QString GUIRootSystem::getParameterDescription(QString componentName, QString parameterName)
 {
-    return QString::fromStdString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterDescription(parameterName.toStdString()));
+    return QString::fromStdString(mpCoreComponentSystem->getComponent(componentName.toStdString())->getParameterDescription(parameterName.toStdString()));
 }
 
 double GUIRootSystem::getParameterValue(QString componentName, QString parameterName)
 {
-    return mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterValue(parameterName.toStdString());
+    return mpCoreComponentSystem->getComponent(componentName.toStdString())->getParameterValue(parameterName.toStdString());
 }
 
 void GUIRootSystem::deleteSystemPort(QString portname)
@@ -225,21 +227,20 @@ void GUIRootSystem::deleteSystemPort(QString portname)
 
 QString GUIRootSystem::addSystemPort(QString portname)
 {
-    mpCoreComponentSystem->addSystemPort(portname.toStdString());
+    qDebug() << "add system port: " << portname;
+    return QString::fromStdString(mpCoreComponentSystem->addSystemPort(portname.toStdString())->getPortName());
 }
 
 QString GUIRootSystem::renameSystemPort(QString oldname, QString newname)
 {
-    mpCoreComponentSystem->renameSystemPort(oldname.toStdString(), newname.toStdString());
-
-
+    return QString::fromStdString(mpCoreComponentSystem->renameSystemPort(oldname.toStdString(), newname.toStdString()));
 }
 
 //! @todo how to handle fetching from systemports, component names will not be found
 void GUIRootSystem::getPlotDataNamesAndUnits(const QString compname, const QString portname, QVector<QString> &rNames, QVector<QString> &rUnits)
 {
     vector<string> corenames, coreunits;
-    mpCoreComponentSystem->getSubComponent(compname.toStdString())->getPort(portname.toStdString())->getNodeDataNamesAndUnits(corenames, coreunits);
+    mpCoreComponentSystem->getComponent(compname.toStdString())->getPort(portname.toStdString())->getNodeDataNamesAndUnits(corenames, coreunits);
 
     rNames.clear();
     rUnits.clear();
@@ -255,10 +256,10 @@ void GUIRootSystem::getPlotDataNamesAndUnits(const QString compname, const QStri
 void GUIRootSystem::getPlotData(const QString compname, const QString portname, const QString dataname, QVector<double> &rData)
 {
     //*****Core Interaction*****
-    int dataId = mpCoreComponentSystem->getSubComponent(compname.toStdString())->getPort(portname.toStdString())->getNodeDataIdFromName(dataname.toStdString());
+    int dataId = mpCoreComponentSystem->getComponent(compname.toStdString())->getPort(portname.toStdString())->getNodeDataIdFromName(dataname.toStdString());
     if (dataId >= 0)
     {
-        vector< vector<double> > *pData = mpCoreComponentSystem->getSubComponent(compname.toStdString())->getPort(portname.toStdString())->getDataVectorPtr();
+        vector< vector<double> > *pData = mpCoreComponentSystem->getComponent(compname.toStdString())->getPort(portname.toStdString())->getDataVectorPtr();
 
         //Ok lets copy all of the data to a QT vector
         rData.clear();

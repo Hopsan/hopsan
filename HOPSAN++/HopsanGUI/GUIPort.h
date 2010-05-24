@@ -58,7 +58,7 @@ class GUIPort :public QGraphicsSvgItem
 {
     Q_OBJECT
 public:
-    GUIPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent = 0);
+    GUIPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent = 0, GUIRootSystem *pGUIRootSystem=0);
     ~GUIPort();
     void updatePosition();
     GraphicsView *getParentView();
@@ -66,7 +66,6 @@ public:
     void magnify(bool blowup);
     PortAppearance::portDirectionType getPortDirection();
     void setPortDirection(PortAppearance::portDirectionType direction);
-    void setGUIRootSystemPtr(GUIRootSystem *pGUIRootSystem);
 
     QString getName();
     void setDisplayName(const QString name);

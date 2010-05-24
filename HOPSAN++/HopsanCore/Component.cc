@@ -605,7 +605,7 @@ Component* ComponentSystem::SubComponentStorage::get(const string &rName)
     else
     {
         cout << "The component you requested: " << rName << " does not exist" << endl;
-        assert(false);
+        return 0;
     }
 }
 
@@ -863,6 +863,30 @@ void ComponentSystem::removeSubComponent(Component* c_ptr, bool doDelete)
 }
 
 
+//! @brief Get a Component ptr the the component with supplied name, can also return a ptr to self if no subcomponent found
+//! @todo for this to work we need to amke sure that the system and its sub components have unique names
+Component* ComponentSystem::getComponent(string name)
+{
+    cout << "getComponent: " << name << " " << mName << endl;
+    //First try to find among subcomponents
+    Component *tmp = getSubComponent(name);
+    if (tmp != 0)
+    {
+        return tmp;
+    }
+    else if (name == mName)
+    {
+        cout << "aaagetComponent: " << name << " " << mName << endl;
+        return this;
+    }
+    else
+    {
+        cout << "return null" << endl;
+        return 0;
+    }
+}
+
+
 Component* ComponentSystem::getSubComponent(string name)
 {
     return mSubComponentStorage.get(name);
@@ -1083,7 +1107,7 @@ bool ComponentSystem::connect(Component *pComponent1, const string portname1, Co
 //! Connect two commponents string version
 bool ComponentSystem::connect(string compname1, string portname1, string compname2, string portname2)
 {
-    return connect( *getSubComponent(compname1), portname1, *getSubComponent(compname2), portname2 );
+    return connect( *getComponent(compname1), portname1, *getComponent(compname2), portname2 );
 }
 
 //! Connect two components with specified ports to each other, reference version
@@ -1372,7 +1396,7 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
 //! @todo maybe clean up and have one (or maybe ok with two dissconnect functions)
 bool ComponentSystem::disconnect(string compname1, string portname1, string compname2, string portname2)
 {
-    disconnect( getSubComponent(compname1)->getPort(portname1), getSubComponent(compname2)->getPort(portname2) );
+    disconnect( getComponent(compname1)->getPort(portname1), getComponent(compname2)->getPort(portname2) );
 }
 
 //! Disconnects two ports and remove node if no one is using it any more

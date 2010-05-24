@@ -52,13 +52,13 @@
 //! @param rot how the port should be rotated.
 //! @param iconPath a string with the path to the svg-figure representing the port.
 //! @param parent the port's parent, the component it is a part of.
-GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent)
+GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent, GUIRootSystem *pGUIRootSystem)
     : QGraphicsSvgItem(pPortAppearance->iconPath, pParent)
 {
     mpParentGraphicsView = pParent->mpParentGraphicsView;
     mpParentGuiObject = pParent;
     mpPortAppearance = pPortAppearance;
-    mpGUIRootSystem = 0; //Assume not a systemport
+    mpGUIRootSystem = pGUIRootSystem; //Use this to indicate system port
 
     this->name = portName;
 
@@ -84,6 +84,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPort
     mpPortLabel->setPos(7.0,7.0);
     mpPortLabel->hide();
 
+    //! @todo this kind of harcoded stuff should not be here, fix the problem in some other way
     if(this->getPortType() == "POWERPORT")
     {
         this->setRotation(0.0);
@@ -348,13 +349,6 @@ void GUIPort::setPortDirection(PortAppearance::portDirectionType direction)
 }
 
 
-//! @brief Sets a pointer to the GUIRootSystem, usefull for systemports
-void GUIPort::setGUIRootSystemPtr(GUIRootSystem *pGUIRootSystem)
-{
-    mpGUIRootSystem = pGUIRootSystem;
-}
-
-
 QString GUIPort::getName()
 {
     return this->name;
@@ -369,12 +363,17 @@ void GUIPort::setDisplayName(const QString name)
 //! @todo this is a very ugly way of handeling system ports should try to think of something better
 QString GUIPort::getGUIComponentName()
 {
+    qDebug() << "apa";
     if (mpGUIRootSystem == 0)
     {
+        qDebug() << "apa2";
+        qDebug() << "return guiobject name: " << mpParentGuiObject->getName();
         return mpParentGuiObject->getName();
     }
     else
     {
+        qDebug() << "apa3";
+        qDebug() << "return root name: " << mpGUIRootSystem->getName();
         return mpGUIRootSystem->getName();
     }
 }

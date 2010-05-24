@@ -194,6 +194,7 @@ public:
     void deleteSystemPort(const string name);
 
     //Getting added components and component names
+    Component* getComponent(string name);
     Component* getSubComponent(string name);
     ComponentSystem* getSubComponentSystem(string name);
     vector<string> getSubComponentNames();
