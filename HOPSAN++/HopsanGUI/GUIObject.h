@@ -261,16 +261,13 @@ public:
     GUISystemPort(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
     QString getTypeName();
     void setName(QString newName, bool doOnlyCoreRename);
-    QString getName();
     void deleteInHopsanCore();
 
     enum { Type = UserType + 5 };
     int type() const;
 
 private:
-    ComponentSystem *mpCoreComponentSystem;
     GUIPort *mpGuiPort;
-
 };
 
 

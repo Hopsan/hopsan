@@ -1288,11 +1288,8 @@ GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, Gra
         : GUIObject(position, appearanceData, scene, parent)
 
 {
-    //*****Core Interaction*****
     //Set the core system pointer
-    mpCoreComponentSystem = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem;
     mName = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.addSystemPort("SysPort");
-    //**************************
 
     //Sets the ports
     //! @todo Only one port in system ports could simplify this
@@ -1326,10 +1323,8 @@ void GUISystemPort::setName(QString newName, bool doOnlyCoreRename)
         //Check if we want to avoid trying to rename in the graphics view map
         if (doOnlyCoreRename)
         {
-            //*****Core Interaction*****
-            //Set name in core component,
-            mpCoreComponentSystem->renameSystemPort(oldName.toStdString(), newName.toStdString());
-            //**************************
+            //Set name in core component, Also set the current name to the resulting one (might have been changed)
+            mName = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.renameSystemPort(oldName, newName);
             refreshName();
         }
         else
@@ -1338,14 +1333,6 @@ void GUISystemPort::setName(QString newName, bool doOnlyCoreRename)
             mpParentGraphicsView->renameGUIObject(oldName, newName);
         }
     }
-}
-
-//! This function returns the current GuiSystemPort name
-QString GUISystemPort::getName()
-{
-    //*****Core Interaction*****
-    return QString::fromStdString(mpGuiPort->mpCorePort->getPortName());
-    //**************************
 }
 
 

@@ -227,3 +227,10 @@ QString GUIRootSystem::addSystemPort(QString portname)
 {
     mpCoreComponentSystem->addSystemPort(portname.toStdString());
 }
+
+QString GUIRootSystem::renameSystemPort(QString oldname, QString newname)
+{
+    mpCoreComponentSystem->renameSystemPort(oldname.toStdString(), newname.toStdString());
+
+
+}

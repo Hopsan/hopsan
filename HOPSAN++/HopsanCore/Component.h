@@ -118,7 +118,7 @@ protected:
     Port* addReadPort(const string portname, const string nodetype);
     Port* addWritePort(const string portname, const string nodetype);
     bool getPort(const string portname, Port* &rpPort);
-    void renamePort(const string oldname, const string newname);
+    string renamePort(const string oldname, const string newname);
     void deletePort(const string name);
 
     //==========Protected member variables==========
@@ -190,7 +190,7 @@ public:
 
     //Add system ports
     Port* addSystemPort(const string portname);
-    void renameSystemPort(const string oldname, const string newname);
+    string renameSystemPort(const string oldname, const string newname);
     void deleteSystemPort(const string name);
 
     //Getting added components and component names

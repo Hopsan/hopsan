@@ -481,7 +481,7 @@ Port* Component::addWritePort(const string portname, const string nodetype)
 }
 
 //! @todo this could be a template function to use with all rename in map
-void Component::renamePort(const string oldname, const string newname)
+string Component::renamePort(const string oldname, const string newname)
 {
     if (mPortPtrMap.count(oldname) != 0)
     {
@@ -494,10 +494,12 @@ void Component::renamePort(const string oldname, const string newname)
         string modnewname = modifyName<PortPtrMapT>(mPortPtrMap, newname); //Make sure new name is unique
         temp_port_ptr->mPortName = modnewname;  //Set new name in port
         mPortPtrMap.insert(PortPtrPairT(modnewname, temp_port_ptr)); //Re add to map
+        return modnewname;
     }
     else
     {
         gCoreMessageHandler.addWarningMessage("Trying to rename port {" + oldname + "}, but not found", 1);
+        return oldname;
     }
 }
 
@@ -972,9 +974,9 @@ Port* ComponentSystem::addSystemPort(const string portname)
 }
 
 //! Rename system port
-void ComponentSystem::renameSystemPort(const string oldname, const string newname)
+string ComponentSystem::renameSystemPort(const string oldname, const string newname)
 {
-    renamePort(oldname,newname);
+    return renamePort(oldname,newname);
 }
 
 //! delete System prot

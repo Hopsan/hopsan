@@ -78,6 +78,8 @@ public:
 
     void deleteSystemPort(QString portname);
     QString addSystemPort(QString portname);
+    QString renameSystemPort(QString oldname, QString newname);
+
 
 //private:
     //*****Core Interaction*****
