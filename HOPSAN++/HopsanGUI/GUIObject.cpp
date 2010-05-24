@@ -1305,7 +1305,7 @@ GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, Gra
     //*****Core Interaction*****
     //Set the core system pointer
     mpCoreComponentSystem = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem;
-    mName = QString::fromStdString(mpCoreComponentSystem->addSystemPort("SysPort")->getPortName());
+    mName = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.addSystemPort("SysPort");
     //**************************
 
     //Sets the ports
@@ -1373,9 +1373,7 @@ int GUISystemPort::type() const
 void GUISystemPort::deleteInHopsanCore()
 {
     qDebug() << "In GUISystemPort::deleteInHopsanCore";
-    //*****Core Interaction*****
-    mpCoreComponentSystem->deleteSystemPort(mpGuiPort->mpCorePort->getPortName());
-    //**************************
+    this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.deleteSystemPort(mName);
 }
 
 

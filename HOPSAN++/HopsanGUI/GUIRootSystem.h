@@ -76,6 +76,9 @@ public:
     QString getParameterDescription(QString componentName, QString parameterName);
     double getParameterValue(QString componentName, QString parameterName);
 
+    void deleteSystemPort(QString portname);
+    QString addSystemPort(QString portname);
+
 //private:
     //*****Core Interaction*****
     ComponentSystem *mpCoreComponentSystem;

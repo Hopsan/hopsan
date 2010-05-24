@@ -217,3 +217,13 @@ double GUIRootSystem::getParameterValue(QString componentName, QString parameter
 {
     return mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterValue(parameterName.toStdString());
 }
+
+void GUIRootSystem::deleteSystemPort(QString portname)
+{
+    mpCoreComponentSystem->deleteSystemPort(portname.toStdString());
+}
+
+QString GUIRootSystem::addSystemPort(QString portname)
+{
+    mpCoreComponentSystem->addSystemPort(portname.toStdString());
+}
