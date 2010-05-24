@@ -15,7 +15,7 @@
 //! @param rot how the port should be rotated.
 //! @param iconPath a string with the path to the svg-figure representing the port.
 //! @param parent the port's parent, the component it is a part of.
-GUIPort::GUIPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent)
+GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent)
     : QGraphicsSvgItem(pPortAppearance->iconPath, pParent)
 {
     mpParentGraphicsView = pParent->mpParentGraphicsView;
@@ -23,9 +23,11 @@ GUIPort::GUIPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppe
     mpPortAppearance = pPortAppearance;
 
     //*****Core Interaction*****
-    mpCorePort = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->getSubComponent(mpParentGuiObject->getName().toStdString())->getPort(name.toStdString());
+    mpCorePort = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->getSubComponent(mpParentGuiObject->getName().toStdString())->getPort(portName.toStdString());
     //! @todo this does not work here we assume that the parent is a component, if it is a system port it will not be found and we can not get the core port pointer = CRASH
     //**************************
+
+    this->name = portName;
 
     //setTransformOriginPoint(boundingRect().width()/2,boundingRect().height()/2);
     setTransformOriginPoint(boundingRect().center());
@@ -164,9 +166,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
 
-    //*****Core Interaction
-    if ((!this->isConnected) || (this->mpCorePort->getTimeVectorPtr()->empty()))
-    //*********************
+    if ((!this->isConnected) || (this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTimeVector(this->getGuiObject()->getName(), this->getName()).empty()))
     {
         event->ignore();
     }
@@ -331,8 +331,9 @@ void GUIPort::setPortDirection(PortAppearance::portDirectionType direction)
 
 QString GUIPort::getName()
 {
+    return this->name;
     //*****Core Interaction*****
-    return QString::fromStdString(mpCorePort->getPortName());       //! @todo This must change so that GUI ports know their own names. You can't ask core for a port name if you don't know the name of the port, because the core won't know which port you are asking about.
+    //return QString::fromStdString(mpCorePort->getPortName());       //! @todo This must change so that GUI ports know their own names. You can't ask core for a port name if you don't know the name of the port, because the core won't know which port you are asking about.
     //**************************
 }
 

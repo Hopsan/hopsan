@@ -978,7 +978,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
     mGUIRootSystem.setDesiredTimeStep(.001);
-    mGUIRootSystem.setTypeCQS("S");
+    mGUIRootSystem.setRootTypeCQS("S");
 
     emit checkMessages();
 
@@ -1088,7 +1088,7 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
     ProjectTab *newTab = new ProjectTab(this);
     newTab->mIsSaved = false;
 
-    newTab->mGUIRootSystem.setSystemName(tabName.toStdString());
+    newTab->mGUIRootSystem.setRootSystemName(tabName.toStdString());
 
     addTab(newTab, tabName.append(QString("*")));
     setCurrentWidget(newTab);
@@ -1273,9 +1273,9 @@ void ProjectTabWidget::simulateCurrent()
     }
 
     if (progressBar.wasCanceled())
-        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(QString::fromStdString(pCurrentTab->mGUIRootSystem.getName())).append(tr("' was terminated!"))));
+        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(pCurrentTab->mGUIRootSystem.getName()).append(tr("' was terminated!"))));
     else
-        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulated '").append(QString::fromStdString(pCurrentTab->mGUIRootSystem.getName())).append(tr("' successfully!"))));
+        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulated '").append(pCurrentTab->mGUIRootSystem.getName()).append(tr("' successfully!"))));
 
     emit checkMessages();
 }
@@ -1467,7 +1467,7 @@ void ProjectTabWidget::loadModel()
     }
 
     //Sets the file name as model name
-    getCurrentTab()->mGUIRootSystem.setSystemName(fileInfo.fileName().toStdString());
+    getCurrentTab()->mGUIRootSystem.setRootSystemName(fileInfo.fileName().toStdString());
 
     pCurrentView->undoStack->clear();
 
@@ -1559,7 +1559,7 @@ void ProjectTabWidget::saveModel(bool saveAs)
     modelFile << "--------------------------------------------------------------\n";
 
     //Sets the model name
-    pCurrentTab->mGUIRootSystem.setSystemName(fileInfo.fileName().toStdString());
+    pCurrentTab->mGUIRootSystem.setRootSystemName(fileInfo.fileName().toStdString());
     this->setTabText(this->currentIndex(), fileInfo.fileName());
 }
 

@@ -172,7 +172,7 @@ void GUIObject::addConnector(GUIConnector *item)
 //! This function refreshes the displayed name (HopsanCore may have changed it)
 void GUIObject::refreshName()
 {
-    mpNameText->setPlainText(getName());
+    mpNameText->setPlainText(getName());        //! @todo Will this really do anything? getName just returns the text from mpNameText, so this should just tell it to use its own text...
     //Adjust the position of the text
     this->fixTextPosition(this->mpNameText->pos());
 }
@@ -911,12 +911,15 @@ void GUIObject::deleteMe()
 GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
     : GUIObject(position, appearanceData, scene, parent)
 {
+    mName = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createComponent(mAppearanceData.getTypeName());
     //*****Core Interaction*****
-    mpHopsanCore = HopsanEssentials::getInstance();
-    mpCoreComponent = mpHopsanCore->CreateComponent(mAppearanceData.getTypeName().toStdString());
-    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->addComponent(getHopsanCoreComponentPtr());
+    mpCoreComponent = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->getSubComponent(mName.toStdString());
     //**************************
+
+
     QString cqsType = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTypeCQS(this->getName());
+
+
 
     //Sets the ports
     PortAppearanceMapT::iterator i;
@@ -949,9 +952,7 @@ GUIComponent::~GUIComponent()
 //! This function returns the current component name
 QString GUIComponent::getName()
 {
-    //*****Core Interaction*****
-    return QString::fromStdString(mpCoreComponent->getName());  //! @todo This must change so that GUI components know their own names. You can't ask core for a component name if you don't know the name of the component, because the core won't know which component you are asking about.
-    //***************************
+    return mName;
 }
 
 //!
@@ -968,17 +969,10 @@ void GUIComponent::setName(QString newName, bool doOnlyCoreRename)
     //If name same as before do nothing
     if (newName != oldName)
     {
-        //This does not work when we load systems, the default name (oldNAme) may already be in the graphicsView and an incorrect rename will be triggered
-//        if (mpParentGraphicsView->haveComponent(oldName))
-//        {
-//            //Rename
-//            mpParentGraphicsView->renameComponent(oldName, newName);
-//        }
-
         //Check if we want to avoid trying to rename in the graphics view map
         if (doOnlyCoreRename)
         {
-            mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setName(this->getName().toStdString(), newName.toStdString());
+            this->mName = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setName(this->getName().toStdString(), newName.toStdString());
             refreshName();
         }
         else
@@ -988,7 +982,6 @@ void GUIComponent::setName(QString newName, bool doOnlyCoreRename)
         }
     }
 }
-
 
 
 //! Event when double clicking on component icon.
@@ -1150,79 +1143,14 @@ void GUIComponent::saveToTextStream(QTextStream &rStream)
 GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
         : GUIObject(position, appearanceData, scene, parent)
 {
+    this->mName = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createSubSystem();
     //*****Core Interaction*****
-    mpHopsanCore = HopsanEssentials::getInstance();
-    mpCoreComponentSystem = mpHopsanCore->CreateComponentSystem();
-    this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->addComponent(this->getHopsanCoreComponentPtr());
+    mpCoreComponentSystem = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->getSubComponentSystem(mName.toStdString());
     //**************************
 
-//    mComponentTypeName = appearanceData.at(0);
-//    //QString fileName = appearanceData.at(1);
-//    QString iconRotationBehaviour = appearanceData.at(2);
-//    if(iconRotationBehaviour == "ON")
-//        this->mIconRotation = true;
-//    else
-//        this->mIconRotation = false;
-//    size_t nPorts = appearanceData.at(3).toInt();
-//
-//
-//
-//    //Sets the ports
-//    //! @todo should break this out and make it reusable
-//    //GUIPort::portType type;
-//    Port::PORTTYPE porttype;
-//    for (size_t i = 0; i < nPorts; ++i)
-//    {
-//        double x = appearanceData.at(4+3*i).toDouble();
-//        double y = appearanceData.at(5+3*i).toDouble();
-//        double rot = appearanceData.at(6+3*i).toDouble();
-//
-//        porttype = mpCoreComponent->getPortPtrVector().at(i)->getPortType();
-//
-//        QString iconPath("../../HopsanGUI/porticons/");
-//        if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeSignal")
-//        {
-//            iconPath.append("SignalPort");
-//            if ( porttype == Port::READPORT)
-//            {
-//                iconPath.append("_read");
-//            }
-//            else
-//            {
-//                iconPath.append("_write");
-//            }
-//        }
-//        else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeMechanic")
-//        {
-//            iconPath.append("MechanicPort");
-//            if (mpCoreComponent->getTypeCQS() == Component::C)
-//                iconPath.append("C");
-//            else if (mpCoreComponent->getTypeCQS() == Component::Q)
-//                iconPath.append("Q");
-//        }
-//        else if (mpCoreComponent->getPortPtrVector().at(i)->getNodeType() == "NodeHydraulic")
-//        {
-//            iconPath.append("HydraulicPort");
-//            if (mpCoreComponent->getTypeCQS() == Component::C)
-//                iconPath.append("C");
-//            else if (mpCoreComponent->getTypeCQS() == Component::Q)
-//                iconPath.append("Q");
-//        }
-//        else
-//        {
-//            assert(false);
-//        }
-//        iconPath.append(".svg");
-//
-//        GUIPort::portDirectionType direction;
-//        if((rot == 0) | (rot == 180))
-//            direction = GUIPort::HORIZONTAL;
-//        else
-//            direction = GUIPort::VERTICAL;
-//        mPortListPtrs.append(new GUIPort(mpCoreComponent->getPortPtrVector().at(i), x*mpIcon->sceneBoundingRect().width(),y*mpIcon->sceneBoundingRect().height(),rot,iconPath,porttype,direction,this));//mpIcon));
-//    }
-
     refreshName(); //Make sure name window is correct size for center positioning
+
+    //! @todo Write some code here!
 
 //    std::cout << "GUISubsystem: " << mComponentTypeName.toStdString() << std::endl;
 }
@@ -1230,7 +1158,7 @@ GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, Graph
 //! This function returns the current subsystem name
 QString GUISubsystem::getName()
 {
-    return QString::fromStdString(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getName());
+    return mName;
 }
 
 //!
@@ -1259,7 +1187,7 @@ void GUISubsystem::setName(QString newName, bool doOnlyCoreRename)
         //Check if we want to avoid trying to rename in the graphics view map
         if (doOnlyCoreRename)
         {
-            mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setSystemName(newName.toStdString());
+            mName = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setSystemName(oldName.toStdString(), newName.toStdString());
             refreshName();
         }
         else
@@ -1280,18 +1208,12 @@ QString GUISubsystem::getTypeName()
 
 void GUISubsystem::setTypeCQS(QString typestring)
 {
-    //mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setTypeCQS(typestring.toStdString()); //ehhh this will set the CQS type for the paren system (the root even) we want to set this partiular systems CQS type
-    //*****Core Interaction*****
-    return mpCoreComponentSystem->setTypeCQS(typestring.toStdString());
-    //**************************
+    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setSystemTypeCQS(this->getName(), typestring.toStdString()); //ehhh this will set the CQS type for the paren system (the root even) we want to set this partiular systems CQS type
 }
 
 QString GUISubsystem::getTypeCQS()
 {
-    //return mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTypeCQS();  //ehhh this will get the CQS type for the paren system (the root even) we want this partiular systems CQS type
-    //*****Core Interaction*****
-    return QString::fromStdString(mpCoreComponentSystem->getTypeCQSString());
-    //**************************
+    return mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getSystemTypeCQS(this->getName());  //ehhh this will get the CQS type for the paren system (the root even) we want this partiular systems CQS type
 }
 
 QVector<QString> GUISubsystem::getParameterNames()
@@ -1319,9 +1241,9 @@ int GUISubsystem::type() const
 
 void GUISubsystem::deleteInHopsanCore()
 {
-    //mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.removeSystem(); //No this will do something wierd
+    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.removeSystem(this->getName()); //No this will do something wierd
     //*****Core Interaction*****
-    mpCoreComponentSystem->getSystemParent()->removeSubComponent(mpCoreComponentSystem, true);
+    //mpCoreComponentSystem->getSystemParent()->removeSubComponent(mpCoreComponentSystem, true);
     //**************************
 
 }

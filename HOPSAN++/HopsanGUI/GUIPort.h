@@ -75,6 +75,7 @@ private:
     PortAppearance *mpPortAppearance;
     qreal mXpos;
     qreal mYpos;
+    QString name;
 
 };
 

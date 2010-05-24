@@ -31,14 +31,19 @@ double GUIRootSystem::getDesiredTimeStep()
     return mpCoreComponentSystem->getDesiredTimeStep();
 }
 
-void GUIRootSystem::setTypeCQS(const string cqs_type, bool doOnlyLocalSet)
+void GUIRootSystem::setRootTypeCQS(const string cqs_type, bool doOnlyLocalSet)
 {
     mpCoreComponentSystem->setTypeCQS(cqs_type, doOnlyLocalSet);
 }
 
-QString GUIRootSystem::getTypeCQS()
+void GUIRootSystem::setSystemTypeCQS(QString systemName, const string cqs_type, bool doOnlyLocalSet)
 {
-    return QString::fromStdString(mpCoreComponentSystem->getTypeCQSString());
+    mpCoreComponentSystem->getSubComponentSystem(systemName.toStdString())->setTypeCQS(cqs_type, doOnlyLocalSet);
+}
+
+QString GUIRootSystem::getSystemTypeCQS(QString systemName)
+{
+    return QString::fromStdString(mpCoreComponentSystem->getSubComponentSystem(systemName.toStdString())->getTypeCQSString());
 }
 
 QString GUIRootSystem::getTypeCQS(QString componentName)
@@ -46,19 +51,28 @@ QString GUIRootSystem::getTypeCQS(QString componentName)
     return QString::fromStdString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getTypeCQSString());
 }
 
-void GUIRootSystem::setSystemName(string name, bool doOnlyLocalRename)
+void GUIRootSystem::setRootSystemName(string name, bool doOnlyLocalRename)
 {
     mpCoreComponentSystem->setName(name, doOnlyLocalRename);
 }
 
-void GUIRootSystem::setName(string componentName, string name, bool doOnlyLocalRename)
+QString GUIRootSystem::setSystemName(string systemname, string name, bool doOnlyLocalRename)
 {
-    mpCoreComponentSystem->getSubComponent(componentName)->setName(name, doOnlyLocalRename);
+    ComponentSystem *pTempComponentSystem = mpCoreComponentSystem->getSubComponentSystem(systemname);
+    pTempComponentSystem->setName(name, doOnlyLocalRename);
+    return QString::fromStdString(pTempComponentSystem->getName());
 }
 
-string GUIRootSystem::getName()
+QString GUIRootSystem::setName(string componentName, string name, bool doOnlyLocalRename)
 {
-    return mpCoreComponentSystem->getName();
+    Component *pTempComponent = mpCoreComponentSystem->getSubComponent(componentName);
+    pTempComponent->setName(name, doOnlyLocalRename);
+    return QString::fromStdString(pTempComponent->getName());
+}
+
+QString GUIRootSystem::getName()
+{
+    return QString::fromStdString(mpCoreComponentSystem->getName());
 }
 
 double GUIRootSystem::getCurrentTime()
@@ -91,10 +105,9 @@ void GUIRootSystem::removeSubComponent(QString componentName, bool doDelete)
     mpCoreComponentSystem->removeSubComponent(mpCoreComponentSystem->getSubComponent(componentName.toStdString()), doDelete);
 }
 
-void GUIRootSystem::removeSystem()
+void GUIRootSystem::removeSystem(QString name)
 {
-    //This wont work, the root system does not have a system parnet = NULL pointer = CRASH
-    mpCoreComponentSystem->getSystemParent()->removeSubComponent(mpCoreComponentSystem, true);
+    mpCoreComponentSystem->removeSubComponent(mpCoreComponentSystem->getSubComponentSystem(name.toStdString()), true);
 }
 
 
@@ -119,4 +132,19 @@ void GUIRootSystem::simulate(double mStartTime, double mFinishTime)
 void GUIRootSystem::finalize(double mStartTime, double mFinishTime)
 {
     mpCoreComponentSystem->finalize(mStartTime, mFinishTime);
+}
+
+QString GUIRootSystem::createComponent(QString type)
+{
+    Component *pCoreComponent = HopsanEssentials::getInstance()->CreateComponent(type.toStdString());
+    mpCoreComponentSystem->addComponent(pCoreComponent);
+    return QString::fromStdString(pCoreComponent->getName());
+}
+
+QString GUIRootSystem::createSubSystem()
+{
+    ComponentSystem *pTempComponentSystem = HopsanEssentials::getInstance()->CreateComponentSystem();
+    mpCoreComponentSystem->addComponent(pTempComponentSystem);
+    return QString::fromStdString(pTempComponentSystem->getName());
+
 }
