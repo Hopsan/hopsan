@@ -48,7 +48,9 @@ void ParameterDialog::createEditStuff()
 {
     mpNameEdit = new QLineEdit(mpGUIObject->getName());
 
+    qDebug() << "before parnames";
     QVector<QString> parnames = mpGUIObject->getParameterNames();
+    qDebug() << "parnames.size: " << parnames.size();
     QVector<QString>::iterator pit;
     for ( pit=parnames.begin(); pit!=parnames.end(); ++pit )
     {
@@ -67,6 +69,7 @@ void ParameterDialog::createEditStuff()
         mVarVector.back()->setBuddy(mValueVector.back());
 
     }
+    qDebug() << "after parnames";
 
     okButton = new QPushButton(tr("&Ok"));
     okButton->setDefault(true);

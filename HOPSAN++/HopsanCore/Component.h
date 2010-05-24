@@ -70,10 +70,12 @@ public:
 
     //Parameters
     void listParametersConsole();
+    const vector<string> getParameterNames();
     const string getParameterUnit(const string name);
     const string getParameterDescription(const string name);
     double getParameterValue(const string name);
-    void setParameter(const string name, const double value);
+    void setParameterValue(const string name, const double value);
+
     vector<CompParameter> getParameterVector();
     map<string, double> getParameterMap();
 

@@ -313,6 +313,16 @@ double Component::getParameterValue(const string name)
     return 0.0;
 }
 
+const vector<string> Component::getParameterNames()
+{
+    vector<string> names;
+    for (size_t i=0; i<mParameters.size(); ++i)
+    {
+        names.push_back(mParameters[i].getName());
+    }
+    return names;
+}
+
 const string Component::getParameterUnit(const string name)
 {
     for (size_t i=0; i<mParameters.size(); ++i)
@@ -354,7 +364,7 @@ map<string, double> Component::getParameterMap()
     return parameterMap;
 }
 
-void Component::setParameter(const string name, const double value)
+void Component::setParameterValue(const string name, const double value)
 {
     bool notset = 1;
     for (size_t i=0; i<mParameters.size(); ++i)

@@ -1014,19 +1014,20 @@ QString GUIComponent::getTypeCQS()
 }
 
 //! @brief Get a vector with the names of the available parameters
-//! @todo Should be handled by hopsan core
 QVector<QString> GUIComponent::getParameterNames()
 {
    QVector<QString> names;
    //*****Core Interaction*****
-    vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
-    std::vector<CompParameter>::iterator itp;
-    for ( itp=paramVector.begin() ; itp !=paramVector.end(); ++itp )
-    {
-        names.push_back(QString::fromStdString(itp->getName()));
-    }
-    //**************************
-    return names;
+   vector<string> core_names = mpCoreComponent->getParameterNames();
+   vector<string>::iterator nit;
+   //Copy and cast to qt datatypes
+   for ( nit=core_names.begin(); nit!=core_names.end(); ++nit)
+   {
+       names.push_back(QString::fromStdString(*nit));
+   }
+   //**************************
+
+   return names;
 }
 
 QString GUIComponent::getParameterUnit(QString name)
@@ -1102,16 +1103,6 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 void GUIComponent::openParameterDialog()
 {
-    vector<CompParameter>::iterator it;
-
-    //*****Core Interaction*****
-    vector<CompParameter> paramVector = this->mpCoreComponent->getParameterVector();
-    //**************************
-
-    qDebug() << "This component has the following Parameters: ";
-    for ( it=paramVector.begin() ; it !=paramVector.end(); it++ )
-        qDebug() << QString::fromStdString(it->getName()) << ": " << it->getValue();
-
     ParameterDialog *dialog = new ParameterDialog(this,mpParentGraphicsView);
     dialog->exec();
 }
@@ -1307,14 +1298,16 @@ QVector<QString> GUISubsystem::getParameterNames()
 {
     QVector<QString> names;
     //*****Core Interaction*****
-     vector<CompParameter> paramVector = mpCoreComponentSystem->getParameterVector();
-     std::vector<CompParameter>::iterator itp;
-     for ( itp=paramVector.begin() ; itp !=paramVector.end(); ++itp )
-     {
-         names.push_back(QString::fromStdString(itp->getName()));
-     }
-     //**************************
-     return names;
+    vector<string> core_names = mpCoreComponentSystem->getParameterNames();
+    vector<string>::iterator nit;
+    //Copy and cast to qt datatypes
+    for ( nit=core_names.begin(); nit!=core_names.end(); ++nit)
+    {
+        names.push_back(QString::fromStdString(*nit));
+    }
+    //**************************
+
+    return names;
 }
 
 

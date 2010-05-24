@@ -149,7 +149,7 @@ ComponentSystem* FileAccess::loadModel(HopsanEssentials* pHopsan, double *startT
                 inputStream >> componentName;
                 inputStream >> parameterName;
                 inputStream >> parameterValue;
-                componentMap.find(componentName)->second->setParameter(parameterName, parameterValue);
+                componentMap.find(componentName)->second->setParameterValue(parameterName, parameterValue);
             }
 
             //----------- Set Simulation Parameters -----------//

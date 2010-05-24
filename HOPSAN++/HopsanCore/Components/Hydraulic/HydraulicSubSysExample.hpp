@@ -37,7 +37,7 @@ public:
         orificeC = new HydraulicLaminarOrifice("orificeC");
         volumeR = new HydraulicVolume("volumeR");
 
-        orificeC->setParameter("Kc", 1e-12);
+        orificeC->setParameterValue("Kc", 1e-12);
 
         addComponent(volumeL);
         addComponent(orificeC);

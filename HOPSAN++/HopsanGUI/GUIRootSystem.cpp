@@ -83,7 +83,7 @@ QString GUIRootSystem::getNodeType(QString componentName, QString portName)
 
 void GUIRootSystem::setParameter(QString componentName, QString parameterName, double value)
 {
-    mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameter(parameterName.toStdString(), value);
+    mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), value);
 }
 
 void GUIRootSystem::removeSubComponent(QString componentName, bool doDelete)
