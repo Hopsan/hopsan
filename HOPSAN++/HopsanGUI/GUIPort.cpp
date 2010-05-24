@@ -357,6 +357,9 @@ QString GUIPort::getName()
 void GUIPort::setDisplayName(const QString name)
 {
     this->name = name;
+    QString label("<p><span style=\"background-color:lightyellow\">");
+    label.append(this->name).append("</span></p>");
+    mpPortLabel->setHtml(label);
 }
 
 //! Get the name of the GUIComponent or GUISubsystem that the port is connected to, This is not necessarily the same as the parent GUIObject name (SystemPorts)
