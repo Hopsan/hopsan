@@ -49,9 +49,6 @@ class MessageWidget : public QTextEdit
 {
     Q_OBJECT
 private:
-    //*****Core Interaction*****
-    HopsanEssentials *mpHopsanCore;
-    //**************************
     void setMessageColor(int type);
 
 public:

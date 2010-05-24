@@ -44,10 +44,6 @@ MessageWidget::MessageWidget(MainWindow *pParent)
     : QTextEdit(pParent)
 {
     mpParentMainWindow = pParent;
-    //*****Core Interaction*****
-    mpHopsanCore = HopsanEssentials::getInstance();
-    //**************************
-
 }
 
 QSize MessageWidget::sizeHint() const
@@ -83,12 +79,13 @@ void MessageWidget::printCoreMessages()
 {
     //*****Core Interaction*****
     HopsanCoreMessage msg;
-    if (mpHopsanCore != 0)
+    HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
+    if (pHopsanCore != 0)
     {
-        size_t nmsg = mpHopsanCore->checkMessage();
+        size_t nmsg = pHopsanCore->checkMessage();
         for (size_t idx=0; idx < nmsg; ++idx)
         {
-            msg = mpHopsanCore->getMessage();
+            msg = pHopsanCore->getMessage();
             if (true) //! @todo Debug level rules
             {
                 setMessageColor(msg.type);
