@@ -1041,45 +1041,28 @@ QString GUIComponent::getTypeName()
 
 QString GUIComponent::getTypeCQS()
 {
-    return QString::fromStdString(mpCoreComponent->getTypeCQSString());
+    return mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTypeCQS(this->getName());
 }
 
 //! @brief Get a vector with the names of the available parameters
 QVector<QString> GUIComponent::getParameterNames()
 {
-   QVector<QString> names;
-   //*****Core Interaction*****
-   vector<string> core_names = mpCoreComponent->getParameterNames();
-   vector<string>::iterator nit;
-   //Copy and cast to qt datatypes
-   for ( nit=core_names.begin(); nit!=core_names.end(); ++nit)
-   {
-       names.push_back(QString::fromStdString(*nit));
-   }
-   //**************************
-
-   return names;
+    return mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getParameterNames(this->getName());
 }
 
 QString GUIComponent::getParameterUnit(QString name)
 {
-    //*****Core Interaction*****
-    return QString::fromStdString(mpCoreComponent->getParameterUnit(name.toStdString()));
-    //**************************
+    return mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getParameterUnit(this->getName(), name);
 }
 
 QString GUIComponent::getParameterDescription(QString name)
 {
-    //*****Core Interaction*****
-    return QString::fromStdString(mpCoreComponent->getParameterDescription(name.toStdString()));
-    //**************************
+    return mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getParameterDescription(this->getName(), name);
 }
 
 double GUIComponent::getParameterValue(QString name)
 {
-    //*****Core Interaction*****
-    return mpCoreComponent->getParameterValue(name.toStdString());
-    //**************************
+    return mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getParameterValue(this->getName(), name);
 }
 
 //! @brief Set a parameter value, wrapps hopsan core
@@ -1280,10 +1263,6 @@ int GUISubsystem::type() const
 void GUISubsystem::deleteInHopsanCore()
 {
     mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.removeSystem(this->getName()); //No this will do something wierd
-    //*****Core Interaction*****
-    //mpCoreComponentSystem->getSystemParent()->removeSubComponent(mpCoreComponentSystem, true);
-    //**************************
-
 }
 
 //! @brief Get a Component ptr version of the Core component system ptr

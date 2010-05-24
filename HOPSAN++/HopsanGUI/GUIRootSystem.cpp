@@ -38,6 +38,7 @@
 
 #include "GUIRootSystem.h"
 #include <QString>
+#include <QVector>
 
 GUIRootSystem::GUIRootSystem()
 {
@@ -184,5 +185,35 @@ QString GUIRootSystem::createSubSystem()
     ComponentSystem *pTempComponentSystem = HopsanEssentials::getInstance()->CreateComponentSystem();
     mpCoreComponentSystem->addComponent(pTempComponentSystem);
     return QString::fromStdString(pTempComponentSystem->getName());
+}
 
+QVector<QString> GUIRootSystem::getParameterNames(QString componentName)
+{
+    QVector<QString> names;
+    //*****Core Interaction*****
+    vector<string> core_names = mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterNames();
+    vector<string>::iterator nit;
+    //Copy and cast to qt datatypes
+    for ( nit=core_names.begin(); nit!=core_names.end(); ++nit)
+    {
+        names.push_back(QString::fromStdString(*nit));
+    }
+    //**************************
+
+    return names;
+}
+
+QString GUIRootSystem::getParameterUnit(QString componentName, QString parameterName)
+{
+    return QString::fromStdString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterUnit(parameterName.toStdString()));
+}
+
+QString GUIRootSystem::getParameterDescription(QString componentName, QString parameterName)
+{
+    return QString::fromStdString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterDescription(parameterName.toStdString()));
+}
+
+double GUIRootSystem::getParameterValue(QString componentName, QString parameterName)
+{
+    return mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterValue(parameterName.toStdString());
 }

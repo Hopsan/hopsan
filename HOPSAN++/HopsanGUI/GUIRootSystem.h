@@ -71,6 +71,10 @@ public:
     void finalize(double mStartTime, double mFinishTime);
     QString createComponent(QString type);
     QString createSubSystem();
+    QVector<QString> getParameterNames(QString componentName);
+    QString getParameterUnit(QString componentName, QString parameterName);
+    QString getParameterDescription(QString componentName, QString parameterName);
+    double getParameterValue(QString componentName, QString parameterName);
 
 //private:
     //*****Core Interaction*****
