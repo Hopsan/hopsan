@@ -8,7 +8,6 @@
 //$Id$
 
 
-#include "HopsanCore.h"
 #include "ProjectTabWidget.h"
 #include "GUIObject.h"
 #include "GUIPort.h"
