@@ -61,7 +61,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPort
     mpPortAppearance = pPortAppearance;
 
     //*****Core Interaction*****
-    mpCorePort = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->getSubComponent(mpParentGuiObject->getName().toStdString())->getPort(portName.toStdString());
+    //mpCorePort = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.mpCoreComponentSystem->getSubComponent(mpParentGuiObject->getName().toStdString())->getPort(portName.toStdString());
     //! @todo this does not work here we assume that the parent is a component, if it is a system port it will not be found and we can not get the core port pointer = CRASH
     //**************************
 
@@ -220,11 +220,11 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
             if (selectedAction == plotFlowAction)
             {
-                plot(0);
+                plot("Flow");
             }
             if (selectedAction == plotPressureAction)
             {
-                plot(1);
+                plot("Pressure");
             }
         }
         if (this->getNodeType() =="NodeMechanic")
@@ -236,15 +236,15 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
             if (selectedAction == plotVelocityAction)
             {
-                plot(0);
+                plot("Velocity");
             }
             if (selectedAction == plotForceAction)
             {
-                plot(1);
+                plot("Force");
             }
             if (selectedAction == plotPositionAction)
             {
-                plot(2);
+                plot("Position");
             }
         }
         if (this->getNodeType() =="NodeSignal")
@@ -254,7 +254,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
             if (selectedAction == plotSignalAction)
             {
-                plot(0);
+                plot("Value");
             }
         }
     }
@@ -271,37 +271,36 @@ GraphicsView *GUIPort::getParentView()
 //! Returns a pointer to the GUIComponent the port belongs to.
 GUIObject *GUIPort::getGuiObject()
 {
-    //! @todo Thiss will crash if not GUIComponent should be GUI object may need to change code elsewhere
-//    GUIComponent* ptr = qobject_cast<GUIComponent*>(mpParentGuiObject);
-//    return ptr;
     return mpParentGuiObject;
 }
 
 
 //! Plots the varable number 'nVar' in the node the port is connected to.
 //! @param nVar tells which variable to plot.
-void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
+void GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna metoden...
 {
     std::cout << "GUIPort.cpp: " << "Plot()" << std::endl;
 
-    size_t dataLength = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTimeVector(mpParentGuiObject->getName(), this->getName()).size();
+    //size_t dataLength = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTimeVector(mpParentGuiObject->getName(), this->getName()).size();
     QVector<double> time = QVector<double>::fromStdVector(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTimeVector(mpParentGuiObject->getName(), this->getName()));
-    QVector<double> y(dataLength);// = QVector<double>::fromStdVector((this->mpCorePort->getDataVectorPtr()->at(1)));
+    //QVector<double> y(dataLength);// = QVector<double>::fromStdVector((this->mpCorePort->getDataVectorPtr()->at(1)));
 
-    qDebug() << "Time size: " << time.size() << " last time: " << *time.end() << " datalength: " << dataLength << "y.size(): " << y.size();
+//    for (size_t i = 0; i<dataLength; ++i) //Denna loop ar inte klok
+//    {
+//        //*****Core Interaction*****
+//        //timeq[i] = this->mpCorePort->getTimeVectorPtr()->at(i);
+//        y[i] = (this->mpCorePort->getDataVectorPtr()->at(i)).at(nVar);
+//        //**************************
+//    }
+    QVector<double> y;
+    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPlotData(mpParentGuiObject->getName(), this->getName(), dataName, y);
+
+    qDebug() << "Time size: " << time.size() << " last time: " << *time.end() << " " << "y.size(): " << y.size();
     qDebug() << "time[0]: " << time[0] << " time[last-1]: " << time[time.size()-2] << " time[last]: " << time[time.size()-1];
 
     for (int i = 0; i<time.size(); ++i)
     {
         //qDebug() << time[i];
-    }
-    
-    for (size_t i = 0; i<dataLength; ++i) //Denna loop ar inte klok
-    {
-        //*****Core Interaction*****
-        //timeq[i] = this->mpCorePort->getTimeVectorPtr()->at(i);
-        y[i] = (this->mpCorePort->getDataVectorPtr()->at(i)).at(nVar);
-        //**************************
     }
 
     qDebug() << "y[0]: " << y[0] << " y[last-1]: " << y[y.size()-2] << " y[last]: " << y[y.size()-1];
@@ -310,14 +309,8 @@ void GUIPort::plot(size_t nVar) //En del vansinne i denna metoden...
     QString xlabel;
     QString ylabel;
 
-    string name, unit;
-
-    //*****Core Interaction*****
-    mpCorePort->getNodeDataNameAndUnit(nVar, name, unit);       //! @todo There is some problem here...
-    //**************************
-
-    title.append(QString::fromStdString(name));
-    ylabel.append(QString::fromStdString(name) + ", [" + QString::fromStdString(unit) + "]");
+    title.append(dataName);
+    ylabel.append(dataName + ", [" + dataUnit + "]");
 
     //! @todo need to comment this out  for now  fix later
     //title.append(" at component: ").append(QString::fromStdString(mpParentComponent->mpCoreComponent->getName())).append(", port: ").append(QString::fromStdString(mpCorePort->getPortName()));

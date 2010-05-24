@@ -39,6 +39,7 @@ public:
     void saveLogData(string filename);
     void getNodeDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits);
     void getNodeDataNameAndUnit(const size_t dataid, string &rName, string &rUnit);
+    int getNodeDataIdFromName(const string name);
     vector<double> *getTimeVectorPtr();
     vector<vector<double> > *getDataVectorPtr();
 

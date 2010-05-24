@@ -234,3 +234,39 @@ QString GUIRootSystem::renameSystemPort(QString oldname, QString newname)
 
 
 }
+
+//! @todo how to handle fetching from systemports, component names will not be found
+void GUIRootSystem::getPlotDataNamesAndUnits(const QString compname, const QString portname, QVector<QString> &rNames, QVector<QString> &rUnits)
+{
+    vector<string> corenames, coreunits;
+    mpCoreComponentSystem->getSubComponent(compname.toStdString())->getPort(portname.toStdString())->getNodeDataNamesAndUnits(corenames, coreunits);
+
+    rNames.clear();
+    rUnits.clear();
+
+    //Copy into QT datatype vector (assumes bothe received vectors same length (should always be same)
+    for (int i=0; i<corenames.size(); ++i)
+    {
+        rNames.push_back(QString::fromStdString(corenames[i]));
+        rUnits.push_back(QString::fromStdString(coreunits[i]));
+    }
+}
+
+void GUIRootSystem::getPlotData(const QString compname, const QString portname, const QString dataname, QVector<double> &rData)
+{
+    //*****Core Interaction*****
+    int dataId = mpCoreComponentSystem->getSubComponent(compname.toStdString())->getPort(portname.toStdString())->getNodeDataIdFromName(dataname.toStdString());
+    if (dataId >= 0)
+    {
+        vector< vector<double> > *pData = mpCoreComponentSystem->getSubComponent(compname.toStdString())->getPort(portname.toStdString())->getDataVectorPtr();
+
+        //Ok lets copy all of the data to a QT vector
+        rData.clear();
+        rData.resize(pData->size()); //Allocaate memory
+        for (size_t i=0; i<pData->size(); ++i) //Denna loop ar inte klok
+        {
+            rData[i] = pData->at(i).at(dataId);
+        }
+    }
+    //**************************
+}

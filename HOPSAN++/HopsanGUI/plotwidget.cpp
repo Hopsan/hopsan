@@ -338,85 +338,85 @@ VariableList::VariableList(MainWindow *parent)
             //qDebug() << "Julafton";
 
             //*****Core Interaction*****
-            if ((*itp)->mpCorePort->getNodeType() =="NodeHydraulic")
-            {
-                size_t dataLength = (*itp)->mpCorePort->getTimeVectorPtr()->size();
-                QVector<double> time = QVector<double>::fromStdVector(*((*itp)->mpCorePort->getTimeVectorPtr()));
-                //qDebug() << "hoj";
-                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Flow", this);
-                //qDebug() << "hoj 1";
-                for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
-                {
-                    y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(0));
-                }
-                //qDebug() << "hoj 2";
-                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Flow", time);
-                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Flow", y);
-                
-                y.clear();
-
-                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Pressure", this);
-                for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
-                {
-                    y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(1));
-                }
-                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Pressure", time);
-                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Pressure", y);
-            }
-            if ((*itp)->mpCorePort->getNodeType() =="NodeMechanic")
-            {
-                size_t dataLength = (*itp)->mpCorePort->getTimeVectorPtr()->size();
-                QVector<double> time = QVector<double>::fromStdVector(*((*itp)->mpCorePort->getTimeVectorPtr()));
-                //qDebug() << "hej";
-                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Velocity", this);
-                for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
-                {
-                    y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(0));
-                }
-                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Velocity", time);
-                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Velocity", y);
-
-                y.clear();
-                
-                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Force", this);
-                for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
-                {
-                    y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(1));
-                }
-                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Force", time);
-                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Force", y);
-                
-                y.clear();
-
-                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Position", this);
-                for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
-                {
-                    y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(2));
-                }
-                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Position", time);
-                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Position", y);
-            }
-            if ((*itp)->mpCorePort->getNodeType() =="NodeSignal")
-            {
-                if((*itp)->mpCorePort->isConnected())
-                {
-                    //qDebug() << "size = " << (*itp)->mpCorePort->getTimeVectorPtr()->size();
-                    size_t dataLength = (*itp)->mpCorePort->getTimeVectorPtr()->size();
-                    QVector<double> time = QVector<double>::fromStdVector(*((*itp)->mpCorePort->getTimeVectorPtr()));
-                    //qDebug() << "haj";
-                    tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Signal", this);
-                    //qDebug() << "haj 1";
-                    for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
-                    {
-                        y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(0));
-                    }
-                    //qDebug() << "haj 2";
-                    xMap.insert(it.key() + ", " + (*itp)->getName() + ", Signal", time);
-                    //qDebug() << "haj 3";
-                    yMap.insert(it.key() + ", " + (*itp)->getName() + ", Signal", y);
-                    //qDebug() << "haj 4";
-                }
-            }
+//            if ((*itp)->mpCorePort->getNodeType() =="NodeHydraulic")
+//            {
+//                size_t dataLength = (*itp)->mpCorePort->getTimeVectorPtr()->size();
+//                QVector<double> time = QVector<double>::fromStdVector(*((*itp)->mpCorePort->getTimeVectorPtr()));
+//                //qDebug() << "hoj";
+//                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Flow", this);
+//                //qDebug() << "hoj 1";
+//                for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
+//                {
+//                    y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(0));
+//                }
+//                //qDebug() << "hoj 2";
+//                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Flow", time);
+//                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Flow", y);
+//
+//                y.clear();
+//
+//                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Pressure", this);
+//                for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
+//                {
+//                    y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(1));
+//                }
+//                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Pressure", time);
+//                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Pressure", y);
+//            }
+//            if ((*itp)->mpCorePort->getNodeType() =="NodeMechanic")
+//            {
+//                size_t dataLength = (*itp)->mpCorePort->getTimeVectorPtr()->size();
+//                QVector<double> time = QVector<double>::fromStdVector(*((*itp)->mpCorePort->getTimeVectorPtr()));
+//                //qDebug() << "hej";
+//                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Velocity", this);
+//                for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
+//                {
+//                    y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(0));
+//                }
+//                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Velocity", time);
+//                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Velocity", y);
+//
+//                y.clear();
+//
+//                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Force", this);
+//                for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
+//                {
+//                    y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(1));
+//                }
+//                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Force", time);
+//                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Force", y);
+//
+//                y.clear();
+//
+//                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Position", this);
+//                for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
+//                {
+//                    y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(2));
+//                }
+//                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Position", time);
+//                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Position", y);
+//            }
+//            if ((*itp)->mpCorePort->getNodeType() =="NodeSignal")
+//            {
+//                if((*itp)->mpCorePort->isConnected())
+//                {
+//                    //qDebug() << "size = " << (*itp)->mpCorePort->getTimeVectorPtr()->size();
+//                    size_t dataLength = (*itp)->mpCorePort->getTimeVectorPtr()->size();
+//                    QVector<double> time = QVector<double>::fromStdVector(*((*itp)->mpCorePort->getTimeVectorPtr()));
+//                    //qDebug() << "haj";
+//                    tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Signal", this);
+//                    //qDebug() << "haj 1";
+//                    for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
+//                    {
+//                        y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(0));
+//                    }
+//                    //qDebug() << "haj 2";
+//                    xMap.insert(it.key() + ", " + (*itp)->getName() + ", Signal", time);
+//                    //qDebug() << "haj 3";
+//                    yMap.insert(it.key() + ", " + (*itp)->getName() + ", Signal", y);
+//                    //qDebug() << "haj 4";
+//                }
+//            }
             //**************************
         }
     }

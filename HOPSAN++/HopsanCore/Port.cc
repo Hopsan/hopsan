@@ -165,6 +165,12 @@ void Port::getNodeDataNameAndUnit(const size_t dataid, string &rName, string &rU
     rUnit = mpNode->getDataUnit(dataid);
 }
 
+//! @brief Wraper for the Node function
+int Port::getNodeDataIdFromName(const string name)
+{
+    return mpNode->getDataIdFromName(name);
+}
+
 
 vector<double> *Port::getTimeVectorPtr()
 {

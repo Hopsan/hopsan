@@ -109,6 +109,21 @@ string Node::getDataUnit(size_t id)
     return mDataUnits[id];
 }
 
+//! @brief This function gives you the data Id for a names data variable
+//! @param [in] name The data name
+//! @return The Id, -1 if requested data name is not found
+int Node::getDataIdFromName(const string name)
+{
+    for (int i=0; i<mDataNames.size(); ++i)
+    {
+        if (name == mDataNames[i])
+        {
+            return i;
+        }
+    }
+    return -1; //Did not find this name retunr -1 to signal failure
+}
+
 
 //! Get all data names and units
 //! @param [in,out] rNames This vector will contain the names

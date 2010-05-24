@@ -48,6 +48,7 @@ protected:
     void setDataNameAndUnit(size_t id, string name, string unit);
     string getDataName(size_t id);
     string getDataUnit(size_t id);
+    int getDataIdFromName(const string name);
     void getDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits);
 
     //Protected member variables

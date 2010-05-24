@@ -58,7 +58,6 @@ class GUIPort :public QGraphicsSvgItem
 {
     Q_OBJECT
 public:
-    //GUIPort(Port *corePort, qreal x, qreal y, qreal rot, QString iconPath, Port::PORTTYPE type, GUIPort::portDirectionType portDirection, GUIObject *parent = 0);
     GUIPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent = 0);
     ~GUIPort();
     void updatePosition();
@@ -76,7 +75,7 @@ public:
     QString getPortType();
     QString getNodeType();
     //*****Core Interaction*****
-    Port *mpCorePort;
+    //Port *mpCorePort;
     //**************************
 
     bool isConnected;
@@ -91,7 +90,7 @@ protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
     //protected slots:
-    void plot(size_t plotFlowAction);
+    void plot(QString dataName, QString dataUnit=QString());
 
 signals:
     void portClicked(GUIPort *item);

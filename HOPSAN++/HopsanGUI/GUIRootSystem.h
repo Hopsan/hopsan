@@ -80,6 +80,11 @@ public:
     QString addSystemPort(QString portname);
     QString renameSystemPort(QString oldname, QString newname);
 
+    void getPlotDataNamesAndUnits(const QString compname, const QString portname, QVector<QString> &rNames, QVector<QString> &rUnits);
+    //void getPlotDataUnit(const QString compname, const QString portname, const string dataname, QString &rUnit);
+    //QVector<QString> getPlotDataUnits();
+    void getPlotData(const QString compname, const QString portname, const QString dataname, QVector<double> &rData);
+
 
 //private:
     //*****Core Interaction*****
