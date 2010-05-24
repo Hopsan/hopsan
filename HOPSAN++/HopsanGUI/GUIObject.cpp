@@ -209,9 +209,9 @@ void GUIObject::addConnector(GUIConnector *item)
 }
 
 //! This function refreshes the displayed name (HopsanCore may have changed it)
-void GUIObject::refreshName()
+void GUIObject::refreshDisplayName()
 {
-    mpNameText->setPlainText(getName());        //! @todo Will this really do anything? getName just returns the text from mpNameText, so this should just tell it to use its own text...
+    mpNameText->setPlainText(mName);
     //Adjust the position of the text
     this->fixTextPosition(this->mpNameText->pos());
 }
@@ -220,7 +220,7 @@ void GUIObject::refreshName()
 //! This function returns the current component name
 QString GUIObject::getName()
 {
-    return this->mpNameText->toPlainText();
+    return mName;
 }
 
 void GUIObject::deleteInHopsanCore()
@@ -232,7 +232,8 @@ void GUIObject::deleteInHopsanCore()
 void GUIObject::setName(QString newName, bool doOnlyCoreRename)
 {
     mpParentGraphicsView->mGUIObjectMap.erase(mpParentGraphicsView->mGUIObjectMap.find(this->getName()));
-    mpNameText->setPlainText(newName);
+    mName = newName;
+    refreshDisplayName();
     mpParentGraphicsView->mGUIObjectMap.insert(this->getName(), this);
 }
 
@@ -783,7 +784,7 @@ void GUIObjectDisplayName::focusOutEvent(QFocusEvent *event)
     //Try to set the new name, the rename function in parent view will be called
     mpParentGUIComponent->setName(toPlainText());
     //refresh the display name (it may be different from the one you wanted)
-    mpParentGUIComponent->refreshName();
+    mpParentGUIComponent->refreshDisplayName();
     emit textMoved(pos());
 
     setTextInteractionFlags(Qt::NoTextInteraction);
@@ -965,23 +966,12 @@ GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, Graph
         mPortListPtrs.append(pNewPort);
     }
 
-    refreshName(); //Make sure name window is correct size for center positioning
+    refreshDisplayName(); //Make sure name window is correct size for center positioning
 
     std::cout << "GUIcomponent: " << mComponentTypeName.toStdString() << std::endl;
 }
 
 
-
-GUIComponent::~GUIComponent()
-{
-}
-
-
-//! This function returns the current component name
-QString GUIComponent::getName()
-{
-    return mName;
-}
 
 //!
 //! @brief This function sets the desired component name
@@ -1001,7 +991,7 @@ void GUIComponent::setName(QString newName, bool doOnlyCoreRename)
         if (doOnlyCoreRename)
         {
             this->mName = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setName(this->getName().toStdString(), newName.toStdString());
-            refreshName();
+            refreshDisplayName();
         }
         else
         {
@@ -1025,7 +1015,6 @@ void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 //! Returns a string with the component type.
 QString GUIComponent::getTypeName()
 {
-//    return this->mComponentTypeName;
     return mAppearanceData.getTypeName();
 }
 
@@ -1147,18 +1136,13 @@ GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, Graph
 {
     this->mName = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createSubSystem();
 
-    refreshName(); //Make sure name window is correct size for center positioning
+    refreshDisplayName(); //Make sure name window is correct size for center positioning
 
     //! @todo Write some code here!
 
 //    std::cout << "GUISubsystem: " << mComponentTypeName.toStdString() << std::endl;
 }
 
-//! This function returns the current subsystem name
-QString GUISubsystem::getName()
-{
-    return mName;
-}
 
 //!
 //! @brief This function sets the desired subsystem name
@@ -1176,18 +1160,11 @@ void GUISubsystem::setName(QString newName, bool doOnlyCoreRename)
     //If name same as before do nothing
     if (newName != oldName)
     {
-        //This does not work when we load systems, the default name (oldNAme) may already be in the graphicsView and an incorrect rename will be triggered
-//        if (mpParentGraphicsView->haveComponent(oldName))
-//        {
-//            //Rename
-//            mpParentGraphicsView->renameComponent(oldName, newName);
-//        }
-
         //Check if we want to avoid trying to rename in the graphics view map
         if (doOnlyCoreRename)
         {
             mName = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setSystemName(oldName.toStdString(), newName.toStdString());
-            refreshName();
+            refreshDisplayName();
         }
         else
         {
@@ -1325,7 +1302,7 @@ void GUISystemPort::setName(QString newName, bool doOnlyCoreRename)
         {
             //Set name in core component, Also set the current name to the resulting one (might have been changed)
             mName = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.renameSystemPort(oldName, newName);
-            refreshName();
+            refreshDisplayName();
         }
         else
         {
@@ -1365,7 +1342,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
     QList<GUIConnector*> GUIConnList;
 
     this->setName(QString("Grupp_test"));
-    this->refreshName();
+    this->refreshDisplayName();
 
     MessageWidget *pMessageWidget = scene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget;
     pMessageWidget->printGUIMessage("Group selected components (implementing in progress...) Selected components: ");

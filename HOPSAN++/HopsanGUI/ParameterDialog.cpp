@@ -180,7 +180,7 @@ void ParameterDialog::createEditStuff()
 void ParameterDialog::setParameters()
 {
     mpGUIObject->setName(mpNameEdit->text());
-    mpGUIObject->refreshName();
+    mpGUIObject->refreshDisplayName();
 
     qDebug() << mpNameEdit->text();
 

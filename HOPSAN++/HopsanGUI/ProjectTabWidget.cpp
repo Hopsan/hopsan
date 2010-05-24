@@ -273,7 +273,7 @@ void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appear
         mpTempGUIObject->setName(name, true);
     }
 
-    mpTempGUIObject->refreshName();
+    mpTempGUIObject->refreshDisplayName();
     emit checkMessages();
     //qDebug() << "=====================Get name after add: " << mpTempGUIObject->getName();
     //

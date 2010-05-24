@@ -67,7 +67,7 @@ public:
     void addConnector(GUIConnector *item);
 
     virtual QString getName();
-    void refreshName();
+    void refreshDisplayName();
     virtual void setName(QString name, bool doOnlyLocalRename=false);
     virtual QString getTypeName();
     virtual QString getTypeCQS() {assert(false);}; //Only available in GUISystemComponent adn GuiComponent for now
@@ -189,7 +189,6 @@ class GUIComponent : public GUIObject
     Q_OBJECT
 public:
     GUIComponent(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
-    ~GUIComponent();
 
     QVector<QString> getParameterNames();
     QString getParameterUnit(QString name);
@@ -199,7 +198,6 @@ public:
 
     void saveToTextStream(QTextStream &rStream);
 
-    QString getName();
     void setName(QString name, bool doOnlyLocalRename=false);
     QString getTypeName();
     QString getTypeCQS();
@@ -229,7 +227,6 @@ public:
 
     void deleteInHopsanCore();
 
-    QString getName();
     QString getTypeName();
     void setName(QString newName, bool doOnlyCoreRename);
     void setTypeCQS(QString typestring);
@@ -248,10 +245,6 @@ private:
     QString mModelFilePath;
     QString mGraphicsFilePath;
     bool   mIsEmbedded;
-    //*****Core Interaction*****
-    ComponentSystem *mpCoreComponentSystem;
-    HopsanEssentials *mpHopsanCore;
-    //**************************
 };
 
 class GUISystemPort : public GUIObject
