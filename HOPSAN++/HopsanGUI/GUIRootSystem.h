@@ -86,7 +86,7 @@ public:
     void getPlotData(const QString compname, const QString portname, const QString dataname, QVector<double> &rData);
 
 
-//private:
+private:
     //*****Core Interaction*****
     ComponentSystem *mpCoreComponentSystem;
     //**************************
