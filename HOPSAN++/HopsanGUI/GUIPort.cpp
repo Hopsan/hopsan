@@ -164,7 +164,9 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
 
+    //*****Core Interaction
     if ((!this->isConnected) || (this->mpCorePort->getTimeVectorPtr()->empty()))
+    //*********************
     {
         event->ignore();
     }

@@ -3,7 +3,8 @@
 
 GUIRootSystem::GUIRootSystem()
 {
-
+    //Create new Core system component
+    mpCoreComponentSystem = HopsanEssentials::getInstance()->CreateComponentSystem();
 }
 
 bool GUIRootSystem::connect(QString compname1, QString portname1, QString compname2, QString portname2)

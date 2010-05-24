@@ -978,11 +978,8 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     MainWindow *pMainWindow = mpParentProjectTabWidget->mpParentMainWindow;
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
-    HopsanEssentials *hopsanCore = HopsanEssentials::getInstance();
-    mGUIRootSystem.mpCoreComponentSystem = hopsanCore->CreateComponentSystem();
     mGUIRootSystem.setDesiredTimeStep(.001);
     mGUIRootSystem.setTypeCQS("S");
-
 
     emit checkMessages();
 
