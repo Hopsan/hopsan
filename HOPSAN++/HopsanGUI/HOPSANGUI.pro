@@ -21,8 +21,8 @@ SOURCES += main.cpp \
     GUIObject.cpp \
     UndoStack.cpp \
     AppearanceData.cpp \
-    GUIUtilities.cc \
-    GUIRootSystem.cpp
+    GUIRootSystem.cpp \
+    GUIUtilities.cpp
 HEADERS += mainwindow.h \
     ProjectTabWidget.h \
     LibraryWidget.h \
