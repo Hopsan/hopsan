@@ -47,40 +47,47 @@ class GUIRootSystem
 {
 public:
     GUIRootSystem();
+
     bool connect(QString compname1, QString portname1, QString compname2, QString portname2);
     bool disconnect(QString compname1, QString portname1, QString compname2, QString portname2);
+
     void setDesiredTimeStep(double timestep);
     double getDesiredTimeStep();
+
     void setRootTypeCQS(const QString cqs_type, bool doOnlyLocalSet=false);
     void setSystemTypeCQS(QString systemName, const string cqs_type, bool doOnlyLocalSet=false);
-    QString getSystemTypeCQS(QString systemName);
     QString getTypeCQS(QString componentName);
+    QString getSystemTypeCQS(QString systemName); //!< @todo dont think that we need this one the component specifik one should do
+
     void setRootSystemName(QString name, bool doOnlyLocalRename=false);
-    QString setSystemName(QString systemname, QString name, bool doOnlyLocalRename=false);
-    QString setName(QString componentName, QString name, bool doOnlyLocalRename=false);
-    QString getName();
-    double getCurrentTime();
-    void stop();
+    QString getName(); //!< Shouldnt this one be named getRootSystemName like set name above
+    QString setSystemName(QString systemname, QString name, bool doOnlyLocalRename=false); //!< @todo This might not be necessary, should be able to use the component base class specifik one
+    QString setName(QString componentName, QString name, bool doOnlyLocalRename=false); //!< @todo maybe this should be rename as we must know the old name
+
     QString getPortType(QString componentName, QString portName);
     QString getNodeType(QString componentName, QString portName);
-    void setParameter(QString componentName, QString parameterName, double value);
-    void removeSubComponent(QString componentName, bool doDelete);
-    //void removeSystem(QString name);
-    vector<double> getTimeVector(QString componentName, QString portName);
-    void initialize(double mStartTime, double mFinishTime);
-    void simulate(double mStartTime, double mFinishTime);
-    void finalize(double mStartTime, double mFinishTime);
-    QString createComponent(QString type);
-    QString createSubSystem();
+
     QVector<QString> getParameterNames(QString componentName);
     QString getParameterUnit(QString componentName, QString parameterName);
     QString getParameterDescription(QString componentName, QString parameterName);
     double getParameterValue(QString componentName, QString parameterName);
+    void setParameter(QString componentName, QString parameterName, double value); //!< @todo maybe call this set parameter value
+
+    QString createComponent(QString type);
+    QString createSubSystem();
+    void removeSubComponent(QString componentName, bool doDelete);
+
+    void initialize(double mStartTime, double mFinishTime);
+    void simulate(double mStartTime, double mFinishTime);
+    void finalize(double mStartTime, double mFinishTime);
+    double getCurrentTime();
+    void stop();
 
     void deleteSystemPort(QString portname);
     QString addSystemPort(QString portname);
     QString renameSystemPort(QString oldname, QString newname);
 
+    vector<double> getTimeVector(QString componentName, QString portName);
     void getPlotDataNamesAndUnits(const QString compname, const QString portname, QVector<QString> &rNames, QVector<QString> &rUnits);
     //void getPlotDataUnit(const QString compname, const QString portname, const string dataname, QString &rUnit);
     //QVector<QString> getPlotDataUnits();
