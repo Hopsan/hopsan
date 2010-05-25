@@ -30,10 +30,10 @@
  */
 
 /*
+ * HopsanGUI
+ * Fluid and Mechatronic Systems, Department of Management and Engineering, Linköping University
  * Main Authors 2009-2010:  Robert Braun, Björn Eriksson, Peter Nordin
  * Contributors 2009-2010:  Mikael Axin, Alessandro Dell'Amico, Karl Pettersson, Ingo Staack
- * Fluid and Mechatronic Systems, Department of Management and Engineering, Linköping University
- * Based on: HopsanGUI
  */
 
 #include "GUIUtilities.h"
