@@ -128,14 +128,7 @@ MainWindow::MainWindow(QWidget *parent)
         //Load default libraries
     mpLibrary->addEmptyLibrary("User defined libraries");
 
-    mpLibrary->addEmptyLibrary("Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/sources","Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/sensors","Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/restrictors","Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/volumes","Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/actuators","Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/valves","Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/pumps","Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/Subsystem");
 
     mpLibrary->addEmptyLibrary("Signal");
     mpLibrary->addLibrary("../../HopsanGUI/componentData/signal/Sources","Signal");
@@ -150,7 +143,14 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary("../../HopsanGUI/componentData/mechanic/Springs & Dampers","Mechanic");
     mpLibrary->addLibrary("../../HopsanGUI/componentData/mechanic/Sensors","Mechanic");
 
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/Subsystem");
+    mpLibrary->addEmptyLibrary("Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/sources","Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/sensors","Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/restrictors","Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/volumes","Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/actuators","Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/valves","Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/pumps","Hydraulic");
 
     QMetaObject::connectSlotsByName(this);
 

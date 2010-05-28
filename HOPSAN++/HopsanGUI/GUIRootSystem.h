@@ -93,6 +93,7 @@ public:
     //QVector<QString> getPlotDataUnits();
     void getPlotData(const QString compname, const QString portname, const QString dataname, QVector<double> &rData);
 
+    bool isPortConnected(QString componentName, QString portName);
 
 private:
     //*****Core Interaction*****

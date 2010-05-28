@@ -55,7 +55,7 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
     this->resize(640,480);
     this->setWindowTitle("Model Preferences");
 
-    isoCheckBox = new QCheckBox(tr("Use ISO graphics"));
+    isoCheckBox = new QCheckBox(tr("Use ISO 1219 graphics"));
     isoCheckBox->setCheckable(true);
     isoCheckBox->setChecked(false);
 

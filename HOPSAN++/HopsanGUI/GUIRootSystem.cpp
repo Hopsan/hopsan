@@ -271,3 +271,9 @@ void GUIRootSystem::getPlotData(const QString compname, const QString portname, 
     }
     //**************************
 }
+
+
+bool GUIRootSystem::isPortConnected(QString componentName, QString portName)
+{
+    return mpCoreComponentSystem->getComponent(componentName.toStdString())->getPort(portName.toStdString())->isConnected();
+}

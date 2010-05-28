@@ -42,6 +42,7 @@
 #include <QSpinBox>
 #include <QColorDialog>
 #include <QLabel>
+#include <QCursor>
 
 
 PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindow *parent)
@@ -257,7 +258,8 @@ void PlotWidget::setBackgroundColor()
 VariablePlot::VariablePlot(QWidget *parent)
         : QwtPlot(parent)
 {
-    this->setAcceptDrops(true);
+    this->setAcceptDrops(false);
+
     //Set color for plot background
     setCanvasBackground(QColor(Qt::white));
 
@@ -309,130 +311,95 @@ void VariablePlot::dropEvent(QDropEvent *event)
 VariableList::VariableList(MainWindow *parent)
         : QListWidget(parent)
 {
-    qDebug() << "dsada";
     mpParentMainWindow = parent;
     mpCurrentView = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView;
-    qDebug() << "erwq";
-    //if ((!(this->mpCorePort->isConnected())) || (this->mpCorePort->getTimeVectorPtr()->empty()))
+
+    this->setDragEnabled(true);
+    this->setAcceptDrops(true);
 
     xMap.clear();
     yMap.clear();
     QVector<double> y;
-    qDebug() << "dsfsdaga";
     QMap<QString, GUIObject *>::iterator it;
     QListWidgetItem *tempListWidget;
-    qDebug() << "wqer";
+    bool colorize = false;
     for(it = mpCurrentView->mGUIObjectMap.begin(); it!=mpCurrentView->mGUIObjectMap.end(); ++it)
     {
-        //qDebug() << "Gorilla";
+        QColor backgroundColor;
+        if(colorize)
+        {
+            backgroundColor = QColor("white");
+            colorize = false;
+        }
+        else
+        {
+            backgroundColor = QColor("aliceblue");
+            colorize = true;
+        }
+
         QList<GUIPort*>::iterator itp;
-        //qDebug() << "Blaj";
         for(itp = it.value()->mPortListPtrs.begin(); itp !=it.value()->mPortListPtrs.end(); ++itp)
         {
             qDebug() << "Writing plot stuff for " << it.value()->getName() << " " << (*itp)->getName();
-            // qDebug() << "tjo";
             y.clear();
-            //qDebug() << "Bamse";
-           // qDebug() << "Varmkorv";
 
-            //qDebug() << "Julafton";
+            if (mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getNodeType((*itp)->getGUIComponentName(), (*itp)->getName()) == "NodeHydraulic")
+            {
+                QVector<double> time = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getTimeVector((*itp)->getGUIComponentName(), (*itp)->getName()));
+                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Flow", this);
+                tempListWidget->setBackgroundColor(backgroundColor);
+                tempListWidget->setFlags(Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+                this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), QString("MassFlow"), y);
+                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Flow", time);
+                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Flow", y);
+                
+                y.clear();
 
-             //! @todo This stuff is completely mad, should ask the core about available data names and units, not hardcoded
-            //*****Core Interaction*****
-//            if ((*itp)->mpCorePort->getNodeType() =="NodeHydraulic")
-//            {
-//                size_t dataLength = (*itp)->mpCorePort->getTimeVectorPtr()->size();
-//                QVector<double> time = QVector<double>::fromStdVector(*((*itp)->mpCorePort->getTimeVectorPtr()));
-//                //qDebug() << "hoj";
-//                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Flow", this);
-//                //qDebug() << "hoj 1";
-//                for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
-//                {
-//                    y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(0));
-//                }
-//                //qDebug() << "hoj 2";
-//                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Flow", time);
-//                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Flow", y);
-//
-//                y.clear();
-//
-//                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Pressure", this);
-//                for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
-//                {
-//                    y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(1));
-//                }
-//                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Pressure", time);
-//                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Pressure", y);
-//            }
-//            if ((*itp)->mpCorePort->getNodeType() =="NodeMechanic")
-//            {
-//                size_t dataLength = (*itp)->mpCorePort->getTimeVectorPtr()->size();
-//                QVector<double> time = QVector<double>::fromStdVector(*((*itp)->mpCorePort->getTimeVectorPtr()));
-//                //qDebug() << "hej";
-//                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Velocity", this);
-//                for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
-//                {
-//                    y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(0));
-//                }
-//                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Velocity", time);
-//                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Velocity", y);
-//
-//                y.clear();
-//
-//                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Force", this);
-//                for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
-//                {
-//                    y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(1));
-//                }
-//                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Force", time);
-//                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Force", y);
-//
-//                y.clear();
-//
-//                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Position", this);
-//                for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
-//                {
-//                    y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(2));
-//                }
-//                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Position", time);
-//                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Position", y);
-//            }
-//            if ((*itp)->mpCorePort->getNodeType() =="NodeSignal")
-//            {
-//                if((*itp)->mpCorePort->isConnected())
-//                {
-//                    //qDebug() << "size = " << (*itp)->mpCorePort->getTimeVectorPtr()->size();
-//                    size_t dataLength = (*itp)->mpCorePort->getTimeVectorPtr()->size();
-//                    QVector<double> time = QVector<double>::fromStdVector(*((*itp)->mpCorePort->getTimeVectorPtr()));
-//                    //qDebug() << "haj";
-//                    tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Signal", this);
-//                    //qDebug() << "haj 1";
-//                    for (size_t i = 0; i<dataLength-1; ++i) //Denna loop ar inte klok
-//                    {
-//                        y.append(((*itp)->mpCorePort->getDataVectorPtr()->at(i)).at(0));
-//                    }
-//                    //qDebug() << "haj 2";
-//                    xMap.insert(it.key() + ", " + (*itp)->getName() + ", Signal", time);
-//                    //qDebug() << "haj 3";
-//                    yMap.insert(it.key() + ", " + (*itp)->getName() + ", Signal", y);
-//                    //qDebug() << "haj 4";
-//                }
-//            }
-            //**************************
+                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Pressure", this);
+                tempListWidget->setBackgroundColor(backgroundColor);
+                this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), QString("Pressure"), y);
+                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Pressure", time);
+                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Pressure", y);
+            }
+            if (mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getNodeType((*itp)->getGUIComponentName(), (*itp)->getName()) =="NodeMechanic")
+            {
+                QVector<double> time = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getTimeVector((*itp)->getGUIComponentName(), (*itp)->getName()));
+                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Velocity", this);
+                tempListWidget->setBackgroundColor(backgroundColor);
+                this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), QString("Velocity"), y);
+                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Velocity", time);
+                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Velocity", y);
+
+                y.clear();
+                
+                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Force", this);
+                tempListWidget->setBackgroundColor(backgroundColor);
+                this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), QString("Force"), y);
+                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Force", time);
+                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Force", y);
+                
+                y.clear();
+
+                tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Position", this);
+                tempListWidget->setBackgroundColor(backgroundColor);
+                this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), QString("Position"), y);
+                xMap.insert(it.key() + ", " + (*itp)->getName() + ", Position", time);
+                yMap.insert(it.key() + ", " + (*itp)->getName() + ", Position", y);
+            }
+            if (mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getNodeType((*itp)->getGUIComponentName(), (*itp)->getName()) =="NodeSignal")
+            {
+                if(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.isPortConnected((*itp)->getGUIComponentName(), (*itp)->getName()))
+                {
+                    QVector<double> time = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getTimeVector((*itp)->getGUIComponentName(), (*itp)->getName()));
+                    tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Signal", this);
+                    tempListWidget->setBackgroundColor(backgroundColor);
+                    this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), QString("Value"), y);
+                    xMap.insert(it.key() + ", " + (*itp)->getName() + ", Signal", time);
+                    yMap.insert(it.key() + ", " + (*itp)->getName() + ", Signal", y);
+                }
+            }
         }
     }
-
-    //Populate the list
-    //QListWidgetItem *sinus = new QListWidgetItem(tr("linear1"),this);
-    //QListWidgetItem *cosinus = new QListWidgetItem(tr("linear2"),this);
-
-    // Store values for two functions, only for testing
-
-    //map["linear1"] = 1.0;
-
-    //map["linear2"] = 2.0;
-
-    qDebug() << "Orangutang";
 
     connect(this,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(createPlot(QListWidgetItem*)));
 }
@@ -475,24 +442,81 @@ void VariableList::mouseMoveEvent(QMouseEvent *event)
 
     stream << item->text();
 
+    *data = "Test";
+
     QString mimeType = "application/x-plotvariable";
 
     QDrag *drag = new QDrag(this);
     QMimeData *mimeData = new QMimeData;
 
     mimeData->setData(mimeType, *data);
+    qDebug() << "mimeData = " << *data;
     drag->setMimeData(mimeData);
-
-    drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()));
+    //QCursor cursor;
+    //drag->setHotSpot(cursor.pos());
+    //drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()));
+    drag->exec();
 
     //Qt::DropAction dropAction = drag->exec(Qt::CopyAction | Qt::MoveAction);
 
 }
 
 
+SelectedVariableList::SelectedVariableList(MainWindow *parent)
+        : VariableList(parent)
+{
+    mpParentMainWindow = parent;
+    mpCurrentView = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView;
+    this->setAcceptDrops(true);
+    this->setDragEnabled(true);
+
+    xMap.clear();
+    yMap.clear();
+}
+
+void SelectedVariableList::dragMoveEvent(QDragMoveEvent *event)
+{
+    qDebug() << "Dragging something...";
+    if (event->mimeData()->hasFormat("application/x-plotvariable"))
+    {
+        event->acceptProposedAction();
+    }
+}
+
+//
+//void SelectedVariableList::dragMoveEvent(QDragMoveEvent *event)
+//{
+//    if (event->mimeData()->hasFormat("application/x-plotvariable"))
+//    {
+//      event->accept();
+//    }
+//    else
+//    {
+//        event->ignore();
+//    }
+//}
+
+
+void SelectedVariableList::dropEvent(QDropEvent *event)
+{
+    qDebug() << "dropEvent";
+    if (event->mimeData()->hasFormat("application/x-plotvariable"))
+    //if (event->mimeData()->hasText())
+    {
+        qDebug() << "True!";
+        QString datastr =  event->mimeData()->text();
+        //QTextStream stream(&datastr, QIODevice::ReadOnly);
+        QListWidgetItem *tempListWidget = new QListWidgetItem(datastr, this);
+
+        event->acceptProposedAction();
+   }
+}
+
 VariableListDialog::VariableListDialog(MainWindow *parent)
         : QWidget(parent)
 {
+    //this->setAcceptDrops(true);
+
     mpParentMainWindow = parent;
 
     //Create a grid
@@ -500,6 +524,24 @@ VariableListDialog::VariableListDialog(MainWindow *parent)
 
     //Create the plotvariables list
     VariableList *varList = new VariableList(mpParentMainWindow);
+    SelectedVariableList *rightAxisList = new SelectedVariableList(mpParentMainWindow);
+    SelectedVariableList *leftAxisList = new SelectedVariableList(mpParentMainWindow);
+    rightAxisList->setMaximumHeight(100);
+    rightAxisList->setObjectName("Right Axis");
+    rightAxisList->setWindowTitle("Right Axis");
+    rightAxisList->setSelectionMode(QAbstractItemView::SingleSelection);
+    rightAxisList->setDragEnabled(true);
+    rightAxisList->viewport()->setAcceptDrops(true);
+    rightAxisList->setDropIndicatorShown(true);
+    rightAxisList->setDragDropMode(QAbstractItemView::DragDrop);
+    leftAxisList->setMaximumHeight(100);
+    leftAxisList->setWindowTitle("Left Axis");
 
-    grid->addWidget(varList,0,0);
+    plotButton = new QPushButton(tr("&Plot"));
+    plotButton->setAutoDefault(true);
+
+    grid->addWidget(varList,0,0,3,1);
+    //grid->addWidget(rightAxisList,4,0,1,1);
+    //grid->addWidget(leftAxisList,5,0,1,1);
+    //grid->addWidget(plotButton,6,0);
 }

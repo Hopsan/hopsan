@@ -146,6 +146,28 @@ protected:
 };
 
 
+class SelectedVariableList : public VariableList
+{
+    Q_OBJECT
+public:
+    SelectedVariableList(MainWindow *parent = 0);
+    QMap< QString, QVector<double> > xMap;
+    QMap< QString, QVector<double> > yMap;
+    MainWindow *mpParentMainWindow;
+    GraphicsView *mpCurrentView;
+
+protected:
+    //virtual void mousePressEvent(QMouseEvent *event);
+    //virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void dragMoveEvent(QDragMoveEvent *event);
+    virtual void dropEvent(QDropEvent *event);
+    QPoint dragStartPosition;
+
+private slots:
+    //void createPlot(QListWidgetItem *item);
+};
+
+
 class VariableListDialog : public QWidget
 {
     Q_OBJECT
@@ -153,6 +175,7 @@ public:
     VariableListDialog(MainWindow *parent = 0);
 private:
     MainWindow *mpParentMainWindow;
+    QPushButton *plotButton;
 };
 
 #endif // PLOTWIDGET_H
