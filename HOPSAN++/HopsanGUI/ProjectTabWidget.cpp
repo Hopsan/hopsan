@@ -1176,9 +1176,12 @@ void ProjectTabWidget::updateCurrentStopTime()
 
 void ProjectTabWidget::updateSimulationSetupWidget()
 {
-    mpParentMainWindow->mpSimulationSetupWidget->setStartTimeLabel(getCurrentTab()->getStartTime());
-    mpParentMainWindow->mpSimulationSetupWidget->setTimeStepLabel(getCurrentTab()->getTimeStep());
-    mpParentMainWindow->mpSimulationSetupWidget->setFinishTimeLabel(getCurrentTab()->getStopTime());
+    if(this->count() != 0)  //Don't do anything if there are no current tab
+    {
+        mpParentMainWindow->mpSimulationSetupWidget->setStartTimeLabel(getCurrentTab()->getStartTime());
+        mpParentMainWindow->mpSimulationSetupWidget->setTimeStepLabel(getCurrentTab()->getTimeStep());
+        mpParentMainWindow->mpSimulationSetupWidget->setFinishTimeLabel(getCurrentTab()->getStopTime());
+    }
 }
 
 

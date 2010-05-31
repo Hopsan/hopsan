@@ -62,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle("HOPSAN NG");
     this->setWindowIcon(QIcon("../../HopsanGUI/icons/hopsan.png"));
 
-    mpPreferenceWidget = new PreferenceWidget(this);
+
     mpOptionsWidget = new OptionsWidget(this);
 
     //Create a centralwidget for the main window
@@ -124,6 +124,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     mpUndoWidget = new UndoWidget(this);
     mpProjectTabs->addNewProjectTab();
+
+    mpPreferenceWidget = new PreferenceWidget(this);
 
         //Load default libraries
     mpLibrary->addEmptyLibrary("User defined libraries");

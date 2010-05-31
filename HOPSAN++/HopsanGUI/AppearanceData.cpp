@@ -199,25 +199,25 @@ void GUIConnectorAppearance::adjustToZoom(qreal zoomFactor)
     }
     else if( zoomFactor < 0.5)
     {
-        zoomFactor2 = zoomFactor*1.6;
-        zoomFactor3 = zoomFactor*2.6;
+        zoomFactor2 = zoomFactor*2.0;
+        zoomFactor3 = zoomFactor*3.0;
     }
 
-    mPrimaryPenPowerIso.setWidth(1.0/zoomFactor);
-    mActivePenPowerIso.setWidth(2.0/zoomFactor2);
-    mHoverPenPowerIso.setWidth(2.0/zoomFactor2);
+    mPrimaryPenPowerIso.setWidth(1.5/zoomFactor);
+    mActivePenPowerIso.setWidth(2.5/zoomFactor2);
+    mHoverPenPowerIso.setWidth(2.5/zoomFactor2);
 
-    mPrimaryPenSignalIso.setWidth(1.0/zoomFactor);
-    mActivePenSignalIso.setWidth(2.0/zoomFactor2);
-    mHoverPenSignalIso.setWidth(2.0/zoomFactor2);
+    mPrimaryPenSignalIso.setWidth(1.5/zoomFactor);
+    mActivePenSignalIso.setWidth(2.5/zoomFactor2);
+    mHoverPenSignalIso.setWidth(2.5/zoomFactor2);
 
-    mPrimaryPenPowerUser.setWidth(2.0/zoomFactor2);
-    mActivePenPowerUser.setWidth(3.0/zoomFactor3);
-    mHoverPenPowerUser.setWidth(3.0/zoomFactor3);
+    mPrimaryPenPowerUser.setWidth(2.5/zoomFactor2);
+    mActivePenPowerUser.setWidth(4.5/zoomFactor3);
+    mHoverPenPowerUser.setWidth(4.5/zoomFactor3);
 
-    mPrimaryPenSignalUser.setWidth(1.0/zoomFactor);
-    mActivePenSignalUser.setWidth(2.0/zoomFactor2);
-    mHoverPenSignalUser.setWidth(2.0/zoomFactor2);
+    mPrimaryPenSignalUser.setWidth(1.5/zoomFactor);
+    mActivePenSignalUser.setWidth(2.5/zoomFactor2);
+    mHoverPenSignalUser.setWidth(2.5/zoomFactor2);
 qDebug() << 2.0/zoomFactor2*zoomFactor;
 }
 

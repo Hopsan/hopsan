@@ -57,8 +57,8 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
 
     isoCheckBox = new QCheckBox(tr("Use ISO 1219 graphics"));
     isoCheckBox->setCheckable(true);
-    //isoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentTab()->useIsoGraphics);
-    isoCheckBox->setChecked(false);
+    isoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentTab()->useIsoGraphics);
+    //isoCheckBox->setChecked(false);
 
     cancelButton = new QPushButton(tr("&Cancel"));
     cancelButton->setAutoDefault(false);
@@ -87,6 +87,12 @@ PreferenceWidget::~PreferenceWidget()
 {
 }
 
+
+void PreferenceWidget::show()
+{
+    isoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentTab()->useIsoGraphics);
+    QDialog::show();
+}
 
 
 void PreferenceWidget::updateValues()

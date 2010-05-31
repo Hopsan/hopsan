@@ -69,6 +69,7 @@ public:
 
 
 public slots:
+    void show();
     void updateValues();
 };
 

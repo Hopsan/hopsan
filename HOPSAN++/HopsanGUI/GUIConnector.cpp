@@ -155,6 +155,8 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
 
     mpStartPort->getGuiObject()->addConnector(this);
     mpEndPort->getGuiObject()->addConnector(this);
+
+    connect(mpParentGraphicsView, SIGNAL(zoomChange()), this, SLOT(adjustToZoom()));
 }
 
 
