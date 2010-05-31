@@ -1,4 +1,4 @@
-TYPENAME SignalMultiply
+TYPENAME "SignalMultiply"
 DISPLAYNAME "Multiply"
 ISOICON multiply.svg
 ICONROTATION ON

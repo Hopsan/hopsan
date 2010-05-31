@@ -1,4 +1,4 @@
-TYPENAME SignalRamp
+TYPENAME "SignalRamp"
 DISPLAYNAME "Ramp"
 ISOICON ramp.svg
 ICONROTATION ON

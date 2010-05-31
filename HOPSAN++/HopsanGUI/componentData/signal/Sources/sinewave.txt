@@ -1,4 +1,4 @@
-TYPENAME SignalSineWave
+TYPENAME "SignalSineWave"
 DISPLAYNAME "Sine Wave"
 ISOICON sinewave.svg
 ICONROTATION ON

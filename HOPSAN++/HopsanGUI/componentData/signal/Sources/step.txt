@@ -1,4 +1,4 @@
-TYPENAME SignalStep
+TYPENAME "SignalStep"
 DISPLAYNAME "Step"
 USERICON step.svg
 ICONROTATION ON

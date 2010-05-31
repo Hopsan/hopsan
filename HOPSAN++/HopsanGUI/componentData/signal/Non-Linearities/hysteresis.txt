@@ -1,4 +1,4 @@
-TYPENAME SignalHysteresis
+TYPENAME "SignalHysteresis"
 DISPLAYNAME "Hysteresis"
 ISOICON hysteresis.svg
 ICONROTATION ON

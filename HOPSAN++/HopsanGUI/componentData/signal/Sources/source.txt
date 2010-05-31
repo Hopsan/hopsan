@@ -1,4 +1,4 @@
-TYPENAME SignalSource
+TYPENAME "SignalSource"
 DISPLAYNAME "Source"
 ISOICON Source.svg
 ICONROTATION OFF

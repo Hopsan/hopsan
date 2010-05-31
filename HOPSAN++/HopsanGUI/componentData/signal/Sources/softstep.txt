@@ -1,4 +1,4 @@
-TYPENAME SignalSoftStep
+TYPENAME "SignalSoftStep"
 DISPLAYNAME "Soft step"
 ISOICON softstep.svg
 ICONROTATION ON

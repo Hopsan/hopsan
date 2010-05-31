@@ -1,4 +1,4 @@
-TYPENAME SignalSubtract
+TYPENAME "SignalSubtract"
 DISPLAYNAME "Subtract"
 ISOICON sub.svg
 ICONROTATION ON

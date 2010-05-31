@@ -1,4 +1,4 @@
-TYPENAME SignalDeadZone
+TYPENAME "SignalDeadZone"
 DISPLAYNAME "Dead Zone"
 ISOICON deadzone.svg
 ICONROTATION ON

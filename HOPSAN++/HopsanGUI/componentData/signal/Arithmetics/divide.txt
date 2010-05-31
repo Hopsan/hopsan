@@ -1,4 +1,4 @@
-TYPENAME SignalDivide
+TYPENAME "SignalDivide"
 DISPLAYNAME "Divide"
 ISOICON divide.svg
 ICONROTATION ON

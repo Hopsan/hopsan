@@ -1,4 +1,4 @@
-TYPENAME SignalSecondOrderFilter
+TYPENAME "SignalSecondOrderFilter"
 DISPLAYNAME "Second order filter"
 USERICON secondorder.svg
 ICONROTATION ON

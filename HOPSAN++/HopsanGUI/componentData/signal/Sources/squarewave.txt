@@ -1,4 +1,4 @@
-TYPENAME SignalSquareWave
+TYPENAME "SignalSquareWave"
 DISPLAYNAME "Square Wave"
 ISOICON squarewave.svg
 ICONROTATION ON

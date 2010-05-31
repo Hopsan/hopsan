@@ -1,4 +1,4 @@
-TYPENAME SignalPulse
+TYPENAME "SignalPulse"
 DISPLAYNAME "Pulse"
 ISOICON pulse.svg
 ICONROTATION ON

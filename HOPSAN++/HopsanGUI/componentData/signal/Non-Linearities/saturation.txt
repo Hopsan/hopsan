@@ -1,4 +1,4 @@
-TYPENAME SignalSaturation
+TYPENAME "SignalSaturation"
 DISPLAYNAME "Saturation"
 ISOICON saturation.svg
 ICONROTATION ON
