@@ -5,23 +5,23 @@ HOPSANGUIVERSION 0.0.1
 HOPSANGUIMODELFILEVERSION 0.1
 HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION 0.1
 --------------------------------------------------------------
-COMPONENT MechanicForceTransformer "ForceTransformer" 2240 2393 0 1
+COMPONENT "MechanicForceTransformer" "ForceTransformer" 2240 2393 0 1
 PARAMETER "ForceTransformer" x0 0
 PARAMETER "ForceTransformer" v0 1
 PARAMETER "ForceTransformer" Force 0
-COMPONENT MechanicTranslationalMass "TranslationalMass" 2332 2393 0 0
+COMPONENT "MechanicTranslationalMass" "TranslationalMass" 2332 2393 0 0
 PARAMETER "TranslationalMass" Mass 100
 PARAMETER "TranslationalMass" B 0
 PARAMETER "TranslationalMass" k 0
-COMPONENT MechanicTranslationalMass "TranslationalMass_1" 2518 2393 0 0
+COMPONENT "MechanicTranslationalMass" "TranslationalMass_1" 2518 2393 0 0
 PARAMETER "TranslationalMass_1" Mass 100
 PARAMETER "TranslationalMass_1" B 0
 PARAMETER "TranslationalMass_1" k 0
-COMPONENT MechanicTranslationalSpring "TranslationalSpring" 2617 2393 0 1
+COMPONENT "MechanicTranslationalSpring" "TranslationalSpring" 2617 2393 0 1
 PARAMETER "TranslationalSpring" k 100000
-COMPONENT MechanicTranslationalSpring "TranslationalSpring_1" 2426 2393 0 1
+COMPONENT "MechanicTranslationalSpring" "TranslationalSpring_1" 2426 2393 0 1
 PARAMETER "TranslationalSpring_1" k 100000
-COMPONENT MechanicVelocityTransformer "VelocityTransformer" 2693 2393 180 0
+COMPONENT "MechanicVelocityTransformer" "VelocityTransformer" 2693 2393 180 0
 PARAMETER "VelocityTransformer" Speed 0
 --------------------------------------------------------------
 CONNECT "VelocityTransformer" "out" "TranslationalSpring" "P2" 2673.5 2393 2653 2393 2653 2393 2633.5 2393
