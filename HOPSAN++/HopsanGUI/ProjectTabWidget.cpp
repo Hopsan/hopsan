@@ -167,12 +167,13 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
     {
         if (QGraphicsItem *item = itemAt(event->pos()))
             QGraphicsView::contextMenuEvent(event);
-        else
-        {
-            QMenu menu(this);
-            menu.addMenu(menuInsert);
-            menu.exec(event->globalPos());
-        }
+        // Context menu when right-clicking:
+//        else
+//        {
+//            QMenu menu(this);
+//            menu.addMenu(menuInsert);
+//            menu.exec(event->globalPos());
+//        }
         mJustStoppedCreatingConnector = true;
     }
 }
