@@ -1438,7 +1438,7 @@ void ProjectTabWidget::loadModel()
 
         if ( inputWord == "COMPONENT" )
         {
-            inputStream >> componentType;
+            componentType = readName(inputStream);
             componentName = readName(inputStream);  //Now read the name, assume that the name is contained within quotes signs, "name"
             inputStream >> posX;
             inputStream >> posY;
@@ -1446,6 +1446,7 @@ void ProjectTabWidget::loadModel()
             inputStream >> nameTextPos;
 
             //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
+            qDebug() << "componentType: " << componentType;
             AppearanceData appearanceData = *mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
             pCurrentTab->mpGraphicsView->addGUIObject(componentType, appearanceData, QPoint(posX, posY), 0, componentName);
             pCurrentTab->mpGraphicsView->getGUIObject(componentName)->setNameTextPos(nameTextPos);

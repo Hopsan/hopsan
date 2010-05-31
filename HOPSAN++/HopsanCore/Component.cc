@@ -20,7 +20,7 @@
 template<typename MapType>
 string modifyName(MapType &rMap, string name)
 {
-    //Make sure naem is not empty
+    //Make sure name is not empty
     if (name.empty())
     {
         name = "empty_name";
@@ -57,13 +57,6 @@ string modifyName(MapType &rMap, string name)
     }
     //cout << name << endl;
 
-//    //If name change, notify
-//    //! @todo maybe this notification should not be inside this function but after its use
-//    if (oldname != name)
-//    {
-//        cout << "Modified name: " << oldname << "  was changed to: " << name << endl;
-//        gCoreMessageHandler.addInfoMessage("Name was automatically adjusted from the requested: {" + oldname + "} to: {" + name + "}", 3);
-//    }
     return name;
 }
 

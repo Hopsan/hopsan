@@ -112,6 +112,8 @@ public:
     void addLibrary(QString libDir, QString parentLib=QString());
     void addLibraryContentItem(QString libraryName, QString parentLibraryName, LibraryContentItem *newComponent);
     AppearanceData *getAppearanceData(QString componentType);
+    AppearanceData *getAppearanceDataByDisplayName(QString displayName);
+
 
 public slots:
     void addLibrary();
@@ -125,6 +127,7 @@ private:
     //Member variables
     MainWindow *mpParentMainWindow;
     QMap<QString, AppearanceData*> mAppearanceDataMap;
+    QMap<QString, QString> mName2TypeMap; //!< @todo This is a temporary hack
     QTreeWidget *mpTree;
     QMap<QString, LibraryContent*> mLibraryContentMapPtrs;
     QVBoxLayout *mpGrid;

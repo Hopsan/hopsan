@@ -152,10 +152,11 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
     QTextStream stream(&datastr);//, QIODevice::WriteOnly);
 
     QListWidgetItem *pItem = this->currentItem();
+    //    LibraryContentItem* pContItem = q
 
     //stream out appearance data and extra basepath info
-    stream << *(mpParentLibraryWidget->getAppearanceData(pItem->toolTip()));
-    stream << "BASEPATH " << mpParentLibraryWidget->getAppearanceData(pItem->toolTip())->getBasePath();
+    stream << *(mpParentLibraryWidget->getAppearanceDataByDisplayName(pItem->toolTip()));
+    stream << "BASEPATH " << mpParentLibraryWidget->getAppearanceDataByDisplayName(pItem->toolTip())->getBasePath();
 
     QDrag *drag = new QDrag(this);
     QMimeData *mimeData = new QMimeData;
@@ -339,7 +340,8 @@ void LibraryWidget::addLibraryContentItem(QString libraryName, QString parentLib
         }
         ++it;
     }
-    mAppearanceDataMap.insert(newComponent->getAppearanceData()->getName(), newComponent->getAppearanceData());
+    mName2TypeMap.insert(newComponent->getAppearanceData()->getName(), newComponent->getAppearanceData()->getTypeName()); //! @todo this is a temporary workaround
+    mAppearanceDataMap.insert(newComponent->getAppearanceData()->getTypeName(), newComponent->getAppearanceData());
 }
 
 
@@ -374,7 +376,7 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
     }
 }
 
-
+//! @brief This function retrieves the appearance data given the TypeName
 AppearanceData *LibraryWidget::getAppearanceData(QString componentType)
 {
     qDebug() << "LibraryWidget::getAppearanceData: " + componentType;
@@ -385,6 +387,13 @@ AppearanceData *LibraryWidget::getAppearanceData(QString componentType)
     }
 
     return mAppearanceDataMap.value(componentType);
+}
+
+//! @brief This function retrieves the appearance data given a display name
+//! @todo This is a temporary hack
+AppearanceData *LibraryWidget::getAppearanceDataByDisplayName(QString displayName)
+{
+    return getAppearanceData(mName2TypeMap.value(displayName));
 }
 
 //! Hide all libraries.

@@ -332,7 +332,7 @@ void GUIObject::setParameterValue(QString name, double value)
 void GUIObject::saveToTextStream(QTextStream &rStream)
 {
     QPointF pos = mapToScene(boundingRect().center());
-    rStream << "COMPONENT " << getTypeName() << " " << addQuotes(getName()) << " "
+    rStream << "COMPONENT " << addQuotes(getTypeName()) << " " << addQuotes(getName()) << " "
             << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << "\n";
 
 //    vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
@@ -947,8 +947,20 @@ void GUIObject::deleteMe()
 GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
     : GUIObject(position, appearanceData, scene, parent)
 {
+    //Create the object in core, and get its default core name
     QString corename = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createComponent(mAppearanceData.getTypeName());
-    mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.rename(corename, getName())); //Cant use setName here as thewould call an aditional rename (of someone else)
+
+    if ( getName().isEmpty() )
+    {
+        //If the displayname has not been decided then use the name from core
+        mAppearanceData.setName(corename);
+    }
+    else
+    {
+        //Lets rename the core object to the gui name that is set in the txt description file, we take the name theat this function returns
+        mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.rename(corename, getName())); //Cant use setName here as thewould call an aditional rename (of someone else)
+    }
+
     QString cqsType = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTypeCQS(getName());
 
     //Sets the ports
@@ -967,12 +979,7 @@ GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, Graph
         mPortListPtrs.append(pNewPort);
     }
 
-    //If the displayname has not been decided then use the name from core
-    if ( getName().isEmpty() )
-    {
-        //We set the name here only core setName
-        setName(corename, true);
-    }
+
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
     std::cout << "GUIcomponent: " << mComponentTypeName.toStdString() << std::endl;
@@ -1142,13 +1149,17 @@ GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, Graph
         : GUIObject(position, appearanceData, scene, parent)
 {
     QString corename = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createSubSystem();
-
-    //If the displayname has not been decided then use the name from core
     if ( getName().isEmpty() )
     {
-        //We set the name here only local setName
-        setName(corename, true);
+        //If the displayname has not been decided then use the name from core
+        mAppearanceData.setName(corename);
     }
+    else
+    {
+        //Lets rename the core object to the gui name that is set in the txt description file, we take the name that this function returns
+        mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.rename(corename, getName())); //Cant use setName here as thewould call an aditional rename (of someone else)
+    }
+
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
     //! @todo Write some code here!
