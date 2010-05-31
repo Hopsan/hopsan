@@ -1,4 +1,5 @@
-NAME HydraulicLaminarOrifice
+TYPENAME HydraulicLaminarOrifice
+DISPLAYNAME "Laminar Orifice"
 ISOICON laminarorifice_iso.svg
 USERICON laminarorifice_user.svg
 ICONROTATION ON

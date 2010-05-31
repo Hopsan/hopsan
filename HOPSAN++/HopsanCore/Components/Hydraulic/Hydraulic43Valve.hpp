@@ -49,7 +49,7 @@ private:
 public:
     static Component *Creator()
     {
-        return new Hydraulic43Valve("43Valve");
+        return new Hydraulic43Valve("Hydraulic 4/3 Valve");
     }
 
     Hydraulic43Valve(const string name) : ComponentQ(name)

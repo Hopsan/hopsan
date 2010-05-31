@@ -1,4 +1,5 @@
-NAME HydraulicCylinderC
+TYPENAME HydraulicCylinderC
+DISPLAYNAME "Cylinder C"
 ISOICON cylinderc_iso.svg
 USERICON cylinderc_user.svg
 ICONROTATION ON

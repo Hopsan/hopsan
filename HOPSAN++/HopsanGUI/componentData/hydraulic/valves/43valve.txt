@@ -1,4 +1,5 @@
-NAME Hydraulic43Valve
+TYPENAME Hydraulic43Valve
+DISPLAYNAME "4/3 Servo Valve"
 ISOICON 43valve_iso.svg
 USERICON 43valve_user.svg
 ICONROTATION ON

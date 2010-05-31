@@ -1,4 +1,5 @@
-NAME HydraulicFlowSensor
+TYPENAME HydraulicFlowSensor
+DISPLAYNAME "Flow Sensor"
 ISOICON flowsensor_iso.svg
 USERICON flowsensor_user.svg
 ICONROTATION ON

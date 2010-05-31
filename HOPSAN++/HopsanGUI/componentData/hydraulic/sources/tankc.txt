@@ -1,4 +1,5 @@
-NAME HydraulicTankC
+TYPENAME HydraulicTankC
+DISPLAYNAME "Tank C"
 ISOICON tank_iso.svg
 USERICON tank_user.svg
 ICONROTATION ON

@@ -92,6 +92,7 @@ public:
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void itemEntered(QListWidgetItem *item);
 
     QPoint dragStartPosition;
     LibraryWidget *mpParentLibraryWidget;

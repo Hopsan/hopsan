@@ -1,4 +1,5 @@
-NAME HydraulicPressureSourceQ
+TYPENAME HydraulicPressureSourceQ
+DISPLAYNAME "Prescribed Pressure Q"
 ISOICON pressuresource_iso.svg
 USERICON pressuresource_user.svg
 ICONROTATION ON

@@ -114,7 +114,7 @@ public:
         double p1 = c1 + q1*Zc1;
 
         double Ftot = p1*mPilotArea - mFs;      //Sum of forces in x direction beside from spring coeff and viscous friction
-  //      double x0 = mFilter.value(Ftot);        //Filter function G = 1/(mMass*s^2 + mC*s + mK)
+        //double x0 = mFilter.value(Ftot);        //Filter function G = 1/(mMass*s^2 + mC*s + mK)
         double x0 = Ftot/mK;                    //No filter function G = 1/mK
         if(x0>mXmax)                            //No filter function G = 1/mK
             x0=mXmax;                           //No filter function G = 1/mK

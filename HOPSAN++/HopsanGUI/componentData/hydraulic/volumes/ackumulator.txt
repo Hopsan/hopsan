@@ -1,4 +1,5 @@
-NAME HydraulicAckumulator
+TYPENAME HydraulicAckumulator
+DISPLAYNAME "Gas Accumulator"
 ISOICON ackumulator_iso.svg
 USERICON ackumulator_user.svg
 ICONROTATION ON

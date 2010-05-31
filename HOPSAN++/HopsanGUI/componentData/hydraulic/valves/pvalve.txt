@@ -1,4 +1,5 @@
-NAME HydraulicPressureControlledValve
+TYPENAME HydraulicPressureControlledValve
+DISPLAYNAME "Pressure Controlled Valve"
 ISOICON pvalve_iso.svg
 USERICON pvalve_user.svg
 ICONROTATION ON

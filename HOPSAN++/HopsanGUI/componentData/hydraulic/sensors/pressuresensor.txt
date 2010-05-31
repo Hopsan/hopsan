@@ -1,4 +1,5 @@
-NAME HydraulicPressureSensor
+TYPENAME HydraulicPressureSensor
+DISPLAYNAME "Pressure Sensor"
 ISOICON pressuresensor_iso.svg
 USERICON pressuresensor_user.svg
 ICONROTATION ON

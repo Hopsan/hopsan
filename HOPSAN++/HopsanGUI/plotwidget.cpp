@@ -333,7 +333,7 @@ VariableList::VariableList(MainWindow *parent)
         }
         else
         {
-            backgroundColor = QColor("aliceblue");
+            backgroundColor = QColor("lightyellow");
             colorize = true;
         }
 

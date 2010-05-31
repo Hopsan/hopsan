@@ -1,4 +1,5 @@
-NAME HydraulicCheckValve
+TYPENAME HydraulicCheckValve
+DISPLAYNAME "Check Valve"
 ISOICON checkvalve_iso.svg
 USERICON checkvalve_user.svg
 ICONROTATION ON

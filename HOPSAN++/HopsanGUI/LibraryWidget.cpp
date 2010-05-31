@@ -71,13 +71,14 @@
 
 //! Constructor
 LibraryContentItem::LibraryContentItem(AppearanceData *pAppearanceData, QListWidget *pParent)
-        : QListWidgetItem(pAppearanceData->getTypeName(), pParent, QListWidgetItem::UserType)
+        : QListWidgetItem(pParent, QListWidgetItem::UserType)
 {
     //Set font
     QFont font;
     font.setPixelSize(8);
     this->setFont(font);
-
+    this->setToolTip(pAppearanceData->getTypeName());
+    //this->setText("");
     mpAppearanceData = pAppearanceData;
     selectIcon(false);
 }
@@ -129,7 +130,8 @@ void LibraryContentItem::selectIcon(bool useIso)
 //    }
     icon.addFile(mpAppearanceData->getFullIconPath(useIso));
 
-    setIcon(icon);
+    this->setSizeHint(QSize(55,55));
+    this->setIcon(icon);
 }
 
 
@@ -142,6 +144,8 @@ LibraryContent::LibraryContent(LibraryContent *pParentLibraryContent, LibraryWid
     setViewMode(QListView::IconMode);
     setAcceptDrops(false);
     setResizeMode(QListView::Adjust);
+    this->setIconSize(QSize(40,40));
+    this->setMouseTracking(true);
     //setIconSize(QSize(25,25));
 }
 
@@ -152,6 +156,13 @@ void LibraryContent::mousePressEvent(QMouseEvent *event)
 
     if (event->button() == Qt::LeftButton)
         dragStartPosition = event->pos();
+}
+
+
+void LibraryContent::itemEntered(QListWidgetItem *item)
+{
+    qDebug() << "itemEntered";
+    item->setBackgroundColor(QColor("lightgray"));
 }
 
 
@@ -169,8 +180,8 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
     QListWidgetItem *pItem = this->currentItem();
 
     //stream out appearance data and extra basepath info
-    stream << *(mpParentLibraryWidget->getAppearanceData(pItem->text()));
-    stream << "BASEPATH " << mpParentLibraryWidget->getAppearanceData(pItem->text())->getBasePath();
+    stream << *(mpParentLibraryWidget->getAppearanceData(pItem->toolTip()));
+    stream << "BASEPATH " << mpParentLibraryWidget->getAppearanceData(pItem->toolTip())->getBasePath();
 
     QDrag *drag = new QDrag(this);
     QMimeData *mimeData = new QMimeData;
@@ -183,6 +194,8 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
     drag->exec(Qt::CopyAction | Qt::MoveAction);
     //Qt::DropAction dropAction = drag->exec(Qt::CopyAction | Qt::MoveAction);
 }
+
+
 
 
 //! Constructor.
