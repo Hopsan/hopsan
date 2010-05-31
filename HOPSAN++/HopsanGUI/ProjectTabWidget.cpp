@@ -471,7 +471,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         emit keyPressShiftL();
     }
-    else if(Qt::ControlModifier and event->key() == Qt::Key_Up)
+    else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Up)
     {
         if(isObjectSelected())
         {
@@ -479,7 +479,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         emit keyPressCtrlUp();
     }
-    else if(Qt::ControlModifier and event->key() == Qt::Key_Down)
+    else if(event->modifiers() and Qt::ControlModifier  == Qt::Key_Down)
     {
         if(isObjectSelected())
         {
