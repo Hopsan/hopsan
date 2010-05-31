@@ -253,12 +253,9 @@ GUIConnector *GraphicsView::getTempConnector()
 //! @param name will be the name of the component.
 void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appearanceData, QPoint position, qreal rotation, QString name, bool startSelected, bool doNotRegisterUndo)
 {
-    qDebug() << "in the asfljnaögojsågojsögjspgh";
-    qDebug() << "Type: " << componentTypeName;
     if (componentTypeName == "Subsystem")
     {
-        GUISubsystem *pSys = new GUISubsystem(appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
-        mpTempGUIObject = pSys;
+        mpTempGUIObject= new GUISubsystem(appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
     }
     else if (componentTypeName == "SystemPort")
     {
@@ -268,10 +265,8 @@ void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appear
     {
         mpTempGUIObject = new GUIComponent(appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
     }
-    qDebug() << "display adn core name: " << mpTempGUIObject->getName();
 
     qDebug() << "The name: " <<  name;
-
     //qDebug() << "=====================Get initial name: " << mpTempGUIObject->getName() << "requested: " << name;
     if (!name.isEmpty())
     {

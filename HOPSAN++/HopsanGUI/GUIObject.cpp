@@ -947,11 +947,8 @@ void GUIObject::deleteMe()
 GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
     : GUIObject(position, appearanceData, scene, parent)
 {
-    qDebug() << "=========================Before: " << getName();
     QString corename = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createComponent(mAppearanceData.getTypeName());
-    qDebug() << "=========================Core: " << corename;
-    mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.rename(corename, getName()));
-    qDebug() << "=========================After: " << getName();
+    mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.rename(corename, getName())); //Cant use setName here as thewould call an aditional rename (of someone else)
     QString cqsType = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTypeCQS(getName());
 
     //Sets the ports
@@ -965,18 +962,16 @@ GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, Graph
 
         qreal x = i.value().x;
         qreal y = i.value().y;
-qDebug()  << "before guiport constructor";
+
         GUIPort *pNewPort = new GUIPort(i.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
         mPortListPtrs.append(pNewPort);
     }
 
-    qDebug()  << "after port creation";
-
     //If the displayname has not been decided then use the name from core
     if ( getName().isEmpty() )
     {
-        //We can not use setname here as it is actually rename
-        mAppearanceData.setName(corename);
+        //We set the name here only core setName
+        setName(corename, true);
     }
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
@@ -993,14 +988,14 @@ qDebug()  << "before guiport constructor";
 //! The desired new name will be sent to the the core component and may be modified. Rename will be called in the graphics view to make sure that the guicomponent map key value is up to date.
 //! doOnlyCoreRename is a somewhat ugly hack, we need to be able to force setName without calling rename in some very special situations, it defaults to false
 //!
-void GUIComponent::setName(QString newName, bool doOnlyLocalRename)
+void GUIComponent::setName(QString newName, bool doOnlyCoreRename)
 {
     QString oldName = getName();
     //If name same as before do nothing
     if (newName != oldName)
     {
         //Check if we want to avoid trying to rename in the graphics view map
-        if (doOnlyLocalRename)
+        if (doOnlyCoreRename)
         {
             mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.rename(this->getName(), newName));
             refreshDisplayName();
@@ -1151,10 +1146,9 @@ GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, Graph
     //If the displayname has not been decided then use the name from core
     if ( getName().isEmpty() )
     {
-        //We can not use setname here as it is actually rename
-        mAppearanceData.setName(corename);
+        //We set the name here only local setName
+        setName(corename, true);
     }
-
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
     //! @todo Write some code here!

@@ -68,7 +68,7 @@ public:
 
     virtual QString getName();
     void refreshDisplayName();
-    virtual void setName(QString name, bool doOnlyLocalRename=false);
+    virtual void setName(QString name, bool doOnlyCoreRename=false);
     virtual QString getTypeName();
     virtual QString getTypeCQS() {assert(false);}; //Only available in GUISystemComponent adn GuiComponent for now
 
@@ -198,7 +198,7 @@ public:
 
     void saveToTextStream(QTextStream &rStream);
 
-    void setName(QString name, bool doOnlyLocalRename=false);
+    void setName(QString name, bool doOnlyCoreRename=false);
     QString getTypeName();
     QString getTypeCQS();
     void deleteInHopsanCore();
