@@ -77,7 +77,7 @@ LibraryContentItem::LibraryContentItem(AppearanceData *pAppearanceData, QListWid
     QFont font;
     font.setPixelSize(8);
     this->setFont(font);
-    this->setToolTip(pAppearanceData->getTypeName());
+    this->setToolTip(pAppearanceData->getName());
     //this->setText("");
     mpAppearanceData = pAppearanceData;
     selectIcon(false);
@@ -102,32 +102,6 @@ void LibraryContentItem::selectIcon(bool useIso)
     //Set Icon, prefere user, if its empty use iso
     QIcon icon;
  
-//    //! @todo to speedup we might find out som of this stuff when we load appearanceData, so that we dont have to check every time, (dont know if necessary)
-//    if ( !mpAppearanceData->getIconPath().isEmpty() && !useIso )
-//    {
-//        //Use user icon
-//        icon.addFile(mpAppearanceData->getBasePath() + mpAppearanceData->getIconPath());
-//    }
-//    else if ( !mpAppearanceData->getIconPathISO().isEmpty() && useIso )
-//    {
-//        //use iso icon
-//        icon.addFile(mpAppearanceData->getBasePath() + mpAppearanceData->getIconPathISO());
-//    }
-//    else if ( mpAppearanceData->getIconPath().isEmpty() && !mpAppearanceData->getIconPathISO().isEmpty() )
-//    {
-//        //Want user icon but not available, use iso icon
-//        icon.addFile(mpAppearanceData->getBasePath() + mpAppearanceData->getIconPathISO());
-//    }
-//    else if ( !mpAppearanceData->getIconPath().isEmpty() && mpAppearanceData->getIconPathISO().isEmpty() )
-//    {
-//        //Want ISO icon but not available, Use user icon
-//        icon.addFile(mpAppearanceData->getBasePath() + mpAppearanceData->getIconPath());
-//    }
-//    else
-//    {
-//        //No icon available use som noname icon
-//        icon.addFile("som noname file"); //!< @todo Fix this, noname library icon
-//    }
     icon.addFile(mpAppearanceData->getFullIconPath(useIso));
 
     this->setSizeHint(QSize(55,55));
@@ -365,7 +339,7 @@ void LibraryWidget::addLibraryContentItem(QString libraryName, QString parentLib
         }
         ++it;
     }
-    mAppearanceDataMap.insert(newComponent->getAppearanceData()->getTypeName(), newComponent->getAppearanceData());
+    mAppearanceDataMap.insert(newComponent->getAppearanceData()->getName(), newComponent->getAppearanceData());
 }
 
 

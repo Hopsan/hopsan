@@ -256,7 +256,8 @@ QTextStream& operator <<(QTextStream &os, AppearanceData &rData)
 {
     //! @todo maybe write header here (probaly not a good place, better somewhere else)
     //! @todo find out how to make newline in qt instead of "\n"
-    os << "NAME " << rData.mTypeName << "\n";
+    os << "TYPENAME " << addQuotes(rData.mTypeName) << "\n";
+    os << "DISPLAYNAME " << addQuotes(rData.mName) << "\n";
     //os << "BASEPATH " << rData.getBasePath() << "\n"; //Base path is computer dependant
     if (!rData.mIconPathISO.isEmpty())
     {
@@ -274,8 +275,8 @@ QTextStream& operator <<(QTextStream &os, AppearanceData &rData)
     PortAppearanceMapT::iterator it;
     for (it = rData.mPortAppearanceMap.begin(); it != rData.mPortAppearanceMap.end(); ++it)
     {
-        os << "PORT " << " \""
-           << it.key() << "\" "
+        os << "PORT " << " "
+           << addQuotes(it.key()) << " "
            << it.value().x << " "
            << it.value().y << " "
            << it.value().rot << "\n";
@@ -290,7 +291,14 @@ QString AppearanceData::getTypeName()
 
 QString AppearanceData::getName()
 {
-    return mName;
+    if (mName.isEmpty())
+    {
+        return mTypeName;
+    }
+    else
+    {
+        return mName;
+    }
 }
 
 QString AppearanceData::getFullIconPath(bool useIso)
