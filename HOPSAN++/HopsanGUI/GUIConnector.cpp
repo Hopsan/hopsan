@@ -72,6 +72,8 @@ GUIConnector::GUIConnector(QPointF startpos, GUIConnectorAppearance *pConnApp, G
     this->drawConnector();
 
     this->mMakingDiagonal = false;
+
+    connect(mpParentGraphicsView, SIGNAL(zoomChange()), this, SLOT(adjustToZoom()));
 }
 
 
@@ -341,6 +343,15 @@ void GUIConnector::setIsoStyle(bool useISO)
     }
 }
 
+void GUIConnector::adjustToZoom()
+{
+    mpGUIConnectorAppearance->adjustToZoom(mpParentGraphicsView->mZoomFactor);
+    for (std::size_t i=0; i!=mpLines.size(); ++i )
+    {
+        //Refresh each line by setting to passive (primary) appearance
+        mpLines[i]->setPassive();
+    }
+}
 
 //! Returns the number of lines in a connector.
 int GUIConnector::getNumberOfLines()

@@ -99,6 +99,7 @@ public slots:
     void setUnHovered();
     void deleteMe();
     void deleteMeWithNoUndo();
+    void adjustToZoom();
 
 signals:
     void endPortConnected();

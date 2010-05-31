@@ -102,6 +102,7 @@ public:
     QColor mBackgroundColor;
     //QPen getPen(QString situation, QString type, QString style);
     UndoStack *undoStack;
+    qreal mZoomFactor;
 
 signals:
     void keyPressDelete();
@@ -115,6 +116,7 @@ signals:
     void viewClicked();
     void checkMessages();
     void systemPortSignal(QPoint position);
+    void zoomChange();
 
 public slots:
     void addGUIObject(QString componentTypeName, AppearanceData appearanceData, QPoint position, qreal rotation = 0, QString name=QString(), bool startSelected=true, bool doNotRegisterUndo = false);

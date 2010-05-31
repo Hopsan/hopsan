@@ -97,6 +97,8 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     this->createActions();
     this->createMenus();
 
+    mZoomFactor = 1.0;
+
     mpCopyData = new QString;
 
     undoStack = new UndoStack(this);
@@ -426,6 +428,8 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
     {
         qreal factor = pow(1.41,(-event->delta()/240.0));
         this->scale(factor,factor);
+        mZoomFactor = mZoomFactor * factor;
+        emit zoomChange();
     }
 }
 
@@ -909,6 +913,8 @@ void GraphicsView::setScale(const QString &scale)
 void GraphicsView::resetZoom()
 {
     this->resetMatrix();
+    mZoomFactor = 1.0;
+    emit zoomChange();
 }
 
 
@@ -918,6 +924,8 @@ void GraphicsView::resetZoom()
 void GraphicsView::zoomIn()
 {
     this->scale(1.15, 1.15);
+    mZoomFactor = mZoomFactor * 1.15;
+    emit zoomChange();
 }
 
 
@@ -927,6 +935,8 @@ void GraphicsView::zoomIn()
 void GraphicsView::zoomOut()
 {
     this->scale(1/1.15, 1/1.15);
+    mZoomFactor = mZoomFactor / 1.15;
+    emit zoomChange();
 }
 
 

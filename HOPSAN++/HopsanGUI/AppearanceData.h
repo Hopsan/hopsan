@@ -65,6 +65,7 @@ public:
     void setTypeAndIsoStyle(QString porttype, bool useISO);
     QPen getPen(QString situation, QString type, bool useISO);
     QPen getPen(QString situation);
+    void adjustToZoom(qreal zoomFactor);
 
 private:
     QPen mPrimaryPenPowerUser;

@@ -184,8 +184,45 @@ QPen GUIConnectorAppearance::getPen(QString situation, QString type, bool useISO
     }
     //! @todo Return some other default noname pen
     qDebug() << "ERROR no such connector appearance: " << situation << " " <<  type << " ISOstyle: " << useISO;
-
 }
+
+void GUIConnectorAppearance::adjustToZoom(qreal zoomFactor)
+{
+    qDebug() << "Adjust to zoom, zoomFactor = " << zoomFactor;
+    qreal zoomFactor2 = zoomFactor;
+    qreal zoomFactor3 = zoomFactor;
+    if(zoomFactor > 1.0)
+    {
+        zoomFactor = 1.0;
+        zoomFactor2 = zoomFactor;
+        zoomFactor3 = zoomFactor;
+    }
+    else if( zoomFactor < 0.5)
+    {
+        zoomFactor2 = zoomFactor*1.6;
+        zoomFactor3 = zoomFactor*2.6;
+    }
+
+    mPrimaryPenPowerIso.setWidth(1.0/zoomFactor);
+    mActivePenPowerIso.setWidth(2.0/zoomFactor2);
+    mHoverPenPowerIso.setWidth(2.0/zoomFactor2);
+
+    mPrimaryPenSignalIso.setWidth(1.0/zoomFactor);
+    mActivePenSignalIso.setWidth(2.0/zoomFactor2);
+    mHoverPenSignalIso.setWidth(2.0/zoomFactor2);
+
+    mPrimaryPenPowerUser.setWidth(2.0/zoomFactor2);
+    mActivePenPowerUser.setWidth(3.0/zoomFactor3);
+    mHoverPenPowerUser.setWidth(3.0/zoomFactor3);
+
+    mPrimaryPenSignalUser.setWidth(1.0/zoomFactor);
+    mActivePenSignalUser.setWidth(2.0/zoomFactor2);
+    mHoverPenSignalUser.setWidth(2.0/zoomFactor2);
+qDebug() << 2.0/zoomFactor2*zoomFactor;
+}
+
+
+
 
 //! @brief Contains hardcoded appearance for different hopsancore ports
 //! @todo maybe this should be placed in som more generic external .txt file in som way
