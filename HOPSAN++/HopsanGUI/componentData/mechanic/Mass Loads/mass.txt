@@ -1,4 +1,5 @@
-NAME MechanicTranslationalMass
+TYPENAME MechanicTranslationalMass
+DISPLAYNAME "Translational Mass Q"
 ISOICON mass_iso.svg
 USERICON mass_user.svg
 ICONROTATION ON

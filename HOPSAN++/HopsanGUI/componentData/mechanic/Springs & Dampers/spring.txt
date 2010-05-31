@@ -1,4 +1,5 @@
-NAME MechanicTranslationalSpring
+TYPENAME MechanicTranslationalSpring
+DISPLAYNAME "Translational Spring C"
 ISOICON spring_iso.svg
 USERICON spring_user.svg
 ICONROTATION ON

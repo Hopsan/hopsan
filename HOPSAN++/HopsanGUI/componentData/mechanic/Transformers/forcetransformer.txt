@@ -1,4 +1,5 @@
-NAME MechanicForceTransformer
+TYPENAME MechanicForceTransformer
+DISPLAYNAME "Force Transformer"
 ISOICON forcetransformer.svg
 ICONROTATION ON
 PORT "in" 0.0 0.5 0
