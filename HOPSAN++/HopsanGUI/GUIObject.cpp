@@ -948,31 +948,33 @@ GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, Graph
     : GUIObject(position, appearanceData, scene, parent)
 {
     QString corename = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createComponent(mAppearanceData.getTypeName());
+    this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setName(corename, getName()); //! @todo this does not work will not rename in the gui map correctly
+    QString cqsType = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTypeCQS(getName());
+
+    //Sets the ports
+    PortAppearanceMapT::iterator i;
+    for (i = mAppearanceData.getPortAppearanceMap().begin(); i != mAppearanceData.getPortAppearanceMap().end(); ++i)
+    {
+        QString nodeType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getNodeType(getName(), i.key());
+        QString portType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPortType(getName(), i.key());
+        i.value().selectPortIcon(cqsType, portType, nodeType);
+        qDebug() << i.key();
+
+        qreal x = i.value().x;
+        qreal y = i.value().y;
+qDebug()  << "before guiport constructor";
+        GUIPort *pNewPort = new GUIPort(i.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
+        mPortListPtrs.append(pNewPort);
+    }
+
+    qDebug()  << "after port creation";
+
     //If the displayname has not been decided then use the name from core
     if ( getName().isEmpty() )
     {
         //We can not use setname here as it is actually rename
         mAppearanceData.setName(corename);
     }
-
-    QString cqsType = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTypeCQS(this->getName());
-
-    //Sets the ports
-    PortAppearanceMapT::iterator i;
-    for (i = mAppearanceData.getPortAppearanceMap().begin(); i != mAppearanceData.getPortAppearanceMap().end(); ++i)
-    {
-        QString nodeType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getNodeType(this->getName(), i.key());
-        QString portType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPortType(this->getName(), i.key());
-        i.value().selectPortIcon(cqsType, portType, nodeType);
-        qDebug() << i.key();
-
-        qreal x = i.value().x;
-        qreal y = i.value().y;
-
-        GUIPort *pNewPort = new GUIPort(i.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
-        mPortListPtrs.append(pNewPort);
-    }
-
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
     std::cout << "GUIcomponent: " << mComponentTypeName.toStdString() << std::endl;
@@ -1142,6 +1144,7 @@ GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, Graph
         : GUIObject(position, appearanceData, scene, parent)
 {
     QString corename = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createSubSystem();
+
     //If the displayname has not been decided then use the name from core
     if ( getName().isEmpty() )
     {
