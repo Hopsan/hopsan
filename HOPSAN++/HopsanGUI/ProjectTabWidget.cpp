@@ -572,13 +572,10 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     emit viewClicked();
     mJustStoppedCreatingConnector = false;
 
+
     if (this->mIsCreatingConnector)
     {
         this->setDragMode(NoDrag);
-    }
-    else
-    {
-        this->setDragMode(RubberBandDrag);
     }
 
     if (event->button() == Qt::RightButton and this->mIsCreatingConnector)
@@ -586,6 +583,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         if((mpTempConnector->getNumberOfLines() == 1 and mpTempConnector->isMakingDiagonal()) or (mpTempConnector->getNumberOfLines() == 2 and !mpTempConnector->isMakingDiagonal()))
         {
             mpTempConnector->getStartPort()->show();
+            this->setDragMode(RubberBandDrag);
             mIsCreatingConnector = false;
             mJustStoppedCreatingConnector = true;
         }
