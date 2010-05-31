@@ -1,4 +1,5 @@
-NAME SignalHysteresis
+TYPENAME SignalHysteresis
+DISPLAYNAME "Hysteresis"
 ISOICON hysteresis.svg
 ICONROTATION ON
 PORT "in" 0.0 0.5 0
