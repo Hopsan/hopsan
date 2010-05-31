@@ -62,7 +62,7 @@ public:
     void setRootSystemName(QString name, bool doOnlyLocalRename=false);
     QString getName(); //!< Shouldnt this one be named getRootSystemName like set name above
     QString setSystemName(QString systemname, QString name, bool doOnlyLocalRename=false); //!< @todo This might not be necessary, should be able to use the component base class specifik one
-    QString setName(QString componentName, QString name, bool doOnlyLocalRename=false); //!< @todo maybe this should be rename as we must know the old name
+    QString rename(QString componentName, QString name, bool doOnlyLocalRename=false);
 
     QString getPortType(QString componentName, QString portName);
     QString getNodeType(QString componentName, QString portName);

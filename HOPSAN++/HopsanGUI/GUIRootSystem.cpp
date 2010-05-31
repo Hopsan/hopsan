@@ -102,7 +102,7 @@ QString GUIRootSystem::setSystemName(QString systemname, QString name, bool doOn
     return QString::fromStdString(pTempComponentSystem->getName());
 }
 
-QString GUIRootSystem::setName(QString componentName, QString name, bool doOnlyLocalRename)
+QString GUIRootSystem::rename(QString componentName, QString name, bool doOnlyLocalRename)
 {
     Component *pTempComponent = mpCoreComponentSystem->getComponent(componentName.toStdString());
     pTempComponent->setName(name.toStdString(), doOnlyLocalRename);

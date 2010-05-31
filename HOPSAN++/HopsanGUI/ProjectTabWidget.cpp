@@ -268,6 +268,7 @@ void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appear
     {
         mpTempGUIObject = new GUIComponent(appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
     }
+    qDebug() << "display adn core name: " << mpTempGUIObject->getName();
 
     qDebug() << "The name: " <<  name;
 

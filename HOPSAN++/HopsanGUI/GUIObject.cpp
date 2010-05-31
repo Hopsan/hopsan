@@ -947,8 +947,11 @@ void GUIObject::deleteMe()
 GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
     : GUIObject(position, appearanceData, scene, parent)
 {
+    qDebug() << "=========================Before: " << getName();
     QString corename = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createComponent(mAppearanceData.getTypeName());
-    this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setName(corename, getName()); //! @todo this does not work will not rename in the gui map correctly
+    qDebug() << "=========================Core: " << corename;
+    mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.rename(corename, getName()));
+    qDebug() << "=========================After: " << getName();
     QString cqsType = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTypeCQS(getName());
 
     //Sets the ports
@@ -990,16 +993,16 @@ qDebug()  << "before guiport constructor";
 //! The desired new name will be sent to the the core component and may be modified. Rename will be called in the graphics view to make sure that the guicomponent map key value is up to date.
 //! doOnlyCoreRename is a somewhat ugly hack, we need to be able to force setName without calling rename in some very special situations, it defaults to false
 //!
-void GUIComponent::setName(QString newName, bool doOnlyCoreRename)
+void GUIComponent::setName(QString newName, bool doOnlyLocalRename)
 {
     QString oldName = getName();
     //If name same as before do nothing
     if (newName != oldName)
     {
         //Check if we want to avoid trying to rename in the graphics view map
-        if (doOnlyCoreRename)
+        if (doOnlyLocalRename)
         {
-            mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setName(this->getName(), newName));
+            mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.rename(this->getName(), newName));
             refreshDisplayName();
         }
         else
