@@ -1,4 +1,4 @@
-TYPENAME HydraulicPressureReliefValve
+TYPENAME "HydraulicPressureReliefValve"
 DISPLAYNAME "Pressure Relief Valve"
 ISOICON prv_iso.svg
 USERICON prv_user.svg

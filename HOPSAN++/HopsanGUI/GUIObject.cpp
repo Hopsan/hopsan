@@ -809,7 +809,8 @@ GUIObjectSelectionBox::GUIObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal
 {
     mpParentGUIObject = parent;
     qreal b = 5;
-    qreal a = b*mpParentGUIObject->boundingRect().width()/mpParentGUIObject->boundingRect().height();
+    //qreal a = b*mpParentGUIObject->boundingRect().width()/mpParentGUIObject->boundingRect().height();
+    qreal a = 5;
     x1 = x1-3;
     y1 = y1-3;
     x2 = x2+3;

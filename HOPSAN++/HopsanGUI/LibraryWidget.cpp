@@ -121,8 +121,8 @@ LibraryContent::LibraryContent(LibraryContent *pParentLibraryContent, LibraryWid
     this->setIconSize(QSize(40,40));
     this->setMouseTracking(true);
     //setIconSize(QSize(25,25));
-}
 
+}
 
 void LibraryContent::mousePressEvent(QMouseEvent *event)
 {

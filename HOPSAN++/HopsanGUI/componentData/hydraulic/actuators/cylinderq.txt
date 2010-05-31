@@ -1,4 +1,4 @@
-TYPENAME HydraulicCylinderQ
+TYPENAME "HydraulicCylinderQ"
 DISPLAYNAME "Cylinder Q"
 ISOICON cylinderq_iso.svg
 USERICON cylinderq_user.svg

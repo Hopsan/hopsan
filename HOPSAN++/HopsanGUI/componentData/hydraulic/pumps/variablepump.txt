@@ -1,4 +1,4 @@
-TYPENAME HydraulicVariableDisplacementPump
+TYPENAME "HydraulicVariableDisplacementPump"
 DISPLAYNAME "Variable Displacement Pump"
 ISOICON variablepump_iso.svg
 USERICON variablepump_user.svg

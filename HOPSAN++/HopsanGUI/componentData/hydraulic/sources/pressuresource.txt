@@ -1,4 +1,4 @@
-TYPENAME HydraulicPressureSource
+TYPENAME "HydraulicPressureSource"
 DISPLAYNAME "Prescribed Pressure C"
 ISOICON pressuresource_iso.svg
 USERICON pressuresource_user.svg

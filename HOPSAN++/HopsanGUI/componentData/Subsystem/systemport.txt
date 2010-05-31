@@ -1,4 +1,4 @@
-TYPENAME SystemPort
+TYPENAME "SystemPort"
 ISOICON ../../systemporttmp.svg
 PORT "sysp" 0.5 0.5 0
 

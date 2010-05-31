@@ -1,4 +1,4 @@
-TYPENAME HydraulicVolume
+TYPENAME "HydraulicVolume"
 DISPLAYNAME "Hydraulic Volume"
 ISOICON volume_iso.svg
 USERICON volume_user.svg

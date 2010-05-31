@@ -1,4 +1,4 @@
-TYPENAME HydraulicFlowSourceQ
+TYPENAME "HydraulicFlowSourceQ"
 DISPLAYNAME "Flow Sensor Q"
 ISOICON flowsource_iso.svg
 USERICON flowsource_user.svg

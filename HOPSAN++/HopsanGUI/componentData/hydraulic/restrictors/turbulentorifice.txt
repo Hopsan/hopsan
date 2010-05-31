@@ -1,4 +1,4 @@
-TYPENAME HydraulicTurbulentOrifice
+TYPENAME "HydraulicTurbulentOrifice"
 DISPLAYNAME "Turbulent Orifice"
 ISOICON turbulentorifice_iso.svg
 USERICON turbulentorifice_user.svg

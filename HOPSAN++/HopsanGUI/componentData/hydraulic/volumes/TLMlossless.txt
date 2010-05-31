@@ -1,4 +1,4 @@
-TYPENAME HydraulicTLMlossless
+TYPENAME "HydraulicTLMlossless"
 DISPLAYNAME "Lossless Transmission Line"
 ISOICON tlm_iso.svg
 USERICON tlm_user.svg
