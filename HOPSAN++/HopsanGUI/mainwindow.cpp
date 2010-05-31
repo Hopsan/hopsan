@@ -283,14 +283,14 @@ void MainWindow::createActions()
     zoomOutAction = new QAction(QIcon("../../HopsanGUI/icons/zoomOut.png"), tr("&Zoom Out"), this);
     zoomOutAction->setText("Zoom Out");
 
-    hideNamesAction = new QAction(QIcon("../../HopsanGUI/icons/hidenames.png"), tr("&Hide All Component Names"), this);
+    hideNamesAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-HideNames.png"), tr("&Hide All Component Names"), this);
     hideNamesAction->setText("Hide All Component Names");
 
-    showNamesAction = new QAction(QIcon("../../HopsanGUI/icons/shownames.png"), tr("&Show All Component Names"), this);
+    showNamesAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-ShowNames.png"), tr("&Show All Component Names"), this);
     showNamesAction->setText("Show All Component Names");
 
     QIcon hidePortsIcon;
-    hidePortsIcon.addFile("../../HopsanGUI/icons/hideports.png", QSize(), QIcon::Normal, QIcon::On);
+    hidePortsIcon.addFile("../../HopsanGUI/icons/Hopsan-HidePorts.png", QSize(), QIcon::Normal, QIcon::On);
     hidePortsAction = new QAction(hidePortsIcon, tr("&Hide All Ports"), this);
     hidePortsAction->setText("Hide All Ports");
     hidePortsAction->setCheckable(true);
