@@ -204,21 +204,21 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::createActions()
 {
 
-    newAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_39.png"), tr("&New"), this);
+    newAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-New.png"), tr("&New"), this);
     newAction->setShortcut(tr("New"));
     newAction->setStatusTip(tr("Create New Project"));
 
 
-    openAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_13.png"), tr("&Open"), this);
+    openAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Open.png"), tr("&Open"), this);
     openAction->setShortcut(QKeySequence("Ctrl+o"));
     openAction->setStatusTip(tr("Load Model File"));
 
 
-    saveAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_11.png"), tr("&Save"), this);
+    saveAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Save.png"), tr("&Save"), this);
     saveAction->setShortcut(QKeySequence("Ctrl+s"));
     saveAction->setStatusTip(tr("Save Model File"));
 
-    saveAsAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_12.png"), tr("&Save As"), this);
+    saveAsAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-SaveAs.png"), tr("&Save As"), this);
     saveAction->setShortcut(QKeySequence("Ctrl+Alt+s"));
     saveAsAction->setStatusTip(tr("Save Model File As"));
 
@@ -228,12 +228,12 @@ void MainWindow::createActions()
     closeAction->setShortcut(QKeySequence("Ctrl+q"));
     connect(this->closeAction,SIGNAL(triggered()),SLOT(close()));
 
-    undoAction = new QAction(QIcon("../../HopsanGUI/icons/undo.png"), tr("&Undo"), this);
+    undoAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Undo.png"), tr("&Undo"), this);
     undoAction->setText("Undo");
     undoAction->setShortcut(QKeySequence(tr("Ctrl+z")));
     undoAction->setStatusTip(tr("Undo One Step"));
 
-    redoAction = new QAction(QIcon("../../HopsanGUI/icons/redo.png"), tr("&Redo"), this);
+    redoAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Redo.png"), tr("&Redo"), this);
     redoAction->setText("Redo");
     redoAction->setShortcut(QKeySequence(tr("Ctrl+y")));
     redoAction->setStatusTip(tr("Redo One Step"));
@@ -246,15 +246,15 @@ void MainWindow::createActions()
     cutAction->setShortcut(tr("Ctrl+x"));
     cutAction->setStatusTip(tr("Cut Selection"));
 
-    copyAction = new QAction(QIcon("../../HopsanGUI/icons/copy.png"), tr("&Copy"), this);
+    copyAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Copy.png"), tr("&Copy"), this);
     copyAction->setShortcut(tr("Ctrl+c"));
     copyAction->setStatusTip(tr("Copy Selection"));
 
-    pasteAction = new QAction(QIcon("../../HopsanGUI/icons/paste.png"), tr("&Paste"), this);
+    pasteAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Paste.png"), tr("&Paste"), this);
     pasteAction->setShortcut(tr("Ctrl+v"));
     pasteAction->setStatusTip(tr("Paste Selection"));
 
-    simulateAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_27.png"), tr("&Simulate"), this);
+    simulateAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Simulate.png"), tr("&Simulate"), this);
     simulateAction->setShortcut(tr("Simulate"));
     simulateAction->setStatusTip(tr("Simulate Current Project"));
 
@@ -267,22 +267,22 @@ void MainWindow::createActions()
     loadLibsAction->setText("Load Libraries");
     connect(loadLibsAction,SIGNAL(triggered()),mpLibrary,SLOT(addLibrary()));
 
-    preferencesAction = new QAction(QIcon("../../HopsanGUI/icons/preferences.png"), tr("&Model Preferences"), this);
+    preferencesAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Configure.png"), tr("&Model Preferences"), this);
     preferencesAction->setText("Model Preferences");
     preferencesAction->setShortcut(QKeySequence("Ctrl+Alt+p"));
     connect(preferencesAction,SIGNAL(triggered()),this,SLOT(openPreferences()));
 
-    optionsAction = new QAction(QIcon("../../HopsanGUI/icons/options.png"), tr("&Options"), this);
+    optionsAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Options.png"), tr("&Options"), this);
     optionsAction->setText("Options");
     connect(optionsAction,SIGNAL(triggered()),this,SLOT(openOptions()));
 
-    resetZoomAction = new QAction(QIcon("../../HopsanGUI/icons/zoom100.png"), tr("&Reset Zoom"), this);
+    resetZoomAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Zoom100.png"), tr("&Reset Zoom"), this);
     resetZoomAction->setText("Reset Zoom");
 
-    zoomInAction = new QAction(QIcon("../../HopsanGUI/icons/zoomIn.png"), tr("&Zoom In"), this);
+    zoomInAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-ZoomIn.png"), tr("&Zoom In"), this);
     zoomInAction->setText("Zoom In");
 
-    zoomOutAction = new QAction(QIcon("../../HopsanGUI/icons/zoomOut.png"), tr("&Zoom Out"), this);
+    zoomOutAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-ZoomOut.png"), tr("&Zoom Out"), this);
     zoomOutAction->setText("Zoom Out");
 
     hideNamesAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-HideNames.png"), tr("&Hide All Component Names"), this);
