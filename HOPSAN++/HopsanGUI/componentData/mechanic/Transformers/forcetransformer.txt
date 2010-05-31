@@ -1,4 +1,4 @@
-TYPENAME MechanicForceTransformer
+TYPENAME "MechanicForceTransformer"
 DISPLAYNAME "Force Transformer"
 ISOICON forcetransformer.svg
 ICONROTATION ON

@@ -1,4 +1,4 @@
-TYPENAME MechanicPositionSensor
+TYPENAME "MechanicPositionSensor"
 DISPLAYNAME "Position Sensor"
 ISOICON positionsensor.svg
 USERICON positionsensor_user.svg

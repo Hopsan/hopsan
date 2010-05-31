@@ -1,4 +1,4 @@
-TYPENAME MechanicSpeedSensor
+TYPENAME "MechanicSpeedSensor"
 DISPLAYNAME "Speed Sensor"
 ISOICON speedsensor.svg
 USERICON speedsensor_user.svg

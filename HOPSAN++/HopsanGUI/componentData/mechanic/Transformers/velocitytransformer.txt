@@ -1,4 +1,4 @@
-TYPENAME MechanicVelocityTransformer
+TYPENAME "MechanicVelocityTransformer"
 DISPLAYNAME "Velocity Transformer"
 ISOICON velocitytransformer.svg
 ICONROTATION ON

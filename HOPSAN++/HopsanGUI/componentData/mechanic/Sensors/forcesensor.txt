@@ -1,4 +1,4 @@
-TYPENAME MechanicForceSensor
+TYPENAME "MechanicForceSensor"
 DISPLAYNAME "Force Sensor"
 ISOICON forcesensor.svg
 USERICON forcesensor_user.svg
