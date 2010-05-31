@@ -131,7 +131,7 @@ protected:
     GUIObjectSelectionBox *mpSelectionBox;
     double mTextOffset;
     QGraphicsLineItem *mpTempLine;
-    QString mName;
+    //QString mName;
 
     int mNameTextPos;
     bool mIconRotation;

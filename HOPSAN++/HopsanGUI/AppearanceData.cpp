@@ -288,6 +288,11 @@ QString AppearanceData::getTypeName()
     return mTypeName;
 }
 
+QString AppearanceData::getName()
+{
+    return mName;
+}
+
 QString AppearanceData::getFullIconPath(bool useIso)
 {
     if ( !mIconPathUser.isEmpty() && !useIso )
@@ -352,6 +357,7 @@ QString AppearanceData::getBasePath()
 bool AppearanceData::setAppearanceData(QTextStream &is)
 {
     QString command;
+    QString lineStr;
     bool sucess = true;
 
     while (!is.atEnd())
@@ -360,9 +366,13 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
         //! @todo need som error handling here if file stream has incorect data
         is >> command; //Read the command word
 
-        if (command == "NAME")
+        if (command == "TYPENAME")
         {
-            mTypeName = is.readLine().trimmed();
+            mTypeName = readName(is.readLine().trimmed());
+        }
+        else if (command == "DISPLAYNAME")
+        {
+            mName = readName(is.readLine().trimmed());
         }
         else if (command == "ISOICON")
         {
@@ -378,7 +388,7 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
         }
         else if (command == "PORT")
         {
-            QString lineStr = is.readLine();
+            lineStr = is.readLine();
             QTextStream portStream(&lineStr);
             QString portName=readName(portStream);
             if(portName == "")
@@ -439,6 +449,11 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
 void AppearanceData::setTypeName(QString name)
 {
     mTypeName = name;
+}
+
+void AppearanceData::setName(QString name)
+{
+    mName = name;
 }
 
 void AppearanceData::setBasePath(QString path)

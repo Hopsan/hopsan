@@ -105,11 +105,13 @@ class AppearanceData
 public:
     AppearanceData();
     void setTypeName(QString name);
+    void setName(QString name);
     void setBasePath(QString path);
     void setIconPathUser(QString path);
     void setIconPathISO(QString path);
 
     QString getTypeName();
+    QString getName();
     QString getFullIconPath(bool useIso=false);
     QString getIconPathUser();
     QString getIconPathISO();
@@ -130,6 +132,7 @@ public:
 
 private:
     QString mTypeName;
+    QString mName;
     QString mIconPathUser;
     QString mIconPathISO;
     QString mIconRotationBehaviour;

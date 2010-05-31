@@ -43,6 +43,7 @@
 #include <QTextStream>
 
 QString readName(QTextStream &rTextStream);
+QString readName(QString namestring);
 QString addQuotes(QString str);
 
 #endif // GUIUTILITIES_H

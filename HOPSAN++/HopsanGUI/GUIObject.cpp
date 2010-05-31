@@ -210,7 +210,7 @@ void GUIObject::addConnector(GUIConnector *item)
 //! This function refreshes the displayed name (HopsanCore may have changed it)
 void GUIObject::refreshDisplayName()
 {
-    mpNameText->setPlainText(mName);
+    mpNameText->setPlainText(mAppearanceData.getName());
     //Adjust the position of the text
     this->fixTextPosition(this->mpNameText->pos());
 }
@@ -219,7 +219,7 @@ void GUIObject::refreshDisplayName()
 //! This function returns the current component name
 QString GUIObject::getName()
 {
-    return mName;
+    return mAppearanceData.getName();
 }
 
 
@@ -232,7 +232,7 @@ void GUIObject::deleteInHopsanCore()
 void GUIObject::setName(QString newName, bool doOnlyCoreRename)
 {
     mpParentGraphicsView->mGUIObjectMap.erase(mpParentGraphicsView->mGUIObjectMap.find(this->getName()));
-    mName = newName;
+    mAppearanceData.setName(newName);
     refreshDisplayName();
     mpParentGraphicsView->mGUIObjectMap.insert(this->getName(), this);
 }
@@ -946,7 +946,13 @@ void GUIObject::deleteMe()
 GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
     : GUIObject(position, appearanceData, scene, parent)
 {
-    mName = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createComponent(mAppearanceData.getTypeName());
+    QString corename = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createComponent(mAppearanceData.getTypeName());
+    //If the displayname has not been decided then use the name from core
+    if ( getName().isEmpty() )
+    {
+        //We can not use setname here as it is actually rename
+        mAppearanceData.setName(corename);
+    }
 
     QString cqsType = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTypeCQS(this->getName());
 
@@ -990,7 +996,7 @@ void GUIComponent::setName(QString newName, bool doOnlyCoreRename)
         //Check if we want to avoid trying to rename in the graphics view map
         if (doOnlyCoreRename)
         {
-            this->mName = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setName(this->getName(), newName);
+            mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setName(this->getName(), newName));
             refreshDisplayName();
         }
         else
@@ -1134,7 +1140,13 @@ void GUIComponent::saveToTextStream(QTextStream &rStream)
 GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
         : GUIObject(position, appearanceData, scene, parent)
 {
-    this->mName = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createSubSystem();
+    QString corename = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createSubSystem();
+    //If the displayname has not been decided then use the name from core
+    if ( getName().isEmpty() )
+    {
+        //We can not use setname here as it is actually rename
+        mAppearanceData.setName(corename);
+    }
 
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
@@ -1163,7 +1175,7 @@ void GUISubsystem::setName(QString newName, bool doOnlyCoreRename)
         //Check if we want to avoid trying to rename in the graphics view map
         if (doOnlyCoreRename)
         {
-            mName = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setSystemName(oldName, newName);
+            mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setSystemName(oldName, newName));
             refreshDisplayName();
         }
         else
@@ -1275,11 +1287,11 @@ GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, Gra
 
         i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
 
-        mName = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.addSystemPort(i.key());
+        mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.addSystemPort(i.key()));
 
         //We supply ptr to rootsystem to indicate that this is a systemport
         //! @todo this is a very bad way of doing this (ptr to rootsystem for systemport), really need to figure out some better way
-        mpGuiPort = new GUIPort(mName, x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this, &(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem));
+        mpGuiPort = new GUIPort(mAppearanceData.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this, &(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem));
         mPortListPtrs.append(mpGuiPort);
     }
 }
@@ -1302,9 +1314,9 @@ void GUISystemPort::setName(QString newName, bool doOnlyCoreRename)
         if (doOnlyCoreRename)
         {
             //Set name in core component, Also set the current name to the resulting one (might have been changed)
-            mName = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.renameSystemPort(oldName, newName);
+            mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.renameSystemPort(oldName, newName));
             refreshDisplayName();
-            mpGuiPort->setDisplayName(mName); //change the actual gui port name
+            mpGuiPort->setDisplayName(mAppearanceData.getName()); //change the actual gui port name
         }
         else
         {
@@ -1325,7 +1337,7 @@ int GUISystemPort::type() const
 void GUISystemPort::deleteInHopsanCore()
 {
     qDebug() << "In GUISystemPort::deleteInHopsanCore";
-    this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.deleteSystemPort(mName);
+    this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.deleteSystemPort(mAppearanceData.getName());
 }
 
 

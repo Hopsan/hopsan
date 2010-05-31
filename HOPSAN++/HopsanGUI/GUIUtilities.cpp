@@ -68,6 +68,15 @@ QString readName(QTextStream &rTextStream)
     }
 }
 
+//! @brief Convenience function if you dont have a stream to read from
+//! @return The extracted name without quotes, empty string if failed
+//! It is assumed that the name was saved OK. but error indicated by empty string
+QString readName(QString namestring)
+{
+    QTextStream namestream(&namestring);
+    return readName(namestream);
+}
+
 //! @brief This function may be used to add quotes around string, usefull for saving names. Ex: "string"
 QString addQuotes(QString str)
 {
