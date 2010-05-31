@@ -1030,6 +1030,10 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 {
     mpParentProjectTabWidget = parent;
 
+    mStartTime = 0;
+    mTimeStep = 0.01;
+    mStopTime = 5;
+
     MainWindow *pMainWindow = mpParentProjectTabWidget->mpParentMainWindow;
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
@@ -1081,6 +1085,39 @@ void ProjectTab::hasChanged()
 }
 
 
+void ProjectTab::updateStartTime()
+{
+    mStartTime = mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getStartTimeLabel();
+    qDebug() << "updateStartTime(), " << mStartTime;
+}
+
+void ProjectTab::updateTimeStep()
+{
+    mTimeStep = mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getTimeStepLabel();
+    qDebug() << "updateTimeStep(), " << mTimeStep;
+}
+
+void ProjectTab::updateStopTime()
+{
+    mStopTime = mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getFinishTimeLabel();
+    qDebug() << "updateStopTime(), " << mStopTime;
+}
+
+double ProjectTab::getStartTime()
+{
+    return mStartTime;
+}
+
+double ProjectTab::getTimeStep()
+{
+    return mTimeStep;
+}
+
+double ProjectTab::getStopTime()
+{
+    return mStopTime;
+}
+
 //! @class ProjectTabWidget
 //! @brief The ProjectTabWidget class is a container class for ProjectTab class
 //!
@@ -1103,6 +1140,12 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
 
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(closeProjectTab(int)));
 
+    connect(this,SIGNAL(currentChanged(int)),this, SLOT(updateSimulationSetupWidget()));
+
+    connect(mpParentMainWindow->mpSimulationSetupWidget->mpStartTimeLabel, SIGNAL(editingFinished()), this, SLOT(updateCurrentStartTime()));
+    connect(mpParentMainWindow->mpSimulationSetupWidget->mpTimeStepLabel, SIGNAL(editingFinished()), this, SLOT(updateCurrentTimeStep()));
+    connect(mpParentMainWindow->mpSimulationSetupWidget->mpFinishTimeLabel, SIGNAL(editingFinished()), this, SLOT(updateCurrentStopTime()));
+
     connect(pMainWindow->newAction, SIGNAL(triggered()), this,SLOT(addNewProjectTab()));
     connect(pMainWindow->openAction, SIGNAL(triggered()), this,SLOT(loadModel()));
     connect(pMainWindow->saveAction, SIGNAL(triggered()), this,SLOT(saveProjectTab()));
@@ -1113,7 +1156,29 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     connect(pMainWindow->zoomOutAction, SIGNAL(triggered()),this,SLOT(zoomOut()));
     connect(pMainWindow->hideNamesAction,SIGNAL(triggered()),this, SLOT(hideNames()));
     connect(pMainWindow->showNamesAction,SIGNAL(triggered()),this, SLOT(showNames()));
+}
 
+
+void ProjectTabWidget::updateCurrentStartTime()
+{
+    getCurrentTab()->updateStartTime();
+}
+
+void ProjectTabWidget::updateCurrentTimeStep()
+{
+    getCurrentTab()->updateTimeStep();
+}
+
+void ProjectTabWidget::updateCurrentStopTime()
+{
+    getCurrentTab()->updateStopTime();
+}
+
+void ProjectTabWidget::updateSimulationSetupWidget()
+{
+    mpParentMainWindow->mpSimulationSetupWidget->setStartTimeLabel(getCurrentTab()->getStartTime());
+    mpParentMainWindow->mpSimulationSetupWidget->setTimeStepLabel(getCurrentTab()->getTimeStep());
+    mpParentMainWindow->mpSimulationSetupWidget->setFinishTimeLabel(getCurrentTab()->getStopTime());
 }
 
 

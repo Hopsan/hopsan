@@ -181,13 +181,23 @@ public:
     GUIRootSystem mGUIRootSystem;
     GraphicsView *mpGraphicsView;
     GraphicsScene *mpGraphicsScene;
+    double getStartTime();
+    double getTimeStep();
+    double getStopTime();
 
 public slots:
     void hasChanged();
+    void updateStartTime();
+    void updateTimeStep();
+    void updateStopTime();
 
 signals:
     void checkMessages();
 
+private:
+    double mStartTime;
+    double mStopTime;
+    double mTimeStep;
 };
 
 
@@ -221,6 +231,10 @@ public slots:
     void zoomOut();
     void hideNames();
     void showNames();
+    void updateSimulationSetupWidget();
+    void updateCurrentStartTime();
+    void updateCurrentTimeStep();
+    void updateCurrentStopTime();
 
 signals:
     void checkMessages();

@@ -97,7 +97,6 @@ SimulationSetupWidget::SimulationSetupWidget(const QString &title, MainWindow *p
     connect(mpStartTimeLabel, SIGNAL(editingFinished()), SLOT(fixLabelValues()));
     connect(mpTimeStepLabel, SIGNAL(editingFinished()), SLOT(fixLabelValues()));
     connect(mpFinishTimeLabel, SIGNAL(editingFinished()), SLOT(fixLabelValues()));
-
 }
 
 
