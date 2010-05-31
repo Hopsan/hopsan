@@ -698,7 +698,8 @@ void GraphicsView::removeConnector(GUIConnector* pConnector, bool doNotRegisterU
     if(doDelete)
     {
         mConnectorVector.remove(i);
-    }    
+    }
+    this->setBackgroundBrush(mBackgroundColor);
 }
 
 
