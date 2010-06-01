@@ -127,11 +127,12 @@ protected:
 class VariableList : public QListWidget
 {
     Q_OBJECT
- public:
+public:
     VariableList(MainWindow *parent = 0);
     //QMap<QString, int> map;
     QMap< QString, QVector<double> > xMap;
     QMap< QString, QVector<double> > yMap;
+    QMap< QString, QString > yLabelMap;
     MainWindow *mpParentMainWindow;
     GraphicsView *mpCurrentView;
 
@@ -142,6 +143,7 @@ protected:
     QPoint dragStartPosition;
 
  private slots:
+    void updateList();
     void createPlot(QListWidgetItem *item);
 };
 
