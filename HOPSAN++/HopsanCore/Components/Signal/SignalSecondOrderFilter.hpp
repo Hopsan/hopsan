@@ -54,10 +54,10 @@ public:
         registerParameter("k", "Gain", "-", mK);
         registerParameter("wnum", "Numerator break frequency", "rad/s", mWnum);
         registerParameter("dnum", "Numerator damp coefficient", "-", mDnum);
-        registerParameter("wden", "Denumerator break frequency", "rad/s", mWden);
-        registerParameter("dden", "Numerator damp coefficient", "-", mDden);
-        registerParameter("min", "Lower limit for output", "-", mMin);
-        registerParameter("max", "Upper limit for output", "-", mMax);
+        registerParameter("wden", "Denominator break frequency", "rad/s", mWden);
+        registerParameter("dden", "Denominator damp coefficient", "-", mDden);
+        registerParameter("min", "Output Lower limit", "-", mMin);
+        registerParameter("max", "Output Upper limit", "-", mMax);
     }
 
 
