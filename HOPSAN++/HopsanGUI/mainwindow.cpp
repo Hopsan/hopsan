@@ -157,6 +157,7 @@ MainWindow::MainWindow(QWidget *parent)
     QMetaObject::connectSlotsByName(this);
 
     connect(mpSimulationSetupWidget->mpSimulateButton, SIGNAL(released()), mpProjectTabs, SLOT(simulateCurrent()));
+    connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateToolBarsToNewTab()));
 }
 
 
@@ -452,4 +453,13 @@ void MainWindow::openUndo()
     addDockWidget(Qt::RightDockWidgetArea, undoDock);
 
     mpUndoWidget->refreshList();
+}
+
+
+void MainWindow::updateToolBarsToNewTab()
+{
+    if(mpProjectTabs->count() > 0)
+    {
+        hidePortsAction->setChecked(mpProjectTabs->getCurrentTab()->mpGraphicsView->mPortsHidden);
+    }
 }

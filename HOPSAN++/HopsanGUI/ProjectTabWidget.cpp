@@ -110,7 +110,6 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     connect(pMainWindow->cutAction, SIGNAL(triggered()), this,SLOT(cutSelected()));
     connect(pMainWindow->copyAction, SIGNAL(triggered()), this,SLOT(copySelected()));
     connect(pMainWindow->pasteAction, SIGNAL(triggered()), this,SLOT(paste()));
-    connect(pMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this,SLOT(hidePorts(bool)));
     connect(pMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
     connect(pMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
     connect(pMainWindow->mpUndoWidget->undoButton, SIGNAL(pressed()), this, SLOT(undo()));
@@ -420,6 +419,7 @@ bool GraphicsView::haveGUIObject(QString name)
     }
 }
 
+
 //! Defines what happens when scrolling the mouse in a GraphicsView.
 //! @param event contains information of the scrolling operation.
 void GraphicsView::wheelEvent(QWheelEvent *event)
@@ -433,6 +433,9 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
     }
 }
 
+
+//! Defines what shall happen when various keys or key combinations are pressed.
+//! @param event contains information about the key press event.
 void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
 
@@ -1089,38 +1092,59 @@ void ProjectTab::hasChanged()
 }
 
 
+//! Slot that updates start time value of the current project to the one in the simulation setup widget.
+//! @see updateTimeStep()
+//! @see updateStopTime()
 void ProjectTab::updateStartTime()
 {
     mStartTime = mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getStartTimeLabel();
-    qDebug() << "updateStartTime(), " << mStartTime;
 }
 
+
+//! Slot that updates time step value of the current project to the one in the simulation setup widget.
+//! @see updateStartTime()
+//! @see updateStopTime()
 void ProjectTab::updateTimeStep()
 {
     mTimeStep = mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getTimeStepLabel();
-    qDebug() << "updateTimeStep(), " << mTimeStep;
 }
 
+
+//! Slot that updates stop time value of the current project to the one in the simulation setup widget.
+//! @see updateStartTime()
+//! @see updateTimeStep()
 void ProjectTab::updateStopTime()
 {
     mStopTime = mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getFinishTimeLabel();
-    qDebug() << "updateStopTime(), " << mStopTime;
 }
 
+
+//! Returns the start time value of the current project.
+//! @see getTimeStep()
+//! @see getStopTime()
 double ProjectTab::getStartTime()
 {
     return mStartTime;
 }
 
+
+//! Returns the time step value of the current project.
+//! @see getStartTime()
+//! @see getStopTime()
 double ProjectTab::getTimeStep()
 {
     return mTimeStep;
 }
 
+
+//! Returns the stop time value of the current project.
+//! @see getStartTime()
+//! @see getTimeStep()
 double ProjectTab::getStopTime()
 {
     return mStopTime;
 }
+
 
 //! @class ProjectTabWidget
 //! @brief The ProjectTabWidget class is a container class for ProjectTab class
@@ -1135,9 +1159,9 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
         :   QTabWidget(parent)
 {
     mpParentMainWindow = parent;
-    MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent)); //Ugly!!!
+    //MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent)); //Ugly!!!
 
-    connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
+    connect(this, SIGNAL(checkMessages()), mpParentMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
     setTabsClosable(true);
     mNumberOfUntitledTabs = 0;
@@ -1149,35 +1173,57 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     connect(mpParentMainWindow->mpSimulationSetupWidget->mpStartTimeLabel, SIGNAL(editingFinished()), this, SLOT(updateCurrentStartTime()));
     connect(mpParentMainWindow->mpSimulationSetupWidget->mpTimeStepLabel, SIGNAL(editingFinished()), this, SLOT(updateCurrentTimeStep()));
     connect(mpParentMainWindow->mpSimulationSetupWidget->mpFinishTimeLabel, SIGNAL(editingFinished()), this, SLOT(updateCurrentStopTime()));
+    connect(mpParentMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this,SLOT(hidePortsInCurrentTab(bool)));
 
-    connect(pMainWindow->newAction, SIGNAL(triggered()), this,SLOT(addNewProjectTab()));
-    connect(pMainWindow->openAction, SIGNAL(triggered()), this,SLOT(loadModel()));
-    connect(pMainWindow->saveAction, SIGNAL(triggered()), this,SLOT(saveProjectTab()));
-    connect(pMainWindow->saveAsAction, SIGNAL(triggered()), this,SLOT(saveProjectTabAs()));
-    connect(pMainWindow->simulateAction, SIGNAL(triggered()), this,SLOT(simulateCurrent()));
-    connect(pMainWindow->resetZoomAction, SIGNAL(triggered()),this,SLOT(resetZoom()));
-    connect(pMainWindow->zoomInAction, SIGNAL(triggered()),this,SLOT(zoomIn()));
-    connect(pMainWindow->zoomOutAction, SIGNAL(triggered()),this,SLOT(zoomOut()));
-    connect(pMainWindow->hideNamesAction,SIGNAL(triggered()),this, SLOT(hideNames()));
-    connect(pMainWindow->showNamesAction,SIGNAL(triggered()),this, SLOT(showNames()));
+    connect(mpParentMainWindow->newAction, SIGNAL(triggered()), this,SLOT(addNewProjectTab()));
+    connect(mpParentMainWindow->openAction, SIGNAL(triggered()), this,SLOT(loadModel()));
+    connect(mpParentMainWindow->saveAction, SIGNAL(triggered()), this,SLOT(saveProjectTab()));
+    connect(mpParentMainWindow->saveAsAction, SIGNAL(triggered()), this,SLOT(saveProjectTabAs()));
+    connect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), this,SLOT(simulateCurrent()));
+    connect(mpParentMainWindow->resetZoomAction, SIGNAL(triggered()),this,SLOT(resetZoom()));
+    connect(mpParentMainWindow->zoomInAction, SIGNAL(triggered()),this,SLOT(zoomIn()));
+    connect(mpParentMainWindow->zoomOutAction, SIGNAL(triggered()),this,SLOT(zoomOut()));
+    connect(mpParentMainWindow->hideNamesAction,SIGNAL(triggered()),this, SLOT(hideNames()));
+    connect(mpParentMainWindow->showNamesAction,SIGNAL(triggered()),this, SLOT(showNames()));
 }
 
 
+//! Slot that tells the current project tab to hide its ports.
+//! @param doIt is true if ports shall be hidden, otherwise false.
+void ProjectTabWidget::hidePortsInCurrentTab(bool doIt)
+{
+    this->getCurrentTab()->mpGraphicsView->hidePorts(doIt);
+}
+
+
+//! Slot that tells current project tab to update its start time value.
+//! @see updateCurrentTimeStep()
+//! @see updateCurrentStopTime()
 void ProjectTabWidget::updateCurrentStartTime()
 {
     getCurrentTab()->updateStartTime();
 }
 
+
+//! Slot that tells current project tab to update its time step value.
+//! @see updateCurrentStartTime()
+//! @see updateCurrentStopTime()
 void ProjectTabWidget::updateCurrentTimeStep()
 {
     getCurrentTab()->updateTimeStep();
 }
 
+
+//! Slot that tells current project tab to update its stop time value.
+//! @see updateCurrentStartTime()
+//! @see updateCurrentTimeStep()
 void ProjectTabWidget::updateCurrentStopTime()
 {
     getCurrentTab()->updateStopTime();
 }
 
+
+//! Slot that updates the values in the simulation setup widget to display new values when current project tab is changed.
 void ProjectTabWidget::updateSimulationSetupWidget()
 {
     if(this->count() != 0)  //Don't do anything if there are no current tab

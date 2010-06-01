@@ -379,14 +379,19 @@ QString GUIPort::getGUIComponentName()
 }
 
 
+//! Slot that hides the port if "hide ports" setting is enabled, but only if the project tab is opened.
+//! @param justDoIt is true if ports shall be hidden, otherwise false.
 void GUIPort::hideIfNotConnected(bool justDoIt)
 {
-    if(!isConnected and justDoIt)
+    if(mpParentGraphicsView->mpParentProjectTab == mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->getCurrentTab())
     {
-        this->hide();
-    }
-    else if(!isConnected and !justDoIt)
-    {
-        this->show();
+        if(!isConnected and justDoIt)
+        {
+            this->hide();
+        }
+        else if(!isConnected and !justDoIt)
+        {
+            this->show();
+        }
     }
 }

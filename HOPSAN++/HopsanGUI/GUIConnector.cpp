@@ -336,6 +336,9 @@ void GUIConnector::setEndPort(GUIPort *port)
 //    }
 //}
 
+
+//! Slot that tells the connector lines whether or not to use ISO style.
+//! @param useISO is true if ISO style shall be used.
 void GUIConnector::setIsoStyle(bool useISO)
 {
     mpGUIConnectorAppearance->setIsoStyle(useISO);
@@ -346,6 +349,8 @@ void GUIConnector::setIsoStyle(bool useISO)
     }
 }
 
+
+//! Slot that tells the lines to adjust their size to the zoom factor. This is to make sure line will not become invisible when zooming out.
 void GUIConnector::adjustToZoom()
 {
     mpGUIConnectorAppearance->adjustToZoom(mpParentGraphicsView->mZoomFactor);
@@ -355,6 +360,7 @@ void GUIConnector::adjustToZoom()
         mpLines[i]->setPassive();
     }
 }
+
 
 //! Returns the number of lines in a connector.
 int GUIConnector::getNumberOfLines()
@@ -461,6 +467,9 @@ bool GUIConnector::isActive()
     return mIsActive;
 }
 
+
+//! Saves all necessary information about the connetor to a text stream. Used for save, undo and copy operations.
+//! @param QTextSream is the text stream with the information.
 void GUIConnector::saveToTextStream(QTextStream &rStream)
 {
     QString startObjName = getStartPort()->getGuiObject()->getName();
@@ -606,6 +615,9 @@ void GUIConnector::updateLine(int lineNumber)
 }
 
 
+//! Slot that moves all points in the connector a specified distance in a specified direction. This is used in copy-paste operations.
+//! @param offsetX is the distance to move in X direction.
+//! @param offsetY is the distance to move in Y direction.
 void GUIConnector::moveAllPoints(qreal offsetX, qreal offsetY)
 {
     for(int i=0; i != mPoints.size(); ++i)
@@ -613,6 +625,7 @@ void GUIConnector::moveAllPoints(qreal offsetX, qreal offsetY)
         mPoints[i] = QPointF(mPoints[i].x()+offsetX, mPoints[i].y()+offsetY);
     }
 }
+
 
 //! Tells the connector to create one diagonal lines instead of the last two horizontal/vertical, or to return to horizontal/diagonal mode.
 //! @param enable indicates whether diagonal mode shall be enabled or disabled.
@@ -904,7 +917,6 @@ void GUIConnectorLine::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     emit lineHoverLeave();
 }
-
 
 
 //! Returns the number of the line in the connector.

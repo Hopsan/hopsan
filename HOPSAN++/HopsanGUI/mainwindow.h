@@ -142,6 +142,9 @@ public:
 
     void closeEvent(QCloseEvent *event);
 
+public slots:
+    void updateToolBarsToNewTab();
+
 private slots:
     //void addLibs(QString libDir, QString parentLib=QString());
     //void addLibs();

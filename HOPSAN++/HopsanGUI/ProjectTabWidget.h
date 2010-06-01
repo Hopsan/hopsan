@@ -235,6 +235,7 @@ public slots:
     void updateCurrentStartTime();
     void updateCurrentTimeStep();
     void updateCurrentStopTime();
+    void hidePortsInCurrentTab(bool doIt);
 
 signals:
     void checkMessages();
