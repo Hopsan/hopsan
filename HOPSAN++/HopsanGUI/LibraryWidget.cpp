@@ -280,6 +280,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
         {
             //Create library content item
             LibraryContentItem *libcomp= new LibraryContentItem(pAppearanceData);
+            mpContentItems.append(libcomp);
 
             //Add the component to the library
             addLibraryContentItem(libName, parentLib, libcomp);
@@ -335,6 +336,7 @@ void LibraryWidget::addLibraryContentItem(QString libraryName, QString parentLib
             if((*it)->parent()->text(0) == parentLibraryName)      //Only add component if in the correct set of libraries
             {
                 LibraryContentItem *copyOfNewComponent = new LibraryContentItem(*newComponent); //A QListWidgetItem can only be in one list at the time, therefor a copy...
+                mpContentItems.append(copyOfNewComponent);
                 addLibraryContentItem(parentLibraryName, "", copyOfNewComponent); //Recursively
             }
         }
@@ -409,15 +411,16 @@ void LibraryWidget::hideAllLib()
 
 void LibraryWidget::useIsoGraphics(bool useISO)
 {
-    QMap<QString, LibraryContent*>::iterator lib;
-    for (lib = mLibraryContentMapPtrs.begin(); lib != mLibraryContentMapPtrs.end(); ++lib)
+    qDebug() << "useIsoGraphics " << useISO;
+    for(int i=0; i<mpContentItems.size(); ++i)
     {
-        for (int i=0; i<(*lib)->count(); i++)
-        {
-            //! @todo q casting will not work in this cas need to rewrite and use some otehr way
-            //LibraryContentItem* libcontit =
-            //qobject_cast<LibraryContentItem*>( (*lib)->item(i) )->selectIcon(useISO);
-            //libcontit->selectIcon(useISO);
-        }
+        mpContentItems[i]->selectIcon(useISO);
     }
+//        for (int i=0; i<(*lib)->count(); i++)
+//        {
+//            //! @todo q casting will not work in this cas need to rewrite and use some otehr way
+//            //LibraryContentItem* libcontit =
+//            //qobject_cast<LibraryContentItem*>( (*lib)->item(i) )->selectIcon(useISO);
+//            //libcontit->selectIcon(useISO);
+//        }
 }

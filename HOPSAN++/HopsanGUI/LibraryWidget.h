@@ -131,6 +131,7 @@ private:
     QTreeWidget *mpTree;
     QMap<QString, LibraryContent*> mLibraryContentMapPtrs;
     QVBoxLayout *mpGrid;
+    QVector<LibraryContentItem*> mpContentItems;
 
 };
 
