@@ -321,6 +321,7 @@ VariableList::VariableList(MainWindow *parent)
     this->setAcceptDrops(true);
     this->updateList();
 
+    connect(mpParentMainWindow->mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateList()));
     connect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), this, SLOT(updateList()));
     connect(mpParentMainWindow->mpSimulationSetupWidget->mpSimulateButton,SIGNAL(released()),this,SLOT(updateList()));
     connect(this,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(createPlot(QListWidgetItem*)));
@@ -328,6 +329,11 @@ VariableList::VariableList(MainWindow *parent)
 
 void VariableList::updateList()
 {
+    if(mpParentMainWindow->mpProjectTabs->count() == 0)     //Check so that project tabs are not empty (= program is closing)
+    {
+        return;
+    }
+
     xMap.clear();
     yMap.clear();
     this->clear();
