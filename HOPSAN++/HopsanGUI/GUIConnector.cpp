@@ -266,6 +266,12 @@ void GUIConnector::setEndPort(GUIPort *port)
     mEndPortConnected = true;
     mpEndPort = port;
     mpEndPort->isConnected = true;
+
+    if(mpStartPort->getPortType() == "POWERPORT" or mpEndPort->getPortType() == "POWERPORT")
+    {
+        this->mpGUIConnectorAppearance->setType("POWERPORT");
+    }
+
     if( ((mpEndPort->getPortDirection() == PortAppearance::HORIZONTAL) and (mGeometries.back() == GUIConnector::HORIZONTAL)) or
         ((mpEndPort->getPortDirection() == PortAppearance::VERTICAL) and (mGeometries.back() == GUIConnector::VERTICAL)) )
     {
@@ -553,6 +559,8 @@ void GUIConnector::drawConnector()
         mpLines.pop_back();
         this->scene()->update();
     }
+
+    mpParentGraphicsView->setBackgroundBrush(mpParentGraphicsView->mBackgroundColor);
 }
 
 
