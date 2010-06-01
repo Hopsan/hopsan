@@ -45,6 +45,7 @@
 #include <QCursor>
 #include "mainwindow.h"
 #include <QAction>
+#include "SimulationSetupWidget.h"
 
 PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindow *parent)
     : QMainWindow(parent)//QWidget(parent,Qt::Window)
@@ -321,6 +322,7 @@ VariableList::VariableList(MainWindow *parent)
     this->updateList();
 
     connect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), this, SLOT(updateList()));
+    connect(mpParentMainWindow->mpSimulationSetupWidget->mpSimulateButton,SIGNAL(released()),this,SLOT(updateList()));
     connect(this,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(createPlot(QListWidgetItem*)));
 }
 
@@ -328,6 +330,8 @@ void VariableList::updateList()
 {
     xMap.clear();
     yMap.clear();
+    this->clear();
+    mpCurrentView = this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView;
     QVector<double> y;
     QMap<QString, GUIObject *>::iterator it;
     QListWidgetItem *tempListWidget;
