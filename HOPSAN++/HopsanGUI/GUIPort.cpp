@@ -366,16 +366,13 @@ void GUIPort::setDisplayName(const QString name)
 //! @todo this is a very ugly way of handeling system ports should try to think of something better
 QString GUIPort::getGUIComponentName()
 {
-    qDebug() << "apa";
     if (mpGUIRootSystem == 0)
     {
-        qDebug() << "apa2";
         qDebug() << "return guiobject name: " << mpParentGuiObject->getName();
         return mpParentGuiObject->getName();
     }
     else
     {
-        qDebug() << "apa3";
         qDebug() << "return root name: " << mpGUIRootSystem->getName();
         return mpGUIRootSystem->getName();
     }
