@@ -1,5 +1,5 @@
 TYPENAME "SignalSource"
-DISPLAYNAME "Source"
+DISPLAYNAME "Constant"
 ISOICON Source.svg
 ICONROTATION OFF
 PORT "out" 1.0 0.5 0
