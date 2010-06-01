@@ -46,14 +46,14 @@ public:
 
         registerParameter("k", "Gain", "-", mK);
         registerParameter("wnum", "Numerator break frequency", "rad/s", mWnum);
-        registerParameter("wden", "Denumerator break frequency", "rad/s", mWden);
+        registerParameter("wden", "Denominator break frequency", "rad/s", mWden);
+        registerParameter("min", "Output Lower limit", "-", mMin);
+        registerParameter("max", "Output Upper limit", "-", mMax);
     }
 
 
     void initialize()
     {
-        //double u0 = mPortPtrs[in]->readNode(NodeSignal::VALUE);
-
         double num[2];
         double den[2];
 
@@ -61,13 +61,11 @@ public:
         num[1] = mK;
         den[0] = 1.0/mWden;
         den[1] = 1.0;
-        //num[0] = 0.0;
-        //num[1] = 1.0;
-        //den[0] = 1.0E-10;
-        //den[1] = 1.0;
 
         mFilter.initialize(mTime, mTimestep, num, den, mStartY, mStartY, mMin, mMax);
-        //! @todo Write out values into node as well? (I think so) This is true for all components
+
+        //Writes out the value for time "zero"
+        mpOut->writeNode(NodeSignal::VALUE, mStartY);
     }
 
 
