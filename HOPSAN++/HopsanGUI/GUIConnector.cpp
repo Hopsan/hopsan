@@ -227,6 +227,24 @@ void GUIConnector::removePoint(bool deleteIfEmpty)
 {
     mPoints.pop_back();
     mGeometries.pop_back();
+    if(getNumberOfLines() > 2)
+    {
+        if((mGeometries[mGeometries.size()-1] == GUIConnector::DIAGONAL) or ((mGeometries[mGeometries.size()-2] == GUIConnector::DIAGONAL)))
+        {
+            if(mGeometries[mGeometries.size()-3] == GUIConnector::HORIZONTAL)
+            {
+                mGeometries[mGeometries.size()-2] = GUIConnector::VERTICAL;
+                mGeometries[mGeometries.size()-1] = GUIConnector::HORIZONTAL;
+                mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-1].x(), mPoints[mPoints.size()-3].y());
+            }
+            else
+            {
+                mGeometries[mGeometries.size()-2] = GUIConnector::HORIZONTAL;
+                mGeometries[mGeometries.size()-1] = GUIConnector::VERTICAL;
+                mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-3].x(), mPoints[mPoints.size()-1].y());
+            }
+        }
+    }
 
     if(mPoints.size() == 2 and !mMakingDiagonal)
     {
@@ -651,25 +669,45 @@ void GUIConnector::makeDiagonal(bool enable)
     }
     else
     {
-        if(mGeometries[mGeometries.size()-2] == GUIConnector::HORIZONTAL)
+        if(this->getNumberOfLines() > 1)
         {
-            mGeometries.back() = GUIConnector::VERTICAL;
-            mPoints.back() = QPointF(mPoints.back().x(), mPoints[mPoints.size()-2].y());
-        }
-        else if(mGeometries[mGeometries.size()-2] == GUIConnector::VERTICAL)
-        {
-            mGeometries.back() = GUIConnector::HORIZONTAL;
-            mPoints.back() = QPointF(mPoints[mPoints.size()-2].x(), mPoints.back().y());
-        }
-        else if(mGeometries[mGeometries.size()-2] == GUIConnector::DIAGONAL)
-        {
-            if(abs(mPoints[mPoints.size()-2].x() - mPoints[mPoints.size()-3].x()) > abs(mPoints[mPoints.size()-2].y() - mPoints[mPoints.size()-3].y()))
-                mGeometries.back() = GUIConnector::HORIZONTAL;
-            else
+            if(mGeometries[mGeometries.size()-2] == GUIConnector::HORIZONTAL)
+            {
                 mGeometries.back() = GUIConnector::VERTICAL;
-            mPoints.back() = QPointF(mPoints[mPoints.size()-2].x(), mPoints.back().y());
+                mPoints.back() = QPointF(mPoints.back().x(), mPoints[mPoints.size()-2].y());
+            }
+            else if(mGeometries[mGeometries.size()-2] == GUIConnector::VERTICAL)
+            {
+                mGeometries.back() = GUIConnector::HORIZONTAL;
+                mPoints.back() = QPointF(mPoints[mPoints.size()-2].x(), mPoints.back().y());
+            }
+            else if(mGeometries[mGeometries.size()-2] == GUIConnector::DIAGONAL)
+            {
+                if(abs(mPoints[mPoints.size()-2].x() - mPoints[mPoints.size()-3].x()) > abs(mPoints[mPoints.size()-2].y() - mPoints[mPoints.size()-3].y()))
+                    mGeometries.back() = GUIConnector::HORIZONTAL;
+                else
+                    mGeometries.back() = GUIConnector::VERTICAL;
+                mPoints.back() = QPointF(mPoints[mPoints.size()-2].x(), mPoints.back().y());
+            }
+            addPoint(mpParentGraphicsView->mapToScene(mpParentGraphicsView->mapFromGlobal(cursor.pos())));
         }
-        addPoint(mpParentGraphicsView->mapToScene(mpParentGraphicsView->mapFromGlobal(cursor.pos())));
+        else    //Only one (diagonal) line exist, so special solution is required
+        {
+            addPoint(mpParentGraphicsView->mapToScene(mpParentGraphicsView->mapFromGlobal(cursor.pos())));
+            if(getStartPort()->getPortDirection() == PortAppearance::HORIZONTAL)
+            {
+                mGeometries[0] = GUIConnector::VERTICAL;
+                mGeometries[1] = GUIConnector::HORIZONTAL;
+                mPoints[1] = QPointF(mPoints[2].x(), mPoints[0].y());
+            }
+            else
+            {
+                mGeometries[0] = GUIConnector::HORIZONTAL;
+                mGeometries[1] = GUIConnector::VERTICAL;
+                mPoints[1] = QPointF(mPoints[0].x(), mPoints[2].y());
+            }
+        }
+
         drawConnector();
         mMakingDiagonal = false;
     }
