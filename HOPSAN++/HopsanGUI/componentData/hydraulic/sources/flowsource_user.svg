@@ -13,7 +13,7 @@
    id="svg3336"
    sodipodi:version="0.32"
    inkscape:version="0.46"
-   sodipodi:docname="FlowSource.svg"
+   sodipodi:docname="flowsource_user.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
   <defs
@@ -37,7 +37,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="7.9195959"
-     inkscape:cx="-39.016454"
+     inkscape:cx="-59.408909"
      inkscape:cy="29.385063"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -84,7 +84,7 @@
        sodipodi:cy="316.64789"
        sodipodi:cx="330"
        id="path2160"
-       style="font-weight:bold;fill:none;stroke:#000000;stroke-width:15.27899933;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="font-weight:bold;fill:#ffffff;stroke:#000000;stroke-width:15.27899933000000000;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
        sodipodi:type="arc" />
     <text
        xml:space="preserve"

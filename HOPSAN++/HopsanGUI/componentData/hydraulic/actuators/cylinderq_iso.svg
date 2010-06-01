@@ -37,7 +37,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.979899"
-     inkscape:cx="77.871976"
+     inkscape:cx="-3.6978415"
      inkscape:cy="-3.3750921"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -72,8 +72,17 @@
      id="layer1"
      transform="translate(-349.93753,-496.21265)">
     <rect
+       ry="0"
+       y="-439.43753"
+       x="496.71265"
+       height="89"
+       width="39"
+       id="rect2709"
+       style="fill:#ffffff;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:10.43299961000000000;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;fill-opacity:1"
+       transform="matrix(0,1,-1,0,0,0)" />
+    <rect
        transform="matrix(0,1,-1,0,0,0)"
-       style="fill:#ffffff;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:10.43299961;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:#ffffff;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:10.43299961000000000;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;fill-opacity:1"
        id="rect2813"
        width="39"
        height="19"
@@ -81,17 +90,8 @@
        y="-380.43753"
        ry="0" />
     <rect
-       ry="0"
-       y="-439.43753"
-       x="496.71265"
-       height="89"
-       width="39"
-       id="rect2709"
-       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:10.43299961;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       transform="matrix(0,1,-1,0,0,0)" />
-    <rect
        transform="matrix(0,1,-1,0,0,0)"
-       style="fill:#ffffff;stroke:#000000;stroke-width:0.99999994;stroke-linecap:butt;stroke-miterlimit:10.43299961;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:#ffffff;stroke:#000000;stroke-width:0.99999994000000003;stroke-linecap:butt;stroke-miterlimit:10.43299961000000000;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;fill-opacity:1"
        id="rect2815"
        width="8.999999"
        height="89"

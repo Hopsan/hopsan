@@ -50,16 +50,16 @@
      objecttolerance="10"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="16"
-     inkscape:cx="90.863586"
-     inkscape:cy="19.481457"
+     inkscape:zoom="4"
+     inkscape:cx="141.41232"
+     inkscape:cy="10.121048"
      inkscape:document-units="px"
      inkscape:current-layer="g4285"
      showgrid="false"
      inkscape:window-width="1680"
      inkscape:window-height="954"
      inkscape:window-x="0"
-     inkscape:window-y="29"
+     inkscape:window-y="58"
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:window-maximized="1">
@@ -97,13 +97,22 @@
        transform="matrix(1.2499995,0,0,1.2499995,299.84912,506.27469)">
       <rect
          transform="matrix(0,-1,-1,0,0,0)"
-         style="fill:none;stroke:#000000;stroke-width:1.60000049999999990;stroke-linecap:butt;stroke-miterlimit:3;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:#ffffff;stroke:#000000;stroke-width:1.60000049999999990;stroke-linecap:butt;stroke-miterlimit:3;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
          id="rect2732"
          class="st4"
          height="31.199917"
          width="14.206808"
          y="-33.719673"
          x="-37.092968" />
+      <rect
+         transform="matrix(0,-1,-1,0,0,0)"
+         x="-37.095509"
+         y="-128.10544"
+         width="30.400013"
+         height="94.40004"
+         class="st4"
+         id="rect2655"
+         style="fill:#ffffff;stroke:#000000;stroke-width:1.60000074000000000;stroke-linecap:butt;stroke-miterlimit:3;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1" />
       <path
          style="stroke:#000000;stroke-width:1.60000049999999990;stroke-miterlimit:3;stroke-dasharray:none;stroke-opacity:1"
          id="path2734"
@@ -194,15 +203,6 @@
          id="path211"
          class="st5"
          d="M 43.682626,13.061813 L 41.286079,9.0618016 L 38.882624,13.061813 L 43.682626,13.061813 z" />
-      <rect
-         transform="matrix(0,-1,-1,0,0,0)"
-         x="-37.095509"
-         y="-128.10544"
-         width="30.400013"
-         height="94.40004"
-         class="st4"
-         id="rect2655"
-         style="fill:none;stroke:#000000;stroke-width:1.60000074000000000;stroke-linecap:butt;stroke-miterlimit:3;stroke-dasharray:none;stroke-opacity:1" />
       <path
          style="stroke:#000000;stroke-width:1.60000062000000010;stroke-linecap:square;stroke-miterlimit:3;stroke-dasharray:none;stroke-opacity:1"
          id="path2661"

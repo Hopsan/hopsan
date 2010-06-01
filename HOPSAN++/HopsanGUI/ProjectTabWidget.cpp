@@ -92,7 +92,7 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     this->setSceneRect(0,0,5000,5000);
     this->centerOn(this->sceneRect().center());
-    this->mBackgroundColor = QColor(Qt::white);
+    this->mBackgroundColor = QColor("lightyellow");
     this->setBackgroundBrush(mBackgroundColor);
     this->createActions();
     this->createMenus();
