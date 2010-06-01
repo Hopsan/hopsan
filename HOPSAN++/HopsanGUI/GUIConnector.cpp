@@ -307,8 +307,9 @@ void GUIConnector::setEndPort(GUIPort *port)
         this->mpGUIConnectorAppearance->setType("POWERPORT");
     }
 
-    if( ((mpEndPort->getPortDirection() == PortAppearance::HORIZONTAL) and (mGeometries.back() == GUIConnector::HORIZONTAL)) or
-        ((mpEndPort->getPortDirection() == PortAppearance::VERTICAL) and (mGeometries.back() == GUIConnector::VERTICAL)) )
+    if( ( ((mpEndPort->getPortDirection() == PortAppearance::HORIZONTAL) and (mGeometries.back() == GUIConnector::HORIZONTAL)) or
+          ((mpEndPort->getPortDirection() == PortAppearance::VERTICAL) and (mGeometries.back() == GUIConnector::VERTICAL)) ) or
+          (mGeometries[mGeometries.size()-2] == GUIConnector::DIAGONAL))
     {
             //Wrong direction of last line, so remove last point. It will be fine.
         this->removePoint();
@@ -316,7 +317,6 @@ void GUIConnector::setEndPort(GUIPort *port)
     else
     {
             //Move second last line a bit outwards from the component
-
         if(mpEndPort->getPortDirection() == PortAppearance::HORIZONTAL and mpEndPort->getGuiObject()->mapToScene(mpEndPort->getGuiObject()->boundingRect().center()).x() > mpEndPort->scenePos().x())
         {
             mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-2].x() - 20, mPoints[mPoints.size()-2].y());
