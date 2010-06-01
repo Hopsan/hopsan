@@ -1201,7 +1201,10 @@ void ProjectTabWidget::hidePortsInCurrentTab(bool doIt)
 //! @see updateCurrentStopTime()
 void ProjectTabWidget::updateCurrentStartTime()
 {
-    getCurrentTab()->updateStartTime();
+    if(this->count() > 0)     //This is necessary because closing the program can trigger a line editing finished event, but the project tab has already been closed.
+    {
+        getCurrentTab()->updateStartTime();
+    }
 }
 
 
@@ -1210,7 +1213,10 @@ void ProjectTabWidget::updateCurrentStartTime()
 //! @see updateCurrentStopTime()
 void ProjectTabWidget::updateCurrentTimeStep()
 {
-    getCurrentTab()->updateTimeStep();
+    if(this->count() > 0)     //This is necessary because closing the program can trigger a line editing finished event, but the project tab has already been closed.
+    {
+        getCurrentTab()->updateTimeStep();
+    }
 }
 
 
@@ -1219,7 +1225,10 @@ void ProjectTabWidget::updateCurrentTimeStep()
 //! @see updateCurrentTimeStep()
 void ProjectTabWidget::updateCurrentStopTime()
 {
-    getCurrentTab()->updateStopTime();
+    if(this->count() > 0)     //This is necessary because closing the program can trigger a line editing finished event, but the project tab has already been closed.
+    {
+        getCurrentTab()->updateStopTime();
+    }
 }
 
 
