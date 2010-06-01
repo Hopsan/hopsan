@@ -81,6 +81,7 @@ GraphicsView::GraphicsView(ProjectTab *parent)
 {
     mpParentProjectTab = parent;
 
+
     this->setDragMode(RubberBandDrag);
     this->setInteractive(true);
     this->setEnabled(true);
@@ -92,7 +93,7 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     this->setSceneRect(0,0,5000,5000);
     this->centerOn(this->sceneRect().center());
-    this->mBackgroundColor = QColor("white");
+    this->mBackgroundColor = QColor(Qt::white);
     this->setBackgroundBrush(mBackgroundColor);
     this->createActions();
     this->createMenus();
@@ -575,11 +576,9 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     emit viewClicked();
     mJustStoppedCreatingConnector = false;
 
-
-    if (this->mIsCreatingConnector)
-    {
-        this->setDragMode(NoDrag);
-    }
+    //No rubber band during connecting:
+    if (this->mIsCreatingConnector) this->setDragMode(NoDrag);
+    else this->setDragMode(RubberBandDrag);
 
     if (event->button() == Qt::RightButton and this->mIsCreatingConnector)
     {
@@ -587,7 +586,6 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         {
             mpTempConnector->getStartPort()->isConnected = false;
             mpTempConnector->getStartPort()->show();
-            this->setDragMode(RubberBandDrag);
             mIsCreatingConnector = false;
             mJustStoppedCreatingConnector = true;
         }
@@ -1201,10 +1199,7 @@ void ProjectTabWidget::hidePortsInCurrentTab(bool doIt)
 //! @see updateCurrentStopTime()
 void ProjectTabWidget::updateCurrentStartTime()
 {
-    if(this->count() > 0)     //This is necessary because closing the program can trigger a line editing finished event, but the project tab has already been closed.
-    {
-        getCurrentTab()->updateStartTime();
-    }
+    getCurrentTab()->updateStartTime();
 }
 
 
@@ -1213,10 +1208,7 @@ void ProjectTabWidget::updateCurrentStartTime()
 //! @see updateCurrentStopTime()
 void ProjectTabWidget::updateCurrentTimeStep()
 {
-    if(this->count() > 0)     //This is necessary because closing the program can trigger a line editing finished event, but the project tab has already been closed.
-    {
-        getCurrentTab()->updateTimeStep();
-    }
+    getCurrentTab()->updateTimeStep();
 }
 
 
@@ -1225,10 +1217,7 @@ void ProjectTabWidget::updateCurrentTimeStep()
 //! @see updateCurrentTimeStep()
 void ProjectTabWidget::updateCurrentStopTime()
 {
-    if(this->count() > 0)     //This is necessary because closing the program can trigger a line editing finished event, but the project tab has already been closed.
-    {
-        getCurrentTab()->updateStopTime();
-    }
+    getCurrentTab()->updateStopTime();
 }
 
 
@@ -1740,8 +1729,6 @@ void ProjectTabWidget::saveModel(bool saveAs)
 void ProjectTabWidget::setIsoGraphics(bool useISO)
 {
     this->getCurrentTab()->useIsoGraphics = useISO;
-
-    mpParentMainWindow->mpLibrary->useIsoGraphics(useISO);
 
     ProjectTab *pCurrentTab = getCurrentTab();
     GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
