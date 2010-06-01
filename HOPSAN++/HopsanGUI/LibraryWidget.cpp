@@ -75,10 +75,13 @@ LibraryContentItem::LibraryContentItem(AppearanceData *pAppearanceData, QListWid
 {
     //Set font
     QFont font;
-    font.setPixelSize(8);
+    font.setPointSizeF(0.001);
     this->setFont(font);
     this->setToolTip(pAppearanceData->getName());
+
+    //this->setFont(QFont("Arial", 1));
     //this->setText("");
+
     mpAppearanceData = pAppearanceData;
     selectIcon(false);
 }
@@ -115,12 +118,12 @@ LibraryContent::LibraryContent(LibraryContent *pParentLibraryContent, LibraryWid
     :   QListWidget(pParentLibraryContent)
 {
     mpParentLibraryWidget = pParentLibraryWidget;
-    setViewMode(QListView::IconMode);
-    setAcceptDrops(false);
-    setResizeMode(QListView::Adjust);
+    this->setViewMode(QListView::IconMode);
+    this->setAcceptDrops(false);
+    this->setResizeMode(QListView::Adjust);
     this->setIconSize(QSize(40,40));
     this->setMouseTracking(true);
-    //setIconSize(QSize(25,25));
+    this->setSelectionRectVisible(true);
 
 }
 

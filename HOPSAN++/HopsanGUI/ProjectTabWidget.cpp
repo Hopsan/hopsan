@@ -1730,6 +1730,8 @@ void ProjectTabWidget::setIsoGraphics(bool useISO)
 {
     this->getCurrentTab()->useIsoGraphics = useISO;
 
+    mpParentMainWindow->mpLibrary->useIsoGraphics(useISO);
+
     ProjectTab *pCurrentTab = getCurrentTab();
     GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
     //QMap<QString, GUIConnector *>::iterator it;
@@ -1738,7 +1740,6 @@ void ProjectTabWidget::setIsoGraphics(bool useISO)
     {
         pCurrentView->mConnectorVector[i]->setIsoStyle(useISO);
     }
-
 
     QMap<QString, GUIObject*>::iterator it2;
     for(it2 = pCurrentView->mGUIObjectMap.begin(); it2!=pCurrentView->mGUIObjectMap.end(); ++it2)
