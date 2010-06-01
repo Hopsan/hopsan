@@ -699,11 +699,11 @@ void GraphicsView::removeConnector(GUIConnector* pConnector, bool doNotRegisterU
                  GUIPort *pEndP = pConnector->getEndPort();
                  mpParentProjectTab->mGUIRootSystem.disconnect(pStartP->getGUIComponentName(), pStartP->getName(), pEndP->getGUIComponentName(), pEndP->getName());
                  emit checkMessages();
-                 pConnector->getEndPort()->show();
+                 pConnector->getEndPort()->setVisible(!mPortsHidden);
                  pConnector->getEndPort()->isConnected = false;
              }
              scene()->removeItem(pConnector);
-             pConnector->getStartPort()->show();
+             pConnector->getStartPort()->setVisible(!mPortsHidden);
              pConnector->getStartPort()->isConnected = false;
              delete pConnector;
              doDelete = true;
