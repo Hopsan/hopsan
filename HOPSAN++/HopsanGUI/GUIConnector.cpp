@@ -490,7 +490,8 @@ GUIConnectorLine *GUIConnector::getThirdLastLine()
 bool GUIConnector::isConnected()
 {
     //qDebug() << "Entering isConnected()";
-    return (getStartPort()->isConnected and getEndPort()->isConnected);
+    //return (getStartPort()->isConnected and getEndPort()->isConnected);
+    return (getStartPort()->isConnected and mEndPortConnected);
 }
 
 
@@ -561,7 +562,7 @@ void GUIConnector::drawConnector()
         }
         if(!mEndPortConnected && mpLines.size() > 1)
         {
-            mpLines.back()->setActive();
+            //mpLines.back()->setActive();
             mpLines[mpLines.size()-2]->setPassive();
         }
     }
@@ -925,7 +926,14 @@ void GUIConnectorLine::setActive()
 //! @see setHovered()
 void GUIConnectorLine::setPassive()
 {
+    if(!mpParentGUIConnector->isConnected())
+    {
+        this->setPen(mpConnectorAppearance->getPen("NonFinished"));
+    }
+    else
+    {
         this->setPen(mpConnectorAppearance->getPen("Primary"));
+    }
 }
 
 

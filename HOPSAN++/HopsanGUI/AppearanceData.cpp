@@ -69,6 +69,8 @@ GUIConnectorAppearance::GUIConnectorAppearance(QString type, bool useISO)
     mActivePenSignalUser = QPen(QColor("red"), 2, Qt::DashLine);
     mHoverPenSignalUser = QPen(QColor("darkRed"),2, Qt::DashLine);
 
+    mNonFinishedPen = QPen(QColor("gray"),2,Qt::SolidLine, Qt::RoundCap);
+
     //Set the connector type and style
     setTypeAndIsoStyle(type, useISO);     //Need to use set type instead of setting directly as setType narrows types down to power or signal
 }
@@ -181,6 +183,10 @@ QPen GUIConnectorAppearance::getPen(QString situation, QString type, bool useISO
                 return mHoverPenSignalUser;
             }
         }
+    }
+    else if(situation == "NonFinished")
+    {
+        return mNonFinishedPen;
     }
     //! @todo Return some other default noname pen
     qDebug() << "ERROR no such connector appearance: " << situation << " " <<  type << " ISOstyle: " << useISO;

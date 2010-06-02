@@ -80,6 +80,7 @@ private:
     QPen mPrimaryPenSignalIso;
     QPen mActivePenSignalIso;
     QPen mHoverPenSignalIso;
+    QPen mNonFinishedPen;
 
     QString mConnectorType;
     bool mUseISOStyle;
