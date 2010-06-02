@@ -74,13 +74,12 @@ LibraryContentItem::LibraryContentItem(AppearanceData *pAppearanceData, QListWid
         : QListWidgetItem(pParent, QListWidgetItem::UserType)
 {
     //Set font
-    QFont font;
-    font.setPointSizeF(0.001);
-    this->setFont(font);
+    //QFont font;
+    //font.setPointSizeF(0.001);
+    //this->setFont(font);
     this->setToolTip(pAppearanceData->getName());
 
-    //this->setFont(QFont("Arial", 1));
-    //this->setText("");
+    this->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
 
     mpAppearanceData = pAppearanceData;
     selectIcon(false);
@@ -107,8 +106,9 @@ void LibraryContentItem::selectIcon(bool useIso)
  
     icon.addFile(mpAppearanceData->getFullIconPath(useIso));
 
-    this->setSizeHint(QSize(55,55));
+    //this->setSizeHint(QSize(55,55));
     this->setIcon(icon);
+    //this->setData(Qt::UserRole, QVariant(icon));
 }
 
 
@@ -119,11 +119,14 @@ LibraryContent::LibraryContent(LibraryContent *pParentLibraryContent, LibraryWid
 {
     mpParentLibraryWidget = pParentLibraryWidget;
     this->setViewMode(QListView::IconMode);
-    this->setAcceptDrops(false);
     this->setResizeMode(QListView::Adjust);
     this->setIconSize(QSize(40,40));
     this->setMouseTracking(true);
-    this->setSelectionRectVisible(true);
+    this->setSelectionRectVisible(false);
+    this->setDragEnabled(true);
+    this->setSpacing(10);
+    this->setAcceptDrops(true);
+    this->setDropIndicatorShown(true);
 
 }
 
@@ -161,10 +164,13 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
     stream << *(mpParentLibraryWidget->getAppearanceDataByDisplayName(pItem->toolTip()));
     stream << "BASEPATH " << mpParentLibraryWidget->getAppearanceDataByDisplayName(pItem->toolTip())->getBasePath();
 
-    QDrag *drag = new QDrag(this);
     QMimeData *mimeData = new QMimeData;
-    drag->setMimeData(mimeData);
     mimeData->setText(datastr);
+
+    QDrag *drag = new QDrag(this);
+    drag->setMimeData(mimeData);
+    drag->setPixmap(pItem->icon().pixmap(40,40));
+
 
     qDebug() << "Debug stream: " << mimeData->text();
 
@@ -190,6 +196,10 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
     mpGrid = new QVBoxLayout(this);
 
     mpGrid->addWidget(mpTree);
+
+    mpComponentNameField = new QLabel("No Component Selected", this);
+    mpGrid->addWidget(mpComponentNameField);
+    mpComponentNameField->hide();
 
     setLayout(mpGrid);
 

@@ -54,6 +54,7 @@
 #include <QStringList>
 #include <QTreeWidget>
 #include <QVBoxLayout>
+#include <QLabel>
 #include "AppearanceData.h"
 
 
@@ -132,6 +133,7 @@ private:
     QMap<QString, LibraryContent*> mLibraryContentMapPtrs;
     QVBoxLayout *mpGrid;
     QVector<LibraryContentItem*> mpContentItems;
+    QLabel *mpComponentNameField;
 
 };
 
