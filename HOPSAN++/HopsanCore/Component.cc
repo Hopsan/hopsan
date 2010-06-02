@@ -1345,20 +1345,34 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
             n_PowerPorts += 1;
         }
     }
+
     //Check the kind of ports in the components subjected for connection
     //                                 This checks that rPort1 is not already connected to pNode
-    if (((pPort1->getPortType() == Port::READPORT) && !(pNode->isConnectedToPort(pPort1))) || ((pPort2->getPortType() == Port::READPORT) && !(pNode->isConnectedToPort(pPort2))))
+    if ((pPort1->getPortType() == Port::READPORT) && !(pNode->isConnectedToPort(pPort1)))
     {
         n_ReadPorts += 1;
     }
-    if (((pPort1->getPortType() == Port::WRITEPORT) && !(pNode->isConnectedToPort(pPort1))) || ((pPort2->getPortType() == Port::WRITEPORT) && !(pNode->isConnectedToPort(pPort2))))
+    if ((pPort2->getPortType() == Port::READPORT) && !(pNode->isConnectedToPort(pPort2)))
+    {
+        n_ReadPorts += 1;
+    }
+    if ((pPort1->getPortType() == Port::WRITEPORT) && !(pNode->isConnectedToPort(pPort1)))
     {
         n_WritePorts += 1;
     }
-    if (((pPort1->getPortType() == Port::POWERPORT) && !(pNode->isConnectedToPort(pPort1))) || ((pPort2->getPortType() == Port::POWERPORT) && !(pNode->isConnectedToPort(pPort2))))
+    if ((pPort2->getPortType() == Port::WRITEPORT) && !(pNode->isConnectedToPort(pPort2)))
+    {
+        n_WritePorts += 1;
+    }
+    if ((pPort1->getPortType() == Port::POWERPORT) && !(pNode->isConnectedToPort(pPort1)))
     {
         n_PowerPorts += 1;
     }
+    if ((pPort2->getPortType() == Port::POWERPORT) && !(pNode->isConnectedToPort(pPort2)))
+    {
+        n_PowerPorts += 1;
+    }
+
     //Check if there are some problems with the connection
     if (n_PowerPorts > 2)
     {
@@ -1379,6 +1393,11 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
     {
         cout << "Trying to connect only ReadPorts" << endl;
         gCoreMessageHandler.addErrorMessage("Trying to connect only ReadPorts");
+        return false;
+    }
+    if ((pPort1->getPortType() == Port::READPORT) &&  (pPort2->getPortType() == Port::READPORT))
+    {
+        gCoreMessageHandler.addErrorMessage("Trying to connect ReadPort to ReadPort");
         return false;
     }
     //It seems to be OK!

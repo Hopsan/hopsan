@@ -243,7 +243,7 @@ void MainWindow::createActions()
     openUndoAction->setText("Undo History");
     connect(openUndoAction,SIGNAL(triggered()),this,SLOT(openUndo()));
 
-    cutAction = new QAction(QIcon("../../HopsanGUI/icons/cut.png"), tr("&Cut"), this);
+    cutAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Cut.png"), tr("&Cut"), this);
     cutAction->setShortcut(tr("Ctrl+x"));
     cutAction->setStatusTip(tr("Cut Selection"));
 
@@ -259,7 +259,7 @@ void MainWindow::createActions()
     simulateAction->setShortcut(tr("Simulate"));
     simulateAction->setStatusTip(tr("Simulate Current Project"));
 
-    plotAction = new QAction(QIcon("../../HopsanGUI/icons/onebit_20.png"), tr("&Plot"), this);
+    plotAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Plot.png"), tr("&Plot"), this);
     plotAction->setShortcut(tr("Plot"));
     plotAction->setStatusTip(tr("Plot Something"));
     connect(plotAction, SIGNAL(triggered()), this,SLOT(plot()));
