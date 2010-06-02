@@ -171,10 +171,9 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
     drag->setMimeData(mimeData);
     drag->setPixmap(pItem->icon().pixmap(40,40));
 
-
     qDebug() << "Debug stream: " << mimeData->text();
 
-    drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()));
+    drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()/2));
     drag->exec(Qt::CopyAction | Qt::MoveAction);
     //Qt::DropAction dropAction = drag->exec(Qt::CopyAction | Qt::MoveAction);
 }
