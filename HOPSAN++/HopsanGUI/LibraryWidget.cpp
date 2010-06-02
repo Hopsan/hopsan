@@ -77,6 +77,7 @@ LibraryContentItem::LibraryContentItem(AppearanceData *pAppearanceData, QListWid
     //QFont font;
     //font.setPointSizeF(0.001);
     //this->setFont(font);
+
     this->setToolTip(pAppearanceData->getName());
 
     this->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
@@ -127,6 +128,8 @@ LibraryContent::LibraryContent(LibraryContent *pParentLibraryContent, LibraryWid
     this->setSpacing(10);
     this->setAcceptDrops(true);
     this->setDropIndicatorShown(true);
+    qDebug() << "Connecting!";
+    connect(this,SIGNAL(itemEntered(QListWidgetItem*)),this,SLOT(highLightItem(QListWidgetItem*)));
 
 }
 
@@ -139,7 +142,7 @@ void LibraryContent::mousePressEvent(QMouseEvent *event)
 }
 
 
-void LibraryContent::itemEntered(QListWidgetItem *item)
+void LibraryContent::highLightItem(QListWidgetItem *item)
 {
     qDebug() << "itemEntered";
     item->setBackgroundColor(QColor("lightgray"));

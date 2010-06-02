@@ -93,8 +93,11 @@ public:
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
-    virtual void itemEntered(QListWidgetItem *item);
 
+public slots:
+    virtual void highLightItem(QListWidgetItem *item);
+
+private:
     QPoint dragStartPosition;
     LibraryWidget *mpParentLibraryWidget;
 };

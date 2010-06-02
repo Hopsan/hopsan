@@ -788,6 +788,8 @@ void GraphicsView::paste()
 {
     qDebug() << "mpCopyData = " << *mpCopyData;
 
+    undoStack->newPost();
+
     QTextStream copyStream;
     copyStream.setString(mpCopyData);
 
@@ -824,7 +826,7 @@ void GraphicsView::paste()
         if(inputWord == "COMPONENT")
         {
             qreal posX, posY, rotation, nameTextPos;
-            copyStream >> componentType;
+            componentType = readName(copyStream);
             componentName = readName(copyStream);  //Now read the name, assume that the name is contained within quotes signs, "name"
             copyStream >> posX;
             copyStream >> posY;
