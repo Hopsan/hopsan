@@ -892,8 +892,8 @@ GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, GUICo
     //this->mpParentGUIConnector->mGeometries.push_back(GUIConnector::HORIZONTAL);
     this->mHasStartArrow = false;
     this->mHasEndArrow = false;
-    this->mArrowSize = 10.0;
-    this->mArrowAngle = 0.6;
+    this->mArrowSize = 8.0;
+    this->mArrowAngle = 0.5;
 }
 
 
