@@ -1400,11 +1400,12 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
         gCoreMessageHandler.addErrorMessage("Trying to connect ReadPort to ReadPort");
         return false;
     }
-    if((pPort1->getPortType() == Port::READPORT) && n_PowerPorts > 1)
-    {
-        gCoreMessageHandler.addErrorMessage("Trying to connect one ReadPort to more than one PowerPort");
-        return false;
-    }
+//    if( ((pPort1->getPortType() == Port::READPORT) && pPort2->getPortType() == Port::POWERPORT && n_PowerPorts > 1) or
+//        ((pPort2->getPortType() == Port::READPORT) && pPort1->getPortType() == Port::POWERPORT && n_PowerPorts > 1) )
+//    {
+//        gCoreMessageHandler.addErrorMessage("Trying to connect one ReadPort to more than one PowerPort");
+//        return false;
+//    }
     //It seems to be OK!
     return true;
 }
