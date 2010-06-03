@@ -104,8 +104,8 @@ void LibraryContentItem::selectIcon(bool useIso)
 {
     //Set Icon, prefere user, if its empty use iso
     QIcon icon;
- 
-    icon.addFile(mpAppearanceData->getFullIconPath(useIso));
+    QPixmap testPixMap;
+    icon.addFile(mpAppearanceData->getFullIconPath(useIso),QSize(55,55));
 
     //this->setSizeHint(QSize(55,55));
     this->setIcon(icon);
@@ -121,12 +121,11 @@ LibraryContent::LibraryContent(LibraryContent *pParentLibraryContent, LibraryWid
     mpParentLibraryWidget = pParentLibraryWidget;
     this->setViewMode(QListView::IconMode);
     this->setResizeMode(QListView::Adjust);
-    this->setIconSize(QSize(40,40));
     this->setMouseTracking(true);
     this->setSelectionRectVisible(false);
     this->setDragEnabled(true);
-    
-    this->setSpacing(10);
+    this->setIconSize(QSize(40,40));
+    this->setGridSize(QSize(50,50));
     this->setAcceptDrops(true);
     this->setDropIndicatorShown(true);
     qDebug() << "Connecting!";

@@ -95,6 +95,7 @@ public:
     QToolButton *btnZoom;
     QToolButton *btnPan;
     QToolButton *btnSVG;
+    QToolButton *btnGNUPLOT;
     QToolButton *btnGrid;
     QToolBar *btnSize;
     QSpinBox *sizeSpinBox;
@@ -105,6 +106,7 @@ private slots:
     void enableZoom(bool);
     void enablePan(bool);
     void exportSVG();
+    void exportGNUPLOT();
     void enableGrid(bool);
     void setSize(int);
     void setColor();
@@ -116,11 +118,15 @@ class VariablePlot : public QwtPlot
 {
 public:
     VariablePlot(QWidget *parent = 0);
+    void setCurve(QwtPlotCurve *pCurve);
+    QwtPlotCurve *getCurve();
 
 protected:
     virtual void dragMoveEvent(QDragMoveEvent *event);
     virtual void dropEvent(QDropEvent *event);
 
+private:
+    QwtPlotCurve *mpCurve;
 };
 
 

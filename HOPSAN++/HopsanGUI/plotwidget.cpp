@@ -70,6 +70,7 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindo
     QwtArrayData data(xarray,yarray);
     mpCurve->setData(data);
     mpCurve->attach(mpVariablePlot);
+    mpVariablePlot->setCurve(mpCurve);
     mpCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
     mpVariablePlot->replot();
 
@@ -90,23 +91,29 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindo
 
     btnZoom = new QToolButton(toolBar);
     btnZoom->setText("Zoom");
-    btnZoom->setIcon(QIcon("../../HopsanGUI/icons/zoom.png"));
+    btnZoom->setIcon(QIcon("../../HopsanGUI/icons/Hopsan-Zoom.png"));
     btnZoom->setCheckable(true);
     btnZoom->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolBar->addWidget(btnZoom);
 
     btnPan = new QToolButton(toolBar);
     btnPan->setText("Pan");
-    btnPan->setIcon(QIcon("../../HopsanGUI/icons/pan.png"));
+    btnPan->setIcon(QIcon("../../HopsanGUI/icons/Hopsan-Pan.png"));
     btnPan->setCheckable(true);
     btnPan->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolBar->addWidget(btnPan);
 
     btnSVG = new QToolButton(toolBar);
-    btnSVG->setText("svg");
-    btnSVG->setIcon(QIcon("../../HopsanGUI/icons/save_svg.png"));
+    btnSVG->setText("SVG");
+    btnSVG->setIcon(QIcon("../../HopsanGUI/icons/Hopsan-SaveToSvg.png"));
     btnSVG->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolBar->addWidget(btnSVG);
+
+    btnGNUPLOT = new QToolButton(toolBar);
+    btnGNUPLOT->setText("GNUPLOT");
+    btnGNUPLOT->setIcon(QIcon("../../HopsanGUI/icons/Hopsan-SaveToGnuPlot.png"));
+    btnGNUPLOT->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    toolBar->addWidget(btnGNUPLOT);
 
     btnGrid = new QToolButton(toolBar);
     btnGrid->setText("Grid");
@@ -172,6 +179,7 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindo
     connect(btnZoom,SIGNAL(toggled(bool)),SLOT(enableZoom(bool)));
     connect(btnPan,SIGNAL(toggled(bool)),SLOT(enablePan(bool)));
     connect(btnSVG,SIGNAL(clicked()),SLOT(exportSVG()));
+    connect(btnGNUPLOT,SIGNAL(clicked()),SLOT(exportGNUPLOT()));
     connect(btnGrid,SIGNAL(toggled(bool)),SLOT(enableGrid(bool)));
     connect(sizeSpinBox,SIGNAL(valueChanged(int)),this, SLOT(setSize(int)));
     connect(btnColor,SIGNAL(clicked()),this,SLOT(setColor()));
@@ -229,6 +237,34 @@ void PlotWidget::exportSVG()
         mpVariablePlot->print(generator);
     }
 #endif
+}
+
+
+void PlotWidget::exportGNUPLOT()
+{
+    QDir fileDialogSaveDir;
+    QString modelFileName = QFileDialog::getSaveFileName(this, tr("Save Model File"),
+                                                         fileDialogSaveDir.currentPath(),
+                                                         tr("GNUPLOT File (*.GNUPLOT)"));
+    QFile file(modelFileName);
+    QFileInfo fileInfo(file);
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qDebug() << "Failed to open file for writing: " + modelFileName;
+        return;
+    }
+    QTextStream modelFile(&file);  //Create a QTextStream object to stream the content of file
+
+    size_t size = mpVariablePlot->getCurve()->data().size();
+    for(int i=0; i!=size; ++i)
+    {
+        modelFile << mpVariablePlot->getCurve()->data().x(i);
+        modelFile << " ";
+        modelFile << mpVariablePlot->getCurve()->data().y(i);
+        modelFile << "\n";
+    }
+    file.close();
 }
 
 void PlotWidget::setSize(int size)
@@ -308,6 +344,18 @@ void VariablePlot::dropEvent(QDropEvent *event)
         delete data;
 
     }
+}
+
+
+void VariablePlot::setCurve(QwtPlotCurve *pCurve)
+{
+    mpCurve = pCurve;
+}
+
+
+QwtPlotCurve *VariablePlot::getCurve()
+{
+    return mpCurve;
 }
 
 
