@@ -90,47 +90,47 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindo
     QToolBar *toolBar = new QToolBar(this);
 
     btnZoom = new QToolButton(toolBar);
-    btnZoom->setText("Zoom");
+    btnZoom->setToolTip("Zoom");
     btnZoom->setIcon(QIcon("../../HopsanGUI/icons/Hopsan-Zoom.png"));
     btnZoom->setCheckable(true);
     btnZoom->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolBar->addWidget(btnZoom);
 
     btnPan = new QToolButton(toolBar);
-    btnPan->setText("Pan");
+    btnPan->setToolTip("Pan");
     btnPan->setIcon(QIcon("../../HopsanGUI/icons/Hopsan-Pan.png"));
     btnPan->setCheckable(true);
     btnPan->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolBar->addWidget(btnPan);
 
     btnSVG = new QToolButton(toolBar);
-    btnSVG->setText("SVG");
+    btnSVG->setToolTip("Export to SVG");
     btnSVG->setIcon(QIcon("../../HopsanGUI/icons/Hopsan-SaveToSvg.png"));
     btnSVG->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolBar->addWidget(btnSVG);
 
     btnGNUPLOT = new QToolButton(toolBar);
-    btnGNUPLOT->setText("GNUPLOT");
+    btnGNUPLOT->setToolTip("Export to GNUPLOT");
     btnGNUPLOT->setIcon(QIcon("../../HopsanGUI/icons/Hopsan-SaveToGnuPlot.png"));
     btnGNUPLOT->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolBar->addWidget(btnGNUPLOT);
 
     btnGrid = new QToolButton(toolBar);
-    btnGrid->setText("Grid");
-    btnGrid->setIcon(QIcon("../../HopsanGUI/icons/grid.png"));
+    btnGrid->setToolTip("Show Grid");
+    btnGrid->setIcon(QIcon("../../HopsanGUI/icons/Hopsan-Grid.png"));
     btnGrid->setCheckable(true);
     btnGrid->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolBar->addWidget(btnGrid);
 
     btnColor = new QToolButton(toolBar);
-    btnColor->setText("Line Color");
-    btnColor->setIcon(QIcon("../../HopsanGUI/icons/palette.png"));
+    btnColor->setToolTip("Select Line Color");
+    btnColor->setIcon(QIcon("../../HopsanGUI/icons/Hopsan-LineColor.png"));
     btnColor->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolBar->addWidget(btnColor);
 
     btnBackgroundColor = new QToolButton(toolBar);
-    btnBackgroundColor->setText("Canvas Color");
-    btnBackgroundColor->setIcon(QIcon("../../HopsanGUI/icons/palette.png"));
+    btnBackgroundColor->setToolTip("Select Canvas Color");
+    btnBackgroundColor->setIcon(QIcon("../../HopsanGUI/icons/Hopsan-BackgroundColor.png"));
     btnBackgroundColor->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     toolBar->addWidget(btnBackgroundColor);
 
