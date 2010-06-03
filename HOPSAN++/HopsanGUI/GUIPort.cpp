@@ -132,6 +132,12 @@ void GUIPort::magnify(bool blowup)
 }
 
 
+void GUIPort::setVisible(bool visible)
+{
+    QGraphicsSvgItem::setVisible(visible);
+    mpPortLabel->setVisible(false);
+}
+
 //! Defines what happens when mouse cursor begins to hover a port.
 //! @param *event defines the mouse event.
 void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)

@@ -81,12 +81,14 @@ public:
 
 public slots:
     void hideIfNotConnected(bool justDoIt);
+    void setVisible(bool visible);
 
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+
 
     //protected slots:
     void plot(QString dataName, QString dataUnit=QString());
