@@ -61,7 +61,7 @@ public:
         else
             signal = mSignal;
 
-        //Spring equations
+        //Transformer equations
         double c = signal;
         double Zc = 0.0;
 

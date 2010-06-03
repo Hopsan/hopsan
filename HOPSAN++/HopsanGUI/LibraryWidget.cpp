@@ -125,6 +125,7 @@ LibraryContent::LibraryContent(LibraryContent *pParentLibraryContent, LibraryWid
     this->setMouseTracking(true);
     this->setSelectionRectVisible(false);
     this->setDragEnabled(true);
+    
     this->setSpacing(10);
     this->setAcceptDrops(true);
     this->setDropIndicatorShown(true);
@@ -151,6 +152,18 @@ void LibraryContent::highLightItem(QListWidgetItem *item)
 
 void LibraryContent::mouseMoveEvent(QMouseEvent *event)
 {
+        //Make hovered item gray//
+    for(int i=0; i != mpParentLibraryWidget->mpContentItems.size(); ++i)
+    {
+        mpParentLibraryWidget->mpContentItems[i]->setBackgroundColor(QColor("white"));
+    }
+    QListWidgetItem *tempItem = itemAt(event->pos());
+    if(tempItem != 0x0)
+    {
+        tempItem->setBackgroundColor(QColor("lightblue"));
+    }
+        //***********************//
+
     if ( !(event->buttons() & Qt::LeftButton) )
         return;
     if ( (event->pos() - dragStartPosition).manhattanLength() < QApplication::startDragDistance() )

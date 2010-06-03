@@ -109,6 +109,8 @@ class LibraryWidget : public QWidget
 {
     Q_OBJECT
 
+    friend class LibraryContent;
+
 public:
     //Member functions
     LibraryWidget(MainWindow *parent = 0);
