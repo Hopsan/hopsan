@@ -680,6 +680,10 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
 void GraphicsView::removeConnector(GUIConnector* pConnector, bool doNotRegisterUndo)
 {
     bool doDelete = false;
+    bool startPortHasMoreConnections = false;
+    bool endPortWasConnected = false;
+    bool endPortHasMoreConnections = false;
+    int indexToRemove;
     int i;
 
     if(!doNotRegisterUndo)
@@ -697,22 +701,47 @@ void GraphicsView::removeConnector(GUIConnector* pConnector, bool doNotRegisterU
                  GUIPort *pEndP = pConnector->getEndPort();
                  mpParentProjectTab->mGUIRootSystem.disconnect(pStartP->getGUIComponentName(), pStartP->getName(), pEndP->getGUIComponentName(), pEndP->getName());
                  emit checkMessages();
-                 pConnector->getEndPort()->setVisible(!mPortsHidden);
-                 pConnector->getEndPort()->isConnected = false;
+                 endPortWasConnected = true;
              }
-             scene()->removeItem(pConnector);
-             pConnector->getStartPort()->setVisible(!mPortsHidden);
-             pConnector->getStartPort()->isConnected = false;
-             delete pConnector;
              doDelete = true;
-             break;
+             indexToRemove = i;
+        }
+        else if( (pConnector->getStartPort() == mConnectorVector[i]->getStartPort()) or
+                 (pConnector->getStartPort() == mConnectorVector[i]->getEndPort()) )
+        {
+            startPortHasMoreConnections = true;
+        }
+        else if( (pConnector->getEndPort() == mConnectorVector[i]->getStartPort()) or
+                 (pConnector->getEndPort() == mConnectorVector[i]->getEndPort()) )
+        {
+            endPortHasMoreConnections = true;
         }
         if(mConnectorVector.empty())
             break;
     }
+
+    if(endPortWasConnected and !endPortHasMoreConnections)
+    {
+        pConnector->getEndPort()->setVisible(!mPortsHidden);
+        pConnector->getEndPort()->isConnected = false;
+    }
+
+    if(!startPortHasMoreConnections)
+    {
+        pConnector->getStartPort()->setVisible(!mPortsHidden);
+        pConnector->getStartPort()->isConnected = false;
+    }
+    else if(startPortHasMoreConnections and !endPortWasConnected)
+    {
+        pConnector->getStartPort()->setVisible(false);
+        pConnector->getStartPort()->isConnected = true;
+    }
+
     if(doDelete)
     {
-        mConnectorVector.remove(i);
+        scene()->removeItem(pConnector);
+        delete pConnector;
+        mConnectorVector.remove(indexToRemove);
     }
     this->setBackgroundBrush(mBackgroundColor);
 }

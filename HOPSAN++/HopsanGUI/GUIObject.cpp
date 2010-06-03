@@ -243,7 +243,6 @@ void GUIObject::setIcon(bool useIso)
     QGraphicsSvgItem *tmp = mpIcon;
     if(useIso and mAppearanceData.haveIsoIcon())
     {
-
         mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(true) , this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
     }
