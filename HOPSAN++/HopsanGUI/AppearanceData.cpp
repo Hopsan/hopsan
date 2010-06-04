@@ -69,7 +69,7 @@ GUIConnectorAppearance::GUIConnectorAppearance(QString type, bool useISO)
     mActivePenSignalUser = QPen(QColor("red"), 2, Qt::DashLine);
     mHoverPenSignalUser = QPen(QColor("darkRed"),2, Qt::DashLine);
 
-    mNonFinishedPen = QPen(QColor("gray"),3,Qt::SolidLine, Qt::RoundCap);
+    mNonFinishedPen = QPen(QColor("lightslategray"),3,Qt::SolidLine, Qt::RoundCap);
 
     //Set the connector type and style
     setTypeAndIsoStyle(type, useISO);     //Need to use set type instead of setting directly as setType narrows types down to power or signal

@@ -98,6 +98,8 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     this->createActions();
     this->createMenus();
 
+    mCtrlKeyPressed = false;
+
     mZoomFactor = 1.0;
 
     mpCopyData = new QString;
@@ -525,7 +527,8 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         else
         {
-            this->setDragMode(QGraphicsView::ScrollHandDrag);
+            //this->setDragMode(QGraphicsView::ScrollHandDrag);
+            mCtrlKeyPressed = true;
         }
     }
     else
@@ -545,7 +548,8 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
         this->setBackgroundBrush(mBackgroundColor);
     }
 
-    this->setDragMode(QGraphicsView::RubberBandDrag);
+    //this->setDragMode(QGraphicsView::RubberBandDrag);
+    mCtrlKeyPressed = false;
 
     QGraphicsView::keyReleaseEvent(event);
 }
@@ -577,8 +581,18 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     mJustStoppedCreatingConnector = false;
 
     //No rubber band during connecting:
-    if (this->mIsCreatingConnector) this->setDragMode(NoDrag);
-    else this->setDragMode(RubberBandDrag);
+    if (this->mIsCreatingConnector)
+    {
+        this->setDragMode(NoDrag);
+    }
+    else if(mCtrlKeyPressed)
+    {
+        this->setDragMode(ScrollHandDrag);
+    }
+    else
+    {
+        this->setDragMode(RubberBandDrag);
+    }
 
     if (event->button() == Qt::RightButton and this->mIsCreatingConnector)
     {

@@ -94,7 +94,7 @@ MainWindow::MainWindow(QWidget *parent)
     //setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
     //Create a SimulationSetupWidget
-    mpSimulationSetupWidget = new SimulationSetupWidget(tr("Simulation setup"), this);
+    mpSimulationSetupWidget = new SimulationSetupWidget(tr("Simulation Setup"), this);
 
     this->createActions();
     this->createToolbars();
@@ -419,9 +419,12 @@ void MainWindow::createToolbars()
     viewToolBar->addAction(showNamesAction);
     viewToolBar->addAction(hidePortsAction);
 
-    mpSimulationToolBar = addToolBar(tr("Simulation"));
-    mpSimulationToolBar->setAllowedAreas(Qt::TopToolBarArea);
-    mpSimulationToolBar->addWidget(mpSimulationSetupWidget);
+    //addToolBar(tr("Simulation"));
+    //mpSimulationToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    //mpSimulationToolBar->addWidget(mpSimulationSetupWidget);
+    mpCentralgrid->addWidget(mpSimulationSetupWidget);
+
+
 }
 
 

@@ -163,6 +163,7 @@ private:
     void createMenus();
     void addSystemPort(QPoint position, QString name=QString(), bool startSelected = false);
     bool mJustStoppedCreatingConnector;
+    bool mCtrlKeyPressed;
 };
 
 
