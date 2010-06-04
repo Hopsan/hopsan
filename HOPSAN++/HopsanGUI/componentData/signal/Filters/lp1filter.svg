@@ -14,7 +14,7 @@
    id="svg3336"
    sodipodi:version="0.32"
    inkscape:version="0.47 r22583"
-   sodipodi:docname="firstorder.svg"
+   sodipodi:docname="lp1filter.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.0">
   <sodipodi:namedview
@@ -28,8 +28,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="8.0000004"
-     inkscape:cx="-0.81541226"
-     inkscape:cy="27.842144"
+     inkscape:cx="-15.178128"
+     inkscape:cy="27.93208"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -140,7 +140,7 @@
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
     <inkscape:perspective
-       id="perspective2848"
+       id="perspective2868"
        inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
        inkscape:vp_z="1 : 0.5 : 1"
        inkscape:vp_y="0 : 1000 : 0"
@@ -160,16 +160,16 @@
     </rdf:RDF>
   </metadata>
   <g
-     transform="translate(-222.92744,-381.152)"
+     transform="translate(-221.66515,-381.24193)"
      id="layer1"
      inkscape:groupmode="layer"
      inkscape:label="Layer 1">
     <rect
-       y="382.00018"
-       x="223.77562"
+       y="382.09012"
+       x="222.51334"
        height="48.123775"
        width="56.279053"
-       id="rect3623-1"
+       id="rect3623"
        style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1.69636893;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
     <text
        transform="translate(211.66515,381.24194)"
@@ -184,130 +184,68 @@
          id="tspan2841"
          sodipodi:role="line" /></text>
     <text
-       sodipodi:linespacing="125%"
-       id="text2831"
-       y="393.01071"
-       x="239.66354"
-       style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
-       xml:space="preserve"><tspan
-         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial"
-         y="393.01071"
-         x="239.66354"
-         id="tspan2833"
-         sodipodi:role="line">s</tspan></text>
-    <path
-       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 246.1459,395.26091 -7.01555,0"
-       id="path3757" />
-    <text
-       xml:space="preserve"
-       style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:SymbolGreek;-inkscape-font-specification:Bitstream Vera Sans"
-       x="238.61642"
-       y="403.3678"
-       id="text3759"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan3761"
-         x="238.61642"
-         y="403.3678">w</tspan></text>
-    <text
-       sodipodi:linespacing="125%"
-       id="text3799"
-       y="399.00696"
-       x="251.22153"
-       style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
-       xml:space="preserve"><tspan
-         y="399.00696"
-         x="251.22153"
-         id="tspan3801"
-         sodipodi:role="line">+</tspan></text>
-    <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:SymbolGreek;-inkscape-font-specification:SymbolGreek"
-       x="260.89032"
-       y="398.55066"
+       x="246.89032"
+       y="397.67566"
        id="text3803"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3805"
-         x="260.89032"
-         y="398.55066">1</tspan></text>
-    <text
-       sodipodi:linespacing="125%"
-       id="text3832"
-       y="403.97665"
-       x="246.67097"
-       style="font-size:4px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:SymbolGreek Bold"
-       xml:space="preserve"><tspan
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:SymbolGreek;-inkscape-font-specification:SymbolGreek Bold"
-         y="403.97665"
-         x="246.67097"
-         id="tspan3834"
-         sodipodi:role="line">1</tspan></text>
-    <path
-       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 228.67097,406.15202 46.48836,0 0,0"
-       id="path3844" />
+         x="246.89032"
+         y="397.67566">1</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
-       x="239.66354"
-       y="416.01071"
+       x="238.91354"
+       y="414.63571"
        id="text3833"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3835"
-         x="239.66354"
-         y="416.01071"
+         x="238.91354"
+         y="414.63571"
          style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial">s</tspan></text>
     <path
        id="path3837"
-       d="m 246.1459,418.26091 -7.01555,0"
+       d="m 245.3959,416.88591 -7.01555,0"
        style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <text
        sodipodi:linespacing="125%"
        id="text3839"
-       y="426.3678"
-       x="238.61642"
+       y="424.9928"
+       x="237.86642"
        style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:SymbolGreek;-inkscape-font-specification:Bitstream Vera Sans"
        xml:space="preserve"><tspan
-         y="426.3678"
-         x="238.61642"
+         y="424.9928"
+         x="237.86642"
          id="tspan3841"
          sodipodi:role="line">w</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
-       x="251.22153"
-       y="422.00696"
+       x="250.47153"
+       y="420.63196"
        id="text3843"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3845"
-         x="251.22153"
-         y="422.00696">+</tspan></text>
+         x="250.47153"
+         y="420.63196">+</tspan></text>
     <text
        sodipodi:linespacing="125%"
        id="text3847"
-       y="421.55066"
-       x="260.89032"
+       y="420.17566"
+       x="260.14032"
        style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:SymbolGreek;-inkscape-font-specification:SymbolGreek"
        xml:space="preserve"><tspan
-         y="421.55066"
-         x="260.89032"
+         y="420.17566"
+         x="260.14032"
          id="tspan3849"
          sodipodi:role="line">1</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:4px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:SymbolGreek Bold"
-       x="246.67097"
-       y="426.97665"
-       id="text3851"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         x="246.67097"
-         y="426.97665"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:SymbolGreek;-inkscape-font-specification:SymbolGreek Bold"
-         id="tspan3855">2</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 227.40868,404.06208 46.48836,0 0,0"
+       id="path3844" />
   </g>
 </svg>

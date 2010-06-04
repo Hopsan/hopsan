@@ -1,0 +1,7 @@
+TYPENAME "SignalLP1Filter"
+DISPLAYNAME "First order low pass filter"
+USERICON lp1filter.svg
+ICONROTATION ON
+PORT "in" 0 .5 0
+PORT "out" 1 .5 0
+
