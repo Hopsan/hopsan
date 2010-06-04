@@ -210,6 +210,7 @@ public:
     void disconnect(Port *pPort1, Port *pPort2);
 
     //initializeand simulate
+    bool isSimulationOk();
     void initialize(const double startT, const double stopT);
     void simulate(const double startT, const double stopT);
     void finalize(const double startT, const double stopT);

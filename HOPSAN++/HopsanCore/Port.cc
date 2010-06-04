@@ -78,6 +78,10 @@ Node* Port::getNodePtr()
 //! @return The data value
 double Port::readNode(const size_t idx)
 {
+    if(this->getPortType() == Port::READPORT and !this->isConnected())      //Signal nodes don't have to be connected
+    {
+        return 0;
+    }
     return mpNode->getData(idx);
 }
 
@@ -86,6 +90,10 @@ double Port::readNode(const size_t idx)
 //! @param [in] value The value of the data to read
 void Port::writeNode(const size_t idx, const double value)
 {
+    if(this->getPortType() == Port::WRITEPORT and !this->isConnected())     //Signal nodes don't have to be connected
+    {
+        return;
+    }
     return mpNode->setData(idx, value);
 }
 

@@ -1630,6 +1630,39 @@ void ComponentSystem::adjustTimestep(double timestep, vector<Component*> compone
 //    }
 //}
 
+
+bool ComponentSystem::isSimulationOk()
+{
+    bool itLooksGood = true;
+    for (size_t c=0; c < mSubComponentStorage.mComponentCptrs.size(); ++c)
+    {
+        for(size_t p=0; p < mSubComponentStorage.mComponentCptrs[c]->getPortPtrVector().size(); ++p)
+        {
+            if (!mSubComponentStorage.mComponentCptrs[c]->getPortPtrVector()[p]->isConnected())
+            {
+                gCoreMessageHandler.addErrorMessage("Port " + mSubComponentStorage.mComponentCptrs[c]->getPortPtrVector()[p]->getPortName() + " on " +
+                                                    mSubComponentStorage.mComponentCptrs[c]->getName() + " is not connected!");
+                itLooksGood = false;
+            }
+        }
+    }
+
+    for (size_t q=0; q < mSubComponentStorage.mComponentQptrs.size(); ++q)
+    {
+        for(size_t p=0; p < mSubComponentStorage.mComponentQptrs[q]->getPortPtrVector().size(); ++p)
+        {
+            if (!mSubComponentStorage.mComponentQptrs[q]->getPortPtrVector()[p]->isConnected())
+            {
+                gCoreMessageHandler.addErrorMessage("Port " + mSubComponentStorage.mComponentQptrs[q]->getPortPtrVector()[p]->getPortName() + " on " +
+                                                    mSubComponentStorage.mComponentQptrs[q]->getName() + " is not connected!");
+                itLooksGood = false;
+            }
+        }
+    }
+    return itLooksGood;
+}
+
+
 //! Initializes a system component and all its contained components, also allocates log data memory
 void ComponentSystem::initialize(const double startT, const double stopT)
 {

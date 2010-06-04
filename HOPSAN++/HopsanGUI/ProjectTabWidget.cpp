@@ -527,8 +527,8 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         else
         {
-            //this->setDragMode(QGraphicsView::ScrollHandDrag);
             mCtrlKeyPressed = true;
+            this->setDragMode(RubberBandDrag);
         }
     }
     else
@@ -548,8 +548,13 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
         this->setBackgroundBrush(mBackgroundColor);
     }
 
+    if(event->key() == Qt::Key_Control)
+    {
+        mCtrlKeyPressed = false;
+        this->setDragMode(RubberBandDrag);
+    }
     //this->setDragMode(QGraphicsView::RubberBandDrag);
-    mCtrlKeyPressed = false;
+
 
     QGraphicsView::keyReleaseEvent(event);
 }
@@ -1435,6 +1440,14 @@ void ProjectTabWidget::simulateCurrent()
         mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("There is no open system to simulate"));
         return;
     }
+
+    if(!this->getCurrentTab()->mGUIRootSystem.isSimulationOk())
+    {
+        mpParentMainWindow->mpMessageWidget->printCoreMessages();
+        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("Simulation failed"));
+        return;
+    }
+
 
     ProjectTab *pCurrentTab = getCurrentTab();
 

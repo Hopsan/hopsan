@@ -77,6 +77,7 @@ public:
     QString createSubSystem();
     void removeSubComponent(QString componentName, bool doDelete);
 
+    bool isSimulationOk();
     void initialize(double mStartTime, double mFinishTime);
     void simulate(double mStartTime, double mFinishTime);
     void finalize(double mStartTime, double mFinishTime);

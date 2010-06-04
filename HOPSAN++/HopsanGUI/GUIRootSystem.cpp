@@ -158,6 +158,12 @@ vector<double> GUIRootSystem::getTimeVector(QString componentName, QString portN
 }
 
 
+bool GUIRootSystem::isSimulationOk()
+{
+    return mpCoreComponentSystem->isSimulationOk();
+}
+
+
 void GUIRootSystem::initialize(double mStartTime, double mFinishTime)
 {
     mpCoreComponentSystem->initialize(mStartTime, mFinishTime);
