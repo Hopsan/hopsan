@@ -1638,7 +1638,8 @@ bool ComponentSystem::isSimulationOk()
     {
         for(size_t p=0; p < mSubComponentStorage.mComponentCptrs[c]->getPortPtrVector().size(); ++p)
         {
-            if (!mSubComponentStorage.mComponentCptrs[c]->getPortPtrVector()[p]->isConnected())
+            if (!mSubComponentStorage.mComponentCptrs[c]->getPortPtrVector()[p]->isConnected() and
+                mSubComponentStorage.mComponentCptrs[c]->getPortPtrVector()[p]->getPortType() == Port::POWERPORT)
             {
                 gCoreMessageHandler.addErrorMessage("Port " + mSubComponentStorage.mComponentCptrs[c]->getPortPtrVector()[p]->getPortName() + " on " +
                                                     mSubComponentStorage.mComponentCptrs[c]->getName() + " is not connected!");
@@ -1651,7 +1652,8 @@ bool ComponentSystem::isSimulationOk()
     {
         for(size_t p=0; p < mSubComponentStorage.mComponentQptrs[q]->getPortPtrVector().size(); ++p)
         {
-            if (!mSubComponentStorage.mComponentQptrs[q]->getPortPtrVector()[p]->isConnected())
+            if (!mSubComponentStorage.mComponentQptrs[q]->getPortPtrVector()[p]->isConnected() and
+                mSubComponentStorage.mComponentQptrs[q]->getPortPtrVector()[p]->getPortType() == Port::POWERPORT)
             {
                 gCoreMessageHandler.addErrorMessage("Port " + mSubComponentStorage.mComponentQptrs[q]->getPortPtrVector()[p]->getPortName() + " on " +
                                                     mSubComponentStorage.mComponentQptrs[q]->getName() + " is not connected!");

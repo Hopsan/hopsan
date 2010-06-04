@@ -176,11 +176,13 @@ private:
     void createToolbars();
     QDockWidget *messagedock;
     QDockWidget *libdock;
+    QDockWidget *mPlotVariablesDock;
 
     void setValue(QLineEdit *lineEdit, double value);
     double getValue(QLineEdit *lineEdit);
     void fixFinishTime();
     void fixTimeStep();
+    bool mPlotVariableListOpen;
 
 
 };

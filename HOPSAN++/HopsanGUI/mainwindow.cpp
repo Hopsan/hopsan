@@ -62,6 +62,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle("HOPSAN NG");
     this->setWindowIcon(QIcon("../../HopsanGUI/icons/hopsan.png"));
 
+    mPlotVariableListOpen = false;
 
     mpOptionsWidget = new OptionsWidget(this);
 
@@ -173,12 +174,21 @@ MainWindow::~MainWindow()
 //! Opens the plot widget.
 void MainWindow::plot()
 {
-    QDockWidget *varPlotDock = new QDockWidget(tr("Plot Variables"), this);
-    varPlotDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    VariableListDialog *variableList = new VariableListDialog(this);
-    varPlotDock->setWidget(variableList);
-    //variableList->show();
-    addDockWidget(Qt::RightDockWidgetArea, varPlotDock);
+    if(!mPlotVariableListOpen)
+    {
+        mPlotVariablesDock = new QDockWidget(tr("Plot Variables"), this);
+        mPlotVariablesDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+        VariableListDialog *variableList = new VariableListDialog(this);
+        mPlotVariablesDock->setWidget(variableList);
+        //variableList->show();
+        addDockWidget(Qt::RightDockWidgetArea, mPlotVariablesDock);
+        mPlotVariableListOpen = true;
+    }
+    else
+    {
+        this->removeDockWidget(mPlotVariablesDock);
+        mPlotVariableListOpen = false;
+    }
 
 }
 

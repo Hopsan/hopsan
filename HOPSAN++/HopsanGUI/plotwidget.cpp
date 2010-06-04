@@ -502,7 +502,7 @@ void VariableList::createPlot(QListWidgetItem *item)
     xlabel.append("Time, [s]");
 
     PlotWidget *plotwidget = new PlotWidget(xMap.find(item->text()).value(),yMap.find(item->text()).value(),this->mpParentMainWindow);
-
+    plotwidget->setWindowTitle("HOPSAN Plot Window");
     plotwidget->mpCurve->setTitle(title);
     plotwidget->mpVariablePlot->setAxisTitle(VariablePlot::yLeft, ylabel);
     plotwidget->mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xlabel);

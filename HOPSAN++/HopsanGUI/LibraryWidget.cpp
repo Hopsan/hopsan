@@ -151,15 +151,17 @@ void LibraryContent::highLightItem(QListWidgetItem *item)
 
 void LibraryContent::mouseMoveEvent(QMouseEvent *event)
 {
-        //Make hovered item gray//
+        //Make hovered item gray & display name//
     for(int i=0; i != mpParentLibraryWidget->mpContentItems.size(); ++i)
     {
         mpParentLibraryWidget->mpContentItems[i]->setBackgroundColor(QColor("white"));
+        mpParentLibraryWidget->mpComponentNameField->setText("");
     }
     QListWidgetItem *tempItem = itemAt(event->pos());
-    if(tempItem != 0x0)
+    if(tempItem != 0x0)     //! @todo This is perhaps a bit ugly, but the pointer is zero if there are not item beneath the mouse
     {
         tempItem->setBackgroundColor(QColor("lightblue"));
+        mpParentLibraryWidget->mpComponentNameField->setText(tempItem->toolTip());
     }
         //***********************//
 
@@ -213,7 +215,10 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
 
     mpComponentNameField = new QLabel("No Component Selected", this);
     mpGrid->addWidget(mpComponentNameField);
-    mpComponentNameField->hide();
+    mpComponentNameField->setAlignment(Qt::AlignCenter);
+    mpComponentNameField->setFont(QFont(mpComponentNameField->font().family(), 12));
+    mpComponentNameField->setText("");
+    //mpComponentNameField->hide();
 
     setLayout(mpGrid);
 

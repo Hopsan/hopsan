@@ -25,7 +25,8 @@ private:
     Delay mDelayedX0;
     TurbulentFlowFunction mTurb;
     ValveHysteresis mHyst;
-    SecondOrderFilter mFilter;
+    //SecondOrderFilter mFilter;
+    FirstOrderFilter mFilter;
     Port *mpP1, *mpP2, *mpX;
 
     double debug,tid1,tid2;
@@ -85,12 +86,16 @@ public:
 
         double num[3];
         double den[3];
+//        num[0] = 0.0;
+//        num[1] = 0.0;
+//        num[2] = 1.0;
+//        den[0] = mMass;
+//        den[1] = mC;
+//        den[2] = mK;
         num[0] = 0.0;
-        num[1] = 0.0;
-        num[2] = 1.0;
-        den[0] = mMass;
-        den[1] = mC;
-        den[2] = mK;
+        num[1] = 1.0;
+        den[0] = mC;
+        den[1] = mK;
 
         mFilter.initialize(mTime, mTimestep, num, den, 0.0, 0.0, 0.0, mXmax);
 
@@ -114,13 +119,16 @@ public:
         double p1 = c1 + q1*Zc1;
 
         double Ftot = p1*mPilotArea - mFs;      //Sum of forces in x direction beside from spring coeff and viscous friction
-        //double x0 = mFilter.value(Ftot);        //Filter function G = 1/(mMass*s^2 + mC*s + mK)
-        double x0 = Ftot/mK;                    //No filter function G = 1/mK
-        if(x0>mXmax)                            //No filter function G = 1/mK
-            x0=mXmax;                           //No filter function G = 1/mK
-        if(x0<0.0)                              //No filter function G = 1/mK
-            x0=0.0;                             //No filter function G = 1/mK
+        double x0 = mFilter.value(Ftot);        //Filter function G = 1/(mMass*s^2 + mC*s + mK)
+     //   double v0 = (Ftot-mK*mDelayedX0.value())/mC;
+     //   double x0 = mDelayedX0.value()+v0*mTimestep;
+        //double x0 = Ftot/mK;
+//        if(x0>mXmax)                            //No filter function G = 1/mK
+//            x0=mXmax;                           //No filter function G = 1/mK
+//        if(x0<0.0)                              //No filter function G = 1/mK
+//            x0=0.0;                             //No filter function G = 1/mK
         double x0h = mHyst.getValue(x0, mXhyst, mDelayedX0.value()); //Hysteresis
+
 
         //Turbulent flow equation
         mTurb.setFlowCoefficient(mCq*mW*x0);
@@ -180,7 +188,7 @@ public:
         if(mpX->isConnected())
             mpX->writeNode(NodeSignal::VALUE, x0);
 
-        mDelayedX0.update(x0h);  //Ska vara x0h
+        mDelayedX0.update(x0);  //Ska vara x0h
     }
 
     void finalize()
