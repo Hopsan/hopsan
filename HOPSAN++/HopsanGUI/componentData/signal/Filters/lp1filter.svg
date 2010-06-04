@@ -28,7 +28,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="8.0000004"
-     inkscape:cx="-15.178128"
+     inkscape:cx="-0.80312872"
      inkscape:cy="27.93208"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -146,6 +146,13 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3656"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
   </defs>
   <metadata
      id="metadata3341">
@@ -245,7 +252,7 @@
          sodipodi:role="line">1</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 227.40868,404.06208 46.48836,0 0,0"
+       d="m 232.84516,404.18708 35.6154,0 0,0"
        id="path3844" />
   </g>
 </svg>
