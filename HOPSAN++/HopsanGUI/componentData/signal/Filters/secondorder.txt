@@ -1,5 +1,5 @@
 TYPENAME "SignalSecondOrderFilter"
-DISPLAYNAME "Second order filter"
+DISPLAYNAME "General second order filter"
 USERICON secondorder.svg
 ICONROTATION ON
 PORT "in" 0 .5 0
