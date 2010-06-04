@@ -49,6 +49,7 @@
 #include "OptionsWidget.h"
 #include "UndoStack.h"
 #include <QComboBox>
+#include <QLabel>
 
 
 
@@ -83,7 +84,7 @@ public:
     ProjectTabWidget *mpProjectTabs;
     QGridLayout *mpTabgrid;
     LibraryWidget *mpLibrary;
-    SimulationSetupWidget *mpSimulationSetupWidget;
+    //SimulationSetupWidget *mpSimulationSetupWidget;
     OptionsWidget *mpOptionsWidget;
     PreferenceWidget *mpPreferenceWidget;
     QMenuBar *menubar;
@@ -123,12 +124,27 @@ public:
     QAction *showNamesAction;
     QAction *hidePortsAction;
     QAction *showPortsAction;
+    QLineEdit *mpStartTimeLineEdit;
+    QLineEdit *mpTimeStepLineEdit;
+    QLineEdit *mpFinishTimeLineEdit;
+    QLabel *mpTimeLabelDeliminator1;
+    QLabel *mpTimeLabelDeliminator2;
+
 
     QToolBar *fileToolBar;
     QToolBar *editToolBar;
     QToolBar *simToolBar;
     QToolBar *mpSimulationToolBar;
     QToolBar *viewToolBar;
+
+    void setStartTimeLabel(double startTime);
+    void setTimeStepLabel(double timeStep);
+    void setFinishTimeLabel(double finishTime);
+
+    double getStartTimeLabel();
+    double getTimeStepLabel();
+    double getFinishTimeLabel();
+
 
     //QComboBox *viewScaleCombo;
 
@@ -144,6 +160,7 @@ public:
 
 public slots:
     void updateToolBarsToNewTab();
+    void fixSimulationParameterValues();
 
 private slots:
     //void addLibs(QString libDir, QString parentLib=QString());
@@ -159,6 +176,11 @@ private:
     void createToolbars();
     QDockWidget *messagedock;
     QDockWidget *libdock;
+
+    void setValue(QLineEdit *lineEdit, double value);
+    double getValue(QLineEdit *lineEdit);
+    void fixFinishTime();
+    void fixTimeStep();
 
 
 };

@@ -94,7 +94,7 @@ MainWindow::MainWindow(QWidget *parent)
     //setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
     //Create a SimulationSetupWidget
-    mpSimulationSetupWidget = new SimulationSetupWidget(tr("Simulation Setup"), this);
+    //mpSimulationSetupWidget = new SimulationSetupWidget(tr("Simulation Setup"), this);
 
     this->createActions();
     this->createToolbars();
@@ -156,7 +156,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     QMetaObject::connectSlotsByName(this);
 
-    connect(mpSimulationSetupWidget->mpSimulateButton, SIGNAL(released()), mpProjectTabs, SLOT(simulateCurrent()));
+    //connect(mpSimulationSetupWidget->mpSimulateButton, SIGNAL(released()), mpProjectTabs, SLOT(simulateCurrent()));
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateToolBarsToNewTab()));
 }
 
@@ -297,6 +297,25 @@ void MainWindow::createActions()
     hidePortsAction = new QAction(hidePortsIcon, tr("&Hide All Ports"), this);
     hidePortsAction->setText("Hide All Ports");
     hidePortsAction->setCheckable(true);
+
+    mpStartTimeLineEdit = new QLineEdit("0.0");
+    mpStartTimeLineEdit->setMaximumWidth(100);
+    mpStartTimeLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
+    mpStartTimeLineEdit->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mpStartTimeLineEdit));
+    mpTimeStepLineEdit = new QLineEdit("0.001");
+    mpTimeStepLineEdit->setMaximumWidth(100);
+    mpTimeStepLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
+    mpTimeStepLineEdit->setValidator(new QDoubleValidator(0.0, 999.0, 6, mpStartTimeLineEdit));
+    mpFinishTimeLineEdit = new QLineEdit("10.0");
+    mpFinishTimeLineEdit->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mpFinishTimeLineEdit));
+    mpFinishTimeLineEdit->setMaximumWidth(100);
+    mpFinishTimeLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
+    mpTimeLabelDeliminator1 = new QLabel(tr(" :: "));
+    mpTimeLabelDeliminator2 = new QLabel(tr(" :: "));
+
+    connect(mpStartTimeLineEdit, SIGNAL(editingFinished()), SLOT(fixSimulationParameterValues()));
+    connect(mpTimeStepLineEdit, SIGNAL(editingFinished()), SLOT(fixSimulationParameterValues()));
+    connect(mpFinishTimeLineEdit, SIGNAL(editingFinished()), SLOT(fixSimulationParameterValues()));
 }
 
 
@@ -403,13 +422,6 @@ void MainWindow::createToolbars()
     editToolBar->addAction(redoAction);
     editToolBar->addAction(optionsAction);
 
-    simToolBar = addToolBar(tr("Simulation Toolbar"));
-    simToolBar->setAllowedAreas(Qt::TopToolBarArea);
-    //simToolBar->addWidget(viewScaleCombo);
-    simToolBar->addAction(preferencesAction);
-    simToolBar->addAction(simulateAction);
-    simToolBar->addAction(plotAction);
-
     viewToolBar = addToolBar(tr("View Toolbar"));
     viewToolBar->setAllowedAreas(Qt::TopToolBarArea);
     viewToolBar->addAction(resetZoomAction);
@@ -419,10 +431,21 @@ void MainWindow::createToolbars()
     viewToolBar->addAction(showNamesAction);
     viewToolBar->addAction(hidePortsAction);
 
-    //addToolBar(tr("Simulation"));
+    simToolBar = addToolBar(tr("Simulation Toolbar"));
+    simToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    simToolBar->addWidget(mpStartTimeLineEdit);
+    simToolBar->addWidget(mpTimeLabelDeliminator1);
+    simToolBar->addWidget(mpTimeStepLineEdit);
+    simToolBar->addWidget(mpTimeLabelDeliminator2);
+    simToolBar->addWidget(mpFinishTimeLineEdit);
+    simToolBar->addAction(simulateAction);
+    simToolBar->addAction(plotAction);
+    simToolBar->addAction(preferencesAction);
+
+    //mpSimulationToolBar = addToolBar(tr("Simulation"));
     //mpSimulationToolBar->setAllowedAreas(Qt::TopToolBarArea);
     //mpSimulationToolBar->addWidget(mpSimulationSetupWidget);
-    mpCentralgrid->addWidget(mpSimulationSetupWidget);
+    //mpCentralgrid->addWidget(mpSimulationSetupWidget);
 
 
 }
@@ -465,4 +488,110 @@ void MainWindow::updateToolBarsToNewTab()
     {
         hidePortsAction->setChecked(mpProjectTabs->getCurrentTab()->mpGraphicsView->mPortsHidden);
     }
+}
+
+
+//! Make sure the values make sens.
+//! @see fixTimeStep()
+void MainWindow::fixSimulationParameterValues()
+{
+    fixFinishTime();
+    fixTimeStep();
+}
+
+
+//! Make sure that the finishs time of the simulation is not smaller than start time.
+//! @see fixTimeStep()
+//! @see fixLabelValues()
+void MainWindow::fixFinishTime()
+{
+    if (getFinishTimeLabel() < getStartTimeLabel())
+        setFinishTimeLabel(getStartTimeLabel());
+
+}
+
+
+//! Make sure that the timestep is in the right range i.e. not larger than the simulation time.
+//! @see fixFinishTime()
+//! @see fixLabelValues()
+void MainWindow::fixTimeStep()
+{
+    //! @todo Maybe more checks, i.e. the time step should be even divided into the simulation time.
+    if (getTimeStepLabel() > (getFinishTimeLabel() - getStartTimeLabel()))
+        setTimeStepLabel(getFinishTimeLabel() - getStartTimeLabel());
+
+    if (mpProjectTabs->getCurrentTab()) //crashes if not if statement if no tabs are there...
+    {
+        mpProjectTabs->getCurrentTab()->mGUIRootSystem.setDesiredTimeStep(getTimeStepLabel());
+    }
+}
+
+
+//! Sets a new value to a label.
+//! @param lineEdit is a pointer to the label which should change
+//! @param value is the new value
+void MainWindow::setValue(QLineEdit *lineEdit, double value)
+{
+    QString valueTxt;
+    valueTxt.setNum(value, 'g', 6 );
+    lineEdit->setText(valueTxt);
+    fixTimeStep();
+    fixFinishTime();
+}
+
+
+//! Sets a new startvalue.
+//! @param startTime is the new value
+void MainWindow::setStartTimeLabel(double startTime)
+{
+    setValue(mpStartTimeLineEdit, startTime);
+}
+
+
+//! Sets a new timestep.
+//! @param timeStep is the new value
+void MainWindow::setTimeStepLabel(double timeStep)
+{
+    setValue(mpTimeStepLineEdit, timeStep);
+}
+
+
+//! Sets a new finish value.
+//! @param finishTime is the new value
+void MainWindow::setFinishTimeLabel(double finishTime)
+{
+    setValue(mpFinishTimeLineEdit, finishTime);
+}
+
+
+//! Acess function to the value of a label.
+//! @param lineEdit is the linedit to read
+//! @returns the value of the lineedit
+double MainWindow::getValue(QLineEdit *lineEdit)
+{
+    return lineEdit->text().toDouble();
+}
+
+
+//! Acess function to the starttimelabel value.
+//! @returns the starttime value
+double MainWindow::getStartTimeLabel()
+{
+    return getValue(mpStartTimeLineEdit);
+}
+
+
+//! Acess function to the timesteplabel value.
+//! @returns the timestep value
+double MainWindow::getTimeStepLabel()
+{
+    return getValue(mpTimeStepLineEdit);
+}
+
+
+//! Acess function to the finishlabel value.
+//! @returns the finish value
+double MainWindow::getFinishTimeLabel()
+{
+    return getValue(mpFinishTimeLineEdit);
 }

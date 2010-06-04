@@ -1099,7 +1099,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 
     double timeStep = mGUIRootSystem.getDesiredTimeStep();
 
-    mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->setTimeStepLabel(timeStep);
+    mpParentProjectTabWidget->mpParentMainWindow->setTimeStepLabel(timeStep);
 
     mIsSaved = true;
     mModelFileName.clear();
@@ -1145,7 +1145,7 @@ void ProjectTab::hasChanged()
 //! @see updateStopTime()
 void ProjectTab::updateStartTime()
 {
-    mStartTime = mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getStartTimeLabel();
+    mStartTime = mpParentProjectTabWidget->mpParentMainWindow->getStartTimeLabel();
 }
 
 
@@ -1154,7 +1154,7 @@ void ProjectTab::updateStartTime()
 //! @see updateStopTime()
 void ProjectTab::updateTimeStep()
 {
-    mTimeStep = mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getTimeStepLabel();
+    mTimeStep = mpParentProjectTabWidget->mpParentMainWindow->getTimeStepLabel();
 }
 
 
@@ -1163,7 +1163,7 @@ void ProjectTab::updateTimeStep()
 //! @see updateTimeStep()
 void ProjectTab::updateStopTime()
 {
-    mStopTime = mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getFinishTimeLabel();
+    mStopTime = mpParentProjectTabWidget->mpParentMainWindow->getFinishTimeLabel();
 }
 
 
@@ -1218,9 +1218,9 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
 
     connect(this,SIGNAL(currentChanged(int)),this, SLOT(updateSimulationSetupWidget()));
 
-    connect(mpParentMainWindow->mpSimulationSetupWidget->mpStartTimeLabel, SIGNAL(editingFinished()), this, SLOT(updateCurrentStartTime()));
-    connect(mpParentMainWindow->mpSimulationSetupWidget->mpTimeStepLabel, SIGNAL(editingFinished()), this, SLOT(updateCurrentTimeStep()));
-    connect(mpParentMainWindow->mpSimulationSetupWidget->mpFinishTimeLabel, SIGNAL(editingFinished()), this, SLOT(updateCurrentStopTime()));
+    connect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), this, SLOT(updateCurrentStartTime()));
+    connect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), this, SLOT(updateCurrentTimeStep()));
+    connect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), this, SLOT(updateCurrentStopTime()));
     connect(mpParentMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this,SLOT(hidePortsInCurrentTab(bool)));
 
     connect(mpParentMainWindow->newAction, SIGNAL(triggered()), this,SLOT(addNewProjectTab()));
@@ -1276,9 +1276,9 @@ void ProjectTabWidget::updateSimulationSetupWidget()
 {
     if(this->count() != 0)  //Don't do anything if there are no current tab
     {
-        mpParentMainWindow->mpSimulationSetupWidget->setStartTimeLabel(getCurrentTab()->getStartTime());
-        mpParentMainWindow->mpSimulationSetupWidget->setTimeStepLabel(getCurrentTab()->getTimeStep());
-        mpParentMainWindow->mpSimulationSetupWidget->setFinishTimeLabel(getCurrentTab()->getStopTime());
+        mpParentMainWindow->setStartTimeLabel(getCurrentTab()->getStartTime());
+        mpParentMainWindow->setTimeStepLabel(getCurrentTab()->getTimeStep());
+        mpParentMainWindow->setFinishTimeLabel(getCurrentTab()->getStopTime());
     }
 }
 
@@ -1451,8 +1451,8 @@ void ProjectTabWidget::simulateCurrent()
 
     ProjectTab *pCurrentTab = getCurrentTab();
 
-    double startTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getStartTimeLabel();
-    double finishTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->mpSimulationSetupWidget->getFinishTimeLabel();
+    double startTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->getStartTimeLabel();
+    double finishTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->getFinishTimeLabel();
     
     QString timeTxt;
     double dt = finishTime - startTime;
@@ -1593,21 +1593,21 @@ void ProjectTabWidget::loadModel()
         {
             double startTime;
             inputStream >> startTime;
-            mpParentMainWindow->mpSimulationSetupWidget->setStartTimeLabel(startTime);
+            mpParentMainWindow->setStartTimeLabel(startTime);
         }
 
         if ( inputWord == "TIMESTEP" )
         {
             double timeStep;
             inputStream >> timeStep;
-            mpParentMainWindow->mpSimulationSetupWidget->setTimeStepLabel(timeStep);
+            mpParentMainWindow->setTimeStepLabel(timeStep);
         }
 
         if ( inputWord == "FINISHTIME" )
         {
             double finishTime;
             inputStream >> finishTime;
-            mpParentMainWindow->mpSimulationSetupWidget->setFinishTimeLabel(finishTime);
+            mpParentMainWindow->setFinishTimeLabel(finishTime);
         }
 
         if ( inputWord == "COMPONENT" )
@@ -1746,9 +1746,9 @@ void ProjectTabWidget::saveModel(bool saveAs)
     modelFile << "HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION " << HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION << "\n";
     modelFile << "--------------------------------------------------------------\n";
 
-    modelFile << "STARTTIME " << mpParentMainWindow->mpSimulationSetupWidget->getStartTimeLabel() << "\n";
-    modelFile << "TIMESTEP " << mpParentMainWindow->mpSimulationSetupWidget->getTimeStepLabel() << "\n";
-    modelFile << "FINISHTIME " << mpParentMainWindow->mpSimulationSetupWidget->getFinishTimeLabel() << "\n";
+    modelFile << "STARTTIME " << mpParentMainWindow->getStartTimeLabel() << "\n";
+    modelFile << "TIMESTEP " << mpParentMainWindow->getTimeStepLabel() << "\n";
+    modelFile << "FINISHTIME " << mpParentMainWindow->getFinishTimeLabel() << "\n";
     modelFile << "--------------------------------------------------------------\n";
 
     QMap<QString, GUIObject*>::iterator it;

@@ -371,7 +371,7 @@ VariableList::VariableList(MainWindow *parent)
 
     connect(mpParentMainWindow->mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateList()));
     connect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), this, SLOT(updateList()));
-    connect(mpParentMainWindow->mpSimulationSetupWidget->mpSimulateButton,SIGNAL(released()),this,SLOT(updateList()));
+    //connect(mpParentMainWindow->mpSimulationSetupWidget->mpSimulateButton,SIGNAL(released()),this,SLOT(updateList()));
     connect(this,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(createPlot(QListWidgetItem*)));
 }
 
@@ -400,7 +400,7 @@ void VariableList::updateList()
         }
         else
         {
-            backgroundColor = QColor("lightyellow");
+            backgroundColor = QColor("beige");
             colorize = true;
         }
 
