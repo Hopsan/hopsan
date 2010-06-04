@@ -78,6 +78,7 @@ Node* Port::getNodePtr()
 //! @return The data value
 double Port::readNode(const size_t idx)
 {
+    //! @todo ummm??, if this is a readport node and it is not connected then noone will ever read
     if(this->getPortType() == Port::READPORT and !this->isConnected())      //Signal nodes don't have to be connected
     {
         return 0;
@@ -90,6 +91,7 @@ double Port::readNode(const size_t idx)
 //! @param [in] value The value of the data to read
 void Port::writeNode(const size_t idx, const double value)
 {
+    //! @todo ummm??, if this is a writeport and it is not connected then noone will ever write
     if(this->getPortType() == Port::WRITEPORT and !this->isConnected())     //Signal nodes don't have to be connected
     {
         return;
