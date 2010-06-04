@@ -96,6 +96,7 @@ GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsSce
     mpSelectionBox->setVisible(false);
 
     connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(fixTextPosition(QPointF)));
+    connect(mpParentGraphicsView,SIGNAL(zoomChange()),this,SLOT(adjustTextPositionToZoom()));
     //connect(this->mpParentGraphicsView,SIGNAL(keyPressDelete()),this,SLOT(deleteComponent()));
 
     //setPos(position-QPoint(mpIcon->boundingRect().width()/2, mpIcon->boundingRect().height()/2));
@@ -127,9 +128,9 @@ void GUIObject::fixTextPosition(QPointF pos)
     {
         if(this->rotation() == 0)
         {
-            x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
+            x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2/mpParentGraphicsView->mZoomFactor;
             y1 = -mpNameText->boundingRect().height() - mTextOffset;  //mTextOffset*
-            x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
+            x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2/mpParentGraphicsView->mZoomFactor;
             y2 = mpIcon->boundingRect().height() + mTextOffset;// - mpNameText->boundingRect().height()/2;
         }
         else if(this->rotation() == 180)
@@ -752,6 +753,11 @@ QString GUIObject::getTypeName()
     assert(false);
 }
 
+
+void GUIObject::adjustTextPositionToZoom()
+{
+    this->fixTextPosition(mpNameText->pos());
+}
 
 GUIObjectDisplayName::GUIObjectDisplayName(GUIObject *pParent)
     :   QGraphicsTextItem(pParent)

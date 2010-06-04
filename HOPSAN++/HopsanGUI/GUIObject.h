@@ -124,6 +124,7 @@ public slots:
      void showName();
      void setIcon(bool useIso);
 
+
 protected:
     void groupComponents(QList<QGraphicsItem*> compList);
     QGraphicsSvgItem *mpIcon;
@@ -141,6 +142,7 @@ protected:
 
 protected slots:
     void fixTextPosition(QPointF pos);
+    void adjustTextPositionToZoom();
 
 };
 
