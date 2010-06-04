@@ -194,8 +194,6 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 //! @param event contains information of the drag operation.
 void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 {
-        qDebug() << "Dragging something...";
-    //if (event->mimeData()->hasFormat("application/x-text"))
     if (event->mimeData()->hasText())
     {
         event->accept();
