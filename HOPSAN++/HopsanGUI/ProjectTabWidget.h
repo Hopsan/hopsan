@@ -91,6 +91,7 @@ public:
     //~GraphicsView();
     bool mIsCreatingConnector;
     bool mPortsHidden;
+    bool mIsRenamingObject;
     GUIObject *getGUIObject(QString name);
     GUIConnector *getTempConnector();
 

@@ -99,6 +99,7 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     this->createMenus();
 
     mCtrlKeyPressed = false;
+    mIsRenamingObject = false;
 
     mZoomFactor = 1.0;
 
@@ -439,8 +440,7 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
 //! @param event contains information about the key press event.
 void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
-
-    if (event->key() == Qt::Key_Delete)
+    if (event->key() == Qt::Key_Delete and !mIsRenamingObject)
     {
         if(isObjectSelected() or isConnectorSelected())
         {
@@ -448,7 +448,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         emit keyPressDelete();
     }
-    else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_R)
+    else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_R and !mIsRenamingObject)
     {
         if(isObjectSelected())
         {
@@ -464,7 +464,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             mIsCreatingConnector = false;
         }
     }
-    else if(Qt::ShiftModifier and event->key() == Qt::Key_K)
+    else if(Qt::ShiftModifier and event->key() == Qt::Key_K and !mIsRenamingObject)
     {
         if(isObjectSelected())
         {
@@ -472,7 +472,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         emit keyPressShiftK();
     }
-    else if(Qt::ShiftModifier and event->key() == Qt::Key_L)
+    else if(Qt::ShiftModifier and event->key() == Qt::Key_L and !mIsRenamingObject)
     {
         if(isObjectSelected())
         {
@@ -496,7 +496,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         emit keyPressCtrlDown();
     }
-    else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Left)
+    else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Left and !mIsRenamingObject)
     {
         if(isObjectSelected())
         {
@@ -504,7 +504,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         emit keyPressCtrlLeft();
     }
-    else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Right)
+    else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Right and !mIsRenamingObject)
     {
         if(isObjectSelected())
         {
@@ -512,7 +512,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         emit keyPressCtrlRight();
     }
-    else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_A)
+    else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_A and !mIsRenamingObject)
         this->selectAll();
     else if (event->modifiers() and Qt::ControlModifier)
     {
@@ -529,8 +529,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             this->setDragMode(RubberBandDrag);
         }
     }
-    else
-        QGraphicsView::keyPressEvent ( event );
+    QGraphicsView::keyPressEvent ( event );
 }
 
 
