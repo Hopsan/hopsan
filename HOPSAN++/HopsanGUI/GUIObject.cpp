@@ -287,12 +287,6 @@ void GUIObject::setIcon(bool useIso)
 
 }
 
-//! Returns the port with the specified number.
-//! @see getPortNumber(GUIPort *port)
-GUIPort *GUIObject::getPort(int number)
-{
-    return this->mPortListPtrs[number];
-}
 
 //! Returns the port with the specified name.
 GUIPort *GUIObject::getPort(QString name)

@@ -77,7 +77,6 @@ public:
     void setNameTextPos(int textPos);
 
     void showPorts(bool visible);
-    GUIPort *getPort(int number);
     GUIPort *getPort(QString name);
 
     virtual QVector<QString> getParameterNames();

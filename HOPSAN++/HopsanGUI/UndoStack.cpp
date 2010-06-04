@@ -157,15 +157,15 @@ void UndoStack::undoOneStep()
             else if ( mStack[undoPosition][i][0] == "DELETEDCONNECTOR" )
             {
                 QString startComponentName = mStack[undoPosition][i][1];
-                int startPortNumber = mStack[undoPosition][i][2].toInt();
+                QString startPortName = mStack[undoPosition][i][2];
                 QString endComponentName = mStack[undoPosition][i][3];;
-                int endPortNumber = mStack[undoPosition][i][4].toInt();
+                QString endPortName = mStack[undoPosition][i][4];
 
-                GUIPort *startPort = mpParentView->getGUIObject(startComponentName)->getPort(startPortNumber);
-                GUIPort *endPort = mpParentView->getGUIObject(endComponentName)->getPort(endPortNumber);
+                GUIPort *startPort = mpParentView->getGUIObject(startComponentName)->getPort(startPortName);
+                GUIPort *endPort = mpParentView->getGUIObject(endComponentName)->getPort(endPortName);
 
-                qDebug() << "Names: " << startComponentName << " " << startPort->getName() << " " << endComponentName << " " << endPort->getName();
-                bool success = mpParentView->mpParentProjectTab->mGUIRootSystem.connect( startComponentName, startPort->getName(), endComponentName, endPort->getName() );
+                qDebug() << "Names: " << startComponentName << " " << startPortName << " " << endComponentName << " " << endPortName;
+                bool success = mpParentView->mpParentProjectTab->mGUIRootSystem.connect( startComponentName, startPortName, endComponentName, endPortName );
                 if (success)
                 {
                     QVector<QPointF> tempPointVector;
@@ -211,25 +211,25 @@ void UndoStack::undoOneStep()
             else if( mStack[undoPosition][i][0] == "ADDEDCONNECTOR" )
             {
                 QString startComponentName = mStack[undoPosition][i][1];
-                int startPortNumber = mStack[undoPosition][i][2].toInt();
+                QString startPortName = mStack[undoPosition][i][2];
                 QString endComponentName = mStack[undoPosition][i][3];
-                int endPortNumber = mStack[undoPosition][i][4].toInt();
+                QString endPortName = mStack[undoPosition][i][4];
 
                     // Lookup the pointer to the connector to remove from the connector vector
                 GUIConnector *item;
                 for(int i = 0; i != mpParentView->mConnectorVector.size(); ++i)
                 {
                     if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == startComponentName) and
-                       (mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber() == startPortNumber) and
+                       (mpParentView->mConnectorVector[i]->getStartPort()->getName() == startPortName) and
                        (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == endComponentName) and
-                       (mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber() == endPortNumber))
+                       (mpParentView->mConnectorVector[i]->getEndPort()->getName() == endPortName))
                     {
                         item = mpParentView->mConnectorVector[i];
                     }
                     else if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == endComponentName) and
-                            (mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber() == endPortNumber) and
+                            (mpParentView->mConnectorVector[i]->getStartPort()->getName() == endPortName) and
                             (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == startComponentName) and
-                            (mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber() == startPortNumber))
+                            (mpParentView->mConnectorVector[i]->getEndPort()->getName() == startPortName))
                     {
                         item = mpParentView->mConnectorVector[i];
                     }
@@ -341,25 +341,25 @@ void UndoStack::redoOneStep()
             else if ( mStack[mCurrentStackPosition][i][0] == "DELETEDCONNECTOR" )
             {
                 QString startComponentName = mStack[mCurrentStackPosition][i][1];
-                int startPortNumber = mStack[mCurrentStackPosition][i][2].toInt();
+                QString startPortName = mStack[mCurrentStackPosition][i][2];
                 QString endComponentName = mStack[mCurrentStackPosition][i][3];
-                int endPortNumber = mStack[mCurrentStackPosition][i][4].toInt();
+                QString endPortName = mStack[mCurrentStackPosition][i][4];
 
                     // Lookup the pointer to the connector to remove from the connector vector
                 GUIConnector *item;
                 for(int i = 0; i != mpParentView->mConnectorVector.size(); ++i)
                 {
                     if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == startComponentName) and
-                       (mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber() == startPortNumber) and
+                       (mpParentView->mConnectorVector[i]->getStartPort()->getName() == startPortName) and
                        (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == endComponentName) and
-                       (mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber() == endPortNumber))
+                       (mpParentView->mConnectorVector[i]->getEndPort()->getName() == endPortName))
                     {
                         item = mpParentView->mConnectorVector[i];
                     }
                     else if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == endComponentName) and
-                            (mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber() == endPortNumber) and
+                            (mpParentView->mConnectorVector[i]->getStartPort()->getName() == endPortName) and
                             (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == startComponentName) and
-                            (mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber() == startPortNumber))
+                            (mpParentView->mConnectorVector[i]->getEndPort()->getName() == startPortName))
                     {
                         item = mpParentView->mConnectorVector[i];
                     }
@@ -390,14 +390,14 @@ void UndoStack::redoOneStep()
             else if( mStack[mCurrentStackPosition][i][0] == "ADDEDCONNECTOR" )
             {
                 QString startComponentName = mStack[mCurrentStackPosition][i][1];
-                int startPortNumber = mStack[mCurrentStackPosition][i][2].toInt();
+                QString startPortName = mStack[mCurrentStackPosition][i][2];
                 QString endComponentName = mStack[mCurrentStackPosition][i][3];;
-                int endPortNumber = mStack[mCurrentStackPosition][i][4].toInt();
-                GUIPort *startPort = mpParentView->getGUIObject(startComponentName)->getPort(startPortNumber);
-                GUIPort *endPort = mpParentView->getGUIObject(endComponentName)->getPort(endPortNumber);
+                QString endPortName = mStack[mCurrentStackPosition][i][4];
+                GUIPort *startPort = mpParentView->getGUIObject(startComponentName)->getPort(startPortName);
+                GUIPort *endPort = mpParentView->getGUIObject(endComponentName)->getPort(endPortName);
 
-                qDebug() << "Names: " << startComponentName << " " << startPort->getName() << " " << endComponentName << " " << endPort->getName();
-                bool success = mpParentView->mpParentProjectTab->mGUIRootSystem.connect( startComponentName, startPort->getName(), endComponentName, endPort->getName() );
+                qDebug() << "Names: " << startComponentName << " " << startPortName << " " << endComponentName << " " << endPortName;
+                bool success = mpParentView->mpParentProjectTab->mGUIRootSystem.connect( startComponentName, startPortName, endComponentName, endPortName );
                 if (success)
                 {
                     QVector<QPointF> tempPointVector;
@@ -543,12 +543,10 @@ void UndoStack::registerDeletedConnector(GUIConnector *item)
 {
     qDebug() << "registerDeletedConnector()";
     QStringList tempStringList;
-    QString startPortNumberString;
-    QString endPortNumberString;
-    startPortNumberString.setNum(item->getStartPort()->getPortNumber());
-    endPortNumberString.setNum(item->getEndPort()->getPortNumber());
-    tempStringList << "DELETEDCONNECTOR" << item->getStartPort()->getGuiObject()->getName() << startPortNumberString <<
-                                   item->getEndPort()->getGuiObject()->getName() << endPortNumberString;
+    QString startPortName = item->getStartPort()->getName();
+    QString endPortName = item->getEndPort()->getName();
+    tempStringList << "DELETEDCONNECTOR" << item->getStartPort()->getGuiObject()->getName() << startPortName <<
+                                   item->getEndPort()->getGuiObject()->getName() << endPortName;
     QString xString, yString;
     for(int j = 0; j != item->getPointsVector().size(); ++j)
     {
@@ -594,12 +592,8 @@ void UndoStack::registerAddedConnector(GUIConnector *item)
             break;
         }
     }
-    QString startPortNumberString;
-    QString endPortNumberString;
-    startPortNumberString.setNum(item->getStartPort()->getPortNumber());
-    endPortNumberString.setNum(item->getEndPort()->getPortNumber());
-    tempStringList << "ADDEDCONNECTOR" << item->getStartPort()->getGuiObject()->getName() << startPortNumberString <<
-                                      item->getEndPort()->getGuiObject()->getName() << endPortNumberString;
+    tempStringList << "ADDEDCONNECTOR" << item->getStartPort()->getGuiObject()->getName() << item->getStartPort()->getName() <<
+                                          item->getEndPort()->getGuiObject()->getName() << item->getEndPort()->getName();
     QString xString, yString;
     for(int j = 0; j != item->getPointsVector().size(); ++j)
     {
