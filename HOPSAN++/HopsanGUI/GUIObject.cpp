@@ -559,6 +559,7 @@ void GUIObject::rotate(bool doNotRegisterUndo)
 //! @see moveRight()
 void GUIObject::moveUp()
 {
+    qDebug() << "Move up!";
     this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()-1);
     mpParentGraphicsView->setBackgroundBrush(mpParentGraphicsView->mBackgroundColor);
 }

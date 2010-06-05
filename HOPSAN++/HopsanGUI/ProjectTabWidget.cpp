@@ -440,6 +440,8 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
 //! @param event contains information about the key press event.
 void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
+    bool doNotForwardEvent = false;
+
     if (event->key() == Qt::Key_Delete and !mIsRenamingObject)
     {
         if(isObjectSelected() or isConnectorSelected())
@@ -448,7 +450,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         emit keyPressDelete();
     }
-    else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_R and !mIsRenamingObject)
+    else if (Qt::ControlModifier and event->key() == Qt::Key_R and !mIsRenamingObject)
     {
         if(isObjectSelected())
         {
@@ -480,45 +482,50 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         emit keyPressShiftL();
     }
-    else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Up)
+    else if(Qt::ControlModifier and event->key() == Qt::Key_Up)
     {
         if(isObjectSelected())
         {
             undoStack->newPost();
         }
         emit keyPressCtrlUp();
+        doNotForwardEvent = true;
     }
-    else if(event->modifiers() and Qt::ControlModifier  == Qt::Key_Down)
+    else if(Qt::ControlModifier  and event->key() == Qt::Key_Down)
     {
         if(isObjectSelected())
         {
             undoStack->newPost();
         }
         emit keyPressCtrlDown();
+        doNotForwardEvent = true;
     }
-    else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Left and !mIsRenamingObject)
+    else if(Qt::ControlModifier and event->key() == Qt::Key_Left and !mIsRenamingObject)
     {
         if(isObjectSelected())
         {
             undoStack->newPost();
         }
         emit keyPressCtrlLeft();
+        doNotForwardEvent = true;
     }
-    else if(event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_Right and !mIsRenamingObject)
+    else if(Qt::ControlModifier and event->key() == Qt::Key_Right and !mIsRenamingObject)
     {
         if(isObjectSelected())
         {
             undoStack->newPost();
         }
         emit keyPressCtrlRight();
+        doNotForwardEvent = true;
     }
-    else if (event->modifiers() and Qt::ControlModifier and event->key() == Qt::Key_A and !mIsRenamingObject)
+    else if (Qt::ControlModifier and event->key() == Qt::Key_A and !mIsRenamingObject)
+    {
         this->selectAll();
-    else if (event->modifiers() and Qt::ControlModifier)
+    }
+    else if (Qt::ControlModifier)
     {
         if (this->mIsCreatingConnector)
         {
-            //QCursor cursor;
             mpTempConnector->makeDiagonal(true);
             mpTempConnector->drawConnector();
             this->setBackgroundBrush(mBackgroundColor);
@@ -529,7 +536,11 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             this->setDragMode(RubberBandDrag);
         }
     }
-    QGraphicsView::keyPressEvent ( event );
+
+    if(!doNotForwardEvent)
+    {
+        QGraphicsView::keyPressEvent ( event );
+    }
 }
 
 
@@ -550,8 +561,6 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
         mCtrlKeyPressed = false;
         this->setDragMode(RubberBandDrag);
     }
-    //this->setDragMode(QGraphicsView::RubberBandDrag);
-
 
     QGraphicsView::keyReleaseEvent(event);
 }
@@ -1305,7 +1314,7 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
     tabName.append(QString::number(mNumberOfUntitledTabs));
 
     ProjectTab *newTab = new ProjectTab(this);
-    newTab->mIsSaved = false;
+    //newTab->mIsSaved = false;
 
     newTab->mGUIRootSystem.setRootSystemName(tabName);
 
@@ -1532,6 +1541,7 @@ void ProjectTabWidget::loadModel()
     ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
     pCurrentTab->mModelFileName = modelFileName;
     pCurrentTab->mpGraphicsView->undoStack->newPost();
+    pCurrentTab->mIsSaved = true;
 
         //Necessary declarations
     QString inputWord, componentType, componentName, startComponentName, endComponentName, parameterName, startPortName, endPortName, tempString;
