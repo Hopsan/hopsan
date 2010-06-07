@@ -1069,6 +1069,24 @@ void GraphicsView::clearUndo()
 
 
 
+//! Exports the graphics view to PDF
+void GraphicsView::exportPDF()
+{
+     QString fileName = QFileDialog::getSaveFileName(
+        this, "Export File Name", QString(),
+        "Adobe PDF Documents (*.pdf)");
+    if ( !fileName.isEmpty() )
+    {
+        QPrinter *printer;
+        //printer = new QPrinter(QPrinter::HighResolution);
+        printer = new QPrinter();
+        printer->setOutputFormat(QPrinter::PdfFormat);
+        printer->setOutputFileName(fileName);
+        QPainter *painter = new QPainter(printer);
+        this->render(painter);
+        painter->end();
+    }
+}
 
 
 //! @class GraphicsScene
@@ -1241,6 +1259,7 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     connect(mpParentMainWindow->newAction, SIGNAL(triggered()), this,SLOT(addNewProjectTab()));
     connect(mpParentMainWindow->openAction, SIGNAL(triggered()), this,SLOT(loadModel()));
     connect(mpParentMainWindow->saveAction, SIGNAL(triggered()), this,SLOT(saveProjectTab()));
+    connect(mpParentMainWindow->exportPDFAction, SIGNAL(triggered()), this,SLOT(exportCurrentToPDF()));
     connect(mpParentMainWindow->saveAsAction, SIGNAL(triggered()), this,SLOT(saveProjectTabAs()));
     connect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), this,SLOT(simulateCurrent()));
     connect(mpParentMainWindow->resetZoomAction, SIGNAL(triggered()),this,SLOT(resetZoom()));
@@ -1248,6 +1267,12 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     connect(mpParentMainWindow->zoomOutAction, SIGNAL(triggered()),this,SLOT(zoomOut()));
     connect(mpParentMainWindow->hideNamesAction,SIGNAL(triggered()),this, SLOT(hideNames()));
     connect(mpParentMainWindow->showNamesAction,SIGNAL(triggered()),this, SLOT(showNames()));
+}
+
+
+void ProjectTabWidget::exportCurrentToPDF()
+{
+    getCurrentTab()->mpGraphicsView->exportPDF();
 }
 
 

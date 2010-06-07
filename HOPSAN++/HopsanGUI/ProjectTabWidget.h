@@ -141,6 +141,7 @@ public slots:
     void undo();
     void redo();
     void clearUndo();
+    void exportPDF();
 
 protected:
     virtual void dragMoveEvent(QDragMoveEvent *event);
@@ -238,6 +239,7 @@ public slots:
     void updateCurrentTimeStep();
     void updateCurrentStopTime();
     void hidePortsInCurrentTab(bool doIt);
+    void exportCurrentToPDF();
 
 signals:
     void checkMessages();

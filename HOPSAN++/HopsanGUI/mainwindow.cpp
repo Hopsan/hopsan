@@ -302,6 +302,9 @@ void MainWindow::createActions()
     showNamesAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-ShowNames.png"), tr("&Show All Component Names"), this);
     showNamesAction->setText("Show All Component Names");
 
+    exportPDFAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-SaveToPDF.png"), tr("&Export To PDF"), this);
+    exportPDFAction->setText("Export Model to PDF");
+
     QIcon hidePortsIcon;
     hidePortsIcon.addFile("../../HopsanGUI/icons/Hopsan-HidePorts.png", QSize(), QIcon::Normal, QIcon::On);
     hidePortsAction = new QAction(hidePortsIcon, tr("&Hide All Ports"), this);
@@ -440,6 +443,7 @@ void MainWindow::createToolbars()
     viewToolBar->addAction(hideNamesAction);
     viewToolBar->addAction(showNamesAction);
     viewToolBar->addAction(hidePortsAction);
+    viewToolBar->addAction(exportPDFAction);
 
     simToolBar = addToolBar(tr("Simulation Toolbar"));
     simToolBar->setAllowedAreas(Qt::TopToolBarArea);

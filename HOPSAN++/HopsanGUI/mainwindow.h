@@ -124,6 +124,7 @@ public:
     QAction *showNamesAction;
     QAction *hidePortsAction;
     QAction *showPortsAction;
+    QAction *exportPDFAction;
     QLineEdit *mpStartTimeLineEdit;
     QLineEdit *mpTimeStepLineEdit;
     QLineEdit *mpFinishTimeLineEdit;

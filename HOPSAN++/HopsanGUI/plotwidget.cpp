@@ -233,7 +233,6 @@ void PlotWidget::exportSVG()
         QSvgGenerator generator;
         generator.setFileName(fileName);
         generator.setSize(QSize(800, 600));
-
         mpVariablePlot->print(generator);
     }
 #endif
