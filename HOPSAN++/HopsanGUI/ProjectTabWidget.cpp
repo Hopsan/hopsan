@@ -215,6 +215,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
     if (event->mimeData()->hasText())
     {
         undoStack->newPost();
+        mpParentProjectTab->hasChanged();
 
         //qDebug() << "dropEvent: hasText";
         //QByteArray *data = new QByteArray;
@@ -447,6 +448,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         if(isObjectSelected() or isConnectorSelected())
         {
             undoStack->newPost();
+            mpParentProjectTab->hasChanged();
         }
         emit keyPressDelete();
     }
@@ -455,6 +457,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         if(isObjectSelected())
         {
             undoStack->newPost();
+            mpParentProjectTab->hasChanged();
         }
         emit keyPressR();
     }
@@ -471,6 +474,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         if(isObjectSelected())
         {
             undoStack->newPost();
+            mpParentProjectTab->hasChanged();
         }
         emit keyPressShiftK();
     }
@@ -479,6 +483,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         if(isObjectSelected())
         {
             undoStack->newPost();
+            mpParentProjectTab->hasChanged();
         }
         emit keyPressShiftL();
     }
@@ -496,6 +501,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         if(isObjectSelected())
         {
             undoStack->newPost();
+            mpParentProjectTab->hasChanged();
         }
         emit keyPressCtrlDown();
         doNotForwardEvent = true;
@@ -514,6 +520,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         if(isObjectSelected())
         {
             undoStack->newPost();
+            mpParentProjectTab->hasChanged();
         }
         emit keyPressCtrlRight();
         doNotForwardEvent = true;
@@ -689,6 +696,7 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
             this->mConnectorVector.append(mpTempConnector);
 
             undoStack->newPost();
+            mpParentProjectTab->hasChanged();
             if(!doNotRegisterUndo)
             {
                 undoStack->registerAddedConnector(mpTempConnector);
@@ -843,6 +851,7 @@ void GraphicsView::paste()
     qDebug() << "mpCopyData = " << *mpCopyData;
 
     undoStack->newPost();
+    mpParentProjectTab->hasChanged();
 
     QTextStream copyStream;
     copyStream.setString(mpCopyData);
@@ -1073,7 +1082,7 @@ GraphicsScene::GraphicsScene(ProjectTab *parent)
 {
     mpParentProjectTab = parent;
     setSceneRect(0.0, 0.0, 800.0, 600.0);
-    connect(this, SIGNAL(changed( const QList<QRectF> & )),this->parent(), SLOT(hasChanged()));
+    //connect(this, SIGNAL(changed( const QList<QRectF> & )),this->parent(), SLOT(hasChanged()));
 }
 
 
@@ -1318,7 +1327,8 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
 
     newTab->mGUIRootSystem.setRootSystemName(tabName);
 
-    addTab(newTab, tabName.append(QString("*")));
+    //addTab(newTab, tabName.append(QString("*")));
+    addTab(newTab, tabName);
     setCurrentWidget(newTab);
 
     mNumberOfUntitledTabs += 1;

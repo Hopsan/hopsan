@@ -42,6 +42,7 @@ void FirstOrderFilter::initialize(double &rTime, double timestep, double num[2],
     mTimeStep = timestep;
     mpTime = &rTime;
     mIsInitialized = true;
+    mLastTime = -mTimeStep;
 
     setNumDen(num, den);
 }
@@ -66,11 +67,6 @@ void FirstOrderFilter::setNumDen(double num[2], double den[2])
 
     mCoeffY[0] = den[1]*mTimeStep-2.0*den[0];
     mCoeffY[1] = den[1]*mTimeStep+2.0*den[0];
-
-//cout << "mCoeffU[0] " << mCoeffU[0] << endl;
-//cout << "mCoeffU[1] " << mCoeffU[1] << endl;
-//cout << "mCoeffY[0] " << mCoeffY[0] << endl;
-//cout << "mCoeffY[1] " << mCoeffY[1] << endl;
 }
 
 

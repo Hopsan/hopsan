@@ -99,7 +99,6 @@ void UndoStack::newPost()
         ++mCurrentStackPosition;
     }
     mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
-    mpParentView->mpParentProjectTab->mIsSaved = false;
 }
 
 

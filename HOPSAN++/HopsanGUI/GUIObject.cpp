@@ -390,6 +390,7 @@ void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
             if(!alreadyClearedRedo)
             {
                 mpParentGraphicsView->undoStack->newPost();
+                mpParentGraphicsView->mpParentProjectTab->hasChanged();
                 alreadyClearedRedo = true;
             }
             mpParentGraphicsView->undoStack->registerMovedObject(it.value()->mOldPos, it.value()->pos(), it.value()->getName());
