@@ -58,6 +58,7 @@ public:
 
     MainWindow *mpParentMainWindow;
 
+    QCheckBox *invertWheelCheckBox;
     QPushButton *cancelButton;
     QPushButton *applyButton;
     QPushButton *okButton;

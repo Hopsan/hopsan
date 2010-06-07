@@ -427,12 +427,31 @@ bool GraphicsView::haveGUIObject(QString name)
 //! @param event contains information of the scrolling operation.
 void GraphicsView::wheelEvent(QWheelEvent *event)
 {
-    if (event->modifiers() and (Qt::ControlModifier or Qt::Key_Alt))
+    qreal wheelDelta;
+    if(this->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mInvertWheel)
     {
-        qreal factor = pow(1.41,(-event->delta()/240.0));
+        wheelDelta = event->delta();
+    }
+    else
+    {
+        wheelDelta = -event->delta();
+    }
+
+    if (event->modifiers().testFlag(Qt::ControlModifier) or event->modifiers().testFlag(Qt::AltModifier))
+    {
+        qreal factor = pow(1.41,(-wheelDelta/240.0));
         this->scale(factor,factor);
         mZoomFactor = mZoomFactor * factor;
         emit zoomChange();
+    }
+    else if(event->modifiers().testFlag(Qt::ShiftModifier))
+    {
+
+        this->horizontalScrollBar()->setValue(this->horizontalScrollBar()->value()-wheelDelta);
+    }
+    else
+    {
+        this->verticalScrollBar()->setValue(this->verticalScrollBar()->value()+wheelDelta);
     }
 }
 
@@ -442,6 +461,8 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
 void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
     bool doNotForwardEvent = false;
+    bool ctrlPressed = event->modifiers().testFlag(Qt::ControlModifier);
+    bool shiftPressed = event->modifiers().testFlag(Qt::ShiftModifier);
 
     if (event->key() == Qt::Key_Delete and !mIsRenamingObject)
     {
@@ -452,14 +473,14 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         emit keyPressDelete();
     }
-    else if (Qt::ControlModifier and event->key() == Qt::Key_R and !mIsRenamingObject)
+    else if (ctrlPressed and event->key() == Qt::Key_R and !mIsRenamingObject)
     {
         if(isObjectSelected())
         {
             undoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
-        emit keyPressR();
+        emit keyPressCtrlR();
     }
     else if (event->key() == Qt::Key_Escape)
     {
@@ -469,7 +490,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             mIsCreatingConnector = false;
         }
     }
-    else if(Qt::ShiftModifier and event->key() == Qt::Key_K and !mIsRenamingObject)
+    else if(shiftPressed and event->key() == Qt::Key_K and !mIsRenamingObject)
     {
         if(isObjectSelected())
         {
@@ -478,7 +499,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         emit keyPressShiftK();
     }
-    else if(Qt::ShiftModifier and event->key() == Qt::Key_L and !mIsRenamingObject)
+    else if(shiftPressed and event->key() == Qt::Key_L and !mIsRenamingObject)
     {
         if(isObjectSelected())
         {
@@ -487,7 +508,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         emit keyPressShiftL();
     }
-    else if(Qt::ControlModifier and event->key() == Qt::Key_Up)
+    else if(ctrlPressed and event->key() == Qt::Key_Up)
     {
         if(isObjectSelected())
         {
@@ -496,7 +517,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         emit keyPressCtrlUp();
         doNotForwardEvent = true;
     }
-    else if(Qt::ControlModifier  and event->key() == Qt::Key_Down)
+    else if(ctrlPressed and event->key() == Qt::Key_Down)
     {
         if(isObjectSelected())
         {
@@ -515,7 +536,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         emit keyPressCtrlLeft();
         doNotForwardEvent = true;
     }
-    else if(Qt::ControlModifier and event->key() == Qt::Key_Right and !mIsRenamingObject)
+    else if(ctrlPressed and event->key() == Qt::Key_Right and !mIsRenamingObject)
     {
         if(isObjectSelected())
         {
@@ -525,11 +546,11 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         emit keyPressCtrlRight();
         doNotForwardEvent = true;
     }
-    else if (Qt::ControlModifier and event->key() == Qt::Key_A and !mIsRenamingObject)
+    else if (ctrlPressed and event->key() == Qt::Key_A and !mIsRenamingObject)
     {
         this->selectAll();
     }
-    else if (Qt::ControlModifier)
+    else if (ctrlPressed)
     {
         if (this->mIsCreatingConnector)
         {

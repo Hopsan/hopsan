@@ -107,7 +107,7 @@ public:
 
 signals:
     void keyPressDelete();
-    void keyPressR();
+    void keyPressCtrlR();
     void keyPressShiftK();
     void keyPressShiftL();
     void keyPressCtrlUp();

@@ -84,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpMessageWidget->printGUIMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
 
     //Create a dock for the componentslibrary
-    libdock = new QDockWidget(tr("Components"), this);
+    libdock = new QDockWidget(tr("Component Library"), this);
     libdock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     mpLibrary = new LibraryWidget(this);
     libdock->setWidget(mpLibrary);
@@ -159,6 +159,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     //connect(mpSimulationSetupWidget->mpSimulateButton, SIGNAL(released()), mpProjectTabs, SLOT(simulateCurrent()));
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateToolBarsToNewTab()));
+
+    mInvertWheel = false;
 }
 
 
@@ -269,9 +271,9 @@ void MainWindow::createActions()
     simulateAction->setShortcut(tr("Simulate"));
     simulateAction->setStatusTip(tr("Simulate Current Project"));
 
-    plotAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Plot.png"), tr("&Plot"), this);
+    plotAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Plot.png"), tr("&Plot Variables"), this);
     plotAction->setShortcut(tr("Plot"));
-    plotAction->setStatusTip(tr("Plot Something"));
+    plotAction->setStatusTip(tr("Plot Variables"));
     connect(plotAction, SIGNAL(triggered()), this,SLOT(plot()));
 
     loadLibsAction = new QAction(this);
@@ -362,8 +364,8 @@ void MainWindow::createMenus()
     menuTools = new QMenu(menubar);
     menuTools->setTitle("&Tools");
 
-    menuPlot = new QMenu(menubar);
-    menuPlot->setTitle("&Plot");
+    //menuPlot = new QMenu(menubar);
+    //menuPlot->setTitle("&Plot");
 
     this->setMenuBar(menubar);
 
@@ -400,13 +402,13 @@ void MainWindow::createMenus()
 
     menuTools->addAction(optionsAction);
 
-    menuPlot->addAction(plotAction);
+    menuSimulation->addAction(plotAction);
 
     menubar->addAction(menuFile->menuAction());
     menubar->addAction(menuEdit->menuAction());
     menubar->addAction(menuTools->menuAction());
     menubar->addAction(menuSimulation->menuAction());
-    menubar->addAction(menuPlot->menuAction());
+    //menubar->addAction(menuPlot->menuAction());
     menubar->addAction(menuView->menuAction());
 }
 
@@ -426,7 +428,7 @@ void MainWindow::createToolbars()
     fileToolBar->addAction(saveAction);
     fileToolBar->addAction(saveAsAction);
 
-    editToolBar = addToolBar(tr("Clipboard Toolbar"));
+    editToolBar = addToolBar(tr("Edit Toolbar"));
     editToolBar->setAllowedAreas(Qt::TopToolBarArea);
     editToolBar->addAction(cutAction);
     editToolBar->addAction(copyAction);

@@ -87,6 +87,8 @@ public:
     //SimulationSetupWidget *mpSimulationSetupWidget;
     OptionsWidget *mpOptionsWidget;
     PreferenceWidget *mpPreferenceWidget;
+    bool mInvertWheel;
+
     QMenuBar *menubar;
     QMenu *menuFile;
     QMenu *menuNew;
@@ -130,7 +132,6 @@ public:
     QLineEdit *mpFinishTimeLineEdit;
     QLabel *mpTimeLabelDeliminator1;
     QLabel *mpTimeLabelDeliminator2;
-
 
     QToolBar *fileToolBar;
     QToolBar *editToolBar;
@@ -184,7 +185,6 @@ private:
     void fixFinishTime();
     void fixTimeStep();
     bool mPlotVariableListOpen;
-
 
 };
 

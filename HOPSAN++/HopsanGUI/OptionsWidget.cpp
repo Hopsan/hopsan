@@ -55,6 +55,9 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     this->resize(640,480);
     this->setWindowTitle("Options");
 
+    invertWheelCheckBox = new QCheckBox(tr("Invert Mouse Wheel"));
+    invertWheelCheckBox->setCheckable(true);
+    invertWheelCheckBox->setChecked(mpParentMainWindow->mInvertWheel);
 
     cancelButton = new QPushButton(tr("&Cancel"));
     cancelButton->setAutoDefault(false);
@@ -71,9 +74,8 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
 
     QGridLayout *mainLayout = new QGridLayout;
     mainLayout->setSizeConstraint(QLayout::SetFixedSize);
-    //mainLayout->addLayout(topLeftLayout, 0, 0);
+    mainLayout->addWidget(invertWheelCheckBox, 0, 0);
     mainLayout->addWidget(buttonBox, 1, 0);
-    //mainLayout->addWidget(extension, 1, 0, 1, 2);
     setLayout(mainLayout);
 }
 
@@ -85,5 +87,6 @@ OptionsWidget::~OptionsWidget()
 
 void OptionsWidget::updateValues()
 {
+    mpParentMainWindow->mInvertWheel = invertWheelCheckBox->isChecked();
     this->accept();
 }

@@ -412,7 +412,7 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
         {
             this->mpSelectionBox->setActive();
             connect(this->mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
-            connect(this->mpParentGraphicsView, SIGNAL(keyPressR()), this, SLOT(rotate()));
+            connect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
             connect(this->mpParentGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
             connect(this->mpParentGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
             connect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
@@ -424,7 +424,7 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
         else
         {
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
-            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressR()), this, SLOT(rotate()));
+            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
             disconnect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
