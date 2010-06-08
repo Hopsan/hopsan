@@ -163,6 +163,7 @@ public:
 public slots:
     void updateToolBarsToNewTab();
     void fixSimulationParameterValues();
+    void saveSettings();
 
 private slots:
     //void addLibs(QString libDir, QString parentLib=QString());
@@ -171,6 +172,7 @@ private slots:
     void openPreferences();
     void openOptions();
     void openUndo();
+    void loadSettings();
 
 private:
     void createActions();

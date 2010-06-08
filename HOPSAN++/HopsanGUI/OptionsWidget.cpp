@@ -88,5 +88,6 @@ OptionsWidget::~OptionsWidget()
 void OptionsWidget::updateValues()
 {
     mpParentMainWindow->mInvertWheel = invertWheelCheckBox->isChecked();
+    mpParentMainWindow->saveSettings();
     this->accept();
 }

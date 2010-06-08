@@ -64,7 +64,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     mPlotVariableListOpen = false;
 
-    mpOptionsWidget = new OptionsWidget(this);
+
 
     //Create a centralwidget for the main window
     mpCentralwidget = new QWidget(this);
@@ -82,6 +82,9 @@ MainWindow::MainWindow(QWidget *parent)
     messagedock->setWidget(mpMessageWidget);
     addDockWidget(Qt::BottomDockWidgetArea, messagedock);
     mpMessageWidget->printGUIMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
+
+    this->loadSettings();
+    mpOptionsWidget = new OptionsWidget(this);
 
     //Create a dock for the componentslibrary
     libdock = new QDockWidget(tr("Component Library"), this);
@@ -159,8 +162,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     //connect(mpSimulationSetupWidget->mpSimulateButton, SIGNAL(released()), mpProjectTabs, SLOT(simulateCurrent()));
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateToolBarsToNewTab()));
-
-    mInvertWheel = false;
 }
 
 
@@ -202,6 +203,8 @@ void MainWindow::plot()
 //! @param event contains information of the closing operation.
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    this->saveSettings();
+
     if (mpProjectTabs->closeAllProjectTabs())
     {
         event->accept();
@@ -505,6 +508,70 @@ void MainWindow::updateToolBarsToNewTab()
         hidePortsAction->setChecked(mpProjectTabs->getCurrentTab()->mpGraphicsView->mPortsHidden);
     }
 }
+
+
+void MainWindow::loadSettings()
+{
+    QFile file("../../settings.txt");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        mpMessageWidget->printGUIErrorMessage("Unable to read settings file. Using default settings.");
+
+            //Apply default values
+        mInvertWheel = false;
+        return;
+    }
+
+    QString inputWord;
+    QTextStream inputStream(&file);
+    while ( !inputStream.atEnd() )
+    {
+        inputStream >> inputWord;
+        qDebug() << "Reading " << inputWord;
+        if(inputWord == "INVERTWHEEL")
+        {
+            inputStream >> inputWord;
+            qDebug() << "Reading " << inputWord;
+            if(inputWord == "TRUE")
+            {
+                mInvertWheel = true;
+            }
+            else
+            {
+                mInvertWheel = false;
+            }
+        }
+    }
+    file.close();
+}
+
+
+void MainWindow::saveSettings()
+{
+    QFile file("../../settings.txt");
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+    {
+        mpMessageWidget->printGUIErrorMessage("Error writing to settings file. Default values will be used next session");
+        return;
+    }
+    QTextStream modelFile(&file);  //Create a QTextStream object to stream the content of file
+
+    modelFile << "INVERTWHEEL ";
+    if(mInvertWheel)
+    {
+        modelFile << "TRUE\n";
+    }
+    else
+    {
+        modelFile << "FALSE\n";
+    }
+    file.close();
+}
+
+
+
+
+
 
 
 //! Make sure the values make sens.

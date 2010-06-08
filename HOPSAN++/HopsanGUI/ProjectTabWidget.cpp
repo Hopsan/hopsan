@@ -463,6 +463,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     bool doNotForwardEvent = false;
     bool ctrlPressed = event->modifiers().testFlag(Qt::ControlModifier);
     bool shiftPressed = event->modifiers().testFlag(Qt::ShiftModifier);
+    bool altPressed = event->modifiers().testFlag(Qt::AltModifier);
 
     if (event->key() == Qt::Key_Delete and !mIsRenamingObject)
     {
@@ -527,7 +528,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         emit keyPressCtrlDown();
         doNotForwardEvent = true;
     }
-    else if(Qt::ControlModifier and event->key() == Qt::Key_Left and !mIsRenamingObject)
+    else if(ctrlPressed and event->key() == Qt::Key_Left and !mIsRenamingObject)
     {
         if(isObjectSelected())
         {
@@ -1091,6 +1092,7 @@ void GraphicsView::clearUndo()
 
 
 //! Exports the graphics view to PDF
+//! @todo Check if it is possible to export to SVG instead. It appears as it is not possible with the current QT version, but I am not sure.
 void GraphicsView::exportPDF()
 {
      QString fileName = QFileDialog::getSaveFileName(
@@ -1099,8 +1101,8 @@ void GraphicsView::exportPDF()
     if ( !fileName.isEmpty() )
     {
         QPrinter *printer;
-        //printer = new QPrinter(QPrinter::HighResolution);
-        printer = new QPrinter();
+        printer = new QPrinter(QPrinter::HighResolution);
+        //printer = new QPrinter();
         printer->setOutputFormat(QPrinter::PdfFormat);
         printer->setOutputFileName(fileName);
         QPainter *painter = new QPainter(printer);
