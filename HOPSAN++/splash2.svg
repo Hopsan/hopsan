@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -12,7 +11,7 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="svg2816"
    version="1.1"
-   inkscape:version="0.47 r22583"
+   inkscape:version="0.46"
    width="640"
    height="340"
    sodipodi:docname="splash2.svg"
@@ -259,8 +258,8 @@
      inkscape:zoom="0.98452625"
      inkscape:cx="325.4013"
      inkscape:cy="137.59307"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-x="88"
+     inkscape:window-y="78"
      inkscape:window-maximized="0"
      inkscape:current-layer="layer1"
      inkscape:snap-page="true" />
@@ -275,7 +274,7 @@
        id="image4072"
        height="341.78137"
        width="748.82208"
-       xlink:href="file:///C:/Users/Robert/Documents/Jobbsaker/Subversion/Hopsan/trunk/HOPSAN++/inkscape_pasted_image_20100328_115041.png"
+       xlink:href="inkscape_pasted_image_20100328_115041.png"
        style="filter:url(#filter4076)" />
   </g>
   <g
