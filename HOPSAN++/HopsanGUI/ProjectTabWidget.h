@@ -131,7 +131,7 @@ public slots:
     void copySelected();
     void paste();
     void selectAll();
-    void setScale(const QString &scale);
+    //void setScale(const QString &scale);
     void resetZoom();
     void zoomIn();
     void zoomOut();

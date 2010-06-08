@@ -159,6 +159,7 @@ void GraphicsView::createMenus()
     menuInsert->addAction(systemPortAction);
 }
 
+
 void GraphicsView::createActions()
 {
     systemPortAction = new QAction(this);
@@ -166,6 +167,7 @@ void GraphicsView::createActions()
 }
 
 
+//! Defines the right click menu event
 void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 {
     if(!mIsCreatingConnector and !mJustStoppedCreatingConnector)
@@ -989,14 +991,16 @@ void GraphicsView::paste()
     this->setBackgroundBrush(mBackgroundColor);
 }
 
-void GraphicsView::setScale(const QString &scale)
-{
-    double newScale = scale.left(scale.indexOf(tr("%"))).toDouble() / 100.0;
-    QMatrix oldMatrix = this->matrix();
-    this->resetMatrix();
-    this->translate(oldMatrix.dx(), oldMatrix.dy());
-    this->scale(newScale, newScale);
-}
+
+//! @todo This is not used anywhere and can probably be removed. Why would you want to do it like this?
+//void GraphicsView::setScale(const QString &scale)
+//{
+//    double newScale = scale.left(scale.indexOf(tr("%"))).toDouble() / 100.0;
+//    QMatrix oldMatrix = this->matrix();
+//    this->resetMatrix();
+//    this->translate(oldMatrix.dx(), oldMatrix.dy());
+//    this->scale(newScale, newScale);
+//}
 
 
 //! Resets zoom factor to 100%.
@@ -1293,6 +1297,7 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
 }
 
 
+//!  Tells current tab to export itself to PDF. This is needed because a direct connection to current tab would be too complicated.
 void ProjectTabWidget::exportCurrentToPDF()
 {
     getCurrentTab()->mpGraphicsView->exportPDF();

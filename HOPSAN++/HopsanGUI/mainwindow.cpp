@@ -501,6 +501,7 @@ void MainWindow::openUndo()
 }
 
 
+//! Updates the toolbar values that are tab specific when a new tab is activated
 void MainWindow::updateToolBarsToNewTab()
 {
     if(mpProjectTabs->count() > 0)
@@ -510,6 +511,7 @@ void MainWindow::updateToolBarsToNewTab()
 }
 
 
+//! Loads global settings from a text file
 void MainWindow::loadSettings()
 {
     QFile file("../../settings.txt");
@@ -546,6 +548,7 @@ void MainWindow::loadSettings()
 }
 
 
+//! Saves global settings to a text file
 void MainWindow::saveSettings()
 {
     QFile file("../../settings.txt");
@@ -572,6 +575,12 @@ void MainWindow::saveSettings()
 
 
 
+
+
+
+
+
+//! @todo The following functions are stupid. They should be in the SimulationSetupWidget class, but it then has to be converted to a QToolBar.
 
 
 //! Make sure the values make sens.
