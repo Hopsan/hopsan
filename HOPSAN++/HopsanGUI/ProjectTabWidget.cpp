@@ -555,7 +555,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     }
     else if (ctrlPressed)
     {
-        if (this->mIsCreatingConnector)
+        if (this->mIsCreatingConnector and !mpTempConnector->isMakingDiagonal())
         {
             mpTempConnector->makeDiagonal(true);
             mpTempConnector->drawConnector();
@@ -579,6 +579,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 //! @param event contains information about the keypress operation.
 void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 {
+    qDebug() << "keyReleaseEvent";
         // Releasing ctrl key while creating a connector means return from diagonal mode to orthogonal mode.
     if(event->key() == Qt::Key_Control and mIsCreatingConnector)
     {

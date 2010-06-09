@@ -6,29 +6,29 @@ HOPSANGUIMODELFILEVERSION 0.1
 HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION 0.1
 --------------------------------------------------------------
 STARTTIME 0
-TIMESTEP 5e-05
-FINISHTIME 5
+TIMESTEP 1e-05
+FINISHTIME 2
 --------------------------------------------------------------
-COMPONENT "HydraulicAlternativePRV" "AlternativePRV" 2443 2404 0 0
-PARAMETER "AlternativePRV" pref 2e+06
+COMPONENT "HydraulicAlternativePRV" "AlternativePRV" 2443 2390 0 0
+PARAMETER "AlternativePRV" pref 1e+07
 PARAMETER "AlternativePRV" cq 0.67
-PARAMETER "AlternativePRV" spooldiameter 0.01
+PARAMETER "AlternativePRV" spooldiameter 0.0025
 PARAMETER "AlternativePRV" frac 1
-PARAMETER "AlternativePRV" pilotarea 0.001
-PARAMETER "AlternativePRV" k 1e+06
-PARAMETER "AlternativePRV" c 1000
+PARAMETER "AlternativePRV" pilotarea 5e-05
+PARAMETER "AlternativePRV" k 150000
+PARAMETER "AlternativePRV" c 400
 PARAMETER "AlternativePRV" m 0
 PARAMETER "AlternativePRV" xhyst 0
-PARAMETER "AlternativePRV" xmax 0.001
+PARAMETER "AlternativePRV" xmax 0.015
 PARAMETER "AlternativePRV" debug 0
 PARAMETER "AlternativePRV" t1 0
 PARAMETER "AlternativePRV" t2 0.01
-COMPONENT "HydraulicFlowSourceQ" "FlowSourceQ" 2226 2345 0 0
-PARAMETER "FlowSourceQ" Flow 1e-05
-COMPONENT "HydraulicTankC" "PressureSource" 2441 2482 0 0
+COMPONENT "HydraulicFlowSourceQ" "FlowSourceQ" 2270 2343 0 0
+PARAMETER "FlowSourceQ" Flow 0.0001
+COMPONENT "HydraulicTankC" "PressureSource" 2441 2460 0 0
 PARAMETER "PressureSource" P 100000
-COMPONENT "SignalSink" "Sink" 2556 2405 0 0
-COMPONENT "HydraulicVolume" "Volume" 2338 2345 0 1
+COMPONENT "SignalSink" "Sink" 2538 2391 0 0
+COMPONENT "HydraulicVolume" "Volume" 2358 2343 0 1
 PARAMETER "Volume" V 0.001
 PARAMETER "Volume" Be 1e+09
 PARAMETER "Volume" a 0
@@ -36,8 +36,8 @@ PARAMETER "Volume" debug 0
 PARAMETER "Volume" t1 0
 PARAMETER "Volume" t2 0.01
 --------------------------------------------------------------
-CONNECT "AlternativePRV" "X" "Sink" "in" 2485 2404 2531 2404 2531 2405 2543.5 2405
-CONNECT "FlowSourceQ" "P1" "Volume" "P1" 2238 2345 2245 2345 2245 2345 2313 2345 2313 2345
-CONNECT "PressureSource" "P1" "AlternativePRV" "P2" 2441 2467.5 2441 2465 2441 2465 2441 2459 2441 2444
-CONNECT "Volume" "P2" "AlternativePRV" "P1" 2363 2345 2441 2345 2441 2379 2441 2364
+CONNECT "AlternativePRV" "X" "Sink" "in" 2485 2390 2491 2390 2491 2391 2525.5 2391
+CONNECT "FlowSourceQ" "P1" "Volume" "P1" 2282 2343 2265 2343 2265 2343 2333 2343 2333 2343
+CONNECT "Volume" "P2" "AlternativePRV" "P1" 2383 2343 2441 2343 2441 2379 2441 2350
+CONNECT "AlternativePRV" "P2" "PressureSource" "P1" 2441 2430 2441 2436 2441 2436 2441 2445.5
 --------------------------------------------------------------

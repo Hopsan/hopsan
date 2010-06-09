@@ -196,8 +196,6 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
 }
 
 
-
-
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
 LibraryWidget::LibraryWidget(MainWindow *parent)
