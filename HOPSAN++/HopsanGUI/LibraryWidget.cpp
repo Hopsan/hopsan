@@ -129,7 +129,7 @@ LibraryContent::LibraryContent(LibraryContent *pParentLibraryContent, LibraryWid
     this->setAcceptDrops(true);
     this->setDropIndicatorShown(true);
     //this->setSpacing(10);
-    qDebug() << "Connecting!";
+
     connect(this,SIGNAL(itemEntered(QListWidgetItem*)),this,SLOT(highLightItem(QListWidgetItem*)));
 
 }

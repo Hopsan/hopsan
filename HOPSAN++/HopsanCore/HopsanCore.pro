@@ -89,7 +89,6 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicPressureSource.hpp \
     Components/Hydraulic/HydraulicPressureSensor.hpp \
     Components/Hydraulic/HydraulicPressureReliefValve.hpp \
-    Components/Hydraulic/HydraulicPressureControlledValve.hpp \
     Components/Hydraulic/HydraulicPowerSensor.hpp \
     Components/Hydraulic/HydraulicLaminarOrifice.hpp \
     Components/Hydraulic/HydraulicFlowSourceQ.hpp \
@@ -115,4 +114,5 @@ HEADERS += win32dll.h \
     version.h \
     Components/Hydraulic/HydraulicTankC.hpp \
     Components/Hydraulic/HydraulicAlternativePRV.hpp \
-    ComponentUtilities/AuxiliarySimulationFunctions.h
+    ComponentUtilities/AuxiliarySimulationFunctions.h \
+    Components/Hydraulic/HydraulicPressureControlledPump.hpp

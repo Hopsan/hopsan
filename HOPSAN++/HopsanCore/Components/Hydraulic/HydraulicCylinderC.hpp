@@ -58,6 +58,7 @@ public:
         mTypeName = "HydraulicCylinderC";
         mStartPosition = 0.0;
         mStartVelocity = 0.0;
+        mStartForce = 0.0;
         mStartPressure1 = 0;
         mStartPressure2 = 0;
         mArea1 = 1.0e-3;
@@ -120,6 +121,7 @@ public:
         mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc2);
         mpP3->writeNode(NodeMechanic::POSITION,      mStartPosition-mStroke);
         mpP3->writeNode(NodeMechanic::VELOCITY,      -mStartVelocity);
+        mpP3->writeNode(NodeMechanic::FORCE,        0);
         mpP3->writeNode(NodeMechanic::WAVEVARIABLE, mArea1*mStartPressure1 + mArea2*mStartPressure2);
         mpP3->writeNode(NodeMechanic::CHARIMP,      mZx);
     }
@@ -177,7 +179,7 @@ public:
         //--------------------------------------------------------------------------------------//
           double cxSpring, cxSpring0, ZxSpring;
         //double Zx0 = 0.01*mEquivalentMass/mTimestep;
-        double kSpring = 30.0*mEquivalentMass;
+        double kSpring = 300.0*mEquivalentMass;
         if ( xPiston > mStroke )
         {
             ZxSpring = kSpring*mTimestep;

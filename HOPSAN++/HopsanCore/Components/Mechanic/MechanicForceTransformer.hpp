@@ -15,6 +15,7 @@ class MechanicForceTransformer : public ComponentC
 private:
     double mStartPosition;
     double mStartVelocity;
+    double mStartForce;
     double mSignal;
     Port *mpIn, *mpP1;
 
@@ -30,6 +31,7 @@ public:
         mTypeName = "MechanicForceTransformer";
         mStartPosition = 0.0;
         mStartVelocity = 0.0;
+        mStartForce = 0.0;
         mSignal = 0.0;
 
         //Add ports to the component
@@ -47,6 +49,7 @@ public:
     {
         mpP1->writeNode(NodeMechanic::POSITION, mStartPosition);
         mpP1->writeNode(NodeMechanic::VELOCITY, mStartVelocity);
+        mpP1->writeNode(NodeMechanic::FORCE, mStartForce);
         mpP1->writeNode(NodeMechanic::CHARIMP, 0.0);
         mpP1->writeNode(NodeMechanic::WAVEVARIABLE, 0.0);
     }
