@@ -128,6 +128,7 @@ LibraryContent::LibraryContent(LibraryContent *pParentLibraryContent, LibraryWid
     this->setGridSize(QSize(50,50));
     this->setAcceptDrops(true);
     this->setDropIndicatorShown(true);
+    //this->setSpacing(10);
     qDebug() << "Connecting!";
     connect(this,SIGNAL(itemEntered(QListWidgetItem*)),this,SLOT(highLightItem(QListWidgetItem*)));
 
@@ -155,8 +156,9 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
     for(int i=0; i != mpParentLibraryWidget->mpContentItems.size(); ++i)
     {
         mpParentLibraryWidget->mpContentItems[i]->setBackgroundColor(QColor("white"));
-        mpParentLibraryWidget->mpComponentNameField->setText("");
+        mpParentLibraryWidget->mpContentItems[i]->setSelected(false);
     }
+    mpParentLibraryWidget->mpComponentNameField->setText("");
     QListWidgetItem *tempItem = itemAt(event->pos());
     if(tempItem != 0x0)     //! @todo This is perhaps a bit ugly, but the pointer is zero if there are not item beneath the mouse
     {
@@ -169,6 +171,15 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
         return;
     if ( (event->pos() - dragStartPosition).manhattanLength() < QApplication::startDragDistance() )
         return;
+
+        //Drag is initialized, so remove the highlight and name text stuff
+    if(tempItem != 0x0)
+    {
+        tempItem->setBackgroundColor(QColor("white"));
+        tempItem->setSelected(false);
+    }
+    mpParentLibraryWidget->mpComponentNameField->setText("");
+
 
     //QByteArray *data = new QByteArray;
     QString datastr;
@@ -219,9 +230,9 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
     //mpComponentNameField->hide();
 
     setLayout(mpGrid);
+    this->setMouseTracking(true);
 
     connect(mpTree, SIGNAL(itemClicked (QTreeWidgetItem*, int)), SLOT(showLib(QTreeWidgetItem*, int)));
-
 }
 
 
@@ -453,4 +464,16 @@ void LibraryWidget::useIsoGraphics(bool useISO)
 //            //qobject_cast<LibraryContentItem*>( (*lib)->item(i) )->selectIcon(useISO);
 //            //libcontit->selectIcon(useISO);
 //        }
+}
+
+
+void LibraryWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    for(int i=0; i<mpContentItems.size(); ++i)
+    {
+        mpContentItems[i]->setBackgroundColor(QColor("white"));
+        mpContentItems[i]->setSelected(false);
+    }
+    mpComponentNameField->setText("");
+    QWidget::mouseMoveEvent(event);
 }

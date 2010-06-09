@@ -120,6 +120,8 @@ public:
     AppearanceData *getAppearanceData(QString componentType);
     AppearanceData *getAppearanceDataByDisplayName(QString displayName);
 
+protected:
+    virtual void mouseMoveEvent(QMouseEvent *event);
 
 public slots:
     void addLibrary();
