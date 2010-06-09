@@ -137,7 +137,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary("../../HopsanGUI/componentData/Subsystem");
 
     mpLibrary->addEmptyLibrary("Signal");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/signal/Sources & sinks","Signal");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/signal/Sources & Sinks","Signal");
     mpLibrary->addLibrary("../../HopsanGUI/componentData/signal/Arithmetics","Signal");
     mpLibrary->addLibrary("../../HopsanGUI/componentData/signal/Non-Linearities","Signal");
     mpLibrary->addLibrary("../../HopsanGUI/componentData/signal/Filters","Signal");
@@ -149,7 +149,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary("../../HopsanGUI/componentData/mechanic/Sensors","Mechanic");
 
     mpLibrary->addEmptyLibrary("Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/sources & sinks","Hydraulic");
+    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/Sources & Sinks","Hydraulic");
     mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/sensors","Hydraulic");
     mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/restrictors","Hydraulic");
     mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/volumes","Hydraulic");
