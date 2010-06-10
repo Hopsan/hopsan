@@ -43,7 +43,7 @@ public:
         mMax = 1.5E+300;
 
         mK = 1.0;
-        mWnum = 1e10;
+        mWnum = 1.0e10;
         mDnum = 1.0;
         mWden = 1.0*2.0*3.1415;
         mDden = 0.7;

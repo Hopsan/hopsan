@@ -1,9 +1,9 @@
 //!
-//! @file   SignalLP2Filter.hpp
-//! @author Robert Braun <robert.braun@liu.se>
-//! @date   2010-01-21
+//! @file   SignalLP1Filter.hpp
+//! @author Karl Pettersson <karl.pettersson@liu.se>
+//! @date   2010-06-10
 //!
-//! @brief Contains a second order low pass filter
+//! @brief Contains a Signal Second Order Low Pass Filter Component using CoreUtilities
 //!
 //$Id$
 
@@ -11,6 +11,7 @@
 #define SIGNALLP2FILTER_HPP_INCLUDED
 
 #include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 
 //!
 //! @brief
@@ -20,52 +21,65 @@ class SignalLP2Filter : public ComponentSignal
 {
 
 private:
-    double mCofrequency;
-    double mTimestep;
-    TransferFunction Filter;
+    SecondOrderFilter mFilter;
+    double mW, mD, mMin, mMax;
+    double mStartY;
     Port *mpIn, *mpOut;
 
 public:
     static Component *Creator()
     {
-        return new SignalLP2Filter("LP2Filter");
+        return new SignalLP2Filter("Filter");
     }
 
     SignalLP2Filter(const string name) : ComponentSignal(name)
     {
         mTypeName = "SignalLP2Filter";
-        mCofrequency = 100;
+        mStartY = 0.0;
+
+        mMin = -1.5E+300;
+        mMax = 1.5E+300;
+
+        mW=1.0e10;
+        mD=1.0;
 
         mpIn = addReadPort("in", "NodeSignal");
         mpOut = addWritePort("out", "NodeSignal");
 
-        registerParameter("Frequency", "Cut-Off Frequency", "[rad/s]", mCofrequency);
-    }
+        registerParameter("w", "Break frequency", "rad/s", mW);
+        registerParameter("d", "Damp coefficient", "-", mD);
+        }
 
 
     void initialize()
     {
-        double num [3] = {1.0, 0.0, 0.0};
-        double den [3] = {1.0, 2.0/mCofrequency, 1.0/pow(mCofrequency,2)};
-        Filter.setCoefficients(num, den, mTimestep);
+        double num[2];
+        double den[2];
+
+        num[0] = 0.0;
+        num[1] = 0.0;
+        num[2] = 1.0;
+        den[0] = 1.0/pow(mW,2);
+        den[1] = 2.0*mD/mW;
+        den[2] = 1.0;
+
+        mFilter.initialize(mTime, mTimestep, num, den, mStartY, mStartY, mMin, mMax);
+
+        //Writes out the value for time "zero"
+        mpOut->writeNode(NodeSignal::VALUE, mStartY);
     }
 
 
     void simulateOneTimestep()
     {
-
         //Get variable values from nodes
         double u = mpIn->readNode(NodeSignal::VALUE);
 
-        //Filter equations
-		double y = Filter.getValue(u);
-
         //Write new values to nodes
-        mpOut->writeNode(NodeSignal::VALUE, y);
-
-        //Update filter:
-        //Filter.update(u);
+        mpOut->writeNode(NodeSignal::VALUE, mFilter.value(u));
     }
 };
 
 #endif // SIGNALLP2FILTER_HPP_INCLUDED
+
+
