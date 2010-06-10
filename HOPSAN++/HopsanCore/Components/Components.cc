@@ -63,7 +63,7 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->RegisterCreatorFunction("SignalSaturation", SignalSaturation::Creator);
     cfact_ptr->RegisterCreatorFunction("SignalDeadZone", SignalDeadZone::Creator);
     cfact_ptr->RegisterCreatorFunction("SignalLP1Filter", SignalLP1Filter::Creator);
-    cfact_ptr->RegisterCreatorFunction("SignalLP2Filter", SignalLP1Filter::Creator);
+    cfact_ptr->RegisterCreatorFunction("SignalLP2Filter", SignalLP2Filter::Creator);
     cfact_ptr->RegisterCreatorFunction("SignalPulse", SignalPulse::Creator);
     cfact_ptr->RegisterCreatorFunction("SignalSoftStep", SignalSoftStep::Creator);
     cfact_ptr->RegisterCreatorFunction("SignalIntegrator", SignalIntegrator::Creator);
