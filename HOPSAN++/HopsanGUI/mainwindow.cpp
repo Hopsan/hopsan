@@ -61,10 +61,8 @@ MainWindow::MainWindow(QWidget *parent)
     this->resize(1024,768);
     this->setWindowTitle("HOPSAN NG");
     this->setWindowIcon(QIcon("../../HopsanGUI/icons/hopsan.png"));
-
+    this->setDockOptions(QMainWindow::ForceTabbedDocks);
     mPlotVariableListOpen = false;
-
-
 
     //Create a centralwidget for the main window
     mpCentralwidget = new QWidget(this);
@@ -488,13 +486,19 @@ void MainWindow::openUndo()
 {
     //this->mpUndoWidget->show();
 
-    QDockWidget *undoDock = new QDockWidget(tr("Undo History"), this);
-    undoDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    mUndoDock = new QDockWidget(tr("Undo History"), this);
+    mUndoDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     //VariableListDialog *variableList = new VariableListDialog(varPlotDock);
 
-    undoDock->setWidget(mpUndoWidget);
+    mUndoDock->setWidget(mpUndoWidget);
     //variableList->show();
-    addDockWidget(Qt::RightDockWidgetArea, undoDock);
+    addDockWidget(Qt::RightDockWidgetArea, mUndoDock);
+
+    if(dockWidgetArea(mPlotVariablesDock) == dockWidgetArea(mUndoDock))
+    {
+        this->tabifyDockWidget(mUndoDock, mPlotVariablesDock);
+        mUndoDock->setFocus();
+    }
 
     mpUndoWidget->refreshList();
 }
@@ -528,11 +532,11 @@ void MainWindow::loadSettings()
     while ( !inputStream.atEnd() )
     {
         inputStream >> inputWord;
-        qDebug() << "Reading " << inputWord;
+        //qDebug() << "Reading " << inputWord;
         if(inputWord == "INVERTWHEEL")
         {
             inputStream >> inputWord;
-            qDebug() << "Reading " << inputWord;
+            //qDebug() << "Reading " << inputWord;
             if(inputWord == "TRUE")
             {
                 mInvertWheel = true;

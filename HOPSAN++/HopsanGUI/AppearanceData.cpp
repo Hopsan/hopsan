@@ -188,8 +188,10 @@ QPen GUIConnectorAppearance::getPen(QString situation, QString type, bool useISO
     {
         return mNonFinishedPen;
     }
-    //! @todo Return some other default noname pen
+
     qDebug() << "ERROR no such connector appearance: " << situation << " " <<  type << " ISOstyle: " << useISO;
+
+    return QPen(QColor("black"),1, Qt::SolidLine, Qt::RoundCap);
 }
 
 void GUIConnectorAppearance::adjustToZoom(qreal zoomFactor)

@@ -111,7 +111,7 @@ QString GUIRootSystem::rename(QString componentName, QString name, bool doOnlyLo
 
 QString GUIRootSystem::getName()
 {
-    qDebug() << "getNAme from core root: " << QString::fromStdString(mpCoreComponentSystem->getName());
+   // qDebug() << "getNAme from core root: " << QString::fromStdString(mpCoreComponentSystem->getName());
     return QString::fromStdString(mpCoreComponentSystem->getName());
 }
 
@@ -127,7 +127,7 @@ void GUIRootSystem::stop()
 
 QString GUIRootSystem::getPortType(QString componentName, QString portName)
 {
-    qDebug() << "name for port fetch " << componentName << " " << portName;
+    //qDebug() << "name for port fetch " << componentName << " " << portName;
     return QString(mpCoreComponentSystem->getComponent(componentName.toStdString())->getPort(portName.toStdString())->getPortTypeString().c_str());
 }
 
@@ -233,7 +233,7 @@ void GUIRootSystem::deleteSystemPort(QString portname)
 
 QString GUIRootSystem::addSystemPort(QString portname)
 {
-    qDebug() << "add system port: " << portname;
+    //qDebug() << "add system port: " << portname;
     return QString::fromStdString(mpCoreComponentSystem->addSystemPort(portname.toStdString())->getPortName());
 }
 
@@ -252,7 +252,7 @@ void GUIRootSystem::getPlotDataNamesAndUnits(const QString compname, const QStri
     rUnits.clear();
 
     //Copy into QT datatype vector (assumes bothe received vectors same length (should always be same)
-    for (int i=0; i<corenames.size(); ++i)
+    for (size_t i=0; i<corenames.size(); ++i)
     {
         rNames.push_back(QString::fromStdString(corenames[i]));
         rUnits.push_back(QString::fromStdString(coreunits[i]));

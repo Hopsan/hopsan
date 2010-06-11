@@ -289,15 +289,15 @@ void GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
     QVector<double> y;
     mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPlotData(getGUIComponentName(), this->getName(), dataName, y);
 
-    qDebug() << "Time size: " << time.size() << " last time: " << *time.end() << " " << "y.size(): " << y.size();
-    qDebug() << "time[0]: " << time[0] << " time[last-1]: " << time[time.size()-2] << " time[last]: " << time[time.size()-1];
+    //qDebug() << "Time size: " << time.size() << " last time: " << *time.end() << " " << "y.size(): " << y.size();
+    //qDebug() << "time[0]: " << time[0] << " time[last-1]: " << time[time.size()-2] << " time[last]: " << time[time.size()-1];
 
     for (int i = 0; i<time.size(); ++i)
     {
         //qDebug() << time[i];
     }
 
-    qDebug() << "y[0]: " << y[0] << " y[last-1]: " << y[y.size()-2] << " y[last]: " << y[y.size()-1];
+    //qDebug() << "y[0]: " << y[0] << " y[last-1]: " << y[y.size()-2] << " y[last]: " << y[y.size()-1];
 
     QString title;
     QString xlabel;
@@ -374,12 +374,12 @@ QString GUIPort::getGUIComponentName()
 {
     if (mpGUIRootSystem == 0)
     {
-        qDebug() << "return guiobject name: " << mpParentGuiObject->getName();
+        //qDebug() << "return guiobject name: " << mpParentGuiObject->getName();
         return mpParentGuiObject->getName();
     }
     else
     {
-        qDebug() << "return root name: " << mpGUIRootSystem->getName();
+        //qDebug() << "return root name: " << mpGUIRootSystem->getName();
         return mpGUIRootSystem->getName();
     }
 }

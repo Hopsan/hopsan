@@ -227,7 +227,7 @@ void GUIConnector::removePoint(bool deleteIfEmpty)
 {
     mPoints.pop_back();
     mGeometries.pop_back();
-    qDebug() << "removePoint, getNumberOfLines = " << getNumberOfLines();
+    //qDebug() << "removePoint, getNumberOfLines = " << getNumberOfLines();
     if(getNumberOfLines() > 3 and !mMakingDiagonal)
     {
         if((mGeometries[mGeometries.size()-1] == GUIConnector::DIAGONAL) or ((mGeometries[mGeometries.size()-2] == GUIConnector::DIAGONAL)))
@@ -348,10 +348,10 @@ void GUIConnector::setEndPort(GUIPort *port)
         //Make all lines selectable and all lines except first and last movable
     if(mpLines.size() > 1)
     {
-        for(std::size_t i=1; i!=mpLines.size()-1; ++i)
+        for(int i=1; i!=mpLines.size()-1; ++i)
             mpLines[i]->setFlag(QGraphicsItem::ItemIsMovable, true);
     }
-    for(std::size_t i=0; i!=mpLines.size(); ++i)
+    for(int i=0; i!=mpLines.size(); ++i)
         mpLines[i]->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
         //Add arrow to the connector if it is of signal type
@@ -383,7 +383,7 @@ void GUIConnector::setEndPort(GUIPort *port)
 void GUIConnector::setIsoStyle(bool useISO)
 {
     mpGUIConnectorAppearance->setIsoStyle(useISO);
-    for (std::size_t i=0; i!=mpLines.size(); ++i )
+    for (int i=0; i!=mpLines.size(); ++i )
     {
         //Refresh each line by setting to passive (primary) appearance
         mpLines[i]->setPassive();
@@ -395,7 +395,7 @@ void GUIConnector::setIsoStyle(bool useISO)
 void GUIConnector::adjustToZoom()
 {
     mpGUIConnectorAppearance->adjustToZoom(mpParentGraphicsView->mZoomFactor);
-    for (std::size_t i=0; i!=mpLines.size(); ++i )
+    for (int i=0; i!=mpLines.size(); ++i )
     {
         //Refresh each line by setting to passive (primary) appearance
         mpLines[i]->setPassive();
@@ -751,7 +751,7 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
             this->setActive();
             for (int i=0; i != mpLines.size(); ++i)
             {
-               if(i != (std::size_t)lineNumber)     //I think this means that only one line in a connector can be selected at one time
+               if(i != lineNumber)     //I think this means that only one line in a connector can be selected at one time
                    mpLines[i]->setSelected(false);
             }
         }
@@ -794,7 +794,7 @@ void GUIConnector::setActive()
     if(this->mEndPortConnected)
     {
         mIsActive = true;
-        for (std::size_t i=0; i!=mpLines.size(); ++i )
+        for (int i=0; i!=mpLines.size(); ++i )
         {
             mpLines[i]->setActive();
             //mpLines[i]->setSelected(true);         //???
@@ -811,7 +811,7 @@ void GUIConnector::setPassive()
     if(this->mEndPortConnected)
     {
         mIsActive = false;
-        for (std::size_t i=0; i!=mpLines.size(); ++i )
+        for (int i=0; i!=mpLines.size(); ++i )
         {
             mpLines[i]->setPassive();
             mpLines[i]->setSelected(false);       //OBS! Kanske inte blir bra...
@@ -826,7 +826,7 @@ void GUIConnector::setHovered()
 {
     if(this->mEndPortConnected && !this->mIsActive)
     {
-        for (std::size_t i=0; i!=mpLines.size(); ++i )
+        for (int i=0; i!=mpLines.size(); ++i )
         {
             mpLines[i]->setHovered();
         }
@@ -841,7 +841,7 @@ void GUIConnector::setUnHovered()
 {
     if(this->mEndPortConnected && !this->mIsActive)
     {
-        for (std::size_t i=0; i!=mpLines.size(); ++i )
+        for (int i=0; i!=mpLines.size(); ++i )
         {
             mpLines[i]->setPassive();
         }
@@ -852,7 +852,7 @@ void GUIConnector::setUnHovered()
 //! Asks my parent to delete myself.
 void GUIConnector::deleteMe()
 {
-    qDebug() << "deleteMe()";
+    //qDebug() << "deleteMe()";
     mpParentGraphicsView->removeConnector(this, false);
 }
 

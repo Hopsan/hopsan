@@ -181,6 +181,7 @@ private:
     QDockWidget *messagedock;
     QDockWidget *libdock;
     QDockWidget *mPlotVariablesDock;
+    QDockWidget *mUndoDock;
 
     void setValue(QLineEdit *lineEdit, double value);
     double getValue(QLineEdit *lineEdit);

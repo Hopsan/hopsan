@@ -560,7 +560,7 @@ void GUIObject::rotate(bool doNotRegisterUndo)
 //! @see moveRight()
 void GUIObject::moveUp()
 {
-    qDebug() << "Move up!";
+    //qDebug() << "Move up!";
     this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()-1);
     mpParentGraphicsView->setBackgroundBrush(mpParentGraphicsView->mBackgroundColor);
 }
@@ -981,7 +981,7 @@ GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, Graph
         QString nodeType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getNodeType(getName(), i.key());
         QString portType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPortType(getName(), i.key());
         i.value().selectPortIcon(cqsType, portType, nodeType);
-        qDebug() << i.key();
+        //qDebug() << i.key();
 
         qreal x = i.value().x;
         qreal y = i.value().y;
@@ -1359,7 +1359,7 @@ int GUISystemPort::type() const
 //! Delete the system port in the core
 void GUISystemPort::deleteInHopsanCore()
 {
-    qDebug() << "In GUISystemPort::deleteInHopsanCore";
+    //qDebug() << "In GUISystemPort::deleteInHopsanCore";
     this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.deleteSystemPort(mAppearanceData.getName());
 }
 

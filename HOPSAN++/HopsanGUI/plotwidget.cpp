@@ -256,7 +256,7 @@ void PlotWidget::exportGNUPLOT()
     QTextStream modelFile(&file);  //Create a QTextStream object to stream the content of file
 
     size_t size = mpVariablePlot->getCurve()->data().size();
-    for(int i=0; i!=size; ++i)
+    for(std::size_t i=0; i!=size; ++i)
     {
         modelFile << mpVariablePlot->getCurve()->data().x(i);
         modelFile << " ";
@@ -408,7 +408,7 @@ void VariableList::updateList()
         QList<GUIPort*>::iterator itp;
         for(itp = it.value()->mPortListPtrs.begin(); itp !=it.value()->mPortListPtrs.end(); ++itp)
         {
-            qDebug() << "Writing plot stuff for " << it.value()->getName() << " " << (*itp)->getName();
+           // qDebug() << "Writing plot stuff for " << it.value()->getName() << " " << (*itp)->getName();
             y.clear();
 
             if (mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getNodeType((*itp)->getGUIComponentName(), (*itp)->getName()) == "NodeHydraulic")

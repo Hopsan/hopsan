@@ -325,7 +325,7 @@ void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appear
 //! @brief A function that ads a system port to the current system
 void GraphicsView::addSystemPort()
 {
-    qDebug() <<"Adding a system port";
+    //qDebug() <<"Adding a system port";
     QCursor cursor;
     QPointF position = this->mapToScene(this->mapFromGlobal(cursor.pos()));
     this->setBackgroundBrush(mBackgroundColor);
@@ -345,7 +345,7 @@ void GraphicsView::addSystemPort()
 //! @param objectName is the name of the componenet to delete
 void GraphicsView::deleteGUIObject(QString objectName)
 {
-    qDebug() << "deleteGUIObject()";
+    //qDebug() << "deleteGUIObject()";
     QMap<QString, GUIObject *>::iterator it;
     it = mGUIObjectMap.find(objectName);
 
@@ -398,11 +398,11 @@ void GraphicsView::renameGUIObject(QString oldName, QString newName)
         obj_ptr->setName(newName, true);
         //Re insert
         mGUIObjectMap.insert(obj_ptr->getName(), obj_ptr);
-        qDebug() << "GUI rename: " << oldName << " " << obj_ptr->getName();
+        //qDebug() << "GUI rename: " << oldName << " " << obj_ptr->getName();
     }
     else
     {
-        qDebug() << "Old name: " << oldName << " not found";
+        //qDebug() << "Old name: " << oldName << " not found";
     }
 
     undoStack->registerRenameObject(oldName, newName);
@@ -579,7 +579,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 //! @param event contains information about the keypress operation.
 void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 {
-    qDebug() << "keyReleaseEvent";
+    //qDebug() << "keyReleaseEvent";
         // Releasing ctrl key while creating a connector means return from diagonal mode to orthogonal mode.
     if(event->key() == Qt::Key_Control and mIsCreatingConnector)
     {
@@ -653,7 +653,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
             mpTempConnector->drawConnector();
             this->setBackgroundBrush(mBackgroundColor);
         }
-        qDebug() << "mIsCreatingConnector = " << mIsCreatingConnector;
+        //qDebug() << "mIsCreatingConnector = " << mIsCreatingConnector;
     }
     else if  ((event->button() == Qt::LeftButton) && (this->mIsCreatingConnector))
     {
@@ -873,7 +873,7 @@ void GraphicsView::copySelected()
 //! @see copySelected()
 void GraphicsView::paste()
 {
-    qDebug() << "mpCopyData = " << *mpCopyData;
+    //qDebug() << "mpCopyData = " << *mpCopyData;
 
     undoStack->newPost();
     mpParentProjectTab->hasChanged();
@@ -1691,7 +1691,7 @@ void ProjectTabWidget::loadModel()
             inputStream >> nameTextPos;
 
             //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
-            qDebug() << "componentType: " << componentType;
+            //qDebug() << "componentType: " << componentType;
             AppearanceData appearanceData = *mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
             pCurrentTab->mpGraphicsView->addGUIObject(componentType, appearanceData, QPoint(posX, posY), 0, componentName);
             pCurrentTab->mpGraphicsView->getGUIObject(componentName)->setNameTextPos(nameTextPos);
