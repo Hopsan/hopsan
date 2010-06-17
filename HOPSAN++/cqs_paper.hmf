@@ -9,7 +9,7 @@ STARTTIME 0
 TIMESTEP 0.01
 FINISHTIME 5
 --------------------------------------------------------------
-COMPONENT "HydraulicFlowSensor" "Flow Sensor" 1776 2314 0 0
+COMPONENT "HydraulicFlowSensor" "Flow Sensor" 1776 2314.07 0 0
 COMPONENT "SignalGain" "Gain" 1603 2280 0 0
 PARAMETER "Gain" Gain 1
 COMPONENT "HydraulicTLMlossless" "Long pipe" 1698 2344 0 0
@@ -18,14 +18,14 @@ PARAMETER "Long pipe" a 0
 PARAMETER "Long pipe" Zc 1e+09
 PARAMETER "Long pipe" startP 100000
 PARAMETER "Long pipe" startQ 0
-COMPONENT "HydraulicLaminarOrifice" "Orifice" 1581.06 2344.07 90 0
+COMPONENT "HydraulicLaminarOrifice" "Orifice" 1581 2344 90 0
 PARAMETER "Orifice" Kc 1e-11
 COMPONENT "HydraulicLaminarOrifice" "Orifice_1" 1843 2344 90 0
 PARAMETER "Orifice_1" Kc 1e-11
 COMPONENT "HydraulicPressureSource" "Pressure" 1484 2344 90 0
 PARAMETER "Pressure" P 100000
 COMPONENT "SignalSubtract" "Subtract" 1547 2280 0 0
-COMPONENT "HydraulicTankC" "Tank" 1888.83 2344 270 0
+COMPONENT "HydraulicTankC" "Tank" 1888 2344 270 0
 PARAMETER "Tank" P 100000
 COMPONENT "SignalRamp" "ref" 1487 2280 0 0
 PARAMETER "ref" BaseValue 0
@@ -33,13 +33,13 @@ PARAMETER "ref" Amplitude 1
 PARAMETER "ref" StartTime 1
 PARAMETER "ref" StopTime 2
 --------------------------------------------------------------
-CONNECT "Pressure" "P1" "Orifice" "P2" 1496 2344 1498 2344 1498 2344.07 1546.56 2344.07
-CONNECT "Orifice" "P1" "Long pipe" "P1" 1615.56 2344.07 1614 2344.07 1614 2344 1638.5 2344
+CONNECT "Pressure" "P1" "Orifice" "P2" 1496 2344 1498 2344 1498 2344 1546.5 2344
+CONNECT "Orifice" "P1" "Long pipe" "P1" 1615.5 2344 1614 2344 1614 2344 1638.5 2344
 CONNECT "Long pipe" "P2" "Orifice_1" "P2" 1757.5 2344 1796 2344 1796 2344 1808.5 2344
-CONNECT "Orifice_1" "P1" "Tank" "P1" 1877.5 2344 1879 2344 1879 2344 1874.33 2344
-CONNECT "Flow Sensor" "P1" "Long pipe" "P2" 1776 2343.5 1776 2344 1757.5 2344
+CONNECT "Orifice_1" "P1" "Tank" "P1" 1877.5 2344 1879 2344 1879 2344 1873.5 2344
 CONNECT "ref" "out" "Subtract" "in1" 1507 2280 1511 2280 1511 2280 1534.5 2280
-CONNECT "Flow Sensor" "out" "Subtract" "in2" 1776 2284.5 1776 2254 1547 2254 1547 2267.5
+CONNECT "Flow Sensor" "out" "Subtract" "in2" 1776 2284.57 1776 2254 1547 2254 1547 2267.5
 CONNECT "Subtract" "out" "Gain" "in" 1559.5 2280 1565 2280 1565 2280 1590.5 2280
 CONNECT "Gain" "out" "Pressure" "In" 1615.5 2280 1655 2280 1655 2321 1457 2321 1457 2344 1472 2344
+CONNECT "Flow Sensor" "P1" "Long pipe" "P2" 1776 2343.57 1776 2344 1757.5 2344
 --------------------------------------------------------------

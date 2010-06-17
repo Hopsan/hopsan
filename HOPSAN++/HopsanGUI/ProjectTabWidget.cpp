@@ -1610,7 +1610,7 @@ void ProjectTabWidget::loadModel()
         //Necessary declarations
     QString inputWord, componentType, componentName, startComponentName, endComponentName, parameterName, startPortName, endPortName, tempString;
     //int length, heigth;
-    int posX, posY;
+    qreal posX, posY;
     int nameTextPos;
     qreal rotation;
     double parameterValue;
@@ -1699,7 +1699,6 @@ void ProjectTabWidget::loadModel()
             {
                 pCurrentTab->mpGraphicsView->getGUIObject(componentName)->rotate();
             }
-
         }
 
 
@@ -1709,6 +1708,7 @@ void ProjectTabWidget::loadModel()
             inputStream >> parameterName;
             inputStream >> parameterValue;
 
+            //qDebug() << "Parameter: " << componentName << " " << parameterName << " " << parameterValue;
             pCurrentTab->mpGraphicsView->mGUIObjectMap.find(componentName).value()->setParameterValue(parameterName, parameterValue);
         }
 

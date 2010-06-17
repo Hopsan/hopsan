@@ -860,7 +860,7 @@ void ComponentSystem::removeSubComponent(Component* c_ptr, bool doDelete)
 //! @todo for this to work we need to amke sure that the system and its sub components have unique names
 Component* ComponentSystem::getComponent(string name)
 {
-    cout << "getComponent: " << name << " " << mName << endl;
+    cout << "getComponent: " << name << " in: " << mName << endl;
     //First try to find among subcomponents
     Component *tmp = getSubComponent(name);
     if (tmp != 0)
@@ -869,7 +869,7 @@ Component* ComponentSystem::getComponent(string name)
     }
     else if (name == mName)
     {
-        cout << "aaagetComponent: " << name << " " << mName << endl;
+        cout << "getComponent (name == mName): " << name << " in: " << mName << " returning this" << endl;
         return this;
     }
     else
