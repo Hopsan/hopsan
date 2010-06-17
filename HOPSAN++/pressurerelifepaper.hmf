@@ -1,0 +1,36 @@
+--------------------------------------------------------------
+-------------------  HOPSAN NG MODEL FILE  -------------------
+--------------------------------------------------------------
+HOPSANGUIVERSION 0.0.1
+HOPSANGUIMODELFILEVERSION 0.1
+HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION 0.1
+--------------------------------------------------------------
+STARTTIME 0
+TIMESTEP 0.01
+FINISHTIME 5
+--------------------------------------------------------------
+COMPONENT "HydraulicVolume" "Hydraulic Volume" 1558 2275 0 0
+PARAMETER "Hydraulic Volume" V 0.001
+PARAMETER "Hydraulic Volume" Be 1e+09
+PARAMETER "Hydraulic Volume" a 0
+PARAMETER "Hydraulic Volume" debug 0
+PARAMETER "Hydraulic Volume" t1 0
+PARAMETER "Hydraulic Volume" t2 0.01
+COMPONENT "HydraulicPressureSourceQ" "Prescribed Pressure Q" 1495 2275 90 0
+PARAMETER "Prescribed Pressure Q" P 100000
+COMPONENT "HydraulicPressureReliefValve" "Pressure Relief Valve" 1623 2321 0 0
+PARAMETER "Pressure Relief Valve" pref 2e+06
+PARAMETER "Pressure Relief Valve" tao 0.01
+PARAMETER "Pressure Relief Valve" kcs 1e-08
+PARAMETER "Pressure Relief Valve" kcf 1e-08
+PARAMETER "Pressure Relief Valve" qnom 0.001
+PARAMETER "Pressure Relief Valve" ph 500000
+COMPONENT "HydraulicPressureSensor" "Pressure Sensor" 1621 2245.17 0 0
+COMPONENT "HydraulicTankC" "Tank C" 1621 2375.69 0 0
+PARAMETER "Tank C" P 100000
+--------------------------------------------------------------
+CONNECT "Tank C" "P1" "Pressure Relief Valve" "P2" 1621 2361.19 1621 2384 1621 2384 1621 2361
+CONNECT "Prescribed Pressure Q" "P1" "Hydraulic Volume" "P1" 1507 2275 1513 2275 1513 2275 1533 2275
+CONNECT "Hydraulic Volume" "P2" "Pressure Relief Valve" "P1" 1583 2275 1621 2275 1621 2281
+CONNECT "Pressure Sensor" "P1" "Pressure Relief Valve" "P1" 1621 2274.67 1621 2262.37 1621 2262.37 1621 2281
+--------------------------------------------------------------
