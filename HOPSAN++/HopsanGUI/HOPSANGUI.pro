@@ -42,7 +42,8 @@ HEADERS += mainwindow.h \
     AppearanceData.h \
     UndoStack.h \
     GUIUtilities.h \
-    GUIRootSystem.h
+    GUIRootSystem.h \
+    ../HopsanCore/ComponentUtilities/IntegratorDamping.h
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE

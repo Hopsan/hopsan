@@ -1,0 +1,119 @@
+//!
+//! @file   HydraulicFixedDisplacementPump.hpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-06-30
+//!
+//! @brief Contains a hydraulic motor component with inertia load
+//!
+//$Id$
+
+#ifndef HYDRAULICMOTORQ_H
+#define HYDRAULICMOTORQ_H
+
+
+#include <iostream>
+#include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
+
+//!
+//! @brief
+//! @ingroup HydraulicComponents
+//!
+class HydraulicMotorQ : public ComponentQ
+{
+private:
+    double mDp, mBm, mCim, mJ;
+    //Integrator mFirstIntegrator;
+    //Integrator mSecondIntegrator;
+    DoubleIntegratorWithDamping mIntegrator;
+    Port *mpP1, *mpP2, *mpP3;
+
+public:
+    static Component *Creator()
+    {
+        return new HydraulicMotorQ("MotorQ");
+    }
+
+    HydraulicMotorQ(const string name) : ComponentQ(name)
+    {
+        mTypeName = "HydraulicMotorQ";
+        mDp = 0.00005;
+        mBm = 0;
+        mCim = 0;
+        mJ = 1;
+
+        mpP1 = addPowerPort("P1", "NodeHydraulic");
+        mpP2 = addPowerPort("P2", "NodeHydraulic");
+        mpP3 = addPowerPort("P3", "NodeMechanic");      //! @todo Shall be rotating
+
+        registerParameter("Dp", "Displacement", "m^3/rev", mDp);
+        registerParameter("Bm", "Viscous Friction", "?", mBm);       //! @todo Figure out these units
+        registerParameter("Cim", "Leakage Coefficient", "?", mCim);
+        registerParameter("J", "Inerteia Load", "?", mJ);
+
+    }
+
+
+    void initialize()
+    {
+        mIntegrator.initialize(mTime, mTimestep, 0, 0, 0, 0);
+        
+    }
+
+
+    void simulateOneTimestep()
+    {
+        //Get variable values from nodes
+        double c1 = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
+        double c2 = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
+        double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
+        double c3 = mpP3->readNode(NodeMechanic::WAVEVARIABLE);
+        double Zc3 = mpP3->readNode(NodeMechanic::CHARIMP);
+
+        //Motor equations
+
+        double dp = mDp / (3.1415 * 2);
+        //double dpe = dpr * eps;       //For variable displacement motor
+        double ble = mBm + Zc1 * pow(dp,2) + Zc2 * pow(dp,2) + Zc3;
+        double gamma = 1 / (mCim * (Zc1 + Zc2) + 1);
+        double c1a = (mCim * Zc2 + 1) * gamma * c1 + mCim * gamma * Zc1 * c2;
+        double c2a = (mCim * Zc1 + 1) * gamma * c2 + mCim * gamma * Zc2 * c1;
+        double ct = c1a * dp - c2a * dp - c3;
+        mIntegrator.setDamping(ble / mJ * mTimestep);
+        double v3 = mIntegrator.valueFirst(ct/mJ);
+        double x3 = mIntegrator.valueSecond(ct/mJ);
+        mIntegrator.update(ct/mJ);
+
+            //Ideal Flow
+        double q1a = -dp * v3;
+        double q2a = -q1a;
+        double p1 = c1a + gamma * Zc1 * q1a;
+        double p2 = c2a + gamma * Zc2 * q2a;
+
+            //Leakage Flow
+        double q1leak = -mCim * (p1 - p2);
+        double q2leak = -q1leak;
+
+            //Effective Flow
+        double q1 = q1a + q1leak;
+        double q2 = q2a + q2leak;
+
+            //Cavitation Check
+        if (p1 < 0.0) { p1 = 0.0; }
+        if (p2 < 0.0) { p2 = 0.0; }
+
+        double f3 = c3 + v3 * Zc3;
+
+        //Write new values to nodes
+        mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
+        mpP1->writeNode(NodeHydraulic::MASSFLOW, q1);
+        mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
+        mpP2->writeNode(NodeHydraulic::MASSFLOW, q2);
+        mpP3->writeNode(NodeMechanic::FORCE, f3);
+        mpP3->writeNode(NodeMechanic::POSITION, x3);
+        mpP3->writeNode(NodeMechanic::VELOCITY, v3);
+    }
+};
+
+#endif // HYDRAULICMOTORQ_H

@@ -9,6 +9,7 @@
 #include "ComponentUtilities/TransferFunction.h"
 #include "ComponentUtilities/TurbulentFlowFunction.h"
 #include "ComponentUtilities/ValveHysteresis.h"
+#include "ComponentUtilities/DoubleIntegratorWithDamping.h"
 
 #include "ComponentUtilities/AuxiliarySimulationFunctions.h"
 

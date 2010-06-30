@@ -35,7 +35,8 @@ SOURCES += Port.cc \
     ComponentUtilities/FirstOrderFilter.cc \
     ComponentUtilities/Delay.cc \
     CoreUtilities/HopsanCoreMessageHandler.cc \
-    ComponentUtilities/AuxiliarySimulationFunctions.cpp
+    ComponentUtilities/AuxiliarySimulationFunctions.cpp \
+    ComponentUtilities/DoubleIntegratorWithDamping.cpp
 HEADERS += win32dll.h \
     Port.h \
     Node.h \
@@ -115,4 +116,6 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicTankC.hpp \
     Components/Hydraulic/HydraulicAlternativePRV.hpp \
     ComponentUtilities/AuxiliarySimulationFunctions.h \
-    Components/Hydraulic/HydraulicPressureControlledPump.hpp
+    Components/Hydraulic/HydraulicPressureControlledPump.hpp \
+    ComponentUtilities/DoubleIntegratorWithDamping.h \
+    Components/Hydraulic/HydraulicMotorQ.hpp

@@ -66,7 +66,7 @@ public:
 
     void initialize()
     {
-        mZc = mBulkmodulus/mVolume*mTimestep; //Need to be updated at simulation start since it is volume and bulk that are set.
+        mZc = mBulkmodulus/mVolume*mTimestep/(1-mAlpha); //Need to be updated at simulation start since it is volume and bulk that are set.
 
         //Write to nodes
         mpP1->writeNode(NodeHydraulic::MASSFLOW,     mStartFlow);
@@ -91,10 +91,13 @@ public:
         double c2  = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
 
         //Volume equations
-        double c10 = p2 + mZc * q2;
-        double c20 = p1 + mZc * q1;
-        //double c10 = c2 + 2.0*mZc * q2;
-        //double c20 = c1 + 2.0*mZc * q1;
+
+        //double c10 = p2 + mZc * q2;       //Why did we write these equations?
+        //double c20 = p1 + mZc * q1;
+
+        double c10 = c2 + 2.0*mZc * q2;     //These two equations are from old Hopsan
+        double c20 = c1 + 2.0*mZc * q1;
+
         c1 = mAlpha*c1 + (1.0-mAlpha)*c10;
         c2 = mAlpha*c2 + (1.0-mAlpha)*c20;
 

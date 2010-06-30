@@ -954,8 +954,8 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
             break;
 
         //! @todo this is an ugly quit hack test
-        //(*it)->setLogSettingsNSamples(1024, startT, stopT, mTimestep);
-        (*it)->setLogSettingsSkipFactor(1, startT, stopT, mTimestep);
+        (*it)->setLogSettingsNSamples(2048, startT, stopT, mTimestep);
+        //(*it)->setLogSettingsSkipFactor(1, startT, stopT, mTimestep);
         //(*it)->preAllocateLogSpace(needed_slots);
         (*it)->preAllocateLogSpace();
     }
