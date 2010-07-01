@@ -7,8 +7,8 @@
 //!
 //$Id$
 
-#ifndef HYDRAULICMOTORQ_H
-#define HYDRAULICMOTORQ_H
+#ifndef HYDRAULICFIXEDDISPLACEMENTMOTORQ_H
+#define HYDRAULICFIXEDDISPLACEMENTMOTORQ_H
 
 
 #include <iostream>
@@ -19,7 +19,7 @@
 //! @brief
 //! @ingroup HydraulicComponents
 //!
-class HydraulicMotorQ : public ComponentQ
+class HydraulicFixedDisplacementMotorQ : public ComponentQ
 {
 private:
     double mDp, mBm, mCim, mJ;
@@ -31,12 +31,12 @@ private:
 public:
     static Component *Creator()
     {
-        return new HydraulicMotorQ("MotorQ");
+        return new HydraulicFixedDisplacementMotorQ("FixedDisplacementMotorQ");
     }
 
-    HydraulicMotorQ(const string name) : ComponentQ(name)
+    HydraulicFixedDisplacementMotorQ(const string name) : ComponentQ(name)
     {
-        mTypeName = "HydraulicMotorQ";
+        mTypeName = "HydraulicFixedDisplacementMotorQ";
         mDp = 0.00005;
         mBm = 0;
         mCim = 0;
@@ -116,4 +116,4 @@ public:
     }
 };
 
-#endif // HYDRAULICMOTORQ_H
+#endif // HYDRAULICFIXEDDISPLACEMENTMOTORQ_H

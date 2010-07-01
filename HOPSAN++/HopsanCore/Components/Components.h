@@ -37,7 +37,8 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr);
 #include "Hydraulic/HydraulicSubSysExample.hpp"
 #include "Hydraulic/HydraulicTankC.hpp"
 #include "Hydraulic/HydraulicAlternativePRV.hpp"
-#include "Hydraulic/HydraulicMotorQ.hpp"
+#include "Hydraulic/HydraulicFixedDisplacementMotorQ.hpp"
+#include "Hydraulic/HydraulicVariableDisplacementMotorQ.h"
 
 
 

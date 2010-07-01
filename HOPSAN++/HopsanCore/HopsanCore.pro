@@ -118,4 +118,5 @@ HEADERS += win32dll.h \
     ComponentUtilities/AuxiliarySimulationFunctions.h \
     Components/Hydraulic/HydraulicPressureControlledPump.hpp \
     ComponentUtilities/DoubleIntegratorWithDamping.h \
-    Components/Hydraulic/HydraulicMotorQ.hpp
+    Components/Hydraulic/HydraulicVariableDisplacementMotorQ.h \
+    Components/Hydraulic/HydraulicFixedDisplacementMotorQ.hpp

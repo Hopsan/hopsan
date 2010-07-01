@@ -7,9 +7,9 @@ HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION 0.1
 --------------------------------------------------------------
 STARTTIME 0
 TIMESTEP 0.001
-FINISHTIME 10
+FINISHTIME 5
 --------------------------------------------------------------
-COMPONENT "Hydraulic43Valve" "43Valve" 2600 2555 0 0
+COMPONENT "Hydraulic43Valve" "43Valve" 2600 2523 0 0
 PARAMETER "43Valve" Cq 0.67
 PARAMETER "43Valve" d 0.01
 PARAMETER "43Valve" f 1
@@ -20,7 +20,7 @@ PARAMETER "43Valve" overlap_at 0
 PARAMETER "43Valve" overlap_pa 0
 PARAMETER "43Valve" omegah 100
 PARAMETER "43Valve" deltah 0
-COMPONENT "HydraulicCylinderC" "CylinderC" 2637 2412 0 0
+COMPONENT "HydraulicCylinderC" "CylinderC" 2634 2436 0 0
 PARAMETER "CylinderC" x0 1
 PARAMETER "CylinderC" v0 0
 PARAMETER "CylinderC" Area1 0.001
@@ -31,41 +31,41 @@ PARAMETER "CylinderC" DeadVolume1 0.01
 PARAMETER "CylinderC" DeadVolume2 0.01
 PARAMETER "CylinderC" Bp 10
 PARAMETER "CylinderC" Betae 1e+09
-COMPONENT "MechanicForceTransformer" "ForceTransformer" 2884 2412 180 1
+COMPONENT "MechanicForceTransformer" "ForceTransformer" 2868 2436 180 1
 PARAMETER "ForceTransformer" x0 1
 PARAMETER "ForceTransformer" v0 0
 PARAMETER "ForceTransformer" Force 0
-COMPONENT "SignalGain" "Gain" 2364 2466 0 0
-PARAMETER "Gain" Gain 0.002
-COMPONENT "HydraulicLaminarOrifice" "LaminarOrifice" 2385 2640 90 1
+COMPONENT "SignalGain" "Gain" 2463 2533 0 0
+PARAMETER "Gain" Gain 0.001
+COMPONENT "HydraulicLaminarOrifice" "LaminarOrifice" 2423 2593 90 1
 PARAMETER "LaminarOrifice" Kc 1e-08
-COMPONENT "HydraulicLaminarOrifice" "LaminarOrifice_1" 2384 2718 90 1
+COMPONENT "HydraulicLaminarOrifice" "LaminarOrifice_1" 2422 2638 90 1
 PARAMETER "LaminarOrifice_1" Kc 1e-08
-COMPONENT "MechanicPositionSensor" "PositionSensor" 2849 2308 0 0
-COMPONENT "HydraulicPressureSource" "PressureSource" 2280 2640 90 1
+COMPONENT "MechanicPositionSensor" "PositionSensor" 2840 2357 0 0
+COMPONENT "HydraulicPressureSource" "PressureSource" 2343 2593 90 1
 PARAMETER "PressureSource" P 2e+07
-COMPONENT "SignalSource" "Source" 2977 2412 180 1
+COMPONENT "SignalSource" "Source" 2930 2436 180 1
 PARAMETER "Source" Value 0
-COMPONENT "SignalSquareWave" "SquareWave" 2134 2427 0 0
+COMPONENT "SignalSquareWave" "SquareWave" 2312 2533 0 0
 PARAMETER "SquareWave" StartTime 0
-PARAMETER "SquareWave" Frequency 0.3
+PARAMETER "SquareWave" Frequency 0.5
 PARAMETER "SquareWave" Amplitude 1
 PARAMETER "SquareWave" BaseValue 0
-COMPONENT "SignalSubtract" "Subtract" 2236 2427 0 0
-COMPONENT "HydraulicTankC" "Tank" 2283 2758 0 0
+COMPONENT "SignalSubtract" "Subtract" 2392 2533 0 0
+COMPONENT "HydraulicTankC" "Tank" 2344 2663 0 0
 PARAMETER "Tank" P 100000
-COMPONENT "MechanicTranslationalMass" "TranslationalMass" 2778 2412 0 0
+COMPONENT "MechanicTranslationalMass" "TranslationalMass" 2778 2436 0 0
 PARAMETER "TranslationalMass" Mass 5
 PARAMETER "TranslationalMass" B 10
 PARAMETER "TranslationalMass" k 10
-COMPONENT "HydraulicVolume" "Volume" 2515 2640 0 0
+COMPONENT "HydraulicVolume" "Volume" 2516 2593 0 0
 PARAMETER "Volume" V 0.001
 PARAMETER "Volume" Be 1e+09
 PARAMETER "Volume" a 0
 PARAMETER "Volume" debug 0
 PARAMETER "Volume" t1 0
 PARAMETER "Volume" t2 0.01
-COMPONENT "HydraulicVolume" "Volume_1" 2516 2718 0 0
+COMPONENT "HydraulicVolume" "Volume_1" 2517 2638 0 0
 PARAMETER "Volume_1" V 0.001
 PARAMETER "Volume_1" Be 1e+09
 PARAMETER "Volume_1" a 0
@@ -73,20 +73,20 @@ PARAMETER "Volume_1" debug 0
 PARAMETER "Volume_1" t1 0
 PARAMETER "Volume_1" t2 0.01
 --------------------------------------------------------------
-CONNECT "43Valve" "PA" "CylinderC" "P1" 2609.92 2530 2609.92 2465 2582.47 2465 2582.47 2432
-CONNECT "CylinderC" "P3" "TranslationalMass" "P1" 2696.5 2412 2746 2412 2746 2412
-CONNECT "ForceTransformer" "P1" "TranslationalMass" "P2" 2864.5 2412 2810 2412 2810 2412
-CONNECT "LaminarOrifice" "P1" "Volume" "P1" 2419.5 2640 2430 2640 2430 2640 2490 2640
-CONNECT "LaminarOrifice_1" "P1" "Volume_1" "P1" 2418.5 2718 2430 2718 2430 2718 2491 2718
-CONNECT "PositionSensor" "P1" "TranslationalMass" "P2" 2849 2320.5 2849 2368 2810 2412
-CONNECT "PositionSensor" "out" "Subtract" "in2" 2849 2295.5 2849 2273 2289 2273 2236 2414.5
-CONNECT "PressureSource" "P1" "LaminarOrifice" "P2" 2292 2640 2325 2640 2325 2640 2350.5 2640
-CONNECT "Source" "out" "ForceTransformer" "in" 2964.5 2412 2934 2412 2934 2412 2903.5 2412
-CONNECT "Subtract" "out" "Gain" "in" 2248.5 2427 2285 2427 2351.5 2466
-CONNECT "Tank" "P1" "LaminarOrifice_1" "P2" 2283 2743.5 2283 2718 2349.5 2718
-CONNECT "Volume" "P2" "43Valve" "PP" 2540 2640 2609.92 2640 2609.92 2580
-CONNECT "Gain" "out" "43Valve" "in" 2376.5 2466 2434.04 2466 2434.04 2565 2520.5 2565
-CONNECT "43Valve" "PB" "CylinderC" "P2" 2629.97 2530 2629.97 2468 2662.06 2468 2662.06 2432
-CONNECT "43Valve" "PT" "Volume_1" "P2" 2629.97 2580 2629.97 2718 2541 2718
-CONNECT "SquareWave" "out" "Subtract" "in1" 2154 2427 2196 2427 2196 2427 2223.5 2427
+CONNECT "43Valve" "PA" "CylinderC" "P1" 2609.92 2498 2609.92 2475.3 2579.47 2475.3 2579.47 2456
+CONNECT "CylinderC" "P3" "TranslationalMass" "P1" 2693.5 2436 2746 2436 2746 2436
+CONNECT "ForceTransformer" "P1" "TranslationalMass" "P2" 2848.5 2436 2810 2436 2810 2436
+CONNECT "LaminarOrifice" "P1" "Volume" "P1" 2457.5 2593 2477 2593 2477 2593 2491 2593
+CONNECT "LaminarOrifice_1" "P1" "Volume_1" "P1" 2456.5 2638 2477 2638 2477 2638 2492 2638
+CONNECT "PressureSource" "P1" "LaminarOrifice" "P2" 2355 2593 2363 2593 2363 2593 2388.5 2593
+CONNECT "Source" "out" "ForceTransformer" "in" 2917.5 2436 2934 2436 2934 2436 2887.5 2436
+CONNECT "Tank" "P1" "LaminarOrifice_1" "P2" 2344 2648.5 2344 2638 2387.5 2638
+CONNECT "Volume" "P2" "43Valve" "PP" 2541 2593 2609.92 2593 2609.92 2548
+CONNECT "43Valve" "PB" "CylinderC" "P2" 2629.97 2498 2629.97 2477 2659.06 2477 2659.06 2456
+CONNECT "43Valve" "PT" "Volume_1" "P2" 2629.97 2548 2629.97 2638 2542 2638
+CONNECT "PositionSensor" "out" "Subtract" "in2" 2840 2344.5 2840 2325 2392 2325 2392 2520.5
+CONNECT "PositionSensor" "P1" "TranslationalMass" "P2" 2840 2369.5 2840 2402 2810 2436
+CONNECT "Gain" "out" "43Valve" "in" 2475.5 2533 2499 2533 2499 2533 2520.5 2533
+CONNECT "Subtract" "out" "Gain" "in" 2404.5 2533 2416 2533 2416 2533 2450.5 2533
+CONNECT "SquareWave" "out" "Subtract" "in1" 2332 2533 2356 2533 2356 2533 2379.5 2533
 --------------------------------------------------------------
