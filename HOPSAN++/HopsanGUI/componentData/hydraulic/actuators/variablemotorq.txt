@@ -1,5 +1,5 @@
 TYPENAME "HydraulicVariableDisplacementMotorQ"
-DISPLAYNAME "Motor with Inertia Load"
+DISPLAYNAME "Variable Motor with Inertia Load"
 ISOICON variablemotorq_iso.svg
 USERICON variablemotorq_user.svg
 ICONROTATION ON

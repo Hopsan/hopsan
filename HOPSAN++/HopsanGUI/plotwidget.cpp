@@ -73,7 +73,7 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindo
     mpVariablePlot->setCurve(mpCurve);
     mpCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
     mpVariablePlot->replot();
-
+    mpCurve->setPen(QPen(QBrush(QColor("Blue")),2));
 
 
     //Create the close button
@@ -170,7 +170,7 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindo
     grid->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
     grid->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
     grid->attach(mpVariablePlot);
-    grid->hide();
+    //grid->hide();
 
     enableZoom(false);
 

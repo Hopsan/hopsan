@@ -57,7 +57,6 @@ public:
     void initialize()
     {
         mIntegrator.initialize(mTime, mTimestep, 0, 0, 0, 0);
-        
     }
 
 

@@ -86,7 +86,7 @@ public:
         double p1  = mpP1->readNode(NodeHydraulic::PRESSURE);
         double q1  = mpP1->readNode(NodeHydraulic::MASSFLOW);
         double c1  = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
-        double p2  = mpP1->readNode(NodeHydraulic::PRESSURE);
+        double p2  = mpP2->readNode(NodeHydraulic::PRESSURE);
         double q2  = mpP2->readNode(NodeHydraulic::MASSFLOW);
         double c2  = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
 
