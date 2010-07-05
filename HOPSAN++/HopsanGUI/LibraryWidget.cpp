@@ -46,8 +46,6 @@
 //$Id$
 
 #include <QtGui>
-#include <map>
-#include <iostream>
 
 #include "LibraryWidget.h"
 #include "listwidget.h"
@@ -96,6 +94,12 @@ LibraryContentItem::LibraryContentItem(const QListWidgetItem &other)
 AppearanceData *LibraryContentItem::getAppearanceData()
 {
     return mpAppearanceData;
+}
+
+//! @brief Wraps the apperancedata get name function
+QString LibraryContentItem::getTypeName()
+{
+    return mpAppearanceData->getTypeName();
 }
 
 //! @brief Selects and loads either user or ISO icon
@@ -152,12 +156,16 @@ void LibraryContent::highLightItem(QListWidgetItem *item)
 
 void LibraryContent::mouseMoveEvent(QMouseEvent *event)
 {
+    //! @todo maybe try to do this in some not so cpu needing way (setting white backround for all objects VERY often when mouse move)
         //Make hovered item gray & display name//
-    for(int i=0; i != mpParentLibraryWidget->mpContentItems.size(); ++i)
+    QList<LibraryContentItem*> itemlist =  mpParentLibraryWidget->mLibraryContentItemPtrsMap.values();
+    QList<LibraryContentItem*>::iterator it = itemlist.begin();
+    for( ; it != itemlist.end(); ++it )
     {
-        mpParentLibraryWidget->mpContentItems[i]->setBackgroundColor(QColor("white"));
-        mpParentLibraryWidget->mpContentItems[i]->setSelected(false);
+        (*it)->setBackgroundColor(QColor("white"));
+        (*it)->setSelected(false);
     }
+
     mpParentLibraryWidget->mpComponentNameField->setText("");
     QListWidgetItem *tempItem = itemAt(event->pos());
     if(tempItem != 0x0)     //! @todo This is perhaps a bit ugly, but the pointer is zero if there are not item beneath the mouse
@@ -250,7 +258,7 @@ void LibraryWidget::addEmptyLibrary(QString libraryName, QString parentLibraryNa
     LibraryContent *newLibContent = new LibraryContent((LibraryContent*)0, this);
     newLibContent->setDragEnabled(true);
     //newLibContent->setDropIndicatorShown(true);
-    mLibraryContentMapPtrs.insert(parentLibraryName + libraryName, newLibContent);
+    mLibraryContentPtrsMap.insert(parentLibraryName + libraryName, newLibContent);
 
     mpGrid->addWidget(newLibContent);
     newLibContent->hide();
@@ -321,7 +329,6 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
         {
             //Create library content item
             LibraryContentItem *libcomp= new LibraryContentItem(pAppearanceData);
-            mpContentItems.append(libcomp);
 
             //Add the component to the library
             addLibraryContentItem(libName, parentLib, libcomp);
@@ -368,7 +375,12 @@ void LibraryWidget::addLibrary()
 //! @param libraryName is the name of the library where the component should be added.
 void LibraryWidget::addLibraryContentItem(QString libraryName, QString parentLibraryName, LibraryContentItem *newComponent)
 {
-    mLibraryContentMapPtrs.value(parentLibraryName + libraryName)->addItem(newComponent);
+    //First add the item to the overview LibraryContent (This will cast to QListWidget Item and not preserver our stuff)
+    mLibraryContentPtrsMap.value(parentLibraryName + libraryName)->addItem(newComponent);
+    //Now add it to our own MultiMap to retain a pointer the the LibraryContentItem with our own stuff
+    mLibraryContentItemPtrsMap.insertMulti(newComponent->getTypeName(), newComponent);
+
+    //Now add to sub library content
     QTreeWidgetItemIterator it(mpTree);
     while (*it)
     {
@@ -377,14 +389,13 @@ void LibraryWidget::addLibraryContentItem(QString libraryName, QString parentLib
             if((*it)->parent()->text(0) == parentLibraryName)      //Only add component if in the correct set of libraries
             {
                 LibraryContentItem *copyOfNewComponent = new LibraryContentItem(*newComponent); //A QListWidgetItem can only be in one list at the time, therefor a copy...
-                mpContentItems.append(copyOfNewComponent);
+                mLibraryContentItemPtrsMap.insertMulti(newComponent->getTypeName(), copyOfNewComponent);
                 addLibraryContentItem(parentLibraryName, "", copyOfNewComponent); //Recursively
             }
         }
         ++it;
     }
     mName2TypeMap.insert(newComponent->getAppearanceData()->getName(), newComponent->getAppearanceData()->getTypeName()); //! @todo this is a temporary workaround
-    mAppearanceDataMap.insert(newComponent->getAppearanceData()->getTypeName(), newComponent->getAppearanceData());
 }
 
 
@@ -397,13 +408,13 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
    hideAllLib();
 
    QMap<QString, LibraryContent*>::iterator lib;
-   for (lib = mLibraryContentMapPtrs.begin(); lib != mLibraryContentMapPtrs.end(); ++lib)
+   for (lib = mLibraryContentPtrsMap.begin(); lib != mLibraryContentPtrsMap.end(); ++lib)
    {
         //Not top level list widget, so check if it has the correct parent
-        if(item->text(column).size() != mLibraryContentMapPtrs.key((*lib)).size())
+        if(item->text(column).size() != mLibraryContentPtrsMap.key((*lib)).size())
         {
-            if (item->text(column) == mLibraryContentMapPtrs.key((*lib)).right(item->text(column).size()) &&
-                item->parent()->text(column) == mLibraryContentMapPtrs.key((*lib)).left(item->parent()->text(column).size()))
+            if (item->text(column) == mLibraryContentPtrsMap.key((*lib)).right(item->text(column).size()) &&
+                item->parent()->text(column) == mLibraryContentPtrsMap.key((*lib)).left(item->parent()->text(column).size()))
             {
                 (*lib)->show();
             }
@@ -411,7 +422,7 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
         else
         //Top level widget, don't check parent (would lead to a segmentation fault since it does not exist)
         {
-            if (item->text(column) == mLibraryContentMapPtrs.key((*lib)).right(item->text(column).size()))
+            if (item->text(column) == mLibraryContentPtrsMap.key((*lib)).right(item->text(column).size()))
             {
                 (*lib)->show();
             }
@@ -423,13 +434,13 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
 AppearanceData *LibraryWidget::getAppearanceData(QString componentType)
 {
     qDebug() << "LibraryWidget::getAppearanceData: " + componentType;
-    if (mAppearanceDataMap.count(componentType) == 0)
+    if (mLibraryContentItemPtrsMap.count(componentType) == 0)
     {
         qDebug() << "Trying to fetch appearanceData for " + componentType + " which does not appear to exist in the Map, returning empty data";
         mpParentMainWindow->mpMessageWidget->printGUIWarningMessage("Trying to fetch appearanceData for " + componentType + " which does not appear to exist in the Map, returning empty data");
     }
 
-    return mAppearanceDataMap.value(componentType);
+    return mLibraryContentItemPtrsMap.value(componentType)->getAppearanceData();
 }
 
 //! @brief This function retrieves the appearance data given a display name
@@ -444,7 +455,7 @@ AppearanceData *LibraryWidget::getAppearanceDataByDisplayName(QString displayNam
 void LibraryWidget::hideAllLib()
 {
     QMap<QString, LibraryContent*>::iterator lib;
-    for (lib = mLibraryContentMapPtrs.begin(); lib != mLibraryContentMapPtrs.end(); ++lib)
+    for (lib = mLibraryContentPtrsMap.begin(); lib != mLibraryContentPtrsMap.end(); ++lib)
     {
         (*lib)->hide();
     }
@@ -453,26 +464,24 @@ void LibraryWidget::hideAllLib()
 void LibraryWidget::useIsoGraphics(bool useISO)
 {
     qDebug() << "useIsoGraphics " << useISO;
-    for(int i=0; i<mpContentItems.size(); ++i)
+    QList<LibraryContentItem*> itemlist =  mLibraryContentItemPtrsMap.values();
+    QList<LibraryContentItem*>::iterator it = itemlist.begin();
+    for( ; it != itemlist.end(); ++it )
     {
-        mpContentItems[i]->selectIcon(useISO);
+        (*it)->selectIcon(useISO);
     }
-//        for (int i=0; i<(*lib)->count(); i++)
-//        {
-//            //! @todo q casting will not work in this cas need to rewrite and use some otehr way
-//            //LibraryContentItem* libcontit =
-//            //qobject_cast<LibraryContentItem*>( (*lib)->item(i) )->selectIcon(useISO);
-//            //libcontit->selectIcon(useISO);
-//        }
 }
 
 
 void LibraryWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    for(int i=0; i<mpContentItems.size(); ++i)
+    //! @todo maybe try to do this in some not so cpu needing way (setting white backround for all objects VERY often when mouse move)
+    QList<LibraryContentItem*> itemlist =  mLibraryContentItemPtrsMap.values();
+    QList<LibraryContentItem*>::iterator it = itemlist.begin();
+    for( ; it != itemlist.end(); ++it )
     {
-        mpContentItems[i]->setBackgroundColor(QColor("white"));
-        mpContentItems[i]->setSelected(false);
+        (*it)->setBackgroundColor(QColor("white"));
+        (*it)->setSelected(false);
     }
     mpComponentNameField->setText("");
     QWidget::mouseMoveEvent(event);

@@ -48,8 +48,6 @@
 #ifndef LIBRARYWIDGET_H
 #define LIBRARYWIDGET_H
 
-#include <string>
-#include <map>
 #include <QListWidget>
 #include <QStringList>
 #include <QTreeWidget>
@@ -64,13 +62,13 @@ class LibraryContentItem;
 #include <QStringList>
 
 
-//Här borde en funktion finnas som växlar mellan iso-ikon och user-ikon
 class LibraryContentItem : public QListWidgetItem
 {
 public:
     LibraryContentItem(AppearanceData *pAppearanceData, QListWidget *parent = 0);
     LibraryContentItem(const QListWidgetItem &other);
     AppearanceData *getAppearanceData();
+    QString getTypeName();
 
 //public slots:
     void selectIcon(bool useIso=false);
@@ -134,14 +132,16 @@ private slots:
 private:
     //Member variables
     MainWindow *mpParentMainWindow;
-    QMap<QString, AppearanceData*> mAppearanceDataMap;
+
+    QMap<QString, LibraryContent*> mLibraryContentPtrsMap;
+    QMultiMap<QString, LibraryContentItem*> mLibraryContentItemPtrsMap;
+
     QMap<QString, QString> mName2TypeMap; //!< @todo This is a temporary hack
-    QTreeWidget *mpTree;
-    QMap<QString, LibraryContent*> mLibraryContentMapPtrs;
-    QVBoxLayout *mpGrid;
-    QVector<LibraryContentItem*> mpContentItems;
+
     QLabel *mpComponentNameField;
 
+    QTreeWidget *mpTree;
+    QVBoxLayout *mpGrid;
 };
 
 #endif // LIBRARYWIDGET_H
