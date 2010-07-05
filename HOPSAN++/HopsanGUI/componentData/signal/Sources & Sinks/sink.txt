@@ -1,0 +1,6 @@
+TYPENAME "SignalSink"
+DISPLAYNAME "Sink"
+USERICON Sink.svg
+ICONROTATION ON
+PORT "in" 0.0 0.5 0
+
