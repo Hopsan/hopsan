@@ -20,6 +20,7 @@ Port::Port()
 {
     mPortType = UNDEFINEDPORT;
     mpComponent = 0;
+    mConnectionRequired = true;
     clearConnection();
 }
 
@@ -30,6 +31,7 @@ Port::Port(string portname, string node_type)
     mPortName = portname;
     mNodeType = node_type;
     mpComponent = 0;
+    mConnectionRequired = true;
     clearConnection();
 }
 
@@ -197,6 +199,12 @@ vector<vector<double> > *Port::getDataVectorPtr()
 bool Port::isConnected()
 {
     return mIsConnected;
+}
+
+//! Check if the port MUST be connected
+bool Port::isConnectionRequired()
+{
+    return mConnectionRequired;
 }
 
 //! Get the port type

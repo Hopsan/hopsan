@@ -27,6 +27,7 @@ class DLLIMPORTEXPORT Port
 
 public:
     enum PORTTYPE {POWERPORT, READPORT, WRITEPORT, SYSTEMPORT, UNDEFINEDPORT};
+    enum CONREQ {REQUIRED, OPTIONAL};
 
     //Constructors - Destructors
     Port();
@@ -44,6 +45,7 @@ public:
     vector<vector<double> > *getDataVectorPtr();
 
     bool isConnected();
+    bool isConnectionRequired();
 
     const string &getNodeType();
     PORTTYPE getPortType();
@@ -67,6 +69,7 @@ private:
     Node* mpNode;
     Component* mpComponent;
     vector<Port*> mConnectedPorts;
+    bool mConnectionRequired;
     bool mIsConnected;
 
     void addConnectedPort(Port* pPort);

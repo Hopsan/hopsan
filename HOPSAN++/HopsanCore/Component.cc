@@ -428,11 +428,17 @@ double *Component::getTimePtr()
 //! @param [in] portname The desired name of the port (may be automatically changed)
 //! @param [in] porttype The type of port
 //! @param [in] nodetype The type of node that must be connected to the port
-Port* Component::addPort(const string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype)
+Port* Component::addPort(const string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype, Port::CONREQ connection_requirement)
 {
     Port* new_port = CreatePort(porttype);
     new_port->mNodeType = nodetype;
     new_port->mpComponent = this;    //Set port owner
+    //Set wheter the port must be connected before simulation
+    if (connection_requirement == Port::OPTIONAL)
+    {
+        //! @todo maybe use a string for OPTIONAL instead, to reduce the number of compiletime dependencies, will need to think about that a bit more
+        new_port->mConnectionRequired = false;
+    }
 
     //Make sure name is unique before insert
     string newname = modifyName<PortPtrMapT>(mPortPtrMap, portname);
@@ -454,23 +460,23 @@ Port* Component::addPort(const string portname, Port::PORTTYPE porttype, const N
 //! @param [in] nodetype The type of node that must be connected to the port
 Port* Component::addPowerPort(const string portname, const string nodetype)
 {
-    return addPort(portname, Port::POWERPORT, nodetype);
+    return addPort(portname, Port::POWERPORT, nodetype, Port::REQUIRED);
 }
 
 //! @brief Convenience method to add a ReadPort
 //! @param [in] porttype The type of port
 //! @param [in] nodetype The type of node that must be connected to the port
-Port* Component::addReadPort(const string portname, const string nodetype)
+Port* Component::addReadPort(const string portname, const string nodetype, Port::CONREQ connection_requirement)
 {
-    return addPort(portname, Port::READPORT, nodetype);
+    return addPort(portname, Port::READPORT, nodetype, connection_requirement);
 }
 
 //! @brief Convenience method to add a WritePort
 //! @param [in] porttype The type of port
 //! @param [in] nodetype The type of node that must be connected to the port
-Port* Component::addWritePort(const string portname, const string nodetype)
+Port* Component::addWritePort(const string portname, const string nodetype, Port::CONREQ connection_requirement)
 {
-    return addPort(portname, Port::WRITEPORT, nodetype);
+    return addPort(portname, Port::WRITEPORT, nodetype, connection_requirement);
 }
 
 //! @todo this could be a template function to use with all rename in map
@@ -977,17 +983,15 @@ void ComponentSystem::logAllNodes(const double time)
 }
 
 //! Adds a transparent SubSystemPort
-Port* ComponentSystem::addSystemPort(const string portname)
+Port* ComponentSystem::addSystemPort(string portname)
 {
     if (portname.empty())
     {
         //Force default portname p, if nothing else specified
-        return addPort("p", Port::SYSTEMPORT, "undefined_nodetype");
+        portname = "p";
     }
-    else
-    {
-        return addPort(portname, Port::SYSTEMPORT, "undefined_nodetype");
-    }
+
+    return addPort(portname, Port::SYSTEMPORT, "undefined_nodetype", Port::REQUIRED);
 }
 
 //! Rename system port
@@ -1634,33 +1638,58 @@ void ComponentSystem::adjustTimestep(double timestep, vector<Component*> compone
 bool ComponentSystem::isSimulationOk()
 {
     bool itLooksGood = true;
-    for (size_t c=0; c < mSubComponentStorage.mComponentCptrs.size(); ++c)
+
+    //First check all subcomponents to make sure that all requirements for simulation are met
+    //scmit = The subcomponent map iterator
+    SubComponentStorage::SubComponentMapT::iterator scmit = mSubComponentStorage.mSubComponentMap.begin();
+    for ( ; scmit!=mSubComponentStorage.mSubComponentMap.end(); ++scmit)
     {
-        for(size_t p=0; p < mSubComponentStorage.mComponentCptrs[c]->getPortPtrVector().size(); ++p)
+        Component* pComp = scmit->second; //Component pointer
+        //! @todo how to handle subsystems should recurse
+
+        //Check that ALL ports that MUST be connected are connected
+        vector<Port*> ports = pComp->getPortPtrVector();
+        for (size_t i=0; i<ports.size(); ++i)
         {
-            if (!mSubComponentStorage.mComponentCptrs[c]->getPortPtrVector()[p]->isConnected() and
-                mSubComponentStorage.mComponentCptrs[c]->getPortPtrVector()[p]->getPortType() == Port::POWERPORT)
+            if ( ports[i]->isConnectionRequired() and !ports[i]->isConnected() )
             {
-                gCoreMessageHandler.addErrorMessage("Port " + mSubComponentStorage.mComponentCptrs[c]->getPortPtrVector()[p]->getPortName() + " on " +
-                                                    mSubComponentStorage.mComponentCptrs[c]->getName() + " is not connected!");
+                gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " on " + pComp->getName() + " is not connected!");
                 itLooksGood = false;
             }
         }
+        //! @todo Check all system ports too
+
+        //! @todo check more stuff
     }
 
-    for (size_t q=0; q < mSubComponentStorage.mComponentQptrs.size(); ++q)
-    {
-        for(size_t p=0; p < mSubComponentStorage.mComponentQptrs[q]->getPortPtrVector().size(); ++p)
-        {
-            if (!mSubComponentStorage.mComponentQptrs[q]->getPortPtrVector()[p]->isConnected() and
-                mSubComponentStorage.mComponentQptrs[q]->getPortPtrVector()[p]->getPortType() == Port::POWERPORT)
-            {
-                gCoreMessageHandler.addErrorMessage("Port " + mSubComponentStorage.mComponentQptrs[q]->getPortPtrVector()[p]->getPortName() + " on " +
-                                                    mSubComponentStorage.mComponentQptrs[q]->getName() + " is not connected!");
-                itLooksGood = false;
-            }
-        }
-    }
+
+//    for (size_t c=0; c < mSubComponentStorage.mComponentCptrs.size(); ++c)
+//    {
+//        for(size_t p=0; p < mSubComponentStorage.mComponentCptrs[c]->getPortPtrVector().size(); ++p)
+//        {
+//            if (!mSubComponentStorage.mComponentCptrs[c]->getPortPtrVector()[p]->isConnected() and
+//                mSubComponentStorage.mComponentCptrs[c]->getPortPtrVector()[p]->getPortType() == Port::POWERPORT)
+//            {
+//                gCoreMessageHandler.addErrorMessage("Port " + mSubComponentStorage.mComponentCptrs[c]->getPortPtrVector()[p]->getPortName() + " on " +
+//                                                    mSubComponentStorage.mComponentCptrs[c]->getName() + " is not connected!");
+//                itLooksGood = false;
+//            }
+//        }
+//    }
+
+//    for (size_t q=0; q < mSubComponentStorage.mComponentQptrs.size(); ++q)
+//    {
+//        for(size_t p=0; p < mSubComponentStorage.mComponentQptrs[q]->getPortPtrVector().size(); ++p)
+//        {
+//            if (!mSubComponentStorage.mComponentQptrs[q]->getPortPtrVector()[p]->isConnected() and
+//                mSubComponentStorage.mComponentQptrs[q]->getPortPtrVector()[p]->getPortType() == Port::POWERPORT)
+//            {
+//                gCoreMessageHandler.addErrorMessage("Port " + mSubComponentStorage.mComponentQptrs[q]->getPortPtrVector()[p]->getPortName() + " on " +
+//                                                    mSubComponentStorage.mComponentQptrs[q]->getName() + " is not connected!");
+//                itLooksGood = false;
+//            }
+//        }
+//    }
     return itLooksGood;
 }
 

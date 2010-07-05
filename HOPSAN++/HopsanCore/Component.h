@@ -113,10 +113,10 @@ protected:
     void registerParameter(const string name, const string description, const string unit, double &rValue);
 
     //Port functions
-    Port* addPort(const string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype);
+    Port* addPort(const string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype, Port::CONREQ connection_requirement);
     Port* addPowerPort(const string portname, const string nodetype);
-    Port* addReadPort(const string portname, const string nodetype);
-    Port* addWritePort(const string portname, const string nodetype);
+    Port* addReadPort(const string portname, const string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
+    Port* addWritePort(const string portname, const string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
     bool getPort(const string portname, Port* &rpPort);
     string renamePort(const string oldname, const string newname);
     void deletePort(const string name);
@@ -189,7 +189,7 @@ public:
     void removeSubComponent(Component *pComponent, bool doDelete=false);
 
     //Add system ports
-    Port* addSystemPort(const string portname);
+    Port* addSystemPort(string portname);
     string renameSystemPort(const string oldname, const string newname);
     void deleteSystemPort(const string name);
 

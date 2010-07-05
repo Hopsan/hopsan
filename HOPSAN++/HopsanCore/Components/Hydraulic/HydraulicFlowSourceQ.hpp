@@ -34,7 +34,7 @@ public:
         mTypeName = "HydraulicFlowSourceQ";
         mFlow = 1.0e-3;
 
-        mpIn = addReadPort("in", "NodeSignal");
+        mpIn = addReadPort("in", "NodeSignal",  Port::OPTIONAL);
         mpP1 = addPowerPort("P1", "NodeHydraulic");
 
         registerParameter("Flow", "Flow", "m^3/s", mFlow);
