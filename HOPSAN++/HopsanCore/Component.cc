@@ -1657,9 +1657,21 @@ bool ComponentSystem::isSimulationOk()
                 itLooksGood = false;
             }
         }
-        //! @todo Check all system ports too
+
+
 
         //! @todo check more stuff
+    }
+
+    //Check the this systems own SystemPorts, are they connected (they must be)
+    vector<Port*> ports = getPortPtrVector();
+    for (size_t i=0; i<ports.size(); ++i)
+    {
+        if ( ports[i]->isConnectionRequired() and !ports[i]->isConnected() )
+        {
+            gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is not connected!");
+            itLooksGood = false;
+        }
     }
 
 
