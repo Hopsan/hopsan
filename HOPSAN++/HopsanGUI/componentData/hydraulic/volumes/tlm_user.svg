@@ -10,12 +10,12 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="407.03894"
-   height="37.750252"
+   width="113"
+   height="10.480025"
    id="svg2942"
    version="1.1"
    inkscape:version="0.47 r22583"
-   sodipodi:docname="Nytt dokument 3">
+   sodipodi:docname="tlm_user (kopia).svg">
   <defs
      id="defs2944">
     <inkscape:perspective
@@ -122,9 +122,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8965287"
-     inkscape:cx="203.51947"
-     inkscape:cy="18.87513"
+     inkscape:zoom="10.400385"
+     inkscape:cx="56.5"
+     inkscape:cy="5.2400125"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -132,7 +132,7 @@
      inkscape:window-height="752"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="0" />
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata2947">
     <rdf:RDF>
@@ -149,9 +149,9 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(563.51947,-322.05849)">
+     transform="translate(563.51948,-349.32871)">
     <g
-       transform="translate(-733.49892,-54.879014)"
+       transform="matrix(0.27761471,0,0,0.27761471,-610.70827,244.68532)"
        id="g2896">
       <path
          id="rect2837"
