@@ -1,5 +1,5 @@
 TYPENAME "HydraulicFlowSourceQ"
-DISPLAYNAME "Flow Sensor Q"
+DISPLAYNAME "Prescribed Source Q"
 ISOICON flowsource_iso.svg
 USERICON flowsource_user.svg
 ICONROTATION OFF
