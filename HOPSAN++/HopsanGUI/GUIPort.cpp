@@ -355,6 +355,13 @@ void GUIPort::setPortDirection(PortAppearance::portDirectionType direction)
 }
 
 
+void GUIPort::hide()
+{
+    mpPortLabel->hide();
+    QGraphicsSvgItem::hide();
+}
+
+
 QString GUIPort::getName()
 {
     return this->name;

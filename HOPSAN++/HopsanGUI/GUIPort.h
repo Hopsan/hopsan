@@ -66,6 +66,7 @@ public:
     void magnify(bool blowup);
     PortAppearance::portDirectionType getPortDirection();
     void setPortDirection(PortAppearance::portDirectionType direction);
+    void hide();
 
     QString getName();
     void setDisplayName(const QString name);
