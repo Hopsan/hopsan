@@ -135,10 +135,10 @@ double SecondOrderFilter::value(double u)
 }
 
 
-double SecondOrderFilter::value()
 //! Observe that a call to this method has to be followed by another call to value(double u) or to update(double u)
 //! @return The filtered actual value.
 //! @see value(double u)
+double SecondOrderFilter::value()
 {
     update(mDelayU.valueIdx(1));
 

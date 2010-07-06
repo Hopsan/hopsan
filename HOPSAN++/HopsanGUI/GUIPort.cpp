@@ -111,6 +111,7 @@ GUIPort::~GUIPort()
 {
 }
 
+
 //! Magnify the port with a class mebmer factor 'mMag'. Is used i.e. at hovering over disconnected port.
 //! @param blowup says if the port should be magnified or not.
 void GUIPort::magnify(bool blowup)
@@ -137,6 +138,7 @@ void GUIPort::setVisible(bool visible)
     QGraphicsSvgItem::setVisible(visible);
     mpPortLabel->setVisible(false);
 }
+
 
 //! Defines what happens when mouse cursor begins to hover a port.
 //! @param *event defines the mouse event.
@@ -167,6 +169,7 @@ void GUIPort::updatePosition()
     else
         setPos(mXpos+this->boundingRect().width()/2.0, mYpos-this->boundingRect().height()/2.0);
 }
+
 
 //! Defines what happens when mouse cursor stops hovering a port.
 //! @param *event defines the mouse event.
@@ -349,6 +352,7 @@ PortAppearance::portDirectionType GUIPort::getPortDirection()
     return mpPortAppearance->direction;
 }
 
+
 void GUIPort::setPortDirection(PortAppearance::portDirectionType direction)
 {
     mpPortAppearance->direction = direction;
@@ -367,6 +371,7 @@ QString GUIPort::getName()
     return this->name;
 }
 
+
 void GUIPort::setDisplayName(const QString name)
 {
     this->name = name;
@@ -374,6 +379,7 @@ void GUIPort::setDisplayName(const QString name)
     label.append(this->name).append("</span></p>");
     mpPortLabel->setHtml(label);
 }
+
 
 //! Get the name of the GUIComponent or GUISubsystem that the port is connected to, This is not necessarily the same as the parent GUIObject name (SystemPorts)
 //! @todo this is a very ugly way of handeling system ports should try to think of something better

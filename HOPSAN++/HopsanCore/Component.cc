@@ -118,12 +118,14 @@ Component::Component(string name, double timestep)
     //registerParameter("Ts", "Sample time", "[s]",   mTimestep);
 }
 
+
 //! Virtual Function, base version which gives you an error if you try to use it.
 void Component::initialize(const double startT, const double stopT)
 {
     cout << "Error! This function should only be used by system components, it should be overloded. For a component use initialize() instead" << endl;
     assert(false);
 }
+
 
 //! Virtual Function, base version which gives you an error if you try to use it.
 void Component::finalize(const double startT, const double stopT)
@@ -132,9 +134,10 @@ void Component::finalize(const double startT, const double stopT)
     assert(false);
 }
 
+
+//! @todo adjust self.timestep or simulation depending on Ts from system above (self.timestep should be multipla of Ts)
 void Component::simulate(const double startT, const double stopT)
 {
-//! @todo adjust self.timestep or simulation depending on Ts from system above (self.timestep should be multipla of Ts)
     //double dT = stopT-startT;
     double stopTsafe = stopT - mTimestep/2.0;
     mTime = startT;
@@ -146,11 +149,13 @@ void Component::simulate(const double startT, const double stopT)
     //cout << "simulate in: " << this->getName() << endl;
 }
 
+
 void Component::initialize()
 {
     cout << "Warning! You should implement your own method" << endl;
     assert(false);
 }
+
 
 void Component::simulateOneTimestep()
 {
@@ -158,13 +163,14 @@ void Component::simulateOneTimestep()
     assert(false);
 }
 
+
 void Component::finalize()
 {
     cout << "Warning! You should implement your own finalize() method" << endl;
     //assert(false);
 }
 
-//!
+
 //! @brief Set the desired component name
 //! @param [in] name The desired component name
 //! @param [in] doOnlyLocalRename Only use this if you know what you are doing, default: false
@@ -172,7 +178,6 @@ void Component::finalize()
 //! Set the desired component name, if name is already taken in a subsystem the desired name will be modified with a suffix.
 //! If you set doOnlyLocalRename to true, the smart rename will not be atempted, avoid doing this as the component storage map will not be updated on anme change
 //! This is a somewhat ugly fix for some special situations where we want to make sure that a smart rename is not atempted
-//!
 void Component::setName(string name, bool doOnlyLocalRename)
 {
     //! @todo fix the trailing _ removal
@@ -210,6 +215,7 @@ void Component::setName(string name, bool doOnlyLocalRename)
     }
 }
 
+
 //! Get the component name
 const string &Component::getName()
 {
@@ -222,6 +228,7 @@ Component::typeCQS Component::getTypeCQS()
 {
     return mTypeCQS;
 }
+
 
 //! Convert the C, Q or S type from enum to string
 //! @todo This function may not need to be meber in Component, (maybe enum should be free aswell), this function may be completely useless
@@ -246,6 +253,7 @@ string Component::convertTypeCQS2String(typeCQS type)
     }
 }
 
+
 //! Get the CQStype as string
 string Component::getTypeCQSString()
 {
@@ -268,11 +276,13 @@ string Component::getTypeCQSString()
     }
 }
 
+
 //! Get the type name of the component
 const string &Component::getTypeName()
 {
     return mTypeName;
 }
+
 
 //! Register a parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
 void Component::registerParameter(const string name, const string description, const string unit, double &rValue)
@@ -281,6 +291,7 @@ void Component::registerParameter(const string name, const string description, c
     CompParameter new_comppar(name, description, unit, rValue);
     mParameters.push_back(new_comppar); //Copy parameters into storage
 }
+
 
 void Component::listParametersConsole()
 {
@@ -291,6 +302,7 @@ void Component::listParametersConsole()
     }
     cout <<"-----------------------------------------------" << endl;
 }
+
 
 double Component::getParameterValue(const string name)
 {
@@ -306,6 +318,7 @@ double Component::getParameterValue(const string name)
     return 0.0;
 }
 
+
 const vector<string> Component::getParameterNames()
 {
     vector<string> names;
@@ -315,6 +328,7 @@ const vector<string> Component::getParameterNames()
     }
     return names;
 }
+
 
 const string Component::getParameterUnit(const string name)
 {
@@ -329,6 +343,7 @@ const string Component::getParameterUnit(const string name)
     assert(false);
 }
 
+
 const string Component::getParameterDescription(const string name)
 {
     for (size_t i=0; i<mParameters.size(); ++i)
@@ -342,10 +357,12 @@ const string Component::getParameterDescription(const string name)
     assert(false);
 }
 
+
 vector<CompParameter> Component::getParameterVector()
 {
     return mParameters;
 }
+
 
 map<string, double> Component::getParameterMap()
 {
@@ -356,6 +373,7 @@ map<string, double> Component::getParameterMap()
     }
     return parameterMap;
 }
+
 
 void Component::setParameterValue(const string name, const double value)
 {
@@ -374,6 +392,7 @@ void Component::setParameterValue(const string name, const double value)
         assert(false);
     }
 }
+
 
 //! @todo Maby not have this function, solve in some other nicer way
 vector<Port*> Component::getPortPtrVector()
@@ -397,20 +416,24 @@ void Component::setDesiredTimestep(const double timestep)
     assert(false);
 }
 
+
 bool Component::isComponentC()
 {
     return mIsComponentC;
 }
+
 
 bool Component::isComponentQ()
 {
     return mIsComponentQ;
 }
 
+
 bool Component::isComponentSystem()
 {
     return mIsComponentSystem;
 }
+
 
 bool Component::isComponentSignal()
 {
@@ -455,6 +478,7 @@ Port* Component::addPort(const string portname, Port::PORTTYPE porttype, const N
     return new_port;
 }
 
+
 //! @brief Convenience method to add a PowerPort
 //! @param [in] porttype The type of port
 //! @param [in] nodetype The type of node that must be connected to the port
@@ -462,6 +486,7 @@ Port* Component::addPowerPort(const string portname, const string nodetype)
 {
     return addPort(portname, Port::POWERPORT, nodetype, Port::REQUIRED);
 }
+
 
 //! @brief Convenience method to add a ReadPort
 //! @param [in] porttype The type of port
@@ -471,6 +496,7 @@ Port* Component::addReadPort(const string portname, const string nodetype, Port:
     return addPort(portname, Port::READPORT, nodetype, connection_requirement);
 }
 
+
 //! @brief Convenience method to add a WritePort
 //! @param [in] porttype The type of port
 //! @param [in] nodetype The type of node that must be connected to the port
@@ -478,6 +504,7 @@ Port* Component::addWritePort(const string portname, const string nodetype, Port
 {
     return addPort(portname, Port::WRITEPORT, nodetype, connection_requirement);
 }
+
 
 //! @todo this could be a template function to use with all rename in map
 string Component::renamePort(const string oldname, const string newname)
@@ -501,6 +528,7 @@ string Component::renamePort(const string oldname, const string newname)
         return oldname;
     }
 }
+
 
 void Component::deletePort(const string name)
 {
@@ -528,6 +556,7 @@ void Component::setSystemParent(ComponentSystem &rComponentSystem)
 //    return *mPortPtrs[port_idx];
 //}
 
+
 Port *Component::getPort(const string portname)
 {
     PortPtrMapT::iterator it;
@@ -543,6 +572,7 @@ Port *Component::getPort(const string portname)
     }
 }
 
+
 bool Component::getPort(const string portname, Port* &rpPort)
 {
     rpPort = getPort(portname);
@@ -555,6 +585,7 @@ bool Component::getPort(const string portname, Port* &rpPort)
         return false;
     }
 }
+
 
 void Component::setTimestep(const double timestep)
 {
@@ -593,6 +624,7 @@ void ComponentSystem::SubComponentStorage::add(Component* pComponent)
     mSubComponentMap.insert(pair<string, Component*>(modname, pComponent));
 }
 
+
 Component* ComponentSystem::SubComponentStorage::get(const string &rName)
 {
     map<string, Component*>::iterator it;
@@ -607,6 +639,7 @@ Component* ComponentSystem::SubComponentStorage::get(const string &rName)
         return 0;
     }
 }
+
 
 void ComponentSystem::SubComponentStorage::remove(const string &rName)
 {
@@ -670,6 +703,7 @@ void ComponentSystem::SubComponentStorage::remove(const string &rName)
     }
 }
 
+
 bool ComponentSystem::SubComponentStorage::have(const string &rName)
 {
     if (mSubComponentMap.count(rName) > 0)
@@ -681,6 +715,7 @@ bool ComponentSystem::SubComponentStorage::have(const string &rName)
         return false;
     }
 }
+
 
 void ComponentSystem::SubComponentStorage::rename(const string &rOldName, const string &rNewName)
 {
@@ -710,6 +745,7 @@ void ComponentSystem::SubComponentStorage::rename(const string &rOldName, const 
         assert(false);
     }
 }
+
 
 //! @brief Change the cqs type of a stored subsystem component
 bool ComponentSystem::SubComponentStorage::changeTypeCQS(const string &rName, const typeCQS newType)
@@ -743,10 +779,12 @@ bool ComponentSystem::SubComponentStorage::changeTypeCQS(const string &rName, co
     return true;
 }
 
+
 ComponentSystem *Component::getSystemParent()
 {
     return mpSystemParent;
 }
+
 
 //constructor ComponentSignal
 ComponentSignal::ComponentSignal(string name, double timestep) : Component(name, timestep)
@@ -756,6 +794,7 @@ ComponentSignal::ComponentSignal(string name, double timestep) : Component(name,
     mIsComponentSignal = true;
 }
 
+
 //constructor ComponentC
 ComponentC::ComponentC(string name, double timestep) : Component(name, timestep)
 {
@@ -763,6 +802,7 @@ ComponentC::ComponentC(string name, double timestep) : Component(name, timestep)
     mTypeCQS = Component::C;
     mIsComponentC = true;
 }
+
 
 //Constructor ComponentQ
 ComponentQ::ComponentQ(string name, double timestep) : Component(name, timestep)
@@ -772,6 +812,7 @@ ComponentQ::ComponentQ(string name, double timestep) : Component(name, timestep)
     mIsComponentQ = true;
 }
 
+
 //Constructor
 ComponentSystem::ComponentSystem(string name, double timestep) : Component(name, timestep)
 {
@@ -779,6 +820,7 @@ ComponentSystem::ComponentSystem(string name, double timestep) : Component(name,
     mIsComponentSystem = true;
     mDesiredTimestep = timestep;
 }
+
 
 double ComponentSystem::getDesiredTimeStep()
 {
@@ -792,6 +834,7 @@ void ComponentSystem::stop()
 {
     mStop = true;
 }
+
 
 void ComponentSystem::addComponents(vector<Component*> components)
 {
@@ -811,6 +854,7 @@ void ComponentSystem::addComponent(Component &rComponent)
     addComponents(components);
 }
 
+
 void ComponentSystem::addComponent(Component *pComponent)
 {
     vector<Component*> components;
@@ -818,11 +862,13 @@ void ComponentSystem::addComponent(Component *pComponent)
     addComponents(components);
 }
 
+
 //! Rename a sub component and automatically fix unique names
 void ComponentSystem::renameSubComponent(string old_name, string new_name)
 {
     mSubComponentStorage.rename(old_name, new_name);
 }
+
 
 //! Remove a dub component from a system, can also be used to actually delete the component
 //! @param[in] name The name of the component to remove from the system
@@ -832,6 +878,7 @@ void ComponentSystem::removeSubComponent(string name, bool doDelete)
     Component* c_ptr = getSubComponent(name);
     removeSubComponent(c_ptr, doDelete);
 }
+
 
 //! Remove a sub component from a system, can also be used to actually delete the component
 //! @param[in] c_ptr A pointer to the component to remove
@@ -920,6 +967,7 @@ vector<string> ComponentSystem::getSubComponentNames()
     return names;
 }
 
+
 bool  ComponentSystem::haveSubComponent(string name)
 {
     return mSubComponentStorage.have(name);
@@ -931,6 +979,7 @@ void ComponentSystem::addSubNode(Node* node_ptr)
 {
     mSubNodePtrs.push_back(node_ptr);
 }
+
 
 //! Removes a previously added node
 void ComponentSystem::removeSubNode(Node* node_ptr)
@@ -946,6 +995,7 @@ void ComponentSystem::removeSubNode(Node* node_ptr)
     }
     //! @todo some notification if you try to remove something that does not exist (can not check it==mSubNodePtrs.end() ) this check can be OK after an successfull erase
 }
+
 
 //! preAllocates log space (to speed up later access for log writing)
 void ComponentSystem::preAllocateLogSpace(const double startT, const double stopT)
@@ -972,6 +1022,7 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
 
 }
 
+
 //! Tells all subnodes contained within a system to store current data in log
 void ComponentSystem::logAllNodes(const double time)
 {
@@ -981,6 +1032,7 @@ void ComponentSystem::logAllNodes(const double time)
         (*it)->logData(time);
     }
 }
+
 
 //! Adds a transparent SubSystemPort
 Port* ComponentSystem::addSystemPort(string portname)
@@ -994,17 +1046,20 @@ Port* ComponentSystem::addSystemPort(string portname)
     return addPort(portname, Port::SYSTEMPORT, "undefined_nodetype", Port::REQUIRED);
 }
 
+
 //! Rename system port
 string ComponentSystem::renameSystemPort(const string oldname, const string newname)
 {
     return renamePort(oldname,newname);
 }
 
+
 //! delete System prot
 void ComponentSystem::deleteSystemPort(const string name)
 {
     deletePort(name);
 }
+
 
 //! Set the type C, Q, or S of the subsystem by using string
 void ComponentSystem::setTypeCQS(const string cqs_type, bool doOnlyLocalSet)
@@ -1027,6 +1082,7 @@ void ComponentSystem::setTypeCQS(const string cqs_type, bool doOnlyLocalSet)
         gCoreMessageHandler.addWarningMessage("Specified type: " + cqs_type + " does not exist!, System CQStype unchanged");
     }
 }
+
 
 //! Set the type C, Q, or S of the subsystem
 void ComponentSystem::setTypeCQS(typeCQS cqs_type, bool doOnlyLocalSet)
@@ -1083,17 +1139,20 @@ void ComponentSystem::setTypeCQS(typeCQS cqs_type, bool doOnlyLocalSet)
     }
 }
 
+
 //! Connect two ports to each other ptr version
 bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
 {
     return connect(pPort1->mpComponent, pPort1->mPortName, pPort2->mpComponent, pPort2->mPortName);
 }
 
+
 //! Connect two ports to each other ref version
 bool ComponentSystem::connect(Port &rPort1, Port &rPort2)
 {
     return connect(*rPort1.mpComponent, rPort1.mPortName, *rPort2.mpComponent, rPort2.mPortName);
 }
+
 
 //! Connect two components with specified ports to each other, pointer version
 bool ComponentSystem::connect(Component *pComponent1, const string portname1, Component *pComponent2, const string portname2)
@@ -1106,6 +1165,7 @@ bool ComponentSystem::connect(string compname1, string portname1, string compnam
 {
     return connect( *getComponent(compname1), portname1, *getComponent(compname2), portname2 );
 }
+
 
 //! Connect two components with specified ports to each other, reference version
 //! @todo Cleanup this connect madness only 1 or two alternatives maybe string version default (or pointer version)
@@ -1324,7 +1384,6 @@ bool ComponentSystem::connect(Component &rComponent1, const string portname1, Co
 }
 
 
-
 bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
 {
     size_t n_ReadPorts = 0;
@@ -1414,12 +1473,14 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
     return true;
 }
 
+
 //! @brief Disconnect two ports, string version
 //! @todo maybe clean up and have one (or maybe ok with two dissconnect functions)
 bool ComponentSystem::disconnect(string compname1, string portname1, string compname2, string portname2)
 {
     disconnect( getComponent(compname1)->getPort(portname1), getComponent(compname2)->getPort(portname2) );
 }
+
 
 //! Disconnects two ports and remove node if no one is using it any more
 //! @todo whay about system ports they are somewaht speciall
@@ -1480,6 +1541,7 @@ void ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
     }
 }
 
+
 void ComponentSystem::setDesiredTimestep(const double timestep)
 {
     mDesiredTimestep = timestep;
@@ -1517,6 +1579,7 @@ void ComponentSystem::setDesiredTimestep(const double timestep)
 //    }
 //}
 
+
 void ComponentSystem::setTimestep(const double timestep)
 {
     mTimestep = timestep;
@@ -1547,6 +1610,7 @@ void ComponentSystem::setTimestep(const double timestep)
         }
     }
 }
+
 
 void ComponentSystem::adjustTimestep(double timestep, vector<Component*> componentPtrs)
 {
@@ -1581,6 +1645,7 @@ void ComponentSystem::adjustTimestep(double timestep, vector<Component*> compone
         }
     }
 }
+
 
 ////! Initializes a system component and all its contained components, also allocates log data memory
 //void ComponentSystem::initialize(const double startT, const double stopT)
@@ -1769,6 +1834,7 @@ void ComponentSystem::initialize(const double startT, const double stopT)
     }
 }
 
+
 //! The system component version of simulate
 void ComponentSystem::simulate(const double startT, const double stopT)
 {
@@ -1812,6 +1878,7 @@ void ComponentSystem::simulate(const double startT, const double stopT)
         mTime += mTimestep;
     }
 }
+
 
 //! Finalizes a system component and all its contained components
 void ComponentSystem::finalize(const double startT, const double stopT)
@@ -1859,6 +1926,7 @@ void ComponentSystem::finalize(const double startT, const double stopT)
 
     }
 }
+
 
 ComponentFactory gCoreComponentFactory;
 DLLIMPORTEXPORT ComponentFactory* getCoreComponentFactoryPtr()

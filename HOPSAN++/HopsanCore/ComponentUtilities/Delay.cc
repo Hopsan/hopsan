@@ -142,11 +142,11 @@ void Delay::setTimeDelay(const double timeDelay, const double Ts)
 }
 
 
-double Delay::value()
 //! Returns the oldest delayed value and update with the last value.
 //! @see value(double value)
 //! @see valueIdx(const int idx)
 //! @see valueIdx(double value, const int idx)
+double Delay::value()
 {
     update(mValues.front());
 
@@ -166,13 +166,13 @@ double Delay::value()
 }
 
 
-double Delay::value(double value)
 //! Get the oldest delayed value and update with a new value.
 //! @param[in] value is the new value of the delayed variable.
 //! @return The delayed value of the Delay object.
 //! @see value()
 //! @see valueIdx(const int idx)
 //! @see valueIdx(double value, const int idx)
+double Delay::value(double value)
 {
     update(value);
     if (mValues.empty())
@@ -191,7 +191,6 @@ double Delay::value(double value)
 }
 
 
-double Delay::valueIdx(double value, const int idx)
 //! Get the delayed value at a specified index and update with a new value.
 //! \f[ [returnValue] = [delayedVariable] z^{-idx} \f]
 //! @param value is the new value of the delayed variable.
@@ -200,6 +199,7 @@ double Delay::valueIdx(double value, const int idx)
 //! @see value()
 //! @see value(double value)
 //! @see valueIdx(const int idx)
+double Delay::valueIdx(double value, const int idx)
 {
     update(value);
     if ((idx < 0) || ((size_t)idx > mValues.size()))
@@ -214,13 +214,13 @@ double Delay::valueIdx(double value, const int idx)
 }
 
 
-double Delay::valueIdx(const int idx) //! @todo interpolera värden
 //! Get the delayed value at a specified index.
 //! @param idx tell which value to return, 1 is the last timestep's value 2 is the value from two timsteps ago and so on.
 //! @return The value delayed idx time steps of the Delay object.
 //! @see value(double value)
 //! @see valueIdx(const int idx)
 //! @see valueIdx(double value, const int idx)
+double Delay::valueIdx(const int idx) //! @todo interpolera värden
 {
     update(mValues.front());
     if (((size_t)idx < 1) || ((size_t)idx > mValues.size()))

@@ -119,10 +119,10 @@ double IntegratorLimited::value(double u)
 }
 
 
-double IntegratorLimited::value()
 //! Observe that a call to this method has to be followed by another call to value(double u) or to update(double u)
 //! @return The integrated actual value.
 //! @see value(double u)
+double IntegratorLimited::value()
 {
     update(mDelayU.valueIdx(1));
 

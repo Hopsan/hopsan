@@ -38,7 +38,7 @@ void FirstOrderFilter::initialize(double &rTime, double timestep, double num[2],
     mDelayY.setStepDelay(1);
     mDelayU.initialize(rTime, u0);
     mDelayY.initialize(rTime, std::max(std::min(y0, mMax), mMin));
-
+http://di.se/
     mTimeStep = timestep;
     mpTime = &rTime;
     mIsInitialized = true;
@@ -124,10 +124,10 @@ double FirstOrderFilter::value(double u)
 }
 
 
-double FirstOrderFilter::value()
 //! Observe that a call to this method has to be followed by another call to value(double u) or to update(double u)
 //! @return The filtered actual value.
 //! @see value(double u)
+double FirstOrderFilter::value()
 {
     update(mDelayU.valueIdx(1));
 

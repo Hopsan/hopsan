@@ -28,6 +28,7 @@ void HopsanEssentials::Initialize()
     mpMessageHandler->addInfoMessage("HopsanCore, Version: " + string(HOPSANCOREVERSION));
 }
 
+
 HopsanEssentials::HopsanEssentials()
 {
     mpNodeFactory = getCoreNodeFactoryPtr();
@@ -36,6 +37,7 @@ HopsanEssentials::HopsanEssentials()
     externalLoader.setFactory(mpComponentFactory, mpNodeFactory);
     Initialize();
 }
+
 
 HopsanEssentials* HopsanEssentials::getInstance()
 {
@@ -51,6 +53,7 @@ HopsanEssentials* HopsanEssentials::getInstance()
     }
 }
 
+
 HopsanEssentials::~HopsanEssentials()
 {
     //Clear the factories
@@ -62,11 +65,13 @@ HopsanEssentials::~HopsanEssentials()
     mHasInstance = false;
 }
 
+
 //!Creates a component with the specified key-value and returns a pointer to this component.
 Component* HopsanEssentials::CreateComponent(const string &rString)
 {
         return mpComponentFactory->CreateInstance(rString.c_str());
 }
+
 
 //! @todo for now a ugly special fix for component system, (It can not be created by the factory that only deals with Component* objects)
 ComponentSystem* HopsanEssentials::CreateComponentSystem()
@@ -74,10 +79,12 @@ ComponentSystem* HopsanEssentials::CreateComponentSystem()
     return new ComponentSystem();
 }
 
+
 HopsanCoreMessage HopsanEssentials::getMessage()
 {
     return mpMessageHandler->getMessage();
 }
+
 
 size_t HopsanEssentials::checkMessage()
 {

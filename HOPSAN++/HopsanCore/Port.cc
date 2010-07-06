@@ -24,6 +24,7 @@ Port::Port()
     clearConnection();
 }
 
+
 //! Port base class constructor
 Port::Port(string portname, string node_type)
 {
@@ -35,11 +36,13 @@ Port::Port(string portname, string node_type)
     clearConnection();
 }
 
+
 //Destructor
 Port::~Port()
 {
     //Nothing for now
 }
+
 
 //! Helper function for quickly clearing all connection info
 void Port::clearConnection()
@@ -50,11 +53,13 @@ void Port::clearConnection()
     mIsConnected = false;
 }
 
+
 //! Returns the type of node that can be connected to this port
 const string &Port::getNodeType()
 {
     return mNodeType;
 }
+
 
 //! Returns referense to connected node (Dont use this)
 Node &Port::getNode()
@@ -63,17 +68,20 @@ Node &Port::getNode()
     return *mpNode;
 }
 
+
 //! This one shal be removed
 Node* Port::getNodePublic()
 {
     return mpNode;
 }
 
+
 //! Returns a pointer to the connected node
 Node* Port::getNodePtr()
 {
     return mpNode;
 }
+
 
 //! Reads a value from the connected node
 //! @param [in] idx The data id of the data to read
@@ -88,6 +96,7 @@ double Port::readNode(const size_t idx)
     return mpNode->getData(idx);
 }
 
+
 //! Writes a value to the connected node
 //! @param [in] idx The data id of the data to write
 //! @param [in] value The value of the data to read
@@ -101,6 +110,7 @@ void Port::writeNode(const size_t idx, const double value)
     return mpNode->setData(idx, value);
 }
 
+
 //! Set the node that the port is connected to
 //! @param [in] pNode A pointer to the Node
 void Port::setNode(Node* pNode)
@@ -109,12 +119,14 @@ void Port::setNode(Node* pNode)
     mIsConnected = true;
 }
 
+
 //! Adds a pointer to an other connected port to a port
 //! @param [in] pPort A pointer to the other port
 void Port::addConnectedPort(Port* pPort)
 {
     mConnectedPorts.push_back(pPort);
 }
+
 
 //! Removes a pointer to an other connected port from a port
 //! @param [in] pPort The pointer to the other port to be removed
@@ -137,6 +149,7 @@ void Port::eraseConnectedPort(Port* pPort)
     }
 }
 
+
 //! Get a vector of pointers to all other ports connected connected to this one
 //! @returns A refernce to the internal vector of connected port pointers
 //! @todo maybe should return const vector so that contents my not be changed
@@ -144,6 +157,7 @@ vector<Port*> &Port::getConnectedPorts()
 {
     return mConnectedPorts;
 }
+
 
 //! Calls the save log data function of the connected node (if any)
 void Port::saveLogData(string filename)
@@ -159,6 +173,7 @@ void Port::saveLogData(string filename)
     }
 }
 
+
 //! Get all data names and units from the connected node
 //! @param [in,out] rNames This vector will contain the names
 //! @param [in,out] rUnits This vector will contain the units
@@ -166,6 +181,7 @@ void Port::getNodeDataNamesAndUnits(vector<string> &rNames, vector<string> &rUni
 {
     mpNode->getDataNamesAndUnits(rNames, rUnits);
 }
+
 
 //! @brief Get node data name and unit for specific node data
 //! @param [in] dataid The node data id
@@ -176,6 +192,7 @@ void Port::getNodeDataNameAndUnit(const size_t dataid, string &rName, string &rU
     rName = mpNode->getDataName(dataid);
     rUnit = mpNode->getDataUnit(dataid);
 }
+
 
 //! @brief Wraper for the Node function
 int Port::getNodeDataIdFromName(const string name)
@@ -195,11 +212,13 @@ vector<vector<double> > *Port::getDataVectorPtr()
     return &(getNode().mDataStorage);
 }
 
+
 //! Check if the port is curently connected
 bool Port::isConnected()
 {
     return mIsConnected;
 }
+
 
 //! Check if the port MUST be connected
 bool Port::isConnectionRequired()
@@ -207,11 +226,13 @@ bool Port::isConnectionRequired()
     return mConnectionRequired;
 }
 
+
 //! Get the port type
 Port::PORTTYPE Port::getPortType()
 {
     return mPortType;
 }
+
 
 //! @brief Get the port type as a string
 //! @todo this can probably be made some other better way, mayb let port type lie ooutside port class
@@ -236,11 +257,13 @@ string Port::getPortTypeString()
     }
 }
 
+
 //! Get the port name
 const string &Port::getPortName()
 {
     return mPortName;
 }
+
 
 //! Get the name of the commponent that the port is attached to
 const string &Port::getComponentName()
@@ -248,11 +271,13 @@ const string &Port::getComponentName()
     mpComponent->getName();
 }
 
+
 //! SystemPort constructor
 SystemPort::SystemPort() : Port()
 {
     mPortType = SYSTEMPORT;
 }
+
 
 //! PowerPort constructor
 PowerPort::PowerPort() : Port()
@@ -260,11 +285,13 @@ PowerPort::PowerPort() : Port()
     mPortType = POWERPORT;
 }
 
+
 //! PowerPort constructor
 PowerPort::PowerPort(string portname, string node_type) : Port(portname, node_type)
 {
     mPortType = POWERPORT;
 }
+
 
 //Constructor
 ReadPort::ReadPort() : Port()
@@ -272,10 +299,12 @@ ReadPort::ReadPort() : Port()
     mPortType = READPORT;
 }
 
+
 ReadPort::ReadPort(string portname, string node_type) : Port(portname, node_type)
 {
     mPortType = READPORT;
 }
+
 
 void ReadPort::writeNode(const size_t idx, const double value)
 {
@@ -283,22 +312,26 @@ void ReadPort::writeNode(const size_t idx, const double value)
     assert(false);
 }
 
+
 //Constructor
 WritePort::WritePort() : Port()
 {
     mPortType = WRITEPORT;
 }
 
+
 WritePort::WritePort(string portname, string node_type) : Port(portname, node_type)
 {
     mPortType = WRITEPORT;
 }
+
 
 double WritePort::readNode(const size_t idx)
 {
     cout << "Could not read from port, this is a WritePort" << endl;
     assert(false);
 }
+
 
 //!
 //! @brief Very simple port factory, no need to complicate things with the more advanced one as we will only have a few fixed port types.

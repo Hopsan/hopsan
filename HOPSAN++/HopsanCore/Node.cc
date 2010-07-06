@@ -47,6 +47,7 @@ Node::Node(size_t datalength)
     mLogSlots = 0;
 }
 
+
 //!
 //! @brief returns the node type
 //!
@@ -54,6 +55,7 @@ NodeTypeT &Node::getNodeType()
 {
     return mNodeType;
 }
+
 
 //!
 //! @brief set data in node
@@ -65,6 +67,7 @@ void Node::setData(const size_t data_type, double data)
     mDataVector[data_type] = data;
 }
 
+
 //!
 //! @brief get data from node
 //! @param [in] data_type Identifier for the type of node data to get
@@ -74,6 +77,7 @@ double Node::getData(const size_t data_type)
 {
     return mDataVector[data_type];
 }
+
 
 //!
 //! @brief get data reference from node, (Dont us this function, It may be removed)
@@ -85,6 +89,7 @@ double &Node::getDataRef(const size_t data_type)
     return mDataVector[data_type];
 }
 
+
 //! Set data name and unit for a specified data variable
 //! @param [in] id This is the ENUM data id
 //! @param [in,out] name The variable name
@@ -95,6 +100,7 @@ void Node::setDataNameAndUnit(size_t id, string name, string unit)
     mDataUnits[id] = unit;
 }
 
+
 //! Get a specific data name
 //! @param [in] id This is the ENUM data id
 string Node::getDataName(size_t id)
@@ -102,12 +108,14 @@ string Node::getDataName(size_t id)
     return mDataNames[id];
 }
 
+
 //! Get a specific data unit
 //! @param [in] id This is the ENUM data id
 string Node::getDataUnit(size_t id)
 {
     return mDataUnits[id];
 }
+
 
 //! @brief This function gives you the data Id for a names data variable
 //! @param [in] name The data name
@@ -134,6 +142,7 @@ void Node::getDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits)
     rUnits = mDataUnits;
 }
 
+
 //! This function will set the number of log data slots for preallocation and logDt based on the number of samples that should be loged
 //! @param [in] nSamples The desired number of log data samples
 void Node::setLogSettingsNSamples(size_t nSamples, double start, double stop, double sampletime)
@@ -156,6 +165,7 @@ void Node::setLogSettingsNSamples(size_t nSamples, double start, double stop, do
     mLastLogTime = start-mLogTimeDt;
 }
 
+
 //! This function will set the number of log data slots for preallocation and logDt based on a skip factor to the sample time
 //! @param [in] factor The timestep skip factor
 void Node::setLogSettingsSkipFactor(double factor, double start, double stop,  double sampletime)
@@ -167,6 +177,7 @@ void Node::setLogSettingsSkipFactor(double factor, double start, double stop,  d
     mLastLogTime = start-mLogTimeDt;
     mLogSlots = (size_t)((stop-start)/mLogTimeDt+0.5); //Round to nearest
 }
+
 
 //! This function will set the number of log data slots for preallocation and logDt
 //! @param [in] log_dt The desired log timestep
@@ -205,6 +216,7 @@ void Node::preAllocateLogSpace()
     mLogCtr = 0;
 }
 
+
 //! Copy current data vector into log storage, also adds current time
 void Node::logData(const double time)
 {
@@ -238,6 +250,7 @@ void Node::logData(const double time)
     }
 }
 
+
 //! debug function to dump loged node data to a file
 void Node::saveLogData(string filename)
 {
@@ -268,6 +281,7 @@ void Node::saveLogData(string filename)
     }
 }
 
+
 //! Adds a pointer to a port connected to this node
 //! @param [in] pPort The port pointer
 void Node::setPort(Port *pPort)
@@ -292,6 +306,7 @@ void Node::setPort(Port *pPort)
     }
 }
 
+
 //! Removes a port poniter from this node
 //! @param [in] pPort The port pointer to be removed
 void Node::removePort(Port *pPort)
@@ -314,6 +329,7 @@ void Node::removePort(Port *pPort)
     }
 }
 
+
 //! Check if a specified port is connected to this node
 //! @param [in] pPort The port pointer to find
 //! @return Is specified port connected (true or false)
@@ -330,17 +346,20 @@ bool Node::isConnectedToPort(Port *pPort)
     return false;
 }
 
+
 //! Enable node data logging
 void Node::enableLog()
 {
     mDoLog = true;
 }
 
+
 //! Disable node data logging
 void Node::disableLog()
 {
     mDoLog = false;
 }
+
 
 NodeFactory gCoreNodeFactory;
 DLLIMPORTEXPORT NodeFactory* getCoreNodeFactoryPtr()

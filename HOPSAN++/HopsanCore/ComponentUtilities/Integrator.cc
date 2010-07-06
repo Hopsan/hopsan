@@ -66,10 +66,10 @@ double Integrator::value(double u)
 }
 
 
-double Integrator::value()
 //! Observe that a call to this method has to be followed by another call to value(double u) or to update(double u)
 //! @return The integrated actual value.
 //! @see value(double u)
+double Integrator::value()
 {
     update(mDelayU.valueIdx(1));
 
