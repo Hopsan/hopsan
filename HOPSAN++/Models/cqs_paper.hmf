@@ -34,12 +34,12 @@ PARAMETER "ref" StartTime 1
 PARAMETER "ref" StopTime 2
 --------------------------------------------------------------
 CONNECT "Pressure" "P1" "Orifice" "P2" 1496 2344 1498 2344 1498 2344 1546.5 2344
-CONNECT "Long pipe" "P2" "Orifice_1" "P2" 1757.5 2344 1796 2344 1796 2344 1808.5 2344
+CONNECT "Long pipe" "P2" "Orifice_1" "P2" 1754.5 2344 1796 2344 1796 2344 1808.5 2344
 CONNECT "Orifice_1" "P1" "Tank" "P1" 1877.5 2344 1879 2344 1879 2344 1873.5 2344
 CONNECT "ref" "out" "Subtract" "in1" 1507 2280 1511 2280 1511 2280 1534.5 2280
 CONNECT "Subtract" "out" "Gain" "in" 1559.5 2280 1565 2280 1565 2280 1590.5 2280
-CONNECT "Flow Sensor" "P1" "Long pipe" "P2" 1776 2343.5 1776 2344 1757.5 2344
-CONNECT "Subtract" "in2" "Flow Sensor" "out" 1547 2267.5 1547 2212 1776 2212 1776 2284.5
-CONNECT "Orifice" "P1" "Long pipe" "P1" 1615.5 2344 1614 2344 1614 2344 1638.5 2344
-CONNECT "Gain" "out" "Pressure" "In" 1615.5 2280 1658 2280 1658 2323 1429 2323 1429 2344 1472 2344
+CONNECT "Subtract" "in2" "Flow Sensor" "out" 1547 2267.5 1547 2251 1776 2251 1776 2284.5
+CONNECT "Orifice" "P1" "Long pipe" "P1" 1615.5 2344 1614 2344 1614 2344 1641.5 2344
+CONNECT "Gain" "out" "Pressure" "In" 1615.5 2280 1634.11 2280 1634.11 2323 1455.88 2323 1455.88 2344 1472 2344
+CONNECT "Flow Sensor" "P1" "Long pipe" "P2" 1776 2343.5 1776 2344 1754.5 2344
 --------------------------------------------------------------

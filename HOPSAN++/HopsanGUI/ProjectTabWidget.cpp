@@ -1105,9 +1105,13 @@ void GraphicsView::exportPDF()
         "Adobe PDF Documents (*.pdf)");
     if ( !fileName.isEmpty() )
     {
-        QPrinter *printer;
-        printer = new QPrinter(QPrinter::HighResolution);
-        //printer = new QPrinter();
+        //Here we set A0, Landscape and Fullpage among other things to make sure that components get large enough to be treeted as vector graphics
+        //Some bug or "feature" makes small objects be converted to bitmaps (ugly)
+        //! @todo Try to find out why this happens (se comment above)
+        QPrinter *printer = new QPrinter(QPrinter::HighResolution);
+        printer->setPaperSize(QPrinter::A0);
+        printer->setOrientation(QPrinter::Landscape);
+        printer->setFullPage(true);
         printer->setOutputFormat(QPrinter::PdfFormat);
         printer->setOutputFileName(fileName);
         QPainter *painter = new QPainter(printer);
