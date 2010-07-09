@@ -95,6 +95,9 @@ public:
         //double c10 = p2 + mZc * q2;       //Why did we write these equations?
         //double c20 = p1 + mZc * q1;
 
+        //The result will be the same. p = c - mZc * q, and we need to compensate for the minus term by multiplying with 2
+        //The two equations bellow are apperantly more convenient however
+
         double c10 = c2 + 2.0*mZc * q2;     //These two equations are from old Hopsan
         double c20 = c1 + 2.0*mZc * q1;
 
