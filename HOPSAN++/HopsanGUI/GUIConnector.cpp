@@ -139,6 +139,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
         connect(this,SIGNAL(endPortConnected()),mpTempLine,SLOT(setConnected()));
     }
 
+    this->updateAppearance();
     this->drawConnector();
 
         //Make all lines selectable and all lines except first and last movable
@@ -147,11 +148,13 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     for(int i=0; i!=mpLines.size(); ++i)
         mpLines[i]->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
-      //Add arrow to the connector if it is of signal type
-    if(mpEndPort->getPortType() == "READPORT" && mpEndPort->getNodeType() == "NodeSignal")
-        this->getLastLine()->addEndArrow();
-    else if(mpEndPort->getPortType() == "WRITEPORT" && mpEndPort->getNodeType() == "NodeSignal")
-        this->mpLines[0]->addStartArrow();
+
+
+//      //Add arrow to the connector if it is of signal type
+//    if(mpEndPort->getPortType() == "READPORT" && mpEndPort->getNodeType() == "NodeSignal")
+//        this->getLastLine()->addEndArrow();
+//    else if(mpEndPort->getPortType() == "WRITEPORT" && mpEndPort->getNodeType() == "NodeSignal")
+//        this->mpLines[0]->addStartArrow();
 
     mpStartPort->getGuiObject()->addConnector(this);
     mpEndPort->getGuiObject()->addConnector(this);
@@ -338,7 +341,8 @@ void GUIConnector::setEndPort(GUIPort *port)
             mPoints[mPoints.size()-3] = QPointF(mPoints[mPoints.size()-3].x(), mPoints[mPoints.size()-3].y() + 20);
         }
         this->drawConnector();
-        this->mpParentGraphicsView->setBackgroundBrush(this->mpParentGraphicsView->mBackgroundColor);
+        //this->mpParentGraphicsView->setBackgroundBrush(this->mpParentGraphicsView->mBackgroundColor);
+        this->mpParentGraphicsView->resetBackgroundBrush();
     }
 
     this->updateEndPoint(port->mapToScene(port->boundingRect().center()));
@@ -361,6 +365,7 @@ void GUIConnector::setEndPort(GUIPort *port)
 //        this->mpLines[0]->addStartArrow();
 
     emit endPortConnected();
+    this->updateAppearance();
     this->setPassive();
 }
 
@@ -596,7 +601,8 @@ void GUIConnector::drawConnector()
         this->scene()->update();
     }
 
-    mpParentGraphicsView->setBackgroundBrush(mpParentGraphicsView->mBackgroundColor);
+    //mpParentGraphicsView->setBackgroundBrush(mpParentGraphicsView->mBackgroundColor);
+    mpParentGraphicsView->resetBackgroundBrush();
 }
 
 
@@ -864,6 +870,7 @@ void GUIConnector::deleteMeWithNoUndo()
 }
 
 //! Uppdate the appearance of the connector (setting its type and line endings)
+//! @todo right now this only set the type and ending arrows, maybe should handle ALLA appearance update like switching when howering, or maybe have two different update appearance functions (this one only needs to be run once when a conector is created)
 void GUIConnector::updateAppearance()
 {
 
@@ -891,6 +898,9 @@ void GUIConnector::updateAppearance()
         //Assumes that the startport was a read port
         this->mpLines[0]->addStartArrow();
     }
+
+    //Run this to actually change the pen
+    this->setPassive(); //!< @todo Not sure if setPassive is allways correct, but it is a good guess
 }
 
 //------------------------------------------------------------------------------------------------------------------------//

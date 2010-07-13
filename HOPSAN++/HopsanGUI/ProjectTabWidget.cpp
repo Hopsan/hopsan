@@ -251,6 +251,13 @@ GUIConnector *GraphicsView::getTempConnector()
     return this->mpTempConnector;
 }
 
+//! @breif dont really know what this is used for
+//! @todo Ok this does not seem to refresh the view at all, but maybe some parts of the view, dont know realy
+void GraphicsView::resetBackgroundBrush()
+{
+    this->setBackgroundBrush(mBackgroundColor);
+}
+
 
 //! @brief Temporary addSubSystem functin should be same later on
 //! Adds a new component to the GraphicsView.
@@ -1776,6 +1783,7 @@ void ProjectTabWidget::loadModel()
     getCurrentTab()->mGUIRootSystem.setRootSystemName(fileInfo.fileName());
 
     pCurrentView->undoStack->clear();
+    pCurrentView->resetBackgroundBrush();
 
     emit checkMessages();
 }

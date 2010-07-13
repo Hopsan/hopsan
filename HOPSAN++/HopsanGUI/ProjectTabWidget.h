@@ -94,6 +94,7 @@ public:
     bool mIsRenamingObject;
     GUIObject *getGUIObject(QString name);
     GUIConnector *getTempConnector();
+    void resetBackgroundBrush();
 
     ProjectTab *mpParentProjectTab;
     QMap<QString, GUIObject *> mGUIObjectMap;

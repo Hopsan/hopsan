@@ -493,7 +493,7 @@ void UndoStack::redoOneStep()
                 mpParentView->getGUIObject(objectName)->rotate(true);
             }
         }
-        mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
+        mpParentView->resetBackgroundBrush();
     }
     mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
 }
