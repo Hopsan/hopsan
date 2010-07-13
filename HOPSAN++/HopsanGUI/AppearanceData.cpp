@@ -75,17 +75,21 @@ GUIConnectorAppearance::GUIConnectorAppearance(QString type, bool useISO)
     setTypeAndIsoStyle(type, useISO);     //Need to use set type instead of setting directly as setType narrows types down to power or signal
 }
 
+//! @brief Set the Connector type
+//! @todo Maybe should use enum or some other non (can be whatever the programer want) type, or make it possible to "register" string keys with predetermined appearce through a ini file or similar
 void GUIConnectorAppearance::setType(const QString type)
 {
     if (type == "POWERPORT")
     {
         mConnectorType = "Power";
     }
+    else if(type == "SIGNALPORT")
+    {
+        mConnectorType = "Signal";
+    }
     else
     {
-        //! @todo Mybe should not yust assume signalport here might not be correct
-        //Assume signal port (read or write)
-        mConnectorType = "Signal";
+        mConnectorType = "Undefined";
     }
 }
 
@@ -109,6 +113,7 @@ QPen GUIConnectorAppearance::getPen(QString situation)
 //! @todo Hardcoded appearance stuff (should maybe be loaded from external file (not prio 1)
 QPen GUIConnectorAppearance::getPen(QString situation, QString type, bool useISO)
 {
+    //! @todo store pens in some smarter way, maybe in an array where situation and type are enums or used to calculate index, will be necessary for larger variations as a mega if else code is madness
     if(situation == "Primary")
     {
         if(type == "Power")
@@ -191,7 +196,7 @@ QPen GUIConnectorAppearance::getPen(QString situation, QString type, bool useISO
 
     qDebug() << "ERROR no such connector appearance: " << situation << " " <<  type << " ISOstyle: " << useISO;
 
-    return QPen(QColor("black"),1, Qt::SolidLine, Qt::RoundCap);
+    return mNonFinishedPen;
 }
 
 void GUIConnectorAppearance::adjustToZoom(qreal zoomFactor)

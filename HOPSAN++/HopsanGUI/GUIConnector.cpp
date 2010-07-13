@@ -302,10 +302,10 @@ void GUIConnector::setEndPort(GUIPort *port)
     mpEndPort = port;
     mpEndPort->isConnected = true;
 
-    if(mpStartPort->getPortType() == "POWERPORT" or mpEndPort->getPortType() == "POWERPORT")
-    {
-        this->mpGUIConnectorAppearance->setType("POWERPORT");
-    }
+//    if(mpStartPort->getPortType() == "POWERPORT" or mpEndPort->getPortType() == "POWERPORT")
+//    {
+//        this->mpGUIConnectorAppearance->setType("POWERPORT");
+//    }
 
     if( ( ((mpEndPort->getPortDirection() == PortAppearance::HORIZONTAL) and (mGeometries.back() == GUIConnector::HORIZONTAL)) or
           ((mpEndPort->getPortDirection() == PortAppearance::VERTICAL) and (mGeometries.back() == GUIConnector::VERTICAL)) ) or
@@ -354,11 +354,11 @@ void GUIConnector::setEndPort(GUIPort *port)
     for(int i=0; i!=mpLines.size(); ++i)
         mpLines[i]->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
-        //Add arrow to the connector if it is of signal type
-    if(port->getPortType() == "READPORT" && port->getNodeType() == "NodeSignal")
-        this->getLastLine()->addEndArrow();
-    else if(port->getPortType() == "WRITEPORT" && port->getNodeType() == "NodeSignal")
-        this->mpLines[0]->addStartArrow();
+//        //Add arrow to the connector if it is of signal type
+//    if(port->getPortType() == "READPORT" && port->getNodeType() == "NodeSignal")
+//        this->getLastLine()->addEndArrow();
+//    else if(port->getPortType() == "WRITEPORT" && port->getNodeType() == "NodeSignal")
+//        this->mpLines[0]->addStartArrow();
 
     emit endPortConnected();
     this->setPassive();
@@ -863,6 +863,35 @@ void GUIConnector::deleteMeWithNoUndo()
     mpParentGraphicsView->removeConnector(this, true);
 }
 
+//! Uppdate the appearance of the connector (setting its type and line endings)
+void GUIConnector::updateAppearance()
+{
+
+    if(mpStartPort->getPortType() == "POWERPORT" or mpEndPort->getPortType() == "POWERPORT")
+    {
+        this->mpGUIConnectorAppearance->setType("POWERPORT");
+    }
+    else if (mpStartPort->getPortType() == "READPORT" or mpEndPort->getPortType() == "READPORT")
+    {
+        this->mpGUIConnectorAppearance->setType("SIGNALPORT");
+    }
+    else
+    {
+        //! @todo this maight be bad if unknown not handled
+        this->mpGUIConnectorAppearance->setType("UNKNOWN");
+    }
+
+    //Add arrow to the connector if it is of signal type
+    if(mpEndPort->getPortType() == "READPORT" && mpEndPort->getNodeType() == "NodeSignal")
+    {
+        this->getLastLine()->addEndArrow();
+    }
+    else if(mpEndPort->getPortType() == "WRITEPORT" && mpEndPort->getNodeType() == "NodeSignal")
+    {
+        //Assumes that the startport was a read port
+        this->mpLines[0]->addStartArrow();
+    }
+}
 
 //------------------------------------------------------------------------------------------------------------------------//
 

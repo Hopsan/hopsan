@@ -77,6 +77,8 @@ public:
     GUIConnectorLine *getLastLine();
     GUIConnectorLine *getSecondLastLine();
     GUIConnectorLine *getThirdLastLine();
+    void updateAppearance();
+
     bool isConnected();
     bool isMakingDiagonal();
     bool isActive();
