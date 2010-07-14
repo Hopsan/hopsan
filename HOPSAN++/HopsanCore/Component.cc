@@ -1140,26 +1140,6 @@ void ComponentSystem::setTypeCQS(typeCQS cqs_type, bool doOnlyLocalSet)
 }
 
 
-////! Connect two ports to each other ptr version
-//bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
-//{
-//    return connect(pPort1->mpComponent, pPort1->mPortName, pPort2->mpComponent, pPort2->mPortName);
-//}
-
-
-////! Connect two ports to each other ref version
-//bool ComponentSystem::connect(Port &rPort1, Port &rPort2)
-//{
-//    return connect(*rPort1.mpComponent, rPort1.mPortName, *rPort2.mpComponent, rPort2.mPortName);
-//}
-
-
-////! Connect two components with specified ports to each other, pointer version
-//bool ComponentSystem::connect(Component *pComponent1, const string portname1, Component *pComponent2, const string portname2)
-//{
-//    return connect(*pComponent1, portname1, *pComponent2, portname2);
-//}
-
 //! Connect two commponents string version
 bool ComponentSystem::connect(string compname1, string portname1, string compname2, string portname2)
 {
@@ -1614,7 +1594,7 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
 
 
 //! @brief Disconnect two ports, string version
-//! @todo maybe clean up and have one (or maybe ok with two dissconnect functions)
+//! @todo need to make sure that components and prots given by name exist here
 bool ComponentSystem::disconnect(string compname1, string portname1, string compname2, string portname2)
 {
     disconnect( getComponent(compname1)->getPort(portname1), getComponent(compname2)->getPort(portname2) );
