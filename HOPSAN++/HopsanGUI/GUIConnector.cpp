@@ -139,7 +139,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
         connect(this,SIGNAL(endPortConnected()),mpTempLine,SLOT(setConnected()));
     }
 
-    this->updateAppearance();
+    this->determineAppearance();
     this->drawConnector();
 
         //Make all lines selectable and all lines except first and last movable
@@ -365,7 +365,7 @@ void GUIConnector::setEndPort(GUIPort *port)
 //        this->mpLines[0]->addStartArrow();
 
     emit endPortConnected();
-    this->updateAppearance();
+    this->determineAppearance();
     this->setPassive();
 }
 
@@ -871,7 +871,7 @@ void GUIConnector::deleteMeWithNoUndo()
 
 //! Uppdate the appearance of the connector (setting its type and line endings)
 //! @todo right now this only set the type and ending arrows, maybe should handle ALLA appearance update like switching when howering, or maybe have two different update appearance functions (this one only needs to be run once when a conector is created)
-void GUIConnector::updateAppearance()
+void GUIConnector::determineAppearance()
 {
 
     if(mpStartPort->getPortType() == "POWERPORT" or mpEndPort->getPortType() == "POWERPORT")
@@ -879,6 +879,10 @@ void GUIConnector::updateAppearance()
         this->mpGUIConnectorAppearance->setType("POWERPORT");
     }
     else if (mpStartPort->getPortType() == "READPORT" or mpEndPort->getPortType() == "READPORT")
+    {
+        this->mpGUIConnectorAppearance->setType("SIGNALPORT");
+    }
+    else if (mpStartPort->getPortType() == "WRITEPORT" or mpEndPort->getPortType() == "WRITEPORT")
     {
         this->mpGUIConnectorAppearance->setType("SIGNALPORT");
     }

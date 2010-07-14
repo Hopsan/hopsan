@@ -24,6 +24,7 @@ private:
     HydraulicVolume *volumeL;
     HydraulicLaminarOrifice *orificeC;
     HydraulicVolume *volumeR;
+    Port *mpSubP1, *mpSubP2;
 
 public:
     static Component *Creator()
@@ -43,14 +44,14 @@ public:
         addComponent(orificeC);
         addComponent(volumeR);
 
-        addSystemPort("subP1");
-        addSystemPort("subP2");
+        mpSubP1 = addSystemPort("subP1");
+        mpSubP2 = addSystemPort("subP2");
 
         //Connect components in subModel2
-        connect(this, "subP1" , volumeL, "P1");
-        connect(volumeL, "P2", orificeC, "P1");
-        connect(orificeC, "P2", volumeR, "P1");
-        connect(volumeR, "P2" , this, "subP2");
+        connect(mpSubP1, volumeL->getPort("P1"));
+        connect(volumeL->getPort("P2"), orificeC->getPort("P1"));
+        connect(orificeC->getPort("P2"), volumeR->getPort("P1"));
+        connect(volumeR->getPort("P2"), mpSubP2);
 
         //Decide submodel type
         setTypeCQS("C");
