@@ -7,7 +7,6 @@
 #include <QMap>
 #include <QVector>
 
-
 #include "AppearanceData.h"
 
 //Forward Declarations

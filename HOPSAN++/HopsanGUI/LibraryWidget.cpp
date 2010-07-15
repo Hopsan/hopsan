@@ -48,9 +48,9 @@
 #include <QtGui>
 
 #include "LibraryWidget.h"
-#include "listwidget.h"
 #include "MainWindow.h"
 #include "MessageWidget.h"
+#include "AppearanceData.h"
 
 
 //! @class LibraryContentItem

@@ -42,13 +42,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
+#include <QtGui>
 
 //#include <QComboBox>
 //#include <QLabel>
-
-#include <QtGui>
-
 //class QGridLayout;
 //class QHBoxLayout;
 //class QMenuBar;

@@ -53,14 +53,11 @@
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QLabel>
-#include "AppearanceData.h"
-
-
-class LibraryContentItem;
-
 #include <QListWidgetItem>
 #include <QStringList>
 
+class AppearanceData;
+class LibraryContentItem;
 
 class LibraryContentItem : public QListWidgetItem
 {
