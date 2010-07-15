@@ -636,7 +636,8 @@ void ProjectTabWidget::loadModel()
             //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
             //qDebug() << "componentType: " << componentType;
             AppearanceData appearanceData = *mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
-            pCurrentTab->mpGraphicsView->addGUIObject(componentType, appearanceData, QPoint(posX, posY), 0, componentName);
+            appearanceData.setName(componentName);
+            pCurrentTab->mpGraphicsView->addGUIObject(appearanceData, QPoint(posX, posY), 0);
             pCurrentTab->mpGraphicsView->getGUIObject(componentName)->setNameTextPos(nameTextPos);
             while(pCurrentTab->mpGraphicsView->getGUIObject(componentName)->rotation() != rotation)
             {

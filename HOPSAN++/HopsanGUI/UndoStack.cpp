@@ -151,7 +151,8 @@ void UndoStack::undoOneStep()
 
                 //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
                 AppearanceData appearanceData = *mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
-                mpParentView->addGUIObject(componentType, appearanceData, QPoint(posX, posY), 0, componentName, false, true);
+                appearanceData.setName(componentName);
+                mpParentView->addGUIObject(appearanceData, QPoint(posX, posY), 0, false, true);
                 mpParentView->getGUIObject(componentName)->setNameTextPos(nameTextPos);
                 while(mpParentView->getGUIObject(componentName)->rotation() != rotation)
                 {
@@ -383,8 +384,9 @@ void UndoStack::redoOneStep()
                 //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
                 qDebug() << "Debug 1";
                 AppearanceData appearanceData = *mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
+                appearanceData.setName(componentName);
                 qDebug() << "Debug 2";
-                mpParentView->addGUIObject(componentType, appearanceData, QPoint(posX, posY), 0, componentName, false, true);
+                mpParentView->addGUIObject(appearanceData, QPoint(posX, posY), 0, false, true);
                 mpParentView->getGUIObject(componentName)->setNameTextPos(nameTextPos);
                 while(mpParentView->getGUIObject(componentName)->rotation() != rotation)
                 {

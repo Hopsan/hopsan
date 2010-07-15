@@ -181,7 +181,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
         QPoint position = event->pos();
         //qDebug() << "GraphicsView: " << "x=" << position.x() << "  " << "y=" << position.y();
 
-        this->addGUIObject(appearanceData.getTypeName(), appearanceData, this->mapToScene(position).toPoint());
+        this->addGUIObject(appearanceData, this->mapToScene(position).toPoint());
     }
 }
 
@@ -204,8 +204,9 @@ void GraphicsView::resetBackgroundBrush()
 //! @param componentType is a string defining the type of component.
 //! @param position is the position where the component will be created.
 //! @param name will be the name of the component.
-void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appearanceData, QPoint position, qreal rotation, QString name, bool startSelected, bool doNotRegisterUndo)
+void GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation, bool startSelected, bool doNotRegisterUndo)
 {
+    QString componentTypeName = appearanceData.getTypeName();
     if (componentTypeName == "Subsystem")
     {
         mpTempGUIObject= new GUISubsystem(appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
@@ -219,16 +220,16 @@ void GraphicsView::addGUIObject(QString componentTypeName, AppearanceData appear
         mpTempGUIObject = new GUIComponent(appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
     }
 
-    qDebug() << "The name: " <<  name;
-    //qDebug() << "=====================Get initial name: " << mpTempGUIObject->getName() << "requested: " << name;
-    if (!name.isEmpty())
-    {
-        qDebug() << "name not empty, setting to: " << name;
-        //Set name, do NOT try to do smart rename. (If component already exist with new component default name that other component would be renamed)
-        mpTempGUIObject->setName(name, true);
-    }
+//    qDebug() << "The name: " <<  name;
+//    //qDebug() << "=====================Get initial name: " << mpTempGUIObject->getName() << "requested: " << name;
+//    if (!name.isEmpty())
+//    {
+//        qDebug() << "name not empty, setting to: " << name;
+//        //Set name, do NOT try to do smart rename. (If component already exist with new component default name that other component would be renamed)
+//        mpTempGUIObject->setName(name, true);
+//    }
 
-    mpTempGUIObject->refreshDisplayName();
+//    mpTempGUIObject->refreshDisplayName();
     emit checkMessages();
     //qDebug() << "=====================Get name after add: " << mpTempGUIObject->getName();
     //
@@ -285,7 +286,7 @@ void GraphicsView::addSystemPort()
     appstream << "ICONPATH ../../HopsanGUI/systemporttmp.svg";
     appstream >> appearanceData;
 
-    addGUIObject(QString("SystemPort"), appearanceData, position.toPoint());
+    addGUIObject(appearanceData, position.toPoint());
 }
 
 //! Delete GUIObject with specified name
@@ -869,7 +870,8 @@ void GraphicsView::paste()
             copyStream >> nameTextPos;
 
             AppearanceData appearanceData = *mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
-            this->addGUIObject(componentType, appearanceData, QPoint(posX-50, posY-50), rotation, componentName, true);
+            appearanceData.setName(componentName);
+            this->addGUIObject(appearanceData, QPoint(posX-50, posY-50), rotation, true);
             mpTempGUIObject->setNameTextPos(nameTextPos);
             renameMap.insert(componentName, mpTempGUIObject->getName());
             mpTempGUIObject->setSelected(true);

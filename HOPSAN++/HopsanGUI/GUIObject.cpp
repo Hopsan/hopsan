@@ -66,14 +66,10 @@ GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsSce
     //remeber the scene ptr
     //! @todo is this really necessary as the object might know th scen (after adding ourrselves)
     mpParentGraphicsScene = scene;
+
     //Make a local copy of the appearance data (that can safely be modified if needed)
     mAppearanceData = appearanceData;
 
-    this->initGUIObject(position);
-}
-
-void GUIObject::initGUIObject(QPoint position)
-{
     mpParentGraphicsScene->addItem(this);
     mpParentGraphicsView = mpParentGraphicsScene->mpParentProjectTab->mpGraphicsView;
 
@@ -88,7 +84,6 @@ void GUIObject::initGUIObject(QPoint position)
 
     mpIcon = 0; //Set to null ptr initially
     setIcon(false); //Use user icon initially
-
 
     std::cout << "GUIObject: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
 
@@ -111,7 +106,6 @@ void GUIObject::initGUIObject(QPoint position)
     setPos(position.x()-mpIcon->boundingRect().width()/2,position.y()-mpIcon->boundingRect().height()/2);
 
     mIsFlipped = false;
-
 }
 
 
@@ -970,7 +964,7 @@ GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, Graph
     //Create the object in core, and get its default core name
     QString corename = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createComponent(mAppearanceData.getTypeName());
 
-    if ( getName().isEmpty() )
+    if ( this->getName().isEmpty() )
     {
         //If the displayname has not been decided then use the name from core
         mAppearanceData.setName(corename);
@@ -978,7 +972,7 @@ GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, Graph
     else
     {
         //Lets rename the core object to the gui name that is set in the txt description file, we take the name theat this function returns
-        mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.rename(corename, getName())); //Cant use setName here as thewould call an aditional rename (of someone else)
+        mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.rename(corename, getName())); //Cant use setName here as that would call an aditional rename (of someone else)
     }
 
     QString cqsType = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTypeCQS(getName());

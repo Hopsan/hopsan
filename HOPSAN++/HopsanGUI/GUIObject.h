@@ -145,7 +145,6 @@ protected slots:
     void adjustTextPositionToZoom();
 
 private:
-    void initGUIObject(QPoint position);
 
 };
 
@@ -301,5 +300,6 @@ public slots:
 //public slots:
 //     void deleteMe();
 };
+
 
 #endif // GUIOBJECT_H
