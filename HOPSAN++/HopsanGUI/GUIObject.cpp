@@ -88,7 +88,7 @@ GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsSce
     setIcon(false); //Use user icon initially
 
 
-    std::cout << "GUIcomponent: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
+    std::cout << "GUIObject: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
 
     setGeometry(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height());
 
