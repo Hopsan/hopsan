@@ -63,7 +63,17 @@ double dist(double x1,double y1, double x2, double y2)
 GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsScene *scene, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
+    //remeber the scene ptr
+    //! @todo is this really necessary as the object might know th scen (after adding ourrselves)
     mpParentGraphicsScene = scene;
+    //Make a local copy of the appearance data (that can safely be modified if needed)
+    mAppearanceData = appearanceData;
+
+    this->initGUIObject(position);
+}
+
+void GUIObject::initGUIObject(QPoint position)
+{
     mpParentGraphicsScene->addItem(this);
     mpParentGraphicsView = mpParentGraphicsScene->mpParentProjectTab->mpGraphicsView;
 
@@ -75,8 +85,7 @@ GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsSce
 
     this->setZValue(10);
 
-    //Make a local copy of the appearance data (that can safely be modified if needed)
-    mAppearanceData = appearanceData;
+
     mpIcon = 0; //Set to null ptr initially
     setIcon(false); //Use user icon initially
 
@@ -102,6 +111,7 @@ GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsSce
     setPos(position.x()-mpIcon->boundingRect().width()/2,position.y()-mpIcon->boundingRect().height()/2);
 
     mIsFlipped = false;
+
 }
 
 

@@ -144,6 +144,9 @@ protected slots:
     void fixTextPosition(QPointF pos);
     void adjustTextPositionToZoom();
 
+private:
+    void initGUIObject(QPoint position);
+
 };
 
 class GUIObjectDisplayName : public QGraphicsTextItem
@@ -218,7 +221,7 @@ protected:
 public slots:
 
 private:
-    HopsanEssentials *mpHopsanCore;
+
 };
 
 class GUISubsystem : public GUIObject
