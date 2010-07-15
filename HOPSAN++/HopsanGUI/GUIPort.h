@@ -44,16 +44,12 @@
 #include <QGraphicsSvgItem>
 #include <QGraphicsLineItem>
 #include <QGraphicsTextItem>
-//#include <QGraphicsScene>
-//#include "GUIObject.h"
 
 #include "AppearanceData.h"
-class GUIRootSystem;
 
-//Forward declaration
+//Forward declarations
 class GUIObject;
-//class GUIComponent;
-//class GUIRootSystem;
+class GUIRootSystem;
 class GraphicsView;
 
 class GUIPort :public QGraphicsSvgItem

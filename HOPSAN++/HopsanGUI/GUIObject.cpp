@@ -38,20 +38,13 @@
 
 //$Id$
 
-#include <iostream>
-#include <ostream>
-#include <assert.h>
-#include <vector>
 #include <math.h>
 
-#include <QtGui>
-#include <QtCore>
 #include <QVector>
 
-#include "ProjectTabWidget.h"
-
-
 #include "GUIObject.h"
+
+#include "ProjectTabWidget.h"
 #include "MainWindow.h"
 #include "ParameterDialog.h"
 #include "GUIPort.h"

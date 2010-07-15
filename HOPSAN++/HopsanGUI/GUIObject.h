@@ -46,14 +46,12 @@
 
 #include <QGraphicsWidget>
 #include <QObject>
+#include <QGraphicsSvgItem>
 
 class ProjectTabWidget;
-//class AppearanceData;
-
 class GraphicsScene;
 class GraphicsView;
 class GUIConnector;
-class QGraphicsSvgItem;
 class GUIObjectDisplayName;
 class HopsanEssentials;
 class Component;
