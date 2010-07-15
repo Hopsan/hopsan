@@ -48,7 +48,8 @@
 
 #include "SimulationThread.h"
 #include "ProjectTabWidget.h"
-#include "mainwindow.h"
+#include "GUIRootSystem.h"
+#include "MainWindow.h"
 
 
 //! @class SimulationThread

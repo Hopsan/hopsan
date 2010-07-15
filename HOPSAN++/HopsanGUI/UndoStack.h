@@ -41,18 +41,17 @@
 
 #include <QList>
 #include <QStringList>
-#include "ProjectTabWidget.h"
-#include "GUIObject.h"
-#include "GUIConnector.h"
 #include <QTableWidget>
 #include <QPushButton>
 #include <QDialog>
 #include <QTableWidget>
+#include <QObject>
 
     //Forward Declarations
 class GUIObject;
 class GraphicsView;
 class GUIConnector;
+class MainWindow;
 
 class UndoStack : public QObject
 {

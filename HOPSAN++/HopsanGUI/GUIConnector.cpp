@@ -38,14 +38,22 @@
 
 //$Id$
 
-#include <QtGui>
-#include "GUIConnector.h"
+
 #include <QDebug>
-#include "GUIPort.h"
-#include <vector>
 #include <QStyleOptionGraphicsItem>
-#include <math.h>
+
+//#include <QtGui>
+//#include "GUIPort.h"
+#include "GUIPort.h"
+//#include <vector>
+
+#include "GraphicsView.h"
 #include "GUIUtilities.h"
+#include "GUIObject.h"
+#include "GUIConnector.h"
+#include "UndoStack.h"
+#include "ProjectTabWidget.h"
+#include <math.h>
 
 //! Constructor.
 //! @param startpos defines the start position of the connector, normally the center of the starting port.

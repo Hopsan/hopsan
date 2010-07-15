@@ -5,12 +5,12 @@ QT += svg
 TARGET = HOPSANGUI
 TEMPLATE = app
 SOURCES += main.cpp \
-    mainwindow.cpp \
+    MainWindow.cpp \
     ProjectTabWidget.cpp \
     LibraryWidget.cpp \
     GUIConnector.cpp \
     GUIPort.cpp \
-    plotwidget.cpp \
+    PlotWidget.cpp \
     ParameterDialog.cpp \
     MessageWidget.cpp \
     SimulationSetupWidget.cpp \
@@ -22,14 +22,16 @@ SOURCES += main.cpp \
     UndoStack.cpp \
     AppearanceData.cpp \
     GUIRootSystem.cpp \
-    GUIUtilities.cpp
-HEADERS += mainwindow.h \
+    GUIUtilities.cpp \
+    GraphicsView.cpp \
+    GraphicsScene.cpp
+HEADERS += MainWindow.h \
     ProjectTabWidget.h \
     LibraryWidget.h \
     ../HopsanCore/HopsanCore.h \
     GUIConnector.h \
     GUIPort.h \
-    plotwidget.h \
+    PlotWidget.h \
     ParameterDialog.h \
     MessageWidget.h \
     SimulationSetupWidget.h \
@@ -43,7 +45,9 @@ HEADERS += mainwindow.h \
     UndoStack.h \
     GUIUtilities.h \
     GUIRootSystem.h \
-    ../HopsanCore/ComponentUtilities/IntegratorDamping.h
+    ../HopsanCore/ComponentUtilities/IntegratorDamping.h \
+    GraphicsView.h \
+    GraphicsScene.h
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE

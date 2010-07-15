@@ -38,12 +38,16 @@
 
 //$Id$
 
-#include "GUIPort.h"
-#include "plotwidget.h"
-#include "mainwindow.h"
-
 #include <QtGui>
 
+#include "GUIPort.h"
+#include "PlotWidget.h"
+#include "MainWindow.h"
+#include "GUIRootSystem.h"
+#include "GUIObject.h"
+#include "GraphicsScene.h"
+#include "GraphicsView.h"
+#include "ProjectTabWidget.h"
 
 //! Constructor.
 //! @param portName The name of the port

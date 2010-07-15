@@ -50,11 +50,11 @@
 #define INITIALIZATIONTHREAD_H
 
 #include <QThread>
-#include "GUIRootSystem.h"
 
 
-class ComponentSystem;
+//class ComponentSystem;
 class ProjectTabWidget;
+class GUIRootSystem;
 
 class InitializationThread : public QThread
 {

@@ -40,11 +40,13 @@
 
 
 #include <QtGui>
-#include "PreferenceWidget.h"
 #include <QDebug>
-#include "ProjectTabWidget.h"
 
-class ProjectTabWidget;
+#include "PreferenceWidget.h"
+#include "ProjectTabWidget.h"
+#include "MainWindow.h"
+
+//class ProjectTabWidget;
 
 PreferenceWidget::PreferenceWidget(MainWindow *parent)
     : QDialog(parent)

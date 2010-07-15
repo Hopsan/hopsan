@@ -49,8 +49,9 @@
 #include <cassert>
 
 #include "ParameterDialog.h"
-#include "mainwindow.h"
+#include "MainWindow.h"
 #include "GUIObject.h"
+#include "MessageWidget.h"
 
 
 //! @class ParameterDialog

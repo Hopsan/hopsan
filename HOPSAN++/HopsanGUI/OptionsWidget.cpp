@@ -40,9 +40,11 @@
 
 
 #include <QtGui>
-#include "OptionsWidget.h"
 #include <QDebug>
+
+#include "OptionsWidget.h"
 #include "ProjectTabWidget.h"
+#include "MainWindow.h"
 
 class ProjectTabWidget;
 

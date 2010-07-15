@@ -43,24 +43,21 @@
 
 #include <QMainWindow>
 
-#include "plotwidget.h"
-#include "MessageWidget.h"
-#include "PreferenceWidget.h"
-#include "OptionsWidget.h"
-#include "UndoStack.h"
-#include <QComboBox>
-#include <QLabel>
 
+//#include <QComboBox>
+//#include <QLabel>
 
+#include <QtGui>
 
-class QGridLayout;
-class QHBoxLayout;
-class QMenuBar;
-class QMenu;
-class QStatusBar;
-class QAction;
-class QString;
-class QPlainTextEdit;
+//class QGridLayout;
+//class QHBoxLayout;
+//class QMenuBar;
+//class QMenu;
+//class QStatusBar;
+//class QAction;
+//class QString;
+//class QPlainTextEdit;
+
 class SimulationSetupWidget;
 class ProjectTabWidget;
 class GraphicsView;
@@ -68,6 +65,8 @@ class GraphicsScene;
 class LibraryWidget;
 class PreferenceWidget;
 class OptionsWidget;
+class UndoWidget;
+class MessageWidget;
 
 
 class MainWindow : public QMainWindow

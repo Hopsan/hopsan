@@ -37,17 +37,21 @@
  */
 
 #include <QtGui>
-//#include <QObject>
+//
 #include "UndoStack.h"
-#include "GUIObject.h"
+
 #include <sstream>
 #include <QDebug>
-#include "AppearanceData.h"
-#include "mainwindow.h"
-#include "LibraryWidget.h"
-#include <assert.h>
 
-class AppearanceData;
+#include "GraphicsView.h"
+#include "GUIObject.h"
+#include "AppearanceData.h"
+#include "MainWindow.h"
+#include "ProjectTabWidget.h"
+#include "LibraryWidget.h"
+#include "GUIPort.h"
+#include "GUIConnector.h"
+#include <assert.h>
 
 //! Constructor.
 UndoStack::UndoStack(GraphicsView *parentView) : QObject()

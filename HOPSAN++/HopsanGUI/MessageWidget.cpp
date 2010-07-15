@@ -37,7 +37,7 @@
  */
 
 #include "MessageWidget.h"
-#include "mainwindow.h"
+#include "MainWindow.h"
 
 
 MessageWidget::MessageWidget(MainWindow *pParent)

@@ -42,10 +42,12 @@
 #define GUICONNECTOR_H
 
 #include <QGraphicsWidget>
+#include <QObject>
 #include <QPen>
 #include <QGraphicsLineItem>
 #include <QGraphicsSceneMoveEvent>
-#include "GUIPort.h"
+
+
 #include "AppearanceData.h"
 
 class GUIConnectorLine;

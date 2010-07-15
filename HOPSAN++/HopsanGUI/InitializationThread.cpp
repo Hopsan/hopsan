@@ -48,7 +48,8 @@
 
 #include "InitializationThread.h"
 #include "ProjectTabWidget.h"
-#include "mainwindow.h"
+#include "MainWindow.h"
+#include "GUIRootSystem.h"
 
 
 //! @class InitializationThread

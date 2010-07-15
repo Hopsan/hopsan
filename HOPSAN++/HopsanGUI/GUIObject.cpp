@@ -48,13 +48,19 @@
 #include <QtCore>
 #include <QVector>
 
+#include "ProjectTabWidget.h"
+
+
 #include "GUIObject.h"
-#include "mainwindow.h"
+#include "MainWindow.h"
 #include "ParameterDialog.h"
 #include "GUIPort.h"
 #include "GUIConnector.h"
 #include "GUIUtilities.h"
-
+#include "UndoStack.h"
+#include "MessageWidget.h"
+#include "GraphicsScene.h"
+#include "GraphicsView.h"
 
 double dist(double x1,double y1, double x2, double y2)
 {

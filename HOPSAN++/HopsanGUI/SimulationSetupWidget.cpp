@@ -48,7 +48,7 @@
 #include <iostream>
 #include <QtGui>
 #include "SimulationSetupWidget.h"
-#include "mainwindow.h"
+#include "MainWindow.h"
 #include "ProjectTabWidget.h"
 
 

@@ -37,15 +37,22 @@
  */
 
 //$Id$
-#include "plotwidget.h"
+
 #include <QDebug>
 #include <QSpinBox>
 #include <QColorDialog>
 #include <QLabel>
 #include <QCursor>
-#include "mainwindow.h"
 #include <QAction>
+
+#include "PlotWidget.h"
+
+#include "MainWindow.h"
 #include "SimulationSetupWidget.h"
+#include "ProjectTabWidget.h"
+#include "GUIObject.h"
+#include "GUIPort.h"
+#include "GraphicsView.h"
 
 PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindow *parent)
     : QMainWindow(parent)//QWidget(parent,Qt::Window)

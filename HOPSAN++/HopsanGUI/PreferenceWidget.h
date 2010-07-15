@@ -44,7 +44,6 @@
 #include <QDialog>
 #include <QCheckBox>
 #include <QDialogButtonBox>
-#include "mainwindow.h"
 
 class MainWindow;
 

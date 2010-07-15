@@ -49,7 +49,8 @@
 
 #include "LibraryWidget.h"
 #include "listwidget.h"
-#include "mainwindow.h"
+#include "MainWindow.h"
+#include "MessageWidget.h"
 
 
 //! @class LibraryContentItem

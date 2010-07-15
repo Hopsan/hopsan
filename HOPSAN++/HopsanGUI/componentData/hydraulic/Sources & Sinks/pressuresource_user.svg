@@ -1,124 +1,50 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.0"
    width="24.999998"
    height="24.999998"
-   id="svg3336"
-   sodipodi:version="0.32"
-   inkscape:version="0.46"
-   sodipodi:docname="pressuresource_user.svg"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   version="1.0">
+   id="svg3336">
   <defs
      id="defs3338">
     <marker
-       style="overflow:visible"
-       id="TriangleOutL"
        refX="0"
        refY="0"
        orient="auto"
-       inkscape:stockid="TriangleOutL">
+       id="TriangleOutL"
+       style="overflow:visible">
       <path
+         d="m 5.77,0 -8.65,5 0,-10 8.65,5 z"
          transform="scale(0.8,0.8)"
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
-         d="M 5.77,0 L -2.88,5 L -2.88,-5 L 5.77,0 z"
-         id="path8118" />
+         id="path8118"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none" />
     </marker>
-    <inkscape:perspective
-       sodipodi:type="inkscape:persp3d"
-       inkscape:vp_x="-0.31831148 : 525.26285 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_z="743.77617 : 525.26285 : 1"
-       inkscape:persp3d-origin="371.72893 : 349.86915 : 1"
-       id="perspective3344" />
   </defs>
-  <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     gridtolerance="10000"
-     guidetolerance="10"
-     objecttolerance="10"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="22.4"
-     inkscape:cx="5.2892106"
-     inkscape:cy="12.467227"
-     inkscape:document-units="px"
-     inkscape:current-layer="layer1"
-     showgrid="false"
-     inkscape:window-width="1680"
-     inkscape:window-height="948"
-     inkscape:window-x="0"
-     inkscape:window-y="68"
-     showguides="true"
-     inkscape:snap-global="true"
-     inkscape:snap-intersection-line-segments="true"
-     inkscape:snap-center="true"
-     inkscape:window-maximized="0">
-    <inkscape:grid
-       type="xygrid"
-       id="grid2405"
-       visible="true"
-       enabled="true"
-       empspacing="5"
-       snapvisiblegridlinesonly="true" />
-  </sodipodi:namedview>
-  <metadata
-     id="metadata3341">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
   <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(-172.58114,-363.382)">
+     transform="translate(-172.58114,-363.382)"
+     id="layer1">
     <path
+       d="m 417.14286,316.64789 a 87.14286,88.571426 0 1 1 -174.28572,0 87.14286,88.571426 0 1 1 174.28572,0 z"
        transform="matrix(0.1319672,0,0,0.1298387,141.53196,334.76885)"
-       d="M 417.14286,316.64789 A 87.14286,88.571426 0 1 1 242.85714,316.64789 A 87.14286,88.571426 0 1 1 417.14286,316.64789 z"
-       sodipodi:ry="88.571426"
-       sodipodi:rx="87.14286"
-       sodipodi:cy="316.64789"
-       sodipodi:cx="330"
        id="path2160"
-       style="font-weight:bold;fill:#ffffff;stroke:#000000;stroke-width:15.27899933000000000;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
-       sodipodi:type="arc" />
+       style="font-weight:bold;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:15.27899933;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <text
-       xml:space="preserve"
-       style="font-size:18px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:119.00000572%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"
        x="178.02353"
        y="381.93765"
        id="text3353"
-       sodipodi:linespacing="119.00001%"><tspan
-         sodipodi:role="line"
-         id="tspan3355"
+       xml:space="preserve"
+       style="font-size:18px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:119.00000572%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Vera Sans"><tspan
          x="178.02353"
          y="381.93765"
+         id="tspan3355"
          style="font-size:18px;font-weight:normal" /></text>
     <path
-       sodipodi:type="arc"
-       style="opacity:1;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.42857146;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 10.9375,9.1517839 a 0.71428573,0.71428573 0 1 1 -1.4285716,0 0.71428573,0.71428573 0 1 1 1.4285716,0 z"
+       transform="matrix(1.3999999,0,0,1.4,170.76864,363.0695)"
        id="path2471"
-       sodipodi:cx="10.223214"
-       sodipodi:cy="9.1517839"
-       sodipodi:rx="0.71428573"
-       sodipodi:ry="0.71428573"
-       d="M 10.9375,9.1517839 A 0.71428573,0.71428573 0 1 1 9.5089284,9.1517839 A 0.71428573,0.71428573 0 1 1 10.9375,9.1517839 z"
-       transform="matrix(1.3999999,0,0,1.4,170.76864,363.0695)" />
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.42857146;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
   </g>
 </svg>

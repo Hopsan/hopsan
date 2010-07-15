@@ -56,11 +56,10 @@ class QGroupBox;
 class QLabel;
 class QLineEdit;
 class QPushButton;
+
 class GUIObject;
 class GUIComponent;
 class GUISubsystem;
-class Component;
-class ComponentSystem;
 
 class ParameterDialog : public QDialog
 {

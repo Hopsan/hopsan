@@ -48,164 +48,15 @@
 #ifndef PROJECTTABWIDGET_H
 #define PROJECTTABWIDGET_H
 
-#include <QGraphicsView>
-#include <QGraphicsScene>
 #include <QTabWidget>
-#include <map>
 
 #include "GUIRootSystem.h"
 
-#include "MessageWidget.h"
-#include "AppearanceData.h"
-#include "UndoStack.h"
-
-
-class GUIPort;
-class GUIConnector;
-class ProjectTab;
-class UndoStack;
-
-class GraphicsScene : public QGraphicsScene
-{
-    Q_OBJECT
-
-public:
-    GraphicsScene(ProjectTab *parent = 0);
-    qreal TestVar;
-
-    ProjectTab *mpParentProjectTab;
-};
-
-
-class HopsanEssentials; //Forward declaration
-class ComponentSystem;
-class GUIComponent;
-class GUIObject;
-
-class GraphicsView : public QGraphicsView
-{
-    Q_OBJECT
-
-public:
-    GraphicsView(ProjectTab *parent = 0);
-    //~GraphicsView();
-    bool mIsCreatingConnector;
-    bool mPortsHidden;
-    bool mIsRenamingObject;
-    GUIObject *getGUIObject(QString name);
-    GUIConnector *getTempConnector();
-    void resetBackgroundBrush();
-
-    ProjectTab *mpParentProjectTab;
-    QMap<QString, GUIObject *> mGUIObjectMap;
-    QVector<GUIConnector *> mConnectorVector;
-    QAction *systemPortAction;
-    QMenu *menuInsert;
-    QColor mBackgroundColor;
-    //QPen getPen(QString situation, QString type, QString style);
-    UndoStack *undoStack;
-    qreal mZoomFactor;
-
-signals:
-    void keyPressDelete();
-    void keyPressCtrlR();
-    void keyPressShiftK();
-    void keyPressShiftL();
-    void keyPressCtrlUp();
-    void keyPressCtrlDown();
-    void keyPressCtrlLeft();
-    void keyPressCtrlRight();
-    void viewClicked();
-    void checkMessages();
-    void systemPortSignal(QPoint position);
-    void zoomChange();
-
-public slots:
-    void addGUIObject(QString componentTypeName, AppearanceData appearanceData, QPoint position, qreal rotation = 0, QString name=QString(), bool startSelected=true, bool doNotRegisterUndo = false);
-    void deleteGUIObject(QString componentName);
-    bool haveGUIObject(QString name);
-    void renameGUIObject(QString oldName, QString newName);
-    void addSystemPort();
-    void addConnector(GUIPort *pPort, bool doNotRegisterUndo = false);
-    void removeConnector(GUIConnector* pConnector, bool doNotRegisterUndo = false);
-    void cutSelected();
-    void copySelected();
-    void paste();
-    void selectAll();
-    //void setScale(const QString &scale);
-    void resetZoom();
-    void zoomIn();
-    void zoomOut();
-    void hideNames();
-    void showNames();
-    void hidePorts(bool doIt);
-    void undo();
-    void redo();
-    void clearUndo();
-    void exportPDF();
-
-protected:
-    virtual void dragMoveEvent(QDragMoveEvent *event);
-    virtual void dropEvent(QDropEvent *event);
-    virtual void wheelEvent(QWheelEvent *event);
-    virtual void mouseMoveEvent(QMouseEvent *event);
-    virtual void mousePressEvent(QMouseEvent *event);
-    virtual void keyPressEvent(QKeyEvent *event);
-    virtual void keyReleaseEvent(QKeyEvent *event);
-
-    void contextMenuEvent ( QContextMenuEvent * event );
-
-private:
-    GUIObject *mpTempGUIObject;
-    GUIConnector *mpTempConnector;
-    QString *mpCopyData;
-    //! @todo QMap no good means problem if we rename need to loop around the rename like in coore
-    bool isObjectSelected();
-    bool isConnectorSelected();
-    void createActions();
-    void createMenus();
-    void addSystemPort(QPoint position, QString name=QString(), bool startSelected = false);
-    bool mJustStoppedCreatingConnector;
-    bool mCtrlKeyPressed;
-};
-
-
-class ProjectTabWidget; //Forward declaration
-
-class ProjectTab : public QWidget
-{
-    Q_OBJECT
-
-public:
-    ProjectTab(ProjectTabWidget *parent = 0);
-    bool mIsSaved;
-    QString mModelFileName;
-    bool useIsoGraphics;
-    ProjectTabWidget *mpParentProjectTabWidget;
-    GUIRootSystem mGUIRootSystem;
-    GraphicsView *mpGraphicsView;
-    GraphicsScene *mpGraphicsScene;
-    double getStartTime();
-    double getTimeStep();
-    double getStopTime();
-
-public slots:
-    void hasChanged();
-    void updateStartTime();
-    void updateTimeStep();
-    void updateStopTime();
-
-signals:
-    void checkMessages();
-
-private:
-    double mStartTime;
-    double mStopTime;
-    double mTimeStep;
-};
-
-
+//Forward declaration
+class GraphicsScene;
+class GraphicsView;
 class MainWindow;
+class ProjectTab;
 
 class ProjectTabWidget : public QTabWidget
 {
@@ -245,6 +96,38 @@ public slots:
 signals:
     void checkMessages();
 
+};
+
+class ProjectTab : public QWidget
+{
+    Q_OBJECT
+
+public:
+    ProjectTab(ProjectTabWidget *parent = 0);
+    bool mIsSaved;
+    QString mModelFileName;
+    bool useIsoGraphics;
+    ProjectTabWidget *mpParentProjectTabWidget;
+    GUIRootSystem mGUIRootSystem;
+    GraphicsView *mpGraphicsView;
+    GraphicsScene *mpGraphicsScene;
+    double getStartTime();
+    double getTimeStep();
+    double getStopTime();
+
+public slots:
+    void hasChanged();
+    void updateStartTime();
+    void updateTimeStep();
+    void updateStopTime();
+
+signals:
+    void checkMessages();
+
+private:
+    double mStartTime;
+    double mStopTime;
+    double mTimeStep;
 };
 
 #endif // PROJECTTABWIDGET_H

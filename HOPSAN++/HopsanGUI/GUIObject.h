@@ -41,11 +41,14 @@
 #ifndef GUIOBJECT_H
 #define GUIOBJECT_H
 
-#include <QGraphicsWidget>
-#include <QGraphicsView>
-#include <vector>
-#include "ProjectTabWidget.h"
+#include "AppearanceData.h"
 #include <assert.h>
+
+#include <QGraphicsWidget>
+#include <QObject>
+
+class ProjectTabWidget;
+//class AppearanceData;
 
 class GraphicsScene;
 class GraphicsView;
