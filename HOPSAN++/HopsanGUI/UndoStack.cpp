@@ -40,8 +40,9 @@
 //
 #include "UndoStack.h"
 
-#include <sstream>
+//#include <sstream>
 #include <QDebug>
+#include <QTextStream>
 
 #include "GraphicsView.h"
 #include "GUIObject.h"
@@ -51,7 +52,9 @@
 #include "LibraryWidget.h"
 #include "GUIPort.h"
 #include "GUIConnector.h"
+#include "loadObjects.h"
 #include <assert.h>
+#include "GUIUtilities.h"
 
 //! Constructor.
 UndoStack::UndoStack(GraphicsView *parentView) : QObject()
@@ -141,23 +144,35 @@ void UndoStack::undoOneStep()
             qDebug() << "UNDO: " << mStack[undoPosition][i][0];
             if( mStack[undoPosition][i][0] == "DELETEDOBJECT" )
             {
-                QString componentType = mStack[undoPosition][i][1];
-                qDebug() << "componentType = " << componentType;
-                QString componentName = mStack[undoPosition][i][2];
-                int posX = mStack[undoPosition][i][3].toInt();
-                int posY = mStack[undoPosition][i][4].toInt();
-                qreal rotation = mStack[undoPosition][i][5].toDouble();
-                int nameTextPos = mStack[undoPosition][i][6].toInt();
+                //! @todo This code is testing the use of generic loadGUIObject functionality
+                //! @todo Temporary fix until QStringLists in undo has been replaced på TextStreams
+                QString tmpstr;
+                tmpstr = mStack[undoPosition][i].join(" ");
+                qDebug() << tmpstr;
+                QTextStream tmpstream(&tmpstr);
+                QString junk;
+                tmpstream >> junk;
 
-                //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
-                AppearanceData appearanceData = *mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
-                appearanceData.setName(componentName);
-                mpParentView->addGUIObject(appearanceData, QPoint(posX, posY), 0, false, true);
-                mpParentView->getGUIObject(componentName)->setNameTextPos(nameTextPos);
-                while(mpParentView->getGUIObject(componentName)->rotation() != rotation)
-                {
-                    mpParentView->getGUIObject(componentName)->rotate(true);
-                }
+                loadGUIObject(tmpstream, mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentView);
+                qDebug() << "after loadGUIObject: " << i;
+
+//                QString componentType = mStack[undoPosition][i][1];
+//                qDebug() << "componentType = " << componentType;
+//                QString componentName = mStack[undoPosition][i][2];
+//                int posX = mStack[undoPosition][i][3].toInt();
+//                int posY = mStack[undoPosition][i][4].toInt();
+//                qreal rotation = mStack[undoPosition][i][5].toDouble();
+//                int nameTextPos = mStack[undoPosition][i][6].toInt();
+
+//                //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
+//                AppearanceData appearanceData = *mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
+//                appearanceData.setName(componentName);
+//                mpParentView->addGUIObject(appearanceData, QPoint(posX, posY), 0, false, true);
+//                mpParentView->getGUIObject(componentName)->setNameTextPos(nameTextPos);
+//                while(mpParentView->getGUIObject(componentName)->rotation() != rotation)
+//                {
+//                    mpParentView->getGUIObject(componentName)->rotate(true);
+//                }
             }
             else if ( mStack[undoPosition][i][0] == "DELETEDCONNECTOR" )
             {
@@ -247,6 +262,7 @@ void UndoStack::undoOneStep()
                 QString oldName = mStack[undoPosition][i][1];
                 QString newName = mStack[undoPosition][i][2];
 
+                //! @todo Why not use the rename function to rename back?
                 GUIObject* obj_ptr = mpParentView->mGUIObjectMap.find(newName).value();
                 mpParentView->mGUIObjectMap.erase(mpParentView->mGUIObjectMap.find(newName));
                 obj_ptr->setName(oldName, true);
@@ -386,7 +402,7 @@ void UndoStack::redoOneStep()
                 AppearanceData appearanceData = *mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
                 appearanceData.setName(componentName);
                 qDebug() << "Debug 2";
-                mpParentView->addGUIObject(appearanceData, QPoint(posX, posY), 0, false, true);
+                mpParentView->addGUIObject(appearanceData, QPoint(posX, posY), 0);
                 mpParentView->getGUIObject(componentName)->setNameTextPos(nameTextPos);
                 while(mpParentView->getGUIObject(componentName)->rotation() != rotation)
                 {
@@ -510,36 +526,84 @@ void UndoStack::redoOneStep()
 void UndoStack::registerDeletedObject(GUIObject *item)
 {
     qDebug() << "registerDeletedObject()";
-    QPointF pos = item->mapToScene(item->boundingRect().center());
-    QStringList tempStringList;
-    QString xPosString;
-    QString yPosString;
-    QString rotationString;
-    QString nameTextPosString;
-    xPosString.setNum(pos.x());
-    yPosString.setNum(pos.y());
-    rotationString.setNum(item->rotation());
-    nameTextPosString.setNum(item->getNameTextPos());
-    tempStringList << "DELETEDOBJECT" << item->getTypeName() << item->getName() << xPosString << yPosString << rotationString << nameTextPosString;
-    qDebug() << "typeName = " << item->getTypeName();
-    this->insertPost(tempStringList);
 
-    //! @todo ugly quickhack for now dont save parameters for systemport or group
-    //! @todo Group typename probably not correct
-    //! @todo maybe the save functin should be part of every object (so it can write its own text)
-    if ( (item->getTypeName() != "SystemPort") && (item->getTypeName() != "Group") )
+    //! @todo This is REALLY UGLY WORKOROUND CODE to test using streams in undo, the use of stringlists in undo should be replaced by strings connected to streams so that generic load and save functions can be used.
+    //============================UGLY TEMPORARY CODE=======================
+    QStringList tmpStringList, tmpStringList2;
+    QString tmpStreamString;
+    QTextStream tmpStream(&tmpStreamString);
+    QString junk;
+    item->saveToTextStream(tmpStream);
+    tmpStream >> junk; //remove COMPONENT command
+
+    tmpStringList << "DELETEDOBJECT";
+    tmpStringList << addQuotes(readName(tmpStream));
+    tmpStringList << addQuotes(readName(tmpStream));
+    QString tmpStr;
+    while ( !tmpStream.atEnd() )
     {
-        QVector<QString> param_names = item->getParameterNames();
-        QVector<QString>::iterator pit;
-        for ( pit=param_names.begin() ; pit !=param_names.end(); ++pit )
+        tmpStream >> tmpStr;
+        if ((tmpStr == "PARAMETER"))
         {
-            QString tempVal;
-            tempVal.setNum(item->getParameterValue(*pit)); //Fetch parameter value to string
-            tempStringList.clear();
-            tempStringList << "PARAMETER" << item->getName() << *pit << tempVal;
-            this->insertPost(tempStringList);
+            tmpStringList2 << tmpStr;
+            break;
         }
+        if (tmpStr == "\n")
+        {
+            break;
+        }
+        tmpStringList << tmpStr;
+
     }
+    tmpStringList2 << addQuotes(readName(tmpStream));
+    while ( (!tmpStream.atEnd()) )
+    {
+        tmpStream >> tmpStr;
+        if (tmpStr == "\n")
+        {
+            break;
+        }
+        tmpStringList2 << tmpStr;
+    }
+
+    qDebug() << tmpStringList;
+    qDebug() << tmpStringList2;
+
+    this->insertPost(tmpStringList);
+    if (tmpStringList2[0] != "")
+        this->insertPost(tmpStringList2);
+    //============================UGLY TEMPORARY CODE=======================
+
+//    QPointF pos = item->mapToScene(item->boundingRect().center());
+//    QStringList tempStringList;
+//    QString xPosString;
+//    QString yPosString;
+//    QString rotationString;
+//    QString nameTextPosString;
+//    xPosString.setNum(pos.x());
+//    yPosString.setNum(pos.y());
+//    rotationString.setNum(item->rotation());
+//    nameTextPosString.setNum(item->getNameTextPos());
+//    tempStringList << "DELETEDOBJECT" << item->getTypeName() << item->getName() << xPosString << yPosString << rotationString << nameTextPosString;
+//    qDebug() << "typeName = " << item->getTypeName();
+//    this->insertPost(tempStringList);
+
+//    //! @todo ugly quickhack for now dont save parameters for systemport or group
+//    //! @todo Group typename probably not correct
+//    //! @todo maybe the save functin should be part of every object (so it can write its own text)
+//    if ( (item->getTypeName() != "SystemPort") && (item->getTypeName() != "Group") )
+//    {
+//        QVector<QString> param_names = item->getParameterNames();
+//        QVector<QString>::iterator pit;
+//        for ( pit=param_names.begin() ; pit !=param_names.end(); ++pit )
+//        {
+//            QString tempVal;
+//            tempVal.setNum(item->getParameterValue(*pit)); //Fetch parameter value to string
+//            tempStringList.clear();
+//            tempStringList << "PARAMETER" << item->getName() << *pit << tempVal;
+//            this->insertPost(tempStringList);
+//        }
+//    }
 }
 
 

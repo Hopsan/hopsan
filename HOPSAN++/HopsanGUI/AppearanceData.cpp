@@ -194,7 +194,7 @@ QPen GUIConnectorAppearance::getPen(QString situation, QString type, bool useISO
         return mNonFinishedPen;
     }
 
-    qDebug() << "ERROR no such connector appearance: " << situation << " " <<  type << " ISOstyle: " << useISO;
+    qDebug() << "ERROR no such connector appearance: " << situation << " " <<  type << " ISOstyle: " << useISO << "   DONT WORRY ABOUT THIS ERROR WILL FIX LATER, /Peter";
 
     return mNonFinishedPen;
 }

@@ -58,7 +58,7 @@ signals:
     void zoomChange();
 
 public slots:
-    GUIObject* addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation = 0, bool startSelected=true, bool doNotRegisterUndo=false);
+    GUIObject* addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation=0);
     void deleteGUIObject(QString componentName);
     bool haveGUIObject(QString name);
     void renameGUIObject(QString oldName, QString newName);

@@ -552,7 +552,8 @@ void ProjectTabWidget::loadModel()
     pCurrentTab->mIsSaved = true;
 
         //Necessary declarations
-    QString inputWord, componentType, componentName, startComponentName, endComponentName, parameterName, startPortName, endPortName, tempString;
+    QString inputWord, tempString;
+    //QString inputWord, componentType, componentName, startComponentName, endComponentName, parameterName, startPortName, endPortName, tempString;
     //int length, heigth;
 //    qreal posX, posY;
 //    int nameTextPos;
@@ -604,6 +605,7 @@ void ProjectTabWidget::loadModel()
             }
         }
 
+        //! @todo Why have 3 different rows for simulation time variables why not SIMULATIONTIME start, ts, stop
         if ( inputWord == "STARTTIME" )
         {
             double startTime;

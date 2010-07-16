@@ -193,7 +193,7 @@ GUIConnector *GraphicsView::getTempConnector()
 }
 
 //! @breif dont really know what this is used for
-//! @todo Ok this does not seem to refresh the view at all, but maybe some parts of the view, dont know realy
+//! @todo Ok this does not seem niceto refresh the view at all, but maybe some parts of the view, dont know realy
 void GraphicsView::resetBackgroundBrush()
 {
     this->setBackgroundBrush(mBackgroundColor);
@@ -226,7 +226,7 @@ void GraphicsView::deselectAllConnectors()
 //! @param position is the position where the component will be created.
 //! @param name will be the name of the component.
 //! @returns a pointer to the created and added object
-GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation, bool startSelected, bool doNotRegisterUndo)
+GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation)
 {
     QString componentTypeName = appearanceData.getTypeName();
     if (componentTypeName == "Subsystem")
@@ -289,7 +289,7 @@ GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint posi
 //    {
 //        undoStack->registerAddedObject(mpTempGUIObject);
 //    }
-    this->setFocus(Qt::OtherFocusReason);
+//    this->setFocus(Qt::OtherFocusReason);
 
     return mpTempGUIObject;
 }
@@ -907,7 +907,9 @@ void GraphicsView::paste()
 
             //Remember old name, in case we want to connect later
             renameMap.insert(data.name, pObj->getName());
-            pObj->setSelected(true);
+            //! @todo FINDOUT WHY: Cant select here because then the select all components bellow wont auto select the connectors DONT KNOW WHY, need to figure this out and clean up, (not that I realy nead to set selected here)
+            //pObj->setSelected(true);
+
             undoStack->registerAddedObject(pObj);
 
 
