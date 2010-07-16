@@ -29,9 +29,12 @@ public:
     GUIObject *getGUIObject(QString name);
     GUIConnector *getTempConnector();
     void resetBackgroundBrush();
+    void deselectAllGUIObjects();
+    void deselectAllConnectors();
 
     ProjectTab *mpParentProjectTab;
-    QMap<QString, GUIObject *> mGUIObjectMap;
+    typedef QMap<QString, GUIObject*> GUIObjectMapT;
+    GUIObjectMapT mGUIObjectMap;
     QVector<GUIConnector *> mConnectorVector;
     QAction *systemPortAction;
     QMenu *menuInsert;
@@ -55,7 +58,7 @@ signals:
     void zoomChange();
 
 public slots:
-    void addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation = 0, bool startSelected=true, bool doNotRegisterUndo=false);
+    GUIObject* addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation = 0, bool startSelected=true, bool doNotRegisterUndo=false);
     void deleteGUIObject(QString componentName);
     bool haveGUIObject(QString name);
     void renameGUIObject(QString oldName, QString newName);

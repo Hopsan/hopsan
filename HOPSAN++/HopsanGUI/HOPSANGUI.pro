@@ -24,7 +24,8 @@ SOURCES += main.cpp \
     GUIRootSystem.cpp \
     GUIUtilities.cpp \
     GraphicsView.cpp \
-    GraphicsScene.cpp
+    GraphicsScene.cpp \
+    loadObjects.cpp
 HEADERS += MainWindow.h \
     ProjectTabWidget.h \
     LibraryWidget.h \
@@ -47,7 +48,8 @@ HEADERS += MainWindow.h \
     GUIRootSystem.h \
     ../HopsanCore/ComponentUtilities/IntegratorDamping.h \
     GraphicsView.h \
-    GraphicsScene.h
+    GraphicsScene.h \
+    loadObjects.h
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE

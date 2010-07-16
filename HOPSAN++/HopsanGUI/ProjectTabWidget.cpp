@@ -73,6 +73,7 @@
 
 #include "version.h"
 #include "GUIUtilities.h"
+#include "loadObjects.h"
 
 
 //! @class ProjectTab
@@ -553,10 +554,10 @@ void ProjectTabWidget::loadModel()
         //Necessary declarations
     QString inputWord, componentType, componentName, startComponentName, endComponentName, parameterName, startPortName, endPortName, tempString;
     //int length, heigth;
-    qreal posX, posY;
-    int nameTextPos;
-    qreal rotation;
-    double parameterValue;
+//    qreal posX, posY;
+//    int nameTextPos;
+//    qreal rotation;
+//    double parameterValue;
 
     while ( !inputStream.atEnd() )
     {
@@ -626,97 +627,95 @@ void ProjectTabWidget::loadModel()
 
         if ( inputWord == "COMPONENT" )
         {
-            componentType = readName(inputStream);
-            componentName = readName(inputStream);  //Now read the name, assume that the name is contained within quotes signs, "name"
-            inputStream >> posX;
-            inputStream >> posY;
-            inputStream >> rotation;
-            inputStream >> nameTextPos;
+            loadGUIObject(inputStream, mpParentMainWindow->mpLibrary, pCurrentTab->mpGraphicsView);
+//            componentType = readName(inputStream);
+//            componentName = readName(inputStream);  //Now read the name, assume that the name is contained within quotes signs, "name"
+//            inputStream >> posX;
+//            inputStream >> posY;
+//            inputStream >> rotation;
+//            inputStream >> nameTextPos;
 
-            //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
-            //qDebug() << "componentType: " << componentType;
-            AppearanceData appearanceData = *mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
-            appearanceData.setName(componentName);
-            pCurrentTab->mpGraphicsView->addGUIObject(appearanceData, QPoint(posX, posY), 0);
-            pCurrentTab->mpGraphicsView->getGUIObject(componentName)->setNameTextPos(nameTextPos);
-            while(pCurrentTab->mpGraphicsView->getGUIObject(componentName)->rotation() != rotation)
-            {
-                pCurrentTab->mpGraphicsView->getGUIObject(componentName)->rotate();
-            }
+//            //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
+//            //qDebug() << "componentType: " << componentType;
+//            AppearanceData appearanceData = *mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
+//            appearanceData.setName(componentName);
+//            pCurrentTab->mpGraphicsView->addGUIObject(appearanceData, QPoint(posX, posY), 0);
+//            pCurrentTab->mpGraphicsView->getGUIObject(componentName)->setNameTextPos(nameTextPos);
+//            while(pCurrentTab->mpGraphicsView->getGUIObject(componentName)->rotation() != rotation)
+//            {
+//                pCurrentTab->mpGraphicsView->getGUIObject(componentName)->rotate();
+//            }
         }
 
 
         if ( inputWord == "PARAMETER" )
         {
-            componentName = readName(inputStream);
-            inputStream >> parameterName;
-            inputStream >> parameterValue;
+            loadParameterValues(inputStream, pCurrentTab->mpGraphicsView);
+//            componentName = readName(inputStream);
+//            inputStream >> parameterName;
+//            inputStream >> parameterValue;
 
-            //qDebug() << "Parameter: " << componentName << " " << parameterName << " " << parameterValue;
-            pCurrentTab->mpGraphicsView->mGUIObjectMap.find(componentName).value()->setParameterValue(parameterName, parameterValue);
+//            //qDebug() << "Parameter: " << componentName << " " << parameterName << " " << parameterValue;
+//            pCurrentTab->mpGraphicsView->mGUIObjectMap.find(componentName).value()->setParameterValue(parameterName, parameterValue);
         }
 
 
         if ( inputWord == "CONNECT" )
         {
+            loadConnector(inputStream, pCurrentTab->mpGraphicsView, &(pCurrentTab->mGUIRootSystem));
 
-            GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
-            startComponentName = readName(inputStream);
-            startPortName = readName(inputStream);
-            endComponentName = readName(inputStream);
-            endPortName = readName(inputStream);
-            GUIPort *startPort = pCurrentView->getGUIObject(startComponentName)->getPort(startPortName);
-            GUIPort *endPort = pCurrentView->getGUIObject(endComponentName)->getPort(endPortName);
+//            GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
+//            startComponentName = readName(inputStream);
+//            startPortName = readName(inputStream);
+//            endComponentName = readName(inputStream);
+//            endPortName = readName(inputStream);
+//            GUIPort *startPort = pCurrentView->getGUIObject(startComponentName)->getPort(startPortName);
+//            GUIPort *endPort = pCurrentView->getGUIObject(endComponentName)->getPort(endPortName);
 
-            bool success = pCurrentTab->mGUIRootSystem.connect(startComponentName, startPortName, endComponentName, endPortName);
-            if (!success)
-            {
-                qDebug() << "Unsuccessful connection try" << endl;
-            }
-            else
-            {
-                QVector<QPointF> tempPointVector;
-                qreal tempX, tempY;
+//            bool success = pCurrentTab->mGUIRootSystem.connect(startComponentName, startPortName, endComponentName, endPortName);
+//            if (!success)
+//            {
+//                qDebug() << "Unsuccessful connection try" << endl;
+//            }
+//            else
+//            {
+//                QVector<QPointF> tempPointVector;
+//                qreal tempX, tempY;
 
-                QString restOfLineString = inputStream.readLine();
-                QTextStream restOfLineStream(&restOfLineString);
-                while( !restOfLineStream.atEnd() )
-                {
-                    restOfLineStream >> tempX;
-                    restOfLineStream >> tempY;
-                    tempPointVector.push_back(QPointF(tempX, tempY));
-                }
+//                QString restOfLineString = inputStream.readLine();
+//                QTextStream restOfLineStream(&restOfLineString);
+//                while( !restOfLineStream.atEnd() )
+//                {
+//                    restOfLineStream >> tempX;
+//                    restOfLineStream >> tempY;
+//                    tempPointVector.push_back(QPointF(tempX, tempY));
+//                }
 
-                //! @todo: Store useIso bool in model file and pick the correct line styles when loading
-                GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), pCurrentTab->useIsoGraphics);
-                GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, pConnApp, pCurrentView);
+//                //! @todo: Store useIso bool in model file and pick the correct line styles when loading
+//                GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), pCurrentTab->useIsoGraphics);
+//                GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, pConnApp, pCurrentView);
 
-                pCurrentView->scene()->addItem(pTempConnector);
+//                pCurrentView->scene()->addItem(pTempConnector);
 
-                //Hide connected ports
-                startPort->hide();
-                endPort->hide();
+//                //Hide connected ports
+//                startPort->hide();
+//                endPort->hide();
 
-                connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-                connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+//                connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+//                connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
 
-                pCurrentView->mConnectorVector.append(pTempConnector);
-            }
+//                pCurrentView->mConnectorVector.append(pTempConnector);
+//            }
         }
     }
-    //Deselect all comonents
-    GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
-    QMap<QString, GUIObject *>::iterator it;
-    for(it = pCurrentView->mGUIObjectMap.begin(); it!=pCurrentView->mGUIObjectMap.end(); ++it)
-    {
-        it.value()->setSelected(false);
-    }
+    //Deselect all components
+    pCurrentTab->mpGraphicsView->deselectAllGUIObjects();
 
     //Sets the file name as model name
     getCurrentTab()->mGUIRootSystem.setRootSystemName(fileInfo.fileName());
 
-    pCurrentView->undoStack->clear();
-    pCurrentView->resetBackgroundBrush();
+    pCurrentTab->mpGraphicsView->undoStack->clear();
+    pCurrentTab->mpGraphicsView->resetBackgroundBrush();
 
     emit checkMessages();
 }

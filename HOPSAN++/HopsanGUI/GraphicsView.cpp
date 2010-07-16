@@ -9,6 +9,7 @@
 #include "MainWindow.h"
 #include "MessageWidget.h"
 #include "LibraryWidget.h"
+#include "loadObjects.h"
 
 //! @class GraphicsView
 //! @brief The GraphicsView class is a class which display the content of a scene of components.
@@ -198,13 +199,34 @@ void GraphicsView::resetBackgroundBrush()
     this->setBackgroundBrush(mBackgroundColor);
 }
 
+//! @brief deselects all GUIObjects in the view
+void GraphicsView::deselectAllGUIObjects()
+{
+    GUIObjectMapT::iterator it;
+    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
+    {
+        it.value()->setSelected(false);
+    }
+}
+
+//! @brief deselects all GUIConnectors in the view
+void GraphicsView::deselectAllConnectors()
+{
+    for(int i = 0; i != mConnectorVector.size(); ++i)
+    {
+        mConnectorVector[i]->doSelect(false, -1);
+        mConnectorVector[i]->setPassive();
+    }
+}
+
 
 //! @brief Temporary addSubSystem functin should be same later on
 //! Adds a new component to the GraphicsView.
 //! @param componentType is a string defining the type of component.
 //! @param position is the position where the component will be created.
 //! @param name will be the name of the component.
-void GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation, bool startSelected, bool doNotRegisterUndo)
+//! @returns a pointer to the created and added object
+GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation, bool startSelected, bool doNotRegisterUndo)
 {
     QString componentTypeName = appearanceData.getTypeName();
     if (componentTypeName == "Subsystem")
@@ -254,19 +276,22 @@ void GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint position, 
         //qDebug() << "GUI Object created at (" << mpTempGUIObject->x() << " " << mpTempGUIObject->y() << ")";
     }
 
-        //Deselect all other comonents
-    QMap<QString, GUIObject *>::iterator it;
-    for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
-    {
-        it.value()->setSelected(false);
-    }
-    mpTempGUIObject->setSelected(startSelected);
+//        //Deselect all other comonents
+//    QMap<QString, GUIObject *>::iterator it;
+//    for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
+//    {
+//        it.value()->setSelected(false);
+//    }
+//    mpTempGUIObject->setSelected(startSelected);
+//    this->setFocus(Qt::OtherFocusReason);
+
+//    if(!doNotRegisterUndo)
+//    {
+//        undoStack->registerAddedObject(mpTempGUIObject);
+//    }
     this->setFocus(Qt::OtherFocusReason);
 
-    if(!doNotRegisterUndo)
-    {
-        undoStack->registerAddedObject(mpTempGUIObject);
-    }
+    return mpTempGUIObject;
 }
 
 
@@ -634,8 +659,8 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
         std::cout << "GraphicsView: " << "Adding connector";
         QPointF oldPos = pPort->mapToScene(pPort->boundingRect().center());
 
-        GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(pPort->getPortType(), this->mpParentProjectTab->useIsoGraphics);
-        mpTempConnector = new GUIConnector(oldPos, pConnApp, this);
+        //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(pPort->getPortType(), this->mpParentProjectTab->useIsoGraphics);
+        mpTempConnector = new GUIConnector(oldPos, this);
 
         this->scene()->addItem(mpTempConnector);
         this->mIsCreatingConnector = true;
@@ -830,27 +855,29 @@ void GraphicsView::paste()
     copyStream.setString(mpCopyData);
 
         //Deselect all components
-    QMap<QString, GUIObject*>::iterator it;
-    for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
-    {
-        it.value()->setSelected(false);
-    }
+    this->deselectAllGUIObjects();
+//    QMap<QString, GUIObject*>::iterator it;
+//    for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
+//    {
+//        it.value()->setSelected(false);
+//    }
 
         //Deselect all connectors
-    for(int i = 0; i != mConnectorVector.size(); ++i)
-    {
-        mConnectorVector[i]->doSelect(false, -1);
-        mConnectorVector[i]->setPassive();
-    }
+    this->deselectAllConnectors();
+//    for(int i = 0; i != mConnectorVector.size(); ++i)
+//    {
+//        mConnectorVector[i]->doSelect(false, -1);
+//        mConnectorVector[i]->setPassive();
+//    }
 
     QMap<QString, QString> renameMap;       //Used to track name changes, so that connectors will know what components are called
     QString inputWord;
-    QString componentName;
-    QString componentType;
-    QString startComponentName, endComponentName;
-    QString startPortName, endPortName;
-    QString parameterName;
-    qreal parameterValue;
+//    QString componentName;
+//    QString componentType;
+//    QString startComponentName, endComponentName;
+//    QString startPortName, endPortName;
+//    QString parameterName;
+//    qreal parameterValue;
 
     //! @todo Could we not use some common load function for the stuff bellow
 
@@ -861,73 +888,124 @@ void GraphicsView::paste()
 
         if(inputWord == "COMPONENT")
         {
-            qreal posX, posY, rotation, nameTextPos;
-            componentType = readName(copyStream);
-            componentName = readName(copyStream);  //Now read the name, assume that the name is contained within quotes signs, "name"
-            copyStream >> posX;
-            copyStream >> posY;
-            copyStream >> rotation;
-            copyStream >> nameTextPos;
+            //QString oldname;
+            ObjectLoadData data;
 
-            AppearanceData appearanceData = *mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
-            appearanceData.setName(componentName);
-            this->addGUIObject(appearanceData, QPoint(posX-50, posY-50), rotation, true);
-            mpTempGUIObject->setNameTextPos(nameTextPos);
-            renameMap.insert(componentName, mpTempGUIObject->getName());
-            mpTempGUIObject->setSelected(true);
+            //Read the data from stream
+            data.read(copyStream);
+
+            //Remember old name
+            //oldname = data.name;
+
+            //Add offset to pos (to avoid pasting on top of old data)
+            //! @todo maybe take pos from mouse cursor
+            data.posX -= 50;
+            data.posY -= 50;
+
+            //Load (create new) object
+            GUIObject *pObj = loadGUIObject(data,mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,this);
+
+            //Remember old name, in case we want to connect later
+            renameMap.insert(data.name, pObj->getName());
+            pObj->setSelected(true);
+            undoStack->registerAddedObject(pObj);
+
+
+//            qreal posX, posY, rotation, nameTextPos;
+//            componentType = readName(copyStream);
+//            componentName = readName(copyStream);  //Now read the name, assume that the name is contained within quotes signs, "name"
+//            copyStream >> posX;
+//            copyStream >> posY;
+//            copyStream >> rotation;
+//            copyStream >> nameTextPos;
+
+//            AppearanceData appearanceData = *mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
+//            appearanceData.setName(componentName);
+//            this->addGUIObject(appearanceData, QPoint(posX-50, posY-50), rotation, true);
+//            mpTempGUIObject->setNameTextPos(nameTextPos);
+
+//            renameMap.insert(componentName, mpTempGUIObject->getName());
+//            mpTempGUIObject->setSelected(true);
         }
         else if(inputWord == "CONNECT")
         {
-            startComponentName = renameMap.find(readName(copyStream)).value();
-            startPortName = readName(copyStream);
-            endComponentName = renameMap.find(readName(copyStream)).value();
-            endPortName = readName(copyStream);
-            GUIPort *startPort = this->getGUIObject(startComponentName)->getPort(startPortName);
-            GUIPort *endPort = this->getGUIObject(endComponentName)->getPort(endPortName);
+            ConnectorLoadData data;
 
-            bool success = mpParentProjectTab->mGUIRootSystem.connect(startComponentName, startPortName, endComponentName, endPortName);
-            if (!success)
+            //Read the data
+            data.read(copyStream);
+
+            //Replace component names with posiibly renamed names
+            data.startComponentName = renameMap.find(data.startComponentName).value();
+            data.endComponentName = renameMap.find(data.endComponentName).value();
+
+            //Apply offset
+            //! @todo maybe use mose pointer location
+            for (int i=0; i < data.pointVector.size(); ++i)
             {
-                qDebug() << "Unsuccessful connection try" << endl;
+                data.pointVector[i].rx() -= 50;
+                data.pointVector[i].ry() -= 50;
             }
-            else
-            {
-                QVector<QPointF> tempPointVector;
-                qreal tempX, tempY;
 
-                QString restOfLineString = copyStream.readLine();
-                QTextStream restOfLineStream(&restOfLineString);
-                while( !restOfLineStream.atEnd() )
-                {
-                    restOfLineStream >> tempX;
-                    restOfLineStream >> tempY;
-                    tempPointVector.push_back(QPointF(tempX-50, tempY-50));
-                }
+            loadConnector(data,this,&(mpParentProjectTab->mGUIRootSystem));
 
-                //! @todo: Store useIso bool in model file and pick the correct line styles when loading
-                GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), this->mpParentProjectTab->useIsoGraphics);
-                GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, pConnApp, this);
+//            startComponentName = renameMap.find(readName(copyStream)).value();
+//            startPortName = readName(copyStream);
+//            endComponentName = renameMap.find(readName(copyStream)).value();
+//            endPortName = readName(copyStream);
+//            GUIPort *startPort = this->getGUIObject(startComponentName)->getPort(startPortName);
+//            GUIPort *endPort = this->getGUIObject(endComponentName)->getPort(endPortName);
 
-                this->scene()->addItem(pTempConnector);
+//            bool success = mpParentProjectTab->mGUIRootSystem.connect(startComponentName, startPortName, endComponentName, endPortName);
+//            if (!success)
+//            {
+//                qDebug() << "Unsuccessful connection try" << endl;
+//            }
+//            else
+//            {
+//                QVector<QPointF> tempPointVector;
+//                qreal tempX, tempY;
 
-                //Hide connected ports
-                startPort->hide();
-                endPort->hide();
+//                QString restOfLineString = copyStream.readLine();
+//                QTextStream restOfLineStream(&restOfLineString);
+//                while( !restOfLineStream.atEnd() )
+//                {
+//                    restOfLineStream >> tempX;
+//                    restOfLineStream >> tempY;
+//                    tempPointVector.push_back(QPointF(tempX-50, tempY-50));
+//                }
 
-                connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-                connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+//                //! @todo: Store useIso bool in model file and pick the correct line styles when loading
+//                //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), this->mpParentProjectTab->useIsoGraphics);
+//                GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, this);
 
-                this->mConnectorVector.append(pTempConnector);
-            }
+//                this->scene()->addItem(pTempConnector);
+
+//                //Hide connected ports
+//                startPort->hide();
+//                endPort->hide();
+
+//                connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+//                connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+
+//                this->mConnectorVector.append(pTempConnector);
+//            }
         }
 
         else if ( inputWord == "PARAMETER" )
         {
-            componentName = renameMap.find(readName(copyStream)).value();
-            copyStream >> parameterName;
-            copyStream >> parameterValue;
+            ParameterLoadData data;
+            //Read parameter data
+            data.read(copyStream);
+            //Replace the component name to the actual new name
+            data.componentName = renameMap.find(data.componentName).value();
+            //Load it into the new copy
+            loadParameterValues(data,this);
 
-            this->mGUIObjectMap.find(componentName).value()->setParameterValue(parameterName, parameterValue);
+//            componentName = renameMap.find(readName(copyStream)).value();
+//            copyStream >> parameterName;
+//            copyStream >> parameterValue;
+
+//            this->mGUIObjectMap.find(componentName).value()->setParameterValue(parameterName, parameterValue);
         }
     }
 

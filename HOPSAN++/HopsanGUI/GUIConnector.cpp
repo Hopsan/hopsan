@@ -42,11 +42,7 @@
 #include <QDebug>
 #include <QStyleOptionGraphicsItem>
 
-//#include <QtGui>
-//#include "GUIPort.h"
 #include "GUIPort.h"
-//#include <vector>
-
 #include "GraphicsView.h"
 #include "GUIUtilities.h"
 #include "GUIObject.h"
@@ -57,12 +53,9 @@
 
 //! Constructor.
 //! @param startpos defines the start position of the connector, normally the center of the starting port.
-//! @param primaryPen defines the default width and color of the line.
-//! @param activePen defines the width and color of the line when it is selected.
-//! @param hoverPen defines the width and color of the line when hovered by the mouse cursor.
 //! @param *parentView is a pointer to the GraphicsView the connector belongs to.
 //! @param parent is the parent of the port.
-GUIConnector::GUIConnector(QPointF startpos, GUIConnectorAppearance *pConnApp, GraphicsView *parentView, QGraphicsItem *parent)
+GUIConnector::GUIConnector(QPointF startpos, GraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
     this->mpParentGraphicsView = parentView;
@@ -73,7 +66,7 @@ GUIConnector::GUIConnector(QPointF startpos, GUIConnectorAppearance *pConnApp, G
 
     this->updateStartPoint(startpos);
 
-    mpGUIConnectorAppearance = pConnApp;
+    mpGUIConnectorAppearance = new GUIConnectorAppearance("notconnected", mpParentGraphicsView->mpParentProjectTab->useIsoGraphics);
 
     this->mEndPortConnected = false;
 
@@ -89,12 +82,9 @@ GUIConnector::GUIConnector(QPointF startpos, GUIConnectorAppearance *pConnApp, G
 //! @param *startPort is a pointer to the start port.
 //! @param *endPort is a pointer to the end port.
 //! @param points is the point vector for the connector.
-//! @param primaryPen defines the default width and color of the line.
-//! @param activePen defines the width and color of the line when it is selected.
-//! @param hoverPen defines the width and color of the line when hovered by the mouse cursor.
 //! @param *parentView is a pointer to the GraphicsView the connector belongs to.
 //! @param parent is the parent of the port.
-GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, GUIConnectorAppearance *pConnApp, GraphicsView *parentView, QGraphicsItem *parent)
+GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, GraphicsView *parentView, QGraphicsItem *parent)
 {
     this->mpParentGraphicsView = parentView;
     setFlags(QGraphicsItem::ItemIsFocusable);
@@ -107,7 +97,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     QPointF startPos = getStartPort()->mapToScene(getStartPort()->boundingRect().center());
     this->setPos(startPos);
 
-    mpGUIConnectorAppearance = pConnApp;
+    mpGUIConnectorAppearance = new GUIConnectorAppearance(startPort->getPortType(), mpParentGraphicsView->mpParentProjectTab->useIsoGraphics);
 //        //Set pen styles
 //    this->mPrimaryPen = primaryPen;
 //    this->mActivePen = activePen;

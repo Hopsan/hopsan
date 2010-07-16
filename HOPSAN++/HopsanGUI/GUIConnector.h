@@ -58,8 +58,8 @@ class GUIConnector : public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    GUIConnector(QPointF startpos, GUIConnectorAppearance *pConnApp, GraphicsView *parentView, QGraphicsItem *parent = 0);
-    GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> mPoints, GUIConnectorAppearance *pConnApp, GraphicsView *parentView, QGraphicsItem *parent = 0);
+    GUIConnector(QPointF startpos, GraphicsView *parentView, QGraphicsItem *parent = 0);
+    GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> mPoints, GraphicsView *parentView, QGraphicsItem *parent = 0);
     ~GUIConnector();
 
     enum geometryType {VERTICAL, HORIZONTAL, DIAGONAL};
