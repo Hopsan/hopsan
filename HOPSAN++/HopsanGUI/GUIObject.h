@@ -284,6 +284,10 @@ protected:
     GraphicsScene *mpParentScene;
     GraphicsScene *mpGroupScene;
 
+    QList<GUIComponent*> mGUICompList;
+    QList<GUIConnector*> mGUIConnList;
+    QList<GUIConnector*> mGUITransitConnList;
+
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 public slots:

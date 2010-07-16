@@ -428,6 +428,34 @@ QVector<QPointF> GUIConnector::getPointsVector()
 }
 
 
+QPointF GUIConnector::getStartPoint()
+{
+    if(mPoints.empty())
+        assert(false);
+    else
+    {
+        if(mPoints.first()==this->mpLines[0]->startPos)
+            return mPoints.first();
+        else
+            return mPoints.last();
+    }
+}
+
+
+QPointF GUIConnector::getEndPoint()
+{
+    if(mPoints.empty())
+        assert(false);
+    else
+    {
+        if(mPoints.last()==this->getLastLine()->endPos)
+            return mPoints.last();
+        else
+            return mPoints.first();
+    }
+}
+
+
 //! Returns a pointer to the start port of a connector.
 //! @see setStartPort(GUIPort *port)
 //! @see setEndPort(GUIPort *port)

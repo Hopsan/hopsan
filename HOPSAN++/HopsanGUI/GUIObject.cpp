@@ -54,6 +54,7 @@
 #include "MessageWidget.h"
 #include "GraphicsScene.h"
 #include "GraphicsView.h"
+#include "LibraryWidget.h"
 
 double dist(double x1,double y1, double x2, double y2)
 {
@@ -104,7 +105,6 @@ GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsSce
 
     //setPos(position-QPoint(mpIcon->boundingRect().width()/2, mpIcon->boundingRect().height()/2));
     setPos(position.x()-mpIcon->boundingRect().width()/2,position.y()-mpIcon->boundingRect().height()/2);
-
     mIsFlipped = false;
 }
 
@@ -1378,9 +1378,6 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
 {
     mpParentScene = scene;
 
-    QList<GUIComponent*> GUICompList;
-    QList<GUIConnector*> GUIConnList;
-
     this->setName(QString("Grupp_test"));
     this->refreshDisplayName();
 
@@ -1391,18 +1388,26 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
         GUIComponent *pComponent = qgraphicsitem_cast<GUIComponent*>(compList.at(i));
         if (pComponent)
         {
-            GUICompList.append(pComponent);
+            mGUICompList.append(pComponent);
 
-            QMap<QString, GUIConnector *>::iterator it;
+            //A bit ugly to loop trough ALL compenents in the GraphicsView
             for(int i = 0; i != mpParentGraphicsView->mConnectorVector.size(); ++i)
             {
                 if((mpParentGraphicsView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == pComponent->getName()) or
                    (mpParentGraphicsView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == pComponent->getName()))
                 {
+                    //Adds the connections which have both ends among selected components for grouping
                     if((compList.contains(mpParentGraphicsView->mConnectorVector[i]->getStartPort()->getGuiObject())) and
                        (compList.contains(mpParentGraphicsView->mConnectorVector[i]->getEndPort()->getGuiObject())))
                     {
-                        GUIConnList.append(it.value());
+                        mGUIConnList.append(mpParentGraphicsView->mConnectorVector[i]);
+                    }
+                    else
+                    {
+                        mGUITransitConnList.append(mpParentGraphicsView->mConnectorVector[i]);
+
+                        qDebug() << mpParentGraphicsView->mConnectorVector[i]->getStartPort()->getName() << ": " << mpParentGraphicsView->mConnectorVector[i]->getStartPort()->getGUIComponentName();
+                        qDebug() << mpParentGraphicsView->mConnectorVector[i]->getEndPort()->getName() << ": " << mpParentGraphicsView->mConnectorVector[i]->getEndPort()->getGUIComponentName();
                     }
                 }
                 if(this->mpParentGraphicsView->mConnectorVector.empty())
@@ -1413,29 +1418,61 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
         }
     }
 
-    double xMin = GUICompList.at(0)->x()+GUICompList.at(0)->rect().width()/2.0,
-           xMax = GUICompList.at(0)->x()+GUICompList.at(0)->rect().width()/2.0,
-           yMin = GUICompList.at(0)->y()+GUICompList.at(0)->rect().height()/2.0,
-           yMax = GUICompList.at(0)->y()+GUICompList.at(0)->rect().height()/2.0;
+    double xMin = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
+           xMax = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
+           yMin = mGUICompList.at(0)->y()+mGUICompList.at(0)->rect().height()/2.0,
+           yMax = mGUICompList.at(0)->y()+mGUICompList.at(0)->rect().height()/2.0;
 
     mpGroupScene = new GraphicsScene(this->mpParentGraphicsScene->mpParentProjectTab);
-    for (int i=0; i < GUICompList.size(); ++i)
+    for (int i=0; i < mGUICompList.size(); ++i)
     {
-        mpGroupScene->addItem(GUICompList.at(i));
+        mpGroupScene->addItem(mGUICompList.at(i));
 
         //Find the rect for the selscted items
-        if (GUICompList.at(i)->x()+GUICompList.at(i)->rect().width()/2.0 < xMin)
-            xMin = GUICompList.at(i)->x()+GUICompList.at(i)->rect().width()/2.0;
-        if (GUICompList.at(i)->x()+GUICompList.at(i)->rect().width()/2.0 > xMax)
-            xMax = GUICompList.at(i)->x()+GUICompList.at(i)->rect().width()/2.0;
-        if (GUICompList.at(i)->y()+GUICompList.at(i)->rect().height()/2.0 < yMin)
-            yMin = GUICompList.at(i)->y()+GUICompList.at(i)->rect().height()/2.0;
-        if (GUICompList.at(i)->y()+GUICompList.at(i)->rect().height()/2.0 > yMax)
-            yMax = GUICompList.at(i)->y()+GUICompList.at(i)->rect().height()/2.0;
+        if (mGUICompList.at(i)->x()+mGUICompList.at(i)->rect().width()/2.0 < xMin)
+            xMin = mGUICompList.at(i)->x()+mGUICompList.at(i)->rect().width()/2.0;
+        if (mGUICompList.at(i)->x()+mGUICompList.at(i)->rect().width()/2.0 > xMax)
+            xMax = mGUICompList.at(i)->x()+mGUICompList.at(i)->rect().width()/2.0;
+        if (mGUICompList.at(i)->y()+mGUICompList.at(i)->rect().height()/2.0 < yMin)
+            yMin = mGUICompList.at(i)->y()+mGUICompList.at(i)->rect().height()/2.0;
+        if (mGUICompList.at(i)->y()+mGUICompList.at(i)->rect().height()/2.0 > yMax)
+            yMax = mGUICompList.at(i)->y()+mGUICompList.at(i)->rect().height()/2.0;
     }
-    for (int i=0; i < GUIConnList.size(); ++i)
+    for (int i=0; i < mGUIConnList.size(); ++i)
     {
-        mpGroupScene->addItem(GUIConnList.at(i));
+        mpGroupScene->addItem(mGUIConnList.at(i));
+    }
+
+    for(int i=0; i < mGUITransitConnList.size(); ++i)
+    {
+        GUIConnector *transitConnector = mGUITransitConnList[i];
+
+        mpGroupScene->addItem(transitConnector);
+
+        AppearanceData appData;
+        appData = *(mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData("SystemPort"));
+        appData.setName("aPaApA-port");
+
+        GUISystemPort *pPort;
+
+        GUIComponent *startComp;
+        GUIComponent *endComp;
+        startComp = qgraphicsitem_cast<GUIComponent*>(transitConnector->getStartPort()->getGuiObject());
+        endComp   = qgraphicsitem_cast<GUIComponent*>(transitConnector->getEndPort()->getGuiObject());
+
+        if((startComp) && (mGUICompList.contains(startComp)))
+        {
+            pPort = new GUISystemPort(appData, transitConnector->getStartPoint().toPoint(), mpGroupScene);
+
+            mpGroupScene->addItem(pPort);
+        }
+        if((endComp) && (mGUICompList.contains(endComp)))
+        {
+            pPort = new GUISystemPort(appData, transitConnector->getEndPoint().toPoint(), mpGroupScene);
+
+            mpGroupScene->addItem(pPort);
+        }
+
     }
 
     //Fix the position for the group item
