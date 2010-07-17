@@ -326,19 +326,15 @@ void GUIObject::setParameterValue(QString name, double value)
 
 
 //! @brief Save GuiObject to a text stream
-void GUIObject::saveToTextStream(QTextStream &rStream)
+void GUIObject::saveToTextStream(QTextStream &rStream, QString prepend)
 {
     QPointF pos = mapToScene(boundingRect().center());
-    rStream << "COMPONENT " << addQuotes(getTypeName()) << " " << addQuotes(getName()) << " "
+    if (!prepend.isEmpty())
+    {
+        rStream << prepend << " ";
+    }
+    rStream << addQuotes(getTypeName()) << " " << addQuotes(getName()) << " "
             << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << "\n";
-
-//    vector<CompParameter> paramVector = mpCoreComponent->getParameterVector();
-//    std::vector<CompParameter>::iterator pit;
-//    for ( pit=paramVector.begin() ; pit !=paramVector.end(); ++pit )
-//    {
-//        rStream << "PARAMETER " << addQuotes(it.key()) << " " << QString::fromStdString(itp->getName()) << " " << itp->getValue() << "\n";
-//        //qDebug() << it.key() << " - " << itp->getName().c_str() << " - " << itp->getValue();
-//    }
 }
 
 
@@ -1142,17 +1138,18 @@ int GUIComponent::type() const
 
 
 //! @brief Save GuiObject to a text stream
-void GUIComponent::saveToTextStream(QTextStream &rStream)
+void GUIComponent::saveToTextStream(QTextStream &rStream, QString prepend)
 {
 //    QPointF pos = mapToScene(boundingRect().center());
 //    rStream << "COMPONENT " << getTypeName() << " " << addQuotes(it.value()->getName()) << " "
 //            << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << "\n";
-    GUIObject::saveToTextStream(rStream);
+    GUIObject::saveToTextStream(rStream, prepend);
 
     QVector<QString> parameterNames = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getParameterNames(this->getName());
     QVector<QString>::iterator pit;
     for(pit = parameterNames.begin(); pit != parameterNames.end(); ++pit)
     {
+        //! @todo It is a bit strange that we can not control the parameter keyword, but then agian spliting this into a separate function with its own prepend variable would also be wierd
         rStream << "PARAMETER " << addQuotes(getName()) << " " << (*pit) << " " <<
                 mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getParameterValue(this->getName(), (*pit)) << "\n";
     }

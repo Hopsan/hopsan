@@ -72,14 +72,14 @@ public:
     void registerHorizontalFlip(GUIObject *item);
     void clear();
     void newPost();
-    void insertPost(QStringList(list));
+    void insertPost(QString str);
     //void newRedoPost();
     void undoOneStep();
     void redoOneStep();
 
 private:
     GraphicsView *mpParentView;
-    QList< QList<QStringList> > mStack;
+    QList< QList<QString> > mStack;
     int mCurrentStackPosition;
 };
 
@@ -93,7 +93,7 @@ public:
     MainWindow *mpParentMainWindow;
 
     QTableWidget *mUndoTable;
-    QList< QList<QStringList> > mTempStack;
+    QList< QList<QString> > mTempStack;
 
     QPushButton *hideButton;
     QPushButton *undoButton;

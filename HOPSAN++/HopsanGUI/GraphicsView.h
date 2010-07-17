@@ -59,12 +59,13 @@ signals:
 
 public slots:
     GUIObject* addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation=0);
-    void deleteGUIObject(QString componentName);
+    void deleteGUIObject(QString componentName, bool noUnDo=false);
     bool haveGUIObject(QString name);
-    void renameGUIObject(QString oldName, QString newName);
+    void renameGUIObject(QString oldName, QString newName, bool noUnDo=false);
     void addSystemPort();
-    void addConnector(GUIPort *pPort, bool doNotRegisterUndo = false);
-    void removeConnector(GUIConnector* pConnector, bool doNotRegisterUndo = false);
+    void addConnector(GUIPort *pPort, bool doNotRegisterUndo=false);
+    void removeConnector(GUIConnector* pConnector, bool doNotRegisterUndo=false);
+    GUIConnector* findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
     void cutSelected();
     void copySelected();
     void paste();

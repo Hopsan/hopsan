@@ -771,7 +771,7 @@ void ProjectTabWidget::saveModel(bool saveAs)
     QMap<QString, GUIObject*>::iterator it;
     for(it = pCurrentView->mGUIObjectMap.begin(); it!=pCurrentView->mGUIObjectMap.end(); ++it)
     {
-        it.value()->saveToTextStream(modelFile);
+        it.value()->saveToTextStream(modelFile, "COMPONENT");
     }
 
     modelFile << "--------------------------------------------------------------\n";
@@ -788,7 +788,7 @@ void ProjectTabWidget::saveModel(bool saveAs)
 //            modelFile << " " << pCurrentView->mConnectorVector[i]->getPointsVector()[j].x() << " " << pCurrentView->mConnectorVector[i]->getPointsVector()[j].y();
 //        }
 //        modelFile << "\n";
-        pCurrentView->mConnectorVector[i]->saveToTextStream(modelFile);
+        pCurrentView->mConnectorVector[i]->saveToTextStream(modelFile, "CONNECT");
     }
     modelFile << "--------------------------------------------------------------\n";
 

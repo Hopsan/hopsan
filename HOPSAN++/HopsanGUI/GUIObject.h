@@ -90,7 +90,7 @@ public:
     GraphicsScene *mpParentGraphicsScene;
     GraphicsView *mpParentGraphicsView;
 
-    virtual void saveToTextStream(QTextStream &rStream);
+    virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());
     virtual void deleteInHopsanCore();
 
     enum { Type = UserType + 2 };
@@ -200,7 +200,7 @@ public:
     double getParameterValue(QString name);
     void setParameterValue(QString name, double value);
 
-    void saveToTextStream(QTextStream &rStream);
+    void saveToTextStream(QTextStream &rStream, QString prepend=QString());
 
     void setName(QString name, bool doOnlyCoreRename=false);
     QString getTypeName();

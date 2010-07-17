@@ -316,7 +316,7 @@ void GraphicsView::addSystemPort()
 
 //! Delete GUIObject with specified name
 //! @param objectName is the name of the componenet to delete
-void GraphicsView::deleteGUIObject(QString objectName)
+void GraphicsView::deleteGUIObject(QString objectName, bool noUnDo)
 {
     //qDebug() << "deleteGUIObject()";
     QMap<QString, GUIObject *>::iterator it;
@@ -337,8 +337,12 @@ void GraphicsView::deleteGUIObject(QString objectName)
             ++i;
         }
     }
+
+    if (!noUnDo)
+    {
         //Register removal of connector in undo stack (must be done after removal of connectors or the order of the commands in the undo stack will be wrong!)
-    this->undoStack->registerDeletedObject(it.value());
+        this->undoStack->registerDeletedObject(it.value());
+    }
 
     if (it != mGUIObjectMap.end())
     {
@@ -357,7 +361,7 @@ void GraphicsView::deleteGUIObject(QString objectName)
 }
 
 //! This function is used to rename a GUI Component (including key rename in component map)
-void GraphicsView::renameGUIObject(QString oldName, QString newName)
+void GraphicsView::renameGUIObject(QString oldName, QString newName, bool noUnDo)
 {
     //First find record with old name
     QMap<QString, GUIObject *>::iterator it = mGUIObjectMap.find(oldName);
@@ -378,7 +382,10 @@ void GraphicsView::renameGUIObject(QString oldName, QString newName)
         //qDebug() << "Old name: " << oldName << " not found";
     }
 
-    undoStack->registerRenameObject(oldName, newName);
+    if (!noUnDo)
+    {
+        undoStack->registerRenameObject(oldName, newName);
+    }
 
     emit checkMessages();
 }
@@ -704,6 +711,34 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
      }
 }
 
+//! @brief Find a connector in the connector vector
+GUIConnector* GraphicsView::findConnector(QString startComp, QString startPort, QString endComp, QString endPort)
+{
+    GUIConnector *item;
+    for(int i = 0; i < mConnectorVector.size(); ++i)
+    {
+        //! @todo Should add functions to connector to get start/end component/port names (used a few times around the code)
+        if((mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == startComp) and
+           (mConnectorVector[i]->getStartPort()->getName() == startPort) and
+           (mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == endComp) and
+           (mConnectorVector[i]->getEndPort()->getName() == endPort))
+        {
+            item = mConnectorVector[i];
+            break;
+        }
+        //Find even if the caller mixed up start and stop
+        else if((mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == endComp) and
+                (mConnectorVector[i]->getStartPort()->getName() == endPort) and
+                (mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == startComp) and
+                (mConnectorVector[i]->getEndPort()->getName() == startPort))
+        {
+            item = mConnectorVector[i];
+            break;
+        }
+    }
+    return item;
+}
+
 
 //! Removes the connector from the model.
 //! @param pConnector is a pointer to the connector to remove.
@@ -827,7 +862,7 @@ void GraphicsView::copySelected()
     {
         if (it.value()->isSelected())
         {
-            it.value()->saveToTextStream(copyStream);
+            it.value()->saveToTextStream(copyStream, "COMPONENT");
         }
     }
 
@@ -835,7 +870,7 @@ void GraphicsView::copySelected()
     {
         if(mConnectorVector[i]->getStartPort()->getGuiObject()->isSelected() and mConnectorVector[i]->getEndPort()->getGuiObject()->isSelected() and mConnectorVector[i]->isActive())
         {
-            mConnectorVector[i]->saveToTextStream(copyStream);
+            mConnectorVector[i]->saveToTextStream(copyStream, "CONNECT");
         }
     }
 }
@@ -929,6 +964,22 @@ void GraphicsView::paste()
 //            renameMap.insert(componentName, mpTempGUIObject->getName());
 //            mpTempGUIObject->setSelected(true);
         }
+        else if ( inputWord == "PARAMETER" )
+        {
+            ParameterLoadData data;
+            //Read parameter data
+            data.read(copyStream);
+            //Replace the component name to the actual new name
+            data.componentName = renameMap.find(data.componentName).value();
+            //Load it into the new copy
+            loadParameterValues(data,this);
+
+//            componentName = renameMap.find(readName(copyStream)).value();
+//            copyStream >> parameterName;
+//            copyStream >> parameterValue;
+
+//            this->mGUIObjectMap.find(componentName).value()->setParameterValue(parameterName, parameterValue);
+        }
         else if(inputWord == "CONNECT")
         {
             ConnectorLoadData data;
@@ -991,23 +1042,6 @@ void GraphicsView::paste()
 
 //                this->mConnectorVector.append(pTempConnector);
 //            }
-        }
-
-        else if ( inputWord == "PARAMETER" )
-        {
-            ParameterLoadData data;
-            //Read parameter data
-            data.read(copyStream);
-            //Replace the component name to the actual new name
-            data.componentName = renameMap.find(data.componentName).value();
-            //Load it into the new copy
-            loadParameterValues(data,this);
-
-//            componentName = renameMap.find(readName(copyStream)).value();
-//            copyStream >> parameterName;
-//            copyStream >> parameterValue;
-
-//            this->mGUIObjectMap.find(componentName).value()->setParameterValue(parameterName, parameterValue);
         }
     }
 

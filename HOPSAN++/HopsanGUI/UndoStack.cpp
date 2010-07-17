@@ -95,13 +95,13 @@ void UndoStack::newPost()
 
     if(mCurrentStackPosition < 0)
     {
-        QList<QStringList> tempList;
+        QList<QString> tempList;
         mStack.append(tempList);
         mCurrentStackPosition = 0;
     }
     else if(!mStack[mCurrentStackPosition].empty())
     {
-        QList<QStringList> tempList;
+        QList<QString> tempList;
         mStack.append(tempList);
         ++mCurrentStackPosition;
     }
@@ -110,9 +110,9 @@ void UndoStack::newPost()
 
 
 //! Inserts an undopost to the current stack position
-void UndoStack::insertPost(QStringList(list))
+void UndoStack::insertPost(QString str)
 {
-    mStack[mCurrentStackPosition].insert(0,list);
+    mStack[mCurrentStackPosition].insert(0,str);
     mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
 }
 
@@ -141,20 +141,29 @@ void UndoStack::undoOneStep()
     {
         for(int i = 0; i != mStack[undoPosition].size(); ++i)
         {
-            qDebug() << "UNDO: " << mStack[undoPosition][i][0];
-            if( mStack[undoPosition][i][0] == "DELETEDOBJECT" )
-            {
-                //! @todo This code is testing the use of generic loadGUIObject functionality
-                //! @todo Temporary fix until QStringLists in undo has been replaced på TextStreams
-                QString tmpstr;
-                tmpstr = mStack[undoPosition][i].join(" ");
-                qDebug() << tmpstr;
-                QTextStream tmpstream(&tmpstr);
-                QString junk;
-                tmpstream >> junk;
+            QString undoevent;
+            QTextStream poststream(&mStack[undoPosition][i]);
+            poststream >> undoevent;
 
-                loadGUIObject(tmpstream, mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentView);
+            qDebug() << "UNDO: " << undoevent;
+            if( undoevent == "DELETEDOBJECT" )
+            {
+                //poststream >> junk; //Discard Component load command
+                ////! @todo maybe we should not save it automatically in the guiobject maby let some other external save function add it
+                loadGUIObject(poststream, mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentView);
                 qDebug() << "after loadGUIObject: " << i;
+
+//                //! @todo This code is testing the use of generic loadGUIObject functionality
+//                //! @todo Temporary fix until QStringLists in undo has been replaced på TextStreams
+//                QString tmpstr;
+//                tmpstr = mStack[undoPosition][i].join(" ");
+//                qDebug() << tmpstr;
+//                QTextStream tmpstream(&tmpstr);
+//                QString junk;
+//                tmpstream >> junk;
+
+//                loadGUIObject(tmpstream, mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentView);
+//                qDebug() << "after loadGUIObject: " << i;
 
 //                QString componentType = mStack[undoPosition][i][1];
 //                qDebug() << "componentType = " << componentType;
@@ -174,163 +183,215 @@ void UndoStack::undoOneStep()
 //                    mpParentView->getGUIObject(componentName)->rotate(true);
 //                }
             }
-            else if ( mStack[undoPosition][i][0] == "DELETEDCONNECTOR" )
+            else if ( undoevent == "DELETEDCONNECTOR" )
             {
-                QString startComponentName = mStack[undoPosition][i][1];
-                QString startPortName = mStack[undoPosition][i][2];
-                QString endComponentName = mStack[undoPosition][i][3];;
-                QString endPortName = mStack[undoPosition][i][4];
+                loadConnector(poststream, mpParentView, &(mpParentView->mpParentProjectTab->mGUIRootSystem));
 
-                GUIPort *startPort = mpParentView->getGUIObject(startComponentName)->getPort(startPortName);
-                GUIPort *endPort = mpParentView->getGUIObject(endComponentName)->getPort(endPortName);
-
-                qDebug() << "Names: " << startComponentName << " " << startPortName << " " << endComponentName << " " << endPortName;
-                bool success = mpParentView->mpParentProjectTab->mGUIRootSystem.connect( startComponentName, startPortName, endComponentName, endPortName );
-                if (success)
-                {
-                    QVector<QPointF> tempPointVector;
-                    qreal tempX, tempY;
-                    for(int j = 5; j != mStack[undoPosition][i].size(); ++j)
-                    {
-                        tempX = mStack[undoPosition][i][j].toDouble();
-                        tempY = mStack[undoPosition][i][j+1].toDouble();
-                        tempPointVector.push_back(QPointF(tempX, tempY));
-                        ++j;
-                    }
-
-                    //! @todo: Store useIso bool in model file and pick the correct line styles when loading
-                    //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), mpParentView->mpParentProjectTab->useIsoGraphics);
-                    GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, mpParentView);
-
-                    mpParentView->scene()->addItem(pTempConnector);
-
-                    startPort->hide();
-                    endPort->hide();
-
-                    GUIObject::connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-                    GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-
-                    mpParentView->mConnectorVector.append(pTempConnector);
-                }
-                else
-                {
-                    qDebug() << "Unsuccessful connection atempt" << endl;
-                }
+//                QString startComponentName = mStack[undoPosition][i][1];
+//                QString startPortName = mStack[undoPosition][i][2];
+//                QString endComponentName = mStack[undoPosition][i][3];;
+//                QString endPortName = mStack[undoPosition][i][4];
+//
+//                GUIPort *startPort = mpParentView->getGUIObject(startComponentName)->getPort(startPortName);
+//                GUIPort *endPort = mpParentView->getGUIObject(endComponentName)->getPort(endPortName);
+//
+//                qDebug() << "Names: " << startComponentName << " " << startPortName << " " << endComponentName << " " << endPortName;
+//                bool success = mpParentView->mpParentProjectTab->mGUIRootSystem.connect( startComponentName, startPortName, endComponentName, endPortName );
+//                if (success)
+//                {
+//                    QVector<QPointF> tempPointVector;
+//                    qreal tempX, tempY;
+//                    for(int j = 5; j != mStack[undoPosition][i].size(); ++j)
+//                    {
+//                        tempX = mStack[undoPosition][i][j].toDouble();
+//                        tempY = mStack[undoPosition][i][j+1].toDouble();
+//                        tempPointVector.push_back(QPointF(tempX, tempY));
+//                        ++j;
+//                    }
+//
+//                    //! @todo: Store useIso bool in model file and pick the correct line styles when loading
+//                    //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), mpParentView->mpParentProjectTab->useIsoGraphics);
+//                    GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, mpParentView);
+//
+//                    mpParentView->scene()->addItem(pTempConnector);
+//
+//                    startPort->hide();
+//                    endPort->hide();
+//
+//                    GUIObject::connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+//                    GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+//
+//                    mpParentView->mConnectorVector.append(pTempConnector);
+//                }
+//                else
+//                {
+//                    qDebug() << "Unsuccessful connection atempt" << endl;
+//                }
             }
-            else if( mStack[undoPosition][i][0] == "ADDEDOBJECT" )
+            else if( undoevent == "ADDEDOBJECT" )
             {
-                QString itemName = mStack[undoPosition][i][2];
+                //! @todo MAybe we only need to save the name
+                readName(poststream); //Discard Type
+                QString name = readName(poststream); //Store name
+                mpParentView->deleteGUIObject(name, true);
 
-                GUIObject* item = mpParentView->mGUIObjectMap.find(itemName).value();
-                mpParentView->mGUIObjectMap.erase(mpParentView->mGUIObjectMap.find(itemName));
-                item->deleteInHopsanCore();
-                mpParentView->scene()->removeItem(item);
-                delete(item);
-                mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
+//                QString itemName = mStack[undoPosition][i][2];
+//
+//                GUIObject* item = mpParentView->mGUIObjectMap.find(itemName).value();
+//                mpParentView->mGUIObjectMap.erase(mpParentView->mGUIObjectMap.find(itemName));
+//                item->deleteInHopsanCore();
+//                mpParentView->scene()->removeItem(item);
+//                delete(item);
+//                mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
             }
-            else if( mStack[undoPosition][i][0] == "ADDEDCONNECTOR" )
+            else if( undoevent == "ADDEDCONNECTOR" )
             {
-                QString startComponentName = mStack[undoPosition][i][1];
-                QString startPortName = mStack[undoPosition][i][2];
-                QString endComponentName = mStack[undoPosition][i][3];
-                QString endPortName = mStack[undoPosition][i][4];
-
-                    // Lookup the pointer to the connector to remove from the connector vector
-                GUIConnector *item;
-                for(int i = 0; i != mpParentView->mConnectorVector.size(); ++i)
-                {
-                    if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == startComponentName) and
-                       (mpParentView->mConnectorVector[i]->getStartPort()->getName() == startPortName) and
-                       (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == endComponentName) and
-                       (mpParentView->mConnectorVector[i]->getEndPort()->getName() == endPortName))
-                    {
-                        item = mpParentView->mConnectorVector[i];
-                    }
-                    else if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == endComponentName) and
-                            (mpParentView->mConnectorVector[i]->getStartPort()->getName() == endPortName) and
-                            (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == startComponentName) and
-                            (mpParentView->mConnectorVector[i]->getEndPort()->getName() == startPortName))
-                    {
-                        item = mpParentView->mConnectorVector[i];
-                    }
-                }
+                //! @todo Do we really need to save the entire connector for this
+                QString startCompName = readName(poststream);
+                QString startPortName = readName(poststream);
+                QString endCompName = readName(poststream);
+                QString endPortName = readName(poststream);
+                GUIConnector *item = mpParentView->findConnector(startCompName, startPortName, endCompName, endPortName);
                 mpParentView->removeConnector(item, true);
-                //mStack[undoPosition].pop_front();
+
+
+//                QString startComponentName = mStack[undoPosition][i][1];
+//                QString startPortName = mStack[undoPosition][i][2];
+//                QString endComponentName = mStack[undoPosition][i][3];
+//                QString endPortName = mStack[undoPosition][i][4];
+//
+//                    // Lookup the pointer to the connector to remove from the connector vector
+//                GUIConnector *item;
+//                for(int i = 0; i != mpParentView->mConnectorVector.size(); ++i)
+//                {
+//                    if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == startComponentName) and
+//                       (mpParentView->mConnectorVector[i]->getStartPort()->getName() == startPortName) and
+//                       (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == endComponentName) and
+//                       (mpParentView->mConnectorVector[i]->getEndPort()->getName() == endPortName))
+//                    {
+//                        item = mpParentView->mConnectorVector[i];
+//                    }
+//                    else if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == endComponentName) and
+//                            (mpParentView->mConnectorVector[i]->getStartPort()->getName() == endPortName) and
+//                            (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == startComponentName) and
+//                            (mpParentView->mConnectorVector[i]->getEndPort()->getName() == startPortName))
+//                    {
+//                        item = mpParentView->mConnectorVector[i];
+//                    }
+//                }
+//                mpParentView->removeConnector(item, true);
+//                //mStack[undoPosition].pop_front();
             }
-            else if( mStack[undoPosition][i][0] == "RENAMEDOBJECT" )
+            else if( undoevent == "RENAMEDOBJECT" )
             {
-                QString oldName = mStack[undoPosition][i][1];
-                QString newName = mStack[undoPosition][i][2];
+                QString oldName = readName(poststream);
+                QString newName = readName(poststream);
+                mpParentView->renameGUIObject(newName, oldName, true);
 
-                //! @todo Why not use the rename function to rename back?
-                GUIObject* obj_ptr = mpParentView->mGUIObjectMap.find(newName).value();
-                mpParentView->mGUIObjectMap.erase(mpParentView->mGUIObjectMap.find(newName));
-                obj_ptr->setName(oldName, true);
-                mpParentView->mGUIObjectMap.insert(obj_ptr->getName(), obj_ptr);
+//                QString oldName = mStack[undoPosition][i][1];
+//                QString newName = mStack[undoPosition][i][2];
+//
+//                //! @todo Why not use the rename function to rename back?
+//                GUIObject* obj_ptr = mpParentView->mGUIObjectMap.find(newName).value();
+//                mpParentView->mGUIObjectMap.erase(mpParentView->mGUIObjectMap.find(newName));
+//                obj_ptr->setName(oldName, true);
+//                mpParentView->mGUIObjectMap.insert(obj_ptr->getName(), obj_ptr);
             }
-            else if( mStack[undoPosition][i][0] == "MODIFIEDCONNECTOR" )
+            else if( undoevent == "MODIFIEDCONNECTOR" )
             {
-                qreal oldX =                    mStack[undoPosition][i][1].toDouble();
-                qreal oldY =                    mStack[undoPosition][i][2].toDouble();
-                qreal newX =                    mStack[undoPosition][i][3].toDouble();
-                qreal newY =                    mStack[undoPosition][i][4].toDouble();
-                QString startComponentName =    mStack[undoPosition][i][5];
-                int startPortNumber =           mStack[undoPosition][i][6].toInt();
-                QString endComponentName =      mStack[undoPosition][i][7];
-                int endPortNumber =             mStack[undoPosition][i][8].toInt();
-                int lineNumber =                mStack[undoPosition][i][9].toInt();
+                QPointF oldPt, newPt;
+                int lineNumber;
 
-                    //Fetch the pointer to the connector
-                GUIConnector *item;
-                for(int i = 0; i != mpParentView->mConnectorVector.size(); ++i)
-                {
-                    if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == startComponentName) and
-                       (mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber() == startPortNumber) and
-                       (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == endComponentName) and
-                       (mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber() == endPortNumber))
-                    {
-                        item = mpParentView->mConnectorVector[i];
-                    }
-                    else if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == endComponentName) and
-                            (mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber() == endPortNumber) and
-                            (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == startComponentName) and
-                            (mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber() == startPortNumber))
-                    {
-                        item = mpParentView->mConnectorVector[i];
-                    }
-                }
-                qreal dX = newX-oldX;
-                qreal dY = newY-oldY;
+                QString startComp = readName(poststream);
+                QString startPort = readName(poststream);
+                QString endComp = readName(poststream);
+                QString endPort = readName(poststream);
+                poststream >> oldPt.rx() >> oldPt.ry() >> newPt.rx() >> newPt.ry() >> lineNumber;
+                GUIConnector *item = mpParentView->findConnector(startComp, startPort, endComp, endPort);
 
-                item->getLine(lineNumber)->setPos(QPointF(item->getLine(lineNumber)->pos().x()-dX, item->getLine(lineNumber)->pos().y()-dY));
+                QPointF dXY = newPt-oldPt;
+                item->getLine(lineNumber)->setPos(item->getLine(lineNumber)->pos()-dXY);
                 item->updateLine(lineNumber);
-            }
-            else if( mStack[undoPosition][i][0] == "MOVEDOBJECT" )
-            {
-                qreal oldX = mStack[undoPosition][i][1].toDouble();
-                qreal oldY = mStack[undoPosition][i][2].toDouble();
-                //qreal newX = mStack[undoPosition][i][3].toDouble();
-                //qreal newY = mStack[undoPosition][i][4].toDouble();
-                QString objectName = mStack[undoPosition][i][5];
 
-                mpParentView->getGUIObject(objectName)->setPos(QPointF(oldX, oldY));
+//                qreal oldX =                    mStack[undoPosition][i][1].toDouble();
+//                qreal oldY =                    mStack[undoPosition][i][2].toDouble();
+//                qreal newX =                    mStack[undoPosition][i][3].toDouble();
+//                qreal newY =                    mStack[undoPosition][i][4].toDouble();
+//                QString startComponentName =    mStack[undoPosition][i][5];
+//                int startPortNumber =           mStack[undoPosition][i][6].toInt();
+//                QString endComponentName =      mStack[undoPosition][i][7];
+//                int endPortNumber =             mStack[undoPosition][i][8].toInt();
+//                int lineNumber =                mStack[undoPosition][i][9].toInt();
+//
+//                    //Fetch the pointer to the connector
+//                GUIConnector *item;
+//                for(int i = 0; i != mpParentView->mConnectorVector.size(); ++i)
+//                {
+//                    if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == startComponentName) and
+//                       (mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber() == startPortNumber) and
+//                       (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == endComponentName) and
+//                       (mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber() == endPortNumber))
+//                    {
+//                        item = mpParentView->mConnectorVector[i];
+//                    }
+//                    else if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == endComponentName) and
+//                            (mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber() == endPortNumber) and
+//                            (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == startComponentName) and
+//                            (mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber() == startPortNumber))
+//                    {
+//                        item = mpParentView->mConnectorVector[i];
+//                    }
+//                }
+//                qreal dX = newX-oldX;
+//                qreal dY = newY-oldY;
+//
+//                item->getLine(lineNumber)->setPos(QPointF(item->getLine(lineNumber)->pos().x()-dX, item->getLine(lineNumber)->pos().y()-dY));
+//                item->updateLine(lineNumber);
             }
-            else if( mStack[undoPosition][i][0] == "ROTATEDOBJECT" )
+            else if( undoevent == "MOVEDOBJECT" )
             {
-                QString objectName = mStack[undoPosition][i][1];
-                mpParentView->getGUIObject(objectName)->rotate(true);
-                mpParentView->getGUIObject(objectName)->rotate(true);
-                mpParentView->getGUIObject(objectName)->rotate(true);
+                QPointF oldPt, newPt;
+                QString name = readName(poststream);
+                poststream >> oldPt.rx() >> oldPt.ry() >> newPt.rx() >> newPt.ry();
+                qDebug() << name;
+                mpParentView->getGUIObject(name)->setPos(oldPt);
+
+//                qreal oldX = mStack[undoPosition][i][1].toDouble();
+//                qreal oldY = mStack[undoPosition][i][2].toDouble();
+//                //qreal newX = mStack[undoPosition][i][3].toDouble();
+//                //qreal newY = mStack[undoPosition][i][4].toDouble();
+//                QString objectName = mStack[undoPosition][i][5];
+//
+//                mpParentView->getGUIObject(objectName)->setPos(QPointF(oldX, oldY));
             }
-            else if( mStack[undoPosition][i][0] == "VERTICALFLIP" )
+            else if( undoevent == "ROTATEDOBJECT" )
             {
-                QString objectName = mStack[undoPosition][i][1];
-                mpParentView->getGUIObject(objectName)->flipVertical(true);
+                QString name = readName(poststream);
+                //! @todo This feels wierd, why rotate three times
+                mpParentView->getGUIObject(name)->rotate(true);
+                mpParentView->getGUIObject(name)->rotate(true);
+                mpParentView->getGUIObject(name)->rotate(true);
+
+//                QString objectName = mStack[undoPosition][i][1];
+//                mpParentView->getGUIObject(objectName)->rotate(true);
+//                mpParentView->getGUIObject(objectName)->rotate(true);
+//                mpParentView->getGUIObject(objectName)->rotate(true);
             }
-            else if( mStack[undoPosition][i][0] == "HORIZONTALFLIP" )
+            else if( undoevent == "VERTICALFLIP" )
             {
-                QString objectName = mStack[undoPosition][i][1];
-                mpParentView->getGUIObject(objectName)->flipHorizontal(true);
+                QString name = readName(poststream);
+                mpParentView->getGUIObject(name)->flipVertical(true);
+
+//                QString objectName = mStack[undoPosition][i][1];
+//                mpParentView->getGUIObject(objectName)->flipVertical(true);
+            }
+            else if( undoevent == "HORIZONTALFLIP" )
+            {
+                QString name = readName(poststream);
+                mpParentView->getGUIObject(name)->flipHorizontal(true);
+
+//                QString objectName = mStack[undoPosition][i][1];
+//                mpParentView->getGUIObject(objectName)->flipHorizontal(true);
             }
         }
         mCurrentStackPosition = undoPosition - 1;
@@ -346,177 +407,226 @@ void UndoStack::redoOneStep()
     if( (mCurrentStackPosition != mStack.size()-1) and (!mStack[mCurrentStackPosition+1].empty()) )
     {
         ++mCurrentStackPosition;
-        for(int i = mStack[mCurrentStackPosition].size()-1; i != -1; --i)
+        for(int i = mStack[mCurrentStackPosition].size()-1; i > -1; --i)
         {
-            qDebug() << "REDO: " << mStack[mCurrentStackPosition][i][0];
-            if( mStack[mCurrentStackPosition][i][0] == "DELETEDOBJECT" )
-            {
-                QString componentName = mStack[mCurrentStackPosition][i][2];
-                GUIObject* item = mpParentView->mGUIObjectMap.find(componentName).value();
-                mpParentView->mGUIObjectMap.erase(mpParentView->mGUIObjectMap.find(componentName));
-                item->deleteInHopsanCore();
-                mpParentView->scene()->removeItem(item);
-                delete(item);
-                mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
-            }
-            else if ( mStack[mCurrentStackPosition][i][0] == "DELETEDCONNECTOR" )
-            {
-                QString startComponentName = mStack[mCurrentStackPosition][i][1];
-                QString startPortName = mStack[mCurrentStackPosition][i][2];
-                QString endComponentName = mStack[mCurrentStackPosition][i][3];
-                QString endPortName = mStack[mCurrentStackPosition][i][4];
+            QString redoevent;
+            QTextStream poststream (&mStack[mCurrentStackPosition][i]);
+            poststream >> redoevent;
 
-                    // Lookup the pointer to the connector to remove from the connector vector
-                GUIConnector *item;
-                for(int i = 0; i != mpParentView->mConnectorVector.size(); ++i)
-                {
-                    if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == startComponentName) and
-                       (mpParentView->mConnectorVector[i]->getStartPort()->getName() == startPortName) and
-                       (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == endComponentName) and
-                       (mpParentView->mConnectorVector[i]->getEndPort()->getName() == endPortName))
-                    {
-                        item = mpParentView->mConnectorVector[i];
-                    }
-                    else if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == endComponentName) and
-                            (mpParentView->mConnectorVector[i]->getStartPort()->getName() == endPortName) and
-                            (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == startComponentName) and
-                            (mpParentView->mConnectorVector[i]->getEndPort()->getName() == startPortName))
-                    {
-                        item = mpParentView->mConnectorVector[i];
-                    }
-                }
+            qDebug() << "REDO: " << redoevent;
+            if( redoevent == "DELETEDOBJECT" )
+            {
+                readName(poststream); //Discard Type
+                QString name = readName(poststream); //Store name
+                mpParentView->deleteGUIObject(name, true);
+
+//                QString componentName = mStack[mCurrentStackPosition][i][2];
+//                GUIObject* item = mpParentView->mGUIObjectMap.find(componentName).value();
+//                mpParentView->mGUIObjectMap.erase(mpParentView->mGUIObjectMap.find(componentName));
+//                item->deleteInHopsanCore();
+//                mpParentView->scene()->removeItem(item);
+//                delete(item);
+//                mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
+            }
+            else if ( redoevent == "DELETEDCONNECTOR" )
+            {
+                //! @todo Do we really need to save the entire connector for this
+                QString startCompName = readName(poststream);
+                QString startPortName = readName(poststream);
+                QString endCompName = readName(poststream);
+                QString endPortName = readName(poststream);
+                GUIConnector *item = mpParentView->findConnector(startCompName, startPortName, endCompName, endPortName);
                 mpParentView->removeConnector(item, true);
-                //mStack[undoPosition].pop_front();
+
+//                QString startComponentName = mStack[mCurrentStackPosition][i][1];
+//                QString startPortName = mStack[mCurrentStackPosition][i][2];
+//                QString endComponentName = mStack[mCurrentStackPosition][i][3];
+//                QString endPortName = mStack[mCurrentStackPosition][i][4];
+//
+//                    // Lookup the pointer to the connector to remove from the connector vector
+//                GUIConnector *item;
+//                for(int i = 0; i != mpParentView->mConnectorVector.size(); ++i)
+//                {
+//                    if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == startComponentName) and
+//                       (mpParentView->mConnectorVector[i]->getStartPort()->getName() == startPortName) and
+//                       (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == endComponentName) and
+//                       (mpParentView->mConnectorVector[i]->getEndPort()->getName() == endPortName))
+//                    {
+//                        item = mpParentView->mConnectorVector[i];
+//                    }
+//                    else if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == endComponentName) and
+//                            (mpParentView->mConnectorVector[i]->getStartPort()->getName() == endPortName) and
+//                            (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == startComponentName) and
+//                            (mpParentView->mConnectorVector[i]->getEndPort()->getName() == startPortName))
+//                    {
+//                        item = mpParentView->mConnectorVector[i];
+//                    }
+//                }
+//                mpParentView->removeConnector(item, true);
+//                //mStack[undoPosition].pop_front();
             }
-            else if( mStack[mCurrentStackPosition][i][0] == "ADDEDOBJECT" )
+            else if( redoevent == "ADDEDOBJECT" )
             {
-                QString componentType = mStack[mCurrentStackPosition][i][1];
-                QString componentName = mStack[mCurrentStackPosition][i][2];
-                int posX = mStack[mCurrentStackPosition][i][3].toInt();
-                int posY = mStack[mCurrentStackPosition][i][4].toInt();
-                qreal rotation = mStack[mCurrentStackPosition][i][5].toDouble();
-                int nameTextPos = mStack[mCurrentStackPosition][i][6].toInt();
+                  loadGUIObject(poststream, mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentView);
 
-                //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
-                qDebug() << "Debug 1";
-                AppearanceData appearanceData = *mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
-                appearanceData.setName(componentName);
-                qDebug() << "Debug 2";
-                mpParentView->addGUIObject(appearanceData, QPoint(posX, posY), 0);
-                mpParentView->getGUIObject(componentName)->setNameTextPos(nameTextPos);
-                while(mpParentView->getGUIObject(componentName)->rotation() != rotation)
-                {
-                    mpParentView->getGUIObject(componentName)->rotate();
-                }
+//                QString componentType = mStack[mCurrentStackPosition][i][1];
+//                QString componentName = mStack[mCurrentStackPosition][i][2];
+//                int posX = mStack[mCurrentStackPosition][i][3].toInt();
+//                int posY = mStack[mCurrentStackPosition][i][4].toInt();
+//                qreal rotation = mStack[mCurrentStackPosition][i][5].toDouble();
+//                int nameTextPos = mStack[mCurrentStackPosition][i][6].toInt();
+//
+//                //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
+//                qDebug() << "Debug 1";
+//                AppearanceData appearanceData = *mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
+//                appearanceData.setName(componentName);
+//                qDebug() << "Debug 2";
+//                mpParentView->addGUIObject(appearanceData, QPoint(posX, posY), 0);
+//                mpParentView->getGUIObject(componentName)->setNameTextPos(nameTextPos);
+//                while(mpParentView->getGUIObject(componentName)->rotation() != rotation)
+//                {
+//                    mpParentView->getGUIObject(componentName)->rotate();
+//                }
             }
-            else if( mStack[mCurrentStackPosition][i][0] == "ADDEDCONNECTOR" )
+            else if( redoevent == "ADDEDCONNECTOR" )
             {
-                QString startComponentName = mStack[mCurrentStackPosition][i][1];
-                QString startPortName = mStack[mCurrentStackPosition][i][2];
-                QString endComponentName = mStack[mCurrentStackPosition][i][3];;
-                QString endPortName = mStack[mCurrentStackPosition][i][4];
-                GUIPort *startPort = mpParentView->getGUIObject(startComponentName)->getPort(startPortName);
-                GUIPort *endPort = mpParentView->getGUIObject(endComponentName)->getPort(endPortName);
+                loadConnector(poststream, mpParentView, &(mpParentView->mpParentProjectTab->mGUIRootSystem));
 
-                qDebug() << "Names: " << startComponentName << " " << startPortName << " " << endComponentName << " " << endPortName;
-                bool success = mpParentView->mpParentProjectTab->mGUIRootSystem.connect( startComponentName, startPortName, endComponentName, endPortName );
-                if (success)
-                {
-                    QVector<QPointF> tempPointVector;
-                    qreal tempX, tempY;
-                    for(int j = 5; j != mStack[mCurrentStackPosition][i].size(); ++j)
-                    {
-                        tempX = mStack[mCurrentStackPosition][i][j].toDouble();
-                        tempY = mStack[mCurrentStackPosition][i][j+1].toDouble();
-                        tempPointVector.push_back(QPointF(tempX, tempY));
-                        ++j;
-                    }
-
-                    //! @todo: Store useIso bool in model file and pick the correct line styles when loading
-                    //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), mpParentView->mpParentProjectTab->useIsoGraphics);
-                    GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, mpParentView);
-
-                    mpParentView->scene()->addItem(pTempConnector);
-
-                    startPort->hide();
-                    endPort->hide();
-
-                    GUIObject::connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-                    GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-
-                    mpParentView->mConnectorVector.append(pTempConnector);
-
-                }
-                else
-                {
-                    qDebug() << "Unsuccessful connection atempt" << endl;
-                }
+//                QString startComponentName = mStack[mCurrentStackPosition][i][1];
+//                QString startPortName = mStack[mCurrentStackPosition][i][2];
+//                QString endComponentName = mStack[mCurrentStackPosition][i][3];;
+//                QString endPortName = mStack[mCurrentStackPosition][i][4];
+//                GUIPort *startPort = mpParentView->getGUIObject(startComponentName)->getPort(startPortName);
+//                GUIPort *endPort = mpParentView->getGUIObject(endComponentName)->getPort(endPortName);
+//
+//                qDebug() << "Names: " << startComponentName << " " << startPortName << " " << endComponentName << " " << endPortName;
+//                bool success = mpParentView->mpParentProjectTab->mGUIRootSystem.connect( startComponentName, startPortName, endComponentName, endPortName );
+//                if (success)
+//                {
+//                    QVector<QPointF> tempPointVector;
+//                    qreal tempX, tempY;
+//                    for(int j = 5; j != mStack[mCurrentStackPosition][i].size(); ++j)
+//                    {
+//                        tempX = mStack[mCurrentStackPosition][i][j].toDouble();
+//                        tempY = mStack[mCurrentStackPosition][i][j+1].toDouble();
+//                        tempPointVector.push_back(QPointF(tempX, tempY));
+//                        ++j;
+//                    }
+//
+//                    //! @todo: Store useIso bool in model file and pick the correct line styles when loading
+//                    //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), mpParentView->mpParentProjectTab->useIsoGraphics);
+//                    GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, mpParentView);
+//
+//                    mpParentView->scene()->addItem(pTempConnector);
+//
+//                    startPort->hide();
+//                    endPort->hide();
+//
+//                    GUIObject::connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+//                    GUIObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+//
+//                    mpParentView->mConnectorVector.append(pTempConnector);
+//
+//                }
+//                else
+//                {
+//                    qDebug() << "Unsuccessful connection atempt" << endl;
+//                }
             }
-            else if( mStack[mCurrentStackPosition][i][0] == "RENAMEDOBJECT" )
+            else if( redoevent == "RENAMEDOBJECT" )
             {
-                QString oldName = mStack[mCurrentStackPosition][i][1];
-                QString newName = mStack[mCurrentStackPosition][i][2];
+                QString oldName = readName(poststream);
+                QString newName = readName(poststream);
+                mpParentView->renameGUIObject(oldName, newName, true);
 
-                GUIObject* obj_ptr = mpParentView->mGUIObjectMap.find(oldName).value();
-                mpParentView->mGUIObjectMap.erase(mpParentView->mGUIObjectMap.find(oldName));
-                obj_ptr->setName(newName, true);
-                mpParentView->mGUIObjectMap.insert(obj_ptr->getName(), obj_ptr);
+//                QString oldName = mStack[mCurrentStackPosition][i][1];
+//                QString newName = mStack[mCurrentStackPosition][i][2];
+//
+//                GUIObject* obj_ptr = mpParentView->mGUIObjectMap.find(oldName).value();
+//                mpParentView->mGUIObjectMap.erase(mpParentView->mGUIObjectMap.find(oldName));
+//                obj_ptr->setName(newName, true);
+//                mpParentView->mGUIObjectMap.insert(obj_ptr->getName(), obj_ptr);
             }
-            else if( mStack[mCurrentStackPosition][i][0] == "MODIFIEDCONNECTOR" )
+            else if( redoevent == "MODIFIEDCONNECTOR" )
             {
-                qreal oldX =                    mStack[mCurrentStackPosition][i][1].toDouble();
-                qreal oldY =                    mStack[mCurrentStackPosition][i][2].toDouble();
-                qreal newX =                    mStack[mCurrentStackPosition][i][3].toDouble();
-                qreal newY =                    mStack[mCurrentStackPosition][i][4].toDouble();
-                QString startComponentName =    mStack[mCurrentStackPosition][i][5];
-                int startPortNumber =           mStack[mCurrentStackPosition][i][6].toInt();
-                QString endComponentName =      mStack[mCurrentStackPosition][i][7];
-                int endPortNumber =             mStack[mCurrentStackPosition][i][8].toInt();
-                int lineNumber =                mStack[mCurrentStackPosition][i][9].toInt();
+                QPointF oldPt, newPt;
+                int lineNumber;
+                QString startComp = readName(poststream);
+                QString startPort = readName(poststream);
+                QString endComp = readName(poststream);
+                QString endPort = readName(poststream);
+                poststream >> oldPt.rx() >> oldPt.ry() >> newPt.rx() >> newPt.ry() >> lineNumber;
 
-                    //Fetch the pointer to the connector
-                GUIConnector *item;
-                for(int i = 0; i != mpParentView->mConnectorVector.size(); ++i)
-                {
-                    if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == startComponentName) and
-                       (mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber() == startPortNumber) and
-                       (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == endComponentName) and
-                       (mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber() == endPortNumber))
-                    {
-                        item = mpParentView->mConnectorVector[i];
-                    }
-                    else if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == endComponentName) and
-                            (mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber() == endPortNumber) and
-                            (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == startComponentName) and
-                            (mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber() == startPortNumber))
-                    {
-                        item = mpParentView->mConnectorVector[i];
-                    }
-                }
-                qreal dX = newX-oldX;
-                qreal dY = newY-oldY;
+                GUIConnector *item = mpParentView->findConnector(startComp, startPort, endComp, endPort);
 
-                item->getLine(lineNumber)->setPos(QPointF(item->getLine(lineNumber)->pos().x()+dX, item->getLine(lineNumber)->pos().y()+dY));
+                QPointF dXY = newPt-oldPt;
+                item->getLine(lineNumber)->setPos(item->getLine(lineNumber)->pos()+dXY);
                 item->updateLine(lineNumber);
-            }
-            else if( mStack[mCurrentStackPosition][i][0] == "MOVEDOBJECT" )
-            {
-                //qreal oldX = mStack[mCurrentStackPosition][i][1].toDouble();
-                //qreal oldY = mStack[mCurrentStackPosition][i][2].toDouble();
-                qreal newX = mStack[mCurrentStackPosition][i][3].toDouble();
-                qreal newY = mStack[mCurrentStackPosition][i][4].toDouble();
-                QString objectName = mStack[mCurrentStackPosition][i][5];
 
-                mpParentView->getGUIObject(objectName)->setPos(QPointF(newX, newY));
+//                qreal oldX =                    mStack[mCurrentStackPosition][i][1].toDouble();
+//                qreal oldY =                    mStack[mCurrentStackPosition][i][2].toDouble();
+//                qreal newX =                    mStack[mCurrentStackPosition][i][3].toDouble();
+//                qreal newY =                    mStack[mCurrentStackPosition][i][4].toDouble();
+//                QString startComponentName =    mStack[mCurrentStackPosition][i][5];
+//                int startPortNumber =           mStack[mCurrentStackPosition][i][6].toInt();
+//                QString endComponentName =      mStack[mCurrentStackPosition][i][7];
+//                int endPortNumber =             mStack[mCurrentStackPosition][i][8].toInt();
+//                int lineNumber =                mStack[mCurrentStackPosition][i][9].toInt();
+//
+//                    //Fetch the pointer to the connector
+//                GUIConnector *item;
+//                for(int i = 0; i != mpParentView->mConnectorVector.size(); ++i)
+//                {
+//                    if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == startComponentName) and
+//                       (mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber() == startPortNumber) and
+//                       (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == endComponentName) and
+//                       (mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber() == endPortNumber))
+//                    {
+//                        item = mpParentView->mConnectorVector[i];
+//                    }
+//                    else if((mpParentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == endComponentName) and
+//                            (mpParentView->mConnectorVector[i]->getStartPort()->getPortNumber() == endPortNumber) and
+//                            (mpParentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == startComponentName) and
+//                            (mpParentView->mConnectorVector[i]->getEndPort()->getPortNumber() == startPortNumber))
+//                    {
+//                        item = mpParentView->mConnectorVector[i];
+//                    }
+//                }
+//                qreal dX = newX-oldX;
+//                qreal dY = newY-oldY;
+//
+//                item->getLine(lineNumber)->setPos(QPointF(item->getLine(lineNumber)->pos().x()+dX, item->getLine(lineNumber)->pos().y()+dY));
+//                item->updateLine(lineNumber);
             }
-            else if( mStack[mCurrentStackPosition][i][0] == "ROTATEDOBJECT" )
+            else if( redoevent == "MOVEDOBJECT" )
             {
-                QString objectName = mStack[mCurrentStackPosition][i][1];
-                mpParentView->getGUIObject(objectName)->rotate(true);
+                QPointF oldPt, newPt;
+                QString name = readName(poststream);
+                poststream >> oldPt.rx() >> oldPt.ry() >> newPt.rx() >> newPt.ry();
+                mpParentView->getGUIObject(name)->setPos(newPt);
+
+//                //qreal oldX = mStack[mCurrentStackPosition][i][1].toDouble();
+//                //qreal oldY = mStack[mCurrentStackPosition][i][2].toDouble();
+//                qreal newX = mStack[mCurrentStackPosition][i][3].toDouble();
+//                qreal newY = mStack[mCurrentStackPosition][i][4].toDouble();
+//                QString objectName = mStack[mCurrentStackPosition][i][5];
+//
+//                mpParentView->getGUIObject(objectName)->setPos(QPointF(newX, newY));
+            }
+            else if( redoevent == "ROTATEDOBJECT" )
+            {
+                QString name;
+                name = readName(poststream);
+                //! @todo This feels wierd, why rotate one time
+                mpParentView->getGUIObject(name)->rotate(true);
+
+//                QString objectName = mStack[mCurrentStackPosition][i][1];
+//                mpParentView->getGUIObject(objectName)->rotate(true);
             }
         }
         mpParentView->resetBackgroundBrush();
     }
+    //! @todo why dont I know of my own UndoWidget (should maybe have a pointer to it directly)
     mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
 }
 
@@ -526,53 +636,10 @@ void UndoStack::redoOneStep()
 void UndoStack::registerDeletedObject(GUIObject *item)
 {
     qDebug() << "registerDeletedObject()";
-
-    //! @todo This is REALLY UGLY WORKOROUND CODE to test using streams in undo, the use of stringlists in undo should be replaced by strings connected to streams so that generic load and save functions can be used.
-    //============================UGLY TEMPORARY CODE=======================
-    QStringList tmpStringList, tmpStringList2;
-    QString tmpStreamString;
-    QTextStream tmpStream(&tmpStreamString);
-    QString junk;
-    item->saveToTextStream(tmpStream);
-    tmpStream >> junk; //remove COMPONENT command
-
-    tmpStringList << "DELETEDOBJECT";
-    tmpStringList << addQuotes(readName(tmpStream));
-    tmpStringList << addQuotes(readName(tmpStream));
-    QString tmpStr;
-    while ( !tmpStream.atEnd() )
-    {
-        tmpStream >> tmpStr;
-        if ((tmpStr == "PARAMETER"))
-        {
-            tmpStringList2 << tmpStr;
-            break;
-        }
-        if (tmpStr == "\n")
-        {
-            break;
-        }
-        tmpStringList << tmpStr;
-
-    }
-    tmpStringList2 << addQuotes(readName(tmpStream));
-    while ( (!tmpStream.atEnd()) )
-    {
-        tmpStream >> tmpStr;
-        if (tmpStr == "\n")
-        {
-            break;
-        }
-        tmpStringList2 << tmpStr;
-    }
-
-    qDebug() << tmpStringList;
-    qDebug() << tmpStringList2;
-
-    this->insertPost(tmpStringList);
-    if (tmpStringList2[0] != "")
-        this->insertPost(tmpStringList2);
-    //============================UGLY TEMPORARY CODE=======================
+    QString str;
+    QTextStream stream(&str);
+    item->saveToTextStream(stream, "DELETEDOBJECT");
+    this->insertPost(str);
 
 //    QPointF pos = item->mapToScene(item->boundingRect().center());
 //    QStringList tempStringList;
@@ -612,19 +679,25 @@ void UndoStack::registerDeletedObject(GUIObject *item)
 void UndoStack::registerDeletedConnector(GUIConnector *item)
 {
     qDebug() << "registerDeletedConnector()";
-    QStringList tempStringList;
-    QString startPortName = item->getStartPort()->getName();
-    QString endPortName = item->getEndPort()->getName();
-    tempStringList << "DELETEDCONNECTOR" << item->getStartPort()->getGuiObject()->getName() << startPortName <<
-                                   item->getEndPort()->getGuiObject()->getName() << endPortName;
-    QString xString, yString;
-    for(int j = 0; j != item->getPointsVector().size(); ++j)
-    {
-        xString.setNum(item->getPointsVector()[j].x());
-        yString.setNum(item->getPointsVector()[j].y());
-        tempStringList << xString << yString;
-    }
-    this->insertPost(tempStringList);
+    QString str;
+    QTextStream stream(&str);
+    item->saveToTextStream(stream, "DELETEDCONNECTOR");
+    this->insertPost(str);
+
+
+//    QStringList tempStringList;
+//    QString startPortName = item->getStartPort()->getName();
+//    QString endPortName = item->getEndPort()->getName();
+//    tempStringList << "DELETEDCONNECTOR" << item->getStartPort()->getGuiObject()->getName() << startPortName <<
+//                                   item->getEndPort()->getGuiObject()->getName() << endPortName;
+//    QString xString, yString;
+//    for(int j = 0; j != item->getPointsVector().size(); ++j)
+//    {
+//        xString.setNum(item->getPointsVector()[j].x());
+//        yString.setNum(item->getPointsVector()[j].y());
+//        tempStringList << xString << yString;
+//    }
+//    this->insertPost(tempStringList);
 }
 
 
@@ -632,18 +705,22 @@ void UndoStack::registerDeletedConnector(GUIConnector *item)
 //! @param itemName is the name of the added object
 void UndoStack::registerAddedObject(GUIObject *item)
 {
-    QPointF pos = item->mapToScene(item->boundingRect().center());
-    QStringList tempStringList;
-    QString xPosString;
-    QString yPosString;
-    QString rotationString;
-    QString nameTextPosString;
-    xPosString.setNum(pos.x());
-    yPosString.setNum(pos.y());
-    rotationString.setNum(item->rotation());
-    nameTextPosString.setNum(item->getNameTextPos());
-    tempStringList << "ADDEDOBJECT" << item->getTypeName() << item->getName() << xPosString << yPosString << rotationString << nameTextPosString;
-    this->insertPost(tempStringList);
+    QString str;
+    QTextStream stream(&str);
+    item->saveToTextStream(stream, "ADDEDOBJECT"); //! @todo We now save the parameters also (not necessary as they are dafult, (does not do any harm however)
+
+//    QPointF pos = item->mapToScene(item->boundingRect().center());
+//    QStringList tempStringList;
+//    QString xPosString;
+//    QString yPosString;
+//    QString rotationString;
+//    QString nameTextPosString;
+//    xPosString.setNum(pos.x());
+//    yPosString.setNum(pos.y());
+//    rotationString.setNum(item->rotation());
+//    nameTextPosString.setNum(item->getNameTextPos());
+//    tempStringList << "ADDEDOBJECT" << item->getTypeName() << item->getName() << xPosString << yPosString << rotationString << nameTextPosString;
+//    this->insertPost(tempStringList);
 }
 
 
@@ -652,26 +729,30 @@ void UndoStack::registerAddedObject(GUIObject *item)
 void UndoStack::registerAddedConnector(GUIConnector *item)
 {
     qDebug() << "registerAddedConnector()";
+    QString str;
+    QTextStream stream(&str);
+    item->saveToTextStream(stream, "ADDEDCONNECTOR");
+    this->insertPost(str);
 
-    QStringList tempStringList;
-    int i;
-    for(i = 0; i != mpParentView->mConnectorVector.size(); ++i)
-    {
-        if(mpParentView->mConnectorVector[i] == item)
-        {
-            break;
-        }
-    }
-    tempStringList << "ADDEDCONNECTOR" << item->getStartPort()->getGuiObject()->getName() << item->getStartPort()->getName() <<
-                                          item->getEndPort()->getGuiObject()->getName() << item->getEndPort()->getName();
-    QString xString, yString;
-    for(int j = 0; j != item->getPointsVector().size(); ++j)
-    {
-        xString.setNum(item->getPointsVector()[j].x());
-        yString.setNum(item->getPointsVector()[j].y());
-        tempStringList << xString << yString;
-    }
-    this->insertPost(tempStringList);
+//    QStringList tempStringList;
+//    int i;
+//    for(i = 0; i != mpParentView->mConnectorVector.size(); ++i)
+//    {
+//        if(mpParentView->mConnectorVector[i] == item)
+//        {
+//            break;
+//        }
+//    }
+//    tempStringList << "ADDEDCONNECTOR" << item->getStartPort()->getGuiObject()->getName() << item->getStartPort()->getName() <<
+//                                          item->getEndPort()->getGuiObject()->getName() << item->getEndPort()->getName();
+//    QString xString, yString;
+//    for(int j = 0; j != item->getPointsVector().size(); ++j)
+//    {
+//        xString.setNum(item->getPointsVector()[j].x());
+//        yString.setNum(item->getPointsVector()[j].y());
+//        tempStringList << xString << yString;
+//    }
+//    this->insertPost(tempStringList);
 }
 
 
@@ -680,9 +761,14 @@ void UndoStack::registerAddedConnector(GUIConnector *item)
 //! @param newName is a string with the new name.
 void UndoStack::registerRenameObject(QString oldName, QString newName)
 {
-    QStringList tempStringList;
-    tempStringList << "RENAMEDOBJECT" << oldName << newName;
-    this->insertPost(tempStringList);
+    QString str;
+    QTextStream stream(&str);
+    stream << "RENAMEDOBJECT " << addQuotes(oldName) << " " << addQuotes(newName);
+    this->insertPost(str);
+
+//    QStringList tempStringList;
+//    tempStringList << "RENAMEDOBJECT" << oldName << newName;
+//    this->insertPost(tempStringList);
 }
 
 
@@ -692,26 +778,34 @@ void UndoStack::registerRenameObject(QString oldName, QString newName)
 //! @param lineNumber is the number of the line that was moved.
 void UndoStack::registerModifiedConnector(QPointF oldPos, QPointF newPos, GUIConnector *item, int lineNumber)
 {
-    QString oldXString;
-    QString oldYString;
-    QString newXString;
-    QString newYString;
-    QString lineNumberString;
-    QString startPortNumberString;
-    QString endPortNumberString;
-    oldXString.setNum(oldPos.x());
-    oldYString.setNum(oldPos.y());
-    newXString.setNum(newPos.x());
-    newYString.setNum(newPos.y());
+    QString str;
+    QTextStream stream(&str);
 
-    lineNumberString.setNum(lineNumber);
-    startPortNumberString.setNum(item->getStartPort()->getPortNumber());
-    endPortNumberString.setNum(item->getEndPort()->getPortNumber());
+    stream << "MODIFIEDCONNECTOR" << " " << addQuotes(item->getStartPort()->getGuiObject()->getName()) << " " << addQuotes(item->getStartPort()->getName())
+                                  << " " << addQuotes(item->getEndPort()->getGuiObject()->getName())   << " " << addQuotes(item->getEndPort()->getName())
+                                  << " " << oldPos.x() << " " << oldPos.y() << " " << newPos.x() << " " << newPos.y() << " " << lineNumber;
+    this->insertPost(str);
 
-    QStringList tempStringList;
-    tempStringList << "MODIFIEDCONNECTOR" << oldXString << oldYString << newXString << newYString << item->getStartPort()->getGuiObject()->getName() << startPortNumberString <<
-                      item->getEndPort()->getGuiObject()->getName() << endPortNumberString << lineNumberString;
-    this->insertPost(tempStringList);
+//    QString oldXString;
+//    QString oldYString;
+//    QString newXString;
+//    QString newYString;
+//    QString lineNumberString;
+//    QString startPortNumberString;
+//    QString endPortNumberString;
+//    oldXString.setNum(oldPos.x());
+//    oldYString.setNum(oldPos.y());
+//    newXString.setNum(newPos.x());
+//    newYString.setNum(newPos.y());
+//
+//    lineNumberString.setNum(lineNumber);
+//    startPortNumberString.setNum(item->getStartPort()->getPortNumber());
+//    endPortNumberString.setNum(item->getEndPort()->getPortNumber());
+//
+//    QStringList tempStringList;
+//    tempStringList << "MODIFIEDCONNECTOR" << oldXString << oldYString << newXString << newYString << item->getStartPort()->getGuiObject()->getName() << startPortNumberString <<
+//                      item->getEndPort()->getGuiObject()->getName() << endPortNumberString << lineNumberString;
+//    this->insertPost(tempStringList);
 }
 
 
@@ -720,19 +814,25 @@ void UndoStack::registerModifiedConnector(QPointF oldPos, QPointF newPos, GUICon
 //! @param objectName is the name of the object.
 void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString objectName)
 {
-    QString oldXString;
-    QString oldYString;
-    QString newXString;
-    QString newYString;
-    oldXString.setNum(oldPos.x());
-    oldYString.setNum(oldPos.y());
-    newXString.setNum(newPos.x());
-    newYString.setNum(newPos.y());
+    QString str;
+    QTextStream stream(&str);
+    stream << "MOVEDOBJECT " <<  addQuotes(objectName) << " " << oldPos.x() << " " << oldPos.y() << " " << newPos.x() << " " << newPos.y();
+    qDebug() << str;
+    this->insertPost(str);
 
-    QStringList tempStringList;
-
-    tempStringList << "MOVEDOBJECT" << oldXString << oldYString << newXString << newYString << objectName;
-    this->insertPost(tempStringList);
+//    QString oldXString;
+//    QString oldYString;
+//    QString newXString;
+//    QString newYString;
+//    oldXString.setNum(oldPos.x());
+//    oldYString.setNum(oldPos.y());
+//    newXString.setNum(newPos.x());
+//    newYString.setNum(newPos.y());
+//
+//    QStringList tempStringList;
+//
+//    tempStringList << "MOVEDOBJECT" << oldXString << oldYString << newXString << newYString << objectName;
+//    this->insertPost(tempStringList);
 }
 
 
@@ -740,9 +840,14 @@ void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString obje
 //! @param item is a pointer to the object.
 void UndoStack::registerRotatedObject(GUIObject *item)
 {
-    QStringList tempStringList;
-    tempStringList << "ROTATEDOBJECT" << item->getName();
-    this->insertPost(tempStringList);
+    QString str;
+    QTextStream stream(&str);
+    stream << "ROTATEDOBJECT " << item->getName();
+    this->insertPost(str);
+
+//    QStringList tempStringList;
+//    tempStringList << "ROTATEDOBJECT" << item->getName();
+//    this->insertPost(tempStringList);
 }
 
 
@@ -750,9 +855,14 @@ void UndoStack::registerRotatedObject(GUIObject *item)
 //! @param item is a pointer to the object.
 void UndoStack::registerVerticalFlip(GUIObject *item)
 {
-    QStringList tempStringList;
-    tempStringList << "VERTICALFLIP" << item->getName();
-    this->insertPost(tempStringList);
+    QString str;
+    QTextStream stream(&str);
+    stream << "VERTICALFLIP " << item->getName();
+    this->insertPost(str);
+
+//    QStringList tempStringList;
+//    tempStringList << "VERTICALFLIP" << item->getName();
+//    this->insertPost(tempStringList);
 }
 
 
@@ -760,9 +870,14 @@ void UndoStack::registerVerticalFlip(GUIObject *item)
 //! @param item is a pointer to the object.
 void UndoStack::registerHorizontalFlip(GUIObject *item)
 {
-    QStringList tempStringList;
-    tempStringList << "HORIZONTALFLIP" << item->getName();
-    this->insertPost(tempStringList);
+    QString str;
+    QTextStream stream(&str);
+    stream << "HORIZONTALFLIP " << item->getName();
+    this->insertPost(str);
+
+//    QStringList tempStringList;
+//    tempStringList << "HORIZONTALFLIP" << item->getName();
+//    this->insertPost(tempStringList);
 }
 
 
@@ -872,49 +987,54 @@ void UndoWidget::refreshList()
             item = new QTableWidgetItem();
             item->setFlags(!Qt::ItemIsEditable);
                 // Translate the command words into better looking explanations
-            if (mTempStack[i][j][0] == "DELETEDOBJECT")
+
+            QTextStream stream(&mTempStack[i][j]);
+            QString commandword;
+            stream >> commandword;
+
+            if (commandword == "DELETEDOBJECT")
             {
                 item->setText("Deleted Object");
             }
-            else if (mTempStack[i][j][0] == "DELETEDCONNECTOR")
+            else if (commandword == "DELETEDCONNECTOR")
             {
                 item->setText("Deleted Connector");
             }
-            else if (mTempStack[i][j][0] == "ADDEDOBJECT")
+            else if (commandword == "ADDEDOBJECT")
             {
                 item->setText("Added Object");
             }
-            else if (mTempStack[i][j][0] == "ADDEDCONNECTOR")
+            else if (commandword == "ADDEDCONNECTOR")
             {
                 item->setText("Added Connector");
             }
-            else if (mTempStack[i][j][0] == "RENAMEDOBJECT")
+            else if (commandword == "RENAMEDOBJECT")
             {
                 item->setText("Renamed Object");
             }
-            else if (mTempStack[i][j][0] == "MODIFIEDCONNECTOR")
+            else if (commandword == "MODIFIEDCONNECTOR")
             {
                 item->setText("Modified Connector");
             }
-            else if (mTempStack[i][j][0] == "MOVEDOBJECT")
+            else if (commandword == "MOVEDOBJECT")
             {
                 item->setText("Moved Object");
             }
-            else if (mTempStack[i][j][0] == "ROTATEDOBJECT")
+            else if (commandword == "ROTATEDOBJECT")
             {
                 item->setText("Rotated Object");
             }
-            else if (mTempStack[i][j][0] == "VERTICALFLIP")
+            else if (commandword == "VERTICALFLIP")
             {
                 item->setText("Flipped Vertical");
             }
-            else if (mTempStack[i][j][0] == "HORIZONTALFLIP")
+            else if (commandword == "HORIZONTALFLIP")
             {
                 item->setText("Flipped Horizontal");
             }
             else
             {
-                item->setText(mTempStack[i][j][0]);
+                item->setText(commandword);
             }
 
                 // Figure out which color to use.
@@ -952,7 +1072,7 @@ void UndoWidget::refreshList()
             }
 
                 //Insert a new line in the table and display the action
-            if(mTempStack[i][j][0] != "PARAMETER")                              //Don't show parameter lines, because they "belong" to the object lines.
+            if(commandword != "PARAMETER")                              //Don't show parameter lines, because they "belong" to the object lines.
             {
                 mUndoTable->insertRow(x);
                 mUndoTable->setItem(x,0,item);

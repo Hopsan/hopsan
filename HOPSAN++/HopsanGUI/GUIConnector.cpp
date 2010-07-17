@@ -543,13 +543,17 @@ bool GUIConnector::isActive()
 
 //! Saves all necessary information about the connetor to a text stream. Used for save, undo and copy operations.
 //! @param QTextSream is the text stream with the information.
-void GUIConnector::saveToTextStream(QTextStream &rStream)
+void GUIConnector::saveToTextStream(QTextStream &rStream, QString prepend)
 {
     QString startObjName = getStartPort()->getGuiObject()->getName();
     QString endObjName = getEndPort()->getGuiObject()->getName();
     QString startPortName  = getStartPort()->getName();
     QString endPortName = getEndPort()->getName();
-    rStream << "CONNECT " << ( addQuotes(startObjName) + " " + addQuotes(startPortName) + " " + addQuotes(endObjName) + " " + addQuotes(endPortName) );
+    if (!prepend.isEmpty())
+    {
+        rStream << prepend << " ";
+    }
+    rStream << ( addQuotes(startObjName) + " " + addQuotes(startPortName) + " " + addQuotes(endObjName) + " " + addQuotes(endPortName) );
     for(int j = 0; j != mPoints.size(); ++j)
     {
         rStream << " " << mPoints[j].x() << " " << mPoints[j].y();
