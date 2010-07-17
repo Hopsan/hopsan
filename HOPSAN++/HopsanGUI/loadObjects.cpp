@@ -52,7 +52,7 @@ void ParameterLoadData::read(QTextStream &rStream)
 
 
 
-GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, GraphicsView* pGraphicsView)
+GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, GraphicsView* pGraphicsView, bool noUnDo)
 {
     AppearanceData *pAppearanceData = pLibrary->getAppearanceData(rData.type);
     if (pAppearanceData != 0)
@@ -64,12 +64,13 @@ GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, G
         pObj->setNameTextPos(rData.nameTextPos);
         while(pObj->rotation() != rData.rotation)
         {
-            pObj->rotate();
+            pObj->rotate(noUnDo);
         }
         return pObj;
     }
     else
     {
+        qDebug() << "loadGUIObj Some errer happend pAppearanceData == 0";
         //! @todo Some error message
         return 0;
     }
@@ -77,7 +78,7 @@ GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, G
 
 
 
-void loadConnector(const ConnectorLoadData &rData, GraphicsView* pGraphicsView, GUIRootSystem* pRootSystem)
+void loadConnector(const ConnectorLoadData &rData, GraphicsView* pGraphicsView, GUIRootSystem* pRootSystem, bool noUnDo)
 {
     //! @todo Need some error handling here to avoid crash if components or ports do not exist
     GUIPort *startPort = pGraphicsView->getGUIObject(rData.startComponentName)->getPort(rData.startPortName);
@@ -106,32 +107,32 @@ void loadConnector(const ConnectorLoadData &rData, GraphicsView* pGraphicsView, 
 }
 
 
-void loadParameterValues(const ParameterLoadData &rData, GraphicsView* pGraphicsView)
+void loadParameterValues(const ParameterLoadData &rData, GraphicsView* pGraphicsView, bool noUnDo)
 {
     //qDebug() << "Parameter: " << componentName << " " << parameterName << " " << parameterValue;
     pGraphicsView->mGUIObjectMap.find(rData.componentName).value()->setParameterValue(rData.parameterName, rData.parameterValue);
 }
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data
-GUIObject* loadGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GraphicsView* pGraphicsView)
+GUIObject* loadGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GraphicsView* pGraphicsView, bool noUnDo)
 {
     ObjectLoadData data;
     data.read(rStream);
-    loadGUIObject(data,pLibrary,pGraphicsView);
+    loadGUIObject(data,pLibrary, pGraphicsView, noUnDo);
 }
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data
-void loadConnector(QTextStream &rStream, GraphicsView* pGraphicsView, GUIRootSystem* pRootSystem)
+void loadConnector(QTextStream &rStream, GraphicsView* pGraphicsView, GUIRootSystem* pRootSystem, bool noUnDo)
 {
     ConnectorLoadData data;
     data.read(rStream);
-    loadConnector(data,pGraphicsView,pRootSystem);
+    loadConnector(data,pGraphicsView, pRootSystem, noUnDo);
 }
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data
-void loadParameterValues(QTextStream &rStream, GraphicsView* pGraphicsView)
+void loadParameterValues(QTextStream &rStream, GraphicsView* pGraphicsView, bool noUnDo)
 {
     ParameterLoadData data;
     data.read(rStream);
-    loadParameterValues(data,pGraphicsView);
+    loadParameterValues(data, pGraphicsView, noUnDo);
 }

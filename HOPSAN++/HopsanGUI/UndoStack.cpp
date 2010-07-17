@@ -139,7 +139,7 @@ void UndoStack::undoOneStep()
 
     if(undoPosition > -1)
     {
-        for(int i = 0; i != mStack[undoPosition].size(); ++i)
+        for(int i = 0; i < mStack[undoPosition].size(); ++i)
         {
             QString undoevent;
             QTextStream poststream(&mStack[undoPosition][i]);
@@ -150,8 +150,8 @@ void UndoStack::undoOneStep()
             {
                 //poststream >> junk; //Discard Component load command
                 ////! @todo maybe we should not save it automatically in the guiobject maby let some other external save function add it
-                loadGUIObject(poststream, mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentView);
-                qDebug() << "after loadGUIObject: " << i;
+                loadGUIObject(poststream, mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentView, true);
+                qDebug() << "after loadGUIObject: " << i << " " << mStack[undoPosition].size();
 
 //                //! @todo This code is testing the use of generic loadGUIObject functionality
 //                //! @todo Temporary fix until QStringLists in undo has been replaced på TextStreams
@@ -185,7 +185,7 @@ void UndoStack::undoOneStep()
             }
             else if ( undoevent == "DELETEDCONNECTOR" )
             {
-                loadConnector(poststream, mpParentView, &(mpParentView->mpParentProjectTab->mGUIRootSystem));
+                loadConnector(poststream, mpParentView, &(mpParentView->mpParentProjectTab->mGUIRootSystem), true);
 
 //                QString startComponentName = mStack[undoPosition][i][1];
 //                QString startPortName = mStack[undoPosition][i][2];
@@ -395,7 +395,7 @@ void UndoStack::undoOneStep()
             }
         }
         mCurrentStackPosition = undoPosition - 1;
-        mpParentView->setBackgroundBrush(mpParentView->mBackgroundColor);
+        mpParentView->resetBackgroundBrush();
     }
     mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
 }
@@ -467,7 +467,7 @@ void UndoStack::redoOneStep()
             }
             else if( redoevent == "ADDEDOBJECT" )
             {
-                  loadGUIObject(poststream, mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentView);
+                  loadGUIObject(poststream, mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentView, true);
 
 //                QString componentType = mStack[mCurrentStackPosition][i][1];
 //                QString componentName = mStack[mCurrentStackPosition][i][2];
@@ -490,7 +490,7 @@ void UndoStack::redoOneStep()
             }
             else if( redoevent == "ADDEDCONNECTOR" )
             {
-                loadConnector(poststream, mpParentView, &(mpParentView->mpParentProjectTab->mGUIRootSystem));
+                loadConnector(poststream, mpParentView, &(mpParentView->mpParentProjectTab->mGUIRootSystem), true);
 
 //                QString startComponentName = mStack[mCurrentStackPosition][i][1];
 //                QString startPortName = mStack[mCurrentStackPosition][i][2];
