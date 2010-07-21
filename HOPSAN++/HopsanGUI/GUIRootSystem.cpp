@@ -128,7 +128,16 @@ void GUIRootSystem::stop()
 QString GUIRootSystem::getPortType(QString componentName, QString portName)
 {
     //qDebug() << "name for port fetch " << componentName << " " << portName;
-    return QString(mpCoreComponentSystem->getComponent(componentName.toStdString())->getPort(portName.toStdString())->getPortTypeString().c_str());
+    Component *pComponent = mpCoreComponentSystem->getComponent(componentName.toStdString());
+    if(pComponent)
+    {
+        Port *pPort = pComponent->getPort(portName.toStdString());
+        if(pPort)
+            return QString(pPort->getPortTypeString().c_str());
+    }
+    else
+        return QString();
+//    return QString(mpCoreComponentSystem->getComponent(componentName.toStdString())->getPort(portName.toStdString())->getPortTypeString().c_str());
 }
 
 QString GUIRootSystem::getNodeType(QString componentName, QString portName)

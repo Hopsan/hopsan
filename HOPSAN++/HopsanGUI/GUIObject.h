@@ -267,7 +267,6 @@ private:
     GUIPort *mpGuiPort;
 };
 
-
 class GUIGroup : public GUIObject
 {
     Q_OBJECT
@@ -303,6 +302,27 @@ public slots:
 //
 //public slots:
 //     void deleteMe();
+};
+
+
+class GUIGroupPort : public GUIObject
+{
+    Q_OBJECT
+public:
+    GUIGroupPort(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    QString getTypeName();
+    void setName(QString newName);
+
+    void setOuterGuiPort(GUIPort *pPort);
+
+    void pGroupPort();
+
+    enum { Type = UserType + 7 };
+    int type() const;
+
+private:
+    GUIPort *mpGuiPort;
+    GUIPort *mpOuterGuiPort;
 };
 
 

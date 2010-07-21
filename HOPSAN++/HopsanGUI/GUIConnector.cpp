@@ -428,12 +428,15 @@ QVector<QPointF> GUIConnector::getPointsVector()
 }
 
 
+//! Returns a QPoint to the start point of a connector line.
+//! @see getEndPoint()
 QPointF GUIConnector::getStartPoint()
 {
     if(mPoints.empty())
         assert(false);
     else
     {
+        //! @todo This is an insane way of determine if it is the start point of the connector. It has to be redone.
         if(mPoints.first()==this->mpLines[0]->startPos)
             return mPoints.first();
         else
@@ -442,12 +445,15 @@ QPointF GUIConnector::getStartPoint()
 }
 
 
+//! Returns a QPoint to the end point of a connector line.
+//! @see getStartPoint()
 QPointF GUIConnector::getEndPoint()
 {
     if(mPoints.empty())
         assert(false);
     else
     {
+        //! @todo This is an insane way of determine if it is the end point of the connector. It has to be redone.
         if(mPoints.last()==this->getLastLine()->endPos)
             return mPoints.last();
         else

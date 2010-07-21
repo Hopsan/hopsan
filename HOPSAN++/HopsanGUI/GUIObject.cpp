@@ -1364,12 +1364,24 @@ void GUISystemPort::deleteInHopsanCore()
 }
 
 
+//! @class GUIGroup
+//! @brief The GUIGroup class implement a class to group components graphically
+//!
+//! The grouping is an alternative to make subcomponents. A group is a graphical operation ONLY, no changes in the core.
+//!
+
+
 int GUIGroup::type() const
 {
     return Type;
 }
 
 
+//! Constructor.
+//! @param compList is a list for the QGraphicsItems that should be in the group.
+//! @param appearanceData defines the appearance for the group.
+//! @param scene is the scene which should contain the group.
+//! @param parent is the parent QGraphicsItem for the group, default = 0.
 GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData, GraphicsScene *scene, QGraphicsItem *parent)
     :   GUIObject(QPoint(0.0,0.0), appearanceData, scene, parent)
 {
@@ -1385,21 +1397,24 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
         GUIComponent *pComponent = qgraphicsitem_cast<GUIComponent*>(compList.at(i));
         if (pComponent)
         {
+            //Adds the component pComponent to a list of components whose make up the group
             mGUICompList.append(pComponent);
+            pMessageWidget->printGUIMessage(pComponent->getName());
 
-            //A bit ugly to loop trough ALL compenents in the GraphicsView
+            //A bit ugly to loop trough ALL connectors in the GraphicsView
             for(int i = 0; i != mpParentGraphicsView->mConnectorVector.size(); ++i)
             {
                 if((mpParentGraphicsView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == pComponent->getName()) or
                    (mpParentGraphicsView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == pComponent->getName()))
                 {
-                    //Adds the connections which have both ends among selected components for grouping
                     if((compList.contains(mpParentGraphicsView->mConnectorVector[i]->getStartPort()->getGuiObject())) and
                        (compList.contains(mpParentGraphicsView->mConnectorVector[i]->getEndPort()->getGuiObject())))
+                        //Add the connections which have both ends among selected components for grouping in a list for connections
                     {
                         mGUIConnList.append(mpParentGraphicsView->mConnectorVector[i]);
                     }
                     else
+                        //Add the connections that go trough the group boundary to a list
                     {
                         mGUITransitConnList.append(mpParentGraphicsView->mConnectorVector[i]);
 
@@ -1415,17 +1430,19 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
         }
     }
 
-    double xMin = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
-           xMax = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
-           yMin = mGUICompList.at(0)->y()+mGUICompList.at(0)->rect().height()/2.0,
-           yMax = mGUICompList.at(0)->y()+mGUICompList.at(0)->rect().height()/2.0;
-
+    //Constructs a new scene for the group
     mpGroupScene = new GraphicsScene(this->mpParentGraphicsScene->mpParentProjectTab);
+
+    double xMin = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
+    xMax = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
+    yMin = mGUICompList.at(0)->y()+mGUICompList.at(0)->rect().height()/2.0,
+    yMax = mGUICompList.at(0)->y()+mGUICompList.at(0)->rect().height()/2.0;
     for (int i=0; i < mGUICompList.size(); ++i)
     {
+        //Add the components in the group to the group scene
         mpGroupScene->addItem(mGUICompList.at(i));
 
-        //Find the rect for the selscted items
+        //Find the rect for the selscted items (the group)
         if (mGUICompList.at(i)->x()+mGUICompList.at(i)->rect().width()/2.0 < xMin)
             xMin = mGUICompList.at(i)->x()+mGUICompList.at(i)->rect().width()/2.0;
         if (mGUICompList.at(i)->x()+mGUICompList.at(i)->rect().width()/2.0 > xMax)
@@ -1435,54 +1452,79 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
         if (mGUICompList.at(i)->y()+mGUICompList.at(i)->rect().height()/2.0 > yMax)
             yMax = mGUICompList.at(i)->y()+mGUICompList.at(i)->rect().height()/2.0;
     }
+    //Fix the position for the group item
+    this->setPos((xMax+xMin)/2.0-this->rect().width()/2.0,(yMax+yMin)/2.0-this->rect().height()/2.0);
+    this->mpParentGraphicsView->setScene(mpGroupScene);
+    this->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton->show();
+
     for (int i=0; i < mGUIConnList.size(); ++i)
     {
+        //Add the connections in the group to the group scene
         mpGroupScene->addItem(mGUIConnList.at(i));
     }
 
+    //Take care of the boundary connections of the group
     for(int i=0; i < mGUITransitConnList.size(); ++i)
     {
         GUIConnector *transitConnector = mGUITransitConnList[i];
 
+        //Add the connections at the group boundary of the group to the group scene
         mpGroupScene->addItem(transitConnector);
 
+        //Get the right appearance data for the group port
         AppearanceData appData;
         appData = *(mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData("SystemPort"));
         appData.setName("aPaApA-port");
 
-        GUISystemPort *pPort;
+        GUIGroupPort *pGroupPort;
 
         GUIComponent *startComp;
         GUIComponent *endComp;
         startComp = qgraphicsitem_cast<GUIComponent*>(transitConnector->getStartPort()->getGuiObject());
         endComp   = qgraphicsitem_cast<GUIComponent*>(transitConnector->getEndPort()->getGuiObject());
 
+        QPoint groupPortPoint;
+        //Find the right point for the group boundary port (in this case the boundary is at the connector end point)
         if((startComp) && (mGUICompList.contains(startComp)))
         {
-            pPort = new GUISystemPort(appData, transitConnector->getStartPoint().toPoint(), mpGroupScene);
-
-            mpGroupScene->addItem(pPort);
+            groupPortPoint = transitConnector->getStartPoint().toPoint();
         }
+        //Find the right point for the group boundary port (in this case the boundary is at the connector start point)
         if((endComp) && (mGUICompList.contains(endComp)))
         {
-            pPort = new GUISystemPort(appData, transitConnector->getEndPoint().toPoint(), mpGroupScene);
+            groupPortPoint = transitConnector->getEndPoint().toPoint();
+        }
+        //Add a new group port for the boundary at the boundary connector
+        pGroupPort = new GUIGroupPort(appData, groupPortPoint, mpGroupScene);
+        GUIPort *pPort = pGroupPort->getPort("sysp");
+        if(pPort)
+        {
+            //Sets the right port to the connector
+            if((startComp) && (mGUICompList.contains(startComp)))
+            {
+                pGroupPort->setOuterGuiPort(transitConnector->getEndPort());
+                transitConnector->setEndPort(pPort);
+            }
+            if((endComp) && (mGUICompList.contains(endComp)))
+            {
+                pGroupPort->setOuterGuiPort(transitConnector->getStartPort());
+                transitConnector->setStartPort(pPort);
+            }
+            else
+                qDebug() << "No port with that name!";
 
-            mpGroupScene->addItem(pPort);
+            pGroupPort->addConnector(transitConnector);
+            mpGroupScene->addItem(pGroupPort);
+            pGroupPort->showPorts(false);
+
         }
 
+        connect(this->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
+
     }
-
-    //Fix the position for the group item
-    this->setPos((xMax+xMin)/2.0-this->rect().width()/2.0,(yMax+yMin)/2.0-this->rect().height()/2.0);
-
-    this->mpParentGraphicsView->setScene(mpGroupScene);
-
-    this->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton->show();
-
-    connect(this->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
-
 }
 
+//! Shows the parent scene. Should be called to exit a group.
 void GUIGroup::showParent()
 {
     this->mpParentGraphicsView->setScene(mpParentScene);
@@ -1493,6 +1535,9 @@ void GUIGroup::showParent()
 
 }
 
+
+//! A slot that makes an entrance into a group at double clicks.
+//! @param event contain information of the doubleclick event.
 void GUIGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mouseDoubleClickEvent(event);
@@ -1508,3 +1553,61 @@ void GUIGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 //graphicsColor ->setColor(Qt::red);
 //graphicsColor->setEnabled(true);
 //this->mpIcon->setGraphicsEffect(graphicsColor);
+
+
+GUIGroupPort::GUIGroupPort(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
+        : GUIObject(position, appearanceData, scene, parent)
+
+{
+    //Sets the ports
+    //! @todo Only one port in group ports could simplify this
+    PortAppearanceMapT::iterator i;
+    for (i = mAppearanceData.getPortAppearanceMap().begin(); i != mAppearanceData.getPortAppearanceMap().end(); ++i)
+    {
+        qreal x = i.value().x;
+        qreal y = i.value().y;
+
+        i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
+
+//        mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.addSystemPort(i.key()));
+        mAppearanceData.setName(i.key());
+
+        //We supply ptr to rootsystem to indicate that this is a systemport
+        //! @todo this is a very bad way of doing this (ptr to rootsystem for systemport), really need to figure out some better way
+        mpGuiPort = new GUIPort(mAppearanceData.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
+        mpOuterGuiPort = 0;
+        mPortListPtrs.append(mpGuiPort);
+    }
+}
+
+
+void GUIGroupPort::setOuterGuiPort(GUIPort *pPort)
+{
+    mpOuterGuiPort = pPort;
+}
+
+
+//! Returns a string with the GUIObject type.
+QString GUIGroupPort::getTypeName()
+{
+    return "GroupPort";
+}
+
+//! Set the name of a group port
+void GUIGroupPort::setName(QString newName)
+{
+    QString oldName = getName();
+    //If name same as before do nothing
+    if (newName != oldName)
+    {
+        //Check if we want to avoid trying to rename in the graphics view map
+        //Rename
+        mpParentGraphicsView->renameGUIObject(oldName, newName);
+    }
+}
+
+
+int GUIGroupPort::type() const
+{
+    return Type;
+}

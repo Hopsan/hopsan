@@ -560,6 +560,7 @@ void Component::setSystemParent(ComponentSystem &rComponentSystem)
 Port *Component::getPort(const string portname)
 {
     PortPtrMapT::iterator it;
+    cout << portname << endl;
     it = mPortPtrMap.find(portname);
     if (it != mPortPtrMap.end())
     {
