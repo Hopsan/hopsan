@@ -315,8 +315,6 @@ public:
 
     void setOuterGuiPort(GUIPort *pPort);
 
-    void pGroupPort();
-
     enum { Type = UserType + 7 };
     int type() const;
 

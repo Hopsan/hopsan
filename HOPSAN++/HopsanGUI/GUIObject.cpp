@@ -1417,9 +1417,6 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
                         //Add the connections that go trough the group boundary to a list
                     {
                         mGUITransitConnList.append(mpParentGraphicsView->mConnectorVector[i]);
-
-                        qDebug() << mpParentGraphicsView->mConnectorVector[i]->getStartPort()->getName() << ": " << mpParentGraphicsView->mConnectorVector[i]->getStartPort()->getGUIComponentName();
-                        qDebug() << mpParentGraphicsView->mConnectorVector[i]->getEndPort()->getName() << ": " << mpParentGraphicsView->mConnectorVector[i]->getEndPort()->getGUIComponentName();
                     }
                 }
                 if(this->mpParentGraphicsView->mConnectorVector.empty())

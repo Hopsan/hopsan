@@ -91,13 +91,11 @@ cout << "D 1" << endl;
     //! @todo this kind of harcoded stuff should not be here, fix the problem in some other way
     if(this->getPortType() == "POWERPORT")
     {
-        cout << "D 2" << endl;
         this->setRotation(0.0);
         mpPortLabel->setRotation(0.0);
     }
     else
     {
-        cout << "D 3" << endl;
         this->setRotation(mpPortAppearance->rot);
         mpPortLabel->setRotation(-mpPortAppearance->rot);
     }
