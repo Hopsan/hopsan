@@ -38,7 +38,7 @@
 
 //$Id$
 
-#include <math.h>
+#include <cmath>
 
 #include <QVector>
 
@@ -1536,10 +1536,29 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
         double vinkel=line.angle()*3.141592/180.0;
         double b = mpIcon->boundingRect().width()/2.0;
         double h = mpIcon->boundingRect().height()/2.0;
-        double x=max(min(h/tan(vinkel), b), -b);
-        double y=-max(min(b*tan(vinkel), h), -h);
+        double x, y;
+        if(vinkel>3.1415*3.0/2.0)
+        {
+            x=-max(min(h/tan(vinkel), b), -b);
+            y=max(min(b*tan(vinkel), h), -h);
+        }
+        else if(vinkel>3.1415)
+        {
+            x=-max(min(h/tan(vinkel), b), -b);
+            y=-max(min(b*tan(vinkel), h), -h);
+        }
+        else if(vinkel>3.1415/2.0)
+        {
+            x=max(min(h/tan(vinkel), b), -b);
+            y=-max(min(b*tan(vinkel), h), -h);
+        }
+        else
+        {
+            x=max(min(h/tan(vinkel), b), -b);
+            y=max(min(b*tan(vinkel), h), -h);
+        }
 
-        qDebug() << portName << " vinkel: " << vinkel*180/3.1415 << " x: " << x << " ber x: " << h/tan(vinkel) << " b: " << b << " y: " << y << " ber y: " << b*tan(vinkel) << " h: " << h;
+        qDebug() << portName << " vinkel: " << tan(vinkel) << " x: " << x << " ber x: " << h/tan(vinkel) << " b: " << b << " y: " << y << " ber y: " << b*tan(vinkel) << " h: " << h;
 
         //Make ports on the group system icon
         PortAppearance portAppearance;
@@ -1550,8 +1569,9 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
         //! @todo this is a very bad way of doing this (ptr to rootsystem for systemport), really need to figure out some better way
         mpGuiPort = new GUIPort(pPortBoundary->getGUIComponentName().append(", ").append(portName),
                                 mpIcon->boundingRect().center().x()+x,
-                                mpIcon->boundingRect().center().y()+y,
-                                &(portAppearance), this);
+                                mpIcon->boundingRect().center().y()-y,
+                                &(portAppearance),
+                                this);
         mPortListPtrs.append(mpGuiPort);
 
     }
