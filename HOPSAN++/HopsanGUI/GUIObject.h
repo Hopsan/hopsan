@@ -292,6 +292,9 @@ protected:
 public slots:
     void showParent();
 
+private:
+    GUIPort *mpGuiPort;
+
 //    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 //    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 //    void openParameterDialog();
