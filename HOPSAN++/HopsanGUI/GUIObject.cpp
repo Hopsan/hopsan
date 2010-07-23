@@ -1463,9 +1463,14 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
     QPointF sceneCenterPointF = mpGroupScene->sceneRect().center();
 
     //Draw a cross in the center of the scene (just for debugging)
-    mpGroupScene->addLine(-10+sceneCenterPointF.x(), -10+sceneCenterPointF.y(), 10+sceneCenterPointF.x(), 10+sceneCenterPointF.y());
-    mpGroupScene->addLine(10+sceneCenterPointF.x(), -10+sceneCenterPointF.y(), -10+sceneCenterPointF.x(), 10+sceneCenterPointF.y());
-    qDebug() << "Center: " << sceneCenterPointF << mpGroupScene->sceneRect();
+//    mpGroupScene->addLine(-10+sceneCenterPointF.x(), -10+sceneCenterPointF.y(), 10+sceneCenterPointF.x(), 10+sceneCenterPointF.y());
+//    mpGroupScene->addLine(10+sceneCenterPointF.x(), -10+sceneCenterPointF.y(), -10+sceneCenterPointF.x(), 10+sceneCenterPointF.y());
+//    qDebug() << "Center: " << sceneCenterPointF << mpGroupScene->sceneRect();
+
+    //Adjusts the size of the group component icon
+    double scale = 1.0;//.75*min(mpGroupScene->sceneRect().width()/this->boundingRect().width(),mpGroupScene->sceneRect().height()/this->boundingRect().height());
+    this->setTransformOriginPoint(this->boundingRect().center());
+    this->setScale(scale);
 
     //Take care of the boundary connections of the group
     for(int i=0; i < mGUITransitConnList.size(); ++i)
@@ -1501,7 +1506,8 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
         //Add a new group port for the boundary at the boundary connector
         pGroupPortComponent = new GUIGroupPort(appData, groupPortPoint, mpGroupScene);
         GUIPort *pPort = pGroupPortComponent->getPort("sysp");
-        GUIPort *pPortBoundary;
+        GUIPort *pPortBoundaryInside; //Inside the group
+        GUIPort *pPortBoundaryOutside; //Outside the group
         QString portName;
         if(pPort)
         {
@@ -1509,14 +1515,16 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
             if((startComp) && (mGUICompList.contains(startComp)))
             {
                 pGroupPortComponent->setOuterGuiPort(transitConnector->getEndPort());
-                pPortBoundary = transitConnector->getStartPort();
+                pPortBoundaryInside = transitConnector->getStartPort();
+                pPortBoundaryOutside = transitConnector->getEndPort();
                 portName = transitConnector->getStartPort()->getName();
                 transitConnector->setEndPort(pPort);
             }
             if((endComp) && (mGUICompList.contains(endComp)))
             {
                 pGroupPortComponent->setOuterGuiPort(transitConnector->getStartPort());
-                pPortBoundary = transitConnector->getEndPort();
+                pPortBoundaryInside = transitConnector->getEndPort();
+                pPortBoundaryOutside = transitConnector->getStartPort();
                 portName = transitConnector->getEndPort()->getName();
                 transitConnector->setStartPort(pPort);
             }
@@ -1531,8 +1539,8 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
 
         //A line from center to port, used to determine the angle
         QLineF line(QPointF(sceneCenterPointF.x(), sceneCenterPointF.y()), QPointF(groupPortPoint.x(), groupPortPoint.y()));
-        mpGroupScene->addLine(line); //(just for debugging)
-
+//        mpGroupScene->addLine(line); //(just for debugging)
+        //Determine the placement of the ports on the group icon
         double vinkel=line.angle()*3.141592/180.0;
         double b = mpIcon->boundingRect().width()/2.0;
         double h = mpIcon->boundingRect().height()/2.0;
@@ -1557,22 +1565,25 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
             x=max(min(h/tan(vinkel), b), -b);
             y=max(min(b*tan(vinkel), h), -h);
         }
-
         qDebug() << portName << " vinkel: " << tan(vinkel) << " x: " << x << " ber x: " << h/tan(vinkel) << " b: " << b << " y: " << y << " ber y: " << b*tan(vinkel) << " h: " << h;
-
         //Make ports on the group system icon
         PortAppearance portAppearance;
-
         portAppearance.selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
-
         //We supply ptr to rootsystem to indicate that this is a systemport
         //! @todo this is a very bad way of doing this (ptr to rootsystem for systemport), really need to figure out some better way
-        mpGuiPort = new GUIPort(pPortBoundary->getGUIComponentName().append(", ").append(portName),
+        mpGuiPort = new GUIPort(pPortBoundaryInside->getGUIComponentName().append(", ").append(portName),
                                 mpIcon->boundingRect().center().x()+x,
                                 mpIcon->boundingRect().center().y()-y,
                                 &(portAppearance),
                                 this);
         mPortListPtrs.append(mpGuiPort);
+
+        //Make connectors to the group component
+        GUIConnector *tmpConnector = new GUIConnector(mpGuiPort, pPortBoundaryOutside,transitConnector->getPointsVector(), this->mpParentGraphicsView);
+        //! @todo Do I have to add the connector in "graphicsview.mpConnectors"?
+        this->mpParentScene->addItem(tmpConnector);
+        this->showPorts(false);
+        tmpConnector->drawConnector();
 
     }
 
@@ -1580,13 +1591,23 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
     this->mpParentGraphicsView->setScene(mpGroupScene);
     this->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton->show();
 
-    //Draw a cross in the center of the group component icon
-    new QGraphicsLineItem(QLineF(this->rect().center()-QPointF(-10,-10), this->rect().center()-QPointF(10,10)),this);
-    new QGraphicsLineItem(QLineF(this->rect().center()-QPointF(-10,10), this->rect().center()-QPointF(10,-10)),this);
+    //Draw a cross in the center of the group component icon (debug)
+//    new QGraphicsLineItem(QLineF(this->rect().center()-QPointF(-10,-10), this->rect().center()-QPointF(10,10)),this);
+//    new QGraphicsLineItem(QLineF(this->rect().center()-QPointF(-10,10), this->rect().center()-QPointF(10,-10)),this);
+
+    //Scale up the ports and so on
+    //! @todo Add a method to this->mpSelectionBox so the lines could be scaled
+    QList<GUIPort*>::iterator it;
+    for (it = mPortListPtrs .begin(); it != mPortListPtrs.end(); ++it)
+    {
+        (*it)->setTransformOriginPoint((*it)->boundingRect().center());
+        (*it)->setScale(1.0/scale);
+    }
 
     connect(this->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
 
 }
+
 
 //! Shows the parent scene. Should be called to exit a group.
 void GUIGroup::showParent()
