@@ -17,13 +17,13 @@
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 
 //TBB stuff - ONLY UNCOMMENT BEFORE MULTICORE EXPERIMENTS - DO NOT COMMIT UNCOMMENTED
-/*
+
 #include "tbb/task_scheduler_init.h"
 #include "tbb/parallel_for.h"
 #include "tbb/blocked_range.h"
 #include "tbb/tick_count.h"
 #include "tbb/task_group.h"
-*/
+
 
 
 //! @brief Helper function to create a unique name among names from a Map
@@ -1991,6 +1991,17 @@ void ComponentSystem::simulate(const double startT, const double stopT)
     //Simulate
     double stopTsafe = stopT - mTimestep/2.0; //minus halv a timestep is here to ensure that no numerical issues occure
 
+        //TBB stuff
+    /*
+    if(false)
+    {
+        task_group *c;
+        task_group *q;
+        c = new task_group;
+        q = new task_group;
+    }
+    */
+
     while ((mTime < stopTsafe) && (!mStop))
     {
         //cout << this->getName() << ": starT: " << startT  << " stopT: " << stopT << " mTime: " << mTime << endl;
@@ -2021,6 +2032,16 @@ void ComponentSystem::simulate(const double startT, const double stopT)
             mSubComponentStorage.mComponentQptrs[q]->simulate(mTime, mTime+mTimestep);
         }
 
+            //TBB stuff
+        /*
+        if(false)
+        {
+            c->run(taskC(splitCVector[0], mTime, mTime+mTimestep));
+            c->run_and_wait(taskC(splitCVector[1], mTime, mTime+mTimestep));
+            q->run(taskQ(splitQVector[0]));
+            q->run_and_wait(taskQ(splitQVector[1]));
+        }
+        */
         mTime += mTimestep;
     }
 }
@@ -2079,3 +2100,54 @@ DLLIMPORTEXPORT ComponentFactory* getCoreComponentFactoryPtr()
 {
     return &gCoreComponentFactory;
 }
+
+
+
+
+
+
+// TBB Stuff - do not commit uncommented!
+
+
+class taskQ
+{
+    vector<ComponentQ*> vectorQ;
+public:
+    taskQ(vector<ComponentQ*> inputVector, double startTime, double stopTime) : vectorQ(inputVector)
+    {
+        mStartTime = startTime;
+        mStopTime = stopTime;
+    }
+    void operator() () const
+    {
+        for(size_t i=0; i<vectorQ.size(); ++i)
+        {
+            vectorQ[i]->simulate(mStartTime, mStopTime);
+        }
+    }
+private:
+    double mStartTime;
+    double mStopTime;
+};
+
+class taskC
+{
+    vector<ComponentC*> vectorC;
+public:
+    taskC(vector<ComponentC*> inputVector, double startTime, double stopTime) : vectorC(inputVector)
+    {
+        mStartTime = startTime;
+        mStopTime = stopTime;
+    }
+    void operator() () const
+    {
+        for(size_t i=0; i<vectorC.size(); ++i)
+        {
+            vectorC[i]->simulate(mStartTime, mStopTime);
+        }
+    }
+private:
+    double mStartTime;
+    double mStopTime;
+};
+
