@@ -33,7 +33,7 @@ public:
         mTypeName = "HydraulicFlowSensor";
 
         mpP1 = addReadPort("P1", "NodeHydraulic");
-        mpOut = addWritePort("out", "NodeSignal", Port::OPTIONAL);
+        mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
     }
 
 

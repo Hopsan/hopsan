@@ -27,7 +27,7 @@ class DLLIMPORTEXPORT Port
 
 public:
     enum PORTTYPE {POWERPORT, READPORT, WRITEPORT, SYSTEMPORT, UNDEFINEDPORT};
-    enum CONREQ {REQUIRED, OPTIONAL};
+    enum CONREQ {REQUIRED, NOTREQUIRED};
 
     //Constructors - Destructors
     Port();

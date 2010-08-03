@@ -38,7 +38,7 @@ public:
         mStartFlow     = 0.0;
         mPressure      = 1.0e5;
 
-        mpIn = addReadPort("in", "NodeSignal",  Port::OPTIONAL);
+        mpIn = addReadPort("in", "NodeSignal",  Port::NOTREQUIRED);
         mpP1 = addPowerPort("P1", "NodeHydraulic");
 
         registerParameter("P", "Default pressure", "Pa", mPressure);

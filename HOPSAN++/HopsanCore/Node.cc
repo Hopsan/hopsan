@@ -122,7 +122,7 @@ string Node::getDataUnit(size_t id)
 //! @return The Id, -1 if requested data name is not found
 int Node::getDataIdFromName(const string name)
 {
-    for (int i=0; i<mDataNames.size(); ++i)
+    for (size_t i=0; i<mDataNames.size(); ++i)
     {
         if (name == mDataNames[i])
         {

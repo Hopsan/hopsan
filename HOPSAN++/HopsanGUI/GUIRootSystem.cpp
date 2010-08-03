@@ -135,8 +135,7 @@ QString GUIRootSystem::getPortType(QString componentName, QString portName)
         if(pPort)
             return QString(pPort->getPortTypeString().c_str());
     }
-    else
-        return QString();
+    return QString();
 //    return QString(mpCoreComponentSystem->getComponent(componentName.toStdString())->getPort(portName.toStdString())->getPortTypeString().c_str());
 }
 

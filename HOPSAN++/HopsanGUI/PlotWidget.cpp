@@ -606,7 +606,8 @@ void SelectedVariableList::dropEvent(QDropEvent *event)
         qDebug() << "True!";
         QString datastr =  event->mimeData()->text();
         //QTextStream stream(&datastr, QIODevice::ReadOnly);
-        QListWidgetItem *tempListWidget = new QListWidgetItem(datastr, this);
+        QListWidgetItem *tempListWidget;
+        tempListWidget = new QListWidgetItem(datastr, this);
 
         event->acceptProposedAction();
    }

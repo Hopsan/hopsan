@@ -97,6 +97,10 @@ public:
     //double getTimestep();
     double *getTimePtr();
 
+    void setMeasuredTime(double time);
+    double getMeasuredTime();
+
+
 protected:
     //==========Protected member functions==========
     //Constructor - Destructor
@@ -143,7 +147,7 @@ private:
     typedef map<string, Port*> PortPtrMapT;
     typedef pair<string, Port*> PortPtrPairT;
     PortPtrMapT mPortPtrMap;
-
+    double mMeasuredTime;
 };
 
 

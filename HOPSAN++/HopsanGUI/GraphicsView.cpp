@@ -27,22 +27,24 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     this->setInteractive(true);
     this->setEnabled(true);
     this->setAcceptDrops(true);
-    this->mIsCreatingConnector = false;
-    this->mPortsHidden = false;
+
+    mIsCreatingConnector = false;
+    mIsRenamingObject = false;
+    mPortsHidden = false;
+    mCtrlKeyPressed = false;
+
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     this->setSceneRect(0,0,5000,5000);
     this->centerOn(this->sceneRect().center());
-    this->mBackgroundColor = QColor(Qt::white);
-    this->setBackgroundBrush(mBackgroundColor);
-    this->createActions();
-    this->createMenus();
-
-    mCtrlKeyPressed = false;
-    mIsRenamingObject = false;
 
     mZoomFactor = 1.0;
+    mBackgroundColor = QColor(Qt::white);
+    this->setBackgroundBrush(mBackgroundColor);
+
+    this->createActions();
+    this->createMenus();
 
     mpCopyData = new QString;
 
@@ -445,7 +447,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     bool doNotForwardEvent = false;
     bool ctrlPressed = event->modifiers().testFlag(Qt::ControlModifier);
     bool shiftPressed = event->modifiers().testFlag(Qt::ShiftModifier);
-    bool altPressed = event->modifiers().testFlag(Qt::AltModifier);
+    //bool altPressed = event->modifiers().testFlag(Qt::AltModifier);       //Commented because it is not used, to avoid compile warnings
 
     if (event->key() == Qt::Key_Delete and !mIsRenamingObject)
     {

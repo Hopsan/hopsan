@@ -16,6 +16,16 @@
 #include "Component.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 
+//TBB stuff - ONLY UNCOMMENT BEFORE MULTICORE EXPERIMENTS - DO NOT COMMIT UNCOMMENTED
+/*
+#include "tbb/task_scheduler_init.h"
+#include "tbb/parallel_for.h"
+#include "tbb/blocked_range.h"
+#include "tbb/tick_count.h"
+#include "tbb/task_group.h"
+*/
+
+
 //! @brief Helper function to create a unique name among names from a Map
 template<typename MapType>
 string modifyName(MapType &rMap, string name)
@@ -457,7 +467,7 @@ Port* Component::addPort(const string portname, Port::PORTTYPE porttype, const N
     new_port->mNodeType = nodetype;
     new_port->mpComponent = this;    //Set port owner
     //Set wheter the port must be connected before simulation
-    if (connection_requirement == Port::OPTIONAL)
+    if (connection_requirement == Port::NOTREQUIRED)
     {
         //! @todo maybe use a string for OPTIONAL instead, to reduce the number of compiletime dependencies, will need to think about that a bit more
         new_port->mConnectionRequired = false;
@@ -591,6 +601,21 @@ bool Component::getPort(const string portname, Port* &rpPort)
 void Component::setTimestep(const double timestep)
 {
     mTimestep = timestep;
+}
+
+
+//! Sets the measured time variable for the component. This is used to measure time requirements when sorting components for multicore purposes.
+//! @see getMeasuredTime()
+void Component::setMeasuredTime(double time)
+{
+        mMeasuredTime = time;
+}
+
+
+//! Returns the measured time variable for the component. This is used to measure time requirements when sorting components for multicore purposes.
+double Component::getMeasuredTime()
+{
+        return mMeasuredTime;
 }
 
 
@@ -1599,6 +1624,7 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
 bool ComponentSystem::disconnect(string compname1, string portname1, string compname2, string portname2)
 {
     disconnect( getComponent(compname1)->getPort(portname1), getComponent(compname2)->getPort(portname2) );
+    //! @todo Shouldn't this return a boolean?
 }
 
 

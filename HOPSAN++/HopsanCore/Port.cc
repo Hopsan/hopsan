@@ -268,7 +268,7 @@ const string &Port::getPortName()
 //! Get the name of the commponent that the port is attached to
 const string &Port::getComponentName()
 {
-    mpComponent->getName();
+    return mpComponent->getName();
 }
 
 

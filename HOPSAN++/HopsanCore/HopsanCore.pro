@@ -14,6 +14,7 @@ DESTDIR = ../bin/debug
 # win32:DEFINES += STATICCORE
 win32:DEFINES += DOCOREDLLEXPORT
 win32:DEFINES -= UNICODE
+win32:INCLUDEPATH += c:\tbb30_018oss\include
 
 # -------------------------------------------------
 # Project files
@@ -121,3 +122,6 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicVariableDisplacementMotorQ.h \
     Components/Hydraulic/HydraulicFixedDisplacementMotorQ.hpp \
     Components/Hydraulic/HydraulicVolume3.h
+
+
+
