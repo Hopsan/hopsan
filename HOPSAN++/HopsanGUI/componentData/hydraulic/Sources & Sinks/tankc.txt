@@ -1,7 +1,7 @@
 TYPENAME "HydraulicTankC"
 DISPLAYNAME "Tank C"
-ISOICON tank_iso.svg
-USERICON tank_user.svg
+ISOICON "tank_iso.svg"
+USERICON "tank_user.svg"
 ICONROTATION ON
 PORT "P1" 0.5000 0.000 90
 

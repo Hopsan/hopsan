@@ -1,7 +1,7 @@
 TYPENAME "MechanicForceSensor"
 DISPLAYNAME "Force Sensor"
-ISOICON forcesensor.svg
-USERICON forcesensor_user.svg
+ISOICON "forcesensor.svg"
+USERICON "forcesensor_user.svg"
 ICONROTATION ON
 PORT "P1" 0.5 1.0 90
 PORT "out" 0.5 0.0 270

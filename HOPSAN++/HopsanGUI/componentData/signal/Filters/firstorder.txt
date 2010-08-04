@@ -1,6 +1,6 @@
 TYPENAME "SignalFirstOrderFilter"
 DISPLAYNAME "General first order filter"
-USERICON firstorder.svg
+USERICON "firstorder.svg"
 ICONROTATION ON
 PORT "in" 0 .5 0
 PORT "out" 1 .5 0

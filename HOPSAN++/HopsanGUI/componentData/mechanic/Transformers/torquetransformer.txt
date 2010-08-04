@@ -1,6 +1,6 @@
 TYPENAME "MechanicTorqueTransformer"
 DISPLAYNAME "Torque Transformer"
-ISOICON torquetransformer.svg
+ISOICON "torquetransformer.svg"
 ICONROTATION ON
 PORT "in" 0.0 0.5 0
 PORT "P1" 1.0 0.5 0

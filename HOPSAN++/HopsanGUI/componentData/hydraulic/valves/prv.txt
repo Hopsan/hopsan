@@ -1,7 +1,7 @@
 TYPENAME "HydraulicPressureReliefValve"
 DISPLAYNAME "Pressure Relief Valve"
-ISOICON prv_iso.svg
-USERICON prv_user.svg
+ISOICON "prv_iso.svg"
+USERICON "prv_user.svg"
 ICONROTATION ON
 PORT "P1" 0.4762 0.0000 90
 PORT "P2" 0.4762 1.0000 270

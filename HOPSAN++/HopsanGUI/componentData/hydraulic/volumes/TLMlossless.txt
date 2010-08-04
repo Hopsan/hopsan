@@ -1,7 +1,7 @@
 TYPENAME "HydraulicTLMlossless"
 DISPLAYNAME "Lossless Transmission Line"
-ISOICON tlm_iso.svg
-USERICON tlm_user.svg
+ISOICON "tlm_iso.svg"
+USERICON "tlm_user.svg"
 ICONROTATION ON
 PORT "P1" 0.0 0.5 0
 PORT "P2" 1.0 0.5 0

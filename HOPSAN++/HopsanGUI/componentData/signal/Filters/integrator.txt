@@ -1,6 +1,6 @@
 TYPENAME "SignalIntegrator2"
 DISPLAYNAME "Integrator"
-USERICON integrator.svg
+USERICON "integrator.svg"
 ICONROTATION ON
 PORT "in" 0 .5 0
 PORT "out" 1 .5 0

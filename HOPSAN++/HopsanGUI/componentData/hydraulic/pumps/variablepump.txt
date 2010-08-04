@@ -1,7 +1,7 @@
 TYPENAME "HydraulicVariableDisplacementPump"
 DISPLAYNAME "Variable Displacement Pump"
-ISOICON variablepump_iso.svg
-USERICON variablepump_user.svg
+ISOICON "variablepump_iso.svg"
+USERICON "variablepump_user.svg"
 ICONROTATION ON
 PORT "P1" 0.5741 1.0000 90
 PORT "P2" 0.5741 0.0000 270

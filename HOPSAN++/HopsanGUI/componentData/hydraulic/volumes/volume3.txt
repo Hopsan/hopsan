@@ -1,8 +1,9 @@
-TYPENAME "HydraulicVolume"
-DISPLAYNAME "Hydraulic Volume"
+TYPENAME "HydraulicVolume3"
+DISPLAYNAME "Hydraulic Volume with 3 Ports"
 ISOICON "volume_iso.svg"
 USERICON "volume_user.svg"
 ICONROTATION ON
 PORT "P1" 0.0 0.5 0
 PORT "P2" 1.0 0.5 0
+PORT "P3" 0.5 1.0 0
 

@@ -48,7 +48,7 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->RegisterCreatorFunction("HydraulicAlternativePRV", HydraulicAlternativePRV::Creator);
     cfact_ptr->RegisterCreatorFunction("HydraulicFixedDisplacementMotorQ", HydraulicFixedDisplacementMotorQ::Creator);
     cfact_ptr->RegisterCreatorFunction("HydraulicVariableDisplacementMotorQ", HydraulicVariableDisplacementMotorQ::Creator);
-    //cfact_ptr->RegisterCreatorFunction("HydraulicVolume3", HydraulicVolume3::Creator);
+    cfact_ptr->RegisterCreatorFunction("HydraulicVolume3", HydraulicVolume3::Creator);
 
 
     //Signal components

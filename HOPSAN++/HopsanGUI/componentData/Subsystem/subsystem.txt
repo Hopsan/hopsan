@@ -1,4 +1,4 @@
 TYPENAME "Subsystem"
-ISOICON ../../subsystemtmp.svg
+ISOICON "../../subsystemtmp.svg"
 
 

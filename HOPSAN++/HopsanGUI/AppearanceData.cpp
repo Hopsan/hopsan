@@ -323,11 +323,11 @@ QTextStream& operator <<(QTextStream &os, AppearanceData &rData)
     //os << "BASEPATH " << rData.getBasePath() << "\n"; //Base path is computer dependant
     if (!rData.mIconPathISO.isEmpty())
     {
-        os << "ISOICON " << rData.mIconPathISO << "\n";
+        os << "ISOICON " << addQuotes(rData.mIconPathISO) << "\n";
     }
     if (!rData.mIconPathUser.isEmpty())
     {
-        os << "USERICON " << rData.mIconPathUser << "\n";
+        os << "USERICON " << addQuotes(rData.mIconPathUser) << "\n";
     }
     if (!rData.mIconRotationBehaviour.isEmpty())
     {
@@ -446,11 +446,11 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
         }
         else if (command == "ISOICON")
         {
-            mIconPathISO = is.readLine().trimmed();
+            mIconPathISO = readName(is.readLine().trimmed());
         }
         else if (command == "USERICON")
         {
-            mIconPathUser = is.readLine().trimmed();
+            mIconPathUser = readName(is.readLine().trimmed());
         }
         else if (command == "ICONROTATION")
         {

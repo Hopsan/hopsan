@@ -1,6 +1,6 @@
 TYPENAME "SignalDivide"
 DISPLAYNAME "Divide"
-ISOICON divide.svg
+ISOICON "divide.svg"
 ICONROTATION ON
 PORT "in1" 0.0 0.5 0
 PORT "in2" 0.5 0.0 90

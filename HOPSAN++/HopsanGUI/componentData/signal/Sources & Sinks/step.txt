@@ -1,6 +1,6 @@
 TYPENAME "SignalStep"
 DISPLAYNAME "Step"
-USERICON step.svg
+USERICON "step.svg"
 ICONROTATION ON
 PORT "out" 1.0 0.5 0
 

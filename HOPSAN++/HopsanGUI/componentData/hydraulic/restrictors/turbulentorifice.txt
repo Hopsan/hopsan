@@ -1,7 +1,7 @@
 TYPENAME "HydraulicTurbulentOrifice"
 DISPLAYNAME "Turbulent Orifice"
-ISOICON turbulentorifice_iso.svg
-USERICON turbulentorifice_user.svg
+ISOICON "turbulentorifice_iso.svg"
+USERICON "turbulentorifice_user.svg"
 ICONROTATION ON
 PORT "P1" 0.5 0.0 90
 PORT "P2" 0.5 1.0 270

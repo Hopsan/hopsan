@@ -1,7 +1,7 @@
 TYPENAME "HydraulicVariableDisplacementMotorQ"
 DISPLAYNAME "Variable Motor with Inertia Load"
-ISOICON variablemotorq_iso.svg
-USERICON variablemotorq_user.svg
+ISOICON "variablemotorq_iso.svg"
+USERICON "variablemotorq_user.svg"
 ICONROTATION ON
 PORT "P1" 0.5741 0.0000 90
 PORT "P2" 0.5741 1.0000 270

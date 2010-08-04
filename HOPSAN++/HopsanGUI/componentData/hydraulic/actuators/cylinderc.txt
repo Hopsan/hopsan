@@ -1,7 +1,7 @@
 TYPENAME "HydraulicCylinderC"
 DISPLAYNAME "Cylinder C"
-ISOICON cylinderc_iso.svg
-USERICON cylinderc_user.svg
+ISOICON "cylinderc_iso.svg"
+USERICON "cylinderc_user.svg"
 ICONROTATION ON
 PORT "P1" 0.0418 1.000 90
 PORT "P2" 0.7106 1.000 90

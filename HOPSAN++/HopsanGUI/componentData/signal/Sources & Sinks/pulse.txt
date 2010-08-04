@@ -1,5 +1,5 @@
 TYPENAME "SignalPulse"
 DISPLAYNAME "Pulse"
-ISOICON pulse.svg
+ISOICON "pulse.svg"
 ICONROTATION ON
 PORT "out" 1.0 0.5 0

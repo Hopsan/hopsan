@@ -1,7 +1,7 @@
 TYPENAME "HydraulicCylinderQ"
 DISPLAYNAME "Cylinder Q"
-ISOICON cylinderq_iso.svg
-USERICON cylinderq_user.svg
+ISOICON "cylinderq_iso.svg"
+USERICON "cylinderq_user.svg"
 ICONROTATION ON
 PORT "P1" 0.0274 1.000 90
 PORT "P2" 0.4660 1.000 90

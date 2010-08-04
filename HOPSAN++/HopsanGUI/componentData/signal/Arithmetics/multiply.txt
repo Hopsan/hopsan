@@ -1,6 +1,6 @@
 TYPENAME "SignalMultiply"
 DISPLAYNAME "Multiply"
-ISOICON multiply.svg
+ISOICON "multiply.svg"
 ICONROTATION ON
 PORT "in1" 0.0 0.5 0
 PORT "in2" 0.5 0.0 90
