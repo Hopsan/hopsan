@@ -5,28 +5,32 @@ HOPSANGUIVERSION 0.0.1
 HOPSANGUIMODELFILEVERSION 0.1
 HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION 0.1
 --------------------------------------------------------------
-COMPONENT "MechanicForceTransformer" "ForceTransformer" 2240 2393 0 1
+STARTTIME 0
+TIMESTEP 0.01
+FINISHTIME 5
+--------------------------------------------------------------
+COMPONENT "MechanicForceTransformer" "ForceTransformer" 2309 2487 0 1
 PARAMETER "ForceTransformer" x0 0
 PARAMETER "ForceTransformer" v0 1
 PARAMETER "ForceTransformer" Force 0
-COMPONENT "MechanicTranslationalMass" "TranslationalMass" 2332 2393 0 0
+COMPONENT "MechanicTranslationalMass" "TranslationalMass" 2401 2487 0 0
 PARAMETER "TranslationalMass" Mass 100
 PARAMETER "TranslationalMass" B 0
 PARAMETER "TranslationalMass" k 0
-COMPONENT "MechanicTranslationalMass" "TranslationalMass_1" 2518 2393 0 0
+COMPONENT "MechanicTranslationalMass" "TranslationalMass_1" 2587 2487 0 0
 PARAMETER "TranslationalMass_1" Mass 100
 PARAMETER "TranslationalMass_1" B 0
 PARAMETER "TranslationalMass_1" k 0
-COMPONENT "MechanicTranslationalSpring" "TranslationalSpring" 2617 2393 0 1
+COMPONENT "MechanicTranslationalSpring" "TranslationalSpring" 2686 2487 0 1
 PARAMETER "TranslationalSpring" k 100000
-COMPONENT "MechanicTranslationalSpring" "TranslationalSpring_1" 2426 2393 0 1
+COMPONENT "MechanicTranslationalSpring" "TranslationalSpring_1" 2495 2487 0 1
 PARAMETER "TranslationalSpring_1" k 100000
-COMPONENT "MechanicVelocityTransformer" "VelocityTransformer" 2693 2393 180 0
+COMPONENT "MechanicVelocityTransformer" "VelocityTransformer" 2762 2487 180 0
 PARAMETER "VelocityTransformer" Speed 0
 --------------------------------------------------------------
-CONNECT "VelocityTransformer" "out" "TranslationalSpring" "P2" 2673.5 2393 2653 2393 2653 2393 2633.5 2393
-CONNECT "TranslationalSpring" "P1" "TranslationalMass_1" "P2" 2600.5 2393 2522 2393 2522 2393 2550 2393
-CONNECT "TranslationalSpring_1" "P2" "TranslationalMass_1" "P1" 2442.5 2393 2467 2393 2467 2393 2486 2393
-CONNECT "TranslationalMass" "P2" "TranslationalSpring_1" "P1" 2364 2393 2385 2393 2385 2393 2409.5 2393
-CONNECT "ForceTransformer" "P1" "TranslationalMass" "P1" 2259.5 2393 2282 2393 2282 2393 2300 2393
+CONNECT "VelocityTransformer" "out" "TranslationalSpring" "P2" 2742.5 2487 2722 2487 2722 2487 2702.5 2487
+CONNECT "TranslationalSpring" "P1" "TranslationalMass_1" "P2" 2669.5 2487 2591 2487 2591 2487 2619 2487
+CONNECT "TranslationalSpring_1" "P2" "TranslationalMass_1" "P1" 2511.5 2487 2536 2487 2536 2487 2555 2487
+CONNECT "TranslationalMass" "P2" "TranslationalSpring_1" "P1" 2433 2487 2454 2487 2454 2487 2478.5 2487
+CONNECT "ForceTransformer" "P1" "TranslationalMass" "P1" 2328.5 2487 2351 2487 2351 2487 2369 2487
 --------------------------------------------------------------

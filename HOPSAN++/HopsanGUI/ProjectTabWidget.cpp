@@ -628,6 +628,18 @@ void ProjectTabWidget::loadModel()
             mpParentMainWindow->setFinishTimeLabel(finishTime);
         }
 
+        if ( inputWord == "VIEWPORT" )
+        {
+            double xPos, yPos, zoomFactor;
+            inputStream >> xPos;
+            inputStream >> yPos;
+            inputStream >> zoomFactor;
+            getCurrentTab()->mpGraphicsView->centerOn(xPos, yPos);
+            getCurrentTab()->mpGraphicsView->scale(zoomFactor, zoomFactor);
+            getCurrentTab()->mpGraphicsView->mZoomFactor = zoomFactor;
+            getCurrentTab()->mpGraphicsView->setBackgroundBrush(getCurrentTab()->mpGraphicsView->mBackgroundColor);
+        }
+
         if ( inputWord == "COMPONENT" )
         {
             loadGUIObject(inputStream, mpParentMainWindow->mpLibrary, pCurrentTab->mpGraphicsView);
@@ -767,6 +779,9 @@ void ProjectTabWidget::saveModel(bool saveAs)
     modelFile << "STARTTIME " << mpParentMainWindow->getStartTimeLabel() << "\n";
     modelFile << "TIMESTEP " << mpParentMainWindow->getTimeStepLabel() << "\n";
     modelFile << "FINISHTIME " << mpParentMainWindow->getFinishTimeLabel() << "\n";
+    modelFile << "VIEWPORT " << (getCurrentTab()->mpGraphicsView->horizontalScrollBar()->value() + getCurrentTab()->mpGraphicsView->width()/2 - getCurrentTab()->mpGraphicsView->pos().x()) / getCurrentTab()->mpGraphicsView->mZoomFactor << " " <<
+                                (getCurrentTab()->mpGraphicsView->verticalScrollBar()->value() + getCurrentTab()->mpGraphicsView->height()/2 - getCurrentTab()->mpGraphicsView->pos().x()) / getCurrentTab()->mpGraphicsView->mZoomFactor << " " <<
+                                getCurrentTab()->mpGraphicsView->mZoomFactor << "\n";
     modelFile << "--------------------------------------------------------------\n";
 
     QMap<QString, GUIObject*>::iterator it;
