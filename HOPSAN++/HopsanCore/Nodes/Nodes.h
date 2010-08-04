@@ -32,6 +32,7 @@ private:
     }
 };
 
+
 //!
 //! @class NodeHydraulic
 //! @brief A hydraulic node
@@ -74,6 +75,30 @@ private:
         setDataNameAndUnit(VELOCITY, "Velocity", "m/s");
         setDataNameAndUnit(FORCE, "Force", "N");
         setDataNameAndUnit(POSITION, "Position", "m");
+        setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?");
+        setDataNameAndUnit(CHARIMP, "CharImp", "?");
+    }
+};
+
+
+//!
+//! @class NodeMechanicRotational
+//! @brief A rotational mechanic node
+//! @ingroup RotationalMechanicalNode
+//!
+class NodeMechanicRotational :public Node
+{
+public:
+    enum {ANGULARVELOCITY, TORQUE, ANGLE, WAVEVARIABLE, CHARIMP, DATALENGTH};
+    static Node* CreatorFunction() {return new NodeMechanicRotational;}
+
+private:
+    NodeMechanicRotational() : Node(DATALENGTH)
+    {
+        mNodeType = "NodeMechanicRotational";
+        setDataNameAndUnit(ANGULARVELOCITY, "Angular Velocity", "rad/s");
+        setDataNameAndUnit(TORQUE, "Torque", "Nm");
+        setDataNameAndUnit(ANGLE, "Angle", "rad");
         setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?");
         setDataNameAndUnit(CHARIMP, "CharImp", "?");
     }

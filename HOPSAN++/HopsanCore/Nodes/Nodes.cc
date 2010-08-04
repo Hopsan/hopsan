@@ -21,7 +21,9 @@
 DLLIMPORTEXPORT void register_nodes(NodeFactory* nfact_ptr)
 {
     nfact_ptr->RegisterCreatorFunction("NodeSignal", NodeSignal::CreatorFunction);
+    nfact_ptr->RegisterCreatorFunction("NodeSignalBoolean", NodeSignalBoolean::CreatorFunction);
     nfact_ptr->RegisterCreatorFunction("NodeHydraulic", NodeHydraulic::CreatorFunction);
     nfact_ptr->RegisterCreatorFunction("NodeMechanic", NodeMechanic::CreatorFunction);
+    nfact_ptr->RegisterCreatorFunction("NodeMechanicRotational", NodeMechanicRotational::CreatorFunction);
 }
 

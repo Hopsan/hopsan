@@ -44,7 +44,7 @@ public:
 
         mpP1 = addPowerPort("P1", "NodeHydraulic");
         mpP2 = addPowerPort("P2", "NodeHydraulic");
-        mpP3 = addPowerPort("P3", "NodeMechanic");      //! @todo Shall be rotating
+        mpP3 = addPowerPort("P3", "NodeMechanicRotational");
 
         registerParameter("Dp", "Displacement", "m^3/rev", mDp);
         registerParameter("Bm", "Viscous Friction", "?", mBm);       //! @todo Figure out these units
@@ -80,12 +80,12 @@ public:
         double c2a = (mCim * Zc1 + 1) * gamma * c2 + mCim * gamma * Zc2 * c1;
         double ct = c1a * dp - c2a * dp - c3;
         mIntegrator.setDamping(ble / mJ * mTimestep);
-        double v3 = mIntegrator.valueFirst(ct/mJ);
-        double x3 = mIntegrator.valueSecond(ct/mJ);
+        double omega3 = mIntegrator.valueFirst(ct/mJ);
+        double phi3 = mIntegrator.valueSecond(ct/mJ);
         mIntegrator.update(ct/mJ);
 
             //Ideal Flow
-        double q1a = -dp * v3;
+        double q1a = -dp * omega3;
         double q2a = -q1a;
         double p1 = c1a + gamma * Zc1 * q1a;
         double p2 = c2a + gamma * Zc2 * q2a;
@@ -102,16 +102,16 @@ public:
         if (p1 < 0.0) { p1 = 0.0; }
         if (p2 < 0.0) { p2 = 0.0; }
 
-        double f3 = c3 + v3 * Zc3;
+        double t3 = c3 + omega3 * Zc3;
 
         //Write new values to nodes
         mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
         mpP1->writeNode(NodeHydraulic::MASSFLOW, q1);
         mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
         mpP2->writeNode(NodeHydraulic::MASSFLOW, q2);
-        mpP3->writeNode(NodeMechanic::FORCE, f3);
-        mpP3->writeNode(NodeMechanic::POSITION, x3);
-        mpP3->writeNode(NodeMechanic::VELOCITY, v3);
+        mpP3->writeNode(NodeMechanicRotational::TORQUE, t3);
+        mpP3->writeNode(NodeMechanicRotational::ANGLE, phi3);
+        mpP3->writeNode(NodeMechanicRotational::ANGULARVELOCITY, omega3);
     }
 };
 

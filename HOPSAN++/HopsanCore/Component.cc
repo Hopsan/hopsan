@@ -17,13 +17,13 @@
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 
 //TBB stuff - ONLY UNCOMMENT BEFORE MULTICORE EXPERIMENTS - DO NOT COMMIT UNCOMMENTED
-
+/*
 #include "tbb/task_scheduler_init.h"
 #include "tbb/parallel_for.h"
 #include "tbb/blocked_range.h"
 #include "tbb/tick_count.h"
 #include "tbb/task_group.h"
-
+*/
 
 
 //! @brief Helper function to create a unique name among names from a Map
@@ -2108,7 +2108,7 @@ DLLIMPORTEXPORT ComponentFactory* getCoreComponentFactoryPtr()
 
 // TBB Stuff - do not commit uncommented!
 
-
+/*
 class taskQ
 {
     vector<ComponentQ*> vectorQ;
@@ -2151,3 +2151,4 @@ private:
     double mStopTime;
 };
 
+*/

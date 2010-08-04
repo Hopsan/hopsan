@@ -267,6 +267,18 @@ void PortAppearance::selectPortIcon(QString CQSType, QString porttype, QString n
             iconPath.append("Q");
         }
     }
+    else if (nodetype == "NodeMechanicRotational")      //! @todo Make specific graphics for rotational nodes
+    {
+        iconPath.append("MechanicPort");
+        if (CQSType == "C")
+        {
+            iconPath.append("C");
+        }
+        else if (CQSType == "Q")
+        {
+            iconPath.append("Q");
+        }
+    }
     else if (nodetype == "NodeHydraulic")
     {
         iconPath.append("HydraulicPort");
