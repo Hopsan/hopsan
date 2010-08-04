@@ -121,4 +121,5 @@ HEADERS += win32dll.h \
     ComponentUtilities/DoubleIntegratorWithDamping.h \
     Components/Hydraulic/HydraulicFixedDisplacementMotorQ.hpp \
     Components/Hydraulic/HydraulicVariableDisplacementMotorQ.hpp \
-    Components/Hydraulic/HydraulicVolume3.hpp
+    Components/Hydraulic/HydraulicVolume3.hpp \
+    Components/Mechanic/MechanicTorqueTransformer.hpp

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -12,10 +13,8 @@
    height="10"
    id="svg2"
    version="1.1"
-   inkscape:version="0.46"
-   sodipodi:docname="MechanicPortQ.svg"
-   sodipodi:version="0.32"
-   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+   inkscape:version="0.47pre4 r22446"
+   sodipodi:docname="MechanicPortQ.svg">
   <defs
      id="defs4">
     <inkscape:perspective
@@ -51,12 +50,12 @@
      inkscape:cx="-0.28112011"
      inkscape:cy="6.1692269"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="text2814"
      showgrid="false"
      inkscape:window-width="1274"
      inkscape:window-height="942"
-     inkscape:window-x="66"
-     inkscape:window-y="74"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
@@ -75,13 +74,16 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(-356.39287,-588.82649)">
-    <rect
-       style="fill:#00baff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="rect2381"
-       width="9.5"
-       height="9.5"
-       x="356.64288"
-       y="589.07648" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#00baff;fill-opacity:1;stroke:#000000;stroke-width:0.27916721;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="path3619"
+       sodipodi:cx="7.1075969"
+       sodipodi:cy="7.2771893"
+       sodipodi:rx="2.6520884"
+       sodipodi:ry="2.6520884"
+       d="m 9.7596853,7.2771893 c 0,1.4647079 -1.1873804,2.6520884 -2.6520884,2.6520884 -1.464708,0 -2.6520884,-1.1873805 -2.6520884,-2.6520884 0,-1.464708 1.1873804,-2.6520884 2.6520884,-2.6520884 1.464708,0 2.6520884,1.1873804 2.6520884,2.6520884 z"
+       transform="matrix(1.7910414,0,0,1.7910414,348.66287,580.79274)" />
     <g
        style="font-size:10px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
        id="text2814">

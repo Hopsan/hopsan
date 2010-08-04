@@ -269,7 +269,7 @@ void PortAppearance::selectPortIcon(QString CQSType, QString porttype, QString n
     }
     else if (nodetype == "NodeMechanicRotational")      //! @todo Make specific graphics for rotational nodes
     {
-        iconPath.append("MechanicPort");
+        iconPath.append("RotationalMechanicPort");
         if (CQSType == "C")
         {
             iconPath.append("C");
