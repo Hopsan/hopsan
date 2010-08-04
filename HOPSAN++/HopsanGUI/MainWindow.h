@@ -118,6 +118,7 @@ public:
     QAction *resetZoomAction;
     QAction *zoomInAction;
     QAction *zoomOutAction;
+    QAction *centerViewAction;
     QAction *hideNamesAction;
     QAction *showNamesAction;
     QAction *hidePortsAction;

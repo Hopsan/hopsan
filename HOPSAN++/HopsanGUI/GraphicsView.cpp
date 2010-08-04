@@ -1184,4 +1184,3 @@ void GraphicsView::exportPDF()
         painter->end();
     }
 }
-

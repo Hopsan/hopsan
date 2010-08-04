@@ -92,6 +92,7 @@ public slots:
     void updateCurrentStopTime();
     void hidePortsInCurrentTab(bool doIt);
     void exportCurrentToPDF();
+    void centerView();
 
 signals:
     void checkMessages();

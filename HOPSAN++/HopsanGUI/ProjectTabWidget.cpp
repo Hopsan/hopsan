@@ -239,6 +239,7 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     connect(mpParentMainWindow->zoomOutAction, SIGNAL(triggered()),this,SLOT(zoomOut()));
     connect(mpParentMainWindow->hideNamesAction,SIGNAL(triggered()),this, SLOT(hideNames()));
     connect(mpParentMainWindow->showNamesAction,SIGNAL(triggered()),this, SLOT(showNames()));
+    connect(mpParentMainWindow->centerViewAction,SIGNAL(triggered()),this,SLOT(centerView()));
 }
 
 
@@ -864,4 +865,11 @@ void ProjectTabWidget::hideNames()
 void ProjectTabWidget::showNames()
 {
     this->getCurrentTab()->mpGraphicsView->showNames();
+}
+
+
+//! Tells the current tab to center the viewport
+void ProjectTabWidget::centerView()
+{
+    this->getCurrentTab()->mpGraphicsView->centerOn(getCurrentTab()->mpGraphicsView->sceneRect().center());
 }
