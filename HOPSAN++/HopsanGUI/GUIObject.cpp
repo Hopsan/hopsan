@@ -1379,6 +1379,12 @@ int GUIGroup::type() const
 }
 
 
+QString GUIGroup::getTypeName()
+{
+    return "";
+}
+
+
 //! Constructor.
 //! @param compList is a list for the QGraphicsItems that should be in the group.
 //! @param appearanceData defines the appearance for the group.

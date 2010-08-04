@@ -279,6 +279,8 @@ public:
     enum { Type = UserType + 6 };
     int type() const;
 
+    QString getTypeName();
+
 protected:
     GraphicsScene *mpParentScene;
     GraphicsScene *mpGroupScene;

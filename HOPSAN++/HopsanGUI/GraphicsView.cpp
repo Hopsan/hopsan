@@ -324,6 +324,9 @@ void GraphicsView::deleteGUIObject(QString objectName, bool noUnDo)
     QMap<QString, GUIObject *>::iterator it;
     it = mGUIObjectMap.find(objectName);
 
+    if(it==mGUIObjectMap.end())
+        cout << "Didn't find component: " << objectName.toStdString() << endl;
+
     //for(int i = 0; i != mConnectorVector.size(); ++i)
     int i = 0;
     while(i != mConnectorVector.size())
