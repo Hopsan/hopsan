@@ -125,4 +125,7 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicFixedDisplacementMotorQ.hpp \
     Components/Hydraulic/HydraulicVariableDisplacementMotorQ.hpp \
     Components/Hydraulic/HydraulicVolume3.hpp \
-    Components/Mechanic/MechanicTorqueTransformer.hpp
+    Components/Mechanic/MechanicTorqueTransformer.hpp \
+    Components/Mechanic/MechanicAngularVelocityTransformer.hpp \
+    Components/Mechanic/MechanicRotationalInertia.hpp \
+    Components/Mechanic/MechanicTorsionalSpring.hpp

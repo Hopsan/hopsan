@@ -1,0 +1,7 @@
+TYPENAME "MechanicTorsionalSpring"
+DISPLAYNAME "Torsional Spring"
+ISOICON "torsionalspring_iso.svg"
+USERICON "torsionalspring_user.svg"
+ICONROTATION ON
+PORT "P1" 0.0 1.0 0
+PORT "P2" 1.0 1.0 0

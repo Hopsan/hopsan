@@ -62,6 +62,9 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     connect(pMainWindow->mpUndoWidget->undoButton, SIGNAL(pressed()), this, SLOT(undo()));
     connect(pMainWindow->mpUndoWidget->redoButton, SIGNAL(pressed()), this, SLOT(redo()));
     connect(pMainWindow->mpUndoWidget->clearButton, SIGNAL(pressed()), this, SLOT(clearUndo()));
+
+
+    //this->setRenderHint(QPainter::Antialiasing);
 }
 
 

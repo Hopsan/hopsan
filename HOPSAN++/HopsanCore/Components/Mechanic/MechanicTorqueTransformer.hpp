@@ -1,4 +1,11 @@
-//$Id: MechanicForceTransformer.hpp 1557 2010-06-09 14:35:02Z robbr48 $
+//!
+//! @file   MechanicTorqueTransformer.hpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-08-05
+//!
+//! @brief Contains a mechanic prescribed torque component
+//!
+//$Id$
 
 #ifndef MECHANICTORQUETRANSFORMER_HPP_INCLUDED
 #define MECHANICTORQUETRANSFORMER_HPP_INCLUDED

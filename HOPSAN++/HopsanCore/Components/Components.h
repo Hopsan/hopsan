@@ -73,9 +73,12 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr);
 /* Mechanical Components */
 #include "Mechanic/MechanicForceTransformer.hpp"
 #include "Mechanic/MechanicVelocityTransformer.hpp"
+#include "Mechanic/MechanicAngularVelocityTransformer.hpp"
 #include "Mechanic/MechanicTorqueTransformer.hpp"
 #include "Mechanic/MechanicTranslationalMass.hpp"
 #include "Mechanic/MechanicTranslationalSpring.hpp"
+#include "Mechanic/MechanicRotationalInertia.hpp"
+#include "Mechanic/MechanicTorsionalSpring.hpp"
 #include "Mechanic/MechanicSpeedSensor.hpp"
 #include "Mechanic/MechanicForceSensor.hpp"
 #include "Mechanic/MechanicPositionSensor.hpp"

@@ -82,8 +82,11 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->RegisterCreatorFunction("MechanicForceTransformer", MechanicForceTransformer::Creator);
     cfact_ptr->RegisterCreatorFunction("MechanicVelocityTransformer", MechanicVelocityTransformer::Creator);
     cfact_ptr->RegisterCreatorFunction("MechanicTorqueTransformer", MechanicTorqueTransformer::Creator);
+    cfact_ptr->RegisterCreatorFunction("MechanicAngularVelocityTransformer", MechanicAngularVelocityTransformer::Creator);
     cfact_ptr->RegisterCreatorFunction("MechanicTranslationalMass", MechanicTranslationalMass::Creator);
     cfact_ptr->RegisterCreatorFunction("MechanicTranslationalSpring", MechanicTranslationalSpring::Creator);
+    cfact_ptr->RegisterCreatorFunction("MechanicTorsionalSpring", MechanicTorsionalSpring::Creator);
+    cfact_ptr->RegisterCreatorFunction("MechanicRotationalInertia", MechanicRotationalInertia::Creator);
     cfact_ptr->RegisterCreatorFunction("MechanicSpeedSensor", MechanicSpeedSensor::Creator);
     cfact_ptr->RegisterCreatorFunction("MechanicForceSensor", MechanicForceSensor::Creator);
     cfact_ptr->RegisterCreatorFunction("MechanicPositionSensor", MechanicPositionSensor::Creator);
