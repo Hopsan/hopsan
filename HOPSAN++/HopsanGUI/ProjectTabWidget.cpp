@@ -327,8 +327,8 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
     newTab->mGUIRootSystem.setRootSystemName(tabName);
 
     //addTab(newTab, tabName.append(QString("*")));
-    addTab(newTab, tabName);
-    setCurrentWidget(newTab);
+    this->addTab(newTab, tabName);
+    this->setCurrentWidget(newTab);
 
     mNumberOfUntitledTabs += 1;
 }
@@ -637,7 +637,7 @@ void ProjectTabWidget::loadModel()
             getCurrentTab()->mpGraphicsView->centerOn(xPos, yPos);
             getCurrentTab()->mpGraphicsView->scale(zoomFactor, zoomFactor);
             getCurrentTab()->mpGraphicsView->mZoomFactor = zoomFactor;
-            getCurrentTab()->mpGraphicsView->setBackgroundBrush(getCurrentTab()->mpGraphicsView->mBackgroundColor);
+            getCurrentTab()->mpGraphicsView->resetBackgroundBrush();
         }
 
         if ( inputWord == "COMPONENT" )
@@ -724,7 +724,7 @@ void ProjectTabWidget::loadModel()
         }
     }
     //Deselect all components
-    pCurrentTab->mpGraphicsView->deselectAllGUIObjects();
+   //pCurrentTab->mpGraphicsView->deselectAllGUIObjects();
 
     //Sets the file name as model name
     getCurrentTab()->mGUIRootSystem.setRootSystemName(fileInfo.fileName());

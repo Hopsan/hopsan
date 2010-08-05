@@ -128,6 +128,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setStatusBar(statusBar);
 
     mpUndoWidget = new UndoWidget(this);
+
     mpProjectTabs->addNewProjectTab();
 
     mpPreferenceWidget = new PreferenceWidget(this);
@@ -171,6 +172,14 @@ MainWindow::~MainWindow()
     delete mpProjectTabs;
     delete menubar;
     delete statusBar;
+}
+
+
+//! Overloaded function for showing the mainwindow. This is to make sure the view is centered when the program starts.
+void MainWindow::show()
+{
+    QMainWindow::show();
+    mpProjectTabs->centerView();
 }
 
 

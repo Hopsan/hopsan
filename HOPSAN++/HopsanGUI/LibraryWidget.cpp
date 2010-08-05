@@ -333,7 +333,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
 
             //Add the component to the library
             addLibraryContentItem(libName, parentLib, libcomp);
-            qDebug() << "Loaded item: " << pAppearanceData->getTypeName();
+            //qDebug() << "Loaded item: " << pAppearanceData->getTypeName();
         }
         else
         {

@@ -46,6 +46,7 @@
 
 int main(int argc, char *argv[])
 {
+
     QApplication a(argc, argv);
     QPixmap pixmap("../../HopsanGUI/splash.png");
     QSplashScreen splash(pixmap);
@@ -55,7 +56,7 @@ int main(int argc, char *argv[])
     MainWindow mainwindow;
 
     QTimer::singleShot(750, &splash, SLOT(close()));
-    QTimer::singleShot(700, &mainwindow, SLOT(show()));
+    QTimer::singleShot(400, &mainwindow, SLOT(show()));
 
     //splash.finish(&mainwindow);
 

@@ -760,25 +760,27 @@ GUIObjectDisplayName::GUIObjectDisplayName(GUIObject *pParent)
     :   QGraphicsTextItem(pParent)
 {
     mpParentGUIComponent = pParent;
-    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIgnoresTransformations);
+    setTextInteractionFlags(Qt::TextEditable | Qt::TextSelectableByMouse);
+    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIgnoresTransformations);
 }
 
 GUIObjectDisplayName::~GUIObjectDisplayName()
 {
 }
 
-void GUIObjectDisplayName::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
-{
-    setTextInteractionFlags(Qt::TextEditorInteraction);
-    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIgnoresTransformations);
-}
+//void GUIObjectDisplayName::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+//{
+//    setTextInteractionFlags(Qt::TextEditable | Qt::TextSelectableByMouse);
+
+//    //setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIgnoresTransformations);
+//}
 
 
 void GUIObjectDisplayName::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     emit textMoved(event->pos());
     QGraphicsTextItem::mouseReleaseEvent(event);
-    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIgnoresTransformations);
+    //setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIgnoresTransformations);
 }
 
 
@@ -799,10 +801,10 @@ void GUIObjectDisplayName::focusOutEvent(QFocusEvent *event)
     mpParentGUIComponent->refreshDisplayName();
     emit textMoved(pos());
 
-    setTextInteractionFlags(Qt::NoTextInteraction);
+    //setTextInteractionFlags(Qt::NoTextInteraction);
 
     QGraphicsTextItem::focusOutEvent(event);
-    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIgnoresTransformations);
+    //setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIgnoresTransformations);
 }
 
 

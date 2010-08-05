@@ -158,6 +158,7 @@ public:
     void closeEvent(QCloseEvent *event);
 
 public slots:
+    void show();
     void updateToolBarsToNewTab();
     void fixSimulationParameterValues();
     void saveSettings();

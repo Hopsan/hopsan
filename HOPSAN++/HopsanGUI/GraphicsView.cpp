@@ -157,7 +157,7 @@ void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 void GraphicsView::dropEvent(QDropEvent *event)
 {
     //if (event->mimeData()->hasFormat("application/x-text"))
-    if (event->mimeData()->hasText())
+    if (event->mimeData()->hasText())               //! @todo We must check if it is the correct type of text in the drop object, otherwise it will crash if the user drops something that is not a gui object...
     {
         undoStack->newPost();
         mpParentProjectTab->hasChanged();
