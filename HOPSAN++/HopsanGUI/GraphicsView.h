@@ -31,6 +31,7 @@ public:
     void resetBackgroundBrush();
     void deselectAllGUIObjects();
     void deselectAllConnectors();
+    void deselectAllText();
 
     ProjectTab *mpParentProjectTab;
     typedef QMap<QString, GUIObject*> GUIObjectMapT;

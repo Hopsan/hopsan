@@ -230,6 +230,17 @@ void GraphicsView::deselectAllConnectors()
     }
 }
 
+//! @brief deselects all GUIObject name text fields
+void GraphicsView::deselectAllText()
+{
+    GUIObjectMapT::iterator it;
+    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
+    {
+        it.value()->mpNameText->setSelected(false);
+        it.value()->mpNameText->clearFocus();
+    }
+}
+
 
 //! @brief Temporary addSubSystem functin should be same later on
 //! Adds a new component to the GraphicsView.
@@ -1132,6 +1143,8 @@ void GraphicsView::zoomOut()
 //! @see showNames()
 void GraphicsView::hideNames()
 {
+    this->deselectAllText();
+    mIsRenamingObject = false;
     QMap<QString, GUIObject *>::iterator it;
     for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
     {

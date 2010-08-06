@@ -12,6 +12,6 @@ GraphicsScene::GraphicsScene(ProjectTab *parent)
         :   QGraphicsScene(parent)
 {
     mpParentProjectTab = parent;
-    setSceneRect(0.0, 0.0, 800.0, 600.0);   //! I think this is unnecessary, since we override it in GraphicsView...
+    //setSceneRect(0.0, 0.0, 800.0, 600.0);   //! I think this is unnecessary, since we override it in GraphicsView...
     //connect(this, SIGNAL(changed( const QList<QRectF> & )),this->parent(), SLOT(hasChanged()));
 }

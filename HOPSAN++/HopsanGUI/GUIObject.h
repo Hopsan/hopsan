@@ -96,6 +96,7 @@ public:
     enum { Type = UserType + 2 };
     int type() const;
     QList<GUIPort*> mPortListPtrs;
+    GUIObjectDisplayName *mpNameText;
     //QMap<QString, GUIPort*> mGuiPortPtrMap;
 
 protected:
@@ -128,7 +129,7 @@ public slots:
 protected:
     void groupComponents(QList<QGraphicsItem*> compList);
     QGraphicsSvgItem *mpIcon;
-    GUIObjectDisplayName *mpNameText;
+
     GUIObjectSelectionBox *mpSelectionBox;
     double mTextOffset;
     QGraphicsLineItem *mpTempLine;

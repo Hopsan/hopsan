@@ -782,21 +782,11 @@ GUIObjectDisplayName::~GUIObjectDisplayName()
 {
 }
 
-//void GUIObjectDisplayName::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
-//{
-//    setTextInteractionFlags(Qt::TextEditable | Qt::TextSelectableByMouse);
-
-//    //setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIgnoresTransformations);
-//}
-
-
 void GUIObjectDisplayName::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     emit textMoved(event->pos());
     QGraphicsTextItem::mouseReleaseEvent(event);
-    //setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIgnoresTransformations);
 }
-
 
 void GUIObjectDisplayName::focusInEvent(QFocusEvent *event)
 {
@@ -804,21 +794,15 @@ void GUIObjectDisplayName::focusInEvent(QFocusEvent *event)
     QGraphicsTextItem::focusInEvent(event);
 }
 
-
 void GUIObjectDisplayName::focusOutEvent(QFocusEvent *event)
 {
     mpParentGUIComponent->mpParentGraphicsView->mIsRenamingObject = false;
-
-    //Try to set the new name, the rename function in parent view will be called
+        //Try to set the new name, the rename function in parent view will be called
     mpParentGUIComponent->setName(toPlainText());
-    //refresh the display name (it may be different from the one you wanted)
+        //Refresh the display name (it may be different from the one you wanted)
     mpParentGUIComponent->refreshDisplayName();
     emit textMoved(pos());
-
-    //setTextInteractionFlags(Qt::NoTextInteraction);
-
     QGraphicsTextItem::focusOutEvent(event);
-    //setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIgnoresTransformations);
 }
 
 

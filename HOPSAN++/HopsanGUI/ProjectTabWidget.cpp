@@ -70,7 +70,6 @@
 #include "GraphicsScene.h"
 #include "GraphicsView.h"
 
-
 #include "version.h"
 #include "GUIUtilities.h"
 #include "loadObjects.h"
@@ -741,6 +740,8 @@ void ProjectTabWidget::loadModel()
     //Sets the file name as model name
     getCurrentTab()->mGUIRootSystem.setRootSystemName(fileInfo.fileName());
 
+    pCurrentTab->mpGraphicsView->deSelectAll();
+    this->centerView();
     pCurrentTab->mpGraphicsView->undoStack->clear();
     pCurrentTab->mpGraphicsView->resetBackgroundBrush();
 
