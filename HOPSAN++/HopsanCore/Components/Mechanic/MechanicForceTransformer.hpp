@@ -35,7 +35,7 @@ public:
         mSignal = 0.0;
 
         //Add ports to the component
-        mpIn = addReadPort("in", "NodeSignal");
+        mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
         mpP1 = addPowerPort("P1", "NodeMechanic");
 
         //Register changable parameters to the HOPSAN++ core

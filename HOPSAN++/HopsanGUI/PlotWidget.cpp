@@ -471,6 +471,37 @@ void VariableList::updateList()
                     yLabelMap.insert(it.key() + ", " + (*itp)->getName() + ", Position", "Position [m]");
                 }
             }
+            if (mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getNodeType((*itp)->getGUIComponentName(), (*itp)->getName()) =="NodeMechanicRotational")
+            {
+                QVector<double> time = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getTimeVector((*itp)->getGUIComponentName(), (*itp)->getName()));
+                if(time.size() > 0)
+                {
+                    tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Angular Velocity", this);
+                    tempListWidget->setBackgroundColor(backgroundColor);
+                    this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), QString("Angular Velocity"), y);
+                    xMap.insert(it.key() + ", " + (*itp)->getName() + ", Angular Velocity", time);
+                    yMap.insert(it.key() + ", " + (*itp)->getName() + ", Angular Velocity", y);
+                    yLabelMap.insert(it.key() + ", " + (*itp)->getName() + ", Angular Velocity", "Angular Velocity [m/s]");
+
+                    y.clear();
+
+                    tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Torque", this);
+                    tempListWidget->setBackgroundColor(backgroundColor);
+                    this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), QString("Torque"), y);
+                    xMap.insert(it.key() + ", " + (*itp)->getName() + ", Torque", time);
+                    yMap.insert(it.key() + ", " + (*itp)->getName() + ", Torque", y);
+                    yLabelMap.insert(it.key() + ", " + (*itp)->getName() + ", Torque", "Torque [N]");
+
+                    y.clear();
+
+                    tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Angle", this);
+                    tempListWidget->setBackgroundColor(backgroundColor);
+                    this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), QString("Angle"), y);
+                    xMap.insert(it.key() + ", " + (*itp)->getName() + ", Angle", time);
+                    yMap.insert(it.key() + ", " + (*itp)->getName() + ", Angle", y);
+                    yLabelMap.insert(it.key() + ", " + (*itp)->getName() + ", Angle", "Angle [m]");
+                }
+            }
             if (mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getNodeType((*itp)->getGUIComponentName(), (*itp)->getName()) =="NodeSignal")
             {
                 if(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.isPortConnected((*itp)->getGUIComponentName(), (*itp)->getName()))

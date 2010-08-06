@@ -32,7 +32,7 @@ public:
         mTypeName = "MechanicVelocityTransformer";
 
         //Add ports to the component
-        mpIn = addReadPort("in", "NodeSignal");
+        mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
         mpOut = addPowerPort("out", "NodeMechanic");
 
         //Register changable parameters to the HOPSAN++ core

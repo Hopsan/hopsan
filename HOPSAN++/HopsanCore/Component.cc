@@ -21,10 +21,22 @@
 //TBB stuff - ONLY UNCOMMENT BEFORE MULTICORE EXPERIMENTS - DO NOT COMMIT UNCOMMENTED
 
 #ifdef USETBB
-#include "tbb/task_scheduler_init.h"
-#include "tbb/parallel_for.h"
+
+//#include "tbb/tbb.h"
+//#include "tbb/tbb_allocator.h"
+//#include "tbb/tbb_stddef.h"
+//#include "tbb/tbbmalloc_proxy.h"
+//#include "tbb/tbb_config.h"
+//#include "tbb/tbb_exception.h"
+#include "tbb/tbb_machine.h"
+//#include "tbb/tbb_profiling.h"
+//#include "tbb/tbb_thread.h"
+//#include "tbb/parallel_for.h"
 #include "tbb/blocked_range.h"
 #include "tbb/tick_count.h"
+//#include "tbb/task.h"
+//#include "tbb/task_scheduler_init.h"
+//#include "tbb/task_scheduler_observer.h"
 #include "tbb/task_group.h"
 using namespace tbb;
 #endif
@@ -2136,12 +2148,12 @@ void ComponentSystem::simulate(const double startT, const double stopT)
         splitQVector.push_back(qPtrs1);
         splitQVector.push_back(qPtrs2);
 
-        /*
+
         task_group *c;
         task_group *q;
         c = new task_group;
         q = new task_group;
-
+        /*
         while ((mTime < stopTsafe) && (!mStop))
         {
             logAllNodes(mTime);
