@@ -679,6 +679,7 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
         mpTempConnector = new GUIConnector(oldPos, this);
 
         this->scene()->addItem(mpTempConnector);
+        this->deselectAllGUIObjects();
         this->mIsCreatingConnector = true;
         pPort->getGuiObject()->addConnector(mpTempConnector);
 

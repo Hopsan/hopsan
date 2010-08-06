@@ -21,6 +21,7 @@
 #ifdef USETBB
 
 #include "tbb/tbb.h"
+#include "tbb/blocked_range.h"
 //#include "tbb/tbb_allocator.h"
 //#include "tbb/tbb_stddef.h"
 //#include "tbb/tbbmalloc_proxy.h"

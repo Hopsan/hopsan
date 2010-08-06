@@ -62,6 +62,7 @@ MainWindow::MainWindow(QWidget *parent)
     //Set the name and size of the main window
     this->setObjectName("MainWindow");
     this->resize(1024,768);
+    this->setFont(QFont("Comic Sans"));
     this->setWindowTitle("HOPSAN NG");
     this->setWindowIcon(QIcon("../../HopsanGUI/icons/hopsan.png"));
     this->setDockOptions(QMainWindow::ForceTabbedDocks);

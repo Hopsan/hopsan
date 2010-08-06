@@ -376,6 +376,13 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
         }
     }
     QGraphicsWidget::mousePressEvent(event);
+
+        //Objects shall not be selectable while creating a connector
+    if(this->mpParentGraphicsView->mIsCreatingConnector)
+    {
+        this->setSelected(false);
+        this->setActive(false);
+    }
 }
 
 
@@ -399,6 +406,13 @@ void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     }
 
     QGraphicsWidget::mouseReleaseEvent(event);
+
+        //Objects shall not be selectable while creating a connector
+    if(this->mpParentGraphicsView->mIsCreatingConnector)
+    {
+        this->setSelected(false);
+        this->setActive(false);
+    }
 }
 
 
