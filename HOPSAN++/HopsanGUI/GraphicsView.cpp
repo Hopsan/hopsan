@@ -183,7 +183,6 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
         event->accept();
 
-
         QPoint position = event->pos();
         //qDebug() << "GraphicsView: " << "x=" << position.x() << "  " << "y=" << position.y();
 
@@ -231,7 +230,7 @@ void GraphicsView::deselectAllConnectors()
 //! @param position is the position where the component will be created.
 //! @param name will be the name of the component.
 //! @returns a pointer to the created and added object
-GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation)
+GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation, bool startSelected, bool doNotRegisterUndo)
 {
     QString componentTypeName = appearanceData.getTypeName();
     if (componentTypeName == "Subsystem")
@@ -281,20 +280,15 @@ GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint posi
         //qDebug() << "GUI Object created at (" << mpTempGUIObject->x() << " " << mpTempGUIObject->y() << ")";
     }
 
-//        //Deselect all other comonents
-//    QMap<QString, GUIObject *>::iterator it;
-//    for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
-//    {
-//        it.value()->setSelected(false);
-//    }
-//    mpTempGUIObject->setSelected(startSelected);
-//    this->setFocus(Qt::OtherFocusReason);
+        //Deselect all other comonents
+    this->deSelectAll();
+    mpTempGUIObject->setSelected(startSelected);
+    //this->setFocus(Qt::OtherFocusReason);
 
-//    if(!doNotRegisterUndo)
-//    {
-//        undoStack->registerAddedObject(mpTempGUIObject);
-//    }
-//    this->setFocus(Qt::OtherFocusReason);
+    if(!doNotRegisterUndo)
+    {
+        undoStack->registerAddedObject(mpTempGUIObject);
+    }
 
     return mpTempGUIObject;
 }
@@ -830,11 +824,29 @@ void GraphicsView::selectAll()
     {
         it.value()->setSelected(true);
     }
-        //Deselect all connectors
+        //Select all connectors
     QMap<QString, GUIConnector*>::iterator it2;
     for(int i = 0; i != mConnectorVector.size(); ++i)
     {
         mConnectorVector[i]->doSelect(true, -1);
+    }
+}
+
+
+//! Deselects all objects and connectors.
+void GraphicsView::deSelectAll()
+{
+        //Deselect all components
+    QMap<QString, GUIObject *>::iterator it;
+    for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
+    {
+        it.value()->setSelected(false);
+    }
+        //Deselect all connectors
+    QMap<QString, GUIConnector*>::iterator it2;
+    for(int i = 0; i != mConnectorVector.size(); ++i)
+    {
+        mConnectorVector[i]->doSelect(false, -1);
     }
 }
 

@@ -60,7 +60,7 @@ GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, G
         AppearanceData appearanceData = *pAppearanceData; //Make a copy
         appearanceData.setName(rData.name);
 
-        GUIObject* pObj = pGraphicsView->addGUIObject(appearanceData, QPoint(rData.posX, rData.posY), 0);
+        GUIObject* pObj = pGraphicsView->addGUIObject(appearanceData, QPoint(rData.posX, rData.posY), 0, true, noUnDo);
         pObj->setNameTextPos(rData.nameTextPos);
         while(pObj->rotation() != rData.rotation)
         {

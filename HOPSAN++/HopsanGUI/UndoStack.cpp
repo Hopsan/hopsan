@@ -708,7 +708,7 @@ void UndoStack::registerAddedObject(GUIObject *item)
     QString str;
     QTextStream stream(&str);
     item->saveToTextStream(stream, "ADDEDOBJECT"); //! @todo We now save the parameters also (not necessary as they are dafult, (does not do any harm however)
-
+    this->insertPost(str);
 //    QPointF pos = item->mapToScene(item->boundingRect().center());
 //    QStringList tempStringList;
 //    QString xPosString;
