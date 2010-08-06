@@ -538,6 +538,18 @@ void ProjectTabWidget::loadModel()
 
     QFile file(modelFileName);   //Create a QFile object
     QFileInfo fileInfo(file);
+
+    for(int t=0; t!=this->count(); ++t)
+    {
+        if( (this->tabText(t) == fileInfo.fileName()) or (this->tabText(t) == (fileInfo.fileName() + "*")) )
+        {
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::information(this, tr("Error"), tr("Unable to load model. File is already open."));
+            return;
+        }
+    }
+
+
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
     {
         qDebug() << "Failed to open file or not a text file: " + modelFileName;
