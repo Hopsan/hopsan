@@ -310,7 +310,7 @@ QTextStream& operator >>(QTextStream &is, AppearanceData &rData)
 {
     //! @todo handle returned error indication
     bool sucess = rData.setAppearanceData(is);
-    sucess = sucess;
+    rData.mIsOK = sucess;
     return is;
 }
 

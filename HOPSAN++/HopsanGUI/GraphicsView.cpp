@@ -168,6 +168,8 @@ void GraphicsView::dropEvent(QDropEvent *event)
         //qDebug() << "dropEvent: hasText";
         //QByteArray *data = new QByteArray;
         //*data = event->mimeData()->data("application/x-text");
+        qDebug() << event->mimeData()->text();
+        qDebug() << "END TRANSMISSION";
 
         QString datastr =  event->mimeData()->text();
         QTextStream stream(&datastr, QIODevice::ReadOnly);
@@ -181,12 +183,17 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
         //qDebug() << "Drop appearanceData: " <<  appearanceData;
 
-        event->accept();
-
-        QPoint position = event->pos();
-        //qDebug() << "GraphicsView: " << "x=" << position.x() << "  " << "y=" << position.y();
-
-        this->addGUIObject(appearanceData, this->mapToScene(position).toPoint());
+        if(appearanceData.mIsOK)
+        {
+            event->accept();
+            QPoint position = event->pos();
+            //qDebug() << "GraphicsView: " << "x=" << position.x() << "  " << "y=" << position.y();
+            this->addGUIObject(appearanceData, this->mapToScene(position).toPoint());
+        }
+        else
+        {
+            //Error, don't do anything (user have probably dropped something else by mistake...)
+        }
     }
 }
 

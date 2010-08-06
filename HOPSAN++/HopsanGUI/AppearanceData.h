@@ -132,6 +132,9 @@ public:
     friend QTextStream& operator >>(QTextStream &is, AppearanceData &rData);
     friend QTextStream& operator <<(QTextStream &os, AppearanceData &rData);
 
+    //This bool signals wheter there were errors when reading the data from input stream
+    bool mIsOK;
+
 private:
     QString mTypeName;
     QString mName;
@@ -145,11 +148,6 @@ private:
 
     //BaseDir for path strings, mayb should not be stored in here
     QString mBasePath;
-    //This bool signals wheter there were errors when reading the data from input stream
-    bool mIsOK;
-
-
-
 
 };
 
