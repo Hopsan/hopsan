@@ -36,6 +36,7 @@ Node::Node(size_t datalength)
     mDataVector.resize(datalength,0.0);
     mDataNames.resize(datalength,"");
     mDataUnits.resize(datalength,"");
+    mPlotBehaviour.resize(datalength, Node::PLOT);
 
     //Set log specific variables
     mLogSpaceAllocated = false;
@@ -94,10 +95,11 @@ double &Node::getDataRef(const size_t data_type)
 //! @param [in] id This is the ENUM data id
 //! @param [in,out] name The variable name
 //! @param [in,out] unit The variable unit
-void Node::setDataNameAndUnit(size_t id, string name, string unit)
+void Node::setDataNameAndUnit(size_t id, string name, string unit, Node::PLOTORNOT plotBehaviour)
 {
     mDataNames[id] = name;
     mDataUnits[id] = unit;
+    mPlotBehaviour[id] = plotBehaviour;
 }
 
 
@@ -138,8 +140,16 @@ int Node::getDataIdFromName(const string name)
 //! @param [in,out] rUnits This vector will contain the units
 void Node::getDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits)
 {
-    rNames = mDataNames;
-    rUnits = mDataUnits;
+    for(int i=0; i != mDataNames.size(); ++i)
+    {
+        if(mPlotBehaviour[i] == Node::PLOT)
+        {
+            rNames.push_back(mDataNames[i]);
+            rUnits.push_back(mDataUnits[i]);
+        }
+    }
+    //rNames = mDataNames;
+    //rUnits = mDataUnits;
 }
 
 

@@ -179,7 +179,14 @@ void Port::saveLogData(string filename)
 //! @param [in,out] rUnits This vector will contain the units
 void Port::getNodeDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits)
 {
-    mpNode->getDataNamesAndUnits(rNames, rUnits);
+    if(this->isConnected())
+    {
+        mpNode->getDataNamesAndUnits(rNames, rUnits);
+    }
+    else
+    {
+        return;
+    }
 }
 
 

@@ -410,112 +410,29 @@ void VariableList::updateList()
             colorize = true;
         }
 
-        //! @todo This shall not be hard coded. Ask the core about which plot variables that exist and what units they have instead!
-
         QList<GUIPort*>::iterator itp;
         for(itp = it.value()->mPortListPtrs.begin(); itp !=it.value()->mPortListPtrs.end(); ++itp)
         {
            // qDebug() << "Writing plot stuff for " << it.value()->getName() << " " << (*itp)->getName();
-            y.clear();
 
-            if (mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getNodeType((*itp)->getGUIComponentName(), (*itp)->getName()) == "NodeHydraulic")
+            QVector<QString> parameterNames;
+            QVector<QString> parameterUnits;
+            mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotDataNamesAndUnits((*itp)->getGUIComponentName(), (*itp)->getName(), parameterNames, parameterUnits);
+
+            for(int i = 0; i!=parameterNames.size(); ++i)
             {
                 QVector<double> time = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getTimeVector((*itp)->getGUIComponentName(), (*itp)->getName()));
-                if(time.size() > 0)
+                if(time.size() > 0)     //If time vector is greater than zero we have something to plot!
                 {
-                    tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Flow", this);
+                    y.clear();
+                    tempListWidget = new QListWidgetItem((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", this);
                     tempListWidget->setBackgroundColor(backgroundColor);
                     tempListWidget->setFlags(Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-                    this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), QString("MassFlow"), y);
-                    xMap.insert(it.key() + ", " + (*itp)->getName() + ", Flow", time);
-                    yMap.insert(it.key() + ", " + (*itp)->getName() + ", Flow", y);
-                    yLabelMap.insert(it.key() + ", " + (*itp)->getName() + ", Flow", "Flow [m^3/s]");
-                    y.clear();
+                    mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), parameterNames[i], y);
+                    xMap.insert((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", time);
+                    yMap.insert((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", y);
+                    yLabelMap.insert((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", parameterNames[i]);
 
-                    tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Pressure", this);
-                    tempListWidget->setBackgroundColor(backgroundColor);
-                    this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), QString("Pressure"), y);
-                    xMap.insert(it.key() + ", " + (*itp)->getName() + ", Pressure", time);
-                    yMap.insert(it.key() + ", " + (*itp)->getName() + ", Pressure", y);
-                    yLabelMap.insert(it.key() + ", " + (*itp)->getName() + ", Pressure", "Pressure [bar]");
-                }
-            }
-            if (mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getNodeType((*itp)->getGUIComponentName(), (*itp)->getName()) =="NodeMechanic")
-            {
-                QVector<double> time = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getTimeVector((*itp)->getGUIComponentName(), (*itp)->getName()));
-                if(time.size() > 0)
-                {
-                    tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Velocity", this);
-                    tempListWidget->setBackgroundColor(backgroundColor);
-                    this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), QString("Velocity"), y);
-                    xMap.insert(it.key() + ", " + (*itp)->getName() + ", Velocity", time);
-                    yMap.insert(it.key() + ", " + (*itp)->getName() + ", Velocity", y);
-                    yLabelMap.insert(it.key() + ", " + (*itp)->getName() + ", Velocity", "Velocity [m/s]");
-
-                    y.clear();
-
-                    tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Force", this);
-                    tempListWidget->setBackgroundColor(backgroundColor);
-                    this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), QString("Force"), y);
-                    xMap.insert(it.key() + ", " + (*itp)->getName() + ", Force", time);
-                    yMap.insert(it.key() + ", " + (*itp)->getName() + ", Force", y);
-                    yLabelMap.insert(it.key() + ", " + (*itp)->getName() + ", Force", "Force [N]");
-
-                    y.clear();
-
-                    tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Position", this);
-                    tempListWidget->setBackgroundColor(backgroundColor);
-                    this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), QString("Position"), y);
-                    xMap.insert(it.key() + ", " + (*itp)->getName() + ", Position", time);
-                    yMap.insert(it.key() + ", " + (*itp)->getName() + ", Position", y);
-                    yLabelMap.insert(it.key() + ", " + (*itp)->getName() + ", Position", "Position [m]");
-                }
-            }
-            if (mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getNodeType((*itp)->getGUIComponentName(), (*itp)->getName()) =="NodeMechanicRotational")
-            {
-                QVector<double> time = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getTimeVector((*itp)->getGUIComponentName(), (*itp)->getName()));
-                if(time.size() > 0)
-                {
-                    tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Angular Velocity", this);
-                    tempListWidget->setBackgroundColor(backgroundColor);
-                    this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), QString("Angular Velocity"), y);
-                    xMap.insert(it.key() + ", " + (*itp)->getName() + ", Angular Velocity", time);
-                    yMap.insert(it.key() + ", " + (*itp)->getName() + ", Angular Velocity", y);
-                    yLabelMap.insert(it.key() + ", " + (*itp)->getName() + ", Angular Velocity", "Angular Velocity [m/s]");
-
-                    y.clear();
-
-                    tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Torque", this);
-                    tempListWidget->setBackgroundColor(backgroundColor);
-                    this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), QString("Torque"), y);
-                    xMap.insert(it.key() + ", " + (*itp)->getName() + ", Torque", time);
-                    yMap.insert(it.key() + ", " + (*itp)->getName() + ", Torque", y);
-                    yLabelMap.insert(it.key() + ", " + (*itp)->getName() + ", Torque", "Torque [N]");
-
-                    y.clear();
-
-                    tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Angle", this);
-                    tempListWidget->setBackgroundColor(backgroundColor);
-                    this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), QString("Angle"), y);
-                    xMap.insert(it.key() + ", " + (*itp)->getName() + ", Angle", time);
-                    yMap.insert(it.key() + ", " + (*itp)->getName() + ", Angle", y);
-                    yLabelMap.insert(it.key() + ", " + (*itp)->getName() + ", Angle", "Angle [m]");
-                }
-            }
-            if (mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getNodeType((*itp)->getGUIComponentName(), (*itp)->getName()) =="NodeSignal")
-            {
-                if(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.isPortConnected((*itp)->getGUIComponentName(), (*itp)->getName()))
-                {
-                    QVector<double> time = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getTimeVector((*itp)->getGUIComponentName(), (*itp)->getName()));
-                    if(time.size() > 0)
-                    {
-                        tempListWidget = new QListWidgetItem(it.key() + ", " +(*itp)->getName() + ", Signal", this);
-                        tempListWidget->setBackgroundColor(backgroundColor);
-                        this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), QString("Value"), y);
-                        xMap.insert(it.key() + ", " + (*itp)->getName() + ", Signal", time);
-                        yMap.insert(it.key() + ", " + (*itp)->getName() + ", Signal", y);
-                        yLabelMap.insert(it.key() + ", " + (*itp)->getName() + ", Signal", "Signal Value [-]");
-                    }
                 }
             }
         }

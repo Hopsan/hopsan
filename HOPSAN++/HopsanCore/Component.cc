@@ -9,7 +9,7 @@
 
 //! @defgroup Components Components
 
-//#define USETBB
+//#define USETBB            //Uncomment this will enable TBB package. Only use if you have it installed.
 
 #include <iostream>
 #include <sstream>

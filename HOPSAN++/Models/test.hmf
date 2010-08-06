@@ -6,9 +6,9 @@ HOPSANGUIMODELFILEVERSION 0.1
 HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION 0.1
 --------------------------------------------------------------
 STARTTIME 0
-TIMESTEP 0.01
+TIMESTEP 0.001
 FINISHTIME 5
-VIEWPORT 2489 2590.77 3.51788
+VIEWPORT 2542 2616 1
 --------------------------------------------------------------
 COMPONENT "Hydraulic43Valve" "43Valve" 2469 2536 0 0
 PARAMETER "43Valve" Cq 0.67
@@ -37,7 +37,7 @@ PARAMETER "ForceTransformer" x0 1
 PARAMETER "ForceTransformer" v0 0
 PARAMETER "ForceTransformer" Force 0
 COMPONENT "SignalGain" "Gain" 2332 2546 0 0
-PARAMETER "Gain" Gain 0.001
+PARAMETER "Gain" Gain 0.003
 COMPONENT "HydraulicLaminarOrifice" "LaminarOrifice" 2292 2606 90 1
 PARAMETER "LaminarOrifice" Kc 1e-08
 COMPONENT "HydraulicLaminarOrifice" "LaminarOrifice_1" 2291 2651 90 1

@@ -50,10 +50,10 @@ private:
         mNodeType = "NodeHydraulic";
         setDataNameAndUnit(MASSFLOW, "MassFlow", "Kg/m^3");
         setDataNameAndUnit(PRESSURE, "Pressure", "Pa");
-        setDataNameAndUnit(TEMPERATURE, "Temperature", "?");
-        setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?");
-        setDataNameAndUnit(CHARIMP, "CharImp", "?");
-        setDataNameAndUnit(HEATFLOW, "HeatFlow", "?");
+        setDataNameAndUnit(TEMPERATURE, "Temperature", "K", Node::NOPLOT);
+        setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?", Node::NOPLOT);
+        setDataNameAndUnit(CHARIMP, "CharImp", "?", Node::NOPLOT);
+        setDataNameAndUnit(HEATFLOW, "HeatFlow", "?", Node::NOPLOT);
     }
 };
 
@@ -75,8 +75,8 @@ private:
         setDataNameAndUnit(VELOCITY, "Velocity", "m/s");
         setDataNameAndUnit(FORCE, "Force", "N");
         setDataNameAndUnit(POSITION, "Position", "m");
-        setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?");
-        setDataNameAndUnit(CHARIMP, "CharImp", "?");
+        setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?", Node::NOPLOT);
+        setDataNameAndUnit(CHARIMP, "CharImp", "?", Node::NOPLOT);
     }
 };
 
@@ -99,8 +99,8 @@ private:
         setDataNameAndUnit(ANGULARVELOCITY, "Angular Velocity", "rad/s");
         setDataNameAndUnit(TORQUE, "Torque", "Nm");
         setDataNameAndUnit(ANGLE, "Angle", "rad");
-        setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?");
-        setDataNameAndUnit(CHARIMP, "CharImp", "?");
+        setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?", Node::NOPLOT);
+        setDataNameAndUnit(CHARIMP, "CharImp", "?", Node::NOPLOT);
     }
 };
 

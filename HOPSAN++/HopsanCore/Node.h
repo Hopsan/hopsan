@@ -33,6 +33,8 @@ protected:
     Node(size_t datalength);
     NodeTypeT &getNodeType();
 
+    enum PLOTORNOT {PLOT, NOPLOT};
+
     void setLogSettingsNSamples(size_t nSamples, double start, double stop, double sampletime);
     void setLogSettingsSkipFactor(double factor, double start, double stop, double sampletime);
     void setLogSettingsSampleTime(double log_dt, double start, double stop, double sampletime);
@@ -45,7 +47,7 @@ protected:
     double getData(const size_t data_type);
     double &getDataRef(const size_t data_type);
 
-    void setDataNameAndUnit(size_t id, string name, string unit);
+    void setDataNameAndUnit(size_t id, string name, string unit, Node::PLOTORNOT plotBehaviour = Node::PLOT);
     string getDataName(size_t id);
     string getDataUnit(size_t id);
     int getDataIdFromName(const string name);
@@ -68,6 +70,7 @@ private:
     string mName;
     vector<string> mDataNames;
     vector<string> mDataUnits;
+    vector<Node::PLOTORNOT> mPlotBehaviour;
     
     //Log specific
     vector<double> mTimeStorage;
