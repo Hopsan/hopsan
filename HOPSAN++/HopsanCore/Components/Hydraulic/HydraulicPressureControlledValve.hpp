@@ -34,7 +34,7 @@ public:
         return new HydraulicPressureControlledValve("PressureControlledValve");
     }
 
-    HydraulicPressureControlledValve(const string name) : ComponentQ(name)
+    HydraulicPressureControlledValve(const std::string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicPressureControlledValve";
         mPref = 2000000;
@@ -119,7 +119,7 @@ public:
         double xsh = mHyst.getValue(xs, xh, mDelayedX0.valueIdx(1)); //Ska det vara 1 eller 1.0? Idx eller ej
         //cout << "xsh = " << xsh << endl;
         mX0 = mFilterLP.getValue(xsh);          //Filter disabled because it's not working!
-        if (mTime < 0.1) { cout << "p1 = " << p1 << ", xs = " << xs << ", xsh = " << xsh << ", mDelayedX0 = " << mDelayedX0.valueIdx(1) << ", mX0 = " << mX0 << endl; }
+        if (mTime < 0.1) { std::cout << "p1 = " << p1 << ", xs = " << xs << ", xsh = " << xsh << ", mDelayedX0 = " << mDelayedX0.valueIdx(1) << ", mX0 = " << mX0 << std::endl; }
         //cout << "mX0 = " << mX0 << endl;
         //mX0 = xsh;      //Debug, ta bort sen
         if (xsh > mX0max)

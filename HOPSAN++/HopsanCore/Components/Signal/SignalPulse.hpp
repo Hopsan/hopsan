@@ -41,7 +41,7 @@ public:
         return new SignalPulse("Pulse");
     }
 
-    SignalPulse(const string name) : ComponentSignal(name)
+    SignalPulse(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalPulse";
         mBaseValue = 0.0;

@@ -28,7 +28,7 @@ public:
         return new MechanicForceSensor("ForceSensor");
     }
 
-    MechanicForceSensor(const string name) : ComponentSignal(name)
+    MechanicForceSensor(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "MechanicForceSensor";
 

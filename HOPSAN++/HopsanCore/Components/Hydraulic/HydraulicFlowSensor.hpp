@@ -28,7 +28,7 @@ public:
         return new HydraulicFlowSensor("FlowSensor");
     }
 
-    HydraulicFlowSensor(const string name) : ComponentSignal(name)
+    HydraulicFlowSensor(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "HydraulicFlowSensor";
 

@@ -55,7 +55,7 @@ public:
         return new HydraulicCylinderQ("CylinderQ");
     }
 
-    HydraulicCylinderQ(const string name) : ComponentQ(name)
+    HydraulicCylinderQ(const std::string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicCylinderQ";
         mArea1  = 0.0001;

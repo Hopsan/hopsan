@@ -31,7 +31,7 @@ public:
         return new HydraulicAckumulator("Ackumulator");
     }
 
-    HydraulicAckumulator(const string name) : ComponentQ(name)
+    HydraulicAckumulator(const std::string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicAckumulator";
         mPmin                   = 1000000.0;
@@ -94,7 +94,7 @@ public:
         mDelayedZc1.setStepDelay(1);
         mDelayedQ2.setStepDelay(1);
 
-        cout << "Start Pressure: " << mStartPressure << endl;;
+        std::cout << "Start Pressure: " << mStartPressure << std::endl;;
     }
 
 
@@ -118,7 +118,7 @@ public:
 
         if (mTime < 0.05)
         {
-                cout << "p1 = " << p1 << ", p2 = " << p2 << ", q = " << q2 << ", ct = " << ct << endl;
+                std::cout << "p1 = " << p1 << ", p2 = " << p2 << ", q = " << q2 << ", ct = " << ct << std::endl;
         }
 
 
@@ -134,7 +134,7 @@ public:
 
         if (p2 < mPmin)     //Too low pressure (ack cannot be less than empty)
         {
-            cout << "Empty!" << endl;
+            std::cout << "Empty!" << std::endl;
             mVgas = mVtot;
             q2 = 0.0;
             p1 = c1;
@@ -147,7 +147,7 @@ public:
 
         if (mTime < 0.05)
         {
-                cout << "Voil = " << mVoil << endl;
+                std::cout << "Voil = " << mVoil << std::endl;
         }
 
         mDelayedP2.update(p2);

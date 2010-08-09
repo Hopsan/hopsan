@@ -32,7 +32,7 @@ public:
         return new HydraulicFixedDisplacementPump("FixedDisplacementPump");
     }
 
-    HydraulicFixedDisplacementPump(const string name) : ComponentQ(name)
+    HydraulicFixedDisplacementPump(const std::string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicFixedDisplacementPump";
         mSpeed = 125.0;

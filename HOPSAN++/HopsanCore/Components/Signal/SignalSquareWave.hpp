@@ -44,7 +44,7 @@ public:
         return new SignalSquareWave("SquareWave");
     }
 
-    SignalSquareWave(const string name) : ComponentSignal(name)
+    SignalSquareWave(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalSquareWave";
         mStartTime = 0.0;

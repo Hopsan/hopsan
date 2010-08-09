@@ -29,7 +29,7 @@ public:
         return new SignalSource("Source");
     }
 
-    SignalSource(const string name) : ComponentSignal(name)
+    SignalSource(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalSource";
         mValue = 1.0;

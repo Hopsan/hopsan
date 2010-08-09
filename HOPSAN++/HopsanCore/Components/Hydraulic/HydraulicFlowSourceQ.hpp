@@ -29,7 +29,7 @@ public:
         return new HydraulicFlowSourceQ("FlowSourceQ");
     }
 
-    HydraulicFlowSourceQ(const string name) : ComponentQ(name)
+    HydraulicFlowSourceQ(const std::string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicFlowSourceQ";
         mFlow = 1.0e-3;

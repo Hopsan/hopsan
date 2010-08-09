@@ -39,7 +39,7 @@ public:
         return new HydraulicTLMRlineR("TLMRlineR");
     }
 
-    HydraulicTLMRlineR(const string name) : ComponentC(name)
+    HydraulicTLMRlineR(const std::string name) : ComponentC(name)
     {
         //Set member attributes
         mTypeName = "HydraulicTLMRlineR";

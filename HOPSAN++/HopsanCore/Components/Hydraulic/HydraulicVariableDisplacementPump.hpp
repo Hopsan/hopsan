@@ -22,7 +22,7 @@ public:
         return new HydraulicVariableDisplacementPump("VariableDisplacementPump");
     }
 
-    HydraulicVariableDisplacementPump(const string name) : ComponentQ(name)
+    HydraulicVariableDisplacementPump(const std::string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicVariableDisplacementPump";
         mSpeed = 125.0;

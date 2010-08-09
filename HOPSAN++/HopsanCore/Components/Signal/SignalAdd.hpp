@@ -28,7 +28,7 @@ public:
         return new SignalAdd("Add");
     }
 
-    SignalAdd(const string name) : ComponentSignal(name)
+    SignalAdd(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalAdd";
 

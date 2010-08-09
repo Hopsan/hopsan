@@ -34,7 +34,7 @@ public:
         return new SignalSecondOrderFilter("Filter");
     }
 
-    SignalSecondOrderFilter(const string name) : ComponentSignal(name)
+    SignalSecondOrderFilter(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalSecondOrderFilter";
         mStartY = 0.0;

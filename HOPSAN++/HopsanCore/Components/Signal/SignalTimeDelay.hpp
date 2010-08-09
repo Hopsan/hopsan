@@ -30,7 +30,7 @@ public:
         return new SignalTimeDelay("TimeDelay");
     }
 
-    SignalTimeDelay(const string name) : ComponentSignal(name)
+    SignalTimeDelay(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalTimeDelay";
         mStartY = 0.0;

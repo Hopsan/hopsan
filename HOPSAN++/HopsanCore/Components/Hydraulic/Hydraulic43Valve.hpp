@@ -52,7 +52,7 @@ public:
         return new Hydraulic43Valve("Hydraulic 4/3 Valve");
     }
 
-    Hydraulic43Valve(const string name) : ComponentQ(name)
+    Hydraulic43Valve(const std::string name) : ComponentQ(name)
     {
         mTypeName = "Hydraulic43Valve";
         mCq = 0.67;
@@ -113,10 +113,10 @@ public:
         {
          xv = mxvmax*sign(xv);
         }
-        double xpanom = max(xv-moverlap_pa,0.0);
-        double xpbnom = max(-xv-moverlap_pb,0.0);
-        double xatnom = max(-xv-moverlap_at,0.0);
-        double xbtnom = max(xv-moverlap_bt,0.0);
+        double xpanom = std::max(xv-moverlap_pa,0.0);
+        double xpbnom = std::max(-xv-moverlap_pb,0.0);
+        double xatnom = std::max(-xv-moverlap_at,0.0);
+        double xbtnom = std::max(xv-moverlap_bt,0.0);
 
         double Kcpa = mCq*mf*pi*md*xpanom*sqrt(2.0/890.0);
         double Kcpb = mCq*mf*pi*md*xpbnom*sqrt(2.0/890.0);

@@ -50,7 +50,7 @@ public:
         return new SignalSoftStep("SoftStep");
     }
 
-    SignalSoftStep(const string name) : ComponentSignal(name)
+    SignalSoftStep(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalSoftStep";
         mStartTime = 1.0;

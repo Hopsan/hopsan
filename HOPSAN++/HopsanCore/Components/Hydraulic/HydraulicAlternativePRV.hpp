@@ -37,7 +37,7 @@ public:
         return new HydraulicAlternativePRV("AlternativePRV");
     }
 
-    HydraulicAlternativePRV(const string name) : ComponentQ(name)
+    HydraulicAlternativePRV(const std::string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicAlternativePRV";
         mPref = 20000000;

@@ -23,7 +23,7 @@ public:
         return new SignalDeadZone("DeadZone");
     }
 
-    SignalDeadZone(const string name) : ComponentSignal(name)
+    SignalDeadZone(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalDeadZone";
         mStartDead = -1.0;

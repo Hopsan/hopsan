@@ -28,7 +28,7 @@ public:
         return new SignalMultiply("Multiply");
     }
 
-    SignalMultiply(const string name) : ComponentSignal(name)
+    SignalMultiply(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalMultiply";
 

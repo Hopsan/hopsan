@@ -31,7 +31,7 @@ public:
         return new HydraulicPressureSourceQ("PressureSourceQ");
     }
 
-    HydraulicPressureSourceQ(const string name) : ComponentQ(name)
+    HydraulicPressureSourceQ(const std::string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicPressureSourceQ";
         mStartPressure = 0.0;

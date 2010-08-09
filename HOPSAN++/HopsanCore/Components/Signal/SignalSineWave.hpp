@@ -47,7 +47,7 @@ public:
         return new SignalSineWave("SineWave");
     }
 
-    SignalSineWave(const string name) : ComponentSignal(name)
+    SignalSineWave(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalSineWave";
         mStartTime = 0.0;

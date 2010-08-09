@@ -31,7 +31,7 @@ public:
         return new MechanicAngularVelocityTransformer("AngularVelocityTransformer");
     }
 
-    MechanicAngularVelocityTransformer(const string name) : ComponentQ(name)
+    MechanicAngularVelocityTransformer(const std::string name) : ComponentQ(name)
     {
         mSignal = 0.0;
 

@@ -29,7 +29,7 @@ public:
         return new MechanicTorsionalSpring("TorsionalSpring");
     }
 
-    MechanicTorsionalSpring(const string name) : ComponentC(name)
+    MechanicTorsionalSpring(const std::string name) : ComponentC(name)
     {
         //Set member attributes
         mTypeName = "MechanicTorsionalSpring";

@@ -31,7 +31,7 @@ public:
         return new HydraulicTurbulentOrifice("TurbulentOrifice");
     }
 
-    HydraulicTurbulentOrifice(const string name) : ComponentQ(name)
+    HydraulicTurbulentOrifice(const std::string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicTurbulentOrificeName";
         mCq = 0.67;

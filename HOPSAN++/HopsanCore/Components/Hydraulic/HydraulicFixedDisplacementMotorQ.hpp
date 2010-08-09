@@ -34,7 +34,7 @@ public:
         return new HydraulicFixedDisplacementMotorQ("FixedDisplacementMotorQ");
     }
 
-    HydraulicFixedDisplacementMotorQ(const string name) : ComponentQ(name)
+    HydraulicFixedDisplacementMotorQ(const std::string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicFixedDisplacementMotorQ";
         mDp = 0.00005;

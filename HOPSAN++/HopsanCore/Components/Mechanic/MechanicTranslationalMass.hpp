@@ -27,7 +27,7 @@ public:
         return new MechanicTranslationalMass("TranslationalMass");
     }
 
-    MechanicTranslationalMass(const string name) : ComponentQ(name)
+    MechanicTranslationalMass(const std::string name) : ComponentQ(name)
     {
         //Set member attributes
         mTypeName = "MechanicTranslationalMass";

@@ -32,7 +32,7 @@ public:
         return new SignalIntegratorLimited("IntegratorLimited");
     }
 
-    SignalIntegratorLimited(const string name) : ComponentSignal(name)
+    SignalIntegratorLimited(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalIntegratorLimited";
         mStartY = 0.0;
@@ -52,7 +52,7 @@ public:
     {
         double u0 = mpIn->readNode(NodeSignal::VALUE);
         mDelayU.initialize(mTime, u0);
-        mDelayY.initialize(mTime, max(min(mStartY, mMax), mMin));
+        mDelayY.initialize(mTime, std::max(std::min(mStartY, mMax), mMin));
     }
 
 

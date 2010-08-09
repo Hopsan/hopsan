@@ -37,7 +37,7 @@ public:
         return new HydraulicTLMlossless("TLMlossless");
     }
 
-    HydraulicTLMlossless(const string name) : ComponentC(name)
+    HydraulicTLMlossless(const std::string name) : ComponentC(name)
     {
         //Set member attributes
         mTypeName = "HydraulicTLMlossless";

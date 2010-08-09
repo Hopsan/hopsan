@@ -30,7 +30,7 @@ public:
         return new SignalSaturation("Saturation");
     }
 
-    SignalSaturation(const string name) : ComponentSignal(name)
+    SignalSaturation(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalSaturation";
         mUpperLimit = 1.0;

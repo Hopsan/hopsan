@@ -52,7 +52,7 @@ public:
         return new HydraulicCylinderC("CylinderC");
     }
 
-    HydraulicCylinderC(const string name) : ComponentC(name)
+    HydraulicCylinderC(const std::string name) : ComponentC(name)
     {
         //Set member attributes
         mTypeName = "HydraulicCylinderC";
@@ -92,7 +92,7 @@ public:
 
     void initialize()
     {
-        cout << "Startposition = " << mStartPosition << endl;
+        std::cout << "Startposition = " << mStartPosition << std::endl;
         mDelayedC1prim.setStepDelay(1);
         mDelayedC2prim.setStepDelay(1);
         mDelayedV.setStepDelay(1);

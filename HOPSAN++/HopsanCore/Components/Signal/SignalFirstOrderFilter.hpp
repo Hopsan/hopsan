@@ -33,7 +33,7 @@ public:
         return new SignalFirstOrderFilter("Filter");
     }
 
-    SignalFirstOrderFilter(const string name) : ComponentSignal(name)
+    SignalFirstOrderFilter(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalFirstOrderFilter";
         mStartY = 0.0;

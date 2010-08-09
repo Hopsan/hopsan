@@ -32,7 +32,7 @@ public:
         return new HydraulicTankC("PressureSource");
     }
 
-    HydraulicTankC(const string name) : ComponentC(name)
+    HydraulicTankC(const std::string name) : ComponentC(name)
     {
         mTypeName = "HydraulicTankC";
         mStartFlow      = 0.0;

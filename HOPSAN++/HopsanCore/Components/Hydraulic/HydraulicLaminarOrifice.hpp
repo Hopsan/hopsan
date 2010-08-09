@@ -4,8 +4,6 @@
 #include <iostream>
 #include "../../ComponentEssentials.h"
 
-using namespace std;
-
 //!
 //! @brief A hydraulic laminar orifice component
 //! @ingroup HydraulicComponents
@@ -22,7 +20,7 @@ public:
         return new HydraulicLaminarOrifice("LaminarOrifice");
     }
 
-    HydraulicLaminarOrifice(const string name) : ComponentQ(name)
+    HydraulicLaminarOrifice(const std::string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicLaminarOrifice";
         mKc = 1.0e-11;

@@ -31,7 +31,7 @@ public:
         return new SignalIntegrator("Integrator");
     }
 
-    SignalIntegrator(const string name) : ComponentSignal(name)
+    SignalIntegrator(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalIntegrator";
         mStartY = 0.0;

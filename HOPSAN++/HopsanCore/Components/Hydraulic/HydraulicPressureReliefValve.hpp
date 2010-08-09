@@ -34,7 +34,7 @@ public:
         return new HydraulicPressureReliefValve("PressureReliefValve");
     }
 
-    HydraulicPressureReliefValve(const string name) : ComponentQ(name)
+    HydraulicPressureReliefValve(const std::string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicPressureReliefValve";
         mPref = 2000000;

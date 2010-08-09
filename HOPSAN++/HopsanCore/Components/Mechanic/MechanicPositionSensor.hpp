@@ -29,7 +29,7 @@ public:
         return new MechanicPositionSensor("PositionSensor");
     }
 
-    MechanicPositionSensor(const string name) : ComponentSignal(name)
+    MechanicPositionSensor(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "MechanicPositionSensor";
 

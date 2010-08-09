@@ -28,7 +28,7 @@ public:
         return new SignalDivide("Divide");
     }
 
-    SignalDivide(const string name) : ComponentSignal(name)
+    SignalDivide(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalDivide";
 

@@ -32,7 +32,7 @@ public:
         return new SignalIntegratorLimited2("Integrator");
     }
 
-    SignalIntegratorLimited2(const string name) : ComponentSignal(name)
+    SignalIntegratorLimited2(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalIntegratorLimited2";
         mStartY = 0.0;

@@ -32,7 +32,7 @@ public:
         return new MechanicTorqueTransformer("TorqueTransformer");
     }
 
-    MechanicTorqueTransformer(const string name) : ComponentC(name)
+    MechanicTorqueTransformer(const std::string name) : ComponentC(name)
     {
         //Set member attributes
         mTypeName = "MechanicForceTransformer";

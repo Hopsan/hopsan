@@ -31,7 +31,7 @@ public:
         return new SignalHysteresis("Hysteresis");
     }
 
-    SignalHysteresis(const string name) : ComponentSignal(name)
+    SignalHysteresis(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalHysteresis";
         mHysteresisWidth = 1.0;

@@ -22,7 +22,7 @@ public:
         return new MechanicTranslationalSpring("TranslationalSpring");
     }
 
-    MechanicTranslationalSpring(const string name) : ComponentC(name)
+    MechanicTranslationalSpring(const std::string name) : ComponentC(name)
     {
         //Set member attributes
         mTypeName = "MechanicTranslationalSpring";

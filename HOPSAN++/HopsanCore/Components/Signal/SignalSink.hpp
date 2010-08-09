@@ -28,7 +28,7 @@ public:
         return new SignalSink("Sink");
     }
 
-    SignalSink(const string name) : ComponentSignal(name)
+    SignalSink(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalSink";
 

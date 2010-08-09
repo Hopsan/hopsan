@@ -34,7 +34,7 @@ public:
         return new MechanicRotationalInertia("RotationalInertia");
     }
 
-    MechanicRotationalInertia(const string name) : ComponentQ(name)
+    MechanicRotationalInertia(const std::string name) : ComponentQ(name)
     {
         //Set member attributes
         mTypeName = "MechanicRotationalInertia";

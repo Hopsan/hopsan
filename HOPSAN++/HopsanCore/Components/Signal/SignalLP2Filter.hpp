@@ -32,7 +32,7 @@ public:
         return new SignalLP2Filter("Filter");
     }
 
-    SignalLP2Filter(const string name) : ComponentSignal(name)
+    SignalLP2Filter(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalLP2Filter";
         mStartY = 0.0;

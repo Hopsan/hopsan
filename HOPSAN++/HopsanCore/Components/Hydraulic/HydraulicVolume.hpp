@@ -36,7 +36,7 @@ public:
         return new HydraulicVolume("Volume");
     }
 
-    HydraulicVolume(const string name) : ComponentC(name)
+    HydraulicVolume(const std::string name) : ComponentC(name)
     {
         //Set member attributes
         mTypeName = "HydraulicVolume";

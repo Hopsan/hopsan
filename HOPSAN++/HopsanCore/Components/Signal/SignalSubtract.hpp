@@ -28,7 +28,7 @@ public:
         return new SignalSubtract("Subtract");
     }
 
-    SignalSubtract(const string name) : ComponentSignal(name)
+    SignalSubtract(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalSubtract";
 

@@ -46,7 +46,7 @@ public:
         return new SignalRamp("Ramp");
     }
 
-    SignalRamp(const string name) : ComponentSignal(name)
+    SignalRamp(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalRamp";
         mBaseValue = 0.0;

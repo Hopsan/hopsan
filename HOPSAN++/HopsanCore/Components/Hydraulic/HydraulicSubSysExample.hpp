@@ -32,7 +32,7 @@ public:
         return new HydraulicSubSysExample("SubSysExample");
     }
 
-    HydraulicSubSysExample(const string name) : ComponentSystem(name)
+    HydraulicSubSysExample(const std::string name) : ComponentSystem(name)
     {
         volumeL = new HydraulicVolume("volumeL");
         orificeC = new HydraulicLaminarOrifice("orificeC");

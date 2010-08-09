@@ -29,7 +29,7 @@ public:
         return new SignalGain("Gain");
     }
 
-    SignalGain(const string name) : ComponentSignal(name)
+    SignalGain(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalGain";
         mGain = 1.0;

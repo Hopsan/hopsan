@@ -28,7 +28,7 @@ public:
         return new HydraulicPressureSensor("PressureSensor");
     }
 
-    HydraulicPressureSensor(const string name) : ComponentSignal(name)
+    HydraulicPressureSensor(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "HydraulicPressureSensor";
 

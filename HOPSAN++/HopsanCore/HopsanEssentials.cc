@@ -17,6 +17,8 @@
 #include "Nodes/Nodes.h"
 #include "version.h"
 
+using namespace std;
+
 //Set the stacic start values
 bool HopsanEssentials::mHasInstance = false;
 HopsanEssentials* HopsanEssentials::mpInstance = 0;

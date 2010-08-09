@@ -41,7 +41,7 @@ public:
         return new SignalStep("Step");
     }
 
-    SignalStep(const string name) : ComponentSignal(name)
+    SignalStep(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "SignalStep";
         mBaseValue = 0.0;

@@ -32,7 +32,7 @@ public:
         return new HydraulicCheckValve("CheckValve");
     }
 
-    HydraulicCheckValve(const string name) : ComponentQ(name)
+    HydraulicCheckValve(const std::string name) : ComponentQ(name)
     {
         mTypeName = "HydraulicCheckValve";
         mKs = 0.000000025;

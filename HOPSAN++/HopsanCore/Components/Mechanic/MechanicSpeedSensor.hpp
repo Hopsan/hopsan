@@ -28,7 +28,7 @@ public:
         return new MechanicSpeedSensor("SpeedSensor");
     }
 
-    MechanicSpeedSensor(const string name) : ComponentSignal(name)
+    MechanicSpeedSensor(const std::string name) : ComponentSignal(name)
     {
         mTypeName = "MechanicSpeedSensor";
 
