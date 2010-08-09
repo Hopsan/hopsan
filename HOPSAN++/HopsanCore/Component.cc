@@ -19,25 +19,8 @@
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 
 #ifdef USETBB
-#include "tbb/atomic.h"
 #include "tbb/tbb.h"
-#include "tbb/blocked_range.h"
-//#include "tbb/tbb_allocator.h"
-//#include "tbb/tbb_stddef.h"
-//#include "tbb/tbbmalloc_proxy.h"
-#include "tbb/tbb_config.h"
-//#include "tbb/tbb_exception.h"
-#include "tbb/tbb_machine.h"
-//#include "tbb/tbb_profiling.h"
-//#include "tbb/tbb_thread.h"
-//#include "tbb/parallel_for.h"
-//#include "tbb/blocked_range.h"
-//#include "tbb/tick_count.h"
-#include "tbb/task.h"
-#include "tbb/task_group.h"
-#include "tbb/task_scheduler_init.h"
-#include "tbb/task_scheduler_observer.h"
-using namespace tbb;
+//using namespace tbb;
 #endif
 
 
@@ -2072,17 +2055,17 @@ void ComponentSystem::simulate(const double startT, const double stopT)
 
         for(size_t c=0; c<mSubComponentStorage.mComponentCptrs.size(); ++c)
         {
-                tick_count comp_start = tick_count::now();
-                mSubComponentStorage.mComponentCptrs[c]->simulate(mTime, mTime+mTimestep);
-                tick_count comp_end = tick_count::now();
-                mSubComponentStorage.mComponentCptrs[c]->setMeasuredTime(double((comp_end-comp_start).seconds()));
+            tbb::tick_count comp_start = tbb::tick_count::now();
+            mSubComponentStorage.mComponentCptrs[c]->simulate(mTime, mTime+mTimestep);
+            tbb::tick_count comp_end = tbb::tick_count::now();
+            mSubComponentStorage.mComponentCptrs[c]->setMeasuredTime(double((comp_end-comp_start).seconds()));
         }
         for(size_t q=0; q<mSubComponentStorage.mComponentQptrs.size(); ++q)
         {
-                tick_count comp_start = tick_count::now();
-                mSubComponentStorage.mComponentQptrs[q]->simulate(mTime, mTime+mTimestep);
-                tick_count comp_end = tick_count::now();
-                mSubComponentStorage.mComponentQptrs[q]->setMeasuredTime(double((comp_end-comp_start).seconds()));
+            tbb::tick_count comp_start = tbb::tick_count::now();
+            mSubComponentStorage.mComponentQptrs[q]->simulate(mTime, mTime+mTimestep);
+            tbb::tick_count comp_end = tbb::tick_count::now();
+            mSubComponentStorage.mComponentQptrs[q]->setMeasuredTime(double((comp_end-comp_start).seconds()));
         }
 
         mTime += mTimestep;
@@ -2148,11 +2131,10 @@ void ComponentSystem::simulate(const double startT, const double stopT)
         splitQVector.push_back(qPtrs2);
 
 
-        task_group *c;
-        task_group *q;
-        c = new task_group;
-        //q = new task_group;
-        /*
+        tbb::task_group *c;
+        tbb::task_group *q;
+        c = new tbb::task_group;
+        q = new tbb::task_group;
         while ((mTime < stopTsafe) && (!mStop))
         {
             logAllNodes(mTime);
@@ -2168,7 +2150,7 @@ void ComponentSystem::simulate(const double startT, const double stopT)
             q->run_and_wait(taskQ(splitQVector[1], mTime, mTime+mTimestep));
 
             mTime += mTimestep;
-        }*/
+        }
     }
     else
     {
