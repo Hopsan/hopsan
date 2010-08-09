@@ -157,7 +157,6 @@ private:
 
 public:
     GUIObjectDisplayName(GUIObject *pParent);
-    ~GUIObjectDisplayName();
 
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     //void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -175,7 +174,6 @@ class GUIObjectSelectionBox : public QObject, public QGraphicsItemGroup
     Q_OBJECT
 public:
     GUIObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal y2, QPen activePen, QPen hoverPen, GUIObject *parent = 0);
-    ~GUIObjectSelectionBox();
     void setActive();
     void setPassive();
     void setHovered();

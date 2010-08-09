@@ -132,13 +132,6 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 }
 
 
-////! Destructor.
-//GraphicsView::~GraphicsView()
-//{
-//
-//}
-
-
 //! Defines what happens when moving an object in a GraphicsView.
 //! @param event contains information of the drag operation.
 void GraphicsView::dragMoveEvent(QDragMoveEvent *event)

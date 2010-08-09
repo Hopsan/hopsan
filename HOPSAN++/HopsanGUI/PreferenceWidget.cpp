@@ -85,10 +85,6 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
     setLayout(mainLayout);
 }
 
-PreferenceWidget::~PreferenceWidget()
-{
-}
-
 
 void PreferenceWidget::show()
 {

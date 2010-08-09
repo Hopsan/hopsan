@@ -59,7 +59,6 @@ friend class UndoWidget;
 
 public:
     UndoStack(GraphicsView *parentView);
-    ~UndoStack();
     void registerDeletedObject(GUIObject *item);
     void registerDeletedConnector(GUIConnector *item);
     void registerAddedObject(GUIObject *item);
@@ -88,7 +87,6 @@ class UndoWidget : public QDialog
 {
 public:
     UndoWidget(MainWindow *parent = 0);
-    ~UndoWidget();
 
     MainWindow *mpParentMainWindow;
 

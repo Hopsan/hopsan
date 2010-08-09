@@ -53,7 +53,6 @@ class PreferenceWidget : public QDialog
 
 public:
     PreferenceWidget(MainWindow *parent = 0);
-    ~PreferenceWidget();
 
     MainWindow *mpParentMainWindow;
 

@@ -81,11 +81,6 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     setLayout(mainLayout);
 }
 
-OptionsWidget::~OptionsWidget()
-{
-}
-
-
 
 void OptionsWidget::updateValues()
 {

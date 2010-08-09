@@ -57,7 +57,6 @@ class GUIPort :public QGraphicsSvgItem
     Q_OBJECT
 public:
     GUIPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent = 0, GUIRootSystem *pGUIRootSystem=0);
-    ~GUIPort();
     void updatePosition();
     GraphicsView *getParentView();
     GUIObject *getGuiObject();

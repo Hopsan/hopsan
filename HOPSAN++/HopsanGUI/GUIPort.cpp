@@ -111,11 +111,6 @@ cout << "D 1" << endl;
 }
 
 
-GUIPort::~GUIPort()
-{
-}
-
-
 //! Magnify the port with a class mebmer factor 'mMag'. Is used i.e. at hovering over disconnected port.
 //! @param blowup says if the port should be magnified or not.
 void GUIPort::magnify(bool blowup)

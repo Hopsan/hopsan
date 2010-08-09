@@ -53,7 +53,6 @@ class OptionsWidget : public QDialog
 
 public:
     OptionsWidget(MainWindow *parent = 0);
-    ~OptionsWidget();
 
     MainWindow *mpParentMainWindow;
 

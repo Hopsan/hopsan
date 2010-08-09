@@ -22,7 +22,6 @@ class GraphicsView : public QGraphicsView
 
 public:
     GraphicsView(ProjectTab *parent = 0);
-    //~GraphicsView();
     bool mIsCreatingConnector;
     bool mPortsHidden;
     bool mIsRenamingObject;

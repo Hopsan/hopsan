@@ -778,10 +778,6 @@ GUIObjectDisplayName::GUIObjectDisplayName(GUIObject *pParent)
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIgnoresTransformations);
 }
 
-GUIObjectDisplayName::~GUIObjectDisplayName()
-{
-}
-
 void GUIObjectDisplayName::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     emit textMoved(event->pos());
@@ -847,12 +843,6 @@ GUIObjectSelectionBox::GUIObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal
     mLines.push_back(tempLine);
     tempLine = new QGraphicsLineItem(x2,y2,x2-a,y2,this);
     mLines.push_back(tempLine);
-}
-
-
-//! Destructor.
-GUIObjectSelectionBox::~GUIObjectSelectionBox()
-{
 }
 
 

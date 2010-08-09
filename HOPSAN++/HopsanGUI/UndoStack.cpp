@@ -65,13 +65,6 @@ UndoStack::UndoStack(GraphicsView *parentView) : QObject()
 }
 
 
-//! Destructor.
-UndoStack::~UndoStack()
-{
-    //Not implemented yet
-}
-
-
 //! Clears all contents in the stack.
 void UndoStack::clear()
 {
@@ -924,10 +917,6 @@ UndoWidget::UndoWidget(MainWindow *parent)
     //mainLayout->addWidget(hideButton, 1, 3);
     //mainLayout->addWidget(extension, 1, 0, 1, 2);
     setLayout(mainLayout);
-}
-
-UndoWidget::~UndoWidget()
-{
 }
 
 
