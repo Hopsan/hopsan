@@ -9,8 +9,6 @@
 
 //! @defgroup Components Components
 
-#define USETBB            //Uncomment this will enable TBB package. Only use if you have it installed.
-
 #include <iostream>
 #include <sstream>
 #include <cassert>
@@ -18,9 +16,9 @@
 #include "Component.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 
+#define USETBB            //Uncomment this will enable TBB package. Only use if you have it installed.
 #ifdef USETBB
 #include "tbb/tbb.h"
-//using namespace tbb;
 #endif
 
 
