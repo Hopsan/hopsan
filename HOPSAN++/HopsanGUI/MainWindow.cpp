@@ -199,7 +199,8 @@ void MainWindow::plot()
     }
     else
     {
-        this->removeDockWidget(mPlotVariablesDock);
+        mPlotVariablesDock->close();
+        //this->removeDockWidget(mPlotVariablesDock);
         mPlotVariableListOpen = false;
     }
 
