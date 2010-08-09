@@ -76,6 +76,7 @@
 class MainWindow;
 class VariablePlot;
 class GraphicsView;
+class VariableListDialog;
 
 class PlotWidget : public QMainWindow
 {
@@ -111,6 +112,9 @@ private slots:
     void setSize(int);
     void setColor();
     void setBackgroundColor();
+
+private:
+    VariableListDialog *mpVariableList;
 };
 
 

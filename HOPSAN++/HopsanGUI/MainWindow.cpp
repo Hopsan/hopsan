@@ -160,6 +160,13 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/valves","Hydraulic");
     mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/pumps","Hydraulic");
 
+        //Create the plot widget and hide it
+    mPlotVariablesDock = new QDockWidget(tr("Plot Variables"), this);
+    mPlotVariablesDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    mPlotVariablesDock->hide();
+    addDockWidget(Qt::RightDockWidgetArea, mPlotVariablesDock);
+    mPlotVariableListOpen=false;
+
     QMetaObject::connectSlotsByName(this);
 
     //connect(mpSimulationSetupWidget->mpSimulateButton, SIGNAL(released()), mpProjectTabs, SLOT(simulateCurrent()));
@@ -189,21 +196,25 @@ void MainWindow::plot()
 {
     if(!mPlotVariableListOpen)
     {
-        mPlotVariablesDock = new QDockWidget(tr("Plot Variables"), this);
-        mPlotVariablesDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+//        mPlotVariablesDock = new QDockWidget(tr("Plot Variables"), this);
+//        mPlotVariablesDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+//        VariableListDialog *variableList = new VariableListDialog(this);
+//        mPlotVariablesDock->setWidget(variableList);
+//        //variableList->show();
+//        addDockWidget(Qt::RightDockWidgetArea, mPlotVariablesDock);
+
         VariableListDialog *variableList = new VariableListDialog(this);
         mPlotVariablesDock->setWidget(variableList);
-        //variableList->show();
-        addDockWidget(Qt::RightDockWidgetArea, mPlotVariablesDock);
+
+        mPlotVariablesDock->show();
         mPlotVariableListOpen = true;
     }
     else
     {
-        mPlotVariablesDock->close();
+        mPlotVariablesDock->hide();
         //this->removeDockWidget(mPlotVariablesDock);
         mPlotVariableListOpen = false;
     }
-
 }
 
 
