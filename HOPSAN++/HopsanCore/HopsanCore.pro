@@ -20,6 +20,11 @@ win32:DEFINES -= UNICODE
 win32:INCLUDEPATH += c:\tbb\tbb30_056oss\include
 winr32:LIBS += c:\tbb\tbb30_056oss\build\windows_ia32_gcc_mingw_debug
 
+unix {
+    LIBS += -ltbb
+    INCLUDEPATH += /usr/include/tbb/
+}
+
 # -------------------------------------------------
 # Project files
 # -------------------------------------------------
