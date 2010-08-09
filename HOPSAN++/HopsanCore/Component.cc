@@ -18,7 +18,7 @@
 
 #define USETBB            //Uncomment this will enable TBB package. Only use if you have it installed.
 #ifdef USETBB
-#include "tbb/tbb.h"
+#include "tbb.h"
 #endif
 
 
