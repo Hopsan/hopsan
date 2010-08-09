@@ -1503,12 +1503,12 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
         //Find the right point for the group boundary port (in this case the boundary is at the connector end point)
         if((startComp) && (mGUICompList.contains(startComp)))
         {
-            groupPortPoint = transitConnector->getStartPoint().toPoint();
+            groupPortPoint = transitConnector->getEndPort()->mapToScene(transitConnector->getEndPort()->boundingRect().center()).toPoint();
         }
         //Find the right point for the group boundary port (in this case the boundary is at the connector start point)
         if((endComp) && (mGUICompList.contains(endComp)))
         {
-            groupPortPoint = transitConnector->getEndPoint().toPoint();
+            groupPortPoint = transitConnector->getStartPort()->mapToScene(transitConnector->getStartPort()->boundingRect().center()).toPoint();
         }
         //Add a new group port for the boundary at the boundary connector
         pGroupPortComponent = new GUIGroupPort(appData, groupPortPoint, mpGroupScene);
