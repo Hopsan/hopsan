@@ -8,6 +8,8 @@
 //$Id$
 #include "HopsanCoreMessageHandler.h"
 
+using namespace std;
+
 HopsanCoreMessageHandler::HopsanCoreMessageHandler()
 {
     mMaxQueueSize = 20;

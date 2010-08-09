@@ -21,22 +21,21 @@
 #include "../ComponentEssentials.h"
 #include "../HopsanEssentials.h"
 
-using namespace std;
 
 class DLLIMPORTEXPORT FileAccess
 {
 public:
     FileAccess();
-    FileAccess(string filename);
-    void setFilename(string filename);
-    ComponentSystem* loadModel(HopsanEssentials* pHopsan, double *startTime, double *stopTime, string *plotComponent, string *plotPort);
-    ComponentSystem* loadModel(HopsanEssentials* pHopsan, string filename, double *startTime, double *stopTime, string *plotComponent, string *plotPort);
-    void saveModel(string fileName, ComponentSystem* pMainModel, double startTime, double stopTime, string plotComponent, string plotPort);
+    FileAccess(std::string filename);
+    void setFilename(std::string filename);
+    ComponentSystem* loadModel(HopsanEssentials* pHopsan, double *startTime, double *stopTime, std::string *plotComponent, std::string *plotPort);
+    ComponentSystem* loadModel(HopsanEssentials* pHopsan, std::string filename, double *startTime, double *stopTime, std::string *plotComponent, std::string *plotPort);
+    void saveModel(std::string fileName, ComponentSystem* pMainModel, double startTime, double stopTime, std::string plotComponent, std::string plotPort);
 
 private:
-    string mFilename;
+    std::string mFilename;
     ComponentSystem mModel;
-    void saveComponentSystem(ofstream& modelFile, ComponentSystem* pMotherModel, string motherSystemName);
+    void saveComponentSystem(std::ofstream& modelFile, ComponentSystem* pMotherModel, std::string motherSystemName);
 };
 
 #endif // FILEACCESS_INCLUDED

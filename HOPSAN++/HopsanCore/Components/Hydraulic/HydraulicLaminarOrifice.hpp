@@ -4,6 +4,8 @@
 #include <iostream>
 #include "../../ComponentEssentials.h"
 
+using namespace std;
+
 //!
 //! @brief A hydraulic laminar orifice component
 //! @ingroup HydraulicComponents

@@ -55,7 +55,7 @@ public:
     double getDesiredTimeStep();
 
     void setRootTypeCQS(const QString cqs_type, bool doOnlyLocalSet=false);
-    void setSystemTypeCQS(QString systemName, const string cqs_type, bool doOnlyLocalSet=false);
+    void setSystemTypeCQS(QString systemName, const std::string cqs_type, bool doOnlyLocalSet=false);
     QString getTypeCQS(QString componentName);
     QString getSystemTypeCQS(QString systemName); //!< @todo dont think that we need this one the component specifik one should do
 
@@ -88,7 +88,7 @@ public:
     QString addSystemPort(QString portname);
     QString renameSystemPort(QString oldname, QString newname);
 
-    vector<double> getTimeVector(QString componentName, QString portName);
+    std::vector<double> getTimeVector(QString componentName, QString portName);
     void getPlotDataNamesAndUnits(const QString compname, const QString portname, QVector<QString> &rNames, QVector<QString> &rUnits);
     //void getPlotDataUnit(const QString compname, const QString portname, const string dataname, QString &rUnit);
     //QVector<QString> getPlotDataUnits();

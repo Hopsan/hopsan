@@ -19,6 +19,8 @@
 #include "Node.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 
+using namespace std;
+
 //! Node base class constructor
 //! @param [in] datalength The length of the data vector
 Node::Node(size_t datalength)

@@ -38,6 +38,11 @@
 
 //$Id$
 
+//!
+//! \mainpage
+//! Library used in Hopsan NG is 'qwt-5'
+//!
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 

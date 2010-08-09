@@ -14,6 +14,7 @@
 #include <math.h>
 #include "Component.h"
 
+using namespace std;
 
 //! Port base class constructor
 Port::Port()

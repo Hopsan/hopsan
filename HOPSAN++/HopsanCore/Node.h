@@ -13,9 +13,8 @@
 #include "CoreUtilities/ClassFactory.h"
 #include "win32dll.h"
 
-using namespace std;
 
-typedef string NodeTypeT;
+typedef std::string NodeTypeT;
 
 class Port; //forward declaration
 
@@ -41,22 +40,22 @@ protected:
     //void preAllocateLogSpace(const size_t nSlots);
     void preAllocateLogSpace();
     void logData(const double time);
-    void saveLogData(string filename);
+    void saveLogData(std::string filename);
 
     void setData(const size_t data_type, double data);
     double getData(const size_t data_type);
     double &getDataRef(const size_t data_type);
 
-    void setDataNameAndUnit(size_t id, string name, string unit, Node::PLOTORNOT plotBehaviour = Node::PLOT);
-    string getDataName(size_t id);
-    string getDataUnit(size_t id);
-    int getDataIdFromName(const string name);
-    void getDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits);
+    void setDataNameAndUnit(size_t id, std::string name, std::string unit, Node::PLOTORNOT plotBehaviour = Node::PLOT);
+    std::string getDataName(size_t id);
+    std::string getDataUnit(size_t id);
+    int getDataIdFromName(const std::string name);
+    void getDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits);
 
     //Protected member variables
     NodeTypeT mNodeType;
-    vector<double> mDataVector;
-    vector<Port*> mPortPtrs;
+    std::vector<double> mDataVector;
+    std::vector<Port*> mPortPtrs;
 
 private:
     //Private member fuctions
@@ -67,14 +66,14 @@ private:
     void disableLog();
 
     //Private member variables
-    string mName;
-    vector<string> mDataNames;
-    vector<string> mDataUnits;
-    vector<Node::PLOTORNOT> mPlotBehaviour;
+    std::string mName;
+    std::vector<std::string> mDataNames;
+    std::vector<std::string> mDataUnits;
+    std::vector<Node::PLOTORNOT> mPlotBehaviour;
     
     //Log specific
-    vector<double> mTimeStorage;
-    vector<vector<double> > mDataStorage;
+    std::vector<double> mTimeStorage;
+    std::vector<std::vector<double> > mDataStorage;
     bool mLogSpaceAllocated;
     bool mDoLog;
     double mLogTimeDt;

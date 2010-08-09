@@ -45,7 +45,7 @@ public:
     static HopsanEssentials* getInstance();
     ~HopsanEssentials();
 
-    Component* CreateComponent(const string &rString);
+    Component* CreateComponent(const std::string &rString);
     ComponentSystem* CreateComponentSystem();
 };
 

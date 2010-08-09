@@ -11,6 +11,8 @@
 #include "LibraryWidget.h"
 #include "loadObjects.h"
 
+using namespace std;
+
 //! @class GraphicsView
 //! @brief The GraphicsView class is a class which display the content of a scene of components.
 //!

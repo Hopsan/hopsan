@@ -14,7 +14,6 @@
 #include "win32dll.h"
 #include <string>
 
-using namespace std;
 
 //Forward declarations
 class Component;
@@ -31,27 +30,27 @@ public:
 
     //Constructors - Destructors
     Port();
-    Port(string portname, string node_type);
+    Port(std::string portname, std::string node_type);
     virtual ~Port();
 
     virtual double readNode(const size_t idx);
     virtual void writeNode(const size_t idx, const double value);
 
-    void saveLogData(string filename);
-    void getNodeDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits);
-    void getNodeDataNameAndUnit(const size_t dataid, string &rName, string &rUnit);
-    int getNodeDataIdFromName(const string name);
-    vector<double> *getTimeVectorPtr();
-    vector<vector<double> > *getDataVectorPtr();
+    void saveLogData(std::string filename);
+    void getNodeDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits);
+    void getNodeDataNameAndUnit(const size_t dataid, std::string &rName, std::string &rUnit);
+    int getNodeDataIdFromName(const std::string name);
+    std::vector<double> *getTimeVectorPtr();
+    std::vector<std::vector<double> > *getDataVectorPtr();
 
     bool isConnected();
     bool isConnectionRequired();
 
-    const string &getNodeType();
+    const std::string &getNodeType();
     PORTTYPE getPortType();
-    string getPortTypeString();
-    const string &getPortName();
-    const string &getComponentName();
+    std::string getPortTypeString();
+    const std::string &getPortName();
+    const std::string &getComponentName();
 
     Node* getNodePublic();
 
@@ -64,17 +63,17 @@ protected:
     Node *getNodePtr();
 
 private:
-    string mPortName;
+    std::string mPortName;
     NodeTypeT mNodeType;
     Node* mpNode;
     Component* mpComponent;
-    vector<Port*> mConnectedPorts;
+    std::vector<Port*> mConnectedPorts;
     bool mConnectionRequired;
     bool mIsConnected;
 
     void addConnectedPort(Port* pPort);
     void eraseConnectedPort(Port* pPort);
-    vector<Port*> &getConnectedPorts();
+    std::vector<Port*> &getConnectedPorts();
     void clearConnection();
 };
 
@@ -98,7 +97,7 @@ class PowerPort :public Port
 public:
     //Constructors
     PowerPort();
-    PowerPort(string portname, string node_type);
+    PowerPort(std::string portname, std::string node_type);
 };
 
 
@@ -110,7 +109,7 @@ class ReadPort :public Port
 public:
     //Constructors
     ReadPort();
-    ReadPort(string portname, string node_type);
+    ReadPort(std::string portname, std::string node_type);
 
     void writeNode(const size_t idx, const double value);
 };
@@ -124,7 +123,7 @@ class WritePort :public Port
 public:
     //Constructors
     WritePort();
-    WritePort(string portname, string node_type);
+    WritePort(std::string portname, std::string node_type);
 
     double readNode(const size_t idx);
 };

@@ -14,7 +14,6 @@
 #include <string>
 #include "../win32dll.h"
 
-using namespace std;
 
 class DLLIMPORTEXPORT HopsanCoreMessage
 {
@@ -22,21 +21,21 @@ public:
     enum MessageTypes {INFO, WARNING, ERROR};
     int type;
     int debuglevel;
-    string message;
+    std::string message;
 };
 
 class DLLIMPORTEXPORT HopsanCoreMessageHandler
 {
 private:
-    queue<HopsanCoreMessage> mMessageQueue;
-    void addMessage(int type, string preFix, string message, int debuglevel=0);
+    std::queue<HopsanCoreMessage> mMessageQueue;
+    void addMessage(int type, std::string preFix, std::string message, int debuglevel=0);
     size_t mMaxQueueSize;
 
 public:
     HopsanCoreMessageHandler();
-    void addInfoMessage(string message, int dbglevel=0);
-    void addWarningMessage(string message, int dbglevel=0);
-    void addErrorMessage(string message, int dbglevel=0);
+    void addInfoMessage(std::string message, int dbglevel=0);
+    void addWarningMessage(std::string message, int dbglevel=0);
+    void addErrorMessage(std::string message, int dbglevel=0);
 
     //const HopsanCoreMessage &peakMessage();
     HopsanCoreMessage getMessage();

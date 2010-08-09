@@ -14,7 +14,6 @@
 #include "../win32dll.h"
 #include "../Component.h"
 
-using namespace std;
 
 //! @brief This class handles loading and unloading of external component and node libs
 class DLLIMPORTEXPORT LoadExternal
@@ -25,7 +24,7 @@ private:
 
 public:
     LoadExternal();
-    void load(string libpath);
+    void load(std::string libpath);
     void setFactory(ComponentFactory* cfactory_ptr, NodeFactory* nfactory_ptr);
 };
 

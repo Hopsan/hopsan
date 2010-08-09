@@ -18,6 +18,8 @@
 #include "dlfcn.h"
 #endif
 
+using namespace std;
+
 //!LoadExternal Constructor
 LoadExternal::LoadExternal()
 {

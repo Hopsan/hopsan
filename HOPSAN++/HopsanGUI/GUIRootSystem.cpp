@@ -40,6 +40,8 @@
 #include <QString>
 #include <QVector>
 
+using namespace std;
+
 GUIRootSystem::GUIRootSystem()
 {
     //Create new Core system component

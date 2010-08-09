@@ -17,7 +17,6 @@
 #include <string>
 #include <list>
 
-using namespace std;
 
 class DLLIMPORTEXPORT CompParameter
 {
@@ -25,20 +24,20 @@ class DLLIMPORTEXPORT CompParameter
 
 public:
     //! @todo getting strings can (maybe, dont really know) be speed up by returning const references instead of copying strings
-    string getName();
-    string getDesc();
-    string getUnit();
+    std::string getName();
+    std::string getDesc();
+    std::string getUnit();
 
     double getValue();
 
 private:
-    CompParameter(const string name, const string description, const string unit, double &rValue);
+    CompParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
 
     void setValue(const double value);
 
-    string mName;
-    string mDescription;
-    string mUnit;
+    std::string mName;
+    std::string mDescription;
+    std::string mUnit;
     double* mpValue;
 };
 
@@ -60,28 +59,28 @@ public:
     virtual void setDesiredTimestep(const double timestep);
 
     //Name and type
-    void setName(string name, bool doOnlyLocalRename=false);
-    const string &getName();
-    const string &getTypeName();
+    void setName(std::string name, bool doOnlyLocalRename=false);
+    const std::string &getName();
+    const std::string &getTypeName();
     //const string &getTypeCQS();
     typeCQS getTypeCQS();
-    string getTypeCQSString();
-    string convertTypeCQS2String(typeCQS type);
+    std::string getTypeCQSString();
+    std::string convertTypeCQS2String(typeCQS type);
 
     //Parameters
     void listParametersConsole();
-    const vector<string> getParameterNames();
-    const string getParameterUnit(const string name);
-    const string getParameterDescription(const string name);
-    double getParameterValue(const string name);
-    void setParameterValue(const string name, const double value);
+    const std::vector<std::string> getParameterNames();
+    const std::string getParameterUnit(const std::string name);
+    const std::string getParameterDescription(const std::string name);
+    double getParameterValue(const std::string name);
+    void setParameterValue(const std::string name, const double value);
 
-    vector<CompParameter> getParameterVector();
-    map<string, double> getParameterMap();
+    std::vector<CompParameter> getParameterVector();
+    std::map<std::string, double> getParameterMap();
 
     //Ports
-    vector<Port*> getPortPtrVector();
-    Port *getPort(const string portname);
+    std::vector<Port*> getPortPtrVector();
+    Port *getPort(const std::string portname);
 
     //System parent
     ComponentSystem *getSystemParent();
@@ -104,7 +103,7 @@ public:
 protected:
     //==========Protected member functions==========
     //Constructor - Destructor
-    Component(string name="Component", double timestep=0.001);
+    Component(std::string name="Component", double timestep=0.001);
     virtual ~Component(){};
 
     //Virtual functions
@@ -114,21 +113,21 @@ protected:
     virtual void setTimestep(const double timestep);
 
     //Parameter functions
-    void registerParameter(const string name, const string description, const string unit, double &rValue);
+    void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
 
     //Port functions
-    Port* addPort(const string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype, Port::CONREQ connection_requirement);
-    Port* addPowerPort(const string portname, const string nodetype);
-    Port* addReadPort(const string portname, const string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
-    Port* addWritePort(const string portname, const string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
-    bool getPort(const string portname, Port* &rpPort);
-    string renamePort(const string oldname, const string newname);
-    void deletePort(const string name);
+    Port* addPort(const std::string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype, Port::CONREQ connection_requirement);
+    Port* addPowerPort(const std::string portname, const std::string nodetype);
+    Port* addReadPort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
+    Port* addWritePort(const std::string portname, const std::string nodetype, Port::CONREQ connection_requirement=Port::REQUIRED);
+    bool getPort(const std::string portname, Port* &rpPort);
+    std::string renamePort(const std::string oldname, const std::string newname);
+    void deletePort(const std::string name);
 
     //==========Protected member variables==========
     //string mTypeCQS;
     typeCQS mTypeCQS;
-    string mTypeName;
+    std::string mTypeName;
     double mTimestep, mDesiredTimestep;
     double mTime;
     bool mIsComponentC;
@@ -141,11 +140,11 @@ private:
     void setSystemParent(ComponentSystem &rComponentSystem);
 
     //Private member variables
-    string mName;
-    vector<CompParameter> mParameters;
+    std::string mName;
+    std::vector<CompParameter> mParameters;
     ComponentSystem* mpSystemParent;
-    typedef map<string, Port*> PortPtrMapT;
-    typedef pair<string, Port*> PortPtrPairT;
+    typedef std::map<std::string, Port*> PortPtrMapT;
+    typedef std::pair<std::string, Port*> PortPtrPairT;
     PortPtrMapT mPortPtrMap;
     double mMeasuredTime;
 };
@@ -158,56 +157,56 @@ private:
     {
         friend class ComponentSystem;
     private:
-        typedef map<string, Component*> SubComponentMapT;
+        typedef std::map<std::string, Component*> SubComponentMapT;
         SubComponentMapT mSubComponentMap;
 
     public:
         void add(Component* pComponent);
-        Component* get(const string &rName);
-        void rename(const string &rOldName, const string &rNewName);
-        void remove(const string &rName);
-        bool have(const string &rName);
-        bool changeTypeCQS(const string &rName, const typeCQS newType);
+        Component* get(const std::string &rName);
+        void rename(const std::string &rOldName, const std::string &rNewName);
+        void remove(const std::string &rName);
+        bool have(const std::string &rName);
+        bool changeTypeCQS(const std::string &rName, const typeCQS newType);
 
-        vector<Component*> mComponentSignalptrs;
-        vector<Component*> mComponentQptrs;
-        vector<Component*> mComponentCptrs;
-        vector<Component*> mComponentUndefinedptrs;
+        std::vector<Component*> mComponentSignalptrs;
+        std::vector<Component*> mComponentQptrs;
+        std::vector<Component*> mComponentCptrs;
+        std::vector<Component*> mComponentUndefinedptrs;
     };
 
 public:
     //==========Public functions==========
     //Constructor - Destructor
-    ComponentSystem(string name="ComponentSystem", double timestep=0.001);
+    ComponentSystem(std::string name="ComponentSystem", double timestep=0.001);
 
     //Set the subsystem CQS type
-    void setTypeCQS(const string cqs_type, bool doOnlyLocalSet=false);
+    void setTypeCQS(const std::string cqs_type, bool doOnlyLocalSet=false);
     void setTypeCQS(typeCQS cqs_type, bool doOnlyLocalSet=false);
 
     //adding removing and renaming components
-    void addComponents(vector<Component*> components);
+    void addComponents(std::vector<Component*> components);
     void addComponent(Component &rComponent);
     void addComponent(Component *pComponent);
-    void renameSubComponent(string old_name, string new_name);
-    void removeSubComponent(string name, bool doDelete=false);
+    void renameSubComponent(std::string old_name, std::string new_name);
+    void removeSubComponent(std::string name, bool doDelete=false);
     void removeSubComponent(Component *pComponent, bool doDelete=false);
 
     //Add system ports
-    Port* addSystemPort(string portname);
-    string renameSystemPort(const string oldname, const string newname);
-    void deleteSystemPort(const string name);
+    Port* addSystemPort(std::string portname);
+    std::string renameSystemPort(const std::string oldname, const std::string newname);
+    void deleteSystemPort(const std::string name);
 
     //Getting added components and component names
-    Component* getComponent(string name);
-    Component* getSubComponent(string name);
-    ComponentSystem* getSubComponentSystem(string name);
-    vector<string> getSubComponentNames();
-    bool haveSubComponent(string name);
+    Component* getComponent(std::string name);
+    Component* getSubComponent(std::string name);
+    ComponentSystem* getSubComponentSystem(std::string name);
+    std::vector<std::string> getSubComponentNames();
+    bool haveSubComponent(std::string name);
 
     //connecting components
     bool connect(Port *pPort1, Port *pPort2);
-    bool connect(string compname1, string portname1, string compname2, string portname2);
-    bool disconnect(string compname1, string portname1, string compname2, string portname2);
+    bool connect(std::string compname1, std::string portname1, std::string compname2, std::string portname2);
+    bool disconnect(std::string compname1, std::string portname1, std::string compname2, std::string portname2);
     void disconnect(Port *pPort1, Port *pPort2);
 
     //initializeand simulate
@@ -229,7 +228,7 @@ private:
     //==========Private functions==========
     //Time specific functions
     void setTimestep(const double timestep);
-    void adjustTimestep(double timestep, vector<Component*> componentPtrs);
+    void adjustTimestep(double timestep, std::vector<Component*> componentPtrs);
 
     //log specific functions
     void preAllocateLogSpace(const double startT, const double stopT);
@@ -244,7 +243,7 @@ private:
 
     //==========Prvate member variables==========
     SubComponentStorage mSubComponentStorage;
-    vector<Node*> mSubNodePtrs;
+    std::vector<Node*> mSubNodePtrs;
     NodeFactory mpNodeFactory;
 
     bool mStop;
@@ -253,24 +252,24 @@ private:
 class DLLIMPORTEXPORT ComponentSignal :public Component
 {
 protected:
-    ComponentSignal(string name, double timestep=0.001);
+    ComponentSignal(std::string name, double timestep=0.001);
 };
 
 
 class DLLIMPORTEXPORT ComponentC :public Component
 {
 protected:
-    ComponentC(string name, double timestep=0.001);
+    ComponentC(std::string name, double timestep=0.001);
 };
 
 
 class DLLIMPORTEXPORT ComponentQ :public Component
 {
 protected:
-    ComponentQ(string name, double timestep=0.001);
+    ComponentQ(std::string name, double timestep=0.001);
 };
 
-typedef ClassFactory<string, Component> ComponentFactory;
+typedef ClassFactory<std::string, Component> ComponentFactory;
 extern ComponentFactory gCoreComponentFactory;
 DLLIMPORTEXPORT ComponentFactory* getCoreComponentFactoryPtr();
 

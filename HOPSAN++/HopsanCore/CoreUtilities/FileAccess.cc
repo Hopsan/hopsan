@@ -13,6 +13,7 @@
 #include "../Component.h"
 #include "../HopsanCore.h"
 
+using namespace std;
 
 FileAccess::FileAccess()
 {

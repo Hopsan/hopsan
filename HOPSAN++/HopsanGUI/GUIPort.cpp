@@ -49,6 +49,8 @@
 #include "GraphicsView.h"
 #include "ProjectTabWidget.h"
 
+using namespace std;
+
 //! Constructor.
 //! @param portName The name of the port
 //! @param x the x-coord. of where the port should be placed.

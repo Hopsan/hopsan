@@ -21,6 +21,7 @@
 #include "tbb.h"
 #endif
 
+using namespace std;
 
 //! @brief Helper function to create a unique name among names from a Map
 template<typename MapType>
