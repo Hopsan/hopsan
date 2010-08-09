@@ -12,56 +12,59 @@
 
 #include "../../ComponentEssentials.h"
 
-//!
-//! @brief
-//! @ingroup SignalComponents
-//!
-class SignalHysteresis : public ComponentSignal
-{
+namespace hopsan {
 
-private:
-    double mHysteresisWidth;
-    Delay mDelayedInput;
-    ValveHysteresis mHyst;
-    Port *mpIn, *mpOut;
-
-public:
-    static Component *Creator()
+    //!
+    //! @brief
+    //! @ingroup SignalComponents
+    //!
+    class SignalHysteresis : public ComponentSignal
     {
-        return new SignalHysteresis("Hysteresis");
-    }
 
-    SignalHysteresis(const std::string name) : ComponentSignal(name)
-    {
-        mTypeName = "SignalHysteresis";
-        mHysteresisWidth = 1.0;
+    private:
+        double mHysteresisWidth;
+        Delay mDelayedInput;
+        ValveHysteresis mHyst;
+        Port *mpIn, *mpOut;
 
-        mpIn = addReadPort("in", "NodeSignal");
-        mpOut = addWritePort("out", "NodeSignal");
+    public:
+        static Component *Creator()
+        {
+            return new SignalHysteresis("Hysteresis");
+        }
 
-        registerParameter("HysteresisWidth", "Width of the Hysteresis", "-", mHysteresisWidth);
-    }
+        SignalHysteresis(const std::string name) : ComponentSignal(name)
+        {
+            mTypeName = "SignalHysteresis";
+            mHysteresisWidth = 1.0;
+
+            mpIn = addReadPort("in", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal");
+
+            registerParameter("HysteresisWidth", "Width of the Hysteresis", "-", mHysteresisWidth);
+        }
 
 
-    void initialize()
-    {
-        mDelayedInput.initialize(mTime, 0.0);
-        mDelayedInput.setStepDelay(1);
-    }
+        void initialize()
+        {
+            mDelayedInput.initialize(mTime, 0.0);
+            mDelayedInput.setStepDelay(1);
+        }
 
 
-    void simulateOneTimestep()
-    {
-        //Get variable values from nodes
-        double input = mpIn->readNode(NodeSignal::VALUE);
+        void simulateOneTimestep()
+        {
+            //Get variable values from nodes
+            double input = mpIn->readNode(NodeSignal::VALUE);
 
-        //Hysteresis equations
-        double output = mHyst.getValue(input, mHysteresisWidth, mDelayedInput.value());
-        mDelayedInput.update(output);
+            //Hysteresis equations
+            double output = mHyst.getValue(input, mHysteresisWidth, mDelayedInput.value());
+            mDelayedInput.update(output);
 
-        //Write new values to nodes
-        mpOut->writeNode(NodeSignal::VALUE, output);
-    }
-};
+            //Write new values to nodes
+            mpOut->writeNode(NodeSignal::VALUE, output);
+        }
+    };
+}
 
 #endif // SIGNALHYSTERESIS_HPP_INCLUDED

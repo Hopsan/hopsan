@@ -12,6 +12,8 @@
 #include "../HopsanCore.h"
 #include "DoubleIntegratorWithDamping.h"
 
+using namespace hopsan;
+
 DoubleIntegratorWithDamping::DoubleIntegratorWithDamping()
 {
     mLastTime = 0.0;

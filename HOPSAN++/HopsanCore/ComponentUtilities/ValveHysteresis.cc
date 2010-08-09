@@ -10,6 +10,8 @@
 #include <math.h>
 #include "ValveHysteresis.h"
 
+using namespace hopsan;
+
 ValveHysteresis::ValveHysteresis()
 {
 }

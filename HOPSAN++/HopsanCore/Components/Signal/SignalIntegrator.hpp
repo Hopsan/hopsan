@@ -12,64 +12,67 @@
 
 #include "../../ComponentEssentials.h"
 
-//!
-//! @brief
-//! @ingroup SignalComponents
-//!
-class SignalIntegrator : public ComponentSignal
-{
+namespace hopsan {
 
-private:
-    double mStartY;
-    Delay mDelayU;
-    Delay mDelayY;
-    Port *mpIn, *mpOut;
-
-public:
-    static Component *Creator()
+    //!
+    //! @brief
+    //! @ingroup SignalComponents
+    //!
+    class SignalIntegrator : public ComponentSignal
     {
-        return new SignalIntegrator("Integrator");
-    }
 
-    SignalIntegrator(const std::string name) : ComponentSignal(name)
-    {
-        mTypeName = "SignalIntegrator";
-        mStartY = 0.0;
+    private:
+        double mStartY;
+        Delay mDelayU;
+        Delay mDelayY;
+        Port *mpIn, *mpOut;
 
-        mDelayU.setStepDelay(1);
-        mDelayY.setStepDelay(1);
+    public:
+        static Component *Creator()
+        {
+            return new SignalIntegrator("Integrator");
+        }
 
-        mpIn = addReadPort("in", "NodeSignal");
-        mpOut = addWritePort("out", "NodeSignal");
-    }
+        SignalIntegrator(const std::string name) : ComponentSignal(name)
+        {
+            mTypeName = "SignalIntegrator";
+            mStartY = 0.0;
+
+            mDelayU.setStepDelay(1);
+            mDelayY.setStepDelay(1);
+
+            mpIn = addReadPort("in", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal");
+        }
 
 
-    void initialize()
-    {
-        double u0 = mpIn->readNode(NodeSignal::VALUE);
-        mDelayU.initialize(mTime, u0);
-        mDelayY.initialize(mTime, mStartY);
-        //! @todo Write out values into node as well? (I think so) This is true for all components
-    }
+        void initialize()
+        {
+            double u0 = mpIn->readNode(NodeSignal::VALUE);
+            mDelayU.initialize(mTime, u0);
+            mDelayY.initialize(mTime, mStartY);
+            //! @todo Write out values into node as well? (I think so) This is true for all components
+        }
 
 
-    void simulateOneTimestep()
-    {
-        //Get variable values from nodes
-        double u = mpIn->readNode(NodeSignal::VALUE);
+        void simulateOneTimestep()
+        {
+            //Get variable values from nodes
+            double u = mpIn->readNode(NodeSignal::VALUE);
 
-        //Filter equation
-        //Bilinear transform is used
-        double y = mDelayY.value() + mTimestep/2.0*(u + mDelayU.value());
+            //Filter equation
+            //Bilinear transform is used
+            double y = mDelayY.value() + mTimestep/2.0*(u + mDelayU.value());
 
-        //Write new values to nodes
-        mpOut->writeNode(NodeSignal::VALUE, y);
+            //Write new values to nodes
+            mpOut->writeNode(NodeSignal::VALUE, y);
 
-        //Update filter:
-        mDelayU.update(u);
-        mDelayY.update(y);
-    }
-};
+            //Update filter:
+            mDelayU.update(u);
+            mDelayY.update(y);
+        }
+    };
+}
 
 #endif // SIGNALINTEGRATOR_HPP_INCLUDED
 

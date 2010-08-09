@@ -18,6 +18,7 @@
 #include "version.h"
 
 using namespace std;
+using namespace hopsan;
 
 //Set the stacic start values
 bool HopsanEssentials::mHasInstance = false;

@@ -13,59 +13,62 @@
 #include "../../ComponentEssentials.h"
 #include "../../ComponentUtilities.h"
 
-//!
-//! @brief
-//! @ingroup SignalComponents
-//!
-class SignalIntegratorLimited2 : public ComponentSignal
-{
+namespace hopsan {
 
-private:
-    IntegratorLimited mIntegrator;
-    double mStartY;
-    double mMin, mMax;
-    Port *mpIn, *mpOut;
-
-public:
-    static Component *Creator()
+    //!
+    //! @brief
+    //! @ingroup SignalComponents
+    //!
+    class SignalIntegratorLimited2 : public ComponentSignal
     {
-        return new SignalIntegratorLimited2("Integrator");
-    }
 
-    SignalIntegratorLimited2(const std::string name) : ComponentSignal(name)
-    {
-        mTypeName = "SignalIntegratorLimited2";
-        mStartY = 0.0;
+    private:
+        IntegratorLimited mIntegrator;
+        double mStartY;
+        double mMin, mMax;
+        Port *mpIn, *mpOut;
 
-        mMin = -1.5E+300;
-        mMax = 1.5E+300;
+    public:
+        static Component *Creator()
+        {
+            return new SignalIntegratorLimited2("Integrator");
+        }
 
-        mpIn = addReadPort("in", "NodeSignal");
-        mpOut = addWritePort("out", "NodeSignal");
-    }
+        SignalIntegratorLimited2(const std::string name) : ComponentSignal(name)
+        {
+            mTypeName = "SignalIntegratorLimited2";
+            mStartY = 0.0;
+
+            mMin = -1.5E+300;
+            mMax = 1.5E+300;
+
+            mpIn = addReadPort("in", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal");
+        }
 
 
-    void initialize()
-    {
-        double u0 = mpIn->readNode(NodeSignal::VALUE);
+        void initialize()
+        {
+            double u0 = mpIn->readNode(NodeSignal::VALUE);
 
-        mIntegrator.initialize(mTime, mTimestep, u0, mStartY, mMin, mMax);
-        //! @todo Write out values into node as well? (I think so) This is true for all components
-    }
+            mIntegrator.initialize(mTime, mTimestep, u0, mStartY, mMin, mMax);
+            //! @todo Write out values into node as well? (I think so) This is true for all components
+        }
 
 
-    void simulateOneTimestep()
-    {
-        //Get variable values from nodes
-        double u = mpIn->readNode(NodeSignal::VALUE);
+        void simulateOneTimestep()
+        {
+            //Get variable values from nodes
+            double u = mpIn->readNode(NodeSignal::VALUE);
 
-        //Filter equation
-        //Get variable values from nodes
+            //Filter equation
+            //Get variable values from nodes
 
-        //Write new values to nodes
-        mpOut->writeNode(NodeSignal::VALUE, mIntegrator.value(u));
-    }
-};
+            //Write new values to nodes
+            mpOut->writeNode(NodeSignal::VALUE, mIntegrator.value(u));
+        }
+    };
+}
 
 #endif // SIGNALINTEGRATORLIMITED2_HPP_INCLUDED
 

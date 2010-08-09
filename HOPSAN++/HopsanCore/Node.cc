@@ -20,6 +20,7 @@
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 
 using namespace std;
+using namespace hopsan;
 
 //! Node base class constructor
 //! @param [in] datalength The length of the data vector
@@ -373,8 +374,8 @@ void Node::disableLog()
 }
 
 
-NodeFactory gCoreNodeFactory;
-DLLIMPORTEXPORT NodeFactory* getCoreNodeFactoryPtr()
+NodeFactory hopsan::gCoreNodeFactory;
+DLLIMPORTEXPORT NodeFactory* hopsan::getCoreNodeFactoryPtr()
 {
     return &gCoreNodeFactory;
 }

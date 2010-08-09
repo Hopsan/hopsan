@@ -13,65 +13,68 @@
 #include <iostream>
 #include "../../ComponentEssentials.h"
 
-//!
-//! @brief
-//! @ingroup HydraulicComponents
-//!
-class HydraulicPressureSource : public ComponentC
-{
-private:
-    //double mStartPressure;
-    double mStartFlow;
-    double mZc;
-    double mPressure;
-    Port *mpIn, *mpP1;
+namespace hopsan {
 
-public:
-    static Component *Creator()
+    //!
+    //! @brief
+    //! @ingroup HydraulicComponents
+    //!
+    class HydraulicPressureSource : public ComponentC
     {
-        return new HydraulicPressureSource("PressureSource");
-    }
+    private:
+        //double mStartPressure;
+        double mStartFlow;
+        double mZc;
+        double mPressure;
+        Port *mpIn, *mpP1;
 
-    HydraulicPressureSource(const std::string name) : ComponentC(name)
-    {
-        mTypeName = "HydraulicPressureSource";
-        //mStartPressure  = 0.0;
-        mStartFlow      = 0.0;
-        mPressure       = 1.0e5;
-        mZc             = 0.0;
-
-        mpIn = addReadPort("In", "NodeSignal", Port::NOTREQUIRED);
-        mpP1 = addPowerPort("P1", "NodeHydraulic");
-
-        registerParameter("P", "Default pressure", "Pa", mPressure);
-    }
-
-
-    void initialize()
-    {
-        //write to nodes
-        mpP1->writeNode(NodeHydraulic::PRESSURE, mPressure);
-        mpP1->writeNode(NodeHydraulic::MASSFLOW, mStartFlow);
-    }
-
-
-    void simulateOneTimestep()
-    {
-        //Pressure source equation
-        double c;
-        if (mpIn->isConnected())
+    public:
+        static Component *Creator()
         {
-            c = mpIn->readNode(NodeSignal::VALUE);         //We have a signal!
-        }
-        else
-        {
-            c = mPressure;                                  //No signal, use internal parameter
+            return new HydraulicPressureSource("PressureSource");
         }
 
-        //Write new values to nodes
-        mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, c);
-        mpP1->writeNode(NodeHydraulic::CHARIMP, mZc);
-    }
-};
+        HydraulicPressureSource(const std::string name) : ComponentC(name)
+        {
+            mTypeName = "HydraulicPressureSource";
+            //mStartPressure  = 0.0;
+            mStartFlow      = 0.0;
+            mPressure       = 1.0e5;
+            mZc             = 0.0;
+
+            mpIn = addReadPort("In", "NodeSignal", Port::NOTREQUIRED);
+            mpP1 = addPowerPort("P1", "NodeHydraulic");
+
+            registerParameter("P", "Default pressure", "Pa", mPressure);
+        }
+
+
+        void initialize()
+        {
+            //write to nodes
+            mpP1->writeNode(NodeHydraulic::PRESSURE, mPressure);
+            mpP1->writeNode(NodeHydraulic::MASSFLOW, mStartFlow);
+        }
+
+
+        void simulateOneTimestep()
+        {
+            //Pressure source equation
+            double c;
+            if (mpIn->isConnected())
+            {
+                c = mpIn->readNode(NodeSignal::VALUE);         //We have a signal!
+            }
+            else
+            {
+                c = mPressure;                                  //No signal, use internal parameter
+            }
+
+            //Write new values to nodes
+            mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, c);
+            mpP1->writeNode(NodeHydraulic::CHARIMP, mZc);
+        }
+    };
+}
 
 #endif // HYDRAULICPRESSURESOURCE_HPP_INCLUDED

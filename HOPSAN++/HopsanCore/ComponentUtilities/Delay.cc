@@ -12,6 +12,8 @@
 #include <cassert>
 #include "Delay.h"
 
+using namespace hopsan;
+
 //! @class Delay
 //! @brief The Delay class delayes a variable in time (A \f$\mbox{\LaTeX}\f$ example: \f$e^{\pi}=-1\f$)
 //!

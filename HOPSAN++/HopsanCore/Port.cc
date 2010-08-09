@@ -15,6 +15,7 @@
 #include "Component.h"
 
 using namespace std;
+using namespace hopsan;
 
 //! Port base class constructor
 Port::Port()
@@ -344,7 +345,7 @@ double WritePort::readNode(const size_t idx)
 //!
 //! @brief Very simple port factory, no need to complicate things with the more advanced one as we will only have a few fixed port types.
 //!
-Port* CreatePort(Port::PORTTYPE type)
+Port* hopsan::CreatePort(Port::PORTTYPE type)
 {
     switch (type)
     {

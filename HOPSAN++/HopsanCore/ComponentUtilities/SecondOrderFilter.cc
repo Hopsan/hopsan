@@ -13,6 +13,8 @@
 #include "../HopsanCore.h"
 #include "SecondOrderFilter.h"
 
+using namespace hopsan;
+
 //! @class SecondOrderFilter
 //! @brief The SecondOrderFilter class implements a second order filter using bilinear transform
 //!

@@ -13,6 +13,8 @@
 #include "../HopsanCore.h"
 #include "IntegratorLimited.h"
 
+using namespace hopsan;
+
 /*! @class IntegratorLimited
  *  @brief The IntegratorLimited class implements a integrator using bilinear
  *  transform which integrates a variable with limited output signal and wind-up protection

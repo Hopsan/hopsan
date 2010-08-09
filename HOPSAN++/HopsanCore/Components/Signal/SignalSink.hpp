@@ -12,45 +12,48 @@
 
 #include "../../ComponentEssentials.h"
 
-//!
-//! @brief
-//! @ingroup SignalComponents
-//!
-class SignalSink : public ComponentSignal
-{
+namespace hopsan {
 
-private:
-    Port *mpIn;
-
-public:
-    static Component *Creator()
-    {
-        return new SignalSink("Sink");
-    }
-
-    SignalSink(const std::string name) : ComponentSignal(name)
-    {
-        mTypeName = "SignalSink";
-
-        mpIn = addReadPort("in", "NodeSignal");
-    }
-
-
-    void initialize()
-    {
-        //Nothing to initilize
-    }
-
-
-    void simulateOneTimestep()
-    {
-        //Nothing to do
-    }
-
-    void finalize()
+    //!
+    //! @brief
+    //! @ingroup SignalComponents
+    //!
+    class SignalSink : public ComponentSignal
     {
 
-    }
-};
+    private:
+        Port *mpIn;
+
+    public:
+        static Component *Creator()
+        {
+            return new SignalSink("Sink");
+        }
+
+        SignalSink(const std::string name) : ComponentSignal(name)
+        {
+            mTypeName = "SignalSink";
+
+            mpIn = addReadPort("in", "NodeSignal");
+        }
+
+
+        void initialize()
+        {
+            //Nothing to initilize
+        }
+
+
+        void simulateOneTimestep()
+        {
+            //Nothing to do
+        }
+
+        void finalize()
+        {
+
+        }
+    };
+}
 
 #endif // SIGNALSINK_HPP_INCLUDED

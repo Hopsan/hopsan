@@ -13,85 +13,86 @@
 #include "../../ComponentEssentials.h"
 #include "../../ComponentUtilities.h"
 
-//!
-//! @brief
-//! @ingroup SignalComponents
-//!
-class SignalSecondOrderFilter : public ComponentSignal
-{
+namespace hopsan {
 
-private:
-    SecondOrderFilter mFilter;
-    double mWnum, mDnum, mWden, mDden, mK;
-    double mStartY;
-    double mMin, mMax;
-    Port *mpIn, *mpOut;
-
-public:
-    static Component *Creator()
+    //!
+    //! @brief
+    //! @ingroup SignalComponents
+    //!
+    class SignalSecondOrderFilter : public ComponentSignal
     {
-        std::cout << "running Second Order Filter creator" << std::endl;
-        return new SignalSecondOrderFilter("Filter");
-    }
 
-    SignalSecondOrderFilter(const std::string name) : ComponentSignal(name)
-    {
-        mTypeName = "SignalSecondOrderFilter";
-        mStartY = 0.0;
+    private:
+        SecondOrderFilter mFilter;
+        double mWnum, mDnum, mWden, mDden, mK;
+        double mStartY;
+        double mMin, mMax;
+        Port *mpIn, *mpOut;
 
-        mMin = -1.5E+300;
-        mMax = 1.5E+300;
+    public:
+        static Component *Creator()
+        {
+            std::cout << "running Second Order Filter creator" << std::endl;
+            return new SignalSecondOrderFilter("Filter");
+        }
 
-        mK = 1.0;
-        mWnum = 1.0e10;
-        mDnum = 1.0;
-        mWden = 1.0*2.0*3.1415;
-        mDden = 0.7;
+        SignalSecondOrderFilter(const std::string name) : ComponentSignal(name)
+        {
+            mTypeName = "SignalSecondOrderFilter";
+            mStartY = 0.0;
 
-        mpIn = addReadPort("in", "NodeSignal");
-        mpOut = addWritePort("out", "NodeSignal");
+            mMin = -1.5E+300;
+            mMax = 1.5E+300;
 
-        registerParameter("k", "Gain", "-", mK);
-        registerParameter("wnum", "Numerator break frequency", "rad/s", mWnum);
-        registerParameter("dnum", "Numerator damp coefficient", "-", mDnum);
-        registerParameter("wden", "Denominator break frequency", "rad/s", mWden);
-        registerParameter("dden", "Denominator damp coefficient", "-", mDden);
-        registerParameter("min", "Output Lower limit", "-", mMin);
-        registerParameter("max", "Output Upper limit", "-", mMax);
-    }
+            mK = 1.0;
+            mWnum = 1.0e10;
+            mDnum = 1.0;
+            mWden = 1.0*2.0*3.1415;
+            mDden = 0.7;
 
+            mpIn = addReadPort("in", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal");
 
-    void initialize()
-    {
-        //double u0 = mpIn->readNode(NodeSignal::VALUE);
-
-        double num[3];
-        double den[3];
-
-        num[0] = mK/pow(mWnum, 2);
-        num[1] = mK*2.0*mDnum/mWnum;
-        num[2] = mK;
-        den[0] = 1.0/pow(mWden, 2);
-        den[1] = 2.0*mDden/mWden;
-        den[2] = 1.0;
-
-        mFilter.initialize(mTime, mTimestep, num, den, mStartY, mStartY, mMin, mMax);
-
-        //Writes out the value for time "zero"
-        mpOut->writeNode(NodeSignal::VALUE, mStartY);
-    }
+            registerParameter("k", "Gain", "-", mK);
+            registerParameter("wnum", "Numerator break frequency", "rad/s", mWnum);
+            registerParameter("dnum", "Numerator damp coefficient", "-", mDnum);
+            registerParameter("wden", "Denominator break frequency", "rad/s", mWden);
+            registerParameter("dden", "Denominator damp coefficient", "-", mDden);
+            registerParameter("min", "Output Lower limit", "-", mMin);
+            registerParameter("max", "Output Upper limit", "-", mMax);
+        }
 
 
-    void simulateOneTimestep()
-    {
-        //Get variable values from nodes
-        double u = mpIn->readNode(NodeSignal::VALUE);
+        void initialize()
+        {
+            //double u0 = mpIn->readNode(NodeSignal::VALUE);
 
-        //Write new values to nodes
-        mpOut->writeNode(NodeSignal::VALUE, mFilter.value(u));
-    }
-};
+            double num[3];
+            double den[3];
+
+            num[0] = mK/pow(mWnum, 2);
+            num[1] = mK*2.0*mDnum/mWnum;
+            num[2] = mK;
+            den[0] = 1.0/pow(mWden, 2);
+            den[1] = 2.0*mDden/mWden;
+            den[2] = 1.0;
+
+            mFilter.initialize(mTime, mTimestep, num, den, mStartY, mStartY, mMin, mMax);
+
+            //Writes out the value for time "zero"
+            mpOut->writeNode(NodeSignal::VALUE, mStartY);
+        }
+
+
+        void simulateOneTimestep()
+        {
+            //Get variable values from nodes
+            double u = mpIn->readNode(NodeSignal::VALUE);
+
+            //Write new values to nodes
+            mpOut->writeNode(NodeSignal::VALUE, mFilter.value(u));
+        }
+    };
+}
 
 #endif // SIGNALSECONORDERFILTER_HPP_INCLUDED
-
-

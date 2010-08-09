@@ -13,68 +13,71 @@
 #include "../../ComponentEssentials.h"
 #include "../../ComponentUtilities.h"
 
-//!
-//! @brief
-//! @ingroup SignalComponents
-//!
-class SignalLP1Filter : public ComponentSignal
-{
+namespace hopsan {
 
-private:
-    FirstOrderFilter mFilter;
-    double mW, mMin, mMax;
-    double mStartY;
-    Port *mpIn, *mpOut;
-
-public:
-    static Component *Creator()
+    //!
+    //! @brief
+    //! @ingroup SignalComponents
+    //!
+    class SignalLP1Filter : public ComponentSignal
     {
-        return new SignalLP1Filter("Filter");
-    }
 
-    SignalLP1Filter(const std::string name) : ComponentSignal(name)
-    {
-        mTypeName = "SignalLP1Filter";
-        mStartY = 0.0;
+    private:
+        FirstOrderFilter mFilter;
+        double mW, mMin, mMax;
+        double mStartY;
+        Port *mpIn, *mpOut;
 
-        mMin = -1.5E+300;
-        mMax = 1.5E+300;
+    public:
+        static Component *Creator()
+        {
+            return new SignalLP1Filter("Filter");
+        }
 
-        mW=1.0e10;
+        SignalLP1Filter(const std::string name) : ComponentSignal(name)
+        {
+            mTypeName = "SignalLP1Filter";
+            mStartY = 0.0;
 
-        mpIn = addReadPort("in", "NodeSignal");
-        mpOut = addWritePort("out", "NodeSignal");
+            mMin = -1.5E+300;
+            mMax = 1.5E+300;
 
-        registerParameter("w", "Break frequency", "rad/s", mW);
+            mW=1.0e10;
+
+            mpIn = addReadPort("in", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal");
+
+            registerParameter("w", "Break frequency", "rad/s", mW);
         }
 
 
-    void initialize()
-    {
-        double num[2];
-        double den[2];
+        void initialize()
+        {
+            double num[2];
+            double den[2];
 
-        num[0] = 0.0;
-        num[1] = 1.0;
-        den[0] = 1.0/mW;
-        den[1] = 1.0;
+            num[0] = 0.0;
+            num[1] = 1.0;
+            den[0] = 1.0/mW;
+            den[1] = 1.0;
 
-        mFilter.initialize(mTime, mTimestep, num, den, mStartY, mStartY, mMin, mMax);
+            mFilter.initialize(mTime, mTimestep, num, den, mStartY, mStartY, mMin, mMax);
 
-        //Writes out the value for time "zero"
-        mpOut->writeNode(NodeSignal::VALUE, mStartY);
-    }
+            //Writes out the value for time "zero"
+            mpOut->writeNode(NodeSignal::VALUE, mStartY);
+        }
 
 
-    void simulateOneTimestep()
-    {
-        //Get variable values from nodes
-        double u = mpIn->readNode(NodeSignal::VALUE);
+        void simulateOneTimestep()
+        {
+            //Get variable values from nodes
+            double u = mpIn->readNode(NodeSignal::VALUE);
 
-        //Write new values to nodes
-        mpOut->writeNode(NodeSignal::VALUE, mFilter.value(u));
-    }
-};
+            //Write new values to nodes
+            mpOut->writeNode(NodeSignal::VALUE, mFilter.value(u));
+        }
+    };
+}
 
 #endif // SIGNALLP1FILTER_HPP_INCLUDED
 

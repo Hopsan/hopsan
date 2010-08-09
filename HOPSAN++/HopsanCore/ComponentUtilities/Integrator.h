@@ -14,22 +14,26 @@
 #include "../win32dll.h"
 #include "Delay.h"
 
-class DLLIMPORTEXPORT Integrator
-{
-public:
-    Integrator();
-    void initialize(double &rTime, double timestep, double u0=0.0, double y0=0.0);
-    void initializeValues(double u0, double y0);
-    void update(double u);
+namespace hopsan {
+
+    class DLLIMPORTEXPORT Integrator
+    {
+    public:
+        Integrator();
+        void initialize(double &rTime, double timestep, double u0=0.0, double y0=0.0);
+        void initializeValues(double u0, double y0);
+        void update(double u);
 	double value(double u);
 	double value();
 
-private:
-    Delay mDelayU, mDelayY;
-    double mTimeStep;
-    double *mpTime;
-    double mLastTime;
-    bool mIsInitialized;
-};
+    private:
+        Delay mDelayU, mDelayY;
+        double mTimeStep;
+        double *mpTime;
+        double mLastTime;
+        bool mIsInitialized;
+    };
+
+}
 
 #endif // INTEGRATOR_H_INCLUDED

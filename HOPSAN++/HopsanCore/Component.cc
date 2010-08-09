@@ -22,6 +22,7 @@
 #endif
 
 using namespace std;
+using namespace hopsan;
 
 //! @brief Helper function to create a unique name among names from a Map
 template<typename MapType>
@@ -2236,8 +2237,8 @@ void ComponentSystem::finalize(const double startT, const double stopT)
 }
 
 
-ComponentFactory gCoreComponentFactory;
-DLLIMPORTEXPORT ComponentFactory* getCoreComponentFactoryPtr()
+ComponentFactory hopsan::gCoreComponentFactory;
+DLLIMPORTEXPORT ComponentFactory* hopsan::getCoreComponentFactoryPtr()
 {
     return &gCoreComponentFactory;
 }

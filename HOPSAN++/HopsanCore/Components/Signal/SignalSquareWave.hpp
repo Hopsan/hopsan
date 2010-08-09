@@ -24,67 +24,70 @@
 #include "../../ComponentEssentials.h"
 #include "math.h"
 
-//!
-//! @brief
-//! @ingroup SignalComponents
-//!
-class SignalSquareWave : public ComponentSignal
-{
+namespace hopsan {
 
-private:
-    double mStartTime;
-    double mFrequency;
-    double mAmplitude;
-    double mBaseValue;
-    Port *mpOut;
-
-public:
-    static Component *Creator()
+    //!
+    //! @brief
+    //! @ingroup SignalComponents
+    //!
+    class SignalSquareWave : public ComponentSignal
     {
-        return new SignalSquareWave("SquareWave");
-    }
 
-    SignalSquareWave(const std::string name) : ComponentSignal(name)
-    {
-        mTypeName = "SignalSquareWave";
-        mStartTime = 0.0;
-        mFrequency = 1.0;
-        mAmplitude = 1.0;
-        mBaseValue = 0.0;
+    private:
+        double mStartTime;
+        double mFrequency;
+        double mAmplitude;
+        double mBaseValue;
+        Port *mpOut;
 
-        mpOut = addWritePort("out", "NodeSignal");
-
-        registerParameter("StartTime", "Start Time", "s", mStartTime);
-        registerParameter("Frequency", "Frequencty", "Hz", mFrequency);
-        registerParameter("Amplitude", "Amplitude", "-", mAmplitude);
-        registerParameter("BaseValue", "Base Value", "-", mBaseValue);
-    }
-
-
-    void initialize()
-    {
-        //Nothing to initilize
-    }
-
-
-    void simulateOneTimestep()
-    {
-        //Step Equations
-        double output;
-        int relTimeInt;
-        if (mTime < mStartTime)
+    public:
+        static Component *Creator()
         {
-            output = 0;
-        }
-        else
-        {
-            relTimeInt = (int)ceil((mTime-mStartTime)*mFrequency);
-            output = mBaseValue + (mAmplitude * (relTimeInt % 2));
+            return new SignalSquareWave("SquareWave");
         }
 
-        //Write new values to nodes
-        mpOut->writeNode(NodeSignal::VALUE, output);
-    }
-};
+        SignalSquareWave(const std::string name) : ComponentSignal(name)
+        {
+            mTypeName = "SignalSquareWave";
+            mStartTime = 0.0;
+            mFrequency = 1.0;
+            mAmplitude = 1.0;
+            mBaseValue = 0.0;
+
+            mpOut = addWritePort("out", "NodeSignal");
+
+            registerParameter("StartTime", "Start Time", "s", mStartTime);
+            registerParameter("Frequency", "Frequencty", "Hz", mFrequency);
+            registerParameter("Amplitude", "Amplitude", "-", mAmplitude);
+            registerParameter("BaseValue", "Base Value", "-", mBaseValue);
+        }
+
+
+        void initialize()
+        {
+            //Nothing to initilize
+        }
+
+
+        void simulateOneTimestep()
+        {
+            //Step Equations
+            double output;
+            int relTimeInt;
+            if (mTime < mStartTime)
+            {
+                output = 0;
+            }
+            else
+            {
+                relTimeInt = (int)ceil((mTime-mStartTime)*mFrequency);
+                output = mBaseValue + (mAmplitude * (relTimeInt % 2));
+            }
+
+            //Write new values to nodes
+            mpOut->writeNode(NodeSignal::VALUE, output);
+        }
+    };
+}
 
 #endif // SIGNALSQUAREWAVE_HPP_INCLUDED

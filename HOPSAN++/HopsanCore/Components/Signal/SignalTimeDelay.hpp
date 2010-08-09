@@ -12,55 +12,56 @@
 
 #include "../../ComponentEssentials.h"
 
-//!
-//! @brief
-//! @ingroup SignalComponents
-//!
-class SignalTimeDelay : public ComponentSignal
-{
+namespace hopsan {
 
-private:
-    double mStartY, mTimeDelay;
-    Delay mDelay;
-    Port *mpIn, *mpOut;
-
-public:
-    static Component *Creator()
+    //!
+    //! @brief
+    //! @ingroup SignalComponents
+    //!
+    class SignalTimeDelay : public ComponentSignal
     {
-        return new SignalTimeDelay("TimeDelay");
-    }
 
-    SignalTimeDelay(const std::string name) : ComponentSignal(name)
-    {
-        mTypeName = "SignalTimeDelay";
-        mStartY = 0.0;
-        mTimeDelay = 1.0;
+    private:
+        double mStartY, mTimeDelay;
+        Delay mDelay;
+        Port *mpIn, *mpOut;
 
-        registerParameter("TD", "Time delay", "s", mTimeDelay);
+    public:
+        static Component *Creator()
+        {
+            return new SignalTimeDelay("TimeDelay");
+        }
 
-        mpIn = addReadPort("in", "NodeSignal");
-        mpOut = addWritePort("out", "NodeSignal");
-    }
+        SignalTimeDelay(const std::string name) : ComponentSignal(name)
+        {
+            mTypeName = "SignalTimeDelay";
+            mStartY = 0.0;
+            mTimeDelay = 1.0;
+
+            registerParameter("TD", "Time delay", "s", mTimeDelay);
+
+            mpIn = addReadPort("in", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal");
+        }
 
 
-    void initialize()
-    {
-        mDelay.initialize(mTime, mStartY);
-        mDelay.setTimeDelay(mTimeDelay, mTimestep, mStartY);
-        //! @todo Write out values into node as well? (I think so) This is true for all components
-    }
+        void initialize()
+        {
+            mDelay.initialize(mTime, mStartY);
+            mDelay.setTimeDelay(mTimeDelay, mTimestep, mStartY);
+            //! @todo Write out values into node as well? (I think so) This is true for all components
+        }
 
 
-    void simulateOneTimestep()
-    {
-        //Get variable values from nodes
-        double u = mpIn->readNode(NodeSignal::VALUE);
-        mDelay.update(u);
-        //Write new values to nodes
-        mpOut->writeNode(NodeSignal::VALUE, mDelay.value(u));
-    }
-};
+        void simulateOneTimestep()
+        {
+            //Get variable values from nodes
+            double u = mpIn->readNode(NodeSignal::VALUE);
+            mDelay.update(u);
+            //Write new values to nodes
+            mpOut->writeNode(NodeSignal::VALUE, mDelay.value(u));
+        }
+    };
+}
 
 #endif // SIGNALTIMEDELAY_HPP_INCLUDED
-
-

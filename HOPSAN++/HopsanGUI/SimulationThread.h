@@ -51,7 +51,7 @@
 
 #include <QThread>
 
-class ComponentSystem;
+//class ComponentSystem;
 class ProjectTabWidget;
 class GUIRootSystem;
 

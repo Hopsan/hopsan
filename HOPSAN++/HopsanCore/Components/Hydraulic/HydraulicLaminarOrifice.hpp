@@ -4,60 +4,63 @@
 #include <iostream>
 #include "../../ComponentEssentials.h"
 
-//!
-//! @brief A hydraulic laminar orifice component
-//! @ingroup HydraulicComponents
-//!
-class HydraulicLaminarOrifice : public ComponentQ
-{
-private:
-    double mKc;
-    Port *mpP1, *mpP2;
+namespace hopsan {
 
-public:
-    static Component *Creator()
+    //!
+    //! @brief A hydraulic laminar orifice component
+    //! @ingroup HydraulicComponents
+    //!
+    class HydraulicLaminarOrifice : public ComponentQ
     {
-        return new HydraulicLaminarOrifice("LaminarOrifice");
-    }
+    private:
+        double mKc;
+        Port *mpP1, *mpP2;
 
-    HydraulicLaminarOrifice(const std::string name) : ComponentQ(name)
-    {
-        mTypeName = "HydraulicLaminarOrifice";
-        mKc = 1.0e-11;
+    public:
+        static Component *Creator()
+        {
+            return new HydraulicLaminarOrifice("LaminarOrifice");
+        }
 
-        mpP1 = addPowerPort("P1", "NodeHydraulic");
-        mpP2 = addPowerPort("P2", "NodeHydraulic");
+        HydraulicLaminarOrifice(const std::string name) : ComponentQ(name)
+        {
+            mTypeName = "HydraulicLaminarOrifice";
+            mKc = 1.0e-11;
 
-        registerParameter("Kc", "Pressure-Flow Coefficient", "[m^5/Ns]", mKc);
-    }
+            mpP1 = addPowerPort("P1", "NodeHydraulic");
+            mpP2 = addPowerPort("P2", "NodeHydraulic");
+
+            registerParameter("Kc", "Pressure-Flow Coefficient", "[m^5/Ns]", mKc);
+        }
 
 
-    void initialize()
-    {
-        //Nothing to initialize
-    }
+        void initialize()
+        {
+            //Nothing to initialize
+        }
 
 
-    void simulateOneTimestep()
-    {
-        //Get variable values from nodes
-        double c1 = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
-        double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
-        double c2 = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
-        double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
+        void simulateOneTimestep()
+        {
+            //Get variable values from nodes
+            double c1 = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
+            double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
+            double c2 = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
+            double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
 
-        //Orifice equations
-        double q2 = mKc*(c1-c2)/(1.0+mKc*(Zc1+Zc2));
-        double q1 = -q2;
-        double p1 = c1 + q1*Zc1;
-        double p2 = c2 + q2*Zc2;
+            //Orifice equations
+            double q2 = mKc*(c1-c2)/(1.0+mKc*(Zc1+Zc2));
+            double q1 = -q2;
+            double p1 = c1 + q1*Zc1;
+            double p2 = c2 + q2*Zc2;
 
-        //Write new values to nodes
-        mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
-        mpP1->writeNode(NodeHydraulic::MASSFLOW, q1);
-        mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
-        mpP2->writeNode(NodeHydraulic::MASSFLOW, q2);
-    }
-};
+            //Write new values to nodes
+            mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
+            mpP1->writeNode(NodeHydraulic::MASSFLOW, q1);
+            mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
+            mpP2->writeNode(NodeHydraulic::MASSFLOW, q2);
+        }
+    };
+}
 
 #endif // HYDRAULICLAMINARORIFICE_HPP_INCLUDED

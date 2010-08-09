@@ -26,71 +26,74 @@
 
 #include "../../ComponentEssentials.h"
 
-//!
-//! @brief
-//! @ingroup SignalComponents
-//!
-class SignalRamp : public ComponentSignal
-{
+namespace hopsan {
 
-private:
-    double mBaseValue;
-    double mAmplitude;
-    double mStartTime;
-    double mStopTime;
-    Port *mpOut;
-
-public:
-    static Component *Creator()
+    //!
+    //! @brief
+    //! @ingroup SignalComponents
+    //!
+    class SignalRamp : public ComponentSignal
     {
-        return new SignalRamp("Ramp");
-    }
 
-    SignalRamp(const std::string name) : ComponentSignal(name)
-    {
-        mTypeName = "SignalRamp";
-        mBaseValue = 0.0;
-        mAmplitude = 1.0;
-        mStartTime = 1.0;
-        mStopTime = 2.0;
+    private:
+        double mBaseValue;
+        double mAmplitude;
+        double mStartTime;
+        double mStopTime;
+        Port *mpOut;
 
-        mpOut = addWritePort("out", "NodeSignal");
-
-        registerParameter("BaseValue", "Base Value", "-", mBaseValue);
-        registerParameter("Amplitude", "Amplitude", "-", mAmplitude);
-        registerParameter("StartTime", "Start Time", "s", mStartTime);
-        registerParameter("StopTime", "Stop Time", "s", mStopTime);
-    }
-
-
-    void initialize()
-    {
-        //Nothing to initilize
-    }
-
-
-    void simulateOneTimestep()
-    {
-        //Step Equations
-        double output;
-
-        if (mTime < mStartTime)
+    public:
+        static Component *Creator()
         {
-            output = mBaseValue;     //Before ramp
-        }
-        else if (mTime >= mStartTime && mTime < mStopTime)
-        {
-            output = ((mTime - mStartTime) / (mStopTime - mStartTime)) * mAmplitude + mBaseValue ;     //During ramp
-        }
-        else
-        {
-            output = mBaseValue + mAmplitude;     //After ramp
+            return new SignalRamp("Ramp");
         }
 
-        //Write new values to nodes
-        mpOut->writeNode(NodeSignal::VALUE, output);
+        SignalRamp(const std::string name) : ComponentSignal(name)
+        {
+            mTypeName = "SignalRamp";
+            mBaseValue = 0.0;
+            mAmplitude = 1.0;
+            mStartTime = 1.0;
+            mStopTime = 2.0;
 
-    }
-};
+            mpOut = addWritePort("out", "NodeSignal");
+
+            registerParameter("BaseValue", "Base Value", "-", mBaseValue);
+            registerParameter("Amplitude", "Amplitude", "-", mAmplitude);
+            registerParameter("StartTime", "Start Time", "s", mStartTime);
+            registerParameter("StopTime", "Stop Time", "s", mStopTime);
+        }
+
+
+        void initialize()
+        {
+            //Nothing to initilize
+        }
+
+
+        void simulateOneTimestep()
+        {
+            //Step Equations
+            double output;
+
+            if (mTime < mStartTime)
+            {
+                output = mBaseValue;     //Before ramp
+            }
+            else if (mTime >= mStartTime && mTime < mStopTime)
+            {
+                output = ((mTime - mStartTime) / (mStopTime - mStartTime)) * mAmplitude + mBaseValue ;     //During ramp
+            }
+            else
+            {
+                output = mBaseValue + mAmplitude;     //After ramp
+            }
+
+            //Write new values to nodes
+            mpOut->writeNode(NodeSignal::VALUE, output);
+
+        }
+    };
+}
 
 #endif // SIGNALRAMP_HPP_INCLUDED

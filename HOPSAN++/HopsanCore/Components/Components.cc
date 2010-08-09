@@ -21,7 +21,10 @@
 //! @brief Registers the creator function of all built in components
 //! @param [in,out] cfact_ptr A pointer the the component factory in wich to register the components
 //!
-DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr)
+
+using namespace hopsan;
+
+DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfact_ptr)
 {
     //Hydraulic components
     cfact_ptr->RegisterCreatorFunction("HydraulicLaminarOrifice", HydraulicLaminarOrifice::Creator);

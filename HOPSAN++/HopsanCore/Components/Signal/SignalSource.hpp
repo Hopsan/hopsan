@@ -12,46 +12,49 @@
 
 #include "../../ComponentEssentials.h"
 
-//!
-//! @brief
-//! @ingroup SignalComponents
-//!
-class SignalSource : public ComponentSignal
-{
+namespace hopsan {
 
-private:
-    double mValue;
-    Port *mpOut;
-
-public:
-    static Component *Creator()
+    //!
+    //! @brief
+    //! @ingroup SignalComponents
+    //!
+    class SignalSource : public ComponentSignal
     {
-        return new SignalSource("Source");
-    }
 
-    SignalSource(const std::string name) : ComponentSignal(name)
-    {
-        mTypeName = "SignalSource";
-        mValue = 1.0;
+    private:
+        double mValue;
+        Port *mpOut;
 
-        mpOut = addWritePort("out", "NodeSignal");
+    public:
+        static Component *Creator()
+        {
+            return new SignalSource("Source");
+        }
 
-        registerParameter("Value", "Source Value", "-", mValue);
-    }
+        SignalSource(const std::string name) : ComponentSignal(name)
+        {
+            mTypeName = "SignalSource";
+            mValue = 1.0;
+
+            mpOut = addWritePort("out", "NodeSignal");
+
+            registerParameter("Value", "Source Value", "-", mValue);
+        }
 
 
-    void initialize()
-    {
-        //Initialize value to the node
-        mpOut->writeNode(NodeSignal::VALUE, mValue);
-    }
+        void initialize()
+        {
+            //Initialize value to the node
+            mpOut->writeNode(NodeSignal::VALUE, mValue);
+        }
 
 
-    void simulateOneTimestep()
-    {
-        //Write new values to nodes
-        mpOut->writeNode(NodeSignal::VALUE, mValue);
-    }
-};
+        void simulateOneTimestep()
+        {
+            //Write new values to nodes
+            mpOut->writeNode(NodeSignal::VALUE, mValue);
+        }
+    };
+}
 
 #endif // SIGNALSOURCE_HPP_INCLUDED

@@ -33,6 +33,7 @@
 #include <deque>
 #include "../win32dll.h"
 
+namespace hopsan {
 
 class DLLIMPORTEXPORT ValveHysteresis
 {
@@ -40,5 +41,6 @@ public:
     ValveHysteresis();
     double getValue(double xs, double xh, double xd);
 };
+}
 
 #endif // VALVEHYSTERESIS_H_INCLUDED

@@ -13,73 +13,76 @@
 #include "../../ComponentEssentials.h"
 #include "../../ComponentUtilities.h"
 
-//!
-//! @brief
-//! @ingroup MechanicalComponents
-//!
-class MechanicAngularVelocityTransformer : public ComponentQ
-{
+namespace hopsan {
 
-private:
-    double mSignal;
-    Integrator mInt;
-    Port *mpIn, *mpOut;
-
-public:
-    static Component *Creator()
+    //!
+    //! @brief
+    //! @ingroup MechanicalComponents
+    //!
+    class MechanicAngularVelocityTransformer : public ComponentQ
     {
-        return new MechanicAngularVelocityTransformer("AngularVelocityTransformer");
-    }
 
-    MechanicAngularVelocityTransformer(const std::string name) : ComponentQ(name)
-    {
-        mSignal = 0.0;
+    private:
+        double mSignal;
+        Integrator mInt;
+        Port *mpIn, *mpOut;
 
-        //Set member attributes
-        mTypeName = "MechanicAngularVelocityTransformer";
+    public:
+        static Component *Creator()
+        {
+            return new MechanicAngularVelocityTransformer("AngularVelocityTransformer");
+        }
 
-        //Add ports to the component
-        mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
-        mpOut = addPowerPort("out", "NodeMechanicRotational");
+        MechanicAngularVelocityTransformer(const std::string name) : ComponentQ(name)
+        {
+            mSignal = 0.0;
 
-        //Register changable parameters to the HOPSAN++ core
-        registerParameter("omega", "Generated angular velocity", "[rad/s]", mSignal);
-    }
+            //Set member attributes
+            mTypeName = "MechanicAngularVelocityTransformer";
 
+            //Add ports to the component
+            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addPowerPort("out", "NodeMechanicRotational");
 
-    void initialize()
-    {
-        double signal;
-        if(mpIn->isConnected())
-            signal  = mpIn->readNode(NodeSignal::VALUE);
-        else
-            signal = mSignal;
-        mInt.initialize(mTime, mTimestep, signal, 0.0);
-    }
+            //Register changable parameters to the HOPSAN++ core
+            registerParameter("omega", "Generated angular velocity", "[rad/s]", mSignal);
+        }
 
 
-    void simulateOneTimestep()
-    {
-        double signal;
-        //Get variable values from nodes
-        if(mpIn->isConnected())
-            signal  = mpIn->readNode(NodeSignal::VALUE);
-        else
-            signal = mSignal;
-        double c =mpOut->readNode(NodeMechanicRotational::WAVEVARIABLE);
-        double Zc =mpOut->readNode(NodeMechanicRotational::CHARIMP);
+        void initialize()
+        {
+            double signal;
+            if(mpIn->isConnected())
+                signal  = mpIn->readNode(NodeSignal::VALUE);
+            else
+                signal = mSignal;
+            mInt.initialize(mTime, mTimestep, signal, 0.0);
+        }
 
-        //Spring equations
-        double omega = signal;
-        double phi = mInt.value(omega);
-        double T = c + Zc*omega;
 
-        //Write new values to nodes
-        mpOut->writeNode(NodeMechanicRotational::ANGLE, phi);
-        mpOut->writeNode(NodeMechanicRotational::ANGULARVELOCITY, omega);
-        mpOut->writeNode(NodeMechanicRotational::TORQUE, T);
-    }
-};
+        void simulateOneTimestep()
+        {
+            double signal;
+            //Get variable values from nodes
+            if(mpIn->isConnected())
+                signal  = mpIn->readNode(NodeSignal::VALUE);
+            else
+                signal = mSignal;
+            double c =mpOut->readNode(NodeMechanicRotational::WAVEVARIABLE);
+            double Zc =mpOut->readNode(NodeMechanicRotational::CHARIMP);
+
+            //Spring equations
+            double omega = signal;
+            double phi = mInt.value(omega);
+            double T = c + Zc*omega;
+
+            //Write new values to nodes
+            mpOut->writeNode(NodeMechanicRotational::ANGLE, phi);
+            mpOut->writeNode(NodeMechanicRotational::ANGULARVELOCITY, omega);
+            mpOut->writeNode(NodeMechanicRotational::TORQUE, T);
+        }
+    };
+}
 
 #endif // MECHANICANGULARVELOCITYTRANSFORMER_HPP_INCLUDED
 

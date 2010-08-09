@@ -13,6 +13,8 @@
 #include "../HopsanCore.h"
 #include "FirstOrderFilter.h"
 
+using namespace hopsan;
+
 //! @class FirstOrderFilter
 //! @brief The FirstOrderFilter class implements a first order filter using bilinear transform
 //!

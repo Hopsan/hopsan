@@ -13,44 +13,47 @@
 #include <iostream>
 #include "../../ComponentEssentials.h"
 
-//!
-//! @brief
-//! @ingroup MechanicalComponents
-//!
-class MechanicForceSensor : public ComponentSignal
-{
-private:
-    Port *mpP1, *mpOut;
+namespace hopsan {
 
-public:
-    static Component *Creator()
+    //!
+    //! @brief
+    //! @ingroup MechanicalComponents
+    //!
+    class MechanicForceSensor : public ComponentSignal
     {
-        return new MechanicForceSensor("ForceSensor");
-    }
+    private:
+        Port *mpP1, *mpOut;
 
-    MechanicForceSensor(const std::string name) : ComponentSignal(name)
-    {
-        mTypeName = "MechanicForceSensor";
+    public:
+        static Component *Creator()
+        {
+            return new MechanicForceSensor("ForceSensor");
+        }
 
-        mpP1 = addReadPort("P1", "NodeMechanic");
-        mpOut = addWritePort("out", "NodeSignal");
-    }
+        MechanicForceSensor(const std::string name) : ComponentSignal(name)
+        {
+            mTypeName = "MechanicForceSensor";
+
+            mpP1 = addReadPort("P1", "NodeMechanic");
+            mpOut = addWritePort("out", "NodeSignal");
+        }
 
 
-    void initialize()
-    {
-        //Nothing to initilize
-    }
+        void initialize()
+        {
+            //Nothing to initilize
+        }
 
 
-    void simulateOneTimestep()
-    {
-        //Get variable values from nodes
-        double f = mpP1->readNode(NodeMechanic::FORCE);
+        void simulateOneTimestep()
+        {
+            //Get variable values from nodes
+            double f = mpP1->readNode(NodeMechanic::FORCE);
 
-        //Write new values to nodes
-        mpOut->writeNode(NodeSignal::VALUE, f);
-    }
-};
+            //Write new values to nodes
+            mpOut->writeNode(NodeSignal::VALUE, f);
+        }
+    };
+}
 
 #endif // MECHANICFORCESENSOR_HPP_INCLUDED

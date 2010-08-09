@@ -28,73 +28,76 @@
 #include "../../ComponentEssentials.h"
 #include "math.h"
 
-//!
-//! @brief
-//! @ingroup SignalComponents
-//!
-class SignalSoftStep : public ComponentSignal
-{
+namespace hopsan {
 
-private:
-    double mStartTime;
-    double mStopTime;
-    double mBaseValue;
-    double mAmplitude;
-    double mFrequency;
-    double mOffset;
-    Port *mpOut;
-
-public:
-    static Component *Creator()
+    //!
+    //! @brief
+    //! @ingroup SignalComponents
+    //!
+    class SignalSoftStep : public ComponentSignal
     {
-        return new SignalSoftStep("SoftStep");
-    }
 
-    SignalSoftStep(const std::string name) : ComponentSignal(name)
-    {
-        mTypeName = "SignalSoftStep";
-        mStartTime = 1.0;
-        mStopTime = 2.0;
-        mBaseValue = 0.0;
-        mAmplitude = 1.0;
-        mFrequency = pi/(mStopTime-mStartTime);       //omega = 2pi/T, T = (stoptime-starttime)*4
+    private:
+        double mStartTime;
+        double mStopTime;
+        double mBaseValue;
+        double mAmplitude;
+        double mFrequency;
+        double mOffset;
+        Port *mpOut;
 
-        mpOut = addWritePort("out", "NodeSignal");
-
-        registerParameter("StartTime", "Start Time", "s", mStartTime);
-        registerParameter("StopTime", "Stop Time", "s", mStopTime);
-        registerParameter("BaseValue", "Base Value", "-", mBaseValue);
-        registerParameter("Amplitude", "Amplitude", "-", mAmplitude);
-    }
-
-
-    void initialize()
-    {
-        //Nothing to initilize
-    }
-
-
-    void simulateOneTimestep()
-    {
-        //Sinewave Equations
-        double output;
-        mFrequency = pi/(mStopTime-mStartTime);
-        if (mTime < mStartTime)
+    public:
+        static Component *Creator()
         {
-            output = mBaseValue;     //Before start
-        }
-        else if (mTime > mStartTime && mTime < mStopTime)
-        {
-            output = mBaseValue + 0.5*mAmplitude*sin((mTime-mStartTime)*mFrequency - 3.141592653589/2) + mAmplitude*0.5;
-        }
-        else
-        {
-            output = mBaseValue + mAmplitude;
+            return new SignalSoftStep("SoftStep");
         }
 
-        //Write new values to nodes
-        mpOut->writeNode(NodeSignal::VALUE, output);
-    }
-};
+        SignalSoftStep(const std::string name) : ComponentSignal(name)
+        {
+            mTypeName = "SignalSoftStep";
+            mStartTime = 1.0;
+            mStopTime = 2.0;
+            mBaseValue = 0.0;
+            mAmplitude = 1.0;
+            mFrequency = pi/(mStopTime-mStartTime);       //omega = 2pi/T, T = (stoptime-starttime)*4
+
+            mpOut = addWritePort("out", "NodeSignal");
+
+            registerParameter("StartTime", "Start Time", "s", mStartTime);
+            registerParameter("StopTime", "Stop Time", "s", mStopTime);
+            registerParameter("BaseValue", "Base Value", "-", mBaseValue);
+            registerParameter("Amplitude", "Amplitude", "-", mAmplitude);
+        }
+
+
+        void initialize()
+        {
+            //Nothing to initilize
+        }
+
+
+        void simulateOneTimestep()
+        {
+            //Sinewave Equations
+            double output;
+            mFrequency = pi/(mStopTime-mStartTime);
+            if (mTime < mStartTime)
+            {
+                output = mBaseValue;     //Before start
+            }
+            else if (mTime > mStartTime && mTime < mStopTime)
+            {
+                output = mBaseValue + 0.5*mAmplitude*sin((mTime-mStartTime)*mFrequency - 3.141592653589/2) + mAmplitude*0.5;
+            }
+            else
+            {
+                output = mBaseValue + mAmplitude;
+            }
+
+            //Write new values to nodes
+            mpOut->writeNode(NodeSignal::VALUE, output);
+        }
+    };
+}
 
 #endif // SIGNALSOFTSTEP_HPP_INCLUDED

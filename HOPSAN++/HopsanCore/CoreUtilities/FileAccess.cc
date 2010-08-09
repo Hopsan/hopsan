@@ -14,6 +14,7 @@
 #include "../HopsanCore.h"
 
 using namespace std;
+using namespace hopsan;
 
 FileAccess::FileAccess()
 {

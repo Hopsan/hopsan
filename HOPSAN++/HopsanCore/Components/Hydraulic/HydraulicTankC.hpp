@@ -13,58 +13,61 @@
 #include <iostream>
 #include "../../ComponentEssentials.h"
 
-//!
-//! @brief
-//! @ingroup HydraulicComponents
-//!
-class HydraulicTankC : public ComponentC
-{
-private:
-    //double mStartPressure;
-    double mStartFlow;
-    double mZc;
-    double mPressure;
-    Port *mpP1;
+namespace hopsan {
 
-public:
-    static Component *Creator()
+    //!
+    //! @brief
+    //! @ingroup HydraulicComponents
+    //!
+    class HydraulicTankC : public ComponentC
     {
-        return new HydraulicTankC("PressureSource");
-    }
+    private:
+        //double mStartPressure;
+        double mStartFlow;
+        double mZc;
+        double mPressure;
+        Port *mpP1;
 
-    HydraulicTankC(const std::string name) : ComponentC(name)
-    {
-        mTypeName = "HydraulicTankC";
-        mStartFlow      = 0.0;
-        mPressure       = 1.0e5;
-        mZc             = 0.0;
+    public:
+        static Component *Creator()
+        {
+            return new HydraulicTankC("PressureSource");
+        }
 
-        mpP1 = addPowerPort("P1", "NodeHydraulic");
+        HydraulicTankC(const std::string name) : ComponentC(name)
+        {
+            mTypeName = "HydraulicTankC";
+            mStartFlow      = 0.0;
+            mPressure       = 1.0e5;
+            mZc             = 0.0;
 
-        registerParameter("P", "Default pressure", "Pa", mPressure);
-    }
+            mpP1 = addPowerPort("P1", "NodeHydraulic");
 
-
-    void initialize()
-    {
-        //write to nodes
-        mpP1->writeNode(NodeHydraulic::PRESSURE, mPressure);
-        mpP1->writeNode(NodeHydraulic::MASSFLOW, mStartFlow);
-    }
+            registerParameter("P", "Default pressure", "Pa", mPressure);
+        }
 
 
-    void simulateOneTimestep()
-    {
+        void initialize()
+        {
+            //write to nodes
+            mpP1->writeNode(NodeHydraulic::PRESSURE, mPressure);
+            mpP1->writeNode(NodeHydraulic::MASSFLOW, mStartFlow);
+        }
 
-        //Write new values to nodes
-        mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, mPressure);
-        mpP1->writeNode(NodeHydraulic::CHARIMP, mZc);
-    }
 
-    void finalize()
-    {
+        void simulateOneTimestep()
+        {
 
-    }
-};
+            //Write new values to nodes
+            mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, mPressure);
+            mpP1->writeNode(NodeHydraulic::CHARIMP, mZc);
+        }
+
+        void finalize()
+        {
+
+        }
+    };
+}
 
 #endif // HYDRAULICTANKC_HPP_INCLUDED

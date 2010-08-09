@@ -3,6 +3,7 @@
 #include <cassert>
 #include "TransferFunction.h"
 
+using namespace hopsan;
 
 TransferFunction::TransferFunction()
 {

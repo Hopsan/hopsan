@@ -13,44 +13,47 @@
 #include <iostream>
 #include "../../ComponentEssentials.h"
 
-//!
-//! @brief
-//! @ingroup HydraulicComponents
-//!
-class HydraulicPressureSensor : public ComponentSignal
-{
-private:
-    Port *mpP1, * mpOut;
+namespace hopsan {
 
-public:
-    static Component *Creator()
+    //!
+    //! @brief
+    //! @ingroup HydraulicComponents
+    //!
+    class HydraulicPressureSensor : public ComponentSignal
     {
-        return new HydraulicPressureSensor("PressureSensor");
-    }
+    private:
+        Port *mpP1, * mpOut;
 
-    HydraulicPressureSensor(const std::string name) : ComponentSignal(name)
-    {
-        mTypeName = "HydraulicPressureSensor";
+    public:
+        static Component *Creator()
+        {
+            return new HydraulicPressureSensor("PressureSensor");
+        }
 
-        mpP1 = addReadPort("P1", "NodeHydraulic");
-        mpOut = addWritePort("out", "NodeSignal",  Port::NOTREQUIRED);
-    }
+        HydraulicPressureSensor(const std::string name) : ComponentSignal(name)
+        {
+            mTypeName = "HydraulicPressureSensor";
+
+            mpP1 = addReadPort("P1", "NodeHydraulic");
+            mpOut = addWritePort("out", "NodeSignal",  Port::NOTREQUIRED);
+        }
 
 
-    void initialize()
-    {
-        //Nothing to initilize
-    }
+        void initialize()
+        {
+            //Nothing to initilize
+        }
 
 
-    void simulateOneTimestep()
-    {
-        //Get variable values from nodes
-        double p = mpP1->readNode(NodeHydraulic::PRESSURE);
+        void simulateOneTimestep()
+        {
+            //Get variable values from nodes
+            double p = mpP1->readNode(NodeHydraulic::PRESSURE);
 
-        //Write new values to nodes
-        mpOut->writeNode(NodeSignal::VALUE, p);
-    }
-};
+            //Write new values to nodes
+            mpOut->writeNode(NodeSignal::VALUE, p);
+        }
+    };
+}
 
 #endif // HYDRAULICPRESSURESENSOR_HPP_INCLUDED

@@ -14,36 +14,38 @@
 #include <string>
 #include "../win32dll.h"
 
+namespace hopsan {
 
-class DLLIMPORTEXPORT HopsanCoreMessage
-{
-public:
-    enum MessageTypes {INFO, WARNING, ERROR};
-    int type;
-    int debuglevel;
-    std::string message;
-};
+    class DLLIMPORTEXPORT HopsanCoreMessage
+    {
+    public:
+        enum MessageTypes {INFO, WARNING, ERROR};
+        int type;
+        int debuglevel;
+        std::string message;
+    };
 
-class DLLIMPORTEXPORT HopsanCoreMessageHandler
-{
-private:
-    std::queue<HopsanCoreMessage> mMessageQueue;
-    void addMessage(int type, std::string preFix, std::string message, int debuglevel=0);
-    size_t mMaxQueueSize;
+    class DLLIMPORTEXPORT HopsanCoreMessageHandler
+    {
+    private:
+        std::queue<HopsanCoreMessage> mMessageQueue;
+        void addMessage(int type, std::string preFix, std::string message, int debuglevel=0);
+        size_t mMaxQueueSize;
 
-public:
-    HopsanCoreMessageHandler();
-    void addInfoMessage(std::string message, int dbglevel=0);
-    void addWarningMessage(std::string message, int dbglevel=0);
-    void addErrorMessage(std::string message, int dbglevel=0);
+    public:
+        HopsanCoreMessageHandler();
+        void addInfoMessage(std::string message, int dbglevel=0);
+        void addWarningMessage(std::string message, int dbglevel=0);
+        void addErrorMessage(std::string message, int dbglevel=0);
 
-    //const HopsanCoreMessage &peakMessage();
-    HopsanCoreMessage getMessage();
-    size_t nWaitingMessages();
+        //const HopsanCoreMessage &peakMessage();
+        HopsanCoreMessage getMessage();
+        size_t nWaitingMessages();
 
-};
+    };
 
-extern HopsanCoreMessageHandler gCoreMessageHandler;
-DLLIMPORTEXPORT HopsanCoreMessageHandler* getCoreMessageHandlerPtr();
+    extern HopsanCoreMessageHandler gCoreMessageHandler;
+    DLLIMPORTEXPORT HopsanCoreMessageHandler* getCoreMessageHandlerPtr();
+}
 
 #endif // HOPSANCOREMESSAGEHANDLER_H

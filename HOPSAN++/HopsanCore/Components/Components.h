@@ -9,9 +9,6 @@
 #ifndef COMPONENTS_H_INCLUDED
 #define COMPONENTS_H_INCLUDED
 
-#include "../Component.h"
-DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr);
-
 /* Hydraulic Components */
 #include "Hydraulic/HydraulicLaminarOrifice.hpp"
 #include "Hydraulic/HydraulicTurbulentOrifice.hpp"
@@ -82,5 +79,12 @@ DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr);
 #include "Mechanic/MechanicSpeedSensor.hpp"
 #include "Mechanic/MechanicForceSensor.hpp"
 #include "Mechanic/MechanicPositionSensor.hpp"
+
+#include "../Component.h"
+
+namespace hopsan {
+
+    DLLIMPORTEXPORT void register_components(ComponentFactory* cfact_ptr);
+}
 
 #endif // COMPONENTS_H_INCLUDED

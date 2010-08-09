@@ -18,7 +18,10 @@
 //! @brief Registers the creator function of all built in nodes
 //! @param [in,out] nfact_ptr A pointer the the node factory in wich to register the nodes
 //!
-DLLIMPORTEXPORT void register_nodes(NodeFactory* nfact_ptr)
+
+using namespace hopsan;
+
+DLLIMPORTEXPORT void hopsan::register_nodes(NodeFactory* nfact_ptr)
 {
     nfact_ptr->RegisterCreatorFunction("NodeSignal", NodeSignal::CreatorFunction);
     nfact_ptr->RegisterCreatorFunction("NodeHydraulic", NodeHydraulic::CreatorFunction);

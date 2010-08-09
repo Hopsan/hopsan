@@ -43,6 +43,8 @@
 #include <QString>
 #include <qdebug.h>
 
+using namespace hopsan;
+
 class GUIRootSystem
 {
 public:

@@ -12,52 +12,55 @@
 
 #include "../../ComponentEssentials.h"
 
-//!
-//! @brief
-//! @ingroup SignalComponents
-//!
-class SignalGain : public ComponentSignal
-{
+namespace hopsan {
 
-private:
-    double mGain;
-    Port *mpIn, *mpOut;
-
-public:
-    static Component *Creator()
+    //!
+    //! @brief
+    //! @ingroup SignalComponents
+    //!
+    class SignalGain : public ComponentSignal
     {
-        return new SignalGain("Gain");
-    }
 
-    SignalGain(const std::string name) : ComponentSignal(name)
-    {
-        mTypeName = "SignalGain";
-        mGain = 1.0;
+    private:
+        double mGain;
+        Port *mpIn, *mpOut;
 
-        mpIn = addReadPort("in", "NodeSignal");
-        mpOut = addWritePort("out", "NodeSignal");
+    public:
+        static Component *Creator()
+        {
+            return new SignalGain("Gain");
+        }
 
-        registerParameter("Gain", "Gain value", "-", mGain);
-    }
+        SignalGain(const std::string name) : ComponentSignal(name)
+        {
+            mTypeName = "SignalGain";
+            mGain = 1.0;
+
+            mpIn = addReadPort("in", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal");
+
+            registerParameter("Gain", "Gain value", "-", mGain);
+        }
 
 
-    void initialize()
-    {
-        //Nothing to initilize
-    }
+        void initialize()
+        {
+            //Nothing to initilize
+        }
 
 
-    void simulateOneTimestep()
-    {
-        //Get variable values from nodes
-        double u = mpIn->readNode(NodeSignal::VALUE);
+        void simulateOneTimestep()
+        {
+            //Get variable values from nodes
+            double u = mpIn->readNode(NodeSignal::VALUE);
 
-        //Gain equations
-        double y = mGain*u;
+            //Gain equations
+            double y = mGain*u;
 
-        //Write new values to nodes
-        mpOut->writeNode(NodeSignal::VALUE, y);
-    }
-};
+            //Write new values to nodes
+            mpOut->writeNode(NodeSignal::VALUE, y);
+        }
+    };
+}
 
 #endif // SIGNALGAIN_HPP_INCLUDED

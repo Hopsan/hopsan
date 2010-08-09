@@ -12,68 +12,70 @@
 
 #include "../../ComponentEssentials.h"
 
-//!
-//! @brief
-//! @ingroup SignalComponents
-//!
-class SignalSaturation : public ComponentSignal
-{
+namespace hopsan {
 
-private:
-    double mUpperLimit;
-    double mLowerLimit;
-    Port *mpIn, *mpOut;
-
-public:
-    static Component *Creator()
+    //!
+    //! @brief
+    //! @ingroup SignalComponents
+    //!
+    class SignalSaturation : public ComponentSignal
     {
-        return new SignalSaturation("Saturation");
-    }
 
-    SignalSaturation(const std::string name) : ComponentSignal(name)
-    {
-        mTypeName = "SignalSaturation";
-        mUpperLimit = 1.0;
-        mLowerLimit = -1.0;
+    private:
+        double mUpperLimit;
+        double mLowerLimit;
+        Port *mpIn, *mpOut;
 
-        mpIn = addReadPort("in", "NodeSignal");
-        mpOut = addWritePort("out", "NodeSignal");
+    public:
+        static Component *Creator()
+        {
+            return new SignalSaturation("Saturation");
+        }
 
-        registerParameter("UpperLimit", "Upper Limit", "-", mUpperLimit);
-        registerParameter("LowerLimit", "Lower Limit", "-", mLowerLimit);
-    }
+        SignalSaturation(const std::string name) : ComponentSignal(name)
+        {
+            mTypeName = "SignalSaturation";
+            mUpperLimit = 1.0;
+            mLowerLimit = -1.0;
+
+            mpIn = addReadPort("in", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal");
+
+            registerParameter("UpperLimit", "Upper Limit", "-", mUpperLimit);
+            registerParameter("LowerLimit", "Lower Limit", "-", mLowerLimit);
+        }
 
 
-    void initialize()
-    {
-        //Nothing to initilize
-    }
+        void initialize()
+        {
+            //Nothing to initilize
+        }
 
 
-    void simulateOneTimestep()
-    {
-        //Get variable values from nodes
-        double input = mpIn->readNode(NodeSignal::VALUE);
+        void simulateOneTimestep()
+        {
+            //Get variable values from nodes
+            double input = mpIn->readNode(NodeSignal::VALUE);
 
-        //Gain equations
-		double output;
-		if (input > mUpperLimit)
-		{
-		    output = mUpperLimit;
-		}
-		else if (input < mLowerLimit)
-		{
-		    output = mLowerLimit;
-		}
-		else
-		{
-		    output = input;
-		}
+            //Gain equations
+            double output;
+            if (input > mUpperLimit)
+            {
+                output = mUpperLimit;
+            }
+            else if (input < mLowerLimit)
+            {
+                output = mLowerLimit;
+            }
+            else
+            {
+                output = input;
+            }
 
-        //Write new values to nodes
-        mpOut->writeNode(NodeSignal::VALUE, output);
-    }
-};
+            //Write new values to nodes
+            mpOut->writeNode(NodeSignal::VALUE, output);
+        }
+    };
+}
 
 #endif // SIGNALSATURATION_HPP_INCLUDED
-

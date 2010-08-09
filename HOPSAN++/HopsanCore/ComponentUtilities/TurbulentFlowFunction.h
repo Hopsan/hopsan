@@ -15,17 +15,19 @@
 #include <deque>
 #include "../win32dll.h"
 
+namespace hopsan {
 
-class DLLIMPORTEXPORT TurbulentFlowFunction
-{
-public:
-    TurbulentFlowFunction();
-    TurbulentFlowFunction(double ks);
-    double getFlow(double c1, double c2, double Zc1, double Zc2);
-    void setFlowCoefficient(double ks);
-private:
-    double mKs;
-    double mR1,mK1,mK2;
-};
+    class DLLIMPORTEXPORT TurbulentFlowFunction
+    {
+    public:
+        TurbulentFlowFunction();
+        TurbulentFlowFunction(double ks);
+        double getFlow(double c1, double c2, double Zc1, double Zc2);
+        void setFlowCoefficient(double ks);
+    private:
+        double mKs;
+        double mR1,mK1,mK2;
+    };
+}
 
 #endif // TURBULENTFLOW_H_INCLUDED

@@ -3,6 +3,8 @@
 
 #include "../../ComponentEssentials.h"
 
+namespace hopsan {
+
 //!
 //! @brief
 //! @ingroup SignalComponents
@@ -66,5 +68,6 @@ public:
         mpOut->writeNode(NodeSignal::VALUE, output);
     }
 };
+}
 
 #endif // SIGNALDEADZONE_HPP_INCLUDED

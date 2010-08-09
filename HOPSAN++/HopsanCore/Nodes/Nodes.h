@@ -11,97 +11,100 @@
 
 #include "../Node.h"
 
-DLLIMPORTEXPORT void register_nodes(NodeFactory* nfact_ptr);
+namespace hopsan {
 
-//!
-//! @class NodeSignal
-//! @brief A signal node
-//! @ingroup SignalNode
-//!
-class NodeSignal :public Node
-{
-public:
-    enum {VALUE, DATALENGTH};
-    static Node* CreatorFunction() {return new NodeSignal;}
+    DLLIMPORTEXPORT void register_nodes(NodeFactory* nfact_ptr);
 
-private:
-    NodeSignal() : Node(DATALENGTH)
+    //!
+    //! @class NodeSignal
+    //! @brief A signal node
+    //! @ingroup SignalNode
+    //!
+    class NodeSignal :public Node
     {
-        mNodeType = "NodeSignal";
-        setDataNameAndUnit(VALUE, "Value", "-");
-    }
-};
+    public:
+        enum {VALUE, DATALENGTH};
+        static Node* CreatorFunction() {return new NodeSignal;}
+
+    private:
+        NodeSignal() : Node(DATALENGTH)
+        {
+            mNodeType = "NodeSignal";
+            setDataNameAndUnit(VALUE, "Value", "-");
+        }
+    };
 
 
-//!
-//! @class NodeHydraulic
-//! @brief A hydraulic node
-//! @ingroup HydraulicNode
-//!
-class NodeHydraulic :public Node
-{
-public:
-    enum {MASSFLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP, HEATFLOW, DATALENGTH};
-    static Node* CreatorFunction() {return new NodeHydraulic;}
-
-private:
-    NodeHydraulic() : Node(DATALENGTH)
+    //!
+    //! @class NodeHydraulic
+    //! @brief A hydraulic node
+    //! @ingroup HydraulicNode
+    //!
+    class NodeHydraulic :public Node
     {
-        mNodeType = "NodeHydraulic";
-        setDataNameAndUnit(MASSFLOW, "MassFlow", "Kg/m^3");
-        setDataNameAndUnit(PRESSURE, "Pressure", "Pa");
-        setDataNameAndUnit(TEMPERATURE, "Temperature", "K", Node::NOPLOT);
-        setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?", Node::NOPLOT);
-        setDataNameAndUnit(CHARIMP, "CharImp", "?", Node::NOPLOT);
-        setDataNameAndUnit(HEATFLOW, "HeatFlow", "?", Node::NOPLOT);
-    }
-};
+    public:
+        enum {MASSFLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP, HEATFLOW, DATALENGTH};
+        static Node* CreatorFunction() {return new NodeHydraulic;}
 
-//!
-//! @class NodeMechanic
-//! @brief A mechanic node
-//! @ingroup MechanicalNode
-//!
-class NodeMechanic :public Node
-{
-public:
-    enum {VELOCITY, FORCE, POSITION, WAVEVARIABLE, CHARIMP, DATALENGTH};
-    static Node* CreatorFunction() {return new NodeMechanic;}
+    private:
+        NodeHydraulic() : Node(DATALENGTH)
+        {
+            mNodeType = "NodeHydraulic";
+            setDataNameAndUnit(MASSFLOW, "MassFlow", "Kg/m^3");
+            setDataNameAndUnit(PRESSURE, "Pressure", "Pa");
+            setDataNameAndUnit(TEMPERATURE, "Temperature", "K", Node::NOPLOT);
+            setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?", Node::NOPLOT);
+            setDataNameAndUnit(CHARIMP, "CharImp", "?", Node::NOPLOT);
+            setDataNameAndUnit(HEATFLOW, "HeatFlow", "?", Node::NOPLOT);
+        }
+    };
 
-private:
-    NodeMechanic() : Node(DATALENGTH)
+    //!
+    //! @class NodeMechanic
+    //! @brief A mechanic node
+    //! @ingroup MechanicalNode
+    //!
+    class NodeMechanic :public Node
     {
-        mNodeType = "NodeMechanic";
-        setDataNameAndUnit(VELOCITY, "Velocity", "m/s");
-        setDataNameAndUnit(FORCE, "Force", "N");
-        setDataNameAndUnit(POSITION, "Position", "m");
-        setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?", Node::NOPLOT);
-        setDataNameAndUnit(CHARIMP, "CharImp", "?", Node::NOPLOT);
-    }
-};
+    public:
+        enum {VELOCITY, FORCE, POSITION, WAVEVARIABLE, CHARIMP, DATALENGTH};
+        static Node* CreatorFunction() {return new NodeMechanic;}
+
+    private:
+        NodeMechanic() : Node(DATALENGTH)
+        {
+            mNodeType = "NodeMechanic";
+            setDataNameAndUnit(VELOCITY, "Velocity", "m/s");
+            setDataNameAndUnit(FORCE, "Force", "N");
+            setDataNameAndUnit(POSITION, "Position", "m");
+            setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?", Node::NOPLOT);
+            setDataNameAndUnit(CHARIMP, "CharImp", "?", Node::NOPLOT);
+        }
+    };
 
 
-//!
-//! @class NodeMechanicRotational
-//! @brief A rotational mechanic node
-//! @ingroup RotationalMechanicalNode
-//!
-class NodeMechanicRotational :public Node
-{
-public:
-    enum {ANGULARVELOCITY, TORQUE, ANGLE, WAVEVARIABLE, CHARIMP, DATALENGTH};
-    static Node* CreatorFunction() {return new NodeMechanicRotational;}
-
-private:
-    NodeMechanicRotational() : Node(DATALENGTH)
+    //!
+    //! @class NodeMechanicRotational
+    //! @brief A rotational mechanic node
+    //! @ingroup RotationalMechanicalNode
+    //!
+    class NodeMechanicRotational :public Node
     {
-        mNodeType = "NodeMechanicRotational";
-        setDataNameAndUnit(ANGULARVELOCITY, "Angular Velocity", "rad/s");
-        setDataNameAndUnit(TORQUE, "Torque", "Nm");
-        setDataNameAndUnit(ANGLE, "Angle", "rad");
-        setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?", Node::NOPLOT);
-        setDataNameAndUnit(CHARIMP, "CharImp", "?", Node::NOPLOT);
-    }
-};
+    public:
+        enum {ANGULARVELOCITY, TORQUE, ANGLE, WAVEVARIABLE, CHARIMP, DATALENGTH};
+        static Node* CreatorFunction() {return new NodeMechanicRotational;}
+
+    private:
+        NodeMechanicRotational() : Node(DATALENGTH)
+        {
+            mNodeType = "NodeMechanicRotational";
+            setDataNameAndUnit(ANGULARVELOCITY, "Angular Velocity", "rad/s");
+            setDataNameAndUnit(TORQUE, "Torque", "Nm");
+            setDataNameAndUnit(ANGLE, "Angle", "rad");
+            setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?", Node::NOPLOT);
+            setDataNameAndUnit(CHARIMP, "CharImp", "?", Node::NOPLOT);
+        }
+    };
+}
 
 #endif // NODES_H_INCLUDED

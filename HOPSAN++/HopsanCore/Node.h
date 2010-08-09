@@ -13,77 +13,79 @@
 #include "CoreUtilities/ClassFactory.h"
 #include "win32dll.h"
 
+namespace hopsan {
 
-typedef std::string NodeTypeT;
+    typedef std::string NodeTypeT;
 
-class Port; //forward declaration
+    class Port; //forward declaration
 
-class DLLIMPORTEXPORT Node
-{
-    friend class Port;
-    friend class Component;
-    friend class ComponentSystem;
+    class DLLIMPORTEXPORT Node
+    {
+        friend class Port;
+        friend class Component;
+        friend class ComponentSystem;
 
-public:
-    //The user should never bother about Nodes
+    public:
+        //The user should never bother about Nodes
 
-protected:
-    //Protected member functions
-    Node(size_t datalength);
-    NodeTypeT &getNodeType();
+    protected:
+        //Protected member functions
+        Node(size_t datalength);
+        NodeTypeT &getNodeType();
 
-    enum PLOTORNOT {PLOT, NOPLOT};
+        enum PLOTORNOT {PLOT, NOPLOT};
 
-    void setLogSettingsNSamples(size_t nSamples, double start, double stop, double sampletime);
-    void setLogSettingsSkipFactor(double factor, double start, double stop, double sampletime);
-    void setLogSettingsSampleTime(double log_dt, double start, double stop, double sampletime);
-    //void preAllocateLogSpace(const size_t nSlots);
-    void preAllocateLogSpace();
-    void logData(const double time);
-    void saveLogData(std::string filename);
+        void setLogSettingsNSamples(size_t nSamples, double start, double stop, double sampletime);
+        void setLogSettingsSkipFactor(double factor, double start, double stop, double sampletime);
+        void setLogSettingsSampleTime(double log_dt, double start, double stop, double sampletime);
+        //void preAllocateLogSpace(const size_t nSlots);
+        void preAllocateLogSpace();
+        void logData(const double time);
+        void saveLogData(std::string filename);
 
-    void setData(const size_t data_type, double data);
-    double getData(const size_t data_type);
-    double &getDataRef(const size_t data_type);
+        void setData(const size_t data_type, double data);
+        double getData(const size_t data_type);
+        double &getDataRef(const size_t data_type);
 
-    void setDataNameAndUnit(size_t id, std::string name, std::string unit, Node::PLOTORNOT plotBehaviour = Node::PLOT);
-    std::string getDataName(size_t id);
-    std::string getDataUnit(size_t id);
-    int getDataIdFromName(const std::string name);
-    void getDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits);
+        void setDataNameAndUnit(size_t id, std::string name, std::string unit, Node::PLOTORNOT plotBehaviour = Node::PLOT);
+        std::string getDataName(size_t id);
+        std::string getDataUnit(size_t id);
+        int getDataIdFromName(const std::string name);
+        void getDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits);
 
-    //Protected member variables
-    NodeTypeT mNodeType;
-    std::vector<double> mDataVector;
-    std::vector<Port*> mPortPtrs;
+        //Protected member variables
+        NodeTypeT mNodeType;
+        std::vector<double> mDataVector;
+        std::vector<Port*> mPortPtrs;
 
-private:
-    //Private member fuctions
-    void setPort(Port *pPort);
-    void removePort(Port *pPort);
-    bool isConnectedToPort(Port *pPort);
-    void enableLog();
-    void disableLog();
+    private:
+        //Private member fuctions
+        void setPort(Port *pPort);
+        void removePort(Port *pPort);
+        bool isConnectedToPort(Port *pPort);
+        void enableLog();
+        void disableLog();
 
-    //Private member variables
-    std::string mName;
-    std::vector<std::string> mDataNames;
-    std::vector<std::string> mDataUnits;
-    std::vector<Node::PLOTORNOT> mPlotBehaviour;
-    
-    //Log specific
-    std::vector<double> mTimeStorage;
-    std::vector<std::vector<double> > mDataStorage;
-    bool mLogSpaceAllocated;
-    bool mDoLog;
-    double mLogTimeDt;
-    double mLastLogTime;
-    size_t mLogSlots;
-    size_t mLogCtr;
-};
+        //Private member variables
+        std::string mName;
+        std::vector<std::string> mDataNames;
+        std::vector<std::string> mDataUnits;
+        std::vector<Node::PLOTORNOT> mPlotBehaviour;
 
-typedef ClassFactory<NodeTypeT, Node> NodeFactory;
-extern NodeFactory gCoreNodeFactory;
-DLLIMPORTEXPORT NodeFactory* getCoreNodeFactoryPtr();
+        //Log specific
+        std::vector<double> mTimeStorage;
+        std::vector<std::vector<double> > mDataStorage;
+        bool mLogSpaceAllocated;
+        bool mDoLog;
+        double mLogTimeDt;
+        double mLastLogTime;
+        size_t mLogSlots;
+        size_t mLogCtr;
+    };
+
+    typedef ClassFactory<NodeTypeT, Node> NodeFactory;
+    extern NodeFactory gCoreNodeFactory;
+    DLLIMPORTEXPORT NodeFactory* getCoreNodeFactoryPtr();
+}
 
 #endif // NODE_H_INCLUDED

@@ -9,6 +9,7 @@
 #include "HopsanCoreMessageHandler.h"
 
 using namespace std;
+using namespace hopsan;
 
 HopsanCoreMessageHandler::HopsanCoreMessageHandler()
 {
@@ -69,8 +70,8 @@ size_t HopsanCoreMessageHandler::nWaitingMessages()
     return mMessageQueue.size();
 }
 
-HopsanCoreMessageHandler gCoreMessageHandler;
-DLLIMPORTEXPORT HopsanCoreMessageHandler* getCoreMessageHandlerPtr()
+HopsanCoreMessageHandler hopsan::gCoreMessageHandler;
+DLLIMPORTEXPORT HopsanCoreMessageHandler* hopsan::getCoreMessageHandlerPtr()
 {
     return &gCoreMessageHandler;
 }

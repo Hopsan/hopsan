@@ -12,6 +12,8 @@
 #include "../HopsanCore.h"
 #include "Integrator.h"
 
+using namespace hopsan;
+
 Integrator::Integrator()
 {
     mLastTime = 0.0;

@@ -6,76 +6,75 @@
 #include "../../ComponentEssentials.h"
 #include "../../ComponentUtilities.h"
 
-//!
-//! @brief
-//! @ingroup MechanicalComponents
-//!
-class MechanicVelocityTransformer : public ComponentQ
-{
+namespace hopsan {
 
-private:
-    double mSignal;
-    Integrator mInt;
-    Port *mpIn, *mpOut;
-
-public:
-    static Component *Creator()
+    //!
+    //! @brief
+    //! @ingroup MechanicalComponents
+    //!
+    class MechanicVelocityTransformer : public ComponentQ
     {
-        return new MechanicVelocityTransformer("VelocityTransformer");
-    }
 
-    MechanicVelocityTransformer(const std::string name) : ComponentQ(name)
-    {
-        mSignal = 0.0;
+    private:
+        double mSignal;
+        Integrator mInt;
+        Port *mpIn, *mpOut;
 
-        //Set member attributes
-        mTypeName = "MechanicVelocityTransformer";
+    public:
+        static Component *Creator()
+        {
+            return new MechanicVelocityTransformer("VelocityTransformer");
+        }
 
-        //Add ports to the component
-        mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
-        mpOut = addPowerPort("out", "NodeMechanic");
+        MechanicVelocityTransformer(const std::string name) : ComponentQ(name)
+        {
+            mSignal = 0.0;
 
-        //Register changable parameters to the HOPSAN++ core
-        registerParameter("Speed", "Generated speed", "[m/s]", mSignal);
-    }
+            //Set member attributes
+            mTypeName = "MechanicVelocityTransformer";
 
+            //Add ports to the component
+            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addPowerPort("out", "NodeMechanic");
 
-    void initialize()
-    {
-        double signal;
-        if(mpIn->isConnected())
-            signal  = mpIn->readNode(NodeSignal::VALUE);
-        else
-            signal = mSignal;
-        mInt.initialize(mTime, mTimestep, signal, 0.0);
-    }
+            //Register changable parameters to the HOPSAN++ core
+            registerParameter("Speed", "Generated speed", "[m/s]", mSignal);
+        }
 
 
-    void simulateOneTimestep()
-    {
-        double signal;
-        //Get variable values from nodes
-        if(mpIn->isConnected())
-            signal  = mpIn->readNode(NodeSignal::VALUE);
-        else
-            signal = mSignal;
-        double c =mpOut->readNode(NodeMechanic::WAVEVARIABLE);
-        double Zc =mpOut->readNode(NodeMechanic::CHARIMP);
+        void initialize()
+        {
+            double signal;
+            if(mpIn->isConnected())
+                signal  = mpIn->readNode(NodeSignal::VALUE);
+            else
+                signal = mSignal;
+            mInt.initialize(mTime, mTimestep, signal, 0.0);
+        }
 
-        //Spring equations
-        double v = signal;
-        double x = mInt.value(v);
-        double F = c + Zc*v;
 
-        //Write new values to nodes
-        mpOut->writeNode(NodeMechanic::POSITION, x);
-        mpOut->writeNode(NodeMechanic::VELOCITY, v);
-        mpOut->writeNode(NodeMechanic::FORCE, F);
-    }
-};
+        void simulateOneTimestep()
+        {
+            double signal;
+            //Get variable values from nodes
+            if(mpIn->isConnected())
+                signal  = mpIn->readNode(NodeSignal::VALUE);
+            else
+                signal = mSignal;
+            double c =mpOut->readNode(NodeMechanic::WAVEVARIABLE);
+            double Zc =mpOut->readNode(NodeMechanic::CHARIMP);
+
+            //Spring equations
+            double v = signal;
+            double x = mInt.value(v);
+            double F = c + Zc*v;
+
+            //Write new values to nodes
+            mpOut->writeNode(NodeMechanic::POSITION, x);
+            mpOut->writeNode(NodeMechanic::VELOCITY, v);
+            mpOut->writeNode(NodeMechanic::FORCE, F);
+        }
+    };
+}
 
 #endif // MECHANICVELOCITYTRANSFORMER_HPP_INCLUDED
-
-
-
-

@@ -39,6 +39,7 @@
 #include "MessageWidget.h"
 #include "MainWindow.h"
 
+using namespace hopsan;
 
 MessageWidget::MessageWidget(MainWindow *pParent)
     : QTextEdit(pParent)

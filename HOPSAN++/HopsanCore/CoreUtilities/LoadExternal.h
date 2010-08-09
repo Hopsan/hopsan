@@ -14,18 +14,20 @@
 #include "../win32dll.h"
 #include "../Component.h"
 
+namespace hopsan {
 
-//! @brief This class handles loading and unloading of external component and node libs
-class DLLIMPORTEXPORT LoadExternal
-{
-private:
-    ComponentFactory* mpComponentFactory;
-    NodeFactory* mpNodeFactory;
+    //! @brief This class handles loading and unloading of external component and node libs
+    class DLLIMPORTEXPORT LoadExternal
+    {
+    private:
+        ComponentFactory* mpComponentFactory;
+        NodeFactory* mpNodeFactory;
 
-public:
-    LoadExternal();
-    void load(std::string libpath);
-    void setFactory(ComponentFactory* cfactory_ptr, NodeFactory* nfactory_ptr);
-};
+    public:
+        LoadExternal();
+        void load(std::string libpath);
+        void setFactory(ComponentFactory* cfactory_ptr, NodeFactory* nfactory_ptr);
+    };
+}
 
 #endif // LOADEXTERNAL_H

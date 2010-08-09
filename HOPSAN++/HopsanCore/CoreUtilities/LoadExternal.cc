@@ -19,6 +19,7 @@
 #endif
 
 using namespace std;
+using namespace hopsan;
 
 //!LoadExternal Constructor
 LoadExternal::LoadExternal()

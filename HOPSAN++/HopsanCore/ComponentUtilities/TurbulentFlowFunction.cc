@@ -10,6 +10,8 @@
 #include <math.h>
 #include "TurbulentFlowFunction.h"
 
+using namespace hopsan;
+
 TurbulentFlowFunction::TurbulentFlowFunction()
 {
 }

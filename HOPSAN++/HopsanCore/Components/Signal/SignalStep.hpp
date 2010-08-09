@@ -22,62 +22,65 @@
 
 #include "../../ComponentEssentials.h"
 
-//!
-//! @brief
-//! @ingroup SignalComponents
-//!
-class SignalStep : public ComponentSignal
-{
+namespace hopsan {
 
-private:
-    double mBaseValue;
-    double mAmplitude;
-    double mStepTime;
-    Port *mpOut;
-
-public:
-    static Component *Creator()
+    //!
+    //! @brief
+    //! @ingroup SignalComponents
+    //!
+    class SignalStep : public ComponentSignal
     {
-        return new SignalStep("Step");
-    }
 
-    SignalStep(const std::string name) : ComponentSignal(name)
-    {
-        mTypeName = "SignalStep";
-        mBaseValue = 0.0;
-        mAmplitude = 1.0;
-        mStepTime = 1.0;
+    private:
+        double mBaseValue;
+        double mAmplitude;
+        double mStepTime;
+        Port *mpOut;
 
-        mpOut = addWritePort("out", "NodeSignal");
-
-        registerParameter("BaseValue", "Base Value", "-", mBaseValue);
-        registerParameter("Amplitude", "Amplitude", "-", mAmplitude);
-        registerParameter("StepTime", "Step Time", "-", mStepTime);
-    }
-
-
-    void initialize()
-    {
-        mpOut->writeNode(NodeSignal::VALUE, mBaseValue);
-    }
-
-
-    void simulateOneTimestep()
-    {
-        //Step Equations
-        double output;
-        if (mTime <= mStepTime)
+    public:
+        static Component *Creator()
         {
-            output = mBaseValue;     //Before step
-        }
-        else
-        {
-            output = mBaseValue + mAmplitude;     //After step
+            return new SignalStep("Step");
         }
 
-        //Write new values to nodes
-        mpOut->writeNode(NodeSignal::VALUE, output);
-    }
-};
+        SignalStep(const std::string name) : ComponentSignal(name)
+        {
+            mTypeName = "SignalStep";
+            mBaseValue = 0.0;
+            mAmplitude = 1.0;
+            mStepTime = 1.0;
+
+            mpOut = addWritePort("out", "NodeSignal");
+
+            registerParameter("BaseValue", "Base Value", "-", mBaseValue);
+            registerParameter("Amplitude", "Amplitude", "-", mAmplitude);
+            registerParameter("StepTime", "Step Time", "-", mStepTime);
+        }
+
+
+        void initialize()
+        {
+            mpOut->writeNode(NodeSignal::VALUE, mBaseValue);
+        }
+
+
+        void simulateOneTimestep()
+        {
+            //Step Equations
+            double output;
+            if (mTime <= mStepTime)
+            {
+                output = mBaseValue;     //Before step
+            }
+            else
+            {
+                output = mBaseValue + mAmplitude;     //After step
+            }
+
+            //Write new values to nodes
+            mpOut->writeNode(NodeSignal::VALUE, output);
+        }
+    };
+}
 
 #endif // SIGNALSTEP_HPP_INCLUDED
