@@ -38,7 +38,6 @@ void FirstOrderFilter::initialize(double &rTime, double timestep, double num[2],
     mDelayY.setStepDelay(1);
     mDelayU.initialize(rTime, u0);
     mDelayY.initialize(rTime, std::max(std::min(y0, mMax), mMin));
-  http://di.se/
     mTimeStep = timestep;
     mpTime = &rTime;
     mIsInitialized = true;
