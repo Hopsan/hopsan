@@ -251,13 +251,13 @@ void GUIObject::setIcon(bool useIso)
     {
         mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(true) , this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
-        qDebug() << "Setting iconpath to " << mAppearanceData.getFullIconPath(true);
+        //qDebug() << "Setting iconpath to " << mAppearanceData.getFullIconPath(true);
     }
     else
     {
         mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(false), this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
-        qDebug() << "Setting iconpath to " << mAppearanceData.getFullIconPath(false);
+        //qDebug() << "Setting iconpath to " << mAppearanceData.getFullIconPath(false);
     }
 
     //Delete old icon if it exist;

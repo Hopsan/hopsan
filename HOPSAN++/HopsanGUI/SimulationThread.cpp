@@ -79,8 +79,12 @@ SimulationThread::SimulationThread(GUIRootSystem *pGUIRootSystem, double startTi
 //! Implements the task for the thread.
 void SimulationThread::run()
 {
+    QTime simTimer;
+    simTimer.start();
     mpGUIRootSystem->simulate(mStartTime, mFinishTime);
+    qDebug() << "Simulation time: " << (simTimer.elapsed()) << " ms";
     mpGUIRootSystem->finalize(mStartTime, mFinishTime);
+
 
     //exec(); //Is used if one want to run an event loop in this thread.
 }
