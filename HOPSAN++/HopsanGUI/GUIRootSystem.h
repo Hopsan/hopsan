@@ -43,8 +43,6 @@
 #include <QString>
 #include <qdebug.h>
 
-using namespace hopsan;
-
 class GUIRootSystem
 {
 public:
@@ -100,7 +98,7 @@ public:
 
 private:
     //*****Core Interaction*****
-    ComponentSystem *mpCoreComponentSystem;
+    hopsan::ComponentSystem *mpCoreComponentSystem;
     //**************************
 };
 

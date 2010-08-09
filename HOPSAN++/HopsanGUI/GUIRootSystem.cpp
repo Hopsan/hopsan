@@ -41,6 +41,7 @@
 #include <QVector>
 
 using namespace std;
+using namespace hopsan;
 
 GUIRootSystem::GUIRootSystem()
 {
