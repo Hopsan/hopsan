@@ -311,7 +311,7 @@ void MainWindow::createActions()
     zoomOutAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-ZoomOut.png"), tr("&Zoom Out"), this);
     zoomOutAction->setText("Zoom Out");
 
-    centerViewAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-CenterVIew.png"), tr("&Center View"), this);
+    centerViewAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-CenterView.png"), tr("&Center View"), this);
     centerViewAction->setText("Center View");
 
     hideNamesAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-HideNames.png"), tr("&Hide All Component Names"), this);

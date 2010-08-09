@@ -15,9 +15,10 @@ DESTDIR = ../bin/debug
 win32:DEFINES += DOCOREDLLEXPORT
 win32:DEFINES -= UNICODE
 #win32:INCLUDEPATH += c:\tbb30_018oss\include
-win32:INCLUDEPATH += c:\tbb\tbb30_20100406oss\include
+#win32:INCLUDEPATH += c:\tbb\tbb30_20100406oss\include
 #win32:INCLUDEPATH += c:\tbb\tbb22_20090809oss\include
-#win32:INCLUDEPATH += c:\tbb\tbb30_056oss\include
+win32:INCLUDEPATH += c:\tbb\tbb30_056oss\include
+winr32:LIBS += c:\tbb\tbb30_056oss\build\windows_ia32_gcc_mingw_debug
 
 # -------------------------------------------------
 # Project files

@@ -46,7 +46,6 @@ HEADERS += MainWindow.h \
     UndoStack.h \
     GUIUtilities.h \
     GUIRootSystem.h \
-    ../HopsanCore/ComponentUtilities/IntegratorDamping.h \
     GraphicsView.h \
     GraphicsScene.h \
     loadObjects.h

@@ -90,8 +90,8 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mpParentProjectTabWidget = parent;
 
     mStartTime = 0;
-    mTimeStep = 0.01;
-    mStopTime = 5;
+    mTimeStep = 0.001;
+    mStopTime = 10;
 
     MainWindow *pMainWindow = mpParentProjectTabWidget->mpParentMainWindow;
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
