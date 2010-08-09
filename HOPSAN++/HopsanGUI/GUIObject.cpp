@@ -1226,6 +1226,13 @@ QVector<QString> GUISubsystem::getParameterNames()
     return mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getParameterNames(this->getName());
 }
 
+//! @todo Maybe should be somewhere else and be called load subsystem
+void GUISubsystem::load(QString filepath)
+{
+
+
+}
+
 
 int GUISubsystem::type() const
 {

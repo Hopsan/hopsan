@@ -8,6 +8,8 @@
 #include "GUIRootSystem.h"
 #include "GUIConnector.h"
 #include "GUIPort.h"
+#include "MessageWidget.h"
+#include "version.h"
 
 #include "GUIUtilities.h"
 
@@ -135,4 +137,78 @@ void loadParameterValues(QTextStream &rStream, GraphicsView* pGraphicsView, bool
     ParameterLoadData data;
     data.read(rStream);
     loadParameterValues(data, pGraphicsView, noUnDo);
+}
+
+//! @brief Loads the hmf file HEADER data and checks version numbers
+void readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidget)
+{
+    QString inputWord, ver;
+
+    //Read and discard title block
+    rInputStream.readLine();
+    rInputStream.readLine();
+    rInputStream.readLine();
+
+    //Read the three version numbers
+    for (int i=0; i<3; ++i)
+    {
+        rInputStream >> inputWord >> ver;
+
+        if ( inputWord == "HOPSANGUIVERSION")
+        {
+            if(ver > QString(HOPSANGUIVERSION))
+            {
+                pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
+            }
+            else if(ver < QString(HOPSANGUIVERSION))
+            {
+                pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
+            }
+        }
+        else if ( inputWord == "HMFVERSION")
+        {
+            if(ver > QString(HMFVERSION))
+            {
+                pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
+            }
+            else if(ver < QString(HMFVERSION))
+            {
+                pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
+            }
+        }
+        else if ( inputWord == "CAFVERSION") //CAF = Component Appearance File
+        {
+            if(ver > QString(CAFVERSION))
+            {
+                pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
+            }
+            else if(ver < QString(CAFVERSION))
+            {
+                pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
+            }
+        }
+        else
+        {
+            pMessageWidget->printGUIErrorMessage(QString("Error: unknown HEADER command: " + inputWord));
+        }
+    }
+
+    //Remove dashed end line
+    rInputStream.readLine();
+}
+
+void writeHeader(QTextStream &rStream)
+{
+    //Make sure that the readHeader function is synced with changes here
+
+    //Write Header to save file
+    rStream << "--------------------------------------------------------------\n";
+    rStream << "-------------------  HOPSAN NG MODEL FILE  -------------------\n";
+    rStream << "--------------------------------------------------------------\n";
+    rStream << "HOPSANGUIVERSION " << HOPSANGUIVERSION << "\n";
+    rStream << "HMFVERSION " << HMFVERSION << "\n";
+    rStream << "CAFVERSION " << CAFVERSION << "\n";
+    rStream << "--------------------------------------------------------------\n";
+
+    //! @todo wite more header data like time and viewport
 }

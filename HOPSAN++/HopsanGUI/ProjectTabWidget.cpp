@@ -565,57 +565,53 @@ void ProjectTabWidget::loadModel()
 
         //Necessary declarations
     QString inputWord, tempString;
-    //QString inputWord, componentType, componentName, startComponentName, endComponentName, parameterName, startPortName, endPortName, tempString;
-    //int length, heigth;
-//    qreal posX, posY;
-//    int nameTextPos;
-//    qreal rotation;
-//    double parameterValue;
+
+    readHeader(inputStream, mpParentMainWindow->mpMessageWidget);
 
     while ( !inputStream.atEnd() )
     {
-        //Extract first word on line
-        inputStream >> inputWord;
-
         //----------- Create New SubSystem -----------//
 
-        if ( inputWord == "HOPSANGUIVERSION")
-        {
-            inputStream >> tempString;
-            if(tempString > QString(HOPSANGUIVERSION))
-            {
-                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
-            }
-            else if(tempString < QString(HOPSANGUIVERSION))
-            {
-                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
-            }
-        }
-        else if ( inputWord == "HOPSANGUIMODELFILEVERSION")
-        {
-            inputStream >> tempString;
-            if(tempString > QString(HOPSANGUIMODELFILEVERSION))
-            {
-                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
-            }
-            else if(tempString < QString(HOPSANGUIMODELFILEVERSION))
-            {
-                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
-            }
-        }
-        else if ( inputWord == "HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION")
-        {
-            inputStream >> tempString;
-            qDebug() << inputWord << " " << tempString;
-            if(tempString > QString(HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION))
-            {
-                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
-            }
-            else if(tempString < QString(HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION))
-            {
-                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
-            }
-        }
+//        if ( inputWord == "HOPSANGUIVERSION")
+//        {
+//            inputStream >> tempString;
+//            if(tempString > QString(HOPSANGUIVERSION))
+//            {
+//                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
+//            }
+//            else if(tempString < QString(HOPSANGUIVERSION))
+//            {
+//                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
+//            }
+//        }
+//        else if ( inputWord == "HOPSANGUIMODELFILEVERSION")
+//        {
+//            inputStream >> tempString;
+//            if(tempString > QString(HOPSANGUIMODELFILEVERSION))
+//            {
+//                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
+//            }
+//            else if(tempString < QString(HOPSANGUIMODELFILEVERSION))
+//            {
+//                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
+//            }
+//        }
+//        else if ( inputWord == "HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION")
+//        {
+//            inputStream >> tempString;
+//            qDebug() << inputWord << " " << tempString;
+//            if(tempString > QString(HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION))
+//            {
+//                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
+//            }
+//            else if(tempString < QString(HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION))
+//            {
+//                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
+//            }
+//        }
+
+        //Extract first word on line
+        inputStream >> inputWord;
 
         //! @todo Why have 3 different rows for simulation time variables why not SIMULATIONTIME start, ts, stop
         if ( inputWord == "STARTTIME" )
@@ -654,84 +650,18 @@ void ProjectTabWidget::loadModel()
         if ( inputWord == "COMPONENT" )
         {
             loadGUIObject(inputStream, mpParentMainWindow->mpLibrary, pCurrentTab->mpGraphicsView);
-//            componentType = readName(inputStream);
-//            componentName = readName(inputStream);  //Now read the name, assume that the name is contained within quotes signs, "name"
-//            inputStream >> posX;
-//            inputStream >> posY;
-//            inputStream >> rotation;
-//            inputStream >> nameTextPos;
-
-//            //! @todo This component need to be loaded in the library, or maybe we should auto load it if possible if missing (probably dfficult)
-//            //qDebug() << "componentType: " << componentType;
-//            AppearanceData appearanceData = *mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
-//            appearanceData.setName(componentName);
-//            pCurrentTab->mpGraphicsView->addGUIObject(appearanceData, QPoint(posX, posY), 0);
-//            pCurrentTab->mpGraphicsView->getGUIObject(componentName)->setNameTextPos(nameTextPos);
-//            while(pCurrentTab->mpGraphicsView->getGUIObject(componentName)->rotation() != rotation)
-//            {
-//                pCurrentTab->mpGraphicsView->getGUIObject(componentName)->rotate();
-//            }
         }
 
 
         if ( inputWord == "PARAMETER" )
         {
             loadParameterValues(inputStream, pCurrentTab->mpGraphicsView);
-//            componentName = readName(inputStream);
-//            inputStream >> parameterName;
-//            inputStream >> parameterValue;
-
-//            //qDebug() << "Parameter: " << componentName << " " << parameterName << " " << parameterValue;
-//            pCurrentTab->mpGraphicsView->mGUIObjectMap.find(componentName).value()->setParameterValue(parameterName, parameterValue);
         }
 
 
         if ( inputWord == "CONNECT" )
         {
             loadConnector(inputStream, pCurrentTab->mpGraphicsView, &(pCurrentTab->mGUIRootSystem));
-
-//            GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
-//            startComponentName = readName(inputStream);
-//            startPortName = readName(inputStream);
-//            endComponentName = readName(inputStream);
-//            endPortName = readName(inputStream);
-//            GUIPort *startPort = pCurrentView->getGUIObject(startComponentName)->getPort(startPortName);
-//            GUIPort *endPort = pCurrentView->getGUIObject(endComponentName)->getPort(endPortName);
-
-//            bool success = pCurrentTab->mGUIRootSystem.connect(startComponentName, startPortName, endComponentName, endPortName);
-//            if (!success)
-//            {
-//                qDebug() << "Unsuccessful connection try" << endl;
-//            }
-//            else
-//            {
-//                QVector<QPointF> tempPointVector;
-//                qreal tempX, tempY;
-
-//                QString restOfLineString = inputStream.readLine();
-//                QTextStream restOfLineStream(&restOfLineString);
-//                while( !restOfLineStream.atEnd() )
-//                {
-//                    restOfLineStream >> tempX;
-//                    restOfLineStream >> tempY;
-//                    tempPointVector.push_back(QPointF(tempX, tempY));
-//                }
-
-//                //! @todo: Store useIso bool in model file and pick the correct line styles when loading
-//                GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), pCurrentTab->useIsoGraphics);
-//                GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, pConnApp, pCurrentView);
-
-//                pCurrentView->scene()->addItem(pTempConnector);
-
-//                //Hide connected ports
-//                startPort->hide();
-//                endPort->hide();
-
-//                connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-//                connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-
-//                pCurrentView->mConnectorVector.append(pTempConnector);
-//            }
         }
     }
     //Deselect all components
@@ -781,13 +711,14 @@ void ProjectTabWidget::saveModel(bool saveAs)
     }
     QTextStream modelFile(&file);  //Create a QTextStream object to stream the content of file
 
-    modelFile << "--------------------------------------------------------------\n";
-    modelFile << "-------------------  HOPSAN NG MODEL FILE  -------------------\n";
-    modelFile << "--------------------------------------------------------------\n";
-    modelFile << "HOPSANGUIVERSION " << HOPSANGUIVERSION << "\n";
-    modelFile << "HOPSANGUIMODELFILEVERSION " << HOPSANGUIMODELFILEVERSION << "\n";
-    modelFile << "HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION " << HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION << "\n";
-    modelFile << "--------------------------------------------------------------\n";
+//    modelFile << "--------------------------------------------------------------\n";
+//    modelFile << "-------------------  HOPSAN NG MODEL FILE  -------------------\n";
+//    modelFile << "--------------------------------------------------------------\n";
+//    modelFile << "HOPSANGUIVERSION " << HOPSANGUIVERSION << "\n";
+//    modelFile << "HOPSANGUIMODELFILEVERSION " << HOPSANGUIMODELFILEVERSION << "\n";
+//    modelFile << "HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION " << HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION << "\n";
+//    modelFile << "--------------------------------------------------------------\n";
+    writeHeader(modelFile);
 
     modelFile << "STARTTIME " << mpParentMainWindow->getStartTimeLabel() << "\n";
     modelFile << "TIMESTEP " << mpParentMainWindow->getTimeStepLabel() << "\n";

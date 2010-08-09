@@ -9,6 +9,7 @@ class GraphicsView;
 class LibraryWidget;
 class GUIRootSystem;
 class GUIObject;
+class MessageWidget;
 
 class ObjectLoadData
 {
@@ -47,5 +48,8 @@ void loadParameterValues(QTextStream &rStream, GraphicsView* pGraphicsView, bool
 GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, GraphicsView* pGraphicsView, bool noUnDo=false);
 void loadConnector(const ConnectorLoadData &rData, GraphicsView* pGraphicsView, GUIRootSystem* pRootSystem, bool noUnDo=false);
 void loadParameterValues(const ParameterLoadData &rData, GraphicsView* pGraphicsView, bool noUnDo=false);
+
+void readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidget);
+void writeHeader(QTextStream &rStream);
 
 #endif // LOADOBJECTS_H

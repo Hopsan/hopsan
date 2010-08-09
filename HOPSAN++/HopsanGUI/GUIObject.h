@@ -234,6 +234,7 @@ public:
     void setName(QString newName, bool doOnlyCoreRename);
     void setTypeCQS(QString typestring);
     QString getTypeCQS();
+    void load(QString filepath);
 
     QVector<QString> getParameterNames();
 
