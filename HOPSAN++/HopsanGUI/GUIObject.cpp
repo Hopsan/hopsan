@@ -209,8 +209,17 @@ void GUIObject::fixTextPosition(QPointF pos)
 
 void GUIObject::addConnector(GUIConnector *item)
 {
+    mpGUIConnectorPtrs.append(item);
     connect(this, SIGNAL(componentMoved()), item, SLOT(drawConnector()));
 }
+
+
+void GUIObject::removeConnector(GUIConnector *item)
+{
+    mpGUIConnectorPtrs.removeOne(item);
+    disconnect(this, SIGNAL(componentMoved()), item, SLOT(drawConnector()));
+}
+
 
 //! This function refreshes the displayed name (HopsanCore may have changed it)
 void GUIObject::refreshDisplayName()
@@ -1584,7 +1593,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
         mpGroupScene->addItem(mGUIConnList.at(i));
     }
 
-    mpGroupScene->setSceneRect(0,0,0,0); //Dirty fix to re-calculate the correct scenerect
+    mpGroupScene->setSceneRect(0,0,0,0); //Dirty(?) fix to re-calculate the correct scenerect
     QPointF sceneCenterPointF = mpGroupScene->sceneRect().center();
 
     //Draw a cross in the center of the scene (just for debugging)
@@ -1705,7 +1714,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
     //Scale up the ports and so on
     //! @todo Add a method to this->mpSelectionBox so the lines could be scaled
     QList<GUIPort*>::iterator it;
-    for (it = mPortListPtrs .begin(); it != mPortListPtrs.end(); ++it)
+    for (it = mPortListPtrs.begin(); it != mPortListPtrs.end(); ++it)
     {
         (*it)->setTransformOriginPoint((*it)->boundingRect().center());
         (*it)->setScale(1.0/scale);

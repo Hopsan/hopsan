@@ -184,6 +184,9 @@ GUIConnector::~GUIConnector()
     //mpLines.clear();
     //! @todo more cleanup
     delete mpGUIConnectorAppearance;
+
+    this->mpStartPort->getGuiObject()->removeConnector(this);
+    this->mpEndPort->getGuiObject()->removeConnector(this);
 }
 
 

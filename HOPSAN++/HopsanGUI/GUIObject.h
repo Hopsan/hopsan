@@ -66,6 +66,7 @@ public:
     ~GUIObject();
 
     void addConnector(GUIConnector *item);
+    void removeConnector(GUIConnector *item);
 
     virtual QString getName();
     void refreshDisplayName();
@@ -127,6 +128,8 @@ public slots:
 
 
 protected:
+    QList<GUIConnector*> mpGUIConnectorPtrs;
+
     void groupComponents(QList<QGraphicsItem*> compList);
     QGraphicsSvgItem *mpIcon;
 
