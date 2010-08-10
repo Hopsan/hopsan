@@ -890,6 +890,10 @@ void ProjectTabWidget::disableUndo()
 //! Enables or disables the undo buttons depending on whether or not undo is disabled in current tab
 void ProjectTabWidget::updateUndoStatus()
 {
+    if(this->count() == 0)
+    {
+        return;
+    }
     if(getCurrentTab()->mpGraphicsView->mUndoDisabled)
     {
         mpParentMainWindow->undoAction->setDisabled(true);
