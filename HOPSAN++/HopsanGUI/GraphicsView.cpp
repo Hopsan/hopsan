@@ -297,7 +297,7 @@ GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint posi
         //Deselect all other comonents
     this->deSelectAll();
     mpTempGUIObject->setSelected(startSelected);
-    //this->setFocus(Qt::OtherFocusReason);
+    this->setFocus();
 
     if(!doNotRegisterUndo)
     {

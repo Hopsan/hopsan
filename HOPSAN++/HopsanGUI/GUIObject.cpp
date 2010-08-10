@@ -826,6 +826,7 @@ GUIObjectSelectionBox::GUIObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal
 
     this->mActivePen = activePen;
     this->mHoverPen = hoverPen;
+    this->setPassive();
 
     QGraphicsLineItem *tempLine = new QGraphicsLineItem(x1,y1+b,x1,y1,this);
     mLines.push_back(tempLine);

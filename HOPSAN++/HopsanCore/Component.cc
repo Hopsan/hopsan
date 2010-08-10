@@ -16,10 +16,12 @@
 #include "Component.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 
-//#define USETBB            //Uncomment this will enable TBB package. Only use if you have it installed.
+#define USETBB            //Uncomment this will enable TBB package. Only use if you have it installed.
 #ifdef USETBB
 #include "tbb.h"
 #include "tick_count.h"
+#include "blocked_range.h"
+#include "parallel_for.h"
 #endif
 
 using namespace std;
@@ -1981,6 +1983,27 @@ void ComponentSystem::initialize(const double startT, const double stopT)
 
 
 #ifdef USETBB
+class simulateParallelSignal
+{
+    std::vector<Component*> componentSignalvector;
+public:
+    simulateParallelSignal(std::vector<Component*> inputVector, double startTime, double stopTime) : componentSignalvector(inputVector)
+    {
+        mStartTime = startTime;
+        mStopTime = stopTime;
+    }
+    void operator() (const tbb::blocked_range<size_t> &r) const
+    {
+        for(size_t i=r.begin(); i!=r.end(); i++)
+        {
+            componentSignalvector[i]->simulate(mStartTime, mStopTime);
+        }
+    }
+private:
+    double mStartTime;
+    double mStopTime;
+};
+
 class taskQ
 {
     vector<Component*> vectorQ;
@@ -2041,137 +2064,145 @@ void ComponentSystem::simulate(const double startT, const double stopT)
 
     logAllNodes(mTime);
 
-    //Signal components
-    for (size_t s=0; s < mSubComponentStorage.mComponentSignalptrs.size(); ++s)
-    {
-        mSubComponentStorage.mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);
-    }
+//    //Signal components
+//    for (size_t s=0; s < mSubComponentStorage.mComponentSignalptrs.size(); ++s)
+//    {
+//        mSubComponentStorage.mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);
+//    }
 
-    tbb::tick_count mother_of_all_starts = tbb::tick_count::now();
+//    tbb::tick_count mother_of_all_starts = tbb::tick_count::now();
 
-        //Time measurement
-    //static tbb::affinity_partitioner Affinity3;
-    //static tbb::affinity_partitioner Affinity4;
+//        //Time measurement
+//    //static tbb::affinity_partitioner Affinity3;
+//    //static tbb::affinity_partitioner Affinity4;
 
-    for(size_t c=0; c<mSubComponentStorage.mComponentCptrs.size(); ++c)
-    {
-        tbb::tick_count comp_start = tbb::tick_count::now();
-        mSubComponentStorage.mComponentCptrs[c]->simulate(mTime, mTime+mTimestep);
-        tbb::tick_count comp_end = tbb::tick_count::now();
-        mSubComponentStorage.mComponentCptrs[c]->setMeasuredTime(double((comp_end-comp_start).seconds()));
-    }
-    for(size_t q=0; q<mSubComponentStorage.mComponentQptrs.size(); ++q)
-    {
-        tbb::tick_count comp_start = tbb::tick_count::now();
-        mSubComponentStorage.mComponentQptrs[q]->simulate(mTime, mTime+mTimestep);
-        tbb::tick_count comp_end = tbb::tick_count::now();
-        mSubComponentStorage.mComponentQptrs[q]->setMeasuredTime(double((comp_end-comp_start).seconds()));
-    }
+//    for(size_t c=0; c<mSubComponentStorage.mComponentCptrs.size(); ++c)
+//    {
+//        tbb::tick_count comp_start = tbb::tick_count::now();
+//        mSubComponentStorage.mComponentCptrs[c]->simulate(mTime, mTime+mTimestep);
+//        tbb::tick_count comp_end = tbb::tick_count::now();
+//        mSubComponentStorage.mComponentCptrs[c]->setMeasuredTime(double((comp_end-comp_start).seconds()));
+//    }
+//    for(size_t q=0; q<mSubComponentStorage.mComponentQptrs.size(); ++q)
+//    {
+//        tbb::tick_count comp_start = tbb::tick_count::now();
+//        mSubComponentStorage.mComponentQptrs[q]->simulate(mTime, mTime+mTimestep);
+//        tbb::tick_count comp_end = tbb::tick_count::now();
+//        mSubComponentStorage.mComponentQptrs[q]->setMeasuredTime(double((comp_end-comp_start).seconds()));
+//    }
 
-    mTime += mTimestep;
+//    mTime += mTimestep;
 
-        //Bubblesort
-    size_t i, j;
-    bool flag = true;    // set flag to 1 to start first pass
-    Component *temp;             // holding variable
-    for(i = 1; (i < mSubComponentStorage.mComponentCptrs.size()) && flag; ++i)
-    {
-        flag = false;
-        for (j=0; j < (mSubComponentStorage.mComponentCptrs.size()-1); ++j)
-        {
-            if (mSubComponentStorage.mComponentCptrs[j+1]->getMeasuredTime() > mSubComponentStorage.mComponentCptrs[j]->getMeasuredTime())      // ascending order simply changes to <
-            {
-                temp = mSubComponentStorage.mComponentCptrs[j];             // swap elements
-                mSubComponentStorage.mComponentCptrs[j] = mSubComponentStorage.mComponentCptrs[j+1];
-                mSubComponentStorage.mComponentCptrs[j+1] = temp;
-                flag = true;               // indicates that a swap occurred.
-            }
-        }
-    }
+//        //Bubblesort
+//    size_t i, j;
+//    bool flag = true;    // set flag to 1 to start first pass
+//    Component *temp;             // holding variable
+//    for(i = 1; (i < mSubComponentStorage.mComponentCptrs.size()) && flag; ++i)
+//    {
+//        flag = false;
+//        for (j=0; j < (mSubComponentStorage.mComponentCptrs.size()-1); ++j)
+//        {
+//            if (mSubComponentStorage.mComponentCptrs[j+1]->getMeasuredTime() > mSubComponentStorage.mComponentCptrs[j]->getMeasuredTime())      // ascending order simply changes to <
+//            {
+//                temp = mSubComponentStorage.mComponentCptrs[j];             // swap elements
+//                mSubComponentStorage.mComponentCptrs[j] = mSubComponentStorage.mComponentCptrs[j+1];
+//                mSubComponentStorage.mComponentCptrs[j+1] = temp;
+//                flag = true;               // indicates that a swap occurred.
+//            }
+//        }
+//    }
 
-    flag = true;
-    Component *tempQ;
-    for(i = 1; (i < mSubComponentStorage.mComponentQptrs.size()) && flag; ++i)
-    {
-        flag = false;
-        for (j=0; j < (mSubComponentStorage.mComponentQptrs.size()-1); ++j)
-        {
-            if (mSubComponentStorage.mComponentQptrs[j+1]->getMeasuredTime() > mSubComponentStorage.mComponentQptrs[j]->getMeasuredTime())      // ascending order simply changes to <
-            {
-                tempQ = mSubComponentStorage.mComponentQptrs[j];             // swap elements
-                mSubComponentStorage.mComponentQptrs[j] = mSubComponentStorage.mComponentQptrs[j+1];
-                mSubComponentStorage.mComponentQptrs[j+1] = tempQ;
-                flag = true;               // indicates that a swap occurred.
-            }
-        }
-    }
+//    flag = true;
+//    Component *tempQ;
+//    for(i = 1; (i < mSubComponentStorage.mComponentQptrs.size()) && flag; ++i)
+//    {
+//        flag = false;
+//        for (j=0; j < (mSubComponentStorage.mComponentQptrs.size()-1); ++j)
+//        {
+//            if (mSubComponentStorage.mComponentQptrs[j+1]->getMeasuredTime() > mSubComponentStorage.mComponentQptrs[j]->getMeasuredTime())      // ascending order simply changes to <
+//            {
+//                tempQ = mSubComponentStorage.mComponentQptrs[j];             // swap elements
+//                mSubComponentStorage.mComponentQptrs[j] = mSubComponentStorage.mComponentQptrs[j+1];
+//                mSubComponentStorage.mComponentQptrs[j+1] = tempQ;
+//                flag = true;               // indicates that a swap occurred.
+//            }
+//        }
+//    }
+//    vector<Component*> cPtrs1;
+//    vector<Component*> cPtrs2;
+//    vector<Component*> qPtrs1;
+//    vector<Component*> qPtrs2;
+//    for (size_t j=0; j < mSubComponentStorage.mComponentCptrs.size(); ++j)
+//    {
+//        if(j % 2 == 0)
+//            cPtrs1.push_back(mSubComponentStorage.mComponentCptrs[j]);
+//        else
+//            cPtrs2.push_back(mSubComponentStorage.mComponentCptrs[j]);
+//    }
+//    vector< vector<Component*> > splitCVector;
+//    splitCVector.push_back(cPtrs1);
+//    splitCVector.push_back(cPtrs2);
+//    for (size_t j=0; j < mSubComponentStorage.mComponentQptrs.size(); ++j)
+//    {
+//        if(j % 2 == 0)
+//            qPtrs1.push_back(mSubComponentStorage.mComponentQptrs[j]);
+//        else
+//            qPtrs2.push_back(mSubComponentStorage.mComponentQptrs[j]);
+//    }
+//    vector< vector<Component*> > splitQVector;
+//    splitQVector.push_back(qPtrs1);
+//    splitQVector.push_back(qPtrs2);
+
     vector<Component*> cPtrs1;
     vector<Component*> cPtrs2;
     vector<Component*> qPtrs1;
     vector<Component*> qPtrs2;
-    for (size_t j=0; j < mSubComponentStorage.mComponentCptrs.size(); ++j)
+    for(int i=0; i!=mSubComponentStorage.mComponentCptrs.size()/2; ++i)
     {
-        if(j % 2 == 0)
-            cPtrs1.push_back(mSubComponentStorage.mComponentCptrs[j]);
-        else
-            cPtrs2.push_back(mSubComponentStorage.mComponentCptrs[j]);
+        cPtrs1.push_back(mSubComponentStorage.mComponentCptrs[i]);
+    }
+    for(int i=mSubComponentStorage.mComponentCptrs.size()/2+1; i!=mSubComponentStorage.mComponentCptrs.size(); ++i)
+    {
+        cPtrs2.push_back(mSubComponentStorage.mComponentCptrs[i]);
+    }
+    for(int i=0; i!=mSubComponentStorage.mComponentQptrs.size()/2; ++i)
+    {
+        qPtrs1.push_back(mSubComponentStorage.mComponentQptrs[i]);
+    }
+    for(int i=mSubComponentStorage.mComponentQptrs.size()/2+1; i!=mSubComponentStorage.mComponentQptrs.size(); ++i)
+    {
+        qPtrs2.push_back(mSubComponentStorage.mComponentQptrs[i]);
     }
     vector< vector<Component*> > splitCVector;
+    vector< vector<Component*> > splitQVector;
     splitCVector.push_back(cPtrs1);
     splitCVector.push_back(cPtrs2);
-    for (size_t j=0; j < mSubComponentStorage.mComponentQptrs.size(); ++j)
-    {
-        if(j % 2 == 0)
-            qPtrs1.push_back(mSubComponentStorage.mComponentQptrs[j]);
-        else
-            qPtrs2.push_back(mSubComponentStorage.mComponentQptrs[j]);
-    }
-    vector< vector<Component*> > splitQVector;
     splitQVector.push_back(qPtrs1);
     splitQVector.push_back(qPtrs2);
 
-
-    double log_time = 0;
-    double sim_time = 0;
     tbb::task_group *c;
     tbb::task_group *q;
     c = new tbb::task_group;
     q = new tbb::task_group;
+    //static tbb::affinity_partitioner Affinity1;
     while ((mTime < stopTsafe) && (!mStop))
     {
-        tbb::tick_count log_start = tbb::tick_count::now();
         logAllNodes(mTime);
-        tbb::tick_count log_end = tbb::tick_count::now();
-        log_time = log_time + (log_end - log_start).seconds();
 
-        tbb::tick_count sim_start = tbb::tick_count::now();
         for (size_t s=0; s < mSubComponentStorage.mComponentSignalptrs.size(); ++s)
         {
             mSubComponentStorage.mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);
         }
+        //parallel_for( tbb::blocked_range<size_t>(0,mSubComponentStorage.mComponentSignalptrs.size(),1), simulateParallelSignal(mSubComponentStorage.mComponentSignalptrs, mTime, mTime+mTimestep), Affinity1 );
+        //It appears to run slower when parallelizing signal components, so we probably shouldn't do it
 
         c->run(taskC(splitCVector[0], mTime, mTime+mTimestep));
         c->run_and_wait(taskC(splitCVector[1], mTime, mTime+mTimestep));
         q->run(taskQ(splitQVector[0], mTime, mTime+mTimestep));
         q->run_and_wait(taskQ(splitQVector[1], mTime, mTime+mTimestep));
 
-        tbb::tick_count sim_end = tbb::tick_count::now();
-        sim_time = sim_time + (sim_end - sim_start).seconds();
-
-
         mTime += mTimestep;
     }
-    std::string s;
-    std::stringstream out;
-    out << log_time;
-    s = out.str();
-    gCoreMessageHandler.addInfoMessage(s);
-
-    std::string s2;
-    std::stringstream out2;
-    out2 << sim_time;
-    s2 = out2.str();
-    gCoreMessageHandler.addInfoMessage(s2);
 }
 
 #else
