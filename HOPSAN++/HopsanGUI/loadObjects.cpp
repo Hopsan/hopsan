@@ -26,7 +26,6 @@ void HeaderLoadData::read(QTextStream &rStream)
     for (int i=0; i<3; ++i)
     {
         rStream >> inputWord;
-        qDebug() << inputWord;
 
         if ( inputWord == "HOPSANGUIVERSION")
         {
