@@ -171,6 +171,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     //connect(mpSimulationSetupWidget->mpSimulateButton, SIGNAL(released()), mpProjectTabs, SLOT(simulateCurrent()));
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateToolBarsToNewTab()));
+    connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(refreshUndoWidgetList()));
+
 }
 
 
@@ -548,6 +550,12 @@ void MainWindow::updateToolBarsToNewTab()
     }
 }
 
+
+//! Slot that calls refresh list function in undo widget. Used because undo widget cannot have slots.
+void MainWindow::refreshUndoWidgetList()
+{
+    mpUndoWidget->refreshList();
+}
 
 //! Loads global settings from a text file
 void MainWindow::loadSettings()

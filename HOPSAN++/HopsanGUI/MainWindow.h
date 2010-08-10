@@ -166,6 +166,7 @@ public:
 public slots:
     void show();
     void updateToolBarsToNewTab();
+    void refreshUndoWidgetList();
     void fixSimulationParameterValues();
     void saveSettings();
 
