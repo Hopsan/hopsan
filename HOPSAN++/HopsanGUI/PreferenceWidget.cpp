@@ -71,6 +71,11 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
     buttonBox->addButton(cancelButton, QDialogButtonBox::ActionRole);
     buttonBox->addButton(okButton, QDialogButtonBox::ActionRole);
 
+    QLabel *userIconLabel = new QLabel("Icon Path:");
+    QLabel *isoIconLabel = new QLabel("ISO Icon Path:");
+    userIconPath = new QLineEdit();
+    isoIconPath = new QLineEdit();
+
     connect(cancelButton, SIGNAL(pressed()), this, SLOT(reject()));
     connect(okButton, SIGNAL(pressed()), this, SLOT(updateValues()));
     //connect(isoCheckBox, SIGNAL(pressed(bool)), this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView, SLOT(setIsoGraphics(bool)));
@@ -79,9 +84,12 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
     QGridLayout *mainLayout = new QGridLayout;
     mainLayout->setSizeConstraint(QLayout::SetFixedSize);
     //mainLayout->addLayout(topLeftLayout, 0, 0);
-    mainLayout->addWidget(isoCheckBox, 0, 0);
-    mainLayout->addWidget(buttonBox, 1, 0);
-    //mainLayout->addWidget(extension, 1, 0, 1, 2);
+    mainLayout->addWidget(userIconPath, 0, 1);
+    mainLayout->addWidget(isoIconPath, 1, 1);
+    mainLayout->addWidget(userIconLabel, 0, 0);
+    mainLayout->addWidget(isoIconLabel, 1, 0);
+    mainLayout->addWidget(isoCheckBox, 2, 0);
+    mainLayout->addWidget(buttonBox, 3, 0, 2, 0, Qt::AlignHCenter);
     setLayout(mainLayout);
 }
 
@@ -96,6 +104,8 @@ void PreferenceWidget::show()
 void PreferenceWidget::updateValues()
 {
     this->mpParentMainWindow->mpProjectTabs->setIsoGraphics(isoCheckBox->isChecked());
+    this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->setUserIconPath(userIconPath->text());
+    this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->setIsoIconPath(isoIconPath->text());
     //this->isoBool = this->isoCheckBox->isChecked();
     //qDebug() << isoBool;
     this->accept();

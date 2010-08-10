@@ -81,6 +81,7 @@ public slots:
     void loadModel();
     void saveModel(bool saveAs);
     void setIsoGraphics(bool value);
+
     void resetZoom();
     void zoomIn();
     void zoomOut();
@@ -117,6 +118,10 @@ public:
     double getStartTime();
     double getTimeStep();
     double getStopTime();
+    QString getIsoIconPath();
+    QString getUserIconPath();
+    void setIsoIconPath(QString path);
+    void setUserIconPath(QString path);
 
 public slots:
     void hasChanged();
@@ -131,6 +136,8 @@ private:
     double mStartTime;
     double mStopTime;
     double mTimeStep;
+    QString mUserIconPath;
+    QString mIsoIconPath;
 };
 
 #endif // PROJECTTABWIDGET_H

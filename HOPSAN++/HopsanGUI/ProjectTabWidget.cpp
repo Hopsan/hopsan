@@ -197,6 +197,25 @@ double ProjectTab::getStopTime()
     return mStopTime;
 }
 
+QString ProjectTab::getUserIconPath()
+{
+    return mUserIconPath;
+}
+
+QString ProjectTab::getIsoIconPath()
+{
+    return mIsoIconPath;
+}
+
+void ProjectTab::setUserIconPath(QString path)
+{
+    mUserIconPath = path;
+}
+
+void ProjectTab::setIsoIconPath(QString path)
+{
+    mIsoIconPath = path;
+}
 
 //! @class ProjectTabWidget
 //! @brief The ProjectTabWidget class is a container class for ProjectTab class
@@ -728,6 +747,8 @@ void ProjectTabWidget::saveModel(bool saveAs)
     modelFile << "VIEWPORT " << (getCurrentTab()->mpGraphicsView->horizontalScrollBar()->value() + getCurrentTab()->mpGraphicsView->width()/2 - getCurrentTab()->mpGraphicsView->pos().x()) / getCurrentTab()->mpGraphicsView->mZoomFactor << " " <<
                                 (getCurrentTab()->mpGraphicsView->verticalScrollBar()->value() + getCurrentTab()->mpGraphicsView->height()/2 - getCurrentTab()->mpGraphicsView->pos().x()) / getCurrentTab()->mpGraphicsView->mZoomFactor << " " <<
                                 getCurrentTab()->mpGraphicsView->mZoomFactor << "\n";
+    modelFile << "USERICONPATH " << getCurrentTab()->getUserIconPath() << "\n";
+    modelFile << "ISOICONPATH " << getCurrentTab()->getIsoIconPath() << "\n";
     modelFile << "--------------------------------------------------------------\n";
 
     QMap<QString, GUIObject*>::iterator it;
@@ -784,7 +805,6 @@ void ProjectTabWidget::setIsoGraphics(bool useISO)
         it2.value()->setIcon(useISO);
     }
 }
-
 
 //! Tells the current tab to reset zoom to 100%.
 //! @see zoomIn()

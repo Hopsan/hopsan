@@ -44,6 +44,8 @@
 #include <QDialog>
 #include <QCheckBox>
 #include <QDialogButtonBox>
+#include <QLineEdit>
+#include <QLabel>
 
 class MainWindow;
 
@@ -62,7 +64,10 @@ public:
     QPushButton *applyButton;
     QPushButton *okButton;
     QDialogButtonBox *buttonBox;
-
+    QLineEdit *userIconPath;
+    QLineEdit *isoIconPath;
+    QLabel userIconLabel;
+    QLabel isoIconLabel;
     QWidget *mpCentralwidget;
 
 
