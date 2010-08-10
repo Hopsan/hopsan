@@ -221,6 +221,12 @@ void GUIObject::removeConnector(GUIConnector *item)
 }
 
 
+QList<GUIConnector*> GUIObject::getGUIConnectorPtrs()
+{
+    return mpGUIConnectorPtrs;
+}
+
+
 //! This function refreshes the displayed name (HopsanCore may have changed it)
 void GUIObject::refreshDisplayName()
 {
@@ -1532,35 +1538,32 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
             mGUICompList.append(pComponent);
             pMessageWidget->printGUIMessage(pComponent->getName());
 
-            //Ugly to loop trough ALL connectors in the GraphicsView
-            for(int i = 0; i != mpParentGraphicsView->mConnectorVector.size(); ++i)
-//Ska            for(int i = 0; i != mGUICompList.size(); ++i)
-//vara            {
-//istallet                QList<GUIPort*> portListPtrs = mGUICompList.at(i)->getPortListPtrs();
-//for                for(int j = 0; j != portListPtrs.size(); ++j)
-//FOR                {
-//ovanfor                    GUIConnector *pConnector = portListPtrs.at(j)->getConnector() //! @todo DENNA FUNKTION MASTE SKAPAS!
-                if((mpParentGraphicsView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == pComponent->getName()) or
-                   (mpParentGraphicsView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == pComponent->getName()))
+            QList<GUIConnector*> GUIConnectorPtrs = pComponent->getGUIConnectorPtrs();
+            for(int i = 0; i != GUIConnectorPtrs.size(); ++i)
+            {
+                //Loop trough the GUIConnectors that are connected to pComponent
+                if((GUIConnectorPtrs[i]->getStartPort()->getGuiObject()->getName() == pComponent->getName()) or
+                   (GUIConnectorPtrs[i]->getEndPort()->getGuiObject()->getName() == pComponent->getName()))
                 {
-                    if((compList.contains(mpParentGraphicsView->mConnectorVector[i]->getStartPort()->getGuiObject())) and
-                       (compList.contains(mpParentGraphicsView->mConnectorVector[i]->getEndPort()->getGuiObject())))
+                    if((compList.contains(GUIConnectorPtrs[i]->getStartPort()->getGuiObject())) and
+                       (compList.contains(GUIConnectorPtrs[i]->getEndPort()->getGuiObject())))
                     {
                         //Add the connections which have both ends among selected components for grouping in a list for connections
-                        mGUIConnList.append(mpParentGraphicsView->mConnectorVector[i]);
+                        mGUIConnList.append(GUIConnectorPtrs[i]);
                     }
                     else
                     {
                         //Add the connections that go trough the group boundary to a list
-                        mGUITransitConnList.append(mpParentGraphicsView->mConnectorVector[i]);
+                        mGUITransitConnList.append(GUIConnectorPtrs[i]);
                     }
                 }
-                if(this->mpParentGraphicsView->mConnectorVector.empty())
+                if(GUIConnectorPtrs.empty())
                 {
                     break;
                 }
             }
         }
+    }
 
     //Constructs a new scene for the group
     mpGroupScene = new GraphicsScene(this->mpParentGraphicsScene->mpParentProjectTab);

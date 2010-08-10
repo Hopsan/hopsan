@@ -68,6 +68,8 @@ public:
     void addConnector(GUIConnector *item);
     void removeConnector(GUIConnector *item);
 
+    QList<GUIConnector*> getGUIConnectorPtrs();
+
     virtual QString getName();
     void refreshDisplayName();
     virtual void setName(QString name, bool doOnlyCoreRename=false);

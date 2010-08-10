@@ -2,30 +2,33 @@
 -------------------  HOPSAN NG MODEL FILE  -------------------
 --------------------------------------------------------------
 HOPSANGUIVERSION 0.0.1
-HOPSANGUIMODELFILEVERSION 0.1
-HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION 0.1
+HMFVERSION 0.1
+CAFVERSION 0.1
 --------------------------------------------------------------
 STARTTIME 0
 TIMESTEP 0.01
 FINISHTIME 5
+VIEWPORT 2500 2500 1
+USERICONPATH 
+ISOICONPATH 
 --------------------------------------------------------------
-COMPONENT "MechanicForceTransformer" "ForceTransformer" 2309 2487 0 1
+COMPONENT "MechanicForceTransformer" "ForceTransformer" 2309 2487 0 1 1
 PARAMETER "ForceTransformer" x0 0
 PARAMETER "ForceTransformer" v0 1
 PARAMETER "ForceTransformer" Force 0
-COMPONENT "MechanicTranslationalMass" "TranslationalMass" 2401 2487 0 0
+COMPONENT "MechanicTranslationalMass" "TranslationalMass" 2401 2487 0 0 1
 PARAMETER "TranslationalMass" Mass 100
 PARAMETER "TranslationalMass" B 0
 PARAMETER "TranslationalMass" k 0
-COMPONENT "MechanicTranslationalMass" "TranslationalMass_1" 2587 2487 0 0
+COMPONENT "MechanicTranslationalMass" "TranslationalMass_1" 2587 2487 0 0 1
 PARAMETER "TranslationalMass_1" Mass 100
 PARAMETER "TranslationalMass_1" B 0
 PARAMETER "TranslationalMass_1" k 0
-COMPONENT "MechanicTranslationalSpring" "TranslationalSpring" 2686 2487 0 1
+COMPONENT "MechanicTranslationalSpring" "TranslationalSpring" 2686 2487 0 1 1
 PARAMETER "TranslationalSpring" k 100000
-COMPONENT "MechanicTranslationalSpring" "TranslationalSpring_1" 2495 2487 0 1
+COMPONENT "MechanicTranslationalSpring" "TranslationalSpring_1" 2495 2487 0 1 1
 PARAMETER "TranslationalSpring_1" k 100000
-COMPONENT "MechanicVelocityTransformer" "VelocityTransformer" 2762 2487 180 0
+COMPONENT "MechanicVelocityTransformer" "VelocityTransformer" 2762 2487 180 0 1
 PARAMETER "VelocityTransformer" Speed 0
 --------------------------------------------------------------
 CONNECT "VelocityTransformer" "out" "TranslationalSpring" "P2" 2742.5 2487 2722 2487 2722 2487 2702.5 2487
