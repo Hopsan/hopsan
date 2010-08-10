@@ -38,8 +38,6 @@
 
 //$Id$
 
-#include <cmath>
-
 #include <QVector>
 
 #include "GUIObject.h"
@@ -1439,9 +1437,9 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
     mpGroupScene = new GraphicsScene(this->mpParentGraphicsScene->mpParentProjectTab);
 
     double xMin = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
-    xMax = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
-    yMin = mGUICompList.at(0)->y()+mGUICompList.at(0)->rect().height()/2.0,
-    yMax = mGUICompList.at(0)->y()+mGUICompList.at(0)->rect().height()/2.0;
+           xMax = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
+           yMin = mGUICompList.at(0)->y()+mGUICompList.at(0)->rect().height()/2.0,
+           yMax = mGUICompList.at(0)->y()+mGUICompList.at(0)->rect().height()/2.0;
     for (int i=0; i < mGUICompList.size(); ++i)
     {
         //Add the components in the group to the group scene
@@ -1466,7 +1464,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
         mpGroupScene->addItem(mGUIConnList.at(i));
     }
 
-    mpGroupScene->setSceneRect(0,0,0,0); //Dirty fix to recalc the correct scenerect
+    mpGroupScene->setSceneRect(0,0,0,0); //Dirty fix to re-calculate the correct scenerect
     QPointF sceneCenterPointF = mpGroupScene->sceneRect().center();
 
     //Draw a cross in the center of the scene (just for debugging)
@@ -1500,14 +1498,14 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
         endComp   = qgraphicsitem_cast<GUIComponent*>(transitConnector->getEndPort()->getGuiObject());
 
         QPoint groupPortPoint;
-        //Find the right point for the group boundary port (in this case the boundary is at the connector end point)
         if((startComp) && (mGUICompList.contains(startComp)))
         {
+            //Find the right point for the group boundary port (in this case the boundary is at the connector start point)
             groupPortPoint = transitConnector->getEndPort()->mapToScene(transitConnector->getEndPort()->boundingRect().center()).toPoint();
         }
-        //Find the right point for the group boundary port (in this case the boundary is at the connector start point)
         if((endComp) && (mGUICompList.contains(endComp)))
         {
+            //Find the right point for the group boundary port (in this case the boundary is at the connector end point)
             groupPortPoint = transitConnector->getStartPort()->mapToScene(transitConnector->getStartPort()->boundingRect().center()).toPoint();
         }
         //Add a new group port for the boundary at the boundary connector
@@ -1552,26 +1550,8 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
         double b = mpIcon->boundingRect().width()/2.0;
         double h = mpIcon->boundingRect().height()/2.0;
         double x, y;
-        if(vinkel>3.1415*3.0/2.0)
-        {
-            x=-max(min(h/tan(vinkel), b), -b);
-            y=max(min(b*tan(vinkel), h), -h);
-        }
-        else if(vinkel>3.1415)
-        {
-            x=-max(min(h/tan(vinkel), b), -b);
-            y=-max(min(b*tan(vinkel), h), -h);
-        }
-        else if(vinkel>3.1415/2.0)
-        {
-            x=max(min(h/tan(vinkel), b), -b);
-            y=-max(min(b*tan(vinkel), h), -h);
-        }
-        else
-        {
-            x=max(min(h/tan(vinkel), b), -b);
-            y=max(min(b*tan(vinkel), h), -h);
-        }
+        calcSubsystemPortPosition(b, h, vinkel, x, y);
+
         qDebug() << portName << " vinkel: " << tan(vinkel) << " x: " << x << " ber x: " << h/tan(vinkel) << " b: " << b << " y: " << y << " ber y: " << b*tan(vinkel) << " h: " << h;
         //Make ports on the group system icon
         PortAppearance portAppearance;

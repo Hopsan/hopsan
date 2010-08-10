@@ -42,8 +42,11 @@
 #include <QString>
 #include <QTextStream>
 
+#include <cmath>
+
 QString readName(QTextStream &rTextStream);
 QString readName(QString namestring);
 QString addQuotes(QString str);
+void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y);
 
 #endif // GUIUTILITIES_H

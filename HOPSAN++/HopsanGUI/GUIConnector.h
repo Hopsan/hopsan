@@ -73,8 +73,6 @@ public:
     int getNumberOfLines();
     GUIConnector::geometryType getGeometry(int lineNumber);
     QVector<QPointF> getPointsVector();
-//    QPointF getStartPoint();
-//    QPointF getEndPoint();
     GUIPort *getStartPort();
     GUIPort *getEndPort();
     GUIConnectorLine *getLine(int line);

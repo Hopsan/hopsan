@@ -38,6 +38,8 @@
 
 #include "GUIUtilities.h"
 
+using namespace std;
+
 //! @brief This function extracts the name from a text stream
 //! @return The extracted name without quotes, empty string if failed
 //! It is assumed that the name was saved OK. but error indicated by empty string
@@ -68,6 +70,7 @@ QString readName(QTextStream &rTextStream)
     }
 }
 
+
 //! @brief Convenience function if you dont have a stream to read from
 //! @return The extracted name without quotes, empty string if failed
 //! It is assumed that the name was saved OK. but error indicated by empty string
@@ -77,10 +80,42 @@ QString readName(QString namestring)
     return readName(namestream);
 }
 
+
 //! @brief This function may be used to add quotes around string, usefull for saving names. Ex: "string"
 QString addQuotes(QString str)
 {
     str.prepend("\"");
     str.append("\"");
     return str;
+}
+
+
+//! @brief Use this function to calculate the placement of the ports on a subsystem icon.
+//! @param[in] w width of the subsystem icon
+//! @param[in] h heigth of the subsystem icon
+//! @param[in] angle the angle of the line between center and the actual port
+//! @param[out] x the new calculated horizontal placement for the port
+//! @param[out] y the new calculated vertical placement for the port
+void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y)
+{
+    if(angle>3.1415*3.0/2.0)
+    {
+        x=-max(min(h/tan(angle), w), -w);
+        y=max(min(w*tan(angle), h), -h);
+    }
+    else if(angle>3.1415)
+    {
+        x=-max(min(h/tan(angle), w), -w);
+        y=-max(min(w*tan(angle), h), -h);
+    }
+    else if(angle>3.1415/2.0)
+    {
+        x=max(min(h/tan(angle), w), -w);
+        y=-max(min(w*tan(angle), h), -h);
+    }
+    else
+    {
+        x=max(min(h/tan(angle), w), -w);
+        y=max(min(w*tan(angle), h), -h);
+    }
 }
