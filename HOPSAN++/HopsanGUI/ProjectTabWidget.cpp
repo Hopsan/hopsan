@@ -301,7 +301,10 @@ void ProjectTabWidget::updateCurrentTimeStep()
 //! @see updateCurrentTimeStep()
 void ProjectTabWidget::updateCurrentStopTime()
 {
-    getCurrentTab()->updateStopTime();
+    if(this->count() != 0)
+    {
+        getCurrentTab()->updateStopTime();
+    }
 }
 
 

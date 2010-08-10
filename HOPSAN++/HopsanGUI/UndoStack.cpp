@@ -934,7 +934,10 @@ void UndoWidget::show()
 //! Refresh function for the list. Reads from the current undo stack and displays the results in a table.
 void UndoWidget::refreshList()
 {
-    qDebug() << "refreshList()";
+    if(mpParentMainWindow->mpProjectTabs->count() == 0)
+    {
+        return;
+    }
     mTempStack = this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->undoStack->mStack;
     //mTempStack = this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->undoStack->mStack.size;
     QTableWidgetItem *item;
