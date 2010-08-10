@@ -591,10 +591,12 @@ void ProjectTabWidget::loadModel()
     //! @todo maybe not check the version numbers in there
     HeaderLoadData headerData = readHeader(inputStream, mpParentMainWindow->mpMessageWidget);
 
+    //It is assumed that these data have been successfully read
     mpParentMainWindow->setStartTimeLabel(headerData.startTime);
     mpParentMainWindow->setTimeStepLabel(headerData.timeStep);
     mpParentMainWindow->setFinishTimeLabel(headerData.stopTime);
 
+    //It is assumed that these data have been successfully read
     getCurrentTab()->mpGraphicsView->centerOn(headerData.viewport_x, headerData.viewport_y);
     getCurrentTab()->mpGraphicsView->scale(headerData.viewport_zoomfactor, headerData.viewport_zoomfactor);
     getCurrentTab()->mpGraphicsView->mZoomFactor = headerData.viewport_zoomfactor;
@@ -611,6 +613,7 @@ void ProjectTabWidget::loadModel()
             SubsystemLoadData subsysData;
             subsysData.read(inputStream);
             loadSubsystemGUIObject(subsysData, mpParentMainWindow->mpLibrary, pCurrentTab->mpGraphicsView, true);
+            //! @todo convenience function
         }
 
         if ( inputWord == "COMPONENT" )

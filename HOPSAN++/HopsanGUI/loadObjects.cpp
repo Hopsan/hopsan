@@ -233,6 +233,8 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
         appdata.read(inputStream);
      }
 
+     //pSys
+
      //Load the contents of the subsystem from the external file
      //! @todo do this
 
