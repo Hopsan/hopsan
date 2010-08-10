@@ -36,6 +36,16 @@
  * Contributors 2009-2010:  Mikael Axin, Alessandro Dell'Amico, Karl Pettersson, Ingo Staack
  */
 
+//!
+//! @file   GUIUtilities.h
+//! @author All <flumes@liu.se>
+//! @date   2010-10-09
+//!
+//! @brief Contains a class for misc utilities
+//!
+//$Id$
+
+
 #ifndef GUIUTILITIES_H
 #define GUIUTILITIES_H
 
