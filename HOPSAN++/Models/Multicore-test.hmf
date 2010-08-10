@@ -5,9 +5,7 @@ HOPSANGUIVERSION 0.0.1
 HMFVERSION 0.1
 CAFVERSION 0.1
 --------------------------------------------------------------
-STARTTIME 0
-TIMESTEP 0.001
-FINISHTIME 10
+SIMULATIONTIME 0 0.001 10
 VIEWPORT 5068.56 2453.57 0.0929259
 USERICONPATH 
 ISOICONPATH 
@@ -540,6 +538,7 @@ PARAMETER "4/3 Servo Valve_140" overlap_at 0
 PARAMETER "4/3 Servo Valve_140" overlap_pa 0
 PARAMETER "4/3 Servo Valve_140" omegah 100
 PARAMETER "4/3 Servo Valve_140" deltah 0
+
 COMPONENT "Hydraulic43Valve" "4/3 Servo Valve_141" 4163.14 2889 0 0 0
 PARAMETER "4/3 Servo Valve_141" Cq 0.67
 PARAMETER "4/3 Servo Valve_141" d 0.01
@@ -1808,6 +1807,7 @@ PARAMETER "4/3 Servo Valve_72" deltah 0
 COMPONENT "Hydraulic43Valve" "4/3 Servo Valve_73" 841.31 4092.8 0 0 0
 PARAMETER "4/3 Servo Valve_73" Cq 0.67
 PARAMETER "4/3 Servo Valve_73" d 0.01
+
 PARAMETER "4/3 Servo Valve_73" f 1
 PARAMETER "4/3 Servo Valve_73" xvmax 0.01
 PARAMETER "4/3 Servo Valve_73" overlap_pa 0
@@ -1991,6 +1991,7 @@ PARAMETER "4/3 Servo Valve_88" overlap_pb 0
 PARAMETER "4/3 Servo Valve_88" overlap_at 0
 PARAMETER "4/3 Servo Valve_88" overlap_pa 0
 PARAMETER "4/3 Servo Valve_88" omegah 100
+
 PARAMETER "4/3 Servo Valve_88" deltah 0
 COMPONENT "Hydraulic43Valve" "4/3 Servo Valve_89" 232.31 4688.8 0 0 0
 PARAMETER "4/3 Servo Valve_89" Cq 0.67
@@ -10784,6 +10785,7 @@ COMPONENT "MechanicTranslationalMass" "Translational Mass_387" 5179.14 371 0 0 0
 PARAMETER "Translational Mass_387" Mass 1
 PARAMETER "Translational Mass_387" B 10
 PARAMETER "Translational Mass_387" k 0
+
 COMPONENT "MechanicTranslationalMass" "Translational Mass_39" 667.31 1600.8 0 0 0
 PARAMETER "Translational Mass_39" Mass 1
 PARAMETER "Translational Mass_39" B 10
@@ -11217,6 +11219,7 @@ PARAMETER "Translational Spring_172" k 100
 COMPONENT "MechanicTranslationalSpring" "Translational Spring_173" 3848.14 397 0 0 0
 PARAMETER "Translational Spring_173" k 100
 COMPONENT "MechanicTranslationalSpring" "Translational Spring_174" 4056.14 397 0 0 0
+
 PARAMETER "Translational Spring_174" k 100
 COMPONENT "MechanicTranslationalSpring" "Translational Spring_175" 4260.14 397 0 0 0
 PARAMETER "Translational Spring_175" k 100

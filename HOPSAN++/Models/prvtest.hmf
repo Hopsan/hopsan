@@ -5,9 +5,7 @@ HOPSANGUIVERSION 0.0.1
 HMFVERSION 0.1
 CAFVERSION 0.1
 --------------------------------------------------------------
-STARTTIME 0
-TIMESTEP 0.001
-FINISHTIME 10
+SIMULATIONTIME 0 0.001 10
 VIEWPORT 2500 2500 1
 --------------------------------------------------------------
 COMPONENT "HydraulicAlternativePRV" "AlternativePRV" 2444 2410 0 1 0

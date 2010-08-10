@@ -5,9 +5,7 @@ HOPSANGUIVERSION 0.0.1
 HOPSANGUIMODELFILEVERSION 0.1
 HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION 0.1
 --------------------------------------------------------------
-STARTTIME 0
-TIMESTEP 0.001
-FINISHTIME 5
+SIMULATIONTIME 0 0.001 5
 VIEWPORT 2542 2616 1
 --------------------------------------------------------------
 COMPONENT "Hydraulic43Valve" "43Valve" 2469 2536 0 0

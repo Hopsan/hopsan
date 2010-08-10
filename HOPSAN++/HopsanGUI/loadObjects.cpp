@@ -13,6 +13,73 @@
 
 #include "GUIUtilities.h"
 
+void HeaderLoadData::read(QTextStream &rStream)
+{
+    QString inputWord;
+
+    //Read and discard title block
+    rStream.readLine();
+    rStream.readLine();
+    rStream.readLine();
+
+    //Read the three version numbers
+    for (int i=0; i<3; ++i)
+    {
+        rStream >> inputWord;
+        qDebug() << inputWord;
+
+        if ( inputWord == "HOPSANGUIVERSION")
+        {
+            rStream >> hopsangui_version;
+        }
+        else if ( inputWord == "HMFVERSION")
+        {
+            rStream >> hmf_version;
+        }
+        else if ( inputWord == "CAFVERSION") //CAF = Component Appearance File
+        {
+            rStream >> caf_version;
+        }
+        else
+        {
+            //! @todo handle errors
+            //pMessageWidget->printGUIErrorMessage(QString("Error: unknown HEADER command: " + inputWord));
+        }
+    }
+
+    //Remove end line and dashed line
+    rStream.readLine();
+    rStream.readLine();
+
+    //Read Simulation time
+    rStream >> inputWord;
+    if (inputWord == "SIMULATIONTIME")
+    {
+        rStream >> startTime >> timeStep >> stopTime;
+    }
+    else
+    {
+        qDebug() << QString("ERROR SIMULATIONTIME EXPECTED, got: ") + inputWord;
+        //! @todo handle errors
+    }
+
+    //Read viewport
+    rStream >> inputWord;
+    if (inputWord == "VIEWPORT")
+    {
+        rStream >> viewport_x >> viewport_y >> viewport_zoomfactor;
+    }
+    else
+    {
+        qDebug() << QString("ERROR VIEWPORT EXPECTED, got") + inputWord;
+        //! @todo handle errors
+    }
+
+    //Remove newline and dashed ending line
+    rStream.readLine();
+    rStream.readLine();
+}
+
 void ObjectLoadData::read(QTextStream &rStream)
 {
     type = readName(rStream);
@@ -24,6 +91,67 @@ void ObjectLoadData::read(QTextStream &rStream)
     rStream >> rotation;
     rStream >> nameTextPos;
     rStream >> textVisible;
+}
+
+void SubsystemLoadData::read(QTextStream &rStream)
+{
+    type = "Subsystem";
+    rStream >> loadtype;
+    name = readName(rStream);
+    cqs_type = readName(rStream);
+
+    if (loadtype == "external")
+    {
+        filepath = readName(rStream);
+
+        //Read the gui stuff
+        rStream >> posX;
+        rStream >> posY;
+
+        //! @todo if not end of stream do this, to allow incomplete load_data
+        rStream >> rotation;
+        rStream >> nameTextPos;
+        rStream >> textVisible;
+    }
+    else if (loadtype == "embeded")
+    {
+        //not implemented yet
+        //! @todo handle error
+        assert(false);
+    }
+    else
+    {
+        //incorrect type
+        //! @todo handle error
+        assert(false);
+    }
+}
+
+void SystemAppearanceLoadData::read(QTextStream &rStream)
+{
+    QString commandword;
+    rStream >> commandword;
+
+    //! @todo maybe do this the same way as read apperance data, will examine this later
+    if (commandword == "ISOICON")
+    {
+        isoicon_path = readName(rStream);
+    }
+    else if (commandword == "USERICON")
+    {
+        usericon_path = readName(rStream);
+    }
+    else if (commandword == "PORT")
+    {
+        QString name = readName(rStream);
+        qreal x,y,th;
+        rStream >> x >> y >> th;
+
+        portnames.append(name);
+        port_xpos.append(x);
+        port_ypos.append(y);
+        port_angle.append(th);
+    }
 }
 
 
@@ -81,6 +209,34 @@ GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, G
         //! @todo Some error message
         return 0;
     }
+}
+
+GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget* pLibrary, GraphicsView* pGraphicsView, bool noUnDo)
+{
+    //Load the system the normal way (and add it)
+    GUIObject* pSys = loadGUIObject(rData, pLibrary, pGraphicsView, noUnDo);
+
+    //Now read the external file to change appearance and populate the system
+     QFile file(rData.filepath);
+     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
+     {
+         //! @todo Should signal an error message on screen
+         qDebug() << "Failed to open file or not a text file: " + rData.filepath;
+         return 0;
+     }
+     QTextStream inputStream(&file);  //Create a QTextStream object to stream the content of file
+
+     //Read the entire file for the appearance specific data (a slight waste of time but its ok for now)
+     //! @todo maybe should try to read more efficiently somehow, in this case only read the appearance specific data, not go through the entire file
+     SystemAppearanceLoadData appdata;
+     while (!inputStream.atEnd())
+     {
+        appdata.read(inputStream);
+     }
+
+     //Load the contents of the subsystem from the external file
+     //! @todo do this
+
 }
 
 
@@ -145,61 +301,39 @@ void loadParameterValues(QTextStream &rStream, GraphicsView* pGraphicsView, bool
 }
 
 //! @brief Loads the hmf file HEADER data and checks version numbers
-void readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidget)
+HeaderLoadData readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidget)
 {
-    QString inputWord, ver;
+    HeaderLoadData headerData;
+    headerData.read(rInputStream);
 
-    //Read and discard title block
-    rInputStream.readLine();
-    rInputStream.readLine();
-    rInputStream.readLine();
-
-    //Read the three version numbers
-    for (int i=0; i<3; ++i)
+    if(headerData.hopsangui_version > QString(HOPSANGUIVERSION))
     {
-        rInputStream >> inputWord >> ver;
-
-        if ( inputWord == "HOPSANGUIVERSION")
-        {
-            if(ver > QString(HOPSANGUIVERSION))
-            {
-                pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
-            }
-            else if(ver < QString(HOPSANGUIVERSION))
-            {
-                pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
-            }
-        }
-        else if ( inputWord == "HMFVERSION")
-        {
-            if(ver > QString(HMFVERSION))
-            {
-                pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
-            }
-            else if(ver < QString(HMFVERSION))
-            {
-                pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
-            }
-        }
-        else if ( inputWord == "CAFVERSION") //CAF = Component Appearance File
-        {
-            if(ver > QString(CAFVERSION))
-            {
-                pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
-            }
-            else if(ver < QString(CAFVERSION))
-            {
-                pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
-            }
-        }
-        else
-        {
-            pMessageWidget->printGUIErrorMessage(QString("Error: unknown HEADER command: " + inputWord));
-        }
+        pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
+    }
+    else if(headerData.hopsangui_version < QString(HOPSANGUIVERSION))
+    {
+        pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
     }
 
-    //Remove dashed end line
-    rInputStream.readLine();
+    if(headerData.hmf_version > QString(HMFVERSION))
+    {
+        pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
+    }
+    else if(headerData.hmf_version < QString(HMFVERSION))
+    {
+        pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
+    }
+
+    if(headerData.caf_version > QString(CAFVERSION))
+    {
+        pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
+    }
+    else if(headerData.caf_version < QString(CAFVERSION))
+    {
+        pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
+    }
+
+    return headerData;
 }
 
 void writeHeader(QTextStream &rStream)

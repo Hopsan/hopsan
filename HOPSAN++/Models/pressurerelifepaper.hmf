@@ -5,9 +5,7 @@ HOPSANGUIVERSION 0.0.1
 HOPSANGUIMODELFILEVERSION 0.1
 HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION 0.1
 --------------------------------------------------------------
-STARTTIME 0
-TIMESTEP 0.01
-FINISHTIME 5
+SIMULATIONTIME 0 0.01 5
 --------------------------------------------------------------
 COMPONENT "HydraulicVolume" "Hydraulic Volume" 1558 2275 0 0
 PARAMETER "Hydraulic Volume" V 0.001

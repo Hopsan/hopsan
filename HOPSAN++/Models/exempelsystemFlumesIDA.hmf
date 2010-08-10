@@ -5,9 +5,7 @@ HOPSANGUIVERSION 0.0.1
 HOPSANGUIMODELFILEVERSION 0.1
 HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION 0.1
 --------------------------------------------------------------
-STARTTIME 0
-TIMESTEP 1e-05
-FINISHTIME 2
+SIMULATIONTIME 0 1e-05 2
 --------------------------------------------------------------
 COMPONENT "HydraulicAlternativePRV" "AlternativePRV" 2527 2491 0 0
 PARAMETER "AlternativePRV" pref 1e+07

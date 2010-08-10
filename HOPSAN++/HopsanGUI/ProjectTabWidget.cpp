@@ -587,88 +587,30 @@ void ProjectTabWidget::loadModel()
     pCurrentTab->mpGraphicsView->undoStack->newPost();
     pCurrentTab->mIsSaved = true;
 
-        //Necessary declarations
-    QString inputWord, tempString;
+    //Read the header data, also cecks version numbers
+    //! @todo maybe not check the version numbers in there
+    HeaderLoadData headerData = readHeader(inputStream, mpParentMainWindow->mpMessageWidget);
 
-    readHeader(inputStream, mpParentMainWindow->mpMessageWidget);
+    mpParentMainWindow->setStartTimeLabel(headerData.startTime);
+    mpParentMainWindow->setTimeStepLabel(headerData.timeStep);
+    mpParentMainWindow->setFinishTimeLabel(headerData.stopTime);
+
+    getCurrentTab()->mpGraphicsView->centerOn(headerData.viewport_x, headerData.viewport_y);
+    getCurrentTab()->mpGraphicsView->scale(headerData.viewport_zoomfactor, headerData.viewport_zoomfactor);
+    getCurrentTab()->mpGraphicsView->mZoomFactor = headerData.viewport_zoomfactor;
+    getCurrentTab()->mpGraphicsView->resetBackgroundBrush();
 
     while ( !inputStream.atEnd() )
     {
-        //----------- Create New SubSystem -----------//
-
-//        if ( inputWord == "HOPSANGUIVERSION")
-//        {
-//            inputStream >> tempString;
-//            if(tempString > QString(HOPSANGUIVERSION))
-//            {
-//                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
-//            }
-//            else if(tempString < QString(HOPSANGUIVERSION))
-//            {
-//                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
-//            }
-//        }
-//        else if ( inputWord == "HOPSANGUIMODELFILEVERSION")
-//        {
-//            inputStream >> tempString;
-//            if(tempString > QString(HOPSANGUIMODELFILEVERSION))
-//            {
-//                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
-//            }
-//            else if(tempString < QString(HOPSANGUIMODELFILEVERSION))
-//            {
-//                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
-//            }
-//        }
-//        else if ( inputWord == "HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION")
-//        {
-//            inputStream >> tempString;
-//            qDebug() << inputWord << " " << tempString;
-//            if(tempString > QString(HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION))
-//            {
-//                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
-//            }
-//            else if(tempString < QString(HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION))
-//            {
-//                mpParentMainWindow->mpMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
-//            }
-//        }
-
         //Extract first word on line
+        QString inputWord;
         inputStream >> inputWord;
 
-        //! @todo Why have 3 different rows for simulation time variables why not SIMULATIONTIME start, ts, stop
-        if ( inputWord == "STARTTIME" )
+        if ( inputWord == "SUBSYSTEM" )
         {
-            double startTime;
-            inputStream >> startTime;
-            mpParentMainWindow->setStartTimeLabel(startTime);
-        }
-
-        if ( inputWord == "TIMESTEP" )
-        {
-            double timeStep;
-            inputStream >> timeStep;
-            mpParentMainWindow->setTimeStepLabel(timeStep);
-        }
-
-        if ( inputWord == "FINISHTIME" )
-        {
-            double finishTime;
-            inputStream >> finishTime;
-            mpParentMainWindow->setFinishTimeLabel(finishTime);
-        }
-
-        if ( inputWord == "VIEWPORT" )
-        {
-            double xPos, yPos, zoomFactor;
-            inputStream >> xPos;
-            inputStream >> yPos;
-            inputStream >> zoomFactor;
-            getCurrentTab()->mpGraphicsView->centerOn(xPos, yPos);
-            getCurrentTab()->mpGraphicsView->scale(zoomFactor, zoomFactor);
-            getCurrentTab()->mpGraphicsView->mZoomFactor = zoomFactor;
-            getCurrentTab()->mpGraphicsView->resetBackgroundBrush();
+            SubsystemLoadData subsysData;
+            subsysData.read(inputStream);
+            loadSubsystemGUIObject(subsysData, mpParentMainWindow->mpLibrary, pCurrentTab->mpGraphicsView, true);
         }
 
         if ( inputWord == "COMPONENT" )
@@ -747,9 +689,7 @@ void ProjectTabWidget::saveModel(bool saveAs)
 //    modelFile << "--------------------------------------------------------------\n";
     writeHeader(modelFile);
 
-    modelFile << "STARTTIME " << mpParentMainWindow->getStartTimeLabel() << "\n";
-    modelFile << "TIMESTEP " << mpParentMainWindow->getTimeStepLabel() << "\n";
-    modelFile << "FINISHTIME " << mpParentMainWindow->getFinishTimeLabel() << "\n";
+    modelFile << "SIMULATIONTIME " << mpParentMainWindow->getStartTimeLabel() << " " << mpParentMainWindow->getTimeStepLabel() << " " <<  mpParentMainWindow->getFinishTimeLabel() << "\n";
     modelFile << "VIEWPORT " << (getCurrentTab()->mpGraphicsView->horizontalScrollBar()->value() + getCurrentTab()->mpGraphicsView->width()/2 - getCurrentTab()->mpGraphicsView->pos().x()) / getCurrentTab()->mpGraphicsView->mZoomFactor << " " <<
                                 (getCurrentTab()->mpGraphicsView->verticalScrollBar()->value() + getCurrentTab()->mpGraphicsView->height()/2 - getCurrentTab()->mpGraphicsView->pos().x()) / getCurrentTab()->mpGraphicsView->mZoomFactor << " " <<
                                 getCurrentTab()->mpGraphicsView->mZoomFactor << "\n";
