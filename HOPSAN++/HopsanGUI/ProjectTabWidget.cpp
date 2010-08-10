@@ -733,6 +733,9 @@ void ProjectTabWidget::saveModel(bool saveAs)
         qDebug() << "Failed to open file for writing: " + modelFileName;
         return;
     }
+
+    //QLineF line(QPointF(sceneCenterPointF.x(), sceneCenterPointF.y()), QPointF(groupPortPoint.x(), groupPortPoint.y()));
+
     QTextStream modelFile(&file);  //Create a QTextStream object to stream the content of file
 
 //    modelFile << "--------------------------------------------------------------\n";
@@ -750,9 +753,30 @@ void ProjectTabWidget::saveModel(bool saveAs)
     modelFile << "VIEWPORT " << (getCurrentTab()->mpGraphicsView->horizontalScrollBar()->value() + getCurrentTab()->mpGraphicsView->width()/2 - getCurrentTab()->mpGraphicsView->pos().x()) / getCurrentTab()->mpGraphicsView->mZoomFactor << " " <<
                                 (getCurrentTab()->mpGraphicsView->verticalScrollBar()->value() + getCurrentTab()->mpGraphicsView->height()/2 - getCurrentTab()->mpGraphicsView->pos().x()) / getCurrentTab()->mpGraphicsView->mZoomFactor << " " <<
                                 getCurrentTab()->mpGraphicsView->mZoomFactor << "\n";
+    modelFile << "--------------------------------------------------------------\n";
     modelFile << "USERICONPATH " << getCurrentTab()->getUserIconPath() << "\n";
     modelFile << "ISOICONPATH " << getCurrentTab()->getIsoIconPath() << "\n";
-    modelFile << "--------------------------------------------------------------\n";
+
+    //Calculate the position of the subsystem ports:
+    QMap<QString, GUIObject*>::iterator i;
+    QLineF line;
+    double angle, x, y;
+    double w = getCurrentTab()->mpGraphicsScene->sceneRect().width()/2;
+    double h = getCurrentTab()->mpGraphicsScene->sceneRect().height()/2;
+    QPointF center = getCurrentTab()->mpGraphicsView->geometry().center();
+    for(i = pCurrentView->mGUIObjectMap.begin(); i!=pCurrentView->mGUIObjectMap.end(); ++i)
+    {
+        if(i.value()->getTypeName() == "SystemPort")
+        {
+            line = QLineF(center.x(), center.y(), i.value()->x(), i.value()->y());
+            //getCurrentTab()->mpGraphicsScene->addLine(line); //debug-grej
+            angle = line.angle()*3.141592/180.0;
+            calcSubsystemPortPercentage(w, h, angle, x, y);
+            //x = i.value()->x()
+            modelFile << "PORT " << addQuotes(i.value()->getName()) <<" " << x << " " << y << " " << angle << "\n";
+        }
+    }
+        modelFile << "--------------------------------------------------------------\n";
 
     QMap<QString, GUIObject*>::iterator it;
     for(it = pCurrentView->mGUIObjectMap.begin(); it!=pCurrentView->mGUIObjectMap.end(); ++it)

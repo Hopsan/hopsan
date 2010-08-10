@@ -128,3 +128,35 @@ void calcSubsystemPortPosition(const double w, const double h, const double angl
         y=max(min(w*tan(angle), h), -h);
     }
 }
+
+//! @brief Use this function to calculate the placement in percentage of the ports on a subsystem icon.
+//! @param[in] w width of the subsystem
+//! @param[in] h heigth of the subsystem
+//! @param[in] angle the angle in radians of the line between center and the actual port
+//! @param[out] x the new calculated horizontal placement in percentage of the width
+//! @param[out] y the new calculated vertical placement in percentage of the height
+void calcSubsystemPortPercentage(const double w, const double h, const double angle, double &x, double &y)
+{
+    if(angle>3.1415*3.0/2.0)
+    {
+        x=-max(min(h/tan(angle), w), -w)/w;
+        y=max(min(w*tan(angle), h), -h)/h;
+    }
+    else if(angle>3.1415)
+    {
+        x=-max(min(h/tan(angle), w), -w)/w;
+        y=-max(min(w*tan(angle), h), -h)/h;
+    }
+    else if(angle>3.1415/2.0)
+    {
+        x=max(min(h/tan(angle), w), -w)/w;
+        y=-max(min(w*tan(angle), h), -h)/h;
+    }
+    else
+    {
+        x=max(min(h/tan(angle), w), -w)/w;
+        y=max(min(w*tan(angle), h), -h)/h;
+    }
+}
+
+
