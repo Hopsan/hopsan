@@ -1415,19 +1415,24 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
 
             //Ugly to loop trough ALL connectors in the GraphicsView
             for(int i = 0; i != mpParentGraphicsView->mConnectorVector.size(); ++i)
-            {
+//Ska            for(int i = 0; i != mGUICompList.size(); ++i)
+//vara            {
+//istallet                QList<GUIPort*> portListPtrs = mGUICompList.at(i)->getPortListPtrs();
+//for                for(int j = 0; j != portListPtrs.size(); ++j)
+//FOR                {
+//ovanfor                    GUIConnector *pConnector = portListPtrs.at(j)->getConnector() //! @todo DENNA FUNKTION MASTE SKAPAS!
                 if((mpParentGraphicsView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == pComponent->getName()) or
                    (mpParentGraphicsView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == pComponent->getName()))
                 {
                     if((compList.contains(mpParentGraphicsView->mConnectorVector[i]->getStartPort()->getGuiObject())) and
                        (compList.contains(mpParentGraphicsView->mConnectorVector[i]->getEndPort()->getGuiObject())))
-                        //Add the connections which have both ends among selected components for grouping in a list for connections
                     {
+                        //Add the connections which have both ends among selected components for grouping in a list for connections
                         mGUIConnList.append(mpParentGraphicsView->mConnectorVector[i]);
                     }
                     else
-                        //Add the connections that go trough the group boundary to a list
                     {
+                        //Add the connections that go trough the group boundary to a list
                         mGUITransitConnList.append(mpParentGraphicsView->mConnectorVector[i]);
                     }
                 }
@@ -1437,7 +1442,6 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
                 }
             }
         }
-    }
 
     //Constructs a new scene for the group
     mpGroupScene = new GraphicsScene(this->mpParentGraphicsScene->mpParentProjectTab);
