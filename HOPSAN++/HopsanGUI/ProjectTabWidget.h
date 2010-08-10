@@ -93,6 +93,8 @@ public slots:
     void hidePortsInCurrentTab(bool doIt);
     void exportCurrentToPDF();
     void centerView();
+    void disableUndo();
+    void updateUndoStatus();
 
 signals:
     void checkMessages();

@@ -280,6 +280,11 @@ void MainWindow::createActions()
     openUndoAction->setText("Undo History");
     connect(openUndoAction,SIGNAL(triggered()),this,SLOT(openUndo()));
 
+    disableUndoAction = new QAction(tr("&Disable Undo"), this);
+    disableUndoAction->setText("Disable Undo");
+    disableUndoAction->setCheckable(true);
+    disableUndoAction->setChecked(false);
+
     cutAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Cut.png"), tr("&Cut"), this);
     cutAction->setShortcut(tr("Ctrl+x"));
     cutAction->setStatusTip(tr("Cut Selection"));
@@ -417,6 +422,7 @@ void MainWindow::createMenus()
     menuEdit->addAction(undoAction);
     menuEdit->addAction(redoAction);
     menuEdit->addAction(openUndoAction);
+    menuEdit->addAction(disableUndoAction);
     menuEdit->addSeparator();
     menuEdit->addAction(copyAction);
     menuEdit->addAction(cutAction);

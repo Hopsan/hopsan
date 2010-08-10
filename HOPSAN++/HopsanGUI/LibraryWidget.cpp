@@ -434,7 +434,7 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
 //! @brief This function retrieves the appearance data given the TypeName
 AppearanceData *LibraryWidget::getAppearanceData(QString componentType)
 {
-    qDebug() << "LibraryWidget::getAppearanceData: " + componentType;
+    //qDebug() << "LibraryWidget::getAppearanceData: " + componentType;
     if (mLibraryContentItemPtrsMap.count(componentType) == 0)
     {
         qDebug() << "Trying to fetch appearanceData for " + componentType + " which does not appear to exist in the Map, returning empty data";

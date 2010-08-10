@@ -19,6 +19,7 @@
 //#define USETBB            //Uncomment this will enable TBB package. Only use if you have it installed.
 #ifdef USETBB
 #include "tbb.h"
+#include "tick_count.h"
 #endif
 
 using namespace std;
@@ -2046,6 +2047,8 @@ void ComponentSystem::simulate(const double startT, const double stopT)
         mSubComponentStorage.mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);
     }
 
+    tbb::tick_count mother_of_all_starts = tbb::tick_count::now();
+
         //Time measurement
     //static tbb::affinity_partitioner Affinity3;
     //static tbb::affinity_partitioner Affinity4;
@@ -2128,14 +2131,20 @@ void ComponentSystem::simulate(const double startT, const double stopT)
     splitQVector.push_back(qPtrs2);
 
 
+    double log_time = 0;
+    double sim_time = 0;
     tbb::task_group *c;
     tbb::task_group *q;
     c = new tbb::task_group;
     q = new tbb::task_group;
     while ((mTime < stopTsafe) && (!mStop))
     {
+        tbb::tick_count log_start = tbb::tick_count::now();
         logAllNodes(mTime);
+        tbb::tick_count log_end = tbb::tick_count::now();
+        log_time = log_time + (log_end - log_start).seconds();
 
+        tbb::tick_count sim_start = tbb::tick_count::now();
         for (size_t s=0; s < mSubComponentStorage.mComponentSignalptrs.size(); ++s)
         {
             mSubComponentStorage.mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);
@@ -2146,8 +2155,23 @@ void ComponentSystem::simulate(const double startT, const double stopT)
         q->run(taskQ(splitQVector[0], mTime, mTime+mTimestep));
         q->run_and_wait(taskQ(splitQVector[1], mTime, mTime+mTimestep));
 
+        tbb::tick_count sim_end = tbb::tick_count::now();
+        sim_time = sim_time + (sim_end - sim_start).seconds();
+
+
         mTime += mTimestep;
     }
+    std::string s;
+    std::stringstream out;
+    out << log_time;
+    s = out.str();
+    gCoreMessageHandler.addInfoMessage(s);
+
+    std::string s2;
+    std::stringstream out2;
+    out2 << sim_time;
+    s2 = out2.str();
+    gCoreMessageHandler.addInfoMessage(s2);
 }
 
 #else

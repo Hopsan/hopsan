@@ -34,6 +34,7 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     mIsRenamingObject = false;
     mPortsHidden = false;
     mCtrlKeyPressed = false;
+    mUndoDisabled = false;
 
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
@@ -972,7 +973,7 @@ void GraphicsView::paste()
             data.posY -= 50;
 
             //Load (create new) object
-            GUIObject *pObj = loadGUIObject(data,mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,this);
+            GUIObject *pObj = loadGUIObject(data,mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,this, true);
 
             //Remember old name, in case we want to connect later
             renameMap.insert(data.name, pObj->getName());
@@ -1006,7 +1007,7 @@ void GraphicsView::paste()
             //Replace the component name to the actual new name
             data.componentName = renameMap.find(data.componentName).value();
             //Load it into the new copy
-            loadParameterValues(data,this);
+            loadParameterValues(data,this, true);
 
 //            componentName = renameMap.find(readName(copyStream)).value();
 //            copyStream >> parameterName;
@@ -1033,7 +1034,7 @@ void GraphicsView::paste()
                 data.pointVector[i].ry() -= 50;
             }
 
-            loadConnector(data,this,&(mpParentProjectTab->mGUIRootSystem));
+            loadConnector(data,this,&(mpParentProjectTab->mGUIRootSystem), true);
 
 //            startComponentName = renameMap.find(readName(copyStream)).value();
 //            startPortName = readName(copyStream);

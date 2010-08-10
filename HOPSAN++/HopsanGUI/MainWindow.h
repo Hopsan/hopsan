@@ -112,6 +112,7 @@ public:
     QAction *undoAction;
     QAction *redoAction;
     QAction *openUndoAction;
+    QAction *disableUndoAction;
     QAction *cutAction;
     QAction *copyAction;
     QAction *pasteAction;

@@ -221,6 +221,7 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(closeProjectTab(int)));
 
     connect(this,SIGNAL(currentChanged(int)),this, SLOT(updateSimulationSetupWidget()));
+    connect(this,SIGNAL(currentChanged(int)),this, SLOT(updateUndoStatus()));
 
     connect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), this, SLOT(updateCurrentStartTime()));
     connect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), this, SLOT(updateCurrentTimeStep()));
@@ -239,6 +240,7 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     connect(mpParentMainWindow->hideNamesAction,SIGNAL(triggered()),this, SLOT(hideNames()));
     connect(mpParentMainWindow->showNamesAction,SIGNAL(triggered()),this, SLOT(showNames()));
     connect(mpParentMainWindow->centerViewAction,SIGNAL(triggered()),this,SLOT(centerView()));
+    connect(mpParentMainWindow->disableUndoAction,SIGNAL(triggered()),this, SLOT(disableUndo()));
 }
 
 
@@ -649,19 +651,19 @@ void ProjectTabWidget::loadModel()
 
         if ( inputWord == "COMPONENT" )
         {
-            loadGUIObject(inputStream, mpParentMainWindow->mpLibrary, pCurrentTab->mpGraphicsView);
+            loadGUIObject(inputStream, mpParentMainWindow->mpLibrary, pCurrentTab->mpGraphicsView, true);
         }
 
 
         if ( inputWord == "PARAMETER" )
         {
-            loadParameterValues(inputStream, pCurrentTab->mpGraphicsView);
+            loadParameterValues(inputStream, pCurrentTab->mpGraphicsView, true);
         }
 
 
         if ( inputWord == "CONNECT" )
         {
-            loadConnector(inputStream, pCurrentTab->mpGraphicsView, &(pCurrentTab->mGUIRootSystem));
+            loadConnector(inputStream, pCurrentTab->mpGraphicsView, &(pCurrentTab->mGUIRootSystem), true);
         }
     }
     //Deselect all components
@@ -831,4 +833,51 @@ void ProjectTabWidget::showNames()
 void ProjectTabWidget::centerView()
 {
     this->getCurrentTab()->mpGraphicsView->centerOn(getCurrentTab()->mpGraphicsView->sceneRect().center());
+}
+
+
+//! Disables the undo function for the current model
+void ProjectTabWidget::disableUndo()
+{
+
+    if(!getCurrentTab()->mpGraphicsView->mUndoDisabled)
+    {
+        QMessageBox disableUndoWarningBox(QMessageBox::Warning, tr("Warning"),tr("Disabling undo history will clear all undo history for this model. Do you want to continue?"), 0, this);
+        disableUndoWarningBox.addButton(tr("&Yes"), QMessageBox::AcceptRole);
+        disableUndoWarningBox.addButton(tr("&No"), QMessageBox::RejectRole);
+
+        if (disableUndoWarningBox.exec() == QMessageBox::AcceptRole)
+        {
+            getCurrentTab()->mpGraphicsView->clearUndo();
+            getCurrentTab()->mpGraphicsView->mUndoDisabled = true;
+            this->mpParentMainWindow->undoAction->setDisabled(true);
+            this->mpParentMainWindow->redoAction->setDisabled(true);
+        }
+        else
+        {
+            return;
+        }
+    }
+    else
+    {
+        getCurrentTab()->mpGraphicsView->mUndoDisabled = false;
+        this->mpParentMainWindow->undoAction->setDisabled(false);
+        this->mpParentMainWindow->redoAction->setDisabled(false);
+    }
+}
+
+
+//! Enables or disables the undo buttons depending on whether or not undo is disabled in current tab
+void ProjectTabWidget::updateUndoStatus()
+{
+    if(getCurrentTab()->mpGraphicsView->mUndoDisabled)
+    {
+        mpParentMainWindow->undoAction->setDisabled(true);
+        mpParentMainWindow->redoAction->setDisabled(true);
+    }
+    else
+    {
+        mpParentMainWindow->undoAction->setDisabled(false);
+        mpParentMainWindow->redoAction->setDisabled(false);
+    }
 }

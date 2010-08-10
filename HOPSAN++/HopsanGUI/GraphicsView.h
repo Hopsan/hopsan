@@ -25,6 +25,7 @@ public:
     bool mIsCreatingConnector;
     bool mPortsHidden;
     bool mIsRenamingObject;
+    bool mUndoDisabled;
     GUIObject *getGUIObject(QString name);
     GUIConnector *getTempConnector();
     void resetBackgroundBrush();

@@ -82,7 +82,7 @@ void UndoStack::newPost()
     int tempSize = mStack.size()-1;
     for(int i = mCurrentStackPosition; i != tempSize; ++i)
     {
-        qDebug() << i;
+        //qDebug() << i;
         mStack.pop_back();
     }
 
@@ -105,8 +105,11 @@ void UndoStack::newPost()
 //! Inserts an undopost to the current stack position
 void UndoStack::insertPost(QString str)
 {
-    mStack[mCurrentStackPosition].insert(0,str);
-    mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
+    if(!this->mpParentView->mUndoDisabled)
+    {
+        mStack[mCurrentStackPosition].insert(0,str);
+        mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
+    }
 }
 
 
@@ -138,13 +141,13 @@ void UndoStack::undoOneStep()
             QTextStream poststream(&mStack[undoPosition][i]);
             poststream >> undoevent;
 
-            qDebug() << "UNDO: " << undoevent;
+            //qDebug() << "UNDO: " << undoevent;
             if( undoevent == "DELETEDOBJECT" )
             {
                 //poststream >> junk; //Discard Component load command
                 ////! @todo maybe we should not save it automatically in the guiobject maby let some other external save function add it
                 loadGUIObject(poststream, mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentView, true);
-                qDebug() << "after loadGUIObject: " << i << " " << mStack[undoPosition].size();
+                //qDebug() << "after loadGUIObject: " << i << " " << mStack[undoPosition].size();
 
 //                //! @todo This code is testing the use of generic loadGUIObject functionality
 //                //! @todo Temporary fix until QStringLists in undo has been replaced på TextStreams
@@ -346,7 +349,7 @@ void UndoStack::undoOneStep()
                 QPointF oldPt, newPt;
                 QString name = readName(poststream);
                 poststream >> oldPt.rx() >> oldPt.ry() >> newPt.rx() >> newPt.ry();
-                qDebug() << name;
+                //qDebug() << name;
                 mpParentView->getGUIObject(name)->setPos(oldPt);
 
 //                qreal oldX = mStack[undoPosition][i][1].toDouble();
@@ -406,7 +409,7 @@ void UndoStack::redoOneStep()
             QTextStream poststream (&mStack[mCurrentStackPosition][i]);
             poststream >> redoevent;
 
-            qDebug() << "REDO: " << redoevent;
+            //qDebug() << "REDO: " << redoevent;
             if( redoevent == "DELETEDOBJECT" )
             {
                 readName(poststream); //Discard Type
@@ -628,7 +631,7 @@ void UndoStack::redoOneStep()
 //! @param item is a pointer to the component about to be deleted.
 void UndoStack::registerDeletedObject(GUIObject *item)
 {
-    qDebug() << "registerDeletedObject()";
+    //qDebug() << "registerDeletedObject()";
     QString str;
     QTextStream stream(&str);
     item->saveToTextStream(stream, "DELETEDOBJECT");
@@ -671,7 +674,7 @@ void UndoStack::registerDeletedObject(GUIObject *item)
 //! @param item is a pointer to the connector about to be deleted.
 void UndoStack::registerDeletedConnector(GUIConnector *item)
 {
-    qDebug() << "registerDeletedConnector()";
+    //qDebug() << "registerDeletedConnector()";
     QString str;
     QTextStream stream(&str);
     item->saveToTextStream(stream, "DELETEDCONNECTOR");
@@ -721,7 +724,7 @@ void UndoStack::registerAddedObject(GUIObject *item)
 //! @param item is a pointer to the added connector.
 void UndoStack::registerAddedConnector(GUIConnector *item)
 {
-    qDebug() << "registerAddedConnector()";
+    //qDebug() << "registerAddedConnector()";
     QString str;
     QTextStream stream(&str);
     item->saveToTextStream(stream, "ADDEDCONNECTOR");
@@ -810,7 +813,7 @@ void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString obje
     QString str;
     QTextStream stream(&str);
     stream << "MOVEDOBJECT " <<  addQuotes(objectName) << " " << oldPos.x() << " " << oldPos.y() << " " << newPos.x() << " " << newPos.y();
-    qDebug() << str;
+    //qDebug() << str;
     this->insertPost(str);
 
 //    QString oldXString;
