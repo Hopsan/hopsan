@@ -38,7 +38,7 @@
 
 //!
 //! @file   GUIUtilities.h
-//! @author All <flumes@liu.se>
+//! @author Flumes <flumes@lists.iei.liu.se>
 //! @date   2010-10-09
 //!
 //! @brief Contains a class for misc utilities

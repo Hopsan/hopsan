@@ -102,7 +102,7 @@ QString addQuotes(QString str)
 //! @brief Use this function to calculate the placement of the ports on a subsystem icon.
 //! @param[in] w width of the subsystem icon
 //! @param[in] h heigth of the subsystem icon
-//! @param[in] angle the angle of the line between center and the actual port
+//! @param[in] angle the angle in radians of the line between center and the actual port
 //! @param[out] x the new calculated horizontal placement for the port
 //! @param[out] y the new calculated vertical placement for the port
 void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y)

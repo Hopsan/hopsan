@@ -79,6 +79,7 @@ public:
 
     void showPorts(bool visible);
     GUIPort *getPort(QString name);
+    QList<GUIPort*> getPortListPtrs();
 
     virtual QVector<QString> getParameterNames();
     virtual QString getParameterUnit(QString name) {assert(false);}; //Only availible in GUIComponent for now
@@ -95,7 +96,6 @@ public:
 
     enum { Type = UserType + 2 };
     int type() const;
-    QList<GUIPort*> mPortListPtrs;
     GUIObjectDisplayName *mpNameText;
     //QMap<QString, GUIPort*> mGuiPortPtrMap;
 
@@ -140,6 +140,8 @@ protected:
     bool mIsFlipped;
     AppearanceData mAppearanceData;
     QPointF mOldPos;
+
+    QList<GUIPort*> mPortListPtrs;
 
 protected slots:
     void fixTextPosition(QPointF pos);

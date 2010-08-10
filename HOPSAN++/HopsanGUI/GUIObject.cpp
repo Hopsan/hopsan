@@ -227,6 +227,11 @@ QString GUIObject::getName()
 }
 
 
+QList<GUIPort*> GUIObject::getPortListPtrs()
+{
+    return mPortListPtrs;
+}
+
 void GUIObject::deleteInHopsanCore()
 {
     cout << "Virtual dummy function" << endl;
@@ -1408,7 +1413,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
             mGUICompList.append(pComponent);
             pMessageWidget->printGUIMessage(pComponent->getName());
 
-            //A bit ugly to loop trough ALL connectors in the GraphicsView
+            //Ugly to loop trough ALL connectors in the GraphicsView
             for(int i = 0; i != mpParentGraphicsView->mConnectorVector.size(); ++i)
             {
                 if((mpParentGraphicsView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == pComponent->getName()) or

@@ -410,8 +410,9 @@ void VariableList::updateList()
             colorize = true;
         }
 
+        QList<GUIPort*> portListPtrs = it.value()->getPortListPtrs();
         QList<GUIPort*>::iterator itp;
-        for(itp = it.value()->mPortListPtrs.begin(); itp !=it.value()->mPortListPtrs.end(); ++itp)
+        for(itp = portListPtrs.begin(); itp !=portListPtrs.end(); ++itp)
         {
            // qDebug() << "Writing plot stuff for " << it.value()->getName() << " " << (*itp)->getName();
 
