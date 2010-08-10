@@ -132,9 +132,9 @@ void GUIObject::fixTextPosition(QPointF pos)
     {
         if(this->rotation() == 0)
         {
-            x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2/mpParentGraphicsView->mZoomFactor;
+            x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
             y1 = -mpNameText->boundingRect().height() - mTextOffset;  //mTextOffset*
-            x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2/mpParentGraphicsView->mZoomFactor;
+            x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
             y2 = mpIcon->boundingRect().height() + mTextOffset;// - mpNameText->boundingRect().height()/2;
         }
         else if(this->rotation() == 180)
@@ -204,6 +204,8 @@ void GUIObject::fixTextPosition(QPointF pos)
         mpNameText->setPos(x1,y1);
         mNameTextPos = 1;
     }
+
+    this->mpParentGraphicsView->resetBackgroundBrush();
 }
 
 
@@ -519,15 +521,18 @@ int GUIObject::getPortNumber(GUIPort *port)
 //! Rotates a component 90 degrees clockwise, and tells the connectors that the component has moved.
 void GUIObject::rotate(bool doNotRegisterUndo)
 {
-    int tempNameTextPos = mNameTextPos;
     this->setTransformOriginPoint(this->mpIcon->boundingRect().center());
     this->setRotation(this->rotation()+90);
+
     if (this->rotation() == 360)
     {
         this->setRotation(0);
     }
 
+    int tempNameTextPos = mNameTextPos;
+    this->mpNameText->rotate(-90);
     this->fixTextPosition(this->mpNameText->pos());
+    setNameTextPos(tempNameTextPos);
 
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
@@ -555,7 +560,6 @@ void GUIObject::rotate(bool doNotRegisterUndo)
                 mPortListPtrs.value(i)->setRotation(270);
         }
         //mPortListPtrs[i]->updatePosition();
-        setNameTextPos(tempNameTextPos);
     }
 
     if(!this->mIconRotation)
@@ -796,7 +800,7 @@ GUIObjectDisplayName::GUIObjectDisplayName(GUIObject *pParent)
 {
     mpParentGUIComponent = pParent;
     setTextInteractionFlags(Qt::TextEditable | Qt::TextSelectableByMouse);
-    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIgnoresTransformations);
+    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
 }
 
 void GUIObjectDisplayName::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
