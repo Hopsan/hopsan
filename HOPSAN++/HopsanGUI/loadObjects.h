@@ -18,6 +18,7 @@ public:
     QString name;
     qreal posX, posY, rotation;
     int nameTextPos;
+    int textVisible;
 
     void read(QTextStream &rStream);
 };

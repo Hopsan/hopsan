@@ -23,6 +23,7 @@ void ObjectLoadData::read(QTextStream &rStream)
     //! @todo if not end of stream do this, to allow incomplete load_data
     rStream >> rotation;
     rStream >> nameTextPos;
+    rStream >> textVisible;
 }
 
 
@@ -64,6 +65,10 @@ GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, G
 
         GUIObject* pObj = pGraphicsView->addGUIObject(appearanceData, QPoint(rData.posX, rData.posY), 0, true, noUnDo);
         pObj->setNameTextPos(rData.nameTextPos);
+        if(!rData.textVisible)
+        {
+            pObj->hideName();
+        }
         while(pObj->rotation() != rData.rotation)
         {
             pObj->rotate(noUnDo);

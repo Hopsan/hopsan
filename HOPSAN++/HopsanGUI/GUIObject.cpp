@@ -338,7 +338,7 @@ void GUIObject::saveToTextStream(QTextStream &rStream, QString prepend)
         rStream << prepend << " ";
     }
     rStream << addQuotes(getTypeName()) << " " << addQuotes(getName()) << " "
-            << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << "\n";
+            << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << " " << mpNameText->isVisible() << "\n";
 }
 
 
