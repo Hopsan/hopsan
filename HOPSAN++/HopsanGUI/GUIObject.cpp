@@ -1419,7 +1419,14 @@ void GUISubsystem::saveToTextStream(QTextStream &rStream, QString prepend)
 
 void GUISubsystem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    loadSubsystem();
+    if(mModelFilePath.isEmpty())
+    {
+        loadSubsystem();
+    }
+    else
+    {
+        return;
+    }
 }
 
 GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
