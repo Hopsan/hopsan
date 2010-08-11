@@ -1310,13 +1310,16 @@ void GUISubsystem::loadFromFile(QString modelFileName)
         portapp.selectPortIcon("","",""); //!< @todo fix this
 
         portappmap->insert(sysappdata.portnames[i], portapp);
+        qDebug() << sysappdata.portnames[i];
     }
     qDebug() << "Appearance set";
 
     //Load the contents of the subsystem from the external file
     //! @todo do this
 
+
     this->refreshAppearance();
+    this->createPorts();
 }
 
 
@@ -1400,15 +1403,16 @@ void GUISubsystem::createPorts()
     for (it = mAppearanceData.getPortAppearanceMap().begin(); it != mAppearanceData.getPortAppearanceMap().end(); ++it)
     {
         //! @todo fix this
-//        QString nodeType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getNodeType(this->getName(), i.key());
-//        QString portType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPortType(this->getName(), i.key());
-//        i.value().selectPortIcon(cqsType, portType, nodeType);
+        qDebug() << "getNode and portType for " << it.key();
+        QString nodeType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getNodeType(this->getName(), it.key());
+        QString portType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPortType(this->getName(), it.key());
+        it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
 
-//        qreal x = i.value().x;
-//        qreal y = i.value().y;
+        qreal x = it.value().x;
+        qreal y = it.value().y;
 
-//        GUIPort *pNewPort = new GUIPort(i.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
-//        mPortListPtrs.append(pNewPort);
+        GUIPort *pNewPort = new GUIPort(it.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(it.value()), this);
+        mPortListPtrs.append(pNewPort);
     }
 }
 
