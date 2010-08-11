@@ -719,14 +719,14 @@ void ProjectTabWidget::saveModel(bool saveAs)
     QPointF center = QPointF((xMax+xMin)/2, (yMax+yMin)/2);
     double w = xMax-xMin;
     double h = yMax-yMin;
-    getCurrentTab()->mpGraphicsScene->addRect(xMin, yMin, w, h); //debug-grej
+    //getCurrentTab()->mpGraphicsScene->addRect(xMin, yMin, w, h); //debug-grej
 
     for(it = pCurrentView->mGUIObjectMap.begin(); it!=pCurrentView->mGUIObjectMap.end(); ++it)
     {
         if(it.value()->getTypeName() == "SystemPort")
         {
             line = QLineF(center.x(), center.y(), it.value()->x()+it.value()->rect().width()/2, it.value()->y()+it.value()->rect().height()/2);
-            getCurrentTab()->mpGraphicsScene->addLine(line); //debug-grej
+            //getCurrentTab()->mpGraphicsScene->addLine(line); //debug-grej
             angle = line.angle()*3.141592/180.0;
             calcSubsystemPortPosition(w, h, angle, x, y);
             x = (x/w+1)/2; //Change coordinate system
