@@ -1634,9 +1634,6 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
     {
         GUIConnector *pTransitConnector = mGUITransitConnList[i];
 
-        //Add the connections at the group boundary of the group to the group scene
-//NU         mpGroupScene->addItem(pTransitConnector);
-
         //Get the right appearance data for the group port
         AppearanceData appData;
         appData = *(mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData("SystemPort"));
@@ -1745,6 +1742,36 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
 }
 
 
+GUIGroup::~GUIGroup()
+{
+    qDebug() << "GUIGroup destructor";
+    QMap<QString, GUIObject *>::iterator itm;
+    for(itm = mpParentGraphicsView->mGUIObjectMap.begin(); itm != mpParentGraphicsView->mGUIObjectMap.end(); ++itm)
+    {
+        qDebug() << "GUIObjectMap: " << itm.key();
+    }
+
+
+    QList<QGraphicsItem*> objectsInScenePtrs = this->mpGroupScene->items();
+    QList<QGraphicsItem*>::iterator it;
+    for(it=objectsInScenePtrs.begin(); it != objectsInScenePtrs.end(); ++it)
+    {
+        this->mpParentGraphicsView->deleteGUIObject(this->getName());
+        GUIComponent *pGUIComponent = qgraphicsitem_cast<GUIComponent*>(*it);
+        this->mpGroupScene->removeItem((*it));
+
+        if(pGUIComponent)
+        {
+            qDebug() << "Add this to parent scene: " << pGUIComponent->getName();
+            mpParentScene->addItem(pGUIComponent);
+        }
+        //mpParentScene->addItem((*it));
+    }
+    qDebug() << "this->mpParentGraphicsView->deleteGUIObject(this->getName()), getName:" << this->getName();
+    //delete mpGroupScene;
+}
+
+
 //! Shows the parent scene. Should be called to exit a group.
 void GUIGroup::showParent()
 {
@@ -1754,6 +1781,23 @@ void GUIGroup::showParent()
 
     this->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton->hide();
 
+}
+
+
+void GUIGroup::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+        QMenu menu;
+
+        QAction *groupAction;
+
+        groupAction = menu.addAction(tr("Un-group components"));
+
+        QAction *selectedAction = menu.exec(event->screenPos());
+
+        if (selectedAction == groupAction)
+        {
+            delete this;
+        }
 }
 
 

@@ -237,6 +237,7 @@ private:
 
 };
 
+
 class GUISubsystem : public GUIObject
 {
     Q_OBJECT
@@ -272,6 +273,7 @@ private:
     QString mLoadType;
 };
 
+
 class GUISystemPort : public GUIObject
 {
     Q_OBJECT
@@ -291,12 +293,13 @@ private:
     GUIPort *mpGuiPort;
 };
 
+
 class GUIGroup : public GUIObject
 {
     Q_OBJECT
 public:
     GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData, GraphicsScene *scene, QGraphicsItem *parent = 0);
-
+    ~GUIGroup();
 //    QString getName();
 //    void setName(QString name, bool doOnlyLocalRename=false);
 
@@ -322,7 +325,7 @@ private:
 //    GUIPort *mpGuiPort;
 
 //    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-//    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 //    void openParameterDialog();
 //
 //    QString mComponentTypeName;
