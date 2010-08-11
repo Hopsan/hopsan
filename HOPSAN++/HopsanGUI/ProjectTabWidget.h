@@ -49,7 +49,6 @@
 #define PROJECTTABWIDGET_H
 
 #include <QTabWidget>
-
 #include "GUIRootSystem.h"
 
 //Forward declaration

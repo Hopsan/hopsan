@@ -702,27 +702,48 @@ void ProjectTabWidget::saveModel(bool saveAs)
     modelFile << "ISOICONPATH " << addQuotes(getCurrentTab()->getIsoIconPath()) << "\n";
 
     //Calculate the position of the subsystem ports:
-    QMap<QString, GUIObject*>::iterator i;
+    QMap<QString, GUIObject*>::iterator it;
     QLineF line;
     double angle, x, y;
-    double w = getCurrentTab()->mpGraphicsScene->sceneRect().width()/2;
-    double h = getCurrentTab()->mpGraphicsScene->sceneRect().height()/2;
-    QPointF center = getCurrentTab()->mpGraphicsView->geometry().center();
-    for(i = pCurrentView->mGUIObjectMap.begin(); i!=pCurrentView->mGUIObjectMap.end(); ++i)
+
+    double xMax = pCurrentView->mGUIObjectMap.begin().value()->x()+pCurrentView->mGUIObjectMap.begin().value()->rect().width()/2.0;
+    double xMin = pCurrentView->mGUIObjectMap.begin().value()->x()+pCurrentView->mGUIObjectMap.begin().value()->rect().width()/2.0;
+    double yMax = pCurrentView->mGUIObjectMap.begin().value()->y()+pCurrentView->mGUIObjectMap.begin().value()->rect().height()/2.0;
+    double yMin = pCurrentView->mGUIObjectMap.begin().value()->y()+pCurrentView->mGUIObjectMap.begin().value()->rect().height()/2.0;
+
+    for(it = pCurrentView->mGUIObjectMap.begin(); it!=pCurrentView->mGUIObjectMap.end(); ++it)
     {
-        if(i.value()->getTypeName() == "SystemPort")
+        if (it.value()->x()+it.value()->rect().width()/2.0 < xMin)
+            xMin = it.value()->x()+it.value()->rect().width()/2.0;
+        if (it.value()->x()+it.value()->rect().width()/2.0 > xMax)
+            xMax = it.value()->x()+it.value()->rect().width()/2.0;
+        if (it.value()->y()+it.value()->rect().height()/2.0 < yMin)
+            yMin = it.value()->y()+it.value()->rect().height()/2.0;
+        if (it.value()->y()+it.value()->rect().height()/2.0 > yMax)
+            yMax = it.value()->y()+it.value()->rect().height()/2.0;
+    }
+
+    QPointF center = QPointF((xMax+xMin)/2, (yMax+yMin)/2);
+    double w = xMax-xMin;
+    double h = yMax-yMin;
+    getCurrentTab()->mpGraphicsScene->addRect(xMin, yMin, w, h); //debug-grej
+
+    for(it = pCurrentView->mGUIObjectMap.begin(); it!=pCurrentView->mGUIObjectMap.end(); ++it)
+    {
+        if(it.value()->getTypeName() == "SystemPort")
         {
-            line = QLineF(center.x(), center.y(), i.value()->x(), i.value()->y());
-            //getCurrentTab()->mpGraphicsScene->addLine(line); //debug-grej
+            line = QLineF(center.x(), center.y(), it.value()->x()+it.value()->rect().width()/2, it.value()->y()+it.value()->rect().height()/2);
+            getCurrentTab()->mpGraphicsScene->addLine(line); //debug-grej
             angle = line.angle()*3.141592/180.0;
-            calcSubsystemPortPercentage(w, h, angle, x, y);
-            //x = i.value()->x()
-            modelFile << "PORT " << addQuotes(i.value()->getName()) <<" " << x << " " << y << " " << angle << "\n";
+            calcSubsystemPortPosition(w, h, angle, x, y);
+            x = (x/w+1)/2; //Change coordinate system
+            y = (-y/h+1)/2; //Change coordinate system
+            modelFile << "PORT " << addQuotes(it.value()->getName()) <<" " << x << " " << y << " " << angle << "\n";
         }
     }
         modelFile << "--------------------------------------------------------------\n";
 
-    QMap<QString, GUIObject*>::iterator it;
+    //QMap<QString, GUIObject*>::iterator it;
     for(it = pCurrentView->mGUIObjectMap.begin(); it!=pCurrentView->mGUIObjectMap.end(); ++it)
     {
         it.value()->saveToTextStream(modelFile, "COMPONENT");
