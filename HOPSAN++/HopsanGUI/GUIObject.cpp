@@ -1546,10 +1546,10 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
     //Take care of the boundary connections of the group
     for(int i=0; i < mGUITransitConnList.size(); ++i)
     {
-        GUIConnector *transitConnector = mGUITransitConnList[i];
+        GUIConnector *pTransitConnector = mGUITransitConnList[i];
 
         //Add the connections at the group boundary of the group to the group scene
-//NU         mpGroupScene->addItem(transitConnector);
+//NU         mpGroupScene->addItem(pTransitConnector);
 
         //Get the right appearance data for the group port
         AppearanceData appData;
@@ -1560,53 +1560,45 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
 
         GUIComponent *startComp;
         GUIComponent *endComp;
-        startComp = qgraphicsitem_cast<GUIComponent*>(transitConnector->getStartPort()->getGuiObject());
-        endComp   = qgraphicsitem_cast<GUIComponent*>(transitConnector->getEndPort()->getGuiObject());
+        startComp = qgraphicsitem_cast<GUIComponent*>(pTransitConnector->getStartPort()->getGuiObject());
+        endComp   = qgraphicsitem_cast<GUIComponent*>(pTransitConnector->getEndPort()->getGuiObject());
 
         QPoint groupPortPoint;
+        GUIPort *pPortBoundaryInside; //Inside the group
+        GUIPort *pPortBoundaryOutside; //Outside the group
         if((startComp) && (mGUICompList.contains(startComp)))
         {
             //Find the right point for the group boundary port (in this case the boundary is at the connector start point)
-//NU             groupPortPoint = transitConnector->getEndPort()->mapToScene(transitConnector->getEndPort()->boundingRect().center()).toPoint();
-            groupPortPoint = QPoint(20, 0);
-            groupPortPoint += transitConnector->getStartPort()->mapToScene(transitConnector->getStartPort()->boundingRect().center()).toPoint();
+            pPortBoundaryInside = pTransitConnector->getStartPort();
+            pPortBoundaryOutside = pTransitConnector->getEndPort();
         }
         if((endComp) && (mGUICompList.contains(endComp)))
         {
             //Find the right point for the group boundary port (in this case the boundary is at the connector end point)
-//NU             groupPortPoint = transitConnector->getStartPort()->mapToScene(transitConnector->getStartPort()->boundingRect().center()).toPoint();
-            groupPortPoint = QPoint(20, 0);
-            groupPortPoint += transitConnector->getEndPort()->mapToScene(transitConnector->getEndPort()->boundingRect().center()).toPoint();
+            pPortBoundaryInside = pTransitConnector->getEndPort();
+            pPortBoundaryOutside = pTransitConnector->getStartPort();
         }
+        groupPortPoint = getOffsetPointfromPort(pPortBoundaryInside).toPoint();
+        groupPortPoint += QPoint(2.0*groupPortPoint.x(), 2.0*groupPortPoint.y());
+        groupPortPoint += pPortBoundaryInside->mapToScene(pPortBoundaryInside->boundingRect().center()).toPoint();
+
         //Add a new group port for the boundary at the boundary connector
         pGroupPortComponent = new GUIGroupPort(appData, groupPortPoint, mpGroupScene);
         GUIPort *pPort = pGroupPortComponent->getPort("sysp");
-        GUIPort *pPortBoundaryInside; //Inside the group
-        GUIPort *pPortBoundaryOutside; //Outside the group
         QString portName;
         if(pPort)
         {
-            //Sets the right port to the connector
-            if((startComp) && (mGUICompList.contains(startComp)))
-            {
-                pGroupPortComponent->setOuterGuiPort(transitConnector->getEndPort());
-                pPortBoundaryInside = transitConnector->getStartPort();
-                pPortBoundaryOutside = transitConnector->getEndPort();
-                portName = transitConnector->getStartPort()->getName();
-                transitConnector->setEndPort(pPort);
-            }
-            if((endComp) && (mGUICompList.contains(endComp)))
-            {
-                pGroupPortComponent->setOuterGuiPort(transitConnector->getStartPort());
-                pPortBoundaryInside = transitConnector->getEndPort();
-                pPortBoundaryOutside = transitConnector->getStartPort();
-                portName = transitConnector->getEndPort()->getName();
-                transitConnector->setStartPort(pPort);
-            }
-            else
-                qDebug() << "No port with that name!";
+            pGroupPortComponent->setOuterGuiPort(pPortBoundaryOutside);
+            portName = pTransitConnector->getStartPort()->getName();
 
-            pGroupPortComponent->addConnector(transitConnector);
+            QVector<QPointF> points;
+            points.append(pPortBoundaryInside->mapToScene(pPortBoundaryInside->boundingRect().center()));
+            points.append(pPort->mapToScene(pPort->boundingRect().center())); //! @todo GUIConnector should handle any number of points e.g. 0, 1 or 2
+            points.append(pPort->mapToScene(pPort->boundingRect().center()));
+            GUIConnector *pInsideConnector = new GUIConnector(pPortBoundaryInside, pPort, points, this->mpParentGraphicsView);
+            mpGroupScene->addItem(pInsideConnector);
+
+//            pGroupPortComponent->addConnector(pInsideConnector);
             mpGroupScene->addItem(pGroupPortComponent);
             pGroupPortComponent->showPorts(false);
 
@@ -1628,20 +1620,21 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
         portAppearance.selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
         //We supply ptr to rootsystem to indicate that this is a systemport
         //! @todo this is a very bad way of doing this (ptr to rootsystem for systemport), really need to figure out some better way
-        mpGuiPort = new GUIPort(pPortBoundaryInside->getGUIComponentName().append(", ").append(portName),
-                                mpIcon->boundingRect().center().x()+x,
-                                mpIcon->boundingRect().center().y()-y,
-                                &(portAppearance),
-                                this);
-        mPortListPtrs.append(mpGuiPort);
+        GUIPort *pGuiPort = new GUIPort(pPortBoundaryInside->getGUIComponentName().append(", ").append(portName),
+                                        mpIcon->boundingRect().center().x()+x,
+                                        mpIcon->boundingRect().center().y()-y,
+                                        &(portAppearance),
+                                        this);
+        mPortListPtrs.append(pGuiPort);
 
         //Make connectors to the group component
-        GUIConnector *tmpConnector = new GUIConnector(mpGuiPort, pPortBoundaryOutside,transitConnector->getPointsVector(), this->mpParentGraphicsView);
-        //! @todo Do I have to add the connector in "graphicsview.mpConnectors"?
+        GUIConnector *tmpConnector = new GUIConnector(pGuiPort, pPortBoundaryOutside,pTransitConnector->getPointsVector(), this->mpParentGraphicsView);
         this->mpParentScene->addItem(tmpConnector);
         this->showPorts(false);
         tmpConnector->drawConnector();
 
+        //Delete the old connector
+        delete pTransitConnector;
     }
 
     //Show this scene
