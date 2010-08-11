@@ -45,7 +45,12 @@
 //!
 //$Id$
 
+#include <cmath>
+#include <QPoint>
+
 #include "GUIUtilities.h"
+#include "GUIPort.h"
+#include "GUIObject.h"
 
 using namespace std;
 
@@ -160,3 +165,25 @@ void calcSubsystemPortPercentage(const double w, const double h, const double an
 }
 
 
+QPointF getOffsetPointfromPort(GUIPort *pPort)
+{
+    QPointF point;
+
+    if((pPort->getPortDirection() == PortAppearance::HORIZONTAL) and (pPort->getGuiObject()->mapToScene(pPort->getGuiObject()->boundingRect().center()).x() > pPort->scenePos().x()))
+    {
+        point.setX(-20);
+    }
+    else if((pPort->getPortDirection() == PortAppearance::HORIZONTAL) and (pPort->getGuiObject()->mapToScene(pPort->getGuiObject()->boundingRect().center()).x() < pPort->scenePos().x()))
+    {
+        point.setX(20);
+    }
+    else if((pPort->getPortDirection() == PortAppearance::VERTICAL) and (pPort->getGuiObject()->mapToScene(pPort->getGuiObject()->boundingRect().center()).y() > pPort->scenePos().y()))
+    {
+        point.setY(-20);
+    }
+    else if((pPort->getPortDirection() == PortAppearance::VERTICAL) and (pPort->getGuiObject()->mapToScene(pPort->getGuiObject()->boundingRect().center()).y() < pPort->scenePos().y()))
+    {
+        point.setY(20);
+    }
+    return point;
+}

@@ -941,64 +941,6 @@ void GUIObject::deleteMe()
     mpParentGraphicsView->deleteGUIObject(this->getName());
 }
 
-//void GUIObject::groupComponents(QList<QGraphicsItem*> compList) //Inte alls klart
-//{
-//    //Borde nog ligga i projecttab så man kan rodda med scenerna
-//
-//    QList<GUIComponent*> GUICompList;
-//    QList<GUIConnector*> GUIConnList;
-//
-//    MessageWidget *pMessageWidget = mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget;
-//    pMessageWidget->printGUIMessage("Group selected components (implementing in progress...) Selected components: ");
-//    for (int i=0; i < compList.size(); ++i)
-//    {
-//        GUIComponent *pComponent = qgraphicsitem_cast<GUIComponent*>(compList.at(i));
-//        if (pComponent)
-//        {
-//            GUICompList.append(pComponent);
-//
-//            QMap<QString, GUIConnector *>::iterator it;
-//            for(it = this->mpParentGraphicsView->mConnectorVector.begin(); it!=this->mpParentGraphicsView->mConnectorVector.end(); ++it)
-//            {
-//                if(it.key().contains(pComponent->getName()))
-//                    if((compList.contains(it.value()->getStartPort()->getGuiObject())) && (compList.contains(it.value()->getEndPort()->getGuiObject())))
-//                        GUIConnList.append(it.value());
-//
-//                if(this->mpParentGraphicsView->mConnectorVector.empty())
-//                    break;
-//            }
-//        }
-//    }
-//
-//    GraphicsScene *pSubScene = new GraphicsScene(this->mpParentGraphicsScene->mpParentProjectTab);
-//    for (int i=0; i < GUICompList.size(); ++i)
-//    {
-//        pSubScene->addItem(GUICompList.at(i));
-//    }
-//    for (int i=0; i < GUIConnList.size(); ++i)
-//    {
-//        pSubScene->addItem(GUIConnList.at(i));
-//    }
-//    this->mpParentGraphicsView->setScene(pSubScene);
-//}
-
-//int GUIComponent::type() const
-//{
-//    return Type;
-//}
-
-
-//void GUIComponent::keyPressEvent( QKeyEvent *event )
-//{
-//    if (event->key() == Qt::Key_Delete)
-//    {
-//        //please delete me
-//        mpParentGraphicsView->deleteComponent(this->getName());
-//    }
-//}
-
-
-
 
 GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
     : GUIObject(position, appearanceData, scene, parent)
@@ -1678,7 +1620,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
         GUIConnector *transitConnector = mGUITransitConnList[i];
 
         //Add the connections at the group boundary of the group to the group scene
-        mpGroupScene->addItem(transitConnector);
+//NU         mpGroupScene->addItem(transitConnector);
 
         //Get the right appearance data for the group port
         AppearanceData appData;
@@ -1696,12 +1638,16 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
         if((startComp) && (mGUICompList.contains(startComp)))
         {
             //Find the right point for the group boundary port (in this case the boundary is at the connector start point)
-            groupPortPoint = transitConnector->getEndPort()->mapToScene(transitConnector->getEndPort()->boundingRect().center()).toPoint();
+//NU             groupPortPoint = transitConnector->getEndPort()->mapToScene(transitConnector->getEndPort()->boundingRect().center()).toPoint();
+            groupPortPoint = QPoint(20, 0);
+            groupPortPoint += transitConnector->getStartPort()->mapToScene(transitConnector->getStartPort()->boundingRect().center()).toPoint();
         }
         if((endComp) && (mGUICompList.contains(endComp)))
         {
             //Find the right point for the group boundary port (in this case the boundary is at the connector end point)
-            groupPortPoint = transitConnector->getStartPort()->mapToScene(transitConnector->getStartPort()->boundingRect().center()).toPoint();
+//NU             groupPortPoint = transitConnector->getStartPort()->mapToScene(transitConnector->getStartPort()->boundingRect().center()).toPoint();
+            groupPortPoint = QPoint(20, 0);
+            groupPortPoint += transitConnector->getEndPort()->mapToScene(transitConnector->getEndPort()->boundingRect().center()).toPoint();
         }
         //Add a new group port for the boundary at the boundary connector
         pGroupPortComponent = new GUIGroupPort(appData, groupPortPoint, mpGroupScene);

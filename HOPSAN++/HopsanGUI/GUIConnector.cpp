@@ -321,26 +321,9 @@ void GUIConnector::setEndPort(GUIPort *port)
     else
     {
             //Move second last line a bit outwards from the component
-        if(mpEndPort->getPortDirection() == PortAppearance::HORIZONTAL and mpEndPort->getGuiObject()->mapToScene(mpEndPort->getGuiObject()->boundingRect().center()).x() > mpEndPort->scenePos().x())
-        {
-            mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-2].x() - 20, mPoints[mPoints.size()-2].y());
-            mPoints[mPoints.size()-3] = QPointF(mPoints[mPoints.size()-3].x() - 20, mPoints[mPoints.size()-3].y());
-        }
-        else if(mpEndPort->getPortDirection() == PortAppearance::HORIZONTAL and mpEndPort->getGuiObject()->mapToScene(mpEndPort->getGuiObject()->boundingRect().center()).x() < mpEndPort->scenePos().x())
-        {
-            mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-2].x() + 20, mPoints[mPoints.size()-2].y());
-            mPoints[mPoints.size()-3] = QPointF(mPoints[mPoints.size()-3].x() + 20, mPoints[mPoints.size()-3].y());
-        }
-        else if(mpEndPort->getPortDirection() == PortAppearance::VERTICAL and mpEndPort->getGuiObject()->mapToScene(mpEndPort->getGuiObject()->boundingRect().center()).y() > mpEndPort->scenePos().y())
-        {
-            mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-2].x(), mPoints[mPoints.size()-2].y() - 20);
-            mPoints[mPoints.size()-3] = QPointF(mPoints[mPoints.size()-3].x(), mPoints[mPoints.size()-3].y() - 20);
-        }
-        else if(mpEndPort->getPortDirection() == PortAppearance::VERTICAL and mpEndPort->getGuiObject()->mapToScene(mpEndPort->getGuiObject()->boundingRect().center()).y() < mpEndPort->scenePos().y())
-        {
-            mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-2].x(), mPoints[mPoints.size()-2].y() + 20);
-            mPoints[mPoints.size()-3] = QPointF(mPoints[mPoints.size()-3].x(), mPoints[mPoints.size()-3].y() + 20);
-        }
+        QPointF offsetPoint = getOffsetPointfromPort(mpEndPort);
+        mPoints[mPoints.size()-2] += offsetPoint;
+        mPoints[mPoints.size()-3] += offsetPoint;
         this->drawConnector();
         //this->mpParentGraphicsView->setBackgroundBrush(this->mpParentGraphicsView->mBackgroundColor);
         this->mpParentGraphicsView->resetBackgroundBrush();
