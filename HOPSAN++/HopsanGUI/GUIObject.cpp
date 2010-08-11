@@ -54,6 +54,7 @@
 #include "GraphicsScene.h"
 #include "GraphicsView.h"
 #include "LibraryWidget.h"
+#include "loadObjects.h"
 
 using namespace std;
 
@@ -1227,119 +1228,34 @@ QVector<QString> GUISubsystem::getParameterNames()
 //void GUISubsystem::refreshAppearance();
 
 //! @todo Maybe should be somewhere else and be called load subsystem
-void GUISubsystem::load(QString filepath)
+void GUISubsystem::load(QTextStream &rFile)
 {
-//    QDir fileDialogOpenDir;
-//    QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Model File"),
-//                                                         fileDialogOpenDir.currentPath() + QString("/../../Models"),
-//                                                         tr("Hopsan Model Files (*.hmf)"));
-//    if (modelFileName.isEmpty())
-//        return;
+    SystemAppearanceLoadData sysappdata;
+    HeaderLoadData header;
 
-//    QFile file(modelFileName);   //Create a QFile object
-//    QFileInfo fileInfo(file);
+    header.read(rFile);
+    //! @todo check so that version OK!
+    sysappdata.read(rFile);
 
-////    for(int t=0; t!=this->count(); ++t)
-////    {
-////        if( (this->tabText(t) == fileInfo.fileName()) or (this->tabText(t) == (fileInfo.fileName() + "*")) )
-////        {
-////            QMessageBox::StandardButton reply;
-////            reply = QMessageBox::information(this, tr("Error"), tr("Unable to load model. File is already open."));
-////            return;
-////        }
-////    }
+    mAppearanceData.setIconPathUser(sysappdata.usericon_path);
+    mAppearanceData.setIconPathISO(sysappdata.isoicon_path);
 
+    PortAppearanceMapT* portappmap = &(mAppearanceData.getPortAppearanceMap());
+    for (int i=0; i<sysappdata.portnames.size(); ++i)
+    {
+        PortAppearance portapp;
+        portapp.x = sysappdata.port_xpos[i];
+        portapp.y = sysappdata.port_ypos[i];
+        portapp.rot = sysappdata.port_angle[i];
+        portapp.selectPortIcon("","",""); //!< @todo fix this
 
-//    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
-//    {
-//        qDebug() << "Failed to open file or not a text file: " + modelFileName;
-//        return;
-//    }
-//    QTextStream inputStream(&file);  //Create a QTextStream object to stream the content of file
+        portappmap->insert(sysappdata.portnames[i], portapp);
+    }
 
+    //Load the contents of the subsystem from the external file
+    //! @todo do this
 
-////    this->addProjectTab(new ProjectTab(this), fileInfo.fileName());
-////    ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
-////    pCurrentTab->mModelFileName = modelFileName;
-////    pCurrentTab->mpGraphicsView->undoStack->newPost();
-////    pCurrentTab->mIsSaved = true;
-
-//        //Necessary declarations
-//    QString inputWord, tempString;
-
-//    readHeader(inputStream, mpParentMainWindow->mpMessageWidget);
-
-//    while ( !inputStream.atEnd() )
-//    {
-//        //Extract first word on line
-//        inputStream >> inputWord;
-
-//        //! @todo Why have 3 different rows for simulation time variables why not SIMULATIONTIME start, ts, stop
-//        if ( inputWord == "STARTTIME" )
-//        {
-//            double startTime;
-//            inputStream >> startTime;
-////            mpParentMainWindow->setStartTimeLabel(startTime);
-//        }
-
-//        if ( inputWord == "TIMESTEP" )
-//        {
-//            double timeStep;
-//            inputStream >> timeStep;
-////            mpParentMainWindow->setTimeStepLabel(timeStep);
-//        }
-
-//        if ( inputWord == "FINISHTIME" )
-//        {
-//            double finishTime;
-//            inputStream >> finishTime;
-////            mpParentMainWindow->setFinishTimeLabel(finishTime);
-//        }
-
-//        if ( inputWord == "VIEWPORT" )
-//        {
-//            double xPos, yPos, zoomFactor;
-//            inputStream >> xPos;
-//            inputStream >> yPos;
-//            inputStream >> zoomFactor;
-////            getCurrentTab()->mpGraphicsView->centerOn(xPos, yPos);
-////            getCurrentTab()->mpGraphicsView->scale(zoomFactor, zoomFactor);
-////            getCurrentTab()->mpGraphicsView->mZoomFactor = zoomFactor;
-////            getCurrentTab()->mpGraphicsView->resetBackgroundBrush();
-//        }
-
-//        if ( inputWord == "COMPONENT" )
-//        {
-//            loadGUIObject(inputStream, mpParentMainWindow->mpLibrary, pCurrentTab->mpGraphicsView);
-//        }
-
-
-//        if ( inputWord == "PARAMETER" )
-//        {
-//            loadParameterValues(inputStream, pCurrentTab->mpGraphicsView);
-//        }
-
-
-//        if ( inputWord == "CONNECT" )
-//        {
-//            loadConnector(inputStream, pCurrentTab->mpGraphicsView, &(pCurrentTab->mGUIRootSystem));
-//        }
-//    }
-//    //Deselect all components
-//   //pCurrentTab->mpGraphicsView->deselectAllGUIObjects();
-
-//    //Sets the file name as model name
-//    getCurrentTab()->mGUIRootSystem.setRootSystemName(fileInfo.fileName());
-
-//    pCurrentTab->mpGraphicsView->deSelectAll();
-//    this->centerView();
-//    pCurrentTab->mpGraphicsView->undoStack->clear();
-//    pCurrentTab->mpGraphicsView->resetBackgroundBrush();
-
-//    emit checkMessages();
-//}
-
-
+    this->refreshAppearance();
 }
 
 
@@ -1423,6 +1339,19 @@ void GUISubsystem::createPorts()
 //        GUIPort *pNewPort = new GUIPort(i.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
 //        mPortListPtrs.append(pNewPort);
     }
+}
+
+//! @brief Save GuiSubsystem to a text stream
+//! @todo here we are NOT using the save function in the guiobject base class becouse subsystems are saved completely differently, need to make this more uniform in the future
+void GUISubsystem::saveToTextStream(QTextStream &rStream, QString prepend)
+{
+    QPointF pos = mapToScene(boundingRect().center());
+    if (!prepend.isEmpty())
+    {
+        rStream << prepend << " ";
+    }
+    rStream << addQuotes(mLoadType) << " " << addQuotes(getName()) << " " << addQuotes(getTypeCQS()) << " " << addQuotes(mModelFilePath) << " "
+            << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << " " << mpNameText->isVisible() << "\n";
 }
 
 

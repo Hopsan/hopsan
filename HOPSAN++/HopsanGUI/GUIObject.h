@@ -93,12 +93,13 @@ public:
     virtual double getParameterValue(QString name);
     virtual void setParameterValue(QString name, double value);
 
-
     GraphicsScene *mpParentGraphicsScene;
     GraphicsView *mpParentGraphicsView;
 
     virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());
     virtual void deleteInHopsanCore();
+
+    virtual void load(QTextStream &rFile) {assert(false);} //Only available in GUISubsystem for now
 
     enum { Type = UserType + 2 };
     int type() const;
@@ -248,11 +249,11 @@ public:
     void setName(QString newName, bool doOnlyCoreRename);
     void setTypeCQS(QString typestring);
     QString getTypeCQS();
-    void load(QString filepath);
+    void load(QTextStream &rFile);
+
+    void saveToTextStream(QTextStream &rStream, QString prepend);
 
     QVector<QString> getParameterNames();
-
-    void refreshAppearance();
 
     enum { Type = UserType + 4 };
     int type() const;
@@ -266,6 +267,7 @@ private:
     QString mModelFilePath;
     //QString mGraphicsFilePath;
     bool   mIsEmbedded;
+    QString mLoadType;
 };
 
 class GUISystemPort : public GUIObject

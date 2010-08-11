@@ -684,13 +684,6 @@ void ProjectTabWidget::saveModel(bool saveAs)
 
     QTextStream modelFile(&file);  //Create a QTextStream object to stream the content of file
 
-//    modelFile << "--------------------------------------------------------------\n";
-//    modelFile << "-------------------  HOPSAN NG MODEL FILE  -------------------\n";
-//    modelFile << "--------------------------------------------------------------\n";
-//    modelFile << "HOPSANGUIVERSION " << HOPSANGUIVERSION << "\n";
-//    modelFile << "HOPSANGUIMODELFILEVERSION " << HOPSANGUIMODELFILEVERSION << "\n";
-//    modelFile << "HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION " << HOPSANGUICOMPONENTDESCRIPTIONFILEVERSION << "\n";
-//    modelFile << "--------------------------------------------------------------\n";
     writeHeader(modelFile);
 
     modelFile << "SIMULATIONTIME " << mpParentMainWindow->getStartTimeLabel() << " " << mpParentMainWindow->getTimeStepLabel() << " " <<  mpParentMainWindow->getFinishTimeLabel() << "\n";
@@ -746,23 +739,20 @@ void ProjectTabWidget::saveModel(bool saveAs)
     //QMap<QString, GUIObject*>::iterator it;
     for(it = pCurrentView->mGUIObjectMap.begin(); it!=pCurrentView->mGUIObjectMap.end(); ++it)
     {
-        it.value()->saveToTextStream(modelFile, "COMPONENT");
+        if ( it.value()->getTypeName() == QString("Subsystem") )
+        {
+            it.value()->saveToTextStream(modelFile, "SUBSYSTEM");
+        }
+        else
+        {
+            it.value()->saveToTextStream(modelFile, "COMPONENT");
+        }
     }
 
     modelFile << "--------------------------------------------------------------\n";
 
-   // QMap<QString, GUIConnector *>::iterator it2;
     for(int i = 0; i != pCurrentView->mConnectorVector.size(); ++i)
     {
-//        QString startPortName  = pCurrentView->mConnectorVector[i]->getStartPort()->getName();
-//        QString endPortName = pCurrentView->mConnectorVector[i]->getEndPort()->getName();
-//        modelFile << "CONNECT " << QString(addQuotes(pCurrentView->mConnectorVector[i]->getStartPort()->getGuiObject()->getName()) + " " + addQuotes(startPortName) + " " +
-//                                           addQuotes(pCurrentView->mConnectorVector[i]->getEndPort()->getGuiObject()->getName()) + " " + addQuotes(endPortName));
-//        for(size_t j = 0; j != pCurrentView->mConnectorVector[i]->getPointsVector().size(); ++j)
-//        {
-//            modelFile << " " << pCurrentView->mConnectorVector[i]->getPointsVector()[j].x() << " " << pCurrentView->mConnectorVector[i]->getPointsVector()[j].y();
-//        }
-//        modelFile << "\n";
         pCurrentView->mConnectorVector[i]->saveToTextStream(modelFile, "CONNECT");
     }
     modelFile << "--------------------------------------------------------------\n";

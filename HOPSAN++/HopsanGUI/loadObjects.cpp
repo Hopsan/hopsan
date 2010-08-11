@@ -126,30 +126,36 @@ void SubsystemLoadData::read(QTextStream &rStream)
     }
 }
 
+//! @brief Reads system appearnce data from stream
+//! Assumes that this data ends when commandword has - as first sign
+//! Header must have been removed (read) first
 void SystemAppearanceLoadData::read(QTextStream &rStream)
 {
     QString commandword;
     rStream >> commandword;
 
-    //! @todo maybe do this the same way as read apperance data, will examine this later
-    if (commandword == "ISOICON")
+    while ( !commandword.startsWith("-") )
     {
-        isoicon_path = readName(rStream);
-    }
-    else if (commandword == "USERICON")
-    {
-        usericon_path = readName(rStream);
-    }
-    else if (commandword == "PORT")
-    {
-        QString name = readName(rStream);
-        qreal x,y,th;
-        rStream >> x >> y >> th;
+        //! @todo maybe do this the same way as read apperance data, will examine this later
+        if (commandword == "ISOICON")
+        {
+            isoicon_path = readName(rStream);
+        }
+        else if (commandword == "USERICON")
+        {
+            usericon_path = readName(rStream);
+        }
+        else if (commandword == "PORT")
+        {
+            QString name = readName(rStream);
+            qreal x,y,th;
+            rStream >> x >> y >> th;
 
-        portnames.append(name);
-        port_xpos.append(x);
-        port_ypos.append(y);
-        port_angle.append(th);
+            portnames.append(name);
+            port_xpos.append(x);
+            port_ypos.append(y);
+            port_angle.append(th);
+        }
     }
 }
 
@@ -226,33 +232,7 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
      }
      QTextStream inputStream(&file);  //Create a QTextStream object to stream the content of file
 
-     //Read the entire file for the appearance specific data (a slight waste of time but its ok for now)
-     //! @todo maybe should try to read more efficiently somehow, in this case only read the appearance specific data, not go through the entire file
-     SystemAppearanceLoadData appdata;
-     while (!inputStream.atEnd())
-     {
-        appdata.read(inputStream);
-     }
-
-     pSys->getAppearanceData()->setIconPathUser(appdata.usericon_path);
-     pSys->getAppearanceData()->setIconPathISO(appdata.isoicon_path);
-
-     PortAppearanceMapT* portappmap = &(pSys->getAppearanceData()->getPortAppearanceMap());
-     for (int i=0; i<appdata.portnames.size(); ++i)
-     {
-         PortAppearance portapp;
-         portapp.x = appdata.port_xpos[i];
-         portapp.y = appdata.port_ypos[i];
-         portapp.rot = appdata.port_angle[i];
-         portapp.selectPortIcon("","",""); //!< @todo fix this
-
-         portappmap->insert(appdata.portnames[i], portapp);
-     }
-
-     //Load the contents of the subsystem from the external file
-     //! @todo do this
-
-     pSys->refreshAppearance();
+     pSys->load(inputStream);
 
      return pSys;
 }
