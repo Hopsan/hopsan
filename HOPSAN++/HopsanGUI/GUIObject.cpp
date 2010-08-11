@@ -806,18 +806,25 @@ AppearanceData* GUIObject::getAppearanceData()
 
 void GUIObject::refreshAppearance()
 {
-    setIcon(mIconType);
-    setGeometry(pos().x(),pos().y(),mpIcon->boundingRect().width(),mpIcon->boundingRect().height());
-
+    bool hasActiveSelectionBox = false;
     if (mpSelectionBox != 0)
     {
+        hasActiveSelectionBox = mpSelectionBox->isVisible(); //!< @todo This is a bit strange need to fix see todo bellow
         delete mpSelectionBox;
     }
-    mpSelectionBox = new GUIObjectSelectionBox(pos().x(), pos().y(), mpIcon->boundingRect().width(), mpIcon->boundingRect().height(),
-                                                  QPen(QColor("red"),2*1.6180339887499), QPen(QColor("darkRed"),2*1.6180339887499),this);
-    mpSelectionBox->setVisible(false);
 
-    this->setPos(pos().x()-mpIcon->boundingRect().width()/2, pos().y()-mpIcon->boundingRect().height()/2);
+    setIcon(mIconType);
+    qDebug() << pos();
+    setGeometry(pos().x(), pos().y(), mpIcon->boundingRect().width(), mpIcon->boundingRect().height());
+    qDebug() << pos();
+
+    //! @todo problem with hovered or active or passive selection box, should maybe make it possible to resize rather than to create a new selection box on refresh
+    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpIcon->boundingRect().width(), mpIcon->boundingRect().height(),
+                                                  QPen(QColor("red"),2*1.6180339887499), QPen(QColor("darkRed"),2*1.6180339887499), this);
+    if (hasActiveSelectionBox)
+    {
+        mpSelectionBox->setActive();
+    }
 
     this->refreshDisplayName();
 }
@@ -875,7 +882,6 @@ GUIObjectSelectionBox::GUIObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal
 {
     mpParentGUIObject = parent;
     qreal b = 5;
-    //qreal a = b*mpParentGUIObject->boundingRect().width()/mpParentGUIObject->boundingRect().height();
     qreal a = 5;
     x1 = x1-3;
     y1 = y1-3;
