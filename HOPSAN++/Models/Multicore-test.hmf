@@ -7,8 +7,8 @@ CAFVERSION 0.1
 --------------------------------------------------------------
 SIMULATIONTIME 0 0.001 10
 VIEWPORT 5068.56 2453.57 0.0929259
-USERICONPATH 
-ISOICONPATH 
+USERICON ""
+ISOICON ""
 --------------------------------------------------------------
 COMPONENT "Hydraulic43Valve" "4/3 Servo Valve" -349.69 579.799 0 0 0
 PARAMETER "4/3 Servo Valve" Cq 0.67
