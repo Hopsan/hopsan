@@ -1287,6 +1287,36 @@ void GUISubsystem::deleteInHopsanCore()
     mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.removeSubComponent(this->getName(), true);
 }
 
+void GUISubsystem::loadSubsystem()
+{
+    QDir fileDialog;
+    QString modelFileName = QFileDialog::getOpenFileName(mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
+                                                         fileDialog.currentPath() + QString("/../../Models"),
+                                                         tr("Hopsan Model Files (*.hmf)"));
+    if (modelFileName.isEmpty())
+        return;
+
+    QFile file(modelFileName);   //Create a QFile object
+    QFileInfo fileInfo(file);
+
+    for(int t=0; t!=mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->count(); ++t)
+    {
+        if( (mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == fileInfo.fileName()) or (mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == (fileInfo.fileName() + "*")) )
+        {
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::information(mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget, tr("Error"), tr("Unable to load model. File is already open."));
+            return;
+        }
+    }
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
+    {
+        qDebug() << "Failed to open file or not a text file: " + modelFileName;
+        return;
+    }
+    QTextStream textStreamFile(&file); //Converts to QTextStream
+    load(textStreamFile);
+}
 
 //! @todo Maybe should try to reduce multiple copys of same functions with other GUIObjects
 void GUISubsystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
@@ -1336,35 +1366,11 @@ void GUISubsystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         }
         else if (selectedAction == loadAction)
         {
-            QDir fileDialog;
-            QString modelFileName = QFileDialog::getOpenFileName(mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
-                                                                 fileDialog.currentPath() + QString("/../../Models"),
-                                                                 tr("Hopsan Model Files (*.hmf)"));
-            if (modelFileName.isEmpty())
-                return;
-
-            QFile file(modelFileName);   //Create a QFile object
-            QFileInfo fileInfo(file);     
-
-            for(int t=0; t!=mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->count(); ++t)
-            {
-                if( (mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == fileInfo.fileName()) or (mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == (fileInfo.fileName() + "*")) )
-                {
-                    QMessageBox::StandardButton reply;
-                    reply = QMessageBox::information(mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget, tr("Error"), tr("Unable to load model. File is already open."));
-                    return;
-                }
-            }
-
-            if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
-            {
-                qDebug() << "Failed to open file or not a text file: " + modelFileName;
-                return;
-            }
-            QTextStream textStreamFile(&file); //Converts to QTextStream
-            load(textStreamFile);
+            loadSubsystem();
         }
-}
+    }
+
+
 
 void GUISubsystem::openParameterDialog()
 {
@@ -1405,6 +1411,10 @@ void GUISubsystem::saveToTextStream(QTextStream &rStream, QString prepend)
             << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << " " << mpNameText->isVisible() << "\n";
 }
 
+void GUISubsystem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    loadSubsystem();
+}
 
 GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
         : GUIObject(position, appearanceData, scene, parent)

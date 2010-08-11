@@ -250,6 +250,7 @@ public:
     void setTypeCQS(QString typestring);
     QString getTypeCQS();
     void load(QTextStream &rFile);
+    void loadSubsystem();
 
     void saveToTextStream(QTextStream &rStream, QString prepend);
 
@@ -260,6 +261,7 @@ public:
 
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void openParameterDialog();
     void createPorts();
 
