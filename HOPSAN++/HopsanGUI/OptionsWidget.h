@@ -42,7 +42,9 @@
 #define OptionsWidget_H
 
 #include <QDialog>
+#include <QLabel>
 #include <QCheckBox>
+#include <QSpinBox>
 #include <QDialogButtonBox>
 
 class MainWindow;
@@ -57,6 +59,8 @@ public:
     MainWindow *mpParentMainWindow;
 
     QCheckBox *invertWheelCheckBox;
+    QLabel *progressBarLabel;
+    QSpinBox *progressBarSpinBox;
     QPushButton *cancelButton;
     QPushButton *applyButton;
     QPushButton *okButton;

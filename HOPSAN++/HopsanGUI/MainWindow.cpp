@@ -569,6 +569,7 @@ void MainWindow::loadSettings()
 
             //Apply default values
         mInvertWheel = false;
+        mProgressBarStep = 10;
         return;
     }
 
@@ -590,6 +591,10 @@ void MainWindow::loadSettings()
             {
                 mInvertWheel = false;
             }
+        }
+        if(inputWord == "PROGRESSBARSTEP")
+        {
+            inputStream >> mProgressBarStep;
         }
     }
     file.close();
@@ -616,6 +621,8 @@ void MainWindow::saveSettings()
     {
         modelFile << "FALSE\n";
     }
+    modelFile << "PROGRESSBARSTEP ";
+    modelFile << mProgressBarStep << "\n";
     file.close();
 }
 

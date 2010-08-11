@@ -18,7 +18,7 @@
 #include "Component.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 
-//#define USETBB            //Uncomment this will enable TBB package. Only use if you have it installed.
+#define USETBB            //Uncomment this will enable TBB package. Only use if you have it installed.
 #ifdef USETBB
 #include "tbb.h"
 #include "tick_count.h"
@@ -2051,7 +2051,6 @@ private:
 #endif
 
 
-//! The system component version of simulate
 #ifdef USETBB
 //! The system component version of simulate
 void ComponentSystem::simulate(const double startT, const double stopT)

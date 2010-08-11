@@ -61,6 +61,14 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     invertWheelCheckBox->setCheckable(true);
     invertWheelCheckBox->setChecked(mpParentMainWindow->mInvertWheel);
 
+    progressBarLabel = new QLabel(tr("Simulation Progress Bar Time Step [ms]"));
+
+    progressBarSpinBox = new QSpinBox();
+    progressBarSpinBox->setMinimum(1);
+    progressBarSpinBox->setMaximum(5000);
+    progressBarSpinBox->setSingleStep(10);
+    progressBarSpinBox->setValue(mpParentMainWindow->mProgressBarStep);
+
     cancelButton = new QPushButton(tr("&Cancel"));
     cancelButton->setAutoDefault(false);
     okButton = new QPushButton(tr("&Done"));
@@ -77,7 +85,9 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     QGridLayout *mainLayout = new QGridLayout;
     mainLayout->setSizeConstraint(QLayout::SetFixedSize);
     mainLayout->addWidget(invertWheelCheckBox, 0, 0);
-    mainLayout->addWidget(buttonBox, 1, 0);
+    mainLayout->addWidget(progressBarLabel, 1, 0);
+    mainLayout->addWidget(progressBarSpinBox, 2, 0);
+    mainLayout->addWidget(buttonBox, 3, 0);
     setLayout(mainLayout);
 }
 
@@ -85,6 +95,7 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
 void OptionsWidget::updateValues()
 {
     mpParentMainWindow->mInvertWheel = invertWheelCheckBox->isChecked();
+    mpParentMainWindow->mProgressBarStep = progressBarSpinBox->value();
     mpParentMainWindow->saveSettings();
     this->accept();
 }

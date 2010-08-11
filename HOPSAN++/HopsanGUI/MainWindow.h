@@ -89,6 +89,7 @@ public:
     OptionsWidget *mpOptionsWidget;
     PreferenceWidget *mpPreferenceWidget;
     bool mInvertWheel;
+    int mProgressBarStep;
 
     QMenuBar *menubar;
     QMenu *menuFile;

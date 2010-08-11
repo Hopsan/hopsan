@@ -405,6 +405,7 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
         for(it = mpParentGraphicsView->mGUIObjectMap.begin(); it != mpParentGraphicsView->mGUIObjectMap.end(); ++it)
         {
             it.value()->mOldPos = it.value()->pos();
+            qDebug() << it.key();
         }
     }
     QGraphicsWidget::mousePressEvent(event);

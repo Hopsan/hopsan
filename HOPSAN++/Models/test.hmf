@@ -5,11 +5,11 @@ HOPSANGUIVERSION 0.0.1
 HMFVERSION 0.1
 CAFVERSION 0.1
 --------------------------------------------------------------
-SIMULATIONTIME 0 0.001 5
-VIEWPORT 2502 2501 1
+SIMULATIONTIME 0 0.001 200
+VIEWPORT 2500 2500 1
 --------------------------------------------------------------
-USERICONPATH 
-ISOICONPATH 
+USERICON ""
+ISOICON ""
 --------------------------------------------------------------
 COMPONENT "Hydraulic43Valve" "43Valve" 2511 2537 0 0 0
 PARAMETER "43Valve" Cq 0.67
