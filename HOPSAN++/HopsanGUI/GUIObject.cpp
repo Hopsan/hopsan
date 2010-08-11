@@ -1291,7 +1291,11 @@ void GUISubsystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         showNameAction->setCheckable(true);
         showNameAction->setChecked(this->mpNameText->isVisible());
 
+        QAction *loadAction = menu.addAction(tr("Load"));
+
         QAction *selectedAction = menu.exec(event->screenPos());
+
+
 
         if (selectedAction == parameterAction)
         {
@@ -1316,6 +1320,36 @@ void GUISubsystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
             {
                 this->showName();
             }
+        }
+        else if (selectedAction == loadAction)
+        {
+            QDir fileDialog;
+            QString modelFileName = QFileDialog::getOpenFileName(mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
+                                                                 fileDialog.currentPath() + QString("/../../Models"),
+                                                                 tr("Hopsan Model Files (*.hmf)"));
+            if (modelFileName.isEmpty())
+                return;
+
+            QFile file(modelFileName);   //Create a QFile object
+            QFileInfo fileInfo(file);     
+
+            for(int t=0; t!=mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->count(); ++t)
+            {
+                if( (mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == fileInfo.fileName()) or (mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == (fileInfo.fileName() + "*")) )
+                {
+                    QMessageBox::StandardButton reply;
+                    reply = QMessageBox::information(mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget, tr("Error"), tr("Unable to load model. File is already open."));
+                    return;
+                }
+            }
+
+            if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
+            {
+                qDebug() << "Failed to open file or not a text file: " + modelFileName;
+                return;
+            }
+            QTextStream textStreamFile(&file); //Converts to QTextStream
+            load(textStreamFile);
         }
 }
 
