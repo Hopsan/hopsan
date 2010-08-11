@@ -1342,6 +1342,7 @@ void GUISubsystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         showNameAction->setChecked(this->mpNameText->isVisible());
 
         QAction *loadAction = menu.addAction(tr("Load Subsystem File"));
+        if(!mModelFilePath.isEmpty()) loadAction->setDisabled(true);
 
         QAction *selectedAction = menu.exec(event->screenPos());
 
