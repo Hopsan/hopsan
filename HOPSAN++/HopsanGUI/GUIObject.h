@@ -74,7 +74,10 @@ public:
     void refreshDisplayName();
     virtual void setName(QString name, bool doOnlyCoreRename=false);
     virtual QString getTypeName();
-    virtual QString getTypeCQS() {assert(false);}; //Only available in GUISystemComponent adn GuiComponent for now
+    virtual QString getTypeCQS() {assert(false);} //Only available in GUISystemComponent adn GuiComponent for now
+
+    AppearanceData* getAppearanceData();
+    void refreshAppearance();
 
     int getPortNumber(GUIPort *port);
     int getNameTextPos();
@@ -85,8 +88,8 @@ public:
     QList<GUIPort*> getPortListPtrs();
 
     virtual QVector<QString> getParameterNames();
-    virtual QString getParameterUnit(QString name) {assert(false);}; //Only availible in GUIComponent for now
-    virtual QString getParameterDescription(QString name) {assert(false);}; //Only availible in GUIComponent for now
+    virtual QString getParameterUnit(QString name) {assert(false);} //Only availible in GUIComponent for now
+    virtual QString getParameterDescription(QString name) {assert(false);} //Only availible in GUIComponent for now
     virtual double getParameterValue(QString name);
     virtual void setParameterValue(QString name, double value);
 
@@ -138,15 +141,17 @@ protected:
     GUIObjectSelectionBox *mpSelectionBox;
     double mTextOffset;
     QGraphicsLineItem *mpTempLine;
-    //QString mName;
 
     int mNameTextPos;
+    bool mIconType;
     bool mIconRotation;
     bool mIsFlipped;
     AppearanceData mAppearanceData;
     QPointF mOldPos;
 
     QList<GUIPort*> mPortListPtrs;
+
+    virtual void createPorts() {assert(false);} //Only availible in GUIComponent for now
 
 protected slots:
     void fixTextPosition(QPointF pos);
@@ -221,6 +226,8 @@ protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void openParameterDialog();
 
+    void createPorts();
+
     QString mComponentTypeName;
 
 public slots:
@@ -245,16 +252,19 @@ public:
 
     QVector<QString> getParameterNames();
 
+    void refreshAppearance();
+
     enum { Type = UserType + 4 };
     int type() const;
 
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void openParameterDialog();
+    void createPorts();
 
 private:
     QString mModelFilePath;
-    QString mGraphicsFilePath;
+    //QString mGraphicsFilePath;
     bool   mIsEmbedded;
 };
 
@@ -269,6 +279,9 @@ public:
 
     enum { Type = UserType + 5 };
     int type() const;
+
+protected:
+    void createPorts();
 
 private:
     GUIPort *mpGuiPort;

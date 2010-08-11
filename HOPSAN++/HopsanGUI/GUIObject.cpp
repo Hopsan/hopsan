@@ -83,22 +83,21 @@ GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsSce
 
     this->setZValue(10);
 
+    //Set to null ptr initially
+    mpIcon = 0;
+    mpSelectionBox = 0;
+    mpNameText = 0;
+//    setIcon(false); //Use user icon initially
 
-    mpIcon = 0; //Set to null ptr initially
-    setIcon(false); //Use user icon initially
-
-    std::cout << "GUIObject: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
-
-    setGeometry(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height());
+//    setGeometry(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height());
+//    mpSelectionBox = new GUIObjectSelectionBox(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height(),
+//                                                  QPen(QColor("red"),2*1.6180339887499), QPen(QColor("darkRed"),2*1.6180339887499),this);
+//    mpSelectionBox->setVisible(false);
+    this->refreshAppearance();
 
     mpNameText = new GUIObjectDisplayName(this);
-    //mpNameText->setPos(QPointF(mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2, mTextOffset*mpIcon->boundingRect().height()));
     mNameTextPos = 0;
     this->setNameTextPos(mNameTextPos);
-
-    mpSelectionBox = new GUIObjectSelectionBox(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height(),
-                                                  QPen(QColor("red"),2*1.6180339887499), QPen(QColor("darkRed"),2*1.6180339887499),this);
-    mpSelectionBox->setVisible(false);
 
     connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(fixTextPosition(QPointF)));
     connect(mpParentGraphicsView,SIGNAL(zoomChange()),this,SLOT(adjustTextPositionToZoom()));
@@ -107,6 +106,8 @@ GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsSce
     //setPos(position-QPoint(mpIcon->boundingRect().width()/2, mpIcon->boundingRect().height()/2));
     setPos(position.x()-mpIcon->boundingRect().width()/2,position.y()-mpIcon->boundingRect().height()/2);
     mIsFlipped = false;
+
+    //std::cout << "GUIObject: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
 }
 
 
@@ -232,9 +233,12 @@ QList<GUIConnector*> GUIObject::getGUIConnectorPtrs()
 //! This function refreshes the displayed name (HopsanCore may have changed it)
 void GUIObject::refreshDisplayName()
 {
-    mpNameText->setPlainText(mAppearanceData.getName());
-    //Adjust the position of the text
-    this->fixTextPosition(this->mpNameText->pos());
+    if (mpNameText != 0)
+    {
+        mpNameText->setPlainText(mAppearanceData.getName());
+        //Adjust the position of the text
+        this->fixTextPosition(this->mpNameText->pos());
+    }
 }
 
 
@@ -272,12 +276,14 @@ void GUIObject::setIcon(bool useIso)
     {
         mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(true) , this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
+        mIconType = useIso;
         //qDebug() << "Setting iconpath to " << mAppearanceData.getFullIconPath(true);
     }
     else
     {
         mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(false), this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
+        mIconType = !useIso;
         //qDebug() << "Setting iconpath to " << mAppearanceData.getFullIconPath(false);
     }
 
@@ -789,6 +795,28 @@ QString GUIObject::getTypeName()
     assert(false);
 }
 
+AppearanceData* GUIObject::getAppearanceData()
+{
+    return &mAppearanceData;
+}
+
+
+void GUIObject::refreshAppearance()
+{
+    setIcon(mIconType);
+    setGeometry(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height());
+
+    if (mpSelectionBox != 0)
+    {
+        delete mpSelectionBox;
+    }
+    mpSelectionBox = new GUIObjectSelectionBox(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height(),
+                                                  QPen(QColor("red"),2*1.6180339887499), QPen(QColor("darkRed"),2*1.6180339887499),this);
+    mpSelectionBox->setVisible(false);
+
+    this->refreshDisplayName();
+}
+
 
 void GUIObject::adjustTextPositionToZoom()
 {
@@ -989,24 +1017,8 @@ GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, Graph
         mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.rename(corename, getName())); //Cant use setName here as that would call an aditional rename (of someone else)
     }
 
-    QString cqsType = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTypeCQS(getName());
-
     //Sets the ports
-    PortAppearanceMapT::iterator i;
-    for (i = mAppearanceData.getPortAppearanceMap().begin(); i != mAppearanceData.getPortAppearanceMap().end(); ++i)
-    {
-        QString nodeType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getNodeType(getName(), i.key());
-        QString portType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPortType(getName(), i.key());
-        i.value().selectPortIcon(cqsType, portType, nodeType);
-        //qDebug() << i.key();
-
-        qreal x = i.value().x;
-        qreal y = i.value().y;
-
-        GUIPort *pNewPort = new GUIPort(i.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
-        mPortListPtrs.append(pNewPort);
-    }
-
+    createPorts();
 
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
@@ -1142,6 +1154,26 @@ void GUIComponent::openParameterDialog()
     dialog->exec();
 }
 
+//! @brief Help function to create ports in the component when it is created
+void GUIComponent::createPorts()
+{
+    //! @todo make sure that all old ports and connections are cleared, (not really necessary in guicomponents)
+    QString cqsType = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTypeCQS(getName());
+    PortAppearanceMapT::iterator i;
+    for (i = mAppearanceData.getPortAppearanceMap().begin(); i != mAppearanceData.getPortAppearanceMap().end(); ++i)
+    {
+        QString nodeType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getNodeType(this->getName(), i.key());
+        QString portType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPortType(this->getName(), i.key());
+        i.value().selectPortIcon(cqsType, portType, nodeType);
+
+        qreal x = i.value().x;
+        qreal y = i.value().y;
+
+        GUIPort *pNewPort = new GUIPort(i.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
+        mPortListPtrs.append(pNewPort);
+    }
+}
+
 
 void GUIComponent::deleteInHopsanCore()
 {
@@ -1249,6 +1281,8 @@ QVector<QString> GUISubsystem::getParameterNames()
 {
     return mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getParameterNames(this->getName());
 }
+
+//void GUISubsystem::refreshAppearance();
 
 //! @todo Maybe should be somewhere else and be called load subsystem
 void GUISubsystem::load(QString filepath)
@@ -1429,12 +1463,37 @@ void GUISubsystem::openParameterDialog()
     dialog->exec();
 }
 
+void GUISubsystem::createPorts()
+{
+    //! @todo make sure that all old ports and connections are cleared, (in case we reload, but maybe we can discard old system and create new in that case)
+    //Create the graphics for the ports but do NOT create new ports, use the system ports within the subsystem
+    PortAppearanceMapT::iterator it;
+    for (it = mAppearanceData.getPortAppearanceMap().begin(); it != mAppearanceData.getPortAppearanceMap().end(); ++it)
+    {
+        //! @todo fix this
+//        QString nodeType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getNodeType(this->getName(), i.key());
+//        QString portType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPortType(this->getName(), i.key());
+//        i.value().selectPortIcon(cqsType, portType, nodeType);
+
+//        qreal x = i.value().x;
+//        qreal y = i.value().y;
+
+//        GUIPort *pNewPort = new GUIPort(i.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
+//        mPortListPtrs.append(pNewPort);
+    }
+}
+
 
 GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
         : GUIObject(position, appearanceData, scene, parent)
-
 {
     //Sets the ports
+    createPorts();
+}
+
+//! @brief Help function to create ports in the component when it is created
+void GUISystemPort::createPorts()
+{
     //! @todo Only one port in system ports could simplify this
     PortAppearanceMapT::iterator i;
     for (i = mAppearanceData.getPortAppearanceMap().begin(); i != mAppearanceData.getPortAppearanceMap().end(); ++i)

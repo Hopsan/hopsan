@@ -212,6 +212,7 @@ GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, G
 
 GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget* pLibrary, GraphicsView* pGraphicsView, bool noUnDo)
 {
+    //! @todo maybe create a loadGUIObject function that takes appearance data instead of pLibrary (when special apperance are to be used)
     //Load the system the normal way (and add it)
     GUIObject* pSys = loadGUIObject(rData, pLibrary, pGraphicsView, noUnDo);
 
@@ -233,11 +234,27 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
         appdata.read(inputStream);
      }
 
-     //pSys
+     pSys->getAppearanceData()->setIconPathUser(appdata.usericon_path);
+     pSys->getAppearanceData()->setIconPathISO(appdata.isoicon_path);
+
+     PortAppearanceMapT* portappmap = &(pSys->getAppearanceData()->getPortAppearanceMap());
+     for (int i=0; i<appdata.portnames.size(); ++i)
+     {
+         PortAppearance portapp;
+         portapp.x = appdata.port_xpos[i];
+         portapp.y = appdata.port_ypos[i];
+         portapp.rot = appdata.port_angle[i];
+         portapp.selectPortIcon("","",""); //!< @todo fix this
+
+         portappmap->insert(appdata.portnames[i], portapp);
+     }
 
      //Load the contents of the subsystem from the external file
      //! @todo do this
 
+     pSys->refreshAppearance();
+
+     return pSys;
 }
 
 
@@ -282,7 +299,7 @@ GUIObject* loadGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, Graphics
 {
     ObjectLoadData data;
     data.read(rStream);
-    loadGUIObject(data,pLibrary, pGraphicsView, noUnDo);
+    return loadGUIObject(data,pLibrary, pGraphicsView, noUnDo);
 }
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data
@@ -337,6 +354,7 @@ HeaderLoadData readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidg
     return headerData;
 }
 
+//! @todo thois should be in a save related file, or make this file both save and load
 void writeHeader(QTextStream &rStream)
 {
     //Make sure that the readHeader function is synced with changes here
