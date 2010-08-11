@@ -1293,7 +1293,7 @@ void GUISubsystem::deleteInHopsanCore()
     mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.removeSubComponent(this->getName(), true);
 }
 
-void GUISubsystem::loadSubsystem()
+void GUISubsystem::openSubsystemFile()
 {
     QDir fileDialog;
     QString modelFileName = QFileDialog::getOpenFileName(mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
@@ -1340,7 +1340,7 @@ void GUISubsystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         showNameAction->setCheckable(true);
         showNameAction->setChecked(this->mpNameText->isVisible());
 
-        QAction *loadAction = menu.addAction(tr("Load"));
+        QAction *loadAction = menu.addAction(tr("Load Subsystem File"));
 
         QAction *selectedAction = menu.exec(event->screenPos());
 
@@ -1372,7 +1372,7 @@ void GUISubsystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         }
         else if (selectedAction == loadAction)
         {
-            loadSubsystem();
+            openSubsystemFile();
         }
     }
 
@@ -1421,7 +1421,7 @@ void GUISubsystem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     if(mModelFilePath.isEmpty())
     {
-        loadSubsystem();
+        openSubsystemFile();
     }
     else
     {

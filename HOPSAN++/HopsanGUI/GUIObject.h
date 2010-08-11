@@ -250,7 +250,7 @@ public:
     void setTypeCQS(QString typestring);
     QString getTypeCQS();
     void load(QTextStream &rFile);
-    void loadSubsystem();
+    void openSubsystemFile();
 
     void saveToTextStream(QTextStream &rStream, QString prepend);
 
