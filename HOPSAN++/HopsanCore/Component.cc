@@ -2180,18 +2180,18 @@ void ComponentSystem::simulate(const double startT, const double stopT)
         //parallel_for( tbb::blocked_range<size_t>(0,mSubComponentStorage.mComponentSignalptrs.size(),1), simulateParallelSignal(mSubComponentStorage.mComponentSignalptrs, mTime, mTime+mTimestep), Affinity1 );
 
             //Simulate C component vectors in parallel
-        for(int coreNumber=0; coreNumber<nCores-1; ++coreNumber)
+        for(int coreNumber=0; coreNumber<nCores; ++coreNumber)
         {
             c->run(taskC(splitCVector[coreNumber], mTime, mTime+mTimestep));
         }
-        c->run_and_wait(taskC(splitCVector[nCores-1], mTime, mTime+mTimestep));
+        c->wait();
 
             //Simulate Q component vectors in parallel
-        for(int coreNumber=0; coreNumber<nCores-1; ++coreNumber)
+        for(int coreNumber=0; coreNumber<nCores; ++coreNumber)
         {
             q->run(taskQ(splitQVector[coreNumber], mTime, mTime+mTimestep));
         }
-        q->run_and_wait(taskQ(splitQVector[nCores-1], mTime, mTime+mTimestep));
+        q->wait();
 
         mTime += mTimestep;
     }
