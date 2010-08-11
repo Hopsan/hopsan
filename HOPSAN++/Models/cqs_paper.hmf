@@ -8,8 +8,8 @@ CAFVERSION 0.1
 SIMULATIONTIME 0 0.01 5
 VIEWPORT 2502 2502 1
 --------------------------------------------------------------
-USERICONPATH 
-ISOICONPATH 
+USERICON ""
+ISOICON ""
 --------------------------------------------------------------
 COMPONENT "HydraulicFlowSensor" "Flow Sensor" 2605 2497 0 0 0
 COMPONENT "SignalGain" "Gain" 2432 2463 0 0 0

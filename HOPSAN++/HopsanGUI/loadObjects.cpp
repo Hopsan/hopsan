@@ -123,7 +123,6 @@ void SubsystemLoadData::read(QTextStream &rStream)
         //incorrect type
         qDebug() << QString("This loadtype is not supported: ") + loadtype;
         //! @todo handle error
-        assert(false);
     }
 }
 
@@ -133,10 +132,12 @@ void SubsystemLoadData::read(QTextStream &rStream)
 void SystemAppearanceLoadData::read(QTextStream &rStream)
 {
     QString commandword;
-    rStream >> commandword;
 
     while ( !commandword.startsWith("-") )
     {
+        rStream >> commandword;
+        qDebug() << commandword;
+
         //! @todo maybe do this the same way as read apperance data, will examine this later
         if (commandword == "ISOICON")
         {
@@ -229,7 +230,7 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
      {
          //! @todo Should signal an error message on screen
          qDebug() << "Failed to open file or not a text file: " + rData.filepath;
-         return 0;
+         return pSys;
      }
      QTextStream inputStream(&file);  //Create a QTextStream object to stream the content of file
 

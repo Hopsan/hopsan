@@ -88,6 +88,7 @@ GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsSce
     mpIcon = 0;
     mpSelectionBox = 0;
     mpNameText = 0;
+    mIconType = false;
 //    setIcon(false); //Use user icon initially
 
 //    setGeometry(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height());
@@ -95,6 +96,9 @@ GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsSce
 //                                                  QPen(QColor("red"),2*1.6180339887499), QPen(QColor("darkRed"),2*1.6180339887499),this);
 //    mpSelectionBox->setVisible(false);
     this->refreshAppearance();
+
+    setPos(position.x()-mpIcon->boundingRect().width()/2,position.y()-mpIcon->boundingRect().height()/2);
+    mIsFlipped = false;
 
     mpNameText = new GUIObjectDisplayName(this);
     mNameTextPos = 0;
@@ -104,9 +108,7 @@ GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsSce
     connect(mpParentGraphicsView,SIGNAL(zoomChange()),this,SLOT(adjustTextPositionToZoom()));
     //connect(this->mpParentGraphicsView,SIGNAL(keyPressDelete()),this,SLOT(deleteComponent()));
 
-    //setPos(position-QPoint(mpIcon->boundingRect().width()/2, mpIcon->boundingRect().height()/2));
-    setPos(position.x()-mpIcon->boundingRect().width()/2,position.y()-mpIcon->boundingRect().height()/2);
-    mIsFlipped = false;
+
 
     //std::cout << "GUIObject: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
 }
@@ -805,15 +807,17 @@ AppearanceData* GUIObject::getAppearanceData()
 void GUIObject::refreshAppearance()
 {
     setIcon(mIconType);
-    setGeometry(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height());
+    setGeometry(pos().x(),pos().y(),mpIcon->boundingRect().width(),mpIcon->boundingRect().height());
 
     if (mpSelectionBox != 0)
     {
         delete mpSelectionBox;
     }
-    mpSelectionBox = new GUIObjectSelectionBox(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height(),
+    mpSelectionBox = new GUIObjectSelectionBox(pos().x(), pos().y(), mpIcon->boundingRect().width(), mpIcon->boundingRect().height(),
                                                   QPen(QColor("red"),2*1.6180339887499), QPen(QColor("darkRed"),2*1.6180339887499),this);
     mpSelectionBox->setVisible(false);
+
+    this->setPos(pos().x()-mpIcon->boundingRect().width()/2, pos().y()-mpIcon->boundingRect().height()/2);
 
     this->refreshDisplayName();
 }
@@ -1238,11 +1242,19 @@ void GUISubsystem::load(QTextStream &rFile)
     HeaderLoadData header;
 
     header.read(rFile);
+    qDebug() << "Header read";
     //! @todo check so that version OK!
     sysappdata.read(rFile);
+    qDebug() << "Sysapp data read";
 
-    mAppearanceData.setIconPathUser(sysappdata.usericon_path);
-    mAppearanceData.setIconPathISO(sysappdata.isoicon_path);
+    if (!sysappdata.usericon_path.isEmpty())
+    {
+        mAppearanceData.setIconPathUser(sysappdata.usericon_path);
+    }
+    if (!sysappdata.isoicon_path.isEmpty())
+    {
+        mAppearanceData.setIconPathISO(sysappdata.isoicon_path);
+    }
 
     PortAppearanceMapT* portappmap = &(mAppearanceData.getPortAppearanceMap());
     for (int i=0; i<sysappdata.portnames.size(); ++i)
@@ -1255,6 +1267,7 @@ void GUISubsystem::load(QTextStream &rFile)
 
         portappmap->insert(sysappdata.portnames[i], portapp);
     }
+    qDebug() << "Appearance set";
 
     //Load the contents of the subsystem from the external file
     //! @todo do this

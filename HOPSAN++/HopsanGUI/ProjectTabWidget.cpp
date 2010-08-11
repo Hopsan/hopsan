@@ -691,8 +691,8 @@ void ProjectTabWidget::saveModel(bool saveAs)
                                 (getCurrentTab()->mpGraphicsView->verticalScrollBar()->value() + getCurrentTab()->mpGraphicsView->height()/2 - getCurrentTab()->mpGraphicsView->pos().x()) / getCurrentTab()->mpGraphicsView->mZoomFactor << " " <<
                                 getCurrentTab()->mpGraphicsView->mZoomFactor << "\n";
     modelFile << "--------------------------------------------------------------\n";
-    modelFile << "USERICONPATH " << addQuotes(getCurrentTab()->getUserIconPath()) << "\n";
-    modelFile << "ISOICONPATH " << addQuotes(getCurrentTab()->getIsoIconPath()) << "\n";
+    modelFile << "USERICON " << addQuotes(getCurrentTab()->getUserIconPath()) << "\n";
+    modelFile << "ISOICON " << addQuotes(getCurrentTab()->getIsoIconPath()) << "\n";
 
     //Calculate the position of the subsystem ports:
     QMap<QString, GUIObject*>::iterator it;
