@@ -1321,6 +1321,7 @@ void GUISubsystem::openSubsystemFile()
         return;
     }
     QTextStream textStreamFile(&file); //Converts to QTextStream
+    mModelFilePath = modelFileName;
     loadFromFile(textStreamFile);
 }
 
@@ -1413,6 +1414,16 @@ void GUISubsystem::saveToTextStream(QTextStream &rStream, QString prepend)
     {
         rStream << prepend << " ";
     }
+
+    if (!mModelFilePath.isEmpty())
+    {
+        mLoadType = "EXTERNAL";
+    }
+    else
+    {
+        mLoadType = "EMBEDED";
+    }
+
     rStream << addQuotes(mLoadType) << " " << addQuotes(getName()) << " " << addQuotes(getTypeCQS()) << " " << addQuotes(mModelFilePath) << " "
             << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << " " << mpNameText->isVisible() << "\n";
 }
