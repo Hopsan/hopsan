@@ -63,5 +63,5 @@ ProgressBarThread::ProgressBarThread(ProjectTabWidget *parent)
 //! Implements the task for the thread.
 void ProgressBarThread::run()
 {
-    this->sleep(0.5);
+    this->msleep(10);
 }

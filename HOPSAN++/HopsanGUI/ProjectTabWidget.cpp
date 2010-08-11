@@ -525,6 +525,7 @@ void ProjectTabWidget::simulateCurrent()
         ProgressBarThread progressThread(this);
 
         actualSimulation.start();
+        actualSimulation.setPriority(QThread::HighestPriority);//actualSimulation.setPriority(QThread::HighestPriority);
 
         progressBar.setLabelText(tr("Running simulation..."));
         progressBar.setCancelButtonText(tr("&Abort simulation"));
@@ -533,6 +534,7 @@ void ProjectTabWidget::simulateCurrent()
         while (actualSimulation.isRunning())
         {
            progressThread.start();
+           progressThread.setPriority(QThread::LowestPriority);
            progressThread.wait();
            progressBar.setValue((size_t)(getCurrentTab()->mGUIRootSystem.getCurrentTime()/dt * nSteps));
            if (progressBar.wasCanceled())
@@ -543,8 +545,7 @@ void ProjectTabWidget::simulateCurrent()
         progressBar.setValue((size_t)(getCurrentTab()->mGUIRootSystem.getCurrentTime()/dt * nSteps));
 
 //        actualSimulation.setPriority(QThread::TimeCriticalPriority); //No bar appears in Windows with this prio
-       actualSimulation.setPriority(QThread::HighestPriority);//actualSimulation.setPriority(QThread::HighestPriority);
-       actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
+        actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
 
         //mpParentMainWindow->mpProgressBarWidget->hide();
     }
