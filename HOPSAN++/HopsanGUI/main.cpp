@@ -46,7 +46,6 @@
 
 int main(int argc, char *argv[])
 {
-
     QApplication a(argc, argv);
     QPixmap pixmap("../../HopsanGUI/splash.png");
     QSplashScreen splash(pixmap);

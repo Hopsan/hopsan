@@ -529,15 +529,17 @@ void MainWindow::openUndo()
 
     mUndoDock->setWidget(mpUndoWidget);
     //variableList->show();
+
     addDockWidget(Qt::RightDockWidgetArea, mUndoDock);
 
     if(dockWidgetArea(mPlotVariablesDock) == dockWidgetArea(mUndoDock))
     {
-        this->tabifyDockWidget(mUndoDock, mPlotVariablesDock);
-        mUndoDock->setFocus();
+        tabifyDockWidget(mPlotVariablesDock, mUndoDock);
+        //mPlotVariablesDock->lower();
     }
 
     mpUndoWidget->refreshList();
+
 }
 
 

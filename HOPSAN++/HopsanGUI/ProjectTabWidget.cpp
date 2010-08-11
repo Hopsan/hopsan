@@ -548,6 +548,7 @@ void ProjectTabWidget::simulateCurrent()
     emit checkMessages();
 }
 
+
 //! Loads a model from a file and opens it in a new project tab.
 //! @see saveModel(bool saveAs)
 void ProjectTabWidget::loadModel()
