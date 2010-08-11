@@ -1243,15 +1243,52 @@ QVector<QString> GUISubsystem::getParameterNames()
 //void GUISubsystem::refreshAppearance();
 
 //! @todo Maybe should be somewhere else and be called load subsystem
-void GUISubsystem::loadFromFile(QTextStream &rFile)
+void GUISubsystem::loadFromFile(QString modelFileName)
 {
+    QFile file;
+    if (modelFileName.isEmpty())
+    {
+        QDir fileDialog;
+        modelFileName = QFileDialog::getOpenFileName(mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
+                                                             fileDialog.currentPath() + QString("/../../Models"),
+                                                             tr("Hopsan Model Files (*.hmf)"));
+        if (modelFileName.isEmpty())
+            return;
+
+        file.setFileName(modelFileName);
+        QFileInfo fileInfo(file);
+
+        for(int t=0; t!=mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->count(); ++t)
+        {
+            if( (mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == fileInfo.fileName()) or (mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == (fileInfo.fileName() + "*")) )
+            {
+                QMessageBox::StandardButton reply;
+                reply = QMessageBox::information(mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget, tr("Error"), tr("Unable to load model. File is already open."));
+                return;
+            }
+        }
+    }
+    else
+    {
+         file.setFileName(modelFileName);
+    }
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
+    {
+        qDebug() << "Failed to open file or not a text file: " + modelFileName;
+        return;
+    }
+    QTextStream textStreamFile(&file); //Converts to QTextStream
+    mModelFilePath = modelFileName;
+
+    //Now read the file data
     SystemAppearanceLoadData sysappdata;
     HeaderLoadData header;
 
-    header.read(rFile);
+    header.read(textStreamFile);
     //qDebug() << "Header read";
     //! @todo check so that version OK!
-    sysappdata.read(rFile);
+    sysappdata.read(textStreamFile);
     //qDebug() << "Sysapp data read";
 
     if (!sysappdata.usericon_path.isEmpty())
@@ -1292,38 +1329,6 @@ int GUISubsystem::type() const
 void GUISubsystem::deleteInHopsanCore()
 {
     mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.removeSubComponent(this->getName(), true);
-}
-
-void GUISubsystem::openSubsystemFile()
-{
-    QDir fileDialog;
-    QString modelFileName = QFileDialog::getOpenFileName(mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
-                                                         fileDialog.currentPath() + QString("/../../Models"),
-                                                         tr("Hopsan Model Files (*.hmf)"));
-    if (modelFileName.isEmpty())
-        return;
-
-    QFile file(modelFileName);   //Create a QFile object
-    QFileInfo fileInfo(file);
-
-    for(int t=0; t!=mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->count(); ++t)
-    {
-        if( (mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == fileInfo.fileName()) or (mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == (fileInfo.fileName() + "*")) )
-        {
-            QMessageBox::StandardButton reply;
-            reply = QMessageBox::information(mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget, tr("Error"), tr("Unable to load model. File is already open."));
-            return;
-        }
-    }
-
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
-    {
-        qDebug() << "Failed to open file or not a text file: " + modelFileName;
-        return;
-    }
-    QTextStream textStreamFile(&file); //Converts to QTextStream
-    mModelFilePath = modelFileName;
-    loadFromFile(textStreamFile);
 }
 
 //! @todo Maybe should try to reduce multiple copys of same functions with other GUIObjects
@@ -1375,7 +1380,7 @@ void GUISubsystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         }
         else if (selectedAction == loadAction)
         {
-            openSubsystemFile();
+            loadFromFile();
         }
     }
 
@@ -1434,7 +1439,7 @@ void GUISubsystem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     if(mModelFilePath.isEmpty())
     {
-        openSubsystemFile();
+        loadFromFile();
     }
     else
     {

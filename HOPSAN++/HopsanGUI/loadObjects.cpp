@@ -95,11 +95,11 @@ void ObjectLoadData::read(QTextStream &rStream)
 void SubsystemLoadData::read(QTextStream &rStream)
 {
     type = "Subsystem";
-    rStream >> loadtype;
+    loadtype = readName(rStream);
     name = readName(rStream);
     cqs_type = readName(rStream);
 
-    if (loadtype == "external")
+    if (loadtype == "EXTERNAL")
     {
         filepath = readName(rStream);
 
@@ -225,18 +225,9 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
     GUIObject* pSys = loadGUIObject(rData, pLibrary, pGraphicsView, noUnDo);
 
     //Now read the external file to change appearance and populate the system
-     QFile file(rData.filepath);
-     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
-     {
-         //! @todo Should signal an error message on screen
-         qDebug() << "Failed to open file or not a text file: " + rData.filepath;
-         return pSys;
-     }
-     QTextStream inputStream(&file);  //Create a QTextStream object to stream the content of file
+    pSys->loadFromFile(rData.filepath);
 
-     pSys->load(inputStream);
-
-     return pSys;
+    return pSys;
 }
 
 

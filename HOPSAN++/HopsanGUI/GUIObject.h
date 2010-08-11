@@ -99,7 +99,7 @@ public:
     virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());
     virtual void deleteInHopsanCore();
 
-    virtual void load(QTextStream &rFile) {assert(false);} //Only available in GUISubsystem for now
+    virtual void loadFromFile(QString modelFileName=QString()) {assert(false);} //Only available in GUISubsystem for now
 
     enum { Type = UserType + 2 };
     int type() const;
@@ -250,8 +250,7 @@ public:
     void setName(QString newName, bool doOnlyCoreRename);
     void setTypeCQS(QString typestring);
     QString getTypeCQS();
-    void loadFromFile(QTextStream &rFile);
-    void openSubsystemFile();
+    void loadFromFile(QString modelFileName=QString());
 
     void saveToTextStream(QTextStream &rStream, QString prepend);
 
