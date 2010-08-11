@@ -85,6 +85,5 @@ void SimulationThread::run()
     qDebug() << "Simulation time: " << (simTimer.elapsed()) << " ms";
     mpGUIRootSystem->finalize(mStartTime, mFinishTime);
 
-
     //exec(); //Is used if one want to run an event loop in this thread.
 }

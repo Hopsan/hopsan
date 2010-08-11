@@ -63,6 +63,7 @@
 #include "MessageWidget.h"
 #include "InitializationThread.h"
 #include "SimulationThread.h"
+#include "ProgressBarThread.h"
 #include "UndoStack.h"
 #include "LibraryWidget.h"
 #include "GUIObject.h"
@@ -491,7 +492,7 @@ void ProjectTabWidget::simulateCurrent()
 
     double startTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->getStartTimeLabel();
     double finishTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->getFinishTimeLabel();
-    
+
     QString timeTxt;
     double dt = finishTime - startTime;
     size_t nSteps = dt/pCurrentTab->mGUIRootSystem.getDesiredTimeStep();
@@ -517,35 +518,44 @@ void ProjectTabWidget::simulateCurrent()
     }
     progressBar.setValue(i);
     actualInitialization.wait(); //Make sure actualSimulation do not goes out of scope during simulation
-
+    qDebug() << "Uggla";
     if (!progressBar.wasCanceled())
     {
         SimulationThread actualSimulation(&(pCurrentTab->mGUIRootSystem), startTime, finishTime, this);
+        ProgressBarThread progressThread(this);
+
         actualSimulation.start();
-//        actualSimulation.setPriority(QThread::TimeCriticalPriority); //No bar appears in Windows with this prio
-        actualSimulation.setPriority(QThread::HighestPriority);
+
         progressBar.setLabelText(tr("Running simulation..."));
         progressBar.setCancelButtonText(tr("&Abort simulation"));
         progressBar.setMinimum(0);
         progressBar.setMaximum(nSteps);
         while (actualSimulation.isRunning())
         {
-            progressBar.setValue((size_t)(getCurrentTab()->mGUIRootSystem.getCurrentTime()/dt * nSteps));
-            if (progressBar.wasCanceled())
-            {
-                pCurrentTab->mGUIRootSystem.stop();
-            }
+           progressThread.start();
+           progressThread.wait();
+           progressBar.setValue((size_t)(getCurrentTab()->mGUIRootSystem.getCurrentTime()/dt * nSteps));
+           if (progressBar.wasCanceled())
+           {
+              pCurrentTab->mGUIRootSystem.stop();
+           }
         }
         progressBar.setValue((size_t)(getCurrentTab()->mGUIRootSystem.getCurrentTime()/dt * nSteps));
-        actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
+
+//        actualSimulation.setPriority(QThread::TimeCriticalPriority); //No bar appears in Windows with this prio
+       actualSimulation.setPriority(QThread::HighestPriority);//actualSimulation.setPriority(QThread::HighestPriority);
+       actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
+
+        //mpParentMainWindow->mpProgressBarWidget->hide();
     }
 
-    if (progressBar.wasCanceled())
-        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(pCurrentTab->mGUIRootSystem.getName()).append(tr("' was terminated!"))));
-    else
-        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulated '").append(pCurrentTab->mGUIRootSystem.getName()).append(tr("' successfully!"))));
-
+    //if (progressBar.wasCanceled())
+    //    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(pCurrentTab->mGUIRootSystem.getName()).append(tr("' was terminated!"))));
+    //else
+    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulated '").append(pCurrentTab->mGUIRootSystem.getName()).append(tr("' successfully!"))));
+    qDebug() << "Liten söt Chiwuaua";
     emit checkMessages();
+    qDebug() << "Barn från Ryd";
 }
 
 

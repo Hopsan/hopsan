@@ -134,7 +134,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     mpPreferenceWidget = new PreferenceWidget(this);
 
-        //Load default libraries
+            //Load default libraries
     mpLibrary->addEmptyLibrary("User defined libraries");
 
     mpLibrary->addLibrary("../../HopsanGUI/componentData/Subsystem");

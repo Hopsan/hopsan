@@ -25,7 +25,8 @@ SOURCES += main.cpp \
     GUIUtilities.cpp \
     GraphicsView.cpp \
     GraphicsScene.cpp \
-    loadObjects.cpp
+    loadObjects.cpp \
+    ProgressBarThread.cpp
 HEADERS += MainWindow.h \
     ProjectTabWidget.h \
     LibraryWidget.h \
@@ -48,7 +49,8 @@ HEADERS += MainWindow.h \
     GUIRootSystem.h \
     GraphicsView.h \
     GraphicsScene.h \
-    loadObjects.h
+    loadObjects.h \
+    ProgressBarThread.h
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE
