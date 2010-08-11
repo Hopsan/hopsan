@@ -249,7 +249,7 @@ public:
     void setName(QString newName, bool doOnlyCoreRename);
     void setTypeCQS(QString typestring);
     QString getTypeCQS();
-    void load(QTextStream &rFile);
+    void loadFromFile(QTextStream &rFile);
     void openSubsystemFile();
 
     void saveToTextStream(QTextStream &rStream, QString prepend);

@@ -1242,16 +1242,16 @@ QVector<QString> GUISubsystem::getParameterNames()
 //void GUISubsystem::refreshAppearance();
 
 //! @todo Maybe should be somewhere else and be called load subsystem
-void GUISubsystem::load(QTextStream &rFile)
+void GUISubsystem::loadFromFile(QTextStream &rFile)
 {
     SystemAppearanceLoadData sysappdata;
     HeaderLoadData header;
 
     header.read(rFile);
-    qDebug() << "Header read";
+    //qDebug() << "Header read";
     //! @todo check so that version OK!
     sysappdata.read(rFile);
-    qDebug() << "Sysapp data read";
+    //qDebug() << "Sysapp data read";
 
     if (!sysappdata.usericon_path.isEmpty())
     {
@@ -1321,7 +1321,7 @@ void GUISubsystem::openSubsystemFile()
         return;
     }
     QTextStream textStreamFile(&file); //Converts to QTextStream
-    load(textStreamFile);
+    loadFromFile(textStreamFile);
 }
 
 //! @todo Maybe should try to reduce multiple copys of same functions with other GUIObjects
