@@ -60,7 +60,6 @@ QString readName(QTextStream &rTextStream);
 QString readName(QString namestring);
 QString addQuotes(QString str);
 void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y);
-void calcSubsystemPortPercentage(const double w, const double h, const double angle, double &x, double &y);
 QPointF getOffsetPointfromPort(GUIPort *pPort);
 
 #endif // GUIUTILITIES_H
