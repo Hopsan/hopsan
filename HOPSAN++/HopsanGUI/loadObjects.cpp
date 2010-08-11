@@ -112,15 +112,16 @@ void SubsystemLoadData::read(QTextStream &rStream)
         rStream >> nameTextPos;
         rStream >> textVisible;
     }
-    else if (loadtype == "embeded")
-    {
-        //not implemented yet
-        //! @todo handle error
-        assert(false);
-    }
+//    else if (loadtype == "embeded")
+//    {
+//        //not implemented yet
+//        //! @todo handle error
+//        assert(false);
+//    }
     else
     {
         //incorrect type
+        qDebug() << QString("This loadtype is not supported: ") + loadtype;
         //! @todo handle error
         assert(false);
     }

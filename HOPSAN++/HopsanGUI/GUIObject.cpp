@@ -1152,6 +1152,10 @@ void GUIComponent::saveToTextStream(QTextStream &rStream, QString prepend)
 GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
         : GUIObject(position, appearanceData, scene, parent)
 {
+    //Set default values
+    mLoadType = "Empty";
+    mModelFilePath = "";
+
     QString corename = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createSubSystem();
     if ( getName().isEmpty() )
     {
