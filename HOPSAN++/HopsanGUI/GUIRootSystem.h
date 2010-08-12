@@ -73,8 +73,8 @@ public:
     double getParameterValue(QString componentName, QString parameterName);
     void setParameter(QString componentName, QString parameterName, double value); //!< @todo maybe call this set parameter value
 
-    QString createComponent(QString type);
-    QString createSubSystem();
+    QString createComponent(QString type, QString name="");
+    QString createSubSystem(QString name="");
     void removeSubComponent(QString componentName, bool doDelete);
 
     bool isSimulationOk();

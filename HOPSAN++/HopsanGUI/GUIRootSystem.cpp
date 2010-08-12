@@ -192,17 +192,25 @@ void GUIRootSystem::finalize(double mStartTime, double mFinishTime)
     mpCoreComponentSystem->finalize(mStartTime, mFinishTime);
 }
 
-QString GUIRootSystem::createComponent(QString type)
+QString GUIRootSystem::createComponent(QString type, QString name)
 {
     Component *pCoreComponent = HopsanEssentials::getInstance()->CreateComponent(type.toStdString());
     mpCoreComponentSystem->addComponent(pCoreComponent);
+    if (!name.isEmpty())
+    {
+        pCoreComponent->setName(name.toStdString());
+    }
     return QString::fromStdString(pCoreComponent->getName());
 }
 
-QString GUIRootSystem::createSubSystem()
+QString GUIRootSystem::createSubSystem(QString name)
 {
     ComponentSystem *pTempComponentSystem = HopsanEssentials::getInstance()->CreateComponentSystem();
     mpCoreComponentSystem->addComponent(pTempComponentSystem);
+    if (!name.isEmpty())
+    {
+        pTempComponentSystem->setName(name.toStdString());
+    }
     return QString::fromStdString(pTempComponentSystem->getName());
 }
 

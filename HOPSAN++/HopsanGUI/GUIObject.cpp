@@ -89,17 +89,15 @@ GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsSce
     mpSelectionBox = 0;
     mpNameText = 0;
     mIconType = false;
-//    setIcon(false); //Use user icon initially
 
-//    setGeometry(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height());
-//    mpSelectionBox = new GUIObjectSelectionBox(0,0,mpIcon->boundingRect().width(),mpIcon->boundingRect().height(),
-//                                                  QPen(QColor("red"),2*1.6180339887499), QPen(QColor("darkRed"),2*1.6180339887499),this);
-//    mpSelectionBox->setVisible(false);
+    //Set icon and geometry
     this->refreshAppearance();
 
+    //Move to position
     setPos(position.x()-mpIcon->boundingRect().width()/2,position.y()-mpIcon->boundingRect().height()/2);
     mIsFlipped = false;
 
+    //Create the textbox containing the name
     mpNameText = new GUIObjectDisplayName(this);
     mNameTextPos = 0;
     this->setNameTextPos(mNameTextPos);
@@ -107,8 +105,6 @@ GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsSce
     connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(fixTextPosition(QPointF)));
     connect(mpParentGraphicsView,SIGNAL(zoomChange()),this,SLOT(adjustTextPositionToZoom()));
     //connect(this->mpParentGraphicsView,SIGNAL(keyPressDelete()),this,SLOT(deleteComponent()));
-
-
 
     //std::cout << "GUIObject: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
 }
@@ -1167,6 +1163,7 @@ GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, Graph
     mLoadType = "Empty";
     mModelFilePath = "";
 
+    //Create subsystem in core and get its name
     QString corename = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createSubSystem();
     if ( getName().isEmpty() )
     {
@@ -1181,7 +1178,7 @@ GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, Graph
 
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
-    //! @todo Write some code here!
+    //! @todo Write some code here maybe!
 
 //    std::cout << "GUISubsystem: " << mComponentTypeName.toStdString() << std::endl;
 }

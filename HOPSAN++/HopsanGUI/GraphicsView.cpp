@@ -260,16 +260,7 @@ GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint posi
         mpTempGUIObject = new GUIComponent(appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
     }
 
-//    qDebug() << "The name: " <<  name;
-//    //qDebug() << "=====================Get initial name: " << mpTempGUIObject->getName() << "requested: " << name;
-//    if (!name.isEmpty())
-//    {
-//        qDebug() << "name not empty, setting to: " << name;
-//        //Set name, do NOT try to do smart rename. (If component already exist with new component default name that other component would be renamed)
-//        mpTempGUIObject->setName(name, true);
-//    }
-
-//    mpTempGUIObject->refreshDisplayName();
+    //    mpTempGUIObject->refreshDisplayName();
     emit checkMessages();
     //qDebug() << "=====================Get name after add: " << mpTempGUIObject->getName();
     //

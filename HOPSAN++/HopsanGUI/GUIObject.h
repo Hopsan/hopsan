@@ -98,6 +98,7 @@ public:
 
     virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());
     virtual void deleteInHopsanCore();
+    virtual QString createInHopsanCore() {assert(false);}
 
     virtual void loadFromFile(QString modelFileName=QString()) {assert(false);} //Only available in GUISubsystem for now
 
