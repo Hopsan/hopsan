@@ -234,13 +234,34 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
 
 void loadConnector(const ConnectorLoadData &rData, GraphicsView* pGraphicsView, GUIRootSystem* pRootSystem, bool noUnDo)
 {
-    //! @todo Need some error handling here to avoid crash if components or ports do not exist
-    GUIPort *startPort = pGraphicsView->getGUIObject(rData.startComponentName)->getPort(rData.startPortName);
-    GUIPort *endPort = pGraphicsView->getGUIObject(rData.endComponentName)->getPort(rData.endPortName);
-
+    qDebug() << rData.startComponentName << " " << rData.endComponentName << " " << pRootSystem->getName();
     bool success = pRootSystem->connect(rData.startComponentName, rData.startPortName, rData.endComponentName, rData.endPortName);
     if (success)
     {
+        //Check if the component names are the same as the guiroot system name in such cases we should search for the actual systemport gui object instead
+        //!< @todo this is extremely strange, some day we need to figure out a way that allways works the same way, this will likly mean MAJOR changes
+        QString startGuiObjName, endGuiObjName;
+        if (rData.startComponentName == pRootSystem->getName())
+        {
+            startGuiObjName = rData.startPortName;
+        }
+        else
+        {
+            startGuiObjName = rData.startComponentName;
+        }
+        if (rData.endComponentName == pRootSystem->getName())
+        {
+            endGuiObjName = rData.endPortName;
+        }
+        else
+        {
+            endGuiObjName = rData.endComponentName;
+        }
+
+        //! @todo Need some error handling here to avoid crash if components or ports do not exist
+        GUIPort *startPort = pGraphicsView->getGUIObject(startGuiObjName)->getPort(rData.startPortName);
+        GUIPort *endPort = pGraphicsView->getGUIObject(endGuiObjName)->getPort(rData.endPortName);
+
         GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, rData.pointVector, pGraphicsView);
         pGraphicsView->scene()->addItem(pTempConnector);
 

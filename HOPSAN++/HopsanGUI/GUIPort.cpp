@@ -384,6 +384,7 @@ void GUIPort::setDisplayName(const QString name)
 
 //! Get the name of the GUIComponent or GUISubsystem that the port is connected to, This is not necessarily the same as the parent GUIObject name (SystemPorts)
 //! @todo this is a very ugly way of handeling system ports should try to think of something better
+//! @todo the name should maybe be getConnectComponentName or similar to make it more clear what is returned
 QString GUIPort::getGUIComponentName()
 {
     if (mpGUIRootSystem == 0)

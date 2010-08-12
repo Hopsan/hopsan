@@ -96,10 +96,10 @@ public:
     GraphicsScene *mpParentGraphicsScene;
     GraphicsView *mpParentGraphicsView;
 
-    virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());
     virtual void deleteInHopsanCore();
     virtual QString createInHopsanCore() {assert(false);}
 
+    virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());
     virtual void loadFromFile(QString modelFileName=QString()) {assert(false);} //Only available in GUISubsystem for now
 
     enum { Type = UserType + 2 };
@@ -248,7 +248,7 @@ public:
     void deleteInHopsanCore();
 
     QString getTypeName();
-    void setName(QString newName, bool doOnlyCoreRename);
+    void setName(QString newName, bool doOnlyCoreRename=false);
     void setTypeCQS(QString typestring);
     QString getTypeCQS();
     void loadFromFile(QString modelFileName=QString());

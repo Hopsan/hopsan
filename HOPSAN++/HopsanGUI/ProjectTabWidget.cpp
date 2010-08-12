@@ -608,7 +608,7 @@ void ProjectTabWidget::loadModel()
     pCurrentTab->mpGraphicsView->undoStack->newPost();
     pCurrentTab->mIsSaved = true;
 
-    //Read the header data, also cecks version numbers
+    //Read the header data, also checks version numbers
     //! @todo maybe not check the version numbers in there
     HeaderLoadData headerData = readHeader(inputStream, mpParentMainWindow->mpMessageWidget);
 
@@ -622,6 +622,9 @@ void ProjectTabWidget::loadModel()
     getCurrentTab()->mpGraphicsView->scale(headerData.viewport_zoomfactor, headerData.viewport_zoomfactor);
     getCurrentTab()->mpGraphicsView->mZoomFactor = headerData.viewport_zoomfactor;
     getCurrentTab()->mpGraphicsView->resetBackgroundBrush();
+
+    //Sets the file name (exluding path and ending) as the model name
+    getCurrentTab()->mGUIRootSystem.setRootSystemName(fileInfo.baseName());
 
     while ( !inputStream.atEnd() )
     {
@@ -656,9 +659,6 @@ void ProjectTabWidget::loadModel()
     }
     //Deselect all components
    //pCurrentTab->mpGraphicsView->deselectAllGUIObjects();
-
-    //Sets the file name as model name
-    getCurrentTab()->mGUIRootSystem.setRootSystemName(fileInfo.fileName());
 
     pCurrentTab->mpGraphicsView->deSelectAll();
     this->centerView();
@@ -699,6 +699,10 @@ void ProjectTabWidget::saveModel(bool saveAs)
         qDebug() << "Failed to open file for writing: " + modelFileName;
         return;
     }
+
+    //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
+    pCurrentTab->mGUIRootSystem.setRootSystemName(fileInfo.baseName());
+    this->setTabText(this->currentIndex(), fileInfo.fileName());
 
     //QLineF line(QPointF(sceneCenterPointF.x(), sceneCenterPointF.y()), QPointF(groupPortPoint.x(), groupPortPoint.y()));
 
@@ -780,10 +784,6 @@ void ProjectTabWidget::saveModel(bool saveAs)
         pCurrentView->mConnectorVector[i]->saveToTextStream(modelFile, "CONNECT");
     }
     modelFile << "--------------------------------------------------------------\n";
-
-    //Sets the model name
-    pCurrentTab->mGUIRootSystem.setRootSystemName(fileInfo.fileName());
-    this->setTabText(this->currentIndex(), fileInfo.fileName());
 }
 
 

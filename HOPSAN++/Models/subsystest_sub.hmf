@@ -1,0 +1,23 @@
+--------------------------------------------------------------
+-------------------  HOPSAN NG MODEL FILE  -------------------
+--------------------------------------------------------------
+HOPSANGUIVERSION 0.0.1
+HMFVERSION 0.1
+CAFVERSION 0.1
+--------------------------------------------------------------
+SIMULATIONTIME 0 0.001 10
+VIEWPORT 2502 2502 1
+--------------------------------------------------------------
+USERICON ""
+ISOICON ""
+PORT "sysp" 0 0.999982 3.1599
+PORT "sysp_1" 0.999964 1 6.26487
+--------------------------------------------------------------
+COMPONENT "HydraulicPressureSource" "Prescribed Pressure C" 2367 2434 90 0 1
+PARAMETER "Prescribed Pressure C" "P" 100000
+SYSTEMPORT "SystemPort" "sysp" 2276 2439 0 0 1
+SYSTEMPORT "SystemPort" "sysp_1" 2549 2439 0 0 1
+--------------------------------------------------------------
+CONNECT "subsystest_sub" "sysp" "Prescribed Pressure C" "In" 2276 2439 2331 2439 2331 2434 2355 2434
+CONNECT "Prescribed Pressure C" "P1" "subsystest_sub" "sysp_1" 2379 2434 2526 2434 2526 2439 2549 2439
+--------------------------------------------------------------

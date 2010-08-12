@@ -1244,6 +1244,7 @@ QVector<QString> GUISubsystem::getParameterNames()
 void GUISubsystem::loadFromFile(QString modelFileName)
 {
     QFile file;
+    QFileInfo fileInfo;
     if (modelFileName.isEmpty())
     {
         QDir fileDialog;
@@ -1254,7 +1255,7 @@ void GUISubsystem::loadFromFile(QString modelFileName)
             return;
 
         file.setFileName(modelFileName);
-        QFileInfo fileInfo(file);
+        fileInfo.setFile(file);
 
         for(int t=0; t!=mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->count(); ++t)
         {
@@ -1269,6 +1270,7 @@ void GUISubsystem::loadFromFile(QString modelFileName)
     else
     {
          file.setFileName(modelFileName);
+         fileInfo.setFile(file);
     }
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
@@ -1278,6 +1280,9 @@ void GUISubsystem::loadFromFile(QString modelFileName)
     }
     QTextStream textStreamFile(&file); //Converts to QTextStream
     mModelFilePath = modelFileName;
+
+    //Set the name
+    this->setName(fileInfo.baseName());
 
     //Now read the file data
     SystemAppearanceLoadData sysappdata;
@@ -1318,6 +1323,7 @@ void GUISubsystem::loadFromFile(QString modelFileName)
 
     this->refreshAppearance();
     this->createPorts();
+    this->refreshDisplayName();
     file.close();
 }
 
