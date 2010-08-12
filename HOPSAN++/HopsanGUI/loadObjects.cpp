@@ -184,7 +184,7 @@ void ConnectorLoadData::read(QTextStream &rStream)
 void ParameterLoadData::read(QTextStream &rStream)
 {
     componentName = readName(rStream);
-    rStream >> parameterName;
+    parameterName = readName(rStream);
     rStream >> parameterValue;
 }
 

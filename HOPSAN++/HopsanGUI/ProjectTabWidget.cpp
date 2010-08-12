@@ -527,6 +527,8 @@ void ProjectTabWidget::simulateCurrent()
         //Ask core to execute (and finalize) simulation
     if (!progressBar.wasCanceled())
     {
+        QTime simTimer;
+        simTimer.start();
         SimulationThread actualSimulation(&(pCurrentTab->mGUIRootSystem), startTime, finishTime, this);
         actualSimulation.start();
         actualSimulation.setPriority(QThread::HighestPriority);
@@ -553,6 +555,10 @@ void ProjectTabWidget::simulateCurrent()
 
         actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
         actualSimulation.quit();
+        //qDebug() << "Simulation time: " << (simTimer.elapsed()) << " ms";
+        QString timeString;
+        timeString.setNum(simTimer.elapsed());
+        mpParentMainWindow->mpMessageWidget->printGUIInfoMessage(QString("Simulation time: ").append(timeString).append(" ms"));
     }
 
     if (progressBar.wasCanceled())
