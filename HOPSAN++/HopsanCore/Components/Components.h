@@ -79,6 +79,7 @@
 #include "Mechanic/MechanicSpeedSensor.hpp"
 #include "Mechanic/MechanicForceSensor.hpp"
 #include "Mechanic/MechanicPositionSensor.hpp"
+#include "Mechanic/MechanicAngleSensor.hpp"
 
 #include "../Component.h"
 

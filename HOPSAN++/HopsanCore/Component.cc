@@ -2163,7 +2163,7 @@ void ComponentSystem::simulate(const double startT, const double stopT)
     tbb::task_group *q;
     c = new tbb::task_group;
     q = new tbb::task_group;
-    static tbb::affinity_partitioner Affinity1;
+    //static tbb::affinity_partitioner Affinity1;       //Used for parallel execution of signal components
 
         //Execute simulation
     while ((mTime < stopTsafe) && (!mStop))
@@ -2196,6 +2196,7 @@ void ComponentSystem::simulate(const double startT, const double stopT)
         mTime += mTimestep;
     }
 }
+
 
 #else
 void ComponentSystem::simulate(const double startT, const double stopT)
