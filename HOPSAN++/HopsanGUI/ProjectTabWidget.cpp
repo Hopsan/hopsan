@@ -631,7 +631,7 @@ void ProjectTabWidget::loadModel()
             //! @todo convenience function
         }
 
-        if ( inputWord == "COMPONENT" )
+        if ( (inputWord == "COMPONENT") || (inputWord == "SYSTEMPORT") )
         {
             loadGUIObject(inputStream, mpParentMainWindow->mpLibrary, pCurrentTab->mpGraphicsView, true);
         }
@@ -756,6 +756,10 @@ void ProjectTabWidget::saveModel(bool saveAs)
         if ( it.value()->getTypeName() == QString("Subsystem") )
         {
             it.value()->saveToTextStream(modelFile, "SUBSYSTEM");
+        }
+        else if (it.value()->getTypeName() == QString("SystemPort"))
+        {
+            it.value()->saveToTextStream(modelFile, "SYSTEMPORT");
         }
         else
         {

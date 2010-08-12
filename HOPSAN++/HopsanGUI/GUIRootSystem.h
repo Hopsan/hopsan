@@ -77,6 +77,8 @@ public:
     QString createSubSystem(QString name="");
     void removeSubComponent(QString componentName, bool doDelete);
 
+    void loadSystemFromFileCoreOnly(QString sysname, QString filepath);
+
     bool isSimulationOk();
     void initialize(double mStartTime, double mFinishTime);
     void simulate(double mStartTime, double mFinishTime);

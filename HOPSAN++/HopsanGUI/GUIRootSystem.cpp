@@ -162,6 +162,15 @@ void GUIRootSystem::removeSubComponent(QString componentName, bool doDelete)
 //    mpCoreComponentSystem->removeSubComponent(mpCoreComponentSystem->getSubComponentSystem(name.toStdString()), true);
 //}
 
+//! @brief This function loads a system from a file without adding any graphics
+//! It calls the core load function and adds all contents into the specified subsystem
+//! @param [in] sysname The name of the subsystem in which to add loaded contents
+//! @param [in] filepath The path to the file to load from
+void GUIRootSystem::loadSystemFromFileCoreOnly(QString sysname, QString filepath)
+{
+    mpCoreComponentSystem->getSubComponentSystem(sysname.toStdString())->loadSystemFromFile(filepath.toStdString());
+}
+
 
 vector<double> GUIRootSystem::getTimeVector(QString componentName, QString portName)
 {

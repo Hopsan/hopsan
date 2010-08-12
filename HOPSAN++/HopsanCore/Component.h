@@ -180,6 +180,9 @@ namespace hopsan {
         //Constructor - Destructor
         ComponentSystem(std::string name="ComponentSystem", double timestep=0.001);
 
+        //Load from external file
+        void loadSystemFromFile(std::string filepath);
+
         //Set the subsystem CQS type
         void setTypeCQS(const std::string cqs_type, bool doOnlyLocalSet=false);
         void setTypeCQS(typeCQS cqs_type, bool doOnlyLocalSet=false);
@@ -192,7 +195,7 @@ namespace hopsan {
         void removeSubComponent(std::string name, bool doDelete=false);
         void removeSubComponent(Component *pComponent, bool doDelete=false);
 
-        //Add system ports
+        //Handle system ports
         Port* addSystemPort(std::string portname);
         std::string renameSystemPort(const std::string oldname, const std::string newname);
         void deleteSystemPort(const std::string name);
@@ -204,22 +207,20 @@ namespace hopsan {
         std::vector<std::string> getSubComponentNames();
         bool haveSubComponent(std::string name);
 
-        //connecting components
+        //Connecting and disconnecting components
         bool connect(Port *pPort1, Port *pPort2);
         bool connect(std::string compname1, std::string portname1, std::string compname2, std::string portname2);
         bool disconnect(std::string compname1, std::string portname1, std::string compname2, std::string portname2);
         void disconnect(Port *pPort1, Port *pPort2);
 
-        //initializeand simulate
+        //initialize and simulate
         bool isSimulationOk();
         void initialize(const double startT, const double stopT);
         void simulate(const double startT, const double stopT);
         void finalize(const double startT, const double stopT);
 
-        //Set desired timestep
+        //Set and get desired timestep
         void setDesiredTimestep(const double timestep);
-
-        //Get desired timestep
         double getDesiredTimeStep();
 
         //Stop a running init or simulation

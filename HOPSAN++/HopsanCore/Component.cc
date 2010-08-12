@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include "Component.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
+#include "CoreUtilities/FileAccess.h"
 
 #define USETBB            //Uncomment this will enable TBB package. Only use if you have it installed.
 #ifdef USETBB
@@ -850,6 +851,14 @@ ComponentSystem::ComponentSystem(string name, double timestep) : Component(name,
     mDesiredTimestep = timestep;
 }
 
+//! @todo maybe not have this in this class maybe external function, or maybe all loading internal in all classes
+void ComponentSystem::loadSystemFromFile(string filepath)
+{
+    FileAccess fileaccess;
+    double dummy;
+    fileaccess.loadModel(filepath, this, &dummy, &dummy); //!< @todo fix dummy stuff
+}
+
 
 double ComponentSystem::getDesiredTimeStep()
 {
@@ -938,8 +947,8 @@ void ComponentSystem::removeSubComponent(Component* c_ptr, bool doDelete)
 }
 
 
-//! @brief Get a Component ptr the the component with supplied name, can also return a ptr to self if no subcomponent found
-//! @todo for this to work we need to amke sure that the system and its sub components have unique names
+//! @brief Get a Component ptr to the component with supplied name, can also return a ptr to self if no subcomponent found
+//! @todo for this to work we need to make sure that the system and its sub components have unique names
 Component* ComponentSystem::getComponent(string name)
 {
     cout << "getComponent: " << name << " in: " << mName << endl;

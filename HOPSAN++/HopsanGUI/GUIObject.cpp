@@ -1150,7 +1150,7 @@ void GUIComponent::saveToTextStream(QTextStream &rStream, QString prepend)
     for(pit = parameterNames.begin(); pit != parameterNames.end(); ++pit)
     {
         //! @todo It is a bit strange that we can not control the parameter keyword, but then agian spliting this into a separate function with its own prepend variable would also be wierd
-        rStream << "PARAMETER " << addQuotes(getName()) << " " << (*pit) << " " <<
+        rStream << "PARAMETER " << addQuotes(getName()) << " " << addQuotes(*pit) << " " <<
                 mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getParameterValue(this->getName(), (*pit)) << "\n";
     }
 }
@@ -1312,11 +1312,12 @@ void GUISubsystem::loadFromFile(QString modelFileName)
     qDebug() << "Appearance set";
 
     //Load the contents of the subsystem from the external file
-    //! @todo do this
-
+    this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.loadSystemFromFileCoreOnly(this->getName(), modelFileName);
+    qDebug() << "Loaded in core";
 
     this->refreshAppearance();
     this->createPorts();
+    file.close();
 }
 
 

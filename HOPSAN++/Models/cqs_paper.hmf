@@ -13,27 +13,27 @@ ISOICON ""
 --------------------------------------------------------------
 COMPONENT "HydraulicFlowSensor" "Flow Sensor" 2605 2497 0 0 0
 COMPONENT "SignalGain" "Gain" 2432 2463 0 0 0
-PARAMETER "Gain" Gain 1
+PARAMETER "Gain" "Gain" 1
 COMPONENT "HydraulicTLMlossless" "Long pipe" 2527 2527 0 0 0
-PARAMETER "Long pipe" TD 0.1
-PARAMETER "Long pipe" a 0
-PARAMETER "Long pipe" Zc 1e+09
-PARAMETER "Long pipe" startP 100000
-PARAMETER "Long pipe" startQ 0
+PARAMETER "Long pipe" "TD" 0.1
+PARAMETER "Long pipe" "a" 0
+PARAMETER "Long pipe" "Zc" 1e+09
+PARAMETER "Long pipe" "startP" 100000
+PARAMETER "Long pipe" "startQ" 0
 COMPONENT "HydraulicLaminarOrifice" "Orifice" 2410 2527 90 0 0
-PARAMETER "Orifice" Kc 1e-11
+PARAMETER "Orifice" "Kc" 1e-11
 COMPONENT "HydraulicLaminarOrifice" "Orifice_1" 2672 2527 90 0 0
-PARAMETER "Orifice_1" Kc 1e-11
+PARAMETER "Orifice_1" "Kc" 1e-11
 COMPONENT "HydraulicPressureSource" "Pressure" 2313 2527 90 0 0
-PARAMETER "Pressure" P 100000
+PARAMETER "Pressure" "P" 100000
 COMPONENT "SignalSubtract" "Subtract" 2376 2463 0 0 0
 COMPONENT "HydraulicTankC" "Tank" 2717 2527 270 0 0
-PARAMETER "Tank" P 100000
+PARAMETER "Tank" "P" 100000
 COMPONENT "SignalRamp" "ref" 2316 2463 0 0 0
-PARAMETER "ref" BaseValue 0
-PARAMETER "ref" Amplitude 1
-PARAMETER "ref" StartTime 1
-PARAMETER "ref" StopTime 2
+PARAMETER "ref" "BaseValue" 0
+PARAMETER "ref" "Amplitude" 1
+PARAMETER "ref" "StartTime" 1
+PARAMETER "ref" "StopTime" 2
 --------------------------------------------------------------
 CONNECT "Pressure" "P1" "Orifice" "P2" 2325 2527 2327.43 2527 2327.43 2527 2375.5 2527
 CONNECT "Long pipe" "P2" "Orifice_1" "P2" 2583.5 2527 2625.43 2527 2625.43 2527 2637.5 2527

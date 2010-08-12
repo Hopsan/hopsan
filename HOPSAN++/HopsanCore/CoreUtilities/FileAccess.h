@@ -31,18 +31,18 @@ namespace hopsan {
     {
     public:
         FileAccess();
-        FileAccess(std::string filename);
-        void setFilename(std::string filename);
-        ComponentSystem* loadModel(HopsanEssentials* pHopsan, double *startTime, double *stopTime);
-        ComponentSystem* loadModel(HopsanEssentials* pHopsan, std::string filename, double *startTime, double *stopTime);
-        void loadModelContents(std::stringstream &rLoaddatastream, ComponentSystem* pSubsystem, HopsanEssentials* pHopsan);
+        //FileAccess(std::string filename);
+        //void setFilename(std::string filename);
+
+        void loadModel(std::string filename, ComponentSystem* pModelSystem, double *startTime, double *stopTime);
+        void loadSystemContents(std::stringstream &rLoaddatastream, ComponentSystem* pSubsystem);
 
         void saveModel(std::string fileName, ComponentSystem* pMainModel, double startTime, double stopTime);
 
 
     private:
-        std::string mFilename;
-        ComponentSystem mModel;
+        //std::string mFilename;
+        //ComponentSystem mModel;
         void saveComponentSystem(std::ofstream& modelFile, ComponentSystem* pMotherModel, std::string motherSystemName);
 
     };

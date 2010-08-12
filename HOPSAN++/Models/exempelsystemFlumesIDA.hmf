@@ -6,37 +6,37 @@ HMFVERSION 0.1
 CAFVERSION 0.1
 --------------------------------------------------------------
 SIMULATIONTIME 0 1e-05 2
-VIEWPORT 2500 2499 1
+VIEWPORT 2502 2502 1
 --------------------------------------------------------------
 USERICON ""
 ISOICON ""
 --------------------------------------------------------------
 COMPONENT "HydraulicAlternativePRV" "AlternativePRV" 2527 2491 0 0 1
-PARAMETER "AlternativePRV" pref 1e+07
-PARAMETER "AlternativePRV" cq 0.67
-PARAMETER "AlternativePRV" spooldiameter 0.0025
-PARAMETER "AlternativePRV" frac 1
-PARAMETER "AlternativePRV" pilotarea 5e-05
-PARAMETER "AlternativePRV" k 150000
-PARAMETER "AlternativePRV" c 400
-PARAMETER "AlternativePRV" m 0
-PARAMETER "AlternativePRV" xhyst 0
-PARAMETER "AlternativePRV" xmax 0.015
-PARAMETER "AlternativePRV" debug 0
-PARAMETER "AlternativePRV" t1 0
-PARAMETER "AlternativePRV" t2 0.01
+PARAMETER "AlternativePRV" "pref" 1e+07
+PARAMETER "AlternativePRV" "cq" 0.67
+PARAMETER "AlternativePRV" "spooldiameter" 0.0025
+PARAMETER "AlternativePRV" "frac" 1
+PARAMETER "AlternativePRV" "pilotarea" 5e-05
+PARAMETER "AlternativePRV" "k" 150000
+PARAMETER "AlternativePRV" "c" 400
+PARAMETER "AlternativePRV" "m" 0
+PARAMETER "AlternativePRV" "xhyst" 0
+PARAMETER "AlternativePRV" "xmax" 0.015
+PARAMETER "AlternativePRV" "debug" 0
+PARAMETER "AlternativePRV" "t1" 0
+PARAMETER "AlternativePRV" "t2" 0.01
 COMPONENT "HydraulicFlowSourceQ" "FlowSourceQ" 2354 2444 0 0 1
-PARAMETER "FlowSourceQ" Flow 0.0001
+PARAMETER "FlowSourceQ" "Flow" 0.0001
 COMPONENT "HydraulicTankC" "PressureSource" 2525 2561 0 0 1
-PARAMETER "PressureSource" P 100000
+PARAMETER "PressureSource" "P" 100000
 COMPONENT "SignalSink" "Sink" 2622 2492 0 0 1
 COMPONENT "HydraulicVolume" "Volume" 2442 2444 0 1 1
-PARAMETER "Volume" V 0.001
-PARAMETER "Volume" Be 1e+09
-PARAMETER "Volume" a 0
-PARAMETER "Volume" debug 0
-PARAMETER "Volume" t1 0
-PARAMETER "Volume" t2 0.01
+PARAMETER "Volume" "V" 0.001
+PARAMETER "Volume" "Be" 1e+09
+PARAMETER "Volume" "a" 0
+PARAMETER "Volume" "debug" 0
+PARAMETER "Volume" "t1" 0
+PARAMETER "Volume" "t2" 0.01
 --------------------------------------------------------------
 CONNECT "AlternativePRV" "X" "Sink" "in" 2569 2491 2575 2491 2575 2492 2609.5 2492
 CONNECT "FlowSourceQ" "P1" "Volume" "P1" 2366 2444 2349 2444 2349 2444 2417 2444 2417 2444

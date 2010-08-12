@@ -6,35 +6,38 @@ HMFVERSION 0.1
 CAFVERSION 0.1
 --------------------------------------------------------------
 SIMULATIONTIME 0 0.001 10
-VIEWPORT 2500 2500 1
+VIEWPORT 2502 2502 1
 --------------------------------------------------------------
-COMPONENT "HydraulicAlternativePRV" "AlternativePRV" 2444 2410 0 1 0
-PARAMETER "AlternativePRV" pref 1e+07
-PARAMETER "AlternativePRV" cq 0.67
-PARAMETER "AlternativePRV" spooldiameter 0.02
-PARAMETER "AlternativePRV" frac 1
-PARAMETER "AlternativePRV" pilotarea 0.0001
-PARAMETER "AlternativePRV" k 30000
-PARAMETER "AlternativePRV" c 0
-PARAMETER "AlternativePRV" m 0.05
-PARAMETER "AlternativePRV" xhyst 0
-PARAMETER "AlternativePRV" xmax 0.01
-PARAMETER "AlternativePRV" debug 0
-PARAMETER "AlternativePRV" t1 0
-PARAMETER "AlternativePRV" t2 0.01
-COMPONENT "HydraulicFlowSourceQ" "FlowSourceQ" 2226 2345 0 1 1
-PARAMETER "FlowSourceQ" Flow 2e-05
-COMPONENT "HydraulicTankC" "PressureSource" 2441 2482 0 1 0
-PARAMETER "PressureSource" P 100000
-COMPONENT "HydraulicVolume" "Volume" 2338 2345 0 11 1
-PARAMETER "Volume" V 0.003
-PARAMETER "Volume" Be 1e+09
-PARAMETER "Volume" a 0
-PARAMETER "Volume" debug 0
-PARAMETER "Volume" t1 0
-PARAMETER "Volume" t2 0.01
+USERICON ""
+ISOICON ""
 --------------------------------------------------------------
-CONNECT "FlowSourceQ" "P1" "Volume" "P1" 2238 2345 2245 2345 2245 2345 2313 2345
-CONNECT "PressureSource" "P1" "AlternativePRV" "P2" 2441 2467.5 2441 2465 2442 2465 2442 2450
-CONNECT "Volume" "P2" "AlternativePRV" "P1" 2363 2345 2442 2345 2442 2370
+COMPONENT "HydraulicAlternativePRV" "AlternativePRV" 2594 2511 0 1 0
+PARAMETER "AlternativePRV" "pref" 1e+07
+PARAMETER "AlternativePRV" "cq" 0.67
+PARAMETER "AlternativePRV" "spooldiameter" 0.02
+PARAMETER "AlternativePRV" "frac" 1
+PARAMETER "AlternativePRV" "pilotarea" 0.0001
+PARAMETER "AlternativePRV" "k" 30000
+PARAMETER "AlternativePRV" "c" 0
+PARAMETER "AlternativePRV" "m" 0.05
+PARAMETER "AlternativePRV" "xhyst" 0
+PARAMETER "AlternativePRV" "xmax" 0.01
+PARAMETER "AlternativePRV" "debug" 0
+PARAMETER "AlternativePRV" "t1" 0
+PARAMETER "AlternativePRV" "t2" 0.01
+COMPONENT "HydraulicFlowSourceQ" "FlowSourceQ" 2376 2446 0 1 1
+PARAMETER "FlowSourceQ" "Flow" 2e-05
+COMPONENT "HydraulicTankC" "PressureSource" 2592 2583 0 1 0
+PARAMETER "PressureSource" "P" 100000
+COMPONENT "HydraulicVolume" "Volume" 2488 2446 0 0 1
+PARAMETER "Volume" "V" 0.003
+PARAMETER "Volume" "Be" 1e+09
+PARAMETER "Volume" "a" 0
+PARAMETER "Volume" "debug" 0
+PARAMETER "Volume" "t1" 0
+PARAMETER "Volume" "t2" 0.01
+--------------------------------------------------------------
+CONNECT "FlowSourceQ" "P1" "Volume" "P1" 2388 2446 2395 2446 2395 2446 2463 2446
+CONNECT "PressureSource" "P1" "AlternativePRV" "P2" 2592 2568.5 2592 2566 2592 2566 2592 2551
+CONNECT "Volume" "P2" "AlternativePRV" "P1" 2513 2446 2592 2446 2592 2471
 --------------------------------------------------------------
