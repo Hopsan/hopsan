@@ -954,18 +954,18 @@ GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, Graph
     : GUIObject(position, appearanceData, scene, parent)
 {
     //Create the object in core, and get its default core name
-    QString corename = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createComponent(mAppearanceData.getTypeName());
-
-    if ( this->getName().isEmpty() )
-    {
-        //If the displayname has not been decided then use the name from core
-        mAppearanceData.setName(corename);
-    }
-    else
-    {
-        //Lets rename the core object to the gui name that is set in the txt description file, we take the name theat this function returns
-        mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.rename(corename, getName())); //Cant use setName here as that would call an aditional rename (of someone else)
-    }
+//    QString corename = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createComponent(mAppearanceData.getTypeName());
+//    if ( this->getName().isEmpty() )
+//    {
+//        //If the displayname has not been decided then use the name from core
+//        mAppearanceData.setName(corename);
+//    }
+//    else
+//    {
+//        //Lets rename the core object to the gui name that is set in the txt description file, we take the name theat this function returns
+//        mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.rename(corename, getName())); //Cant use setName here as that would call an aditional rename (of someone else)
+//    }
+    mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createComponent(mAppearanceData.getTypeName(), this->getName()));
 
     //Sets the ports
     createPorts();
@@ -1164,17 +1164,18 @@ GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, Graph
     mModelFilePath = "";
 
     //Create subsystem in core and get its name
-    QString corename = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createSubSystem();
-    if ( getName().isEmpty() )
-    {
-        //If the displayname has not been decided then use the name from core
-        mAppearanceData.setName(corename);
-    }
-    else
-    {
-        //Lets rename the core object to the gui name that is set in the txt description file, we take the name that this function returns
-        mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.rename(corename, getName())); //Cant use setName here as thewould call an aditional rename (of someone else)
-    }
+//    QString corename = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createSubSystem();
+//    if ( getName().isEmpty() )
+//    {
+//        //If the displayname has not been decided then use the name from core
+//        mAppearanceData.setName(corename);
+//    }
+//    else
+//    {
+//        //Lets rename the core object to the gui name that is set in the txt description file, we take the name that this function returns
+//        mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.rename(corename, getName())); //Cant use setName here as thewould call an aditional rename (of someone else)
+//    }
+    mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createSubSystem(this->getName()));
 
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
@@ -1454,6 +1455,7 @@ GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, Gra
 {
     //Sets the ports
     createPorts();
+    refreshDisplayName();
 }
 
 //! @brief Help function to create ports in the component when it is created
