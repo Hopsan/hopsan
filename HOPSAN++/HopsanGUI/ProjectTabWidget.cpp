@@ -474,6 +474,8 @@ bool ProjectTabWidget::closeAllProjectTabs()
 //! Simulates the model in current open tab in a separate thread, the GUI runs a progressbar parallel to the simulation.
 void ProjectTabWidget::simulateCurrent()
 {
+
+        //Check if simulation is possible
     if (!currentWidget())
     {
         mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("There is no open system to simulate"));
@@ -488,28 +490,29 @@ void ProjectTabWidget::simulateCurrent()
     }
 
 
+        //Setup simulation parameters
     ProjectTab *pCurrentTab = getCurrentTab();
-
     double startTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->getStartTimeLabel();
     double finishTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->getFinishTimeLabel();
-
-    QString timeTxt;
     double dt = finishTime - startTime;
     size_t nSteps = dt/pCurrentTab->mGUIRootSystem.getDesiredTimeStep();
 
-    QProgressDialog progressBar(tr("Initialize simulation..."), tr("&Abort initialization"), 0, 0, this);
-    std::cout << progressBar.geometry().width() << " " << progressBar.geometry().height() << std::endl;
+
+        //Ask core to initialize simulation
+    InitializationThread actualInitialization(&(pCurrentTab->mGUIRootSystem), startTime, finishTime, this);
+    actualInitialization.start();
+    actualInitialization.setPriority(QThread::HighestPriority);
+    ProgressBarThread progressThread(this);
+
+    QProgressDialog progressBar(tr("Initializing simulation..."), tr("&Abort initialization"), 0, 0, this);
     progressBar.setWindowModality(Qt::WindowModal);
     progressBar.setWindowTitle(tr("Simulate!"));
-
-    InitializationThread actualInitialization(&(pCurrentTab->mGUIRootSystem), startTime, finishTime, this);
-
     size_t i=0;
-    actualInitialization.start();
-//    actualInitialization.setPriority(QThread::TimeCriticalPriority); //No bar appears in Windows with this prio
-    actualInitialization.setPriority(QThread::HighestPriority);
     while (actualInitialization.isRunning())
     {
+        progressThread.start();
+        progressThread.setPriority(QThread::LowestPriority);
+        progressThread.wait();
         progressBar.setValue(i++);
         if (progressBar.wasCanceled())
         {
@@ -518,14 +521,17 @@ void ProjectTabWidget::simulateCurrent()
     }
     progressBar.setValue(i);
     actualInitialization.wait(); //Make sure actualSimulation do not goes out of scope during simulation
-    qDebug() << "Uggla";
+    actualInitialization.quit();
+
+
+        //Ask core to execute (and finalize) simulation
     if (!progressBar.wasCanceled())
     {
         SimulationThread actualSimulation(&(pCurrentTab->mGUIRootSystem), startTime, finishTime, this);
-        ProgressBarThread progressThread(this);
-
         actualSimulation.start();
-        actualSimulation.setPriority(QThread::HighestPriority);//actualSimulation.setPriority(QThread::HighestPriority);
+        actualSimulation.setPriority(QThread::HighestPriority);
+            //! @todo TimeCriticalPriority seem to work on dual core, is it a problem on single core machines only?
+        //actualSimulation.setPriority(QThread::TimeCriticalPriority); //No bar appears in Windows with this prio
 
         progressBar.setLabelText(tr("Running simulation..."));
         progressBar.setCancelButtonText(tr("&Abort simulation"));
@@ -542,21 +548,18 @@ void ProjectTabWidget::simulateCurrent()
               pCurrentTab->mGUIRootSystem.stop();
            }
         }
+        progressThread.quit();
         progressBar.setValue((size_t)(getCurrentTab()->mGUIRootSystem.getCurrentTime()/dt * nSteps));
 
-//        actualSimulation.setPriority(QThread::TimeCriticalPriority); //No bar appears in Windows with this prio
         actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
-
-        //mpParentMainWindow->mpProgressBarWidget->hide();
+        actualSimulation.quit();
     }
 
-    //if (progressBar.wasCanceled())
-    //    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(pCurrentTab->mGUIRootSystem.getName()).append(tr("' was terminated!"))));
-    //else
+    if (progressBar.wasCanceled())
+        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(pCurrentTab->mGUIRootSystem.getName()).append(tr("' was terminated!"))));
+    else
     mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulated '").append(pCurrentTab->mGUIRootSystem.getName()).append(tr("' successfully!"))));
-    qDebug() << "Liten söt Chiwuaua";
     emit checkMessages();
-    qDebug() << "Barn från Ryd";
 }
 
 
