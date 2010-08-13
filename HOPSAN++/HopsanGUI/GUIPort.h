@@ -80,8 +80,8 @@ public:
     bool isConnected;
 
 public slots:
-    void hideIfNotConnected(bool justDoIt);
-    void setVisible(bool visible);
+    void hideIfNotConnected(bool hidePortsActionTriggered);
+    void setVisible(bool value);
 
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);

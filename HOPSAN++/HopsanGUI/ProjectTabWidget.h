@@ -91,7 +91,7 @@ public slots:
     void updateCurrentStartTime();
     void updateCurrentTimeStep();
     void updateCurrentStopTime();
-    void hidePortsInCurrentTab(bool doIt);
+    void hidePortsInCurrentTab(bool hidePortsActionTriggered);
     void exportCurrentToPDF();
     void centerView();
     void disableUndo();

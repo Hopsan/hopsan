@@ -107,7 +107,7 @@ private:
     bool isConnectorSelected();
     void createActions();
     void createMenus();
-    void addSystemPort(QPoint position, QString name=QString(), bool startSelected = false);
+    void addSystemPort(QPoint position, QString name=QString(), selectionStatus startSelected = DESELECTED);
     bool mJustStoppedCreatingConnector;
     bool mCtrlKeyPressed;
 };

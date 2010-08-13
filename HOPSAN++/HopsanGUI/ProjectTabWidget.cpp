@@ -273,9 +273,9 @@ void ProjectTabWidget::exportCurrentToPDF()
 
 //! Slot that tells the current project tab to hide its ports.
 //! @param doIt is true if ports shall be hidden, otherwise false.
-void ProjectTabWidget::hidePortsInCurrentTab(bool doIt)
+void ProjectTabWidget::hidePortsInCurrentTab(bool hidePortsActionTriggered)
 {
-    this->getCurrentTab()->mpGraphicsView->hidePorts(doIt);
+    this->getCurrentTab()->mpGraphicsView->hidePorts(hidePortsActionTriggered);
 }
 
 

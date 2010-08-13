@@ -132,9 +132,9 @@ void GUIPort::magnify(bool blowup)
 }
 
 
-void GUIPort::setVisible(bool visible)
+void GUIPort::setVisible(bool value)
 {
-    QGraphicsSvgItem::setVisible(visible);
+    QGraphicsSvgItem::setVisible(value);
     mpPortLabel->setVisible(false);
 }
 
@@ -399,16 +399,16 @@ QString GUIPort::getGUIComponentName()
 
 
 //! Slot that hides the port if "hide ports" setting is enabled, but only if the project tab is opened.
-//! @param justDoIt is true if ports shall be hidden, otherwise false.
-void GUIPort::hideIfNotConnected(bool justDoIt)
+//! @param hidePortsActionTriggered is true if ports shall be hidden, otherwise false.
+void GUIPort::hideIfNotConnected(bool hidePortsActionTriggered)
 {
     if(mpParentGraphicsView->mpParentProjectTab == mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->getCurrentTab())
     {
-        if(!isConnected and justDoIt)
+        if(!isConnected and hidePortsActionTriggered)
         {
             this->hide();
         }
-        else if(!isConnected and !justDoIt)
+        else if(!isConnected and !hidePortsActionTriggered)
         {
             this->show();
         }
