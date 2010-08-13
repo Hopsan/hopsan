@@ -82,7 +82,7 @@ LibraryContentItem::LibraryContentItem(AppearanceData *pAppearanceData, QListWid
     this->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
 
     mpAppearanceData = pAppearanceData;
-    selectIcon(false);
+    selectIcon(USERGRAPHICS);
 }
 
 //! @brief Copy Constructor
@@ -104,13 +104,13 @@ QString LibraryContentItem::getTypeName()
 }
 
 //! @brief Selects and loads either user or ISO icon
-//! @param [in] useIso Select wheter to use user (false) or iso (true) icon
-void LibraryContentItem::selectIcon(bool useIso)
+//! @param [in] gfxType Select wheter to use user (false) or iso (true) icon
+void LibraryContentItem::selectIcon(graphicsType gfxType)
 {
     //Set Icon, prefere user, if its empty use iso
     QIcon icon;
     QPixmap testPixMap;
-    icon.addFile(mpAppearanceData->getFullIconPath(useIso),QSize(55,55));
+    icon.addFile(mpAppearanceData->getFullIconPath(gfxType),QSize(55,55));
 
     //this->setSizeHint(QSize(55,55));
     this->setIcon(icon);
@@ -462,14 +462,14 @@ void LibraryWidget::hideAllLib()
     }
 }
 
-void LibraryWidget::useIsoGraphics(bool useISO)
+void LibraryWidget::setGfxType(graphicsType gfxType)
 {
-    qDebug() << "useIsoGraphics " << useISO;
+    //qDebug() << "setGfxType gfxType";
     QList<LibraryContentItem*> itemlist =  mLibraryContentItemPtrsMap.values();
     QList<LibraryContentItem*>::iterator it = itemlist.begin();
     for( ; it != itemlist.end(); ++it )
     {
-        (*it)->selectIcon(useISO);
+        (*it)->selectIcon(gfxType);
     }
 }
 

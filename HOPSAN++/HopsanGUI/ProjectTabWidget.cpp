@@ -124,7 +124,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 
     setLayout(tabLayout);
 
-    this->useIsoGraphics = USERGRAPHICS;
+    this->setGfxType = USERGRAPHICS;
 
 }
 
@@ -790,16 +790,16 @@ void ProjectTabWidget::saveModel(bool saveAs)
 //! Tells the current tab to change to or from ISO graphics.
 //! @param value is true if ISO should be activated and false if it should be deactivated.
 //! @todo Break out the guiconnector appearance stuff into a separate general function
-void ProjectTabWidget::setIsoGraphics(graphicsType useISO)
+void ProjectTabWidget::setIsoGraphics(graphicsType gfxType)
 {
-    //if(useISO)
-    //    this->getCurrentTab()->useIsoGraphics = GUIObject::ISOGRAPHICS;
+    //if(gfxType = ISOGRAPHICS)
+    //    this->getCurrentTab()->setGfxType = GUIObject::ISOGRAPHICS;
     //else
-    //    this->getCurrentTab()->useIsoGraphics = GUIObject::USERGRAPHICS;
+    //    this->getCurrentTab()->setGfxType = GUIObject::USERGRAPHICS;
 
-    this->getCurrentTab()->useIsoGraphics = useISO;
+    this->getCurrentTab()->setGfxType = gfxType;
 
-    mpParentMainWindow->mpLibrary->useIsoGraphics(useISO);
+    mpParentMainWindow->mpLibrary->setGfxType(gfxType);
 
     ProjectTab *pCurrentTab = getCurrentTab();
     GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
@@ -807,13 +807,13 @@ void ProjectTabWidget::setIsoGraphics(graphicsType useISO)
 
     for(int i = 0; i!=pCurrentView->mConnectorVector.size(); ++i)
     {
-        pCurrentView->mConnectorVector[i]->setIsoStyle(useISO);
+        pCurrentView->mConnectorVector[i]->setIsoStyle(gfxType);
     }
 
     QMap<QString, GUIObject*>::iterator it2;
     for(it2 = pCurrentView->mGUIObjectMap.begin(); it2!=pCurrentView->mGUIObjectMap.end(); ++it2)
     {
-        it2.value()->setIcon(useISO);
+        it2.value()->setIcon(gfxType);
     }
 }
 

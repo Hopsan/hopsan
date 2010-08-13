@@ -110,7 +110,7 @@ public:
     ProjectTab(ProjectTabWidget *parent = 0);
     bool mIsSaved;
     QString mModelFileName;
-    graphicsType useIsoGraphics;
+    graphicsType setGfxType;
     ProjectTabWidget *mpParentProjectTabWidget;
     GUIRootSystem mGUIRootSystem;
     GraphicsView *mpGraphicsView;

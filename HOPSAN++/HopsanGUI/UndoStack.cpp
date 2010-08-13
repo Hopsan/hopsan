@@ -205,8 +205,8 @@ void UndoStack::undoOneStep()
 //                        ++j;
 //                    }
 //
-//                    //! @todo: Store useIso bool in model file and pick the correct line styles when loading
-//                    //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), mpParentView->mpParentProjectTab->useIsoGraphics);
+//                    //! @todo: Store gfxType bool in model file and pick the correct line styles when loading
+//                    //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), mpParentView->mpParentProjectTab->setGfxType);
 //                    GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, mpParentView);
 //
 //                    mpParentView->scene()->addItem(pTempConnector);
@@ -509,8 +509,8 @@ void UndoStack::redoOneStep()
 //                        ++j;
 //                    }
 //
-//                    //! @todo: Store useIso bool in model file and pick the correct line styles when loading
-//                    //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), mpParentView->mpParentProjectTab->useIsoGraphics);
+//                    //! @todo: Store gfxType bool in model file and pick the correct line styles when loading
+//                    //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), mpParentView->mpParentProjectTab->setGfxType);
 //                    GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, mpParentView);
 //
 //                    mpParentView->scene()->addItem(pTempConnector);

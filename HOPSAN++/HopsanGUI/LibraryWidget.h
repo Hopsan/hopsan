@@ -48,6 +48,8 @@
 #ifndef LIBRARYWIDGET_H
 #define LIBRARYWIDGET_H
 
+#include "common.h"
+
 #include <QListWidget>
 #include <QStringList>
 #include <QTreeWidget>
@@ -68,7 +70,7 @@ public:
     QString getTypeName();
 
 //public slots:
-    void selectIcon(bool useIso=false);
+    void selectIcon(graphicsType gfxType=USERGRAPHICS);
 
 private:
     AppearanceData *mpAppearanceData;
@@ -120,7 +122,7 @@ protected:
 
 public slots:
     void addLibrary();
-    void useIsoGraphics(bool useISO);
+    void setGfxType(graphicsType gfxType);
 
 private slots:
     void showLib(QTreeWidgetItem * item, int column);

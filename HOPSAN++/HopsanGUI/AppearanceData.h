@@ -60,11 +60,11 @@ class GUIConnectorAppearance
 {
 public:
     //GUIConnectorAppearance();
-    GUIConnectorAppearance(QString porttype, bool useISO);
+    GUIConnectorAppearance(QString porttype, graphicsType gfxType);
     void setType(const QString porttype);
-    void setIsoStyle(bool useISO);
-    void setTypeAndIsoStyle(QString porttype, bool useISO);
-    QPen getPen(QString situation, QString type, bool useISO);
+    void setIsoStyle(graphicsType gfxType);
+    void setTypeAndIsoStyle(QString porttype, graphicsType gfxType);
+    QPen getPen(QString situation, QString type, graphicsType gfxType);
     QPen getPen(QString situation);
     void adjustToZoom(qreal zoomFactor);
 
@@ -84,7 +84,7 @@ private:
     QPen mNonFinishedPen;
 
     QString mConnectorType;
-    bool mUseISOStyle;
+    graphicsType mGfxType;
 
 };
 
@@ -114,7 +114,7 @@ public:
 
     QString getTypeName();
     QString getName();
-    QString getFullIconPath(bool useIso=false);
+    QString getFullIconPath(graphicsType gfxType=USERGRAPHICS);
     QString getIconPathUser();
     QString getIconPathISO();
     QString getIconRotationBehaviour();

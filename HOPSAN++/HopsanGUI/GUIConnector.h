@@ -88,7 +88,7 @@ public:
     GraphicsView *mpParentGraphicsView;
 
 public slots:
-    void setIsoStyle(bool useISO);
+    void setIsoStyle(graphicsType gfxType);
     void drawConnector();
     void updateStartPoint(QPointF point);
     void updateEndPoint(QPointF point);

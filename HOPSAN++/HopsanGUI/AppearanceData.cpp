@@ -50,7 +50,7 @@
 #include "qdebug.h"
 #include "GUIUtilities.h"
 
-GUIConnectorAppearance::GUIConnectorAppearance(QString type, bool useISO)
+GUIConnectorAppearance::GUIConnectorAppearance(QString type, graphicsType gfxType)
 {
     //! @todo Dont set these here should be set once when the program starts, should be possible to change appearance by config
     //Sets the hardcoded connector pen appearance
@@ -73,7 +73,7 @@ GUIConnectorAppearance::GUIConnectorAppearance(QString type, bool useISO)
     mNonFinishedPen = QPen(QColor("lightslategray"),3,Qt::SolidLine, Qt::RoundCap);
 
     //Set the connector type and style
-    setTypeAndIsoStyle(type, useISO);     //Need to use set type instead of setting directly as setType narrows types down to power or signal
+    setTypeAndIsoStyle(type, gfxType);     //Need to use set type instead of setting directly as setType narrows types down to power or signal
 }
 
 //! @brief Set the Connector type
@@ -94,32 +94,32 @@ void GUIConnectorAppearance::setType(const QString type)
     }
 }
 
-void GUIConnectorAppearance::setIsoStyle(bool useISO)
+void GUIConnectorAppearance::setIsoStyle(graphicsType gfxType)
 {
-    mUseISOStyle = useISO;
+    mGfxType = gfxType;
 }
 
-void GUIConnectorAppearance::setTypeAndIsoStyle(QString porttype, bool useISO)
+void GUIConnectorAppearance::setTypeAndIsoStyle(QString porttype, graphicsType gfxType)
 {
     setType(porttype);
-    setIsoStyle(useISO);
+    setIsoStyle(gfxType);
 }
 
 QPen GUIConnectorAppearance::getPen(QString situation)
 {
-    return getPen(situation, mConnectorType, mUseISOStyle);
+    return getPen(situation, mConnectorType, mGfxType);
 }
 
 //! Get function for primary pen style
 //! @todo Hardcoded appearance stuff (should maybe be loaded from external file (not prio 1)
-QPen GUIConnectorAppearance::getPen(QString situation, QString type, bool useISO)
+QPen GUIConnectorAppearance::getPen(QString situation, QString type, graphicsType gfxType)
 {
     //! @todo store pens in some smarter way, maybe in an array where situation and type are enums or used to calculate index, will be necessary for larger variations as a mega if else code is madness
     if(situation == "Primary")
     {
         if(type == "Power")
         {
-            if (useISO)
+            if (gfxType == ISOGRAPHICS)
             {
                 return mPrimaryPenPowerIso;
             }
@@ -130,7 +130,7 @@ QPen GUIConnectorAppearance::getPen(QString situation, QString type, bool useISO
         }
         if(type == "Signal")
         {
-            if (useISO)
+            if (gfxType == ISOGRAPHICS)
             {
                 return mPrimaryPenSignalIso;
             }
@@ -144,7 +144,7 @@ QPen GUIConnectorAppearance::getPen(QString situation, QString type, bool useISO
     {
         if(type == "Power")
         {
-            if (useISO)
+            if (gfxType == ISOGRAPHICS)
             {
                 return mActivePenPowerIso;
             }
@@ -155,7 +155,7 @@ QPen GUIConnectorAppearance::getPen(QString situation, QString type, bool useISO
         }
         if(type == "Signal")
         {
-            if (useISO)
+            if (gfxType == ISOGRAPHICS)
             {
                 return mActivePenSignalIso;
             }
@@ -169,7 +169,7 @@ QPen GUIConnectorAppearance::getPen(QString situation, QString type, bool useISO
     {
         if(type == "Power")
         {
-            if (useISO)
+            if (gfxType == ISOGRAPHICS)
             {
                 return mHoverPenPowerIso;
             }
@@ -180,7 +180,7 @@ QPen GUIConnectorAppearance::getPen(QString situation, QString type, bool useISO
         }
         if(type == "Signal")
         {
-            if (useISO)
+            if (gfxType == ISOGRAPHICS)
             {
                 return mHoverPenSignalIso;
             }
@@ -195,7 +195,7 @@ QPen GUIConnectorAppearance::getPen(QString situation, QString type, bool useISO
         return mNonFinishedPen;
     }
 
-    qDebug() << "ERROR no such connector appearance: " << situation << " " <<  type << " ISOstyle: " << useISO << "   DONT WORRY ABOUT THIS ERROR WILL FIX LATER, /Peter";
+    qDebug() << "ERROR no such connector appearance: " << situation << " " <<  type << " ISOstyle: " << gfxType << "   DONT WORRY ABOUT THIS ERROR WILL FIX LATER, /Peter";
 
     return mNonFinishedPen;
 }
@@ -364,14 +364,14 @@ QString AppearanceData::getName()
     }
 }
 
-QString AppearanceData::getFullIconPath(bool useIso)
+QString AppearanceData::getFullIconPath(graphicsType gfxType)
 {
-    if ( !mIconPathUser.isEmpty() && !useIso )
+    if ( !mIconPathUser.isEmpty() && (gfxType == USERGRAPHICS) )
     {
         //Use user icon
         return mBasePath + mIconPathUser;
     }
-    else if ( !mIconPathISO.isEmpty() && useIso )
+    else if ( !mIconPathISO.isEmpty() && (gfxType == ISOGRAPHICS) )
     {
         //use iso icon
         return mBasePath + mIconPathISO;

@@ -66,7 +66,7 @@ GUIConnector::GUIConnector(QPointF startpos, GraphicsView *parentView, QGraphics
 
     this->updateStartPoint(startpos);
 
-    mpGUIConnectorAppearance = new GUIConnectorAppearance("notconnected", mpParentGraphicsView->mpParentProjectTab->useIsoGraphics);
+    mpGUIConnectorAppearance = new GUIConnectorAppearance("notconnected", mpParentGraphicsView->mpParentProjectTab->setGfxType);
 
     mEndPortConnected = false;
 
@@ -97,11 +97,8 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     QPointF startPos = getStartPort()->mapToScene(getStartPort()->boundingRect().center());
     this->setPos(startPos);
 
-    mpGUIConnectorAppearance = new GUIConnectorAppearance(startPort->getPortType(), mpParentGraphicsView->mpParentProjectTab->useIsoGraphics);
-//        //Set pen styles
-//    mprimaryPen = primaryPen;
-//    mActivePen = activePen;
-//    mHoverPen = hoverPen;
+    mpGUIConnectorAppearance = new GUIConnectorAppearance(startPort->getPortType(), mpParentGraphicsView->mpParentProjectTab->setGfxType);
+
     mPoints = points;
 
         //Setup the geometries vector based on the point geometry
@@ -347,10 +344,10 @@ void GUIConnector::setEndPort(GUIPort *port)
 
 
 //! Slot that tells the connector lines whether or not to use ISO style.
-//! @param useISO is true if ISO style shall be used.
-void GUIConnector::setIsoStyle(bool useISO)
+//! @param gfxType tells whether or not iso graphics is to be used
+void GUIConnector::setIsoStyle(graphicsType gfxType)
 {
-    mpGUIConnectorAppearance->setIsoStyle(useISO);
+    mpGUIConnectorAppearance->setIsoStyle(gfxType);
     for (int i=0; i!=mpLines.size(); ++i )
     {
         //Refresh each line by setting to passive (primary) appearance

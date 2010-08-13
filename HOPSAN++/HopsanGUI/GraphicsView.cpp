@@ -247,15 +247,15 @@ GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint posi
     QString componentTypeName = appearanceData.getTypeName();
     if (componentTypeName == "Subsystem")
     {
-        mpTempGUIObject= new GUISubsystem(appearanceData, position, rotation, mpParentProjectTab->mpGraphicsScene, startSelected, mpParentProjectTab->useIsoGraphics);
+        mpTempGUIObject= new GUISubsystem(appearanceData, position, rotation, mpParentProjectTab->mpGraphicsScene, startSelected, mpParentProjectTab->setGfxType);
     }
     else if (componentTypeName == "SystemPort")
     {
-        mpTempGUIObject = new GUISystemPort(appearanceData, position, rotation, mpParentProjectTab->mpGraphicsScene, startSelected, mpParentProjectTab->useIsoGraphics);
+        mpTempGUIObject = new GUISystemPort(appearanceData, position, rotation, mpParentProjectTab->mpGraphicsScene, startSelected, mpParentProjectTab->setGfxType);
     }
     else //Assume some standard component type
     {
-        mpTempGUIObject = new GUIComponent(appearanceData, position, rotation, mpParentProjectTab->mpGraphicsScene, startSelected, mpParentProjectTab->useIsoGraphics);
+        mpTempGUIObject = new GUIComponent(appearanceData, position, rotation, mpParentProjectTab->mpGraphicsScene, startSelected, mpParentProjectTab->setGfxType);
     }
 
     emit checkMessages();
@@ -653,7 +653,7 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
         std::cout << "GraphicsView: " << "Adding connector";
         QPointF oldPos = pPort->mapToScene(pPort->boundingRect().center());
 
-        //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(pPort->getPortType(), mpParentProjectTab->useIsoGraphics);
+        //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(pPort->getPortType(), mpParentProjectTab->setGfxType);
         mpTempConnector = new GUIConnector(oldPos, this);
 
         this->scene()->addItem(mpTempConnector);
@@ -1033,8 +1033,8 @@ void GraphicsView::paste()
 //                    tempPointVector.push_back(QPointF(tempX-50, tempY-50));
 //                }
 
-//                //! @todo: Store useIso bool in model file and pick the correct line styles when loading
-//                //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), mpParentProjectTab->useIsoGraphics);
+//                //! @todo: Store gfxType bool in model file and pick the correct line styles when loading
+//                //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), mpParentProjectTab->setGfxType);
 //                GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, this);
 
 //                this->scene()->addItem(pTempConnector);

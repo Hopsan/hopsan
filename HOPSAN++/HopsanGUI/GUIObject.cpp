@@ -64,7 +64,7 @@ double dist(double x1,double y1, double x2, double y2)
     return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
 }
 
-GUIObject::GUIObject(QPoint position, qreal rotation, AppearanceData appearanceData, selectionStatus startSelected, graphicsType useISO, GraphicsScene *scene, QGraphicsItem *parent)
+GUIObject::GUIObject(QPoint position, qreal rotation, AppearanceData appearanceData, selectionStatus startSelected, graphicsType gfxType, GraphicsScene *scene, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
     //remeber the scene ptr
@@ -90,7 +90,7 @@ GUIObject::GUIObject(QPoint position, qreal rotation, AppearanceData appearanceD
     this->setPos(position.x()-mpIcon->boundingRect().width()/2,position.y()-mpIcon->boundingRect().height()/2);
     this->rotateTo(rotation);
     this->setSelected(startSelected);
-    this->setIcon(useISO);
+    this->setIcon(gfxType);
     this->setZValue(10);
     this->setAcceptHoverEvents(true);
     mTextOffset = 5.0;
@@ -265,21 +265,21 @@ void GUIObject::setName(QString newName, bool doOnlyCoreRename)
 }
 
 
-void GUIObject::setIcon(graphicsType useIso)
+void GUIObject::setIcon(graphicsType gfxType)
 {
-    qDebug() << "setIcon(" << useIso << ")";
+    qDebug() << "setIcon(" << gfxType << ")";
 
     QGraphicsSvgItem *tmp = mpIcon;
-    if(useIso and mAppearanceData.haveIsoIcon())
+    if(gfxType and mAppearanceData.haveIsoIcon())
     {
-        mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(true) , this);
+        mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(ISOGRAPHICS) , this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
         mIconType = ISOGRAPHICS;
         //qDebug() << "Setting iconpath to " << mAppearanceData.getFullIconPath(true);
     }
     else
     {
-        mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(false), this);
+        mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(USERGRAPHICS), this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
         mIconType = USERGRAPHICS;
         //qDebug() << "Setting iconpath to " << mAppearanceData.getFullIconPath(false);
@@ -961,8 +961,8 @@ void GUIObject::deleteMe()
 }
 
 
-GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, selectionStatus startSelected, graphicsType useISO, QGraphicsItem *parent)
-    : GUIObject(position, rotation, appearanceData, startSelected, useISO, scene, parent)
+GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
+    : GUIObject(position, rotation, appearanceData, startSelected, gfxType, scene, parent)
 {
     //Create the object in core, and get its default core name
 //    QString corename = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createComponent(mAppearanceData.getTypeName());
@@ -1167,8 +1167,8 @@ void GUIComponent::saveToTextStream(QTextStream &rStream, QString prepend)
 }
 
 
-GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, selectionStatus startSelected, graphicsType useISO, QGraphicsItem *parent)
-    : GUIObject(position, rotation, appearanceData, startSelected, useISO, scene, parent)
+GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
+    : GUIObject(position, rotation, appearanceData, startSelected, gfxType, scene, parent)
 {
     //Set default values
     mLoadType = "Empty";
@@ -1477,8 +1477,8 @@ void GUISubsystem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     }
 }
 
-GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, selectionStatus startSelected, graphicsType useISO, QGraphicsItem *parent)
-        : GUIObject(position, rotation, appearanceData, startSelected, useISO, scene, parent)
+GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
+        : GUIObject(position, rotation, appearanceData, startSelected, gfxType, scene, parent)
 {
     //Sets the ports
     createPorts();
