@@ -865,6 +865,7 @@ void GUIObjectDisplayName::focusInEvent(QFocusEvent *event)
 
 void GUIObjectDisplayName::focusOutEvent(QFocusEvent *event)
 {
+    mpParentGUIComponent->mpParentGraphicsView->undoStack->newPost();
     mpParentGUIComponent->mpParentGraphicsView->mIsRenamingObject = false;
         //Try to set the new name, the rename function in parent view will be called
     mpParentGUIComponent->setName(toPlainText());
