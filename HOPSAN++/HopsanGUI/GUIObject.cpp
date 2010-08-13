@@ -202,7 +202,7 @@ void GUIObject::fixTextPosition(QPointF pos)
         mNameTextPos = 1;
     }
 
-    this->mpParentGraphicsView->resetBackgroundBrush();
+    mpParentGraphicsView->resetBackgroundBrush();
 }
 
 
@@ -233,7 +233,7 @@ void GUIObject::refreshDisplayName()
     {
         mpNameText->setPlainText(mAppearanceData.getName());
         //Adjust the position of the text
-        this->fixTextPosition(this->mpNameText->pos());
+        this->fixTextPosition(mpNameText->pos());
     }
 }
 
@@ -292,28 +292,28 @@ void GUIObject::setIcon(graphicsType useIso)
     }
 
     if(mAppearanceData.getIconRotationBehaviour() == "ON")
-        this->mIconRotation = true;
+        mIconRotation = true;
     else
-        this->mIconRotation = false;
+        mIconRotation = false;
 
-    if(!this->mIconRotation)
+    if(!mIconRotation)
     {
-        this->mpIcon->setRotation(-this->rotation());
+        mpIcon->setRotation(-this->rotation());
         if(this->rotation() == 0)
         {
-            this->mpIcon->setPos(0,0);
+            mpIcon->setPos(0,0);
         }
         else if(this->rotation() == 90)
         {
-            this->mpIcon->setPos(0,this->boundingRect().height());
+            mpIcon->setPos(0,this->boundingRect().height());
         }
         else if(this->rotation() == 180)
         {
-            this->mpIcon->setPos(this->boundingRect().width(),this->boundingRect().height());
+            mpIcon->setPos(this->boundingRect().width(),this->boundingRect().height());
         }
         else if(this->rotation() == 270)
         {
-            this->mpIcon->setPos(this->boundingRect().width(),0);
+            mpIcon->setPos(this->boundingRect().width(),0);
         }
     }
 
@@ -372,8 +372,8 @@ void GUIObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     if(!this->isSelected())
     {
-        this->mpSelectionBox->setHovered();
-        //this->mpSelectionBox->setVisible(true);
+        mpSelectionBox->setHovered();
+        //mpSelectionBox->setVisible(true);
     }
     this->showPorts(true);
 }
@@ -406,7 +406,7 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsWidget::mousePressEvent(event);
 
         //Objects shall not be selectable while creating a connector
-    if(this->mpParentGraphicsView->mIsCreatingConnector)
+    if(mpParentGraphicsView->mIsCreatingConnector)
     {
         this->setSelected(false);
         this->setActive(false);
@@ -436,7 +436,7 @@ void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsWidget::mouseReleaseEvent(event);
 
         //Objects shall not be selectable while creating a connector
-    if(this->mpParentGraphicsView->mIsCreatingConnector)
+    if(mpParentGraphicsView->mIsCreatingConnector)
     {
         this->setSelected(false);
         this->setActive(false);
@@ -453,28 +453,28 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
     {
         if (this->isSelected())
         {
-            this->mpSelectionBox->setActive();
-            connect(this->mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
-            connect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
-            connect(this->mpParentGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
-            connect(this->mpParentGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
-            connect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
-            connect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
-            connect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
-            connect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
+            mpSelectionBox->setActive();
+            connect(mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+            connect(mpParentGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
+            connect(mpParentGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
+            connect(mpParentGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
+            connect(mpParentGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
+            connect(mpParentGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
+            connect(mpParentGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
+            connect(mpParentGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
             emit componentSelected();
         }
         else
         {
-            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
-            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
-            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
-            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
-            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
-            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
-            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
-            disconnect(this->mpParentGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
-            this->mpSelectionBox->setPassive();
+            disconnect(mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+            disconnect(mpParentGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
+            disconnect(mpParentGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
+            disconnect(mpParentGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
+            disconnect(mpParentGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
+            disconnect(mpParentGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
+            disconnect(mpParentGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
+            disconnect(mpParentGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
+            mpSelectionBox->setPassive();
         }
     }
     else if (change == QGraphicsItem::ItemPositionHasChanged)
@@ -527,7 +527,7 @@ int GUIObject::getPortNumber(GUIPort *port)
 //! @see rotateTo(qreal angle);
 void GUIObject::rotate(bool doNotRegisterUndo)
 {
-    this->setTransformOriginPoint(this->mpIcon->boundingRect().center());
+    this->setTransformOriginPoint(mpIcon->boundingRect().center());
     this->setRotation(this->rotation()+90);
 
     if (this->rotation() == 360)
@@ -536,8 +536,8 @@ void GUIObject::rotate(bool doNotRegisterUndo)
     }
 
     int tempNameTextPos = mNameTextPos;
-    this->mpNameText->rotate(-90);
-    this->fixTextPosition(this->mpNameText->pos());
+    mpNameText->rotate(-90);
+    this->fixTextPosition(mpNameText->pos());
     setNameTextPos(tempNameTextPos);
 
     for (int i = 0; i != mPortListPtrs.size(); ++i)
@@ -568,27 +568,27 @@ void GUIObject::rotate(bool doNotRegisterUndo)
         //mPortListPtrs[i]->updatePosition();
     }
 
-    if(!this->mIconRotation)
+    if(!mIconRotation)
     {
-        this->mpIcon->setRotation(-this->rotation());
+        mpIcon->setRotation(-this->rotation());
         if(this->rotation() == 0)
         {
-            this->mpIcon->setPos(0,0);
+            mpIcon->setPos(0,0);
         }
         else if(this->rotation() == 90)
         {
-            this->mpIcon->setPos(0,this->boundingRect().height());
+            mpIcon->setPos(0,this->boundingRect().height());
         }
         else if(this->rotation() == 180)
         {
-            this->mpIcon->setPos(this->boundingRect().width(),this->boundingRect().height());
+            mpIcon->setPos(this->boundingRect().width(),this->boundingRect().height());
         }
         else if(this->rotation() == 270)
         {
-            this->mpIcon->setPos(this->boundingRect().width(),0);
+            mpIcon->setPos(this->boundingRect().width(),0);
         }
 
-        //this->mpIcon->setPos(this->boundingRect().center());
+        //mpIcon->setPos(this->boundingRect().center());
     }
 
     if(!doNotRegisterUndo)
@@ -708,7 +708,7 @@ void GUIObject::flipHorizontal(bool doNotRegisterUndo)
         mIsFlipped = true;
     }
 
-    this->fixTextPosition(this->mpNameText->pos());
+    this->fixTextPosition(mpNameText->pos());
 
         //"Un-flip" the ports
     for (int i = 0; i != mPortListPtrs.size(); ++i)
@@ -791,12 +791,12 @@ void GUIObject::setNameTextPos(int textPos)
 
 void GUIObject::hideName()
 {
-    this->mpNameText->setVisible(false);
+    mpNameText->setVisible(false);
 }
 
 void GUIObject::showName()
 {
-    this->mpNameText->setVisible(true);
+    mpNameText->setVisible(true);
 }
 
 
@@ -896,8 +896,8 @@ GUIObjectSelectionBox::GUIObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal
     x2 = x2+3;
     y2 = y2+3;
 
-    this->mActivePen = activePen;
-    this->mHoverPen = hoverPen;
+    mActivePen = activePen;
+    mHoverPen = hoverPen;
     this->setPassive();
 
     QGraphicsLineItem *tempLine = new QGraphicsLineItem(x1,y1+b,x1,y1,this);
@@ -928,7 +928,7 @@ void GUIObjectSelectionBox::setActive()
     this->setVisible(true);
     for(std::size_t i=0;i!=mLines.size();++i)
     {
-        mLines[i]->setPen(this->mActivePen);
+        mLines[i]->setPen(mActivePen);
     }
 }
 
@@ -950,7 +950,7 @@ void GUIObjectSelectionBox::setHovered()
     this->setVisible(true);
     for(std::size_t i=0;i!=mLines.size();++i)
     {
-        mLines[i]->setPen(this->mHoverPen);
+        mLines[i]->setPen(mHoverPen);
     }
 }
 
@@ -965,7 +965,7 @@ GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, qreal
     : GUIObject(position, rotation, appearanceData, startSelected, useISO, scene, parent)
 {
     //Create the object in core, and get its default core name
-//    QString corename = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createComponent(mAppearanceData.getTypeName());
+//    QString corename = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createComponent(mAppearanceData.getTypeName());
 //    if ( this->getName().isEmpty() )
 //    {
 //        //If the displayname has not been decided then use the name from core
@@ -1078,7 +1078,7 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
         QAction *showNameAction = menu.addAction(tr("Show name"));
         showNameAction->setCheckable(true);
-        showNameAction->setChecked(this->mpNameText->isVisible());
+        showNameAction->setChecked(mpNameText->isVisible());
 
         QAction *selectedAction = menu.exec(event->screenPos());
 
@@ -1093,11 +1093,11 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
             appdata.setIconPathUser("subsystemtmp.svg");
             appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
             GUIGroup *pGroup = new GUIGroup(mpParentGraphicsScene->selectedItems(), appdata, mpParentGraphicsScene);
-            this->mpParentGraphicsScene->addItem(pGroup);
+            mpParentGraphicsScene->addItem(pGroup);
         }
         else if (selectedAction == showNameAction)
         {
-            if(this->mpNameText->isVisible())
+            if(mpNameText->isVisible())
             {
                 this->hideName();
             }
@@ -1123,8 +1123,8 @@ void GUIComponent::createPorts()
     PortAppearanceMapT::iterator i;
     for (i = mAppearanceData.getPortAppearanceMap().begin(); i != mAppearanceData.getPortAppearanceMap().end(); ++i)
     {
-        QString nodeType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getNodeType(this->getName(), i.key());
-        QString portType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPortType(this->getName(), i.key());
+        QString nodeType = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getNodeType(this->getName(), i.key());
+        QString portType = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPortType(this->getName(), i.key());
         i.value().selectPortIcon(cqsType, portType, nodeType);
 
         qreal x = i.value().x;
@@ -1339,7 +1339,7 @@ void GUISubsystem::loadFromFile(QString modelFileName)
     qDebug() << "Appearance set";
 
     //Load the contents of the subsystem from the external file
-    this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.loadSystemFromFileCoreOnly(this->getName(), modelFileName);
+    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.loadSystemFromFileCoreOnly(this->getName(), modelFileName);
     qDebug() << "Loaded in core";
 
     this->refreshAppearance();
@@ -1374,7 +1374,7 @@ void GUISubsystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
         QAction *showNameAction = menu.addAction(tr("Show name"));
         showNameAction->setCheckable(true);
-        showNameAction->setChecked(this->mpNameText->isVisible());
+        showNameAction->setChecked(mpNameText->isVisible());
 
         QAction *loadAction = menu.addAction(tr("Load Subsystem File"));
         if(!mModelFilePath.isEmpty()) loadAction->setDisabled(true);
@@ -1394,11 +1394,11 @@ void GUISubsystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
             appdata.setIconPathUser("subsystemtmp.svg");
             appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
             GUIGroup *pGroup = new GUIGroup(mpParentGraphicsScene->selectedItems(), appdata, mpParentGraphicsScene);
-            this->mpParentGraphicsScene->addItem(pGroup);
+            mpParentGraphicsScene->addItem(pGroup);
         }
         else if (selectedAction == showNameAction)
         {
-            if(this->mpNameText->isVisible())
+            if(mpNameText->isVisible())
             {
                 this->hideName();
             }
@@ -1430,8 +1430,8 @@ void GUISubsystem::createPorts()
     {
         //! @todo fix this
         qDebug() << "getNode and portType for " << it.key();
-        QString nodeType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getNodeType(this->getName(), it.key());
-        QString portType = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPortType(this->getName(), it.key());
+        QString nodeType = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getNodeType(this->getName(), it.key());
+        QString portType = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPortType(this->getName(), it.key());
         it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
 
         qreal x = it.value().x;
@@ -1547,7 +1547,7 @@ int GUISystemPort::type() const
 void GUISystemPort::deleteInHopsanCore()
 {
     //qDebug() << "In GUISystemPort::deleteInHopsanCore";
-    this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.deleteSystemPort(mAppearanceData.getName());
+    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.deleteSystemPort(mAppearanceData.getName());
 }
 
 
@@ -1623,7 +1623,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
     }
 
     //Constructs a new scene for the group
-    mpGroupScene = new GraphicsScene(this->mpParentGraphicsScene->mpParentProjectTab);
+    mpGroupScene = new GraphicsScene(mpParentGraphicsScene->mpParentProjectTab);
 
     double xMin = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
            xMax = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
@@ -1715,7 +1715,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
             points.append(pPortBoundaryInside->mapToScene(pPortBoundaryInside->boundingRect().center()));
             points.append(pPort->mapToScene(pPort->boundingRect().center())); //! @todo GUIConnector should handle any number of points e.g. 0, 1 or 2
             points.append(pPort->mapToScene(pPort->boundingRect().center()));
-            GUIConnector *pInsideConnector = new GUIConnector(pPortBoundaryInside, pPort, points, this->mpParentGraphicsView);
+            GUIConnector *pInsideConnector = new GUIConnector(pPortBoundaryInside, pPort, points, mpParentGraphicsView);
             mpGroupScene->addItem(pInsideConnector);
 
 //            pGroupPortComponent->addConnector(pInsideConnector);
@@ -1748,8 +1748,8 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
         mPortListPtrs.append(pGuiPort);
 
         //Make connectors to the group component
-        GUIConnector *tmpConnector = new GUIConnector(pGuiPort, pPortBoundaryOutside,pTransitConnector->getPointsVector(), this->mpParentGraphicsView);
-        this->mpParentScene->addItem(tmpConnector);
+        GUIConnector *tmpConnector = new GUIConnector(pGuiPort, pPortBoundaryOutside,pTransitConnector->getPointsVector(), mpParentGraphicsView);
+        mpParentScene->addItem(tmpConnector);
         this->showPorts(false);
         tmpConnector->drawConnector();
 
@@ -1758,15 +1758,15 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
     }
 
     //Show this scene
-    this->mpParentGraphicsView->setScene(mpGroupScene);
-    this->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton->show();
+    mpParentGraphicsView->setScene(mpGroupScene);
+    mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton->show();
 
     //Draw a cross in the center of the group component icon (debug)
 //    new QGraphicsLineItem(QLineF(this->rect().center()-QPointF(-10,-10), this->rect().center()-QPointF(10,10)),this);
 //    new QGraphicsLineItem(QLineF(this->rect().center()-QPointF(-10,10), this->rect().center()-QPointF(10,-10)),this);
 
     //Scale up the ports and so on
-    //! @todo Add a method to this->mpSelectionBox so the lines could be scaled
+    //! @todo Add a method to mpSelectionBox so the lines could be scaled
     QList<GUIPort*>::iterator it;
     for (it = mPortListPtrs.begin(); it != mPortListPtrs.end(); ++it)
     {
@@ -1774,7 +1774,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
         (*it)->setScale(1.0/scale);
     }
 
-    connect(this->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
+    connect(mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
 
 }
 
@@ -1789,14 +1789,14 @@ GUIGroup::~GUIGroup()
     }
 
 
-    QList<QGraphicsItem*> objectsInScenePtrs = this->mpGroupScene->items();
+    QList<QGraphicsItem*> objectsInScenePtrs = mpGroupScene->items();
     QList<QGraphicsItem*>::iterator it;
     for(it=objectsInScenePtrs.begin(); it != objectsInScenePtrs.end(); ++it)
     {
         //! @todo Will cause crash when closing program if the GUIObject has already been deleted by the scene.
-        this->mpParentGraphicsView->deleteGUIObject(this->getName());
+        mpParentGraphicsView->deleteGUIObject(this->getName());
         GUIComponent *pGUIComponent = qgraphicsitem_cast<GUIComponent*>(*it);
-        this->mpGroupScene->removeItem((*it));
+        mpGroupScene->removeItem((*it));
 
         if(pGUIComponent)
         {
@@ -1805,7 +1805,7 @@ GUIGroup::~GUIGroup()
         }
         //mpParentScene->addItem((*it));
     }
-    qDebug() << "this->mpParentGraphicsView->deleteGUIObject(this->getName()), getName:" << this->getName();
+    qDebug() << "mpParentGraphicsView->deleteGUIObject(this->getName()), getName:" << this->getName();
     //delete mpGroupScene;
 }
 
@@ -1813,11 +1813,11 @@ GUIGroup::~GUIGroup()
 //! Shows the parent scene. Should be called to exit a group.
 void GUIGroup::showParent()
 {
-    this->mpParentGraphicsView->setScene(mpParentScene);
+    mpParentGraphicsView->setScene(mpParentScene);
 
-    disconnect(this->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
+    disconnect(mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
 
-    this->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton->hide();
+    mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton->hide();
 
 }
 
@@ -1844,18 +1844,18 @@ void GUIGroup::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 void GUIGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mouseDoubleClickEvent(event);
-    this->mpParentGraphicsView->setScene(mpGroupScene);
+    mpParentGraphicsView->setScene(mpGroupScene);
 
-    this->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton->show();
+    mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton->show();
 
-    connect(this->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
+    connect(mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
 
 }
 
 //QGraphicsColorizeEffect *graphicsColor = new QGraphicsColorizeEffect;
 //graphicsColor ->setColor(Qt::red);
 //graphicsColor->setEnabled(true);
-//this->mpIcon->setGraphicsEffect(graphicsColor);
+//mpIcon->setGraphicsEffect(graphicsColor);
 
 
 GUIGroupPort::GUIGroupPort(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)

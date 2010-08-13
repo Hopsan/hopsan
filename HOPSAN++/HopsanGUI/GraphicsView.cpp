@@ -76,7 +76,7 @@ GraphicsView::GraphicsView(ProjectTab *parent)
 bool GraphicsView::isObjectSelected()
 {
     QMap<QString, GUIObject *>::iterator it;
-    for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
+    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
     {
         if(it.value()->isSelected())
         {
@@ -191,7 +191,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
 GUIConnector *GraphicsView::getTempConnector()
 {
-    return this->mpTempConnector;
+    return mpTempConnector;
 }
 
 //! @breif dont really know what this is used for
@@ -247,15 +247,15 @@ GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint posi
     QString componentTypeName = appearanceData.getTypeName();
     if (componentTypeName == "Subsystem")
     {
-        mpTempGUIObject= new GUISubsystem(appearanceData, position, rotation, this->mpParentProjectTab->mpGraphicsScene, startSelected, mpParentProjectTab->useIsoGraphics);
+        mpTempGUIObject= new GUISubsystem(appearanceData, position, rotation, mpParentProjectTab->mpGraphicsScene, startSelected, mpParentProjectTab->useIsoGraphics);
     }
     else if (componentTypeName == "SystemPort")
     {
-        mpTempGUIObject = new GUISystemPort(appearanceData, position, rotation, this->mpParentProjectTab->mpGraphicsScene, startSelected, mpParentProjectTab->useIsoGraphics);
+        mpTempGUIObject = new GUISystemPort(appearanceData, position, rotation, mpParentProjectTab->mpGraphicsScene, startSelected, mpParentProjectTab->useIsoGraphics);
     }
     else //Assume some standard component type
     {
-        mpTempGUIObject = new GUIComponent(appearanceData, position, rotation, this->mpParentProjectTab->mpGraphicsScene, startSelected, mpParentProjectTab->useIsoGraphics);
+        mpTempGUIObject = new GUIComponent(appearanceData, position, rotation, mpParentProjectTab->mpGraphicsScene, startSelected, mpParentProjectTab->useIsoGraphics);
     }
 
     emit checkMessages();
@@ -399,7 +399,7 @@ bool GraphicsView::haveGUIObject(QString name)
 void GraphicsView::wheelEvent(QWheelEvent *event)
 {
     qreal wheelDelta;
-    if(this->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mInvertWheel)
+    if(mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mInvertWheel)
     {
         wheelDelta = event->delta();
     }
@@ -456,7 +456,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     }
     else if (event->key() == Qt::Key_Escape)
     {
-        if(this->mIsCreatingConnector)
+        if(mIsCreatingConnector)
         {
             delete(mpTempConnector);
             mIsCreatingConnector = false;
@@ -524,7 +524,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     }
     else if (ctrlPressed)
     {
-        if (this->mIsCreatingConnector and !mpTempConnector->isMakingDiagonal())
+        if (mIsCreatingConnector and !mpTempConnector->isMakingDiagonal())
         {
             mpTempConnector->makeDiagonal(true);
             mpTempConnector->drawConnector();
@@ -548,7 +548,6 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 //! @param event contains information about the keypress operation.
 void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 {
-    //qDebug() << "keyReleaseEvent";
         // Releasing ctrl key while creating a connector means return from diagonal mode to orthogonal mode.
     if(event->key() == Qt::Key_Control and mIsCreatingConnector)
     {
@@ -576,7 +575,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
     this->setBackgroundBrush(mBackgroundColor);     //Refresh the viewport
 
         //If creating connector, the end port shall be updated to the mouse position.
-    if (this->mIsCreatingConnector)
+    if (mIsCreatingConnector)
     {
         mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
         mpTempConnector->drawConnector();
@@ -588,12 +587,11 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 //! @param event contains information of the mouse click operation.
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
-    //undoStack->newPost();       //! @todo: This will trigger unnecessary clear redo stack
     emit viewClicked();
     mJustStoppedCreatingConnector = false;
 
-    //No rubber band during connecting:
-    if (this->mIsCreatingConnector)
+        //No rubber band during connecting:
+    if (mIsCreatingConnector)
     {
         this->setDragMode(NoDrag);
     }
@@ -606,7 +604,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         this->setDragMode(RubberBandDrag);
     }
 
-    if (event->button() == Qt::RightButton and this->mIsCreatingConnector)
+    if (event->button() == Qt::RightButton and mIsCreatingConnector)
     {
         if((mpTempConnector->getNumberOfLines() == 1 and mpTempConnector->isMakingDiagonal()) or (mpTempConnector->getNumberOfLines() == 2 and !mpTempConnector->isMakingDiagonal()))
         {
@@ -624,7 +622,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         }
         //qDebug() << "mIsCreatingConnector = " << mIsCreatingConnector;
     }
-    else if  ((event->button() == Qt::LeftButton) && (this->mIsCreatingConnector))
+    else if  ((event->button() == Qt::LeftButton) && (mIsCreatingConnector))
     {
         mpTempConnector->addPoint(this->mapToScene(event->pos()));
     }
@@ -655,12 +653,12 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
         std::cout << "GraphicsView: " << "Adding connector";
         QPointF oldPos = pPort->mapToScene(pPort->boundingRect().center());
 
-        //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(pPort->getPortType(), this->mpParentProjectTab->useIsoGraphics);
+        //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(pPort->getPortType(), mpParentProjectTab->useIsoGraphics);
         mpTempConnector = new GUIConnector(oldPos, this);
 
         this->scene()->addItem(mpTempConnector);
         this->deselectAllGUIObjects();
-        this->mIsCreatingConnector = true;
+        mIsCreatingConnector = true;
         pPort->getGuiObject()->addConnector(mpTempConnector);
 
         QCursor cursor;
@@ -688,7 +686,7 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
             mpTempConnector->getStartPort()->hide();
             mpTempConnector->getEndPort()->hide();
 
-            this->mConnectorVector.append(mpTempConnector);
+            mConnectorVector.append(mpTempConnector);
 
             undoStack->newPost();
             mpParentProjectTab->hasChanged();
@@ -808,7 +806,7 @@ void GraphicsView::selectAll()
 {
         //Select all components
     QMap<QString, GUIObject *>::iterator it;
-    for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
+    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
     {
         it.value()->setSelected(true);
     }
@@ -826,7 +824,7 @@ void GraphicsView::deSelectAll()
 {
         //Deselect all components
     QMap<QString, GUIObject *>::iterator it;
-    for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
+    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
     {
         it.value()->setSelected(false);
     }
@@ -866,7 +864,7 @@ void GraphicsView::copySelected()
     //copyStreamPos.clear();
 
     QMap<QString, GUIObject *>::iterator it;
-    for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
+    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
     {
         if (it.value()->isSelected())
         {
@@ -900,7 +898,7 @@ void GraphicsView::paste()
         //Deselect all components
     this->deselectAllGUIObjects();
 //    QMap<QString, GUIObject*>::iterator it;
-//    for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
+//    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
 //    {
 //        it.value()->setSelected(false);
 //    }
@@ -986,7 +984,7 @@ void GraphicsView::paste()
 //            copyStream >> parameterName;
 //            copyStream >> parameterValue;
 
-//            this->mGUIObjectMap.find(componentName).value()->setParameterValue(parameterName, parameterValue);
+//            mGUIObjectMap.find(componentName).value()->setParameterValue(parameterName, parameterValue);
         }
         else if(inputWord == "CONNECT")
         {
@@ -1036,7 +1034,7 @@ void GraphicsView::paste()
 //                }
 
 //                //! @todo: Store useIso bool in model file and pick the correct line styles when loading
-//                //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), this->mpParentProjectTab->useIsoGraphics);
+//                //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), mpParentProjectTab->useIsoGraphics);
 //                GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, this);
 
 //                this->scene()->addItem(pTempConnector);
@@ -1048,7 +1046,7 @@ void GraphicsView::paste()
 //                connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
 //                connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
 
-//                this->mConnectorVector.append(pTempConnector);
+//                mConnectorVector.append(pTempConnector);
 //            }
         }
     }
@@ -1057,7 +1055,7 @@ void GraphicsView::paste()
     QMap<QString, QString>::iterator itn;
     for(itn = renameMap.begin(); itn != renameMap.end(); ++itn)
     {
-        this->mGUIObjectMap.find(itn.value()).value()->setSelected(true);
+        mGUIObjectMap.find(itn.value()).value()->setSelected(true);
     }
 
     this->setBackgroundBrush(mBackgroundColor);
@@ -1115,7 +1113,7 @@ void GraphicsView::hideNames()
     this->deselectAllText();
     mIsRenamingObject = false;
     QMap<QString, GUIObject *>::iterator it;
-    for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
+    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
     {
         it.value()->hideName();
     }
@@ -1127,7 +1125,7 @@ void GraphicsView::hideNames()
 void GraphicsView::showNames()
 {
     QMap<QString, GUIObject *>::iterator it;
-    for(it = this->mGUIObjectMap.begin(); it!=this->mGUIObjectMap.end(); ++it)
+    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
     {
         it.value()->showName();
     }

@@ -119,14 +119,14 @@ void GUIPort::magnify(bool blowup)
     {
         this->moveBy((mMag-1)*boundingRect().width()/2, (mMag-1)*boundingRect().height()/2);
         this->scale(1/mMag,1/mMag);
-        this->mpPortLabel->scale(mMag,mMag);
+        mpPortLabel->scale(mMag,mMag);
         mIsMag = false;
     }
     else if ((blowup) && (!mIsMag))
     {
         this->scale(mMag, mMag);
         this->moveBy(-(mMag-1)*boundingRect().width()/2, -(mMag-1)*boundingRect().height()/2);
-        this->mpPortLabel->scale(1/mMag,1/mMag);
+        mpPortLabel->scale(1/mMag,1/mMag);
         mIsMag = true;
     }
 }
@@ -150,7 +150,7 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     std::cout << "GUIPort.cpp: " << "hovering over port" << std::endl;
     magnify(true);
 
-    mpPortLabel->setRotation(-this->mpParentGuiObject->rotation()-this->rotation());
+    mpPortLabel->setRotation(-mpParentGuiObject->rotation()-this->rotation());
     //qDebug() << "label: " << mpPortLabel->rotation() << " this: " << this->rotation();
     this->setZValue(1.0);
     mpPortLabel->show();
@@ -208,7 +208,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
 
-    if ((!this->isConnected) || (this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTimeVector(getGUIComponentName(), this->getName()).empty()))
+    if ((!this->isConnected) || (mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTimeVector(getGUIComponentName(), this->getName()).empty()))
     {
         event->ignore();
     }
@@ -335,14 +335,14 @@ int GUIPort::getPortNumber()
 //! Wrapper for the Core getPortTypeString() function
 QString GUIPort::getPortType()
 {
-    return this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPortType(getGUIComponentName(), this->getName());
+    return mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPortType(getGUIComponentName(), this->getName());
 }
 
 
 //! Wrapper for the Core getNodeType() function
 QString GUIPort::getNodeType()
 {
-    return this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getNodeType(getGUIComponentName(), this->getName());
+    return mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getNodeType(getGUIComponentName(), this->getName());
 }
 
 

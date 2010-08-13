@@ -58,7 +58,7 @@
 GUIConnector::GUIConnector(QPointF startpos, GraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
-    this->mpParentGraphicsView = parentView;
+    mpParentGraphicsView = parentView;
 
     setFlags(QGraphicsItem::ItemIsFocusable);
 
@@ -68,11 +68,11 @@ GUIConnector::GUIConnector(QPointF startpos, GraphicsView *parentView, QGraphics
 
     mpGUIConnectorAppearance = new GUIConnectorAppearance("notconnected", mpParentGraphicsView->mpParentProjectTab->useIsoGraphics);
 
-    this->mEndPortConnected = false;
+    mEndPortConnected = false;
 
     this->drawConnector();
 
-    this->mMakingDiagonal = false;
+    mMakingDiagonal = false;
 
     connect(mpParentGraphicsView, SIGNAL(zoomChange()), this, SLOT(adjustToZoom()));
 }
@@ -86,22 +86,22 @@ GUIConnector::GUIConnector(QPointF startpos, GraphicsView *parentView, QGraphics
 //! @param parent is the parent of the port.
 GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, GraphicsView *parentView, QGraphicsItem *parent)
 {
-    this->mpParentGraphicsView = parentView;
+    mpParentGraphicsView = parentView;
     setFlags(QGraphicsItem::ItemIsFocusable);
     mpStartPort = startPort;
     mpEndPort = endPort;
     mpStartPort->isConnected = true;
     mpEndPort->isConnected = true;
-    connect(this->mpStartPort->getGuiObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
-    connect(this->mpEndPort->getGuiObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
+    connect(mpStartPort->getGuiObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
+    connect(mpEndPort->getGuiObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
     QPointF startPos = getStartPort()->mapToScene(getStartPort()->boundingRect().center());
     this->setPos(startPos);
 
     mpGUIConnectorAppearance = new GUIConnectorAppearance(startPort->getPortType(), mpParentGraphicsView->mpParentProjectTab->useIsoGraphics);
 //        //Set pen styles
-//    this->mPrimaryPen = primaryPen;
-//    this->mActivePen = activePen;
-//    this->mHoverPen = hoverPen;
+//    mprimaryPen = primaryPen;
+//    mActivePen = activePen;
+//    mHoverPen = hoverPen;
     mPoints = points;
 
         //Setup the geometries vector based on the point geometry
@@ -118,7 +118,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     mEndPortConnected = true;
     emit endPortConnected();
     this->setPassive();
-    connect(this->mpEndPort->getGuiObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
+    connect(mpEndPort->getGuiObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
 
         //Create the lines, so that drawConnector has something to work with
     for(int i = 0; i != mPoints.size()-1; ++i)
@@ -152,7 +152,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
 //    if(mpEndPort->getPortType() == "READPORT" && mpEndPort->getNodeType() == "NodeSignal")
 //        this->getLastLine()->addEndArrow();
 //    else if(mpEndPort->getPortType() == "WRITEPORT" && mpEndPort->getNodeType() == "NodeSignal")
-//        this->mpLines[0]->addStartArrow();
+//        mpLines[0]->addStartArrow();
 
     mpStartPort->getGuiObject()->addConnector(this);
     mpEndPort->getGuiObject()->addConnector(this);
@@ -185,8 +185,8 @@ GUIConnector::~GUIConnector()
     //! @todo more cleanup
     delete mpGUIConnectorAppearance;
 
-    this->mpStartPort->getGuiObject()->removeConnector(this);
-    this->mpEndPort->getGuiObject()->removeConnector(this);
+    mpStartPort->getGuiObject()->removeConnector(this);
+    mpEndPort->getGuiObject()->removeConnector(this);
 }
 
 
@@ -292,8 +292,8 @@ void GUIConnector::setStartPort(GUIPort *port)
 {
     mpStartPort = port;
     mpStartPort->isConnected = true;
-    connect(this->mpStartPort->getGuiObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
-    connect(this->mpStartPort->getGuiObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
+    connect(mpStartPort->getGuiObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
+    connect(mpStartPort->getGuiObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
 }
 
 
@@ -323,13 +323,13 @@ void GUIConnector::setEndPort(GUIPort *port)
         mPoints[mPoints.size()-2] += offsetPoint;
         mPoints[mPoints.size()-3] += offsetPoint;
         this->drawConnector();
-        //this->mpParentGraphicsView->setBackgroundBrush(this->mpParentGraphicsView->mBackgroundColor);
-        this->mpParentGraphicsView->resetBackgroundBrush();
+        //mpParentGraphicsView->setBackgroundBrush(mpParentGraphicsView->mBackgroundColor);
+        mpParentGraphicsView->resetBackgroundBrush();
     }
 
     this->updateEndPoint(port->mapToScene(port->boundingRect().center()));
-    connect(this->mpEndPort->getGuiObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
-    connect(this->mpEndPort->getGuiObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
+    connect(mpEndPort->getGuiObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
+    connect(mpEndPort->getGuiObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
 
         //Make all lines selectable and all lines except first and last movable
     if(mpLines.size() > 1)
@@ -399,7 +399,7 @@ QVector<QPointF> GUIConnector::getPointsVector()
 //! @see getEndPort()
 GUIPort *GUIConnector::getStartPort()
 {
-    return this->mpStartPort;
+    return mpStartPort;
 }
 
 
@@ -409,7 +409,7 @@ GUIPort *GUIConnector::getStartPort()
 //! @see getStartPort()
 GUIPort *GUIConnector::getEndPort()
 {
-    return this->mpEndPort;
+    return mpEndPort;
 }
 
 
@@ -717,7 +717,7 @@ void GUIConnector::makeDiagonal(bool enable)
 //! @see setPassive()
 void GUIConnector::doSelect(bool lineSelected, int lineNumber)
 {
-    if(this->mEndPortConnected)     //Non-finished lines shall not be selectable
+    if(mEndPortConnected)     //Non-finished lines shall not be selectable
     {
         if(lineSelected)
         {
@@ -753,7 +753,7 @@ void GUIConnector::selectIfBothComponentsSelected()
 {
     if(mEndPortConnected and mpStartPort->getGuiObject()->isSelected() and mpEndPort->getGuiObject()->isSelected())
     {
-        this->mpLines[0]->setSelected(true);
+        mpLines[0]->setSelected(true);
         doSelect(true,0);
     }
 }
@@ -763,8 +763,8 @@ void GUIConnector::selectIfBothComponentsSelected()
 //! @see setPassive()
 void GUIConnector::setActive()
 {
-    connect(this->mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
-    if(this->mEndPortConnected)
+    connect(mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+    if(mEndPortConnected)
     {
         mIsActive = true;
         for (int i=0; i!=mpLines.size(); ++i )
@@ -780,8 +780,8 @@ void GUIConnector::setActive()
 //! @see setActive()
 void GUIConnector::setPassive()
 {
-    disconnect(this->mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
-    if(this->mEndPortConnected)
+    disconnect(mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+    if(mEndPortConnected)
     {
         mIsActive = false;
         for (int i=0; i!=mpLines.size(); ++i )
@@ -797,7 +797,7 @@ void GUIConnector::setPassive()
 //! @see setUnHovered()
 void GUIConnector::setHovered()
 {
-    if(this->mEndPortConnected && !this->mIsActive)
+    if(mEndPortConnected && !mIsActive)
     {
         for (int i=0; i!=mpLines.size(); ++i )
         {
@@ -812,7 +812,7 @@ void GUIConnector::setHovered()
 //! @see setPassive()
 void GUIConnector::setUnHovered()
 {
-    if(this->mEndPortConnected && !this->mIsActive)
+    if(mEndPortConnected && !mIsActive)
     {
         for (int i=0; i!=mpLines.size(); ++i )
         {
@@ -844,20 +844,20 @@ void GUIConnector::determineAppearance()
     //! @todo need to figure out a new way to handle this
     if(mpStartPort->getPortType() == "POWERPORT" or mpEndPort->getPortType() == "POWERPORT")
     {
-        this->mpGUIConnectorAppearance->setType("POWERPORT");
+        mpGUIConnectorAppearance->setType("POWERPORT");
     }
     else if (mpStartPort->getPortType() == "READPORT" or mpEndPort->getPortType() == "READPORT")
     {
-        this->mpGUIConnectorAppearance->setType("SIGNALPORT");
+        mpGUIConnectorAppearance->setType("SIGNALPORT");
     }
     else if (mpStartPort->getPortType() == "WRITEPORT" or mpEndPort->getPortType() == "WRITEPORT")
     {
-        this->mpGUIConnectorAppearance->setType("SIGNALPORT");
+        mpGUIConnectorAppearance->setType("SIGNALPORT");
     }
     else
     {
         //! @todo this maight be bad if unknown not handled
-        this->mpGUIConnectorAppearance->setType("UNKNOWN");
+        mpGUIConnectorAppearance->setType("UNKNOWN");
     }
 
     //Add arrow to the connector if it is of signal type
@@ -868,7 +868,7 @@ void GUIConnector::determineAppearance()
     else if(mpEndPort->getPortType() == "WRITEPORT" && mpEndPort->getNodeType() == "NodeSignal")
     {
         //Assumes that the startport was a read port
-        this->mpLines[0]->addStartArrow();
+        mpLines[0]->addStartArrow();
     }
 
     //Run this to actually change the pen
@@ -895,16 +895,16 @@ GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, GUICo
     mpParentGUIConnector = parent;
     setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
     mpConnectorAppearance = pConnApp;
-    this->mLineNumber = lineNumber;
+    mLineNumber = lineNumber;
     this->setAcceptHoverEvents(true);
-    this->mParentConnectorEndPortConnected = false;
+    mParentConnectorEndPortConnected = false;
     this->startPos = QPointF(x1,y1);
     this->endPos = QPointF(x2,y2);
-    //this->mpParentGUIConnector->mGeometries.push_back(HORIZONTAL);
-    this->mHasStartArrow = false;
-    this->mHasEndArrow = false;
-    this->mArrowSize = 8.0;
-    this->mArrowAngle = 0.5;
+    //mpParentGUIConnector->mGeometries.push_back(HORIZONTAL);
+    mHasStartArrow = false;
+    mHasEndArrow = false;
+    mArrowSize = 8.0;
+    mArrowAngle = 0.5;
 }
 
 
@@ -987,11 +987,11 @@ void GUIConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     if(this->flags().testFlag((QGraphicsItem::ItemIsMovable)))
     {
-        if(this->mParentConnectorEndPortConnected && this->mpParentGUIConnector->getGeometry(getLineNumber()) == VERTICAL)
+        if(mParentConnectorEndPortConnected && mpParentGUIConnector->getGeometry(getLineNumber()) == VERTICAL)
         {
             this->setCursor(Qt::SizeVerCursor);
         }
-        else if(this->mParentConnectorEndPortConnected && this->mpParentGUIConnector->getGeometry(getLineNumber()) == HORIZONTAL)
+        else if(mParentConnectorEndPortConnected && mpParentGUIConnector->getGeometry(getLineNumber()) == HORIZONTAL)
         {
             this->setCursor(Qt::SizeHorCursor);
         }
@@ -1020,11 +1020,11 @@ QVariant GUIConnectorLine::itemChange(GraphicsItemChange change, const QVariant 
 {
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
-         emit lineSelected(this->isSelected(), this->mLineNumber);
+         emit lineSelected(this->isSelected(), mLineNumber);
     }
     if (change == QGraphicsItem::ItemPositionHasChanged)
     {
-        emit lineMoved(this->mLineNumber);
+        emit lineMoved(mLineNumber);
     }
     return value;
 }
@@ -1046,16 +1046,16 @@ void GUIConnectorLine::setLine(QPointF pos1, QPointF pos2)
 {
     this->startPos = this->mapFromParent(pos1);
     this->endPos = this->mapFromParent(pos2);
-    if(this->mHasEndArrow)
+    if(mHasEndArrow)
     {
-        delete(this->mArrowLine1);
-        delete(this->mArrowLine2);
+        delete(mArrowLine1);
+        delete(mArrowLine2);
         this->addEndArrow();
     }
-    else if(this->mHasStartArrow)
+    else if(mHasStartArrow)
     {
-        delete(this->mArrowLine1);
-        delete(this->mArrowLine2);
+        delete(mArrowLine1);
+        delete(mArrowLine2);
         this->addStartArrow();
     }
     QGraphicsLineItem::setLine(this->mapFromParent(pos1).x(),this->mapFromParent(pos1).y(),
@@ -1077,7 +1077,7 @@ void GUIConnectorLine::addEndArrow()
                                         this->endPos.x()-mArrowSize*cos(angle-mArrowAngle),
                                         this->endPos.y()-mArrowSize*sin(angle-mArrowAngle), this);
     this->setPen(this->pen());
-    this->mHasEndArrow = true;
+    mHasEndArrow = true;
 }
 
 
@@ -1095,7 +1095,7 @@ void GUIConnectorLine::addStartArrow()
                                         this->startPos.x()+mArrowSize*cos(angle-mArrowAngle),
                                         this->startPos.y()+mArrowSize*sin(angle-mArrowAngle), this);
     this->setPen(this->pen());
-    this->mHasStartArrow = true;
+    mHasStartArrow = true;
 }
 
 
@@ -1103,7 +1103,7 @@ void GUIConnectorLine::addStartArrow()
 void GUIConnectorLine::setPen (const QPen &pen)
 {
     QGraphicsLineItem::setPen(pen);
-    if(this->mHasStartArrow | this->mHasEndArrow)       //Update arrow lines two, but ignore dashes
+    if(mHasStartArrow | mHasEndArrow)       //Update arrow lines two, but ignore dashes
     {
         QPen tempPen = this->pen();
         tempPen = QPen(tempPen.color(), tempPen.width(), Qt::SolidLine);

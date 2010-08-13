@@ -51,7 +51,7 @@ class ProjectTabWidget;
 OptionsWidget::OptionsWidget(MainWindow *parent)
     : QDialog(parent)
 {
-    this->mpParentMainWindow = parent;
+    mpParentMainWindow = parent;
     //Set the name and size of the main window
     this->setObjectName("OptionsWidget");
     this->resize(640,480);

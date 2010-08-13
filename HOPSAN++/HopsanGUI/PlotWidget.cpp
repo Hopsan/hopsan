@@ -391,7 +391,7 @@ void VariableList::updateList()
     xMap.clear();
     yMap.clear();
     this->clear();
-    mpCurrentView = this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView;
+    mpCurrentView = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView;
     QVector<double> y;
     QMap<QString, GUIObject *>::iterator it;
     QListWidgetItem *tempListWidget;
@@ -456,7 +456,7 @@ void VariableList::createPlot(QListWidgetItem *item)
     ylabel.append(yLabelMap.find(item->text()).value());
     xlabel.append("Time, [s]");
 
-    PlotWidget *plotwidget = new PlotWidget(xMap.find(item->text()).value(),yMap.find(item->text()).value(),this->mpParentMainWindow);
+    PlotWidget *plotwidget = new PlotWidget(xMap.find(item->text()).value(),yMap.find(item->text()).value(),mpParentMainWindow);
     plotwidget->setWindowTitle("HOPSAN Plot Window");
     plotwidget->mpCurve->setTitle(title);
     plotwidget->mpVariablePlot->setAxisTitle(VariablePlot::yLeft, ylabel);

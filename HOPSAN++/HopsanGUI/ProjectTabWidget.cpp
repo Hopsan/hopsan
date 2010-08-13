@@ -881,8 +881,8 @@ void ProjectTabWidget::disableUndo()
         {
             getCurrentTab()->mpGraphicsView->clearUndo();
             getCurrentTab()->mpGraphicsView->mUndoDisabled = true;
-            this->mpParentMainWindow->undoAction->setDisabled(true);
-            this->mpParentMainWindow->redoAction->setDisabled(true);
+            mpParentMainWindow->undoAction->setDisabled(true);
+            mpParentMainWindow->redoAction->setDisabled(true);
         }
         else
         {
@@ -892,8 +892,8 @@ void ProjectTabWidget::disableUndo()
     else
     {
         getCurrentTab()->mpGraphicsView->mUndoDisabled = false;
-        this->mpParentMainWindow->undoAction->setDisabled(false);
-        this->mpParentMainWindow->redoAction->setDisabled(false);
+        mpParentMainWindow->undoAction->setDisabled(false);
+        mpParentMainWindow->redoAction->setDisabled(false);
     }
 }
 

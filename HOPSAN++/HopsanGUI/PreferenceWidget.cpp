@@ -51,7 +51,7 @@
 PreferenceWidget::PreferenceWidget(MainWindow *parent)
     : QDialog(parent)
 {
-    this->mpParentMainWindow = parent;
+    mpParentMainWindow = parent;
     //Set the name and size of the main window
     this->setObjectName("PreferenceWidget");
     this->resize(640,480);
@@ -78,7 +78,7 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
 
     connect(cancelButton, SIGNAL(pressed()), this, SLOT(reject()));
     connect(okButton, SIGNAL(pressed()), this, SLOT(updateValues()));
-    //connect(isoCheckBox, SIGNAL(pressed(bool)), this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView, SLOT(setIsoGraphics(bool)));
+    //connect(isoCheckBox, SIGNAL(pressed(bool)), mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView, SLOT(setIsoGraphics(bool)));
 
 
     QGridLayout *mainLayout = new QGridLayout;
@@ -105,15 +105,15 @@ void PreferenceWidget::updateValues()
 {
     if(isoCheckBox->isChecked())
     {
-        this->mpParentMainWindow->mpProjectTabs->setIsoGraphics(ISOGRAPHICS);
+        mpParentMainWindow->mpProjectTabs->setIsoGraphics(ISOGRAPHICS);
     }
     else
     {
-        this->mpParentMainWindow->mpProjectTabs->setIsoGraphics(USERGRAPHICS);
+        mpParentMainWindow->mpProjectTabs->setIsoGraphics(USERGRAPHICS);
     }
 
-    this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->setUserIconPath(userIconPath->text());
-    this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->setIsoIconPath(isoIconPath->text());
+    mpParentMainWindow->mpProjectTabs->getCurrentTab()->setUserIconPath(userIconPath->text());
+    mpParentMainWindow->mpProjectTabs->getCurrentTab()->setIsoIconPath(isoIconPath->text());
     //this->isoBool = this->isoCheckBox->isChecked();
     //qDebug() << isoBool;
     this->accept();

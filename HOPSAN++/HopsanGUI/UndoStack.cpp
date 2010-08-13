@@ -105,7 +105,7 @@ void UndoStack::newPost()
 //! Inserts an undopost to the current stack position
 void UndoStack::insertPost(QString str)
 {
-    if(!this->mpParentView->mUndoDisabled)
+    if(!mpParentView->mUndoDisabled)
     {
         mStack[mCurrentStackPosition].insert(0,str);
         mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
@@ -881,7 +881,7 @@ void UndoStack::registerHorizontalFlip(GUIObject *item)
 UndoWidget::UndoWidget(MainWindow *parent)
     : QDialog(parent)
 {
-    this->mpParentMainWindow = parent;
+    mpParentMainWindow = parent;
     //Set the name and size of the main window
     this->setObjectName("UndoWidget");
     this->resize(400,500);
@@ -938,8 +938,8 @@ void UndoWidget::refreshList()
     {
         return;
     }
-    mTempStack = this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->undoStack->mStack;
-    //mTempStack = this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->undoStack->mStack.size;
+    mTempStack = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->undoStack->mStack;
+    //mTempStack = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->undoStack->mStack.size;
     QTableWidgetItem *item;
 
     mUndoTable->clear();

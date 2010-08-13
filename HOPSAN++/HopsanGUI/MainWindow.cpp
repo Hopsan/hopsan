@@ -508,21 +508,21 @@ void MainWindow::createToolbars()
 //! Opens the model preference widget.
 void MainWindow::openPreferences()
 {
-    this->mpPreferenceWidget->show();
+    mpPreferenceWidget->show();
 }
 
 
 //! Opens the options widget.
 void MainWindow::openOptions()
 {
-    this->mpOptionsWidget->show();
+    mpOptionsWidget->show();
 }
 
 
 //! Opens the undo widget.
 void MainWindow::openUndo()
 {
-    //this->mpUndoWidget->show();
+    //mpUndoWidget->show();
 
     mUndoDock = new QDockWidget(tr("Undo History"), this);
     mUndoDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
