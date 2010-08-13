@@ -542,10 +542,10 @@ void GUIObject::rotate(bool doNotRegisterUndo)
 
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
-        if(mPortListPtrs.value(i)->getPortDirection() == PortAppearance::VERTICAL)
-            mPortListPtrs.value(i)->setPortDirection(PortAppearance::HORIZONTAL);
+        if(mPortListPtrs.value(i)->getPortDirection() == TOPBOTTOM)
+            mPortListPtrs.value(i)->setPortDirection(LEFTRIGHT);
         else
-            mPortListPtrs.value(i)->setPortDirection(PortAppearance::VERTICAL);
+            mPortListPtrs.value(i)->setPortDirection(TOPBOTTOM);
         if (mPortListPtrs.value(i)->getPortType() == "POWERPORT")
         {
             if(this->rotation() == 0 and !mIsFlipped)
@@ -828,7 +828,7 @@ void GUIObject::refreshAppearance()
 
     //! @todo problem with hovered or active or passive selection box, should maybe make it possible to resize rather than to create a new selection box on refresh
     mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpIcon->boundingRect().width(), mpIcon->boundingRect().height(),
-                                                  QPen(QColor("red"),2*1.6180339887499), QPen(QColor("darkRed"),2*1.6180339887499), this);
+                                                  QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
     if (hasActiveSelectionBox)
     {
         mpSelectionBox->setActive();

@@ -40,6 +40,8 @@
 
 #include <QtGui>
 
+#include "common.h"
+
 #include "GUIPort.h"
 #include "PlotWidget.h"
 #include "MainWindow.h"
@@ -102,7 +104,7 @@ cout << "D 1" << endl;
         mpPortLabel->setRotation(-mpPortAppearance->rot);
     }
 
-    mMag = 1.6180339887;
+    mMag = GOLDENRATIO;
     mIsMag = false;
     isConnected = false;
 
@@ -348,13 +350,13 @@ QString GUIPort::getNodeType()
 }
 
 
-PortAppearance::portDirectionType GUIPort::getPortDirection()
+portDirection GUIPort::getPortDirection()
 {
     return mpPortAppearance->direction;
 }
 
 
-void GUIPort::setPortDirection(PortAppearance::portDirectionType direction)
+void GUIPort::setPortDirection(portDirection direction)
 {
     mpPortAppearance->direction = direction;
 }

@@ -47,6 +47,7 @@
 #include <QGraphicsLineItem>
 #include <QGraphicsSceneMoveEvent>
 
+#include "common.h"
 
 #include "AppearanceData.h"
 
@@ -62,7 +63,6 @@ public:
     GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> mPoints, GraphicsView *parentView, QGraphicsItem *parent = 0);
     ~GUIConnector();
 
-    enum geometryType {VERTICAL, HORIZONTAL, DIAGONAL};
     enum { Type = UserType + 1 };           //Va tusan gör den här?! -Det du!
 
     void addPoint(QPointF point);
@@ -71,7 +71,7 @@ public:
     void setEndPort(GUIPort *port);
     void setPens(QPen activePen, QPen primaryPen, QPen hoverPen);
     int getNumberOfLines();
-    GUIConnector::geometryType getGeometry(int lineNumber);
+    connectorGeometry getGeometry(int lineNumber);
     QVector<QPointF> getPointsVector();
     GUIPort *getStartPort();
     GUIPort *getEndPort();
@@ -119,7 +119,7 @@ private:
     GUIConnectorLine *mpTempLine;
     QVector<GUIConnectorLine*> mpLines;
     QVector<QPointF> mPoints;
-    QVector<geometryType> mGeometries;
+    QVector<connectorGeometry> mGeometries;
 
 };
 
@@ -140,7 +140,7 @@ public:
     void setActive();
     void setPassive();
     void setHovered();
-    void setGeometry(GUIConnector::geometryType geometry);
+    void setGeometry(connectorGeometry geometry);
     void setLine(QPointF pos1, QPointF pos2);
 //    void setPen(const QPen &pen);
 //    void setPens(QPen activePen, QPen primaryPen, QPen hoverPen);
@@ -173,7 +173,7 @@ private:
     bool mHasEndArrow;
     int mLineNumber;
     GUIConnectorAppearance *mpConnectorAppearance;
-    GUIConnector::geometryType mGeometry;
+    connectorGeometry mGeometry;
     QGraphicsLineItem *mArrowLine1;
     QGraphicsLineItem *mArrowLine2;
     qreal mArrowSize;

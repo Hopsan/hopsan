@@ -39,7 +39,11 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#define GOLDENRATIO 1.61803399
+
 enum selectionStatus {DESELECTED, SELECTED};
 enum graphicsType {USERGRAPHICS, ISOGRAPHICS};
+enum portDirection {TOPBOTTOM, LEFTRIGHT};
+enum connectorGeometry {VERTICAL, HORIZONTAL, DIAGONAL};
 
 #endif // COMMON_H

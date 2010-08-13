@@ -45,6 +45,8 @@
 #include <QGraphicsLineItem>
 #include <QGraphicsTextItem>
 
+#include "common.h"
+
 #include "AppearanceData.h"
 
 //Forward declarations
@@ -61,8 +63,8 @@ public:
     GraphicsView *getParentView();
     GUIObject *getGuiObject();
     void magnify(bool blowup);
-    PortAppearance::portDirectionType getPortDirection();
-    void setPortDirection(PortAppearance::portDirectionType direction);
+    portDirection getPortDirection();
+    void setPortDirection(portDirection direction);
     void hide();
 
     QString getName();

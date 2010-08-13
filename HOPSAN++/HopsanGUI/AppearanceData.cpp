@@ -490,11 +490,11 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
 
             if( (portapp.rot == 0) || (portapp.rot == 180) )
             {
-                portapp.direction = PortAppearance::HORIZONTAL;
+                portapp.direction = LEFTRIGHT;
             }
             else
             {
-                portapp.direction = PortAppearance::VERTICAL;
+                portapp.direction = TOPBOTTOM;
             }
 
             mPortAppearanceMap.insert(portName, portapp);

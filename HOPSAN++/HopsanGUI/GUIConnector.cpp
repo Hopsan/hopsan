@@ -108,11 +108,11 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     for(int i=0; i != mPoints.size()-1; ++i)
     {
         if(mPoints[i].x() == mPoints[i+1].x())
-            mGeometries.push_back(GUIConnector::HORIZONTAL);
+            mGeometries.push_back(HORIZONTAL);
         else if(mPoints[i].y() == mPoints[i+1].y())
-            mGeometries.push_back(GUIConnector::VERTICAL);
+            mGeometries.push_back(VERTICAL);
         else
-            mGeometries.push_back(GUIConnector::DIAGONAL);
+            mGeometries.push_back(DIAGONAL);
     }
 
     mEndPortConnected = true;
@@ -198,25 +198,25 @@ void GUIConnector::addPoint(QPointF point)
     //point = this->mapFromScene(point);
     mPoints.push_back(point);
 
-    if(getNumberOfLines() == 0 && getStartPort()->getPortDirection() == PortAppearance::VERTICAL)
+    if(getNumberOfLines() == 0 && getStartPort()->getPortDirection() == TOPBOTTOM)
     {
-        mGeometries.push_back(GUIConnector::HORIZONTAL);
+        mGeometries.push_back(HORIZONTAL);
     }
-    else if(getNumberOfLines() == 0 && getStartPort()->getPortDirection() == PortAppearance::HORIZONTAL)
+    else if(getNumberOfLines() == 0 && getStartPort()->getPortDirection() == LEFTRIGHT)
     {
-        mGeometries.push_back(GUIConnector::VERTICAL);
+        mGeometries.push_back(VERTICAL);
     }
-    else if(getNumberOfLines() != 0 && mGeometries.back() == GUIConnector::HORIZONTAL)
+    else if(getNumberOfLines() != 0 && mGeometries.back() == HORIZONTAL)
     {
-        mGeometries.push_back(GUIConnector::VERTICAL);
+        mGeometries.push_back(VERTICAL);
     }
-    else if(getNumberOfLines() != 0 && mGeometries.back() == GUIConnector::VERTICAL)
+    else if(getNumberOfLines() != 0 && mGeometries.back() == VERTICAL)
     {
-        mGeometries.push_back(GUIConnector::HORIZONTAL);
+        mGeometries.push_back(HORIZONTAL);
     }
-    else if(getNumberOfLines() != 0 && mGeometries.back() == GUIConnector::DIAGONAL)
+    else if(getNumberOfLines() != 0 && mGeometries.back() == DIAGONAL)
     {
-        mGeometries.push_back(GUIConnector::DIAGONAL);
+        mGeometries.push_back(DIAGONAL);
         //Give new line correct angle!
     }
     if(mPoints.size() > 1)
@@ -234,35 +234,35 @@ void GUIConnector::removePoint(bool deleteIfEmpty)
     //qDebug() << "removePoint, getNumberOfLines = " << getNumberOfLines();
     if(getNumberOfLines() > 3 and !mMakingDiagonal)
     {
-        if((mGeometries[mGeometries.size()-1] == GUIConnector::DIAGONAL) or ((mGeometries[mGeometries.size()-2] == GUIConnector::DIAGONAL)))
+        if((mGeometries[mGeometries.size()-1] == DIAGONAL) or ((mGeometries[mGeometries.size()-2] == DIAGONAL)))
         {
-            //if(mGeometries[mGeometries.size()-3] == GUIConnector::HORIZONTAL)
+            //if(mGeometries[mGeometries.size()-3] == HORIZONTAL)
             if(abs(mPoints[mPoints.size()-3].x() - mPoints[mPoints.size()-4].x()) > abs(mPoints[mPoints.size()-3].y() - mPoints[mPoints.size()-4].y()))
             {
-                mGeometries[mGeometries.size()-2] = GUIConnector::HORIZONTAL;
-                mGeometries[mGeometries.size()-1] = GUIConnector::VERTICAL;
+                mGeometries[mGeometries.size()-2] = HORIZONTAL;
+                mGeometries[mGeometries.size()-1] = VERTICAL;
                 mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-3].x(), mPoints[mPoints.size()-1].y());
             }
             else
             {
-                mGeometries[mGeometries.size()-2] = GUIConnector::VERTICAL;
-                mGeometries[mGeometries.size()-1] = GUIConnector::HORIZONTAL;
+                mGeometries[mGeometries.size()-2] = VERTICAL;
+                mGeometries[mGeometries.size()-1] = HORIZONTAL;
                 mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-1].x(), mPoints[mPoints.size()-3].y());
             }
         }
     }
     else if(getNumberOfLines() == 3 and !mMakingDiagonal)
     {
-        if(getStartPort()->getPortDirection() == PortAppearance::HORIZONTAL)
+        if(getStartPort()->getPortDirection() == LEFTRIGHT)
         {
-            mGeometries[1] = GUIConnector::HORIZONTAL;
-            mGeometries[0] = GUIConnector::VERTICAL;
+            mGeometries[1] = HORIZONTAL;
+            mGeometries[0] = VERTICAL;
             mPoints[1] = QPointF(mPoints[2].x(), mPoints[0].y());
         }
         else
         {
-            mGeometries[1] = GUIConnector::VERTICAL;
-            mGeometries[0] = GUIConnector::HORIZONTAL;
+            mGeometries[1] = VERTICAL;
+            mGeometries[0] = HORIZONTAL;
             mPoints[1] = QPointF(mPoints[0].x(), mPoints[2].y());
         }
     }
@@ -311,9 +311,9 @@ void GUIConnector::setEndPort(GUIPort *port)
 //        this->mpGUIConnectorAppearance->setType("POWERPORT");
 //    }
 
-    if( ( ((mpEndPort->getPortDirection() == PortAppearance::HORIZONTAL) and (mGeometries.back() == GUIConnector::HORIZONTAL)) or
-          ((mpEndPort->getPortDirection() == PortAppearance::VERTICAL) and (mGeometries.back() == GUIConnector::VERTICAL)) ) or
-          (mGeometries[mGeometries.size()-2] == GUIConnector::DIAGONAL))
+    if( ( ((mpEndPort->getPortDirection() == LEFTRIGHT) and (mGeometries.back() == HORIZONTAL)) or
+          ((mpEndPort->getPortDirection() == TOPBOTTOM) and (mGeometries.back() == VERTICAL)) ) or
+          (mGeometries[mGeometries.size()-2] == DIAGONAL))
     {
             //Wrong direction of last line, so remove last point. It will be fine.
         this->removePoint();
@@ -401,7 +401,7 @@ int GUIConnector::getNumberOfLines()
 
 //! Returns the geometry type of the specified line.
 //! @param lineNumber is the number of the specified line in the mpLines vector.
-GUIConnector::geometryType GUIConnector::getGeometry(int lineNumber)
+connectorGeometry GUIConnector::getGeometry(int lineNumber)
 {
     return mGeometries[lineNumber];
 }
@@ -606,9 +606,9 @@ void GUIConnector::updateStartPoint(QPointF point)
 
     if(mPoints.size() != 1)
     {
-        if(mGeometries[0] == GUIConnector::HORIZONTAL)
+        if(mGeometries[0] == HORIZONTAL)
             mPoints[1] = QPointF(mPoints[0].x(),mPoints[1].y());
-        else if(mGeometries[0] == GUIConnector::VERTICAL)
+        else if(mGeometries[0] == VERTICAL)
             mPoints[1] = QPointF(mPoints[1].x(),mPoints[0].y());
     }
 }
@@ -620,11 +620,11 @@ void GUIConnector::updateStartPoint(QPointF point)
 void GUIConnector::updateEndPoint(QPointF point)
 {
     mPoints.back() = point;
-    if(mGeometries.back() == GUIConnector::HORIZONTAL)
+    if(mGeometries.back() == HORIZONTAL)
     {
         mPoints[mPoints.size()-2] = QPointF(point.x(),mPoints[mPoints.size()-2].y());
     }
-    else if(mGeometries.back() == GUIConnector::VERTICAL)
+    else if(mGeometries.back() == VERTICAL)
     {
         mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-2].x(),point.y());
     }
@@ -637,12 +637,12 @@ void GUIConnector::updateLine(int lineNumber)
 {
    if ((mEndPortConnected) && (lineNumber != 0) && (lineNumber != int(mpLines.size())))
     {
-        if(mGeometries[lineNumber] == GUIConnector::HORIZONTAL)
+        if(mGeometries[lineNumber] == HORIZONTAL)
         {
             mPoints[lineNumber] = QPointF(getLine(lineNumber)->mapToScene(getLine(lineNumber)->line().p1()).x(), mPoints[lineNumber].y());
             mPoints[lineNumber+1] = QPointF(getLine(lineNumber)->mapToScene(getLine(lineNumber)->line().p2()).x(), mPoints[lineNumber+1].y());
         }
-        else if (mGeometries[lineNumber] == GUIConnector::VERTICAL)
+        else if (mGeometries[lineNumber] == VERTICAL)
         {
             mPoints[lineNumber] = QPointF(mPoints[lineNumber].x(), getLine(lineNumber)->mapToScene(getLine(lineNumber)->line().p1()).y());
             mPoints[lineNumber+1] = QPointF(mPoints[lineNumber+1].x(), getLine(lineNumber)->mapToScene(getLine(lineNumber)->line().p2()).y());
@@ -675,7 +675,7 @@ void GUIConnector::makeDiagonal(bool enable)
     {
         mMakingDiagonal = true;
         removePoint();
-        mGeometries.back() = GUIConnector::DIAGONAL;
+        mGeometries.back() = DIAGONAL;
         mPoints.back() = mpParentGraphicsView->mapToScene(mpParentGraphicsView->mapFromGlobal(cursor.pos()));
         drawConnector();
     }
@@ -683,26 +683,26 @@ void GUIConnector::makeDiagonal(bool enable)
     {
         if(this->getNumberOfLines() > 1)
         {
-            if(mGeometries[mGeometries.size()-2] == GUIConnector::HORIZONTAL)
+            if(mGeometries[mGeometries.size()-2] == HORIZONTAL)
             {
-                mGeometries.back() = GUIConnector::VERTICAL;
+                mGeometries.back() = VERTICAL;
                 mPoints.back() = QPointF(mPoints.back().x(), mPoints[mPoints.size()-2].y());
             }
-            else if(mGeometries[mGeometries.size()-2] == GUIConnector::VERTICAL)
+            else if(mGeometries[mGeometries.size()-2] == VERTICAL)
             {
-                mGeometries.back() = GUIConnector::HORIZONTAL;
+                mGeometries.back() = HORIZONTAL;
                 mPoints.back() = QPointF(mPoints[mPoints.size()-2].x(), mPoints.back().y());
             }
-            else if(mGeometries[mGeometries.size()-2] == GUIConnector::DIAGONAL)
+            else if(mGeometries[mGeometries.size()-2] == DIAGONAL)
             {
                 if(abs(mPoints[mPoints.size()-2].x() - mPoints[mPoints.size()-3].x()) > abs(mPoints[mPoints.size()-2].y() - mPoints[mPoints.size()-3].y()))
                 {
-                    mGeometries.back() = GUIConnector::HORIZONTAL;
+                    mGeometries.back() = HORIZONTAL;
                     mPoints.back() = QPointF(mPoints[mPoints.size()-2].x(), mPoints.back().y());
                 }
                 else
                 {
-                    mGeometries.back() = GUIConnector::VERTICAL;
+                    mGeometries.back() = VERTICAL;
                     mPoints.back() = QPointF(mPoints.back().x(), mPoints[mPoints.size()-2].y());
                 }
 
@@ -712,16 +712,16 @@ void GUIConnector::makeDiagonal(bool enable)
         else    //Only one (diagonal) line exist, so special solution is required
         {
             addPoint(mpParentGraphicsView->mapToScene(mpParentGraphicsView->mapFromGlobal(cursor.pos())));
-            if(getStartPort()->getPortDirection() == PortAppearance::HORIZONTAL)
+            if(getStartPort()->getPortDirection() == LEFTRIGHT)
             {
-                mGeometries[0] = GUIConnector::VERTICAL;
-                mGeometries[1] = GUIConnector::HORIZONTAL;
+                mGeometries[0] = VERTICAL;
+                mGeometries[1] = HORIZONTAL;
                 mPoints[1] = QPointF(mPoints[2].x(), mPoints[0].y());
             }
             else
             {
-                mGeometries[0] = GUIConnector::HORIZONTAL;
-                mGeometries[1] = GUIConnector::VERTICAL;
+                mGeometries[0] = HORIZONTAL;
+                mGeometries[1] = VERTICAL;
                 mPoints[1] = QPointF(mPoints[0].x(), mPoints[2].y());
             }
         }
@@ -920,7 +920,7 @@ GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, GUICo
     this->mParentConnectorEndPortConnected = false;
     this->startPos = QPointF(x1,y1);
     this->endPos = QPointF(x2,y2);
-    //this->mpParentGUIConnector->mGeometries.push_back(GUIConnector::HORIZONTAL);
+    //this->mpParentGUIConnector->mGeometries.push_back(HORIZONTAL);
     this->mHasStartArrow = false;
     this->mHasEndArrow = false;
     this->mArrowSize = 8.0;
@@ -1007,11 +1007,11 @@ void GUIConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     if(this->flags().testFlag((QGraphicsItem::ItemIsMovable)))
     {
-        if(this->mParentConnectorEndPortConnected && this->mpParentGUIConnector->getGeometry(getLineNumber()) == GUIConnector::VERTICAL)
+        if(this->mParentConnectorEndPortConnected && this->mpParentGUIConnector->getGeometry(getLineNumber()) == VERTICAL)
         {
             this->setCursor(Qt::SizeVerCursor);
         }
-        else if(this->mParentConnectorEndPortConnected && this->mpParentGUIConnector->getGeometry(getLineNumber()) == GUIConnector::HORIZONTAL)
+        else if(this->mParentConnectorEndPortConnected && this->mpParentGUIConnector->getGeometry(getLineNumber()) == HORIZONTAL)
         {
             this->setCursor(Qt::SizeHorCursor);
         }

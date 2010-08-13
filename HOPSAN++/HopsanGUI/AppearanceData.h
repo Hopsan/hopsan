@@ -54,6 +54,7 @@
 #include <QVector>
 #include <QMap>
 #include <QPen>
+#include "common.h"
 
 class GUIConnectorAppearance
 {
@@ -90,14 +91,13 @@ private:
 class PortAppearance
 {
 public:
-    enum portDirectionType {VERTICAL, HORIZONTAL};
     void selectPortIcon(QString cqstype, QString porttype, QString nodetype);
 
     qreal x;
     qreal y;
     qreal rot;
     QString iconPath;
-    portDirectionType direction;
+    portDirection direction;
 };
 
 typedef QMap<QString, PortAppearance> PortAppearanceMapT;
