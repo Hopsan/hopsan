@@ -174,7 +174,17 @@ void GUIRootSystem::loadSystemFromFileCoreOnly(QString sysname, QString filepath
 
 vector<double> GUIRootSystem::getTimeVector(QString componentName, QString portName)
 {
-    return *(mpCoreComponentSystem->getComponent(componentName.toStdString())->getPort(portName.toStdString())->getTimeVectorPtr());
+    vector<double>* ptr = (mpCoreComponentSystem->getComponent(componentName.toStdString())->getPort(portName.toStdString())->getTimeVectorPtr());
+    if (ptr != 0)
+    {
+        return *ptr;
+    }
+    else
+    {
+        //Return empty dummy
+        vector<double> dummy;
+        return dummy;
+    }
 }
 
 

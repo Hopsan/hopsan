@@ -19,7 +19,7 @@
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "CoreUtilities/FileAccess.h"
 
-#define USETBB            //Uncomment this will enable TBB package. Only use if you have it installed.
+//#define USETBB            //Uncomment this will enable TBB package. Only use if you have it installed.
 #ifdef USETBB
 #include "tbb.h"
 #include "tick_count.h"
@@ -574,7 +574,7 @@ void Component::setSystemParent(ComponentSystem &rComponentSystem)
 Port *Component::getPort(const string portname)
 {
     PortPtrMapT::iterator it;
-    cout << portname << endl;
+    cout << "get Port:" << portname << endl;
     it = mPortPtrMap.find(portname);
     if (it != mPortPtrMap.end())
     {
@@ -582,6 +582,7 @@ Port *Component::getPort(const string portname)
     }
     else
     {
+        cout << "failed to find port: " << portname << endl;
         gCoreMessageHandler.addWarningMessage("Trying to get port {" + portname + "}, but not found, pointer invalid", 1);
         return 0;
     }

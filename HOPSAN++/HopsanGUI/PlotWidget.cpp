@@ -420,10 +420,12 @@ void VariableList::updateList()
             QVector<QString> parameterUnits;
             mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getPlotDataNamesAndUnits((*itp)->getGUIComponentName(), (*itp)->getName(), parameterNames, parameterUnits);
 
-            for(int i = 0; i!=parameterNames.size(); ++i)
+            qDebug() << "guiComponentName: " << (*itp)->getGUIComponentName() << " portName: " << (*itp)->getName();
+            QVector<double> time = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getTimeVector((*itp)->getGUIComponentName(), (*itp)->getName()));
+            qDebug() << "time.size: " << time.size();
+            if(time.size() > 0)     //If time vector is greater than zero we have something to plot!
             {
-                QVector<double> time = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.getTimeVector((*itp)->getGUIComponentName(), (*itp)->getName()));
-                if(time.size() > 0)     //If time vector is greater than zero we have something to plot!
+                for(int i = 0; i!=parameterNames.size(); ++i)
                 {
                     y.clear();
                     tempListWidget = new QListWidgetItem((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", this);

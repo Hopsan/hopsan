@@ -91,6 +91,7 @@ Node* Port::getNodePtr()
 double Port::readNode(const size_t idx)
 {
     //! @todo ummm??, if this is a readport node and it is not connected then noone will ever read
+    //! @todo maybe use dummy nodes with 0 in for not connected ports
     if(this->getPortType() == Port::READPORT and !this->isConnected())      //Signal nodes don't have to be connected
     {
         return 0;
@@ -118,7 +119,7 @@ void Port::writeNode(const size_t idx, const double value)
 void Port::setNode(Node* pNode)
 {
     mpNode = pNode;
-    mIsConnected = true;
+    mIsConnected = true; //!< @todo do we really need this bool, we can compare pointer != 0 instead
 }
 
 
@@ -194,31 +195,60 @@ void Port::getNodeDataNamesAndUnits(vector<string> &rNames, vector<string> &rUni
 
 //! @brief Get node data name and unit for specific node data
 //! @param [in] dataid The node data id
-//! @param [in,out] rName This vector will contain the names
-//! @param [in,out] rUnit This vector will contain the units
+//! @param [in,out] rName This string will contain the name
+//! @param [in,out] rUnit This string will contain the unit
 void Port::getNodeDataNameAndUnit(const size_t dataid, string &rName, string &rUnit)
 {
-    rName = mpNode->getDataName(dataid);
-    rUnit = mpNode->getDataUnit(dataid);
+    if (mpNode != 0)
+    {
+        rName = mpNode->getDataName(dataid);
+        rUnit = mpNode->getDataUnit(dataid);
+    }
+    else
+    {
+        rName = "";
+        rUnit = "";
+    }
 }
 
 
 //! @brief Wraper for the Node function
 int Port::getNodeDataIdFromName(const string name)
 {
-    return mpNode->getDataIdFromName(name);
+    if (mpNode != 0)
+    {
+        return mpNode->getDataIdFromName(name);
+    }
+    else
+    {
+        return -1;
+    }
 }
 
 
 vector<double> *Port::getTimeVectorPtr()
 {
-    return &(getNode().mTimeStorage);
+    if (mpNode != 0)
+    {
+        return  &(mpNode->mTimeStorage);
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 
 vector<vector<double> > *Port::getDataVectorPtr()
 {
-    return &(getNode().mDataStorage);
+    if (mpNode != 0)
+    {
+        return &(mpNode->mDataStorage);
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 
