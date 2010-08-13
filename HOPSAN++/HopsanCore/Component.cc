@@ -1041,7 +1041,7 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
 {
     cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
 
-    //First allocate memory for own subnodes
+    //Allocate memory for subnodes
     vector<Node*>::iterator it;
     for (it=mSubNodePtrs.begin(); it!=mSubNodePtrs.end(); ++it)
     {
@@ -1054,11 +1054,6 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
         //(*it)->preAllocateLogSpace(needed_slots);
         (*it)->preAllocateLogSpace();
     }
-
-
-
-    //! @todo Call allocate for subsubsystems
-
 }
 
 
@@ -1806,64 +1801,30 @@ void ComponentSystem::adjustTimestep(double timestep, vector<Component*> compone
 }
 
 
-////! Initializes a system component and all its contained components, also allocates log data memory
-//void ComponentSystem::initialize(const double startT, const double stopT)
-//{
-//    //preAllocate local logspace
-//    preAllocateLogSpace(startT, stopT);
-//
-//    adjustTimestep(mTimestep, mComponentSignalptrs);
-//    adjustTimestep(mTimestep, mComponentCptrs);
-//    adjustTimestep(mTimestep, mComponentQptrs);
-//
-//    //Init
-//    //Signal components
-//    for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
-//    {
-//        if (mComponentSignalptrs[s]->isComponentSystem())
-//        {
-//            mComponentSignalptrs[s]->initialize(startT, stopT);
-//        }
-//        else
-//        {
-//            mComponentSignalptrs[s]->initialize();
-//        }
-//    }
-//
-//    //C components
-//    for (size_t c=0; c < mComponentCptrs.size(); ++c)
-//    {
-//        if (mComponentCptrs[c]->isComponentSystem())
-//        {
-//            mComponentCptrs[c]->initialize(startT, stopT);
-//        }
-//        else
-//        {
-//            mComponentCptrs[c]->initialize();
-//        }
-//    }
-//
-//    //Q components
-//    for (size_t q=0; q < mComponentQptrs.size(); ++q)
-//    {
-//        if (mComponentQptrs[q]->isComponentSystem())
-//        {
-//            mComponentQptrs[q]->initialize(startT,stopT);
-//        }
-//        else
-//        {
-//            mComponentQptrs[q]->initialize();
-//        }
-//
-//    }
-//}
-
-
+//! @brief Checks that everything is OK before simulation
 bool ComponentSystem::isSimulationOk()
 {
-    bool itLooksGood = true;
+    //Make sure that there are no components or systems with an undefined cqs_type present
+    if (mSubComponentStorage.mComponentUndefinedptrs.size() > 0)
+    {
+        //! @todo maybe list their names
+        gCoreMessageHandler.addErrorMessage("There are components without correct CQS type pressent, you need to fix this before simulation");
+        return false;
+    }
 
-    //First check all subcomponents to make sure that all requirements for simulation are met
+    //Check the this systems own SystemPorts, are they connected (they must be)
+    vector<Port*> ports = getPortPtrVector();
+    for (size_t i=0; i<ports.size(); ++i)
+    {
+        if ( ports[i]->isConnectionRequired() and !ports[i]->isConnected() )
+        {
+            gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is not connected!");
+            return false;
+        }
+    }
+
+
+    //Check all subcomponents to make sure that all requirements for simulation are met
     //scmit = The subcomponent map iterator
     SubComponentStorage::SubComponentMapT::iterator scmit = mSubComponentStorage.mSubComponentMap.begin();
     for ( ; scmit!=mSubComponentStorage.mSubComponentMap.end(); ++scmit)
@@ -1878,65 +1839,25 @@ bool ComponentSystem::isSimulationOk()
             if ( ports[i]->isConnectionRequired() and !ports[i]->isConnected() )
             {
                 gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " on " + pComp->getName() + " is not connected!");
-                itLooksGood = false;
+                return false;
             }
         }
-
-
 
         //! @todo check more stuff
     }
 
-    //Check the this systems own SystemPorts, are they connected (they must be)
-    vector<Port*> ports = getPortPtrVector();
-    for (size_t i=0; i<ports.size(); ++i)
-    {
-        if ( ports[i]->isConnectionRequired() and !ports[i]->isConnected() )
-        {
-            gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is not connected!");
-            itLooksGood = false;
-        }
-    }
-
-
-//    for (size_t c=0; c < mSubComponentStorage.mComponentCptrs.size(); ++c)
-//    {
-//        for(size_t p=0; p < mSubComponentStorage.mComponentCptrs[c]->getPortPtrVector().size(); ++p)
-//        {
-//            if (!mSubComponentStorage.mComponentCptrs[c]->getPortPtrVector()[p]->isConnected() and
-//                mSubComponentStorage.mComponentCptrs[c]->getPortPtrVector()[p]->getPortType() == Port::POWERPORT)
-//            {
-//                gCoreMessageHandler.addErrorMessage("Port " + mSubComponentStorage.mComponentCptrs[c]->getPortPtrVector()[p]->getPortName() + " on " +
-//                                                    mSubComponentStorage.mComponentCptrs[c]->getName() + " is not connected!");
-//                itLooksGood = false;
-//            }
-//        }
-//    }
-
-//    for (size_t q=0; q < mSubComponentStorage.mComponentQptrs.size(); ++q)
-//    {
-//        for(size_t p=0; p < mSubComponentStorage.mComponentQptrs[q]->getPortPtrVector().size(); ++p)
-//        {
-//            if (!mSubComponentStorage.mComponentQptrs[q]->getPortPtrVector()[p]->isConnected() and
-//                mSubComponentStorage.mComponentQptrs[q]->getPortPtrVector()[p]->getPortType() == Port::POWERPORT)
-//            {
-//                gCoreMessageHandler.addErrorMessage("Port " + mSubComponentStorage.mComponentQptrs[q]->getPortPtrVector()[p]->getPortName() + " on " +
-//                                                    mSubComponentStorage.mComponentQptrs[q]->getName() + " is not connected!");
-//                itLooksGood = false;
-//            }
-//        }
-//    }
-    return itLooksGood;
+    return true;
 }
 
 
 //! Initializes a system component and all its contained components, also allocates log data memory
 void ComponentSystem::initialize(const double startT, const double stopT)
 {
+    cout << "Initializing SubSystem: " << this->mName << endl;
     mStop = false; //This variable can not be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
 
     //preAllocate local logspace
-    preAllocateLogSpace(startT, stopT);
+    this->preAllocateLogSpace(startT, stopT);
 
     adjustTimestep(mTimestep, mSubComponentStorage.mComponentSignalptrs);
     adjustTimestep(mTimestep, mSubComponentStorage.mComponentCptrs);
@@ -1989,7 +1910,6 @@ void ComponentSystem::initialize(const double startT, const double stopT)
         {
             mSubComponentStorage.mComponentQptrs[q]->initialize();
         }
-
     }
 }
 

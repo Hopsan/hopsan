@@ -165,7 +165,6 @@ void FileAccess::loadSystemContents(stringstream &rLoaddatastream, ComponentSyst
                     parentname = readName(inputStream);
                     cout << "Not implemented yet" << endl;
                     assert(false);
-                    //componentSystemMap.find(inputWord)->second->addComponent(tempComponentSystem);      //Subsystem belongs to other subsystem
                 }
                 else
                 {
@@ -173,9 +172,6 @@ void FileAccess::loadSystemContents(stringstream &rLoaddatastream, ComponentSyst
                     //! @todo maybe delete the tempsystem
                     assert(false);
                 }
-
-                //componentMap.insert(pair<string, Component*>(inputWord, &*tempComponentSystem));
-                //componentSystemMap.insert(pair<string, ComponentSystem*>(inputWord, &*tempComponentSystem));
 
                 currentSystems.push_back(tempComponentSystem);
             }

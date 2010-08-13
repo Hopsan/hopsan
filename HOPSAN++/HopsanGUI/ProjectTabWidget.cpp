@@ -766,6 +766,7 @@ void ProjectTabWidget::saveModel(bool saveAs)
         if ( it.value()->getTypeName() == QString("Subsystem") )
         {
             it.value()->saveToTextStream(modelFile, "SUBSYSTEM");
+            modelFile << "ENDSUBSYSTEM" << "\n"; //!< @todo Do this in some better way, end subsystem is needed by core (but not gui as embedded systems are not suportet (yet))
         }
         else if (it.value()->getTypeName() == QString("SystemPort"))
         {
