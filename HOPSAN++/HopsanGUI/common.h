@@ -45,5 +45,6 @@ enum selectionStatus {DESELECTED, SELECTED};
 enum graphicsType {USERGRAPHICS, ISOGRAPHICS};
 enum portDirection {TOPBOTTOM, LEFTRIGHT};
 enum connectorGeometry {VERTICAL, HORIZONTAL, DIAGONAL};
+enum renameRestrictions {UNRESTRICTED, CORERENAMEONLY};
 
 #endif // COMMON_H

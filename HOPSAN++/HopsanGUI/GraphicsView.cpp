@@ -361,7 +361,7 @@ void GraphicsView::renameGUIObject(QString oldName, QString newName, bool noUnDo
         //Erase old record
         mGUIObjectMap.erase(it);
         //Rename (core rename will be handled by core), here we force a core only rename (true) so that we dont get stuck in a loop (as rename might be called again)
-        obj_ptr->setName(newName, true);
+        obj_ptr->setName(newName, CORERENAMEONLY);
         //Re insert
         mGUIObjectMap.insert(obj_ptr->getName(), obj_ptr);
         //qDebug() << "GUI rename: " << oldName << " " << obj_ptr->getName();

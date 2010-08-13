@@ -75,7 +75,7 @@ public:
 
     virtual QString getName();
     void refreshDisplayName();
-    virtual void setName(QString name, bool doOnlyCoreRename=false);
+    virtual void setName(QString name, renameRestrictions renameSettings=UNRESTRICTED);
     virtual QString getTypeName();
     virtual QString getTypeCQS() {assert(false);} //Only available in GUISystemComponent adn GuiComponent for now
 
@@ -219,7 +219,7 @@ public:
 
     void saveToTextStream(QTextStream &rStream, QString prepend=QString());
 
-    void setName(QString name, bool doOnlyCoreRename=false);
+    void setName(QString name, renameRestrictions renameSettings=UNRESTRICTED);
     QString getTypeName();
     QString getTypeCQS();
     void deleteInHopsanCore();
@@ -252,7 +252,7 @@ public:
     void deleteInHopsanCore();
 
     QString getTypeName();
-    void setName(QString newName, bool doOnlyCoreRename=false);
+    void setName(QString newName, renameRestrictions renameSettings=UNRESTRICTED);
     void setTypeCQS(QString typestring);
     QString getTypeCQS();
     void loadFromFile(QString modelFileName=QString());
@@ -284,7 +284,7 @@ class GUISystemPort : public GUIObject
 public:
     GUISystemPort(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, selectionStatus startSelected = SELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
     QString getTypeName();
-    void setName(QString newName, bool doOnlyCoreRename);
+    void setName(QString newName, renameRestrictions renameSettings);
     void deleteInHopsanCore();
 
     enum { Type = UserType + 5 };

@@ -256,7 +256,7 @@ void GUIObject::deleteInHopsanCore()
     assert(false);
 }
 
-void GUIObject::setName(QString newName, bool doOnlyCoreRename)
+void GUIObject::setName(QString newName, renameRestrictions renameSettings)
 {
     mpParentGraphicsView->mGUIObjectMap.erase(mpParentGraphicsView->mGUIObjectMap.find(this->getName()));
     mAppearanceData.setName(newName);
@@ -991,19 +991,19 @@ GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, qreal
 //!
 //! @brief This function sets the desired component name
 //! @param [in] newName The new name
-//! @param [in] doOnlyCoreRename  Dont use this if you dont know what you are doing
+//! @param [in] renameSettings  Dont use this if you dont know what you are doing
 //!
 //! The desired new name will be sent to the the core component and may be modified. Rename will be called in the graphics view to make sure that the guicomponent map key value is up to date.
-//! doOnlyCoreRename is a somewhat ugly hack, we need to be able to force setName without calling rename in some very special situations, it defaults to false
+//! renameSettings is a somewhat ugly hack, we need to be able to force setName without calling rename in some very special situations, it defaults to false
 //!
-void GUIComponent::setName(QString newName, bool doOnlyCoreRename)
+void GUIComponent::setName(QString newName, renameRestrictions renameSettings)
 {
     QString oldName = getName();
     //If name same as before do nothing
     if (newName != oldName)
     {
         //Check if we want to avoid trying to rename in the graphics view map
-        if (doOnlyCoreRename)
+        if (renameSettings == CORERENAMEONLY)
         {
             mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.rename(this->getName(), newName));
             refreshDisplayName();
@@ -1199,21 +1199,21 @@ GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, qreal
 //!
 //! @brief This function sets the desired subsystem name
 //! @param [in] newName The new name
-//! @param [in] doOnlyCoreRename  Dont use this if you dont know what you are doing
+//! @param [in] renameSettings  Dont use this if you dont know what you are doing
 //!
 //! @todo This function is almost exactly identical to the one for GUIcomponents need to make sure that we dont dublicate functions like this, maybe this should be directly in GUIObject
 //!
 //! The desired new name will be sent to the the core component and may be modified. Rename will be called in the graphics view to make sure that the guicomponent map key value is up to date.
-//! doOnlyCoreRename is a somewhat ugly hack, we need to be able to force setName without calling rename in some very special situations, it defaults to false
+//! renameSettings is a somewhat ugly hack, we need to be able to force setName without calling rename in some very special situations, it defaults to false
 //!
-void GUISubsystem::setName(QString newName, bool doOnlyCoreRename)
+void GUISubsystem::setName(QString newName, renameRestrictions renameSettings)
 {
     QString oldName = getName();
     //If name same as before do nothing
     if (newName != oldName)
     {
         //Check if we want to avoid trying to rename in the graphics view map
-        if (doOnlyCoreRename)
+        if (renameSettings = CORERENAMEONLY)
         {
             mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setSystemName(oldName, newName));
             refreshDisplayName();
@@ -1514,14 +1514,14 @@ QString GUISystemPort::getTypeName()
 }
 
 //! Set the name of a system port
-void GUISystemPort::setName(QString newName, bool doOnlyCoreRename)
+void GUISystemPort::setName(QString newName, renameRestrictions renameSettings)
 {
     QString oldName = getName();
     //If name same as before do nothing
     if (newName != oldName)
     {
         //Check if we want to avoid trying to rename in the graphics view map
-        if (doOnlyCoreRename)
+        if (renameSettings = CORERENAMEONLY)
         {
             //Set name in core component, Also set the current name to the resulting one (might have been changed)
             mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.renameSystemPort(oldName, newName));

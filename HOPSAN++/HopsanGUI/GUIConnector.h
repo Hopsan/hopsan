@@ -142,8 +142,6 @@ public:
     void setHovered();
     void setGeometry(connectorGeometry geometry);
     void setLine(QPointF pos1, QPointF pos2);
-//    void setPen(const QPen &pen);
-//    void setPens(QPen activePen, QPen primaryPen, QPen hoverPen);
     int getLineNumber();
 
 public slots:
