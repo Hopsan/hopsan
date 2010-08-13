@@ -1112,7 +1112,7 @@ void ComponentSystem::setTypeCQS(const string cqs_type, bool doOnlyLocalSet)
     }
     else
     {
-        cout << "Error: Specified type _" << cqs_type << "_ does not exist!" << endl;
+        cout << "Error: Specified type \"" << cqs_type << "\" does not exist!" << endl;
         gCoreMessageHandler.addWarningMessage("Specified type: " + cqs_type + " does not exist!, System CQStype unchanged");
     }
 }
@@ -1484,6 +1484,8 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
 
     size_t n_Ccomponents = 0;
     size_t n_Qcomponents = 0;
+    size_t n_SYScomponentCs = 0;
+    size_t n_SYScomponentQs = 0;
 
     //Count the different kind of ports and C,Q components in the node
     vector<Port*>::iterator it;
@@ -1509,11 +1511,20 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
         if ((*it)->mpComponent->isComponentC())
         {
             n_Ccomponents += 1;
+            if ((*it)->mpComponent->isComponentSystem())
+            {
+                n_SYScomponentCs += 1;
+            }
         }
         else if ((*it)->mpComponent->isComponentQ())
         {
             n_Qcomponents += 1;
+            if ((*it)->mpComponent->isComponentSystem())
+            {
+                n_SYScomponentQs += 1;
+            }
         }
+
     }
 
     //Check the kind of ports in the components subjected for connection
@@ -1539,10 +1550,18 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
         if ( pPort1->mpComponent->isComponentC() )
         {
             n_Ccomponents += 1;
+            if ( pPort1->mpComponent->isComponentSystem() )
+            {
+                n_SYScomponentCs += 1;
+            }
         }
         if ( pPort1->mpComponent->isComponentQ() )
         {
             n_Qcomponents += 1;
+            if ( pPort1->mpComponent->isComponentSystem() )
+            {
+                n_SYScomponentQs += 1;
+            }
         }
     }
 
@@ -1567,10 +1586,18 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
         if ( pPort2->mpComponent->isComponentC() )
         {
             n_Ccomponents += 1;
+            if ( pPort2->mpComponent->isComponentSystem() )
+            {
+                n_SYScomponentCs += 1;
+            }
         }
         if ( pPort2->mpComponent->isComponentQ() )
         {
             n_Qcomponents += 1;
+            if ( pPort2->mpComponent->isComponentSystem() )
+            {
+                n_SYScomponentQs += 1;
+            }
         }
     }
 
@@ -1598,13 +1625,15 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
     }
 
     cout << "nQ: " << n_Qcomponents << " nC: " << n_Ccomponents << endl;
-    if (n_Ccomponents > 1)
+    //Normaly we want at most one c and one q component but if there happen to be a subsystem in the picture allow one extra
+    //! @todo not 100% sure that this will work allways. Only work if we assume that the subsystem has the correct cqs type when connecting
+    if (n_Ccomponents > 1+n_SYScomponentCs)
     {
         cout << "Trying to connect two C-Components to each other" << endl;
         gCoreMessageHandler.addErrorMessage("Trying to connect two C-Component ports to each other");
         return false;
     }
-    if (n_Qcomponents > 1)
+    if (n_Qcomponents > 1+n_SYScomponentQs)
     {
         cout << "Trying to connect two Q-Components to each other" << endl;
         gCoreMessageHandler.addErrorMessage("Trying to connect two Q-Component ports to each other");
@@ -1842,6 +1871,8 @@ bool ComponentSystem::isSimulationOk()
                 return false;
             }
         }
+
+        //! @todo check that all C-component required ports are connected to Q-component ports
 
         //! @todo check more stuff
     }

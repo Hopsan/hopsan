@@ -36,7 +36,6 @@ namespace hopsan {
         HydraulicPressureSourceQ(const std::string name) : ComponentQ(name)
         {
             mTypeName = "HydraulicPressureSourceQ";
-            mStartPressure = 0.0;
             mStartFlow     = 0.0;
             mPressure      = 1.0e5;
 

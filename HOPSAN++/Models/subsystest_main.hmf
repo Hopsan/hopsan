@@ -19,14 +19,21 @@ COMPONENT "SignalGain" "Gain" 2584 2574 0 0 1
 PARAMETER "Gain" "Gain" 1
 COMPONENT "SignalGain" "Gain_1" 2351 2620 0 0 1
 PARAMETER "Gain_1" "Gain" 1
-COMPONENT "HydraulicPressureSensor" "Pressure Sensor" 2641 2375 0 0 1
+COMPONENT "HydraulicLaminarOrifice" "Laminar Orifice" 2615 2434 90 0 1
+PARAMETER "Laminar Orifice" "Kc" 1e-11
+COMPONENT "HydraulicPressureSensor" "Pressure Sensor" 2545 2330 0 0 1
 COMPONENT "SignalSink" "Sink" 2651 2530 0 0 1
-SUBSYSTEM "EXTERNAL" "subsystest_sub" "NOCQSTYPE" "/home/petno25/svn/temp_hopsan/HOPSAN++/Models/subsystest_sub.hmf" 2447 2469 0 0 1
+COMPONENT "HydraulicTankC" "Tank C" 2731 2471 0 0 1
+PARAMETER "Tank C" "P" 100000
+SUBSYSTEM "EXTERNAL" "subsystest_sub" "C" "/home/petno25/svn/temp_hopsan/HOPSAN++/Models/subsystest_sub.hmf" 2447 2469 0 0 1
+ENDSUBSYSTEM
 --------------------------------------------------------------
-CONNECT "Constant" "out" "subsystest_sub" "sysp" 2273.5 2390 2325 2390 2325 2390 2401 2390 2401 2442.38
-CONNECT "Pressure Sensor" "P1" "subsystest_sub" "sysp_1" 2641 2404.5 2641 2424 2490.16 2424 2490.16 2440.5
 CONNECT "subsystest_sub" "sysp_3" "Gain" "in" 2493 2497.5 2493 2584 2546 2584 2546 2574 2571.5 2574
 CONNECT "Gain" "out" "Sink" "in" 2596.5 2574 2616 2574 2616 2530 2638.5 2530
 CONNECT "Constant_1" "out" "Gain_1" "in" 2257.5 2559 2304 2559 2304 2620 2338.5 2620
 CONNECT "Gain_1" "out" "subsystest_sub" "sysp_2" 2363.5 2620 2372 2620 2372 2527 2401 2527 2401 2494.25
+CONNECT "Constant" "out" "subsystest_sub" "sysp" 2273.5 2390 2340 2390 2340 2424 2401 2424 2401 2442.38
+CONNECT "subsystest_sub" "sysp_1" "Laminar Orifice" "P2" 2490.16 2440.5 2490.16 2434 2580.5 2434
+CONNECT "Laminar Orifice" "P1" "Tank C" "P1" 2649.5 2434 2731 2434 2731 2456.5
+CONNECT "Pressure Sensor" "P1" "subsystest_sub" "sysp_1" 2545 2359.5 2545 2407 2490.16 2407 2490.16 2440.5
 --------------------------------------------------------------

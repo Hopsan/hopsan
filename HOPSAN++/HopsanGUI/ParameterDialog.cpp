@@ -133,7 +133,6 @@ void ParameterDialog::createEditStuff()
         //This is very hopsan specific (or actually TLM specific)
         mpCQSEdit = new QLineEdit(mpGUIObject->getTypeCQS());
         QLabel *pCQSLabel = new QLabel("CQS: ");
-        //! @todo We never set the cqs type
 
         pCQSLayout->addWidget(pCQSLabel);
         pCQSLayout->addWidget(mpCQSEdit);
@@ -196,6 +195,13 @@ void ParameterDialog::setParameters()
         }
         mpGUIObject->setParameterValue(mVarVector[i]->text(), newValue);
     }
+
+    if (isGUISubsystem)
+    {
+        qDebug() << "Setting CQS type to: " << this->mpCQSEdit->displayText();
+        mpGUIObject->setTypeCQS(this->mpCQSEdit->displayText());
+    }
+
     std::cout << "Parameters updated." << std::endl;
     this->close();
 }

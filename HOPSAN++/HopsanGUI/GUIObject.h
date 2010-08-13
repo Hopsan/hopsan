@@ -78,6 +78,7 @@ public:
     virtual void setName(QString name, renameRestrictions renameSettings=UNRESTRICTED);
     virtual QString getTypeName();
     virtual QString getTypeCQS() {assert(false);} //Only available in GUISystemComponent adn GuiComponent for now
+    virtual void setTypeCQS(QString typestring) {assert(false);} //Only available in GUISystemComponent
 
     AppearanceData* getAppearanceData();
     void refreshAppearance();

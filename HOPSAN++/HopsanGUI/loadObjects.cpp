@@ -227,6 +227,9 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
     //Now read the external file to change appearance and populate the system
     pSys->loadFromFile(rData.filepath);
 
+    //Set the cqs type of the system
+    pSys->setTypeCQS(rData.cqs_type);
+
     return pSys;
 }
 
