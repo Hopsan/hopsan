@@ -62,7 +62,7 @@ class GUIObject : public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    GUIObject(QPoint position, AppearanceData appearanceData, GraphicsScene *scene = 0, QGraphicsItem *parent = 0);
+    GUIObject(QPoint position, qreal rotation, AppearanceData appearanceData, GraphicsScene *scene = 0, QGraphicsItem *parent = 0);
     ~GUIObject();
 
     void addConnector(GUIConnector *item);
@@ -205,7 +205,7 @@ class GUIComponent : public GUIObject
 {
     Q_OBJECT
 public:
-    GUIComponent(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    GUIComponent(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, QGraphicsItem *parent = 0);
 
     QVector<QString> getParameterNames();
     QString getParameterUnit(QString name);
@@ -243,7 +243,7 @@ class GUISubsystem : public GUIObject
 {
     Q_OBJECT
 public:
-    GUISubsystem(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    GUISubsystem(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, QGraphicsItem *parent = 0);
 
     void deleteInHopsanCore();
 
@@ -278,7 +278,7 @@ class GUISystemPort : public GUIObject
 {
     Q_OBJECT
 public:
-    GUISystemPort(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    GUISystemPort(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, QGraphicsItem *parent = 0);
     QString getTypeName();
     void setName(QString newName, bool doOnlyCoreRename);
     void deleteInHopsanCore();

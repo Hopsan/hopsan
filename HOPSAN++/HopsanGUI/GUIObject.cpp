@@ -63,7 +63,7 @@ double dist(double x1,double y1, double x2, double y2)
     return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
 }
 
-GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsScene *scene, QGraphicsItem *parent)
+GUIObject::GUIObject(QPoint position, qreal rotation, AppearanceData appearanceData, GraphicsScene *scene, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
     //remeber the scene ptr
@@ -96,6 +96,12 @@ GUIObject::GUIObject(QPoint position, AppearanceData appearanceData, GraphicsSce
     //Move to position
     setPos(position.x()-mpIcon->boundingRect().width()/2,position.y()-mpIcon->boundingRect().height()/2);
     mIsFlipped = false;
+
+    while (this->rotation() != rotation)
+    {
+        this->rotate();
+    }
+
 
     //Create the textbox containing the name
     mpNameText = new GUIObjectDisplayName(this);
@@ -950,8 +956,8 @@ void GUIObject::deleteMe()
 }
 
 
-GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
-    : GUIObject(position, appearanceData, scene, parent)
+GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, QGraphicsItem *parent)
+    : GUIObject(position, rotation, appearanceData, scene, parent)
 {
     //Create the object in core, and get its default core name
 //    QString corename = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createComponent(mAppearanceData.getTypeName());
@@ -1156,8 +1162,8 @@ void GUIComponent::saveToTextStream(QTextStream &rStream, QString prepend)
 }
 
 
-GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
-        : GUIObject(position, appearanceData, scene, parent)
+GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, QGraphicsItem *parent)
+        : GUIObject(position, rotation, appearanceData, scene, parent)
 {
     //Set default values
     mLoadType = "Empty";
@@ -1456,8 +1462,8 @@ void GUISubsystem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     }
 }
 
-GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
-        : GUIObject(position, appearanceData, scene, parent)
+GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, QGraphicsItem *parent)
+        : GUIObject(position, rotation, appearanceData, scene, parent)
 {
     //Sets the ports
     createPorts();
@@ -1555,7 +1561,7 @@ QString GUIGroup::getTypeName()
 //! @param scene is the scene which should contain the group.
 //! @param parent is the parent QGraphicsItem for the group, default = 0.
 GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData, GraphicsScene *scene, QGraphicsItem *parent)
-    :   GUIObject(QPoint(0.0,0.0), appearanceData, scene, parent)
+    :   GUIObject(QPoint(0.0,0.0), 0, appearanceData, scene, parent)
 {
     mpParentScene = scene;
 
@@ -1837,7 +1843,7 @@ void GUIGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 
 GUIGroupPort::GUIGroupPort(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
-        : GUIObject(position, appearanceData, scene, parent)
+        : GUIObject(position, 0, appearanceData, scene, parent)
 
 {
     //Sets the ports

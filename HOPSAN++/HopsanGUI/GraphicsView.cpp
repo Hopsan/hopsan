@@ -249,15 +249,15 @@ GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint posi
     QString componentTypeName = appearanceData.getTypeName();
     if (componentTypeName == "Subsystem")
     {
-        mpTempGUIObject= new GUISubsystem(appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+        mpTempGUIObject= new GUISubsystem(appearanceData, position, rotation, this->mpParentProjectTab->mpGraphicsScene);
     }
     else if (componentTypeName == "SystemPort")
     {
-        mpTempGUIObject = new GUISystemPort(appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+        mpTempGUIObject = new GUISystemPort(appearanceData, position, rotation, this->mpParentProjectTab->mpGraphicsScene);
     }
     else //Assume some standard component type
     {
-        mpTempGUIObject = new GUIComponent(appearanceData, position, this->mpParentProjectTab->mpGraphicsScene);
+        mpTempGUIObject = new GUIComponent(appearanceData, position, rotation, this->mpParentProjectTab->mpGraphicsScene);
     }
 
     //    mpTempGUIObject->refreshDisplayName();
@@ -266,11 +266,6 @@ GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint posi
     //
 
     mpTempGUIObject->setIcon(this->mpParentProjectTab->useIsoGraphics);
-
-    while (mpTempGUIObject->rotation() != rotation)
-    {
-        mpTempGUIObject->rotate();
-    }
 
     //guiComponent->setPos(this->mapToScene(position));
     //qDebug() << "GraphicsView: " << mpTempGUIObject->parent();
