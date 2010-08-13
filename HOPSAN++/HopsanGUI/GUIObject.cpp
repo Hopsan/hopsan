@@ -41,8 +41,9 @@
 #include <QVector>
 #include <QtGui> //!< @todo maybe only need qtfile dialog
 
-#include "GUIObject.h"
+#include "common.h"
 
+#include "GUIObject.h"
 #include "ProjectTabWidget.h"
 #include "MainWindow.h"
 #include "ParameterDialog.h"
@@ -63,7 +64,7 @@ double dist(double x1,double y1, double x2, double y2)
     return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
 }
 
-GUIObject::GUIObject(QPoint position, qreal rotation, AppearanceData appearanceData, GraphicsScene *scene, QGraphicsItem *parent)
+GUIObject::GUIObject(QPoint position, qreal rotation, AppearanceData appearanceData, selectionStatus startSelected, graphicsType useISO, GraphicsScene *scene, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
     //remeber the scene ptr
@@ -76,43 +77,33 @@ GUIObject::GUIObject(QPoint position, qreal rotation, AppearanceData appearanceD
     mpParentGraphicsScene->addItem(this);
     mpParentGraphicsView = mpParentGraphicsScene->mpParentProjectTab->mpGraphicsView;
 
-    mTextOffset = 5.0;
-
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
-    //setFocusPolicy(Qt::StrongFocus);
-    this->setAcceptHoverEvents(true);
 
-    this->setZValue(10);
-
-    //Set to null ptr initially
+        //Set to null ptr initially
     mpIcon = 0;
     mpSelectionBox = 0;
     mpNameText = 0;
-    mIconType = false;
+    //mIconType = USERGRAPHICS;
 
-    //Set icon and geometry
+        //Setup appearance
     this->refreshAppearance();
-
-    //Move to position
-    setPos(position.x()-mpIcon->boundingRect().width()/2,position.y()-mpIcon->boundingRect().height()/2);
+    this->setPos(position.x()-mpIcon->boundingRect().width()/2,position.y()-mpIcon->boundingRect().height()/2);
+    this->rotateTo(rotation);
+    this->setSelected(startSelected);
+    this->setIcon(useISO);
+    this->setZValue(10);
+    this->setAcceptHoverEvents(true);
+    mTextOffset = 5.0;
     mIsFlipped = false;
 
-    while (this->rotation() != rotation)
-    {
-        this->rotate();
-    }
-
-
-    //Create the textbox containing the name
+        //Create the textbox containing the name
     mpNameText = new GUIObjectDisplayName(this);
     mNameTextPos = 0;
     this->setNameTextPos(mNameTextPos);
 
+        //Create connections
     connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(fixTextPosition(QPointF)));
     connect(mpParentGraphicsView,SIGNAL(zoomChange()),this,SLOT(adjustTextPositionToZoom()));
-    //connect(this->mpParentGraphicsView,SIGNAL(keyPressDelete()),this,SLOT(deleteComponent()));
-
-    //std::cout << "GUIObject: " << "x=" << this->pos().x() << "  " << "y=" << this->pos().y() << std::endl;
 }
 
 
@@ -274,21 +265,23 @@ void GUIObject::setName(QString newName, bool doOnlyCoreRename)
 }
 
 
-void GUIObject::setIcon(bool useIso)
+void GUIObject::setIcon(graphicsType useIso)
 {
+    qDebug() << "setIcon(" << useIso << ")";
+
     QGraphicsSvgItem *tmp = mpIcon;
     if(useIso and mAppearanceData.haveIsoIcon())
     {
         mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(true) , this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
-        mIconType = useIso;
+        mIconType = ISOGRAPHICS;
         //qDebug() << "Setting iconpath to " << mAppearanceData.getFullIconPath(true);
     }
     else
     {
         mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(false), this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
-        mIconType = !useIso;
+        mIconType = USERGRAPHICS;
         //qDebug() << "Setting iconpath to " << mAppearanceData.getFullIconPath(false);
     }
 
@@ -531,6 +524,7 @@ int GUIObject::getPortNumber(GUIPort *port)
 
 
 //! Rotates a component 90 degrees clockwise, and tells the connectors that the component has moved.
+//! @see rotateTo(qreal angle);
 void GUIObject::rotate(bool doNotRegisterUndo)
 {
     this->setTransformOriginPoint(this->mpIcon->boundingRect().center());
@@ -603,6 +597,17 @@ void GUIObject::rotate(bool doNotRegisterUndo)
     }
 
     emit componentMoved();
+}
+
+
+//! Slot that rotates the object to a desired angle (this does NOT create and undo post)
+//! @see rotate(bool doNotRegisterUndo)
+void GUIObject::rotateTo(qreal angle)
+{
+    while(this->rotation() != angle)
+    {
+        this->rotate(true);
+    }
 }
 
 
@@ -956,8 +961,8 @@ void GUIObject::deleteMe()
 }
 
 
-GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, QGraphicsItem *parent)
-    : GUIObject(position, rotation, appearanceData, scene, parent)
+GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, selectionStatus startSelected, graphicsType useISO, QGraphicsItem *parent)
+    : GUIObject(position, rotation, appearanceData, startSelected, useISO, scene, parent)
 {
     //Create the object in core, and get its default core name
 //    QString corename = this->mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createComponent(mAppearanceData.getTypeName());
@@ -1162,8 +1167,8 @@ void GUIComponent::saveToTextStream(QTextStream &rStream, QString prepend)
 }
 
 
-GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, QGraphicsItem *parent)
-        : GUIObject(position, rotation, appearanceData, scene, parent)
+GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, selectionStatus startSelected, graphicsType useISO, QGraphicsItem *parent)
+    : GUIObject(position, rotation, appearanceData, startSelected, useISO, scene, parent)
 {
     //Set default values
     mLoadType = "Empty";
@@ -1462,8 +1467,8 @@ void GUISubsystem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     }
 }
 
-GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, QGraphicsItem *parent)
-        : GUIObject(position, rotation, appearanceData, scene, parent)
+GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, selectionStatus startSelected, graphicsType useISO, QGraphicsItem *parent)
+        : GUIObject(position, rotation, appearanceData, startSelected, useISO, scene, parent)
 {
     //Sets the ports
     createPorts();
@@ -1561,7 +1566,7 @@ QString GUIGroup::getTypeName()
 //! @param scene is the scene which should contain the group.
 //! @param parent is the parent QGraphicsItem for the group, default = 0.
 GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData, GraphicsScene *scene, QGraphicsItem *parent)
-    :   GUIObject(QPoint(0.0,0.0), 0, appearanceData, scene, parent)
+    :   GUIObject(QPoint(0.0,0.0), 0, appearanceData, DESELECTED, USERGRAPHICS, scene, parent)
 {
     mpParentScene = scene;
 
@@ -1778,6 +1783,7 @@ GUIGroup::~GUIGroup()
     QList<QGraphicsItem*>::iterator it;
     for(it=objectsInScenePtrs.begin(); it != objectsInScenePtrs.end(); ++it)
     {
+        //! @todo Will cause crash when closing program if the GUIObject has already been deleted by the scene.
         this->mpParentGraphicsView->deleteGUIObject(this->getName());
         GUIComponent *pGUIComponent = qgraphicsitem_cast<GUIComponent*>(*it);
         this->mpGroupScene->removeItem((*it));
@@ -1843,7 +1849,7 @@ void GUIGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 
 GUIGroupPort::GUIGroupPort(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent)
-        : GUIObject(position, 0, appearanceData, scene, parent)
+    : GUIObject(position, 0, appearanceData, DESELECTED, USERGRAPHICS, scene, parent)
 
 {
     //Sets the ports

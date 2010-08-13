@@ -103,7 +103,15 @@ void PreferenceWidget::show()
 
 void PreferenceWidget::updateValues()
 {
-    this->mpParentMainWindow->mpProjectTabs->setIsoGraphics(isoCheckBox->isChecked());
+    if(isoCheckBox->isChecked())
+    {
+        this->mpParentMainWindow->mpProjectTabs->setIsoGraphics(ISOGRAPHICS);
+    }
+    else
+    {
+        this->mpParentMainWindow->mpProjectTabs->setIsoGraphics(USERGRAPHICS);
+    }
+
     this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->setUserIconPath(userIconPath->text());
     this->mpParentMainWindow->mpProjectTabs->getCurrentTab()->setIsoIconPath(isoIconPath->text());
     //this->isoBool = this->isoCheckBox->isChecked();

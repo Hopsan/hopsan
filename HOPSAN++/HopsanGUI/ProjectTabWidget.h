@@ -50,6 +50,7 @@
 
 #include <QTabWidget>
 #include "GUIRootSystem.h"
+#include "GUIObject.h"
 
 //Forward declaration
 class GraphicsScene;
@@ -79,7 +80,7 @@ public slots:
     void simulateCurrent();
     void loadModel();
     void saveModel(bool saveAs);
-    void setIsoGraphics(bool value);
+    void setIsoGraphics(graphicsType);
 
     void resetZoom();
     void zoomIn();
@@ -109,7 +110,7 @@ public:
     ProjectTab(ProjectTabWidget *parent = 0);
     bool mIsSaved;
     QString mModelFileName;
-    bool useIsoGraphics;
+    graphicsType useIsoGraphics;
     ProjectTabWidget *mpParentProjectTabWidget;
     GUIRootSystem mGUIRootSystem;
     GraphicsView *mpGraphicsView;

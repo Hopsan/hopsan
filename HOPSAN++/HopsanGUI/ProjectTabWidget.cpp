@@ -124,7 +124,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 
     setLayout(tabLayout);
 
-    this->useIsoGraphics = false;
+    this->useIsoGraphics = USERGRAPHICS;
 
 }
 
@@ -790,8 +790,13 @@ void ProjectTabWidget::saveModel(bool saveAs)
 //! Tells the current tab to change to or from ISO graphics.
 //! @param value is true if ISO should be activated and false if it should be deactivated.
 //! @todo Break out the guiconnector appearance stuff into a separate general function
-void ProjectTabWidget::setIsoGraphics(bool useISO)
+void ProjectTabWidget::setIsoGraphics(graphicsType useISO)
 {
+    //if(useISO)
+    //    this->getCurrentTab()->useIsoGraphics = GUIObject::ISOGRAPHICS;
+    //else
+    //    this->getCurrentTab()->useIsoGraphics = GUIObject::USERGRAPHICS;
+
     this->getCurrentTab()->useIsoGraphics = useISO;
 
     mpParentMainWindow->mpLibrary->useIsoGraphics(useISO);

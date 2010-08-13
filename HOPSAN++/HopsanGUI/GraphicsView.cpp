@@ -1,6 +1,7 @@
+#include "common.h"
+
 #include "GraphicsView.h"
 #include "GUIUtilities.h"
-
 #include "GUIObject.h"
 #include "GUIPort.h"
 #include "UndoStack.h"
@@ -161,7 +162,6 @@ void GraphicsView::dropEvent(QDropEvent *event)
         undoStack->newPost();
         mpParentProjectTab->hasChanged();
 
-        //qDebug() << "dropEvent: hasText";
         //QByteArray *data = new QByteArray;
         //*data = event->mimeData()->data("application/x-text");
         qDebug() << event->mimeData()->text();
@@ -170,20 +170,15 @@ void GraphicsView::dropEvent(QDropEvent *event)
         QString datastr =  event->mimeData()->text();
         QTextStream stream(&datastr, QIODevice::ReadOnly);
 
-        //qDebug() << "drop string: \n" << datastr;
-
         AppearanceData appearanceData;
         stream >> appearanceData;
 
         //! @todo Check if appearnaceData OK otherwihse do not add
 
-        //qDebug() << "Drop appearanceData: " <<  appearanceData;
-
         if(appearanceData.mIsOK)
         {
             event->accept();
             QPoint position = event->pos();
-            //qDebug() << "GraphicsView: " << "x=" << position.x() << "  " << "y=" << position.y();
             this->addGUIObject(appearanceData, this->mapToScene(position).toPoint());
         }
         else
@@ -244,51 +239,43 @@ void GraphicsView::deselectAllText()
 //! @param position is the position where the component will be created.
 //! @param name will be the name of the component.
 //! @returns a pointer to the created and added object
-GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation, bool startSelected, bool doNotRegisterUndo)
+GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation, selectionStatus startSelected, bool doNotRegisterUndo)
 {
+        //Deselect all other comonents
+    this->deSelectAll();
+
     QString componentTypeName = appearanceData.getTypeName();
     if (componentTypeName == "Subsystem")
     {
-        mpTempGUIObject= new GUISubsystem(appearanceData, position, rotation, this->mpParentProjectTab->mpGraphicsScene);
+        mpTempGUIObject= new GUISubsystem(appearanceData, position, rotation, this->mpParentProjectTab->mpGraphicsScene, startSelected, mpParentProjectTab->useIsoGraphics);
     }
     else if (componentTypeName == "SystemPort")
     {
-        mpTempGUIObject = new GUISystemPort(appearanceData, position, rotation, this->mpParentProjectTab->mpGraphicsScene);
+        mpTempGUIObject = new GUISystemPort(appearanceData, position, rotation, this->mpParentProjectTab->mpGraphicsScene, startSelected, mpParentProjectTab->useIsoGraphics);
     }
     else //Assume some standard component type
     {
-        mpTempGUIObject = new GUIComponent(appearanceData, position, rotation, this->mpParentProjectTab->mpGraphicsScene);
+        mpTempGUIObject = new GUIComponent(appearanceData, position, rotation, this->mpParentProjectTab->mpGraphicsScene, startSelected, mpParentProjectTab->useIsoGraphics);
     }
 
-    //    mpTempGUIObject->refreshDisplayName();
     emit checkMessages();
-    //qDebug() << "=====================Get name after add: " << mpTempGUIObject->getName();
-    //
-
-    mpTempGUIObject->setIcon(this->mpParentProjectTab->useIsoGraphics);
-
-    //guiComponent->setPos(this->mapToScene(position));
-    //qDebug() << "GraphicsView: " << mpTempGUIObject->parent();
 
     if ( mGUIObjectMap.contains(mpTempGUIObject->getName()) )
     {
         mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Trying to add component with name: " + mpTempGUIObject->getName() + " that already exist in GUIObjectMap, (Not adding)");
+        //! @todo Won't this mean that the object will be added to the scene but not to the model map?
     }
     else
     {
         mGUIObjectMap.insert(mpTempGUIObject->getName(), mpTempGUIObject);
-        //qDebug() << "GUI Object created at (" << mpTempGUIObject->x() << " " << mpTempGUIObject->y() << ")";
     }
-
-        //Deselect all other comonents
-    this->deSelectAll();
-    mpTempGUIObject->setSelected(startSelected);
-    this->setFocus();
 
     if(!doNotRegisterUndo)
     {
         undoStack->registerAddedObject(mpTempGUIObject);
     }
+
+    this->setFocus();
 
     return mpTempGUIObject;
 }

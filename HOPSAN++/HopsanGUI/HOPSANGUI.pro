@@ -50,7 +50,8 @@ HEADERS += MainWindow.h \
     GraphicsView.h \
     GraphicsScene.h \
     loadObjects.h \
-    ProgressBarThread.h
+    ProgressBarThread.h \
+    common.h
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE
