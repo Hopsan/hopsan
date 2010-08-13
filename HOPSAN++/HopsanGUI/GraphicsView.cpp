@@ -239,7 +239,7 @@ void GraphicsView::deselectAllText()
 //! @param position is the position where the component will be created.
 //! @param name will be the name of the component.
 //! @returns a pointer to the created and added object
-GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation, selectionStatus startSelected, bool doNotRegisterUndo)
+GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation, selectionStatus startSelected, undoStatus undoSettings)
 {
         //Deselect all other comonents
     this->deSelectAll();
@@ -270,7 +270,7 @@ GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint posi
         mGUIObjectMap.insert(mpTempGUIObject->getName(), mpTempGUIObject);
     }
 
-    if(!doNotRegisterUndo)
+    if(undoSettings == UNDO)
     {
         undoStack->registerAddedObject(mpTempGUIObject);
     }
@@ -302,7 +302,7 @@ void GraphicsView::addSystemPort()
 
 //! Delete GUIObject with specified name
 //! @param objectName is the name of the componenet to delete
-void GraphicsView::deleteGUIObject(QString objectName, bool noUnDo)
+void GraphicsView::deleteGUIObject(QString objectName, undoStatus undoSettings)
 {
     //qDebug() << "deleteGUIObject()";
     QMap<QString, GUIObject *>::iterator it;
@@ -327,7 +327,7 @@ void GraphicsView::deleteGUIObject(QString objectName, bool noUnDo)
         }
     }
 
-    if (!noUnDo)
+    if (undoSettings == UNDO)
     {
         //Register removal of connector in undo stack (must be done after removal of connectors or the order of the commands in the undo stack will be wrong!)
         this->undoStack->registerDeletedObject(it.value());
@@ -350,7 +350,7 @@ void GraphicsView::deleteGUIObject(QString objectName, bool noUnDo)
 }
 
 //! This function is used to rename a GUI Component (including key rename in component map)
-void GraphicsView::renameGUIObject(QString oldName, QString newName, bool noUnDo)
+void GraphicsView::renameGUIObject(QString oldName, QString newName, undoStatus undoSettings)
 {
     //First find record with old name
     QMap<QString, GUIObject *>::iterator it = mGUIObjectMap.find(oldName);
@@ -371,7 +371,7 @@ void GraphicsView::renameGUIObject(QString oldName, QString newName, bool noUnDo
         //qDebug() << "Old name: " << oldName << " not found";
     }
 
-    if (!noUnDo)
+    if (undoSettings == UNDO)
     {
         undoStack->registerRenameObject(oldName, newName);
     }
@@ -644,8 +644,8 @@ GUIObject *GraphicsView::getGUIObject(QString name)
 
 //! Begins creation of connector or complete creation of connector depending on the mIsCreatingConnector flag.
 //! @param pPort is a pointer to the clicked port, either start or end depending on the mIsCreatingConnector flag.
-//! @param doNotRegisterUndo is true if the added connector shall not be registered in the undo stack, for example if this function is called by a redo function.
-void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
+//! @param undoSettings is true if the added connector shall not be registered in the undo stack, for example if this function is called by a redo function.
+void GraphicsView::addConnector(GUIPort *pPort, undoStatus undoSettings)
 {
         //When clicking start port
     if (!mIsCreatingConnector)
@@ -690,7 +690,7 @@ void GraphicsView::addConnector(GUIPort *pPort, bool doNotRegisterUndo)
 
             undoStack->newPost();
             mpParentProjectTab->hasChanged();
-            if(!doNotRegisterUndo)
+            if(undoSettings == UNDO)
             {
                 undoStack->registerAddedConnector(mpTempConnector);
             }
@@ -730,8 +730,8 @@ GUIConnector* GraphicsView::findConnector(QString startComp, QString startPort, 
 
 //! Removes the connector from the model.
 //! @param pConnector is a pointer to the connector to remove.
-//! @param doNotRegisterUndo is true if the removal of the connector shall not be registered in the undo stack, for example if this function is called by a redo-function.
-void GraphicsView::removeConnector(GUIConnector* pConnector, bool doNotRegisterUndo)
+//! @param undoSettings is true if the removal of the connector shall not be registered in the undo stack, for example if this function is called by a redo-function.
+void GraphicsView::removeConnector(GUIConnector* pConnector, undoStatus undoSettings)
 {
     bool doDelete = false;
     bool startPortHasMoreConnections = false;
@@ -740,7 +740,7 @@ void GraphicsView::removeConnector(GUIConnector* pConnector, bool doNotRegisterU
     int indexToRemove;
     int i;
 
-    if(!doNotRegisterUndo)
+    if(undoSettings == UNDO)
     {
         undoStack->registerDeletedConnector(pConnector);
     }
@@ -944,7 +944,7 @@ void GraphicsView::paste()
             data.posY -= 50;
 
             //Load (create new) object
-            GUIObject *pObj = loadGUIObject(data,mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,this, true);
+            GUIObject *pObj = loadGUIObject(data,mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,this, NOUNDO);
 
             //Remember old name, in case we want to connect later
             renameMap.insert(data.name, pObj->getName());
@@ -978,7 +978,7 @@ void GraphicsView::paste()
             //Replace the component name to the actual new name
             data.componentName = renameMap.find(data.componentName).value();
             //Load it into the new copy
-            loadParameterValues(data,this, true);
+            loadParameterValues(data,this, NOUNDO);
 
 //            componentName = renameMap.find(readName(copyStream)).value();
 //            copyStream >> parameterName;
@@ -1005,7 +1005,7 @@ void GraphicsView::paste()
                 data.pointVector[i].ry() -= 50;
             }
 
-            loadConnector(data,this,&(mpParentProjectTab->mGUIRootSystem), true);
+            loadConnector(data,this,&(mpParentProjectTab->mGUIRootSystem), NOUNDO);
 
 //            startComponentName = renameMap.find(readName(copyStream)).value();
 //            startPortName = readName(copyStream);

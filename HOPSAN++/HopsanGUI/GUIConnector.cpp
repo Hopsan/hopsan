@@ -823,14 +823,14 @@ void GUIConnector::setUnHovered()
 void GUIConnector::deleteMe()
 {
     //qDebug() << "deleteMe()";
-    mpParentGraphicsView->removeConnector(this, false);
+    mpParentGraphicsView->removeConnector(this, UNDO);
 }
 
 
 //! Asks my parent to delete myself, and tells it to not add me to the undo stack.
 void GUIConnector::deleteMeWithNoUndo()
 {
-    mpParentGraphicsView->removeConnector(this, true);
+    mpParentGraphicsView->removeConnector(this, NOUNDO);
 }
 
 //! Uppdate the appearance of the connector (setting its type and line endings)

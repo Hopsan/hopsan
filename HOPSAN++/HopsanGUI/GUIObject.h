@@ -125,14 +125,14 @@ signals:
 
 public slots:
      void deleteMe();
-     void rotate(bool doNotRegisterUndo = false);
+     void rotate(undoStatus undoSettings = UNDO);
      void rotateTo(qreal angle);
      void moveUp();
      void moveDown();
      void moveLeft();
      void moveRight();
-     void flipVertical(bool doNotRegisterUndo = false);
-     void flipHorizontal(bool doNotRegisterUndo = false);
+     void flipVertical(undoStatus undoSettings = UNDO);
+     void flipHorizontal(undoStatus undoSettings = UNDO);
      void hideName();
      void showName();
      void setIcon(graphicsType);

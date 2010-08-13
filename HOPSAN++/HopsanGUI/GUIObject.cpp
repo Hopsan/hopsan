@@ -525,7 +525,7 @@ int GUIObject::getPortNumber(GUIPort *port)
 
 //! Rotates a component 90 degrees clockwise, and tells the connectors that the component has moved.
 //! @see rotateTo(qreal angle);
-void GUIObject::rotate(bool doNotRegisterUndo)
+void GUIObject::rotate(undoStatus undoSettings)
 {
     this->setTransformOriginPoint(mpIcon->boundingRect().center());
     this->setRotation(this->rotation()+90);
@@ -591,7 +591,7 @@ void GUIObject::rotate(bool doNotRegisterUndo)
         //mpIcon->setPos(this->boundingRect().center());
     }
 
-    if(!doNotRegisterUndo)
+    if(undoSettings == UNDO)
     {
         mpParentGraphicsView->undoStack->registerRotatedObject(this);
     }
@@ -601,12 +601,12 @@ void GUIObject::rotate(bool doNotRegisterUndo)
 
 
 //! Slot that rotates the object to a desired angle (this does NOT create and undo post)
-//! @see rotate(bool doNotRegisterUndo)
+//! @see rotate(undoStatus undoSettings)
 void GUIObject::rotateTo(qreal angle)
 {
     while(this->rotation() != angle)
     {
-        this->rotate(true);
+        this->rotate(NOUNDO);
     }
 }
 
@@ -660,12 +660,12 @@ void GUIObject::moveRight()
 
 //! Slot that flips the object vertically.
 //! @see flipHorizontal()
-void GUIObject::flipVertical(bool doNotRegisterUndo)
+void GUIObject::flipVertical(undoStatus undoSettings)
 {
-    this->rotate(true);
-    this->rotate(true);
-    this->flipHorizontal(true);
-    if(!doNotRegisterUndo)
+    this->rotate(NOUNDO);
+    this->rotate(NOUNDO);
+    this->flipHorizontal(NOUNDO);
+    if(undoSettings == UNDO)
     {
         mpParentGraphicsView->undoStack->registerVerticalFlip(this);
 
@@ -675,7 +675,7 @@ void GUIObject::flipVertical(bool doNotRegisterUndo)
 
 //! Slot that flips the object horizontally.
 //! @see flipVertical()
-void GUIObject::flipHorizontal(bool doNotRegisterUndo)
+void GUIObject::flipHorizontal(undoStatus undoSettings)
 {
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
@@ -724,7 +724,7 @@ void GUIObject::flipHorizontal(bool doNotRegisterUndo)
             mPortListPtrs.value(i)->translate(-mPortListPtrs.value(i)->boundingRect().width(), 0);
         }
     }
-    if(!doNotRegisterUndo)
+    if(undoSettings == UNDO)
     {
         mpParentGraphicsView->undoStack->registerHorizontalFlip(this);
     }

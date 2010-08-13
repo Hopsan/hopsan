@@ -190,7 +190,7 @@ void ParameterLoadData::read(QTextStream &rStream)
 
 
 
-GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, GraphicsView* pGraphicsView, bool noUnDo)
+GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, GraphicsView* pGraphicsView, undoStatus undoSettings)
 {
     AppearanceData *pAppearanceData = pLibrary->getAppearanceData(rData.type);
     if (pAppearanceData != 0)
@@ -198,7 +198,7 @@ GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, G
         AppearanceData appearanceData = *pAppearanceData; //Make a copy
         appearanceData.setName(rData.name);
 
-        GUIObject* pObj = pGraphicsView->addGUIObject(appearanceData, QPoint(rData.posX, rData.posY), 0, DESELECTED, noUnDo);
+        GUIObject* pObj = pGraphicsView->addGUIObject(appearanceData, QPoint(rData.posX, rData.posY), 0, DESELECTED, undoSettings);
         pObj->setNameTextPos(rData.nameTextPos);
         if(!rData.textVisible)
         {
@@ -206,7 +206,7 @@ GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, G
         }
         while(pObj->rotation() != rData.rotation)
         {
-            pObj->rotate(noUnDo);
+            pObj->rotate(undoSettings);
         }
         return pObj;
     }
@@ -218,11 +218,11 @@ GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, G
     }
 }
 
-GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget* pLibrary, GraphicsView* pGraphicsView, bool noUnDo)
+GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget* pLibrary, GraphicsView* pGraphicsView, undoStatus undoSettings)
 {
     //! @todo maybe create a loadGUIObject function that takes appearance data instead of pLibrary (when special apperance are to be used)
     //Load the system the normal way (and add it)
-    GUIObject* pSys = loadGUIObject(rData, pLibrary, pGraphicsView, noUnDo);
+    GUIObject* pSys = loadGUIObject(rData, pLibrary, pGraphicsView, undoSettings);
 
     //Now read the external file to change appearance and populate the system
     pSys->loadFromFile(rData.filepath);
@@ -232,7 +232,7 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
 
 
 
-void loadConnector(const ConnectorLoadData &rData, GraphicsView* pGraphicsView, GUIRootSystem* pRootSystem, bool noUnDo)
+void loadConnector(const ConnectorLoadData &rData, GraphicsView* pGraphicsView, GUIRootSystem* pRootSystem, undoStatus undoSettings)
 {
     qDebug() << rData.startComponentName << " " << rData.endComponentName << " " << pRootSystem->getName();
     bool success = pRootSystem->connect(rData.startComponentName, rData.startPortName, rData.endComponentName, rData.endPortName);
@@ -282,34 +282,34 @@ void loadConnector(const ConnectorLoadData &rData, GraphicsView* pGraphicsView, 
 }
 
 
-void loadParameterValues(const ParameterLoadData &rData, GraphicsView* pGraphicsView, bool noUnDo)
+void loadParameterValues(const ParameterLoadData &rData, GraphicsView* pGraphicsView, undoStatus undoSettings)
 {
     //qDebug() << "Parameter: " << componentName << " " << parameterName << " " << parameterValue;
     pGraphicsView->mGUIObjectMap.find(rData.componentName).value()->setParameterValue(rData.parameterName, rData.parameterValue);
 }
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data
-GUIObject* loadGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GraphicsView* pGraphicsView, bool noUnDo)
+GUIObject* loadGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GraphicsView* pGraphicsView, undoStatus undoSettings)
 {
     ObjectLoadData data;
     data.read(rStream);
-    return loadGUIObject(data,pLibrary, pGraphicsView, noUnDo);
+    return loadGUIObject(data,pLibrary, pGraphicsView, undoSettings);
 }
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data
-void loadConnector(QTextStream &rStream, GraphicsView* pGraphicsView, GUIRootSystem* pRootSystem, bool noUnDo)
+void loadConnector(QTextStream &rStream, GraphicsView* pGraphicsView, GUIRootSystem* pRootSystem, undoStatus undoSettings)
 {
     ConnectorLoadData data;
     data.read(rStream);
-    loadConnector(data,pGraphicsView, pRootSystem, noUnDo);
+    loadConnector(data,pGraphicsView, pRootSystem, undoSettings);
 }
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data
-void loadParameterValues(QTextStream &rStream, GraphicsView* pGraphicsView, bool noUnDo)
+void loadParameterValues(QTextStream &rStream, GraphicsView* pGraphicsView, undoStatus undoSettings)
 {
     ParameterLoadData data;
     data.read(rStream);
-    loadParameterValues(data, pGraphicsView, noUnDo);
+    loadParameterValues(data, pGraphicsView, undoSettings);
 }
 
 //! @brief Loads the hmf file HEADER data and checks version numbers

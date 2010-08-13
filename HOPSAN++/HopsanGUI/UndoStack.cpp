@@ -146,7 +146,7 @@ void UndoStack::undoOneStep()
             {
                 //poststream >> junk; //Discard Component load command
                 ////! @todo maybe we should not save it automatically in the guiobject maby let some other external save function add it
-                loadGUIObject(poststream, mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentView, true);
+                loadGUIObject(poststream, mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentView, NOUNDO);
                 //qDebug() << "after loadGUIObject: " << i << " " << mStack[undoPosition].size();
 
 //                //! @todo This code is testing the use of generic loadGUIObject functionality
@@ -181,7 +181,7 @@ void UndoStack::undoOneStep()
             }
             else if ( undoevent == "DELETEDCONNECTOR" )
             {
-                loadConnector(poststream, mpParentView, &(mpParentView->mpParentProjectTab->mGUIRootSystem), true);
+                loadConnector(poststream, mpParentView, &(mpParentView->mpParentProjectTab->mGUIRootSystem), NOUNDO);
 
 //                QString startComponentName = mStack[undoPosition][i][1];
 //                QString startPortName = mStack[undoPosition][i][2];
@@ -229,7 +229,7 @@ void UndoStack::undoOneStep()
                 //! @todo MAybe we only need to save the name
                 readName(poststream); //Discard Type
                 QString name = readName(poststream); //Store name
-                mpParentView->deleteGUIObject(name, true);
+                mpParentView->deleteGUIObject(name, NOUNDO);
 
 //                QString itemName = mStack[undoPosition][i][2];
 //
@@ -248,7 +248,7 @@ void UndoStack::undoOneStep()
                 QString endCompName = readName(poststream);
                 QString endPortName = readName(poststream);
                 GUIConnector *item = mpParentView->findConnector(startCompName, startPortName, endCompName, endPortName);
-                mpParentView->removeConnector(item, true);
+                mpParentView->removeConnector(item, NOUNDO);
 
 
 //                QString startComponentName = mStack[undoPosition][i][1];
@@ -282,7 +282,7 @@ void UndoStack::undoOneStep()
             {
                 QString oldName = readName(poststream);
                 QString newName = readName(poststream);
-                mpParentView->renameGUIObject(newName, oldName, true);
+                mpParentView->renameGUIObject(newName, oldName, NOUNDO);
 
 //                QString oldName = mStack[undoPosition][i][1];
 //                QString newName = mStack[undoPosition][i][2];
@@ -364,19 +364,19 @@ void UndoStack::undoOneStep()
             {
                 QString name = readName(poststream);
                 //! @todo This feels wierd, why rotate three times
-                mpParentView->getGUIObject(name)->rotate(true);
-                mpParentView->getGUIObject(name)->rotate(true);
-                mpParentView->getGUIObject(name)->rotate(true);
+                mpParentView->getGUIObject(name)->rotate(NOUNDO);
+                mpParentView->getGUIObject(name)->rotate(NOUNDO);
+                mpParentView->getGUIObject(name)->rotate(NOUNDO);
 
 //                QString objectName = mStack[undoPosition][i][1];
-//                mpParentView->getGUIObject(objectName)->rotate(true);
-//                mpParentView->getGUIObject(objectName)->rotate(true);
-//                mpParentView->getGUIObject(objectName)->rotate(true);
+//                mpParentView->getGUIObject(objectName)->rotate(NOUNDO);
+//                mpParentView->getGUIObject(objectName)->rotate(NOUNDO);
+//                mpParentView->getGUIObject(objectName)->rotate(NOUNDO);
             }
             else if( undoevent == "VERTICALFLIP" )
             {
                 QString name = readName(poststream);
-                mpParentView->getGUIObject(name)->flipVertical(true);
+                mpParentView->getGUIObject(name)->flipVertical(NOUNDO);
 
 //                QString objectName = mStack[undoPosition][i][1];
 //                mpParentView->getGUIObject(objectName)->flipVertical(true);
@@ -384,7 +384,7 @@ void UndoStack::undoOneStep()
             else if( undoevent == "HORIZONTALFLIP" )
             {
                 QString name = readName(poststream);
-                mpParentView->getGUIObject(name)->flipHorizontal(true);
+                mpParentView->getGUIObject(name)->flipHorizontal(NOUNDO);
 
 //                QString objectName = mStack[undoPosition][i][1];
 //                mpParentView->getGUIObject(objectName)->flipHorizontal(true);
@@ -414,7 +414,7 @@ void UndoStack::redoOneStep()
             {
                 readName(poststream); //Discard Type
                 QString name = readName(poststream); //Store name
-                mpParentView->deleteGUIObject(name, true);
+                mpParentView->deleteGUIObject(name, NOUNDO);
 
 //                QString componentName = mStack[mCurrentStackPosition][i][2];
 //                GUIObject* item = mpParentView->mGUIObjectMap.find(componentName).value();
@@ -432,7 +432,7 @@ void UndoStack::redoOneStep()
                 QString endCompName = readName(poststream);
                 QString endPortName = readName(poststream);
                 GUIConnector *item = mpParentView->findConnector(startCompName, startPortName, endCompName, endPortName);
-                mpParentView->removeConnector(item, true);
+                mpParentView->removeConnector(item, NOUNDO);
 
 //                QString startComponentName = mStack[mCurrentStackPosition][i][1];
 //                QString startPortName = mStack[mCurrentStackPosition][i][2];
@@ -463,7 +463,7 @@ void UndoStack::redoOneStep()
             }
             else if( redoevent == "ADDEDOBJECT" )
             {
-                  loadGUIObject(poststream, mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentView, true);
+                  loadGUIObject(poststream, mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentView, NOUNDO);
 
 //                QString componentType = mStack[mCurrentStackPosition][i][1];
 //                QString componentName = mStack[mCurrentStackPosition][i][2];
@@ -486,7 +486,7 @@ void UndoStack::redoOneStep()
             }
             else if( redoevent == "ADDEDCONNECTOR" )
             {
-                loadConnector(poststream, mpParentView, &(mpParentView->mpParentProjectTab->mGUIRootSystem), true);
+                loadConnector(poststream, mpParentView, &(mpParentView->mpParentProjectTab->mGUIRootSystem), NOUNDO);
 
 //                QString startComponentName = mStack[mCurrentStackPosition][i][1];
 //                QString startPortName = mStack[mCurrentStackPosition][i][2];
@@ -533,7 +533,7 @@ void UndoStack::redoOneStep()
             {
                 QString oldName = readName(poststream);
                 QString newName = readName(poststream);
-                mpParentView->renameGUIObject(oldName, newName, true);
+                mpParentView->renameGUIObject(oldName, newName, NOUNDO);
 
 //                QString oldName = mStack[mCurrentStackPosition][i][1];
 //                QString newName = mStack[mCurrentStackPosition][i][2];
@@ -614,7 +614,7 @@ void UndoStack::redoOneStep()
                 QString name;
                 name = readName(poststream);
                 //! @todo This feels wierd, why rotate one time
-                mpParentView->getGUIObject(name)->rotate(true);
+                mpParentView->getGUIObject(name)->rotate(NOUNDO);
 
 //                QString objectName = mStack[mCurrentStackPosition][i][1];
 //                mpParentView->getGUIObject(objectName)->rotate(true);
@@ -703,6 +703,7 @@ void UndoStack::registerAddedObject(GUIObject *item)
 {
     QString str;
     QTextStream stream(&str);
+
     item->saveToTextStream(stream, "ADDEDOBJECT"); //! @todo We now save the parameters also (not necessary as they are dafult, (does not do any harm however)
     this->insertPost(str);
 //    QPointF pos = item->mapToScene(item->boundingRect().center());
@@ -838,7 +839,7 @@ void UndoStack::registerRotatedObject(GUIObject *item)
 {
     QString str;
     QTextStream stream(&str);
-    stream << "ROTATEDOBJECT " << item->getName();
+    stream << "ROTATEDOBJECT " << addQuotes(item->getName());
     this->insertPost(str);
 
 //    QStringList tempStringList;

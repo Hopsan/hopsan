@@ -87,14 +87,14 @@ public:
 };
 
 
-GUIObject* loadGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GraphicsView* pGraphicsView, bool noUnDo=false);
-void loadConnector(QTextStream &rStream, GraphicsView* pGraphicsView, GUIRootSystem* pRootSystem, bool noUnDo=false);
-void loadParameterValues(QTextStream &rStream, GraphicsView* pGraphicsView, bool noUnDo=false);
+GUIObject* loadGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GraphicsView* pGraphicsView, undoStatus undoSettings=UNDO);
+void loadConnector(QTextStream &rStream, GraphicsView* pGraphicsView, GUIRootSystem* pRootSystem, undoStatus undoSettings=UNDO);
+void loadParameterValues(QTextStream &rStream, GraphicsView* pGraphicsView, undoStatus undoSettings=UNDO);
 
-GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, GraphicsView* pGraphicsView, bool noUnDo=false);
-GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget* pLibrary, GraphicsView* pGraphicsView, bool noUnDo);
-void loadConnector(const ConnectorLoadData &rData, GraphicsView* pGraphicsView, GUIRootSystem* pRootSystem, bool noUnDo=false);
-void loadParameterValues(const ParameterLoadData &rData, GraphicsView* pGraphicsView, bool noUnDo=false);
+GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, GraphicsView* pGraphicsView, undoStatus undoSettings=UNDO);
+GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget* pLibrary, GraphicsView* pGraphicsView, undoStatus undoSettings);
+void loadConnector(const ConnectorLoadData &rData, GraphicsView* pGraphicsView, GUIRootSystem* pRootSystem, undoStatus undoSettings=UNDO);
+void loadParameterValues(const ParameterLoadData &rData, GraphicsView* pGraphicsView, undoStatus undoSettings=UNDO);
 
 HeaderLoadData readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidget);
 void writeHeader(QTextStream &rStream);

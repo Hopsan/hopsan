@@ -62,13 +62,13 @@ signals:
     void zoomChange();
 
 public slots:
-    GUIObject* addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, bool doNotRegisterUndo = false);
-    void deleteGUIObject(QString componentName, bool noUnDo=false);
+    GUIObject* addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
+    void deleteGUIObject(QString componentName, undoStatus undoSettings=UNDO);
     bool haveGUIObject(QString name);
-    void renameGUIObject(QString oldName, QString newName, bool noUnDo=false);
+    void renameGUIObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
     void addSystemPort();
-    void addConnector(GUIPort *pPort, bool doNotRegisterUndo=false);
-    void removeConnector(GUIConnector* pConnector, bool doNotRegisterUndo=false);
+    void addConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);
+    void removeConnector(GUIConnector* pConnector, undoStatus undoSettings=UNDO);
     GUIConnector* findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
     void cutSelected();
     void copySelected();

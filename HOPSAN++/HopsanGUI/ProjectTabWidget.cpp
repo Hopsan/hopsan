@@ -636,25 +636,25 @@ void ProjectTabWidget::loadModel()
         {
             SubsystemLoadData subsysData;
             subsysData.read(inputStream);
-            loadSubsystemGUIObject(subsysData, mpParentMainWindow->mpLibrary, pCurrentTab->mpGraphicsView, true);
+            loadSubsystemGUIObject(subsysData, mpParentMainWindow->mpLibrary, pCurrentTab->mpGraphicsView, NOUNDO);
             //! @todo convenience function
         }
 
         if ( (inputWord == "COMPONENT") || (inputWord == "SYSTEMPORT") )
         {
-            loadGUIObject(inputStream, mpParentMainWindow->mpLibrary, pCurrentTab->mpGraphicsView, true);
+            loadGUIObject(inputStream, mpParentMainWindow->mpLibrary, pCurrentTab->mpGraphicsView, NOUNDO);
         }
 
 
         if ( inputWord == "PARAMETER" )
         {
-            loadParameterValues(inputStream, pCurrentTab->mpGraphicsView, true);
+            loadParameterValues(inputStream, pCurrentTab->mpGraphicsView, NOUNDO);
         }
 
 
         if ( inputWord == "CONNECT" )
         {
-            loadConnector(inputStream, pCurrentTab->mpGraphicsView, &(pCurrentTab->mGUIRootSystem), true);
+            loadConnector(inputStream, pCurrentTab->mpGraphicsView, &(pCurrentTab->mGUIRootSystem), NOUNDO);
         }
     }
     //Deselect all components
