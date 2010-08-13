@@ -70,7 +70,6 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPort
 
     this->name = portName;
 
-    //setTransformOriginPoint(boundingRect().width()/2,boundingRect().height()/2);
     setTransformOriginPoint(boundingRect().center());
 
     mXpos = xpos;
@@ -81,9 +80,6 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPort
 //    pRectParent = parent;
     this->setAcceptHoverEvents(true);
 
-    //QBrush brush(Qt::green);
-    //this->setBrush(brush);
-
     mpPortLabel = new QGraphicsTextItem(this);
     QString label("<p><span style=\"background-color:lightyellow\">");
     label.append(this->getName()).append("</span></p>");
@@ -91,7 +87,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPort
     mpPortLabel->setTextInteractionFlags(Qt::NoTextInteraction);
     mpPortLabel->setPos(7.0,7.0);
     mpPortLabel->hide();
-cout << "D 1" << endl;
+
     //! @todo this kind of harcoded stuff should not be here, fix the problem in some other way
     if(this->getPortType() == "POWERPORT")
     {

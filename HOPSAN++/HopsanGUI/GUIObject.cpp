@@ -1314,6 +1314,7 @@ void GUISubsystem::loadFromFile(QString modelFileName)
         mAppearanceData.setIconPathISO(sysappdata.isoicon_path);
     }
 
+    //! @todo reading portappearance should have a common function and be shared with the setappearancedata rad function that reads from caf files
     PortAppearanceMapT* portappmap = &(mAppearanceData.getPortAppearanceMap());
     for (int i=0; i<sysappdata.portnames.size(); ++i)
     {
@@ -1321,6 +1322,15 @@ void GUISubsystem::loadFromFile(QString modelFileName)
         portapp.x = sysappdata.port_xpos[i];
         portapp.y = sysappdata.port_ypos[i];
         portapp.rot = sysappdata.port_angle[i];
+        if( (portapp.rot == 0) || (portapp.rot == 180) )
+        {
+            portapp.direction = LEFTRIGHT;
+        }
+        else
+        {
+            portapp.direction = TOPBOTTOM;
+        }
+        //! @todo portdirection in portapperance should have an initial default value to avoid crash if not set when creating connector
         portapp.selectPortIcon("","",""); //!< @todo fix this
 
         portappmap->insert(sysappdata.portnames[i], portapp);

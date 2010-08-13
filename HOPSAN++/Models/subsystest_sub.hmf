@@ -10,14 +10,24 @@ VIEWPORT 2502 2502 1
 --------------------------------------------------------------
 USERICON ""
 ISOICON ""
-PORT "sysp" 0 0.999982 3.1599
-PORT "sysp_1" 0.999964 1 6.26487
+PORT "sysp" 0 0.0330376 2.75931
+PORT "sysp_1" 0.969144 0 0.430167
+PORT "sysp_2" 0 0.943014 3.506
+PORT "sysp_3" 0.999998 1 5.87666
 --------------------------------------------------------------
+COMPONENT "SignalAdd" "Add" 2408 2561 0 0 1
+COMPONENT "SignalSource" "Constant" 2274 2503 0 0 1
+PARAMETER "Constant" "Value" 1
 COMPONENT "HydraulicPressureSource" "Prescribed Pressure C" 2367 2434 90 0 1
 PARAMETER "Prescribed Pressure C" "P" 100000
 SYSTEMPORT "SystemPort" "sysp" 2276 2439 0 0 1
 SYSTEMPORT "SystemPort" "sysp_1" 2549 2439 0 0 1
+SYSTEMPORT "SystemPort" "sysp_2" 2276 2553 0 0 1
+SYSTEMPORT "SystemPort" "sysp_3" 2569 2561 0 0 1
 --------------------------------------------------------------
 CONNECT "subsystest_sub" "sysp" "Prescribed Pressure C" "In" 2276 2439 2331 2439 2331 2434 2355 2434
 CONNECT "Prescribed Pressure C" "P1" "subsystest_sub" "sysp_1" 2379 2434 2526 2434 2526 2439 2549 2439
+CONNECT "Constant" "out" "Add" "in2" 2286.5 2503 2408 2503 2408 2548.5
+CONNECT "subsystest_sub" "sysp_2" "Add" "in1" 2276 2553 2367 2553 2367 2561 2395.5 2561
+CONNECT "Add" "out" "subsystest_sub" "sysp_3" 2420.5 2561 2527 2561 2527 2561 2569 2561
 --------------------------------------------------------------

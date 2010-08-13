@@ -198,6 +198,9 @@ void GUIConnector::addPoint(QPointF point)
     //point = this->mapFromScene(point);
     mPoints.push_back(point);
 
+
+    qDebug() << "the enum: " << getStartPort()->getPortDirection();
+
     if(getNumberOfLines() == 0 && getStartPort()->getPortDirection() == TOPBOTTOM)
     {
         mGeometries.push_back(HORIZONTAL);
@@ -306,11 +309,6 @@ void GUIConnector::setEndPort(GUIPort *port)
     mpEndPort = port;
     mpEndPort->isConnected = true;
 
-//    if(mpStartPort->getPortType() == "POWERPORT" or mpEndPort->getPortType() == "POWERPORT")
-//    {
-//        this->mpGUIConnectorAppearance->setType("POWERPORT");
-//    }
-
     if( ( ((mpEndPort->getPortDirection() == LEFTRIGHT) and (mGeometries.back() == HORIZONTAL)) or
           ((mpEndPort->getPortDirection() == TOPBOTTOM) and (mGeometries.back() == VERTICAL)) ) or
           (mGeometries[mGeometries.size()-2] == DIAGONAL))
@@ -342,29 +340,10 @@ void GUIConnector::setEndPort(GUIPort *port)
     for(int i=0; i!=mpLines.size(); ++i)
         mpLines[i]->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
-//        //Add arrow to the connector if it is of signal type
-//    if(port->getPortType() == "READPORT" && port->getNodeType() == "NodeSignal")
-//        this->getLastLine()->addEndArrow();
-//    else if(port->getPortType() == "WRITEPORT" && port->getNodeType() == "NodeSignal")
-//        this->mpLines[0]->addStartArrow();
-
     emit endPortConnected();
     this->determineAppearance();
     this->setPassive();
 }
-
-
-////! Cycles all lines and gives them the specified pen styles.
-////! @param primaryPen defines the default width and color of the line.
-////! @param activePen defines the width and color of the line when it is selected.
-////! @param hoverPen defines the width and color of the line when hovered by the mouse cursor.
-//void GUIConnector::setPens(QPen primaryPen, QPen activePen, QPen hoverPen)
-//{
-//    for (std::size_t i=0; i!=mpLines.size(); ++i )
-//    {
-//        mpLines[i]->setPens(primaryPen, activePen, hoverPen);
-//    }
-//}
 
 
 //! Slot that tells the connector lines whether or not to use ISO style.
@@ -861,7 +840,8 @@ void GUIConnector::deleteMeWithNoUndo()
 //! @todo right now this only set the type and ending arrows, maybe should handle ALLA appearance update like switching when howering, or maybe have two different update appearance functions (this one only needs to be run once when a conector is created)
 void GUIConnector::determineAppearance()
 {
-
+    //! @todo problem when connecting outside systemport  with internal powerport to readport, will not know that internal port is powerport and line will be signalline
+    //! @todo need to figure out a new way to handle this
     if(mpStartPort->getPortType() == "POWERPORT" or mpEndPort->getPortType() == "POWERPORT")
     {
         this->mpGUIConnectorAppearance->setType("POWERPORT");

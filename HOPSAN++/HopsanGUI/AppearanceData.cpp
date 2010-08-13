@@ -42,6 +42,7 @@
 //! @date   2010-04-22
 //!
 //! @brief Contains appearance data to be used by guiobjects and library widget
+//! @todo Also contains some other appearance stuff that maybe should not be in this fil
 //!
 //$Id$
 
