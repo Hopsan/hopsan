@@ -32,8 +32,6 @@ public:
     GUIObject *getGUIObject(QString name);
     GUIConnector *getTempConnector();
     void resetBackgroundBrush();
-    void deselectAllGUIObjects();
-    void deselectAllConnectors();
     void deselectAllText();
 
     ProjectTab *mpParentProjectTab;
@@ -48,7 +46,7 @@ public:
     qreal mZoomFactor;
 
 signals:
-    void keyPressDelete();
+    void deleteSelected();
     void keyPressCtrlR();
     void keyPressShiftK();
     void keyPressShiftL();
@@ -60,7 +58,8 @@ signals:
     void checkMessages();
     void systemPortSignal(QPoint position);
     void zoomChange();
-    void deselectAll();
+    void deselectAllGUIObjects();
+    void deselectAllGUIConnectors();
 
 public slots:
     GUIObject* addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
@@ -75,7 +74,7 @@ public slots:
     void copySelected();
     void paste();
     void selectAll();
-    void deSelectAll();
+    void deselectAll();
     //void setScale(const QString &scale);
     void resetZoom();
     void zoomIn();

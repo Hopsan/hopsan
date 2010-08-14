@@ -460,7 +460,7 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
         if (this->isSelected())
         {
             mpSelectionBox->setActive();
-            connect(mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+            connect(mpParentGraphicsView, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
             connect(mpParentGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
             connect(mpParentGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
             connect(mpParentGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
@@ -468,12 +468,12 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
             connect(mpParentGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
             connect(mpParentGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
             connect(mpParentGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
-            connect(mpParentGraphicsView, SIGNAL(deselectAll()), this, SLOT(deselect()));
+            connect(mpParentGraphicsView, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
             emit componentSelected();
         }
         else
         {
-            disconnect(mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+            disconnect(mpParentGraphicsView, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
             disconnect(mpParentGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
             disconnect(mpParentGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
             disconnect(mpParentGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
@@ -481,7 +481,7 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
             disconnect(mpParentGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
             disconnect(mpParentGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
             disconnect(mpParentGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
-            disconnect(mpParentGraphicsView, SIGNAL(deselectAll()), this, SLOT(deselect()));
+            disconnect(mpParentGraphicsView, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
             mpSelectionBox->setPassive();
         }
     }

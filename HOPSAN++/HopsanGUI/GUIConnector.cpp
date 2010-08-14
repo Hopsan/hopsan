@@ -719,7 +719,7 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
         if(lineSelected)
         {
             qDebug() << "connecting!";
-            connect(mpParentGraphicsView, SIGNAL(deselectAll()), this, SLOT(deselect()));
+            connect(mpParentGraphicsView, SIGNAL(deselectAllGUIConnectors()), this, SLOT(deselect()));
             this->setActive();
             for (int i=0; i != mpLines.size(); ++i)
             {
@@ -740,7 +740,7 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
             if(noneSelected)
             {
                 this->setPassive();
-                disconnect(mpParentGraphicsView, SIGNAL(deselectAll()), this, SLOT(deselect()));
+                disconnect(mpParentGraphicsView, SIGNAL(deselectAllGUIConnectors()), this, SLOT(deselect()));
             }
        }
     }
@@ -763,7 +763,7 @@ void GUIConnector::selectIfBothComponentsSelected()
 //! @see setPassive()
 void GUIConnector::setActive()
 {
-    connect(mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+    connect(mpParentGraphicsView, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
     if(mEndPortConnected)
     {
         mIsActive = true;
@@ -780,7 +780,7 @@ void GUIConnector::setActive()
 //! @see setActive()
 void GUIConnector::setPassive()
 {
-    disconnect(mpParentGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+    disconnect(mpParentGraphicsView, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
     if(mEndPortConnected)
     {
         mIsActive = false;

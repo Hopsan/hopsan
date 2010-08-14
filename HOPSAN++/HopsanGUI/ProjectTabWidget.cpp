@@ -660,7 +660,7 @@ void ProjectTabWidget::loadModel()
     //Deselect all components
    //pCurrentTab->mpGraphicsView->deselectAllGUIObjects();
 
-    pCurrentTab->mpGraphicsView->deSelectAll();
+    pCurrentTab->mpGraphicsView->deselectAll();
     this->centerView();
     pCurrentTab->mpGraphicsView->undoStack->clear();
     pCurrentTab->mpGraphicsView->resetBackgroundBrush();

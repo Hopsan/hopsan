@@ -201,25 +201,6 @@ void GraphicsView::resetBackgroundBrush()
     this->setBackgroundBrush(mBackgroundColor);
 }
 
-//! @brief deselects all GUIObjects in the view
-void GraphicsView::deselectAllGUIObjects()
-{
-    GUIObjectMapT::iterator it;
-    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
-    {
-        it.value()->setSelected(false);
-    }
-}
-
-//! @brief deselects all GUIConnectors in the view
-void GraphicsView::deselectAllConnectors()
-{
-    for(int i = 0; i != mConnectorVector.size(); ++i)
-    {
-        mConnectorVector[i]->doSelect(false, -1);
-        mConnectorVector[i]->setPassive();
-    }
-}
 
 //! @brief deselects all GUIObject name text fields
 void GraphicsView::deselectAllText()
@@ -241,8 +222,9 @@ void GraphicsView::deselectAllText()
 //! @returns a pointer to the created and added object
 GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation, selectionStatus startSelected, undoStatus undoSettings)
 {
-        //Deselect all other comonents
-    this->deSelectAll();
+        //Deselect all other components and connectors
+    emit deselectAllGUIObjects();
+    emit deselectAllGUIConnectors();
 
     QString componentTypeName = appearanceData.getTypeName();
     if (componentTypeName == "Subsystem")
@@ -443,7 +425,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             undoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
-        emit keyPressDelete();
+        emit deleteSelected();
     }
     else if (ctrlPressed and event->key() == Qt::Key_R and !mIsRenamingObject)
     {
@@ -653,7 +635,8 @@ void GraphicsView::addConnector(GUIPort *pPort, undoStatus undoSettings)
         std::cout << "GraphicsView: " << "Adding connector";
         //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(pPort->getPortType(), mpParentProjectTab->setGfxType);
         mpTempConnector = new GUIConnector(pPort, this);
-        this->deselectAllGUIObjects();
+        emit deselectAllGUIObjects();
+        emit deselectAllGUIConnectors();
         mIsCreatingConnector = true;
         mpTempConnector->drawConnector();
     }
@@ -810,24 +793,10 @@ void GraphicsView::selectAll()
 
 
 //! Deselects all objects and connectors.
-void GraphicsView::deSelectAll()
+void GraphicsView::deselectAll()
 {
-        //Deselect all components
-//    QMap<QString, GUIObject *>::iterator it;
-//    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
-//    {
-//        it.value()->setSelected(false);
-//    }
-
-    emit deselectAll();
-
-        //Deselect all connectors
-    //QMap<QString, GUIConnector*>::iterator it2;
-//    for(int i = 0; i != mConnectorVector.size(); ++i)
-//    {
-//        //mConnectorVector[i]->doSelect(false, -1);
-//        mConnectorVector[i]->setSelected(false);
-//    }
+    emit deselectAllGUIObjects();
+    emit deselectAllGUIConnectors();
 }
 
 
@@ -837,7 +806,7 @@ void GraphicsView::deSelectAll()
 void GraphicsView::cutSelected()
 {
     this->copySelected();
-    emit keyPressDelete();      //Ugly...
+    emit deleteSelected();
     this->setBackgroundBrush(mBackgroundColor);
 }
 
@@ -890,20 +859,11 @@ void GraphicsView::paste()
     copyStream.setString(mpCopyData);
 
         //Deselect all components
-    this->deselectAllGUIObjects();
-//    QMap<QString, GUIObject*>::iterator it;
-//    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
-//    {
-//        it.value()->setSelected(false);
-//    }
+    emit deselectAllGUIObjects();
 
         //Deselect all connectors
-    this->deselectAllConnectors();
-//    for(int i = 0; i != mConnectorVector.size(); ++i)
-//    {
-//        mConnectorVector[i]->doSelect(false, -1);
-//        mConnectorVector[i]->setPassive();
-//    }
+    emit deselectAllGUIConnectors();
+
 
     QMap<QString, QString> renameMap;       //Used to track name changes, so that connectors will know what components are called
     QString inputWord;
