@@ -627,7 +627,7 @@ void GUIObject::moveUp()
 {
     //qDebug() << "Move up!";
     this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()-1);
-    mpParentGraphicsView->setBackgroundBrush(mpParentGraphicsView->mBackgroundColor);
+    mpParentGraphicsView->resetBackgroundBrush();
 }
 
 
@@ -638,7 +638,7 @@ void GUIObject::moveUp()
 void GUIObject::moveDown()
 {
     this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()+1);
-    mpParentGraphicsView->setBackgroundBrush(mpParentGraphicsView->mBackgroundColor);
+    mpParentGraphicsView->resetBackgroundBrush();
 }
 
 
@@ -649,7 +649,7 @@ void GUIObject::moveDown()
 void GUIObject::moveLeft()
 {
     this->setPos(this->mapFromScene(this->mapToScene(this->pos())).x()-1, this->pos().y());
-    mpParentGraphicsView->setBackgroundBrush(mpParentGraphicsView->mBackgroundColor);
+    mpParentGraphicsView->resetBackgroundBrush();
 }
 
 
@@ -660,7 +660,7 @@ void GUIObject::moveLeft()
 void GUIObject::moveRight()
 {
     this->setPos(this->mapFromScene(this->mapToScene(this->pos())).x()+1, this->pos().y());
-    mpParentGraphicsView->setBackgroundBrush(mpParentGraphicsView->mBackgroundColor);
+    mpParentGraphicsView->resetBackgroundBrush();
 }
 
 

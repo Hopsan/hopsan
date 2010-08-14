@@ -30,7 +30,6 @@ public:
     bool mIsRenamingObject;
     bool mUndoDisabled;
     GUIObject *getGUIObject(QString name);
-    GUIConnector *getTempConnector();
     void resetBackgroundBrush();
     void deselectAllText();
 
@@ -57,7 +56,6 @@ signals:
     void viewClicked();
     void checkMessages();
     void systemPortSignal(QPoint position);
-    void zoomChange();
     void deselectAllGUIObjects();
     void deselectAllGUIConnectors();
 

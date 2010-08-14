@@ -718,7 +718,6 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
     {
         if(lineSelected)
         {
-            qDebug() << "connecting!";
             connect(mpParentGraphicsView, SIGNAL(deselectAllGUIConnectors()), this, SLOT(deselect()));
             this->setActive();
             for (int i=0; i != mpLines.size(); ++i)
@@ -886,8 +885,6 @@ void GUIConnector::determineAppearance()
 
 void GUIConnector::deselect()
 {
-    qDebug() << "deselect()";
-    //this->setSelected(false);
     this->setPassive();
 }
 

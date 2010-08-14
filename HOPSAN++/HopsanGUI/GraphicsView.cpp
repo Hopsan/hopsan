@@ -45,7 +45,7 @@ GraphicsView::GraphicsView(ProjectTab *parent)
 
     mZoomFactor = 1.0;
     mBackgroundColor = QColor(Qt::white);
-    this->setBackgroundBrush(mBackgroundColor);
+    this->resetBackgroundBrush();
 
     this->createActions();
     this->createMenus();
@@ -53,7 +53,6 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     mpCopyData = new QString;
 
     undoStack = new UndoStack(this);
-    //undoStack->show();
 
     MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
@@ -67,12 +66,13 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     connect(pMainWindow->mpUndoWidget->redoButton, SIGNAL(pressed()), this, SLOT(redo()));
     connect(pMainWindow->mpUndoWidget->clearButton, SIGNAL(pressed()), this, SLOT(clearUndo()));
 
-
+        //! @todo Antialiasing could be an option for the user. It makes the view blurred, but will on the other hand makes it look better when zooming out.
     //this->setRenderHint(QPainter::Antialiasing);
 }
 
 
 //! @todo Finish this!
+//! @todo Wouldn't it be easier to have an integer that counts how many objects are selected which is increased or decreased every time an object is selected or deselected? Then we wouldn't need this stupid loop...
 bool GraphicsView::isObjectSelected()
 {
     QMap<QString, GUIObject *>::iterator it;
@@ -88,6 +88,7 @@ bool GraphicsView::isObjectSelected()
 
 
 //! @todo Finish this!
+//! @todo See comment above isObjectSelected()
 bool GraphicsView::isConnectorSelected()
 {
     for(int i = 0; i != mConnectorVector.size(); ++i)
@@ -101,6 +102,7 @@ bool GraphicsView::isConnectorSelected()
 }
 
 
+//! Creastes the menus
 void GraphicsView::createMenus()
 {
     menuInsert = new QMenu(this);
@@ -110,6 +112,7 @@ void GraphicsView::createMenus()
 }
 
 
+//! Defines the actions
 void GraphicsView::createActions()
 {
     systemPortAction = new QAction(this);
@@ -151,7 +154,6 @@ void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 }
 
 
-
 //! Defines what happens when drop an object in a GraphicsView.
 //! @param event contains information of the drop operation.
 void GraphicsView::dropEvent(QDropEvent *event)
@@ -164,8 +166,6 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
         //QByteArray *data = new QByteArray;
         //*data = event->mimeData()->data("application/x-text");
-        qDebug() << event->mimeData()->text();
-        qDebug() << "END TRANSMISSION";
 
         QString datastr =  event->mimeData()->text();
         QTextStream stream(&datastr, QIODevice::ReadOnly);
@@ -181,36 +181,15 @@ void GraphicsView::dropEvent(QDropEvent *event)
             QPoint position = event->pos();
             this->addGUIObject(appearanceData, this->mapToScene(position).toPoint());
         }
-        else
-        {
-            //Error, don't do anything (user have probably dropped something else by mistake...)
-        }
     }
 }
 
 
-GUIConnector *GraphicsView::getTempConnector()
-{
-    return mpTempConnector;
-}
-
-//! @breif dont really know what this is used for
+//! @brief dont really know what this is used for
 //! @todo Ok this does not seem niceto refresh the view at all, but maybe some parts of the view, dont know realy
 void GraphicsView::resetBackgroundBrush()
 {
     this->setBackgroundBrush(mBackgroundColor);
-}
-
-
-//! @brief deselects all GUIObject name text fields
-void GraphicsView::deselectAllText()
-{
-    GUIObjectMapT::iterator it;
-    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
-    {
-        it.value()->mpNameText->setSelected(false);
-        it.value()->mpNameText->clearFocus();
-    }
 }
 
 
@@ -263,13 +242,12 @@ GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint posi
 }
 
 
-//! @brief A function that ads a system port to the current system
+//! @brief A function that adds a system port to the current system
 void GraphicsView::addSystemPort()
 {
-    //qDebug() <<"Adding a system port";
     QCursor cursor;
     QPointF position = this->mapToScene(this->mapFromGlobal(cursor.pos()));
-    this->setBackgroundBrush(mBackgroundColor);
+    this->resetBackgroundBrush();
     //QPoint position = QPoint(2300,2400);
 
     AppearanceData appearanceData;
@@ -286,14 +264,10 @@ void GraphicsView::addSystemPort()
 //! @param objectName is the name of the componenet to delete
 void GraphicsView::deleteGUIObject(QString objectName, undoStatus undoSettings)
 {
-    //qDebug() << "deleteGUIObject()";
     QMap<QString, GUIObject *>::iterator it;
     it = mGUIObjectMap.find(objectName);
 
-    if(it==mGUIObjectMap.end())
-        cout << "Didn't find component: " << objectName.toStdString() << endl;
-
-    //for(int i = 0; i != mConnectorVector.size(); ++i)
+    //! @todo This is very very very stupid! We loop through all connectors in the model and removes them if the name of one of their parent components is the same as the component we delete?!
     int i = 0;
     while(i != mConnectorVector.size())
     {
@@ -326,31 +300,33 @@ void GraphicsView::deleteGUIObject(QString objectName, undoStatus undoSettings)
     }
     else
     {
-        qDebug() << "In delete GUIObject: could not find object with name " << objectName;
+        //qDebug() << "In delete GUIObject: could not find object with name " << objectName;
+        //! @todo Maybe we should give the user a message?
     }
-    this->setBackgroundBrush(mBackgroundColor);
+    this->resetBackgroundBrush();
 }
+
 
 //! This function is used to rename a GUI Component (including key rename in component map)
 void GraphicsView::renameGUIObject(QString oldName, QString newName, undoStatus undoSettings)
 {
-    //First find record with old name
+        //First find record with old name
     QMap<QString, GUIObject *>::iterator it = mGUIObjectMap.find(oldName);
     if (it != mGUIObjectMap.end())
     {
-        //Make a backup copy
+            //Make a backup copy
         GUIObject* obj_ptr = it.value();
-        //Erase old record
+            //Erase old record
         mGUIObjectMap.erase(it);
-        //Rename (core rename will be handled by core), here we force a core only rename (true) so that we dont get stuck in a loop (as rename might be called again)
+            //Rename (core rename will be handled by core), here we force a core only rename (true) so that we dont get stuck in a loop (as rename might be called again)
         obj_ptr->setName(newName, CORERENAMEONLY);
-        //Re insert
+            //Re insert
         mGUIObjectMap.insert(obj_ptr->getName(), obj_ptr);
-        //qDebug() << "GUI rename: " << oldName << " " << obj_ptr->getName();
     }
     else
     {
         //qDebug() << "Old name: " << oldName << " not found";
+        //! @todo Maybe we should give the user a message?
     }
 
     if (undoSettings == UNDO)
@@ -380,6 +356,7 @@ bool GraphicsView::haveGUIObject(QString name)
 //! @param event contains information of the scrolling operation.
 void GraphicsView::wheelEvent(QWheelEvent *event)
 {
+        //Get value from scroll wheel change
     qreal wheelDelta;
     if(mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mInvertWheel)
     {
@@ -390,18 +367,19 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
         wheelDelta = -event->delta();
     }
 
+        //Zoom with wheel if ctrl or alt is pressed
     if (event->modifiers().testFlag(Qt::ControlModifier) or event->modifiers().testFlag(Qt::AltModifier))
     {
         qreal factor = pow(1.41,(-wheelDelta/240.0));
         this->scale(factor,factor);
         mZoomFactor = mZoomFactor * factor;
-        emit zoomChange();
     }
+        //Scroll horizontally with wheel if shift is pressed
     else if(event->modifiers().testFlag(Qt::ShiftModifier))
     {
-
         this->horizontalScrollBar()->setValue(this->horizontalScrollBar()->value()-wheelDelta);
     }
+        //Scroll vertically with wheel by default
     else
     {
         this->verticalScrollBar()->setValue(this->verticalScrollBar()->value()+wheelDelta);
@@ -510,7 +488,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         {
             mpTempConnector->makeDiagonal(true);
             mpTempConnector->drawConnector();
-            this->setBackgroundBrush(mBackgroundColor);
+            this->resetBackgroundBrush();
         }
         else
         {
@@ -535,7 +513,7 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
     {
         mpTempConnector->makeDiagonal(false);
         mpTempConnector->drawConnector();
-        this->setBackgroundBrush(mBackgroundColor);
+        this->resetBackgroundBrush();
     }
 
     if(event->key() == Qt::Key_Control)
@@ -554,7 +532,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseMoveEvent(event);
 
-    this->setBackgroundBrush(mBackgroundColor);     //Refresh the viewport
+    this->resetBackgroundBrush();     //Refresh the viewport
 
         //If creating connector, the end port shall be updated to the mouse position.
     if (mIsCreatingConnector)
@@ -600,7 +578,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         {
             mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
             mpTempConnector->drawConnector();
-            this->setBackgroundBrush(mBackgroundColor);
+            this->resetBackgroundBrush();
         }
         //qDebug() << "mIsCreatingConnector = " << mIsCreatingConnector;
     }
@@ -770,7 +748,7 @@ void GraphicsView::removeConnector(GUIConnector* pConnector, undoStatus undoSett
         delete pConnector;
         mConnectorVector.remove(indexToRemove);
     }
-    this->setBackgroundBrush(mBackgroundColor);
+    this->resetBackgroundBrush();
 }
 
 
@@ -800,6 +778,20 @@ void GraphicsView::deselectAll()
 }
 
 
+//! @brief deselects all GUIObject name text fields
+//! @todo Replace this function with signals and slots instead. We should avoid looping through everything like this, to increase performance.
+void GraphicsView::deselectAllText()
+{
+    GUIObjectMapT::iterator it;
+    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
+    {
+        it.value()->mpNameText->setSelected(false);
+        it.value()->mpNameText->clearFocus();
+    }
+}
+
+
+
 //! Copies the selected components, and then deletes them.
 //! @see copySelected()
 //! @see paste()
@@ -807,7 +799,7 @@ void GraphicsView::cutSelected()
 {
     this->copySelected();
     emit deleteSelected();
-    this->setBackgroundBrush(mBackgroundColor);
+    this->resetBackgroundBrush();
 }
 
 
@@ -822,9 +814,6 @@ void GraphicsView::copySelected()
 
     QTextStream copyStream;
     copyStream.setString(mpCopyData);
-    //copyStream.readAll();
-    //copyStreamRot.clear();
-    //copyStreamPos.clear();
 
     QMap<QString, GUIObject *>::iterator it;
     for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
@@ -867,12 +856,6 @@ void GraphicsView::paste()
 
     QMap<QString, QString> renameMap;       //Used to track name changes, so that connectors will know what components are called
     QString inputWord;
-//    QString componentName;
-//    QString componentType;
-//    QString startComponentName, endComponentName;
-//    QString startPortName, endPortName;
-//    QString parameterName;
-//    qreal parameterValue;
 
     //! @todo Could we not use some common load function for the stuff bellow
 
@@ -906,52 +889,27 @@ void GraphicsView::paste()
             //pObj->setSelected(true);
 
             undoStack->registerAddedObject(pObj);
-
-
-//            qreal posX, posY, rotation, nameTextPos;
-//            componentType = readName(copyStream);
-//            componentName = readName(copyStream);  //Now read the name, assume that the name is contained within quotes signs, "name"
-//            copyStream >> posX;
-//            copyStream >> posY;
-//            copyStream >> rotation;
-//            copyStream >> nameTextPos;
-
-//            AppearanceData appearanceData = *mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(componentType);
-//            appearanceData.setName(componentName);
-//            this->addGUIObject(appearanceData, QPoint(posX-50, posY-50), rotation, true);
-//            mpTempGUIObject->setNameTextPos(nameTextPos);
-
-//            renameMap.insert(componentName, mpTempGUIObject->getName());
-//            mpTempGUIObject->setSelected(true);
         }
         else if ( inputWord == "PARAMETER" )
         {
             ParameterLoadData data;
-            //Read parameter data
+                //Read parameter data
             data.read(copyStream);
-            //Replace the component name to the actual new name
+                //Replace the component name to the actual new name
             data.componentName = renameMap.find(data.componentName).value();
-            //Load it into the new copy
+                //Load it into the new copy
             loadParameterValues(data,this, NOUNDO);
-
-//            componentName = renameMap.find(readName(copyStream)).value();
-//            copyStream >> parameterName;
-//            copyStream >> parameterValue;
-
-//            mGUIObjectMap.find(componentName).value()->setParameterValue(parameterName, parameterValue);
         }
         else if(inputWord == "CONNECT")
         {
             ConnectorLoadData data;
-
-            //Read the data
+                //Read the data
             data.read(copyStream);
-
-            //Replace component names with posiibly renamed names
+                //Replace component names with posiibly renamed names
             data.startComponentName = renameMap.find(data.startComponentName).value();
             data.endComponentName = renameMap.find(data.endComponentName).value();
 
-            //Apply offset
+                //Apply offset
             //! @todo maybe use mose pointer location
             for (int i=0; i < data.pointVector.size(); ++i)
             {
@@ -960,48 +918,6 @@ void GraphicsView::paste()
             }
 
             loadConnector(data,this,&(mpParentProjectTab->mGUIRootSystem), NOUNDO);
-
-//            startComponentName = renameMap.find(readName(copyStream)).value();
-//            startPortName = readName(copyStream);
-//            endComponentName = renameMap.find(readName(copyStream)).value();
-//            endPortName = readName(copyStream);
-//            GUIPort *startPort = this->getGUIObject(startComponentName)->getPort(startPortName);
-//            GUIPort *endPort = this->getGUIObject(endComponentName)->getPort(endPortName);
-
-//            bool success = mpParentProjectTab->mGUIRootSystem.connect(startComponentName, startPortName, endComponentName, endPortName);
-//            if (!success)
-//            {
-//                qDebug() << "Unsuccessful connection try" << endl;
-//            }
-//            else
-//            {
-//                QVector<QPointF> tempPointVector;
-//                qreal tempX, tempY;
-
-//                QString restOfLineString = copyStream.readLine();
-//                QTextStream restOfLineStream(&restOfLineString);
-//                while( !restOfLineStream.atEnd() )
-//                {
-//                    restOfLineStream >> tempX;
-//                    restOfLineStream >> tempY;
-//                    tempPointVector.push_back(QPointF(tempX-50, tempY-50));
-//                }
-
-//                //! @todo: Store gfxType bool in model file and pick the correct line styles when loading
-//                //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(startPort->getPortType(), mpParentProjectTab->setGfxType);
-//                GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, tempPointVector, this);
-
-//                this->scene()->addItem(pTempConnector);
-
-//                //Hide connected ports
-//                startPort->hide();
-//                endPort->hide();
-
-//                connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-//                connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-
-//                mConnectorVector.append(pTempConnector);
-//            }
         }
     }
 
@@ -1012,7 +928,7 @@ void GraphicsView::paste()
         mGUIObjectMap.find(itn.value()).value()->setSelected(true);
     }
 
-    this->setBackgroundBrush(mBackgroundColor);
+    this->resetBackgroundBrush();
 }
 
 
@@ -1034,7 +950,6 @@ void GraphicsView::resetZoom()
 {
     this->resetMatrix();
     mZoomFactor = 1.0;
-    emit zoomChange();
 }
 
 
@@ -1045,7 +960,6 @@ void GraphicsView::zoomIn()
 {
     this->scale(1.15, 1.15);
     mZoomFactor = mZoomFactor * 1.15;
-    emit zoomChange();
 }
 
 
@@ -1056,7 +970,6 @@ void GraphicsView::zoomOut()
 {
     this->scale(1/1.15, 1/1.15);
     mZoomFactor = mZoomFactor / 1.15;
-    emit zoomChange();
 }
 
 
@@ -1118,7 +1031,6 @@ void GraphicsView::clearUndo()
 {
     undoStack->clear();
 }
-
 
 
 //! Exports the graphics view to PDF
