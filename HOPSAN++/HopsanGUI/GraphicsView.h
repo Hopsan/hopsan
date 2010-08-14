@@ -60,6 +60,7 @@ signals:
     void checkMessages();
     void systemPortSignal(QPoint position);
     void zoomChange();
+    void deselectAll();
 
 public slots:
     GUIObject* addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);

@@ -55,26 +55,26 @@
 //! @param startpos defines the start position of the connector, normally the center of the starting port.
 //! @param *parentView is a pointer to the GraphicsView the connector belongs to.
 //! @param parent is the parent of the port.
-GUIConnector::GUIConnector(QPointF startpos, GraphicsView *parentView, QGraphicsItem *parent)
+GUIConnector::GUIConnector(GUIPort *startPort, GraphicsView *parentView, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
     mpParentGraphicsView = parentView;
+    mpParentGraphicsView->scene()->addItem(this);
+    startPort->getGuiObject()->addConnector(this);
 
     setFlags(QGraphicsItem::ItemIsFocusable);
-
-    this->setPos(startpos);
-
-    this->updateStartPoint(startpos);
-
-    mpGUIConnectorAppearance = new GUIConnectorAppearance("notconnected", mpParentGraphicsView->mpParentProjectTab->setGfxType);
-
-    mEndPortConnected = false;
-
-    this->drawConnector();
-
-    mMakingDiagonal = false;
-
     connect(mpParentGraphicsView, SIGNAL(zoomChange()), this, SLOT(adjustToZoom()));
+
+    QPointF startPos = startPort->mapToScene(startPort->boundingRect().center());
+    this->setPos(startPos);
+    this->updateStartPoint(startPos);
+    mpGUIConnectorAppearance = new GUIConnectorAppearance("notconnected", mpParentGraphicsView->mpParentProjectTab->setGfxType);
+    mEndPortConnected = false;
+    this->drawConnector();
+    mMakingDiagonal = false;
+    this->setStartPort(startPort);
+    this->addPoint(startPos);
+    this->addPoint(startPos);
 }
 
 
@@ -718,6 +718,8 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
     {
         if(lineSelected)
         {
+            qDebug() << "connecting!";
+            connect(mpParentGraphicsView, SIGNAL(deselectAll()), this, SLOT(deselect()));
             this->setActive();
             for (int i=0; i != mpLines.size(); ++i)
             {
@@ -738,6 +740,7 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
             if(noneSelected)
             {
                 this->setPassive();
+                disconnect(mpParentGraphicsView, SIGNAL(deselectAll()), this, SLOT(deselect()));
             }
        }
     }
@@ -871,6 +874,24 @@ void GUIConnector::determineAppearance()
     //Run this to actually change the pen
     this->setPassive(); //!< @todo Not sure if setPassive is allways correct, but it is a good guess
 }
+
+//
+////! Defines what shall happen if the line is selected or moved.
+//QVariant GUIConnector::itemChange(GraphicsItemChange change, const QVariant &value)
+//{
+//
+//    return value;
+//}
+
+
+void GUIConnector::deselect()
+{
+    qDebug() << "deselect()";
+    //this->setSelected(false);
+    this->setPassive();
+}
+
+
 
 //------------------------------------------------------------------------------------------------------------------------//
 
@@ -1017,7 +1038,7 @@ QVariant GUIConnectorLine::itemChange(GraphicsItemChange change, const QVariant 
 {
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
-         emit lineSelected(this->isSelected(), mLineNumber);
+        emit lineSelected(this->isSelected(), mLineNumber);
     }
     if (change == QGraphicsItem::ItemPositionHasChanged)
     {

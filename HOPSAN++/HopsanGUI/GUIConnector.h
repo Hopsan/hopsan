@@ -59,7 +59,7 @@ class GUIConnector : public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    GUIConnector(QPointF startpos, GraphicsView *parentView, QGraphicsItem *parent = 0);
+    GUIConnector(GUIPort *startPort, GraphicsView *parentView, QGraphicsItem *parent = 0);
     GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> mPoints, GraphicsView *parentView, QGraphicsItem *parent = 0);
     ~GUIConnector();
 
@@ -104,6 +104,7 @@ public slots:
     void deleteMe();
     void deleteMeWithNoUndo();
     void adjustToZoom();
+    void deselect();
 
 signals:
     void endPortConnected();

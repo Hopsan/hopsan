@@ -651,21 +651,10 @@ void GraphicsView::addConnector(GUIPort *pPort, undoStatus undoSettings)
     if (!mIsCreatingConnector)
     {
         std::cout << "GraphicsView: " << "Adding connector";
-        QPointF oldPos = pPort->mapToScene(pPort->boundingRect().center());
-
         //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(pPort->getPortType(), mpParentProjectTab->setGfxType);
-        mpTempConnector = new GUIConnector(oldPos, this);
-
-        this->scene()->addItem(mpTempConnector);
+        mpTempConnector = new GUIConnector(pPort, this);
         this->deselectAllGUIObjects();
         mIsCreatingConnector = true;
-        pPort->getGuiObject()->addConnector(mpTempConnector);
-
-        QCursor cursor;
-
-        mpTempConnector->setStartPort(pPort);
-        mpTempConnector->addPoint(oldPos);
-        mpTempConnector->addPoint(oldPos);
         mpTempConnector->drawConnector();
     }
 
@@ -683,6 +672,7 @@ void GraphicsView::addConnector(GUIPort *pPort, undoStatus undoSettings)
             pPort->getGuiObject()->addConnector(mpTempConnector);
             mpTempConnector->setEndPort(pPort);
 
+                //Hide ports; connected ports shall not be visible
             mpTempConnector->getStartPort()->hide();
             mpTempConnector->getEndPort()->hide();
 
@@ -823,17 +813,21 @@ void GraphicsView::selectAll()
 void GraphicsView::deSelectAll()
 {
         //Deselect all components
-    QMap<QString, GUIObject *>::iterator it;
-    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
-    {
-        it.value()->setSelected(false);
-    }
+//    QMap<QString, GUIObject *>::iterator it;
+//    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
+//    {
+//        it.value()->setSelected(false);
+//    }
+
+    emit deselectAll();
+
         //Deselect all connectors
-    QMap<QString, GUIConnector*>::iterator it2;
-    for(int i = 0; i != mConnectorVector.size(); ++i)
-    {
-        mConnectorVector[i]->doSelect(false, -1);
-    }
+    //QMap<QString, GUIConnector*>::iterator it2;
+//    for(int i = 0; i != mConnectorVector.size(); ++i)
+//    {
+//        //mConnectorVector[i]->doSelect(false, -1);
+//        mConnectorVector[i]->setSelected(false);
+//    }
 }
 
 

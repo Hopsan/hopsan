@@ -129,9 +129,9 @@ void GUIObject::fixTextPosition(QPointF pos)
     {
         if(this->rotation() == 0)
         {
-            x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
+            x1 = mpIcon->boundingRect().width()/2 - mpNameText->boundingRect().width()/2;
             y1 = -mpNameText->boundingRect().height() - mTextOffset;  //mTextOffset*
-            x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
+            x2 = mpIcon->boundingRect().width()/2 - mpNameText->boundingRect().width()/2;
             y2 = mpIcon->boundingRect().height() + mTextOffset;// - mpNameText->boundingRect().height()/2;
         }
         else if(this->rotation() == 180)
@@ -160,10 +160,10 @@ void GUIObject::fixTextPosition(QPointF pos)
     {
         if(this->rotation() == 0)
         {
-            x1 = mpIcon->boundingRect().width()/2+mpNameText->boundingRect().width()/2;
-            y1 = -mpNameText->boundingRect().height() - mTextOffset;  //mTextOffset*
-            x2 = mpIcon->boundingRect().width()/2+mpNameText->boundingRect().width()/2;
-            y2 = mpIcon->boundingRect().height() + mTextOffset;// - mpNameText->boundingRect().height()/2;
+            x1 = mpIcon->boundingRect().width()/2 - mpNameText->boundingRect().width()/2;
+            y1 = mpNameText->boundingRect().height() - mTextOffset;  //mTextOffset*
+            x2 = mpIcon->boundingRect().width()/2 - mpNameText->boundingRect().width()/2;
+            y2 = -mpIcon->boundingRect().height() + mTextOffset;// - mpNameText->boundingRect().height()/2;
         }
         else if(this->rotation() == 180)
         {
@@ -320,6 +320,12 @@ void GUIObject::setIcon(graphicsType gfxType)
 }
 
 
+void GUIObject::deselect()
+{
+    this->setSelected(false);
+}
+
+
 //! Returns the port with the specified name.
 GUIPort *GUIObject::getPort(QString name)
 {
@@ -462,6 +468,7 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
             connect(mpParentGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
             connect(mpParentGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
             connect(mpParentGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
+            connect(mpParentGraphicsView, SIGNAL(deselectAll()), this, SLOT(deselect()));
             emit componentSelected();
         }
         else
@@ -474,6 +481,7 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
             disconnect(mpParentGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
             disconnect(mpParentGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
             disconnect(mpParentGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
+            disconnect(mpParentGraphicsView, SIGNAL(deselectAll()), this, SLOT(deselect()));
             mpSelectionBox->setPassive();
         }
     }
@@ -708,22 +716,26 @@ void GUIObject::flipHorizontal(undoStatus undoSettings)
         mIsFlipped = true;
     }
 
-    this->fixTextPosition(mpNameText->pos());
-
-        //"Un-flip" the ports
+        //"Un-flip" the ports and name text
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
         if(this->rotation() == 90 or this->rotation() == 270)
         {
             mPortListPtrs.value(i)->scale(1,-1);
             mPortListPtrs.value(i)->translate(0, -mPortListPtrs.value(i)->boundingRect().width());
+            this->mpNameText->scale(1,-1);
         }
         else
         {
             mPortListPtrs.value(i)->scale(-1,1);
             mPortListPtrs.value(i)->translate(-mPortListPtrs.value(i)->boundingRect().width(), 0);
+            this->mpNameText->scale(-1,1);
         }
     }
+    //this->setNameTextPos(mNameTextPos);
+    this->fixTextPosition(mpNameText->pos());
+
+
     if(undoSettings == UNDO)
     {
         mpParentGraphicsView->undoStack->registerHorizontalFlip(this);
