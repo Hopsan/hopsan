@@ -162,7 +162,7 @@ void UndoStack::undoOneStep()
                 GUIConnector *item = mpParentView->findConnector(startCompName, startPortName, endCompName, endPortName);
                 mpParentView->removeConnector(item, NOUNDO);
             }
-            else if( undoevent == "RENAMEDOBJECT" )
+            else if( undoevent == "RENAMEDOBJECT" )     //! @todo This does not affect the GUIObject name! (but removes undo post...)
             {
                 QString oldName = readName(poststream);
                 QString newName = readName(poststream);
