@@ -197,26 +197,29 @@ void MainWindow::show()
 //! Opens the plot widget.
 void MainWindow::plot()
 {
-    if(!mPlotVariableListOpen)
+    if(mpProjectTabs->count() != 0)
     {
-//        mPlotVariablesDock = new QDockWidget(tr("Plot Variables"), this);
-//        mPlotVariablesDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-//        VariableListDialog *variableList = new VariableListDialog(this);
-//        mPlotVariablesDock->setWidget(variableList);
-//        //variableList->show();
-//        addDockWidget(Qt::RightDockWidgetArea, mPlotVariablesDock);
+        if(!mPlotVariableListOpen)
+        {
+    //        mPlotVariablesDock = new QDockWidget(tr("Plot Variables"), this);
+    //        mPlotVariablesDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    //        VariableListDialog *variableList = new VariableListDialog(this);
+    //        mPlotVariablesDock->setWidget(variableList);
+    //        //variableList->show();
+    //        addDockWidget(Qt::RightDockWidgetArea, mPlotVariablesDock);
 
-        VariableListDialog *variableList = new VariableListDialog(this);
-        mPlotVariablesDock->setWidget(variableList);
+            VariableListDialog *variableList = new VariableListDialog(this);
+            mPlotVariablesDock->setWidget(variableList);
 
-        mPlotVariablesDock->show();
-        mPlotVariableListOpen = true;
-    }
-    else
-    {
-        mPlotVariablesDock->hide();
-        //this->removeDockWidget(mPlotVariablesDock);
-        mPlotVariableListOpen = false;
+            mPlotVariablesDock->show();
+            mPlotVariableListOpen = true;
+        }
+        else
+        {
+            mPlotVariablesDock->hide();
+            //this->removeDockWidget(mPlotVariablesDock);
+            mPlotVariableListOpen = false;
+        }
     }
 }
 
@@ -508,7 +511,10 @@ void MainWindow::createToolbars()
 //! Opens the model preference widget.
 void MainWindow::openPreferences()
 {
-    mpPreferenceWidget->show();
+    if(mpProjectTabs->count() != 0)
+    {
+        mpPreferenceWidget->show();
+    }
 }
 
 

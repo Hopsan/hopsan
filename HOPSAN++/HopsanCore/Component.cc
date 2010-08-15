@@ -1946,28 +1946,6 @@ void ComponentSystem::initialize(const double startT, const double stopT)
 
 
 #ifdef USETBB
-class simulateParallelSignal
-{
-    std::vector<Component*> componentSignalvector;
-public:
-    simulateParallelSignal(std::vector<Component*> inputVector, double startTime, double stopTime) : componentSignalvector(inputVector)
-    {
-        mStartTime = startTime;
-        mStopTime = stopTime;
-    }
-    void operator() (const tbb::blocked_range<size_t> &r) const
-    {
-        for(size_t i=r.begin(); i!=r.end(); i++)
-        {
-            componentSignalvector[i]->simulate(mStartTime, mStopTime);
-        }
-    }
-private:
-    double mStartTime;
-    double mStopTime;
-};
-
-
 class taskQ
 {
     vector<Component*> vectorQ;
@@ -2124,7 +2102,6 @@ void ComponentSystem::simulate(const double startT, const double stopT)
     tbb::task_group *q;
     c = new tbb::task_group;
     q = new tbb::task_group;
-    //static tbb::affinity_partitioner Affinity1;       //Used for parallel execution of signal components
 
         //Execute simulation
     while ((mTime < stopTsafe) && (!mStop))
@@ -2137,20 +2114,25 @@ void ComponentSystem::simulate(const double startT, const double stopT)
             mSubComponentStorage.mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);
         }
 
-            //Simulate signal components in parallel
-        //parallel_for( tbb::blocked_range<size_t>(0,mSubComponentStorage.mComponentSignalptrs.size(),1), simulateParallelSignal(mSubComponentStorage.mComponentSignalptrs, mTime, mTime+mTimestep), Affinity1 );
-
             //Simulate C component vectors in parallel
-        for(int coreNumber=0; coreNumber<nCores; ++coreNumber)
+        for(int coreNumber=0; coreNumber<nCores-1; ++coreNumber)
         {
             c->run(taskC(splitCVector[coreNumber], mTime, mTime+mTimestep));
+        }
+        for(size_t i=0; i<splitCVector[nCores-1].size(); ++i)       //Keep one of the vectors in current thread, to reduce overhead costs
+        {
+            splitCVector[nCores-1][i]->simulate(mTime, mTime+mTimestep);
         }
         c->wait();
 
             //Simulate Q component vectors in parallel
-        for(int coreNumber=0; coreNumber<nCores; ++coreNumber)
+        for(int coreNumber=0; coreNumber<nCores-1; ++coreNumber)
         {
             q->run(taskQ(splitQVector[coreNumber], mTime, mTime+mTimestep));
+        }
+        for(size_t i=0; i<splitQVector[nCores-1].size(); ++i)       //Keep one of the vectors in current thread, to reduce overhead costs
+        {
+            splitQVector[nCores-1][i]->simulate(mTime, mTime+mTimestep);
         }
         q->wait();
 

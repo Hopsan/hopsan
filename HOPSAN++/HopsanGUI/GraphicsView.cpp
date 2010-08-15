@@ -372,6 +372,7 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
     {
         qreal factor = pow(1.41,(-wheelDelta/240.0));
         this->scale(factor,factor);
+        emit zoomChange();
         mZoomFactor = mZoomFactor * factor;
     }
         //Scroll horizontally with wheel if shift is pressed
@@ -950,6 +951,7 @@ void GraphicsView::resetZoom()
 {
     this->resetMatrix();
     mZoomFactor = 1.0;
+    emit zoomChange();
 }
 
 
@@ -960,6 +962,7 @@ void GraphicsView::zoomIn()
 {
     this->scale(1.15, 1.15);
     mZoomFactor = mZoomFactor * 1.15;
+    emit zoomChange();
 }
 
 
@@ -970,6 +973,7 @@ void GraphicsView::zoomOut()
 {
     this->scale(1/1.15, 1/1.15);
     mZoomFactor = mZoomFactor / 1.15;
+    emit zoomChange();
 }
 
 

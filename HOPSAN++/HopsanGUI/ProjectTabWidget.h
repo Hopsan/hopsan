@@ -74,12 +74,12 @@ public slots:
     void addNewProjectTab(QString tabName="Untitled");
     void saveProjectTab();
     void saveProjectTabAs();
-    void saveProjectTab(int index, bool saveAs);
+    void saveProjectTab(int index, saveMethod saveAsFlag = SAVE);
     bool closeProjectTab(int index);
     bool closeAllProjectTabs();
     void simulateCurrent();
     void loadModel();
-    void saveModel(bool saveAs);
+    void saveModel(saveMethod saveAsFlag = SAVE);
     void setIsoGraphics(graphicsType);
 
     void resetZoom();

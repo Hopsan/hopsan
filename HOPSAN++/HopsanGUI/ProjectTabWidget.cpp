@@ -239,23 +239,23 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     mNumberOfUntitledTabs = 0;
 
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(closeProjectTab(int)));
-
     connect(this,SIGNAL(currentChanged(int)),this, SLOT(updateSimulationSetupWidget()));
     connect(this,SIGNAL(currentChanged(int)),this, SLOT(updateUndoStatus()));
-
     connect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), this, SLOT(updateCurrentStartTime()));
     connect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), this, SLOT(updateCurrentTimeStep()));
+
     connect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), this, SLOT(updateCurrentStopTime()));
     connect(mpParentMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this,SLOT(hidePortsInCurrentTab(bool)));
-
     connect(mpParentMainWindow->newAction, SIGNAL(triggered()), this,SLOT(addNewProjectTab()));
     connect(mpParentMainWindow->openAction, SIGNAL(triggered()), this,SLOT(loadModel()));
     connect(mpParentMainWindow->saveAction, SIGNAL(triggered()), this,SLOT(saveProjectTab()));
+
     connect(mpParentMainWindow->exportPDFAction, SIGNAL(triggered()), this,SLOT(exportCurrentToPDF()));
     connect(mpParentMainWindow->saveAsAction, SIGNAL(triggered()), this,SLOT(saveProjectTabAs()));
     connect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), this,SLOT(simulateCurrent()));
     connect(mpParentMainWindow->resetZoomAction, SIGNAL(triggered()),this,SLOT(resetZoom()));
     connect(mpParentMainWindow->zoomInAction, SIGNAL(triggered()),this,SLOT(zoomIn()));
+
     connect(mpParentMainWindow->zoomOutAction, SIGNAL(triggered()),this,SLOT(zoomOut()));
     connect(mpParentMainWindow->hideNamesAction,SIGNAL(triggered()),this, SLOT(hideNames()));
     connect(mpParentMainWindow->showNamesAction,SIGNAL(triggered()),this, SLOT(showNames()));
@@ -267,7 +267,10 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
 //!  Tells current tab to export itself to PDF. This is needed because a direct connection to current tab would be too complicated.
 void ProjectTabWidget::exportCurrentToPDF()
 {
-    getCurrentTab()->mpGraphicsView->exportPDF();
+    if(this->count() != 0)
+    {
+        this->getCurrentTab()->mpGraphicsView->exportPDF();
+    }
 }
 
 
@@ -275,7 +278,10 @@ void ProjectTabWidget::exportCurrentToPDF()
 //! @param doIt is true if ports shall be hidden, otherwise false.
 void ProjectTabWidget::hidePortsInCurrentTab(bool hidePortsActionTriggered)
 {
-    this->getCurrentTab()->mpGraphicsView->hidePorts(hidePortsActionTriggered);
+    if(this->count() != 0)
+    {
+        this->getCurrentTab()->mpGraphicsView->hidePorts(hidePortsActionTriggered);
+    }
 }
 
 
@@ -284,7 +290,10 @@ void ProjectTabWidget::hidePortsInCurrentTab(bool hidePortsActionTriggered)
 //! @see updateCurrentStopTime()
 void ProjectTabWidget::updateCurrentStartTime()
 {
-    getCurrentTab()->updateStartTime();
+    if(this->count() != 0)
+    {
+        this->getCurrentTab()->updateStartTime();
+    }
 }
 
 
@@ -293,7 +302,10 @@ void ProjectTabWidget::updateCurrentStartTime()
 //! @see updateCurrentStopTime()
 void ProjectTabWidget::updateCurrentTimeStep()
 {
-    getCurrentTab()->updateTimeStep();
+    if(this->count() != 0)
+    {
+        this->getCurrentTab()->updateTimeStep();
+    }
 }
 
 
@@ -304,7 +316,7 @@ void ProjectTabWidget::updateCurrentStopTime()
 {
     if(this->count() != 0)
     {
-        getCurrentTab()->updateStopTime();
+        this->getCurrentTab()->updateStopTime();
     }
 }
 
@@ -321,7 +333,7 @@ void ProjectTabWidget::updateSimulationSetupWidget()
 }
 
 
-//! Returns a pointer to the currently active project tab
+//! Returns a pointer to the currently active project tab - be sure to check that the number of tabs is not zero before calling this
 ProjectTab *ProjectTabWidget::getCurrentTab()
 {
     return qobject_cast<ProjectTab *>(currentWidget());
@@ -362,26 +374,32 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
 //! @see saveProjectTab(int index)
 void ProjectTabWidget::saveProjectTab()
 {
-    saveProjectTab(currentIndex(), false);
+    if(this->count() != 0)
+    {
+        saveProjectTab(currentIndex());
+    }
 }
 
 //! Saves current project to a new model file.
 //! @see saveProjectTab(int index)
 void ProjectTabWidget::saveProjectTabAs()
 {
-    saveProjectTab(currentIndex(), true);
+    if(this->count() != 0)
+    {
+        saveProjectTab(currentIndex(), SAVEAS);
+    }
 }
 
 
 //! Saves project at index.
 //! @param index defines which project to save.
 //! @see saveProjectTab()
-void ProjectTabWidget::saveProjectTab(int index, bool saveAs)
+void ProjectTabWidget::saveProjectTab(int index, saveMethod saveAsFlag)
 {
-    ProjectTab *currentTab = qobject_cast<ProjectTab *>(widget(index));
+    //ProjectTab *currentTab = qobject_cast<ProjectTab *>(widget(index));
     QString tabName = tabText(index);
 
-    if (currentTab->mIsSaved)
+    if (this->getCurrentTab()->mIsSaved)
     {
         //Nothing to do
         //statusBar->showMessage(QString("Project: ").append(tabName).append(QString(" is already saved")));
@@ -397,9 +415,9 @@ void ProjectTabWidget::saveProjectTab(int index, bool saveAs)
         setTabText(index, tabName);
         //statusBar->showMessage(QString("Project: ").append(tabName).append(QString(" saved")));
         std::cout << "ProjectTabWidget: " << qPrintable(QString("Project: ").append(tabName).append(QString(" saved"))) << std::endl;
-        currentTab->mIsSaved = true;
+        this->getCurrentTab()->mIsSaved = true;
     }
-    this->saveModel(saveAs);
+    this->saveModel(saveAsFlag);
 }
 
 
@@ -409,7 +427,7 @@ void ProjectTabWidget::saveProjectTab(int index, bool saveAs)
 //! @see closeAllProjectTabs()
 bool ProjectTabWidget::closeProjectTab(int index)
 {
-    if (!(qobject_cast<ProjectTab *>(widget(index))->mIsSaved))
+    if (!(this->getCurrentTab()->mIsSaved))
     {
         QString modelName;
         modelName = tabText(index);
@@ -427,7 +445,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
         case QMessageBox::Save:
             // Save was clicked
             std::cout << "ProjectTabWidget: " << "Save and close" << std::endl;
-            saveProjectTab(index, false);
+            saveProjectTab(index, SAVE);
             removeTab(index);
             return true;
         case QMessageBox::Discard:
@@ -476,7 +494,7 @@ void ProjectTabWidget::simulateCurrent()
 {
 
         //Check if simulation is possible
-    if (!currentWidget())
+    if (this->count() == 0)
     {
         mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("There is no open system to simulate"));
         return;
@@ -570,7 +588,7 @@ void ProjectTabWidget::simulateCurrent()
 
 
 //! Loads a model from a file and opens it in a new project tab.
-//! @see saveModel(bool saveAs)
+//! @see saveModel(saveMethod saveAsFlag)
 void ProjectTabWidget::loadModel()
 {
     QDir fileDialogOpenDir;
@@ -670,16 +688,16 @@ void ProjectTabWidget::loadModel()
 
 
 //! Saves the model in the active project tab to a model file.
-//! @param saveAs tells whether or not an already existing file name shall be used
+//! @param saveAsFlag tells whether or not an already existing file name shall be used
 //! @see saveProjectTab()
 //! @see loadModel()
-void ProjectTabWidget::saveModel(bool saveAs)
+void ProjectTabWidget::saveModel(saveMethod saveAsFlag)
 {
     ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
     GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
 
     QString modelFileName;
-    if(pCurrentTab->mModelFileName.isEmpty() | saveAs)
+    if((pCurrentTab->mModelFileName.isEmpty()) | (saveAsFlag == SAVEAS))
     {
         QDir fileDialogSaveDir;
         modelFileName = QFileDialog::getSaveFileName(this, tr("Save Model File"),
@@ -793,28 +811,23 @@ void ProjectTabWidget::saveModel(bool saveAs)
 //! @todo Break out the guiconnector appearance stuff into a separate general function
 void ProjectTabWidget::setIsoGraphics(graphicsType gfxType)
 {
-    //if(gfxType = ISOGRAPHICS)
-    //    this->getCurrentTab()->setGfxType = GUIObject::ISOGRAPHICS;
-    //else
-    //    this->getCurrentTab()->setGfxType = GUIObject::USERGRAPHICS;
-
-    this->getCurrentTab()->setGfxType = gfxType;
-
-    mpParentMainWindow->mpLibrary->setGfxType(gfxType);
-
-    ProjectTab *pCurrentTab = getCurrentTab();
-    GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
-    //QMap<QString, GUIConnector *>::iterator it;
-
-    for(int i = 0; i!=pCurrentView->mConnectorVector.size(); ++i)
+    if(this->count() != 0)
     {
-        pCurrentView->mConnectorVector[i]->setIsoStyle(gfxType);
-    }
+        this->getCurrentTab()->setGfxType = gfxType;
+        mpParentMainWindow->mpLibrary->setGfxType(gfxType);
+        ProjectTab *pCurrentTab = getCurrentTab();
+        GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
 
-    QMap<QString, GUIObject*>::iterator it2;
-    for(it2 = pCurrentView->mGUIObjectMap.begin(); it2!=pCurrentView->mGUIObjectMap.end(); ++it2)
-    {
-        it2.value()->setIcon(gfxType);
+        for(int i = 0; i!=pCurrentView->mConnectorVector.size(); ++i)
+        {
+            pCurrentView->mConnectorVector[i]->setIsoStyle(gfxType);
+        }
+
+        QMap<QString, GUIObject*>::iterator it2;
+        for(it2 = pCurrentView->mGUIObjectMap.begin(); it2!=pCurrentView->mGUIObjectMap.end(); ++it2)
+        {
+            it2.value()->setIcon(gfxType);
+        }
     }
 }
 
@@ -823,7 +836,10 @@ void ProjectTabWidget::setIsoGraphics(graphicsType gfxType)
 //! @see zoomOut()
 void ProjectTabWidget::resetZoom()
 {
-    this->getCurrentTab()->mpGraphicsView->resetZoom();
+    if(this->count() != 0)
+    {
+        this->getCurrentTab()->mpGraphicsView->resetZoom();
+    }
 }
 
 
@@ -832,7 +848,10 @@ void ProjectTabWidget::resetZoom()
 //! @see zoomOut()
 void ProjectTabWidget::zoomIn()
 {
-    this->getCurrentTab()->mpGraphicsView->zoomIn();
+    if(this->count() != 0)
+    {
+        this->getCurrentTab()->mpGraphicsView->zoomIn();
+    }
 }
 
 
@@ -841,7 +860,10 @@ void ProjectTabWidget::zoomIn()
 //! @see zoomIn()
 void ProjectTabWidget::zoomOut()
 {
-    this->getCurrentTab()->mpGraphicsView->zoomOut();
+    if(this->count() != 0)
+    {
+        this->getCurrentTab()->mpGraphicsView->zoomOut();
+    }
 }
 
 
@@ -849,7 +871,10 @@ void ProjectTabWidget::zoomOut()
 //! @see showNames()
 void ProjectTabWidget::hideNames()
 {
-    this->getCurrentTab()->mpGraphicsView->hideNames();
+    if(this->count() != 0)
+    {
+        this->getCurrentTab()->mpGraphicsView->hideNames();
+    }
 }
 
 
@@ -857,44 +882,52 @@ void ProjectTabWidget::hideNames()
 //! @see hideNames()
 void ProjectTabWidget::showNames()
 {
-    this->getCurrentTab()->mpGraphicsView->showNames();
+    if(this->count() != 0)
+    {
+        this->getCurrentTab()->mpGraphicsView->showNames();
+    }
 }
 
 
 //! Tells the current tab to center the viewport
 void ProjectTabWidget::centerView()
 {
-    this->getCurrentTab()->mpGraphicsView->centerOn(getCurrentTab()->mpGraphicsView->sceneRect().center());
+    if(this->count() != 0)
+    {
+        this->getCurrentTab()->mpGraphicsView->centerOn(getCurrentTab()->mpGraphicsView->sceneRect().center());
+    }
 }
 
 
 //! Disables the undo function for the current model
 void ProjectTabWidget::disableUndo()
 {
-
-    if(!getCurrentTab()->mpGraphicsView->mUndoDisabled)
+    if(this->count() != 0)
     {
-        QMessageBox disableUndoWarningBox(QMessageBox::Warning, tr("Warning"),tr("Disabling undo history will clear all undo history for this model. Do you want to continue?"), 0, this);
-        disableUndoWarningBox.addButton(tr("&Yes"), QMessageBox::AcceptRole);
-        disableUndoWarningBox.addButton(tr("&No"), QMessageBox::RejectRole);
-
-        if (disableUndoWarningBox.exec() == QMessageBox::AcceptRole)
+        if(!getCurrentTab()->mpGraphicsView->mUndoDisabled)
         {
-            getCurrentTab()->mpGraphicsView->clearUndo();
-            getCurrentTab()->mpGraphicsView->mUndoDisabled = true;
-            mpParentMainWindow->undoAction->setDisabled(true);
-            mpParentMainWindow->redoAction->setDisabled(true);
+            QMessageBox disableUndoWarningBox(QMessageBox::Warning, tr("Warning"),tr("Disabling undo history will clear all undo history for this model. Do you want to continue?"), 0, this);
+            disableUndoWarningBox.addButton(tr("&Yes"), QMessageBox::AcceptRole);
+            disableUndoWarningBox.addButton(tr("&No"), QMessageBox::RejectRole);
+
+            if (disableUndoWarningBox.exec() == QMessageBox::AcceptRole)
+            {
+                getCurrentTab()->mpGraphicsView->clearUndo();
+                getCurrentTab()->mpGraphicsView->mUndoDisabled = true;
+                mpParentMainWindow->undoAction->setDisabled(true);
+                mpParentMainWindow->redoAction->setDisabled(true);
+            }
+            else
+            {
+                return;
+            }
         }
         else
         {
-            return;
+            getCurrentTab()->mpGraphicsView->mUndoDisabled = false;
+            mpParentMainWindow->undoAction->setDisabled(false);
+            mpParentMainWindow->redoAction->setDisabled(false);
         }
-    }
-    else
-    {
-        getCurrentTab()->mpGraphicsView->mUndoDisabled = false;
-        mpParentMainWindow->undoAction->setDisabled(false);
-        mpParentMainWindow->redoAction->setDisabled(false);
     }
 }
 
@@ -902,18 +935,17 @@ void ProjectTabWidget::disableUndo()
 //! Enables or disables the undo buttons depending on whether or not undo is disabled in current tab
 void ProjectTabWidget::updateUndoStatus()
 {
-    if(this->count() == 0)
+    if(this->count() != 0)
     {
-        return;
-    }
-    if(getCurrentTab()->mpGraphicsView->mUndoDisabled)
-    {
-        mpParentMainWindow->undoAction->setDisabled(true);
-        mpParentMainWindow->redoAction->setDisabled(true);
-    }
-    else
-    {
-        mpParentMainWindow->undoAction->setDisabled(false);
-        mpParentMainWindow->redoAction->setDisabled(false);
+        if(getCurrentTab()->mpGraphicsView->mUndoDisabled)
+        {
+            mpParentMainWindow->undoAction->setDisabled(true);
+            mpParentMainWindow->redoAction->setDisabled(true);
+        }
+        else
+        {
+            mpParentMainWindow->undoAction->setDisabled(false);
+            mpParentMainWindow->redoAction->setDisabled(false);
+        }
     }
 }

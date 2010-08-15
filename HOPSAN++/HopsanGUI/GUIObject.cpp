@@ -1226,7 +1226,7 @@ void GUISubsystem::setName(QString newName, renameRestrictions renameSettings)
     if (newName != oldName)
     {
         //Check if we want to avoid trying to rename in the graphics view map
-        if (renameSettings = CORERENAMEONLY)
+        if (renameSettings == CORERENAMEONLY)
         {
             mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setSystemName(oldName, newName));
             refreshDisplayName();
@@ -1534,7 +1534,7 @@ void GUISystemPort::setName(QString newName, renameRestrictions renameSettings)
     if (newName != oldName)
     {
         //Check if we want to avoid trying to rename in the graphics view map
-        if (renameSettings = CORERENAMEONLY)
+        if (renameSettings == CORERENAMEONLY)
         {
             //Set name in core component, Also set the current name to the resulting one (might have been changed)
             mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.renameSystemPort(oldName, newName));

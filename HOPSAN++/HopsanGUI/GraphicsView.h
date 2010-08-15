@@ -54,6 +54,7 @@ signals:
     void keyPressCtrlLeft();
     void keyPressCtrlRight();
     void viewClicked();
+    void zoomChange();
     void checkMessages();
     void systemPortSignal(QPoint position);
     void deselectAllGUIObjects();
