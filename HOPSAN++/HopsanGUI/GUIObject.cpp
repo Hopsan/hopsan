@@ -859,8 +859,8 @@ GUIObjectDisplayName::GUIObjectDisplayName(GUIObject *pParent)
     :   QGraphicsTextItem(pParent)
 {
     mpParentGUIComponent = pParent;
-    setTextInteractionFlags(Qt::TextEditable | Qt::TextSelectableByMouse);
-    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
+    this->setTextInteractionFlags(Qt::TextEditable | Qt::TextSelectableByMouse);
+    this->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
 }
 
 void GUIObjectDisplayName::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)

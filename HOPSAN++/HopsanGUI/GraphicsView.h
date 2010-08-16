@@ -25,28 +25,28 @@ class GraphicsView : public QGraphicsView
 
 public:
     GraphicsView(ProjectTab *parent = 0);
-    bool mIsCreatingConnector;
-    bool mPortsHidden;
-    bool mIsRenamingObject;
-    bool mUndoDisabled;
-    GUIObject *getGUIObject(QString name);
+    bool mIsCreatingConnector;                  //Till subsystem
+    bool mPortsHidden;                          //Till subsystem
+    bool mIsRenamingObject;                     //Till subsystem
+    bool mUndoDisabled;                         //Till subsystem
+    GUIObject *getGUIObject(QString name);      //Till subsystem
     void resetBackgroundBrush();
 
-    ProjectTab *mpParentProjectTab;
-    typedef QMap<QString, GUIObject*> GUIObjectMapT;
-    GUIObjectMapT mGUIObjectMap;
-    QVector<GUIConnector *> mConnectorVector;
+    ProjectTab *mpParentProjectTab;             //Behövs den längre?
+    typedef QMap<QString, GUIObject*> GUIObjectMapT;        //Till subsystem
+    GUIObjectMapT mGUIObjectMap;                            //Till subsystem
+    QVector<GUIConnector *> mConnectorVector;               //Till subsystem
     QAction *systemPortAction;
     QMenu *menuInsert;
     QColor mBackgroundColor;
-    UndoStack *mUndoStack;
+    UndoStack *mUndoStack;                      //Till subsystem
     qreal mZoomFactor;
-    GUIObject* addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
-    void deleteGUIObject(QString componentName, undoStatus undoSettings=UNDO);
-    GUIConnector* findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
-    bool haveGUIObject(QString name);
-    void renameGUIObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
-    void removeConnector(GUIConnector* pConnector, undoStatus undoSettings=UNDO);
+    GUIObject* addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);  //Till subsystem
+    void deleteGUIObject(QString componentName, undoStatus undoSettings=UNDO);  //Till subsystem
+    GUIConnector* findConnector(QString startComp, QString startPort, QString endComp, QString endPort);    //Till subsystem
+    bool haveGUIObject(QString name);       //Till subsystem
+    void renameGUIObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);   //Till subsystem
+    void removeConnector(GUIConnector* pConnector, undoStatus undoSettings=UNDO);           //Till subsystem
 
 
 signals:
@@ -62,27 +62,27 @@ signals:
     void zoomChange();
     void checkMessages();
     void systemPortSignal(QPoint position);
-    void deselectAllNameText();
-    void deselectAllGUIObjects();
-    void deselectAllGUIConnectors();
+    void deselectAllNameText();             //Till subsystem
+    void deselectAllGUIObjects();           //Till subsystem
+    void deselectAllGUIConnectors();        //Till subsystem
 
 public slots:
-    void addSystemPort();
-    void addConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);
-    void cutSelected();
-    void copySelected();
-    void paste();
-    void selectAll();
-    void deselectAll();
+    void addSystemPort();                   //Till subsystem
+    void addConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);    //Till subsystem
+    void cutSelected();                     //Till subsystem
+    void copySelected();                    //Till subsystem
+    void paste();                           //Till subsystem
+    void selectAll();                       //Till subsystem
+    void deselectAll();                     //Till subsystem
     void resetZoom();
     void zoomIn();
     void zoomOut();
-    void hideNames();
-    void showNames();
-    void hidePorts(bool doIt);
-    void undo();
-    void redo();
-    void clearUndo();
+    void hideNames();                       //Till subsystem
+    void showNames();                       //Till subsystem
+    void hidePorts(bool doIt);              //Till subsystem
+    void undo();                            //Till subsystem
+    void redo();                            //Till subsystem
+    void clearUndo();                       //Till subsystem
     void exportPDF();
 
 protected:
@@ -96,17 +96,17 @@ protected:
     virtual void contextMenuEvent ( QContextMenuEvent * event );
 
 private:
-    GUIObject *mpTempGUIObject;
-    GUIConnector *mpTempConnector;
-    QString *mpCopyData;
+    GUIObject *mpTempGUIObject;             //Till subsystem
+    GUIConnector *mpTempConnector;          //Till subsystem
+    QString *mpCopyData;                    //Till subsystem
     //! @todo QMap no good means problem if we rename need to loop around the rename like in coore
-    bool isObjectSelected();
-    bool isConnectorSelected();
+    bool isObjectSelected();                //Till subsystem
+    bool isConnectorSelected();             //Till subsystem
     void createActions();
     void createMenus();
-    void addSystemPort(QPoint position, QString name=QString(), selectionStatus startSelected = DESELECTED);
-    bool mJustStoppedCreatingConnector;
-    bool mCtrlKeyPressed;
+    void addSystemPort(QPoint position, QString name=QString(), selectionStatus startSelected = DESELECTED);    //Till subsystem
+    bool mJustStoppedCreatingConnector;     //Till subsystem
+    bool mCtrlKeyPressed;                   //Till subsystem
 };
 
 #endif // GRAPHICSVIEW_H

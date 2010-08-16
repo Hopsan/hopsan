@@ -108,36 +108,34 @@ class ProjectTab : public QWidget
 
 public:
     ProjectTab(ProjectTabWidget *parent = 0);
-    bool mIsSaved;                          //Move
-    QString mModelFileName;
-    graphicsType setGfxType;
+    bool mIsSaved;                          //Till subsystem
+    QString mModelFileName;                 //Till subsystem
+    graphicsType setGfxType;                //Till subsystem
     ProjectTabWidget *mpParentProjectTabWidget;
-    GUIRootSystem mGUIRootSystem;
+    GUIRootSystem mGUIRootSystem;           //Till subsystem
     GraphicsView *mpGraphicsView;
-    GraphicsScene *mpGraphicsScene;
-    double getStartTime();                  //Move
-    double getTimeStep();                   //Move
-    double getStopTime();                   //Move
-    QString getIsoIconPath();               //Move
-    QString getUserIconPath();              //Move
-    void setIsoIconPath(QString path);
-    void setUserIconPath(QString path);
-
-public slots:
-    void hasChanged();
-    void updateStartTime();
-    void updateTimeStep();
-    void updateStopTime();
+    GraphicsScene *mpGraphicsScene;         //Till subsystem
+    double getStartTime();                  //Till subsystem
+    double getTimeStep();                   //Till subsystem
+    double getStopTime();                   //Till subsystem
+    QString getIsoIconPath();               //Till subsystem
+    QString getUserIconPath();              //Till subsystem
+    void setIsoIconPath(QString path);      //Till subsystem
+    void setUserIconPath(QString path);     //Till subsystem
+    void hasChanged();                      //Till subsystem
+    void updateStartTime();                 //Till subsystem
+    void updateTimeStep();                  //Till subsystem
+    void updateStopTime();                  //Till subsystem
 
 signals:
     void checkMessages();
 
 private:
-    double mStartTime;
-    double mStopTime;
-    double mTimeStep;
-    QString mUserIconPath;
-    QString mIsoIconPath;
+    double mStartTime;                      //Till subsystem
+    double mStopTime;                       //Till subsystem
+    double mTimeStep;                       //Till subsystem
+    QString mUserIconPath;                  //Till subsystem
+    QString mIsoIconPath;                   //Till subsystem
 };
 
 #endif // PROJECTTABWIDGET_H
