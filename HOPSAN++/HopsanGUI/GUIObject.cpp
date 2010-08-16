@@ -1007,6 +1007,16 @@ GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, Appearan
     //Something
 }
 
+void GUIContainerObject::makeRootSystem()
+{
+    mContainerStatus = ROOT;
+}
+
+GUIContainerObject::CONTAINERSTATUS GUIContainerObject::getContainerStatus()
+{
+    return mContainerStatus;
+}
+
 
 GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
     : GUIObject(position, rotation, appearanceData, startSelected, gfxType, scene, parent)

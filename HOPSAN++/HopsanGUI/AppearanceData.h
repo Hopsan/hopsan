@@ -119,7 +119,6 @@ public:
     QString getIconPathISO();
     QString getIconRotationBehaviour();
     QPointF getNameTextPos();
-    size_t  getNumberOfPorts();
     PortAppearanceMapT &getPortAppearanceMap();
 
     bool haveIsoIcon();

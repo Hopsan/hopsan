@@ -216,8 +216,13 @@ class GUIContainerObject : public GUIObject
 {
     Q_OBJECT
 public:
+    enum CONTAINERSTATUS {CLOSED, OPEN, ROOT};
     GUIContainerObject(QPoint position, qreal rotation, AppearanceData appearanceData, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, GraphicsScene *scene=0, QGraphicsItem *parent = 0);
+    void makeRootSystem();
 
+protected:
+    CONTAINERSTATUS getContainerStatus();
+    CONTAINERSTATUS mContainerStatus;
 
 };
 

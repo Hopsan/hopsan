@@ -642,7 +642,7 @@ void ProjectTabWidget::loadModel()
         QString inputWord;
         inputStream >> inputWord;
 
-        if ( inputWord == "SUBSYSTEM" )
+        if ( (inputWord == "SUBSYSTEM") or (inputWord == "BEGINSUBSYSTEM") )
         {
             SubsystemLoadData subsysData;
             subsysData.read(inputStream);
@@ -775,7 +775,7 @@ void ProjectTabWidget::saveModel(saveTarget saveAsFlag)
     {
         if ( it.value()->getTypeName() == QString("Subsystem") )
         {
-            it.value()->saveToTextStream(modelFile, "SUBSYSTEM");
+            it.value()->saveToTextStream(modelFile, "BEGINSUBSYSTEM");
             modelFile << "ENDSUBSYSTEM" << "\n"; //!< @todo Do this in some better way, end subsystem is needed by core (but not gui as embedded systems are not suportet (yet))
         }
         else if (it.value()->getTypeName() == QString("SystemPort"))
