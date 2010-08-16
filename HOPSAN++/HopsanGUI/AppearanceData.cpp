@@ -190,14 +190,10 @@ QPen GUIConnectorAppearance::getPen(QString situation, QString type, graphicsTyp
             }
         }
     }
-    else if(situation == "NonFinished")
+    else
     {
         return mNonFinishedPen;
     }
-
-    qDebug() << "ERROR no such connector appearance: " << situation << " " <<  type << " ISOstyle: " << gfxType << "   DONT WORRY ABOUT THIS ERROR WILL FIX LATER, /Peter";
-
-    return mNonFinishedPen;
 }
 
 void GUIConnectorAppearance::adjustToZoom(qreal zoomFactor)

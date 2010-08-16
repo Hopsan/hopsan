@@ -28,12 +28,12 @@ string hopsan::readName(stringstream &rTextStream)
 
     if (tempName.compare(0,1,"\"") == 0)
     {
-        cout << "begin quote" << endl;
+        //cout << "begin quote" << endl;
         int last = tempName.size()-1; //! @todo find better way to keep track of last character for comparison (not really that important)
         while (!tempName.compare(last,1,"\"") == 0)
         {
-            cout << "not last quote" << endl;
-            cout << "tempname: " << tempName << endl;
+            //cout << "not last quote" << endl;
+            //cout << "tempname: " << tempName << endl;
             if (rTextStream.eof())
             {
                 return string(""); //Empty string (failed)
@@ -46,7 +46,7 @@ string hopsan::readName(stringstream &rTextStream)
             }
             last = tempName.size()-1;
         }
-        cout << "last quote" << endl;
+        //cout << "last quote" << endl;
         //return tempName.remove("\"").trimmed(); //Remove quotes and trimm (just to be sure)
         //Trim the ends
         //! @todo make sure to trim white spaces also

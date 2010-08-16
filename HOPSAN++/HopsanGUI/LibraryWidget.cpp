@@ -78,7 +78,6 @@ LibraryContentItem::LibraryContentItem(AppearanceData *pAppearanceData, QListWid
     //this->setFont(font);
 
     this->setToolTip(pAppearanceData->getName());
-
     this->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
 
     mpAppearanceData = pAppearanceData;
@@ -110,8 +109,8 @@ void LibraryContentItem::selectIcon(graphicsType gfxType)
     //Set Icon, prefere user, if its empty use iso
     QIcon icon;
     QPixmap testPixMap;
-    icon.addFile(mpAppearanceData->getFullIconPath(gfxType),QSize(55,55));
 
+    icon.addFile(mpAppearanceData->getFullIconPath(gfxType),QSize(55,55));
     //this->setSizeHint(QSize(55,55));
     this->setIcon(icon);
     //this->setData(Qt::UserRole, QVariant(icon));
@@ -197,6 +196,7 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
     QListWidgetItem *pItem = this->currentItem();
     //    LibraryContentItem* pContItem = q
 
+    //! @todo actually quite stupid to stream ALL of the data, when the receiving side could just ask for it already in binary form from the library (as the load functions do)
     //stream out appearance data and extra basepath info
     stream << *(mpParentLibraryWidget->getAppearanceDataByDisplayName(pItem->toolTip()));
     stream << "BASEPATH " << mpParentLibraryWidget->getAppearanceDataByDisplayName(pItem->toolTip())->getBasePath();
@@ -321,7 +321,6 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
         }
 
         QTextStream inFile(&file);  //Create a QTextStream object to stream the content of each file
-
         AppearanceData *pAppearanceData = new AppearanceData;
         bool sucess = pAppearanceData->setAppearanceData(inFile); //Read appearance from file
         pAppearanceData->setBasePath(libDirObject.absolutePath() + "/");
@@ -376,6 +375,8 @@ void LibraryWidget::addLibrary()
 //! @param libraryName is the name of the library where the component should be added.
 void LibraryWidget::addLibraryContentItem(QString libraryName, QString parentLibraryName, LibraryContentItem *newComponent)
 {
+    //qDebug() << "Adding componentType: " << newComponent->getTypeName();
+
     //First add the item to the overview LibraryContent (This will cast to QListWidget Item and not preserver our stuff)
     mLibraryContentPtrsMap.value(parentLibraryName + libraryName)->addItem(newComponent);
     //Now add it to our own MultiMap to retain a pointer the the LibraryContentItem with our own stuff
