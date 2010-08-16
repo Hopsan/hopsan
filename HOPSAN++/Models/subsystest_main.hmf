@@ -25,7 +25,7 @@ COMPONENT "HydraulicPressureSensor" "Pressure Sensor" 2545 2330 0 0 1
 COMPONENT "SignalSink" "Sink" 2651 2530 0 0 1
 COMPONENT "HydraulicTankC" "Tank C" 2731 2471 0 0 1
 PARAMETER "Tank C" "P" 100000
-SUBSYSTEM "EXTERNAL" "subsystest_sub" "C" "/home/petno25/svn/temp_hopsan/HOPSAN++/Models/subsystest_sub.hmf" 2447 2469 0 0 1
+BEGINSUBSYSTEM "EXTERNAL" "subsystest_sub" "C" "/home/petno25/svn/temp_hopsan/HOPSAN++/Models/subsystest_sub.hmf" 2447 2469 0 0 1
 ENDSUBSYSTEM
 --------------------------------------------------------------
 CONNECT "subsystest_sub" "sysp_3" "Gain" "in" 2493 2497.5 2493 2584 2546 2584 2546 2574 2571.5 2574

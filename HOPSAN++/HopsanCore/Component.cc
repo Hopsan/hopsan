@@ -624,166 +624,11 @@ double Component::getMeasuredTime()
 }
 
 
-//! The subcomponent storage, Makes it easier to add (with auto unique name), erase and get components
-//! @todo quite ugly code for now
-void ComponentSystem::SubComponentStorage::add(Component* pComponent)
-{
-    //First check if the name already exists, in that case change the suffix
-    string modname = modifyName<SubComponentMapT>(mSubComponentMap, pComponent->getName());
-    pComponent->setName(modname);
-
-    //Add to the cqs component vectors
-    switch (pComponent->getTypeCQS())
-    {
-    case Component::C :
-        mComponentCptrs.push_back(pComponent);
-        break;
-    case Component::Q :
-        mComponentQptrs.push_back(pComponent);
-        break;
-    case Component::S :
-        mComponentSignalptrs.push_back(pComponent);
-        break;
-    case Component::NOCQSTYPE :
-        mComponentUndefinedptrs.push_back(pComponent);
-        break;
-    default :
-            gCoreMessageHandler.addErrorMessage("Trying to add module with unspecified CQS type: " + pComponent->getTypeCQSString()  + ", (Not added)");
-        return;
-    }
-
-    mSubComponentMap.insert(pair<string, Component*>(modname, pComponent));
-}
-
-
-Component* ComponentSystem::SubComponentStorage::get(const string &rName)
-{
-    map<string, Component*>::iterator it;
-    it = mSubComponentMap.find(rName);
-    if (it != mSubComponentMap.end())
-    {
-        return it->second;
-    }
-    else
-    {
-        cout << "The component you requested: " << rName << " does not exist" << endl;
-        return 0;
-    }
-}
-
-
-void ComponentSystem::SubComponentStorage::remove(const string &rName)
-{
-    map<string, Component*>::iterator it;
-    it = mSubComponentMap.find(rName);
-    if (it != mSubComponentMap.end())
-    {
-        vector<Component*>::iterator cit; //Component iterator
-        switch (it->second->getTypeCQS())
-        {
-        case Component::C :
-            for (cit = mComponentCptrs.begin(); cit != mComponentCptrs.end(); ++cit)
-            {
-                if ( (*cit)->getName() == rName )
-                {
-                    mComponentCptrs.erase(cit);
-                    break;
-                }
-            }
-            break;
-        case Component::Q :
-            for (cit = mComponentQptrs.begin(); cit != mComponentQptrs.end(); ++cit)
-            {
-                if ( (*cit)->getName() == rName )
-                {
-                    mComponentQptrs.erase(cit);
-                    break;
-                }
-            }
-            break;
-        case Component::S :
-            for (cit = mComponentSignalptrs.begin(); cit != mComponentSignalptrs.end(); ++cit)
-            {
-                if ( (*cit)->getName() == rName )
-                {
-                    mComponentSignalptrs.erase(cit);
-                    break;
-                }
-            }
-            break;
-        case Component::NOCQSTYPE :
-            for (cit = mComponentUndefinedptrs.begin(); cit != mComponentUndefinedptrs.end(); ++cit)
-            {
-                if ( (*cit)->getName() == rName )
-                {
-                    mComponentUndefinedptrs.erase(cit);
-                    break;
-                }
-            }
-            break;
-        default :
-            cout << "This should not happen neither C Q or S type" << endl;
-            assert(false);
-        }
-
-        mSubComponentMap.erase(it);
-    }
-    else
-    {
-        gCoreMessageHandler.addErrorMessage("The component you are trying to remove: " + rName + " does not exist (Does Nothing)");
-    }
-}
-
-
-bool ComponentSystem::SubComponentStorage::have(const string &rName)
-{
-    if (mSubComponentMap.count(rName) > 0)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-
-void ComponentSystem::SubComponentStorage::rename(const string &rOldName, const string &rNewName)
-{
-    //cout << "Trying to rename: " << old_name << " to " << new_name << endl;
-    //First find the post in the map where the old name resides, copy the data stored there
-    map<string, Component*>::iterator it = mSubComponentMap.find(rOldName);
-    Component* temp_c_ptr;
-    if (it != mSubComponentMap.end())
-    {
-        //If found erase old record
-        temp_c_ptr = it->second;
-        mSubComponentMap.erase(it);
-
-        //insert new (with new name)
-        string mod_new_name = modifyName<SubComponentMapT>(mSubComponentMap, rNewName);
-
-        //cout << "new name is: " << mod_name << endl;
-        mSubComponentMap.insert(pair<string, Component*>(mod_new_name, temp_c_ptr));
-
-        //Now change the actual component name, without trying to do rename (we are in rename now, would cause infinite loop)
-        //! @todo it might be a good idea to rething all of this renaming stuff, right now its prety strange (but works), setname loop
-        temp_c_ptr->setName(mod_new_name, true);
-    }
-    else
-    {
-        cout << "Error no component with old_name: " << rOldName << " found!" << endl;
-        assert(false);
-    }
-}
-
-
 //! @brief Change the cqs type of a stored subsystem component
-bool ComponentSystem::SubComponentStorage::changeTypeCQS(const string &rName, const typeCQS newType)
+bool ComponentSystem::changeTypeCQS(const string name, const typeCQS newType)
 {
-    Component* tmpptr;
     //First get the component ptr and check if we are requesting new type
-    tmpptr = get(rName);
+    Component* tmpptr = getSubComponent(name);
     if (newType != tmpptr->getTypeCQS())
     {
         //check that it is a system component, in that case change the cqs type
@@ -794,13 +639,13 @@ bool ComponentSystem::SubComponentStorage::changeTypeCQS(const string &rName, co
             ComponentSystem* tmpsysptr = dynamic_cast<ComponentSystem*>(tmpptr);
 
             //Remove old version
-            remove(rName);
+            this->removeSubComponentPtrFromStorage(tmpsysptr);
 
             //Change cqsType localy in the subcomponent, make sure to set true to avoid looping back to this rename
             tmpsysptr->setTypeCQS(newType, true);
 
             //readd to system
-            add(tmpsysptr);
+            this->addSubComponentPtrToStorage(tmpsysptr);
         }
         else
         {
@@ -880,32 +725,53 @@ void ComponentSystem::addComponents(vector<Component*> components)
     //! @todo use iterator instead of idx loop (not really necessary)
     for (size_t idx=0; idx<components.size(); ++idx)
     {
-        mSubComponentStorage.add(components[idx]);
-        components[idx]->setSystemParent(*this);
+        addComponent(components[idx]);
     }
 }
 
 
-void ComponentSystem::addComponent(Component &rComponent)
-{
-    vector<Component*> components;
-    components.push_back(&rComponent);
-    addComponents(components);
-}
-
 
 void ComponentSystem::addComponent(Component *pComponent)
 {
-    vector<Component*> components;
-    components.push_back(pComponent);
-    addComponents(components);
+    //First check if the name already exists, in that case change the suffix
+    string modname = modifyName<SubComponentMapT>(mSubComponentMap, pComponent->getName());
+    pComponent->setName(modname);
+
+    //Add to the cqs component vectors
+    addSubComponentPtrToStorage(pComponent);
+
+    pComponent->setSystemParent(*this);
 }
 
 
 //! Rename a sub component and automatically fix unique names
-void ComponentSystem::renameSubComponent(string old_name, string new_name)
+void ComponentSystem::renameSubComponent(string oldname, string newname)
 {
-    mSubComponentStorage.rename(old_name, new_name);
+    //cout << "Trying to rename: " << old_name << " to " << new_name << endl;
+    //First find the post in the map where the old name resides, copy the data stored there
+    SubComponentMapT::iterator it = mSubComponentMap.find(oldname);
+    Component* temp_c_ptr;
+    if (it != mSubComponentMap.end())
+    {
+        //If found erase old record
+        temp_c_ptr = it->second;
+        mSubComponentMap.erase(it);
+
+        //insert new (with new name)
+        string mod_new_name = modifyName<SubComponentMapT>(mSubComponentMap, newname);
+
+        //cout << "new name is: " << mod_name << endl;
+        mSubComponentMap.insert(pair<string, Component*>(mod_new_name, temp_c_ptr));
+
+        //Now change the actual component name, without trying to do rename (we are in rename now, would cause infinite loop)
+        //! @todo it might be a good idea to rething all of this renaming stuff, right now its prety strange (but works), setname loop
+        temp_c_ptr->setName(mod_new_name, true);
+    }
+    else
+    {
+        cout << "Error no component with old_name: " << oldname << " found!" << endl;
+        assert(false);
+    }
 }
 
 
@@ -938,7 +804,7 @@ void ComponentSystem::removeSubComponent(Component* c_ptr, bool doDelete)
     }
 
     //Remove from storage
-    mSubComponentStorage.remove(c_ptr->getName());
+    removeSubComponentPtrFromStorage(c_ptr);
 
     //Shall we also delete the component completely
     if (doDelete)
@@ -947,12 +813,97 @@ void ComponentSystem::removeSubComponent(Component* c_ptr, bool doDelete)
     }
 }
 
+void ComponentSystem::addSubComponentPtrToStorage(Component* pComponent)
+{
+    switch (pComponent->getTypeCQS())
+    {
+    case Component::C :
+        mComponentCptrs.push_back(pComponent);
+        break;
+    case Component::Q :
+        mComponentQptrs.push_back(pComponent);
+        break;
+    case Component::S :
+        mComponentSignalptrs.push_back(pComponent);
+        break;
+    case Component::NOCQSTYPE :
+        mComponentUndefinedptrs.push_back(pComponent);
+        break;
+    default :
+            gCoreMessageHandler.addErrorMessage("Trying to add module with unspecified CQS type: " + pComponent->getTypeCQSString()  + ", (Not added)");
+        return;
+    }
+
+    mSubComponentMap.insert(pair<string, Component*>(pComponent->getName(), pComponent));
+}
+
+void ComponentSystem::removeSubComponentPtrFromStorage(Component* c_ptr)
+{
+    SubComponentMapT::iterator it = mSubComponentMap.find(c_ptr->getName());
+    if (it != mSubComponentMap.end())
+    {
+        vector<Component*>::iterator cit; //Component iterator
+        switch (it->second->getTypeCQS())
+        {
+        case Component::C :
+            for (cit = mComponentCptrs.begin(); cit != mComponentCptrs.end(); ++cit)
+            {
+                if ( *cit == c_ptr )
+                {
+                    mComponentCptrs.erase(cit);
+                    break;
+                }
+            }
+            break;
+        case Component::Q :
+            for (cit = mComponentQptrs.begin(); cit != mComponentQptrs.end(); ++cit)
+            {
+                if ( *cit == c_ptr )
+                {
+                    mComponentQptrs.erase(cit);
+                    break;
+                }
+            }
+            break;
+        case Component::S :
+            for (cit = mComponentSignalptrs.begin(); cit != mComponentSignalptrs.end(); ++cit)
+            {
+                if ( *cit == c_ptr )
+                {
+                    mComponentSignalptrs.erase(cit);
+                    break;
+                }
+            }
+            break;
+        case Component::NOCQSTYPE :
+            for (cit = mComponentUndefinedptrs.begin(); cit != mComponentUndefinedptrs.end(); ++cit)
+            {
+                if ( *cit == c_ptr )
+                {
+                    mComponentUndefinedptrs.erase(cit);
+                    break;
+                }
+            }
+            break;
+        default :
+            cout << "This should not happen neither C Q or S type" << endl;
+            assert(false);
+        }
+
+        mSubComponentMap.erase(it);
+    }
+    else
+    {
+        gCoreMessageHandler.addErrorMessage("The component you are trying to remove: " + c_ptr->getName() + " does not exist (Does Nothing)");
+    }
+}
+
 
 //! @brief Get a Component ptr to the component with supplied name, can also return a ptr to self if no subcomponent found
 //! @todo for this to work we need to make sure that the system and its sub components have unique names
 Component* ComponentSystem::getComponent(string name)
 {
-    //cout << "getComponent: " << name << " in: " << mName << endl;
+    cout << "getComponent: " << name << " in: " << mName << endl;
     //First try to find among subcomponents
     Component *tmp = getSubComponent(name);
     if (tmp != 0)
@@ -974,7 +925,16 @@ Component* ComponentSystem::getComponent(string name)
 
 Component* ComponentSystem::getSubComponent(string name)
 {
-    return mSubComponentStorage.get(name);
+    SubComponentMapT::iterator it = mSubComponentMap.find(name);
+    if (it != mSubComponentMap.end())
+    {
+        return it->second;
+    }
+    else
+    {
+        cout << "The component you requested: " << name << " does not exist" << endl;
+        return 0;
+    }
 }
 
 
@@ -998,7 +958,7 @@ vector<string> ComponentSystem::getSubComponentNames()
     //! @todo for now create a vector of the component names, later maybe we should return a pointer to the real internal map
     vector<string> names;
     map<string, Component*>::iterator it;
-    for (it = mSubComponentStorage.mSubComponentMap.begin(); it != mSubComponentStorage.mSubComponentMap.end(); ++it)
+    for (it = mSubComponentMap.begin(); it != mSubComponentMap.end(); ++it)
     {
         names.push_back(it->first);
     }
@@ -1009,7 +969,14 @@ vector<string> ComponentSystem::getSubComponentNames()
 
 bool  ComponentSystem::haveSubComponent(string name)
 {
-    return mSubComponentStorage.have(name);
+    if (mSubComponentMap.count(name) > 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 
@@ -1131,7 +1098,7 @@ void ComponentSystem::setTypeCQS(typeCQS cqs_type, bool doOnlyLocalSet)
         if ( (mpSystemParent != 0) && (!doOnlyLocalSet) )
         {
             //Request change by our parent (som parent cahnges are neeeded)
-            mpSystemParent->mSubComponentStorage.changeTypeCQS(mName, cqs_type);
+            mpSystemParent->changeTypeCQS(mName, cqs_type);
         }
         else
         {
@@ -1767,29 +1734,29 @@ void ComponentSystem::setTimestep(const double timestep)
 {
     mTimestep = timestep;
 
-    for (size_t s=0; s < mSubComponentStorage.mComponentSignalptrs.size(); ++s)
+    for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
     {
-        if (!(mSubComponentStorage.mComponentSignalptrs[s]->isComponentSystem()))
+        if (!(mComponentSignalptrs[s]->isComponentSystem()))
         {
-            mSubComponentStorage.mComponentSignalptrs[s]->setTimestep(timestep);
+            mComponentSignalptrs[s]->setTimestep(timestep);
         }
     }
 
     //C components
-    for (size_t c=0; c < mSubComponentStorage.mComponentCptrs.size(); ++c)
+    for (size_t c=0; c < mComponentCptrs.size(); ++c)
     {
-        if (!(mSubComponentStorage.mComponentCptrs[c]->isComponentSystem()))
+        if (!(mComponentCptrs[c]->isComponentSystem()))
         {
-            mSubComponentStorage.mComponentCptrs[c]->setTimestep(timestep);
+            mComponentCptrs[c]->setTimestep(timestep);
         }
     }
 
     //Q components
-    for (size_t q=0; q < mSubComponentStorage.mComponentQptrs.size(); ++q)
+    for (size_t q=0; q < mComponentQptrs.size(); ++q)
     {
-        if (!(mSubComponentStorage.mComponentQptrs[q]->isComponentSystem()))
+        if (!(mComponentQptrs[q]->isComponentSystem()))
         {
-            mSubComponentStorage.mComponentQptrs[q]->setTimestep(timestep);
+            mComponentQptrs[q]->setTimestep(timestep);
         }
     }
 }
@@ -1834,7 +1801,7 @@ void ComponentSystem::adjustTimestep(double timestep, vector<Component*> compone
 bool ComponentSystem::isSimulationOk()
 {
     //Make sure that there are no components or systems with an undefined cqs_type present
-    if (mSubComponentStorage.mComponentUndefinedptrs.size() > 0)
+    if (mComponentUndefinedptrs.size() > 0)
     {
         //! @todo maybe list their names
         gCoreMessageHandler.addErrorMessage("There are components without correct CQS type pressent, you need to fix this before simulation");
@@ -1855,8 +1822,8 @@ bool ComponentSystem::isSimulationOk()
 
     //Check all subcomponents to make sure that all requirements for simulation are met
     //scmit = The subcomponent map iterator
-    SubComponentStorage::SubComponentMapT::iterator scmit = mSubComponentStorage.mSubComponentMap.begin();
-    for ( ; scmit!=mSubComponentStorage.mSubComponentMap.end(); ++scmit)
+    SubComponentMapT::iterator scmit = mSubComponentMap.begin();
+    for ( ; scmit!=mSubComponentMap.end(); ++scmit)
     {
         Component* pComp = scmit->second; //Component pointer
         //! @todo how to handle subsystems should recurse
@@ -1890,56 +1857,56 @@ void ComponentSystem::initialize(const double startT, const double stopT)
     //preAllocate local logspace
     this->preAllocateLogSpace(startT, stopT);
 
-    adjustTimestep(mTimestep, mSubComponentStorage.mComponentSignalptrs);
-    adjustTimestep(mTimestep, mSubComponentStorage.mComponentCptrs);
-    adjustTimestep(mTimestep, mSubComponentStorage.mComponentQptrs);
+    adjustTimestep(mTimestep, mComponentSignalptrs);
+    adjustTimestep(mTimestep, mComponentCptrs);
+    adjustTimestep(mTimestep, mComponentQptrs);
 
     //Init
     //Signal components
-    for (size_t s=0; s < mSubComponentStorage.mComponentSignalptrs.size(); ++s)
+    for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
     {
         if (mStop)
             break;
 
-        if (mSubComponentStorage.mComponentSignalptrs[s]->isComponentSystem())
+        if (mComponentSignalptrs[s]->isComponentSystem())
         {
-            mSubComponentStorage.mComponentSignalptrs[s]->initialize(startT, stopT);
+            mComponentSignalptrs[s]->initialize(startT, stopT);
         }
         else
         {
-            mSubComponentStorage.mComponentSignalptrs[s]->initialize();
+            mComponentSignalptrs[s]->initialize();
         }
     }
 
     //C components
-    for (size_t c=0; c < mSubComponentStorage.mComponentCptrs.size(); ++c)
+    for (size_t c=0; c < mComponentCptrs.size(); ++c)
     {
         if (mStop)
             break;
 
-        if (mSubComponentStorage.mComponentCptrs[c]->isComponentSystem())
+        if (mComponentCptrs[c]->isComponentSystem())
         {
-            mSubComponentStorage.mComponentCptrs[c]->initialize(startT, stopT);
+            mComponentCptrs[c]->initialize(startT, stopT);
         }
         else
         {
-            mSubComponentStorage.mComponentCptrs[c]->initialize();
+            mComponentCptrs[c]->initialize();
         }
     }
 
     //Q components
-    for (size_t q=0; q < mSubComponentStorage.mComponentQptrs.size(); ++q)
+    for (size_t q=0; q < mComponentQptrs.size(); ++q)
     {
         if (mStop)
             break;
 
-        if (mSubComponentStorage.mComponentQptrs[q]->isComponentSystem())
+        if (mComponentQptrs[q]->isComponentSystem())
         {
-            mSubComponentStorage.mComponentQptrs[q]->initialize(startT,stopT);
+            mComponentQptrs[q]->initialize(startT,stopT);
         }
         else
         {
-            mSubComponentStorage.mComponentQptrs[q]->initialize();
+            mComponentQptrs[q]->initialize();
         }
     }
 }
@@ -2001,25 +1968,25 @@ void ComponentSystem::simulate(const double startT, const double stopT)
     logAllNodes(mTime);
 
         //Simulate signal components one time step, necessary because C and Q are simulated one time step bellow
-    for (size_t s=0; s < mSubComponentStorage.mComponentSignalptrs.size(); ++s)
+    for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
     {
-        mSubComponentStorage.mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);
+        mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);
     }
 
         //Simulate C and Q components one time step on single core and meassure the required time
-    for(size_t c=0; c<mSubComponentStorage.mComponentCptrs.size(); ++c)
+    for(size_t c=0; c<mComponentCptrs.size(); ++c)
     {
         tbb::tick_count comp_start = tbb::tick_count::now();
-        mSubComponentStorage.mComponentCptrs[c]->simulate(mTime, mTime+mTimestep);
+        mComponentCptrs[c]->simulate(mTime, mTime+mTimestep);
         tbb::tick_count comp_end = tbb::tick_count::now();
-        mSubComponentStorage.mComponentCptrs[c]->setMeasuredTime(double((comp_end-comp_start).seconds()));
+        mComponentCptrs[c]->setMeasuredTime(double((comp_end-comp_start).seconds()));
     }
-    for(size_t q=0; q<mSubComponentStorage.mComponentQptrs.size(); ++q)
+    for(size_t q=0; q<mComponentQptrs.size(); ++q)
     {
         tbb::tick_count comp_start = tbb::tick_count::now();
-        mSubComponentStorage.mComponentQptrs[q]->simulate(mTime, mTime+mTimestep);
+        mComponentQptrs[q]->simulate(mTime, mTime+mTimestep);
         tbb::tick_count comp_end = tbb::tick_count::now();
-        mSubComponentStorage.mComponentQptrs[q]->setMeasuredTime(double((comp_end-comp_start).seconds()));
+        mComponentQptrs[q]->setMeasuredTime(double((comp_end-comp_start).seconds()));
     }
 
     mTime += mTimestep;
@@ -2028,32 +1995,32 @@ void ComponentSystem::simulate(const double startT, const double stopT)
     size_t i, j;
     bool flag = true;
     Component *temp;
-    for(i = 1; (i < mSubComponentStorage.mComponentCptrs.size()) && flag; ++i)
+    for(i = 1; (i < mComponentCptrs.size()) && flag; ++i)
     {
         flag = false;
-        for (j=0; j < (mSubComponentStorage.mComponentCptrs.size()-1); ++j)
+        for (j=0; j < (mComponentCptrs.size()-1); ++j)
         {
-            if (mSubComponentStorage.mComponentCptrs[j+1]->getMeasuredTime() > mSubComponentStorage.mComponentCptrs[j]->getMeasuredTime())
+            if (mComponentCptrs[j+1]->getMeasuredTime() > mComponentCptrs[j]->getMeasuredTime())
             {
-                temp = mSubComponentStorage.mComponentCptrs[j];             //Swap elements
-                mSubComponentStorage.mComponentCptrs[j] = mSubComponentStorage.mComponentCptrs[j+1];
-                mSubComponentStorage.mComponentCptrs[j+1] = temp;
+                temp = mComponentCptrs[j];             //Swap elements
+                mComponentCptrs[j] = mComponentCptrs[j+1];
+                mComponentCptrs[j+1] = temp;
                 flag = true;               //Indicates that a swap occurred
             }
         }
     }
     flag = true;
     Component *tempQ;
-    for(i = 1; (i < mSubComponentStorage.mComponentQptrs.size()) && flag; ++i)
+    for(i = 1; (i < mComponentQptrs.size()) && flag; ++i)
     {
         flag = false;
-        for (j=0; j < (mSubComponentStorage.mComponentQptrs.size()-1); ++j)
+        for (j=0; j < (mComponentQptrs.size()-1); ++j)
         {
-            if (mSubComponentStorage.mComponentQptrs[j+1]->getMeasuredTime() > mSubComponentStorage.mComponentQptrs[j]->getMeasuredTime())
+            if (mComponentQptrs[j+1]->getMeasuredTime() > mComponentQptrs[j]->getMeasuredTime())
             {
-                tempQ = mSubComponentStorage.mComponentQptrs[j];             //Swap elements
-                mSubComponentStorage.mComponentQptrs[j] = mSubComponentStorage.mComponentQptrs[j+1];
-                mSubComponentStorage.mComponentQptrs[j+1] = tempQ;
+                tempQ = mComponentQptrs[j];             //Swap elements
+                mComponentQptrs[j] = mComponentQptrs[j+1];
+                mComponentQptrs[j+1] = tempQ;
                 flag = true;               //Indicates that a swap occurred
             }
         }
@@ -2071,12 +2038,12 @@ void ComponentSystem::simulate(const double startT, const double stopT)
     {
         for(int coreNumber=0; coreNumber<nCores; ++coreNumber)
         {
-            if(cCompNum == mSubComponentStorage.mComponentCptrs.size())
+            if(cCompNum == mComponentCptrs.size())
                 break;
-            splitCVector[coreNumber].push_back(mSubComponentStorage.mComponentCptrs[cCompNum]);
+            splitCVector[coreNumber].push_back(mComponentCptrs[cCompNum]);
             ++cCompNum;
         }
-        if(cCompNum == mSubComponentStorage.mComponentCptrs.size())
+        if(cCompNum == mComponentCptrs.size())
             break;
     }
 
@@ -2088,12 +2055,12 @@ void ComponentSystem::simulate(const double startT, const double stopT)
     {
         for(int coreNumber=0; coreNumber<nCores; ++coreNumber)
         {
-            if(qCompNum == mSubComponentStorage.mComponentQptrs.size())
+            if(qCompNum == mComponentQptrs.size())
                 break;
-            splitQVector[coreNumber].push_back(mSubComponentStorage.mComponentQptrs[qCompNum]);
+            splitQVector[coreNumber].push_back(mComponentQptrs[qCompNum]);
             ++qCompNum;
         }
-        if(qCompNum == mSubComponentStorage.mComponentQptrs.size())
+        if(qCompNum == mComponentQptrs.size())
             break;
     }
 
@@ -2109,9 +2076,9 @@ void ComponentSystem::simulate(const double startT, const double stopT)
         logAllNodes(mTime);
 
             //Simulate signal components on single core
-        for (size_t s=0; s < mSubComponentStorage.mComponentSignalptrs.size(); ++s)
+        for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
         {
-            mSubComponentStorage.mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);
+            mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);
         }
 
             //Simulate C component vectors in parallel
@@ -2157,21 +2124,21 @@ void ComponentSystem::simulate(const double startT, const double stopT)
 
         //! @todo maybe use iterators instead
         //Signal components
-        for (size_t s=0; s < mSubComponentStorage.mComponentSignalptrs.size(); ++s)
+        for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
         {
-            mSubComponentStorage.mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);
+            mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);
         }
 
         //C components
-        for (size_t c=0; c < mSubComponentStorage.mComponentCptrs.size(); ++c)
+        for (size_t c=0; c < mComponentCptrs.size(); ++c)
         {
-            mSubComponentStorage.mComponentCptrs[c]->simulate(mTime, mTime+mTimestep);
+            mComponentCptrs[c]->simulate(mTime, mTime+mTimestep);
         }
 
         //Q components
-        for (size_t q=0; q < mSubComponentStorage.mComponentQptrs.size(); ++q)
+        for (size_t q=0; q < mComponentQptrs.size(); ++q)
         {
-            mSubComponentStorage.mComponentQptrs[q]->simulate(mTime, mTime+mTimestep);
+            mComponentQptrs[q]->simulate(mTime, mTime+mTimestep);
         }
 
         mTime += mTimestep;
@@ -2187,41 +2154,41 @@ void ComponentSystem::finalize(const double startT, const double stopT)
 
     //Finalize
     //Signal components
-    for (size_t s=0; s < mSubComponentStorage.mComponentSignalptrs.size(); ++s)
+    for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
     {
-        if (mSubComponentStorage.mComponentSignalptrs[s]->isComponentSystem())
+        if (mComponentSignalptrs[s]->isComponentSystem())
         {
-            mSubComponentStorage.mComponentSignalptrs[s]->finalize(startT, stopT);
+            mComponentSignalptrs[s]->finalize(startT, stopT);
         }
         else
         {
-            mSubComponentStorage.mComponentSignalptrs[s]->finalize();
+            mComponentSignalptrs[s]->finalize();
         }
     }
 
     //C components
-    for (size_t c=0; c < mSubComponentStorage.mComponentCptrs.size(); ++c)
+    for (size_t c=0; c < mComponentCptrs.size(); ++c)
     {
-        if (mSubComponentStorage.mComponentCptrs[c]->isComponentSystem())
+        if (mComponentCptrs[c]->isComponentSystem())
         {
-            mSubComponentStorage.mComponentCptrs[c]->finalize(startT, stopT);
+            mComponentCptrs[c]->finalize(startT, stopT);
         }
         else
         {
-            mSubComponentStorage.mComponentCptrs[c]->finalize();
+            mComponentCptrs[c]->finalize();
         }
     }
 
     //Q components
-    for (size_t q=0; q < mSubComponentStorage.mComponentQptrs.size(); ++q)
+    for (size_t q=0; q < mComponentQptrs.size(); ++q)
     {
-        if (mSubComponentStorage.mComponentQptrs[q]->isComponentSystem())
+        if (mComponentQptrs[q]->isComponentSystem())
         {
-            mSubComponentStorage.mComponentQptrs[q]->finalize(startT,stopT);
+            mComponentQptrs[q]->finalize(startT,stopT);
         }
         else
         {
-            mSubComponentStorage.mComponentQptrs[q]->finalize();
+            mComponentQptrs[q]->finalize();
         }
 
     }

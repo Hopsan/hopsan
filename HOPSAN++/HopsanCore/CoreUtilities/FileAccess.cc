@@ -142,7 +142,7 @@ void FileAccess::loadSystemContents(stringstream &rLoaddatastream, ComponentSyst
             cout << commandword << endl;
 
             //----------- Create New SubSystem -----------//
-            if ( commandword == "SUBSYSTEM" )
+            if ( commandword == "SUBSYSTEM" || commandword == "BEGINSUBSYSTEM" )
             {
                 string loadtype, name, cqs_type, parentname, filepath;
 
@@ -236,7 +236,6 @@ void FileAccess::loadSystemContents(stringstream &rLoaddatastream, ComponentSyst
         {
             //cout << "Ignoring empty line.\n";
         }
-
     }
 }
 

@@ -153,28 +153,6 @@ namespace hopsan {
 
     class DLLIMPORTEXPORT ComponentSystem :public Component
     {
-    private:
-        class SubComponentStorage
-        {
-            friend class ComponentSystem;
-        private:
-            typedef std::map<std::string, Component*> SubComponentMapT;
-            SubComponentMapT mSubComponentMap;
-
-        public:
-            void add(Component* pComponent);
-            Component* get(const std::string &rName);
-            void rename(const std::string &rOldName, const std::string &rNewName);
-            void remove(const std::string &rName);
-            bool have(const std::string &rName);
-            bool changeTypeCQS(const std::string &rName, const typeCQS newType);
-
-            std::vector<Component*> mComponentSignalptrs;
-            std::vector<Component*> mComponentQptrs;
-            std::vector<Component*> mComponentCptrs;
-            std::vector<Component*> mComponentUndefinedptrs;
-        };
-
     public:
         //==========Public functions==========
         //Constructor - Destructor
@@ -186,10 +164,10 @@ namespace hopsan {
         //Set the subsystem CQS type
         void setTypeCQS(const std::string cqs_type, bool doOnlyLocalSet=false);
         void setTypeCQS(typeCQS cqs_type, bool doOnlyLocalSet=false);
+        bool changeTypeCQS(const std::string name, const typeCQS newType);
 
         //adding removing and renaming components
         void addComponents(std::vector<Component*> components);
-        void addComponent(Component &rComponent);
         void addComponent(Component *pComponent);
         void renameSubComponent(std::string old_name, std::string new_name);
         void removeSubComponent(std::string name, bool doDelete=false);
@@ -243,8 +221,18 @@ namespace hopsan {
         void addSubNode(Node* node_ptr);
         void removeSubNode(Node* node_ptr);
 
+        //Add and Remove subcomponent ptrs from storage vectors
+        void addSubComponentPtrToStorage(Component* pComponent);
+        void removeSubComponentPtrFromStorage(Component* c_ptr);
+
         //==========Prvate member variables==========
-        SubComponentStorage mSubComponentStorage;
+        typedef std::map<std::string, Component*> SubComponentMapT;
+        SubComponentMapT mSubComponentMap;
+        std::vector<Component*> mComponentSignalptrs;
+        std::vector<Component*> mComponentQptrs;
+        std::vector<Component*> mComponentCptrs;
+        std::vector<Component*> mComponentUndefinedptrs;
+
         std::vector<Node*> mSubNodePtrs;
         NodeFactory mpNodeFactory;
 
