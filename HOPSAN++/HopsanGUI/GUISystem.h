@@ -24,6 +24,8 @@ class GUISystem : public GUIContainerObject
 public:
     GUISystem(AppearanceData appearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, ProjectTab *parentProjectTab = 0, QGraphicsItem *parent = 0);
     GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *parent);
+    ~GUISystem();
+    void constructorStuff(ProjectTab *parentProjectTab);
 
     GraphicsScene *mpScene;
     ProjectTab *mpParentProjectTab;
@@ -53,7 +55,7 @@ public:
     GUIConnector *mpTempConnector;
 
 public slots:
-    void addSystemPort();
+    //void addSystemPort();
     void addConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);
     void cutSelected();
     void copySelected();
@@ -78,12 +80,11 @@ private:
     QString *mpCopyData;
 
 public:
-    GUIRootSystem mGUIRootSystem; //!< @todo make this private later
+    GUIRootSystem mCoreSystemAccess; //!< @todo make this private later
 
 
     //! Old subsystem stuff
 public:
-    void deleteInHopsanCore();
     QString getTypeName();
     void setName(QString newName, renameRestrictions renameSettings=UNRESTRICTED);
     void setTypeCQS(QString typestring);
@@ -106,7 +107,6 @@ protected:
 
 private:
     QString mModelFilePath;
-    //QString mGraphicsFilePath;
     bool   mIsEmbedded;
     QString mLoadType;
 };

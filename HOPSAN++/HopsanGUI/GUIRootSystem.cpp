@@ -75,44 +75,44 @@ double GUIRootSystem::getDesiredTimeStep()
 
 void GUIRootSystem::setRootTypeCQS(const QString cqs_type, bool doOnlyLocalSet)
 {
-    mpCoreComponentSystem->setTypeCQS(cqs_type.toStdString(), doOnlyLocalSet);
+    mpCoreComponentSystem->setTypeCQS(cqs_type.toStdString());
 }
 
-void GUIRootSystem::setSystemTypeCQS(QString systemName, const string cqs_type, bool doOnlyLocalSet)
+void GUIRootSystem::setSubSystemTypeCQS(QString systemName, const string cqs_type, bool doOnlyLocalSet)
 {
     mpCoreComponentSystem->getSubComponentSystem(systemName.toStdString())->setTypeCQS(cqs_type, doOnlyLocalSet);
 }
 
-QString GUIRootSystem::getSystemTypeCQS(QString systemName)
-{
-    return QString::fromStdString(mpCoreComponentSystem->getSubComponentSystem(systemName.toStdString())->getTypeCQSString());
-}
+//QString GUIRootSystem::getSystemTypeCQS(QString systemName)
+//{
+//    return QString::fromStdString(mpCoreComponentSystem->getSubComponentSystem(systemName.toStdString())->getTypeCQSString());
+//}
 
 QString GUIRootSystem::getTypeCQS(QString componentName)
 {
     return QString::fromStdString(mpCoreComponentSystem->getComponent(componentName.toStdString())->getTypeCQSString());
 }
 
-void GUIRootSystem::setRootSystemName(QString name, bool doOnlyLocalRename)
+void GUIRootSystem::setRootSystemName(QString name)
 {
-    mpCoreComponentSystem->setName(name.toStdString(), doOnlyLocalRename);
+    mpCoreComponentSystem->setName(name.toStdString());
 }
 
-QString GUIRootSystem::setSystemName(QString systemname, QString name, bool doOnlyLocalRename)
-{
-    ComponentSystem *pTempComponentSystem = mpCoreComponentSystem->getSubComponentSystem(systemname.toStdString());
-    pTempComponentSystem->setName(name.toStdString(), doOnlyLocalRename);
-    return QString::fromStdString(pTempComponentSystem->getName());
-}
+//QString GUIRootSystem::setSystemName(QString systemname, QString name, bool doOnlyLocalRename)
+//{
+//    ComponentSystem *pTempComponentSystem = mpCoreComponentSystem->getSubComponentSystem(systemname.toStdString());
+//    pTempComponentSystem->setName(name.toStdString(), doOnlyLocalRename);
+//    return QString::fromStdString(pTempComponentSystem->getName());
+//}
 
-QString GUIRootSystem::rename(QString componentName, QString name, bool doOnlyLocalRename)
+QString GUIRootSystem::renameSubComponent(QString componentName, QString name)
 {
     Component *pTempComponent = mpCoreComponentSystem->getComponent(componentName.toStdString());
-    pTempComponent->setName(name.toStdString(), doOnlyLocalRename);
+    pTempComponent->setName(name.toStdString());
     return QString::fromStdString(pTempComponent->getName());
 }
 
-QString GUIRootSystem::getName()
+QString GUIRootSystem::getRootSystemName()
 {
    // qDebug() << "getNAme from core root: " << QString::fromStdString(mpCoreComponentSystem->getName());
     return QString::fromStdString(mpCoreComponentSystem->getName());

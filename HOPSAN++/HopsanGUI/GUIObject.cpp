@@ -110,8 +110,6 @@ GUIObject::GUIObject(QPoint position, qreal rotation, AppearanceData appearanceD
 
 GUIObject::~GUIObject()
 {
-    //! @todo This will lead to crash when closing program since undo stack may not exist. Fix it.
-    //delete widget;
     emit componentDeleted();
 }
 
@@ -250,12 +248,6 @@ QString GUIObject::getName()
 QList<GUIPort*> GUIObject::getPortListPtrs()
 {
     return mPortListPtrs;
-}
-
-void GUIObject::deleteInHopsanCore()
-{
-    cout << "Virtual dummy function" << endl;
-    assert(false);
 }
 
 void GUIObject::setName(QString newName, renameRestrictions renameSettings)
@@ -517,20 +509,20 @@ void GUIObject::showPorts(bool visible)
 }
 
 
-//! Figures out the number of a component port by using a pointer to the port.
-//! @see getPort(int number)
-int GUIObject::getPortNumber(GUIPort *port)
-{
-    for (int i = 0; i != mPortListPtrs.size(); ++i)
-    {
-        if(port == mPortListPtrs.value(i))
-        {
-            return i;
-        }
-    }
-    qDebug() << "Request for port number of non-existing port.";
-    assert(false);      /// @todo: Trough exception
-}
+////! Figures out the number of a component port by using a pointer to the port.
+////! @see getPort(int number)
+//int GUIObject::getPortNumber(GUIPort *port)
+//{
+//    for (int i = 0; i != mPortListPtrs.size(); ++i)
+//    {
+//        if(port == mPortListPtrs.value(i))
+//        {
+//            return i;
+//        }
+//    }
+//    qDebug() << "Request for port number of non-existing port.";
+//    assert(false);      /// @todo: Trough exception
+//}
 
 
 //! Rotates a component 90 degrees clockwise, and tells the connectors that the component has moved.
@@ -1023,18 +1015,7 @@ GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, qreal
     : GUIObject(position, rotation, appearanceData, startSelected, gfxType, system, parent)
 {
     //Create the object in core, and get its default core name
-//    QString corename = mpParentSystem->mpParentProjectTab->mGUIRootSystem.createComponent(mAppearanceData.getTypeName());
-//    if ( this->getName().isEmpty() )
-//    {
-//        //If the displayname has not been decided then use the name from core
-//        mAppearanceData.setName(corename);
-//    }
-//    else
-//    {
-//        //Lets rename the core object to the gui name that is set in the txt description file, we take the name theat this function returns
-//        mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mGUIRootSystem.rename(corename, getName())); //Cant use setName here as that would call an aditional rename (of someone else)
-//    }
-    mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.createComponent(mAppearanceData.getTypeName(), this->getName()));
+    mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.createComponent(mAppearanceData.getTypeName(), this->getName()));
 
     //Sets the ports
     createPorts();
@@ -1042,6 +1023,13 @@ GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, qreal
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
     std::cout << "GUIcomponent: " << mComponentTypeName.toStdString() << std::endl;
+}
+
+GUIComponent::~GUIComponent()
+{
+    //Remove in core
+    //! @todo maybe change to delte instead of remove with dodelete yes
+    mpParentSystem->mCoreSystemAccess.removeSubComponent(this->getName(), true);
 }
 
 
@@ -1063,7 +1051,7 @@ void GUIComponent::setName(QString newName, renameRestrictions renameSettings)
         //Check if we want to avoid trying to rename in the graphics view map
         if (renameSettings == CORERENAMEONLY)
         {
-            mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.rename(this->getName(), newName));
+            mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.renameSubComponent(this->getName(), newName));
             refreshDisplayName();
         }
         else
@@ -1093,34 +1081,34 @@ QString GUIComponent::getTypeName()
 
 QString GUIComponent::getTypeCQS()
 {
-    return mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getTypeCQS(this->getName());
+    return mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.getTypeCQS(this->getName());
 }
 
 //! @brief Get a vector with the names of the available parameters
 QVector<QString> GUIComponent::getParameterNames()
 {
-    return mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getParameterNames(this->getName());
+    return mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.getParameterNames(this->getName());
 }
 
 QString GUIComponent::getParameterUnit(QString name)
 {
-    return mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getParameterUnit(this->getName(), name);
+    return mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.getParameterUnit(this->getName(), name);
 }
 
 QString GUIComponent::getParameterDescription(QString name)
 {
-    return mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getParameterDescription(this->getName(), name);
+    return mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.getParameterDescription(this->getName(), name);
 }
 
 double GUIComponent::getParameterValue(QString name)
 {
-    return mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getParameterValue(this->getName(), name);
+    return mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.getParameterValue(this->getName(), name);
 }
 
 //! @brief Set a parameter value, wrapps hopsan core
 void GUIComponent::setParameterValue(QString name, double value)
 {
-    mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.setParameter(this->getName(), name, value);
+    mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.setParameter(this->getName(), name, value);
 }
 
 void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
@@ -1177,12 +1165,12 @@ void GUIComponent::openParameterDialog()
 void GUIComponent::createPorts()
 {
     //! @todo make sure that all old ports and connections are cleared, (not really necessary in guicomponents)
-    QString cqsType = mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getTypeCQS(getName());
+    QString cqsType = mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.getTypeCQS(getName());
     PortAppearanceMapT::iterator i;
     for (i = mAppearanceData.getPortAppearanceMap().begin(); i != mAppearanceData.getPortAppearanceMap().end(); ++i)
     {
-        QString nodeType = mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getNodeType(this->getName(), i.key());
-        QString portType = mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getPortType(this->getName(), i.key());
+        QString nodeType = mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.getNodeType(this->getName(), i.key());
+        QString portType = mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.getPortType(this->getName(), i.key());
         i.value().selectPortIcon(cqsType, portType, nodeType);
 
         qreal x = i.value().x;
@@ -1193,11 +1181,6 @@ void GUIComponent::createPorts()
     }
 }
 
-
-void GUIComponent::deleteInHopsanCore()
-{
-    mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.removeSubComponent(this->getName(), true);
-}
 
 
 int GUIComponent::type() const
@@ -1214,326 +1197,326 @@ void GUIComponent::saveToTextStream(QTextStream &rStream, QString prepend)
 //            << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << "\n";
     GUIObject::saveToTextStream(rStream, prepend);
 
-    QVector<QString> parameterNames = mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getParameterNames(this->getName());
+    QVector<QString> parameterNames = mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.getParameterNames(this->getName());
     QVector<QString>::iterator pit;
     for(pit = parameterNames.begin(); pit != parameterNames.end(); ++pit)
     {
         //! @todo It is a bit strange that we can not control the parameter keyword, but then agian spliting this into a separate function with its own prepend variable would also be wierd
         rStream << "PARAMETER " << addQuotes(getName()) << " " << addQuotes(*pit) << " " <<
-                mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getParameterValue(this->getName(), (*pit)) << "\n";
+                mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.getParameterValue(this->getName(), (*pit)) << "\n";
     }
 }
 
 
-GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
-    : GUIContainerObject(position, rotation, appearanceData, startSelected, gfxType, system, parent)
-{
-    //Set default values
-    mLoadType = "Empty";
-    mModelFilePath = "";
-
-    //Create subsystem in core and get its name
-//    QString corename = mpParentSystem->mpParentProjectTab->mGUIRootSystem.createSubSystem();
-//    if ( getName().isEmpty() )
+//GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
+//    : GUIContainerObject(position, rotation, appearanceData, startSelected, gfxType, system, parent)
+//{
+//    //Set default values
+//    mLoadType = "Empty";
+//    mModelFilePath = "";
+//
+//    //Create subsystem in core and get its name
+////    QString corename = mpParentSystem->mpParentProjectTab->mGUIRootSystem.createSubSystem();
+////    if ( getName().isEmpty() )
+////    {
+////        //If the displayname has not been decided then use the name from core
+////        mAppearanceData.setName(corename);
+////    }
+////    else
+////    {
+////        //Lets rename the core object to the gui name that is set in the txt description file, we take the name that this function returns
+////        mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mGUIRootSystem.rename(corename, getName())); //Cant use setName here as thewould call an aditional rename (of someone else)
+////    }
+//    mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.createSubSystem(this->getName()));
+//
+//    refreshDisplayName(); //Make sure name window is correct size for center positioning
+//
+//    //! @todo Write some code here maybe!
+//
+////    std::cout << "GUISubsystem: " << mComponentTypeName.toStdString() << std::endl;
+//}
+//
+//
+////!
+////! @brief This function sets the desired subsystem name
+////! @param [in] newName The new name
+////! @param [in] renameSettings  Dont use this if you dont know what you are doing
+////!
+////! @todo This function is almost exactly identical to the one for GUIcomponents need to make sure that we dont dublicate functions like this, maybe this should be directly in GUIObject
+////!
+////! The desired new name will be sent to the the core component and may be modified. Rename will be called in the graphics view to make sure that the guicomponent map key value is up to date.
+////! renameSettings is a somewhat ugly hack, we need to be able to force setName without calling rename in some very special situations, it defaults to false
+////!
+//void GUISubsystem::setName(QString newName, renameRestrictions renameSettings)
+//{
+//    QString oldName = getName();
+//    //If name same as before do nothing
+//    if (newName != oldName)
 //    {
-//        //If the displayname has not been decided then use the name from core
-//        mAppearanceData.setName(corename);
+//        //Check if we want to avoid trying to rename in the graphics view map
+//        if (renameSettings == CORERENAMEONLY)
+//        {
+//            mAppearanceData.setName(mpParentSystem->mCoreSystemAccess.renameSubComponent(oldName, newName));
+//            refreshDisplayName();
+//        }
+//        else
+//        {
+//            //Rename
+//            mpParentSystem->renameGUIObject(oldName, newName);
+//        }
+//    }
+//}
+//
+//
+////! Returns a string with the sub system type.
+//QString GUISubsystem::getTypeName()
+//{
+//    //! @todo is this OK should really ask the subsystem but result should be subsystem i think
+//    return "Subsystem";
+//}
+//
+//void GUISubsystem::setTypeCQS(QString typestring)
+//{
+//    mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.setSubSystemTypeCQS(this->getName(), typestring.toStdString()); //ehhh this will set the CQS type for the paren system (the root even) we want to set this partiular systems CQS type
+//}
+//
+//QString GUISubsystem::getTypeCQS()
+//{
+//    return mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.getTypeCQS(this->getName());  //ehhh this will get the CQS type for the paren system (the root even) we want this partiular systems CQS type
+//}
+//
+//QVector<QString> GUISubsystem::getParameterNames()
+//{
+//    return mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.getParameterNames(this->getName());
+//}
+//
+////void GUISubsystem::refreshAppearance();
+//
+////! @todo Maybe should be somewhere else and be called load subsystem
+//void GUISubsystem::loadFromFile(QString modelFileName)
+//{
+//    QFile file;
+//    QFileInfo fileInfo;
+//    if (modelFileName.isEmpty())
+//    {
+//        QDir fileDialog;
+//        modelFileName = QFileDialog::getOpenFileName(mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
+//                                                             fileDialog.currentPath() + QString("/../../Models"),
+//                                                             tr("Hopsan Model Files (*.hmf)"));
+//        if (modelFileName.isEmpty())
+//            return;
+//
+//        file.setFileName(modelFileName);
+//        fileInfo.setFile(file);
+//
+//        for(int t=0; t!=mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->count(); ++t)
+//        {
+//            if( (mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == fileInfo.fileName()) or (mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == (fileInfo.fileName() + "*")) )
+//            {
+//                QMessageBox::StandardButton reply;
+//                reply = QMessageBox::information(mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget, tr("Error"), tr("Unable to load model. File is already open."));
+//                return;
+//            }
+//        }
 //    }
 //    else
 //    {
-//        //Lets rename the core object to the gui name that is set in the txt description file, we take the name that this function returns
-//        mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mGUIRootSystem.rename(corename, getName())); //Cant use setName here as thewould call an aditional rename (of someone else)
+//         file.setFileName(modelFileName);
+//         fileInfo.setFile(file);
 //    }
-    mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.createSubSystem(this->getName()));
-
-    refreshDisplayName(); //Make sure name window is correct size for center positioning
-
-    //! @todo Write some code here maybe!
-
-//    std::cout << "GUISubsystem: " << mComponentTypeName.toStdString() << std::endl;
-}
-
-
-//!
-//! @brief This function sets the desired subsystem name
-//! @param [in] newName The new name
-//! @param [in] renameSettings  Dont use this if you dont know what you are doing
-//!
-//! @todo This function is almost exactly identical to the one for GUIcomponents need to make sure that we dont dublicate functions like this, maybe this should be directly in GUIObject
-//!
-//! The desired new name will be sent to the the core component and may be modified. Rename will be called in the graphics view to make sure that the guicomponent map key value is up to date.
-//! renameSettings is a somewhat ugly hack, we need to be able to force setName without calling rename in some very special situations, it defaults to false
-//!
-void GUISubsystem::setName(QString newName, renameRestrictions renameSettings)
-{
-    QString oldName = getName();
-    //If name same as before do nothing
-    if (newName != oldName)
-    {
-        //Check if we want to avoid trying to rename in the graphics view map
-        if (renameSettings == CORERENAMEONLY)
-        {
-            mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.setSystemName(oldName, newName));
-            refreshDisplayName();
-        }
-        else
-        {
-            //Rename
-            mpParentSystem->renameGUIObject(oldName, newName);
-        }
-    }
-}
-
-
-//! Returns a string with the sub system type.
-QString GUISubsystem::getTypeName()
-{
-    //! @todo is this OK should really ask the subsystem but result should be subsystem i think
-    return "Subsystem";
-}
-
-void GUISubsystem::setTypeCQS(QString typestring)
-{
-    mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.setSystemTypeCQS(this->getName(), typestring.toStdString()); //ehhh this will set the CQS type for the paren system (the root even) we want to set this partiular systems CQS type
-}
-
-QString GUISubsystem::getTypeCQS()
-{
-    return mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getSystemTypeCQS(this->getName());  //ehhh this will get the CQS type for the paren system (the root even) we want this partiular systems CQS type
-}
-
-QVector<QString> GUISubsystem::getParameterNames()
-{
-    return mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getParameterNames(this->getName());
-}
-
-//void GUISubsystem::refreshAppearance();
-
-//! @todo Maybe should be somewhere else and be called load subsystem
-void GUISubsystem::loadFromFile(QString modelFileName)
-{
-    QFile file;
-    QFileInfo fileInfo;
-    if (modelFileName.isEmpty())
-    {
-        QDir fileDialog;
-        modelFileName = QFileDialog::getOpenFileName(mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
-                                                             fileDialog.currentPath() + QString("/../../Models"),
-                                                             tr("Hopsan Model Files (*.hmf)"));
-        if (modelFileName.isEmpty())
-            return;
-
-        file.setFileName(modelFileName);
-        fileInfo.setFile(file);
-
-        for(int t=0; t!=mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->count(); ++t)
-        {
-            if( (mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == fileInfo.fileName()) or (mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == (fileInfo.fileName() + "*")) )
-            {
-                QMessageBox::StandardButton reply;
-                reply = QMessageBox::information(mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget, tr("Error"), tr("Unable to load model. File is already open."));
-                return;
-            }
-        }
-    }
-    else
-    {
-         file.setFileName(modelFileName);
-         fileInfo.setFile(file);
-    }
-
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
-    {
-        qDebug() << "Failed to open file or not a text file: " + modelFileName;
-        return;
-    }
-    QTextStream textStreamFile(&file); //Converts to QTextStream
-    mModelFilePath = modelFileName;
-
-    //Set the name
-    this->setName(fileInfo.baseName());
-
-    //Now read the file data
-    SystemAppearanceLoadData sysappdata;
-    HeaderLoadData header;
-
-    header.read(textStreamFile);
-    //qDebug() << "Header read";
-    //! @todo check so that version OK!
-    sysappdata.read(textStreamFile);
-    //qDebug() << "Sysapp data read";
-
-    if (!sysappdata.usericon_path.isEmpty())
-    {
-        mAppearanceData.setIconPathUser(sysappdata.usericon_path);
-    }
-    if (!sysappdata.isoicon_path.isEmpty())
-    {
-        mAppearanceData.setIconPathISO(sysappdata.isoicon_path);
-    }
-
-    //! @todo reading portappearance should have a common function and be shared with the setappearancedata rad function that reads from caf files
-    PortAppearanceMapT* portappmap = &(mAppearanceData.getPortAppearanceMap());
-    for (int i=0; i<sysappdata.portnames.size(); ++i)
-    {
-        PortAppearance portapp;
-        portapp.x = sysappdata.port_xpos[i];
-        portapp.y = sysappdata.port_ypos[i];
-        portapp.rot = sysappdata.port_angle[i];
-        if( (portapp.rot == 0) || (portapp.rot == 180) )
-        {
-            portapp.direction = LEFTRIGHT;
-        }
-        else
-        {
-            portapp.direction = TOPBOTTOM;
-        }
-        //! @todo portdirection in portapperance should have an initial default value to avoid crash if not set when creating connector
-        portapp.selectPortIcon("","",""); //!< @todo fix this
-
-        portappmap->insert(sysappdata.portnames[i], portapp);
-        qDebug() << sysappdata.portnames[i];
-    }
-    qDebug() << "Appearance set";
-
-    //Load the contents of the subsystem from the external file
-    mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.loadSystemFromFileCoreOnly(this->getName(), modelFileName);
-    qDebug() << "Loaded in core";
-
-    this->refreshAppearance();
-    this->createPorts();
-    this->refreshDisplayName();
-    file.close();
-}
-
-
-int GUISubsystem::type() const
-{
-    return Type;
-}
-
-
-void GUISubsystem::deleteInHopsanCore()
-{
-    mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.removeSubComponent(this->getName(), true);
-}
-
-//! @todo Maybe should try to reduce multiple copys of same functions with other GUIObjects
-void GUISubsystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
-{
-        QMenu menu;
-
-        QAction *groupAction;
-        if (!this->scene()->selectedItems().empty())
-            groupAction = menu.addAction(tr("Group components"));
-
-        QAction *parameterAction = menu.addAction(tr("Change parameters"));
-        //menu.insertSeparator(parameterAction);
-
-        QAction *showNameAction = menu.addAction(tr("Show name"));
-        showNameAction->setCheckable(true);
-        showNameAction->setChecked(mpNameText->isVisible());
-
-        QAction *loadAction = menu.addAction(tr("Load Subsystem File"));
-        if(!mModelFilePath.isEmpty()) loadAction->setDisabled(true);
-
-        QAction *selectedAction = menu.exec(event->screenPos());
-
-
-
-        if (selectedAction == parameterAction)
-        {
-            openParameterDialog();
-        }
-        else if (selectedAction == groupAction)
-        {
-            //groupComponents(mpParentGraphicsScene->selectedItems());
-            AppearanceData appdata;
-            appdata.setIconPathUser("subsystemtmp.svg");
-            appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
-            GUIGroup *pGroup = new GUIGroup(this->scene()->selectedItems(), appdata, mpParentSystem);
-            this->scene()->addItem(pGroup);
-        }
-        else if (selectedAction == showNameAction)
-        {
-            if(mpNameText->isVisible())
-            {
-                this->hideName();
-            }
-            else
-            {
-                this->showName();
-            }
-        }
-        else if (selectedAction == loadAction)
-        {
-            loadFromFile();
-        }
-    }
-
-
-
-void GUISubsystem::openParameterDialog()
-{
-    ParameterDialog *dialog = new ParameterDialog(this);
-    dialog->exec();
-}
-
-void GUISubsystem::createPorts()
-{
-    //! @todo make sure that all old ports and connections are cleared, (in case we reload, but maybe we can discard old system and create new in that case)
-    //Create the graphics for the ports but do NOT create new ports, use the system ports within the subsystem
-    PortAppearanceMapT::iterator it;
-    for (it = mAppearanceData.getPortAppearanceMap().begin(); it != mAppearanceData.getPortAppearanceMap().end(); ++it)
-    {
-        //! @todo fix this
-        qDebug() << "getNode and portType for " << it.key();
-        QString nodeType = mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getNodeType(this->getName(), it.key());
-        QString portType = mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getPortType(this->getName(), it.key());
-        it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
-
-        qreal x = it.value().x;
-        qreal y = it.value().y;
-
-        GUIPort *pNewPort = new GUIPort(it.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(it.value()), this);
-        mPortListPtrs.append(pNewPort);
-    }
-}
-
-//! @brief Save GuiSubsystem to a text stream
-//! @todo here we are NOT using the save function in the guiobject base class becouse subsystems are saved completely differently, need to make this more uniform in the future
-void GUISubsystem::saveToTextStream(QTextStream &rStream, QString prepend)
-{
-    QPointF pos = mapToScene(boundingRect().center());
-    if (!prepend.isEmpty())
-    {
-        rStream << prepend << " ";
-    }
-
-    if (!mModelFilePath.isEmpty())
-    {
-        mLoadType = "EXTERNAL";
-    }
-    else
-    {
-        mLoadType = "EMBEDED";
-    }
-
-    rStream << addQuotes(mLoadType) << " " << addQuotes(getName()) << " " << addQuotes(getTypeCQS()) << " " << addQuotes(mModelFilePath) << " "
-            << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << " " << mpNameText->isVisible() << "\n";
-}
-
-void GUISubsystem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
-{
-    if(mModelFilePath.isEmpty())
-    {
-        loadFromFile();
-    }
-    else
-    {
-        return;
-    }
-}
+//
+//    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
+//    {
+//        qDebug() << "Failed to open file or not a text file: " + modelFileName;
+//        return;
+//    }
+//    QTextStream textStreamFile(&file); //Converts to QTextStream
+//    mModelFilePath = modelFileName;
+//
+//    //Set the name
+//    this->setName(fileInfo.baseName());
+//
+//    //Now read the file data
+//    SystemAppearanceLoadData sysappdata;
+//    HeaderLoadData header;
+//
+//    header.read(textStreamFile);
+//    //qDebug() << "Header read";
+//    //! @todo check so that version OK!
+//    sysappdata.read(textStreamFile);
+//    //qDebug() << "Sysapp data read";
+//
+//    if (!sysappdata.usericon_path.isEmpty())
+//    {
+//        mAppearanceData.setIconPathUser(sysappdata.usericon_path);
+//    }
+//    if (!sysappdata.isoicon_path.isEmpty())
+//    {
+//        mAppearanceData.setIconPathISO(sysappdata.isoicon_path);
+//    }
+//
+//    //! @todo reading portappearance should have a common function and be shared with the setappearancedata rad function that reads from caf files
+//    PortAppearanceMapT* portappmap = &(mAppearanceData.getPortAppearanceMap());
+//    for (int i=0; i<sysappdata.portnames.size(); ++i)
+//    {
+//        PortAppearance portapp;
+//        portapp.x = sysappdata.port_xpos[i];
+//        portapp.y = sysappdata.port_ypos[i];
+//        portapp.rot = sysappdata.port_angle[i];
+//        if( (portapp.rot == 0) || (portapp.rot == 180) )
+//        {
+//            portapp.direction = LEFTRIGHT;
+//        }
+//        else
+//        {
+//            portapp.direction = TOPBOTTOM;
+//        }
+//        //! @todo portdirection in portapperance should have an initial default value to avoid crash if not set when creating connector
+//        portapp.selectPortIcon("","",""); //!< @todo fix this
+//
+//        portappmap->insert(sysappdata.portnames[i], portapp);
+//        qDebug() << sysappdata.portnames[i];
+//    }
+//    qDebug() << "Appearance set";
+//
+//    //Load the contents of the subsystem from the external file
+//    mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.loadSystemFromFileCoreOnly(this->getName(), modelFileName);
+//    qDebug() << "Loaded in core";
+//
+//    this->refreshAppearance();
+//    this->createPorts();
+//    this->refreshDisplayName();
+//    file.close();
+//}
+//
+//
+//int GUISubsystem::type() const
+//{
+//    return Type;
+//}
+//
+//
+//void GUISubsystem::deleteInHopsanCore()
+//{
+//    mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.removeSubComponent(this->getName(), true);
+//}
+//
+////! @todo Maybe should try to reduce multiple copys of same functions with other GUIObjects
+//void GUISubsystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+//{
+//        QMenu menu;
+//
+//        QAction *groupAction;
+//        if (!this->scene()->selectedItems().empty())
+//            groupAction = menu.addAction(tr("Group components"));
+//
+//        QAction *parameterAction = menu.addAction(tr("Change parameters"));
+//        //menu.insertSeparator(parameterAction);
+//
+//        QAction *showNameAction = menu.addAction(tr("Show name"));
+//        showNameAction->setCheckable(true);
+//        showNameAction->setChecked(mpNameText->isVisible());
+//
+//        QAction *loadAction = menu.addAction(tr("Load Subsystem File"));
+//        if(!mModelFilePath.isEmpty()) loadAction->setDisabled(true);
+//
+//        QAction *selectedAction = menu.exec(event->screenPos());
+//
+//
+//
+//        if (selectedAction == parameterAction)
+//        {
+//            openParameterDialog();
+//        }
+//        else if (selectedAction == groupAction)
+//        {
+//            //groupComponents(mpParentGraphicsScene->selectedItems());
+//            AppearanceData appdata;
+//            appdata.setIconPathUser("subsystemtmp.svg");
+//            appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
+//            GUIGroup *pGroup = new GUIGroup(this->scene()->selectedItems(), appdata, mpParentSystem);
+//            this->scene()->addItem(pGroup);
+//        }
+//        else if (selectedAction == showNameAction)
+//        {
+//            if(mpNameText->isVisible())
+//            {
+//                this->hideName();
+//            }
+//            else
+//            {
+//                this->showName();
+//            }
+//        }
+//        else if (selectedAction == loadAction)
+//        {
+//            loadFromFile();
+//        }
+//    }
+//
+//
+//
+//void GUISubsystem::openParameterDialog()
+//{
+//    ParameterDialog *dialog = new ParameterDialog(this);
+//    dialog->exec();
+//}
+//
+//void GUISubsystem::createPorts()
+//{
+//    //! @todo make sure that all old ports and connections are cleared, (in case we reload, but maybe we can discard old system and create new in that case)
+//    //Create the graphics for the ports but do NOT create new ports, use the system ports within the subsystem
+//    PortAppearanceMapT::iterator it;
+//    for (it = mAppearanceData.getPortAppearanceMap().begin(); it != mAppearanceData.getPortAppearanceMap().end(); ++it)
+//    {
+//        //! @todo fix this
+//        qDebug() << "getNode and portType for " << it.key();
+//        QString nodeType = mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.getNodeType(this->getName(), it.key());
+//        QString portType = mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess.getPortType(this->getName(), it.key());
+//        it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
+//
+//        qreal x = it.value().x;
+//        qreal y = it.value().y;
+//
+//        GUIPort *pNewPort = new GUIPort(it.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(it.value()), this);
+//        mPortListPtrs.append(pNewPort);
+//    }
+//}
+//
+////! @brief Save GuiSubsystem to a text stream
+////! @todo here we are NOT using the save function in the guiobject base class becouse subsystems are saved completely differently, need to make this more uniform in the future
+//void GUISubsystem::saveToTextStream(QTextStream &rStream, QString prepend)
+//{
+//    QPointF pos = mapToScene(boundingRect().center());
+//    if (!prepend.isEmpty())
+//    {
+//        rStream << prepend << " ";
+//    }
+//
+//    if (!mModelFilePath.isEmpty())
+//    {
+//        mLoadType = "EXTERNAL";
+//    }
+//    else
+//    {
+//        mLoadType = "EMBEDED";
+//    }
+//
+//    rStream << addQuotes(mLoadType) << " " << addQuotes(getName()) << " " << addQuotes(getTypeCQS()) << " " << addQuotes(mModelFilePath) << " "
+//            << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << " " << mpNameText->isVisible() << "\n";
+//}
+//
+//void GUISubsystem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+//{
+//    if(mModelFilePath.isEmpty())
+//    {
+//        loadFromFile();
+//    }
+//    else
+//    {
+//        return;
+//    }
+//}
 
 GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
         : GUIObject(position, rotation, appearanceData, startSelected, gfxType, system, parent)
@@ -1541,6 +1524,11 @@ GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, qre
     //Sets the ports
     createPorts();
     refreshDisplayName();
+}
+
+GUISystemPort::~GUISystemPort()
+{
+    //! @todo delete systemport in core
 }
 
 //! @brief Help function to create ports in the component when it is created
@@ -1555,11 +1543,11 @@ void GUISystemPort::createPorts()
 
         i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
 
-        mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.addSystemPort(i.key()));
+        mAppearanceData.setName(mpParentSystem->mCoreSystemAccess.addSystemPort(i.key()));
 
         //We supply ptr to rootsystem to indicate that this is a systemport
         //! @todo this is a very bad way of doing this (ptr to rootsystem for systemport), really need to figure out some better way
-        mpGuiPort = new GUIPort(mAppearanceData.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this, &(mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem));
+        mpGuiPort = new GUIPort(mAppearanceData.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this, &(mpParentSystem->mpParentProjectTab->mpSystem->mCoreSystemAccess));
         mPortListPtrs.append(mpGuiPort);
     }
 }
@@ -1582,7 +1570,7 @@ void GUISystemPort::setName(QString newName, renameRestrictions renameSettings)
         if (renameSettings == CORERENAMEONLY)
         {
             //Set name in core component, Also set the current name to the resulting one (might have been changed)
-            mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.renameSystemPort(oldName, newName));
+            mAppearanceData.setName(mpParentSystem->mCoreSystemAccess.renameSystemPort(oldName, newName));
             refreshDisplayName();
             mpGuiPort->setDisplayName(mAppearanceData.getName()); //change the actual gui port name
         }
@@ -1598,14 +1586,6 @@ void GUISystemPort::setName(QString newName, renameRestrictions renameSettings)
 int GUISystemPort::type() const
 {
     return Type;
-}
-
-
-//! Delete the system port in the core
-void GUISystemPort::deleteInHopsanCore()
-{
-    //qDebug() << "In GUISystemPort::deleteInHopsanCore";
-    mpParentSystem->mGUIRootSystem.deleteSystemPort(mAppearanceData.getName());
 }
 
 

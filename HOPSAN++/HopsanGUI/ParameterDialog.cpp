@@ -75,13 +75,13 @@ ParameterDialog::ParameterDialog(GUIComponent *pGUIComponent, QWidget *parent)
 }
 
 
-ParameterDialog::ParameterDialog(GUISubsystem *pGUISubsystem, QWidget *parent)     : QDialog(parent)
-{
-    mpGUIObject = pGUISubsystem;
-    isGUISubsystem = true;
-
-    createEditStuff();
-}
+//ParameterDialog::ParameterDialog(GUISubsystem *pGUISubsystem, QWidget *parent)     : QDialog(parent)
+//{
+//    mpGUIObject = pGUISubsystem;
+//    isGUISubsystem = true;
+//
+//    createEditStuff();
+//}
 
 ParameterDialog::ParameterDialog(GUISystem *pGUISubsystem, QWidget *parent)     : QDialog(parent)
 {

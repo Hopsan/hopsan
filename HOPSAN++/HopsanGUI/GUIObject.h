@@ -84,7 +84,7 @@ public:
     AppearanceData* getAppearanceData();
     void refreshAppearance();
 
-    int getPortNumber(GUIPort *port);
+    //int getPortNumber(GUIPort *port);
     int getNameTextPos();
     void setNameTextPos(int textPos);
 
@@ -99,9 +99,6 @@ public:
     virtual void setParameterValue(QString name, double value);
 
     GUISystem *mpParentSystem;
-
-    virtual void deleteInHopsanCore();
-    virtual QString createInHopsanCore() {assert(false);}
 
     virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());
     virtual void loadFromFile(QString modelFileName=QString()) {assert(false);} //Only available in GUISubsystem for now
@@ -232,6 +229,7 @@ class GUIComponent : public GUIObject
     Q_OBJECT
 public:
     GUIComponent(AppearanceData appearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
+    ~GUIComponent();
 
     QVector<QString> getParameterNames();
     QString getParameterUnit(QString name);
@@ -244,7 +242,6 @@ public:
     void setName(QString name, renameRestrictions renameSettings=UNRESTRICTED);
     QString getTypeName();
     QString getTypeCQS();
-    void deleteInHopsanCore();
 
     enum { Type = UserType + 3 };
     int type() const;
@@ -265,39 +262,39 @@ private:
 };
 
 
-class GUISubsystem : public GUIContainerObject
-{
-    Q_OBJECT
-public:
-    GUISubsystem(AppearanceData appearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
-
-    void deleteInHopsanCore();
-
-    QString getTypeName();
-    void setName(QString newName, renameRestrictions renameSettings=UNRESTRICTED);
-    void setTypeCQS(QString typestring);
-    QString getTypeCQS();
-    void loadFromFile(QString modelFileName=QString());
-
-    void saveToTextStream(QTextStream &rStream, QString prepend);
-
-    QVector<QString> getParameterNames();
-
-    enum { Type = UserType + 4 };
-    int type() const;
-
-protected:
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    void openParameterDialog();
-    void createPorts();
-
-private:
-    QString mModelFilePath;
-    //QString mGraphicsFilePath;
-    bool   mIsEmbedded;
-    QString mLoadType;
-};
+//class GUISubsystem : public GUIContainerObject
+//{
+//    Q_OBJECT
+//public:
+//    GUISubsystem(AppearanceData appearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
+//
+//    void deleteInHopsanCore();
+//
+//    QString getTypeName();
+//    void setName(QString newName, renameRestrictions renameSettings=UNRESTRICTED);
+//    void setTypeCQS(QString typestring);
+//    QString getTypeCQS();
+//    void loadFromFile(QString modelFileName=QString());
+//
+//    void saveToTextStream(QTextStream &rStream, QString prepend);
+//
+//    QVector<QString> getParameterNames();
+//
+//    enum { Type = UserType + 4 };
+//    int type() const;
+//
+//protected:
+//    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+//    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+//    void openParameterDialog();
+//    void createPorts();
+//
+//private:
+//    QString mModelFilePath;
+//    //QString mGraphicsFilePath;
+//    bool   mIsEmbedded;
+//    QString mLoadType;
+//};
 
 
 class GUISystemPort : public GUIObject
@@ -305,9 +302,9 @@ class GUISystemPort : public GUIObject
     Q_OBJECT
 public:
     GUISystemPort(AppearanceData appearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected = SELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
+    ~GUISystemPort();
     QString getTypeName();
     void setName(QString newName, renameRestrictions renameSettings);
-    void deleteInHopsanCore();
 
     enum { Type = UserType + 5 };
     int type() const;

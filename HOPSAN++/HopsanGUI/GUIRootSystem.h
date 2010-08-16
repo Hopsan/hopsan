@@ -55,14 +55,14 @@ public:
     double getDesiredTimeStep();
 
     void setRootTypeCQS(const QString cqs_type, bool doOnlyLocalSet=false);
-    void setSystemTypeCQS(QString systemName, const std::string cqs_type, bool doOnlyLocalSet=false);
+    void setSubSystemTypeCQS(QString systemName, const std::string cqs_type, bool doOnlyLocalSet=false);
     QString getTypeCQS(QString componentName);
-    QString getSystemTypeCQS(QString systemName); //!< @todo dont think that we need this one the component specifik one should do
+    //QString getSystemTypeCQS(QString systemName); //!< @todo dont think that we need this one the component specifik one should do
 
-    void setRootSystemName(QString name, bool doOnlyLocalRename=false);
-    QString getName(); //!< Shouldnt this one be named getRootSystemName like set name above
-    QString setSystemName(QString systemname, QString name, bool doOnlyLocalRename=false); //!< @todo This might not be necessary, should be able to use the component base class specifik one
-    QString rename(QString componentName, QString name, bool doOnlyLocalRename=false);
+    void setRootSystemName(QString name);
+    QString getRootSystemName();
+    //QString setSystemName(QString systemname, QString name, bool doOnlyLocalRename=false); //!< @todo This might not be necessary, should be able to use the component base class specifik one
+    QString renameSubComponent(QString componentName, QString name);
 
     QString getPortType(QString componentName, QString portName);
     QString getNodeType(QString componentName, QString portName);

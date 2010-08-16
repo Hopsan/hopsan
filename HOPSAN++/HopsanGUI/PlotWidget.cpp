@@ -419,10 +419,10 @@ void VariableList::updateList()
 
             QVector<QString> parameterNames;
             QVector<QString> parameterUnits;
-            mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mGUIRootSystem.getPlotDataNamesAndUnits((*itp)->getGUIComponentName(), (*itp)->getName(), parameterNames, parameterUnits);
+            mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mCoreSystemAccess.getPlotDataNamesAndUnits((*itp)->getGUIComponentName(), (*itp)->getName(), parameterNames, parameterUnits);
 
             qDebug() << "guiComponentName: " << (*itp)->getGUIComponentName() << " portName: " << (*itp)->getName();
-            QVector<double> time = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mGUIRootSystem.getTimeVector((*itp)->getGUIComponentName(), (*itp)->getName()));
+            QVector<double> time = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mCoreSystemAccess.getTimeVector((*itp)->getGUIComponentName(), (*itp)->getName()));
             qDebug() << "time.size: " << time.size();
             if(time.size() > 0)     //If time vector is greater than zero we have something to plot!
             {
@@ -432,7 +432,7 @@ void VariableList::updateList()
                     tempListWidget = new QListWidgetItem((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", this);
                     tempListWidget->setBackgroundColor(backgroundColor);
                     tempListWidget->setFlags(Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-                    mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mGUIRootSystem.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), parameterNames[i], y);
+                    mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mCoreSystemAccess.getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), parameterNames[i], y);
                     xMap.insert((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", time);
                     yMap.insert((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", y);
                     yLabelMap.insert((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", parameterNames[i]);

@@ -677,7 +677,7 @@ void MainWindow::fixTimeStep()
 
     if (mpProjectTabs->getCurrentTab()) //crashes if not if statement if no tabs are there...
     {
-        mpProjectTabs->getCurrentTab()->mpSystem->mGUIRootSystem.setDesiredTimeStep(getTimeStepLabel());
+        mpProjectTabs->getCurrentTab()->mpSystem->mCoreSystemAccess.setDesiredTimeStep(getTimeStepLabel());
     }
 }
 

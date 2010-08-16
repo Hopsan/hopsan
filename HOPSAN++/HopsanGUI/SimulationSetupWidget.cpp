@@ -121,7 +121,7 @@ void SimulationSetupWidget::fixTimeStep()
 
     if (mpParentMainWindow->mpProjectTabs->getCurrentTab()) //crashes if not if statement if no tabs are there...
     {
-        mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mGUIRootSystem.setDesiredTimeStep(getTimeStepLabel());
+        mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mCoreSystemAccess.setDesiredTimeStep(getTimeStepLabel());
     }
 }
 

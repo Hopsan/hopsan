@@ -237,14 +237,14 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
 
 void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, GUIRootSystem* pRootSystem, undoStatus undoSettings)
 {
-    qDebug() << rData.startComponentName << " " << rData.endComponentName << " " << pRootSystem->getName();
+    qDebug() << rData.startComponentName << " " << rData.endComponentName << " " << pRootSystem->getRootSystemName();
     bool success = pRootSystem->connect(rData.startComponentName, rData.startPortName, rData.endComponentName, rData.endPortName);
     if (success)
     {
         //Check if the component names are the same as the guiroot system name in such cases we should search for the actual systemport gui object instead
         //!< @todo this is extremely strange, some day we need to figure out a way that allways works the same way, this will likly mean MAJOR changes
         QString startGuiObjName, endGuiObjName;
-        if (rData.startComponentName == pRootSystem->getName())
+        if (rData.startComponentName == pRootSystem->getRootSystemName())
         {
             startGuiObjName = rData.startPortName;
         }
@@ -252,7 +252,7 @@ void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, GUIRootSy
         {
             startGuiObjName = rData.startComponentName;
         }
-        if (rData.endComponentName == pRootSystem->getName())
+        if (rData.endComponentName == pRootSystem->getRootSystemName())
         {
             endGuiObjName = rData.endPortName;
         }
