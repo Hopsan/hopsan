@@ -60,6 +60,7 @@ class QPushButton;
 class GUIObject;
 class GUIComponent;
 class GUISubsystem;
+class GUISystem;
 
 class ParameterDialog : public QDialog
 {
@@ -68,6 +69,7 @@ class ParameterDialog : public QDialog
 public:
     ParameterDialog(GUIComponent *pGUIComponent, QWidget *parent = 0);
     ParameterDialog(GUISubsystem *pGUISubsystem, QWidget *parent = 0);
+    ParameterDialog(GUISystem *pGUISubsystem, QWidget *parent = 0);
 
 protected slots:
     void setParameters();

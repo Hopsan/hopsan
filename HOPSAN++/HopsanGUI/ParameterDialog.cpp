@@ -51,6 +51,7 @@
 #include "ParameterDialog.h"
 #include "MainWindow.h"
 #include "GUIObject.h"
+#include "GUISystem.h"
 #include "MessageWidget.h"
 
 
@@ -75,6 +76,14 @@ ParameterDialog::ParameterDialog(GUIComponent *pGUIComponent, QWidget *parent)
 
 
 ParameterDialog::ParameterDialog(GUISubsystem *pGUISubsystem, QWidget *parent)     : QDialog(parent)
+{
+    mpGUIObject = pGUISubsystem;
+    isGUISubsystem = true;
+
+    createEditStuff();
+}
+
+ParameterDialog::ParameterDialog(GUISystem *pGUISubsystem, QWidget *parent)     : QDialog(parent)
 {
     mpGUIObject = pGUISubsystem;
     isGUISubsystem = true;
