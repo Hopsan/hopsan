@@ -1001,6 +1001,12 @@ void GUIObject::deleteMe()
     mpParentGraphicsView->deleteGUIObject(this->getName());
 }
 
+GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, AppearanceData appearanceData, selectionStatus startSelected, graphicsType gfxType, GraphicsScene *scene, QGraphicsItem *parent)
+        : GUIObject(position, rotation, appearanceData, startSelected, gfxType, scene, parent)
+{
+    //Something
+}
+
 
 GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
     : GUIObject(position, rotation, appearanceData, startSelected, gfxType, scene, parent)
@@ -1209,7 +1215,7 @@ void GUIComponent::saveToTextStream(QTextStream &rStream, QString prepend)
 
 
 GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
-    : GUIObject(position, rotation, appearanceData, startSelected, gfxType, scene, parent)
+    : GUIContainerObject(position, rotation, appearanceData, startSelected, gfxType, scene, parent)
 {
     //Set default values
     mLoadType = "Empty";

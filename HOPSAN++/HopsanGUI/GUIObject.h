@@ -212,6 +212,15 @@ private:
     QPen mHoverPen;
 };
 
+class GUIContainerObject : public GUIObject
+{
+    Q_OBJECT
+public:
+    GUIContainerObject(QPoint position, qreal rotation, AppearanceData appearanceData, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, GraphicsScene *scene=0, QGraphicsItem *parent = 0);
+
+
+};
+
 
 class GUIComponent : public GUIObject
 {
@@ -251,7 +260,7 @@ private:
 };
 
 
-class GUISubsystem : public GUIObject
+class GUISubsystem : public GUIContainerObject
 {
     Q_OBJECT
 public:
