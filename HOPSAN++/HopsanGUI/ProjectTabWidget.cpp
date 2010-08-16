@@ -99,21 +99,21 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     MainWindow *pMainWindow = mpParentProjectTabWidget->mpParentMainWindow;
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
-    mGUIRootSystem.setDesiredTimeStep(.001);
-    mGUIRootSystem.setRootTypeCQS("S");
+//    mGUIRootSystem.setDesiredTimeStep(.001);
+//    mGUIRootSystem.setRootTypeCQS("S");
 
     emit checkMessages();
 
-    double timeStep = mGUIRootSystem.getDesiredTimeStep();
+    double timeStep = mpSystem->mGUIRootSystem.getDesiredTimeStep();
 
     mpParentProjectTabWidget->mpParentMainWindow->setTimeStepLabel(timeStep);
 
     mIsSaved = true;
     mModelFileName.clear();
 
-    mpGraphicsScene = mpSystem->mpScene;
+    //mpGraphicsScene = ;
     mpGraphicsView  = new GraphicsView(this);
-    mpGraphicsView->setScene(mpGraphicsScene);
+    mpGraphicsView->setScene(mpSystem->mpScene);
 
     QVBoxLayout *tabLayout = new QVBoxLayout;
     tabLayout->addWidget(mpGraphicsView);
@@ -361,7 +361,7 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
     ProjectTab *newTab = new ProjectTab(this);
     //newTab->mIsSaved = false;
 
-    newTab->mGUIRootSystem.setRootSystemName(tabName);
+    newTab->mpSystem->mGUIRootSystem.setRootSystemName(tabName);
 
     //addTab(newTab, tabName.append(QString("*")));
     this->addTab(newTab, tabName);
@@ -501,7 +501,7 @@ void ProjectTabWidget::simulateCurrent()
         return;
     }
 
-    if(!this->getCurrentTab()->mGUIRootSystem.isSimulationOk())
+    if(!this->getCurrentTab()->mpSystem->mGUIRootSystem.isSimulationOk())
     {
         mpParentMainWindow->mpMessageWidget->printCoreMessages();
         mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("Simulation failed"));
@@ -514,11 +514,11 @@ void ProjectTabWidget::simulateCurrent()
     double startTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->getStartTimeLabel();
     double finishTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->getFinishTimeLabel();
     double dt = finishTime - startTime;
-    size_t nSteps = dt/pCurrentTab->mGUIRootSystem.getDesiredTimeStep();
+    size_t nSteps = dt/pCurrentTab->mpSystem->mGUIRootSystem.getDesiredTimeStep();
 
 
         //Ask core to initialize simulation
-    InitializationThread actualInitialization(&(pCurrentTab->mGUIRootSystem), startTime, finishTime, this);
+    InitializationThread actualInitialization(&(pCurrentTab->mpSystem->mGUIRootSystem), startTime, finishTime, this);
     actualInitialization.start();
     actualInitialization.setPriority(QThread::HighestPriority);
     ProgressBarThread progressThread(this);
@@ -535,7 +535,7 @@ void ProjectTabWidget::simulateCurrent()
         progressBar.setValue(i++);
         if (progressBar.wasCanceled())
         {
-            pCurrentTab->mGUIRootSystem.stop();
+            pCurrentTab->mpSystem->mGUIRootSystem.stop();
         }
     }
     progressBar.setValue(i);
@@ -548,7 +548,7 @@ void ProjectTabWidget::simulateCurrent()
     {
         QTime simTimer;
         simTimer.start();
-        SimulationThread actualSimulation(&(pCurrentTab->mGUIRootSystem), startTime, finishTime, this);
+        SimulationThread actualSimulation(&(pCurrentTab->mpSystem->mGUIRootSystem), startTime, finishTime, this);
         actualSimulation.start();
         actualSimulation.setPriority(QThread::HighestPriority);
             //! @todo TimeCriticalPriority seem to work on dual core, is it a problem on single core machines only?
@@ -563,14 +563,14 @@ void ProjectTabWidget::simulateCurrent()
            progressThread.start();
            progressThread.setPriority(QThread::LowestPriority);
            progressThread.wait();
-           progressBar.setValue((size_t)(getCurrentTab()->mGUIRootSystem.getCurrentTime()/dt * nSteps));
+           progressBar.setValue((size_t)(getCurrentTab()->mpSystem->mGUIRootSystem.getCurrentTime()/dt * nSteps));
            if (progressBar.wasCanceled())
            {
-              pCurrentTab->mGUIRootSystem.stop();
+              pCurrentTab->mpSystem->mGUIRootSystem.stop();
            }
         }
         progressThread.quit();
-        progressBar.setValue((size_t)(getCurrentTab()->mGUIRootSystem.getCurrentTime()/dt * nSteps));
+        progressBar.setValue((size_t)(getCurrentTab()->mpSystem->mGUIRootSystem.getCurrentTime()/dt * nSteps));
 
         actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
         actualSimulation.quit();
@@ -581,9 +581,9 @@ void ProjectTabWidget::simulateCurrent()
     }
 
     if (progressBar.wasCanceled())
-        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(pCurrentTab->mGUIRootSystem.getName()).append(tr("' was terminated!"))));
+        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(pCurrentTab->mpSystem->mGUIRootSystem.getName()).append(tr("' was terminated!"))));
     else
-    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulated '").append(pCurrentTab->mGUIRootSystem.getName()).append(tr("' successfully!"))));
+    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulated '").append(pCurrentTab->mpSystem->mGUIRootSystem.getName()).append(tr("' successfully!"))));
     emit checkMessages();
 }
 
@@ -643,7 +643,7 @@ void ProjectTabWidget::loadModel()
     getCurrentTab()->mpGraphicsView->resetBackgroundBrush();
 
     //Sets the file name (exluding path and ending) as the model name
-    getCurrentTab()->mGUIRootSystem.setRootSystemName(fileInfo.baseName());
+    getCurrentTab()->mpSystem->mGUIRootSystem.setRootSystemName(fileInfo.baseName());
 
     while ( !inputStream.atEnd() )
     {
@@ -673,7 +673,7 @@ void ProjectTabWidget::loadModel()
 
         if ( inputWord == "CONNECT" )
         {
-            loadConnector(inputStream, pCurrentTab->mpSystem, &(pCurrentTab->mGUIRootSystem), NOUNDO);
+            loadConnector(inputStream, pCurrentTab->mpSystem, &(pCurrentTab->mpSystem->mGUIRootSystem), NOUNDO);
         }
     }
     //Deselect all components
@@ -720,7 +720,7 @@ void ProjectTabWidget::saveModel(saveTarget saveAsFlag)
     }
 
     //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
-    pCurrentTab->mGUIRootSystem.setRootSystemName(fileInfo.baseName());
+    pCurrentTab->mpSystem->mGUIRootSystem.setRootSystemName(fileInfo.baseName());
     this->setTabText(this->currentIndex(), fileInfo.fileName());
 
     //QLineF line(QPointF(sceneCenterPointF.x(), sceneCenterPointF.y()), QPointF(groupPortPoint.x(), groupPortPoint.y()));

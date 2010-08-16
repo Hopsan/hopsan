@@ -50,6 +50,7 @@
 #include "SimulationSetupWidget.h"
 #include "MainWindow.h"
 #include "ProjectTabWidget.h"
+#include "GUISystem.h"
 
 
 //! @class SimulationSetupWidget
@@ -120,7 +121,7 @@ void SimulationSetupWidget::fixTimeStep()
 
     if (mpParentMainWindow->mpProjectTabs->getCurrentTab()) //crashes if not if statement if no tabs are there...
     {
-        mpParentMainWindow->mpProjectTabs->getCurrentTab()->mGUIRootSystem.setDesiredTimeStep(getTimeStepLabel());
+        mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mGUIRootSystem.setDesiredTimeStep(getTimeStepLabel());
     }
 }
 

@@ -144,7 +144,7 @@ void UndoStack::undoOneStep()
             }
             else if ( undoevent == "DELETEDCONNECTOR" )
             {
-                loadConnector(poststream, mpParentSystem, &(mpParentSystem->mpParentProjectTab->mGUIRootSystem), NOUNDO);
+                loadConnector(poststream, mpParentSystem, &(mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem), NOUNDO);
             }
             else if( undoevent == "ADDEDOBJECT" )
             {
@@ -253,7 +253,7 @@ void UndoStack::redoOneStep()
             }
             else if( redoevent == "ADDEDCONNECTOR" )
             {
-                loadConnector(poststream, mpParentSystem, &(mpParentSystem->mpParentProjectTab->mGUIRootSystem), NOUNDO);
+                loadConnector(poststream, mpParentSystem, &(mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem), NOUNDO);
             }
             else if( redoevent == "RENAMEDOBJECT" )
             {

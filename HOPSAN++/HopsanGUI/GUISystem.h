@@ -15,6 +15,8 @@ class AppearanceData;
 class ProjectTab;
 //class GUIContainerObject;
 class UndoStack;
+//class GUIRootSystem;
+#include "GUIRootSystem.h"
 
 class GUISystem : public GUIContainerObject
 {
@@ -74,6 +76,9 @@ signals:
 
 private:
     QString *mpCopyData;
+
+public:
+    GUIRootSystem mGUIRootSystem; //!< @todo make this private later
 
 
     //! Old subsystem stuff

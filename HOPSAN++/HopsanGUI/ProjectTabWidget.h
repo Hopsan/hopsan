@@ -116,9 +116,9 @@ public:
     QString mModelFileName;                 //Till subsystem
     graphicsType setGfxType;                //Till subsystem
     ProjectTabWidget *mpParentProjectTabWidget;
-    GUIRootSystem mGUIRootSystem;           //Till subsystem
+    //GUIRootSystem mGUIRootSystem;           //Till subsystem
     GraphicsView *mpGraphicsView;
-    GraphicsScene *mpGraphicsScene;         //Till subsystem
+    //GraphicsScene *mpGraphicsScene;         //Till subsystem
     double getStartTime();                  //Till subsystem
     double getTimeStep();                   //Till subsystem
     double getStopTime();                   //Till subsystem

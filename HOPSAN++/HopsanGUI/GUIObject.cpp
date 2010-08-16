@@ -1034,7 +1034,7 @@ GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, qreal
 //        //Lets rename the core object to the gui name that is set in the txt description file, we take the name theat this function returns
 //        mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mGUIRootSystem.rename(corename, getName())); //Cant use setName here as that would call an aditional rename (of someone else)
 //    }
-    mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mGUIRootSystem.createComponent(mAppearanceData.getTypeName(), this->getName()));
+    mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.createComponent(mAppearanceData.getTypeName(), this->getName()));
 
     //Sets the ports
     createPorts();
@@ -1063,7 +1063,7 @@ void GUIComponent::setName(QString newName, renameRestrictions renameSettings)
         //Check if we want to avoid trying to rename in the graphics view map
         if (renameSettings == CORERENAMEONLY)
         {
-            mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mGUIRootSystem.rename(this->getName(), newName));
+            mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.rename(this->getName(), newName));
             refreshDisplayName();
         }
         else
@@ -1093,34 +1093,34 @@ QString GUIComponent::getTypeName()
 
 QString GUIComponent::getTypeCQS()
 {
-    return mpParentSystem->mpParentProjectTab->mGUIRootSystem.getTypeCQS(this->getName());
+    return mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getTypeCQS(this->getName());
 }
 
 //! @brief Get a vector with the names of the available parameters
 QVector<QString> GUIComponent::getParameterNames()
 {
-    return mpParentSystem->mpParentProjectTab->mGUIRootSystem.getParameterNames(this->getName());
+    return mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getParameterNames(this->getName());
 }
 
 QString GUIComponent::getParameterUnit(QString name)
 {
-    return mpParentSystem->mpParentProjectTab->mGUIRootSystem.getParameterUnit(this->getName(), name);
+    return mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getParameterUnit(this->getName(), name);
 }
 
 QString GUIComponent::getParameterDescription(QString name)
 {
-    return mpParentSystem->mpParentProjectTab->mGUIRootSystem.getParameterDescription(this->getName(), name);
+    return mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getParameterDescription(this->getName(), name);
 }
 
 double GUIComponent::getParameterValue(QString name)
 {
-    return mpParentSystem->mpParentProjectTab->mGUIRootSystem.getParameterValue(this->getName(), name);
+    return mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getParameterValue(this->getName(), name);
 }
 
 //! @brief Set a parameter value, wrapps hopsan core
 void GUIComponent::setParameterValue(QString name, double value)
 {
-    mpParentSystem->mpParentProjectTab->mGUIRootSystem.setParameter(this->getName(), name, value);
+    mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.setParameter(this->getName(), name, value);
 }
 
 void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
@@ -1177,12 +1177,12 @@ void GUIComponent::openParameterDialog()
 void GUIComponent::createPorts()
 {
     //! @todo make sure that all old ports and connections are cleared, (not really necessary in guicomponents)
-    QString cqsType = mpParentSystem->mpParentProjectTab->mGUIRootSystem.getTypeCQS(getName());
+    QString cqsType = mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getTypeCQS(getName());
     PortAppearanceMapT::iterator i;
     for (i = mAppearanceData.getPortAppearanceMap().begin(); i != mAppearanceData.getPortAppearanceMap().end(); ++i)
     {
-        QString nodeType = mpParentSystem->mpParentProjectTab->mGUIRootSystem.getNodeType(this->getName(), i.key());
-        QString portType = mpParentSystem->mpParentProjectTab->mGUIRootSystem.getPortType(this->getName(), i.key());
+        QString nodeType = mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getNodeType(this->getName(), i.key());
+        QString portType = mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getPortType(this->getName(), i.key());
         i.value().selectPortIcon(cqsType, portType, nodeType);
 
         qreal x = i.value().x;
@@ -1196,7 +1196,7 @@ void GUIComponent::createPorts()
 
 void GUIComponent::deleteInHopsanCore()
 {
-    mpParentSystem->mpParentProjectTab->mGUIRootSystem.removeSubComponent(this->getName(), true);
+    mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.removeSubComponent(this->getName(), true);
 }
 
 
@@ -1214,13 +1214,13 @@ void GUIComponent::saveToTextStream(QTextStream &rStream, QString prepend)
 //            << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << "\n";
     GUIObject::saveToTextStream(rStream, prepend);
 
-    QVector<QString> parameterNames = mpParentSystem->mpParentProjectTab->mGUIRootSystem.getParameterNames(this->getName());
+    QVector<QString> parameterNames = mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getParameterNames(this->getName());
     QVector<QString>::iterator pit;
     for(pit = parameterNames.begin(); pit != parameterNames.end(); ++pit)
     {
         //! @todo It is a bit strange that we can not control the parameter keyword, but then agian spliting this into a separate function with its own prepend variable would also be wierd
         rStream << "PARAMETER " << addQuotes(getName()) << " " << addQuotes(*pit) << " " <<
-                mpParentSystem->mpParentProjectTab->mGUIRootSystem.getParameterValue(this->getName(), (*pit)) << "\n";
+                mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getParameterValue(this->getName(), (*pit)) << "\n";
     }
 }
 
@@ -1244,7 +1244,7 @@ GUISubsystem::GUISubsystem(AppearanceData appearanceData, QPoint position, qreal
 //        //Lets rename the core object to the gui name that is set in the txt description file, we take the name that this function returns
 //        mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mGUIRootSystem.rename(corename, getName())); //Cant use setName here as thewould call an aditional rename (of someone else)
 //    }
-    mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mGUIRootSystem.createSubSystem(this->getName()));
+    mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.createSubSystem(this->getName()));
 
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
@@ -1273,7 +1273,7 @@ void GUISubsystem::setName(QString newName, renameRestrictions renameSettings)
         //Check if we want to avoid trying to rename in the graphics view map
         if (renameSettings == CORERENAMEONLY)
         {
-            mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mGUIRootSystem.setSystemName(oldName, newName));
+            mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.setSystemName(oldName, newName));
             refreshDisplayName();
         }
         else
@@ -1294,17 +1294,17 @@ QString GUISubsystem::getTypeName()
 
 void GUISubsystem::setTypeCQS(QString typestring)
 {
-    mpParentSystem->mpParentProjectTab->mGUIRootSystem.setSystemTypeCQS(this->getName(), typestring.toStdString()); //ehhh this will set the CQS type for the paren system (the root even) we want to set this partiular systems CQS type
+    mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.setSystemTypeCQS(this->getName(), typestring.toStdString()); //ehhh this will set the CQS type for the paren system (the root even) we want to set this partiular systems CQS type
 }
 
 QString GUISubsystem::getTypeCQS()
 {
-    return mpParentSystem->mpParentProjectTab->mGUIRootSystem.getSystemTypeCQS(this->getName());  //ehhh this will get the CQS type for the paren system (the root even) we want this partiular systems CQS type
+    return mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getSystemTypeCQS(this->getName());  //ehhh this will get the CQS type for the paren system (the root even) we want this partiular systems CQS type
 }
 
 QVector<QString> GUISubsystem::getParameterNames()
 {
-    return mpParentSystem->mpParentProjectTab->mGUIRootSystem.getParameterNames(this->getName());
+    return mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getParameterNames(this->getName());
 }
 
 //void GUISubsystem::refreshAppearance();
@@ -1397,7 +1397,7 @@ void GUISubsystem::loadFromFile(QString modelFileName)
     qDebug() << "Appearance set";
 
     //Load the contents of the subsystem from the external file
-    mpParentSystem->mpParentProjectTab->mGUIRootSystem.loadSystemFromFileCoreOnly(this->getName(), modelFileName);
+    mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.loadSystemFromFileCoreOnly(this->getName(), modelFileName);
     qDebug() << "Loaded in core";
 
     this->refreshAppearance();
@@ -1415,7 +1415,7 @@ int GUISubsystem::type() const
 
 void GUISubsystem::deleteInHopsanCore()
 {
-    mpParentSystem->mpParentProjectTab->mGUIRootSystem.removeSubComponent(this->getName(), true);
+    mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.removeSubComponent(this->getName(), true);
 }
 
 //! @todo Maybe should try to reduce multiple copys of same functions with other GUIObjects
@@ -1488,8 +1488,8 @@ void GUISubsystem::createPorts()
     {
         //! @todo fix this
         qDebug() << "getNode and portType for " << it.key();
-        QString nodeType = mpParentSystem->mpParentProjectTab->mGUIRootSystem.getNodeType(this->getName(), it.key());
-        QString portType = mpParentSystem->mpParentProjectTab->mGUIRootSystem.getPortType(this->getName(), it.key());
+        QString nodeType = mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getNodeType(this->getName(), it.key());
+        QString portType = mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.getPortType(this->getName(), it.key());
         it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
 
         qreal x = it.value().x;
@@ -1555,11 +1555,11 @@ void GUISystemPort::createPorts()
 
         i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
 
-        mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mGUIRootSystem.addSystemPort(i.key()));
+        mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.addSystemPort(i.key()));
 
         //We supply ptr to rootsystem to indicate that this is a systemport
         //! @todo this is a very bad way of doing this (ptr to rootsystem for systemport), really need to figure out some better way
-        mpGuiPort = new GUIPort(mAppearanceData.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this, &(mpParentSystem->mpParentProjectTab->mGUIRootSystem));
+        mpGuiPort = new GUIPort(mAppearanceData.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this, &(mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem));
         mPortListPtrs.append(mpGuiPort);
     }
 }
@@ -1582,7 +1582,7 @@ void GUISystemPort::setName(QString newName, renameRestrictions renameSettings)
         if (renameSettings == CORERENAMEONLY)
         {
             //Set name in core component, Also set the current name to the resulting one (might have been changed)
-            mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mGUIRootSystem.renameSystemPort(oldName, newName));
+            mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mpSystem->mGUIRootSystem.renameSystemPort(oldName, newName));
             refreshDisplayName();
             mpGuiPort->setDisplayName(mAppearanceData.getName()); //change the actual gui port name
         }
@@ -1605,7 +1605,7 @@ int GUISystemPort::type() const
 void GUISystemPort::deleteInHopsanCore()
 {
     //qDebug() << "In GUISystemPort::deleteInHopsanCore";
-    mpParentSystem->mpParentProjectTab->mGUIRootSystem.deleteSystemPort(mAppearanceData.getName());
+    mpParentSystem->mGUIRootSystem.deleteSystemPort(mAppearanceData.getName());
 }
 
 

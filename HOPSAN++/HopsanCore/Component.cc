@@ -1804,6 +1804,13 @@ bool ComponentSystem::isSimulationOk()
     if (mComponentUndefinedptrs.size() > 0)
     {
         //! @todo maybe list their names
+        cout << "Wrong CQStype: ";
+        for (int i=0; i<mComponentUndefinedptrs.size(); ++i)
+        {
+             cout << mComponentUndefinedptrs[i]->getName() << " ";
+        }
+        cout << endl;
+
         gCoreMessageHandler.addErrorMessage("There are components without correct CQS type pressent, you need to fix this before simulation");
         return false;
     }

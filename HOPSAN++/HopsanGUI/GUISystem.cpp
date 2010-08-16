@@ -13,6 +13,7 @@
 #include "GraphicsView.h"
 #include "LibraryWidget.h"
 #include "loadObjects.h"
+#include "GUIRootSystem.h"
 
 GUISystem::GUISystem(AppearanceData appearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, ProjectTab *parentProjectTab, QGraphicsItem *parent)
     : GUIContainerObject(position, rotation, appearanceData, startSelected, gfxType, system, parent)
@@ -47,7 +48,10 @@ GUISystem::GUISystem(AppearanceData appearanceData, QPoint position, qreal rotat
     mLoadType = "Empty";
     mModelFilePath = "";
 
-    mAppearanceData.setName(mpParentProjectTab->mGUIRootSystem.createSubSystem(this->getName()));
+    //mAppearanceData.setName(mpParentProjectTab->mpSystem->mGUIRootSystem.createSubSystem(this->getName()));
+    //! @todo Make sure that this code actaully works
+    mGUIRootSystem.setDesiredTimeStep(.001);
+    mGUIRootSystem.setRootTypeCQS("S");
 
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
@@ -90,7 +94,10 @@ GUISystem::GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *parent)
     mLoadType = "Empty";
     mModelFilePath = "";
 
-    mAppearanceData.setName(mpParentProjectTab->mGUIRootSystem.createSubSystem(this->getName()));
+    //mAppearanceData.setName(mpParentProjectTab->mpSystem->mGUIRootSystem.createSubSystem(this->getName()));
+    //! @todo Make sure that this code actaully works
+    mGUIRootSystem.setDesiredTimeStep(.001);
+    mGUIRootSystem.setRootTypeCQS("S");
 
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
@@ -119,7 +126,7 @@ void GUISystem::setName(QString newName, renameRestrictions renameSettings)
         //Check if we want to avoid trying to rename in the graphics view map
         if (renameSettings == CORERENAMEONLY)
         {
-            mAppearanceData.setName(mpParentProjectTab->mGUIRootSystem.setSystemName(oldName, newName));
+            mAppearanceData.setName(mpParentProjectTab->mpSystem->mGUIRootSystem.setSystemName(oldName, newName));
             refreshDisplayName();
         }
         else
@@ -140,17 +147,17 @@ QString GUISystem::getTypeName()
 
 void GUISystem::setTypeCQS(QString typestring)
 {
-    mpParentProjectTab->mGUIRootSystem.setSystemTypeCQS(this->getName(), typestring.toStdString()); //ehhh this will set the CQS type for the paren system (the root even) we want to set this partiular systems CQS type
+    mpParentProjectTab->mpSystem->mGUIRootSystem.setSystemTypeCQS(this->getName(), typestring.toStdString()); //ehhh this will set the CQS type for the paren system (the root even) we want to set this partiular systems CQS type
 }
 
 QString GUISystem::getTypeCQS()
 {
-    return mpParentProjectTab->mGUIRootSystem.getSystemTypeCQS(this->getName());  //ehhh this will get the CQS type for the paren system (the root even) we want this partiular systems CQS type
+    return mpParentProjectTab->mpSystem->mGUIRootSystem.getSystemTypeCQS(this->getName());  //ehhh this will get the CQS type for the paren system (the root even) we want this partiular systems CQS type
 }
 
 QVector<QString> GUISystem::getParameterNames()
 {
-    return mpParentProjectTab->mGUIRootSystem.getParameterNames(this->getName());
+    return mpParentProjectTab->mpSystem->mGUIRootSystem.getParameterNames(this->getName());
 }
 
 //void GUISystem::refreshAppearance();
@@ -243,7 +250,7 @@ void GUISystem::loadFromFile(QString modelFileName)
     qDebug() << "Appearance set";
 
     //Load the contents of the subsystem from the external file
-    mpParentProjectTab->mGUIRootSystem.loadSystemFromFileCoreOnly(this->getName(), modelFileName);
+    mpParentProjectTab->mpSystem->mGUIRootSystem.loadSystemFromFileCoreOnly(this->getName(), modelFileName);
     qDebug() << "Loaded in core";
 
     this->refreshAppearance();
@@ -261,7 +268,7 @@ int GUISystem::type() const
 
 void GUISystem::deleteInHopsanCore()
 {
-    mpParentProjectTab->mGUIRootSystem.removeSubComponent(this->getName(), true);
+    mpParentProjectTab->mpSystem->mGUIRootSystem.removeSubComponent(this->getName(), true);
 }
 
 //! @todo Maybe should try to reduce multiple copys of same functions with other GUIObjects
@@ -334,8 +341,8 @@ void GUISystem::createPorts()
     {
         //! @todo fix this
         qDebug() << "getNode and portType for " << it.key();
-        QString nodeType = mpParentProjectTab->mGUIRootSystem.getNodeType(this->getName(), it.key());
-        QString portType = mpParentProjectTab->mGUIRootSystem.getPortType(this->getName(), it.key());
+        QString nodeType = mpParentProjectTab->mpSystem->mGUIRootSystem.getNodeType(this->getName(), it.key());
+        QString portType = mpParentProjectTab->mpSystem->mGUIRootSystem.getPortType(this->getName(), it.key());
         it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
 
         qreal x = it.value().x;
@@ -585,7 +592,7 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
              {
                  GUIPort *pStartP = pConnector->getStartPort();
                  GUIPort *pEndP = pConnector->getEndPort();
-                 mpParentProjectTab->mGUIRootSystem.disconnect(pStartP->getGUIComponentName(), pStartP->getName(), pEndP->getGUIComponentName(), pEndP->getName());
+                 mpParentProjectTab->mpSystem->mGUIRootSystem.disconnect(pStartP->getGUIComponentName(), pStartP->getName(), pEndP->getGUIComponentName(), pEndP->getName());
                  emit checkMessages();
                  endPortWasConnected = true;
              }
@@ -674,7 +681,7 @@ void GUISystem::addConnector(GUIPort *pPort, undoStatus undoSettings)
     {
         GUIPort *pStartPort = mpTempConnector->getStartPort();
 
-        bool success = mpParentProjectTab->mGUIRootSystem.connect(pStartPort->getGUIComponentName(), pStartPort->getName(), pPort->getGUIComponentName(), pPort->getName() );
+        bool success = mpParentProjectTab->mpSystem->mGUIRootSystem.connect(pStartPort->getGUIComponentName(), pStartPort->getName(), pPort->getGUIComponentName(), pPort->getName() );
         if (success)
         {
             mIsCreatingConnector = false;
@@ -825,7 +832,7 @@ void GUISystem::paste()
                 data.pointVector[i].ry() -= 50;
             }
 
-            loadConnector(data,this,&(mpParentProjectTab->mGUIRootSystem), NOUNDO);
+            loadConnector(data,this,&(mpParentProjectTab->mpSystem->mGUIRootSystem), NOUNDO);
         }
     }
 
