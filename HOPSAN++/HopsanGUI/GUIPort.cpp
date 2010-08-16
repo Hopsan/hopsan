@@ -50,6 +50,7 @@
 #include "GraphicsScene.h"
 #include "GraphicsView.h"
 #include "ProjectTabWidget.h"
+#include "GUISystem.h"
 
 using namespace std;
 
@@ -63,7 +64,7 @@ using namespace std;
 GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent, GUIRootSystem *pGUIRootSystem)
     : QGraphicsSvgItem(pPortAppearance->iconPath, pParent)
 {
-    mpParentGraphicsView = pParent->mpParentGraphicsView;
+    mpParentSystem = pParent->mpParentSystem;
     mpParentGuiObject = pParent;
     mpPortAppearance = pPortAppearance;
     mpGUIRootSystem = pGUIRootSystem; //Use this to indicate system port
@@ -104,8 +105,8 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPort
     mIsMag = false;
     isConnected = false;
 
-    MainWindow *pMainWindow = mpParentGuiObject->mpParentGraphicsScene->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
-    connect(this,SIGNAL(portClicked(GUIPort*)),this->getParentView(),SLOT(addConnector(GUIPort*)));
+    MainWindow *pMainWindow = mpParentGuiObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+    connect(this,SIGNAL(portClicked(GUIPort*)),this->getParentSystem(),SLOT(addConnector(GUIPort*)));
     connect(pMainWindow->hidePortsAction,SIGNAL(triggered(bool)),this, SLOT(hideIfNotConnected(bool)));
     //connect(pMainWindow->showPortsAction,SIGNAL(triggered()),this, SLOT(showIfNotConnected()));
 }
@@ -208,7 +209,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
 
-    if ((!this->isConnected) || (mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTimeVector(getGUIComponentName(), this->getName()).empty()))
+    if ((!this->isConnected) || (mpParentSystem->mpParentProjectTab->mGUIRootSystem.getTimeVector(getGUIComponentName(), this->getName()).empty()))
     {
         event->ignore();
     }
@@ -267,9 +268,9 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 
 //! Returns a pointer to the GraphicsView that the port belongs to.
-GraphicsView *GUIPort::getParentView()
+GUISystem *GUIPort::getParentSystem()
 {
-    return mpParentGraphicsView;
+    return mpParentSystem;
 }
 
 
@@ -287,9 +288,9 @@ void GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
 {
     std::cout << "GUIPort.cpp: " << "Plot()" << std::endl;
 
-    QVector<double> time = QVector<double>::fromStdVector(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getTimeVector(getGUIComponentName(), this->getName()));
+    QVector<double> time = QVector<double>::fromStdVector(mpParentSystem->mpParentProjectTab->mGUIRootSystem.getTimeVector(getGUIComponentName(), this->getName()));
     QVector<double> y;
-    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPlotData(getGUIComponentName(), this->getName(), dataName, y);
+    mpParentSystem->mpParentProjectTab->mGUIRootSystem.getPlotData(getGUIComponentName(), this->getName(), dataName, y);
 
     //qDebug() << "Time size: " << time.size() << " last time: " << *time.end() << " " << "y.size(): " << y.size();
     //qDebug() << "time[0]: " << time[0] << " time[last-1]: " << time[time.size()-2] << " time[last]: " << time[time.size()-1];
@@ -312,8 +313,8 @@ void GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
     //title.append(" at component: ").append(QString::fromStdString(mpParentComponent->mpCoreComponent->getName())).append(", port: ").append(QString::fromStdString(mpCorePort->getPortName()));
     xlabel.append("Time, [s]");
 
-    //PlotWidget *newPlot = new PlotWidget(time,y,mpParentGuiObject->mpParentGraphicsView);
-    PlotWidget *newPlot = new PlotWidget(time,y,mpParentGuiObject->mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow);
+    //PlotWidget *newPlot = new PlotWidget(time,y,mpParentGuiObject->mpParentSystem);
+    PlotWidget *newPlot = new PlotWidget(time,y,mpParentGuiObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow);
 
     //newPlot->mpVariablePlot->setTitle(title);
     newPlot->mpCurve->setTitle(title);
@@ -335,14 +336,14 @@ int GUIPort::getPortNumber()
 //! Wrapper for the Core getPortTypeString() function
 QString GUIPort::getPortType()
 {
-    return mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPortType(getGUIComponentName(), this->getName());
+    return mpParentSystem->mpParentProjectTab->mGUIRootSystem.getPortType(getGUIComponentName(), this->getName());
 }
 
 
 //! Wrapper for the Core getNodeType() function
 QString GUIPort::getNodeType()
 {
-    return mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getNodeType(getGUIComponentName(), this->getName());
+    return mpParentSystem->mpParentProjectTab->mGUIRootSystem.getNodeType(getGUIComponentName(), this->getName());
 }
 
 
@@ -402,7 +403,7 @@ QString GUIPort::getGUIComponentName()
 //! @param hidePortsActionTriggered is true if ports shall be hidden, otherwise false.
 void GUIPort::hideIfNotConnected(bool hidePortsActionTriggered)
 {
-    if(mpParentGraphicsView->mpParentProjectTab == mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->getCurrentTab())
+    if(mpParentSystem->mpParentProjectTab == mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->getCurrentTab())
     {
         if(!isConnected and hidePortsActionTriggered)
         {

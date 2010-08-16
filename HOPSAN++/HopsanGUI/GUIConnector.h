@@ -54,13 +54,14 @@
 class GUIConnectorLine;
 class GraphicsView;
 class GUIPort;
+class GUISystem;
 
 class GUIConnector : public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    GUIConnector(GUIPort *startPort, GraphicsView *parentView, QGraphicsItem *parent = 0);
-    GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> mPoints, GraphicsView *parentView, QGraphicsItem *parent = 0);
+    GUIConnector(GUIPort *startPort, GUISystem *parentSystem, QGraphicsItem *parent = 0);
+    GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> mPoints, GUISystem *parentSystem, QGraphicsItem *parent = 0);
     ~GUIConnector();
 
     enum { Type = UserType + 1 };           //Va tusan gör den här?! -Det du!
@@ -85,7 +86,7 @@ public:
     bool isMakingDiagonal();
     bool isActive();
     void saveToTextStream(QTextStream &rStream, QString prepend=QString());
-    GraphicsView *mpParentGraphicsView;
+    GUISystem *mpParentSystem;
 
 public slots:
     void setIsoStyle(graphicsType gfxType);

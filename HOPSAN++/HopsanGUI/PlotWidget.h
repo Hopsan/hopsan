@@ -75,8 +75,9 @@
 
 class MainWindow;
 class VariablePlot;
-class GraphicsView;
+//class GraphicsView;
 class VariableListDialog;
+class GUISystem;
 
 class PlotWidget : public QMainWindow
 {
@@ -87,7 +88,7 @@ public:
     QwtPlotCurve *mpCurve;
     VariablePlot *mpVariablePlot;
     MainWindow *mpParentMainWindow;
-    GraphicsView *mpCurrentGraphicsView;
+    GUISystem *mpCurrentGUISystem;
 
     QwtPlotZoomer *zoomer;
     QwtPlotPanner *panner;
@@ -144,7 +145,7 @@ public:
     QMap< QString, QVector<double> > yMap;
     QMap< QString, QString > yLabelMap;
     MainWindow *mpParentMainWindow;
-    GraphicsView *mpCurrentView;
+    GUISystem *mpCurrentSystem;
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
@@ -166,7 +167,7 @@ public:
     QMap< QString, QVector<double> > xMap;
     QMap< QString, QVector<double> > yMap;
     MainWindow *mpParentMainWindow;
-    GraphicsView *mpCurrentView;
+    GUISystem *mpCurrentSystem;
 
 protected:
     //virtual void mousePressEvent(QMouseEvent *event);

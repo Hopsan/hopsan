@@ -51,6 +51,7 @@
 
 //Forward declarations
 class GUIObject;
+class GUISystem;
 class GUIRootSystem;
 class GraphicsView;
 
@@ -60,7 +61,7 @@ class GUIPort :public QGraphicsSvgItem
 public:
     GUIPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent = 0, GUIRootSystem *pGUIRootSystem=0);
     void updatePosition();
-    GraphicsView *getParentView();
+    GUISystem *getParentSystem();
     GUIObject *getGuiObject();
     void magnify(bool blowup);
     portDirection getPortDirection();
@@ -103,7 +104,7 @@ private:
 
     QGraphicsLineItem *lineH;
     QGraphicsLineItem *lineV;
-    GraphicsView *mpParentGraphicsView;
+    GUISystem *mpParentSystem;
     GUIObject *mpParentGuiObject;
     GUIRootSystem *mpGUIRootSystem;
     QGraphicsTextItem *mpPortLabel;

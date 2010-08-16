@@ -11,6 +11,7 @@
 #include "MessageWidget.h"
 #include "LibraryWidget.h"
 #include "loadObjects.h"
+#include "GUISystem.h"
 
 using namespace std;
 
@@ -25,17 +26,13 @@ GraphicsView::GraphicsView(ProjectTab *parent)
         : QGraphicsView(parent)
 {
     mpParentProjectTab = parent;
+    mpSystem = mpParentProjectTab->mpSystem;
 
+    mCtrlKeyPressed = false;
     this->setDragMode(RubberBandDrag);
     this->setInteractive(true);
     this->setEnabled(true);
     this->setAcceptDrops(true);
-
-    mIsCreatingConnector = false;
-    mIsRenamingObject = false;
-    mPortsHidden = false;
-    mCtrlKeyPressed = false;
-    mUndoDisabled = false;
 
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
@@ -50,55 +47,8 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     this->createActions();
     this->createMenus();
 
-    mpCopyData = new QString;
-
-    mUndoStack = new UndoStack(this);
-
-    MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
-    connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
-    connect(this->systemPortAction, SIGNAL(triggered()), SLOT(addSystemPort()));
-    connect(pMainWindow->cutAction, SIGNAL(triggered()), this,SLOT(cutSelected()));
-    connect(pMainWindow->copyAction, SIGNAL(triggered()), this,SLOT(copySelected()));
-    connect(pMainWindow->pasteAction, SIGNAL(triggered()), this,SLOT(paste()));
-    connect(pMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
-    connect(pMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
-    connect(pMainWindow->mpUndoWidget->undoButton, SIGNAL(pressed()), this, SLOT(undo()));
-    connect(pMainWindow->mpUndoWidget->redoButton, SIGNAL(pressed()), this, SLOT(redo()));
-    connect(pMainWindow->mpUndoWidget->clearButton, SIGNAL(pressed()), this, SLOT(clearUndo()));
-
         //! @todo Antialiasing could be an option for the user. It makes the view blurred, but will on the other hand makes it look better when zooming out.
     //this->setRenderHint(QPainter::Antialiasing);
-}
-
-
-//! @todo Finish this!
-//! @todo Wouldn't it be easier to have an integer that counts how many objects are selected which is increased or decreased every time an object is selected or deselected? Then we wouldn't need this stupid loop...
-bool GraphicsView::isObjectSelected()
-{
-    QMap<QString, GUIObject *>::iterator it;
-    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
-    {
-        if(it.value()->isSelected())
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-
-//! @todo Finish this!
-//! @todo See comment above isObjectSelected()
-bool GraphicsView::isConnectorSelected()
-{
-    for(int i = 0; i != mConnectorVector.size(); ++i)
-    {
-        if (mConnectorVector[i]->isActive())
-        {
-            return true;
-        }
-    }
-    return false;
 }
 
 
@@ -123,7 +73,7 @@ void GraphicsView::createActions()
 //! Defines the right click menu event
 void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 {
-    if(!mIsCreatingConnector and !mJustStoppedCreatingConnector)
+    if(!mpSystem->mIsCreatingConnector and !mpSystem->mJustStoppedCreatingConnector)
     {
         if (QGraphicsItem *item = itemAt(event->pos()))
             QGraphicsView::contextMenuEvent(event);
@@ -134,7 +84,7 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 //            menu.addMenu(menuInsert);
 //            menu.exec(event->globalPos());
 //        }
-        mJustStoppedCreatingConnector = true;
+        mpSystem->mJustStoppedCreatingConnector = true;
     }
 }
 
@@ -161,7 +111,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
     //if (event->mimeData()->hasFormat("application/x-text"))
     if (event->mimeData()->hasText())               //! @todo We must check if it is the correct type of text in the drop object, otherwise it will crash if the user drops something that is not a gui object...
     {
-        mUndoStack->newPost();
+        mpSystem->mUndoStack->newPost();
         mpParentProjectTab->hasChanged();
 
         //QByteArray *data = new QByteArray;
@@ -179,7 +129,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
         {
             event->accept();
             QPoint position = event->pos();
-            this->addGUIObject(appearanceData, this->mapToScene(position).toPoint());
+            mpSystem->addGUIObject(appearanceData, this->mapToScene(position).toPoint());
         }
     }
 }
@@ -190,165 +140,6 @@ void GraphicsView::dropEvent(QDropEvent *event)
 void GraphicsView::resetBackgroundBrush()
 {
     this->setBackgroundBrush(mBackgroundColor);
-}
-
-
-//! @brief Temporary addSubSystem functin should be same later on
-//! Adds a new component to the GraphicsView.
-//! @param componentType is a string defining the type of component.
-//! @param position is the position where the component will be created.
-//! @param name will be the name of the component.
-//! @returns a pointer to the created and added object
-GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation, selectionStatus startSelected, undoStatus undoSettings)
-{
-        //Deselect all other components and connectors
-    emit deselectAllGUIObjects();
-    emit deselectAllGUIConnectors();
-
-    QString componentTypeName = appearanceData.getTypeName();
-    if (componentTypeName == "Subsystem")
-    {
-        mpTempGUIObject= new GUISubsystem(appearanceData, position, rotation, mpParentProjectTab->mpGraphicsScene, startSelected, mpParentProjectTab->setGfxType);
-    }
-    else if (componentTypeName == "SystemPort")
-    {
-        mpTempGUIObject = new GUISystemPort(appearanceData, position, rotation, mpParentProjectTab->mpGraphicsScene, startSelected, mpParentProjectTab->setGfxType);
-    }
-    else //Assume some standard component type
-    {
-        mpTempGUIObject = new GUIComponent(appearanceData, position, rotation, mpParentProjectTab->mpGraphicsScene, startSelected, mpParentProjectTab->setGfxType);
-    }
-
-    emit checkMessages();
-
-    if ( mGUIObjectMap.contains(mpTempGUIObject->getName()) )
-    {
-        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Trying to add component with name: " + mpTempGUIObject->getName() + " that already exist in GUIObjectMap, (Not adding)");
-        //! @todo Won't this mean that the object will be added to the scene but not to the model map?
-    }
-    else
-    {
-        mGUIObjectMap.insert(mpTempGUIObject->getName(), mpTempGUIObject);
-    }
-
-    if(undoSettings == UNDO)
-    {
-        mUndoStack->registerAddedObject(mpTempGUIObject);
-    }
-
-    this->setFocus();
-
-    return mpTempGUIObject;
-}
-
-
-//! @brief A function that adds a system port to the current system
-void GraphicsView::addSystemPort()
-{
-    QCursor cursor;
-    QPointF position = this->mapToScene(this->mapFromGlobal(cursor.pos()));
-    this->resetBackgroundBrush();
-    //QPoint position = QPoint(2300,2400);
-
-    AppearanceData appearanceData;
-    QTextStream appstream;
-
-    appstream << "TypeName SystemPort";
-    appstream << "ICONPATH ../../HopsanGUI/systemporttmp.svg";
-    appstream >> appearanceData;
-
-    addGUIObject(appearanceData, position.toPoint());
-}
-
-//! Delete GUIObject with specified name
-//! @param objectName is the name of the componenet to delete
-void GraphicsView::deleteGUIObject(QString objectName, undoStatus undoSettings)
-{
-    QMap<QString, GUIObject *>::iterator it;
-    it = mGUIObjectMap.find(objectName);
-
-    //! @todo This is very very very stupid! We loop through all connectors in the model and removes them if the name of one of their parent components is the same as the component we delete?!
-    int i = 0;
-    while(i != mConnectorVector.size())
-    {
-        if((mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == objectName) or
-           (mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == objectName))
-        {
-            this->removeConnector(mConnectorVector[i]);
-            i= 0;   //Restart iteration if map has changed
-        }
-        else
-        {
-            ++i;
-        }
-    }
-
-    if (undoSettings == UNDO)
-    {
-        //Register removal of connector in undo stack (must be done after removal of connectors or the order of the commands in the undo stack will be wrong!)
-        this->mUndoStack->registerDeletedObject(it.value());
-    }
-
-    if (it != mGUIObjectMap.end())
-    {
-        GUIObject* obj_ptr = it.value();
-        mGUIObjectMap.erase(it);
-        obj_ptr->deleteInHopsanCore();
-        scene()->removeItem(obj_ptr);
-        delete(obj_ptr);
-        emit checkMessages();
-    }
-    else
-    {
-        //qDebug() << "In delete GUIObject: could not find object with name " << objectName;
-        //! @todo Maybe we should give the user a message?
-    }
-    this->resetBackgroundBrush();
-}
-
-
-//! This function is used to rename a GUI Component (including key rename in component map)
-void GraphicsView::renameGUIObject(QString oldName, QString newName, undoStatus undoSettings)
-{
-        //First find record with old name
-    QMap<QString, GUIObject *>::iterator it = mGUIObjectMap.find(oldName);
-    if (it != mGUIObjectMap.end())
-    {
-            //Make a backup copy
-        GUIObject* obj_ptr = it.value();
-            //Erase old record
-        mGUIObjectMap.erase(it);
-            //Rename (core rename will be handled by core), here we force a core only rename (true) so that we dont get stuck in a loop (as rename might be called again)
-        obj_ptr->setName(newName, CORERENAMEONLY);
-            //Re insert
-        mGUIObjectMap.insert(obj_ptr->getName(), obj_ptr);
-    }
-    else
-    {
-        //qDebug() << "Old name: " << oldName << " not found";
-        //! @todo Maybe we should give the user a message?
-    }
-
-    if (undoSettings == UNDO)
-    {
-        mUndoStack->registerRenameObject(oldName, newName);
-    }
-
-    emit checkMessages();
-}
-
-
-//! Tells whether or not a component with specified name exist in the GraphicsView
-bool GraphicsView::haveGUIObject(QString name)
-{
-    if (mGUIObjectMap.count(name) > 0)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
 }
 
 
@@ -397,98 +188,98 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     bool shiftPressed = event->modifiers().testFlag(Qt::ShiftModifier);
     //bool altPressed = event->modifiers().testFlag(Qt::AltModifier);       //Commented because it is not used, to avoid compile warnings
 
-    if (event->key() == Qt::Key_Delete and !mIsRenamingObject)
+    if (event->key() == Qt::Key_Delete and !mpSystem->mIsRenamingObject)
     {
-        if(isObjectSelected() or isConnectorSelected())
+        if(mpSystem->isObjectSelected() or mpSystem->isConnectorSelected())
         {
-            mUndoStack->newPost();
+            mpSystem->mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit deleteSelected();
     }
-    else if (ctrlPressed and event->key() == Qt::Key_R and !mIsRenamingObject)
+    else if (ctrlPressed and event->key() == Qt::Key_R and !mpSystem->mIsRenamingObject)
     {
-        if(isObjectSelected())
+        if(mpSystem->isObjectSelected())
         {
-            mUndoStack->newPost();
+            mpSystem->mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit keyPressCtrlR();
     }
     else if (event->key() == Qt::Key_Escape)
     {
-        if(mIsCreatingConnector)
+        if(mpSystem->mIsCreatingConnector)
         {
-            delete(mpTempConnector);
-            mIsCreatingConnector = false;
+            delete(mpSystem->mpTempConnector);
+            mpSystem->mIsCreatingConnector = false;
         }
     }
-    else if(shiftPressed and event->key() == Qt::Key_K and !mIsRenamingObject)
+    else if(shiftPressed and event->key() == Qt::Key_K and !mpSystem->mIsRenamingObject)
     {
-        if(isObjectSelected())
+        if(mpSystem->isObjectSelected())
         {
-            mUndoStack->newPost();
+            mpSystem->mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit keyPressShiftK();
     }
-    else if(shiftPressed and event->key() == Qt::Key_L and !mIsRenamingObject)
+    else if(shiftPressed and event->key() == Qt::Key_L and !mpSystem->mIsRenamingObject)
     {
-        if(isObjectSelected())
+        if(mpSystem->isObjectSelected())
         {
-            mUndoStack->newPost();
+            mpSystem->mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit keyPressShiftL();
     }
     else if(ctrlPressed and event->key() == Qt::Key_Up)
     {
-        if(isObjectSelected())
+        if(mpSystem->isObjectSelected())
         {
-            mUndoStack->newPost();
+            mpSystem->mUndoStack->newPost();
         }
         emit keyPressCtrlUp();
         doNotForwardEvent = true;
     }
     else if(ctrlPressed and event->key() == Qt::Key_Down)
     {
-        if(isObjectSelected())
+        if(mpSystem->isObjectSelected())
         {
-            mUndoStack->newPost();
+            mpSystem->mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit keyPressCtrlDown();
         doNotForwardEvent = true;
     }
-    else if(ctrlPressed and event->key() == Qt::Key_Left and !mIsRenamingObject)
+    else if(ctrlPressed and event->key() == Qt::Key_Left and !mpSystem->mIsRenamingObject)
     {
-        if(isObjectSelected())
+        if(mpSystem->isObjectSelected())
         {
-            mUndoStack->newPost();
+            mpSystem->mUndoStack->newPost();
         }
         emit keyPressCtrlLeft();
         doNotForwardEvent = true;
     }
-    else if(ctrlPressed and event->key() == Qt::Key_Right and !mIsRenamingObject)
+    else if(ctrlPressed and event->key() == Qt::Key_Right and !mpSystem->mIsRenamingObject)
     {
-        if(isObjectSelected())
+        if(mpSystem->isObjectSelected())
         {
-            mUndoStack->newPost();
+            mpSystem->mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit keyPressCtrlRight();
         doNotForwardEvent = true;
     }
-    else if (ctrlPressed and event->key() == Qt::Key_A and !mIsRenamingObject)
+    else if (ctrlPressed and event->key() == Qt::Key_A and !mpSystem->mIsRenamingObject)
     {
-        this->selectAll();
+        mpSystem->selectAll();
     }
     else if (ctrlPressed)
     {
-        if (mIsCreatingConnector and !mpTempConnector->isMakingDiagonal())
+        if (mpSystem->mIsCreatingConnector and !mpSystem->mpTempConnector->isMakingDiagonal())
         {
-            mpTempConnector->makeDiagonal(true);
-            mpTempConnector->drawConnector();
+            mpSystem->mpTempConnector->makeDiagonal(true);
+            mpSystem->mpTempConnector->drawConnector();
             this->resetBackgroundBrush();
         }
         else
@@ -510,10 +301,10 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 {
         // Releasing ctrl key while creating a connector means return from diagonal mode to orthogonal mode.
-    if(event->key() == Qt::Key_Control and mIsCreatingConnector)
+    if(event->key() == Qt::Key_Control and mpSystem->mIsCreatingConnector)
     {
-        mpTempConnector->makeDiagonal(false);
-        mpTempConnector->drawConnector();
+        mpSystem->mpTempConnector->makeDiagonal(false);
+        mpSystem->mpTempConnector->drawConnector();
         this->resetBackgroundBrush();
     }
 
@@ -536,10 +327,10 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
     this->resetBackgroundBrush();     //Refresh the viewport
 
         //If creating connector, the end port shall be updated to the mouse position.
-    if (mIsCreatingConnector)
+    if (mpSystem->mIsCreatingConnector)
     {
-        mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
-        mpTempConnector->drawConnector();
+        mpSystem->mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
+        mpSystem->mpTempConnector->drawConnector();
     }
 }
 
@@ -549,10 +340,10 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
     emit viewClicked();
-    mJustStoppedCreatingConnector = false;
+    mpSystem->mJustStoppedCreatingConnector = false;
 
         //No rubber band during connecting:
-    if (mIsCreatingConnector)
+    if (mpSystem->mIsCreatingConnector)
     {
         this->setDragMode(NoDrag);
     }
@@ -565,358 +356,32 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         this->setDragMode(RubberBandDrag);
     }
 
-    if (event->button() == Qt::RightButton and mIsCreatingConnector)
+    if (event->button() == Qt::RightButton and mpSystem->mIsCreatingConnector)
     {
-        if((mpTempConnector->getNumberOfLines() == 1 and mpTempConnector->isMakingDiagonal()) or (mpTempConnector->getNumberOfLines() == 2 and !mpTempConnector->isMakingDiagonal()))
+        if((mpSystem->mpTempConnector->getNumberOfLines() == 1 and mpSystem->mpTempConnector->isMakingDiagonal()) or (mpSystem->mpTempConnector->getNumberOfLines() == 2 and !mpSystem->mpTempConnector->isMakingDiagonal()))
         {
-            mpTempConnector->getStartPort()->isConnected = false;
-            mpTempConnector->getStartPort()->show();
-            mIsCreatingConnector = false;
-            mJustStoppedCreatingConnector = true;
+            mpSystem->mpTempConnector->getStartPort()->isConnected = false;
+            mpSystem->mpTempConnector->getStartPort()->show();
+            mpSystem->mIsCreatingConnector = false;
+            mpSystem->mJustStoppedCreatingConnector = true;
         }
-        mpTempConnector->removePoint(true);
-        if(mIsCreatingConnector)
+        mpSystem->mpTempConnector->removePoint(true);
+        if(mpSystem->mIsCreatingConnector)
         {
-            mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
-            mpTempConnector->drawConnector();
+            mpSystem->mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
+            mpSystem->mpTempConnector->drawConnector();
             this->resetBackgroundBrush();
         }
         //qDebug() << "mIsCreatingConnector = " << mIsCreatingConnector;
     }
-    else if  ((event->button() == Qt::LeftButton) && (mIsCreatingConnector))
+    else if  ((event->button() == Qt::LeftButton) && (mpSystem->mIsCreatingConnector))
     {
-        mpTempConnector->addPoint(this->mapToScene(event->pos()));
+        mpSystem->mpTempConnector->addPoint(this->mapToScene(event->pos()));
     }
     QGraphicsView::mousePressEvent(event);
 }
 
 
-//! Returns a pointer to the component with specified name.
-GUIObject *GraphicsView::getGUIObject(QString name)
-{
-    if(!mGUIObjectMap.contains(name))
-    {
-        qDebug() << "Request for pointer to non-existing component" << endl;
-        assert(false);
-    }
-    return mGUIObjectMap.find(name).value();
-}
-
-
-//! Begins creation of connector or complete creation of connector depending on the mIsCreatingConnector flag.
-//! @param pPort is a pointer to the clicked port, either start or end depending on the mIsCreatingConnector flag.
-//! @param undoSettings is true if the added connector shall not be registered in the undo stack, for example if this function is called by a redo function.
-void GraphicsView::addConnector(GUIPort *pPort, undoStatus undoSettings)
-{
-        //When clicking start port
-    if (!mIsCreatingConnector)
-    {
-        std::cout << "GraphicsView: " << "Adding connector";
-        //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(pPort->getPortType(), mpParentProjectTab->setGfxType);
-        mpTempConnector = new GUIConnector(pPort, this);
-        emit deselectAllGUIObjects();
-        emit deselectAllGUIConnectors();
-        mIsCreatingConnector = true;
-        mpTempConnector->drawConnector();
-    }
-
-        //When clicking end port
-    else
-    {
-        GUIPort *pStartPort = mpTempConnector->getStartPort();
-
-        bool success = mpParentProjectTab->mGUIRootSystem.connect(pStartPort->getGUIComponentName(), pStartPort->getName(), pPort->getGUIComponentName(), pPort->getName() );
-        if (success)
-        {
-            mIsCreatingConnector = false;
-            QPointF newPos = pPort->mapToScene(pPort->boundingRect().center());
-            mpTempConnector->updateEndPoint(newPos);
-            pPort->getGuiObject()->addConnector(mpTempConnector);
-            mpTempConnector->setEndPort(pPort);
-
-                //Hide ports; connected ports shall not be visible
-            mpTempConnector->getStartPort()->hide();
-            mpTempConnector->getEndPort()->hide();
-
-            mConnectorVector.append(mpTempConnector);
-
-            mUndoStack->newPost();
-            mpParentProjectTab->hasChanged();
-            if(undoSettings == UNDO)
-            {
-                mUndoStack->registerAddedConnector(mpTempConnector);
-            }
-        }
-        emit checkMessages();
-     }
-}
-
-//! @brief Find a connector in the connector vector
-GUIConnector* GraphicsView::findConnector(QString startComp, QString startPort, QString endComp, QString endPort)
-{
-    GUIConnector *item;
-    for(int i = 0; i < mConnectorVector.size(); ++i)
-    {
-        //! @todo Should add functions to connector to get start/end component/port names (used a few times around the code)
-        if((mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == startComp) and
-           (mConnectorVector[i]->getStartPort()->getName() == startPort) and
-           (mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == endComp) and
-           (mConnectorVector[i]->getEndPort()->getName() == endPort))
-        {
-            item = mConnectorVector[i];
-            break;
-        }
-        //Find even if the caller mixed up start and stop
-        else if((mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == endComp) and
-                (mConnectorVector[i]->getStartPort()->getName() == endPort) and
-                (mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == startComp) and
-                (mConnectorVector[i]->getEndPort()->getName() == startPort))
-        {
-            item = mConnectorVector[i];
-            break;
-        }
-    }
-    return item;
-}
-
-
-//! Removes the connector from the model.
-//! @param pConnector is a pointer to the connector to remove.
-//! @param undoSettings is true if the removal of the connector shall not be registered in the undo stack, for example if this function is called by a redo-function.
-void GraphicsView::removeConnector(GUIConnector* pConnector, undoStatus undoSettings)
-{
-    bool doDelete = false;
-    bool startPortHasMoreConnections = false;
-    bool endPortWasConnected = false;
-    bool endPortHasMoreConnections = false;
-    int indexToRemove;
-    int i;
-
-    if(undoSettings == UNDO)
-    {
-        mUndoStack->registerDeletedConnector(pConnector);
-    }
-    for(i = 0; i != mConnectorVector.size(); ++i)
-    {
-        if(mConnectorVector[i] == pConnector)
-        {
-             //! @todo some error handling both ports must exist and be connected to each other
-             if(pConnector->isConnected())
-             {
-                 GUIPort *pStartP = pConnector->getStartPort();
-                 GUIPort *pEndP = pConnector->getEndPort();
-                 mpParentProjectTab->mGUIRootSystem.disconnect(pStartP->getGUIComponentName(), pStartP->getName(), pEndP->getGUIComponentName(), pEndP->getName());
-                 emit checkMessages();
-                 endPortWasConnected = true;
-             }
-             doDelete = true;
-             indexToRemove = i;
-        }
-        else if( (pConnector->getStartPort() == mConnectorVector[i]->getStartPort()) or
-                 (pConnector->getStartPort() == mConnectorVector[i]->getEndPort()) )
-        {
-            startPortHasMoreConnections = true;
-        }
-        else if( (pConnector->getEndPort() == mConnectorVector[i]->getStartPort()) or
-                 (pConnector->getEndPort() == mConnectorVector[i]->getEndPort()) )
-        {
-            endPortHasMoreConnections = true;
-        }
-        if(mConnectorVector.empty())
-            break;
-    }
-
-    if(endPortWasConnected and !endPortHasMoreConnections)
-    {
-        pConnector->getEndPort()->setVisible(!mPortsHidden);
-        pConnector->getEndPort()->isConnected = false;
-    }
-
-    if(!startPortHasMoreConnections)
-    {
-        pConnector->getStartPort()->setVisible(!mPortsHidden);
-        pConnector->getStartPort()->isConnected = false;
-    }
-    else if(startPortHasMoreConnections and !endPortWasConnected)
-    {
-        pConnector->getStartPort()->setVisible(false);
-        pConnector->getStartPort()->isConnected = true;
-    }
-
-    if(doDelete)
-    {
-        scene()->removeItem(pConnector);
-        delete pConnector;
-        mConnectorVector.remove(indexToRemove);
-    }
-    this->resetBackgroundBrush();
-}
-
-
-//! Selects all objects and connectors.
-void GraphicsView::selectAll()
-{
-        //Select all components
-    QMap<QString, GUIObject *>::iterator it;
-    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
-    {
-        it.value()->setSelected(true);
-    }
-        //Select all connectors
-    QMap<QString, GUIConnector*>::iterator it2;
-    for(int i = 0; i != mConnectorVector.size(); ++i)
-    {
-        mConnectorVector[i]->doSelect(true, -1);
-    }
-}
-
-
-//! Deselects all objects and connectors.
-void GraphicsView::deselectAll()
-{
-    emit deselectAllGUIObjects();
-    emit deselectAllGUIConnectors();
-}
-
-
-//! Copies the selected components, and then deletes them.
-//! @see copySelected()
-//! @see paste()
-void GraphicsView::cutSelected()
-{
-    this->copySelected();
-    emit deleteSelected();
-    this->resetBackgroundBrush();
-}
-
-
-//! Puts the selected components in the copy stack, and their positions in the copy position stack.
-//! @see cutSelected()
-//! @see paste()
-//! @todo What about paramter values
-void GraphicsView::copySelected()
-{
-    delete(mpCopyData);
-    mpCopyData = new QString;
-
-    QTextStream copyStream;
-    copyStream.setString(mpCopyData);
-
-    QMap<QString, GUIObject *>::iterator it;
-    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
-    {
-        if (it.value()->isSelected())
-        {
-            it.value()->saveToTextStream(copyStream, "COMPONENT");
-        }
-    }
-
-    for(int i = 0; i != mConnectorVector.size(); ++i)
-    {
-        if(mConnectorVector[i]->getStartPort()->getGuiObject()->isSelected() and mConnectorVector[i]->getEndPort()->getGuiObject()->isSelected() and mConnectorVector[i]->isActive())
-        {
-            mConnectorVector[i]->saveToTextStream(copyStream, "CONNECT");
-        }
-    }
-}
-
-
-//! Creates each item in the copy stack, and places it on its respective position in the position copy stack.
-//! @see cutSelected()
-//! @see copySelected()
-void GraphicsView::paste()
-{
-    //qDebug() << "mpCopyData = " << *mpCopyData;
-
-    mUndoStack->newPost();
-    mpParentProjectTab->hasChanged();
-
-    QTextStream copyStream;
-    copyStream.setString(mpCopyData);
-
-        //Deselect all components
-    emit deselectAllGUIObjects();
-
-        //Deselect all connectors
-    emit deselectAllGUIConnectors();
-
-
-    QMap<QString, QString> renameMap;       //Used to track name changes, so that connectors will know what components are called
-    QString inputWord;
-
-    //! @todo Could we not use some common load function for the stuff bellow
-
-    while ( !copyStream.atEnd() )
-    {
-        //Extract first word on line
-        copyStream >> inputWord;
-
-        if(inputWord == "COMPONENT")
-        {
-            //QString oldname;
-            ObjectLoadData data;
-
-            //Read the data from stream
-            data.read(copyStream);
-
-            //Remember old name
-            //oldname = data.name;
-
-            //Add offset to pos (to avoid pasting on top of old data)
-            //! @todo maybe take pos from mouse cursor
-            data.posX -= 50;
-            data.posY -= 50;
-
-            //Load (create new) object
-            GUIObject *pObj = loadGUIObject(data,mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,this, NOUNDO);
-
-            //Remember old name, in case we want to connect later
-            renameMap.insert(data.name, pObj->getName());
-            //! @todo FINDOUT WHY: Cant select here because then the select all components bellow wont auto select the connectors DONT KNOW WHY, need to figure this out and clean up, (not that I realy nead to set selected here)
-            //pObj->setSelected(true);
-
-            mUndoStack->registerAddedObject(pObj);
-        }
-        else if ( inputWord == "PARAMETER" )
-        {
-            ParameterLoadData data;
-                //Read parameter data
-            data.read(copyStream);
-                //Replace the component name to the actual new name
-            data.componentName = renameMap.find(data.componentName).value();
-                //Load it into the new copy
-            loadParameterValues(data,this, NOUNDO);
-        }
-        else if(inputWord == "CONNECT")
-        {
-            ConnectorLoadData data;
-                //Read the data
-            data.read(copyStream);
-                //Replace component names with posiibly renamed names
-            data.startComponentName = renameMap.find(data.startComponentName).value();
-            data.endComponentName = renameMap.find(data.endComponentName).value();
-
-                //Apply offset
-            //! @todo maybe use mose pointer location
-            for (int i=0; i < data.pointVector.size(); ++i)
-            {
-                data.pointVector[i].rx() -= 50;
-                data.pointVector[i].ry() -= 50;
-            }
-
-            loadConnector(data,this,&(mpParentProjectTab->mGUIRootSystem), NOUNDO);
-        }
-    }
-
-        //Select all pasted comonents
-    QMap<QString, QString>::iterator itn;
-    for(itn = renameMap.begin(); itn != renameMap.end(); ++itn)
-    {
-        mGUIObjectMap.find(itn.value()).value()->setSelected(true);
-    }
-
-    this->resetBackgroundBrush();
-}
 
 
 //! @todo This is not used anywhere and can probably be removed. Why would you want to do it like this?
@@ -960,66 +425,6 @@ void GraphicsView::zoomOut()
     this->scale(1/1.15, 1/1.15);
     mZoomFactor = mZoomFactor / 1.15;
     emit zoomChange();
-}
-
-
-//! Hides all component names.
-//! @see showNames()
-void GraphicsView::hideNames()
-{
-    emit deselectAllNameText();
-    mIsRenamingObject = false;
-    QMap<QString, GUIObject *>::iterator it;
-    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
-    {
-        it.value()->hideName();
-    }
-}
-
-
-//! Shows all component names.
-//! @see hideNames()
-void GraphicsView::showNames()
-{
-    QMap<QString, GUIObject *>::iterator it;
-    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
-    {
-        it.value()->showName();
-    }
-}
-
-
-//! Slot that sets hide ports flag to true
-//! @see unHidePorts()
-void GraphicsView::hidePorts(bool doIt)
-{
-    mPortsHidden = doIt;
-}
-
-
-//! Slot that tells the mUndoStack to execute one undo step. Necessary because the undo stack is not a QT object and cannot use its own slots.
-//! @see redo()
-//! @see clearUndo()
-void GraphicsView::undo()
-{
-    mUndoStack->undoOneStep();
-}
-
-
-//! Slot that tells the mUndoStack to execute one redo step. Necessary because the redo stack is not a QT object and cannot use its own slots.
-//! @see undo()
-//! @see clearUndo()
-void GraphicsView::redo()
-{
-    mUndoStack->redoOneStep();
-}
-
-//! Slot that tells the mUndoStack to clear itself. Necessary because the redo stack is not a QT object and cannot use its own slots.
-//! @see undo()
-//! @see redo()
-void GraphicsView::clearUndo()
-{
-    mUndoStack->clear();
 }
 
 

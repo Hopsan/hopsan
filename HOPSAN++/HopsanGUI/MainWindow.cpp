@@ -54,6 +54,7 @@
 #include "ProjectTabWidget.h"
 #include "GraphicsView.h"
 #include "GraphicsScene.h"
+#include "GUISystem.h"
 
 
 //! Constructor
@@ -555,7 +556,7 @@ void MainWindow::updateToolBarsToNewTab()
 {
     if(mpProjectTabs->count() > 0)
     {
-        hidePortsAction->setChecked(mpProjectTabs->getCurrentTab()->mpGraphicsView->mPortsHidden);
+        hidePortsAction->setChecked(mpProjectTabs->getCurrentTab()->mpSystem->mPortsHidden);
     }
 }
 

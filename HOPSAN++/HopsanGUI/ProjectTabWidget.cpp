@@ -70,6 +70,7 @@
 #include "GUIConnector.h"
 #include "GraphicsScene.h"
 #include "GraphicsView.h"
+#include "GUISystem.h"
 
 #include "version.h"
 #include "GUIUtilities.h"
@@ -89,6 +90,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     : QWidget(parent)
 {
     mpParentProjectTabWidget = parent;
+    mpSystem = new GUISystem(this, 0);
 
     mStartTime = 0;
     mTimeStep = 0.001;
@@ -109,7 +111,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mIsSaved = true;
     mModelFileName.clear();
 
-    mpGraphicsScene = new GraphicsScene(this);
+    mpGraphicsScene = mpSystem->mpScene;
     mpGraphicsView  = new GraphicsView(this);
     mpGraphicsView->setScene(mpGraphicsScene);
 
@@ -272,7 +274,7 @@ void ProjectTabWidget::hidePortsInCurrentTab(bool hidePortsActionTriggered)
 {
     if(this->count() != 0)
     {
-        this->getCurrentTab()->mpGraphicsView->hidePorts(hidePortsActionTriggered);
+        this->getCurrentTab()->mpSystem->hidePorts(hidePortsActionTriggered);
     }
 }
 
@@ -329,6 +331,13 @@ void ProjectTabWidget::updateSimulationSetupWidget()
 ProjectTab *ProjectTabWidget::getCurrentTab()
 {
     return qobject_cast<ProjectTab *>(currentWidget());
+}
+
+
+//! Returns a pointer to the currently system model - be sure to check that the number of tabs is not zero before calling this
+GUISystem *ProjectTabWidget::getCurrentSystem()
+{
+    return getCurrentTab()->mpSystem;
 }
 
 
@@ -615,7 +624,7 @@ void ProjectTabWidget::loadModel()
     this->addProjectTab(new ProjectTab(this), fileInfo.fileName());
     ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
     pCurrentTab->mModelFileName = modelFileName;
-    pCurrentTab->mpGraphicsView->mUndoStack->newPost();
+    pCurrentTab->mpSystem->mUndoStack->newPost();
     pCurrentTab->mIsSaved = true;
 
     //Read the header data, also checks version numbers
@@ -646,33 +655,33 @@ void ProjectTabWidget::loadModel()
         {
             SubsystemLoadData subsysData;
             subsysData.read(inputStream);
-            loadSubsystemGUIObject(subsysData, mpParentMainWindow->mpLibrary, pCurrentTab->mpGraphicsView, NOUNDO);
+            loadSubsystemGUIObject(subsysData, mpParentMainWindow->mpLibrary, pCurrentTab->mpSystem, NOUNDO);
             //! @todo convenience function
         }
 
         if ( (inputWord == "COMPONENT") || (inputWord == "SYSTEMPORT") )
         {
-            loadGUIObject(inputStream, mpParentMainWindow->mpLibrary, pCurrentTab->mpGraphicsView, NOUNDO);
+            loadGUIObject(inputStream, mpParentMainWindow->mpLibrary, pCurrentTab->mpSystem, NOUNDO);
         }
 
 
         if ( inputWord == "PARAMETER" )
         {
-            loadParameterValues(inputStream, pCurrentTab->mpGraphicsView, NOUNDO);
+            loadParameterValues(inputStream, pCurrentTab->mpSystem, NOUNDO);
         }
 
 
         if ( inputWord == "CONNECT" )
         {
-            loadConnector(inputStream, pCurrentTab->mpGraphicsView, &(pCurrentTab->mGUIRootSystem), NOUNDO);
+            loadConnector(inputStream, pCurrentTab->mpSystem, &(pCurrentTab->mGUIRootSystem), NOUNDO);
         }
     }
     //Deselect all components
    //pCurrentTab->mpGraphicsView->deselectAllGUIObjects();
 
-    pCurrentTab->mpGraphicsView->deselectAll();
+    pCurrentTab->mpSystem->deselectAll();
     this->centerView();
-    pCurrentTab->mpGraphicsView->mUndoStack->clear();
+    pCurrentTab->mpSystem->mUndoStack->clear();
     pCurrentTab->mpGraphicsView->resetBackgroundBrush();
 
     emit checkMessages();
@@ -733,12 +742,12 @@ void ProjectTabWidget::saveModel(saveTarget saveAsFlag)
     QLineF line;
     double angle, x, y;
 
-    double xMax = pCurrentView->mGUIObjectMap.begin().value()->x()+pCurrentView->mGUIObjectMap.begin().value()->rect().width()/2.0;
-    double xMin = pCurrentView->mGUIObjectMap.begin().value()->x()+pCurrentView->mGUIObjectMap.begin().value()->rect().width()/2.0;
-    double yMax = pCurrentView->mGUIObjectMap.begin().value()->y()+pCurrentView->mGUIObjectMap.begin().value()->rect().height()/2.0;
-    double yMin = pCurrentView->mGUIObjectMap.begin().value()->y()+pCurrentView->mGUIObjectMap.begin().value()->rect().height()/2.0;
+    double xMax = pCurrentTab->mpSystem->mGUIObjectMap.begin().value()->x()+pCurrentTab->mpSystem->mGUIObjectMap.begin().value()->rect().width()/2.0;
+    double xMin = pCurrentTab->mpSystem->mGUIObjectMap.begin().value()->x()+pCurrentTab->mpSystem->mGUIObjectMap.begin().value()->rect().width()/2.0;
+    double yMax = pCurrentTab->mpSystem->mGUIObjectMap.begin().value()->y()+pCurrentTab->mpSystem->mGUIObjectMap.begin().value()->rect().height()/2.0;
+    double yMin = pCurrentTab->mpSystem->mGUIObjectMap.begin().value()->y()+pCurrentTab->mpSystem->mGUIObjectMap.begin().value()->rect().height()/2.0;
 
-    for(it = pCurrentView->mGUIObjectMap.begin(); it!=pCurrentView->mGUIObjectMap.end(); ++it)
+    for(it = pCurrentTab->mpSystem->mGUIObjectMap.begin(); it!=pCurrentTab->mpSystem->mGUIObjectMap.end(); ++it)
     {
         if (it.value()->x()+it.value()->rect().width()/2.0 < xMin)
             xMin = it.value()->x()+it.value()->rect().width()/2.0;
@@ -755,7 +764,7 @@ void ProjectTabWidget::saveModel(saveTarget saveAsFlag)
     double h = yMax-yMin;
     //getCurrentTab()->mpGraphicsScene->addRect(xMin, yMin, w, h); //debug-grej
 
-    for(it = pCurrentView->mGUIObjectMap.begin(); it!=pCurrentView->mGUIObjectMap.end(); ++it)
+    for(it = pCurrentTab->mpSystem->mGUIObjectMap.begin(); it!=pCurrentTab->mpSystem->mGUIObjectMap.end(); ++it)
     {
         if(it.value()->getTypeName() == "SystemPort")
         {
@@ -771,7 +780,7 @@ void ProjectTabWidget::saveModel(saveTarget saveAsFlag)
         modelFile << "--------------------------------------------------------------\n";
 
     //QMap<QString, GUIObject*>::iterator it;
-    for(it = pCurrentView->mGUIObjectMap.begin(); it!=pCurrentView->mGUIObjectMap.end(); ++it)
+    for(it = pCurrentTab->mpSystem->mGUIObjectMap.begin(); it!=pCurrentTab->mpSystem->mGUIObjectMap.end(); ++it)
     {
         if ( it.value()->getTypeName() == QString("Subsystem") )
         {
@@ -790,9 +799,9 @@ void ProjectTabWidget::saveModel(saveTarget saveAsFlag)
 
     modelFile << "--------------------------------------------------------------\n";
 
-    for(int i = 0; i != pCurrentView->mConnectorVector.size(); ++i)
+    for(int i = 0; i != pCurrentTab->mpSystem->mConnectorVector.size(); ++i)
     {
-        pCurrentView->mConnectorVector[i]->saveToTextStream(modelFile, "CONNECT");
+        pCurrentTab->mpSystem->mConnectorVector[i]->saveToTextStream(modelFile, "CONNECT");
     }
     modelFile << "--------------------------------------------------------------\n";
 }
@@ -810,13 +819,13 @@ void ProjectTabWidget::setIsoGraphics(graphicsType gfxType)
         ProjectTab *pCurrentTab = getCurrentTab();
         GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
 
-        for(int i = 0; i!=pCurrentView->mConnectorVector.size(); ++i)
+        for(int i = 0; i!=pCurrentTab->mpSystem->mConnectorVector.size(); ++i)
         {
-            pCurrentView->mConnectorVector[i]->setIsoStyle(gfxType);
+            pCurrentTab->mpSystem->mConnectorVector[i]->setIsoStyle(gfxType);
         }
 
         QMap<QString, GUIObject*>::iterator it2;
-        for(it2 = pCurrentView->mGUIObjectMap.begin(); it2!=pCurrentView->mGUIObjectMap.end(); ++it2)
+        for(it2 = pCurrentTab->mpSystem->mGUIObjectMap.begin(); it2!=pCurrentTab->mpSystem->mGUIObjectMap.end(); ++it2)
         {
             it2.value()->setIcon(gfxType);
         }
@@ -865,7 +874,7 @@ void ProjectTabWidget::hideNames()
 {
     if(this->count() != 0)
     {
-        this->getCurrentTab()->mpGraphicsView->hideNames();
+        this->getCurrentTab()->mpSystem->hideNames();
     }
 }
 
@@ -876,7 +885,7 @@ void ProjectTabWidget::showNames()
 {
     if(this->count() != 0)
     {
-        this->getCurrentTab()->mpGraphicsView->showNames();
+        this->getCurrentTab()->mpSystem->showNames();
     }
 }
 
@@ -896,7 +905,7 @@ void ProjectTabWidget::disableUndo()
 {
     if(this->count() != 0)
     {
-        if(!getCurrentTab()->mpGraphicsView->mUndoDisabled)
+        if(!getCurrentTab()->mpSystem->mUndoDisabled)
         {
             QMessageBox disableUndoWarningBox(QMessageBox::Warning, tr("Warning"),tr("Disabling undo history will clear all undo history for this model. Do you want to continue?"), 0, this);
             disableUndoWarningBox.addButton(tr("&Yes"), QMessageBox::AcceptRole);
@@ -904,8 +913,8 @@ void ProjectTabWidget::disableUndo()
 
             if (disableUndoWarningBox.exec() == QMessageBox::AcceptRole)
             {
-                getCurrentTab()->mpGraphicsView->clearUndo();
-                getCurrentTab()->mpGraphicsView->mUndoDisabled = true;
+                getCurrentTab()->mpSystem->clearUndo();
+                getCurrentTab()->mpSystem->mUndoDisabled = true;
                 mpParentMainWindow->undoAction->setDisabled(true);
                 mpParentMainWindow->redoAction->setDisabled(true);
             }
@@ -916,7 +925,7 @@ void ProjectTabWidget::disableUndo()
         }
         else
         {
-            getCurrentTab()->mpGraphicsView->mUndoDisabled = false;
+            getCurrentTab()->mpSystem->mUndoDisabled = false;
             mpParentMainWindow->undoAction->setDisabled(false);
             mpParentMainWindow->redoAction->setDisabled(false);
         }
@@ -929,7 +938,7 @@ void ProjectTabWidget::updateUndoStatus()
 {
     if(this->count() != 0)
     {
-        if(getCurrentTab()->mpGraphicsView->mUndoDisabled)
+        if(getCurrentTab()->mpSystem->mUndoDisabled)
         {
             mpParentMainWindow->undoAction->setDisabled(true);
             mpParentMainWindow->redoAction->setDisabled(true);

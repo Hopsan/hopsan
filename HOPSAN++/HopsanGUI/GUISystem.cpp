@@ -14,32 +14,89 @@
 #include "LibraryWidget.h"
 #include "loadObjects.h"
 
-GUISystem::GUISystem(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
-    : GUIContainerObject(position, rotation, appearanceData, startSelected, gfxType, scene, parent)
+GUISystem::GUISystem(AppearanceData appearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, ProjectTab *parentProjectTab, QGraphicsItem *parent)
+    : GUIContainerObject(position, rotation, appearanceData, startSelected, gfxType, system, parent)
 {
+    mpScene = new GraphicsScene();
+    mpScene->addItem(this);     //! Detta kan gå åt helsike
+    mpParentProjectTab = parentProjectTab;
+
+    mIsCreatingConnector = false;
+    mIsRenamingObject = false;
+    mPortsHidden = false;
+    mUndoDisabled = false;
+
+    mpCopyData = new QString;
+
+    mUndoStack = new UndoStack(this);
+
+    MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+    //connect(this->systemPortAction, SIGNAL(triggered()), SLOT(addSystemPort()));
+    connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
+    connect(pMainWindow->cutAction, SIGNAL(triggered()), this,SLOT(cutSelected()));
+    connect(pMainWindow->copyAction, SIGNAL(triggered()), this,SLOT(copySelected()));
+    connect(pMainWindow->pasteAction, SIGNAL(triggered()), this,SLOT(paste()));
+    connect(pMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
+    connect(pMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
+    connect(pMainWindow->mpUndoWidget->undoButton, SIGNAL(pressed()), this, SLOT(undo()));
+    connect(pMainWindow->mpUndoWidget->redoButton, SIGNAL(pressed()), this, SLOT(redo()));
+    connect(pMainWindow->mpUndoWidget->clearButton, SIGNAL(pressed()), this, SLOT(clearUndo()));
+
+
     //Set default values
     mLoadType = "Empty";
     mModelFilePath = "";
 
-    //Create subsystem in core and get its name
-//    QString corename = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createSubSystem();
-//    if ( getName().isEmpty() )
-//    {
-//        //If the displayname has not been decided then use the name from core
-//        mAppearanceData.setName(corename);
-//    }
-//    else
-//    {
-//        //Lets rename the core object to the gui name that is set in the txt description file, we take the name that this function returns
-//        mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.rename(corename, getName())); //Cant use setName here as thewould call an aditional rename (of someone else)
-//    }
-    mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.createSubSystem(this->getName()));
+    mAppearanceData.setName(mpParentProjectTab->mGUIRootSystem.createSubSystem(this->getName()));
 
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
     //! @todo Write some code here maybe!
 
-//    std::cout << "GUISystem: " << mComponentTypeName.toStdString() << std::endl;
+    //std::cout << "GUISystem: " << mComponentTypeName.toStdString() << std::endl;
+}
+
+
+GUISystem::GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *parent)
+    : GUIContainerObject(QPoint(0,0), 0, AppearanceData(), DESELECTED, USERGRAPHICS, 0, parent)
+{
+    mpScene = new GraphicsScene();
+    mpScene->addItem(this);     //! Detta kan gå åt helsike
+    mpParentProjectTab = parentProjectTab;
+
+    mIsCreatingConnector = false;
+    mIsRenamingObject = false;
+    mPortsHidden = false;
+    mUndoDisabled = false;
+
+    mpCopyData = new QString;
+
+    mUndoStack = new UndoStack(this);
+
+    MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+    //connect(this->systemPortAction, SIGNAL(triggered()), SLOT(addSystemPort()));
+    connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
+    connect(pMainWindow->cutAction, SIGNAL(triggered()), this,SLOT(cutSelected()));
+    connect(pMainWindow->copyAction, SIGNAL(triggered()), this,SLOT(copySelected()));
+    connect(pMainWindow->pasteAction, SIGNAL(triggered()), this,SLOT(paste()));
+    connect(pMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
+    connect(pMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
+    connect(pMainWindow->mpUndoWidget->undoButton, SIGNAL(pressed()), this, SLOT(undo()));
+    connect(pMainWindow->mpUndoWidget->redoButton, SIGNAL(pressed()), this, SLOT(redo()));
+    connect(pMainWindow->mpUndoWidget->clearButton, SIGNAL(pressed()), this, SLOT(clearUndo()));
+
+
+    //Set default values
+    mLoadType = "Empty";
+    mModelFilePath = "";
+
+    mAppearanceData.setName(mpParentProjectTab->mGUIRootSystem.createSubSystem(this->getName()));
+
+    refreshDisplayName(); //Make sure name window is correct size for center positioning
+
+    //! @todo Write some code here maybe!
+
+    //std::cout << "GUISystem: " << mComponentTypeName.toStdString() << std::endl;
 }
 
 
@@ -62,13 +119,13 @@ void GUISystem::setName(QString newName, renameRestrictions renameSettings)
         //Check if we want to avoid trying to rename in the graphics view map
         if (renameSettings == CORERENAMEONLY)
         {
-            mAppearanceData.setName(mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setSystemName(oldName, newName));
+            mAppearanceData.setName(mpParentProjectTab->mGUIRootSystem.setSystemName(oldName, newName));
             refreshDisplayName();
         }
         else
         {
             //Rename
-            mpParentGraphicsView->renameGUIObject(oldName, newName);
+            this->renameGUIObject(oldName, newName);
         }
     }
 }
@@ -83,17 +140,17 @@ QString GUISystem::getTypeName()
 
 void GUISystem::setTypeCQS(QString typestring)
 {
-    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.setSystemTypeCQS(this->getName(), typestring.toStdString()); //ehhh this will set the CQS type for the paren system (the root even) we want to set this partiular systems CQS type
+    mpParentProjectTab->mGUIRootSystem.setSystemTypeCQS(this->getName(), typestring.toStdString()); //ehhh this will set the CQS type for the paren system (the root even) we want to set this partiular systems CQS type
 }
 
 QString GUISystem::getTypeCQS()
 {
-    return mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getSystemTypeCQS(this->getName());  //ehhh this will get the CQS type for the paren system (the root even) we want this partiular systems CQS type
+    return mpParentProjectTab->mGUIRootSystem.getSystemTypeCQS(this->getName());  //ehhh this will get the CQS type for the paren system (the root even) we want this partiular systems CQS type
 }
 
 QVector<QString> GUISystem::getParameterNames()
 {
-    return mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getParameterNames(this->getName());
+    return mpParentProjectTab->mGUIRootSystem.getParameterNames(this->getName());
 }
 
 //void GUISystem::refreshAppearance();
@@ -106,7 +163,7 @@ void GUISystem::loadFromFile(QString modelFileName)
     if (modelFileName.isEmpty())
     {
         QDir fileDialog;
-        modelFileName = QFileDialog::getOpenFileName(mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
+        modelFileName = QFileDialog::getOpenFileName(mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
                                                              fileDialog.currentPath() + QString("/../../Models"),
                                                              tr("Hopsan Model Files (*.hmf)"));
         if (modelFileName.isEmpty())
@@ -115,12 +172,12 @@ void GUISystem::loadFromFile(QString modelFileName)
         file.setFileName(modelFileName);
         fileInfo.setFile(file);
 
-        for(int t=0; t!=mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->count(); ++t)
+        for(int t=0; t!=mpParentProjectTab->mpParentProjectTabWidget->count(); ++t)
         {
-            if( (mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == fileInfo.fileName()) or (mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == (fileInfo.fileName() + "*")) )
+            if( (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == fileInfo.fileName()) or (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == (fileInfo.fileName() + "*")) )
             {
                 QMessageBox::StandardButton reply;
-                reply = QMessageBox::information(mpParentGraphicsView->mpParentProjectTab->mpParentProjectTabWidget, tr("Error"), tr("Unable to load model. File is already open."));
+                reply = QMessageBox::information(mpParentProjectTab->mpParentProjectTabWidget, tr("Error"), tr("Unable to load model. File is already open."));
                 return;
             }
         }
@@ -186,7 +243,7 @@ void GUISystem::loadFromFile(QString modelFileName)
     qDebug() << "Appearance set";
 
     //Load the contents of the subsystem from the external file
-    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.loadSystemFromFileCoreOnly(this->getName(), modelFileName);
+    mpParentProjectTab->mGUIRootSystem.loadSystemFromFileCoreOnly(this->getName(), modelFileName);
     qDebug() << "Loaded in core";
 
     this->refreshAppearance();
@@ -204,7 +261,7 @@ int GUISystem::type() const
 
 void GUISystem::deleteInHopsanCore()
 {
-    mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.removeSubComponent(this->getName(), true);
+    mpParentProjectTab->mGUIRootSystem.removeSubComponent(this->getName(), true);
 }
 
 //! @todo Maybe should try to reduce multiple copys of same functions with other GUIObjects
@@ -213,7 +270,7 @@ void GUISystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         QMenu menu;
 
         QAction *groupAction;
-        if (!mpParentGraphicsScene->selectedItems().empty())
+        if (!this->scene()->selectedItems().empty())
             groupAction = menu.addAction(tr("Group components"));
 
         QAction *parameterAction = menu.addAction(tr("Change parameters"));
@@ -240,8 +297,8 @@ void GUISystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
             AppearanceData appdata;
             appdata.setIconPathUser("subsystemtmp.svg");
             appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
-            GUIGroup *pGroup = new GUIGroup(mpParentGraphicsScene->selectedItems(), appdata, mpParentGraphicsScene);
-            mpParentGraphicsScene->addItem(pGroup);
+            GUIGroup *pGroup = new GUIGroup(this->scene()->selectedItems(), appdata, mpParentSystem);
+            mpScene->addItem(pGroup);
         }
         else if (selectedAction == showNameAction)
         {
@@ -264,7 +321,7 @@ void GUISystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 void GUISystem::openParameterDialog()
 {
-    ParameterDialog *dialog = new ParameterDialog(this, mpParentGraphicsView);
+    ParameterDialog *dialog = new ParameterDialog(this);
     dialog->exec();
 }
 
@@ -277,8 +334,8 @@ void GUISystem::createPorts()
     {
         //! @todo fix this
         qDebug() << "getNode and portType for " << it.key();
-        QString nodeType = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getNodeType(this->getName(), it.key());
-        QString portType = mpParentGraphicsView->mpParentProjectTab->mGUIRootSystem.getPortType(this->getName(), it.key());
+        QString nodeType = mpParentProjectTab->mGUIRootSystem.getNodeType(this->getName(), it.key());
+        QString portType = mpParentProjectTab->mGUIRootSystem.getPortType(this->getName(), it.key());
         it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
 
         qreal x = it.value().x;
@@ -322,4 +379,580 @@ void GUISystem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     {
         return;
     }
+}
+
+
+
+//! @brief Temporary addSubSystem functin should be same later on
+//! Adds a new component to the GraphicsView.
+//! @param componentType is a string defining the type of component.
+//! @param position is the position where the component will be created.
+//! @param name will be the name of the component.
+//! @returns a pointer to the created and added object
+GUIObject* GUISystem::addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation, selectionStatus startSelected, undoStatus undoSettings)
+{
+        //Deselect all other components and connectors
+    emit deselectAllGUIObjects();
+    emit deselectAllGUIConnectors();
+
+    QString componentTypeName = appearanceData.getTypeName();
+    if (componentTypeName == "Subsystem")
+    {
+        mpTempGUIObject= new GUISubsystem(appearanceData, position, rotation, this, startSelected, mpParentProjectTab->setGfxType);
+    }
+    else if (componentTypeName == "SystemPort")
+    {
+        mpTempGUIObject = new GUISystemPort(appearanceData, position, rotation, this, startSelected, mpParentProjectTab->setGfxType);
+    }
+    else //Assume some standard component type
+    {
+        mpTempGUIObject = new GUIComponent(appearanceData, position, rotation, this, startSelected, mpParentProjectTab->setGfxType);
+    }
+
+    mpScene->addItem(mpTempGUIObject);
+
+    emit checkMessages();
+
+    if ( mGUIObjectMap.contains(mpTempGUIObject->getName()) )
+    {
+        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Trying to add component with name: " + mpTempGUIObject->getName() + " that already exist in GUIObjectMap, (Not adding)");
+        //! @todo Won't this mean that the object will be added to the scene but not to the model map?
+    }
+    else
+    {
+        mGUIObjectMap.insert(mpTempGUIObject->getName(), mpTempGUIObject);
+    }
+
+    if(undoSettings == UNDO)
+    {
+        mUndoStack->registerAddedObject(mpTempGUIObject);
+    }
+
+    this->setFocus();
+
+    return mpTempGUIObject;
+}
+
+
+//! Delete GUIObject with specified name
+//! @param objectName is the name of the componenet to delete
+void GUISystem::deleteGUIObject(QString objectName, undoStatus undoSettings)
+{
+    QMap<QString, GUIObject *>::iterator it;
+    it = mGUIObjectMap.find(objectName);
+
+    //! @todo This is very very very stupid! We loop through all connectors in the model and removes them if the name of one of their parent components is the same as the component we delete?!
+    int i = 0;
+    while(i != mConnectorVector.size())
+    {
+        if((mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == objectName) or
+           (mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == objectName))
+        {
+            this->removeConnector(mConnectorVector[i]);
+            i= 0;   //Restart iteration if map has changed
+        }
+        else
+        {
+            ++i;
+        }
+    }
+
+    if (undoSettings == UNDO)
+    {
+        //Register removal of connector in undo stack (must be done after removal of connectors or the order of the commands in the undo stack will be wrong!)
+        this->mUndoStack->registerDeletedObject(it.value());
+    }
+
+    if (it != mGUIObjectMap.end())
+    {
+        GUIObject* obj_ptr = it.value();
+        mGUIObjectMap.erase(it);
+        obj_ptr->deleteInHopsanCore();
+        mpScene->removeItem(obj_ptr);
+        delete(obj_ptr);
+        emit checkMessages();
+    }
+    else
+    {
+        //qDebug() << "In delete GUIObject: could not find object with name " << objectName;
+        //! @todo Maybe we should give the user a message?
+    }
+    mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
+}
+
+
+//! This function is used to rename a GUI Component (including key rename in component map)
+void GUISystem::renameGUIObject(QString oldName, QString newName, undoStatus undoSettings)
+{
+        //First find record with old name
+    QMap<QString, GUIObject *>::iterator it = mGUIObjectMap.find(oldName);
+    if (it != mGUIObjectMap.end())
+    {
+            //Make a backup copy
+        GUIObject* obj_ptr = it.value();
+            //Erase old record
+        mGUIObjectMap.erase(it);
+            //Rename (core rename will be handled by core), here we force a core only rename (true) so that we dont get stuck in a loop (as rename might be called again)
+        obj_ptr->setName(newName, CORERENAMEONLY);
+            //Re insert
+        mGUIObjectMap.insert(obj_ptr->getName(), obj_ptr);
+    }
+    else
+    {
+        //qDebug() << "Old name: " << oldName << " not found";
+        //! @todo Maybe we should give the user a message?
+    }
+
+    if (undoSettings == UNDO)
+    {
+        mUndoStack->registerRenameObject(oldName, newName);
+    }
+
+    emit checkMessages();
+}
+
+
+//! Tells whether or not a component with specified name exist in the GraphicsView
+bool GUISystem::haveGUIObject(QString name)
+{
+    return (mGUIObjectMap.count(name) > 0);
+}
+
+
+//! Returns a pointer to the component with specified name.
+GUIObject *GUISystem::getGUIObject(QString name)
+{
+    if(!mGUIObjectMap.contains(name))
+    {
+        qDebug() << "Request for pointer to non-existing component" << endl;
+        assert(false);
+    }
+    return mGUIObjectMap.find(name).value();
+}
+
+
+//! @brief Find a connector in the connector vector
+GUIConnector* GUISystem::findConnector(QString startComp, QString startPort, QString endComp, QString endPort)
+{
+    GUIConnector *item;
+    for(int i = 0; i < mConnectorVector.size(); ++i)
+    {
+        //! @todo Should add functions to connector to get start/end component/port names (used a few times around the code)
+        if((mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == startComp) and
+           (mConnectorVector[i]->getStartPort()->getName() == startPort) and
+           (mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == endComp) and
+           (mConnectorVector[i]->getEndPort()->getName() == endPort))
+        {
+            item = mConnectorVector[i];
+            break;
+        }
+        //Find even if the caller mixed up start and stop
+        else if((mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == endComp) and
+                (mConnectorVector[i]->getStartPort()->getName() == endPort) and
+                (mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == startComp) and
+                (mConnectorVector[i]->getEndPort()->getName() == startPort))
+        {
+            item = mConnectorVector[i];
+            break;
+        }
+    }
+    return item;
+}
+
+
+//! Removes the connector from the model.
+//! @param pConnector is a pointer to the connector to remove.
+//! @param undoSettings is true if the removal of the connector shall not be registered in the undo stack, for example if this function is called by a redo-function.
+void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSettings)
+{
+    bool doDelete = false;
+    bool startPortHasMoreConnections = false;
+    bool endPortWasConnected = false;
+    bool endPortHasMoreConnections = false;
+    int indexToRemove;
+    int i;
+
+    if(undoSettings == UNDO)
+    {
+        mUndoStack->registerDeletedConnector(pConnector);
+    }
+    for(i = 0; i != mConnectorVector.size(); ++i)
+    {
+        if(mConnectorVector[i] == pConnector)
+        {
+             //! @todo some error handling both ports must exist and be connected to each other
+             if(pConnector->isConnected())
+             {
+                 GUIPort *pStartP = pConnector->getStartPort();
+                 GUIPort *pEndP = pConnector->getEndPort();
+                 mpParentProjectTab->mGUIRootSystem.disconnect(pStartP->getGUIComponentName(), pStartP->getName(), pEndP->getGUIComponentName(), pEndP->getName());
+                 emit checkMessages();
+                 endPortWasConnected = true;
+             }
+             doDelete = true;
+             indexToRemove = i;
+        }
+        else if( (pConnector->getStartPort() == mConnectorVector[i]->getStartPort()) or
+                 (pConnector->getStartPort() == mConnectorVector[i]->getEndPort()) )
+        {
+            startPortHasMoreConnections = true;
+        }
+        else if( (pConnector->getEndPort() == mConnectorVector[i]->getStartPort()) or
+                 (pConnector->getEndPort() == mConnectorVector[i]->getEndPort()) )
+        {
+            endPortHasMoreConnections = true;
+        }
+        if(mConnectorVector.empty())
+            break;
+    }
+
+    if(endPortWasConnected and !endPortHasMoreConnections)
+    {
+        pConnector->getEndPort()->setVisible(!mPortsHidden);
+        pConnector->getEndPort()->isConnected = false;
+    }
+
+    if(!startPortHasMoreConnections)
+    {
+        pConnector->getStartPort()->setVisible(!mPortsHidden);
+        pConnector->getStartPort()->isConnected = false;
+    }
+    else if(startPortHasMoreConnections and !endPortWasConnected)
+    {
+        pConnector->getStartPort()->setVisible(false);
+        pConnector->getStartPort()->isConnected = true;
+    }
+
+    if(doDelete)
+    {
+        mpScene->removeItem(pConnector);
+        delete pConnector;
+        mConnectorVector.remove(indexToRemove);
+    }
+    mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
+}
+
+
+//! @brief A function that adds a system port to the current system
+void GUISystem::addSystemPort()
+{
+    QCursor cursor;
+    QPointF position = mpParentProjectTab->mpGraphicsView->mapToScene(mpParentProjectTab->mpGraphicsView->mapFromGlobal(cursor.pos()));
+    mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
+    //QPoint position = QPoint(2300,2400);
+
+    AppearanceData appearanceData;
+    QTextStream appstream;
+
+    appstream << "TypeName SystemPort";
+    appstream << "ICONPATH ../../HopsanGUI/systemporttmp.svg";
+    appstream >> appearanceData;
+
+    addGUIObject(appearanceData, position.toPoint());
+}
+
+
+//! Begins creation of connector or complete creation of connector depending on the mIsCreatingConnector flag.
+//! @param pPort is a pointer to the clicked port, either start or end depending on the mIsCreatingConnector flag.
+//! @param undoSettings is true if the added connector shall not be registered in the undo stack, for example if this function is called by a redo function.
+void GUISystem::addConnector(GUIPort *pPort, undoStatus undoSettings)
+{
+        //When clicking start port
+    if (!mIsCreatingConnector)
+    {
+        std::cout << "GraphicsView: " << "Adding connector";
+        //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(pPort->getPortType(), mpParentProjectTab->setGfxType);
+        mpTempConnector = new GUIConnector(pPort, this);
+        emit deselectAllGUIObjects();
+        emit deselectAllGUIConnectors();
+        mIsCreatingConnector = true;
+        mpTempConnector->drawConnector();
+    }
+
+        //When clicking end port
+    else
+    {
+        GUIPort *pStartPort = mpTempConnector->getStartPort();
+
+        bool success = mpParentProjectTab->mGUIRootSystem.connect(pStartPort->getGUIComponentName(), pStartPort->getName(), pPort->getGUIComponentName(), pPort->getName() );
+        if (success)
+        {
+            mIsCreatingConnector = false;
+            QPointF newPos = pPort->mapToScene(pPort->boundingRect().center());
+            mpTempConnector->updateEndPoint(newPos);
+            pPort->getGuiObject()->addConnector(mpTempConnector);
+            mpTempConnector->setEndPort(pPort);
+
+                //Hide ports; connected ports shall not be visible
+            mpTempConnector->getStartPort()->hide();
+            mpTempConnector->getEndPort()->hide();
+
+            mConnectorVector.append(mpTempConnector);
+
+            mUndoStack->newPost();
+            mpParentProjectTab->hasChanged();
+            if(undoSettings == UNDO)
+            {
+                mUndoStack->registerAddedConnector(mpTempConnector);
+            }
+        }
+        emit checkMessages();
+     }
+}
+
+
+
+//! Copies the selected components, and then deletes them.
+//! @see copySelected()
+//! @see paste()
+void GUISystem::cutSelected()
+{
+    this->copySelected();
+    emit deleteSelected();
+    mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
+}
+
+
+//! Puts the selected components in the copy stack, and their positions in the copy position stack.
+//! @see cutSelected()
+//! @see paste()
+//! @todo What about paramter values
+void GUISystem::copySelected()
+{
+    delete(mpCopyData);
+    mpCopyData = new QString;
+
+    QTextStream copyStream;
+    copyStream.setString(mpCopyData);
+
+    QMap<QString, GUIObject *>::iterator it;
+    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
+    {
+        if (it.value()->isSelected())
+        {
+            it.value()->saveToTextStream(copyStream, "COMPONENT");
+        }
+    }
+
+    for(int i = 0; i != mConnectorVector.size(); ++i)
+    {
+        if(mConnectorVector[i]->getStartPort()->getGuiObject()->isSelected() and mConnectorVector[i]->getEndPort()->getGuiObject()->isSelected() and mConnectorVector[i]->isActive())
+        {
+            mConnectorVector[i]->saveToTextStream(copyStream, "CONNECT");
+        }
+    }
+}
+
+
+//! Creates each item in the copy stack, and places it on its respective position in the position copy stack.
+//! @see cutSelected()
+//! @see copySelected()
+void GUISystem::paste()
+{
+    mUndoStack->newPost();
+    mpParentProjectTab->hasChanged();
+
+    QTextStream copyStream;
+    copyStream.setString(mpCopyData);
+
+        //Deselect all components
+    emit deselectAllGUIObjects();
+
+        //Deselect all connectors
+    emit deselectAllGUIConnectors();
+
+
+    QMap<QString, QString> renameMap;       //Used to track name changes, so that connectors will know what components are called
+    QString inputWord;
+
+    //! @todo Could we not use some common load function for the stuff bellow
+
+    while ( !copyStream.atEnd() )
+    {
+        //Extract first word on line
+        copyStream >> inputWord;
+
+        if(inputWord == "COMPONENT")
+        {
+            //QString oldname;
+            ObjectLoadData data;
+
+            //Read the data from stream
+            data.read(copyStream);
+
+            //Remember old name
+            //oldname = data.name;
+
+            //Add offset to pos (to avoid pasting on top of old data)
+            //! @todo maybe take pos from mouse cursor
+            data.posX -= 50;
+            data.posY -= 50;
+
+            //Load (create new) object
+            GUIObject *pObj = loadGUIObject(data,mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,this, NOUNDO);
+
+            //Remember old name, in case we want to connect later
+            renameMap.insert(data.name, pObj->getName());
+            //! @todo FINDOUT WHY: Cant select here because then the select all components bellow wont auto select the connectors DONT KNOW WHY, need to figure this out and clean up, (not that I realy nead to set selected here)
+            //pObj->setSelected(true);
+
+            mUndoStack->registerAddedObject(pObj);
+        }
+        else if ( inputWord == "PARAMETER" )
+        {
+            ParameterLoadData data;
+                //Read parameter data
+            data.read(copyStream);
+                //Replace the component name to the actual new name
+            data.componentName = renameMap.find(data.componentName).value();
+                //Load it into the new copy
+            loadParameterValues(data,this, NOUNDO);
+        }
+        else if(inputWord == "CONNECT")
+        {
+            ConnectorLoadData data;
+                //Read the data
+            data.read(copyStream);
+                //Replace component names with posiibly renamed names
+            data.startComponentName = renameMap.find(data.startComponentName).value();
+            data.endComponentName = renameMap.find(data.endComponentName).value();
+
+                //Apply offset
+            //! @todo maybe use mose pointer location
+            for (int i=0; i < data.pointVector.size(); ++i)
+            {
+                data.pointVector[i].rx() -= 50;
+                data.pointVector[i].ry() -= 50;
+            }
+
+            loadConnector(data,this,&(mpParentProjectTab->mGUIRootSystem), NOUNDO);
+        }
+    }
+
+        //Select all pasted comonents
+    QMap<QString, QString>::iterator itn;
+    for(itn = renameMap.begin(); itn != renameMap.end(); ++itn)
+    {
+        mGUIObjectMap.find(itn.value()).value()->setSelected(true);
+    }
+
+    mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
+}
+
+
+//! Selects all objects and connectors.
+void GUISystem::selectAll()
+{
+        //Select all components
+    QMap<QString, GUIObject *>::iterator it;
+    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
+    {
+        it.value()->setSelected(true);
+    }
+
+        //Select all connectors
+    QMap<QString, GUIConnector*>::iterator it2;
+    for(int i = 0; i != mConnectorVector.size(); ++i)
+    {
+        mConnectorVector[i]->doSelect(true, -1);
+    }
+}
+
+
+//! Deselects all objects and connectors.
+void GUISystem::deselectAll()
+{
+    emit deselectAllGUIObjects();
+    emit deselectAllGUIConnectors();
+}
+
+
+//! Hides all component names.
+//! @see showNames()
+void GUISystem::hideNames()
+{
+    emit deselectAllNameText();
+    mIsRenamingObject = false;
+    QMap<QString, GUIObject *>::iterator it;
+    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
+    {
+        it.value()->hideName();
+    }
+}
+
+
+//! Shows all component names.
+//! @see hideNames()
+void GUISystem::showNames()
+{
+    QMap<QString, GUIObject *>::iterator it;
+    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
+    {
+        it.value()->showName();
+    }
+}
+
+
+//! Slot that sets hide ports flag to true
+//! @see unHidePorts()
+void GUISystem::hidePorts(bool doIt)
+{
+    mPortsHidden = doIt;
+}
+
+
+//! Slot that tells the mUndoStack to execute one undo step. Necessary because the undo stack is not a QT object and cannot use its own slots.
+//! @see redo()
+//! @see clearUndo()
+void GUISystem::undo()
+{
+    mUndoStack->undoOneStep();
+}
+
+
+//! Slot that tells the mUndoStack to execute one redo step. Necessary because the redo stack is not a QT object and cannot use its own slots.
+//! @see undo()
+//! @see clearUndo()
+void GUISystem::redo()
+{
+    mUndoStack->redoOneStep();
+}
+
+//! Slot that tells the mUndoStack to clear itself. Necessary because the redo stack is not a QT object and cannot use its own slots.
+//! @see undo()
+//! @see redo()
+void GUISystem::clearUndo()
+{
+    mUndoStack->clear();
+}
+
+
+//! @todo Finish this!
+//! @todo Wouldn't it be easier to have an integer that counts how many objects are selected which is increased or decreased every time an object is selected or deselected? Then we wouldn't need this stupid loop...
+bool GUISystem::isObjectSelected()
+{
+    QMap<QString, GUIObject *>::iterator it;
+    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
+    {
+        if(it.value()->isSelected())
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+//! @todo Finish this!
+//! @todo See comment above isObjectSelected()
+bool GUISystem::isConnectorSelected()
+{
+    for(int i = 0; i != mConnectorVector.size(); ++i)
+    {
+        if (mConnectorVector[i]->isActive())
+        {
+            return true;
+        }
+    }
+    return false;
 }

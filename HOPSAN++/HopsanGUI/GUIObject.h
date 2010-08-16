@@ -59,13 +59,14 @@ class HopsanEssentials;
 class Component;
 class GUIObjectSelectionBox;
 class GUIPort;
+class GUISystem;
 
 
 class GUIObject : public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    GUIObject(QPoint position, qreal rotation, AppearanceData appearanceData, selectionStatus startSelected = DESELECTED, graphicsType graphics = USERGRAPHICS, GraphicsScene *scene = 0, QGraphicsItem *parent = 0);
+    GUIObject(QPoint position, qreal rotation, AppearanceData appearanceData, selectionStatus startSelected = DESELECTED, graphicsType graphics = USERGRAPHICS, GUISystem *system = 0, QGraphicsItem *parent = 0);
     ~GUIObject();
 
     void addConnector(GUIConnector *item);
@@ -97,8 +98,7 @@ public:
     virtual double getParameterValue(QString name);
     virtual void setParameterValue(QString name, double value);
 
-    GraphicsScene *mpParentGraphicsScene;
-    GraphicsView *mpParentGraphicsView;
+    GUISystem *mpParentSystem;
 
     virtual void deleteInHopsanCore();
     virtual QString createInHopsanCore() {assert(false);}
@@ -217,7 +217,7 @@ class GUIContainerObject : public GUIObject
     Q_OBJECT
 public:
     enum CONTAINERSTATUS {CLOSED, OPEN, ROOT};
-    GUIContainerObject(QPoint position, qreal rotation, AppearanceData appearanceData, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, GraphicsScene *scene=0, QGraphicsItem *parent = 0);
+    GUIContainerObject(QPoint position, qreal rotation, AppearanceData appearanceData, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, GUISystem *system=0, QGraphicsItem *parent = 0);
     void makeRootSystem();
 
 protected:
@@ -231,7 +231,7 @@ class GUIComponent : public GUIObject
 {
     Q_OBJECT
 public:
-    GUIComponent(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
+    GUIComponent(AppearanceData appearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
 
     QVector<QString> getParameterNames();
     QString getParameterUnit(QString name);
@@ -269,7 +269,7 @@ class GUISubsystem : public GUIContainerObject
 {
     Q_OBJECT
 public:
-    GUISubsystem(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
+    GUISubsystem(AppearanceData appearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
 
     void deleteInHopsanCore();
 
@@ -304,7 +304,7 @@ class GUISystemPort : public GUIObject
 {
     Q_OBJECT
 public:
-    GUISystemPort(AppearanceData appearanceData, QPoint position, qreal rotation, GraphicsScene *scene, selectionStatus startSelected = SELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
+    GUISystemPort(AppearanceData appearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected = SELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
     QString getTypeName();
     void setName(QString newName, renameRestrictions renameSettings);
     void deleteInHopsanCore();
@@ -324,7 +324,7 @@ class GUIGroup : public GUIObject
 {
     Q_OBJECT
 public:
-    GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData, GUISystem *system, QGraphicsItem *parent = 0);
     ~GUIGroup();
 //    QString getName();
 //    void setName(QString name, bool doOnlyLocalRename=false);
@@ -367,7 +367,7 @@ class GUIGroupPort : public GUIObject
 {
     Q_OBJECT
 public:
-    GUIGroupPort(AppearanceData appearanceData, QPoint position, GraphicsScene *scene, QGraphicsItem *parent = 0);
+    GUIGroupPort(AppearanceData appearanceData, QPoint position, GUISystem *system, QGraphicsItem *parent = 0);
     QString getTypeName();
     void setName(QString newName);
 

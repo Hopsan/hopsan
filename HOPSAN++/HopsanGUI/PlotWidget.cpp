@@ -53,6 +53,7 @@
 #include "GUIObject.h"
 #include "GUIPort.h"
 #include "GraphicsView.h"
+#include "GUISystem.h"
 
 PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindow *parent)
     : QMainWindow(parent)//QWidget(parent,Qt::Window)
@@ -62,7 +63,7 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindo
     QWidget *centralwidget = new QWidget(this);
 
     mpParentMainWindow = parent;
-    mpCurrentGraphicsView = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView;
+    mpCurrentGUISystem = mpParentMainWindow->mpProjectTabs->getCurrentSystem();
 
     //QGridLayout *grid = new QGridLayout(this);
 
@@ -369,7 +370,7 @@ VariableList::VariableList(MainWindow *parent)
         : QListWidget(parent)
 {
     mpParentMainWindow = parent;
-    mpCurrentView = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView;
+    mpCurrentSystem = mpParentMainWindow->mpProjectTabs->getCurrentSystem();
 
     this->setDragEnabled(true);
     this->setAcceptDrops(true);
@@ -391,12 +392,12 @@ void VariableList::updateList()
     xMap.clear();
     yMap.clear();
     this->clear();
-    mpCurrentView = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView;
+    mpCurrentSystem = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem;
     QVector<double> y;
     QMap<QString, GUIObject *>::iterator it;
     QListWidgetItem *tempListWidget;
     bool colorize = false;
-    for(it = mpCurrentView->mGUIObjectMap.begin(); it!=mpCurrentView->mGUIObjectMap.end(); ++it)
+    for(it = mpCurrentSystem->mGUIObjectMap.begin(); it!=mpCurrentSystem->mGUIObjectMap.end(); ++it)
     {
         QColor backgroundColor;
         if(colorize)
@@ -517,7 +518,7 @@ SelectedVariableList::SelectedVariableList(MainWindow *parent)
         : VariableList(parent)
 {
     mpParentMainWindow = parent;
-    mpCurrentView = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView;
+    mpCurrentSystem = mpParentMainWindow->mpProjectTabs->getCurrentSystem();
     this->setAcceptDrops(true);
     this->setDragEnabled(true);
 

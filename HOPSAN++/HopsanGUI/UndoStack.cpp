@@ -55,11 +55,12 @@
 #include "loadObjects.h"
 #include <assert.h>
 #include "GUIUtilities.h"
+#include "GUISystem.h"
 
 //! Constructor.
-UndoStack::UndoStack(GraphicsView *parentView) : QObject()
+UndoStack::UndoStack(GUISystem *parentSystem) : QObject()
 {
-    mpParentView = parentView;
+    mpParentSystem = parentSystem;
     mCurrentStackPosition = -1;
     mStack.clear();
 }
@@ -95,17 +96,17 @@ void UndoStack::newPost()
         mStack.append(tempList);
         ++mCurrentStackPosition;
     }
-    mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
+    mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
 }
 
 
 //! Inserts an undopost to the current stack position
 void UndoStack::insertPost(QString str)
 {
-    if(!mpParentView->mUndoDisabled)
+    if(!mpParentSystem->mUndoDisabled)
     {
         mStack[mCurrentStackPosition].insert(0,str);
-        mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
+        mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
     }
 }
 
@@ -139,18 +140,18 @@ void UndoStack::undoOneStep()
             {
                 //poststream >> junk; //Discard Component load command
                 ////! @todo maybe we should not save it automatically in the guiobject maby let some other external save function add it
-                loadGUIObject(poststream, mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentView, NOUNDO);
+                loadGUIObject(poststream, mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentSystem, NOUNDO);
             }
             else if ( undoevent == "DELETEDCONNECTOR" )
             {
-                loadConnector(poststream, mpParentView, &(mpParentView->mpParentProjectTab->mGUIRootSystem), NOUNDO);
+                loadConnector(poststream, mpParentSystem, &(mpParentSystem->mpParentProjectTab->mGUIRootSystem), NOUNDO);
             }
             else if( undoevent == "ADDEDOBJECT" )
             {
                 //! @todo Maybe we only need to save the name
                 readName(poststream); //Discard Type
                 QString name = readName(poststream); //Store name
-                mpParentView->deleteGUIObject(name, NOUNDO);
+                mpParentSystem->deleteGUIObject(name, NOUNDO);
             }
             else if( undoevent == "ADDEDCONNECTOR" )
             {
@@ -159,14 +160,14 @@ void UndoStack::undoOneStep()
                 QString startPortName = readName(poststream);
                 QString endCompName = readName(poststream);
                 QString endPortName = readName(poststream);
-                GUIConnector *item = mpParentView->findConnector(startCompName, startPortName, endCompName, endPortName);
-                mpParentView->removeConnector(item, NOUNDO);
+                GUIConnector *item = mpParentSystem->findConnector(startCompName, startPortName, endCompName, endPortName);
+                mpParentSystem->removeConnector(item, NOUNDO);
             }
             else if( undoevent == "RENAMEDOBJECT" )     //! @todo This does not affect the GUIObject name! (but removes undo post...)
             {
                 QString oldName = readName(poststream);
                 QString newName = readName(poststream);
-                mpParentView->renameGUIObject(newName, oldName, NOUNDO);
+                mpParentSystem->renameGUIObject(newName, oldName, NOUNDO);
             }
             else if( undoevent == "MODIFIEDCONNECTOR" )
             {
@@ -178,7 +179,7 @@ void UndoStack::undoOneStep()
                 QString endComp = readName(poststream);
                 QString endPort = readName(poststream);
                 poststream >> oldPt.rx() >> oldPt.ry() >> newPt.rx() >> newPt.ry() >> lineNumber;
-                GUIConnector *item = mpParentView->findConnector(startComp, startPort, endComp, endPort);
+                GUIConnector *item = mpParentSystem->findConnector(startComp, startPort, endComp, endPort);
 
                 QPointF dXY = newPt-oldPt;
                 item->getLine(lineNumber)->setPos(item->getLine(lineNumber)->pos()-dXY);
@@ -189,31 +190,31 @@ void UndoStack::undoOneStep()
                 QPointF oldPt, newPt;
                 QString name = readName(poststream);
                 poststream >> oldPt.rx() >> oldPt.ry() >> newPt.rx() >> newPt.ry();
-                mpParentView->getGUIObject(name)->setPos(oldPt);
+                mpParentSystem->getGUIObject(name)->setPos(oldPt);
             }
             else if( undoevent == "ROTATEDOBJECT" )
             {
                 QString name = readName(poststream);
                 //! @todo This feels wierd, why rotate three times
-                mpParentView->getGUIObject(name)->rotate(NOUNDO);
-                mpParentView->getGUIObject(name)->rotate(NOUNDO);
-                mpParentView->getGUIObject(name)->rotate(NOUNDO);
+                mpParentSystem->getGUIObject(name)->rotate(NOUNDO);
+                mpParentSystem->getGUIObject(name)->rotate(NOUNDO);
+                mpParentSystem->getGUIObject(name)->rotate(NOUNDO);
             }
             else if( undoevent == "VERTICALFLIP" )
             {
                 QString name = readName(poststream);
-                mpParentView->getGUIObject(name)->flipVertical(NOUNDO);
+                mpParentSystem->getGUIObject(name)->flipVertical(NOUNDO);
             }
             else if( undoevent == "HORIZONTALFLIP" )
             {
                 QString name = readName(poststream);
-                mpParentView->getGUIObject(name)->flipHorizontal(NOUNDO);
+                mpParentSystem->getGUIObject(name)->flipHorizontal(NOUNDO);
             }
         }
         mCurrentStackPosition = undoPosition - 1;
-        mpParentView->resetBackgroundBrush();
+        mpParentSystem->mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
     }
-    mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
+    mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
 }
 
 
@@ -234,7 +235,7 @@ void UndoStack::redoOneStep()
             {
                 readName(poststream); //Discard Type
                 QString name = readName(poststream); //Store name
-                mpParentView->deleteGUIObject(name, NOUNDO);
+                mpParentSystem->deleteGUIObject(name, NOUNDO);
             }
             else if ( redoevent == "DELETEDCONNECTOR" )
             {
@@ -243,22 +244,22 @@ void UndoStack::redoOneStep()
                 QString startPortName = readName(poststream);
                 QString endCompName = readName(poststream);
                 QString endPortName = readName(poststream);
-                GUIConnector *item = mpParentView->findConnector(startCompName, startPortName, endCompName, endPortName);
-                mpParentView->removeConnector(item, NOUNDO);
+                GUIConnector *item = mpParentSystem->findConnector(startCompName, startPortName, endCompName, endPortName);
+                mpParentSystem->removeConnector(item, NOUNDO);
             }
             else if( redoevent == "ADDEDOBJECT" )
             {
-                  loadGUIObject(poststream, mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentView, NOUNDO);
+                  loadGUIObject(poststream, mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentSystem, NOUNDO);
             }
             else if( redoevent == "ADDEDCONNECTOR" )
             {
-                loadConnector(poststream, mpParentView, &(mpParentView->mpParentProjectTab->mGUIRootSystem), NOUNDO);
+                loadConnector(poststream, mpParentSystem, &(mpParentSystem->mpParentProjectTab->mGUIRootSystem), NOUNDO);
             }
             else if( redoevent == "RENAMEDOBJECT" )
             {
                 QString oldName = readName(poststream);
                 QString newName = readName(poststream);
-                mpParentView->renameGUIObject(oldName, newName, NOUNDO);
+                mpParentSystem->renameGUIObject(oldName, newName, NOUNDO);
             }
             else if( redoevent == "MODIFIEDCONNECTOR" )
             {
@@ -270,7 +271,7 @@ void UndoStack::redoOneStep()
                 QString endPort = readName(poststream);
                 poststream >> oldPt.rx() >> oldPt.ry() >> newPt.rx() >> newPt.ry() >> lineNumber;
 
-                GUIConnector *item = mpParentView->findConnector(startComp, startPort, endComp, endPort);
+                GUIConnector *item = mpParentSystem->findConnector(startComp, startPort, endComp, endPort);
 
                 QPointF dXY = newPt-oldPt;
                 item->getLine(lineNumber)->setPos(item->getLine(lineNumber)->pos()+dXY);
@@ -281,20 +282,20 @@ void UndoStack::redoOneStep()
                 QPointF oldPt, newPt;
                 QString name = readName(poststream);
                 poststream >> oldPt.rx() >> oldPt.ry() >> newPt.rx() >> newPt.ry();
-                mpParentView->getGUIObject(name)->setPos(newPt);
+                mpParentSystem->getGUIObject(name)->setPos(newPt);
             }
             else if( redoevent == "ROTATEDOBJECT" )
             {
                 QString name;
                 name = readName(poststream);
                 //! @todo This feels wierd, why rotate one time
-                mpParentView->getGUIObject(name)->rotate(NOUNDO);
+                mpParentSystem->getGUIObject(name)->rotate(NOUNDO);
             }
         }
-        mpParentView->resetBackgroundBrush();
+        mpParentSystem->mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
     }
     //! @todo why dont I know of my own UndoWidget (should maybe have a pointer to it directly)
-    mpParentView->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
+    mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
 }
 
 
@@ -470,7 +471,7 @@ void UndoWidget::refreshList()
     {
         return;
     }
-    mTempStack = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->mUndoStack->mStack;
+    mTempStack = mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoStack->mStack;
     QTableWidgetItem *item;
 
     mUndoTable->clear();
@@ -565,7 +566,7 @@ void UndoWidget::refreshList()
             }
 
                 // Figure out which color to use.
-            if(i > mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->mUndoStack->mCurrentStackPosition)
+            if(i > mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoStack->mCurrentStackPosition)
             {
                 if (i%2 == 0)
                 {
@@ -576,7 +577,7 @@ void UndoWidget::refreshList()
                     item->setBackgroundColor(QColor("antiquewhite"));
                 }
             }
-            else if(i < mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->mUndoStack->mCurrentStackPosition)
+            else if(i < mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoStack->mCurrentStackPosition)
             {
                 if (i%2 == 0)
                 {

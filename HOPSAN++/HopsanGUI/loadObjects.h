@@ -10,6 +10,7 @@ class LibraryWidget;
 class GUIRootSystem;
 class GUIObject;
 class MessageWidget;
+class GUISystem;
 
 class HeaderLoadData
 {
@@ -87,14 +88,14 @@ public:
 };
 
 
-GUIObject* loadGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GraphicsView* pGraphicsView, undoStatus undoSettings=UNDO);
-void loadConnector(QTextStream &rStream, GraphicsView* pGraphicsView, GUIRootSystem* pRootSystem, undoStatus undoSettings=UNDO);
-void loadParameterValues(QTextStream &rStream, GraphicsView* pGraphicsView, undoStatus undoSettings=UNDO);
+GUIObject* loadGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings=UNDO);
+void loadConnector(QTextStream &rStream, GUISystem* pSystem, GUIRootSystem* pRootSystem, undoStatus undoSettings=UNDO);
+void loadParameterValues(QTextStream &rStream, GUISystem* pSystem, undoStatus undoSettings=UNDO);
 
-GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, GraphicsView* pGraphicsView, undoStatus undoSettings=UNDO);
-GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget* pLibrary, GraphicsView* pGraphicsView, undoStatus undoSettings);
-void loadConnector(const ConnectorLoadData &rData, GraphicsView* pGraphicsView, GUIRootSystem* pRootSystem, undoStatus undoSettings=UNDO);
-void loadParameterValues(const ParameterLoadData &rData, GraphicsView* pGraphicsView, undoStatus undoSettings=UNDO);
+GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings=UNDO);
+GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings);
+void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, GUIRootSystem* pRootSystem, undoStatus undoSettings=UNDO);
+void loadParameterValues(const ParameterLoadData &rData, GUISystem* pSystem, undoStatus undoSettings=UNDO);
 
 HeaderLoadData readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidget);
 void writeHeader(QTextStream &rStream);

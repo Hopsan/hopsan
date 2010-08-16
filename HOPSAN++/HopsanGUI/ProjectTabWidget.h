@@ -57,6 +57,7 @@ class GraphicsScene;
 class GraphicsView;
 class MainWindow;
 class ProjectTab;
+class GUISystem;
 
 class ProjectTabWidget : public QTabWidget
 {
@@ -66,6 +67,7 @@ public:
     ProjectTabWidget(MainWindow *parent = 0);
 
     ProjectTab *getCurrentTab();
+    GUISystem *getCurrentSystem();
     MainWindow *mpParentMainWindow;
     size_t mNumberOfUntitledTabs;
 
@@ -82,6 +84,7 @@ public slots:
     void saveModel(saveTarget saveAsFlag = EXISTINGFILE);
     void setIsoGraphics(graphicsType);
 
+        //! @todo The functions bellow could possibly be replaced with connect/disconnect at tab change instead
     void resetZoom();
     void zoomIn();
     void zoomOut();
@@ -108,6 +111,7 @@ class ProjectTab : public QWidget
 
 public:
     ProjectTab(ProjectTabWidget *parent = 0);
+    GUISystem *mpSystem;
     bool mIsSaved;                          //Till subsystem
     QString mModelFileName;                 //Till subsystem
     graphicsType setGfxType;                //Till subsystem
