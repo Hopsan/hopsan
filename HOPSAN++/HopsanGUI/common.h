@@ -47,6 +47,6 @@ enum portDirection {TOPBOTTOM, LEFTRIGHT};
 enum connectorGeometry {VERTICAL, HORIZONTAL, DIAGONAL};
 enum renameRestrictions {UNRESTRICTED, CORERENAMEONLY};
 enum undoStatus {NOUNDO, UNDO};
-enum saveMethod {SAVE, SAVEAS};
+enum saveTarget {EXISTINGFILE, NEWFILE};
 
 #endif // COMMON_H

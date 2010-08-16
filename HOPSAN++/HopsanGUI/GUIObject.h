@@ -183,6 +183,12 @@ public:
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);
 
+protected:
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+
+public slots:
+    void deselect();
+
 signals:
     void textMoved(QPointF pos);
 };

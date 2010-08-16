@@ -470,7 +470,7 @@ void UndoWidget::refreshList()
     {
         return;
     }
-    mTempStack = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->undoStack->mStack;
+    mTempStack = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->mUndoStack->mStack;
     QTableWidgetItem *item;
 
     mUndoTable->clear();
@@ -565,7 +565,7 @@ void UndoWidget::refreshList()
             }
 
                 // Figure out which color to use.
-            if(i > mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->undoStack->mCurrentStackPosition)
+            if(i > mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->mUndoStack->mCurrentStackPosition)
             {
                 if (i%2 == 0)
                 {
@@ -576,7 +576,7 @@ void UndoWidget::refreshList()
                     item->setBackgroundColor(QColor("antiquewhite"));
                 }
             }
-            else if(i < mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->undoStack->mCurrentStackPosition)
+            else if(i < mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView->mUndoStack->mCurrentStackPosition)
             {
                 if (i%2 == 0)
                 {

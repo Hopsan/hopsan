@@ -52,7 +52,7 @@ GraphicsView::GraphicsView(ProjectTab *parent)
 
     mpCopyData = new QString;
 
-    undoStack = new UndoStack(this);
+    mUndoStack = new UndoStack(this);
 
     MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
@@ -161,7 +161,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
     //if (event->mimeData()->hasFormat("application/x-text"))
     if (event->mimeData()->hasText())               //! @todo We must check if it is the correct type of text in the drop object, otherwise it will crash if the user drops something that is not a gui object...
     {
-        undoStack->newPost();
+        mUndoStack->newPost();
         mpParentProjectTab->hasChanged();
 
         //QByteArray *data = new QByteArray;
@@ -233,7 +233,7 @@ GUIObject* GraphicsView::addGUIObject(AppearanceData appearanceData, QPoint posi
 
     if(undoSettings == UNDO)
     {
-        undoStack->registerAddedObject(mpTempGUIObject);
+        mUndoStack->registerAddedObject(mpTempGUIObject);
     }
 
     this->setFocus();
@@ -286,7 +286,7 @@ void GraphicsView::deleteGUIObject(QString objectName, undoStatus undoSettings)
     if (undoSettings == UNDO)
     {
         //Register removal of connector in undo stack (must be done after removal of connectors or the order of the commands in the undo stack will be wrong!)
-        this->undoStack->registerDeletedObject(it.value());
+        this->mUndoStack->registerDeletedObject(it.value());
     }
 
     if (it != mGUIObjectMap.end())
@@ -331,7 +331,7 @@ void GraphicsView::renameGUIObject(QString oldName, QString newName, undoStatus 
 
     if (undoSettings == UNDO)
     {
-        undoStack->registerRenameObject(oldName, newName);
+        mUndoStack->registerRenameObject(oldName, newName);
     }
 
     emit checkMessages();
@@ -401,7 +401,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     {
         if(isObjectSelected() or isConnectorSelected())
         {
-            undoStack->newPost();
+            mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit deleteSelected();
@@ -410,7 +410,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     {
         if(isObjectSelected())
         {
-            undoStack->newPost();
+            mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit keyPressCtrlR();
@@ -427,7 +427,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     {
         if(isObjectSelected())
         {
-            undoStack->newPost();
+            mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit keyPressShiftK();
@@ -436,7 +436,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     {
         if(isObjectSelected())
         {
-            undoStack->newPost();
+            mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit keyPressShiftL();
@@ -445,7 +445,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     {
         if(isObjectSelected())
         {
-            undoStack->newPost();
+            mUndoStack->newPost();
         }
         emit keyPressCtrlUp();
         doNotForwardEvent = true;
@@ -454,7 +454,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     {
         if(isObjectSelected())
         {
-            undoStack->newPost();
+            mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit keyPressCtrlDown();
@@ -464,7 +464,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     {
         if(isObjectSelected())
         {
-            undoStack->newPost();
+            mUndoStack->newPost();
         }
         emit keyPressCtrlLeft();
         doNotForwardEvent = true;
@@ -473,7 +473,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     {
         if(isObjectSelected())
         {
-            undoStack->newPost();
+            mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit keyPressCtrlRight();
@@ -640,11 +640,11 @@ void GraphicsView::addConnector(GUIPort *pPort, undoStatus undoSettings)
 
             mConnectorVector.append(mpTempConnector);
 
-            undoStack->newPost();
+            mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
             if(undoSettings == UNDO)
             {
-                undoStack->registerAddedConnector(mpTempConnector);
+                mUndoStack->registerAddedConnector(mpTempConnector);
             }
         }
         emit checkMessages();
@@ -694,7 +694,7 @@ void GraphicsView::removeConnector(GUIConnector* pConnector, undoStatus undoSett
 
     if(undoSettings == UNDO)
     {
-        undoStack->registerDeletedConnector(pConnector);
+        mUndoStack->registerDeletedConnector(pConnector);
     }
     for(i = 0; i != mConnectorVector.size(); ++i)
     {
@@ -779,20 +779,6 @@ void GraphicsView::deselectAll()
 }
 
 
-//! @brief deselects all GUIObject name text fields
-//! @todo Replace this function with signals and slots instead. We should avoid looping through everything like this, to increase performance.
-void GraphicsView::deselectAllText()
-{
-    GUIObjectMapT::iterator it;
-    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
-    {
-        it.value()->mpNameText->setSelected(false);
-        it.value()->mpNameText->clearFocus();
-    }
-}
-
-
-
 //! Copies the selected components, and then deletes them.
 //! @see copySelected()
 //! @see paste()
@@ -842,7 +828,7 @@ void GraphicsView::paste()
 {
     //qDebug() << "mpCopyData = " << *mpCopyData;
 
-    undoStack->newPost();
+    mUndoStack->newPost();
     mpParentProjectTab->hasChanged();
 
     QTextStream copyStream;
@@ -889,7 +875,7 @@ void GraphicsView::paste()
             //! @todo FINDOUT WHY: Cant select here because then the select all components bellow wont auto select the connectors DONT KNOW WHY, need to figure this out and clean up, (not that I realy nead to set selected here)
             //pObj->setSelected(true);
 
-            undoStack->registerAddedObject(pObj);
+            mUndoStack->registerAddedObject(pObj);
         }
         else if ( inputWord == "PARAMETER" )
         {
@@ -981,7 +967,7 @@ void GraphicsView::zoomOut()
 //! @see showNames()
 void GraphicsView::hideNames()
 {
-    this->deselectAllText();
+    emit deselectAllNameText();
     mIsRenamingObject = false;
     QMap<QString, GUIObject *>::iterator it;
     for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
@@ -1011,29 +997,29 @@ void GraphicsView::hidePorts(bool doIt)
 }
 
 
-//! Slot that tells the undoStack to execute one undo step. Necessary because the undo stack is not a QT object and cannot use its own slots.
+//! Slot that tells the mUndoStack to execute one undo step. Necessary because the undo stack is not a QT object and cannot use its own slots.
 //! @see redo()
 //! @see clearUndo()
 void GraphicsView::undo()
 {
-    undoStack->undoOneStep();
+    mUndoStack->undoOneStep();
 }
 
 
-//! Slot that tells the undoStack to execute one redo step. Necessary because the redo stack is not a QT object and cannot use its own slots.
+//! Slot that tells the mUndoStack to execute one redo step. Necessary because the redo stack is not a QT object and cannot use its own slots.
 //! @see undo()
 //! @see clearUndo()
 void GraphicsView::redo()
 {
-    undoStack->redoOneStep();
+    mUndoStack->redoOneStep();
 }
 
-//! Slot that tells the undoStack to clear itself. Necessary because the redo stack is not a QT object and cannot use its own slots.
+//! Slot that tells the mUndoStack to clear itself. Necessary because the redo stack is not a QT object and cannot use its own slots.
 //! @see undo()
 //! @see redo()
 void GraphicsView::clearUndo()
 {
-    undoStack->clear();
+    mUndoStack->clear();
 }
 
 

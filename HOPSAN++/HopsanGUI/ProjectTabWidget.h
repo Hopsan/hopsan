@@ -74,12 +74,12 @@ public slots:
     void addNewProjectTab(QString tabName="Untitled");
     void saveProjectTab();
     void saveProjectTabAs();
-    void saveProjectTab(int index, saveMethod saveAsFlag = SAVE);
+    void saveProjectTab(int index, saveTarget saveAsFlag = EXISTINGFILE);
     bool closeProjectTab(int index);
     bool closeAllProjectTabs();
     void simulateCurrent();
     void loadModel();
-    void saveModel(saveMethod saveAsFlag = SAVE);
+    void saveModel(saveTarget saveAsFlag = EXISTINGFILE);
     void setIsoGraphics(graphicsType);
 
     void resetZoom();
@@ -108,18 +108,18 @@ class ProjectTab : public QWidget
 
 public:
     ProjectTab(ProjectTabWidget *parent = 0);
-    bool mIsSaved;
+    bool mIsSaved;                          //Move
     QString mModelFileName;
     graphicsType setGfxType;
     ProjectTabWidget *mpParentProjectTabWidget;
     GUIRootSystem mGUIRootSystem;
     GraphicsView *mpGraphicsView;
     GraphicsScene *mpGraphicsScene;
-    double getStartTime();
-    double getTimeStep();
-    double getStopTime();
-    QString getIsoIconPath();
-    QString getUserIconPath();
+    double getStartTime();                  //Move
+    double getTimeStep();                   //Move
+    double getStopTime();                   //Move
+    QString getIsoIconPath();               //Move
+    QString getUserIconPath();              //Move
     void setIsoIconPath(QString path);
     void setUserIconPath(QString path);
 

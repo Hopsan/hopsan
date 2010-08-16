@@ -31,7 +31,6 @@ public:
     bool mUndoDisabled;
     GUIObject *getGUIObject(QString name);
     void resetBackgroundBrush();
-    void deselectAllText();
 
     ProjectTab *mpParentProjectTab;
     typedef QMap<QString, GUIObject*> GUIObjectMapT;
@@ -40,9 +39,15 @@ public:
     QAction *systemPortAction;
     QMenu *menuInsert;
     QColor mBackgroundColor;
-    //QPen getPen(QString situation, QString type, QString style);
-    UndoStack *undoStack;
+    UndoStack *mUndoStack;
     qreal mZoomFactor;
+    GUIObject* addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
+    void deleteGUIObject(QString componentName, undoStatus undoSettings=UNDO);
+    GUIConnector* findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
+    bool haveGUIObject(QString name);
+    void renameGUIObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
+    void removeConnector(GUIConnector* pConnector, undoStatus undoSettings=UNDO);
+
 
 signals:
     void deleteSelected();
@@ -57,24 +62,18 @@ signals:
     void zoomChange();
     void checkMessages();
     void systemPortSignal(QPoint position);
+    void deselectAllNameText();
     void deselectAllGUIObjects();
     void deselectAllGUIConnectors();
 
 public slots:
-    GUIObject* addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
-    void deleteGUIObject(QString componentName, undoStatus undoSettings=UNDO);
-    bool haveGUIObject(QString name);
-    void renameGUIObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
     void addSystemPort();
     void addConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);
-    void removeConnector(GUIConnector* pConnector, undoStatus undoSettings=UNDO);
-    GUIConnector* findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
     void cutSelected();
     void copySelected();
     void paste();
     void selectAll();
     void deselectAll();
-    //void setScale(const QString &scale);
     void resetZoom();
     void zoomIn();
     void zoomOut();
@@ -94,8 +93,7 @@ protected:
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void keyPressEvent(QKeyEvent *event);
     virtual void keyReleaseEvent(QKeyEvent *event);
-
-    void contextMenuEvent ( QContextMenuEvent * event );
+    virtual void contextMenuEvent ( QContextMenuEvent * event );
 
 private:
     GUIObject *mpTempGUIObject;

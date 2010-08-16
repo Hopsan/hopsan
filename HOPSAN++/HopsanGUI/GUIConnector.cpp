@@ -163,7 +163,7 @@ GUIConnector::~GUIConnector()
 {
     //qDebug() << this->getNumberOfLines();
 
-    //mpParentGraphicsView->undoStack->registerDeletedConnector(this);
+    //mpParentGraphicsView->mUndoStack->registerDeletedConnector(this);
 
 //    QMap<QString, GUIConnector *>::iterator it;
 //    for(it = mpParentGraphicsView->mConnectorVector.begin(); it!=mpParentGraphicsView->mConnectorVector.end(); ++it)
@@ -989,9 +989,9 @@ void GUIConnectorLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     if((this->pos() != mOldPos) and (event->button() == Qt::LeftButton))
     {
-        mpParentGUIConnector->mpParentGraphicsView->undoStack->newPost();
+        mpParentGUIConnector->mpParentGraphicsView->mUndoStack->newPost();
         mpParentGUIConnector->mpParentGraphicsView->mpParentProjectTab->hasChanged();
-        mpParentGUIConnector->mpParentGraphicsView->undoStack->registerModifiedConnector(mOldPos, this->pos(), mpParentGUIConnector, getLineNumber());
+        mpParentGUIConnector->mpParentGraphicsView->mUndoStack->registerModifiedConnector(mOldPos, this->pos(), mpParentGUIConnector, getLineNumber());
     }
     QGraphicsLineItem::mouseReleaseEvent(event);
 }

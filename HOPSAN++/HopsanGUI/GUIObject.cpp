@@ -431,11 +431,11 @@ void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         {
             if(!alreadyClearedRedo)
             {
-                mpParentGraphicsView->undoStack->newPost();
+                mpParentGraphicsView->mUndoStack->newPost();
                 mpParentGraphicsView->mpParentProjectTab->hasChanged();
                 alreadyClearedRedo = true;
             }
-            mpParentGraphicsView->undoStack->registerMovedObject(it.value()->mOldPos, it.value()->pos(), it.value()->getName());
+            mpParentGraphicsView->mUndoStack->registerMovedObject(it.value()->mOldPos, it.value()->pos(), it.value()->getName());
         }
     }
 
@@ -601,7 +601,7 @@ void GUIObject::rotate(undoStatus undoSettings)
 
     if(undoSettings == UNDO)
     {
-        mpParentGraphicsView->undoStack->registerRotatedObject(this);
+        mpParentGraphicsView->mUndoStack->registerRotatedObject(this);
     }
 
     emit componentMoved();
@@ -675,7 +675,7 @@ void GUIObject::flipVertical(undoStatus undoSettings)
     this->flipHorizontal(NOUNDO);
     if(undoSettings == UNDO)
     {
-        mpParentGraphicsView->undoStack->registerVerticalFlip(this);
+        mpParentGraphicsView->mUndoStack->registerVerticalFlip(this);
 
     }
 }
@@ -738,7 +738,7 @@ void GUIObject::flipHorizontal(undoStatus undoSettings)
 
     if(undoSettings == UNDO)
     {
-        mpParentGraphicsView->undoStack->registerHorizontalFlip(this);
+        mpParentGraphicsView->mUndoStack->registerHorizontalFlip(this);
     }
 }
 
@@ -877,7 +877,7 @@ void GUIObjectDisplayName::focusInEvent(QFocusEvent *event)
 
 void GUIObjectDisplayName::focusOutEvent(QFocusEvent *event)
 {
-    mpParentGUIComponent->mpParentGraphicsView->undoStack->newPost();
+    mpParentGUIComponent->mpParentGraphicsView->mUndoStack->newPost();
     mpParentGUIComponent->mpParentGraphicsView->mIsRenamingObject = false;
         //Try to set the new name, the rename function in parent view will be called
     mpParentGUIComponent->setName(toPlainText());
@@ -885,6 +885,34 @@ void GUIObjectDisplayName::focusOutEvent(QFocusEvent *event)
     mpParentGUIComponent->refreshDisplayName();
     emit textMoved(pos());
     QGraphicsTextItem::focusOutEvent(event);
+}
+
+
+//! Handles item change events.
+QVariant GUIObjectDisplayName::itemChange(GraphicsItemChange change, const QVariant &value)
+{
+    QGraphicsTextItem::itemChange(change, value);
+
+    if (change == QGraphicsItem::ItemSelectedHasChanged)
+    {
+        if (this->isSelected())
+        {
+            connect(this->mpParentGUIComponent->mpParentGraphicsView, SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
+        }
+        else
+        {
+            disconnect(this->mpParentGUIComponent->mpParentGraphicsView, SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
+        }
+    }
+    return value;
+}
+
+
+
+void GUIObjectDisplayName::deselect()
+{
+    this->setSelected(false);
+    this->clearFocus();
 }
 
 

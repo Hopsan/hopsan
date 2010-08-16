@@ -110,22 +110,14 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mModelFileName.clear();
 
     mpGraphicsScene = new GraphicsScene(this);
-
     mpGraphicsView  = new GraphicsView(this);
-
     mpGraphicsView->setScene(mpGraphicsScene);
 
     QVBoxLayout *tabLayout = new QVBoxLayout;
-
     tabLayout->addWidget(mpGraphicsView);
-
-    //    addStretch(1);
-    //    setWindowModified(true);
-
-    setLayout(tabLayout);
+    this->setLayout(tabLayout);
 
     this->setGfxType = USERGRAPHICS;
-
 }
 
 
@@ -386,7 +378,7 @@ void ProjectTabWidget::saveProjectTabAs()
 {
     if(this->count() != 0)
     {
-        saveProjectTab(currentIndex(), SAVEAS);
+        saveProjectTab(currentIndex(), NEWFILE);
     }
 }
 
@@ -394,7 +386,7 @@ void ProjectTabWidget::saveProjectTabAs()
 //! Saves project at index.
 //! @param index defines which project to save.
 //! @see saveProjectTab()
-void ProjectTabWidget::saveProjectTab(int index, saveMethod saveAsFlag)
+void ProjectTabWidget::saveProjectTab(int index, saveTarget saveAsFlag)
 {
     //ProjectTab *currentTab = qobject_cast<ProjectTab *>(widget(index));
     QString tabName = tabText(index);
@@ -445,7 +437,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
         case QMessageBox::Save:
             // Save was clicked
             std::cout << "ProjectTabWidget: " << "Save and close" << std::endl;
-            saveProjectTab(index, SAVE);
+            saveProjectTab(index, EXISTINGFILE);
             removeTab(index);
             return true;
         case QMessageBox::Discard:
@@ -588,7 +580,7 @@ void ProjectTabWidget::simulateCurrent()
 
 
 //! Loads a model from a file and opens it in a new project tab.
-//! @see saveModel(saveMethod saveAsFlag)
+//! @see saveModel(saveTarget saveAsFlag)
 void ProjectTabWidget::loadModel()
 {
     QDir fileDialogOpenDir;
@@ -623,7 +615,7 @@ void ProjectTabWidget::loadModel()
     this->addProjectTab(new ProjectTab(this), fileInfo.fileName());
     ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
     pCurrentTab->mModelFileName = modelFileName;
-    pCurrentTab->mpGraphicsView->undoStack->newPost();
+    pCurrentTab->mpGraphicsView->mUndoStack->newPost();
     pCurrentTab->mIsSaved = true;
 
     //Read the header data, also checks version numbers
@@ -680,7 +672,7 @@ void ProjectTabWidget::loadModel()
 
     pCurrentTab->mpGraphicsView->deselectAll();
     this->centerView();
-    pCurrentTab->mpGraphicsView->undoStack->clear();
+    pCurrentTab->mpGraphicsView->mUndoStack->clear();
     pCurrentTab->mpGraphicsView->resetBackgroundBrush();
 
     emit checkMessages();
@@ -691,13 +683,13 @@ void ProjectTabWidget::loadModel()
 //! @param saveAsFlag tells whether or not an already existing file name shall be used
 //! @see saveProjectTab()
 //! @see loadModel()
-void ProjectTabWidget::saveModel(saveMethod saveAsFlag)
+void ProjectTabWidget::saveModel(saveTarget saveAsFlag)
 {
     ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
     GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
 
     QString modelFileName;
-    if((pCurrentTab->mModelFileName.isEmpty()) | (saveAsFlag == SAVEAS))
+    if((pCurrentTab->mModelFileName.isEmpty()) | (saveAsFlag == NEWFILE))
     {
         QDir fileDialogSaveDir;
         modelFileName = QFileDialog::getSaveFileName(this, tr("Save Model File"),
