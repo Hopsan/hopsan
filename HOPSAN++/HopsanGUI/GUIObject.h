@@ -69,8 +69,8 @@ public:
     GUIObject(QPoint position, qreal rotation, AppearanceData appearanceData, selectionStatus startSelected = DESELECTED, graphicsType graphics = USERGRAPHICS, GUISystem *system = 0, QGraphicsItem *parent = 0);
     ~GUIObject();
 
-    void addConnector(GUIConnector *item);
-    void removeConnector(GUIConnector *item);
+    void rememberConnector(GUIConnector *item);
+    void forgetConnector(GUIConnector *item);
 
     QList<GUIConnector*> getGUIConnectorPtrs();
 

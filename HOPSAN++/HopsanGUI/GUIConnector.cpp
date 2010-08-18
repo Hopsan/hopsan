@@ -61,7 +61,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUISystem *parentSystem, QGraphic
 {
     mpParentSystem = parentSystem;
     mpParentSystem->scene()->addItem(this);
-    startPort->getGuiObject()->addConnector(this);
+    startPort->getGuiObject()->rememberConnector(this);
 
     setFlags(QGraphicsItem::ItemIsFocusable);
     connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange()), this, SLOT(adjustToZoom()));
@@ -152,8 +152,8 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
 //    else if(mpEndPort->getPortType() == "WRITEPORT" && mpEndPort->getNodeType() == "NodeSignal")
 //        mpLines[0]->addStartArrow();
 
-    mpStartPort->getGuiObject()->addConnector(this);
-    mpEndPort->getGuiObject()->addConnector(this);
+    mpStartPort->getGuiObject()->rememberConnector(this);
+    mpEndPort->getGuiObject()->rememberConnector(this);
 
     connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange()), this, SLOT(adjustToZoom()));
 }
@@ -183,8 +183,8 @@ GUIConnector::~GUIConnector()
     //! @todo more cleanup
     delete mpGUIConnectorAppearance;
 
-    mpStartPort->getGuiObject()->removeConnector(this);
-    mpEndPort->getGuiObject()->removeConnector(this);
+    mpStartPort->getGuiObject()->forgetConnector(this);
+    mpEndPort->getGuiObject()->forgetConnector(this);
 }
 
 

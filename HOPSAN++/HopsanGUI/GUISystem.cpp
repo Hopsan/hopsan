@@ -564,7 +564,7 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
              {
                  GUIPort *pStartP = pConnector->getStartPort();
                  GUIPort *pEndP = pConnector->getEndPort();
-                 mpParentProjectTab->mpSystem->mCoreSystemAccess.disconnect(pStartP->getGUIComponentName(), pStartP->getName(), pEndP->getGUIComponentName(), pEndP->getName());
+                 mCoreSystemAccess.disconnect(pStartP->getGUIComponentName(), pStartP->getName(), pEndP->getGUIComponentName(), pEndP->getName());
                  emit checkMessages();
                  endPortWasConnected = true;
              }
@@ -634,7 +634,7 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
 //! Begins creation of connector or complete creation of connector depending on the mIsCreatingConnector flag.
 //! @param pPort is a pointer to the clicked port, either start or end depending on the mIsCreatingConnector flag.
 //! @param undoSettings is true if the added connector shall not be registered in the undo stack, for example if this function is called by a redo function.
-void GUISystem::addConnector(GUIPort *pPort, undoStatus undoSettings)
+void GUISystem::createConnector(GUIPort *pPort, undoStatus undoSettings)
 {
         //When clicking start port
     if (!mIsCreatingConnector)
@@ -653,13 +653,13 @@ void GUISystem::addConnector(GUIPort *pPort, undoStatus undoSettings)
     {
         GUIPort *pStartPort = mpTempConnector->getStartPort();
 
-        bool success = mpParentProjectTab->mpSystem->mCoreSystemAccess.connect(pStartPort->getGUIComponentName(), pStartPort->getName(), pPort->getGUIComponentName(), pPort->getName() );
+        bool success = mCoreSystemAccess.connect(pStartPort->getGUIComponentName(), pStartPort->getName(), pPort->getGUIComponentName(), pPort->getName() );
         if (success)
         {
             mIsCreatingConnector = false;
             QPointF newPos = pPort->mapToScene(pPort->boundingRect().center());
             mpTempConnector->updateEndPoint(newPos);
-            pPort->getGuiObject()->addConnector(mpTempConnector);
+            pPort->getGuiObject()->rememberConnector(mpTempConnector);
             mpTempConnector->setEndPort(pPort);
 
                 //Hide ports; connected ports shall not be visible

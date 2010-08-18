@@ -206,14 +206,14 @@ void GUIObject::fixTextPosition(QPointF pos)
 }
 
 
-void GUIObject::addConnector(GUIConnector *item)
+void GUIObject::rememberConnector(GUIConnector *item)
 {
     mpGUIConnectorPtrs.append(item);
     connect(this, SIGNAL(componentMoved()), item, SLOT(drawConnector()));
 }
 
 
-void GUIObject::removeConnector(GUIConnector *item)
+void GUIObject::forgetConnector(GUIConnector *item)
 {
     mpGUIConnectorPtrs.removeOne(item);
     disconnect(this, SIGNAL(componentMoved()), item, SLOT(drawConnector()));

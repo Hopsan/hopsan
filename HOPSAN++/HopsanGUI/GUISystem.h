@@ -15,7 +15,6 @@ class AppearanceData;
 class ProjectTab;
 //class GUIContainerObject;
 class UndoStack;
-//class GUIRootSystem;
 #include "CoreSystemAccess.h"
 
 class GUISystem : public GUIContainerObject
@@ -71,7 +70,7 @@ public:
 
 public slots:
     //void addSystemPort();
-    void addConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);
+    void createConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);
     void cutSelected();
     void copySelected();
     void paste();
