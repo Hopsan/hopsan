@@ -43,10 +43,10 @@
 #include <QString>
 #include <qdebug.h>
 
-class GUIRootSystem
+class CoreSystemAccess
 {
 public:
-    GUIRootSystem();
+    CoreSystemAccess();
 
     bool connect(QString compname1, QString portname1, QString compname2, QString portname2);
     bool disconnect(QString compname1, QString portname1, QString compname2, QString portname2);

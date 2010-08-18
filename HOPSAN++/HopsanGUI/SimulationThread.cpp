@@ -48,7 +48,7 @@
 
 #include "SimulationThread.h"
 #include "ProjectTabWidget.h"
-#include "GUIRootSystem.h"
+#include "CoreSystemAccess.h"
 #include "MainWindow.h"
 
 
@@ -64,7 +64,7 @@
 //! @param startTime is the start time for the simulation.
 //! @param finishTime is the finish time for the simulation.
 //! @param parent is the parent of the thread, the a ProjectTabWidget
-SimulationThread::SimulationThread(GUIRootSystem *pGUIRootSystem, double startTime, double finishTime, ProjectTabWidget *parent)
+SimulationThread::SimulationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, ProjectTabWidget *parent)
 {
     mpParentProjectTabWidget = parent;
 

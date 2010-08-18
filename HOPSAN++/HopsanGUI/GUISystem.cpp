@@ -13,7 +13,7 @@
 #include "GraphicsView.h"
 #include "LibraryWidget.h"
 #include "loadObjects.h"
-#include "GUIRootSystem.h"
+#include "CoreSystemAccess.h"
 
 GUISystem::GUISystem(AppearanceData appearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, ProjectTab *parentProjectTab, QGraphicsItem *parent)
     : GUIContainerObject(position, rotation, appearanceData, startSelected, gfxType, system, parent)

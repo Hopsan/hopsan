@@ -45,7 +45,7 @@
 #include "GUIPort.h"
 #include "PlotWidget.h"
 #include "MainWindow.h"
-#include "GUIRootSystem.h"
+#include "CoreSystemAccess.h"
 #include "GUIObject.h"
 #include "GraphicsScene.h"
 #include "GraphicsView.h"
@@ -61,7 +61,7 @@ using namespace std;
 //! @param rot how the port should be rotated.
 //! @param iconPath a string with the path to the svg-figure representing the port.
 //! @param parent the port's parent, the component it is a part of.
-GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent, GUIRootSystem *pGUIRootSystem)
+GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent, CoreSystemAccess *pGUIRootSystem)
     : QGraphicsSvgItem(pPortAppearance->iconPath, pParent)
 {
     mpParentSystem = pParent->mpParentSystem;

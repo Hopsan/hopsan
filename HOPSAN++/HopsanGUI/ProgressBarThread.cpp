@@ -48,7 +48,7 @@
 
 #include "ProgressBarThread.h"
 #include "ProjectTabWidget.h"
-#include "GUIRootSystem.h"
+#include "CoreSystemAccess.h"
 #include "MainWindow.h"
 #include <QThread>
 

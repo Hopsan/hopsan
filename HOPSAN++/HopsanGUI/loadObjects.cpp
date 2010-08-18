@@ -5,7 +5,7 @@
 #include "LibraryWidget.h"
 #include "GraphicsView.h"
 #include "GUIObject.h"
-#include "GUIRootSystem.h"
+#include "CoreSystemAccess.h"
 #include "GUIConnector.h"
 #include "GUIPort.h"
 #include "MessageWidget.h"
@@ -235,7 +235,7 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
 
 
 
-void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, GUIRootSystem* pRootSystem, undoStatus undoSettings)
+void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, CoreSystemAccess* pRootSystem, undoStatus undoSettings)
 {
     qDebug() << rData.startComponentName << " " << rData.endComponentName << " " << pRootSystem->getRootSystemName();
     bool success = pRootSystem->connect(rData.startComponentName, rData.startPortName, rData.endComponentName, rData.endPortName);
@@ -300,7 +300,7 @@ GUIObject* loadGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISyste
 }
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data
-void loadConnector(QTextStream &rStream, GUISystem* pSystem, GUIRootSystem* pRootSystem, undoStatus undoSettings)
+void loadConnector(QTextStream &rStream, GUISystem* pSystem, CoreSystemAccess* pRootSystem, undoStatus undoSettings)
 {
     ConnectorLoadData data;
     data.read(rStream);

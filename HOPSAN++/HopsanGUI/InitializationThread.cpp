@@ -49,7 +49,7 @@
 #include "InitializationThread.h"
 #include "ProjectTabWidget.h"
 #include "MainWindow.h"
-#include "GUIRootSystem.h"
+#include "CoreSystemAccess.h"
 
 
 //! @class InitializationThread
@@ -64,7 +64,7 @@
 //! @param startTime is the start time for the initialization.
 //! @param finishTime is the finish time for the initialization.
 //! @param parent is the parent of the thread, the a ProjectTabWidget
-InitializationThread::InitializationThread(GUIRootSystem *pGUIRootSystem, double startTime, double finishTime, ProjectTabWidget *parent)
+InitializationThread::InitializationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, ProjectTabWidget *parent)
 {
     mpParentProjectTabWidget = parent;
 

@@ -7,7 +7,7 @@
 //Forward Declarations
 class GraphicsView;
 class LibraryWidget;
-class GUIRootSystem;
+class CoreSystemAccess;
 class GUIObject;
 class MessageWidget;
 class GUISystem;
@@ -89,12 +89,12 @@ public:
 
 
 GUIObject* loadGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings=UNDO);
-void loadConnector(QTextStream &rStream, GUISystem* pSystem, GUIRootSystem* pRootSystem, undoStatus undoSettings=UNDO);
+void loadConnector(QTextStream &rStream, GUISystem* pSystem, CoreSystemAccess* pRootSystem, undoStatus undoSettings=UNDO);
 void loadParameterValues(QTextStream &rStream, GUISystem* pSystem, undoStatus undoSettings=UNDO);
 
 GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings=UNDO);
 GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings);
-void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, GUIRootSystem* pRootSystem, undoStatus undoSettings=UNDO);
+void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, CoreSystemAccess* pRootSystem, undoStatus undoSettings=UNDO);
 void loadParameterValues(const ParameterLoadData &rData, GUISystem* pSystem, undoStatus undoSettings=UNDO);
 
 HeaderLoadData readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidget);

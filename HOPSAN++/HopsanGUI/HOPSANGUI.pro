@@ -21,13 +21,13 @@ SOURCES += main.cpp \
     GUIObject.cpp \
     UndoStack.cpp \
     AppearanceData.cpp \
-    GUIRootSystem.cpp \
     GUIUtilities.cpp \
     GraphicsView.cpp \
     GraphicsScene.cpp \
     loadObjects.cpp \
     ProgressBarThread.cpp \
-    GUISystem.cpp
+    GUISystem.cpp \
+    CoreSystemAccess.cpp
 HEADERS += MainWindow.h \
     ProjectTabWidget.h \
     LibraryWidget.h \
@@ -47,13 +47,14 @@ HEADERS += MainWindow.h \
     AppearanceData.h \
     UndoStack.h \
     GUIUtilities.h \
-    GUIRootSystem.h \
+    CoreSystemAccess.h \
     GraphicsView.h \
     GraphicsScene.h \
     loadObjects.h \
     ProgressBarThread.h \
     common.h \
-    GUISystem.h
+    GUISystem.h \
+    CoreSystemAccess.h
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE

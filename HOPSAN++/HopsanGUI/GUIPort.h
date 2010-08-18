@@ -52,14 +52,14 @@
 //Forward declarations
 class GUIObject;
 class GUISystem;
-class GUIRootSystem;
+class CoreSystemAccess;
 class GraphicsView;
 
 class GUIPort :public QGraphicsSvgItem
 {
     Q_OBJECT
 public:
-    GUIPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent = 0, GUIRootSystem *pGUIRootSystem=0);
+    GUIPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent = 0, CoreSystemAccess *pGUIRootSystem=0);
     void updatePosition();
     GUISystem *getParentSystem();
     GUIObject *getGuiObject();
@@ -106,7 +106,7 @@ private:
     QGraphicsLineItem *lineV;
     GUISystem *mpParentSystem;
     GUIObject *mpParentGuiObject;
-    GUIRootSystem *mpGUIRootSystem;
+    CoreSystemAccess *mpGUIRootSystem;
     QGraphicsTextItem *mpPortLabel;
     qreal mMag;
     bool mIsMag;

@@ -49,7 +49,7 @@
 #define PROJECTTABWIDGET_H
 
 #include <QTabWidget>
-#include "GUIRootSystem.h"
+#include "CoreSystemAccess.h"
 #include "GUIObject.h"
 
 //Forward declaration

@@ -52,16 +52,16 @@
 #include <QThread>
 
 class ProjectTabWidget;
-class GUIRootSystem;
+class CoreSystemAccess;
 
 class SimulationThread : public QThread
 {
 public:
-    SimulationThread(GUIRootSystem *pGUIRootSystem, double startTime, double finishTime, ProjectTabWidget *parent);
+    SimulationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, ProjectTabWidget *parent);
 
     ProjectTabWidget *mpParentProjectTabWidget;
 
-    GUIRootSystem *mpGUIRootSystem;
+    CoreSystemAccess *mpGUIRootSystem;
 
 protected:
     void run();
