@@ -22,10 +22,10 @@ class GUISystem : public GUIContainerObject
 {
     Q_OBJECT
 public:
-    GUISystem(AppearanceData appearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, ProjectTab *parentProjectTab = 0, QGraphicsItem *parent = 0);
+    GUISystem( QPoint position, qreal rotation, AppearanceData appearanceData, GUISystem *system, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
     GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *parent);
     ~GUISystem();
-    void constructorStuff(ProjectTab *parentProjectTab);
+
 
     void loadFromHMF(QString modelFileName=QString());
 
@@ -95,6 +95,8 @@ signals:
     void deleteSelected();
 
 private:
+    void commonConstructorCode();
+
     QString *mpCopyData;
     double mStartTime;
     double mStopTime;

@@ -15,17 +15,19 @@
 #include "loadObjects.h"
 #include "CoreSystemAccess.h"
 
-GUISystem::GUISystem(AppearanceData appearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, ProjectTab *parentProjectTab, QGraphicsItem *parent)
+GUISystem::GUISystem(QPoint position, qreal rotation, AppearanceData appearanceData, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
     : GUIContainerObject(position, rotation, appearanceData, startSelected, gfxType, system, parent)
 {
-    constructorStuff(parentProjectTab);
+    this->mpParentProjectTab = system->mpParentProjectTab;
+    this->commonConstructorCode();
 }
 
-
+//Root system specific constructor
 GUISystem::GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *parent)
     : GUIContainerObject(QPoint(0,0), 0, AppearanceData(), DESELECTED, USERGRAPHICS, 0, parent)
 {
-    constructorStuff(parentProjectTab);
+    this->mpParentProjectTab = parentProjectTab;
+    this->commonConstructorCode();
 }
 
 GUISystem::~GUISystem()
@@ -37,12 +39,12 @@ GUISystem::~GUISystem()
 }
 
 //! @todo ugly temporary hack
-void GUISystem::constructorStuff(ProjectTab *parentProjectTab)
+void GUISystem::commonConstructorCode()
 {
     mpScene = new GraphicsScene();
     mpScene->addItem(this);     //! Detta kan gå åt helsike
-    mpParentProjectTab = parentProjectTab;
-    mpMainWindow = parentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+
+    mpMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 
     mpCopyData = new QString;
     mUndoStack = new UndoStack(this);
@@ -63,17 +65,16 @@ void GUISystem::constructorStuff(ProjectTab *parentProjectTab)
     mGfxType = USERGRAPHICS;
 
         //Establish connections
-    MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
     //connect(this->systemPortAction, SIGNAL(triggered()), SLOT(addSystemPort()));
-    connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
-    connect(pMainWindow->cutAction, SIGNAL(triggered()), this,SLOT(cutSelected()));
-    connect(pMainWindow->copyAction, SIGNAL(triggered()), this,SLOT(copySelected()));
-    connect(pMainWindow->pasteAction, SIGNAL(triggered()), this,SLOT(paste()));
-    connect(pMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
-    connect(pMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
-    connect(pMainWindow->mpUndoWidget->undoButton, SIGNAL(pressed()), this, SLOT(undo()));
-    connect(pMainWindow->mpUndoWidget->redoButton, SIGNAL(pressed()), this, SLOT(redo()));
-    connect(pMainWindow->mpUndoWidget->clearButton, SIGNAL(pressed()), this, SLOT(clearUndo()));
+    connect(this, SIGNAL(checkMessages()), mpMainWindow->mpMessageWidget, SLOT(checkMessages()));
+    connect(mpMainWindow->cutAction, SIGNAL(triggered()), this,SLOT(cutSelected()));
+    connect(mpMainWindow->copyAction, SIGNAL(triggered()), this,SLOT(copySelected()));
+    connect(mpMainWindow->pasteAction, SIGNAL(triggered()), this,SLOT(paste()));
+    connect(mpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
+    connect(mpMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
+    connect(mpMainWindow->mpUndoWidget->undoButton, SIGNAL(pressed()), this, SLOT(undo()));
+    connect(mpMainWindow->mpUndoWidget->redoButton, SIGNAL(pressed()), this, SLOT(redo()));
+    connect(mpMainWindow->mpUndoWidget->clearButton, SIGNAL(pressed()), this, SLOT(clearUndo()));
 
     mCoreSystemAccess.setDesiredTimeStep(mTimeStep);
     mCoreSystemAccess.setRootTypeCQS("S");
@@ -187,8 +188,8 @@ void GUISystem::loadFromHMF(QString modelFileName)
     //! @todo maybe not check the version numbers in there
     HeaderLoadData headerData = readHeader(textStreamFile, mpMainWindow->mpMessageWidget);
 
-    //! @todo solve this (what about projecttab pointer for susystems) in some other better way
-    if (this->mpParentProjectTab != 0)
+    //Only set this stuff if this is the root system, (that is if no systemparent exist)
+    if (this->mpParentSystem == 0)
     {
         //It is assumed that these data have been successfully read
         mpMainWindow->setStartTimeLabel(headerData.startTime);
@@ -273,18 +274,17 @@ void GUISystem::loadFromHMF(QString modelFileName)
     }
     //Deselect all components
    //pCurrentTab->mpGraphicsView->deselectAllGUIObjects();
-
-    //! @todo solve some how for subsystems that doesnt have a project tab
-    if (mpParentProjectTab!=0)
+    this->deselectAll();
+    this->mUndoStack->clear();
+    //Only do this for the root system
+    //! @todo maybe can do this for subsystems to (even if we dont see them right now)
+    if (this->mpParentSystem == 0)
     {
-        this->deselectAll();
         //mpParentProjectTab->mpGraphicsView->centerView();
-        this->mUndoStack->clear();
         mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
     }
 
     emit checkMessages();
-
 }
 
 //! @todo Maybe should be somewhere else and be called load subsystem
@@ -525,7 +525,7 @@ GUIObject* GUISystem::addGUIObject(AppearanceData appearanceData, QPoint positio
     QString componentTypeName = appearanceData.getTypeName();
     if (componentTypeName == "Subsystem")
     {
-        mpTempGUIObject= new GUISystem(appearanceData, position, rotation, this, startSelected, mGfxType);
+        mpTempGUIObject= new GUISystem(position, rotation, appearanceData, this, startSelected, mGfxType);
     }
     else if (componentTypeName == "SystemPort")
     {
