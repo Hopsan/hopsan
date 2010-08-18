@@ -519,6 +519,7 @@ void ProjectTabWidget::loadModel()
     QFile file(modelFileName);   //Create a QFile object
     QFileInfo fileInfo(file);
 
+    //Make sure file not already open
     for(int t=0; t!=this->count(); ++t)
     {
         if( (this->tabText(t) == fileInfo.fileName()) or (this->tabText(t) == (fileInfo.fileName() + "*")) )
@@ -530,78 +531,80 @@ void ProjectTabWidget::loadModel()
     }
 
 
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
-    {
-        qDebug() << "Failed to open file or not a text file: " + modelFileName;
-        return;
-    }
-    QTextStream inputStream(&file);  //Create a QTextStream object to stream the content of file
+//    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
+//    {
+//        qDebug() << "Failed to open file or not a text file: " + modelFileName;
+//        return;
+//    }
+//    QTextStream inputStream(&file);  //Create a QTextStream object to stream the content of file
 
 
     this->addProjectTab(new ProjectTab(this), fileInfo.fileName());
     ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
-    pCurrentTab->mpSystem->mModelFileName = modelFileName;
-    pCurrentTab->mpSystem->mUndoStack->newPost();
+//    pCurrentTab->mpSystem->mModelFileName = modelFileName;
+//    pCurrentTab->mpSystem->mUndoStack->newPost();
     pCurrentTab->mIsSaved = true;
 
-    //Read the header data, also checks version numbers
-    //! @todo maybe not check the version numbers in there
-    HeaderLoadData headerData = readHeader(inputStream, mpParentMainWindow->mpMessageWidget);
+    pCurrentTab->mpSystem->loadFromHMF(modelFileName);
 
-    //It is assumed that these data have been successfully read
-    mpParentMainWindow->setStartTimeLabel(headerData.startTime);
-    mpParentMainWindow->setTimeStepLabel(headerData.timeStep);
-    mpParentMainWindow->setFinishTimeLabel(headerData.stopTime);
+//    //Read the header data, also checks version numbers
+//    //! @todo maybe not check the version numbers in there
+//    HeaderLoadData headerData = readHeader(inputStream, mpParentMainWindow->mpMessageWidget);
 
-    //It is assumed that these data have been successfully read
-    getCurrentTab()->mpGraphicsView->centerOn(headerData.viewport_x, headerData.viewport_y);
-    getCurrentTab()->mpGraphicsView->scale(headerData.viewport_zoomfactor, headerData.viewport_zoomfactor);
-    getCurrentTab()->mpGraphicsView->mZoomFactor = headerData.viewport_zoomfactor;
-    getCurrentTab()->mpGraphicsView->resetBackgroundBrush();
+//    //It is assumed that these data have been successfully read
+//    mpParentMainWindow->setStartTimeLabel(headerData.startTime);
+//    mpParentMainWindow->setTimeStepLabel(headerData.timeStep);
+//    mpParentMainWindow->setFinishTimeLabel(headerData.stopTime);
 
-    //Sets the file name (exluding path and ending) as the model name
-    getCurrentTab()->mpSystem->mCoreSystemAccess.setRootSystemName(fileInfo.baseName());
+//    //It is assumed that these data have been successfully read
+//    getCurrentTab()->mpGraphicsView->centerOn(headerData.viewport_x, headerData.viewport_y);
+//    getCurrentTab()->mpGraphicsView->scale(headerData.viewport_zoomfactor, headerData.viewport_zoomfactor);
+//    getCurrentTab()->mpGraphicsView->mZoomFactor = headerData.viewport_zoomfactor;
+//    getCurrentTab()->mpGraphicsView->resetBackgroundBrush();
 
-    while ( !inputStream.atEnd() )
-    {
-        //Extract first word on line
-        QString inputWord;
-        inputStream >> inputWord;
+//    //Sets the file name (exluding path and ending) as the model name
+//    getCurrentTab()->mpSystem->mCoreSystemAccess.setRootSystemName(fileInfo.baseName());
 
-        if ( (inputWord == "SUBSYSTEM") or (inputWord == "BEGINSUBSYSTEM") )
-        {
-            SubsystemLoadData subsysData;
-            subsysData.read(inputStream);
-            loadSubsystemGUIObject(subsysData, mpParentMainWindow->mpLibrary, pCurrentTab->mpSystem, NOUNDO);
-            //! @todo convenience function
-        }
+//    while ( !inputStream.atEnd() )
+//    {
+//        //Extract first word on line
+//        QString inputWord;
+//        inputStream >> inputWord;
 
-        if ( (inputWord == "COMPONENT") || (inputWord == "SYSTEMPORT") )
-        {
-            loadGUIObject(inputStream, mpParentMainWindow->mpLibrary, pCurrentTab->mpSystem, NOUNDO);
-        }
+//        if ( (inputWord == "SUBSYSTEM") or (inputWord == "BEGINSUBSYSTEM") )
+//        {
+//            SubsystemLoadData subsysData;
+//            subsysData.read(inputStream);
+//            loadSubsystemGUIObject(subsysData, mpParentMainWindow->mpLibrary, pCurrentTab->mpSystem, NOUNDO);
+//            //! @todo convenience function
+//        }
 
-
-        if ( inputWord == "PARAMETER" )
-        {
-            loadParameterValues(inputStream, pCurrentTab->mpSystem, NOUNDO);
-        }
+//        if ( (inputWord == "COMPONENT") || (inputWord == "SYSTEMPORT") )
+//        {
+//            loadGUIObject(inputStream, mpParentMainWindow->mpLibrary, pCurrentTab->mpSystem, NOUNDO);
+//        }
 
 
-        if ( inputWord == "CONNECT" )
-        {
-            loadConnector(inputStream, pCurrentTab->mpSystem, &(pCurrentTab->mpSystem->mCoreSystemAccess), NOUNDO);
-        }
-    }
-    //Deselect all components
-   //pCurrentTab->mpGraphicsView->deselectAllGUIObjects();
+//        if ( inputWord == "PARAMETER" )
+//        {
+//            loadParameterValues(inputStream, pCurrentTab->mpSystem, NOUNDO);
+//        }
 
-    pCurrentTab->mpSystem->deselectAll();
-    this->centerView();
-    pCurrentTab->mpSystem->mUndoStack->clear();
-    pCurrentTab->mpGraphicsView->resetBackgroundBrush();
 
-    emit checkMessages();
+//        if ( inputWord == "CONNECT" )
+//        {
+//            loadConnector(inputStream, pCurrentTab->mpSystem, NOUNDO);
+//        }
+//    }
+//    //Deselect all components
+//   //pCurrentTab->mpGraphicsView->deselectAllGUIObjects();
+
+//    pCurrentTab->mpSystem->deselectAll();
+//    this->centerView();
+//    pCurrentTab->mpSystem->mUndoStack->clear();
+//    pCurrentTab->mpGraphicsView->resetBackgroundBrush();
+
+//    emit checkMessages();
 }
 
 
@@ -615,17 +618,17 @@ void ProjectTabWidget::saveModel(saveTarget saveAsFlag)
     GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
 
     QString modelFileName;
-    if((pCurrentTab->mpSystem->mModelFileName.isEmpty()) | (saveAsFlag == NEWFILE))
+    if((pCurrentTab->mpSystem->mModelFilePath.isEmpty()) | (saveAsFlag == NEWFILE))
     {
         QDir fileDialogSaveDir;
         modelFileName = QFileDialog::getSaveFileName(this, tr("Save Model File"),
                                                              fileDialogSaveDir.currentPath() + QString("/../../Models"),
                                                              tr("Hopsan Model Files (*.hmf)"));
-        pCurrentTab->mpSystem->mModelFileName = modelFileName;
+        pCurrentTab->mpSystem->mModelFilePath = modelFileName;
     }
     else
     {
-        modelFileName = pCurrentTab->mpSystem->mModelFileName;
+        modelFileName = pCurrentTab->mpSystem->mModelFilePath;
     }
 
     QFile file(modelFileName);   //Create a QFile object
@@ -716,9 +719,9 @@ void ProjectTabWidget::saveModel(saveTarget saveAsFlag)
 
     modelFile << "--------------------------------------------------------------\n";
 
-    for(int i = 0; i != pCurrentTab->mpSystem->mConnectorVector.size(); ++i)
+    for(int i = 0; i != pCurrentTab->mpSystem->mSubConnectorVector.size(); ++i)
     {
-        pCurrentTab->mpSystem->mConnectorVector[i]->saveToTextStream(modelFile, "CONNECT");
+        pCurrentTab->mpSystem->mSubConnectorVector[i]->saveToTextStream(modelFile, "CONNECT");
     }
     modelFile << "--------------------------------------------------------------\n";
 }
@@ -736,9 +739,9 @@ void ProjectTabWidget::setIsoGraphics(graphicsType gfxType)
         ProjectTab *pCurrentTab = getCurrentTab();
        // GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
 
-        for(int i = 0; i!=pCurrentTab->mpSystem->mConnectorVector.size(); ++i)
+        for(int i = 0; i!=pCurrentTab->mpSystem->mSubConnectorVector.size(); ++i)
         {
-            pCurrentTab->mpSystem->mConnectorVector[i]->setIsoStyle(gfxType);
+            pCurrentTab->mpSystem->mSubConnectorVector[i]->setIsoStyle(gfxType);
         }
 
         QMap<QString, GUIObject*>::iterator it2;

@@ -42,6 +42,7 @@ void GUISystem::constructorStuff(ProjectTab *parentProjectTab)
     mpScene = new GraphicsScene();
     mpScene->addItem(this);     //! Detta kan gå åt helsike
     mpParentProjectTab = parentProjectTab;
+    mpMainWindow = parentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 
     mpCopyData = new QString;
     mUndoStack = new UndoStack(this);
@@ -55,7 +56,7 @@ void GUISystem::constructorStuff(ProjectTab *parentProjectTab)
         //Set default values
     mLoadType = "Empty";
     mModelFilePath.clear();
-    mModelFileName.clear();
+    //mModelFileName.clear();
     mStartTime = 0;     //! @todo These default values should be options for the user
     mTimeStep = 0.001;
     mStopTime = 10;
@@ -136,8 +137,158 @@ QVector<QString> GUISystem::getParameterNames()
 
 //void GUISystem::refreshAppearance();
 
+void GUISystem::loadFromHMF(QString modelFileName)
+{
+    //! @todo maybe break out the load file function it is used in many places (with some diffeerenses every time), should be enough to return file and filinfo obejct maybe
+    QFile file;
+    QFileInfo fileInfo;
+    if (modelFileName.isEmpty())
+    {
+        QDir fileDialog;
+        modelFileName = QFileDialog::getOpenFileName(mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
+                                                             fileDialog.currentPath() + QString("/../../Models"),
+                                                             tr("Hopsan Model Files (*.hmf)"));
+        if (modelFileName.isEmpty())
+            return;
+
+        file.setFileName(modelFileName);
+        fileInfo.setFile(file);
+
+        for(int t=0; t!=mpParentProjectTab->mpParentProjectTabWidget->count(); ++t)
+        {
+            if( (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == fileInfo.fileName()) or (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == (fileInfo.fileName() + "*")) )
+            {
+                QMessageBox::StandardButton reply;
+                reply = QMessageBox::information(mpParentProjectTab->mpParentProjectTabWidget, tr("Error"), tr("Unable to load model. File is already open."));
+                return;
+            }
+        }
+    }
+    else
+    {
+         file.setFileName(modelFileName);
+         fileInfo.setFile(file);
+    }
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
+    {
+        qDebug() << "Failed to open file or not a text file: " + modelFileName;
+        return;
+    }
+    QTextStream textStreamFile(&file); //Converts to QTextStream
+    mModelFilePath = modelFileName;
+    mUndoStack->newPost();
+
+    //Set the name
+    this->setName(fileInfo.baseName());
+
+    //Now read the file data
+    //Read the header data, also checks version numbers
+    //! @todo maybe not check the version numbers in there
+    HeaderLoadData headerData = readHeader(textStreamFile, mpMainWindow->mpMessageWidget);
+
+    //! @todo solve this (what about projecttab pointer for susystems) in some other better way
+    if (this->mpParentProjectTab != 0)
+    {
+        //It is assumed that these data have been successfully read
+        mpMainWindow->setStartTimeLabel(headerData.startTime);
+        mpMainWindow->setTimeStepLabel(headerData.timeStep);
+        mpMainWindow->setFinishTimeLabel(headerData.stopTime);
+
+        //It is assumed that these data have been successfully read
+        mpParentProjectTab->mpGraphicsView->centerOn(headerData.viewport_x, headerData.viewport_y);
+        mpParentProjectTab->mpGraphicsView->scale(headerData.viewport_zoomfactor, headerData.viewport_zoomfactor);
+        mpParentProjectTab->mpGraphicsView->mZoomFactor = headerData.viewport_zoomfactor;
+        mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
+    }
+
+    //Read the system appearance data
+    SystemAppearanceLoadData sysappdata;
+    sysappdata.read(textStreamFile);
+
+    if (!sysappdata.usericon_path.isEmpty())
+    {
+        mAppearanceData.setIconPathUser(sysappdata.usericon_path);
+    }
+    if (!sysappdata.isoicon_path.isEmpty())
+    {
+        mAppearanceData.setIconPathISO(sysappdata.isoicon_path);
+    }
+
+    //! @todo reading portappearance should have a common function and be shared with the setappearancedata read function that reads from caf files
+    PortAppearanceMapT* portappmap = &(mAppearanceData.getPortAppearanceMap());
+    for (int i=0; i<sysappdata.portnames.size(); ++i)
+    {
+        PortAppearance portapp;
+        portapp.x = sysappdata.port_xpos[i];
+        portapp.y = sysappdata.port_ypos[i];
+        portapp.rot = sysappdata.port_angle[i];
+        if( (portapp.rot == 0) || (portapp.rot == 180) )
+        {
+            portapp.direction = LEFTRIGHT;
+        }
+        else
+        {
+            portapp.direction = TOPBOTTOM;
+        }
+        //! @todo portdirection in portapperance should have an initial default value to avoid crash if not set when creating connector
+        portapp.selectPortIcon("","",""); //!< @todo fix this
+
+        portappmap->insert(sysappdata.portnames[i], portapp);
+        qDebug() << sysappdata.portnames[i];
+    }
+    qDebug() << "Appearance set";
+
+    //Now load the contens of the subsystem
+    while ( !textStreamFile.atEnd() )
+    {
+        //Extract first word on line
+        QString inputWord;
+        textStreamFile >> inputWord;
+
+        //! @todo what about NOUNDO here should we be able to select this from the outside maybe
+
+        if ( (inputWord == "SUBSYSTEM") or (inputWord == "BEGINSUBSYSTEM") )
+        {
+            SubsystemLoadData subsysData;
+            subsysData.read(textStreamFile);
+            loadSubsystemGUIObject(subsysData, mpMainWindow->mpLibrary, this, NOUNDO);
+            //! @todo make convenience function
+        }
+
+        if ( (inputWord == "COMPONENT") || (inputWord == "SYSTEMPORT") )
+        {
+            loadGUIObject(textStreamFile, mpMainWindow->mpLibrary, this, NOUNDO);
+        }
+
+        if ( inputWord == "PARAMETER" )
+        {
+            loadParameterValues(textStreamFile, this, NOUNDO);
+        }
+
+        if ( inputWord == "CONNECT" )
+        {
+            loadConnector(textStreamFile, this, NOUNDO);
+        }
+    }
+    //Deselect all components
+   //pCurrentTab->mpGraphicsView->deselectAllGUIObjects();
+
+    //! @todo solve some how for subsystems that doesnt have a project tab
+    if (mpParentProjectTab!=0)
+    {
+        this->deselectAll();
+        //mpParentProjectTab->mpGraphicsView->centerView();
+        this->mUndoStack->clear();
+        mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
+    }
+
+    emit checkMessages();
+
+}
+
 //! @todo Maybe should be somewhere else and be called load subsystem
-void GUISystem::loadFromFile(QString modelFileName)
+void GUISystem::loadFromFileNOGUI(QString modelFileName)
 {
     QFile file;
     QFileInfo fileInfo;
@@ -289,7 +440,7 @@ void GUISystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         }
         else if (selectedAction == loadAction)
         {
-            loadFromFile();
+            loadFromFileNOGUI();
         }
     }
 
@@ -349,7 +500,7 @@ void GUISystem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     if(mModelFilePath.isEmpty())
     {
-        loadFromFile();
+        loadFromFileNOGUI();
     }
     else
     {
@@ -417,12 +568,12 @@ void GUISystem::deleteGUIObject(QString objectName, undoStatus undoSettings)
     GUIObjectMapT::iterator it = mGUIObjectMap.find(objectName);
     //! @todo This is very very very stupid! We loop through all connectors in the model and removes them if the name of one of their parent components is the same as the component we delete?!
     int i = 0;
-    while(i != mConnectorVector.size())
+    while(i != mSubConnectorVector.size())
     {
-        if((mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == objectName) or
-           (mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == objectName))
+        if((mSubConnectorVector[i]->getStartPort()->getGuiObject()->getName() == objectName) or
+           (mSubConnectorVector[i]->getEndPort()->getGuiObject()->getName() == objectName))
         {
-            this->removeConnector(mConnectorVector[i]);
+            this->removeConnector(mSubConnectorVector[i]);
             i= 0;   //Restart iteration if map has changed
         }
         else
@@ -508,24 +659,24 @@ GUIObject *GUISystem::getGUIObject(QString name)
 GUIConnector* GUISystem::findConnector(QString startComp, QString startPort, QString endComp, QString endPort)
 {
     GUIConnector *item;
-    for(int i = 0; i < mConnectorVector.size(); ++i)
+    for(int i = 0; i < mSubConnectorVector.size(); ++i)
     {
         //! @todo Should add functions to connector to get start/end component/port names (used a few times around the code)
-        if((mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == startComp) and
-           (mConnectorVector[i]->getStartPort()->getName() == startPort) and
-           (mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == endComp) and
-           (mConnectorVector[i]->getEndPort()->getName() == endPort))
+        if((mSubConnectorVector[i]->getStartPort()->getGuiObject()->getName() == startComp) and
+           (mSubConnectorVector[i]->getStartPort()->getName() == startPort) and
+           (mSubConnectorVector[i]->getEndPort()->getGuiObject()->getName() == endComp) and
+           (mSubConnectorVector[i]->getEndPort()->getName() == endPort))
         {
-            item = mConnectorVector[i];
+            item = mSubConnectorVector[i];
             break;
         }
         //Find even if the caller mixed up start and stop
-        else if((mConnectorVector[i]->getStartPort()->getGuiObject()->getName() == endComp) and
-                (mConnectorVector[i]->getStartPort()->getName() == endPort) and
-                (mConnectorVector[i]->getEndPort()->getGuiObject()->getName() == startComp) and
-                (mConnectorVector[i]->getEndPort()->getName() == startPort))
+        else if((mSubConnectorVector[i]->getStartPort()->getGuiObject()->getName() == endComp) and
+                (mSubConnectorVector[i]->getStartPort()->getName() == endPort) and
+                (mSubConnectorVector[i]->getEndPort()->getGuiObject()->getName() == startComp) and
+                (mSubConnectorVector[i]->getEndPort()->getName() == startPort))
         {
-            item = mConnectorVector[i];
+            item = mSubConnectorVector[i];
             break;
         }
     }
@@ -549,9 +700,9 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
     {
         mUndoStack->registerDeletedConnector(pConnector);
     }
-    for(i = 0; i != mConnectorVector.size(); ++i)
+    for(i = 0; i != mSubConnectorVector.size(); ++i)
     {
-        if(mConnectorVector[i] == pConnector)
+        if(mSubConnectorVector[i] == pConnector)
         {
              //! @todo some error handling both ports must exist and be connected to each other
              if(pConnector->isConnected())
@@ -565,17 +716,17 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
              doDelete = true;
              indexToRemove = i;
         }
-        else if( (pConnector->getStartPort() == mConnectorVector[i]->getStartPort()) or
-                 (pConnector->getStartPort() == mConnectorVector[i]->getEndPort()) )
+        else if( (pConnector->getStartPort() == mSubConnectorVector[i]->getStartPort()) or
+                 (pConnector->getStartPort() == mSubConnectorVector[i]->getEndPort()) )
         {
             startPortHasMoreConnections = true;
         }
-        else if( (pConnector->getEndPort() == mConnectorVector[i]->getStartPort()) or
-                 (pConnector->getEndPort() == mConnectorVector[i]->getEndPort()) )
+        else if( (pConnector->getEndPort() == mSubConnectorVector[i]->getStartPort()) or
+                 (pConnector->getEndPort() == mSubConnectorVector[i]->getEndPort()) )
         {
             endPortHasMoreConnections = true;
         }
-        if(mConnectorVector.empty())
+        if(mSubConnectorVector.empty())
             break;
     }
 
@@ -600,7 +751,7 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
     {
         mpScene->removeItem(pConnector);
         delete pConnector;
-        mConnectorVector.remove(indexToRemove);
+        mSubConnectorVector.remove(indexToRemove);
     }
     mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
 }
@@ -660,7 +811,7 @@ void GUISystem::createConnector(GUIPort *pPort, undoStatus undoSettings)
             mpTempConnector->getStartPort()->hide();
             mpTempConnector->getEndPort()->hide();
 
-            mConnectorVector.append(mpTempConnector);
+            mSubConnectorVector.append(mpTempConnector);
 
             mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
@@ -707,11 +858,11 @@ void GUISystem::copySelected()
         }
     }
 
-    for(int i = 0; i != mConnectorVector.size(); ++i)
+    for(int i = 0; i != mSubConnectorVector.size(); ++i)
     {
-        if(mConnectorVector[i]->getStartPort()->getGuiObject()->isSelected() and mConnectorVector[i]->getEndPort()->getGuiObject()->isSelected() and mConnectorVector[i]->isActive())
+        if(mSubConnectorVector[i]->getStartPort()->getGuiObject()->isSelected() and mSubConnectorVector[i]->getEndPort()->getGuiObject()->isSelected() and mSubConnectorVector[i]->isActive())
         {
-            mConnectorVector[i]->saveToTextStream(copyStream, "CONNECT");
+            mSubConnectorVector[i]->saveToTextStream(copyStream, "CONNECT");
         }
     }
 }
@@ -798,7 +949,7 @@ void GUISystem::paste()
                 data.pointVector[i].ry() -= 50;
             }
 
-            loadConnector(data,this,&(mpParentProjectTab->mpSystem->mCoreSystemAccess), NOUNDO);
+            loadConnector(data, this, NOUNDO);
         }
     }
 
@@ -825,9 +976,9 @@ void GUISystem::selectAll()
 
         //Select all connectors
     QMap<QString, GUIConnector*>::iterator it2;
-    for(int i = 0; i != mConnectorVector.size(); ++i)
+    for(int i = 0; i != mSubConnectorVector.size(); ++i)
     {
-        mConnectorVector[i]->doSelect(true, -1);
+        mSubConnectorVector[i]->doSelect(true, -1);
     }
 }
 
@@ -920,9 +1071,9 @@ bool GUISystem::isObjectSelected()
 //! @todo See comment above isObjectSelected()
 bool GUISystem::isConnectorSelected()
 {
-    for(int i = 0; i != mConnectorVector.size(); ++i)
+    for(int i = 0; i != mSubConnectorVector.size(); ++i)
     {
-        if (mConnectorVector[i]->isActive())
+        if (mSubConnectorVector[i]->isActive())
         {
             return true;
         }

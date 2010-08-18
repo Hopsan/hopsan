@@ -225,7 +225,7 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
     GUIObject* pSys = loadGUIObject(rData, pLibrary, pSystem, undoSettings);
 
     //Now read the external file to change appearance and populate the system
-    pSys->loadFromFile(rData.filepath);
+    pSys->loadFromHMF(rData.filepath);
 
     //Set the cqs type of the system
     pSys->setTypeCQS(rData.cqs_type);
@@ -235,16 +235,16 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
 
 
 
-void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, CoreSystemAccess* pRootSystem, undoStatus undoSettings)
+void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, undoStatus undoSettings)
 {
-    qDebug() << rData.startComponentName << " " << rData.endComponentName << " " << pRootSystem->getRootSystemName();
-    bool success = pRootSystem->connect(rData.startComponentName, rData.startPortName, rData.endComponentName, rData.endPortName);
+    qDebug() << "loadConnector: " << rData.startComponentName << " " << rData.endComponentName << " " << pSystem->mCoreSystemAccess.getRootSystemName();
+    bool success = pSystem->mCoreSystemAccess.connect(rData.startComponentName, rData.startPortName, rData.endComponentName, rData.endPortName);
     if (success)
     {
         //Check if the component names are the same as the guiroot system name in such cases we should search for the actual systemport gui object instead
         //!< @todo this is extremely strange, some day we need to figure out a way that allways works the same way, this will likly mean MAJOR changes
         QString startGuiObjName, endGuiObjName;
-        if (rData.startComponentName == pRootSystem->getRootSystemName())
+        if (rData.startComponentName == pSystem->mCoreSystemAccess.getRootSystemName())
         {
             startGuiObjName = rData.startPortName;
         }
@@ -252,7 +252,7 @@ void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, CoreSyste
         {
             startGuiObjName = rData.startComponentName;
         }
-        if (rData.endComponentName == pRootSystem->getRootSystemName())
+        if (rData.endComponentName == pSystem->mCoreSystemAccess.getRootSystemName())
         {
             endGuiObjName = rData.endPortName;
         }
@@ -275,8 +275,7 @@ void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, CoreSyste
         QObject::connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
         QObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
 
-        pSystem->mConnectorVector.append(pTempConnector);
-
+        pSystem->mSubConnectorVector.append(pTempConnector);
     }
     else
     {
@@ -300,11 +299,11 @@ GUIObject* loadGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISyste
 }
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data
-void loadConnector(QTextStream &rStream, GUISystem* pSystem, CoreSystemAccess* pRootSystem, undoStatus undoSettings)
+void loadConnector(QTextStream &rStream, GUISystem* pSystem, undoStatus undoSettings)
 {
     ConnectorLoadData data;
     data.read(rStream);
-    loadConnector(data,pSystem, pRootSystem, undoSettings);
+    loadConnector(data, pSystem, undoSettings);
 }
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data

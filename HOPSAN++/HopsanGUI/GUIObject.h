@@ -101,7 +101,7 @@ public:
     GUISystem *mpParentSystem;
 
     virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());
-    virtual void loadFromFile(QString modelFileName=QString()) {assert(false);} //Only available in GUISubsystem for now
+    virtual void loadFromHMF(QString modelFileName=QString()) {assert(false);} //Only available in GUISubsystem for now
 
     enum { Type = UserType + 2 };
     int type() const;

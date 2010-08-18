@@ -15,6 +15,7 @@ class AppearanceData;
 class ProjectTab;
 //class GUIContainerObject;
 class UndoStack;
+class MainWindow;
 #include "CoreSystemAccess.h"
 
 class GUISystem : public GUIContainerObject
@@ -26,10 +27,13 @@ public:
     ~GUISystem();
     void constructorStuff(ProjectTab *parentProjectTab);
 
+    void loadFromHMF(QString modelFileName=QString());
+
     GraphicsScene *mpScene;
     ProjectTab *mpParentProjectTab;
+    MainWindow *mpMainWindow;
 
-    QString mModelFileName;
+    //QString mModelFileName;
 
     typedef QMap<QString, GUIObject*> GUIObjectMapT;
     GUIObjectMapT mGUIObjectMap;
@@ -39,7 +43,7 @@ public:
     bool haveGUIObject(QString name);
     GUIObject *getGUIObject(QString name);
 
-    QVector<GUIConnector *> mConnectorVector;
+    QVector<GUIConnector *> mSubConnectorVector;
     GUIConnector* findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
     void removeConnector(GUIConnector* pConnector, undoStatus undoSettings=UNDO);
 
@@ -109,7 +113,7 @@ public:
     void setTypeCQS(QString typestring);
     QString getTypeCQS();
 
-    void loadFromFile(QString modelFileName=QString());
+    void loadFromFileNOGUI(QString modelFileName=QString());
 
     void saveToTextStream(QTextStream &rStream, QString prepend);
 
@@ -124,8 +128,11 @@ protected:
     void openParameterDialog();
     void createPorts();
 
+public:
+        QString mModelFilePath; //!< @todo should be public
+
 private:
-    QString mModelFilePath;
+
     bool   mIsEmbedded;
     QString mLoadType;
 };
