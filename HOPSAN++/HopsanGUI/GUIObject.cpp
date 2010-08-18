@@ -454,27 +454,27 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
         if (this->isSelected())
         {
             mpSelectionBox->setActive();
-            connect(mpParentSystem, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
-            connect(mpParentSystem, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
-            connect(mpParentSystem, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
-            connect(mpParentSystem, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
-            connect(mpParentSystem, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
-            connect(mpParentSystem, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
-            connect(mpParentSystem, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
-            connect(mpParentSystem, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
+            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
+            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
+            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
+            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
+            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
+            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
+            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
+            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
             connect(mpParentSystem, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
             emit componentSelected();
         }
         else
         {
-            disconnect(mpParentSystem, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
-            disconnect(mpParentSystem, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
-            disconnect(mpParentSystem, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
-            disconnect(mpParentSystem, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
-            disconnect(mpParentSystem, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
-            disconnect(mpParentSystem, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
-            disconnect(mpParentSystem, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
-            disconnect(mpParentSystem, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
+            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
+            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
+            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
+            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
+            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
+            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
+            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
+            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
             disconnect(mpParentSystem, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
             mpSelectionBox->setPassive();
         }
