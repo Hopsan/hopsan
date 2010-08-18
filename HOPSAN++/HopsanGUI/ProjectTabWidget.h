@@ -113,24 +113,14 @@ public:
     ProjectTab(ProjectTabWidget *parent = 0);
     GUISystem *mpSystem;
     bool mIsSaved;                          //Till subsystem
-    QString mModelFileName;                 //Till subsystem
-    graphicsType setGfxType;                //Till subsystem
     ProjectTabWidget *mpParentProjectTabWidget;
-    //GUIRootSystem mGUIRootSystem;           //Till subsystem
+    //GUIRootSystem mGUIRootSystem;         //Till subsystem
     GraphicsView *mpGraphicsView;
-    //GraphicsScene *mpGraphicsScene;         //Till subsystem
-    QString getIsoIconPath();               //Till subsystem
-    QString getUserIconPath();              //Till subsystem
-    void setIsoIconPath(QString path);      //Till subsystem
-    void setUserIconPath(QString path);     //Till subsystem
+    //GraphicsScene *mpGraphicsScene;       //Till subsystem
     void hasChanged();                      //Till subsystem
 
 signals:
     void checkMessages();
-
-private:
-    QString mUserIconPath;                  //Till subsystem
-    QString mIsoIconPath;                   //Till subsystem
 };
 
 #endif // PROJECTTABWIDGET_H

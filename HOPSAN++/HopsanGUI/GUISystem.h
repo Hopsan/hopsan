@@ -30,6 +30,8 @@ public:
     GraphicsScene *mpScene;
     ProjectTab *mpParentProjectTab;
 
+    QString mModelFileName;
+
     typedef QMap<QString, GUIObject*> GUIObjectMapT;
     GUIObjectMapT mGUIObjectMap;
     GUIObject* addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
@@ -53,6 +55,7 @@ public:
     bool isConnectorSelected();
     GUIObject *mpTempGUIObject;
     GUIConnector *mpTempConnector;
+    graphicsType mGfxType;
 
     void updateStartTime();
     void updateTimeStep();
@@ -60,6 +63,11 @@ public:
     double getStartTime();
     double getTimeStep();
     double getStopTime();
+
+    QString getIsoIconPath();
+    QString getUserIconPath();
+    void setIsoIconPath(QString path);
+    void setUserIconPath(QString path);
 
 public slots:
     //void addSystemPort();
@@ -88,6 +96,8 @@ private:
     double mStartTime;
     double mStopTime;
     double mTimeStep;
+    QString mUserIconPath;
+    QString mIsoIconPath;
 
 public:
     CoreSystemAccess mCoreSystemAccess; //!< @todo make this private later

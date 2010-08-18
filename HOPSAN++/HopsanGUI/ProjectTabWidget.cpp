@@ -105,7 +105,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mpParentProjectTabWidget->mpParentMainWindow->setTimeStepLabel(timeStep);
 
     mIsSaved = true;
-    mModelFileName.clear();
+    mpSystem->mModelFileName.clear();
 
     //mpGraphicsScene = ;
     mpGraphicsView  = new GraphicsView(this);
@@ -115,7 +115,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     tabLayout->addWidget(mpGraphicsView);
     this->setLayout(tabLayout);
 
-    this->setGfxType = USERGRAPHICS;
+    mpSystem->mGfxType = USERGRAPHICS;
 }
 
 
@@ -134,26 +134,6 @@ void ProjectTab::hasChanged()
     }
 }
 
-
-QString ProjectTab::getUserIconPath()
-{
-    return mUserIconPath;
-}
-
-QString ProjectTab::getIsoIconPath()
-{
-    return mIsoIconPath;
-}
-
-void ProjectTab::setUserIconPath(QString path)
-{
-    mUserIconPath = path;
-}
-
-void ProjectTab::setIsoIconPath(QString path)
-{
-    mIsoIconPath = path;
-}
 
 //! @class ProjectTabWidget
 //! @brief The ProjectTabWidget class is a container class for ProjectTab class
@@ -566,7 +546,7 @@ void ProjectTabWidget::loadModel()
 
     this->addProjectTab(new ProjectTab(this), fileInfo.fileName());
     ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
-    pCurrentTab->mModelFileName = modelFileName;
+    pCurrentTab->mpSystem->mModelFileName = modelFileName;
     pCurrentTab->mpSystem->mUndoStack->newPost();
     pCurrentTab->mIsSaved = true;
 
@@ -641,17 +621,17 @@ void ProjectTabWidget::saveModel(saveTarget saveAsFlag)
     GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
 
     QString modelFileName;
-    if((pCurrentTab->mModelFileName.isEmpty()) | (saveAsFlag == NEWFILE))
+    if((pCurrentTab->mpSystem->mModelFileName.isEmpty()) | (saveAsFlag == NEWFILE))
     {
         QDir fileDialogSaveDir;
         modelFileName = QFileDialog::getSaveFileName(this, tr("Save Model File"),
                                                              fileDialogSaveDir.currentPath() + QString("/../../Models"),
                                                              tr("Hopsan Model Files (*.hmf)"));
-        pCurrentTab->mModelFileName = modelFileName;
+        pCurrentTab->mpSystem->mModelFileName = modelFileName;
     }
     else
     {
-        modelFileName = pCurrentTab->mModelFileName;
+        modelFileName = pCurrentTab->mpSystem->mModelFileName;
     }
 
     QFile file(modelFileName);   //Create a QFile object
@@ -677,8 +657,8 @@ void ProjectTabWidget::saveModel(saveTarget saveAsFlag)
                                 (getCurrentTab()->mpGraphicsView->verticalScrollBar()->value() + getCurrentTab()->mpGraphicsView->height()/2 - getCurrentTab()->mpGraphicsView->pos().x()) / getCurrentTab()->mpGraphicsView->mZoomFactor << " " <<
                                 getCurrentTab()->mpGraphicsView->mZoomFactor << "\n";
     modelFile << "--------------------------------------------------------------\n";
-    modelFile << "USERICON " << addQuotes(getCurrentTab()->getUserIconPath()) << "\n";
-    modelFile << "ISOICON " << addQuotes(getCurrentTab()->getIsoIconPath()) << "\n";
+    modelFile << "USERICON " << addQuotes(getCurrentSystem()->getUserIconPath()) << "\n";
+    modelFile << "ISOICON " << addQuotes(getCurrentSystem()->getIsoIconPath()) << "\n";
 
     //Calculate the position of the subsystem ports:
     QMap<QString, GUIObject*>::iterator it;
@@ -757,10 +737,10 @@ void ProjectTabWidget::setIsoGraphics(graphicsType gfxType)
 {
     if(this->count() != 0)
     {
-        this->getCurrentTab()->setGfxType = gfxType;
+        this->getCurrentSystem()->mGfxType = gfxType;
         mpParentMainWindow->mpLibrary->setGfxType(gfxType);
         ProjectTab *pCurrentTab = getCurrentTab();
-        GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
+       // GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
 
         for(int i = 0; i!=pCurrentTab->mpSystem->mConnectorVector.size(); ++i)
         {

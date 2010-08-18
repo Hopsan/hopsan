@@ -64,12 +64,12 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUISystem *parentSystem, QGraphic
     startPort->getGuiObject()->addConnector(this);
 
     setFlags(QGraphicsItem::ItemIsFocusable);
-    connect(mpParentSystem, SIGNAL(zoomChange()), this, SLOT(adjustToZoom()));
+    connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange()), this, SLOT(adjustToZoom()));
 
     QPointF startPos = startPort->mapToScene(startPort->boundingRect().center());
     this->setPos(startPos);
     this->updateStartPoint(startPos);
-    mpGUIConnectorAppearance = new GUIConnectorAppearance("notconnected", mpParentSystem->mpParentProjectTab->setGfxType);
+    mpGUIConnectorAppearance = new GUIConnectorAppearance("notconnected", mpParentSystem->mGfxType);
     mEndPortConnected = false;
     this->drawConnector();
     mMakingDiagonal = false;
@@ -98,7 +98,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     QPointF startPos = getStartPort()->mapToScene(getStartPort()->boundingRect().center());
     this->setPos(startPos);
 
-    mpGUIConnectorAppearance = new GUIConnectorAppearance(startPort->getPortType(), mpParentSystem->mpParentProjectTab->setGfxType);
+    mpGUIConnectorAppearance = new GUIConnectorAppearance(startPort->getPortType(), mpParentSystem->mGfxType);
 
     mPoints = points;
 
@@ -155,7 +155,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     mpStartPort->getGuiObject()->addConnector(this);
     mpEndPort->getGuiObject()->addConnector(this);
 
-    connect(mpParentSystem, SIGNAL(zoomChange()), this, SLOT(adjustToZoom()));
+    connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange()), this, SLOT(adjustToZoom()));
 }
 
 

@@ -45,6 +45,7 @@
 #include "PreferenceWidget.h"
 #include "ProjectTabWidget.h"
 #include "MainWindow.h"
+#include "GUISystem.h"
 
 //class ProjectTabWidget;
 
@@ -59,7 +60,7 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
 
     isoCheckBox = new QCheckBox(tr("Use ISO 1219 graphics"));
     isoCheckBox->setCheckable(true);
-    isoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentTab()->setGfxType);
+    isoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mGfxType);
     //isoCheckBox->setChecked(false);
 
     cancelButton = new QPushButton(tr("&Cancel"));
@@ -96,7 +97,7 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
 
 void PreferenceWidget::show()
 {
-    isoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentTab()->setGfxType);
+    isoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mGfxType);
     QDialog::show();
 }
 
@@ -112,8 +113,8 @@ void PreferenceWidget::updateValues()
         mpParentMainWindow->mpProjectTabs->setIsoGraphics(USERGRAPHICS);
     }
 
-    mpParentMainWindow->mpProjectTabs->getCurrentTab()->setUserIconPath(userIconPath->text());
-    mpParentMainWindow->mpProjectTabs->getCurrentTab()->setIsoIconPath(isoIconPath->text());
+    mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setUserIconPath(userIconPath->text());
+    mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setIsoIconPath(isoIconPath->text());
     //this->isoBool = this->isoCheckBox->isChecked();
     //qDebug() << isoBool;
     this->accept();

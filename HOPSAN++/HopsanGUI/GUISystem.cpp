@@ -380,15 +380,15 @@ GUIObject* GUISystem::addGUIObject(AppearanceData appearanceData, QPoint positio
     QString componentTypeName = appearanceData.getTypeName();
     if (componentTypeName == "Subsystem")
     {
-        mpTempGUIObject= new GUISystem(appearanceData, position, rotation, this, startSelected, mpParentProjectTab->setGfxType);
+        mpTempGUIObject= new GUISystem(appearanceData, position, rotation, this, startSelected, mGfxType);
     }
     else if (componentTypeName == "SystemPort")
     {
-        mpTempGUIObject = new GUISystemPort(appearanceData, position, rotation, this, startSelected, mpParentProjectTab->setGfxType);
+        mpTempGUIObject = new GUISystemPort(appearanceData, position, rotation, this, startSelected, mGfxType);
     }
     else //Assume some standard component type
     {
-        mpTempGUIObject = new GUIComponent(appearanceData, position, rotation, this, startSelected, mpParentProjectTab->setGfxType);
+        mpTempGUIObject = new GUIComponent(appearanceData, position, rotation, this, startSelected, mGfxType);
     }
 
     mpScene->addItem(mpTempGUIObject);
@@ -988,4 +988,25 @@ double GUISystem::getTimeStep()
 double GUISystem::getStopTime()
 {
     return mStopTime;
+}
+
+
+QString GUISystem::getUserIconPath()
+{
+    return mUserIconPath;
+}
+
+QString GUISystem::getIsoIconPath()
+{
+    return mIsoIconPath;
+}
+
+void GUISystem::setUserIconPath(QString path)
+{
+    mUserIconPath = path;
+}
+
+void GUISystem::setIsoIconPath(QString path)
+{
+    mIsoIconPath = path;
 }
