@@ -139,9 +139,9 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     this->drawConnector();
 
         //Make all lines selectable and all lines except first and last movable
-    for(int i=1; i!=mpLines.size()-1; ++i)
+    for(int i=1; i<mpLines.size()-1; ++i)
         mpLines[i]->setFlag(QGraphicsItem::ItemIsMovable, true);
-    for(int i=0; i!=mpLines.size(); ++i)
+    for(int i=0; i<mpLines.size(); ++i)
         mpLines[i]->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
 
