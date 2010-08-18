@@ -6,7 +6,7 @@ HMFVERSION 0.1
 CAFVERSION 0.1
 --------------------------------------------------------------
 SIMULATIONTIME 0 0.001 200
-VIEWPORT 2546 2502 1
+VIEWPORT 2500 2500 1
 --------------------------------------------------------------
 USERICON ""
 ISOICON ""
@@ -75,20 +75,20 @@ PARAMETER "Volume_1" "debug" 0
 PARAMETER "Volume_1" "t1" 0
 PARAMETER "Volume_1" "t2" 0.01
 --------------------------------------------------------------
-CONNECT "43Valve" "PA" "CylinderC" "P1" 2520.92 2512 2520.92 2489.3 2490.47 2489.3 2490.47 2470
-CONNECT "CylinderC" "P3" "TranslationalMass" "P1" 2604.5 2450 2657 2450 2657 2450
-CONNECT "ForceTransformer" "P1" "TranslationalMass" "P2" 2759.5 2450 2721 2450 2721 2450
-CONNECT "LaminarOrifice" "P1" "Volume" "P1" 2368.5 2607 2388 2607 2388 2607 2402 2607
-CONNECT "LaminarOrifice_1" "P1" "Volume_1" "P1" 2367.5 2652 2388 2652 2388 2652 2403 2652
-CONNECT "PressureSource" "P1" "LaminarOrifice" "P2" 2266 2607 2274 2607 2274 2607 2299.5 2607
-CONNECT "Source" "out" "ForceTransformer" "in" 2828.5 2450 2845 2450 2845 2450 2798.5 2450
-CONNECT "Tank" "P1" "LaminarOrifice_1" "P2" 2255 2662.5 2255 2652 2298.5 2652
+CONNECT "Volume_1" "P2" "43Valve" "PT" 2453 2652 2540.97 2652 2540.97 2562
 CONNECT "Volume" "P2" "43Valve" "PP" 2452 2607 2520.92 2607 2520.92 2562
-CONNECT "43Valve" "PB" "CylinderC" "P2" 2540.97 2512 2540.97 2491 2570.06 2491 2570.06 2470
-CONNECT "43Valve" "PT" "Volume_1" "P2" 2540.97 2562 2540.97 2652 2453 2652
-CONNECT "PositionSensor" "out" "Subtract" "in2" 2751 2358.5 2751 2339 2303 2339 2303 2534.5
-CONNECT "PositionSensor" "P1" "TranslationalMass" "P2" 2751 2383.5 2751 2416 2721 2450
-CONNECT "Gain" "out" "43Valve" "in" 2386.5 2547 2410 2547 2410 2547 2431.5 2547
-CONNECT "Subtract" "out" "Gain" "in" 2315.5 2547 2327 2547 2327 2547 2361.5 2547
+CONNECT "Volume" "P1" "LaminarOrifice" "P1" 2402 2607 2389 2607 2389 2607 2368.5 2607
+CONNECT "LaminarOrifice_1" "P1" "Volume_1" "P1" 2367.5 2652 2382 2652 2382 2652 2403 2652
+CONNECT "LaminarOrifice" "P2" "PressureSource" "P1" 2299.5 2607 2285 2607 2285 2607 2266 2607
+CONNECT "LaminarOrifice_1" "P2" "Tank" "P1" 2298.5 2652 2255 2652 2255 2662.5
+CONNECT "Gain" "out" "43Valve" "in" 2386.5 2547 2408 2547 2408 2547 2431.5 2547
+CONNECT "Subtract" "out" "Gain" "in" 2315.5 2547 2336 2547 2336 2547 2361.5 2547
 CONNECT "SquareWave" "out" "Subtract" "in1" 2243 2547 2267 2547 2267 2547 2290.5 2547
+CONNECT "Subtract" "in2" "PositionSensor" "out" 2303 2534.5 2303 2299 2751 2299 2751 2358.5
+CONNECT "CylinderC" "P1" "43Valve" "PA" 2490.47 2470 2490.47 2491 2520.92 2491 2520.92 2512
+CONNECT "43Valve" "PB" "CylinderC" "P2" 2540.97 2512 2540.97 2491 2570.06 2491 2570.06 2470
+CONNECT "CylinderC" "P3" "TranslationalMass" "P1" 2604.5 2450 2634 2450 2634 2450 2657 2450
+CONNECT "TranslationalMass" "P2" "ForceTransformer" "P1" 2721 2450 2732 2450 2732 2450 2759.5 2450
+CONNECT "PositionSensor" "P1" "TranslationalMass" "P2" 2751 2383.5 2721 2450
+CONNECT "Source" "out" "ForceTransformer" "in" 2828.5 2450 2821 2450 2821 2450 2798.5 2450
 --------------------------------------------------------------
