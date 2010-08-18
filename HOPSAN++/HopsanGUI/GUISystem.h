@@ -54,6 +54,13 @@ public:
     GUIObject *mpTempGUIObject;
     GUIConnector *mpTempConnector;
 
+    void updateStartTime();
+    void updateTimeStep();
+    void updateStopTime();
+    double getStartTime();
+    double getTimeStep();
+    double getStopTime();
+
 public slots:
     //void addSystemPort();
     void addConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);
@@ -78,6 +85,9 @@ signals:
 
 private:
     QString *mpCopyData;
+    double mStartTime;
+    double mStopTime;
+    double mTimeStep;
 
 public:
     CoreSystemAccess mCoreSystemAccess; //!< @todo make this private later

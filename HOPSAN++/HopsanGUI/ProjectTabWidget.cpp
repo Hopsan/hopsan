@@ -92,10 +92,6 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mpParentProjectTabWidget = parent;
     mpSystem = new GUISystem(this, 0);
 
-    mStartTime = 0;
-    mTimeStep = 0.001;
-    mStopTime = 10;
-
     MainWindow *pMainWindow = mpParentProjectTabWidget->mpParentMainWindow;
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
@@ -138,59 +134,6 @@ void ProjectTab::hasChanged()
     }
 }
 
-
-//! Slot that updates start time value of the current project to the one in the simulation setup widget.
-//! @see updateTimeStep()
-//! @see updateStopTime()
-void ProjectTab::updateStartTime()
-{
-    mStartTime = mpParentProjectTabWidget->mpParentMainWindow->getStartTimeLabel();
-}
-
-
-//! Slot that updates time step value of the current project to the one in the simulation setup widget.
-//! @see updateStartTime()
-//! @see updateStopTime()
-void ProjectTab::updateTimeStep()
-{
-    mTimeStep = mpParentProjectTabWidget->mpParentMainWindow->getTimeStepLabel();
-}
-
-
-//! Slot that updates stop time value of the current project to the one in the simulation setup widget.
-//! @see updateStartTime()
-//! @see updateTimeStep()
-void ProjectTab::updateStopTime()
-{
-    mStopTime = mpParentProjectTabWidget->mpParentMainWindow->getFinishTimeLabel();
-}
-
-
-//! Returns the start time value of the current project.
-//! @see getTimeStep()
-//! @see getStopTime()
-double ProjectTab::getStartTime()
-{
-    return mStartTime;
-}
-
-
-//! Returns the time step value of the current project.
-//! @see getStartTime()
-//! @see getStopTime()
-double ProjectTab::getTimeStep()
-{
-    return mTimeStep;
-}
-
-
-//! Returns the stop time value of the current project.
-//! @see getStartTime()
-//! @see getTimeStep()
-double ProjectTab::getStopTime()
-{
-    return mStopTime;
-}
 
 QString ProjectTab::getUserIconPath()
 {
@@ -286,7 +229,7 @@ void ProjectTabWidget::updateCurrentStartTime()
 {
     if(this->count() != 0)
     {
-        this->getCurrentTab()->updateStartTime();
+        this->getCurrentTab()->mpSystem->updateStartTime();
     }
 }
 
@@ -298,7 +241,7 @@ void ProjectTabWidget::updateCurrentTimeStep()
 {
     if(this->count() != 0)
     {
-        this->getCurrentTab()->updateTimeStep();
+        this->getCurrentTab()->mpSystem->updateTimeStep();
     }
 }
 
@@ -310,7 +253,7 @@ void ProjectTabWidget::updateCurrentStopTime()
 {
     if(this->count() != 0)
     {
-        this->getCurrentTab()->updateStopTime();
+        this->getCurrentTab()->mpSystem->updateStopTime();
     }
 }
 
@@ -320,9 +263,9 @@ void ProjectTabWidget::updateSimulationSetupWidget()
 {
     if(this->count() != 0)  //Don't do anything if there are no current tab
     {
-        mpParentMainWindow->setStartTimeLabel(getCurrentTab()->getStartTime());
-        mpParentMainWindow->setTimeStepLabel(getCurrentTab()->getTimeStep());
-        mpParentMainWindow->setFinishTimeLabel(getCurrentTab()->getStopTime());
+        mpParentMainWindow->setStartTimeLabel(getCurrentSystem()->getStartTime());
+        mpParentMainWindow->setTimeStepLabel(getCurrentSystem()->getTimeStep());
+        mpParentMainWindow->setFinishTimeLabel(getCurrentSystem()->getStopTime());
     }
 }
 

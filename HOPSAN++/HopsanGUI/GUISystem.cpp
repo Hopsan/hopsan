@@ -25,7 +25,7 @@ GUISystem::GUISystem(AppearanceData appearanceData, QPoint position, qreal rotat
 GUISystem::GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *parent)
     : GUIContainerObject(QPoint(0,0), 0, AppearanceData(), DESELECTED, USERGRAPHICS, 0, parent)
 {
-      constructorStuff(parentProjectTab);
+    constructorStuff(parentProjectTab);
 }
 
 GUISystem::~GUISystem()
@@ -47,6 +47,10 @@ void GUISystem::constructorStuff(ProjectTab *parentProjectTab)
     mIsRenamingObject = false;
     mPortsHidden = false;
     mUndoDisabled = false;
+
+    mStartTime = 0;
+    mTimeStep = 0.001;
+    mStopTime = 10;
 
     mpCopyData = new QString;
 
@@ -930,4 +934,58 @@ bool GUISystem::isConnectorSelected()
         }
     }
     return false;
+}
+
+
+//! Function that updates start time value of the current project to the one in the simulation setup widget.
+//! @see updateTimeStep()
+//! @see updateStopTime()
+void GUISystem::updateStartTime()
+{
+    mStartTime = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->getStartTimeLabel();
+}
+
+
+//! Function that updates time step value of the current project to the one in the simulation setup widget.
+//! @see updateStartTime()
+//! @see updateStopTime()
+void GUISystem::updateTimeStep()
+{
+    mTimeStep = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->getTimeStepLabel();
+}
+
+
+//! Function that updates stop time value of the current project to the one in the simulation setup widget.
+//! @see updateStartTime()
+//! @see updateTimeStep()
+void GUISystem::updateStopTime()
+{
+    mStopTime = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->getFinishTimeLabel();
+}
+
+
+//! Returns the start time value of the current project.
+//! @see getTimeStep()
+//! @see getStopTime()
+double GUISystem::getStartTime()
+{
+    return mStartTime;
+}
+
+
+//! Returns the time step value of the current project.
+//! @see getStartTime()
+//! @see getStopTime()
+double GUISystem::getTimeStep()
+{
+    return mTimeStep;
+}
+
+
+//! Returns the stop time value of the current project.
+//! @see getStartTime()
+//! @see getTimeStep()
+double GUISystem::getStopTime()
+{
+    return mStopTime;
 }

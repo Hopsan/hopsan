@@ -119,25 +119,16 @@ public:
     //GUIRootSystem mGUIRootSystem;           //Till subsystem
     GraphicsView *mpGraphicsView;
     //GraphicsScene *mpGraphicsScene;         //Till subsystem
-    double getStartTime();                  //Till subsystem
-    double getTimeStep();                   //Till subsystem
-    double getStopTime();                   //Till subsystem
     QString getIsoIconPath();               //Till subsystem
     QString getUserIconPath();              //Till subsystem
     void setIsoIconPath(QString path);      //Till subsystem
     void setUserIconPath(QString path);     //Till subsystem
     void hasChanged();                      //Till subsystem
-    void updateStartTime();                 //Till subsystem
-    void updateTimeStep();                  //Till subsystem
-    void updateStopTime();                  //Till subsystem
 
 signals:
     void checkMessages();
 
 private:
-    double mStartTime;                      //Till subsystem
-    double mStopTime;                       //Till subsystem
-    double mTimeStep;                       //Till subsystem
     QString mUserIconPath;                  //Till subsystem
     QString mIsoIconPath;                   //Till subsystem
 };
