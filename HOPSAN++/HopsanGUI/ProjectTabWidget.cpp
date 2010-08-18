@@ -95,9 +95,6 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     MainWindow *pMainWindow = mpParentProjectTabWidget->mpParentMainWindow;
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
-//    mGUIRootSystem.setDesiredTimeStep(.001);
-//    mGUIRootSystem.setRootTypeCQS("S");
-
     emit checkMessages();
 
     double timeStep = mpSystem->mCoreSystemAccess.getDesiredTimeStep();
@@ -105,7 +102,6 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mpParentProjectTabWidget->mpParentMainWindow->setTimeStepLabel(timeStep);
 
     mIsSaved = true;
-    mpSystem->mModelFileName.clear();
 
     //mpGraphicsScene = ;
     mpGraphicsView  = new GraphicsView(this);
@@ -114,8 +110,6 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     QVBoxLayout *tabLayout = new QVBoxLayout;
     tabLayout->addWidget(mpGraphicsView);
     this->setLayout(tabLayout);
-
-    mpSystem->mGfxType = USERGRAPHICS;
 }
 
 

@@ -112,12 +112,11 @@ class ProjectTab : public QWidget
 public:
     ProjectTab(ProjectTabWidget *parent = 0);
     GUISystem *mpSystem;
-    bool mIsSaved;                          //Till subsystem
     ProjectTabWidget *mpParentProjectTabWidget;
-    //GUIRootSystem mGUIRootSystem;         //Till subsystem
     GraphicsView *mpGraphicsView;
-    //GraphicsScene *mpGraphicsScene;       //Till subsystem
-    void hasChanged();                      //Till subsystem
+
+    bool mIsSaved;
+    void hasChanged();
 
 signals:
     void checkMessages();

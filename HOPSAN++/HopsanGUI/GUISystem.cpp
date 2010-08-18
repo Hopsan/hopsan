@@ -43,19 +43,25 @@ void GUISystem::constructorStuff(ProjectTab *parentProjectTab)
     mpScene->addItem(this);     //! Detta kan gå åt helsike
     mpParentProjectTab = parentProjectTab;
 
+    mpCopyData = new QString;
+    mUndoStack = new UndoStack(this);
+
+        //Initialize booleans
     mIsCreatingConnector = false;
     mIsRenamingObject = false;
     mPortsHidden = false;
     mUndoDisabled = false;
 
-    mStartTime = 0;
+        //Set default values
+    mLoadType = "Empty";
+    mModelFilePath.clear();
+    mModelFileName.clear();
+    mStartTime = 0;     //! @todo These default values should be options for the user
     mTimeStep = 0.001;
     mStopTime = 10;
+    mGfxType = USERGRAPHICS;
 
-    mpCopyData = new QString;
-
-    mUndoStack = new UndoStack(this);
-
+        //Establish connections
     MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
     //connect(this->systemPortAction, SIGNAL(triggered()), SLOT(addSystemPort()));
     connect(this, SIGNAL(checkMessages()), pMainWindow->mpMessageWidget, SLOT(checkMessages()));
@@ -68,22 +74,10 @@ void GUISystem::constructorStuff(ProjectTab *parentProjectTab)
     connect(pMainWindow->mpUndoWidget->redoButton, SIGNAL(pressed()), this, SLOT(redo()));
     connect(pMainWindow->mpUndoWidget->clearButton, SIGNAL(pressed()), this, SLOT(clearUndo()));
 
-
-    //Set default values
-    mLoadType = "Empty";
-    mModelFilePath = "";
-
-    //mAppearanceData.setName(mpParentProjectTab->mpSystem->mGUIRootSystem.createSubSystem(this->getName()));
-    //! @todo Make sure that this code actaully works
-    mCoreSystemAccess.setDesiredTimeStep(.001);
+    mCoreSystemAccess.setDesiredTimeStep(mTimeStep);
     mCoreSystemAccess.setRootTypeCQS("S");
 
     refreshDisplayName(); //Make sure name window is correct size for center positioning
-
-    //! @todo Write some code here maybe!
-
-    //std::cout << "GUISystem: " << mComponentTypeName.toStdString() << std::endl;
-
 }
 
 

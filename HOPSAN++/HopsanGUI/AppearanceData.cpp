@@ -190,10 +190,7 @@ QPen GUIConnectorAppearance::getPen(QString situation, QString type, graphicsTyp
             }
         }
     }
-    else
-    {
-        return mNonFinishedPen;
-    }
+    return mNonFinishedPen;
 }
 
 void GUIConnectorAppearance::adjustToZoom(qreal zoomFactor)
