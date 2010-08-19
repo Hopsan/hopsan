@@ -46,6 +46,7 @@
 #include "ProjectTabWidget.h"
 #include "MainWindow.h"
 #include "GUISystem.h"
+#include "LibraryWidget.h"
 
 //class ProjectTabWidget;
 
@@ -58,10 +59,13 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
     this->resize(640,480);
     this->setWindowTitle("Model Preferences");
 
-    isoCheckBox = new QCheckBox(tr("Use ISO 1219 graphics"));
+    isoCheckBox = new QCheckBox(tr("Use ISO 1219 Graphics"));
     isoCheckBox->setCheckable(true);
     isoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mGfxType);
-    //isoCheckBox->setChecked(false);
+
+    disableUndoCheckBox = new QCheckBox(tr("Disable Undo Function"));
+    disableUndoCheckBox->setCheckable(true);
+    disableUndoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
 
     cancelButton = new QPushButton(tr("&Cancel"));
     cancelButton->setAutoDefault(false);
@@ -77,6 +81,7 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
     userIconPath = new QLineEdit();
     isoIconPath = new QLineEdit();
 
+    //connect(disableUndoCheckBox, SIGNAL(toggled(bool)),mpParentMainWindow->mpProjectTabs->getCurrentSystem(), SLOT(disableUndo()));
     connect(cancelButton, SIGNAL(pressed()), this, SLOT(reject()));
     connect(okButton, SIGNAL(pressed()), this, SLOT(updateValues()));
     //connect(isoCheckBox, SIGNAL(pressed(bool)), mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView, SLOT(setIsoGraphics(bool)));
@@ -90,7 +95,8 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
     mainLayout->addWidget(userIconLabel, 0, 0);
     mainLayout->addWidget(isoIconLabel, 1, 0);
     mainLayout->addWidget(isoCheckBox, 2, 0);
-    mainLayout->addWidget(buttonBox, 3, 0, 2, 0, Qt::AlignHCenter);
+    mainLayout->addWidget(disableUndoCheckBox, 3, 0);
+    mainLayout->addWidget(buttonBox, 4, 0, 2, 0, Qt::AlignHCenter);
     setLayout(mainLayout);
 }
 
@@ -106,16 +112,27 @@ void PreferenceWidget::updateValues()
 {
     if(isoCheckBox->isChecked())
     {
-        mpParentMainWindow->mpProjectTabs->setIsoGraphics(ISOGRAPHICS);
+        if(mpParentMainWindow->mpProjectTabs->count() > 0)
+        {
+            mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setGfxType(ISOGRAPHICS);
+        }
+        mpParentMainWindow->mpLibrary->setGfxType(ISOGRAPHICS);
     }
     else
     {
-        mpParentMainWindow->mpProjectTabs->setIsoGraphics(USERGRAPHICS);
+        if(mpParentMainWindow->mpProjectTabs->count() > 0)
+        {
+            mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setGfxType(USERGRAPHICS);
+        }
+        mpParentMainWindow->mpLibrary->setGfxType(USERGRAPHICS);
+    }
+
+    if( (disableUndoCheckBox->isChecked()) != (mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled) )
+    {
+        mpParentMainWindow->mpProjectTabs->getCurrentSystem()->disableUndo();
     }
 
     mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setUserIconPath(userIconPath->text());
     mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setIsoIconPath(isoIconPath->text());
-    //this->isoBool = this->isoCheckBox->isChecked();
-    //qDebug() << isoBool;
     this->accept();
 }

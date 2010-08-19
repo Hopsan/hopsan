@@ -60,6 +60,7 @@ public:
 
     bool isoBool;
     QCheckBox *isoCheckBox;
+    QCheckBox *disableUndoCheckBox;
     QPushButton *cancelButton;
     QPushButton *applyButton;
     QPushButton *okButton;

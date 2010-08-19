@@ -1228,6 +1228,7 @@ void GUISystem::disableUndo()
         QMessageBox disableUndoWarningBox(QMessageBox::Warning, tr("Warning"),tr("Disabling undo history will clear all undo history for this model. Do you want to continue?"), 0, 0);
         disableUndoWarningBox.addButton(tr("&Yes"), QMessageBox::AcceptRole);
         disableUndoWarningBox.addButton(tr("&No"), QMessageBox::RejectRole);
+        disableUndoWarningBox.setWindowIcon(mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->windowIcon());
 
         if (disableUndoWarningBox.exec() == QMessageBox::AcceptRole)
         {
@@ -1272,4 +1273,21 @@ void GUISystem::updateSimulationSetupWidget()
     mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->setStartTimeLabel(mStartTime);
     mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->setTimeStepLabel(mTimeStep);
     mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->setFinishTimeLabel(mStopTime);
+}
+
+
+//! Sets the iso graphics option for the model
+void GUISystem::setGfxType(graphicsType gfxType)
+{
+    this->mGfxType = gfxType;
+    for(int i = 0; i!=mSubConnectorVector.size(); ++i)
+    {
+        mSubConnectorVector[i]->setIsoStyle(gfxType);
+    }
+
+    QMap<QString, GUIObject*>::iterator it2;
+    for(it2 = mGUIObjectMap.begin(); it2!=mGUIObjectMap.end(); ++it2)
+    {
+        it2.value()->setIcon(gfxType);
+    }
 }

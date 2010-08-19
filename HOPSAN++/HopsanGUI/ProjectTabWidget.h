@@ -79,10 +79,8 @@ public slots:
     void saveProjectTab(int index, saveTarget saveAsFlag = EXISTINGFILE);
     bool closeProjectTab(int index);
     bool closeAllProjectTabs();
-    //void simulateCurrent();
     void loadModel();
     void saveModel(saveTarget saveAsFlag = EXISTINGFILE);
-    void setIsoGraphics(graphicsType);
     void tabChanged();
 
 

@@ -16,6 +16,7 @@ class ProjectTab;
 //class GUIContainerObject;
 class UndoStack;
 class MainWindow;
+
 #include "CoreSystemAccess.h"
 
 class GUISystem : public GUIContainerObject
@@ -90,6 +91,7 @@ public slots:
     void disableUndo();
     void updateUndoStatus();
     void updateSimulationSetupWidget();
+    void setGfxType(graphicsType gfxType);
 
 signals:
     void deselectAllNameText();

@@ -143,7 +143,7 @@ void ProjectTab::setSaved(bool value)
 
 
 
-//! Simulates the model in tab in a separate thread, the GUI runs a progressbar parallel to the simulation.
+//! Simulates the model in the tab in a separate thread, the GUI runs a progressbar parallel to the simulation.
 void ProjectTab::simulate()
 {
 
@@ -154,8 +154,8 @@ void ProjectTab::simulate()
     mpSystem->updateTimeStep();
 
         //Setup simulation parameters
-    double startTime = mpSystem->getStartTime();//mpParentProjectTabWidget->mpParentMainWindow->getStartTimeLabel();
-    double finishTime = mpSystem->getStopTime();//mpParentProjectTabWidget->mpParentMainWindow->getFinishTimeLabel();
+    double startTime = mpSystem->getStartTime();
+    double finishTime = mpSystem->getStopTime();
     double dt = finishTime - startTime;
     size_t nSteps = dt/mpSystem->mpCoreSystemAccess->getDesiredTimeStep();
 
@@ -659,32 +659,6 @@ void ProjectTabWidget::saveModel(saveTarget saveAsFlag)
         pCurrentTab->mpSystem->mSubConnectorVector[i]->saveToTextStream(modelFile, "CONNECT");
     }
     modelFile << "--------------------------------------------------------------\n";
-}
-
-
-//! Tells the current tab to change to or from ISO graphics.
-//! @param value is true if ISO should be activated and false if it should be deactivated.
-//! @todo Break out the guiconnector appearance stuff into a separate general function
-void ProjectTabWidget::setIsoGraphics(graphicsType gfxType)
-{
-    if(this->count() != 0)
-    {
-        this->getCurrentSystem()->mGfxType = gfxType;
-        mpParentMainWindow->mpLibrary->setGfxType(gfxType);
-        ProjectTab *pCurrentTab = getCurrentTab();
-       // GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
-
-        for(int i = 0; i!=pCurrentTab->mpSystem->mSubConnectorVector.size(); ++i)
-        {
-            pCurrentTab->mpSystem->mSubConnectorVector[i]->setIsoStyle(gfxType);
-        }
-
-        QMap<QString, GUIObject*>::iterator it2;
-        for(it2 = pCurrentTab->mpSystem->mGUIObjectMap.begin(); it2!=pCurrentTab->mpSystem->mGUIObjectMap.end(); ++it2)
-        {
-            it2.value()->setIcon(gfxType);
-        }
-    }
 }
 
 
