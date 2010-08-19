@@ -19,7 +19,7 @@
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "CoreUtilities/FileAccess.h"
 
-//#define USETBB            //Uncomment this will enable TBB package. Only use if you have it installed.
+#define USETBB            //Uncomment this will enable TBB package. Only use if you have it installed.
 #ifdef USETBB
 #include "tbb.h"
 #include "tick_count.h"
@@ -1966,7 +1966,7 @@ private:
 
 #ifdef USETBB
 //! The system component version of simulate
-void ComponentSystem::simulate(const double startT, const double stopT)
+void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT)
 {
     mStop = false; //This variable can not be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
     mTime = startT;
@@ -2116,7 +2116,15 @@ void ComponentSystem::simulate(const double startT, const double stopT)
 
 
 #else
-void ComponentSystem::simulate(const double startT, const double stopT)
+    //This overrides the multi-threaded simulation call with a single-threaded simulation if TBB is not installed.
+void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT)
+{
+    this->simulateSingleThreaded(startT, stopT);
+}
+#endif
+
+
+void ComponentSystem::simulateSingleThreaded(const double startT, const double stopT)
 {
     mStop = false; //This variable can not be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
 
@@ -2151,7 +2159,6 @@ void ComponentSystem::simulate(const double startT, const double stopT)
         mTime += mTimestep;
     }
 }
-#endif
 
 
 //! Finalizes a system component and all its contained components

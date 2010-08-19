@@ -103,7 +103,6 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 
     mIsSaved = true;
 
-    //mpGraphicsScene = ;
     mpGraphicsView  = new GraphicsView(this);
     mpGraphicsView->setScene(mpSystem->mpScene);
 

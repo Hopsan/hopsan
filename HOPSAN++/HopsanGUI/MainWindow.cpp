@@ -577,6 +577,7 @@ void MainWindow::loadSettings()
 
             //Apply default values
         mInvertWheel = false;
+        mUseMulticore = true;
         mProgressBarStep = 10;
         return;
     }
@@ -586,23 +587,19 @@ void MainWindow::loadSettings()
     while ( !inputStream.atEnd() )
     {
         inputStream >> inputWord;
-        //qDebug() << "Reading " << inputWord;
         if(inputWord == "INVERTWHEEL")
         {
             inputStream >> inputWord;
-            //qDebug() << "Reading " << inputWord;
-            if(inputWord == "TRUE")
-            {
-                mInvertWheel = true;
-            }
-            else
-            {
-                mInvertWheel = false;
-            }
+            mInvertWheel = ((inputWord == "TRUE"));
         }
         if(inputWord == "PROGRESSBARSTEP")
         {
             inputStream >> mProgressBarStep;
+        }
+        if(inputWord == "USEMULTICORE")
+        {
+            inputStream >> inputWord;
+            mUseMulticore = (inputWord == "TRUE");
         }
     }
     file.close();
@@ -629,8 +626,19 @@ void MainWindow::saveSettings()
     {
         modelFile << "FALSE\n";
     }
+
     modelFile << "PROGRESSBARSTEP ";
     modelFile << mProgressBarStep << "\n";
+
+    modelFile << "USEMULTICORE ";
+    if(mUseMulticore)
+    {
+        modelFile << "TRUE\n";
+    }
+    else
+    {
+        modelFile << "FALSE\n";
+    }
     file.close();
 }
 

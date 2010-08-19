@@ -62,12 +62,15 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     invertWheelCheckBox->setChecked(mpParentMainWindow->mInvertWheel);
 
     progressBarLabel = new QLabel(tr("Simulation Progress Bar Time Step [ms]"));
-
     progressBarSpinBox = new QSpinBox();
     progressBarSpinBox->setMinimum(1);
     progressBarSpinBox->setMaximum(5000);
     progressBarSpinBox->setSingleStep(10);
     progressBarSpinBox->setValue(mpParentMainWindow->mProgressBarStep);
+
+    useMulticoreCheckBox = new QCheckBox(tr("Use Multi-Threaded Simulation"));
+    useMulticoreCheckBox->setCheckable(true);
+    useMulticoreCheckBox->setChecked(mpParentMainWindow->mUseMulticore);
 
     cancelButton = new QPushButton(tr("&Cancel"));
     cancelButton->setAutoDefault(false);
@@ -87,7 +90,8 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     mainLayout->addWidget(invertWheelCheckBox, 0, 0);
     mainLayout->addWidget(progressBarLabel, 1, 0);
     mainLayout->addWidget(progressBarSpinBox, 2, 0);
-    mainLayout->addWidget(buttonBox, 3, 0);
+    mainLayout->addWidget(useMulticoreCheckBox, 3, 0);
+    mainLayout->addWidget(buttonBox, 4, 0);
     setLayout(mainLayout);
 }
 
@@ -96,6 +100,7 @@ void OptionsWidget::updateValues()
 {
     mpParentMainWindow->mInvertWheel = invertWheelCheckBox->isChecked();
     mpParentMainWindow->mProgressBarStep = progressBarSpinBox->value();
+    mpParentMainWindow->mUseMulticore = useMulticoreCheckBox->isChecked();
     mpParentMainWindow->saveSettings();
     this->accept();
 }

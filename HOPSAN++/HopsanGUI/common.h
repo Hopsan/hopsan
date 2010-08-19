@@ -48,5 +48,6 @@ enum connectorGeometry {VERTICAL, HORIZONTAL, DIAGONAL};
 enum renameRestrictions {UNRESTRICTED, CORERENAMEONLY};
 enum undoStatus {NOUNDO, UNDO};
 enum saveTarget {EXISTINGFILE, NEWFILE};
+enum simulationMethod {SINGLECORE, MULTICORE};
 
 #endif // COMMON_H

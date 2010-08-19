@@ -79,10 +79,15 @@ SimulationThread::SimulationThread(CoreSystemAccess *pGUIRootSystem, double star
 //! Implements the task for the thread.
 void SimulationThread::run()
 {
-    //QTime simTimer;
-    //simTimer.start();
-    mpGUIRootSystem->simulate(mStartTime, mFinishTime);
-    //qDebug() << "Simulation time: " << (simTimer.elapsed()) << " ms";
+    qDebug() << mpParentProjectTabWidget->mpParentMainWindow->mUseMulticore;
+    if(mpParentProjectTabWidget->mpParentMainWindow->mUseMulticore)
+    {
+        mpGUIRootSystem->simulate(mStartTime, mFinishTime, MULTICORE);
+    }
+    else
+    {
+        mpGUIRootSystem->simulate(mStartTime, mFinishTime, SINGLECORE);
+    }
     mpGUIRootSystem->finalize(mStartTime, mFinishTime);
 
     //exec(); //Is used if one want to run an event loop in this thread.

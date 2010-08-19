@@ -40,6 +40,8 @@
 #define GUIROOTSYSTEM_H
 
 #include "HopsanCore.h"
+#include "common.h"
+
 #include <QString>
 #include <qdebug.h>
 
@@ -81,6 +83,7 @@ public:
 
     bool isSimulationOk();
     void initialize(double mStartTime, double mFinishTime);
+    void simulate(double mStartTime, double mFinishTime, simulationMethod type);
     void simulate(double mStartTime, double mFinishTime);
     void finalize(double mStartTime, double mFinishTime);
     double getCurrentTime();

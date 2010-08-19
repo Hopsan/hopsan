@@ -59,6 +59,7 @@ public:
     MainWindow *mpParentMainWindow;
 
     QCheckBox *invertWheelCheckBox;
+    QCheckBox *useMulticoreCheckBox;
     QLabel *progressBarLabel;
     QSpinBox *progressBarSpinBox;
     QPushButton *cancelButton;

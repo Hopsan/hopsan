@@ -194,7 +194,8 @@ namespace hopsan {
         //initialize and simulate
         bool isSimulationOk();
         void initialize(const double startT, const double stopT);
-        void simulate(const double startT, const double stopT);
+        void simulateMultiThreaded(const double startT, const double stopT);
+        void simulateSingleThreaded(const double startT, const double stopT);
         void finalize(const double startT, const double stopT);
 
         //Set and get desired timestep
