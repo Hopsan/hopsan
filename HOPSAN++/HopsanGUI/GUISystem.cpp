@@ -35,7 +35,7 @@ GUISystem::~GUISystem()
     //! @todo should remove all subcomponents first then run the code bellow, to cleanup nicely in the correct order
 
     //! @todo this probably wont work need to remove the ROOT system
-    mCoreSystemAccess.removeSubComponent(this->getName(), true);
+    mpCoreSystemAccess->removeSubComponent(this->getName(), true);
 }
 
 //! @todo ugly temporary hack
@@ -76,42 +76,73 @@ void GUISystem::commonConstructorCode()
     connect(mpMainWindow->mpUndoWidget->redoButton, SIGNAL(pressed()), this, SLOT(redo()));
     connect(mpMainWindow->mpUndoWidget->clearButton, SIGNAL(pressed()), this, SLOT(clearUndo()));
 
-    mCoreSystemAccess.setDesiredTimeStep(mTimeStep);
-    mCoreSystemAccess.setRootTypeCQS("S");
+    //Create the object in core, and update name
+    if (this->mpParentSystem == 0)
+    {
+        //Create root system
+        mpCoreSystemAccess = new CoreSystemAccess();
+
+    }
+    else
+    {
+        //Create subsystem
+        qDebug() << "creating subsystem and setting name";
+        mAppearanceData.setName(mpParentSystem->mpCoreSystemAccess->createSubSystem(this->getName()));
+        qDebug() << "creating CoreSystemAccess for this subsystem, name: " << this->getName();
+        mpCoreSystemAccess = new CoreSystemAccess(this->getName(), mpParentSystem->mpCoreSystemAccess);
+    }
+
+    mpCoreSystemAccess->setDesiredTimeStep(mTimeStep);
+    mpCoreSystemAccess->setRootTypeCQS("S");
+
+
 
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 }
 
 
-//!
-//! @brief This function sets the desired subsystem name
-//! @param [in] newName The new name
-//! @param [in] renameSettings  Dont use this if you dont know what you are doing
-//!
-//! @todo This function is almost exactly identical to the one for GUIcomponents need to make sure that we dont dublicate functions like this, maybe this should be directly in GUIObject
-//!
-//! The desired new name will be sent to the the core component and may be modified. Rename will be called in the graphics view to make sure that the guicomponent map key value is up to date.
-//! renameSettings is a somewhat ugly hack, we need to be able to force setName without calling rename in some very special situations, it defaults to false
-//!
-void GUISystem::setName(QString newName, renameRestrictions renameSettings)
-{
-    QString oldName = getName();
-    //If name same as before do nothing
-    if (newName != oldName)
-    {
-        //Check if we want to avoid trying to rename in the graphics view map
-        if (renameSettings == CORERENAMEONLY)
-        {
-            mAppearanceData.setName(mCoreSystemAccess.renameSubComponent(oldName, newName));
-            refreshDisplayName();
-        }
-        else
-        {
-            //Rename
-            this->renameGUIObject(oldName, newName);
-        }
-    }
-}
+////!
+////! @brief This function sets the desired subsystem name
+////! @param [in] newName The new name
+////! @param [in] renameSettings  Dont use this if you dont know what you are doing
+////!
+////! @todo This function is almost exactly identical to the one for GUIcomponents need to make sure that we dont dublicate functions like this, maybe this should be directly in GUIObject
+////!
+////! The desired new name will be sent to the the core component and may be modified. Rename will be called in the graphics view to make sure that the guicomponent map key value is up to date.
+////! renameSettings is a somewhat ugly hack, we need to be able to force setName without calling rename in some very special situations, it defaults to false
+////!
+//void GUISystem::setName(QString newName, renameRestrictions renameSettings)
+//{
+//    QString oldName = getName();
+//    //If name same as before do nothing
+//    if (newName != oldName)
+//    {
+//        if (mpParentSystem != 0)
+//        {
+//            mpParentSystem->renameGUIObject(oldName, newName);
+//        }
+//        else
+//        {
+//            mAppearanceData.setName(mpCoreSystemAccess->setRootSystemName(newName));
+//        }
+//    }
+//    QString oldName = getName();
+//    //If name same as before do nothing
+//    if (newName != oldName)
+//    {
+//        //Check if we want to avoid trying to rename in the graphics view map
+//        if (renameSettings == CORERENAMEONLY)
+//        {
+
+//            refreshDisplayName();
+//        }
+//        else
+//        {
+//            //Rename
+//            this->mpParentSystem->renameGUIObject(oldName, newName);
+//        }
+//    }
+//}
 
 
 //! Returns a string with the sub system type.
@@ -123,17 +154,17 @@ QString GUISystem::getTypeName()
 
 void GUISystem::setTypeCQS(QString typestring)
 {
-    mCoreSystemAccess.setRootTypeCQS(typestring);
+    mpCoreSystemAccess->setRootTypeCQS(typestring);
 }
 
 QString GUISystem::getTypeCQS()
 {
-    return mCoreSystemAccess.getTypeCQS((this->getName()));
+    return mpCoreSystemAccess->getTypeCQS((this->getName()));
 }
 
 QVector<QString> GUISystem::getParameterNames()
 {
-    return mCoreSystemAccess.getParameterNames(this->getName());
+    return mpCoreSystemAccess->getParameterNames(this->getName());
 }
 
 //void GUISystem::refreshAppearance();
@@ -181,7 +212,16 @@ void GUISystem::loadFromHMF(QString modelFileName)
     mUndoStack->newPost();
 
     //Set the name
-    this->setName(fileInfo.baseName());
+    //! @todo maybe have a setname private function in GUISystem
+    if (mpParentSystem != 0)
+    {
+        mpParentSystem->renameGUIObject(this->getName(), fileInfo.baseName());
+    }
+    else
+    {
+        setDisplayName(fileInfo.baseName());
+    }
+
 
     //Now read the file data
     //Read the header data, also checks version numbers
@@ -329,7 +369,7 @@ void GUISystem::loadFromFileNOGUI(QString modelFileName)
     mModelFilePath = modelFileName;
 
     //Set the name
-    this->setName(fileInfo.baseName());
+    this->mpParentSystem->renameGUIObject(this->getName(), fileInfo.baseName());
 
     //Now read the file data
     SystemAppearanceLoadData sysappdata;
@@ -375,7 +415,7 @@ void GUISystem::loadFromFileNOGUI(QString modelFileName)
     qDebug() << "Appearance set";
 
     //Load the contents of the subsystem from the external file
-    mpParentProjectTab->mpSystem->mCoreSystemAccess.loadSystemFromFileCoreOnly(this->getName(), modelFileName);
+    mpParentProjectTab->mpSystem->mpCoreSystemAccess->loadSystemFromFileCoreOnly(this->getName(), modelFileName);
     qDebug() << "Loaded in core";
 
     this->refreshAppearance();
@@ -461,8 +501,8 @@ void GUISystem::createPorts()
     {
         //! @todo fix this
         qDebug() << "getNode and portType for " << it.key();
-        QString nodeType = mpParentProjectTab->mpSystem->mCoreSystemAccess.getNodeType(this->getName(), it.key());
-        QString portType = mpParentProjectTab->mpSystem->mCoreSystemAccess.getPortType(this->getName(), it.key());
+        QString nodeType = mpParentProjectTab->mpSystem->mpCoreSystemAccess->getNodeType(this->getName(), it.key());
+        QString portType = mpParentProjectTab->mpSystem->mpCoreSystemAccess->getPortType(this->getName(), it.key());
         it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
 
         qreal x = it.value().x;
@@ -608,30 +648,52 @@ void GUISystem::deleteGUIObject(QString objectName, undoStatus undoSettings)
 //! This function is used to rename a SubGUIObject
 void GUISystem::renameGUIObject(QString oldName, QString newName, undoStatus undoSettings)
 {
-        //First find record with old name
-    GUIObjectMapT::iterator it = mGUIObjectMap.find(oldName);
-    if (it != mGUIObjectMap.end())
+    //Avoid work if no change is requested
+    if (oldName != newName)
     {
-            //Make a backup copy
-        GUIObject* obj_ptr = it.value();
-            //Erase old record
-        mGUIObjectMap.erase(it);
-            //Rename (core rename will be handled by core), here we force a core only rename (true) so that we dont get stuck in a loop (as rename might be called again)
-        obj_ptr->setName(newName, CORERENAMEONLY);
-            //Re insert
-        mGUIObjectMap.insert(obj_ptr->getName(), obj_ptr);
-    }
-    else
-    {
-        //qDebug() << "Old name: " << oldName << " not found";
-        //! @todo Maybe we should give the user a message?
-    }
+        QString modNewName;
+            //First find record with old name
+        GUIObjectMapT::iterator it = mGUIObjectMap.find(oldName);
+        if (it != mGUIObjectMap.end())
+        {
+                //Make a backup copy
+            GUIObject* obj_ptr = it.value();
+                //Erase old record
+            mGUIObjectMap.erase(it);
+                //Set new name, first in core then in gui object
+            qDebug() << "Renaming: " << oldName << " " << newName << " type: " << obj_ptr->type();
+            switch (obj_ptr->type())
+            {
+            case GUICOMPONENT:
+                //qDebug() << "GUICOMPONENT";
+            case GUISYSTEM :
+                //qDebug() << "GUISYSTEM";
+                modNewName = this->mpCoreSystemAccess->renameSubComponent(oldName, newName);
+                break;
+            case GUISYSTEMPORT :
+                //qDebug() << "GUISYSTEMPORT";
+                modNewName = this->mpCoreSystemAccess->renameSystemPort(oldName, newName);
+                break;
+            //default :
+                //qDebug() << "default";
+                    //No Core rename action
+            }
+            qDebug() << "modNewName: " << modNewName;
+            obj_ptr->setDisplayName(modNewName);
+                //Re insert
+            mGUIObjectMap.insert(obj_ptr->getName(), obj_ptr);
+        }
+        else
+        {
+            //qDebug() << "Old name: " << oldName << " not found";
+            //! @todo Maybe we should give the user a message?
+        }
 
-    if (undoSettings == UNDO)
-    {
-        mUndoStack->registerRenameObject(oldName, newName);
+        if (undoSettings == UNDO)
+        {
+            mUndoStack->registerRenameObject(oldName, modNewName);
+        }
     }
-
     emit checkMessages();
 }
 
@@ -709,7 +771,7 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
              {
                  GUIPort *pStartP = pConnector->getStartPort();
                  GUIPort *pEndP = pConnector->getEndPort();
-                 mCoreSystemAccess.disconnect(pStartP->getGUIComponentName(), pStartP->getName(), pEndP->getGUIComponentName(), pEndP->getName());
+                 mpCoreSystemAccess->disconnect(pStartP->getGUIComponentName(), pStartP->getName(), pEndP->getGUIComponentName(), pEndP->getName());
                  emit checkMessages();
                  endPortWasConnected = true;
              }
@@ -798,7 +860,7 @@ void GUISystem::createConnector(GUIPort *pPort, undoStatus undoSettings)
     {
         GUIPort *pStartPort = mpTempConnector->getStartPort();
 
-        bool success = mCoreSystemAccess.connect(pStartPort->getGUIComponentName(), pStartPort->getName(), pPort->getGUIComponentName(), pPort->getName() );
+        bool success = mpCoreSystemAccess->connect(pStartPort->getGUIComponentName(), pStartPort->getName(), pPort->getGUIComponentName(), pPort->getName() );
         if (success)
         {
             mIsCreatingConnector = false;

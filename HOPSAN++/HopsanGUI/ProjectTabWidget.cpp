@@ -97,7 +97,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 
     emit checkMessages();
 
-    double timeStep = mpSystem->mCoreSystemAccess.getDesiredTimeStep();
+    double timeStep = mpSystem->mpCoreSystemAccess->getDesiredTimeStep();
 
     mpParentProjectTabWidget->mpParentMainWindow->setTimeStepLabel(timeStep);
 
@@ -210,7 +210,7 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
     ProjectTab *newTab = new ProjectTab(this);
     //newTab->mIsSaved = false;
 
-    newTab->mpSystem->mCoreSystemAccess.setRootSystemName(tabName);
+    newTab->mpSystem->setDisplayName(tabName);
 
     //addTab(newTab, tabName.append(QString("*")));
     this->addTab(newTab, tabName);
@@ -350,7 +350,7 @@ void ProjectTabWidget::simulateCurrent()
         return;
     }
 
-    if(!this->getCurrentTab()->mpSystem->mCoreSystemAccess.isSimulationOk())
+    if(!this->getCurrentTab()->mpSystem->mpCoreSystemAccess->isSimulationOk())
     {
         mpParentMainWindow->mpMessageWidget->printCoreMessages();
         mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("Simulation failed"));
@@ -363,11 +363,11 @@ void ProjectTabWidget::simulateCurrent()
     double startTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->getStartTimeLabel();
     double finishTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->getFinishTimeLabel();
     double dt = finishTime - startTime;
-    size_t nSteps = dt/pCurrentTab->mpSystem->mCoreSystemAccess.getDesiredTimeStep();
+    size_t nSteps = dt/pCurrentTab->mpSystem->mpCoreSystemAccess->getDesiredTimeStep();
 
 
         //Ask core to initialize simulation
-    InitializationThread actualInitialization(&(pCurrentTab->mpSystem->mCoreSystemAccess), startTime, finishTime, this);
+    InitializationThread actualInitialization(pCurrentTab->mpSystem->mpCoreSystemAccess, startTime, finishTime, this);
     actualInitialization.start();
     actualInitialization.setPriority(QThread::HighestPriority);
     ProgressBarThread progressThread(this);
@@ -384,7 +384,7 @@ void ProjectTabWidget::simulateCurrent()
         progressBar.setValue(i++);
         if (progressBar.wasCanceled())
         {
-            pCurrentTab->mpSystem->mCoreSystemAccess.stop();
+            pCurrentTab->mpSystem->mpCoreSystemAccess->stop();
         }
     }
     progressBar.setValue(i);
@@ -397,7 +397,7 @@ void ProjectTabWidget::simulateCurrent()
     {
         QTime simTimer;
         simTimer.start();
-        SimulationThread actualSimulation(&(pCurrentTab->mpSystem->mCoreSystemAccess), startTime, finishTime, this);
+        SimulationThread actualSimulation(pCurrentTab->mpSystem->mpCoreSystemAccess, startTime, finishTime, this);
         actualSimulation.start();
         actualSimulation.setPriority(QThread::HighestPriority);
             //! @todo TimeCriticalPriority seem to work on dual core, is it a problem on single core machines only?
@@ -412,14 +412,14 @@ void ProjectTabWidget::simulateCurrent()
            progressThread.start();
            progressThread.setPriority(QThread::LowestPriority);
            progressThread.wait();
-           progressBar.setValue((size_t)(getCurrentTab()->mpSystem->mCoreSystemAccess.getCurrentTime()/dt * nSteps));
+           progressBar.setValue((size_t)(getCurrentTab()->mpSystem->mpCoreSystemAccess->getCurrentTime()/dt * nSteps));
            if (progressBar.wasCanceled())
            {
-              pCurrentTab->mpSystem->mCoreSystemAccess.stop();
+              pCurrentTab->mpSystem->mpCoreSystemAccess->stop();
            }
         }
         progressThread.quit();
-        progressBar.setValue((size_t)(getCurrentTab()->mpSystem->mCoreSystemAccess.getCurrentTime()/dt * nSteps));
+        progressBar.setValue((size_t)(getCurrentTab()->mpSystem->mpCoreSystemAccess->getCurrentTime()/dt * nSteps));
 
         actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
         actualSimulation.quit();
@@ -430,9 +430,9 @@ void ProjectTabWidget::simulateCurrent()
     }
 
     if (progressBar.wasCanceled())
-        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(pCurrentTab->mpSystem->mCoreSystemAccess.getRootSystemName()).append(tr("' was terminated!"))));
+        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(pCurrentTab->mpSystem->mpCoreSystemAccess->getRootSystemName()).append(tr("' was terminated!"))));
     else
-    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulated '").append(pCurrentTab->mpSystem->mCoreSystemAccess.getRootSystemName()).append(tr("' successfully!"))));
+    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulated '").append(pCurrentTab->mpSystem->mpCoreSystemAccess->getRootSystemName()).append(tr("' successfully!"))));
     emit checkMessages();
 }
 
@@ -495,7 +495,7 @@ void ProjectTabWidget::loadModel()
 //    getCurrentTab()->mpGraphicsView->resetBackgroundBrush();
 
 //    //Sets the file name (exluding path and ending) as the model name
-//    getCurrentTab()->mpSystem->mCoreSystemAccess.setRootSystemName(fileInfo.baseName());
+//    getCurrentTab()->mpSystem->mpCoreSystemAccess->setRootSystemName(fileInfo.baseName());
 
 //    while ( !inputStream.atEnd() )
 //    {
@@ -572,7 +572,7 @@ void ProjectTabWidget::saveModel(saveTarget saveAsFlag)
     }
 
     //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
-    pCurrentTab->mpSystem->mCoreSystemAccess.setRootSystemName(fileInfo.baseName());
+    pCurrentTab->mpSystem->mpCoreSystemAccess->setRootSystemName(fileInfo.baseName());
     this->setTabText(this->currentIndex(), fileInfo.fileName());
 
     //QLineF line(QPointF(sceneCenterPointF.x(), sceneCenterPointF.y()), QPointF(groupPortPoint.x(), groupPortPoint.y()));

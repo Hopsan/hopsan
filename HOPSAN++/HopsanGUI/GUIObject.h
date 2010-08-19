@@ -61,6 +61,7 @@ class GUIObjectSelectionBox;
 class GUIPort;
 class GUISystem;
 
+enum GUIObjectEnumT {GUIOBJECT=QGraphicsItem::UserType+1, GUISYSTEM, GUICOMPONENT, GUISYSTEMPORT, GUIGROUP, GUIGROUPPORT};
 
 class GUIObject : public QGraphicsWidget
 {
@@ -76,7 +77,8 @@ public:
 
     virtual QString getName();
     void refreshDisplayName();
-    virtual void setName(QString name, renameRestrictions renameSettings=UNRESTRICTED);
+    //virtual void setName(QString name, renameRestrictions renameSettings=UNRESTRICTED);
+    void setDisplayName(QString name);
     virtual QString getTypeName();
     virtual QString getTypeCQS() {assert(false);} //Only available in GUISystemComponent adn GuiComponent for now
     virtual void setTypeCQS(QString typestring) {assert(false);} //Only available in GUISystemComponent
@@ -84,7 +86,6 @@ public:
     AppearanceData* getAppearanceData();
     void refreshAppearance();
 
-    //int getPortNumber(GUIPort *port);
     int getNameTextPos();
     void setNameTextPos(int textPos);
 
@@ -103,7 +104,7 @@ public:
     virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());
     virtual void loadFromHMF(QString modelFileName=QString()) {assert(false);} //Only available in GUISubsystem for now
 
-    enum { Type = UserType + 2 };
+    enum { Type = GUIOBJECT };
     int type() const;
     GUIObjectDisplayName *mpNameText;
     //QMap<QString, GUIPort*> mGuiPortPtrMap;
@@ -170,7 +171,7 @@ class GUIObjectDisplayName : public QGraphicsTextItem
 {
     Q_OBJECT
 private:
-    GUIObject* mpParentGUIComponent;
+    GUIObject* mpParentGUIObject;
 
 public:
     GUIObjectDisplayName(GUIObject *pParent);
@@ -243,7 +244,7 @@ public:
     QString getTypeName();
     QString getTypeCQS();
 
-    enum { Type = UserType + 3 };
+    enum { Type = GUICOMPONENT };
     int type() const;
 
 protected:
@@ -306,7 +307,7 @@ public:
     QString getTypeName();
     void setName(QString newName, renameRestrictions renameSettings);
 
-    enum { Type = UserType + 5 };
+    enum { Type = GUISYSTEMPORT };
     int type() const;
 
 protected:
@@ -326,7 +327,7 @@ public:
 //    QString getName();
 //    void setName(QString name, bool doOnlyLocalRename=false);
 
-    enum { Type = UserType + 6 };
+    enum { Type = GUIGROUP };
     int type() const;
 
     QString getTypeName();
@@ -370,7 +371,7 @@ public:
 
     void setOuterGuiPort(GUIPort *pPort);
 
-    enum { Type = UserType + 7 };
+    enum { Type = GUIGROUPPORT };
     int type() const;
 
 private:

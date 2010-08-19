@@ -48,7 +48,8 @@
 class CoreSystemAccess
 {
 public:
-    CoreSystemAccess();
+    CoreSystemAccess(QString name=QString(), CoreSystemAccess* pParentCoreSystemAccess=0);
+    hopsan::ComponentSystem *getCoreSubSystemPtr(QString name);
 
     bool connect(QString compname1, QString portname1, QString compname2, QString portname2);
     bool disconnect(QString compname1, QString portname1, QString compname2, QString portname2);

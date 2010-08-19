@@ -43,10 +43,24 @@
 using namespace std;
 using namespace hopsan;
 
-CoreSystemAccess::CoreSystemAccess()
+CoreSystemAccess::CoreSystemAccess(QString name, CoreSystemAccess* pParentCoreSystemAccess)
 {
     //Create new Core system component
-    mpCoreComponentSystem = HopsanEssentials::getInstance()->CreateComponentSystem();
+    if (pParentCoreSystemAccess == 0)
+    {
+        //Create new root system
+        mpCoreComponentSystem = HopsanEssentials::getInstance()->CreateComponentSystem();
+    }
+    else
+    {
+        //Creating a subsystem, setting internal pointer
+        mpCoreComponentSystem = pParentCoreSystemAccess->getCoreSubSystemPtr(name);
+    }
+}
+
+ComponentSystem* CoreSystemAccess::getCoreSubSystemPtr(QString name)
+{
+    return mpCoreComponentSystem->getSubComponentSystem(name.toStdString());
 }
 
 bool CoreSystemAccess::connect(QString compname1, QString portname1, QString compname2, QString portname2)

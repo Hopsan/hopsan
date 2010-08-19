@@ -187,10 +187,8 @@ void ParameterDialog::createEditStuff()
 //! Sets the parameters in the core component. Read the values from the dialog and write them into the core component.
 void ParameterDialog::setParameters()
 {
-    mpGUIObject->setName(mpNameEdit->text());
-    mpGUIObject->refreshDisplayName();
-
-    qDebug() << mpNameEdit->text();
+    mpGUIObject->mpParentSystem->renameGUIObject(mpGUIObject->getName(), mpNameEdit->text());
+    //qDebug() << mpNameEdit->text();
 
     for (size_t i=0 ; i < mValueVector.size(); ++i )
     {

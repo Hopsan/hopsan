@@ -109,7 +109,7 @@ private:
     QString mIsoIconPath;
 
 public:
-    CoreSystemAccess mCoreSystemAccess; //!< @todo make this private later
+    CoreSystemAccess *mpCoreSystemAccess; //!< @todo make this private later
 
 
     //! Old subsystem stuff
@@ -125,7 +125,7 @@ public:
 
     QVector<QString> getParameterNames();
 
-    enum { Type = UserType + 4 };
+    enum { TYPE = GUISYSTEM };
     int type() const;
 
 protected:

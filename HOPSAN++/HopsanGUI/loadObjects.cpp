@@ -237,14 +237,14 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
 
 void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, undoStatus undoSettings)
 {
-    qDebug() << "loadConnector: " << rData.startComponentName << " " << rData.endComponentName << " " << pSystem->mCoreSystemAccess.getRootSystemName();
-    bool success = pSystem->mCoreSystemAccess.connect(rData.startComponentName, rData.startPortName, rData.endComponentName, rData.endPortName);
+    qDebug() << "loadConnector: " << rData.startComponentName << " " << rData.endComponentName << " " << pSystem->mpCoreSystemAccess->getRootSystemName();
+    bool success = pSystem->mpCoreSystemAccess->connect(rData.startComponentName, rData.startPortName, rData.endComponentName, rData.endPortName);
     if (success)
     {
         //Check if the component names are the same as the guiroot system name in such cases we should search for the actual systemport gui object instead
         //!< @todo this is extremely strange, some day we need to figure out a way that allways works the same way, this will likly mean MAJOR changes
         QString startGuiObjName, endGuiObjName;
-        if (rData.startComponentName == pSystem->mCoreSystemAccess.getRootSystemName())
+        if (rData.startComponentName == pSystem->mpCoreSystemAccess->getRootSystemName())
         {
             startGuiObjName = rData.startPortName;
         }
@@ -252,7 +252,7 @@ void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, undoStatu
         {
             startGuiObjName = rData.startComponentName;
         }
-        if (rData.endComponentName == pSystem->mCoreSystemAccess.getRootSystemName())
+        if (rData.endComponentName == pSystem->mpCoreSystemAccess->getRootSystemName())
         {
             endGuiObjName = rData.endPortName;
         }
