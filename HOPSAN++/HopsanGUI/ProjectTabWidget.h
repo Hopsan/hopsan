@@ -67,7 +67,9 @@ public:
     ProjectTabWidget(MainWindow *parent = 0);
 
     ProjectTab *getCurrentTab();
+    ProjectTab *getTab(int index);
     GUISystem *getCurrentSystem();
+    GUISystem *getSystem(int index);
     MainWindow *mpParentMainWindow;
     size_t mNumberOfUntitledTabs;
 
@@ -84,12 +86,14 @@ public slots:
     void saveModel(saveTarget saveAsFlag = EXISTINGFILE);
     void setIsoGraphics(graphicsType);
 
+    void tabChanged();
+
         //! @todo The functions bellow could possibly be replaced with connect/disconnect at tab change instead
-    void resetZoom();
-    void zoomIn();
-    void zoomOut();
-    void hideNames();
-    void showNames();
+    //void resetZoom();
+//    void zoomIn();
+//    void zoomOut();
+//    void hideNames();
+//    void showNames();
     void updateSimulationSetupWidget();
     void updateCurrentStartTime();
     void updateCurrentTimeStep();

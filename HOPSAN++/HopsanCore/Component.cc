@@ -2089,7 +2089,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         }
 
             //Simulate C component vectors in parallel
-        for(int coreNumber=0; coreNumber<nCores-1; ++coreNumber)
+        for(int coreNumber=0; coreNumber<(nCores-1); ++coreNumber)
         {
             c->run(taskC(splitCVector[coreNumber], mTime, mTime+mTimestep));
         }
@@ -2100,7 +2100,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         c->wait();
 
             //Simulate Q component vectors in parallel
-        for(int coreNumber=0; coreNumber<nCores-1; ++coreNumber)
+        for(int coreNumber=0; coreNumber<(nCores-1); ++coreNumber)
         {
             q->run(taskQ(splitQVector[coreNumber], mTime, mTime+mTimestep));
         }

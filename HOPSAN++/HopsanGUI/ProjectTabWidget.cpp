@@ -148,6 +148,8 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     setTabsClosable(true);
     mNumberOfUntitledTabs = 0;
 
+    connect(this,SIGNAL(currentChanged(int)),SLOT(tabChanged()));
+
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(closeProjectTab(int)));
     connect(this,SIGNAL(currentChanged(int)),this, SLOT(updateSimulationSetupWidget()));
     connect(this,SIGNAL(currentChanged(int)),this, SLOT(updateUndoStatus()));
@@ -163,12 +165,12 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     connect(mpParentMainWindow->exportPDFAction, SIGNAL(triggered()), this,SLOT(exportCurrentToPDF()));
     connect(mpParentMainWindow->saveAsAction, SIGNAL(triggered()), this,SLOT(saveProjectTabAs()));
     connect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), this,SLOT(simulateCurrent()));
-    connect(mpParentMainWindow->resetZoomAction, SIGNAL(triggered()),this,SLOT(resetZoom()));
-    connect(mpParentMainWindow->zoomInAction, SIGNAL(triggered()),this,SLOT(zoomIn()));
+    //connect(mpParentMainWindow->resetZoomAction, SIGNAL(triggered()),this,SLOT(resetZoom()));
+    //connect(mpParentMainWindow->zoomInAction, SIGNAL(triggered()),this,SLOT(zoomIn()));
 
-    connect(mpParentMainWindow->zoomOutAction, SIGNAL(triggered()),this,SLOT(zoomOut()));
-    connect(mpParentMainWindow->hideNamesAction,SIGNAL(triggered()),this, SLOT(hideNames()));
-    connect(mpParentMainWindow->showNamesAction,SIGNAL(triggered()),this, SLOT(showNames()));
+    //connect(mpParentMainWindow->zoomOutAction, SIGNAL(triggered()),this,SLOT(zoomOut()));
+    //connect(mpParentMainWindow->hideNamesAction,SIGNAL(triggered()),this, SLOT(hideNames()));
+    //connect(mpParentMainWindow->showNamesAction,SIGNAL(triggered()),this, SLOT(showNames()));
     connect(mpParentMainWindow->centerViewAction,SIGNAL(triggered()),this,SLOT(centerView()));
     connect(mpParentMainWindow->disableUndoAction,SIGNAL(triggered()),this, SLOT(disableUndo()));
 }
@@ -250,10 +252,24 @@ ProjectTab *ProjectTabWidget::getCurrentTab()
 }
 
 
+//! Returns a pointer to the currently active project tab - be sure to check that the number of tabs is not zero before calling this
+ProjectTab *ProjectTabWidget::getTab(int index)
+{
+    return qobject_cast<ProjectTab *>(widget(index));
+}
+
+
 //! Returns a pointer to the currently system model - be sure to check that the number of tabs is not zero before calling this
 GUISystem *ProjectTabWidget::getCurrentSystem()
 {
     return getCurrentTab()->mpSystem;
+}
+
+
+//! Returns a pointer to the currently system model - be sure to check that the number of tabs is not zero before calling this
+GUISystem *ProjectTabWidget::getSystem(int index)
+{
+    return getTab(index)->mpSystem;
 }
 
 
@@ -751,62 +767,62 @@ void ProjectTabWidget::setIsoGraphics(graphicsType gfxType)
     }
 }
 
-//! Tells the current tab to reset zoom to 100%.
-//! @see zoomIn()
-//! @see zoomOut()
-void ProjectTabWidget::resetZoom()
-{
-    if(this->count() != 0)
-    {
-        this->getCurrentTab()->mpGraphicsView->resetZoom();
-    }
-}
+////! Tells the current tab to reset zoom to 100%.
+////! @see zoomIn()
+////! @see zoomOut()
+//void ProjectTabWidget::resetZoom()
+//{
+//    if(this->count() != 0)
+//    {
+//        this->getCurrentTab()->mpGraphicsView->resetZoom();
+//    }
+//}
 
 
-//! Tells the current tab to increase its zoom factor.
-//! @see resetZoom()
-//! @see zoomOut()
-void ProjectTabWidget::zoomIn()
-{
-    if(this->count() != 0)
-    {
-        this->getCurrentTab()->mpGraphicsView->zoomIn();
-    }
-}
+////! Tells the current tab to increase its zoom factor.
+////! @see resetZoom()
+////! @see zoomOut()
+//void ProjectTabWidget::zoomIn()
+//{
+//    if(this->count() != 0)
+//    {
+//        this->getCurrentTab()->mpGraphicsView->zoomIn();
+//    }
+//}
 
 
-//! Tells the current tab to decrease its zoom factor.
-//! @see resetZoom()
-//! @see zoomIn()
-void ProjectTabWidget::zoomOut()
-{
-    if(this->count() != 0)
-    {
-        this->getCurrentTab()->mpGraphicsView->zoomOut();
-    }
-}
+////! Tells the current tab to decrease its zoom factor.
+////! @see resetZoom()
+////! @see zoomIn()
+//void ProjectTabWidget::zoomOut()
+//{
+//    if(this->count() != 0)
+//    {
+//        this->getCurrentTab()->mpGraphicsView->zoomOut();
+//    }
+//}
 
 
-//! Tells the current tab to hide all component names.
-//! @see showNames()
-void ProjectTabWidget::hideNames()
-{
-    if(this->count() != 0)
-    {
-        this->getCurrentTab()->mpSystem->hideNames();
-    }
-}
+////! Tells the current tab to hide all component names.
+////! @see showNames()
+//void ProjectTabWidget::hideNames()
+//{
+//    if(this->count() != 0)
+//    {
+//        this->getCurrentTab()->mpSystem->hideNames();
+//    }
+//}
 
 
-//! Tells the current tab to show all component names.
-//! @see hideNames()
-void ProjectTabWidget::showNames()
-{
-    if(this->count() != 0)
-    {
-        this->getCurrentTab()->mpSystem->showNames();
-    }
-}
+////! Tells the current tab to show all component names.
+////! @see hideNames()
+//void ProjectTabWidget::showNames()
+//{
+//    if(this->count() != 0)
+//    {
+//        this->getCurrentTab()->mpSystem->showNames();
+//    }
+//}
 
 
 //! Tells the current tab to center the viewport
@@ -867,5 +883,26 @@ void ProjectTabWidget::updateUndoStatus()
             mpParentMainWindow->undoAction->setDisabled(false);
             mpParentMainWindow->redoAction->setDisabled(false);
         }
+    }
+}
+
+
+void ProjectTabWidget::tabChanged()
+{
+    if(this->count() != 0)
+    {
+        for(size_t i=0; i<count(); ++i)
+        {
+            disconnect(mpParentMainWindow->resetZoomAction, SIGNAL(triggered()),getTab(i)->mpGraphicsView,SLOT(resetZoom()));
+            disconnect(mpParentMainWindow->zoomInAction, SIGNAL(triggered()),getTab(i)->mpGraphicsView,SLOT(zoomIn()));
+            disconnect(mpParentMainWindow->zoomOutAction, SIGNAL(triggered()),getTab(i)->mpGraphicsView,SLOT(zoomOut()));
+            disconnect(mpParentMainWindow->hideNamesAction, SIGNAL(triggered()),getSystem(i),SLOT(hideNames()));
+            disconnect(mpParentMainWindow->showNamesAction, SIGNAL(triggered()),getSystem(i),SLOT(showNames()));
+        }
+        connect(mpParentMainWindow->resetZoomAction, SIGNAL(triggered()),getCurrentTab()->mpGraphicsView,SLOT(resetZoom()));
+        connect(mpParentMainWindow->zoomInAction, SIGNAL(triggered()),getCurrentTab()->mpGraphicsView,SLOT(zoomIn()));
+        connect(mpParentMainWindow->zoomOutAction, SIGNAL(triggered()),getCurrentTab()->mpGraphicsView,SLOT(zoomOut()));
+        connect(mpParentMainWindow->hideNamesAction, SIGNAL(triggered()),getCurrentSystem(),SLOT(hideNames()));
+        connect(mpParentMainWindow->showNamesAction, SIGNAL(triggered()),getCurrentSystem(),SLOT(showNames()));
     }
 }
