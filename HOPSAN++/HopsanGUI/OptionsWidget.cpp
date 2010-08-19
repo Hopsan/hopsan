@@ -52,14 +52,25 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     : QDialog(parent)
 {
     mpParentMainWindow = parent;
-    //Set the name and size of the main window
+
+        //Set the name and size of the main window
+
     this->setObjectName("OptionsWidget");
     this->resize(640,480);
     this->setWindowTitle("Options");
 
+        //Interface Options
+
     invertWheelCheckBox = new QCheckBox(tr("Invert Mouse Wheel"));
     invertWheelCheckBox->setCheckable(true);
     invertWheelCheckBox->setChecked(mpParentMainWindow->mInvertWheel);
+
+    interfaceGroupBox = new QGroupBox(tr("Interface"));
+    interfaceLayout = new QGridLayout;
+    interfaceLayout->addWidget(invertWheelCheckBox, 0, 0);
+    interfaceGroupBox->setLayout(interfaceLayout);
+
+        //Simulation Options
 
     progressBarLabel = new QLabel(tr("Simulation Progress Bar Time Step [ms]"));
     progressBarSpinBox = new QSpinBox();
@@ -71,6 +82,13 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     useMulticoreCheckBox = new QCheckBox(tr("Use Multi-Threaded Simulation"));
     useMulticoreCheckBox->setCheckable(true);
     useMulticoreCheckBox->setChecked(mpParentMainWindow->mUseMulticore);
+
+    simulationGroupBox = new QGroupBox(tr("Simulation"));
+    simulationLayout = new QGridLayout;
+    simulationLayout->addWidget(progressBarLabel, 0, 0);
+    simulationLayout->addWidget(progressBarSpinBox, 1, 0);
+    simulationLayout->addWidget(useMulticoreCheckBox, 2, 0);
+    simulationGroupBox->setLayout(simulationLayout);
 
     cancelButton = new QPushButton(tr("&Cancel"));
     cancelButton->setAutoDefault(false);
@@ -87,10 +105,12 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
 
     QGridLayout *mainLayout = new QGridLayout;
     mainLayout->setSizeConstraint(QLayout::SetFixedSize);
-    mainLayout->addWidget(invertWheelCheckBox, 0, 0);
-    mainLayout->addWidget(progressBarLabel, 1, 0);
-    mainLayout->addWidget(progressBarSpinBox, 2, 0);
-    mainLayout->addWidget(useMulticoreCheckBox, 3, 0);
+    //mainLayout->addWidget(invertWheelCheckBox, 0, 0);
+    //mainLayout->addWidget(progressBarLabel, 1, 0);
+    //mainLayout->addWidget(progressBarSpinBox, 2, 0);
+    //mainLayout->addWidget(useMulticoreCheckBox, 3, 0);
+    mainLayout->addWidget(interfaceGroupBox);
+    mainLayout->addWidget(simulationGroupBox);
     mainLayout->addWidget(buttonBox, 4, 0);
     setLayout(mainLayout);
 }

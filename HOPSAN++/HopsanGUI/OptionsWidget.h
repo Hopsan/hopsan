@@ -46,6 +46,8 @@
 #include <QCheckBox>
 #include <QSpinBox>
 #include <QDialogButtonBox>
+#include <QGroupBox>
+#include <QGridLayout>
 
 class MainWindow;
 
@@ -58,10 +60,18 @@ public:
 
     MainWindow *mpParentMainWindow;
 
+
+
     QCheckBox *invertWheelCheckBox;
+    QGroupBox *interfaceGroupBox;
+    QGridLayout *interfaceLayout;
+
     QCheckBox *useMulticoreCheckBox;
     QLabel *progressBarLabel;
     QSpinBox *progressBarSpinBox;
+    QGroupBox *simulationGroupBox;
+    QGridLayout *simulationLayout;
+
     QPushButton *cancelButton;
     QPushButton *applyButton;
     QPushButton *okButton;
