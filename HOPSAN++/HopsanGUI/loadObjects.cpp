@@ -287,7 +287,14 @@ void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, undoStatu
 void loadParameterValues(const ParameterLoadData &rData, GUISystem* pSystem, undoStatus undoSettings)
 {
     //qDebug() << "Parameter: " << componentName << " " << parameterName << " " << parameterValue;
-    pSystem->mGUIObjectMap.find(rData.componentName).value()->setParameterValue(rData.parameterName, rData.parameterValue);
+    qDebug() << "count" << pSystem->mGUIObjectMap.count(rData.componentName);
+    GUIObject* ptr = pSystem->mGUIObjectMap.find(rData.componentName).value();
+    qDebug() << ptr->getName();
+    if (ptr != 0)
+        ptr->setParameterValue(rData.parameterName, rData.parameterValue);
+    else
+        assert(false);
+
 }
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data

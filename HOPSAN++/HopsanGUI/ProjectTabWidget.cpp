@@ -311,7 +311,7 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
     ProjectTab *newTab = new ProjectTab(this);
     //newTab->mIsSaved = false;
 
-    newTab->mpSystem->setDisplayName(tabName);
+    newTab->mpSystem->setName(tabName);
 
     //addTab(newTab, tabName.append(QString("*")));
     this->addTab(newTab, tabName);

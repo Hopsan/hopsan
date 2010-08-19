@@ -1023,6 +1023,7 @@ void GUIObjectSelectionBox::setHovered()
 //! Tells the component to ask its parent to delete it.
 void GUIObject::deleteMe()
 {
+    qDebug() << "deleteMe in " << this->getName();
     mpParentSystem->deleteGUIObject(this->getName());
 }
 
@@ -1112,7 +1113,7 @@ QString GUIComponent::getTypeName()
 
 QString GUIComponent::getTypeCQS()
 {
-    return mpParentSystem->mpParentProjectTab->mpSystem->mpCoreSystemAccess->getTypeCQS(this->getName());
+    return mpParentSystem->mpParentProjectTab->mpSystem->mpCoreSystemAccess->getRootSystemTypeCQS(this->getName());
 }
 
 //! @brief Get a vector with the names of the available parameters
@@ -1196,7 +1197,7 @@ void GUIComponent::openParameterDialog()
 void GUIComponent::createPorts()
 {
     //! @todo make sure that all old ports and connections are cleared, (not really necessary in guicomponents)
-    QString cqsType = mpParentSystem->mpParentProjectTab->mpSystem->mpCoreSystemAccess->getTypeCQS(getName());
+    QString cqsType = mpParentSystem->mpParentProjectTab->mpSystem->mpCoreSystemAccess->getRootSystemTypeCQS(getName());
     PortAppearanceMapT::iterator i;
     for (i = mAppearanceData.getPortAppearanceMap().begin(); i != mAppearanceData.getPortAppearanceMap().end(); ++i)
     {
@@ -1645,7 +1646,7 @@ QString GUIGroup::getTypeName()
 //! @param scene is the scene which should contain the group.
 //! @param parent is the parent QGraphicsItem for the group, default = 0.
 GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData, GUISystem *system, QGraphicsItem *parent)
-    :   GUIObject(QPoint(0.0,0.0), 0, appearanceData, DESELECTED, USERGRAPHICS, system, parent)
+    :   GUIContainerObject(QPoint(0.0,0.0), 0, appearanceData, DESELECTED, USERGRAPHICS, system, parent)
 {
 
     this->setDisplayName(QString("Grupp_test"));

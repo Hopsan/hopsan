@@ -34,8 +34,16 @@ GUISystem::~GUISystem()
 {
     //! @todo should remove all subcomponents first then run the code bellow, to cleanup nicely in the correct order
 
-    //! @todo this probably wont work need to remove the ROOT system
-    mpCoreSystemAccess->removeSubComponent(this->getName(), true);
+    if (mpParentSystem != 0)
+    {
+        mpParentSystem->mpCoreSystemAccess->removeSubComponent(this->getName(), true);
+    }
+    else
+    {
+        mpParentSystem->mpCoreSystemAccess->deleteRootSystemPtr();
+    }
+
+    delete mpCoreSystemAccess;
 }
 
 //! @todo ugly temporary hack
@@ -80,69 +88,42 @@ void GUISystem::commonConstructorCode()
     if (this->mpParentSystem == 0)
     {
         //Create root system
+        qDebug() << "creating ROOT access system";
         mpCoreSystemAccess = new CoreSystemAccess();
-
+        mpCoreSystemAccess->setRootSystemName("RootSystem");
+        this->setDisplayName(mpCoreSystemAccess->getRootSystemName());
     }
     else
     {
         //Create subsystem
-        qDebug() << "creating subsystem and setting name";
+        qDebug() << "creating subsystem and setting name in " << mpParentSystem->mpCoreSystemAccess->getRootSystemName();
         mAppearanceData.setName(mpParentSystem->mpCoreSystemAccess->createSubSystem(this->getName()));
-        qDebug() << "creating CoreSystemAccess for this subsystem, name: " << this->getName();
+        qDebug() << "creating CoreSystemAccess for this subsystem, name: " << this->getName() << " parentname: " << mpParentSystem->getName();
         mpCoreSystemAccess = new CoreSystemAccess(this->getName(), mpParentSystem->mpCoreSystemAccess);
     }
 
     mpCoreSystemAccess->setDesiredTimeStep(mTimeStep);
     mpCoreSystemAccess->setRootTypeCQS("S");
 
-
-
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 }
 
 
-////!
-////! @brief This function sets the desired subsystem name
-////! @param [in] newName The new name
-////! @param [in] renameSettings  Dont use this if you dont know what you are doing
-////!
-////! @todo This function is almost exactly identical to the one for GUIcomponents need to make sure that we dont dublicate functions like this, maybe this should be directly in GUIObject
-////!
-////! The desired new name will be sent to the the core component and may be modified. Rename will be called in the graphics view to make sure that the guicomponent map key value is up to date.
-////! renameSettings is a somewhat ugly hack, we need to be able to force setName without calling rename in some very special situations, it defaults to false
-////!
-//void GUISystem::setName(QString newName, renameRestrictions renameSettings)
-//{
-//    QString oldName = getName();
-//    //If name same as before do nothing
-//    if (newName != oldName)
-//    {
-//        if (mpParentSystem != 0)
-//        {
-//            mpParentSystem->renameGUIObject(oldName, newName);
-//        }
-//        else
-//        {
-//            mAppearanceData.setName(mpCoreSystemAccess->setRootSystemName(newName));
-//        }
-//    }
-//    QString oldName = getName();
-//    //If name same as before do nothing
-//    if (newName != oldName)
-//    {
-//        //Check if we want to avoid trying to rename in the graphics view map
-//        if (renameSettings == CORERENAMEONLY)
-//        {
-
-//            refreshDisplayName();
-//        }
-//        else
-//        {
-//            //Rename
-//            this->mpParentSystem->renameGUIObject(oldName, newName);
-//        }
-//    }
-//}
+//!
+//! @brief This function sets the desired subsystem name
+//! @param [in] newName The new name
+//!
+void GUISystem::setName(QString newName)
+{
+    if (mpParentSystem == 0)
+    {
+        setDisplayName(mpCoreSystemAccess->setRootSystemName(newName));
+    }
+    else
+    {
+        mpParentSystem->renameGUIObject(this->getName(), newName);
+    }
+}
 
 
 //! Returns a string with the sub system type.
@@ -159,7 +140,7 @@ void GUISystem::setTypeCQS(QString typestring)
 
 QString GUISystem::getTypeCQS()
 {
-    return mpCoreSystemAccess->getTypeCQS((this->getName()));
+    return mpCoreSystemAccess->getRootSystemTypeCQS((this->getName()));
 }
 
 QVector<QString> GUISystem::getParameterNames()
@@ -212,16 +193,7 @@ void GUISystem::loadFromHMF(QString modelFileName)
     mUndoStack->newPost();
 
     //Set the name
-    //! @todo maybe have a setname private function in GUISystem
-    if (mpParentSystem != 0)
-    {
-        mpParentSystem->renameGUIObject(this->getName(), fileInfo.baseName());
-    }
-    else
-    {
-        setDisplayName(fileInfo.baseName());
-    }
-
+    this->setName(fileInfo.baseName());
 
     //Now read the file data
     //Read the header data, also checks version numbers
@@ -327,102 +299,102 @@ void GUISystem::loadFromHMF(QString modelFileName)
     emit checkMessages();
 }
 
-//! @todo Maybe should be somewhere else and be called load subsystem
-void GUISystem::loadFromFileNOGUI(QString modelFileName)
-{
-    QFile file;
-    QFileInfo fileInfo;
-    if (modelFileName.isEmpty())
-    {
-        QDir fileDialog;
-        modelFileName = QFileDialog::getOpenFileName(mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
-                                                             fileDialog.currentPath() + QString("/../../Models"),
-                                                             tr("Hopsan Model Files (*.hmf)"));
-        if (modelFileName.isEmpty())
-            return;
+////! @todo Maybe should be somewhere else and be called load subsystem
+//void GUISystem::loadFromFileNOGUI(QString modelFileName)
+//{
+//    QFile file;
+//    QFileInfo fileInfo;
+//    if (modelFileName.isEmpty())
+//    {
+//        QDir fileDialog;
+//        modelFileName = QFileDialog::getOpenFileName(mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
+//                                                             fileDialog.currentPath() + QString("/../../Models"),
+//                                                             tr("Hopsan Model Files (*.hmf)"));
+//        if (modelFileName.isEmpty())
+//            return;
 
-        file.setFileName(modelFileName);
-        fileInfo.setFile(file);
+//        file.setFileName(modelFileName);
+//        fileInfo.setFile(file);
 
-        for(int t=0; t!=mpParentProjectTab->mpParentProjectTabWidget->count(); ++t)
-        {
-            if( (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == fileInfo.fileName()) or (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == (fileInfo.fileName() + "*")) )
-            {
-                QMessageBox::StandardButton reply;
-                reply = QMessageBox::information(mpParentProjectTab->mpParentProjectTabWidget, tr("Error"), tr("Unable to load model. File is already open."));
-                return;
-            }
-        }
-    }
-    else
-    {
-         file.setFileName(modelFileName);
-         fileInfo.setFile(file);
-    }
+//        for(int t=0; t!=mpParentProjectTab->mpParentProjectTabWidget->count(); ++t)
+//        {
+//            if( (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == fileInfo.fileName()) or (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == (fileInfo.fileName() + "*")) )
+//            {
+//                QMessageBox::StandardButton reply;
+//                reply = QMessageBox::information(mpParentProjectTab->mpParentProjectTabWidget, tr("Error"), tr("Unable to load model. File is already open."));
+//                return;
+//            }
+//        }
+//    }
+//    else
+//    {
+//         file.setFileName(modelFileName);
+//         fileInfo.setFile(file);
+//    }
 
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
-    {
-        qDebug() << "Failed to open file or not a text file: " + modelFileName;
-        return;
-    }
-    QTextStream textStreamFile(&file); //Converts to QTextStream
-    mModelFilePath = modelFileName;
+//    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
+//    {
+//        qDebug() << "Failed to open file or not a text file: " + modelFileName;
+//        return;
+//    }
+//    QTextStream textStreamFile(&file); //Converts to QTextStream
+//    mModelFilePath = modelFileName;
 
-    //Set the name
-    this->mpParentSystem->renameGUIObject(this->getName(), fileInfo.baseName());
+//    //Set the name
+//    this->mpParentSystem->renameGUIObject(this->getName(), fileInfo.baseName());
 
-    //Now read the file data
-    SystemAppearanceLoadData sysappdata;
-    HeaderLoadData header;
+//    //Now read the file data
+//    SystemAppearanceLoadData sysappdata;
+//    HeaderLoadData header;
 
-    header.read(textStreamFile);
-    //qDebug() << "Header read";
-    //! @todo check so that version OK!
-    sysappdata.read(textStreamFile);
-    //qDebug() << "Sysapp data read";
+//    header.read(textStreamFile);
+//    //qDebug() << "Header read";
+//    //! @todo check so that version OK!
+//    sysappdata.read(textStreamFile);
+//    //qDebug() << "Sysapp data read";
 
-    if (!sysappdata.usericon_path.isEmpty())
-    {
-        mAppearanceData.setIconPathUser(sysappdata.usericon_path);
-    }
-    if (!sysappdata.isoicon_path.isEmpty())
-    {
-        mAppearanceData.setIconPathISO(sysappdata.isoicon_path);
-    }
+//    if (!sysappdata.usericon_path.isEmpty())
+//    {
+//        mAppearanceData.setIconPathUser(sysappdata.usericon_path);
+//    }
+//    if (!sysappdata.isoicon_path.isEmpty())
+//    {
+//        mAppearanceData.setIconPathISO(sysappdata.isoicon_path);
+//    }
 
-    //! @todo reading portappearance should have a common function and be shared with the setappearancedata rad function that reads from caf files
-    PortAppearanceMapT* portappmap = &(mAppearanceData.getPortAppearanceMap());
-    for (int i=0; i<sysappdata.portnames.size(); ++i)
-    {
-        PortAppearance portapp;
-        portapp.x = sysappdata.port_xpos[i];
-        portapp.y = sysappdata.port_ypos[i];
-        portapp.rot = sysappdata.port_angle[i];
-        if( (portapp.rot == 0) || (portapp.rot == 180) )
-        {
-            portapp.direction = LEFTRIGHT;
-        }
-        else
-        {
-            portapp.direction = TOPBOTTOM;
-        }
-        //! @todo portdirection in portapperance should have an initial default value to avoid crash if not set when creating connector
-        portapp.selectPortIcon("","",""); //!< @todo fix this
+//    //! @todo reading portappearance should have a common function and be shared with the setappearancedata rad function that reads from caf files
+//    PortAppearanceMapT* portappmap = &(mAppearanceData.getPortAppearanceMap());
+//    for (int i=0; i<sysappdata.portnames.size(); ++i)
+//    {
+//        PortAppearance portapp;
+//        portapp.x = sysappdata.port_xpos[i];
+//        portapp.y = sysappdata.port_ypos[i];
+//        portapp.rot = sysappdata.port_angle[i];
+//        if( (portapp.rot == 0) || (portapp.rot == 180) )
+//        {
+//            portapp.direction = LEFTRIGHT;
+//        }
+//        else
+//        {
+//            portapp.direction = TOPBOTTOM;
+//        }
+//        //! @todo portdirection in portapperance should have an initial default value to avoid crash if not set when creating connector
+//        portapp.selectPortIcon("","",""); //!< @todo fix this
 
-        portappmap->insert(sysappdata.portnames[i], portapp);
-        qDebug() << sysappdata.portnames[i];
-    }
-    qDebug() << "Appearance set";
+//        portappmap->insert(sysappdata.portnames[i], portapp);
+//        qDebug() << sysappdata.portnames[i];
+//    }
+//    qDebug() << "Appearance set";
 
-    //Load the contents of the subsystem from the external file
-    mpParentProjectTab->mpSystem->mpCoreSystemAccess->loadSystemFromFileCoreOnly(this->getName(), modelFileName);
-    qDebug() << "Loaded in core";
+//    //Load the contents of the subsystem from the external file
+//    mpParentProjectTab->mpSystem->mpCoreSystemAccess->loadSystemFromFileCoreOnly(this->getName(), modelFileName);
+//    qDebug() << "Loaded in core";
 
-    this->refreshAppearance();
-    this->createPorts();
-    this->refreshDisplayName();
-    file.close();
-}
+//    this->refreshAppearance();
+//    this->createPorts();
+//    this->refreshDisplayName();
+//    file.close();
+//}
 
 
 int GUISystem::type() const
@@ -480,7 +452,7 @@ void GUISystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         }
         else if (selectedAction == loadAction)
         {
-            loadFromFileNOGUI();
+            loadFromHMF();
         }
     }
 
@@ -540,7 +512,7 @@ void GUISystem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     if(mModelFilePath.isEmpty())
     {
-        loadFromFileNOGUI();
+        loadFromHMF();
     }
     else
     {
@@ -605,6 +577,7 @@ GUIObject* GUISystem::addGUIObject(AppearanceData appearanceData, QPoint positio
 //! @param objectName is the name of the componenet to delete
 void GUISystem::deleteGUIObject(QString objectName, undoStatus undoSettings)
 {
+    qDebug() << "deleteGUIObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->mpCoreSystemAccess->getRootSystemName() ;
     GUIObjectMapT::iterator it = mGUIObjectMap.find(objectName);
     //! @todo This is very very very stupid! We loop through all connectors in the model and removes them if the name of one of their parent components is the same as the component we delete?!
     int i = 0;

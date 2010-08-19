@@ -148,7 +148,7 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
     this->setCursor(Qt::CrossCursor);
     QBrush brush(Qt::blue);
-    std::cout << "GUIPort.cpp: " << "hovering over port" << std::endl;
+    //std::cout << "GUIPort.cpp: " << "hovering over port" << std::endl;
     magnify(true);
 
     mpPortLabel->setRotation(-mpParentGuiObject->rotation()-this->rotation());

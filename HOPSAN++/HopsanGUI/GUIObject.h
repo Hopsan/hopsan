@@ -318,7 +318,7 @@ private:
 };
 
 
-class GUIGroup : public GUIObject
+class GUIGroup : public GUIContainerObject
 {
     Q_OBJECT
 public:

@@ -117,7 +117,7 @@ public:
     //! Old subsystem stuff
 public:
     QString getTypeName();
-    void setName(QString newName, renameRestrictions renameSettings=UNRESTRICTED);
+    void setName(QString newName);
     void setTypeCQS(QString typestring);
     QString getTypeCQS();
 

@@ -912,7 +912,7 @@ Component* ComponentSystem::getComponent(string name)
     }
     else if (name == mName)
     {
-        //cout << "getComponent (name == mName): " << name << " in: " << mName << " returning this" << endl;
+        cout << "getComponent (name == mName): " << name << " in: " << mName << " returning this" << endl;
         return this;
     }
     else
@@ -932,7 +932,7 @@ Component* ComponentSystem::getSubComponent(string name)
     }
     else
     {
-        cout << "The component you requested: " << name << " does not exist" << endl;
+        cout << "getSubComponent: The component you requested: " << name << " does not exist" << endl;
         return 0;
     }
 }

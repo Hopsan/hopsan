@@ -60,7 +60,19 @@ CoreSystemAccess::CoreSystemAccess(QString name, CoreSystemAccess* pParentCoreSy
 
 ComponentSystem* CoreSystemAccess::getCoreSubSystemPtr(QString name)
 {
+    qDebug() << " corecomponentsystemname: " <<  QString::fromStdString(mpCoreComponentSystem->getName()) << "  Subname: " << name;
     return mpCoreComponentSystem->getSubComponentSystem(name.toStdString());
+}
+
+CoreSystemAccess::~CoreSystemAccess()
+{
+    //Dont remove the mpCoreComponentSystem here you must do that manually until we have found a samrter way to do all of this
+}
+
+//This is an extremaly stupid ugly function
+void CoreSystemAccess::deleteRootSystemPtr()
+{
+    delete mpCoreComponentSystem; //!< @todo this may be unsafe, dont know
 }
 
 bool CoreSystemAccess::connect(QString compname1, QString portname1, QString compname2, QString portname2)
@@ -89,6 +101,7 @@ double CoreSystemAccess::getDesiredTimeStep()
 
 void CoreSystemAccess::setRootTypeCQS(const QString cqs_type, bool doOnlyLocalSet)
 {
+    qDebug () << "setting root type cqs";
     mpCoreComponentSystem->setTypeCQS(cqs_type.toStdString());
 }
 
@@ -102,14 +115,22 @@ void CoreSystemAccess::setSubSystemTypeCQS(QString systemName, const string cqs_
 //    return QString::fromStdString(mpCoreComponentSystem->getSubComponentSystem(systemName.toStdString())->getTypeCQSString());
 //}
 
-QString CoreSystemAccess::getTypeCQS(QString componentName)
+QString CoreSystemAccess::getRootSystemTypeCQS(QString componentName)
 {
-    return QString::fromStdString(mpCoreComponentSystem->getComponent(componentName.toStdString())->getTypeCQSString());
+    qDebug() << "getRootTypeCQS: " << componentName;
+    return QString::fromStdString(mpCoreComponentSystem->getTypeCQSString());
 }
 
-void CoreSystemAccess::setRootSystemName(QString name)
+QString CoreSystemAccess::getSubSystemTypeCQS(QString componentName)
+{
+    qDebug() << "getSubSysTypeCQS: " << componentName;
+    return QString::fromStdString(mpCoreComponentSystem->getSubComponentSystem(componentName.toStdString())->getTypeCQSString());
+}
+
+QString CoreSystemAccess::setRootSystemName(QString name)
 {
     mpCoreComponentSystem->setName(name.toStdString());
+    return QString::fromStdString(mpCoreComponentSystem->getName());
 }
 
 //QString GUIRootSystem::setSystemName(QString systemname, QString name, bool doOnlyLocalRename)

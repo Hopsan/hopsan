@@ -49,7 +49,9 @@ class CoreSystemAccess
 {
 public:
     CoreSystemAccess(QString name=QString(), CoreSystemAccess* pParentCoreSystemAccess=0);
+    ~CoreSystemAccess();
     hopsan::ComponentSystem *getCoreSubSystemPtr(QString name);
+    void deleteRootSystemPtr(); //!< @todo This is completely stuipid, temporary extreamly ugly hack, need to solve this (the subsystem core ptrs) in a better way
 
     bool connect(QString compname1, QString portname1, QString compname2, QString portname2);
     bool disconnect(QString compname1, QString portname1, QString compname2, QString portname2);
@@ -59,10 +61,11 @@ public:
 
     void setRootTypeCQS(const QString cqs_type, bool doOnlyLocalSet=false);
     void setSubSystemTypeCQS(QString systemName, const std::string cqs_type, bool doOnlyLocalSet=false);
-    QString getTypeCQS(QString componentName);
+    QString getRootSystemTypeCQS(QString componentName);
+    QString getSubSystemTypeCQS(QString componentName);
     //QString getSystemTypeCQS(QString systemName); //!< @todo dont think that we need this one the component specifik one should do
 
-    void setRootSystemName(QString name);
+    QString setRootSystemName(QString name);
     QString getRootSystemName();
     //QString setSystemName(QString systemname, QString name, bool doOnlyLocalRename=false); //!< @todo This might not be necessary, should be able to use the component base class specifik one
     QString renameSubComponent(QString componentName, QString name);
