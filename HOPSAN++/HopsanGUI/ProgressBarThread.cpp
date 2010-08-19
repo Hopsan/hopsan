@@ -54,14 +54,14 @@
 
 
 //! Constructor.
-ProgressBarThread::ProgressBarThread(ProjectTabWidget *parent)
+ProgressBarThread::ProgressBarThread(ProjectTab *parent)
 {
-    mpParentProjectTabWidget = parent;
+    mpParentProjectTab = parent;
 }
 
 
 //! Implements the task for the thread.
 void ProgressBarThread::run()
 {
-    this->msleep(mpParentProjectTabWidget->mpParentMainWindow->mProgressBarStep);
+    this->msleep(mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mProgressBarStep);
 }

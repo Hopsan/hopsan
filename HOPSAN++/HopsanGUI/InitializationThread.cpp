@@ -64,9 +64,9 @@
 //! @param startTime is the start time for the initialization.
 //! @param finishTime is the finish time for the initialization.
 //! @param parent is the parent of the thread, the a ProjectTabWidget
-InitializationThread::InitializationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, ProjectTabWidget *parent)
+InitializationThread::InitializationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, ProjectTab *parent)
 {
-    mpParentProjectTabWidget = parent;
+    mpParentProjectTab = parent;
 
     mpGUIRootSystem = pGUIRootSystem;
 

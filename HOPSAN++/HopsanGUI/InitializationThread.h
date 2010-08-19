@@ -51,15 +51,15 @@
 
 #include <QThread>
 
-class ProjectTabWidget;
+class ProjectTab;
 class CoreSystemAccess;
 
 class InitializationThread : public QThread
 {
 public:
-    InitializationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, ProjectTabWidget *parent);
+    InitializationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, ProjectTab *parent);
 
-    ProjectTabWidget *mpParentProjectTabWidget;
+    ProjectTab *mpParentProjectTab;
 
     CoreSystemAccess *mpGUIRootSystem;
 

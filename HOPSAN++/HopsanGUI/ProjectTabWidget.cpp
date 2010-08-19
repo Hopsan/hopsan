@@ -128,6 +128,122 @@ void ProjectTab::hasChanged()
 }
 
 
+//! Returns whether or not the current project is saved
+bool ProjectTab::isSaved()
+{
+    return mIsSaved;
+}
+
+
+//! Set function to tell the tab whether or not it is saved
+void ProjectTab::setSaved(bool value)
+{
+    mIsSaved = value;
+}
+
+
+
+//! Simulates the model in tab in a separate thread, the GUI runs a progressbar parallel to the simulation.
+void ProjectTab::simulate()
+{
+
+    MessageWidget *pMessageWidget = mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget;
+//        //Check if simulation is possible
+//    if (this->count() == 0)
+//    {
+//        mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("There is no open system to simulate"));
+//        return;
+//    }
+
+    if(!mpSystem->mCoreSystemAccess.isSimulationOk())
+    {
+        pMessageWidget->printCoreMessages();
+        pMessageWidget->printGUIMessage(QString("Simulation failed"));
+        return;
+    }
+
+
+    mpSystem->updateStartTime();
+    mpSystem->updateStopTime();
+    mpSystem->updateTimeStep();
+
+        //Setup simulation parameters
+    double startTime = mpSystem->getStartTime();//mpParentProjectTabWidget->mpParentMainWindow->getStartTimeLabel();
+    double finishTime = mpSystem->getStopTime();//mpParentProjectTabWidget->mpParentMainWindow->getFinishTimeLabel();
+    double dt = finishTime - startTime;
+    size_t nSteps = dt/mpSystem->mCoreSystemAccess.getDesiredTimeStep();
+
+        //Ask core to initialize simulation
+    InitializationThread actualInitialization(&(mpSystem->mCoreSystemAccess), startTime, finishTime, this);
+    actualInitialization.start();
+    actualInitialization.setPriority(QThread::HighestPriority);
+    ProgressBarThread progressThread(this);
+
+    QProgressDialog progressBar(tr("Initializing simulation..."), tr("&Abort initialization"), 0, 0, this);
+    progressBar.setWindowModality(Qt::WindowModal);
+    progressBar.setWindowTitle(tr("Simulate!"));
+    size_t i=0;
+    while (actualInitialization.isRunning())
+    {
+        progressThread.start();
+        progressThread.setPriority(QThread::LowestPriority);
+        progressThread.wait();
+        progressBar.setValue(i++);
+        if (progressBar.wasCanceled())
+        {
+            mpSystem->mCoreSystemAccess.stop();
+        }
+    }
+    progressBar.setValue(i);
+    actualInitialization.wait(); //Make sure actualSimulation do not goes out of scope during simulation
+    actualInitialization.quit();
+
+
+        //Ask core to execute (and finalize) simulation
+    if (!progressBar.wasCanceled())
+    {
+        QTime simTimer;
+        simTimer.start();
+        SimulationThread actualSimulation(&(mpSystem->mCoreSystemAccess), startTime, finishTime, this);
+        actualSimulation.start();
+        actualSimulation.setPriority(QThread::HighestPriority);
+            //! @todo TimeCriticalPriority seem to work on dual core, is it a problem on single core machines only?
+        //actualSimulation.setPriority(QThread::TimeCriticalPriority); //No bar appears in Windows with this prio
+
+        progressBar.setLabelText(tr("Running simulation..."));
+        progressBar.setCancelButtonText(tr("&Abort simulation"));
+        progressBar.setMinimum(0);
+        progressBar.setMaximum(nSteps);
+        while (actualSimulation.isRunning())
+        {
+           progressThread.start();
+           progressThread.setPriority(QThread::LowestPriority);
+           progressThread.wait();
+           progressBar.setValue((size_t)(mpSystem->mCoreSystemAccess.getCurrentTime()/dt * nSteps));
+           if (progressBar.wasCanceled())
+           {
+              mpSystem->mCoreSystemAccess.stop();
+           }
+        }
+        progressThread.quit();
+        progressBar.setValue((size_t)(mpSystem->mCoreSystemAccess.getCurrentTime()/dt * nSteps));
+
+        actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
+        actualSimulation.quit();
+        QString timeString;
+        timeString.setNum(simTimer.elapsed());
+        pMessageWidget->printGUIInfoMessage(QString("Simulation time: ").append(timeString).append(" ms"));
+    }
+
+    if (progressBar.wasCanceled())
+        pMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(mpSystem->mCoreSystemAccess.getRootSystemName()).append(tr("' was terminated!"))));
+    else
+    pMessageWidget->printGUIMessage(QString(tr("Simulated '").append(mpSystem->mCoreSystemAccess.getRootSystemName()).append(tr("' successfully!"))));
+    emit checkMessages();
+}
+
+
+
 //! @class ProjectTabWidget
 //! @brief The ProjectTabWidget class is a container class for ProjectTab class
 //!
@@ -155,7 +271,6 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     connect(mpParentMainWindow->openAction, SIGNAL(triggered()), this,SLOT(loadModel()));
     connect(mpParentMainWindow->saveAction, SIGNAL(triggered()), this,SLOT(saveProjectTab()));
     connect(mpParentMainWindow->saveAsAction, SIGNAL(triggered()), this,SLOT(saveProjectTabAs()));
-    connect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), this,SLOT(simulateCurrent()));
 }
 
 
@@ -249,7 +364,7 @@ void ProjectTabWidget::saveProjectTab(int index, saveTarget saveAsFlag)
     //ProjectTab *currentTab = qobject_cast<ProjectTab *>(widget(index));
     QString tabName = tabText(index);
 
-    if (this->getCurrentTab()->mIsSaved)
+    if (this->getCurrentTab()->isSaved())
     {
         //Nothing to do
         //statusBar->showMessage(QString("Project: ").append(tabName).append(QString(" is already saved")));
@@ -265,7 +380,7 @@ void ProjectTabWidget::saveProjectTab(int index, saveTarget saveAsFlag)
         setTabText(index, tabName);
         //statusBar->showMessage(QString("Project: ").append(tabName).append(QString(" saved")));
         std::cout << "ProjectTabWidget: " << qPrintable(QString("Project: ").append(tabName).append(QString(" saved"))) << std::endl;
-        this->getCurrentTab()->mIsSaved = true;
+        this->getCurrentTab()->setSaved(true);
     }
     this->saveModel(saveAsFlag);
 }
@@ -277,7 +392,7 @@ void ProjectTabWidget::saveProjectTab(int index, saveTarget saveAsFlag)
 //! @see closeAllProjectTabs()
 bool ProjectTabWidget::closeProjectTab(int index)
 {
-    if (!(this->getCurrentTab()->mIsSaved))
+    if (!(this->getCurrentTab()->isSaved()))
     {
         QString modelName;
         modelName = tabText(index);
@@ -339,104 +454,6 @@ bool ProjectTabWidget::closeAllProjectTabs()
 }
 
 
-//! Simulates the model in current open tab in a separate thread, the GUI runs a progressbar parallel to the simulation.
-void ProjectTabWidget::simulateCurrent()
-{
-
-        //Check if simulation is possible
-    if (this->count() == 0)
-    {
-        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("There is no open system to simulate"));
-        return;
-    }
-
-    if(!this->getCurrentTab()->mpSystem->mpCoreSystemAccess->isSimulationOk())
-    {
-        mpParentMainWindow->mpMessageWidget->printCoreMessages();
-        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("Simulation failed"));
-        return;
-    }
-
-
-        //Setup simulation parameters
-    ProjectTab *pCurrentTab = getCurrentTab();
-    double startTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->getStartTimeLabel();
-    double finishTime = pCurrentTab->mpParentProjectTabWidget->mpParentMainWindow->getFinishTimeLabel();
-    double dt = finishTime - startTime;
-    size_t nSteps = dt/pCurrentTab->mpSystem->mpCoreSystemAccess->getDesiredTimeStep();
-
-
-        //Ask core to initialize simulation
-    InitializationThread actualInitialization(pCurrentTab->mpSystem->mpCoreSystemAccess, startTime, finishTime, this);
-    actualInitialization.start();
-    actualInitialization.setPriority(QThread::HighestPriority);
-    ProgressBarThread progressThread(this);
-
-    QProgressDialog progressBar(tr("Initializing simulation..."), tr("&Abort initialization"), 0, 0, this);
-    progressBar.setWindowModality(Qt::WindowModal);
-    progressBar.setWindowTitle(tr("Simulate!"));
-    size_t i=0;
-    while (actualInitialization.isRunning())
-    {
-        progressThread.start();
-        progressThread.setPriority(QThread::LowestPriority);
-        progressThread.wait();
-        progressBar.setValue(i++);
-        if (progressBar.wasCanceled())
-        {
-            pCurrentTab->mpSystem->mpCoreSystemAccess->stop();
-        }
-    }
-    progressBar.setValue(i);
-    actualInitialization.wait(); //Make sure actualSimulation do not goes out of scope during simulation
-    actualInitialization.quit();
-
-
-        //Ask core to execute (and finalize) simulation
-    if (!progressBar.wasCanceled())
-    {
-        QTime simTimer;
-        simTimer.start();
-        SimulationThread actualSimulation(pCurrentTab->mpSystem->mpCoreSystemAccess, startTime, finishTime, this);
-        actualSimulation.start();
-        actualSimulation.setPriority(QThread::HighestPriority);
-            //! @todo TimeCriticalPriority seem to work on dual core, is it a problem on single core machines only?
-        //actualSimulation.setPriority(QThread::TimeCriticalPriority); //No bar appears in Windows with this prio
-
-        progressBar.setLabelText(tr("Running simulation..."));
-        progressBar.setCancelButtonText(tr("&Abort simulation"));
-        progressBar.setMinimum(0);
-        progressBar.setMaximum(nSteps);
-        while (actualSimulation.isRunning())
-        {
-           progressThread.start();
-           progressThread.setPriority(QThread::LowestPriority);
-           progressThread.wait();
-           progressBar.setValue((size_t)(getCurrentTab()->mpSystem->mpCoreSystemAccess->getCurrentTime()/dt * nSteps));
-           if (progressBar.wasCanceled())
-           {
-              pCurrentTab->mpSystem->mpCoreSystemAccess->stop();
-           }
-        }
-        progressThread.quit();
-        progressBar.setValue((size_t)(getCurrentTab()->mpSystem->mpCoreSystemAccess->getCurrentTime()/dt * nSteps));
-
-        actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
-        actualSimulation.quit();
-        //qDebug() << "Simulation time: " << (simTimer.elapsed()) << " ms";
-        QString timeString;
-        timeString.setNum(simTimer.elapsed());
-        mpParentMainWindow->mpMessageWidget->printGUIInfoMessage(QString("Simulation time: ").append(timeString).append(" ms"));
-    }
-
-    if (progressBar.wasCanceled())
-        mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(pCurrentTab->mpSystem->mpCoreSystemAccess->getRootSystemName()).append(tr("' was terminated!"))));
-    else
-    mpParentMainWindow->mpMessageWidget->printGUIMessage(QString(tr("Simulated '").append(pCurrentTab->mpSystem->mpCoreSystemAccess->getRootSystemName()).append(tr("' successfully!"))));
-    emit checkMessages();
-}
-
-
 //! Loads a model from a file and opens it in a new project tab.
 //! @see saveModel(saveTarget saveAsFlag)
 void ProjectTabWidget::loadModel()
@@ -475,7 +492,7 @@ void ProjectTabWidget::loadModel()
     ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
 //    pCurrentTab->mpSystem->mModelFileName = modelFileName;
 //    pCurrentTab->mpSystem->mUndoStack->newPost();
-    pCurrentTab->mIsSaved = true;
+    pCurrentTab->setSaved(true);
 
     pCurrentTab->mpSystem->loadFromHMF(modelFileName);
 
@@ -702,6 +719,10 @@ void ProjectTabWidget::tabChanged()
             disconnect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getSystem(i), SLOT(updateTimeStep()));
             disconnect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getSystem(i), SLOT(updateStopTime()));
             disconnect(mpParentMainWindow->disableUndoAction,SIGNAL(triggered()),getSystem(i), SLOT(disableUndo()));
+            disconnect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), getTab(i), SLOT(simulate()));
+            disconnect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), getSystem(i),SLOT(updateStartTime()));
+            disconnect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getSystem(i),SLOT(updateStopTime()));
+            disconnect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getSystem(i),SLOT(updateTimeStep()));
         }
         connect(mpParentMainWindow->resetZoomAction, SIGNAL(triggered()),getCurrentTab()->mpGraphicsView,SLOT(resetZoom()));
         connect(mpParentMainWindow->zoomInAction, SIGNAL(triggered()),getCurrentTab()->mpGraphicsView,SLOT(zoomIn()));
@@ -714,6 +735,10 @@ void ProjectTabWidget::tabChanged()
         connect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getCurrentSystem(), SLOT(updateTimeStep()));
         connect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getCurrentSystem(), SLOT(updateStopTime()));
         connect(mpParentMainWindow->disableUndoAction,SIGNAL(triggered()),getCurrentSystem(), SLOT(disableUndo()));
+        connect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), getCurrentTab(), SLOT(simulate()));
+        connect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), getCurrentSystem(),SLOT(updateStartTime()));
+        connect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getCurrentSystem(),SLOT(updateStopTime()));
+        connect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getCurrentSystem(),SLOT(updateTimeStep()));
         getCurrentSystem()->updateUndoStatus();
         getCurrentSystem()->updateSimulationSetupWidget();
     }

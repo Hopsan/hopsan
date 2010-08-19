@@ -65,13 +65,11 @@ class ProjectTabWidget : public QTabWidget
 
 public:
     ProjectTabWidget(MainWindow *parent = 0);
-
+    MainWindow *mpParentMainWindow;
     ProjectTab *getCurrentTab();
     ProjectTab *getTab(int index);
     GUISystem *getCurrentSystem();
     GUISystem *getSystem(int index);
-    MainWindow *mpParentMainWindow;
-    size_t mNumberOfUntitledTabs;
 
 public slots:
     void addProjectTab(ProjectTab *projectTab, QString tabName="Untitled");
@@ -81,14 +79,18 @@ public slots:
     void saveProjectTab(int index, saveTarget saveAsFlag = EXISTINGFILE);
     bool closeProjectTab(int index);
     bool closeAllProjectTabs();
-    void simulateCurrent();
+    //void simulateCurrent();
     void loadModel();
     void saveModel(saveTarget saveAsFlag = EXISTINGFILE);
     void setIsoGraphics(graphicsType);
     void tabChanged();
+
+
 signals:
     void checkMessages();
 
+private:
+        size_t mNumberOfUntitledTabs;
 };
 
 class ProjectTab : public QWidget
@@ -101,11 +103,18 @@ public:
     ProjectTabWidget *mpParentProjectTabWidget;
     GraphicsView *mpGraphicsView;
 
-    bool mIsSaved;
+    bool isSaved();
+    void setSaved(bool value);
     void hasChanged();
+
+public slots:
+    void simulate();
 
 signals:
     void checkMessages();
+
+private:
+    bool mIsSaved;
 };
 
 #endif // PROJECTTABWIDGET_H

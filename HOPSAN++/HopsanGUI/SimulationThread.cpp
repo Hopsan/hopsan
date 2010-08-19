@@ -64,9 +64,9 @@
 //! @param startTime is the start time for the simulation.
 //! @param finishTime is the finish time for the simulation.
 //! @param parent is the parent of the thread, the a ProjectTabWidget
-SimulationThread::SimulationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, ProjectTabWidget *parent)
+SimulationThread::SimulationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, ProjectTab *parent)
 {
-    mpParentProjectTabWidget = parent;
+    mpParentProjectTab = parent;
 
     mpGUIRootSystem = pGUIRootSystem;
 
@@ -79,8 +79,8 @@ SimulationThread::SimulationThread(CoreSystemAccess *pGUIRootSystem, double star
 //! Implements the task for the thread.
 void SimulationThread::run()
 {
-    qDebug() << mpParentProjectTabWidget->mpParentMainWindow->mUseMulticore;
-    if(mpParentProjectTabWidget->mpParentMainWindow->mUseMulticore)
+    qDebug() << mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mUseMulticore;
+    if(mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mUseMulticore)
     {
         mpGUIRootSystem->simulate(mStartTime, mFinishTime, MULTICORE);
     }
