@@ -191,7 +191,7 @@ MainWindow::~MainWindow()
 void MainWindow::show()
 {
     QMainWindow::show();
-    mpProjectTabs->centerView();
+    mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
 }
 
 

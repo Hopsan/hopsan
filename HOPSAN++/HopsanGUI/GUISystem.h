@@ -60,9 +60,7 @@ public:
     GUIConnector *mpTempConnector;
     graphicsType mGfxType;
 
-    void updateStartTime();
-    void updateTimeStep();
-    void updateStopTime();
+
     double getStartTime();
     double getTimeStep();
     double getStopTime();
@@ -86,6 +84,12 @@ public slots:
     void undo();
     void redo();
     void clearUndo();
+    void updateStartTime();
+    void updateTimeStep();
+    void updateStopTime();
+    void disableUndo();
+    void updateUndoStatus();
+    void updateSimulationSetupWidget();
 
 signals:
     void deselectAllNameText();

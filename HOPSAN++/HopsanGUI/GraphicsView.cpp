@@ -428,9 +428,16 @@ void GraphicsView::zoomOut()
 }
 
 
+//! Tells the current tab to center the viewport
+void GraphicsView::centerView()
+{
+    this->centerOn(this->sceneRect().center());
+}
+
+
 //! Exports the graphics view to PDF
 //! @todo Check if it is possible to export to SVG instead. It appears as it is not possible with the current QT version, but I am not sure.
-void GraphicsView::exportPDF()
+void GraphicsView::exportToPDF()
 {
      QString fileName = QFileDialog::getSaveFileName(
         this, "Export File Name", QString(),

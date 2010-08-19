@@ -149,100 +149,17 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     mNumberOfUntitledTabs = 0;
 
     connect(this,SIGNAL(currentChanged(int)),SLOT(tabChanged()));
-
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(closeProjectTab(int)));
-    connect(this,SIGNAL(currentChanged(int)),this, SLOT(updateSimulationSetupWidget()));
-    connect(this,SIGNAL(currentChanged(int)),this, SLOT(updateUndoStatus()));
-    connect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), this, SLOT(updateCurrentStartTime()));
-    connect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), this, SLOT(updateCurrentTimeStep()));
 
-    connect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), this, SLOT(updateCurrentStopTime()));
-    connect(mpParentMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this,SLOT(hidePortsInCurrentTab(bool)));
     connect(mpParentMainWindow->newAction, SIGNAL(triggered()), this,SLOT(addNewProjectTab()));
     connect(mpParentMainWindow->openAction, SIGNAL(triggered()), this,SLOT(loadModel()));
     connect(mpParentMainWindow->saveAction, SIGNAL(triggered()), this,SLOT(saveProjectTab()));
-
-    connect(mpParentMainWindow->exportPDFAction, SIGNAL(triggered()), this,SLOT(exportCurrentToPDF()));
     connect(mpParentMainWindow->saveAsAction, SIGNAL(triggered()), this,SLOT(saveProjectTabAs()));
     connect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), this,SLOT(simulateCurrent()));
-    //connect(mpParentMainWindow->resetZoomAction, SIGNAL(triggered()),this,SLOT(resetZoom()));
-    //connect(mpParentMainWindow->zoomInAction, SIGNAL(triggered()),this,SLOT(zoomIn()));
-
-    //connect(mpParentMainWindow->zoomOutAction, SIGNAL(triggered()),this,SLOT(zoomOut()));
-    //connect(mpParentMainWindow->hideNamesAction,SIGNAL(triggered()),this, SLOT(hideNames()));
-    //connect(mpParentMainWindow->showNamesAction,SIGNAL(triggered()),this, SLOT(showNames()));
-    connect(mpParentMainWindow->centerViewAction,SIGNAL(triggered()),this,SLOT(centerView()));
-    connect(mpParentMainWindow->disableUndoAction,SIGNAL(triggered()),this, SLOT(disableUndo()));
 }
 
 
 //!  Tells current tab to export itself to PDF. This is needed because a direct connection to current tab would be too complicated.
-void ProjectTabWidget::exportCurrentToPDF()
-{
-    if(this->count() != 0)
-    {
-        this->getCurrentTab()->mpGraphicsView->exportPDF();
-    }
-}
-
-
-//! Slot that tells the current project tab to hide its ports.
-//! @param doIt is true if ports shall be hidden, otherwise false.
-void ProjectTabWidget::hidePortsInCurrentTab(bool hidePortsActionTriggered)
-{
-    if(this->count() != 0)
-    {
-        this->getCurrentTab()->mpSystem->hidePorts(hidePortsActionTriggered);
-    }
-}
-
-
-//! Slot that tells current project tab to update its start time value.
-//! @see updateCurrentTimeStep()
-//! @see updateCurrentStopTime()
-void ProjectTabWidget::updateCurrentStartTime()
-{
-    if(this->count() != 0)
-    {
-        this->getCurrentTab()->mpSystem->updateStartTime();
-    }
-}
-
-
-//! Slot that tells current project tab to update its time step value.
-//! @see updateCurrentStartTime()
-//! @see updateCurrentStopTime()
-void ProjectTabWidget::updateCurrentTimeStep()
-{
-    if(this->count() != 0)
-    {
-        this->getCurrentTab()->mpSystem->updateTimeStep();
-    }
-}
-
-
-//! Slot that tells current project tab to update its stop time value.
-//! @see updateCurrentStartTime()
-//! @see updateCurrentTimeStep()
-void ProjectTabWidget::updateCurrentStopTime()
-{
-    if(this->count() != 0)
-    {
-        this->getCurrentTab()->mpSystem->updateStopTime();
-    }
-}
-
-
-//! Slot that updates the values in the simulation setup widget to display new values when current project tab is changed.
-void ProjectTabWidget::updateSimulationSetupWidget()
-{
-    if(this->count() != 0)  //Don't do anything if there are no current tab
-    {
-        mpParentMainWindow->setStartTimeLabel(getCurrentSystem()->getStartTime());
-        mpParentMainWindow->setTimeStepLabel(getCurrentSystem()->getTimeStep());
-        mpParentMainWindow->setFinishTimeLabel(getCurrentSystem()->getStopTime());
-    }
-}
 
 
 //! Returns a pointer to the currently active project tab - be sure to check that the number of tabs is not zero before calling this
@@ -767,125 +684,6 @@ void ProjectTabWidget::setIsoGraphics(graphicsType gfxType)
     }
 }
 
-////! Tells the current tab to reset zoom to 100%.
-////! @see zoomIn()
-////! @see zoomOut()
-//void ProjectTabWidget::resetZoom()
-//{
-//    if(this->count() != 0)
-//    {
-//        this->getCurrentTab()->mpGraphicsView->resetZoom();
-//    }
-//}
-
-
-////! Tells the current tab to increase its zoom factor.
-////! @see resetZoom()
-////! @see zoomOut()
-//void ProjectTabWidget::zoomIn()
-//{
-//    if(this->count() != 0)
-//    {
-//        this->getCurrentTab()->mpGraphicsView->zoomIn();
-//    }
-//}
-
-
-////! Tells the current tab to decrease its zoom factor.
-////! @see resetZoom()
-////! @see zoomIn()
-//void ProjectTabWidget::zoomOut()
-//{
-//    if(this->count() != 0)
-//    {
-//        this->getCurrentTab()->mpGraphicsView->zoomOut();
-//    }
-//}
-
-
-////! Tells the current tab to hide all component names.
-////! @see showNames()
-//void ProjectTabWidget::hideNames()
-//{
-//    if(this->count() != 0)
-//    {
-//        this->getCurrentTab()->mpSystem->hideNames();
-//    }
-//}
-
-
-////! Tells the current tab to show all component names.
-////! @see hideNames()
-//void ProjectTabWidget::showNames()
-//{
-//    if(this->count() != 0)
-//    {
-//        this->getCurrentTab()->mpSystem->showNames();
-//    }
-//}
-
-
-//! Tells the current tab to center the viewport
-void ProjectTabWidget::centerView()
-{
-    if(this->count() != 0)
-    {
-        this->getCurrentTab()->mpGraphicsView->centerOn(getCurrentTab()->mpGraphicsView->sceneRect().center());
-    }
-}
-
-
-//! Disables the undo function for the current model
-void ProjectTabWidget::disableUndo()
-{
-    if(this->count() != 0)
-    {
-        if(!getCurrentTab()->mpSystem->mUndoDisabled)
-        {
-            QMessageBox disableUndoWarningBox(QMessageBox::Warning, tr("Warning"),tr("Disabling undo history will clear all undo history for this model. Do you want to continue?"), 0, this);
-            disableUndoWarningBox.addButton(tr("&Yes"), QMessageBox::AcceptRole);
-            disableUndoWarningBox.addButton(tr("&No"), QMessageBox::RejectRole);
-
-            if (disableUndoWarningBox.exec() == QMessageBox::AcceptRole)
-            {
-                getCurrentTab()->mpSystem->clearUndo();
-                getCurrentTab()->mpSystem->mUndoDisabled = true;
-                mpParentMainWindow->undoAction->setDisabled(true);
-                mpParentMainWindow->redoAction->setDisabled(true);
-            }
-            else
-            {
-                return;
-            }
-        }
-        else
-        {
-            getCurrentTab()->mpSystem->mUndoDisabled = false;
-            mpParentMainWindow->undoAction->setDisabled(false);
-            mpParentMainWindow->redoAction->setDisabled(false);
-        }
-    }
-}
-
-
-//! Enables or disables the undo buttons depending on whether or not undo is disabled in current tab
-void ProjectTabWidget::updateUndoStatus()
-{
-    if(this->count() != 0)
-    {
-        if(getCurrentTab()->mpSystem->mUndoDisabled)
-        {
-            mpParentMainWindow->undoAction->setDisabled(true);
-            mpParentMainWindow->redoAction->setDisabled(true);
-        }
-        else
-        {
-            mpParentMainWindow->undoAction->setDisabled(false);
-            mpParentMainWindow->redoAction->setDisabled(false);
-        }
-    }
-}
-
 
 void ProjectTabWidget::tabChanged()
 {
@@ -896,13 +694,27 @@ void ProjectTabWidget::tabChanged()
             disconnect(mpParentMainWindow->resetZoomAction, SIGNAL(triggered()),getTab(i)->mpGraphicsView,SLOT(resetZoom()));
             disconnect(mpParentMainWindow->zoomInAction, SIGNAL(triggered()),getTab(i)->mpGraphicsView,SLOT(zoomIn()));
             disconnect(mpParentMainWindow->zoomOutAction, SIGNAL(triggered()),getTab(i)->mpGraphicsView,SLOT(zoomOut()));
+            disconnect(mpParentMainWindow->exportPDFAction, SIGNAL(triggered()), getTab(i)->mpGraphicsView,SLOT(exportToPDF()));
+            disconnect(mpParentMainWindow->centerViewAction,SIGNAL(triggered()),getTab(i)->mpGraphicsView,SLOT(centerView()));
             disconnect(mpParentMainWindow->hideNamesAction, SIGNAL(triggered()),getSystem(i),SLOT(hideNames()));
             disconnect(mpParentMainWindow->showNamesAction, SIGNAL(triggered()),getSystem(i),SLOT(showNames()));
+            disconnect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), getSystem(i), SLOT(updateStartTime()));
+            disconnect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getSystem(i), SLOT(updateTimeStep()));
+            disconnect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getSystem(i), SLOT(updateStopTime()));
+            disconnect(mpParentMainWindow->disableUndoAction,SIGNAL(triggered()),getSystem(i), SLOT(disableUndo()));
         }
         connect(mpParentMainWindow->resetZoomAction, SIGNAL(triggered()),getCurrentTab()->mpGraphicsView,SLOT(resetZoom()));
         connect(mpParentMainWindow->zoomInAction, SIGNAL(triggered()),getCurrentTab()->mpGraphicsView,SLOT(zoomIn()));
         connect(mpParentMainWindow->zoomOutAction, SIGNAL(triggered()),getCurrentTab()->mpGraphicsView,SLOT(zoomOut()));
+        connect(mpParentMainWindow->exportPDFAction, SIGNAL(triggered()), getCurrentTab()->mpGraphicsView,SLOT(exportToPDF()));
+        connect(mpParentMainWindow->centerViewAction,SIGNAL(triggered()),getCurrentTab()->mpGraphicsView,SLOT(centerView()));
         connect(mpParentMainWindow->hideNamesAction, SIGNAL(triggered()),getCurrentSystem(),SLOT(hideNames()));
         connect(mpParentMainWindow->showNamesAction, SIGNAL(triggered()),getCurrentSystem(),SLOT(showNames()));
+        connect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), getCurrentSystem(), SLOT(updateStartTime()));
+        connect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getCurrentSystem(), SLOT(updateTimeStep()));
+        connect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getCurrentSystem(), SLOT(updateStopTime()));
+        connect(mpParentMainWindow->disableUndoAction,SIGNAL(triggered()),getCurrentSystem(), SLOT(disableUndo()));
+        getCurrentSystem()->updateUndoStatus();
+        getCurrentSystem()->updateSimulationSetupWidget();
     }
 }

@@ -1155,3 +1155,59 @@ void GUISystem::setIsoIconPath(QString path)
 {
     mIsoIconPath = path;
 }
+
+
+
+//! Disables the undo function for the current model
+void GUISystem::disableUndo()
+{
+    if(!mUndoDisabled)
+    {
+        QMessageBox disableUndoWarningBox(QMessageBox::Warning, tr("Warning"),tr("Disabling undo history will clear all undo history for this model. Do you want to continue?"), 0, 0);
+        disableUndoWarningBox.addButton(tr("&Yes"), QMessageBox::AcceptRole);
+        disableUndoWarningBox.addButton(tr("&No"), QMessageBox::RejectRole);
+
+        if (disableUndoWarningBox.exec() == QMessageBox::AcceptRole)
+        {
+            this->clearUndo();
+            mUndoDisabled = true;
+            mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->undoAction->setDisabled(true);
+            mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->redoAction->setDisabled(true);
+        }
+        else
+        {
+            return;
+        }
+    }
+    else
+    {
+        mUndoDisabled = false;
+        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->undoAction->setDisabled(false);
+        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->redoAction->setDisabled(false);
+    }
+}
+
+
+//! Enables or disables the undo buttons depending on whether or not undo is disabled in current tab
+void GUISystem::updateUndoStatus()
+{
+    if(mUndoDisabled)
+    {
+        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->undoAction->setDisabled(true);
+        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->redoAction->setDisabled(true);
+    }
+    else
+    {
+        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->undoAction->setDisabled(false);
+        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->redoAction->setDisabled(false);
+    }
+}
+
+
+//! Slot that updates the values in the simulation setup widget to display new values when current project tab is changed.
+void GUISystem::updateSimulationSetupWidget()
+{
+    mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->setStartTimeLabel(mStartTime);
+    mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->setTimeStepLabel(mTimeStep);
+    mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->setFinishTimeLabel(mStopTime);
+}

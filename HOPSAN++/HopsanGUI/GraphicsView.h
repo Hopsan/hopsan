@@ -55,7 +55,8 @@ public slots:
     void resetZoom();
     void zoomIn();
     void zoomOut();
-    void exportPDF();
+    void centerView();
+    void exportToPDF();
 
 protected:
     virtual void dragMoveEvent(QDragMoveEvent *event);
