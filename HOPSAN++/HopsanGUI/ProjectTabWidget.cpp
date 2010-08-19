@@ -148,20 +148,6 @@ void ProjectTab::simulate()
 {
 
     MessageWidget *pMessageWidget = mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget;
-//        //Check if simulation is possible
-//    if (this->count() == 0)
-//    {
-//        mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget->printGUIMessage(QString("There is no open system to simulate"));
-//        return;
-//    }
-
-    if(!mpSystem->mCoreSystemAccess.isSimulationOk())
-    {
-        pMessageWidget->printCoreMessages();
-        pMessageWidget->printGUIMessage(QString("Simulation failed"));
-        return;
-    }
-
 
     mpSystem->updateStartTime();
     mpSystem->updateStopTime();
@@ -171,10 +157,10 @@ void ProjectTab::simulate()
     double startTime = mpSystem->getStartTime();//mpParentProjectTabWidget->mpParentMainWindow->getStartTimeLabel();
     double finishTime = mpSystem->getStopTime();//mpParentProjectTabWidget->mpParentMainWindow->getFinishTimeLabel();
     double dt = finishTime - startTime;
-    size_t nSteps = dt/mpSystem->mCoreSystemAccess.getDesiredTimeStep();
+    size_t nSteps = dt/mpSystem->mpCoreSystemAccess->getDesiredTimeStep();
 
         //Ask core to initialize simulation
-    InitializationThread actualInitialization(&(mpSystem->mCoreSystemAccess), startTime, finishTime, this);
+    InitializationThread actualInitialization(mpSystem->mpCoreSystemAccess, startTime, finishTime, this);
     actualInitialization.start();
     actualInitialization.setPriority(QThread::HighestPriority);
     ProgressBarThread progressThread(this);
@@ -191,7 +177,7 @@ void ProjectTab::simulate()
         progressBar.setValue(i++);
         if (progressBar.wasCanceled())
         {
-            mpSystem->mCoreSystemAccess.stop();
+            mpSystem->mpCoreSystemAccess->stop();
         }
     }
     progressBar.setValue(i);
@@ -204,7 +190,7 @@ void ProjectTab::simulate()
     {
         QTime simTimer;
         simTimer.start();
-        SimulationThread actualSimulation(&(mpSystem->mCoreSystemAccess), startTime, finishTime, this);
+        SimulationThread actualSimulation(mpSystem->mpCoreSystemAccess, startTime, finishTime, this);
         actualSimulation.start();
         actualSimulation.setPriority(QThread::HighestPriority);
             //! @todo TimeCriticalPriority seem to work on dual core, is it a problem on single core machines only?
@@ -219,14 +205,14 @@ void ProjectTab::simulate()
            progressThread.start();
            progressThread.setPriority(QThread::LowestPriority);
            progressThread.wait();
-           progressBar.setValue((size_t)(mpSystem->mCoreSystemAccess.getCurrentTime()/dt * nSteps));
+           progressBar.setValue((size_t)(mpSystem->mpCoreSystemAccess->getCurrentTime()/dt * nSteps));
            if (progressBar.wasCanceled())
            {
-              mpSystem->mCoreSystemAccess.stop();
+              mpSystem->mpCoreSystemAccess->stop();
            }
         }
         progressThread.quit();
-        progressBar.setValue((size_t)(mpSystem->mCoreSystemAccess.getCurrentTime()/dt * nSteps));
+        progressBar.setValue((size_t)(mpSystem->mpCoreSystemAccess->getCurrentTime()/dt * nSteps));
 
         actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
         actualSimulation.quit();
@@ -236,9 +222,9 @@ void ProjectTab::simulate()
     }
 
     if (progressBar.wasCanceled())
-        pMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(mpSystem->mCoreSystemAccess.getRootSystemName()).append(tr("' was terminated!"))));
+        pMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(mpSystem->mpCoreSystemAccess->getRootSystemName()).append(tr("' was terminated!"))));
     else
-    pMessageWidget->printGUIMessage(QString(tr("Simulated '").append(mpSystem->mCoreSystemAccess.getRootSystemName()).append(tr("' successfully!"))));
+    pMessageWidget->printGUIMessage(QString(tr("Simulated '").append(mpSystem->mpCoreSystemAccess->getRootSystemName()).append(tr("' successfully!"))));
     emit checkMessages();
 }
 
