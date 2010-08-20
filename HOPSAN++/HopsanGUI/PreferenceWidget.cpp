@@ -130,6 +130,7 @@ void PreferenceWidget::updateValues()
     if( (disableUndoCheckBox->isChecked()) != (mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled) )
     {
         mpParentMainWindow->mpProjectTabs->getCurrentSystem()->disableUndo();
+        disableUndoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
     }
 
     mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setUserIconPath(userIconPath->text());

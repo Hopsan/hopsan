@@ -62,19 +62,21 @@ DESTDIR = ../bin/debug
 LIBS += -L../bin/debug \
     -lHopsanCore
 INCLUDEPATH += ../HopsanCore
-unix { 
+unix {
     LIBS += -Wl,-rpath,./
     LIBS += -lqwt-qt4
     INCLUDEPATH += /usr/include/qwt-qt4/
 }
-win32 { 
+win32 {
     # Ingopath:
     INCLUDEPATH += c:/temp_qwt/src
     LIBS += -Lc:/temp_qwt/lib
-    
-    # make install path ("c:\Qwt-5.2.1-svn\lib" need to be added in windows PATH env variable)
-    INCLUDEPATH += c:\Qwt-5.2.1-svn\include
-    LIBS += -Lc:\Qwt-5.2.1-svn\lib
-    LIBS += -lqwtd5
+
+    CONFIG(debug, debug|release) {
+        LIBS += -lqwt5d
+    }
+    CONFIG(release, debug|release) {
+        LIBS += -lqwt5
+    }
 }
 RESOURCES += 
