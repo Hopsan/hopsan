@@ -252,6 +252,7 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
 
     connect(this,SIGNAL(currentChanged(int)),SLOT(tabChanged()));
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(closeProjectTab(int)));
+    connect(this,SIGNAL(tabCloseRequested(int)),SLOT(tabChanged()));
 
     connect(mpParentMainWindow->newAction, SIGNAL(triggered()), this,SLOT(addNewProjectTab()));
     connect(mpParentMainWindow->openAction, SIGNAL(triggered()), this,SLOT(loadModel()));
@@ -378,6 +379,21 @@ void ProjectTabWidget::saveProjectTab(int index, saveTarget saveAsFlag)
 //! @see closeAllProjectTabs()
 bool ProjectTabWidget::closeProjectTab(int index)
 {
+    disconnect(mpParentMainWindow->resetZoomAction, SIGNAL(triggered()),getTab(index)->mpGraphicsView,SLOT(resetZoom()));
+    disconnect(mpParentMainWindow->zoomInAction, SIGNAL(triggered()),getTab(index)->mpGraphicsView,SLOT(zoomIn()));
+    disconnect(mpParentMainWindow->zoomOutAction, SIGNAL(triggered()),getTab(index)->mpGraphicsView,SLOT(zoomOut()));
+    disconnect(mpParentMainWindow->exportPDFAction, SIGNAL(triggered()), getTab(index)->mpGraphicsView,SLOT(exportToPDF()));
+    disconnect(mpParentMainWindow->centerViewAction,SIGNAL(triggered()),getTab(index)->mpGraphicsView,SLOT(centerView()));
+    disconnect(mpParentMainWindow->hideNamesAction, SIGNAL(triggered()),getSystem(index),SLOT(hideNames()));
+    disconnect(mpParentMainWindow->showNamesAction, SIGNAL(triggered()),getSystem(index),SLOT(showNames()));
+    disconnect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), getSystem(index), SLOT(updateStartTime()));
+    disconnect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getSystem(index), SLOT(updateTimeStep()));
+    disconnect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getSystem(index), SLOT(updateStopTime()));
+    disconnect(mpParentMainWindow->disableUndoAction,SIGNAL(triggered()),getSystem(index), SLOT(disableUndo()));
+    disconnect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), getTab(index), SLOT(simulate()));
+    disconnect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), getSystem(index),SLOT(updateStartTime()));
+    disconnect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getSystem(index),SLOT(updateStopTime()));
+    disconnect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getSystem(index),SLOT(updateTimeStep()));
     if (!(this->getCurrentTab()->isSaved()))
     {
         QString modelName;
@@ -664,26 +680,26 @@ void ProjectTabWidget::saveModel(saveTarget saveAsFlag)
 
 void ProjectTabWidget::tabChanged()
 {
+    for(size_t i=0; i<count(); ++i)
+    {
+        disconnect(mpParentMainWindow->resetZoomAction, SIGNAL(triggered()),getTab(i)->mpGraphicsView,SLOT(resetZoom()));
+        disconnect(mpParentMainWindow->zoomInAction, SIGNAL(triggered()),getTab(i)->mpGraphicsView,SLOT(zoomIn()));
+        disconnect(mpParentMainWindow->zoomOutAction, SIGNAL(triggered()),getTab(i)->mpGraphicsView,SLOT(zoomOut()));
+        disconnect(mpParentMainWindow->exportPDFAction, SIGNAL(triggered()), getTab(i)->mpGraphicsView,SLOT(exportToPDF()));
+        disconnect(mpParentMainWindow->centerViewAction,SIGNAL(triggered()),getTab(i)->mpGraphicsView,SLOT(centerView()));
+        disconnect(mpParentMainWindow->hideNamesAction, SIGNAL(triggered()),getSystem(i),SLOT(hideNames()));
+        disconnect(mpParentMainWindow->showNamesAction, SIGNAL(triggered()),getSystem(i),SLOT(showNames()));
+        disconnect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), getSystem(i), SLOT(updateStartTime()));
+        disconnect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getSystem(i), SLOT(updateTimeStep()));
+        disconnect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getSystem(i), SLOT(updateStopTime()));
+        disconnect(mpParentMainWindow->disableUndoAction,SIGNAL(triggered()),getSystem(i), SLOT(disableUndo()));
+        disconnect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), getTab(i), SLOT(simulate()));
+        disconnect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), getSystem(i),SLOT(updateStartTime()));
+        disconnect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getSystem(i),SLOT(updateStopTime()));
+        disconnect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getSystem(i),SLOT(updateTimeStep()));
+    }
     if(this->count() != 0)
     {
-        for(size_t i=0; i<count(); ++i)
-        {
-            disconnect(mpParentMainWindow->resetZoomAction, SIGNAL(triggered()),getTab(i)->mpGraphicsView,SLOT(resetZoom()));
-            disconnect(mpParentMainWindow->zoomInAction, SIGNAL(triggered()),getTab(i)->mpGraphicsView,SLOT(zoomIn()));
-            disconnect(mpParentMainWindow->zoomOutAction, SIGNAL(triggered()),getTab(i)->mpGraphicsView,SLOT(zoomOut()));
-            disconnect(mpParentMainWindow->exportPDFAction, SIGNAL(triggered()), getTab(i)->mpGraphicsView,SLOT(exportToPDF()));
-            disconnect(mpParentMainWindow->centerViewAction,SIGNAL(triggered()),getTab(i)->mpGraphicsView,SLOT(centerView()));
-            disconnect(mpParentMainWindow->hideNamesAction, SIGNAL(triggered()),getSystem(i),SLOT(hideNames()));
-            disconnect(mpParentMainWindow->showNamesAction, SIGNAL(triggered()),getSystem(i),SLOT(showNames()));
-            disconnect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), getSystem(i), SLOT(updateStartTime()));
-            disconnect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getSystem(i), SLOT(updateTimeStep()));
-            disconnect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getSystem(i), SLOT(updateStopTime()));
-            disconnect(mpParentMainWindow->disableUndoAction,SIGNAL(triggered()),getSystem(i), SLOT(disableUndo()));
-            disconnect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), getTab(i), SLOT(simulate()));
-            disconnect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), getSystem(i),SLOT(updateStartTime()));
-            disconnect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getSystem(i),SLOT(updateStopTime()));
-            disconnect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getSystem(i),SLOT(updateTimeStep()));
-        }
         connect(mpParentMainWindow->resetZoomAction, SIGNAL(triggered()),getCurrentTab()->mpGraphicsView,SLOT(resetZoom()));
         connect(mpParentMainWindow->zoomInAction, SIGNAL(triggered()),getCurrentTab()->mpGraphicsView,SLOT(zoomIn()));
         connect(mpParentMainWindow->zoomOutAction, SIGNAL(triggered()),getCurrentTab()->mpGraphicsView,SLOT(zoomOut()));

@@ -73,7 +73,7 @@ win32 {
     LIBS += -Lc:/temp_qwt/lib
 
     CONFIG(debug, debug|release) {
-        LIBS += -lqwt5d
+        LIBS += -lqwtd5
     }
     CONFIG(release, debug|release) {
         LIBS += -lqwt5
