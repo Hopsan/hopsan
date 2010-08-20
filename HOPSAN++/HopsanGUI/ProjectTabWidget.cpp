@@ -194,7 +194,7 @@ void ProjectTab::simulate()
         actualSimulation.start();
         actualSimulation.setPriority(QThread::HighestPriority);
             //! @todo TimeCriticalPriority seem to work on dual core, is it a problem on single core machines only?
-        //actualSimulation.setPriority(QThread::TimeCriticalPriority); //No bar appears in Windows with this prio
+        actualSimulation.setPriority(QThread::TimeCriticalPriority); //No bar appears in Windows with this prio
 
         progressBar.setLabelText(tr("Running simulation..."));
         progressBar.setCancelButtonText(tr("&Abort simulation"));
@@ -226,6 +226,151 @@ void ProjectTab::simulate()
     else
     pMessageWidget->printGUIMessage(QString(tr("Simulated '").append(mpSystem->mpCoreSystemAccess->getRootSystemName()).append(tr("' successfully!"))));
     emit checkMessages();
+}
+
+
+//! Slot that saves current project to old file name if it exists.
+//! @see saveProjectTab(int index)
+void ProjectTab::save()
+{
+    saveModel(EXISTINGFILE);
+}
+
+
+//! Slot that saves current project to a new model file.
+//! @see saveProjectTab(int index)
+void ProjectTab::saveAs()
+{
+    saveModel(NEWFILE);
+}
+
+
+//! Saves the model and the viewport settings in the tab to a model file.
+//! @param saveAsFlag tells whether or not an already existing file name shall be used
+//! @see saveProjectTab()
+//! @see loadModel()
+void ProjectTab::saveModel(saveTarget saveAsFlag)
+{
+        //Remove the asterix if tab goes from unsaved to saved
+    QString tabName = mpParentProjectTabWidget->tabText(mpParentProjectTabWidget->currentIndex());
+    if (this->isSaved())
+    {
+        return;
+    }
+    else
+    {
+        tabName.chop(1);
+        mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
+        std::cout << "ProjectTabWidget: " << qPrintable(QString("Project: ").append(tabName).append(QString(" saved"))) << std::endl;
+        this->setSaved(true);
+    }
+
+    MainWindow *pMainWindow = mpParentProjectTabWidget->mpParentMainWindow;
+
+    QString modelFileName;
+    if((mpSystem->mModelFilePath.isEmpty()) | (saveAsFlag == NEWFILE))
+    {
+        QDir fileDialogSaveDir;
+        modelFileName = QFileDialog::getSaveFileName(this, tr("Save Model File"),
+                                                             fileDialogSaveDir.currentPath() + QString("/../../Models"),
+                                                             tr("Hopsan Model Files (*.hmf)"));
+        mpSystem->mModelFilePath = modelFileName;
+    }
+    else
+    {
+        modelFileName = mpSystem->mModelFilePath;
+    }
+
+    QFile file(modelFileName);   //Create a QFile object
+    QFileInfo fileInfo(file);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+    {
+        qDebug() << "Failed to open file for writing: " + modelFileName;
+        return;
+    }
+
+    //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
+    mpSystem->mpCoreSystemAccess->setRootSystemName(fileInfo.baseName());
+    mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), fileInfo.fileName());
+
+    QTextStream modelFile(&file);  //Create a QTextStream object to stream the content of file
+
+    writeHeader(modelFile);
+
+    modelFile << "SIMULATIONTIME " << pMainWindow->getStartTimeLabel() << " " << pMainWindow->getTimeStepLabel() << " " <<  pMainWindow->getFinishTimeLabel() << "\n";
+    modelFile << "VIEWPORT " << (mpGraphicsView->horizontalScrollBar()->value() + mpGraphicsView->width()/2 - mpGraphicsView->pos().x()) / mpGraphicsView->mZoomFactor << " " <<
+                                (mpGraphicsView->verticalScrollBar()->value() + mpGraphicsView->height()/2 - mpGraphicsView->pos().x()) / mpGraphicsView->mZoomFactor << " " <<
+                                mpGraphicsView->mZoomFactor << "\n";
+    modelFile << "--------------------------------------------------------------\n";
+    modelFile << "USERICON " << addQuotes(mpSystem->getUserIconPath()) << "\n";
+    modelFile << "ISOICON " << addQuotes(mpSystem->getIsoIconPath()) << "\n";
+
+    //Calculate the position of the subsystem ports:
+    QMap<QString, GUIObject*>::iterator it;
+    QLineF line;
+    double angle, x, y;
+
+    double xMax = mpSystem->mGUIObjectMap.begin().value()->x() + mpSystem->mGUIObjectMap.begin().value()->rect().width()/2.0;
+    double xMin = mpSystem->mGUIObjectMap.begin().value()->x() + mpSystem->mGUIObjectMap.begin().value()->rect().width()/2.0;
+    double yMax = mpSystem->mGUIObjectMap.begin().value()->y() + mpSystem->mGUIObjectMap.begin().value()->rect().height()/2.0;
+    double yMin = mpSystem->mGUIObjectMap.begin().value()->y() + mpSystem->mGUIObjectMap.begin().value()->rect().height()/2.0;
+
+    for(it = mpSystem->mGUIObjectMap.begin(); it!=mpSystem->mGUIObjectMap.end(); ++it)
+    {
+        if (it.value()->x()+it.value()->rect().width()/2.0 < xMin)
+            xMin = it.value()->x()+it.value()->rect().width()/2.0;
+        if (it.value()->x()+it.value()->rect().width()/2.0 > xMax)
+            xMax = it.value()->x()+it.value()->rect().width()/2.0;
+        if (it.value()->y()+it.value()->rect().height()/2.0 < yMin)
+            yMin = it.value()->y()+it.value()->rect().height()/2.0;
+        if (it.value()->y()+it.value()->rect().height()/2.0 > yMax)
+            yMax = it.value()->y()+it.value()->rect().height()/2.0;
+    }
+
+    QPointF center = QPointF((xMax+xMin)/2, (yMax+yMin)/2);
+    double w = xMax-xMin;
+    double h = yMax-yMin;
+
+    for(it = mpSystem->mGUIObjectMap.begin(); it!=mpSystem->mGUIObjectMap.end(); ++it)
+    {
+        if(it.value()->getTypeName() == "SystemPort")
+        {
+            line = QLineF(center.x(), center.y(), it.value()->x()+it.value()->rect().width()/2, it.value()->y()+it.value()->rect().height()/2);
+            //getCurrentTab()->mpGraphicsScene->addLine(line); //debug-grej
+            angle = line.angle()*3.141592/180.0;
+            calcSubsystemPortPosition(w, h, angle, x, y);
+            x = (x/w+1)/2; //Change coordinate system
+            y = (-y/h+1)/2; //Change coordinate system
+            modelFile << "PORT " << addQuotes(it.value()->getName()) <<" " << x << " " << y << " " << angle << "\n";
+        }
+    }
+        modelFile << "--------------------------------------------------------------\n";
+
+    //QMap<QString, GUIObject*>::iterator it;
+    for(it = mpSystem->mGUIObjectMap.begin(); it!=mpSystem->mGUIObjectMap.end(); ++it)
+    {
+        if ( it.value()->getTypeName() == QString("Subsystem") )
+        {
+            it.value()->saveToTextStream(modelFile, "BEGINSUBSYSTEM");
+            modelFile << "ENDSUBSYSTEM" << "\n"; //!< @todo Do this in some better way, end subsystem is needed by core (but not gui as embedded systems are not suportet (yet))
+        }
+        else if (it.value()->getTypeName() == QString("SystemPort"))
+        {
+            it.value()->saveToTextStream(modelFile, "SYSTEMPORT");
+        }
+        else
+        {
+            it.value()->saveToTextStream(modelFile, "COMPONENT");
+        }
+    }
+
+    modelFile << "--------------------------------------------------------------\n";
+
+    for(int i = 0; i != mpSystem->mSubConnectorVector.size(); ++i)
+    {
+        mpSystem->mSubConnectorVector[i]->saveToTextStream(modelFile, "CONNECT");
+    }
+    modelFile << "--------------------------------------------------------------\n";
 }
 
 
@@ -322,57 +467,6 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
 }
 
 
-//! Saves current project.
-//! @see saveProjectTab(int index)
-void ProjectTabWidget::saveProjectTab()
-{
-    if(this->count() != 0)
-    {
-        saveProjectTab(currentIndex());
-    }
-}
-
-//! Saves current project to a new model file.
-//! @see saveProjectTab(int index)
-void ProjectTabWidget::saveProjectTabAs()
-{
-    if(this->count() != 0)
-    {
-        saveProjectTab(currentIndex(), NEWFILE);
-    }
-}
-
-
-//! Saves project at index.
-//! @param index defines which project to save.
-//! @see saveProjectTab()
-void ProjectTabWidget::saveProjectTab(int index, saveTarget saveAsFlag)
-{
-    //ProjectTab *currentTab = qobject_cast<ProjectTab *>(widget(index));
-    QString tabName = tabText(index);
-
-    if (this->getCurrentTab()->isSaved())
-    {
-        //Nothing to do
-        //statusBar->showMessage(QString("Project: ").append(tabName).append(QString(" is already saved")));
-    }
-    else
-    {
-        /*Add some "saving code" in the future:
-         *
-         *
-         *
-         */
-        tabName.chop(1);
-        setTabText(index, tabName);
-        //statusBar->showMessage(QString("Project: ").append(tabName).append(QString(" saved")));
-        std::cout << "ProjectTabWidget: " << qPrintable(QString("Project: ").append(tabName).append(QString(" saved"))) << std::endl;
-        this->getCurrentTab()->setSaved(true);
-    }
-    this->saveModel(saveAsFlag);
-}
-
-
 //! Closes current project.
 //! @param index defines which project to close.
 //! @return true if closing went ok. false if the user canceled the operation.
@@ -394,6 +488,9 @@ bool ProjectTabWidget::closeProjectTab(int index)
     disconnect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), getSystem(index),SLOT(updateStartTime()));
     disconnect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getSystem(index),SLOT(updateStopTime()));
     disconnect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getSystem(index),SLOT(updateTimeStep()));
+    disconnect(mpParentMainWindow->saveAction, SIGNAL(triggered()), getTab(index), SLOT(save()));
+    disconnect(mpParentMainWindow->saveAsAction, SIGNAL(triggered()), getTab(index), SLOT(saveAs()));
+
     if (!(this->getCurrentTab()->isSaved()))
     {
         QString modelName;
@@ -412,7 +509,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
         case QMessageBox::Save:
             // Save was clicked
             std::cout << "ProjectTabWidget: " << "Save and close" << std::endl;
-            saveProjectTab(index, EXISTINGFILE);
+            getTab(index)->save();
             removeTab(index);
             return true;
         case QMessageBox::Discard:
@@ -559,129 +656,11 @@ void ProjectTabWidget::loadModel()
 }
 
 
-//! Saves the model in the active project tab to a model file.
-//! @param saveAsFlag tells whether or not an already existing file name shall be used
-//! @see saveProjectTab()
-//! @see loadModel()
-void ProjectTabWidget::saveModel(saveTarget saveAsFlag)
-{
-    ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
-    GraphicsView *pCurrentView = pCurrentTab->mpGraphicsView;
-
-    QString modelFileName;
-    if((pCurrentTab->mpSystem->mModelFilePath.isEmpty()) | (saveAsFlag == NEWFILE))
-    {
-        QDir fileDialogSaveDir;
-        modelFileName = QFileDialog::getSaveFileName(this, tr("Save Model File"),
-                                                             fileDialogSaveDir.currentPath() + QString("/../../Models"),
-                                                             tr("Hopsan Model Files (*.hmf)"));
-        pCurrentTab->mpSystem->mModelFilePath = modelFileName;
-    }
-    else
-    {
-        modelFileName = pCurrentTab->mpSystem->mModelFilePath;
-    }
-
-    QFile file(modelFileName);   //Create a QFile object
-    QFileInfo fileInfo(file);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-    {
-        qDebug() << "Failed to open file for writing: " + modelFileName;
-        return;
-    }
-
-    //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
-    pCurrentTab->mpSystem->mpCoreSystemAccess->setRootSystemName(fileInfo.baseName());
-    this->setTabText(this->currentIndex(), fileInfo.fileName());
-
-    //QLineF line(QPointF(sceneCenterPointF.x(), sceneCenterPointF.y()), QPointF(groupPortPoint.x(), groupPortPoint.y()));
-
-    QTextStream modelFile(&file);  //Create a QTextStream object to stream the content of file
-
-    writeHeader(modelFile);
-
-    modelFile << "SIMULATIONTIME " << mpParentMainWindow->getStartTimeLabel() << " " << mpParentMainWindow->getTimeStepLabel() << " " <<  mpParentMainWindow->getFinishTimeLabel() << "\n";
-    modelFile << "VIEWPORT " << (getCurrentTab()->mpGraphicsView->horizontalScrollBar()->value() + getCurrentTab()->mpGraphicsView->width()/2 - getCurrentTab()->mpGraphicsView->pos().x()) / getCurrentTab()->mpGraphicsView->mZoomFactor << " " <<
-                                (getCurrentTab()->mpGraphicsView->verticalScrollBar()->value() + getCurrentTab()->mpGraphicsView->height()/2 - getCurrentTab()->mpGraphicsView->pos().x()) / getCurrentTab()->mpGraphicsView->mZoomFactor << " " <<
-                                getCurrentTab()->mpGraphicsView->mZoomFactor << "\n";
-    modelFile << "--------------------------------------------------------------\n";
-    modelFile << "USERICON " << addQuotes(getCurrentSystem()->getUserIconPath()) << "\n";
-    modelFile << "ISOICON " << addQuotes(getCurrentSystem()->getIsoIconPath()) << "\n";
-
-    //Calculate the position of the subsystem ports:
-    QMap<QString, GUIObject*>::iterator it;
-    QLineF line;
-    double angle, x, y;
-
-    double xMax = pCurrentTab->mpSystem->mGUIObjectMap.begin().value()->x()+pCurrentTab->mpSystem->mGUIObjectMap.begin().value()->rect().width()/2.0;
-    double xMin = pCurrentTab->mpSystem->mGUIObjectMap.begin().value()->x()+pCurrentTab->mpSystem->mGUIObjectMap.begin().value()->rect().width()/2.0;
-    double yMax = pCurrentTab->mpSystem->mGUIObjectMap.begin().value()->y()+pCurrentTab->mpSystem->mGUIObjectMap.begin().value()->rect().height()/2.0;
-    double yMin = pCurrentTab->mpSystem->mGUIObjectMap.begin().value()->y()+pCurrentTab->mpSystem->mGUIObjectMap.begin().value()->rect().height()/2.0;
-
-    for(it = pCurrentTab->mpSystem->mGUIObjectMap.begin(); it!=pCurrentTab->mpSystem->mGUIObjectMap.end(); ++it)
-    {
-        if (it.value()->x()+it.value()->rect().width()/2.0 < xMin)
-            xMin = it.value()->x()+it.value()->rect().width()/2.0;
-        if (it.value()->x()+it.value()->rect().width()/2.0 > xMax)
-            xMax = it.value()->x()+it.value()->rect().width()/2.0;
-        if (it.value()->y()+it.value()->rect().height()/2.0 < yMin)
-            yMin = it.value()->y()+it.value()->rect().height()/2.0;
-        if (it.value()->y()+it.value()->rect().height()/2.0 > yMax)
-            yMax = it.value()->y()+it.value()->rect().height()/2.0;
-    }
-
-    QPointF center = QPointF((xMax+xMin)/2, (yMax+yMin)/2);
-    double w = xMax-xMin;
-    double h = yMax-yMin;
-    //getCurrentTab()->mpGraphicsScene->addRect(xMin, yMin, w, h); //debug-grej
-
-    for(it = pCurrentTab->mpSystem->mGUIObjectMap.begin(); it!=pCurrentTab->mpSystem->mGUIObjectMap.end(); ++it)
-    {
-        if(it.value()->getTypeName() == "SystemPort")
-        {
-            line = QLineF(center.x(), center.y(), it.value()->x()+it.value()->rect().width()/2, it.value()->y()+it.value()->rect().height()/2);
-            //getCurrentTab()->mpGraphicsScene->addLine(line); //debug-grej
-            angle = line.angle()*3.141592/180.0;
-            calcSubsystemPortPosition(w, h, angle, x, y);
-            x = (x/w+1)/2; //Change coordinate system
-            y = (-y/h+1)/2; //Change coordinate system
-            modelFile << "PORT " << addQuotes(it.value()->getName()) <<" " << x << " " << y << " " << angle << "\n";
-        }
-    }
-        modelFile << "--------------------------------------------------------------\n";
-
-    //QMap<QString, GUIObject*>::iterator it;
-    for(it = pCurrentTab->mpSystem->mGUIObjectMap.begin(); it!=pCurrentTab->mpSystem->mGUIObjectMap.end(); ++it)
-    {
-        if ( it.value()->getTypeName() == QString("Subsystem") )
-        {
-            it.value()->saveToTextStream(modelFile, "BEGINSUBSYSTEM");
-            modelFile << "ENDSUBSYSTEM" << "\n"; //!< @todo Do this in some better way, end subsystem is needed by core (but not gui as embedded systems are not suportet (yet))
-        }
-        else if (it.value()->getTypeName() == QString("SystemPort"))
-        {
-            it.value()->saveToTextStream(modelFile, "SYSTEMPORT");
-        }
-        else
-        {
-            it.value()->saveToTextStream(modelFile, "COMPONENT");
-        }
-    }
-
-    modelFile << "--------------------------------------------------------------\n";
-
-    for(int i = 0; i != pCurrentTab->mpSystem->mSubConnectorVector.size(); ++i)
-    {
-        pCurrentTab->mpSystem->mSubConnectorVector[i]->saveToTextStream(modelFile, "CONNECT");
-    }
-    modelFile << "--------------------------------------------------------------\n";
-}
-
-
 void ProjectTabWidget::tabChanged()
 {
     for(size_t i=0; i<count(); ++i)
     {
+            //If you add a disconnect here, remember to also add it to the close tab function!
         disconnect(mpParentMainWindow->resetZoomAction, SIGNAL(triggered()),getTab(i)->mpGraphicsView,SLOT(resetZoom()));
         disconnect(mpParentMainWindow->zoomInAction, SIGNAL(triggered()),getTab(i)->mpGraphicsView,SLOT(zoomIn()));
         disconnect(mpParentMainWindow->zoomOutAction, SIGNAL(triggered()),getTab(i)->mpGraphicsView,SLOT(zoomOut()));
@@ -697,6 +676,8 @@ void ProjectTabWidget::tabChanged()
         disconnect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), getSystem(i),SLOT(updateStartTime()));
         disconnect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getSystem(i),SLOT(updateStopTime()));
         disconnect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getSystem(i),SLOT(updateTimeStep()));
+        disconnect(mpParentMainWindow->saveAction, SIGNAL(triggered()), getTab(i), SLOT(save()));
+        disconnect(mpParentMainWindow->saveAsAction, SIGNAL(triggered()), getTab(i), SLOT(saveAs()));
     }
     if(this->count() != 0)
     {
@@ -715,6 +696,8 @@ void ProjectTabWidget::tabChanged()
         connect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), getCurrentSystem(),SLOT(updateStartTime()));
         connect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getCurrentSystem(),SLOT(updateStopTime()));
         connect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getCurrentSystem(),SLOT(updateTimeStep()));
+        connect(mpParentMainWindow->saveAction, SIGNAL(triggered()), getCurrentTab(), SLOT(save()));
+        connect(mpParentMainWindow->saveAsAction, SIGNAL(triggered()), getCurrentTab(), SLOT(saveAs()));
         getCurrentSystem()->updateUndoStatus();
         getCurrentSystem()->updateSimulationSetupWidget();
     }

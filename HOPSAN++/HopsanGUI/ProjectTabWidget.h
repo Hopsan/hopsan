@@ -74,13 +74,9 @@ public:
 public slots:
     void addProjectTab(ProjectTab *projectTab, QString tabName="Untitled");
     void addNewProjectTab(QString tabName="Untitled");
-    void saveProjectTab();
-    void saveProjectTabAs();
-    void saveProjectTab(int index, saveTarget saveAsFlag = EXISTINGFILE);
     bool closeProjectTab(int index);
     bool closeAllProjectTabs();
     void loadModel();
-    void saveModel(saveTarget saveAsFlag = EXISTINGFILE);
     void tabChanged();
 
 
@@ -107,12 +103,15 @@ public:
 
 public slots:
     void simulate();
+    void save();
+    void saveAs();
 
 signals:
     void checkMessages();
 
 private:
     bool mIsSaved;
+    void saveModel(saveTarget saveAsFlag);
 };
 
 #endif // PROJECTTABWIDGET_H
