@@ -252,13 +252,9 @@ void ProjectTab::saveAs()
 void ProjectTab::saveModel(saveTarget saveAsFlag)
 {
         //Remove the asterix if tab goes from unsaved to saved
-    QString tabName = mpParentProjectTabWidget->tabText(mpParentProjectTabWidget->currentIndex());
-    if (this->isSaved())
+    if(!mIsSaved)
     {
-        return;
-    }
-    else
-    {
+        QString tabName = mpParentProjectTabWidget->tabText(mpParentProjectTabWidget->currentIndex());
         tabName.chop(1);
         mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
         std::cout << "ProjectTabWidget: " << qPrintable(QString("Project: ").append(tabName).append(QString(" saved"))) << std::endl;

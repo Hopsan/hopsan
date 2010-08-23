@@ -38,7 +38,7 @@ public:
 
 
 signals:
-    void deleteSelected();
+    void keyPressDelete();
     void keyPressCtrlR();
     void keyPressShiftK();
     void keyPressShiftL();

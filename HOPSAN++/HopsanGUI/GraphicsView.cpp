@@ -195,7 +195,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             mpSystem->mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
-        emit deleteSelected();
+        emit keyPressDelete();
     }
     else if (ctrlPressed and event->key() == Qt::Key_R and !mpSystem->mIsRenamingObject)
     {

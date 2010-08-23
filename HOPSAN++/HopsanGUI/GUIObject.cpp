@@ -427,11 +427,10 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
         //Store old positions for all components, in case more than one is selected
     if(event->button() == Qt::LeftButton)
     {
-        QMap<QString, GUIObject *>::iterator it;
-        for(it = mpParentSystem->mGUIObjectMap.begin(); it != mpParentSystem->mGUIObjectMap.end(); ++it)
+        QList<GUIObject *>::iterator it;
+        for(it = mpParentSystem->mSelectedGUIObjectsList.begin(); it != mpParentSystem->mSelectedGUIObjectsList.end(); ++it)
         {
-            it.value()->mOldPos = it.value()->pos();
-            qDebug() << it.key();
+            (*it)->mOldPos = (*it)->pos();
         }
     }
     QGraphicsWidget::mousePressEvent(event);
@@ -448,11 +447,11 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 //! Defines what shall happen if a mouse key is released while hovering an object.
 void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    QMap<QString, GUIObject *>::iterator it;
+    QList<GUIObject *>::iterator it;
     bool alreadyClearedRedo = false;
-    for(it = mpParentSystem->mGUIObjectMap.begin(); it != mpParentSystem->mGUIObjectMap.end(); ++it)
+    for(it = mpParentSystem->mSelectedGUIObjectsList.begin(); it != mpParentSystem->mSelectedGUIObjectsList.end(); ++it)
     {
-        if((it.value()->mOldPos != it.value()->pos()) and (event->button() == Qt::LeftButton))
+        if(((*it)->mOldPos != (*it)->pos()) and (event->button() == Qt::LeftButton))
         {
             if(!alreadyClearedRedo)
             {
@@ -460,7 +459,7 @@ void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
                 mpParentSystem->mpParentProjectTab->hasChanged();
                 alreadyClearedRedo = true;
             }
-            mpParentSystem->mUndoStack->registerMovedObject(it.value()->mOldPos, it.value()->pos(), it.value()->getName());
+            mpParentSystem->mUndoStack->registerMovedObject((*it)->mOldPos, (*it)->pos(), (*it)->getName());
         }
     }
 
@@ -484,8 +483,10 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
     {
         if (this->isSelected())
         {
+            mpParentSystem->mSelectedGUIObjectsList.append(this);
             mpSelectionBox->setActive();
-            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
+            connect(mpParentSystem, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
+            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
             connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
             connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
@@ -498,7 +499,9 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
         }
         else
         {
-            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
+            mpParentSystem->mSelectedGUIObjectsList.removeAll(this);
+            disconnect(mpParentSystem, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
+            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
             disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
             disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));

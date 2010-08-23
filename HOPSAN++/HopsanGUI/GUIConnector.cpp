@@ -719,6 +719,10 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
     {
         if(lineSelected)
         {
+            if(!mpParentSystem->mSelectedSubConnectorsList.contains(this))
+            {
+                mpParentSystem->mSelectedSubConnectorsList.append(this);
+            }
             connect(mpParentSystem, SIGNAL(deselectAllGUIConnectors()), this, SLOT(deselect()));
             this->setActive();
             for (int i=0; i != mpLines.size(); ++i)
@@ -740,9 +744,10 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
             if(noneSelected)
             {
                 this->setPassive();
+                mpParentSystem->mSelectedSubConnectorsList.removeOne(this);
                 disconnect(mpParentSystem, SIGNAL(deselectAllGUIConnectors()), this, SLOT(deselect()));
             }
-       }
+        }
     }
 }
 

@@ -48,7 +48,7 @@ COMPONENT "HydraulicPressureSource" "PressureSource" 2254 2607 90 0 0
 PARAMETER "PressureSource" "P" 2e+07
 COMPONENT "SignalSource" "Source" 2841 2450 180 0 0
 PARAMETER "Source" "Value" 0
-COMPONENT "SignalSquareWave" "SquareWave" 2223 2547 0 0 0
+COMPONENT "SignalSquareWave" "SquareWave" 2220 2545 0 0 0
 PARAMETER "SquareWave" "StartTime" 0
 PARAMETER "SquareWave" "Frequency" 0.5
 PARAMETER "SquareWave" "Amplitude" 1
@@ -83,7 +83,7 @@ CONNECT "LaminarOrifice" "P2" "PressureSource" "P1" 2299.5 2607 2285 2607 2285 2
 CONNECT "LaminarOrifice_1" "P2" "Tank" "P1" 2298.5 2652 2255 2652 2255 2662.5
 CONNECT "Gain" "out" "43Valve" "in" 2386.5 2547 2408 2547 2408 2547 2431.5 2547
 CONNECT "Subtract" "out" "Gain" "in" 2315.5 2547 2336 2547 2336 2547 2361.5 2547
-CONNECT "SquareWave" "out" "Subtract" "in1" 2243 2547 2267 2547 2267 2547 2290.5 2547
+CONNECT "SquareWave" "out" "Subtract" "in1" 2240 2545 2267 2545 2267 2547 2290.5 2547
 CONNECT "Subtract" "in2" "PositionSensor" "out" 2303 2534.5 2303 2299 2751 2299 2751 2358.5
 CONNECT "CylinderC" "P1" "43Valve" "PA" 2490.47 2470 2490.47 2491 2520.92 2491 2520.92 2512
 CONNECT "43Valve" "PB" "CylinderC" "P2" 2540.97 2512 2540.97 2491 2570.06 2491 2570.06 2470

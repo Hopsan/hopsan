@@ -38,12 +38,14 @@ public:
 
     typedef QMap<QString, GUIObject*> GUIObjectMapT;
     GUIObjectMapT mGUIObjectMap;
+    QList<GUIObject *> mSelectedGUIObjectsList;
     GUIObject* addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
     void deleteGUIObject(QString componentName, undoStatus undoSettings=UNDO);
     void renameGUIObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
     bool haveGUIObject(QString name);
     GUIObject *getGUIObject(QString name);
 
+    QList<GUIConnector *> mSelectedSubConnectorsList;
     QVector<GUIConnector *> mSubConnectorVector;
     GUIConnector* findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
     void removeConnector(GUIConnector* pConnector, undoStatus undoSettings=UNDO);

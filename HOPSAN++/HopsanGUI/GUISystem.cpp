@@ -579,14 +579,14 @@ void GUISystem::deleteGUIObject(QString objectName, undoStatus undoSettings)
 {
     qDebug() << "deleteGUIObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->mpCoreSystemAccess->getRootSystemName() ;
     GUIObjectMapT::iterator it = mGUIObjectMap.find(objectName);
-    //! @todo This is very very very stupid! We loop through all connectors in the model and removes them if the name of one of their parent components is the same as the component we delete?!
+    //! @todo This is very very very stupid! We loop through all selected connectors in the model and removes them if the name of one of their parent components is the same as the component we delete?!
     int i = 0;
     while(i != mSubConnectorVector.size())
     {
         if((mSubConnectorVector[i]->getStartPort()->getGuiObject()->getName() == objectName) or
            (mSubConnectorVector[i]->getEndPort()->getGuiObject()->getName() == objectName))
         {
-            this->removeConnector(mSubConnectorVector[i]);
+            this->removeConnector(mSubConnectorVector[i], undoSettings);
             i= 0;   //Restart iteration if map has changed
         }
         else
@@ -605,6 +605,7 @@ void GUISystem::deleteGUIObject(QString objectName, undoStatus undoSettings)
     {
         GUIObject* obj_ptr = it.value();
         mGUIObjectMap.erase(it);
+        mSelectedGUIObjectsList.removeOne(obj_ptr);
         mpScene->removeItem(obj_ptr);
         delete(obj_ptr);
         emit checkMessages();
@@ -784,9 +785,10 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
 
     if(doDelete)
     {
+        mSubConnectorVector.remove(indexToRemove);
+        mSelectedSubConnectorsList.removeOne(pConnector);
         mpScene->removeItem(pConnector);
         delete pConnector;
-        mSubConnectorVector.remove(indexToRemove);
     }
     mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
 }
@@ -884,13 +886,10 @@ void GUISystem::copySelected()
     QTextStream copyStream;
     copyStream.setString(mpCopyData);
 
-    QMap<QString, GUIObject *>::iterator it;
-    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
+    QList<GUIObject *>::iterator it;
+    for(it = mSelectedGUIObjectsList.begin(); it!=mSelectedGUIObjectsList.end(); ++it)
     {
-        if (it.value()->isSelected())
-        {
-            it.value()->saveToTextStream(copyStream, "COMPONENT");
-        }
+        (*it)->saveToTextStream(copyStream, "COMPONENT");
     }
 
     for(int i = 0; i != mSubConnectorVector.size(); ++i)
@@ -1086,19 +1085,19 @@ void GUISystem::clearUndo()
 }
 
 
-//! @todo Finish this!
-//! @todo Wouldn't it be easier to have an integer that counts how many objects are selected which is increased or decreased every time an object is selected or deselected? Then we wouldn't need this stupid loop...
+//! Returns true if at least one GUIObject is selected
 bool GUISystem::isObjectSelected()
 {
-    QMap<QString, GUIObject *>::iterator it;
-    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
-    {
-        if(it.value()->isSelected())
-        {
-            return true;
-        }
-    }
-    return false;
+//    QMap<QString, GUIObject *>::iterator it;
+//    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
+//    {
+//        if(it.value()->isSelected())
+//        {
+//            return true;
+//        }
+//    }
+//    return false;
+    return (mSelectedGUIObjectsList.size() > 0);
 }
 
 
@@ -1106,14 +1105,15 @@ bool GUISystem::isObjectSelected()
 //! @todo See comment above isObjectSelected()
 bool GUISystem::isConnectorSelected()
 {
-    for(int i = 0; i != mSubConnectorVector.size(); ++i)
-    {
-        if (mSubConnectorVector[i]->isActive())
-        {
-            return true;
-        }
-    }
-    return false;
+//    for(int i = 0; i != mSubConnectorVector.size(); ++i)
+//    {
+//        if (mSubConnectorVector[i]->isActive())
+//        {
+//            return true;
+//        }
+//    }
+//    return false;
+    return (mSelectedSubConnectorsList.size() > 0);
 }
 
 
