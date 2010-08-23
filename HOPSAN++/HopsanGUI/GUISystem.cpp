@@ -581,12 +581,12 @@ void GUISystem::deleteGUIObject(QString objectName, undoStatus undoSettings)
     GUIObjectMapT::iterator it = mGUIObjectMap.find(objectName);
     //! @todo This is very very very stupid! We loop through all selected connectors in the model and removes them if the name of one of their parent components is the same as the component we delete?!
     int i = 0;
-    while(i != mSubConnectorVector.size())
+    while(i != mSubConnectorList.size())
     {
-        if((mSubConnectorVector[i]->getStartPort()->getGuiObject()->getName() == objectName) or
-           (mSubConnectorVector[i]->getEndPort()->getGuiObject()->getName() == objectName))
+        if((mSubConnectorList[i]->getStartPort()->getGuiObject()->getName() == objectName) or
+           (mSubConnectorList[i]->getEndPort()->getGuiObject()->getName() == objectName))
         {
-            this->removeConnector(mSubConnectorVector[i], undoSettings);
+            this->removeConnector(mSubConnectorList[i], undoSettings);
             i= 0;   //Restart iteration if map has changed
         }
         else
@@ -695,24 +695,24 @@ GUIObject *GUISystem::getGUIObject(QString name)
 GUIConnector* GUISystem::findConnector(QString startComp, QString startPort, QString endComp, QString endPort)
 {
     GUIConnector *item;
-    for(int i = 0; i < mSubConnectorVector.size(); ++i)
+    for(int i = 0; i < mSubConnectorList.size(); ++i)
     {
         //! @todo Should add functions to connector to get start/end component/port names (used a few times around the code)
-        if((mSubConnectorVector[i]->getStartPort()->getGuiObject()->getName() == startComp) and
-           (mSubConnectorVector[i]->getStartPort()->getName() == startPort) and
-           (mSubConnectorVector[i]->getEndPort()->getGuiObject()->getName() == endComp) and
-           (mSubConnectorVector[i]->getEndPort()->getName() == endPort))
+        if((mSubConnectorList[i]->getStartPort()->getGuiObject()->getName() == startComp) and
+           (mSubConnectorList[i]->getStartPort()->getName() == startPort) and
+           (mSubConnectorList[i]->getEndPort()->getGuiObject()->getName() == endComp) and
+           (mSubConnectorList[i]->getEndPort()->getName() == endPort))
         {
-            item = mSubConnectorVector[i];
+            item = mSubConnectorList[i];
             break;
         }
         //Find even if the caller mixed up start and stop
-        else if((mSubConnectorVector[i]->getStartPort()->getGuiObject()->getName() == endComp) and
-                (mSubConnectorVector[i]->getStartPort()->getName() == endPort) and
-                (mSubConnectorVector[i]->getEndPort()->getGuiObject()->getName() == startComp) and
-                (mSubConnectorVector[i]->getEndPort()->getName() == startPort))
+        else if((mSubConnectorList[i]->getStartPort()->getGuiObject()->getName() == endComp) and
+                (mSubConnectorList[i]->getStartPort()->getName() == endPort) and
+                (mSubConnectorList[i]->getEndPort()->getGuiObject()->getName() == startComp) and
+                (mSubConnectorList[i]->getEndPort()->getName() == startPort))
         {
-            item = mSubConnectorVector[i];
+            item = mSubConnectorList[i];
             break;
         }
     }
@@ -729,16 +729,16 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
     bool startPortHasMoreConnections = false;
     bool endPortWasConnected = false;
     bool endPortHasMoreConnections = false;
-    int indexToRemove;
+    //int indexToRemove;
     int i;
 
     if(undoSettings == UNDO)
     {
         mUndoStack->registerDeletedConnector(pConnector);
     }
-    for(i = 0; i != mSubConnectorVector.size(); ++i)
+    for(i = 0; i != mSubConnectorList.size(); ++i)
     {
-        if(mSubConnectorVector[i] == pConnector)
+        if(mSubConnectorList[i] == pConnector)
         {
              //! @todo some error handling both ports must exist and be connected to each other
              if(pConnector->isConnected())
@@ -750,19 +750,19 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
                  endPortWasConnected = true;
              }
              doDelete = true;
-             indexToRemove = i;
+             //indexToRemove = i;
         }
-        else if( (pConnector->getStartPort() == mSubConnectorVector[i]->getStartPort()) or
-                 (pConnector->getStartPort() == mSubConnectorVector[i]->getEndPort()) )
+        else if( (pConnector->getStartPort() == mSubConnectorList[i]->getStartPort()) or
+                 (pConnector->getStartPort() == mSubConnectorList[i]->getEndPort()) )
         {
             startPortHasMoreConnections = true;
         }
-        else if( (pConnector->getEndPort() == mSubConnectorVector[i]->getStartPort()) or
-                 (pConnector->getEndPort() == mSubConnectorVector[i]->getEndPort()) )
+        else if( (pConnector->getEndPort() == mSubConnectorList[i]->getStartPort()) or
+                 (pConnector->getEndPort() == mSubConnectorList[i]->getEndPort()) )
         {
             endPortHasMoreConnections = true;
         }
-        if(mSubConnectorVector.empty())
+        if(mSubConnectorList.empty())
             break;
     }
 
@@ -785,7 +785,7 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
 
     if(doDelete)
     {
-        mSubConnectorVector.remove(indexToRemove);
+        mSubConnectorList.removeAll(pConnector);
         mSelectedSubConnectorsList.removeOne(pConnector);
         mpScene->removeItem(pConnector);
         delete pConnector;
@@ -848,7 +848,7 @@ void GUISystem::createConnector(GUIPort *pPort, undoStatus undoSettings)
             mpTempConnector->getStartPort()->hide();
             mpTempConnector->getEndPort()->hide();
 
-            mSubConnectorVector.append(mpTempConnector);
+            mSubConnectorList.append(mpTempConnector);
 
             mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
@@ -892,11 +892,11 @@ void GUISystem::copySelected()
         (*it)->saveToTextStream(copyStream, "COMPONENT");
     }
 
-    for(int i = 0; i != mSubConnectorVector.size(); ++i)
+    for(int i = 0; i != mSubConnectorList.size(); ++i)
     {
-        if(mSubConnectorVector[i]->getStartPort()->getGuiObject()->isSelected() and mSubConnectorVector[i]->getEndPort()->getGuiObject()->isSelected() and mSubConnectorVector[i]->isActive())
+        if(mSubConnectorList[i]->getStartPort()->getGuiObject()->isSelected() and mSubConnectorList[i]->getEndPort()->getGuiObject()->isSelected() and mSubConnectorList[i]->isActive())
         {
-            mSubConnectorVector[i]->saveToTextStream(copyStream, "CONNECT");
+            mSubConnectorList[i]->saveToTextStream(copyStream, "CONNECT");
         }
     }
 }
@@ -1010,9 +1010,9 @@ void GUISystem::selectAll()
 
         //Select all connectors
     QMap<QString, GUIConnector*>::iterator it2;
-    for(int i = 0; i != mSubConnectorVector.size(); ++i)
+    for(int i = 0; i != mSubConnectorList.size(); ++i)
     {
-        mSubConnectorVector[i]->doSelect(true, -1);
+        mSubConnectorList[i]->doSelect(true, -1);
     }
 }
 
@@ -1088,15 +1088,6 @@ void GUISystem::clearUndo()
 //! Returns true if at least one GUIObject is selected
 bool GUISystem::isObjectSelected()
 {
-//    QMap<QString, GUIObject *>::iterator it;
-//    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
-//    {
-//        if(it.value()->isSelected())
-//        {
-//            return true;
-//        }
-//    }
-//    return false;
     return (mSelectedGUIObjectsList.size() > 0);
 }
 
@@ -1105,14 +1096,6 @@ bool GUISystem::isObjectSelected()
 //! @todo See comment above isObjectSelected()
 bool GUISystem::isConnectorSelected()
 {
-//    for(int i = 0; i != mSubConnectorVector.size(); ++i)
-//    {
-//        if (mSubConnectorVector[i]->isActive())
-//        {
-//            return true;
-//        }
-//    }
-//    return false;
     return (mSelectedSubConnectorsList.size() > 0);
 }
 
@@ -1253,9 +1236,9 @@ void GUISystem::updateSimulationSetupWidget()
 void GUISystem::setGfxType(graphicsType gfxType)
 {
     this->mGfxType = gfxType;
-    for(int i = 0; i!=mSubConnectorVector.size(); ++i)
+    for(int i = 0; i!=mSubConnectorList.size(); ++i)
     {
-        mSubConnectorVector[i]->setIsoStyle(gfxType);
+        mSubConnectorList[i]->setIsoStyle(gfxType);
     }
 
     QMap<QString, GUIObject*>::iterator it2;

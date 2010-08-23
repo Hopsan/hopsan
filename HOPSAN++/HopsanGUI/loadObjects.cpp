@@ -275,7 +275,7 @@ void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, undoStatu
         QObject::connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
         QObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
 
-        pSystem->mSubConnectorVector.append(pTempConnector);
+        pSystem->mSubConnectorList.append(pTempConnector);
     }
     else
     {

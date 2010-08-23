@@ -46,7 +46,7 @@ public:
     GUIObject *getGUIObject(QString name);
 
     QList<GUIConnector *> mSelectedSubConnectorsList;
-    QVector<GUIConnector *> mSubConnectorVector;
+    QList<GUIConnector *> mSubConnectorList;
     GUIConnector* findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
     void removeConnector(GUIConnector* pConnector, undoStatus undoSettings=UNDO);
 

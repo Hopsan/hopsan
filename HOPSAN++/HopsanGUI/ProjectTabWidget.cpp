@@ -362,9 +362,9 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
 
     modelFile << "--------------------------------------------------------------\n";
 
-    for(int i = 0; i != mpSystem->mSubConnectorVector.size(); ++i)
+    for(int i = 0; i != mpSystem->mSubConnectorList.size(); ++i)
     {
-        mpSystem->mSubConnectorVector[i]->saveToTextStream(modelFile, "CONNECT");
+        mpSystem->mSubConnectorList[i]->saveToTextStream(modelFile, "CONNECT");
     }
     modelFile << "--------------------------------------------------------------\n";
 }
