@@ -263,31 +263,27 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
 
     MainWindow *pMainWindow = mpParentProjectTabWidget->mpParentMainWindow;
 
-    QString modelFileName;
-    if((mpSystem->mModelFilePath.isEmpty()) | (saveAsFlag == NEWFILE))
+
+    if((mpSystem->mModelFileInfo.filePath().isEmpty()) | (saveAsFlag == NEWFILE))
     {
         QDir fileDialogSaveDir;
-        modelFileName = QFileDialog::getSaveFileName(this, tr("Save Model File"),
+        QString modelFilePath;
+        modelFilePath = QFileDialog::getSaveFileName(this, tr("Save Model File"),
                                                              fileDialogSaveDir.currentPath() + QString("/../../Models"),
                                                              tr("Hopsan Model Files (*.hmf)"));
-        mpSystem->mModelFilePath = modelFileName;
-    }
-    else
-    {
-        modelFileName = mpSystem->mModelFilePath;
+        mpSystem->mModelFileInfo.setFile(modelFilePath);
     }
 
-    QFile file(modelFileName);   //Create a QFile object
-    QFileInfo fileInfo(file);
+    QFile file(mpSystem->mModelFileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        qDebug() << "Failed to open file for writing: " + modelFileName;
+        qDebug() << "Failed to open file for writing: " + mpSystem->mModelFileInfo.filePath();
         return;
     }
 
     //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
-    mpSystem->mpCoreSystemAccess->setRootSystemName(fileInfo.baseName());
-    mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), fileInfo.fileName());
+    mpSystem->mpCoreSystemAccess->setRootSystemName(mpSystem->mModelFileInfo.baseName());
+    mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), mpSystem->mModelFileInfo.fileName());
 
     QTextStream modelFile(&file);  //Create a QTextStream object to stream the content of file
 

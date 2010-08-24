@@ -47,6 +47,7 @@
 
 #include <cmath>
 #include <QPoint>
+#include <QDir>
 
 #include "GUIUtilities.h"
 #include "GUIPort.h"
@@ -101,6 +102,16 @@ QString addQuotes(QString str)
     str.prepend("\"");
     str.append("\"");
     return str;
+}
+
+//! @brief This function returns the relative absolute path
+//! @param [in] pathtochange The absolute path theat you want to change
+//! @param [in] basedirpath The absolute directory path of the base directory
+//! @returns The realtive pathtochange, relative to basepath
+QString relativePath(QString pathtochange, QString basedirpath)
+{
+    QDir basedir(basedirpath);
+    return basedir.relativeFilePath(pathtochange);
 }
 
 

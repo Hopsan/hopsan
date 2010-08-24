@@ -6,27 +6,27 @@ HMFVERSION 0.1
 CAFVERSION 0.1
 --------------------------------------------------------------
 SIMULATIONTIME 0 0.01 2
-VIEWPORT 2502 2502 1
+VIEWPORT 2506 2506 1
 --------------------------------------------------------------
 USERICON ""
 ISOICON ""
 --------------------------------------------------------------
-COMPONENT "SignalSource" "Constant" 2261 2390 0 0 1
-PARAMETER "Constant" "Value" 1
-COMPONENT "SignalSource" "Constant_1" 2245 2559 0 0 1
-PARAMETER "Constant_1" "Value" 1
-COMPONENT "SignalGain" "Gain" 2584 2574 0 0 1
-PARAMETER "Gain" "Gain" 1
 COMPONENT "SignalGain" "Gain_1" 2351 2620 0 0 1
 PARAMETER "Gain_1" "Gain" 1
+COMPONENT "SignalSink" "Sink" 2651 2530 0 0 1
 COMPONENT "HydraulicLaminarOrifice" "Laminar Orifice" 2615 2434 90 0 1
 PARAMETER "Laminar Orifice" "Kc" 1e-11
+COMPONENT "SignalSource" "Constant" 2261 2390 0 0 1
+PARAMETER "Constant" "Value" 1
 COMPONENT "HydraulicPressureSensor" "Pressure Sensor" 2545 2330 0 0 1
-COMPONENT "SignalSink" "Sink" 2651 2530 0 0 1
+BEGINSUBSYSTEM "EXTERNAL" "subsystest_sub" "C" "subsystest_sub.hmf" 2447 2469 0 0 1
+ENDSUBSYSTEM
 COMPONENT "HydraulicTankC" "Tank C" 2731 2471 0 0 1
 PARAMETER "Tank C" "P" 100000
-BEGINSUBSYSTEM "EXTERNAL" "subsystest_sub" "C" "/home/petno25/svn/temp_hopsan/HOPSAN++/Models/subsystest_sub.hmf" 2447 2469 0 0 1
-ENDSUBSYSTEM
+COMPONENT "SignalGain" "Gain" 2584 2574 0 0 1
+PARAMETER "Gain" "Gain" 1
+COMPONENT "SignalSource" "Constant_1" 2245 2559 0 0 1
+PARAMETER "Constant_1" "Value" 1
 --------------------------------------------------------------
 CONNECT "subsystest_sub" "sysp_3" "Gain" "in" 2493 2497.5 2493 2584 2546 2584 2546 2574 2571.5 2574
 CONNECT "Gain" "out" "Sink" "in" 2596.5 2574 2616 2574 2616 2530 2638.5 2530

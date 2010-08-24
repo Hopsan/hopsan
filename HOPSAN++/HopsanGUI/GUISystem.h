@@ -6,6 +6,7 @@
 #include <QString>
 #include <QTextStream>
 #include <QPoint>
+#include <QFileInfo>
 
 #include "common.h"
 #include "GUIObject.h"
@@ -28,7 +29,7 @@ public:
     ~GUISystem();
 
 
-    void loadFromHMF(QString modelFileName=QString());
+    void loadFromHMF(QString modelFilePath=QString());
 
     GraphicsScene *mpScene;
     ProjectTab *mpParentProjectTab;
@@ -144,7 +145,7 @@ protected:
     void createPorts();
 
 public:
-        QString mModelFilePath; //!< @todo should not be public
+        QFileInfo mModelFileInfo; //!< @todo should not be public
 
 private:
 

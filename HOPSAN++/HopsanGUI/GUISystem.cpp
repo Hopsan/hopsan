@@ -65,8 +65,7 @@ void GUISystem::commonConstructorCode()
 
         //Set default values
     mLoadType = "Empty";
-    mModelFilePath.clear();
-    //mModelFileName.clear();
+    //mModelFileInfo.setFile();
     mStartTime = 0;     //! @todo These default values should be options for the user
     mTimeStep = 0.001;
     mStopTime = 10;
@@ -152,23 +151,22 @@ QVector<QString> GUISystem::getParameterNames()
 
 //void GUISystem::refreshAppearance();
 
-void GUISystem::loadFromHMF(QString modelFileName)
+void GUISystem::loadFromHMF(QString modelFilePath)
 {
     //! @todo maybe break out the load file function it is used in many places (with some diffeerenses every time), should be enough to return file and filinfo obejct maybe
     QFile file;
-    QFileInfo fileInfo;
-    if (modelFileName.isEmpty())
+    if (modelFilePath.isEmpty())
     {
+        QFileInfo fileInfo;
         QDir fileDialog;
-        modelFileName = QFileDialog::getOpenFileName(mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
+        modelFilePath = QFileDialog::getOpenFileName(mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
                                                              fileDialog.currentPath() + QString("/../../Models"),
                                                              tr("Hopsan Model Files (*.hmf)"));
-        if (modelFileName.isEmpty())
+        if (modelFilePath.isEmpty())
             return;
 
-        file.setFileName(modelFileName);
+        file.setFileName(modelFilePath);
         fileInfo.setFile(file);
-
         for(int t=0; t!=mpParentProjectTab->mpParentProjectTabWidget->count(); ++t)
         {
             if( (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == fileInfo.fileName()) or (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == (fileInfo.fileName() + "*")) )
@@ -181,21 +179,31 @@ void GUISystem::loadFromHMF(QString modelFileName)
     }
     else
     {
-         file.setFileName(modelFileName);
-         fileInfo.setFile(file);
+        //Open the file with a path relative to the parent system, in case of rootsystem assume that the given path is absolute and correct
+        if (mpParentSystem != 0)
+        {
+            //! @todo assumes that the supplied path is rellative, need to make sure that this does not crash if that is not the case
+            //! @todo what if the parent system does not have a path (embeded systems)
+            file.setFileName(this->mpParentSystem->mModelFileInfo.absolutePath() + "/" + modelFilePath);
+        }
+        else
+        {
+            file.setFileName(modelFilePath);
+        }
     }
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
     {
-        qDebug() << "Failed to open file or not a text file: " + modelFileName;
+        qDebug() << "Failed to open file or not a text file: " + file.fileName();
         return;
     }
+    mModelFileInfo.setFile(file);
+
     QTextStream textStreamFile(&file); //Converts to QTextStream
-    mModelFilePath = modelFileName;
     mUndoStack->newPost();
 
     //Set the name
-    this->setName(fileInfo.baseName());
+    this->setName(mModelFileInfo.baseName());
 
     //Now read the file data
     //Read the header data, also checks version numbers
@@ -430,7 +438,7 @@ void GUISystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         showNameAction->setChecked(mpNameText->isVisible());
 
         QAction *loadAction = menu.addAction(tr("Load Subsystem File"));
-        if(!mModelFilePath.isEmpty()) loadAction->setDisabled(true);
+        if(!mModelFileInfo.filePath().isEmpty()) loadAction->setDisabled(true);
 
         QAction *selectedAction = menu.exec(event->screenPos());
 
@@ -506,7 +514,7 @@ void GUISystem::saveToTextStream(QTextStream &rStream, QString prepend)
         rStream << prepend << " ";
     }
 
-    if (!mModelFilePath.isEmpty())
+    if (!mModelFileInfo.filePath().isEmpty())
     {
         mLoadType = "EXTERNAL";
     }
@@ -515,13 +523,14 @@ void GUISystem::saveToTextStream(QTextStream &rStream, QString prepend)
         mLoadType = "EMBEDED";
     }
 
-    rStream << addQuotes(mLoadType) << " " << addQuotes(getName()) << " " << addQuotes(getTypeCQS()) << " " << addQuotes(mModelFilePath) << " "
+    rStream << addQuotes(mLoadType) << " " << addQuotes(getName()) << " " << addQuotes(getTypeCQS()) << " "
+            << addQuotes(relativePath(mModelFileInfo.absoluteFilePath(), mpParentSystem->mModelFileInfo.absolutePath())) << " "
             << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << " " << mpNameText->isVisible() << "\n";
 }
 
 void GUISystem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(mModelFilePath.isEmpty())
+    if(mModelFileInfo.filePath().isEmpty())
     {
         loadFromHMF();
     }

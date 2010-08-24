@@ -51,6 +51,7 @@
 
 #include <QPointF>
 #include <QString>
+#include <QFileInfo>
 #include <QTextStream>
 
 
@@ -59,6 +60,7 @@ class GUIPort;
 QString readName(QTextStream &rTextStream);
 QString readName(QString namestring);
 QString addQuotes(QString str);
+QString relativePath(QString pathtochange, QString basepath);
 void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y);
 QPointF getOffsetPointfromPort(GUIPort *pPort);
 
