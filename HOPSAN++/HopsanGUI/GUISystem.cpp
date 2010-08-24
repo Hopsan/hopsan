@@ -1001,19 +1001,21 @@ void GUISystem::paste()
 //! Selects all objects and connectors.
 void GUISystem::selectAll()
 {
-        //Select all components
-    QMap<QString, GUIObject *>::iterator it;
-    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
-    {
-        it.value()->setSelected(true);
-    }
+//        //Select all components
+//    QMap<QString, GUIObject *>::iterator it;
+//    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
+//    {
+//        it.value()->setSelected(true);
+//    }
+    emit selectAllGUIObjects();
+    emit selectAllGUIConnectors();
 
-        //Select all connectors
-    QMap<QString, GUIConnector*>::iterator it2;
-    for(int i = 0; i != mSubConnectorList.size(); ++i)
-    {
-        mSubConnectorList[i]->doSelect(true, -1);
-    }
+//        //Select all connectors
+//    QMap<QString, GUIConnector*>::iterator it2;
+//    for(int i = 0; i != mSubConnectorList.size(); ++i)
+//    {
+//        mSubConnectorList[i]->doSelect(true, -1);
+//    }
 }
 
 

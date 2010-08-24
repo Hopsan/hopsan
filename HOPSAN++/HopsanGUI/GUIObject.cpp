@@ -104,6 +104,7 @@ GUIObject::GUIObject(QPoint position, qreal rotation, AppearanceData appearanceD
     if(mpParentSystem != 0)
     {
         connect(mpParentSystem->mpParentProjectTab->mpGraphicsView,SIGNAL(zoomChange()),this,SLOT(adjustTextPositionToZoom()));
+        connect(mpParentSystem, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
     }
 }
 
@@ -345,9 +346,17 @@ void GUIObject::setIcon(graphicsType gfxType)
 }
 
 
+//! Slots that deselects the object. Used for signal-slot connection.
 void GUIObject::deselect()
 {
     this->setSelected(false);
+}
+
+
+//! Slots that selects the object. Used for signal-slot connection.
+void GUIObject::select()
+{
+    this->setSelected(true);
 }
 
 
@@ -494,6 +503,7 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
             connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
             connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
             connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
+            disconnect(mpParentSystem, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
             connect(mpParentSystem, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
             emit componentSelected();
         }
@@ -509,6 +519,7 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
             disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
             disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
             disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
+            connect(mpParentSystem, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
             disconnect(mpParentSystem, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
             mpSelectionBox->setPassive();
         }

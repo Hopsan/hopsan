@@ -106,6 +106,7 @@ public slots:
     void deleteMeWithNoUndo();
     void adjustToZoom();
     void deselect();
+    void select();
 
 signals:
     void endPortConnected();

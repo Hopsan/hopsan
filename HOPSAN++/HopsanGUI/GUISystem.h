@@ -99,6 +99,8 @@ signals:
     void deselectAllNameText();
     void deselectAllGUIObjects();
     void deselectAllGUIConnectors();
+    void selectAllGUIObjects();
+    void selectAllGUIConnectors();
     void checkMessages();
     void deleteSelected();
 

@@ -136,6 +136,7 @@ public slots:
      void showName();
      void setIcon(graphicsType);
      void deselect();
+     void select();
 
 
 protected:

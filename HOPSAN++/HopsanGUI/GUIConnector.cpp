@@ -65,6 +65,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUISystem *parentSystem, QGraphic
 
     setFlags(QGraphicsItem::ItemIsFocusable);
     connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange()), this, SLOT(adjustToZoom()));
+    connect(mpParentSystem, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
 
     QPointF startPos = startPort->mapToScene(startPort->boundingRect().center());
     this->setPos(startPos);
@@ -156,6 +157,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     mpEndPort->getGuiObject()->rememberConnector(this);
 
     connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange()), this, SLOT(adjustToZoom()));
+    connect(mpParentSystem, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
 }
 
 
@@ -715,7 +717,7 @@ void GUIConnector::makeDiagonal(bool enable)
 //! @see setPassive()
 void GUIConnector::doSelect(bool lineSelected, int lineNumber)
 {
-    if(mEndPortConnected)     //Non-finished lines shall not be selectable
+    if(mEndPortConnected)     //Non-finished connectors shall not be selectable
     {
         if(lineSelected)
         {
@@ -724,11 +726,14 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
                 mpParentSystem->mSelectedSubConnectorsList.append(this);
             }
             connect(mpParentSystem, SIGNAL(deselectAllGUIConnectors()), this, SLOT(deselect()));
+            disconnect(mpParentSystem, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
             this->setActive();
             for (int i=0; i != mpLines.size(); ++i)
             {
-               if(i != lineNumber)     //I think this means that only one line in a connector can be selected at one time
+               if(i != lineNumber)     //This makes sure that only one line in a connector can be "selected" at one time
+               {
                    mpLines[i]->setSelected(false);
+               }
             }
         }
         else
@@ -746,6 +751,7 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
                 this->setPassive();
                 mpParentSystem->mSelectedSubConnectorsList.removeOne(this);
                 disconnect(mpParentSystem, SIGNAL(deselectAllGUIConnectors()), this, SLOT(deselect()));
+                connect(mpParentSystem, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
             }
         }
     }
@@ -889,9 +895,17 @@ void GUIConnector::determineAppearance()
 //}
 
 
+//! Slot that deselects the connector. Used for signal-slot-connections.
 void GUIConnector::deselect()
 {
     this->setPassive();
+}
+
+
+//! Slot that selects the connector. Used for signal-slot-connections.
+void GUIConnector::select()
+{
+    this->doSelect(true, -1);
 }
 
 
