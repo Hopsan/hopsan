@@ -117,6 +117,7 @@ void GUISystem::setName(QString newName)
 {
     if (mpParentSystem == 0)
     {
+        //! @todo This means that the display name will appearn in the graphics view, since it belongs to the systems scene for some reason...
         setDisplayName(mpCoreSystemAccess->setRootSystemName(newName));
     }
     else
@@ -721,7 +722,6 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
     bool startPortHasMoreConnections = false;
     bool endPortWasConnected = false;
     bool endPortHasMoreConnections = false;
-    //int indexToRemove;
     int i;
 
     qDebug() << "Svampar i min diskho";
@@ -730,10 +730,9 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
     {
         mUndoStack->registerDeletedConnector(pConnector);
     }
-    qDebug() << "Flugsvamp i fulvin";
+
     for(i = 0; i < mSubConnectorList.size(); ++i)
     {
-        qDebug() << "i = " << i << ", mSubConnectorList.size() = " << mSubConnectorList.size();
         if(mSubConnectorList[i] == pConnector)
         {
              //! @todo some error handling both ports must exist and be connected to each other
@@ -746,7 +745,6 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
                  endPortWasConnected = true;
              }
              doDelete = true;
-             //indexToRemove = i;
         }
         else if( (pConnector->getStartPort() == mSubConnectorList[i]->getStartPort()) or
                  (pConnector->getStartPort() == mSubConnectorList[i]->getEndPort()) )
@@ -763,8 +761,6 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
             break;
         }
     }
-
-    qDebug() << "En natt i mekoteket";
 
     if(endPortWasConnected and !endPortHasMoreConnections)
     {
