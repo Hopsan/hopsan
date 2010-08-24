@@ -64,7 +64,9 @@ using namespace std;
 GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent, CoreSystemAccess *pGUIRootSystem)
     : QGraphicsSvgItem(pPortAppearance->iconPath, pParent)
 {
-    if (pParent->type() == GUISYSTEM)
+    qDebug() << "parentType: " << pParent->type() << " GUISYSTEM=" << GUISYSTEM;
+    qDebug() << "======================= parentName: " << pParent->getName();
+    if ( pParent->type() == GUISYSTEM )
     {
         mpParentSystem = qobject_cast<GUISystem*>(pParent);
     }
@@ -112,7 +114,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPort
     mIsMag = false;
     isConnected = false;
 
-    MainWindow *pMainWindow = mpParentGuiObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+    MainWindow *pMainWindow = mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
     connect(this,SIGNAL(portClicked(GUIPort*)),this->getParentSystem(),SLOT(createConnector(GUIPort*)));
     connect(pMainWindow->hidePortsAction,SIGNAL(triggered(bool)),this, SLOT(hideIfNotConnected(bool)));
     //connect(pMainWindow->showPortsAction,SIGNAL(triggered()),this, SLOT(showIfNotConnected()));

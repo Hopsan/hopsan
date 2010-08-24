@@ -134,7 +134,7 @@ public:
 
     QVector<QString> getParameterNames();
 
-    enum { TYPE = GUISYSTEM };
+    enum { Type = GUISYSTEM };
     int type() const;
 
 protected:

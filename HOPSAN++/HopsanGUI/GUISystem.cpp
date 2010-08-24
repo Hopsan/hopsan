@@ -491,6 +491,7 @@ void GUISystem::createPorts()
         qreal x = it.value().x;
         qreal y = it.value().y;
 
+        qDebug() << "this-type(): " << this->type();
         GUIPort *pNewPort = new GUIPort(it.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(it.value()), this);
         mPortListPtrs.append(pNewPort);
     }
