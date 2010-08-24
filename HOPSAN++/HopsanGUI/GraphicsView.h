@@ -4,7 +4,7 @@
 #include <QtGui>
 #include <QGraphicsView>
 #include <QObject>
-#include <QMap>
+#include <QHash>
 #include <QVector>
 
 #include "common.h"
@@ -69,7 +69,7 @@ protected:
     virtual void contextMenuEvent ( QContextMenuEvent * event );
 
 private:
-    //! @todo QMap no good means problem if we rename need to loop around the rename like in coore
+    //! @todo QHash no good means problem if we rename need to loop around the rename like in coore
     void createActions();
     void createMenus();
 };

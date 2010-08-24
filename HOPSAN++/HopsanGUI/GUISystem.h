@@ -36,7 +36,7 @@ public:
 
     //QString mModelFileName;
 
-    typedef QMap<QString, GUIObject*> GUIObjectMapT;
+    typedef QHash<QString, GUIObject*> GUIObjectMapT;
     GUIObjectMapT mGUIObjectMap;
     QList<GUIObject *> mSelectedGUIObjectsList;
     GUIObject* addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);

@@ -394,7 +394,7 @@ void VariableList::updateList()
     this->clear();
     mpCurrentSystem = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem;
     QVector<double> y;
-    QMap<QString, GUIObject *>::iterator it;
+    QHash<QString, GUIObject *>::iterator it;
     QListWidgetItem *tempListWidget;
     bool colorize = false;
     for(it = mpCurrentSystem->mGUIObjectMap.begin(); it!=mpCurrentSystem->mGUIObjectMap.end(); ++it)

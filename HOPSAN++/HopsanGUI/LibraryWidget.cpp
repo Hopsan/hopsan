@@ -409,7 +409,7 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
 {
    hideAllLib();
 
-   QMap<QString, LibraryContent*>::iterator lib;
+   QHash<QString, LibraryContent*>::iterator lib;
    for (lib = mLibraryContentPtrsMap.begin(); lib != mLibraryContentPtrsMap.end(); ++lib)
    {
         //Not top level list widget, so check if it has the correct parent
@@ -456,7 +456,7 @@ AppearanceData *LibraryWidget::getAppearanceDataByDisplayName(QString displayNam
 //! @see showLib(QTreeWidgetItem *item, int column)
 void LibraryWidget::hideAllLib()
 {
-    QMap<QString, LibraryContent*>::iterator lib;
+    QHash<QString, LibraryContent*>::iterator lib;
     for (lib = mLibraryContentPtrsMap.begin(); lib != mLibraryContentPtrsMap.end(); ++lib)
     {
         (*lib)->hide();

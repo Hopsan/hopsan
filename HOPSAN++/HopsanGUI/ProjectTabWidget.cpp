@@ -48,7 +48,7 @@
 
 #include <QtGui>
 #include <QSizePolicy>
-#include <QMap>
+#include <QHash>
 
 #include <string>
 #include <iostream>
@@ -302,7 +302,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     modelFile << "ISOICON " << addQuotes(mpSystem->getIsoIconPath()) << "\n";
 
     //Calculate the position of the subsystem ports:
-    QMap<QString, GUIObject*>::iterator it;
+    QHash<QString, GUIObject*>::iterator it;
     QLineF line;
     double angle, x, y;
 
@@ -342,7 +342,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     }
         modelFile << "--------------------------------------------------------------\n";
 
-    //QMap<QString, GUIObject*>::iterator it;
+    //QHash<QString, GUIObject*>::iterator it;
     for(it = mpSystem->mGUIObjectMap.begin(); it!=mpSystem->mGUIObjectMap.end(); ++it)
     {
         if ( it.value()->getTypeName() == QString("Subsystem") )

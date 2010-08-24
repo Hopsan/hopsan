@@ -1867,7 +1867,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
 GUIGroup::~GUIGroup()
 {
     qDebug() << "GUIGroup destructor";
-    QMap<QString, GUIObject *>::iterator itm;
+    QHash<QString, GUIObject *>::iterator itm;
     for(itm = mpParentSystem->mGUIObjectMap.begin(); itm != mpParentSystem->mGUIObjectMap.end(); ++itm)
     {
         qDebug() << "GUIObjectMap: " << itm.key();

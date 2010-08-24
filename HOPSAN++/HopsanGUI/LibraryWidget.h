@@ -132,10 +132,10 @@ private:
     //Member variables
     MainWindow *mpParentMainWindow;
 
-    QMap<QString, LibraryContent*> mLibraryContentPtrsMap;
+    QHash<QString, LibraryContent*> mLibraryContentPtrsMap;
     QMultiMap<QString, LibraryContentItem*> mLibraryContentItemPtrsMap;
 
-    QMap<QString, QString> mName2TypeMap; //!< @todo This is a temporary hack
+    QHash<QString, QString> mName2TypeMap; //!< @todo This is a temporary hack
 
     QLabel *mpComponentNameField;
 

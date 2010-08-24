@@ -59,7 +59,7 @@
 #include <QVector>
 #include <QListWidget>
 #include <QListWidgetItem>
-#include <QMap>
+#include <QHash>
 #include <QToolBar>
 #include <QToolButton>
 #include <QMainWindow>
@@ -140,10 +140,10 @@ class VariableList : public QListWidget
     Q_OBJECT
 public:
     VariableList(MainWindow *parent = 0);
-    //QMap<QString, int> map;
-    QMap< QString, QVector<double> > xMap;
-    QMap< QString, QVector<double> > yMap;
-    QMap< QString, QString > yLabelMap;
+    //QHash<QString, int> map;
+    QHash< QString, QVector<double> > xMap;
+    QHash< QString, QVector<double> > yMap;
+    QHash< QString, QString > yLabelMap;
     MainWindow *mpParentMainWindow;
     GUISystem *mpCurrentSystem;
 
@@ -164,8 +164,8 @@ class SelectedVariableList : public VariableList
     Q_OBJECT
 public:
     SelectedVariableList(MainWindow *parent = 0);
-    QMap< QString, QVector<double> > xMap;
-    QMap< QString, QVector<double> > yMap;
+    QHash< QString, QVector<double> > xMap;
+    QHash< QString, QVector<double> > yMap;
     MainWindow *mpParentMainWindow;
     GUISystem *mpCurrentSystem;
 

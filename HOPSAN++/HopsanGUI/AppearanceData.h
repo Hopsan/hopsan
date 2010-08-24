@@ -52,7 +52,7 @@
 #include <QString>
 #include <QPointF>
 #include <QVector>
-#include <QMap>
+#include <QHash>
 #include <QPen>
 #include "common.h"
 
@@ -100,7 +100,7 @@ public:
     portDirection direction;
 };
 
-typedef QMap<QString, PortAppearance> PortAppearanceMapT;
+typedef QHash<QString, PortAppearance> PortAppearanceMapT;
 
 class AppearanceData
 {

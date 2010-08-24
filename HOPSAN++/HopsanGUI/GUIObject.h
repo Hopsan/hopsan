@@ -107,7 +107,7 @@ public:
     enum { Type = GUIOBJECT };
     int type() const;
     GUIObjectDisplayName *mpNameText;
-    //QMap<QString, GUIPort*> mGuiPortPtrMap;
+    //QHash<QString, GUIPort*> mGuiPortPtrMap;
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);

@@ -581,17 +581,21 @@ void GUISystem::deleteGUIObject(QString objectName, undoStatus undoSettings)
     GUIObjectMapT::iterator it = mGUIObjectMap.find(objectName);
     //! @todo This is very very very stupid! We loop through all selected connectors in the model and removes them if the name of one of their parent components is the same as the component we delete?!
     int i = 0;
+    qDebug() << "Nötkött ifrån Irland";
     while(i != mSubConnectorList.size())
     {
         if((mSubConnectorList[i]->getStartPort()->getGuiObject()->getName() == objectName) or
            (mSubConnectorList[i]->getEndPort()->getGuiObject()->getName() == objectName))
         {
+            qDebug() << "En flaska Gin";
             this->removeConnector(mSubConnectorList[i], undoSettings);
-            i= 0;   //Restart iteration if map has changed
+            i = 0;   //Restart iteration if map has changed
+            qDebug() << "i = " << i << ", mSubConnectorList.size() = " << mSubConnectorList.size();
         }
         else
         {
             ++i;
+            qDebug() << "i = " << i << ", mSubConnectorList.size() = " << mSubConnectorList.size();
         }
     }
 
@@ -604,6 +608,7 @@ void GUISystem::deleteGUIObject(QString objectName, undoStatus undoSettings)
     if (it != mGUIObjectMap.end())
     {
         GUIObject* obj_ptr = it.value();
+        qDebug() << "Höns från Korea";
         mGUIObjectMap.erase(it);
         mSelectedGUIObjectsList.removeOne(obj_ptr);
         mpScene->removeItem(obj_ptr);
@@ -732,12 +737,16 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
     //int indexToRemove;
     int i;
 
+    qDebug() << "Svampar i min diskho";
+
     if(undoSettings == UNDO)
     {
         mUndoStack->registerDeletedConnector(pConnector);
     }
-    for(i = 0; i != mSubConnectorList.size(); ++i)
+    qDebug() << "Flugsvamp i fulvin";
+    for(i = 0; i < mSubConnectorList.size(); ++i)
     {
+        qDebug() << "i = " << i << ", mSubConnectorList.size() = " << mSubConnectorList.size();
         if(mSubConnectorList[i] == pConnector)
         {
              //! @todo some error handling both ports must exist and be connected to each other
@@ -763,8 +772,12 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
             endPortHasMoreConnections = true;
         }
         if(mSubConnectorList.empty())
+        {
             break;
+        }
     }
+
+    qDebug() << "En natt i mekoteket";
 
     if(endPortWasConnected and !endPortHasMoreConnections)
     {
@@ -786,7 +799,7 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
     if(doDelete)
     {
         mSubConnectorList.removeAll(pConnector);
-        mSelectedSubConnectorsList.removeOne(pConnector);
+        mSelectedSubConnectorsList.removeAll(pConnector);
         mpScene->removeItem(pConnector);
         delete pConnector;
     }
@@ -920,7 +933,7 @@ void GUISystem::paste()
     emit deselectAllGUIConnectors();
 
 
-    QMap<QString, QString> renameMap;       //Used to track name changes, so that connectors will know what components are called
+    QHash<QString, QString> renameMap;       //Used to track name changes, so that connectors will know what components are called
     QString inputWord;
 
     //! @todo Could we not use some common load function for the stuff bellow
@@ -988,7 +1001,7 @@ void GUISystem::paste()
     }
 
         //Select all pasted comonents
-    QMap<QString, QString>::iterator itn;
+    QHash<QString, QString>::iterator itn;
     for(itn = renameMap.begin(); itn != renameMap.end(); ++itn)
     {
         mGUIObjectMap.find(itn.value()).value()->setSelected(true);
