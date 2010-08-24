@@ -261,6 +261,7 @@ void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, undoStatu
             endGuiObjName = rData.endComponentName;
         }
 
+        //! @todo all of this (above and bellow) should be inside some conventiant function like "connect"
         //! @todo Need some error handling here to avoid crash if components or ports do not exist
         GUIPort *startPort = pSystem->getGUIObject(startGuiObjName)->getPort(rData.startPortName);
         GUIPort *endPort = pSystem->getGUIObject(endGuiObjName)->getPort(rData.endPortName);
@@ -279,7 +280,7 @@ void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, undoStatu
     }
     else
     {
-        qDebug() << "Unsuccessful connection try" << endl;
+        qDebug() << "Unsuccessful connection atempt" << endl;
     }
 }
 

@@ -88,6 +88,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUISystem *parentSystem, QGraphic
 //! @param *parentView is a pointer to the GraphicsView the connector belongs to.
 //! @param parent is the parent of the port.
 GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, GUISystem *parentSystem, QGraphicsItem *parent)
+        : QGraphicsWidget(parent)
 {
     mpParentSystem = parentSystem;
     setFlags(QGraphicsItem::ItemIsFocusable);
@@ -105,7 +106,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     mPoints = points;
 
         //Setup the geometries vector based on the point geometry
-    for(int i=0; i != mPoints.size()-1; ++i)
+    for(int i=0; i < mPoints.size()-1; ++i)
     {
         if(mPoints[i].x() == mPoints[i+1].x())
             mGeometries.push_back(HORIZONTAL);
@@ -121,7 +122,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     connect(mpEndPort->getGuiObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
 
         //Create the lines, so that drawConnector has something to work with
-    for(int i = 0; i != mPoints.size()-1; ++i)
+    for(int i=0; i < mPoints.size()-1; ++i)
     {
         mpTempLine = new GUIConnectorLine(mapFromScene(mPoints[i]).x(), mapFromScene(mPoints[i]).y(),
                                           mapFromScene(mPoints[i+1]).x(), mapFromScene(mPoints[i+1]).y(),

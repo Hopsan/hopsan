@@ -254,7 +254,6 @@ void GUISystem::loadFromHMF(QString modelFileName)
     }
 
     qDebug() << "Appearance set for system: " << this->getName();
-
     qDebug() << "loadFromHMF contents, name: " << this->getName();
     //Now load the contens of the subsystem
     while ( !textStreamFile.atEnd() )

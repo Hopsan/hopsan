@@ -144,7 +144,7 @@ protected:
     void createPorts();
 
 public:
-        QString mModelFilePath; //!< @todo should be public
+        QString mModelFilePath; //!< @todo should not be public
 
 private:
 
