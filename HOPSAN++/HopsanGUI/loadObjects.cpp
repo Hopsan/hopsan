@@ -288,6 +288,7 @@ void loadParameterValues(const ParameterLoadData &rData, GUISystem* pSystem, und
 {
     //qDebug() << "Parameter: " << componentName << " " << parameterName << " " << parameterValue;
     qDebug() << "count" << pSystem->mGUIObjectMap.count(rData.componentName);
+    qDebug() << "load Parameter value for component: " << rData.componentName  << " in " << pSystem->getName();
     GUIObject* ptr = pSystem->mGUIObjectMap.find(rData.componentName).value();
     qDebug() << ptr->getName();
     if (ptr != 0)

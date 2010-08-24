@@ -347,15 +347,7 @@ QString AppearanceData::getTypeName()
 
 QString AppearanceData::getName()
 {
-    //! @todo this is wierd, maybe should not do it like this
-    if (mName.isEmpty())
-    {
-        return mTypeName;
-    }
-    else
-    {
-        return mName;
-    }
+    return mName;
 }
 
 QString AppearanceData::getFullIconPath(graphicsType gfxType)

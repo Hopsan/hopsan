@@ -209,7 +209,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
 
-    if ((!this->isConnected) || (mpParentSystem->mpParentProjectTab->mpSystem->mpCoreSystemAccess->getTimeVector(getGUIComponentName(), this->getName()).empty()))
+    if ((!this->isConnected) || (mpParentSystem->mpCoreSystemAccess->getTimeVector(getGUIComponentName(), this->getName()).empty()))
     {
         event->ignore();
     }
@@ -288,9 +288,9 @@ void GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
 {
     std::cout << "GUIPort.cpp: " << "Plot()" << std::endl;
 
-    QVector<double> time = QVector<double>::fromStdVector(mpParentSystem->mpParentProjectTab->mpSystem->mpCoreSystemAccess->getTimeVector(getGUIComponentName(), this->getName()));
+    QVector<double> time = QVector<double>::fromStdVector(mpParentSystem->mpCoreSystemAccess->getTimeVector(getGUIComponentName(), this->getName()));
     QVector<double> y;
-    mpParentSystem->mpParentProjectTab->mpSystem->mpCoreSystemAccess->getPlotData(getGUIComponentName(), this->getName(), dataName, y);
+    mpParentSystem->mpCoreSystemAccess->getPlotData(getGUIComponentName(), this->getName(), dataName, y);
 
     //qDebug() << "Time size: " << time.size() << " last time: " << *time.end() << " " << "y.size(): " << y.size();
     //qDebug() << "time[0]: " << time[0] << " time[last-1]: " << time[time.size()-2] << " time[last]: " << time[time.size()-1];
@@ -336,14 +336,14 @@ void GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
 //! Wrapper for the Core getPortTypeString() function
 QString GUIPort::getPortType()
 {
-    return mpParentSystem->mpParentProjectTab->mpSystem->mpCoreSystemAccess->getPortType(getGUIComponentName(), this->getName());
+    return mpParentSystem->mpCoreSystemAccess->getPortType(getGUIComponentName(), this->getName());
 }
 
 
 //! Wrapper for the Core getNodeType() function
 QString GUIPort::getNodeType()
 {
-    return mpParentSystem->mpParentProjectTab->mpSystem->mpCoreSystemAccess->getNodeType(getGUIComponentName(), this->getName());
+    return mpParentSystem->mpCoreSystemAccess->getNodeType(getGUIComponentName(), this->getName());
 }
 
 

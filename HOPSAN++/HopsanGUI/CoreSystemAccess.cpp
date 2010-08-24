@@ -123,8 +123,10 @@ QString CoreSystemAccess::getRootSystemTypeCQS()
 
 QString CoreSystemAccess::getSubComponentTypeCQS(QString componentName)
 {
-    qDebug() << "getSubComponentTypeCQS: " << componentName;
-    return QString::fromStdString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getTypeCQSString());
+    qDebug() << "getSubComponentTypeCQS: " << componentName << " in " << QString::fromStdString(mpCoreComponentSystem->getName());
+    QString ans = QString::fromStdString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getTypeCQSString());
+    qDebug() << "cqs answer: " << ans;
+    return ans;
 }
 
 QString CoreSystemAccess::setRootSystemName(QString name)
@@ -142,7 +144,7 @@ QString CoreSystemAccess::setRootSystemName(QString name)
 
 QString CoreSystemAccess::renameSubComponent(QString componentName, QString name)
 {
-    Component *pTempComponent = mpCoreComponentSystem->getComponent(componentName.toStdString());
+    Component *pTempComponent = mpCoreComponentSystem->getSubComponent(componentName.toStdString());
     pTempComponent->setName(name.toStdString());
     return QString::fromStdString(pTempComponent->getName());
 }
@@ -257,12 +259,14 @@ void CoreSystemAccess::finalize(double mStartTime, double mFinishTime)
 
 QString CoreSystemAccess::createComponent(QString type, QString name)
 {
+    qDebug() << "createComponent: " << "type: " << type << " desired name:  " << name << " in system: " << this->getRootSystemName();
     Component *pCoreComponent = HopsanEssentials::getInstance()->CreateComponent(type.toStdString());
     mpCoreComponentSystem->addComponent(pCoreComponent);
     if (!name.isEmpty())
     {
         pCoreComponent->setName(name.toStdString());
     }
+    qDebug() << "createComponent: name after add: " << QString::fromStdString(pCoreComponent->getName()) << " added to: " << QString::fromStdString(mpCoreComponentSystem->getName());
     return QString::fromStdString(pCoreComponent->getName());
 }
 

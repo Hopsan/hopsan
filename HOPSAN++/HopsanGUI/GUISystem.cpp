@@ -252,7 +252,7 @@ void GUISystem::loadFromHMF(QString modelFileName)
         //qDebug() << sysappdata.portnames[i];
     }
     qDebug() << "Appearance set for system: " << this->getName();
-
+    qDebug() << "loadFromHMF contents, name: " << this->getName();
     //Now load the contens of the subsystem
     while ( !textStreamFile.atEnd() )
     {
@@ -536,6 +536,7 @@ GUIObject* GUISystem::addGUIObject(AppearanceData appearanceData, QPoint positio
     emit deselectAllGUIConnectors();
 
     QString componentTypeName = appearanceData.getTypeName();
+    qDebug()  << "Add GUIObject, typename: " << componentTypeName << " displayname: " << appearanceData.getName() << " systemname: " << this->getName();
     if (componentTypeName == "Subsystem")
     {
         mpTempGUIObject= new GUISystem(position, rotation, appearanceData, this, startSelected, mGfxType);

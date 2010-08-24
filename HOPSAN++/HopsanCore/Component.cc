@@ -925,6 +925,7 @@ Component* ComponentSystem::getComponent(string name)
 
 Component* ComponentSystem::getSubComponent(string name)
 {
+    cout << "getSubComponent: " << name << " in " <<  this->mName << endl;
     SubComponentMapT::iterator it = mSubComponentMap.find(name);
     if (it != mSubComponentMap.end())
     {
