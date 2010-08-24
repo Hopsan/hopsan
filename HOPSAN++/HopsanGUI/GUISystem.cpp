@@ -246,12 +246,14 @@ void GUISystem::loadFromHMF(QString modelFileName)
             portapp.direction = TOPBOTTOM;
         }
         //! @todo portdirection in portapperance should have an initial default value to avoid crash if not set when creating connector
-        portapp.selectPortIcon("","",""); //!< @todo fix this
+        portapp.selectPortIcon("","",""); //!< @todo fix this, (maybe not necessary to fix)
 
         portappmap->insert(sysappdata.portnames[i], portapp);
         //qDebug() << sysappdata.portnames[i];
     }
+
     qDebug() << "Appearance set for system: " << this->getName();
+
     qDebug() << "loadFromHMF contents, name: " << this->getName();
     //Now load the contens of the subsystem
     while ( !textStreamFile.atEnd() )
@@ -285,6 +287,12 @@ void GUISystem::loadFromHMF(QString modelFileName)
             loadConnector(textStreamFile, this, NOUNDO);
         }
     }
+
+    //Refresh the appearnce of the subsystemem and create the GUIPorts
+    //! @todo This is a bit strange, refreshAppearance MUST be run before create ports or create ports will not know some necessary stuff
+    this->refreshAppearance();
+    this->createPorts();
+
     //Deselect all components
    //pCurrentTab->mpGraphicsView->deselectAllGUIObjects();
     this->deselectAll();
@@ -297,6 +305,7 @@ void GUISystem::loadFromHMF(QString modelFileName)
         mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
     }
 
+    file.close();
     emit checkMessages();
 }
 
@@ -474,8 +483,8 @@ void GUISystem::createPorts()
     {
         //! @todo fix this
         qDebug() << "getNode and portType for " << it.key();
-        QString nodeType = mpParentProjectTab->mpSystem->mpCoreSystemAccess->getNodeType(this->getName(), it.key());
-        QString portType = mpParentProjectTab->mpSystem->mpCoreSystemAccess->getPortType(this->getName(), it.key());
+        QString nodeType = mpCoreSystemAccess->getNodeType(this->getName(), it.key());
+        QString portType = mpCoreSystemAccess->getPortType(this->getName(), it.key());
         it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
 
         qreal x = it.value().x;

@@ -64,7 +64,14 @@ using namespace std;
 GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent, CoreSystemAccess *pGUIRootSystem)
     : QGraphicsSvgItem(pPortAppearance->iconPath, pParent)
 {
-    mpParentSystem = pParent->mpParentSystem;
+    if (pParent->type() == GUISYSTEM)
+    {
+        mpParentSystem = qobject_cast<GUISystem*>(pParent);
+    }
+    else
+    {
+        mpParentSystem = pParent->mpParentSystem;
+    }
     mpParentGuiObject = pParent;
     mpPortAppearance = pPortAppearance;
     mpGUIRootSystem = pGUIRootSystem; //Use this to indicate system port
