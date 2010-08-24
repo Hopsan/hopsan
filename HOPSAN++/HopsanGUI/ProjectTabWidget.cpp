@@ -391,6 +391,7 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     setTabsClosable(true);
     mNumberOfUntitledTabs = 0;
 
+
     connect(this,SIGNAL(currentChanged(int)),SLOT(tabChanged()));
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(closeProjectTab(int)));
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(tabChanged()));

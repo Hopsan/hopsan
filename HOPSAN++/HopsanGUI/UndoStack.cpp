@@ -103,18 +103,15 @@ void UndoStack::newPost()
 //! Inserts an undopost to the current stack position
 void UndoStack::insertPost(QString str)
 {
-    qDebug() << "Entering: insertPost()";
     if(mCurrentStackPosition < 0)
     {
         this->clear();
     }
     if(!mpParentSystem->mUndoDisabled)
     {
-        qDebug() << "mStack.size() = " << mStack.size() << ", mCurrentStackPosition = " << mCurrentStackPosition;
         mStack[mCurrentStackPosition].insert(0,str);
         mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
     }
-    qDebug() << "Leaving: insertPost()";
 }
 
 
@@ -142,7 +139,6 @@ void UndoStack::undoOneStep()
             QTextStream poststream(&mStack[undoPosition][i]);
             poststream >> undoevent;
 
-            //qDebug() << "UNDO: " << undoevent;
             if( undoevent == "DELETEDOBJECT" )
             {
                 //poststream >> junk; //Discard Component load command
@@ -218,7 +214,6 @@ void UndoStack::undoOneStep()
                 mpParentSystem->getGUIObject(name)->flipHorizontal(NOUNDO);
             }
         }
-        qDebug() << "Setting mCurrentStackPosition to " << undoPosition - 1;
         mCurrentStackPosition = undoPosition - 1;
 
         mpParentSystem->mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();

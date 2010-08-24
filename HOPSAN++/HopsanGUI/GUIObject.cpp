@@ -99,6 +99,7 @@ GUIObject::GUIObject(QPoint position, qreal rotation, AppearanceData appearanceD
     mNameTextPos = 0;
     this->setNameTextPos(mNameTextPos);
 
+
         //Create connections
     connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(fixTextPosition(QPointF)));
     if(mpParentSystem != 0)
@@ -206,7 +207,9 @@ void GUIObject::fixTextPosition(QPointF pos)
     }
 
     if(mpParentSystem != 0)
+    {
         mpParentSystem->mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
+    }
 }
 
 
@@ -236,6 +239,7 @@ void GUIObject::refreshDisplayName()
     if (mpNameText != 0)
     {
         mpNameText->setPlainText(mAppearanceData.getName());
+        mpNameText->setSelected(false);
         //Adjust the position of the text
         this->fixTextPosition(mpNameText->pos());
     }
@@ -901,8 +905,9 @@ GUIObjectDisplayName::GUIObjectDisplayName(GUIObject *pParent)
     :   QGraphicsTextItem(pParent)
 {
     mpParentGUIObject = pParent;
-    this->setTextInteractionFlags(Qt::TextEditable | Qt::TextSelectableByMouse);
-    this->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
+    this->setTextInteractionFlags(Qt::NoTextInteraction);
+    //this->setTextInteractionFlags(Qt::TextEditable | Qt::TextSelectableByMouse);
+    this->setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
 }
 
 void GUIObjectDisplayName::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
@@ -913,19 +918,25 @@ void GUIObjectDisplayName::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void GUIObjectDisplayName::focusInEvent(QFocusEvent *event)
 {
+    qDebug() << "focusInEvent()";
     mpParentGUIObject->mpParentSystem->mIsRenamingObject = true;
+    this->setSelected(true);
     QGraphicsTextItem::focusInEvent(event);
 }
 
 void GUIObjectDisplayName::focusOutEvent(QFocusEvent *event)
 {
-    //mpParentGUIComponent->mpParentSystem->mUndoStack->newPost();
-    mpParentGUIObject->mpParentSystem->mIsRenamingObject = false;
-        //Try to set the new name, the rename function in parent is used
-    mpParentGUIObject->mpParentSystem->renameGUIObject(mpParentGUIObject->getName(),toPlainText());
-        //Refresh the display name (it may be different from the one you wanted)
-    mpParentGUIObject->refreshDisplayName();
-    emit textMoved(pos());
+//    qDebug() << "focusOutEvent()";
+//    //mpParentGUIComponent->mpParentSystem->mUndoStack->newPost();
+//    mpParentGUIObject->mpParentSystem->mIsRenamingObject = false;
+//        //Try to set the new name, the rename function in parent is used
+//    mpParentGUIObject->mpParentSystem->renameGUIObject(mpParentGUIObject->getName(),toPlainText());
+//        //Refresh the display name (it may be different from the one you wanted)
+//    mpParentGUIObject->refreshDisplayName();
+
+//    this->setSelected(false);
+
+//    emit textMoved(pos());
     QGraphicsTextItem::focusOutEvent(event);
 }
 

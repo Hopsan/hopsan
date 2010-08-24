@@ -483,7 +483,6 @@ bool GUIConnector::isActive()
 //! @param QTextSream is the text stream with the information.
 void GUIConnector::saveToTextStream(QTextStream &rStream, QString prepend)
 {
-    qDebug() << "Entering: saveToTextStream()";
     QString startObjName = getStartPort()->getGUIComponentName();
     QString endObjName = getEndPort()->getGUIComponentName();
     QString startPortName  = getStartPort()->getName();
@@ -498,7 +497,6 @@ void GUIConnector::saveToTextStream(QTextStream &rStream, QString prepend)
         rStream << " " << mPoints[j].x() << " " << mPoints[j].y();
     }
     rStream << "\n";
-    qDebug() << "Leaving: saveToTextStream()";
 }
 
 

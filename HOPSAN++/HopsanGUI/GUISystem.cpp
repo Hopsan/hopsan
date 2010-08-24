@@ -567,7 +567,7 @@ GUIObject* GUISystem::addGUIObject(AppearanceData appearanceData, QPoint positio
         mUndoStack->registerAddedObject(mpTempGUIObject);
     }
 
-    this->setFocus();
+    //this->setFocus();
 
     return mpTempGUIObject;
 }
