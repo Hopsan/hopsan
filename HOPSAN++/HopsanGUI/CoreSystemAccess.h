@@ -59,10 +59,10 @@ public:
     void setDesiredTimeStep(double timestep);
     double getDesiredTimeStep();
 
-    void setRootTypeCQS(const QString cqs_type, bool doOnlyLocalSet=false);
-    void setSubSystemTypeCQS(QString systemName, const std::string cqs_type, bool doOnlyLocalSet=false);
-    QString getRootSystemTypeCQS(QString componentName);
-    QString getSubSystemTypeCQS(QString componentName);
+    void setRootTypeCQS(const QString cqs_type);
+    void setSubSystemTypeCQS(const QString systemName, const QString cqs_type);
+    QString getRootSystemTypeCQS();
+    QString getSubComponentTypeCQS(QString componentName);
     //QString getSystemTypeCQS(QString systemName); //!< @todo dont think that we need this one the component specifik one should do
 
     QString setRootSystemName(QString name);

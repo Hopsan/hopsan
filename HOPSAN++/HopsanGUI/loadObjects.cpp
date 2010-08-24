@@ -136,7 +136,7 @@ void SystemAppearanceLoadData::read(QTextStream &rStream)
     while ( !commandword.startsWith("-") )
     {
         rStream >> commandword;
-        qDebug() << commandword;
+        //qDebug() << commandword;
 
         //! @todo maybe do this the same way as read apperance data, will examine this later
         if (commandword == "ISOICON")

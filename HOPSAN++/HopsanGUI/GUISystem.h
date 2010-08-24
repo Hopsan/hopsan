@@ -128,7 +128,7 @@ public:
     void setTypeCQS(QString typestring);
     QString getTypeCQS();
 
-    void loadFromFileNOGUI(QString modelFileName=QString());
+    //void loadFromFileNOGUI(QString modelFileName=QString());
 
     void saveToTextStream(QTextStream &rStream, QString prepend);
 

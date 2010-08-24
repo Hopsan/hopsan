@@ -99,15 +99,15 @@ double CoreSystemAccess::getDesiredTimeStep()
     return mpCoreComponentSystem->getDesiredTimeStep();
 }
 
-void CoreSystemAccess::setRootTypeCQS(const QString cqs_type, bool doOnlyLocalSet)
+void CoreSystemAccess::setRootTypeCQS(const QString cqs_type)
 {
-    qDebug () << "setting root type cqs";
+    qDebug () << "setting root type cqs to: " << cqs_type;
     mpCoreComponentSystem->setTypeCQS(cqs_type.toStdString());
 }
 
-void CoreSystemAccess::setSubSystemTypeCQS(QString systemName, const string cqs_type, bool doOnlyLocalSet)
+void CoreSystemAccess::setSubSystemTypeCQS(QString systemName, const QString cqs_type)
 {
-    mpCoreComponentSystem->getSubComponentSystem(systemName.toStdString())->setTypeCQS(cqs_type, doOnlyLocalSet);
+    mpCoreComponentSystem->getSubComponentSystem(systemName.toStdString())->setTypeCQS(cqs_type.toStdString());
 }
 
 //QString GUIRootSystem::getSystemTypeCQS(QString systemName)
@@ -115,16 +115,16 @@ void CoreSystemAccess::setSubSystemTypeCQS(QString systemName, const string cqs_
 //    return QString::fromStdString(mpCoreComponentSystem->getSubComponentSystem(systemName.toStdString())->getTypeCQSString());
 //}
 
-QString CoreSystemAccess::getRootSystemTypeCQS(QString componentName)
+QString CoreSystemAccess::getRootSystemTypeCQS()
 {
-    qDebug() << "getRootTypeCQS: " << componentName;
+    //qDebug() << "getRootTypeCQS: " << componentName;
     return QString::fromStdString(mpCoreComponentSystem->getTypeCQSString());
 }
 
-QString CoreSystemAccess::getSubSystemTypeCQS(QString componentName)
+QString CoreSystemAccess::getSubComponentTypeCQS(QString componentName)
 {
-    qDebug() << "getSubSysTypeCQS: " << componentName;
-    return QString::fromStdString(mpCoreComponentSystem->getSubComponentSystem(componentName.toStdString())->getTypeCQSString());
+    qDebug() << "getSubComponentTypeCQS: " << componentName;
+    return QString::fromStdString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getTypeCQSString());
 }
 
 QString CoreSystemAccess::setRootSystemName(QString name)

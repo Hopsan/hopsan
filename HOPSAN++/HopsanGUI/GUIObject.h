@@ -255,7 +255,7 @@ protected:
 
     void createPorts();
 
-    QString mComponentTypeName;
+    //QString mComponentTypeName;
 
 public slots:
 

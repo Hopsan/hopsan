@@ -1071,7 +1071,7 @@ GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, qreal
 
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
-    std::cout << "GUIcomponent: " << mComponentTypeName.toStdString() << std::endl;
+    std::cout << "GUIcomponent: " << this->mAppearanceData.getTypeName().toStdString() << std::endl;
 }
 
 GUIComponent::~GUIComponent()
@@ -1130,7 +1130,7 @@ QString GUIComponent::getTypeName()
 
 QString GUIComponent::getTypeCQS()
 {
-    return mpParentSystem->mpParentProjectTab->mpSystem->mpCoreSystemAccess->getRootSystemTypeCQS(this->getName());
+    return mpParentSystem->mpCoreSystemAccess->getSubComponentTypeCQS(this->getName());
 }
 
 //! @brief Get a vector with the names of the available parameters
@@ -1214,7 +1214,7 @@ void GUIComponent::openParameterDialog()
 void GUIComponent::createPorts()
 {
     //! @todo make sure that all old ports and connections are cleared, (not really necessary in guicomponents)
-    QString cqsType = mpParentSystem->mpParentProjectTab->mpSystem->mpCoreSystemAccess->getRootSystemTypeCQS(getName());
+    QString cqsType = mpParentSystem->mpCoreSystemAccess->getSubComponentTypeCQS(getName());
     PortAppearanceMapT::iterator i;
     for (i = mAppearanceData.getPortAppearanceMap().begin(); i != mAppearanceData.getPortAppearanceMap().end(); ++i)
     {

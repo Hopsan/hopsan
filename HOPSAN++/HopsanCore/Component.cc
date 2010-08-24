@@ -932,7 +932,7 @@ Component* ComponentSystem::getSubComponent(string name)
     }
     else
     {
-        cout << "getSubComponent: The component you requested: " << name << " does not exist" << endl;
+        cout << "getSubComponent: The component you requested: " << name << " does not exist in: " << this->mName << endl;
         return 0;
     }
 }

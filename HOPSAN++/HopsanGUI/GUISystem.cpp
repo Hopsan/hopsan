@@ -140,7 +140,7 @@ void GUISystem::setTypeCQS(QString typestring)
 
 QString GUISystem::getTypeCQS()
 {
-    return mpCoreSystemAccess->getRootSystemTypeCQS((this->getName()));
+    return mpCoreSystemAccess->getRootSystemTypeCQS();
 }
 
 QVector<QString> GUISystem::getParameterNames()
@@ -248,9 +248,9 @@ void GUISystem::loadFromHMF(QString modelFileName)
         portapp.selectPortIcon("","",""); //!< @todo fix this
 
         portappmap->insert(sysappdata.portnames[i], portapp);
-        qDebug() << sysappdata.portnames[i];
+        //qDebug() << sysappdata.portnames[i];
     }
-    qDebug() << "Appearance set";
+    qDebug() << "Appearance set for system: " << this->getName();
 
     //Now load the contens of the subsystem
     while ( !textStreamFile.atEnd() )
