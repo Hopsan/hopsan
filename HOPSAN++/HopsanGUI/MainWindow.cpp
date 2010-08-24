@@ -570,16 +570,16 @@ void MainWindow::refreshUndoWidgetList()
 //! Loads global settings from a text file
 void MainWindow::loadSettings()
 {
+        //Apply default values
+    mInvertWheel = false;
+    mUseMulticore = true;
+    mProgressBarStep = 10;
+    mBackgroundColor = QColor("white");
+
     QFile file("../../settings.txt");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         mpMessageWidget->printGUIErrorMessage("Unable to read settings file. Using default settings.");
-
-            //Apply default values
-        mInvertWheel = false;
-        mUseMulticore = true;
-        mProgressBarStep = 10;
-        mBackgroundColor = QColor("white");
         return;
     }
 

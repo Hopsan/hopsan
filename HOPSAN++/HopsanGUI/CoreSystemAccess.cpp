@@ -241,12 +241,12 @@ void CoreSystemAccess::simulate(double mStartTime, double mFinishTime, simulatio
 {
     if(type == MULTICORE)
     {
-        qDebug() << "Staring multicore simulation";
+        qDebug() << "Starting multicore simulation";
         mpCoreComponentSystem->simulateMultiThreaded(mStartTime, mFinishTime);
     }
     else
     {
-        qDebug() << "Staring singlecore simulation";
+        qDebug() << "Starting singlecore simulation";
         mpCoreComponentSystem->simulateSingleThreaded(mStartTime, mFinishTime);
     }
 }

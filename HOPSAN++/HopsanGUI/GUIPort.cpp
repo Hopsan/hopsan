@@ -335,13 +335,6 @@ void GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
 }
 
 
-////! Returns the number of the port by calling the equivalent function in the parent component.
-//int GUIPort::getPortNumber()
-//{
-//    return this->getGuiObject()->getPortNumber(this);
-//}
-
-
 //! Wrapper for the Core getPortTypeString() function
 QString GUIPort::getPortType()
 {
