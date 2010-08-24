@@ -579,24 +579,12 @@ void GUISystem::deleteGUIObject(QString objectName, undoStatus undoSettings)
 {
     qDebug() << "deleteGUIObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->mpCoreSystemAccess->getRootSystemName() ;
     GUIObjectMapT::iterator it = mGUIObjectMap.find(objectName);
-    //! @todo This is very very very stupid! We loop through all selected connectors in the model and removes them if the name of one of their parent components is the same as the component we delete?!
-    int i = 0;
-    qDebug() << "Nötkött ifrån Irland";
-    while(i != mSubConnectorList.size())
+    GUIObject* obj_ptr = it.value();
+
+    QList<GUIConnector *> pConnectorList = obj_ptr->getGUIConnectorPtrs();
+    for(size_t i=0; i<pConnectorList.size(); ++i)
     {
-        if((mSubConnectorList[i]->getStartPort()->getGuiObject()->getName() == objectName) or
-           (mSubConnectorList[i]->getEndPort()->getGuiObject()->getName() == objectName))
-        {
-            qDebug() << "En flaska Gin";
-            this->removeConnector(mSubConnectorList[i], undoSettings);
-            i = 0;   //Restart iteration if map has changed
-            qDebug() << "i = " << i << ", mSubConnectorList.size() = " << mSubConnectorList.size();
-        }
-        else
-        {
-            ++i;
-            qDebug() << "i = " << i << ", mSubConnectorList.size() = " << mSubConnectorList.size();
-        }
+        this->removeConnector(pConnectorList[i], undoSettings);
     }
 
     if (undoSettings == UNDO)
@@ -607,7 +595,6 @@ void GUISystem::deleteGUIObject(QString objectName, undoStatus undoSettings)
 
     if (it != mGUIObjectMap.end())
     {
-        GUIObject* obj_ptr = it.value();
         qDebug() << "Höns från Korea";
         mGUIObjectMap.erase(it);
         mSelectedGUIObjectsList.removeOne(obj_ptr);
@@ -893,6 +880,8 @@ void GUISystem::cutSelected()
 //! @todo What about paramter values
 void GUISystem::copySelected()
 {
+    mUndoStack->newPost();
+
     delete(mpCopyData);
     mpCopyData = new QString;
 

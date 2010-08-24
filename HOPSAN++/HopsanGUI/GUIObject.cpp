@@ -440,16 +440,17 @@ void GUIObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 //! Defines what shall happen if a mouse key is pressed while hovering an object.
 void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    QGraphicsWidget::mousePressEvent(event);
+
         //Store old positions for all components, in case more than one is selected
     if(event->button() == Qt::LeftButton)
     {
-        QList<GUIObject *>::iterator it;
-        for(it = mpParentSystem->mSelectedGUIObjectsList.begin(); it != mpParentSystem->mSelectedGUIObjectsList.end(); ++it)
+        //QList<GUIObject *>::iterator it;
+        for(size_t i = 0; i < mpParentSystem->mSelectedGUIObjectsList.size(); ++i)
         {
-            (*it)->mOldPos = (*it)->pos();
+            mpParentSystem->mSelectedGUIObjectsList[i]->mOldPos = mpParentSystem->mSelectedGUIObjectsList[i]->pos();
         }
     }
-    QGraphicsWidget::mousePressEvent(event);
 
         //Objects shall not be selectable while creating a connector
     if(mpParentSystem->mIsCreatingConnector)

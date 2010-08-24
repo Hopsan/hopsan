@@ -396,10 +396,8 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(closeProjectTab(int)));
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(tabChanged()));
 
-    connect(mpParentMainWindow->newAction, SIGNAL(triggered()), this,SLOT(addNewProjectTab()));
-    connect(mpParentMainWindow->openAction, SIGNAL(triggered()), this,SLOT(loadModel()));
-    connect(mpParentMainWindow->saveAction, SIGNAL(triggered()), this,SLOT(saveProjectTab()));
-    connect(mpParentMainWindow->saveAsAction, SIGNAL(triggered()), this,SLOT(saveProjectTabAs()));
+    connect(mpParentMainWindow->newAction, SIGNAL(triggered()), this, SLOT(addNewProjectTab()));
+    connect(mpParentMainWindow->openAction, SIGNAL(triggered()), this, SLOT(loadModel()));
 }
 
 
