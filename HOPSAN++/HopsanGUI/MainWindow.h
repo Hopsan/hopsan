@@ -91,6 +91,7 @@ public:
     bool mInvertWheel;
     bool mUseMulticore;
     int mProgressBarStep;
+    QColor mBackgroundColor;
 
     QMenuBar *menubar;
     QMenu *menuFile;

@@ -40,8 +40,9 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     this->setSceneRect(0,0,5000,5000);
     this->centerOn(this->sceneRect().center());
 
+    mIsoColor = QColor("white");
     mZoomFactor = 1.0;
-    mBackgroundColor = QColor(Qt::white);
+
     this->resetBackgroundBrush();
 
     this->createActions();
@@ -139,7 +140,14 @@ void GraphicsView::dropEvent(QDropEvent *event)
 //! @todo Ok this does not seem niceto refresh the view at all, but maybe some parts of the view, dont know realy
 void GraphicsView::resetBackgroundBrush()
 {
-    this->setBackgroundBrush(mBackgroundColor);
+    if(mpParentProjectTab->mpSystem->mGfxType == USERGRAPHICS)
+    {
+        this->setBackgroundBrush(mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mBackgroundColor);
+    }
+    else
+    {
+        this->setBackgroundBrush(mIsoColor);
+    }
 }
 
 

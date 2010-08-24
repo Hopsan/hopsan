@@ -83,6 +83,7 @@ void GUISystem::commonConstructorCode()
     connect(mpMainWindow->mpUndoWidget->undoButton, SIGNAL(pressed()), this, SLOT(undo()));
     connect(mpMainWindow->mpUndoWidget->redoButton, SIGNAL(pressed()), this, SLOT(redo()));
     connect(mpMainWindow->mpUndoWidget->clearButton, SIGNAL(pressed()), this, SLOT(clearUndo()));
+    connect(mpMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this, SLOT(hidePorts(bool)));
 
     //Create the object in core, and update name
     if (this->mpParentSystem == 0)
@@ -1041,7 +1042,6 @@ void GUISystem::showNames()
 
 
 //! Slot that sets hide ports flag to true or false
-//! @see unHidePorts()
 void GUISystem::hidePorts(bool doIt)
 {
     mPortsHidden = doIt;
@@ -1225,5 +1225,6 @@ void GUISystem::updateSimulationSetupWidget()
 void GUISystem::setGfxType(graphicsType gfxType)
 {
     this->mGfxType = gfxType;
+    this->mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
     emit setAllGfxType(mGfxType);
 }

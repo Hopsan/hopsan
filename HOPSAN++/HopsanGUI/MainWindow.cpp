@@ -579,6 +579,7 @@ void MainWindow::loadSettings()
         mInvertWheel = false;
         mUseMulticore = true;
         mProgressBarStep = 10;
+        mBackgroundColor = QColor("white");
         return;
     }
 
@@ -601,6 +602,13 @@ void MainWindow::loadSettings()
             inputStream >> inputWord;
             mUseMulticore = (inputWord == "TRUE");
         }
+        if(inputWord == "BACKGROUNDCOLOR")
+        {
+            inputStream >> inputWord;
+            QColor tempColor;
+            tempColor.setNamedColor(inputWord);
+            mBackgroundColor = tempColor;
+        }
     }
     file.close();
 }
@@ -615,30 +623,33 @@ void MainWindow::saveSettings()
         mpMessageWidget->printGUIErrorMessage("Error writing to settings file. Default values will be used next session");
         return;
     }
-    QTextStream modelFile(&file);  //Create a QTextStream object to stream the content of file
+    QTextStream settingsFile(&file);  //Create a QTextStream object to stream the content of file
 
-    modelFile << "INVERTWHEEL ";
+    settingsFile << "INVERTWHEEL ";
     if(mInvertWheel)
     {
-        modelFile << "TRUE\n";
+        settingsFile << "TRUE\n";
     }
     else
     {
-        modelFile << "FALSE\n";
+        settingsFile << "FALSE\n";
     }
 
-    modelFile << "PROGRESSBARSTEP ";
-    modelFile << mProgressBarStep << "\n";
+    settingsFile << "PROGRESSBARSTEP ";
+    settingsFile << mProgressBarStep << "\n";
 
-    modelFile << "USEMULTICORE ";
+    settingsFile << "USEMULTICORE ";
     if(mUseMulticore)
     {
-        modelFile << "TRUE\n";
+        settingsFile << "TRUE\n";
     }
     else
     {
-        modelFile << "FALSE\n";
+        settingsFile << "FALSE\n";
     }
+
+    settingsFile << "BACKGROUNDCOLOR ";
+    settingsFile << mBackgroundColor.name() << "\n";
     file.close();
 }
 

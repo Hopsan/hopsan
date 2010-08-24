@@ -32,7 +32,6 @@ public:
     GUISystem *mpSystem;
     QAction *systemPortAction;
     QMenu *menuInsert;
-    QColor mBackgroundColor;
     qreal mZoomFactor;
     bool mCtrlKeyPressed;
 
@@ -71,6 +70,7 @@ private:
     //! @todo QHash no good means problem if we rename need to loop around the rename like in coore
     void createActions();
     void createMenus();
+    QColor mIsoColor;
 };
 
 #endif // GRAPHICSVIEW_H

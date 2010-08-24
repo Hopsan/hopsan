@@ -22,6 +22,34 @@ PARAMETER "43Valve" "overlap_at" 0
 PARAMETER "43Valve" "overlap_pa" 0
 PARAMETER "43Valve" "omegah" 100
 PARAMETER "43Valve" "deltah" 0
+COMPONENT "MechanicTranslationalMass" "TranslationalMass" 2689 2450 0 0 0
+PARAMETER "TranslationalMass" "Mass" 5
+PARAMETER "TranslationalMass" "B" 10
+PARAMETER "TranslationalMass" "k" 10
+COMPONENT "HydraulicLaminarOrifice" "LaminarOrifice" 2334 2607 90 0 0
+PARAMETER "LaminarOrifice" "Kc" 1e-08
+COMPONENT "HydraulicPressureSource" "PressureSource" 2254 2607 90 0 0
+PARAMETER "PressureSource" "P" 2e+07
+COMPONENT "HydraulicVolume" "Volume_1" 2428 2652 0 0 0
+PARAMETER "Volume_1" "V" 0.001
+PARAMETER "Volume_1" "Be" 1e+09
+PARAMETER "Volume_1" "a" 0
+PARAMETER "Volume_1" "debug" 0
+PARAMETER "Volume_1" "t1" 0
+PARAMETER "Volume_1" "t2" 0.01
+COMPONENT "SignalSubtract" "Subtract" 2303 2547 0 0 0
+COMPONENT "MechanicPositionSensor" "PositionSensor" 2751 2371 0 0 0
+COMPONENT "HydraulicVolume" "Volume" 2427 2607 0 0 0
+PARAMETER "Volume" "V" 0.001
+PARAMETER "Volume" "Be" 1e+09
+PARAMETER "Volume" "a" 0
+PARAMETER "Volume" "debug" 0
+PARAMETER "Volume" "t1" 0
+PARAMETER "Volume" "t2" 0.01
+COMPONENT "SignalSource" "Source" 2841 2450 180 0 0
+PARAMETER "Source" "Value" 0
+COMPONENT "HydraulicTankC" "Tank" 2255 2677 0 0 0
+PARAMETER "Tank" "P" 100000
 COMPONENT "HydraulicCylinderC" "CylinderC" 2545 2450 0 0 0
 PARAMETER "CylinderC" "x0" 1
 PARAMETER "CylinderC" "v0" 0
@@ -33,47 +61,19 @@ PARAMETER "CylinderC" "DeadVolume1" 0.01
 PARAMETER "CylinderC" "DeadVolume2" 0.01
 PARAMETER "CylinderC" "Bp" 10
 PARAMETER "CylinderC" "Betae" 1e+09
-COMPONENT "MechanicForceTransformer" "ForceTransformer" 2779 2450 180 0 0
-PARAMETER "ForceTransformer" "x0" 1
-PARAMETER "ForceTransformer" "v0" 0
-PARAMETER "ForceTransformer" "Force" 0
 COMPONENT "SignalGain" "Gain" 2374 2547 0 0 0
 PARAMETER "Gain" "Gain" 0.003
-COMPONENT "HydraulicLaminarOrifice" "LaminarOrifice" 2334 2607 90 0 0
-PARAMETER "LaminarOrifice" "Kc" 1e-08
-COMPONENT "HydraulicLaminarOrifice" "LaminarOrifice_1" 2333 2652 90 0 0
-PARAMETER "LaminarOrifice_1" "Kc" 1e-08
-COMPONENT "MechanicPositionSensor" "PositionSensor" 2751 2371 0 0 0
-COMPONENT "HydraulicPressureSource" "PressureSource" 2254 2607 90 0 0
-PARAMETER "PressureSource" "P" 2e+07
-COMPONENT "SignalSource" "Source" 2841 2450 180 0 0
-PARAMETER "Source" "Value" 0
 COMPONENT "SignalSquareWave" "SquareWave" 2220 2545 0 0 0
 PARAMETER "SquareWave" "StartTime" 0
 PARAMETER "SquareWave" "Frequency" 0.5
 PARAMETER "SquareWave" "Amplitude" 1
 PARAMETER "SquareWave" "BaseValue" 0
-COMPONENT "SignalSubtract" "Subtract" 2303 2547 0 0 0
-COMPONENT "HydraulicTankC" "Tank" 2255 2677 0 0 0
-PARAMETER "Tank" "P" 100000
-COMPONENT "MechanicTranslationalMass" "TranslationalMass" 2689 2450 0 0 0
-PARAMETER "TranslationalMass" "Mass" 5
-PARAMETER "TranslationalMass" "B" 10
-PARAMETER "TranslationalMass" "k" 10
-COMPONENT "HydraulicVolume" "Volume" 2427 2607 0 0 0
-PARAMETER "Volume" "V" 0.001
-PARAMETER "Volume" "Be" 1e+09
-PARAMETER "Volume" "a" 0
-PARAMETER "Volume" "debug" 0
-PARAMETER "Volume" "t1" 0
-PARAMETER "Volume" "t2" 0.01
-COMPONENT "HydraulicVolume" "Volume_1" 2428 2652 0 0 0
-PARAMETER "Volume_1" "V" 0.001
-PARAMETER "Volume_1" "Be" 1e+09
-PARAMETER "Volume_1" "a" 0
-PARAMETER "Volume_1" "debug" 0
-PARAMETER "Volume_1" "t1" 0
-PARAMETER "Volume_1" "t2" 0.01
+COMPONENT "MechanicForceTransformer" "ForceTransformer" 2779 2450 180 0 0
+PARAMETER "ForceTransformer" "x0" 1
+PARAMETER "ForceTransformer" "v0" 0
+PARAMETER "ForceTransformer" "Force" 0
+COMPONENT "HydraulicLaminarOrifice" "LaminarOrifice_1" 2333 2652 90 0 0
+PARAMETER "LaminarOrifice_1" "Kc" 1e-08
 --------------------------------------------------------------
 CONNECT "Volume_1" "P2" "43Valve" "PT" 2453 2652 2540.97 2652 2540.97 2562
 CONNECT "Volume" "P2" "43Valve" "PP" 2452 2607 2520.92 2607 2520.92 2562

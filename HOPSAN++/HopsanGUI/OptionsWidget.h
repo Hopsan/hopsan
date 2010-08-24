@@ -48,6 +48,7 @@
 #include <QDialogButtonBox>
 #include <QGroupBox>
 #include <QGridLayout>
+#include <QToolButton>
 
 class MainWindow;
 
@@ -63,8 +64,10 @@ public:
 
 
     QCheckBox *invertWheelCheckBox;
-    QGroupBox *interfaceGroupBox;
+    QLabel *backgroundColorLabel;
+    QToolButton *backgroundColorButton;
     QGridLayout *interfaceLayout;
+    QGroupBox *interfaceGroupBox;
 
     QCheckBox *useMulticoreCheckBox;
     QLabel *progressBarLabel;
@@ -82,6 +85,7 @@ public:
 
 public slots:
     void updateValues();
+    void colorDialog();
 };
 
 #endif // OptionsWidget_H
