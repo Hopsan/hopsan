@@ -97,10 +97,13 @@ public slots:
 
 signals:
     void deselectAllNameText();
+    void hideAllNameText();
+    void showAllNameText();
     void deselectAllGUIObjects();
-    void deselectAllGUIConnectors();
     void selectAllGUIObjects();
+    void deselectAllGUIConnectors();
     void selectAllGUIConnectors();
+    void setAllGfxType(graphicsType);
     void checkMessages();
     void deleteSelected();
 

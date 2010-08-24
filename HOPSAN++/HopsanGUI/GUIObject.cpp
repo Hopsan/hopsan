@@ -105,6 +105,9 @@ GUIObject::GUIObject(QPoint position, qreal rotation, AppearanceData appearanceD
     {
         connect(mpParentSystem->mpParentProjectTab->mpGraphicsView,SIGNAL(zoomChange()),this,SLOT(adjustTextPositionToZoom()));
         connect(mpParentSystem, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
+        connect(mpParentSystem, SIGNAL(hideAllNameText()), this, SLOT(hideName()));
+        connect(mpParentSystem, SIGNAL(showAllNameText()), this, SLOT(showName()));
+        connect(mpParentSystem, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIcon(graphicsType)));
     }
 }
 

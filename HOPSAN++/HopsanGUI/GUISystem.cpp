@@ -1001,21 +1001,8 @@ void GUISystem::paste()
 //! Selects all objects and connectors.
 void GUISystem::selectAll()
 {
-//        //Select all components
-//    QMap<QString, GUIObject *>::iterator it;
-//    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
-//    {
-//        it.value()->setSelected(true);
-//    }
     emit selectAllGUIObjects();
     emit selectAllGUIConnectors();
-
-//        //Select all connectors
-//    QMap<QString, GUIConnector*>::iterator it2;
-//    for(int i = 0; i != mSubConnectorList.size(); ++i)
-//    {
-//        mSubConnectorList[i]->doSelect(true, -1);
-//    }
 }
 
 
@@ -1031,13 +1018,9 @@ void GUISystem::deselectAll()
 //! @see showNames()
 void GUISystem::hideNames()
 {
-    emit deselectAllNameText();
     mIsRenamingObject = false;
-    QMap<QString, GUIObject *>::iterator it;
-    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
-    {
-        it.value()->hideName();
-    }
+    emit deselectAllNameText();
+    emit hideAllNameText();
 }
 
 
@@ -1045,15 +1028,11 @@ void GUISystem::hideNames()
 //! @see hideNames()
 void GUISystem::showNames()
 {
-    QMap<QString, GUIObject *>::iterator it;
-    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
-    {
-        it.value()->showName();
-    }
+    emit showAllNameText();
 }
 
 
-//! Slot that sets hide ports flag to true
+//! Slot that sets hide ports flag to true or false
 //! @see unHidePorts()
 void GUISystem::hidePorts(bool doIt)
 {
@@ -1238,14 +1217,5 @@ void GUISystem::updateSimulationSetupWidget()
 void GUISystem::setGfxType(graphicsType gfxType)
 {
     this->mGfxType = gfxType;
-    for(int i = 0; i!=mSubConnectorList.size(); ++i)
-    {
-        mSubConnectorList[i]->setIsoStyle(gfxType);
-    }
-
-    QMap<QString, GUIObject*>::iterator it2;
-    for(it2 = mGUIObjectMap.begin(); it2!=mGUIObjectMap.end(); ++it2)
-    {
-        it2.value()->setIcon(gfxType);
-    }
+    emit setAllGfxType(mGfxType);
 }

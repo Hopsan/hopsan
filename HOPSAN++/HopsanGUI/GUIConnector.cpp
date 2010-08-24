@@ -66,6 +66,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUISystem *parentSystem, QGraphic
     setFlags(QGraphicsItem::ItemIsFocusable);
     connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange()), this, SLOT(adjustToZoom()));
     connect(mpParentSystem, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
+    connect(mpParentSystem, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIsoStyle(graphicsType)));
 
     QPointF startPos = startPort->mapToScene(startPort->boundingRect().center());
     this->setPos(startPos);
