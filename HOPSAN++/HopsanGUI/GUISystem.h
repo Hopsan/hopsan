@@ -24,7 +24,7 @@ class GUISystem : public GUIContainerObject
 {
     Q_OBJECT
 public:
-    GUISystem( QPoint position, qreal rotation, AppearanceData appearanceData, GUISystem *system, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
+    GUISystem( QPoint position, qreal rotation, const AppearanceData* pAppearanceData, GUISystem *system, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
     GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *parent);
     ~GUISystem();
 
@@ -40,7 +40,7 @@ public:
     typedef QHash<QString, GUIObject*> GUIObjectMapT;
     GUIObjectMapT mGUIObjectMap;
     QList<GUIObject *> mSelectedGUIObjectsList;
-    GUIObject* addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
+    GUIObject* addGUIObject(AppearanceData* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
     void deleteGUIObject(QString componentName, undoStatus undoSettings=UNDO);
     void renameGUIObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
     bool haveGUIObject(QString name);

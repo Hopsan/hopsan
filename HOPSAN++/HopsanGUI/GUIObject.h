@@ -67,7 +67,7 @@ class GUIObject : public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    GUIObject(QPoint position, qreal rotation, AppearanceData appearanceData, selectionStatus startSelected = DESELECTED, graphicsType graphics = USERGRAPHICS, GUISystem *system = 0, QGraphicsItem *parent = 0);
+    GUIObject(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType graphics = USERGRAPHICS, GUISystem *system = 0, QGraphicsItem *parent = 0);
     ~GUIObject();
 
     void rememberConnector(GUIConnector *item);
@@ -216,7 +216,7 @@ class GUIContainerObject : public GUIObject
     Q_OBJECT
 public:
     enum CONTAINERSTATUS {CLOSED, OPEN, ROOT};
-    GUIContainerObject(QPoint position, qreal rotation, AppearanceData appearanceData, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, GUISystem *system=0, QGraphicsItem *parent = 0);
+    GUIContainerObject(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, GUISystem *system=0, QGraphicsItem *parent = 0);
     void makeRootSystem();
 
 protected:
@@ -230,7 +230,7 @@ class GUIComponent : public GUIObject
 {
     Q_OBJECT
 public:
-    GUIComponent(AppearanceData appearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
+    GUIComponent(AppearanceData* pAppearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
     ~GUIComponent();
 
     QVector<QString> getParameterNames();
@@ -303,7 +303,7 @@ class GUISystemPort : public GUIObject
 {
     Q_OBJECT
 public:
-    GUISystemPort(AppearanceData appearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected = SELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
+    GUISystemPort(AppearanceData* pAppearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected = SELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
     ~GUISystemPort();
     QString getTypeName();
     void setName(QString newName, renameRestrictions renameSettings);
@@ -323,7 +323,7 @@ class GUIGroup : public GUIContainerObject
 {
     Q_OBJECT
 public:
-    GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData, GUISystem *system, QGraphicsItem *parent = 0);
+    GUIGroup(QList<QGraphicsItem*> compList, AppearanceData* pAppearanceData, GUISystem *system, QGraphicsItem *parent = 0);
     ~GUIGroup();
 //    QString getName();
 //    void setName(QString name, bool doOnlyLocalRename=false);
@@ -366,7 +366,7 @@ class GUIGroupPort : public GUIObject
 {
     Q_OBJECT
 public:
-    GUIGroupPort(AppearanceData appearanceData, QPoint position, GUISystem *system, QGraphicsItem *parent = 0);
+    GUIGroupPort(AppearanceData* pAppearanceData, QPoint position, GUISystem *system, QGraphicsItem *parent = 0);
     QString getTypeName();
     void setName(QString newName);
 

@@ -199,7 +199,7 @@ GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, G
         AppearanceData appearanceData = *pAppearanceData; //Make a copy
         appearanceData.setName(rData.name);
 
-        GUIObject* pObj = pSystem->addGUIObject(appearanceData, QPoint(rData.posX, rData.posY), 0, DESELECTED, undoSettings);
+        GUIObject* pObj = pSystem->addGUIObject(&appearanceData, QPoint(rData.posX, rData.posY), 0, DESELECTED, undoSettings);
         pObj->setNameTextPos(rData.nameTextPos);
         if(!rData.textVisible)
         {

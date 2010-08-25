@@ -1,6 +1,4 @@
 #include "myLib.h"
-//#include "../../HopsanCore/Component.h"
-//#include "../../HopsanCore/win32dll.h"
 #include "../../HopsanCore/ComponentEssentials.h"
 using namespace hopsan;
 

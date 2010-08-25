@@ -117,19 +117,19 @@ void GraphicsView::dropEvent(QDropEvent *event)
         //QByteArray *data = new QByteArray;
         //*data = event->mimeData()->data("application/x-text");
 
-        QString datastr =  event->mimeData()->text();
-        QTextStream stream(&datastr, QIODevice::ReadOnly);
+        QString typestring = event->mimeData()->text();
+        //QTextStream stream(&datastr, QIODevice::ReadOnly);
 
-        AppearanceData appearanceData;
-        stream >> appearanceData;
+        AppearanceData* pAppearanceData = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(typestring);
+        //stream >> appearanceData;
 
         //! @todo Check if appearnaceData OK otherwihse do not add
 
-        if(appearanceData.mIsOK)
+        if(pAppearanceData != 0)
         {
             event->accept();
             QPoint position = event->pos();
-            mpSystem->addGUIObject(appearanceData, this->mapToScene(position).toPoint());
+            mpSystem->addGUIObject(pAppearanceData, this->mapToScene(position).toPoint());
         }
     }
 }

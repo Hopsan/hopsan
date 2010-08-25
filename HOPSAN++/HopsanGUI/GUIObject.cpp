@@ -65,13 +65,13 @@ double dist(double x1,double y1, double x2, double y2)
     return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
 }
 
-GUIObject::GUIObject(QPoint position, qreal rotation, AppearanceData appearanceData, selectionStatus startSelected, graphicsType gfxType, GUISystem *system, QGraphicsItem *parent)
+GUIObject::GUIObject(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUISystem *system, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
     //remeber the scene ptr
 
     //Make a local copy of the appearance data (that can safely be modified if needed)
-    mAppearanceData = appearanceData;
+    mAppearanceData = *pAppearanceData;
 
     mpParentSystem = system;
 
@@ -1056,8 +1056,8 @@ void GUIObject::deleteMe()
     mpParentSystem->deleteGUIObject(this->getName());
 }
 
-GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, AppearanceData appearanceData, selectionStatus startSelected, graphicsType gfxType, GUISystem *system, QGraphicsItem *parent)
-        : GUIObject(position, rotation, appearanceData, startSelected, gfxType, system, parent)
+GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUISystem *system, QGraphicsItem *parent)
+        : GUIObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
 {
     //Something
 }
@@ -1072,8 +1072,8 @@ GUIContainerObject::CONTAINERSTATUS GUIContainerObject::getContainerStatus()
     return mContainerStatus;
 }
 
-GUIComponent::GUIComponent(AppearanceData appearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
-    : GUIObject(position, rotation, appearanceData, startSelected, gfxType, system, parent)
+GUIComponent::GUIComponent(AppearanceData* pAppearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
+    : GUIObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
 {
     //Create the object in core, and get its default core name
     mAppearanceData.setName(mpParentSystem->mpCoreSystemAccess->createComponent(mAppearanceData.getTypeName(), mAppearanceData.getName()));
@@ -1199,7 +1199,7 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
             AppearanceData appdata;
             appdata.setIconPathUser("subsystemtmp.svg");
             appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
-            GUIGroup *pGroup = new GUIGroup(this->scene()->selectedItems(), appdata, mpParentSystem);
+            GUIGroup *pGroup = new GUIGroup(this->scene()->selectedItems(), &appdata, mpParentSystem);
             this->scene()->addItem(pGroup);
         }
         else if (selectedAction == showNameAction)
@@ -1579,8 +1579,8 @@ void GUIComponent::saveToTextStream(QTextStream &rStream, QString prepend)
 //    }
 //}
 
-GUISystemPort::GUISystemPort(AppearanceData appearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
-        : GUIObject(position, rotation, appearanceData, startSelected, gfxType, system, parent)
+GUISystemPort::GUISystemPort(AppearanceData* pAppearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
+        : GUIObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
 {
     //Sets the ports
     createPorts();
@@ -1674,8 +1674,8 @@ QString GUIGroup::getTypeName()
 //! @param appearanceData defines the appearance for the group.
 //! @param scene is the scene which should contain the group.
 //! @param parent is the parent QGraphicsItem for the group, default = 0.
-GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData, GUISystem *system, QGraphicsItem *parent)
-    :   GUIContainerObject(QPoint(0.0,0.0), 0, appearanceData, DESELECTED, USERGRAPHICS, system, parent)
+GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData* pAppearanceData, GUISystem *system, QGraphicsItem *parent)
+    :   GUIContainerObject(QPoint(0.0,0.0), 0, pAppearanceData, DESELECTED, USERGRAPHICS, system, parent)
 {
 
     this->setDisplayName(QString("Grupp_test"));
@@ -1800,7 +1800,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData appearanceData
         groupPortPoint += pPortBoundaryInside->mapToScene(pPortBoundaryInside->boundingRect().center()).toPoint();
 
         //Add a new group port for the boundary at the boundary connector
-        pGroupPortComponent = new GUIGroupPort(appData, groupPortPoint, mpParentSystem);
+        pGroupPortComponent = new GUIGroupPort(&appData, groupPortPoint, mpParentSystem);
         GUIPort *pPort = pGroupPortComponent->getPort("sysp");
         QString portName;
         if(pPort)
@@ -1955,8 +1955,8 @@ void GUIGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 //mpIcon->setGraphicsEffect(graphicsColor);
 
 
-GUIGroupPort::GUIGroupPort(AppearanceData appearanceData, QPoint position, GUISystem *system, QGraphicsItem *parent)
-    : GUIObject(position, 0, appearanceData, DESELECTED, USERGRAPHICS, system, parent)
+GUIGroupPort::GUIGroupPort(AppearanceData* pAppearanceData, QPoint position, GUISystem *system, QGraphicsItem *parent)
+    : GUIObject(position, 0, pAppearanceData, DESELECTED, USERGRAPHICS, system, parent)
 
 {
     //Sets the ports

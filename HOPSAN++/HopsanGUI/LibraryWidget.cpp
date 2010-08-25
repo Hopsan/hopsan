@@ -191,25 +191,26 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
 
 
     //QByteArray *data = new QByteArray;
-    QString datastr;
-    QTextStream stream(&datastr);//, QIODevice::WriteOnly);
+    //QString datastr;
+    //QTextStream stream(&datastr);//, QIODevice::WriteOnly);
 
     QListWidgetItem *pItem = this->currentItem();
     //    LibraryContentItem* pContItem = q
 
-    //! @todo actually quite stupid to stream ALL of the data, when the receiving side could just ask for it already in binary form from the library (as the load functions do)
+    ////! @todo actually quite stupid to stream ALL of the data, when the receiving side could just ask for it already in binary form from the library (as the load functions do)
     //stream out appearance data and extra basepath info
-    stream << *(mpParentLibraryWidget->getAppearanceDataByDisplayName(pItem->toolTip()));
-    stream << "BASEPATH " << mpParentLibraryWidget->getAppearanceDataByDisplayName(pItem->toolTip())->getBasePath();
+//    stream << *(mpParentLibraryWidget->getAppearanceDataByDisplayName(pItem->toolTip()));
+//    stream << "BASEPATH " << mpParentLibraryWidget->getAppearanceDataByDisplayName(pItem->toolTip())->getBasePath();
+    ////stream << mpParentLibraryWidget->getAppearanceDataByDisplayName(pItem->toolTip())->getTypeName();
 
     QMimeData *mimeData = new QMimeData;
-    mimeData->setText(datastr);
+    mimeData->setText(mpParentLibraryWidget->getAppearanceDataByDisplayName(pItem->toolTip())->getTypeName());
 
     QDrag *drag = new QDrag(this);
     drag->setMimeData(mimeData);
     drag->setPixmap(pItem->icon().pixmap(40,40));
 
-    qDebug() << "Debug stream: " << mimeData->text();
+    //qDebug() << "Debug stream: " << mimeData->text();
 
     drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()/2));
     drag->exec(Qt::CopyAction | Qt::MoveAction);

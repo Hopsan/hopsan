@@ -15,8 +15,8 @@
 #include "loadObjects.h"
 #include "CoreSystemAccess.h"
 
-GUISystem::GUISystem(QPoint position, qreal rotation, AppearanceData appearanceData, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
-    : GUIContainerObject(position, rotation, appearanceData, startSelected, gfxType, system, parent)
+GUISystem::GUISystem(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
+    : GUIContainerObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
 {
     this->mpParentProjectTab = system->mpParentProjectTab;
     this->commonConstructorCode();
@@ -24,7 +24,7 @@ GUISystem::GUISystem(QPoint position, qreal rotation, AppearanceData appearanceD
 
 //Root system specific constructor
 GUISystem::GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *parent)
-    : GUIContainerObject(QPoint(0,0), 0, AppearanceData(), DESELECTED, USERGRAPHICS, 0, parent)
+    : GUIContainerObject(QPoint(0,0), 0, &AppearanceData(), DESELECTED, USERGRAPHICS, 0, parent)
 {
     this->mpParentProjectTab = parentProjectTab;
     this->commonConstructorCode();
@@ -454,7 +454,7 @@ void GUISystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
             AppearanceData appdata;
             appdata.setIconPathUser("subsystemtmp.svg");
             appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
-            GUIGroup *pGroup = new GUIGroup(this->scene()->selectedItems(), appdata, mpParentSystem);
+            GUIGroup *pGroup = new GUIGroup(this->scene()->selectedItems(), &appdata, mpParentSystem);
             mpScene->addItem(pGroup);
         }
         else if (selectedAction == showNameAction)
@@ -548,25 +548,25 @@ void GUISystem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 //! @param position is the position where the component will be created.
 //! @param name will be the name of the component.
 //! @returns a pointer to the created and added object
-GUIObject* GUISystem::addGUIObject(AppearanceData appearanceData, QPoint position, qreal rotation, selectionStatus startSelected, undoStatus undoSettings)
+GUIObject* GUISystem::addGUIObject(AppearanceData* pAppearanceData, QPoint position, qreal rotation, selectionStatus startSelected, undoStatus undoSettings)
 {
         //Deselect all other components and connectors
     emit deselectAllGUIObjects();
     emit deselectAllGUIConnectors();
 
-    QString componentTypeName = appearanceData.getTypeName();
-    qDebug()  << "Add GUIObject, typename: " << componentTypeName << " displayname: " << appearanceData.getName() << " systemname: " << this->getName();
+    QString componentTypeName = pAppearanceData->getTypeName();
+    qDebug()  << "Add GUIObject, typename: " << componentTypeName << " displayname: " << pAppearanceData->getName() << " systemname: " << this->getName();
     if (componentTypeName == "Subsystem")
     {
-        mpTempGUIObject= new GUISystem(position, rotation, appearanceData, this, startSelected, mGfxType);
+        mpTempGUIObject= new GUISystem(position, rotation, pAppearanceData, this, startSelected, mGfxType);
     }
     else if (componentTypeName == "SystemPort")
     {
-        mpTempGUIObject = new GUISystemPort(appearanceData, position, rotation, this, startSelected, mGfxType);
+        mpTempGUIObject = new GUISystemPort(pAppearanceData, position, rotation, this, startSelected, mGfxType);
     }
     else //Assume some standard component type
     {
-        mpTempGUIObject = new GUIComponent(appearanceData, position, rotation, this, startSelected, mGfxType);
+        mpTempGUIObject = new GUIComponent(pAppearanceData, position, rotation, this, startSelected, mGfxType);
     }
 
     mpScene->addItem(mpTempGUIObject);
