@@ -34,21 +34,22 @@ namespace hopsan {
         NodeFactory* mpNodeFactory;
         ComponentFactory* mpComponentFactory;
         HopsanCoreMessageHandler* mpMessageHandler;
+        LoadExternal mExternalLoader;
 
         void Initialize();
         HopsanEssentials();
 
     public:
-        LoadExternal externalLoader;
-        HopsanCoreMessage getMessage();
-        size_t checkMessage();
-
-
         static HopsanEssentials* getInstance();
         ~HopsanEssentials();
 
         Component* CreateComponent(const std::string &rString);
         ComponentSystem* CreateComponentSystem();
+
+        HopsanCoreMessage getMessage();
+        size_t checkMessage();
+
+        void loadExternalComponent(const std::string path);
     };
 }
 

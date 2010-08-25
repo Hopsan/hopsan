@@ -42,7 +42,7 @@ HopsanEssentials::HopsanEssentials()
     mpNodeFactory = getCoreNodeFactoryPtr();
     mpComponentFactory = getCoreComponentFactoryPtr();
     mpMessageHandler = getCoreMessageHandlerPtr();
-    externalLoader.setFactory(mpComponentFactory, mpNodeFactory);
+    mExternalLoader.setFactory(mpComponentFactory, mpNodeFactory);
     Initialize();
 }
 
@@ -97,4 +97,9 @@ HopsanCoreMessage HopsanEssentials::getMessage()
 size_t HopsanEssentials::checkMessage()
 {
     return mpMessageHandler->nWaitingMessages();
+}
+
+void HopsanEssentials::loadExternalComponent(const string path)
+{
+    mExternalLoader.load(path);
 }

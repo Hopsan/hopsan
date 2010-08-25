@@ -173,7 +173,7 @@ void Component::initialize()
 
 void Component::simulateOneTimestep()
 {
-    cout << "Warning! You should implement your own method" << endl;
+    cout << "Warning! You should implement your own method: " << mName << endl;
     assert(false);
 }
 
