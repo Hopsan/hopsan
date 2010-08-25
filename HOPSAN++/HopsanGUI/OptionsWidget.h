@@ -61,9 +61,10 @@ public:
 
     MainWindow *mpParentMainWindow;
 
-
+    //! @todo Add "m" at the beginning of the members
 
     QCheckBox *invertWheelCheckBox;
+    QCheckBox *antiAliasingCheckBox;
     QLabel *backgroundColorLabel;
     QToolButton *backgroundColorButton;
     QGridLayout *interfaceLayout;

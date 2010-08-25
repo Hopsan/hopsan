@@ -74,6 +74,10 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     backgroundColorButton->setStyleSheet(QString("* { background-color: rgb(" + redString + "," + greenString + "," + blueString + ") }"));
     backgroundColorButton->setAutoRaise(true);
 
+    antiAliasingCheckBox = new QCheckBox(tr("Use Anti-Aliasing"));
+    antiAliasingCheckBox->setCheckable(true);
+    antiAliasingCheckBox->setChecked(mpParentMainWindow->mAntiAliasing);
+
     invertWheelCheckBox = new QCheckBox(tr("Invert Mouse Wheel"));
     invertWheelCheckBox->setCheckable(true);
     invertWheelCheckBox->setChecked(mpParentMainWindow->mInvertWheel);
@@ -81,8 +85,9 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     interfaceGroupBox = new QGroupBox(tr("Interface"));
     interfaceLayout = new QGridLayout;
     interfaceLayout->addWidget(invertWheelCheckBox, 0, 0);
-    interfaceLayout->addWidget(backgroundColorLabel, 1, 0);
-    interfaceLayout->addWidget(backgroundColorButton, 1, 1);
+    interfaceLayout->addWidget(antiAliasingCheckBox, 1, 0);
+    interfaceLayout->addWidget(backgroundColorLabel, 2, 0);
+    interfaceLayout->addWidget(backgroundColorButton, 2, 1);
     interfaceGroupBox->setLayout(interfaceLayout);
 
         //Simulation Options
@@ -135,6 +140,11 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
 void OptionsWidget::updateValues()
 {
     mpParentMainWindow->mInvertWheel = invertWheelCheckBox->isChecked();
+    mpParentMainWindow->mAntiAliasing = antiAliasingCheckBox->isChecked();
+    for(size_t i=0; i<mpParentMainWindow->mpProjectTabs->count(); ++i)
+    {
+        mpParentMainWindow->mpProjectTabs->getTab(i)->mpGraphicsView->setRenderHint(QPainter::Antialiasing, mpParentMainWindow->mAntiAliasing);
+    }
     mpParentMainWindow->mProgressBarStep = progressBarSpinBox->value();
     mpParentMainWindow->mUseMulticore = useMulticoreCheckBox->isChecked();
     mpParentMainWindow->saveSettings();

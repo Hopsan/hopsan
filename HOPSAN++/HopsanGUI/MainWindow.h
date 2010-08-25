@@ -92,6 +92,7 @@ public:
     bool mUseMulticore;
     int mProgressBarStep;
     QColor mBackgroundColor;
+    bool mAntiAliasing;
 
     QMenuBar *menubar;
     QMenu *menuFile;

@@ -48,8 +48,7 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     this->createActions();
     this->createMenus();
 
-        //! @todo Antialiasing could be an option for the user. It makes the view blurred, but will on the other hand makes it look better when zooming out.
-    //this->setRenderHint(QPainter::Antialiasing);
+    this->setRenderHint(QPainter::Antialiasing, mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mAntiAliasing);
 }
 
 

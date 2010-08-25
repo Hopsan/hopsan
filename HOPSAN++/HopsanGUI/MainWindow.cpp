@@ -575,6 +575,7 @@ void MainWindow::loadSettings()
     mUseMulticore = true;
     mProgressBarStep = 10;
     mBackgroundColor = QColor("white");
+    mAntiAliasing = false;
 
     QFile file("../../settings.txt");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -608,6 +609,11 @@ void MainWindow::loadSettings()
             QColor tempColor;
             tempColor.setNamedColor(inputWord);
             mBackgroundColor = tempColor;
+        }
+        if(inputWord == "ANTIALIASING")
+        {
+            inputStream >> inputWord;
+            mAntiAliasing = (inputWord == "TRUE");
         }
     }
     file.close();
@@ -650,6 +656,17 @@ void MainWindow::saveSettings()
 
     settingsFile << "BACKGROUNDCOLOR ";
     settingsFile << mBackgroundColor.name() << "\n";
+
+    settingsFile << "ANTIALIASING ";
+    if(mAntiAliasing)
+    {
+        settingsFile << "TRUE\n";
+    }
+    else
+    {
+        settingsFile << "FALSE\n";
+    }
+
     file.close();
 }
 
