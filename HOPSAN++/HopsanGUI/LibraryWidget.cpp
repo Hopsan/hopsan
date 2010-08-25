@@ -190,23 +190,10 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
     }
     mpParentLibraryWidget->mpComponentNameField->setText("");
 
-
-    //QByteArray *data = new QByteArray;
-    //QString datastr;
-    //QTextStream stream(&datastr);//, QIODevice::WriteOnly);
-
     QListWidgetItem *pItem = this->currentItem();
-    //    LibraryContentItem* pContItem = q
 
     if(!pItem)
         return;
-
-    ////! @todo actually quite stupid to stream ALL of the data, when the receiving side could just ask for it already in binary form from the library (as the load functions do)
-
-    //stream out appearance data and extra basepath info
-//    stream << *(mpParentLibraryWidget->getAppearanceDataByDisplayName(pItem->toolTip()));
-//    stream << "BASEPATH " << mpParentLibraryWidget->getAppearanceDataByDisplayName(pItem->toolTip())->getBasePath();
-    ////stream << mpParentLibraryWidget->getAppearanceDataByDisplayName(pItem->toolTip())->getTypeName();
 
     QMimeData *mimeData = new QMimeData;
     mimeData->setText(mpParentLibraryWidget->getAppearanceDataByDisplayName(pItem->toolTip())->getTypeName());
@@ -484,8 +471,8 @@ AppearanceData *LibraryWidget::getAppearanceData(QString componentType)
     {
         qDebug() << "Trying to fetch appearanceData for " + componentType + " which does not appear to exist in the Map, returning empty data";
         mpParentMainWindow->mpMessageWidget->printGUIWarningMessage("Trying to fetch appearanceData for " + componentType + " which does not appear to exist in the Map, returning empty data");
+        return 0;
     }
-
     return mLibraryContentItemPtrsMap.value(componentType)->getAppearanceData();
 }
 

@@ -109,22 +109,16 @@ void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 void GraphicsView::dropEvent(QDropEvent *event)
 {
     //if (event->mimeData()->hasFormat("application/x-text"))
-    if (event->mimeData()->hasText())               //! @todo We must check if it is the correct type of text in the drop object, otherwise it will crash if the user drops something that is not a gui object...
+    if (event->mimeData()->hasText())
     {
         mpSystem->mUndoStack->newPost();
         mpParentProjectTab->hasChanged();
 
-        //QByteArray *data = new QByteArray;
-        //*data = event->mimeData()->data("application/x-text");
 
         QString typestring = event->mimeData()->text();
-        //QTextStream stream(&datastr, QIODevice::ReadOnly);
-
         AppearanceData* pAppearanceData = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(typestring);
-        //stream >> appearanceData;
 
-        //! @todo Check if appearnaceData OK otherwihse do not add
-
+        //Check if appearnaceData OK otherwihse do not add (usefull if you drag some crap text into the window)
         if(pAppearanceData != 0)
         {
             event->accept();
