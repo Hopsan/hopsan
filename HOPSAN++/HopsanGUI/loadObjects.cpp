@@ -12,6 +12,7 @@
 #include "version.h"
 #include "GUISystem.h"
 #include "GUIUtilities.h"
+#include "GraphicsScene.h"
 
 void HeaderLoadData::read(QTextStream &rStream)
 {
@@ -267,7 +268,7 @@ void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, undoStatu
         GUIPort *endPort = pSystem->getGUIObject(endGuiObjName)->getPort(rData.endPortName);
 
         GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, rData.pointVector, pSystem);
-        pSystem->scene()->addItem(pTempConnector);
+        pSystem->mpScene->addItem(pTempConnector);
 
         //Hide connected ports
         startPort->hide();

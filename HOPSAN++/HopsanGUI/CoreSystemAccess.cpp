@@ -247,7 +247,7 @@ void CoreSystemAccess::simulate(double mStartTime, double mFinishTime, simulatio
     else
     {
         qDebug() << "Starting singlecore simulation";
-        mpCoreComponentSystem->simulateSingleThreaded(mStartTime, mFinishTime);
+        mpCoreComponentSystem->simulate(mStartTime, mFinishTime);
     }
 }
 

@@ -2120,12 +2120,12 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     //This overrides the multi-threaded simulation call with a single-threaded simulation if TBB is not installed.
 void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT)
 {
-    this->simulateSingleThreaded(startT, stopT);
+    this->simulate(startT, stopT);
 }
 #endif
 
 
-void ComponentSystem::simulateSingleThreaded(const double startT, const double stopT)
+void ComponentSystem::simulate(const double startT, const double stopT)
 {
     mStop = false; //This variable can not be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
 
