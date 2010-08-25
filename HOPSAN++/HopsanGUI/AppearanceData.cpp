@@ -515,7 +515,7 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
             if (!command.isEmpty())
             {
                 qDebug() << "appearanceData: Incorrect command: " + command;
-                sucess = false;
+//                sucess = false;
             }
         }
     }
