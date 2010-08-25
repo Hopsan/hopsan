@@ -379,7 +379,7 @@ void LibraryWidget::addExternalLibrary()
 {
     HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
 
-    pHopsanCore->externalLoader.load("../../EXTERNALPATH");
+    pHopsanCore->loadExternalComponent("../../HopsanGUI/componentData/UserLibs/TestLib/libmyLib.so");
 
     QString libDir = "../../HopsanGUI/componentData/UserLibs/TestLib";
 

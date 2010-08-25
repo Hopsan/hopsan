@@ -1,4 +1,4 @@
-TYPENAME "HydraulicWickedOrifice"
+TYPENAME "MyWickedOrifice"
 DISPLAYNAME "Wicked Orifice"
 ISOICON "wickedorifice_user.svg"
 USERICON "wickedorifice_user.svg"
