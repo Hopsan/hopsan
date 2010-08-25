@@ -340,14 +340,33 @@ QTextStream& operator <<(QTextStream &os, AppearanceData &rData)
     return os;
 }
 
+//! @brief get the type-name
+//! @returns The type-name
 QString AppearanceData::getTypeName()
 {
     return mTypeName;
 }
 
+//! @brief get the display name, even if it is empty
+//! @returns The display name
 QString AppearanceData::getName()
 {
     return mName;
+}
+
+//! @brief This function returns the name or typename (if name is empty)
+//! Useful if display name has not been specified, then we use the type name
+//! @returns A non-empty name
+QString AppearanceData::getNonEmptyName()
+{
+    if (mName.isEmpty())
+    {
+        return mTypeName;
+    }
+    else
+    {
+        return mName;
+    }
 }
 
 QString AppearanceData::getFullIconPath(graphicsType gfxType)

@@ -77,7 +77,7 @@ LibraryContentItem::LibraryContentItem(AppearanceData *pAppearanceData, QListWid
     //font.setPointSizeF(0.001);
     //this->setFont(font);
 
-    this->setToolTip(pAppearanceData->getName());
+    this->setToolTip(pAppearanceData->getNonEmptyName());
     this->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
 
     mpAppearanceData = pAppearanceData;
@@ -397,7 +397,7 @@ void LibraryWidget::addLibraryContentItem(QString libraryName, QString parentLib
         }
         ++it;
     }
-    mName2TypeMap.insert(newComponent->getAppearanceData()->getName(), newComponent->getAppearanceData()->getTypeName()); //! @todo this is a temporary workaround
+    mName2TypeMap.insert(newComponent->getAppearanceData()->getNonEmptyName(), newComponent->getAppearanceData()->getTypeName()); //! @todo this is a temporary workaround
 }
 
 

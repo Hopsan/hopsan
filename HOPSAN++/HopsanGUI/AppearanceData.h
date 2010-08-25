@@ -114,6 +114,7 @@ public:
 
     QString getTypeName();
     QString getName();
+    QString getNonEmptyName();
     QString getFullIconPath(graphicsType gfxType=USERGRAPHICS);
     QString getIconPathUser();
     QString getIconPathISO();
