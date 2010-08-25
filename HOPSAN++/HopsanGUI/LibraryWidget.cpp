@@ -324,6 +324,10 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
         QTextStream inFile(&file);  //Create a QTextStream object to stream the content of each file
         AppearanceData *pAppearanceData = new AppearanceData;
         bool sucess = pAppearanceData->setAppearanceData(inFile); //Read appearance from file
+        //*****Core Interaction*****
+        HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
+        sucess *= pHopsanCore->hasComponent(pAppearanceData->getTypeName().toStdString());
+        //**************************
         pAppearanceData->setBasePath(libDirObject.absolutePath() + "/");
 
         if (sucess)
@@ -377,6 +381,7 @@ void LibraryWidget::addLibrary()
 //! @see addLibrary(QString libDir, QString parentLib)
 void LibraryWidget::addExternalLibrary()
 {
+    //*****Core Interaction*****
     HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
 
 #ifdef WIN32
@@ -384,6 +389,7 @@ void LibraryWidget::addExternalLibrary()
 #else
     pHopsanCore->loadExternalComponent("../../HopsanGUI/componentData/UserLibs/TestLib/libmyLib.so");
 #endif
+    //**************************
 
     QString libDir = "../../HopsanGUI/componentData/UserLibs/TestLib";
 

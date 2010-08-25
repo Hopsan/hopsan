@@ -55,7 +55,7 @@ class GraphicsScene;
 class GraphicsView;
 class GUIConnector;
 class GUIObjectDisplayName;
-class HopsanEssentials;
+//class HopsanEssentials;
 class Component;
 class GUIObjectSelectionBox;
 class GUIPort;
