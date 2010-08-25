@@ -52,6 +52,7 @@
 #include "MessageWidget.h"
 #include "AppearanceData.h"
 
+using namespace std;
 using namespace hopsan;
 
 //! @class LibraryContentItem
@@ -197,7 +198,11 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
     QListWidgetItem *pItem = this->currentItem();
     //    LibraryContentItem* pContItem = q
 
+    if(!pItem)
+        return;
+
     ////! @todo actually quite stupid to stream ALL of the data, when the receiving side could just ask for it already in binary form from the library (as the load functions do)
+
     //stream out appearance data and extra basepath info
 //    stream << *(mpParentLibraryWidget->getAppearanceDataByDisplayName(pItem->toolTip()));
 //    stream << "BASEPATH " << mpParentLibraryWidget->getAppearanceDataByDisplayName(pItem->toolTip())->getBasePath();
@@ -327,7 +332,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
         bool sucess = pAppearanceData->setAppearanceData(inFile); //Read appearance from file
         //*****Core Interaction*****
         HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
-        sucess *= pHopsanCore->hasComponent(pAppearanceData->getTypeName().toStdString());
+        sucess *= pHopsanCore->hasComponent(pAppearanceData->getTypeName().toStdString()); //Check so that there is such component availible in the Core
         //**************************
         pAppearanceData->setBasePath(libDirObject.absolutePath() + "/");
 
