@@ -913,7 +913,7 @@ GUIObjectDisplayName::GUIObjectDisplayName(GUIObject *pParent)
 
 void GUIObjectDisplayName::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    emit textMoved(event->pos());
+    emit textMoved(this->pos());
     QGraphicsTextItem::mouseReleaseEvent(event);
 }
 

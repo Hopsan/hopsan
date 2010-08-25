@@ -381,18 +381,29 @@ void LibraryWidget::addLibrary()
 //! @see addLibrary(QString libDir, QString parentLib)
 void LibraryWidget::addExternalLibrary()
 {
-    //*****Core Interaction*****
-    HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
-
-#ifdef WIN32
-    pHopsanCore->loadExternalComponent("../../HopsanGUI/componentData/UserLibs/TestLib/wickedorifice.dll");
-    pHopsanCore->loadExternalComponent("../../HopsanGUI/componentData/UserLibs/TestLib/wickedvolume.dll");
-#else
-    pHopsanCore->loadExternalComponent("../../HopsanGUI/componentData/UserLibs/TestLib/libmyLib.so");
-#endif
-    //**************************
 
     QString libDir = "../../HopsanGUI/componentData/UserLibs/TestLib";
+
+    //*****Core Interaction*****
+
+        // Load all .dll or .so files in specified folder
+    HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
+    QDir libDirObject(libDir + "/");
+    QString libName = QString(libDirObject.dirName().left(1).toUpper() + libDirObject.dirName().right(libDirObject.dirName().size()-1));
+    QStringList filters;
+    #ifdef WIN32
+        filters << "*.dll";
+    #else
+        filters << "*.so";
+    #endif
+    libDirObject.setNameFilters(filters);
+    QStringList libList = libDirObject.entryList();
+    for (int i = 0; i < libList.size(); ++i)
+    {
+        QString filename = libDirObject.absolutePath() + "/" + libList.at(i);
+        pHopsanCore->loadExternalComponent(filename.toStdString());
+    }
+    //**************************
 
     addLibrary(libDir,QString("User defined libraries"));
 }
