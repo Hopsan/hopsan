@@ -729,6 +729,7 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
             }
             connect(mpParentSystem, SIGNAL(deselectAllGUIConnectors()), this, SLOT(deselect()));
             disconnect(mpParentSystem, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
+            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             this->setActive();
             for (int i=0; i != mpLines.size(); ++i)
             {
@@ -754,6 +755,7 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
                 mpParentSystem->mSelectedSubConnectorsList.removeOne(this);
                 disconnect(mpParentSystem, SIGNAL(deselectAllGUIConnectors()), this, SLOT(deselect()));
                 connect(mpParentSystem, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
+                disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             }
         }
     }
