@@ -52,6 +52,7 @@
 #include "MessageWidget.h"
 #include "AppearanceData.h"
 
+using namespace hopsan;
 
 //! @class LibraryContentItem
 //! @brief The LibraryContentItem contains the typename and icon to show in the library when selecting component or other guiobjects
@@ -368,6 +369,21 @@ void LibraryWidget::addLibrary()
                                                  | QFileDialog::DontResolveSymlinks);
     addLibrary(libDir,QString("User defined libraries"));
     //std::cout << qPrintable(libDir) << std::endl;
+}
+
+
+//! Load a external library and adds it to the 'User defined libraries'.
+//! @see addEmptyLibrary(QString libraryName, QString parentLibraryName)
+//! @see addLibrary(QString libDir, QString parentLib)
+void LibraryWidget::addExternalLibrary()
+{
+    HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
+
+    pHopsanCore->externalLoader.load("../../EXTERNALPATH");
+
+    QString libDir = "../../HopsanGUI/componentData/UserLibs/TestLib";
+
+    addLibrary(libDir,QString("User defined libraries"));
 }
 
 
