@@ -379,7 +379,11 @@ void LibraryWidget::addExternalLibrary()
 {
     HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
 
+#ifdef WIN32
+    pHopsanCore->loadExternalComponent("../../HopsanGUI/componentData/UserLibs/TestLib/libmyLib.dll");
+#else
     pHopsanCore->loadExternalComponent("../../HopsanGUI/componentData/UserLibs/TestLib/libmyLib.so");
+#endif
 
     QString libDir = "../../HopsanGUI/componentData/UserLibs/TestLib";
 
