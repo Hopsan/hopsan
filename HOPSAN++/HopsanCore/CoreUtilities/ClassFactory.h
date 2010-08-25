@@ -27,15 +27,15 @@ namespace hopsan {
     {
     public:
         ClassFactory() {}
-        ~ClassFactory() {}
+        //~ClassFactory() {}
 
         typedef _Base* (*CreatorFunctionT) (void);
         typedef std::map<_Key, CreatorFunctionT, _Predicator> FactoryMapT;
         typedef std::pair<_Key, CreatorFunctionT> FactoryPairT;
         //typedef std::vector<FactoryPairT> FactoryPairVectorT;
 
-        // Used to register creator functions
-        _Key RegisterCreatorFunction(_Key idKey, CreatorFunctionT classCreator)
+        //! @brief Used to register creator functions
+        _Key registerCreatorFunction(_Key idKey, CreatorFunctionT classCreator)
         {
             std::cout << "Registering: " << idKey << std::endl;
             //std::cout << "BeforeInsert: Size: " << mFactoryMap.size() << std::endl;
@@ -50,7 +50,7 @@ namespace hopsan {
         }
 
         //! @brief Tries to create instance based on the key using creator function (if provided)
-        _Base* CreateInstance(_Key idKey)
+        _Base* createInstance(_Key idKey)
         {
             //std::cout << "Create: Size: " << mFactoryMap.size() << std::endl;
             typename FactoryMapT::iterator it = mFactoryMap.find(idKey);
@@ -78,7 +78,8 @@ namespace hopsan {
             }
         }
 
-        void UnRegisterCreatorFunction(_Key idKey)
+        //! @brief Use this to unregister creator functions
+        void unRegisterCreatorFunction(_Key idKey)
         {
             size_t rc;
             rc = mFactoryMap.erase(idKey);
@@ -92,7 +93,8 @@ namespace hopsan {
             }
         }
 
-        void ClearFactory()
+        //! @brief Use this to clear the entire factory map (unregister everything)
+        void clearFactory()
         {
             mFactoryMap.clear();
         }
@@ -100,12 +102,6 @@ namespace hopsan {
     protected:
         // map where the construction info is stored
         FactoryMapT mFactoryMap;
-
-        //    static FactoryMapT * getFactoryMap()
-        //    {
-        //        static FactoryMapT smFactoryMap;
-        //        return &smFactoryMap;
-        //    }
     };
 }
 

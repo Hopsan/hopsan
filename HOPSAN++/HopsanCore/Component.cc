@@ -1233,7 +1233,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
             if (!pPort1->isConnected())
             {
                 //Create an instance of the node specified in nodespecifications
-                pNode = gCoreNodeFactory.CreateInstance(pPort2->getNodeType());
+                pNode = gCoreNodeFactory.createInstance(pPort2->getNodeType());
                 //Set nodetype in the systemport (should be empty by default)
                 pPort1->mNodeType = pPort2->getNodeType();
                 if( connectionOK(pNode, pPort1, pPort2) )
@@ -1273,7 +1273,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
             {
                 //! @todo both these checks could be boken out into subfunction as the code is the same only swapped 1 with 2
                 //Create an instance of the node specified in nodespecifications
-                pNode = gCoreNodeFactory.CreateInstance(pPort1->getNodeType());
+                pNode = gCoreNodeFactory.createInstance(pPort1->getNodeType());
                 //Set nodetype in the systemport (should be empty by default)
                 pPort2->mNodeType = pPort1->getNodeType();
                 if( connectionOK(pNode, pPort1, pPort2) )
@@ -1408,7 +1408,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
             else
             {
                 //Create an instance of the node specified in nodespecifications
-                pNode = gCoreNodeFactory.CreateInstance(pPort1->getNodeType());
+                pNode = gCoreNodeFactory.createInstance(pPort1->getNodeType());
                 cout << "Created NodeType: " << pNode->getNodeType() << endl;
                 // Check so the ports can be connected
                 if (!connectionOK(pNode, pPort1, pPort2))

@@ -67,8 +67,8 @@ HopsanEssentials::~HopsanEssentials()
     //Clear the factories
     //! @todo need to make sure that every one has destoyed all components/nodes before we unregister them, it probably cant be done from inside here
     std::cout << "Clearing factories" << std::endl;
-    mpNodeFactory->ClearFactory();
-    mpComponentFactory->ClearFactory();
+    mpNodeFactory->clearFactory();
+    mpComponentFactory->clearFactory();
 
     mHasInstance = false;
 }
@@ -77,7 +77,7 @@ HopsanEssentials::~HopsanEssentials()
 //!Creates a component with the specified key-value and returns a pointer to this component.
 Component* HopsanEssentials::CreateComponent(const string &rString)
 {
-        return mpComponentFactory->CreateInstance(rString.c_str());
+        return mpComponentFactory->createInstance(rString.c_str());
 }
 
 bool HopsanEssentials::hasComponent(const string type)
