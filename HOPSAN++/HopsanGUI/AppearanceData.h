@@ -127,13 +127,13 @@ public:
 
     QString getBasePath();
 
-    bool setAppearanceData(QTextStream &is);
+    void readFromTextStream(QTextStream &is);
 
     friend QTextStream& operator >>(QTextStream &is, AppearanceData &rData);
     friend QTextStream& operator <<(QTextStream &os, AppearanceData &rData);
 
     //This bool signals wheter there were errors when reading the data from input stream
-    bool mIsOK;
+    bool mIsReadOK;
 
 private:
     QString mTypeName;

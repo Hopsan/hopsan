@@ -300,45 +300,45 @@ AppearanceData::AppearanceData()
 }
 
 
-QTextStream& operator >>(QTextStream &is, AppearanceData &rData)
-{
-    //! @todo handle returned error indication
-    bool sucess = rData.setAppearanceData(is);
-    rData.mIsOK = sucess;
-    return is;
-}
+//QTextStream& operator >>(QTextStream &is, AppearanceData &rData)
+//{
+//    //! @todo handle returned error indication
+//    bool sucess = rData.readFromTextStream(is);
+//    rData.mIsReadOK = sucess;
+//    return is;
+//}
 
-QTextStream& operator <<(QTextStream &os, AppearanceData &rData)
-{
-    //! @todo maybe write header here (probaly not a good place, better somewhere else)
-    //! @todo find out how to make newline in qt instead of "\n"
-    os << "TYPENAME " << addQuotes(rData.mTypeName) << "\n";
-    os << "DISPLAYNAME " << addQuotes(rData.mName) << "\n";
-    //os << "BASEPATH " << rData.getBasePath() << "\n"; //Base path is computer dependant
-    if (!rData.mIconPathISO.isEmpty())
-    {
-        os << "ISOICON " << addQuotes(rData.mIconPathISO) << "\n";
-    }
-    if (!rData.mIconPathUser.isEmpty())
-    {
-        os << "USERICON " << addQuotes(rData.mIconPathUser) << "\n";
-    }
-    if (!rData.mIconRotationBehaviour.isEmpty())
-    {
-        os << "ICONROTATION " << rData.mIconRotationBehaviour << "\n";
-    }
+//QTextStream& operator <<(QTextStream &os, AppearanceData &rData)
+//{
+//    //! @todo maybe write header here (probaly not a good place, better somewhere else)
+//    //! @todo find out how to make newline in qt instead of "\n"
+//    os << "TYPENAME " << addQuotes(rData.mTypeName) << "\n";
+//    os << "DISPLAYNAME " << addQuotes(rData.mName) << "\n";
+//    //os << "BASEPATH " << rData.getBasePath() << "\n"; //Base path is computer dependant
+//    if (!rData.mIconPathISO.isEmpty())
+//    {
+//        os << "ISOICON " << addQuotes(rData.mIconPathISO) << "\n";
+//    }
+//    if (!rData.mIconPathUser.isEmpty())
+//    {
+//        os << "USERICON " << addQuotes(rData.mIconPathUser) << "\n";
+//    }
+//    if (!rData.mIconRotationBehaviour.isEmpty())
+//    {
+//        os << "ICONROTATION " << rData.mIconRotationBehaviour << "\n";
+//    }
 
-    PortAppearanceMapT::iterator it;
-    for (it = rData.mPortAppearanceMap.begin(); it != rData.mPortAppearanceMap.end(); ++it)
-    {
-        os << "PORT " << " "
-           << addQuotes(it.key()) << " "
-           << it.value().x << " "
-           << it.value().y << " "
-           << it.value().rot << "\n";
-    }
-    return os;
-}
+//    PortAppearanceMapT::iterator it;
+//    for (it = rData.mPortAppearanceMap.begin(); it != rData.mPortAppearanceMap.end(); ++it)
+//    {
+//        os << "PORT " << " "
+//           << addQuotes(it.key()) << " "
+//           << it.value().x << " "
+//           << it.value().y << " "
+//           << it.value().rot << "\n";
+//    }
+//    return os;
+//}
 
 //! @brief get the type-name
 //! @returns The type-name
@@ -430,47 +430,46 @@ QString AppearanceData::getBasePath()
     return mBasePath;
 }
 
-bool AppearanceData::setAppearanceData(QTextStream &is)
+void AppearanceData::readFromTextStream(QTextStream &rIs)
 {
     QString command;
     QString lineStr;
-    bool sucess = true;
+    this->mIsReadOK = true; //Assume read will be ok, set to false if fail bellow
 
-    while (!is.atEnd())
+    while (!rIs.atEnd())
     {
-        //! @todo make sure we dont read any file hader if that exist # in the begining
         //! @todo need som error handling here if file stream has incorect data
-        is >> command; //Read the command word
+        rIs >> command; //Read the command word
 
         if (command == "TYPENAME")
         {
-            mTypeName = readName(is.readLine().trimmed());
+            mTypeName = readName(rIs.readLine().trimmed());
         }
         else if (command == "DISPLAYNAME")
         {
-            mName = readName(is.readLine().trimmed());
+            mName = readName(rIs.readLine().trimmed());
         }
         else if (command == "ISOICON")
         {
-            mIconPathISO = readName(is.readLine().trimmed());
+            mIconPathISO = readName(rIs.readLine().trimmed());
         }
         else if (command == "USERICON")
         {
-            mIconPathUser = readName(is.readLine().trimmed());
+            mIconPathUser = readName(rIs.readLine().trimmed());
         }
         else if (command == "ICONROTATION")
         {
-            mIconRotationBehaviour = is.readLine().trimmed();
+            mIconRotationBehaviour = rIs.readLine().trimmed();
         }
         else if (command == "PORT")
         {
-            lineStr = is.readLine();
+            lineStr = rIs.readLine();
             QTextStream portStream(&lineStr);
             QString portName=readName(portStream);
             if(portName == "")
             {
                 qDebug() << "FEL I PORTNAMN";
-                return false;
+                mIsReadOK = false;
             }
 
             PortAppearance portapp;
@@ -478,19 +477,19 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
             if(portStream.atEnd())
             {
                 qDebug() << "SAKNAS DATA";
-                return false;
+                mIsReadOK = false;
             }
             portStream >> portapp.x;
             if(portStream.atEnd())
             {
                 qDebug() << "SAKNAS DATA";
-                return false;
+                mIsReadOK = false;
             }
             portStream >> portapp.y;
             if(portStream.atEnd())
             {
                 qDebug() << "SAKNAS DATA";
-                return false;
+                mIsReadOK = false;
             }
             portStream >> portapp.rot;
 
@@ -507,19 +506,25 @@ bool AppearanceData::setAppearanceData(QTextStream &is)
         }
         else if (command == "BASEPATH")
         {
-            mBasePath = is.readLine().trimmed();
+            mBasePath = rIs.readLine().trimmed();
         }
         else
         {
-            //Ignore empty lines
+            //If incorrect command discard rest of line, ignoring empty lines
             if (!command.isEmpty())
             {
-                qDebug() << "appearanceData: Incorrect command: " + command;
-//                sucess = false;
+                rIs.readLine().trimmed();
+                //qDebug() << "appearanceData: Incorrect command: " + command;
             }
         }
     }
-    return sucess;
+
+    //Check if read OK!
+    //We must have at least a type name
+    if (mTypeName.isEmpty())
+    {
+        mIsReadOK = false;
+    }
 }
 
 void AppearanceData::setTypeName(QString name)

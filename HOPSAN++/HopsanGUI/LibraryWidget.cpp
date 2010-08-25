@@ -314,29 +314,37 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
             return;
         }
 
+        bool sucess = true;
         QTextStream inFile(&file);  //Create a QTextStream object to stream the content of each file
         AppearanceData *pAppearanceData = new AppearanceData;
-        bool sucess = pAppearanceData->setAppearanceData(inFile); //Read appearance from file
-        //*****Core Interaction*****
-        HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
-        if(!((pAppearanceData->getTypeName()=="Subsystem") || (pAppearanceData->getTypeName()=="SystemPort"))) //Do not check if it is Subsystem or SystemPort
-            sucess *= pHopsanCore->hasComponent(pAppearanceData->getTypeName().toStdString()); //Check so that there is such component availible in the Core
-        //**************************
+        pAppearanceData->readFromTextStream(inFile); //Read appearance from file
         pAppearanceData->setBasePath(libDirObject.absolutePath() + "/");
+        if (!pAppearanceData->mIsReadOK)
+        {
+            mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Error when reading appearance data from file: " + filename);
+            sucess = false;
+        }
+        else
+        {
+            //*****Core Interaction*****
+            HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
+            if(!((pAppearanceData->getTypeName()=="Subsystem") || (pAppearanceData->getTypeName()=="SystemPort"))) //Do not check if it is Subsystem or SystemPort
+            {
+                sucess = pHopsanCore->hasComponent(pAppearanceData->getTypeName().toStdString()); //Check so that there is such component availible in the Core
+                if (!sucess)
+                {
+                    mpParentMainWindow->mpMessageWidget->printGUIWarningMessage("Warning: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)");
+                }
+            }
+            //**************************
+        }
 
         if (sucess)
         {
             //Create library content item
             LibraryContentItem *libcomp= new LibraryContentItem(pAppearanceData);
-
             //Add the component to the library
             addLibraryContentItem(libName, parentLib, libcomp);
-            //qDebug() << "Loaded item: " << pAppearanceData->getTypeName();
-        }
-        else
-        {
-            qDebug() << "Error reading appearanceFile: " << filename;
-            mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Failure when reading appearanceData file: " + filename);
         }
 
         //Close file
