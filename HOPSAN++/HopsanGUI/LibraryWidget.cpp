@@ -319,7 +319,8 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
         bool sucess = pAppearanceData->setAppearanceData(inFile); //Read appearance from file
         //*****Core Interaction*****
         HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
-        sucess *= pHopsanCore->hasComponent(pAppearanceData->getTypeName().toStdString()); //Check so that there is such component availible in the Core
+        if(!((pAppearanceData->getTypeName()=="Subsystem") || (pAppearanceData->getTypeName()=="SystemPort"))) //Do not check if it is Subsystem or SystemPort
+            sucess *= pHopsanCore->hasComponent(pAppearanceData->getTypeName().toStdString()); //Check so that there is such component availible in the Core
         //**************************
         pAppearanceData->setBasePath(libDirObject.absolutePath() + "/");
 
