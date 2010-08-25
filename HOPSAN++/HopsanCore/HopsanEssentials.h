@@ -44,12 +44,13 @@ namespace hopsan {
         ~HopsanEssentials();
 
         Component* CreateComponent(const std::string &rString);
+        bool hasComponent(const std::string type);
         ComponentSystem* CreateComponentSystem();
 
         HopsanCoreMessage getMessage();
         size_t checkMessage();
 
-        void loadExternalComponent(const std::string path);
+        bool loadExternalComponent(const std::string path);
     };
 }
 

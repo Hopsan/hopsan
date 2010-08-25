@@ -28,7 +28,7 @@ LoadExternal::LoadExternal()
 }
 
 //!This function loads a library with given path
-void LoadExternal::load(string libpath)
+bool LoadExternal::load(string libpath)
 {
     //typedef void (*register_contents_t)(ComponentFactory::FactoryPairVectorT *factory_vector_ptr);
     typedef void (*register_contents_t)(ComponentFactory* cfact_ptr, NodeFactory* nfact_ptr);
@@ -41,6 +41,7 @@ void LoadExternal::load(string libpath)
     {
         cout << "Error opening external lib: " << libpath << endl;
         //cout << dlerror() << endl;
+        return false;
         //exit(-1);
     }
     else
@@ -53,7 +54,7 @@ void LoadExternal::load(string libpath)
     {
         cout << "Cannot load symbol 'register_contents': " << GetLastError() << endl;
         //dlclose(handle);
-        //return 1;
+        return false;
     }
 #else
     void *lib_ptr;
@@ -64,6 +65,7 @@ void LoadExternal::load(string libpath)
     {
         cout << "Error opening external lib: " << libpath << endl;
         cout << dlerror() << endl;
+        return false;
         //exit(-1);
     }
     else
@@ -77,25 +79,13 @@ void LoadExternal::load(string libpath)
     {
         cout << "Cannot load symbol 'register_contents': " << dlsym_error << endl;
         //dlclose(handle);
-        //return 1;
+        return false;
     }
 
 #endif
 
-////    //Cant send factory ptr as it contain static memberfunctions for registering. Local static functions in dll will be used then = VERY BAD
-////    ComponentFactory::FactoryPairVectorT new_components;
-////    new_components.clear();                 //Make sure clean
-////    register_contents(&new_components);     //Send vector to dll for registration info
-////
-////    //Register all components given by dll or so
-////    ComponentFactory::FactoryPairVectorT::iterator it;
-////    for (it = new_components.begin(); it != new_components.end(); ++it)
-////    {
-////        ComponentFactory::RegisterCreatorFunction((*it).first, (*it).second);
-////    }
-
     register_contents(mpComponentFactory, mpNodeFactory);
-
+    return true;
 }
 
 //!This function sets the node and component factory pointers

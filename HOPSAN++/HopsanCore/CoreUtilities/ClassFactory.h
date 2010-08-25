@@ -23,11 +23,11 @@ namespace hopsan {
     //! http://www.codeproject.com/KB/architecture/SimpleDynCreate.aspx
     //!
     template <typename _Key, typename _Base, typename _Predicator = std::less<_Key> >
-                                                                    class ClassFactory
-                                                                    {
-                                                                    public:
-        ClassFactory() {};
-        ~ClassFactory() {};
+    class ClassFactory
+    {
+    public:
+        ClassFactory() {}
+        ~ClassFactory() {}
 
         typedef _Base* (*CreatorFunctionT) (void);
         typedef std::map<_Key, CreatorFunctionT, _Predicator> FactoryMapT;
@@ -49,7 +49,7 @@ namespace hopsan {
             return idKey;
         }
 
-        // tries to create instance based on the key using creator function (if provided)
+        //! @brief Tries to create instance based on the key using creator function (if provided)
         _Base* CreateInstance(_Key idKey)
         {
             //std::cout << "Create: Size: " << mFactoryMap.size() << std::endl;
@@ -63,6 +63,19 @@ namespace hopsan {
             }
             std::cout << "Warning key: " << idKey << " not found!" << std::endl;
             return NULL;
+        }
+
+        //! @brief Check if the factory have key registerd
+        bool hasKey(_Key idKey)
+        {
+            if (mFactoryMap.count(idKey) > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         void UnRegisterCreatorFunction(_Key idKey)

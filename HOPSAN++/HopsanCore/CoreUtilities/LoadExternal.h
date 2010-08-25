@@ -25,7 +25,7 @@ namespace hopsan {
 
     public:
         LoadExternal();
-        void load(std::string libpath);
+        bool load(std::string libpath);
         void setFactory(ComponentFactory* cfactory_ptr, NodeFactory* nfactory_ptr);
     };
 }

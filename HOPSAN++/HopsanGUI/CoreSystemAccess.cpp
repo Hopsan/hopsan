@@ -261,13 +261,21 @@ QString CoreSystemAccess::createComponent(QString type, QString name)
 {
     qDebug() << "createComponent: " << "type: " << type << " desired name:  " << name << " in system: " << this->getRootSystemName();
     Component *pCoreComponent = HopsanEssentials::getInstance()->CreateComponent(type.toStdString());
-    mpCoreComponentSystem->addComponent(pCoreComponent);
-    if (!name.isEmpty())
+    if (pCoreComponent != 0)
     {
-        pCoreComponent->setName(name.toStdString());
+        mpCoreComponentSystem->addComponent(pCoreComponent);
+        if (!name.isEmpty())
+        {
+            pCoreComponent->setName(name.toStdString());
+        }
+        qDebug() << "createComponent: name after add: " << QString::fromStdString(pCoreComponent->getName()) << " added to: " << QString::fromStdString(mpCoreComponentSystem->getName());
+        return QString::fromStdString(pCoreComponent->getName());
     }
-    qDebug() << "createComponent: name after add: " << QString::fromStdString(pCoreComponent->getName()) << " added to: " << QString::fromStdString(mpCoreComponentSystem->getName());
-    return QString::fromStdString(pCoreComponent->getName());
+    else
+    {
+        qDebug() << "failed to create component of type: " << type << " maybe it is not registered in the core";
+        return QString();
+    }
 }
 
 QString CoreSystemAccess::createSubSystem(QString name)

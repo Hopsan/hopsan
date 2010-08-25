@@ -80,6 +80,11 @@ Component* HopsanEssentials::CreateComponent(const string &rString)
         return mpComponentFactory->CreateInstance(rString.c_str());
 }
 
+bool HopsanEssentials::hasComponent(const string type)
+{
+    return mpComponentFactory->hasKey(type.c_str());
+}
+
 
 //! @todo for now a ugly special fix for component system, (It can not be created by the factory that only deals with Component* objects)
 ComponentSystem* HopsanEssentials::CreateComponentSystem()
@@ -99,7 +104,7 @@ size_t HopsanEssentials::checkMessage()
     return mpMessageHandler->nWaitingMessages();
 }
 
-void HopsanEssentials::loadExternalComponent(const string path)
+bool HopsanEssentials::loadExternalComponent(const string path)
 {
-    mExternalLoader.load(path);
+    return mExternalLoader.load(path);
 }
