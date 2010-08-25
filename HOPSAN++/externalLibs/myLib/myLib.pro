@@ -9,6 +9,11 @@ QT       -= core gui
 TARGET = myLib
 TEMPLATE = lib
 
+#DESTDIR = ../bin/debug
+LIBS += -L../../bin/debug \
+    -lHopsanCore
+INCLUDEPATH += ../HopsanCore
+
 DEFINES += MYLIB_LIBRARY
 
 SOURCES += myLib.cc
