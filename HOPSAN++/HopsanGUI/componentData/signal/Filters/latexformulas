@@ -1,3 +1,8 @@
+These formulas are meant for the latex formula renderer in inkscape 0.48
+You will need some dependencies for this render extension to show,
+On Linux you need, dvi2ps and pstoedit as well as latex.
+On windows you need, "write what you need here"
+
 lp1filter: \(\displaystyle\frac{1}{\frac{s}{w}+1}\)
 firstorder: \(\displaystyle\frac{\frac{s}{w_{1}}+1}{\frac{s}{w_{2}}+1}\)
 
