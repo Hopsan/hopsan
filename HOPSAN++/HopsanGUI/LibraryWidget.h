@@ -86,11 +86,15 @@ class LibraryContent : public QListWidget
     Q_OBJECT
 
 public:
-    LibraryContent(LibraryContent *pParentLibraryContent, LibraryWidget *pParentLibraryWidget);
+    LibraryContent(LibraryContent *pParentLibraryContent, QString mapKey, LibraryWidget *pParentLibraryWidget, QTreeWidgetItem *pParentTreeWidgetItem);
+    bool mIsUserLib;
+    QTreeWidgetItem *mpParentTreeWidgetItem;
+    QString mMapKey;
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void contextMenuEvent(QContextMenuEvent *);
 
 public slots:
     virtual void highLightItem(QListWidgetItem *item);
@@ -144,5 +148,6 @@ private:
     QTreeWidget *mpTree;
     QVBoxLayout *mpGrid;
 };
+
 
 #endif // LIBRARYWIDGET_H

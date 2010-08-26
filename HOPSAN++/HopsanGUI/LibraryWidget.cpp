@@ -121,10 +121,12 @@ void LibraryContentItem::selectIcon(graphicsType gfxType)
 
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
-LibraryContent::LibraryContent(LibraryContent *pParentLibraryContent, LibraryWidget *pParentLibraryWidget)
+LibraryContent::LibraryContent(LibraryContent *pParentLibraryContent, QString mapKey, LibraryWidget *pParentLibraryWidget, QTreeWidgetItem *pParentTreeWidgetItem)
     :   QListWidget(pParentLibraryContent)
 {
     mpParentLibraryWidget = pParentLibraryWidget;
+    mpParentTreeWidgetItem = pParentTreeWidgetItem;
+    mMapKey = mapKey;
     this->setViewMode(QListView::IconMode);
     this->setResizeMode(QListView::Adjust);
     this->setMouseTracking(true);
@@ -210,6 +212,52 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
 }
 
 
+void LibraryContent::contextMenuEvent(QContextMenuEvent *event)
+{
+    if(this->mIsUserLib)
+    {
+        QMenu menu;
+
+        QAction *unloadAction;
+        unloadAction = menu.addAction(tr("Unload Library"));
+
+        QCursor *cursor;
+        QAction *selectedAction = menu.exec(cursor->pos());
+
+        if (selectedAction == unloadAction)
+        {
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::information(this, tr("Information"), tr("Program must be restarted for this to take effect."));
+            for(size_t i=0; i<mpParentLibraryWidget->mpParentMainWindow->mUserLibs.size(); ++i)
+            {
+                if(mpParentLibraryWidget->mpParentMainWindow->mUserLibs.at(i).endsWith("/"+mpParentTreeWidgetItem->text(0)))
+                {
+                    mpParentLibraryWidget->mpParentMainWindow->mUserLibs.removeAt(i);
+                    --i;
+                }
+            }
+
+
+//            mpParentLibraryWidget->mpTree->removeItemWidget(mpParentTreeWidgetItem, 0);
+
+//            QHash<QString, LibraryContent*>::iterator lib;
+//            for (lib = mLibraryContentPtrsMap.begin(); lib != mLibraryContentPtrsMap.end(); ++lib)
+//            {
+//                mpParentLibraryWidget->mLibraryContentItemPtrsMap.remove(lib.value().)
+//            }
+
+//            mpParentLibraryWidget->mLibraryContentPtrsMap.remove(mMapKey);
+//            delete(mpParentTreeWidgetItem);
+//            delete(this);
+
+
+            //mpParentLibraryWidget->mpTree->(mpParentTreeWidgetItem, 0);
+
+        }
+    }
+}
+
+
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
 LibraryWidget::LibraryWidget(MainWindow *parent)
@@ -250,8 +298,10 @@ void LibraryWidget::addEmptyLibrary(QString libraryName, QString parentLibraryNa
     QTreeWidgetItem *newTreePost = new QTreeWidgetItem((QTreeWidget*)0);
     newTreePost->setText(0, QString(libraryName));
 
-    LibraryContent *newLibContent = new LibraryContent((LibraryContent*)0, this);
+    LibraryContent *newLibContent = new LibraryContent((LibraryContent*)0, parentLibraryName + libraryName, this, newTreePost);
     newLibContent->setDragEnabled(true);
+    newLibContent->mIsUserLib = (parentLibraryName == "User defined libraries");
+
     //newLibContent->setDropIndicatorShown(true);
     mLibraryContentPtrsMap.insert(parentLibraryName + libraryName, newLibContent);
 

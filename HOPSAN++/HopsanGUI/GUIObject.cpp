@@ -1177,47 +1177,47 @@ void GUIComponent::setParameterValue(QString name, double value)
 
 void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
-        QMenu menu;
+    QMenu menu;
 
-        QAction *groupAction;
-        if (!this->scene()->selectedItems().empty())
+    QAction *groupAction;
+    if (!this->scene()->selectedItems().empty())
+    {
+        groupAction = menu.addAction(tr("Group components"));
+    }
+
+    QAction *parameterAction = menu.addAction(tr("Change parameters"));
+    //menu.insertSeparator(parameterAction);
+
+    QAction *showNameAction = menu.addAction(tr("Show name"));
+    showNameAction->setCheckable(true);
+    showNameAction->setChecked(mpNameText->isVisible());
+
+    QAction *selectedAction = menu.exec(event->screenPos());
+
+    if (selectedAction == parameterAction)
+    {
+        openParameterDialog();
+    }
+    else if (selectedAction == groupAction)
+    {
+        //groupComponents(mpParentGraphicsScene->selectedItems());
+        AppearanceData appdata;
+        appdata.setIconPathUser("subsystemtmp.svg");
+        appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
+        GUIGroup *pGroup = new GUIGroup(this->scene()->selectedItems(), &appdata, mpParentSystem);
+        this->scene()->addItem(pGroup);
+    }
+    else if (selectedAction == showNameAction)
+    {
+        if(mpNameText->isVisible())
         {
-            groupAction = menu.addAction(tr("Group components"));
+            this->hideName();
         }
-
-        QAction *parameterAction = menu.addAction(tr("Change parameters"));
-        //menu.insertSeparator(parameterAction);
-
-        QAction *showNameAction = menu.addAction(tr("Show name"));
-        showNameAction->setCheckable(true);
-        showNameAction->setChecked(mpNameText->isVisible());
-
-        QAction *selectedAction = menu.exec(event->screenPos());
-
-        if (selectedAction == parameterAction)
+        else
         {
-            openParameterDialog();
+            this->showName();
         }
-        else if (selectedAction == groupAction)
-        {
-            //groupComponents(mpParentGraphicsScene->selectedItems());
-            AppearanceData appdata;
-            appdata.setIconPathUser("subsystemtmp.svg");
-            appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
-            GUIGroup *pGroup = new GUIGroup(this->scene()->selectedItems(), &appdata, mpParentSystem);
-            this->scene()->addItem(pGroup);
-        }
-        else if (selectedAction == showNameAction)
-        {
-            if(mpNameText->isVisible())
-            {
-                this->hideName();
-            }
-            else
-            {
-                this->showName();
-            }
-        }
+    }
 }
 
 
