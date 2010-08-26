@@ -160,6 +160,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
 
     connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange()), this, SLOT(adjustToZoom()));
     connect(mpParentSystem, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
+    connect(mpParentSystem, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIsoStyle(graphicsType)));
 }
 
 
