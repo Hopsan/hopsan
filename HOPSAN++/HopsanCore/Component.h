@@ -12,7 +12,7 @@
 
 #include "Node.h"
 #include "Port.h"
-#include "CoreUtilities/ClassFactory.h"
+#include "CoreUtilities/ClassFactory.hpp"
 #include "win32dll.h"
 #include <string>
 #include <list>

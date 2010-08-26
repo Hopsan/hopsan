@@ -1,5 +1,5 @@
 //!
-//! @file   ClassFactory.h
+//! @file   ClassFactory.hpp
 //! @author <peter.nordin@liu.se>
 //! @date   2009-12-26
 //!
@@ -7,32 +7,31 @@
 //!
 //$Id$
 
-#ifndef CLASFACTORY_H_INCLUDED
-#define CLASFACTORY_H_INCLUDED
+#ifndef CLASFACTORY_HPP_INCLUDED
+#define CLASFACTORY_HPP_INCLUDED
 
 #include <map>
-#include <vector>
 #include <iostream>
 
 namespace hopsan {
 
-    //!
     //! @brief Template class for automatic object instantiation by key-value.
     //!
     //! This code is based on:
     //! http://www.codeproject.com/KB/architecture/SimpleDynCreate.aspx
-    //!
     template <typename _Key, typename _Base, typename _Predicator = std::less<_Key> >
     class ClassFactory
     {
-    public:
-        ClassFactory() {}
-        //~ClassFactory() {}
-
+    protected:
         typedef _Base* (*CreatorFunctionT) (void);
         typedef std::map<_Key, CreatorFunctionT, _Predicator> FactoryMapT;
         typedef std::pair<_Key, CreatorFunctionT> FactoryPairT;
-        //typedef std::vector<FactoryPairT> FactoryPairVectorT;
+
+        //Map where the construction info is stored
+        FactoryMapT mFactoryMap;
+
+    public:
+        ClassFactory() {}
 
         //! @brief Used to register creator functions
         _Key registerCreatorFunction(_Key idKey, CreatorFunctionT classCreator)
@@ -49,7 +48,7 @@ namespace hopsan {
             return idKey;
         }
 
-        //! @brief Tries to create instance based on the key using creator function (if provided)
+        //! @brief Creates an instance based on the key using creator function (if registered)
         _Base* createInstance(_Key idKey)
         {
             //std::cout << "Create: Size: " << mFactoryMap.size() << std::endl;
@@ -65,7 +64,7 @@ namespace hopsan {
             return NULL;
         }
 
-        //! @brief Check if the factory have key registerd
+        //! @brief Check if the factory has key registerd
         bool hasKey(_Key idKey)
         {
             if (mFactoryMap.count(idKey) > 0)
@@ -78,7 +77,7 @@ namespace hopsan {
             }
         }
 
-        //! @brief Use this to unregister creator functions
+        //! @brief Unregister creator functions for given key
         void unRegisterCreatorFunction(_Key idKey)
         {
             size_t rc;
@@ -93,16 +92,12 @@ namespace hopsan {
             }
         }
 
-        //! @brief Use this to clear the entire factory map (unregister everything)
+        //! @brief Clear the entire factory map (unregister everything)
         void clearFactory()
         {
             mFactoryMap.clear();
         }
-
-    protected:
-        // map where the construction info is stored
-        FactoryMapT mFactoryMap;
     };
 }
 
-#endif // CLASFACTORY_H_INCLUDED
+#endif // CLASFACTORY_HPP_INCLUDED

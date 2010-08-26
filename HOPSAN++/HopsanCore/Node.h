@@ -10,7 +10,7 @@
 
 #include <vector>
 #include <string>
-#include "CoreUtilities/ClassFactory.h"
+#include "CoreUtilities/ClassFactory.hpp"
 #include "win32dll.h"
 
 namespace hopsan {

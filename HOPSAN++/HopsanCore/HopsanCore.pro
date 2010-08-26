@@ -60,7 +60,7 @@ HEADERS += win32dll.h \
     Nodes/Nodes.h \
     CoreUtilities/LoadExternal.h \
     CoreUtilities/FileAccess.h \
-    CoreUtilities/ClassFactory.h \
+    CoreUtilities/ClassFactory.hpp \
     Components/HydraulicComponentTemplate.hpp \
     Components/Components.h \
     Components/Signal/SignalTimeDelay.hpp \
