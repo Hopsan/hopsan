@@ -362,6 +362,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         {
             mpSystem->mpTempConnector->getStartPort()->isConnected = false;
             mpSystem->mpTempConnector->getStartPort()->show();
+            mpSystem->mpTempConnector->getStartPort()->getGuiObject()->forgetConnector(mpSystem->mpTempConnector);
             mpSystem->mIsCreatingConnector = false;
             mpSystem->mJustStoppedCreatingConnector = true;
         }

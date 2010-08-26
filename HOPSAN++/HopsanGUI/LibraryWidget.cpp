@@ -398,6 +398,7 @@ void LibraryWidget::addExternalLibrary()
     #else
         filters << "*.so";
     #endif
+
     libDirObject.setNameFilters(filters);
     QStringList libList = libDirObject.entryList();
     for (int i = 0; i < libList.size(); ++i)
