@@ -678,6 +678,7 @@ void GUISystem::renameGUIObject(QString oldName, QString newName, undoStatus und
 
         if (undoSettings == UNDO)
         {
+            mUndoStack->newPost();
             mUndoStack->registerRenameObject(oldName, modNewName);
         }
     }

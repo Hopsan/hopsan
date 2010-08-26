@@ -470,6 +470,7 @@ void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     {
         if(((*it)->mOldPos != (*it)->pos()) and (event->button() == Qt::LeftButton))
         {
+                //This check makes sure that only one undo post is created when moving several objects at once
             if(!alreadyClearedRedo)
             {
                 mpParentSystem->mUndoStack->newPost();
@@ -1178,7 +1179,9 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
         QAction *groupAction;
         if (!this->scene()->selectedItems().empty())
+        {
             groupAction = menu.addAction(tr("Group components"));
+        }
 
         QAction *parameterAction = menu.addAction(tr("Change parameters"));
         //menu.insertSeparator(parameterAction);
