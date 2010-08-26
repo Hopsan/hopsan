@@ -373,8 +373,15 @@ void LibraryWidget::addLibrary()
                                                  fileDialogOpenDir.currentPath(),
                                                  QFileDialog::ShowDirsOnly
                                                  | QFileDialog::DontResolveSymlinks);
-    mpParentMainWindow->mUserLibs.append(libDir);
-    addExternalLibrary(libDir);
+    if(!mpParentMainWindow->mUserLibs.contains(libDir))
+    {
+        mpParentMainWindow->mUserLibs.append(libDir);
+        addExternalLibrary(libDir);
+    }
+    else
+    {
+        mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Error: Library " + libDir + " is already loaded!");
+    }
     //std::cout << qPrintable(libDir) << std::endl;
 }
 
