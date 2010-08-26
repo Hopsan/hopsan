@@ -115,7 +115,7 @@ public:
     void addEmptyLibrary(QString libraryName, QString parentLibraryName=QString());
     void addLibrary(QString libDir, QString parentLib=QString());
     void addLibraryContentItem(QString libraryName, QString parentLibraryName, LibraryContentItem *newComponent);
-    void addExternalLibrary();
+    void addExternalLibrary(QString libDir);
     AppearanceData *getAppearanceData(QString componentType);
     AppearanceData *getAppearanceDataByDisplayName(QString displayName);
 

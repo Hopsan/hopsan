@@ -55,6 +55,7 @@
 #include "GraphicsView.h"
 #include "GraphicsScene.h"
 #include "GUISystem.h"
+#include "GUIUtilities.h"
 
 
 //! Constructor
@@ -138,7 +139,12 @@ MainWindow::MainWindow(QWidget *parent)
 
             //Load default libraries
     mpLibrary->addEmptyLibrary("User defined libraries");
-    mpLibrary->addExternalLibrary();
+
+    for(size_t i=0; i<mUserLibs.size(); ++i)
+    {
+        qDebug() << "Adding: " << mUserLibs.at(i);
+        mpLibrary->addExternalLibrary(mUserLibs.at(i));
+    }
 
     mpLibrary->addLibrary("../../HopsanGUI/componentData/Subsystem");
 
@@ -616,6 +622,11 @@ void MainWindow::loadSettings()
             inputStream >> inputWord;
             mAntiAliasing = (inputWord == "TRUE");
         }
+        if(inputWord == "USERLIB")
+        {
+            //qDebug() << "Appending:  readName(" << inputWord << ")";
+            mUserLibs.append(readName(inputStream));
+        }
     }
     file.close();
 }
@@ -666,6 +677,11 @@ void MainWindow::saveSettings()
     else
     {
         settingsFile << "FALSE\n";
+    }
+
+    for(size_t i=0; i<mUserLibs.size(); ++i)
+    {
+        settingsFile << "USERLIB " << addQuotes(mUserLibs.at(i)) << "\n";
     }
 
     file.close();

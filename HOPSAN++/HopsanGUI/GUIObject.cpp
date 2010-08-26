@@ -465,6 +465,8 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QList<GUIObject *>::iterator it;
+
+        //Loop through all selected objects and register changed positions in undo stack
     bool alreadyClearedRedo = false;
     for(it = mpParentSystem->mSelectedGUIObjectsList.begin(); it != mpParentSystem->mSelectedGUIObjectsList.end(); ++it)
     {

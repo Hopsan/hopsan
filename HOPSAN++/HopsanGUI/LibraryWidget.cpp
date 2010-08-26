@@ -373,7 +373,8 @@ void LibraryWidget::addLibrary()
                                                  fileDialogOpenDir.currentPath(),
                                                  QFileDialog::ShowDirsOnly
                                                  | QFileDialog::DontResolveSymlinks);
-    addLibrary(libDir,QString("User defined libraries"));
+    mpParentMainWindow->mUserLibs.append(libDir);
+    addExternalLibrary(libDir);
     //std::cout << qPrintable(libDir) << std::endl;
 }
 
@@ -381,10 +382,9 @@ void LibraryWidget::addLibrary()
 //! Load a external library and adds it to the 'User defined libraries'.
 //! @see addEmptyLibrary(QString libraryName, QString parentLibraryName)
 //! @see addLibrary(QString libDir, QString parentLib)
-void LibraryWidget::addExternalLibrary()
+void LibraryWidget::addExternalLibrary(QString libDir)
 {
-
-    QString libDir = "../../HopsanGUI/componentData/UserLibs/TestLib";
+    //QString libDir = "../../HopsanGUI/componentData/UserLibs/TestLib";
 
     //*****Core Interaction*****
 
