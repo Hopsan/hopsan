@@ -181,7 +181,6 @@ MainWindow::MainWindow(QWidget *parent)
     //connect(mpSimulationSetupWidget->mpSimulateButton, SIGNAL(released()), mpProjectTabs, SLOT(simulateCurrent()));
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateToolBarsToNewTab()));
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(refreshUndoWidgetList()));
-
 }
 
 
@@ -565,6 +564,30 @@ void MainWindow::updateToolBarsToNewTab()
     {
         hidePortsAction->setChecked(mpProjectTabs->getCurrentTab()->mpSystem->mPortsHidden);
     }
+
+    bool noTabs = !(mpProjectTabs->count() > 0);
+    saveAction->setEnabled(!noTabs);
+    saveAsAction->setEnabled(!noTabs);
+    cutAction->setEnabled(!noTabs);
+    copyAction->setEnabled(!noTabs);
+    pasteAction->setEnabled(!noTabs);
+    undoAction->setEnabled(!noTabs);
+    redoAction->setEnabled(!noTabs);
+    centerViewAction->setEnabled(!noTabs);
+    resetZoomAction->setEnabled(!noTabs);
+    zoomInAction->setEnabled(!noTabs);
+    zoomOutAction->setEnabled(!noTabs);
+    hideNamesAction->setEnabled(!noTabs);
+    showNamesAction->setEnabled(!noTabs);
+    hidePortsAction->setEnabled(!noTabs);
+    exportPDFAction->setEnabled(!noTabs);
+    mpStartTimeLineEdit->setEnabled(!noTabs);
+    mpTimeStepLineEdit->setEnabled(!noTabs);
+    mpFinishTimeLineEdit->setEnabled(!noTabs);
+    simulateAction->setEnabled(!noTabs);
+    plotAction->setEnabled(!noTabs);
+    preferencesAction->setEnabled(!noTabs);
+
 }
 
 
