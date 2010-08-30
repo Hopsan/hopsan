@@ -126,6 +126,7 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     buttonBox->addButton(cancelButton, QDialogButtonBox::ActionRole);
     buttonBox->addButton(okButton, QDialogButtonBox::ActionRole);
 
+    connect(mpParentMainWindow->optionsAction,SIGNAL(triggered()),this,SLOT(show()));
     connect(enableProgressBarCheckBox,SIGNAL(toggled(bool)), progressBarLabel, SLOT(setEnabled(bool)));
     connect(enableProgressBarCheckBox,SIGNAL(toggled(bool)), progressBarSpinBox, SLOT(setEnabled(bool)));
     connect(backgroundColorButton, SIGNAL(pressed()), this, SLOT(colorDialog()));
@@ -197,6 +198,7 @@ void OptionsWidget::show()
     greenString.setNum(mpParentMainWindow->mBackgroundColor.green());
     blueString.setNum(mpParentMainWindow->mBackgroundColor.blue());
     backgroundColorButton->setStyleSheet(QString("* { background-color: rgb(" + redString + "," + greenString + "," + blueString + ") }"));
+    mPickedBackgroundColor = mpParentMainWindow->mBackgroundColor;
 
     QDialog::show();
 }

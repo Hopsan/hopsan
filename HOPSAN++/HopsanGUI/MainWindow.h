@@ -182,7 +182,6 @@ private slots:
     //void addLibs(QString libDir, QString parentLib=QString());
     //void addLibs();
     void plot();
-    void openPreferences();
     void openUndo();
     void loadSettings();
 

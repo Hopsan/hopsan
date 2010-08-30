@@ -91,7 +91,6 @@ MainWindow::MainWindow(QWidget *parent)
     mpMessageWidget->printGUIMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
 
     this->loadSettings();
-    mpOptionsWidget = new OptionsWidget(this);
 
     //Create a dock for the componentslibrary
     libdock = new QDockWidget(tr("Component Library"), this);
@@ -138,6 +137,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpProjectTabs->addNewProjectTab();
 
     mpPreferenceWidget = new PreferenceWidget(this);
+    mpOptionsWidget = new OptionsWidget(this);
 
             //Load default libraries
     mpLibrary->addEmptyLibrary("User defined libraries");
@@ -254,16 +254,13 @@ void MainWindow::closeEvent(QCloseEvent *event)
 //! Defines the actions used by the toolbars
 void MainWindow::createActions()
 {
-
     newAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-New.png"), tr("&New"), this);
     newAction->setShortcut(tr("New"));
     newAction->setStatusTip(tr("Create New Project"));
 
-
     openAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Open.png"), tr("&Open"), this);
     openAction->setShortcut(QKeySequence("Ctrl+o"));
     openAction->setStatusTip(tr("Load Model File"));
-
 
     saveAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Save.png"), tr("&Save"), this);
     saveAction->setShortcut(QKeySequence("Ctrl+s"));
@@ -273,11 +270,10 @@ void MainWindow::createActions()
     saveAction->setShortcut(QKeySequence("Ctrl+Alt+s"));
     saveAsAction->setStatusTip(tr("Save Model File As"));
 
-
     closeAction = new QAction(this);
     closeAction->setText("Close");
     closeAction->setShortcut(QKeySequence("Ctrl+q"));
-    connect(this->closeAction,SIGNAL(triggered()),SLOT(close()));
+    connect(closeAction,SIGNAL(triggered()),this,SLOT(close()));
 
     undoAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Undo.png"), tr("&Undo"), this);
     undoAction->setText("Undo");
@@ -317,7 +313,7 @@ void MainWindow::createActions()
     plotAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Plot.png"), tr("&Plot Variables"), this);
     plotAction->setShortcut(tr("Plot"));
     plotAction->setStatusTip(tr("Plot Variables"));
-    connect(plotAction, SIGNAL(triggered()), this,SLOT(plot()));
+    connect(plotAction, SIGNAL(triggered()),this,SLOT(plot()));
 
     loadLibsAction = new QAction(this);
     loadLibsAction->setText("Load Libraries");
@@ -326,11 +322,9 @@ void MainWindow::createActions()
     preferencesAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Configure.png"), tr("&Model Preferences"), this);
     preferencesAction->setText("Model Preferences");
     preferencesAction->setShortcut(QKeySequence("Ctrl+Alt+p"));
-    connect(preferencesAction,SIGNAL(triggered()),this,SLOT(openPreferences()));
 
     optionsAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Options.png"), tr("&Options"), this);
     optionsAction->setText("Options");
-    connect(optionsAction,SIGNAL(triggered()),mpOptionsWidget,SLOT(show()));
 
     resetZoomAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Zoom100.png"), tr("&Reset Zoom"), this);
     resetZoomAction->setText("Reset Zoom");
@@ -513,23 +507,6 @@ void MainWindow::createToolbars()
 
 
 }
-
-
-//! Opens the model preference widget.
-void MainWindow::openPreferences()
-{
-    if(mpProjectTabs->count() != 0)
-    {
-        mpPreferenceWidget->show();
-    }
-}
-
-
-////! Opens the options widget.
-//void MainWindow::openOptions()
-//{
-//    mpOptionsWidget->show();
-//}
 
 
 //! Opens the undo widget.

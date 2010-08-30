@@ -84,6 +84,7 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
     //connect(disableUndoCheckBox, SIGNAL(toggled(bool)),mpParentMainWindow->mpProjectTabs->getCurrentSystem(), SLOT(disableUndo()));
     connect(cancelButton, SIGNAL(pressed()), this, SLOT(reject()));
     connect(okButton, SIGNAL(pressed()), this, SLOT(updateValues()));
+    connect(mpParentMainWindow->preferencesAction,SIGNAL(triggered()),this,SLOT(show()));
     //connect(isoCheckBox, SIGNAL(pressed(bool)), mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView, SLOT(setIsoGraphics(bool)));
 
 
