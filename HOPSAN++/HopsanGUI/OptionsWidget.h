@@ -88,6 +88,10 @@ public:
 public slots:
     void updateValues();
     void colorDialog();
+    void show();
+
+private:
+    QColor mPickedBackgroundColor;
 };
 
 #endif // OptionsWidget_H

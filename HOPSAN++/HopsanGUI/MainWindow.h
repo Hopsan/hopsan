@@ -183,7 +183,7 @@ private slots:
     //void addLibs();
     void plot();
     void openPreferences();
-    void openOptions();
+    //void openOptions();
     void openUndo();
     void loadSettings();
 

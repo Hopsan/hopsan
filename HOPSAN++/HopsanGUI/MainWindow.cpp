@@ -331,7 +331,7 @@ void MainWindow::createActions()
 
     optionsAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Options.png"), tr("&Options"), this);
     optionsAction->setText("Options");
-    connect(optionsAction,SIGNAL(triggered()),this,SLOT(openOptions()));
+    connect(optionsAction,SIGNAL(triggered()),mpOptionsWidget,SLOT(show()));
 
     resetZoomAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Zoom100.png"), tr("&Reset Zoom"), this);
     resetZoomAction->setText("Reset Zoom");
@@ -526,11 +526,11 @@ void MainWindow::openPreferences()
 }
 
 
-//! Opens the options widget.
-void MainWindow::openOptions()
-{
-    mpOptionsWidget->show();
-}
+////! Opens the options widget.
+//void MainWindow::openOptions()
+//{
+//    mpOptionsWidget->show();
+//}
 
 
 //! Opens the undo widget.

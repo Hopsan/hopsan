@@ -153,6 +153,11 @@ void OptionsWidget::updateValues()
     {
         mpParentMainWindow->mpProjectTabs->getTab(i)->mpGraphicsView->setRenderHint(QPainter::Antialiasing, mpParentMainWindow->mAntiAliasing);
     }
+    mpParentMainWindow->mBackgroundColor = mPickedBackgroundColor;
+    for(size_t i=0; i<mpParentMainWindow->mpProjectTabs->count(); ++i)
+    {
+        mpParentMainWindow->mpProjectTabs->getTab(i)->mpGraphicsView->resetBackgroundBrush();
+    }
     mpParentMainWindow->mEnableProgressBar = enableProgressBarCheckBox->isChecked();
     mpParentMainWindow->mProgressBarStep = progressBarSpinBox->value();
     mpParentMainWindow->mUseMulticore = useMulticoreCheckBox->isChecked();
@@ -163,21 +168,35 @@ void OptionsWidget::updateValues()
 
 void OptionsWidget::colorDialog()
 {
-    QColor color = QColorDialog::getColor(mpParentMainWindow->mBackgroundColor, this);
-    if (color.isValid())
+    mPickedBackgroundColor = QColorDialog::getColor(mpParentMainWindow->mBackgroundColor, this);
+    if (mPickedBackgroundColor.isValid())
     {
-        mpParentMainWindow->mBackgroundColor = color;
-        for(size_t i=0; i<mpParentMainWindow->mpProjectTabs->count(); ++i)
-        {
-            mpParentMainWindow->mpProjectTabs->getTab(i)->mpGraphicsView->resetBackgroundBrush();
-        }
         QString redString;
         QString greenString;
         QString blueString;
-        redString.setNum(mpParentMainWindow->mBackgroundColor.red());
-        greenString.setNum(mpParentMainWindow->mBackgroundColor.green());
-        blueString.setNum(mpParentMainWindow->mBackgroundColor.blue());
+        redString.setNum(mPickedBackgroundColor.red());
+        greenString.setNum(mPickedBackgroundColor.green());
+        blueString.setNum(mPickedBackgroundColor.blue());
         backgroundColorButton->setStyleSheet(QString("* { background-color: rgb(" + redString + "," + greenString + "," + blueString + ") }"));
         backgroundColorButton->setDown(false);
     }
+    else
+    {
+        mPickedBackgroundColor = mpParentMainWindow->mBackgroundColor;
+    }
+}
+
+
+//! Reimplementation of show() slot. This is used to make sure that the background color button resets its color if the cancel button was pressed last time options were opened.
+void OptionsWidget::show()
+{
+    QString redString;
+    QString greenString;
+    QString blueString;
+    redString.setNum(mpParentMainWindow->mBackgroundColor.red());
+    greenString.setNum(mpParentMainWindow->mBackgroundColor.green());
+    blueString.setNum(mpParentMainWindow->mBackgroundColor.blue());
+    backgroundColorButton->setStyleSheet(QString("* { background-color: rgb(" + redString + "," + greenString + "," + blueString + ") }"));
+
+    QDialog::show();
 }
