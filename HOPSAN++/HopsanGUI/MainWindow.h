@@ -88,9 +88,12 @@ public:
     //SimulationSetupWidget *mpSimulationSetupWidget;
     OptionsWidget *mpOptionsWidget;
     PreferenceWidget *mpPreferenceWidget;
+
+    //Settings variable - stored in and loaded from settings.txt
     bool mInvertWheel;
     bool mUseMulticore;
     int mProgressBarStep;
+    bool mEnableProgressBar;
     QColor mBackgroundColor;
     bool mAntiAliasing;
     QStringList mUserLibs;

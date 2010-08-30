@@ -71,6 +71,7 @@ public:
     QGroupBox *interfaceGroupBox;
 
     QCheckBox *useMulticoreCheckBox;
+    QCheckBox *enableProgressBarCheckBox;
     QLabel *progressBarLabel;
     QSpinBox *progressBarSpinBox;
     QGroupBox *simulationGroupBox;

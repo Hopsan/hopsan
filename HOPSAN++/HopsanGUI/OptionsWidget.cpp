@@ -92,12 +92,18 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
 
         //Simulation Options
 
+    enableProgressBarCheckBox = new QCheckBox(tr("Enable Simulation Progress Bar"));
+    enableProgressBarCheckBox->setCheckable(true);
+    enableProgressBarCheckBox->setChecked(mpParentMainWindow->mEnableProgressBar);
+
     progressBarLabel = new QLabel(tr("Progress Bar Time Step [ms]"));
+    progressBarLabel->setEnabled(mpParentMainWindow->mEnableProgressBar);
     progressBarSpinBox = new QSpinBox();
     progressBarSpinBox->setMinimum(1);
     progressBarSpinBox->setMaximum(5000);
     progressBarSpinBox->setSingleStep(10);
     progressBarSpinBox->setValue(mpParentMainWindow->mProgressBarStep);
+    progressBarSpinBox->setEnabled(mpParentMainWindow->mEnableProgressBar);
 
     useMulticoreCheckBox = new QCheckBox(tr("Use Multi-Threaded Simulation"));
     useMulticoreCheckBox->setCheckable(true);
@@ -105,8 +111,9 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
 
     simulationGroupBox = new QGroupBox(tr("Simulation"));
     simulationLayout = new QGridLayout;
-    simulationLayout->addWidget(progressBarLabel, 0, 0);
-    simulationLayout->addWidget(progressBarSpinBox, 0, 1);
+    simulationLayout->addWidget(enableProgressBarCheckBox, 0, 0);
+    simulationLayout->addWidget(progressBarLabel, 1, 0);
+    simulationLayout->addWidget(progressBarSpinBox, 1, 1);
     simulationLayout->addWidget(useMulticoreCheckBox, 2, 0, 1, 2);
     simulationGroupBox->setLayout(simulationLayout);
 
@@ -119,10 +126,11 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     buttonBox->addButton(cancelButton, QDialogButtonBox::ActionRole);
     buttonBox->addButton(okButton, QDialogButtonBox::ActionRole);
 
+    connect(enableProgressBarCheckBox,SIGNAL(toggled(bool)), progressBarLabel, SLOT(setEnabled(bool)));
+    connect(enableProgressBarCheckBox,SIGNAL(toggled(bool)), progressBarSpinBox, SLOT(setEnabled(bool)));
     connect(backgroundColorButton, SIGNAL(pressed()), this, SLOT(colorDialog()));
     connect(cancelButton, SIGNAL(pressed()), this, SLOT(reject()));
     connect(okButton, SIGNAL(pressed()), this, SLOT(updateValues()));
-
 
     QGridLayout *mainLayout = new QGridLayout;
     mainLayout->setSizeConstraint(QLayout::SetFixedSize);
@@ -145,6 +153,7 @@ void OptionsWidget::updateValues()
     {
         mpParentMainWindow->mpProjectTabs->getTab(i)->mpGraphicsView->setRenderHint(QPainter::Antialiasing, mpParentMainWindow->mAntiAliasing);
     }
+    mpParentMainWindow->mEnableProgressBar = enableProgressBarCheckBox->isChecked();
     mpParentMainWindow->mProgressBarStep = progressBarSpinBox->value();
     mpParentMainWindow->mUseMulticore = useMulticoreCheckBox->isChecked();
     mpParentMainWindow->saveSettings();

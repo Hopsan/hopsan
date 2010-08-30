@@ -45,7 +45,6 @@
 //!
 //$Id$
 
-
 #include <QtGui>
 #include <QSizePolicy>
 #include <QHash>
@@ -163,24 +162,28 @@ void ProjectTab::simulate()
     InitializationThread actualInitialization(mpSystem->mpCoreSystemAccess, startTime, finishTime, this);
     actualInitialization.start();
     actualInitialization.setPriority(QThread::HighestPriority);
-    ProgressBarThread progressThread(this);
 
+    ProgressBarThread progressThread(this);
     QProgressDialog progressBar(tr("Initializing simulation..."), tr("&Abort initialization"), 0, 0, this);
-    progressBar.setWindowModality(Qt::WindowModal);
-    progressBar.setWindowTitle(tr("Simulate!"));
-    size_t i=0;
-    while (actualInitialization.isRunning())
+    if(mpParentProjectTabWidget->mpParentMainWindow->mEnableProgressBar)
     {
-        progressThread.start();
-        progressThread.setPriority(QThread::LowestPriority);
-        progressThread.wait();
-        progressBar.setValue(i++);
-        if (progressBar.wasCanceled())
+        progressBar.setWindowModality(Qt::WindowModal);
+        progressBar.setWindowTitle(tr("Simulate!"));
+        size_t i=0;
+        while (actualInitialization.isRunning())
         {
-            mpSystem->mpCoreSystemAccess->stop();
+            progressThread.start();
+            progressThread.setPriority(QThread::LowestPriority);
+            progressThread.wait();
+            progressBar.setValue(i++);
+            if (progressBar.wasCanceled())
+            {
+                mpSystem->mpCoreSystemAccess->stop();
+            }
         }
+        progressBar.setValue(i);
     }
-    progressBar.setValue(i);
+
     actualInitialization.wait(); //Make sure actualSimulation do not goes out of scope during simulation
     actualInitialization.quit();
 
@@ -196,23 +199,26 @@ void ProjectTab::simulate()
             //! @todo TimeCriticalPriority seem to work on dual core, is it a problem on single core machines only?
         actualSimulation.setPriority(QThread::TimeCriticalPriority); //No bar appears in Windows with this prio
 
-        progressBar.setLabelText(tr("Running simulation..."));
-        progressBar.setCancelButtonText(tr("&Abort simulation"));
-        progressBar.setMinimum(0);
-        progressBar.setMaximum(nSteps);
-        while (actualSimulation.isRunning())
+        if(mpParentProjectTabWidget->mpParentMainWindow->mEnableProgressBar)
         {
-           progressThread.start();
-           progressThread.setPriority(QThread::LowestPriority);
-           progressThread.wait();
-           progressBar.setValue((size_t)(mpSystem->mpCoreSystemAccess->getCurrentTime()/dt * nSteps));
-           if (progressBar.wasCanceled())
-           {
-              mpSystem->mpCoreSystemAccess->stop();
-           }
+            progressBar.setLabelText(tr("Running simulation..."));
+            progressBar.setCancelButtonText(tr("&Abort simulation"));
+            progressBar.setMinimum(0);
+            progressBar.setMaximum(nSteps);
+            while (actualSimulation.isRunning())
+            {
+               progressThread.start();
+               progressThread.setPriority(QThread::LowestPriority);
+               progressThread.wait();
+               progressBar.setValue((size_t)(mpSystem->mpCoreSystemAccess->getCurrentTime()/dt * nSteps));
+               if (progressBar.wasCanceled())
+               {
+                  mpSystem->mpCoreSystemAccess->stop();
+               }
+            }
+            progressThread.quit();
+            progressBar.setValue((size_t)(mpSystem->mpCoreSystemAccess->getCurrentTime()/dt * nSteps));
         }
-        progressThread.quit();
-        progressBar.setValue((size_t)(mpSystem->mpCoreSystemAccess->getCurrentTime()/dt * nSteps));
 
         actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
         actualSimulation.quit();

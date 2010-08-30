@@ -71,6 +71,8 @@ MainWindow::MainWindow(QWidget *parent)
     this->setDockOptions(QMainWindow::ForceTabbedDocks);
     mPlotVariableListOpen = false;
 
+    QMetaObject::connectSlotsByName(this);
+
     //Create a centralwidget for the main window
     mpCentralwidget = new QWidget(this);
     mpCentralwidget->setObjectName("centralwidget");
@@ -175,8 +177,6 @@ MainWindow::MainWindow(QWidget *parent)
     mPlotVariablesDock->hide();
     addDockWidget(Qt::RightDockWidgetArea, mPlotVariablesDock);
     mPlotVariableListOpen=false;
-
-    QMetaObject::connectSlotsByName(this);
 
     //connect(mpSimulationSetupWidget->mpSimulateButton, SIGNAL(released()), mpProjectTabs, SLOT(simulateCurrent()));
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateToolBarsToNewTab()));
@@ -580,6 +580,7 @@ void MainWindow::loadSettings()
         //Apply default values
     mInvertWheel = false;
     mUseMulticore = true;
+    mEnableProgressBar = true;
     mProgressBarStep = 10;
     mBackgroundColor = QColor("white");
     mAntiAliasing = false;
@@ -599,7 +600,12 @@ void MainWindow::loadSettings()
         if(inputWord == "INVERTWHEEL")
         {
             inputStream >> inputWord;
-            mInvertWheel = ((inputWord == "TRUE"));
+            mInvertWheel = (inputWord == "TRUE");
+        }
+        if(inputWord == "ENABLEPROGRESSBAR")
+        {
+            inputStream >> inputWord;
+            mEnableProgressBar = (inputWord == "TRUE");
         }
         if(inputWord == "PROGRESSBARSTEP")
         {
@@ -645,6 +651,16 @@ void MainWindow::saveSettings()
 
     settingsFile << "INVERTWHEEL ";
     if(mInvertWheel)
+    {
+        settingsFile << "TRUE\n";
+    }
+    else
+    {
+        settingsFile << "FALSE\n";
+    }
+
+    settingsFile << "ENABLEPROGRESSBAR ";
+    if(mEnableProgressBar)
     {
         settingsFile << "TRUE\n";
     }
