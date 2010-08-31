@@ -605,7 +605,7 @@ void ProjectTabWidget::loadModel()
 //    getCurrentTab()->mpGraphicsView->centerOn(headerData.viewport_x, headerData.viewport_y);
 //    getCurrentTab()->mpGraphicsView->scale(headerData.viewport_zoomfactor, headerData.viewport_zoomfactor);
 //    getCurrentTab()->mpGraphicsView->mZoomFactor = headerData.viewport_zoomfactor;
-//    getCurrentTab()->mpGraphicsView->resetBackgroundBrush();
+//    getCurrentTab()->mpGraphicsView->updateViewPort();
 
 //    //Sets the file name (exluding path and ending) as the model name
 //    getCurrentTab()->mpSystem->mpCoreSystemAccess->setRootSystemName(fileInfo.baseName());
@@ -647,7 +647,7 @@ void ProjectTabWidget::loadModel()
 //    pCurrentTab->mpSystem->deselectAll();
 //    this->centerView();
 //    pCurrentTab->mpSystem->mUndoStack->clear();
-//    pCurrentTab->mpGraphicsView->resetBackgroundBrush();
+//    pCurrentTab->mpGraphicsView->updateViewPort();
 
 //    emit checkMessages();
 }

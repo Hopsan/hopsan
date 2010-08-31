@@ -327,7 +327,7 @@ void GUIConnector::setEndPort(GUIPort *port)
         mPoints[mPoints.size()-3] += offsetPoint;
         this->drawConnector();
         //mpParentSystem->setBackgroundBrush(mpParentSystem->mBackgroundColor);
-        mpParentSystem->mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
+        mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
     }
 
     this->updateEndPoint(port->mapToScene(port->boundingRect().center()));
@@ -572,7 +572,7 @@ void GUIConnector::drawConnector()
     }
 
     //mpParentSystem->setBackgroundBrush(mpParentSystem->mBackgroundColor);
-    mpParentSystem->mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
+    mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
 }
 
 

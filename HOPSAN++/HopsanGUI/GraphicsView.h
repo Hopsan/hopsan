@@ -4,7 +4,6 @@
 #include <QtGui>
 #include <QGraphicsView>
 #include <QObject>
-#include <QHash>
 #include <QVector>
 
 #include "common.h"
@@ -26,7 +25,7 @@ class GraphicsView : public QGraphicsView
 public:
     GraphicsView(ProjectTab *parent = 0);
 
-    void resetBackgroundBrush();
+    void updateViewPort();
 
     ProjectTab *mpParentProjectTab;
     GUISystem *mpSystem;
@@ -67,7 +66,6 @@ protected:
     virtual void contextMenuEvent ( QContextMenuEvent * event );
 
 private:
-    //! @todo QHash no good means problem if we rename need to loop around the rename like in coore
     void createActions();
     void createMenus();
     QColor mIsoColor;

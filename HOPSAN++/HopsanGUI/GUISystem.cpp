@@ -222,7 +222,7 @@ void GUISystem::loadFromHMF(QString modelFilePath)
         mpParentProjectTab->mpGraphicsView->centerOn(headerData.viewport_x, headerData.viewport_y);
         mpParentProjectTab->mpGraphicsView->scale(headerData.viewport_zoomfactor, headerData.viewport_zoomfactor);
         mpParentProjectTab->mpGraphicsView->mZoomFactor = headerData.viewport_zoomfactor;
-        mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
+        mpParentProjectTab->mpGraphicsView->updateViewPort();
     }
 
     //Read the system appearance data
@@ -310,7 +310,7 @@ void GUISystem::loadFromHMF(QString modelFilePath)
     if (this->mpParentSystem == 0)
     {
         //mpParentProjectTab->mpGraphicsView->centerView();
-        mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
+        mpParentProjectTab->mpGraphicsView->updateViewPort();
     }
 
     file.close();
@@ -628,7 +628,7 @@ void GUISystem::deleteGUIObject(QString objectName, undoStatus undoSettings)
         //qDebug() << "In delete GUIObject: could not find object with name " << objectName;
         //! @todo Maybe we should give the user a message?
     }
-    mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
+    mpParentProjectTab->mpGraphicsView->updateViewPort();
 }
 
 
@@ -807,7 +807,7 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
         mpScene->removeItem(pConnector);
         delete pConnector;
     }
-    mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
+    mpParentProjectTab->mpGraphicsView->updateViewPort();
 }
 
 
@@ -816,7 +816,7 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
 //{
 //    QCursor cursor;
 //    QPointF position = mpParentProjectTab->mpGraphicsView->mapToScene(mpParentProjectTab->mpGraphicsView->mapFromGlobal(cursor.pos()));
-//    mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
+//    mpParentProjectTab->mpGraphicsView->updateViewPort();
 //    //QPoint position = QPoint(2300,2400);
 //
 //    AppearanceData appearanceData;
@@ -887,7 +887,7 @@ void GUISystem::cutSelected()
 {
     this->copySelected();
     emit deleteSelected();
-    mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
+    mpParentProjectTab->mpGraphicsView->updateViewPort();
 }
 
 
@@ -1013,7 +1013,7 @@ void GUISystem::paste()
         mGUIObjectMap.find(itn.value()).value()->setSelected(true);
     }
 
-    mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
+    mpParentProjectTab->mpGraphicsView->updateViewPort();
 }
 
 
@@ -1235,6 +1235,6 @@ void GUISystem::updateSimulationParametersInToolBar()
 void GUISystem::setGfxType(graphicsType gfxType)
 {
     this->mGfxType = gfxType;
-    this->mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
+    this->mpParentProjectTab->mpGraphicsView->updateViewPort();
     emit setAllGfxType(mGfxType);
 }

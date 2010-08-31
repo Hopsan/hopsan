@@ -157,7 +157,7 @@ void OptionsWidget::updateValues()
     mpParentMainWindow->mBackgroundColor = mPickedBackgroundColor;
     for(size_t i=0; i<mpParentMainWindow->mpProjectTabs->count(); ++i)
     {
-        mpParentMainWindow->mpProjectTabs->getTab(i)->mpGraphicsView->resetBackgroundBrush();
+        mpParentMainWindow->mpProjectTabs->getTab(i)->mpGraphicsView->updateViewPort();
     }
     mpParentMainWindow->mEnableProgressBar = enableProgressBarCheckBox->isChecked();
     mpParentMainWindow->mProgressBarStep = progressBarSpinBox->value();

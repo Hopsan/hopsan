@@ -79,7 +79,6 @@ public slots:
     void loadModel();
     void tabChanged();
 
-
 signals:
     void checkMessages();
 

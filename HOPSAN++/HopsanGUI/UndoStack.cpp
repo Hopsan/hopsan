@@ -216,7 +216,7 @@ void UndoStack::undoOneStep()
         }
         mCurrentStackPosition = undoPosition - 1;
 
-        mpParentSystem->mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
+        mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
     }
     mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
 }
@@ -296,7 +296,7 @@ void UndoStack::redoOneStep()
                 mpParentSystem->getGUIObject(name)->rotate(NOUNDO);
             }
         }
-        mpParentSystem->mpParentProjectTab->mpGraphicsView->resetBackgroundBrush();
+        mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
     }
     //! @todo why dont I know of my own UndoWidget (should maybe have a pointer to it directly)
     mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();

@@ -43,7 +43,7 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     mIsoColor = QColor("white");
     mZoomFactor = 1.0;
 
-    this->resetBackgroundBrush();
+    this->updateViewPort();
 
     this->createActions();
     this->createMenus();
@@ -129,17 +129,22 @@ void GraphicsView::dropEvent(QDropEvent *event)
 }
 
 
-//! @brief dont really know what this is used for
-//! @todo Ok this does not seem niceto refresh the view at all, but maybe some parts of the view, dont know realy
-void GraphicsView::resetBackgroundBrush()
+//! Updates the viewport, used when something has changed. Also changes to the correct background color if it is not the right one.
+void GraphicsView::updateViewPort()
 {
-    if(mpParentProjectTab->mpSystem->mGfxType == USERGRAPHICS)
+    MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+
+    if( (mpParentProjectTab->mpSystem->mGfxType == USERGRAPHICS) and (this->backgroundBrush().color() != pMainWindow->mBackgroundColor) )
     {
-        this->setBackgroundBrush(mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mBackgroundColor);
+        this->setBackgroundBrush(pMainWindow->mBackgroundColor);
+    }
+    else if( (mpParentProjectTab->mpSystem->mGfxType == ISOGRAPHICS) and (this->backgroundBrush().color() != mIsoColor) )
+    {
+        this->setBackgroundBrush(mIsoColor);
     }
     else
     {
-        this->setBackgroundBrush(mIsoColor);
+        this->viewport()->update();
     }
 }
 
@@ -281,7 +286,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         {
             mpSystem->mpTempConnector->makeDiagonal(true);
             mpSystem->mpTempConnector->drawConnector();
-            this->resetBackgroundBrush();
+            this->updateViewPort();
         }
         else
         {
@@ -306,7 +311,7 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
     {
         mpSystem->mpTempConnector->makeDiagonal(false);
         mpSystem->mpTempConnector->drawConnector();
-        this->resetBackgroundBrush();
+        this->updateViewPort();
     }
 
     if(event->key() == Qt::Key_Control)
@@ -325,7 +330,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     QGraphicsView::mouseMoveEvent(event);
 
-    this->resetBackgroundBrush();     //Refresh the viewport
+    //this->updateViewPort();     //Refresh the viewport
 
         //If creating connector, the end port shall be updated to the mouse position.
     if (mpSystem->mIsCreatingConnector)
@@ -371,7 +376,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         {
             mpSystem->mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
             mpSystem->mpTempConnector->drawConnector();
-            this->resetBackgroundBrush();
+            this->updateViewPort();
         }
         //qDebug() << "mIsCreatingConnector = " << mIsCreatingConnector;
     }

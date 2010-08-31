@@ -515,12 +515,12 @@ void MainWindow::openUndo()
 
     if(dockWidgetArea(mpPlotVariablesDock) == dockWidgetArea(mpUndoDock))
     {
-        tabifyDockWidget(mpPlotVariablesDock, mpUndoDock);
-        //mpPlotVariablesDock->lower();
+        tabifyDockWidget(mpUndoDock, mpPlotVariablesDock);
     }
 
+    mpUndoWidget->activateWindow();
+    mpUndoWidget->raise();
     mpUndoWidget->refreshList();
-
 }
 
 
