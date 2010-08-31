@@ -60,7 +60,6 @@
 //class QString;
 //class QPlainTextEdit;
 
-class SimulationSetupWidget;
 class ProjectTabWidget;
 class GraphicsView;
 class GraphicsScene;
@@ -90,7 +89,7 @@ public:
     OptionsWidget *mpOptionsWidget;
     PreferenceWidget *mpPreferenceWidget;
     MessageWidget *mpMessageWidget;
-    QmpStatusBar *mpStatusBar;
+    QStatusBar *mpStatusBar;
 
     //Settings variable - stored in and loaded from settings.txt
     bool mInvertWheel;

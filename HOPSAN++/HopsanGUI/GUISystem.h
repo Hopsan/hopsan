@@ -93,7 +93,7 @@ public slots:
     void updateStopTime();
     void disableUndo();
     void updateUndoStatus();
-    void updateSimulationSetupWidget();
+    void updateSimulationParametersInToolBar();
     void setGfxType(graphicsType gfxType);
 
 signals:

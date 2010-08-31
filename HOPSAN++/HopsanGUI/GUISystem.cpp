@@ -1223,7 +1223,7 @@ void GUISystem::updateUndoStatus()
 
 
 //! Slot that updates the values in the simulation setup widget to display new values when current project tab is changed.
-void GUISystem::updateSimulationSetupWidget()
+void GUISystem::updateSimulationParametersInToolBar()
 {
     mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->setStartTimeInToolBar(mStartTime);
     mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->setTimeStepInToolBar(mTimeStep);

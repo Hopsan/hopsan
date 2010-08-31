@@ -44,7 +44,6 @@
 #include "version.h"
 #include "common.h"
 
-#include "SimulationSetupWidget.h"
 #include "PlotWidget.h"
 #include "MessageWidget.h"
 #include "PreferenceWidget.h"
@@ -103,9 +102,6 @@ MainWindow::MainWindow(QWidget *parent)
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
     //setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
-    //Create a SimulationSetupWidget
-    //mpSimulationSetupWidget = new SimulationSetupWidget(tr("Simulation Setup"), this);
-
     this->createActions();
     this->createToolbars();
     this->createMenus();
@@ -114,7 +110,6 @@ MainWindow::MainWindow(QWidget *parent)
     mpProjectTabs = new ProjectTabWidget(this);
     mpProjectTabs->setObjectName("projectTabs");
 
-    //mpCentralgrid->addWidget(mpSimulationSetupWidget,0,0);
     mpBackButton = new QPushButton("Back");
     mpCentralgrid->addWidget(mpBackButton,0,0);
     mpCentralgrid->addWidget(mpProjectTabs,1,0);
@@ -128,9 +123,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     //Create the Statusbar
-    statusBar = new QStatusBar();
-    statusBar->setObjectName("statusBar");
-    this->setStatusBar(statusBar);
+    mpStatusBar = new QStatusBar();
+    mpStatusBar->setObjectName("statusBar");
+    this->setStatusBar(mpStatusBar);
 
     mpUndoWidget = new UndoWidget(this);
 
@@ -178,7 +173,6 @@ MainWindow::MainWindow(QWidget *parent)
     addDockWidget(Qt::RightDockWidgetArea, mpPlotVariablesDock);
     mPlotVariableListOpen=false;
 
-    //connect(mpSimulationSetupWidget->mpSimulateButton, SIGNAL(released()), mpProjectTabs, SLOT(simulateCurrent()));
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateToolBarsToNewTab()));
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(refreshUndoWidgetList()));
 }
@@ -189,7 +183,7 @@ MainWindow::~MainWindow()
 {
     delete mpProjectTabs;
     delete menubar;
-    delete statusBar;
+    delete mpStatusBar;
 }
 
 
@@ -502,10 +496,6 @@ void MainWindow::createToolbars()
 
     //mpSimulationToolBar = addToolBar(tr("Simulation"));
     //mpSimulationToolBar->setAllowedAreas(Qt::TopToolBarArea);
-    //mpSimulationToolBar->addWidget(mpSimulationSetupWidget);
-    //mpCentralgrid->addWidget(mpSimulationSetupWidget);
-
-
 }
 
 
@@ -707,12 +697,6 @@ void MainWindow::saveSettings()
 
 
 
-
-
-
-
-
-//! @todo The following functions are stupid. They should be in the SimulationSetupWidget class, but it then has to be converted to a QToolBar.
 
 
 //! Make sure the values make sens.

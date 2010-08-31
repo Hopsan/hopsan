@@ -48,7 +48,6 @@
 #include "PlotWidget.h"
 
 #include "MainWindow.h"
-#include "SimulationSetupWidget.h"
 #include "ProjectTabWidget.h"
 #include "GUIObject.h"
 #include "GUIPort.h"
@@ -378,7 +377,6 @@ VariableList::VariableList(MainWindow *parent)
 
     connect(mpParentMainWindow->mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateList()));
     connect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), this, SLOT(updateList()));
-    //connect(mpParentMainWindow->mpSimulationSetupWidget->mpSimulateButton,SIGNAL(released()),this,SLOT(updateList()));
     connect(this,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(createPlot(QListWidgetItem*)));
 }
 

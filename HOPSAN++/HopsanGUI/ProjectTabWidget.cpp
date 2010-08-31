@@ -696,6 +696,6 @@ void ProjectTabWidget::tabChanged()
         connect(mpParentMainWindow->saveAction, SIGNAL(triggered()), getCurrentTab(), SLOT(save()));
         connect(mpParentMainWindow->saveAsAction, SIGNAL(triggered()), getCurrentTab(), SLOT(saveAs()));
         getCurrentSystem()->updateUndoStatus();
-        getCurrentSystem()->updateSimulationSetupWidget();
+        getCurrentSystem()->updateSimulationParametersInToolBar();
     }
 }
