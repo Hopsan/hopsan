@@ -379,7 +379,7 @@ VariableList::VariableList(MainWindow *parent)
 
     connect(mpParentMainWindow->mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateList()));
     connect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), this, SLOT(updateList()));
-    connect(this,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(createPlot(QListWidgetItem*)));
+    connect(this,SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),this,SLOT(createPlot(QTreeWidgetItem*)));
 }
 
 void VariableList::updateList()
