@@ -98,7 +98,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 
     double timeStep = mpSystem->mpCoreSystemAccess->getDesiredTimeStep();
 
-    mpParentProjectTabWidget->mpParentMainWindow->setTimeStepLabel(timeStep);
+    mpParentProjectTabWidget->mpParentMainWindow->setTimeStepInToolBar(timeStep);
 
     mIsSaved = true;
 
@@ -295,7 +295,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
 
     writeHeader(modelFile);
 
-    modelFile << "SIMULATIONTIME " << pMainWindow->getStartTimeLabel() << " " << pMainWindow->getTimeStepLabel() << " " <<  pMainWindow->getFinishTimeLabel() << "\n";
+    modelFile << "SIMULATIONTIME " << pMainWindow->getStartTimeFromToolBar() << " " << pMainWindow->getTimeStepFromToolBar() << " " <<  pMainWindow->getFinishTimeFromToolBar() << "\n";
     modelFile << "VIEWPORT " << (mpGraphicsView->horizontalScrollBar()->value() + mpGraphicsView->width()/2 - mpGraphicsView->pos().x()) / mpGraphicsView->mZoomFactor << " " <<
                                 (mpGraphicsView->verticalScrollBar()->value() + mpGraphicsView->height()/2 - mpGraphicsView->pos().x()) / mpGraphicsView->mZoomFactor << " " <<
                                 mpGraphicsView->mZoomFactor << "\n";
@@ -597,9 +597,9 @@ void ProjectTabWidget::loadModel()
 //    HeaderLoadData headerData = readHeader(inputStream, mpParentMainWindow->mpMessageWidget);
 
 //    //It is assumed that these data have been successfully read
-//    mpParentMainWindow->setStartTimeLabel(headerData.startTime);
-//    mpParentMainWindow->setTimeStepLabel(headerData.timeStep);
-//    mpParentMainWindow->setFinishTimeLabel(headerData.stopTime);
+//    mpParentMainWindow->setStartTimeInToolBar(headerData.startTime);
+//    mpParentMainWindow->setTimeStepInToolBar(headerData.timeStep);
+//    mpParentMainWindow->setFinishTimeInToolBar(headerData.stopTime);
 
 //    //It is assumed that these data have been successfully read
 //    getCurrentTab()->mpGraphicsView->centerOn(headerData.viewport_x, headerData.viewport_y);

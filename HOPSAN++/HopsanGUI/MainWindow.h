@@ -55,7 +55,7 @@
 //class QHBoxLayout;
 //class QMenuBar;
 //class QMenu;
-//class QStatusBar;
+//class QmpStatusBar;
 //class QAction;
 //class QString;
 //class QPlainTextEdit;
@@ -81,13 +81,16 @@ public:
 
     QWidget *mpCentralwidget;
     QGridLayout *mpCentralgrid;
+    QGridLayout *mpTabgrid;
+
+    //Widgets that can be displayed in main window
     UndoWidget *mpUndoWidget;
     ProjectTabWidget *mpProjectTabs;
-    QGridLayout *mpTabgrid;
     LibraryWidget *mpLibrary;
-    //SimulationSetupWidget *mpSimulationSetupWidget;
     OptionsWidget *mpOptionsWidget;
     PreferenceWidget *mpPreferenceWidget;
+    MessageWidget *mpMessageWidget;
+    QmpStatusBar *mpStatusBar;
 
     //Settings variable - stored in and loaded from settings.txt
     bool mInvertWheel;
@@ -98,6 +101,7 @@ public:
     bool mAntiAliasing;
     QStringList mUserLibs;
 
+    //Menubar items
     QMenuBar *menubar;
     QMenu *menuFile;
     QMenu *menuNew;
@@ -107,11 +111,20 @@ public:
     QMenu *menuView;
     QMenu *menuTools;
     QMenu *menuPlot;
-    MessageWidget *mpMessageWidget;
-    QStatusBar *statusBar;
 
-    QPushButton *mpBackButton;
+    //Toolbar items
+    QToolBar *mpFileToolBar;
+    QToolBar *mpEditToolBar;
+    QToolBar *mpSimToolBar;
+    QToolBar *mpSimulationToolBar;
+    QToolBar *mpViewToolBar;
+    QLineEdit *mpStartTimeLineEdit;
+    QLineEdit *mpTimeStepLineEdit;
+    QLineEdit *mpFinishTimeLineEdit;
+    QLabel *mpTimeLabelDeliminator1;
+    QLabel *mpTimeLabelDeliminator2;
 
+    //Actions used in menubar and toolbar
     QAction *newAction;
     QAction *openAction;
     QAction *saveAction;
@@ -138,36 +151,18 @@ public:
     QAction *hidePortsAction;
     QAction *showPortsAction;
     QAction *exportPDFAction;
-    QLineEdit *mpStartTimeLineEdit;
-    QLineEdit *mpTimeStepLineEdit;
-    QLineEdit *mpFinishTimeLineEdit;
-    QLabel *mpTimeLabelDeliminator1;
-    QLabel *mpTimeLabelDeliminator2;
 
-    QToolBar *fileToolBar;
-    QToolBar *editToolBar;
-    QToolBar *simToolBar;
-    QToolBar *mpSimulationToolBar;
-    QToolBar *viewToolBar;
+    //Set and get methods for simulation parameters in toolbar
+    void setStartTimeInToolBar(double startTime);
+    void setTimeStepInToolBar(double timeStep);
+    void setFinishTimeInToolBar(double finishTime);
+    double getStartTimeFromToolBar();
+    double getTimeStepFromToolBar();
+    double getFinishTimeFromToolBar();
 
-    void setStartTimeLabel(double startTime);
-    void setTimeStepLabel(double timeStep);
-    void setFinishTimeLabel(double finishTime);
-
-    double getStartTimeLabel();
-    double getTimeStepLabel();
-    double getFinishTimeLabel();
-
-
-    //QComboBox *viewScaleCombo;
-
+    QPushButton *mpBackButton;
 
     //QString libDir;
-
-    //GraphicsScene *scene;
-    //GraphicsView *view;
-
-    //VariableListDialog *variableList;
 
     void closeEvent(QCloseEvent *event);
 
@@ -186,20 +181,21 @@ private slots:
     void loadSettings();
 
 private:
+    //Dock area widgets
+    QDockWidget *mpMessageDock;
+    QDockWidget *mpLibDock;
+    QDockWidget *mpPlotVariablesDock;
+    QDockWidget *mpUndoDock;
+
+    //Methods that adjusts simulation parameters if they are illegal
+    void fixFinishTime();
+    void fixTimeStep();
+
     void createActions();
     void createMenus();
     void createToolbars();
-    QDockWidget *messagedock;
-    QDockWidget *libdock;
-    QDockWidget *mPlotVariablesDock;
-    QDockWidget *mUndoDock;
 
-    void setValue(QLineEdit *lineEdit, double value);
-    double getValue(QLineEdit *lineEdit);
-    void fixFinishTime();
-    void fixTimeStep();
     bool mPlotVariableListOpen;
-
 };
 
 #endif // MAINWINDOW_H

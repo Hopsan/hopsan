@@ -13,7 +13,6 @@ SOURCES += main.cpp \
     PlotWidget.cpp \
     ParameterDialog.cpp \
     MessageWidget.cpp \
-    SimulationSetupWidget.cpp \
     SimulationThread.cpp \
     InitializationThread.cpp \
     PreferenceWidget.cpp \
@@ -37,7 +36,6 @@ HEADERS += MainWindow.h \
     PlotWidget.h \
     ParameterDialog.h \
     MessageWidget.h \
-    SimulationSetupWidget.h \
     SimulationThread.h \
     InitializationThread.h \
     version.h \

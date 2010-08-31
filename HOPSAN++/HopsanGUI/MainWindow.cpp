@@ -82,22 +82,22 @@ MainWindow::MainWindow(QWidget *parent)
     mpCentralgrid->setSpacing(10);
 
     //Create a dock for the MessageWidget
-    messagedock = new QDockWidget(tr("Messages"), this);
-    messagedock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
+    mpMessageDock = new QDockWidget(tr("Messages"), this);
+    mpMessageDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
     mpMessageWidget = new MessageWidget(this);
     mpMessageWidget->setReadOnly(true);
-    messagedock->setWidget(mpMessageWidget);
-    addDockWidget(Qt::BottomDockWidgetArea, messagedock);
+    mpMessageDock->setWidget(mpMessageWidget);
+    addDockWidget(Qt::BottomDockWidgetArea, mpMessageDock);
     mpMessageWidget->printGUIMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
 
     this->loadSettings();
 
     //Create a dock for the componentslibrary
-    libdock = new QDockWidget(tr("Component Library"), this);
-    libdock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    mpLibDock = new QDockWidget(tr("Component Library"), this);
+    mpLibDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     mpLibrary = new LibraryWidget(this);
-    libdock->setWidget(mpLibrary);
-    addDockWidget(Qt::LeftDockWidgetArea, libdock);
+    mpLibDock->setWidget(mpLibrary);
+    addDockWidget(Qt::LeftDockWidgetArea, mpLibDock);
 
     //Set dock widget corner owner
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
@@ -172,10 +172,10 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/pumps","Hydraulic");
 
         //Create the plot widget and hide it
-    mPlotVariablesDock = new QDockWidget(tr("Plot Variables"), this);
-    mPlotVariablesDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    mPlotVariablesDock->hide();
-    addDockWidget(Qt::RightDockWidgetArea, mPlotVariablesDock);
+    mpPlotVariablesDock = new QDockWidget(tr("Plot Variables"), this);
+    mpPlotVariablesDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    mpPlotVariablesDock->hide();
+    addDockWidget(Qt::RightDockWidgetArea, mpPlotVariablesDock);
     mPlotVariableListOpen=false;
 
     //connect(mpSimulationSetupWidget->mpSimulateButton, SIGNAL(released()), mpProjectTabs, SLOT(simulateCurrent()));
@@ -208,23 +208,23 @@ void MainWindow::plot()
     {
         if(!mPlotVariableListOpen)
         {
-    //        mPlotVariablesDock = new QDockWidget(tr("Plot Variables"), this);
-    //        mPlotVariablesDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    //        mpPlotVariablesDock = new QDockWidget(tr("Plot Variables"), this);
+    //        mpPlotVariablesDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     //        VariableListDialog *variableList = new VariableListDialog(this);
-    //        mPlotVariablesDock->setWidget(variableList);
+    //        mpPlotVariablesDock->setWidget(variableList);
     //        //variableList->show();
-    //        addDockWidget(Qt::RightDockWidgetArea, mPlotVariablesDock);
+    //        addDockWidget(Qt::RightDockWidgetArea, mpPlotVariablesDock);
 
             VariableListDialog *variableList = new VariableListDialog(this);
-            mPlotVariablesDock->setWidget(variableList);
+            mpPlotVariablesDock->setWidget(variableList);
 
-            mPlotVariablesDock->show();
+            mpPlotVariablesDock->show();
             mPlotVariableListOpen = true;
         }
         else
         {
-            mPlotVariablesDock->hide();
-            //this->removeDockWidget(mPlotVariablesDock);
+            mpPlotVariablesDock->hide();
+            //this->removeDockWidget(mpPlotVariablesDock);
             mPlotVariableListOpen = false;
         }
     }
@@ -435,11 +435,11 @@ void MainWindow::createMenus()
     menuEdit->addAction(cutAction);
     menuEdit->addAction(pasteAction);
 
-    menuView->addAction(libdock->toggleViewAction());
-    menuView->addAction(messagedock->toggleViewAction());
-    menuView->addAction(fileToolBar->toggleViewAction());
-    menuView->addAction(editToolBar->toggleViewAction());
-    menuView->addAction(simToolBar->toggleViewAction());
+    menuView->addAction(mpLibDock->toggleViewAction());
+    menuView->addAction(mpMessageDock->toggleViewAction());
+    menuView->addAction(mpFileToolBar->toggleViewAction());
+    menuView->addAction(mpEditToolBar->toggleViewAction());
+    menuView->addAction(mpSimToolBar->toggleViewAction());
 
     menuTools->addAction(optionsAction);
 
@@ -462,43 +462,43 @@ void MainWindow::createToolbars()
     //viewScaleCombo->addItems(scales);
     //viewScaleCombo->setCurrentIndex(2);
 
-    fileToolBar = addToolBar(tr("File Toolbar"));
-    fileToolBar->setAllowedAreas(Qt::TopToolBarArea);
-    fileToolBar->addAction(newAction);
-    fileToolBar->addAction(openAction);
-    fileToolBar->addAction(saveAction);
-    fileToolBar->addAction(saveAsAction);
+    mpFileToolBar = addToolBar(tr("File Toolbar"));
+    mpFileToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    mpFileToolBar->addAction(newAction);
+    mpFileToolBar->addAction(openAction);
+    mpFileToolBar->addAction(saveAction);
+    mpFileToolBar->addAction(saveAsAction);
 
-    editToolBar = addToolBar(tr("Edit Toolbar"));
-    editToolBar->setAllowedAreas(Qt::TopToolBarArea);
-    editToolBar->addAction(cutAction);
-    editToolBar->addAction(copyAction);
-    editToolBar->addAction(pasteAction);
-    editToolBar->addAction(undoAction);
-    editToolBar->addAction(redoAction);
-    editToolBar->addAction(optionsAction);
+    mpEditToolBar = addToolBar(tr("Edit Toolbar"));
+    mpEditToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    mpEditToolBar->addAction(cutAction);
+    mpEditToolBar->addAction(copyAction);
+    mpEditToolBar->addAction(pasteAction);
+    mpEditToolBar->addAction(undoAction);
+    mpEditToolBar->addAction(redoAction);
+    mpEditToolBar->addAction(optionsAction);
 
-    viewToolBar = addToolBar(tr("View Toolbar"));
-    viewToolBar->setAllowedAreas(Qt::TopToolBarArea);
-    viewToolBar->addAction(centerViewAction);
-    viewToolBar->addAction(resetZoomAction);
-    viewToolBar->addAction(zoomInAction);
-    viewToolBar->addAction(zoomOutAction);
-    viewToolBar->addAction(hideNamesAction);
-    viewToolBar->addAction(showNamesAction);
-    viewToolBar->addAction(hidePortsAction);
-    viewToolBar->addAction(exportPDFAction);
+    mpViewToolBar = addToolBar(tr("View Toolbar"));
+    mpViewToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    mpViewToolBar->addAction(centerViewAction);
+    mpViewToolBar->addAction(resetZoomAction);
+    mpViewToolBar->addAction(zoomInAction);
+    mpViewToolBar->addAction(zoomOutAction);
+    mpViewToolBar->addAction(hideNamesAction);
+    mpViewToolBar->addAction(showNamesAction);
+    mpViewToolBar->addAction(hidePortsAction);
+    mpViewToolBar->addAction(exportPDFAction);
 
-    simToolBar = addToolBar(tr("Simulation Toolbar"));
-    simToolBar->setAllowedAreas(Qt::TopToolBarArea);
-    simToolBar->addWidget(mpStartTimeLineEdit);
-    simToolBar->addWidget(mpTimeLabelDeliminator1);
-    simToolBar->addWidget(mpTimeStepLineEdit);
-    simToolBar->addWidget(mpTimeLabelDeliminator2);
-    simToolBar->addWidget(mpFinishTimeLineEdit);
-    simToolBar->addAction(simulateAction);
-    simToolBar->addAction(plotAction);
-    simToolBar->addAction(preferencesAction);
+    mpSimToolBar = addToolBar(tr("Simulation Toolbar"));
+    mpSimToolBar->setAllowedAreas(Qt::TopToolBarArea);
+    mpSimToolBar->addWidget(mpStartTimeLineEdit);
+    mpSimToolBar->addWidget(mpTimeLabelDeliminator1);
+    mpSimToolBar->addWidget(mpTimeStepLineEdit);
+    mpSimToolBar->addWidget(mpTimeLabelDeliminator2);
+    mpSimToolBar->addWidget(mpFinishTimeLineEdit);
+    mpSimToolBar->addAction(simulateAction);
+    mpSimToolBar->addAction(plotAction);
+    mpSimToolBar->addAction(preferencesAction);
 
     //mpSimulationToolBar = addToolBar(tr("Simulation"));
     //mpSimulationToolBar->setAllowedAreas(Qt::TopToolBarArea);
@@ -514,19 +514,19 @@ void MainWindow::openUndo()
 {
     //mpUndoWidget->show();
 
-    mUndoDock = new QDockWidget(tr("Undo History"), this);
-    mUndoDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    mpUndoDock = new QDockWidget(tr("Undo History"), this);
+    mpUndoDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     //VariableListDialog *variableList = new VariableListDialog(varPlotDock);
 
-    mUndoDock->setWidget(mpUndoWidget);
+    mpUndoDock->setWidget(mpUndoWidget);
     //variableList->show();
 
-    addDockWidget(Qt::RightDockWidgetArea, mUndoDock);
+    addDockWidget(Qt::RightDockWidgetArea, mpUndoDock);
 
-    if(dockWidgetArea(mPlotVariablesDock) == dockWidgetArea(mUndoDock))
+    if(dockWidgetArea(mpPlotVariablesDock) == dockWidgetArea(mpUndoDock))
     {
-        tabifyDockWidget(mPlotVariablesDock, mUndoDock);
-        //mPlotVariablesDock->lower();
+        tabifyDockWidget(mpPlotVariablesDock, mpUndoDock);
+        //mpPlotVariablesDock->lower();
     }
 
     mpUndoWidget->refreshList();
@@ -729,8 +729,8 @@ void MainWindow::fixSimulationParameterValues()
 //! @see fixLabelValues()
 void MainWindow::fixFinishTime()
 {
-    if (getFinishTimeLabel() < getStartTimeLabel())
-        setFinishTimeLabel(getStartTimeLabel());
+    if (getFinishTimeFromToolBar() < getStartTimeFromToolBar())
+        setFinishTimeInToolBar(getStartTimeFromToolBar());
 
 }
 
@@ -741,81 +741,71 @@ void MainWindow::fixFinishTime()
 void MainWindow::fixTimeStep()
 {
     //! @todo Maybe more checks, i.e. the time step should be even divided into the simulation time.
-    if (getTimeStepLabel() > (getFinishTimeLabel() - getStartTimeLabel()))
-        setTimeStepLabel(getFinishTimeLabel() - getStartTimeLabel());
+    if (getTimeStepFromToolBar() > (getFinishTimeFromToolBar() - getStartTimeFromToolBar()))
+        setTimeStepInToolBar(getFinishTimeFromToolBar() - getStartTimeFromToolBar());
 
     if (mpProjectTabs->getCurrentTab()) //crashes if not if statement if no tabs are there...
     {
-        mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->setDesiredTimeStep(getTimeStepLabel());
+        mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->setDesiredTimeStep(getStartTimeFromToolBar());
     }
-}
-
-
-//! Sets a new value to a label.
-//! @param lineEdit is a pointer to the label which should change
-//! @param value is the new value
-void MainWindow::setValue(QLineEdit *lineEdit, double value)
-{
-    QString valueTxt;
-    valueTxt.setNum(value, 'g', 6 );
-    lineEdit->setText(valueTxt);
-    fixTimeStep();
-    fixFinishTime();
 }
 
 
 //! Sets a new startvalue.
 //! @param startTime is the new value
-void MainWindow::setStartTimeLabel(double startTime)
+void MainWindow::setStartTimeInToolBar(double startTime)
 {
-    setValue(mpStartTimeLineEdit, startTime);
+    QString valueTxt;
+    valueTxt.setNum(startTime, 'g', 6 );
+    mpStartTimeLineEdit->setText(valueTxt);
+    fixTimeStep();
+    fixFinishTime();
 }
 
 
 //! Sets a new timestep.
 //! @param timeStep is the new value
-void MainWindow::setTimeStepLabel(double timeStep)
+void MainWindow::setTimeStepInToolBar(double timeStep)
 {
-    setValue(mpTimeStepLineEdit, timeStep);
+    QString valueTxt;
+    valueTxt.setNum(timeStep, 'g', 6 );
+    mpTimeStepLineEdit->setText(valueTxt);
+    fixTimeStep();
+    fixFinishTime();
 }
 
 
 //! Sets a new finish value.
 //! @param finishTime is the new value
-void MainWindow::setFinishTimeLabel(double finishTime)
+void MainWindow::setFinishTimeInToolBar(double finishTime)
 {
-    setValue(mpFinishTimeLineEdit, finishTime);
-}
-
-
-//! Acess function to the value of a label.
-//! @param lineEdit is the linedit to read
-//! @returns the value of the lineedit
-double MainWindow::getValue(QLineEdit *lineEdit)
-{
-    return lineEdit->text().toDouble();
+    QString valueTxt;
+    valueTxt.setNum(finishTime, 'g', 6 );
+    mpFinishTimeLineEdit->setText(valueTxt);
+    fixTimeStep();
+    fixFinishTime();
 }
 
 
 //! Acess function to the starttimelabel value.
 //! @returns the starttime value
-double MainWindow::getStartTimeLabel()
+double MainWindow::getStartTimeFromToolBar()
 {
-    return getValue(mpStartTimeLineEdit);
+    return mpStartTimeLineEdit->text().toDouble();
 }
 
 
 //! Acess function to the timesteplabel value.
 //! @returns the timestep value
-double MainWindow::getTimeStepLabel()
+double MainWindow::getTimeStepFromToolBar()
 {
-    return getValue(mpTimeStepLineEdit);
+    return mpTimeStepLineEdit->text().toDouble();
 }
 
 
 //! Acess function to the finishlabel value.
 //! @returns the finish value
-double MainWindow::getFinishTimeLabel()
+double MainWindow::getFinishTimeFromToolBar()
 {
-    return getValue(mpFinishTimeLineEdit);
+    return mpFinishTimeLineEdit->text().toDouble();
 }

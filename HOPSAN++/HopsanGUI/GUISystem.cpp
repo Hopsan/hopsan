@@ -214,9 +214,9 @@ void GUISystem::loadFromHMF(QString modelFilePath)
     if (this->mpParentSystem == 0)
     {
         //It is assumed that these data have been successfully read
-        mpMainWindow->setStartTimeLabel(headerData.startTime);
-        mpMainWindow->setTimeStepLabel(headerData.timeStep);
-        mpMainWindow->setFinishTimeLabel(headerData.stopTime);
+        mpMainWindow->setStartTimeInToolBar(headerData.startTime);
+        mpMainWindow->setTimeStepInToolBar(headerData.timeStep);
+        mpMainWindow->setFinishTimeInToolBar(headerData.stopTime);
 
         //It is assumed that these data have been successfully read
         mpParentProjectTab->mpGraphicsView->centerOn(headerData.viewport_x, headerData.viewport_y);
@@ -1104,7 +1104,7 @@ bool GUISystem::isConnectorSelected()
 //! @see updateStopTime()
 void GUISystem::updateStartTime()
 {
-    mStartTime = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->getStartTimeLabel();
+    mStartTime = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->getStartTimeFromToolBar();
 }
 
 
@@ -1113,7 +1113,7 @@ void GUISystem::updateStartTime()
 //! @see updateStopTime()
 void GUISystem::updateTimeStep()
 {
-    mTimeStep = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->getTimeStepLabel();
+    mTimeStep = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->getTimeStepFromToolBar();
 }
 
 
@@ -1122,7 +1122,7 @@ void GUISystem::updateTimeStep()
 //! @see updateTimeStep()
 void GUISystem::updateStopTime()
 {
-    mStopTime = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->getFinishTimeLabel();
+    mStopTime = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->getFinishTimeFromToolBar();
 }
 
 
@@ -1225,9 +1225,9 @@ void GUISystem::updateUndoStatus()
 //! Slot that updates the values in the simulation setup widget to display new values when current project tab is changed.
 void GUISystem::updateSimulationSetupWidget()
 {
-    mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->setStartTimeLabel(mStartTime);
-    mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->setTimeStepLabel(mTimeStep);
-    mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->setFinishTimeLabel(mStopTime);
+    mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->setStartTimeInToolBar(mStartTime);
+    mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->setTimeStepInToolBar(mTimeStep);
+    mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->setFinishTimeInToolBar(mStopTime);
 }
 
 
