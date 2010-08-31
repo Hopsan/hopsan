@@ -505,43 +505,28 @@ void GUIConnector::saveToTextStream(QTextStream &rStream, QString prepend)
 //! Draws lines between the points in the mPoints vector, and stores them in the mpLines vector.
 void GUIConnector::drawConnector()
 {
-    if(!mEndPortConnected)
+    if(!mEndPortConnected)        //End port is not connected, which means we are creating a new line
     {
-        //End port is not connected, which means we are creating a new line
-        //! @todo Make this smarter, so that lines that are not changed are not removed and then re-added
-
-            //Remove all lines
-        while(!mpLines.empty())
+            //Remove lines if there are too many
+        while(mpLines.size() > mPoints.size()-1)
         {
             this->scene()->removeItem(mpLines.back());
             mpLines.pop_back();
         }
-        mpLines.clear();
-
-            //Create new lines from the mPoints vector
-        if(mPoints.size() > 1)
+            //Add lines if there are too few
+        while(mpLines.size() < mPoints.size()-1)
         {
-            for(int i = 0; i != mPoints.size()-1; ++i)
-            {
-                mpTempLine = new GUIConnectorLine(mapFromScene(mPoints[i]).x(), mapFromScene(mPoints[i]).y(),
-                                                  mapFromScene(mPoints[i+1]).x(), mapFromScene(mPoints[i+1]).y(),
-                                                  mpGUIConnectorAppearance, mpLines.size(), this);
-                mpTempLine->setPassive();
-                connect(mpTempLine,SIGNAL(lineSelected(bool, int)),this,SLOT(doSelect(bool, int)));
-                connect(mpTempLine,SIGNAL(lineMoved(int)),this, SLOT(updateLine(int)));
-                connect(mpTempLine,SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
-                connect(mpTempLine,SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
-                connect(this,SIGNAL(endPortConnected()),mpTempLine,SLOT(setConnected()));
-                mpLines.push_back(mpTempLine);
-            }
-        }
-        if(!mEndPortConnected && mpLines.size() > 1)
-        {
-            //mpLines.back()->setActive();
-            mpLines[mpLines.size()-2]->setPassive();
+            mpTempLine = new GUIConnectorLine(0, 0, 0, 0, mpGUIConnectorAppearance, mpLines.size(), this);
+            mpTempLine->setPassive();
+            connect(mpTempLine,SIGNAL(lineSelected(bool, int)),this,SLOT(doSelect(bool, int)));
+            connect(mpTempLine,SIGNAL(lineMoved(int)),this, SLOT(updateLine(int)));
+            connect(mpTempLine,SIGNAL(lineHoverEnter()),this,SLOT(setHovered()));
+            connect(mpTempLine,SIGNAL(lineHoverLeave()),this,SLOT(setUnHovered()));
+            connect(this,SIGNAL(endPortConnected()),mpTempLine,SLOT(setConnected()));
+            mpLines.push_back(mpTempLine);
         }
     }
-    else
+    else        //End port is connected, so the connector is modified or has moved
     {
         if(mpStartPort->getGuiObject()->isSelected() and mpEndPort->getGuiObject()->isSelected() and this->isActive())
         {
@@ -555,23 +540,15 @@ void GUIConnector::drawConnector()
             updateStartPoint(getStartPort()->mapToScene(getStartPort()->boundingRect().center()));
             updateEndPoint(getEndPort()->mapToScene(getEndPort()->boundingRect().center()));
         }
-
-            //Redraw the lines based on the mPoints vector
-        for(int i = 0; i != mPoints.size()-1; ++i)
-        {
-            mpLines[i]->setLine(mapFromScene(mPoints[i]), mapFromScene(mPoints[i+1]));
-        }
     }
 
-        //Remove the extra lines if there are too many
-    while(mPoints.size() < int(mpLines.size()+1))
+       //Redraw the lines based on the mPoints vector
+    for(int i = 0; i != mPoints.size()-1; ++i)
     {
-        delete(mpLines.back());
-        mpLines.pop_back();
-        this->scene()->update();
+        if(mpLines[i]->line().p1() != mPoints[i] or mpLines[i]->line().p2() != mPoints[i+1]);   //Don't redraw the line if it has not changed
+        mpLines[i]->setLine(mapFromScene(mPoints[i]), mapFromScene(mPoints[i+1]));
     }
 
-    //mpParentSystem->setBackgroundBrush(mpParentSystem->mBackgroundColor);
     mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
 }
 

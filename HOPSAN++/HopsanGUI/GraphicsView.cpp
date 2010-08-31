@@ -388,19 +388,6 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 }
 
 
-
-
-//! @todo This is not used anywhere and can probably be removed. Why would you want to do it like this?
-//void GraphicsView::setScale(const QString &scale)
-//{
-//    double newScale = scale.left(scale.indexOf(tr("%"))).toDouble() / 100.0;
-//    QMatrix oldMatrix = this->matrix();
-//    this->resetMatrix();
-//    this->translate(oldMatrix.dx(), oldMatrix.dy());
-//    this->scale(newScale, newScale);
-//}
-
-
 //! Resets zoom factor to 100%.
 //! @see zoomIn()
 //! @see zoomOut()
