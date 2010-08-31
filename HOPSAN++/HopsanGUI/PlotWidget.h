@@ -57,8 +57,10 @@
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QVector>
-#include <QListWidget>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
 #include <QListWidgetItem>
+#include <QListWidget>
 #include <QHash>
 #include <QToolBar>
 #include <QToolButton>
@@ -135,7 +137,7 @@ private:
 };
 
 
-class VariableList : public QListWidget
+class VariableList : public QTreeWidget
 {
     Q_OBJECT
 public:
@@ -155,7 +157,7 @@ protected:
 
  private slots:
     void updateList();
-    void createPlot(QListWidgetItem *item);
+    void createPlot(QTreeWidgetItem *item);
 };
 
 

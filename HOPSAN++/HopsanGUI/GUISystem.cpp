@@ -51,6 +51,7 @@ void GUISystem::commonConstructorCode()
 {
     mpScene = new GraphicsScene();
     mpScene->addItem(this);     //! Detta kan gå åt helsike
+                                //! @todo Should systems belong to their own scene?! This is why display names appear in the system's scene...
 
     mpMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 
@@ -1089,8 +1090,7 @@ bool GUISystem::isObjectSelected()
 }
 
 
-//! @todo Finish this!
-//! @todo See comment above isObjectSelected()
+//! Returns true if at least one GUIConnector is selected
 bool GUISystem::isConnectorSelected()
 {
     return (mSelectedSubConnectorsList.size() > 0);

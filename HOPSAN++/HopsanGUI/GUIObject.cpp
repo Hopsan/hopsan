@@ -738,7 +738,6 @@ void GUIObject::flipHorizontal(undoStatus undoSettings)
 {
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
-        //if(mPortListPtrs[i]->getPortTypeEnum() == Port::READPORT or mPortListPtrs[i]->getPortTypeEnum() == Port::WRITEPORT)
         if(mPortListPtrs[i]->getPortType() == "READPORT" or mPortListPtrs[i]->getPortType() == "WRITEPORT")
         {
             if(this->rotation() == 90 or this->rotation() == 270)
@@ -929,6 +928,8 @@ void GUIObjectDisplayName::focusInEvent(QFocusEvent *event)
     QGraphicsTextItem::focusInEvent(event);
 }
 
+
+//! @todo Can we delete this reimplementation?
 void GUIObjectDisplayName::focusOutEvent(QFocusEvent *event)
 {
 //    qDebug() << "focusOutEvent()";

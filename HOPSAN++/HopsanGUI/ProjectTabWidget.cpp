@@ -158,6 +158,8 @@ void ProjectTab::simulate()
     double dt = finishTime - startTime;
     size_t nSteps = dt/mpSystem->mpCoreSystemAccess->getDesiredTimeStep();
 
+    qDebug() << "Initializing simulation: " << startTime << nSteps << finishTime;
+
         //Ask core to initialize simulation
     InitializationThread actualInitialization(mpSystem->mpCoreSystemAccess, startTime, finishTime, this);
     actualInitialization.start();
@@ -197,7 +199,7 @@ void ProjectTab::simulate()
         actualSimulation.start();
         actualSimulation.setPriority(QThread::HighestPriority);
             //! @todo TimeCriticalPriority seem to work on dual core, is it a problem on single core machines only?
-        actualSimulation.setPriority(QThread::TimeCriticalPriority); //No bar appears in Windows with this prio
+        //actualSimulation.setPriority(QThread::TimeCriticalPriority); //No bar appears in Windows with this prio
 
         if(mpParentProjectTabWidget->mpParentMainWindow->mEnableProgressBar)
         {

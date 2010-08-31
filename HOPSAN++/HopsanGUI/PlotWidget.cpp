@@ -366,7 +366,7 @@ QwtPlotCurve *VariablePlot::getCurve()
 
 
 VariableList::VariableList(MainWindow *parent)
-        : QListWidget(parent)
+        : QTreeWidget(parent)
 {
     mpParentMainWindow = parent;
     mpCurrentSystem = mpParentMainWindow->mpProjectTabs->getCurrentSystem();
@@ -374,6 +374,8 @@ VariableList::VariableList(MainWindow *parent)
     this->setDragEnabled(true);
     this->setAcceptDrops(true);
     this->updateList();
+    this->setHeaderHidden(true);
+    this->setColumnCount(1);
 
     connect(mpParentMainWindow->mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateList()));
     connect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), this, SLOT(updateList()));
@@ -393,7 +395,8 @@ void VariableList::updateList()
     mpCurrentSystem = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem;
     QVector<double> y;
     QHash<QString, GUIObject *>::iterator it;
-    QListWidgetItem *tempListWidget;
+    QTreeWidgetItem *tempComponentItem;
+    QTreeWidgetItem *tempParameterItem;
     bool colorize = false;
     for(it = mpCurrentSystem->mGUIObjectMap.begin(); it!=mpCurrentSystem->mGUIObjectMap.end(); ++it)
     {
@@ -405,9 +408,18 @@ void VariableList::updateList()
         }
         else
         {
-            backgroundColor = QColor("beige");
+            backgroundColor = QColor("white");      //Used to be "beige"
             colorize = true;
         }
+
+        tempComponentItem = new QTreeWidgetItem();
+        tempComponentItem->setText(0, it.value()->getName());
+        tempComponentItem->setBackgroundColor(0, backgroundColor);
+        QFont tempFont;
+        tempFont = tempComponentItem->font(0);
+        tempFont.setBold(true);
+        tempComponentItem->setFont(0, tempFont);
+        this->addTopLevelItem(tempComponentItem);
 
         QList<GUIPort*> portListPtrs = it.value()->getPortListPtrs();
         QList<GUIPort*>::iterator itp;
@@ -427,21 +439,23 @@ void VariableList::updateList()
                 for(int i = 0; i!=parameterNames.size(); ++i)
                 {
                     y.clear();
-                    tempListWidget = new QListWidgetItem((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", this);
-                    tempListWidget->setBackgroundColor(backgroundColor);
-                    tempListWidget->setFlags(Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+                    tempParameterItem = new QTreeWidgetItem();
+                    tempParameterItem->setText(0, (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]");
+                    tempParameterItem->setBackgroundColor(0, backgroundColor);
+                    //tempListWidget->setFlags(Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+                    tempComponentItem->addChild(tempParameterItem);
                     mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), parameterNames[i], y);
                     xMap.insert((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", time);
                     yMap.insert((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", y);
                     yLabelMap.insert((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", parameterNames[i]);
-
                 }
             }
         }
     }
+    this->sortItems(0, Qt::AscendingOrder);
 }
 
-void VariableList::createPlot(QListWidgetItem *item)
+void VariableList::createPlot(QTreeWidgetItem *item)
 {
     //double n = map.value(item->text());
     //std::cout << n << std::endl;
@@ -449,15 +463,18 @@ void VariableList::createPlot(QListWidgetItem *item)
 //    QVector<double> xarray(2);
   //  QVector<double> yarray(2);
 
+    QString lookupName;
+    lookupName = QString(item->parent()->text(0) + ", " + item->text(0));
+
     QString title;
     QString xlabel;
     QString ylabel;
 
-    title.append(item->text());
-    ylabel.append(yLabelMap.find(item->text()).value());
+    title.append(lookupName);
+    ylabel.append(yLabelMap.find(lookupName).value());
     xlabel.append("Time, [s]");
 
-    PlotWidget *plotwidget = new PlotWidget(xMap.find(item->text()).value(),yMap.find(item->text()).value(),mpParentMainWindow);
+    PlotWidget *plotwidget = new PlotWidget(xMap.find(lookupName).value(),yMap.find(lookupName).value(),mpParentMainWindow);
     plotwidget->setWindowTitle("HOPSAN Plot Window");
     plotwidget->mpCurve->setTitle(title);
     plotwidget->mpVariablePlot->setAxisTitle(VariablePlot::yLeft, ylabel);
@@ -465,12 +482,12 @@ void VariableList::createPlot(QListWidgetItem *item)
     plotwidget->mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
     plotwidget->show();
 
-    std::cout << item->text().toStdString() << std::endl;
+    std::cout << lookupName.toStdString() << std::endl;
 }
 
 void VariableList::mousePressEvent(QMouseEvent *event)
 {
-    QListWidget::mousePressEvent(event);
+    QTreeWidget::mousePressEvent(event);
 
     if (event->button() == Qt::LeftButton)
         dragStartPosition = event->pos();
@@ -488,9 +505,9 @@ void VariableList::mouseMoveEvent(QMouseEvent *event)
     QByteArray *data = new QByteArray;
     QDataStream stream(data,QIODevice::WriteOnly);
 
-    QListWidgetItem *item = this->currentItem();
+    QTreeWidgetItem *item = this->currentItem();
 
-    stream << item->text();
+    stream << item->text(0);
 
     *data = "Test";
 
@@ -549,18 +566,18 @@ void SelectedVariableList::dragMoveEvent(QDragMoveEvent *event)
 
 void SelectedVariableList::dropEvent(QDropEvent *event)
 {
-    qDebug() << "dropEvent";
-    if (event->mimeData()->hasFormat("application/x-plotvariable"))
-    //if (event->mimeData()->hasText())
-    {
-        qDebug() << "True!";
-        QString datastr =  event->mimeData()->text();
-        //QTextStream stream(&datastr, QIODevice::ReadOnly);
-        QListWidgetItem *tempListWidget;
-        tempListWidget = new QListWidgetItem(datastr, this);
+//    qDebug() << "dropEvent";
+//    if (event->mimeData()->hasFormat("application/x-plotvariable"))
+//    //if (event->mimeData()->hasText())
+//    {
+//        qDebug() << "True!";
+//        QString datastr =  event->mimeData()->text();
+//        //QTextStream stream(&datastr, QIODevice::ReadOnly);
+//        QListWidgetItem *tempListWidget;
+//        tempListWidget = new QListWidgetItem(datastr, this);
 
-        event->acceptProposedAction();
-   }
+//        event->acceptProposedAction();
+//   }
 }
 
 VariableListDialog::VariableListDialog(MainWindow *parent)
