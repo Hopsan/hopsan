@@ -370,7 +370,8 @@ void GUIObject::select()
 //! Returns the port with the specified name.
 GUIPort *GUIObject::getPort(QString name)
 {
-    //! @todo use the a guiport map instead
+
+    //! @todo use the a guiport map instead   (Is this really a good idea? The number of ports is probably too small to make it beneficial, and it would slow down everything else...)
     for (int i=0; i<mPortListPtrs.size(); ++i)
     {
         if (mPortListPtrs[i]->getName() == name)
@@ -1701,8 +1702,8 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData* pAppearanceDa
             for(int i = 0; i != GUIConnectorPtrs.size(); ++i)
             {
                 //Loop trough the GUIConnectors that are connected to pComponent
-                if((GUIConnectorPtrs[i]->getStartPort()->getGuiObject()->getName() == pComponent->getName()) or
-                   (GUIConnectorPtrs[i]->getEndPort()->getGuiObject()->getName() == pComponent->getName()))
+                if((GUIConnectorPtrs[i]->getStartComponentName() == pComponent->getName()) or
+                   (GUIConnectorPtrs[i]->getEndComponentName() == pComponent->getName()))
                 {
                     if((compList.contains(GUIConnectorPtrs[i]->getStartPort()->getGuiObject())) and
                        (compList.contains(GUIConnectorPtrs[i]->getEndPort()->getGuiObject())))
@@ -1811,7 +1812,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData* pAppearanceDa
         if(pPort)
         {
             pGroupPortComponent->setOuterGuiPort(pPortBoundaryOutside);
-            portName = pTransitConnector->getStartPort()->getName();
+            portName = pTransitConnector->getStartPortName();
 
             QVector<QPointF> points;
             points.append(pPortBoundaryInside->mapToScene(pPortBoundaryInside->boundingRect().center()));

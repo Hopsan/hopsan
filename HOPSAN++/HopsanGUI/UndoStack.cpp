@@ -373,8 +373,8 @@ void UndoStack::registerModifiedConnector(QPointF oldPos, QPointF newPos, GUICon
     QString str;
     QTextStream stream(&str);
 
-    stream << "MODIFIEDCONNECTOR" << " " << addQuotes(item->getStartPort()->getGuiObject()->getName()) << " " << addQuotes(item->getStartPort()->getName())
-                                  << " " << addQuotes(item->getEndPort()->getGuiObject()->getName())   << " " << addQuotes(item->getEndPort()->getName())
+    stream << "MODIFIEDCONNECTOR" << " " << addQuotes(item->getStartComponentName()) << " " << addQuotes(item->getStartPortName())
+                                  << " " << addQuotes(item->getEndComponentName())   << " " << addQuotes(item->getEndPortName())
                                   << " " << oldPos.x() << " " << oldPos.y() << " " << newPos.x() << " " << newPos.y() << " " << lineNumber;
     this->insertPost(str);
 

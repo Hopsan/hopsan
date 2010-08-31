@@ -53,6 +53,7 @@
 
 class GUIConnectorLine;
 class GraphicsView;
+class GUIObject;
 class GUIPort;
 class GUISystem;
 
@@ -76,6 +77,10 @@ public:
     QVector<QPointF> getPointsVector();
     GUIPort *getStartPort();
     GUIPort *getEndPort();
+    QString getStartPortName();
+    QString getEndPortName();
+    QString getStartComponentName();
+    QString getEndComponentName();
     GUIConnectorLine *getLine(int line);
     GUIConnectorLine *getLastLine();
     GUIConnectorLine *getSecondLastLine();

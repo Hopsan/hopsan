@@ -576,7 +576,7 @@ GUIObject* GUISystem::addGUIObject(AppearanceData* pAppearanceData, QPoint posit
     if ( mGUIObjectMap.contains(mpTempGUIObject->getName()) )
     {
         mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Trying to add component with name: " + mpTempGUIObject->getName() + " that already exist in GUIObjectMap, (Not adding)");
-        //! @todo Won't this mean that the object will be added to the scene but not to the model map?
+        //! @todo Is this check really necessary? Two objects cannot have the same name anyway...
     }
     else
     {
@@ -626,7 +626,7 @@ void GUISystem::deleteGUIObject(QString objectName, undoStatus undoSettings)
     else
     {
         //qDebug() << "In delete GUIObject: could not find object with name " << objectName;
-        //! @todo Maybe we should give the user a message?
+        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Error: Could not delete object with name " + objectName + ", object not found");
     }
     mpParentProjectTab->mpGraphicsView->updateViewPort();
 }
@@ -711,20 +711,19 @@ GUIConnector* GUISystem::findConnector(QString startComp, QString startPort, QSt
     GUIConnector *item;
     for(int i = 0; i < mSubConnectorList.size(); ++i)
     {
-        //! @todo Should add functions to connector to get start/end component/port names (used a few times around the code)
-        if((mSubConnectorList[i]->getStartPort()->getGuiObject()->getName() == startComp) and
-           (mSubConnectorList[i]->getStartPort()->getName() == startPort) and
-           (mSubConnectorList[i]->getEndPort()->getGuiObject()->getName() == endComp) and
-           (mSubConnectorList[i]->getEndPort()->getName() == endPort))
+        if((mSubConnectorList[i]->getStartComponentName() == startComp) and
+           (mSubConnectorList[i]->getStartPortName() == startPort) and
+           (mSubConnectorList[i]->getEndComponentName() == endComp) and
+           (mSubConnectorList[i]->getEndPortName() == endPort))
         {
             item = mSubConnectorList[i];
             break;
         }
         //Find even if the caller mixed up start and stop
-        else if((mSubConnectorList[i]->getStartPort()->getGuiObject()->getName() == endComp) and
-                (mSubConnectorList[i]->getStartPort()->getName() == endPort) and
-                (mSubConnectorList[i]->getEndPort()->getGuiObject()->getName() == startComp) and
-                (mSubConnectorList[i]->getEndPort()->getName() == startPort))
+        else if((mSubConnectorList[i]->getStartComponentName() == endComp) and
+                (mSubConnectorList[i]->getStartPortName() == endPort) and
+                (mSubConnectorList[i]->getEndComponentName() == startComp) and
+                (mSubConnectorList[i]->getEndPortName() == startPort))
         {
             item = mSubConnectorList[i];
             break;
@@ -894,7 +893,6 @@ void GUISystem::cutSelected()
 //! Puts the selected components in the copy stack, and their positions in the copy position stack.
 //! @see cutSelected()
 //! @see paste()
-//! @todo What about paramter values
 void GUISystem::copySelected()
 {
     mUndoStack->newPost();

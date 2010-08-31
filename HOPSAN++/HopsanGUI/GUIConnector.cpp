@@ -167,25 +167,6 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
 //! Destructor.
 GUIConnector::~GUIConnector()
 {
-    //qDebug() << this->getNumberOfLines();
-
-    //mpParentSystem->mUndoStack->registerDeletedConnector(this);
-
-//    QHash<QString, GUIConnector *>::iterator it;
-//    for(it = mpParentSystem->mConnectorVector.begin(); it!=mpParentSystem->mConnectorVector.end(); ++it)
-//    {
-//        if(mpParentSystem->mConnectorVector.empty())
-//        {
-//            break;
-//        }
-//        else if(it.value() = this)
-//        {
-//            mpParentSystem->mConnectorVector.erase(it);
-//        }
-//    }
-
-    //mpLines.clear();
-    //! @todo more cleanup
     delete mpGUIConnectorAppearance;
 
     mpStartPort->getGuiObject()->forgetConnector(this);
@@ -307,7 +288,6 @@ void GUIConnector::setStartPort(GUIPort *port)
 //! @see getEndPort()
 void GUIConnector::setEndPort(GUIPort *port)
 {
-    //! @todo Make connectors add one extra line if end port has wrong direction, and move the line X points outwards from the component.
     mEndPortConnected = true;
     mpEndPort = port;
     mpEndPort->isConnected = true;
@@ -416,6 +396,38 @@ GUIPort *GUIConnector::getEndPort()
 }
 
 
+//! Returns the name of the start port of a connector.
+//! @see getEndPortName()
+QString GUIConnector::getStartPortName()
+{
+    return mpStartPort->getName();
+}
+
+
+//! Returns the name of the end port of a connector.
+//! @see getStartPortName()
+QString GUIConnector::getEndPortName()
+{
+    return mpEndPort->getName();
+}
+
+
+//! Returns the name of the start component of a connector.
+//! @see getEndComponentName()
+QString GUIConnector::getStartComponentName()
+{
+    return mpStartPort->getGUIComponentName();
+}
+
+
+//! Returns the name of the end component of a connector.
+//! @see getStartComponentName()
+QString GUIConnector::getEndComponentName()
+{
+    return mpEndPort->getGUIComponentName();
+}
+
+
 //! Returns the line with specified number.
 //! @param line is the number of the wanted line.
 //! @see getThirdLastLine()
@@ -485,10 +497,10 @@ bool GUIConnector::isActive()
 //! @param QTextSream is the text stream with the information.
 void GUIConnector::saveToTextStream(QTextStream &rStream, QString prepend)
 {
-    QString startObjName = getStartPort()->getGUIComponentName();
-    QString endObjName = getEndPort()->getGUIComponentName();
-    QString startPortName  = getStartPort()->getName();
-    QString endPortName = getEndPort()->getName();
+    QString startObjName = getStartComponentName();
+    QString endObjName = getEndComponentName();
+    QString startPortName  = getStartPortName();
+    QString endPortName = getEndPortName();
     if (!prepend.isEmpty())
     {
         rStream << prepend << " ";
