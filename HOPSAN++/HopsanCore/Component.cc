@@ -2035,8 +2035,13 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     }
 
         //Obtain number of processor cores from environment variable
-    string nCoresString = getenv("NUMBER_OF_PROCESSORS");
-    int nCores = atoi(nCoresString.c_str());
+    int nCores = 1; //At least on single core Ubuntu 10.04 getenv("NUMBER_OF_PROCESSORS") returns NULL and crash, solved by this if block
+    if (getenv("NUMBER_OF_PROCESSORS")!=0)
+    {
+        string nCoresString = getenv("NUMBER_OF_PROCESSORS");
+        nCores = atoi(nCoresString.c_str());
+    }
+
 
         //Attempt to distribute C component equally over vectors (one for each core)
     vector< vector<Component*> > splitCVector;
