@@ -193,8 +193,6 @@ private:
     void createActions();
     void createMenus();
     void createToolbars();
-
-    bool mPlotVariableListOpen;
 };
 
 #endif // MAINWINDOW_H

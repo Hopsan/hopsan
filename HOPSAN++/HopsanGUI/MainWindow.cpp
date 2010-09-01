@@ -68,7 +68,6 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle("HOPSAN NG");
     this->setWindowIcon(QIcon("../../HopsanGUI/icons/hopsan.png"));
     this->setDockOptions(QMainWindow::ForceTabbedDocks);
-    mPlotVariableListOpen = false;
 
     QMetaObject::connectSlotsByName(this);
 
@@ -171,7 +170,12 @@ MainWindow::MainWindow(QWidget *parent)
     mpPlotVariablesDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     mpPlotVariablesDock->hide();
     addDockWidget(Qt::RightDockWidgetArea, mpPlotVariablesDock);
-    mPlotVariableListOpen=false;
+
+    //Create the undo widget and hide it
+mpUndoDock = new QDockWidget(tr("Undo History"), this);
+mpUndoDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+mpUndoDock->hide();
+addDockWidget(Qt::RightDockWidgetArea, mpUndoDock);
 
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateToolBarsToNewTab()));
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(refreshUndoWidgetList()));
@@ -200,7 +204,7 @@ void MainWindow::plot()
 {
     if(mpProjectTabs->count() != 0)
     {
-        if(!mPlotVariableListOpen)
+        if(!mpPlotVariablesDock->isVisible())//!mPlotVariableListOpen)
         {
     //        mpPlotVariablesDock = new QDockWidget(tr("Plot Variables"), this);
     //        mpPlotVariablesDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -213,13 +217,12 @@ void MainWindow::plot()
             mpPlotVariablesDock->setWidget(variableList);
 
             mpPlotVariablesDock->show();
-            mPlotVariableListOpen = true;
+            mpPlotVariablesDock->raise();
         }
         else
         {
             mpPlotVariablesDock->hide();
             //this->removeDockWidget(mpPlotVariablesDock);
-            mPlotVariableListOpen = false;
         }
     }
 }
@@ -502,25 +505,26 @@ void MainWindow::createToolbars()
 //! Opens the undo widget.
 void MainWindow::openUndo()
 {
-    //mpUndoWidget->show();
 
-    mpUndoDock = new QDockWidget(tr("Undo History"), this);
-    mpUndoDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    //VariableListDialog *variableList = new VariableListDialog(varPlotDock);
-
-    mpUndoDock->setWidget(mpUndoWidget);
-    //variableList->show();
-
-    addDockWidget(Qt::RightDockWidgetArea, mpUndoDock);
-
-    if(dockWidgetArea(mpPlotVariablesDock) == dockWidgetArea(mpUndoDock))
+    if(!mpUndoDock->isVisible())
     {
-        tabifyDockWidget(mpUndoDock, mpPlotVariablesDock);
-    }
+        //mpUndoDock = new QDockWidget(tr("Undo History"), this);
+        //mpUndoDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
-    mpUndoWidget->activateWindow();
-    mpUndoWidget->raise();
-    mpUndoWidget->refreshList();
+        mpUndoDock->setWidget(mpUndoWidget);
+
+        //addDockWidget(Qt::RightDockWidgetArea, mpUndoDock);
+
+        if(dockWidgetArea(mpPlotVariablesDock) == dockWidgetArea(mpUndoDock))
+        {
+            tabifyDockWidget(mpUndoDock, mpPlotVariablesDock);
+        }
+
+        mpUndoDock->show();
+        //mpUndoDock->activateWindow();
+        mpUndoDock->raise();
+        mpUndoWidget->refreshList();
+    }
 }
 
 

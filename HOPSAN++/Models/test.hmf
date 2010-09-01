@@ -6,7 +6,7 @@ HMFVERSION 0.1
 CAFVERSION 0.1
 --------------------------------------------------------------
 SIMULATIONTIME 0 0.001 200
-VIEWPORT 2546 2479 1
+VIEWPORT 2544.87 2519.14 1.74901
 --------------------------------------------------------------
 USERICON ""
 ISOICON ""
@@ -38,7 +38,7 @@ PARAMETER "Volume_1" "debug" 0
 PARAMETER "Volume_1" "t1" 0
 PARAMETER "Volume_1" "t2" 0.01
 COMPONENT "SignalSubtract" "Subtract" 2303 2547 0 0 0
-COMPONENT "MechanicPositionSensor" "PositionSensor" 2751 2371 0 0 0
+COMPONENT "MechanicPositionSensor" "PositionSensor" 2744 2408 0 0 0
 COMPONENT "HydraulicVolume" "Volume" 2427 2607 0 0 0
 PARAMETER "Volume" "V" 0.001
 PARAMETER "Volume" "Be" 1e+09
@@ -81,12 +81,12 @@ CONNECT "Volume" "P1" "LaminarOrifice" "P1" 2402 2607 2389 2607 2389 2607 2368.5
 CONNECT "LaminarOrifice_1" "P1" "Volume_1" "P1" 2367.5 2652 2382 2652 2382 2652 2403 2652
 CONNECT "LaminarOrifice" "P2" "PressureSource" "P1" 2299.5 2607 2285 2607 2285 2607 2266 2607
 CONNECT "LaminarOrifice_1" "P2" "Tank" "P1" 2298.5 2652 2255 2652 2255 2662.5
-CONNECT "Subtract" "in2" "PositionSensor" "out" 2303 2534.5 2303 2299 2751 2299 2751 2358.5
+CONNECT "Subtract" "in2" "PositionSensor" "out" 2303 2534.5 2303 2350 2744 2350 2744 2395.5
 CONNECT "CylinderC" "P1" "43Valve" "PA" 2490.47 2470 2490.47 2491 2520.92 2491 2520.92 2512
 CONNECT "43Valve" "PB" "CylinderC" "P2" 2540.97 2512 2540.97 2491 2570.06 2491 2570.06 2470
 CONNECT "CylinderC" "P3" "TranslationalMass" "P1" 2604.5 2450 2634 2450 2634 2450 2657 2450
 CONNECT "TranslationalMass" "P2" "ForceTransformer" "P1" 2721 2450 2732 2450 2732 2450 2759.5 2450
-CONNECT "PositionSensor" "P1" "TranslationalMass" "P2" 2751 2383.5 2721 2450
+CONNECT "PositionSensor" "P1" "TranslationalMass" "P2" 2744 2420.5 2721 2450
 CONNECT "SquareWave" "out" "Subtract" "in1" 2240 2547 2290.5 2547
 CONNECT "Subtract" "out" "Gain" "in" 2315.5 2547 2361.5 2547
 CONNECT "Gain" "out" "43Valve" "in" 2386.5 2547 2431.5 2547
