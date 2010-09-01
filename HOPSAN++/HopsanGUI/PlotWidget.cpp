@@ -378,20 +378,22 @@ VariableList::VariableList(MainWindow *parent)
     this->setColumnCount(1);
 
     connect(mpParentMainWindow->mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateList()));
+    connect(mpParentMainWindow->mpProjectTabs, SIGNAL(tabCloseRequested(int)), this, SLOT(updateList()));
     connect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), this, SLOT(updateList()));
     connect(this,SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),this,SLOT(createPlot(QTreeWidgetItem*)));
 }
 
 void VariableList::updateList()
 {
-    if(mpParentMainWindow->mpProjectTabs->count() == 0)     //Check so that project tabs are not empty (= program is closing)
+    xMap.clear();
+    yMap.clear();
+    this->clear();
+
+    if(mpParentMainWindow->mpProjectTabs->count() == 0)     //Check so that at least one project tab exists
     {
         return;
     }
 
-    xMap.clear();
-    yMap.clear();
-    this->clear();
     mpCurrentSystem = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem;
     QVector<double> y;
     QHash<QString, GUIObject *>::iterator it;
