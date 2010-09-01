@@ -6,12 +6,45 @@ HMFVERSION 0.1
 CAFVERSION 0.1
 --------------------------------------------------------------
 SIMULATIONTIME 0 0.001 5
-VIEWPORT 2301.17 2499.68 1.08814
+VIEWPORT 2500 2500 1
 --------------------------------------------------------------
 USERICON ""
 ISOICON ""
 --------------------------------------------------------------
-COMPONENT "Hydraulic43Valve" "4/3 Servo Valve_128" 2395 2559 0 0 0
+COMPONENT "SignalSineWave" "Sine Wave_191" 2620 2543 0 0 0
+PARAMETER "Sine Wave_191" "StartTime" 0
+PARAMETER "Sine Wave_191" "Frequency" 1
+PARAMETER "Sine Wave_191" "Amplitude" 1
+PARAMETER "Sine Wave_191" "Offset" 0
+COMPONENT "HydraulicTankC" "Tank C_206" 2565 2539 0 0 0
+PARAMETER "Tank C_206" "P" 100000
+COMPONENT "HydraulicTankC" "Tank C_207" 2773 2539 0 0 0
+PARAMETER "Tank C_207" "P" 100000
+COMPONENT "HydraulicVolume3" "Hydraulic Volume with 3 Ports_191" 2388 2590 0 0 0
+PARAMETER "Hydraulic Volume with 3 Ports_191" "V" 0.001
+PARAMETER "Hydraulic Volume with 3 Ports_191" "Be" 1e+09
+PARAMETER "Hydraulic Volume with 3 Ports_191" "a" 0
+COMPONENT "HydraulicPressureReliefValve" "Pressure Relief Valve_38" 2248 2669 0 0 0
+PARAMETER "Pressure Relief Valve_38" "pref" 2e+06
+PARAMETER "Pressure Relief Valve_38" "tao" 0.01
+PARAMETER "Pressure Relief Valve_38" "kcs" 1e-08
+PARAMETER "Pressure Relief Valve_38" "kcf" 1e-08
+PARAMETER "Pressure Relief Valve_38" "qnom" 0.001
+PARAMETER "Pressure Relief Valve_38" "ph" 500000
+COMPONENT "MechanicTranslationalMass" "Translational Mass_329" 2787 2394 0 0 0
+PARAMETER "Translational Mass_329" "Mass" 1
+PARAMETER "Translational Mass_329" "B" 10
+PARAMETER "Translational Mass_329" "k" 0
+COMPONENT "SignalSineWave" "Sine Wave_129" 2576 2262 0 0 0
+PARAMETER "Sine Wave_129" "StartTime" 0
+PARAMETER "Sine Wave_129" "Frequency" 1
+PARAMETER "Sine Wave_129" "Amplitude" 1
+PARAMETER "Sine Wave_129" "Offset" 0
+COMPONENT "MechanicForceTransformer" "Force Transformer_191" 2451 2336 0 0 0
+PARAMETER "Force Transformer_191" "x0" 0
+PARAMETER "Force Transformer_191" "v0" 0
+PARAMETER "Force Transformer_191" "Force" 0
+COMPONENT "Hydraulic43Valve" "4/3 Servo Valve_128" 2743 2490 0 0 0
 PARAMETER "4/3 Servo Valve_128" "Cq" 0.67
 PARAMETER "4/3 Servo Valve_128" "d" 0.01
 PARAMETER "4/3 Servo Valve_128" "f" 1
@@ -22,7 +55,7 @@ PARAMETER "4/3 Servo Valve_128" "overlap_at" 0
 PARAMETER "4/3 Servo Valve_128" "overlap_pa" 0
 PARAMETER "4/3 Servo Valve_128" "omegah" 100
 PARAMETER "4/3 Servo Valve_128" "deltah" 0
-COMPONENT "Hydraulic43Valve" "4/3 Servo Valve_195" 2187 2559 0 0 0
+COMPONENT "Hydraulic43Valve" "4/3 Servo Valve_195" 2535 2490 0 0 0
 PARAMETER "4/3 Servo Valve_195" "Cq" 0.67
 PARAMETER "4/3 Servo Valve_195" "d" 0.01
 PARAMETER "4/3 Servo Valve_195" "f" 1
@@ -33,18 +66,22 @@ PARAMETER "4/3 Servo Valve_195" "overlap_at" 0
 PARAMETER "4/3 Servo Valve_195" "overlap_pa" 0
 PARAMETER "4/3 Servo Valve_195" "omegah" 100
 PARAMETER "4/3 Servo Valve_195" "deltah" 0
-COMPONENT "HydraulicCylinderC" "Cylinder C_128" 2350 2463 0 0 0
-PARAMETER "Cylinder C_128" "x0" 0
-PARAMETER "Cylinder C_128" "v0" 0
-PARAMETER "Cylinder C_128" "Area1" 0.001
-PARAMETER "Cylinder C_128" "Area2" 0.001
-PARAMETER "Cylinder C_128" "Stroke" 1
-PARAMETER "Cylinder C_128" "EquivalentMass" 1000
-PARAMETER "Cylinder C_128" "DeadVolume1" 0.01
-PARAMETER "Cylinder C_128" "DeadVolume2" 0.01
-PARAMETER "Cylinder C_128" "Bp" 10
-PARAMETER "Cylinder C_128" "Betae" 1e+09
-COMPONENT "HydraulicCylinderC" "Cylinder C_191" 2142 2463 0 0 0
+COMPONENT "HydraulicVolume3" "Hydraulic Volume with 3 Ports_128" 2544 2590 180 0 0
+PARAMETER "Hydraulic Volume with 3 Ports_128" "V" 0.001
+PARAMETER "Hydraulic Volume with 3 Ports_128" "Be" 1e+09
+PARAMETER "Hydraulic Volume with 3 Ports_128" "a" 0
+COMPONENT "MechanicForceTransformer" "Force Transformer_128" 2659 2336 0 0 0
+PARAMETER "Force Transformer_128" "x0" 0
+PARAMETER "Force Transformer_128" "v0" 0
+PARAMETER "Force Transformer_128" "Force" 0
+COMPONENT "HydraulicVolume" "Hydraulic Volume" 2721 2590 0 0 0
+PARAMETER "Hydraulic Volume" "V" 0.001
+PARAMETER "Hydraulic Volume" "Be" 1e+09
+PARAMETER "Hydraulic Volume" "a" 0
+PARAMETER "Hydraulic Volume" "debug" 0
+PARAMETER "Hydraulic Volume" "t1" 0
+PARAMETER "Hydraulic Volume" "t2" 0.01
+COMPONENT "HydraulicCylinderC" "Cylinder C_191" 2490 2394 0 0 0
 PARAMETER "Cylinder C_191" "x0" 0
 PARAMETER "Cylinder C_191" "v0" 0
 PARAMETER "Cylinder C_191" "Area1" 0.001
@@ -55,119 +92,82 @@ PARAMETER "Cylinder C_191" "DeadVolume1" 0.01
 PARAMETER "Cylinder C_191" "DeadVolume2" 0.01
 PARAMETER "Cylinder C_191" "Bp" 10
 PARAMETER "Cylinder C_191" "Betae" 1e+09
-COMPONENT "HydraulicFixedDisplacementPump" "Fixed Displacement Pump_38" 2025 2733 0 0 0
-PARAMETER "Fixed Displacement Pump_38" "Speed" 125
-PARAMETER "Fixed Displacement Pump_38" "Dp" 5e-05
-PARAMETER "Fixed Displacement Pump_38" "Kcp" 0.001
-COMPONENT "MechanicForceTransformer" "Force Transformer_128" 2311 2405 0 0 0
-PARAMETER "Force Transformer_128" "x0" 0
-PARAMETER "Force Transformer_128" "v0" 0
-PARAMETER "Force Transformer_128" "Force" 0
-COMPONENT "MechanicForceTransformer" "Force Transformer_191" 2103 2405 0 0 0
-PARAMETER "Force Transformer_191" "x0" 0
-PARAMETER "Force Transformer_191" "v0" 0
-PARAMETER "Force Transformer_191" "Force" 0
-COMPONENT "HydraulicVolume" "Hydraulic Volume" 2373 2658 0 0 0
-PARAMETER "Hydraulic Volume" "V" 0.001
-PARAMETER "Hydraulic Volume" "Be" 1e+09
-PARAMETER "Hydraulic Volume" "a" 0
-PARAMETER "Hydraulic Volume" "debug" 0
-PARAMETER "Hydraulic Volume" "t1" 0
-PARAMETER "Hydraulic Volume" "t2" 0.01
-COMPONENT "HydraulicVolume3" "Hydraulic Volume with 3 Ports_128" 2196 2659 180 0 0
-PARAMETER "Hydraulic Volume with 3 Ports_128" "V" 0.001
-PARAMETER "Hydraulic Volume with 3 Ports_128" "Be" 1e+09
-PARAMETER "Hydraulic Volume with 3 Ports_128" "a" 0
-COMPONENT "HydraulicVolume3" "Hydraulic Volume with 3 Ports_191" 2040 2659 0 0 0
-PARAMETER "Hydraulic Volume with 3 Ports_191" "V" 0.001
-PARAMETER "Hydraulic Volume with 3 Ports_191" "Be" 1e+09
-PARAMETER "Hydraulic Volume with 3 Ports_191" "a" 0
-COMPONENT "HydraulicLaminarOrifice" "Laminar Orifice_128" 2304 2659 90 0 0
-PARAMETER "Laminar Orifice_128" "Kc" 1e-11
-COMPONENT "HydraulicLaminarOrifice" "Laminar Orifice_191" 2124 2659 90 0 0
-PARAMETER "Laminar Orifice_191" "Kc" 1e-11
-COMPONENT "HydraulicPressureReliefValve" "Pressure Relief Valve_38" 1900 2738 0 0 0
-PARAMETER "Pressure Relief Valve_38" "pref" 2e+06
-PARAMETER "Pressure Relief Valve_38" "tao" 0.01
-PARAMETER "Pressure Relief Valve_38" "kcs" 1e-08
-PARAMETER "Pressure Relief Valve_38" "kcf" 1e-08
-PARAMETER "Pressure Relief Valve_38" "qnom" 0.001
-PARAMETER "Pressure Relief Valve_38" "ph" 500000
-COMPONENT "SignalSineWave" "Sine Wave_129" 2228 2331 0 0 0
-PARAMETER "Sine Wave_129" "StartTime" 0
-PARAMETER "Sine Wave_129" "Frequency" 1
-PARAMETER "Sine Wave_129" "Amplitude" 1
-PARAMETER "Sine Wave_129" "Offset" 0
-COMPONENT "SignalSineWave" "Sine Wave_191" 2272 2612 0 0 0
-PARAMETER "Sine Wave_191" "StartTime" 0
-PARAMETER "Sine Wave_191" "Frequency" 1
-PARAMETER "Sine Wave_191" "Amplitude" 1
-PARAMETER "Sine Wave_191" "Offset" 0
-COMPONENT "SignalSquareWave" "Square Wave_129" 2043 2334 0 0 0
-PARAMETER "Square Wave_129" "StartTime" 0
-PARAMETER "Square Wave_129" "Frequency" 1
-PARAMETER "Square Wave_129" "Amplitude" 1
-PARAMETER "Square Wave_129" "BaseValue" 0
-COMPONENT "SignalSquareWave" "Square Wave_191" 2053 2609 0 0 0
+COMPONENT "SignalSquareWave" "Square Wave_191" 2401 2540 0 0 0
 PARAMETER "Square Wave_191" "StartTime" 0
 PARAMETER "Square Wave_191" "Frequency" 1
 PARAMETER "Square Wave_191" "Amplitude" 1
 PARAMETER "Square Wave_191" "BaseValue" 0
-COMPONENT "HydraulicTankC" "Tank C_204" 1898 2827 0 0 0
-PARAMETER "Tank C_204" "P" 100000
-COMPONENT "HydraulicTankC" "Tank C_205" 2040 2830 0 0 0
-PARAMETER "Tank C_205" "P" 100000
-COMPONENT "HydraulicTankC" "Tank C_206" 2217 2608 0 0 0
-PARAMETER "Tank C_206" "P" 100000
-COMPONENT "HydraulicTankC" "Tank C_207" 2425 2608 0 0 0
-PARAMETER "Tank C_207" "P" 100000
-COMPONENT "MechanicTranslationalMass" "Translational Mass_329" 2439 2463 0 0 0
-PARAMETER "Translational Mass_329" "Mass" 1
-PARAMETER "Translational Mass_329" "B" 10
-PARAMETER "Translational Mass_329" "k" 0
-COMPONENT "MechanicTranslationalMass" "Translational Mass_330" 2379 2405 0 0 0
+COMPONENT "HydraulicCylinderC" "Cylinder C_128" 2698 2394 0 0 0
+PARAMETER "Cylinder C_128" "x0" 0
+PARAMETER "Cylinder C_128" "v0" 0
+PARAMETER "Cylinder C_128" "Area1" 0.001
+PARAMETER "Cylinder C_128" "Area2" 0.001
+PARAMETER "Cylinder C_128" "Stroke" 1
+PARAMETER "Cylinder C_128" "EquivalentMass" 1000
+PARAMETER "Cylinder C_128" "DeadVolume1" 0.01
+PARAMETER "Cylinder C_128" "DeadVolume2" 0.01
+PARAMETER "Cylinder C_128" "Bp" 10
+PARAMETER "Cylinder C_128" "Betae" 1e+09
+COMPONENT "HydraulicFixedDisplacementPump" "Fixed Displacement Pump_38" 2373 2664 0 0 0
+PARAMETER "Fixed Displacement Pump_38" "Speed" 125
+PARAMETER "Fixed Displacement Pump_38" "Dp" 5e-05
+PARAMETER "Fixed Displacement Pump_38" "Kcp" 0.001
+COMPONENT "HydraulicLaminarOrifice" "Laminar Orifice_191" 2472 2590 90 0 0
+PARAMETER "Laminar Orifice_191" "Kc" 1e-11
+COMPONENT "MechanicTranslationalMass" "Translational Mass_330" 2727 2336 0 0 0
 PARAMETER "Translational Mass_330" "Mass" 1
 PARAMETER "Translational Mass_330" "B" 10
 PARAMETER "Translational Mass_330" "k" 0
-COMPONENT "MechanicTranslationalMass" "Translational Mass_335" 2231 2463 0 0 0
+COMPONENT "SignalSquareWave" "Square Wave_129" 2391 2265 0 0 0
+PARAMETER "Square Wave_129" "StartTime" 0
+PARAMETER "Square Wave_129" "Frequency" 1
+PARAMETER "Square Wave_129" "Amplitude" 1
+PARAMETER "Square Wave_129" "BaseValue" 0
+COMPONENT "MechanicTranslationalSpring" "Translational Spring_193" 2582 2336 0 0 0
+PARAMETER "Translational Spring_193" "k" 100
+COMPONENT "HydraulicLaminarOrifice" "Laminar Orifice_128" 2635.87 2590.07 90 0 0
+PARAMETER "Laminar Orifice_128" "Kc" 1e-11
+COMPONENT "MechanicTranslationalMass" "Translational Mass_335" 2579 2394 0 0 0
 PARAMETER "Translational Mass_335" "Mass" 1
 PARAMETER "Translational Mass_335" "B" 10
 PARAMETER "Translational Mass_335" "k" 0
-COMPONENT "MechanicTranslationalMass" "Translational Mass_336" 2171 2405 0 0 0
+COMPONENT "MechanicTranslationalMass" "Translational Mass_336" 2519 2336 0 0 0
 PARAMETER "Translational Mass_336" "Mass" 1
 PARAMETER "Translational Mass_336" "B" 10
 PARAMETER "Translational Mass_336" "k" 0
-COMPONENT "MechanicTranslationalSpring" "Translational Spring_128" 2442 2405 0 0 0
+COMPONENT "MechanicTranslationalSpring" "Translational Spring_128" 2790 2336 0 0 0
 PARAMETER "Translational Spring_128" "k" 100
-COMPONENT "MechanicTranslationalSpring" "Translational Spring_193" 2234 2405 0 0 0
-PARAMETER "Translational Spring_193" "k" 100
+COMPONENT "HydraulicTankC" "Tank C_204" 2246 2758 0 0 0
+PARAMETER "Tank C_204" "P" 100000
+COMPONENT "HydraulicTankC" "Tank C_205" 2388 2761 0 0 0
+PARAMETER "Tank C_205" "P" 100000
 --------------------------------------------------------------
-CONNECT "Fixed Displacement Pump_38" "P2" "Hydraulic Volume with 3 Ports_191" "P3" 2040 2683 2040 2680.01 2040 2674
-CONNECT "Hydraulic Volume with 3 Ports_191" "P2" "Laminar Orifice_191" "P2" 2065 2659 2084.22 2659 2084.22 2659 2089.5 2659
-CONNECT "Laminar Orifice_191" "P1" "Hydraulic Volume with 3 Ports_128" "P2" 2158.5 2659 2175.22 2659 2175.22 2659 2171 2659
-CONNECT "Hydraulic Volume with 3 Ports_128" "P3" "4/3 Servo Valve_195" "PP" 2196 2644 2196.92 2644 2196.92 2584
-CONNECT "Tank C_206" "P1" "4/3 Servo Valve_195" "PT" 2217 2593.5 2217 2610.01 2216.97 2610.01 2216.97 2584
-CONNECT "4/3 Servo Valve_195" "PA" "Cylinder C_191" "P1" 2196.92 2534 2196.92 2528.01 2087.47 2528.01 2087.47 2483
-CONNECT "4/3 Servo Valve_195" "PB" "Cylinder C_191" "P2" 2216.97 2534 2216.97 2514.01 2167.06 2514.01 2167.06 2483
-CONNECT "Cylinder C_191" "P3" "Translational Mass_335" "P1" 2201.5 2463 2210.22 2463 2210.22 2463 2199 2463
-CONNECT "Translational Spring_193" "P2" "Translational Mass_335" "P2" 2250.5 2405 2272.22 2405 2272.22 2463 2263 2463
-CONNECT "Translational Mass_336" "P2" "Translational Spring_193" "P1" 2203 2405 2216.22 2405 2216.22 2405 2217.5 2405
-CONNECT "Force Transformer_191" "P1" "Translational Mass_336" "P1" 2122.5 2405 2133.22 2405 2133.22 2405 2139 2405
-CONNECT "Tank C_207" "P1" "4/3 Servo Valve_128" "PT" 2425 2593.5 2425 2610.01 2424.97 2610.01 2424.97 2584
-CONNECT "4/3 Servo Valve_128" "PA" "Cylinder C_128" "P1" 2404.92 2534 2404.92 2528.01 2295.47 2528.01 2295.47 2483
-CONNECT "4/3 Servo Valve_128" "PB" "Cylinder C_128" "P2" 2424.97 2534 2424.97 2514.01 2375.06 2514.01 2375.06 2483
-CONNECT "Cylinder C_128" "P3" "Translational Mass_329" "P1" 2409.5 2463 2418.22 2463 2418.22 2463 2407 2463
-CONNECT "Translational Spring_128" "P2" "Translational Mass_329" "P2" 2458.5 2405 2480.22 2405 2480.22 2463 2471 2463
-CONNECT "Translational Mass_330" "P2" "Translational Spring_128" "P1" 2411 2405 2424.22 2405 2424.22 2405 2425.5 2405
-CONNECT "Force Transformer_128" "P1" "Translational Mass_330" "P1" 2330.5 2405 2341.22 2405 2341.22 2405 2347 2405
-CONNECT "Hydraulic Volume with 3 Ports_128" "P1" "Laminar Orifice_128" "P2" 2221 2659 2279.22 2659 2279.22 2659 2269.5 2659
-CONNECT "Square Wave_191" "out" "4/3 Servo Valve_195" "in" 2073 2609 2088.22 2609 2088.22 2569 2107.5 2569
-CONNECT "Sine Wave_191" "out" "4/3 Servo Valve_128" "in" 2292 2612 2304.22 2612 2304.22 2569 2315.5 2569
-CONNECT "Sine Wave_129" "out" "Force Transformer_128" "in" 2248 2331 2280.22 2331 2280.22 2405 2291.5 2405
-CONNECT "Square Wave_129" "out" "Force Transformer_191" "in" 2063 2334 2074.22 2334 2074.22 2405 2083.5 2405
-CONNECT "Pressure Relief Valve_38" "P1" "Hydraulic Volume with 3 Ports_191" "P1" 1898 2698 1898 2659 2015 2659
-CONNECT "Tank C_205" "P1" "Fixed Displacement Pump_38" "P1" 2040 2815.5 2040 2809.09 2040 2809.09 2040 2783
-CONNECT "Tank C_204" "P1" "Pressure Relief Valve_38" "P2" 1898 2812.5 1898 2801.14 1898 2801.14 1898 2778
-CONNECT "Laminar Orifice_128" "P1" "Hydraulic Volume" "P1" 2338.5 2659 2328.63 2659 2328.63 2658 2348 2658
-CONNECT "Hydraulic Volume" "P2" "4/3 Servo Valve_128" "PP" 2398 2658 2404.92 2658 2404.92 2584
+CONNECT "Fixed Displacement Pump_38" "P2" "Hydraulic Volume with 3 Ports_191" "P3" 2388 2614 2388 2611.01 2388 2605
+CONNECT "Hydraulic Volume with 3 Ports_191" "P2" "Laminar Orifice_191" "P2" 2413 2590 2432.22 2590 2432.22 2590 2437.5 2590
+CONNECT "Laminar Orifice_191" "P1" "Hydraulic Volume with 3 Ports_128" "P2" 2506.5 2590 2523.22 2590 2523.22 2590 2519 2590
+CONNECT "Hydraulic Volume with 3 Ports_128" "P3" "4/3 Servo Valve_195" "PP" 2544 2575 2544.92 2575 2544.92 2515
+CONNECT "Tank C_206" "P1" "4/3 Servo Valve_195" "PT" 2565 2524.5 2565 2541.01 2564.97 2541.01 2564.97 2515
+CONNECT "4/3 Servo Valve_195" "PA" "Cylinder C_191" "P1" 2544.92 2465 2544.92 2459.01 2435.47 2459.01 2435.47 2414
+CONNECT "4/3 Servo Valve_195" "PB" "Cylinder C_191" "P2" 2564.97 2465 2564.97 2445.01 2515.06 2445.01 2515.06 2414
+CONNECT "Cylinder C_191" "P3" "Translational Mass_335" "P1" 2549.5 2394 2558.22 2394 2558.22 2394 2547 2394
+CONNECT "Translational Spring_193" "P2" "Translational Mass_335" "P2" 2598.5 2336 2620.22 2336 2620.22 2394 2611 2394
+CONNECT "Translational Mass_336" "P2" "Translational Spring_193" "P1" 2551 2336 2564.22 2336 2564.22 2336 2565.5 2336
+CONNECT "Force Transformer_191" "P1" "Translational Mass_336" "P1" 2470.5 2336 2481.22 2336 2481.22 2336 2487 2336
+CONNECT "Tank C_207" "P1" "4/3 Servo Valve_128" "PT" 2773 2524.5 2773 2541.01 2772.97 2541.01 2772.97 2515
+CONNECT "4/3 Servo Valve_128" "PA" "Cylinder C_128" "P1" 2752.92 2465 2752.92 2459.01 2643.47 2459.01 2643.47 2414
+CONNECT "4/3 Servo Valve_128" "PB" "Cylinder C_128" "P2" 2772.97 2465 2772.97 2445.01 2723.06 2445.01 2723.06 2414
+CONNECT "Cylinder C_128" "P3" "Translational Mass_329" "P1" 2757.5 2394 2766.22 2394 2766.22 2394 2755 2394
+CONNECT "Translational Spring_128" "P2" "Translational Mass_329" "P2" 2806.5 2336 2828.22 2336 2828.22 2394 2819 2394
+CONNECT "Translational Mass_330" "P2" "Translational Spring_128" "P1" 2759 2336 2772.22 2336 2772.22 2336 2773.5 2336
+CONNECT "Force Transformer_128" "P1" "Translational Mass_330" "P1" 2678.5 2336 2689.22 2336 2689.22 2336 2695 2336
+CONNECT "Hydraulic Volume with 3 Ports_128" "P1" "Laminar Orifice_128" "P2" 2569 2590 2594.14 2590 2594.14 2590.07 2601.37 2590.07
+CONNECT "Square Wave_191" "out" "4/3 Servo Valve_195" "in" 2421 2540 2436.22 2540 2436.22 2500 2455.5 2500
+CONNECT "Sine Wave_191" "out" "4/3 Servo Valve_128" "in" 2640 2543 2652.22 2543 2652.22 2500 2663.5 2500
+CONNECT "Sine Wave_129" "out" "Force Transformer_128" "in" 2596 2262 2628.22 2262 2628.22 2336 2639.5 2336
+CONNECT "Square Wave_129" "out" "Force Transformer_191" "in" 2411 2265 2422.22 2265 2422.22 2336 2431.5 2336
+CONNECT "Pressure Relief Valve_38" "P1" "Hydraulic Volume with 3 Ports_191" "P1" 2246 2629 2246 2590 2363 2590
+CONNECT "Tank C_205" "P1" "Fixed Displacement Pump_38" "P1" 2388 2746.5 2388 2740.09 2388 2740.09 2388 2714
+CONNECT "Tank C_204" "P1" "Pressure Relief Valve_38" "P2" 2246 2743.5 2246 2732.14 2246 2732.14 2246 2709
+CONNECT "Laminar Orifice_128" "P1" "Hydraulic Volume" "P1" 2670.37 2590.07 2682.14 2590.07 2682.14 2590 2696 2590
+CONNECT "Hydraulic Volume" "P2" "4/3 Servo Valve_128" "PP" 2746 2590 2752.92 2590 2752.92 2515
 --------------------------------------------------------------

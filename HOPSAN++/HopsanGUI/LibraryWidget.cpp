@@ -212,52 +212,6 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
 }
 
 
-void LibraryContent::contextMenuEvent(QContextMenuEvent *event)
-{
-    if(this->mIsUserLib)
-    {
-        QMenu menu;
-
-        QAction *unloadAction;
-        unloadAction = menu.addAction(tr("Unload Library"));
-
-        QCursor *cursor;
-        QAction *selectedAction = menu.exec(cursor->pos());
-
-        if (selectedAction == unloadAction)
-        {
-            QMessageBox::StandardButton reply;
-            reply = QMessageBox::information(this, tr("Information"), tr("Program must be restarted for this to take effect."));
-            for(size_t i=0; i<mpParentLibraryWidget->mpParentMainWindow->mUserLibs.size(); ++i)
-            {
-                if(mpParentLibraryWidget->mpParentMainWindow->mUserLibs.at(i).endsWith("/"+mpParentTreeWidgetItem->text(0)))
-                {
-                    mpParentLibraryWidget->mpParentMainWindow->mUserLibs.removeAt(i);
-                    --i;
-                }
-            }
-
-
-//            mpParentLibraryWidget->mpTree->removeItemWidget(mpParentTreeWidgetItem, 0);
-
-//            QHash<QString, LibraryContent*>::iterator lib;
-//            for (lib = mLibraryContentPtrsMap.begin(); lib != mLibraryContentPtrsMap.end(); ++lib)
-//            {
-//                mpParentLibraryWidget->mLibraryContentItemPtrsMap.remove(lib.value().)
-//            }
-
-//            mpParentLibraryWidget->mLibraryContentPtrsMap.remove(mMapKey);
-//            delete(mpParentTreeWidgetItem);
-//            delete(this);
-
-
-            //mpParentLibraryWidget->mpTree->(mpParentTreeWidgetItem, 0);
-
-        }
-    }
-}
-
-
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
 LibraryWidget::LibraryWidget(MainWindow *parent)
@@ -265,7 +219,7 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
 {
     mpParentMainWindow = parent;
 
-    mpTree = new QTreeWidget(this);
+    mpTree = new LibraryTreeWidget(this);
     mpTree->setHeaderHidden(true);
     mpTree->setColumnCount(1);
 
@@ -588,4 +542,61 @@ void LibraryWidget::mouseMoveEvent(QMouseEvent *event)
     }
     mpComponentNameField->setText("");
     QWidget::mouseMoveEvent(event);
+}
+
+
+
+
+
+LibraryTreeWidget::LibraryTreeWidget(LibraryWidget *parent)
+        : QTreeWidget(parent)
+{
+    mpParentLibraryWidget = parent;
+}
+
+
+
+void LibraryTreeWidget::contextMenuEvent(QContextMenuEvent *event)
+{
+    QTreeWidget::contextMenuEvent(event);
+
+
+    QMenu menu;
+
+    QAction *loadAction;
+    QAction *unloadAction;
+    loadAction = menu.addAction(QString("Load External Library"));
+
+
+        //! @todo This is an ugly check to make sure the right clicked object is a library with contents
+    if( (this->currentItem() != 0) and (this->currentItem()->parent() != 0) )
+    {
+        // This will check if the library is a user library (which can be removed)
+        if(mpParentLibraryWidget->mLibraryContentPtrsMap.find(QString(this->currentItem()->parent()->text(0) + this->currentItem()->text(0))).value()->mIsUserLib)
+        {
+            unloadAction = menu.addAction(QString("Unload Library \"" + this->currentItem()->text(0) + "\""));
+        }
+    }
+
+
+    QCursor *cursor;
+    QAction *selectedAction = menu.exec(cursor->pos());
+
+    if (selectedAction == unloadAction)
+    {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::information(this, tr("Information"), tr("Program must be restarted for this to take effect."));
+        for(size_t i=0; i<mpParentLibraryWidget->mpParentMainWindow->mUserLibs.size(); ++i)
+        {
+            if(mpParentLibraryWidget->mpParentMainWindow->mUserLibs.at(i).endsWith("/"+this->currentItem()->text(0)))
+            {
+                mpParentLibraryWidget->mpParentMainWindow->mUserLibs.removeAt(i);
+                --i;
+            }
+        }
+    }
+    else if (selectedAction == loadAction)
+    {
+        this->mpParentLibraryWidget->addLibrary();
+    }
 }
