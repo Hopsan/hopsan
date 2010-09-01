@@ -310,6 +310,9 @@ void LibraryWidget::addEmptyLibrary(QString libraryName, QString parentLibraryNa
 
     if (parentLibraryName.isEmpty())
     {
+        QFont tempFont = newTreePost->font(0);
+        tempFont.setBold(true);
+        newTreePost->setFont(0, tempFont);
         mpTree->insertTopLevelItem(0, newTreePost);
     }
     else
