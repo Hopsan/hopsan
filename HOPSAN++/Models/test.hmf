@@ -5,8 +5,8 @@ HOPSANGUIVERSION 0.0.1
 HMFVERSION 0.1
 CAFVERSION 0.1
 --------------------------------------------------------------
-SIMULATIONTIME 0 0.001 200
-VIEWPORT 2544.87 2519.14 1.74901
+SIMULATIONTIME 0 0.001 20
+VIEWPORT 2500.27 2500.27 1.74901
 --------------------------------------------------------------
 USERICON ""
 ISOICON ""

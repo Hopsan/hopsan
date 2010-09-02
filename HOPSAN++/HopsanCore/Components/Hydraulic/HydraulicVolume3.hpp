@@ -44,7 +44,7 @@ namespace hopsan {
             mStartFlow     = 0.0;
             mBulkmodulus   = 1.0e9;
             mVolume        = 1.0e-3;
-            mAlpha         = 0.0;
+            mAlpha         = 0.1;
 
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeHydraulic");
@@ -81,6 +81,7 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
+
             //Get variable values from nodes
             //double p1  = mpP1->readNode(NodeHydraulic::PRESSURE);
             double q1  = mpP1->readNode(NodeHydraulic::MASSFLOW);
@@ -97,7 +98,7 @@ namespace hopsan {
 
             //Volume equations
 
-            double pMean = ((c1 + Zc1 * 2 * q1) + (c2 + Zc1 * 2 * q2) + (c3 + Zc1 * 2 * q3)) / 3;
+            double pMean = ((c1 + Zc1 * 2 * q1) + (c2 + Zc2 * 2 * q2) + (c3 + Zc3 * 2 * q3)) / 3;
 
             double c10 = pMean * 2 - c1 - 2 * Zc1 * q1;
             c1 = mAlpha * c1 + (1.0 - mAlpha)*c10 + (Zc1 - mZc)*q1;

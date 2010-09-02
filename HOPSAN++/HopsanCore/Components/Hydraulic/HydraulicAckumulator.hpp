@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 #include "math.h"
 
 namespace hopsan {
@@ -51,7 +52,6 @@ namespace hopsan {
 
             registerParameter("Pmin", "Minimum Internal Pressure", "Pa", mPmin);
             registerParameter("Vtot", "Total Volume", "m^3", mVtot);
-            registerParameter("Voil", "Oil Volume", "m^3", mVoil);
             registerParameter("Betae", "Effective Bulk Modulus", "Pa", mBetae);
             registerParameter("Kappa", "Polytropic Exponent", "-", mKappa);
             registerParameter("Kce", "Flow-Pressure Coefficient", "(m^3/s)/Pa", mKce);
@@ -66,6 +66,9 @@ namespace hopsan {
             double c1 = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
             double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
 
+            mpP1->writeNode(NodeHydraulic::PRESSURE, c1);
+            mpP1->writeNode(NodeHydraulic::MASSFLOW, 0.0);
+
             if (mStartPressure < mPmin)         //User has selected an initial pressure lower than the minimum pressure, so use minimum pressure instead
             {
                 mStartPressure = mPmin;
@@ -79,10 +82,6 @@ namespace hopsan {
             }
             else
             {
-                if (p1 < 0.0)                               //Neighbour component has provided a presssure lower than zero, so put it so zero
-                {
-                    p1 = 0.0;
-                }
                 mDelayedQ2.initialize(mTime, mKce*(p1-mStartPressure));              //"Previous" value for q2 first step, calculated with orifice equation
                 mVgas = pow(mPmin*pow(mVtot, mKappa)/mStartPressure, 1/mKappa);     //Initial gas volume, calculated from initial pressure
                 mVoil = mVtot - mVgas;

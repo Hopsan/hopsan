@@ -58,6 +58,7 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindo
     : QMainWindow(parent)//QWidget(parent,Qt::Window)
 {
     this->setAttribute(Qt::WA_DeleteOnClose);
+    this->setAcceptDrops(true);
 
     QWidget *centralwidget = new QWidget(this);
 
@@ -300,10 +301,11 @@ void PlotWidget::setBackgroundColor()
     }
 }
 
+
 VariablePlot::VariablePlot(QWidget *parent)
         : QwtPlot(parent)
 {
-    this->setAcceptDrops(false);
+    this->setAcceptDrops(true);
 
     //Set color for plot background
     setCanvasBackground(QColor(Qt::white));
@@ -318,10 +320,12 @@ VariablePlot::VariablePlot(QWidget *parent)
     setAutoReplot(true);
 }
 
+
 void VariablePlot::dragMoveEvent(QDragMoveEvent *event)
 {
-    std::cout << "apa" << std::endl;
-    if (event->mimeData()->hasFormat("application/x-plotvariable"))
+    qDebug() << "apa";
+
+    if (event->mimeData()->hasText())
     {
         event->accept();
     }
@@ -333,7 +337,9 @@ void VariablePlot::dragMoveEvent(QDragMoveEvent *event)
 
 void VariablePlot::dropEvent(QDropEvent *event)
 {
-    if (event->mimeData()->hasFormat("application/x-plotvariable"))
+    qDebug() << "Mimedata = " << event->mimeData()->text();
+
+    if (event->mimeData()->hasText())
     {
         QByteArray *data = new QByteArray;
         *data = event->mimeData()->data("application/x-plotvariable");
@@ -348,7 +354,6 @@ void VariablePlot::dropEvent(QDropEvent *event)
         std::cout << functionname.toStdString();
 
         delete data;
-
     }
 }
 
@@ -372,7 +377,7 @@ VariableList::VariableList(MainWindow *parent)
     mpCurrentSystem = mpParentMainWindow->mpProjectTabs->getCurrentSystem();
 
     this->setDragEnabled(true);
-    this->setAcceptDrops(true);
+    this->setAcceptDrops(false);
     this->updateList();
     this->setHeaderHidden(true);
     this->setColumnCount(1);
@@ -459,32 +464,29 @@ void VariableList::updateList()
 
 void VariableList::createPlot(QTreeWidgetItem *item)
 {
-    //double n = map.value(item->text());
-    //std::cout << n << std::endl;
+    if(item->parent() != 0)     //Top level items cannot be plotted (they represent the components)
+    {
+        QString lookupName;
+        lookupName = QString(item->parent()->text(0) + ", " + item->text(0));
 
-//    QVector<double> xarray(2);
-  //  QVector<double> yarray(2);
+        QString title;
+        QString xlabel;
+        QString ylabel;
 
-    QString lookupName;
-    lookupName = QString(item->parent()->text(0) + ", " + item->text(0));
+        title.append(lookupName);
+        ylabel.append(yLabelMap.find(lookupName).value());
+        xlabel.append("Time, [s]");
 
-    QString title;
-    QString xlabel;
-    QString ylabel;
+        PlotWidget *plotwidget = new PlotWidget(xMap.find(lookupName).value(),yMap.find(lookupName).value(),mpParentMainWindow);
+        plotwidget->setWindowTitle("HOPSAN Plot Window");
+        plotwidget->mpCurve->setTitle(title);
+        plotwidget->mpVariablePlot->setAxisTitle(VariablePlot::yLeft, ylabel);
+        plotwidget->mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xlabel);
+        plotwidget->mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
+        plotwidget->show();
 
-    title.append(lookupName);
-    ylabel.append(yLabelMap.find(lookupName).value());
-    xlabel.append("Time, [s]");
-
-    PlotWidget *plotwidget = new PlotWidget(xMap.find(lookupName).value(),yMap.find(lookupName).value(),mpParentMainWindow);
-    plotwidget->setWindowTitle("HOPSAN Plot Window");
-    plotwidget->mpCurve->setTitle(title);
-    plotwidget->mpVariablePlot->setAxisTitle(VariablePlot::yLeft, ylabel);
-    plotwidget->mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xlabel);
-    plotwidget->mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
-    plotwidget->show();
-
-    std::cout << lookupName.toStdString() << std::endl;
+        qDebug() << lookupName;
+    }
 }
 
 void VariableList::mousePressEvent(QMouseEvent *event)

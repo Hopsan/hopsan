@@ -46,7 +46,7 @@ namespace hopsan {
             mStartFlow     = 0.0;
             mBulkmodulus   = 1.0e9;
             mVolume        = 1.0e-3;
-            mAlpha         = 0.0;
+            mAlpha         = 0.1;
 
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeHydraulic");
@@ -57,12 +57,12 @@ namespace hopsan {
             registerParameter("Be", "Bulkmodulus", "[Pa]", mBulkmodulus);
             registerParameter("a", "Low pass coeficient to dampen standing delayline waves", "[-]",  mAlpha);
 
-            tid1 = 0.0;
-            tid2 = 0.01;
-            debug = 0;
-            registerParameter("debug", "debug", "[-]", debug);
-            registerParameter("t1", "debug", "[-]", tid1);
-            registerParameter("t2", "debug", "[-]", tid2);
+//            tid1 = 0.0;
+//            tid2 = 0.01;
+//            debug = 0;
+//            registerParameter("debug", "debug", "[-]", debug);
+//            registerParameter("t1", "debug", "[-]", tid1);
+//            registerParameter("t2", "debug", "[-]", tid2);
         }
 
 
@@ -85,10 +85,10 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            double p1  = mpP1->readNode(NodeHydraulic::PRESSURE);
+            //double p1  = mpP1->readNode(NodeHydraulic::PRESSURE);
             double q1  = mpP1->readNode(NodeHydraulic::MASSFLOW);
             double c1  = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
-            double p2  = mpP2->readNode(NodeHydraulic::PRESSURE);
+            //double p2  = mpP2->readNode(NodeHydraulic::PRESSURE);
             double q2  = mpP2->readNode(NodeHydraulic::MASSFLOW);
             double c2  = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
 
@@ -106,8 +106,8 @@ namespace hopsan {
             c1 = mAlpha*c1 + (1.0-mAlpha)*c10;
             c2 = mAlpha*c2 + (1.0-mAlpha)*c20;
 
-            if ((mTime>tid1) && (mTime<tid2) && (debug > 0.5))
-                std::cout << this->getName() << ": " << "mTime: " << mTime << "   p1: " << p1 << "   c1: " << c1 << "   q1: " << q1 << "   mZc: " << mZc << "   p2: " << p2 << "   c2: " << c2 << "   q2: " << q2 << std::endl;
+//            if ((mTime>tid1) && (mTime<tid2) && (debug > 0.5))
+//                std::cout << this->getName() << ": " << "mTime: " << mTime << "   p1: " << p1 << "   c1: " << c1 << "   q1: " << q1 << "   mZc: " << mZc << "   p2: " << p2 << "   c2: " << c2 << "   q2: " << q2 << std::endl;
 
             //Write new values to nodes
             mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, c1);
