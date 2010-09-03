@@ -40,6 +40,9 @@
 #define COMMON_H
 
 #define GOLDENRATIO 1.61803399
+#define MAINPATH "../../"
+#define ICONPATH "../../HopsanGUI/icons/"
+#define COMPONENTPATH "../../HopsanGUI/componentData/"
 
 enum selectionStatus {DESELECTED, SELECTED};
 enum graphicsType {USERGRAPHICS, ISOGRAPHICS};

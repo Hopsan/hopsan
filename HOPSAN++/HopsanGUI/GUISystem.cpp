@@ -374,11 +374,11 @@ void GUISystem::loadFromHMF(QString modelFilePath)
 
 //    if (!sysappdata.usericon_path.isEmpty())
 //    {
-//        mAppearanceData.setIconPathUser(sysappdata.usericon_path);
+//        mAppearanceData.setQString(ICONPATH)User(sysappdata.usericon_path);
 //    }
 //    if (!sysappdata.isoicon_path.isEmpty())
 //    {
-//        mAppearanceData.setIconPathISO(sysappdata.isoicon_path);
+//        mAppearanceData.setQString(ICONPATH)ISO(sysappdata.isoicon_path);
 //    }
 
 //    //! @todo reading portappearance should have a common function and be shared with the setappearancedata rad function that reads from caf files
@@ -823,7 +823,7 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
 //    QTextStream appstream;
 //
 //    appstream << "TypeName SystemPort";
-//    appstream << "ICONPATH ../../HopsanGUI/systemporttmp.svg";
+//    appstream << "QString(ICONPATH) ../../HopsanGUI/systemporttmp.svg";
 //    appstream >> appearanceData;
 //
 //    addGUIObject(appearanceData, position.toPoint());

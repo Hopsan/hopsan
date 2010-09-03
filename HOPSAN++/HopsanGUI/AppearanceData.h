@@ -96,7 +96,7 @@ public:
     qreal x;
     qreal y;
     qreal rot;
-    QString iconPath;
+    QString mIconPath;
     portDirection direction;
 };
 

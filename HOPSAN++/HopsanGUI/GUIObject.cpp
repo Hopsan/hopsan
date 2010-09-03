@@ -308,14 +308,14 @@ void GUIObject::setIcon(graphicsType gfxType)
         mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(ISOGRAPHICS) , this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
         mIconType = ISOGRAPHICS;
-        //qDebug() << "Setting iconpath to " << mAppearanceData.getFullIconPath(true);
+        //qDebug() << "Setting QString(ICONPATH) to " << mAppearanceData.getFullQString(ICONPATH)(true);
     }
     else
     {
         mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(USERGRAPHICS), this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
         mIconType = USERGRAPHICS;
-        //qDebug() << "Setting iconpath to " << mAppearanceData.getFullIconPath(false);
+        //qDebug() << "Setting QString(ICONPATH) to " << mAppearanceData.getFullQString(ICONPATH)(false);
     }
 
     //Delete old icon if it exist;
@@ -1416,11 +1416,11 @@ void GUIComponent::saveToTextStream(QTextStream &rStream, QString prepend)
 //
 //    if (!sysappdata.usericon_path.isEmpty())
 //    {
-//        mAppearanceData.setIconPathUser(sysappdata.usericon_path);
+//        mAppearanceData.setQString(ICONPATH)User(sysappdata.usericon_path);
 //    }
 //    if (!sysappdata.isoicon_path.isEmpty())
 //    {
-//        mAppearanceData.setIconPathISO(sysappdata.isoicon_path);
+//        mAppearanceData.setQString(ICONPATH)ISO(sysappdata.isoicon_path);
 //    }
 //
 //    //! @todo reading portappearance should have a common function and be shared with the setappearancedata rad function that reads from caf files
@@ -1500,7 +1500,7 @@ void GUIComponent::saveToTextStream(QTextStream &rStream, QString prepend)
 //        {
 //            //groupComponents(mpParentGraphicsScene->selectedItems());
 //            AppearanceData appdata;
-//            appdata.setIconPathUser("subsystemtmp.svg");
+//            appdata.setQString(ICONPATH)User("subsystemtmp.svg");
 //            appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
 //            GUIGroup *pGroup = new GUIGroup(this->scene()->selectedItems(), appdata, mpParentSystem);
 //            this->scene()->addItem(pGroup);

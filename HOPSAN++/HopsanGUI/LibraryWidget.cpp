@@ -398,7 +398,6 @@ void LibraryWidget::addLibrary()
 //! @see addLibrary(QString libDir, QString parentLib)
 void LibraryWidget::addExternalLibrary(QString libDir)
 {
-    //QString libDir = "../../HopsanGUI/componentData/UserLibs/TestLib";
 
     //*****Core Interaction*****
 

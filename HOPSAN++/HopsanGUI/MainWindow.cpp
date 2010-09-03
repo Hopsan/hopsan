@@ -61,13 +61,18 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    //QString(MAINPATH) = "../../";
+    //mQString(ICONPATH) = QString(MAINPATH) + "HopsanGUI/icons/";
+    //mComponentPath = QString(MAINPATH) + "HopsanGUI/componentData/";
+
     //Set the name and size of the main window
     this->setObjectName("MainWindow");
     this->resize(1024,768);
     this->setFont(QFont("Comic Sans"));
     this->setWindowTitle("HOPSAN NG");
-    this->setWindowIcon(QIcon("../../HopsanGUI/icons/hopsan.png"));
+    this->setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
     this->setDockOptions(QMainWindow::ForceTabbedDocks);
+
 
     QMetaObject::connectSlotsByName(this);
 
@@ -142,28 +147,28 @@ MainWindow::MainWindow(QWidget *parent)
         mpLibrary->addExternalLibrary(mUserLibs.at(i));
     }
 
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/Subsystem");
+    mpLibrary->addLibrary(QString(COMPONENTPATH) + "Subsystem");
 
     mpLibrary->addEmptyLibrary("Signal");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/signal/Sources & Sinks","Signal");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/signal/Arithmetics","Signal");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/signal/Non-Linearities","Signal");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/signal/Filters","Signal");
+    mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Sources & Sinks","Signal");
+    mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Arithmetics","Signal");
+    mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Non-Linearities","Signal");
+    mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Filters","Signal");
 
     mpLibrary->addEmptyLibrary("Mechanic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/mechanic/Transformers","Mechanic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/mechanic/Mass Loads","Mechanic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/mechanic/Springs & Dampers","Mechanic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/mechanic/Sensors","Mechanic");
+    mpLibrary->addLibrary(QString(COMPONENTPATH) + "mechanic/Transformers","Mechanic");
+    mpLibrary->addLibrary(QString(COMPONENTPATH) + "mechanic/Mass Loads","Mechanic");
+    mpLibrary->addLibrary(QString(COMPONENTPATH) + "mechanic/Springs & Dampers","Mechanic");
+    mpLibrary->addLibrary(QString(COMPONENTPATH) + "mechanic/Sensors","Mechanic");
 
     mpLibrary->addEmptyLibrary("Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/Sources & Sinks","Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/sensors","Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/restrictors","Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/volumes","Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/actuators","Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/valves","Hydraulic");
-    mpLibrary->addLibrary("../../HopsanGUI/componentData/hydraulic/pumps","Hydraulic");
+    mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/Sources & Sinks","Hydraulic");
+    mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/sensors","Hydraulic");
+    mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/restrictors","Hydraulic");
+    mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/volumes","Hydraulic");
+    mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/actuators","Hydraulic");
+    mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/valves","Hydraulic");
+    mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/pumps","Hydraulic");
 
         //Create the plot widget and hide it
     mpPlotVariablesDock = new QDockWidget(tr("Plot Variables"), this);
@@ -251,19 +256,19 @@ void MainWindow::closeEvent(QCloseEvent *event)
 //! Defines the actions used by the toolbars
 void MainWindow::createActions()
 {
-    newAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-New.png"), tr("&New"), this);
+    newAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-New.png"), tr("&New"), this);
     newAction->setShortcut(tr("New"));
     newAction->setStatusTip(tr("Create New Project"));
 
-    openAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Open.png"), tr("&Open"), this);
+    openAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Open.png"), tr("&Open"), this);
     openAction->setShortcut(QKeySequence("Ctrl+o"));
     openAction->setStatusTip(tr("Load Model File"));
 
-    saveAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Save.png"), tr("&Save"), this);
+    saveAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Save.png"), tr("&Save"), this);
     saveAction->setShortcut(QKeySequence("Ctrl+s"));
     saveAction->setStatusTip(tr("Save Model File"));
 
-    saveAsAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-SaveAs.png"), tr("&Save As"), this);
+    saveAsAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SaveAs.png"), tr("&Save As"), this);
     saveAction->setShortcut(QKeySequence("Ctrl+Alt+s"));
     saveAsAction->setStatusTip(tr("Save Model File As"));
 
@@ -272,12 +277,12 @@ void MainWindow::createActions()
     closeAction->setShortcut(QKeySequence("Ctrl+q"));
     connect(closeAction,SIGNAL(triggered()),this,SLOT(close()));
 
-    undoAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Undo.png"), tr("&Undo"), this);
+    undoAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Undo.png"), tr("&Undo"), this);
     undoAction->setText("Undo");
     undoAction->setShortcut(QKeySequence(tr("Ctrl+z")));
     undoAction->setStatusTip(tr("Undo One Step"));
 
-    redoAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Redo.png"), tr("&Redo"), this);
+    redoAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Redo.png"), tr("&Redo"), this);
     redoAction->setText("Redo");
     redoAction->setShortcut(QKeySequence(tr("Ctrl+y")));
     redoAction->setStatusTip(tr("Redo One Step"));
@@ -291,23 +296,23 @@ void MainWindow::createActions()
     disableUndoAction->setCheckable(true);
     disableUndoAction->setChecked(false);
 
-    cutAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Cut.png"), tr("&Cut"), this);
+    cutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Cut.png"), tr("&Cut"), this);
     cutAction->setShortcut(tr("Ctrl+x"));
     cutAction->setStatusTip(tr("Cut Selection"));
 
-    copyAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Copy.png"), tr("&Copy"), this);
+    copyAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Copy.png"), tr("&Copy"), this);
     copyAction->setShortcut(tr("Ctrl+c"));
     copyAction->setStatusTip(tr("Copy Selection"));
 
-    pasteAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Paste.png"), tr("&Paste"), this);
+    pasteAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Paste.png"), tr("&Paste"), this);
     pasteAction->setShortcut(tr("Ctrl+v"));
     pasteAction->setStatusTip(tr("Paste Selection"));
 
-    simulateAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Simulate.png"), tr("&Simulate"), this);
+    simulateAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Simulate.png"), tr("&Simulate"), this);
     simulateAction->setShortcut(tr("Simulate"));
     simulateAction->setStatusTip(tr("Simulate Current Project"));
 
-    plotAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Plot.png"), tr("&Plot Variables"), this);
+    plotAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Plot.png"), tr("&Plot Variables"), this);
     plotAction->setShortcut(tr("Plot"));
     plotAction->setStatusTip(tr("Plot Variables"));
     connect(plotAction, SIGNAL(triggered()),this,SLOT(plot()));
@@ -316,36 +321,36 @@ void MainWindow::createActions()
     loadLibsAction->setText("Load Libraries");
     connect(loadLibsAction,SIGNAL(triggered()),mpLibrary,SLOT(addLibrary()));
 
-    preferencesAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Configure.png"), tr("&Model Preferences"), this);
+    preferencesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Configure.png"), tr("&Model Preferences"), this);
     preferencesAction->setText("Model Preferences");
     preferencesAction->setShortcut(QKeySequence("Ctrl+Alt+p"));
 
-    optionsAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Options.png"), tr("&Options"), this);
+    optionsAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Options.png"), tr("&Options"), this);
     optionsAction->setText("Options");
 
-    resetZoomAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-Zoom100.png"), tr("&Reset Zoom"), this);
+    resetZoomAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Zoom100.png"), tr("&Reset Zoom"), this);
     resetZoomAction->setText("Reset Zoom");
 
-    zoomInAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-ZoomIn.png"), tr("&Zoom In"), this);
+    zoomInAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ZoomIn.png"), tr("&Zoom In"), this);
     zoomInAction->setText("Zoom In");
 
-    zoomOutAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-ZoomOut.png"), tr("&Zoom Out"), this);
+    zoomOutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ZoomOut.png"), tr("&Zoom Out"), this);
     zoomOutAction->setText("Zoom Out");
 
-    centerViewAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-CenterView.png"), tr("&Center View"), this);
+    centerViewAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-CenterView.png"), tr("&Center View"), this);
     centerViewAction->setText("Center View");
 
-    hideNamesAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-HideNames.png"), tr("&Hide All Component Names"), this);
+    hideNamesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-HideNames.png"), tr("&Hide All Component Names"), this);
     hideNamesAction->setText("Hide All Component Names");
 
-    showNamesAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-ShowNames.png"), tr("&Show All Component Names"), this);
+    showNamesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ShowNames.png"), tr("&Show All Component Names"), this);
     showNamesAction->setText("Show All Component Names");
 
-    exportPDFAction = new QAction(QIcon("../../HopsanGUI/icons/Hopsan-SaveToPDF.png"), tr("&Export To PDF"), this);
+    exportPDFAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SaveToPDF.png"), tr("&Export To PDF"), this);
     exportPDFAction->setText("Export Model to PDF");
 
     QIcon hidePortsIcon;
-    hidePortsIcon.addFile("../../HopsanGUI/icons/Hopsan-HidePorts.png", QSize(), QIcon::Normal, QIcon::On);
+    hidePortsIcon.addFile(QString(ICONPATH) + "Hopsan-HidePorts.png", QSize(), QIcon::Normal, QIcon::On);
     hidePortsAction = new QAction(hidePortsIcon, tr("&Hide All Ports"), this);
     hidePortsAction->setText("Hide All Ports");
     hidePortsAction->setCheckable(true);
@@ -579,7 +584,7 @@ void MainWindow::loadSettings()
     mBackgroundColor = QColor("white");
     mAntiAliasing = false;
 
-    QFile file("../../settings.txt");
+    QFile file(QString(MAINPATH) + "settings.txt");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         mpMessageWidget->printGUIErrorMessage("Unable to read settings file. Using default settings.");
@@ -635,7 +640,7 @@ void MainWindow::loadSettings()
 //! Saves global settings to a text file
 void MainWindow::saveSettings()
 {
-    QFile file("../../settings.txt");
+    QFile file("QString(MAINPATH)settings.txt");
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
         mpMessageWidget->printGUIErrorMessage("Error writing to settings file. Default values will be used next session");

@@ -59,10 +59,10 @@ using namespace std;
 //! @param x the x-coord. of where the port should be placed.
 //! @param y the y-coord. of where the port should be placed.
 //! @param rot how the port should be rotated.
-//! @param iconPath a string with the path to the svg-figure representing the port.
+//! @param QString(ICONPATH) a string with the path to the svg-figure representing the port.
 //! @param parent the port's parent, the component it is a part of.
 GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent, CoreSystemAccess *pGUIRootSystem)
-    : QGraphicsSvgItem(pPortAppearance->iconPath, pParent)
+    : QGraphicsSvgItem(pPortAppearance->mIconPath, pParent)
 {
     qDebug() << "parentType: " << pParent->type() << " GUISYSTEM=" << GUISYSTEM;
     qDebug() << "======================= parentName: " << pParent->getName();

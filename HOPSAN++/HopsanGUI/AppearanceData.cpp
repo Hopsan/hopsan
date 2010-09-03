@@ -235,62 +235,62 @@ qDebug() << 2.0/zoomFactor2*zoomFactor;
 //! @todo maybe this should be placed in som more generic external .txt file in som way
 void PortAppearance::selectPortIcon(QString CQSType, QString porttype, QString nodetype)
 {
-    iconPath.clear();
-    iconPath.append("../../HopsanGUI/porticons/"); //!< @todo Not very goood to have this hardcoded everywhere (should be decidet on runtime or something or at least be global or defined)
+    QString(ICONPATH).clear();
+    QString(ICONPATH).append("../../HopsanGUI/porticons/"); //!< @todo Not very goood to have this hardcoded everywhere (should be decidet on runtime or something or at least be global or defined)
     if (nodetype == "NodeSignal")
     {
-        iconPath.append("SignalPort");
+        QString(ICONPATH).append("SignalPort");
         if ( porttype == "READPORT")
         {
-            iconPath.append("_read");
+            QString(ICONPATH).append("_read");
         }
         else
         {
-            iconPath.append("_write");
+            QString(ICONPATH).append("_write");
         }
     }
     else if (nodetype == "NodeMechanic")
     {
-        iconPath.append("MechanicPort");
+        QString(ICONPATH).append("MechanicPort");
         if (CQSType == "C")
         {
-            iconPath.append("C");
+            QString(ICONPATH).append("C");
         }
         else if (CQSType == "Q")
         {
-            iconPath.append("Q");
+            QString(ICONPATH).append("Q");
         }
     }
     else if (nodetype == "NodeMechanicRotational")      //! @todo Make specific graphics for rotational nodes
     {
-        iconPath.append("RotationalMechanicPort");
+        QString(ICONPATH).append("RotationalMechanicPort");
         if (CQSType == "C")
         {
-            iconPath.append("C");
+            QString(ICONPATH).append("C");
         }
         else if (CQSType == "Q")
         {
-            iconPath.append("Q");
+            QString(ICONPATH).append("Q");
         }
     }
     else if (nodetype == "NodeHydraulic")
     {
-        iconPath.append("HydraulicPort");
+        QString(ICONPATH).append("HydraulicPort");
         if (CQSType == "C")
         {
-            iconPath.append("C");
+            QString(ICONPATH).append("C");
         }
         else if (CQSType == "Q")
         {
-            iconPath.append("Q");
+            QString(ICONPATH).append("Q");
         }
     }
     else
     {
         //SystemPort is a blank port (that is why we use it here)
-        iconPath.append("SystemPort");
+        QString(ICONPATH).append("SystemPort");
     }
-    iconPath.append(".svg");
+    QString(ICONPATH).append(".svg");
 }
 
 AppearanceData::AppearanceData()
@@ -315,13 +315,13 @@ AppearanceData::AppearanceData()
 //    os << "TYPENAME " << addQuotes(rData.mTypeName) << "\n";
 //    os << "DISPLAYNAME " << addQuotes(rData.mName) << "\n";
 //    //os << "BASEPATH " << rData.getBasePath() << "\n"; //Base path is computer dependant
-//    if (!rData.mIconPathISO.isEmpty())
+//    if (!rData.mQString(ICONPATH)ISO.isEmpty())
 //    {
-//        os << "ISOICON " << addQuotes(rData.mIconPathISO) << "\n";
+//        os << "ISOICON " << addQuotes(rData.mQString(ICONPATH)ISO) << "\n";
 //    }
-//    if (!rData.mIconPathUser.isEmpty())
+//    if (!rData.mQString(ICONPATH)User.isEmpty())
 //    {
-//        os << "USERICON " << addQuotes(rData.mIconPathUser) << "\n";
+//        os << "USERICON " << addQuotes(rData.mQString(ICONPATH)User) << "\n";
 //    }
 //    if (!rData.mIconRotationBehaviour.isEmpty())
 //    {
