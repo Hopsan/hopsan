@@ -640,7 +640,7 @@ void MainWindow::loadSettings()
 //! Saves global settings to a text file
 void MainWindow::saveSettings()
 {
-    QFile file("QString(MAINPATH)settings.txt");
+    QFile file(QString(MAINPATH) + "settings.txt");
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
         mpMessageWidget->printGUIErrorMessage("Error writing to settings file. Default values will be used next session");
