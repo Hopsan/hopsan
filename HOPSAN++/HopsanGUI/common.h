@@ -43,6 +43,8 @@
 #define MAINPATH "../../"
 #define ICONPATH "../../HopsanGUI/icons/"
 #define COMPONENTPATH "../../HopsanGUI/componentData/"
+#define PORTICONPATH "../../HopsanGUI/porticons/"
+#define MODELPATH "/../../Models/"
 
 enum selectionStatus {DESELECTED, SELECTED};
 enum graphicsType {USERGRAPHICS, ISOGRAPHICS};

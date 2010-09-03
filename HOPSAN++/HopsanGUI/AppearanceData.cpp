@@ -236,7 +236,7 @@ qDebug() << 2.0/zoomFactor2*zoomFactor;
 void PortAppearance::selectPortIcon(QString CQSType, QString porttype, QString nodetype)
 {
     QString(ICONPATH).clear();
-    QString(ICONPATH).append("../../HopsanGUI/porticons/"); //!< @todo Not very goood to have this hardcoded everywhere (should be decidet on runtime or something or at least be global or defined)
+    QString(ICONPATH).append(QString(PORTICONPATH)); //!< @todo Not very goood to have this hardcoded everywhere (should be decidet on runtime or something or at least be global or defined)
     if (nodetype == "NodeSignal")
     {
         QString(ICONPATH).append("SignalPort");

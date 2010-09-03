@@ -277,7 +277,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
         QDir fileDialogSaveDir;
         QString modelFilePath;
         modelFilePath = QFileDialog::getSaveFileName(this, tr("Save Model File"),
-                                                             fileDialogSaveDir.currentPath() + QString("/../../Models"),
+                                                             fileDialogSaveDir.currentPath() + QString(MODELPATH),
                                                              tr("Hopsan Model Files (*.hmf)"));
         mpSystem->mModelFileInfo.setFile(modelFilePath);
     }
@@ -558,7 +558,7 @@ void ProjectTabWidget::loadModel()
 {
     QDir fileDialogOpenDir;
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Model File"),
-                                                         fileDialogOpenDir.currentPath() + QString("/../../Models"),
+                                                         fileDialogOpenDir.currentPath() + QString(MODELPATH),
                                                          tr("Hopsan Model Files (*.hmf)"));
     if (modelFileName.isEmpty())
         return;

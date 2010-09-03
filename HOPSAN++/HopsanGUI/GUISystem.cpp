@@ -161,7 +161,7 @@ void GUISystem::loadFromHMF(QString modelFilePath)
         QFileInfo fileInfo;
         QDir fileDialog;
         modelFilePath = QFileDialog::getOpenFileName(mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
-                                                             fileDialog.currentPath() + QString("/../../Models"),
+                                                             fileDialog.currentPath() + QString(MODELPATH),
                                                              tr("Hopsan Model Files (*.hmf)"));
         if (modelFilePath.isEmpty())
             return;
