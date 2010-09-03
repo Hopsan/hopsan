@@ -235,62 +235,62 @@ qDebug() << 2.0/zoomFactor2*zoomFactor;
 //! @todo maybe this should be placed in som more generic external .txt file in som way
 void PortAppearance::selectPortIcon(QString CQSType, QString porttype, QString nodetype)
 {
-    QString(ICONPATH).clear();
-    QString(ICONPATH).append(QString(PORTICONPATH)); //!< @todo Not very goood to have this hardcoded everywhere (should be decidet on runtime or something or at least be global or defined)
+    mIconPath.clear();
+    mIconPath.append(QString(PORTICONPATH));
     if (nodetype == "NodeSignal")
     {
-        QString(ICONPATH).append("SignalPort");
+        mIconPath.append("SignalPort");
         if ( porttype == "READPORT")
         {
-            QString(ICONPATH).append("_read");
+            mIconPath.append("_read");
         }
         else
         {
-            QString(ICONPATH).append("_write");
+            mIconPath.append("_write");
         }
     }
     else if (nodetype == "NodeMechanic")
     {
-        QString(ICONPATH).append("MechanicPort");
+        mIconPath.append("MechanicPort");
         if (CQSType == "C")
         {
-            QString(ICONPATH).append("C");
+            mIconPath.append("C");
         }
         else if (CQSType == "Q")
         {
-            QString(ICONPATH).append("Q");
+            mIconPath.append("Q");
         }
     }
-    else if (nodetype == "NodeMechanicRotational")      //! @todo Make specific graphics for rotational nodes
+    else if (nodetype == "NodeMechanicRotational")
     {
-        QString(ICONPATH).append("RotationalMechanicPort");
+        mIconPath.append("RotationalMechanicPort");
         if (CQSType == "C")
         {
-            QString(ICONPATH).append("C");
+            mIconPath.append("C");
         }
         else if (CQSType == "Q")
         {
-            QString(ICONPATH).append("Q");
+            mIconPath.append("Q");
         }
     }
     else if (nodetype == "NodeHydraulic")
     {
-        QString(ICONPATH).append("HydraulicPort");
+        mIconPath.append("HydraulicPort");
         if (CQSType == "C")
         {
-            QString(ICONPATH).append("C");
+            mIconPath.append("C");
         }
         else if (CQSType == "Q")
         {
-            QString(ICONPATH).append("Q");
+            mIconPath.append("Q");
         }
     }
     else
     {
         //SystemPort is a blank port (that is why we use it here)
-        QString(ICONPATH).append("SystemPort");
+        mIconPath.append("SystemPort");
     }
-    QString(ICONPATH).append(".svg");
+    mIconPath.append(".svg");
 }
 
 AppearanceData::AppearanceData()
