@@ -581,7 +581,7 @@ void LibraryTreeWidget::contextMenuEvent(QContextMenuEvent *event)
     QCursor *cursor;
     QAction *selectedAction = menu.exec(cursor->pos());
 
-    if (selectedAction == unloadAction)
+    if ((selectedAction == unloadAction) and (unloadAction != 0))
     {
         QMessageBox::StandardButton reply;
         reply = QMessageBox::information(this, tr("Information"), tr("Program must be restarted for this to take effect."));
