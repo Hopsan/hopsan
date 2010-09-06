@@ -64,6 +64,8 @@ public:
     QPushButton *cancelButton;
     QPushButton *applyButton;
     QPushButton *okButton;
+    QPushButton *isoIconBrowseButton;
+    QPushButton *userIconBrowseButton;
     QDialogButtonBox *buttonBox;
     QLineEdit *userIconPath;
     QLineEdit *isoIconPath;
@@ -75,6 +77,8 @@ public:
 public slots:
     void show();
     void updateValues();
+    void browseUser();
+    void browseIso();
 };
 
 #endif // PREFERENCEWIDGET_H

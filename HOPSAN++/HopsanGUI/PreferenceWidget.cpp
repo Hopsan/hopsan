@@ -81,10 +81,18 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
     userIconPath = new QLineEdit();
     isoIconPath = new QLineEdit();
 
+    isoIconBrowseButton = new QPushButton(tr("..."));
+    userIconBrowseButton = new QPushButton(tr("..."));
+    isoIconBrowseButton->setFixedSize(25, 22);
+    userIconBrowseButton->setFixedSize(25, 22);
+
     //connect(disableUndoCheckBox, SIGNAL(toggled(bool)),mpParentMainWindow->mpProjectTabs->getCurrentSystem(), SLOT(disableUndo()));
     connect(cancelButton, SIGNAL(pressed()), this, SLOT(reject()));
     connect(okButton, SIGNAL(pressed()), this, SLOT(updateValues()));
     connect(mpParentMainWindow->preferencesAction,SIGNAL(triggered()),this,SLOT(show()));
+    connect(isoIconBrowseButton, SIGNAL(clicked()), this, SLOT(browseIso()));
+    connect(userIconBrowseButton, SIGNAL(clicked()), this, SLOT(browseUser()));
+
     //connect(isoCheckBox, SIGNAL(pressed(bool)), mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView, SLOT(setIsoGraphics(bool)));
 
 
@@ -93,18 +101,24 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
     //mainLayout->addLayout(topLeftLayout, 0, 0);
     mainLayout->addWidget(userIconPath, 0, 1);
     mainLayout->addWidget(isoIconPath, 1, 1);
+    mainLayout->addWidget(userIconBrowseButton, 0, 1, 1, 1, Qt::AlignRight);
+    mainLayout->addWidget(isoIconBrowseButton, 1, 1, 1, 1, Qt::AlignRight);
     mainLayout->addWidget(userIconLabel, 0, 0);
     mainLayout->addWidget(isoIconLabel, 1, 0);
     mainLayout->addWidget(isoCheckBox, 2, 0);
     mainLayout->addWidget(disableUndoCheckBox, 3, 0);
-    mainLayout->addWidget(buttonBox, 4, 0, 2, 0, Qt::AlignHCenter);
+    mainLayout->addWidget(buttonBox, 4, 1, 2, 2, Qt::AlignHCenter);
     setLayout(mainLayout);
 }
 
 
 void PreferenceWidget::show()
 {
+
     isoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mGfxType);
+    disableUndoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
+    userIconPath->setText(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->getUserIconPath());
+    isoIconPath->setText(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->getIsoIconPath());
     QDialog::show();
 }
 
@@ -137,4 +151,20 @@ void PreferenceWidget::updateValues()
     mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setUserIconPath(userIconPath->text());
     mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setIsoIconPath(isoIconPath->text());
     this->accept();
+}
+
+void PreferenceWidget::browseUser()
+{
+    QDir fileDialogOpenDir;
+    QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose user icon"),
+                                                         fileDialogOpenDir.currentPath() + QString(MODELPATH));
+    userIconPath->setText(modelFileName);
+}
+
+void PreferenceWidget::browseIso()
+{
+    QDir fileDialogOpenDir;
+    QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose ISO icon"),
+                                                         fileDialogOpenDir.currentPath() + QString(MODELPATH));
+    isoIconPath->setText(modelFileName);
 }
