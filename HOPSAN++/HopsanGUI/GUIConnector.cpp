@@ -298,6 +298,7 @@ void GUIConnector::setEndPort(GUIPort *port)
     {
             //Wrong direction of last line, so remove last point. It will be fine.
         this->removePoint();
+        this->mpLines.pop_back();
     }
     else
     {
