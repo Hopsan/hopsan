@@ -51,7 +51,7 @@ namespace hopsan {
             double u0 = mpIn->readNode(NodeSignal::VALUE);
             mDelayU.initialize(mTime, u0);
             mDelayY.initialize(mTime, mStartY);
-            //! @todo Write out values into node as well? (I think so) This is true for all components
+            mpOut->writeNode(NodeSignal::VALUE, mStartY);
         }
 
 

@@ -49,7 +49,8 @@ namespace hopsan {
         {
             double u0 = mpIn->readNode(NodeSignal::VALUE);
             mIntegrator.initialize(mTime, mTimestep, u0, mStartY);
-            //! @todo Write out values into node as well? (I think so) This is true for all components
+
+            mpOut->writeNode(NodeSignal::VALUE, mStartY);
         }
 
 

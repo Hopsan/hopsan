@@ -55,8 +55,8 @@ namespace hopsan {
 
         void initialize()
         {
-            double num[2];
-            double den[2];
+            double num[3];
+            double den[3];
 
             num[0] = 0.0;
             num[1] = 0.0;

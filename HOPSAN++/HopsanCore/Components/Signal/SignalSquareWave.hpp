@@ -65,7 +65,8 @@ namespace hopsan {
 
         void initialize()
         {
-            //Nothing to initilize
+            //Write basevalue value to node
+            mpOut->writeNode(NodeSignal::VALUE, mBaseValue);
         }
 
 
@@ -81,7 +82,7 @@ namespace hopsan {
             else
             {
                 relTimeInt = (int)ceil((mTime-mStartTime)*mFrequency);
-                output = mBaseValue + (mAmplitude * (relTimeInt % 2));
+                output = mBaseValue + (2*mAmplitude * (relTimeInt % 2)) - mAmplitude;
             }
 
             //Write new values to nodes
