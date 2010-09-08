@@ -943,6 +943,7 @@ void GUIObjectDisplayName::focusOutEvent(QFocusEvent *event)
 //    this->setSelected(false);
 
 //    emit textMoved(pos());
+    mpParentGUIObject->mpParentSystem->mIsRenamingObject = false;
     QGraphicsTextItem::focusOutEvent(event);
 }
 
@@ -971,7 +972,6 @@ QVariant GUIObjectDisplayName::itemChange(GraphicsItemChange change, const QVari
 void GUIObjectDisplayName::deselect()
 {
     this->setSelected(false);
-    this->clearFocus();
 }
 
 
