@@ -62,7 +62,7 @@ namespace hopsan {
 
         void initialize()
         {
-            //Nothing to initilize
+            mpOut->writeNode(NodeSignal::VALUE, mBaseValue);
         }
 
 

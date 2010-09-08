@@ -29,6 +29,7 @@
 
 #include <iostream>
 #include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 
 namespace hopsan {
 

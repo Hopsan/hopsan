@@ -32,7 +32,7 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            std::cout << "running Second Order Filter creator" << std::endl;
+            //cout << "running Second Order Filter creator" << std::endl;
             return new SignalSecondOrderFilter("Filter");
         }
 
@@ -47,8 +47,8 @@ namespace hopsan {
             mK = 1.0;
             mWnum = 1.0e10;
             mDnum = 1.0;
-            mWden = 1.0*2.0*3.1415;
-            mDden = 0.7;
+            mWden = 1000;
+            mDden = 1.0;
 
             mpIn = addReadPort("in", "NodeSignal");
             mpOut = addWritePort("out", "NodeSignal");

@@ -42,7 +42,7 @@ namespace hopsan {
             mMin = -1.5E+300;
             mMax = 1.5E+300;
 
-            mW=1.0e10;
+            mW=1000.0;
 
             mpIn = addReadPort("in", "NodeSignal");
             mpOut = addWritePort("out", "NodeSignal");

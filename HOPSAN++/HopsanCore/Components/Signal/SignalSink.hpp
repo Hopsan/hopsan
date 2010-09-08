@@ -51,7 +51,7 @@ namespace hopsan {
 
         void finalize()
         {
-
+            //Nothing to do
         }
     };
 }

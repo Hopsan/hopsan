@@ -68,7 +68,7 @@ namespace hopsan {
 
         void initialize()
         {
-            //Nothing to initilize
+            simulateOneTimestep();
         }
 
 

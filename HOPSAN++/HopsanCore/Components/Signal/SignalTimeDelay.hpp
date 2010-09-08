@@ -49,7 +49,7 @@ namespace hopsan {
         {
             mDelay.initialize(mTime, mStartY);
             mDelay.setTimeDelay(mTimeDelay, mTimestep, mStartY);
-            //! @todo Write out values into node as well? (I think so) This is true for all components
+            mpOut->writeNode(NodeSignal::VALUE, mStartY);
         }
 
 
