@@ -88,6 +88,7 @@ class PlotWindow : public QMainWindow
 public:
     PlotWindow(QVector<double> xarray, QVector<double> yarray, VariableList *variableList, MainWindow *parent);
     void addPlotCurve(QVector<double> xarray, QVector<double> yarray, QString title, QString xLabel, QString yLabel, QwtPlot::Axis axisY);
+    void changeXVector(QVector<double> xarray, QString xLabel);
 
     QVector <QwtPlotCurve *> mpCurves;
     QwtPlotCurve *tempCurve;

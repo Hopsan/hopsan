@@ -218,6 +218,8 @@ void PlotWindow::enableZoom(bool on)
     mpPanner->setEnabled(false);
 }
 
+
+//! Slot that enables or disables
 void PlotWindow::enablePan(bool on)
 {
     mpPanner->setEnabled(on);
@@ -229,6 +231,8 @@ void PlotWindow::enablePan(bool on)
     mpZoomer->setEnabled(false);
 }
 
+
+//! Slot that turns plot grid on or off
 void PlotWindow::enableGrid(bool on)
 {
     if (on)
@@ -242,6 +246,8 @@ void PlotWindow::enableGrid(bool on)
 
 }
 
+
+//! @Slot that exports current plot to .svg format
 void PlotWindow::exportSVG()
 {
 #ifdef QT_SVG_LIB
@@ -261,6 +267,8 @@ void PlotWindow::exportSVG()
 }
 
 
+//! Slot that exports a curve to GNUPLOT format
+//! @todo Currently only the last added curve will be exported...
 void PlotWindow::exportGNUPLOT()
 {
     QDir fileDialogSaveDir;
@@ -332,7 +340,11 @@ void PlotWindow::dragEnterEvent(QDragEnterEvent *event)
 void PlotWindow::dragMoveEvent(QDragMoveEvent *event)
 {
     QCursor cursor;
-    if(this->mapFromGlobal(cursor.pos()).x() < this->width()/2)
+    if(this->mapFromGlobal(cursor.pos()).y() > this->height()/2)
+    {
+        mpHoverRect->setGeometry(mpVariablePlot->canvas()->x(), mpVariablePlot->canvas()->height()/2+mpVariablePlot->canvas()->y()+34, mpVariablePlot->canvas()->width(), mpVariablePlot->canvas()->height()/2);
+    }
+    else if(this->mapFromGlobal(cursor.pos()).x() < this->width()/2)
     {
         mpHoverRect->setGeometry(mpVariablePlot->canvas()->x(), mpVariablePlot->canvas()->y()+34, mpVariablePlot->canvas()->width()/2, mpVariablePlot->canvas()->height());
     }
@@ -340,7 +352,6 @@ void PlotWindow::dragMoveEvent(QDragMoveEvent *event)
     {
         mpHoverRect->setGeometry(mpVariablePlot->canvas()->x() + mpVariablePlot->canvas()->width()/2, mpVariablePlot->canvas()->y()+34, mpVariablePlot->canvas()->width()/2, mpVariablePlot->canvas()->height());
     }
-    qDebug() << this->mpVariablePlot->canvas()->width();
     QMainWindow::dragMoveEvent(event);
 }
 
@@ -352,6 +363,7 @@ void PlotWindow::dragLeaveEvent(QDragLeaveEvent *event)
 }
 
 
+//! Defines what happens when something is dropped in a plot window
 void PlotWindow::dropEvent(QDropEvent *event)
 {
     if (event->mimeData()->hasText())
@@ -374,21 +386,30 @@ void PlotWindow::dropEvent(QDropEvent *event)
             xlabel.append("Time, [s]");
 
             QCursor cursor;
-            if(this->mapFromGlobal(cursor.pos()).x() < this->width()/2)
+            if(this->mapFromGlobal(cursor.pos()).y() > this->height()/2)
+            {
+                this->changeXVector(mpVariableList->yMap.find(lookupName).value(), ylabel);
+            }
+            else if(this->mapFromGlobal(cursor.pos()).x() < this->width()/2)
             {
                 this->addPlotCurve(mpVariableList->xMap.find(lookupName).value(),mpVariableList->yMap.find(lookupName).value(), title, xlabel, ylabel, QwtPlot::yLeft);
-                qDebug() << "Left axis";
             }
             else
             {
                 this->addPlotCurve(mpVariableList->xMap.find(lookupName).value(),mpVariableList->yMap.find(lookupName).value(), title, xlabel, ylabel, QwtPlot::yRight);
-                qDebug() << "Right axis";
             }
         }
     }
 }
 
 
+//! Adds a new curve to an existing plot window
+//! @param xarray is the vector for the x-axis
+//! @param yarray is the vector for the y-axis
+//! @param title is the title of the curve
+//! @param xLabel is the label for the x-axis
+//! @param yLabel is the label for the y-axis
+//! @param axisY tells whether the right or left y-axis shall be used
 void PlotWindow::addPlotCurve(QVector<double> xarray, QVector<double> yarray, QString title, QString xLabel, QString yLabel, QwtPlot::Axis axisY)
 {
 
@@ -415,6 +436,21 @@ void PlotWindow::addPlotCurve(QVector<double> xarray, QVector<double> yarray, QS
     mpVariablePlot->setAxisTitle(VariablePlot::yLeft, yLabel);
     mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xLabel);
     mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
+}
+
+
+void PlotWindow::changeXVector(QVector<double> xarray, QString xLabel)
+{
+    QVector<double> tempYarray;
+    for(size_t i=0; i<mpCurves.size(); ++i)
+    {
+        for(size_t j=0; j<mpCurves.at(i)->data().size(); ++j)       //! @todo Figure out a less stupid way of replacing only the x values...
+        {
+            tempYarray.append(mpCurves.at(i)->data().y(j));
+        }
+        mpCurves.at(i)->setData(xarray, tempYarray);
+    }
+    mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xLabel);
 }
 
 
@@ -530,6 +566,9 @@ void VariableList::updateList()
     this->sortItems(0, Qt::AscendingOrder);
 }
 
+
+//! Creates a new plot window
+//! @param *item is the tree widget item whos arrays will be looked up from the map and plotted
 void VariableList::createPlot(QTreeWidgetItem *item)
 {
     if(item->parent() != 0)     //Top level items cannot be plotted (they represent the components)
@@ -552,8 +591,6 @@ void VariableList::createPlot(QTreeWidgetItem *item)
         plotWindow->mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xlabel);
         plotWindow->mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
         plotWindow->show();
-
-        qDebug() << lookupName;
     }
 }
 
