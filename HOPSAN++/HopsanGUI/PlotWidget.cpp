@@ -334,12 +334,13 @@ void PlotWindow::dragMoveEvent(QDragMoveEvent *event)
     QCursor cursor;
     if(this->mapFromGlobal(cursor.pos()).x() < this->width()/2)
     {
-        mpHoverRect->setGeometry(0, 0, this->width()/2, this->height());
+        mpHoverRect->setGeometry(mpVariablePlot->canvas()->x(), mpVariablePlot->canvas()->y()+34, mpVariablePlot->canvas()->width()/2, mpVariablePlot->canvas()->height());
     }
     else
     {
-        mpHoverRect->setGeometry(this->width()/2, 0, this->width(), this->height());
+        mpHoverRect->setGeometry(mpVariablePlot->canvas()->x() + mpVariablePlot->canvas()->width()/2, mpVariablePlot->canvas()->y()+34, mpVariablePlot->canvas()->width()/2, mpVariablePlot->canvas()->height());
     }
+    qDebug() << this->mpVariablePlot->canvas()->width();
     QMainWindow::dragMoveEvent(event);
 }
 
@@ -420,16 +421,7 @@ void PlotWindow::addPlotCurve(QVector<double> xarray, QVector<double> yarray, QS
 VariablePlot::VariablePlot(QWidget *parent)
         : QwtPlot(parent)
 {
-    //Set color for plot background
     setCanvasBackground(QColor(Qt::white));
-
-//    QwtPlotMarker *d_mrk1 = new QwtPlotMarker();
-//    d_mrk1->setValue(0.0, 0.0);
-//    d_mrk1->setLineStyle(QwtPlotMarker::VLine);
-//    d_mrk1->setLabelAlignment(Qt::AlignRight | Qt::AlignBottom);
-//    d_mrk1->setLinePen(QPen(Qt::green, 0, Qt::DashDotLine));
-//    d_mrk1->attach(this);
-
     setAutoReplot(true);
 }
 
