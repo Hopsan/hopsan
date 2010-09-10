@@ -328,16 +328,14 @@ void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 //! @param event contains information of the mouse moving operation.
 void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
-    QGraphicsView::mouseMoveEvent(event);
-
     //this->updateViewPort();     //Refresh the viewport
-
         //If creating connector, the end port shall be updated to the mouse position.
     if (mpSystem->mIsCreatingConnector)
     {
         mpSystem->mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
         mpSystem->mpTempConnector->drawConnector();
     }
+    QGraphicsView::mouseMoveEvent(event);
 }
 
 

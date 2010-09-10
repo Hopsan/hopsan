@@ -193,7 +193,6 @@ void GUIPort::updatePosition()
 //! @param *event defines the mouse event.
 void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-    QGraphicsSvgItem::hoverLeaveEvent(event);
     //QBrush brush(Qt::green);
     //this->setBrush(brush);
     this->setCursor(Qt::ArrowCursor);
@@ -201,6 +200,8 @@ void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 
     mpPortLabel->hide();
     this->setZValue(0.0);
+
+    QGraphicsSvgItem::hoverLeaveEvent(event);
 }
 
 
@@ -219,6 +220,8 @@ void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
         std::cout << "GUIPort.cpp: " << "RightClick" << std::endl;
     }
     magnify(false);
+
+    QGraphicsItem::mousePressEvent(event);
 }
 
 
