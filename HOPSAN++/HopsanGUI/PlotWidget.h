@@ -106,6 +106,10 @@ public:
     QToolButton *btnColor;
     QToolButton *btnBackgroundColor;
 
+protected:
+    virtual void dragMoveEvent(QDragMoveEvent *event);
+    virtual void dropEvent(QDropEvent *event);
+
 private slots:
     void enableZoom(bool);
     void enablePan(bool);
@@ -127,10 +131,6 @@ public:
     VariablePlot(QWidget *parent = 0);
     void setCurve(QwtPlotCurve *pCurve);
     QwtPlotCurve *getCurve();
-
-protected:
-    virtual void dragMoveEvent(QDragMoveEvent *event);
-    virtual void dropEvent(QDropEvent *event);
 
 private:
     QwtPlotCurve *mpCurve;

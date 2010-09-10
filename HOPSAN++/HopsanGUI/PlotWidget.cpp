@@ -55,10 +55,9 @@
 #include "GUISystem.h"
 
 PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindow *parent)
-    : QMainWindow(parent)//QWidget(parent,Qt::Window)
+    : QMainWindow(parent)
 {
     this->setAttribute(Qt::WA_DeleteOnClose);
-    this->setAcceptDrops(true);
 
     QWidget *centralwidget = new QWidget(this);
 
@@ -194,17 +193,23 @@ PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindo
     connect(btnBackgroundColor,SIGNAL(clicked()),this,SLOT(setBackgroundColor()));
 
     resize(600,600);
+
+    this->setAcceptDrops(true);
+    this->setEnabled(true);
 }
 
 void PlotWidget::enableZoom(bool on)
 {
     zoomer->setEnabled(on);
-    zoomer->zoom(0);
+    //zoomer->zoom(0);
 
     panner->setEnabled(on);
     panner->setMouseButton(Qt::MidButton);
 
+    disconnect(btnPan,SIGNAL(toggled(bool)),this,SLOT(enablePan(bool)));
     btnPan->setChecked(false);
+    connect(btnPan,SIGNAL(toggled(bool)),this, SLOT(enablePan(bool)));
+    panner->setEnabled(false);
 }
 
 void PlotWidget::enablePan(bool on)
@@ -212,7 +217,10 @@ void PlotWidget::enablePan(bool on)
     panner->setEnabled(on);
     panner->setMouseButton(Qt::LeftButton);
 
+    disconnect(btnZoom,SIGNAL(toggled(bool)),this,SLOT(enableZoom(bool)));
     btnZoom->setChecked(false);
+    connect(btnZoom,SIGNAL(toggled(bool)),this,SLOT(enableZoom(bool)));
+    zoomer->setEnabled(false);
 }
 
 void PlotWidget::enableGrid(bool on)
@@ -302,11 +310,33 @@ void PlotWidget::setBackgroundColor()
 }
 
 
+void PlotWidget::dragMoveEvent(QDragMoveEvent *event)
+{
+    if (event->mimeData()->hasText())
+    {
+        qDebug() << "Dragging something!";
+        event->setDropAction(Qt::MoveAction);
+        event->accept();
+    }
+    else
+    {
+        event->ignore();
+    }
+}
+
+void PlotWidget::dropEvent(QDropEvent *event)
+{
+    if (event->mimeData()->hasText())
+    {
+        qDebug() << "Hej, mimedata = " << event->mimeData()->text();
+        event->accept();
+      //  delete data;
+    }
+}
+
 VariablePlot::VariablePlot(QWidget *parent)
         : QwtPlot(parent)
 {
-    this->setAcceptDrops(true);
-
     //Set color for plot background
     setCanvasBackground(QColor(Qt::white));
 
@@ -318,43 +348,6 @@ VariablePlot::VariablePlot(QWidget *parent)
 //    d_mrk1->attach(this);
 
     setAutoReplot(true);
-}
-
-
-void VariablePlot::dragMoveEvent(QDragMoveEvent *event)
-{
-    qDebug() << "apa";
-
-    if (event->mimeData()->hasText())
-    {
-        event->accept();
-    }
-    else
-    {
-        event->ignore();
-    }
-}
-
-void VariablePlot::dropEvent(QDropEvent *event)
-{
-    qDebug() << "Mimedata = " << event->mimeData()->text();
-
-    if (event->mimeData()->hasText())
-    {
-        QByteArray *data = new QByteArray;
-        *data = event->mimeData()->data("application/x-plotvariable");
-
-        QDataStream stream(data,QIODevice::ReadOnly);
-
-        QString functionname;
-        stream >> functionname;
-
-        event->accept();
-
-        std::cout << functionname.toStdString();
-
-        delete data;
-    }
 }
 
 
@@ -520,8 +513,9 @@ void VariableList::mouseMoveEvent(QMouseEvent *event)
     QDrag *drag = new QDrag(this);
     QMimeData *mimeData = new QMimeData;
 
-    mimeData->setData(mimeType, *data);
-    qDebug() << "mimeData = " << *data;
+    //mimeData->setData(mimeType, *data);
+    mimeData->setText(*data);
+    qDebug() << "mimeData = " << *data << "mimeData->hasText() = " << mimeData->hasText();
     drag->setMimeData(mimeData);
     //QCursor cursor;
     //drag->setHotSpot(cursor.pos());
