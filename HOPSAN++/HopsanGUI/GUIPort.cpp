@@ -61,7 +61,7 @@ using namespace std;
 //! @param rot how the port should be rotated.
 //! @param QString(ICONPATH) a string with the path to the svg-figure representing the port.
 //! @param parent the port's parent, the component it is a part of.
-GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParentGUIObject, CoreSystemAccess *pGUIRootSystem)
+GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIObject *pParentGUIObject, CoreSystemAccess *pGUIRootSystem)
     : QGraphicsSvgItem(pPortAppearance->mIconPath, pParentGUIObject)
 {
     qDebug() << "parentType: " << pParentGUIObject->type() << " GUISYSTEM=" << GUISYSTEM;
@@ -429,3 +429,4 @@ void GUIPort::hideIfNotConnected(bool hidePortsActionTriggered)
         }
     }
 }
+

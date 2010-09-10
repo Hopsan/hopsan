@@ -26,7 +26,9 @@ SOURCES += main.cpp \
     loadObjects.cpp \
     ProgressBarThread.cpp \
     GUISystem.cpp \
-    CoreSystemAccess.cpp
+    CoreSystemAccess.cpp \
+    GUIPortAppearance.cpp \
+    GUIConnectorAppearance.cpp
 HEADERS += MainWindow.h \
     ProjectTabWidget.h \
     LibraryWidget.h \
@@ -52,7 +54,9 @@ HEADERS += MainWindow.h \
     ProgressBarThread.h \
     common.h \
     GUISystem.h \
-    CoreSystemAccess.h
+    CoreSystemAccess.h \
+    GUIPortAppearance.h \
+    GUIConnectorAppearance.h
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE

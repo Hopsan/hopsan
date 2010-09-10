@@ -46,10 +46,10 @@
 #include <QPen>
 #include <QGraphicsLineItem>
 #include <QGraphicsSceneMoveEvent>
+#include <QTextStream>
 
 #include "common.h"
-
-#include "AppearanceData.h"
+#include "GUIConnectorAppearance.h"
 
 class GUIConnectorLine;
 class GraphicsView;

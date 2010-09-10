@@ -241,7 +241,7 @@ void GUISystem::loadFromHMF(QString modelFilePath)
     PortAppearanceMapT* portappmap = &(mAppearanceData.getPortAppearanceMap());
     for (int i=0; i<sysappdata.portnames.size(); ++i)
     {
-        PortAppearance portapp;
+        GUIPortAppearance portapp;
         portapp.x = sysappdata.port_xpos[i];
         portapp.y = sysappdata.port_ypos[i];
         portapp.rot = sysappdata.port_angle[i];

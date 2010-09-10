@@ -44,6 +44,7 @@
 #include <QGraphicsWidget>
 #include <QObject>
 #include <QGraphicsSvgItem>
+#include <QPen>
 
 #include "common.h"
 
@@ -55,7 +56,6 @@ class GraphicsScene;
 class GraphicsView;
 class GUIConnector;
 class GUIObjectDisplayName;
-//class HopsanEssentials;
 class Component;
 class GUIObjectSelectionBox;
 class GUIPort;

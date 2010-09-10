@@ -46,8 +46,7 @@
 #include <QGraphicsTextItem>
 
 #include "common.h"
-
-#include "AppearanceData.h"
+#include "GUIPortAppearance.h"
 
 //Forward declarations
 class GUIObject;
@@ -59,7 +58,7 @@ class GUIPort :public QGraphicsSvgItem
 {
     Q_OBJECT
 public:
-    GUIPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent = 0, CoreSystemAccess *pGUIRootSystem=0);
+    GUIPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIObject *pParent = 0, CoreSystemAccess *pGUIRootSystem=0);
     void updatePosition();
     GUISystem *getParentSystem();
     GUIObject *getGuiObject();
@@ -111,7 +110,7 @@ private:
     qreal mMag;
     bool mIsMag;
 
-    PortAppearance *mpPortAppearance;
+    GUIPortAppearance *mpPortAppearance;
     qreal mXpos;
     qreal mYpos;
     QString name;
