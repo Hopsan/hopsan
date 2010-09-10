@@ -61,20 +61,29 @@ using namespace std;
 //! @param rot how the port should be rotated.
 //! @param QString(ICONPATH) a string with the path to the svg-figure representing the port.
 //! @param parent the port's parent, the component it is a part of.
-GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParent, CoreSystemAccess *pGUIRootSystem)
-    : QGraphicsSvgItem(pPortAppearance->mIconPath, pParent)
+GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, GUIObject *pParentGUIObject, CoreSystemAccess *pGUIRootSystem)
+    : QGraphicsSvgItem(pPortAppearance->mIconPath, pParentGUIObject)
 {
-    qDebug() << "parentType: " << pParent->type() << " GUISYSTEM=" << GUISYSTEM;
-    qDebug() << "======================= parentName: " << pParent->getName();
-    if ( pParent->type() == GUISYSTEM )
+    qDebug() << "parentType: " << pParentGUIObject->type() << " GUISYSTEM=" << GUISYSTEM;
+    qDebug() << "======================= parentName: " << pParentGUIObject->getName();
+
+    if ( pParentGUIObject->mpParentSystem != 0 )
     {
-        mpParentSystem = qobject_cast<GUISystem*>(pParent);
+        mpParentSystem = pParentGUIObject->mpParentSystem;
+    }
+    else if ( pParentGUIObject->type() == GUISYSTEM )
+    {
+        //Assume that parentGuiObject (which is a asystem) is the root system
+        //! @todo not sure that this is really 100% correct
+        mpParentSystem = qobject_cast<GUISystem*>(pParentGUIObject);
     }
     else
     {
-        mpParentSystem = pParent->mpParentSystem;
+        qDebug() << "This should not happen";
+        assert(false);
     }
-    mpParentGuiObject = pParent;
+
+    mpParentGuiObject = pParentGUIObject;
     mpPortAppearance = pPortAppearance;
     mpGUIRootSystem = pGUIRootSystem; //Use this to indicate system port
 
@@ -157,7 +166,7 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
     this->setCursor(Qt::CrossCursor);
     QBrush brush(Qt::blue);
-    //std::cout << "GUIPort.cpp: " << "hovering over port" << std::endl;
+    qDebug() << "hovering over port beloning to: " << mpParentGuiObject->getName();
     magnify(true);
 
     mpPortLabel->setRotation(-mpParentGuiObject->rotation()-this->rotation());
@@ -185,8 +194,7 @@ void GUIPort::updatePosition()
 void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     QGraphicsSvgItem::hoverLeaveEvent(event);
-
-    QBrush brush(Qt::green);
+    //QBrush brush(Qt::green);
     //this->setBrush(brush);
     this->setCursor(Qt::ArrowCursor);
     magnify(false);
