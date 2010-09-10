@@ -38,8 +38,8 @@
 
 //$Id$
 
-#ifndef PLOTWIDGET_H
-#define PLOTWIDGET_H
+#ifndef PlotWindow_H
+#define PlotWindow_H
 
 
 #include <qwt_plot.h>
@@ -73,40 +73,52 @@
 #include <QFileDialog>
 #include <QSvgGenerator>
 #include <QSpinBox>
+#include <QLabel>
 
 
 class MainWindow;
 class VariablePlot;
-//class GraphicsView;
+class VariableList;
 class VariableListDialog;
 class GUISystem;
 
-class PlotWidget : public QMainWindow
+class PlotWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindow *parent);
+    PlotWindow(QVector<double> xarray, QVector<double> yarray, VariableList *variableList, MainWindow *parent);
+    void addPlotCurve(QVector<double> xarray, QVector<double> yarray, QString title, QString xLabel, QString yLabel, QwtPlot::Axis axisY);
 
-    QwtPlotCurve *mpCurve;
+    QVector <QwtPlotCurve *> mpCurves;
+    QwtPlotCurve *tempCurve;
     VariablePlot *mpVariablePlot;
     MainWindow *mpParentMainWindow;
     GUISystem *mpCurrentGUISystem;
 
-    QwtPlotZoomer *zoomer;
-    QwtPlotPanner *panner;
-    QwtPlotGrid *grid;
+    QwtPlotZoomer *mpZoomer;
+    QwtPlotPanner *mpPanner;
+    QwtPlotGrid *mpGrid;
 
-    QToolButton *btnZoom;
-    QToolButton *btnPan;
-    QToolButton *btnSVG;
-    QToolButton *btnGNUPLOT;
-    QToolButton *btnGrid;
-    QToolBar *btnSize;
-    QSpinBox *sizeSpinBox;
-    QToolButton *btnColor;
-    QToolButton *btnBackgroundColor;
+    QToolBar *mpToolBar;
+    QToolButton *mpZoomButton;
+    QToolButton *mpPanButton;
+    QToolButton *mpSVGButton;
+    QToolButton *mpGNUPLOTButton;
+    QToolButton *mpGridButton;
+    QToolBar *mpSizeButton;
+    QSpinBox *mpSizeSpinBox;
+    QToolButton *mpColorButton;
+    QToolButton *mpBackgroundColorButton;
+    QLabel *mpSizeLabel;
+
+    QRubberBand *mpHoverRect;
+
+    int nCurves;
+    QStringList mCurveColors;
 
 protected:
+    virtual void dragEnterEvent(QDragEnterEvent *event);
+    virtual void dragLeaveEvent(QDragLeaveEvent *event);
     virtual void dragMoveEvent(QDragMoveEvent *event);
     virtual void dropEvent(QDropEvent *event);
 
@@ -121,7 +133,7 @@ private slots:
     void setBackgroundColor();
 
 private:
-    VariableListDialog *mpVariableList;
+    VariableList *mpVariableList;
 };
 
 
@@ -188,9 +200,10 @@ class VariableListDialog : public QWidget
     Q_OBJECT
 public:
     VariableListDialog(MainWindow *parent = 0);
+    VariableList *mpVariableList;
 private:
     MainWindow *mpParentMainWindow;
     QPushButton *plotButton;
 };
 
-#endif // PLOTWIDGET_H
+#endif // PlotWindow_H

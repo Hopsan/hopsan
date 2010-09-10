@@ -322,11 +322,12 @@ void GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
     //title.append(" at component: ").append(QString::fromStdString(mpParentComponent->mpCoreComponent->getName())).append(", port: ").append(QString::fromStdString(mpCorePort->getPortName()));
     xlabel.append("Time, [s]");
 
-    //PlotWidget *newPlot = new PlotWidget(time,y,mpParentGuiObject->mpParentSystem);
-    PlotWidget *newPlot = new PlotWidget(time,y,mpParentGuiObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow);
+    //PlotWindow *newPlot = new PlotWindow(time,y,mpParentGuiObject->mpParentSystem);
+    MainWindow *pMainWindow = mpParentGuiObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+    PlotWindow *newPlot = new PlotWindow(time,y,pMainWindow->mpPlotVariableListDialog->mpVariableList, pMainWindow);
 
     //newPlot->mpVariablePlot->setTitle(title);
-    newPlot->mpCurve->setTitle(title);
+    newPlot->tempCurve->setTitle(title);
     newPlot->mpVariablePlot->setAxisTitle(VariablePlot::yLeft, ylabel);
     newPlot->mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xlabel);
     newPlot->mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);

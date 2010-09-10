@@ -68,6 +68,7 @@ class PreferenceWidget;
 class OptionsWidget;
 class UndoWidget;
 class MessageWidget;
+class VariableListDialog;
 
 
 class MainWindow : public QMainWindow
@@ -90,6 +91,7 @@ public:
     PreferenceWidget *mpPreferenceWidget;
     MessageWidget *mpMessageWidget;
     QStatusBar *mpStatusBar;
+    VariableListDialog *mpPlotVariableListDialog;
 
     //Settings variable - stored in and loaded from settings.txt
     bool mInvertWheel;

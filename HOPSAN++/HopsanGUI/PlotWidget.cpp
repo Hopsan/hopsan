@@ -54,189 +54,198 @@
 #include "GraphicsView.h"
 #include "GUISystem.h"
 
-PlotWidget::PlotWidget(QVector<double> xarray, QVector<double> yarray, MainWindow *parent)
+PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, VariableList *variableList, MainWindow *parent)
     : QMainWindow(parent)
 {
     this->setAttribute(Qt::WA_DeleteOnClose);
 
-    QWidget *centralwidget = new QWidget(this);
-
     mpParentMainWindow = parent;
     mpCurrentGUISystem = mpParentMainWindow->mpProjectTabs->getCurrentSystem();
+    mpVariableList = variableList;
 
-    //QGridLayout *grid = new QGridLayout(this);
+        //Create the plot
+    mpVariablePlot = new VariablePlot();
+    mpVariablePlot->setAcceptDrops(false);
 
-    //Create the plot
+    nCurves = 0;
+    mCurveColors << "Blue" << "Red" << "Green" << "Orange";
 
-    QString title = "Two Curves";
-    //VariablePlot *varPlot = new VariablePlot(this);
-    mpVariablePlot = new VariablePlot(centralwidget);
 
-    // Create and add curves to the plot
-    mpCurve = new QwtPlotCurve("Curve 1");
+
+        // Create and add curves to the plot
+    tempCurve = new QwtPlotCurve();
     QwtArrayData data(xarray,yarray);
-    mpCurve->setData(data);
-    mpCurve->attach(mpVariablePlot);
-    mpVariablePlot->setCurve(mpCurve);
-    mpCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
+    tempCurve->setData(data);
+    tempCurve->attach(mpVariablePlot);
+    mpVariablePlot->setCurve(tempCurve);
+    tempCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
     mpVariablePlot->replot();
-    mpCurve->setPen(QPen(QBrush(QColor("Blue")),2));
+    tempCurve->setPen(QPen(QBrush(QColor(mCurveColors[nCurves])),2));
+    mpCurves.append(tempCurve);
+    ++nCurves;
 
-
-    //Create the close button
+        //Create the close button
     QDialogButtonBox *buttonbox = new QDialogButtonBox(QDialogButtonBox::Close);
+    buttonbox->setAcceptDrops(false);
 
-    //Add the plot to the grid
-//    grid->addWidget(varPlot,0,0);
-//    grid->addWidget(buttonbox,1,0);
-//
-//    centralwidget->setLayout(grid);
+
+
     this->setCentralWidget(mpVariablePlot);
 
-    //Create toolbar and toolbutton
-    QToolBar *toolBar = new QToolBar(this);
+        //Create mpToolBar and toolbutton
+    mpToolBar = new QToolBar(this);
+    mpToolBar->setAcceptDrops(false);
 
-    btnZoom = new QToolButton(toolBar);
-    btnZoom->setToolTip("Zoom");
-    btnZoom->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Zoom.png"));
-    btnZoom->setCheckable(true);
-    btnZoom->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    toolBar->addWidget(btnZoom);
+    mpZoomButton = new QToolButton(mpToolBar);
+    mpZoomButton->setToolTip("Zoom");
+    mpZoomButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Zoom.png"));
+    mpZoomButton->setCheckable(true);
+    mpZoomButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mpZoomButton->setAcceptDrops(false);
+    mpToolBar->addWidget(mpZoomButton);
 
-    btnPan = new QToolButton(toolBar);
-    btnPan->setToolTip("Pan");
-    btnPan->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Pan.png"));
-    btnPan->setCheckable(true);
-    btnPan->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    toolBar->addWidget(btnPan);
+    mpPanButton = new QToolButton(mpToolBar);
+    mpPanButton->setToolTip("Pan");
+    mpPanButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Pan.png"));
+    mpPanButton->setCheckable(true);
+    mpPanButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mpPanButton->setAcceptDrops(false);
+    mpToolBar->addWidget(mpPanButton);
 
-    btnSVG = new QToolButton(toolBar);
-    btnSVG->setToolTip("Export to SVG");
-    btnSVG->setIcon(QIcon(QString(ICONPATH) + "Hopsan-SaveToSvg.png"));
-    btnSVG->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    toolBar->addWidget(btnSVG);
+    mpSVGButton = new QToolButton(mpToolBar);
+    mpSVGButton->setToolTip("Export to SVG");
+    mpSVGButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-SaveToSvg.png"));
+    mpSVGButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mpSVGButton->setAcceptDrops(false);
+    mpToolBar->addWidget(mpSVGButton);
 
-    btnGNUPLOT = new QToolButton(toolBar);
-    btnGNUPLOT->setToolTip("Export to GNUPLOT");
-    btnGNUPLOT->setIcon(QIcon(QString(ICONPATH) + "Hopsan-SaveToGnuPlot.png"));
-    btnGNUPLOT->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    toolBar->addWidget(btnGNUPLOT);
+    mpGNUPLOTButton = new QToolButton(mpToolBar);
+    mpGNUPLOTButton->setToolTip("Export to GNUPLOT");
+    mpGNUPLOTButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-SaveToGnuPlot.png"));
+    mpGNUPLOTButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mpGNUPLOTButton->setAcceptDrops(false);
+    mpToolBar->addWidget(mpGNUPLOTButton);
 
-    btnGrid = new QToolButton(toolBar);
-    btnGrid->setToolTip("Show Grid");
-    btnGrid->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Grid.png"));
-    btnGrid->setCheckable(true);
-    btnGrid->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    toolBar->addWidget(btnGrid);
+    mpGridButton = new QToolButton(mpToolBar);
+    mpGridButton->setToolTip("Show Grid");
+    mpGridButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Grid.png"));
+    mpGridButton->setCheckable(true);
+    mpGridButton->setChecked(true);
+    mpGridButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mpGridButton->setAcceptDrops(false);
+    mpToolBar->addWidget(mpGridButton);
 
-    btnColor = new QToolButton(toolBar);
-    btnColor->setToolTip("Select Line Color");
-    btnColor->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LineColor.png"));
-    btnColor->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    toolBar->addWidget(btnColor);
+    mpColorButton = new QToolButton(mpToolBar);
+    mpColorButton->setToolTip("Select Line Color");
+    mpColorButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LineColor.png"));
+    mpColorButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mpColorButton->setAcceptDrops(false);
+    mpToolBar->addWidget(mpColorButton);
 
-    btnBackgroundColor = new QToolButton(toolBar);
-    btnBackgroundColor->setToolTip("Select Canvas Color");
-    btnBackgroundColor->setIcon(QIcon(QString(ICONPATH) + "Hopsan-BackgroundColor.png"));
-    btnBackgroundColor->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    toolBar->addWidget(btnBackgroundColor);
+    mpBackgroundColorButton = new QToolButton(mpToolBar);
+    mpBackgroundColorButton->setToolTip("Select Canvas Color");
+    mpBackgroundColorButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-BackgroundColor.png"));
+    mpBackgroundColorButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mpBackgroundColorButton->setAcceptDrops(false);
+    mpToolBar->addWidget(mpBackgroundColorButton);
 
-    //btnSize = new QToolBar(tr("Size Spinbox"));
-    QLabel *sizeLabel = new QLabel(tr("Line Width: "));
-    sizeSpinBox = new QSpinBox(toolBar);
-    //btnSize->set("Line Width");
-    sizeSpinBox->setRange(1,10);
-    sizeSpinBox->setSingleStep(1);
-    sizeSpinBox->setSuffix(" pt");
-    //btnSize->setOrientation(Qt::Vertical);
-    //btnSize->addWidget(sizeLabel);
-    //btnSize->addWidget(sizeSpinBox);
-    toolBar->addWidget(sizeLabel);
-    toolBar->addWidget(sizeSpinBox);
+    //mpSizeButton = new QmpToolBar(tr("Size Spinbox"));
+    mpSizeLabel = new QLabel(tr("Line Width: "));
+    mpSizeLabel->setAcceptDrops(false);
+    mpSizeSpinBox = new QSpinBox(mpToolBar);
+    mpSizeSpinBox->setAcceptDrops(false);
+    //mpSizeButton->set("Line Width");
+    mpSizeSpinBox->setRange(1,10);
+    mpSizeSpinBox->setSingleStep(1);
+    mpSizeSpinBox->setSuffix(" pt");
+    //mpSizeButton->setOrientation(Qt::Vertical);
+    //mpSizeButton->addWidget(mpSizeLabel);
+    //mpSizeButton->addWidget(mpSizeSpinBox);
+    mpToolBar->addWidget(mpSizeLabel);
+    mpToolBar->addWidget(mpSizeSpinBox);
 
-    addToolBar(toolBar);
+    addToolBar(mpToolBar);
 
     //Zoom
-    zoomer = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpVariablePlot->canvas());
-    zoomer->setSelectionFlags(QwtPicker::DragSelection | QwtPicker::CornerToCorner);
-    zoomer->setRubberBand(QwtPicker::RectRubberBand);
-    zoomer->setRubberBandPen(QColor(Qt::green));
-    zoomer->setTrackerMode(QwtPicker::ActiveOnly);
-    zoomer->setTrackerPen(QColor(Qt::white));
-    zoomer->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
-    zoomer->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
+    mpZoomer = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpVariablePlot->canvas());
+    mpZoomer->setSelectionFlags(QwtPicker::DragSelection | QwtPicker::CornerToCorner);
+    mpZoomer->setRubberBand(QwtPicker::RectRubberBand);
+    mpZoomer->setRubberBandPen(QColor(Qt::green));
+    mpZoomer->setTrackerMode(QwtPicker::ActiveOnly);
+    mpZoomer->setTrackerPen(QColor(Qt::white));
+    mpZoomer->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
+    mpZoomer->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
 
     //Panner
-    panner = new QwtPlotPanner(mpVariablePlot->canvas());
-    panner->setMouseButton(Qt::MidButton);
+    mpPanner = new QwtPlotPanner(mpVariablePlot->canvas());
+    mpPanner->setMouseButton(Qt::MidButton);
 
     //grid
-    grid = new QwtPlotGrid;
-    grid->enableXMin(true);
-    grid->enableYMin(true);
-    grid->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
-    grid->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
-    grid->attach(mpVariablePlot);
+    mpGrid = new QwtPlotGrid;
+    mpGrid->enableXMin(true);
+    mpGrid->enableYMin(true);
+    mpGrid->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
+    mpGrid->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
+    mpGrid->attach(mpVariablePlot);
     //grid->hide();
 
     enableZoom(false);
 
     //Establish signal and slots connections
     connect(buttonbox, SIGNAL(rejected()), this, SLOT(close()));
-    connect(btnZoom,SIGNAL(toggled(bool)),SLOT(enableZoom(bool)));
-    connect(btnPan,SIGNAL(toggled(bool)),SLOT(enablePan(bool)));
-    connect(btnSVG,SIGNAL(clicked()),SLOT(exportSVG()));
-    connect(btnGNUPLOT,SIGNAL(clicked()),SLOT(exportGNUPLOT()));
-    connect(btnGrid,SIGNAL(toggled(bool)),SLOT(enableGrid(bool)));
-    connect(sizeSpinBox,SIGNAL(valueChanged(int)),this, SLOT(setSize(int)));
-    connect(btnColor,SIGNAL(clicked()),this,SLOT(setColor()));
-    connect(btnBackgroundColor,SIGNAL(clicked()),this,SLOT(setBackgroundColor()));
+    connect(mpZoomButton,SIGNAL(toggled(bool)),SLOT(enableZoom(bool)));
+    connect(mpPanButton,SIGNAL(toggled(bool)),SLOT(enablePan(bool)));
+    connect(mpSVGButton,SIGNAL(clicked()),SLOT(exportSVG()));
+    connect(mpGNUPLOTButton,SIGNAL(clicked()),SLOT(exportGNUPLOT()));
+    connect(mpGridButton,SIGNAL(toggled(bool)),SLOT(enableGrid(bool)));
+    connect(mpSizeSpinBox,SIGNAL(valueChanged(int)),this, SLOT(setSize(int)));
+    connect(mpColorButton,SIGNAL(clicked()),this,SLOT(setColor()));
+    connect(mpBackgroundColorButton,SIGNAL(clicked()),this,SLOT(setBackgroundColor()));
 
     resize(600,600);
 
     this->setAcceptDrops(true);
-    this->setEnabled(true);
 }
 
-void PlotWidget::enableZoom(bool on)
+void PlotWindow::enableZoom(bool on)
 {
-    zoomer->setEnabled(on);
-    //zoomer->zoom(0);
+    mpZoomer->setEnabled(on);
+    //mpZoomer->zoom(0);
 
-    panner->setEnabled(on);
-    panner->setMouseButton(Qt::MidButton);
+    mpPanner->setEnabled(on);
+    mpPanner->setMouseButton(Qt::MidButton);
 
-    disconnect(btnPan,SIGNAL(toggled(bool)),this,SLOT(enablePan(bool)));
-    btnPan->setChecked(false);
-    connect(btnPan,SIGNAL(toggled(bool)),this, SLOT(enablePan(bool)));
-    panner->setEnabled(false);
+    disconnect(mpPanButton,SIGNAL(toggled(bool)),this,SLOT(enablePan(bool)));
+    mpPanButton->setChecked(false);
+    connect(mpPanButton,SIGNAL(toggled(bool)),this, SLOT(enablePan(bool)));
+    mpPanner->setEnabled(false);
 }
 
-void PlotWidget::enablePan(bool on)
+void PlotWindow::enablePan(bool on)
 {
-    panner->setEnabled(on);
-    panner->setMouseButton(Qt::LeftButton);
+    mpPanner->setEnabled(on);
+    mpPanner->setMouseButton(Qt::LeftButton);
 
-    disconnect(btnZoom,SIGNAL(toggled(bool)),this,SLOT(enableZoom(bool)));
-    btnZoom->setChecked(false);
-    connect(btnZoom,SIGNAL(toggled(bool)),this,SLOT(enableZoom(bool)));
-    zoomer->setEnabled(false);
+    disconnect(mpZoomButton,SIGNAL(toggled(bool)),this,SLOT(enableZoom(bool)));
+    mpZoomButton->setChecked(false);
+    connect(mpZoomButton,SIGNAL(toggled(bool)),this,SLOT(enableZoom(bool)));
+    mpZoomer->setEnabled(false);
 }
 
-void PlotWidget::enableGrid(bool on)
+void PlotWindow::enableGrid(bool on)
 {
     if (on)
     {
-        grid->show();
+        mpGrid->show();
     }
     else
     {
-        grid->hide();
+        mpGrid->hide();
     }
 
 }
 
-void PlotWidget::exportSVG()
+void PlotWindow::exportSVG()
 {
 #ifdef QT_SVG_LIB
 #ifndef QT_NO_FILEDIALOG
@@ -255,7 +264,7 @@ void PlotWidget::exportSVG()
 }
 
 
-void PlotWidget::exportGNUPLOT()
+void PlotWindow::exportGNUPLOT()
 {
     QDir fileDialogSaveDir;
     QString modelFileName = QFileDialog::getSaveFileName(this, tr("Save Model File"),
@@ -282,24 +291,24 @@ void PlotWidget::exportGNUPLOT()
     file.close();
 }
 
-void PlotWidget::setSize(int size)
+void PlotWindow::setSize(int size)
 {
-    mpCurve->setPen(QPen(mpCurve->pen().color(),size));
+    for(size_t i=0; i<mpCurves.size(); ++i)
+    {
+        mpCurves.at(i)->setPen(QPen(mpCurves.at(i)->pen().color(),size));
+    }
 }
 
-void PlotWidget::setColor()
+void PlotWindow::setColor()
 {
     QColor color = QColorDialog::getColor(Qt::black, this);
     if (color.isValid())
     {
-        mpCurve->setPen(QPen(color, mpCurve->pen().width()));
-        //colorLabel->setText(color.name());
-        //colorLabel->setPalette(QPalette(color));
-        //colorLabel->setAutoFillBackground(true);
+        mpCurves[0]->setPen(QPen(color, mpCurves[0]->pen().width()));
     }
 }
 
-void PlotWidget::setBackgroundColor()
+void PlotWindow::setBackgroundColor()
 {
     QColor color = QColorDialog::getColor(Qt::white, this);
     if (color.isValid())
@@ -310,29 +319,105 @@ void PlotWidget::setBackgroundColor()
 }
 
 
-void PlotWidget::dragMoveEvent(QDragMoveEvent *event)
+void PlotWindow::dragEnterEvent(QDragEnterEvent *event)
 {
     if (event->mimeData()->hasText())
     {
-        qDebug() << "Dragging something!";
-        event->setDropAction(Qt::MoveAction);
-        event->accept();
-    }
-    else
-    {
-        event->ignore();
+        mpHoverRect = new QRubberBand(QRubberBand::Rectangle,this);
+        mpHoverRect->setGeometry(0, 0, this->width(), this->height());
+        mpHoverRect->show();
+
+        event->acceptProposedAction();
     }
 }
 
-void PlotWidget::dropEvent(QDropEvent *event)
+
+void PlotWindow::dragMoveEvent(QDragMoveEvent *event)
+{
+    QCursor cursor;
+    if(this->mapFromGlobal(cursor.pos()).x() < this->width()/2)
+    {
+        mpHoverRect->setGeometry(0, 0, this->width()/2, this->height());
+    }
+    else
+    {
+        mpHoverRect->setGeometry(this->width()/2, 0, this->width(), this->height());
+    }
+    QMainWindow::dragMoveEvent(event);
+}
+
+
+void PlotWindow::dragLeaveEvent(QDragLeaveEvent *event)
+{
+    delete(mpHoverRect);
+    QMainWindow::dragLeaveEvent(event);
+}
+
+
+void PlotWindow::dropEvent(QDropEvent *event)
 {
     if (event->mimeData()->hasText())
     {
-        qDebug() << "Hej, mimedata = " << event->mimeData()->text();
-        event->accept();
-      //  delete data;
+        delete(mpHoverRect);
+
+        QString mimeText = event->mimeData()->text();
+
+        if(mimeText.startsWith("HOPSANPLOTDATA"))
+        {
+            QString lookupName;
+            lookupName = QString(mimeText.right(mimeText.size()-15));
+
+            QString title;
+            QString xlabel;
+            QString ylabel;
+
+            title.append(lookupName);
+            ylabel.append(mpVariableList->yLabelMap.find(lookupName).value());
+            xlabel.append("Time, [s]");
+
+            QCursor cursor;
+            if(this->mapFromGlobal(cursor.pos()).x() < this->width()/2)
+            {
+                this->addPlotCurve(mpVariableList->xMap.find(lookupName).value(),mpVariableList->yMap.find(lookupName).value(), title, xlabel, ylabel, QwtPlot::yLeft);
+                qDebug() << "Left axis";
+            }
+            else
+            {
+                this->addPlotCurve(mpVariableList->xMap.find(lookupName).value(),mpVariableList->yMap.find(lookupName).value(), title, xlabel, ylabel, QwtPlot::yRight);
+                qDebug() << "Right axis";
+            }
+        }
     }
 }
+
+
+void PlotWindow::addPlotCurve(QVector<double> xarray, QVector<double> yarray, QString title, QString xLabel, QString yLabel, QwtPlot::Axis axisY)
+{
+
+        // Create and add curves to the plot
+    tempCurve = new QwtPlotCurve(title);
+    QwtArrayData data(xarray,yarray);
+    tempCurve->setData(data);
+    tempCurve->attach(mpVariablePlot);
+    mpVariablePlot->setCurve(tempCurve);
+    mpVariablePlot->enableAxis(axisY, true);
+    tempCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
+    mpVariablePlot->replot();
+    tempCurve->setPen(QPen(QBrush(QColor(mCurveColors[nCurves])),2));
+    tempCurve->setYAxis(axisY);
+    mpCurves.append(tempCurve);
+
+    ++nCurves;
+    if(nCurves > mCurveColors.size()-1)
+    {
+        nCurves = 0;        //! @todo Ugly way to restart color loop when too many curves are added
+    }
+
+    mpVariablePlot->setAxisTitle(VariablePlot::yLeft, yLabel);
+    mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xLabel);
+    mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
+}
+
 
 VariablePlot::VariablePlot(QWidget *parent)
         : QwtPlot(parent)
@@ -470,13 +555,13 @@ void VariableList::createPlot(QTreeWidgetItem *item)
         ylabel.append(yLabelMap.find(lookupName).value());
         xlabel.append("Time, [s]");
 
-        PlotWidget *plotwidget = new PlotWidget(xMap.find(lookupName).value(),yMap.find(lookupName).value(),mpParentMainWindow);
-        plotwidget->setWindowTitle("HOPSAN Plot Window");
-        plotwidget->mpCurve->setTitle(title);
-        plotwidget->mpVariablePlot->setAxisTitle(VariablePlot::yLeft, ylabel);
-        plotwidget->mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xlabel);
-        plotwidget->mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
-        plotwidget->show();
+        PlotWindow *plotWindow = new PlotWindow(xMap.find(lookupName).value(),yMap.find(lookupName).value(), this, mpParentMainWindow);
+        plotWindow->setWindowTitle("HOPSAN Plot Window");
+        plotWindow->tempCurve->setTitle(title);
+        plotWindow->mpVariablePlot->setAxisTitle(VariablePlot::yLeft, ylabel);
+        plotWindow->mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xlabel);
+        plotWindow->mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
+        plotWindow->show();
 
         qDebug() << lookupName;
     }
@@ -499,31 +584,17 @@ void VariableList::mouseMoveEvent(QMouseEvent *event)
          < QApplication::startDragDistance())
         return;
 
-    QByteArray *data = new QByteArray;
-    QDataStream stream(data,QIODevice::WriteOnly);
-
     QTreeWidgetItem *item = this->currentItem();
 
-    stream << item->text(0);
-
-    *data = "Test";
-
-    QString mimeType = "application/x-plotvariable";
+    QString mimeText;
+    mimeText = QString("HOPSANPLOTDATA " + item->parent()->text(0) + ", " + item->text(0));
 
     QDrag *drag = new QDrag(this);
     QMimeData *mimeData = new QMimeData;
 
-    //mimeData->setData(mimeType, *data);
-    mimeData->setText(*data);
-    qDebug() << "mimeData = " << *data << "mimeData->hasText() = " << mimeData->hasText();
+    mimeData->setText(mimeText);
     drag->setMimeData(mimeData);
-    //QCursor cursor;
-    //drag->setHotSpot(cursor.pos());
-    //drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()));
     drag->exec();
-
-    //Qt::DropAction dropAction = drag->exec(Qt::CopyAction | Qt::MoveAction);
-
 }
 
 
@@ -589,7 +660,7 @@ VariableListDialog::VariableListDialog(MainWindow *parent)
     QGridLayout *grid = new QGridLayout(this);
 
     //Create the plotvariables list
-    VariableList *varList = new VariableList(mpParentMainWindow);
+    mpVariableList = new VariableList(mpParentMainWindow);
     SelectedVariableList *rightAxisList = new SelectedVariableList(mpParentMainWindow);
     SelectedVariableList *leftAxisList = new SelectedVariableList(mpParentMainWindow);
     rightAxisList->setMaximumHeight(100);
@@ -606,7 +677,7 @@ VariableListDialog::VariableListDialog(MainWindow *parent)
     plotButton = new QPushButton(tr("&Plot"));
     plotButton->setAutoDefault(true);
 
-    grid->addWidget(varList,0,0,3,1);
+    grid->addWidget(mpVariableList,0,0,3,1);
     //grid->addWidget(rightAxisList,4,0,1,1);
     //grid->addWidget(leftAxisList,5,0,1,1);
     //grid->addWidget(plotButton,6,0);

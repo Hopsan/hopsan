@@ -218,8 +218,8 @@ void MainWindow::plot()
     //        //variableList->show();
     //        addDockWidget(Qt::RightDockWidgetArea, mpPlotVariablesDock);
 
-            VariableListDialog *variableList = new VariableListDialog(this);
-            mpPlotVariablesDock->setWidget(variableList);
+            mpPlotVariableListDialog = new VariableListDialog(this);
+            mpPlotVariablesDock->setWidget(mpPlotVariableListDialog);
 
             mpPlotVariablesDock->show();
             mpPlotVariablesDock->raise();
