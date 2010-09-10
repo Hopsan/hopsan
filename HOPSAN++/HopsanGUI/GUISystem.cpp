@@ -150,8 +150,6 @@ QVector<QString> GUISystem::getParameterNames()
     return mpCoreSystemAccess->getParameterNames(this->getName());
 }
 
-//void GUISystem::refreshAppearance();
-
 void GUISystem::loadFromHMF(QString modelFilePath)
 {
     //! @todo maybe break out the load file function it is used in many places (with some diffeerenses every time), should be enough to return file and filinfo obejct maybe
@@ -275,10 +273,7 @@ void GUISystem::loadFromHMF(QString modelFilePath)
 
         if ( (inputWord == "SUBSYSTEM") or (inputWord == "BEGINSUBSYSTEM") )
         {
-            SubsystemLoadData subsysData;
-            subsysData.read(textStreamFile);
-            loadSubsystemGUIObject(subsysData, mpMainWindow->mpLibrary, this, NOUNDO);
-            //! @todo make convenience function
+            loadSubsystemGUIObject(textStreamFile, mpMainWindow->mpLibrary, this, NOUNDO);
         }
 
         if ( (inputWord == "COMPONENT") || (inputWord == "SYSTEMPORT") )

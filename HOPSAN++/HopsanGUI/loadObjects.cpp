@@ -308,6 +308,13 @@ GUIObject* loadGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISyste
     return loadGUIObject(data,pLibrary, pSystem, undoSettings);
 }
 
+GUIObject* loadSubsystemGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
+{
+    SubsystemLoadData data;
+    data.read(rStream);
+    return loadSubsystemGUIObject(data, pLibrary, pSystem, undoSettings);
+}
+
 //! @brief Conveniance function if you dont want to manipulate the loaded data
 void loadConnector(QTextStream &rStream, GUISystem* pSystem, undoStatus undoSettings)
 {
