@@ -303,7 +303,6 @@ void GUISystem::loadFromHMF(QString modelFilePath)
     this->createPorts();
 
     //Deselect all components
-   //pCurrentTab->mpGraphicsView->deselectAllGUIObjects();
     this->deselectAll();
     this->mUndoStack->clear();
     //Only do this for the root system
@@ -835,10 +834,11 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
 //! @param undoSettings is true if the added connector shall not be registered in the undo stack, for example if this function is called by a redo function.
 void GUISystem::createConnector(GUIPort *pPort, undoStatus undoSettings)
 {
+    qDebug() << "mIsCreatingConnector: " << mIsCreatingConnector;
         //When clicking start port
     if (!mIsCreatingConnector)
     {
-        std::cout << "GraphicsView: " << "Adding connector";
+        qDebug() << "CreatingConnector in: " << this->getName() << " startPortName: " << pPort->getName();
         //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(pPort->getPortType(), mpParentProjectTab->setGfxType);
         mpTempConnector = new GUIConnector(pPort, this);
         emit deselectAllGUIObjects();
@@ -846,13 +846,14 @@ void GUISystem::createConnector(GUIPort *pPort, undoStatus undoSettings)
         mIsCreatingConnector = true;
         mpTempConnector->drawConnector();
     }
-
         //When clicking end port
     else
     {
+        qDebug() << "clicking end port: " << pPort->getName();
         GUIPort *pStartPort = mpTempConnector->getStartPort();
 
         bool success = mpCoreSystemAccess->connect(pStartPort->getGUIComponentName(), pStartPort->getName(), pPort->getGUIComponentName(), pPort->getName() );
+        qDebug() << "GUI Connect: " << success;
         if (success)
         {
             mIsCreatingConnector = false;

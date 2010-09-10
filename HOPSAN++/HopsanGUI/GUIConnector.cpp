@@ -62,6 +62,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUISystem *parentSystem, QGraphic
     mpParentSystem = parentSystem;
     mpParentSystem->scene()->addItem(this);
     startPort->getGuiObject()->rememberConnector(this);
+    qDebug() << "startPort->getGuiObject()->getName(): " << startPort->getGuiObject()->getName();
 
     setFlags(QGraphicsItem::ItemIsFocusable);
 

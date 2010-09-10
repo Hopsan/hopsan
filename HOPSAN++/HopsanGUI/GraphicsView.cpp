@@ -382,6 +382,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     }
     else if  ((event->button() == Qt::LeftButton) && (mpSystem->mIsCreatingConnector))
     {
+        qDebug() << "Adding connector point: " << event->pos();
         mpSystem->mpTempConnector->addPoint(this->mapToScene(event->pos()));
     }
     QGraphicsView::mousePressEvent(event);
