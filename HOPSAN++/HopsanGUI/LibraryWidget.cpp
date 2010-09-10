@@ -585,10 +585,12 @@ void LibraryTreeWidget::contextMenuEvent(QContextMenuEvent *event)
     {
         QMessageBox::StandardButton reply;
         reply = QMessageBox::information(this, tr("Information"), tr("Program must be restarted for this to take effect."));
+        qDebug() << "Trying to remove " << this->currentItem()->text(0);
         for(size_t i=0; i<mpParentLibraryWidget->mpParentMainWindow->mUserLibs.size(); ++i)
         {
             if(mpParentLibraryWidget->mpParentMainWindow->mUserLibs.at(i).endsWith("/"+this->currentItem()->text(0)))
             {
+                qDebug() << "Removing at " << i;
                 mpParentLibraryWidget->mpParentMainWindow->mUserLibs.removeAt(i);
                 --i;
             }

@@ -6,7 +6,7 @@ HMFVERSION 0.1
 CAFVERSION 0.1
 --------------------------------------------------------------
 SIMULATIONTIME 0 0.001 20
-VIEWPORT 2500.27 2500.27 1.74901
+VIEWPORT 2499.99 2499.99 1.15
 --------------------------------------------------------------
 USERICON ""
 ISOICON ""
@@ -34,18 +34,12 @@ COMPONENT "HydraulicVolume" "Volume_1" 2428 2652 0 0 0
 PARAMETER "Volume_1" "V" 0.001
 PARAMETER "Volume_1" "Be" 1e+09
 PARAMETER "Volume_1" "a" 0
-PARAMETER "Volume_1" "debug" 0
-PARAMETER "Volume_1" "t1" 0
-PARAMETER "Volume_1" "t2" 0.01
 COMPONENT "SignalSubtract" "Subtract" 2303 2547 0 0 0
 COMPONENT "MechanicPositionSensor" "PositionSensor" 2744 2408 0 0 0
 COMPONENT "HydraulicVolume" "Volume" 2427 2607 0 0 0
 PARAMETER "Volume" "V" 0.001
 PARAMETER "Volume" "Be" 1e+09
 PARAMETER "Volume" "a" 0
-PARAMETER "Volume" "debug" 0
-PARAMETER "Volume" "t1" 0
-PARAMETER "Volume" "t2" 0.01
 COMPONENT "SignalSource" "Source" 2841 2450 180 0 0
 PARAMETER "Source" "Value" 0
 COMPONENT "HydraulicTankC" "Tank" 2255 2677 0 0 0

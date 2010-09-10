@@ -64,6 +64,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUISystem *parentSystem, QGraphic
     startPort->getGuiObject()->rememberConnector(this);
 
     setFlags(QGraphicsItem::ItemIsFocusable);
+
     connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange()), this, SLOT(adjustToZoom()));
     connect(mpParentSystem, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
     connect(mpParentSystem, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIsoStyle(graphicsType)));
@@ -796,6 +797,8 @@ void GUIConnector::setPassive()
             mpLines[i]->setSelected(false);       //OBS! Kanske inte blir bra...
         }
     }
+
+    this->setZValue(0);
 }
 
 
@@ -1026,6 +1029,7 @@ void GUIConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
             this->setCursor(Qt::SizeHorCursor);
         }
     }
+    this->mpParentGUIConnector->setZValue(11);
     emit lineHoverEnter();
 }
 
@@ -1034,6 +1038,10 @@ void GUIConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 //! @see hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 void GUIConnectorLine::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
+    if(!mpParentGUIConnector->mIsActive)
+    {
+        mpParentGUIConnector->setZValue(0);
+    }
     emit lineHoverLeave();
 }
 

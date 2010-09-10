@@ -60,6 +60,7 @@ class GUISystem;
 class GUIConnector : public QGraphicsWidget
 {
     Q_OBJECT
+    friend class GUIConnectorLine;
 public:
     GUIConnector(GUIPort *startPort, GUISystem *parentSystem, QGraphicsItem *parent = 0);
     GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> mPoints, GUISystem *parentSystem, QGraphicsItem *parent = 0);

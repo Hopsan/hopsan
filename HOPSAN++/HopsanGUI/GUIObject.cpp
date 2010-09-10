@@ -424,6 +424,7 @@ void GUIObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
         //mpSelectionBox->setVisible(true);
     }
     this->showPorts(true);
+    this->setZValue(12);
 }
 
 
@@ -435,6 +436,7 @@ void GUIObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
         mpSelectionBox->setPassive();
     }
     this->showPorts(false);
+    this->setZValue(10);
 }
 
 
