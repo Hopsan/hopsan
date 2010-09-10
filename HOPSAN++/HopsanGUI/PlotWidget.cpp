@@ -70,28 +70,6 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, VariableL
     nCurves = 0;
     mCurveColors << "Blue" << "Red" << "Green" << "Orange";
 
-
-
-        // Create and add curves to the plot
-    tempCurve = new QwtPlotCurve();
-    QwtArrayData data(xarray,yarray);
-    tempCurve->setData(data);
-    tempCurve->attach(mpVariablePlot);
-    mpVariablePlot->setCurve(tempCurve);
-    tempCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
-    mpVariablePlot->replot();
-    tempCurve->setPen(QPen(QBrush(QColor(mCurveColors[nCurves])),2));
-    mpCurves.append(tempCurve);
-    ++nCurves;
-
-        //Create the close button
-    QDialogButtonBox *buttonbox = new QDialogButtonBox(QDialogButtonBox::Close);
-    buttonbox->setAcceptDrops(false);
-
-
-
-    this->setCentralWidget(mpVariablePlot);
-
         //Create mpToolBar and toolbutton
     mpToolBar = new QToolBar(this);
     mpToolBar->setAcceptDrops(false);
@@ -157,6 +135,7 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, VariableL
     //mpSizeButton->set("Line Width");
     mpSizeSpinBox->setRange(1,10);
     mpSizeSpinBox->setSingleStep(1);
+    mpSizeSpinBox->setValue(2);
     mpSizeSpinBox->setSuffix(" pt");
     //mpSizeButton->setOrientation(Qt::Vertical);
     //mpSizeButton->addWidget(mpSizeLabel);
@@ -188,6 +167,24 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, VariableL
     mpGrid->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
     mpGrid->attach(mpVariablePlot);
     //grid->hide();
+
+        // Create and add curves to the plot
+    tempCurve = new QwtPlotCurve();
+    QwtArrayData data(xarray,yarray);
+    tempCurve->setData(data);
+    tempCurve->attach(mpVariablePlot);
+    mpVariablePlot->setCurve(tempCurve);
+    tempCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
+    mpVariablePlot->replot();
+    tempCurve->setPen(QPen(QBrush(QColor(mCurveColors[nCurves])),mpSizeSpinBox->value()));
+    mpCurves.append(tempCurve);
+    ++nCurves;
+
+        //Create the close button
+    QDialogButtonBox *buttonbox = new QDialogButtonBox(QDialogButtonBox::Close);
+    buttonbox->setAcceptDrops(false);
+
+    this->setCentralWidget(mpVariablePlot);
 
     enableZoom(false);
 
@@ -403,7 +400,8 @@ void PlotWindow::addPlotCurve(QVector<double> xarray, QVector<double> yarray, QS
     mpVariablePlot->enableAxis(axisY, true);
     tempCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
     mpVariablePlot->replot();
-    tempCurve->setPen(QPen(QBrush(QColor(mCurveColors[nCurves])),2));
+    int size = mpSizeSpinBox->value();
+    tempCurve->setPen(QPen(QBrush(QColor(mCurveColors[nCurves])),size));
     tempCurve->setYAxis(axisY);
     mpCurves.append(tempCurve);
 
