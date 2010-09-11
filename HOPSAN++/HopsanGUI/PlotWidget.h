@@ -116,6 +116,7 @@ public:
 
     int nCurves;
     QStringList mCurveColors;
+    bool mHasSpecialXAxis;
 
 protected:
     virtual void dragEnterEvent(QDragEnterEvent *event);

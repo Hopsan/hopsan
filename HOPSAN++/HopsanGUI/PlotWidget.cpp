@@ -63,6 +63,8 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, VariableL
     mpCurrentGUISystem = mpParentMainWindow->mpProjectTabs->getCurrentSystem();
     mpVariableList = variableList;
 
+    mHasSpecialXAxis = false;
+
         //Create the plot
     mpVariablePlot = new VariablePlot();
     mpVariablePlot->setAcceptDrops(false);
@@ -415,8 +417,20 @@ void PlotWindow::addPlotCurve(QVector<double> xarray, QVector<double> yarray, QS
 
         // Create and add curves to the plot
     tempCurve = new QwtPlotCurve(title);
-    QwtArrayData data(xarray,yarray);
-    tempCurve->setData(data);
+    if(!mHasSpecialXAxis)
+    {
+        tempCurve->setData(xarray, yarray);
+        mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xLabel);
+    }
+    else
+    {
+        QVector<double> tempXarray;
+        for(size_t j=0; j<mpCurves.last()->data().size(); ++j)
+        {
+            tempXarray.append(mpCurves.last()->data().x(j));
+        }
+        tempCurve->setData(tempXarray, yarray);
+    }
     tempCurve->attach(mpVariablePlot);
     mpVariablePlot->setCurve(tempCurve);
     mpVariablePlot->enableAxis(axisY, true);
@@ -434,7 +448,6 @@ void PlotWindow::addPlotCurve(QVector<double> xarray, QVector<double> yarray, QS
     }
 
     mpVariablePlot->setAxisTitle(VariablePlot::yLeft, yLabel);
-    mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xLabel);
     mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
 }
 
@@ -449,8 +462,10 @@ void PlotWindow::changeXVector(QVector<double> xarray, QString xLabel)
             tempYarray.append(mpCurves.at(i)->data().y(j));
         }
         mpCurves.at(i)->setData(xarray, tempYarray);
+        tempYarray.clear();
     }
     mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xLabel);
+    mHasSpecialXAxis = true;
 }
 
 
