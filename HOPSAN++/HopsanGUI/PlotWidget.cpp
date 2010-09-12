@@ -54,6 +54,8 @@
 #include "GraphicsView.h"
 #include "GUISystem.h"
 
+#include "qwt_scale_engine.h"
+
 PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, VariableList *variableList, MainWindow *parent)
     : QMainWindow(parent)
 {
@@ -71,6 +73,9 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, VariableL
 
     nCurves = 0;
     mCurveColors << "Blue" << "Red" << "Green" << "Orange";
+
+    mLeftAxisLogarithmic = false;
+    mRightAxisLogarithmic = false;
 
         //Create mpToolBar and toolbutton
     mpToolBar = new QToolBar(this);
@@ -404,8 +409,59 @@ void PlotWindow::dropEvent(QDropEvent *event)
     }
 }
 
+void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
+{
+    QMenu menu;
 
-//! Adds a new curve to an existing plot window
+    QMenu *yAxisRightMenu;
+    QMenu *yAxisLeftMenu;
+    //QAction *xAxisAction;
+
+    yAxisRightMenu = menu.addMenu(QString("Right Y Axis"));
+    yAxisLeftMenu = menu.addMenu(QString("Left Y Axis"));
+
+    QAction *setRightAxisLogarithmic;
+    QAction *setLeftAxisLogarithmic;
+
+    setRightAxisLogarithmic = yAxisRightMenu->addAction("Logarithmic Scale");
+    setLeftAxisLogarithmic = yAxisLeftMenu->addAction("Logarithmic Scale");
+
+    setRightAxisLogarithmic->setCheckable(true);
+    setLeftAxisLogarithmic->setCheckable(true);
+    setRightAxisLogarithmic->setChecked(mRightAxisLogarithmic);
+    setLeftAxisLogarithmic->setChecked(mLeftAxisLogarithmic);
+
+    QCursor *cursor;
+    QAction *selectedAction = menu.exec(cursor->pos());
+
+    if (selectedAction == setRightAxisLogarithmic)
+    {
+        mRightAxisLogarithmic = !mRightAxisLogarithmic;
+        if(mRightAxisLogarithmic)
+        {
+            mpVariablePlot->setAxisScaleEngine(QwtPlot::yRight, new QwtLog10ScaleEngine);
+        }
+        else
+        {
+            mpVariablePlot->setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
+        }
+    }
+    else if (selectedAction == setLeftAxisLogarithmic)
+    {
+        mLeftAxisLogarithmic = !mLeftAxisLogarithmic;
+        if(mLeftAxisLogarithmic)
+        {
+            mpVariablePlot->setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
+        }
+        else
+        {
+            mpVariablePlot->setAxisScaleEngine(QwtPlot::yLeft, new QwtLinearScaleEngine);
+        }
+    }
+}
+
+
+//! Help function to add a new curve to an existing plot window
 //! @param xarray is the vector for the x-axis
 //! @param yarray is the vector for the y-axis
 //! @param title is the title of the curve

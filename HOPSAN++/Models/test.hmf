@@ -5,8 +5,8 @@ HOPSANGUIVERSION 0.0.1
 HMFVERSION 0.1
 CAFVERSION 0.1
 --------------------------------------------------------------
-SIMULATIONTIME 0 0.001 20
-VIEWPORT 2499.99 2499.99 1.15
+SIMULATIONTIME 0 0.001 2
+VIEWPORT 2489.57 2492.17 1.15
 --------------------------------------------------------------
 USERICON ""
 ISOICON ""
@@ -55,6 +55,7 @@ PARAMETER "CylinderC" "DeadVolume1" 0.01
 PARAMETER "CylinderC" "DeadVolume2" 0.01
 PARAMETER "CylinderC" "Bp" 10
 PARAMETER "CylinderC" "Betae" 1e+09
+PARAMETER "CylinderC" "Cip" 3.31922e-234
 COMPONENT "SignalGain" "Gain" 2374 2547 0 0 0
 PARAMETER "Gain" "Gain" 0.003
 COMPONENT "SignalSquareWave" "SquareWave" 2220 2547 0 0 0
