@@ -569,7 +569,7 @@ void ProjectTabWidget::loadModel()
     //Make sure file not already open
     for(int t=0; t!=this->count(); ++t)
     {
-        if( (this->tabText(t) == fileInfo.fileName()) or (this->tabText(t) == (fileInfo.fileName() + "*")) )
+        if( (this->tabText(t) == fileInfo.fileName()) || (this->tabText(t) == (fileInfo.fileName() + "*")) )
         {
             QMessageBox::StandardButton reply;
             reply = QMessageBox::information(this, tr("Error"), tr("Unable to load model. File is already open."));

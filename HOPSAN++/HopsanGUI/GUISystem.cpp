@@ -168,7 +168,7 @@ void GUISystem::loadFromHMF(QString modelFilePath)
         fileInfo.setFile(file);
         for(int t=0; t!=mpParentProjectTab->mpParentProjectTabWidget->count(); ++t)
         {
-            if( (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == fileInfo.fileName()) or (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == (fileInfo.fileName() + "*")) )
+            if( (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == fileInfo.fileName()) ||  (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == (fileInfo.fileName() + "*")) )
             {
                 QMessageBox::StandardButton reply;
                 reply = QMessageBox::information(mpParentProjectTab->mpParentProjectTabWidget, tr("Error"), tr("Unable to load model. File is already open."));
@@ -271,7 +271,7 @@ void GUISystem::loadFromHMF(QString modelFilePath)
 
         //! @todo what about NOUNDO here should we be able to select this from the outside maybe
 
-        if ( (inputWord == "SUBSYSTEM") or (inputWord == "BEGINSUBSYSTEM") )
+        if ( (inputWord == "SUBSYSTEM") ||  (inputWord == "BEGINSUBSYSTEM") )
         {
             loadSubsystemGUIObject(textStreamFile, mpMainWindow->mpLibrary, this, NOUNDO);
         }
@@ -706,18 +706,18 @@ GUIConnector* GUISystem::findConnector(QString startComp, QString startPort, QSt
     GUIConnector *item;
     for(int i = 0; i < mSubConnectorList.size(); ++i)
     {
-        if((mSubConnectorList[i]->getStartComponentName() == startComp) and
-           (mSubConnectorList[i]->getStartPortName() == startPort) and
-           (mSubConnectorList[i]->getEndComponentName() == endComp) and
+        if((mSubConnectorList[i]->getStartComponentName() == startComp) &&
+           (mSubConnectorList[i]->getStartPortName() == startPort) &&
+           (mSubConnectorList[i]->getEndComponentName() == endComp) &&
            (mSubConnectorList[i]->getEndPortName() == endPort))
         {
             item = mSubConnectorList[i];
             break;
         }
         //Find even if the caller mixed up start and stop
-        else if((mSubConnectorList[i]->getStartComponentName() == endComp) and
-                (mSubConnectorList[i]->getStartPortName() == endPort) and
-                (mSubConnectorList[i]->getEndComponentName() == startComp) and
+        else if((mSubConnectorList[i]->getStartComponentName() == endComp) &&
+                (mSubConnectorList[i]->getStartPortName() == endPort) &&
+                (mSubConnectorList[i]->getEndComponentName() == startComp) &&
                 (mSubConnectorList[i]->getEndPortName() == startPort))
         {
             item = mSubConnectorList[i];
@@ -761,12 +761,12 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
              }
              doDelete = true;
         }
-        else if( (pConnector->getStartPort() == mSubConnectorList[i]->getStartPort()) or
+        else if( (pConnector->getStartPort() == mSubConnectorList[i]->getStartPort()) ||
                  (pConnector->getStartPort() == mSubConnectorList[i]->getEndPort()) )
         {
             startPortHasMoreConnections = true;
         }
-        else if( (pConnector->getEndPort() == mSubConnectorList[i]->getStartPort()) or
+        else if( (pConnector->getEndPort() == mSubConnectorList[i]->getStartPort()) ||
                  (pConnector->getEndPort() == mSubConnectorList[i]->getEndPort()) )
         {
             endPortHasMoreConnections = true;
@@ -777,7 +777,7 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
         }
     }
 
-    if(endPortWasConnected and !endPortHasMoreConnections)
+    if(endPortWasConnected && !endPortHasMoreConnections)
     {
         pConnector->getEndPort()->setVisible(!mPortsHidden);
         pConnector->getEndPort()->isConnected = false;
@@ -788,7 +788,7 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
         pConnector->getStartPort()->setVisible(!mPortsHidden);
         pConnector->getStartPort()->isConnected = false;
     }
-    else if(startPortHasMoreConnections and !endPortWasConnected)
+    else if(startPortHasMoreConnections && !endPortWasConnected)
     {
         pConnector->getStartPort()->setVisible(false);
         pConnector->getStartPort()->isConnected = true;
@@ -908,7 +908,7 @@ void GUISystem::copySelected()
 
     for(int i = 0; i != mSubConnectorList.size(); ++i)
     {
-        if(mSubConnectorList[i]->getStartPort()->getGuiObject()->isSelected() and mSubConnectorList[i]->getEndPort()->getGuiObject()->isSelected() and mSubConnectorList[i]->isActive())
+        if(mSubConnectorList[i]->getStartPort()->getGuiObject()->isSelected() && mSubConnectorList[i]->getEndPort()->getGuiObject()->isSelected() && mSubConnectorList[i]->isActive())
         {
             mSubConnectorList[i]->saveToTextStream(copyStream, "CONNECT");
         }

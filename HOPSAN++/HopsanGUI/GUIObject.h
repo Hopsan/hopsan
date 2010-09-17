@@ -80,7 +80,7 @@ public:
     //virtual void setName(QString name, renameRestrictions renameSettings=UNRESTRICTED);
     void setDisplayName(QString name);
     virtual QString getTypeName();
-    virtual QString getTypeCQS() {assert(false);} //Only available in GUISystemComponent adn GuiComponent for now
+    virtual QString getTypeCQS() {assert(false); return "";} //Only available in GUISystemComponent adn GuiComponent for now
     virtual void setTypeCQS(QString typestring) {assert(false);} //Only available in GUISystemComponent
 
     AppearanceData* getAppearanceData();
@@ -94,8 +94,8 @@ public:
     QList<GUIPort*> getPortListPtrs();
 
     virtual QVector<QString> getParameterNames();
-    virtual QString getParameterUnit(QString name) {assert(false);} //Only availible in GUIComponent for now
-    virtual QString getParameterDescription(QString name) {assert(false);} //Only availible in GUIComponent for now
+    virtual QString getParameterUnit(QString name) {assert(false); return "";} //Only availible in GUIComponent for now
+    virtual QString getParameterDescription(QString name) {assert(false); return "";} //Only availible in GUIComponent for now
     virtual double getParameterValue(QString name);
     virtual void setParameterValue(QString name, double value);
 

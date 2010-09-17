@@ -419,11 +419,11 @@ void GUIPort::hideIfNotConnected(bool hidePortsActionTriggered)
 {
     if(mpParentSystem->mpParentProjectTab == mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->getCurrentTab())
     {
-        if(!isConnected and hidePortsActionTriggered)
+        if(!isConnected && hidePortsActionTriggered)
         {
             this->hide();
         }
-        else if(!isConnected and !hidePortsActionTriggered)
+        else if(!isConnected && !hidePortsActionTriggered)
         {
             this->show();
         }

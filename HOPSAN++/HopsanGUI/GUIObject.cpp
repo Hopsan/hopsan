@@ -303,7 +303,7 @@ void GUIObject::setIcon(graphicsType gfxType)
     qDebug() << "setIcon(" << gfxType << ")";
 
     QGraphicsSvgItem *tmp = mpIcon;
-    if(gfxType and mAppearanceData.haveIsoIcon())
+    if(gfxType && mAppearanceData.haveIsoIcon())
     {
         mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(ISOGRAPHICS) , this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
@@ -387,12 +387,14 @@ double GUIObject::getParameterValue(QString name)
 {
     cout << "This function should only be available in GUIComponent" << endl;
     assert(false);
+    return 0;
 }
 
 QVector<QString> GUIObject::getParameterNames()
 {
     cout << "This function should only be available in GUIComponent" << endl;
     assert(false);
+    return QVector<QString>();
 }
 
 void GUIObject::setParameterValue(QString name, double value)
@@ -473,7 +475,7 @@ void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     bool alreadyClearedRedo = false;
     for(it = mpParentSystem->mSelectedGUIObjectsList.begin(); it != mpParentSystem->mSelectedGUIObjectsList.end(); ++it)
     {
-        if(((*it)->mOldPos != (*it)->pos()) and (event->button() == Qt::LeftButton))
+        if(((*it)->mOldPos != (*it)->pos()) && (event->button() == Qt::LeftButton))
         {
                 //This check makes sure that only one undo post is created when moving several objects at once
             if(!alreadyClearedRedo)
@@ -560,7 +562,7 @@ void GUIObject::showPorts(bool visible)
     else
         for (i = mPortListPtrs.begin(); i != mPortListPtrs.end(); ++i)
         {
-            if ((*i)->isConnected or mpParentSystem->mPortsHidden)
+            if ((*i)->isConnected || mpParentSystem->mPortsHidden)
             {
                 (*i)->hide();
             }
@@ -609,21 +611,21 @@ void GUIObject::rotate(undoStatus undoSettings)
             mPortListPtrs.value(i)->setPortDirection(TOPBOTTOM);
         if (mPortListPtrs.value(i)->getPortType() == "POWERPORT")
         {
-            if(this->rotation() == 0 and !mIsFlipped)
+            if(this->rotation() == 0 && !mIsFlipped)
                 mPortListPtrs.value(i)->setRotation(0);
-            else if(this->rotation() == 0 and mIsFlipped)
+            else if(this->rotation() == 0 && mIsFlipped)
                 mPortListPtrs.value(i)->setRotation(180);
-            else if(this->rotation() == 90 and !mIsFlipped)
+            else if(this->rotation() == 90 && !mIsFlipped)
                 mPortListPtrs.value(i)->setRotation(270);
-            else if(this->rotation() == 90 and mIsFlipped)
+            else if(this->rotation() == 90 && mIsFlipped)
                 mPortListPtrs.value(i)->setRotation(90);
-            else if(this->rotation() == 180 and !mIsFlipped)
+            else if(this->rotation() == 180 && !mIsFlipped)
                 mPortListPtrs.value(i)->setRotation(180);
-            else if(this->rotation() == 180 and mIsFlipped)
+            else if(this->rotation() == 180 && mIsFlipped)
                 mPortListPtrs.value(i)->setRotation(0);
-            else if(this->rotation() == 270 and !mIsFlipped)
+            else if(this->rotation() == 270 && !mIsFlipped)
                 mPortListPtrs.value(i)->setRotation(90);
-            else if(this->rotation() == 270 and mIsFlipped)
+            else if(this->rotation() == 270 && mIsFlipped)
                 mPortListPtrs.value(i)->setRotation(270);
         }
         //mPortListPtrs[i]->updatePosition();
@@ -740,9 +742,9 @@ void GUIObject::flipHorizontal(undoStatus undoSettings)
 {
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
-        if(mPortListPtrs[i]->getPortType() == "READPORT" or mPortListPtrs[i]->getPortType() == "WRITEPORT")
+        if(mPortListPtrs[i]->getPortType() == "READPORT" ||  mPortListPtrs[i]->getPortType() == "WRITEPORT")
         {
-            if(this->rotation() == 90 or this->rotation() == 270)
+            if(this->rotation() == 90 ||  this->rotation() == 270)
             {
                 mPortListPtrs.value(i)->scale(1,-1);
                 mPortListPtrs.value(i)->translate(0, -mPortListPtrs.value(i)->boundingRect().width());
@@ -771,7 +773,7 @@ void GUIObject::flipHorizontal(undoStatus undoSettings)
         //"Un-flip" the ports and name text
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
-        if(this->rotation() == 90 or this->rotation() == 270)
+        if(this->rotation() == 90 ||  this->rotation() == 270)
         {
             mPortListPtrs.value(i)->scale(1,-1);
             mPortListPtrs.value(i)->translate(0, -mPortListPtrs.value(i)->boundingRect().width());
@@ -868,6 +870,7 @@ void GUIObject::showName()
 QString GUIObject::getTypeName()
 {
     assert(false);
+    return "";
 }
 
 AppearanceData* GUIObject::getAppearanceData()
@@ -1705,10 +1708,10 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData* pAppearanceDa
             for(int i = 0; i != GUIConnectorPtrs.size(); ++i)
             {
                 //Loop trough the GUIConnectors that are connected to pComponent
-                if((GUIConnectorPtrs[i]->getStartComponentName() == pComponent->getName()) or
+                if((GUIConnectorPtrs[i]->getStartComponentName() == pComponent->getName()) ||
                    (GUIConnectorPtrs[i]->getEndComponentName() == pComponent->getName()))
                 {
-                    if((compList.contains(GUIConnectorPtrs[i]->getStartPort()->getGuiObject())) and
+                    if((compList.contains(GUIConnectorPtrs[i]->getStartPort()->getGuiObject())) &&
                        (compList.contains(GUIConnectorPtrs[i]->getEndPort()->getGuiObject())))
                     {
                         //Add the connections which have both ends among selected components for grouping in a list for connections

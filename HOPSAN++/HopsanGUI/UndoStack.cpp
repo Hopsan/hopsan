@@ -125,7 +125,7 @@ void UndoStack::undoOneStep()
     }
     else
     {
-        while(mStack[undoPosition].empty() and undoPosition != 0)
+        while( mStack[undoPosition].empty() && (undoPosition != 0) )
         {
             --undoPosition;
         }
@@ -225,7 +225,7 @@ void UndoStack::undoOneStep()
 //! Will redo the previously undone changes if they exist, and re-add the undo command to the undo stack.
 void UndoStack::redoOneStep()
 {
-    if( (mCurrentStackPosition != mStack.size()-1) and (!mStack[mCurrentStackPosition+1].empty()) )
+    if( (mCurrentStackPosition != mStack.size()-1) && (!mStack[mCurrentStackPosition+1].empty()) )
     {
         ++mCurrentStackPosition;
         for(int i = mStack[mCurrentStackPosition].size()-1; i > -1; --i)
@@ -487,7 +487,7 @@ void UndoWidget::refreshList()
     if(mTempStack.empty())
     {
         item = new QTableWidgetItem();
-        item->setFlags(!Qt::ItemIsEditable);
+        //! @todo what the heck is this suposed to mean !ENUM, item->setFlags(!Qt::ItemIsEditable);
         item->setText("No undo history found.");
         item->setBackgroundColor(QColor("white"));
         mUndoTable->insertRow(x);
@@ -499,7 +499,7 @@ void UndoWidget::refreshList()
     else if(mTempStack[0].empty())
     {
         item = new QTableWidgetItem();
-        item->setFlags(!Qt::ItemIsEditable);
+        //! @todo what the heck is this suposed to mean !ENUM, item->setFlags(!Qt::ItemIsEditable);
         item->setText("No undo history found.");
         item->setBackgroundColor(QColor("white"));
         mUndoTable->insertRow(x);
@@ -518,7 +518,7 @@ void UndoWidget::refreshList()
         for(int j = mTempStack[i].size()-1; j != -1; --j)
         {
             item = new QTableWidgetItem();
-            item->setFlags(!Qt::ItemIsEditable);
+            //! @todo what the heck is this suposed to mean !ENUM, item->setFlags(!Qt::ItemIsEditable);
 
                 // Translate the command words into better looking explanations
             QTextStream stream(&mTempStack[i][j]);

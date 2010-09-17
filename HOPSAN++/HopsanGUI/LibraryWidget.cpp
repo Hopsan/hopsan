@@ -568,7 +568,7 @@ void LibraryTreeWidget::contextMenuEvent(QContextMenuEvent *event)
 
 
         //! @todo This is an ugly check to make sure the right clicked object is a library with contents
-    if( (this->currentItem() != 0) and (this->currentItem()->parent() != 0) )
+    if( (this->currentItem() != 0) && (this->currentItem()->parent() != 0) )
     {
         // This will check if the library is a user library (which can be removed)
         if(mpParentLibraryWidget->mLibraryContentPtrsMap.find(QString(this->currentItem()->parent()->text(0) + this->currentItem()->text(0))).value()->mIsUserLib)
@@ -581,7 +581,7 @@ void LibraryTreeWidget::contextMenuEvent(QContextMenuEvent *event)
     QCursor *cursor;
     QAction *selectedAction = menu.exec(cursor->pos());
 
-    if ((selectedAction == unloadAction) and (unloadAction != 0))
+    if ((selectedAction == unloadAction) && (unloadAction != 0))
     {
         QMessageBox::StandardButton reply;
         reply = QMessageBox::information(this, tr("Information"), tr("Program must be restarted for this to take effect."));

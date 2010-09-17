@@ -92,7 +92,7 @@ double Port::readNode(const size_t idx)
 {
     //! @todo ummm??, if this is a readport node and it is not connected then noone will ever read
     //! @todo maybe use dummy nodes with 0 in for not connected ports
-    if(this->getPortType() == Port::READPORT and !this->isConnected())      //Signal nodes don't have to be connected
+    if((this->getPortType() == Port::READPORT) && (!this->isConnected()))      //Signal nodes don't have to be connected
     {
         return 0;
     }
@@ -106,7 +106,7 @@ double Port::readNode(const size_t idx)
 void Port::writeNode(const size_t idx, const double value)
 {
     //! @todo ummm??, if this is a writeport and it is not connected then noone will ever write
-    if(this->getPortType() == Port::WRITEPORT and !this->isConnected())     //Signal nodes don't have to be connected
+    if((this->getPortType() == Port::WRITEPORT) && (!this->isConnected()))     //Signal nodes don't have to be connected
     {
         return;
     }
@@ -369,6 +369,7 @@ double WritePort::readNode(const size_t idx)
 {
     cout << "Could not read from port, this is a WritePort" << endl;
     assert(false);
+    return 0;
 }
 
 

@@ -1629,7 +1629,8 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
 bool ComponentSystem::disconnect(string compname1, string portname1, string compname2, string portname2)
 {
     disconnect( getComponent(compname1)->getPort(portname1), getComponent(compname2)->getPort(portname2) );
-    //! @todo Shouldn't this return a boolean?
+    //! @todo Should return based on sucessfull dissconnect not hardcoded
+    return true;
 }
 
 
@@ -1806,7 +1807,7 @@ bool ComponentSystem::isSimulationOk()
     {
         //! @todo maybe list their names
         cout << "Wrong CQStype: ";
-        for (int i=0; i<mComponentUndefinedptrs.size(); ++i)
+        for (size_t i=0; i<mComponentUndefinedptrs.size(); ++i)
         {
              cout << mComponentUndefinedptrs[i]->getName() << " ";
         }
@@ -1820,7 +1821,7 @@ bool ComponentSystem::isSimulationOk()
     vector<Port*> ports = getPortPtrVector();
     for (size_t i=0; i<ports.size(); ++i)
     {
-        if ( ports[i]->isConnectionRequired() and !ports[i]->isConnected() )
+        if ( ports[i]->isConnectionRequired() && !ports[i]->isConnected() )
         {
             gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is not connected!");
             return false;
@@ -1840,7 +1841,7 @@ bool ComponentSystem::isSimulationOk()
         vector<Port*> ports = pComp->getPortPtrVector();
         for (size_t i=0; i<ports.size(); ++i)
         {
-            if ( ports[i]->isConnectionRequired() and !ports[i]->isConnected() )
+            if ( ports[i]->isConnectionRequired() && !ports[i]->isConnected() )
             {
                 gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " on " + pComp->getName() + " is not connected!");
                 return false;

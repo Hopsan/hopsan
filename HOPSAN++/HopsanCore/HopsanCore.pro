@@ -18,13 +18,13 @@ win32:INCLUDEPATH += c:\tbb\tbb30_20100406oss\include\tbb
 
 CONFIG(debug, debug|release) {
     DESTDIR = ../bin/debug
-    win32:LIBS += -Lc:/tbb/tbb30_20100406oss/build/windows_ia32_gcc_mingw_debug
-    win32:LIBS += -ltbb_debug
+    #win32:LIBS += -Lc:/tbb/tbb30_20100406oss/build/windows_ia32_gcc_mingw_debug
+    #win32:LIBS += -ltbb_debug
 }
 CONFIG(release, debug|release) {
     DESTDIR = ../bin/release
-    win32:LIBS += -Lc:/tbb/tbb30_20100406oss/build/windows_ia32_gcc_mingw_release
-    win32:LIBS += -ltbb
+    #win32:LIBS += -Lc:/tbb/tbb30_20100406oss/build/windows_ia32_gcc_mingw_release
+    #win32:LIBS += -ltbb
 }
 
 unix {

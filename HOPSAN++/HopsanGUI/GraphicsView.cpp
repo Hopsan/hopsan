@@ -73,7 +73,7 @@ void GraphicsView::createActions()
 //! Defines the right click menu event
 void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 {
-    if(!mpSystem->mIsCreatingConnector and !mpSystem->mJustStoppedCreatingConnector)
+    if(!mpSystem->mIsCreatingConnector && !mpSystem->mJustStoppedCreatingConnector)
     {
         if (QGraphicsItem *item = itemAt(event->pos()))
             QGraphicsView::contextMenuEvent(event);
@@ -134,11 +134,11 @@ void GraphicsView::updateViewPort()
 {
     MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 
-    if( (mpParentProjectTab->mpSystem->mGfxType == USERGRAPHICS) and (this->backgroundBrush().color() != pMainWindow->mBackgroundColor) )
+    if( (mpParentProjectTab->mpSystem->mGfxType == USERGRAPHICS) && (this->backgroundBrush().color() != pMainWindow->mBackgroundColor) )
     {
         this->setBackgroundBrush(pMainWindow->mBackgroundColor);
     }
-    else if( (mpParentProjectTab->mpSystem->mGfxType == ISOGRAPHICS) and (this->backgroundBrush().color() != mIsoColor) )
+    else if( (mpParentProjectTab->mpSystem->mGfxType == ISOGRAPHICS) && (this->backgroundBrush().color() != mIsoColor) )
     {
         this->setBackgroundBrush(mIsoColor);
     }
@@ -165,7 +165,7 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
     }
 
         //Zoom with wheel if ctrl or alt is pressed
-    if (event->modifiers().testFlag(Qt::ControlModifier) or event->modifiers().testFlag(Qt::AltModifier))
+    if (event->modifiers().testFlag(Qt::ControlModifier) ||  event->modifiers().testFlag(Qt::AltModifier))
     {
         qreal factor = pow(1.41,(-wheelDelta/240.0));
         this->scale(factor,factor);
@@ -194,16 +194,16 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     bool shiftPressed = event->modifiers().testFlag(Qt::ShiftModifier);
     //bool altPressed = event->modifiers().testFlag(Qt::AltModifier);       //Commented because it is not used, to avoid compile warnings
 
-    if (event->key() == Qt::Key_Delete and !mpSystem->mIsRenamingObject)
+    if (event->key() == Qt::Key_Delete && !mpSystem->mIsRenamingObject)
     {
-        if(mpSystem->isObjectSelected() or mpSystem->isConnectorSelected())
+        if(mpSystem->isObjectSelected() || mpSystem->isConnectorSelected())
         {
             mpSystem->mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit keyPressDelete();
     }
-    else if (ctrlPressed and event->key() == Qt::Key_R and !mpSystem->mIsRenamingObject)
+    else if (ctrlPressed && event->key() == Qt::Key_R && !mpSystem->mIsRenamingObject)
     {
         if(mpSystem->isObjectSelected())
         {
@@ -220,7 +220,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             mpSystem->mIsCreatingConnector = false;
         }
     }
-    else if(shiftPressed and event->key() == Qt::Key_K and !mpSystem->mIsRenamingObject)
+    else if(shiftPressed && event->key() == Qt::Key_K && !mpSystem->mIsRenamingObject)
     {
         if(mpSystem->isObjectSelected())
         {
@@ -229,7 +229,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         emit keyPressShiftK();
     }
-    else if(shiftPressed and event->key() == Qt::Key_L and !mpSystem->mIsRenamingObject)
+    else if(shiftPressed && event->key() == Qt::Key_L && !mpSystem->mIsRenamingObject)
     {
         if(mpSystem->isObjectSelected())
         {
@@ -238,7 +238,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         emit keyPressShiftL();
     }
-    else if(ctrlPressed and event->key() == Qt::Key_Up)
+    else if(ctrlPressed && event->key() == Qt::Key_Up)
     {
         if(mpSystem->isObjectSelected())
         {
@@ -247,7 +247,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         emit keyPressCtrlUp();
         doNotForwardEvent = true;
     }
-    else if(ctrlPressed and event->key() == Qt::Key_Down)
+    else if(ctrlPressed && event->key() == Qt::Key_Down)
     {
         if(mpSystem->isObjectSelected())
         {
@@ -257,7 +257,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         emit keyPressCtrlDown();
         doNotForwardEvent = true;
     }
-    else if(ctrlPressed and event->key() == Qt::Key_Left and !mpSystem->mIsRenamingObject)
+    else if(ctrlPressed && event->key() == Qt::Key_Left && !mpSystem->mIsRenamingObject)
     {
         if(mpSystem->isObjectSelected())
         {
@@ -266,7 +266,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         emit keyPressCtrlLeft();
         doNotForwardEvent = true;
     }
-    else if(ctrlPressed and event->key() == Qt::Key_Right and !mpSystem->mIsRenamingObject)
+    else if(ctrlPressed && event->key() == Qt::Key_Right && !mpSystem->mIsRenamingObject)
     {
         if(mpSystem->isObjectSelected())
         {
@@ -276,13 +276,13 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         emit keyPressCtrlRight();
         doNotForwardEvent = true;
     }
-    else if (ctrlPressed and event->key() == Qt::Key_A and !mpSystem->mIsRenamingObject)
+    else if (ctrlPressed && event->key() == Qt::Key_A && !mpSystem->mIsRenamingObject)
     {
         mpSystem->selectAll();
     }
     else if (ctrlPressed)
     {
-        if (mpSystem->mIsCreatingConnector and !mpSystem->mpTempConnector->isMakingDiagonal())
+        if (mpSystem->mIsCreatingConnector && !mpSystem->mpTempConnector->isMakingDiagonal())
         {
             mpSystem->mpTempConnector->makeDiagonal(true);
             mpSystem->mpTempConnector->drawConnector();
@@ -307,7 +307,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 {
         // Releasing ctrl key while creating a connector means return from diagonal mode to orthogonal mode.
-    if(event->key() == Qt::Key_Control and mpSystem->mIsCreatingConnector)
+    if(event->key() == Qt::Key_Control && mpSystem->mIsCreatingConnector)
     {
         mpSystem->mpTempConnector->makeDiagonal(false);
         mpSystem->mpTempConnector->drawConnector();
@@ -359,9 +359,9 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         this->setDragMode(RubberBandDrag);
     }
 
-    if (event->button() == Qt::RightButton and mpSystem->mIsCreatingConnector)
+    if (event->button() == Qt::RightButton && mpSystem->mIsCreatingConnector)
     {
-        if((mpSystem->mpTempConnector->getNumberOfLines() == 1 and mpSystem->mpTempConnector->isMakingDiagonal()) or (mpSystem->mpTempConnector->getNumberOfLines() == 2 and !mpSystem->mpTempConnector->isMakingDiagonal()))
+        if((mpSystem->mpTempConnector->getNumberOfLines() == 1 && mpSystem->mpTempConnector->isMakingDiagonal()) ||  (mpSystem->mpTempConnector->getNumberOfLines() == 2 && !mpSystem->mpTempConnector->isMakingDiagonal()))
         {
             mpSystem->mpTempConnector->getStartPort()->isConnected = false;
             mpSystem->mpTempConnector->getStartPort()->show();

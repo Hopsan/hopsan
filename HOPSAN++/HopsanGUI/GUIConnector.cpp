@@ -221,9 +221,9 @@ void GUIConnector::removePoint(bool deleteIfEmpty)
     mPoints.pop_back();
     mGeometries.pop_back();
     //qDebug() << "removePoint, getNumberOfLines = " << getNumberOfLines();
-    if(getNumberOfLines() > 3 and !mMakingDiagonal)
+    if( (getNumberOfLines() > 3) && !mMakingDiagonal )
     {
-        if((mGeometries[mGeometries.size()-1] == DIAGONAL) or ((mGeometries[mGeometries.size()-2] == DIAGONAL)))
+        if((mGeometries[mGeometries.size()-1] == DIAGONAL) || ((mGeometries[mGeometries.size()-2] == DIAGONAL)))
         {
             //if(mGeometries[mGeometries.size()-3] == HORIZONTAL)
             if(abs(mPoints[mPoints.size()-3].x() - mPoints[mPoints.size()-4].x()) > abs(mPoints[mPoints.size()-3].y() - mPoints[mPoints.size()-4].y()))
@@ -240,7 +240,7 @@ void GUIConnector::removePoint(bool deleteIfEmpty)
             }
         }
     }
-    else if(getNumberOfLines() == 3 and !mMakingDiagonal)
+    else if( (getNumberOfLines() == 3) && !mMakingDiagonal)
     {
         if(getStartPort()->getPortDirection() == LEFTRIGHT)
         {
@@ -256,7 +256,7 @@ void GUIConnector::removePoint(bool deleteIfEmpty)
         }
     }
 
-    if(mPoints.size() == 2 and !mMakingDiagonal)
+    if( (mPoints.size() == 2) && !mMakingDiagonal )
     {
         mPoints.pop_back();
         mGeometries.pop_back();
@@ -294,8 +294,8 @@ void GUIConnector::setEndPort(GUIPort *port)
     mpEndPort = port;
     mpEndPort->isConnected = true;
 
-    if( ( ((mpEndPort->getPortDirection() == LEFTRIGHT) and (mGeometries.back() == HORIZONTAL)) or
-          ((mpEndPort->getPortDirection() == TOPBOTTOM) and (mGeometries.back() == VERTICAL)) ) or
+    if( ( ((mpEndPort->getPortDirection() == LEFTRIGHT) && (mGeometries.back() == HORIZONTAL)) ||
+          ((mpEndPort->getPortDirection() == TOPBOTTOM) && (mGeometries.back() == VERTICAL)) ) ||
           (mGeometries[mGeometries.size()-2] == DIAGONAL))
     {
             //Wrong direction of last line, so remove last point. It will be fine.
@@ -477,7 +477,7 @@ bool GUIConnector::isConnected()
 {
     //qDebug() << "Entering isConnected()";
     //return (getStartPort()->isConnected and getEndPort()->isConnected);
-    return (getStartPort()->isConnected and mEndPortConnected);
+    return (getStartPort()->isConnected && mEndPortConnected);
 }
 
 
@@ -543,7 +543,7 @@ void GUIConnector::drawConnector()
     }
     else        //End port is connected, so the connector is modified or has moved
     {
-        if(mpStartPort->getGuiObject()->isSelected() and mpEndPort->getGuiObject()->isSelected() and this->isActive())
+        if(mpStartPort->getGuiObject()->isSelected() && mpEndPort->getGuiObject()->isSelected() && this->isActive())
         {
                 //Both components and connector are selected, so move whole connector along with components
             moveAllPoints(getStartPort()->mapToScene(getStartPort()->boundingRect().center()).x()-mPoints[0].x(),
@@ -560,7 +560,7 @@ void GUIConnector::drawConnector()
        //Redraw the lines based on the mPoints vector
     for(int i = 0; i != mPoints.size()-1; ++i)
     {
-        if(mpLines[i]->line().p1() != mPoints[i] or mpLines[i]->line().p2() != mPoints[i+1]);   //Don't redraw the line if it has not changed
+        if( (mpLines[i]->line().p1() != mPoints[i]) || (mpLines[i]->line().p2() != mPoints[i+1]) );   //Don't redraw the line if it has not changed
         mpLines[i]->setLine(mapFromScene(mPoints[i]), mapFromScene(mPoints[i+1]));
     }
 
@@ -759,7 +759,7 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
 //! @see doSelect(bool lineSelected, int lineNumber)
 void GUIConnector::selectIfBothComponentsSelected()
 {
-    if(mEndPortConnected and mpStartPort->getGuiObject()->isSelected() and mpEndPort->getGuiObject()->isSelected())
+    if(mEndPortConnected && mpStartPort->getGuiObject()->isSelected() && mpEndPort->getGuiObject()->isSelected())
     {
         mpLines[0]->setSelected(true);
         doSelect(true,0);
@@ -852,15 +852,15 @@ void GUIConnector::determineAppearance()
 {
     //! @todo problem when connecting outside systemport  with internal powerport to readport, will not know that internal port is powerport and line will be signalline
     //! @todo need to figure out a new way to handle this
-    if(mpStartPort->getPortType() == "POWERPORT" or mpEndPort->getPortType() == "POWERPORT")
+    if( (mpStartPort->getPortType() == "POWERPORT") || (mpEndPort->getPortType() == "POWERPORT") )
     {
         mpGUIConnectorAppearance->setType("POWERPORT");
     }
-    else if (mpStartPort->getPortType() == "READPORT" or mpEndPort->getPortType() == "READPORT")
+    else if( (mpStartPort->getPortType() == "READPORT") || (mpEndPort->getPortType() == "READPORT") )
     {
         mpGUIConnectorAppearance->setType("SIGNALPORT");
     }
-    else if (mpStartPort->getPortType() == "WRITEPORT" or mpEndPort->getPortType() == "WRITEPORT")
+    else if( (mpStartPort->getPortType() == "WRITEPORT") || (mpEndPort->getPortType() == "WRITEPORT") )
     {
         mpGUIConnectorAppearance->setType("SIGNALPORT");
     }
@@ -1006,7 +1006,7 @@ void GUIConnectorLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 //! Defines what shall happen if a mouse key is released while hovering a connector line.
 void GUIConnectorLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    if((this->pos() != mOldPos) and (event->button() == Qt::LeftButton))
+    if((this->pos() != mOldPos) && (event->button() == Qt::LeftButton))
     {
         mpParentGUIConnector->mpParentSystem->mUndoStack->newPost();
         mpParentGUIConnector->mpParentSystem->mpParentProjectTab->hasChanged();
