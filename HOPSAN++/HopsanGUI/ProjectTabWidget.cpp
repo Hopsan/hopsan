@@ -341,7 +341,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
             calcSubsystemPortPosition(w, h, angle, x, y);
             x = (x/w+1)/2; //Change coordinate system
             y = (-y/h+1)/2; //Change coordinate system
-            modelFile << "PORT " << addQuotes(it.value()->getName()) <<" " << x << " " << y << " " << angle << "\n";
+            modelFile << "PORT " << addQuotes(it.value()->getName()) <<" " << x << " " << y << " " << it.value()->rotation() << "\n";
         }
     }
         modelFile << "--------------------------------------------------------------\n";
