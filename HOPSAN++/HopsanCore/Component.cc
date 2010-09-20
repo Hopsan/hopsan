@@ -327,8 +327,9 @@ double Component::getParameterValue(const string name)
             return mParameters[i].getValue();
         }
     }
-    cout << "No such parameter" << endl;
-    assert(false);
+    cout << "No such parameter (return 0): " << name << endl;
+    //! @todo We should create a debug warning to user if this happens (not only in this function)
+    //! @todo maybe break out find parameter function (maybe even use something else then vector for storage)
     return 0.0;
 }
 
@@ -353,8 +354,8 @@ const string Component::getParameterUnit(const string name)
             return mParameters[i].getUnit();
         }
     }
-    cout << "No such parameter" << endl;
-    assert(false);
+    cout << "No such parameter (return empty): " << name << endl;
+    return string();
 }
 
 
@@ -367,8 +368,8 @@ const string Component::getParameterDescription(const string name)
             return mParameters[i].getDesc();
         }
     }
-    cout << "No such parameter" << endl;
-    assert(false);
+    cout << "No such parameter (return empty): " << name << endl;
+    return string();
 }
 
 
@@ -402,8 +403,7 @@ void Component::setParameterValue(const string name, const double value)
     }
     if (notset)
     {
-        cout << "No such parameter" << endl;
-        assert(false);
+        cout << "No such parameter (does nothing): " << name << endl;
     }
 }
 
