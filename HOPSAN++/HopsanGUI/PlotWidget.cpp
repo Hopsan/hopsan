@@ -313,16 +313,45 @@ void PlotWindow::setSize(int size)
 
 void PlotWindow::setColor()
 {
-    QColor color = QColorDialog::getColor(Qt::black, this);
+    QMenu menu;
+
+
+    //QVector<*QAction> curves;
+    //QAction *tempAction;
+
+    for(int i=0; i<mpCurves.size(); ++i)
+    {
+        menu.addAction(mpCurves[i]->title().text());
+    }
+
+    QCursor *cursor;
+    QAction *selectedAction = menu.exec(cursor->pos());
+
+    if(selectedAction == 0)
+    {
+        return;
+    }
+
+    QwtPlotCurve *pSelectedCurve;
+
+    for(int i=0; i<mpCurves.size(); ++i)
+    {
+        if (selectedAction->text() == mpCurves[i]->title().text())
+        {
+            pSelectedCurve = mpCurves[i];
+        }
+    }
+
+    QColor color = QColorDialog::getColor(pSelectedCurve->pen().color(), this);
     if (color.isValid())
     {
-        mpCurves[0]->setPen(QPen(color, mpCurves[0]->pen().width()));
+        pSelectedCurve->setPen(QPen(color, pSelectedCurve->pen().width()));
     }
 }
 
 void PlotWindow::setBackgroundColor()
 {
-    QColor color = QColorDialog::getColor(Qt::white, this);
+    QColor color = QColorDialog::getColor(this->mpVariablePlot->canvasBackground(), this);
     if (color.isValid())
     {
         mpVariablePlot->setCanvasBackground(color);
@@ -350,15 +379,15 @@ void PlotWindow::dragMoveEvent(QDragMoveEvent *event)
     QCursor cursor;
     if(this->mapFromGlobal(cursor.pos()).y() > this->height()/2 && mpCurves.size() >= 1)
     {
-        mpHoverRect->setGeometry(mpVariablePlot->canvas()->x(), mpVariablePlot->canvas()->height()/2+mpVariablePlot->canvas()->y()+34, mpVariablePlot->canvas()->width(), mpVariablePlot->canvas()->height()/2);
+        mpHoverRect->drawRect(mpVariablePlot->canvas()->x(), mpVariablePlot->canvas()->height()/2+mpVariablePlot->canvas()->y()+34, mpVariablePlot->canvas()->width(), mpVariablePlot->canvas()->height()/2);
     }
     else if(this->mapFromGlobal(cursor.pos()).x() < this->width()/2)
     {
-        mpHoverRect->setGeometry(mpVariablePlot->canvas()->x(), mpVariablePlot->canvas()->y()+34, mpVariablePlot->canvas()->width()/2, mpVariablePlot->canvas()->height());
+        mpHoverRect->drawRect(mpVariablePlot->canvas()->x(), mpVariablePlot->canvas()->y()+34, mpVariablePlot->canvas()->width()/2, mpVariablePlot->canvas()->height());
     }
     else
     {
-        mpHoverRect->setGeometry(mpVariablePlot->canvas()->x() + mpVariablePlot->canvas()->width()/2, mpVariablePlot->canvas()->y()+34, mpVariablePlot->canvas()->width()/2, mpVariablePlot->canvas()->height());
+        mpHoverRect->drawRect(mpVariablePlot->canvas()->x() + mpVariablePlot->canvas()->width()/2, mpVariablePlot->canvas()->y()+34, mpVariablePlot->canvas()->width()/2, mpVariablePlot->canvas()->height());
     }
     QMainWindow::dragMoveEvent(event);
 }
