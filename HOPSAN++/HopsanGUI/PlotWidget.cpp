@@ -337,6 +337,7 @@ void PlotWindow::dragEnterEvent(QDragEnterEvent *event)
     {
         mpHoverRect = new QRubberBand(QRubberBand::Rectangle,this);
         mpHoverRect->setGeometry(0, 0, this->width(), this->height());
+        mpHoverRect->setWindowOpacity(1);
         mpHoverRect->show();
 
         event->acceptProposedAction();
@@ -347,7 +348,7 @@ void PlotWindow::dragEnterEvent(QDragEnterEvent *event)
 void PlotWindow::dragMoveEvent(QDragMoveEvent *event)
 {
     QCursor cursor;
-    if(this->mapFromGlobal(cursor.pos()).y() > this->height()/2)
+    if(this->mapFromGlobal(cursor.pos()).y() > this->height()/2 && mpCurves.size() >= 1)
     {
         mpHoverRect->setGeometry(mpVariablePlot->canvas()->x(), mpVariablePlot->canvas()->height()/2+mpVariablePlot->canvas()->y()+34, mpVariablePlot->canvas()->width(), mpVariablePlot->canvas()->height()/2);
     }
@@ -393,7 +394,7 @@ void PlotWindow::dropEvent(QDropEvent *event)
             xlabel.append("Time, [s]");
 
             QCursor cursor;
-            if(this->mapFromGlobal(cursor.pos()).y() > this->height()/2)
+            if(this->mapFromGlobal(cursor.pos()).y() > this->height()/2 && mpCurves.size() >= 1)
             {
                 this->changeXVector(mpVariableList->yMap.find(lookupName).value(), ylabel);
             }

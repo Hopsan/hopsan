@@ -76,7 +76,7 @@ namespace hopsan {
         Delay mDelayedC1InternalEffective, mDelayedC2InternalEffective;
         Delay mDelayedCSpring;
 
-        Port *mpP1, *mpP2, *mpP3, *mpDebug1, *mpDebug2;
+        Port *mpP1, *mpP2, *mpP3;//, *mpDebug1, *mpDebug2;
 
     public:
         static Component *Creator()
@@ -86,6 +86,51 @@ namespace hopsan {
 
         HydraulicCylinderC(const std::string name) : ComponentC(name)
         {
+            mAlphaZc1 = 0;
+            mAlphaZc2 = 0;
+            mC1Effective = 0;
+            mC2Effective =0;
+            mC1Internal = 0;
+            mC2Internal = 0;
+            mC1InternalEffective = 0;
+            mC2InternalEffective = 0;
+            mC1Internal0 = 0;
+            mC2Internal0 = 0;
+            mC1Internal0Effective = 0;
+            mC2Internal0Effective = 0;
+            mClp = 0;
+            mCt1 = 0;
+            mCt2 = 0;
+            mCt1Effective = 0;
+            mCt2Effective = 0;
+            mP1Effective = 0;
+            mP2Effective = 0;
+            mPm1 = 0;
+            mPm2 = 0;
+            mPm1Effective = 0;
+            mPm2Effective = 0;
+            mP1Internal = 0;
+            mP2Internal = 0;
+            mP1InternalEffective = 0;
+            mP2InternalEffective = 0;
+            mQ1Internal = 0;
+            mQ2Internal = 0;
+            mQ1InternalEffective = 0;
+            mQ2InternalEffective = 0;
+            mMinVolume1 = 0;
+            mMinVolume2 = 0;
+            mZc10 = 0;
+            mZc20 = 0;
+            mXInternal = 0;;
+            mVInternal = 0;;
+            mWfak = 0;;
+            mAlpha = 0;;
+            mZSpring = 0;
+            mZSpring0 = 0;
+            mCSpring = 0;
+            mCSpring0 = 0;
+            mKSpring = 0;
+
             //Set member attributes
             mTypeName = "HydraulicCylinderC";
             mStartPosition = 0.0;
@@ -109,8 +154,8 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanic");
-            mpDebug1 = addWritePort("Debug1", "NodeSignal");
-            mpDebug2 = addWritePort("Debug2", "NodeSignal");
+            //mpDebug1 = addWritePort("Debug1", "NodeSignal");
+            //mpDebug2 = addWritePort("Debug2", "NodeSignal");
 
             //Register changable parameters to the HOPSAN++ core
             registerParameter("x0", "Initial Position", "[m]", mStartPosition);
@@ -221,23 +266,26 @@ namespace hopsan {
             mVolume2 = mDeadVolume2 + mArea2 * (mStroke - mXInternal);
             if (mVolume1 < mMinVolume1) { mVolume1 = mMinVolume1; }
             if (mVolume2 < mMinVolume2) { mVolume2 = mMinVolume2; }
-
+            //Checked
             mZc10 = mBetae * mTimestep / mVolume1;
             mZc20 = mBetae * mTimestep / mVolume2;
             mAlphaZc1 = mZc10 / mDelayedZc1.value();
             mAlphaZc2 = mZc20 / mDelayedZc2.value();
+            //Checked
             mQ1Internal = -mArea1 * mVInternal;
             mQ2Internal = mArea2 * mVInternal;
-
+            //Checked
             mP1Internal = (mC1Internal + mQ1Internal * mZc10 + mLeakageCoefficient * (mC2Internal*mZc10 + mC1Internal*mZc20 + mQ1Internal*mZc10*mZc20 + mQ2Internal*mZc10*mZc20)) / (mLeakageCoefficient*(mZc10 + mZc20) + 1);
             mP2Internal = (mC2Internal + mQ2Internal * mZc20 + mLeakageCoefficient * (mC2Internal*mZc10 + mC1Internal*mZc20 + mQ1Internal*mZc10*mZc20 + mQ2Internal*mZc10*mZc20)) / (mLeakageCoefficient*(mZc10 + mZc20) + 1);
-
+            //Checked
             mP1InternalEffective = mP1Internal;
             mP2InternalEffective = mP2Internal;
             if (mP1InternalEffective < 0.0) { mP1InternalEffective = 0.0; }
             if (mP2InternalEffective < 0.0) { mP2InternalEffective = 0.0; }
+            //Checked
             mQ1InternalEffective = mQ1Internal - mLeakageCoefficient*(mP1InternalEffective - mP2InternalEffective);
             mQ2InternalEffective = mQ2Internal - mLeakageCoefficient*(mP2InternalEffective - mP1InternalEffective);
+            //Checked
 
                 // Characteristics
             mCt1 = c1 + mZc10 * 2 * q1;
@@ -247,24 +295,25 @@ namespace hopsan {
             mCt2 = c2 + mZc20 * 2 * q2;
             mCt2 = mCt2 + mP2Internal + mZc20 * mQ2InternalEffective;
             mPm2 = mCt2 / 2;
-
+            //Checked
             mC1Internal0 = mPm1 * (mAlphaZc1 + 1) - mAlphaZc1 * mP1Internal - mAlphaZc1 * mZc10 * mQ1InternalEffective;
             mC1Internal = (1 - mAlpha) * mC1Internal0 + mAlpha * (mDelayedC1Internal.value() + (mDelayedZc1.value() - mZc10) * mQ1InternalEffective);
             mDelayedC1Internal.update(mC1Internal);
-
+            //Checked
             mC1Effective = mPm1 * (mAlphaZc1 + 1) - mAlphaZc1 * c1 - mAlphaZc1 * 2 * mDelayedZc1.value() * q1;
             c1 = (1 - mAlpha) * mC1Effective + mAlpha * (mDelayedC1.value() + (mDelayedZc1.value() - mZc10) * q1);
             mDelayedC1.update(c1);
             Zc1 = mZc10;
-
+            //Checked
             mC2Internal0 = mPm2 * (mAlphaZc2 + 1) - mAlphaZc2 * mP2Internal - mAlphaZc2 * mZc20 * mQ2InternalEffective;
             mC2Internal = (1 - mAlpha) * mC2Internal0 + mAlpha * (mDelayedC2Internal.value() + (mDelayedZc2.value() - mZc20) * mQ2InternalEffective);
             mDelayedC2Internal.update(mC2Internal);
-
+            //Checked
             mC2Effective = mPm2 * (mAlphaZc2 + 1) - mAlphaZc2 * c2 - mAlphaZc2 * 2 * mDelayedZc2.value() * q2;
             c2 = (1 - mAlpha) * mC2Effective + mAlpha * (mDelayedC2.value() + (mDelayedZc2.value() - mZc20) * q2);
             mDelayedC2.update(c2);
             Zc2 = mZc20;
+            //Checked
 
                 // Effective characteristics
             mP1Effective = p1;
@@ -280,6 +329,7 @@ namespace hopsan {
             mCt2Effective = mCt2Effective + mP2Effective + mZc20 * q2;
             mCt2Effective = mCt2Effective + mP2InternalEffective + mZc20 * mQ2InternalEffective;
             mPm2Effective = mCt2Effective / 2;
+            //Checked
 
                 // Effective characteristics at the piston taking account for cavitation
             mC1Internal0Effective = mPm1Effective * (mAlphaZc1 + 1) - mAlphaZc1 * mP1InternalEffective - mAlphaZc1 * mZc10 * mQ1InternalEffective;
@@ -290,7 +340,7 @@ namespace hopsan {
             mDelayedC2InternalEffective.update(mC2InternalEffective);
             mDelayedZc1.update(mZc10);
             mDelayedZc2.update(mZc20);
-
+            //Checked
                 // Force characteristics
 
             mAlphaSpring = 0.5;
@@ -316,7 +366,7 @@ namespace hopsan {
             mDelayedCSpring.update(mCSpring);
 
             c3 = mC1InternalEffective*mArea1 - mC2InternalEffective*mArea2 + mCSpring;
-            Zc3 = pow(mArea1, 2.0) * mZc10 + pow(mArea2, 2.0) * mZc20 + mBp + mZSpring;
+            Zc3 = mArea1*mArea1 * mZc10 + mArea2*mArea2 * mZc20 + mBp + mZSpring;
 
             //mpDebug1->writeNode(NodeSignal::VALUE, mC1Internal);
             //mpDebug2->writeNode(NodeSignal::VALUE, mC2Internal);
