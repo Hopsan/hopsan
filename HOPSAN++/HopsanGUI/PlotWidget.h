@@ -112,8 +112,8 @@ public:
     QToolButton *mpBackgroundColorButton;
     QLabel *mpSizeLabel;
 
-    //QRubberBand *mpHoverRect;
-    QPainter *mpHoverRect;
+    QRubberBand *mpHoverRect;
+    //QPainter *mpHoverRect;
 
     int nCurves;
     QStringList mCurveColors;

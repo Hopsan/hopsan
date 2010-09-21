@@ -14,7 +14,7 @@ CONFIG += dll
 # win32:DEFINES += STATICCORE
 win32:DEFINES += DOCOREDLLEXPORT
 win32:DEFINES -= UNICODE
-win32:INCLUDEPATH += c:\tbb\tbb30_20100406oss\include\tbb
+win32:INCLUDEPATH += c:/tbb/tbb30_20100406oss/include/tbb
 
 CONFIG(debug, debug|release) {
     DESTDIR = ../bin/debug
