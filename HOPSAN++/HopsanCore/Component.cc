@@ -392,13 +392,13 @@ map<string, double> Component::getParameterMap()
 
 void Component::setParameterValue(const string name, const double value)
 {
-    bool notset = 1;
+    bool notset = true;
     for (size_t i=0; i<mParameters.size(); ++i)
     {
         if (name == mParameters[i].getName())
         {
             mParameters[i].setValue(value);
-            notset = 0;
+            notset = false;
         }
     }
     if (notset)

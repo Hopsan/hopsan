@@ -168,20 +168,28 @@ void CoreSystemAccess::stop()
 QString CoreSystemAccess::getPortType(QString componentName, QString portName)
 {
     //qDebug() << "name for port fetch " << componentName << " " << portName;
-    Component *pComponent = mpCoreComponentSystem->getComponent(componentName.toStdString());
-    if(pComponent)
+    Port *pPort = this->getPortPtr(componentName, portName);
+    if(pPort)
     {
-        Port *pPort = pComponent->getPort(portName.toStdString());
-        if(pPort)
-            return QString(pPort->getPortTypeString().c_str());
+        return QString(pPort->getPortTypeString().c_str());
     }
-    return QString();
-//    return QString(mpCoreComponentSystem->getComponent(componentName.toStdString())->getPort(portName.toStdString())->getPortTypeString().c_str());
+    else
+    {
+        return QString(); //Empty
+    }
 }
 
 QString CoreSystemAccess::getNodeType(QString componentName, QString portName)
 {
-    return QString(mpCoreComponentSystem->getComponent(componentName.toStdString())->getPort(portName.toStdString())->getNodeType().c_str());
+    Port *pPort = this->getPortPtr(componentName, portName);
+    if(pPort)
+    {
+        return QString(pPort->getNodeType().c_str());
+    }
+    else
+    {
+        return QString(); //Empty
+    }
 }
 
 void CoreSystemAccess::setParameter(QString componentName, QString parameterName, double value)
@@ -340,40 +348,69 @@ QString CoreSystemAccess::renameSystemPort(QString oldname, QString newname)
 void CoreSystemAccess::getPlotDataNamesAndUnits(const QString compname, const QString portname, QVector<QString> &rNames, QVector<QString> &rUnits)
 {
     vector<string> corenames, coreunits;
-    mpCoreComponentSystem->getComponent(compname.toStdString())->getPort(portname.toStdString())->getNodeDataNamesAndUnits(corenames, coreunits);
-
     rNames.clear();
     rUnits.clear();
 
-    //Copy into QT datatype vector (assumes bothe received vectors same length (should always be same)
-    for (size_t i=0; i<corenames.size(); ++i)
+    Port* pPort = this->getPortPtr(compname, portname);
+    if (pPort)
     {
-        rNames.push_back(QString::fromStdString(corenames[i]));
-        rUnits.push_back(QString::fromStdString(coreunits[i]));
+        pPort->getNodeDataNamesAndUnits(corenames, coreunits);
+        //Copy into QT datatype vector (assumes bothe received vectors same length (should always be same)
+        for (size_t i=0; i<corenames.size(); ++i)
+        {
+            rNames.push_back(QString::fromStdString(corenames[i]));
+            rUnits.push_back(QString::fromStdString(coreunits[i]));
+        }
     }
 }
 
 void CoreSystemAccess::getPlotData(const QString compname, const QString portname, const QString dataname, QVector<double> &rData)
 {
-    //*****Core Interaction*****
-    int dataId = mpCoreComponentSystem->getComponent(compname.toStdString())->getPort(portname.toStdString())->getNodeDataIdFromName(dataname.toStdString());
-    if (dataId >= 0)
+    int dataId = -1;
+    Port* pPort = this->getPortPtr(compname, portname);
+    if (pPort)
     {
-        vector< vector<double> > *pData = mpCoreComponentSystem->getComponent(compname.toStdString())->getPort(portname.toStdString())->getDataVectorPtr();
+        dataId = pPort->getNodeDataIdFromName(dataname.toStdString());
 
-        //Ok lets copy all of the data to a QT vector
-        rData.clear();
-        rData.resize(pData->size()); //Allocaate memory
-        for (size_t i=0; i<pData->size(); ++i) //Denna loop ar inte klok
+        if (dataId >= 0)
         {
-            rData[i] = pData->at(i).at(dataId);
+            vector< vector<double> > *pData = pPort->getDataVectorPtr();
+
+            //Ok lets copy all of the data to a QT vector
+            rData.clear();
+            rData.resize(pData->size()); //Allocaate memory
+            for (size_t i=0; i<pData->size(); ++i) //Denna loop ar inte klok
+            {
+                rData[i] = pData->at(i).at(dataId);
+            }
         }
     }
-    //**************************
 }
 
 
 bool CoreSystemAccess::isPortConnected(QString componentName, QString portName)
 {
-    return mpCoreComponentSystem->getComponent(componentName.toStdString())->getPort(portName.toStdString())->isConnected();
+    Port* pPort = this->getPortPtr(componentName, portName);
+    if(pPort)
+    {
+        return pPort->isConnected();
+    }
+    else
+    {
+        return false;
+    }
+}
+
+//! @brief Helpfunction that tries to fetch a port pointer
+//! @param [in] componentName The name of the component to which the port belongs
+//! @param [in] portName The name of the port
+//! @returns A pointer to the port or a 0 ptr if component or port not found
+hopsan::Port* CoreSystemAccess::getPortPtr(QString componentName, QString portName)
+{
+    Component* pComp = mpCoreComponentSystem->getComponent(componentName.toStdString());
+    if (pComp)
+    {
+        return pComp->getPort(portName.toStdString());
+    }
+    return 0;
 }
