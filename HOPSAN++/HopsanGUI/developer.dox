@@ -1,0 +1,30 @@
+/*!
+\page developer Developer
+
+\section requirements Requirements
+HopsanGUI uses the Qt-libs for the GUI components, and qmake to generate makefiles.
+You need to install the apropriate Qt-libs and the Qt-Creator IDE from <a href="http://qt.nokia.com" target="_blank">http://qt.nokia.com</a>
+
+\subsection linux gcc in Linux
+On Linux based operationg systems you should use the gcc compiler. Download and install the Qt SDK for Linux. You can use the Qt-libs in you distribution package repository and install Qt-Creator separately but if you want the latest Qt version you should use the SDK.
+
+\subsection mingw MinGW (gcc in Windows)
+If you want to use the MinGW open-source compiler you should donloaw the Qt SDK as it comes prepackaged with a patched MinGW suitable for Qt-libs. The libs them selfes are also compiled with MinGW. Make sure that you do not mix minGW versions. You need to use the version that comes with Qt as it is patched to work with Qt.
+
+\subsection mscompiler VC++ (The Microsoft Compiler)
+If you wish to use the Microsoft Compiler read the following guide for hints on what you need to install.
+\ref mscompilerinqtcreator
+
+\section dependence Dependence libraries
+HopsanGUI depends on some external libraries. Here is a description on how to install them.
+
+\subsection qwt Qwt - Qt Widgets for Technical Applications
+will write this
+
+\subsection pythonqt-vc PythonQt Visual C++
+will write this
+
+\subsection pythonqt-mingw PythonQt minGW
+boring black magic, ask Björn
+
+*/
