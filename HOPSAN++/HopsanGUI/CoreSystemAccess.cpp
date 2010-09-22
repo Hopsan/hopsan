@@ -388,6 +388,25 @@ void CoreSystemAccess::getPlotData(const QString compname, const QString portnam
 }
 
 
+bool CoreSystemAccess::getLastNodeData(const QString compname, const QString portname, const QString dataname, double& rData)
+{
+    int dataId = -1;
+    Port* pPort = this->getPortPtr(compname, portname);
+    if (pPort)
+    {
+        dataId = pPort->getNodeDataIdFromName(dataname.toStdString());
+
+        if (dataId >= 0)
+        {
+            vector< vector<double> > *pData = pPort->getDataVectorPtr();
+            rData = pData->back().at(dataId);
+            return 1;
+        }
+        return 0;
+    }
+}
+
+
 bool CoreSystemAccess::isPortConnected(QString componentName, QString portName)
 {
     Port* pPort = this->getPortPtr(componentName, portName);

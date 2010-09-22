@@ -413,6 +413,12 @@ QString GUIPort::getGUIComponentName()
 }
 
 
+bool GUIPort::getLastNodeData(QString dataName, double& rData)
+{
+    return mpParentSystem->mpCoreSystemAccess->getLastNodeData(getGUIComponentName(), this->getName(), dataName, rData);
+}
+
+
 //! Slot that hides the port if "hide ports" setting is enabled, but only if the project tab is opened.
 //! @param hidePortsActionTriggered is true if ports shall be hidden, otherwise false.
 void GUIPort::hideIfNotConnected(bool hidePortsActionTriggered)

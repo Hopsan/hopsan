@@ -74,6 +74,8 @@ public:
     QPointF rectPos;
     int getPortNumber();
 
+    bool getLastNodeData(QString dataName, double& rData);
+
     QString getPortType();
     QString getNodeType();
 
