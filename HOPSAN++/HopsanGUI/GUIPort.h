@@ -91,6 +91,7 @@ protected:
 
 
     //protected slots:
+public: //! @todo This was made public temporarly to test plot in Python
     void plot(QString dataName, QString dataUnit=QString());
 
 signals:
