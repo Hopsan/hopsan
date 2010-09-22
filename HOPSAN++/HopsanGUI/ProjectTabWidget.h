@@ -77,6 +77,7 @@ public slots:
     bool closeProjectTab(int index);
     bool closeAllProjectTabs();
     void loadModel();
+    void loadModel(QString modelFileName);
     void tabChanged();
 
 signals:
@@ -101,7 +102,7 @@ public:
     void hasChanged();
 
 public slots:
-    void simulate();
+    bool simulate();
     void save();
     void saveAs();
 

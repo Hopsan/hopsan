@@ -143,7 +143,7 @@ void ProjectTab::setSaved(bool value)
 
 
 //! Simulates the model in the tab in a separate thread, the GUI runs a progressbar parallel to the simulation.
-void ProjectTab::simulate()
+bool ProjectTab::simulate()
 {
 
     MessageWidget *pMessageWidget = mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget;
@@ -232,8 +232,10 @@ void ProjectTab::simulate()
     if (progressBar.wasCanceled())
         pMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(mpSystem->mpCoreSystemAccess->getRootSystemName()).append(tr("' was terminated!"))));
     else
-    pMessageWidget->printGUIMessage(QString(tr("Simulated '").append(mpSystem->mpCoreSystemAccess->getRootSystemName()).append(tr("' successfully!"))));
+        pMessageWidget->printGUIMessage(QString(tr("Simulated '").append(mpSystem->mpCoreSystemAccess->getRootSystemName()).append(tr("' successfully!"))));
     emit checkMessages();
+
+    return progressBar.wasCanceled();
 }
 
 
@@ -553,6 +555,7 @@ bool ProjectTabWidget::closeAllProjectTabs()
 
 
 //! Loads a model from a file and opens it in a new project tab.
+//! @see loadModel(QString modelFileName)
 //! @see saveModel(saveTarget saveAsFlag)
 void ProjectTabWidget::loadModel()
 {
@@ -560,10 +563,27 @@ void ProjectTabWidget::loadModel()
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Model File"),
                                                          fileDialogOpenDir.currentPath() + QString(MODELPATH),
                                                          tr("Hopsan Model Files (*.hmf)"));
+    loadModel(modelFileName);
+}
+
+
+//! Loads a model from a file and opens it in a new project tab.
+//! @param modelFileName is the path to the loaded file
+//! @see loadModel()
+//! @see saveModel(saveTarget saveAsFlag)
+void ProjectTabWidget::loadModel(QString modelFileName)
+{
     if (modelFileName.isEmpty())
         return;
 
     QFile file(modelFileName);   //Create a QFile object
+
+    if(!file.exists())
+    {
+        qDebug() << "Failed to open file, file not found: " + file.fileName();
+        return;
+    }
+
     QFileInfo fileInfo(file);
 
     //Make sure file not already open
