@@ -1,0 +1,13 @@
+/*!
+\page hopsancore-dependence Hopsan Core Dependence Libraries
+HopsanCore depends on one external library for multi threaded simulations. Here is a description on how to build and install it.
+
+\section tbb TBB Intel Thread Building Blocks
+\subsection tbb-linux Build/Install TBB on Ubuntu
+
+\subsection tbb-windows-mingw Build/Install TBB on Windows using minGW
+
+\subsection tbb-windows-vcpp Build/Install TBB on Windows using VC++
+
+
+*/

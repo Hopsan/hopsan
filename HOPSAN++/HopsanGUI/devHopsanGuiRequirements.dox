@@ -1,0 +1,64 @@
+/*!
+\page hopsangui-dependence Hopsan GUI Dependence libraries
+HopsanGUI depends on some external libraries. Here is a description on how to build and install them.
+
+\section hopsancore Build The Hopsan Core
+todo
+
+\section qwt-all-os Build/Install Qwt - Qt Widgets for Technical Applications
+-# First checkout the 5.2 stable branch from "https://qwt.svn.sourceforge.net/svnroot/qwt/branches/qwt-5.2".
+-# Open the qwt.pro file in QtCreator and build the project. 
+-# Now you need to install, open a Qt Command Prompt (you can find it in the start menu). Navigate to the directory where qwt was built.
+  -# If you are using minGW, run "mingw32-make install"
+  -# If you are using VC++, run something like "c:\Qt\qtcreator-2.0.1\bin\jom.exe -f Makefile install"
+  -# If you are running Linux, run "make install"
+
+The qwt lib should now be installed to the default installation path (used in the HopsanGUI project file). 
+If you are using Windows, remember to att the libfolder, probably "c:\Qwt-5.2.1-svn\lib", to your system path or the build environment path in QtCreator.
+Or copy the lib files into your "run directory".
+
+\section pythonqt Build/Install PythonQt 
+\subsection pythonqt-ubuntu Ubuntu
+-# Install the python-dev package (sudo aptitude install python-dev)
+-# Download PythonQt from <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a>
+-# Go to the PythonQt directory and run "qmake" followed by "make all"
+-# In the HopsanGUI project. Go to the project tab and add the following variable:\n
+PYTHONQT_PATH = /home/homsi68/pythonqt or whatever your path is
+-# Smooth and simple!
+
+\subsection pythonqt-windows-vc Windows (with Visual C++)
+-# Download and install Python 2.6, can be found at <a href="http://python.org/" target="_blank">http://python.org/</a>
+-# Download and unzip PythonQt, it is found here: <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a>
+-# Open QT Creator and the PythonQT project. Use release settings. Deactivate shadowbuild.
+-# Go to the project tab and add the following variables:\n
+PYTHON_PATH = c:\\Python26 \n
+PYTHON_LIB  = c:\\Python26\\libs
+-# Add the PythonQt*.*.*\src folder to the "Include Path" in your project.
+-# Build PythonQt in release mode.
+-# If you want to run the tests add the PythonQt*.*.*\lib directory to your path (in build environment)
+-# Do some more stuff dont know yet but probably add PythonQt*.*.*\lib to path in HopsanGUI project, maybe also need to add PythonQt*.*.*\src to includepath
+
+\subsection pythonqt-windows-mingw Windows (with minGW)
+Some useful information can be found at <a href="http://www.emmestech.com/moron_guides/moron1.html" target="_blank">http://www.emmestech.com/moron_guides/moron1.html</a> and <a href="http://www.mingw.org/wiki/FAQ" target="_blank">http://www.mingw.org/wiki/FAQ</a>
+-# Download and install Python 2.6, can be found at <a href="http://python.org/" target="_blank">http://python.org/</a>
+-# Download Pexports from MinGW at <a href="http://sourceforge.net/projects/mingw/files/" target="_blank">http://sourceforge.net/projects/mingw/files/</a> (Browse to MinGW/pexports/pexports-0.44-1)
+-# Put the pexports program (pexports.exe) in MinGW/bin 
+-# Create a file called "pydistutils.cfg" that contain:\n
+[build]\n
+compiler=mingw32
+-# Next, use pexports to export the python dll symbols. The library can typically be found under C:\WINDOWS\system32. Use the following command:\n
+pexports c:/WINDOWS/system32/python26.dll >python26.def
+-# Then, use the following command to build an import library:\n
+dlltool -D c:/WINDOWS/system32/python26.dll -d python26.def -l libpython26.a
+-# Move "libpython26.a" to "/mingw/lib" in your Qt directory.
+-# Download and unzip PythonQt, it is found here: <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a>
+-# Open QT Creator and the PythonQT project. Use release settings.
+-# Go to the project tab and add the following variables:\n
+PYTHON_PATH = c:\\Python26 \n
+PYTHON_LIB  = c:\\Python26\\libs
+-# Change the win32 in the code to something else e.g. apwin32 so it is NOT true when you compile.
+-# Build PythonQt in release mode.
+-# In the HopsanGUI project. Go to the project tab and add the following variable:\n
+PYTHONQT_PATH = c:\\pythonqt or whatever your path is
+-# Enjoy!
+*/
