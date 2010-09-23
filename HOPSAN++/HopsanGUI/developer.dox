@@ -19,7 +19,16 @@ If you wish to use the Microsoft Compiler read the following guide for hints on 
 HopsanGUI depends on some external libraries. Here is a description on how to install them.
 
 \subsection qwt Qwt - Qt Widgets for Technical Applications
-will write this
+-# First checkout the 5.2 stable branch from "https://qwt.svn.sourceforge.net/svnroot/qwt/branches/qwt-5.2".
+-# Open the qwt.pro file in QtCreator and build the project. 
+-# Now you need to install, open a Qt Command Prompt (you can find it in the start menu). Navigate to the directory where qwt was built.
+  -# If you are using minGW, run "mingw32-make install"
+  -# If you are using VC++, run something like "c:\Qt\qtcreator-2.0.1\bin\jom.exe -f Makefile install"
+  -# If you are running Linux, run "make install"
+
+The qwt lib should now be installed to the default installation path (used in the HopsanGUI project file). 
+If you are using Windows, remember to att the libfolder, probably "c:\Qwt-5.2.1-svn\lib", to your system path or the build environment path in QtCreator.
+Or copy the lib files into your "run directory".
 
 \subsection pythonqt-vc PythonQt Visual C++
 will write this
