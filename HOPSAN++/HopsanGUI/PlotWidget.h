@@ -99,6 +99,10 @@ public:
     QwtPlotZoomer *mpZoomer;
     QwtPlotPanner *mpPanner;
     QwtPlotGrid *mpGrid;
+    QwtPlotMarker *mpMarker;
+    QwtSymbol *mpMarkerSymbol;
+    QwtText *mpLabelText;
+    QwtTextLabel *mpLabel;
 
     QToolBar *mpToolBar;
     QToolButton *mpZoomButton;
@@ -122,6 +126,7 @@ public:
     bool mLeftAxisLogarithmic;
 
 protected:
+    virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void dragEnterEvent(QDragEnterEvent *event);
     virtual void dragLeaveEvent(QDragLeaveEvent *event);
     virtual void dragMoveEvent(QDragMoveEvent *event);

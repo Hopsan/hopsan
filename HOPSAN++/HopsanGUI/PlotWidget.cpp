@@ -56,6 +56,9 @@
 
 #include "qwt_scale_engine.h"
 
+#include "qwt_symbol.h"
+#include "qwt_text_label.h"
+
 PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, VariableList *variableList, MainWindow *parent)
     : QMainWindow(parent)
 {
@@ -209,6 +212,27 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, VariableL
     resize(600,600);
 
     this->setAcceptDrops(true);
+
+
+
+    mpMarker = new QwtPlotMarker();
+    mpMarkerSymbol = new QwtSymbol();
+    mpMarkerSymbol->setBrush(QBrush(Qt::red, Qt::SolidPattern));
+    mpMarkerSymbol->setStyle(QwtSymbol::Ellipse);
+    mpMarkerSymbol->setSize(10,10);
+    mpMarker->setSymbol(*mpMarkerSymbol);
+    mpMarker->setXValue(0);
+    mpMarker->setYValue(0);
+    mpMarker->attach(mpVariablePlot);
+
+    mpLabelText = new QwtText();
+    mpLabelText->setText("(0.0, 0.0)");
+    mpLabelText->setBackgroundBrush(QColor("yellow"));
+    mpLabelText->setFont(QFont("Arial", 14));
+    mpLabel = new QwtTextLabel(*mpLabelText, this);
+    mpLabel->setGeometry(0, 0, 70, 24);
+    mpLabel->adjustSize();
+    mpLabel->show();
 }
 
 void PlotWindow::enableZoom(bool on)
@@ -371,6 +395,48 @@ void PlotWindow::dragEnterEvent(QDragEnterEvent *event)
 
         event->acceptProposedAction();
     }
+}
+
+void PlotWindow::mouseMoveEvent(QMouseEvent *event)
+{
+
+    QCursor cursor;
+    int correctionFactor = mpVariablePlot->canvas()->x()+5;
+    int intX = this->mapFromGlobal(cursor.pos()).x() - correctionFactor;
+    qDebug() << "intX " << intX;
+    double x = mpVariablePlot->canvasMap(QwtPlot::xBottom).invTransform(intX);
+    if(x < 0)
+    {
+        x = 0;
+    }
+    if(intX < 0)
+    {
+        intX = 0;
+        qDebug() << "Outside!";
+    }
+    //int xDataPos = intX*mpCurves[0]->dataSize()/(mpVariablePlot->canvas()->width()-11)-4;
+    int xDataPos = x/mpCurves[0]->maxXValue()*mpCurves[0]->dataSize();
+    if(xDataPos > mpCurves[0]->dataSize()-1)
+    {
+        xDataPos = mpCurves[0]->dataSize()-1;
+        qDebug() << "Outside!";
+    }
+    //qDebug() << "Moving mouse, dataSize = " << mpCurves[0]->dataSize() << ", xDataPos = " << xDataPos << ", x = " << x;
+    double y = mpCurves[0]->y(std::max(0, xDataPos));
+    mpMarker->setXValue(x);
+    mpMarker->setYValue(y);
+
+    QString xString;
+    QString yString;
+    xString.setNum(x);
+    yString.setNum(y);
+
+    mpLabelText->setText("("+xString+", "+yString+")");
+    mpLabel->setText(*mpLabelText);
+    mpLabel->setGeometry(mpVariablePlot->canvasMap(QwtPlot::xBottom).xTransform(x), mpVariablePlot->canvasMap(QwtPlot::yLeft).xTransform(y),0,0);
+    mpLabel->adjustSize();
+
+    mpVariablePlot->replot();
 }
 
 
