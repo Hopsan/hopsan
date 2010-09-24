@@ -69,7 +69,7 @@ class OptionsWidget;
 class UndoWidget;
 class MessageWidget;
 class VariableListDialog;
-
+class PyDock;
 
 class MainWindow : public QMainWindow
 {
@@ -187,6 +187,7 @@ private:
     QDockWidget *mpLibDock;
     QDockWidget *mpPlotVariablesDock;
     QDockWidget *mpUndoDock;
+    PyDock      *mpPyDock;
 
     //Methods that adjusts simulation parameters if they are illegal
     void fixFinishTime();
@@ -195,6 +196,7 @@ private:
     void createActions();
     void createMenus();
     void createToolbars();
+
 };
 
 #endif // MAINWINDOW_H

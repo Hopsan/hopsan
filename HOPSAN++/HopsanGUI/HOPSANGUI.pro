@@ -28,7 +28,10 @@ SOURCES += main.cpp \
     GUISystem.cpp \
     CoreSystemAccess.cpp \
     GUIPortAppearance.cpp \
-    GUIConnectorAppearance.cpp
+    GUIConnectorAppearance.cpp \
+    PyWrapperClasses.cpp \
+    PyDock.cpp
+
 HEADERS += MainWindow.h \
     ProjectTabWidget.h \
     LibraryWidget.h \
@@ -56,7 +59,10 @@ HEADERS += MainWindow.h \
     GUISystem.h \
     CoreSystemAccess.h \
     GUIPortAppearance.h \
-    GUIConnectorAppearance.h
+    GUIConnectorAppearance.h \
+    PyWrapperClasses.h \
+    PyDock.h
+
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE
@@ -76,7 +82,19 @@ unix {
     LIBS += -Wl,-rpath,./
     LIBS += -lqwt-qt4
     INCLUDEPATH += /usr/include/qwt-qt4/
+
+    #Define a parameter PYTHONQT_PATH e.g. '/home/apako69/pythonqt' in the project settings, also add '/home/apako69/pythonqt/lib' to LD_LIBRARY_PATH.
+    LIBS += -L$(PYTHONQT_PATH)/lib -lPythonQt \
+                                   -lPythonQt_QtAll
+
+    LIBS += $$system(python$${PYTHON_VERSION}-config --libs)
+
+    QMAKE_CXXFLAGS += $$system(python$${PYTHON_VERSION}-config --includes)
+
+    INCLUDEPATH += $(PYTHONQT_PATH)/src \
+                   $(PYTHONQT_PATH)/extensions/PythonQt_QtAll
 }
+
 win32 {
     # Ingopath:
     INCLUDEPATH += c:/temp_qwt/src
