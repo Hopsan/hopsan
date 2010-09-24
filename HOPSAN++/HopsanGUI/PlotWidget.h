@@ -74,6 +74,7 @@
 #include <QSvgGenerator>
 #include <QSpinBox>
 #include <QLabel>
+#include <QCheckBox>
 
 
 class MainWindow;
@@ -104,10 +105,8 @@ public:
     QwtSymbol *mpMarkerSymbol;
 
     QVector <QwtPlotMarker *> mpMarkers;
-    QVector <QwtText *> mpLabels;
     QHash <QwtPlotCurve *, QwtPlotMarker *> mCurveToMarkerMap;
     QHash <QwtPlotMarker *, QwtPlotCurve *> mMarkerToCurveMap;
-    QHash <QwtPlotMarker *, int> mMarkerToLabelNumberMap;
     QwtPlotMarker *mpActiveMarker;
 
     QToolBar *mpToolBar;
@@ -120,6 +119,7 @@ public:
     QSpinBox *mpSizeSpinBox;
     QToolButton *mpColorButton;
     QToolButton *mpBackgroundColorButton;
+    QCheckBox *mpHoldCheckBox;
     QLabel *mpSizeLabel;
 
     QRubberBand *mpHoverRect;
@@ -130,6 +130,7 @@ public:
     bool mHasSpecialXAxis;
     bool mRightAxisLogarithmic;
     bool mLeftAxisLogarithmic;
+    bool mHold;
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
@@ -148,6 +149,8 @@ private slots:
     void setSize(int);
     void setColor();
     void setBackgroundColor();
+    void checkNewValues();
+    void setHold(bool value);
 
 private:
     VariableList *mpVariableList;

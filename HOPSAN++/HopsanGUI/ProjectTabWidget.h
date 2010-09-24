@@ -108,6 +108,7 @@ public slots:
 
 signals:
     void checkMessages();
+    void simulationFinished();
 
 private:
     bool mIsSaved;

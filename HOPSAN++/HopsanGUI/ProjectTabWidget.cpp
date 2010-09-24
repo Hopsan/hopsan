@@ -230,9 +230,14 @@ bool ProjectTab::simulate()
     }
 
     if (progressBar.wasCanceled())
+    {
         pMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(mpSystem->mpCoreSystemAccess->getRootSystemName()).append(tr("' was terminated!"))));
+    }
     else
+    {
         pMessageWidget->printGUIMessage(QString(tr("Simulated '").append(mpSystem->mpCoreSystemAccess->getRootSystemName()).append(tr("' successfully!"))));
+        emit simulationFinished();
+    }
     emit checkMessages();
 
     return progressBar.wasCanceled();

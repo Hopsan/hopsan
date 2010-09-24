@@ -70,6 +70,8 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, VariableL
 
     mHasSpecialXAxis = false;
 
+    mHold = false;
+
         //Create the plot
     mpVariablePlot = new VariablePlot();
     mpVariablePlot->setAcceptDrops(false);
@@ -121,6 +123,7 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, VariableL
     mpGridButton->setChecked(true);
     mpGridButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mpGridButton->setAcceptDrops(false);
+    mpToolBar->addSeparator();
     mpToolBar->addWidget(mpGridButton);
 
     mpColorButton = new QToolButton(mpToolBar);
@@ -137,21 +140,21 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, VariableL
     mpBackgroundColorButton->setAcceptDrops(false);
     mpToolBar->addWidget(mpBackgroundColorButton);
 
-    //mpSizeButton = new QmpToolBar(tr("Size Spinbox"));
     mpSizeLabel = new QLabel(tr("Line Width: "));
     mpSizeLabel->setAcceptDrops(false);
     mpSizeSpinBox = new QSpinBox(mpToolBar);
     mpSizeSpinBox->setAcceptDrops(false);
-    //mpSizeButton->set("Line Width");
     mpSizeSpinBox->setRange(1,10);
     mpSizeSpinBox->setSingleStep(1);
     mpSizeSpinBox->setValue(2);
     mpSizeSpinBox->setSuffix(" pt");
-    //mpSizeButton->setOrientation(Qt::Vertical);
-    //mpSizeButton->addWidget(mpSizeLabel);
-    //mpSizeButton->addWidget(mpSizeSpinBox);
     mpToolBar->addWidget(mpSizeLabel);
     mpToolBar->addWidget(mpSizeSpinBox);
+
+    mpHoldCheckBox = new QCheckBox("Hold Plot Data");
+    mpHoldCheckBox->setChecked(mHold);
+    mpToolBar->addSeparator();
+    mpToolBar->addWidget(mpHoldCheckBox);
 
     addToolBar(mpToolBar);
 
@@ -208,6 +211,8 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, VariableL
     connect(mpSizeSpinBox,SIGNAL(valueChanged(int)),this, SLOT(setSize(int)));
     connect(mpColorButton,SIGNAL(clicked()),this,SLOT(setColor()));
     connect(mpBackgroundColorButton,SIGNAL(clicked()),this,SLOT(setBackgroundColor()));
+    connect (mpHoldCheckBox, SIGNAL(toggled(bool)), this, SLOT(setHold(bool)));
+    connect(this->mpParentMainWindow->mpProjectTabs->getCurrentTab(),SIGNAL(simulationFinished()),this,SLOT(checkNewValues()));
 
     resize(600,600);
 
@@ -236,34 +241,42 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, VariableL
 }
 
 
+void PlotWindow::setHold(bool value)
+{
+    mHold = value;
+}
+
+
 void PlotWindow::insertMarker(QwtPlotCurve *curve)
 {
-    qDebug() << "inertMarker()";
     if(mCurveToMarkerMap.contains(curve))
     {
         return;
     }
-    qDebug() << "Continuing...";
     QwtPlotMarker *tempMarker = new QwtPlotMarker();
+    mpMarkerSymbol->setBrush(curve->pen().brush().color());
     tempMarker->setSymbol(*mpMarkerSymbol);
 
-    QwtText *tempLabel = new QwtText();
-    tempLabel->setText(" ");
-    tempLabel->setBackgroundBrush(QColor("yellow"));
-    tempLabel->setFont(QFont("Calibri", 12, QFont::Bold));
-
-    tempMarker->setLabel(*tempLabel);
+    QwtText tempLabel;
+    QString xString;
+    QString yString;
+    xString.setNum(curve->x(0));
+    yString.setNum(curve->y(0));
+    tempLabel.setText("("+xString+", "+yString+")");
+    tempLabel.setColor(curve->pen().brush().color());
+    tempLabel.setBackgroundBrush(QBrush(QColor("lemonchiffon")));
+    tempLabel.setFont(QFont("Calibri", 12, QFont::Bold));
+    tempMarker->setLabel(tempLabel);
 
     mpMarkers.append(tempMarker);
-    mpLabels.append(tempLabel);
     mCurveToMarkerMap.insert(curve, tempMarker);
     mMarkerToCurveMap.insert(tempMarker, curve);
-    mMarkerToLabelNumberMap.insert(tempMarker, mpLabels.size()-1);
     setActiveMarker(tempMarker);
 
     tempMarker->attach(mpVariablePlot);
     mpActiveMarker->setXValue(curve->x(0));
-    mpActiveMarker->setYValue(curve->y(0));
+    double y_pos = mpVariablePlot->canvasMap(QwtPlot::yLeft).invTransform(mpVariablePlot->canvasMap(curve->yAxis()).xTransform(curve->y(0)));
+    mpActiveMarker->setYValue(y_pos);
 }
 
 
@@ -444,7 +457,6 @@ void PlotWindow::mouseMoveEvent(QMouseEvent *event)
         QCursor cursor;
         int correctionFactor = mpVariablePlot->canvas()->x()+5;
         int intX = this->mapFromGlobal(cursor.pos()).x() - correctionFactor;
-        //qDebug() << "intX " << intX;
         double x = mpVariablePlot->canvasMap(curve->xAxis()).invTransform(intX);
         if(x < 0)
         {
@@ -453,46 +465,30 @@ void PlotWindow::mouseMoveEvent(QMouseEvent *event)
         if(intX < 0)
         {
             intX = 0;
-            //qDebug() << "Outside!";
         }
-        //int xDataPos = intX*mpCurves[0]->dataSize()/(mpVariablePlot->canvas()->width()-11)-4;
         int xDataPos = x / curve->maxXValue() * curve->dataSize();
         if(xDataPos > curve->dataSize()-1)
         {
             xDataPos = curve->dataSize()-1;
-            //qDebug() << "Outside!";
         }
-        //qDebug() << "Moving mouse, dataSize = " << mpCurves[0]->dataSize() << ", xDataPos = " << xDataPos << ", x = " << x;
         double y = curve->y(std::max(0, xDataPos));
         double y_pos = mpVariablePlot->canvasMap(QwtPlot::yLeft).invTransform(mpVariablePlot->canvasMap(curve->yAxis()).xTransform(y));
         mpActiveMarker->setXValue(x);
         mpActiveMarker->setYValue(y_pos);
-
-        qDebug() << "x = " << x << ",  y = " << y << ",  y_pos = " << y_pos;
 
         QString xString;
         QString yString;
         xString.setNum(x);
         yString.setNum(y);
 
-
-        //mpLabels[mMarkerToLabelNumberMap.value(mpActiveMarker)]->setText("("+xString+", "+yString+")");
-
         QwtText tempLabel;
         tempLabel.setText("("+xString+", "+yString+")");
         tempLabel.setColor(curve->pen().brush().color());
         tempLabel.setBackgroundBrush(QBrush(QColor("lemonchiffon")));
+        tempLabel.setFont(QFont("Calibri", 12, QFont::Bold));
+
         mpActiveMarker->setLabel(tempLabel);
-
-        //mpActiveMarker->setLabel(*mpLabelText);
         mpActiveMarker->setLabelAlignment(Qt::AlignTop);
-
-
-
-        //mpLabel->setText(*mpLabelText);
-        //mpLabel->setGeometry(mpVariablePlot->canvasMap(QwtPlot::xBottom).xTransform(x), mpVariablePlot->canvasMap(QwtPlot::yLeft).xTransform(y),0,0);
-        //mpLabel->adjustSize();
-
         mpVariablePlot->replot();
     }
 }
@@ -731,6 +727,23 @@ void PlotWindow::changeXVector(QVector<double> xarray, QString xLabel)
 }
 
 
+void PlotWindow::checkNewValues()
+{
+    if(mHold)       //Do not update curves to new values if hold is checked
+    {
+        return;
+    }
+    for(int i=0; i<mpCurves.size(); ++i)
+    {
+        if(this->mpVariableList->xMap.contains(mpCurves[i]->title().text()))
+        {
+            mpCurves[i]->setData(mpVariableList->xMap.value(mpCurves[i]->title().text()), mpVariableList->yMap.value(mpCurves[i]->title().text()));
+            mpVariablePlot->replot();
+        }
+    }
+}
+
+
 VariablePlot::VariablePlot(QWidget *parent)
         : QwtPlot(parent)
 {
@@ -765,7 +778,7 @@ VariableList::VariableList(MainWindow *parent)
 
     connect(mpParentMainWindow->mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateList()));
     connect(mpParentMainWindow->mpProjectTabs, SIGNAL(tabCloseRequested(int)), this, SLOT(updateList()));
-    connect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), this, SLOT(updateList()));
+    connect(mpParentMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
     connect(this,SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),this,SLOT(createPlot(QTreeWidgetItem*)));
 }
 
@@ -813,15 +826,12 @@ void VariableList::updateList()
         QList<GUIPort*>::iterator itp;
         for(itp = portListPtrs.begin(); itp !=portListPtrs.end(); ++itp)
         {
-           // qDebug() << "Writing plot stuff for " << it.value()->getName() << " " << (*itp)->getName();
-
             QVector<QString> parameterNames;
             QVector<QString> parameterUnits;
             mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getPlotDataNamesAndUnits((*itp)->getGUIComponentName(), (*itp)->getName(), parameterNames, parameterUnits);
 
-            qDebug() << "guiComponentName: " << (*itp)->getGUIComponentName() << " portName: " << (*itp)->getName();
             QVector<double> time = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getTimeVector((*itp)->getGUIComponentName(), (*itp)->getName()));
-            qDebug() << "time.size: " << time.size();
+
             if(time.size() > 0)     //If time vector is greater than zero we have something to plot!
             {
                 for(int i = 0; i!=parameterNames.size(); ++i)
