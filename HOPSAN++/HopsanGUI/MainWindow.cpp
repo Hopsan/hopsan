@@ -39,6 +39,7 @@
 //$Id$
 
 #include <iostream>
+#include <QDebug>
 
 #include "MainWindow.h"
 #include "version.h"
@@ -55,7 +56,7 @@
 #include "GraphicsScene.h"
 #include "GUISystem.h"
 #include "GUIUtilities.h"
-
+#include "PyDock.h"
 
 //! Constructor
 MainWindow::MainWindow(QWidget *parent)
@@ -101,6 +102,11 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary = new LibraryWidget(this);
     mpLibDock->setWidget(mpLibrary);
     addDockWidget(Qt::LeftDockWidgetArea, mpLibDock);
+
+    qDebug() << "KO";
+    qDebug() << "APA";
+    mpPyDock = new PyDock(this, this);
+    addDockWidget(Qt::BottomDockWidgetArea, mpPyDock);
 
     //Set dock widget corner owner
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
