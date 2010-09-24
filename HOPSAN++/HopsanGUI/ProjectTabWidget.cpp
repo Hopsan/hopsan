@@ -48,6 +48,10 @@
 #include <QtGui>
 #include <QSizePolicy>
 #include <QHash>
+#include <QtXml>
+#include <QDomDocument>
+#include <QDomElement>
+#include <QDomText>
 
 #include <string>
 #include <iostream>
@@ -302,7 +306,31 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
 
     QTextStream modelFile(&file);  //Create a QTextStream object to stream the content of file
 
+    QDomDocument domDocument;
+    QDomElement domElement;
+
+    QDomElement xmlHeader = domDocument.createElement("HopsanHeader");
+    QDomElement xmlModelProperties = domDocument.createElement("ModelProperties");
+    QDomElement xmlModelAppearance = domDocument.createElement("ModelAppearance");
+
+    domElement = domDocument.createElement("HOPSANGUIVERSION");
+    domElement.appendChild(domDocument.createTextNode(HOPSANGUIVERSION));
+    xmlHeader.appendChild(domElement);
+
+    domElement = domDocument.createElement("HMFVERSION");
+    domElement.appendChild(domDocument.createTextNode(HMFVERSION));
+    xmlHeader.appendChild(domElement);
+
+    domElement = domDocument.createElement("CAFVERSION");
+    domElement.appendChild(domDocument.createTextNode(CAFVERSION));
+    xmlHeader.appendChild(domElement);
+
     writeHeader(modelFile);
+
+    domElement = domDocument.createElement("Starttime");
+    QString tmpStr;
+    domElement.appendChild(domDocument.createTextNode(tmpStr.setNum(pMainWindow->getStartTimeFromToolBar())));
+    xmlModelProperties.appendChild(domElement);
 
     modelFile << "SIMULATIONTIME " << pMainWindow->getStartTimeFromToolBar() << " " << pMainWindow->getTimeStepFromToolBar() << " " <<  pMainWindow->getFinishTimeFromToolBar() << "\n";
     modelFile << "VIEWPORT " << (mpGraphicsView->horizontalScrollBar()->value() + mpGraphicsView->width()/2 - mpGraphicsView->pos().x()) / mpGraphicsView->mZoomFactor << " " <<
@@ -378,6 +406,20 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
         mpSystem->mSubConnectorList[i]->saveToTextStream(modelFile, "CONNECT");
     }
     modelFile << "--------------------------------------------------------------\n";
+
+    //Appen xml nodes to document and save
+    domDocument.appendChild(xmlHeader);
+    domDocument.appendChild(xmlModelProperties);
+    domDocument.appendChild(xmlModelAppearance);
+    const int IndentSize = 2;
+    QFile apa("test.xml");
+    if (!apa.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+    {
+        qDebug() << "Failed to open file for writing: test.xml";
+        return;
+    }
+    QTextStream out(&apa);
+    domDocument.save(out, IndentSize);
 }
 
 

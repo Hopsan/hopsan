@@ -1,7 +1,7 @@
 # -------------------------------------------------
 # Project created by QtCreator 2009-12-28T14:27:59
 # -------------------------------------------------
-QT += svg
+QT += svg xml
 TARGET = HOPSANGUI
 TEMPLATE = app
 SOURCES += main.cpp \
