@@ -421,6 +421,14 @@ void PlotWindow::setColor()
     if (color.isValid())
     {
         pSelectedCurve->setPen(QPen(color, pSelectedCurve->pen().width()));
+        if(mCurveToMarkerMap.contains(pSelectedCurve))
+        {
+            QwtText tempLabel = mCurveToMarkerMap.value(pSelectedCurve)->label();
+            tempLabel.setColor(color);
+            mCurveToMarkerMap.value(pSelectedCurve)->setLabel(tempLabel);
+            mpMarkerSymbol->setBrush(color);
+            mCurveToMarkerMap.value(pSelectedCurve)->setSymbol(*mpMarkerSymbol);
+        }
     }
 }
 
