@@ -466,6 +466,7 @@ void PlotWindow::mouseMoveEvent(QMouseEvent *event)
         int correctionFactor = mpVariablePlot->canvas()->x()+5;
         int intX = this->mapFromGlobal(cursor.pos()).x() - correctionFactor;
         double x = mpVariablePlot->canvasMap(curve->xAxis()).invTransform(intX);
+//        double x = mpVariablePlot->canvasMap(QwtPlot::xBottom).invTransform(intX);
         if(x < 0)
         {
             x = 0;
@@ -533,23 +534,25 @@ void PlotWindow::dropEvent(QDropEvent *event)
 {
     if (event->mimeData()->hasText())
     {
+        qDebug() << "1";
         delete(mpHoverRect);
-
+        qDebug() << "2";
         QString mimeText = event->mimeData()->text();
-
+        qDebug() << "3";
         if(mimeText.startsWith("HOPSANPLOTDATA"))
         {
             QString lookupName;
             lookupName = QString(mimeText.right(mimeText.size()-15));
-
+            qDebug() << "4";
             QString title;
             QString xlabel;
             QString ylabel;
 
             title.append(lookupName);
+            qDebug() << "Looking up: \"" << lookupName << "\"";
             ylabel.append(mpVariableList->yLabelMap.find(lookupName).value());
             xlabel.append("Time, [s]");
-
+            qDebug() << "5";
             QCursor cursor;
             if(this->mapFromGlobal(cursor.pos()).y() > this->height()/2 && mpCurves.size() >= 1)
             {
@@ -563,6 +566,7 @@ void PlotWindow::dropEvent(QDropEvent *event)
             {
                 this->addPlotCurve(mpVariableList->xMap.find(lookupName).value(),mpVariableList->yMap.find(lookupName).value(), title, xlabel, ylabel, QwtPlot::yRight);
             }
+            qDebug() << "6";
         }
     }
 }
@@ -853,7 +857,7 @@ void VariableList::updateList()
                     mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), parameterNames[i], y);
                     xMap.insert((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", time);
                     yMap.insert((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", y);
-                    yLabelMap.insert((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", parameterNames[i]);
+                    yLabelMap.insert((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", parameterNames[i] + ", [" + parameterUnits[i] + "]");
                 }
             }
         }
@@ -877,7 +881,7 @@ void VariableList::createPlot(QTreeWidgetItem *item)
 
         title.append(lookupName);
         ylabel.append(yLabelMap.find(lookupName).value());
-        xlabel.append("Time, [s]");
+        xlabel.append("Time, [s]");     //! @todo Is it ok to assume time as the x-axis like this?
 
         PlotWindow *plotWindow = new PlotWindow(xMap.find(lookupName).value(),yMap.find(lookupName).value(), this, mpParentMainWindow);
         plotWindow->setWindowTitle("HOPSAN Plot Window");

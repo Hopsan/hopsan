@@ -73,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
     this->setDockOptions(QMainWindow::ForceTabbedDocks);
 
+    mpPlotVariableListDialog = 0;
 
     QMetaObject::connectSlotsByName(this);
 
@@ -207,6 +208,8 @@ void MainWindow::show()
 //! Opens the plot widget.
 void MainWindow::plot()
 {
+    qDebug() << "PLOOOOT";
+
     if(mpProjectTabs->count() != 0)
     {
         if(!mpPlotVariablesDock->isVisible())//!mPlotVariableListOpen)
@@ -218,7 +221,11 @@ void MainWindow::plot()
     //        //variableList->show();
     //        addDockWidget(Qt::RightDockWidgetArea, mpPlotVariablesDock);
 
-            mpPlotVariableListDialog = new VariableListDialog(this);
+            if(mpPlotVariableListDialog == 0)
+            {
+                qDebug() << "It's true!";
+                mpPlotVariableListDialog = new VariableListDialog(this);
+            }
             mpPlotVariablesDock->setWidget(mpPlotVariableListDialog);
 
             mpPlotVariablesDock->show();

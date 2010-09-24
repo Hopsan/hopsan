@@ -236,51 +236,29 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     else
     {
         QMenu menu;
-        //! @todo this bellow is complete madness. hardcoded hopsan specific stuff, must be rewritten, not sure if it should even be here
-        //! @todo we do not need hardcoded stuff we can ask the core about what variables are available
-        if (this->getNodeType() =="NodeHydraulic")
-        {
-            QAction *plotPressureAction = menu.addAction("Plot pressure");
-            QAction *plotFlowAction = menu.addAction("Plot flow");
-            QAction *selectedAction = menu.exec(event->screenPos());
 
-            if (selectedAction == plotFlowAction)
-            {
-                plot("MassFlow");
-            }
-            if (selectedAction == plotPressureAction)
-            {
-                plot("Pressure");
-            }
+        QVector<QString> parameterNames;
+        QVector<QString> parameterUnits;
+        mpParentGuiObject->mpParentSystem->mpCoreSystemAccess->getPlotDataNamesAndUnits(mpParentGuiObject->getName(), this->getName(), parameterNames, parameterUnits);
+
+        //QAction *plotPressureAction = menu.addAction("Plot pressure");
+        //QAction *plotFlowAction = menu.addAction("Plot flow");
+        QVector<QAction *> parameterActions;
+        QAction *tempAction;
+        for(int i=0; i<parameterNames.size(); ++i)
+        {
+
+            tempAction = menu.addAction(QString("Plot "+parameterNames[i]+" ["+parameterUnits[i]+"]"));
+            parameterActions.append(tempAction);
         }
-        if (this->getNodeType() =="NodeMechanic")
-        {
-            QAction *plotVelocityAction = menu.addAction("Plot velocity");
-            QAction *plotForceAction = menu.addAction("Plot force");
-            QAction *plotPositionAction = menu.addAction("Plot position");
-            QAction *selectedAction = menu.exec(event->screenPos());
 
-            if (selectedAction == plotVelocityAction)
-            {
-                plot("Velocity");
-            }
-            if (selectedAction == plotForceAction)
-            {
-                plot("Force");
-            }
-            if (selectedAction == plotPositionAction)
-            {
-                plot("Position");
-            }
-        }
-        if (this->getNodeType() =="NodeSignal")
-        {
-            QAction *plotSignalAction = menu.addAction("Plot signal value");
-            QAction *selectedAction = menu.exec(event->screenPos());
+        QAction *selectedAction = menu.exec(event->screenPos());
 
-            if (selectedAction == plotSignalAction)
+        for(int i=0; i<parameterNames.size(); ++i)
+        {
+            if (selectedAction == parameterActions[i])
             {
-                plot("Value");
+                plot(parameterNames[i], parameterUnits[i]);
             }
         }
     }
@@ -308,6 +286,13 @@ void GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
 {
     std::cout << "GUIPort.cpp: " << "Plot()" << std::endl;
 
+    MainWindow *pMainWindow = mpParentGuiObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+
+    if(pMainWindow->mpPlotVariableListDialog == 0)
+    {
+        pMainWindow->mpPlotVariableListDialog = new VariableListDialog(pMainWindow);
+    }
+
     QVector<double> time = QVector<double>::fromStdVector(mpParentSystem->mpCoreSystemAccess->getTimeVector(getGUIComponentName(), this->getName()));
     QVector<double> y;
     mpParentSystem->mpCoreSystemAccess->getPlotData(getGUIComponentName(), this->getName(), dataName, y);
@@ -326,24 +311,31 @@ void GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
     QString xlabel;
     QString ylabel;
 
-    title.append(dataName);
+    //title.append(dataName);
+    title.append(QString(mpParentGuiObject->getName()+", "+this->getName()+", "+dataName+", ["+dataUnit+"]"));
     ylabel.append(dataName + ", [" + dataUnit + "]");
 
     //! @todo need to comment this out  for now  fix later
     //title.append(" at component: ").append(QString::fromStdString(mpParentComponent->mpCoreComponent->getName())).append(", port: ").append(QString::fromStdString(mpCorePort->getPortName()));
     xlabel.append("Time, [s]");
 
+    //MainWindow *pMainWindow = mpParentGuiObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+    PlotWindow *plotWindow = new PlotWindow(time,y, pMainWindow->mpPlotVariableListDialog->mpVariableList, pMainWindow);
+    plotWindow->setWindowTitle("HOPSAN Plot Window");
+    plotWindow->tempCurve->setTitle(title);
+    plotWindow->mpVariablePlot->setAxisTitle(VariablePlot::yLeft, ylabel);
+    plotWindow->mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xlabel);
+    plotWindow->mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
+    plotWindow->show();
+
     //PlotWindow *newPlot = new PlotWindow(time,y,mpParentGuiObject->mpParentSystem);
-    MainWindow *pMainWindow = mpParentGuiObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
-    PlotWindow *newPlot = new PlotWindow(time,y,pMainWindow->mpPlotVariableListDialog->mpVariableList, pMainWindow);
-
-    //newPlot->mpVariablePlot->setTitle(title);
-    newPlot->tempCurve->setTitle(title);
-    newPlot->mpVariablePlot->setAxisTitle(VariablePlot::yLeft, ylabel);
-    newPlot->mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xlabel);
-    newPlot->mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
-
-    newPlot->show();
+//    MainWindow *pMainWindow = mpParentGuiObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+//    PlotWindow *newPlot = new PlotWindow(time,y,pMainWindow->mpPlotVariableListDialog->mpVariableList, pMainWindow);
+//    newPlot->tempCurve->setTitle(title);
+//    newPlot->mpVariablePlot->setAxisTitle(VariablePlot::yLeft, ylabel);
+//    newPlot->mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xlabel);
+//    newPlot->mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
+//    newPlot->show();
 }
 
 
