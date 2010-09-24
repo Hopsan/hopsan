@@ -56,7 +56,12 @@ dlltool -D c:/WINDOWS/system32/python26.dll -d python26.def -l libpython26.a
 -# Go to the project tab and add the following variables:\n
 PYTHON_PATH = c:\\Python26 \n
 PYTHON_LIB  = c:\\Python26\\libs
--# Change the win32 in the code to something else e.g. apwin32 so it is NOT true when you compile.
+-# Add c:\\pythonqt\\lib or similar to LD_LIBRARY_PATH environment variable under the project tab. 
+-# Change the win32 in the code to something else e.g. apwin32 so it is NOT true when you compile. 
+-# Change the row:\n
+win32:LIBS += $(PYTHON_LIB)/python$${PYTHON_VERSION}$${DEBUG_EXT}.lib\n
+in the file 'python.prf' to:\n
+???
 -# Build PythonQt in release mode.
 -# In the HopsanGUI project. Go to the project tab and add the following variable:\n
 PYTHONQT_PATH = c:\\pythonqt or whatever your path is
