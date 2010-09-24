@@ -89,6 +89,8 @@ public:
     PlotWindow(QVector<double> xarray, QVector<double> yarray, VariableList *variableList, MainWindow *parent);
     void addPlotCurve(QVector<double> xarray, QVector<double> yarray, QString title, QString xLabel, QString yLabel, QwtPlot::Axis axisY);
     void changeXVector(QVector<double> xarray, QString xLabel);
+    void insertMarker(QwtPlotCurve *curve);
+    void setActiveMarker(QwtPlotMarker *marker);
 
     QVector <QwtPlotCurve *> mpCurves;
     QwtPlotCurve *tempCurve;
@@ -99,10 +101,14 @@ public:
     QwtPlotZoomer *mpZoomer;
     QwtPlotPanner *mpPanner;
     QwtPlotGrid *mpGrid;
-    QwtPlotMarker *mpMarker;
     QwtSymbol *mpMarkerSymbol;
-    QwtText *mpLabelText;
-    QwtTextLabel *mpLabel;
+
+    QVector <QwtPlotMarker *> mpMarkers;
+    QVector <QwtText *> mpLabels;
+    QHash <QwtPlotCurve *, QwtPlotMarker *> mCurveToMarkerMap;
+    QHash <QwtPlotMarker *, QwtPlotCurve *> mMarkerToCurveMap;
+    QHash <QwtPlotMarker *, int> mMarkerToLabelNumberMap;
+    QwtPlotMarker *mpActiveMarker;
 
     QToolBar *mpToolBar;
     QToolButton *mpZoomButton;

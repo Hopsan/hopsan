@@ -215,25 +215,63 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, VariableL
 
 
 
-    mpMarker = new QwtPlotMarker();
+    //mpMarker = new QwtPlotMarker();
     mpMarkerSymbol = new QwtSymbol();
     mpMarkerSymbol->setBrush(QBrush(Qt::red, Qt::SolidPattern));
     mpMarkerSymbol->setStyle(QwtSymbol::Ellipse);
     mpMarkerSymbol->setSize(10,10);
-    mpMarker->setSymbol(*mpMarkerSymbol);
-    mpMarker->setXValue(0);
-    mpMarker->setYValue(0);
-    mpMarker->attach(mpVariablePlot);
+//    mpMarker->setSymbol(*mpMarkerSymbol);
+//    mpMarker->setXValue(0);
+//    mpMarker->setYValue(0);
+//    mpMarker->attach(mpVariablePlot);
 
-    mpLabelText = new QwtText();
-    mpLabelText->setText("(0.0, 0.0)");
-    mpLabelText->setBackgroundBrush(QColor("yellow"));
-    mpLabelText->setFont(QFont("Arial", 14));
-    mpLabel = new QwtTextLabel(*mpLabelText, this);
-    mpLabel->setGeometry(0, 0, 70, 24);
-    mpLabel->adjustSize();
-    mpLabel->show();
+    //mpLabels = new QwtText();
+    //mpLabels->setText("(0.0, 0.0)");
+    //mpLabels->setBackgroundBrush(QColor("yellow"));
+    //mpLabels->setFont(QFont("Calibri", 12, QFont::Bold));
+    //mpLabel = new QwtTextLabel(*mpLabelText, this);
+    //mpLabel->setGeometry(0, 0, 70, 24);
+    //mpLabel->adjustSize();
+    //mpLabel->show();
 }
+
+
+void PlotWindow::insertMarker(QwtPlotCurve *curve)
+{
+    qDebug() << "inertMarker()";
+    if(mCurveToMarkerMap.contains(curve))
+    {
+        return;
+    }
+    qDebug() << "Continuing...";
+    QwtPlotMarker *tempMarker = new QwtPlotMarker();
+    tempMarker->setSymbol(*mpMarkerSymbol);
+
+    QwtText *tempLabel = new QwtText();
+    tempLabel->setText(" ");
+    tempLabel->setBackgroundBrush(QColor("yellow"));
+    tempLabel->setFont(QFont("Calibri", 12, QFont::Bold));
+
+    tempMarker->setLabel(*tempLabel);
+
+    mpMarkers.append(tempMarker);
+    mpLabels.append(tempLabel);
+    mCurveToMarkerMap.insert(curve, tempMarker);
+    mMarkerToCurveMap.insert(tempMarker, curve);
+    mMarkerToLabelNumberMap.insert(tempMarker, mpLabels.size()-1);
+    setActiveMarker(tempMarker);
+
+    tempMarker->attach(mpVariablePlot);
+    mpActiveMarker->setXValue(curve->x(0));
+    mpActiveMarker->setYValue(curve->y(0));
+}
+
+
+void PlotWindow::setActiveMarker(QwtPlotMarker *marker)
+{
+    this->mpActiveMarker = marker;
+}
+
 
 void PlotWindow::enableZoom(bool on)
 {
@@ -400,43 +438,63 @@ void PlotWindow::dragEnterEvent(QDragEnterEvent *event)
 void PlotWindow::mouseMoveEvent(QMouseEvent *event)
 {
 
-    QCursor cursor;
-    int correctionFactor = mpVariablePlot->canvas()->x()+5;
-    int intX = this->mapFromGlobal(cursor.pos()).x() - correctionFactor;
-    qDebug() << "intX " << intX;
-    double x = mpVariablePlot->canvasMap(QwtPlot::xBottom).invTransform(intX);
-    if(x < 0)
+    if(mpActiveMarker != 0)
     {
-        x = 0;
-    }
-    if(intX < 0)
-    {
-        intX = 0;
-        qDebug() << "Outside!";
-    }
-    //int xDataPos = intX*mpCurves[0]->dataSize()/(mpVariablePlot->canvas()->width()-11)-4;
-    int xDataPos = x/mpCurves[0]->maxXValue()*mpCurves[0]->dataSize();
-    if(xDataPos > mpCurves[0]->dataSize()-1)
-    {
-        xDataPos = mpCurves[0]->dataSize()-1;
-        qDebug() << "Outside!";
-    }
-    //qDebug() << "Moving mouse, dataSize = " << mpCurves[0]->dataSize() << ", xDataPos = " << xDataPos << ", x = " << x;
-    double y = mpCurves[0]->y(std::max(0, xDataPos));
-    mpMarker->setXValue(x);
-    mpMarker->setYValue(y);
+        QwtPlotCurve *curve = mMarkerToCurveMap.value(mpActiveMarker);
+        QCursor cursor;
+        int correctionFactor = mpVariablePlot->canvas()->x()+5;
+        int intX = this->mapFromGlobal(cursor.pos()).x() - correctionFactor;
+        //qDebug() << "intX " << intX;
+        double x = mpVariablePlot->canvasMap(curve->xAxis()).invTransform(intX);
+        if(x < 0)
+        {
+            x = 0;
+        }
+        if(intX < 0)
+        {
+            intX = 0;
+            //qDebug() << "Outside!";
+        }
+        //int xDataPos = intX*mpCurves[0]->dataSize()/(mpVariablePlot->canvas()->width()-11)-4;
+        int xDataPos = x / curve->maxXValue() * curve->dataSize();
+        if(xDataPos > curve->dataSize()-1)
+        {
+            xDataPos = curve->dataSize()-1;
+            //qDebug() << "Outside!";
+        }
+        //qDebug() << "Moving mouse, dataSize = " << mpCurves[0]->dataSize() << ", xDataPos = " << xDataPos << ", x = " << x;
+        double y = curve->y(std::max(0, xDataPos));
+        double y_pos = mpVariablePlot->canvasMap(QwtPlot::yLeft).invTransform(mpVariablePlot->canvasMap(curve->yAxis()).xTransform(y));
+        mpActiveMarker->setXValue(x);
+        mpActiveMarker->setYValue(y_pos);
 
-    QString xString;
-    QString yString;
-    xString.setNum(x);
-    yString.setNum(y);
+        qDebug() << "x = " << x << ",  y = " << y << ",  y_pos = " << y_pos;
 
-    mpLabelText->setText("("+xString+", "+yString+")");
-    mpLabel->setText(*mpLabelText);
-    mpLabel->setGeometry(mpVariablePlot->canvasMap(QwtPlot::xBottom).xTransform(x), mpVariablePlot->canvasMap(QwtPlot::yLeft).xTransform(y),0,0);
-    mpLabel->adjustSize();
+        QString xString;
+        QString yString;
+        xString.setNum(x);
+        yString.setNum(y);
 
-    mpVariablePlot->replot();
+
+        //mpLabels[mMarkerToLabelNumberMap.value(mpActiveMarker)]->setText("("+xString+", "+yString+")");
+
+        QwtText tempLabel;
+        tempLabel.setText("("+xString+", "+yString+")");
+        tempLabel.setColor(curve->pen().brush().color());
+        tempLabel.setBackgroundBrush(QBrush(QColor("lemonchiffon")));
+        mpActiveMarker->setLabel(tempLabel);
+
+        //mpActiveMarker->setLabel(*mpLabelText);
+        mpActiveMarker->setLabelAlignment(Qt::AlignTop);
+
+
+
+        //mpLabel->setText(*mpLabelText);
+        //mpLabel->setGeometry(mpVariablePlot->canvasMap(QwtPlot::xBottom).xTransform(x), mpVariablePlot->canvasMap(QwtPlot::yLeft).xTransform(y),0,0);
+        //mpLabel->adjustSize();
+
+        mpVariablePlot->replot();
+    }
 }
 
 
@@ -511,13 +569,48 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
 
     QMenu *yAxisRightMenu;
     QMenu *yAxisLeftMenu;
-    //QAction *xAxisAction;
+    QMenu *insertMarkerMenu;
+    QMenu *selectMarkerMenu;
 
     yAxisRightMenu = menu.addMenu(QString("Right Y Axis"));
     yAxisLeftMenu = menu.addMenu(QString("Left Y Axis"));
+    insertMarkerMenu = menu.addMenu(QString("Insert Curve Marker"));
+    selectMarkerMenu = menu.addMenu(QString("Change Active Marker"));
 
     QAction *setRightAxisLogarithmic;
     QAction *setLeftAxisLogarithmic;
+
+    QMap <QAction *, QwtPlotCurve *> actionToCurveMap;
+    QAction *tempAction;
+    for(size_t i=0; i<mpCurves.size(); ++i)
+    {
+        tempAction = insertMarkerMenu->addAction(mpCurves[i]->title().text());
+        actionToCurveMap.insert(tempAction, mpCurves[i]);
+        if(mCurveToMarkerMap.contains(mpCurves[i]))
+        {
+           tempAction->setDisabled(true);
+        }
+    }
+
+    QMap <QAction *, QwtPlotMarker *> actionToMarkerMap;
+    if(mpMarkers.size() < 2)
+    {
+        selectMarkerMenu->setDisabled(true);    //Disable the select marker menu if there are less than two markers
+    }
+    else
+    {
+        for(size_t i=0; i<mpMarkers.size(); ++i)
+        {
+            tempAction = selectMarkerMenu->addAction(mMarkerToCurveMap.value(mpMarkers[i])->title().text());
+            actionToMarkerMap.insert(tempAction, mpMarkers[i]);
+            if(mpActiveMarker == mpMarkers[i])
+            {
+                QFont tempFont = tempAction->font();
+                tempFont.setBold(true);
+                tempAction->setFont(tempFont);
+            }
+        }
+    }
 
     setRightAxisLogarithmic = yAxisRightMenu->addAction("Logarithmic Scale");
     setLeftAxisLogarithmic = yAxisLeftMenu->addAction("Logarithmic Scale");
@@ -554,6 +647,23 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
             mpVariablePlot->setAxisScaleEngine(QwtPlot::yLeft, new QwtLinearScaleEngine);
         }
     }
+    QMap<QAction *, QwtPlotCurve *>::iterator it;
+    for(it = actionToCurveMap.begin(); it!=actionToCurveMap.end(); ++it)
+    {
+        if(selectedAction == it.key())
+        {
+            this->insertMarker(it.value());
+        }
+    }
+    QMap<QAction *, QwtPlotMarker *>::iterator itm;
+    for(itm = actionToMarkerMap.begin(); itm!=actionToMarkerMap.end(); ++itm)
+    {
+        if(selectedAction == itm.key())
+        {
+            this->setActiveMarker(itm.value());
+        }
+    }
+
 }
 
 
