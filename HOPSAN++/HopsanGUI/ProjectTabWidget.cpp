@@ -74,6 +74,7 @@
 #include "GraphicsScene.h"
 #include "GraphicsView.h"
 #include "GUISystem.h"
+#include "PlotWidget.h"
 
 #include "version.h"
 #include "GUIUtilities.h"
@@ -241,6 +242,7 @@ bool ProjectTab::simulate()
     {
         pMessageWidget->printGUIMessage(QString(tr("Simulated '").append(mpSystem->mpCoreSystemAccess->getRootSystemName()).append(tr("' successfully!"))));
         emit simulationFinished();
+        //this->mpParentProjectTabWidget->mpParentMainWindow->mpPlotVariableListDialog->mpVariableList->updateList();
     }
     emit checkMessages();
 

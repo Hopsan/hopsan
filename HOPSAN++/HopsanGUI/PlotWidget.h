@@ -174,12 +174,12 @@ class VariableList : public QTreeWidget
     Q_OBJECT
 public:
     VariableList(MainWindow *parent = 0);
-    //QHash<QString, int> map;
     QHash< QString, QVector<double> > xMap;
     QHash< QString, QVector<double> > yMap;
     QHash< QString, QString > yLabelMap;
     MainWindow *mpParentMainWindow;
     GUISystem *mpCurrentSystem;
+    void createPlot(QString componentName, QString parameterName);
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
@@ -187,31 +187,9 @@ protected:
 
     QPoint dragStartPosition;
 
- private slots:
+public slots:
     void updateList();
     void createPlot(QTreeWidgetItem *item);
-};
-
-
-class SelectedVariableList : public VariableList
-{
-    Q_OBJECT
-public:
-    SelectedVariableList(MainWindow *parent = 0);
-    QHash< QString, QVector<double> > xMap;
-    QHash< QString, QVector<double> > yMap;
-    MainWindow *mpParentMainWindow;
-    GUISystem *mpCurrentSystem;
-
-protected:
-    //virtual void mousePressEvent(QMouseEvent *event);
-    //virtual void mouseMoveEvent(QMouseEvent *event);
-    virtual void dragMoveEvent(QDragMoveEvent *event);
-    virtual void dropEvent(QDropEvent *event);
-    QPoint dragStartPosition;
-
-private slots:
-    //void createPlot(QListWidgetItem *item);
 };
 
 
@@ -223,7 +201,6 @@ public:
     VariableList *mpVariableList;
 private:
     MainWindow *mpParentMainWindow;
-    QPushButton *plotButton;
 };
 
 #endif // PlotWindow_H

@@ -284,8 +284,6 @@ GUIObject *GUIPort::getGuiObject()
 //! @todo If dataUnit not supplied no unit will be shown, we should maybe lookup the unit if not supplid, or allways look it up, or demand that it is supplied
 void GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna metoden...
 {
-    std::cout << "GUIPort.cpp: " << "Plot()" << std::endl;
-
     MainWindow *pMainWindow = mpParentGuiObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 
     if(pMainWindow->mpPlotVariableListDialog == 0)
@@ -293,49 +291,7 @@ void GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
         pMainWindow->mpPlotVariableListDialog = new VariableListDialog(pMainWindow);
     }
 
-    QVector<double> time = QVector<double>::fromStdVector(mpParentSystem->mpCoreSystemAccess->getTimeVector(getGUIComponentName(), this->getName()));
-    QVector<double> y;
-    mpParentSystem->mpCoreSystemAccess->getPlotData(getGUIComponentName(), this->getName(), dataName, y);
-
-    //qDebug() << "Time size: " << time.size() << " last time: " << *time.end() << " " << "y.size(): " << y.size();
-    //qDebug() << "time[0]: " << time[0] << " time[last-1]: " << time[time.size()-2] << " time[last]: " << time[time.size()-1];
-
-    for (int i = 0; i<time.size(); ++i)
-    {
-        //qDebug() << time[i];
-    }
-
-    //qDebug() << "y[0]: " << y[0] << " y[last-1]: " << y[y.size()-2] << " y[last]: " << y[y.size()-1];
-
-    QString title;
-    QString xlabel;
-    QString ylabel;
-
-    //title.append(dataName);
-    title.append(QString(mpParentGuiObject->getName()+", "+this->getName()+", "+dataName+", ["+dataUnit+"]"));
-    ylabel.append(dataName + ", [" + dataUnit + "]");
-
-    //! @todo need to comment this out  for now  fix later
-    //title.append(" at component: ").append(QString::fromStdString(mpParentComponent->mpCoreComponent->getName())).append(", port: ").append(QString::fromStdString(mpCorePort->getPortName()));
-    xlabel.append("Time, [s]");
-
-    //MainWindow *pMainWindow = mpParentGuiObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
-    PlotWindow *plotWindow = new PlotWindow(time,y, pMainWindow->mpPlotVariableListDialog->mpVariableList, pMainWindow);
-    plotWindow->setWindowTitle("HOPSAN Plot Window");
-    plotWindow->tempCurve->setTitle(title);
-    plotWindow->mpVariablePlot->setAxisTitle(VariablePlot::yLeft, ylabel);
-    plotWindow->mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xlabel);
-    plotWindow->mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
-    plotWindow->show();
-
-    //PlotWindow *newPlot = new PlotWindow(time,y,mpParentGuiObject->mpParentSystem);
-//    MainWindow *pMainWindow = mpParentGuiObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
-//    PlotWindow *newPlot = new PlotWindow(time,y,pMainWindow->mpPlotVariableListDialog->mpVariableList, pMainWindow);
-//    newPlot->tempCurve->setTitle(title);
-//    newPlot->mpVariablePlot->setAxisTitle(VariablePlot::yLeft, ylabel);
-//    newPlot->mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xlabel);
-//    newPlot->mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
-//    newPlot->show();
+    pMainWindow->mpPlotVariableListDialog->mpVariableList->createPlot(mpParentGuiObject->getName(), QString(getName() + ", " + dataName +", [" + dataUnit + "]"));
 }
 
 

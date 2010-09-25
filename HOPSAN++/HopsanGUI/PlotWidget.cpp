@@ -794,6 +794,8 @@ VariableList::VariableList(MainWindow *parent)
     connect(this,SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),this,SLOT(createPlot(QTreeWidgetItem*)));
 }
 
+
+//! Updates the list of variables to the available components and parameters in the current tab.
 void VariableList::updateList()
 {
     xMap.clear();
@@ -866,33 +868,46 @@ void VariableList::updateList()
 }
 
 
-//! Creates a new plot window
+//! Helper function that creates a new plot window by using a QTreeWidgetItem in the plot variable tree.
 //! @param *item is the tree widget item whos arrays will be looked up from the map and plotted
 void VariableList::createPlot(QTreeWidgetItem *item)
 {
+        //! @todo This may be a problem if subsystem parameters should be displayed as lower levels in the tree, because subsystems will have a parent without being plotable...
     if(item->parent() != 0)     //Top level items cannot be plotted (they represent the components)
     {
-        QString lookupName;
-        lookupName = QString(item->parent()->text(0) + ", " + item->text(0));
-
-        QString title;
-        QString xlabel;
-        QString ylabel;
-
-        title.append(lookupName);
-        ylabel.append(yLabelMap.find(lookupName).value());
-        xlabel.append("Time, [s]");     //! @todo Is it ok to assume time as the x-axis like this?
-
-        PlotWindow *plotWindow = new PlotWindow(xMap.find(lookupName).value(),yMap.find(lookupName).value(), this, mpParentMainWindow);
-        plotWindow->setWindowTitle("HOPSAN Plot Window");
-        plotWindow->tempCurve->setTitle(title);
-        plotWindow->mpVariablePlot->setAxisTitle(VariablePlot::yLeft, ylabel);
-        plotWindow->mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xlabel);
-        plotWindow->mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
-        plotWindow->show();
+        createPlot(item->parent()->text(0), item->text(0));
     }
 }
 
+
+//! Creates a new plot window from specified component and parameter.
+//! @param componentName is the name of the desired component
+//! @param parameterName is a string containing name of port, data and unit in this format: "portName, dataName, [unitName]"
+void VariableList::createPlot(QString componentName, QString parameterName)
+{
+    //! @todo Add some error handling if component or parameter does not exist!
+    QString lookupName;
+    lookupName = QString(componentName + ", " + parameterName);
+
+    QString title;
+    QString xlabel;
+    QString ylabel;
+
+    title.append(lookupName);
+    ylabel.append(yLabelMap.find(lookupName).value());
+    xlabel.append("Time, [s]");    //! @todo Is it ok to assume time as the x-axis like this?
+
+    PlotWindow *plotWindow = new PlotWindow(xMap.find(lookupName).value(),yMap.find(lookupName).value(), this, mpParentMainWindow);
+    plotWindow->setWindowTitle("HOPSAN Plot Window");
+    plotWindow->tempCurve->setTitle(title);
+    plotWindow->mpVariablePlot->setAxisTitle(VariablePlot::yLeft, ylabel);
+    plotWindow->mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xlabel);
+    plotWindow->mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
+    plotWindow->show();
+}
+
+
+//! Defines what happens when clicking in the variable list. Used to initiate drag operations.
 void VariableList::mousePressEvent(QMouseEvent *event)
 {
     QTreeWidget::mousePressEvent(event);
@@ -901,14 +916,19 @@ void VariableList::mousePressEvent(QMouseEvent *event)
         dragStartPosition = event->pos();
 }
 
+
+//! Defines what happens when mouse is moving in variable list. Used to handle drag operations.
 void VariableList::mouseMoveEvent(QMouseEvent *event)
 {
 
     if (!(event->buttons() & Qt::LeftButton))
+    {
         return;
-    if ((event->pos() - dragStartPosition).manhattanLength()
-         < QApplication::startDragDistance())
+    }
+    if ((event->pos() - dragStartPosition).manhattanLength() < QApplication::startDragDistance())
+    {
         return;
+    }
 
     QTreeWidgetItem *item = this->currentItem();
 
@@ -924,87 +944,16 @@ void VariableList::mouseMoveEvent(QMouseEvent *event)
 }
 
 
-SelectedVariableList::SelectedVariableList(MainWindow *parent)
-        : VariableList(parent)
-{
-    mpParentMainWindow = parent;
-    mpCurrentSystem = mpParentMainWindow->mpProjectTabs->getCurrentSystem();
-    this->setAcceptDrops(true);
-    this->setDragEnabled(true);
-
-    xMap.clear();
-    yMap.clear();
-}
-
-void SelectedVariableList::dragMoveEvent(QDragMoveEvent *event)
-{
-    qDebug() << "Dragging something...";
-    if (event->mimeData()->hasFormat("application/x-plotvariable"))
-    {
-        event->acceptProposedAction();
-    }
-}
-
-//
-//void SelectedVariableList::dragMoveEvent(QDragMoveEvent *event)
-//{
-//    if (event->mimeData()->hasFormat("application/x-plotvariable"))
-//    {
-//      event->accept();
-//    }
-//    else
-//    {
-//        event->ignore();
-//    }
-//}
-
-
-void SelectedVariableList::dropEvent(QDropEvent *event)
-{
-//    qDebug() << "dropEvent";
-//    if (event->mimeData()->hasFormat("application/x-plotvariable"))
-//    //if (event->mimeData()->hasText())
-//    {
-//        qDebug() << "True!";
-//        QString datastr =  event->mimeData()->text();
-//        //QTextStream stream(&datastr, QIODevice::ReadOnly);
-//        QListWidgetItem *tempListWidget;
-//        tempListWidget = new QListWidgetItem(datastr, this);
-
-//        event->acceptProposedAction();
-//   }
-}
-
+//! This is the main plot widget, which contains the tree with variables
 VariableListDialog::VariableListDialog(MainWindow *parent)
         : QWidget(parent)
 {
-    //this->setAcceptDrops(true);
-
     mpParentMainWindow = parent;
 
     //Create a grid
     QGridLayout *grid = new QGridLayout(this);
 
-    //Create the plotvariables list
+    //Create the plot variables tree
     mpVariableList = new VariableList(mpParentMainWindow);
-    SelectedVariableList *rightAxisList = new SelectedVariableList(mpParentMainWindow);
-    SelectedVariableList *leftAxisList = new SelectedVariableList(mpParentMainWindow);
-    rightAxisList->setMaximumHeight(100);
-    rightAxisList->setObjectName("Right Axis");
-    rightAxisList->setWindowTitle("Right Axis");
-    rightAxisList->setSelectionMode(QAbstractItemView::SingleSelection);
-    rightAxisList->setDragEnabled(true);
-    rightAxisList->viewport()->setAcceptDrops(true);
-    rightAxisList->setDropIndicatorShown(true);
-    rightAxisList->setDragDropMode(QAbstractItemView::DragDrop);
-    leftAxisList->setMaximumHeight(100);
-    leftAxisList->setWindowTitle("Left Axis");
-
-    plotButton = new QPushButton(tr("&Plot"));
-    plotButton->setAutoDefault(true);
-
     grid->addWidget(mpVariableList,0,0,3,1);
-    //grid->addWidget(rightAxisList,4,0,1,1);
-    //grid->addWidget(leftAxisList,5,0,1,1);
-    //grid->addWidget(plotButton,6,0);
 }
