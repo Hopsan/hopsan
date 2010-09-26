@@ -54,6 +54,7 @@
 #include "GraphicsView.h"
 #include "GUISystem.h"
 #include "GuiUtilities.h"
+#include "GUISystem.h"
 
 #include "qwt_scale_engine.h"
 
@@ -535,13 +536,11 @@ void PlotWindow::dropEvent(QDropEvent *event)
 {
     if (event->mimeData()->hasText())
     {
-        qDebug() << "mimeData = " << event->mimeData()->text();
-
         delete(mpHoverRect);
 
         QString mimeText = event->mimeData()->text();
-        QTextStream lookupStream;
-        lookupStream.setString(&mimeText);
+        QTextStream mimeStream;
+        mimeStream.setString(&mimeText);
 
         QString discardedText;
         QString componentName;
@@ -551,37 +550,36 @@ void PlotWindow::dropEvent(QDropEvent *event)
 
         if(mimeText.startsWith("HOPSANPLOTDATA"))
         {
-
-            lookupStream >> discardedText;
-            componentName = readName(lookupStream);
-            portName = readName(lookupStream);
-            dataName = readName(lookupStream);
-            dataUnit = readName(lookupStream);
-
-            QString lookupName;
-            lookupName = QString(componentName + ", " + portName + ", " + dataName + ", [" + dataUnit + "]");
+            mimeStream >> discardedText;
+            componentName = readName(mimeStream);
+            portName = readName(mimeStream);
+            dataName = readName(mimeStream);
+            dataUnit = readName(mimeStream);
 
             QString title;
             QString xlabel;
             QString ylabel;
 
-            title.append(lookupName);
-            qDebug() << "Looking up: \"" << lookupName << "\"";
-            ylabel.append(dataName + ", [" + dataUnit + "]");
-            xlabel.append("Time, [s]");
+            title.append(QString(componentName + ", " + portName + ", " + dataName + " [" + dataUnit + "]"));
+            ylabel.append(dataName + " [" + dataUnit + "]");
+            xlabel.append("Time [s]");
+
+            QVector<double> xVector = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mpCoreSystemAccess->getTimeVector(componentName, portName));
+            QVector<double> yVector;
+            mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mpCoreSystemAccess->getPlotData(componentName, portName, dataName, yVector);
 
             QCursor cursor;
             if(this->mapFromGlobal(cursor.pos()).y() > this->height()/2 && mpCurves.size() >= 1)
             {
-                this->changeXVector(mpVariableList->yMap.find(lookupName).value(), ylabel);
+                this->changeXVector(yVector, ylabel);
             }
             else if(this->mapFromGlobal(cursor.pos()).x() < this->width()/2)
             {
-                this->addPlotCurve(mpVariableList->xMap.find(lookupName).value(),mpVariableList->yMap.find(lookupName).value(), title, xlabel, ylabel, QwtPlot::yLeft);
+                this->addPlotCurve(xVector, yVector, title, xlabel, ylabel, QwtPlot::yLeft);
             }
             else
             {
-                this->addPlotCurve(mpVariableList->xMap.find(lookupName).value(),mpVariableList->yMap.find(lookupName).value(), title, xlabel, ylabel, QwtPlot::yRight);
+                this->addPlotCurve(xVector, yVector, title, xlabel, ylabel, QwtPlot::yRight);
             }
         }
     }
@@ -763,9 +761,13 @@ void PlotWindow::checkNewValues()
     }
     for(int i=0; i<mpCurves.size(); ++i)
     {
-        if(this->mpVariableList->xMap.contains(mpCurves[i]->title().text()))
+        if(mpVariableList->mAvailableParameters.contains(mCurveParameters[i]))
         {
-            mpCurves[i]->setData(mpVariableList->xMap.value(mpCurves[i]->title().text()), mpVariableList->yMap.value(mpCurves[i]->title().text()));
+            QVector<double> xVector;
+            xVector = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getTimeVector(mCurveParameters[i][0], mCurveParameters[i][1]));
+            QVector<double> yVector;
+            mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getPlotData(mCurveParameters[i][0], mCurveParameters[i][1], mCurveParameters[i][2], yVector);
+            mpCurves[i]->setData(xVector, yVector);
             mpVariablePlot->replot();
         }
     }
@@ -846,8 +848,9 @@ VariableList::VariableList(MainWindow *parent)
 //! Updates the list of variables to the available components and parameters in the current tab.
 void VariableList::updateList()
 {
-    xMap.clear();
-    yMap.clear();
+    //xMap.clear();
+    //yMap.clear();
+    mAvailableParameters.clear();
     this->clear();
 
     if(mpParentMainWindow->mpProjectTabs->count() == 0)     //Check so that at least one project tab exists
@@ -900,13 +903,12 @@ void VariableList::updateList()
                 {
                     y.clear();
                     tempParameterItem = new ParameterItem(it.value()->getName(), (*itp)->getName(), parameterNames[i], parameterUnits[i], tempComponentItem);
-                    //tempParameterItem->setText(0, (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]");
                     tempParameterItem->setBackgroundColor(0, backgroundColor);
                     tempComponentItem->addChild(tempParameterItem);
                     mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), parameterNames[i], y);
-                    xMap.insert((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", time);
-                    yMap.insert((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", y);
-                    yLabelMap.insert((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", parameterNames[i] + ", [" + parameterUnits[i] + "]");
+                    QStringList parameterDescription;
+                    parameterDescription << (*itp)->getGUIComponentName() << (*itp)->getName() << parameterNames[i];
+                    mAvailableParameters.append(parameterDescription);
                 }
             }
         }
@@ -934,20 +936,29 @@ void VariableList::createPlot(QTreeWidgetItem *item)
 void VariableList::createPlot(QString componentName, QString portName, QString dataName, QString dataUnit)
 {
     //! @todo Add some error handling if component or parameter does not exist!
-    QString lookupName;
-    lookupName = QString(componentName + ", " + portName + ", " + dataName + ", [" + dataUnit + "]");
+    //QString lookupName;
+    //lookupName = QString(componentName + ", " + portName + ", " + dataName + " [" + dataUnit + "]");
 
     QString title;
     QString xlabel;
     QString ylabel;
 
-    title.append(lookupName);
-    ylabel.append(yLabelMap.find(lookupName).value());
+    title.append(QString(componentName + ", " + portName + ", " + dataName + " [" + dataUnit + "]"));
+    //ylabel.append(yLabelMap.find(lookupName).value());
+    ylabel.append(QString(dataName + " [" + dataUnit + "]"));
     xlabel.append("Time, [s]");    //! @todo Is it ok to assume time as the x-axis like this?
 
-    PlotWindow *plotWindow = new PlotWindow(xMap.find(lookupName).value(),yMap.find(lookupName).value(), this, mpParentMainWindow);
-    plotWindow->setWindowTitle("HOPSAN Plot Window");
+    QVector<double> xVector;
+    xVector = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getTimeVector(componentName, portName));
+    QVector<double> yVector;
+    mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getPlotData(componentName, portName, dataName, yVector);
+
+    PlotWindow *plotWindow = new PlotWindow(xVector, yVector, this, mpParentMainWindow);
+    plotWindow->setWindowTitle("Hopsan NG Plot Window");
     plotWindow->tempCurve->setTitle(title);
+    QStringList parameterDescription;
+    parameterDescription << componentName << portName << dataName;
+    plotWindow->mCurveParameters.append(parameterDescription);
     plotWindow->mpVariablePlot->setAxisTitle(VariablePlot::yLeft, ylabel);
     plotWindow->mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xlabel);
     plotWindow->mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);

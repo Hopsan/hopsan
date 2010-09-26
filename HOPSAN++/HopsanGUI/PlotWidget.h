@@ -93,7 +93,8 @@ public:
     void insertMarker(QwtPlotCurve *curve);
     void setActiveMarker(QwtPlotMarker *marker);
 
-    QVector <QwtPlotCurve *> mpCurves;
+    QVector<QwtPlotCurve *> mpCurves;
+    QList<QStringList> mCurveParameters;
     QwtPlotCurve *tempCurve;
     VariablePlot *mpVariablePlot;
     MainWindow *mpParentMainWindow;
@@ -192,9 +193,7 @@ class VariableList : public QTreeWidget
     Q_OBJECT
 public:
     VariableList(MainWindow *parent = 0);
-    QHash< QString, QVector<double> > xMap;
-    QHash< QString, QVector<double> > yMap;
-    QHash< QString, QString > yLabelMap;
+    QList<QStringList> mAvailableParameters;
     MainWindow *mpParentMainWindow;
     GUISystem *mpCurrentSystem;
     void createPlot(QString componentName, QString portName, QString dataName, QString dataUnit);
