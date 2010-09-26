@@ -53,7 +53,7 @@
 #include "GUIPort.h"
 #include "GraphicsView.h"
 #include "GUISystem.h"
-#include "GuiUtilities.h"
+#include "GUIUtilities.h"
 #include "GUISystem.h"
 
 #include "qwt_scale_engine.h"
