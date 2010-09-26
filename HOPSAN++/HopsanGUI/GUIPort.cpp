@@ -291,7 +291,7 @@ void GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
         pMainWindow->mpPlotVariableListDialog = new VariableListDialog(pMainWindow);
     }
 
-    pMainWindow->mpPlotVariableListDialog->mpVariableList->createPlot(mpParentGuiObject->getName(), QString(getName() + ", " + dataName +", [" + dataUnit + "]"));
+    pMainWindow->mpPlotVariableListDialog->mpVariableList->createPlot(mpParentGuiObject->getName(), this->getName(), dataName, dataUnit);
 }
 
 

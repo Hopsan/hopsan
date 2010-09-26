@@ -53,6 +53,7 @@
 #include "GUIPort.h"
 #include "GraphicsView.h"
 #include "GUISystem.h"
+#include "GuiUtilities.h"
 
 #include "qwt_scale_engine.h"
 
@@ -534,25 +535,41 @@ void PlotWindow::dropEvent(QDropEvent *event)
 {
     if (event->mimeData()->hasText())
     {
-        qDebug() << "1";
+        qDebug() << "mimeData = " << event->mimeData()->text();
+
         delete(mpHoverRect);
-        qDebug() << "2";
+
         QString mimeText = event->mimeData()->text();
-        qDebug() << "3";
+        QTextStream lookupStream;
+        lookupStream.setString(&mimeText);
+
+        QString discardedText;
+        QString componentName;
+        QString portName;
+        QString dataName;
+        QString dataUnit;
+
         if(mimeText.startsWith("HOPSANPLOTDATA"))
         {
+
+            lookupStream >> discardedText;
+            componentName = readName(lookupStream);
+            portName = readName(lookupStream);
+            dataName = readName(lookupStream);
+            dataUnit = readName(lookupStream);
+
             QString lookupName;
-            lookupName = QString(mimeText.right(mimeText.size()-15));
-            qDebug() << "4";
+            lookupName = QString(componentName + ", " + portName + ", " + dataName + ", [" + dataUnit + "]");
+
             QString title;
             QString xlabel;
             QString ylabel;
 
             title.append(lookupName);
             qDebug() << "Looking up: \"" << lookupName << "\"";
-            ylabel.append(mpVariableList->yLabelMap.find(lookupName).value());
+            ylabel.append(dataName + ", [" + dataUnit + "]");
             xlabel.append("Time, [s]");
-            qDebug() << "5";
+
             QCursor cursor;
             if(this->mapFromGlobal(cursor.pos()).y() > this->height()/2 && mpCurves.size() >= 1)
             {
@@ -566,7 +583,6 @@ void PlotWindow::dropEvent(QDropEvent *event)
             {
                 this->addPlotCurve(mpVariableList->xMap.find(lookupName).value(),mpVariableList->yMap.find(lookupName).value(), title, xlabel, ylabel, QwtPlot::yRight);
             }
-            qDebug() << "6";
         }
     }
 }
@@ -776,6 +792,38 @@ QwtPlotCurve *VariablePlot::getCurve()
 }
 
 
+
+ParameterItem::ParameterItem(QString componentName, QString portName, QString dataName, QString dataUnit, QTreeWidgetItem *parent)
+        : QTreeWidgetItem(parent)
+{
+    mComponentName = componentName;
+    mPortName = portName;
+    mDataName = dataName;
+    mDataUnit = dataUnit;
+    this->setText(0, mComponentName + ", " + mDataName + ", [" + mDataUnit + "]");
+}
+
+
+QString ParameterItem::getComponentName()
+{
+    return mComponentName;
+}
+
+QString ParameterItem::getPortName()
+{
+    return mPortName;
+}
+
+QString ParameterItem::getDataName()
+{
+    return mDataName;
+}
+
+QString ParameterItem::getDataUnit()
+{
+    return mDataUnit;
+}
+
 VariableList::VariableList(MainWindow *parent)
         : QTreeWidget(parent)
 {
@@ -811,7 +859,7 @@ void VariableList::updateList()
     QVector<double> y;
     QHash<QString, GUIObject *>::iterator it;
     QTreeWidgetItem *tempComponentItem;
-    QTreeWidgetItem *tempParameterItem;
+    ParameterItem *tempParameterItem;
     bool colorize = false;
     for(it = mpCurrentSystem->mGUIObjectMap.begin(); it!=mpCurrentSystem->mGUIObjectMap.end(); ++it)
     {
@@ -851,10 +899,9 @@ void VariableList::updateList()
                 for(int i = 0; i!=parameterNames.size(); ++i)
                 {
                     y.clear();
-                    tempParameterItem = new QTreeWidgetItem();
-                    tempParameterItem->setText(0, (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]");
+                    tempParameterItem = new ParameterItem(it.value()->getName(), (*itp)->getName(), parameterNames[i], parameterUnits[i], tempComponentItem);
+                    //tempParameterItem->setText(0, (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]");
                     tempParameterItem->setBackgroundColor(0, backgroundColor);
-                    //tempListWidget->setFlags(Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
                     tempComponentItem->addChild(tempParameterItem);
                     mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), parameterNames[i], y);
                     xMap.insert((*itp)->getGUIComponentName() + ", " + (*itp)->getName() + ", " + parameterNames[i] + ", [" + parameterUnits[i] + "]", time);
@@ -872,10 +919,11 @@ void VariableList::updateList()
 //! @param *item is the tree widget item whos arrays will be looked up from the map and plotted
 void VariableList::createPlot(QTreeWidgetItem *item)
 {
-        //! @todo This may be a problem if subsystem parameters should be displayed as lower levels in the tree, because subsystems will have a parent without being plotable...
+    //! @todo This may be a problem if subsystem parameters should be displayed as lower levels in the tree, because subsystems will have a parent without being plotable...
     if(item->parent() != 0)     //Top level items cannot be plotted (they represent the components)
     {
-        createPlot(item->parent()->text(0), item->text(0));
+        ParameterItem *tempItem = dynamic_cast<ParameterItem *>(item);
+        createPlot(tempItem->getComponentName(), tempItem->getPortName(), tempItem->getDataName(), tempItem->getDataUnit());
     }
 }
 
@@ -883,11 +931,11 @@ void VariableList::createPlot(QTreeWidgetItem *item)
 //! Creates a new plot window from specified component and parameter.
 //! @param componentName is the name of the desired component
 //! @param parameterName is a string containing name of port, data and unit in this format: "portName, dataName, [unitName]"
-void VariableList::createPlot(QString componentName, QString parameterName)
+void VariableList::createPlot(QString componentName, QString portName, QString dataName, QString dataUnit)
 {
     //! @todo Add some error handling if component or parameter does not exist!
     QString lookupName;
-    lookupName = QString(componentName + ", " + parameterName);
+    lookupName = QString(componentName + ", " + portName + ", " + dataName + ", [" + dataUnit + "]");
 
     QString title;
     QString xlabel;
@@ -930,17 +978,26 @@ void VariableList::mouseMoveEvent(QMouseEvent *event)
         return;
     }
 
-    QTreeWidgetItem *item = this->currentItem();
+    //QTreeWidgetItem *listItem;
+    //listItem = this->currentItem();
+    ParameterItem *item;
+    //item = dynamic_cast<ParameterItem *>(listItem);
+    item = reinterpret_cast<ParameterItem *>(currentItem());
 
-    QString mimeText;
-    mimeText = QString("HOPSANPLOTDATA " + item->parent()->text(0) + ", " + item->text(0));
+    if(item != 0)
+    //if(true)
+    {
+        QString mimeText;
+        mimeText = QString("HOPSANPLOTDATA " + addQuotes(item->getComponentName()) + " " + addQuotes(item->getPortName()) + " " + addQuotes(item->getDataName()) + " " + addQuotes(item->getDataUnit()));
+        //mimeText = QString("Gorilla");
 
-    QDrag *drag = new QDrag(this);
-    QMimeData *mimeData = new QMimeData;
+        QDrag *drag = new QDrag(this);
+        QMimeData *mimeData = new QMimeData;
 
-    mimeData->setText(mimeText);
-    drag->setMimeData(mimeData);
-    drag->exec();
+        mimeData->setText(mimeText);
+        drag->setMimeData(mimeData);
+        drag->exec();
+    }
 }
 
 

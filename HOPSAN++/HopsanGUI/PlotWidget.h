@@ -169,6 +169,24 @@ private:
 };
 
 
+class ParameterItem : public QTreeWidgetItem
+{
+    //Q_OBJECT
+public:
+    ParameterItem(QString componentName, QString portName, QString dataName, QString dataUnit, QTreeWidgetItem *parent = 0);
+    QString getComponentName();
+    QString getPortName();
+    QString getDataName();
+    QString getDataUnit();
+
+private:
+    QString mComponentName;
+    QString mPortName;
+    QString mDataName;
+    QString mDataUnit;
+};
+
+
 class VariableList : public QTreeWidget
 {
     Q_OBJECT
@@ -179,7 +197,7 @@ public:
     QHash< QString, QString > yLabelMap;
     MainWindow *mpParentMainWindow;
     GUISystem *mpCurrentSystem;
-    void createPlot(QString componentName, QString parameterName);
+    void createPlot(QString componentName, QString portName, QString dataName, QString dataUnit);
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
