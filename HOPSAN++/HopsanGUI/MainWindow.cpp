@@ -73,7 +73,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
     this->setDockOptions(QMainWindow::ForceTabbedDocks);
 
-    mpPlotVariableListDialog = 0;
+    mpPlotPlotWidget = 0;
 
     QMetaObject::connectSlotsByName(this);
 
@@ -216,17 +216,17 @@ void MainWindow::plot()
         {
     //        mpPlotVariablesDock = new QDockWidget(tr("Plot Variables"), this);
     //        mpPlotVariablesDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    //        VariableListDialog *variableList = new VariableListDialog(this);
+    //        PlotWidget *variableList = new PlotWidget(this);
     //        mpPlotVariablesDock->setWidget(variableList);
     //        //variableList->show();
     //        addDockWidget(Qt::RightDockWidgetArea, mpPlotVariablesDock);
 
-            if(mpPlotVariableListDialog == 0)
+            if(mpPlotPlotWidget == 0)
             {
                 qDebug() << "It's true!";
-                mpPlotVariableListDialog = new VariableListDialog(this);
+                mpPlotPlotWidget = new PlotWidget(this);
             }
-            mpPlotVariablesDock->setWidget(mpPlotVariableListDialog);
+            mpPlotVariablesDock->setWidget(mpPlotPlotWidget);
 
             mpPlotVariablesDock->show();
             mpPlotVariablesDock->raise();

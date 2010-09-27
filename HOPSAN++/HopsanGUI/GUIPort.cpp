@@ -286,12 +286,12 @@ void GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
 {
     MainWindow *pMainWindow = mpParentGuiObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 
-    if(pMainWindow->mpPlotVariableListDialog == 0)
+    if(pMainWindow->mpPlotPlotWidget == 0)
     {
-        pMainWindow->mpPlotVariableListDialog = new VariableListDialog(pMainWindow);
+        pMainWindow->mpPlotPlotWidget = new PlotWidget(pMainWindow);
     }
 
-    pMainWindow->mpPlotVariableListDialog->mpVariableList->createPlot(mpParentGuiObject->getName(), this->getName(), dataName, dataUnit);
+    pMainWindow->mpPlotPlotWidget->mpPlotParameterTree->createPlotWindow(mpParentGuiObject->getName(), this->getName(), dataName, dataUnit);
 }
 
 

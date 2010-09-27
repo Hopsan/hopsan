@@ -61,14 +61,14 @@
 #include "qwt_symbol.h"
 #include "qwt_text_label.h"
 
-PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, VariableList *variableList, MainWindow *parent)
+PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, PlotParameterTree *PlotParameterTree, MainWindow *parent)
     : QMainWindow(parent)
 {
     this->setAttribute(Qt::WA_DeleteOnClose);
 
     mpParentMainWindow = parent;
     mpCurrentGUISystem = mpParentMainWindow->mpProjectTabs->getCurrentSystem();
-    mpVariableList = variableList;
+    mpPlotParameterTree = PlotParameterTree;
 
     mHasSpecialXAxis = false;
 
@@ -758,7 +758,7 @@ void PlotWindow::checkNewValues()
     }
     for(int i=0; i<mpCurves.size(); ++i)
     {
-        if(mpVariableList->mAvailableParameters.contains(mCurveParameters[i]))
+        if(mpPlotParameterTree->mAvailableParameters.contains(mCurveParameters[i]))
         {
             QVector<double> xVector;
             xVector = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getTimeVector(mCurveParameters[i][0], mCurveParameters[i][1]));
@@ -792,7 +792,7 @@ QwtPlotCurve *VariablePlot::getCurve()
 
 
 
-ParameterItem::ParameterItem(QString componentName, QString portName, QString dataName, QString dataUnit, QTreeWidgetItem *parent)
+PlotParameterItem::PlotParameterItem(QString componentName, QString portName, QString dataName, QString dataUnit, QTreeWidgetItem *parent)
         : QTreeWidgetItem(parent)
 {
     mComponentName = componentName;
@@ -803,27 +803,28 @@ ParameterItem::ParameterItem(QString componentName, QString portName, QString da
 }
 
 
-QString ParameterItem::getComponentName()
+QString PlotParameterItem::getComponentName()
 {
     return mComponentName;
 }
 
-QString ParameterItem::getPortName()
+QString PlotParameterItem::getPortName()
 {
     return mPortName;
 }
 
-QString ParameterItem::getDataName()
+QString PlotParameterItem::getDataName()
 {
     return mDataName;
 }
 
-QString ParameterItem::getDataUnit()
+QString PlotParameterItem::getDataUnit()
 {
     return mDataUnit;
 }
 
-VariableList::VariableList(MainWindow *parent)
+
+PlotParameterTree::PlotParameterTree(MainWindow *parent)
         : QTreeWidget(parent)
 {
     mpParentMainWindow = parent;
@@ -839,15 +840,13 @@ VariableList::VariableList(MainWindow *parent)
     connect(mpParentMainWindow->mpProjectTabs, SIGNAL(tabCloseRequested(int)), this, SLOT(updateList()));
     connect(mpParentMainWindow->mpProjectTabs, SIGNAL(newTabAdded()), this, SLOT(updateList()));
     connect(mpParentMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
-    connect(this,SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),this,SLOT(createPlot(QTreeWidgetItem*)));
+    connect(this,SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),this,SLOT(createPlotWindow(QTreeWidgetItem*)));
 }
 
 
 //! Updates the list of variables to the available components and parameters in the current tab.
-void VariableList::updateList()
+void PlotParameterTree::updateList()
 {
-    //xMap.clear();
-    //yMap.clear();
     mAvailableParameters.clear();
     this->clear();
 
@@ -857,28 +856,14 @@ void VariableList::updateList()
     }
 
     mpCurrentSystem = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem;
-    QVector<double> y;
+    QTreeWidgetItem *tempComponentItem;     //Tree item for components
+    PlotParameterItem *tempPlotParameterItem;       //Tree item for parameters - reimplemented so they can store information about the parameter
+
     QHash<QString, GUIObject *>::iterator it;
-    QTreeWidgetItem *tempComponentItem;
-    ParameterItem *tempParameterItem;
-    bool colorize = false;
     for(it = mpCurrentSystem->mGUIObjectMap.begin(); it!=mpCurrentSystem->mGUIObjectMap.end(); ++it)
     {
-        QColor backgroundColor;
-        if(colorize)
-        {
-            backgroundColor = QColor("white");
-            colorize = false;
-        }
-        else
-        {
-            backgroundColor = QColor("white");      //Used to be "beige"
-            colorize = true;
-        }
-
         tempComponentItem = new QTreeWidgetItem();
         tempComponentItem->setText(0, it.value()->getName());
-        tempComponentItem->setBackgroundColor(0, backgroundColor);
         QFont tempFont;
         tempFont = tempComponentItem->font(0);
         tempFont.setBold(true);
@@ -899,11 +884,8 @@ void VariableList::updateList()
             {
                 for(int i = 0; i!=parameterNames.size(); ++i)
                 {
-                    y.clear();
-                    tempParameterItem = new ParameterItem(it.value()->getName(), (*itp)->getName(), parameterNames[i], parameterUnits[i], tempComponentItem);
-                    tempParameterItem->setBackgroundColor(0, backgroundColor);
-                    tempComponentItem->addChild(tempParameterItem);
-                    mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getPlotData((*itp)->getGUIComponentName(), (*itp)->getName(), parameterNames[i], y);
+                    tempPlotParameterItem = new PlotParameterItem(it.value()->getName(), (*itp)->getName(), parameterNames[i], parameterUnits[i], tempComponentItem);
+                    tempComponentItem->addChild(tempPlotParameterItem);
                     QStringList parameterDescription;
                     parameterDescription << (*itp)->getGUIComponentName() << (*itp)->getName() << parameterNames[i];
                     mAvailableParameters.append(parameterDescription);
@@ -920,13 +902,13 @@ void VariableList::updateList()
 
 //! Helper function that creates a new plot window by using a QTreeWidgetItem in the plot variable tree.
 //! @param *item is the tree widget item whos arrays will be looked up from the map and plotted
-void VariableList::createPlot(QTreeWidgetItem *item)
+void PlotParameterTree::createPlotWindow(QTreeWidgetItem *item)
 {
     //! @todo This may be a problem if subsystem parameters should be displayed as lower levels in the tree, because subsystems will have a parent without being plotable...
     if(item->parent() != 0)     //Top level items cannot be plotted (they represent the components)
     {
-        ParameterItem *tempItem = dynamic_cast<ParameterItem *>(item);
-        createPlot(tempItem->getComponentName(), tempItem->getPortName(), tempItem->getDataName(), tempItem->getDataUnit());
+        PlotParameterItem *tempItem = dynamic_cast<PlotParameterItem *>(item);
+        createPlotWindow(tempItem->getComponentName(), tempItem->getPortName(), tempItem->getDataName(), tempItem->getDataUnit());
     }
 }
 
@@ -934,7 +916,7 @@ void VariableList::createPlot(QTreeWidgetItem *item)
 //! Creates a new plot window from specified component and parameter.
 //! @param componentName is the name of the desired component
 //! @param parameterName is a string containing name of port, data and unit in this format: "portName, dataName, [unitName]"
-void VariableList::createPlot(QString componentName, QString portName, QString dataName, QString dataUnit)
+void PlotParameterTree::createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit)
 {
     //! @todo Add some error handling if component or parameter does not exist!
     //QString lookupName;
@@ -968,7 +950,7 @@ void VariableList::createPlot(QString componentName, QString portName, QString d
 
 
 //! Defines what happens when clicking in the variable list. Used to initiate drag operations.
-void VariableList::mousePressEvent(QMouseEvent *event)
+void PlotParameterTree::mousePressEvent(QMouseEvent *event)
 {
     QTreeWidget::mousePressEvent(event);
 
@@ -978,7 +960,7 @@ void VariableList::mousePressEvent(QMouseEvent *event)
 
 
 //! Defines what happens when mouse is moving in variable list. Used to handle drag operations.
-void VariableList::mouseMoveEvent(QMouseEvent *event)
+void PlotParameterTree::mouseMoveEvent(QMouseEvent *event)
 {
 
     if (!(event->buttons() & Qt::LeftButton))
@@ -992,9 +974,9 @@ void VariableList::mouseMoveEvent(QMouseEvent *event)
 
     //QTreeWidgetItem *listItem;
     //listItem = this->currentItem();
-    ParameterItem *item;
-    //item = dynamic_cast<ParameterItem *>(listItem);
-    item = reinterpret_cast<ParameterItem *>(currentItem());
+    PlotParameterItem *item;
+    //item = dynamic_cast<PlotParameterItem *>(listItem);
+    item = reinterpret_cast<PlotParameterItem *>(currentItem());
 
     if(item != 0)
     //if(true)
@@ -1014,7 +996,7 @@ void VariableList::mouseMoveEvent(QMouseEvent *event)
 
 
 //! This is the main plot widget, which contains the tree with variables
-VariableListDialog::VariableListDialog(MainWindow *parent)
+PlotWidget::PlotWidget(MainWindow *parent)
         : QWidget(parent)
 {
     mpParentMainWindow = parent;
@@ -1023,6 +1005,6 @@ VariableListDialog::VariableListDialog(MainWindow *parent)
     QGridLayout *grid = new QGridLayout(this);
 
     //Create the plot variables tree
-    mpVariableList = new VariableList(mpParentMainWindow);
-    grid->addWidget(mpVariableList,0,0,3,1);
+    mpPlotParameterTree = new PlotParameterTree(mpParentMainWindow);
+    grid->addWidget(mpPlotParameterTree,0,0,3,1);
 }

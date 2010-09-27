@@ -79,15 +79,15 @@
 
 class MainWindow;
 class VariablePlot;
-class VariableList;
-class VariableListDialog;
+class PlotParameterTree;
+class PlotWidget;
 class GUISystem;
 
 class PlotWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    PlotWindow(QVector<double> xarray, QVector<double> yarray, VariableList *variableList, MainWindow *parent);
+    PlotWindow(QVector<double> xarray, QVector<double> yarray, PlotParameterTree *PlotParameterTree, MainWindow *parent);
     void addPlotCurve(QVector<double> xarray, QVector<double> yarray, QString title, QString xLabel, QString yLabel, QwtPlot::Axis axisY);
     void changeXVector(QVector<double> xarray, QString xLabel);
     void insertMarker(QwtPlotCurve *curve);
@@ -154,7 +154,7 @@ private slots:
     void setHold(bool value);
 
 private:
-    VariableList *mpVariableList;
+    PlotParameterTree *mpPlotParameterTree;
 };
 
 
@@ -170,11 +170,11 @@ private:
 };
 
 
-class ParameterItem : public QTreeWidgetItem
+class PlotParameterItem : public QTreeWidgetItem
 {
     //Q_OBJECT
 public:
-    ParameterItem(QString componentName, QString portName, QString dataName, QString dataUnit, QTreeWidgetItem *parent = 0);
+    PlotParameterItem(QString componentName, QString portName, QString dataName, QString dataUnit, QTreeWidgetItem *parent = 0);
     QString getComponentName();
     QString getPortName();
     QString getDataName();
@@ -188,15 +188,15 @@ private:
 };
 
 
-class VariableList : public QTreeWidget
+class PlotParameterTree : public QTreeWidget
 {
     Q_OBJECT
 public:
-    VariableList(MainWindow *parent = 0);
+    PlotParameterTree(MainWindow *parent = 0);
     QList<QStringList> mAvailableParameters;
     MainWindow *mpParentMainWindow;
     GUISystem *mpCurrentSystem;
-    void createPlot(QString componentName, QString portName, QString dataName, QString dataUnit);
+    void createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit);
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
@@ -206,16 +206,16 @@ protected:
 
 public slots:
     void updateList();
-    void createPlot(QTreeWidgetItem *item);
+    void createPlotWindow(QTreeWidgetItem *item);
 };
 
 
-class VariableListDialog : public QWidget
+class PlotWidget : public QWidget
 {
     Q_OBJECT
 public:
-    VariableListDialog(MainWindow *parent = 0);
-    VariableList *mpVariableList;
+    PlotWidget(MainWindow *parent = 0);
+    PlotParameterTree *mpPlotParameterTree;
 private:
     MainWindow *mpParentMainWindow;
 };
