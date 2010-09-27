@@ -82,9 +82,10 @@ public slots:
 
 signals:
     void checkMessages();
+    void newTabAdded();
 
 private:
-        size_t mNumberOfUntitledTabs;
+    size_t mNumberOfUntitledTabs;
 };
 
 class ProjectTab : public QWidget

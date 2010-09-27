@@ -837,6 +837,7 @@ VariableList::VariableList(MainWindow *parent)
 
     connect(mpParentMainWindow->mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateList()));
     connect(mpParentMainWindow->mpProjectTabs, SIGNAL(tabCloseRequested(int)), this, SLOT(updateList()));
+    connect(mpParentMainWindow->mpProjectTabs, SIGNAL(newTabAdded()), this, SLOT(updateList()));
     connect(mpParentMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
     connect(this,SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),this,SLOT(createPlot(QTreeWidgetItem*)));
 }
@@ -911,6 +912,9 @@ void VariableList::updateList()
         }
     }
     this->sortItems(0, Qt::AscendingOrder);
+
+        // This connection makes sure that the plot list is connected to the new tab, so that it will update if the new tab is simulated
+    connect(mpParentMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
 }
 
 

@@ -495,6 +495,8 @@ void ProjectTabWidget::addProjectTab(ProjectTab *projectTab, QString tabName)
 
     addTab(projectTab, tabName);
     setCurrentWidget(projectTab);
+
+    emit newTabAdded();
 }
 
 
@@ -613,6 +615,8 @@ void ProjectTabWidget::loadModel()
                                                          fileDialogOpenDir.currentPath() + QString(MODELPATH),
                                                          tr("Hopsan Model Files (*.hmf)"));
     loadModel(modelFileName);
+
+    emit newTabAdded();
 }
 
 
