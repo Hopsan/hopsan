@@ -360,7 +360,7 @@ void PlotWindow::exportGNUPLOT()
                                                          fileDialogSaveDir.currentPath(),
                                                          tr("GNUPLOT File (*.GNUPLOT)"));
     QFile file(modelFileName);
-    QFileInfo fileInfo(file);
+    //QFileInfo fileInfo(file);
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -391,10 +391,6 @@ void PlotWindow::setSize(int size)
 void PlotWindow::setColor()
 {
     QMenu menu;
-
-
-    //QVector<*QAction> curves;
-    //QAction *tempAction;
 
     for(int i=0; i<mpCurves.size(); ++i)
     {
@@ -465,7 +461,7 @@ void PlotWindow::mouseMoveEvent(QMouseEvent *event)
     {
         QwtPlotCurve *curve = mMarkerToCurveMap.value(mpActiveMarker);
         QCursor cursor;
-        int correctionFactor = mpVariablePlot->canvas()->x()+5;
+        int correctionFactor = mpVariablePlot->canvas()->x();
         int intX = this->mapFromGlobal(cursor.pos()).x() - correctionFactor;
         double x = mpVariablePlot->canvasMap(curve->xAxis()).invTransform(intX);
 //        double x = mpVariablePlot->canvasMap(QwtPlot::xBottom).invTransform(intX);
@@ -481,6 +477,7 @@ void PlotWindow::mouseMoveEvent(QMouseEvent *event)
         if(xDataPos > curve->dataSize()-1)
         {
             xDataPos = curve->dataSize()-1;
+            x = xDataPos*curve->maxXValue() / curve->dataSize();
         }
         double y = curve->y(std::max(0, xDataPos));
         double y_pos = mpVariablePlot->canvasMap(QwtPlot::yLeft).invTransform(mpVariablePlot->canvasMap(curve->yAxis()).xTransform(y));
