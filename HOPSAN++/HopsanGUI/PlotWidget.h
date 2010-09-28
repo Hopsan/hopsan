@@ -89,12 +89,13 @@ class PlotWindow : public QMainWindow
 public:
     PlotWindow(QVector<double> xarray, QVector<double> yarray, PlotParameterTree *PlotParameterTree, MainWindow *parent);
     void addPlotCurve(QVector<double> xarray, QVector<double> yarray, QString title, QString xLabel, QString yLabel, QwtPlot::Axis axisY);
-    void changeXVector(QVector<double> xarray, QString xLabel);
+    void changeXVector(QVector<double> xarray, QString xLabel, QString componentName, QString portName, QString dataName);
     void insertMarker(QwtPlotCurve *curve);
     void setActiveMarker(QwtPlotMarker *marker);
 
     QVector<QwtPlotCurve *> mpCurves;
     QList<QStringList> mCurveParameters;
+    QStringList mSpecialXParameter;
     QwtPlotCurve *tempCurve;
     VariablePlot *mpVariablePlot;
     MainWindow *mpParentMainWindow;

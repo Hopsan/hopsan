@@ -568,7 +568,7 @@ void PlotWindow::dropEvent(QDropEvent *event)
             QCursor cursor;
             if(this->mapFromGlobal(cursor.pos()).y() > this->height()/2 && mpCurves.size() >= 1)
             {
-                this->changeXVector(yVector, ylabel);
+                this->changeXVector(yVector, ylabel, componentName, portName, dataName);
             }
             else if(this->mapFromGlobal(cursor.pos()).x() < this->width()/2)
             {
@@ -739,7 +739,7 @@ void PlotWindow::addPlotCurve(QVector<double> xarray, QVector<double> yarray, QS
 }
 
 
-void PlotWindow::changeXVector(QVector<double> xarray, QString xLabel)
+void PlotWindow::changeXVector(QVector<double> xarray, QString xLabel, QString componentName, QString portName, QString dataName)
 {
     QVector<double> tempYarray;
     for(size_t i=0; i<mpCurves.size(); ++i)
@@ -753,6 +753,8 @@ void PlotWindow::changeXVector(QVector<double> xarray, QString xLabel)
     }
     mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xLabel);
     mHasSpecialXAxis = true;
+    mSpecialXParameter.clear();
+    mSpecialXParameter << componentName << portName << dataName;
 }
 
 
@@ -772,9 +774,16 @@ void PlotWindow::checkNewValues()
         if(mpPlotParameterTree->mAvailableParameters.contains(mCurveParameters[i]))
         {
             QVector<double> xVector;
-            xVector = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getTimeVector(mCurveParameters[i][0], mCurveParameters[i][1]));
+            if(mHasSpecialXAxis && mpPlotParameterTree->mAvailableParameters.contains(mSpecialXParameter))
+            {
+                mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mpCoreSystemAccess->getPlotData(mSpecialXParameter[0], mSpecialXParameter[1], mSpecialXParameter[2], xVector);
+            }
+            else
+            {
+                xVector = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getTimeVector(mCurveParameters[i][0], mCurveParameters[i][1]));
+            }
             QVector<double> yVector;
-            mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getPlotData(mCurveParameters[i][0], mCurveParameters[i][1], mCurveParameters[i][2], yVector);
+            mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mpCoreSystemAccess->getPlotData(mCurveParameters[i][0], mCurveParameters[i][1], mCurveParameters[i][2], yVector);
             mpCurves[i]->setData(xVector, yVector);
             mpVariablePlot->replot();
         }
