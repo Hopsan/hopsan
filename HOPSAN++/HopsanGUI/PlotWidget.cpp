@@ -573,10 +573,16 @@ void PlotWindow::dropEvent(QDropEvent *event)
             else if(this->mapFromGlobal(cursor.pos()).x() < this->width()/2)
             {
                 this->addPlotCurve(xVector, yVector, title, xlabel, ylabel, QwtPlot::yLeft);
+                QStringList parameterDescription;
+                parameterDescription << componentName << portName << dataName;
+                mCurveParameters.append(parameterDescription);
             }
             else
             {
                 this->addPlotCurve(xVector, yVector, title, xlabel, ylabel, QwtPlot::yRight);
+                QStringList parameterDescription;
+                parameterDescription << componentName << portName << dataName;
+                mCurveParameters.append(parameterDescription);
             }
         }
     }
@@ -756,8 +762,13 @@ void PlotWindow::checkNewValues()
     {
         return;
     }
+
+    qDebug() << "mCurveParameters.size() = " << mCurveParameters.size();
+    qDebug() << "mpPlotParameterTree->mAvailableParameters.size() = " << mpPlotParameterTree->mAvailableParameters.size();
+
     for(int i=0; i<mpCurves.size(); ++i)
     {
+        qDebug() << "i = " << i;
         if(mpPlotParameterTree->mAvailableParameters.contains(mCurveParameters[i]))
         {
             QVector<double> xVector;
@@ -799,7 +810,7 @@ PlotParameterItem::PlotParameterItem(QString componentName, QString portName, QS
     mPortName = portName;
     mDataName = dataName;
     mDataUnit = dataUnit;
-    this->setText(0, mComponentName + ", " + mDataName + ", [" + mDataUnit + "]");
+    this->setText(0, mPortName + ", " + mDataName + ", [" + mDataUnit + "]");
 }
 
 
@@ -893,9 +904,14 @@ void PlotParameterTree::updateList()
             }
         }
     }
+
+    qDebug() << "mAvailableParameters.size() = " << mAvailableParameters.size();
+
     this->sortItems(0, Qt::AscendingOrder);
 
-        // This connection makes sure that the plot list is connected to the new tab, so that it will update if the new tab is simulated
+        // This connection makes sure that the plot list is connected to the new tab, so that it will update if the new tab is simulated.
+        // It must first be disconnected in case it was already connected, to avoid duplication of connection.
+    disconnect(mpParentMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
     connect(mpParentMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
 }
 
