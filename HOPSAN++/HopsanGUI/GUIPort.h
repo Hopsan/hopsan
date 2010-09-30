@@ -59,6 +59,9 @@ class GUIPort :public QGraphicsSvgItem
     Q_OBJECT
 public:
     GUIPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIObject *pParent = 0, CoreSystemAccess *pGUIRootSystem=0);
+    GUISystem *mpParentSystem;
+    GUIObject *mpParentGuiObject;
+
     void updatePosition();
     GUISystem *getParentSystem();
     GUIObject *getGuiObject();
@@ -106,8 +109,6 @@ private:
 
     QGraphicsLineItem *lineH;
     QGraphicsLineItem *lineV;
-    GUISystem *mpParentSystem;
-    GUIObject *mpParentGuiObject;
     CoreSystemAccess *mpGUIRootSystem;
     QGraphicsTextItem *mpPortLabel;
     qreal mMag;

@@ -329,6 +329,17 @@ void GUIConnector::setEndPort(GUIPort *port)
     emit endPortConnected();
     this->determineAppearance();
     this->setPassive();
+
+    if( (getNumberOfLines() == 1) && (abs(mPoints.first().x() - mPoints.last().x()) < 20) ||
+        (getNumberOfLines() < 3) && (abs(mPoints.first().x() - mPoints.last().x()) < 10) )
+    {
+        this->mpStartPort->mpParentGuiObject->moveBy(mPoints.last().x() - mPoints.first().x(), 0);
+    }
+    else if( (getNumberOfLines() == 1) && (abs(mPoints.first().y() - mPoints.last().y()) < 20) ||
+             (getNumberOfLines() < 4) && (abs(mPoints.first().y() - mPoints.last().y()) < 10) )
+    {
+        this->mpStartPort->mpParentGuiObject->moveBy(0, mPoints.last().y() - mPoints.first().y());
+    }
 }
 
 
@@ -963,6 +974,7 @@ void GUIConnectorLine::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWi
 void GUIConnectorLine::setActive()
 {
         this->setPen(mpConnectorAppearance->getPen("Active"));
+        this->mpParentGUIConnector->setZValue(0);
 }
 
 
@@ -1030,7 +1042,10 @@ void GUIConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
             this->setCursor(Qt::SizeHorCursor);
         }
     }
-    this->mpParentGUIConnector->setZValue(11);
+    if(mpParentGUIConnector->isConnected())
+    {
+        mpParentGUIConnector->setZValue(11);
+    }
     emit lineHoverEnter();
 }
 
@@ -1043,6 +1058,7 @@ void GUIConnectorLine::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     {
         mpParentGUIConnector->setZValue(0);
     }
+    this->mpParentGUIConnector->setZValue(0);
     emit lineHoverLeave();
 }
 
