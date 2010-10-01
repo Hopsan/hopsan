@@ -79,6 +79,7 @@
 
 class MainWindow;
 class VariablePlot;
+class VariablePlotZoomer;
 class PlotParameterTree;
 class PlotWidget;
 class GUISystem;
@@ -101,7 +102,7 @@ public:
     MainWindow *mpParentMainWindow;
     GUISystem *mpCurrentGUISystem;
 
-    QwtPlotZoomer *mpZoomer;
+    VariablePlotZoomer *mpZoomer;
     QwtPlotPanner *mpPanner;
     QwtPlotGrid *mpGrid;
     QwtSymbol *mpMarkerSymbol;
@@ -168,6 +169,16 @@ public:
 
 private:
     QwtPlotCurve *mpCurve;
+};
+
+
+class VariablePlotZoomer : public QwtPlotZoomer
+{
+public:
+    VariablePlotZoomer(int xAxis, int yAxis, QwtPlotCanvas *canvas);
+
+private:
+    virtual QwtDoubleSize minZoomSize();
 };
 
 

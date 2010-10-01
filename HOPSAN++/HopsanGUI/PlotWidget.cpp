@@ -60,6 +60,7 @@
 
 #include "qwt_symbol.h"
 #include "qwt_text_label.h"
+#include "qwt_double_rect.h"
 
 PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, PlotParameterTree *PlotParameterTree, MainWindow *parent)
     : QMainWindow(parent)
@@ -77,6 +78,8 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, PlotParam
         //Create the plot
     mpVariablePlot = new VariablePlot();
     mpVariablePlot->setAcceptDrops(false);
+    mpVariablePlot->setAxisAutoScale(QwtPlot::yLeft);
+    mpVariablePlot->setAxisAutoScale(QwtPlot::xBottom);
 
     nCurves = 0;
     mCurveColors << "Blue" << "Red" << "Green" << "Orange";
@@ -161,7 +164,8 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, PlotParam
     addToolBar(mpToolBar);
 
     //Zoom
-    mpZoomer = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpVariablePlot->canvas());
+    mpZoomer = new VariablePlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpVariablePlot->canvas());
+    mpZoomer->setMaxStackDepth(10000);
     mpZoomer->setSelectionFlags(QwtPicker::DragSelection | QwtPicker::CornerToCorner);
     mpZoomer->setRubberBand(QwtPicker::RectRubberBand);
     mpZoomer->setRubberBandPen(QColor(Qt::green));
@@ -169,6 +173,7 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, PlotParam
     mpZoomer->setTrackerPen(QColor(Qt::white));
     mpZoomer->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
     mpZoomer->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
+
 
     //Panner
     mpPanner = new QwtPlotPanner(mpVariablePlot->canvas());
@@ -220,26 +225,12 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, PlotParam
 
     this->setAcceptDrops(true);
 
-
-
-    //mpMarker = new QwtPlotMarker();
     mpMarkerSymbol = new QwtSymbol();
     mpMarkerSymbol->setBrush(QBrush(Qt::red, Qt::SolidPattern));
     mpMarkerSymbol->setStyle(QwtSymbol::Ellipse);
     mpMarkerSymbol->setSize(10,10);
-//    mpMarker->setSymbol(*mpMarkerSymbol);
-//    mpMarker->setXValue(0);
-//    mpMarker->setYValue(0);
-//    mpMarker->attach(mpVariablePlot);
 
-    //mpLabels = new QwtText();
-    //mpLabels->setText("(0.0, 0.0)");
-    //mpLabels->setBackgroundBrush(QColor("yellow"));
-    //mpLabels->setFont(QFont("Calibri", 12, QFont::Bold));
-    //mpLabel = new QwtTextLabel(*mpLabelText, this);
-    //mpLabel->setGeometry(0, 0, 70, 24);
-    //mpLabel->adjustSize();
-    //mpLabel->show();
+    mpActiveMarker = 0;
 }
 
 
@@ -803,6 +794,23 @@ void VariablePlot::setCurve(QwtPlotCurve *pCurve)
 {
     mpCurve = pCurve;
 }
+
+
+VariablePlotZoomer::VariablePlotZoomer(int xAxis, int yAxis, QwtPlotCanvas *canvas)
+        : QwtPlotZoomer(xAxis, yAxis, canvas)
+{
+    //Nothing needs to be done here...
+}
+
+QwtDoubleSize VariablePlotZoomer::minZoomSize()
+{
+    QwtDoubleSize tempDoubleSize;
+    tempDoubleSize.setHeight(0.0000000000000000001);
+    tempDoubleSize.setWidth(0.0000000000000000001);
+    return tempDoubleSize;
+}
+
+
 
 
 QwtPlotCurve *VariablePlot::getCurve()
