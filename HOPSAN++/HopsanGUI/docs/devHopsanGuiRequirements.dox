@@ -71,7 +71,9 @@ win32::LIBS += $$PWD/../lib/PythonQt$${DEBUG_EXT}.lib\n
 in the file 'pythonQt.prf' to:\n
 win32::LIBS += -L$$PWD/../lib -lPythonQt$${DEBUG_EXT}
   -# Build PythonQt in release mode.
-  -# In the HopsanGUI project. Go to the project tab and add the following variable:\n
-PYTHONQT_PATH = c:\\pythonqt or whatever your path is
+  -# In the HopsanGUI project. Go to the project tab and add the following variables:\n
+PYTHONQT_PATH = c:\\pythonqt\n
+PYTHON_PATH = c:\\python26 or whatever your paths are
+  -# Also add the path to the PythonQt libs in PATH (in Qt or in system) e.g. c:\\pythonqt\\lib
 -# Enjoy!
 */
