@@ -86,6 +86,8 @@ public:
     GUIConnectorLine *getLastLine();
     GUIConnectorLine *getSecondLastLine();
     GUIConnectorLine *getThirdLastLine();
+    bool isFirstOrLastDiagonal();
+    bool isFirstAndLastDiagonal();
     void determineAppearance();
 
     bool isConnected();
@@ -93,6 +95,8 @@ public:
     bool isActive();
     void saveToTextStream(QTextStream &rStream, QString prepend=QString());
     GUISystem *mpParentSystem;
+
+    QVector<QPointF> mPoints;
 
 public slots:
     void setIsoStyle(graphicsType gfxType);
@@ -127,7 +131,7 @@ private:
     GUIPort *mpEndPort;
     GUIConnectorLine *mpTempLine;
     QVector<GUIConnectorLine*> mpLines;
-    QVector<QPointF> mPoints;
+
     QVector<connectorGeometry> mGeometries;
 
 };

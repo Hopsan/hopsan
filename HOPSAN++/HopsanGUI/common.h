@@ -40,6 +40,7 @@
 #define COMMON_H
 
 #define GOLDENRATIO 1.61803399
+#define SNAPDISTANCE 10
 #define MAINPATH "../../"
 #define ICONPATH "../../HopsanGUI/icons/"
 #define COMPONENTPATH "../../HopsanGUI/componentData/"

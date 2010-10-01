@@ -542,7 +542,43 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
     }
     else if (change == QGraphicsItem::ItemPositionHasChanged)
     {
-        emit componentMoved();
+        emit componentMoved();  //This signal must be emitted  before the snap code, because it updates the connectors which is used to determine whether or not to snap.
+
+            //Vertical snap
+        if( (mpGUIConnectorPtrs.size() == 1) &&
+            (mpGUIConnectorPtrs.first()->getNumberOfLines() < 4) &&
+            !(mpGUIConnectorPtrs.first()->isFirstAndLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() == 2) &&
+            !(mpGUIConnectorPtrs.first()->isFirstOrLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() > 1) &&
+            (abs(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x()) < SNAPDISTANCE) &&
+            (abs(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x()) > 0.0) )
+        {
+            if(this->mpGUIConnectorPtrs.first()->getStartPort()->mpParentGuiObject == this)
+            {
+                this->moveBy(mpGUIConnectorPtrs.first()->mPoints.last().x() - mpGUIConnectorPtrs.first()->mPoints.first().x(), 0);
+            }
+            else
+            {
+                this->moveBy(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x(), 0);
+            }
+        }
+
+            //Horizontal snap
+        if( (mpGUIConnectorPtrs.size() == 1) &&
+            (mpGUIConnectorPtrs.first()->getNumberOfLines() < 4) &&
+            !(mpGUIConnectorPtrs.first()->isFirstAndLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() == 2) &&
+            !(mpGUIConnectorPtrs.first()->isFirstOrLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() > 2) &&
+            (abs(mpGUIConnectorPtrs.first()->mPoints.first().y() - mpGUIConnectorPtrs.first()->mPoints.last().y()) < SNAPDISTANCE) &&
+            (abs(mpGUIConnectorPtrs.first()->mPoints.first().y() - mpGUIConnectorPtrs.first()->mPoints.last().y()) > 0.0) )
+        {
+            if(this->mpGUIConnectorPtrs.first()->getStartPort()->mpParentGuiObject == this)
+            {
+                this->moveBy(0, mpGUIConnectorPtrs.first()->mPoints.last().y() - mpGUIConnectorPtrs.first()->mPoints.first().y());
+            }
+            else
+            {
+                this->moveBy(0, mpGUIConnectorPtrs.first()->mPoints.first().y() - mpGUIConnectorPtrs.first()->mPoints.last().y());
+            }
+        }
     }
     return value;
 }

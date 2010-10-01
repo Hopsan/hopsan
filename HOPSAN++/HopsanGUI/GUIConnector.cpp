@@ -330,15 +330,29 @@ void GUIConnector::setEndPort(GUIPort *port)
     this->determineAppearance();
     this->setPassive();
 
-    if( (getNumberOfLines() == 1) && (abs(mPoints.first().x() - mPoints.last().x()) < 20) ||
-        (getNumberOfLines() < 3) && (abs(mPoints.first().x() - mPoints.last().x()) < 10) )
+    if( (getNumberOfLines() == 1) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE) ||
+        (getNumberOfLines() < 3) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE) )
     {
-        this->mpStartPort->mpParentGuiObject->moveBy(mPoints.last().x() - mPoints.first().x(), 0);
+        if(mpStartPort->mpParentGuiObject->getGUIConnectorPtrs().size() == 1)
+        {
+            mpStartPort->mpParentGuiObject->moveBy(mPoints.last().x() - mPoints.first().x(), 0);
+        }
+        else if (mpEndPort->mpParentGuiObject->getGUIConnectorPtrs().size() == 1)
+        {
+            mpEndPort->mpParentGuiObject->moveBy(mPoints.first().x() - mPoints.last().x(), 0);
+        }
     }
-    else if( (getNumberOfLines() == 1) && (abs(mPoints.first().y() - mPoints.last().y()) < 20) ||
-             (getNumberOfLines() < 4) && (abs(mPoints.first().y() - mPoints.last().y()) < 10) )
+    else if( (getNumberOfLines() == 1) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE) ||
+             (getNumberOfLines() < 4) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE) )
     {
-        this->mpStartPort->mpParentGuiObject->moveBy(0, mPoints.last().y() - mPoints.first().y());
+        if(mpStartPort->mpParentGuiObject->getGUIConnectorPtrs().size() == 1)
+        {
+            mpStartPort->mpParentGuiObject->moveBy(0, mPoints.last().y() - mPoints.first().y());
+        }
+        else if (mpEndPort->mpParentGuiObject->getGUIConnectorPtrs().size() == 1)
+        {
+            mpEndPort->mpParentGuiObject->moveBy(0, mPoints.first().y() - mPoints.last().y());
+        }
     }
 }
 
@@ -856,6 +870,21 @@ void GUIConnector::deleteMeWithNoUndo()
 {
     mpParentSystem->removeConnector(this, NOUNDO);
 }
+
+
+//! This is used to decide whether or not to snap components.
+bool GUIConnector::isFirstOrLastDiagonal()
+{
+    return ( (mGeometries.first() == DIAGONAL) || (mGeometries.last() == DIAGONAL) );
+}
+
+
+//! This is used to decide whether or not to snap components.
+bool GUIConnector::isFirstAndLastDiagonal()
+{
+    return ( (mGeometries.first() == DIAGONAL) && (mGeometries.last() == DIAGONAL) );
+}
+
 
 //! Uppdate the appearance of the connector (setting its type and line endings)
 //! @todo right now this only set the type and ending arrows, maybe should handle ALLA appearance update like switching when howering, or maybe have two different update appearance functions (this one only needs to be run once when a conector is created)
