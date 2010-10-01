@@ -70,6 +70,10 @@ win32:LIBS += -L. -lpython$${PYTHON_VERSION}$${DEBUG_EXT}
 win32::LIBS += $$PWD/../lib/PythonQt$${DEBUG_EXT}.lib\n
 in the file 'pythonQt.prf' to:\n
 win32::LIBS += -L$$PWD/../lib -lPythonQt$${DEBUG_EXT}
+  -# Change the row:\n
+win32::LIBS += $$PWD/../lib/PythonQt_QtAll$${DEBUG_EXT}.lib\n
+in the file 'pythonQt_QtAll.prf' to:\n
+win32::LIBS += -L$$PWD/../lib/ -lPythonQt_QtAll$${DEBUG_EXT}
   -# Build PythonQt in release mode.
   -# In the HopsanGUI project. Go to the project tab and add the following variables:\n
 PYTHONQT_PATH = c:\\pythonqt\n
