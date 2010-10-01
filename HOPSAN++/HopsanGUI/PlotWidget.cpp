@@ -163,18 +163,6 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, PlotParam
 
     addToolBar(mpToolBar);
 
-    //Zoom
-    mpZoomer = new VariablePlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpVariablePlot->canvas());
-    mpZoomer->setMaxStackDepth(10000);
-    mpZoomer->setSelectionFlags(QwtPicker::DragSelection | QwtPicker::CornerToCorner);
-    mpZoomer->setRubberBand(QwtPicker::RectRubberBand);
-    mpZoomer->setRubberBandPen(QColor(Qt::green));
-    mpZoomer->setTrackerMode(QwtPicker::ActiveOnly);
-    mpZoomer->setTrackerPen(QColor(Qt::white));
-    mpZoomer->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
-    mpZoomer->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
-
-
     //Panner
     mpPanner = new QwtPlotPanner(mpVariablePlot->canvas());
     mpPanner->setMouseButton(Qt::MidButton);
@@ -199,6 +187,23 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, PlotParam
     tempCurve->setPen(QPen(QBrush(QColor(mCurveColors[nCurves])),mpSizeSpinBox->value()));
     mpCurves.append(tempCurve);
     ++nCurves;
+
+    //Zoom
+    mpZoomer = new VariablePlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpVariablePlot->canvas());
+    QwtDoubleRect tempDoubleRect;
+    tempDoubleRect.setX(mpCurves.first()->minXValue());
+    tempDoubleRect.setY(mpCurves.first()->minYValue());
+    tempDoubleRect.setWidth(mpCurves.first()->maxXValue()-mpCurves.first()->minXValue());
+    tempDoubleRect.setHeight(mpCurves.first()->maxYValue()-mpCurves.first()->minYValue());
+    mpZoomer->setZoomBase(tempDoubleRect);
+    mpZoomer->setMaxStackDepth(10000);
+    mpZoomer->setSelectionFlags(QwtPicker::DragSelection | QwtPicker::CornerToCorner);
+    mpZoomer->setRubberBand(QwtPicker::RectRubberBand);
+    mpZoomer->setRubberBandPen(QColor(Qt::green));
+    mpZoomer->setTrackerMode(QwtPicker::ActiveOnly);
+    mpZoomer->setTrackerPen(QColor(Qt::white));
+    mpZoomer->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
+    mpZoomer->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
 
         //Create the close button
     QDialogButtonBox *buttonbox = new QDialogButtonBox(QDialogButtonBox::Close);
@@ -448,7 +453,7 @@ void PlotWindow::dragEnterEvent(QDragEnterEvent *event)
 void PlotWindow::mouseMoveEvent(QMouseEvent *event)
 {
 
-    if(mpActiveMarker != 0)
+    if(mpActiveMarker != 0 && !mpZoomer->isEnabled() && !mpPanner->isEnabled())
     {
         QwtPlotCurve *curve = mMarkerToCurveMap.value(mpActiveMarker);
         QCursor cursor;
@@ -579,8 +584,14 @@ void PlotWindow::dropEvent(QDropEvent *event)
     }
 }
 
+
 void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
 {
+    if(this->mpZoomer->isEnabled())
+    {
+        return;
+    }
+
     QMenu menu;
 
     QMenu *yAxisRightMenu;
@@ -756,12 +767,8 @@ void PlotWindow::checkNewValues()
         return;
     }
 
-    qDebug() << "mCurveParameters.size() = " << mCurveParameters.size();
-    qDebug() << "mpPlotParameterTree->mAvailableParameters.size() = " << mpPlotParameterTree->mAvailableParameters.size();
-
     for(int i=0; i<mpCurves.size(); ++i)
     {
-        qDebug() << "i = " << i;
         if(mpPlotParameterTree->mAvailableParameters.contains(mCurveParameters[i]))
         {
             QVector<double> xVector;
@@ -921,8 +928,6 @@ void PlotParameterTree::updateList()
             }
         }
     }
-
-    qDebug() << "mAvailableParameters.size() = " << mAvailableParameters.size();
 
     this->sortItems(0, Qt::AscendingOrder);
 

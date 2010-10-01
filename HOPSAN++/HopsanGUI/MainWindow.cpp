@@ -208,22 +208,12 @@ void MainWindow::show()
 //! Opens the plot widget.
 void MainWindow::plot()
 {
-    qDebug() << "PLOOOOT";
-
     if(mpProjectTabs->count() != 0)
     {
-        if(!mpPlotVariablesDock->isVisible())//!mPlotVariableListOpen)
+        if(!mpPlotVariablesDock->isVisible())
         {
-    //        mpPlotVariablesDock = new QDockWidget(tr("Plot Variables"), this);
-    //        mpPlotVariablesDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    //        PlotWidget *variableList = new PlotWidget(this);
-    //        mpPlotVariablesDock->setWidget(variableList);
-    //        //variableList->show();
-    //        addDockWidget(Qt::RightDockWidgetArea, mpPlotVariablesDock);
-
             if(mpPlotPlotWidget == 0)
             {
-                qDebug() << "It's true!";
                 mpPlotPlotWidget = new PlotWidget(this);
             }
             mpPlotVariablesDock->setWidget(mpPlotPlotWidget);
@@ -234,7 +224,7 @@ void MainWindow::plot()
         else
         {
             mpPlotVariablesDock->hide();
-            //this->removeDockWidget(mpPlotVariablesDock);
+
         }
     }
 }
