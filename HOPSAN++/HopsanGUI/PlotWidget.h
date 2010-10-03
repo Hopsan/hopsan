@@ -49,6 +49,7 @@
 #include <qwt_plot_item.h>
 #include <qwt_plot_marker.h>
 #include <qwt_plot_zoomer.h>
+#include <qwt_plot_magnifier.h>
 #include <qwt_plot_panner.h>
 #include <qwt_picker.h>
 #include <QGridLayout>
@@ -94,29 +95,31 @@ public:
     void insertMarker(QwtPlotCurve *curve);
     void setActiveMarker(QwtPlotMarker *marker);
 
-    QVector<QwtPlotCurve *> mpCurves;
-    QList<QStringList> mCurveParameters;
-    QStringList mSpecialXParameter;
-    QwtPlotCurve *tempCurve;
-    VariablePlot *mpVariablePlot;
     MainWindow *mpParentMainWindow;
     GUISystem *mpCurrentGUISystem;
 
-    VariablePlotZoomer *mpZoomer;
-    QwtPlotPanner *mpPanner;
+    QVector<QwtPlotCurve *> mpCurves;
+    QList<QStringList> mCurveParameters;
+    QStringList mSpecialXParameter;
+
+    QwtPlot *mpVariablePlot;
     QwtPlotGrid *mpGrid;
     QwtSymbol *mpMarkerSymbol;
-
+    QwtPlotMarker *mpActiveMarker;
     QVector <QwtPlotMarker *> mpMarkers;
     QHash <QwtPlotCurve *, QwtPlotMarker *> mCurveToMarkerMap;
     QHash <QwtPlotMarker *, QwtPlotCurve *> mMarkerToCurveMap;
-    QwtPlotMarker *mpActiveMarker;
+    QwtPlotCurve *tempCurve;
+    QwtPlotZoomer *mpZoomer;
+    QwtPlotMagnifier *mpMagnifier;
+    QwtPlotPanner *mpPanner;
 
     QToolBar *mpToolBar;
     QToolButton *mpZoomButton;
     QToolButton *mpPanButton;
     QToolButton *mpSVGButton;
-    QToolButton *mpGNUPLOTButton;
+    QToolButton *mpExportGNUPLOTButton;
+    QToolButton *mpImportGNUPLOTButton;
     QToolButton *mpGridButton;
     QToolBar *mpSizeButton;
     QSpinBox *mpSizeSpinBox;
@@ -148,37 +151,16 @@ private slots:
     void enablePan(bool);
     void exportSVG();
     void exportGNUPLOT();
+    void importGNUPLOT();
     void enableGrid(bool);
-    void setSize(int);
-    void setColor();
+    void setLineWidth(int);
+    void setLineColor();
     void setBackgroundColor();
     void checkNewValues();
     void setHold(bool value);
 
 private:
     PlotParameterTree *mpPlotParameterTree;
-};
-
-
-class VariablePlot : public QwtPlot
-{
-public:
-    VariablePlot(QWidget *parent = 0);
-    void setCurve(QwtPlotCurve *pCurve);
-    QwtPlotCurve *getCurve();
-
-private:
-    QwtPlotCurve *mpCurve;
-};
-
-
-class VariablePlotZoomer : public QwtPlotZoomer
-{
-public:
-    VariablePlotZoomer(int xAxis, int yAxis, QwtPlotCanvas *canvas);
-
-private:
-    virtual QwtDoubleSize minZoomSize();
 };
 
 

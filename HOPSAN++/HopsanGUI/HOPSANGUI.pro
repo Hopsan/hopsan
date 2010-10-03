@@ -28,7 +28,8 @@ SOURCES += main.cpp \
     GUISystem.cpp \
     CoreSystemAccess.cpp \
     GUIPortAppearance.cpp \
-    GUIConnectorAppearance.cpp
+    GUIConnectorAppearance.cpp \
+    GlobalParametersWidget.cpp
 HEADERS += MainWindow.h \
     ProjectTabWidget.h \
     LibraryWidget.h \
@@ -56,7 +57,8 @@ HEADERS += MainWindow.h \
     GUISystem.h \
     CoreSystemAccess.h \
     GUIPortAppearance.h \
-    GUIConnectorAppearance.h
+    GUIConnectorAppearance.h \
+    GlobalParametersWidget.h
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE

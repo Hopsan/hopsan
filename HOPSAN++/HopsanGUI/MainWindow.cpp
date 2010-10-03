@@ -55,6 +55,7 @@
 #include "GraphicsScene.h"
 #include "GUISystem.h"
 #include "GUIUtilities.h"
+#include "GlobalParametersWidget.h"
 
 
 //! Constructor
@@ -134,6 +135,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     mpUndoWidget = new UndoWidget(this);
 
+    mpGlobalParametersWidget = new GlobalParametersWidget(this);
+
     mpProjectTabs->addNewProjectTab();
 
     mpPreferenceWidget = new PreferenceWidget(this);
@@ -171,17 +174,27 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/valves","Hydraulic");
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/pumps","Hydraulic");
 
-        //Create the plot widget and hide it
-    mpPlotVariablesDock = new QDockWidget(tr("Plot Variables"), this);
-    mpPlotVariablesDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    mpPlotVariablesDock->hide();
-    addDockWidget(Qt::RightDockWidgetArea, mpPlotVariablesDock);
+        //Create the plot dock widget and hide it
+    mpPlotWidgetDock = new QDockWidget(tr("Plot Variables"), this);
+    mpPlotWidgetDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    mpPlotWidgetDock->hide();
+    addDockWidget(Qt::RightDockWidgetArea, mpPlotWidgetDock);
 
-    //Create the undo widget and hide it
-mpUndoDock = new QDockWidget(tr("Undo History"), this);
-mpUndoDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-mpUndoDock->hide();
-addDockWidget(Qt::RightDockWidgetArea, mpUndoDock);
+        //Create the global parameters dock widget and hide it
+    mpGlobalParametersDock = new QDockWidget(tr("Global Parameters"), this);
+    mpGlobalParametersDock->setAllowedAreas((Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea));
+    mpGlobalParametersDock->hide();
+    addDockWidget(Qt::RightDockWidgetArea, mpGlobalParametersDock);
+
+        //Create the undo dock widget and hide it
+    mpUndoWidgetDock = new QDockWidget(tr("Undo History"), this);
+    mpUndoWidgetDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    mpUndoWidgetDock->hide();
+    addDockWidget(Qt::RightDockWidgetArea, mpUndoWidgetDock);
+
+    tabifyDockWidget(mpPlotWidgetDock, mpGlobalParametersDock);
+    tabifyDockWidget(mpGlobalParametersDock, mpUndoWidgetDock);
+    tabifyDockWidget(mpUndoWidgetDock, mpPlotWidgetDock);
 
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateToolBarsToNewTab()));
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(refreshUndoWidgetList()));
@@ -206,24 +219,24 @@ void MainWindow::show()
 
 
 //! Opens the plot widget.
-void MainWindow::plot()
+void MainWindow::openPlotWidget()
 {
     if(mpProjectTabs->count() != 0)
     {
-        if(!mpPlotVariablesDock->isVisible())
+        if(!mpPlotWidgetDock->isVisible())
         {
             if(mpPlotPlotWidget == 0)
             {
                 mpPlotPlotWidget = new PlotWidget(this);
             }
-            mpPlotVariablesDock->setWidget(mpPlotPlotWidget);
+            mpPlotWidgetDock->setWidget(mpPlotPlotWidget);
 
-            mpPlotVariablesDock->show();
-            mpPlotVariablesDock->raise();
+            mpPlotWidgetDock->show();
+            mpPlotWidgetDock->raise();
         }
         else
         {
-            mpPlotVariablesDock->hide();
+            mpPlotWidgetDock->hide();
 
         }
     }
@@ -286,12 +299,16 @@ void MainWindow::createActions()
 
     openUndoAction = new QAction(tr("&Undo History"), this);
     openUndoAction->setText("Undo History");
-    connect(openUndoAction,SIGNAL(triggered()),this,SLOT(openUndo()));
+    connect(openUndoAction,SIGNAL(triggered()),this,SLOT(openUndoWidget()));
 
     disableUndoAction = new QAction(tr("&Disable Undo"), this);
     disableUndoAction->setText("Disable Undo");
     disableUndoAction->setCheckable(true);
     disableUndoAction->setChecked(false);
+
+    openGlobalParametersAction = new QAction(tr("&Global Parameters"), this);
+    openGlobalParametersAction->setText("Global Parameters");
+    connect(openGlobalParametersAction,SIGNAL(triggered()),this,SLOT(openGlobalParametersWidget()));
 
     cutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Cut.png"), tr("&Cut"), this);
     cutAction->setShortcut(tr("Ctrl+x"));
@@ -312,7 +329,7 @@ void MainWindow::createActions()
     plotAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Plot.png"), tr("&Plot Variables"), this);
     plotAction->setShortcut(tr("Plot"));
     plotAction->setStatusTip(tr("Plot Variables"));
-    connect(plotAction, SIGNAL(triggered()),this,SLOT(plot()));
+    connect(plotAction, SIGNAL(triggered()),this,SLOT(openPlotWidget()));
 
     loadLibsAction = new QAction(this);
     loadLibsAction->setText("Load Libraries");
@@ -420,6 +437,7 @@ void MainWindow::createMenus()
     menuFile->addAction(loadLibsAction);
     menuFile->addSeparator();
     menuFile->addAction(preferencesAction);
+    menuFile->addAction(openGlobalParametersAction);
     menuFile->addSeparator();
     menuFile->addAction(closeAction);
 
@@ -505,27 +523,39 @@ void MainWindow::createToolbars()
 
 
 //! Opens the undo widget.
-void MainWindow::openUndo()
+void MainWindow::openUndoWidget()
 {
-
-    if(!mpUndoDock->isVisible())
+    if(!mpUndoWidgetDock->isVisible())
     {
-        //mpUndoDock = new QDockWidget(tr("Undo History"), this);
-        //mpUndoDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+        mpUndoWidgetDock->setWidget(mpUndoWidget);
 
-        mpUndoDock->setWidget(mpUndoWidget);
+//        if(dockWidgetArea(mpPlotWidgetDock) == dockWidgetArea(mpUndoWidgetDock))
+//        {
+//            tabifyDockWidget(mpUndoWidgetDock, mpPlotWidgetDock);
+//        }
 
-        //addDockWidget(Qt::RightDockWidgetArea, mpUndoDock);
-
-        if(dockWidgetArea(mpPlotVariablesDock) == dockWidgetArea(mpUndoDock))
-        {
-            tabifyDockWidget(mpUndoDock, mpPlotVariablesDock);
-        }
-
-        mpUndoDock->show();
-        //mpUndoDock->activateWindow();
-        mpUndoDock->raise();
+        mpUndoWidgetDock->show();
+        mpUndoWidgetDock->raise();
         mpUndoWidget->refreshList();
+    }
+}
+
+
+//! Opens the undo widget.
+void MainWindow::openGlobalParametersWidget()
+{
+    if(!mpGlobalParametersDock->isVisible())
+    {
+        mpGlobalParametersDock->setWidget(mpGlobalParametersWidget);
+
+//        if( (dockWidgetArea(mpGlobalParametersDock) == dockWidgetArea(mpPlotWidgetDock)) ||
+//             dockWidgetArea(mpGlobalParametersDock) == dockWidgetArea(mpUndoWidgetDock) )
+//        {
+//            tabifyDockWidget(mpGlobalParametersDock, mpUndoWidgetDock);
+//        }
+
+        mpGlobalParametersDock->show();
+        mpGlobalParametersDock->raise();
     }
 }
 

@@ -69,7 +69,7 @@ class OptionsWidget;
 class UndoWidget;
 class MessageWidget;
 class PlotWidget;
-
+class GlobalParametersWidget;
 
 class MainWindow : public QMainWindow
 {
@@ -92,6 +92,7 @@ public:
     MessageWidget *mpMessageWidget;
     QStatusBar *mpStatusBar;
     PlotWidget *mpPlotPlotWidget;
+    GlobalParametersWidget *mpGlobalParametersWidget;
 
     //Settings variable - stored in and loaded from settings.txt
     bool mInvertWheel;
@@ -134,6 +135,7 @@ public:
     QAction *undoAction;
     QAction *redoAction;
     QAction *openUndoAction;
+    QAction *openGlobalParametersAction;
     QAction *disableUndoAction;
     QAction *cutAction;
     QAction *copyAction;
@@ -175,18 +177,18 @@ public slots:
     void saveSettings();
 
 private slots:
-    //void addLibs(QString libDir, QString parentLib=QString());
-    //void addLibs();
-    void plot();
-    void openUndo();
+    void openPlotWidget();
+    void openUndoWidget();
+    void openGlobalParametersWidget();
     void loadSettings();
 
 private:
     //Dock area widgets
     QDockWidget *mpMessageDock;
     QDockWidget *mpLibDock;
-    QDockWidget *mpPlotVariablesDock;
-    QDockWidget *mpUndoDock;
+    QDockWidget *mpPlotWidgetDock;
+    QDockWidget *mpUndoWidgetDock;
+    QDockWidget *mpGlobalParametersDock;
 
     //Methods that adjusts simulation parameters if they are illegal
     void fixFinishTime();

@@ -57,37 +57,47 @@
 #include "GUISystem.h"
 
 #include "qwt_scale_engine.h"
-
 #include "qwt_symbol.h"
 #include "qwt_text_label.h"
 #include "qwt_double_rect.h"
 
-PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, PlotParameterTree *PlotParameterTree, MainWindow *parent)
+
+//! Constructor for the plot window, where plots are displayed.
+//! @param xArray is the x-axis data for the initial plot curve
+//! @param yArray is the y-axis data for the initial plot curve
+//! @param plotParameterTree is a pointer to the parameter tree from where the plot window was created
+//! @param parent is a pointer to the main window
+PlotWindow::PlotWindow(QVector<double> xArray, QVector<double> yArray, PlotParameterTree *plotParameterTree, MainWindow *parent)
     : QMainWindow(parent)
 {
     this->setAttribute(Qt::WA_DeleteOnClose);
 
     mpParentMainWindow = parent;
     mpCurrentGUISystem = mpParentMainWindow->mpProjectTabs->getCurrentSystem();
-    mpPlotParameterTree = PlotParameterTree;
+    mpPlotParameterTree = plotParameterTree;
 
-    mHasSpecialXAxis = false;
+    mHasSpecialXAxis = false;   //This becomes true when user creates an XY-plot
 
-    mHold = false;
+    mHold = false;      //Default settings for "Hold Plot" function
 
-        //Create the plot
-    mpVariablePlot = new VariablePlot();
+        //Create the actual plot widget
+    mpVariablePlot = new QwtPlot();
     mpVariablePlot->setAcceptDrops(false);
+    mpVariablePlot->setCanvasBackground(QColor(Qt::white));
+    mpVariablePlot->setAutoReplot(true);
     mpVariablePlot->setAxisAutoScale(QwtPlot::yLeft);
     mpVariablePlot->setAxisAutoScale(QwtPlot::xBottom);
 
     nCurves = 0;
-    mCurveColors << "Blue" << "Red" << "Green" << "Orange";
+
+        //Color names for curve colors. A new curve will get next color in list.
+        //When all colors are used, the first color is used again.
+    mCurveColors << "Blue" << "Red" << "Green" << "Orange" << "Pink" << "Brown" << "Purple" << "Gray";
 
     mLeftAxisLogarithmic = false;
     mRightAxisLogarithmic = false;
 
-        //Create mpToolBar and toolbutton
+        //Create the toolbar and toolbar buttons
     mpToolBar = new QToolBar(this);
     mpToolBar->setAcceptDrops(false);
 
@@ -114,12 +124,19 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, PlotParam
     mpSVGButton->setAcceptDrops(false);
     mpToolBar->addWidget(mpSVGButton);
 
-    mpGNUPLOTButton = new QToolButton(mpToolBar);
-    mpGNUPLOTButton->setToolTip("Export to GNUPLOT");
-    mpGNUPLOTButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-SaveToGnuPlot.png"));
-    mpGNUPLOTButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    mpGNUPLOTButton->setAcceptDrops(false);
-    mpToolBar->addWidget(mpGNUPLOTButton);
+    mpExportGNUPLOTButton = new QToolButton(mpToolBar);
+    mpExportGNUPLOTButton->setToolTip("Export to GNUPLOT");
+    mpExportGNUPLOTButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-SaveToGnuPlot.png"));
+    mpExportGNUPLOTButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mpExportGNUPLOTButton->setAcceptDrops(false);
+    mpToolBar->addWidget(mpExportGNUPLOTButton);
+
+    mpImportGNUPLOTButton = new QToolButton(mpToolBar);
+    mpImportGNUPLOTButton->setToolTip("Import from GNUPLOT");
+    mpImportGNUPLOTButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LoadGnuPlot.png"));
+    mpImportGNUPLOTButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mpImportGNUPLOTButton->setAcceptDrops(false);
+    mpToolBar->addWidget(mpImportGNUPLOTButton);
 
     mpGridButton = new QToolButton(mpToolBar);
     mpGridButton->setToolTip("Show Grid");
@@ -163,34 +180,33 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, PlotParam
 
     addToolBar(mpToolBar);
 
-    //Panner
-    mpPanner = new QwtPlotPanner(mpVariablePlot->canvas());
-    mpPanner->setMouseButton(Qt::MidButton);
-
-    //grid
-    mpGrid = new QwtPlotGrid;
-    mpGrid->enableXMin(true);
-    mpGrid->enableYMin(true);
-    mpGrid->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
-    mpGrid->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
-    mpGrid->attach(mpVariablePlot);
-    //grid->hide();
-
         // Create and add curves to the plot
     tempCurve = new QwtPlotCurve();
-    QwtArrayData data(xarray,yarray);
+    QwtArrayData data(xArray,yArray);
     tempCurve->setData(data);
     tempCurve->attach(mpVariablePlot);
-    mpVariablePlot->setCurve(tempCurve);
+    //mpVariablePlot->setCurve(tempCurve);
     tempCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
     mpVariablePlot->replot();
     tempCurve->setPen(QPen(QBrush(QColor(mCurveColors[nCurves])),mpSizeSpinBox->value()));
     mpCurves.append(tempCurve);
     ++nCurves;
 
-    //Zoom
-    mpZoomer = new VariablePlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpVariablePlot->canvas());
-    QwtDoubleRect tempDoubleRect;
+        //Grid
+    mpGrid = new QwtPlotGrid;
+    mpGrid->enableXMin(true);
+    mpGrid->enableYMin(true);
+    mpGrid->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
+    mpGrid->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
+    mpGrid->attach(mpVariablePlot);
+
+        //Panning Tool
+    mpPanner = new QwtPlotPanner(mpVariablePlot->canvas());
+    mpPanner->setMouseButton(Qt::MidButton);
+
+        //Rubber Band Zoom
+    mpZoomer = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpVariablePlot->canvas());
+    QwtDoubleRect tempDoubleRect;       //The first added curve is used as reference rectangle
     tempDoubleRect.setX(mpCurves.first()->minXValue());
     tempDoubleRect.setY(mpCurves.first()->minYValue());
     tempDoubleRect.setWidth(mpCurves.first()->maxXValue()-mpCurves.first()->minXValue());
@@ -205,6 +221,18 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, PlotParam
     mpZoomer->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
     mpZoomer->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
 
+        //Wheel Zoom
+    mpMagnifier = new QwtPlotMagnifier(mpVariablePlot->canvas());
+    mpMagnifier->setZoomInKey(Qt::Key_Plus, Qt::ControlModifier);
+    mpMagnifier->setWheelFactor(1.1);
+
+        //Curve Marker
+    mpMarkerSymbol = new QwtSymbol();
+    mpMarkerSymbol->setBrush(QBrush(Qt::red, Qt::SolidPattern));
+    mpMarkerSymbol->setStyle(QwtSymbol::Ellipse);
+    mpMarkerSymbol->setSize(10,10);
+    mpActiveMarker = 0;
+
         //Create the close button
     QDialogButtonBox *buttonbox = new QDialogButtonBox(QDialogButtonBox::Close);
     buttonbox->setAcceptDrops(false);
@@ -218,33 +246,32 @@ PlotWindow::PlotWindow(QVector<double> xarray, QVector<double> yarray, PlotParam
     connect(mpZoomButton,SIGNAL(toggled(bool)),SLOT(enableZoom(bool)));
     connect(mpPanButton,SIGNAL(toggled(bool)),SLOT(enablePan(bool)));
     connect(mpSVGButton,SIGNAL(clicked()),SLOT(exportSVG()));
-    connect(mpGNUPLOTButton,SIGNAL(clicked()),SLOT(exportGNUPLOT()));
+    connect(mpExportGNUPLOTButton,SIGNAL(clicked()),SLOT(exportGNUPLOT()));
+    connect(mpImportGNUPLOTButton,SIGNAL(clicked()),SLOT(importGNUPLOT()));
     connect(mpGridButton,SIGNAL(toggled(bool)),SLOT(enableGrid(bool)));
-    connect(mpSizeSpinBox,SIGNAL(valueChanged(int)),this, SLOT(setSize(int)));
-    connect(mpColorButton,SIGNAL(clicked()),this,SLOT(setColor()));
+    connect(mpSizeSpinBox,SIGNAL(valueChanged(int)),this, SLOT(setLineWidth(int)));
+    connect(mpColorButton,SIGNAL(clicked()),this,SLOT(setLineColor()));
     connect(mpBackgroundColorButton,SIGNAL(clicked()),this,SLOT(setBackgroundColor()));
     connect (mpHoldCheckBox, SIGNAL(toggled(bool)), this, SLOT(setHold(bool)));
     connect(this->mpParentMainWindow->mpProjectTabs->getCurrentTab(),SIGNAL(simulationFinished()),this,SLOT(checkNewValues()));
 
-    resize(600,600);
+    //! @todo Maybe user should be allowed to change default plot window size, or someone will become annoyed...
+    resize(600,600);    //Default window size
 
     this->setAcceptDrops(true);
-
-    mpMarkerSymbol = new QwtSymbol();
-    mpMarkerSymbol->setBrush(QBrush(Qt::red, Qt::SolidPattern));
-    mpMarkerSymbol->setStyle(QwtSymbol::Ellipse);
-    mpMarkerSymbol->setSize(10,10);
-
-    mpActiveMarker = 0;
 }
 
 
+//! Slot that is used to change the "Hold Plot" setting
+//! @param value is a boolean that tells whether it should be turned on or off
 void PlotWindow::setHold(bool value)
 {
     mHold = value;
 }
 
 
+//! Inserts a curve marker at the specified curve
+//! @param curve is a pointer to the specified curve
 void PlotWindow::insertMarker(QwtPlotCurve *curve)
 {
     if(mCurveToMarkerMap.contains(curve))
@@ -278,17 +305,21 @@ void PlotWindow::insertMarker(QwtPlotCurve *curve)
 }
 
 
+//! Changes the active marker (the on that can be moved around)
+//! @marker is a pointer to the marker that shall be activated
 void PlotWindow::setActiveMarker(QwtPlotMarker *marker)
 {
     this->mpActiveMarker = marker;
 }
 
 
+//! Slot that enables or disables rubber band zooming
+//! @on is true if it shall be enabled or false if it should be disabled
 void PlotWindow::enableZoom(bool on)
 {
     mpZoomer->setEnabled(on);
-    //mpZoomer->zoom(0);
 
+    //! @todo Figure out why panner is enabled if zoomer is. Is it needed for something?
     mpPanner->setEnabled(on);
     mpPanner->setMouseButton(Qt::MidButton);
 
@@ -299,7 +330,8 @@ void PlotWindow::enableZoom(bool on)
 }
 
 
-//! Slot that enables or disables
+//! Slot that enables or disables panning tool
+//! @param on is true/false if panning shall be enabled/disabled
 void PlotWindow::enablePan(bool on)
 {
     mpPanner->setEnabled(on);
@@ -313,6 +345,7 @@ void PlotWindow::enablePan(bool on)
 
 
 //! Slot that turns plot grid on or off
+//! @param on is true/false if it shall be turned on/off.
 void PlotWindow::enableGrid(bool on)
 {
     if (on)
@@ -323,7 +356,6 @@ void PlotWindow::enableGrid(bool on)
     {
         mpGrid->hide();
     }
-
 }
 
 
@@ -348,15 +380,38 @@ void PlotWindow::exportSVG()
 
 
 //! Slot that exports a curve to GNUPLOT format
-//! @todo Currently only the last added curve will be exported...
 void PlotWindow::exportGNUPLOT()
 {
+    QMenu menu;
+
+    for(int i=0; i<mpCurves.size(); ++i)
+    {
+        menu.addAction(mpCurves[i]->title().text());
+    }
+
+    QCursor *cursor;
+    QAction *selectedAction = menu.exec(cursor->pos());
+
+    if(selectedAction == 0)
+    {
+        return;
+    }
+
+    QwtPlotCurve *pSelectedCurve;
+
+    for(int i=0; i<mpCurves.size(); ++i)
+    {
+        if (selectedAction->text() == mpCurves[i]->title().text())
+        {
+            pSelectedCurve = mpCurves[i];
+        }
+    }
+
     QDir fileDialogSaveDir;
     QString modelFileName = QFileDialog::getSaveFileName(this, tr("Save Model File"),
                                                          fileDialogSaveDir.currentPath(),
                                                          tr("GNUPLOT File (*.GNUPLOT)"));
     QFile file(modelFileName);
-    //QFileInfo fileInfo(file);
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -365,18 +420,66 @@ void PlotWindow::exportGNUPLOT()
     }
     QTextStream modelFile(&file);  //Create a QTextStream object to stream the content of file
 
-    size_t size = mpVariablePlot->getCurve()->data().size();
+    size_t size = pSelectedCurve->data().size();
     for(std::size_t i=0; i!=size; ++i)
     {
-        modelFile << mpVariablePlot->getCurve()->data().x(i);
+        modelFile << pSelectedCurve->data().x(i);
         modelFile << " ";
-        modelFile << mpVariablePlot->getCurve()->data().y(i);
-        modelFile << "\n";
+        modelFile << pSelectedCurve->data().y(i);
+        if(i < size-1)      //Do not add line break on the last line in the file
+        {
+            modelFile << "\n";
+        }
     }
     file.close();
 }
 
-void PlotWindow::setSize(int size)
+
+//! Slot that imports a curve from a file in GNUPLOT format
+void PlotWindow::importGNUPLOT()
+{
+    QDir fileDialogOpenDir;
+    QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Data File"),
+                                                         fileDialogOpenDir.currentPath());
+    if (modelFileName.isEmpty())
+    {
+        return;
+    }
+    QFile file(modelFileName);
+    if(!file.exists())
+    {
+        qDebug() << "Failed to open file, file not found: " + file.fileName();
+        return;
+    }
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        return;
+    }
+
+    QVector<double> xArray;
+    QVector<double> yArray;
+
+    QTextStream textStreamFile(&file);
+
+    double tempValue1;
+    double tempValue2;
+    while( !textStreamFile.atEnd() )
+    {
+        qDebug() << "Reading something!";
+        textStreamFile >> tempValue1;
+        xArray.append(tempValue1);
+        textStreamFile >> tempValue2;
+        yArray.append(tempValue2);
+        qDebug() << "(" << tempValue1 << ", " << tempValue2 << ")";
+    }
+    file.close();
+    this->addPlotCurve(xArray, yArray, file.fileName(), "X from GNUPLOT", "Y from GNUPLOT", QwtPlot::yLeft);
+}
+
+
+//! Slot that changes line width of all plot lines
+//! size is the desired line width in pixels
+void PlotWindow::setLineWidth(int size)
 {
     for(size_t i=0; i<mpCurves.size(); ++i)
     {
@@ -384,7 +487,8 @@ void PlotWindow::setSize(int size)
     }
 }
 
-void PlotWindow::setColor()
+//! Slot that asks for a line and then opens color selection box to change the line color
+void PlotWindow::setLineColor()
 {
     QMenu menu;
 
@@ -426,6 +530,8 @@ void PlotWindow::setColor()
     }
 }
 
+
+//! Slot that opens color selection box to change background color for the plot
 void PlotWindow::setBackgroundColor()
 {
     QColor color = QColorDialog::getColor(this->mpVariablePlot->canvasBackground(), this);
@@ -437,10 +543,12 @@ void PlotWindow::setBackgroundColor()
 }
 
 
+//! Defines what happens when used drags something into the plot window
 void PlotWindow::dragEnterEvent(QDragEnterEvent *event)
 {
     if (event->mimeData()->hasText())
     {
+            //Create the hover rectangle (size will be changed by dragMoveEvent)
         mpHoverRect = new QRubberBand(QRubberBand::Rectangle,this);
         mpHoverRect->setGeometry(0, 0, this->width(), this->height());
         mpHoverRect->setWindowOpacity(1);
@@ -450,9 +558,10 @@ void PlotWindow::dragEnterEvent(QDragEnterEvent *event)
     }
 }
 
+
+//! Defines what happens when mouse is moving over plot window with one mouse button pressed. Used to move plot markers.
 void PlotWindow::mouseMoveEvent(QMouseEvent *event)
 {
-
     if(mpActiveMarker != 0 && !mpZoomer->isEnabled() && !mpPanner->isEnabled())
     {
         QwtPlotCurve *curve = mMarkerToCurveMap.value(mpActiveMarker);
@@ -460,7 +569,6 @@ void PlotWindow::mouseMoveEvent(QMouseEvent *event)
         int correctionFactor = mpVariablePlot->canvas()->x();
         int intX = this->mapFromGlobal(cursor.pos()).x() - correctionFactor;
         double x = mpVariablePlot->canvasMap(curve->xAxis()).invTransform(intX);
-//        double x = mpVariablePlot->canvasMap(QwtPlot::xBottom).invTransform(intX);
         if(x < 0)
         {
             x = 0;
@@ -498,6 +606,7 @@ void PlotWindow::mouseMoveEvent(QMouseEvent *event)
 }
 
 
+//! Defines what happens when user is dragging something in the plot window.
 void PlotWindow::dragMoveEvent(QDragMoveEvent *event)
 {
     QCursor cursor;
@@ -517,6 +626,7 @@ void PlotWindow::dragMoveEvent(QDragMoveEvent *event)
 }
 
 
+//! Defines what happens when user drags something out from the plot window.
 void PlotWindow::dragLeaveEvent(QDragLeaveEvent *event)
 {
     delete(mpHoverRect);
@@ -524,7 +634,7 @@ void PlotWindow::dragLeaveEvent(QDragLeaveEvent *event)
 }
 
 
-//! Defines what happens when something is dropped in a plot window
+//! Defines what happens when user drops something in the plot window
 void PlotWindow::dropEvent(QDropEvent *event)
 {
     if (event->mimeData()->hasText())
@@ -585,6 +695,7 @@ void PlotWindow::dropEvent(QDropEvent *event)
 }
 
 
+//! Handles the right-click menu in the plot window
 void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
 {
     if(this->mpZoomer->isEnabled())
@@ -695,33 +806,32 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
 
 
 //! Help function to add a new curve to an existing plot window
-//! @param xarray is the vector for the x-axis
-//! @param yarray is the vector for the y-axis
+//! @param xArray is the vector for the x-axis
+//! @param yArray is the vector for the y-axis
 //! @param title is the title of the curve
 //! @param xLabel is the label for the x-axis
 //! @param yLabel is the label for the y-axis
 //! @param axisY tells whether the right or left y-axis shall be used
-void PlotWindow::addPlotCurve(QVector<double> xarray, QVector<double> yarray, QString title, QString xLabel, QString yLabel, QwtPlot::Axis axisY)
+void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QString title, QString xLabel, QString yLabel, QwtPlot::Axis axisY)
 {
 
         // Create and add curves to the plot
     tempCurve = new QwtPlotCurve(title);
     if(!mHasSpecialXAxis)
     {
-        tempCurve->setData(xarray, yarray);
-        mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xLabel);
+        tempCurve->setData(xArray, yArray);
+        mpVariablePlot->setAxisTitle(QwtPlot::xBottom, xLabel);
     }
     else
     {
-        QVector<double> tempXarray;
+        QVector<double> tempXArray;
         for(size_t j=0; j<mpCurves.last()->data().size(); ++j)
         {
-            tempXarray.append(mpCurves.last()->data().x(j));
+            tempXArray.append(mpCurves.last()->data().x(j));
         }
-        tempCurve->setData(tempXarray, yarray);
+        tempCurve->setData(tempXArray, yArray);
     }
     tempCurve->attach(mpVariablePlot);
-    mpVariablePlot->setCurve(tempCurve);
     mpVariablePlot->enableAxis(axisY, true);
     tempCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
     mpVariablePlot->replot();
@@ -733,33 +843,42 @@ void PlotWindow::addPlotCurve(QVector<double> xarray, QVector<double> yarray, QS
     ++nCurves;
     if(nCurves > mCurveColors.size()-1)
     {
-        nCurves = 0;        //! @todo Ugly way to restart color loop when too many curves are added
+        nCurves = 0;        // This restarts the color loop when too many curves are added
     }
 
-    mpVariablePlot->setAxisTitle(VariablePlot::yLeft, yLabel);
+    mpVariablePlot->setAxisTitle(QwtPlot::yLeft, yLabel);
     mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
 }
 
 
-void PlotWindow::changeXVector(QVector<double> xarray, QString xLabel, QString componentName, QString portName, QString dataName)
+//! Function the x-axis in the plot, and updates all curves corresponding to this. Used to create XY-plots.
+//! @param xArray is the data for the x-axis
+//! @param xLabel is the label text to be displayed on the x-axis
+//! @param componentName is the name of the component where the port is located
+//! @param portName is the name of the port where the parameter is located
+//! @param dataName is the name of the parameter
+void PlotWindow::changeXVector(QVector<double> xArray, QString xLabel, QString componentName, QString portName, QString dataName)
 {
-    QVector<double> tempYarray;
+    QVector<double> tempYArray;
     for(size_t i=0; i<mpCurves.size(); ++i)
     {
+            //Loop through each y-axis and append each value to a new array
         for(size_t j=0; j<mpCurves.at(i)->data().size(); ++j)       //! @todo Figure out a less stupid way of replacing only the x values...
         {
-            tempYarray.append(mpCurves.at(i)->data().y(j));
+            tempYArray.append(mpCurves.at(i)->data().y(j));
         }
-        mpCurves.at(i)->setData(xarray, tempYarray);
-        tempYarray.clear();
+            //Change the curve data to the new x-data and the temporary y-array
+        mpCurves.at(i)->setData(xArray, tempYArray);
+        tempYArray.clear();
     }
-    mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xLabel);
+    mpVariablePlot->setAxisTitle(QwtPlot::xBottom, xLabel);
     mHasSpecialXAxis = true;
     mSpecialXParameter.clear();
     mSpecialXParameter << componentName << portName << dataName;
 }
 
 
+//! Slot that updates the values for the curve, if the component/port still exist in the model
 void PlotWindow::checkNewValues()
 {
     if(mHold)       //Do not update curves to new values if hold is checked
@@ -789,44 +908,12 @@ void PlotWindow::checkNewValues()
 }
 
 
-VariablePlot::VariablePlot(QWidget *parent)
-        : QwtPlot(parent)
-{
-    setCanvasBackground(QColor(Qt::white));
-    setAutoReplot(true);
-}
-
-
-void VariablePlot::setCurve(QwtPlotCurve *pCurve)
-{
-    mpCurve = pCurve;
-}
-
-
-VariablePlotZoomer::VariablePlotZoomer(int xAxis, int yAxis, QwtPlotCanvas *canvas)
-        : QwtPlotZoomer(xAxis, yAxis, canvas)
-{
-    //Nothing needs to be done here...
-}
-
-QwtDoubleSize VariablePlotZoomer::minZoomSize()
-{
-    QwtDoubleSize tempDoubleSize;
-    tempDoubleSize.setHeight(0.0000000000000000001);
-    tempDoubleSize.setWidth(0.0000000000000000001);
-    return tempDoubleSize;
-}
-
-
-
-
-QwtPlotCurve *VariablePlot::getCurve()
-{
-    return mpCurve;
-}
-
-
-
+//! Constructor for the parameter items in the parameter tree
+//! @param componentName Name of the component where the parameter is located
+//! @param portName Name of the port where the parameter is located
+//! @param dataName Name of the parameter
+//! @param dataUnit Name of the unit of the parameter
+//! @param parent Pointer to a tree widget item, not used
 PlotParameterItem::PlotParameterItem(QString componentName, QString portName, QString dataName, QString dataUnit, QTreeWidgetItem *parent)
         : QTreeWidgetItem(parent)
 {
@@ -838,27 +925,36 @@ PlotParameterItem::PlotParameterItem(QString componentName, QString portName, QS
 }
 
 
+//! Returns the name of the component where the parameter is located
 QString PlotParameterItem::getComponentName()
 {
     return mComponentName;
 }
 
+
+//! Returns the name of the port where the parameter is located
 QString PlotParameterItem::getPortName()
 {
     return mPortName;
 }
 
+
+//! Returns the name of the parameter
 QString PlotParameterItem::getDataName()
 {
     return mDataName;
 }
 
+
+//! Returns the name of the unit of the parameter
 QString PlotParameterItem::getDataUnit()
 {
     return mDataUnit;
 }
 
 
+//! Constructor for the parameter tree widget
+//! parent Pointer to the main window
 PlotParameterTree::PlotParameterTree(MainWindow *parent)
         : QTreeWidget(parent)
 {
@@ -879,7 +975,7 @@ PlotParameterTree::PlotParameterTree(MainWindow *parent)
 }
 
 
-//! Updates the list of variables to the available components and parameters in the current tab.
+//! Updates the parameter tree to the available components and parameters in the current tab.
 void PlotParameterTree::updateList()
 {
     mAvailableParameters.clear();
@@ -939,12 +1035,13 @@ void PlotParameterTree::updateList()
 
 
 //! Helper function that creates a new plot window by using a QTreeWidgetItem in the plot variable tree.
-//! @param *item is the tree widget item whos arrays will be looked up from the map and plotted
+//! @param *item Pointer to the tree widget item whos arrays will be looked up from the map and plotted
 void PlotParameterTree::createPlotWindow(QTreeWidgetItem *item)
 {
     //! @todo This may be a problem if subsystem parameters should be displayed as lower levels in the tree, because subsystems will have a parent without being plotable...
     if(item->parent() != 0)     //Top level items cannot be plotted (they represent the components)
     {
+        //QTreeWidgetItem must be casted to a PlotParameterItem. This is a necessary because double click event can not know which kind of tree item is clicked.
         PlotParameterItem *tempItem = dynamic_cast<PlotParameterItem *>(item);
         createPlotWindow(tempItem->getComponentName(), tempItem->getPortName(), tempItem->getDataName(), tempItem->getDataUnit());
     }
@@ -952,22 +1049,21 @@ void PlotParameterTree::createPlotWindow(QTreeWidgetItem *item)
 
 
 //! Creates a new plot window from specified component and parameter.
-//! @param componentName is the name of the desired component
-//! @param parameterName is a string containing name of port, data and unit in this format: "portName, dataName, [unitName]"
+//! @param componentName Name of the component where the port with the parameter is located
+//! @param portName Name of the port where the parameter is located
+//! @param dataName Name of the parameter
+//! @param dataUnit Name of the unit of the parameter
 void PlotParameterTree::createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit)
 {
-    //! @todo Add some error handling if component or parameter does not exist!
-    //QString lookupName;
-    //lookupName = QString(componentName + ", " + portName + ", " + dataName + " [" + dataUnit + "]");
+    //! @todo Add some error handling if component or parameter does not exist
 
     QString title;
     QString xlabel;
     QString ylabel;
 
     title.append(QString(componentName + ", " + portName + ", " + dataName + " [" + dataUnit + "]"));
-    //ylabel.append(yLabelMap.find(lookupName).value());
     ylabel.append(QString(dataName + " [" + dataUnit + "]"));
-    xlabel.append("Time, [s]");    //! @todo Is it ok to assume time as the x-axis like this?
+    xlabel.append("Time, [s]");    //! @todo Maybe we shall not hard code time as the default x-axis, with seconds as default unit?
 
     QVector<double> xVector;
     xVector = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getTimeVector(componentName, portName));
@@ -980,8 +1076,8 @@ void PlotParameterTree::createPlotWindow(QString componentName, QString portName
     QStringList parameterDescription;
     parameterDescription << componentName << portName << dataName;
     plotWindow->mCurveParameters.append(parameterDescription);
-    plotWindow->mpVariablePlot->setAxisTitle(VariablePlot::yLeft, ylabel);
-    plotWindow->mpVariablePlot->setAxisTitle(VariablePlot::xBottom, xlabel);
+    plotWindow->mpVariablePlot->setAxisTitle(QwtPlot::yLeft, ylabel);
+    plotWindow->mpVariablePlot->setAxisTitle(QwtPlot::xBottom, xlabel);
     plotWindow->mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
     plotWindow->show();
 }
@@ -1010,22 +1106,15 @@ void PlotParameterTree::mouseMoveEvent(QMouseEvent *event)
         return;
     }
 
-    //QTreeWidgetItem *listItem;
-    //listItem = this->currentItem();
     PlotParameterItem *item;
-    //item = dynamic_cast<PlotParameterItem *>(listItem);
-    item = reinterpret_cast<PlotParameterItem *>(currentItem());
+    item = dynamic_cast<PlotParameterItem *>(currentItem());
 
     if(item != 0)
-    //if(true)
     {
         QString mimeText;
         mimeText = QString("HOPSANPLOTDATA " + addQuotes(item->getComponentName()) + " " + addQuotes(item->getPortName()) + " " + addQuotes(item->getDataName()) + " " + addQuotes(item->getDataUnit()));
-        //mimeText = QString("Gorilla");
-
         QDrag *drag = new QDrag(this);
         QMimeData *mimeData = new QMimeData;
-
         mimeData->setText(mimeText);
         drag->setMimeData(mimeData);
         drag->exec();
@@ -1033,7 +1122,8 @@ void PlotParameterTree::mouseMoveEvent(QMouseEvent *event)
 }
 
 
-//! This is the main plot widget, which contains the tree with variables
+//! Constructor the main plot widget, which contains the tree with variables
+//! @param parent Pointer to the main window
 PlotWidget::PlotWidget(MainWindow *parent)
         : QWidget(parent)
 {
