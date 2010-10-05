@@ -242,7 +242,7 @@ bool ProjectTab::simulate()
     {
         pMessageWidget->printGUIMessage(QString(tr("Simulated '").append(mpSystem->mpCoreSystemAccess->getRootSystemName()).append(tr("' successfully!"))));
         emit simulationFinished();
-        //this->mpParentProjectTabWidget->mpParentMainWindow->mpPlotPlotWidget->mpVariableList->updateList();
+        //this->mpParentProjectTabWidget->mpParentMainWindow->mpPlotWidget->mpVariableList->updateList();
     }
     emit checkMessages();
 

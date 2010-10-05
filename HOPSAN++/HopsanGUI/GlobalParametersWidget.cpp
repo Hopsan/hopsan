@@ -36,17 +36,28 @@
  * Contributors 2009-2010:  Mikael Axin, Alessandro Dell'Amico, Karl Pettersson, Ingo Staack
  */
 
+//!
+//! @file   GlobalParametersWidget.cpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-10-04
+//!
+//! @brief Contains a global parameter widget class
+//!
+//$Id$
+
 #include <QtGui>
 
 #include "GlobalParametersWidget.h"
 
+#include <QWidget.h>
 #include <QDialog.h>
 
 #include <MainWindow.h>
 
-//! Construtor.
+//! Construtor for Global Parameters widget, where the user can see and change the global parameters in the model.
+//! @param parent Pointer to the main window
 GlobalParametersWidget::GlobalParametersWidget(MainWindow *parent)
-    : QDialog(parent)
+    : QWidget(parent)
 {
     mpParentMainWindow = parent;
     //Set the name and size of the main window
@@ -54,178 +65,109 @@ GlobalParametersWidget::GlobalParametersWidget(MainWindow *parent)
     this->resize(400,500);
     this->setWindowTitle("Undo History");
 
-    addButton = new QPushButton(tr("&Add"));
-    addButton->setAutoDefault(true);
+    mpGlobalParametersTable = new QTableWidget(0,1,this);
+    mpGlobalParametersTable->setBaseSize(400, 500);
+    mpGlobalParametersTable->setColumnWidth(0, 120);
+    mpGlobalParametersTable->setColumnCount(1);
+    mpGlobalParametersTable->setRowCount(1);
 
-    removeButton = new QPushButton(tr("&Remove"));
-    removeButton->setAutoDefault(true);
+    QTableWidgetItem *item = new QTableWidgetItem();
+    item->setText("No undo history found.");
+    item->setBackgroundColor(QColor("white"));
+    item->setTextAlignment(Qt::AlignCenter);
+    mpGlobalParametersTable->setItem(0,0,item);
 
-    mGlobalParametersTable = new QTableWidget(0,1);
-    mGlobalParametersTable->setBaseSize(400, 500);
-    mGlobalParametersTable->setColumnWidth(0, 200);
-    mGlobalParametersTable->setColumnCount(2);
-    mGlobalParametersTable->setRowCount(3);
-    mGlobalParametersTable->horizontalHeader()->setStretchLastSection(true);
-    mGlobalParametersTable->horizontalHeader()->hide();
+    mpGlobalParametersTable->horizontalHeader()->setStretchLastSection(true);
+    mpGlobalParametersTable->horizontalHeader()->hide();
+    //mpGlobalParametersTable->setGridStyle(Qt::NoPen);
 
-    QGridLayout *mainLayout = new QGridLayout;
-    mainLayout->addWidget(mGlobalParametersTable, 0, 0, 1, 2);
-    mainLayout->addWidget(addButton, 1, 0);
-    mainLayout->addWidget(removeButton, 1, 1);
-    setLayout(mainLayout);
+    mpAddButton = new QPushButton(tr("&Add"), this);
+    mpAddButton->setFixedHeight(30);
+    mpAddButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    mpAddButton->setAutoDefault(false);
+    QFont tempFont = mpAddButton->font();
+    tempFont.setBold(true);
+    mpAddButton->setFont(tempFont);
+
+    mpRemoveButton = new QPushButton(tr("&Remove"), this);
+    mpRemoveButton->setFixedHeight(30);
+    mpRemoveButton->setAutoDefault(false);
+    mpRemoveButton->setFont(tempFont);
+
+    mpGridLayout = new QGridLayout(this);
+    mpGridLayout->addWidget(mpGlobalParametersTable, 0, 0);
+    mpGridLayout->addWidget(mpAddButton, 1, 0);
+    mpGridLayout->addWidget(mpRemoveButton, 2, 0);
+
+    connect(this->mpAddButton,SIGNAL(clicked()),this,SLOT(openParameterDialog()));
+    //! @todo Make the "Remove" button do something
+}
+
+//! Slot that adds a global parameter value
+//! @param name Lookup name for the global parameter
+//! @param value Value of the global parameter
+void GlobalParametersWidget::setParameter(QString name, double value)
+{
+    //! @todo Check if parameter label is already registered in system. Cannot be done yet because map in system is not implemented.
+
+
+    if(this->mpGlobalParametersTable->columnCount() == 1)
+    {
+        mpGlobalParametersTable->setColumnCount(2);
+        mpGlobalParametersTable->removeRow(0);
+    }
+    if(!name.startsWith("<"))
+    {
+        name.insert(0,"<");
+    }
+    if(!name.endsWith(">"))
+    {
+        name.append(">");
+    }
+
+    QString valueString;
+    valueString.setNum(value);
+    this->mpGlobalParametersTable->insertRow(mpGlobalParametersTable->rowCount());
+    mpGlobalParametersTable->setItem(mpGlobalParametersTable->rowCount()-1, 0, new QTableWidgetItem(name));
+    mpGlobalParametersTable->setItem(mpGlobalParametersTable->rowCount()-1, 1, new QTableWidgetItem(valueString));
 }
 
 
-////! Reimplementation of show function, which updates the list every time before the widget is displayed.
-//void UndoWidget::show()
-//{
-//    refreshList();
-//    QDialog::show();
-//}
+//! Slot that opens "Add Parameter" dialog, where the user can add new global parameters
+void GlobalParametersWidget::openParameterDialog()
+{
+    QDialog *pAddParameterDialog = new QDialog(this);
+    pAddParameterDialog->setWindowTitle("Add Global Parameter");
+
+    mpNameLabel = new QLabel("Name: ", this);
+    mpNameBox = new QLineEdit(this);
+    mpValueLabel = new QLabel("Value: ", this);
+    mpValueBox = new QLineEdit(this);
+    mpValueBox->setValidator(new QDoubleValidator(this));
+    mpAddInDialogButton = new QPushButton("Add", this);
+    mpDoneInDialogButton = new QPushButton("Done", this);
+    QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
+    pButtonBox->addButton(mpAddInDialogButton, QDialogButtonBox::ActionRole);
+    pButtonBox->addButton(mpDoneInDialogButton, QDialogButtonBox::ActionRole);
+
+    QGridLayout *pDialogLayout = new QGridLayout(this);
+    pDialogLayout->addWidget(mpNameLabel,0,0);
+    pDialogLayout->addWidget(mpNameBox,0,1);
+    pDialogLayout->addWidget(mpValueLabel,1,0);
+    pDialogLayout->addWidget(mpValueBox,1,1);
+    pDialogLayout->addWidget(pButtonBox,2,0,1,2);
+    pAddParameterDialog->setLayout(pDialogLayout);
+    pAddParameterDialog->show();
+
+    connect(mpDoneInDialogButton,SIGNAL(clicked()),pAddParameterDialog,SLOT(close()));
+    connect(mpAddInDialogButton,SIGNAL(clicked()),this,SLOT(addParameter()));
+}
 
 
-////! Refresh function for the list. Reads from the current undo stack and displays the results in a table.
-//void UndoWidget::refreshList()
-//{
-//    if(mpParentMainWindow->mpProjectTabs->count() == 0)
-//    {
-//        return;
-//    }
-//    mTempStack = mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoStack->mStack;
-//    QTableWidgetItem *item;
-
-//    mUndoTable->clear();
-//    mUndoTable->setRowCount(0);
-
-//    int x = 0;
-
-//    if(mTempStack.empty())
-//    {
-//        item = new QTableWidgetItem();
-//        //! @todo what the heck is this suposed to mean !ENUM, item->setFlags(!Qt::ItemIsEditable);
-//        item->setText("No undo history found.");
-//        item->setBackgroundColor(QColor("white"));
-//        mUndoTable->insertRow(x);
-//        mUndoTable->setItem(x,0,item);
-//        ++x;
-//        mUndoTable->verticalHeader()->hide();
-//        item->setTextAlignment(Qt::AlignCenter);
-//    }
-//    else if(mTempStack[0].empty())
-//    {
-//        item = new QTableWidgetItem();
-//        //! @todo what the heck is this suposed to mean !ENUM, item->setFlags(!Qt::ItemIsEditable);
-//        item->setText("No undo history found.");
-//        item->setBackgroundColor(QColor("white"));
-//        mUndoTable->insertRow(x);
-//        mUndoTable->setItem(x,0,item);
-//        ++x;
-//        mUndoTable->verticalHeader()->hide();
-//        item->setTextAlignment(Qt::AlignCenter);
-//    }
-//    else
-//    {
-//        mUndoTable->verticalHeader()->show();
-//    }
-
-//    for(int i = mTempStack.size()-1; i != -1; --i)
-//    {
-//        for(int j = mTempStack[i].size()-1; j != -1; --j)
-//        {
-//            item = new QTableWidgetItem();
-//            //! @todo what the heck is this suposed to mean !ENUM, item->setFlags(!Qt::ItemIsEditable);
-
-//                // Translate the command words into better looking explanations
-//            QTextStream stream(&mTempStack[i][j]);
-//            QString commandword;
-//            stream >> commandword;
-
-//            if (commandword == "DELETEDOBJECT")
-//            {
-//                item->setText("Deleted Object");
-//            }
-//            else if (commandword == "DELETEDCONNECTOR")
-//            {
-//                item->setText("Deleted Connector");
-//            }
-//            else if (commandword == "ADDEDOBJECT")
-//            {
-//                item->setText("Added Object");
-//            }
-//            else if (commandword == "ADDEDCONNECTOR")
-//            {
-//                item->setText("Added Connector");
-//            }
-//            else if (commandword == "RENAMEDOBJECT")
-//            {
-//                item->setText("Renamed Object");
-//            }
-//            else if (commandword == "MODIFIEDCONNECTOR")
-//            {
-//                item->setText("Modified Connector");
-//            }
-//            else if (commandword == "MOVEDOBJECT")
-//            {
-//                item->setText("Moved Object");
-//            }
-//            else if (commandword == "ROTATEDOBJECT")
-//            {
-//                item->setText("Rotated Object");
-//            }
-//            else if (commandword == "VERTICALFLIP")
-//            {
-//                item->setText("Flipped Vertical");
-//            }
-//            else if (commandword == "HORIZONTALFLIP")
-//            {
-//                item->setText("Flipped Horizontal");
-//            }
-//            else
-//            {
-//                item->setText(commandword);
-//            }
-
-//                // Figure out which color to use.
-//            if(i > mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoStack->mCurrentStackPosition)
-//            {
-//                if (i%2 == 0)
-//                {
-//                    item->setBackgroundColor(QColor("white"));
-//                }
-//                else
-//                {
-//                    item->setBackgroundColor(QColor("antiquewhite"));
-//                }
-//            }
-//            else if(i < mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoStack->mCurrentStackPosition)
-//            {
-//                if (i%2 == 0)
-//                {
-//                    item->setBackgroundColor(QColor("white"));
-//                    item->setTextColor(QColor("black"));
-//                }
-//                else
-//                {
-//                    item->setBackgroundColor(QColor("antiquewhite"));
-//                    item->setTextColor(QColor("black"));
-//                }
-//            }
-//            else
-//            {
-//                item->setBackgroundColor(QColor("lightgreen"));
-//                item->setTextColor(QColor("black"));
-//                QFont tempFont = item->font();
-//                tempFont.setBold(true);
-//                item->setFont(tempFont);
-//            }
-
-//                //Insert a new line in the table and display the action
-//            if(commandword != "PARAMETER")                              //Don't show parameter lines, because they "belong" to the object lines.
-//            {
-//                mUndoTable->insertRow(x);
-//                mUndoTable->setItem(x,0,item);
-//                ++x;
-//            }
-//        }
-//    }
-//}
+//! @Private help slot that adds a parameter from the selected name and value in "Add Parameter" dialog
+void GlobalParametersWidget::addParameter()
+{
+    bool ok;
+    setParameter(mpNameBox->text(), mpValueBox->text().toDouble(&ok));
+    qDebug() << "ok = " << ok;
+}

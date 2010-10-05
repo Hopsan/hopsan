@@ -41,7 +41,7 @@
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2010-08-11
 //!
-//! @brief Contains a class for displaying progress bar in a separate class
+//! @brief Contains a class for displaying progress bar in a separate thread
 //!
 //$Id$
 

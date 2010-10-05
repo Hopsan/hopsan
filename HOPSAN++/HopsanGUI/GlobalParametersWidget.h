@@ -46,6 +46,9 @@
 #include <QDialog>
 #include <QTableWidget>
 #include <QObject>
+#include <QGridLayout.h>
+#include <qwidget.h>
+#include <qlabel.h>
 
     //Forward Declarations
 class GUIObject;
@@ -55,21 +58,37 @@ class MainWindow;
 class GUISystem;
 
 
-class GlobalParametersWidget : public QDialog
+class GlobalParametersWidget : public QWidget
 {
+    Q_OBJECT
 public:
     GlobalParametersWidget(MainWindow *parent = 0);
 
     MainWindow *mpParentMainWindow;
 
-    QTableWidget *mGlobalParametersTable;
-    QPushButton *addButton;
-    QPushButton *removeButton;
+    QTableWidget *mpGlobalParametersTable;
+    QPushButton *mpAddButton;
+    QPushButton *mpRemoveButton;
+    QPushButton *mpCloseButton;
+
+    QGridLayout *mpGridLayout;
 
     QMap<QString,double> mGlobalParametersMap;
 
-    //void show();
-    //void refreshList();
+public slots:
+    void setParameter(QString name, double value);
+
+private slots:
+    void openParameterDialog();
+    void addParameter();
+
+private:
+    QLabel *mpNameLabel;
+    QLineEdit *mpNameBox;
+    QLabel *mpValueLabel;
+    QLineEdit *mpValueBox;
+    QPushButton *mpAddInDialogButton;
+    QPushButton *mpDoneInDialogButton;
 };
 
 

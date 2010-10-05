@@ -91,7 +91,7 @@ public:
     PreferenceWidget *mpPreferenceWidget;
     MessageWidget *mpMessageWidget;
     QStatusBar *mpStatusBar;
-    PlotWidget *mpPlotPlotWidget;
+    PlotWidget *mpPlotWidget;
     GlobalParametersWidget *mpGlobalParametersWidget;
 
     //Settings variable - stored in and loaded from settings.txt
@@ -102,6 +102,7 @@ public:
     QColor mBackgroundColor;
     bool mAntiAliasing;
     QStringList mUserLibs;
+    bool mSnapping;
 
     //Menubar items
     QMenuBar *menubar;

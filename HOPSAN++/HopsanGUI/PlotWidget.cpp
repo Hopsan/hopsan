@@ -1129,10 +1129,7 @@ PlotWidget::PlotWidget(MainWindow *parent)
 {
     mpParentMainWindow = parent;
 
-    //Create a grid
-    QGridLayout *grid = new QGridLayout(this);
-
-    //Create the plot variables tree
     mpPlotParameterTree = new PlotParameterTree(mpParentMainWindow);
-    grid->addWidget(mpPlotParameterTree,0,0,3,1);
+    mpLayout = new QGridLayout(this);
+    mpLayout->addWidget(mpPlotParameterTree,0,0,3,1);
 }

@@ -74,7 +74,8 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
     this->setDockOptions(QMainWindow::ForceTabbedDocks);
 
-    mpPlotPlotWidget = 0;
+    mpPlotWidget = 0;
+    mpGlobalParametersWidget = 0;
 
     QMetaObject::connectSlotsByName(this);
 
@@ -126,16 +127,12 @@ MainWindow::MainWindow(QWidget *parent)
     //Set the centralwidget
     this->setCentralWidget(mpCentralwidget);
 
-
-
     //Create the Statusbar
     mpStatusBar = new QStatusBar();
     mpStatusBar->setObjectName("statusBar");
     this->setStatusBar(mpStatusBar);
 
     mpUndoWidget = new UndoWidget(this);
-
-    mpGlobalParametersWidget = new GlobalParametersWidget(this);
 
     mpProjectTabs->addNewProjectTab();
 
@@ -183,8 +180,8 @@ MainWindow::MainWindow(QWidget *parent)
         //Create the global parameters dock widget and hide it
     mpGlobalParametersDock = new QDockWidget(tr("Global Parameters"), this);
     mpGlobalParametersDock->setAllowedAreas((Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea));
-    mpGlobalParametersDock->hide();
     addDockWidget(Qt::RightDockWidgetArea, mpGlobalParametersDock);
+    mpGlobalParametersDock->hide();
 
         //Create the undo dock widget and hide it
     mpUndoWidgetDock = new QDockWidget(tr("Undo History"), this);
@@ -225,11 +222,11 @@ void MainWindow::openPlotWidget()
     {
         if(!mpPlotWidgetDock->isVisible())
         {
-            if(mpPlotPlotWidget == 0)
+            if(mpPlotWidget == 0)
             {
-                mpPlotPlotWidget = new PlotWidget(this);
+                mpPlotWidget = new PlotWidget(this);
             }
-            mpPlotWidgetDock->setWidget(mpPlotPlotWidget);
+            mpPlotWidgetDock->setWidget(mpPlotWidget);
 
             mpPlotWidgetDock->show();
             mpPlotWidgetDock->raise();
@@ -279,7 +276,7 @@ void MainWindow::createActions()
     saveAction->setStatusTip(tr("Save Model File"));
 
     saveAsAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SaveAs.png"), tr("&Save As"), this);
-    saveAction->setShortcut(QKeySequence("Ctrl+Alt+s"));
+    saveAsAction->setShortcut(QKeySequence("Ctrl+Alt+s"));
     saveAsAction->setStatusTip(tr("Save Model File As"));
 
     closeAction = new QAction(this);
@@ -466,19 +463,12 @@ void MainWindow::createMenus()
     menubar->addAction(menuEdit->menuAction());
     menubar->addAction(menuTools->menuAction());
     menubar->addAction(menuSimulation->menuAction());
-    //menubar->addAction(menuPlot->menuAction());
     menubar->addAction(menuView->menuAction());
 }
 
 //! Creates the toolbars
 void MainWindow::createToolbars()
 {
-    //viewScaleCombo = new QComboBox;
-    //QStringList scales;
-    //scales << tr("50%") << tr("75%") << tr("100%") << tr("125%") << tr("150%");
-    //viewScaleCombo->addItems(scales);
-    //viewScaleCombo->setCurrentIndex(2);
-
     mpFileToolBar = addToolBar(tr("File Toolbar"));
     mpFileToolBar->setAllowedAreas(Qt::TopToolBarArea);
     mpFileToolBar->addAction(newAction);
@@ -516,9 +506,6 @@ void MainWindow::createToolbars()
     mpSimToolBar->addAction(simulateAction);
     mpSimToolBar->addAction(plotAction);
     mpSimToolBar->addAction(preferencesAction);
-
-    //mpSimulationToolBar = addToolBar(tr("Simulation"));
-    //mpSimulationToolBar->setAllowedAreas(Qt::TopToolBarArea);
 }
 
 
@@ -528,12 +515,6 @@ void MainWindow::openUndoWidget()
     if(!mpUndoWidgetDock->isVisible())
     {
         mpUndoWidgetDock->setWidget(mpUndoWidget);
-
-//        if(dockWidgetArea(mpPlotWidgetDock) == dockWidgetArea(mpUndoWidgetDock))
-//        {
-//            tabifyDockWidget(mpUndoWidgetDock, mpPlotWidgetDock);
-//        }
-
         mpUndoWidgetDock->show();
         mpUndoWidgetDock->raise();
         mpUndoWidget->refreshList();
@@ -546,6 +527,10 @@ void MainWindow::openGlobalParametersWidget()
 {
     if(!mpGlobalParametersDock->isVisible())
     {
+        if(mpGlobalParametersWidget == 0)
+        {
+            mpGlobalParametersWidget = new GlobalParametersWidget(this);
+        }
         mpGlobalParametersDock->setWidget(mpGlobalParametersWidget);
 
 //        if( (dockWidgetArea(mpGlobalParametersDock) == dockWidgetArea(mpPlotWidgetDock)) ||
@@ -608,6 +593,7 @@ void MainWindow::loadSettings()
     mUseMulticore = true;
     mEnableProgressBar = true;
     mProgressBarStep = 10;
+    mSnapping = true;
     mBackgroundColor = QColor("white");
     mAntiAliasing = false;
 
@@ -641,6 +627,11 @@ void MainWindow::loadSettings()
         {
             inputStream >> inputWord;
             mUseMulticore = (inputWord == "TRUE");
+        }
+        if(inputWord == "SNAPPING")
+        {
+            inputStream >> inputWord;
+            mSnapping = (inputWord == "TRUE");
         }
         if(inputWord == "BACKGROUNDCOLOR")
         {
@@ -700,6 +691,16 @@ void MainWindow::saveSettings()
 
     settingsFile << "USEMULTICORE ";
     if(mUseMulticore)
+    {
+        settingsFile << "TRUE\n";
+    }
+    else
+    {
+        settingsFile << "FALSE\n";
+    }
+
+    settingsFile << "SNAPPING ";
+    if(mSnapping)
     {
         settingsFile << "TRUE\n";
     }

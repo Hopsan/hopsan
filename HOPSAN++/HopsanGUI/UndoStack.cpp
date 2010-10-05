@@ -36,6 +36,15 @@
  * Contributors 2009-2010:  Mikael Axin, Alessandro Dell'Amico, Karl Pettersson, Ingo Staack
  */
 
+//!
+//! @file   UndoStack.cpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-XX-XX
+//!
+//! @brief Contains classes for the undo stack and the undo widget (which displays the stack)
+//!
+//$Id$
+
 #include <QtGui>
 //
 #include "UndoStack.h"
@@ -57,7 +66,8 @@
 #include "GUIUtilities.h"
 #include "GUISystem.h"
 
-//! Constructor.
+//! Constructor for the Undo History widget
+//! @param parentSystem Pointer to the current system
 UndoStack::UndoStack(GUISystem *parentSystem) : QObject()
 {
     mpParentSystem = parentSystem;
@@ -66,7 +76,7 @@ UndoStack::UndoStack(GUISystem *parentSystem) : QObject()
 }
 
 
-//! Clears all contents in the stack.
+//! Clears all contents in the undo stack.
 void UndoStack::clear()
 {
     mCurrentStackPosition = -1;
@@ -75,7 +85,7 @@ void UndoStack::clear()
 }
 
 
-//! Adds a new post to the stack
+//! Adds a new post to the undo stack
 void UndoStack::newPost()
 {
     int tempSize = mStack.size()-1;
@@ -100,7 +110,7 @@ void UndoStack::newPost()
 }
 
 
-//! Inserts an undopost to the current stack position
+//! Inserts an undo post to the current stack position
 void UndoStack::insertPost(QString str)
 {
     if(mCurrentStackPosition < 0)
@@ -437,14 +447,22 @@ UndoWidget::UndoWidget(MainWindow *parent)
     this->resize(400,500);
     this->setWindowTitle("Undo History");
 
-    redoButton = new QPushButton(tr("&Redo"));
-    redoButton->setAutoDefault(true);
+    mpRedoButton = new QPushButton(tr("&Redo"));
+    mpRedoButton->setAutoDefault(false);
+    mpRedoButton->setFixedHeight(30);
+    QFont tempFont = mpRedoButton->font();
+    tempFont.setBold(true);
+    mpRedoButton->setFont(tempFont);
 
-    undoButton = new QPushButton(tr("&Undo"));
-    undoButton->setAutoDefault(true);
+    mpUndoButton = new QPushButton(tr("&Undo"));
+    mpUndoButton->setAutoDefault(false);
+    mpUndoButton->setFixedHeight(30);
+    mpUndoButton->setFont(tempFont);
 
-    clearButton = new QPushButton(tr("&Clear"));
-    clearButton->setAutoDefault(true);
+    mpClearButton = new QPushButton(tr("&Clear"));
+    mpClearButton->setAutoDefault(false);
+    mpClearButton->setFixedHeight(30);
+    mpClearButton->setFont(tempFont);
 
     mUndoTable = new QTableWidget(0,1);
     mUndoTable->setBaseSize(400, 500);
@@ -452,12 +470,12 @@ UndoWidget::UndoWidget(MainWindow *parent)
     mUndoTable->horizontalHeader()->setStretchLastSection(true);
     mUndoTable->horizontalHeader()->hide();
 
-    QGridLayout *mainLayout = new QGridLayout;
-    mainLayout->addWidget(mUndoTable, 0, 0, 1, 3);
-    mainLayout->addWidget(undoButton, 1, 0);
-    mainLayout->addWidget(redoButton, 1, 1);
-    mainLayout->addWidget(clearButton, 1, 2);
-    setLayout(mainLayout);
+    mpLayout = new QGridLayout();
+    mpLayout->addWidget(mUndoTable, 0, 0);
+    mpLayout->addWidget(mpUndoButton, 1, 0);
+    mpLayout->addWidget(mpRedoButton, 2, 0);
+    mpLayout->addWidget(mpClearButton, 3, 0);
+    setLayout(mpLayout);
 }
 
 

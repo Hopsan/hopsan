@@ -36,6 +36,13 @@
  * Contributors 2009-2010:  Mikael Axin, Alessandro Dell'Amico, Karl Pettersson, Ingo Staack
  */
 
+//!
+//! @file   PreferenceWidget.cpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-XX-XX
+//!
+//! @brief Contains a class for the model preferences dialog
+//!
 //$Id$
 
 
@@ -48,84 +55,85 @@
 #include "GUISystem.h"
 #include "LibraryWidget.h"
 
-//class ProjectTabWidget;
 
+//! Constructor for Model Preferences dialog
+//! @param parent Pointer to the main window
 PreferenceWidget::PreferenceWidget(MainWindow *parent)
     : QDialog(parent)
 {
     mpParentMainWindow = parent;
-    //Set the name and size of the main window
+
+        //Set the name and size of the main window
     this->setObjectName("PreferenceWidget");
     this->resize(640,480);
     this->setWindowTitle("Model Preferences");
 
-    isoCheckBox = new QCheckBox(tr("Use ISO 1219 Graphics"));
-    isoCheckBox->setCheckable(true);
-    isoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mGfxType);
+        //Define items in the dialog box
+    mpIsoCheckBox = new QCheckBox(tr("Use ISO 1219 Graphics"));
+    mpIsoCheckBox->setCheckable(true);
+    mpIsoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mGfxType);
 
-    disableUndoCheckBox = new QCheckBox(tr("Disable Undo Function"));
-    disableUndoCheckBox->setCheckable(true);
-    disableUndoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
+    mpDisableUndoCheckBox = new QCheckBox(tr("Disable Undo Function"));
+    mpDisableUndoCheckBox->setCheckable(true);
+    mpDisableUndoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
 
-    cancelButton = new QPushButton(tr("&Cancel"));
-    cancelButton->setAutoDefault(false);
-    okButton = new QPushButton(tr("&Done"));
-    okButton->setAutoDefault(true);
+    mpCancelButton = new QPushButton(tr("&Cancel"));
+    mpCancelButton->setAutoDefault(false);
+    mpOkButton = new QPushButton(tr("&Done"));
+    mpOkButton->setAutoDefault(true);
 
-    buttonBox = new QDialogButtonBox(Qt::Horizontal);
-    buttonBox->addButton(cancelButton, QDialogButtonBox::ActionRole);
-    buttonBox->addButton(okButton, QDialogButtonBox::ActionRole);
+    mpButtonBox = new QDialogButtonBox(Qt::Horizontal);
+    mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
+    mpButtonBox->addButton(mpOkButton, QDialogButtonBox::ActionRole);
 
-    QLabel *userIconLabel = new QLabel("Icon Path:");
-    QLabel *isoIconLabel = new QLabel("ISO Icon Path:");
-    userIconPath = new QLineEdit();
-    isoIconPath = new QLineEdit();
+    mpUserIconLabel = new QLabel("Icon Path:");
+    mpIsoIconLabel = new QLabel("ISO Icon Path:");
+    mpUserIconPath = new QLineEdit();
+    mpIsoIconPath = new QLineEdit();
 
-    isoIconBrowseButton = new QPushButton(tr("..."));
-    userIconBrowseButton = new QPushButton(tr("..."));
-    isoIconBrowseButton->setFixedSize(25, 22);
-    userIconBrowseButton->setFixedSize(25, 22);
+    mpIsoIconBrowseButton = new QPushButton(tr("..."));
+    mpUserIconBrowseButton = new QPushButton(tr("..."));
+    mpIsoIconBrowseButton->setFixedSize(25, 22);
+    mpUserIconBrowseButton->setFixedSize(25, 22);
 
-    //connect(disableUndoCheckBox, SIGNAL(toggled(bool)),mpParentMainWindow->mpProjectTabs->getCurrentSystem(), SLOT(disableUndo()));
-    connect(cancelButton, SIGNAL(pressed()), this, SLOT(reject()));
-    connect(okButton, SIGNAL(pressed()), this, SLOT(updateValues()));
+        //Create connections
+    connect(mpCancelButton, SIGNAL(pressed()), this, SLOT(reject()));
+    connect(mpOkButton, SIGNAL(pressed()), this, SLOT(updateValues()));
     connect(mpParentMainWindow->preferencesAction,SIGNAL(triggered()),this,SLOT(show()));
-    connect(isoIconBrowseButton, SIGNAL(clicked()), this, SLOT(browseIso()));
-    connect(userIconBrowseButton, SIGNAL(clicked()), this, SLOT(browseUser()));
+    connect(mpIsoIconBrowseButton, SIGNAL(clicked()), this, SLOT(browseIso()));
+    connect(mpUserIconBrowseButton, SIGNAL(clicked()), this, SLOT(browseUser()));
 
-    //connect(isoCheckBox, SIGNAL(pressed(bool)), mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpGraphicsView, SLOT(setIsoGraphics(bool)));
-
-
-    QGridLayout *mainLayout = new QGridLayout;
-    mainLayout->setSizeConstraint(QLayout::SetFixedSize);
-    //mainLayout->addLayout(topLeftLayout, 0, 0);
-    mainLayout->addWidget(userIconPath, 0, 1);
-    mainLayout->addWidget(isoIconPath, 1, 1);
-    mainLayout->addWidget(userIconBrowseButton, 0, 1, 1, 1, Qt::AlignRight);
-    mainLayout->addWidget(isoIconBrowseButton, 1, 1, 1, 1, Qt::AlignRight);
-    mainLayout->addWidget(userIconLabel, 0, 0);
-    mainLayout->addWidget(isoIconLabel, 1, 0);
-    mainLayout->addWidget(isoCheckBox, 2, 0);
-    mainLayout->addWidget(disableUndoCheckBox, 3, 0);
-    mainLayout->addWidget(buttonBox, 4, 1, 2, 2, Qt::AlignHCenter);
-    setLayout(mainLayout);
+        //Define the layout of the box
+    mpLayout = new QGridLayout();
+    mpLayout->setSizeConstraint(QLayout::SetFixedSize);
+    mpLayout->addWidget(mpUserIconPath, 0, 1);
+    mpLayout->addWidget(mpIsoIconPath, 1, 1);
+    mpLayout->addWidget(mpUserIconBrowseButton, 0, 1, 1, 1, Qt::AlignRight);
+    mpLayout->addWidget(mpIsoIconBrowseButton, 1, 1, 1, 1, Qt::AlignRight);
+    mpLayout->addWidget(mpUserIconLabel, 0, 0);
+    mpLayout->addWidget(mpIsoIconLabel, 1, 0);
+    mpLayout->addWidget(mpIsoCheckBox, 2, 0);
+    mpLayout->addWidget(mpDisableUndoCheckBox, 3, 0);
+    mpLayout->addWidget(mpButtonBox, 4, 1, 2, 2, Qt::AlignHCenter);
+    setLayout(mpLayout);
 }
 
 
+//! Reimplementation of QDialog::show(), used to update values in the box to current settings every time it is shown
 void PreferenceWidget::show()
 {
-
-    isoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mGfxType);
-    disableUndoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
-    userIconPath->setText(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->getUserIconPath());
-    isoIconPath->setText(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->getIsoIconPath());
+    mpIsoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mGfxType);
+    mpDisableUndoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
+    mpUserIconPath->setText(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->getUserIconPath());
+    mpIsoIconPath->setText(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->getIsoIconPath());
     QDialog::show();
 }
 
 
+//! Updates model settings according to the selected values. They are not saved until the model is.
 void PreferenceWidget::updateValues()
 {
-    if(isoCheckBox->isChecked())
+    if(mpIsoCheckBox->isChecked())
     {
         if(mpParentMainWindow->mpProjectTabs->count() > 0)
         {
@@ -142,29 +150,33 @@ void PreferenceWidget::updateValues()
         mpParentMainWindow->mpLibrary->setGfxType(USERGRAPHICS);
     }
 
-    if( (disableUndoCheckBox->isChecked()) != (mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled) )
+    if( (mpDisableUndoCheckBox->isChecked()) != (mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled) )
     {
         mpParentMainWindow->mpProjectTabs->getCurrentSystem()->disableUndo();
-        disableUndoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
+        mpDisableUndoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
     }
 
-    mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setUserIconPath(userIconPath->text());
-    mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setIsoIconPath(isoIconPath->text());
+    mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setUserIconPath(mpUserIconPath->text());
+    mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setIsoIconPath(mpIsoIconPath->text());
     this->accept();
 }
 
+
+//! Slot that opens a file dialog where user can select a user icon for the system
 void PreferenceWidget::browseUser()
 {
     QDir fileDialogOpenDir;
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose user icon"),
                                                          fileDialogOpenDir.currentPath() + QString(MODELPATH));
-    userIconPath->setText(modelFileName);
+    mpUserIconPath->setText(modelFileName);
 }
 
+
+//! Slot that opens a file dialog where user can select an iso icon for the system
 void PreferenceWidget::browseIso()
 {
     QDir fileDialogOpenDir;
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose ISO icon"),
                                                          fileDialogOpenDir.currentPath() + QString(MODELPATH));
-    isoIconPath->setText(modelFileName);
+    mpIsoIconPath->setText(modelFileName);
 }

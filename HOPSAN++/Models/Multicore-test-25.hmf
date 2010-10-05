@@ -6,7 +6,7 @@ HMFVERSION 0.1
 CAFVERSION 0.1
 --------------------------------------------------------------
 SIMULATIONTIME 0 0.001 5
-VIEWPORT 2718 1877 1
+VIEWPORT 2500 2500 1
 --------------------------------------------------------------
 USERICON ""
 ISOICON ""
@@ -90,7 +90,7 @@ PARAMETER "Cylinder C_191" "DeadVolume2" 0.01
 PARAMETER "Cylinder C_191" "Bp" 10
 PARAMETER "Cylinder C_191" "Betae" 1e+09
 PARAMETER "Cylinder C_191" "Cip" 0
-COMPONENT "SignalSquareWave" "Square Wave_191" 2401 2540 0 0 0
+COMPONENT "SignalSquareWave" "Square Wave_191" 2371 2500 0 0 0
 PARAMETER "Square Wave_191" "StartTime" 0
 PARAMETER "Square Wave_191" "Frequency" 1
 PARAMETER "Square Wave_191" "Amplitude" 1
@@ -111,7 +111,7 @@ COMPONENT "HydraulicFixedDisplacementPump" "Fixed Displacement Pump_38" 2373 266
 PARAMETER "Fixed Displacement Pump_38" "Speed" 125
 PARAMETER "Fixed Displacement Pump_38" "Dp" 5e-05
 PARAMETER "Fixed Displacement Pump_38" "Kcp" 0.001
-COMPONENT "HydraulicLaminarOrifice" "Laminar Orifice_191" 2472 2590 90 0 0
+COMPONENT "HydraulicLaminarOrifice" "Laminar Orifice_191" 2472 2590 0 0 0
 PARAMETER "Laminar Orifice_191" "Kc" 1e-11
 COMPONENT "MechanicTranslationalMass" "Translational Mass_330" 2727 2336 0 0 0
 PARAMETER "Translational Mass_330" "Mass" 1
@@ -124,7 +124,7 @@ PARAMETER "Square Wave_129" "Amplitude" 1
 PARAMETER "Square Wave_129" "BaseValue" 0
 COMPONENT "MechanicTranslationalSpring" "Translational Spring_193" 2582 2336 0 0 0
 PARAMETER "Translational Spring_193" "k" 100
-COMPONENT "HydraulicLaminarOrifice" "Laminar Orifice_128" 2635 2590 90 0 0
+COMPONENT "HydraulicLaminarOrifice" "Laminar Orifice_128" 2635 2590 0 0 0
 PARAMETER "Laminar Orifice_128" "Kc" 1e-11
 COMPONENT "MechanicTranslationalMass" "Translational Mass_335" 2579 2394 0 0 0
 PARAMETER "Translational Mass_335" "Mass" 1
@@ -142,8 +142,8 @@ COMPONENT "HydraulicTankC" "Tank C_205" 2388 2761 0 0 0
 PARAMETER "Tank C_205" "P" 100000
 --------------------------------------------------------------
 CONNECT "Fixed Displacement Pump_38" "P2" "Hydraulic Volume with 3 Ports_191" "P3" 2388 2614 2388 2611.01 2388 2605
-CONNECT "Hydraulic Volume with 3 Ports_191" "P2" "Laminar Orifice_191" "P2" 2413 2590 2432.22 2590 2432.22 2555 2472 2555
-CONNECT "Laminar Orifice_191" "P1" "Hydraulic Volume with 3 Ports_128" "P2" 2472 2625 2523.22 2625 2523.22 2590 2519 2590
+CONNECT "Hydraulic Volume with 3 Ports_191" "P2" "Laminar Orifice_191" "P2" 2413 2590 2432.22 2590 2432.22 2590 2437 2590
+CONNECT "Laminar Orifice_191" "P1" "Hydraulic Volume with 3 Ports_128" "P2" 2507 2590 2523.22 2590 2523.22 2590 2519 2590
 CONNECT "Hydraulic Volume with 3 Ports_128" "P3" "4/3 Servo Valve_195" "PP" 2544 2575 2544.92 2575 2544.92 2515
 CONNECT "Tank C_206" "P1" "4/3 Servo Valve_195" "PT" 2565 2524.5 2565 2541.01 2564.97 2541.01 2564.97 2515
 CONNECT "4/3 Servo Valve_195" "PA" "Cylinder C_191" "P1" 2544.92 2465 2544.92 2459.01 2435.47 2459.01 2435.47 2414
@@ -159,14 +159,14 @@ CONNECT "Cylinder C_128" "P3" "Translational Mass_329" "P1" 2757.5 2394 2766.22 
 CONNECT "Translational Spring_128" "P2" "Translational Mass_329" "P2" 2806.5 2336 2828.22 2336 2828.22 2394 2819 2394
 CONNECT "Translational Mass_330" "P2" "Translational Spring_128" "P1" 2759 2336 2772.22 2336 2772.22 2336 2773.5 2336
 CONNECT "Force Transformer_128" "P1" "Translational Mass_330" "P1" 2678.5 2336 2689.22 2336 2689.22 2336 2695 2336
-CONNECT "Hydraulic Volume with 3 Ports_128" "P1" "Laminar Orifice_128" "P2" 2569 2590 2594.14 2590 2594.14 2555 2635 2555
-CONNECT "Square Wave_191" "out" "4/3 Servo Valve_195" "in" 2421 2540 2436.22 2540 2436.22 2500 2455.5 2500
+CONNECT "Hydraulic Volume with 3 Ports_128" "P1" "Laminar Orifice_128" "P2" 2569 2590 2594.14 2590 2594.14 2590 2600 2590
 CONNECT "Sine Wave_191" "out" "4/3 Servo Valve_128" "in" 2640 2543 2652.22 2543 2652.22 2500 2663.5 2500
 CONNECT "Sine Wave_129" "out" "Force Transformer_128" "in" 2596 2262 2628.22 2262 2628.22 2336 2639.5 2336
 CONNECT "Square Wave_129" "out" "Force Transformer_191" "in" 2411 2265 2422.22 2265 2422.22 2336 2431.5 2336
 CONNECT "Pressure Relief Valve_38" "P1" "Hydraulic Volume with 3 Ports_191" "P1" 2246 2629 2246 2590 2363 2590
 CONNECT "Tank C_205" "P1" "Fixed Displacement Pump_38" "P1" 2388 2746.5 2388 2740.09 2388 2740.09 2388 2714
 CONNECT "Tank C_204" "P1" "Pressure Relief Valve_38" "P2" 2246 2743.5 2246 2732.14 2246 2732.14 2246 2709
-CONNECT "Laminar Orifice_128" "P1" "Hydraulic Volume" "P1" 2635 2625 2682.14 2625 2682.14 2590 2696 2590
+CONNECT "Laminar Orifice_128" "P1" "Hydraulic Volume" "P1" 2670 2590 2682.14 2590 2682.14 2590 2696 2590
 CONNECT "Hydraulic Volume" "P2" "4/3 Servo Valve_128" "PP" 2746 2590 2752.92 2590 2752.92 2515
+CONNECT "Square Wave_191" "out" "4/3 Servo Valve_195" "in" 2391 2500 2433 2500 2433 2500 2455.5 2500
 --------------------------------------------------------------

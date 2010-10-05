@@ -46,6 +46,7 @@
 #include <QDialogButtonBox>
 #include <QLineEdit>
 #include <QLabel>
+#include <QGridLayout>
 
 class MainWindow;
 
@@ -58,21 +59,21 @@ public:
 
     MainWindow *mpParentMainWindow;
 
-    bool isoBool;
-    QCheckBox *isoCheckBox;
-    QCheckBox *disableUndoCheckBox;
-    QPushButton *cancelButton;
-    QPushButton *applyButton;
-    QPushButton *okButton;
-    QPushButton *isoIconBrowseButton;
-    QPushButton *userIconBrowseButton;
-    QDialogButtonBox *buttonBox;
-    QLineEdit *userIconPath;
-    QLineEdit *isoIconPath;
-    QLabel userIconLabel;
-    QLabel isoIconLabel;
+    bool mIsoBool;
+    QCheckBox *mpIsoCheckBox;
+    QCheckBox *mpDisableUndoCheckBox;
+    QPushButton *mpCancelButton;
+    QPushButton *mpApplyButton;
+    QPushButton *mpOkButton;
+    QPushButton *mpIsoIconBrowseButton;
+    QPushButton *mpUserIconBrowseButton;
+    QDialogButtonBox *mpButtonBox;
+    QLineEdit *mpUserIconPath;
+    QLineEdit *mpIsoIconPath;
+    QLabel *mpUserIconLabel;
+    QLabel *mpIsoIconLabel;
     QWidget *mpCentralwidget;
-
+    QGridLayout *mpLayout;
 
 public slots:
     void show();

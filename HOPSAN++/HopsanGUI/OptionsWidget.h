@@ -63,24 +63,25 @@ public:
 
     //! @todo Add "m" at the beginning of the members
 
-    QCheckBox *invertWheelCheckBox;
-    QCheckBox *antiAliasingCheckBox;
-    QLabel *backgroundColorLabel;
-    QToolButton *backgroundColorButton;
-    QGridLayout *interfaceLayout;
-    QGroupBox *interfaceGroupBox;
+    QCheckBox *mpInvertWheelCheckBox;
+    QCheckBox *mpAntiAliasingCheckBox;
+    QCheckBox *mpSnappingCheckBox;
+    QLabel *mpBackgroundColorLabel;
+    QToolButton *mpBackgroundColorButton;
+    QGridLayout *mpInterfaceLayout;
+    QGroupBox *mpInterfaceGroupBox;
 
-    QCheckBox *useMulticoreCheckBox;
-    QCheckBox *enableProgressBarCheckBox;
-    QLabel *progressBarLabel;
-    QSpinBox *progressBarSpinBox;
-    QGroupBox *simulationGroupBox;
-    QGridLayout *simulationLayout;
+    QCheckBox *mpUseMulticoreCheckBox;
+    QCheckBox *mpEnableProgressBarCheckBox;
+    QLabel *mpProgressBarLabel;
+    QSpinBox *mpProgressBarSpinBox;
+    QGroupBox *mpSimulationGroupBox;
+    QGridLayout *mpSimulationLayout;
 
-    QPushButton *cancelButton;
-    QPushButton *applyButton;
-    QPushButton *okButton;
-    QDialogButtonBox *buttonBox;
+    QPushButton *mpCancelButton;
+    QPushButton *mpApplyButton;
+    QPushButton *mpOkButton;
+    QDialogButtonBox *mpButtonBox;
 
     QWidget *mpCentralwidget;
 

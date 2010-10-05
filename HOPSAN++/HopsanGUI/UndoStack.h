@@ -46,6 +46,7 @@
 #include <QDialog>
 #include <QTableWidget>
 #include <QObject>
+#include <QGridLayout>
 
     //Forward Declarations
 class GUIObject;
@@ -94,10 +95,11 @@ public:
     QTableWidget *mUndoTable;
     QList< QList<QString> > mTempStack;
 
-    QPushButton *hideButton;
-    QPushButton *undoButton;
-    QPushButton *redoButton;
-    QPushButton *clearButton;
+    QPushButton *mpUndoButton;
+    QPushButton *mpRedoButton;
+    QPushButton *mpClearButton;
+
+    QGridLayout *mpLayout;
 
     void show();
     void refreshList();

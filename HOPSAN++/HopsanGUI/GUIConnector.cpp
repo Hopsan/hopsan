@@ -42,6 +42,7 @@
 #include <QDebug>
 #include <QStyleOptionGraphicsItem>
 
+#include "MainWindow.h"
 #include "GUIPort.h"
 #include "GraphicsView.h"
 #include "GUIUtilities.h"
@@ -330,28 +331,31 @@ void GUIConnector::setEndPort(GUIPort *port)
     this->determineAppearance();
     this->setPassive();
 
-    if( (getNumberOfLines() == 1) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE) ||
-        (getNumberOfLines() < 3) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE) )
+    if(mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mSnapping)
     {
-        if(mpStartPort->mpParentGuiObject->getGUIConnectorPtrs().size() == 1)
+        if( (getNumberOfLines() == 1) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE) ||
+            (getNumberOfLines() < 3) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE) )
         {
-            mpStartPort->mpParentGuiObject->moveBy(mPoints.last().x() - mPoints.first().x(), 0);
+            if(mpStartPort->mpParentGuiObject->getGUIConnectorPtrs().size() == 1)
+            {
+                mpStartPort->mpParentGuiObject->moveBy(mPoints.last().x() - mPoints.first().x(), 0);
+            }
+            else if (mpEndPort->mpParentGuiObject->getGUIConnectorPtrs().size() == 1)
+            {
+                mpEndPort->mpParentGuiObject->moveBy(mPoints.first().x() - mPoints.last().x(), 0);
+            }
         }
-        else if (mpEndPort->mpParentGuiObject->getGUIConnectorPtrs().size() == 1)
+        else if( (getNumberOfLines() == 1) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE) ||
+                 (getNumberOfLines() < 4) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE) )
         {
-            mpEndPort->mpParentGuiObject->moveBy(mPoints.first().x() - mPoints.last().x(), 0);
-        }
-    }
-    else if( (getNumberOfLines() == 1) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE) ||
-             (getNumberOfLines() < 4) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE) )
-    {
-        if(mpStartPort->mpParentGuiObject->getGUIConnectorPtrs().size() == 1)
-        {
-            mpStartPort->mpParentGuiObject->moveBy(0, mPoints.last().y() - mPoints.first().y());
-        }
-        else if (mpEndPort->mpParentGuiObject->getGUIConnectorPtrs().size() == 1)
-        {
-            mpEndPort->mpParentGuiObject->moveBy(0, mPoints.first().y() - mPoints.last().y());
+            if(mpStartPort->mpParentGuiObject->getGUIConnectorPtrs().size() == 1)
+            {
+                mpStartPort->mpParentGuiObject->moveBy(0, mPoints.last().y() - mPoints.first().y());
+            }
+            else if (mpEndPort->mpParentGuiObject->getGUIConnectorPtrs().size() == 1)
+            {
+                mpEndPort->mpParentGuiObject->moveBy(0, mPoints.first().y() - mPoints.last().y());
+            }
         }
     }
 }

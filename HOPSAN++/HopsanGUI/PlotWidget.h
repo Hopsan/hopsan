@@ -60,8 +60,6 @@
 #include <QVector>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
-#include <QListWidgetItem>
-#include <QListWidget>
 #include <QHash>
 #include <QToolBar>
 #include <QToolButton>
@@ -76,6 +74,7 @@
 #include <QSpinBox>
 #include <QLabel>
 #include <QCheckBox>
+#include <QGridLayout>
 
 
 class MainWindow;
@@ -166,7 +165,6 @@ private:
 
 class PlotParameterItem : public QTreeWidgetItem
 {
-    //Q_OBJECT
 public:
     PlotParameterItem(QString componentName, QString portName, QString dataName, QString dataUnit, QTreeWidgetItem *parent = 0);
     QString getComponentName();
@@ -212,6 +210,7 @@ public:
     PlotParameterTree *mpPlotParameterTree;
 private:
     MainWindow *mpParentMainWindow;
+    QGridLayout *mpLayout;
 };
 
 #endif // PlotWindow_H
