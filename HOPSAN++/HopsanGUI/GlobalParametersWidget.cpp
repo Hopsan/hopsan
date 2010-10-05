@@ -65,22 +65,14 @@ GlobalParametersWidget::GlobalParametersWidget(MainWindow *parent)
     this->resize(400,500);
     this->setWindowTitle("Undo History");
 
+    mContents.clear();
+
     mpGlobalParametersTable = new QTableWidget(0,1,this);
     mpGlobalParametersTable->setBaseSize(400, 500);
-    mpGlobalParametersTable->setColumnWidth(0, 120);
-    mpGlobalParametersTable->setColumnCount(1);
-    mpGlobalParametersTable->setRowCount(1);
-    mpGlobalParametersTable->verticalHeader()->hide();
-
-    QTableWidgetItem *item = new QTableWidgetItem();
-    item->setText("No global parameters set.");
-    item->setBackgroundColor(QColor("white"));
-    item->setTextAlignment(Qt::AlignCenter);
-    mpGlobalParametersTable->setItem(0,0,item);
-
     mpGlobalParametersTable->horizontalHeader()->setStretchLastSection(true);
     mpGlobalParametersTable->horizontalHeader()->hide();
-    //mpGlobalParametersTable->setGridStyle(Qt::NoPen);
+
+    update();
 
     mpAddButton = new QPushButton(tr("&Add"), this);
     mpAddButton->setFixedHeight(30);
@@ -111,14 +103,6 @@ void GlobalParametersWidget::setParameter(QString name, double value)
 {
     //! @todo Check if parameter label is already registered in system. Cannot be done yet because map in system is not implemented.
 
-
-    if(this->mpGlobalParametersTable->columnCount() == 1)
-    {
-        mpGlobalParametersTable->setColumnCount(2);
-        mpGlobalParametersTable->removeRow(0);
-        mpGlobalParametersTable->setColumnWidth(0, 120);
-        mpGlobalParametersTable->verticalHeader()->show();
-    }
     if(!name.startsWith("<"))
     {
         name.insert(0,"<");
@@ -128,11 +112,8 @@ void GlobalParametersWidget::setParameter(QString name, double value)
         name.append(">");
     }
 
-    QString valueString;
-    valueString.setNum(value);
-    this->mpGlobalParametersTable->insertRow(mpGlobalParametersTable->rowCount());
-    mpGlobalParametersTable->setItem(mpGlobalParametersTable->rowCount()-1, 0, new QTableWidgetItem(name));
-    mpGlobalParametersTable->setItem(mpGlobalParametersTable->rowCount()-1, 1, new QTableWidgetItem(valueString));
+    mContents.append(QPair<QString,double>(name, value));
+    update();
 }
 
 
@@ -170,7 +151,40 @@ void GlobalParametersWidget::openParameterDialog()
 //! @Private help slot that adds a parameter from the selected name and value in "Add Parameter" dialog
 void GlobalParametersWidget::addParameter()
 {
-    bool ok;
+    bool ok;    
     setParameter(mpNameBox->text(), mpValueBox->text().toDouble(&ok));
     qDebug() << "ok = " << ok;
+}
+
+
+//! Updates the parameter table from the contents list
+void GlobalParametersWidget::update()
+{
+    if(mContents.empty())
+    {
+        mpGlobalParametersTable->setColumnCount(1);
+        mpGlobalParametersTable->setRowCount(1);
+        mpGlobalParametersTable->verticalHeader()->hide();
+
+        QTableWidgetItem *item = new QTableWidgetItem();
+        item->setText("No global parameters set.");
+        item->setBackgroundColor(QColor("white"));
+        item->setTextAlignment(Qt::AlignCenter);
+        mpGlobalParametersTable->setItem(0,0,item);
+    }
+    else
+    {
+        mpGlobalParametersTable->setColumnCount(2);
+        mpGlobalParametersTable->removeRow(0);
+        mpGlobalParametersTable->setColumnWidth(0, 120);
+        mpGlobalParametersTable->verticalHeader()->show();
+    }
+    for(int i=0; i<mContents.size(); ++i)
+    {
+        QString valueString;
+        valueString.setNum(mContents[i].second);
+        this->mpGlobalParametersTable->insertRow(mpGlobalParametersTable->rowCount());
+        mpGlobalParametersTable->setItem(mpGlobalParametersTable->rowCount()-1, 0, new QTableWidgetItem(mContents[i].first));
+        mpGlobalParametersTable->setItem(mpGlobalParametersTable->rowCount()-1, 1, new QTableWidgetItem(valueString));
+    }
 }

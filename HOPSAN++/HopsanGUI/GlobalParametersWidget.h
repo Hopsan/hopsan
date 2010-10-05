@@ -81,6 +81,7 @@ public slots:
 private slots:
     void openParameterDialog();
     void addParameter();
+    void update();
 
 private:
     QLabel *mpNameLabel;
@@ -89,6 +90,7 @@ private:
     QLineEdit *mpValueBox;
     QPushButton *mpAddInDialogButton;
     QPushButton *mpDoneInDialogButton;
+    QList< QPair<QString, double> > mContents;
 };
 
 
