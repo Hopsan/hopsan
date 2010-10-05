@@ -70,9 +70,10 @@ GlobalParametersWidget::GlobalParametersWidget(MainWindow *parent)
     mpGlobalParametersTable->setColumnWidth(0, 120);
     mpGlobalParametersTable->setColumnCount(1);
     mpGlobalParametersTable->setRowCount(1);
+    mpGlobalParametersTable->verticalHeader()->hide();
 
     QTableWidgetItem *item = new QTableWidgetItem();
-    item->setText("No undo history found.");
+    item->setText("No global parameters set.");
     item->setBackgroundColor(QColor("white"));
     item->setTextAlignment(Qt::AlignCenter);
     mpGlobalParametersTable->setItem(0,0,item);
@@ -115,6 +116,8 @@ void GlobalParametersWidget::setParameter(QString name, double value)
     {
         mpGlobalParametersTable->setColumnCount(2);
         mpGlobalParametersTable->removeRow(0);
+        mpGlobalParametersTable->setColumnWidth(0, 120);
+        mpGlobalParametersTable->verticalHeader()->show();
     }
     if(!name.startsWith("<"))
     {
