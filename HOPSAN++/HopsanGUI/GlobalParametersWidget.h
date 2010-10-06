@@ -46,7 +46,7 @@
 #include <QDialog>
 #include <QTableWidget>
 #include <QObject>
-#include <QGridLayout.h>
+#include <QGridLayout>
 #include <qwidget.h>
 #include <qlabel.h>
 

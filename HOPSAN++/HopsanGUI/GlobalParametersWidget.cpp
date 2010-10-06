@@ -47,12 +47,12 @@
 
 #include <QtGui>
 
+#include "MainWindow.h"
 #include "GlobalParametersWidget.h"
 
-#include <QWidget.h>
-#include <QDialog.h>
+#include <QWidget>
+#include <QDialog>
 
-#include <MainWindow.h>
 
 //! Construtor for Global Parameters widget, where the user can see and change the global parameters in the model.
 //! @param parent Pointer to the main window
