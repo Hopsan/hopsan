@@ -81,6 +81,7 @@ public slots:
 private slots:
     void openParameterDialog();
     void addParameter();
+    void removeSelectedParameters();
     void update();
 
 private:

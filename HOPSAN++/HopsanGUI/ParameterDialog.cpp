@@ -193,7 +193,7 @@ void ParameterDialog::setParameters()
     for (size_t i=0 ; i < mValueVector.size(); ++i )
     {
         qDebug() << "Checking " << mVarVector[i]->text();
-        if(mValueVector[i]->text().startsWith("<") and mValueVector[i]->text().endsWith(">"))
+        if(mValueVector[i]->text().startsWith("<") && mValueVector[i]->text().endsWith(">"))
         {
             QString requestedParameter = mValueVector[i]->text().mid(1, mValueVector[i]->text().size()-2);
             qDebug() << "Found global parameter \"" << requestedParameter << "\"";

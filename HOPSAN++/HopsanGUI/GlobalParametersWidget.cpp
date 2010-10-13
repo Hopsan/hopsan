@@ -53,6 +53,7 @@
 #include <QWidget>
 #include <QDialog>
 
+#include "MainWindow.h"
 
 //! Construtor for Global Parameters widget, where the user can see and change the global parameters in the model.
 //! @param parent Pointer to the main window
@@ -93,8 +94,9 @@ GlobalParametersWidget::GlobalParametersWidget(MainWindow *parent)
     mpGridLayout->addWidget(mpRemoveButton, 2, 0);
 
     connect(this->mpAddButton,SIGNAL(clicked()),this,SLOT(openParameterDialog()));
-    //! @todo Make the "Remove" button do something
+    connect(mpRemoveButton,SIGNAL(clicked()),this,SLOT(removeSelectedParameters()));
 }
+
 
 //! Slot that adds a global parameter value
 //! @param name Lookup name for the global parameter
@@ -113,6 +115,35 @@ void GlobalParametersWidget::setParameter(QString name, double value)
     }
 
     mContents.append(QPair<QString,double>(name, value));
+    update();
+}
+
+
+//! Slot that removes all selected global parameters in parameter table
+//! @todo This shall remove the actual global parameters when they have been implemented, wherever they are stored.
+void GlobalParametersWidget::removeSelectedParameters()
+{
+    QList<QTableWidgetItem *> pSelectedItems = mpGlobalParametersTable->selectedItems();
+    QList< QPair<QString, double> > parametersToRemove;
+    QString tempName;
+    double tempValue;
+
+    for(size_t i=0; i<pSelectedItems.size(); ++i)
+    {
+        tempName = mpGlobalParametersTable->item(pSelectedItems[i]->row(),0)->text();
+        tempValue = mpGlobalParametersTable->item(pSelectedItems[i]->row(),1)->text().toDouble();
+        if(!parametersToRemove.contains(QPair<QString, double>(tempName, tempValue)))
+        {
+            parametersToRemove.append(QPair<QString, double>(tempName, tempValue));
+        }
+    }
+
+    for(size_t j=0; j<parametersToRemove.size(); ++j)
+    {
+        qDebug() << "Removing: " << parametersToRemove[j];
+        mContents.removeAll(parametersToRemove[j]);
+    }
+
     update();
 }
 
@@ -160,6 +191,7 @@ void GlobalParametersWidget::addParameter()
 //! Updates the parameter table from the contents list
 void GlobalParametersWidget::update()
 {
+    mpGlobalParametersTable->clear();
     if(mContents.empty())
     {
         mpGlobalParametersTable->setColumnCount(1);
@@ -174,8 +206,8 @@ void GlobalParametersWidget::update()
     }
     else
     {
+        mpGlobalParametersTable->setRowCount(0);
         mpGlobalParametersTable->setColumnCount(2);
-        mpGlobalParametersTable->removeRow(0);
         mpGlobalParametersTable->setColumnWidth(0, 120);
         mpGlobalParametersTable->verticalHeader()->show();
     }
