@@ -101,6 +101,7 @@ public slots:
 private:
     QPoint dragStartPosition;
     LibraryWidget *mpParentLibraryWidget;
+    QListWidgetItem *mpHoveredItem;
 };
 
 

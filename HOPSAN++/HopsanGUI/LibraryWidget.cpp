@@ -127,6 +127,7 @@ LibraryContent::LibraryContent(LibraryContent *pParentLibraryContent, QString ma
     mpParentLibraryWidget = pParentLibraryWidget;
     mpParentTreeWidgetItem = pParentTreeWidgetItem;
     mMapKey = mapKey;
+    mpHoveredItem = 0x0;
     this->setViewMode(QListView::IconMode);
     this->setResizeMode(QListView::Adjust);
     this->setMouseTracking(true);
@@ -160,25 +161,32 @@ void LibraryContent::highLightItem(QListWidgetItem *item)
 
 void LibraryContent::mouseMoveEvent(QMouseEvent *event)
 {
-    //! @todo maybe try to do this in some not so cpu needing way (setting white backround for all objects VERY often when mouse move)
-        //Make hovered item gray & display name//
-    QList<LibraryContentItem*> itemlist =  mpParentLibraryWidget->mLibraryContentItemPtrsMap.values();
-    QList<LibraryContentItem*>::iterator it = itemlist.begin();
-    for( ; it != itemlist.end(); ++it )
-    {
-        (*it)->setBackgroundColor(QColor("white"));
-        (*it)->setSelected(false);
-    }
-
+        //Make hovered item light blue & display its name
     mpParentLibraryWidget->mpComponentNameField->setText("");
     QListWidgetItem *tempItem = itemAt(event->pos());
-    if(tempItem != 0x0)     //! @todo This is perhaps a bit ugly, but the pointer is zero if there are not item beneath the mouse
+    if(tempItem != 0x0)     //The pointer is zero if there is no item beneath the mouse
     {
-        tempItem->setBackgroundColor(QColor("lightblue"));
+        if(tempItem != mpHoveredItem)
+        {
+            tempItem->setBackgroundColor(QColor("lightblue"));
+            if(mpHoveredItem != 0x0)
+            {
+                mpHoveredItem->setBackgroundColor(QColor("white"));
+            }
+            mpHoveredItem = tempItem;
+        }
         mpParentLibraryWidget->mpComponentNameField->setText(tempItem->toolTip());
     }
-        //***********************//
+    else
+    {
+        if(mpHoveredItem != 0x0)
+        {
+            mpHoveredItem->setBackgroundColor(QColor("white"));
+        }
+        mpHoveredItem = 0x0;
+    }
 
+        //Return if no drag is initialized
     if ( !(event->buttons() & Qt::LeftButton) )
         return;
     if ( (event->pos() - dragStartPosition).manhattanLength() < QApplication::startDragDistance() )
