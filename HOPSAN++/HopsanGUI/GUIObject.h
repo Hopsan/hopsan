@@ -45,6 +45,7 @@
 #include <QObject>
 #include <QGraphicsSvgItem>
 #include <QPen>
+#include <QtXml>
 
 #include "common.h"
 
@@ -102,6 +103,7 @@ public:
     GUISystem *mpParentSystem;
 
     virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());
+    virtual void saveToDomDocument(QDomDocument &rDomDocument);
     virtual void loadFromHMF(QString modelFilePath=QString()) {assert(false);} //Only available in GUISubsystem for now
 
     enum { Type = GUIOBJECT };

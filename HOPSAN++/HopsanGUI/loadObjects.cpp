@@ -384,3 +384,33 @@ void writeHeader(QTextStream &rStream)
 
     //! @todo wite more header data like time and viewport
 }
+
+void addHMFHeader(QDomDocument &rDomDocument)
+{
+    QDomElement xmlHeader = rDomDocument.createElement("HopsanHeader");
+
+    appendDomTextElement(xmlHeader, "HOPSANGUIVERSION", HOPSANGUIVERSION);
+    appendDomTextElement(xmlHeader, "HMFVERSION", HMFVERSION);
+    appendDomTextElement(xmlHeader, "CAFVERSION", CAFVERSION);
+
+    rDomDocument.appendChild(xmlHeader);
+}
+
+//! @brief Helper function for adding Dom elements containing one text node
+void appendDomTextElement(QDomElement &rDomElement, const QString element_name, const QString text)
+{
+    QDomDocument ownerDomDocument = rDomElement.ownerDocument();
+    QDomElement subDomElement = ownerDomDocument.createElement(element_name);
+    subDomElement.appendChild(ownerDomDocument.createTextNode(text));
+    rDomElement.appendChild(subDomElement);
+}
+
+//! @brief Helper function for adding Dom elements containing one text node (based on a double value)
+void appendDomTextElement(QDomElement &rDomElement, const QString element_name, const double text)
+{
+    QString tmp_string;
+    tmp_string.setNum(text);
+    appendDomTextElement(rDomElement, element_name, tmp_string);
+}
+
+

@@ -2,6 +2,10 @@
 #define LOADOBJECTS_H
 
 #include <QTextStream>
+#include <QtXml>
+#include <QDomDocument>
+#include <QDomElement>
+#include <QDomText>
 #include "AppearanceData.h"
 
 //Forward Declarations
@@ -100,5 +104,9 @@ void loadParameterValues(const ParameterLoadData &rData, GUISystem* pSystem, und
 
 HeaderLoadData readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidget);
 void writeHeader(QTextStream &rStream);
+void addHMFHeader(QDomDocument &rDomDocument);
+
+void appendDomTextElement(QDomElement &rDomElement, const QString element_name, const QString text);
+void appendDomTextElement(QDomElement &rDomElement, const QString element_name, const double text);
 
 #endif // LOADOBJECTS_H

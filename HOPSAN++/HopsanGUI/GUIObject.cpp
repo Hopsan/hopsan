@@ -416,6 +416,11 @@ void GUIObject::saveToTextStream(QTextStream &rStream, QString prepend)
             << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << " " << mpNameText->isVisible() << "\n";
 }
 
+void GUIObject::saveToDomDocument(QDomDocument &rDomDocument)
+{
+    //! @todo add code here
+}
+
 
 //! Event when mouse cursor enters component icon.
 void GUIObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
