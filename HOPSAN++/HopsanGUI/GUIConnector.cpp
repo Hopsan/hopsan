@@ -331,6 +331,8 @@ void GUIConnector::setEndPort(GUIPort *port)
     this->determineAppearance();
     this->setPassive();
 
+
+        //Snap if close to a snapping position
     if(mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mSnapping)
     {
         if( (getNumberOfLines() == 1) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE) ||

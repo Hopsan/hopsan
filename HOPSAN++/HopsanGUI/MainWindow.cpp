@@ -189,6 +189,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpUndoWidgetDock->hide();
     addDockWidget(Qt::RightDockWidgetArea, mpUndoWidgetDock);
 
+        //Make dock widgets that share same dock area tabified, instead of stacking them above each other
     tabifyDockWidget(mpPlotWidgetDock, mpGlobalParametersDock);
     tabifyDockWidget(mpGlobalParametersDock, mpUndoWidgetDock);
     tabifyDockWidget(mpUndoWidgetDock, mpPlotWidgetDock);

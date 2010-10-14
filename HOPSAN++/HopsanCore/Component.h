@@ -100,6 +100,8 @@ namespace hopsan {
         void setMeasuredTime(double time);
         double getMeasuredTime();
 
+            //Temporarily made public for RT-simulation
+        virtual void initialize(); //! @todo Default values are hard set
 
     protected:
         //==========Protected member functions==========
@@ -108,7 +110,7 @@ namespace hopsan {
         virtual ~Component(){};
 
         //Virtual functions
-        virtual void initialize(); //! @todo Default values are hard set
+
         virtual void simulateOneTimestep();
         virtual void finalize();
         virtual void setTimestep(const double timestep);

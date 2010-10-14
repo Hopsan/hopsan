@@ -680,14 +680,14 @@ void PlotWindow::dropEvent(QDropEvent *event)
             {
                 this->addPlotCurve(xVector, yVector, title, xlabel, ylabel, QwtPlot::yLeft);
                 QStringList parameterDescription;
-                parameterDescription << componentName << portName << dataName;
+                parameterDescription << componentName << portName << dataName << dataUnit;
                 mCurveParameters.append(parameterDescription);
             }
             else
             {
                 this->addPlotCurve(xVector, yVector, title, xlabel, ylabel, QwtPlot::yRight);
                 QStringList parameterDescription;
-                parameterDescription << componentName << portName << dataName;
+                parameterDescription << componentName << portName << dataName << dataUnit;
                 mCurveParameters.append(parameterDescription);
             }
         }
@@ -960,6 +960,7 @@ PlotParameterTree::PlotParameterTree(MainWindow *parent)
 {
     mpParentMainWindow = parent;
     mpCurrentSystem = mpParentMainWindow->mpProjectTabs->getCurrentSystem();
+    mFavoriteParameters.clear();
 
     this->setDragEnabled(true);
     this->setAcceptDrops(false);
@@ -1018,13 +1019,44 @@ void PlotParameterTree::updateList()
                     tempPlotParameterItem = new PlotParameterItem(it.value()->getName(), (*itp)->getName(), parameterNames[i], parameterUnits[i], tempComponentItem);
                     tempComponentItem->addChild(tempPlotParameterItem);
                     QStringList parameterDescription;
-                    parameterDescription << (*itp)->getGUIComponentName() << (*itp)->getName() << parameterNames[i];
+                    parameterDescription << (*itp)->getGUIComponentName() << (*itp)->getName() << parameterNames[i] << parameterUnits[i];
                     mAvailableParameters.append(parameterDescription);
+                    if(mFavoriteParameters.contains(parameterDescription))
+                    {
+                        tempPlotParameterItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
+                    }
                 }
             }
         }
     }
 
+        //Append favorite plot variables to tree if they still exist
+    for(size_t i=0; i<mFavoriteParameters.size(); ++i)
+    {
+        if(mAvailableParameters.contains(mFavoriteParameters.at(i)))
+        {
+            QString componentName = mFavoriteParameters.at(i).at(0);
+            QString portName = mFavoriteParameters.at(i).at(1);
+            QString dataName = mFavoriteParameters.at(i).at(2);
+            QString dataUnit = mFavoriteParameters.at(i).at(3);
+
+            tempPlotParameterItem = new PlotParameterItem(componentName, portName, dataName, dataUnit);
+            tempPlotParameterItem->setText(0, tempPlotParameterItem->text(0).prepend(" " + componentName + ", "));
+            tempPlotParameterItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
+            this->addTopLevelItem(tempPlotParameterItem);
+        }
+    }
+
+        //Remove no longer existing favorite parameters
+    for(size_t i=0; i<mFavoriteParameters.size(); ++i)
+    {
+        if(!mAvailableParameters.contains(mFavoriteParameters.at(i)))
+        {
+            mFavoriteParameters.removeAll(mFavoriteParameters.at(i));
+        }
+    }
+
+        //Sort the tree widget
     this->sortItems(0, Qt::AscendingOrder);
 
         // This connection makes sure that the plot list is connected to the new tab, so that it will update if the new tab is simulated.
@@ -1038,8 +1070,8 @@ void PlotParameterTree::updateList()
 //! @param *item Pointer to the tree widget item whos arrays will be looked up from the map and plotted
 void PlotParameterTree::createPlotWindow(QTreeWidgetItem *item)
 {
-    //! @todo This may be a problem if subsystem parameters should be displayed as lower levels in the tree, because subsystems will have a parent without being plotable...
-    if(item->parent() != 0)     //Top level items cannot be plotted (they represent the components)
+    //! @todo This is a kind of dumb check; it assumes that component items have bold font and variables not.
+    if(!item->font(0).bold())     //Top level items cannot be plotted (they represent the components)
     {
         //QTreeWidgetItem must be casted to a PlotParameterItem. This is a necessary because double click event can not know which kind of tree item is clicked.
         PlotParameterItem *tempItem = dynamic_cast<PlotParameterItem *>(item);
@@ -1074,7 +1106,7 @@ void PlotParameterTree::createPlotWindow(QString componentName, QString portName
     plotWindow->setWindowTitle("Hopsan NG Plot Window");
     plotWindow->tempCurve->setTitle(title);
     QStringList parameterDescription;
-    parameterDescription << componentName << portName << dataName;
+    parameterDescription << componentName << portName << dataName << dataUnit;
     plotWindow->mCurveParameters.append(parameterDescription);
     plotWindow->mpVariablePlot->setAxisTitle(QwtPlot::yLeft, ylabel);
     plotWindow->mpVariablePlot->setAxisTitle(QwtPlot::xBottom, xlabel);
@@ -1118,6 +1150,53 @@ void PlotParameterTree::mouseMoveEvent(QMouseEvent *event)
         mimeData->setText(mimeText);
         drag->setMimeData(mimeData);
         drag->exec();
+    }
+}
+
+
+void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
+{
+    qDebug() << "contextMenuEvent()";
+
+    PlotParameterItem *item;
+
+    //! @todo Dumb check that assumes component tree items to be bold and parameter items to be not bold
+    if(currentItem() != 0 && !currentItem()->font(0).bold())
+    {
+        qDebug() << "currentItem() is ok!";
+
+        item = dynamic_cast<PlotParameterItem *>(currentItem());
+        QStringList parameterDescription;
+        parameterDescription << item->getComponentName() << item->getPortName() << item->getDataName() << item->getDataUnit();
+        QMenu menu;
+        if(!mFavoriteParameters.contains(parameterDescription))
+        {
+            QAction *addToFavoritesAction;
+            addToFavoritesAction = menu.addAction(QString("Add Favorite Parameter"));
+
+            QCursor *cursor;
+            QAction *selectedAction = menu.exec(cursor->pos());
+
+            if(selectedAction == addToFavoritesAction)
+            {
+               mFavoriteParameters.append(parameterDescription);
+               this->updateList();
+            }
+        }
+        else
+        {
+            QAction *removeFromFavoritesAction;
+            removeFromFavoritesAction = menu.addAction(QString("Remove Favorite Parameter"));
+
+            QCursor *cursor;
+            QAction *selectedAction = menu.exec(cursor->pos());
+
+            if(selectedAction == removeFromFavoritesAction)
+            {
+               mFavoriteParameters.removeAll(parameterDescription);
+               this->updateList();
+            }
+        }
     }
 }
 

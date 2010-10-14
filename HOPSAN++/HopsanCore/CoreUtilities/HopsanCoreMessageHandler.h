@@ -41,7 +41,6 @@ namespace hopsan {
         //const HopsanCoreMessage &peakMessage();
         HopsanCoreMessage getMessage();
         size_t nWaitingMessages();
-
     };
 
     extern HopsanCoreMessageHandler gCoreMessageHandler;

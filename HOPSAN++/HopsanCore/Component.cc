@@ -14,7 +14,7 @@
 #include <cassert>
 #include <math.h>
 #include <stdlib.h>
-#include <stdio.h>
+#include "stdio.h"
 #include "Component.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "CoreUtilities/FileAccess.h"
