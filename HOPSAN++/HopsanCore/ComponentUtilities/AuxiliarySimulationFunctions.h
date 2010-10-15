@@ -5,7 +5,7 @@
 
 namespace hopsan {
 
-    double multByTwo(double input);     //! @todo Vad är det här bra för?
+    double multByTwo(double input);     //! @todo Vad Ã¤r det hÃ¤r bra fÃ¶r?
 
 }
 #endif // AUXILIARYSIMULATIONFUNCTIONS_H
