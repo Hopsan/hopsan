@@ -118,7 +118,6 @@ protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
-
 signals:
     void componentMoved();
     void componentDeleted();

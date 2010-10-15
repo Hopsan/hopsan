@@ -450,8 +450,6 @@ void GUIObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 //! Defines what shall happen if a mouse key is pressed while hovering an object.
 void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    QGraphicsWidget::mousePressEvent(event);
-
         //Store old positions for all components, in case more than one is selected
     if(event->button() == Qt::LeftButton)
     {
@@ -1270,14 +1268,17 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
             this->showName();
         }
     }
+    QGraphicsItem::contextMenuEvent(event);
 }
 
 
+//! @brief Slot that opens the parameter dialog for the component
 void GUIComponent::openParameterDialog()
 {
     ParameterDialog *dialog = new ParameterDialog(this);
     dialog->exec();
 }
+
 
 //! @brief Help function to create ports in the component when it is created
 void GUIComponent::createPorts()

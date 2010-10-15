@@ -107,6 +107,7 @@ signals:
     void setAllGfxType(graphicsType);
     void checkMessages();
     void deleteSelected();
+    void componentChanged();
 
 private:
     void commonConstructorCode();

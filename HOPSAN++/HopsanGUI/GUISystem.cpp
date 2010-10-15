@@ -607,6 +607,7 @@ void GUISystem::deleteGUIObject(QString objectName, undoStatus undoSettings)
     {
         //Register removal of connector in undo stack (must be done after removal of connectors or the order of the commands in the undo stack will be wrong!)
         this->mUndoStack->registerDeletedObject(it.value());
+        emit componentChanged();
     }
 
     if (it != mGUIObjectMap.end())
@@ -675,6 +676,7 @@ void GUISystem::renameGUIObject(QString oldName, QString newName, undoStatus und
         {
             mUndoStack->newPost();
             mUndoStack->registerRenameObject(oldName, modNewName);
+            emit componentChanged();
         }
     }
     emit checkMessages();
