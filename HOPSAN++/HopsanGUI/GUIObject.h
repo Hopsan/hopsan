@@ -118,6 +118,8 @@ protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
+    virtual void saveGuiDataToDomNode(QDomNode &rDomNode);
+
 signals:
     void componentMoved();
     void componentDeleted();

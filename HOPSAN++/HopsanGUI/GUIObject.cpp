@@ -419,14 +419,20 @@ void GUIObject::saveToTextStream(QTextStream &rStream, QString prepend)
 void GUIObject::saveToDomNode(QDomNode &rDomNode)
 {
     //! @todo Default assume that this is has a core equivalent, may change object classes later
-    QDomNode xmlSysp = appendDomContainerNode(rDomNode,"Object");
+    QDomNode xmlObject = appendDomContainerNode(rDomNode,"Object");
 
     //Save Core related stuff
-    appendDomTextNode(xmlSysp,"TypeName", getTypeName());
-    appendDomTextNode(xmlSysp,"Name", getName());
+    //! @todo maybe have special protected function for this
+    appendDomTextNode(xmlObject,"TypeName", getTypeName());
+    appendDomTextNode(xmlObject,"Name", getName());
 
+    saveGuiDataToDomNode(xmlObject);
+}
+
+void GUIObject::saveGuiDataToDomNode(QDomNode &rDomNode)
+{
     //Save GUI realted stuff
-    QDomNode xmlSyspGUI = appendDomContainerNode(xmlSysp,"HopsanGui");
+    QDomNode xmlSyspGUI = appendDomContainerNode(rDomNode,"HopsanGui");
 
     QPointF pos = mapToScene(boundingRect().center());
     appendDomTextNode(xmlSyspGUI, "posx", pos.x());
@@ -434,7 +440,6 @@ void GUIObject::saveToDomNode(QDomNode &rDomNode)
     appendDomTextNode(xmlSyspGUI, "rotation", rotation());
     appendDomTextNode(xmlSyspGUI, "NameTextPos", getNameTextPos());
     appendDomTextNode(xmlSyspGUI, "isVisible", mpNameText->isVisible());
-
 }
 
 

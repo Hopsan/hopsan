@@ -47,6 +47,7 @@
 #include <QGraphicsLineItem>
 #include <QGraphicsSceneMoveEvent>
 #include <QTextStream>
+#include <QtXml>
 
 #include "common.h"
 #include "GUIConnectorAppearance.h"
@@ -94,8 +95,9 @@ public:
     bool isMakingDiagonal();
     bool isActive();
     void saveToTextStream(QTextStream &rStream, QString prepend=QString());
-    GUISystem *mpParentSystem;
+    void saveToDomNode(QDomNode &rDomNode);
 
+    GUISystem *mpParentSystem;
     QVector<QPointF> mPoints;
 
 public slots:

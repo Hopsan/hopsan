@@ -51,6 +51,7 @@
 #include "UndoStack.h"
 #include "ProjectTabWidget.h"
 #include "GUISystem.h"
+#include "loadObjects.h"
 #include <math.h>
 
 //! Constructor.
@@ -546,6 +547,24 @@ void GUIConnector::saveToTextStream(QTextStream &rStream, QString prepend)
     }
     rStream << "\n";
 }
+
+void GUIConnector::saveToDomNode(QDomNode &rDomNode)
+{
+    QDomNode xmlConnect = appendDomContainerNode(rDomNode, "Connect");
+    appendDomTextNode(xmlConnect, "StartComponent", getStartComponentName());
+    appendDomTextNode(xmlConnect, "StartPort", getStartPortName());
+    appendDomTextNode(xmlConnect, "EndComponent", getEndComponentName());
+    appendDomTextNode(xmlConnect, "EndPort", getEndPortName());
+
+    //Save gui data to dom
+    QDomNode xmlConnectGUI = appendDomContainerNode(xmlConnect, "HopsanGui");
+    for(size_t j=0; j<mPoints.size(); ++j)
+    {
+        appendDomTextNode(xmlConnectGUI, "ptx", mPoints[j].x());
+        appendDomTextNode(xmlConnectGUI, "pty", mPoints[j].y());
+    }
+}
+
 
 
 //! Draws lines between the points in the mPoints vector, and stores them in the mpLines vector.

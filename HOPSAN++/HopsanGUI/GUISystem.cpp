@@ -65,7 +65,7 @@ void GUISystem::commonConstructorCode()
     mUndoDisabled = false;
 
         //Set default values
-    mLoadType = "Empty";
+    mLoadType = "EMBEDED";
     //mModelFileInfo.setFile();
     mStartTime = 0;     //! @todo These default values should be options for the user
     mTimeStep = 0.001;
@@ -525,7 +525,13 @@ void GUISystem::saveToTextStream(QTextStream &rStream, QString prepend)
 
 void GUISystem::saveToDomNode(QDomNode &rDomNode)
 {
-    if (!mModelFileInfo.filePath().isEmpty())
+    //! @todo maybe use enums instead
+    //! @todo should not need to set this here
+    if (mpParentSystem==0)
+    {
+        mLoadType = "ROOT"; //!< @todo this is a temporary hack for the xml save function (see bellow)
+    }
+    else if (!mModelFileInfo.filePath().isEmpty())
     {
         mLoadType = "EXTERNAL";
     }
@@ -538,21 +544,40 @@ void GUISystem::saveToDomNode(QDomNode &rDomNode)
     //! @todo dont hardcode "system" or maybe thats ok
     QDomNode subsysContainerNode = appendDomContainerNode(rDomNode,"System");
 
-    //! @todo do we really ned both systemtype and external path, en empty path could indicate embeded
-    appendDomTextNode(subsysContainerNode, "SystemType", mLoadType);
+    //Save Core related stuff
+    //! @todo maybe have special protected function for this
+    appendDomTextNode(subsysContainerNode,"TypeName", getTypeName());
+    appendDomTextNode(subsysContainerNode,"Name", getName());
+
+    //! @todo do we really need both systemtype and external path, en empty path could indicate embeded
+    //appendDomTextNode(subsysContainerNode, "SystemType", mLoadType);
     appendDomTextNode(subsysContainerNode, "CQSType", getTypeCQS());
-    //appendDomTextNode(subsysContainerNode, "ExternalPath", relativePath(mModelFileInfo.absoluteFilePath(), mpParentSystem->mModelFileInfo.absolutePath()));
-    GUIObject::saveToDomNode(subsysContainerNode);
-
-
-    //First save the systemports
-    //! @todo do this, but hey these are saved like ui objects already, maybe change this, or not?
-
-    //Then Save the subcomponents
-    QHash<QString, GUIObject*>::iterator it;
-    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
+    if ((mpParentSystem != 0) && (mLoadType=="EXTERNAL"))
     {
-        it.value()->saveToDomNode(subsysContainerNode);
+        appendDomTextNode(subsysContainerNode, "ExternalPath", relativePath(mModelFileInfo.absoluteFilePath(), mpParentSystem->mModelFileInfo.absolutePath()));
+    }
+    else
+    {
+        //appendDomTextNode(subsysContainerNode, "ExternalPath", QString()); //Maybe dont need this on root systems
+    }
+
+    //Save gui object stuff
+    saveGuiDataToDomNode(subsysContainerNode);
+
+    if (mLoadType=="EMBEDED" || mLoadType=="ROOT")
+    {
+        //Save the sub objects
+        QHash<QString, GUIObject*>::iterator it;
+        for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
+        {
+            it.value()->saveToDomNode(subsysContainerNode);
+        }
+
+        //Save the connectors
+        for(int i = 0; i != mSubConnectorList.size(); ++i)
+        {
+            mSubConnectorList[i]->saveToDomNode(subsysContainerNode);
+        }
     }
 }
 
