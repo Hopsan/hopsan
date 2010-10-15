@@ -145,4 +145,5 @@ HEADERS += win32dll.h \
     Components/Mechanic/MechanicAngularVelocityTransformer.hpp \
     Components/Mechanic/MechanicRotationalInertia.hpp \
     Components/Mechanic/MechanicTorsionalSpring.hpp \
-    Components/Mechanic/MechanicAngleSensor.hpp
+    Components/Mechanic/MechanicAngleSensor.hpp \
+    Components/Signal/SignalStopSimulation.hpp

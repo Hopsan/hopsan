@@ -80,6 +80,7 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->registerCreatorFunction("SignalFirstOrderFilter", SignalFirstOrderFilter::Creator);
     cfact_ptr->registerCreatorFunction("SignalSecondOrderFilter", SignalSecondOrderFilter::Creator);
     cfact_ptr->registerCreatorFunction("SignalHysteresis", SignalHysteresis::Creator);
+    cfact_ptr->registerCreatorFunction("SignalStopSimulation", SignalStopSimulation::Creator);
 
     //Mechanical components
     cfact_ptr->registerCreatorFunction("MechanicForceTransformer", MechanicForceTransformer::Creator);

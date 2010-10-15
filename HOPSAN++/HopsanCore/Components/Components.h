@@ -66,6 +66,7 @@
 #include "Signal/SignalFirstOrderFilter.hpp"
 #include "Signal/SignalSecondOrderFilter.hpp"
 #include "Signal/SignalHysteresis.hpp"
+#include "Signal/SignalStopSimulation.hpp"
 
 /* Mechanical Components */
 #include "Mechanic/MechanicForceTransformer.hpp"

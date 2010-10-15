@@ -1,0 +1,7 @@
+TYPENAME "SignalStopSimulation"
+DISPLAYNAME "Stop simulation"
+ISOICON "stopsimulation_user.svg"
+USERICON "stopsimulation_user.svg"
+ICONROTATION ON
+PORT "in" 0.0 0.5 0
+

@@ -298,6 +298,12 @@ const string &Component::getTypeName()
 }
 
 
+void Component::stopSimulation()
+{
+    this->getSystemParent()->stop();
+}
+
+
 //! Register a parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
 void Component::registerParameter(const string name, const string description, const string unit, double &rValue)
 {

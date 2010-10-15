@@ -115,6 +115,9 @@ namespace hopsan {
         virtual void finalize();
         virtual void setTimestep(const double timestep);
 
+        //Stop a running simulation
+        void stopSimulation();
+
         //Parameter functions
         void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
 
