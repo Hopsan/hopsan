@@ -388,45 +388,33 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     }
     modelFile << "--------------------------------------------------------------\n";
 
+    qDebug() << "saving to xml";
     //Save xml document
     QDomDocument domDocument;
-    addHMFHeader(domDocument);
+    QDomElement hmfRoot = domDocument.createElement("hmf");
+    domDocument.appendChild(hmfRoot);
+    addHMFHeader(hmfRoot);
 
     QDomElement xmlModelProperties = domDocument.createElement("ModelProperties");
     //! @todo maybe use tuple of 3 instead of thre different element (if you can do that in xml)
-    appendDomTextElement(xmlModelProperties, "Starttime", pMainWindow->getStartTimeFromToolBar());
-    appendDomTextElement(xmlModelProperties, "Timestep", pMainWindow->getTimeStepFromToolBar());
-    appendDomTextElement(xmlModelProperties, "Stoptime", pMainWindow->getFinishTimeFromToolBar());
+    appendDomTextNode(xmlModelProperties, "Starttime", pMainWindow->getStartTimeFromToolBar());
+    appendDomTextNode(xmlModelProperties, "Timestep", pMainWindow->getTimeStepFromToolBar());
+    appendDomTextNode(xmlModelProperties, "Stoptime", pMainWindow->getFinishTimeFromToolBar());
     //! @todo save more stuff here
-    domDocument.appendChild(xmlModelProperties);
+    hmfRoot.appendChild(xmlModelProperties);
 
     QDomElement xmlModelAppearance = domDocument.createElement("ModelAppearance");
     //! @todo save more stuff here, like ports and stuff
-    appendDomTextElement(xmlModelAppearance, "UserIcon", mpSystem->getUserIconPath());
-    appendDomTextElement(xmlModelAppearance, "ISOIcon", mpSystem->getIsoIconPath());
-    domDocument.appendChild(xmlModelAppearance);
+    appendDomTextNode(xmlModelAppearance, "UserIcon", mpSystem->getUserIconPath());
+    appendDomTextNode(xmlModelAppearance, "ISOIcon", mpSystem->getIsoIconPath());
+    hmfRoot.appendChild(xmlModelAppearance);
 
     //Save the model component hierarcy
-    for(it = mpSystem->mGUIObjectMap.begin(); it!=mpSystem->mGUIObjectMap.end(); ++it)
-    {
-//        if ( it.value()->getTypeName() == QString("Subsystem") )
-//        {
-//            it.value()->saveToTextStream(modelFile, "BEGINSUBSYSTEM");
-//            modelFile << "ENDSUBSYSTEM" << "\n"; //!< @todo Do this in some better way, end subsystem is needed by core (but not gui as embedded systems are not suportet (yet))
-//        }
-//        else if (it.value()->getTypeName() == QString("SystemPort"))
-//        {
-//            it.value()->saveToTextStream(modelFile, "SYSTEMPORT");
-//        }
-//        else
-//        {
-//            it.value()->saveToTextStream(modelFile, "COMPONENT");
-//        }
-        //! @todo maybe use a saveload object instead of calling save imediately (only load object exist for now)
-        //it.value()->saveToDomDocument();
-    }
+    //! @todo maybe return to DomElements intead of DomNodes to prevent people from using domdocument directly
+    //! @todo maybe use a saveload object instead of calling save imediately (only load object exist for now)
+    mpSystem->saveToDomNode(hmfRoot);
 
-
+    //Save to file
     const int IndentSize = 2;
     QFile apa("test.xml");
     if (!apa.open(QIODevice::WriteOnly | QIODevice::Text))  //open file

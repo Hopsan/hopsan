@@ -385,32 +385,45 @@ void writeHeader(QTextStream &rStream)
     //! @todo wite more header data like time and viewport
 }
 
-void addHMFHeader(QDomDocument &rDomDocument)
+void addHMFHeader(QDomNode &rDomNode)
 {
-    QDomElement xmlHeader = rDomDocument.createElement("HopsanHeader");
+    QDomElement xmlHeader = rDomNode.ownerDocument().createElement("HopsanHeader");
 
-    appendDomTextElement(xmlHeader, "HOPSANGUIVERSION", HOPSANGUIVERSION);
-    appendDomTextElement(xmlHeader, "HMFVERSION", HMFVERSION);
-    appendDomTextElement(xmlHeader, "CAFVERSION", CAFVERSION);
+    appendDomTextNode(xmlHeader, "HOPSANGUIVERSION", HOPSANGUIVERSION);
+    appendDomTextNode(xmlHeader, "HMFVERSION", HMFVERSION);
+    appendDomTextNode(xmlHeader, "CAFVERSION", CAFVERSION);
 
-    rDomDocument.appendChild(xmlHeader);
+    rDomNode.appendChild(xmlHeader);
+}
+
+//! @brief Helper function for adding one initially empty Dom node
+//! @todo maybe retunr reference (is there a difference)
+//! @returns The new sub element dom node
+QDomNode appendDomContainerNode(QDomNode &rDomNode, const QString element_name)
+{
+    //! @todo maybe need to check if isDomDocument (dont seem to be necessary)
+    QDomDocument ownerDocument = rDomNode.ownerDocument();
+    QDomElement subDomElement = ownerDocument.createElement(element_name);
+    rDomNode.appendChild(subDomElement);
+    return subDomElement;
 }
 
 //! @brief Helper function for adding Dom elements containing one text node
-void appendDomTextElement(QDomElement &rDomElement, const QString element_name, const QString text)
+void appendDomTextNode(QDomNode &rDomNode, const QString element_name, const QString text)
 {
-    QDomDocument ownerDomDocument = rDomElement.ownerDocument();
+    //! @todo maybe need to check if isDomDocument
+    QDomDocument ownerDomDocument = rDomNode.ownerDocument();
     QDomElement subDomElement = ownerDomDocument.createElement(element_name);
     subDomElement.appendChild(ownerDomDocument.createTextNode(text));
-    rDomElement.appendChild(subDomElement);
+    rDomNode.appendChild(subDomElement);
 }
 
 //! @brief Helper function for adding Dom elements containing one text node (based on a double value)
-void appendDomTextElement(QDomElement &rDomElement, const QString element_name, const double text)
+void appendDomTextNode(QDomNode &rDomNode, const QString element_name, const double text)
 {
     QString tmp_string;
     tmp_string.setNum(text);
-    appendDomTextElement(rDomElement, element_name, tmp_string);
+    appendDomTextNode(rDomNode, element_name, tmp_string);
 }
 
 

@@ -523,6 +523,39 @@ void GUISystem::saveToTextStream(QTextStream &rStream, QString prepend)
             << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << " " << mpNameText->isVisible() << "\n";
 }
 
+void GUISystem::saveToDomNode(QDomNode &rDomNode)
+{
+    if (!mModelFileInfo.filePath().isEmpty())
+    {
+        mLoadType = "EXTERNAL";
+    }
+    else
+    {
+        mLoadType = "EMBEDED";
+    }
+
+    qDebug() << "Saving to dom node in: " << this->mAppearanceData.getName();
+    //! @todo dont hardcode "system" or maybe thats ok
+    QDomNode subsysContainerNode = appendDomContainerNode(rDomNode,"System");
+
+    //! @todo do we really ned both systemtype and external path, en empty path could indicate embeded
+    appendDomTextNode(subsysContainerNode, "SystemType", mLoadType);
+    appendDomTextNode(subsysContainerNode, "CQSType", getTypeCQS());
+    //appendDomTextNode(subsysContainerNode, "ExternalPath", relativePath(mModelFileInfo.absoluteFilePath(), mpParentSystem->mModelFileInfo.absolutePath()));
+    GUIObject::saveToDomNode(subsysContainerNode);
+
+
+    //First save the systemports
+    //! @todo do this, but hey these are saved like ui objects already, maybe change this, or not?
+
+    //Then Save the subcomponents
+    QHash<QString, GUIObject*>::iterator it;
+    for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
+    {
+        it.value()->saveToDomNode(subsysContainerNode);
+    }
+}
+
 void GUISystem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     if(mModelFileInfo.filePath().isEmpty())

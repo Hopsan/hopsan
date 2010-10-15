@@ -103,7 +103,7 @@ public:
     GUISystem *mpParentSystem;
 
     virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());
-    virtual void saveToDomDocument(QDomDocument &rDomDocument);
+    virtual void saveToDomNode(QDomNode &rDomNode);
     virtual void loadFromHMF(QString modelFilePath=QString()) {assert(false);} //Only available in GUISubsystem for now
 
     enum { Type = GUIOBJECT };
@@ -275,6 +275,8 @@ public:
     ~GUISystemPort();
     QString getTypeName();
     void setName(QString newName, renameRestrictions renameSettings);
+
+    //void saveToDomNode(QDomNode &rDomNode);
 
     enum { Type = GUISYSTEMPORT };
     int type() const;
