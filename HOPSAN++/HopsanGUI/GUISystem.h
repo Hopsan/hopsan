@@ -133,7 +133,7 @@ public:
     //void loadFromFileNOGUI(QString modelFileName=QString());
 
     void saveToTextStream(QTextStream &rStream, QString prepend);
-    void saveToDomNode(QDomNode &rDomNode);
+    void saveToDomElement(QDomElement &rDomElement);
 
     QVector<QString> getParameterNames();
 

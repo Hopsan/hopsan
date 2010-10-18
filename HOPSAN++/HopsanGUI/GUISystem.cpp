@@ -523,7 +523,7 @@ void GUISystem::saveToTextStream(QTextStream &rStream, QString prepend)
             << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << " " << mpNameText->isVisible() << "\n";
 }
 
-void GUISystem::saveToDomNode(QDomNode &rDomNode)
+void GUISystem::saveToDomElement(QDomElement &rDomElement)
 {
     //! @todo maybe use enums instead
     //! @todo should not need to set this here
@@ -542,7 +542,7 @@ void GUISystem::saveToDomNode(QDomNode &rDomNode)
 
     qDebug() << "Saving to dom node in: " << this->mAppearanceData.getName();
     //! @todo dont hardcode "system" or maybe thats ok
-    QDomNode subsysContainerNode = appendDomContainerNode(rDomNode,"System");
+    QDomElement subsysContainerNode = appendDomElement(rDomElement,"System");
 
     //Save Core related stuff
     //! @todo maybe have special protected function for this
@@ -562,7 +562,7 @@ void GUISystem::saveToDomNode(QDomNode &rDomNode)
     }
 
     //Save gui object stuff
-    saveGuiDataToDomNode(subsysContainerNode);
+    saveGuiDataToDomElement(subsysContainerNode);
 
     if (mLoadType=="EMBEDED" || mLoadType=="ROOT")
     {
@@ -570,13 +570,13 @@ void GUISystem::saveToDomNode(QDomNode &rDomNode)
         QHash<QString, GUIObject*>::iterator it;
         for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
         {
-            it.value()->saveToDomNode(subsysContainerNode);
+            it.value()->saveToDomElement(subsysContainerNode);
         }
 
         //Save the connectors
         for(int i = 0; i != mSubConnectorList.size(); ++i)
         {
-            mSubConnectorList[i]->saveToDomNode(subsysContainerNode);
+            mSubConnectorList[i]->saveToDomElement(subsysContainerNode);
         }
     }
 }

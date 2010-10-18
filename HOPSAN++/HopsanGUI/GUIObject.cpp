@@ -416,23 +416,23 @@ void GUIObject::saveToTextStream(QTextStream &rStream, QString prepend)
             << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << " " << mpNameText->isVisible() << "\n";
 }
 
-void GUIObject::saveToDomNode(QDomNode &rDomNode)
+void GUIObject::saveToDomElement(QDomElement &rDomElement)
 {
     //! @todo Default assume that this is has a core equivalent, may change object classes later
-    QDomNode xmlObject = appendDomContainerNode(rDomNode,"Object");
+    QDomElement xmlObject = appendDomElement(rDomElement,"Object");
 
     //Save Core related stuff
     //! @todo maybe have special protected function for this
     appendDomTextNode(xmlObject,"TypeName", getTypeName());
     appendDomTextNode(xmlObject,"Name", getName());
 
-    saveGuiDataToDomNode(xmlObject);
+    saveGuiDataToDomElement(xmlObject);
 }
 
-void GUIObject::saveGuiDataToDomNode(QDomNode &rDomNode)
+void GUIObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 {
     //Save GUI realted stuff
-    QDomNode xmlSyspGUI = appendDomContainerNode(rDomNode,"HopsanGui");
+    QDomElement xmlSyspGUI = appendDomElement(rDomElement,"HopsanGui");
 
     QPointF pos = mapToScene(boundingRect().center());
     appendDomTextNode(xmlSyspGUI, "posx", pos.x());
@@ -1436,17 +1436,6 @@ void GUISystemPort::setName(QString newName, renameRestrictions renameSettings)
         }
     }
 }
-
-//void GUISystemPort::saveToDomNode(QDomNode &rDomNode)
-//{
-//    QPointF pos = mapToScene(boundingRect().center());
-
-//    QDomNode xmlSysp = appendDomContainerNode(rDomNode,"SystemPort");
-
-
-//    rStream << addQuotes(getTypeName()) << " " << addQuotes(getName()) << " "
-//            << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << " " << mpNameText->isVisible() << "\n";
-//}
 
 
 int GUISystemPort::type() const

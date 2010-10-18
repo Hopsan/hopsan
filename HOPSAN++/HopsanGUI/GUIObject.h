@@ -103,7 +103,7 @@ public:
     GUISystem *mpParentSystem;
 
     virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());
-    virtual void saveToDomNode(QDomNode &rDomNode);
+    virtual void saveToDomElement(QDomElement &rDomElement);
     virtual void loadFromHMF(QString modelFilePath=QString()) {assert(false);} //Only available in GUISubsystem for now
 
     enum { Type = GUIOBJECT };
@@ -118,7 +118,7 @@ protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
-    virtual void saveGuiDataToDomNode(QDomNode &rDomNode);
+    virtual void saveGuiDataToDomElement(QDomElement &rDomElement);
 
 signals:
     void componentMoved();
@@ -278,7 +278,6 @@ public:
     QString getTypeName();
     void setName(QString newName, renameRestrictions renameSettings);
 
-    //void saveToDomNode(QDomNode &rDomNode);
 
     enum { Type = GUISYSTEMPORT };
     int type() const;

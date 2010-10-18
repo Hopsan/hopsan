@@ -95,7 +95,7 @@ public:
     bool isMakingDiagonal();
     bool isActive();
     void saveToTextStream(QTextStream &rStream, QString prepend=QString());
-    void saveToDomNode(QDomNode &rDomNode);
+    void saveToDomElement(QDomElement &rDomElement);
 
     GUISystem *mpParentSystem;
     QVector<QPointF> mPoints;

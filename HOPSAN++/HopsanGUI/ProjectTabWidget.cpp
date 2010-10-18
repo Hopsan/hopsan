@@ -49,8 +49,8 @@
 #include <QSizePolicy>
 #include <QHash>
 #include <QtXml>
-#include <QDomDocument>
-#include <QDomElement>
+//#include <QDomDocument>
+//#include <QDomElement>
 #include <QDomText>
 
 #include <string>
@@ -418,7 +418,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     //Save the model component hierarcy
     //! @todo maybe return to DomElements intead of DomNodes to prevent people from using domdocument directly
     //! @todo maybe use a saveload object instead of calling save imediately (only load object exist for now)
-    mpSystem->saveToDomNode(hmfRoot);
+    mpSystem->saveToDomElement(hmfRoot);
 
     //Save to file
     const int IndentSize = 2;

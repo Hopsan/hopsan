@@ -104,10 +104,10 @@ void loadParameterValues(const ParameterLoadData &rData, GUISystem* pSystem, und
 
 HeaderLoadData readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidget);
 void writeHeader(QTextStream &rStream);
-void addHMFHeader(QDomNode &rDomNode);
+void addHMFHeader(QDomElement &rDomElement);
 
-QDomNode appendDomContainerNode(QDomNode &rDomNode, const QString element_name);
-void appendDomTextNode(QDomNode &rDomNode, const QString element_name, const QString text);
-void appendDomTextNode(QDomNode &rDomNode, const QString element_name, const double text);
+QDomElement appendDomElement(QDomElement &rDomElement, const QString element_name);
+void appendDomTextNode(QDomElement &rDomElement, const QString element_name, const QString text);
+void appendDomTextNode(QDomElement &rDomElement, const QString element_name, const double text);
 
 #endif // LOADOBJECTS_H
