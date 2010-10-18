@@ -163,6 +163,12 @@ bool ProjectTab::simulate()
     double dt = finishTime - startTime;
     size_t nSteps = dt/mpSystem->mpCoreSystemAccess->getDesiredTimeStep();
 
+    if(!mpSystem->mpCoreSystemAccess->isSimulationOk())
+    {
+        emit checkMessages();
+        return false;
+    }
+
     qDebug() << "Initializing simulation: " << startTime << nSteps << finishTime;
 
         //Ask core to initialize simulation
