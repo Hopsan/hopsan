@@ -588,6 +588,31 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
                     this->moveBy(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x(), 0);
                 }
             }
+//            else if( (mpGUIConnectorPtrs.size() == 2) &&
+//                     (mpGUIConnectorPtrs.first()->getNumberOfLines() < 4) &&
+//                     (mpGUIConnectorPtrs.last()->getNumberOfLines() < 4) &&
+//                     ( ( (this->rotation() == 0 || this->rotation() == 180) &&
+//                       (mPortListPtrs.first()->pos().y() == mPortListPtrs.last()->pos().y()) ) ||
+//                       ( (this->rotation() == 90 || this->rotation() == 270) &&
+//                       (mPortListPtrs.first()->pos().x() == mPortListPtrs.last()->pos().x()) ) ) &&
+//                     !(mpGUIConnectorPtrs.first()->isFirstAndLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() == 2) &&
+//                     !(mpGUIConnectorPtrs.first()->isFirstOrLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() > 1) &&
+//                     (abs(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x()) < SNAPDISTANCE) &&
+//                     (abs(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x()) > 0.0) &&
+//                     !(mpGUIConnectorPtrs.last()->isFirstAndLastDiagonal() && mpGUIConnectorPtrs.last()->getNumberOfLines() == 2) &&
+//                     !(mpGUIConnectorPtrs.last()->isFirstOrLastDiagonal() && mpGUIConnectorPtrs.last()->getNumberOfLines() > 1) &&
+//                     (abs(mpGUIConnectorPtrs.last()->mPoints.first().x() - mpGUIConnectorPtrs.last()->mPoints.last().x()) < SNAPDISTANCE) &&
+//                     (abs(mpGUIConnectorPtrs.last()->mPoints.first().x() - mpGUIConnectorPtrs.last()->mPoints.last().x()) > 0.0) )
+//            {
+//                if(this->mpGUIConnectorPtrs.first()->getStartPort()->mpParentGuiObject == this)
+//                {
+//                    this->moveBy(mpGUIConnectorPtrs.first()->mPoints.last().x() - mpGUIConnectorPtrs.first()->mPoints.first().x(), 0);
+//                }
+//                else
+//                {
+//                    this->moveBy(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x(), 0);
+//                }
+//            }
 
                 //Horizontal snap
             if( (mpGUIConnectorPtrs.size() == 1) &&

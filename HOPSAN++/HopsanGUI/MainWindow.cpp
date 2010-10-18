@@ -155,6 +155,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Arithmetics","Signal");
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Non-Linearities","Signal");
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Filters","Signal");
+    mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Logic","Signal");
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Simulation Control","Signal");
 
     mpLibrary->addEmptyLibrary("Mechanic");

@@ -39,7 +39,6 @@
 #include "Hydraulic/HydraulicVolume3.hpp"
 
 
-
 /* Signal Components */
 #include "Signal/SignalSource.hpp"
 #include "Signal/SignalGain.hpp"
@@ -67,6 +66,9 @@
 #include "Signal/SignalSecondOrderFilter.hpp"
 #include "Signal/SignalHysteresis.hpp"
 #include "Signal/SignalStopSimulation.hpp"
+#include "Signal/SignalGreaterThan.hpp"
+#include "Signal/SignalSmallerThan.hpp"
+
 
 /* Mechanical Components */
 #include "Mechanic/MechanicForceTransformer.hpp"
