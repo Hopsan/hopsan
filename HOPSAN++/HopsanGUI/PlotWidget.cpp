@@ -62,7 +62,7 @@
 #include "qwt_double_rect.h"
 
 
-//! Constructor for the plot window, where plots are displayed.
+//! @brief Constructor for the plot window, where plots are displayed.
 //! @param xArray is the x-axis data for the initial plot curve
 //! @param yArray is the y-axis data for the initial plot curve
 //! @param plotParameterTree is a pointer to the parameter tree from where the plot window was created
@@ -292,7 +292,7 @@ PlotWindow::PlotWindow(QVector<double> xArray, QVector<double> yArray, PlotParam
 }
 
 
-//! Slot that is used to change the "Hold Plot" setting
+//! @brief Slot that is used to change the "Hold Plot" setting
 //! @param value is a boolean that tells whether it should be turned on or off
 void PlotWindow::setHold(bool value)
 {
@@ -347,7 +347,7 @@ void PlotWindow::stepForward()
     mpGenerationLabel->setText(numStr1 + " (" + numStr2 + ")");
 }
 
-//! Inserts a curve marker at the specified curve
+//! @brief Inserts a curve marker at the specified curve
 //! @param curve is a pointer to the specified curve
 void PlotWindow::insertMarker(QwtPlotCurve *curve)
 {
@@ -382,7 +382,7 @@ void PlotWindow::insertMarker(QwtPlotCurve *curve)
 }
 
 
-//! Changes the active marker (the on that can be moved around)
+//! @brief Changes the active marker (the on that can be moved around)
 //! @marker is a pointer to the marker that shall be activated
 void PlotWindow::setActiveMarker(QwtPlotMarker *marker)
 {
@@ -390,7 +390,7 @@ void PlotWindow::setActiveMarker(QwtPlotMarker *marker)
 }
 
 
-//! Slot that enables or disables rubber band zooming
+//! @brief Slot that enables or disables rubber band zooming
 //! @on is true if it shall be enabled or false if it should be disabled
 void PlotWindow::enableZoom(bool on)
 {
@@ -407,7 +407,7 @@ void PlotWindow::enableZoom(bool on)
 }
 
 
-//! Slot that enables or disables panning tool
+//! @brief Slot that enables or disables panning tool
 //! @param on is true/false if panning shall be enabled/disabled
 void PlotWindow::enablePan(bool on)
 {
@@ -421,7 +421,7 @@ void PlotWindow::enablePan(bool on)
 }
 
 
-//! Slot that turns plot grid on or off
+//! @brief Slot that turns plot grid on or off
 //! @param on is true/false if it shall be turned on/off.
 void PlotWindow::enableGrid(bool on)
 {
@@ -436,7 +436,7 @@ void PlotWindow::enableGrid(bool on)
 }
 
 
-//! @Slot that exports current plot to .svg format
+//! @brief Slot that exports current plot to .svg format
 void PlotWindow::exportSVG()
 {
 #ifdef QT_SVG_LIB
@@ -456,7 +456,7 @@ void PlotWindow::exportSVG()
 }
 
 
-//! Slot that exports a curve to GNUPLOT format
+//! @brief Slot that exports a curve to GNUPLOT format
 void PlotWindow::exportGNUPLOT()
 {
     QMenu menu;
@@ -512,7 +512,7 @@ void PlotWindow::exportGNUPLOT()
 }
 
 
-//! Slot that imports a curve from a file in GNUPLOT format
+//! @brief Slot that imports a curve from a file in GNUPLOT format
 void PlotWindow::importGNUPLOT()
 {
     QDir fileDialogOpenDir;
@@ -554,8 +554,8 @@ void PlotWindow::importGNUPLOT()
 }
 
 
-//! Slot that changes line width of all plot lines
-//! size is the desired line width in pixels
+//! @brief Slot that changes line width of all plot lines
+//! @param size is the desired line width in pixels
 void PlotWindow::setLineWidth(int size)
 {
     for(size_t i=0; i<mpCurves.size(); ++i)
@@ -564,7 +564,7 @@ void PlotWindow::setLineWidth(int size)
     }
 }
 
-//! Slot that asks for a line and then opens color selection box to change the line color
+//! @brief Slot that asks for a line and then opens color selection box to change the line color
 void PlotWindow::setLineColor()
 {
     QMenu menu;
@@ -608,7 +608,7 @@ void PlotWindow::setLineColor()
 }
 
 
-//! Slot that opens color selection box to change background color for the plot
+//! @brief Slot that opens color selection box to change background color for the plot
 void PlotWindow::setBackgroundColor()
 {
     QColor color = QColorDialog::getColor(this->mpVariablePlot->canvasBackground(), this);
@@ -620,7 +620,7 @@ void PlotWindow::setBackgroundColor()
 }
 
 
-//! Defines what happens when used drags something into the plot window
+//! @brief Defines what happens when used drags something into the plot window
 void PlotWindow::dragEnterEvent(QDragEnterEvent *event)
 {
     if (event->mimeData()->hasText())
@@ -636,7 +636,7 @@ void PlotWindow::dragEnterEvent(QDragEnterEvent *event)
 }
 
 
-//! Defines what happens when mouse is moving over plot window with one mouse button pressed. Used to move plot markers.
+//! @brief Defines what happens when mouse is moving over plot window with one mouse button pressed. Used to move plot markers.
 void PlotWindow::mouseMoveEvent(QMouseEvent *event)
 {
     if(mpActiveMarker != 0 && !mpZoomer->isEnabled() && !mpPanner->isEnabled())
@@ -683,7 +683,7 @@ void PlotWindow::mouseMoveEvent(QMouseEvent *event)
 }
 
 
-//! Defines what happens when user is dragging something in the plot window.
+//! @brief Defines what happens when user is dragging something in the plot window.
 void PlotWindow::dragMoveEvent(QDragMoveEvent *event)
 {
     QCursor cursor;
@@ -703,7 +703,7 @@ void PlotWindow::dragMoveEvent(QDragMoveEvent *event)
 }
 
 
-//! Defines what happens when user drags something out from the plot window.
+//! @brief Defines what happens when user drags something out from the plot window.
 void PlotWindow::dragLeaveEvent(QDragLeaveEvent *event)
 {
     delete(mpHoverRect);
@@ -711,7 +711,7 @@ void PlotWindow::dragLeaveEvent(QDragLeaveEvent *event)
 }
 
 
-//! Defines what happens when user drops something in the plot window
+//! @brief Defines what happens when user drops something in the plot window
 void PlotWindow::dropEvent(QDropEvent *event)
 {
     if (event->mimeData()->hasText())
@@ -772,7 +772,7 @@ void PlotWindow::dropEvent(QDropEvent *event)
 }
 
 
-//! Handles the right-click menu in the plot window
+//! @brief Handles the right-click menu in the plot window
 void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
 {
     if(this->mpZoomer->isEnabled())
@@ -930,7 +930,7 @@ void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QS
 }
 
 
-//! Function the x-axis in the plot, and updates all curves corresponding to this. Used to create XY-plots.
+//! @brief Function the x-axis in the plot, and updates all curves corresponding to this. Used to create XY-plots.
 //! @param xArray is the data for the x-axis
 //! @param xLabel is the label text to be displayed on the x-axis
 //! @param componentName is the name of the component where the port is located
@@ -1005,7 +1005,7 @@ void PlotWindow::checkNewValues()
 }
 
 
-//! Constructor for the parameter items in the parameter tree
+//! @brief Constructor for the parameter items in the parameter tree
 //! @param componentName Name of the component where the parameter is located
 //! @param portName Name of the port where the parameter is located
 //! @param dataName Name of the parameter
@@ -1022,36 +1022,36 @@ PlotParameterItem::PlotParameterItem(QString componentName, QString portName, QS
 }
 
 
-//! Returns the name of the component where the parameter is located
+//! @brief Returns the name of the component where the parameter is located
 QString PlotParameterItem::getComponentName()
 {
     return mComponentName;
 }
 
 
-//! Returns the name of the port where the parameter is located
+//! @brief Returns the name of the port where the parameter is located
 QString PlotParameterItem::getPortName()
 {
     return mPortName;
 }
 
 
-//! Returns the name of the parameter
+//! @brief Returns the name of the parameter
 QString PlotParameterItem::getDataName()
 {
     return mDataName;
 }
 
 
-//! Returns the name of the unit of the parameter
+//! @brief Returns the name of the unit of the parameter
 QString PlotParameterItem::getDataUnit()
 {
     return mDataUnit;
 }
 
 
-//! Constructor for the parameter tree widget
-//! parent Pointer to the main window
+//! @brief Constructor for the parameter tree widget
+//! @param parent Pointer to the main window
 PlotParameterTree::PlotParameterTree(MainWindow *parent)
         : QTreeWidget(parent)
 {
@@ -1074,7 +1074,7 @@ PlotParameterTree::PlotParameterTree(MainWindow *parent)
 }
 
 
-//! Updates the parameter tree to the available components and parameters in the current tab.
+//! @brief Updates the parameter tree to the available components and parameters in the current tab.
 void PlotParameterTree::updateList()
 {
     mAvailableParameters.clear();
@@ -1164,7 +1164,7 @@ void PlotParameterTree::updateList()
 }
 
 
-//! Helper function that creates a new plot window by using a QTreeWidgetItem in the plot variable tree.
+//! @brief Helper function that creates a new plot window by using a QTreeWidgetItem in the plot variable tree.
 //! @param *item Pointer to the tree widget item whos arrays will be looked up from the map and plotted
 void PlotParameterTree::createPlotWindow(QTreeWidgetItem *item)
 {
@@ -1178,7 +1178,7 @@ void PlotParameterTree::createPlotWindow(QTreeWidgetItem *item)
 }
 
 
-//! Creates a new plot window from specified component and parameter.
+//! @brief Creates a new plot window from specified component and parameter.
 //! @param componentName Name of the component where the port with the parameter is located
 //! @param portName Name of the port where the parameter is located
 //! @param dataName Name of the parameter
@@ -1213,7 +1213,7 @@ void PlotParameterTree::createPlotWindow(QString componentName, QString portName
 }
 
 
-//! Defines what happens when clicking in the variable list. Used to initiate drag operations.
+//! @brief Defines what happens when clicking in the variable list. Used to initiate drag operations.
 void PlotParameterTree::mousePressEvent(QMouseEvent *event)
 {
     QTreeWidget::mousePressEvent(event);
@@ -1223,7 +1223,7 @@ void PlotParameterTree::mousePressEvent(QMouseEvent *event)
 }
 
 
-//! Defines what happens when mouse is moving in variable list. Used to handle drag operations.
+//! @brief Defines what happens when mouse is moving in variable list. Used to handle drag operations.
 void PlotParameterTree::mouseMoveEvent(QMouseEvent *event)
 {
 
@@ -1252,6 +1252,7 @@ void PlotParameterTree::mouseMoveEvent(QMouseEvent *event)
 }
 
 
+//! @brief Defines the right-click menu in the parameter tree
 void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
 {
     qDebug() << "contextMenuEvent()";
@@ -1299,7 +1300,7 @@ void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
 }
 
 
-//! Constructor the main plot widget, which contains the tree with variables
+//! @brief Constructor the main plot widget, which contains the tree with variables
 //! @param parent Pointer to the main window
 PlotWidget::PlotWidget(MainWindow *parent)
         : QWidget(parent)
