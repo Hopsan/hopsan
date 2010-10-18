@@ -26,6 +26,7 @@ You don't need to install the .NET stuff, but make sure that you install the "De
 -# Download the Qt-libs compiled with VS from <a href="http://qt.nokia.com" target="_blank">http://qt.nokia.com</a> and then manually install the latest version of QtCreator (you can find it on the same download page).
 -# When you start QtCreator for the first time go to Tools->Options->Qt4. Here you should manually find the qmake.exe for your VS compiled version of the Qt-Libs. You may find it in a place like "C:\Qt\4.6.3\bin". If the Microsoft SDK has been properly installed the Microsoft Visual C++ Compilers 9.0 toolchain should be automatically set up. Change the name to something indicating that VC++ is used. Be sure to rebuild the debugger helper.
 -# Open your Qt projects and they should automatically add/readd build settings for your new Qt version wich VC++.
+-# If you get an error about "cl.exe" not being found, add the "Visual Studio 9.0/VC/bin" folder to your PATH system environment variable.
 
 To get a working debugger
 -# Go into Tools->Options->Debugger->Cdb and check the Cdb box. Now set the path to the Debugging tools for Windows 32-bit version. (Autodetect should work).

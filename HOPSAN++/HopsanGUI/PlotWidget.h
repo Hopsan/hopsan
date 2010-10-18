@@ -100,6 +100,8 @@ public:
     QVector<QwtPlotCurve *> mpCurves;
     QList<QStringList> mCurveParameters;
     QStringList mSpecialXParameter;
+    QList< QList< QVector<double> > > mVectorX;
+    QList< QList< QVector<double> > > mVectorY;
 
     QwtPlot *mpVariablePlot;
     QwtPlotGrid *mpGrid;
@@ -112,6 +114,7 @@ public:
     QwtPlotZoomer *mpZoomer;
     QwtPlotMagnifier *mpMagnifier;
     QwtPlotPanner *mpPanner;
+    int mCurrentGeneration;
 
     QToolBar *mpToolBar;
     QToolButton *mpZoomButton;
@@ -120,12 +123,15 @@ public:
     QToolButton *mpExportGNUPLOTButton;
     QToolButton *mpImportGNUPLOTButton;
     QToolButton *mpGridButton;
+    QToolButton *mpPreviousButton;
+    QToolButton *mpNextButton;
     QToolBar *mpSizeButton;
     QSpinBox *mpSizeSpinBox;
     QToolButton *mpColorButton;
     QToolButton *mpBackgroundColorButton;
     QCheckBox *mpHoldCheckBox;
     QLabel *mpSizeLabel;
+    QLabel *mpGenerationLabel;
 
     QRubberBand *mpHoverRect;
     //QPainter *mpHoverRect;
@@ -157,6 +163,8 @@ private slots:
     void setBackgroundColor();
     void checkNewValues();
     void setHold(bool value);
+    void stepBack();
+    void stepForward();
 
 private:
     PlotParameterTree *mpPlotParameterTree;

@@ -178,19 +178,47 @@ PlotWindow::PlotWindow(QVector<double> xArray, QVector<double> yArray, PlotParam
     mpToolBar->addSeparator();
     mpToolBar->addWidget(mpHoldCheckBox);
 
+    mpPreviousButton = new QToolButton(mpToolBar);
+    mpPreviousButton->setToolTip("Previous Generation");
+    mpPreviousButton->setText("<-");
+    mpPreviousButton->setAcceptDrops(false);
+    mpPreviousButton->setDisabled(true);
+    mpToolBar->addWidget(mpPreviousButton);
+
+    mpGenerationLabel = new QLabel(mpToolBar);
+    mpGenerationLabel->setText("1 (1)");
+    QFont tempFont = mpGenerationLabel->font();
+    tempFont.setBold(true);
+    mpGenerationLabel->setFont(tempFont);
+    mpGenerationLabel->setDisabled(false);
+    mpToolBar->addWidget(mpGenerationLabel);
+
+    mpNextButton = new QToolButton(mpToolBar);
+    mpNextButton->setToolTip("Next Generation");
+    mpNextButton->setText("->");
+    mpNextButton->setAcceptDrops(false);
+    mpNextButton->setDisabled(false);
+    mpToolBar->addWidget(mpNextButton);
+
     addToolBar(mpToolBar);
 
         // Create and add curves to the plot
+    mCurrentGeneration = 0;
     tempCurve = new QwtPlotCurve();
     QwtArrayData data(xArray,yArray);
     tempCurve->setData(data);
     tempCurve->attach(mpVariablePlot);
-    //mpVariablePlot->setCurve(tempCurve);
     tempCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
     mpVariablePlot->replot();
     tempCurve->setPen(QPen(QBrush(QColor(mCurveColors[nCurves])),mpSizeSpinBox->value()));
     mpCurves.append(tempCurve);
     ++nCurves;
+
+    QList< QVector<double> > tempList;
+    tempList.append(xArray);
+    mVectorX.append(tempList);
+    tempList.first() = yArray;
+    mVectorY.append(tempList);
 
         //Grid
     mpGrid = new QwtPlotGrid;
@@ -253,6 +281,8 @@ PlotWindow::PlotWindow(QVector<double> xArray, QVector<double> yArray, PlotParam
     connect(mpColorButton,SIGNAL(clicked()),this,SLOT(setLineColor()));
     connect(mpBackgroundColorButton,SIGNAL(clicked()),this,SLOT(setBackgroundColor()));
     connect (mpHoldCheckBox, SIGNAL(toggled(bool)), this, SLOT(setHold(bool)));
+    connect(mpPreviousButton,SIGNAL(clicked()),this,SLOT(stepBack()));
+    connect(mpNextButton, SIGNAL(clicked()),this,SLOT(stepForward()));
     connect(this->mpParentMainWindow->mpProjectTabs->getCurrentTab(),SIGNAL(simulationFinished()),this,SLOT(checkNewValues()));
 
     //! @todo Maybe user should be allowed to change default plot window size, or someone will become annoyed...
@@ -269,6 +299,53 @@ void PlotWindow::setHold(bool value)
     mHold = value;
 }
 
+
+//! @brief Slot that steps back one generation in plot history
+void PlotWindow::stepBack()
+{
+    if(mCurrentGeneration != 0)
+    {
+        --mCurrentGeneration;
+        mpPreviousButton->setDisabled(mCurrentGeneration == 0);
+        mpNextButton->setDisabled(false);
+
+        for(int i=0; i<mpCurves.size(); ++i)
+        {
+            mpCurves[i]->setData(mVectorX[mCurrentGeneration][i], mVectorY[mCurrentGeneration][i]);
+        }
+        mpVariablePlot->replot();
+    }
+
+    QString numStr1;
+    QString numStr2;
+    numStr1.setNum(mCurrentGeneration+1);
+    numStr2.setNum(mVectorX.size());
+    mpGenerationLabel->setText(numStr1 + " (" + numStr2 + ")");
+}
+
+
+//! @brief Slot that steps forward one generation in plot history
+void PlotWindow::stepForward()
+{
+    if(mCurrentGeneration != mVectorX.size()-1)
+    {
+        ++mCurrentGeneration;
+        mpNextButton->setDisabled(mCurrentGeneration == mVectorX.size()-1);
+        mpPreviousButton->setDisabled(false);
+
+        for(int i=0; i<mpCurves.size(); ++i)
+        {
+            mpCurves[i]->setData(mVectorX[mCurrentGeneration][i], mVectorY[mCurrentGeneration][i]);
+        }
+        mpVariablePlot->replot();
+    }
+
+    QString numStr1;
+    QString numStr2;
+    numStr1.setNum(mCurrentGeneration+1);
+    numStr2.setNum(mVectorX.size());
+    mpGenerationLabel->setText(numStr1 + " (" + numStr2 + ")");
+}
 
 //! Inserts a curve marker at the specified curve
 //! @param curve is a pointer to the specified curve
@@ -814,6 +891,8 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
 //! @param axisY tells whether the right or left y-axis shall be used
 void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QString title, QString xLabel, QString yLabel, QwtPlot::Axis axisY)
 {
+    mVectorX[mCurrentGeneration].append(xArray);
+    mVectorY[mCurrentGeneration].append(yArray);
 
         // Create and add curves to the plot
     tempCurve = new QwtPlotCurve(title);
@@ -878,13 +957,27 @@ void PlotWindow::changeXVector(QVector<double> xArray, QString xLabel, QString c
 }
 
 
-//! Slot that updates the values for the curve, if the component/port still exist in the model
+//! @brief Slot that updates the values for the curve, if the component/port still exist in the model
 void PlotWindow::checkNewValues()
 {
     if(mHold)       //Do not update curves to new values if hold is checked
     {
         return;
     }
+
+    QList< QVector<double> > tempList;
+    mVectorX.append(tempList);
+    mVectorY.append(tempList);
+
+    mCurrentGeneration = mVectorX.size()-1;
+    QString numStr1;
+    QString numStr2;
+    numStr1.setNum(mCurrentGeneration+1);
+    numStr2.setNum(mVectorX.size());
+    mpGenerationLabel->setText(numStr1 + " (" + numStr2 + ")");
+
+    mpNextButton->setDisabled(true);
+    mpPreviousButton->setDisabled(false);
 
     for(int i=0; i<mpCurves.size(); ++i)
     {
@@ -901,8 +994,12 @@ void PlotWindow::checkNewValues()
             }
             QVector<double> yVector;
             mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mpCoreSystemAccess->getPlotData(mCurveParameters[i][0], mCurveParameters[i][1], mCurveParameters[i][2], yVector);
+
             mpCurves[i]->setData(xVector, yVector);
             mpVariablePlot->replot();
+
+            mVectorX[mCurrentGeneration].append(xVector);
+            mVectorY[mCurrentGeneration].append(yVector);
         }
     }
 }
