@@ -426,4 +426,29 @@ void appendDomTextNode(QDomElement &rDomElement, const QString element_name, con
     appendDomTextNode(rDomElement, element_name, tmp_string);
 }
 
+void appendDomTextNodeXYA(QDomElement &rDomElement, const double x, const double y, const double a)
+{
+    QString str,str2;
+    str.setNum(x);
+    str2.append(str);
+    str2.append(" ");
+    str.setNum(y);
+    str2.append(str);
+    str2.append(" ");
+    str.setNum(a);
+    str2.append(str);
+    appendDomTextNode(rDomElement, "xya", str2);
+}
+
+void appendDomTextNodeXY(QDomElement &rDomElement, const double x, const double y)
+{
+    QString str,str2;
+    str.setNum(x);
+    str2.append(str);
+    str2.append(" ");
+    str.setNum(y);
+    str2.append(str);
+    appendDomTextNode(rDomElement, "xy", str2);
+}
+
 

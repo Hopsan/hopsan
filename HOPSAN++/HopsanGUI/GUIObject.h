@@ -243,6 +243,7 @@ public:
     void setParameterValue(QString name, double value);
 
     void saveToTextStream(QTextStream &rStream, QString prepend=QString());
+    void saveToDomElement(QDomElement &rDomElement);
 
     void setName(QString name, renameRestrictions renameSettings=UNRESTRICTED);
     QString getTypeName();

@@ -432,14 +432,15 @@ void GUIObject::saveToDomElement(QDomElement &rDomElement)
 void GUIObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 {
     //Save GUI realted stuff
-    QDomElement xmlSyspGUI = appendDomElement(rDomElement,"HopsanGui");
+    QDomElement xmlGuiStuff = appendDomElement(rDomElement,"HopsanGui");
 
     QPointF pos = mapToScene(boundingRect().center());
-    appendDomTextNode(xmlSyspGUI, "posx", pos.x());
-    appendDomTextNode(xmlSyspGUI, "posy", pos.y());
-    appendDomTextNode(xmlSyspGUI, "rotation", rotation());
-    appendDomTextNode(xmlSyspGUI, "NameTextPos", getNameTextPos());
-    appendDomTextNode(xmlSyspGUI, "isVisible", mpNameText->isVisible());
+//    appendDomTextNode(xmlSyspGUI, "posx", pos.x());
+//    appendDomTextNode(xmlSyspGUI, "posy", pos.y());
+//    appendDomTextNode(xmlSyspGUI, "rotation", rotation());
+    appendDomTextNodeXYA(xmlGuiStuff, pos.x(), pos.y(), rotation());
+    appendDomTextNode(xmlGuiStuff, "NameTextPos", getNameTextPos());
+    appendDomTextNode(xmlGuiStuff, "isVisible", mpNameText->isVisible());
 }
 
 
@@ -1370,6 +1371,29 @@ void GUIComponent::saveToTextStream(QTextStream &rStream, QString prepend)
         rStream << "PARAMETER " << addQuotes(getName()) << " " << addQuotes(*pit) << " " <<
                 mpParentSystem->mpCoreSystemAccess->getParameterValue(this->getName(), (*pit)) << "\n";
     }
+}
+
+void GUIComponent::saveToDomElement(QDomElement &rDomElement)
+{
+    //! @todo Maybe have a giucoreobject class with a common save function
+    QDomElement xmlObject = appendDomElement(rDomElement,"Object");
+
+    //Save Core related stuff
+    //! @todo maybe have special protected function for this
+    appendDomTextNode(xmlObject,"TypeName", getTypeName());
+    appendDomTextNode(xmlObject,"Name", getName());
+
+    //Save parameters
+    //! @todo need more efficient fetching of both par names and values in one call to avoid re-searching every time
+    QVector<QString> parameterNames = mpParentSystem->mpCoreSystemAccess->getParameterNames(this->getName());
+    QVector<QString>::iterator pit;
+    for(pit = parameterNames.begin(); pit != parameterNames.end(); ++pit)
+    {
+        QDomElement xmlParam = appendDomElement(xmlObject, "Parameter");
+        appendDomTextNode(xmlParam,"Name",*pit);
+        appendDomTextNode(xmlParam,"Value",mpParentSystem->mpCoreSystemAccess->getParameterValue(this->getName(), (*pit)));
+    }
+    saveGuiDataToDomElement(xmlObject);
 }
 
 

@@ -560,8 +560,9 @@ void GUIConnector::saveToDomElement(QDomElement &rDomElement)
     QDomElement xmlConnectGUI = appendDomElement(xmlConnect, "HopsanGui");
     for(size_t j=0; j<mPoints.size(); ++j)
     {
-        appendDomTextNode(xmlConnectGUI, "ptx", mPoints[j].x());
-        appendDomTextNode(xmlConnectGUI, "pty", mPoints[j].y());
+        appendDomTextNodeXY(xmlConnectGUI, mPoints[j].x(), mPoints[j].y());
+//        appendDomTextNode(xmlConnectGUI, "ptx", mPoints[j].x());
+//        appendDomTextNode(xmlConnectGUI, "pty", mPoints[j].y());
     }
 }
 

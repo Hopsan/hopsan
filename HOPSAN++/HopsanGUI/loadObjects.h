@@ -110,4 +110,8 @@ QDomElement appendDomElement(QDomElement &rDomElement, const QString element_nam
 void appendDomTextNode(QDomElement &rDomElement, const QString element_name, const QString text);
 void appendDomTextNode(QDomElement &rDomElement, const QString element_name, const double text);
 
+void appendDomTextNodeXYA(QDomElement &rDomElement, const double x, const double y, const double a);
+void appendDomTextNodeXY(QDomElement &rDomElement, const double x, const double y);
+
+
 #endif // LOADOBJECTS_H
