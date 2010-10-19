@@ -90,7 +90,7 @@ class PlotWindow : public QMainWindow
 public:
     PlotWindow(QVector<double> xarray, QVector<double> yarray, PlotParameterTree *PlotParameterTree, MainWindow *parent);
     void addPlotCurve(QVector<double> xarray, QVector<double> yarray, QString title, QString xLabel, QString yLabel, QwtPlot::Axis axisY);
-    void changeXVector(QVector<double> xarray, QString xLabel, QString componentName, QString portName, QString dataName);
+    void changeXVector(QVector<double> xarray, QString xLabel, QString componentName, QString portName, QString dataName, QString dataUnit);
     void insertMarker(QwtPlotCurve *curve);
     void setActiveMarker(QwtPlotMarker *marker);
     void setGeneration(int gen);
@@ -126,11 +126,12 @@ public:
     QToolButton *mpGridButton;
     QToolButton *mpPreviousButton;
     QToolButton *mpNextButton;
+    QToolButton *mpDiscardGenerationButton;
     QToolBar *mpSizeButton;
     QSpinBox *mpSizeSpinBox;
     QToolButton *mpColorButton;
     QToolButton *mpBackgroundColorButton;
-    QCheckBox *mpHoldCheckBox;
+    QCheckBox *mpAutoUpdateCheckBox;
     QLabel *mpSizeLabel;
     QLabel *mpGenerationLabel;
 
@@ -142,7 +143,7 @@ public:
     bool mHasSpecialXAxis;
     bool mRightAxisLogarithmic;
     bool mLeftAxisLogarithmic;
-    bool mHold;
+    bool mAutoUpdate;
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
@@ -152,6 +153,9 @@ protected:
     virtual void dropEvent(QDropEvent *event);
     virtual void contextMenuEvent(QContextMenuEvent *event);
     virtual void closeEvent(QCloseEvent *);
+
+public slots:
+    void discardGeneration();
 
 private slots:
     void enableZoom(bool);
@@ -164,7 +168,7 @@ private slots:
     void setLineColor();
     void setBackgroundColor();
     void checkNewValues();
-    void setHold(bool value);
+    void setAutoUpdate(bool value);
     void stepBack();
     void stepForward();
 

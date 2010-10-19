@@ -37,9 +37,10 @@ PlotWindow::PlotWindow(QVector<double> xArray, QVector<double> yArray, PlotParam
     mpCurrentGUISystem = mpParentMainWindow->mpProjectTabs->getCurrentSystem();
     mpPlotParameterTree = plotParameterTree;
 
-    mHasSpecialXAxis = false;   //This becomes true when user creates an XY-plot
-
-    mHold = false;      //Default settings for "Hold Plot" function
+    mHasSpecialXAxis = false;       //This becomes true when user creates an XY-plot
+    mLeftAxisLogarithmic = false;
+    mRightAxisLogarithmic = false;
+    mAutoUpdate = true;             //Default settings for "Auto Update" function
 
         //Create the actual plot widget
     mpVariablePlot = new QwtPlot();
@@ -54,9 +55,6 @@ PlotWindow::PlotWindow(QVector<double> xArray, QVector<double> yArray, PlotParam
         //Color names for curve colors. A new curve will get next color in list.
         //When all colors are used, the first color is used again.
     mCurveColors << "Blue" << "Red" << "Green" << "Orange" << "Pink" << "Brown" << "Purple" << "Gray";
-
-    mLeftAxisLogarithmic = false;
-    mRightAxisLogarithmic = false;
 
         //Create the toolbar and toolbar buttons
     mpToolBar = new QToolBar(this);
@@ -134,20 +132,28 @@ PlotWindow::PlotWindow(QVector<double> xArray, QVector<double> yArray, PlotParam
     mpToolBar->addWidget(mpSizeLabel);
     mpToolBar->addWidget(mpSizeSpinBox);
 
-    mpHoldCheckBox = new QCheckBox("Hold Plot Data");
-    mpHoldCheckBox->setChecked(mHold);
     mpToolBar->addSeparator();
-    mpToolBar->addWidget(mpHoldCheckBox);
+
+    mpAutoUpdateCheckBox = new QCheckBox("Auto Update");
+    mpAutoUpdateCheckBox->setChecked(mAutoUpdate);
+    mpToolBar->addWidget(mpAutoUpdateCheckBox);
+
+    mpDiscardGenerationButton = new QToolButton(mpToolBar);
+    mpDiscardGenerationButton->setToolTip("Discard Generation");
+    mpDiscardGenerationButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Discard.png"));
+    mpDiscardGenerationButton->setAcceptDrops(false);
+    mpDiscardGenerationButton->setDisabled(true);
+    mpToolBar->addWidget(mpDiscardGenerationButton);
 
     mpPreviousButton = new QToolButton(mpToolBar);
     mpPreviousButton->setToolTip("Previous Generation");
-    mpPreviousButton->setText("<-");
+    mpPreviousButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-StepLeft.png"));
     mpPreviousButton->setAcceptDrops(false);
     mpPreviousButton->setDisabled(true);
     mpToolBar->addWidget(mpPreviousButton);
 
     mpGenerationLabel = new QLabel(mpToolBar);
-    mpGenerationLabel->setText("1 (1)");
+    mpGenerationLabel->setText("Generation 1 (1)");
     QFont tempFont = mpGenerationLabel->font();
     tempFont.setBold(true);
     mpGenerationLabel->setFont(tempFont);
@@ -156,9 +162,9 @@ PlotWindow::PlotWindow(QVector<double> xArray, QVector<double> yArray, PlotParam
 
     mpNextButton = new QToolButton(mpToolBar);
     mpNextButton->setToolTip("Next Generation");
-    mpNextButton->setText("->");
+    mpNextButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-StepRight.png"));
     mpNextButton->setAcceptDrops(false);
-    mpNextButton->setDisabled(false);
+    mpNextButton->setDisabled(true);
     mpToolBar->addWidget(mpNextButton);
 
     addToolBar(mpToolBar);
@@ -241,13 +247,14 @@ PlotWindow::PlotWindow(QVector<double> xArray, QVector<double> yArray, PlotParam
     connect(mpSizeSpinBox,SIGNAL(valueChanged(int)),this, SLOT(setLineWidth(int)));
     connect(mpColorButton,SIGNAL(clicked()),this,SLOT(setLineColor()));
     connect(mpBackgroundColorButton,SIGNAL(clicked()),this,SLOT(setBackgroundColor()));
-    connect (mpHoldCheckBox, SIGNAL(toggled(bool)), this, SLOT(setHold(bool)));
+    connect(mpAutoUpdateCheckBox, SIGNAL(toggled(bool)), this, SLOT(setAutoUpdate(bool)));
     connect(mpPreviousButton,SIGNAL(clicked()),this,SLOT(stepBack()));
     connect(mpNextButton, SIGNAL(clicked()),this,SLOT(stepForward()));
+    connect(mpDiscardGenerationButton,SIGNAL(clicked()),this,SLOT(discardGeneration()));
     connect(this->mpParentMainWindow->mpProjectTabs->getCurrentTab(),SIGNAL(simulationFinished()),this,SLOT(checkNewValues()));
 
     //! @todo Maybe user should be allowed to change default plot window size, or someone will become annoyed...
-    resize(600,600);    //Default window size
+    resize(700,600);    //Default window size
 
     this->setAcceptDrops(true);
 }
@@ -255,9 +262,9 @@ PlotWindow::PlotWindow(QVector<double> xArray, QVector<double> yArray, PlotParam
 
 //! @brief Slot that is used to change the "Hold Plot" setting
 //! @param value is a boolean that tells whether it should be turned on or off
-void PlotWindow::setHold(bool value)
+void PlotWindow::setAutoUpdate(bool value)
 {
-    mHold = value;
+    mAutoUpdate = value;
 }
 
 
@@ -352,7 +359,24 @@ void PlotWindow::setGeneration(int gen)
     QString numStr2;
     numStr1.setNum(mCurrentGeneration+1);
     numStr2.setNum(mVectorX.size());
-    mpGenerationLabel->setText(numStr1 + " (" + numStr2 + ")");
+    mpGenerationLabel->setText("Generation " + numStr1 + " (" + numStr2 + ")");
+}
+
+
+//! @brief Slot that removes the current generation from the plot window.
+//! @todo There is no check that the number of generations is greater than one. The button shall always be disabled then anyway, but if this is called from outside it will cause problems.
+void PlotWindow::discardGeneration()
+{
+    mVectorX.removeAt(mCurrentGeneration);
+    mVectorY.removeAt(mCurrentGeneration);
+    --mCurrentGeneration;
+    if(mCurrentGeneration < 0)
+    {
+        mCurrentGeneration = 0;
+    }
+    setGeneration(mCurrentGeneration);
+
+    mpDiscardGenerationButton->setEnabled(mVectorX.size() > 1);
 }
 
 
@@ -717,7 +741,7 @@ void PlotWindow::dropEvent(QDropEvent *event)
             QCursor cursor;
             if(this->mapFromGlobal(cursor.pos()).y() > this->height()/2 && mpCurves.size() >= 1)
             {
-                this->changeXVector(yVector, ylabel, componentName, portName, dataName);
+                this->changeXVector(yVector, ylabel, componentName, portName, dataName, dataUnit);
             }
             else if(this->mapFromGlobal(cursor.pos()).x() < this->width()/2)
             {
@@ -848,7 +872,7 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
 }
 
 
-//! Help function to add a new curve to an existing plot window
+//! @brief Help function to add a new curve to an existing plot window
 //! @param xArray is the vector for the x-axis
 //! @param yArray is the vector for the y-axis
 //! @param title is the title of the curve
@@ -902,7 +926,7 @@ void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QS
 //! @param componentName is the name of the component where the port is located
 //! @param portName is the name of the port where the parameter is located
 //! @param dataName is the name of the parameter
-void PlotWindow::changeXVector(QVector<double> xArray, QString xLabel, QString componentName, QString portName, QString dataName)
+void PlotWindow::changeXVector(QVector<double> xArray, QString xLabel, QString componentName, QString portName, QString dataName, QString dataUnit)
 {
     QVector<double> tempYArray;
     for(size_t i=0; i<mpCurves.size(); ++i)
@@ -915,18 +939,19 @@ void PlotWindow::changeXVector(QVector<double> xArray, QString xLabel, QString c
             //Change the curve data to the new x-data and the temporary y-array
         mpCurves.at(i)->setData(xArray, tempYArray);
         tempYArray.clear();
+        mVectorX[mCurrentGeneration][i] = xArray;
     }
     mpVariablePlot->setAxisTitle(QwtPlot::xBottom, xLabel);
     mHasSpecialXAxis = true;
     mSpecialXParameter.clear();
-    mSpecialXParameter << componentName << portName << dataName;
+    mSpecialXParameter << componentName << portName << dataName << dataUnit;
 }
 
 
 //! @brief Slot that updates the values for the curve, if the component/port still exist in the model
 void PlotWindow::checkNewValues()
 {
-    if(mHold)       //Do not update curves to new values if hold is checked
+    if(!mAutoUpdate)       //Do not update curves to new values unless auto update is true
     {
         return;
     }
@@ -934,16 +959,6 @@ void PlotWindow::checkNewValues()
     QList< QVector<double> > tempList;
     mVectorX.append(tempList);
     mVectorY.append(tempList);
-
-    mCurrentGeneration = mVectorX.size()-1;
-    QString numStr1;
-    QString numStr2;
-    numStr1.setNum(mCurrentGeneration+1);
-    numStr2.setNum(mVectorX.size());
-    mpGenerationLabel->setText(numStr1 + " (" + numStr2 + ")");
-
-    mpNextButton->setDisabled(true);
-    mpPreviousButton->setDisabled(false);
 
     for(int i=0; i<mpCurves.size(); ++i)
     {
@@ -961,25 +976,21 @@ void PlotWindow::checkNewValues()
             QVector<double> yVector;
             mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mpCoreSystemAccess->getPlotData(mCurveParameters[i][0], mCurveParameters[i][1], mCurveParameters[i][2], yVector);
 
-            mpCurves[i]->setData(xVector, yVector);
-            mpCurves[i]->show();
-
-            mVectorX[mCurrentGeneration].append(xVector);
-            mVectorY[mCurrentGeneration].append(yVector);
-        }
-        else
-        {
-            mpCurves[i]->hide();
+            mVectorX.last().append(xVector);
+            mVectorY.last().append(yVector);
         }
     }
-    mpVariablePlot->replot();
+
+    this->setGeneration(mVectorX.size()-1);
+
+    mpDiscardGenerationButton->setEnabled(mVectorX.size() > 1);
 }
 
 
+//! @brief Reimplemented verseion of closeEvent function from QMainWindow. Used to warn the user if trying to close a plot window with old generations.
+//! @todo The warning message won't appear if user discards all new generations and keeps only one old version. Could be difficult to solve though.
 void PlotWindow::closeEvent(QCloseEvent *event)
 {
-    qDebug() << "Close!";
-
     if(mVectorX.size() > 1)
     {
         QMessageBox msgBox(QMessageBox::Warning, tr("QMessageBox::warning()"),
