@@ -192,6 +192,25 @@ QString CoreSystemAccess::getNodeType(QString componentName, QString portName)
     }
 }
 
+
+void CoreSystemAccess::getStartValueDataNamesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<QString> &rUnits)
+{
+    std::vector<std::string> stdNames, stdUnits;
+    Port *pPort = this->getPortPtr(componentName, portName);
+    if(pPort)
+    {
+        pPort->getStartValueDataNamesAndUnits(stdNames, stdUnits);
+    }
+    rNames.resize(stdNames.size());
+    rUnits.resize(stdUnits.size());
+    for(size_t i=0; i < stdNames.size(); ++i) //! @todo Make a nicer conversion fron std::vector<std::string> --> QVector<QString>
+    {
+        rNames[i] = QString::fromStdString(stdNames[i]);
+        rUnits[i] = QString::fromStdString(stdUnits[i]);
+    }
+}
+
+
 void CoreSystemAccess::setParameter(QString componentName, QString parameterName, double value)
 {
     mpCoreComponentSystem->getComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), value);

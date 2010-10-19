@@ -30,8 +30,7 @@ namespace hopsan {
         enum CONREQ {REQUIRED, NOTREQUIRED};
 
         //Constructors - Destructors
-        Port();
-        Port(std::string portname, std::string node_type);
+        Port(std::string node_type, std::string portname="");
         virtual ~Port();
 
         virtual double readNode(const size_t idx);
@@ -43,6 +42,8 @@ namespace hopsan {
         int getNodeDataIdFromName(const std::string name);
         std::vector<double> *getTimeVectorPtr();
         std::vector<std::vector<double> > *getDataVectorPtr();
+
+        void getStartValueDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits);
 
         bool isConnected();
         bool isConnectionRequired();
@@ -62,6 +63,8 @@ namespace hopsan {
         void setNode(Node* pNode);
         Node &getNode();
         Node *getNodePtr();
+
+        Node* mpStartNode;
 
     private:
         std::string mPortName;
@@ -86,7 +89,8 @@ namespace hopsan {
 
     public:
         //Constructors
-        SystemPort();
+        //SystemPort();
+        SystemPort(std::string node_type, std::string portname="");
     };
 
 
@@ -97,8 +101,8 @@ namespace hopsan {
 
     public:
         //Constructors
-        PowerPort();
-        PowerPort(std::string portname, std::string node_type);
+        //PowerPort();
+        PowerPort(std::string node_type, std::string portname="");
     };
 
 
@@ -109,8 +113,8 @@ namespace hopsan {
 
     public:
         //Constructors
-        ReadPort();
-        ReadPort(std::string portname, std::string node_type);
+        //ReadPort();
+        ReadPort(std::string node_type, std::string portname="");
 
         void writeNode(const size_t idx, const double value);
     };
@@ -123,13 +127,13 @@ namespace hopsan {
 
     public:
         //Constructors
-        WritePort();
-        WritePort(std::string portname, std::string node_type);
+        //WritePort();
+        WritePort(std::string node_type, std::string portname="");
 
         double readNode(const size_t idx);
     };
 
-    Port* CreatePort(Port::PORTTYPE type);
+    Port* CreatePort(Port::PORTTYPE type, NodeTypeT nodetype);
 }
 
 #endif // PORT_H_INCLUDED

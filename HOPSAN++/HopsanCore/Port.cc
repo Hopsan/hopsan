@@ -8,6 +8,7 @@
 //$Id$
 
 #include "Port.h"
+#include "Node.h"
 #include <iostream>
 #include <sstream>
 #include <cassert>
@@ -17,18 +18,9 @@
 using namespace std;
 using namespace hopsan;
 
-//! Port base class constructor
-Port::Port()
-{
-    mPortType = UNDEFINEDPORT;
-    mpComponent = 0;
-    mConnectionRequired = true;
-    clearConnection();
-}
-
 
 //! Port base class constructor
-Port::Port(string portname, string node_type)
+Port::Port(string node_type, string portname)
 {
     mPortType = UNDEFINEDPORT;
     mPortName = portname;
@@ -36,6 +28,9 @@ Port::Port(string portname, string node_type)
     mpComponent = 0;
     mConnectionRequired = true;
     clearConnection();
+
+    mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
+    cout << " ==============================================================" << mNodeType << endl;
 }
 
 
@@ -252,6 +247,12 @@ vector<vector<double> > *Port::getDataVectorPtr()
 }
 
 
+void Port::getStartValueDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits)
+{
+    mpStartNode->getDataNamesAndUnits(rNames, rUnits);
+}
+
+
 //! Check if the port is curently connected
 bool Port::isConnected()
 {
@@ -311,35 +312,42 @@ const string &Port::getComponentName()
 }
 
 
+////! SystemPort constructor
+//SystemPort::SystemPort() : Port()
+//{
+//    mPortType = SYSTEMPORT;
+//}
+
+
 //! SystemPort constructor
-SystemPort::SystemPort() : Port()
+SystemPort::SystemPort(std::string node_type, std::string portname) : Port(node_type, portname)
 {
     mPortType = SYSTEMPORT;
 }
 
 
+////! PowerPort constructor
+//PowerPort::PowerPort() : Port()
+//{
+//    mPortType = POWERPORT;
+//}
+
+
 //! PowerPort constructor
-PowerPort::PowerPort() : Port()
+PowerPort::PowerPort(std::string node_type, std::string portname) : Port(node_type, portname)
 {
     mPortType = POWERPORT;
 }
 
 
-//! PowerPort constructor
-PowerPort::PowerPort(string portname, string node_type) : Port(portname, node_type)
-{
-    mPortType = POWERPORT;
-}
+////Constructor
+//ReadPort::ReadPort() : Port()
+//{
+//    mPortType = READPORT;
+//}
 
 
-//Constructor
-ReadPort::ReadPort() : Port()
-{
-    mPortType = READPORT;
-}
-
-
-ReadPort::ReadPort(string portname, string node_type) : Port(portname, node_type)
+ReadPort::ReadPort(std::string node_type, std::string portname) : Port(node_type, portname)
 {
     mPortType = READPORT;
 }
@@ -352,14 +360,14 @@ void ReadPort::writeNode(const size_t idx, const double value)
 }
 
 
-//Constructor
-WritePort::WritePort() : Port()
-{
-    mPortType = WRITEPORT;
-}
+////Constructor
+//WritePort::WritePort() : Port()
+//{
+//    mPortType = WRITEPORT;
+//}
 
 
-WritePort::WritePort(string portname, string node_type) : Port(portname, node_type)
+WritePort::WritePort(std::string node_type, std::string portname) : Port(node_type, portname)
 {
     mPortType = WRITEPORT;
 }
@@ -376,24 +384,24 @@ double WritePort::readNode(const size_t idx)
 //!
 //! @brief Very simple port factory, no need to complicate things with the more advanced one as we will only have a few fixed port types.
 //!
-Port* hopsan::CreatePort(Port::PORTTYPE type)
+Port* hopsan::CreatePort(Port::PORTTYPE type, NodeTypeT nodetype)
 {
     switch (type)
     {
     case Port::POWERPORT :
-        return new PowerPort();
+        return new PowerPort(nodetype);
         break;
     case Port::WRITEPORT :
-        return new WritePort();
+        return new WritePort(nodetype);
         break;
     case Port::READPORT :
-        return new ReadPort();
+        return new ReadPort(nodetype);
         break;
     case Port::SYSTEMPORT :
-        return new SystemPort();
+        return new SystemPort(nodetype);
         break;
     default :
        //! @todo maybe defualt should be impossible
-       return new Port();
+       return new Port(nodetype);
     }
 }

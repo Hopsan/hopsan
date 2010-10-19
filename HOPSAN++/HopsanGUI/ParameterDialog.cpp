@@ -47,11 +47,13 @@
 
 #include <QtGui>
 #include <cassert>
+#include <iostream>
 
 #include "ParameterDialog.h"
 #include "MainWindow.h"
 #include "GUIObject.h"
 #include "GUISystem.h"
+#include "GUIPort.h"
 #include "MessageWidget.h"
 
 
@@ -95,6 +97,16 @@ void ParameterDialog::createEditStuff()
 {
     mpNameEdit = new QLineEdit(mpGUIObject->getName());
 
+    QFont fontH1;
+    fontH1.setBold(true);
+
+    QFont fontH2;
+    fontH2.setBold(true);
+    fontH2.setItalic(true);
+
+    QLabel *pParameterLabel = new QLabel("Parameters");
+    pParameterLabel->setFont(fontH1);
+
     //qDebug() << "before parnames";
     QVector<QString> parnames = mpGUIObject->getParameterNames();
     //qDebug() << "parnames.size: " << parnames.size();
@@ -116,6 +128,53 @@ void ParameterDialog::createEditStuff()
         mVarVector.back()->setBuddy(mValueVector.back());
 
     }
+
+
+    QGridLayout *startValueLayout = new QGridLayout;
+    size_t sr=0;
+    QLabel *pStartValueLabel = new QLabel("Start Values");
+    pStartValueLabel->setFont(fontH1);
+
+    QList<GUIPort*> ports = mpGUIObject->getPortListPtrs();
+    QList<GUIPort*>::iterator portIt;
+    for ( portIt=ports.begin(); portIt!=ports.end(); ++portIt )
+    {
+        QString portName("  Port, ");
+        portName.append((*portIt)->getName());
+        QLabel *portLabelName = new QLabel(portName);
+        portLabelName->setFont(fontH2);
+        startValueLayout->addWidget(portLabelName, sr, 0);
+        ++sr;
+
+        QVector<QString> startDataNames;
+        QVector<QString> startDataUnits;
+        (*portIt)->getStartValueDataNamesAndUnits(startDataNames, startDataUnits);
+
+        for(size_t i=0; i < startDataNames.size(); ++i)
+        {
+            QString tmpText("    ");
+            tmpText.append(startDataNames[i]);
+            QLabel *pStartValueName = new QLabel(tmpText);
+            pStartValueName->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+            startValueLayout->addWidget(pStartValueName, sr, 0);
+
+            QLineEdit *pStartValueEdit = new QLineEdit();
+            QString valueTxt;
+            valueTxt.setNum(44.8, 'g', 6 );
+            pStartValueEdit->setText(valueTxt);
+            startValueLayout->addWidget(pStartValueEdit, sr, 1);
+            pStartValueName->setBuddy(pStartValueEdit);
+
+            tmpText.clear();
+            tmpText.append(startDataUnits[i]);
+            QLabel *pStartValueUnit = new QLabel(tmpText);
+            startValueLayout->addWidget(pStartValueUnit, sr, 2);
+
+            ++sr;
+        }
+    }
+
+
     //qDebug() << "after parnames";
 
     okButton = new QPushButton(tr("&Ok"));
@@ -147,24 +206,25 @@ void ParameterDialog::createEditStuff()
         pCQSLayout->addWidget(mpCQSEdit);
     }
 
-    QVBoxLayout *topLeftLayout1 = new QVBoxLayout;
-    QVBoxLayout *topLeftLayout2 = new QVBoxLayout;
-    QVBoxLayout *topLeftLayout3 = new QVBoxLayout;
-    QVBoxLayout *topLeftLayout4 = new QVBoxLayout;
+    QVBoxLayout *parameterDescriptionLayput = new QVBoxLayout;
+    QVBoxLayout *parameterVarLayout = new QVBoxLayout;
+    QVBoxLayout *parameterValueLayout = new QVBoxLayout;
+    QVBoxLayout *parameterUnitLayout = new QVBoxLayout;
     for (size_t i=0 ; i <mVarVector.size(); ++i )
     {
-        topLeftLayout1->addWidget(mDescriptionVector[i]);
-        topLeftLayout2->addWidget(mVarVector[i]);
-        topLeftLayout3->addWidget(mValueVector[i]);
-        topLeftLayout4->addWidget(mUnitVector[i]);
+        parameterDescriptionLayput->addWidget(mDescriptionVector[i]);
+        parameterVarLayout->addWidget(mVarVector[i]);
+        parameterValueLayout->addWidget(mValueVector[i]);
+        parameterUnitLayout->addWidget(mUnitVector[i]);
     }
 
-    QHBoxLayout *leftLayout = new QHBoxLayout;
-    leftLayout->addLayout(topLeftLayout1);
-    leftLayout->addLayout(topLeftLayout2);
-    leftLayout->addLayout(topLeftLayout3);
-    leftLayout->addLayout(topLeftLayout4);
-    leftLayout->addStretch(1);
+    QHBoxLayout *parameterLayout = new QHBoxLayout;
+    parameterLayout->addLayout(parameterDescriptionLayput);
+    parameterLayout->addLayout(parameterVarLayout);
+    parameterLayout->addLayout(parameterValueLayout);
+    parameterLayout->addLayout(parameterUnitLayout);
+    parameterLayout->addStretch(1);
+
 
     QGridLayout *mainLayout = new QGridLayout;
     mainLayout->setSizeConstraint(QLayout::SetFixedSize);
@@ -177,7 +237,13 @@ void ParameterDialog::createEditStuff()
         mainLayout->addLayout(pCQSLayout, lr, 0);
         ++lr;
     }
-    mainLayout->addLayout(leftLayout, lr, 0);
+    mainLayout->addWidget(pParameterLabel, lr, 0);
+    ++lr;
+    mainLayout->addLayout(parameterLayout, lr, 0);
+    ++lr;
+    mainLayout->addWidget(pStartValueLabel,lr, 0);
+    ++lr;
+    mainLayout->addLayout(startValueLayout, lr, 0);
     setLayout(mainLayout);
 
     setWindowTitle(tr("Parameters"));

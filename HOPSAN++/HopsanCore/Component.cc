@@ -473,8 +473,7 @@ double *Component::getTimePtr()
 //! @param [in] nodetype The type of node that must be connected to the port
 Port* Component::addPort(const string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype, Port::CONREQ connection_requirement)
 {
-    Port* new_port = CreatePort(porttype);
-    new_port->mNodeType = nodetype;
+    Port* new_port = CreatePort(porttype, nodetype);
     new_port->mpComponent = this;    //Set port owner
     //Set wheter the port must be connected before simulation
     if (connection_requirement == Port::NOTREQUIRED)

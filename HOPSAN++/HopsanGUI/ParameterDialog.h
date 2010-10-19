@@ -89,6 +89,7 @@ private:
     std::vector<QLabel*> mDescriptionVector;
     std::vector<QLabel*> mUnitVector;
     std::vector<QLineEdit*> mValueVector;
+
     QDialogButtonBox *buttonBox;
     QPushButton *okButton;
     QPushButton *cancelButton;

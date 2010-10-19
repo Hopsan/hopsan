@@ -309,6 +309,12 @@ QString GUIPort::getNodeType()
 }
 
 
+void GUIPort::getStartValueDataNamesAndUnits(QVector<QString> &rNames, QVector<QString> &rUnits)
+{
+    mpParentSystem->mpCoreSystemAccess->getStartValueDataNamesAndUnits(getGUIComponentName(), this->getName(), rNames, rUnits);
+}
+
+
 portDirection GUIPort::getPortDirection()
 {
     return mpPortAppearance->direction;
