@@ -54,7 +54,7 @@
 #include "loadObjects.h"
 #include <math.h>
 
-//! Constructor.
+//! @brief Constructor for connector class
 //! @param startpos defines the start position of the connector, normally the center of the starting port.
 //! @param *parentView is a pointer to the GraphicsView the connector belongs to.
 //! @param parent is the parent of the port.
@@ -85,12 +85,12 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUISystem *parentSystem, QGraphic
 }
 
 
-//! Constructor used to create a whole connector at once. Used when loading models.
-//! @param *startPort is a pointer to the start port.
-//! @param *endPort is a pointer to the end port.
-//! @param points is the point vector for the connector.
-//! @param *parentView is a pointer to the GraphicsView the connector belongs to.
-//! @param parent is the parent of the port.
+//! @brief Constructor used to create a whole connector at once. Used when for example loading models.
+//! @param *startPort Pointer to the start port
+//! @param *endPort Pointer to the end port
+//! @param points Point vector for the connector
+//! @param *parentView Pointer to the GraphicsView the connector belongs to
+//! @param *parent Pointer to parent of the port
 GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, GUISystem *parentSystem, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
@@ -168,7 +168,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
 }
 
 
-//! Destructor.
+//! @brief Destructor for connector class
 GUIConnector::~GUIConnector()
 {
     delete mpGUIConnectorAppearance;
@@ -178,8 +178,8 @@ GUIConnector::~GUIConnector()
 }
 
 
-//! Inserts a new point to the connector and adjusts the previous point accordingly, depending on the geometry vector.
-//! @param point is the position where the point shall be inserted, normally the cursor position.
+//! @brief Inserts a new point to the connector and adjusts the previous point accordingly, depending on the geometry vector.
+//! @param point Position where the point shall be inserted (normally mouse cursor position)
 //! @see removePoint(bool deleteIfEmpty)
 void GUIConnector::addPoint(QPointF point)
 {
@@ -215,8 +215,8 @@ void GUIConnector::addPoint(QPointF point)
 }
 
 
-//! Removes the last point in the connecetor. Asks to delete the connector if deleteIfEmpty is true and if no lines or only one non-diagonal lines remains.
-//! @param deleteIfEmpty tells whether or not the connector shall be deleted if too few points remains.
+//! @brief Removes the last point in the connecetor. Asks to delete the connector if deleteIfEmpty is true and if no lines or only one non-diagonal lines remains.
+//! @param deleteIfEmpty True if the connector shall be deleted if too few points remains.
 //! @see addPoint(QPointF point)
 void GUIConnector::removePoint(bool deleteIfEmpty)
 {
@@ -271,8 +271,8 @@ void GUIConnector::removePoint(bool deleteIfEmpty)
 }
 
 
-//! Sets the pointer to the start port of a connector.
-//! @param *port is the pointer to the new start port.
+//! @brief Sets the pointer to the start port of a connector.
+//! @param *port Pointer to the new start port
 //! @see setEndPort(GUIPort *port)
 //! @see getStartPort()
 //! @see getEndPort()
@@ -285,8 +285,8 @@ void GUIConnector::setStartPort(GUIPort *port)
 }
 
 
-//! Sets the pointer to the end port of a connector, and executes the final tasks before creation of the connetor is complete. Then flags that the end port is connected.
-//! @param *port is the pointer to the new end port.
+//! @brief Sets the pointer to the end port of a connector, and executes the final tasks before creation of the connetor is complete. Then flags that the end port is connected.
+//! @param *port Pointer to the new end port
 //! @see setStartPort(GUIPort *port)
 //! @see getStartPort()
 //! @see getEndPort()
@@ -364,8 +364,8 @@ void GUIConnector::setEndPort(GUIPort *port)
 }
 
 
-//! Slot that tells the connector lines whether or not to use ISO style.
-//! @param gfxType tells whether or not iso graphics is to be used
+//! @brief Slot that tells the connector lines whether or not to use ISO style
+//! @param gfxType Tells whether or not iso graphics is to be used
 void GUIConnector::setIsoStyle(graphicsType gfxType)
 {
     mpGUIConnectorAppearance->setIsoStyle(gfxType);
@@ -377,7 +377,7 @@ void GUIConnector::setIsoStyle(graphicsType gfxType)
 }
 
 
-//! Slot that tells the lines to adjust their size to the zoom factor. This is to make sure line will not become invisible when zooming out.
+//! @brief Slot that tells the lines to adjust their size to the zoom factor.
 void GUIConnector::adjustToZoom()
 {
     mpGUIConnectorAppearance->adjustToZoom(mpParentSystem->mpParentProjectTab->mpGraphicsView->mZoomFactor);
@@ -389,29 +389,29 @@ void GUIConnector::adjustToZoom()
 }
 
 
-//! Returns the number of lines in a connector.
+//! @brief Returns the number of lines in a connector
 int GUIConnector::getNumberOfLines()
 {
     return mpLines.size();
 }
 
 
-//! Returns the geometry type of the specified line.
-//! @param lineNumber is the number of the specified line in the mpLines vector.
+//! @brief Returns the geometry type of the specified line
+//! @param lineNumber Number of the desired line in the mpLines vector
 connectorGeometry GUIConnector::getGeometry(int lineNumber)
 {
     return mGeometries[lineNumber];
 }
 
 
-//! Returns the point vector used by the connector.
+//! @brief Returns the point vector used by the connector
 QVector<QPointF> GUIConnector::getPointsVector()
 {
     return mPoints;
 }
 
 
-//! Returns a pointer to the start port of a connector.
+//! @brief Returns a pointer to the start port of a connector
 //! @see setStartPort(GUIPort *port)
 //! @see setEndPort(GUIPort *port)
 //! @see getEndPort()
@@ -421,7 +421,7 @@ GUIPort *GUIConnector::getStartPort()
 }
 
 
-//! Returns a pointer to the end port of a connector.
+//! @brief Returns a pointer to the end port of a connector
 //! @see setStartPort(GUIPort *port)
 //! @see setEndPort(GUIPort *port)
 //! @see getStartPort()
@@ -431,7 +431,7 @@ GUIPort *GUIConnector::getEndPort()
 }
 
 
-//! Returns the name of the start port of a connector.
+//! @brief Returns the name of the start port of a connector
 //! @see getEndPortName()
 QString GUIConnector::getStartPortName()
 {
@@ -439,7 +439,7 @@ QString GUIConnector::getStartPortName()
 }
 
 
-//! Returns the name of the end port of a connector.
+//! @brief Returns the name of the end port of a connector
 //! @see getStartPortName()
 QString GUIConnector::getEndPortName()
 {
@@ -447,7 +447,7 @@ QString GUIConnector::getEndPortName()
 }
 
 
-//! Returns the name of the start component of a connector.
+//! @brief Returns the name of the start component of a connector
 //! @see getEndComponentName()
 QString GUIConnector::getStartComponentName()
 {
@@ -455,7 +455,7 @@ QString GUIConnector::getStartComponentName()
 }
 
 
-//! Returns the name of the end component of a connector.
+//! @brief Returns the name of the end component of a connector
 //! @see getStartComponentName()
 QString GUIConnector::getEndComponentName()
 {
@@ -463,8 +463,8 @@ QString GUIConnector::getEndComponentName()
 }
 
 
-//! Returns the line with specified number.
-//! @param line is the number of the wanted line.
+//! @brief Returns the line with specified number
+//! @param line Number of the desired line
 //! @see getThirdLastLine()
 //! @see getSecondLastLine()
 //! @see getLastLine()
@@ -474,7 +474,7 @@ GUIConnectorLine *GUIConnector::getLine(int line)
 }
 
 
-//! Returns the last line of the connector.
+//! @brief Returns the last line of the connector
 //! @see getThirdLastLine()
 //! @see getSecondLastLine()
 //! @see getLine(int line)
@@ -484,7 +484,7 @@ GUIConnectorLine *GUIConnector::getLastLine()
 }
 
 
-//! Returns the second last line of the connector.
+//! @brief Returns the second last line of the connector
 //! @see getThirdLastLine()
 //! @see getLastLine()
 //! @see getLine(int line)
@@ -494,7 +494,7 @@ GUIConnectorLine *GUIConnector::getSecondLastLine()
 }
 
 
-//! Returns the third last line of the connector.
+//! @brief Returns the third last line of the connector
 //! @see getSecondLastLine()
 //! @see getLastLine()
 //! @see getLine(int line)
@@ -504,7 +504,7 @@ GUIConnectorLine *GUIConnector::getThirdLastLine()
 }
 
 
-//! Returns true if the connector is connected at both ends, otherwise false.
+//! @brief Returns true if the connector is connected at both ends, otherwise false
 bool GUIConnector::isConnected()
 {
     //qDebug() << "Entering isConnected()";
@@ -513,7 +513,7 @@ bool GUIConnector::isConnected()
 }
 
 
-//! Returns true if the line currently being drawn is a diagonal one, otherwise false.
+//! @brief Returns true if the line currently being drawn is a diagonal one, otherwise false
 //! @see makeDiagonal(bool enable)
 bool GUIConnector::isMakingDiagonal()
 {
@@ -521,15 +521,15 @@ bool GUIConnector::isMakingDiagonal()
 }
 
 
-//! Returns true if the connector is active ("selected").
+//! @brief Returns true if the connector is active (= "selected")
 bool GUIConnector::isActive()
 {
     return mIsActive;
 }
 
 
-//! Saves all necessary information about the connetor to a text stream. Used for save, undo and copy operations.
-//! @param QTextSream is the text stream with the information.
+//! @brief Saves all necessary information about the connetor to a text stream. Used for save, undo and copy operations.
+//! @param QTextSream Text stream with the information
 void GUIConnector::saveToTextStream(QTextStream &rStream, QString prepend)
 {
     QString startObjName = getStartComponentName();
@@ -568,7 +568,7 @@ void GUIConnector::saveToDomElement(QDomElement &rDomElement)
 
 
 
-//! Draws lines between the points in the mPoints vector, and stores them in the mpLines vector.
+//! @brief Draws lines between the points in the mPoints vector, and stores them in the mpLines vector
 void GUIConnector::drawConnector()
 {
     if(!mEndPortConnected)        //End port is not connected, which means we are creating a new line
@@ -619,8 +619,8 @@ void GUIConnector::drawConnector()
 }
 
 
-//! Updates the first point of the connector, and adjusts the second point accordingly depending on the geometry vector.
-//! @param point is the new start point.
+//! @brief Updates the first point of the connector, and adjusts the second point accordingly depending on the geometry vector.
+//! @param point Position of the new start point
 //! @see updateEndPoint(QPointF point)
 void GUIConnector::updateStartPoint(QPointF point)
 {
@@ -639,8 +639,8 @@ void GUIConnector::updateStartPoint(QPointF point)
 }
 
 
-//! Updates the last point of the connector, and adjusts the second last point accordingly depending on the geometry vector.
-//! @param point is the new start point.
+//! @brief Updates the last point of the connector, and adjusts the second last point accordingly depending on the geometry vector.
+//! @param point Position of the new start point
 //! @see updateEndPoint(QPointF point)
 void GUIConnector::updateEndPoint(QPointF point)
 {
@@ -656,8 +656,8 @@ void GUIConnector::updateEndPoint(QPointF point)
 }
 
 
-//! Updates the mPoints vector when a line has been moved. Used to make lines follow each other when they are moved, and to make sure horizontal lines can only move vertically and vice versa.
-//! @param lineNumber is the number of the line that has moved.
+//! @brief Updates the mPoints vector when a line has been moved. Used to make lines follow each other when they are moved, and to make sure horizontal lines can only move vertically and vice versa.
+//! @param lineNumber Number of the line to update (the line that has moved)
 void GUIConnector::updateLine(int lineNumber)
 {
    if ((mEndPortConnected) && (lineNumber != 0) && (lineNumber != int(mpLines.size())))
@@ -678,9 +678,9 @@ void GUIConnector::updateLine(int lineNumber)
 }
 
 
-//! Slot that moves all points in the connector a specified distance in a specified direction. This is used in copy-paste operations.
-//! @param offsetX is the distance to move in X direction.
-//! @param offsetY is the distance to move in Y direction.
+//! @brief Slot that moves all points in the connector a specified distance in a specified direction.
+//! @param offsetX Distance to move in X direction
+//! @param offsetY Distance to move in Y direction
 void GUIConnector::moveAllPoints(qreal offsetX, qreal offsetY)
 {
     for(int i=0; i != mPoints.size(); ++i)
@@ -690,8 +690,8 @@ void GUIConnector::moveAllPoints(qreal offsetX, qreal offsetY)
 }
 
 
-//! Tells the connector to create one diagonal lines instead of the last two horizontal/vertical, or to return to horizontal/diagonal mode.
-//! @param enable indicates whether diagonal mode shall be enabled or disabled.
+//! @brief Tells the connector to create one diagonal lines instead of the last two horizontal/vertical, or to return to horizontal/diagonal mode.
+//! @param enable True (false) if diagonal mode shall be enabled (disabled)
 //! @see isMakingDiagonal()
 void GUIConnector::makeDiagonal(bool enable)
 {
@@ -757,8 +757,9 @@ void GUIConnector::makeDiagonal(bool enable)
 }
 
 
-//! Slot that activates or deactivates the connector if one of its lines is selected or deselected.
-//! @param lineSelected tells whether the signal was induced by selection or deselection of a line.
+//! @brief Slot that activates or deactivates the connector if one of its lines is selected or deselected
+//! @param lineSelected Tells whether the signal was induced by selection or deselection of a line
+//! @param lineNumber Number of the line that was selected or deselected
 //! @see setActive()
 //! @see setPassive()
 void GUIConnector::doSelect(bool lineSelected, int lineNumber)
@@ -806,7 +807,7 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
 }
 
 
-//! Slot that selects a connector if both its components are selected.
+//! @brief Slot that selects a connector if both its components are selected
 //! @see doSelect(bool lineSelected, int lineNumber)
 void GUIConnector::selectIfBothComponentsSelected()
 {
@@ -818,7 +819,7 @@ void GUIConnector::selectIfBothComponentsSelected()
 }
 
 
-//! Activates a connector, activates each line and connects delete function with delete key.
+//! @brief Activates a connector, activates each line and connects delete function with delete key.
 //! @see setPassive()
 void GUIConnector::setActive()
 {
@@ -835,7 +836,7 @@ void GUIConnector::setActive()
 }
 
 
-//! Deactivates a connector, deactivates each line and disconnects delete function with delete key.
+//! @brief Deactivates a connector, deactivates each line and disconnects delete function with delete key.
 //! @see setActive()
 void GUIConnector::setPassive()
 {
@@ -854,7 +855,7 @@ void GUIConnector::setPassive()
 }
 
 
-//! Changes connector style to hovered if it is not active. Used when mouse starts hovering a line.
+//! @brief Changes connector style to hovered unless it is active. Used when mouse starts hovering a line.
 //! @see setUnHovered()
 void GUIConnector::setHovered()
 {
@@ -868,7 +869,7 @@ void GUIConnector::setHovered()
 }
 
 
-//! Changes connector style back to normal if it is not active. Used when mouse stops hovering a line.
+//! @brief Changes connector style back to normal unless it is active. Used when mouse stops hovering a line.
 //! @see setHovered()
 //! @see setPassive()
 void GUIConnector::setUnHovered()
@@ -883,7 +884,8 @@ void GUIConnector::setUnHovered()
 }
 
 
-//! Asks my parent to delete myself.
+//! @brief Asks the parent system to delete the connector
+//! @todo Rename this to something less childish!
 void GUIConnector::deleteMe()
 {
     //qDebug() << "deleteMe()";
@@ -891,28 +893,30 @@ void GUIConnector::deleteMe()
 }
 
 
-//! Asks my parent to delete myself, and tells it to not add me to the undo stack.
+//! @brief Asks the parent system to delete the connector, and tells it to not add it to the undo stack
+//! @todo Rename this to something better
+//! @todo Perhaps this function and deleteMe() can be combined to one, wtih UNDO or NOUNDO as input parameter?
 void GUIConnector::deleteMeWithNoUndo()
 {
     mpParentSystem->removeConnector(this, NOUNDO);
 }
 
 
-//! This is used to decide whether or not to snap components.
+//! @brief Function that returns true if first or last line is diagonal. Used to determine snapping stuff.
 bool GUIConnector::isFirstOrLastDiagonal()
 {
     return ( (mGeometries.first() == DIAGONAL) || (mGeometries.last() == DIAGONAL) );
 }
 
 
-//! This is used to decide whether or not to snap components.
+//! @brief Function that returns true if both first and last line is diagonal. Used to determine snapping stuff.
 bool GUIConnector::isFirstAndLastDiagonal()
 {
     return ( (mGeometries.first() == DIAGONAL) && (mGeometries.last() == DIAGONAL) );
 }
 
 
-//! Uppdate the appearance of the connector (setting its type and line endings)
+//! @brief Uppdates the appearance of the connector (setting its type and line endings)
 //! @todo right now this only set the type and ending arrows, maybe should handle ALLA appearance update like switching when howering, or maybe have two different update appearance functions (this one only needs to be run once when a conector is created)
 void GUIConnector::determineAppearance()
 {
@@ -951,23 +955,15 @@ void GUIConnector::determineAppearance()
     this->setPassive(); //!< @todo Not sure if setPassive is allways correct, but it is a good guess
 }
 
-//
-////! Defines what shall happen if the line is selected or moved.
-//QVariant GUIConnector::itemChange(GraphicsItemChange change, const QVariant &value)
-//{
-//
-//    return value;
-//}
 
-
-//! Slot that deselects the connector. Used for signal-slot-connections.
+//! @brief Slot that "deactivates" a connector if it is deselected
 void GUIConnector::deselect()
 {
     this->setPassive();
 }
 
 
-//! Slot that selects the connector. Used for signal-slot-connections.
+//! @brief Slot that "activates" a connector if it is selected
 void GUIConnector::select()
 {
     this->doSelect(true, -1);
@@ -978,17 +974,14 @@ void GUIConnector::select()
 //------------------------------------------------------------------------------------------------------------------------//
 
 
-//! Constructor.
-//! @param x1 is the x-coordinate of the start position of the line.
-//! @param y1 is the y-coordinate of the start position of the line.
-//! @param x2 is the x-coordinate of the end position of the line.
-//! @param y2 is the y-coordinate of the end position of the line.
-////! @param primaryPen defines the default color and width of the line.
-////! @param activePen defines the color and width of the line when it is selected.
-////! @param hoverPen defines the color and width of the line when it is hovered by the mouse cursor.
-//! @param pConnApp A pointer to the connector appearance data, containing pens
-//! @param lineNumber is the number of the line in the connector.
-//! @param *parent is a pointer to the parent object.
+//! @brief Constructor for connector lines
+//! @param x1 X-coordinate of the start position of the line.
+//! @param y1 Y-coordinate of the start position of the line.
+//! @param x2 X-coordinate of the end position of the line.
+//! @param y2 Y-coordinate of the end position of the line.
+//! @param pConnApp Pointer to the connector appearance data, containing pens
+//! @param lineNumber Number of the line in the connector's line vector.
+//! @param *parent Pointer to the parent object (the connector)
 GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, GUIConnectorAppearance* pConnApp, int lineNumber, GUIConnector *parent)
         : QGraphicsLineItem(x1,y1,x2,y2,parent)
 {
@@ -1000,7 +993,6 @@ GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, GUICo
     mParentConnectorEndPortConnected = false;
     this->startPos = QPointF(x1,y1);
     this->endPos = QPointF(x2,y2);
-    //mpParentGUIConnector->mGeometries.push_back(HORIZONTAL);
     mHasStartArrow = false;
     mHasEndArrow = false;
     mArrowSize = 8.0;
@@ -1008,13 +1000,13 @@ GUIConnectorLine::GUIConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, GUICo
 }
 
 
-//! Destructor
+//! @brief Destructor for connector lines
 GUIConnectorLine::~GUIConnectorLine()
 {
 }
 
 
-//! Reimplementation of paint function. Removes the ugly dotted selection box.
+//! @brief Reimplementation of paint function. Removes the ugly dotted selection box.
 void GUIConnectorLine::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w)
 {
     QStyleOptionGraphicsItem *_o = const_cast<QStyleOptionGraphicsItem*>(o);
@@ -1023,7 +1015,7 @@ void GUIConnectorLine::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWi
 }
 
 
-//! Changes the style of the line to active.
+//! @brief Changes the style of the line to active
 //! @see setPassive()
 //! @see setHovered()
 void GUIConnectorLine::setActive()
@@ -1033,7 +1025,7 @@ void GUIConnectorLine::setActive()
 }
 
 
-//! Changes the style of the line to default.
+//! @brief Changes the style of the line to default
 //! @see setActive()
 //! @see setHovered()
 void GUIConnectorLine::setPassive()
@@ -1049,7 +1041,7 @@ void GUIConnectorLine::setPassive()
 }
 
 
-//! Changes the style of the line to hovered.
+//! @brief Changes the style of the line to hovered
 //! @see setActive()
 //! @see setPassive()
 void GUIConnectorLine::setHovered()
@@ -1058,10 +1050,9 @@ void GUIConnectorLine::setHovered()
 }
 
 
-//! Defines what shall happen if a mouse key is pressed while hovering a connector line.
+//! @brief Defines what happens if a mouse key is pressed while hovering a connector line
 void GUIConnectorLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    //emit lineClicked();
     if(event->button() == Qt::LeftButton)
     {
         mOldPos = this->pos();
@@ -1070,7 +1061,7 @@ void GUIConnectorLine::mousePressEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
-//! Defines what shall happen if a mouse key is released while hovering a connector line.
+//! @brief Defines what happens if a mouse key is released while hovering a connector line
 void GUIConnectorLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     if((this->pos() != mOldPos) && (event->button() == Qt::LeftButton))
@@ -1082,7 +1073,7 @@ void GUIConnectorLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsLineItem::mouseReleaseEvent(event);
 }
 
-//! Devines what shall happen if the mouse cursor enters the line. Change cursor if the line is movable.
+//! @brief Defines what happens if the mouse cursor enters the line (changes cursor if the line is movable)
 //! @see hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 void GUIConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
@@ -1105,7 +1096,7 @@ void GUIConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 }
 
 
-//! Defines what shall happen when mouse cursor leaves the line.
+//! @brief Defines what happens when mouse cursor leaves the line
 //! @see hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 void GUIConnectorLine::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
@@ -1118,14 +1109,14 @@ void GUIConnectorLine::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 }
 
 
-//! Returns the number of the line in the connector.
+//! @brief Returns the number of the line in the connector
 int GUIConnectorLine::getLineNumber()
 {
     return mLineNumber;
 }
 
 
-//! Defines what shall happen if the line is selected or moved.
+//! @brief Defines what shall happen if the line is selected or moved
 QVariant GUIConnectorLine::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == QGraphicsItem::ItemSelectedHasChanged)
@@ -1140,18 +1131,18 @@ QVariant GUIConnectorLine::itemChange(GraphicsItemChange change, const QVariant 
 }
 
 
-//! Tells the line that its parent connector has been connected at both ends
+//! @brief Tells the line that its parent connector has been connected at both ends
 void GUIConnectorLine::setConnected()
 {
     mParentConnectorEndPortConnected = true;
 }
 
 
-//! Reimplementation of setLine; stores the start and end positions before changing them
-//! @param x1 is the x-coordinate of the start position.
-//! @param y1 is the y-coordinate of the start position.
-//! @param x2 is the x-coordinate of the end position.
-//! @param y2 is the y-coordinate of the end position.
+//! @brief Reimplementation of setLine, stores the start and end positions before changing them
+//! @param x1 X-coordinate of the start position.
+//! @param y1 Y-coordinate of the start position.
+//! @param x2 X-coordinate of the end position.
+//! @param y2 Y-coordinate of the end position.
 void GUIConnectorLine::setLine(QPointF pos1, QPointF pos2)
 {
     this->startPos = this->mapFromParent(pos1);
@@ -1173,7 +1164,7 @@ void GUIConnectorLine::setLine(QPointF pos1, QPointF pos2)
 }
 
 
-//! Adds an arrow at the end of the line.
+//! @brief Adds an arrow at the end of the line
 //! @see addStartArrow()
 void GUIConnectorLine::addEndArrow()
 {
@@ -1191,7 +1182,7 @@ void GUIConnectorLine::addEndArrow()
 }
 
 
-//! Adds an arrow at the start of the line.
+//! @brief Adds an arrow at the start of the line
 //! @see addEndArrow()
 void GUIConnectorLine::addStartArrow()
 {
@@ -1209,7 +1200,7 @@ void GUIConnectorLine::addStartArrow()
 }
 
 
-//! Reimplementation of inherited setPen function to include arrow pen too.
+//! @brief Reimplementation of setPen function, used to set the pen style for the arrow lines too
 void GUIConnectorLine::setPen (const QPen &pen)
 {
     QGraphicsLineItem::setPen(pen);
@@ -1222,13 +1213,3 @@ void GUIConnectorLine::setPen (const QPen &pen)
         mArrowLine1->line();
     }
 }
-
-
-////! Set function for all three pen styles (primary, active and hover).
-//void GUIConnectorLine::setPens(QPen primaryPen, QPen activePen, QPen hoverPen)
-//{
-//    mPrimaryPen = primaryPen;
-//    mActivePen = activePen;
-//    mHoverPen = hoverPen;
-//    this->setPassive();
-//}
