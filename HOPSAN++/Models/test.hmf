@@ -6,7 +6,7 @@ HMFVERSION 0.1
 CAFVERSION 0.1
 --------------------------------------------------------------
 SIMULATIONTIME 0 0.001 1
-VIEWPORT 2461.74 2464.35 1.15
+VIEWPORT 2340.87 2464.35 1.15
 --------------------------------------------------------------
 USERICON ""
 ISOICON ""
@@ -26,7 +26,7 @@ COMPONENT "MechanicTranslationalMass" "TranslationalMass" 2689 2450 0 0 0
 PARAMETER "TranslationalMass" "Mass" 5
 PARAMETER "TranslationalMass" "B" 10
 PARAMETER "TranslationalMass" "k" 10
-COMPONENT "HydraulicLaminarOrifice" "LaminarOrifice" 2334 2607 90 0 0
+COMPONENT "HydraulicLaminarOrifice" "LaminarOrifice" 2334 2607 0 0 0
 PARAMETER "LaminarOrifice" "Kc" 1e-08
 COMPONENT "HydraulicPressureSource" "PressureSource" 2254 2607 90 0 0
 PARAMETER "PressureSource" "P" 2e+07
@@ -67,15 +67,15 @@ COMPONENT "MechanicForceTransformer" "ForceTransformer" 2779 2450 180 0 0
 PARAMETER "ForceTransformer" "x0" 1
 PARAMETER "ForceTransformer" "v0" 0
 PARAMETER "ForceTransformer" "Force" 0
-COMPONENT "HydraulicLaminarOrifice" "LaminarOrifice_1" 2333 2652 90 0 0
+COMPONENT "HydraulicLaminarOrifice" "LaminarOrifice_1" 2333 2652 0 0 0
 PARAMETER "LaminarOrifice_1" "Kc" 1e-08
 --------------------------------------------------------------
 CONNECT "Volume_1" "P2" "43Valve" "PT" 2453 2652 2540.97 2652 2540.97 2562
 CONNECT "Volume" "P2" "43Valve" "PP" 2452 2607 2520.92 2607 2520.92 2562
-CONNECT "Volume" "P1" "LaminarOrifice" "P1" 2402 2607 2389 2607 2389 2607 2368.5 2607
-CONNECT "LaminarOrifice_1" "P1" "Volume_1" "P1" 2367.5 2652 2382 2652 2382 2652 2403 2652
-CONNECT "LaminarOrifice" "P2" "PressureSource" "P1" 2299.5 2607 2285 2607 2285 2607 2266 2607
-CONNECT "LaminarOrifice_1" "P2" "Tank" "P1" 2298.5 2652 2255 2652 2255 2662.5
+CONNECT "Volume" "P1" "LaminarOrifice" "P1" 2402 2607 2389 2607 2389 2607 2369 2607
+CONNECT "LaminarOrifice_1" "P1" "Volume_1" "P1" 2368 2652 2382 2652 2382 2652 2403 2652
+CONNECT "LaminarOrifice" "P2" "PressureSource" "P1" 2299 2607 2285 2607 2285 2607 2266 2607
+CONNECT "LaminarOrifice_1" "P2" "Tank" "P1" 2298 2652 2255 2652 2255 2662.5
 CONNECT "Subtract" "in2" "PositionSensor" "out" 2303 2534.5 2303 2350 2744 2350 2744 2395.5
 CONNECT "CylinderC" "P1" "43Valve" "PA" 2490.47 2470 2490.47 2491 2520.92 2491 2520.92 2512
 CONNECT "43Valve" "PB" "CylinderC" "P2" 2540.97 2512 2540.97 2491 2570.06 2491 2570.06 2470

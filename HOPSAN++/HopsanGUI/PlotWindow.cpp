@@ -152,6 +152,13 @@ PlotWindow::PlotWindow(QVector<double> xArray, QVector<double> yArray, PlotParam
     mpPreviousButton->setDisabled(true);
     mpToolBar->addWidget(mpPreviousButton);
 
+    mpNextButton = new QToolButton(mpToolBar);
+    mpNextButton->setToolTip("Next Generation");
+    mpNextButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-StepRight.png"));
+    mpNextButton->setAcceptDrops(false);
+    mpNextButton->setDisabled(true);
+    mpToolBar->addWidget(mpNextButton);
+
     mpGenerationLabel = new QLabel(mpToolBar);
     mpGenerationLabel->setText("Generation 1 (1)");
     QFont tempFont = mpGenerationLabel->font();
@@ -159,13 +166,6 @@ PlotWindow::PlotWindow(QVector<double> xArray, QVector<double> yArray, PlotParam
     mpGenerationLabel->setFont(tempFont);
     mpGenerationLabel->setDisabled(false);
     mpToolBar->addWidget(mpGenerationLabel);
-
-    mpNextButton = new QToolButton(mpToolBar);
-    mpNextButton->setToolTip("Next Generation");
-    mpNextButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-StepRight.png"));
-    mpNextButton->setAcceptDrops(false);
-    mpNextButton->setDisabled(true);
-    mpToolBar->addWidget(mpNextButton);
 
     addToolBar(mpToolBar);
 
