@@ -29,7 +29,8 @@ SOURCES += main.cpp \
     CoreSystemAccess.cpp \
     GUIPortAppearance.cpp \
     GUIConnectorAppearance.cpp \
-    GlobalParametersWidget.cpp
+    GlobalParametersWidget.cpp \
+    PlotWindow.cpp
 HEADERS += MainWindow.h \
     ProjectTabWidget.h \
     LibraryWidget.h \
@@ -58,7 +59,8 @@ HEADERS += MainWindow.h \
     CoreSystemAccess.h \
     GUIPortAppearance.h \
     GUIConnectorAppearance.h \
-    GlobalParametersWidget.h
+    GlobalParametersWidget.h \
+    PlotWindow.h
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE

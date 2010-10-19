@@ -38,9 +38,8 @@
 
 //$Id$
 
-#ifndef PlotWindow_H
-#define PlotWindow_H
-
+#ifndef PlotWidget_H
+#define PlotWidget_H
 
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
@@ -78,97 +77,10 @@
 
 
 class MainWindow;
-class VariablePlot;
-class VariablePlotZoomer;
-class PlotParameterTree;
-class PlotWidget;
 class GUISystem;
-
-class PlotWindow : public QMainWindow
-{
-    Q_OBJECT
-public:
-    PlotWindow(QVector<double> xarray, QVector<double> yarray, PlotParameterTree *PlotParameterTree, MainWindow *parent);
-    void addPlotCurve(QVector<double> xarray, QVector<double> yarray, QString title, QString xLabel, QString yLabel, QwtPlot::Axis axisY);
-    void changeXVector(QVector<double> xarray, QString xLabel, QString componentName, QString portName, QString dataName);
-    void insertMarker(QwtPlotCurve *curve);
-    void setActiveMarker(QwtPlotMarker *marker);
-
-    MainWindow *mpParentMainWindow;
-    GUISystem *mpCurrentGUISystem;
-
-    QVector<QwtPlotCurve *> mpCurves;
-    QList<QStringList> mCurveParameters;
-    QStringList mSpecialXParameter;
-    QList< QList< QVector<double> > > mVectorX;
-    QList< QList< QVector<double> > > mVectorY;
-
-    QwtPlot *mpVariablePlot;
-    QwtPlotGrid *mpGrid;
-    QwtSymbol *mpMarkerSymbol;
-    QwtPlotMarker *mpActiveMarker;
-    QVector <QwtPlotMarker *> mpMarkers;
-    QHash <QwtPlotCurve *, QwtPlotMarker *> mCurveToMarkerMap;
-    QHash <QwtPlotMarker *, QwtPlotCurve *> mMarkerToCurveMap;
-    QwtPlotCurve *tempCurve;
-    QwtPlotZoomer *mpZoomer;
-    QwtPlotMagnifier *mpMagnifier;
-    QwtPlotPanner *mpPanner;
-    int mCurrentGeneration;
-
-    QToolBar *mpToolBar;
-    QToolButton *mpZoomButton;
-    QToolButton *mpPanButton;
-    QToolButton *mpSVGButton;
-    QToolButton *mpExportGNUPLOTButton;
-    QToolButton *mpImportGNUPLOTButton;
-    QToolButton *mpGridButton;
-    QToolButton *mpPreviousButton;
-    QToolButton *mpNextButton;
-    QToolBar *mpSizeButton;
-    QSpinBox *mpSizeSpinBox;
-    QToolButton *mpColorButton;
-    QToolButton *mpBackgroundColorButton;
-    QCheckBox *mpHoldCheckBox;
-    QLabel *mpSizeLabel;
-    QLabel *mpGenerationLabel;
-
-    QRubberBand *mpHoverRect;
-    //QPainter *mpHoverRect;
-
-    int nCurves;
-    QStringList mCurveColors;
-    bool mHasSpecialXAxis;
-    bool mRightAxisLogarithmic;
-    bool mLeftAxisLogarithmic;
-    bool mHold;
-
-protected:
-    virtual void mouseMoveEvent(QMouseEvent *event);
-    virtual void dragEnterEvent(QDragEnterEvent *event);
-    virtual void dragLeaveEvent(QDragLeaveEvent *event);
-    virtual void dragMoveEvent(QDragMoveEvent *event);
-    virtual void dropEvent(QDropEvent *event);
-    virtual void contextMenuEvent(QContextMenuEvent *event);
-
-private slots:
-    void enableZoom(bool);
-    void enablePan(bool);
-    void exportSVG();
-    void exportGNUPLOT();
-    void importGNUPLOT();
-    void enableGrid(bool);
-    void setLineWidth(int);
-    void setLineColor();
-    void setBackgroundColor();
-    void checkNewValues();
-    void setHold(bool value);
-    void stepBack();
-    void stepForward();
-
-private:
-    PlotParameterTree *mpPlotParameterTree;
-};
+class PlotWindow;
+class PlotWidget;
+class PlotParameterTree;
 
 
 class PlotParameterItem : public QTreeWidgetItem
@@ -225,4 +137,4 @@ private:
     QGridLayout *mpLayout;
 };
 
-#endif // PlotWindow_H
+#endif // PlotWidget_H
