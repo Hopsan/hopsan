@@ -68,6 +68,9 @@
 #include "Signal/SignalStopSimulation.hpp"
 #include "Signal/SignalGreaterThan.hpp"
 #include "Signal/SignalSmallerThan.hpp"
+#include "Signal/SignalAnd.hpp"
+#include "Signal/SignalOr.hpp"
+#include "Signal/SignalXor.hpp"
 
 
 /* Mechanical Components */

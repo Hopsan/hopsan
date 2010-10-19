@@ -11,6 +11,7 @@
 #define SIGNALSTOPSIMULATION_HPP_INCLUDED
 
 #include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 
 namespace hopsan {
 
@@ -47,8 +48,10 @@ namespace hopsan {
         {
             if (mpIn->isConnected())
             {
-                if(mpIn->readNode(NodeSignal::VALUE) > 0.5)
+                if(doubleToBool(mpIn->readNode(NodeSignal::VALUE)))
+                {
                     this->stopSimulation();
+                }
             }
         }
 

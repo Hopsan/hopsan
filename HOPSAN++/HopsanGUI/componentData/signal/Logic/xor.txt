@@ -1,0 +1,8 @@
+TYPENAME "SignalXor"
+DISPLAYNAME "Logical Exclusive Or Operator"
+USERICON "xor.svg"
+ICONROTATION OFF
+PORT "in1" 0 .25 0
+PORT "in2" 0 .75 0
+PORT "out" 1 .50 0
+

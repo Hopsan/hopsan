@@ -1,5 +1,7 @@
 //$Id$
 
+#include "AuxiliarySimulationFunctions.h"
+
 //! Multiplies the value by two.
 //! @param[in] input is the value to multiply.
 //! @return the input value times two.
@@ -30,4 +32,24 @@ void limit(double &value, double min, double max)
     {
         value = min;
     }
+}
+
+
+//! @brief Converts a float point number to a boolean
+//! @param value Double value to convert, 1.0 means true, 0.0 means false
+bool hopsan::doubleToBool(double value)
+{
+    return(value > 0.5);
+}
+
+
+//! @brief Converts a boolean value to a float point number
+//! @param value Boolean to convert, will return 1.0 if true and 0.0 if false
+double hopsan::boolToDouble(bool value)
+{
+    if(value)
+    {
+        return 1.0;
+    }
+    return 0.0;
 }

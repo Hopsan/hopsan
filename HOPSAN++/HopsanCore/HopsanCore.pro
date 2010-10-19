@@ -148,4 +148,7 @@ HEADERS += win32dll.h \
     Components/Mechanic/MechanicAngleSensor.hpp \
     Components/Signal/SignalStopSimulation.hpp \
     Components/Signal/SignalGreaterThan.hpp \
-    Components/Signal/SignalSmallerThan.hpp
+    Components/Signal/SignalSmallerThan.hpp \
+    Components/Signal/SignalAnd.hpp \
+    Components/Signal/SignalOr.hpp \
+    Components/Signal/SignalXor.hpp
