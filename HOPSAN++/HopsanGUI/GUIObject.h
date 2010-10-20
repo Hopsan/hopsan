@@ -165,7 +165,6 @@ protected:
 
 protected slots:
     void fixTextPosition(QPointF pos);
-    void adjustTextPositionToZoom();
 
 private:
 
@@ -181,9 +180,6 @@ public:
     GUIObjectDisplayName(GUIObject *pParent);
 
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    //void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    void focusInEvent(QFocusEvent *event);
-    void focusOutEvent(QFocusEvent *event);
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);

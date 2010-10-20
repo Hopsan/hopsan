@@ -65,9 +65,19 @@ double dist(double x1,double y1, double x2, double y2)
     return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
 }
 
+
+//! @brief Constructor for GUI Objects
+//! @param position Initial scene coordinates where object shall be placed
+//! @param rotation Initial rotation of the object
+//! @param pAppearanceData Pointer to appearance data object
+//! @param startSelected Initial selection status
+//! @param gfxType Initial graphics type (user or iso)
+//! @param system Pointer to the parent system
+//! @param parent Pointer to parent object (not mandatory)
 GUIObject::GUIObject(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUISystem *system, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
+    //! @todo Is this comment a todo?
     //remeber the scene ptr
 
     //Make a local copy of the appearance data (that can safely be modified if needed)
@@ -81,7 +91,6 @@ GUIObject::GUIObject(QPoint position, qreal rotation, const AppearanceData* pApp
     mpIcon = 0;
     mpSelectionBox = 0;
     mpNameText = 0;
-    //mIconType = USERGRAPHICS;
 
         //Setup appearance
     this->refreshAppearance();
@@ -99,12 +108,10 @@ GUIObject::GUIObject(QPoint position, qreal rotation, const AppearanceData* pApp
     mNameTextPos = 0;
     this->setNameTextPos(mNameTextPos);
 
-
         //Create connections
     connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(fixTextPosition(QPointF)));
     if(mpParentSystem != 0)
     {
-        connect(mpParentSystem->mpParentProjectTab->mpGraphicsView,SIGNAL(zoomChange()),this,SLOT(adjustTextPositionToZoom()));
         connect(mpParentSystem, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
         connect(mpParentSystem, SIGNAL(hideAllNameText()), this, SLOT(hideName()));
         connect(mpParentSystem, SIGNAL(showAllNameText()), this, SLOT(showName()));
@@ -113,18 +120,21 @@ GUIObject::GUIObject(QPoint position, qreal rotation, const AppearanceData* pApp
 }
 
 
+//! @brief Destructor for GUI Objects
 GUIObject::~GUIObject()
 {
     emit componentDeleted();
 }
 
 
+//! @brief Returns the type of the object (object, component, systemport, group etc)
 int GUIObject::type() const
 {
     return Type;
 }
 
-
+//! @brief Updates name text position
+//! @param pos Position where name text was dropped
 void GUIObject::fixTextPosition(QPointF pos)
 {
     double x1,x2,y1,y2;
@@ -213,6 +223,8 @@ void GUIObject::fixTextPosition(QPointF pos)
 }
 
 
+//! @brief Stores a connector pointer in the connector list
+//! @param item Pointer to connector that shall be stored
 void GUIObject::rememberConnector(GUIConnector *item)
 {
     mpGUIConnectorPtrs.append(item);
@@ -220,6 +232,8 @@ void GUIObject::rememberConnector(GUIConnector *item)
 }
 
 
+//! @brief Removes a connector pointer from the connector list
+//! @param item Pointer to connector that shall be forgotten
 void GUIObject::forgetConnector(GUIConnector *item)
 {
     mpGUIConnectorPtrs.removeOne(item);
@@ -227,13 +241,14 @@ void GUIObject::forgetConnector(GUIConnector *item)
 }
 
 
+//! @param Returns the a list with pointers to the connecetors connected to the object
 QList<GUIConnector*> GUIObject::getGUIConnectorPtrs()
 {
     return mpGUIConnectorPtrs;
 }
 
 
-//! This function refreshes the displayed name (HopsanCore may have changed it)
+//! @brief Refreshes the displayed name (HopsanCore may have changed it)
 void GUIObject::refreshDisplayName()
 {
     if (mpNameText != 0)
@@ -246,13 +261,14 @@ void GUIObject::refreshDisplayName()
 }
 
 
-//! This function returns the current component name
+//! @brief Returns the name of the object
 QString GUIObject::getName()
 {
     return mAppearanceData.getName();
 }
 
 
+//! @brief Returns a list with pointers to the ports in the object
 QList<GUIPort*> GUIObject::getPortListPtrs()
 {
     return mPortListPtrs;
@@ -291,6 +307,8 @@ QList<GUIPort*> GUIObject::getPortListPtrs()
 ////    mpParentSystem->mGUIObjectMap.insert(this->getName(), this);
 //}
 
+
+//! @brief Sets the name of the object (may be modified by HopsanCore if name already exists)
 void GUIObject::setDisplayName(QString name)
 {
     mAppearanceData.setName(name);
@@ -298,24 +316,22 @@ void GUIObject::setDisplayName(QString name)
 }
 
 
+//! @brief Updates the icon of the object to user or iso style
+//! @param gfxType Graphics type that shall be used
 void GUIObject::setIcon(graphicsType gfxType)
 {
-    qDebug() << "setIcon(" << gfxType << ")";
-
     QGraphicsSvgItem *tmp = mpIcon;
     if(gfxType && mAppearanceData.haveIsoIcon())
     {
         mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(ISOGRAPHICS) , this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
         mIconType = ISOGRAPHICS;
-        //qDebug() << "Setting QString(ICONPATH) to " << mAppearanceData.getFullQString(ICONPATH)(true);
     }
     else
     {
         mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(USERGRAPHICS), this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
         mIconType = USERGRAPHICS;
-        //qDebug() << "Setting QString(ICONPATH) to " << mAppearanceData.getFullQString(ICONPATH)(false);
     }
 
     //Delete old icon if it exist;
@@ -353,21 +369,21 @@ void GUIObject::setIcon(graphicsType gfxType)
 }
 
 
-//! Slots that deselects the object. Used for signal-slot connection.
+//! @brief Slot that deselects the object
 void GUIObject::deselect()
 {
     this->setSelected(false);
 }
 
 
-//! Slots that selects the object. Used for signal-slot connection.
+//! @brief Slot that selects the object
 void GUIObject::select()
 {
     this->setSelected(true);
 }
 
 
-//! Returns the port with the specified name.
+//! @brief Returns a pointer to the port with the specified name
 GUIPort *GUIObject::getPort(QString name)
 {
 
@@ -383,6 +399,9 @@ GUIPort *GUIObject::getPort(QString name)
     return 0;
 }
 
+
+//! @brief Virtual function that returns the specified parameter value
+//! @param name Name of the parameter to return value from
 double GUIObject::getParameterValue(QString name)
 {
     cout << "This function should only be available in GUIComponent" << endl;
@@ -390,6 +409,8 @@ double GUIObject::getParameterValue(QString name)
     return 0;
 }
 
+
+//! @brief Virtual function that returns a vector with the names of the parameteres in the object
 QVector<QString> GUIObject::getParameterNames()
 {
     cout << "This function should only be available in GUIComponent" << endl;
@@ -397,6 +418,10 @@ QVector<QString> GUIObject::getParameterNames()
     return QVector<QString>();
 }
 
+
+//! @brief Virtual function that sets specified parameter to specified value
+//! @param name Name of parameter
+//! @param value New parameter value
 void GUIObject::setParameterValue(QString name, double value)
 {
     cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
@@ -404,7 +429,9 @@ void GUIObject::setParameterValue(QString name, double value)
 }
 
 
-//! @brief Save GuiObject to a text stream
+//! @brief Saves the GUIObject to a text stream
+//! @param &rStream Text stream to save into
+//! @param prepend String to prepend before object data
 void GUIObject::saveToTextStream(QTextStream &rStream, QString prepend)
 {
     QPointF pos = mapToScene(boundingRect().center());
@@ -415,6 +442,7 @@ void GUIObject::saveToTextStream(QTextStream &rStream, QString prepend)
     rStream << addQuotes(getTypeName()) << " " << addQuotes(getName()) << " "
             << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << " " << mpNameText->isVisible() << "\n";
 }
+
 
 void GUIObject::saveToDomElement(QDomElement &rDomElement)
 {
@@ -428,6 +456,7 @@ void GUIObject::saveToDomElement(QDomElement &rDomElement)
 
     saveGuiDataToDomElement(xmlObject);
 }
+
 
 void GUIObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 {
@@ -444,7 +473,7 @@ void GUIObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 }
 
 
-//! Event when mouse cursor enters component icon.
+//! @brief Defines what happens when mouse starts hovering the object
 void GUIObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     if(!this->isSelected())
@@ -457,7 +486,7 @@ void GUIObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 }
 
 
-//! Event when mouse cursor leaves component icon.
+//! @bried Defines what happens when mouse stops hovering the object
 void GUIObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     if(!this->isSelected())
@@ -469,13 +498,12 @@ void GUIObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 }
 
 
-//! Defines what shall happen if a mouse key is pressed while hovering an object.
+//! @brief Defines what happens if a mouse key is pressed while hovering an object
 void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
         //Store old positions for all components, in case more than one is selected
     if(event->button() == Qt::LeftButton)
     {
-        //QList<GUIObject *>::iterator it;
         for(size_t i = 0; i < mpParentSystem->mSelectedGUIObjectsList.size(); ++i)
         {
             mpParentSystem->mSelectedGUIObjectsList[i]->mOldPos = mpParentSystem->mSelectedGUIObjectsList[i]->pos();
@@ -491,7 +519,7 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
-//! Defines what shall happen if a mouse key is released while hovering an object.
+//! @brief Defines what happens if a mouse key is released while hovering an object
 void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QList<GUIObject *>::iterator it;
@@ -524,7 +552,8 @@ void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
-//! Handles item change events.
+//! @brief Defines what happens when object is selected, deselected or has moved
+//! @param change Tells what it is that has changed
 QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     QGraphicsWidget::itemChange(change, value);
@@ -638,7 +667,8 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
 }
 
 
-//! Shows or hides the port, depending on the input boolean and whether or not they are connected.
+//! @brief Shows or hides the port, depending on the input boolean and whether or not they are connected
+//! @param visible Tells whether the ports shall be shown or hidden
 void GUIObject::showPorts(bool visible)
 {
     QList<GUIPort*>::iterator i;
@@ -676,7 +706,8 @@ void GUIObject::showPorts(bool visible)
 //}
 
 
-//! Rotates a component 90 degrees clockwise, and tells the connectors that the component has moved.
+//! @brief Rotates a component 90 degrees clockwise
+//! @param undoSettings Tells whether or not this shall be registered in undo stsack
 //! @see rotateTo(qreal angle);
 void GUIObject::rotate(undoStatus undoSettings)
 {
@@ -718,7 +749,6 @@ void GUIObject::rotate(undoStatus undoSettings)
             else if(this->rotation() == 270 && mIsFlipped)
                 mPortListPtrs.value(i)->setRotation(270);
         }
-        //mPortListPtrs[i]->updatePosition();
     }
 
     if(!mIconRotation)
@@ -753,8 +783,10 @@ void GUIObject::rotate(undoStatus undoSettings)
 }
 
 
-//! Slot that rotates the object to a desired angle (this does NOT create and undo post)
+//! @brief Slot that rotates the object to a desired angle (NOT registered in undo stack!)
+//! @param angle Angle to rotate to
 //! @see rotate(undoStatus undoSettings)
+//! @todo Add option to register this in undo stack - someone will want to do this sooner or later anyway
 void GUIObject::rotateTo(qreal angle)
 {
     while(this->rotation() != angle)
@@ -764,7 +796,7 @@ void GUIObject::rotateTo(qreal angle)
 }
 
 
-//! Slot that moves component one pixel upwards
+//! @brief Slot that moves component one pixel upwards
 //! @see moveDown()
 //! @see moveLeft()
 //! @see moveRight()
@@ -776,7 +808,7 @@ void GUIObject::moveUp()
 }
 
 
-//! Slot that moves component one pixel downwards
+//! @brief Slot that moves component one pixel downwards
 //! @see moveUp()
 //! @see moveLeft()
 //! @see moveRight()
@@ -787,7 +819,7 @@ void GUIObject::moveDown()
 }
 
 
-//! Slot that moves component one pixel leftwards
+//! @brief Slot that moves component one pixel leftwards
 //! @see moveUp()
 //! @see moveDown()
 //! @see moveRight()
@@ -798,7 +830,7 @@ void GUIObject::moveLeft()
 }
 
 
-//! Slot that moves component one pixel rightwards
+//! @brief Slot that moves component one pixel rightwards
 //! @see moveUp()
 //! @see moveDown()
 //! @see moveLeft()
@@ -809,10 +841,12 @@ void GUIObject::moveRight()
 }
 
 
-//! @todo Fix name text position when flipping components
 
-//! Slot that flips the object vertically.
+
+//! @brief Slot that flips the object vertically
+//! @param undoSettings Tells whether or not this shall be registered in undo stack
 //! @see flipHorizontal()
+//! @todo Fix name text position when flipping components
 void GUIObject::flipVertical(undoStatus undoSettings)
 {
     this->rotate(NOUNDO);
@@ -826,7 +860,8 @@ void GUIObject::flipVertical(undoStatus undoSettings)
 }
 
 
-//! Slot that flips the object horizontally.
+//! @brief Slot that flips the object horizontally
+//! @param undoSettings Tells whether or not this shall be registered in undo stack
 //! @see flipVertical()
 void GUIObject::flipHorizontal(undoStatus undoSettings)
 {
@@ -887,16 +922,17 @@ void GUIObject::flipHorizontal(undoStatus undoSettings)
 }
 
 
-//! Returns an integer that describes the position of the component name text.
+//! @brief Returns an number of the current name text position
 //! @see setNameTextPos(int textPos)
 //! @see fixTextPosition(QPointF pos)
 int GUIObject::getNameTextPos()
 {
     return mNameTextPos;
-}\
+}
 
 
-//! Updates the name text position, and moves the text to the correct position.
+//! @brief Moves the name text to the specified name text position
+//! @param textPos Number of the desired text position
 //! @see getNameTextPos()
 //! @see fixTextPosition(QPointF pos)
 void GUIObject::setNameTextPos(int textPos)
@@ -945,30 +981,36 @@ void GUIObject::setNameTextPos(int textPos)
     }
 }
 
+
+//! @brief Slots that hides the name text of the object
 void GUIObject::hideName()
 {
     mpNameText->setVisible(false);
 }
 
+
+//! @brief Slots that makes the name text of the object visible
 void GUIObject::showName()
 {
     mpNameText->setVisible(true);
 }
 
 
-//! Dummy
+//! @brief Virtual dummy function that returns the type name of the object (must be reimplemented by children)
 QString GUIObject::getTypeName()
 {
     assert(false);
     return "";
 }
 
+//! @brief Returns a pointer to the appearance data object
 AppearanceData* GUIObject::getAppearanceData()
 {
     return &mAppearanceData;
 }
 
 
+//! @brief Refreshes the appearance of the object
 void GUIObject::refreshAppearance()
 {
     bool hasActiveSelectionBox = false;
@@ -995,63 +1037,37 @@ void GUIObject::refreshAppearance()
 }
 
 
-void GUIObject::adjustTextPositionToZoom()
-{
-    this->fixTextPosition(mpNameText->pos());
-}
-
+//! @brief Construtor for the name text object
+//! @param pParent Pointer to the object which the name text belongs to
 GUIObjectDisplayName::GUIObjectDisplayName(GUIObject *pParent)
     :   QGraphicsTextItem(pParent)
 {
     mpParentGUIObject = pParent;
     this->setTextInteractionFlags(Qt::NoTextInteraction);
-    //this->setTextInteractionFlags(Qt::TextEditable | Qt::TextSelectableByMouse);
     this->setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
 }
 
+
+//! @brief Defines what happens when a mouse button is released (used to update position when text has moved)
 void GUIObjectDisplayName::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     emit textMoved(this->pos());
     QGraphicsTextItem::mouseReleaseEvent(event);
 }
 
-void GUIObjectDisplayName::focusInEvent(QFocusEvent *event)
-{
-    qDebug() << "focusInEvent()";
-    mpParentGUIObject->mpParentSystem->mIsRenamingObject = true;
-    this->setSelected(true);
-    QGraphicsTextItem::focusInEvent(event);
-}
 
-
-//! @todo Can we delete this reimplementation?
-void GUIObjectDisplayName::focusOutEvent(QFocusEvent *event)
-{
-//    qDebug() << "focusOutEvent()";
-//    //mpParentGUIComponent->mpParentSystem->mUndoStack->newPost();
-//    mpParentGUIObject->mpParentSystem->mIsRenamingObject = false;
-//        //Try to set the new name, the rename function in parent is used
-//    mpParentGUIObject->mpParentSystem->renameGUIObject(mpParentGUIObject->getName(),toPlainText());
-//        //Refresh the display name (it may be different from the one you wanted)
-//    mpParentGUIObject->refreshDisplayName();
-
-//    this->setSelected(false);
-
-//    emit textMoved(pos());
-    mpParentGUIObject->mpParentSystem->mIsRenamingObject = false;
-    QGraphicsTextItem::focusOutEvent(event);
-}
-
-
-//! Handles item change events.
+//! @brief Defines what happens when selection status of name text has changed
+//! @param change Type of change (only ItemSelectedHasChanged is used)
 QVariant GUIObjectDisplayName::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     QGraphicsTextItem::itemChange(change, value);
 
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
+        qDebug() << "ItemSelectedHasChanged";
         if (this->isSelected())
         {
+            mpParentGUIObject->mpParentSystem->deselectSelectedNameText();
             connect(this->mpParentGUIObject->mpParentSystem, SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
         }
         else

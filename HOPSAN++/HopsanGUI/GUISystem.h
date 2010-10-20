@@ -95,6 +95,7 @@ public slots:
     void updateUndoStatus();
     void updateSimulationParametersInToolBar();
     void setGfxType(graphicsType gfxType);
+    void deselectSelectedNameText();
 
 signals:
     void deselectAllNameText();

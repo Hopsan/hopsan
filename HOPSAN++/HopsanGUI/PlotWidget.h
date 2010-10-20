@@ -41,16 +41,6 @@
 #ifndef PlotWidget_H
 #define PlotWidget_H
 
-#include <qwt_plot.h>
-#include <qwt_plot_curve.h>
-#include <qwt_data.h>
-#include <qwt_plot_grid.h>
-#include <qwt_plot_item.h>
-#include <qwt_plot_marker.h>
-#include <qwt_plot_zoomer.h>
-#include <qwt_plot_magnifier.h>
-#include <qwt_plot_panner.h>
-#include <qwt_picker.h>
 #include <QGridLayout>
 #include <iostream>
 #include <QWidget>
@@ -74,6 +64,15 @@
 #include <QLabel>
 #include <QCheckBox>
 #include <QGridLayout>
+
+#include <qwt_plot.h>
+#include <qwt_plot_curve.h>
+#include <qwt_data.h>
+#include <qwt_plot_grid.h>
+#include <qwt_plot_marker.h>
+#include <qwt_plot_zoomer.h>
+#include <qwt_plot_magnifier.h>
+#include <qwt_plot_panner.h>
 
 
 class MainWindow;

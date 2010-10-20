@@ -1292,3 +1292,10 @@ void GUISystem::setGfxType(graphicsType gfxType)
     this->mpParentProjectTab->mpGraphicsView->updateViewPort();
     emit setAllGfxType(mGfxType);
 }
+
+
+//! Slot that tells all selected name texts to deselect themselves
+void GUISystem::deselectSelectedNameText()
+{
+    emit deselectAllNameText();
+}

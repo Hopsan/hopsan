@@ -1,9 +1,9 @@
 /*
  * This file is part of OpenModelica.
  *
- * Copyright (c) 1998-CurrentYear, Linköping University,
+ * Copyright (c) 1998-CurrentYear, LinkÃ¶ping University,
  * Department of Computer and Information Science,
- * SE-58183 Linköping, Sweden.
+ * SE-58183 LinkÃ¶ping, Sweden.
  *
  * All rights reserved.
  *
@@ -14,7 +14,7 @@
  *
  * The OpenModelica software and the Open Source Modelica
  * Consortium (OSMC) Public License (OSMC-PL) are obtained
- * from Linköping University, either from the above address,
+ * from LinkÃ¶ping University, either from the above address,
  * from the URLs: http://www.ida.liu.se/projects/OpenModelica or
  * http://www.openmodelica.org, and in the OpenModelica distribution.
  * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
@@ -31,8 +31,8 @@
 
 /*
  * HopsanGUI
- * Fluid and Mechatronic Systems, Department of Management and Engineering, Linköping University
- * Main Authors 2009-2010:  Robert Braun, Björn Eriksson, Peter Nordin
+ * Fluid and Mechatronic Systems, Department of Management and Engineering, LinkÃ¶ping University
+ * Main Authors 2009-2010:  Robert Braun, BjÃ¶rn Eriksson, Peter Nordin
  * Contributors 2009-2010:  Mikael Axin, Alessandro Dell'Amico, Karl Pettersson, Ingo Staack
  */
 
@@ -41,17 +41,6 @@
 #ifndef PlotWindow_H
 #define PlotWindow_H
 
-
-#include <qwt_plot.h>
-#include <qwt_plot_curve.h>
-#include <qwt_data.h>
-#include <qwt_plot_grid.h>
-#include <qwt_plot_item.h>
-#include <qwt_plot_marker.h>
-#include <qwt_plot_zoomer.h>
-#include <qwt_plot_magnifier.h>
-#include <qwt_plot_panner.h>
-#include <qwt_picker.h>
 #include <QGridLayout>
 #include <iostream>
 #include <QWidget>
@@ -76,6 +65,13 @@
 #include <QCheckBox>
 #include <QGridLayout>
 
+#include <qwt_plot.h>
+#include <qwt_plot_curve.h>
+#include <qwt_plot_grid.h>
+#include <qwt_plot_marker.h>
+#include <qwt_plot_zoomer.h>
+#include <qwt_plot_magnifier.h>
+#include <qwt_plot_panner.h>
 
 class MainWindow;
 class VariablePlot;
