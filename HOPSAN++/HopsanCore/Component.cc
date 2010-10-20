@@ -1924,6 +1924,7 @@ void ComponentSystem::loadStartValues()
 }
 
 
+//! @brief Load start values from last simulation to start value container
 void ComponentSystem::loadStartValuesFromSimulation()
 {
     std::vector<Component*>::iterator compIt;
