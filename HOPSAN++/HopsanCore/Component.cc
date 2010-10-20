@@ -2301,7 +2301,7 @@ void ComponentSystem::finalize(const double startT, const double stopT)
 
     }
 
-    loadStartValuesFromSimulation();
+    //loadStartValuesFromSimulation();
 }
 
 
