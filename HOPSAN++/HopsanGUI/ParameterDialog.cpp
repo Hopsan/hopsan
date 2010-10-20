@@ -113,19 +113,19 @@ void ParameterDialog::createEditStuff()
     QVector<QString>::iterator pit;
     for ( pit=parnames.begin(); pit!=parnames.end(); ++pit )
     {
-        mVarVector.push_back(new QLabel(*pit));
-        mVarVector.back()->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-        mDescriptionVector.push_back(new QLabel(mpGUIObject->getParameterDescription(*pit).append(", ")));
-        mUnitVector.push_back(new QLabel(mpGUIObject->getParameterUnit(*pit)));
+        mParameterVarVector.push_back(new QLabel(*pit));
+        mParameterVarVector.back()->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+        mParameterDescriptionVector.push_back(new QLabel(mpGUIObject->getParameterDescription(*pit).append(", ")));
+        mParameterUnitVector.push_back(new QLabel(mpGUIObject->getParameterUnit(*pit)));
 
-        mValueVector.push_back(new QLineEdit());
+        mParameterValueVector.push_back(new QLineEdit());
         //mValueVector.back()->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mValueVector.back()));
 
         QString valueTxt;
         valueTxt.setNum(mpGUIObject->getParameterValue(*pit), 'g', 6 );
-        mValueVector.back()->setText(valueTxt);
+        mParameterValueVector.back()->setText(valueTxt);
 
-        mVarVector.back()->setBuddy(mValueVector.back());
+        mParameterVarVector.back()->setBuddy(mParameterValueVector.back());
 
     }
 
@@ -137,41 +137,52 @@ void ParameterDialog::createEditStuff()
 
     QList<GUIPort*> ports = mpGUIObject->getPortListPtrs();
     QList<GUIPort*>::iterator portIt;
+    double j=0;
+    QVector<QVector<QString> > startDataNamesStr, startDataUnitsStr;
+    QVector<QVector<double> > startDataValuesStr;
+    startDataNamesStr.resize(ports.size());
+    startDataValuesStr.resize(ports.size());
+    startDataUnitsStr.resize(ports.size());
+    mStartDataNames.resize(ports.size());
+    mStartDataValues.resize(ports.size());
+    mStartDataUnits.resize(ports.size());
     for ( portIt=ports.begin(); portIt!=ports.end(); ++portIt )
     {
-        QString portName("  Port, ");
+        QString portName("Port, ");
         portName.append((*portIt)->getName());
         QLabel *portLabelName = new QLabel(portName);
         portLabelName->setFont(fontH2);
         startValueLayout->addWidget(portLabelName, sr, 0);
         ++sr;
 
-        QVector<QString> startDataNames;
-        QVector<QString> startDataUnits;
-        (*portIt)->getStartValueDataNamesAndUnits(startDataNames, startDataUnits);
+        (*portIt)->getStartValueDataNamesValuesAndUnits(startDataNamesStr[j], startDataValuesStr[j], startDataUnitsStr[j]);
 
-        for(size_t i=0; i < startDataNames.size(); ++i)
+        mStartDataNames[j].resize(startDataNamesStr[j].size());
+        mStartDataValues[j].resize(startDataNamesStr[j].size());
+        mStartDataUnits[j].resize(startDataNamesStr[j].size());
+        for(size_t i=0; i < startDataNamesStr[j].size(); ++i)
         {
-            QString tmpText("    ");
-            tmpText.append(startDataNames[i]);
-            QLabel *pStartValueName = new QLabel(tmpText);
-            pStartValueName->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-            startValueLayout->addWidget(pStartValueName, sr, 0);
+            QString tmpText;
+            tmpText.append(startDataNamesStr[j][i]);
+            mStartDataNames[j][i] = new QLabel(tmpText);
+            mStartDataNames[j][i]->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+            startValueLayout->addWidget(mStartDataNames[j][i], sr, 0);
 
-            QLineEdit *pStartValueEdit = new QLineEdit();
+            mStartDataValues[j][i] = new QLineEdit();
             QString valueTxt;
-            valueTxt.setNum(44.8, 'g', 6 );
-            pStartValueEdit->setText(valueTxt);
-            startValueLayout->addWidget(pStartValueEdit, sr, 1);
-            pStartValueName->setBuddy(pStartValueEdit);
+            valueTxt.setNum(startDataValuesStr[j][i], 'g', 6 );
+            mStartDataValues[j][i]->setText(valueTxt);
+            startValueLayout->addWidget(mStartDataValues[j][i], sr, 1);
+            mStartDataNames[j][i]->setBuddy(mStartDataValues[j][i]);
 
             tmpText.clear();
-            tmpText.append(startDataUnits[i]);
-            QLabel *pStartValueUnit = new QLabel(tmpText);
-            startValueLayout->addWidget(pStartValueUnit, sr, 2);
+            tmpText.append(startDataUnitsStr[j][i]);
+            mStartDataUnits[j][i] = new QLabel(tmpText);
+            startValueLayout->addWidget(mStartDataUnits[j][i], sr, 2);
 
             ++sr;
         }
+        ++j;
     }
 
 
@@ -186,7 +197,7 @@ void ParameterDialog::createEditStuff()
     buttonBox->addButton(okButton, QDialogButtonBox::ActionRole);
     buttonBox->addButton(cancelButton, QDialogButtonBox::ActionRole);
 
-    connect(okButton, SIGNAL(pressed()), SLOT(setParameters()));
+    connect(okButton, SIGNAL(pressed()), SLOT(okPressed()));
     connect(cancelButton, SIGNAL(pressed()), SLOT(close()));
 
     QHBoxLayout *pNameLayout = new QHBoxLayout;
@@ -210,12 +221,12 @@ void ParameterDialog::createEditStuff()
     QVBoxLayout *parameterVarLayout = new QVBoxLayout;
     QVBoxLayout *parameterValueLayout = new QVBoxLayout;
     QVBoxLayout *parameterUnitLayout = new QVBoxLayout;
-    for (size_t i=0 ; i <mVarVector.size(); ++i )
+    for (size_t i=0 ; i <mParameterVarVector.size(); ++i )
     {
-        parameterDescriptionLayput->addWidget(mDescriptionVector[i]);
-        parameterVarLayout->addWidget(mVarVector[i]);
-        parameterValueLayout->addWidget(mValueVector[i]);
-        parameterUnitLayout->addWidget(mUnitVector[i]);
+        parameterDescriptionLayput->addWidget(mParameterDescriptionVector[i]);
+        parameterVarLayout->addWidget(mParameterVarVector[i]);
+        parameterValueLayout->addWidget(mParameterValueVector[i]);
+        parameterUnitLayout->addWidget(mParameterUnitVector[i]);
     }
 
     QHBoxLayout *parameterLayout = new QHBoxLayout;
@@ -250,39 +261,74 @@ void ParameterDialog::createEditStuff()
 }
 
 
-//! Sets the parameters in the core component. Read the values from the dialog and write them into the core component.
-void ParameterDialog::setParameters()
+void ParameterDialog::okPressed()
 {
     mpGUIObject->mpParentSystem->renameGUIObject(mpGUIObject->getName(), mpNameEdit->text());
     //qDebug() << mpNameEdit->text();
 
-    for (size_t i=0 ; i < mValueVector.size(); ++i )
-    {
-        qDebug() << "Checking " << mVarVector[i]->text();
-        if(mValueVector[i]->text().startsWith("<") && mValueVector[i]->text().endsWith(">"))
-        {
-            QString requestedParameter = mValueVector[i]->text().mid(1, mValueVector[i]->text().size()-2);
-            qDebug() << "Found global parameter \"" << requestedParameter << "\"";
-        }
-        bool ok;
-        double newValue = mValueVector[i]->text().toDouble(&ok);
-        if (!ok)
-        {
-
-            MessageWidget *messageWidget = this->mpGUIObject->mpParentSystem->mpMainWindow->mpMessageWidget;//qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent()->parent())->mpMessageWidget;
-            messageWidget->printGUIMessage(QString("ParameterDialog::setParameters(): You must give a correct value for '").append(mVarVector[i]->text()).append(QString("', putz. Try again!")));
-            qDebug() << "Inte okej!";
-            return;
-        }
-        mpGUIObject->setParameterValue(mVarVector[i]->text(), newValue);
-    }
+    setParameters();
+    setStartValues();
 
     if (isGUISubsystem)
     {
         qDebug() << "Setting CQS type to: " << this->mpCQSEdit->displayText();
         mpGUIObject->setTypeCQS(this->mpCQSEdit->displayText());
     }
+}
+
+
+//! Sets the parameters in the core component. Read the values from the dialog and write them into the core component.
+void ParameterDialog::setParameters()
+{
+    for (size_t i=0 ; i < mParameterValueVector.size(); ++i )
+    {
+        qDebug() << "Checking " << mParameterVarVector[i]->text();
+        if(mParameterValueVector[i]->text().startsWith("<") && mParameterValueVector[i]->text().endsWith(">")) //! @todo Break out global parameter stuff to own method so it can be used, for example, in start value method too
+        {
+            QString requestedParameter = mParameterValueVector[i]->text().mid(1, mParameterValueVector[i]->text().size()-2);
+            qDebug() << "Found global parameter \"" << requestedParameter << "\"";
+        }
+        bool ok;
+        double newValue = mParameterValueVector[i]->text().toDouble(&ok);
+        if (!ok)
+        {
+
+            MessageWidget *messageWidget = this->mpGUIObject->mpParentSystem->mpMainWindow->mpMessageWidget;//qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent()->parent())->mpMessageWidget;
+            messageWidget->printGUIMessage(QString("ParameterDialog::setParameters(): You must give a correct value for '").append(mParameterVarVector[i]->text()).append(QString("', putz. Try again!")));
+            qDebug() << "Inte okej!";
+            return;
+        }
+        mpGUIObject->setParameterValue(mParameterVarVector[i]->text(), newValue);
+    }
+
 
     std::cout << "Parameters updated." << std::endl;
+    this->close();
+}
+
+
+void ParameterDialog::setStartValues()
+{
+    QList<GUIPort*> ports = mpGUIObject->getPortListPtrs();
+    QList<GUIPort*>::iterator portIt;
+    QVector<QString> startDataNamesStr, startDataUnitsStr;
+    QVector<double> startDataValuesStr;
+    size_t j=0;
+    for ( portIt=ports.begin(); portIt!=ports.end(); ++portIt )
+    {
+        startDataNamesStr.resize(mStartDataNames[j].size());
+        startDataValuesStr.resize(mStartDataNames[j].size());
+        startDataUnitsStr.resize(mStartDataNames[j].size());
+        for(size_t i=0; i < mStartDataNames[j].size(); ++i)
+        {
+            startDataNamesStr[i] = mStartDataNames[j][i]->text();
+            startDataValuesStr[i] = mStartDataValues[j][i]->text().toDouble();
+     //       qDebug() << "startDataNamesStr[i]: " << startDataNamesStr[i] << "startDataValuesStr[i]: " << startDataValuesStr[i];
+        }
+
+        (*portIt)->setStartValueDataByNames(startDataNamesStr, startDataValuesStr);
+        ++j;
+    }
+    std::cout << "Start values updated." << std::endl;
     this->close();
 }

@@ -72,7 +72,8 @@ public:
 
     QString getPortType(QString componentName, QString portName);
     QString getNodeType(QString componentName, QString portName);
-    void getStartValueDataNamesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<QString> &rUnits);
+    void getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<double> &rStartDataValues, QVector<QString> &rUnits);
+    void setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<double> startDataValues);
 
     QVector<QString> getParameterNames(QString componentName);
     QString getParameterUnit(QString componentName, QString parameterName);
@@ -100,6 +101,7 @@ public:
 
     std::vector<double> getTimeVector(QString componentName, QString portName);
     void getPlotDataNamesAndUnits(const QString compname, const QString portname, QVector<QString> &rNames, QVector<QString> &rUnits);
+    QString getPlotDataUnit(const QString compname, const QString portname, const QString dataname);
     //void getPlotDataUnit(const QString compname, const QString portname, const string dataname, QString &rUnit);
     //QVector<QString> getPlotDataUnits();
     void getPlotData(const QString compname, const QString portname, const QString dataname, QVector<double> &rData);

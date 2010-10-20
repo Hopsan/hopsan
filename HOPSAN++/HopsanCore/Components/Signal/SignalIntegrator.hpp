@@ -49,7 +49,7 @@ namespace hopsan {
         void initialize()
         {
             double u0 = mpIn->readNode(NodeSignal::VALUE);
-            mDelayU.initialize(mTime, u0);
+            mDelayU.initialize(mTime, mStartY);
             mDelayY.initialize(mTime, mStartY);
             mpOut->writeNode(NodeSignal::VALUE, mStartY);
         }

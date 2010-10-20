@@ -30,7 +30,10 @@ SOURCES += main.cpp \
     GUIPortAppearance.cpp \
     GUIConnectorAppearance.cpp \
     GlobalParametersWidget.cpp \
-    PlotWindow.cpp
+    PlotWindow.cpp \
+    PyWrapperClasses.cpp \
+    PyDock.cpp
+
 HEADERS += MainWindow.h \
     ProjectTabWidget.h \
     LibraryWidget.h \
@@ -60,7 +63,10 @@ HEADERS += MainWindow.h \
     GUIPortAppearance.h \
     GUIConnectorAppearance.h \
     GlobalParametersWidget.h \
-    PlotWindow.h
+    PlotWindow.h \
+    PyWrapperClasses.h \
+    PyDock.h
+
 OTHER_FILES += 
 
 # win32:DEFINES += STATICCORE
@@ -75,11 +81,28 @@ CONFIG(release, debug|release) {
         -lHopsanCore
 }
 
+#Define a parameter PYTHONQT_PATH e.g. '/home/apako69/pythonqt' in the project settings, also add '/home/apako69/pythonqt/lib' to LD_LIBRARY_PATH on *nix.
+CONFIG(release, debug|release) {
+    LIBS += -L$(PYTHONQT_PATH)/lib -lPythonQt \
+                                   -lPythonQt_QtAll
+}
+CONFIG(debug, debug|release) {
+    LIBS += -L$(PYTHONQT_PATH)/lib -lPythonQt_d \
+                                   -lPythonQt_QtAll_d
+}
+
+INCLUDEPATH += $(PYTHONQT_PATH)/src \
+               $(PYTHONQT_PATH)/extensions/PythonQt_QtAll
+
 INCLUDEPATH += ../HopsanCore
 unix {
     LIBS += -Wl,-rpath,./
     LIBS += -lqwt-qt4
     INCLUDEPATH += /usr/include/qwt-qt4/
+
+    LIBS += $$system(python$${PYTHON_VERSION}-config --libs)
+
+    QMAKE_CXXFLAGS += $$system(python$${PYTHON_VERSION}-config --includes)
 }
 win32 {
     # Ingopath:
@@ -98,5 +121,6 @@ win32 {
     CONFIG(release, debug|release) {
         LIBS += -lqwt5
     }
+    INCLUDEPATH += $(PYTHON_PATH)/include
 }
 RESOURCES += 

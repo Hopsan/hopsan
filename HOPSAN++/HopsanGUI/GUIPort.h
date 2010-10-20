@@ -82,7 +82,8 @@ public:
     QString getPortType();
     QString getNodeType();
 
-    void getStartValueDataNamesAndUnits(QVector<QString> &rNames, QVector<QString> &rUnits);
+    void getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<double> &rValues, QVector<QString> &rUnits);
+    void setStartValueDataByNames(QVector<QString> names, QVector<double> values);
 
     bool isConnected;
 

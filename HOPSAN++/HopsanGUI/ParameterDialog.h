@@ -72,7 +72,11 @@ public:
     ParameterDialog(GUISystem *pGUISubsystem, QWidget *parent = 0);
 
 protected slots:
+    void okPressed();
+
+protected:
     void setParameters();
+    void setStartValues();
 
 private:
     GUIObject    *mpGUIObject;
@@ -85,10 +89,15 @@ private:
 
     QLineEdit *mpNameEdit;
     QLineEdit *mpCQSEdit;
-    std::vector<QLabel*> mVarVector;
-    std::vector<QLabel*> mDescriptionVector;
-    std::vector<QLabel*> mUnitVector;
-    std::vector<QLineEdit*> mValueVector;
+    std::vector<QLabel*> mParameterVarVector;
+    std::vector<QLabel*> mParameterDescriptionVector;
+    std::vector<QLabel*> mParameterUnitVector;
+    std::vector<QLineEdit*> mParameterValueVector;
+
+    QVector<QVector<QLabel*> > mStartDataNames;
+    QVector<QVector<QLineEdit*> > mStartDataValues;
+    QVector<QVector<QLabel*> > mStartDataUnits;
+
 
     QDialogButtonBox *buttonBox;
     QPushButton *okButton;

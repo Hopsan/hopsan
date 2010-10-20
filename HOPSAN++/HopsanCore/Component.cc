@@ -180,7 +180,7 @@ void Component::simulateOneTimestep()
 
 void Component::finalize()
 {
-    cout << "Warning! You should implement your own finalize() method" << endl;
+    //cout << "Warning! You should implement your own finalize() method" << endl;
     //assert(false);
 }
 
@@ -908,7 +908,7 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* c_ptr)
 //! @todo for this to work we need to make sure that the system and its sub components have unique names
 Component* ComponentSystem::getComponent(string name)
 {
-    cout << "getComponent: " << name << " in: " << mName << endl;
+//    cout << "getComponent: " << name << " in: " << mName << endl;
     //First try to find among subcomponents
     Component *tmp = getSubComponent(name);
     if (tmp != 0)
@@ -930,7 +930,7 @@ Component* ComponentSystem::getComponent(string name)
 
 Component* ComponentSystem::getSubComponent(string name)
 {
-    cout << "getSubComponent: " << name << " in " <<  this->mName << endl;
+//    cout << "getSubComponent: " << name << " in " <<  this->mName << endl;
     SubComponentMapT::iterator it = mSubComponentMap.find(name);
     if (it != mSubComponentMap.end())
     {

@@ -138,6 +138,33 @@ int Node::getDataIdFromName(const string name)
 }
 
 
+//! Get all data names, values and units
+//! @param [in,out] rNames This vector will contain the names
+//! @param [in,out] rValues This vector will contain the values
+//! @param [in,out] rUnits This vector will contain the units
+void Node::getDataNamesValuesAndUnits(vector<string> &rNames, std::vector<double> &rValues, vector<string> &rUnits)
+{
+    for(int i=0; i != mDataNames.size(); ++i)
+    {
+        if(mPlotBehaviour[i] == Node::PLOT)
+        {
+            rNames.push_back(mDataNames[i]);
+            rValues.push_back(mDataVector[i]);
+            rUnits.push_back(mDataUnits[i]);
+        }
+    }
+}
+
+
+void Node::setDataValuesByNames(vector<string> names, std::vector<double> values)
+{
+    for(int i=0; i != names.size(); ++i)
+    {
+        this->setData(this->getDataIdFromName(names[i]),values[i]);
+    }
+}
+
+
 //! Get all data names and units
 //! @param [in,out] rNames This vector will contain the names
 //! @param [in,out] rUnits This vector will contain the units
@@ -154,7 +181,6 @@ void Node::getDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits)
     //rNames = mDataNames;
     //rUnits = mDataUnits;
 }
-
 
 //! This function will set the number of log data slots for preallocation and logDt based on the number of samples that should be loged
 //! @param [in] nSamples The desired number of log data samples

@@ -43,7 +43,8 @@ namespace hopsan {
         std::vector<double> *getTimeVectorPtr();
         std::vector<std::vector<double> > *getDataVectorPtr();
 
-        void getStartValueDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits);
+        void getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<double> &rValues, std::vector<std::string> &rUnits);
+        void setStartValueDataByNames(std::vector<std::string> names, std::vector<double> values);
 
         bool isConnected();
         bool isConnectionRequired();

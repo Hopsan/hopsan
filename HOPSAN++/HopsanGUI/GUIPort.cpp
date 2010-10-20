@@ -284,6 +284,9 @@ GUIObject *GUIPort::getGuiObject()
 //! @todo If dataUnit not supplied no unit will be shown, we should maybe lookup the unit if not supplid, or allways look it up, or demand that it is supplied
 void GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna metoden...
 {
+    if(dataUnit.isEmpty())
+        dataUnit = this->mpParentSystem->mpCoreSystemAccess->getPlotDataUnit(this->getGUIComponentName(),this->getName(),dataName);
+
     MainWindow *pMainWindow = mpParentGuiObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 
     if(pMainWindow->mpPlotWidget == 0)
@@ -309,11 +312,16 @@ QString GUIPort::getNodeType()
 }
 
 
-void GUIPort::getStartValueDataNamesAndUnits(QVector<QString> &rNames, QVector<QString> &rUnits)
+void GUIPort::getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<double> &rValues, QVector<QString> &rUnits)
 {
-    mpParentSystem->mpCoreSystemAccess->getStartValueDataNamesAndUnits(getGUIComponentName(), this->getName(), rNames, rUnits);
+    mpParentSystem->mpCoreSystemAccess->getStartValueDataNamesValuesAndUnits(getGUIComponentName(), this->getName(), rNames, rValues, rUnits);
 }
 
+
+void GUIPort::setStartValueDataByNames(QVector<QString> names, QVector<double> values)
+{
+    mpParentSystem->mpCoreSystemAccess->setStartValueDataByNames(getGUIComponentName(), this->getName(), names, values);
+}
 
 portDirection GUIPort::getPortDirection()
 {

@@ -65,6 +65,8 @@
 #include "Signal/SignalFirstOrderFilter.hpp"
 #include "Signal/SignalSecondOrderFilter.hpp"
 #include "Signal/SignalHysteresis.hpp"
+#include "Signal/SignalSquare.hpp"
+#include "Signal/SignalTime.hpp"
 #include "Signal/SignalStopSimulation.hpp"
 #include "Signal/SignalGreaterThan.hpp"
 #include "Signal/SignalSmallerThan.hpp"

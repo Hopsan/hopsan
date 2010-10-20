@@ -193,20 +193,43 @@ QString CoreSystemAccess::getNodeType(QString componentName, QString portName)
 }
 
 
-void CoreSystemAccess::getStartValueDataNamesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<QString> &rUnits)
+void CoreSystemAccess::getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<double> &rValues, QVector<QString> &rUnits)
 {
     std::vector<std::string> stdNames, stdUnits;
+    std::vector<double> stdValues;
     Port *pPort = this->getPortPtr(componentName, portName);
     if(pPort)
     {
-        pPort->getStartValueDataNamesAndUnits(stdNames, stdUnits);
+        pPort->getStartValueDataNamesValuesAndUnits(stdNames, stdValues, stdUnits);
     }
     rNames.resize(stdNames.size());
+    rValues.resize(stdValues.size());
     rUnits.resize(stdUnits.size());
     for(size_t i=0; i < stdNames.size(); ++i) //! @todo Make a nicer conversion fron std::vector<std::string> --> QVector<QString>
     {
         rNames[i] = QString::fromStdString(stdNames[i]);
+        rValues[i] = stdValues[i];
         rUnits[i] = QString::fromStdString(stdUnits[i]);
+    }
+}
+
+
+void CoreSystemAccess::setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<double> values)
+{
+    std::vector<std::string> stdNames;
+    std::vector<double> stdValues;
+    stdNames.resize(names.size());
+    stdValues.resize(values.size());
+    for(size_t i=0; i < names.size(); ++i) //! @todo Make a nicer conversion fron std::vector<std::string> --> QVector<QString>
+    {
+        stdNames[i] = names[i].toStdString();
+    }
+    stdValues = values.toStdVector();
+
+    Port *pPort = this->getPortPtr(componentName, portName);
+    if(pPort)
+    {
+        pPort->setStartValueDataByNames(stdNames, stdValues);
     }
 }
 
@@ -361,6 +384,14 @@ QString CoreSystemAccess::addSystemPort(QString portname)
 QString CoreSystemAccess::renameSystemPort(QString oldname, QString newname)
 {
     return QString::fromStdString(mpCoreComponentSystem->renameSystemPort(oldname.toStdString(), newname.toStdString()));
+}
+
+QString CoreSystemAccess::getPlotDataUnit(const QString compname, const QString portname, const QString dataname)
+{
+    std::string dummy, unit;
+    Port* pPort = this->getPortPtr(compname, portname);
+    pPort->getNodeDataNameAndUnit(pPort->getNodeDataIdFromName(dataname.toStdString()),dummy,unit);
+    return QString::fromStdString(unit);
 }
 
 //! @todo how to handle fetching from systemports, component names will not be found

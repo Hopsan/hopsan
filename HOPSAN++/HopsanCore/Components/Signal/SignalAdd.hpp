@@ -42,7 +42,8 @@ namespace hopsan {
 
         void initialize()
         {
-            simulateOneTimestep();
+//            simulateOneTimestep();
+            mpOut->writeNode(NodeSignal::VALUE, 0.0);
         }
 
 

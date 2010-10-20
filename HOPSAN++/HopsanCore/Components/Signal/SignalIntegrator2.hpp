@@ -48,7 +48,7 @@ namespace hopsan {
         void initialize()
         {
             double u0 = mpIn->readNode(NodeSignal::VALUE);
-            mIntegrator.initialize(mTime, mTimestep, u0, mStartY);
+            mIntegrator.initialize(mTime, mTimestep, mStartY, mStartY);
 
             mpOut->writeNode(NodeSignal::VALUE, mStartY);
         }

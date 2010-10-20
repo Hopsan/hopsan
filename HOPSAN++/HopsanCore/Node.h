@@ -52,6 +52,8 @@ namespace hopsan {
         std::string getDataUnit(size_t id);
         int getDataIdFromName(const std::string name);
         void getDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits);
+        void getDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<double> &rValues, std::vector<std::string> &rUnits);
+        void setDataValuesByNames(std::vector<std::string> names, std::vector<double> values);
 
         //Protected member variables
         NodeTypeT mNodeType;

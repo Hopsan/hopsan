@@ -252,7 +252,7 @@ bool ProjectTab::simulate()
     }
     emit checkMessages();
 
-    return progressBar.wasCanceled();
+    return !(progressBar.wasCanceled());
 }
 
 

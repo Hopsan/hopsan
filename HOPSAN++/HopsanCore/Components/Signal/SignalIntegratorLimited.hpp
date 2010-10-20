@@ -53,7 +53,7 @@ namespace hopsan {
         void initialize()
         {
             double u0 = mpIn->readNode(NodeSignal::VALUE);
-            mDelayU.initialize(mTime, u0);
+            mDelayU.initialize(mTime, mStartY);
             mDelayY.initialize(mTime, std::max(std::min(mStartY, mMax), mMin));
             mpOut->writeNode(NodeSignal::VALUE, mStartY);
         }

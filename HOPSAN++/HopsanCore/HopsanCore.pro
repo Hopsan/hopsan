@@ -7,7 +7,6 @@ TARGET = HopsanCore
 TEMPLATE = lib
 CONFIG += dll
 
-
 # -------------------------------------------------
 # Platform specific additional project options
 # -------------------------------------------------
@@ -34,7 +33,6 @@ unix {
     LIBS += -ltbb
     INCLUDEPATH += /usr/include/tbb/
 }
-
 # -------------------------------------------------
 # Project files
 # -------------------------------------------------

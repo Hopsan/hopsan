@@ -30,7 +30,6 @@ Port::Port(string node_type, string portname)
     clearConnection();
 
     mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
-    cout << " ==============================================================" << mNodeType << endl;
 }
 
 
@@ -247,11 +246,16 @@ vector<vector<double> > *Port::getDataVectorPtr()
 }
 
 
-void Port::getStartValueDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits)
+void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vector<double> &rValues, vector<string> &rUnits)
 {
-    mpStartNode->getDataNamesAndUnits(rNames, rUnits);
+    mpStartNode->getDataNamesValuesAndUnits(rNames, rValues, rUnits);
 }
 
+
+void Port::setStartValueDataByNames(vector<string> names, std::vector<double> values)
+{
+    mpStartNode->setDataValuesByNames(names, values);
+}
 
 //! Check if the port is curently connected
 bool Port::isConnected()
