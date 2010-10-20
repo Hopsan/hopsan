@@ -74,6 +74,8 @@ public:
     void setIsoIconPath(QString path);
     void setUserIconPath(QString path);
 
+    void calcExternalPortPositions(QMap<QString, QPointF> &rExtPortMap);
+
 public slots:
     //void addSystemPort();
     void createConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);

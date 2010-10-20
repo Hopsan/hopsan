@@ -1,3 +1,4 @@
+#include <float.h>
 #include "GUISystem.h"
 
 #include "GUIObject.h"
@@ -1227,6 +1228,75 @@ void GUISystem::setIsoIconPath(QString path)
     mIsoIconPath = path;
 }
 
+
+void GUISystem::calcExternalPortPositions(QMap<QString, QPointF> &rExtPortMap)
+{
+    GUIObjectMapT::iterator it;
+    QLineF line;
+    double angle, x, y, val;
+
+    //Set the initial values to be overwriten by the if bellow
+//    double xMax = mpSystem->mGUIObjectMap.begin().value()->x() + mpSystem->mGUIObjectMap.begin().value()->rect().width()/2.0;
+//    double xMin = mpSystem->mGUIObjectMap.begin().value()->x() + mpSystem->mGUIObjectMap.begin().value()->rect().width()/2.0;
+//    double yMax = mpSystem->mGUIObjectMap.begin().value()->y() + mpSystem->mGUIObjectMap.begin().value()->rect().height()/2.0;
+//    double yMin = mpSystem->mGUIObjectMap.begin().value()->y() + mpSystem->mGUIObjectMap.begin().value()->rect().height()/2.0;
+
+    //! @todo maybe declare these or something like really big number in HopsanGUI to avoid needing to include float.h
+    double xMin=FLT_MAX, xMax=FLT_MIN, yMin=FLT_MAX, yMax=FLT_MIN;
+
+    for(it = mGUIObjectMap.begin(); it != mGUIObjectMap.end(); ++it)
+    {
+        //val is the center of each component, its coordinates topleft plus half of the size in x and y
+        //! @todo maybe we need a function in guiobject that returns this i think it is calculated all over the place
+        //check x max and min
+        val = it.value()->x()+it.value()->rect().width()/2.0;
+        if (val < xMin)
+        {
+            xMin = val;
+        }
+        if (val > xMax)
+        {
+            xMax = val;
+        }
+        //check y max and min
+        val = it.value()->y()+it.value()->rect().height()/2.0;
+        if (val < yMin)
+        {
+            yMin = val;
+        }
+        if (val > yMax)
+        {
+            yMax = val;
+        }
+    }
+    //! @todo Find out ig it is possible to ask the scene or wive for this information instead of calulating it ourselves
+    QPointF center = QPointF((xMax+xMin)/2.0, (yMax+yMin)/2.0);
+    double w = xMax-xMin;
+    double h = yMax-yMin;
+
+    rExtPortMap.clear(); //Make sure this is clean
+    for(it = mGUIObjectMap.begin(); it != mGUIObjectMap.end(); ++it)
+    {
+        if(it.value()->type() == GUISYSTEMPORT)
+        {
+            //! @todo here we extract center pos again, shuold have function for it
+            line = QLineF(center.x(), center.y(), it.value()->x()+it.value()->rect().width()/2, it.value()->y()+it.value()->rect().height()/2);
+            //getCurrentTab()->mpGraphicsScene->addLine(line); //debug-grej
+            angle = deg2rad(line.angle());
+            calcSubsystemPortPosition(w, h, angle, x, y);
+            //! @todo what about this coordinate switch should we not use the same coordinate system everywhere
+            x = (x/w+1.0)/2.0; //Change coordinate system
+            y = (-y/h+1.0)/2.0; //Change coordinate system
+            //modelFile << "PORT " << addQuotes(it.value()->getName()) <<" " << x << " " << y << " " << it.value()->rotation() << "\n";
+            //! @todo mybe we should update the ports as we now know where they should be
+            //Populate the output vector
+            //! @todo maybe we can read the updated actual port appearance instead of returning data here
+            rExtPortMap.insert(it.value()->getName(), QPointF(x,y));
+        }
+    }
+
+
+}
 
 
 //! Disables the undo function for the current model

@@ -217,6 +217,8 @@ public:
     enum CONTAINERSTATUS {CLOSED, OPEN, ROOT};
     GUIContainerObject(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, GUISystem *system=0, QGraphicsItem *parent = 0);
     void makeRootSystem();
+    virtual void calcExternalPortPositions();
+    void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y);
 
 protected:
     CONTAINERSTATUS getContainerStatus();

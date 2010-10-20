@@ -114,36 +114,14 @@ QString relativePath(QString pathtochange, QString basedirpath)
     return basedir.relativeFilePath(pathtochange);
 }
 
-
-//! @brief Use this function to calculate the placement of the ports on a subsystem icon.
-//! @param[in] w width of the subsystem icon
-//! @param[in] h heigth of the subsystem icon
-//! @param[in] angle the angle in radians of the line between center and the actual port
-//! @param[out] x the new calculated horizontal placement for the port
-//! @param[out] y the new calculated vertical placement for the port
-void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y)
+//! @brief Utility function to convert degrees to radians
+qreal deg2rad(qreal deg)
 {
-    if(angle>3.1415*3.0/2.0)
-    {
-        x=-max(min(h/tan(angle), w), -w);
-        y=max(min(w*tan(angle), h), -h);
-    }
-    else if(angle>3.1415)
-    {
-        x=-max(min(h/tan(angle), w), -w);
-        y=-max(min(w*tan(angle), h), -h);
-    }
-    else if(angle>3.1415/2.0)
-    {
-        x=max(min(h/tan(angle), w), -w);
-        y=-max(min(w*tan(angle), h), -h);
-    }
-    else
-    {
-        x=max(min(h/tan(angle), w), -w);
-        y=max(min(w*tan(angle), h), -h);
-    }
+    return deg*M_PI/180.0;
 }
+
+
+
 
 QPointF getOffsetPointfromPort(GUIPort *pPort)
 {

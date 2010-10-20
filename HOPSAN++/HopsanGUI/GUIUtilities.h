@@ -61,7 +61,8 @@ QString readName(QTextStream &rTextStream);
 QString readName(QString namestring);
 QString addQuotes(QString str);
 QString relativePath(QString pathtochange, QString basepath);
-void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y);
+qreal deg2rad(qreal deg);
+
 QPointF getOffsetPointfromPort(GUIPort *pPort);
 
 #endif // GUIUTILITIES_H

@@ -1183,9 +1183,45 @@ void GUIContainerObject::makeRootSystem()
     mContainerStatus = ROOT;
 }
 
+void GUIContainerObject::calcExternalPortPositions()
+{
+
+}
+
 GUIContainerObject::CONTAINERSTATUS GUIContainerObject::getContainerStatus()
 {
     return mContainerStatus;
+}
+
+//! @brief Use this function to calculate the placement of the ports on a subsystem icon.
+//! @param[in] w width of the subsystem icon
+//! @param[in] h heigth of the subsystem icon
+//! @param[in] angle the angle in radians of the line between center and the actual port
+//! @param[out] x the new calculated horizontal placement for the port
+//! @param[out] y the new calculated vertical placement for the port
+//! @todo rename this one and maybe change it a bit as it is now included in this class, it should be common for subsystems and groups
+void GUIContainerObject::calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y)
+{
+    if(angle>3.1415*3.0/2.0)
+    {
+        x=-max(min(h/tan(angle), w), -w);
+        y=max(min(w*tan(angle), h), -h);
+    }
+    else if(angle>3.1415)
+    {
+        x=-max(min(h/tan(angle), w), -w);
+        y=-max(min(w*tan(angle), h), -h);
+    }
+    else if(angle>3.1415/2.0)
+    {
+        x=max(min(h/tan(angle), w), -w);
+        y=-max(min(w*tan(angle), h), -h);
+    }
+    else
+    {
+        x=max(min(h/tan(angle), w), -w);
+        y=max(min(w*tan(angle), h), -h);
+    }
 }
 
 GUIComponent::GUIComponent(AppearanceData* pAppearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)

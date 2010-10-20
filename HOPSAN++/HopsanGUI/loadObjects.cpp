@@ -387,13 +387,10 @@ void writeHeader(QTextStream &rStream)
 
 void addHMFHeader(QDomElement &rDomElement)
 {
-    QDomElement xmlHeader = rDomElement.ownerDocument().createElement("HopsanHeader");
-
+    QDomElement xmlHeader = appendDomElement(rDomElement,"HopsanVersion");
     appendDomTextNode(xmlHeader, "HOPSANGUIVERSION", HOPSANGUIVERSION);
     appendDomTextNode(xmlHeader, "HMFVERSION", HMFVERSION);
     appendDomTextNode(xmlHeader, "CAFVERSION", CAFVERSION);
-
-    rDomElement.appendChild(xmlHeader);
 }
 
 //! @brief Helper function for adding one initially empty Dom node
@@ -401,9 +398,7 @@ void addHMFHeader(QDomElement &rDomElement)
 //! @returns The new sub element dom node
 QDomElement appendDomElement(QDomElement &rDomElement, const QString element_name)
 {
-    //! @todo maybe need to check if isDomDocument (dont seem to be necessary)
-    QDomDocument ownerDocument = rDomElement.ownerDocument();
-    QDomElement subDomElement = ownerDocument.createElement(element_name);
+    QDomElement subDomElement = rDomElement.ownerDocument().createElement(element_name);
     rDomElement.appendChild(subDomElement);
     return subDomElement;
 }
@@ -411,7 +406,6 @@ QDomElement appendDomElement(QDomElement &rDomElement, const QString element_nam
 //! @brief Helper function for adding Dom elements containing one text node
 void appendDomTextNode(QDomElement &rDomElement, const QString element_name, const QString text)
 {
-    //! @todo maybe need to check if isDomDocument
     QDomDocument ownerDomDocument = rDomElement.ownerDocument();
     QDomElement subDomElement = ownerDomDocument.createElement(element_name);
     subDomElement.appendChild(ownerDomDocument.createTextNode(text));
@@ -428,27 +422,27 @@ void appendDomTextNode(QDomElement &rDomElement, const QString element_name, con
 
 void appendDomTextNodeXYA(QDomElement &rDomElement, const double x, const double y, const double a)
 {
-    QString str,str2;
-    str.setNum(x);
-    str2.append(str);
-    str2.append(" ");
-    str.setNum(y);
-    str2.append(str);
-    str2.append(" ");
-    str.setNum(a);
-    str2.append(str);
-    appendDomTextNode(rDomElement, "xya", str2);
+    QString num,str;
+    num.setNum(x);
+    str.append(num);
+    str.append(" ");
+    num.setNum(y);
+    str.append(num);
+    str.append(" ");
+    num.setNum(a);
+    str.append(num);
+    appendDomTextNode(rDomElement, "xya", str);
 }
 
 void appendDomTextNodeXY(QDomElement &rDomElement, const double x, const double y)
 {
-    QString str,str2;
-    str.setNum(x);
-    str2.append(str);
-    str2.append(" ");
-    str.setNum(y);
-    str2.append(str);
-    appendDomTextNode(rDomElement, "xy", str2);
+    QString num,str;
+    num.setNum(x);
+    str.append(num);
+    str.append(" ");
+    num.setNum(y);
+    str.append(num);
+    appendDomTextNode(rDomElement, "xy", str);
 }
 
 

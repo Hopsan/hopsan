@@ -360,7 +360,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
             line = QLineF(center.x(), center.y(), it.value()->x()+it.value()->rect().width()/2, it.value()->y()+it.value()->rect().height()/2);
             //getCurrentTab()->mpGraphicsScene->addLine(line); //debug-grej
             angle = line.angle()*3.141592/180.0;
-            calcSubsystemPortPosition(w, h, angle, x, y);
+            mpSystem->calcSubsystemPortPosition(w, h, angle, x, y);
             x = (x/w+1)/2; //Change coordinate system
             y = (-y/h+1)/2; //Change coordinate system
             modelFile << "PORT " << addQuotes(it.value()->getName()) <<" " << x << " " << y << " " << it.value()->rotation() << "\n";
@@ -401,27 +401,43 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     domDocument.appendChild(hmfRoot);
     addHMFHeader(hmfRoot);
 
-    QDomElement xmlModelProperties = domDocument.createElement("ModelProperties");
+    QDomElement xmlModelProperties = appendDomElement(hmfRoot,"ModelProperties");
+    //Simulation time
     //! @todo maybe use tuple of 3 instead of thre different element (if you can do that in xml)
     appendDomTextNode(xmlModelProperties, "Starttime", pMainWindow->getStartTimeFromToolBar());
     appendDomTextNode(xmlModelProperties, "Timestep", pMainWindow->getTimeStepFromToolBar());
     appendDomTextNode(xmlModelProperties, "Stoptime", pMainWindow->getFinishTimeFromToolBar());
+    //viewport
+    QDomElement xmlViewPort = appendDomElement(xmlModelProperties,"ViewPort");
+    appendDomTextNodeXY(xmlViewPort,
+                        (mpGraphicsView->horizontalScrollBar()->value() + mpGraphicsView->width()/2 - mpGraphicsView->pos().x()) / mpGraphicsView->mZoomFactor,
+                        (mpGraphicsView->verticalScrollBar()->value() + mpGraphicsView->height()/2 - mpGraphicsView->pos().x()) / mpGraphicsView->mZoomFactor);
+    appendDomTextNode(xmlViewPort, "zoom", mpGraphicsView->mZoomFactor);
     //! @todo save more stuff here
-    hmfRoot.appendChild(xmlModelProperties);
 
-    QDomElement xmlModelAppearance = domDocument.createElement("ModelAppearance");
+    QDomElement xmlModelAppearance = appendDomElement(hmfRoot,"ModelAppearance");
     //! @todo save more stuff here, like ports and stuff
     appendDomTextNode(xmlModelAppearance, "UserIcon", mpSystem->getUserIconPath());
     appendDomTextNode(xmlModelAppearance, "ISOIcon", mpSystem->getIsoIconPath());
-    hmfRoot.appendChild(xmlModelAppearance);
+    QMap<QString, QPointF> extPortMap;
+    mpSystem->calcExternalPortPositions(extPortMap);
+    //! @todo maybe have a write xml port help function
+    //! @todo we should fetch this data from the real port appearance data that should be updated
+    //! @todo we must save port direction
+    QMap<QString, QPointF>::iterator epmit;
+    for (epmit=extPortMap.begin(); epmit!=extPortMap.end(); ++epmit)
+    {
+        QDomElement xmlPort = appendDomElement(xmlModelAppearance, "Port");
+        appendDomTextNode(xmlPort, "Name", epmit.key());
+        appendDomTextNodeXY(xmlPort, epmit.value().x(), epmit.value().y());
+    }
 
     //Save the model component hierarcy
-    //! @todo maybe return to DomElements intead of DomNodes to prevent people from using domdocument directly
     //! @todo maybe use a saveload object instead of calling save imediately (only load object exist for now)
     mpSystem->saveToDomElement(hmfRoot);
 
     //Save to file
-    const int IndentSize = 2;
+    const int IndentSize = 1;
     QFile apa("test.xml");
     if (!apa.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
