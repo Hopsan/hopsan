@@ -183,9 +183,25 @@ void Node::getDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits)
 }
 
 
-void Node::copyNodeVariables(Node &rNode)
+void Node::copyNodeVariables(Node *pNode)
 {
     //this ska kopiera sina varabler till rNode
+    if(pNode->getNodeType()==this->getNodeType())
+    {
+        for(int i=0; i != mDataNames.size(); ++i)
+        {
+            if(mPlotBehaviour[i] == Node::PLOT)
+            {
+                pNode->mDataNames[i] = mDataNames[i];
+                pNode->mDataVector[i] = mDataVector[i];
+                pNode->mDataUnits[i] = mDataUnits[i];
+            }
+        }
+    }
+    else
+    {
+        assert(false);
+    }
 }
 
 

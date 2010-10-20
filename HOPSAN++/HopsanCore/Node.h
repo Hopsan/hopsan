@@ -35,7 +35,7 @@ namespace hopsan {
 
         enum PLOTORNOT {PLOT, NOPLOT};
 
-        void copyNodeVariables(Node &rNode);
+        void copyNodeVariables(Node *pNode);
 
         void setLogSettingsNSamples(size_t nSamples, double start, double stop, double sampletime);
         void setLogSettingsSkipFactor(double factor, double start, double stop, double sampletime);

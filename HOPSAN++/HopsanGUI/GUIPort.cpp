@@ -312,6 +312,11 @@ QString GUIPort::getNodeType()
 }
 
 
+bool GUIPort::haveStartValues()
+{
+    return mpParentSystem->mpCoreSystemAccess->haveStartValues(getGUIComponentName(), this->getName());
+}
+
 void GUIPort::getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<double> &rValues, QVector<QString> &rUnits)
 {
     mpParentSystem->mpCoreSystemAccess->getStartValueDataNamesValuesAndUnits(getGUIComponentName(), this->getName(), rNames, rValues, rUnits);

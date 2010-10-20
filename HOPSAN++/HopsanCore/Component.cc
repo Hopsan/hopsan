@@ -473,18 +473,17 @@ double *Component::getTimePtr()
 //! @param [in] nodetype The type of node that must be connected to the port
 Port* Component::addPort(const string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype, Port::CONREQ connection_requirement)
 {
-    Port* new_port = CreatePort(porttype, nodetype);
-    new_port->mpComponent = this;    //Set port owner
+    //Make sure name is unique before insert
+    string newname = modifyName<PortPtrMapT>(mPortPtrMap, portname);
+
+    Port* new_port = CreatePort(porttype, nodetype, newname, this);
+
     //Set wheter the port must be connected before simulation
     if (connection_requirement == Port::NOTREQUIRED)
     {
         //! @todo maybe use a string for OPTIONAL instead, to reduce the number of compiletime dependencies, will need to think about that a bit more
         new_port->mConnectionRequired = false;
     }
-
-    //Make sure name is unique before insert
-    string newname = modifyName<PortPtrMapT>(mPortPtrMap, portname);
-    new_port->mPortName = newname;
 
     mPortPtrMap.insert(PortPtrPairT(newname, new_port));
 
@@ -673,6 +672,30 @@ ComponentSignal::ComponentSignal(string name, double timestep) : Component(name,
     //mTypeCQS = "S";
     mTypeCQS = Component::S;
     mIsComponentSignal = true;
+}
+
+
+void Component::loadStartValues()
+{
+    std::vector<Port*> pPortPtrs = getPortPtrVector();
+    std::vector<Port*>::iterator portIt;
+    for(portIt = pPortPtrs.begin(); portIt != pPortPtrs.end(); ++portIt)
+    {
+        (*portIt)->loadStartValues();
+    }
+
+}
+
+
+void Component::loadStartValuesFromSimulation()
+{
+    std::vector<Port*> pPortPtrs = getPortPtrVector();
+    std::vector<Port*>::iterator portIt;
+    for(portIt = pPortPtrs.begin(); portIt != pPortPtrs.end(); ++portIt)
+    {
+        (*portIt)->loadStartValuesFromSimulation();
+    }
+
 }
 
 
@@ -1882,22 +1905,40 @@ bool ComponentSystem::isSimulationOk()
     return true;
 }
 
-
-void ComponentSystem::loadStartValues(std::vector<Component*> componentVector)
+//! @brief Load start values by telling each component to load their start values
+void ComponentSystem::loadStartValues()
 {
     std::vector<Component*>::iterator compIt;
-    std::vector<Port*>::iterator portIt;
-    for(compIt = componentVector.begin(); compIt != componentVector.end(); ++compIt)
+    for(compIt = mComponentSignalptrs.begin(); compIt != mComponentSignalptrs.end(); ++compIt)
     {
-        cout << "============================ Component: " << (*compIt)->getName() << endl;
-        std::vector<Port*> portVector = (*compIt)->getPortPtrVector();
-        for(portIt = portVector.begin(); portIt != portVector.end(); ++portIt)
-        {
-            cout << "============================ Port: " << (*portIt)->getPortName() << endl;
-
-        }
+        (*compIt)->loadStartValues();
     }
-    cout << "Finish the implementation of this method!" << endl;
+    for(compIt = mComponentCptrs.begin(); compIt != mComponentCptrs.end(); ++compIt)
+    {
+        (*compIt)->loadStartValues();
+    }
+    for(compIt = mComponentQptrs.begin(); compIt != mComponentQptrs.end(); ++compIt)
+    {
+        (*compIt)->loadStartValues();
+    }
+}
+
+
+void ComponentSystem::loadStartValuesFromSimulation()
+{
+    std::vector<Component*>::iterator compIt;
+    for(compIt = mComponentSignalptrs.begin(); compIt != mComponentSignalptrs.end(); ++compIt)
+    {
+        (*compIt)->loadStartValuesFromSimulation();
+    }
+    for(compIt = mComponentCptrs.begin(); compIt != mComponentCptrs.end(); ++compIt)
+    {
+        (*compIt)->loadStartValuesFromSimulation();
+    }
+    for(compIt = mComponentQptrs.begin(); compIt != mComponentQptrs.end(); ++compIt)
+    {
+        (*compIt)->loadStartValuesFromSimulation();
+    }
 }
 
 
@@ -1914,7 +1955,7 @@ void ComponentSystem::initialize(const double startT, const double stopT)
     adjustTimestep(mTimestep, mComponentCptrs);
     adjustTimestep(mTimestep, mComponentQptrs);
 
-    loadStartValues(mComponentSignalptrs);
+    loadStartValues();
 
     //Init
     //Signal components
@@ -2259,6 +2300,8 @@ void ComponentSystem::finalize(const double startT, const double stopT)
         }
 
     }
+
+    loadStartValuesFromSimulation();
 }
 
 

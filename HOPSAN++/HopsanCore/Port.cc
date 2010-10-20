@@ -20,16 +20,15 @@ using namespace hopsan;
 
 
 //! Port base class constructor
-Port::Port(string node_type, string portname)
+Port::Port(string node_type, string portname, Component *portOwner)
 {
     mPortType = UNDEFINEDPORT;
     mPortName = portname;
     mNodeType = node_type;
-    mpComponent = 0;
+    mpComponent = portOwner;
     mConnectionRequired = true;
     clearConnection();
-
-    mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
+    mpStartNode = 0;
 }
 
 
@@ -76,6 +75,35 @@ Node* Port::getNodePublic()
 Node* Port::getNodePtr()
 {
     return mpNode;
+}
+
+//! @brief Used to check if a Port has start values to set
+//! @return true if the Port has startvalues
+bool Port::haveStartValues()
+{
+    if(mpStartNode)
+        return true;
+    else
+        return false;
+}
+
+
+//! @brief Load start values by copying the start values from the port to the node
+void Port::loadStartValues()
+{
+    if((isConnected()) && mpStartNode)
+    {
+        this->mpStartNode->copyNodeVariables(mpNode);
+    }
+}
+
+
+void Port::loadStartValuesFromSimulation()
+{
+    if((isConnected()) && mpStartNode)
+    {
+        this->mpNode->copyNodeVariables(mpStartNode);
+    }
 }
 
 
@@ -254,7 +282,8 @@ void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vec
 
 void Port::setStartValueDataByNames(vector<string> names, std::vector<double> values)
 {
-    mpStartNode->setDataValuesByNames(names, values);
+    if(mpStartNode)
+        mpStartNode->setDataValuesByNames(names, values);
 }
 
 //! Check if the port is curently connected
@@ -324,7 +353,7 @@ const string &Port::getComponentName()
 
 
 //! SystemPort constructor
-SystemPort::SystemPort(std::string node_type, std::string portname) : Port(node_type, portname)
+SystemPort::SystemPort(std::string node_type, std::string portname, Component *portOwner) : Port(node_type, portname, portOwner)
 {
     mPortType = SYSTEMPORT;
 }
@@ -338,9 +367,11 @@ SystemPort::SystemPort(std::string node_type, std::string portname) : Port(node_
 
 
 //! PowerPort constructor
-PowerPort::PowerPort(std::string node_type, std::string portname) : Port(node_type, portname)
+PowerPort::PowerPort(std::string node_type, std::string portname, Component *portOwner) : Port(node_type, portname, portOwner)
 {
     mPortType = POWERPORT;
+    if(mpComponent->isComponentC())
+        mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
 }
 
 
@@ -351,7 +382,7 @@ PowerPort::PowerPort(std::string node_type, std::string portname) : Port(node_ty
 //}
 
 
-ReadPort::ReadPort(std::string node_type, std::string portname) : Port(node_type, portname)
+ReadPort::ReadPort(std::string node_type, std::string portname, Component *portOwner) : Port(node_type, portname, portOwner)
 {
     mPortType = READPORT;
 }
@@ -371,9 +402,10 @@ void ReadPort::writeNode(const size_t idx, const double value)
 //}
 
 
-WritePort::WritePort(std::string node_type, std::string portname) : Port(node_type, portname)
+WritePort::WritePort(std::string node_type, std::string portname, Component *portOwner) : Port(node_type, portname, portOwner)
 {
     mPortType = WRITEPORT;
+    mpStartNode = gCoreNodeFactory.createInstance(mNodeType);
 }
 
 
@@ -388,24 +420,24 @@ double WritePort::readNode(const size_t idx)
 //!
 //! @brief Very simple port factory, no need to complicate things with the more advanced one as we will only have a few fixed port types.
 //!
-Port* hopsan::CreatePort(Port::PORTTYPE type, NodeTypeT nodetype)
+Port* hopsan::CreatePort(Port::PORTTYPE type, NodeTypeT nodetype, string name, Component *portOwner)
 {
     switch (type)
     {
     case Port::POWERPORT :
-        return new PowerPort(nodetype);
+        return new PowerPort(nodetype, name, portOwner);
         break;
     case Port::WRITEPORT :
-        return new WritePort(nodetype);
+        return new WritePort(nodetype, name, portOwner);
         break;
     case Port::READPORT :
-        return new ReadPort(nodetype);
+        return new ReadPort(nodetype, name, portOwner);
         break;
     case Port::SYSTEMPORT :
-        return new SystemPort(nodetype);
+        return new SystemPort(nodetype, name, portOwner);
         break;
     default :
        //! @todo maybe defualt should be impossible
-       return new Port(nodetype);
+       return new Port(nodetype, name, portOwner);
     }
 }

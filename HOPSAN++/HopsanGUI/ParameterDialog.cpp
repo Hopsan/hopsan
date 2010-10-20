@@ -145,41 +145,44 @@ void ParameterDialog::createEditStuff()
     mStartDataUnits.resize(ports.size());
     for ( portIt=ports.begin(); portIt!=ports.end(); ++portIt )
     {
-        QString portName("Port, ");
-        portName.append((*portIt)->getName());
-        QLabel *portLabelName = new QLabel(portName);
-        portLabelName->setFont(fontH2);
-        startValueLayout->addWidget(portLabelName, sr, 0);
-        ++sr;
-
-        (*portIt)->getStartValueDataNamesValuesAndUnits(startDataNamesStr[j], startDataValuesStr[j], startDataUnitsStr[j]);
-
-        mStartDataNames[j].resize(startDataNamesStr[j].size());
-        mStartDataValues[j].resize(startDataNamesStr[j].size());
-        mStartDataUnits[j].resize(startDataNamesStr[j].size());
-        for(size_t i=0; i < startDataNamesStr[j].size(); ++i)
+        if((*portIt)->haveStartValues())
         {
-            QString tmpText;
-            tmpText.append(startDataNamesStr[j][i]);
-            mStartDataNames[j][i] = new QLabel(tmpText);
-            mStartDataNames[j][i]->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-            startValueLayout->addWidget(mStartDataNames[j][i], sr, 0);
+            (*portIt)->getStartValueDataNamesValuesAndUnits(startDataNamesStr[j], startDataValuesStr[j], startDataUnitsStr[j]);
 
-            mStartDataValues[j][i] = new QLineEdit();
-            QString valueTxt;
-            valueTxt.setNum(startDataValuesStr[j][i], 'g', 6 );
-            mStartDataValues[j][i]->setText(valueTxt);
-            startValueLayout->addWidget(mStartDataValues[j][i], sr, 1);
-            mStartDataNames[j][i]->setBuddy(mStartDataValues[j][i]);
-
-            tmpText.clear();
-            tmpText.append(startDataUnitsStr[j][i]);
-            mStartDataUnits[j][i] = new QLabel(tmpText);
-            startValueLayout->addWidget(mStartDataUnits[j][i], sr, 2);
-
+            QString portName("Port, ");
+            portName.append((*portIt)->getName());
+            QLabel *portLabelName = new QLabel(portName);
+            portLabelName->setFont(fontH2);
+            startValueLayout->addWidget(portLabelName, sr, 0);
             ++sr;
+
+            mStartDataNames[j].resize(startDataNamesStr[j].size());
+            mStartDataValues[j].resize(startDataNamesStr[j].size());
+            mStartDataUnits[j].resize(startDataNamesStr[j].size());
+            for(size_t i=0; i < startDataNamesStr[j].size(); ++i)
+            {
+                QString tmpText;
+                tmpText.append(startDataNamesStr[j][i]);
+                mStartDataNames[j][i] = new QLabel(tmpText);
+                mStartDataNames[j][i]->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+                startValueLayout->addWidget(mStartDataNames[j][i], sr, 0);
+
+                mStartDataValues[j][i] = new QLineEdit();
+                QString valueTxt;
+                valueTxt.setNum(startDataValuesStr[j][i], 'g', 6 );
+                mStartDataValues[j][i]->setText(valueTxt);
+                startValueLayout->addWidget(mStartDataValues[j][i], sr, 1);
+                mStartDataNames[j][i]->setBuddy(mStartDataValues[j][i]);
+
+                tmpText.clear();
+                tmpText.append(startDataUnitsStr[j][i]);
+                mStartDataUnits[j][i] = new QLabel(tmpText);
+                startValueLayout->addWidget(mStartDataUnits[j][i], sr, 2);
+
+                ++sr;
+            }
+            ++j;
         }
-        ++j;
     }
 
 

@@ -54,6 +54,8 @@ namespace hopsan {
         enum typeCQS {C, Q, S, NOCQSTYPE};
         //==========Public functions==========
         //Virtual functions
+        virtual void loadStartValues();
+        virtual void loadStartValuesFromSimulation();
         virtual void initialize(const double startT, const double stopT);
         virtual void simulate(const double startT, const double Ts);
         virtual void finalize(const double startT, const double Ts);
@@ -198,7 +200,8 @@ namespace hopsan {
 
         //initialize and simulate
         bool isSimulationOk();
-        void loadStartValues(std::vector<Component*> componentVector);
+        void loadStartValues();
+        void loadStartValuesFromSimulation();
         void initialize(const double startT, const double stopT);
         void simulateMultiThreaded(const double startT, const double stopT);
         void simulate(const double startT, const double stopT);

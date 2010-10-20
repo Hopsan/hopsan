@@ -72,6 +72,7 @@ public:
 
     QString getPortType(QString componentName, QString portName);
     QString getNodeType(QString componentName, QString portName);
+    bool haveStartValues(QString componentName, QString portName);
     void getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<double> &rStartDataValues, QVector<QString> &rUnits);
     void setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<double> startDataValues);
 

@@ -30,7 +30,7 @@ namespace hopsan {
         enum CONREQ {REQUIRED, NOTREQUIRED};
 
         //Constructors - Destructors
-        Port(std::string node_type, std::string portname="");
+        Port(std::string node_type, std::string portname, Component *portOwner);
         virtual ~Port();
 
         virtual double readNode(const size_t idx);
@@ -57,9 +57,15 @@ namespace hopsan {
 
         Node* getNodePublic();
 
+        bool haveStartValues();
+        void loadStartValues();
+        void loadStartValuesFromSimulation();
+
     protected:
 
         PORTTYPE mPortType;
+        Component* mpComponent;
+        NodeTypeT mNodeType;
 
         void setNode(Node* pNode);
         Node &getNode();
@@ -69,9 +75,7 @@ namespace hopsan {
 
     private:
         std::string mPortName;
-        NodeTypeT mNodeType;
         Node* mpNode;
-        Component* mpComponent;
         std::vector<Port*> mConnectedPorts;
         bool mConnectionRequired;
         bool mIsConnected;
@@ -91,7 +95,7 @@ namespace hopsan {
     public:
         //Constructors
         //SystemPort();
-        SystemPort(std::string node_type, std::string portname="");
+        SystemPort(std::string node_type, std::string portname, Component *portOwner);
     };
 
 
@@ -103,7 +107,7 @@ namespace hopsan {
     public:
         //Constructors
         //PowerPort();
-        PowerPort(std::string node_type, std::string portname="");
+        PowerPort(std::string node_type, std::string portname, Component *portOwner);
     };
 
 
@@ -115,7 +119,7 @@ namespace hopsan {
     public:
         //Constructors
         //ReadPort();
-        ReadPort(std::string node_type, std::string portname="");
+        ReadPort(std::string node_type, std::string portname, Component *portOwner);
 
         void writeNode(const size_t idx, const double value);
     };
@@ -129,12 +133,12 @@ namespace hopsan {
     public:
         //Constructors
         //WritePort();
-        WritePort(std::string node_type, std::string portname="");
+        WritePort(std::string node_type, std::string portname, Component *portOwner);
 
         double readNode(const size_t idx);
     };
 
-    Port* CreatePort(Port::PORTTYPE type, NodeTypeT nodetype);
+    Port* CreatePort(Port::PORTTYPE type, NodeTypeT nodetype, std::string name, Component *portOwner);
 }
 
 #endif // PORT_H_INCLUDED

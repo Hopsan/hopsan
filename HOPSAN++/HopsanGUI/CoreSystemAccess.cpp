@@ -193,6 +193,17 @@ QString CoreSystemAccess::getNodeType(QString componentName, QString portName)
 }
 
 
+bool CoreSystemAccess::haveStartValues(QString componentName, QString portName)
+{
+    Port *pPort = this->getPortPtr(componentName, portName);
+    if(pPort)
+    {
+        return pPort->haveStartValues();
+    }
+    else
+        return 0;
+}
+
 void CoreSystemAccess::getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<double> &rValues, QVector<QString> &rUnits)
 {
     std::vector<std::string> stdNames, stdUnits;
