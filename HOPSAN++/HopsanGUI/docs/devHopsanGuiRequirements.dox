@@ -36,7 +36,7 @@ PYTHONQT_PATH = /home/homsi68/pythonqt or whatever your path is
 -# Go to the project tab and add the following build variables:\n
 PYTHON_PATH = c:\\Python26 \n
 PYTHON_LIB  = c:\\Python26\\libs
--# Add the PythonQt*.*.*\src folder to the "Include Path" in your project.
+-# Add the PythonQt*.*.*\\src folder to the "Include Path" in your project.
 -# Build PythonQt in release mode.
 -# If you want to run the tests add the PythonQt*.*.*\lib directory to your path (in build environment)
 -# Do some more stuff dont know yet but probably add PythonQt*.*.*\lib to path in HopsanGUI project, maybe also need to add PythonQt*.*.*\src to includepath

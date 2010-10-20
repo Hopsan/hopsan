@@ -8,8 +8,7 @@ HopsanCore depends on one external library for multi threaded simulations. Here 
 
 \subsection tbb-windows-mingw Build/Install TBB on Windows using minGW
 -# Open a Qt Command Prompt (you can find it in the start menu). Navigate to the tbb directory.
-  -# If you are using minGW, run "mingw32-make compiler=gcc"
-  -# If you are using VC++, ??
+-# Run "mingw32-make compiler=gcc"
 
 \subsection tbb-windows-vcpp Build/Install TBB on Windows using VC++
 These libs are already build with VC++ in the Windows specific download.

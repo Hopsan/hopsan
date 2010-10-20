@@ -31,4 +31,7 @@ You don't need to install the .NET stuff, but make sure that you install the "De
 To get a working debugger
 -# Go into Tools->Options->Debugger->Cdb and check the Cdb box. Now set the path to the Debugging tools for Windows 32-bit version. (Autodetect should work).
 -# If you want the debugger to automatically download debugger symbols for the Windows libraries, then create a folder, eg. "C:\websymbols" and add the following line to "Symbol Paths:" under the Cdb tab: "SRV*c:\websymbols*http://msdl.microsoft.com/download/symbols" (without quotes). You websymbols folder will act as a cache for symbol retreival.
+
+Hints
+-# You may need to add the directory to cl.exe to your PATH environment variable, e.g "C:\Program Files\Microsoft Visual Studio 9.0\VC\bin" (Be sure not to use spaces in Windows)
 */
