@@ -182,6 +182,13 @@ void Node::getDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits)
     //rUnits = mDataUnits;
 }
 
+
+void Node::copyNodeVariables(Node &rNode)
+{
+    //this ska kopiera sina varabler till rNode
+}
+
+
 //! This function will set the number of log data slots for preallocation and logDt based on the number of samples that should be loged
 //! @param [in] nSamples The desired number of log data samples
 void Node::setLogSettingsNSamples(size_t nSamples, double start, double stop, double sampletime)

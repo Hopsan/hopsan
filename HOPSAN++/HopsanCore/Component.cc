@@ -1883,6 +1883,24 @@ bool ComponentSystem::isSimulationOk()
 }
 
 
+void ComponentSystem::loadStartValues(std::vector<Component*> componentVector)
+{
+    std::vector<Component*>::iterator compIt;
+    std::vector<Port*>::iterator portIt;
+    for(compIt = componentVector.begin(); compIt != componentVector.end(); ++compIt)
+    {
+        cout << "============================ Component: " << (*compIt)->getName() << endl;
+        std::vector<Port*> portVector = (*compIt)->getPortPtrVector();
+        for(portIt = portVector.begin(); portIt != portVector.end(); ++portIt)
+        {
+            cout << "============================ Port: " << (*portIt)->getPortName() << endl;
+
+        }
+    }
+    cout << "Finish the implementation of this method!" << endl;
+}
+
+
 //! Initializes a system component and all its contained components, also allocates log data memory
 void ComponentSystem::initialize(const double startT, const double stopT)
 {
@@ -1895,6 +1913,8 @@ void ComponentSystem::initialize(const double startT, const double stopT)
     adjustTimestep(mTimestep, mComponentSignalptrs);
     adjustTimestep(mTimestep, mComponentCptrs);
     adjustTimestep(mTimestep, mComponentQptrs);
+
+    loadStartValues(mComponentSignalptrs);
 
     //Init
     //Signal components

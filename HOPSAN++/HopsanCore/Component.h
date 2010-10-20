@@ -198,6 +198,7 @@ namespace hopsan {
 
         //initialize and simulate
         bool isSimulationOk();
+        void loadStartValues(std::vector<Component*> componentVector);
         void initialize(const double startT, const double stopT);
         void simulateMultiThreaded(const double startT, const double stopT);
         void simulate(const double startT, const double stopT);
