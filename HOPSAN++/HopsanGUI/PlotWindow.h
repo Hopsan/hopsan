@@ -84,9 +84,9 @@ class PlotWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    PlotWindow(QVector<double> xarray, QVector<double> yarray, PlotParameterTree *PlotParameterTree, MainWindow *parent);
-    void addPlotCurve(QVector<double> xarray, QVector<double> yarray, QString title, QString xLabel, QString yLabel, QwtPlot::Axis axisY);
-    void changeXVector(QVector<double> xarray, QString xLabel, QString componentName, QString portName, QString dataName, QString dataUnit);
+    PlotWindow(PlotParameterTree *PlotParameterTree, MainWindow *parent);
+    void addPlotCurve(QVector<double> xarray, QVector<double> yarray, QString componentName, QString portName, QString dataName, QString dataUnit, QwtPlot::Axis axisY);
+    void changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit);
     void insertMarker(QwtPlotCurve *curve);
     void setActiveMarker(QwtPlotMarker *marker);
     void setGeneration(int gen);

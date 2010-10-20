@@ -237,31 +237,13 @@ void PlotParameterTree::createPlotWindow(QTreeWidgetItem *item)
 //! @param dataUnit Name of the unit of the parameter
 void PlotParameterTree::createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit)
 {
-    //! @todo Add some error handling if component or parameter does not exist
-
-    QString title;
-    QString xlabel;
-    QString ylabel;
-
-    title.append(QString(componentName + ", " + portName + ", " + dataName + " [" + dataUnit + "]"));
-    ylabel.append(QString(dataName + " [" + dataUnit + "]"));
-    xlabel.append("Time, [s]");    //! @todo Maybe we shall not hard code time as the default x-axis, with seconds as default unit?
-
-    QVector<double> xVector;
-    xVector = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getTimeVector(componentName, portName));
+    QVector<double> xVector = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getTimeVector(componentName, portName));
     QVector<double> yVector;
     mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getPlotData(componentName, portName, dataName, yVector);
 
-    PlotWindow *plotWindow = new PlotWindow(xVector, yVector, this, mpParentMainWindow);
-    plotWindow->setWindowTitle("Hopsan NG Plot Window");
-    plotWindow->tempCurve->setTitle(title);
-    QStringList parameterDescription;
-    parameterDescription << componentName << portName << dataName << dataUnit;
-    plotWindow->mCurveParameters.append(parameterDescription);
-    plotWindow->mpVariablePlot->setAxisTitle(QwtPlot::yLeft, ylabel);
-    plotWindow->mpVariablePlot->setAxisTitle(QwtPlot::xBottom, xlabel);
-    plotWindow->mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
+    PlotWindow *plotWindow = new PlotWindow(this, mpParentMainWindow);
     plotWindow->show();
+    plotWindow->addPlotCurve(xVector, yVector, componentName, portName, dataName, dataUnit, QwtPlot::yLeft);
 }
 
 

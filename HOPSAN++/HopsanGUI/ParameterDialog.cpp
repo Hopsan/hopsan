@@ -64,9 +64,9 @@
 //!
 
 
-//! Constructor.
-//! @param coreComponent is a ponter to the core component.
-//! @param parent defines a parent to the new instanced object.
+//! @brief Constructor for the parameter dialog for components
+//! @param pGUIComponent Pointer to the component
+//! @param parent Pointer to the parent widget
 ParameterDialog::ParameterDialog(GUIComponent *pGUIComponent, QWidget *parent)
     : QDialog(parent)
 {
@@ -77,14 +77,9 @@ ParameterDialog::ParameterDialog(GUIComponent *pGUIComponent, QWidget *parent)
 }
 
 
-//ParameterDialog::ParameterDialog(GUISubsystem *pGUISubsystem, QWidget *parent)     : QDialog(parent)
-//{
-//    mpGUIObject = pGUISubsystem;
-//    isGUISubsystem = true;
-//
-//    createEditStuff();
-//}
-
+//! @brief Constructor for the parameter dialog for a subsystem
+//! @param pGUISubsystem Pointer to the subsystem
+//! @param parent Pointer to the parent widget
 ParameterDialog::ParameterDialog(GUISystem *pGUISubsystem, QWidget *parent)     : QDialog(parent)
 {
     mpGUIObject = pGUISubsystem;
@@ -93,6 +88,8 @@ ParameterDialog::ParameterDialog(GUISystem *pGUISubsystem, QWidget *parent)     
     createEditStuff();
 }
 
+
+//! @brief Creates the contents in the parameter dialog
 void ParameterDialog::createEditStuff()
 {
     mpNameEdit = new QLineEdit(mpGUIObject->getName());
@@ -261,6 +258,7 @@ void ParameterDialog::createEditStuff()
 }
 
 
+//! @brief Reads the values from the dialog and writes them into the core component
 void ParameterDialog::okPressed()
 {
     mpGUIObject->mpParentSystem->renameGUIObject(mpGUIObject->getName(), mpNameEdit->text());

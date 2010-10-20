@@ -1037,6 +1037,15 @@ void GUIObject::refreshAppearance()
 }
 
 
+//! @brief Tells the component to ask its parent to delete it
+//! @todo The name of the function is silly
+void GUIObject::deleteMe()
+{
+    qDebug() << "deleteMe in " << this->getName();
+    mpParentSystem->deleteGUIObject(this->getName());
+}
+
+
 //! @brief Construtor for the name text object
 //! @param pParent Pointer to the object which the name text belongs to
 GUIObjectDisplayName::GUIObjectDisplayName(GUIObject *pParent)
@@ -1079,23 +1088,21 @@ QVariant GUIObjectDisplayName::itemChange(GraphicsItemChange change, const QVari
 }
 
 
-
+//! @brief Slot that deselects the name text
 void GUIObjectDisplayName::deselect()
 {
     this->setSelected(false);
 }
 
 
-
-
-//! Constructor.
-//! @param x1 is the x-coordinate of the top left corner of the parent component.
-//! @param y1 is the y-coordinate of the top left corner of the parent component.
-//! @param x2 is the x-coordinate of the bottom right corner of the parent component.
-//! @param y2 is the y-coordinate of the bottom right corner of the parent component.
-//! @param activePen defines the width and color of the box when the parent component is selected.
-//! @param hoverPen defines the width and color of the box when the parent component is hovered by the mouse cursor.
-//! @param *parent defines the parent object.
+//! @brief Constructor for GUI object selection box
+//! @param x1 Initial X-coordinate of the top left corner of the parent component
+//! @param y1 InitialY-coordinate of the top left corner of the parent component
+//! @param x2 InitialX-coordinate of the bottom right corner of the parent component
+//! @param y2 InitialY-coordinate of the bottom right corner of the parent component
+//! @param activePen Width and color of the box when the parent component is selected.
+//! @param hoverPen Width and color of the box when the parent component is hovered by the mouse cursor.
+//! @param *parent Pointer to the parent object.
 GUIObjectSelectionBox::GUIObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal y2, QPen activePen, QPen hoverPen, GUIObject *parent)
         : QGraphicsItemGroup(parent)
 {
@@ -1130,7 +1137,7 @@ GUIObjectSelectionBox::GUIObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal
 }
 
 
-//! Tells the box to become visible and use active style.
+//! @brief Makes the box visible and makes it use "active" style
 //! @see setPassive();
 //! @see setHovered();
 void GUIObjectSelectionBox::setActive()
@@ -1144,7 +1151,7 @@ void GUIObjectSelectionBox::setActive()
 }
 
 
-//! Tells the box to become invisible.
+//! @brief Makes the box invisible
 //! @see setActive();
 //! @see setHovered();
 void GUIObjectSelectionBox::setPassive()
@@ -1153,7 +1160,7 @@ void GUIObjectSelectionBox::setPassive()
 }
 
 
-//! Tells the box to become visible and use hovered style.
+//! @brief Makes the box visible and makes it use "hovered" style
 //! @see setActive();
 //! @see setPassive();
 void GUIObjectSelectionBox::setHovered()
@@ -1165,12 +1172,6 @@ void GUIObjectSelectionBox::setHovered()
     }
 }
 
-//! Tells the component to ask its parent to delete it.
-void GUIObject::deleteMe()
-{
-    qDebug() << "deleteMe in " << this->getName();
-    mpParentSystem->deleteGUIObject(this->getName());
-}
 
 GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUISystem *system, QGraphicsItem *parent)
         : GUIObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)

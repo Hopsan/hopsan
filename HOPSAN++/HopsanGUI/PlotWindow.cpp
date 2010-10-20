@@ -24,23 +24,25 @@
 
 
 //! @brief Constructor for the plot window, where plots are displayed.
-//! @param xArray is the x-axis data for the initial plot curve
-//! @param yArray is the y-axis data for the initial plot curve
 //! @param plotParameterTree is a pointer to the parameter tree from where the plot window was created
 //! @param parent is a pointer to the main window
-PlotWindow::PlotWindow(QVector<double> xArray, QVector<double> yArray, PlotParameterTree *plotParameterTree, MainWindow *parent)
+PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     : QMainWindow(parent)
 {
     this->setAttribute(Qt::WA_DeleteOnClose);
+    this->setWindowTitle("Hopsan NG Plot Window");
+    this->setAcceptDrops(true);
+    resize(700,600);    //! @todo Maybe user should be allowed to change default plot window size, or someone will become annoyed...
 
     mpParentMainWindow = parent;
     mpCurrentGUISystem = mpParentMainWindow->mpProjectTabs->getCurrentSystem();
     mpPlotParameterTree = plotParameterTree;
 
-    mHasSpecialXAxis = false;       //This becomes true when user creates an XY-plot
+        //Default settings
+    mHasSpecialXAxis = false;
     mLeftAxisLogarithmic = false;
     mRightAxisLogarithmic = false;
-    mAutoUpdate = true;             //Default settings for "Auto Update" function
+    mAutoUpdate = true;
 
         //Create the actual plot widget
     mpVariablePlot = new QwtPlot();
@@ -169,23 +171,8 @@ PlotWindow::PlotWindow(QVector<double> xArray, QVector<double> yArray, PlotParam
 
     addToolBar(mpToolBar);
 
-        // Create and add curves to the plot
+    mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
     mCurrentGeneration = 0;
-    tempCurve = new QwtPlotCurve();
-    QwtArrayData data(xArray,yArray);
-    tempCurve->setData(data);
-    tempCurve->attach(mpVariablePlot);
-    tempCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
-    mpVariablePlot->replot();
-    tempCurve->setPen(QPen(QBrush(QColor(mCurveColors[nCurves])),mpSizeSpinBox->value()));
-    mpCurves.append(tempCurve);
-    ++nCurves;
-
-    QList< QVector<double> > tempList;
-    tempList.append(xArray);
-    mVectorX.append(tempList);
-    tempList.first() = yArray;
-    mVectorY.append(tempList);
 
         //Grid
     mpGrid = new QwtPlotGrid;
@@ -201,12 +188,6 @@ PlotWindow::PlotWindow(QVector<double> xArray, QVector<double> yArray, PlotParam
 
         //Rubber Band Zoom
     mpZoomer = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpVariablePlot->canvas());
-    QwtDoubleRect tempDoubleRect;       //The first added curve is used as reference rectangle
-    tempDoubleRect.setX(mpCurves.first()->minXValue());
-    tempDoubleRect.setY(mpCurves.first()->minYValue());
-    tempDoubleRect.setWidth(mpCurves.first()->maxXValue()-mpCurves.first()->minXValue());
-    tempDoubleRect.setHeight(mpCurves.first()->maxYValue()-mpCurves.first()->minYValue());
-    mpZoomer->setZoomBase(tempDoubleRect);
     mpZoomer->setMaxStackDepth(10000);
     mpZoomer->setSelectionFlags(QwtPicker::DragSelection | QwtPicker::CornerToCorner);
     mpZoomer->setRubberBand(QwtPicker::RectRubberBand);
@@ -234,9 +215,10 @@ PlotWindow::PlotWindow(QVector<double> xArray, QVector<double> yArray, PlotParam
 
     this->setCentralWidget(mpVariablePlot);
 
+        //Disables zoom function (activated by tool button, off by default)
     enableZoom(false);
 
-    //Establish signal and slots connections
+        //Establish signal and slots connections
     connect(buttonbox, SIGNAL(rejected()), this, SLOT(close()));
     connect(mpZoomButton,SIGNAL(toggled(bool)),SLOT(enableZoom(bool)));
     connect(mpPanButton,SIGNAL(toggled(bool)),SLOT(enablePan(bool)));
@@ -252,11 +234,6 @@ PlotWindow::PlotWindow(QVector<double> xArray, QVector<double> yArray, PlotParam
     connect(mpNextButton, SIGNAL(clicked()),this,SLOT(stepForward()));
     connect(mpDiscardGenerationButton,SIGNAL(clicked()),this,SLOT(discardGeneration()));
     connect(this->mpParentMainWindow->mpProjectTabs->getCurrentTab(),SIGNAL(simulationFinished()),this,SLOT(checkNewValues()));
-
-    //! @todo Maybe user should be allowed to change default plot window size, or someone will become annoyed...
-    resize(700,600);    //Default window size
-
-    this->setAcceptDrops(true);
 }
 
 
@@ -540,7 +517,7 @@ void PlotWindow::importGNUPLOT()
         qDebug() << "(" << tempValue1 << ", " << tempValue2 << ")";
     }
     file.close();
-    this->addPlotCurve(xArray, yArray, file.fileName(), "X from GNUPLOT", "Y from GNUPLOT", QwtPlot::yLeft);
+    this->addPlotCurve(xArray, yArray, file.fileName(), "-", "-", "-", QwtPlot::yLeft);
 }
 
 
@@ -726,14 +703,6 @@ void PlotWindow::dropEvent(QDropEvent *event)
             dataName = readName(mimeStream);
             dataUnit = readName(mimeStream);
 
-            QString title;
-            QString xlabel;
-            QString ylabel;
-
-            title.append(QString(componentName + ", " + portName + ", " + dataName + " [" + dataUnit + "]"));
-            ylabel.append(dataName + " [" + dataUnit + "]");
-            xlabel.append("Time [s]");
-
             QVector<double> xVector = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mpCoreSystemAccess->getTimeVector(componentName, portName));
             QVector<double> yVector;
             mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mpCoreSystemAccess->getPlotData(componentName, portName, dataName, yVector);
@@ -741,21 +710,15 @@ void PlotWindow::dropEvent(QDropEvent *event)
             QCursor cursor;
             if(this->mapFromGlobal(cursor.pos()).y() > this->height()/2 && mpCurves.size() >= 1)
             {
-                this->changeXVector(yVector, ylabel, componentName, portName, dataName, dataUnit);
+                this->changeXVector(yVector, componentName, portName, dataName, dataUnit);
             }
             else if(this->mapFromGlobal(cursor.pos()).x() < this->width()/2)
             {
-                this->addPlotCurve(xVector, yVector, title, xlabel, ylabel, QwtPlot::yLeft);
-                QStringList parameterDescription;
-                parameterDescription << componentName << portName << dataName << dataUnit;
-                mCurveParameters.append(parameterDescription);
+                this->addPlotCurve(xVector, yVector, componentName, portName, dataName, dataUnit, QwtPlot::yLeft);
             }
             else
             {
-                this->addPlotCurve(xVector, yVector, title, xlabel, ylabel, QwtPlot::yRight);
-                QStringList parameterDescription;
-                parameterDescription << componentName << portName << dataName << dataUnit;
-                mCurveParameters.append(parameterDescription);
+                this->addPlotCurve(xVector, yVector, componentName, portName, dataName, dataUnit, QwtPlot::yRight);
             }
         }
     }
@@ -875,14 +838,33 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
 //! @brief Help function to add a new curve to an existing plot window
 //! @param xArray is the vector for the x-axis
 //! @param yArray is the vector for the y-axis
-//! @param title is the title of the curve
-//! @param xLabel is the label for the x-axis
-//! @param yLabel is the label for the y-axis
+//! @param componentName Name of the where parameter is located
+//! @param portName Name of the port where the parameter is located
+//! @param dataName Name of parameter
+//! @param dataUnit Unit of the parameter
 //! @param axisY tells whether the right or left y-axis shall be used
-void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QString title, QString xLabel, QString yLabel, QwtPlot::Axis axisY)
+void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QString componentName, QString portName, QString dataName, QString dataUnit, QwtPlot::Axis axisY)
 {
-    mVectorX[mCurrentGeneration].append(xArray);
-    mVectorY[mCurrentGeneration].append(yArray);
+    QString title = QString(componentName + ", " + portName + ", " + dataName + " [" + dataUnit + "]");
+    QString xLabel = "Time [s]";
+    QString yLabel = QString(dataName + " [" + dataUnit + "]");
+
+    bool firstCurve = false;
+    if(mVectorX.isEmpty())
+    {
+        firstCurve = true;
+        QList< QVector<double> > tempList;
+        tempList.append(xArray);
+        mVectorX.append(tempList);
+        tempList.clear();
+        tempList.append(yArray);
+        mVectorY.append(tempList);
+    }
+    else
+    {
+        mVectorX[mCurrentGeneration].append(xArray);
+        mVectorY[mCurrentGeneration].append(yArray);
+    }
 
         // Create and add curves to the plot
     tempCurve = new QwtPlotCurve(title);
@@ -917,17 +899,33 @@ void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QS
 
     mpVariablePlot->setAxisTitle(QwtPlot::yLeft, yLabel);
     mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
+
+    if(firstCurve)
+    {
+            //First curve, so set rubber band zoom base accordingly
+        QwtDoubleRect tempDoubleRect;       //The first added curve is used as reference rectangle
+        tempDoubleRect.setX(mpCurves.first()->minXValue());
+        tempDoubleRect.setY(mpCurves.first()->minYValue());
+        tempDoubleRect.setWidth(mpCurves.first()->maxXValue()-mpCurves.first()->minXValue());
+        tempDoubleRect.setHeight(mpCurves.first()->maxYValue()-mpCurves.first()->minYValue());
+        mpZoomer->setZoomBase(tempDoubleRect);
+    }
+
+    QStringList parameterDescription;
+    parameterDescription << componentName << portName << dataName << dataUnit;
+    mCurveParameters.append(parameterDescription);
 }
 
 
 //! @brief Function the x-axis in the plot, and updates all curves corresponding to this. Used to create XY-plots.
 //! @param xArray is the data for the x-axis
-//! @param xLabel is the label text to be displayed on the x-axis
-//! @param componentName is the name of the component where the port is located
-//! @param portName is the name of the port where the parameter is located
-//! @param dataName is the name of the parameter
-void PlotWindow::changeXVector(QVector<double> xArray, QString xLabel, QString componentName, QString portName, QString dataName, QString dataUnit)
+//! @param componentName Name of the component where the parameter is located
+//! @param portName Name of the port where the parameter is located
+//! @param dataName Name of the parameter
+//! @param dataUnit Unit of the parameter
+void PlotWindow::changeXVector(QVector<double> xArray, QString componentName, QString portName, QString dataName, QString dataUnit)
 {
+    QString xLabel = QString(dataName + " [" + dataUnit + "]");
     QVector<double> tempYArray;
     for(size_t i=0; i<mpCurves.size(); ++i)
     {
@@ -993,13 +991,12 @@ void PlotWindow::closeEvent(QCloseEvent *event)
 {
     if(mVectorX.size() > 1)
     {
-        QMessageBox msgBox(QMessageBox::Warning, tr("QMessageBox::warning()"),
+        QMessageBox msgBox(QMessageBox::Warning, tr("Warning"),
                            tr("Old plot data exist in plot window. Are you sure you want to close?"), 0, this);
         msgBox.addButton(tr("&Close"), QMessageBox::AcceptRole);
         msgBox.addButton(tr("&Cancel"), QMessageBox::RejectRole);
         if (msgBox.exec() == QMessageBox::RejectRole)
         {
-            qDebug() << "Cancel!";
             event->ignore();
         }
         else

@@ -59,11 +59,11 @@
 //!
 
 
-//! Constructor.
-//! @param pComponentSystem is a pointer to the system to simulate.
-//! @param startTime is the start time for the simulation.
-//! @param finishTime is the finish time for the simulation.
-//! @param parent is the parent of the thread, the a ProjectTabWidget
+//! @brief Constructor for simulation thread
+//! @param pComponentSystem Pointer to the system to simulate.
+//! @param startTime Start time for the simulation.
+//! @param finishTime Finish time for the simulation.
+//! @param parent Parent of the thread, the ProjectTabWidget
 SimulationThread::SimulationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, ProjectTab *parent)
 {
     mpParentProjectTab = parent;
@@ -72,11 +72,10 @@ SimulationThread::SimulationThread(CoreSystemAccess *pGUIRootSystem, double star
 
     mStartTime = startTime;
     mFinishTime = finishTime;
-
 }
 
 
-//! Implements the task for the thread.
+//! @brief Implements the task for the thread.
 void SimulationThread::run()
 {
     qDebug() << mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mUseMulticore;

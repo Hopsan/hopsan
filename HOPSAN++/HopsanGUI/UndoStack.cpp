@@ -66,7 +66,7 @@
 #include "GUIUtilities.h"
 #include "GUISystem.h"
 
-//! Constructor for the Undo History widget
+//! @brief Constructor for the undo stack
 //! @param parentSystem Pointer to the current system
 UndoStack::UndoStack(GUISystem *parentSystem) : QObject()
 {
@@ -76,7 +76,7 @@ UndoStack::UndoStack(GUISystem *parentSystem) : QObject()
 }
 
 
-//! Clears all contents in the undo stack.
+//! @brief Clears all contents in the undo stack
 void UndoStack::clear()
 {
     mCurrentStackPosition = -1;
@@ -85,7 +85,7 @@ void UndoStack::clear()
 }
 
 
-//! Adds a new post to the undo stack
+//! @brief Adds a new empty post to the undo stack
 void UndoStack::newPost()
 {
     int tempSize = mStack.size()-1;
@@ -110,7 +110,7 @@ void UndoStack::newPost()
 }
 
 
-//! Inserts an undo post to the current stack position
+//! @brief Inserts an undo post to the current stack position
 void UndoStack::insertPost(QString str)
 {
     if(mCurrentStackPosition < 0)
@@ -125,7 +125,7 @@ void UndoStack::insertPost(QString str)
 }
 
 
-//! Will undo the changes registered in the last stack position, and switch stack pointer one step back
+//! @brief Will undo the changes registered in the last stack position, and switch stack pointer one step back
 void UndoStack::undoOneStep()
 {
     int undoPosition = mCurrentStackPosition;
@@ -232,7 +232,7 @@ void UndoStack::undoOneStep()
 }
 
 
-//! Will redo the previously undone changes if they exist, and re-add the undo command to the undo stack.
+//! @brief Will redo the previously undone changes if they exist, and re-add the undo command to the undo stack.
 void UndoStack::redoOneStep()
 {
     if( (mCurrentStackPosition != mStack.size()-1) && (!mStack[mCurrentStackPosition+1].empty()) )
@@ -313,8 +313,8 @@ void UndoStack::redoOneStep()
 }
 
 
-//! Register function for deleted objects
-//! @param item is a pointer to the component about to be deleted.
+//! @brief Register function for deleted objects
+//! @param item Pointer to the component about to be deleted
 void UndoStack::registerDeletedObject(GUIObject *item)
 {
     //qDebug() << "registerDeletedObject()";
@@ -325,8 +325,8 @@ void UndoStack::registerDeletedObject(GUIObject *item)
 }
 
 
-//! Register function for connectors
-//! @param item is a pointer to the connector about to be deleted.
+//! @brief Register function for connectors
+//! @param item Pointer to the connector about to be deleted
 void UndoStack::registerDeletedConnector(GUIConnector *item)
 {
     qDebug() << "Entering: registerDeletedConnector()";
@@ -338,8 +338,8 @@ void UndoStack::registerDeletedConnector(GUIConnector *item)
 }
 
 
-//! Register function for added objects.
-//! @param itemName is the name of the added object
+//! @brief Register function for added objects
+//! @param itemName Name of the added object
 void UndoStack::registerAddedObject(GUIObject *item)
 {
     QString str;
@@ -350,8 +350,8 @@ void UndoStack::registerAddedObject(GUIObject *item)
 }
 
 
-//! Register function for added connectors.
-//! @param item is a pointer to the added connector.
+//! @brief Register function for added connectors
+//! @param item Pointer to the added connector
 void UndoStack::registerAddedConnector(GUIConnector *item)
 {
     //qDebug() << "registerAddedConnector()";
@@ -362,9 +362,9 @@ void UndoStack::registerAddedConnector(GUIConnector *item)
 }
 
 
-//! Registser function for renaming an object.
-//! @param oldName is a string with the old name.
-//! @param newName is a string with the new name.
+//! @brief Registser function for renaming an object
+//! @param oldName Old object name
+//! @param newName New object name
 void UndoStack::registerRenameObject(QString oldName, QString newName)
 {
     QString str;
@@ -374,10 +374,10 @@ void UndoStack::registerRenameObject(QString oldName, QString newName)
 }
 
 
-//! Register function for moving a line in a connector.
-//! @param oldPos is the position before the line was moved.
-//! @param item is a pointer to the connector.
-//! @param lineNumber is the number of the line that was moved.
+//! @brief Register function for modifying a line in a connector
+//! @param oldPos Position of the line before it was moved
+//! @param item Pointer to the connector
+//! @param lineNumber Number of the line that was moved
 void UndoStack::registerModifiedConnector(QPointF oldPos, QPointF newPos, GUIConnector *item, int lineNumber)
 {
     QString str;
@@ -391,9 +391,9 @@ void UndoStack::registerModifiedConnector(QPointF oldPos, QPointF newPos, GUICon
 }
 
 
-//! Register function for moving an object.
-//! @param oldPos is the position of the object before it was moved.
-//! @param objectName is the name of the object.
+//! @brief Register function for moving an object
+//! @param oldPos Position of the object before it was moved
+//! @param objectName Name of the object
 void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString objectName)
 {
     QString str;
@@ -404,8 +404,8 @@ void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString obje
 }
 
 
-//! Register function for rotating an object.
-//! @param item is a pointer to the object.
+//! @brief Register function for rotating an object
+//! @param item Pointer to the object
 void UndoStack::registerRotatedObject(GUIObject *item)
 {
     QString str;
@@ -415,8 +415,8 @@ void UndoStack::registerRotatedObject(GUIObject *item)
 }
 
 
-//! Register function for vertical flip of an object.
-//! @param item is a pointer to the object.
+//! @brief Register function for vertical flip of an object
+//! @param item Pointer to the object
 void UndoStack::registerVerticalFlip(GUIObject *item)
 {
     QString str;
@@ -426,8 +426,9 @@ void UndoStack::registerVerticalFlip(GUIObject *item)
 }
 
 
-//! Register function for horizontal flip of an object.
-//! @param item is a pointer to the object.
+//! @brief Register function for horizontal flip of an object
+//! @param item Pointer to the object
+//! @todo Maybe we should combine this and registerVerticalFlip to one function?
 void UndoStack::registerHorizontalFlip(GUIObject *item)
 {
     QString str;
@@ -437,7 +438,8 @@ void UndoStack::registerHorizontalFlip(GUIObject *item)
 }
 
 
-//! Construtor.
+//! @brief Construtor for undo list widget
+//! @param parent Pointer to the parent main window
 UndoWidget::UndoWidget(MainWindow *parent)
     : QDialog(parent)
 {
@@ -479,7 +481,7 @@ UndoWidget::UndoWidget(MainWindow *parent)
 }
 
 
-//! Reimplementation of show function, which updates the list every time before the widget is displayed.
+//! @brief Reimplementation of show function. Updates the list every time before the widget is displayed.
 void UndoWidget::show()
 {
     refreshList();
@@ -487,7 +489,7 @@ void UndoWidget::show()
 }
 
 
-//! Refresh function for the list. Reads from the current undo stack and displays the results in a table.
+//! @brief Refresh function for the list. Reads from the current undo stack and displays the results in the table.
 void UndoWidget::refreshList()
 {
     if(mpParentMainWindow->mpProjectTabs->count() == 0)
@@ -517,6 +519,7 @@ void UndoWidget::refreshList()
     else if(mTempStack[0].empty())
     {
         item = new QTableWidgetItem();
+        //! @todo What the heck does this todo mean?
         //! @todo what the heck is this suposed to mean !ENUM, item->setFlags(!Qt::ItemIsEditable);
         item->setText("No undo history found.");
         item->setBackgroundColor(QColor("white"));

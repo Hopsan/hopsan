@@ -56,7 +56,7 @@
 #include "LibraryWidget.h"
 
 
-//! Constructor for Model Preferences dialog
+//! @brief Constructor for Model Preferences dialog
 //! @param parent Pointer to the main window
 PreferenceWidget::PreferenceWidget(MainWindow *parent)
     : QDialog(parent)
@@ -119,7 +119,7 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
 }
 
 
-//! Reimplementation of QDialog::show(), used to update values in the box to current settings every time it is shown
+//! @brief Reimplementation of QDialog::show(), used to update values in the box to current settings every time it is shown
 void PreferenceWidget::show()
 {
     mpIsoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mGfxType);
@@ -130,7 +130,7 @@ void PreferenceWidget::show()
 }
 
 
-//! Updates model settings according to the selected values. They are not saved until the model is.
+//! @brief Updates model settings according to the selected values
 void PreferenceWidget::updateValues()
 {
     if(mpIsoCheckBox->isChecked())
@@ -162,7 +162,7 @@ void PreferenceWidget::updateValues()
 }
 
 
-//! Slot that opens a file dialog where user can select a user icon for the system
+//! @brief Slot that opens a file dialog where user can select a user icon for the system
 void PreferenceWidget::browseUser()
 {
     QDir fileDialogOpenDir;
@@ -172,7 +172,7 @@ void PreferenceWidget::browseUser()
 }
 
 
-//! Slot that opens a file dialog where user can select an iso icon for the system
+//! @brief Slot that opens a file dialog where user can select an iso icon for the system
 void PreferenceWidget::browseIso()
 {
     QDir fileDialogOpenDir;
