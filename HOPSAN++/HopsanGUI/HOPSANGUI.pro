@@ -99,6 +99,7 @@ unix {
     LIBS += -Wl,-rpath,./
     LIBS += -lqwt-qt4
     INCLUDEPATH += /usr/include/qwt-qt4/
+    INCLUDEPATH += /usr/include/python2.6
 
     LIBS += $$system(python$${PYTHON_VERSION}-config --libs)
 

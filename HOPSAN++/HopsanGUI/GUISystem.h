@@ -74,7 +74,7 @@ public:
     void setIsoIconPath(QString path);
     void setUserIconPath(QString path);
 
-    void calcExternalPortPositions(QMap<QString, QPointF> &rExtPortMap);
+    void updateExternalPortPositions();
 
 public slots:
     //void addSystemPort();
@@ -125,6 +125,8 @@ private:
 public:
     CoreSystemAccess *mpCoreSystemAccess; //!< @todo make this private later
 
+protected:
+    void saveCoreDataToDomElement(QDomElement &rDomElement);
 
     //! Old subsystem stuff
 public:

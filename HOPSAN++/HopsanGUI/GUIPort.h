@@ -62,12 +62,15 @@ public:
     GUISystem *mpParentSystem;
     GUIObject *mpParentGuiObject;
 
-    void updatePosition();
+    QPointF getCenterPos();
+    void updatePosition(qreal x, qreal y);
+    void updatePositionByFraction(qreal x, qreal y);
     GUISystem *getParentSystem();
     GUIObject *getGuiObject();
     void magnify(bool blowup);
     portDirection getPortDirection();
     void setPortDirection(portDirection direction);
+    qreal getPortHeading();
     void hide();
 
     QString getName();
@@ -119,8 +122,8 @@ private:
     bool mIsMag;
 
     GUIPortAppearance *mpPortAppearance;
-    qreal mXpos;
-    qreal mYpos;
+//    qreal mXpos;
+//    qreal mYpos;
     QString name;
 
 };

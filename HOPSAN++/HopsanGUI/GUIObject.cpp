@@ -269,7 +269,7 @@ QString GUIObject::getName()
 
 
 //! @brief Returns a list with pointers to the ports in the object
-QList<GUIPort*> GUIObject::getPortListPtrs()
+QList<GUIPort*> &GUIObject::getPortListPtrs()
 {
     return mPortListPtrs;
 }
@@ -347,6 +347,7 @@ void GUIObject::setIcon(graphicsType gfxType)
 
     if(!mIconRotation)
     {
+        //! @todo calulate this instead of if if if if if .......
         mpIcon->setRotation(-this->rotation());
         if(this->rotation() == 0)
         {
@@ -447,29 +448,33 @@ void GUIObject::saveToTextStream(QTextStream &rStream, QString prepend)
 void GUIObject::saveToDomElement(QDomElement &rDomElement)
 {
     //! @todo Default assume that this is has a core equivalent, may change object classes later
-    QDomElement xmlObject = appendDomElement(rDomElement,"Object");
+    QDomElement xmlObject = appendDomElement(rDomElement,"object");
 
     //Save Core related stuff
     //! @todo maybe have special protected function for this
-    appendDomTextNode(xmlObject,"TypeName", getTypeName());
-    appendDomTextNode(xmlObject,"Name", getName());
+    appendDomTextNode(xmlObject,"typeName", getTypeName());
+    appendDomTextNode(xmlObject,"name", getName());
 
     saveGuiDataToDomElement(xmlObject);
 }
 
+void GUIObject::saveCoreDataToDomElement(QDomElement &rDomElement)
+{
+    //Default nothing
+}
 
 void GUIObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 {
     //Save GUI realted stuff
-    QDomElement xmlGuiStuff = appendDomElement(rDomElement,"HopsanGui");
+    QDomElement xmlGuiStuff = appendDomElement(rDomElement,"hopsangui");
 
     QPointF pos = mapToScene(boundingRect().center());
 //    appendDomTextNode(xmlSyspGUI, "posx", pos.x());
 //    appendDomTextNode(xmlSyspGUI, "posy", pos.y());
 //    appendDomTextNode(xmlSyspGUI, "rotation", rotation());
-    appendDomTextNodeXYA(xmlGuiStuff, pos.x(), pos.y(), rotation());
-    appendDomTextNode(xmlGuiStuff, "NameTextPos", getNameTextPos());
-    appendDomTextNode(xmlGuiStuff, "isVisible", mpNameText->isVisible());
+    appendDomValueNode3(xmlGuiStuff, "pose", pos.x(), pos.y(), rotation());
+    appendDomValueNode(xmlGuiStuff, "nametextpos", getNameTextPos());
+    appendDomValueNode(xmlGuiStuff, "visible", mpNameText->isVisible());
 }
 
 
@@ -1184,9 +1189,9 @@ void GUIContainerObject::makeRootSystem()
     mContainerStatus = ROOT;
 }
 
-void GUIContainerObject::calcExternalPortPositions()
+void GUIContainerObject::updateExternalPortPositions()
 {
-
+    //Nothing for now
 }
 
 GUIContainerObject::CONTAINERSTATUS GUIContainerObject::getContainerStatus()
@@ -1203,6 +1208,7 @@ GUIContainerObject::CONTAINERSTATUS GUIContainerObject::getContainerStatus()
 //! @todo rename this one and maybe change it a bit as it is now included in this class, it should be common for subsystems and groups
 void GUIContainerObject::calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y)
 {
+    //! @todo make common PI declaration, maybe also PIhalf or include math.h and use M_PI
     if(angle>3.1415*3.0/2.0)
     {
         x=-max(min(h/tan(angle), w), -w);
@@ -1392,10 +1398,10 @@ void GUIComponent::createPorts()
         QString portType = mpParentSystem->mpCoreSystemAccess->getPortType(this->getName(), i.key());
         i.value().selectPortIcon(cqsType, portType, nodeType);
 
-        qreal x = i.value().x;
-        qreal y = i.value().y;
+        qreal x = i.value().x * mpIcon->sceneBoundingRect().width();
+        qreal y = i.value().y * mpIcon->sceneBoundingRect().height();
 
-        GUIPort *pNewPort = new GUIPort(i.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
+        GUIPort *pNewPort = new GUIPort(i.key(), x, y, &(i.value()), this);
         mPortListPtrs.append(pNewPort);
     }
 }
@@ -1426,26 +1432,32 @@ void GUIComponent::saveToTextStream(QTextStream &rStream, QString prepend)
     }
 }
 
+//! @todo maybe have a inherited function in some other base class that are specific for guiobjects with core equivalent
+void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
+{
+    appendDomTextNode(rDomElement, "typename", getTypeName());
+    appendDomTextNode(rDomElement, "name", getName());
+}
+
 void GUIComponent::saveToDomElement(QDomElement &rDomElement)
 {
     //! @todo Maybe have a giucoreobject class with a common save function
-    QDomElement xmlObject = appendDomElement(rDomElement,"Object");
+    QDomElement xmlObject = appendDomElement(rDomElement,"component");
 
     //Save Core related stuff
-    //! @todo maybe have special protected function for this
-    appendDomTextNode(xmlObject,"TypeName", getTypeName());
-    appendDomTextNode(xmlObject,"Name", getName());
+    saveCoreDataToDomElement(xmlObject);
 
-    //Save parameters
+    //Save parameters (also core related)
     //! @todo need more efficient fetching of both par names and values in one call to avoid re-searching every time
     QVector<QString> parameterNames = mpParentSystem->mpCoreSystemAccess->getParameterNames(this->getName());
     QVector<QString>::iterator pit;
     for(pit = parameterNames.begin(); pit != parameterNames.end(); ++pit)
     {
-        QDomElement xmlParam = appendDomElement(xmlObject, "Parameter");
-        appendDomTextNode(xmlParam,"Name",*pit);
-        appendDomTextNode(xmlParam,"Value",mpParentSystem->mpCoreSystemAccess->getParameterValue(this->getName(), (*pit)));
+        QDomElement xmlParam = appendDomElement(xmlObject, "parameter");
+        appendDomTextNode(xmlParam, "name", *pit);
+        appendDomValueNode(xmlParam, "value", mpParentSystem->mpCoreSystemAccess->getParameterValue(this->getName(), (*pit)));
     }
+    //Save the Gui specific data
     saveGuiDataToDomElement(xmlObject);
 }
 

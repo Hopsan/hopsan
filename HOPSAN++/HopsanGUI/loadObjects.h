@@ -108,10 +108,10 @@ void addHMFHeader(QDomElement &rDomElement);
 
 QDomElement appendDomElement(QDomElement &rDomElement, const QString element_name);
 void appendDomTextNode(QDomElement &rDomElement, const QString element_name, const QString text);
-void appendDomTextNode(QDomElement &rDomElement, const QString element_name, const double text);
-
-void appendDomTextNodeXYA(QDomElement &rDomElement, const double x, const double y, const double a);
-void appendDomTextNodeXY(QDomElement &rDomElement, const double x, const double y);
-
+void appendDomValueNode(QDomElement &rDomElement, const QString element_name, const double val);
+//! @todo maybe revert to using only appendDomTextNode names on all functions (then you need to think less)
+void appendDomValueNode3(QDomElement &rDomElement, const QString element_name, const double a, const double b, const double c);
+void appendDomValueNode2(QDomElement &rDomElement, const QString element_name, const double a, const double b);
+//! @todo write one that takes a vector with data
 
 #endif // LOADOBJECTS_H

@@ -89,12 +89,10 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
 
     this->name = portName;
 
+    updatePosition(xpos, ypos);
+    //All rotaion and other transformation should be aplied around the port center
     setTransformOriginPoint(boundingRect().center());
 
-    mXpos = xpos;
-    mYpos = ypos;
-
-    updatePosition();
 
 //    pRectParent = parent;
     this->setAcceptHoverEvents(true);
@@ -175,17 +173,61 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     mpPortLabel->show();
 }
 
-
-void GUIPort::updatePosition()
+//! @brief Updates the gui port position on its parent object, taking coordinates in aprent coordinate system
+//! @todo it is necessary to be able to update orientation also
+void GUIPort::updatePosition(const qreal x, const qreal y)
 {
-    if(mpParentGuiObject->rotation() == 0)
-        setPos(mXpos-this->boundingRect().width()/2.0, mYpos-this->boundingRect().height()/2.0);
-    else if(mpParentGuiObject->rotation() == 90)
-        setPos(mXpos-this->boundingRect().width()/2.0, mYpos+this->boundingRect().height()/2.0);
-    else if(mpParentGuiObject->rotation() == 180)
-        setPos(mXpos+this->boundingRect().width()/2.0, mYpos+this->boundingRect().height()/2.0);
-    else
-        setPos(mXpos+this->boundingRect().width()/2.0, mYpos-this->boundingRect().height()/2.0);
+    qDebug() << "Update Port Position in: " << this->getName();
+    qDebug() << "x,y: " << x << " " << y;
+    qDebug() << "Parent bounding rect: " << mpParentGuiObject->boundingRect();
+    qDebug() << "Parentrotation: " << mpParentGuiObject->rotation();
+    qDebug() << "This bounding rect: " << this->boundingRect();
+    qDebug() << "This bounding rect center: " << this->boundingRect().center();
+    qDebug() << "This transform origin: " << this->transformOriginPoint();
+
+
+//    qreal mXpos = x;
+//    qreal mYpos = y;
+//    Original code----
+//    if(mpParentGuiObject->rotation() == 0)
+//        setPos(mXpos-this->boundingRect().width()/2.0, mYpos-this->boundingRect().height()/2.0);
+//    else if(mpParentGuiObject->rotation() == 90)
+//        setPos(mXpos-this->boundingRect().width()/2.0, mYpos+this->boundingRect().height()/2.0);
+//    else if(mpParentGuiObject->rotation() == 180)
+//        setPos(mXpos+this->boundingRect().width()/2.0, mYpos+this->boundingRect().height()/2.0);
+//    else
+//        setPos(mXpos+this->boundingRect().width()/2.0, mYpos-this->boundingRect().height()/2.0);
+//--------------------------
+
+    //Place the guiport with center in x and y, assume x and y in parent local coordinates
+    this->setPos(x-boundingRect().width()/2.0, y-boundingRect().height()/2.0);
+    //Now rotate backwards around center to always keep the object horizontal
+    //this->setTransformOriginPoint(boundingRect().width()/2.0, boundingRect().height()/2.0);
+    //this->setRotation(mpParentGuiObject->rotation());
+    //Reset transformation (rotation) point
+    //this->setTransformOriginPoint(0, 0);
+
+    qDebug() << "Resulting pos: " << this->pos();
+
+}
+
+//! Conveniance function when fraction positions are known
+void GUIPort::updatePositionByFraction(qreal x, qreal y)
+{
+    qDebug() << "Fraction position: " << x << " " << y;
+    qDebug() << "parent bounding rect: " << mpParentGuiObject->boundingRect();
+    //qDebug() << "parent icon scene bounding rect" << mpParentGuiObject->mpIcon->sceneBoundingRect();
+
+    //! @todo maybe use only boundingrect instead (if they are same)
+    //! @todo for now root systems may not have an icon, if icon is empty ports will end up in zero, which is OK, maybe we should always force a default icon
+    //this->updatePosition(x*mpParentGuiObject->mpIcon->sceneBoundingRect().width(), y*mpParentGuiObject->mpIcon->sceneBoundingRect().height());
+    this->updatePosition(x*mpParentGuiObject->boundingRect().width(), y*mpParentGuiObject->boundingRect().height());
+}
+
+
+QPointF GUIPort::getCenterPos()
+{
+    return this->pos() + QPointF( this->boundingRect().width()/2.0, this->boundingRect().height()/2.0);
 }
 
 
@@ -332,6 +374,13 @@ portDirection GUIPort::getPortDirection()
 {
     return mpPortAppearance->direction;
 }
+
+//! @todo Do we really need both direction and heading
+qreal GUIPort::getPortHeading()
+{
+    return mpPortAppearance->rot;
+}
+
 
 
 void GUIPort::setPortDirection(portDirection direction)

@@ -550,17 +550,18 @@ void GUIConnector::saveToTextStream(QTextStream &rStream, QString prepend)
 
 void GUIConnector::saveToDomElement(QDomElement &rDomElement)
 {
-    QDomElement xmlConnect = appendDomElement(rDomElement, "Connect");
-    appendDomTextNode(xmlConnect, "StartComponent", getStartComponentName());
-    appendDomTextNode(xmlConnect, "StartPort", getStartPortName());
-    appendDomTextNode(xmlConnect, "EndComponent", getEndComponentName());
-    appendDomTextNode(xmlConnect, "EndPort", getEndPortName());
+    //Core necessary stuff
+    QDomElement xmlConnect = appendDomElement(rDomElement, "connect");
+    appendDomTextNode(xmlConnect, "startcomponent", getStartComponentName());
+    appendDomTextNode(xmlConnect, "startport", getStartPortName());
+    appendDomTextNode(xmlConnect, "endcomponent", getEndComponentName());
+    appendDomTextNode(xmlConnect, "endport", getEndPortName());
 
     //Save gui data to dom
-    QDomElement xmlConnectGUI = appendDomElement(xmlConnect, "HopsanGui");
+    QDomElement xmlConnectGUI = appendDomElement(xmlConnect, "hopsangui");
     for(size_t j=0; j<mPoints.size(); ++j)
     {
-        appendDomTextNodeXY(xmlConnectGUI, mPoints[j].x(), mPoints[j].y());
+        appendDomValueNode2(xmlConnectGUI, "xy", mPoints[j].x(), mPoints[j].y());
 //        appendDomTextNode(xmlConnectGUI, "ptx", mPoints[j].x());
 //        appendDomTextNode(xmlConnectGUI, "pty", mPoints[j].y());
     }

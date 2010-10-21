@@ -524,6 +524,13 @@ void GUISystem::saveToTextStream(QTextStream &rStream, QString prepend)
             << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << " " << mpNameText->isVisible() << "\n";
 }
 
+//! @todo maybe have a inherited function in some other base class that are specific for guiobjects with core equivalent
+void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
+{
+    appendDomTextNode(rDomElement, "typename", getTypeName());
+    appendDomTextNode(rDomElement, "name", getName());
+}
+
 void GUISystem::saveToDomElement(QDomElement &rDomElement)
 {
     //! @todo maybe use enums instead
@@ -543,19 +550,17 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
 
     qDebug() << "Saving to dom node in: " << this->mAppearanceData.getName();
     //! @todo dont hardcode "system" or maybe thats ok
-    QDomElement subsysContainerNode = appendDomElement(rDomElement,"System");
+    QDomElement xmlSubsystem = appendDomElement(rDomElement,"system");
 
     //Save Core related stuff
-    //! @todo maybe have special protected function for this
-    appendDomTextNode(subsysContainerNode,"TypeName", getTypeName());
-    appendDomTextNode(subsysContainerNode,"Name", getName());
+    this->saveCoreDataToDomElement(xmlSubsystem);
 
     //! @todo do we really need both systemtype and external path, en empty path could indicate embeded
     //appendDomTextNode(subsysContainerNode, "SystemType", mLoadType);
-    appendDomTextNode(subsysContainerNode, "CQSType", getTypeCQS());
+    appendDomTextNode(xmlSubsystem, "cqstype", getTypeCQS());
     if ((mpParentSystem != 0) && (mLoadType=="EXTERNAL"))
     {
-        appendDomTextNode(subsysContainerNode, "ExternalPath", relativePath(mModelFileInfo.absoluteFilePath(), mpParentSystem->mModelFileInfo.absolutePath()));
+        appendDomTextNode(xmlSubsystem, "externalpath", relativePath(mModelFileInfo.absoluteFilePath(), mpParentSystem->mModelFileInfo.absolutePath()));
     }
     else
     {
@@ -563,21 +568,21 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
     }
 
     //Save gui object stuff
-    saveGuiDataToDomElement(subsysContainerNode);
+    saveGuiDataToDomElement(xmlSubsystem);
 
+    //Save all of the sub objects
     if (mLoadType=="EMBEDED" || mLoadType=="ROOT")
     {
-        //Save the sub objects
         QHash<QString, GUIObject*>::iterator it;
         for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
         {
-            it.value()->saveToDomElement(subsysContainerNode);
+            it.value()->saveToDomElement(xmlSubsystem);
         }
 
         //Save the connectors
         for(int i = 0; i != mSubConnectorList.size(); ++i)
         {
-            mSubConnectorList[i]->saveToDomElement(subsysContainerNode);
+            mSubConnectorList[i]->saveToDomElement(xmlSubsystem);
         }
     }
 }
@@ -1229,7 +1234,7 @@ void GUISystem::setIsoIconPath(QString path)
 }
 
 
-void GUISystem::calcExternalPortPositions(QMap<QString, QPointF> &rExtPortMap)
+void GUISystem::updateExternalPortPositions()
 {
     GUIObjectMapT::iterator it;
     QLineF line;
@@ -1269,12 +1274,12 @@ void GUISystem::calcExternalPortPositions(QMap<QString, QPointF> &rExtPortMap)
             yMax = val;
         }
     }
-    //! @todo Find out ig it is possible to ask the scene or wive for this information instead of calulating it ourselves
+    //! @todo Find out if it is possible to ask the scene or wive for this information instead of calulating it ourselves
     QPointF center = QPointF((xMax+xMin)/2.0, (yMax+yMin)/2.0);
     double w = xMax-xMin;
     double h = yMax-yMin;
 
-    rExtPortMap.clear(); //Make sure this is clean
+    //rExtPortMap.clear(); //Make sure this is clean
     for(it = mGUIObjectMap.begin(); it != mGUIObjectMap.end(); ++it)
     {
         if(it.value()->type() == GUISYSTEMPORT)
@@ -1284,14 +1289,27 @@ void GUISystem::calcExternalPortPositions(QMap<QString, QPointF> &rExtPortMap)
             //getCurrentTab()->mpGraphicsScene->addLine(line); //debug-grej
             angle = deg2rad(line.angle());
             calcSubsystemPortPosition(w, h, angle, x, y);
+
+            qDebug() << "--------------------x,y unchanged: " << x << " " << y;
             //! @todo what about this coordinate switch should we not use the same coordinate system everywhere
             x = (x/w+1.0)/2.0; //Change coordinate system
             y = (-y/h+1.0)/2.0; //Change coordinate system
+
+            qDebug() << "--------------------x,y changed: " << x << " " << y;
+
             //modelFile << "PORT " << addQuotes(it.value()->getName()) <<" " << x << " " << y << " " << it.value()->rotation() << "\n";
             //! @todo mybe we should update the ports as we now know where they should be
+            GUIPort* pPort = this->getPort(it.value()->getName());
+            //! @todo need some kind of function that wraps this somehow "x*mpIcon->sceneBoundingRect().width()"
+            //pPort->updatePosition(x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height());
+            pPort->updatePositionByFraction(x,y);
+            //pPort->updatePosition(x, y);
+            //pPort->setRotation(line.angle());
+            //! @todo maybe we should be able to update rotation also
+
             //Populate the output vector
             //! @todo maybe we can read the updated actual port appearance instead of returning data here
-            rExtPortMap.insert(it.value()->getName(), QPointF(x,y));
+            //rExtPortMap.insert(it.value()->getName(), QPointF(x,y));
         }
     }
 

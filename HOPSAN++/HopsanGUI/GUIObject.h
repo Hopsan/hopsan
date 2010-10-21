@@ -92,7 +92,7 @@ public:
 
     void showPorts(bool visible);
     GUIPort *getPort(QString name);
-    QList<GUIPort*> getPortListPtrs();
+    QList<GUIPort*> &getPortListPtrs();
 
     virtual QVector<QString> getParameterNames();
     virtual QString getParameterUnit(QString name) {assert(false); return "";} //Only availible in GUIComponent for now
@@ -119,6 +119,7 @@ protected:
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
     virtual void saveGuiDataToDomElement(QDomElement &rDomElement);
+    virtual void saveCoreDataToDomElement(QDomElement &rDomElement);
 
 signals:
     void componentMoved();
@@ -217,7 +218,7 @@ public:
     enum CONTAINERSTATUS {CLOSED, OPEN, ROOT};
     GUIContainerObject(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, GUISystem *system=0, QGraphicsItem *parent = 0);
     void makeRootSystem();
-    virtual void calcExternalPortPositions();
+    virtual void updateExternalPortPositions();
     void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y);
 
 protected:
@@ -251,6 +252,8 @@ public:
     int type() const;
 
 protected:
+    void saveCoreDataToDomElement(QDomElement &rDomElement);
+
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void openParameterDialog();
