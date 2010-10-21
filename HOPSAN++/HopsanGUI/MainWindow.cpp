@@ -106,8 +106,6 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibDock->setWidget(mpLibrary);
     addDockWidget(Qt::LeftDockWidgetArea, mpLibDock);
 
-    qDebug() << "KO";
-    qDebug() << "APA";
     mpPyDock = new PyDock(this, this);
     addDockWidget(Qt::BottomDockWidgetArea, mpPyDock);
 

@@ -57,7 +57,6 @@ namespace hopsan {
 
         Node* getNodePublic();
 
-        bool haveStartValues();
         void loadStartValues();
         void loadStartValuesFromSimulation();
 

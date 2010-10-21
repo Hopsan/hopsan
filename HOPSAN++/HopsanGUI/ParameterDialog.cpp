@@ -145,9 +145,10 @@ void ParameterDialog::createEditStuff()
     mStartDataUnits.resize(ports.size());
     for ( portIt=ports.begin(); portIt!=ports.end(); ++portIt )
     {
-        if((*portIt)->haveStartValues())
+        (*portIt)->getStartValueDataNamesValuesAndUnits(startDataNamesStr[j], startDataValuesStr[j], startDataUnitsStr[j]);
+        if(!(startDataNamesStr[j].isEmpty()))
         {
-            (*portIt)->getStartValueDataNamesValuesAndUnits(startDataNamesStr[j], startDataValuesStr[j], startDataUnitsStr[j]);
+//            (*portIt)->getStartValueDataNamesValuesAndUnits(startDataNamesStr[j], startDataValuesStr[j], startDataUnitsStr[j]);
 
             QString portName("Port, ");
             portName.append((*portIt)->getName());
@@ -248,13 +249,19 @@ void ParameterDialog::createEditStuff()
         mainLayout->addLayout(pCQSLayout, lr, 0);
         ++lr;
     }
-    mainLayout->addWidget(pParameterLabel, lr, 0);
-    ++lr;
-    mainLayout->addLayout(parameterLayout, lr, 0);
-    ++lr;
-    mainLayout->addWidget(pStartValueLabel,lr, 0);
-    ++lr;
-    mainLayout->addLayout(startValueLayout, lr, 0);
+    if(!(mParameterVarVector.empty()))
+    {
+        mainLayout->addWidget(pParameterLabel, lr, 0);
+        ++lr;
+        mainLayout->addLayout(parameterLayout, lr, 0);
+        ++lr;
+    }
+    if(!(mStartDataNames[0].isEmpty()))
+    {
+        mainLayout->addWidget(pStartValueLabel,lr, 0);
+        ++lr;
+        mainLayout->addLayout(startValueLayout, lr, 0);
+    }
     setLayout(mainLayout);
 
     setWindowTitle(tr("Parameters"));

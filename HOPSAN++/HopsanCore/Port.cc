@@ -77,16 +77,6 @@ Node* Port::getNodePtr()
     return mpNode;
 }
 
-//! @brief Used to check if a Port has start values to set
-//! @return true if the Port has startvalues
-bool Port::haveStartValues()
-{
-    if(mpStartNode)
-        return true;
-    else
-        return false;
-}
-
 
 //! @brief Load start values by copying the start values from the port to the node
 void Port::loadStartValues()
@@ -98,6 +88,7 @@ void Port::loadStartValues()
 }
 
 
+//! @brief Load start values to the start value container from the node (last values from simulation)
 void Port::loadStartValuesFromSimulation()
 {
     if((isConnected()) && mpStartNode)
@@ -276,7 +267,8 @@ vector<vector<double> > *Port::getDataVectorPtr()
 
 void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vector<double> &rValues, vector<string> &rUnits)
 {
-    mpStartNode->getDataNamesValuesAndUnits(rNames, rValues, rUnits);
+    if(mpStartNode)
+        mpStartNode->getDataNamesValuesAndUnits(rNames, rValues, rUnits);
 }
 
 

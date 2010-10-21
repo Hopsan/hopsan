@@ -676,7 +676,7 @@ void GUISystem::deleteGUIObject(QString objectName, undoStatus undoSettings)
 
     if (it != mGUIObjectMap.end())
     {
-        qDebug() << "Höns från Korea";
+        //qDebug() << "Höns från Korea";
         mGUIObjectMap.erase(it);
         mSelectedGUIObjectsList.removeOne(obj_ptr);
         mpScene->removeItem(obj_ptr);
