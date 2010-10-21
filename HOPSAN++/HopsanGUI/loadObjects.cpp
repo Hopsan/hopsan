@@ -93,6 +93,23 @@ void ObjectLoadData::read(QTextStream &rStream)
     rStream >> textVisible;
 }
 
+void ObjectLoadData::readDomElement(QDomElement &rDomElement)
+{
+    //Read core specific data
+    type = rDomElement.firstChildElement("typename").text();
+    name = rDomElement.firstChildElement("name").text();
+
+    //! What about parameters
+
+    //Read gui specific data
+    //! @todo maybe have common function for this
+    QDomElement guiData = rDomElement.firstChildElement("hopsangui");
+    parseDomValueNode3(guiData.firstChildElement("pose"), posX, posY, rotation);
+
+    nameTextPos = parseDomValueNode(guiData.firstChildElement("nametextpos"));
+    textVisible = parseDomValueNode(guiData.firstChildElement("visibel")); //should be bool
+}
+
 void SubsystemLoadData::read(QTextStream &rStream)
 {
     type = "Subsystem";
@@ -125,6 +142,51 @@ void SubsystemLoadData::read(QTextStream &rStream)
         qDebug() << QString("This loadtype is not supported: ") + loadtype;
         //! @todo handle error
     }
+}
+
+void SubsystemLoadData::readDomElement(QDomElement &rDomElement)
+{
+    type = "Subsystem"; //Hardcode the type, regardles of hmf contents (should not contain type
+    //loadtype = readName(rStream);
+    name = rDomElement.firstChildElement("name").text();
+    cqs_type = rDomElement.firstChildElement("cqs_type").text();
+    filepath = rDomElement.firstChildElement("external_path").text();
+
+    //! @todo loadtype should probably be removed
+    if(filepath.isEmpty())
+    {
+        loadtype = "embeded";
+    }
+    else
+    {
+        loadtype = "EXTERNAL";
+    }
+
+    if (loadtype == "EXTERNAL")
+    {
+        //filepath = readName(rStream);
+
+        //Read gui specific data
+        //! @todo maybe have common function for this
+        QDomElement guiData = rDomElement.firstChildElement("hopsangui");
+        parseDomValueNode3(guiData.firstChildElement("pose"), posX, posY, rotation);
+
+        nameTextPos = parseDomValueNode(guiData.firstChildElement("nametextpos"));
+        textVisible = parseDomValueNode(guiData.firstChildElement("visibel")); //should be bool
+    }
+//    else if (loadtype == "embeded")
+//    {
+//        //not implemented yet
+//        //! @todo handle error
+//        assert(false);
+//    }
+    else
+    {
+        //incorrect type
+        qDebug() << QString("This loadtype is not supported: ") + loadtype;
+        //! @todo handle error
+    }
+
 }
 
 //! @brief Reads system appearnce data from stream
@@ -181,12 +243,39 @@ void ConnectorLoadData::read(QTextStream &rStream)
     }
 }
 
+void ConnectorLoadData::readDomElement(QDomElement &rDomElement)
+{
+    //Read core specific stuff
+    startComponentName = rDomElement.firstChildElement("startcomponent").text();
+    startPortName = rDomElement.firstChildElement("startport").text();
+    endComponentName = rDomElement.firstChildElement("endcomponent").text();
+    endPortName = rDomElement.firstChildElement("endport").text();
+
+    //Read gui specific stuff
+    QDomElement guiData = rDomElement.firstChildElement("hopsangui");
+    qreal x,y;
+    QDomElement xyNode = guiData.firstChildElement("xy");
+    while (!xyNode.isNull())
+    {
+        parseDomValueNode2(xyNode,x,y);
+        pointVector.push_back(QPointF(x,y));
+        xyNode = xyNode.nextSiblingElement("xy");
+    }
+}
+
 
 void ParameterLoadData::read(QTextStream &rStream)
 {
     componentName = readName(rStream);
     parameterName = readName(rStream);
     rStream >> parameterValue;
+}
+
+void ParameterLoadData::readDomElement(QDomElement &rDomElement)
+{
+    componentName = "";
+    parameterName = rDomElement.firstChildElement("name").text();
+    parameterValue = parseDomValueNode(rDomElement.firstChildElement("value"));
 }
 
 
@@ -285,7 +374,7 @@ void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, undoStatu
     }
 }
 
-
+//! @brief text version
 void loadParameterValues(const ParameterLoadData &rData, GUISystem* pSystem, undoStatus undoSettings)
 {
     //qDebug() << "Parameter: " << componentName << " " << parameterName << " " << parameterValue;
@@ -301,11 +390,34 @@ void loadParameterValues(const ParameterLoadData &rData, GUISystem* pSystem, und
 
 }
 
+//! @brief xml version
+void loadParameterValue(const ParameterLoadData &rData, GUIObject* pObject, undoStatus undoSettings)
+{
+    pObject->setParameterValue(rData.parameterName, rData.parameterValue);
+}
+
+//! @brief xml version
+void loadParameterValue(QDomElement &rDomElement, GUIObject* pObject, undoStatus undoSettings)
+{
+    ParameterLoadData data;
+    data.readDomElement(rDomElement);
+    loadParameterValue(data, pObject, undoSettings);
+}
+
+
 //! @brief Conveniance function if you dont want to manipulate the loaded data
 GUIObject* loadGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
 {
     ObjectLoadData data;
     data.read(rStream);
+    return loadGUIObject(data,pLibrary, pSystem, undoSettings);
+}
+
+//! @brief Conveniance function if you dont want to manipulate the loaded data
+GUIObject* loadGUIObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
+{
+    ObjectLoadData data;
+    data.readDomElement(rDomElement);
     return loadGUIObject(data,pLibrary, pSystem, undoSettings);
 }
 
@@ -316,11 +428,26 @@ GUIObject* loadSubsystemGUIObject(QTextStream &rStream, LibraryWidget* pLibrary,
     return loadSubsystemGUIObject(data, pLibrary, pSystem, undoSettings);
 }
 
+GUIObject* loadSubsystemGUIObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
+{
+    SubsystemLoadData data;
+    data.readDomElement(rDomElement);
+    return loadSubsystemGUIObject(data, pLibrary, pSystem, undoSettings);
+}
+
 //! @brief Conveniance function if you dont want to manipulate the loaded data
 void loadConnector(QTextStream &rStream, GUISystem* pSystem, undoStatus undoSettings)
 {
     ConnectorLoadData data;
     data.read(rStream);
+    loadConnector(data, pSystem, undoSettings);
+}
+
+//! @brief Conveniance function if you dont want to manipulate the loaded data
+void loadConnector(QDomElement &rDomElement, GUISystem* pSystem, undoStatus undoSettings)
+{
+    ConnectorLoadData data;
+    data.readDomElement(rDomElement);
     loadConnector(data, pSystem, undoSettings);
 }
 
@@ -445,4 +572,22 @@ void appendDomValueNode2(QDomElement &rDomElement, const QString element_name, c
     appendDomTextNode(rDomElement, element_name, str);
 }
 
+void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &rC)
+{
+    QStringList poseList = domElement.text().split(" ");
+    rA = poseList[0].toDouble();
+    rB = poseList[1].toDouble();
+    rC = poseList[2].toDouble();
+}
 
+void parseDomValueNode2(QDomElement domElement, double &rA, double &rB)
+{
+    QStringList poseList = domElement.text().split(" ");
+    rA = poseList[0].toDouble();
+    rB = poseList[1].toDouble();
+}
+
+qreal parseDomValueNode(QDomElement domElement)
+{
+    return domElement.text().toDouble();
+}

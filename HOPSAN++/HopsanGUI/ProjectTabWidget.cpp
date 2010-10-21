@@ -423,16 +423,9 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     //QMap<QString, QPointF> extPortMap;
     mpSystem->updateExternalPortPositions();
     //! @todo maybe have a write xml port help function
-    //! @todo we should fetch this data from the real port appearance data that should be updated
-    //! @todo we must save port direction
-//    QMap<QString, QPointF>::iterator epmit;
-//    for (epmit=extPortMap.begin(); epmit!=extPortMap.end(); ++epmit)
-//    {
-//        QDomElement xmlPort = appendDomElement(xmlModelAppearance, "port");
-//        appendDomTextNode(xmlPort, "name", epmit.key());
-//        appendDomTextNodeXY(xmlPort, epmit.value().x(), epmit.value().y());
-//    }
 
+
+    //! @todo Do we really need to svae this at all now that we can call update external ports function
     QList<GUIPort*>::iterator pit;
     //Note we need a local copy of portlist here calling mpSystem->getPortListPtrs().begin() and .edn() would fail as they would return two DIFFERENT copies
     for (pit=mpSystem->getPortListPtrs().begin(); pit!=mpSystem->getPortListPtrs().end(); ++pit)
@@ -450,13 +443,13 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
 
     //Save to file
     const int IndentSize = 1;
-    QFile apa("test.xml");
-    if (!apa.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+    QFile xmlhmf(mpSystem->mModelFileInfo.filePath()+"x");
+    if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        qDebug() << "Failed to open file for writing: test.xml";
+        qDebug() << "Failed to open file for writing: " << mpSystem->mModelFileInfo.filePath() << "x";
         return;
     }
-    QTextStream out(&apa);
+    QTextStream out(&xmlhmf);
     domDocument.save(out, IndentSize);
 }
 
@@ -701,7 +694,49 @@ void ProjectTabWidget::loadModel(QString modelFileName)
 //    pCurrentTab->mpSystem->mUndoStack->newPost();
     pCurrentTab->setSaved(true);
 
-    pCurrentTab->mpSystem->loadFromHMF(modelFileName);
+    //Temporary hack to atempt loading xml model files
+    if (modelFileName.endsWith("x"))
+    {
+
+        //QString textStringFile(&file); //Converts to QTextStream
+        QDomDocument domDocument;
+        QString errorStr;
+        int errorLine, errorColumn;
+        if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
+        {
+            QMessageBox::information(window(), tr("Hopsan GUI"),
+                                     tr("Parse error at line %1, column %2:\n%3")
+                                     .arg(errorLine)
+                                     .arg(errorColumn)
+                                     .arg(errorStr));
+        }
+        else
+        {
+            QDomElement hmfRoot = domDocument.documentElement();
+            if (hmfRoot.tagName() != "hopsanmodelfile")
+            {
+                QMessageBox::information(window(), tr("Hopsan GUI"),
+                                         tr("The file is not an Hopsan Model File file."));
+            }
+            else
+            {
+                //Do some header read stuff
+                //! @todo clean this up and check for existance .isNull can be used
+                //! @todo use the unused info
+                QDomElement versionInfo = hmfRoot.firstChildElement("hopsanversions");
+                QDomElement modelProperties = hmfRoot.firstChildElement("modelproperties");
+                QDomElement modelAppearance = hmfRoot.firstChildElement("modelappearance");
+                QDomElement systemElement = hmfRoot.firstChildElement("system");
+                pCurrentTab->mpSystem->loadFromDomElement(systemElement);
+            }
+
+        }
+    }
+    else
+    {
+        pCurrentTab->mpSystem->loadFromHMF(modelFileName);
+    }
+
 
 //    //Read the header data, also checks version numbers
 //    //! @todo maybe not check the version numbers in there

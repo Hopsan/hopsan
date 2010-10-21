@@ -45,6 +45,7 @@ public:
     int textVisible;
 
     void read(QTextStream &rStream);
+    void readDomElement(QDomElement &rDomElement);
 };
 
 class SubsystemLoadData :public ObjectLoadData
@@ -55,6 +56,8 @@ public:
     QString cqs_type;
 
     void read(QTextStream &rStream);
+    void readDomElement(QDomElement &rDomElement);
+
 };
 
 //! @todo the class should be shared somehow with the other class that reads appearance data from files for components
@@ -70,6 +73,7 @@ public:
     QVector<qreal> port_angle;
 
     void read(QTextStream &rStream);
+    //void readDomElement(QDomElement &rDomElement);
 
 };
 
@@ -80,6 +84,7 @@ public:
     QVector<QPointF> pointVector;
 
     void read(QTextStream &rStream);
+    void readDomElement(QDomElement &rDomElement);
 };
 
 class ParameterLoadData
@@ -89,18 +94,26 @@ public:
     qreal parameterValue;
 
     void read(QTextStream &rStream);
+    void readDomElement(QDomElement &rDomElement);
 };
 
 
-GUIObject* loadGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings=UNDO);
-GUIObject* loadSubsystemGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings);
-void loadConnector(QTextStream &rStream, GUISystem* pSystem, undoStatus undoSettings=UNDO);
-void loadParameterValues(QTextStream &rStream, GUISystem* pSystem, undoStatus undoSettings=UNDO);
-
 GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings=UNDO);
+GUIObject* loadGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings=UNDO);
+GUIObject* loadGUIObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings);
+
 GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings);
+GUIObject* loadSubsystemGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings);
+GUIObject* loadSubsystemGUIObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings);
+
 void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, undoStatus undoSettings=UNDO);
+void loadConnector(QTextStream &rStream, GUISystem* pSystem, undoStatus undoSettings=UNDO);
+void loadConnector(QDomElement &rDomElement, GUISystem* pSystem, undoStatus undoSettings);
+
 void loadParameterValues(const ParameterLoadData &rData, GUISystem* pSystem, undoStatus undoSettings=UNDO);
+void loadParameterValues(QTextStream &rStream, GUISystem* pSystem, undoStatus undoSettings=UNDO);
+void loadParameterValue(const ParameterLoadData &rData, GUIObject* pObject, undoStatus undoSettings=UNDO);
+void loadParameterValue(QDomElement &rDomElement, GUIObject* pObject, undoStatus undoSettings=UNDO);
 
 HeaderLoadData readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidget);
 void writeHeader(QTextStream &rStream);
@@ -113,5 +126,9 @@ void appendDomValueNode(QDomElement &rDomElement, const QString element_name, co
 void appendDomValueNode3(QDomElement &rDomElement, const QString element_name, const double a, const double b, const double c);
 void appendDomValueNode2(QDomElement &rDomElement, const QString element_name, const double a, const double b);
 //! @todo write one that takes a vector with data
+
+void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &rC);
+void parseDomValueNode2(QDomElement domElement, double &rA, double &rB);
+qreal parseDomValueNode(QDomElement domElement);
 
 #endif // LOADOBJECTS_H

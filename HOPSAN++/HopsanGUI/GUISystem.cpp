@@ -587,6 +587,69 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
     }
 }
 
+void GUISystem::loadFromDomElement(QDomElement &rDomElement)
+{
+    //! @todo might need some error checking here incase some fields are missing
+    //First load the core specific data, might need inherited function for this
+    this->setName(rDomElement.firstChildElement("name").text());
+    this->setTypeCQS(rDomElement.firstChildElement("cqs_type").text());
+
+    //Check if the subsystem is external or internal, and load appropriately
+    QString external_path = rDomElement.firstChildElement("external_path").text();
+    //! @todo define component and similar bellow somwhere eg. in common.h
+    if (external_path.isEmpty())
+    {
+        //Load embedded subsystem
+        //1. Load all sub-components
+        QDomElement xmlSubObject = rDomElement.firstChildElement("component");
+        while (!xmlSubObject.isNull())
+        {
+            GUIObject* pObj = loadGUIObject(xmlSubObject, mpMainWindow->mpLibrary, this, NOUNDO);
+
+            //Load parameter values
+            QDomElement xmlParameter = xmlSubObject.firstChildElement("parameter");
+            while (!xmlParameter.isNull())
+            {
+                loadParameterValue(xmlParameter, pObj, NOUNDO);
+                xmlParameter = xmlParameter.nextSiblingElement("parameter");
+            }
+
+            xmlSubObject = xmlSubObject.nextSiblingElement("component");
+        }
+
+        //2. Load all sub-systems
+        xmlSubObject = rDomElement.firstChildElement("system");
+        while (!xmlSubObject.isNull())
+        {
+            loadSubsystemGUIObject(xmlSubObject, mpMainWindow->mpLibrary, this, NOUNDO);
+            xmlSubObject = xmlSubObject.nextSiblingElement("system");
+        }
+
+        //3. Load all systemports
+        xmlSubObject = rDomElement.firstChildElement("systemport");
+        while (!xmlSubObject.isNull())
+        {
+            loadGUIObject(xmlSubObject, mpMainWindow->mpLibrary, this, NOUNDO);
+            xmlSubObject = xmlSubObject.nextSiblingElement("systemport");
+        }
+
+        //4. Load all connectors
+        xmlSubObject = rDomElement.firstChildElement("connector");
+        while (!xmlSubObject.isNull())
+        {
+            //! load component data
+            xmlSubObject = xmlSubObject.nextSiblingElement("connector");
+        }
+    }
+    else
+    {
+        //Load external system
+        //! @todo do this code
+    }
+
+
+}
+
 void GUISystem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     if(mModelFileInfo.filePath().isEmpty())

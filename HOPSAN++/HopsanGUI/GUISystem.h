@@ -128,7 +128,7 @@ public:
 protected:
     void saveCoreDataToDomElement(QDomElement &rDomElement);
 
-    //! Old subsystem stuff
+
 public:
     QString getTypeName();
     void setName(QString newName);
@@ -139,6 +139,7 @@ public:
 
     void saveToTextStream(QTextStream &rStream, QString prepend);
     void saveToDomElement(QDomElement &rDomElement);
+    void loadFromDomElement(QDomElement &rDomElement);
 
     QVector<QString> getParameterNames();
 
