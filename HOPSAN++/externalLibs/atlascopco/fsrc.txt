@@ -1,0 +1,7 @@
+TYPENAME "fsrc"
+DISPLAYNAME "fsrc"
+ISOICON "Pictures/fsrc.svg"
+USERICON "Pictures/fsrc.svg"
+ICONROTATION ON
+PORT "IN" 0 0.5 0
+PORT "P1" 1.0 0.5 0

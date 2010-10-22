@@ -1,0 +1,7 @@
+TYPENAME "sep2"
+DISPLAYNAME "sep2"
+ISOICON "Pictures/sep2.svg"
+USERICON "Pictures/sep2.svg"
+ICONROTATION ON
+PORT "P1" 0 0.5 0
+PORT "P2" 1.0 0.5 0

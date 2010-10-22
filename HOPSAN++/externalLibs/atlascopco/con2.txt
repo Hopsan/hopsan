@@ -1,0 +1,7 @@
+TYPENAME "con2"
+DISPLAYNAME "con2"
+ISOICON "Pictures/con2.svg"
+USERICON "Pictures/con2.svg"
+ICONROTATION ON
+PORT "P1" 0 0.5 0
+PORT "P2" 1.0 0.5 0

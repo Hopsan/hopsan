@@ -1,0 +1,7 @@
+TYPENAME "bar"
+DISPLAYNAME "bar"
+ISOICON "Pictures/bar.svg"
+USERICON "Pictures/bar.svg"
+ICONROTATION ON
+PORT "P1" 0 0.5 0
+PORT "P2" 1.0 0.5 0

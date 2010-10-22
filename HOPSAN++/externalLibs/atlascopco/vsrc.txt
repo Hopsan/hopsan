@@ -1,0 +1,7 @@
+TYPENAME "vsrc"
+DISPLAYNAME "vsrc"
+ISOICON "Pictures/vsrc.svg"
+USERICON "Pictures/vsrc.svg"
+ICONROTATION ON
+PORT "IN" 0 0.5 0
+PORT "P1" 1.0 0.5 0
