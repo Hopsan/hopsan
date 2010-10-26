@@ -1,7 +1,7 @@
 TYPENAME "HydraulicOptimizedCylinderQ"
 DISPLAYNAME "Optimized Cylinder Q"
-ISOICON "../hydraulic/Actuators/cylinderq_iso.svg"
-USERICON "../hydraulic/Actuators/cylinderq_user.svg"
+ISOICON "../hydraulic/actuators/cylinderq_iso.svg"
+USERICON "../hydraulic/actuators/cylinderq_user.svg"
 ICONROTATION ON
 PORT "P1" 0.0274 1.000 90
 PORT "P2" 0.4660 1.000 90
