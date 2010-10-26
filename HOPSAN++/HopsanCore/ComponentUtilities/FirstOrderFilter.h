@@ -30,8 +30,8 @@ namespace hopsan {
         void initializeValues(double u0, double y0);
         void setMinMax(double min, double max);
         void setNumDen(double num[2], double den[2]);
-        void update(double u);
-        double value(double u);
+        void update(double &u);
+        double value(double &u);
 	double value();
 
     private:

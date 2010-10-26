@@ -81,7 +81,7 @@ void FirstOrderFilter::initializeValues(double u0, double y0)
 }
 
 
-void FirstOrderFilter::update(double u)
+void FirstOrderFilter::update(double &u)
 {
     if (!mIsInitialized)
     {
@@ -119,7 +119,7 @@ void FirstOrderFilter::update(double u)
 }
 
 
-double FirstOrderFilter::value(double u)
+double FirstOrderFilter::value(double &u)
 {
     update(u);
 
@@ -132,7 +132,8 @@ double FirstOrderFilter::value(double u)
 //! @see value(double u)
 double FirstOrderFilter::value()
 {
-    update(mDelayU.valueIdx(1));
+    double tmp = mDelayU.valueIdx(1);
+    update(tmp);
 
     return mValue;
 }

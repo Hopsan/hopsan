@@ -116,7 +116,7 @@ double Port::readNode(const size_t idx)
 //! Writes a value to the connected node
 //! @param [in] idx The data id of the data to write
 //! @param [in] value The value of the data to read
-void Port::writeNode(const size_t idx, const double value)
+void Port::writeNode(const size_t &idx, const double &value)
 {
     //! @todo ummm??, if this is a writeport and it is not connected then noone will ever write
     if((this->getPortType() == Port::WRITEPORT) && (!this->isConnected()))     //Signal nodes don't have to be connected

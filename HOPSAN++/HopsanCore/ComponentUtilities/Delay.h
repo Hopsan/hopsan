@@ -24,7 +24,7 @@ namespace hopsan {
         void initialize(double &rTime, const double initValue);
         void initialize(double &rTime);
         void initializeValues(const double initValue);
-        void update(const double value);
+        void update(const double &value);
         void setStepDelay(const std::size_t stepDelay);
         void setStepDelay(const std::size_t stepDelay, const double initValue);
         void setTimeDelay(const double timeDelay, const double Ts);

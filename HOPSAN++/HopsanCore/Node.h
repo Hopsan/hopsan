@@ -45,7 +45,7 @@ namespace hopsan {
         void logData(const double time);
         void saveLogData(std::string filename);
 
-        void setData(const size_t data_type, double data);
+        void setData(const size_t &data_type, const double &data);
         double getData(const size_t data_type);
         double &getDataRef(const size_t data_type);
         double *getDataPtr(const size_t data_type);

@@ -87,7 +87,7 @@ void Delay::initializeValues(const double initValue)
 }
 
 
-void Delay::update(const double value)
+void Delay::update(const double &value)
 {
     if (!mIsInitialized)
     {

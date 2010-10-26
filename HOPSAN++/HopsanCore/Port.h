@@ -34,7 +34,7 @@ namespace hopsan {
         virtual ~Port();
 
         virtual double readNode(const size_t idx);
-        virtual void writeNode(const size_t idx, const double value);
+        virtual void writeNode(const size_t &idx, const double &value);
 
         double *getNodeDataPtr(const size_t idx);
 
