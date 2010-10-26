@@ -1,0 +1,24 @@
+--------------------------------------------------------------
+-------------------  HOPSAN NG MODEL FILE  -------------------
+--------------------------------------------------------------
+HOPSANGUIVERSION 0.0.1
+HMFVERSION 0.1
+CAFVERSION 0.1
+--------------------------------------------------------------
+SIMULATIONTIME 0 1e-06 10
+VIEWPORT 2500 2499 1
+--------------------------------------------------------------
+USERICON ""
+ISOICON ""
+--------------------------------------------------------------
+COMPONENT "SignalSink" "Sink" 2488 2517 0 0 1
+COMPONENT "SignalLP1Filter" "First order low pass filter" 2365 2517 0 0 1
+PARAMETER "First order low pass filter" "w" 1000
+COMPONENT "SignalStep" "Step" 2234 2517 0 0 1
+PARAMETER "Step" "BaseValue" 0
+PARAMETER "Step" "Amplitude" 1
+PARAMETER "Step" "StepTime" 1
+--------------------------------------------------------------
+CONNECT "Sink" "in" "First order low pass filter" "out" 2475.5 2517 2413 2517 2413 2517 2393.5 2517
+CONNECT "Step" "out" "First order low pass filter" "in" 2254 2517 2314 2517 2314 2517 2336.5 2517
+--------------------------------------------------------------
