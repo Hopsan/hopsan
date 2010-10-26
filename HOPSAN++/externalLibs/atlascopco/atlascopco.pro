@@ -3,9 +3,17 @@ QT -= core \
 TARGET = atlascopcoLib
 TEMPLATE = lib
 
+CONFIG(debug, debug|release) {
+#DESTDIR = ../../bin/debug
+LIBS += -L../../bin/debug \
+    -lHopsanCore
+}
+CONFIG(release, debug|release) {
 #DESTDIR = ../../bin/debug
 LIBS += -L../../bin/release \
     -lHopsanCore
+}
+
 INCLUDEPATH += ../../HopsanCore
 
 HEADERS += \

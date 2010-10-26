@@ -13,7 +13,7 @@ using namespace hopsan;
 
 HopsanCoreMessageHandler::HopsanCoreMessageHandler()
 {
-    mMaxQueueSize = 20;
+    mMaxQueueSize = 10000;
 }
 
 void HopsanCoreMessageHandler::addMessage(int type, string preFix, string message, int debuglevel)
@@ -44,6 +44,11 @@ void HopsanCoreMessageHandler::addWarningMessage(string message, int dbglevel)
 void HopsanCoreMessageHandler::addErrorMessage(string message, int dbglevel)
 {
     addMessage(HopsanCoreMessage::ERROR, "Error: ", message, dbglevel);
+}
+
+void HopsanCoreMessageHandler::addComponentDebugMessage(string message, int dbglevel)
+{
+    addMessage(HopsanCoreMessage::DEBUG, "Debug: ", message, dbglevel);
 }
 
 

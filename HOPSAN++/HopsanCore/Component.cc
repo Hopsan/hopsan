@@ -628,6 +628,13 @@ double Component::getMeasuredTime()
 }
 
 
+//! Write an Info message, i.e. for debugging purposes.
+void Component::addDebugMessage(string message)
+{
+    gCoreMessageHandler.addComponentDebugMessage(message);
+}
+
+
 //! @brief Change the cqs type of a stored subsystem component
 bool ComponentSystem::changeTypeCQS(const string name, const typeCQS newType)
 {

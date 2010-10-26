@@ -149,4 +149,5 @@ HEADERS += win32dll.h \
     Components/Signal/SignalSmallerThan.hpp \
     Components/Signal/SignalAnd.hpp \
     Components/Signal/SignalOr.hpp \
-    Components/Signal/SignalXor.hpp
+    Components/Signal/SignalXor.hpp \
+    Components/Signal/SignalTime.hpp
