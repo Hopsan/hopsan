@@ -19,6 +19,7 @@ Schematic image:
 
 #include "../../HopsanCore/ComponentEssentials.h"
 #include "../../HopsanCore/ComponentUtilities.h"
+//#include "../../HopsanCore/ComponentUtilities/Integrator.hpp"
 
 namespace hopsan {
 

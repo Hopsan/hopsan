@@ -150,4 +150,7 @@ HEADERS += win32dll.h \
     Components/Signal/SignalAnd.hpp \
     Components/Signal/SignalOr.hpp \
     Components/Signal/SignalXor.hpp \
-    Components/Signal/SignalTime.hpp
+    Components/Signal/SignalTime.hpp \
+    ComponentUtilities/Integrator.hpp \
+    ComponentUtilities/FirstOrderFilter.hpp \
+    ComponentUtilities/Delay.hpp

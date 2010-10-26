@@ -368,7 +368,7 @@ void LibraryWidget::addLibrary()
 //! @see addLibrary(QString libDir, QString parentLib)
 void LibraryWidget::addExternalLibrary(QString libDir)
 {
-
+    qDebug() << "looking for dll or so in: " << libDir;
     //*****Core Interaction*****
 
         // Load all .dll or .so files in specified folder
@@ -387,6 +387,7 @@ void LibraryWidget::addExternalLibrary(QString libDir)
     for (int i = 0; i < libList.size(); ++i)
     {
         QString filename = libDirObject.absolutePath() + "/" + libList.at(i);
+        qDebug() << "Trying to load: " << filename << " in Core";
         pHopsanCore->loadExternalComponent(filename.toStdString());
     }
     //**************************

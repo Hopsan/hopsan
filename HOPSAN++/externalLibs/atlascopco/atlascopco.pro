@@ -4,14 +4,12 @@ TARGET = atlascopcoLib
 TEMPLATE = lib
 
 CONFIG(debug, debug|release) {
-#DESTDIR = ../../bin/debug
-LIBS += -L../../bin/debug \
-    -lHopsanCore
+    #DESTDIR = ../bin/debug
+    LIBS += -L../../bin/debug -lHopsanCore
 }
 CONFIG(release, debug|release) {
-#DESTDIR = ../../bin/debug
-LIBS += -L../../bin/release \
-    -lHopsanCore
+    #DESTDIR = ../bin/release
+    LIBS += -L../../bin/release -lHopsanCore
 }
 
 INCLUDEPATH += ../../HopsanCore

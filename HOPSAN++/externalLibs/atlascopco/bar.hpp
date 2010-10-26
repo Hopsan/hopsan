@@ -20,6 +20,7 @@ I         I
 using namespace std;
 #include "../../HopsanCore/ComponentEssentials.h"
 #include "../../HopsanCore/ComponentUtilities.h"
+//#include "../../HopsanCore/ComponentUtilities/FirstOrderFilter.hpp"
 
 namespace hopsan {
 
