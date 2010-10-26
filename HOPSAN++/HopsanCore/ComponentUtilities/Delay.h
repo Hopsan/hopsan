@@ -31,7 +31,7 @@ namespace hopsan {
         void setTimeDelay(const double timeDelay, const double Ts, const double initValue);
 	double value();
 	double value(double value);
-	double valueIdx(const int idx);
+    double &valueIdx(const int idx);
 	double valueIdx(double value, const int idx);
         //! @todo Implement void valueTime(double time); A function which returns delayed value of time
     private:

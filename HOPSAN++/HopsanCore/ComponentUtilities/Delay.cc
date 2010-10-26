@@ -222,7 +222,7 @@ double Delay::valueIdx(double value, const int idx)
 //! @see value(double value)
 //! @see valueIdx(const int idx)
 //! @see valueIdx(double value, const int idx)
-double Delay::valueIdx(const int idx) //! @todo interpolera värden
+double &Delay::valueIdx(const int idx) //! @todo interpolera värden
 {
     update(mValues.front());
     if (((size_t)idx < 1) || ((size_t)idx > mValues.size()))

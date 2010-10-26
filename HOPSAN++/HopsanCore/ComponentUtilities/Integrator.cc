@@ -41,7 +41,7 @@ void Integrator::initializeValues(double u0, double y0)
 }
 
 
-void Integrator::update(double u)
+void Integrator::update(double &u)
 {
     if (!mIsInitialized)
     {
@@ -60,7 +60,7 @@ void Integrator::update(double u)
 }
 
 
-double Integrator::value(double u)
+double Integrator::value(double &u)
 {
     update(u);
 
