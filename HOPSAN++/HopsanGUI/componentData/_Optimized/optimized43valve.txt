@@ -1,7 +1,7 @@
 TYPENAME "HydraulicOptimized43Valve"
 DISPLAYNAME "Optimized 4/3 Servo Valve"
-ISOICON "..\hydraulic\valves\43valve_iso.svg"
-USERICON "..\hydraulic\valves\43valve_user.svg"
+ISOICON "../hydraulic/valves/43valve_iso.svg"
+USERICON "../hydraulic/valves/43valve_user.svg"
 ICONROTATION ON
 PORT "PP" 0.5624 1.0000 90
 PORT "PT" 0.6885 1.0000 90
