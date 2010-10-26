@@ -107,7 +107,9 @@ unix {
 }
 win32 {
     INCLUDEPATH += c:/Qwt-5.2.2-svn/include
+    INCLUDEPATH += c:/Qwt-5.2.1-svn/include
     LIBS += -Lc:/Qwt-5.2.2-svn/lib
+    LIBS += -Lc:/Qwt-5.2.1-svn/lib
 
     CONFIG(debug, debug|release) {
         LIBS += -lqwtd5
