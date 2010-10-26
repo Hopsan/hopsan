@@ -1,6 +1,6 @@
 TYPENAME "MechanicOptimizedForceTransformer"
 DISPLAYNAME "Optimized Force Transformer"
-ISOICON "..\mechanic\Transformers\forcetransformer.svg"
+ISOICON "../mechanic/Transformers/forcetransformer.svg"
 ICONROTATION ON
 PORT "in" 0.0 0.5 0
 PORT "P1" 1.0 0.5 0

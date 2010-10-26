@@ -1,6 +1,6 @@
 TYPENAME "SignalOptimizedGain"
 DISPLAYNAME "Optimized Gain"
-ISOICON "..\signal\Arithmetics\gain.svg"
+ISOICON "../signal/Arithmetics/gain.svg"
 ICONROTATION ON
 PORT "in" 0.0 0.5 0
 PORT "out" 1.0 0.5 0
