@@ -52,8 +52,8 @@ void Integrator::update(double u)
     {
         //Filter equation
         //Bilinear transform is used
-		mDelayY.update(mDelayY.value() + mTimeStep/2.0*(u + mDelayU.value()));
-		mDelayU.update(u);
+        mDelayY.update(mDelayY.value() + mTimeStep/2.0*(u + mDelayU.value()));
+        mDelayU.update(u);
 
         mLastTime = *mpTime;
     }
@@ -76,4 +76,75 @@ double Integrator::value()
     update(mDelayU.valueIdx(1));
 
     return mDelayY.value();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+OptimizedIntegrator::OptimizedIntegrator()
+{
+    mLastTime = 0.0;
+    mIsInitialized = false;
+}
+
+
+void OptimizedIntegrator::initialize(double &rTime, double timestep, double *uref, double *yref, double u0, double y0)
+{
+    //mDelayU.setStepDelay(1);
+    //mDelayY.setStepDelay(1);
+    //mDelayU.initialize(rTime, u0);
+    //mDelayY.initialize(rTime, y0);
+    mDelayU = u0;
+    mDelayY = y0;
+
+    mTimeStep = timestep;
+    mpU = uref;
+    mpY = yref;
+    mpTime = &rTime;
+    mIsInitialized = true;
+}
+
+
+void OptimizedIntegrator::initializeValues(double u0, double y0)
+{
+    mDelayU = u0;
+    mDelayY = y0;
+    //mDelayU.initializeValues(u0);
+    //mDelayY.initializeValues(y0);
+}
+
+
+void OptimizedIntegrator::update()
+{
+    if (!mIsInitialized)
+    {
+        std::cout << "Integrator function has to be initialized" << std::endl;
+        assert(false);
+    }
+    else if (mLastTime != *mpTime)
+    {
+        //Filter equation
+        //Bilinear transform is used
+        mDelayY = mDelayY + mTimeStep/2.0*(*mpU + mDelayU);
+        mDelayU = *mpU;
+        //mDelayU.update(*mpU);
+
+        mLastTime = *mpTime;
+    }
+}
+
+
+void OptimizedIntegrator::doTheStuff()
+{
+    update();
+
+    *mpY = mDelayY;
 }

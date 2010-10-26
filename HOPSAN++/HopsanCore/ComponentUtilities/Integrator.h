@@ -23,12 +23,33 @@ namespace hopsan {
         void initialize(double &rTime, double timestep, double u0=0.0, double y0=0.0);
         void initializeValues(double u0, double y0);
         void update(double u);
-	double value(double u);
+        double value(double u);
 	double value();
 
     private:
         Delay mDelayU, mDelayY;
         double mTimeStep;
+        double *mpTime;
+        double mLastTime;
+        bool mIsInitialized;
+    };
+
+
+    class DLLIMPORTEXPORT OptimizedIntegrator
+    {
+    public:
+        OptimizedIntegrator();
+        void initialize(double &rTime, double timestep, double *uref, double *yref, double u0=0.0, double y0=0.0);
+        void initializeValues(double u0, double y0);
+        void update();
+        void doTheStuff();
+
+    private:
+        //Delay mDelayU, mDelayY;
+        double mDelayU, mDelayY;
+        double mTimeStep;
+        double *mpU;
+        double *mpY;
         double *mpTime;
         double mLastTime;
         bool mIsInitialized;
