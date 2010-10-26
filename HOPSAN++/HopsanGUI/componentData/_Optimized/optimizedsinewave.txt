@@ -1,5 +1,5 @@
 TYPENAME "SignalOptimizedSineWave"
 DISPLAYNAME "Optimized Sine Wave"
-ISOICON "..\signal\Sources & Sinks\sinewave.svg"
+ISOICON "../signal/Sources & Sinks/sinewave.svg"
 ICONROTATION ON
 PORT "out" 1.0 0.5 0
