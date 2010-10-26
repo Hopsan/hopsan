@@ -122,6 +122,97 @@ namespace hopsan {
 
         }
     };
+
+
+
+
+
+
+
+    //!
+    //! @brief A hydraulic volume component
+    //! @ingroup HydraulicComponents
+    //!
+    class HydraulicOptimizedVolume : public ComponentC
+    {
+
+    private:
+        double mStartPressure;
+        double mStartFlow;
+        double mZc;
+        double mAlpha;
+        double mVolume;
+        double mBulkmodulus;
+        Port *mpP1, *mpP2;
+
+        double *p1, *q1, *c1, *Zc1, *p2, *q2, *c2, *Zc2;
+        double c10, c20;
+
+    public:
+        static Component *Creator()
+        {
+            return new HydraulicOptimizedVolume("Volume");
+        }
+
+        HydraulicOptimizedVolume(const std::string name) : ComponentC(name)
+        {
+            //Set member attributes
+            mTypeName = "HydraulicOptimizedVolume";
+            mStartPressure = 0.0;
+            mStartFlow     = 0.0;
+            mBulkmodulus   = 1.0e9;
+            mVolume        = 1.0e-3;
+            mAlpha         = 0.1;
+
+            //Add ports to the component
+            mpP1 = addPowerPort("P1", "NodeHydraulic");
+            mpP2 = addPowerPort("P2", "NodeHydraulic");
+
+            //Register changable parameters to the HOPSAN++ core
+            registerParameter("V", "Volume", "[m^3]",            mVolume);
+            registerParameter("Be", "Bulkmodulus", "[Pa]", mBulkmodulus);
+            registerParameter("a", "Low pass coeficient to dampen standing delayline waves", "[-]",  mAlpha);
+
+        }
+
+
+        void initialize()
+        {
+            p1 = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            q1 = mpP1->getNodeDataPtr(NodeHydraulic::MASSFLOW);
+            c1 = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            Zc1 = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
+            p2 = mpP2->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            q2 = mpP2->getNodeDataPtr(NodeHydraulic::MASSFLOW);
+            c2 = mpP2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            Zc2 = mpP2->getNodeDataPtr(NodeHydraulic::CHARIMP);
+
+            mZc = mBulkmodulus/mVolume*mTimestep/(1-mAlpha);
+
+            *c1 = *p1 + mZc * *q1;
+            *c2 = *p2 + mZc * *q2;
+            *Zc1 = mZc;
+            *Zc2 = mZc;
+        }
+
+
+        void simulateOneTimestep()
+        {
+            c10 = *c2 + 2.0 * mZc * *q2;
+            c20 = *c1 + 2.0 * mZc * *q1;
+
+            *c1 = mAlpha * *c1 + (1.0-mAlpha) * c10;
+            *c2 = mAlpha * *c2 + (1.0-mAlpha) * c20;
+
+            *Zc1 = mZc;
+            *Zc2 = mZc;
+        }
+
+        void finalize()
+        {
+
+        }
+    };
 }
 
 #endif // HYDRAULICVOLUME_HPP_INCLUDED

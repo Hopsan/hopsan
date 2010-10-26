@@ -62,6 +62,55 @@ namespace hopsan {
             mpOut->writeNode(NodeSignal::VALUE, y);
         }
     };
+
+
+
+
+    //!
+    //! @brief
+    //! @ingroup SignalComponents
+    //!
+    class SignalOptimizedGain : public ComponentSignal
+    {
+
+    private:
+        double mGain;
+        Port *mpIn, *mpOut;
+
+        double *input, *output;
+
+    public:
+        static Component *Creator()
+        {
+            return new SignalOptimizedGain("Gain");
+        }
+
+        SignalOptimizedGain(const std::string name) : ComponentSignal(name)
+        {
+            mTypeName = "SignalOptimizedGain";
+            mGain = 1.0;
+
+            mpIn = addReadPort("in", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal");
+
+            registerParameter("Gain", "Gain value", "-", mGain);
+        }
+
+
+        void initialize()
+        {
+            input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+
+            *output = 0.0;
+        }
+
+
+        void simulateOneTimestep()
+        {
+            *output = mGain * *input;
+        }
+    };
 }
 
 #endif // SIGNALGAIN_HPP_INCLUDED

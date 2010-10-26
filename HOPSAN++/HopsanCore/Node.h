@@ -48,6 +48,7 @@ namespace hopsan {
         void setData(const size_t data_type, double data);
         double getData(const size_t data_type);
         double &getDataRef(const size_t data_type);
+        double *getDataPtr(const size_t data_type);
 
         void setDataNameAndUnit(size_t id, std::string name, std::string unit, Node::PLOTORNOT plotBehaviour = Node::PLOT);
         std::string getDataName(size_t id);

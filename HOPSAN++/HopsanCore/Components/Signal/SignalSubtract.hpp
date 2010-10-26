@@ -82,6 +82,71 @@ namespace hopsan {
             mpOut->writeNode(NodeSignal::VALUE, output);
         }
     };
+
+
+
+
+    //!
+    //! @brief
+    //! @ingroup SignalComponents
+    //!
+    class SignalOptimizedSubtract : public ComponentSignal
+    {
+
+    private:
+        Port *mpIn1, *mpIn2, *mpOut;
+
+        double *in1, *in2, *output;
+
+    public:
+        static Component *Creator()
+        {
+            return new SignalOptimizedSubtract("Subtract");
+        }
+
+        SignalOptimizedSubtract(const std::string name) : ComponentSignal(name)
+        {
+            mTypeName = "SignalOptimizedSubtract";
+
+            mpIn1 = addReadPort("in1", "NodeSignal");
+            mpIn2 = addReadPort("in2", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal");
+        }
+
+
+        void initialize()
+        {
+            if(mpIn1->isConnected())
+                in1 = mpIn1->getNodeDataPtr(NodeSignal::VALUE);
+            if(mpIn2->isConnected())
+                in2 = mpIn2->getNodeDataPtr(NodeSignal::VALUE);
+
+            output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+
+            *output = 0.0;
+        }
+
+
+        void simulateOneTimestep()
+        {
+            if (mpIn1->isConnected() && mpIn2->isConnected())       //Both ports connected
+            {
+                *output = *in1 - *in2;
+            }
+            else if (mpIn1->isConnected() && !mpIn2->isConnected())       //Port 1 connected, port 2 disconnected
+            {
+                *output = *in1;
+            }
+            else if (!mpIn1->isConnected() && mpIn2->isConnected())       //Port 2 connected, port 1 disconnected
+            {
+                *output = -*in2;
+            }
+            else
+            {
+                *output = 0;
+            }
+        }
+    };
 }
 
 #endif // SIGNALSUBTRACT_HPP_INCLUDED

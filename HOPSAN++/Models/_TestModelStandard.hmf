@@ -1,0 +1,71 @@
+--------------------------------------------------------------
+-------------------  HOPSAN NG MODEL FILE  -------------------
+--------------------------------------------------------------
+HOPSANGUIVERSION 0.0.1
+HMFVERSION 0.1
+CAFVERSION 0.1
+--------------------------------------------------------------
+SIMULATIONTIME 0 0.0001 100
+VIEWPORT 2509 2427 1
+--------------------------------------------------------------
+USERICON ""
+ISOICON ""
+--------------------------------------------------------------
+COMPONENT "SignalSineWave" "Sine Wave" 2084 2607 0 0 1
+PARAMETER "Sine Wave" "StartTime" 0
+PARAMETER "Sine Wave" "Frequency" 0.1
+PARAMETER "Sine Wave" "Amplitude" 1
+PARAMETER "Sine Wave" "Offset" 0
+COMPONENT "HydraulicVolume" "Hydraulic Volume_1" 2481 2490 90 0 0
+PARAMETER "Hydraulic Volume_1" "V" 0.001
+PARAMETER "Hydraulic Volume_1" "Be" 1e+09
+PARAMETER "Hydraulic Volume_1" "a" 0.1
+COMPONENT "MechanicForceTransformer" "Force Transformer" 2686 2413 180 0 0
+PARAMETER "Force Transformer" "x0" 0
+PARAMETER "Force Transformer" "v0" 0
+PARAMETER "Force Transformer" "Force" 0
+COMPONENT "SignalSubtract" "Subtract" 2201 2607 0 0 1
+COMPONENT "HydraulicCylinderQ" "Cylinder Q" 2489 2413 0 0 0
+PARAMETER "Cylinder Q" "Area1" 0.001
+PARAMETER "Cylinder Q" "Area2" 0.001
+PARAMETER "Cylinder Q" "Stroke" 1
+PARAMETER "Cylinder Q" "Bp" 0
+PARAMETER "Cylinder Q" "Mass" 100
+PARAMETER "Cylinder Q" "Bl" 100
+PARAMETER "Cylinder Q" "Kl" 100
+COMPONENT "HydraulicVolume" "Hydraulic Volume" 2401 2487 90 0 0
+PARAMETER "Hydraulic Volume" "V" 0.001
+PARAMETER "Hydraulic Volume" "Be" 1e+09
+PARAMETER "Hydraulic Volume" "a" 0.1
+COMPONENT "Hydraulic43Valve" "4/3 Servo Valve" 2422 2597 0 0 0
+PARAMETER "4/3 Servo Valve" "Cq" 0.67
+PARAMETER "4/3 Servo Valve" "d" 0.01
+PARAMETER "4/3 Servo Valve" "f" 1
+PARAMETER "4/3 Servo Valve" "xvmax" 0.01
+PARAMETER "4/3 Servo Valve" "overlap_pa" 0
+PARAMETER "4/3 Servo Valve" "overlap_pb" 0
+PARAMETER "4/3 Servo Valve" "overlap_at" 0
+PARAMETER "4/3 Servo Valve" "overlap_pa" 0
+PARAMETER "4/3 Servo Valve" "omegah" 100
+PARAMETER "4/3 Servo Valve" "deltah" 0
+COMPONENT "MechanicPositionSensor" "Position Sensor" 2598 2331 0 0 0
+COMPONENT "HydraulicPressureSource" "Prescribed Pressure C" 2406 2699 0 0 0
+PARAMETER "Prescribed Pressure C" "P" 2e+07
+COMPONENT "SignalGain" "Gain" 2288 2607 0 0 1
+PARAMETER "Gain" "Gain" 0.03
+COMPONENT "HydraulicPressureSource" "Prescribed Pressure C_1" 2482 2697 0 0 0
+PARAMETER "Prescribed Pressure C_1" "P" 100000
+--------------------------------------------------------------
+CONNECT "Hydraulic Volume_1" "P1" "Cylinder Q" "P2" 2481 2465 2482.81 2433
+CONNECT "Hydraulic Volume" "P1" "Cylinder Q" "P1" 2401 2462 2402.99 2433
+CONNECT "Hydraulic Volume_1" "P2" "4/3 Servo Valve" "PB" 2481 2515 2481 2547 2451.97 2547 2451.97 2572
+CONNECT "Hydraulic Volume" "P2" "4/3 Servo Valve" "PA" 2401 2512 2401 2548 2431.92 2548 2431.92 2572
+CONNECT "Force Transformer" "P1" "Cylinder Q" "P3" 2666.5 2413 2602 2413 2602 2413 2580 2413
+CONNECT "Cylinder Q" "P3" "Position Sensor" "P1" 2580 2413 2598 2343.5
+CONNECT "Prescribed Pressure C_1" "P1" "4/3 Servo Valve" "PT" 2482 2685 2482 2643 2451.97 2643 2451.97 2622
+CONNECT "Prescribed Pressure C" "P1" "4/3 Servo Valve" "PP" 2406 2687 2406 2642 2431.92 2642 2431.92 2622
+CONNECT "Gain" "out" "4/3 Servo Valve" "in" 2300.5 2607 2342.5 2607
+CONNECT "Subtract" "out" "Gain" "in" 2213.5 2607 2275.5 2607
+CONNECT "Subtract" "in2" "Position Sensor" "out" 2201 2594.5 2201 2227 2598 2227 2598 2318.5
+CONNECT "Sine Wave" "out" "Subtract" "in1" 2104 2607 2166 2607 2166 2607 2188.5 2607
+--------------------------------------------------------------

@@ -18,7 +18,7 @@
 #include "GraphicsScene.h"
 #include "GUISystem.h"
 #include "GUIUtilities.h"
-#include "PyDock.h"
+//#include "PyDock.h"
 #include "GlobalParametersWidget.h"
 
 //! Constructor
@@ -68,8 +68,8 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibDock->setWidget(mpLibrary);
     addDockWidget(Qt::LeftDockWidgetArea, mpLibDock);
 
-    mpPyDock = new PyDock(this, this);
-    addDockWidget(Qt::BottomDockWidgetArea, mpPyDock);
+    //mpPyDock = new PyDock(this, this);
+    //addDockWidget(Qt::BottomDockWidgetArea, mpPyDock);
 
     //Set dock widget corner owner
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
@@ -138,6 +138,8 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/actuators","Hydraulic");
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/valves","Hydraulic");
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/pumps","Hydraulic");
+
+    mpLibrary->addLibrary(QString(COMPONENTPATH) + "_Optimized");
 
         //Create the plot dock widget and hide it
     mpPlotWidgetDock = new QDockWidget(tr("Plot Variables"), this);

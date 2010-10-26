@@ -36,6 +36,8 @@ namespace hopsan {
         virtual double readNode(const size_t idx);
         virtual void writeNode(const size_t idx, const double value);
 
+        double *getNodeDataPtr(const size_t idx);
+
         void saveLogData(std::string filename);
         void getNodeDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits);
         void getNodeDataNameAndUnit(const size_t dataid, std::string &rName, std::string &rUnit);

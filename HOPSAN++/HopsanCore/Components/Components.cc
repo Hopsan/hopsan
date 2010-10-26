@@ -53,6 +53,13 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->registerCreatorFunction("HydraulicVariableDisplacementMotorQ", HydraulicVariableDisplacementMotorQ::Creator);
     cfact_ptr->registerCreatorFunction("HydraulicVolume3", HydraulicVolume3::Creator);
 
+    cfact_ptr->registerCreatorFunction("HydraulicOptimizedCylinderQ", HydraulicOptimizedCylinderQ::Creator);
+    cfact_ptr->registerCreatorFunction("HydraulicOptimized43Valve", HydraulicOptimized43Valve::Creator);
+    cfact_ptr->registerCreatorFunction("HydraulicOptimizedVolume", HydraulicOptimizedVolume::Creator);
+    cfact_ptr->registerCreatorFunction("HydraulicOptimizedTurbulentOrifice", HydraulicOptimizedTurbulentOrifice::Creator);
+    cfact_ptr->registerCreatorFunction("HydraulicOptimizedPressureSource", HydraulicOptimizedPressureSource::Creator);
+
+
 
     //Signal components
     cfact_ptr->registerCreatorFunction("SignalSource", SignalSource::Creator);
@@ -89,6 +96,11 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->registerCreatorFunction("SignalOr", SignalOr::Creator);
     cfact_ptr->registerCreatorFunction("SignalXor", SignalXor::Creator);
 
+    cfact_ptr->registerCreatorFunction("SignalOptimizedSineWave", SignalOptimizedSineWave::Creator);
+    cfact_ptr->registerCreatorFunction("SignalOptimizedSubtract", SignalOptimizedSubtract::Creator);
+    cfact_ptr->registerCreatorFunction("SignalOptimizedGain", SignalOptimizedGain::Creator);
+
+
 
     //Mechanical components
     cfact_ptr->registerCreatorFunction("MechanicForceTransformer", MechanicForceTransformer::Creator);
@@ -103,5 +115,11 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->registerCreatorFunction("MechanicForceSensor", MechanicForceSensor::Creator);
     cfact_ptr->registerCreatorFunction("MechanicPositionSensor", MechanicPositionSensor::Creator);
     cfact_ptr->registerCreatorFunction("MechanicAngleSensor", MechanicAngleSensor::Creator);
+
+    cfact_ptr->registerCreatorFunction("MechanicOptimizedPositionSensor", MechanicOptimizedPositionSensor::Creator);
+    cfact_ptr->registerCreatorFunction("MechanicOptimizedForceTransformer", MechanicOptimizedForceTransformer::Creator);
+
+
+
 
 }

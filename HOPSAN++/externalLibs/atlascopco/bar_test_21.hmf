@@ -5,8 +5,8 @@ HOPSANGUIVERSION 0.0.1
 HMFVERSION 0.1
 CAFVERSION 0.1
 --------------------------------------------------------------
-SIMULATIONTIME 0 5e-08 0.2
-VIEWPORT 2500 1902 1
+SIMULATIONTIME 0 5e-07 0.05
+VIEWPORT 2500 1874 1
 --------------------------------------------------------------
 USERICON ""
 ISOICON ""
@@ -90,6 +90,13 @@ COMPONENT "fsrc" "fsrc_6" 2700 2447 180 0 1
 PARAMETER "fsrc_6" "Position" 0
 PARAMETER "fsrc_6" "Velocity" 0
 PARAMETER "fsrc_6" "Force" 0
+COMPONENT "sep2" "sep2_13" 2449 2097 0 0 1
+PARAMETER "sep2_13" "Node 1 position" 0
+PARAMETER "sep2_13" "Node 2 position" 0.001
+PARAMETER "sep2_13" "Node 1 velocity" 0
+PARAMETER "sep2_13" "Node 2 velocity" 0
+PARAMETER "sep2_13" "Node 1 force" 0
+PARAMETER "sep2_13" "Node 2 force" 0
 COMPONENT "sep2" "sep2_4" 2474 2530 0 0 1
 PARAMETER "sep2_4" "Node 1 position" 0
 PARAMETER "sep2_4" "Node 2 position" 0.001
@@ -105,28 +112,6 @@ COMPONENT "fsrc" "fsrc_7" 2693 2398 180 0 1
 PARAMETER "fsrc_7" "Position" 0
 PARAMETER "fsrc_7" "Velocity" 0
 PARAMETER "fsrc_7" "Force" 0
-COMPONENT "sep2" "sep2_13" 2449 2097 0 0 1
-PARAMETER "sep2_13" "Node 1 position" 0
-PARAMETER "sep2_13" "Node 2 position" 0.001
-PARAMETER "sep2_13" "Node 1 velocity" 0
-PARAMETER "sep2_13" "Node 2 velocity" 0
-PARAMETER "sep2_13" "Node 1 force" 0
-PARAMETER "sep2_13" "Node 2 force" 0
-COMPONENT "sep2" "sep2_5" 2470 2491 0 0 1
-PARAMETER "sep2_5" "Node 1 position" 0
-PARAMETER "sep2_5" "Node 2 position" 0.001
-PARAMETER "sep2_5" "Node 1 velocity" 0
-PARAMETER "sep2_5" "Node 2 velocity" 0
-PARAMETER "sep2_5" "Node 1 force" 0
-PARAMETER "sep2_5" "Node 2 force" 0
-COMPONENT "fsrc" "fsrc_8" 2695 2354 180 0 1
-PARAMETER "fsrc_8" "Position" 0
-PARAMETER "fsrc_8" "Velocity" 0
-PARAMETER "fsrc_8" "Force" 0
-COMPONENT "fsrc" "fsrc_13" 2692 2092 180 0 1
-PARAMETER "fsrc_13" "Position" 0
-PARAMETER "fsrc_13" "Velocity" 0
-PARAMETER "fsrc_13" "Force" 0
 COMPONENT "sep2" "sep2_14" 2455 2048 0 0 1
 PARAMETER "sep2_14" "Node 1 position" 0
 PARAMETER "sep2_14" "Node 2 position" 0.001
@@ -143,21 +128,21 @@ PARAMETER "TLM_30" "DMP" -1
 PARAMETER "TLM_30" "v21" 10
 PARAMETER "TLM_30" "f1" 0
 PARAMETER "TLM_30" "f2" 0
-COMPONENT "sep2" "sep2_6" 2457 2452 0 0 1
-PARAMETER "sep2_6" "Node 1 position" 0
-PARAMETER "sep2_6" "Node 2 position" 0.001
-PARAMETER "sep2_6" "Node 1 velocity" 0
-PARAMETER "sep2_6" "Node 2 velocity" 0
-PARAMETER "sep2_6" "Node 1 force" 0
-PARAMETER "sep2_6" "Node 2 force" 0
-COMPONENT "fsrc" "fsrc_9" 2694 2300 180 0 1
-PARAMETER "fsrc_9" "Position" 0
-PARAMETER "fsrc_9" "Velocity" 0
-PARAMETER "fsrc_9" "Force" 0
-COMPONENT "fsrc" "fsrc_14" 2698 2043 180 0 1
-PARAMETER "fsrc_14" "Position" 0
-PARAMETER "fsrc_14" "Velocity" 0
-PARAMETER "fsrc_14" "Force" 0
+COMPONENT "sep2" "sep2_5" 2470 2491 0 0 1
+PARAMETER "sep2_5" "Node 1 position" 0
+PARAMETER "sep2_5" "Node 2 position" 0.001
+PARAMETER "sep2_5" "Node 1 velocity" 0
+PARAMETER "sep2_5" "Node 2 velocity" 0
+PARAMETER "sep2_5" "Node 1 force" 0
+PARAMETER "sep2_5" "Node 2 force" 0
+COMPONENT "fsrc" "fsrc_13" 2692 2092 180 0 1
+PARAMETER "fsrc_13" "Position" 0
+PARAMETER "fsrc_13" "Velocity" 0
+PARAMETER "fsrc_13" "Force" 0
+COMPONENT "fsrc" "fsrc_8" 2695 2354 180 0 1
+PARAMETER "fsrc_8" "Position" 0
+PARAMETER "fsrc_8" "Velocity" 0
+PARAMETER "fsrc_8" "Force" 0
 COMPONENT "sep2" "sep2_15" 2451 1989 0 0 1
 PARAMETER "sep2_15" "Node 1 position" 0
 PARAMETER "sep2_15" "Node 2 position" 0.001
@@ -174,17 +159,21 @@ PARAMETER "TLM_31" "DMP" -1
 PARAMETER "TLM_31" "v21" 0
 PARAMETER "TLM_31" "f1" 0
 PARAMETER "TLM_31" "f2" 0
-COMPONENT "sep2" "sep2_7" 2450 2403 0 0 1
-PARAMETER "sep2_7" "Node 1 position" 0
-PARAMETER "sep2_7" "Node 2 position" 0.001
-PARAMETER "sep2_7" "Node 1 velocity" 0
-PARAMETER "sep2_7" "Node 2 velocity" 0
-PARAMETER "sep2_7" "Node 1 force" 0
-PARAMETER "sep2_7" "Node 2 force" 0
-COMPONENT "fsrc" "fsrc_15" 2694 1984 180 0 1
-PARAMETER "fsrc_15" "Position" 0
-PARAMETER "fsrc_15" "Velocity" 0
-PARAMETER "fsrc_15" "Force" 0
+COMPONENT "sep2" "sep2_6" 2457 2452 0 0 1
+PARAMETER "sep2_6" "Node 1 position" 0
+PARAMETER "sep2_6" "Node 2 position" 0.001
+PARAMETER "sep2_6" "Node 1 velocity" 0
+PARAMETER "sep2_6" "Node 2 velocity" 0
+PARAMETER "sep2_6" "Node 1 force" 0
+PARAMETER "sep2_6" "Node 2 force" 0
+COMPONENT "fsrc" "fsrc_14" 2698 2043 180 0 1
+PARAMETER "fsrc_14" "Position" 0
+PARAMETER "fsrc_14" "Velocity" 0
+PARAMETER "fsrc_14" "Force" 0
+COMPONENT "fsrc" "fsrc_9" 2694 2300 180 0 1
+PARAMETER "fsrc_9" "Position" 0
+PARAMETER "fsrc_9" "Velocity" 0
+PARAMETER "fsrc_9" "Force" 0
 COMPONENT "sep2" "sep2_16" 2456 1932 0 0 1
 PARAMETER "sep2_16" "Node 1 position" 0
 PARAMETER "sep2_16" "Node 2 position" 0.001
@@ -201,13 +190,24 @@ PARAMETER "TLM_32" "DMP" -1
 PARAMETER "TLM_32" "v21" 10
 PARAMETER "TLM_32" "f1" 0
 PARAMETER "TLM_32" "f2" 0
-COMPONENT "sep2" "sep2_8" 2452 2359 0 0 1
-PARAMETER "sep2_8" "Node 1 position" 0
-PARAMETER "sep2_8" "Node 2 position" 0.001
-PARAMETER "sep2_8" "Node 1 velocity" 0
-PARAMETER "sep2_8" "Node 2 velocity" 0
-PARAMETER "sep2_8" "Node 1 force" 0
-PARAMETER "sep2_8" "Node 2 force" 0
+COMPONENT "sep2" "sep2_7" 2450 2403 0 0 1
+PARAMETER "sep2_7" "Node 1 position" 0
+PARAMETER "sep2_7" "Node 2 position" 0.001
+PARAMETER "sep2_7" "Node 1 velocity" 0
+PARAMETER "sep2_7" "Node 2 velocity" 0
+PARAMETER "sep2_7" "Node 1 force" 0
+PARAMETER "sep2_7" "Node 2 force" 0
+COMPONENT "fsrc" "fsrc_15" 2694 1984 180 0 1
+PARAMETER "fsrc_15" "Position" 0
+PARAMETER "fsrc_15" "Velocity" 0
+PARAMETER "fsrc_15" "Force" 0
+COMPONENT "sep2" "sep2_17" 2455 1879 0 0 1
+PARAMETER "sep2_17" "Node 1 position" 0
+PARAMETER "sep2_17" "Node 2 position" 0.001
+PARAMETER "sep2_17" "Node 1 velocity" 0
+PARAMETER "sep2_17" "Node 2 velocity" 0
+PARAMETER "sep2_17" "Node 1 force" 0
+PARAMETER "sep2_17" "Node 2 force" 0
 COMPONENT "bar" "TLM_33" 2352 1925 0 0 1
 PARAMETER "TLM_33" "D" 0.05
 PARAMETER "TLM_33" "L" 3
@@ -217,17 +217,33 @@ PARAMETER "TLM_33" "DMP" -1
 PARAMETER "TLM_33" "v21" 0
 PARAMETER "TLM_33" "f1" 0
 PARAMETER "TLM_33" "f2" 0
+COMPONENT "sep2" "sep2_8" 2452 2359 0 0 1
+PARAMETER "sep2_8" "Node 1 position" 0
+PARAMETER "sep2_8" "Node 2 position" 0.001
+PARAMETER "sep2_8" "Node 1 velocity" 0
+PARAMETER "sep2_8" "Node 2 velocity" 0
+PARAMETER "sep2_8" "Node 1 force" 0
+PARAMETER "sep2_8" "Node 2 force" 0
 COMPONENT "fsrc" "fsrc_16" 2699 1927 180 0 1
 PARAMETER "fsrc_16" "Position" 0
 PARAMETER "fsrc_16" "Velocity" 0
 PARAMETER "fsrc_16" "Force" 0
-COMPONENT "sep2" "sep2_17" 2455 1879 0 0 1
-PARAMETER "sep2_17" "Node 1 position" 0
-PARAMETER "sep2_17" "Node 2 position" 0.001
-PARAMETER "sep2_17" "Node 1 velocity" 0
-PARAMETER "sep2_17" "Node 2 velocity" 0
-PARAMETER "sep2_17" "Node 1 force" 0
-PARAMETER "sep2_17" "Node 2 force" 0
+COMPONENT "sep2" "sep2_18" 2456 1829 0 0 1
+PARAMETER "sep2_18" "Node 1 position" 0
+PARAMETER "sep2_18" "Node 2 position" 0.001
+PARAMETER "sep2_18" "Node 1 velocity" 0
+PARAMETER "sep2_18" "Node 2 velocity" 0
+PARAMETER "sep2_18" "Node 1 force" 0
+PARAMETER "sep2_18" "Node 2 force" 0
+COMPONENT "bar" "TLM_34" 2581 1873 0 0 1
+PARAMETER "TLM_34" "D" 0.05
+PARAMETER "TLM_34" "L" 0.5
+PARAMETER "TLM_34" "RHOB" 7800
+PARAMETER "TLM_34" "EB" 2.1e+11
+PARAMETER "TLM_34" "DMP" -1
+PARAMETER "TLM_34" "v21" 10
+PARAMETER "TLM_34" "f1" 0
+PARAMETER "TLM_34" "f2" 0
 COMPONENT "sep2" "sep2_9" 2451 2305 0 0 1
 PARAMETER "sep2_9" "Node 1 position" 0
 PARAMETER "sep2_9" "Node 2 position" 0.001
@@ -239,22 +255,13 @@ COMPONENT "fsrc" "fsrc_17" 2698 1874 180 0 1
 PARAMETER "fsrc_17" "Position" 0
 PARAMETER "fsrc_17" "Velocity" 0
 PARAMETER "fsrc_17" "Force" 0
-COMPONENT "bar" "TLM_34" 2581 1873 0 0 1
-PARAMETER "TLM_34" "D" 0.05
-PARAMETER "TLM_34" "L" 0.5
-PARAMETER "TLM_34" "RHOB" 7800
-PARAMETER "TLM_34" "EB" 2.1e+11
-PARAMETER "TLM_34" "DMP" -1
-PARAMETER "TLM_34" "v21" 10
-PARAMETER "TLM_34" "f1" 0
-PARAMETER "TLM_34" "f2" 0
-COMPONENT "sep2" "sep2_18" 2456 1829 0 0 1
-PARAMETER "sep2_18" "Node 1 position" 0
-PARAMETER "sep2_18" "Node 2 position" 0.001
-PARAMETER "sep2_18" "Node 1 velocity" 0
-PARAMETER "sep2_18" "Node 2 velocity" 0
-PARAMETER "sep2_18" "Node 1 force" 0
-PARAMETER "sep2_18" "Node 2 force" 0
+COMPONENT "sep2" "sep2_19" 2467 1779 0 0 1
+PARAMETER "sep2_19" "Node 1 position" 0
+PARAMETER "sep2_19" "Node 2 position" 0.001
+PARAMETER "sep2_19" "Node 1 velocity" 0
+PARAMETER "sep2_19" "Node 2 velocity" 0
+PARAMETER "sep2_19" "Node 1 force" 0
+PARAMETER "sep2_19" "Node 2 force" 0
 COMPONENT "bar" "TLM_35" 2351 1872 0 0 1
 PARAMETER "TLM_35" "D" 0.05
 PARAMETER "TLM_35" "L" 3
@@ -268,13 +275,6 @@ COMPONENT "fsrc" "fsrc_18" 2699 1824 180 0 1
 PARAMETER "fsrc_18" "Position" 0
 PARAMETER "fsrc_18" "Velocity" 0
 PARAMETER "fsrc_18" "Force" 0
-COMPONENT "sep2" "sep2_19" 2467 1779 0 0 1
-PARAMETER "sep2_19" "Node 1 position" 0
-PARAMETER "sep2_19" "Node 2 position" 0.001
-PARAMETER "sep2_19" "Node 1 velocity" 0
-PARAMETER "sep2_19" "Node 2 velocity" 0
-PARAMETER "sep2_19" "Node 1 force" 0
-PARAMETER "sep2_19" "Node 2 force" 0
 COMPONENT "bar" "TLM_36" 2582 1823 0 0 1
 PARAMETER "TLM_36" "D" 0.05
 PARAMETER "TLM_36" "L" 0.5

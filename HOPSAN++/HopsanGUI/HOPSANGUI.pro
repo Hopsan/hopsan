@@ -106,15 +106,8 @@ unix {
     QMAKE_CXXFLAGS += $$system(python$${PYTHON_VERSION}-config --includes)
 }
 win32 {
-    # Ingopath:
-    INCLUDEPATH += c:/temp_qwt/src
-    LIBS += -Lc:/temp_qwt/lib
-
-    INCLUDEPATH += c:/Qwt-5.2.1-svn/include
-    LIBS += -Lc:/Qwt-5.2.1-svn/lib
-
-    INCLUDEPATH += c:/Qwt-5.2.1/include
-    LIBS += -Lc:/Qwt-5.2.1/lib
+    INCLUDEPATH += c:/Qwt-5.2.2-svn/include
+    LIBS += -Lc:/Qwt-5.2.2-svn/lib
 
     CONFIG(debug, debug|release) {
         LIBS += -lqwtd5

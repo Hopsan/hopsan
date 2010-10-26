@@ -55,6 +55,46 @@ namespace hopsan {
             mpOut->writeNode(NodeSignal::VALUE, x);
         }
     };
+
+
+
+    //!
+    //! @brief
+    //! @ingroup MechanicalComponents
+    //!
+    class MechanicOptimizedPositionSensor : public ComponentSignal
+    {
+    private:
+        Port *mpP1, *mpOut;
+        double *x1, *output;
+
+    public:
+        static Component *Creator()
+        {
+            return new MechanicOptimizedPositionSensor("PositionSensor");
+        }
+
+        MechanicOptimizedPositionSensor(const std::string name) : ComponentSignal(name)
+        {
+            mTypeName = "MechanicOptimizedPositionSensor";
+
+            mpP1 = addReadPort("P1", "NodeMechanic");
+            mpOut = addWritePort("out", "NodeSignal");
+        }
+
+
+        void initialize()
+        {
+            x1 = mpP1->getNodeDataPtr(NodeMechanic::POSITION);
+            output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+        }
+
+
+        void simulateOneTimestep()
+        {
+            *output = *x1;
+        }
+    };
 }
 
 #endif // MECHANICPOSITIONSENSOR_HPP_INCLUDED

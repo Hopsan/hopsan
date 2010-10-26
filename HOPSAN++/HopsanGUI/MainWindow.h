@@ -31,7 +31,7 @@ class OptionsWidget;
 class UndoWidget;
 class MessageWidget;
 class PlotWidget;
-class PyDock;
+//class PyDock;
 class GlobalParametersWidget;
 
 class MainWindow : public QMainWindow
@@ -152,7 +152,7 @@ private:
     QDockWidget *mpLibDock;
     QDockWidget *mpPlotWidgetDock;
     QDockWidget *mpUndoWidgetDock;
-    PyDock      *mpPyDock;
+    //PyDock      *mpPyDock;
     QDockWidget *mpGlobalParametersDock;
 
     //Methods that adjusts simulation parameters if they are illegal

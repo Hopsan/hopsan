@@ -4,7 +4,7 @@ TARGET = atlascopcoLib
 TEMPLATE = lib
 
 #DESTDIR = ../../bin/debug
-LIBS += -L../../bin/debug \
+LIBS += -L../../bin/release \
     -lHopsanCore
 INCLUDEPATH += ../../HopsanCore
 

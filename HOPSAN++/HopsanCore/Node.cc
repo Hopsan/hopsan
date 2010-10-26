@@ -93,6 +93,11 @@ double &Node::getDataRef(const size_t data_type)
     return mDataVector[data_type];
 }
 
+double *Node::getDataPtr(const size_t data_type)
+{
+    return &mDataVector[data_type];
+}
+
 
 //! Set data name and unit for a specified data variable
 //! @param [in] id This is the ENUM data id

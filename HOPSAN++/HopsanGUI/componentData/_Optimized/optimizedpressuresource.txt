@@ -1,0 +1,8 @@
+TYPENAME "HydraulicOptimizedPressureSource"
+DISPLAYNAME "Optimized Prescribed Pressure C"
+ISOICON "..\hydraulic\Sources & Sinks\pressuresource_iso.svg"
+USERICON "..\hydraulic\Sources & Sinks\pressuresource_user.svg"
+ICONROTATION ON
+PORT "In" 0.5 1.0 270
+PORT "P1" 0.5 0.0 90
+
