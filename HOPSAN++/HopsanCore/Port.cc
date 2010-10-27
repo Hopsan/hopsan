@@ -105,11 +105,12 @@ double Port::readNode(const size_t idx)
 {
     //! @todo ummm??, if this is a readport node and it is not connected then noone will ever read
     //! @todo maybe use dummy nodes with 0 in for not connected ports
-    if((this->getPortType() == Port::READPORT) && (!this->isConnected()))      //Signal nodes don't have to be connected
+    /*if((this->getPortType() == Port::READPORT) && (!this->isConnected()))      //Signal nodes don't have to be connected
     {
         return 0;
-    }
-    return mpNode->getData(idx);
+    }*/
+    //return mpNode->getData(idx);
+    return mpNode->mDataVector[idx];//Test for speed up
 }
 
 
@@ -118,12 +119,13 @@ double Port::readNode(const size_t idx)
 //! @param [in] value The value of the data to read
 void Port::writeNode(const size_t &idx, const double &value)
 {
-    //! @todo ummm??, if this is a writeport and it is not connected then noone will ever write
-    if((this->getPortType() == Port::WRITEPORT) && (!this->isConnected()))     //Signal nodes don't have to be connected
+    //! @todo ummm??, if this is a writeport and it is not connected then noone will ever write. Should the check may be done?
+    /*if((this->getPortType() == Port::WRITEPORT) && (!this->isConnected()))     //Signal nodes don't have to be connected
     {
         return;
-    }
-    mpNode->setData(idx, value);
+    }*/
+    mpNode->mDataVector[idx] = value;//Test for speed up
+    //mpNode->setData(idx, value);
 }
 
 
