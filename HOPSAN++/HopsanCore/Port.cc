@@ -123,7 +123,7 @@ void Port::writeNode(const size_t &idx, const double &value)
     {
         return;
     }
-    return mpNode->setData(idx, value);
+    mpNode->setData(idx, value);
 }
 
 
