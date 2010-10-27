@@ -96,7 +96,7 @@ OptimizedIntegrator::OptimizedIntegrator()
 }
 
 
-void OptimizedIntegrator::initialize(double &rTime, double timestep, double *uref, double *yref, double u0, double y0)
+void OptimizedIntegrator::initialize(double &rTime, double timestep, double *pInput, double *pOutput, double u0, double y0)
 {
     //mDelayU.setStepDelay(1);
     //mDelayY.setStepDelay(1);
@@ -106,8 +106,8 @@ void OptimizedIntegrator::initialize(double &rTime, double timestep, double *ure
     mDelayY = y0;
 
     mTimeStep = timestep;
-    mpU = uref;
-    mpY = yref;
+    mpU = pInput;
+    mpY = pOutput;
     mpTime = &rTime;
     mIsInitialized = true;
 }
@@ -142,9 +142,79 @@ void OptimizedIntegrator::update()
 }
 
 
-void OptimizedIntegrator::doTheStuff()
+void OptimizedIntegrator::integrate()
 {
     update();
 
     *mpY = mDelayY;
+}
+
+
+
+
+
+
+
+
+NoDelayIntegrator::NoDelayIntegrator()
+{
+    mLastTime = 0.0;
+    mIsInitialized = false;
+}
+
+
+void NoDelayIntegrator::initialize(double &rTime, double timestep, double u0, double y0)
+{
+
+    mDelayU = u0;
+    mDelayY = y0;
+
+    mTimeStep = timestep;
+    mpTime = &rTime;
+    mIsInitialized = true;
+}
+
+
+void NoDelayIntegrator::initializeValues(double u0, double y0)
+{
+    mDelayU = u0;
+    mDelayY = y0;
+}
+
+
+void NoDelayIntegrator::update(double &u)
+{
+    if (!mIsInitialized)
+    {
+        std::cout << "Integrator function has to be initialized" << std::endl;
+        assert(false);
+    }
+    else if (mLastTime != *mpTime)
+    {
+        //Filter equation
+        //Bilinear transform is used
+        mDelayY = mDelayY + mTimeStep/2.0*(u + mDelayU);
+        mDelayU = u;
+
+        mLastTime = *mpTime;
+    }
+}
+
+
+double NoDelayIntegrator::value(double &u)
+{
+    update(u);
+
+    return mDelayY;
+}
+
+
+//! Observe that a call to this method has to be followed by another call to value(double u) or to update(double u)
+//! @return The integrated actual value.
+//! @see value(double u)
+double NoDelayIntegrator::value()
+{
+    update(mDelayU);
+
+    return mDelayY;
 }

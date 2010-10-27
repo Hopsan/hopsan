@@ -437,6 +437,7 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     setTabsClosable(true);
     mNumberOfUntitledTabs = 0;
 
+    mpCopyData = new QString;
 
     connect(this,SIGNAL(currentChanged(int)),SLOT(tabChanged()));
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(closeProjectTab(int)));
@@ -783,6 +784,9 @@ void ProjectTabWidget::tabChanged()
         disconnect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getSystem(i),SLOT(updateTimeStep()));
         disconnect(mpParentMainWindow->saveAction, SIGNAL(triggered()), getTab(i), SLOT(save()));
         disconnect(mpParentMainWindow->saveAsAction, SIGNAL(triggered()), getTab(i), SLOT(saveAs()));
+        disconnect(mpParentMainWindow->cutAction, SIGNAL(triggered()), getSystem(i),SLOT(cutSelected()));
+        disconnect(mpParentMainWindow->copyAction, SIGNAL(triggered()), getSystem(i),SLOT(copySelected()));
+        disconnect(mpParentMainWindow->pasteAction, SIGNAL(triggered()), getSystem(i),SLOT(paste()));
     }
     if(this->count() != 0)
     {
@@ -803,6 +807,9 @@ void ProjectTabWidget::tabChanged()
         connect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getCurrentSystem(),SLOT(updateTimeStep()));
         connect(mpParentMainWindow->saveAction, SIGNAL(triggered()), getCurrentTab(), SLOT(save()));
         connect(mpParentMainWindow->saveAsAction, SIGNAL(triggered()), getCurrentTab(), SLOT(saveAs()));
+        connect(mpParentMainWindow->cutAction, SIGNAL(triggered()), getCurrentSystem(),SLOT(cutSelected()));
+        connect(mpParentMainWindow->copyAction, SIGNAL(triggered()), getCurrentSystem(),SLOT(copySelected()));
+        connect(mpParentMainWindow->pasteAction, SIGNAL(triggered()), getCurrentSystem(),SLOT(paste()));
         getCurrentSystem()->updateUndoStatus();
         getCurrentSystem()->updateSimulationParametersInToolBar();
     }

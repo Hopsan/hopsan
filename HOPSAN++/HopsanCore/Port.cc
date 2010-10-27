@@ -134,6 +134,13 @@ double *Port::getNodeDataPtr(const size_t idx)
     return mpNode->getDataPtr(idx);
 }
 
+
+double &Port::getNodeDataRef(const size_t idx)
+{
+    return mpNode->getDataRef(idx);
+}
+
+
 //! Set the node that the port is connected to
 //! @param [in] pNode A pointer to the Node
 void Port::setNode(Node* pNode)

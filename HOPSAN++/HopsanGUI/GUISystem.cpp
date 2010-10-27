@@ -56,7 +56,6 @@ void GUISystem::commonConstructorCode()
 
     mpMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 
-    mpCopyData = new QString;
     mUndoStack = new UndoStack(this);
 
         //Initialize booleans
@@ -76,9 +75,6 @@ void GUISystem::commonConstructorCode()
         //Establish connections
     //connect(this->systemPortAction, SIGNAL(triggered()), SLOT(addSystemPort()));
     connect(this, SIGNAL(checkMessages()), mpMainWindow->mpMessageWidget, SLOT(checkMessages()));
-    connect(mpMainWindow->cutAction, SIGNAL(triggered()), this,SLOT(cutSelected()));
-    connect(mpMainWindow->copyAction, SIGNAL(triggered()), this,SLOT(copySelected()));
-    connect(mpMainWindow->pasteAction, SIGNAL(triggered()), this,SLOT(paste()));
     connect(mpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
     connect(mpMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
     connect(mpMainWindow->mpUndoWidget->mpUndoButton, SIGNAL(pressed()), this, SLOT(undo()));
@@ -1023,11 +1019,11 @@ void GUISystem::copySelected()
 {
     mUndoStack->newPost();
 
-    delete(mpCopyData);
-    mpCopyData = new QString;
+    delete(mpParentProjectTab->mpParentProjectTabWidget->mpCopyData);
+    mpParentProjectTab->mpParentProjectTabWidget->mpCopyData = new QString;
 
     QTextStream copyStream;
-    copyStream.setString(mpCopyData);
+    copyStream.setString(mpParentProjectTab->mpParentProjectTabWidget->mpCopyData);
 
     QList<GUIObject *>::iterator it;
     for(it = mSelectedGUIObjectsList.begin(); it!=mSelectedGUIObjectsList.end(); ++it)
@@ -1054,7 +1050,7 @@ void GUISystem::paste()
     mpParentProjectTab->hasChanged();
 
     QTextStream copyStream;
-    copyStream.setString(mpCopyData);
+    copyStream.setString(mpParentProjectTab->mpParentProjectTabWidget->mpCopyData);
 
         //Deselect all components
     emit deselectAllGUIObjects();

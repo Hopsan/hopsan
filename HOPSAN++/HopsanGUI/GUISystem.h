@@ -115,7 +115,6 @@ signals:
 private:
     void commonConstructorCode();
 
-    QString *mpCopyData;
     double mStartTime;
     double mStopTime;
     double mTimeStep;
