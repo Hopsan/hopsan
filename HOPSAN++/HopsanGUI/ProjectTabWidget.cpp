@@ -404,7 +404,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     mpSystem->saveToDomElement(hmfRoot);
 
     //Save to file
-    const int IndentSize = 1;
+    const int IndentSize = 4;
     QFile xmlhmf(mpSystem->mModelFileInfo.filePath()+"x");
     if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {

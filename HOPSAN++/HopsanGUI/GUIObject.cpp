@@ -1419,6 +1419,27 @@ void GUIComponent::saveToDomElement(QDomElement &rDomElement)
         appendDomTextNode(xmlParam, "name", *pit);
         appendDomValueNode(xmlParam, "value", mpParentSystem->mpCoreSystemAccess->getParameterValue(this->getName(), (*pit)));
     }
+
+    QVector<QString> startValueNames;
+    QVector<double> startValueValues;
+    QVector<QString> dummy;
+    QList<GUIPort*>::iterator portIt;
+    for(portIt = mPortListPtrs.begin(); portIt != mPortListPtrs.end(); ++portIt)
+    {
+        mpParentSystem->mpCoreSystemAccess->getStartValueDataNamesValuesAndUnits(this->getName(), (*portIt)->getName(), startValueNames, startValueValues, dummy);
+        if((!startValueNames.empty()))
+        {
+            QDomElement xmlPort = appendDomElement(xmlObject, "port");
+            appendDomTextNode(xmlPort, "name", (*portIt)->getName());
+            for(size_t i = 0; i < startValueNames.size(); ++i)
+            {
+                QDomElement xmlStartValue = appendDomElement(xmlPort, "startvalue");
+                appendDomTextNode(xmlStartValue, "quantity", startValueNames[i]);
+                appendDomValueNode(xmlStartValue, "value", startValueValues[i]);
+            }
+        }
+    }
+
     //Save the Gui specific data
     saveGuiDataToDomElement(xmlObject);
 }
