@@ -635,6 +635,26 @@ void Component::addDebugMessage(string message)
 }
 
 
+//! @brief Get the an actual start value of a port
+//! @param[in] pPort is the port which should be read from
+//! @param[in] idx is the index of the start value e.g. NodeHydraulic::PRESSURE
+//! @returns the start value
+double Component::getStartValue(Port* pPort, const size_t idx)
+{
+    return pPort->getStartValue(idx);
+}
+
+
+//! @brief Set the an actual start value of a port
+//! @param[in] pPort is the port which should be written to
+//! @param[in] idx is the index of the start value e.g. NodeHydraulic::PRESSURE
+//! @param[in] value is the start value that should be written
+void Component::setStartValue(Port* pPort, const size_t &idx, const double &value)
+{
+    pPort->setStartValue(idx, value);
+}
+
+
 //! @brief Change the cqs type of a stored subsystem component
 bool ComponentSystem::changeTypeCQS(const string name, const typeCQS newType)
 {

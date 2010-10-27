@@ -49,6 +49,9 @@ namespace hopsan {
         void getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<double> &rValues, std::vector<std::string> &rUnits);
         void setStartValueDataByNames(std::vector<std::string> names, std::vector<double> values);
 
+        double getStartValue(const size_t idx);
+        void setStartValue(const size_t &idx, const double &value);
+
         bool isConnected();
         bool isConnectionRequired();
 

@@ -104,6 +104,9 @@ namespace hopsan {
 
         void addDebugMessage(std::string message);
 
+        double getStartValue(Port* pPort, const size_t idx);
+        void setStartValue(Port* pPort, const size_t &idx, const double &value);
+
             //Temporarily made public for RT-simulation
         virtual void initialize(); //! @todo Default values are hard set
 

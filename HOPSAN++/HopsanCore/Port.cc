@@ -292,6 +292,27 @@ void Port::setStartValueDataByNames(vector<string> names, std::vector<double> va
         mpStartNode->setDataValuesByNames(names, values);
 }
 
+
+//! @brief Get the an actual start value of the port
+//! @param[in] idx is the index of the start value e.g. NodeHydraulic::PRESSURE
+//! @returns the start value
+double Port::getStartValue(const size_t idx)
+{
+    if(mpStartNode)
+        return mpStartNode->getData(idx);
+}
+
+
+//! @brief Set the an actual start value of the port
+//! @param[in] idx is the index of the start value e.g. NodeHydraulic::PRESSURE
+//! @param[in] value is the start value that should be written
+void Port::setStartValue(const size_t &idx, const double &value)
+{
+    if(mpStartNode)
+        mpStartNode->setData(idx, value);
+}
+
+
 //! Check if the port is curently connected
 bool Port::isConnected()
 {
