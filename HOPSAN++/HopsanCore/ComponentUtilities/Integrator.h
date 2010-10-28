@@ -35,10 +35,10 @@ namespace hopsan {
     };
 
 
-    class DLLIMPORTEXPORT OptimizedIntegrator
+    class DLLIMPORTEXPORT NoDelayAndPointersIntegrator
     {
     public:
-        OptimizedIntegrator();
+        NoDelayAndPointersIntegrator();
         void initialize(double &rTime, double timestep, double *pInput, double *pOutput, double u0=0.0, double y0=0.0);
         void initializeValues(double u0, double y0);
         void update();
