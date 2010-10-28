@@ -89,14 +89,14 @@ double Integrator::value()
 
 
 
-OptimizedIntegrator::OptimizedIntegrator()
+NoDelayAndPointersIntegrator::NoDelayAndPointersIntegrator()
 {
     mLastTime = 0.0;
     mIsInitialized = false;
 }
 
 
-void OptimizedIntegrator::initialize(double &rTime, double timestep, double *pInput, double *pOutput, double u0, double y0)
+void NoDelayAndPointersIntegrator::initialize(double &rTime, double timestep, double *pInput, double *pOutput, double u0, double y0)
 {
     //mDelayU.setStepDelay(1);
     //mDelayY.setStepDelay(1);
@@ -113,7 +113,7 @@ void OptimizedIntegrator::initialize(double &rTime, double timestep, double *pIn
 }
 
 
-void OptimizedIntegrator::initializeValues(double u0, double y0)
+void NoDelayAndPointersIntegrator::initializeValues(double u0, double y0)
 {
     mDelayU = u0;
     mDelayY = y0;
@@ -122,7 +122,7 @@ void OptimizedIntegrator::initializeValues(double u0, double y0)
 }
 
 
-void OptimizedIntegrator::update()
+void NoDelayAndPointersIntegrator::update()
 {
     if (!mIsInitialized)
     {
@@ -142,7 +142,7 @@ void OptimizedIntegrator::update()
 }
 
 
-void OptimizedIntegrator::integrate()
+void NoDelayAndPointersIntegrator::integrate()
 {
     update();
 

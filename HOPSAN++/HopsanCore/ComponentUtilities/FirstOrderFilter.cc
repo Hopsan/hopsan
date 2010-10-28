@@ -146,14 +146,14 @@ double FirstOrderFilter::value()
 
 
 
-OptimizedFirstOrderFilter::OptimizedFirstOrderFilter()
+NoDelayAndPointersFirstOrderFilter::NoDelayAndPointersFirstOrderFilter()
 {
     mLastTime = -1.0;
     mIsInitialized = false;
 }
 
 
-void OptimizedFirstOrderFilter::initialize(double &rTime, double timestep, double num[2], double den[2], double *uref, double *yref, double u0, double y0, double min, double max)
+void NoDelayAndPointersFirstOrderFilter::initialize(double &rTime, double timestep, double num[2], double den[2], double *uref, double *yref, double u0, double y0, double min, double max)
 {
     mMin = min;
     mMax = max;
@@ -171,14 +171,14 @@ void OptimizedFirstOrderFilter::initialize(double &rTime, double timestep, doubl
 }
 
 
-void OptimizedFirstOrderFilter::setMinMax(double min, double max)
+void NoDelayAndPointersFirstOrderFilter::setMinMax(double min, double max)
 {
     mMin = min;
     mMax = max;
 }
 
 
-void OptimizedFirstOrderFilter::setNumDen(double num[2], double den[2])
+void NoDelayAndPointersFirstOrderFilter::setNumDen(double num[2], double den[2])
 {
 //num =
 //(T + T*q)*(2*a + T*b - 2*a*q + T*b*q)
@@ -195,7 +195,7 @@ void OptimizedFirstOrderFilter::setNumDen(double num[2], double den[2])
 }
 
 
-void OptimizedFirstOrderFilter::initializeValues(double u0, double y0)
+void NoDelayAndPointersFirstOrderFilter::initializeValues(double u0, double y0)
 {
     mDelayU = u0;
     mDelayY = y0;
@@ -203,7 +203,7 @@ void OptimizedFirstOrderFilter::initializeValues(double u0, double y0)
 }
 
 
-void OptimizedFirstOrderFilter::update()
+void NoDelayAndPointersFirstOrderFilter::update()
 {
     if (!mIsInitialized)
     {
@@ -241,7 +241,7 @@ void OptimizedFirstOrderFilter::update()
 }
 
 
-void OptimizedFirstOrderFilter::filter()
+void NoDelayAndPointersFirstOrderFilter::filter()
 {
     update();
 

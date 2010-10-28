@@ -61,7 +61,7 @@ namespace hopsan {
             num[0] = 0.0;
             num[1] = 0.0;
             num[2] = 1.0;
-            den[0] = 1.0/pow(mW,2);
+            den[0] = 1.0/(mW*mW);
             den[1] = 2.0*mD/mW;
             den[2] = 1.0;
 

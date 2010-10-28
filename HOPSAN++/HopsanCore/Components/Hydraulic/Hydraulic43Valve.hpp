@@ -90,7 +90,7 @@ namespace hopsan {
         void initialize()
         {
             double num[3] = {0.0, 0.0, 1.0};
-            double den[3] = {1.0/pow(momegah,2.0), 2.0*mdeltah/momegah, 1.0};
+            double den[3] = {1.0/momegah*momegah, 2.0*mdeltah/momegah, 1.0};
             myFilter.initialize(mTime, mTimestep, num, den);
         }
 
@@ -137,10 +137,10 @@ namespace hopsan {
             double qbt = mQturbbt.getFlow(cb, ct, Zcb, Zct);
 
             //With sigsqrl:
-            //        double qpa = 0.5*pow(Kcpa,2.0)*(Zcp+Zca)+sigsqrl(pow(Kcpa,2.0)*(cp-ca)+0.25*pow(Kcpa,4.0)*pow(Zcp+Zca,2.0));
-            //        double qpb = 0.5*pow(Kcpb,2.0)*(Zcp+Zcb)+sigsqrl(pow(Kcpb,2.0)*(cp-cb)+0.25*pow(Kcpb,4.0)*pow(Zcp+Zcb,2.0));
-            //        double qat = 0.5*pow(Kcat,2.0)*(Zca+Zct)+sigsqrl(pow(Kcat,2.0)*(ca-ct)+0.25*pow(Kcat,4.0)*pow(Zca+Zct,2.0));
-            //        double qbt = 0.5*pow(Kcbt,2.0)*(Zcb+Zct)+sigsqrl(pow(Kcbt,2.0)*(cb-ct)+0.25*pow(Kcbt,4.0)*pow(Zcb+Zct,2.0));
+            //        double qpa = 0.5*Kcpa*Kcpa*(Zcp+Zca)+sigsqrl(Kcpa*Kcpa*(cp-ca)+0.25*Kcpa*Kcpa*Kcpa*Kcpa*(Zcp+Zca)*(Zcp+Zca));
+            //        double qpb = 0.5*Kcpb*Kcpb*(Zcp+Zcb)+sigsqrl(Kcpb*Kcpb*(cp-cb)+0.25*Kcpb*Kcpb*Kcpb*Kcpb*(Zcp+Zcb)*(Zcp+Zcb));
+            //        double qat = 0.5*Kcat*Kcat*(Zca+Zct)+sigsqrl(Kcat*Kcat*(ca-ct)+0.25*Kcat*Kcat*Kcat*Kcat*(Zca+Zct)*(Zca+Zct);
+            //        double qbt = 0.5*Kcbt*Kcbt*(Zcb+Zct)+sigsqrl(Kcbt*Kcbt*(cb-ct)+0.25*Kcbt*Kcbt*Kcbt*Kcbt*(Zcb+Zct)*(Zcb+Zct));
 
             double qp, qa, qb, qt;
             if (xv >= 0.0)
@@ -255,7 +255,7 @@ namespace hopsan {
         void initialize()
         {
             double num[3] = {0.0, 0.0, 1.0};
-            double den[3] = {1.0/pow(momegah,2.0), 2.0*mdeltah/momegah, 1.0};
+            double den[3] = {1.0/momegah*momegah, 2.0*mdeltah/momegah, 1.0};
 
                 //Filter
             mFilterDelayU[0] = 0;

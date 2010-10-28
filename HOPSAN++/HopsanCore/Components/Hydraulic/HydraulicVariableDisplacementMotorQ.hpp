@@ -91,7 +91,7 @@ namespace hopsan {
             }
 
             double dp = mDp / (3.1415 * 2) * mEps;
-            double ble = mBm + Zc1 * pow(dp,2) + Zc2 * pow(dp,2) + Zc3;
+            double ble = mBm + Zc1 * dp*dp + Zc2 * dp*dp + Zc3;
             double gamma = 1 / (mCim * (Zc1 + Zc2) + 1);
             double c1a = (mCim * Zc2 + 1) * gamma * c1 + mCim * gamma * Zc1 * c2;
             double c2a = (mCim * Zc1 + 1) * gamma * c2 + mCim * gamma * Zc2 * c1;

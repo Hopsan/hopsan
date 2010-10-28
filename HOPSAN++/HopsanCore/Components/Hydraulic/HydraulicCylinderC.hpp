@@ -176,8 +176,8 @@ namespace hopsan {
         {
             mZSpring0 = mWfak * mEquivalentMass / mTimestep;
 
-            mMinVolume1 = mBetae * pow(mTimestep, 2.0)  * pow(mArea1, 2.0) / (mWfak * mEquivalentMass);
-            mMinVolume2 = mBetae * pow(mTimestep, 2.0)  * pow(mArea2, 2.0) / (mWfak * mEquivalentMass);
+            mMinVolume1 = mBetae * mTimestep*mTimestep  * mArea1*mArea1 / (mWfak * mEquivalentMass);
+            mMinVolume2 = mBetae * mTimestep*mTimestep  * mArea2*mArea2 / (mWfak * mEquivalentMass);
 
             mXInternal = mStartPosition;
             mVInternal = mStartVelocity;
@@ -217,7 +217,7 @@ namespace hopsan {
             mDelayedC2InternalEffective.initialize(mTime, mC2Internal);
 
             double c3 = mC1Internal*mArea1 - mC2Internal*mArea2;
-            double Zc3 = mZc10*pow(mArea1, 2.0) + mZc20*pow(mArea2, 2.0) + mBp;
+            double Zc3 = mZc10*mArea1*mArea1 + mZc20*mArea2*mArea2 + mBp;
 
             mDelayedCSpring.setStepDelay(1);
             mDelayedCSpring.initialize(mTime, 0.0);

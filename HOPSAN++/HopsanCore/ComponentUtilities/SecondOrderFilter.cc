@@ -55,25 +55,25 @@ void SecondOrderFilter::setNumDen(double num[3], double den[3])
 //den =
 //(C*T^2*q^2 + 2*C*T^2*q + C*T^2 - 2*B*T*q^2 + 2*B*T + 4*A*q^2 - 8*A*q + 4*A)
 
-    mCoeffU[0] = num[2]*pow(mTimeStep, 2) - 2.0*num[1]*mTimeStep + 4.0*num[0];
-    mCoeffU[1] = 2.0*num[2]*pow(mTimeStep, 2) - 8.0*num[0];
-    mCoeffU[2] = num[2]*pow(mTimeStep, 2) + 2.0*num[1]*mTimeStep + 4.0*num[0];
+    mCoeffU[0] = num[2]*mTimeStep*mTimeStep - 2.0*num[1]*mTimeStep + 4.0*num[0];
+    mCoeffU[1] = 2.0*num[2]*mTimeStep*mTimeStep - 8.0*num[0];
+    mCoeffU[2] = num[2]*mTimeStep*mTimeStep + 2.0*num[1]*mTimeStep + 4.0*num[0];
 
-    mCoeffY[0] = den[2]*pow(mTimeStep, 2) - 2.0*den[1]*mTimeStep + 4.0*den[0];
-    mCoeffY[1] = 2.0*den[2]*pow(mTimeStep, 2) - 8.0*den[0];
-    mCoeffY[2] = den[2]*pow(mTimeStep, 2) + 2.0*den[1]*mTimeStep + 4.0*den[0];
+    mCoeffY[0] = den[2]*mTimeStep*mTimeStep - 2.0*den[1]*mTimeStep + 4.0*den[0];
+    mCoeffY[1] = 2.0*den[2]*mTimeStep*mTimeStep - 8.0*den[0];
+    mCoeffY[2] = den[2]*mTimeStep*mTimeStep + 2.0*den[1]*mTimeStep + 4.0*den[0];
 
-//    mCoeffU[0] = pow(mTimeStep, 2)*(num[2]*pow(mTimeStep, 2) - 2*num[1]*mTimeStep + 4*num[0]);
-//    mCoeffU[1] = -pow(mTimeStep, 2)*(4*mTimeStep*num[1] - 4*pow(mTimeStep, 2)*num[2]);
-//    mCoeffU[2] = -pow(mTimeStep, 2)*(8*num[0] - 6*pow(mTimeStep, 2)*num[2]);
-//    mCoeffU[3] = pow(mTimeStep, 2)*(4*num[2]*pow(mTimeStep, 2) + 4*num[1]*mTimeStep);
-//    mCoeffU[4] = pow(mTimeStep, 2)*(num[2]*pow(mTimeStep, 2) + 2*num[1]*mTimeStep + 4*num[0]); //To newest U
+//    mCoeffU[0] = mTimeStep*mTimeStep*(num[2]*mTimeStep*mTimeStep - 2*num[1]*mTimeStep + 4*num[0]);
+//    mCoeffU[1] = -mTimeStep*mTimeStep*(4*mTimeStep*num[1] - 4*mTimeStep*mTimeStep*num[2]);
+//    mCoeffU[2] = -mTimeStep*mTimeStep*(8*num[0] - 6*mTimeStep*mTimeStep*num[2]);
+//    mCoeffU[3] = mTimeStep*mTimeStep*(4*num[2]*mTimeStep*mTimeStep + 4*num[1]*mTimeStep);
+//    mCoeffU[4] = mTimeStep*mTimeStep*(num[2]*mTimeStep*mTimeStep + 2*num[1]*mTimeStep + 4*num[0]); //To newest U
 //
-//    mCoeffY[0] = pow(mTimeStep, 2.0)*(den[2]*pow(mTimeStep, 2.0) - 2*den[1]*mTimeStep + 4*den[0]);
-//    mCoeffY[1] = -pow(mTimeStep, 2.0)*(4*mTimeStep*den[1] - 4*pow(mTimeStep, 2.0)*den[2]);
-//    mCoeffY[2] = -pow(mTimeStep, 2.0)*(8*den[0] - 6*pow(mTimeStep, 2.0)*den[2]);
-//    mCoeffY[3] = pow(mTimeStep, 2.0)*(4*den[2]*pow(mTimeStep, 2.0) + 4*den[1]*mTimeStep);
-//    mCoeffY[4] = pow(mTimeStep, 2.0)*(den[2]*pow(mTimeStep, 2.0) + 2*den[1]*mTimeStep + 4*den[0]);
+//    mCoeffY[0] = NoDelayAndPointersIntegrator*(den[2]*NoDelayAndPointersIntegrator - 2*den[1]*mTimeStep + 4*den[0]);
+//    mCoeffY[1] = -NoDelayAndPointersIntegrator*(4*mTimeStep*den[1] - 4*NoDelayAndPointersIntegrator*den[2]);
+//    mCoeffY[2] = -NoDelayAndPointersIntegrator*(8*den[0] - 6*NoDelayAndPointersIntegrator*den[2]);
+//    mCoeffY[3] = NoDelayAndPointersIntegrator*(4*den[2]*NoDelayAndPointersIntegrator + 4*den[1]*mTimeStep);
+//    mCoeffY[4] = NoDelayAndPointersIntegrator*(den[2]*NoDelayAndPointersIntegrator + 2*den[1]*mTimeStep + 4*den[0]);
 }
 
 

@@ -41,13 +41,13 @@ void TransferFunction::update(double signal)
       y2 = mDelayy.valueIdx(y0, 2); // Inc. idx +1
       y1 = mDelayy.valueIdx(y0, 1); // Inc. idx +1
 
-      b[0] = 4.0*mnum[2]+mnum[0]*pow(mTimestep,2.0)+2.0*mnum[1]*mTimestep;
-      b[1] = -8.0*mnum[2]+2*mnum[0]*pow(mTimestep,2.0);
-      b[2] = -2.0*mnum[1]*mTimestep+4.0*mnum[2]+mnum[0]*pow(mTimestep,2.0);
+      b[0] = 4.0*mnum[2]+mnum[0]*mTimestep*mTimestep+2.0*mnum[1]*mTimestep;
+      b[1] = -8.0*mnum[2]+2*mnum[0]*mTimestep*mTimestep;
+      b[2] = -2.0*mnum[1]*mTimestep+4.0*mnum[2]+mnum[0]*mTimestep*mTimestep;
 
-      a[0] = 4.0*mden[2]+mden[0]*pow(mTimestep,2.0)+2.0*mden[1]*mTimestep;
-      a[1] = -8.0*mden[2]+2.0*mden[0]*pow(mTimestep,2.0);
-      a[2] = -2.0*mden[1]*mTimestep+4.0*mden[2]+mden[0]*pow(mTimestep,2.0);
+      a[0] = 4.0*mden[2]+mden[0]*mTimestep*mTimestep+2.0*mden[1]*mTimestep;
+      a[1] = -8.0*mden[2]+2.0*mden[0]*mTimestep*mTimestep;
+      a[2] = -2.0*mden[1]*mTimestep+4.0*mden[2]+mden[0]*mTimestep*mTimestep;
 
         /* Equation:
                 bo+b1q^-1+b2q^-2

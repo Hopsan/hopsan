@@ -95,7 +95,7 @@ namespace hopsan {
             //double c2 = mPortPtrs[P2]->readNode(NodeMechanic::WAVEVARIABLE);
             double Zc2 = mpP2->readNode(NodeMechanic::CHARIMP);
             //double cx1 = mArea1*c1 - mArea2*c2;
-            double Zx1 = pow(mArea1,2)*Zc1 + pow(mArea2,2)*Zc2-mBp;
+            double Zx1 = mArea1*mArea1*Zc1 + mArea2*mArea2*Zc2-mBp;
             double cx2 = mpP3->readNode(NodeMechanic::WAVEVARIABLE);
             double Zx2 = mpP3->readNode(NodeMechanic::CHARIMP);
 
@@ -125,7 +125,7 @@ namespace hopsan {
 
             //Internal mechanical port
             double cx1 = mArea1*c1 - mArea2*c2;
-            double Zx1 = pow(mArea1,2)*Zc1 + pow(mArea2,2)*Zc2-mBp;
+            double Zx1 = mArea1*mArea1*Zc1 + mArea2*mArea2*Zc2-mBp;
 
             //Piston
             double posnum [3] = {0.0, 0.0, 1.0};

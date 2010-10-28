@@ -70,7 +70,7 @@ namespace hopsan {
             double num[3];
             double den[3];
 
-            num[0] = mK/pow(mWnum, 2);
+            num[0] = mK/(mWnum*mWnum);
             num[1] = mK*2.0*mDnum/mWnum;
             num[2] = mK;
             den[0] = 1.0/pow(mWden, 2);
