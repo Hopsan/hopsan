@@ -739,11 +739,24 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
     QMenu *yAxisLeftMenu;
     QMenu *insertMarkerMenu;
     QMenu *selectMarkerMenu;
+    QMenu *changeUnitMenuLeft;
 
     yAxisRightMenu = menu.addMenu(QString("Right Y Axis"));
     yAxisLeftMenu = menu.addMenu(QString("Left Y Axis"));
     insertMarkerMenu = menu.addMenu(QString("Insert Curve Marker"));
     selectMarkerMenu = menu.addMenu(QString("Change Active Marker"));
+
+    changeUnitMenuLeft = yAxisLeftMenu->addMenu(QString("Change Unit"));
+
+    if(mpVariablePlot->axisTitle(QwtPlot::yLeft).text().startsWith("Pressure"))
+    {
+        QAction *tempAction = changeUnitMenuLeft->addAction("Pa");
+        QMap<QString, double>::iterator it;
+        for(it=mpParentMainWindow->mpPlotWidget->mAlternativeUnits.find("Pressure").value().begin(); it!=mpParentMainWindow->mpPlotWidget->mAlternativeUnits.find("Pressure").value().end(); ++it)
+        {
+            QAction *tempAction = changeUnitMenuLeft->addAction(it.key());
+        }
+    }
 
     QAction *setRightAxisLogarithmic;
     QAction *setLeftAxisLogarithmic;
@@ -790,6 +803,16 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
 
     QCursor *cursor;
     QAction *selectedAction = menu.exec(cursor->pos());
+
+    if(mpVariablePlot->axisTitle(QwtPlot::yLeft).text().startsWith("Pressure"))
+    {
+        if(mpParentMainWindow->mpPlotWidget->mAlternativeUnits.find("Pressure").value().contains(selectedAction->text()))
+        {
+            qDebug() << mpParentMainWindow->mpPlotWidget->mAlternativeUnits.find("Pressure").value().find(selectedAction->text()).value();
+        }
+
+        //! @todo Finish this - rescale the plot curve and the axis to the new unit
+    }
 
     if (selectedAction == setRightAxisLogarithmic)
     {
