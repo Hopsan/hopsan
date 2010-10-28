@@ -66,8 +66,8 @@ namespace hopsan {
         {
             mX0 = 0.00001;
 
-            mDelayedX0.setStepDelay(1);
-            mDelayedX0.initialize(mTime, 0.0);
+            //mDelayedX0.setStepDelay(1);
+            mDelayedX0.initialize(1, 0.0);
 
             double wCutoff = 1 / mTao;
             double num [2] = {0.0, 1.0};
@@ -142,7 +142,7 @@ namespace hopsan {
 
             //Hysteresis
             double xh = mPh / (b1+b2);                                  //Hysteresis width [m]
-            double xsh = mHyst.getValue(xs, xh, mDelayedX0.value());
+            double xsh = mHyst.getValue(xs, xh, mDelayedX0.getOldest());
 
             //Filter
             double wCutoff = (1.0 + b2/b1) * 1.0/mTao;                //Cutoff frequency
@@ -175,7 +175,7 @@ namespace hopsan {
             if (cav)
             {
                 xs = (c1-c2 + b2*mX0/2.0 - mPref) / (b1+b2);
-                xsh = mHyst.getValue(xs, xh, mDelayedX0.value());
+                xsh = mHyst.getValue(xs, xh, mDelayedX0.getOldest());
                 mX0 = mFilterLP.value(xsh);
 
                 mTurb.setFlowCoefficient(mX0);

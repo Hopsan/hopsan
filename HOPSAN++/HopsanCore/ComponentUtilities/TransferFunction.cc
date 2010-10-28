@@ -18,8 +18,10 @@ TransferFunction::TransferFunction(double num [3], double den [3], double timest
     }
     mTimestep = timestep;
     mLastTime = 0.0;
-    mDelayu.setStepDelay(2);
-    mDelayy.setStepDelay(2);
+//    mDelayu.setStepDelay(2);
+//    mDelayy.setStepDelay(2);
+    mDelayu.initialize(2,0);
+    mDelayy.initialize(2,0);
     mIsInitialized = false;
 }
 
@@ -35,11 +37,14 @@ void TransferFunction::update(double signal)
     {
 
       u0 = signal;
-      u1 = mDelayu.valueIdx(u0, 1); // Inc. idx +1
-      u2 = mDelayu.valueIdx(u0, 2); // Inc. idx +1
+      u1 = mDelayu.getIdx(1); // Inc. idx +1
+      u2 = mDelayu.getIdx(2); // Inc. idx +1
 
-      y2 = mDelayy.valueIdx(y0, 2); // Inc. idx +1
-      y1 = mDelayy.valueIdx(y0, 1); // Inc. idx +1
+      y1 = mDelayy.getIdx(1); // Inc. idx +1
+      y2 = mDelayy.getIdx(2); // Inc. idx +1
+
+      mDelayu.update(u0);
+      mDelayy.update(y0);
 
       b[0] = 4.0*mnum[2]+mnum[0]*mTimestep*mTimestep+2.0*mnum[1]*mTimestep;
       b[1] = -8.0*mnum[2]+2*mnum[0]*mTimestep*mTimestep;
@@ -69,8 +74,12 @@ void TransferFunction::setCoefficients(double num [3], double den [3], double ti
       mden[i] = den[i];
     }
     mTimestep = timestep;
-    mDelayu.setStepDelay(2); // Added
-    mDelayy.setStepDelay(2); // Added
+
+    //! @todo why are theses bellow needed?
+//    mDelayu.setStepDelay(2); // Added
+//    mDelayy.setStepDelay(2); // Added
+    mDelayu.initialize(2,0); //This will reset the entire data buffer to 0
+    mDelayy.initialize(2,0);
 
 }
 
@@ -84,8 +93,11 @@ void TransferFunction::initialize(double initValueU, double initValueY, double &
 {
     mpTime = &rTime;
     mLastTime = 0.0;
-    mDelayu.initialize(rTime, initValueU);
-    mDelayy.initialize(rTime, initValueY);
+//    mDelayu.initialize(rTime, initValueU);
+//    mDelayy.initialize(rTime, initValueY);
+    mDelayu.initialize(2, initValueU);
+    mDelayy.initialize(2, initValueY);
+    //! @todo is it allways 2 in this class, i think it should be possible to have mor than 2, there are hardcoded 2 in other places in this file as well
     mIsInitialized = true;
 }
 

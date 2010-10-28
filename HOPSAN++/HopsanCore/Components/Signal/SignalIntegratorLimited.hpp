@@ -42,9 +42,6 @@ namespace hopsan {
             mMin = -1.5E+300;
             mMax = 1.5E+300;
 
-            mDelayU.setStepDelay(1);
-            mDelayY.setStepDelay(1);
-
             mpIn = addReadPort("in", "NodeSignal");
             mpOut = addWritePort("out", "NodeSignal");
         }
@@ -53,8 +50,10 @@ namespace hopsan {
         void initialize()
         {
             double u0 = mpIn->readNode(NodeSignal::VALUE);
-            mDelayU.initialize(mTime, mStartY);
-            mDelayY.initialize(mTime, std::max(std::min(mStartY, mMax), mMin));
+            //mDelayU.setStepDelay(1);
+            //mDelayY.setStepDelay(1);
+            mDelayU.initialize(1, mStartY);
+            mDelayY.initialize(1, std::max(std::min(mStartY, mMax), mMin));
             mpOut->writeNode(NodeSignal::VALUE, mStartY);
         }
 
@@ -66,7 +65,7 @@ namespace hopsan {
 
             //Filter equations
             //Bilinear transform is used
-            double y = mDelayY.value() + mTimestep/2.0*(u + mDelayU.value());
+            double y = mDelayY.getOldest() + mTimestep/2.0*(u + mDelayU.getOldest());
 
             if (y >= mMax)
             {

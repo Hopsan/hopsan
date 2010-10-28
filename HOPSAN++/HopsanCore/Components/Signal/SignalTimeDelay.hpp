@@ -47,8 +47,9 @@ namespace hopsan {
 
         void initialize()
         {
-            mDelay.initialize(mTime, mStartY);
-            mDelay.setTimeDelay(mTimeDelay, mTimestep, mStartY);
+//            mDelay.initialize(mTime, mStartY);
+//            mDelay.setTimeDelay(mTimeDelay, mTimestep, mStartY);
+            mDelay.initialize(mTimeDelay, mTimestep, mStartY);
             mpOut->writeNode(NodeSignal::VALUE, mStartY);
         }
 
@@ -57,9 +58,8 @@ namespace hopsan {
         {
             //Get variable values from nodes
             double u = mpIn->readNode(NodeSignal::VALUE);
-            mDelay.update(u);
             //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, mDelay.value(u));
+            mpOut->writeNode(NodeSignal::VALUE, mDelay.update(u));
         }
     };
 }

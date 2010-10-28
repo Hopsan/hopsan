@@ -38,9 +38,6 @@ namespace hopsan {
             mTypeName = "SignalIntegrator";
             mStartY = 0.0;
 
-            mDelayU.setStepDelay(1);
-            mDelayY.setStepDelay(1);
-
             mpIn = addReadPort("in", "NodeSignal");
             mpOut = addWritePort("out", "NodeSignal");
         }
@@ -49,8 +46,10 @@ namespace hopsan {
         void initialize()
         {
             double u0 = mpIn->readNode(NodeSignal::VALUE);
-            mDelayU.initialize(mTime, mStartY);
-            mDelayY.initialize(mTime, mStartY);
+            //mDelayU.setStepDelay(1);
+            //mDelayY.setStepDelay(1);
+            mDelayU.initialize(1, mStartY);
+            mDelayY.initialize(1, mStartY);
             mpOut->writeNode(NodeSignal::VALUE, mStartY);
         }
 
@@ -62,7 +61,7 @@ namespace hopsan {
 
             //Filter equation
             //Bilinear transform is used
-            double y = mDelayY.value() + mTimestep/2.0*(u + mDelayU.value());
+            double y = mDelayY.getOldest() + mTimestep/2.0*(u + mDelayU.getOldest());
 
             //Write new values to nodes
             mpOut->writeNode(NodeSignal::VALUE, y);

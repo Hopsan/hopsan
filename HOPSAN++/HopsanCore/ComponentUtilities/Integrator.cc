@@ -23,10 +23,10 @@ Integrator::Integrator()
 
 void Integrator::initialize(double &rTime, double timestep, double u0, double y0)
 {
-    mDelayU.setStepDelay(1);
-    mDelayY.setStepDelay(1);
-    mDelayU.initialize(rTime, u0);
-    mDelayY.initialize(rTime, y0);
+//    mDelayU.setStepDelay(1);
+//    mDelayY.setStepDelay(1);
+    mDelayU.initialize(1, u0);
+    mDelayY.initialize(1, y0);
 
     mTimeStep = timestep;
     mpTime = &rTime;
@@ -43,16 +43,17 @@ void Integrator::initializeValues(double u0, double y0)
 
 void Integrator::update(double &u)
 {
-    if (!mIsInitialized)
-    {
-        std::cout << "Integrator function has to be initialized" << std::endl;
-        assert(false);
-    }
-    else if (mLastTime != *mpTime)
+//    if (!mIsInitialized)
+//    {
+//        std::cout << "Integrator function has to be initialized" << std::endl;
+//        assert(false);
+//    }
+//    else
+    if (mLastTime != *mpTime)
     {
         //Filter equation
         //Bilinear transform is used
-        mDelayY.update(mDelayY.value() + mTimeStep/2.0*(u + mDelayU.value()));
+        mDelayY.update(mDelayY.getOldest() + mTimeStep/2.0*(u + mDelayU.getOldest()));
         mDelayU.update(u);
 
         mLastTime = *mpTime;
@@ -64,19 +65,19 @@ double Integrator::value(double &u)
 {
     update(u);
 
-    return mDelayY.value();
+    return mDelayY.getOldest();
 }
 
 
-//! Observe that a call to this method has to be followed by another call to value(double u) or to update(double u)
-//! @return The integrated actual value.
-//! @see value(double u)
-double Integrator::value()
-{
-    update(mDelayU.valueIdx(1));
+////! Observe that a call to this method has to be followed by another call to value(double u) or to update(double u)
+////! @return The integrated actual value.
+////! @see value(double u)
+//double Integrator::value()
+//{
+//    update(mDelayU.valueIdx(1));
 
-    return mDelayY.value();
-}
+//    return mDelayY.value();
+//}
 
 
 

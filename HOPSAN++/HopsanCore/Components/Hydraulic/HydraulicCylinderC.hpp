@@ -189,10 +189,10 @@ namespace hopsan {
 
             mZc10 = mBetae*mTimestep/mVolume1;
             mZc20 = mBetae*mTimestep/mVolume2;
-            mDelayedZc1.setStepDelay(1);
-            mDelayedZc2.setStepDelay(1);
-            mDelayedZc1.initialize(mTime, mZc10);
-            mDelayedZc2.initialize(mTime, mZc20);
+//            mDelayedZc1.setStepDelay(1);
+//            mDelayedZc2.setStepDelay(1);
+            mDelayedZc1.initialize(1, mZc10);
+            mDelayedZc2.initialize(1, mZc20);
 
             mQ1Internal = -mArea1 * mVInternal;
             mQ2Internal = mArea2 * mVInternal;
@@ -200,27 +200,27 @@ namespace hopsan {
             double c1 = mStartPressure1 - mZc10 * mQ1Internal;
             double c2 = mStartPressure2 - mZc20 * mQ2Internal;
 
-            mDelayedC1.setStepDelay(1);
-            mDelayedC2.setStepDelay(1);
-            mDelayedC1.initialize(mTime, c1);
-            mDelayedC2.initialize(mTime, c2);
+//            mDelayedC1.setStepDelay(1);
+//            mDelayedC2.setStepDelay(1);
+            mDelayedC1.initialize(1, c1);
+            mDelayedC2.initialize(1, c2);
 
             mC1Internal = mStartPressure1 - mZc10 * (mQ1Internal - mLeakageCoefficient * (mStartPressure1 - mStartPressure2));
             mC2Internal = mStartPressure2 - mZc20 * (mQ2Internal - mLeakageCoefficient * (mStartPressure2 - mStartPressure1));
-            mDelayedC1Internal.setStepDelay(1);
-            mDelayedC2Internal.setStepDelay(1);
-            mDelayedC1InternalEffective.setStepDelay(1);
-            mDelayedC2InternalEffective.setStepDelay(1);
-            mDelayedC1Internal.initialize(mTime, mC1Internal);
-            mDelayedC2Internal.initialize(mTime, mC2Internal);
-            mDelayedC1InternalEffective.initialize(mTime, mC1Internal);
-            mDelayedC2InternalEffective.initialize(mTime, mC2Internal);
+//            mDelayedC1Internal.setStepDelay(1);
+//            mDelayedC2Internal.setStepDelay(1);
+//            mDelayedC1InternalEffective.setStepDelay(1);
+//            mDelayedC2InternalEffective.setStepDelay(1);
+            mDelayedC1Internal.initialize(1, mC1Internal);
+            mDelayedC2Internal.initialize(1, mC2Internal);
+            mDelayedC1InternalEffective.initialize(1, mC1Internal);
+            mDelayedC2InternalEffective.initialize(1, mC2Internal);
 
             double c3 = mC1Internal*mArea1 - mC2Internal*mArea2;
             double Zc3 = mZc10*mArea1*mArea1 + mZc20*mArea2*mArea2 + mBp;
 
-            mDelayedCSpring.setStepDelay(1);
-            mDelayedCSpring.initialize(mTime, 0.0);
+            //mDelayedCSpring.setStepDelay(1);
+            mDelayedCSpring.initialize(1, 0.0);
 
             //Write to nodes
             mpP1->writeNode(NodeHydraulic::MASSFLOW,     mQ1Internal);
@@ -269,8 +269,8 @@ namespace hopsan {
             //Checked
             mZc10 = mBetae * mTimestep / mVolume1;
             mZc20 = mBetae * mTimestep / mVolume2;
-            mAlphaZc1 = mZc10 / mDelayedZc1.value();
-            mAlphaZc2 = mZc20 / mDelayedZc2.value();
+            mAlphaZc1 = mZc10 / mDelayedZc1.getOldest();
+            mAlphaZc2 = mZc20 / mDelayedZc2.getOldest();
             //Checked
             mQ1Internal = -mArea1 * mVInternal;
             mQ2Internal = mArea2 * mVInternal;
@@ -297,20 +297,20 @@ namespace hopsan {
             mPm2 = mCt2 / 2;
             //Checked
             mC1Internal0 = mPm1 * (mAlphaZc1 + 1) - mAlphaZc1 * mP1Internal - mAlphaZc1 * mZc10 * mQ1InternalEffective;
-            mC1Internal = (1 - mAlpha) * mC1Internal0 + mAlpha * (mDelayedC1Internal.value() + (mDelayedZc1.value() - mZc10) * mQ1InternalEffective);
+            mC1Internal = (1 - mAlpha) * mC1Internal0 + mAlpha * (mDelayedC1Internal.getOldest() + (mDelayedZc1.getOldest() - mZc10) * mQ1InternalEffective);
             mDelayedC1Internal.update(mC1Internal);
             //Checked
-            mC1Effective = mPm1 * (mAlphaZc1 + 1) - mAlphaZc1 * c1 - mAlphaZc1 * 2 * mDelayedZc1.value() * q1;
-            c1 = (1 - mAlpha) * mC1Effective + mAlpha * (mDelayedC1.value() + (mDelayedZc1.value() - mZc10) * q1);
+            mC1Effective = mPm1 * (mAlphaZc1 + 1) - mAlphaZc1 * c1 - mAlphaZc1 * 2 * mDelayedZc1.getOldest() * q1;
+            c1 = (1 - mAlpha) * mC1Effective + mAlpha * (mDelayedC1.getOldest() + (mDelayedZc1.getOldest() - mZc10) * q1);
             mDelayedC1.update(c1);
             Zc1 = mZc10;
             //Checked
             mC2Internal0 = mPm2 * (mAlphaZc2 + 1) - mAlphaZc2 * mP2Internal - mAlphaZc2 * mZc20 * mQ2InternalEffective;
-            mC2Internal = (1 - mAlpha) * mC2Internal0 + mAlpha * (mDelayedC2Internal.value() + (mDelayedZc2.value() - mZc20) * mQ2InternalEffective);
+            mC2Internal = (1 - mAlpha) * mC2Internal0 + mAlpha * (mDelayedC2Internal.getOldest() + (mDelayedZc2.getOldest() - mZc20) * mQ2InternalEffective);
             mDelayedC2Internal.update(mC2Internal);
             //Checked
-            mC2Effective = mPm2 * (mAlphaZc2 + 1) - mAlphaZc2 * c2 - mAlphaZc2 * 2 * mDelayedZc2.value() * q2;
-            c2 = (1 - mAlpha) * mC2Effective + mAlpha * (mDelayedC2.value() + (mDelayedZc2.value() - mZc20) * q2);
+            mC2Effective = mPm2 * (mAlphaZc2 + 1) - mAlphaZc2 * c2 - mAlphaZc2 * 2 * mDelayedZc2.getOldest() * q2;
+            c2 = (1 - mAlpha) * mC2Effective + mAlpha * (mDelayedC2.getOldest() + (mDelayedZc2.getOldest() - mZc20) * q2);
             mDelayedC2.update(c2);
             Zc2 = mZc20;
             //Checked
@@ -334,8 +334,8 @@ namespace hopsan {
                 // Effective characteristics at the piston taking account for cavitation
             mC1Internal0Effective = mPm1Effective * (mAlphaZc1 + 1) - mAlphaZc1 * mP1InternalEffective - mAlphaZc1 * mZc10 * mQ1InternalEffective;
             mC2Internal0Effective = mPm2Effective * (mAlphaZc2 + 1) - mAlphaZc2 * mP2InternalEffective - mAlphaZc2 * mZc20 * mQ2InternalEffective;
-            mC1InternalEffective = (1 - mAlpha) * mC1Internal0Effective + mAlpha * (mDelayedC1InternalEffective.value() + (mDelayedZc1.value() - mZc10) * mQ1InternalEffective);
-            mC2InternalEffective = (1 - mAlpha) * mC2Internal0Effective + mAlpha * (mDelayedC2InternalEffective.value() + (mDelayedZc2.value() - mZc20) * mQ2InternalEffective);
+            mC1InternalEffective = (1 - mAlpha) * mC1Internal0Effective + mAlpha * (mDelayedC1InternalEffective.getOldest() + (mDelayedZc1.getOldest() - mZc10) * mQ1InternalEffective);
+            mC2InternalEffective = (1 - mAlpha) * mC2Internal0Effective + mAlpha * (mDelayedC2InternalEffective.getOldest() + (mDelayedZc2.getOldest() - mZc20) * mQ2InternalEffective);
             mDelayedC1InternalEffective.update(mC1InternalEffective);
             mDelayedC2InternalEffective.update(mC2InternalEffective);
             mDelayedZc1.update(mZc10);
@@ -362,7 +362,7 @@ namespace hopsan {
 
                 /* Filtering of the characteristics */
 
-            mCSpring = mAlphaSpring * mDelayedCSpring.value() + (1.0 - mAlphaSpring) * mCSpring0;
+            mCSpring = mAlphaSpring * mDelayedCSpring.getOldest() + (1.0 - mAlphaSpring) * mCSpring0;
             mDelayedCSpring.update(mCSpring);
 
             c3 = mC1InternalEffective*mArea1 - mC2InternalEffective*mArea2 + mCSpring;

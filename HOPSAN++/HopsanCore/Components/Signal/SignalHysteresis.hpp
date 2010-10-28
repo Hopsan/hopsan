@@ -47,8 +47,8 @@ namespace hopsan {
 
         void initialize()
         {
-            mDelayedInput.initialize(mTime, 0.0);
-            mDelayedInput.setStepDelay(1);
+            mDelayedInput.initialize(1, 0.0);
+            //mDelayedInput.setStepDelay(1);
         }
 
 
@@ -58,7 +58,7 @@ namespace hopsan {
             double input = mpIn->readNode(NodeSignal::VALUE);
 
             //Hysteresis equations
-            double output = mHyst.getValue(input, mHysteresisWidth, mDelayedInput.value());
+            double output = mHyst.getValue(input, mHysteresisWidth, mDelayedInput.getOldest());
             mDelayedInput.update(output);
 
             //Write new values to nodes

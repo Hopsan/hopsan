@@ -25,12 +25,12 @@ void DoubleIntegratorWithDamping::initialize(double &rTime, double timestep, dou
 {
     mW0 = w0;
 
-    mDelayU.setStepDelay(1);
-    mDelayY.setStepDelay(1);
-    mDelaySY.setStepDelay(1);
-    mDelayU.initialize(rTime, u0);
-    mDelayY.initialize(rTime, y0);
-    mDelaySY.initialize(rTime, sy0);
+//    mDelayU.setStepDelay(1);
+//    mDelayY.setStepDelay(1);
+//    mDelaySY.setStepDelay(1);
+    mDelayU.initialize(1, u0);
+    mDelayY.initialize(1, y0);
+    mDelaySY.initialize(1, sy0);
 
     mTimeStep = timestep;
     mpTime = &rTime;
@@ -61,9 +61,9 @@ void DoubleIntegratorWithDamping::update(double u)
     }
     else if (mLastTime != *mpTime)
     {
-        double tempDelaySY = mDelaySY.value();
-        mDelaySY.update( (2-mW0)/(2+mW0)*tempDelaySY + mTimeStep/(2.0+mW0)*(u + mDelayU.value()) );
-        mDelayY.update( mDelayY.value() + mTimeStep/2.0*tempDelaySY );
+        double tempDelaySY = mDelaySY.getOldest();
+        mDelaySY.update( (2-mW0)/(2+mW0)*tempDelaySY + mTimeStep/(2.0+mW0)*(u + mDelayU.getOldest()) );
+        mDelayY.update( mDelayY.getOldest() + mTimeStep/2.0*tempDelaySY );
         mDelayU.update(u);
 
         mLastTime = *mpTime;
@@ -75,7 +75,7 @@ void DoubleIntegratorWithDamping::update(double u)
 double DoubleIntegratorWithDamping::valueFirst(double u)
 {
     update(u);
-    return mDelaySY.value();
+    return mDelaySY.getOldest();
 }
 
 
@@ -83,21 +83,21 @@ double DoubleIntegratorWithDamping::valueFirst(double u)
 double DoubleIntegratorWithDamping::valueSecond(double u)
 {
     update(u);
-    return mDelayY.value();
+    return mDelayY.getOldest();
 }
 
 
 //! Returns first primitive from double integration
 double DoubleIntegratorWithDamping::valueFirst()
 {
-    update(mDelayU.valueIdx(1));
-    return mDelaySY.value();
+    update(mDelayU.getIdx(1));
+    return mDelaySY.getOldest();
 }
 
 
 //! Returns second primitive from double integration
 double DoubleIntegratorWithDamping::valueSecond()
 {
-    update(mDelayU.valueIdx(1));
-    return mDelayY.value();
+    update(mDelayU.getIdx(1));
+    return mDelayY.getOldest();
 }

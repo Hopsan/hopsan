@@ -31,8 +31,8 @@ namespace hopsan {
         void setMinMax(double min, double max);
         void setNumDen(double num[2], double den[2]);
         void update(double &u);
-        double value(double &u);
-	double value();
+        double &value(double &u);
+        double &value();
 
     private:
         double mValue;
@@ -43,7 +43,7 @@ namespace hopsan {
         double mTimeStep;
         double *mpTime;
         double mLastTime;
-	bool mIsInitialized;
+        bool mIsInitialized;
     };
 
 

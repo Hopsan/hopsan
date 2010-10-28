@@ -53,10 +53,10 @@ void IntegratorLimited::initialize(double &rTime, double timestep, double u0, do
 {
     mMin = min;
     mMax = max;
-    mDelayU.setStepDelay(1);
-    mDelayY.setStepDelay(1);
-    mDelayU.initialize(rTime, u0);
-    mDelayY.initialize(rTime, std::max(std::min(y0, mMax), mMin));
+//    mDelayU.setStepDelay(1);
+//    mDelayY.setStepDelay(1);
+    mDelayU.initialize(1, u0);
+    mDelayY.initialize(1, std::max(std::min(y0, mMax), mMin));
 
     mTimeStep = timestep;
     mpTime = &rTime;
@@ -90,7 +90,7 @@ void IntegratorLimited::update(double u)
         //Filter equation
         //Bilinear transform is used
 
-        double y = mDelayY.value() + mTimeStep/2.0*(u + mDelayU.value());
+        double y = mDelayY.getOldest() + mTimeStep/2.0*(u + mDelayU.getOldest());
         //cout << "mMin: " << mMin << " mMax: " << mMax << " y: " << y << endl;
         if (y > mMax)
         {
@@ -117,7 +117,7 @@ double IntegratorLimited::value(double u)
 {
     update(u);
 
-    return mDelayY.value();
+    return mDelayY.getOldest();
 }
 
 
@@ -126,7 +126,7 @@ double IntegratorLimited::value(double u)
 //! @see value(double u)
 double IntegratorLimited::value()
 {
-    update(mDelayU.valueIdx(1));
+    update(mDelayU.getIdx(1));
 
-    return mDelayY.value();
+    return mDelayY.getOldest();
 }

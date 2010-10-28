@@ -83,8 +83,8 @@ namespace hopsan {
             mW = mSpoolDiameter*mFrac;
             mFs = mPilotArea * mPref;   //Spring preload
 
-            mDelayedX0.setStepDelay(1);
-            mDelayedX0.initialize(mTime, 0.0);
+            //mDelayedX0.setStepDelay(1);
+            mDelayedX0.initialize(1, 0.0);
 
             double num[3];
             double den[3];
@@ -129,7 +129,7 @@ namespace hopsan {
             //            x0=mXmax;                           //No filter function G = 1/mK
             //        if(x0<0.0)                              //No filter function G = 1/mK
             //            x0=0.0;                             //No filter function G = 1/mK
-            double x0h = mHyst.getValue(x0, mXhyst, mDelayedX0.value()); //Hysteresis
+            double x0h = mHyst.getValue(x0, mXhyst, mDelayedX0.getOldest()); //Hysteresis
 
 
             //Turbulent flow equation

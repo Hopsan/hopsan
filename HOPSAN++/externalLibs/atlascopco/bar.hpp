@@ -50,8 +50,10 @@ namespace hopsan {
         double Cx1old;
         double Cx2old;
         double V0, F1S, F2S;
-        deque<double> Cx1NofEl;
-        deque<double> Cx2NofEl;
+//        deque<double> Cx1NofEl;
+//        deque<double> Cx2NofEl;
+        Delay Cx1NofEl;
+        Delay Cx2NofEl;
         FirstOrderFilter mFilterLPCx1, mFilterLPCx2;
         Port *pP1, *pP2;
 
@@ -117,8 +119,10 @@ namespace hopsan {
             //Start values for wave variables
             Cx1=F1S+Zx*(-V0);
             Cx2=F2S+Zx*( V0);
-            Cx1NofEl.assign( int(NofEl-1) , Cx1);
-            Cx2NofEl.assign( int(NofEl-1) , Cx2);
+//            Cx1NofEl.assign( int(NofEl-1) , Cx1);
+//            Cx2NofEl.assign( int(NofEl-1) , Cx2);
+            Cx1NofEl.initialize(NofEl, Cx1);
+            Cx2NofEl.initialize(NofEl, Cx2);
             Cx1old=F2S-Zx*(-V0);
             Cx2old=F1S-Zx*( V0);
 
@@ -149,11 +153,14 @@ namespace hopsan {
             double V1 = pP1->readNode(NodeMechanic::VELOCITY);
             double V2 = pP2->readNode(NodeMechanic::VELOCITY);
 
-            Cx1NofEl.push_back(Cx2old + 2.*Zx*V1);  //Add new value at the end
-            Cx2NofEl.push_back(Cx1old + 2.*Zx*V2);
+//            Cx1NofEl.push_back(Cx2old + 2.*Zx*V1);  //Add new value at the end
+//            Cx2NofEl.push_back(Cx1old + 2.*Zx*V2);
 
-            double Cx1new=Cx1NofEl.front(); Cx1NofEl.pop_front();  //Read and remove first value
-            double Cx2new=Cx2NofEl.front(); Cx2NofEl.pop_front();
+//            double Cx1new=Cx1NofEl.front(); Cx1NofEl.pop_front();  //Read and remove first value
+//            double Cx2new=Cx2NofEl.front(); Cx2NofEl.pop_front();
+
+            double Cx1new = Cx1NofEl.update(Cx2old + 2.*Zx*V1);  //Add new value, pop old
+            double Cx2new = Cx2NofEl.update(Cx1old + 2.*Zx*V2);
 
              //First order filter
             Cx1=mFilterLPCx1.value(Cx1new);

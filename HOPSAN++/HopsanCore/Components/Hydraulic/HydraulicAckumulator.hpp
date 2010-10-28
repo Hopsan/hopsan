@@ -78,22 +78,18 @@ namespace hopsan {
                 }
                 mVgas = mVtot;                  //Pressure is minimum, so ackumulator is empty
                 mVoil = 0;
-                mDelayedQ2.initialize(mTime, mStartFlow);        //"Previous" value for q2 first step
+                mDelayedQ2.initialize(1, mStartFlow);        //"Previous" value for q2 first step
             }
             else
             {
-                mDelayedQ2.initialize(mTime, mKce*(p1-mStartPressure));              //"Previous" value for q2 first step, calculated with orifice equation
+                mDelayedQ2.initialize(1, mKce*(p1-mStartPressure));              //"Previous" value for q2 first step, calculated with orifice equation
                 mVgas = pow(mPmin*pow(mVtot, mKappa)/mStartPressure, 1/mKappa);     //Initial gas volume, calculated from initial pressure
                 mVoil = mVtot - mVgas;
             }
-            mDelayedP2.initialize(mTime, mStartPressure);
-            mDelayedC1.initialize(mTime, c1);
-            mDelayedZc1.initialize(mTime, Zc1);
-
-            mDelayedP2.setStepDelay(1);
-            mDelayedC1.setStepDelay(1);
-            mDelayedZc1.setStepDelay(1);
-            mDelayedQ2.setStepDelay(1);
+            mDelayedP2.initialize(1, mStartPressure);
+            mDelayedC1.initialize(1, c1);
+            mDelayedZc1.initialize(1, Zc1);
+            //! @todo the delays are hardcoded to 1 we could avoid using Delay class for speed
 
             std::cout << "Start Pressure: " << mStartPressure << std::endl;;
         }
@@ -108,12 +104,12 @@ namespace hopsan {
             //Ackumulator equations
             double e0, ct;
             double p1,q1,q2;
-            double p2 = mDelayedP2.value();
+            double p2 = mDelayedP2.getOldest();
 
             e0 = mPmin * pow(mVtot, mKappa);
             ct = mVgas / (p2*mKappa) + (mVtot-mVgas) / mBetae;
-            q2 = (mDelayedQ2.value() * (2*ct*(mKce*mDelayedZc1.value()+1) - mKce*mTimestep) +
-                  2*ct*mKce*(c1-mDelayedC1.value())) / (2*ct*(mKce*Zc1+1) + mKce*mTimestep);
+            q2 = (mDelayedQ2.getOldest() * (2.0*ct*(mKce*mDelayedZc1.getOldest()+1.0) - mKce*mTimestep) +
+                  2.0*ct*mKce*(c1-mDelayedC1.getOldest())) / (2.0*ct*(mKce*Zc1+1.0) + mKce*mTimestep);
             p1 = c1 - Zc1*q2;
             p2 = p1 - q2/mKce;
 
@@ -127,8 +123,8 @@ namespace hopsan {
             {
                 c1 = 0.0;
                 Zc1 = 0.0;
-                q2 = (mDelayedQ2.value() * (2*ct*(mKce*mDelayedZc1.value()+1) - mKce*mTimestep) +
-                      2*ct*mKce*(c1-mDelayedC1.value())) / (2*ct*(mKce*Zc1+1) + mKce*mTimestep);
+                q2 = (mDelayedQ2.getOldest() * (2.0*ct*(mKce*mDelayedZc1.getOldest()+1.0) - mKce*mTimestep) +
+                      2*ct*mKce*(c1-mDelayedC1.getOldest())) / (2*ct*(mKce*Zc1+1) + mKce*mTimestep);
                 p1 = 0.0;
                 p2 = -q2/mKce;
             }

@@ -100,13 +100,54 @@ double mannyArgsClass::doIt()
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
+
+    //Test modulo
+//    qDebug() << "Testing modulo";
+//    size_t rIdx = 0;
+//    size_t size = 10;
+//    for (size_t i=0;i<101; ++i)
+//    {
+//        qDebug() << "i: " << i << " rIdx: " << rIdx;
+//        rIdx = (rIdx + 1) % size;
+//    }
+
     QTime timer;
+    timer.start();
+
+    //Test array vs Vector
+    #include <vector>
+    size_t max = 1000000;
+    size_t ntries = 5000;
+    double* pArray = new double[max];
+    std::vector<double> mVector;
+    mVector.resize(max);
+    timer.restart();
+    for (size_t j=0; j<ntries; ++j)
+    {
+        for (size_t i=0; i<max; ++i)
+        {
+            pArray[i] = i;
+        }
+    }
+    qDebug() << "Array time: " << timer.elapsed() << " ms";
+
+    timer.restart();
+    for (size_t j=0; j<ntries; ++j)
+    {
+        for (size_t i=0; i<max; ++i)
+        {
+            mVector[i] = i;
+        }
+    }
+    qDebug() << "Vector time: " << timer.elapsed() << " ms";
+
+
     unsigned int ctr;
     unsigned int maxctr = 10000000000;
     double answer;
     double answer2;
 
-    timer.start();
+
     //Check the time it takes to calc 5^2 (5*5) with a return value, not redeclaring double every time
     for (ctr=0; ctr<maxctr; ++ctr)
     {

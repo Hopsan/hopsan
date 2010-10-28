@@ -68,8 +68,8 @@ namespace hopsan {
         {
             mX0 = 0.00001;
 
-            mDelayedX0.initialize(mTime, 0.0);
-            mDelayedX0.setStepDelay(1);
+            mDelayedX0.initialize(1, 0.0);
+            //mDelayedX0.setStepDelay(1);
 
             double wCutoff = 1 / mTao;      //Ska det vara Timestep/Tao?
             //double wCutoff = 100;     DEBUG
@@ -118,10 +118,10 @@ namespace hopsan {
 
             double xh = mPh/b1;
             //cout << "xs = " << xs << endl;
-            double xsh = mHyst.getValue(xs, xh, mDelayedX0.valueIdx(1)); //Ska det vara 1 eller 1.0? Idx eller ej
+            double xsh = mHyst.getValue(xs, xh, mDelayedX0.getIdx(1)); //Ska det vara 1 eller 1.0? Idx eller ej
             //cout << "xsh = " << xsh << endl;
             mX0 = mFilterLP.getValue(xsh);          //Filter disabled because it's not working!
-            if (mTime < 0.1) { std::cout << "p1 = " << p1 << ", xs = " << xs << ", xsh = " << xsh << ", mDelayedX0 = " << mDelayedX0.valueIdx(1) << ", mX0 = " << mX0 << std::endl; }
+            if (mTime < 0.1) { std::cout << "p1 = " << p1 << ", xs = " << xs << ", xsh = " << xsh << ", mDelayedX0 = " << mDelayedX0.getIdx(1) << ", mX0 = " << mX0 << std::endl; }
             //cout << "mX0 = " << mX0 << endl;
             //mX0 = xsh;      //Debug, ta bort sen
             if (xsh > mX0max)
@@ -167,7 +167,7 @@ namespace hopsan {
                 xs = (p_open-mPref-p_close)/b1;
                 xh = mPh / b1;
                 //if (mTime == 0) { xs = mX0; }
-                xsh = mHyst.getValue(xs, xh, mDelayedX0.value());
+                xsh = mHyst.getValue(xs, xh, mDelayedX0.getOldest());
                 mX0 = mFilterLP.getValue(xsh);          //Filter is not working
                 //mX0 = xsh;
                 if (mX0 > mX0max)

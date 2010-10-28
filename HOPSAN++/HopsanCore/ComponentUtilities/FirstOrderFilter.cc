@@ -36,10 +36,10 @@ void FirstOrderFilter::initialize(double &rTime, double timestep, double num[2],
     mMin = min;
     mMax = max;
     mValue = y0;
-    mDelayU.setStepDelay(1);
-    mDelayY.setStepDelay(1);
-    mDelayU.initialize(rTime, u0);
-    mDelayY.initialize(rTime, std::max(std::min(y0, mMax), mMin));
+//    mDelayU.setStepDelay(1);
+//    mDelayY.setStepDelay(1);
+    mDelayU.initialize(1, u0);
+    mDelayY.initialize(1, std::max(std::min(y0, mMax), mMin));
     mTimeStep = timestep;
     mpTime = &rTime;
     mIsInitialized = true;
@@ -93,7 +93,8 @@ void FirstOrderFilter::update(double &u)
         //Filter equation
         //Bilinear transform is used
 
-        mValue = 1.0/mCoeffY[1]*(mCoeffU[1]*u + mCoeffU[0]*mDelayU.value(u) - mCoeffY[0]*mDelayY.value());
+        mValue = 1.0/mCoeffY[1]*(mCoeffU[1]*u + mCoeffU[0]*mDelayU.getOldest() - mCoeffY[0]*mDelayY.getOldest());
+        //! @todo mDelayU.getOldest() was mDelayU.value(u), that is update and fetch
 //cout << "FILTER: " << "  u: " << u << "  y: " << mValue << endl;
 
         if (mValue > mMax)
@@ -119,7 +120,7 @@ void FirstOrderFilter::update(double &u)
 }
 
 
-double FirstOrderFilter::value(double &u)
+double &FirstOrderFilter::value(double &u)
 {
     update(u);
 
@@ -130,9 +131,9 @@ double FirstOrderFilter::value(double &u)
 //! Observe that a call to this method has to be followed by another call to value(double u) or to update(double u)
 //! @return The filtered actual value.
 //! @see value(double u)
-double FirstOrderFilter::value()
+double &FirstOrderFilter::value()
 {
-    double tmp = mDelayU.valueIdx(1);
+    double tmp = mDelayU.getIdx(1);
     update(tmp);
 
     return mValue;

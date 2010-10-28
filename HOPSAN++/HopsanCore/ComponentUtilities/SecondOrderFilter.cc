@@ -35,10 +35,10 @@ void SecondOrderFilter::initialize(double &rTime, double timestep, double num[3]
 {
     mMin = min;
     mMax = max;
-    mDelayU.setStepDelay(2);
-    mDelayY.setStepDelay(2);
-    mDelayU.initialize(rTime, u0);
-    mDelayY.initialize(rTime, std::max(std::min(y0, mMax), mMin));
+//    mDelayU.setStepDelay(2);
+//    mDelayY.setStepDelay(2);
+    mDelayU.initialize(2, u0);
+    mDelayY.initialize(2, std::max(std::min(y0, mMax), mMin));
 
     mTimeStep = timestep;
     mpTime = &rTime;
@@ -86,8 +86,10 @@ void SecondOrderFilter::setMinMax(double min, double max)
 
 void SecondOrderFilter::initializeValues(double u0, double y0)
 {
-    mDelayU.initializeValues(u0);
-    mDelayY.initializeValues(y0);
+//    mDelayU.initializeValues(u0);
+//    mDelayY.initializeValues(y0);
+    mDelayU.initialize(mDelayU.getSize(), u0);
+    mDelayU.initialize(mDelayY.getSize(), y0);
 }
 
 
@@ -103,16 +105,19 @@ void SecondOrderFilter::update(double u)
         //Filter equation
         //Bilinear transform is used
 
-        mValue = 1.0/mCoeffY[2]*(mCoeffU[2]*u + mCoeffU[1]*mDelayU.valueIdx(u, 1) + mCoeffU[0]*mDelayU.value(u) - (mCoeffY[1]*mDelayY.valueIdx(1) + mCoeffY[0]*mDelayY.value()));
+        mValue = 1.0/mCoeffY[2]*(mCoeffU[2]*u + mCoeffU[1]*mDelayU.getIdx(1) + mCoeffU[0]*mDelayU.getOldest() - (mCoeffY[1]*mDelayY.getIdx(1) + mCoeffY[0]*mDelayY.getOldest()));
+        mDelayU.update(u); //!< @todo update here or before calculation (added by peter as there was a .valueIdx(u,1) above (an update and fetch value). No update on Y values though??
 
         if (mValue > mMax)
         {
+            //! @todo Why do we reset the entire history, do we even need this wierd function
             mDelayY.initializeValues(mMax);
             mDelayU.initializeValues(mMax);
             mValue = mMax;
         }
         else if (mValue < mMin)
         {
+            //! @todo Why do we reset the entire history, do we even need this wierd function
             mDelayY.initializeValues(mMin);
             mDelayU.initializeValues(mMin);
             mValue = mMin;
@@ -120,7 +125,7 @@ void SecondOrderFilter::update(double u)
         else
         {
             mDelayY.update(mValue);
-            mDelayU.update(u);
+            mDelayU.update(u); //!< @todo Update AGAIN
         }
 
         mLastTime = *mpTime;
@@ -142,7 +147,7 @@ double SecondOrderFilter::value(double u)
 //! @see value(double u)
 double SecondOrderFilter::value()
 {
-    update(mDelayU.valueIdx(1));
+    update(mDelayU.getIdx(1));
 
     return mValue;
 }
