@@ -166,6 +166,18 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateToolBarsToNewTab()));
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(refreshUndoWidgetList()));
+
+    if(!mLastSessionModels.empty())
+    {
+        mpProjectTabs->closeProjectTab(0);
+        for(size_t i=0; i<mLastSessionModels.size(); ++i)
+        {
+            //mpProjectTabs->loadModel(mLastSessionModels.at(i));
+            mpProjectTabs->loadModel(mLastSessionModels.at(i));
+
+        }
+    }
+
 }
 
 
@@ -218,8 +230,6 @@ void MainWindow::openPlotWidget()
 //! @param event contains information of the closing operation.
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    this->saveSettings();
-
     if (mpProjectTabs->closeAllProjectTabs())
     {
         event->accept();
@@ -228,6 +238,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
     {
         event->ignore();
     }
+
+    this->saveSettings();
 }
 
 
@@ -371,6 +383,9 @@ void MainWindow::createMenus()
     menuFile->setObjectName("menuFile");
     menuFile->setTitle("&File");
 
+    recentMenu = new QMenu(this);
+    recentMenu->setTitle("Recent Models");
+
     menuNew = new QMenu(menubar);
     menuNew->setObjectName("menuNew");
     menuNew->setTitle("New");
@@ -401,6 +416,7 @@ void MainWindow::createMenus()
     menuFile->addAction(openAction);
     menuFile->addAction(saveAction);
     menuFile->addAction(saveAsAction);
+    menuFile->addMenu(recentMenu);
     menuFile->addSeparator();
     menuFile->addAction(loadLibsAction);
     menuFile->addSeparator();
@@ -408,6 +424,8 @@ void MainWindow::createMenus()
     menuFile->addAction(openGlobalParametersAction);
     menuFile->addSeparator();
     menuFile->addAction(closeAction);
+
+    this->updateRecentList();
 
     menuSimulation->addAction(simulateAction);
 
@@ -567,6 +585,8 @@ void MainWindow::loadSettings()
     mSnapping = true;
     mBackgroundColor = QColor("white");
     mAntiAliasing = false;
+    mLastSessionModels.clear();
+    mRecentModels.clear();
 
     QFile file(QString(MAINPATH) + "settings.txt");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -618,8 +638,15 @@ void MainWindow::loadSettings()
         }
         if(inputWord == "USERLIB")
         {
-            //qDebug() << "Appending:  readName(" << inputWord << ")";
             mUserLibs.append(readName(inputStream));
+        }
+        if(inputWord == "LASTSESSIONMODEL")
+        {
+            mLastSessionModels.append(readName(inputStream));
+        }
+        if(inputWord == "RECENTMODEL")
+        {
+            mRecentModels.append(QFileInfo(readName(inputStream)));
         }
     }
     file.close();
@@ -698,6 +725,19 @@ void MainWindow::saveSettings()
         settingsFile << "USERLIB " << addQuotes(mUserLibs.at(i)) << "\n";
     }
 
+    for(size_t i=0; i<mLastSessionModels.size(); ++i)
+    {
+        if(mLastSessionModels.at(i) != "")
+        {
+            settingsFile << "LASTSESSIONMODEL " << addQuotes(mLastSessionModels.at(i)) << "\n";
+        }
+    }
+
+    for(size_t i = 0; i<mRecentModels.size(); ++i)
+    {
+        settingsFile << "RECENTMODEL " << addQuotes(mRecentModels.at(i).filePath()) << "\n";
+    }
+
     file.close();
 }
 
@@ -714,6 +754,38 @@ void MainWindow::fixSimulationParameterValues()
     fixFinishTime();
     fixTimeStep();
 }
+
+
+void MainWindow::registerRecentModel(QFileInfo model)
+{
+    mRecentModels.removeAll(model);
+    mRecentModels.prepend(model);
+    while(mRecentModels.size() > 10)
+    {
+        mRecentModels.pop_back();
+    }
+    updateRecentList();
+}
+
+
+void MainWindow::updateRecentList()
+{
+    recentMenu->clear();
+    if(mRecentModels.empty())
+    {
+        recentMenu->setDisabled(true);
+    }
+    else
+    {
+        recentMenu->setEnabled(true);
+        for(size_t i=0; i<mRecentModels.size(); ++i)
+        {
+            QAction *tempAction;
+            tempAction = recentMenu->addAction(mRecentModels.at(i).fileName());
+        }
+    }
+}
+
 
 
 //! Make sure that the finishs time of the simulation is not smaller than start time.

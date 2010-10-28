@@ -517,24 +517,6 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
 //! @see closeAllProjectTabs()
 bool ProjectTabWidget::closeProjectTab(int index)
 {
-    disconnect(mpParentMainWindow->resetZoomAction, SIGNAL(triggered()),getTab(index)->mpGraphicsView,SLOT(resetZoom()));
-    disconnect(mpParentMainWindow->zoomInAction, SIGNAL(triggered()),getTab(index)->mpGraphicsView,SLOT(zoomIn()));
-    disconnect(mpParentMainWindow->zoomOutAction, SIGNAL(triggered()),getTab(index)->mpGraphicsView,SLOT(zoomOut()));
-    disconnect(mpParentMainWindow->exportPDFAction, SIGNAL(triggered()), getTab(index)->mpGraphicsView,SLOT(exportToPDF()));
-    disconnect(mpParentMainWindow->centerViewAction,SIGNAL(triggered()),getTab(index)->mpGraphicsView,SLOT(centerView()));
-    disconnect(mpParentMainWindow->hideNamesAction, SIGNAL(triggered()),getSystem(index),SLOT(hideNames()));
-    disconnect(mpParentMainWindow->showNamesAction, SIGNAL(triggered()),getSystem(index),SLOT(showNames()));
-    disconnect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), getSystem(index), SLOT(updateStartTime()));
-    disconnect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getSystem(index), SLOT(updateTimeStep()));
-    disconnect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getSystem(index), SLOT(updateStopTime()));
-    disconnect(mpParentMainWindow->disableUndoAction,SIGNAL(triggered()),getSystem(index), SLOT(disableUndo()));
-    disconnect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), getTab(index), SLOT(simulate()));
-    disconnect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), getSystem(index),SLOT(updateStartTime()));
-    disconnect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getSystem(index),SLOT(updateStopTime()));
-    disconnect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getSystem(index),SLOT(updateTimeStep()));
-    disconnect(mpParentMainWindow->saveAction, SIGNAL(triggered()), getTab(index), SLOT(save()));
-    disconnect(mpParentMainWindow->saveAsAction, SIGNAL(triggered()), getTab(index), SLOT(saveAs()));
-
     if (!(this->getCurrentTab()->isSaved()))
     {
         QString modelName;
@@ -573,6 +555,24 @@ bool ProjectTabWidget::closeProjectTab(int index)
     {
         std::cout << "ProjectTabWidget: " << "Closing project: " << qPrintable(tabText(index)) << std::endl;
         //statusBar->showMessage(QString("Closing project: ").append(tabText(index)));
+        disconnect(mpParentMainWindow->resetZoomAction, SIGNAL(triggered()),getTab(index)->mpGraphicsView,SLOT(resetZoom()));
+        disconnect(mpParentMainWindow->zoomInAction, SIGNAL(triggered()),getTab(index)->mpGraphicsView,SLOT(zoomIn()));
+        disconnect(mpParentMainWindow->zoomOutAction, SIGNAL(triggered()),getTab(index)->mpGraphicsView,SLOT(zoomOut()));
+        disconnect(mpParentMainWindow->exportPDFAction, SIGNAL(triggered()), getTab(index)->mpGraphicsView,SLOT(exportToPDF()));
+        disconnect(mpParentMainWindow->centerViewAction,SIGNAL(triggered()),getTab(index)->mpGraphicsView,SLOT(centerView()));
+        disconnect(mpParentMainWindow->hideNamesAction, SIGNAL(triggered()),getSystem(index),SLOT(hideNames()));
+        disconnect(mpParentMainWindow->showNamesAction, SIGNAL(triggered()),getSystem(index),SLOT(showNames()));
+        disconnect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), getSystem(index), SLOT(updateStartTime()));
+        disconnect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getSystem(index), SLOT(updateTimeStep()));
+        disconnect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getSystem(index), SLOT(updateStopTime()));
+        disconnect(mpParentMainWindow->disableUndoAction,SIGNAL(triggered()),getSystem(index), SLOT(disableUndo()));
+        disconnect(mpParentMainWindow->simulateAction, SIGNAL(triggered()), getTab(index), SLOT(simulate()));
+        disconnect(mpParentMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), getSystem(index),SLOT(updateStartTime()));
+        disconnect(mpParentMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getSystem(index),SLOT(updateStopTime()));
+        disconnect(mpParentMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getSystem(index),SLOT(updateTimeStep()));
+        disconnect(mpParentMainWindow->saveAction, SIGNAL(triggered()), getTab(index), SLOT(save()));
+        disconnect(mpParentMainWindow->saveAsAction, SIGNAL(triggered()), getTab(index), SLOT(saveAs()));
+
         removeTab(index);
         return true;
     }
@@ -585,9 +585,12 @@ bool ProjectTabWidget::closeProjectTab(int index)
 //! @see saveProjectTab()
 bool ProjectTabWidget::closeAllProjectTabs()
 {
+    mpParentMainWindow->mLastSessionModels.clear();
+
     while(count() > 0)
     {
         setCurrentIndex(count()-1);
+        mpParentMainWindow->mLastSessionModels.append(getCurrentSystem()->mModelFileInfo.filePath());
         if (!closeProjectTab(count()-1))
         {
             return false;
@@ -641,6 +644,10 @@ void ProjectTabWidget::loadModel(QString modelFileName)
             return;
         }
     }
+
+    mpParentMainWindow->registerRecentModel(fileInfo);
+
+
 
 
 //    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file

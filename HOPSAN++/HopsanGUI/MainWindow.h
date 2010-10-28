@@ -66,6 +66,8 @@ public:
     bool mAntiAliasing;
     QStringList mUserLibs;
     bool mSnapping;
+    QList<QFileInfo> mRecentModels;
+    QStringList mLastSessionModels;
 
     //Menubar items
     QMenuBar *menubar;
@@ -77,6 +79,7 @@ public:
     QMenu *menuView;
     QMenu *menuTools;
     QMenu *menuPlot;
+    QMenu *recentMenu;
 
     //Toolbar items
     QToolBar *mpFileToolBar;
@@ -138,7 +141,10 @@ public slots:
     void updateToolBarsToNewTab();
     void refreshUndoWidgetList();
     void fixSimulationParameterValues();
+    void registerRecentModel(QFileInfo model);
+    void updateRecentList();
     void saveSettings();
+
 
 private slots:
     void openPlotWidget();
