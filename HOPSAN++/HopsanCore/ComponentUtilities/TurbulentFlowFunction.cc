@@ -26,11 +26,11 @@ double TurbulentFlowFunction::getFlow(double c1, double c2, double Zc1, double Z
 {
     if (c1 > c2)
     {
-        return mKs*(sqrt(c1-c2+pow((Zc1+Zc2),2)*pow(mKs,2)/4) - mKs*(Zc1+Zc2)/2);
+        return mKs*(sqrt(c1-c2+(Zc1+Zc2)*(Zc1+Zc2)*mKs*mKs/4) - mKs*(Zc1+Zc2)/2);
     }
     else
     {
-        return mKs*(mKs*(Zc1+Zc2)/2 - sqrt(c2-c1+pow((Zc1+Zc2),2)*pow(mKs,2)/4));
+        return mKs*(mKs*(Zc1+Zc2)/2 - sqrt(c2-c1+(Zc1+Zc2)*(Zc1+Zc2)*mKs*mKs/4));
     }
 }
 

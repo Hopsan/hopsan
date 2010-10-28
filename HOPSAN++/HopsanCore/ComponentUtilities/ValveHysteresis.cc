@@ -25,7 +25,7 @@ double ValveHysteresis::getValue(double xs, double xh, double xd)
     else if (xd > xs+xh/2)
     {
         return xs+xh/2;
-       }
+    }
     else
     {
         return xd;
