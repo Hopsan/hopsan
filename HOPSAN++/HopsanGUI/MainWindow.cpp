@@ -443,6 +443,7 @@ void MainWindow::createMenus()
     menuView->addAction(mpFileToolBar->toggleViewAction());
     menuView->addAction(mpEditToolBar->toggleViewAction());
     menuView->addAction(mpSimToolBar->toggleViewAction());
+    menuView->addAction(mpPyDock->toggleViewAction());
 
     menuTools->addAction(optionsAction);
 
