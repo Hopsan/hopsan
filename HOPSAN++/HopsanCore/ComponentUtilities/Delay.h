@@ -105,7 +105,7 @@ namespace hopsan {
         //! @brief Returns a specific value, 0=newest, 1=nextnewest, 2=nextnextnewest and so on, no range check is performed
         double getIdx(const size_t i)
         {
-            if (newest-i<0)
+            if (((int)newest-(int)i)<0) //!< @todo is this right
             {
                 return mpArray[newest-i+mSize];
             }
