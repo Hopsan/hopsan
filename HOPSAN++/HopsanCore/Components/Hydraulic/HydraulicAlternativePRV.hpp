@@ -98,7 +98,7 @@ namespace hopsan {
             //        den[0] = mC;
             //        den[1] = mK;
 
-            mFilter.initialize(mTime, mTimestep, num, den, 0.0, 0.0, 0.0, mXmax);
+            mFilter.initialize(mTimestep, num, den, 0.0, 0.0, 0.0, mXmax);
 
             if(mpX->isConnected())
                 mpX->writeNode(NodeSignal::VALUE, 0.0);
@@ -120,7 +120,8 @@ namespace hopsan {
             double p1 = c1 + q1*Zc1;
 
             double Ftot = p1*mPilotArea - mFs;      //Sum of forces in x direction beside from spring coeff and viscous friction
-            double x0 = mFilter.value(Ftot);        //Filter function G = 1/(mMass*s^2 + mC*s + mK)
+            mFilter.update(Ftot);
+            double x0 = mFilter.value();        //Filter function G = 1/(mMass*s^2 + mC*s + mK)
             //   double v0 = (Ftot-mK*mPrevX0.value())/mC;
             //   double x0 = mPrevX0.value()+v0*mTimestep;
             //double x0 = Ftot/mK;

@@ -20,7 +20,7 @@ namespace hopsan {
     {
     public:
         DoubleIntegratorWithDamping();
-        void initialize(double &rTime, double timestep, double w0, double u0=0.0, double y0=0.0, double sy0=0.0);
+        void initialize(double timestep, double w0, double u0=0.0, double y0=0.0, double sy0=0.0);
         void initializeValues(double u0, double y0, double sy0);
         void setDamping(double w0);
         void integrate(double u);
@@ -28,11 +28,8 @@ namespace hopsan {
         double valueSecond();
 
     private:
-        Delay mDelayU, mDelayY, mDelaySY;
+        double mDelayU, mDelayY, mDelaySY;
         double mTimeStep;
-        double *mpTime;
-        double mLastTime;
-        bool mIsInitialized;
         double mW0;
     };
 }

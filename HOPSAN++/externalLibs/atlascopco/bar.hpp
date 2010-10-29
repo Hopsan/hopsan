@@ -54,7 +54,7 @@ namespace hopsan {
 //        deque<double> Cx2NofEl;
         Delay Cx1NofEl;
         Delay Cx2NofEl;
-        FirstOrderFilter mFilterLPCx1, mFilterLPCx2;
+        NoDelayFirstOrderFilter mFilterLPCx1, mFilterLPCx2;
         Port *pP1, *pP2;
 
     public:

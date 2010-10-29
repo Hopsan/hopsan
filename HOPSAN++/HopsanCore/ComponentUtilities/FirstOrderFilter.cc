@@ -26,25 +26,17 @@ using namespace hopsan;
 
 FirstOrderFilter::FirstOrderFilter()
 {
-    mLastTime = -1.0;
-    mIsInitialized = false;
 }
 
 
-void FirstOrderFilter::initialize(double &rTime, double timestep, double num[2], double den[2], double u0, double y0, double min, double max)
+void FirstOrderFilter::initialize(double timestep, double num[2], double den[2], double u0, double y0, double min, double max)
 {
     mMin = min;
     mMax = max;
     mValue = y0;
-//    mDelayU.setStepDelay(1);
-//    mDelayY.setStepDelay(1);
-    mDelayU.initialize(1, u0);
-    mDelayY.initialize(1, std::max(std::min(y0, mMax), mMin));
+    mDelayU = u0;
+    mDelayY = std::max(std::min(y0, mMax), mMin);
     mTimeStep = timestep;
-    mpTime = &rTime;
-    mIsInitialized = true;
-    mLastTime = -mTimeStep;
-
     setNumDen(num, den);
 }
 
@@ -58,71 +50,46 @@ void FirstOrderFilter::setMinMax(double min, double max)
 
 void FirstOrderFilter::setNumDen(double num[2], double den[2])
 {
-//num =
-//(T + T*q)*(2*a + T*b - 2*a*q + T*b*q)
-//den =
-//(T + T*q)*(2*A - 2*A*q + B*T + B*T*q)
-
     mCoeffU[0] = num[1]*mTimeStep-2.0*num[0];
     mCoeffU[1] = num[1]*mTimeStep+2.0*num[0];
 
     mCoeffY[0] = den[1]*mTimeStep-2.0*den[0];
     mCoeffY[1] = den[1]*mTimeStep+2.0*den[0];
-
-
 }
 
 
 void FirstOrderFilter::initializeValues(double u0, double y0)
 {
-    mDelayU.initializeValues(u0);
-    mDelayY.initializeValues(y0);
+    mDelayU = u0;
+    mDelayY = y0;
     mValue = y0;
 }
 
 
-void FirstOrderFilter::update(double &u)
+double FirstOrderFilter::update(double &u)
 {
-    if (!mIsInitialized)
+    //Filter equation
+    //Bilinear transform is used
+
+    mValue = 1.0/mCoeffY[1]*(mCoeffU[1]*u + mCoeffU[0]*mDelayU - mCoeffY[0]*mDelayY);
+
+    if (mValue > mMax)
     {
-        std::cout << "Integrator function has to be initialized" << std::endl;
-        assert(false);
+        mDelayY = mMax;
+        mDelayU = mMax;
+        mValue = mMax;
     }
-    else if (mLastTime != *mpTime)
+    else if (mValue < mMin)
     {
-        //Filter equation
-        //Bilinear transform is used
-
-        mValue = 1.0/mCoeffY[1]*(mCoeffU[1]*u + mCoeffU[0]*mDelayU.getOldest() - mCoeffY[0]*mDelayY.getOldest());
-        //! @todo mDelayU.getOldest() was mDelayU.value(u), that is update and fetch
-//cout << "FILTER: " << "  u: " << u << "  y: " << mValue << endl;
-
-        if (mValue > mMax)
-        {
-            mDelayY.initializeValues(mMax);
-            mDelayU.initializeValues(mMax);
-            mValue = mMax;
-        }
-        else if (mValue < mMin)
-        {
-            mDelayY.initializeValues(mMin);
-            mDelayU.initializeValues(mMin);
-            mValue = mMin;
-        }
-        else
-        {
-            mDelayY.update(mValue);
-            mDelayU.update(u);
-        }
-
-        mLastTime = *mpTime;
+        mDelayY = mMin;
+        mDelayU = mMin;
+        mValue = mMin;
     }
-}
-
-
-double &FirstOrderFilter::value(double &u)
-{
-    update(u);
+    else
+    {
+        mDelayY = mValue;
+        mDelayU = u;
+    }
 
     return mValue;
 }
@@ -133,241 +100,5 @@ double &FirstOrderFilter::value(double &u)
 //! @see value(double u)
 double &FirstOrderFilter::value()
 {
-    double tmp = mDelayU.getIdx(1);
-    update(tmp);
-
-    return mValue;
-}
-
-
-
-
-
-
-
-
-
-//NoDelayAndPointersFirstOrderFilter::NoDelayAndPointersFirstOrderFilter()
-//{
-//    mLastTime = -1.0;
-//    mIsInitialized = false;
-//}
-
-
-//void NoDelayAndPointersFirstOrderFilter::initialize(double &rTime, double timestep, double num[2], double den[2], double *uref, double *yref, double u0, double y0, double min, double max)
-//{
-//    mMin = min;
-//    mMax = max;
-//    mpU = uref;
-//    mpY = yref;
-//    mValue = y0;
-//    mDelayU = u0;
-//    mDelayY = std::max(std::min(y0, mMax), mMin);
-//    mTimeStep = timestep;
-//    mpTime = &rTime;
-//    mIsInitialized = true;
-//    mLastTime = -mTimeStep;
-
-//    setNumDen(num, den);
-//}
-
-
-//void NoDelayAndPointersFirstOrderFilter::setMinMax(double min, double max)
-//{
-//    mMin = min;
-//    mMax = max;
-//}
-
-
-//void NoDelayAndPointersFirstOrderFilter::setNumDen(double num[2], double den[2])
-//{
-////num =
-////(T + T*q)*(2*a + T*b - 2*a*q + T*b*q)
-////den =
-////(T + T*q)*(2*A - 2*A*q + B*T + B*T*q)
-
-//    mCoeffU[0] = num[1]*mTimeStep-2.0*num[0];
-//    mCoeffU[1] = num[1]*mTimeStep+2.0*num[0];
-
-//    mCoeffY[0] = den[1]*mTimeStep-2.0*den[0];
-//    mCoeffY[1] = den[1]*mTimeStep+2.0*den[0];
-
-
-//}
-
-
-//void NoDelayAndPointersFirstOrderFilter::initializeValues(double u0, double y0)
-//{
-//    mDelayU = u0;
-//    mDelayY = y0;
-//    mValue = y0;
-//}
-
-
-//void NoDelayAndPointersFirstOrderFilter::update()
-//{
-//    if (!mIsInitialized)
-//    {
-//        std::cout << "Integrator function has to be initialized" << std::endl;
-//        assert(false);
-//    }
-//    else if (mLastTime != *mpTime)
-//    {
-//        //Filter equation
-//        //Bilinear transform is used
-
-//        mDelayU = *mpU;
-//        mValue = 1.0/mCoeffY[1]*(mCoeffU[1] * *mpU + mCoeffU[0]*mDelayU - mCoeffY[0]*mDelayY);
-
-//        if (mValue > mMax)
-//        {
-//            mDelayY = mMax;
-//            mDelayU = mMax;
-//            mValue = mMax;
-//        }
-//        else if (mValue < mMin)
-//        {
-//            mDelayY = mMin;
-//            mDelayU = mMin;
-//            mValue = mMin;
-//        }
-//        else
-//        {
-//            mDelayY = mValue;
-//            mDelayU = *mpU;
-//        }
-
-//        mLastTime = *mpTime;
-//    }
-//}
-
-
-//void NoDelayAndPointersFirstOrderFilter::filter()
-//{
-//    update();
-
-//    *mpY = mValue;
-//}
-
-
-
-
-
-
-
-
-
-
-
-NoDelayFirstOrderFilter::NoDelayFirstOrderFilter()
-{
-    mLastTime = -1.0;
-    mIsInitialized = false;
-}
-
-
-void NoDelayFirstOrderFilter::initialize(double &rTime, double timestep, double num[2], double den[2], double u0, double y0, double min, double max)
-{
-    mMin = min;
-    mMax = max;
-    mValue = y0;
-    mDelayU = u0;
-    mDelayY = std::max(std::min(y0, mMax), mMin);
-    mTimeStep = timestep;
-    mpTime = &rTime;
-    mIsInitialized = true;
-    mLastTime = -mTimeStep;
-
-    setNumDen(num, den);
-}
-
-
-void NoDelayFirstOrderFilter::setMinMax(double min, double max)
-{
-    mMin = min;
-    mMax = max;
-}
-
-
-void NoDelayFirstOrderFilter::setNumDen(double num[2], double den[2])
-{
-//num =
-//(T + T*q)*(2*a + T*b - 2*a*q + T*b*q)
-//den =
-//(T + T*q)*(2*A - 2*A*q + B*T + B*T*q)
-
-    mCoeffU[0] = num[1]*mTimeStep-2.0*num[0];
-    mCoeffU[1] = num[1]*mTimeStep+2.0*num[0];
-
-    mCoeffY[0] = den[1]*mTimeStep-2.0*den[0];
-    mCoeffY[1] = den[1]*mTimeStep+2.0*den[0];
-
-
-}
-
-
-void NoDelayFirstOrderFilter::initializeValues(double u0, double y0)
-{
-    mDelayU = u0;
-    mDelayY = y0;
-    mValue = y0;
-}
-
-
-void NoDelayFirstOrderFilter::update(double &u)
-{
-    if (!mIsInitialized)
-    {
-        std::cout << "Integrator function has to be initialized" << std::endl;
-        assert(false);
-    }
-    else if (mLastTime != *mpTime)
-    {
-        //Filter equation
-        //Bilinear transform is used
-
-        mDelayU = u;
-
-        mValue = 1.0/mCoeffY[1]*(mCoeffU[1]*u + mCoeffU[0]*mDelayU - mCoeffY[0]*mDelayY);
-
-        if (mValue > mMax)
-        {
-            mDelayY = mMax;
-            mDelayU = mMax;
-            mValue = mMax;
-        }
-        else if (mValue < mMin)
-        {
-            mDelayY = mMin;
-            mDelayU = mMin;
-            mValue = mMin;
-        }
-        else
-        {
-            mDelayY = mValue;
-            mDelayU = u;
-        }
-
-        mLastTime = *mpTime;
-    }
-}
-
-
-double NoDelayFirstOrderFilter::value(double &u)
-{
-    update(u);
-
-    return mValue;
-}
-
-
-//! Observe that a call to this method has to be followed by another call to value(double u) or to update(double u)
-//! @return The filtered actual value.
-//! @see value(double u)
-double NoDelayFirstOrderFilter::value()
-{
-    double tmp = mDelayU;
-    update(tmp);
-
     return mValue;
 }

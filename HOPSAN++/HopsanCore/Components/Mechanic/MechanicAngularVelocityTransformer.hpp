@@ -56,7 +56,7 @@ namespace hopsan {
                 signal  = mpIn->readNode(NodeSignal::VALUE);
             else
                 signal = mSignal;
-            mInt.initialize(mTime, mTimestep, signal, 0.0);
+            mInt.initialize(mTimestep, signal, 0.0);
         }
 
 
@@ -73,7 +73,7 @@ namespace hopsan {
 
             //Spring equations
             double omega = signal;
-            double phi = mInt.value(omega);
+            double phi = mInt.update(omega);
             double T = c + Zc*omega;
 
             //Write new values to nodes

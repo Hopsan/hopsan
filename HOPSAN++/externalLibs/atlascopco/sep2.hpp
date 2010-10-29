@@ -28,7 +28,7 @@ namespace hopsan {
     private:
         double X1S, X2S, V1S, V2S, F1S, F2S;
         bool CONTACT;
-        Integrator XINT1, XINT2;
+        NoDelayIntegrator XINT1, XINT2;
         Port *pP1, *pP2;
 
     public:

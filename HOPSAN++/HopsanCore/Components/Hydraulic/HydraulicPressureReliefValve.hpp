@@ -74,7 +74,7 @@ namespace hopsan {
             double wCutoff = 1 / mTao;
             double num [2] = {0.0, 1.0};
             double den [2] = {1.0/wCutoff, 1.0};
-            mFilterLP.initialize(mTime, mTimestep, num, den, 0.0, 0.0, 0.0, mX0max);
+            mFilterLP.initialize(mTimestep, num, den, 0.0, 0.0, 0.0, mX0max);
         }
 
 
@@ -151,7 +151,8 @@ namespace hopsan {
             double num [2] = {0.0, 1.0};
             double den [2] = {1.0/wCutoff, 1.0};
             mFilterLP.setNumDen(num,den);
-            mX0 = mFilterLP.value(xsh);
+            mFilterLP.update(xsh);
+            mX0 = mFilterLP.value();
 
             //Turbulent flow equation
             mTurb.setFlowCoefficient(mX0);
@@ -178,7 +179,7 @@ namespace hopsan {
             {
                 xs = (c1-c2 + b2*mX0/2.0 - mPref) / (b1+b2);
                 xsh = mHyst.getValue(xs, xh, mPrevX0);
-                mX0 = mFilterLP.value(xsh);
+                mX0 = mFilterLP.value();        //! @todo How is this supposed to work? It is not possible to use the same filter twice in the same timesteps with different input values...
 
                 mTurb.setFlowCoefficient(mX0);
                 q2 = mTurb.getFlow(c1,c2,Zc1,Zc2);

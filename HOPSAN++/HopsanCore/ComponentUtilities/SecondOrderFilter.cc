@@ -26,24 +26,18 @@ using namespace hopsan;
 
 SecondOrderFilter::SecondOrderFilter()
 {
-    mLastTime = -1.0;
-    mIsInitialized = false;
 }
 
 
-void SecondOrderFilter::initialize(double &rTime, double timestep, double num[3], double den[3], double u0, double y0, double min, double max)
+void SecondOrderFilter::initialize(double timestep, double num[3], double den[3], double u0, double y0, double min, double max)
 {
     mMin = min;
     mMax = max;
-//    mDelayU.setStepDelay(2);
-//    mDelayY.setStepDelay(2);
-    mDelayU.initialize(2, u0);
-    mDelayY.initialize(2, std::max(std::min(y0, mMax), mMin));
-
+    mDelayU[0] = u0;
+    mDelayU[1] = u0;
+    mDelayY[0] = std::max(std::min(y0, mMax), mMin);
+    mDelayY[1] = mDelayY[0];
     mTimeStep = timestep;
-    mpTime = &rTime;
-    mIsInitialized = true;
-
     setNumDen(num, den);
 }
 
@@ -86,68 +80,49 @@ void SecondOrderFilter::setMinMax(double min, double max)
 
 void SecondOrderFilter::initializeValues(double u0, double y0)
 {
-//    mDelayU.initializeValues(u0);
-//    mDelayY.initializeValues(y0);
-    mDelayU.initialize(mDelayU.getSize(), u0);
-    mDelayU.initialize(mDelayY.getSize(), y0);
+    mDelayU[0] = u0;
+    mDelayU[1] = u0;
+    mDelayY[0] = y0;
+    mDelayY[1] = y0;
 }
 
 
-void SecondOrderFilter::update(double u)
+double SecondOrderFilter::update(double u)
 {
-    if (!mIsInitialized)
+    mValue = 1.0/mCoeffY[2]*(mCoeffU[2]*u + mCoeffU[1]*mDelayU[0] + mCoeffU[0]*mDelayU[1] - (mCoeffY[1]*mDelayY[0] + mCoeffY[0]*mDelayY[1]));
+
+    if (mValue > mMax)
     {
-        std::cout << "Integrator function has to be initialized" << std::endl;
-        assert(false);
+        mDelayU[0] = mMax;
+        mDelayU[1] = mMax;
+        mDelayY[0] = mMax;
+        mDelayY[1] = mMax;
+        mValue = mMax;
     }
-    else if (mLastTime != *mpTime)
+    else if (mValue < mMin)
     {
-        //Filter equation
-        //Bilinear transform is used
-
-        mValue = 1.0/mCoeffY[2]*(mCoeffU[2]*u + mCoeffU[1]*mDelayU.getIdx(1) + mCoeffU[0]*mDelayU.getOldest() - (mCoeffY[1]*mDelayY.getIdx(1) + mCoeffY[0]*mDelayY.getOldest()));
-        mDelayU.update(u); //!< @todo update here or before calculation (added by peter as there was a .valueIdx(u,1) above (an update and fetch value). No update on Y values though??
-
-        if (mValue > mMax)
-        {
-            //! @todo Why do we reset the entire history, do we even need this wierd function
-            mDelayY.initializeValues(mMax);
-            mDelayU.initializeValues(mMax);
-            mValue = mMax;
-        }
-        else if (mValue < mMin)
-        {
-            //! @todo Why do we reset the entire history, do we even need this wierd function
-            mDelayY.initializeValues(mMin);
-            mDelayU.initializeValues(mMin);
-            mValue = mMin;
-        }
-        else
-        {
-            mDelayY.update(mValue);
-            mDelayU.update(u); //!< @todo Update AGAIN
-        }
-
-        mLastTime = *mpTime;
+        mDelayU[0] = mMin;
+        mDelayU[1] = mMin;
+        mDelayY[0] = mMin;
+        mDelayY[1] = mMin;
+        mValue = mMin;
     }
-}
-
-
-double SecondOrderFilter::value(double u)
-{
-    update(u);
+    else
+    {
+        mDelayY[1] = mDelayY[0];
+        mDelayY[0] = mValue;
+        mDelayU[1] = mDelayU[0];
+        mDelayU[0] = u;
+    }
 
     return mValue;
-
 }
 
 
-//! Observe that a call to this method has to be followed by another call to value(double u) or to update(double u)
+//! Observe that a call to this method has to be followed by another call to update(double u)
 //! @return The filtered actual value.
 //! @see value(double u)
 double SecondOrderFilter::value()
 {
-    update(mDelayU.getIdx(1));
-
     return mValue;
 }

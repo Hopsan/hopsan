@@ -17,53 +17,43 @@ SecondOrderTransferFunction::SecondOrderTransferFunction(double num [3], double 
       mden[i] = den[i];
     }
     mTimestep = timestep;
-    mLastTime = 0.0;
 //    mDelayu.setStepDelay(2);
 //    mDelayy.setStepDelay(2);
-    mDelayu.initialize(2,0);
-    mDelayy.initialize(2,0);
-    mIsInitialized = false;
+    mDelayu[0] = 0;
+    mDelayu[1] = 0;
+    mDelayy[0] = 0;
+    mDelayy[1] = 0;
 }
 
 void SecondOrderTransferFunction::update(double signal)
 {
-    if (!mIsInitialized)
-    {
-        std::cout << "SecondOrderTransferFunction has to be initialized" << std::endl;
-        assert(false);
-    }
+    u0 = signal;
+    u1 = mDelayu[0]; // Inc. idx +1
+    u2 = mDelayu[1]; // Inc. idx +1
 
-    else if (mLastTime != *mpTime)
-    {
+    y1 = mDelayy[0]; // Inc. idx +1
+    y2 = mDelayy[1]; // Inc. idx +1
 
-      u0 = signal;
-      u1 = mDelayu.getIdx(1); // Inc. idx +1
-      u2 = mDelayu.getIdx(2); // Inc. idx +1
+    mDelayu[1] = mDelayu[0];
+    mDelayu[0] = u0;
+    mDelayy[1] = mDelayy[0];
+    mDelayy[0] = y0;
 
-      y1 = mDelayy.getIdx(1); // Inc. idx +1
-      y2 = mDelayy.getIdx(2); // Inc. idx +1
+    b[0] = 4.0*mnum[2]+mnum[0]*mTimestep*mTimestep+2.0*mnum[1]*mTimestep;
+    b[1] = -8.0*mnum[2]+2*mnum[0]*mTimestep*mTimestep;
+    b[2] = -2.0*mnum[1]*mTimestep+4.0*mnum[2]+mnum[0]*mTimestep*mTimestep;
 
-      mDelayu.update(u0);
-      mDelayy.update(y0);
+    a[0] = 4.0*mden[2]+mden[0]*mTimestep*mTimestep+2.0*mden[1]*mTimestep;
+    a[1] = -8.0*mden[2]+2.0*mden[0]*mTimestep*mTimestep;
+    a[2] = -2.0*mden[1]*mTimestep+4.0*mden[2]+mden[0]*mTimestep*mTimestep;
 
-      b[0] = 4.0*mnum[2]+mnum[0]*mTimestep*mTimestep+2.0*mnum[1]*mTimestep;
-      b[1] = -8.0*mnum[2]+2*mnum[0]*mTimestep*mTimestep;
-      b[2] = -2.0*mnum[1]*mTimestep+4.0*mnum[2]+mnum[0]*mTimestep*mTimestep;
+    /* Equation:
+            bo+b1q^-1+b2q^-2
+      y=  -------------------- u
+            a0+a1q^-1+a2q^-2
+    */
 
-      a[0] = 4.0*mden[2]+mden[0]*mTimestep*mTimestep+2.0*mden[1]*mTimestep;
-      a[1] = -8.0*mden[2]+2.0*mden[0]*mTimestep*mTimestep;
-      a[2] = -2.0*mden[1]*mTimestep+4.0*mden[2]+mden[0]*mTimestep*mTimestep;
-
-        /* Equation:
-                bo+b1q^-1+b2q^-2
-          y=  -------------------- u
-                a0+a1q^-1+a2q^-2
-        */
-
-        y0 = (b[0]*u0+b[1]*u1+b[2]*u2-a[1]*y1-a[2]*y2)/a[0];
-
-        mLastTime = *mpTime;
-    }
+    y0 = (b[0]*u0+b[1]*u1+b[2]*u2-a[1]*y1-a[2]*y2)/a[0];
 }
 
 void SecondOrderTransferFunction::setCoefficients(double num [3], double den [3], double timestep)
@@ -75,30 +65,24 @@ void SecondOrderTransferFunction::setCoefficients(double num [3], double den [3]
     }
     mTimestep = timestep;
 
-    //! @todo why are theses bellow needed?
-//    mDelayu.setStepDelay(2); // Added
-//    mDelayy.setStepDelay(2); // Added
-    mDelayu.initialize(2,0); //This will reset the entire data buffer to 0
-    mDelayy.initialize(2,0);
+    mDelayu[0] = 0;
+    mDelayu[1] = 0;
+    mDelayy[0] = 0;
+    mDelayy[1] = 0;
 
 }
 
-double SecondOrderTransferFunction::getValue(double value)
+double SecondOrderTransferFunction::value()
 {
-    update(value);
     return y0;
 }
 
 void SecondOrderTransferFunction::initialize(double initValueU, double initValueY, double &rTime)
 {
-    mpTime = &rTime;
-    mLastTime = 0.0;
-//    mDelayu.initialize(rTime, initValueU);
-//    mDelayy.initialize(rTime, initValueY);
-    mDelayu.initialize(2, initValueU);
-    mDelayy.initialize(2, initValueY);
-    //! @todo is it allways 2 in this class, i think it should be possible to have mor than 2, there are hardcoded 2 in other places in this file as well
-    mIsInitialized = true;
+    mDelayu[0] = initValueU;
+    mDelayu[1] = initValueU;
+    mDelayy[0] = initValueY;
+    mDelayy[1] = initValueY;
 }
 
 

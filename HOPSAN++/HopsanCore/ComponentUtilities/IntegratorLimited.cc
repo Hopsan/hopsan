@@ -44,30 +44,23 @@ using namespace hopsan;
 
 IntegratorLimited::IntegratorLimited()
 {
-    mLastTime = 0.0;
-    mIsInitialized = false;
 }
 
 
-void IntegratorLimited::initialize(double &rTime, double timestep, double u0, double y0, double min, double max)
+void IntegratorLimited::initialize(double timestep, double u0, double y0, double min, double max)
 {
     mMin = min;
     mMax = max;
-//    mDelayU.setStepDelay(1);
-//    mDelayY.setStepDelay(1);
-    mDelayU.initialize(1, u0);
-    mDelayY.initialize(1, std::max(std::min(y0, mMax), mMin));
-
+    mDelayU = u0;
+    mDelayY = std::max(std::min(y0, mMax), mMin);
     mTimeStep = timestep;
-    mpTime = &rTime;
-    mIsInitialized = true;
 }
 
 
 void IntegratorLimited::initializeValues(double u0, double y0)
 {
-    mDelayU.initializeValues(u0);
-    mDelayY.initializeValues(y0);
+    mDelayU = u0;
+    mDelayY = y0;
 }
 
 
@@ -78,55 +71,38 @@ void IntegratorLimited::setMinMax(double min, double max)
 }
 
 
-void IntegratorLimited::update(double u)
+double IntegratorLimited::update(double u)
 {
-    if (!mIsInitialized)
-    {
-        std::cout << "Integrator function has to be initialized" << std::endl;
-        assert(false);
-    }
-    else if (mLastTime != *mpTime)
-    {
-        //Filter equation
-        //Bilinear transform is used
+    //Filter equation
+    //Bilinear transform is used
 
-        double y = mDelayY.getOldest() + mTimeStep/2.0*(u + mDelayU.getOldest());
-        //cout << "mMin: " << mMin << " mMax: " << mMax << " y: " << y << endl;
-        if (y > mMax)
-        {
-            mDelayY.update(mMax);
-            mDelayU.update(0.0);
-        }
-        else if (y < mMin)
-        {
-            mDelayY.update(mMin);
-            mDelayU.update(0.0);
-        }
-        else
-        {
-            mDelayY.update(y);
-            mDelayU.update(u);
-        }
-
-        mLastTime = *mpTime;
+    double y = mDelayY + mTimeStep/2.0*(u + mDelayU);
+    //cout << "mMin: " << mMin << " mMax: " << mMax << " y: " << y << endl;
+    if (y > mMax)
+    {
+        mDelayY = mMax;
+        mDelayU = 0.0;
     }
+    else if (y < mMin)
+    {
+        mDelayY = mMin;
+        mDelayU = 0.0;
+    }
+    else
+    {
+        mDelayY = y;
+        mDelayU = u;
+    }
+
+    return mDelayY;
 }
 
 
-double IntegratorLimited::value(double u)
-{
-    update(u);
 
-    return mDelayY.getOldest();
-}
-
-
-//! Observe that a call to this method has to be followed by another call to value(double u) or to update(double u)
+//! Observe that a call to this method has to be followed by another call to update(double u)
 //! @return The integrated actual value.
 //! @see value(double u)
 double IntegratorLimited::value()
 {
-    update(mDelayU.getIdx(1));
-
-    return mDelayY.getOldest();
+    return mDelayY;
 }

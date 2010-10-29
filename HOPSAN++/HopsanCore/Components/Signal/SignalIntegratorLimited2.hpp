@@ -51,7 +51,7 @@ namespace hopsan {
         {
             double u0 = mpIn->readNode(NodeSignal::VALUE);
 
-            mIntegrator.initialize(mTime, mTimestep, u0, mStartY, mMin, mMax);
+            mIntegrator.initialize(mTimestep, u0, mStartY, mMin, mMax);
             mpOut->writeNode(NodeSignal::VALUE, mStartY);
         }
 
@@ -65,7 +65,7 @@ namespace hopsan {
             //Get variable values from nodes
 
             //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, mIntegrator.value(u));
+            mpOut->writeNode(NodeSignal::VALUE, mIntegrator.update(u));
         }
     };
 }

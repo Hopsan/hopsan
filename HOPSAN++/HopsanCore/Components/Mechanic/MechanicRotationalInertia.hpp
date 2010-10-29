@@ -63,8 +63,8 @@ namespace hopsan {
 
             double num [] = {0.0, 1.0, 0.0};
             double den [] = {mJ, mB, mk};
-            mFilter.initialize(mTime, mTimestep, num, den, -T1, -omega1);
-            mInt.initialize(mTime, mTimestep, -omega1, -phi1);
+            mFilter.initialize(mTimestep, num, den, -T1, -omega1);
+            mInt.initialize(mTimestep, -omega1, -phi1);
         }
 
 
@@ -81,9 +81,9 @@ namespace hopsan {
             double den[3] = {mJ, mB+Zx1+Zx2, mk};
 
             mFilter.setNumDen(num, den);
-            double omega2 = mFilter.value(c1-c2);
+            double omega2 = mFilter.update(c1-c2);
             double omega1 = -omega2;
-            double phi2 = mInt.value(omega2);
+            double phi2 = mInt.update(omega2);
             double phi1 = -phi2;
             double T1 = c1 + Zx1*omega1;
             double T2 = c2 + Zx2*omega2;

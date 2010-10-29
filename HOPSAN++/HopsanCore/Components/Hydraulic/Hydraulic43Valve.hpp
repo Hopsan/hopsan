@@ -91,7 +91,7 @@ namespace hopsan {
         {
             double num[3] = {0.0, 0.0, 1.0};
             double den[3] = {1.0/momegah*momegah, 2.0*mdeltah/momegah, 1.0};
-            myFilter.initialize(mTime, mTimestep, num, den);
+            myFilter.initialize(mTimestep, num, den);
         }
 
 
@@ -108,7 +108,8 @@ namespace hopsan {
             double Zcb = mpPB->readNode(NodeHydraulic::CHARIMP);
             double xvin  = mpIn->readNode(NodeSignal::VALUE);
 
-            double xv = myFilter.value(xvin);
+            myFilter.update(xvin);
+            double xv = myFilter.value();
 
             //Valve equations
             if (fabs(xv)>mxvmax)

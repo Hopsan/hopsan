@@ -13,7 +13,7 @@ namespace hopsan {
         SecondOrderTransferFunction(double num [3], double den [3], double timestep);
         void update(double signal);
         void setCoefficients(double num [3], double den [3], double timestep);
-        double getValue(double value);
+        double value();
         void initialize(double initValueU, double initValueY, double &rTime);
 
     private:
@@ -21,14 +21,11 @@ namespace hopsan {
         double y0, y1, y2;
         double a [3];
         double b [3];
-        Delay mDelayu;
-        Delay mDelayy;
+        double mDelayu[2];
+        double mDelayy[2];
         double mnum [3];
         double mden [3];
         double mTimestep;
-        double *mpTime;
-        double mLastTime;
-        bool mIsInitialized;
     };
 }
 

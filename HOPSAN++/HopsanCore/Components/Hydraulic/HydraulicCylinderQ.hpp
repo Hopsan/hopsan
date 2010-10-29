@@ -103,8 +103,8 @@ namespace hopsan {
             double posden [3] = {mMass, mBl+Zx1+Zx2, mKl};
             double velnum [3] = {0.0, 1.0, 0.0};
             double velden [3] = {0.0, mTao, 1.0};
-            mPositionFilter.initialize(mTime, mTimestep, posnum, posden, cx2, x2, 0.0, mStroke);
-            mVelocityFilter.initialize(mTime, mTimestep, velnum, velden, x2, v2);
+            mPositionFilter.initialize(mTimestep, posnum, posden, cx2, x2, 0.0, mStroke);
+            mVelocityFilter.initialize(mTimestep, velnum, velden, x2, v2);
 
             //mPositionFilter.update(cx1-cx2);
             //mVelocityFilter.update(cx1-cx2);
@@ -131,12 +131,14 @@ namespace hopsan {
             double posnum [3] = {0.0, 0.0, 1.0};
             double posden [3] = {mMass, mBl+Zx1+Zx2, mKl};
             mPositionFilter.setNumDen(posnum, posden);
-            double x2 = mPositionFilter.value(cx1-cx2);
+            mPositionFilter.update(cx1-cx2);
+            double x2 = mPositionFilter.value();
 
             double velnum [3] = {0.0, 1.0, 0.0};
             double velden [3] = {0.0, mTao, 1.0};
             mVelocityFilter.setNumDen(velnum, velden);
-            double v2 = mVelocityFilter.value(x2);
+            mVelocityFilter.update(x2);
+            double v2 = mVelocityFilter.value();
 
             double v1 = -v2;
             double F2 = cx2 + Zc2*v2;

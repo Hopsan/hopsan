@@ -61,7 +61,7 @@ namespace hopsan {
             den[0] = 1.0/mW;
             den[1] = 1.0;
 
-            mFilter.initialize(mTime, mTimestep, num, den, mStartY, mStartY, mMin, mMax);
+            mFilter.initialize(mTimestep, num, den, mStartY, mStartY, mMin, mMax);
 
             //Writes out the value for time "zero"
             mpOut->writeNode(NodeSignal::VALUE, mStartY);
@@ -74,7 +74,7 @@ namespace hopsan {
             double u = mpIn->readNode(NodeSignal::VALUE);
 
             //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, mFilter.value(u));
+            mpOut->writeNode(NodeSignal::VALUE, mFilter.update(u));
         }
     };
 }

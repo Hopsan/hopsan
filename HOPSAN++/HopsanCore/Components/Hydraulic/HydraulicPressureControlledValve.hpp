@@ -119,7 +119,8 @@ namespace hopsan {
             //cout << "xs = " << xs << endl;
             double xsh = mHyst.getValue(xs, xh, mPrevX0);
             //cout << "xsh = " << xsh << endl;
-            mX0 = mFilterLP.getValue(xsh);          //Filter disabled because it's not working!
+            mFilterLP.update(xsh);
+            mX0 = mFilterLP.value();
             if (mTime < 0.1) { std::cout << "p1 = " << p1 << ", xs = " << xs << ", xsh = " << xsh << ", mPrevX0 = " << mPrevX0 << ", mX0 = " << mX0 << std::endl; }
             //cout << "mX0 = " << mX0 << endl;
             //mX0 = xsh;      //Debug, ta bort sen
@@ -167,8 +168,10 @@ namespace hopsan {
                 xh = mPh / b1;
                 //if (mTime == 0) { xs = mX0; }
                 xsh = mHyst.getValue(xs, xh, mPrevX0);
-                mX0 = mFilterLP.getValue(xsh);          //Filter is not working
-                //mX0 = xsh;
+                //! @todo This won't work, filter cannot be updated twice in the same time step with different values...
+                //mFilterLP.update(xsh);
+                //mX0 = mFilterLP.getValue();
+                mX0 = xsh;
                 if (mX0 > mX0max)
                 {
                     mX0 = mX0max;

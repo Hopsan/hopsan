@@ -57,8 +57,8 @@ namespace hopsan {
             //cout << "x0 = " << x1 << endl;
             double num [] = {0.0, 1.0, 0.0};
             double den [] = {mMass, mB, mk};
-            mFilter.initialize(mTime, mTimestep, num, den, -F1, -v1);
-            mInt.initialize(mTime, mTimestep, -v1, -x1);
+            mFilter.initialize(mTimestep, num, den, -F1, -v1);
+            mInt.initialize(mTimestep, -v1, -x1);
             //mFilter.update(0);
         }
 
@@ -76,9 +76,9 @@ namespace hopsan {
             double den[3] = {mMass, mB+Zx1+Zx2, mk};
 
             mFilter.setNumDen(num, den);
-            double v2 = mFilter.value(c1-c2);
+            double v2 = mFilter.update(c1-c2);
             double v1 = -v2;
-            double x2 = mInt.value(v2);
+            double x2 = mInt.update(v2);
             double x1 = -x2;
             double F1 = c1 + Zx1*v1;
             double F2 = c2 + Zx2*v2;

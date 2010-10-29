@@ -60,7 +60,7 @@ namespace hopsan {
 
         void initialize()
         {
-            mIntegrator.initialize(mTime, mTimestep, 0, 0, 0, 0);
+            mIntegrator.initialize(mTimestep, 0, 0, 0, 0);
 
         }
 
