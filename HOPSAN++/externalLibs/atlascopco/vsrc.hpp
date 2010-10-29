@@ -25,7 +25,7 @@ namespace hopsan {
 
     private:
         double X1S, F1S, V1S;
-        NoDelayIntegrator XINT;
+        Integrator XINT;
         Port *pP1, *pIN;
 
     public:
@@ -65,7 +65,7 @@ namespace hopsan {
                 V1=V1S;
 
             //Initiate the integrator
-            XINT.initialize(mTime, mTimestep, V1, X1S);
+            XINT.initialize(mTimestep, V1, X1S);
 
             //STARTVALUEHANDLING NOT COMPLETE, SINCE WE'RE WAITING FOR LiTH!
             pP1->writeNode(NodeMechanic::POSITION, X1S);
@@ -89,7 +89,7 @@ namespace hopsan {
                 V1=V1S;
 
             //Calculate position by integrating velocity.
-            double X1 = XINT.value(V1);
+            double X1 = XINT.update(V1);
 
             //Calculate force of source.
             double F1 = Cx1 + Zx1 * V1;

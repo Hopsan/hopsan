@@ -80,7 +80,7 @@ namespace hopsan {
             double F2  = pP1->readNode(NodeMechanic::FORCE);
             if (Zx1 == 0) pP1 ->writeNode(NodeMechanic::WAVEVARIABLE, F1);
             if (Zx2 == 0) pP2 ->writeNode(NodeMechanic::WAVEVARIABLE, F2);
-            Int.initialize(mTime, mTimestep, V1, X1);
+            Int.initialize(mTimestep, V1, X1);
 
         }
 
@@ -95,7 +95,7 @@ namespace hopsan {
             //Equations
             double V2 = (Cx1-Cx2)/((Zx1+Zx2)); // !!!!!!!!!!if Zx==0 notify user!!!!!!!!!
             double V1 = -V2;
-            double X1 = Int.value(V1);
+            double X1 = Int.update(V1);
             double X2 = X20-(X1-X10);
             double F1 = Cx1 + V1*Zx1;
             double F2 = Cx2 + V2*Zx2;

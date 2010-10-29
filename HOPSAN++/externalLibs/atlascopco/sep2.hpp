@@ -28,7 +28,7 @@ namespace hopsan {
     private:
         double X1S, X2S, V1S, V2S, F1S, F2S;
         bool CONTACT;
-        NoDelayIntegrator XINT1, XINT2;
+        Integrator XINT1, XINT2;
         Port *pP1, *pP2;
 
     public:
@@ -84,8 +84,8 @@ namespace hopsan {
             //Determine if contact or not.
             CONTACT = ((X1S+X2S <= 0 ? true : false));
 
-            XINT1.initialize(mTime, mTimestep, V1S, X1S);
-            XINT2.initialize(mTime, mTimestep, V2S, X2S);
+            XINT1.initialize(mTimestep, V1S, X1S);
+            XINT2.initialize(mTimestep, V2S, X2S);
 
             //Write new values to nodes               
             pP1->writeNode(NodeMechanic::POSITION, X1S);
@@ -123,8 +123,8 @@ namespace hopsan {
                 if(F1<0) F1=0;
                 if(F2<0) F2=0;
 
-                X1=XINT1.value(V1);
-                X2=XINT2.value(V2);
+                X1=XINT1.update(V1);
+                X2=XINT2.update(V2);
             }
 
             //If nodes are NOT in contact:
@@ -139,8 +139,8 @@ namespace hopsan {
                 if(Zx2>0) V2=-Cx2/Zx2;
 
                 //Integrate to find x
-                X1=XINT1.value(V1);
-                X2=XINT2.value(V2);
+                X1=XINT1.update(V1);
+                X2=XINT2.update(V2);
 
                 //Determine if contact or not.
                 CONTACT = ((X1+X2 <= 0 ? true : false));

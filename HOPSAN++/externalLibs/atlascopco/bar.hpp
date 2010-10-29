@@ -54,7 +54,7 @@ namespace hopsan {
 //        deque<double> Cx2NofEl;
         Delay Cx1NofEl;
         Delay Cx2NofEl;
-        NoDelayFirstOrderFilter mFilterLPCx1, mFilterLPCx2;
+        FirstOrderFilter mFilterLPCx1, mFilterLPCx2;
         Port *pP1, *pP2;
 
     public:
@@ -131,8 +131,8 @@ namespace hopsan {
             else Wf=1./mTimestep;
             double num [2] = {0.0, 1.0};
             double den [2] = {1.0/Wf, 1.0}; //{1.0/wCutoff, 1.0};
-            mFilterLPCx1.initialize(mTime, mTimestep, num, den,Cx1,Cx1, -1.5E+300, 1.5E+300);
-            mFilterLPCx2.initialize(mTime, mTimestep, num, den,Cx2,Cx2, -1.5E+300, 1.5E+300);
+            mFilterLPCx1.initialize(mTimestep, num, den,Cx1,Cx1, -1.5E+300, 1.5E+300);
+            mFilterLPCx2.initialize(mTimestep, num, den,Cx2,Cx2, -1.5E+300, 1.5E+300);
 
             //Write characteristics to nodes
             pP1->writeNode(NodeMechanic::WAVEVARIABLE, Cx2old);  //Cx(N1) = Cx2old
@@ -163,8 +163,8 @@ namespace hopsan {
             double Cx2new = Cx2NofEl.update(Cx1old + 2.*Zx*V2);
 
              //First order filter
-            Cx1=mFilterLPCx1.value(Cx1new);
-            Cx2=mFilterLPCx2.value(Cx2new);
+            Cx1=mFilterLPCx1.update(Cx1new);
+            Cx2=mFilterLPCx2.update(Cx2new);
 
             //Write new values to nodes
             pP1->writeNode(NodeMechanic::WAVEVARIABLE, Cx2);
