@@ -118,5 +118,6 @@ win32 {
         LIBS += -lqwt5
     }
     INCLUDEPATH += $(PYTHON_PATH)/include
+    LIBS += -L$(PYTHON_PATH)/libs
 }
 RESOURCES += 

@@ -8,7 +8,7 @@ CONFIG(debug, debug|release) {
     LIBS += -L../../bin/debug -lHopsanCore
 }
 CONFIG(release, debug|release) {
-    #DESTDIR = ../bin/release
+    DESTDIR = ./
     LIBS += -L../../bin/release -lHopsanCore
 }
 

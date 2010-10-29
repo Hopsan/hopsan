@@ -11,6 +11,7 @@ todo
 
 \subsection qwt-windows Windows (minGW and VC++)
 -# First checkout the 5.2 stable branch from "https://qwt.svn.sourceforge.net/svnroot/qwt/branches/qwt-5.2".
+-# open the qwtconfig/qwtconfig.pri file make sure that "CONFIG += debug_and_release" is selected (somwhere around line 50)
 -# Open the qwt.pro file in QtCreator and build the project. 
 -# Now you need to install, open a Qt Command Prompt (you can find it in the start menu). Navigate to the directory where qwt was built.
   -# If you are using minGW, run "mingw32-make install"
@@ -39,7 +40,8 @@ PYTHON_LIB  = c:\\Python26\\libs
 -# Add the PythonQt*.*.*\\src folder to the "Include Path" in your project.
 -# Build PythonQt in release mode.
 -# If you want to run the tests add the PythonQt*.*.*\lib directory to your path (in build environment)
--# Do some more stuff dont know yet but probably add PythonQt*.*.*\lib to path in HopsanGUI project, maybe also need to add PythonQt*.*.*\src to includepath
+-# Add the PYTHONQT_PATH = C:\\Users\\petno25\\Downloads\\PythonQt2.0.1 (or whatever your path is), to the HopsanGui build environment
+-# Add the  C:\\Users\\petno25\\Downloads\\PythonQt2.0.1\\lib (or whatever your path is) to the PATH variable in your HopsanGui build environment
 
 \subsection pythonqt-windows-mingw Windows (with minGW)
 Some useful information can be found at <a href="http://www.emmestech.com/moron_guides/moron1.html" target="_blank">http://www.emmestech.com/moron_guides/moron1.html</a> and <a href="http://www.mingw.org/wiki/FAQ" target="_blank">http://www.mingw.org/wiki/FAQ</a>
