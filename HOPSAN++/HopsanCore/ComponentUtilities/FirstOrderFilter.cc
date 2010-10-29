@@ -147,107 +147,107 @@ double &FirstOrderFilter::value()
 
 
 
-NoDelayAndPointersFirstOrderFilter::NoDelayAndPointersFirstOrderFilter()
-{
-    mLastTime = -1.0;
-    mIsInitialized = false;
-}
+//NoDelayAndPointersFirstOrderFilter::NoDelayAndPointersFirstOrderFilter()
+//{
+//    mLastTime = -1.0;
+//    mIsInitialized = false;
+//}
 
 
-void NoDelayAndPointersFirstOrderFilter::initialize(double &rTime, double timestep, double num[2], double den[2], double *uref, double *yref, double u0, double y0, double min, double max)
-{
-    mMin = min;
-    mMax = max;
-    mpU = uref;
-    mpY = yref;
-    mValue = y0;
-    mDelayU = u0;
-    mDelayY = std::max(std::min(y0, mMax), mMin);
-    mTimeStep = timestep;
-    mpTime = &rTime;
-    mIsInitialized = true;
-    mLastTime = -mTimeStep;
+//void NoDelayAndPointersFirstOrderFilter::initialize(double &rTime, double timestep, double num[2], double den[2], double *uref, double *yref, double u0, double y0, double min, double max)
+//{
+//    mMin = min;
+//    mMax = max;
+//    mpU = uref;
+//    mpY = yref;
+//    mValue = y0;
+//    mDelayU = u0;
+//    mDelayY = std::max(std::min(y0, mMax), mMin);
+//    mTimeStep = timestep;
+//    mpTime = &rTime;
+//    mIsInitialized = true;
+//    mLastTime = -mTimeStep;
 
-    setNumDen(num, den);
-}
-
-
-void NoDelayAndPointersFirstOrderFilter::setMinMax(double min, double max)
-{
-    mMin = min;
-    mMax = max;
-}
+//    setNumDen(num, den);
+//}
 
 
-void NoDelayAndPointersFirstOrderFilter::setNumDen(double num[2], double den[2])
-{
-//num =
-//(T + T*q)*(2*a + T*b - 2*a*q + T*b*q)
-//den =
-//(T + T*q)*(2*A - 2*A*q + B*T + B*T*q)
-
-    mCoeffU[0] = num[1]*mTimeStep-2.0*num[0];
-    mCoeffU[1] = num[1]*mTimeStep+2.0*num[0];
-
-    mCoeffY[0] = den[1]*mTimeStep-2.0*den[0];
-    mCoeffY[1] = den[1]*mTimeStep+2.0*den[0];
+//void NoDelayAndPointersFirstOrderFilter::setMinMax(double min, double max)
+//{
+//    mMin = min;
+//    mMax = max;
+//}
 
 
-}
+//void NoDelayAndPointersFirstOrderFilter::setNumDen(double num[2], double den[2])
+//{
+////num =
+////(T + T*q)*(2*a + T*b - 2*a*q + T*b*q)
+////den =
+////(T + T*q)*(2*A - 2*A*q + B*T + B*T*q)
+
+//    mCoeffU[0] = num[1]*mTimeStep-2.0*num[0];
+//    mCoeffU[1] = num[1]*mTimeStep+2.0*num[0];
+
+//    mCoeffY[0] = den[1]*mTimeStep-2.0*den[0];
+//    mCoeffY[1] = den[1]*mTimeStep+2.0*den[0];
 
 
-void NoDelayAndPointersFirstOrderFilter::initializeValues(double u0, double y0)
-{
-    mDelayU = u0;
-    mDelayY = y0;
-    mValue = y0;
-}
+//}
 
 
-void NoDelayAndPointersFirstOrderFilter::update()
-{
-    if (!mIsInitialized)
-    {
-        std::cout << "Integrator function has to be initialized" << std::endl;
-        assert(false);
-    }
-    else if (mLastTime != *mpTime)
-    {
-        //Filter equation
-        //Bilinear transform is used
-
-        mDelayU = *mpU;
-        mValue = 1.0/mCoeffY[1]*(mCoeffU[1] * *mpU + mCoeffU[0]*mDelayU - mCoeffY[0]*mDelayY);
-
-        if (mValue > mMax)
-        {
-            mDelayY = mMax;
-            mDelayU = mMax;
-            mValue = mMax;
-        }
-        else if (mValue < mMin)
-        {
-            mDelayY = mMin;
-            mDelayU = mMin;
-            mValue = mMin;
-        }
-        else
-        {
-            mDelayY = mValue;
-            mDelayU = *mpU;
-        }
-
-        mLastTime = *mpTime;
-    }
-}
+//void NoDelayAndPointersFirstOrderFilter::initializeValues(double u0, double y0)
+//{
+//    mDelayU = u0;
+//    mDelayY = y0;
+//    mValue = y0;
+//}
 
 
-void NoDelayAndPointersFirstOrderFilter::filter()
-{
-    update();
+//void NoDelayAndPointersFirstOrderFilter::update()
+//{
+//    if (!mIsInitialized)
+//    {
+//        std::cout << "Integrator function has to be initialized" << std::endl;
+//        assert(false);
+//    }
+//    else if (mLastTime != *mpTime)
+//    {
+//        //Filter equation
+//        //Bilinear transform is used
 
-    *mpY = mValue;
-}
+//        mDelayU = *mpU;
+//        mValue = 1.0/mCoeffY[1]*(mCoeffU[1] * *mpU + mCoeffU[0]*mDelayU - mCoeffY[0]*mDelayY);
+
+//        if (mValue > mMax)
+//        {
+//            mDelayY = mMax;
+//            mDelayU = mMax;
+//            mValue = mMax;
+//        }
+//        else if (mValue < mMin)
+//        {
+//            mDelayY = mMin;
+//            mDelayU = mMin;
+//            mValue = mMin;
+//        }
+//        else
+//        {
+//            mDelayY = mValue;
+//            mDelayU = *mpU;
+//        }
+
+//        mLastTime = *mpTime;
+//    }
+//}
+
+
+//void NoDelayAndPointersFirstOrderFilter::filter()
+//{
+//    update();
+
+//    *mpY = mValue;
+//}
 
 
 

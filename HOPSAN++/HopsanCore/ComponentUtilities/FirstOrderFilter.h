@@ -47,29 +47,29 @@ namespace hopsan {
     };
 
 
-class DLLIMPORTEXPORT NoDelayAndPointersFirstOrderFilter
-    {
-    public:
-        NoDelayAndPointersFirstOrderFilter();
-        void initialize(double &rTime, double timestep, double num[2], double den[2], double *pInput, double *pOutput, double u0=0.0, double y0=0.0, double min=-1.5E+300, double max=1.5E+300);
-        void initializeValues(double u0, double y0);
-        void setMinMax(double min, double max);
-        void setNumDen(double num[2], double den[2]);
-        void update();
-        void filter();
+//class DLLIMPORTEXPORT NoDelayAndPointersFirstOrderFilter
+//    {
+//    public:
+//        NoDelayAndPointersFirstOrderFilter();
+//        void initialize(double &rTime, double timestep, double num[2], double den[2], double *pInput, double *pOutput, double u0=0.0, double y0=0.0, double min=-1.5E+300, double max=1.5E+300);
+//        void initializeValues(double u0, double y0);
+//        void setMinMax(double min, double max);
+//        void setNumDen(double num[2], double den[2]);
+//        void update();
+//        void filter();
 
-    private:
-        double mValue;
-        double mDelayU, mDelayY;
-        double mCoeffU[2];
-        double mCoeffY[2];
-        double *mpU, *mpY;
-        double mMin, mMax;
-        double mTimeStep;
-        double *mpTime;
-        double mLastTime;
-        bool mIsInitialized;
-    };
+//    private:
+//        double mValue;
+//        double mDelayU, mDelayY;
+//        double mCoeffU[2];
+//        double mCoeffY[2];
+//        double *mpU, *mpY;
+//        double mMin, mMax;
+//        double mTimeStep;
+//        double *mpTime;
+//        double mLastTime;
+//        bool mIsInitialized;
+//    };
 
 
     class DLLIMPORTEXPORT NoDelayFirstOrderFilter

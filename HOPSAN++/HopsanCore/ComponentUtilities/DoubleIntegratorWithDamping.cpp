@@ -52,7 +52,7 @@ void DoubleIntegratorWithDamping::setDamping(double w0)
 }
 
 
-void DoubleIntegratorWithDamping::update(double u)
+void DoubleIntegratorWithDamping::integrate(double u)
 {
     if (!mIsInitialized)
     {
@@ -72,25 +72,8 @@ void DoubleIntegratorWithDamping::update(double u)
 
 
 //! Returns first primitive from double integration
-double DoubleIntegratorWithDamping::valueFirst(double u)
-{
-    update(u);
-    return mDelaySY.getOldest();
-}
-
-
-//! Returns second primitive from double integration
-double DoubleIntegratorWithDamping::valueSecond(double u)
-{
-    update(u);
-    return mDelayY.getOldest();
-}
-
-
-//! Returns first primitive from double integration
 double DoubleIntegratorWithDamping::valueFirst()
 {
-    update(mDelayU.getIdx(1));
     return mDelaySY.getOldest();
 }
 
@@ -98,6 +81,5 @@ double DoubleIntegratorWithDamping::valueFirst()
 //! Returns second primitive from double integration
 double DoubleIntegratorWithDamping::valueSecond()
 {
-    update(mDelayU.getIdx(1));
     return mDelayY.getOldest();
 }

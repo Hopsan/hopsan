@@ -90,65 +90,65 @@ double Integrator::value(double &u)
 
 
 
-NoDelayAndPointersIntegrator::NoDelayAndPointersIntegrator()
-{
-    mLastTime = 0.0;
-    mIsInitialized = false;
-}
+//NoDelayAndPointersIntegrator::NoDelayAndPointersIntegrator()
+//{
+//    mLastTime = 0.0;
+//    mIsInitialized = false;
+//}
 
 
-void NoDelayAndPointersIntegrator::initialize(double &rTime, double timestep, double *pInput, double *pOutput, double u0, double y0)
-{
-    //mDelayU.setStepDelay(1);
-    //mDelayY.setStepDelay(1);
-    //mDelayU.initialize(rTime, u0);
-    //mDelayY.initialize(rTime, y0);
-    mDelayU = u0;
-    mDelayY = y0;
+//void NoDelayAndPointersIntegrator::initialize(double &rTime, double timestep, double *pInput, double *pOutput, double u0, double y0)
+//{
+//    //mDelayU.setStepDelay(1);
+//    //mDelayY.setStepDelay(1);
+//    //mDelayU.initialize(rTime, u0);
+//    //mDelayY.initialize(rTime, y0);
+//    mDelayU = u0;
+//    mDelayY = y0;
 
-    mTimeStep = timestep;
-    mpU = pInput;
-    mpY = pOutput;
-    mpTime = &rTime;
-    mIsInitialized = true;
-}
-
-
-void NoDelayAndPointersIntegrator::initializeValues(double u0, double y0)
-{
-    mDelayU = u0;
-    mDelayY = y0;
-    //mDelayU.initializeValues(u0);
-    //mDelayY.initializeValues(y0);
-}
+//    mTimeStep = timestep;
+//    mpU = pInput;
+//    mpY = pOutput;
+//    mpTime = &rTime;
+//    mIsInitialized = true;
+//}
 
 
-void NoDelayAndPointersIntegrator::update()
-{
-    if (!mIsInitialized)
-    {
-        std::cout << "Integrator function has to be initialized" << std::endl;
-        assert(false);
-    }
-    else if (mLastTime != *mpTime)
-    {
-        //Filter equation
-        //Bilinear transform is used
-        mDelayY = mDelayY + mTimeStep/2.0*(*mpU + mDelayU);
-        mDelayU = *mpU;
-        //mDelayU.update(*mpU);
-
-        mLastTime = *mpTime;
-    }
-}
+//void NoDelayAndPointersIntegrator::initializeValues(double u0, double y0)
+//{
+//    mDelayU = u0;
+//    mDelayY = y0;
+//    //mDelayU.initializeValues(u0);
+//    //mDelayY.initializeValues(y0);
+//}
 
 
-void NoDelayAndPointersIntegrator::integrate()
-{
-    update();
+//void NoDelayAndPointersIntegrator::update()
+//{
+//    if (!mIsInitialized)
+//    {
+//        std::cout << "Integrator function has to be initialized" << std::endl;
+//        assert(false);
+//    }
+//    else if (mLastTime != *mpTime)
+//    {
+//        //Filter equation
+//        //Bilinear transform is used
+//        mDelayY = mDelayY + mTimeStep/2.0*(*mpU + mDelayU);
+//        mDelayU = *mpU;
+//        //mDelayU.update(*mpU);
 
-    *mpY = mDelayY;
-}
+//        mLastTime = *mpTime;
+//    }
+//}
+
+
+//void NoDelayAndPointersIntegrator::integrate()
+//{
+//    update();
+
+//    *mpY = mDelayY;
+//}
 
 
 

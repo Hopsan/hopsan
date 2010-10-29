@@ -23,9 +23,7 @@ namespace hopsan {
         void initialize(double &rTime, double timestep, double w0, double u0=0.0, double y0=0.0, double sy0=0.0);
         void initializeValues(double u0, double y0, double sy0);
         void setDamping(double w0);
-        void update(double u);
-        double valueFirst(double u);
-        double valueSecond(double u);
+        void integrate(double u);
         double valueFirst();
         double valueSecond();
 

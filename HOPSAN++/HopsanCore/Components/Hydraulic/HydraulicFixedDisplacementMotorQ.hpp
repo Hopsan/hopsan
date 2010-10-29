@@ -82,9 +82,10 @@ namespace hopsan {
             double c2a = (mCim * Zc1 + 1) * gamma * c2 + mCim * gamma * Zc2 * c1;
             double ct = c1a * dp - c2a * dp - c3;
             mIntegrator.setDamping(ble / mJ * mTimestep);
-            double omega3 = mIntegrator.valueFirst(ct/mJ);
-            double phi3 = mIntegrator.valueSecond(ct/mJ);
-            mIntegrator.update(ct/mJ);
+            mIntegrator.integrate(ct/mJ);
+            double omega3 = mIntegrator.valueFirst();
+            double phi3 = mIntegrator.valueSecond();
+
 
             //Ideal Flow
             double q1a = -dp * omega3;
