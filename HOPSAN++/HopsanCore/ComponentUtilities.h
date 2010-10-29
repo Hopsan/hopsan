@@ -6,7 +6,7 @@
 #include "ComponentUtilities/Integrator.h"
 #include "ComponentUtilities/IntegratorLimited.h"
 #include "ComponentUtilities/SecondOrderFilter.h"
-#include "ComponentUtilities/TransferFunction.h"
+#include "ComponentUtilities/SecondOrderTransferFunction.h"
 #include "ComponentUtilities/TurbulentFlowFunction.h"
 #include "ComponentUtilities/ValveHysteresis.h"
 #include "ComponentUtilities/DoubleIntegratorWithDamping.h"

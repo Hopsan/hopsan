@@ -1,15 +1,15 @@
 #include <math.h>
 #include <iostream>
 #include <cassert>
-#include "TransferFunction.h"
+#include "SecondOrderTransferFunction.h"
 
 using namespace hopsan;
 
-TransferFunction::TransferFunction()
+SecondOrderTransferFunction::SecondOrderTransferFunction()
 {
 }
 
-TransferFunction::TransferFunction(double num [3], double den [3], double timestep)
+SecondOrderTransferFunction::SecondOrderTransferFunction(double num [3], double den [3], double timestep)
 {
     for(int i=0; i<3; i++)
     {
@@ -25,11 +25,11 @@ TransferFunction::TransferFunction(double num [3], double den [3], double timest
     mIsInitialized = false;
 }
 
-void TransferFunction::update(double signal)
+void SecondOrderTransferFunction::update(double signal)
 {
     if (!mIsInitialized)
     {
-        std::cout << "TransferFunction has to be initialized" << std::endl;
+        std::cout << "SecondOrderTransferFunction has to be initialized" << std::endl;
         assert(false);
     }
 
@@ -66,7 +66,7 @@ void TransferFunction::update(double signal)
     }
 }
 
-void TransferFunction::setCoefficients(double num [3], double den [3], double timestep)
+void SecondOrderTransferFunction::setCoefficients(double num [3], double den [3], double timestep)
 {
     for(int i=0; i<3; i++)
     {
@@ -83,13 +83,13 @@ void TransferFunction::setCoefficients(double num [3], double den [3], double ti
 
 }
 
-double TransferFunction::getValue(double value)
+double SecondOrderTransferFunction::getValue(double value)
 {
     update(value);
     return y0;
 }
 
-void TransferFunction::initialize(double initValueU, double initValueY, double &rTime)
+void SecondOrderTransferFunction::initialize(double initValueU, double initValueY, double &rTime)
 {
     mpTime = &rTime;
     mLastTime = 0.0;

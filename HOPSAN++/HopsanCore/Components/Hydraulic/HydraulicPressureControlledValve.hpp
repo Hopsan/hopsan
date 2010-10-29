@@ -27,7 +27,7 @@ namespace hopsan {
         Delay mDelayedX0;
         TurbulentFlowFunction mTurb;
         ValveHysteresis mHyst;
-        TransferFunction mFilterLP;
+        SecondOrderTransferFunction mFilterLP;
         Port *mpP1, *mpP2, *mpP_OPEN, *mpP_CLOSE;
 
     public:

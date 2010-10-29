@@ -46,7 +46,6 @@ SOURCES += Port.cc \
     HopsanEssentials.cc \
     ComponentUtilities/ValveHysteresis.cc \
     ComponentUtilities/TurbulentFlowFunction.cc \
-    ComponentUtilities/TransferFunction.cc \
     ComponentUtilities/SecondOrderFilter.cc \
     ComponentUtilities/IntegratorLimited.cc \
     ComponentUtilities/Integrator.cc \
@@ -54,7 +53,8 @@ SOURCES += Port.cc \
     ComponentUtilities/Delay.cc \
     CoreUtilities/HopsanCoreMessageHandler.cc \
     ComponentUtilities/AuxiliarySimulationFunctions.cpp \
-    ComponentUtilities/DoubleIntegratorWithDamping.cpp
+    ComponentUtilities/DoubleIntegratorWithDamping.cpp \
+    ComponentUtilities/SecondOrderTransferFunction.cc
 HEADERS += win32dll.h \
     Port.h \
     Node.h \
@@ -123,7 +123,6 @@ HEADERS += win32dll.h \
     HopsanEssentials.h \
     ComponentUtilities/ValveHysteresis.h \
     ComponentUtilities/TurbulentFlowFunction.h \
-    ComponentUtilities/TransferFunction.h \
     ComponentUtilities/SecondOrderFilter.h \
     ComponentUtilities/IntegratorLimited.h \
     ComponentUtilities/Integrator.h \
@@ -153,4 +152,5 @@ HEADERS += win32dll.h \
     Components/Signal/SignalTime.hpp \
     ComponentUtilities/Integrator.hpp \
     ComponentUtilities/FirstOrderFilter.hpp \
-    ComponentUtilities/Delay.hpp
+    ComponentUtilities/Delay.hpp \
+    ComponentUtilities/SecondOrderTransferFunction.h
