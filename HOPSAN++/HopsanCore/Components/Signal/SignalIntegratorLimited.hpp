@@ -11,6 +11,7 @@
 #define SIGNALINTEGRATORLIMITED_HPP_INCLUDED
 
 #include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 
 namespace hopsan {
 
@@ -24,8 +25,7 @@ namespace hopsan {
     private:
         double mStartY;
         double mMin, mMax;
-        Delay mDelayU;
-        Delay mDelayY;
+        double mPrevU, mPrevY;
         Port *mpIn, *mpOut;
 
     public:
@@ -50,10 +50,8 @@ namespace hopsan {
         void initialize()
         {
             double u0 = mpIn->readNode(NodeSignal::VALUE);
-            //mDelayU.setStepDelay(1);
-            //mDelayY.setStepDelay(1);
-            mDelayU.initialize(1, mStartY);
-            mDelayY.initialize(1, std::max(std::min(mStartY, mMax), mMin));
+            mPrevU = mStartY;
+            mPrevY = std::max(std::min(mStartY, mMax), mMin);
             mpOut->writeNode(NodeSignal::VALUE, mStartY);
         }
 
@@ -65,7 +63,7 @@ namespace hopsan {
 
             //Filter equations
             //Bilinear transform is used
-            double y = mDelayY.getOldest() + mTimestep/2.0*(u + mDelayU.getOldest());
+            double y = mPrevY + mTimestep/2.0*(u + mPrevU);
 
             if (y >= mMax)
             {
@@ -81,8 +79,8 @@ namespace hopsan {
                 mpOut->writeNode(NodeSignal::VALUE, y);
 
                 //Update filter:
-                mDelayU.update(u);
-                mDelayY.update(y);
+                mPrevU = u;
+                mPrevY = y;
             }
         }
     };

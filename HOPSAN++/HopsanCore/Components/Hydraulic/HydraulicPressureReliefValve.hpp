@@ -17,14 +17,15 @@
 namespace hopsan {
 
     //!
-    //! @brief
+    //! @brief A Hydraulic Pressure Releife Vale
     //! @ingroup HydraulicComponents
     //!
     class HydraulicPressureReliefValve : public ComponentQ
     {
     private:
         double mX0, mPref, mTao, mKcs, mKcf, mCs, mCf, mQnom, mPnom, mPh, mX0max;
-        Delay mDelayedX0;
+        //Delay mDelayedX0;
+        double mPrevX0;
         TurbulentFlowFunction mTurb;
         ValveHysteresis mHyst;
         FirstOrderFilter mFilterLP;
@@ -67,7 +68,8 @@ namespace hopsan {
             mX0 = 0.00001;
 
             //mDelayedX0.setStepDelay(1);
-            mDelayedX0.initialize(1, 0.0);
+            //mDelayedX0.initialize(1, 0.0);
+            mPrevX0 = 0;
 
             double wCutoff = 1 / mTao;
             double num [2] = {0.0, 1.0};
@@ -142,7 +144,7 @@ namespace hopsan {
 
             //Hysteresis
             double xh = mPh / (b1+b2);                                  //Hysteresis width [m]
-            double xsh = mHyst.getValue(xs, xh, mDelayedX0.getOldest());
+            double xsh = mHyst.getValue(xs, xh, mPrevX0);
 
             //Filter
             double wCutoff = (1.0 + b2/b1) * 1.0/mTao;                //Cutoff frequency
@@ -175,7 +177,7 @@ namespace hopsan {
             if (cav)
             {
                 xs = (c1-c2 + b2*mX0/2.0 - mPref) / (b1+b2);
-                xsh = mHyst.getValue(xs, xh, mDelayedX0.getOldest());
+                xsh = mHyst.getValue(xs, xh, mPrevX0);
                 mX0 = mFilterLP.value(xsh);
 
                 mTurb.setFlowCoefficient(mX0);
@@ -195,7 +197,7 @@ namespace hopsan {
             mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
             mpP2->writeNode(NodeHydraulic::MASSFLOW, q2);
 
-            mDelayedX0.update(mX0);
+            mPrevX0 = mX0;
         }
     };
 }

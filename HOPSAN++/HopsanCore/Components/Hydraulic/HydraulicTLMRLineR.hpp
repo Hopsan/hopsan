@@ -101,6 +101,7 @@ namespace hopsan {
             c2  = mAlpha*c2 + (1.0-mAlpha)*c20;
 
             //Write new values to nodes
+            //! @todo now when we update, in the next step we will read a value that is delayed two times, or?? Previously we updated after getting latest (at least it seems that way) (but value used to perform update also)
             mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, mDelayedC1.update(c1));
             mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc+mR1);
             mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, mDelayedC2.update(c2));

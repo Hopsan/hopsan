@@ -24,7 +24,7 @@ namespace hopsan {
     {
     private:
         double mX0, mX0max, mPref, mTao, mKcs, mKcf, mCs, mCf, mPnom, mQnom, mPh;
-        Delay mDelayedX0;
+        double mPrevX0;
         TurbulentFlowFunction mTurb;
         ValveHysteresis mHyst;
         SecondOrderTransferFunction mFilterLP;
@@ -68,8 +68,7 @@ namespace hopsan {
         {
             mX0 = 0.00001;
 
-            mDelayedX0.initialize(1, 0.0);
-            //mDelayedX0.setStepDelay(1);
+            mPrevX0 = 0.0;
 
             double wCutoff = 1 / mTao;      //Ska det vara Timestep/Tao?
             //double wCutoff = 100;     DEBUG
@@ -118,10 +117,10 @@ namespace hopsan {
 
             double xh = mPh/b1;
             //cout << "xs = " << xs << endl;
-            double xsh = mHyst.getValue(xs, xh, mDelayedX0.getIdx(1)); //Ska det vara 1 eller 1.0? Idx eller ej
+            double xsh = mHyst.getValue(xs, xh, mPrevX0);
             //cout << "xsh = " << xsh << endl;
             mX0 = mFilterLP.getValue(xsh);          //Filter disabled because it's not working!
-            if (mTime < 0.1) { std::cout << "p1 = " << p1 << ", xs = " << xs << ", xsh = " << xsh << ", mDelayedX0 = " << mDelayedX0.getIdx(1) << ", mX0 = " << mX0 << std::endl; }
+            if (mTime < 0.1) { std::cout << "p1 = " << p1 << ", xs = " << xs << ", xsh = " << xsh << ", mPrevX0 = " << mPrevX0 << ", mX0 = " << mX0 << std::endl; }
             //cout << "mX0 = " << mX0 << endl;
             //mX0 = xsh;      //Debug, ta bort sen
             if (xsh > mX0max)
@@ -167,7 +166,7 @@ namespace hopsan {
                 xs = (p_open-mPref-p_close)/b1;
                 xh = mPh / b1;
                 //if (mTime == 0) { xs = mX0; }
-                xsh = mHyst.getValue(xs, xh, mDelayedX0.getOldest());
+                xsh = mHyst.getValue(xs, xh, mPrevX0);
                 mX0 = mFilterLP.getValue(xsh);          //Filter is not working
                 //mX0 = xsh;
                 if (mX0 > mX0max)
@@ -187,7 +186,7 @@ namespace hopsan {
                 if (p2 < 0.0) { p2 = 0.0; }
             }
 
-            mDelayedX0.update(mX0);
+            mPrevX0 = mX0;
 
             //Write new values to nodes
 

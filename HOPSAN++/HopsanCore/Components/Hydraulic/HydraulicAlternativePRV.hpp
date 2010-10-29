@@ -24,7 +24,7 @@ namespace hopsan {
     {
     private:
         double mX0, mPref, mCq, mW, mSpoolDiameter, mFrac, mPilotArea, mK, mC, mMass, mXhyst, mXmax, mFs;
-        Delay mDelayedX0;
+        double mPrevX0;
         TurbulentFlowFunction mTurb;
         ValveHysteresis mHyst;
         SecondOrderFilter mFilter;
@@ -83,8 +83,7 @@ namespace hopsan {
             mW = mSpoolDiameter*mFrac;
             mFs = mPilotArea * mPref;   //Spring preload
 
-            //mDelayedX0.setStepDelay(1);
-            mDelayedX0.initialize(1, 0.0);
+            mPrevX0 = 0.0;
 
             double num[3];
             double den[3];
@@ -122,14 +121,14 @@ namespace hopsan {
 
             double Ftot = p1*mPilotArea - mFs;      //Sum of forces in x direction beside from spring coeff and viscous friction
             double x0 = mFilter.value(Ftot);        //Filter function G = 1/(mMass*s^2 + mC*s + mK)
-            //   double v0 = (Ftot-mK*mDelayedX0.value())/mC;
-            //   double x0 = mDelayedX0.value()+v0*mTimestep;
+            //   double v0 = (Ftot-mK*mPrevX0.value())/mC;
+            //   double x0 = mPrevX0.value()+v0*mTimestep;
             //double x0 = Ftot/mK;
             //        if(x0>mXmax)                            //No filter function G = 1/mK
             //            x0=mXmax;                           //No filter function G = 1/mK
             //        if(x0<0.0)                              //No filter function G = 1/mK
             //            x0=0.0;                             //No filter function G = 1/mK
-            double x0h = mHyst.getValue(x0, mXhyst, mDelayedX0.getOldest()); //Hysteresis
+            double x0h = mHyst.getValue(x0, mXhyst, mPrevX0); //Hysteresis
 
 
             //Turbulent flow equation
@@ -165,7 +164,7 @@ namespace hopsan {
             double den [3] = {mK, mC, mMass};
             mFilter.setNumDen(num,den);
             double x0 = mFilter.value(Ftot);            //Filter function
-            double x0h = mHyst.getValue(x0, mXhyst, mDelayedX0.value());            //Hysteresis
+            double x0h = mHyst.getValue(x0, mXhyst, mPrevX0.value());            //Hysteresis
 
                 //Turbulent flow equation
             mTurb.setFlowCoefficient(mCq*mW*x0h);
@@ -190,7 +189,8 @@ namespace hopsan {
             if(mpX->isConnected())
                 mpX->writeNode(NodeSignal::VALUE, x0);
 
-            mDelayedX0.update(x0);  //Ska vara x0h
+            //! @todo ska det verkligen vara x0 se kommentar nedan
+            mPrevX0 = x0;  //Ska vara x0h
         }
 
         void finalize()

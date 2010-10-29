@@ -77,10 +77,6 @@ namespace hopsan {
             //Init delay
             mDelayedC1.initialize(mTimeDelay-mTimestep, mTimestep, mStartPressure+mZc*mStartFlow); //-mTimestep due to calc time
             mDelayedC2.initialize(mTimeDelay-mTimestep, mTimestep, mStartPressure+mZc*mStartFlow);
-
-//            //Set external parameters
-//            mDelayedC1.setTimeDelay(mTimeDelay-mTimestep, mTimestep); //-mTimestep due to calc time
-//            mDelayedC2.setTimeDelay(mTimeDelay-mTimestep, mTimestep);
         }
 
 
@@ -101,14 +97,12 @@ namespace hopsan {
             c2  = mAlpha*c2 + (1.0-mAlpha)*c20;
 
             //Write new values to nodes
+            //! @todo now when we update, in the next step we will read a value that is delayed two times, or??
             mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, mDelayedC1.update(c1));
             mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc);
             mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, mDelayedC2.update(c2));
             mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc);
 
-//            //Update the delayed variabels
-//            mDelayedC1.update(c1);
-//            mDelayedC2.update(c2);
         }
     };
 }

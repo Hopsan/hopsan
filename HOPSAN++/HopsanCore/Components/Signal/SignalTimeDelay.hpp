@@ -11,6 +11,7 @@
 #define SIGNALTIMEDELAY_HPP_INCLUDED
 
 #include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 
 namespace hopsan {
 
@@ -47,8 +48,6 @@ namespace hopsan {
 
         void initialize()
         {
-//            mDelay.initialize(mTime, mStartY);
-//            mDelay.setTimeDelay(mTimeDelay, mTimestep, mStartY);
             mDelay.initialize(mTimeDelay, mTimestep, mStartY);
             mpOut->writeNode(NodeSignal::VALUE, mStartY);
         }

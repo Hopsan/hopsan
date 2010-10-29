@@ -11,6 +11,7 @@
 #define SIGNALINTEGRATOR_HPP_INCLUDED
 
 #include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 
 namespace hopsan {
 
@@ -23,8 +24,8 @@ namespace hopsan {
 
     private:
         double mStartY;
-        Delay mDelayU;
-        Delay mDelayY;
+        double mPrevU;
+        double mPrevY;
         Port *mpIn, *mpOut;
 
     public:
@@ -46,10 +47,8 @@ namespace hopsan {
         void initialize()
         {
             double u0 = mpIn->readNode(NodeSignal::VALUE);
-            //mDelayU.setStepDelay(1);
-            //mDelayY.setStepDelay(1);
-            mDelayU.initialize(1, mStartY);
-            mDelayY.initialize(1, mStartY);
+            mPrevU = mStartY;
+            mPrevY = mStartY;
             mpOut->writeNode(NodeSignal::VALUE, mStartY);
         }
 
@@ -61,14 +60,14 @@ namespace hopsan {
 
             //Filter equation
             //Bilinear transform is used
-            double y = mDelayY.getOldest() + mTimestep/2.0*(u + mDelayU.getOldest());
+            double y = mPrevY + mTimestep/2.0*(u + mPrevU);
 
             //Write new values to nodes
             mpOut->writeNode(NodeSignal::VALUE, y);
 
             //Update filter:
-            mDelayU.update(u);
-            mDelayY.update(y);
+            mPrevU = u;
+            mPrevY = y;
         }
     };
 }

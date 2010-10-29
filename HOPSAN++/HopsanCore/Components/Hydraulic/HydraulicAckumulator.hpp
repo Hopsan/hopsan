@@ -25,7 +25,7 @@ namespace hopsan {
     {
     private:
         double mPmin, mVtot, mVoil, mVgas, mBetae, mKappa, mKce, mStartPressure, mStartFlow;
-        Delay mDelayedP2, mDelayedC1, mDelayedZc1, mDelayedQ2;
+        double mPrevP2, mPrevC1, mPrevZc1, mPrevQ2;
         Port *mpP1, *mpOut;
 
     public:
@@ -78,18 +78,17 @@ namespace hopsan {
                 }
                 mVgas = mVtot;                  //Pressure is minimum, so ackumulator is empty
                 mVoil = 0;
-                mDelayedQ2.initialize(1, mStartFlow);        //"Previous" value for q2 first step
+                mPrevQ2 = mStartFlow;           //"Previous" value for q2 first step
             }
             else
             {
-                mDelayedQ2.initialize(1, mKce*(p1-mStartPressure));              //"Previous" value for q2 first step, calculated with orifice equation
+                mPrevQ2 = mKce*(p1-mStartPressure);              //"Previous" value for q2 first step, calculated with orifice equation
                 mVgas = pow(mPmin*pow(mVtot, mKappa)/mStartPressure, 1/mKappa);     //Initial gas volume, calculated from initial pressure
                 mVoil = mVtot - mVgas;
             }
-            mDelayedP2.initialize(1, mStartPressure);
-            mDelayedC1.initialize(1, c1);
-            mDelayedZc1.initialize(1, Zc1);
-            //! @todo the delays are hardcoded to 1 we could avoid using Delay class for speed
+            mPrevP2 = mStartPressure;
+            mPrevC1 = c1;
+            mPrevZc1 = Zc1;
 
             std::cout << "Start Pressure: " << mStartPressure << std::endl;;
         }
@@ -104,12 +103,12 @@ namespace hopsan {
             //Ackumulator equations
             double e0, ct;
             double p1,q1,q2;
-            double p2 = mDelayedP2.getOldest();
+            double p2 = mPrevP2;
 
             e0 = mPmin * pow(mVtot, mKappa);
             ct = mVgas / (p2*mKappa) + (mVtot-mVgas) / mBetae;
-            q2 = (mDelayedQ2.getOldest() * (2.0*ct*(mKce*mDelayedZc1.getOldest()+1.0) - mKce*mTimestep) +
-                  2.0*ct*mKce*(c1-mDelayedC1.getOldest())) / (2.0*ct*(mKce*Zc1+1.0) + mKce*mTimestep);
+            q2 = (mPrevQ2 * (2.0*ct*(mKce*mPrevZc1+1.0) - mKce*mTimestep) +
+                  2.0*ct*mKce*(c1-mPrevC1)) / (2.0*ct*(mKce*Zc1+1.0) + mKce*mTimestep);
             p1 = c1 - Zc1*q2;
             p2 = p1 - q2/mKce;
 
@@ -123,8 +122,8 @@ namespace hopsan {
             {
                 c1 = 0.0;
                 Zc1 = 0.0;
-                q2 = (mDelayedQ2.getOldest() * (2.0*ct*(mKce*mDelayedZc1.getOldest()+1.0) - mKce*mTimestep) +
-                      2*ct*mKce*(c1-mDelayedC1.getOldest())) / (2*ct*(mKce*Zc1+1) + mKce*mTimestep);
+                q2 = (mPrevQ2 * (2.0*ct*(mKce*mPrevZc1+1.0) - mKce*mTimestep) +
+                      2*ct*mKce*(c1-mPrevC1)) / (2*ct*(mKce*Zc1+1) + mKce*mTimestep);
                 p1 = 0.0;
                 p2 = -q2/mKce;
             }
@@ -147,10 +146,10 @@ namespace hopsan {
                 std::cout << "Voil = " << mVoil << std::endl;
             }
 
-            mDelayedP2.update(p2);
-            mDelayedQ2.update(q2);
-            mDelayedC1.update(c1);
-            mDelayedZc1.update(Zc1);
+            mPrevP2 = p2;
+            mPrevQ2 = q2;
+            mPrevC1 = c1;
+            mPrevZc1 = Zc1;
 
             //Write new values to nodes
             mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
