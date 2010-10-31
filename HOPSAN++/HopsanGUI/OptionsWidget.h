@@ -11,6 +11,7 @@
 #include <QGroupBox>
 #include <QGridLayout>
 #include <QToolButton>
+#include <QComboBox>
 
 class MainWindow;
 
@@ -30,8 +31,8 @@ public:
     QCheckBox *mpSnappingCheckBox;
     QLabel *mpBackgroundColorLabel;
     QToolButton *mpBackgroundColorButton;
-    QGridLayout *mpInterfaceLayout;
     QGroupBox *mpInterfaceGroupBox;
+    QGridLayout *mpInterfaceLayout;
 
     QCheckBox *mpUseMulticoreCheckBox;
     QCheckBox *mpEnableProgressBarCheckBox;
@@ -39,6 +40,11 @@ public:
     QSpinBox *mpProgressBarSpinBox;
     QGroupBox *mpSimulationGroupBox;
     QGridLayout *mpSimulationLayout;
+
+    QLabel *mpPressureUnitLabel;
+    QComboBox *mpPressureUnitComboBox;
+    QGroupBox *mpPlottingGroupBox;
+    QGridLayout *mpPlottingLayout;
 
     QPushButton *mpCancelButton;
     QPushButton *mpApplyButton;

@@ -34,8 +34,8 @@ namespace hopsan {
         {
             mTypeName = "SignalSubtract";
 
-            mpIn1 = addReadPort("in1", "NodeSignal");
-            mpIn2 = addReadPort("in2", "NodeSignal");
+            mpIn1 = addReadPort("in1", "NodeSignal", Port::NOTREQUIRED);
+            mpIn2 = addReadPort("in2", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal");
         }
 
@@ -108,43 +108,43 @@ namespace hopsan {
         {
             mTypeName = "SignalOptimizedSubtract";
 
-            mpIn1 = addReadPort("in1", "NodeSignal");
-            mpIn2 = addReadPort("in2", "NodeSignal");
+            mpIn1 = addReadPort("in1", "NodeSignal", Port::NOTREQUIRED);
+            mpIn2 = addReadPort("in2", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal");
         }
 
 
         void initialize()
         {
+                //Make in1 or in2 be zero if they are not connected
             if(mpIn1->isConnected())
+            {
                 in1 = mpIn1->getNodeDataPtr(NodeSignal::VALUE);
-            if(mpIn2->isConnected())
-                in2 = mpIn2->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                in1 = new double(0);
+            }
 
+            if(mpIn2->isConnected())
+            {
+                in2 = mpIn2->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                in2 = new double(0);
+            }
+
+                //output must be connected
             output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
 
-            *output = 0.0;
+            (*output) = 0.0;
         }
 
 
         void simulateOneTimestep()
         {
-            if (mpIn1->isConnected() && mpIn2->isConnected())       //Both ports connected
-            {
-                *output = *in1 - *in2;
-            }
-            else if (mpIn1->isConnected() && !mpIn2->isConnected())       //Port 1 connected, port 2 disconnected
-            {
-                *output = *in1;
-            }
-            else if (!mpIn1->isConnected() && mpIn2->isConnected())       //Port 2 connected, port 1 disconnected
-            {
-                *output = -*in2;
-            }
-            else
-            {
-                *output = 0;
-            }
+            (*output) = (*in1) - (*in2);
         }
     };
 }

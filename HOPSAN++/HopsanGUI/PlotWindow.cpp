@@ -43,6 +43,11 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mLeftAxisLogarithmic = false;
     mRightAxisLogarithmic = false;
     mAutoUpdate = true;
+    mCurrentUnitsLeft.insert("Pressure", mpParentMainWindow->mDefaultPressureUnit);
+    mCurrentUnitsLeft.insert("Flow", "m^3/s");      //! @todo Finish this for all data types!
+    mCurrentUnitsLeft.insert("Position", "m");
+    mCurrentUnitsLeft.insert("Velocity", "m/s");
+    mCurrentUnitsLeft.insert("Force", "N");
 
         //Create the actual plot widget
     mpVariablePlot = new QwtPlot();
@@ -751,7 +756,7 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
     if(mpVariablePlot->axisTitle(QwtPlot::yLeft).text().startsWith("Pressure"))
     {
         QMap<QString, double>::iterator it;
-        for(it=mpParentMainWindow->mpPlotWidget->mAlternativeUnits.find("Pressure").value().begin(); it!=mpParentMainWindow->mpPlotWidget->mAlternativeUnits.find("Pressure").value().end(); ++it)
+        for(it=mpParentMainWindow->mAlternativeUnits.find("Pressure").value().begin(); it!=mpParentMainWindow->mAlternativeUnits.find("Pressure").value().end(); ++it)
         {
             QAction *tempAction = changeUnitMenuLeft->addAction(it.key());
             if(mpVariablePlot->axisTitle(QwtPlot::yLeft).text().contains(it.key())) //! @todo Very very very ugly!
@@ -814,14 +819,14 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
         // Change unit
     if(mpVariablePlot->axisTitle(QwtPlot::yLeft).text().startsWith("Pressure"))
     {
-        if(mpParentMainWindow->mpPlotWidget->mAlternativeUnits.find("Pressure").value().contains(selectedAction->text()))
+        if(mpParentMainWindow->mAlternativeUnits.find("Pressure").value().contains(selectedAction->text()))
         {
             for(size_t i=0; i<mpCurves.size(); ++i)
             {
                 if(mpCurves.at(i)->yAxis() == QwtPlot::yLeft)
                 {
                         //Change the curve data to the new x-data and the temporary y-array
-                    double scale = mpParentMainWindow->mpPlotWidget->mAlternativeUnits.find("Pressure").value().find(selectedAction->text()).value();
+                    double scale = mpParentMainWindow->mAlternativeUnits.find("Pressure").value().find(selectedAction->text()).value();
                     QVector<double> tempVectorY;
                     for(size_t j=0; j<mVectorY[mCurrentGeneration][i].size(); ++j)
                     {

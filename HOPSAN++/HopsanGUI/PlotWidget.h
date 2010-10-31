@@ -93,7 +93,7 @@ class PlotWidget : public QWidget
 public:
     PlotWidget(MainWindow *parent = 0);
     PlotParameterTree *mpPlotParameterTree;
-    QMap< QString, QMap<QString, double> > mAlternativeUnits;
+
 private:
     MainWindow *mpParentMainWindow;
     QGridLayout *mpLayout;

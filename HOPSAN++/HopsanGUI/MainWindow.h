@@ -68,6 +68,8 @@ public:
     bool mSnapping;
     QList<QFileInfo> mRecentModels;
     QStringList mLastSessionModels;
+    QString mDefaultPressureUnit;
+    QMap< QString, QMap<QString, double> > mAlternativeUnits;
 
     //Menubar items
     QMenuBar *menubar;

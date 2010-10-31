@@ -132,6 +132,7 @@ private slots:
 
 private:
     PlotParameterTree *mpPlotParameterTree;
+    QMap<QString, QString> mCurrentUnitsLeft;
 };
 
 #endif // PlotWidget_H

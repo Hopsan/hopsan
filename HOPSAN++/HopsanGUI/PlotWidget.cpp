@@ -306,14 +306,4 @@ PlotWidget::PlotWidget(MainWindow *parent)
     mpPlotParameterTree = new PlotParameterTree(mpParentMainWindow);
     mpLayout = new QGridLayout(this);
     mpLayout->addWidget(mpPlotParameterTree,0,0,3,1);
-
-    QMap<QString, double> PressureUnitMap;
-    PressureUnitMap.insert("Pa", 1);
-    PressureUnitMap.insert("Bar", 1e-5);
-    PressureUnitMap.insert("MPa", 1e-6);
-    QMap<QString, double> FlowUnitMap;
-    FlowUnitMap.insert("m^3/s", 1);
-    FlowUnitMap.insert("l/min", 1.666666666666667e-5);
-    mAlternativeUnits.insert("Pressure", PressureUnitMap);
-    mAlternativeUnits.insert("Flow", FlowUnitMap);
 }

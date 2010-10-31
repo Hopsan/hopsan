@@ -52,10 +52,14 @@ Some useful information can be found at <a href="http://www.emmestech.com/moron_
 [build]\n
 compiler=mingw32
   -# Next, use pexports to export the python dll symbols. The library can typically be found under C:\WINDOWS\system32. Use the following command:\n
-pexports c:/WINDOWS/system32/python26.dll >python26.def
+pexports c:/WINDOWS/system32/python26.dll >python26.def\n
+Or the following for 64-bit Windows:\n
+pexports c:/WINDOWS/syswow64/python26.dll >python26.def\n
 -# Then, build an import library
   -# Use the following command to build the library:\n
-dlltool -D c:/WINDOWS/system32/python26.dll -d python26.def -l libpython26.a
+dlltool -D c:/WINDOWS/system32/python26.dll -d python26.def -l libpython26.a\n
+Or the following for 64-bit Windows:\n
+dlltool -D c:/WINDOWS/syswow64/python26.dll -d python26.def -l libpython26.a\n
   -# Move "libpython26.a" to "/mingw/lib" in your Qt directory.
 -# Download and unzip PythonQt, it is found here: <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a>
 -# Open QT Creator and the PythonQT project. Use release settings.

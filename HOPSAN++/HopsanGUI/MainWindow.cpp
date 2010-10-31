@@ -25,6 +25,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+
     //QString(MAINPATH) = "../../";
     //mQString(ICONPATH) = QString(MAINPATH) + "HopsanGUI/icons/";
     //mComponentPath = QString(MAINPATH) + "HopsanGUI/componentData/";
@@ -588,6 +589,18 @@ void MainWindow::loadSettings()
     mAntiAliasing = false;
     mLastSessionModels.clear();
     mRecentModels.clear();
+    mDefaultPressureUnit = "Pa";
+
+        //Definition of default alternative units
+    QMap<QString, double> PressureUnitMap;
+    PressureUnitMap.insert("Pa", 1);
+    PressureUnitMap.insert("Bar", 1e-5);
+    PressureUnitMap.insert("MPa", 1e-6);
+    QMap<QString, double> FlowUnitMap;
+    FlowUnitMap.insert("m^3/s", 1);
+    FlowUnitMap.insert("l/min", 1.666666666666667e-5);
+    mAlternativeUnits.insert("Pressure", PressureUnitMap);
+    mAlternativeUnits.insert("Flow", FlowUnitMap);
 
     QFile file(QString(MAINPATH) + "settings.txt");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -648,6 +661,10 @@ void MainWindow::loadSettings()
         if(inputWord == "RECENTMODEL")
         {
             mRecentModels.append(QFileInfo(readName(inputStream)));
+        }
+        if(inputWord == "DEFAULTPRESSUREUNIT")
+        {
+            mDefaultPressureUnit = readName(inputStream);
         }
     }
     file.close();
@@ -738,6 +755,8 @@ void MainWindow::saveSettings()
     {
         settingsFile << "RECENTMODEL " << addQuotes(mRecentModels.at(i).filePath()) << "\n";
     }
+
+    settingsFile << "DEFAULTPRESSUREUNIT " << addQuotes(mDefaultPressureUnit) << "\n";
 
     file.close();
 }

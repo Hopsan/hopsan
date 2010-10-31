@@ -15,6 +15,7 @@
 #include "ProjectTabWidget.h"
 #include "MainWindow.h"
 #include "GraphicsView.h"
+#include "PlotWidget.h"
 
 class ProjectTabWidget;
 
@@ -90,6 +91,35 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     mpSimulationLayout->addWidget(mpUseMulticoreCheckBox, 2, 0, 1, 2);
     mpSimulationGroupBox->setLayout(mpSimulationLayout);
 
+    mpPressureUnitLabel = new QLabel(tr("Default Pressure Unit"));
+    mpPressureUnitComboBox = new QComboBox();
+
+    QMap<QString, double>::iterator it;
+    for(it = mpParentMainWindow->mAlternativeUnits.find("Pressure").value().begin();
+        it != mpParentMainWindow->mAlternativeUnits.find("Pressure").value().end(); ++it)
+    {
+        mpPressureUnitComboBox->addItem(it.key());
+    }
+    for(size_t i = 0; i<mpPressureUnitComboBox->count(); ++i)
+    {
+        if(mpPressureUnitComboBox->itemText(i) == mpParentMainWindow->mDefaultPressureUnit)
+        {
+            mpPressureUnitComboBox->setCurrentIndex(i);
+        }
+    }
+
+
+    mpPlottingGroupBox = new QGroupBox(tr("Plotting"));
+    mpPlottingLayout = new QGridLayout;
+    mpPlottingLayout->addWidget(mpPressureUnitLabel, 0, 0);
+    mpPlottingLayout->addWidget(mpPressureUnitComboBox, 0, 1);
+    mpPlottingGroupBox->setLayout(mpPlottingLayout);
+
+    //QLabel *mpPressureUnitLabel;
+    //QComboBox *mpPressureUnitComboBox;
+    //QGroupBox *mpPlottingGroupBox;
+    //QGridLayout *mpPlottingLayout;
+
     mpCancelButton = new QPushButton(tr("&Cancel"));
     mpCancelButton->setAutoDefault(false);
     mpOkButton = new QPushButton(tr("&Done"));
@@ -110,6 +140,7 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     pLayout->setSizeConstraint(QLayout::SetFixedSize);
     pLayout->addWidget(mpInterfaceGroupBox);
     pLayout->addWidget(mpSimulationGroupBox);
+    pLayout->addWidget(mpPlottingGroupBox);
     pLayout->addWidget(mpButtonBox, 4, 0);
     setLayout(pLayout);
 }
@@ -133,6 +164,7 @@ void OptionsWidget::updateValues()
     mpParentMainWindow->mEnableProgressBar = mpEnableProgressBarCheckBox->isChecked();
     mpParentMainWindow->mProgressBarStep = mpProgressBarSpinBox->value();
     mpParentMainWindow->mUseMulticore = mpUseMulticoreCheckBox->isChecked();
+    mpParentMainWindow->mDefaultPressureUnit = mpPressureUnitComboBox->currentText();
     mpParentMainWindow->saveSettings();
     this->accept();
 }
