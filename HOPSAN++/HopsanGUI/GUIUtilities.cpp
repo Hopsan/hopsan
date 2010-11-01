@@ -89,21 +89,26 @@ QPointF getOffsetPointfromPort(GUIPort *pPort)
 {
     QPointF point;
 
-    if((pPort->getPortDirection() == LEFTRIGHT) && (pPort->getGuiObject()->mapToScene(pPort->getGuiObject()->boundingRect().center()).x() > pPort->scenePos().x()))
+    if((pPort->getPortDirection() == LEFTRIGHT) && (pPort->getGuiModelObject()->mapToScene(pPort->getGuiModelObject()->boundingRect().center()).x() > pPort->scenePos().x()))
     {
         point.setX(-20);
     }
-    else if((pPort->getPortDirection() == LEFTRIGHT) && (pPort->getGuiObject()->mapToScene(pPort->getGuiObject()->boundingRect().center()).x() < pPort->scenePos().x()))
+    else if((pPort->getPortDirection() == LEFTRIGHT) && (pPort->getGuiModelObject()->mapToScene(pPort->getGuiModelObject()->boundingRect().center()).x() < pPort->scenePos().x()))
     {
         point.setX(20);
     }
-    else if((pPort->getPortDirection() == TOPBOTTOM) && (pPort->getGuiObject()->mapToScene(pPort->getGuiObject()->boundingRect().center()).y() > pPort->scenePos().y()))
+    else if((pPort->getPortDirection() == TOPBOTTOM) && (pPort->getGuiModelObject()->mapToScene(pPort->getGuiModelObject()->boundingRect().center()).y() > pPort->scenePos().y()))
     {
         point.setY(-20);
     }
-    else if((pPort->getPortDirection() == TOPBOTTOM) && (pPort->getGuiObject()->mapToScene(pPort->getGuiObject()->boundingRect().center()).y() < pPort->scenePos().y()))
+    else if((pPort->getPortDirection() == TOPBOTTOM) && (pPort->getGuiModelObject()->mapToScene(pPort->getGuiModelObject()->boundingRect().center()).y() < pPort->scenePos().y()))
     {
         point.setY(20);
     }
     return point;
+}
+
+double dist(double x1,double y1, double x2, double y2)
+{
+    return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
 }

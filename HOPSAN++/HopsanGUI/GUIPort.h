@@ -12,6 +12,7 @@
 
 //Forward declarations
 class GUIObject;
+class GUIModelObject;
 class GUISystem;
 class CoreSystemAccess;
 class GraphicsView;
@@ -20,15 +21,15 @@ class GUIPort :public QGraphicsSvgItem
 {
     Q_OBJECT
 public:
-    GUIPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIObject *pParent = 0, CoreSystemAccess *pGUIRootSystem=0);
+    GUIPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParent = 0, CoreSystemAccess *pGUIRootSystem=0);
     GUISystem *mpParentSystem;
-    GUIObject *mpParentGuiObject;
+    GUIModelObject *mpParentGuiModelObject;
 
     QPointF getCenterPos();
     void updatePosition(qreal x, qreal y);
     void updatePositionByFraction(qreal x, qreal y);
     GUISystem *getParentSystem();
-    GUIObject *getGuiObject();
+    GUIModelObject *getGuiModelObject();
     void magnify(bool blowup);
     portDirection getPortDirection();
     void setPortDirection(portDirection direction);

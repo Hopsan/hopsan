@@ -18,21 +18,73 @@ class ProjectTabWidget;
 class GraphicsScene;
 class GraphicsView;
 class GUIConnector;
-class GUIObjectDisplayName;
-class Component;
+class GUIModelObjectDisplayName;
+//class Component;
 class GUIObjectSelectionBox;
 class GUIPort;
 class GUISystem;
-class GUIComponent;
+//class GUIComponent;
 
-enum GUIObjectEnumT {GUIOBJECT=QGraphicsItem::UserType+1, GUISYSTEM, GUICOMPONENT, GUISYSTEMPORT, GUIGROUP, GUIGROUPPORT};
+enum GUIObjectEnumT {GUIOBJECT=QGraphicsItem::UserType+1, GUIMODELOBJECT, GUICONTAINEROBJECT, GUISYSTEM, GUICOMPONENT, GUISYSTEMPORT, GUIGROUP, GUIGROUPPORT};
 
 class GUIObject : public QGraphicsWidget
 {
     Q_OBJECT
 public:
-    GUIObject(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType graphics = USERGRAPHICS, GUISystem *system = 0, QGraphicsItem *parent = 0);
+    GUIObject(QPoint pos, qreal rot, selectionStatus=DESELECTED, GUISystem *pSystem=0, QGraphicsItem *pParent=0);
     ~GUIObject();
+    GUISystem *mpParentSystem; //!< @todo not public
+
+    virtual QString getTypeName() {assert(false);} //Maybe sould not bee here
+    virtual QString getName() {assert(false);} //Maybe sould not bee here
+
+    virtual QPointF getCenterPos();
+    virtual void setCenterPos(QPointF pos);
+
+    virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString()){;} //! @todo nothing for now
+    virtual void saveToDomElement(QDomElement &rDomElement){;}  //! @todo nothing for now
+    virtual void loadFromHMF(QString modelFilePath=QString()) {assert(false);} //Only available in GUISubsystem for now
+
+    enum { Type = GUIOBJECT };
+    int type() const;
+
+public slots:
+    void deleteMe();
+    virtual void rotate(undoStatus undoSettings = UNDO);
+    void rotateTo(qreal angle);
+    void moveUp();
+    void moveDown();
+    void moveLeft();
+    void moveRight();
+    virtual void flipVertical(undoStatus undoSettings = UNDO){;} //!< @todo nothing for now
+    virtual void flipHorizontal(undoStatus undoSettings = UNDO){;}  //!< @todo nothing for now
+    void deselect();
+    void select();
+
+signals:
+    void objectMoved();
+    void objectDeleted();
+    void objectSelected();
+
+protected:
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+
+    QString mHmfTagName;
+    GUIObjectSelectionBox *mpSelectionBox;
+    bool mIsFlipped;
+    QPointF mOldPos;
+};
+
+
+class GUIModelObject : public GUIObject
+{
+    Q_OBJECT
+public:
+    GUIModelObject(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType graphics = USERGRAPHICS, GUISystem *system = 0, QGraphicsItem *parent = 0);
 
     void rememberConnector(GUIConnector *item);
     void forgetConnector(GUIConnector *item);
@@ -63,69 +115,51 @@ public:
     virtual double getParameterValue(QString name);
     virtual void setParameterValue(QString name, double value);
 
-    GUISystem *mpParentSystem;
-
     virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());
     virtual void saveToDomElement(QDomElement &rDomElement);
     virtual void loadFromHMF(QString modelFilePath=QString()) {assert(false);} //Only available in GUISubsystem for now
 
-    enum { Type = GUIOBJECT };
+    enum { Type = GUIMODELOBJECT };
     int type() const;
-    GUIObjectDisplayName *mpNameText;
-    //QHash<QString, GUIPort*> mGuiPortPtrMap;
+
+    //Public Vaariables
+    GUIModelObjectDisplayName *mpNameText;
+
+public slots:
+    void rotate(undoStatus undoSettings = UNDO);
+    //! @todo flip should work on all ui objects
+    void flipVertical(undoStatus undoSettings = UNDO);
+    void flipHorizontal(undoStatus undoSettings = UNDO);
+    void hideName();
+    void showName();
+    void setIcon(graphicsType);
+
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
     virtual void saveGuiDataToDomElement(QDomElement &rDomElement);
     virtual void saveCoreDataToDomElement(QDomElement &rDomElement);
 
-signals:
-    void componentMoved();
-    void componentDeleted();
-    void componentSelected();
-
-public slots:
-     void deleteMe();
-     void rotate(undoStatus undoSettings = UNDO);
-     void rotateTo(qreal angle);
-     void moveUp();
-     void moveDown();
-     void moveLeft();
-     void moveRight();
-     void flipVertical(undoStatus undoSettings = UNDO);
-     void flipHorizontal(undoStatus undoSettings = UNDO);
-     void hideName();
-     void showName();
-     void setIcon(graphicsType);
-     void deselect();
-     void select();
-
-
-protected:
-    QList<GUIConnector*> mpGUIConnectorPtrs;
-
     void groupComponents(QList<QGraphicsItem*> compList);
-    QGraphicsSvgItem *mpIcon;
+    virtual void createPorts() {assert(false);} //Only availible in GUIComponent for now
 
-    GUIObjectSelectionBox *mpSelectionBox;
+    //Protected Variables
+    AppearanceData mAppearanceData;
+
     double mTextOffset;
-    QGraphicsLineItem *mpTempLine;
-
     int mNameTextPos;
+
     graphicsType mIconType;
     bool mIconRotation;
-    bool mIsFlipped;
-    AppearanceData mAppearanceData;
-    QPointF mOldPos;
+    QGraphicsSvgItem *mpIcon;
 
     QList<GUIPort*> mPortListPtrs;
+    QList<GUIConnector*> mpGUIConnectorPtrs;
 
-    virtual void createPorts() {assert(false);} //Only availible in GUIComponent for now
+    QGraphicsLineItem *mpTempLine;
 
 protected slots:
     void fixTextPosition(QPointF pos);
@@ -134,25 +168,24 @@ private:
 
 };
 
-class GUIObjectDisplayName : public QGraphicsTextItem
+class GUIModelObjectDisplayName : public QGraphicsTextItem
 {
     Q_OBJECT
-private:
-    GUIObject* mpParentGUIObject;
-
 public:
-    GUIObjectDisplayName(GUIObject *pParent);
-
+    GUIModelObjectDisplayName(GUIModelObject *pParent);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-
-protected:
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 public slots:
     void deselect();
 
 signals:
     void textMoved(QPointF pos);
+
+protected:
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+
+private:
+    GUIModelObject* mpParentGUIModelObject;
 };
 
 
@@ -174,7 +207,7 @@ private:
     QPen mHoverPen;
 };
 
-class GUIContainerObject : public GUIObject
+class GUIContainerObject : public GUIModelObject
 {
     Q_OBJECT
 public:
@@ -189,17 +222,5 @@ protected:
     CONTAINERSTATUS mContainerStatus;
 
 };
-
-
-
-
-
-
-
-
-
-
-
-
 
 #endif // GUIOBJECT_H

@@ -19,7 +19,7 @@ class QLabel;
 class QLineEdit;
 class QPushButton;
 
-class GUIObject;
+class GUIModelObject;
 class GUIComponent;
 //class GUISubsystem;
 class GUISystem;
@@ -41,7 +41,7 @@ protected:
     void setStartValues();
 
 private:
-    GUIObject    *mpGUIObject;
+    GUIModelObject    *mpGUIModelObject;
     bool isGUISubsystem;
 
     void createEditStuff();

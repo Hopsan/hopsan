@@ -47,17 +47,17 @@ class PyGUIObjectClassWrapper : public QObject
     Q_OBJECT
 
 public slots:
-    double getParameter(GUIObject* o, const QString& parName)
+    double getParameter(GUIModelObject* o, const QString& parName)
     {
         return o->getParameterValue(parName);
     }
 
-    void setParameter(GUIObject* o, const QString& parName, const double& value)
+    void setParameter(GUIModelObject* o, const QString& parName, const double& value)
     {
         o->setParameterValue(parName, value);
     }
 
-    GUIPort* port(GUIObject* o, const QString& portName)
+    GUIPort* port(GUIModelObject* o, const QString& portName)
     {
         return o->getPort(portName);
     }
@@ -110,7 +110,7 @@ public slots:
 
     GUIObject* component(MainWindow* o, const QString& compName)
     {
-        return o->mpProjectTabs->getCurrentSystem()->getGUIObject(compName);
+        return o->mpProjectTabs->getCurrentSystem()->getGUIModelObject(compName);
     }
 
     void setStartTime(MainWindow* o, const double& start)
@@ -150,17 +150,17 @@ public slots:
 
     double getParameter(MainWindow* o, const QString& compName, const QString& parName)
     {
-        return o->mpProjectTabs->getCurrentSystem()->getGUIObject(compName)->getParameterValue(parName);
+        return o->mpProjectTabs->getCurrentSystem()->getGUIModelObject(compName)->getParameterValue(parName);
     }
 
     void setParameter(MainWindow* o, const QString& compName, const QString& parName, const double& value)
     {
-        o->mpProjectTabs->getCurrentSystem()->getGUIObject(compName)->setParameterValue(parName, value);
+        o->mpProjectTabs->getCurrentSystem()->getGUIModelObject(compName)->setParameterValue(parName, value);
     }
 
     void plot(MainWindow* o, const QString& compName, const QString& portName, const QString& dataName)
     {
-        o->mpProjectTabs->getCurrentSystem()->getGUIObject(compName)->getPort(portName)->plot(dataName);
+        o->mpProjectTabs->getCurrentSystem()->getGUIModelObject(compName)->getPort(portName)->plot(dataName);
     }
 
 };

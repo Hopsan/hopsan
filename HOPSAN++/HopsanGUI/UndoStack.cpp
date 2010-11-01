@@ -115,7 +115,7 @@ void UndoStack::undoOneStep()
             {
                 //poststream >> junk; //Discard Component load command
                 ////! @todo maybe we should not save it automatically in the guiobject maby let some other external save function add it
-                loadGUIObject(poststream, mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentSystem, NOUNDO);
+                loadGUIModelObject(poststream, mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentSystem, NOUNDO);
             }
             else if ( undoevent == "DELETEDCONNECTOR" )
             {
@@ -165,25 +165,25 @@ void UndoStack::undoOneStep()
                 QPointF oldPt, newPt;
                 QString name = readName(poststream);
                 poststream >> oldPt.rx() >> oldPt.ry() >> newPt.rx() >> newPt.ry();
-                mpParentSystem->getGUIObject(name)->setPos(oldPt);
+                mpParentSystem->getGUIModelObject(name)->setPos(oldPt);
             }
             else if( undoevent == "ROTATEDOBJECT" )
             {
                 QString name = readName(poststream);
                 //! @todo This feels wierd, why rotate three times
-                mpParentSystem->getGUIObject(name)->rotate(NOUNDO);
-                mpParentSystem->getGUIObject(name)->rotate(NOUNDO);
-                mpParentSystem->getGUIObject(name)->rotate(NOUNDO);
+                mpParentSystem->getGUIModelObject(name)->rotate(NOUNDO);
+                mpParentSystem->getGUIModelObject(name)->rotate(NOUNDO);
+                mpParentSystem->getGUIModelObject(name)->rotate(NOUNDO);
             }
             else if( undoevent == "VERTICALFLIP" )
             {
                 QString name = readName(poststream);
-                mpParentSystem->getGUIObject(name)->flipVertical(NOUNDO);
+                mpParentSystem->getGUIModelObject(name)->flipVertical(NOUNDO);
             }
             else if( undoevent == "HORIZONTALFLIP" )
             {
                 QString name = readName(poststream);
-                mpParentSystem->getGUIObject(name)->flipHorizontal(NOUNDO);
+                mpParentSystem->getGUIModelObject(name)->flipHorizontal(NOUNDO);
             }
         }
         mCurrentStackPosition = undoPosition - 1;
@@ -225,7 +225,7 @@ void UndoStack::redoOneStep()
             }
             else if( redoevent == "ADDEDOBJECT" )
             {
-                  loadGUIObject(poststream, mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentSystem, NOUNDO);
+                  loadGUIModelObject(poststream, mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentSystem, NOUNDO);
             }
             else if( redoevent == "ADDEDCONNECTOR" )
             {
@@ -258,14 +258,14 @@ void UndoStack::redoOneStep()
                 QPointF oldPt, newPt;
                 QString name = readName(poststream);
                 poststream >> oldPt.rx() >> oldPt.ry() >> newPt.rx() >> newPt.ry();
-                mpParentSystem->getGUIObject(name)->setPos(newPt);
+                mpParentSystem->getGUIModelObject(name)->setPos(newPt);
             }
             else if( redoevent == "ROTATEDOBJECT" )
             {
                 QString name;
                 name = readName(poststream);
                 //! @todo This feels wierd, why rotate one time
-                mpParentSystem->getGUIObject(name)->rotate(NOUNDO);
+                mpParentSystem->getGUIModelObject(name)->rotate(NOUNDO);
             }
         }
         mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();

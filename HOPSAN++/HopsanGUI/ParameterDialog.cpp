@@ -33,7 +33,7 @@
 ParameterDialog::ParameterDialog(GUIComponent *pGUIComponent, QWidget *parent)
     : QDialog(parent)
 {
-    mpGUIObject = pGUIComponent;
+    mpGUIModelObject = pGUIComponent;
     isGUISubsystem = false;
 
     createEditStuff();
@@ -45,7 +45,7 @@ ParameterDialog::ParameterDialog(GUIComponent *pGUIComponent, QWidget *parent)
 //! @param parent Pointer to the parent widget
 ParameterDialog::ParameterDialog(GUISystem *pGUISubsystem, QWidget *parent)     : QDialog(parent)
 {
-    mpGUIObject = pGUISubsystem;
+    mpGUIModelObject = pGUISubsystem;
     isGUISubsystem = true;
 
     createEditStuff();
@@ -55,7 +55,7 @@ ParameterDialog::ParameterDialog(GUISystem *pGUISubsystem, QWidget *parent)     
 //! @brief Creates the contents in the parameter dialog
 void ParameterDialog::createEditStuff()
 {
-    mpNameEdit = new QLineEdit(mpGUIObject->getName());
+    mpNameEdit = new QLineEdit(mpGUIModelObject->getName());
 
     QFont fontH1;
     fontH1.setBold(true);
@@ -68,21 +68,21 @@ void ParameterDialog::createEditStuff()
     pParameterLabel->setFont(fontH1);
 
     //qDebug() << "before parnames";
-    QVector<QString> parnames = mpGUIObject->getParameterNames();
+    QVector<QString> parnames = mpGUIModelObject->getParameterNames();
     //qDebug() << "parnames.size: " << parnames.size();
     QVector<QString>::iterator pit;
     for ( pit=parnames.begin(); pit!=parnames.end(); ++pit )
     {
         mParameterVarVector.push_back(new QLabel(*pit));
         mParameterVarVector.back()->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-        mParameterDescriptionVector.push_back(new QLabel(mpGUIObject->getParameterDescription(*pit).append(", ")));
-        mParameterUnitVector.push_back(new QLabel(mpGUIObject->getParameterUnit(*pit)));
+        mParameterDescriptionVector.push_back(new QLabel(mpGUIModelObject->getParameterDescription(*pit).append(", ")));
+        mParameterUnitVector.push_back(new QLabel(mpGUIModelObject->getParameterUnit(*pit)));
 
         mParameterValueVector.push_back(new QLineEdit());
         //mValueVector.back()->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mValueVector.back()));
 
         QString valueTxt;
-        valueTxt.setNum(mpGUIObject->getParameterValue(*pit), 'g', 6 );
+        valueTxt.setNum(mpGUIModelObject->getParameterValue(*pit), 'g', 6 );
         mParameterValueVector.back()->setText(valueTxt);
 
         mParameterVarVector.back()->setBuddy(mParameterValueVector.back());
@@ -95,7 +95,7 @@ void ParameterDialog::createEditStuff()
     QLabel *pStartValueLabel = new QLabel("Start Values");
     pStartValueLabel->setFont(fontH1);
 
-    QList<GUIPort*> ports = mpGUIObject->getPortListPtrs();
+    QList<GUIPort*> ports = mpGUIModelObject->getPortListPtrs();
     QList<GUIPort*>::iterator portIt;
     double j=0;
     QVector<QVector<QString> > startDataNamesStr, startDataUnitsStr;
@@ -174,7 +174,7 @@ void ParameterDialog::createEditStuff()
     {
         pCQSLayout = new QHBoxLayout;
         //This is very hopsan specific (or actually TLM specific)
-        mpCQSEdit = new QLineEdit(mpGUIObject->getTypeCQS());
+        mpCQSEdit = new QLineEdit(mpGUIModelObject->getTypeCQS());
         QLabel *pCQSLabel = new QLabel("CQS: ");
 
         pCQSLayout->addWidget(pCQSLabel);
@@ -234,7 +234,7 @@ void ParameterDialog::createEditStuff()
 //! @brief Reads the values from the dialog and writes them into the core component
 void ParameterDialog::okPressed()
 {
-    mpGUIObject->mpParentSystem->renameGUIObject(mpGUIObject->getName(), mpNameEdit->text());
+    mpGUIModelObject->mpParentSystem->renameGUIObject(mpGUIModelObject->getName(), mpNameEdit->text());
     //qDebug() << mpNameEdit->text();
 
     setParameters();
@@ -243,7 +243,7 @@ void ParameterDialog::okPressed()
     if (isGUISubsystem)
     {
         qDebug() << "Setting CQS type to: " << this->mpCQSEdit->displayText();
-        mpGUIObject->setTypeCQS(this->mpCQSEdit->displayText());
+        mpGUIModelObject->setTypeCQS(this->mpCQSEdit->displayText());
     }
 }
 
@@ -264,12 +264,12 @@ void ParameterDialog::setParameters()
         if (!ok)
         {
 
-            MessageWidget *messageWidget = this->mpGUIObject->mpParentSystem->mpMainWindow->mpMessageWidget;//qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent()->parent())->mpMessageWidget;
+            MessageWidget *messageWidget = this->mpGUIModelObject->mpParentSystem->mpMainWindow->mpMessageWidget;//qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent()->parent())->mpMessageWidget;
             messageWidget->printGUIMessage(QString("ParameterDialog::setParameters(): You must give a correct value for '").append(mParameterVarVector[i]->text()).append(QString("', putz. Try again!")));
             qDebug() << "Inte okej!";
             return;
         }
-        mpGUIObject->setParameterValue(mParameterVarVector[i]->text(), newValue);
+        mpGUIModelObject->setParameterValue(mParameterVarVector[i]->text(), newValue);
     }
 
 
@@ -280,7 +280,7 @@ void ParameterDialog::setParameters()
 
 void ParameterDialog::setStartValues()
 {
-    QList<GUIPort*> ports = mpGUIObject->getPortListPtrs();
+    QList<GUIPort*> ports = mpGUIModelObject->getPortListPtrs();
     QList<GUIPort*>::iterator portIt;
     QVector<QString> startDataNamesStr, startDataUnitsStr;
     QVector<double> startDataValuesStr;

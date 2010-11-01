@@ -13,6 +13,7 @@ class GraphicsView;
 class LibraryWidget;
 class CoreSystemAccess;
 class GUIObject;
+class GUIModelObject;
 class MessageWidget;
 class GUISystem;
 
@@ -98,9 +99,9 @@ public:
 };
 
 
-GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings=UNDO);
-GUIObject* loadGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings=UNDO);
-GUIObject* loadGUIObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings);
+GUIModelObject* loadGUIModelObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings=UNDO);
+GUIModelObject* loadGUIModelObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings=UNDO);
+GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings);
 
 GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings);
 GUIObject* loadSubsystemGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings);
@@ -112,8 +113,8 @@ void loadConnector(QDomElement &rDomElement, GUISystem* pSystem, undoStatus undo
 
 void loadParameterValues(const ParameterLoadData &rData, GUISystem* pSystem, undoStatus undoSettings=UNDO);
 void loadParameterValues(QTextStream &rStream, GUISystem* pSystem, undoStatus undoSettings=UNDO);
-void loadParameterValue(const ParameterLoadData &rData, GUIObject* pObject, undoStatus undoSettings=UNDO);
-void loadParameterValue(QDomElement &rDomElement, GUIObject* pObject, undoStatus undoSettings=UNDO);
+void loadParameterValue(const ParameterLoadData &rData, GUIModelObject* pObject, undoStatus undoSettings=UNDO);
+void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus undoSettings=UNDO);
 
 HeaderLoadData readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidget);
 void writeHeader(QTextStream &rStream);
@@ -141,6 +142,7 @@ void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &
 #define HMF_SYSTEMPORTTAG "systemport"
 #define HMF_CONNECTORTAG "connect"
 #define HMF_PARAMETERTAG "parameter"
+#define HMF_GROUPTAG "group"
 
 #define HMF_NAMETAG "name"
 #define HMF_TYPETAG "typename"

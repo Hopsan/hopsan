@@ -103,8 +103,8 @@ void PlotParameterTree::updateList()
     QTreeWidgetItem *tempComponentItem;     //Tree item for components
     PlotParameterItem *tempPlotParameterItem;       //Tree item for parameters - reimplemented so they can store information about the parameter
 
-    QHash<QString, GUIObject *>::iterator it;
-    for(it = mpCurrentSystem->mGUIObjectMap.begin(); it!=mpCurrentSystem->mGUIObjectMap.end(); ++it)
+    GUISystem::GUIModelObjectMapT::iterator it;
+    for(it = mpCurrentSystem->mGUIModelObjectMap.begin(); it!=mpCurrentSystem->mGUIModelObjectMap.end(); ++it)
     {
         tempComponentItem = new QTreeWidgetItem();
         tempComponentItem->setText(0, it.value()->getName());

@@ -25,8 +25,8 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUISystem *parentSystem, QGraphic
 {
     mpParentSystem = parentSystem;
     mpParentSystem->scene()->addItem(this);
-    startPort->getGuiObject()->rememberConnector(this);
-    qDebug() << "startPort->getGuiObject()->getName(): " << startPort->getGuiObject()->getName();
+    startPort->getGuiModelObject()->rememberConnector(this);
+    qDebug() << "startPort->getGuiObject()->getName(): " << startPort->getGuiModelObject()->getName();
 
     setFlags(QGraphicsItem::ItemIsFocusable);
 
@@ -62,8 +62,8 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     mpEndPort = endPort;
     mpStartPort->isConnected = true;
     mpEndPort->isConnected = true;
-    connect(mpStartPort->getGuiObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
-    connect(mpEndPort->getGuiObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
+    connect(mpStartPort->getGuiModelObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
+    connect(mpEndPort->getGuiModelObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
     QPointF startPos = getStartPort()->mapToScene(getStartPort()->boundingRect().center());
     this->setPos(startPos);
 
@@ -85,7 +85,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     mEndPortConnected = true;
     emit endPortConnected();
     this->setPassive();
-    connect(mpEndPort->getGuiObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
+    connect(mpEndPort->getGuiModelObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
 
         //Create the lines, so that drawConnector has something to work with
     for(int i=0; i < mPoints.size()-1; ++i)
@@ -121,8 +121,8 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
 //    else if(mpEndPort->getPortType() == "WRITEPORT" && mpEndPort->getNodeType() == "NodeSignal")
 //        mpLines[0]->addStartArrow();
 
-    mpStartPort->getGuiObject()->rememberConnector(this);
-    mpEndPort->getGuiObject()->rememberConnector(this);
+    mpStartPort->getGuiModelObject()->rememberConnector(this);
+    mpEndPort->getGuiModelObject()->rememberConnector(this);
 
     connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange()), this, SLOT(adjustToZoom()));
     connect(mpParentSystem, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
@@ -135,8 +135,8 @@ GUIConnector::~GUIConnector()
 {
     delete mpGUIConnectorAppearance;
 
-    mpStartPort->getGuiObject()->forgetConnector(this);
-    mpEndPort->getGuiObject()->forgetConnector(this);
+    mpStartPort->getGuiModelObject()->forgetConnector(this);
+    mpEndPort->getGuiModelObject()->forgetConnector(this);
 }
 
 
@@ -242,8 +242,8 @@ void GUIConnector::setStartPort(GUIPort *port)
 {
     mpStartPort = port;
     mpStartPort->isConnected = true;
-    connect(mpStartPort->getGuiObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
-    connect(mpStartPort->getGuiObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
+    connect(mpStartPort->getGuiModelObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
+    connect(mpStartPort->getGuiModelObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
 }
 
 
@@ -278,8 +278,8 @@ void GUIConnector::setEndPort(GUIPort *port)
     }
 
     this->updateEndPoint(port->mapToScene(port->boundingRect().center()));
-    connect(mpEndPort->getGuiObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
-    connect(mpEndPort->getGuiObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
+    connect(mpEndPort->getGuiModelObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
+    connect(mpEndPort->getGuiModelObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
 
         //Make all lines selectable and all lines except first and last movable
     if(mpLines.size() > 1)
@@ -301,25 +301,25 @@ void GUIConnector::setEndPort(GUIPort *port)
         if( ((getNumberOfLines() == 1) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE)) ||
             ((getNumberOfLines() < 3) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE)) )
         {
-            if(mpStartPort->mpParentGuiObject->getGUIConnectorPtrs().size() == 1)
+            if(mpStartPort->mpParentGuiModelObject->getGUIConnectorPtrs().size() == 1)
             {
-                mpStartPort->mpParentGuiObject->moveBy(mPoints.last().x() - mPoints.first().x(), 0);
+                mpStartPort->mpParentGuiModelObject->moveBy(mPoints.last().x() - mPoints.first().x(), 0);
             }
-            else if (mpEndPort->mpParentGuiObject->getGUIConnectorPtrs().size() == 1)
+            else if (mpEndPort->mpParentGuiModelObject->getGUIConnectorPtrs().size() == 1)
             {
-                mpEndPort->mpParentGuiObject->moveBy(mPoints.first().x() - mPoints.last().x(), 0);
+                mpEndPort->mpParentGuiModelObject->moveBy(mPoints.first().x() - mPoints.last().x(), 0);
             }
         }
         else if( (getNumberOfLines() == 1) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE) ||
                  (getNumberOfLines() < 4) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE) )
         {
-            if(mpStartPort->mpParentGuiObject->getGUIConnectorPtrs().size() == 1)
+            if(mpStartPort->mpParentGuiModelObject->getGUIConnectorPtrs().size() == 1)
             {
-                mpStartPort->mpParentGuiObject->moveBy(0, mPoints.last().y() - mPoints.first().y());
+                mpStartPort->mpParentGuiModelObject->moveBy(0, mPoints.last().y() - mPoints.first().y());
             }
-            else if (mpEndPort->mpParentGuiObject->getGUIConnectorPtrs().size() == 1)
+            else if (mpEndPort->mpParentGuiModelObject->getGUIConnectorPtrs().size() == 1)
             {
-                mpEndPort->mpParentGuiObject->moveBy(0, mPoints.first().y() - mPoints.last().y());
+                mpEndPort->mpParentGuiModelObject->moveBy(0, mPoints.first().y() - mPoints.last().y());
             }
         }
     }
@@ -557,7 +557,7 @@ void GUIConnector::drawConnector()
     }
     else        //End port is connected, so the connector is modified or has moved
     {
-        if(mpStartPort->getGuiObject()->isSelected() && mpEndPort->getGuiObject()->isSelected() && this->isActive())
+        if(mpStartPort->getGuiModelObject()->isSelected() && mpEndPort->getGuiModelObject()->isSelected() && this->isActive())
         {
                 //Both components and connector are selected, so move whole connector along with components
             moveAllPoints(getStartPort()->mapToScene(getStartPort()->boundingRect().center()).x()-mPoints[0].x(),
@@ -774,7 +774,7 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
 //! @see doSelect(bool lineSelected, int lineNumber)
 void GUIConnector::selectIfBothComponentsSelected()
 {
-    if(mEndPortConnected && mpStartPort->getGuiObject()->isSelected() && mpEndPort->getGuiObject()->isSelected())
+    if(mEndPortConnected && mpStartPort->getGuiModelObject()->isSelected() && mpEndPort->getGuiModelObject()->isSelected())
     {
         mpLines[0]->setSelected(true);
         doSelect(true,0);

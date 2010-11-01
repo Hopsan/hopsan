@@ -23,21 +23,21 @@ using namespace std;
 //! @param rot how the port should be rotated.
 //! @param QString(ICONPATH) a string with the path to the svg-figure representing the port.
 //! @param parent the port's parent, the component it is a part of.
-GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIObject *pParentGUIObject, CoreSystemAccess *pGUIRootSystem)
-    : QGraphicsSvgItem(pPortAppearance->mIconPath, pParentGUIObject)
+GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParentGUIModelObject, CoreSystemAccess *pGUIRootSystem)
+    : QGraphicsSvgItem(pPortAppearance->mIconPath, pParentGUIModelObject)
 {
-    qDebug() << "parentType: " << pParentGUIObject->type() << " GUISYSTEM=" << GUISYSTEM;
-    qDebug() << "======================= parentName: " << pParentGUIObject->getName();
+    qDebug() << "parentType: " << pParentGUIModelObject->type() << " GUISYSTEM=" << GUISYSTEM;
+    qDebug() << "======================= parentName: " << pParentGUIModelObject->getName();
 
-    if ( pParentGUIObject->mpParentSystem != 0 )
+    if ( pParentGUIModelObject->mpParentSystem != 0 )
     {
-        mpParentSystem = pParentGUIObject->mpParentSystem;
+        mpParentSystem = pParentGUIModelObject->mpParentSystem;
     }
-    else if ( pParentGUIObject->type() == GUISYSTEM )
+    else if ( pParentGUIModelObject->type() == GUISYSTEM )
     {
-        //Assume that parentGuiObject (which is a asystem) is the root system
+        //Assume that parentGuiObject (which is a system) is the root system
         //! @todo not sure that this is really 100% correct
-        mpParentSystem = qobject_cast<GUISystem*>(pParentGUIObject);
+        mpParentSystem = qobject_cast<GUISystem*>(pParentGUIModelObject);
     }
     else
     {
@@ -45,7 +45,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
         assert(false);
     }
 
-    mpParentGuiObject = pParentGUIObject;
+    mpParentGuiModelObject = pParentGUIModelObject;
     mpPortAppearance = pPortAppearance;
     mpGUIRootSystem = pGUIRootSystem; //Use this to indicate system port
 
@@ -126,10 +126,10 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
     this->setCursor(Qt::CrossCursor);
     QBrush brush(Qt::blue);
-    qDebug() << "hovering over port beloning to: " << mpParentGuiObject->getName();
+    qDebug() << "hovering over port beloning to: " << mpParentGuiModelObject->getName();
     magnify(true);
 
-    mpPortLabel->setRotation(-mpParentGuiObject->rotation()-this->rotation());
+    mpPortLabel->setRotation(-mpParentGuiModelObject->rotation()-this->rotation());
     //qDebug() << "label: " << mpPortLabel->rotation() << " this: " << this->rotation();
     this->setZValue(1.0);
     mpPortLabel->show();
@@ -141,8 +141,8 @@ void GUIPort::updatePosition(const qreal x, const qreal y)
 {
     qDebug() << "Update Port Position in: " << this->getName();
     qDebug() << "x,y: " << x << " " << y;
-    qDebug() << "Parent bounding rect: " << mpParentGuiObject->boundingRect();
-    qDebug() << "Parentrotation: " << mpParentGuiObject->rotation();
+    qDebug() << "Parent bounding rect: " << mpParentGuiModelObject->boundingRect();
+    qDebug() << "Parentrotation: " << mpParentGuiModelObject->rotation();
     qDebug() << "This bounding rect: " << this->boundingRect();
     qDebug() << "This bounding rect center: " << this->boundingRect().center();
     qDebug() << "This transform origin: " << this->transformOriginPoint();
@@ -177,13 +177,13 @@ void GUIPort::updatePosition(const qreal x, const qreal y)
 void GUIPort::updatePositionByFraction(qreal x, qreal y)
 {
     qDebug() << "Fraction position: " << x << " " << y;
-    qDebug() << "parent bounding rect: " << mpParentGuiObject->boundingRect();
+    qDebug() << "parent bounding rect: " << mpParentGuiModelObject->boundingRect();
     //qDebug() << "parent icon scene bounding rect" << mpParentGuiObject->mpIcon->sceneBoundingRect();
 
     //! @todo maybe use only boundingrect instead (if they are same)
     //! @todo for now root systems may not have an icon, if icon is empty ports will end up in zero, which is OK, maybe we should always force a default icon
     //this->updatePosition(x*mpParentGuiObject->mpIcon->sceneBoundingRect().width(), y*mpParentGuiObject->mpIcon->sceneBoundingRect().height());
-    this->updatePosition(x*mpParentGuiObject->boundingRect().width(), y*mpParentGuiObject->boundingRect().height());
+    this->updatePosition(x*mpParentGuiModelObject->boundingRect().width(), y*mpParentGuiModelObject->boundingRect().height());
 }
 
 
@@ -243,7 +243,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
         QVector<QString> parameterNames;
         QVector<QString> parameterUnits;
-        mpParentGuiObject->mpParentSystem->mpCoreSystemAccess->getPlotDataNamesAndUnits(mpParentGuiObject->getName(), this->getName(), parameterNames, parameterUnits);
+        mpParentGuiModelObject->mpParentSystem->mpCoreSystemAccess->getPlotDataNamesAndUnits(mpParentGuiModelObject->getName(), this->getName(), parameterNames, parameterUnits);
 
         //QAction *plotPressureAction = menu.addAction("Plot pressure");
         //QAction *plotFlowAction = menu.addAction("Plot flow");
@@ -277,9 +277,9 @@ GUISystem *GUIPort::getParentSystem()
 
 
 //! Returns a pointer to the GUIComponent the port belongs to.
-GUIObject *GUIPort::getGuiObject()
+GUIModelObject *GUIPort::getGuiModelObject()
 {
-    return mpParentGuiObject;
+    return mpParentGuiModelObject;
 }
 
 
@@ -291,14 +291,14 @@ void GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
     if(dataUnit.isEmpty())
         dataUnit = this->mpParentSystem->mpCoreSystemAccess->getPlotDataUnit(this->getGUIComponentName(),this->getName(),dataName);
 
-    MainWindow *pMainWindow = mpParentGuiObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+    MainWindow *pMainWindow = mpParentGuiModelObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 
     if(pMainWindow->mpPlotWidget == 0)
     {
         pMainWindow->mpPlotWidget = new PlotWidget(pMainWindow);
     }
 
-    pMainWindow->mpPlotWidget->mpPlotParameterTree->createPlotWindow(mpParentGuiObject->getName(), this->getName(), dataName, dataUnit);
+    pMainWindow->mpPlotWidget->mpPlotParameterTree->createPlotWindow(mpParentGuiModelObject->getName(), this->getName(), dataName, dataUnit);
 }
 
 
@@ -376,7 +376,7 @@ QString GUIPort::getGUIComponentName()
     if (mpGUIRootSystem == 0)
     {
         //qDebug() << "return guiobject name: " << mpParentGuiObject->getName();
-        return mpParentGuiObject->getName();
+        return mpParentGuiModelObject->getName();
     }
     else
     {

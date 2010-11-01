@@ -1,9 +1,10 @@
 #include "GUISystemPort.h"
 #include "GUISystem.h"
 #include "GUIPort.h"
+#include "loadObjects.h"
 
 GUISystemPort::GUISystemPort(AppearanceData* pAppearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
-        : GUIObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
+        : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
 {
     //Sets the ports
     createPorts();
@@ -35,6 +36,21 @@ void GUISystemPort::createPorts()
         mPortListPtrs.append(mpGuiPort);
     }
 }
+
+//void GUISystemPort::saveToDomElement(QDomElement &rDomElement)
+//{
+//    //! @todo The tag name should be set in constructor so that we cn reuse the saveToDomElement in all subclasses instead of having to rewrite it every where, the save core stuff and save gui stuff can be specific
+//    QDomElement xmlObject = appendDomElement(rDomElement, HMF_SYSTEMPORTTAG);
+
+//    saveCoreDataToDomElement(xmlObject);
+//    saveGuiDataToDomElement(xmlObject);
+//}
+
+//void GUISystemPort::saveCoreDataToDomElement(QDomElement &rDomElement)
+//{
+//    appendDomTextNode(rDomElement, HMF_TYPETAG, getTypeName());
+//    appendDomTextNode(rDomElement, HMF_NAMETAG, getName());
+//}
 
 
 //! Returns a string with the GUIObject type.

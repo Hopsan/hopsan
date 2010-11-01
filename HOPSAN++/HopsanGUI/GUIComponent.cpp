@@ -26,7 +26,7 @@
 #include "AppearanceData.h"
 
 GUIComponent::GUIComponent(AppearanceData* pAppearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
-    : GUIObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
+    : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
 {
     //Create the object in core, and get its default core name
     mAppearanceData.setName(mpParentSystem->mpCoreSystemAccess->createComponent(mAppearanceData.getTypeName(), mAppearanceData.getName()));
@@ -37,6 +37,9 @@ GUIComponent::GUIComponent(AppearanceData* pAppearanceData, QPoint position, qre
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
     std::cout << "GUIcomponent: " << this->mAppearanceData.getTypeName().toStdString() << std::endl;
+
+    //Set the hmf save tag name
+    mHmfTagName = HMF_COMPONENTTAG;
 }
 
 GUIComponent::~GUIComponent()
@@ -214,7 +217,7 @@ void GUIComponent::saveToTextStream(QTextStream &rStream, QString prepend)
 //    QPointF pos = mapToScene(boundingRect().center());
 //    rStream << "COMPONENT " << getTypeName() << " " << addQuotes(it.value()->getName()) << " "
 //            << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << "\n";
-    GUIObject::saveToTextStream(rStream, prepend);
+    GUIModelObject::saveToTextStream(rStream, prepend);
 
     QVector<QString> parameterNames = mpParentSystem->mpCoreSystemAccess->getParameterNames(this->getName());
     QVector<QString>::iterator pit;
@@ -229,17 +232,9 @@ void GUIComponent::saveToTextStream(QTextStream &rStream, QString prepend)
 //! @todo maybe have a inherited function in some other base class that are specific for guiobjects with core equivalent
 void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
 {
-    appendDomTextNode(rDomElement, HMF_TYPETAG, getTypeName());
-    appendDomTextNode(rDomElement, HMF_NAMETAG, getName());
-}
-
-void GUIComponent::saveToDomElement(QDomElement &rDomElement)
-{
-    //! @todo Maybe have a giucoreobject class with a common save function
-    QDomElement xmlObject = appendDomElement(rDomElement,HMF_COMPONENTTAG);
-
-    //Save Core related stuff
-    saveCoreDataToDomElement(xmlObject);
+//    appendDomTextNode(rDomElement, HMF_TYPETAG, getTypeName());
+//    appendDomTextNode(rDomElement, HMF_NAMETAG, getName());
+    GUIModelObject::saveCoreDataToDomElement(rDomElement);
 
     //Save parameters (also core related)
     //! @todo need more efficient fetching of both par names and values in one call to avoid re-searching every time
@@ -247,11 +242,12 @@ void GUIComponent::saveToDomElement(QDomElement &rDomElement)
     QVector<QString>::iterator pit;
     for(pit = parameterNames.begin(); pit != parameterNames.end(); ++pit)
     {
-        QDomElement xmlParam = appendDomElement(xmlObject, HMF_PARAMETERTAG);
+        QDomElement xmlParam = appendDomElement(rDomElement, HMF_PARAMETERTAG);
         appendDomTextNode(xmlParam, HMF_NAMETAG, *pit);
         appendDomValueNode(xmlParam, HMF_VALUETAG, mpParentSystem->mpCoreSystemAccess->getParameterValue(this->getName(), (*pit)));
     }
 
+    //Save start values
     QVector<QString> startValueNames;
     QVector<double> startValueValues;
     QVector<QString> dummy;
@@ -261,7 +257,7 @@ void GUIComponent::saveToDomElement(QDomElement &rDomElement)
         mpParentSystem->mpCoreSystemAccess->getStartValueDataNamesValuesAndUnits(this->getName(), (*portIt)->getName(), startValueNames, startValueValues, dummy);
         if((!startValueNames.empty()))
         {
-            QDomElement xmlPort = appendDomElement(xmlObject, HMF_PORTTAG);
+            QDomElement xmlPort = appendDomElement(rDomElement, HMF_PORTTAG);
             appendDomTextNode(xmlPort, HMF_NAMETAG, (*portIt)->getName());
             for(size_t i = 0; i < startValueNames.size(); ++i)
             {
@@ -271,7 +267,16 @@ void GUIComponent::saveToDomElement(QDomElement &rDomElement)
             }
         }
     }
-
-    //Save the Gui specific data
-    saveGuiDataToDomElement(xmlObject);
 }
+
+//void GUIComponent::saveToDomElement(QDomElement &rDomElement)
+//{
+//    //! @todo Maybe have a giucoreobject class with a common save function
+//    QDomElement xmlObject = appendDomElement(rDomElement,HMF_COMPONENTTAG);
+
+//    //Save Core related stuff
+//    saveCoreDataToDomElement(xmlObject);
+
+//    //Save the Gui specific data
+//    saveGuiDataToDomElement(xmlObject);
+//}

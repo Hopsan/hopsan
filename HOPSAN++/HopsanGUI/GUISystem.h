@@ -37,14 +37,14 @@ public:
 
     //QString mModelFileName;
 
-    typedef QHash<QString, GUIObject*> GUIObjectMapT;
-    GUIObjectMapT mGUIObjectMap;
+    typedef QHash<QString, GUIModelObject*> GUIModelObjectMapT;
+    GUIModelObjectMapT mGUIModelObjectMap;
     QList<GUIObject *> mSelectedGUIObjectsList;
-    GUIObject* addGUIObject(AppearanceData* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
+    GUIModelObject* addGUIObject(AppearanceData* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
     void deleteGUIObject(QString componentName, undoStatus undoSettings=UNDO);
     void renameGUIObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
     bool haveGUIObject(QString name);
-    GUIObject *getGUIObject(QString name);
+    GUIModelObject *getGUIModelObject(QString name);
 
     QList<GUIConnector *> mSelectedSubConnectorsList;
     QList<GUIConnector *> mSubConnectorList;
@@ -60,7 +60,7 @@ public:
     bool mJustStoppedCreatingConnector;
     bool isObjectSelected();
     bool isConnectorSelected();
-    GUIObject *mpTempGUIObject;
+    GUIModelObject *mpTempGUIObject;
     GUIConnector *mpTempConnector;
     graphicsType mGfxType;
 

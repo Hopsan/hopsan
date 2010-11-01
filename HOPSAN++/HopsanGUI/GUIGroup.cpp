@@ -53,6 +53,8 @@ QString GUIGroup::getTypeName()
 GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData* pAppearanceData, GUISystem *system, QGraphicsItem *parent)
     :   GUIContainerObject(QPoint(0.0,0.0), 0, pAppearanceData, DESELECTED, USERGRAPHICS, system, parent)
 {
+    //Set the hmf save tag name
+    mHmfTagName = HMF_GROUPTAG;
 
     this->setDisplayName(QString("Grupp_test"));
 
@@ -75,8 +77,8 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData* pAppearanceDa
                 if((GUIConnectorPtrs[i]->getStartComponentName() == pComponent->getName()) ||
                    (GUIConnectorPtrs[i]->getEndComponentName() == pComponent->getName()))
                 {
-                    if((compList.contains(GUIConnectorPtrs[i]->getStartPort()->getGuiObject())) &&
-                       (compList.contains(GUIConnectorPtrs[i]->getEndPort()->getGuiObject())))
+                    if((compList.contains(GUIConnectorPtrs[i]->getStartPort()->getGuiModelObject())) &&
+                       (compList.contains(GUIConnectorPtrs[i]->getEndPort()->getGuiModelObject())))
                     {
                         //Add the connections which have both ends among selected components for grouping in a list for connections
                         mGUIConnList.append(GUIConnectorPtrs[i]);
@@ -153,8 +155,8 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData* pAppearanceDa
 
         GUIComponent *startComp;
         GUIComponent *endComp;
-        startComp = qgraphicsitem_cast<GUIComponent*>(pTransitConnector->getStartPort()->getGuiObject());
-        endComp   = qgraphicsitem_cast<GUIComponent*>(pTransitConnector->getEndPort()->getGuiObject());
+        startComp = qgraphicsitem_cast<GUIComponent*>(pTransitConnector->getStartPort()->getGuiModelObject());
+        endComp   = qgraphicsitem_cast<GUIComponent*>(pTransitConnector->getEndPort()->getGuiModelObject());
 
         QPoint groupPortPoint;
         GUIPort *pPortBoundaryInside; //Inside the group
@@ -255,8 +257,8 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData* pAppearanceDa
 GUIGroup::~GUIGroup()
 {
     qDebug() << "GUIGroup destructor";
-    QHash<QString, GUIObject *>::iterator itm;
-    for(itm = mpParentSystem->mGUIObjectMap.begin(); itm != mpParentSystem->mGUIObjectMap.end(); ++itm)
+    GUISystem::GUIModelObjectMapT::iterator itm;
+    for(itm = mpParentSystem->mGUIModelObjectMap.begin(); itm != mpParentSystem->mGUIModelObjectMap.end(); ++itm)
     {
         qDebug() << "GUIObjectMap: " << itm.key();
     }
@@ -332,7 +334,7 @@ void GUIGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 
 GUIGroupPort::GUIGroupPort(AppearanceData* pAppearanceData, QPoint position, GUISystem *system, QGraphicsItem *parent)
-    : GUIObject(position, 0, pAppearanceData, DESELECTED, USERGRAPHICS, system, parent)
+    : GUIModelObject(position, 0, pAppearanceData, DESELECTED, USERGRAPHICS, system, parent)
 
 {
     //Sets the ports

@@ -17,7 +17,7 @@ class ProjectTabWidget;
 class GraphicsScene;
 class GraphicsView;
 class GUIConnector;
-class GUIObjectDisplayName;
+class GUIModelObjectDisplayName;
 class Component;
 class GUIObjectSelectionBox;
 class GUIPort;
@@ -69,7 +69,7 @@ private:
 };
 
 
-class GUIGroupPort : public GUIObject
+class GUIGroupPort : public GUIModelObject
 {
     Q_OBJECT
 public:

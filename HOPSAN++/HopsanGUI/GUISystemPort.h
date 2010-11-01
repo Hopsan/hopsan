@@ -3,7 +3,7 @@
 
 #include "GUIObject.h"
 
-class GUISystemPort : public GUIObject
+class GUISystemPort : public GUIModelObject
 {
     Q_OBJECT
 public:
@@ -18,6 +18,8 @@ public:
 
 protected:
     void createPorts();
+    //void saveToDomElement(QDomElement &rDomElement);
+    //void saveCoreDataToDomElement(QDomElement &rDomElement);
 
 private:
     GUIPort *mpGuiPort;

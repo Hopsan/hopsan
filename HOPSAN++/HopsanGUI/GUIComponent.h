@@ -16,7 +16,7 @@ class ProjectTabWidget;
 class GraphicsScene;
 class GraphicsView;
 class GUIConnector;
-class GUIObjectDisplayName;
+class GUIModelObjectDisplayName;
 class Component;
 class GUIObjectSelectionBox;
 class GUIPort;
@@ -25,7 +25,7 @@ class GUISystem;
 
 #include "GUIObject.h"
 
-class GUIComponent : public GUIObject
+class GUIComponent : public GUIModelObject
 {
     Q_OBJECT
 public:
@@ -39,7 +39,7 @@ public:
     void setParameterValue(QString name, double value);
 
     void saveToTextStream(QTextStream &rStream, QString prepend=QString());
-    void saveToDomElement(QDomElement &rDomElement);
+    //void saveToDomElement(QDomElement &rDomElement);
 
     void setName(QString name, renameRestrictions renameSettings=UNRESTRICTED);
     QString getTypeName();

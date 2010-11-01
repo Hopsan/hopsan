@@ -53,6 +53,9 @@ GUISystem::~GUISystem()
 //! @todo ugly temporary hack
 void GUISystem::commonConstructorCode()
 {
+    //Set the hmf save tag name
+    mHmfTagName = HMF_COMPONENTTAG;
+
     mpScene = new GraphicsScene();
     mpScene->addItem(this);     //! Detta kan gå åt helsike
                                 //! @todo Should systems belong to their own scene?! This is why display names appear in the system's scene...
@@ -279,7 +282,7 @@ void GUISystem::loadFromHMF(QString modelFilePath)
 
         if ( (inputWord == "COMPONENT") || (inputWord == "SYSTEMPORT") )
         {
-            loadGUIObject(textStreamFile, mpMainWindow->mpLibrary, this, NOUNDO);
+            loadGUIModelObject(textStreamFile, mpMainWindow->mpLibrary, this, NOUNDO);
         }
 
         if ( inputWord == "PARAMETER" )
@@ -549,8 +552,7 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
     }
 
     qDebug() << "Saving to dom node in: " << this->mAppearanceData.getName();
-    //! @todo dont hardcode "system" or maybe thats ok
-    QDomElement xmlSubsystem = appendDomElement(rDomElement, HMF_SYSTEMTAG);
+    QDomElement xmlSubsystem = appendDomElement(rDomElement, mHmfTagName);
 
     //Save Core related stuff
     this->saveCoreDataToDomElement(xmlSubsystem);
@@ -573,8 +575,8 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
     //Save all of the sub objects
     if (mLoadType=="EMBEDED" || mLoadType=="ROOT")
     {
-        QHash<QString, GUIObject*>::iterator it;
-        for(it = mGUIObjectMap.begin(); it!=mGUIObjectMap.end(); ++it)
+        GUIModelObjectMapT::iterator it;
+        for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
         {
             it.value()->saveToDomElement(xmlSubsystem);
         }
@@ -603,7 +605,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         QDomElement xmlSubObject = rDomElement.firstChildElement(HMF_COMPONENTTAG);
         while (!xmlSubObject.isNull())
         {
-            GUIObject* pObj = loadGUIObject(xmlSubObject, mpMainWindow->mpLibrary, this, NOUNDO);
+            GUIModelObject* pObj = loadGUIModelObject(xmlSubObject, mpMainWindow->mpLibrary, this, NOUNDO);
 
             //Load parameter values
             QDomElement xmlParameter = xmlSubObject.firstChildElement(HMF_PARAMETERTAG);
@@ -628,7 +630,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = rDomElement.firstChildElement(HMF_SYSTEMPORTTAG);
         while (!xmlSubObject.isNull())
         {
-            loadGUIObject(xmlSubObject, mpMainWindow->mpLibrary, this, NOUNDO);
+            loadGUIModelObject(xmlSubObject, mpMainWindow->mpLibrary, this, NOUNDO);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMPORTTAG);
         }
 
@@ -669,7 +671,8 @@ void GUISystem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 //! @param position is the position where the component will be created.
 //! @param name will be the name of the component.
 //! @returns a pointer to the created and added object
-GUIObject* GUISystem::addGUIObject(AppearanceData* pAppearanceData, QPoint position, qreal rotation, selectionStatus startSelected, undoStatus undoSettings)
+//! @todo only modelobjects for now
+GUIModelObject* GUISystem::addGUIObject(AppearanceData* pAppearanceData, QPoint position, qreal rotation, selectionStatus startSelected, undoStatus undoSettings)
 {
         //Deselect all other components and connectors
     emit deselectAllGUIObjects();
@@ -694,14 +697,14 @@ GUIObject* GUISystem::addGUIObject(AppearanceData* pAppearanceData, QPoint posit
 
     emit checkMessages();
 
-    if ( mGUIObjectMap.contains(mpTempGUIObject->getName()) )
+    if ( mGUIModelObjectMap.contains(mpTempGUIObject->getName()) )
     {
         mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Trying to add component with name: " + mpTempGUIObject->getName() + " that already exist in GUIObjectMap, (Not adding)");
         //! @todo Is this check really necessary? Two objects cannot have the same name anyway...
     }
     else
     {
-        mGUIObjectMap.insert(mpTempGUIObject->getName(), mpTempGUIObject);
+        mGUIModelObjectMap.insert(mpTempGUIObject->getName(), mpTempGUIObject);
     }
 
     if(undoSettings == UNDO)
@@ -720,8 +723,8 @@ GUIObject* GUISystem::addGUIObject(AppearanceData* pAppearanceData, QPoint posit
 void GUISystem::deleteGUIObject(QString objectName, undoStatus undoSettings)
 {
     qDebug() << "deleteGUIObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->mpCoreSystemAccess->getRootSystemName() ;
-    GUIObjectMapT::iterator it = mGUIObjectMap.find(objectName);
-    GUIObject* obj_ptr = it.value();
+    GUIModelObjectMapT::iterator it = mGUIModelObjectMap.find(objectName);
+    GUIModelObject* obj_ptr = it.value();
 
     QList<GUIConnector *> pConnectorList = obj_ptr->getGUIConnectorPtrs();
     for(size_t i=0; i<pConnectorList.size(); ++i)
@@ -736,10 +739,10 @@ void GUISystem::deleteGUIObject(QString objectName, undoStatus undoSettings)
         emit componentChanged();
     }
 
-    if (it != mGUIObjectMap.end())
+    if (it != mGUIModelObjectMap.end())
     {
         //qDebug() << "Höns från Korea";
-        mGUIObjectMap.erase(it);
+        mGUIModelObjectMap.erase(it);
         mSelectedGUIObjectsList.removeOne(obj_ptr);
         mpScene->removeItem(obj_ptr);
         delete(obj_ptr);
@@ -762,13 +765,13 @@ void GUISystem::renameGUIObject(QString oldName, QString newName, undoStatus und
     {
         QString modNewName;
             //First find record with old name
-        GUIObjectMapT::iterator it = mGUIObjectMap.find(oldName);
-        if (it != mGUIObjectMap.end())
+        GUIModelObjectMapT::iterator it = mGUIModelObjectMap.find(oldName);
+        if (it != mGUIModelObjectMap.end())
         {
                 //Make a backup copy
-            GUIObject* obj_ptr = it.value();
+            GUIModelObject* obj_ptr = it.value();
                 //Erase old record
-            mGUIObjectMap.erase(it);
+            mGUIModelObjectMap.erase(it);
                 //Set new name, first in core then in gui object
             qDebug() << "Renaming: " << oldName << " " << newName << " type: " << obj_ptr->type();
             switch (obj_ptr->type())
@@ -790,7 +793,7 @@ void GUISystem::renameGUIObject(QString oldName, QString newName, undoStatus und
             qDebug() << "modNewName: " << modNewName;
             obj_ptr->setDisplayName(modNewName);
                 //Re insert
-            mGUIObjectMap.insert(obj_ptr->getName(), obj_ptr);
+            mGUIModelObjectMap.insert(obj_ptr->getName(), obj_ptr);
         }
         else
         {
@@ -812,19 +815,19 @@ void GUISystem::renameGUIObject(QString oldName, QString newName, undoStatus und
 //! Tells whether or not a component with specified name exist in the GraphicsView
 bool GUISystem::haveGUIObject(QString name)
 {
-    return (mGUIObjectMap.count(name) > 0);
+    return (mGUIModelObjectMap.count(name) > 0);
 }
 
 
 //! Returns a pointer to the component with specified name.
-GUIObject *GUISystem::getGUIObject(QString name)
+GUIModelObject *GUISystem::getGUIModelObject(QString name)
 {
-    if(!mGUIObjectMap.contains(name))
+    if(!mGUIModelObjectMap.contains(name))
     {
         qDebug() << "Request for pointer to non-existing component" << endl;
         assert(false);
     }
-    return mGUIObjectMap.find(name).value();
+    return mGUIModelObjectMap.find(name).value();
 }
 
 
@@ -982,7 +985,7 @@ void GUISystem::createConnector(GUIPort *pPort, undoStatus undoSettings)
             mIsCreatingConnector = false;
             QPointF newPos = pPort->mapToScene(pPort->boundingRect().center());
             mpTempConnector->updateEndPoint(newPos);
-            pPort->getGuiObject()->rememberConnector(mpTempConnector);
+            pPort->getGuiModelObject()->rememberConnector(mpTempConnector);
             mpTempConnector->setEndPort(pPort);
 
                 //Hide ports; connected ports shall not be visible
@@ -1036,7 +1039,7 @@ void GUISystem::copySelected()
 
     for(int i = 0; i != mSubConnectorList.size(); ++i)
     {
-        if(mSubConnectorList[i]->getStartPort()->getGuiObject()->isSelected() && mSubConnectorList[i]->getEndPort()->getGuiObject()->isSelected() && mSubConnectorList[i]->isActive())
+        if(mSubConnectorList[i]->getStartPort()->getGuiModelObject()->isSelected() && mSubConnectorList[i]->getEndPort()->getGuiModelObject()->isSelected() && mSubConnectorList[i]->isActive())
         {
             mSubConnectorList[i]->saveToTextStream(copyStream, "CONNECT");
         }
@@ -1089,7 +1092,7 @@ void GUISystem::paste()
             data.posY -= 50;
 
             //Load (create new) object
-            GUIObject *pObj = loadGUIObject(data,mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,this, NOUNDO);
+            GUIObject *pObj = loadGUIModelObject(data,mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,this, NOUNDO);
 
             //Remember old name, in case we want to connect later
             renameMap.insert(data.name, pObj->getName());
@@ -1133,7 +1136,7 @@ void GUISystem::paste()
     QHash<QString, QString>::iterator itn;
     for(itn = renameMap.begin(); itn != renameMap.end(); ++itn)
     {
-        mGUIObjectMap.find(itn.value()).value()->setSelected(true);
+        mGUIModelObjectMap.find(itn.value()).value()->setSelected(true);
     }
 
     mpParentProjectTab->mpGraphicsView->updateViewPort();
@@ -1310,7 +1313,7 @@ void GUISystem::setIsoIconPath(QString path)
 
 void GUISystem::updateExternalPortPositions()
 {
-    GUIObjectMapT::iterator it;
+    GUIModelObjectMapT::iterator it;
     QLineF line;
     double angle, x, y, val;
 
@@ -1323,7 +1326,7 @@ void GUISystem::updateExternalPortPositions()
     //! @todo maybe declare these or something like really big number in HopsanGUI to avoid needing to include float.h
     double xMin=FLT_MAX, xMax=FLT_MIN, yMin=FLT_MAX, yMax=FLT_MIN;
 
-    for(it = mGUIObjectMap.begin(); it != mGUIObjectMap.end(); ++it)
+    for(it = mGUIModelObjectMap.begin(); it != mGUIModelObjectMap.end(); ++it)
     {
         //val is the center of each component, its coordinates topleft plus half of the size in x and y
         //! @todo maybe we need a function in guiobject that returns this i think it is calculated all over the place
@@ -1354,7 +1357,7 @@ void GUISystem::updateExternalPortPositions()
     double h = yMax-yMin;
 
     //rExtPortMap.clear(); //Make sure this is clean
-    for(it = mGUIObjectMap.begin(); it != mGUIObjectMap.end(); ++it)
+    for(it = mGUIModelObjectMap.begin(); it != mGUIModelObjectMap.end(); ++it)
     {
         if(it.value()->type() == GUISYSTEMPORT)
         {

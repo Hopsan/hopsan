@@ -281,7 +281,7 @@ void ParameterLoadData::readDomElement(QDomElement &rDomElement)
 
 
 
-GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
+GUIModelObject* loadGUIModelObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
 {
     AppearanceData *pAppearanceData = pLibrary->getAppearanceData(rData.type);
     if (pAppearanceData != 0)
@@ -289,7 +289,7 @@ GUIObject* loadGUIObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, G
         AppearanceData appearanceData = *pAppearanceData; //Make a copy
         appearanceData.setName(rData.name);
 
-        GUIObject* pObj = pSystem->addGUIObject(&appearanceData, QPoint(rData.posX, rData.posY), 0, DESELECTED, undoSettings);
+        GUIModelObject* pObj = pSystem->addGUIObject(&appearanceData, QPoint(rData.posX, rData.posY), 0, DESELECTED, undoSettings);
         pObj->setNameTextPos(rData.nameTextPos);
         if(!rData.textVisible)
         {
@@ -313,7 +313,7 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
 {
     //! @todo maybe create a loadGUIObject function that takes appearance data instead of pLibrary (when special apperance are to be used)
     //Load the system the normal way (and add it)
-    GUIObject* pSys = loadGUIObject(rData, pLibrary, pSystem, undoSettings);
+    GUIModelObject* pSys = loadGUIModelObject(rData, pLibrary, pSystem, undoSettings);
 
     //Now read the external file to change appearance and populate the system
     pSys->loadFromHMF(rData.filepath);
@@ -354,8 +354,8 @@ void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, undoStatu
 
         //! @todo all of this (above and bellow) should be inside some conventiant function like "connect"
         //! @todo Need some error handling here to avoid crash if components or ports do not exist
-        GUIPort *startPort = pSystem->getGUIObject(startGuiObjName)->getPort(rData.startPortName);
-        GUIPort *endPort = pSystem->getGUIObject(endGuiObjName)->getPort(rData.endPortName);
+        GUIPort *startPort = pSystem->getGUIModelObject(startGuiObjName)->getPort(rData.startPortName);
+        GUIPort *endPort = pSystem->getGUIModelObject(endGuiObjName)->getPort(rData.endPortName);
 
         GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, rData.pointVector, pSystem);
         pSystem->mpScene->addItem(pTempConnector);
@@ -364,8 +364,8 @@ void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, undoStatu
         startPort->hide();
         endPort->hide();
 
-        QObject::connect(startPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-        QObject::connect(endPort->getGuiObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+        QObject::connect(startPort->getGuiModelObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+        QObject::connect(endPort->getGuiModelObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
 
         pSystem->mSubConnectorList.append(pTempConnector);
     }
@@ -382,7 +382,7 @@ void loadParameterValues(const ParameterLoadData &rData, GUISystem* pSystem, und
     //qDebug() << "count" << pSystem->mGUIObjectMap.count(rData.componentName);
     qDebug() << "load Parameter value for component: " << rData.componentName  << " in " << pSystem->getName();
     //qDebug() << "Parameter: " << rData.parameterName << " " << rData.parameterValue;
-    GUIObject* ptr = pSystem->mGUIObjectMap.find(rData.componentName).value();
+    GUIModelObject* ptr = pSystem->mGUIModelObjectMap.find(rData.componentName).value();
     qDebug() << ptr->getName();
     if (ptr != 0)
         ptr->setParameterValue(rData.parameterName, rData.parameterValue);
@@ -392,13 +392,13 @@ void loadParameterValues(const ParameterLoadData &rData, GUISystem* pSystem, und
 }
 
 //! @brief xml version
-void loadParameterValue(const ParameterLoadData &rData, GUIObject* pObject, undoStatus undoSettings)
+void loadParameterValue(const ParameterLoadData &rData, GUIModelObject* pObject, undoStatus undoSettings)
 {
     pObject->setParameterValue(rData.parameterName, rData.parameterValue);
 }
 
 //! @brief xml version
-void loadParameterValue(QDomElement &rDomElement, GUIObject* pObject, undoStatus undoSettings)
+void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus undoSettings)
 {
     ParameterLoadData data;
     data.readDomElement(rDomElement);
@@ -407,19 +407,19 @@ void loadParameterValue(QDomElement &rDomElement, GUIObject* pObject, undoStatus
 
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data
-GUIObject* loadGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
+GUIModelObject* loadGUIModelObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
 {
     ObjectLoadData data;
     data.read(rStream);
-    return loadGUIObject(data,pLibrary, pSystem, undoSettings);
+    return loadGUIModelObject(data,pLibrary, pSystem, undoSettings);
 }
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data
-GUIObject* loadGUIObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
+GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
 {
     ObjectLoadData data;
     data.readDomElement(rDomElement);
-    return loadGUIObject(data,pLibrary, pSystem, undoSettings);
+    return loadGUIModelObject(data,pLibrary, pSystem, undoSettings);
 }
 
 GUIObject* loadSubsystemGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)

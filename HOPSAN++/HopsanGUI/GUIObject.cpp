@@ -23,10 +23,353 @@
 
 using namespace std;
 
-double dist(double x1,double y1, double x2, double y2)
+
+
+//! @todo should not pSystem and pParent be teh same ?
+GUIObject::GUIObject(QPoint pos, qreal rot, selectionStatus, GUISystem *pSystem, QGraphicsItem *pParent)
+    : QGraphicsWidget(pParent)
 {
-    return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
+    //Initi variables
+    mHmfTagName = HMF_OBJECTTAG;
+    mpSelectionBox = 0;
+
+    mpParentSystem = pSystem;
+    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
+
+    //Set position orientation and other appearance stuff
+    this->setCenterPos(pos);
+    this->rotateTo(rot);
+    this->setZValue(10);
+    this->setAcceptHoverEvents(true);
+    mIsFlipped = false;
 }
+
+
+//! @brief Destructor for GUI Objects
+GUIObject::~GUIObject()
+{
+    emit objectDeleted();
+}
+
+
+//! @brief Returns the type of the object (object, component, systemport, group etc)
+int GUIObject::type() const
+{
+    return Type;
+}
+
+QPointF GUIObject::getCenterPos()
+{
+    return QPointF(this->pos().x()+this->boundingRect().width()/2.0, this->pos().y()+this->boundingRect().height()/2.0);
+}
+
+void GUIObject::setCenterPos(QPointF pos)
+{
+    this->setPos(this->pos().x()-this->boundingRect().width()/2.0, this->pos().y()-this->boundingRect().height()/2.0);
+}
+
+
+//! @brief Slot that deselects the object
+void GUIObject::deselect()
+{
+    this->setSelected(false);
+}
+
+
+//! @brief Slot that selects the object
+void GUIObject::select()
+{
+    this->setSelected(true);
+}
+
+
+//! @brief Defines what happens when mouse starts hovering the object
+void GUIObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    if(!this->isSelected())
+    {
+        mpSelectionBox->setHovered();
+    }
+    this->setZValue(12);
+
+    QGraphicsWidget::hoverEnterEvent(event);
+}
+
+
+//! @bried Defines what happens when mouse stops hovering the object
+void GUIObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+    if(!this->isSelected())
+    {
+        mpSelectionBox->setPassive();
+    }
+    this->setZValue(10);
+
+    QGraphicsWidget::hoverLeaveEvent(event);
+}
+
+
+//! @brief Defines what happens if a mouse key is pressed while hovering an object
+void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+        //Store old positions for all components, in case more than one is selected
+    if(event->button() == Qt::LeftButton)
+    {
+        for(size_t i = 0; i < mpParentSystem->mSelectedGUIObjectsList.size(); ++i)
+        {
+            mpParentSystem->mSelectedGUIObjectsList[i]->mOldPos = mpParentSystem->mSelectedGUIObjectsList[i]->pos();
+        }
+    }
+
+        //Objects shall not be selectable while creating a connector
+    if(mpParentSystem->mIsCreatingConnector)
+    {
+        this->setSelected(false);
+        this->setActive(false);
+    }
+
+    QGraphicsWidget::mousePressEvent(event);
+}
+
+
+//! @brief Defines what happens if a mouse key is released while hovering an object
+void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    QList<GUIObject *>::iterator it;
+
+        //Loop through all selected objects and register changed positions in undo stack
+    bool alreadyClearedRedo = false;
+    for(it = mpParentSystem->mSelectedGUIObjectsList.begin(); it != mpParentSystem->mSelectedGUIObjectsList.end(); ++it)
+    {
+        if(((*it)->mOldPos != (*it)->pos()) && (event->button() == Qt::LeftButton))
+        {
+                //This check makes sure that only one undo post is created when moving several objects at once
+            if(!alreadyClearedRedo)
+            {
+                mpParentSystem->mUndoStack->newPost();
+                mpParentSystem->mpParentProjectTab->hasChanged();
+                alreadyClearedRedo = true;
+            }
+            mpParentSystem->mUndoStack->registerMovedObject((*it)->mOldPos, (*it)->pos(), (*it)->getName());
+        }
+    }
+
+        //Objects shall not be selectable while creating a connector
+    if(mpParentSystem->mIsCreatingConnector)
+    {
+        this->setSelected(false);
+        this->setActive(false);
+    }
+
+    QGraphicsWidget::mouseReleaseEvent(event);
+}
+
+
+//! @brief Defines what happens when object is selected, deselected or has moved
+//! @param change Tells what it is that has changed
+QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
+{
+    QGraphicsWidget::itemChange(change, value);
+
+    if (change == QGraphicsItem::ItemSelectedHasChanged)
+    {
+        if (this->isSelected())
+        {
+            mpParentSystem->mSelectedGUIObjectsList.append(this);
+            mpSelectionBox->setActive();
+            connect(mpParentSystem, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
+            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
+            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
+            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
+            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
+            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
+            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
+            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
+            disconnect(mpParentSystem, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
+            connect(mpParentSystem, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
+            emit objectSelected();
+        }
+        else
+        {
+            mpParentSystem->mSelectedGUIObjectsList.removeAll(this);
+            disconnect(mpParentSystem, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
+            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
+            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
+            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
+            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
+            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
+            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
+            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
+            connect(mpParentSystem, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
+            disconnect(mpParentSystem, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
+            mpSelectionBox->setPassive();
+        }
+    }
+//    else if (change == QGraphicsItem::ItemPositionHasChanged)
+//    {
+//        emit componentMoved();  //This signal must be emitted  before the snap code, because it updates the connectors which is used to determine whether or not to snap.
+
+//            //Snap component if it only has one connector and is dropped close enough (horizontal or vertical) to adjacent component
+//        if(mpParentSystem != 0 && mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mSnapping && !mpParentSystem->mIsCreatingConnector)
+//        {
+//                //Vertical snap
+//            if( (mpGUIConnectorPtrs.size() == 1) &&
+//                (mpGUIConnectorPtrs.first()->getNumberOfLines() < 4) &&
+//                !(mpGUIConnectorPtrs.first()->isFirstAndLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() == 2) &&
+//                !(mpGUIConnectorPtrs.first()->isFirstOrLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() > 1) &&
+//                (abs(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x()) < SNAPDISTANCE) &&
+//                (abs(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x()) > 0.0) )
+//            {
+//                if(this->mpGUIConnectorPtrs.first()->getStartPort()->mpParentGuiObject == this)
+//                {
+//                    this->moveBy(mpGUIConnectorPtrs.first()->mPoints.last().x() - mpGUIConnectorPtrs.first()->mPoints.first().x(), 0);
+//                }
+//                else
+//                {
+//                    this->moveBy(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x(), 0);
+//                }
+//            }
+////            else if( (mpGUIConnectorPtrs.size() == 2) &&
+////                     (mpGUIConnectorPtrs.first()->getNumberOfLines() < 4) &&
+////                     (mpGUIConnectorPtrs.last()->getNumberOfLines() < 4) &&
+////                     ( ( (this->rotation() == 0 || this->rotation() == 180) &&
+////                       (mPortListPtrs.first()->pos().y() == mPortListPtrs.last()->pos().y()) ) ||
+////                       ( (this->rotation() == 90 || this->rotation() == 270) &&
+////                       (mPortListPtrs.first()->pos().x() == mPortListPtrs.last()->pos().x()) ) ) &&
+////                     !(mpGUIConnectorPtrs.first()->isFirstAndLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() == 2) &&
+////                     !(mpGUIConnectorPtrs.first()->isFirstOrLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() > 1) &&
+////                     (abs(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x()) < SNAPDISTANCE) &&
+////                     (abs(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x()) > 0.0) &&
+////                     !(mpGUIConnectorPtrs.last()->isFirstAndLastDiagonal() && mpGUIConnectorPtrs.last()->getNumberOfLines() == 2) &&
+////                     !(mpGUIConnectorPtrs.last()->isFirstOrLastDiagonal() && mpGUIConnectorPtrs.last()->getNumberOfLines() > 1) &&
+////                     (abs(mpGUIConnectorPtrs.last()->mPoints.first().x() - mpGUIConnectorPtrs.last()->mPoints.last().x()) < SNAPDISTANCE) &&
+////                     (abs(mpGUIConnectorPtrs.last()->mPoints.first().x() - mpGUIConnectorPtrs.last()->mPoints.last().x()) > 0.0) )
+////            {
+////                if(this->mpGUIConnectorPtrs.first()->getStartPort()->mpParentGuiObject == this)
+////                {
+////                    this->moveBy(mpGUIConnectorPtrs.first()->mPoints.last().x() - mpGUIConnectorPtrs.first()->mPoints.first().x(), 0);
+////                }
+////                else
+////                {
+////                    this->moveBy(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x(), 0);
+////                }
+////            }
+
+//                //Horizontal snap
+//            if( (mpGUIConnectorPtrs.size() == 1) &&
+//                (mpGUIConnectorPtrs.first()->getNumberOfLines() < 4) &&
+//                !(mpGUIConnectorPtrs.first()->isFirstAndLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() == 2) &&
+//                !(mpGUIConnectorPtrs.first()->isFirstOrLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() > 2) &&
+//                (abs(mpGUIConnectorPtrs.first()->mPoints.first().y() - mpGUIConnectorPtrs.first()->mPoints.last().y()) < SNAPDISTANCE) &&
+//                (abs(mpGUIConnectorPtrs.first()->mPoints.first().y() - mpGUIConnectorPtrs.first()->mPoints.last().y()) > 0.0) )
+//            {
+//                if(this->mpGUIConnectorPtrs.first()->getStartPort()->mpParentGuiObject == this)
+//                {
+//                    this->moveBy(0, mpGUIConnectorPtrs.first()->mPoints.last().y() - mpGUIConnectorPtrs.first()->mPoints.first().y());
+//                }
+//                else
+//                {
+//                    this->moveBy(0, mpGUIConnectorPtrs.first()->mPoints.first().y() - mpGUIConnectorPtrs.first()->mPoints.last().y());
+//                }
+//            }
+//        }
+//    }
+    return value;
+}
+
+
+//! @brief Slot that rotates the object to a desired angle (NOT registered in undo stack!)
+//! @param angle Angle to rotate to
+//! @see rotate(undoStatus undoSettings)
+//! @todo Add option to register this in undo stack - someone will want to do this sooner or later anyway
+void GUIObject::rotateTo(qreal angle)
+{
+    while(this->rotation() != angle)
+    {
+        this->rotate(NOUNDO);
+    }
+}
+
+//! @brief Rotates a component 90 degrees clockwise
+//! @param undoSettings Tells whether or not this shall be registered in undo stsack
+//! @see rotateTo(qreal angle);
+void GUIObject::rotate(undoStatus undoSettings)
+{
+    this->setTransformOriginPoint(this->boundingRect().center());
+    this->setRotation(this->rotation()+90);
+
+    if (this->rotation() == 360)
+    {
+        this->setRotation(0);
+    }
+
+    if(undoSettings == UNDO)
+    {
+        mpParentSystem->mUndoStack->registerRotatedObject(this);
+    }
+
+    emit objectMoved();
+}
+
+
+//! @brief Slot that moves component one pixel upwards
+//! @see moveDown()
+//! @see moveLeft()
+//! @see moveRight()
+void GUIObject::moveUp()
+{
+    //qDebug() << "Move up!";
+    this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()-1);
+    mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
+}
+
+
+//! @brief Slot that moves component one pixel downwards
+//! @see moveUp()
+//! @see moveLeft()
+//! @see moveRight()
+void GUIObject::moveDown()
+{
+    this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()+1);
+    mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
+}
+
+
+//! @brief Slot that moves component one pixel leftwards
+//! @see moveUp()
+//! @see moveDown()
+//! @see moveRight()
+void GUIObject::moveLeft()
+{
+    this->setPos(this->mapFromScene(this->mapToScene(this->pos())).x()-1, this->pos().y());
+    mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
+}
+
+
+//! @brief Slot that moves component one pixel rightwards
+//! @see moveUp()
+//! @see moveDown()
+//! @see moveLeft()
+void GUIObject::moveRight()
+{
+    this->setPos(this->mapFromScene(this->mapToScene(this->pos())).x()+1, this->pos().y());
+    mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
+}
+
+
+//! @brief Tells the component to ask its parent to delete it
+//! @todo The name of the function is silly
+//! @todo will not work with gui only objects like textboxes, as they ont have unique names
+void GUIObject::deleteMe()
+{
+    qDebug() << "deleteMe in " << this->getName();
+    mpParentSystem->deleteGUIObject(this->getName());
+}
+
+
+
 
 
 //! @brief Constructor for GUI Objects
@@ -37,37 +380,33 @@ double dist(double x1,double y1, double x2, double y2)
 //! @param gfxType Initial graphics type (user or iso)
 //! @param system Pointer to the parent system
 //! @param parent Pointer to parent object (not mandatory)
-GUIObject::GUIObject(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUISystem *system, QGraphicsItem *parent)
-        : QGraphicsWidget(parent)
+GUIModelObject::GUIModelObject(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUISystem *system, QGraphicsItem *parent)
+        : GUIObject(position, rotation, startSelected, system, parent)
 {
+    //Set the hmf save tag name
+    mHmfTagName = HMF_OBJECTTAG; //!< @todo change this
+
     //! @todo Is this comment a todo?
     //remeber the scene ptr
 
     //Make a local copy of the appearance data (that can safely be modified if needed)
     mAppearanceData = *pAppearanceData;
 
-    mpParentSystem = system;
-
-    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
-
         //Set to null ptr initially
     mpIcon = 0;
-    mpSelectionBox = 0;
     mpNameText = 0;
 
         //Setup appearance
     this->refreshAppearance();
     this->setPos(position.x()-mpIcon->boundingRect().width()/2,position.y()-mpIcon->boundingRect().height()/2);
-    this->rotateTo(rotation);
+
     this->setSelected(startSelected);
     this->setIcon(gfxType);
-    this->setZValue(10);
-    this->setAcceptHoverEvents(true);
+
     mTextOffset = 5.0;
-    mIsFlipped = false;
 
         //Create the textbox containing the name
-    mpNameText = new GUIObjectDisplayName(this);
+    mpNameText = new GUIModelObjectDisplayName(this);
     mNameTextPos = 0;
     this->setNameTextPos(mNameTextPos);
 
@@ -83,22 +422,22 @@ GUIObject::GUIObject(QPoint position, qreal rotation, const AppearanceData* pApp
 }
 
 
-//! @brief Destructor for GUI Objects
-GUIObject::~GUIObject()
-{
-    emit componentDeleted();
-}
+////! @brief Destructor for GUI Objects
+//GUIModelObject::~GUIModelObject()
+//{
+//    emit componentDeleted();
+//}
 
 
 //! @brief Returns the type of the object (object, component, systemport, group etc)
-int GUIObject::type() const
+int GUIModelObject::type() const
 {
     return Type;
 }
 
 //! @brief Updates name text position
 //! @param pos Position where name text was dropped
-void GUIObject::fixTextPosition(QPointF pos)
+void GUIModelObject::fixTextPosition(QPointF pos)
 {
     double x1,x2,y1,y2;
 
@@ -188,7 +527,7 @@ void GUIObject::fixTextPosition(QPointF pos)
 
 //! @brief Stores a connector pointer in the connector list
 //! @param item Pointer to connector that shall be stored
-void GUIObject::rememberConnector(GUIConnector *item)
+void GUIModelObject::rememberConnector(GUIConnector *item)
 {
     mpGUIConnectorPtrs.append(item);
     connect(this, SIGNAL(componentMoved()), item, SLOT(drawConnector()));
@@ -197,7 +536,7 @@ void GUIObject::rememberConnector(GUIConnector *item)
 
 //! @brief Removes a connector pointer from the connector list
 //! @param item Pointer to connector that shall be forgotten
-void GUIObject::forgetConnector(GUIConnector *item)
+void GUIModelObject::forgetConnector(GUIConnector *item)
 {
     mpGUIConnectorPtrs.removeOne(item);
     disconnect(this, SIGNAL(componentMoved()), item, SLOT(drawConnector()));
@@ -205,14 +544,14 @@ void GUIObject::forgetConnector(GUIConnector *item)
 
 
 //! @param Returns the a list with pointers to the connecetors connected to the object
-QList<GUIConnector*> GUIObject::getGUIConnectorPtrs()
+QList<GUIConnector*> GUIModelObject::getGUIConnectorPtrs()
 {
     return mpGUIConnectorPtrs;
 }
 
 
 //! @brief Refreshes the displayed name (HopsanCore may have changed it)
-void GUIObject::refreshDisplayName()
+void GUIModelObject::refreshDisplayName()
 {
     if (mpNameText != 0)
     {
@@ -225,19 +564,19 @@ void GUIObject::refreshDisplayName()
 
 
 //! @brief Returns the name of the object
-QString GUIObject::getName()
+QString GUIModelObject::getName()
 {
     return mAppearanceData.getName();
 }
 
 
 //! @brief Returns a list with pointers to the ports in the object
-QList<GUIPort*> &GUIObject::getPortListPtrs()
+QList<GUIPort*> &GUIModelObject::getPortListPtrs()
 {
     return mPortListPtrs;
 }
 
-//void GUIObject::setName(QString newName, renameRestrictions renameSettings)
+//void GUIModelObject::setName(QString newName, renameRestrictions renameSettings)
 //{
 //    QString oldName = getName();
 //    //If name same as before do nothing
@@ -272,7 +611,7 @@ QList<GUIPort*> &GUIObject::getPortListPtrs()
 
 
 //! @brief Sets the name of the object (may be modified by HopsanCore if name already exists)
-void GUIObject::setDisplayName(QString name)
+void GUIModelObject::setDisplayName(QString name)
 {
     mAppearanceData.setName(name);
     refreshDisplayName();
@@ -281,7 +620,7 @@ void GUIObject::setDisplayName(QString name)
 
 //! @brief Updates the icon of the object to user or iso style
 //! @param gfxType Graphics type that shall be used
-void GUIObject::setIcon(graphicsType gfxType)
+void GUIModelObject::setIcon(graphicsType gfxType)
 {
     QGraphicsSvgItem *tmp = mpIcon;
     if(gfxType && mAppearanceData.haveIsoIcon())
@@ -333,22 +672,22 @@ void GUIObject::setIcon(graphicsType gfxType)
 }
 
 
-//! @brief Slot that deselects the object
-void GUIObject::deselect()
-{
-    this->setSelected(false);
-}
+////! @brief Slot that deselects the object
+//void GUIModelObject::deselect()
+//{
+//    this->setSelected(false);
+//}
 
 
-//! @brief Slot that selects the object
-void GUIObject::select()
-{
-    this->setSelected(true);
-}
+////! @brief Slot that selects the object
+//void GUIModelObject::select()
+//{
+//    this->setSelected(true);
+//}
 
 
 //! @brief Returns a pointer to the port with the specified name
-GUIPort *GUIObject::getPort(QString name)
+GUIPort *GUIModelObject::getPort(QString name)
 {
 
     //! @todo use the a guiport map instead   (Is this really a good idea? The number of ports is probably too small to make it beneficial, and it would slow down everything else...)
@@ -366,7 +705,7 @@ GUIPort *GUIObject::getPort(QString name)
 
 //! @brief Virtual function that returns the specified parameter value
 //! @param name Name of the parameter to return value from
-double GUIObject::getParameterValue(QString name)
+double GUIModelObject::getParameterValue(QString name)
 {
     cout << "This function should only be available in GUIComponent" << endl;
     assert(false);
@@ -375,7 +714,7 @@ double GUIObject::getParameterValue(QString name)
 
 
 //! @brief Virtual function that returns a vector with the names of the parameteres in the object
-QVector<QString> GUIObject::getParameterNames()
+QVector<QString> GUIModelObject::getParameterNames()
 {
     cout << "This function should only be available in GUIComponent" << endl;
     assert(false);
@@ -386,17 +725,17 @@ QVector<QString> GUIObject::getParameterNames()
 //! @brief Virtual function that sets specified parameter to specified value
 //! @param name Name of parameter
 //! @param value New parameter value
-void GUIObject::setParameterValue(QString name, double value)
+void GUIModelObject::setParameterValue(QString name, double value)
 {
     cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
     assert(false);
 }
 
 
-//! @brief Saves the GUIObject to a text stream
+//! @brief Saves the GUIModelObject to a text stream
 //! @param &rStream Text stream to save into
 //! @param prepend String to prepend before object data
-void GUIObject::saveToTextStream(QTextStream &rStream, QString prepend)
+void GUIModelObject::saveToTextStream(QTextStream &rStream, QString prepend)
 {
     QPointF pos = mapToScene(boundingRect().center());
     if (!prepend.isEmpty())
@@ -408,25 +747,20 @@ void GUIObject::saveToTextStream(QTextStream &rStream, QString prepend)
 }
 
 
-void GUIObject::saveToDomElement(QDomElement &rDomElement)
+void GUIModelObject::saveToDomElement(QDomElement &rDomElement)
 {
-    //! @todo Default assume that this is has a core equivalent, may change object classes later
-    QDomElement xmlObject = appendDomElement(rDomElement, HMF_OBJECTTAG);
-
-    //Save Core related stuff
-//    //! @todo maybe have special protected function for this
-//    appendDomTextNode(xmlObject, HMF_TYPETAG, getTypeName());
-//    appendDomTextNode(xmlObject, HMF_NAMETAG, getName());
+    QDomElement xmlObject = appendDomElement(rDomElement, mHmfTagName);
     saveCoreDataToDomElement(xmlObject);
     saveGuiDataToDomElement(xmlObject);
 }
 
-void GUIObject::saveCoreDataToDomElement(QDomElement &rDomElement)
+void GUIModelObject::saveCoreDataToDomElement(QDomElement &rDomElement)
 {
-    //Default nothing
+    appendDomTextNode(rDomElement, HMF_TYPETAG, getTypeName());
+    appendDomTextNode(rDomElement, HMF_NAMETAG, getName());
 }
 
-void GUIObject::saveGuiDataToDomElement(QDomElement &rDomElement)
+void GUIModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 {
     //Save GUI realted stuff
     QDomElement xmlGuiStuff = appendDomElement(rDomElement,HMF_HOPSANGUITAG);
@@ -442,129 +776,85 @@ void GUIObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 
 
 //! @brief Defines what happens when mouse starts hovering the object
-void GUIObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+void GUIModelObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-    if(!this->isSelected())
-    {
-        mpSelectionBox->setHovered();
-        //mpSelectionBox->setVisible(true);
-    }
+    GUIObject::hoverEnterEvent(event);
     this->showPorts(true);
-    this->setZValue(12);
 }
 
 
 //! @bried Defines what happens when mouse stops hovering the object
-void GUIObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+void GUIModelObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-    if(!this->isSelected())
-    {
-        mpSelectionBox->setPassive();
-    }
+    GUIObject::hoverLeaveEvent(event);
     this->showPorts(false);
-    this->setZValue(10);
 }
 
 
-//! @brief Defines what happens if a mouse key is pressed while hovering an object
-void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-        //Store old positions for all components, in case more than one is selected
-    if(event->button() == Qt::LeftButton)
-    {
-        for(size_t i = 0; i < mpParentSystem->mSelectedGUIObjectsList.size(); ++i)
-        {
-            mpParentSystem->mSelectedGUIObjectsList[i]->mOldPos = mpParentSystem->mSelectedGUIObjectsList[i]->pos();
-        }
-    }
+////! @brief Defines what happens if a mouse key is pressed while hovering an object
+//void GUIModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
+//{
+//        //Store old positions for all components, in case more than one is selected
+//    if(event->button() == Qt::LeftButton)
+//    {
+//        for(size_t i = 0; i < mpParentSystem->mSelectedGUIObjectsList.size(); ++i)
+//        {
+//            mpParentSystem->mSelectedGUIObjectsList[i]->mOldPos = mpParentSystem->mSelectedGUIObjectsList[i]->pos();
+//        }
+//    }
 
-        //Objects shall not be selectable while creating a connector
-    if(mpParentSystem->mIsCreatingConnector)
-    {
-        this->setSelected(false);
-        this->setActive(false);
-    }
-}
+//        //Objects shall not be selectable while creating a connector
+//    if(mpParentSystem->mIsCreatingConnector)
+//    {
+//        this->setSelected(false);
+//        this->setActive(false);
+//    }
+//}
 
 
-//! @brief Defines what happens if a mouse key is released while hovering an object
-void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    QList<GUIObject *>::iterator it;
+////! @brief Defines what happens if a mouse key is released while hovering an object
+//void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+//{
+//    QList<GUIModelObject *>::iterator it;
 
-        //Loop through all selected objects and register changed positions in undo stack
-    bool alreadyClearedRedo = false;
-    for(it = mpParentSystem->mSelectedGUIObjectsList.begin(); it != mpParentSystem->mSelectedGUIObjectsList.end(); ++it)
-    {
-        if(((*it)->mOldPos != (*it)->pos()) && (event->button() == Qt::LeftButton))
-        {
-                //This check makes sure that only one undo post is created when moving several objects at once
-            if(!alreadyClearedRedo)
-            {
-                mpParentSystem->mUndoStack->newPost();
-                mpParentSystem->mpParentProjectTab->hasChanged();
-                alreadyClearedRedo = true;
-            }
-            mpParentSystem->mUndoStack->registerMovedObject((*it)->mOldPos, (*it)->pos(), (*it)->getName());
-        }
-    }
+//        //Loop through all selected objects and register changed positions in undo stack
+//    bool alreadyClearedRedo = false;
+//    for(it = mpParentSystem->mSelectedGUIObjectsList.begin(); it != mpParentSystem->mSelectedGUIObjectsList.end(); ++it)
+//    {
+//        if(((*it)->mOldPos != (*it)->pos()) && (event->button() == Qt::LeftButton))
+//        {
+//                //This check makes sure that only one undo post is created when moving several objects at once
+//            if(!alreadyClearedRedo)
+//            {
+//                mpParentSystem->mUndoStack->newPost();
+//                mpParentSystem->mpParentProjectTab->hasChanged();
+//                alreadyClearedRedo = true;
+//            }
+//            mpParentSystem->mUndoStack->registerMovedObject((*it)->mOldPos, (*it)->pos(), (*it)->getName());
+//        }
+//    }
 
-    QGraphicsWidget::mouseReleaseEvent(event);
+//    QGraphicsWidget::mouseReleaseEvent(event);
 
-        //Objects shall not be selectable while creating a connector
-    if(mpParentSystem->mIsCreatingConnector)
-    {
-        this->setSelected(false);
-        this->setActive(false);
-    }
-}
+//        //Objects shall not be selectable while creating a connector
+//    if(mpParentSystem->mIsCreatingConnector)
+//    {
+//        this->setSelected(false);
+//        this->setActive(false);
+//    }
+//}
 
 
 //! @brief Defines what happens when object is selected, deselected or has moved
 //! @param change Tells what it is that has changed
-QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
+QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    QGraphicsWidget::itemChange(change, value);
+    GUIObject::itemChange(change, value);
 
-    if (change == QGraphicsItem::ItemSelectedHasChanged)
+    //Snap if objects have moved
+    if (change == QGraphicsItem::ItemPositionHasChanged)
     {
-        if (this->isSelected())
-        {
-            mpParentSystem->mSelectedGUIObjectsList.append(this);
-            mpSelectionBox->setActive();
-            connect(mpParentSystem, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
-            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
-            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
-            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
-            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
-            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
-            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
-            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
-            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
-            disconnect(mpParentSystem, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
-            connect(mpParentSystem, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
-            emit componentSelected();
-        }
-        else
-        {
-            mpParentSystem->mSelectedGUIObjectsList.removeAll(this);
-            disconnect(mpParentSystem, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
-            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
-            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
-            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
-            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
-            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
-            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
-            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
-            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
-            connect(mpParentSystem, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
-            disconnect(mpParentSystem, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
-            mpSelectionBox->setPassive();
-        }
-    }
-    else if (change == QGraphicsItem::ItemPositionHasChanged)
-    {
-        emit componentMoved();  //This signal must be emitted  before the snap code, because it updates the connectors which is used to determine whether or not to snap.
+        emit objectMoved();  //This signal must be emitted  before the snap code, because it updates the connectors which is used to determine whether or not to snap.
 
             //Snap component if it only has one connector and is dropped close enough (horizontal or vertical) to adjacent component
         if(mpParentSystem != 0 && mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mSnapping &&
@@ -578,7 +868,7 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
                 (abs(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x()) < SNAPDISTANCE) &&
                 (abs(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x()) > 0.0) )
             {
-                if(this->mpGUIConnectorPtrs.first()->getStartPort()->mpParentGuiObject == this)
+                if(this->mpGUIConnectorPtrs.first()->getStartPort()->mpParentGuiModelObject == this)
                 {
                     this->moveBy(mpGUIConnectorPtrs.first()->mPoints.last().x() - mpGUIConnectorPtrs.first()->mPoints.first().x(), 0);
                 }
@@ -621,7 +911,7 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
                 (abs(mpGUIConnectorPtrs.first()->mPoints.first().y() - mpGUIConnectorPtrs.first()->mPoints.last().y()) < SNAPDISTANCE) &&
                 (abs(mpGUIConnectorPtrs.first()->mPoints.first().y() - mpGUIConnectorPtrs.first()->mPoints.last().y()) > 0.0) )
             {
-                if(this->mpGUIConnectorPtrs.first()->getStartPort()->mpParentGuiObject == this)
+                if(this->mpGUIConnectorPtrs.first()->getStartPort()->mpParentGuiModelObject == this)
                 {
                     this->moveBy(0, mpGUIConnectorPtrs.first()->mPoints.last().y() - mpGUIConnectorPtrs.first()->mPoints.first().y());
                 }
@@ -638,7 +928,7 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
 
 //! @brief Shows or hides the port, depending on the input boolean and whether or not they are connected
 //! @param visible Tells whether the ports shall be shown or hidden
-void GUIObject::showPorts(bool visible)
+void GUIModelObject::showPorts(bool visible)
 {
     QList<GUIPort*>::iterator i;
     if(visible)
@@ -661,7 +951,7 @@ void GUIObject::showPorts(bool visible)
 
 ////! Figures out the number of a component port by using a pointer to the port.
 ////! @see getPort(int number)
-//int GUIObject::getPortNumber(GUIPort *port)
+//int GUIModelObject::getPortNumber(GUIPort *port)
 //{
 //    for (int i = 0; i != mPortListPtrs.size(); ++i)
 //    {
@@ -678,7 +968,8 @@ void GUIObject::showPorts(bool visible)
 //! @brief Rotates a component 90 degrees clockwise
 //! @param undoSettings Tells whether or not this shall be registered in undo stsack
 //! @see rotateTo(qreal angle);
-void GUIObject::rotate(undoStatus undoSettings)
+//! @todo try to reuse the code in rotate guiobject
+void GUIModelObject::rotate(undoStatus undoSettings)
 {
     this->setTransformOriginPoint(mpIcon->boundingRect().center());
     this->setRotation(this->rotation()+90);
@@ -748,66 +1039,24 @@ void GUIObject::rotate(undoStatus undoSettings)
         mpParentSystem->mUndoStack->registerRotatedObject(this);
     }
 
-    emit componentMoved();
+    emit objectMoved();
 }
 
 
-//! @brief Slot that rotates the object to a desired angle (NOT registered in undo stack!)
-//! @param angle Angle to rotate to
-//! @see rotate(undoStatus undoSettings)
-//! @todo Add option to register this in undo stack - someone will want to do this sooner or later anyway
-void GUIObject::rotateTo(qreal angle)
-{
-    while(this->rotation() != angle)
-    {
-        this->rotate(NOUNDO);
-    }
-}
+////! @brief Slot that rotates the object to a desired angle (NOT registered in undo stack!)
+////! @param angle Angle to rotate to
+////! @see rotate(undoStatus undoSettings)
+////! @todo Add option to register this in undo stack - someone will want to do this sooner or later anyway
+//void GUIModelObject::rotateTo(qreal angle)
+//{
+//    while(this->rotation() != angle)
+//    {
+//        this->rotate(NOUNDO);
+//    }
+//}
 
 
-//! @brief Slot that moves component one pixel upwards
-//! @see moveDown()
-//! @see moveLeft()
-//! @see moveRight()
-void GUIObject::moveUp()
-{
-    //qDebug() << "Move up!";
-    this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()-1);
-    mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
-}
 
-
-//! @brief Slot that moves component one pixel downwards
-//! @see moveUp()
-//! @see moveLeft()
-//! @see moveRight()
-void GUIObject::moveDown()
-{
-    this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()+1);
-    mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
-}
-
-
-//! @brief Slot that moves component one pixel leftwards
-//! @see moveUp()
-//! @see moveDown()
-//! @see moveRight()
-void GUIObject::moveLeft()
-{
-    this->setPos(this->mapFromScene(this->mapToScene(this->pos())).x()-1, this->pos().y());
-    mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
-}
-
-
-//! @brief Slot that moves component one pixel rightwards
-//! @see moveUp()
-//! @see moveDown()
-//! @see moveLeft()
-void GUIObject::moveRight()
-{
-    this->setPos(this->mapFromScene(this->mapToScene(this->pos())).x()+1, this->pos().y());
-    mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
-}
 
 
 
@@ -816,7 +1065,7 @@ void GUIObject::moveRight()
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
 //! @see flipHorizontal()
 //! @todo Fix name text position when flipping components
-void GUIObject::flipVertical(undoStatus undoSettings)
+void GUIModelObject::flipVertical(undoStatus undoSettings)
 {
     this->rotate(NOUNDO);
     this->rotate(NOUNDO);
@@ -832,7 +1081,7 @@ void GUIObject::flipVertical(undoStatus undoSettings)
 //! @brief Slot that flips the object horizontally
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
 //! @see flipVertical()
-void GUIObject::flipHorizontal(undoStatus undoSettings)
+void GUIModelObject::flipHorizontal(undoStatus undoSettings)
 {
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
@@ -894,7 +1143,7 @@ void GUIObject::flipHorizontal(undoStatus undoSettings)
 //! @brief Returns an number of the current name text position
 //! @see setNameTextPos(int textPos)
 //! @see fixTextPosition(QPointF pos)
-int GUIObject::getNameTextPos()
+int GUIModelObject::getNameTextPos()
 {
     return mNameTextPos;
 }
@@ -904,7 +1153,7 @@ int GUIObject::getNameTextPos()
 //! @param textPos Number of the desired text position
 //! @see getNameTextPos()
 //! @see fixTextPosition(QPointF pos)
-void GUIObject::setNameTextPos(int textPos)
+void GUIModelObject::setNameTextPos(int textPos)
 {
     mNameTextPos = textPos;
 
@@ -952,35 +1201,35 @@ void GUIObject::setNameTextPos(int textPos)
 
 
 //! @brief Slots that hides the name text of the object
-void GUIObject::hideName()
+void GUIModelObject::hideName()
 {
     mpNameText->setVisible(false);
 }
 
 
 //! @brief Slots that makes the name text of the object visible
-void GUIObject::showName()
+void GUIModelObject::showName()
 {
     mpNameText->setVisible(true);
 }
 
 
 //! @brief Virtual dummy function that returns the type name of the object (must be reimplemented by children)
-QString GUIObject::getTypeName()
+QString GUIModelObject::getTypeName()
 {
     assert(false);
     return "";
 }
 
 //! @brief Returns a pointer to the appearance data object
-AppearanceData* GUIObject::getAppearanceData()
+AppearanceData* GUIModelObject::getAppearanceData()
 {
     return &mAppearanceData;
 }
 
 
 //! @brief Refreshes the appearance of the object
-void GUIObject::refreshAppearance()
+void GUIModelObject::refreshAppearance()
 {
     bool hasActiveSelectionBox = false;
     if (mpSelectionBox != 0)
@@ -1006,28 +1255,22 @@ void GUIObject::refreshAppearance()
 }
 
 
-//! @brief Tells the component to ask its parent to delete it
-//! @todo The name of the function is silly
-void GUIObject::deleteMe()
-{
-    qDebug() << "deleteMe in " << this->getName();
-    mpParentSystem->deleteGUIObject(this->getName());
-}
+
 
 
 //! @brief Construtor for the name text object
 //! @param pParent Pointer to the object which the name text belongs to
-GUIObjectDisplayName::GUIObjectDisplayName(GUIObject *pParent)
+GUIModelObjectDisplayName::GUIModelObjectDisplayName(GUIModelObject *pParent)
     :   QGraphicsTextItem(pParent)
 {
-    mpParentGUIObject = pParent;
+    mpParentGUIModelObject = pParent;
     this->setTextInteractionFlags(Qt::NoTextInteraction);
     this->setFlags(QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
 }
 
 
 //! @brief Defines what happens when a mouse button is released (used to update position when text has moved)
-void GUIObjectDisplayName::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+void GUIModelObjectDisplayName::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     emit textMoved(this->pos());
     QGraphicsTextItem::mouseReleaseEvent(event);
@@ -1036,7 +1279,7 @@ void GUIObjectDisplayName::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 //! @brief Defines what happens when selection status of name text has changed
 //! @param change Type of change (only ItemSelectedHasChanged is used)
-QVariant GUIObjectDisplayName::itemChange(GraphicsItemChange change, const QVariant &value)
+QVariant GUIModelObjectDisplayName::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     QGraphicsTextItem::itemChange(change, value);
 
@@ -1045,12 +1288,12 @@ QVariant GUIObjectDisplayName::itemChange(GraphicsItemChange change, const QVari
         qDebug() << "ItemSelectedHasChanged";
         if (this->isSelected())
         {
-            mpParentGUIObject->mpParentSystem->deselectSelectedNameText();
-            connect(this->mpParentGUIObject->mpParentSystem, SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
+            mpParentGUIModelObject->mpParentSystem->deselectSelectedNameText();
+            connect(this->mpParentGUIModelObject->mpParentSystem, SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
         }
         else
         {
-            disconnect(this->mpParentGUIObject->mpParentSystem, SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
+            disconnect(this->mpParentGUIModelObject->mpParentSystem, SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
         }
     }
     return value;
@@ -1058,7 +1301,7 @@ QVariant GUIObjectDisplayName::itemChange(GraphicsItemChange change, const QVari
 
 
 //! @brief Slot that deselects the name text
-void GUIObjectDisplayName::deselect()
+void GUIModelObjectDisplayName::deselect()
 {
     this->setSelected(false);
 }
@@ -1143,7 +1386,7 @@ void GUIObjectSelectionBox::setHovered()
 
 
 GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUISystem *system, QGraphicsItem *parent)
-        : GUIObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
+        : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
 {
     //Something
 }

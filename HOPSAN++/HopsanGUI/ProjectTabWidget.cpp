@@ -291,16 +291,16 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     modelFile << "ISOICON " << addQuotes(mpSystem->getIsoIconPath()) << "\n";
 
     //Calculate the position of the subsystem ports:
-    QHash<QString, GUIObject*>::iterator it;
+    GUISystem::GUIModelObjectMapT::iterator it;
     QLineF line;
     double angle, x, y;
 
-    double xMax = mpSystem->mGUIObjectMap.begin().value()->x() + mpSystem->mGUIObjectMap.begin().value()->rect().width()/2.0;
-    double xMin = mpSystem->mGUIObjectMap.begin().value()->x() + mpSystem->mGUIObjectMap.begin().value()->rect().width()/2.0;
-    double yMax = mpSystem->mGUIObjectMap.begin().value()->y() + mpSystem->mGUIObjectMap.begin().value()->rect().height()/2.0;
-    double yMin = mpSystem->mGUIObjectMap.begin().value()->y() + mpSystem->mGUIObjectMap.begin().value()->rect().height()/2.0;
+    double xMax = mpSystem->mGUIModelObjectMap.begin().value()->x() + mpSystem->mGUIModelObjectMap.begin().value()->rect().width()/2.0;
+    double xMin = mpSystem->mGUIModelObjectMap.begin().value()->x() + mpSystem->mGUIModelObjectMap.begin().value()->rect().width()/2.0;
+    double yMax = mpSystem->mGUIModelObjectMap.begin().value()->y() + mpSystem->mGUIModelObjectMap.begin().value()->rect().height()/2.0;
+    double yMin = mpSystem->mGUIModelObjectMap.begin().value()->y() + mpSystem->mGUIModelObjectMap.begin().value()->rect().height()/2.0;
 
-    for(it = mpSystem->mGUIObjectMap.begin(); it!=mpSystem->mGUIObjectMap.end(); ++it)
+    for(it = mpSystem->mGUIModelObjectMap.begin(); it!=mpSystem->mGUIModelObjectMap.end(); ++it)
     {
         if (it.value()->x()+it.value()->rect().width()/2.0 < xMin)
             xMin = it.value()->x()+it.value()->rect().width()/2.0;
@@ -316,7 +316,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     double w = xMax-xMin;
     double h = yMax-yMin;
 
-    for(it = mpSystem->mGUIObjectMap.begin(); it!=mpSystem->mGUIObjectMap.end(); ++it)
+    for(it = mpSystem->mGUIModelObjectMap.begin(); it!=mpSystem->mGUIModelObjectMap.end(); ++it)
     {
         if(it.value()->getTypeName() == "SystemPort")
         {
@@ -332,7 +332,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
         modelFile << "--------------------------------------------------------------\n";
 
     //QHash<QString, GUIObject*>::iterator it;
-    for(it = mpSystem->mGUIObjectMap.begin(); it!=mpSystem->mGUIObjectMap.end(); ++it)
+    for(it = mpSystem->mGUIModelObjectMap.begin(); it!=mpSystem->mGUIModelObjectMap.end(); ++it)
     {
         if ( it.value()->getTypeName() == QString("Subsystem") )
         {
