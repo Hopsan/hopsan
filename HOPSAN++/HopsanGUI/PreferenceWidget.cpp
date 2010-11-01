@@ -39,6 +39,14 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
     mpDisableUndoCheckBox->setCheckable(true);
     mpDisableUndoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
 
+    mpNumberOfSamplesLabel = new QLabel(tr("Progress Bar Time Step [ms]"));
+    mpNumberOfSamplesLabel->setEnabled(mpParentMainWindow->mEnableProgressBar);
+    mpNumberOfSamplesBox = new QLineEdit(this);
+    mpNumberOfSamplesBox->setValidator(new QIntValidator(0, 1000000000000, this));
+    QString samplesText;
+    samplesText.setNum(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->getNumberOfSamples());
+    mpNumberOfSamplesBox->setText(samplesText);
+
     mpCancelButton = new QPushButton(tr("&Cancel"));
     mpCancelButton->setAutoDefault(false);
     mpOkButton = new QPushButton(tr("&Done"));
@@ -76,7 +84,9 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
     mpLayout->addWidget(mpIsoIconLabel, 1, 0);
     mpLayout->addWidget(mpIsoCheckBox, 2, 0);
     mpLayout->addWidget(mpDisableUndoCheckBox, 3, 0);
-    mpLayout->addWidget(mpButtonBox, 4, 1, 2, 2, Qt::AlignHCenter);
+    mpLayout->addWidget(mpNumberOfSamplesLabel, 4, 0);
+    mpLayout->addWidget(mpNumberOfSamplesBox, 4, 1);
+    mpLayout->addWidget(mpButtonBox, 5, 1, 2, 2, Qt::AlignHCenter);
     setLayout(mpLayout);
 }
 
@@ -120,6 +130,7 @@ void PreferenceWidget::updateValues()
 
     mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setUserIconPath(mpUserIconPath->text());
     mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setIsoIconPath(mpIsoIconPath->text());
+    mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setNumberOfSamples(mpNumberOfSamplesBox->text().toInt());
     this->accept();
 }
 

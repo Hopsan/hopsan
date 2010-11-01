@@ -68,6 +68,9 @@ public:
     double getTimeStep();
     double getStopTime();
 
+    size_t getNumberOfSamples();
+    void setNumberOfSamples(size_t nSamples);
+
     QString getIsoIconPath();
     QString getUserIconPath();
     void setIsoIconPath(QString path);
@@ -117,6 +120,7 @@ private:
     double mStartTime;
     double mStopTime;
     double mTimeStep;
+    size_t mNumberOfSamples;
     QString mUserIconPath;
     QString mIsoIconPath;
 

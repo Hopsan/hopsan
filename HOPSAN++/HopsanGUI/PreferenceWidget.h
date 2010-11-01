@@ -9,6 +9,7 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QGridLayout>
+#include <QSpinBox>
 
 class MainWindow;
 
@@ -22,20 +23,29 @@ public:
     MainWindow *mpParentMainWindow;
 
     bool mIsoBool;
-    QCheckBox *mpIsoCheckBox;
-    QCheckBox *mpDisableUndoCheckBox;
-    QPushButton *mpCancelButton;
-    QPushButton *mpApplyButton;
-    QPushButton *mpOkButton;
-    QPushButton *mpIsoIconBrowseButton;
-    QPushButton *mpUserIconBrowseButton;
-    QDialogButtonBox *mpButtonBox;
+
     QLineEdit *mpUserIconPath;
     QLineEdit *mpIsoIconPath;
     QLabel *mpUserIconLabel;
     QLabel *mpIsoIconLabel;
+    QPushButton *mpIsoIconBrowseButton;
+    QPushButton *mpUserIconBrowseButton;
+
+    QCheckBox *mpIsoCheckBox;
+    QCheckBox *mpDisableUndoCheckBox;
+
+    QLabel *mpNumberOfSamplesLabel;
+    QLineEdit *mpNumberOfSamplesBox;
+
+    QPushButton *mpCancelButton;
+    QPushButton *mpApplyButton;
+    QPushButton *mpOkButton;
+    QDialogButtonBox *mpButtonBox;
+
     QWidget *mpCentralwidget;
     QGridLayout *mpLayout;
+
+
 
 public slots:
     void show();

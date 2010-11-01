@@ -124,6 +124,7 @@ bool ProjectTab::simulate()
     double finishTime = mpSystem->getStopTime();
     double dt = finishTime - startTime;
     size_t nSteps = dt/mpSystem->mpCoreSystemAccess->getDesiredTimeStep();
+    size_t nSamples = mpSystem->getNumberOfSamples();
 
     if(!mpSystem->mpCoreSystemAccess->isSimulationOk())
     {
@@ -134,7 +135,7 @@ bool ProjectTab::simulate()
     qDebug() << "Initializing simulation: " << startTime << nSteps << finishTime;
 
         //Ask core to initialize simulation
-    InitializationThread actualInitialization(mpSystem->mpCoreSystemAccess, startTime, finishTime, this);
+    InitializationThread actualInitialization(mpSystem->mpCoreSystemAccess, startTime, finishTime, nSamples, this);
     actualInitialization.start();
     actualInitialization.setPriority(QThread::HighestPriority);
 

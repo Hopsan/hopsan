@@ -19,7 +19,7 @@ class CoreSystemAccess;
 class InitializationThread : public QThread
 {
 public:
-    InitializationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, ProjectTab *parent);
+    InitializationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, size_t nSamples, ProjectTab *parent);
 
     ProjectTab *mpParentProjectTab;
 
@@ -30,7 +30,8 @@ protected:
 
 private:
     double mStartTime;
-    double mFinishTime;
+    size_t mFinishTime;
+    int mSamples;
 
 };
 

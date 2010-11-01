@@ -74,6 +74,7 @@ void GUISystem::commonConstructorCode()
     mTimeStep = 0.001;
     mStopTime = 10;
     mGfxType = USERGRAPHICS;
+    mNumberOfSamples = 2048;
 
         //Establish connections
     //connect(this->systemPortAction, SIGNAL(triggered()), SLOT(addSystemPort()));
@@ -1271,6 +1272,18 @@ double GUISystem::getTimeStep()
 double GUISystem::getStopTime()
 {
     return mStopTime;
+}
+
+
+size_t GUISystem::getNumberOfSamples()
+{
+    return mNumberOfSamples;
+}
+
+
+void GUISystem::setNumberOfSamples(size_t nSamples)
+{
+    mNumberOfSamples = nSamples;
 }
 
 

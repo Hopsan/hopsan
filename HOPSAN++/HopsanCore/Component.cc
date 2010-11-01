@@ -134,7 +134,7 @@ Component::Component(string name, double timestep)
 
 
 //! Virtual Function, base version which gives you an error if you try to use it.
-void Component::initialize(const double startT, const double stopT)
+void Component::initialize(const double startT, const double stopT, const size_t nSamples)
 {
     cout << "Error! This function should only be used by system components, it should be overloded. For a component use initialize() instead" << endl;
     assert(false);
@@ -1060,7 +1060,7 @@ void ComponentSystem::removeSubNode(Node* node_ptr)
 
 
 //! preAllocates log space (to speed up later access for log writing)
-void ComponentSystem::preAllocateLogSpace(const double startT, const double stopT)
+void ComponentSystem::preAllocateLogSpace(const double startT, const double stopT, const size_t nSamples)
 {
     cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
 
@@ -1072,7 +1072,7 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
             break;
 
         //! @todo this is an ugly quit hack test
-        (*it)->setLogSettingsNSamples(2048, startT, stopT, mTimestep);
+        (*it)->setLogSettingsNSamples(nSamples, startT, stopT, mTimestep);
         //(*it)->setLogSettingsSkipFactor(1, startT, stopT, mTimestep);
         //(*it)->preAllocateLogSpace(needed_slots);
         (*it)->preAllocateLogSpace();
@@ -1971,13 +1971,13 @@ void ComponentSystem::loadStartValuesFromSimulation()
 
 
 //! Initializes a system component and all its contained components, also allocates log data memory
-void ComponentSystem::initialize(const double startT, const double stopT)
+void ComponentSystem::initialize(const double startT, const double stopT, const int nSamples)
 {
     cout << "Initializing SubSystem: " << this->mName << endl;
     mStop = false; //This variable can not be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
 
     //preAllocate local logspace
-    this->preAllocateLogSpace(startT, stopT);
+    this->preAllocateLogSpace(startT, stopT, nSamples);
 
     adjustTimestep(mTimestep, mComponentSignalptrs);
     adjustTimestep(mTimestep, mComponentCptrs);
@@ -1994,7 +1994,7 @@ void ComponentSystem::initialize(const double startT, const double stopT)
 
         if (mComponentSignalptrs[s]->isComponentSystem())
         {
-            mComponentSignalptrs[s]->initialize(startT, stopT);
+            mComponentSignalptrs[s]->initialize(startT, stopT, nSamples);
         }
         else
         {
@@ -2010,7 +2010,7 @@ void ComponentSystem::initialize(const double startT, const double stopT)
 
         if (mComponentCptrs[c]->isComponentSystem())
         {
-            mComponentCptrs[c]->initialize(startT, stopT);
+            mComponentCptrs[c]->initialize(startT, stopT, nSamples);
         }
         else
         {
@@ -2026,7 +2026,7 @@ void ComponentSystem::initialize(const double startT, const double stopT)
 
         if (mComponentQptrs[q]->isComponentSystem())
         {
-            mComponentQptrs[q]->initialize(startT,stopT);
+            mComponentQptrs[q]->initialize(startT, stopT, nSamples);
         }
         else
         {

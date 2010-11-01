@@ -56,7 +56,7 @@ namespace hopsan {
         //Virtual functions
         virtual void loadStartValues();
         virtual void loadStartValuesFromSimulation();
-        virtual void initialize(const double startT, const double stopT);
+        virtual void initialize(const double startT, const double stopT, const size_t nSamples);
         virtual void simulate(const double startT, const double Ts);
         virtual void finalize(const double startT, const double Ts);
         virtual void setDesiredTimestep(const double timestep);
@@ -207,7 +207,7 @@ namespace hopsan {
         bool isSimulationOk();
         void loadStartValues();
         void loadStartValuesFromSimulation();
-        void initialize(const double startT, const double stopT);
+        void initialize(const double startT, const double stopT, const int nSamples=2048);
         void simulateMultiThreaded(const double startT, const double stopT);
         void simulate(const double startT, const double stopT);
         void finalize(const double startT, const double stopT);
@@ -226,7 +226,7 @@ namespace hopsan {
         void adjustTimestep(double timestep, std::vector<Component*> componentPtrs);
 
         //log specific functions
-        void preAllocateLogSpace(const double startT, const double stopT);
+        void preAllocateLogSpace(const double startT, const double stopT, const size_t nSamples = 2048);
         void logAllNodes(const double time);
 
         //Check if connection ok

@@ -51,7 +51,7 @@ public:
     void loadSystemFromFileCoreOnly(QString sysname, QString filepath);
 
     bool isSimulationOk();
-    void initialize(double mStartTime, double mFinishTime);
+    void initialize(double mStartTime, double mFinishTime, size_t nSamples=2048);
     void simulate(double mStartTime, double mFinishTime, simulationMethod type);
     void simulate(double mStartTime, double mFinishTime);
     void finalize(double mStartTime, double mFinishTime);

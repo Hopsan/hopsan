@@ -243,9 +243,9 @@ bool CoreSystemAccess::isSimulationOk()
 }
 
 
-void CoreSystemAccess::initialize(double mStartTime, double mFinishTime)
+void CoreSystemAccess::initialize(double mStartTime, double mFinishTime, size_t nSamples)
 {
-    mpCoreComponentSystem->initialize(mStartTime, mFinishTime);
+    mpCoreComponentSystem->initialize(mStartTime, mFinishTime, nSamples);
 }
 
 

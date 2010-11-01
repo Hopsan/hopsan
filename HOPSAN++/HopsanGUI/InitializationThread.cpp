@@ -26,7 +26,7 @@
 //! @param startTime is the start time for the initialization.
 //! @param finishTime is the finish time for the initialization.
 //! @param parent is the parent of the thread, the a ProjectTabWidget
-InitializationThread::InitializationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, ProjectTab *parent)
+InitializationThread::InitializationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, size_t nSamples, ProjectTab *parent)
 {
     mpParentProjectTab = parent;
 
@@ -34,6 +34,7 @@ InitializationThread::InitializationThread(CoreSystemAccess *pGUIRootSystem, dou
 
     mStartTime = startTime;
     mFinishTime = finishTime;
+    mSamples = nSamples;
 
 }
 
@@ -41,7 +42,7 @@ InitializationThread::InitializationThread(CoreSystemAccess *pGUIRootSystem, dou
 //! Implements the task for the thread.
 void InitializationThread::run()
 {
-    mpGUIRootSystem->initialize(mStartTime, mFinishTime);
+    mpGUIRootSystem->initialize(mStartTime, mFinishTime, mSamples);
 
     //exec(); //Is used if one want to run an event loop in this thread.
 }
