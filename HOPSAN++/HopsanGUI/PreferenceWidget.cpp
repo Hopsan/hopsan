@@ -39,7 +39,7 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
     mpDisableUndoCheckBox->setCheckable(true);
     mpDisableUndoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
 
-    mpNumberOfSamplesLabel = new QLabel(tr("Progress Bar Time Step [ms]"));
+    mpNumberOfSamplesLabel = new QLabel(tr("Number of Log Samples"));
     mpNumberOfSamplesLabel->setEnabled(mpParentMainWindow->mEnableProgressBar);
     mpNumberOfSamplesBox = new QLineEdit(this);
     mpNumberOfSamplesBox->setValidator(new QIntValidator(0, 1000000000000, this));
