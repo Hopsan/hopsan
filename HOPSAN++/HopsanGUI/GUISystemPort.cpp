@@ -20,22 +20,36 @@ GUISystemPort::~GUISystemPort()
 //! @brief Help function to create ports in the component when it is created
 void GUISystemPort::createPorts()
 {
-    //! @todo Only one port in system ports could simplify this
-    PortAppearanceMapT::iterator i;
-    for (i = mAppearanceData.getPortAppearanceMap().begin(); i != mAppearanceData.getPortAppearanceMap().end(); ++i)
+    //A system port only contains one port, which should be first in the map, ignore any others (should not be any more)
+    PortAppearanceMapT::iterator i = mAppearanceData.getPortAppearanceMap().begin();
+
+    //Check if a systemport name is given in appearance data (for example if the systemport is loaded from file)
+    //In that case override the default port name with this name
+    QString desiredportname;
+    if (mAppearanceData.getName().isEmpty())
     {
-        qreal x = i.value().x;
-        qreal y = i.value().y;
-
-        i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
-
-        mAppearanceData.setName(mpParentSystem->mpCoreSystemAccess->addSystemPort(i.key()));
-
-        //We supply ptr to rootsystem to indicate that this is a systemport
-        //! @todo this is a very bad way of doing this (ptr to rootsystem for systemport), really need to figure out some better way
-        mpGuiPort = new GUIPort(mAppearanceData.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this, mpParentSystem->mpCoreSystemAccess);
-        mPortListPtrs.append(mpGuiPort);
+        desiredportname = i.key();
     }
+    else
+    {
+        desiredportname = mAppearanceData.getName();
+    }
+
+    qreal x = i.value().x;
+    qreal y = i.value().y;
+
+    //! @todo should make this function select a systemport icon not undefined
+    i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
+
+    //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding systemport with name: " << desiredportname;
+    mAppearanceData.setName(mpParentSystem->mpCoreSystemAccess->addSystemPort(desiredportname));
+    //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,resulting in name from core: " << mAppearanceData.getName();
+
+    //We supply ptr to rootsystem to indicate that this is a systemport
+    //! @todo this is a very bad way of doing this (ptr to rootsystem for systemport), really need to figure out some better way
+    mpGuiPort = new GUIPort(mAppearanceData.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this, mpParentSystem->mpCoreSystemAccess);
+    mPortListPtrs.append(mpGuiPort);
+
 }
 
 
