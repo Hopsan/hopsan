@@ -770,9 +770,10 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
     {
         QAction *tempAction = changeUnitMenuLeft->addAction(itul.key());
         std::string axisTitle = mpVariablePlot->axisTitle(QwtPlot::yLeft).text().toStdString();
-        if(axisTitle.substr(axisTitle.find("["), axisTitle.find("]")) == itul.key().toStdString())
+
+        if(axisTitle.substr(axisTitle.find("[")+1, axisTitle.find("]")-axisTitle.find("[")-1) == itul.key().toStdString())
         {
-            QFont tempFont = tempAction->font();
+           QFont tempFont = tempAction->font();
             tempFont.setBold(true);
             tempAction->setFont(tempFont);
         }

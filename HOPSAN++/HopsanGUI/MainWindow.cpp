@@ -691,6 +691,21 @@ void MainWindow::loadSettings()
             inputStream >> inputWord;
             mDefaultUnits.insert(inputWord, readName(inputStream));
         }
+        if(inputWord == "ALTERNATIVEUNIT")
+        {
+            QString physicalQuantity;
+            QString unitName;
+            double unitScale;
+
+            inputStream >> physicalQuantity;
+            unitName = readName(inputStream);
+            inputStream >> unitScale;
+
+            if(!mAlternativeUnits.find(physicalQuantity).value().contains(unitName))
+            {
+                mAlternativeUnits.find(physicalQuantity).value().insert(unitName, unitScale);
+            }
+        }
     }
     file.close();
 }
@@ -785,6 +800,16 @@ void MainWindow::saveSettings()
     for(it = mDefaultUnits.begin(); it != mDefaultUnits.end(); ++it)
     {
         settingsFile << "DEFAULTUNIT " << it.key() << " " << addQuotes(it.value()) << "\n";
+    }
+
+    QMap<QString, QMap<QString, double> >::iterator itp;
+    QMap<QString, double>::iterator itu;
+    for(itp = mAlternativeUnits.begin(); itp != mAlternativeUnits.end(); ++itp)
+    {
+        for(itu = itp.value().begin(); itu != itp.value().end(); ++itu)
+        {
+            settingsFile << "ALTERNATIVEUNIT " << itp.key() << " " << addQuotes(itu.key()) << " " << itu.value() << "\n";
+        }
     }
 
     file.close();

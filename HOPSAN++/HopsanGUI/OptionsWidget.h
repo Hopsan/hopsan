@@ -43,14 +43,19 @@ public:
 
     QLabel *mpPressureUnitLabel;
     QComboBox *mpPressureUnitComboBox;
+    QPushButton *mpAddPressureUnitButton;
     QLabel *mpMassFlowUnitLabel;
     QComboBox *mpMassFlowUnitComboBox;
+    QPushButton *mpAddMassFlowUnitButton;
     QLabel *mpForceUnitLabel;
     QComboBox *mpForceUnitComboBox;
+    QPushButton *mpAddForceUnitButton;
     QLabel *mpPositionUnitLabel;
     QComboBox *mpPositionUnitComboBox;
+    QPushButton *mpAddPositionUnitButton;
     QLabel *mpVelocityUnitLabel;
     QComboBox *mpVelocityUnitComboBox;
+    QPushButton *mpAddVelocityUnitButton;
     QGroupBox *mpPlottingGroupBox;
     QGridLayout *mpPlottingLayout;
 
@@ -62,10 +67,31 @@ public:
     QWidget *mpCentralwidget;
 
 
+    QDialog *mpAddUnitDialog;
+    QLabel *mpNameLabel;
+    QLineEdit *mpUnitNameBox;
+    QLabel *mpScaleLabel;
+    QLineEdit *mpScaleBox;
+    QPushButton *mpDoneInUnitDialogButton;
+    QPushButton *mpCancelInUnitDialogButton;
+    QString mPhysicalQuantityToModify;
+
+
+
 public slots:
     void updateValues();
     void colorDialog();
     void show();
+
+private slots:
+    void addPressureUnit();
+    void addMassFlowUnit();
+    void addForceUnit();
+    void addPositionUnit();
+    void addVelocityUnit();
+    void addAlternativeUnitDialog(QString physicalQuantity);
+    void addAlternativeUnit();
+    void updateAlternativeUnits();
 
 private:
     QColor mPickedBackgroundColor;
