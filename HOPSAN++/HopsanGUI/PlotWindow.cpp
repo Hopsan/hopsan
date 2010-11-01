@@ -5,6 +5,8 @@
 #include <QCursor>
 #include <QAction>
 
+#include <cstring>
+
 #include "PlotWidget.h"
 #include "PlotWindow.h"
 
@@ -43,11 +45,20 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mLeftAxisLogarithmic = false;
     mRightAxisLogarithmic = false;
     mAutoUpdate = true;
-    mCurrentUnitsLeft.insert("Pressure", mpParentMainWindow->mDefaultPressureUnit);
-    mCurrentUnitsLeft.insert("Flow", "m^3/s");      //! @todo Finish this for all data types!
-    mCurrentUnitsLeft.insert("Position", "m");
-    mCurrentUnitsLeft.insert("Velocity", "m/s");
-    mCurrentUnitsLeft.insert("Force", "N");
+
+        //Initiate default values for left y-axis
+    mCurrentUnitsLeft.insert("Pressure", mpParentMainWindow->mDefaultUnits.find("Pressure").value());
+    mCurrentUnitsLeft.insert("MassFlow", mpParentMainWindow->mDefaultUnits.find("MassFlow").value());
+    mCurrentUnitsLeft.insert("Position", mpParentMainWindow->mDefaultUnits.find("Position").value());
+    mCurrentUnitsLeft.insert("Velocity", mpParentMainWindow->mDefaultUnits.find("Velocity").value());
+    mCurrentUnitsLeft.insert("Force", mpParentMainWindow->mDefaultUnits.find("Force").value());
+
+        //Initiate default values for right y-axis
+    mCurrentUnitsRight.insert("Pressure", mpParentMainWindow->mDefaultUnits.find("Pressure").value());
+    mCurrentUnitsRight.insert("MassFlow", mpParentMainWindow->mDefaultUnits.find("MassFlow").value());
+    mCurrentUnitsRight.insert("Position", mpParentMainWindow->mDefaultUnits.find("Position").value());
+    mCurrentUnitsRight.insert("Velocity", mpParentMainWindow->mDefaultUnits.find("Velocity").value());
+    mCurrentUnitsRight.insert("Force", mpParentMainWindow->mDefaultUnits.find("Force").value());
 
         //Create the actual plot widget
     mpVariablePlot = new QwtPlot();
@@ -745,21 +756,41 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
     QMenu *insertMarkerMenu;
     QMenu *selectMarkerMenu;
     QMenu *changeUnitMenuLeft;
+    QMenu *changeUnitMenuRight;
 
     yAxisRightMenu = menu.addMenu(QString("Right Y Axis"));
     yAxisLeftMenu = menu.addMenu(QString("Left Y Axis"));
-    insertMarkerMenu = menu.addMenu(QString("Insert Curve Marker"));
-    selectMarkerMenu = menu.addMenu(QString("Change Active Marker"));
 
+
+        //Create menu for changing unit on left axis
     changeUnitMenuLeft = yAxisLeftMenu->addMenu(QString("Change Unit"));
-
-    if(mpVariablePlot->axisTitle(QwtPlot::yLeft).text().startsWith("Pressure"))
+    QString physicalQuantityLeft = QString(mpVariablePlot->axisTitle(QwtPlot::yLeft).text().toStdString().substr(0, mpVariablePlot->axisTitle(QwtPlot::yLeft).text().toStdString().find(' ')).c_str());
+    QMap<QString, double>::iterator itul;
+    for(itul=mpParentMainWindow->mAlternativeUnits.find(physicalQuantityLeft).value().begin(); itul!=mpParentMainWindow->mAlternativeUnits.find(physicalQuantityLeft).value().end(); ++itul)
     {
-        QMap<QString, double>::iterator it;
-        for(it=mpParentMainWindow->mAlternativeUnits.find("Pressure").value().begin(); it!=mpParentMainWindow->mAlternativeUnits.find("Pressure").value().end(); ++it)
+        QAction *tempAction = changeUnitMenuLeft->addAction(itul.key());
+        std::string axisTitle = mpVariablePlot->axisTitle(QwtPlot::yLeft).text().toStdString();
+        if(axisTitle.substr(axisTitle.find("["), axisTitle.find("]")) == itul.key().toStdString())
         {
-            QAction *tempAction = changeUnitMenuLeft->addAction(it.key());
-            if(mpVariablePlot->axisTitle(QwtPlot::yLeft).text().contains(it.key())) //! @todo Very very very ugly!
+            QFont tempFont = tempAction->font();
+            tempFont.setBold(true);
+            tempAction->setFont(tempFont);
+        }
+    }
+
+
+        //Create menu for changing unit on right axis
+    QString physicalQuantityRight;
+    if(mpVariablePlot->axisEnabled(QwtPlot::yRight))
+    {
+        changeUnitMenuRight = yAxisRightMenu->addMenu(QString("Change Unit"));
+        physicalQuantityRight = QString(mpVariablePlot->axisTitle(QwtPlot::yRight).text().toStdString().substr(0, mpVariablePlot->axisTitle(QwtPlot::yRight).text().toStdString().find(' ')).c_str());
+        QMap<QString, double>::iterator itur;
+        for(itur=mpParentMainWindow->mAlternativeUnits.find(physicalQuantityRight).value().begin(); itur!=mpParentMainWindow->mAlternativeUnits.find(physicalQuantityRight).value().end(); ++itur)
+        {
+            QAction *tempAction = changeUnitMenuRight->addAction(itur.key());
+            std::string axisTitle = mpVariablePlot->axisTitle(QwtPlot::yRight).text().toStdString();
+            if(axisTitle.substr(axisTitle.find("["), axisTitle.find("]")) == itur.key().toStdString())
             {
                 QFont tempFont = tempAction->font();
                 tempFont.setBold(true);
@@ -768,9 +799,20 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
         }
     }
 
+
+        //Create actions for making axis logarithmic
     QAction *setRightAxisLogarithmic;
     QAction *setLeftAxisLogarithmic;
+    setRightAxisLogarithmic = yAxisRightMenu->addAction("Logarithmic Scale");
+    setLeftAxisLogarithmic = yAxisLeftMenu->addAction("Logarithmic Scale");
+    setRightAxisLogarithmic->setCheckable(true);
+    setLeftAxisLogarithmic->setCheckable(true);
+    setRightAxisLogarithmic->setChecked(mRightAxisLogarithmic);
+    setLeftAxisLogarithmic->setChecked(mLeftAxisLogarithmic);
 
+
+        //Create menu for insereting curve markers
+    insertMarkerMenu = menu.addMenu(QString("Insert Curve Marker"));
     QMap <QAction *, QwtPlotCurve *> actionToCurveMap;
     QAction *tempAction;
     for(size_t i=0; i<mpCurves.size(); ++i)
@@ -783,6 +825,9 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
         }
     }
 
+
+        //Create menu for selecting curve markers
+    selectMarkerMenu = menu.addMenu(QString("Change Active Marker"));
     QMap <QAction *, QwtPlotMarker *> actionToMarkerMap;
     if(mpMarkers.size() < 2)
     {
@@ -803,45 +848,69 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
         }
     }
 
-    setRightAxisLogarithmic = yAxisRightMenu->addAction("Logarithmic Scale");
-    setLeftAxisLogarithmic = yAxisLeftMenu->addAction("Logarithmic Scale");
 
-    setRightAxisLogarithmic->setCheckable(true);
-    setLeftAxisLogarithmic->setCheckable(true);
-    setRightAxisLogarithmic->setChecked(mRightAxisLogarithmic);
-    setLeftAxisLogarithmic->setChecked(mLeftAxisLogarithmic);
+
+    // -- Wait for user to make a selection -- //
 
     QCursor *cursor;
     QAction *selectedAction = menu.exec(cursor->pos());
 
+    // -- User has selected something --  //
 
 
-        // Change unit
-    if(mpVariablePlot->axisTitle(QwtPlot::yLeft).text().startsWith("Pressure"))
+
+        //User did not click on a menu item
+    if(selectedAction == 0)
     {
-        if(mpParentMainWindow->mAlternativeUnits.find("Pressure").value().contains(selectedAction->text()))
+        return;
+    }
+
+
+        // Change unit on left axis
+    if((selectedAction->parentWidget() == changeUnitMenuLeft) && (mpParentMainWindow->mAlternativeUnits.find(physicalQuantityLeft).value().contains(selectedAction->text())))
+    {
+        QString selectedUnit = selectedAction->text();
+        for(size_t i=0; i<mpCurves.size(); ++i)
         {
-            for(size_t i=0; i<mpCurves.size(); ++i)
+            if(mpCurves.at(i)->yAxis() == QwtPlot::yLeft)
             {
-                if(mpCurves.at(i)->yAxis() == QwtPlot::yLeft)
+                    //Change the curve data to the new x-data and the temporary y-array
+                double scale = mpParentMainWindow->mAlternativeUnits.find(physicalQuantityLeft).value().find(selectedUnit).value();
+                QVector<double> tempVectorY;
+                for(size_t j=0; j<mVectorY[mCurrentGeneration][i].size(); ++j)
                 {
-                        //Change the curve data to the new x-data and the temporary y-array
-                    double scale = mpParentMainWindow->mAlternativeUnits.find("Pressure").value().find(selectedAction->text()).value();
-                    QVector<double> tempVectorY;
-                    for(size_t j=0; j<mVectorY[mCurrentGeneration][i].size(); ++j)
-                    {
-                        tempVectorY.append(mVectorY[mCurrentGeneration][i][j]*scale);
-                    }
-                    mpCurves.at(i)->setData(mVectorX[mCurrentGeneration][i], tempVectorY);
-
-                    //! Make mCurveParameters use struct or tuple instead of stringlist. Now we assume that the last value is the unit, which is kind of ugly.
-                    mCurveParameters[i][3] = selectedAction->text();
+                    tempVectorY.append(mVectorY[mCurrentGeneration][i][j]*scale);
                 }
-                mpVariablePlot->setAxisTitle(QwtPlot::yLeft, "Pressure [" + selectedAction->text() + "]");
-            }
-        }
+                mpCurves.at(i)->setData(mVectorX[mCurrentGeneration][i], tempVectorY);
 
-        //! @todo Finish this - rescale the plot curve and the axis to the new unit
+                //! @todo Perhaps make mCurveParameters use struct or tuple instead of stringlist. Now we assume that the last value is the unit, which is kind of ugly.
+                mCurveParameters[i][3] = selectedAction->text();
+            }
+            mpVariablePlot->setAxisTitle(QwtPlot::yLeft, physicalQuantityLeft + " [" + selectedAction->text() + "]");
+        }
+    }
+
+
+        // Change unit on left axis
+    if((selectedAction->parentWidget() == changeUnitMenuRight) && (mpParentMainWindow->mAlternativeUnits.find(physicalQuantityRight).value().contains(selectedAction->text())))
+    {
+        QString selectedUnit = selectedAction->text();
+        for(size_t i=0; i<mpCurves.size(); ++i)
+        {
+            if(mpCurves.at(i)->yAxis() == QwtPlot::yRight)
+            {
+                    //Change the curve data to the new x-data and the temporary y-array
+                double scale = mpParentMainWindow->mAlternativeUnits.find(physicalQuantityRight).value().find(selectedUnit).value();
+                QVector<double> tempVectorY;
+                for(size_t j=0; j<mVectorY[mCurrentGeneration][i].size(); ++j)
+                {
+                    tempVectorY.append(mVectorY[mCurrentGeneration][i][j]*scale);
+                }
+                mpCurves.at(i)->setData(mVectorX[mCurrentGeneration][i], tempVectorY);
+                mCurveParameters[i][3] = selectedAction->text();
+            }
+            mpVariablePlot->setAxisTitle(QwtPlot::yRight, physicalQuantityRight + " [" + selectedAction->text() + "]");
+        }
     }
 
 
@@ -872,7 +941,7 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
     }
 
 
-        //Inseret curve marker
+        //Insert curve marker
     QMap<QAction *, QwtPlotCurve *>::iterator it;
     for(it = actionToCurveMap.begin(); it!=actionToCurveMap.end(); ++it)
     {
@@ -907,7 +976,6 @@ void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QS
 {
     QString title = QString(componentName + ", " + portName + ", " + dataName + " [" + dataUnit + "]");
     QString xLabel = "Time [s]";
-    QString yLabel = QString(dataName + " [" + dataUnit + "]");
 
     bool firstCurve = false;
     if(mVectorX.isEmpty())
@@ -951,13 +1019,35 @@ void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QS
     tempCurve->setYAxis(axisY);
     mpCurves.append(tempCurve);
 
+
+        //Change to default unit
+    QString newUnit;
+    if(axisY == QwtPlot::yLeft)
+    {
+        newUnit = mCurrentUnitsLeft.find(dataName).value();
+    }
+    else
+    {
+        newUnit = mCurrentUnitsRight.find(dataName).value();
+    }
+    double scale = mpParentMainWindow->mAlternativeUnits.find(dataName).value().find(newUnit).value();
+    QVector<double> tempVectorY;
+    for(size_t j=0; j<mVectorY[mCurrentGeneration].last().size(); ++j)
+    {
+        tempVectorY.append(mVectorY[mCurrentGeneration].last()[j]*scale);
+    }
+    tempCurve->setData(mVectorX[mCurrentGeneration].last(), tempVectorY);
+
+
+    QString yLabel = QString(dataName + " [" + newUnit + "]");
+
     ++nCurves;
     if(nCurves > mCurveColors.size()-1)
     {
         nCurves = 0;        // This restarts the color loop when too many curves are added
     }
 
-    mpVariablePlot->setAxisTitle(QwtPlot::yLeft, yLabel);
+    mpVariablePlot->setAxisTitle(axisY, yLabel);
     mpVariablePlot->insertLegend(new QwtLegend(), QwtPlot::TopLegend);
 
     if(firstCurve)
@@ -972,7 +1062,7 @@ void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QS
     }
 
     QStringList parameterDescription;
-    parameterDescription << componentName << portName << dataName << dataUnit;
+    parameterDescription << componentName << portName << dataName << newUnit;
     mCurveParameters.append(parameterDescription);
 }
 

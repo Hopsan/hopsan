@@ -43,6 +43,14 @@ public:
 
     QLabel *mpPressureUnitLabel;
     QComboBox *mpPressureUnitComboBox;
+    QLabel *mpMassFlowUnitLabel;
+    QComboBox *mpMassFlowUnitComboBox;
+    QLabel *mpForceUnitLabel;
+    QComboBox *mpForceUnitComboBox;
+    QLabel *mpPositionUnitLabel;
+    QComboBox *mpPositionUnitComboBox;
+    QLabel *mpVelocityUnitLabel;
+    QComboBox *mpVelocityUnitComboBox;
     QGroupBox *mpPlottingGroupBox;
     QGridLayout *mpPlottingLayout;
 

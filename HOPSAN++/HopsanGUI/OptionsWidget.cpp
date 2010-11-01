@@ -93,7 +93,6 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
 
     mpPressureUnitLabel = new QLabel(tr("Default Pressure Unit"));
     mpPressureUnitComboBox = new QComboBox();
-
     QMap<QString, double>::iterator it;
     for(it = mpParentMainWindow->mAlternativeUnits.find("Pressure").value().begin();
         it != mpParentMainWindow->mAlternativeUnits.find("Pressure").value().end(); ++it)
@@ -102,9 +101,69 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     }
     for(size_t i = 0; i<mpPressureUnitComboBox->count(); ++i)
     {
-        if(mpPressureUnitComboBox->itemText(i) == mpParentMainWindow->mDefaultPressureUnit)
+        if(mpPressureUnitComboBox->itemText(i) == mpParentMainWindow->mDefaultUnits.find("Pressure").value())
         {
             mpPressureUnitComboBox->setCurrentIndex(i);
+        }
+    }
+
+    mpMassFlowUnitLabel = new QLabel(tr("Default Flow Unit"));
+    mpMassFlowUnitComboBox = new QComboBox();
+    for(it = mpParentMainWindow->mAlternativeUnits.find("MassFlow").value().begin();
+        it != mpParentMainWindow->mAlternativeUnits.find("MassFlow").value().end(); ++it)
+    {
+        mpMassFlowUnitComboBox->addItem(it.key());
+    }
+    for(size_t i = 0; i<mpMassFlowUnitComboBox->count(); ++i)
+    {
+        if(mpMassFlowUnitComboBox->itemText(i) == mpParentMainWindow->mDefaultUnits.find("MassFlow").value())
+        {
+            mpMassFlowUnitComboBox->setCurrentIndex(i);
+        }
+    }
+
+    mpForceUnitLabel = new QLabel(tr("Default Force Unit"));
+    mpForceUnitComboBox = new QComboBox();
+    for(it = mpParentMainWindow->mAlternativeUnits.find("Force").value().begin();
+        it != mpParentMainWindow->mAlternativeUnits.find("Force").value().end(); ++it)
+    {
+        mpForceUnitComboBox->addItem(it.key());
+    }
+    for(size_t i = 0; i<mpForceUnitComboBox->count(); ++i)
+    {
+        if(mpForceUnitComboBox->itemText(i) == mpParentMainWindow->mDefaultUnits.find("Force").value())
+        {
+            mpForceUnitComboBox->setCurrentIndex(i);
+        }
+    }
+
+    mpPositionUnitLabel = new QLabel(tr("Default Position Unit"));
+    mpPositionUnitComboBox = new QComboBox();
+    for(it = mpParentMainWindow->mAlternativeUnits.find("Position").value().begin();
+        it != mpParentMainWindow->mAlternativeUnits.find("Position").value().end(); ++it)
+    {
+        mpPositionUnitComboBox->addItem(it.key());
+    }
+    for(size_t i = 0; i<mpPositionUnitComboBox->count(); ++i)
+    {
+        if(mpPositionUnitComboBox->itemText(i) == mpParentMainWindow->mDefaultUnits.find("Position").value())
+        {
+            mpPositionUnitComboBox->setCurrentIndex(i);
+        }
+    }
+
+    mpVelocityUnitLabel = new QLabel(tr("Default Velocity Unit"));
+    mpVelocityUnitComboBox = new QComboBox();
+    for(it = mpParentMainWindow->mAlternativeUnits.find("Velocity").value().begin();
+        it != mpParentMainWindow->mAlternativeUnits.find("Velocity").value().end(); ++it)
+    {
+        mpVelocityUnitComboBox->addItem(it.key());
+    }
+    for(size_t i = 0; i<mpVelocityUnitComboBox->count(); ++i)
+    {
+        if(mpVelocityUnitComboBox->itemText(i) == mpParentMainWindow->mDefaultUnits.find("Velocity").value())
+        {
+            mpVelocityUnitComboBox->setCurrentIndex(i);
         }
     }
 
@@ -113,6 +172,14 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     mpPlottingLayout = new QGridLayout;
     mpPlottingLayout->addWidget(mpPressureUnitLabel, 0, 0);
     mpPlottingLayout->addWidget(mpPressureUnitComboBox, 0, 1);
+    mpPlottingLayout->addWidget(mpMassFlowUnitLabel, 1, 0);
+    mpPlottingLayout->addWidget(mpMassFlowUnitComboBox, 1, 1);
+    mpPlottingLayout->addWidget(mpForceUnitLabel, 2, 0);
+    mpPlottingLayout->addWidget(mpForceUnitComboBox, 2, 1);
+    mpPlottingLayout->addWidget(mpPositionUnitLabel, 3, 0);
+    mpPlottingLayout->addWidget(mpPositionUnitComboBox, 3, 1);
+    mpPlottingLayout->addWidget(mpVelocityUnitLabel, 4, 0);
+    mpPlottingLayout->addWidget(mpVelocityUnitComboBox, 4, 1);
     mpPlottingGroupBox->setLayout(mpPlottingLayout);
 
     //QLabel *mpPressureUnitLabel;
@@ -164,7 +231,16 @@ void OptionsWidget::updateValues()
     mpParentMainWindow->mEnableProgressBar = mpEnableProgressBarCheckBox->isChecked();
     mpParentMainWindow->mProgressBarStep = mpProgressBarSpinBox->value();
     mpParentMainWindow->mUseMulticore = mpUseMulticoreCheckBox->isChecked();
-    mpParentMainWindow->mDefaultPressureUnit = mpPressureUnitComboBox->currentText();
+    mpParentMainWindow->mDefaultUnits.remove("Pressure");
+    mpParentMainWindow->mDefaultUnits.insert("Pressure", mpPressureUnitComboBox->currentText());
+    mpParentMainWindow->mDefaultUnits.remove("MassFlow");
+    mpParentMainWindow->mDefaultUnits.insert("MassFlow", mpMassFlowUnitComboBox->currentText());
+    mpParentMainWindow->mDefaultUnits.remove("Force");
+    mpParentMainWindow->mDefaultUnits.insert("Force", mpForceUnitComboBox->currentText());
+    mpParentMainWindow->mDefaultUnits.remove("Position");
+    mpParentMainWindow->mDefaultUnits.insert("Position", mpPositionUnitComboBox->currentText());
+    mpParentMainWindow->mDefaultUnits.remove("Velocity");
+    mpParentMainWindow->mDefaultUnits.insert("Velocity", mpVelocityUnitComboBox->currentText());
     mpParentMainWindow->saveSettings();
     this->accept();
 }

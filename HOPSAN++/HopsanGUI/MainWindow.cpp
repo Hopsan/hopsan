@@ -589,18 +589,42 @@ void MainWindow::loadSettings()
     mAntiAliasing = false;
     mLastSessionModels.clear();
     mRecentModels.clear();
-    mDefaultPressureUnit = "Pa";
 
-        //Definition of default alternative units
+    mDefaultUnits.insert("Pressure", "Pa");
+    mDefaultUnits.insert("MassFlow", "m^3/s");
+    mDefaultUnits.insert("Position", "m");
+    mDefaultUnits.insert("Velocity", "m/s");
+    mDefaultUnits.insert("Acceleration", "m/s^2");
+    mDefaultUnits.insert("Force", "N");
+
+        //Definition of dalternative units
     QMap<QString, double> PressureUnitMap;
     PressureUnitMap.insert("Pa", 1);
     PressureUnitMap.insert("Bar", 1e-5);
     PressureUnitMap.insert("MPa", 1e-6);
+    PressureUnitMap.insert("psi", 1.450326e-4);
     QMap<QString, double> FlowUnitMap;
     FlowUnitMap.insert("m^3/s", 1);
-    FlowUnitMap.insert("l/min", 1.666666666666667e-5);
+    FlowUnitMap.insert("l/min", 60000);
+    QMap<QString, double> ForceUnitMap;
+    ForceUnitMap.insert("N", 1);
+    ForceUnitMap.insert("kN", 1e-3);
+    QMap<QString, double> PositionUnitMap;
+    PositionUnitMap.insert("m", 1);
+    PositionUnitMap.insert("mm", 1000);
+    PositionUnitMap.insert("cm", 100);
+    PositionUnitMap.insert("inch", 39.3700787);
+    PositionUnitMap.insert("ft", 3.2808);
+    QMap<QString, double> VelocityUnitMap;
+    VelocityUnitMap.insert("m/s", 1);
+    QMap<QString, double> AccelerationUnitMap;
+    AccelerationUnitMap.insert("m/s^2", 1);
     mAlternativeUnits.insert("Pressure", PressureUnitMap);
-    mAlternativeUnits.insert("Flow", FlowUnitMap);
+    mAlternativeUnits.insert("MassFlow", FlowUnitMap);
+    mAlternativeUnits.insert("Force", ForceUnitMap);
+    mAlternativeUnits.insert("Position", PositionUnitMap);
+    mAlternativeUnits.insert("Velocity", VelocityUnitMap);
+    mAlternativeUnits.insert("Acceleration", AccelerationUnitMap);
 
     QFile file(QString(MAINPATH) + "settings.txt");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -662,9 +686,10 @@ void MainWindow::loadSettings()
         {
             mRecentModels.append(QFileInfo(readName(inputStream)));
         }
-        if(inputWord == "DEFAULTPRESSUREUNIT")
+        if(inputWord == "DEFAULTUNIT")
         {
-            mDefaultPressureUnit = readName(inputStream);
+            inputStream >> inputWord;
+            mDefaultUnits.insert(inputWord, readName(inputStream));
         }
     }
     file.close();
@@ -756,7 +781,11 @@ void MainWindow::saveSettings()
         settingsFile << "RECENTMODEL " << addQuotes(mRecentModels.at(i).filePath()) << "\n";
     }
 
-    settingsFile << "DEFAULTPRESSUREUNIT " << addQuotes(mDefaultPressureUnit) << "\n";
+    QMap<QString, QString>::iterator it;
+    for(it = mDefaultUnits.begin(); it != mDefaultUnits.end(); ++it)
+    {
+        settingsFile << "DEFAULTUNIT " << it.key() << " " << addQuotes(it.value()) << "\n";
+    }
 
     file.close();
 }
