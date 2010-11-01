@@ -53,6 +53,8 @@ public:
     OptionsWidget *mpOptionsWidget;
     PreferenceWidget *mpPreferenceWidget;
     MessageWidget *mpMessageWidget;
+    QPushButton *mpClearMessageWidgetButton;
+
     QStatusBar *mpStatusBar;
     PlotWidget *mpPlotWidget;
     GlobalParametersWidget *mpGlobalParametersWidget;

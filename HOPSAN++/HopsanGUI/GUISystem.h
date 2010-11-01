@@ -64,7 +64,6 @@ public:
     GUIConnector *mpTempConnector;
     graphicsType mGfxType;
 
-
     double getStartTime();
     double getTimeStep();
     double getStopTime();

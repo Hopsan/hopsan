@@ -56,9 +56,19 @@ MainWindow::MainWindow(QWidget *parent)
     mpMessageDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
     mpMessageWidget = new MessageWidget(this);
     mpMessageWidget->setReadOnly(true);
-    mpMessageDock->setWidget(mpMessageWidget);
+    mpClearMessageWidgetButton = new QPushButton("Clear Messages");
+    QFont tempFont = mpClearMessageWidgetButton->font();
+    tempFont.setBold(true);
+    mpClearMessageWidgetButton->setFont(tempFont);
+    QGridLayout *pTempLayout = new QGridLayout(mpMessageDock);
+    pTempLayout->addWidget(mpMessageWidget,0,0,1,5);
+    pTempLayout->addWidget(mpClearMessageWidgetButton,1,0,1,1);
+    QWidget *pTempWidget = new QWidget(this);
+    pTempWidget->setLayout(pTempLayout);
+    mpMessageDock->setWidget(pTempWidget);
     addDockWidget(Qt::BottomDockWidgetArea, mpMessageDock);
     mpMessageWidget->printGUIMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
+    connect(mpClearMessageWidgetButton, SIGNAL(pressed()),mpMessageWidget,SLOT(clear()));
 
     this->loadSettings();
 
@@ -164,6 +174,8 @@ MainWindow::MainWindow(QWidget *parent)
     tabifyDockWidget(mpPlotWidgetDock, mpGlobalParametersDock);
     tabifyDockWidget(mpGlobalParametersDock, mpUndoWidgetDock);
     tabifyDockWidget(mpUndoWidgetDock, mpPlotWidgetDock);
+
+    tabifyDockWidget(mpMessageDock, mpPyDock);
 
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateToolBarsToNewTab()));
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(refreshUndoWidgetList()));
