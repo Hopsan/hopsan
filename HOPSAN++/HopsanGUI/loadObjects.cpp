@@ -96,8 +96,8 @@ void ObjectLoadData::read(QTextStream &rStream)
 void ObjectLoadData::readDomElement(QDomElement &rDomElement)
 {
     //Read core specific data
-    type = rDomElement.firstChildElement("typename").text();
-    name = rDomElement.firstChildElement("name").text();
+    type = rDomElement.firstChildElement(HMF_TYPETAG).text();
+    name = rDomElement.firstChildElement(HMF_NAMETAG).text();
 
     //! What about parameters
 
@@ -146,6 +146,7 @@ void SubsystemLoadData::read(QTextStream &rStream)
 
 void SubsystemLoadData::readDomElement(QDomElement &rDomElement)
 {
+    //! @todo should check if tagname is what we expect really, should do this in all readDomElement functions
     type = "Subsystem"; //Hardcode the type, regardles of hmf contents (should not contain type
     //loadtype = readName(rStream);
     name = rDomElement.firstChildElement("name").text();
@@ -252,14 +253,14 @@ void ConnectorLoadData::readDomElement(QDomElement &rDomElement)
     endPortName = rDomElement.firstChildElement("endport").text();
 
     //Read gui specific stuff
-    QDomElement guiData = rDomElement.firstChildElement("hopsangui");
+    QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
     qreal x,y;
-    QDomElement xyNode = guiData.firstChildElement("xy");
+    QDomElement xyNode = guiData.firstChildElement(HMF_XYTAG);
     while (!xyNode.isNull())
     {
         parseDomValueNode2(xyNode,x,y);
         pointVector.push_back(QPointF(x,y));
-        xyNode = xyNode.nextSiblingElement("xy");
+        xyNode = xyNode.nextSiblingElement(HMF_XYTAG);
     }
 }
 
@@ -547,6 +548,19 @@ void appendDomValueNode(QDomElement &rDomElement, const QString element_name, co
     appendDomTextNode(rDomElement, element_name, tmp_string);
 }
 
+
+void appendDomValueNode2(QDomElement &rDomElement, const QString element_name, const double a, const double b)
+{
+    QString num,str;
+    num.setNum(a);
+    str.append(num);
+    str.append(" ");
+    num.setNum(b);
+    str.append(num);
+    appendDomTextNode(rDomElement, element_name, str);
+}
+
+
 void appendDomValueNode3(QDomElement &rDomElement, const QString element_name, const double a, const double b, const double c)
 {
     QString num,str;
@@ -561,16 +575,21 @@ void appendDomValueNode3(QDomElement &rDomElement, const QString element_name, c
     appendDomTextNode(rDomElement, element_name, str);
 }
 
-void appendDomValueNode2(QDomElement &rDomElement, const QString element_name, const double a, const double b)
+
+void appendDomValueNodeN(QDomElement &rDomElement, const QString element_name, const QVector<qreal> &rValues)
 {
     QString num,str;
-    num.setNum(a);
-    str.append(num);
-    str.append(" ");
-    num.setNum(b);
-    str.append(num);
+    for (unsigned int i=0; i<rValues.size(); ++i)
+    {
+        num.setNum(rValues[i]);
+        str.append(num);
+        str.append(" ");
+    }
+    str.chop(1); //Remove last space
     appendDomTextNode(rDomElement, element_name, str);
 }
+
+
 
 void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &rC)
 {

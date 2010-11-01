@@ -121,14 +121,41 @@ void addHMFHeader(QDomElement &rDomElement);
 
 QDomElement appendDomElement(QDomElement &rDomElement, const QString element_name);
 void appendDomTextNode(QDomElement &rDomElement, const QString element_name, const QString text);
+
 void appendDomValueNode(QDomElement &rDomElement, const QString element_name, const double val);
 //! @todo maybe revert to using only appendDomTextNode names on all functions (then you need to think less)
-void appendDomValueNode3(QDomElement &rDomElement, const QString element_name, const double a, const double b, const double c);
 void appendDomValueNode2(QDomElement &rDomElement, const QString element_name, const double a, const double b);
+void appendDomValueNode3(QDomElement &rDomElement, const QString element_name, const double a, const double b, const double c);
+void appendDomValueNodeN(QDomElement &rDomElement, const QString element_name, const QVector<qreal> &rValues);
 //! @todo write one that takes a vector with data
 
-void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &rC);
-void parseDomValueNode2(QDomElement domElement, double &rA, double &rB);
 qreal parseDomValueNode(QDomElement domElement);
+void parseDomValueNode2(QDomElement domElement, double &rA, double &rB);
+void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &rC);
+
+//Save Load Definitions
+#define HMF_ROOTTAG "hopsanmodelfile"
+#define HMF_OBJECTTAG "object"              //Non core Gui Object
+#define HMF_COMPONENTTAG "component"
+#define HMF_SYSTEMTAG "system"
+#define HMF_SYSTEMPORTTAG "systemport"
+#define HMF_CONNECTORTAG "connect"
+#define HMF_PARAMETERTAG "parameter"
+
+#define HMF_NAMETAG "name"
+#define HMF_TYPETAG "typename"
+#define HMF_CQSTYPETAG "cqs_type"
+#define HMF_PORTTAG "port"
+
+#define HMF_HOPSANGUITAG "hopsangui"
+#define HMF_XYTAG "xy"                      //Containes an xy coordinate pair
+#define HMF_EXTERNALPATHTAG "external_path" //Contains the path to an external subsystem
+#define HMF_VALUETAG "value"
+#define HMF_POSETAG "pose"
+
+#define HMF_CONNECTORSTARTCOMPONENTTAG "startcomponent"
+#define HMF_CONNECTORSTARTPORTTAG "startport"
+#define HMF_CONNECTORENDCOMPONENTTAG "endcomponent"
+#define HMF_CONNECTORENDPORTTAG "endport"
 
 #endif // LOADOBJECTS_H

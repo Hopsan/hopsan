@@ -17,6 +17,7 @@
 #include "GUISystem.h"
 #include "GUIPort.h"
 #include "MessageWidget.h"
+#include "GUIComponent.h"
 
 
 //! @class ParameterDialog

@@ -23,6 +23,7 @@ class Component;
 class GUIObjectSelectionBox;
 class GUIPort;
 class GUISystem;
+class GUIComponent;
 
 enum GUIObjectEnumT {GUIOBJECT=QGraphicsItem::UserType+1, GUISYSTEM, GUICOMPONENT, GUISYSTEMPORT, GUIGROUP, GUIGROUPPORT};
 
@@ -190,130 +191,15 @@ protected:
 };
 
 
-class GUIComponent : public GUIObject
-{
-    Q_OBJECT
-public:
-    GUIComponent(AppearanceData* pAppearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
-    ~GUIComponent();
-
-    QVector<QString> getParameterNames();
-    QString getParameterUnit(QString name);
-    QString getParameterDescription(QString name);
-    double getParameterValue(QString name);
-    void setParameterValue(QString name, double value);
-
-    void saveToTextStream(QTextStream &rStream, QString prepend=QString());
-    void saveToDomElement(QDomElement &rDomElement);
-
-    void setName(QString name, renameRestrictions renameSettings=UNRESTRICTED);
-    QString getTypeName();
-    QString getTypeCQS();
-
-    enum { Type = GUICOMPONENT };
-    int type() const;
-
-protected:
-    void saveCoreDataToDomElement(QDomElement &rDomElement);
-
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-    void openParameterDialog();
-
-    void createPorts();
-
-    //QString mComponentTypeName;
-
-public slots:
-
-private:
-
-};
 
 
 
 
-class GUISystemPort : public GUIObject
-{
-    Q_OBJECT
-public:
-    GUISystemPort(AppearanceData* pAppearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected = SELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
-    ~GUISystemPort();
-    QString getTypeName();
-    void setName(QString newName, renameRestrictions renameSettings);
 
 
-    enum { Type = GUISYSTEMPORT };
-    int type() const;
-
-protected:
-    void createPorts();
-
-private:
-    GUIPort *mpGuiPort;
-};
 
 
-class GUIGroup : public GUIContainerObject
-{
-    Q_OBJECT
-public:
-    GUIGroup(QList<QGraphicsItem*> compList, AppearanceData* pAppearanceData, GUISystem *system, QGraphicsItem *parent = 0);
-    ~GUIGroup();
-//    QString getName();
-//    void setName(QString name, bool doOnlyLocalRename=false);
 
-    enum { Type = GUIGROUP };
-    int type() const;
-
-    QString getTypeName();
-
-protected:
-    GraphicsScene *mpParentScene;
-    GraphicsScene *mpGroupScene;
-
-    QList<GUIComponent*> mGUICompList;
-    QList<GUIConnector*> mGUIConnList;
-    QList<GUIConnector*> mGUITransitConnList;
-
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-
-public slots:
-    void showParent();
-
-private:
-//    GUIPort *mpGuiPort;
-
-//    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-//    void openParameterDialog();
-//
-//    QString mComponentTypeName;
-//
-//    GraphicsScene *mpGroupScene;
-//
-//public slots:
-//     void deleteMe();
-};
-
-
-class GUIGroupPort : public GUIObject
-{
-    Q_OBJECT
-public:
-    GUIGroupPort(AppearanceData* pAppearanceData, QPoint position, GUISystem *system, QGraphicsItem *parent = 0);
-    QString getTypeName();
-    void setName(QString newName);
-
-    void setOuterGuiPort(GUIPort *pPort);
-
-    enum { Type = GUIGROUPPORT };
-    int type() const;
-
-private:
-    GUIPort *mpGuiPort;
-    GUIPort *mpOuterGuiPort;
-};
 
 
 #endif // GUIOBJECT_H

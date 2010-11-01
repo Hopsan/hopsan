@@ -32,7 +32,10 @@ SOURCES += main.cpp \
     GlobalParametersWidget.cpp \
     PlotWindow.cpp \
     PyWrapperClasses.cpp \
-    PyDock.cpp
+    PyDock.cpp \
+    GUIComponent.cpp \
+    GUIGroup.cpp \
+    GUISystemPort.cpp
 
 HEADERS += MainWindow.h \
     ProjectTabWidget.h \
@@ -65,7 +68,10 @@ HEADERS += MainWindow.h \
     GlobalParametersWidget.h \
     PlotWindow.h \
     PyWrapperClasses.h \
-    PyDock.h
+    PyDock.h \
+    GUIComponent.h \
+    GUIGroup.h \
+    GUISystemPort.h
 
 OTHER_FILES += 
 

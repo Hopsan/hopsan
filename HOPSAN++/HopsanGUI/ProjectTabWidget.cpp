@@ -360,7 +360,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     qDebug() << "saving to xml";
     //Save xml document
     QDomDocument domDocument;
-    QDomElement hmfRoot = domDocument.createElement("hmf");
+    QDomElement hmfRoot = domDocument.createElement(HMF_ROOTTAG);
     domDocument.appendChild(hmfRoot);
     addHMFHeader(hmfRoot);
 
@@ -608,7 +608,7 @@ void ProjectTabWidget::loadModel()
     QDir fileDialogOpenDir;
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Model File"),
                                                          fileDialogOpenDir.currentPath() + QString(MODELPATH),
-                                                         tr("Hopsan Model Files (*.hmf)"));
+                                                         tr("Hopsan Model Files (*.hmf *.hmfx)"));
     loadModel(modelFileName);
 
     emit newTabAdded();
@@ -683,10 +683,11 @@ void ProjectTabWidget::loadModel(QString modelFileName)
         else
         {
             QDomElement hmfRoot = domDocument.documentElement();
-            if (hmfRoot.tagName() != "hopsanmodelfile")
+            if (hmfRoot.tagName() != HMF_ROOTTAG)
             {
                 QMessageBox::information(window(), tr("Hopsan GUI"),
-                                         tr("The file is not an Hopsan Model File file."));
+                                         "The file is not an Hopsan Model File file. Incorrect hmf root tag name: "
+                                         + hmfRoot.tagName() + "!=" + HMF_ROOTTAG);
             }
             else
             {
@@ -696,7 +697,7 @@ void ProjectTabWidget::loadModel(QString modelFileName)
                 QDomElement versionInfo = hmfRoot.firstChildElement("hopsanversions");
                 QDomElement modelProperties = hmfRoot.firstChildElement("modelproperties");
                 QDomElement modelAppearance = hmfRoot.firstChildElement("modelappearance");
-                QDomElement systemElement = hmfRoot.firstChildElement("system");
+                QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
                 pCurrentTab->mpSystem->loadFromDomElement(systemElement);
             }
 

@@ -2,6 +2,7 @@
 #include "GUISystem.h"
 
 #include "GUIObject.h"
+#include "GUIComponent.h"
 #include "ProjectTabWidget.h"
 #include "MainWindow.h"
 #include "ParameterDialog.h"
@@ -15,6 +16,8 @@
 #include "LibraryWidget.h"
 #include "loadObjects.h"
 #include "CoreSystemAccess.h"
+#include "GUIGroup.h"
+#include "GUISystemPort.h"
 
 GUISystem::GUISystem(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
     : GUIContainerObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
@@ -523,8 +526,8 @@ void GUISystem::saveToTextStream(QTextStream &rStream, QString prepend)
 //! @todo maybe have a inherited function in some other base class that are specific for guiobjects with core equivalent
 void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
 {
-    appendDomTextNode(rDomElement, "typename", getTypeName());
-    appendDomTextNode(rDomElement, "name", getName());
+    appendDomTextNode(rDomElement, HMF_TYPETAG, getTypeName());
+    appendDomTextNode(rDomElement, HMF_NAMETAG, getName());
 }
 
 void GUISystem::saveToDomElement(QDomElement &rDomElement)
@@ -546,7 +549,7 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
 
     qDebug() << "Saving to dom node in: " << this->mAppearanceData.getName();
     //! @todo dont hardcode "system" or maybe thats ok
-    QDomElement xmlSubsystem = appendDomElement(rDomElement,"system");
+    QDomElement xmlSubsystem = appendDomElement(rDomElement, HMF_SYSTEMTAG);
 
     //Save Core related stuff
     this->saveCoreDataToDomElement(xmlSubsystem);
@@ -556,7 +559,7 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
     appendDomTextNode(xmlSubsystem, "cqstype", getTypeCQS());
     if ((mpParentSystem != 0) && (mLoadType=="EXTERNAL"))
     {
-        appendDomTextNode(xmlSubsystem, "externalpath", relativePath(mModelFileInfo.absoluteFilePath(), mpParentSystem->mModelFileInfo.absolutePath()));
+        appendDomTextNode(xmlSubsystem, HMF_EXTERNALPATHTAG, relativePath(mModelFileInfo.absoluteFilePath(), mpParentSystem->mModelFileInfo.absolutePath()));
     }
     else
     {
@@ -587,54 +590,53 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 {
     //! @todo might need some error checking here incase some fields are missing
     //First load the core specific data, might need inherited function for this
-    this->setName(rDomElement.firstChildElement("name").text());
-    this->setTypeCQS(rDomElement.firstChildElement("cqs_type").text());
+    this->setName(rDomElement.firstChildElement(HMF_NAMETAG).text());
+    this->setTypeCQS(rDomElement.firstChildElement(HMF_CQSTYPETAG).text());
 
     //Check if the subsystem is external or internal, and load appropriately
-    QString external_path = rDomElement.firstChildElement("external_path").text();
-    //! @todo define component and similar bellow somwhere eg. in common.h
+    QString external_path = rDomElement.firstChildElement(HMF_EXTERNALPATHTAG).text();
     if (external_path.isEmpty())
     {
         //Load embedded subsystem
         //1. Load all sub-components
-        QDomElement xmlSubObject = rDomElement.firstChildElement("component");
+        QDomElement xmlSubObject = rDomElement.firstChildElement(HMF_COMPONENTTAG);
         while (!xmlSubObject.isNull())
         {
             GUIObject* pObj = loadGUIObject(xmlSubObject, mpMainWindow->mpLibrary, this, NOUNDO);
 
             //Load parameter values
-            QDomElement xmlParameter = xmlSubObject.firstChildElement("parameter");
+            QDomElement xmlParameter = xmlSubObject.firstChildElement(HMF_PARAMETERTAG);
             while (!xmlParameter.isNull())
             {
                 loadParameterValue(xmlParameter, pObj, NOUNDO);
-                xmlParameter = xmlParameter.nextSiblingElement("parameter");
+                xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
             }
 
-            xmlSubObject = xmlSubObject.nextSiblingElement("component");
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_COMPONENTTAG);
         }
 
         //2. Load all sub-systems
-        xmlSubObject = rDomElement.firstChildElement("system");
+        xmlSubObject = rDomElement.firstChildElement(HMF_SYSTEMTAG);
         while (!xmlSubObject.isNull())
         {
             loadSubsystemGUIObject(xmlSubObject, mpMainWindow->mpLibrary, this, NOUNDO);
-            xmlSubObject = xmlSubObject.nextSiblingElement("system");
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMTAG);
         }
 
         //3. Load all systemports
-        xmlSubObject = rDomElement.firstChildElement("systemport");
+        xmlSubObject = rDomElement.firstChildElement(HMF_SYSTEMPORTTAG);
         while (!xmlSubObject.isNull())
         {
             loadGUIObject(xmlSubObject, mpMainWindow->mpLibrary, this, NOUNDO);
-            xmlSubObject = xmlSubObject.nextSiblingElement("systemport");
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMPORTTAG);
         }
 
         //4. Load all connectors
-        xmlSubObject = rDomElement.firstChildElement("connector");
+        xmlSubObject = rDomElement.firstChildElement(HMF_CONNECTORTAG);
         while (!xmlSubObject.isNull())
         {
-            //! load component data
-            xmlSubObject = xmlSubObject.nextSiblingElement("connector");
+            loadConnector(xmlSubObject, this, NOUNDO);
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_CONNECTORTAG);
         }
     }
     else
