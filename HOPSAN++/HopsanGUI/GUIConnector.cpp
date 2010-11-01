@@ -62,8 +62,8 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     mpEndPort = endPort;
     mpStartPort->isConnected = true;
     mpEndPort->isConnected = true;
-    connect(mpStartPort->getGuiModelObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
-    connect(mpEndPort->getGuiModelObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
+    connect(mpStartPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
+    connect(mpEndPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
     QPointF startPos = getStartPort()->mapToScene(getStartPort()->boundingRect().center());
     this->setPos(startPos);
 
@@ -85,7 +85,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     mEndPortConnected = true;
     emit endPortConnected();
     this->setPassive();
-    connect(mpEndPort->getGuiModelObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
+    connect(mpEndPort->getGuiModelObject(),SIGNAL(objectDeleted()),this,SLOT(deleteMeWithNoUndo()));
 
         //Create the lines, so that drawConnector has something to work with
     for(int i=0; i < mPoints.size()-1; ++i)
@@ -243,7 +243,7 @@ void GUIConnector::setStartPort(GUIPort *port)
     mpStartPort = port;
     mpStartPort->isConnected = true;
     connect(mpStartPort->getGuiModelObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
-    connect(mpStartPort->getGuiModelObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
+    connect(mpStartPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
 }
 
 
@@ -279,7 +279,7 @@ void GUIConnector::setEndPort(GUIPort *port)
 
     this->updateEndPoint(port->mapToScene(port->boundingRect().center()));
     connect(mpEndPort->getGuiModelObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
-    connect(mpEndPort->getGuiModelObject(),SIGNAL(componentSelected()),this,SLOT(selectIfBothComponentsSelected()));
+    connect(mpEndPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
 
         //Make all lines selectable and all lines except first and last movable
     if(mpLines.size() > 1)

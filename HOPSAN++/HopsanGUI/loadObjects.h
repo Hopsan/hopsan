@@ -36,7 +36,7 @@ public:
     void read(QTextStream &rStream);
 };
 
-class ObjectLoadData
+class ModelObjectLoadData
 {
 public:
     QString type;
@@ -47,9 +47,13 @@ public:
 
     void read(QTextStream &rStream);
     void readDomElement(QDomElement &rDomElement);
+
+protected:
+    void readGuiDataFromDomElement(QDomElement &rDomElement);
+
 };
 
-class SubsystemLoadData :public ObjectLoadData
+class SubsystemLoadData :public ModelObjectLoadData
 {
 public:
     QString loadtype;
@@ -99,7 +103,7 @@ public:
 };
 
 
-GUIModelObject* loadGUIModelObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings=UNDO);
+GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings=UNDO);
 GUIModelObject* loadGUIModelObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings=UNDO);
 GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings);
 
@@ -154,6 +158,8 @@ void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &
 #define HMF_EXTERNALPATHTAG "external_path" //Contains the path to an external subsystem
 #define HMF_VALUETAG "value"
 #define HMF_POSETAG "pose"
+#define HMF_NAMETEXTPOSTAG "nametextpos"
+#define HMF_VISIBLETAG "visible"
 
 #define HMF_CONNECTORSTARTCOMPONENTTAG "startcomponent"
 #define HMF_CONNECTORSTARTPORTTAG "startport"

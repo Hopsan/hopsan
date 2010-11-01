@@ -14,16 +14,14 @@
 #include "AppearanceData.h"
 #include <assert.h>
 
-class ProjectTabWidget;
+//class ProjectTabWidget;
 class GraphicsScene;
-class GraphicsView;
+//class GraphicsView;
 class GUIConnector;
 class GUIModelObjectDisplayName;
-//class Component;
 class GUIObjectSelectionBox;
 class GUIPort;
 class GUISystem;
-//class GUIComponent;
 
 enum GUIObjectEnumT {GUIOBJECT=QGraphicsItem::UserType+1, GUIMODELOBJECT, GUICONTAINEROBJECT, GUISYSTEM, GUICOMPONENT, GUISYSTEMPORT, GUIGROUP, GUIGROUPPORT};
 

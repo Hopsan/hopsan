@@ -54,7 +54,7 @@ GUISystem::~GUISystem()
 void GUISystem::commonConstructorCode()
 {
     //Set the hmf save tag name
-    mHmfTagName = HMF_COMPONENTTAG;
+    mHmfTagName = HMF_SYSTEMTAG;
 
     mpScene = new GraphicsScene();
     mpScene->addItem(this);     //! Detta kan gå åt helsike
@@ -559,7 +559,7 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
 
     //! @todo do we really need both systemtype and external path, en empty path could indicate embeded
     //appendDomTextNode(subsysContainerNode, "SystemType", mLoadType);
-    appendDomTextNode(xmlSubsystem, "cqstype", getTypeCQS());
+    appendDomTextNode(xmlSubsystem, HMF_CQSTYPETAG, getTypeCQS());
     if ((mpParentSystem != 0) && (mLoadType=="EXTERNAL"))
     {
         appendDomTextNode(xmlSubsystem, HMF_EXTERNALPATHTAG, relativePath(mModelFileInfo.absoluteFilePath(), mpParentSystem->mModelFileInfo.absolutePath()));
@@ -614,6 +614,8 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
                 loadParameterValue(xmlParameter, pObj, NOUNDO);
                 xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
             }
+
+            //Load start values
 
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_COMPONENTTAG);
         }
@@ -686,6 +688,7 @@ GUIModelObject* GUISystem::addGUIObject(AppearanceData* pAppearanceData, QPoint 
     }
     else if (componentTypeName == "SystemPort")
     {
+        qDebug() << "======================================================Loading systemport";
         mpTempGUIObject = new GUISystemPort(pAppearanceData, position, rotation, this, startSelected, mGfxType);
     }
     else //Assume some standard component type
@@ -1078,7 +1081,7 @@ void GUISystem::paste()
         if(inputWord == "COMPONENT")
         {
             //QString oldname;
-            ObjectLoadData data;
+            ModelObjectLoadData data;
 
             //Read the data from stream
             data.read(copyStream);

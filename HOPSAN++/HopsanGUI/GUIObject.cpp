@@ -530,7 +530,7 @@ void GUIModelObject::fixTextPosition(QPointF pos)
 void GUIModelObject::rememberConnector(GUIConnector *item)
 {
     mpGUIConnectorPtrs.append(item);
-    connect(this, SIGNAL(componentMoved()), item, SLOT(drawConnector()));
+    connect(this, SIGNAL(objectMoved()), item, SLOT(drawConnector()));
 }
 
 
@@ -766,12 +766,9 @@ void GUIModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
     QDomElement xmlGuiStuff = appendDomElement(rDomElement,HMF_HOPSANGUITAG);
 
     QPointF pos = mapToScene(boundingRect().center());
-//    appendDomTextNode(xmlSyspGUI, "posx", pos.x());
-//    appendDomTextNode(xmlSyspGUI, "posy", pos.y());
-//    appendDomTextNode(xmlSyspGUI, "rotation", rotation());
     appendDomValueNode3(xmlGuiStuff, HMF_POSETAG, pos.x(), pos.y(), rotation());
-    appendDomValueNode(xmlGuiStuff, "nametextpos", getNameTextPos());
-    appendDomValueNode(xmlGuiStuff, "visible", mpNameText->isVisible());
+    appendDomValueNode(xmlGuiStuff, HMF_NAMETEXTPOSTAG, getNameTextPos());
+    appendDomValueNode(xmlGuiStuff, HMF_VISIBLETAG, mpNameText->isVisible());
 }
 
 

@@ -80,7 +80,7 @@ void HeaderLoadData::read(QTextStream &rStream)
     rStream.readLine();
 }
 
-void ObjectLoadData::read(QTextStream &rStream)
+void ModelObjectLoadData::read(QTextStream &rStream)
 {
     type = readName(rStream);
     name = readName(rStream);  //Now read the name, assume that the name is contained within quotes signs, "name"
@@ -93,21 +93,23 @@ void ObjectLoadData::read(QTextStream &rStream)
     rStream >> textVisible;
 }
 
-void ObjectLoadData::readDomElement(QDomElement &rDomElement)
+void ModelObjectLoadData::readDomElement(QDomElement &rDomElement)
 {
     //Read core specific data
     type = rDomElement.firstChildElement(HMF_TYPETAG).text();
     name = rDomElement.firstChildElement(HMF_NAMETAG).text();
 
-    //! What about parameters
-
     //Read gui specific data
-    //! @todo maybe have common function for this
-    QDomElement guiData = rDomElement.firstChildElement("hopsangui");
-    parseDomValueNode3(guiData.firstChildElement("pose"), posX, posY, rotation);
+    readGuiDataFromDomElement(rDomElement);
+}
 
-    nameTextPos = parseDomValueNode(guiData.firstChildElement("nametextpos"));
-    textVisible = parseDomValueNode(guiData.firstChildElement("visibel")); //should be bool
+void ModelObjectLoadData::readGuiDataFromDomElement(QDomElement &rDomElement)
+{
+    QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
+    parseDomValueNode3(guiData.firstChildElement(HMF_POSETAG), posX, posY, rotation);
+
+    nameTextPos = parseDomValueNode(guiData.firstChildElement(HMF_NAMETEXTPOSTAG));
+    textVisible = parseDomValueNode(guiData.firstChildElement(HMF_VISIBLETAG))+0.5; //should be bool, +0.5 to roound to int on truncation
 }
 
 void SubsystemLoadData::read(QTextStream &rStream)
@@ -165,15 +167,8 @@ void SubsystemLoadData::readDomElement(QDomElement &rDomElement)
 
     if (loadtype == "EXTERNAL")
     {
-        //filepath = readName(rStream);
-
         //Read gui specific data
-        //! @todo maybe have common function for this
-        QDomElement guiData = rDomElement.firstChildElement("hopsangui");
-        parseDomValueNode3(guiData.firstChildElement("pose"), posX, posY, rotation);
-
-        nameTextPos = parseDomValueNode(guiData.firstChildElement("nametextpos"));
-        textVisible = parseDomValueNode(guiData.firstChildElement("visibel")); //should be bool
+        this->readGuiDataFromDomElement(rDomElement);
     }
 //    else if (loadtype == "embeded")
 //    {
@@ -247,10 +242,10 @@ void ConnectorLoadData::read(QTextStream &rStream)
 void ConnectorLoadData::readDomElement(QDomElement &rDomElement)
 {
     //Read core specific stuff
-    startComponentName = rDomElement.firstChildElement("startcomponent").text();
-    startPortName = rDomElement.firstChildElement("startport").text();
-    endComponentName = rDomElement.firstChildElement("endcomponent").text();
-    endPortName = rDomElement.firstChildElement("endport").text();
+    startComponentName = rDomElement.firstChildElement(HMF_CONNECTORSTARTCOMPONENTTAG).text();
+    startPortName = rDomElement.firstChildElement(HMF_CONNECTORSTARTPORTTAG).text();
+    endComponentName = rDomElement.firstChildElement(HMF_CONNECTORENDCOMPONENTTAG).text();
+    endPortName = rDomElement.firstChildElement(HMF_CONNECTORENDPORTTAG).text();
 
     //Read gui specific stuff
     QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
@@ -274,14 +269,14 @@ void ParameterLoadData::read(QTextStream &rStream)
 
 void ParameterLoadData::readDomElement(QDomElement &rDomElement)
 {
-    componentName = "";
+    componentName = ""; //not used
     parameterName = rDomElement.firstChildElement("name").text();
     parameterValue = parseDomValueNode(rDomElement.firstChildElement("value"));
 }
 
 
 
-GUIModelObject* loadGUIModelObject(const ObjectLoadData &rData, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
+GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
 {
     AppearanceData *pAppearanceData = pLibrary->getAppearanceData(rData.type);
     if (pAppearanceData != 0)
@@ -364,8 +359,8 @@ void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, undoStatu
         startPort->hide();
         endPort->hide();
 
-        QObject::connect(startPort->getGuiModelObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
-        QObject::connect(endPort->getGuiModelObject(),SIGNAL(componentDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+        QObject::connect(startPort->getGuiModelObject(),SIGNAL(objectDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
+        QObject::connect(endPort->getGuiModelObject(),SIGNAL(objectDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
 
         pSystem->mSubConnectorList.append(pTempConnector);
     }
@@ -409,7 +404,7 @@ void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoS
 //! @brief Conveniance function if you dont want to manipulate the loaded data
 GUIModelObject* loadGUIModelObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
 {
-    ObjectLoadData data;
+    ModelObjectLoadData data;
     data.read(rStream);
     return loadGUIModelObject(data,pLibrary, pSystem, undoSettings);
 }
@@ -417,7 +412,7 @@ GUIModelObject* loadGUIModelObject(QTextStream &rStream, LibraryWidget* pLibrary
 //! @brief Conveniance function if you dont want to manipulate the loaded data
 GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
 {
-    ObjectLoadData data;
+    ModelObjectLoadData data;
     data.readDomElement(rDomElement);
     return loadGUIModelObject(data,pLibrary, pSystem, undoSettings);
 }

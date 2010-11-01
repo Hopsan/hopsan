@@ -229,11 +229,8 @@ void GUIComponent::saveToTextStream(QTextStream &rStream, QString prepend)
     }
 }
 
-//! @todo maybe have a inherited function in some other base class that are specific for guiobjects with core equivalent
 void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
 {
-//    appendDomTextNode(rDomElement, HMF_TYPETAG, getTypeName());
-//    appendDomTextNode(rDomElement, HMF_NAMETAG, getName());
     GUIModelObject::saveCoreDataToDomElement(rDomElement);
 
     //Save parameters (also core related)
@@ -268,15 +265,3 @@ void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
         }
     }
 }
-
-//void GUIComponent::saveToDomElement(QDomElement &rDomElement)
-//{
-//    //! @todo Maybe have a giucoreobject class with a common save function
-//    QDomElement xmlObject = appendDomElement(rDomElement,HMF_COMPONENTTAG);
-
-//    //Save Core related stuff
-//    saveCoreDataToDomElement(xmlObject);
-
-//    //Save the Gui specific data
-//    saveGuiDataToDomElement(xmlObject);
-//}
