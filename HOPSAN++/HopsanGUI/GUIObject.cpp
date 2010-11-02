@@ -432,7 +432,7 @@ GUIModelObject::GUIModelObject(QPoint position, qreal rotation, const Appearance
 ////! @brief Destructor for GUI Objects
 //GUIModelObject::~GUIModelObject()
 //{
-//    emit componentDeleted();
+//    emit objectDeleted();
 //}
 
 

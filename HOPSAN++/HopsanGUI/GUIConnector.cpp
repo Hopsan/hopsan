@@ -245,7 +245,7 @@ void GUIConnector::setStartPort(GUIPort *port)
 {
     mpStartPort = port;
     mpStartPort->isConnected = true;
-    connect(mpStartPort->getGuiModelObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
+    connect(mpStartPort->getGuiModelObject(),SIGNAL(objectDeleted()),this,SLOT(deleteMeWithNoUndo()));
     connect(mpStartPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
 }
 
@@ -281,7 +281,7 @@ void GUIConnector::setEndPort(GUIPort *port)
     }
 
     this->updateEndPoint(port->mapToScene(port->boundingRect().center()));
-    connect(mpEndPort->getGuiModelObject(),SIGNAL(componentDeleted()),this,SLOT(deleteMeWithNoUndo()));
+    connect(mpEndPort->getGuiModelObject(),SIGNAL(objectDeleted()),this,SLOT(deleteMeWithNoUndo()));
     connect(mpEndPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
 
         //Make all lines selectable and all lines except first and last movable
