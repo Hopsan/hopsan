@@ -21,6 +21,8 @@
 #include "PyDock.h"
 #include "GlobalParametersWidget.h"
 
+#include "loadObjects.h"
+
 //! Constructor
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -593,12 +595,12 @@ void MainWindow::loadSettings()
 {
         //Apply default values
     mInvertWheel = false;
-    mUseMulticore = true;
+    mUseMulticore = false;
     mEnableProgressBar = true;
-    mProgressBarStep = 10;
+    mProgressBarStep = 50;
     mSnapping = true;
     mBackgroundColor = QColor("white");
-    mAntiAliasing = false;
+    mAntiAliasing = true;
     mLastSessionModels.clear();
     mRecentModels.clear();
 
@@ -638,84 +640,80 @@ void MainWindow::loadSettings()
     mAlternativeUnits.insert("Velocity", VelocityUnitMap);
     mAlternativeUnits.insert("Acceleration", AccelerationUnitMap);
 
-    QFile file(QString(MAINPATH) + "settings.txt");
+
+        //Read from hopsanconfig.xml
+    QFile file(QString(MAINPATH) + "hopsanconfig.xml");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         mpMessageWidget->printGUIErrorMessage("Unable to read settings file. Using default settings.");
         return;
     }
-
-    QString inputWord;
-    QTextStream inputStream(&file);
-    while ( !inputStream.atEnd() )
+    QDomDocument domDocument;
+    QString errorStr;
+    int errorLine, errorColumn;
+    if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
     {
-        inputStream >> inputWord;
-        if(inputWord == "INVERTWHEEL")
+        QMessageBox::information(window(), tr("Hopsan GUI"),
+                                 tr("Parse error at line %1, column %2:\n%3")
+                                 .arg(errorLine)
+                                 .arg(errorColumn)
+                                 .arg(errorStr));
+    }
+    else
+    {
+        QDomElement configRoot = domDocument.documentElement();
+        if (configRoot.tagName() != "hopsanconfig")
         {
-            inputStream >> inputWord;
-            mInvertWheel = (inputWord == "TRUE");
+            QMessageBox::information(window(), tr("Hopsan GUI"),
+                                     "The file is not an Hopsan Configuration File. Incorrect hmf root tag name: "
+                                     + configRoot.tagName() + " != hopsanconfig");
         }
-        if(inputWord == "ENABLEPROGRESSBAR")
+        else
         {
-            inputStream >> inputWord;
-            mEnableProgressBar = (inputWord == "TRUE");
-        }
-        if(inputWord == "PROGRESSBARSTEP")
-        {
-            inputStream >> mProgressBarStep;
-        }
-        if(inputWord == "USEMULTICORE")
-        {
-            inputStream >> inputWord;
-            mUseMulticore = (inputWord == "TRUE");
-        }
-        if(inputWord == "SNAPPING")
-        {
-            inputStream >> inputWord;
-            mSnapping = (inputWord == "TRUE");
-        }
-        if(inputWord == "BACKGROUNDCOLOR")
-        {
-            inputStream >> inputWord;
-            QColor tempColor;
-            tempColor.setNamedColor(inputWord);
-            mBackgroundColor = tempColor;
-        }
-        if(inputWord == "ANTIALIASING")
-        {
-            inputStream >> inputWord;
-            mAntiAliasing = (inputWord == "TRUE");
-        }
-        if(inputWord == "USERLIB")
-        {
-            mUserLibs.append(readName(inputStream));
-        }
-        if(inputWord == "LASTSESSIONMODEL")
-        {
-            mLastSessionModels.append(readName(inputStream));
-        }
-        if(inputWord == "RECENTMODEL")
-        {
-            mRecentModels.append(QFileInfo(readName(inputStream)));
-        }
-        if(inputWord == "DEFAULTUNIT")
-        {
-            inputStream >> inputWord;
-            mDefaultUnits.insert(inputWord, readName(inputStream));
-        }
-        if(inputWord == "ALTERNATIVEUNIT")
-        {
-            QString physicalQuantity;
-            QString unitName;
-            double unitScale;
+            QDomElement settingsElement = configRoot.firstChildElement("settings");
 
-            inputStream >> physicalQuantity;
-            unitName = readName(inputStream);
-            inputStream >> unitScale;
+            mBackgroundColor.setNamedColor(settingsElement.firstChildElement("backgroundcolor").text());
+            mAntiAliasing = parseDomBooleanNode(settingsElement.firstChildElement("antialiasing"));
+            mInvertWheel = parseDomBooleanNode(settingsElement.firstChildElement("invertwheel"));
+            mSnapping = parseDomBooleanNode(settingsElement.firstChildElement("snapping"));
+            mEnableProgressBar = parseDomBooleanNode(settingsElement.firstChildElement("progressbar"));
+            mProgressBarStep = parseDomValueNode(settingsElement.firstChildElement("progressbar_step"));
+            mUseMulticore = parseDomBooleanNode(settingsElement.firstChildElement("multicore"));
 
-            if(!mAlternativeUnits.find(physicalQuantity).value().contains(unitName))
+            QDomElement modelsElement = configRoot.firstChildElement("models");
+            QDomElement lastSessionElement = modelsElement.firstChildElement("lastsessionmodel");
+            while (!lastSessionElement.isNull())
             {
-                mAlternativeUnits.find(physicalQuantity).value().insert(unitName, unitScale);
+                mLastSessionModels.prepend(lastSessionElement.text());
+                lastSessionElement = lastSessionElement.nextSiblingElement("lastsessionmodel");
+            }
+            QDomElement recentModelElement = modelsElement.firstChildElement("recentmodel");
+            while (!recentModelElement.isNull())
+            {
+                mRecentModels.prepend(QFileInfo(readName(recentModelElement.text())));
+                recentModelElement = recentModelElement.nextSiblingElement("recentmodel");
+            }
+
+            QDomElement unitsElement = configRoot.firstChildElement("units");
+            QDomElement defaultUnitElement = unitsElement.firstChildElement("defaultunit");
+            while (!defaultUnitElement.isNull())
+            {
+                mDefaultUnits.insert(defaultUnitElement.firstChildElement("dataname").text(),
+                                     defaultUnitElement.firstChildElement("unitname").text());
+                defaultUnitElement = defaultUnitElement.nextSiblingElement("defaultunit");
+            }
+            QDomElement alternativeUnitElement = unitsElement.firstChildElement("customunit");
+            while (!alternativeUnitElement.isNull())
+            {
+                QString physicalQuantity = alternativeUnitElement.firstChildElement("dataname").text();
+                QString unitName = alternativeUnitElement.firstChildElement("unitname").text();
+                double unitScale = parseDomValueNode(alternativeUnitElement.firstChildElement("scale"));
+
+                if(!mAlternativeUnits.find(physicalQuantity).value().contains(unitName))
+                {
+                    mAlternativeUnits.find(physicalQuantity).value().insert(unitName, unitScale);
+                }
+                alternativeUnitElement = alternativeUnitElement.nextSiblingElement("customunit");
             }
         }
     }
@@ -726,105 +724,72 @@ void MainWindow::loadSettings()
 //! Saves global settings to a text file
 void MainWindow::saveSettings()
 {
-    QFile file(QString(MAINPATH) + "settings.txt");
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-    {
-        mpMessageWidget->printGUIErrorMessage("Error writing to settings file. Default values will be used next session");
-        return;
-    }
-    QTextStream settingsFile(&file);  //Create a QTextStream object to stream the content of file
+        //Write to hopsanconfig.xml
+    QDomDocument domDocument;
+    QDomElement configRoot = domDocument.createElement("hopsanconfig");
+    domDocument.appendChild(configRoot);
 
-    settingsFile << "INVERTWHEEL ";
-    if(mInvertWheel)
-    {
-        settingsFile << "TRUE\n";
-    }
-    else
-    {
-        settingsFile << "FALSE\n";
-    }
+    QDomElement settings = appendDomElement(configRoot,"settings");
+    appendDomTextNode(settings, "backgroundcolor", mBackgroundColor.name());
+    appendDomBooleanNode(settings, "antialiasing", mAntiAliasing);
+    appendDomBooleanNode(settings, "invertwheel", mInvertWheel);
+    appendDomBooleanNode(settings, "snapping", mSnapping);
+    appendDomBooleanNode(settings, "progressbar", mEnableProgressBar);
+    appendDomValueNode(settings, "progressbar_step", mProgressBarStep);
+    appendDomBooleanNode(settings, "multicore", mUseMulticore);
 
-    settingsFile << "ENABLEPROGRESSBAR ";
-    if(mEnableProgressBar)
-    {
-        settingsFile << "TRUE\n";
-    }
-    else
-    {
-        settingsFile << "FALSE\n";
-    }
-
-    settingsFile << "PROGRESSBARSTEP ";
-    settingsFile << mProgressBarStep << "\n";
-
-    settingsFile << "USEMULTICORE ";
-    if(mUseMulticore)
-    {
-        settingsFile << "TRUE\n";
-    }
-    else
-    {
-        settingsFile << "FALSE\n";
-    }
-
-    settingsFile << "SNAPPING ";
-    if(mSnapping)
-    {
-        settingsFile << "TRUE\n";
-    }
-    else
-    {
-        settingsFile << "FALSE\n";
-    }
-
-    settingsFile << "BACKGROUNDCOLOR ";
-    settingsFile << mBackgroundColor.name() << "\n";
-
-    settingsFile << "ANTIALIASING ";
-    if(mAntiAliasing)
-    {
-        settingsFile << "TRUE\n";
-    }
-    else
-    {
-        settingsFile << "FALSE\n";
-    }
-
+    QDomElement libs = appendDomElement(configRoot, "libs");
     for(size_t i=0; i<mUserLibs.size(); ++i)
     {
-        settingsFile << "USERLIB " << addQuotes(mUserLibs.at(i)) << "\n";
+        appendDomTextNode(libs, "userlib", mUserLibs.at(i));
     }
 
+    QDomElement models = appendDomElement(configRoot, "models");
     for(size_t i=0; i<mLastSessionModels.size(); ++i)
     {
         if(mLastSessionModels.at(i) != "")
         {
-            settingsFile << "LASTSESSIONMODEL " << addQuotes(mLastSessionModels.at(i)) << "\n";
+            appendDomTextNode(models, "lastsessionmodel", mLastSessionModels.at(i));
         }
     }
-
     for(size_t i = 0; i<mRecentModels.size(); ++i)
     {
-        settingsFile << "RECENTMODEL " << addQuotes(mRecentModels.at(i).filePath()) << "\n";
+        if(mRecentModels.at(i).filePath() != "")
+            appendDomTextNode(models, "recentmodel", mRecentModels.at(i).filePath());
     }
 
-    QMap<QString, QString>::iterator it;
-    for(it = mDefaultUnits.begin(); it != mDefaultUnits.end(); ++it)
+    QDomElement units = appendDomElement(configRoot, "units");
+    QMap<QString, QString>::iterator itdu;
+    for(itdu = mDefaultUnits.begin(); itdu != mDefaultUnits.end(); ++itdu)
     {
-        settingsFile << "DEFAULTUNIT " << it.key() << " " << addQuotes(it.value()) << "\n";
+        QDomElement tempElement = appendDomElement(units, "defaultunit");
+        appendDomTextNode(tempElement, "dataname", itdu.key());
+        appendDomTextNode(tempElement, "unitname", itdu.value());
     }
-
-    QMap<QString, QMap<QString, double> >::iterator itp;
-    QMap<QString, double>::iterator itu;
-    for(itp = mAlternativeUnits.begin(); itp != mAlternativeUnits.end(); ++itp)
+    QMap<QString, QMap<QString, double> >::iterator itpcu;
+    QMap<QString, double>::iterator itcu;
+    for(itpcu = mAlternativeUnits.begin(); itpcu != mAlternativeUnits.end(); ++itpcu)
     {
-        for(itu = itp.value().begin(); itu != itp.value().end(); ++itu)
+        for(itcu = itpcu.value().begin(); itcu != itpcu.value().end(); ++itcu)
         {
-            settingsFile << "ALTERNATIVEUNIT " << itp.key() << " " << addQuotes(itu.key()) << " " << itu.value() << "\n";
+            QDomElement tempElement = appendDomElement(units, "customunit");
+            appendDomTextNode(tempElement, "dataname", itpcu.key());
+            appendDomTextNode(tempElement, "unitname", itcu.key());
+            appendDomValueNode(tempElement, "scale", itcu.value());
         }
     }
 
-    file.close();
+    //Save to file
+    const int IndentSize = 4;
+    QFile xmlsettings(QString(MAINPATH) + "hopsanconfig.xml");
+    if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+    {
+        qDebug() << "Failed to open file for writing: " << QString(MAINPATH) << "settings.xml";
+        return;
+    }
+    QTextStream out(&xmlsettings);
+    domDocument.save(out, IndentSize);
+
 }
 
 
@@ -844,6 +809,9 @@ void MainWindow::fixSimulationParameterValues()
 
 void MainWindow::registerRecentModel(QFileInfo model)
 {
+    if(model.fileName() == "")
+        return;
+
     mRecentModels.removeAll(model);
     mRecentModels.prepend(model);
     while(mRecentModels.size() > 10)
@@ -866,8 +834,11 @@ void MainWindow::updateRecentList()
         recentMenu->setEnabled(true);
         for(size_t i=0; i<mRecentModels.size(); ++i)
         {
-            QAction *tempAction;
-            tempAction = recentMenu->addAction(mRecentModels.at(i).fileName());
+            if(mRecentModels.at(i).fileName() != "")
+            {
+                QAction *tempAction;
+                tempAction = recentMenu->addAction(mRecentModels.at(i).fileName());
+            }
         }
     }
 }

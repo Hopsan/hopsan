@@ -126,6 +126,7 @@ void addHMFHeader(QDomElement &rDomElement);
 
 QDomElement appendDomElement(QDomElement &rDomElement, const QString element_name);
 void appendDomTextNode(QDomElement &rDomElement, const QString element_name, const QString text);
+void appendDomBooleanNode(QDomElement &rDomElement, const QString element_name, const bool value);
 
 void appendDomValueNode(QDomElement &rDomElement, const QString element_name, const double val);
 //! @todo maybe revert to using only appendDomTextNode names on all functions (then you need to think less)
@@ -134,6 +135,7 @@ void appendDomValueNode3(QDomElement &rDomElement, const QString element_name, c
 void appendDomValueNodeN(QDomElement &rDomElement, const QString element_name, const QVector<qreal> &rValues);
 //! @todo write one that takes a vector with data
 
+bool parseDomBooleanNode(QDomElement domElement);
 qreal parseDomValueNode(QDomElement domElement);
 void parseDomValueNode2(QDomElement domElement, double &rA, double &rB);
 void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &rC);

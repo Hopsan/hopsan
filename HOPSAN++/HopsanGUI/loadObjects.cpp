@@ -536,6 +536,17 @@ void appendDomTextNode(QDomElement &rDomElement, const QString element_name, con
     rDomElement.appendChild(subDomElement);
 }
 
+void appendDomBooleanNode(QDomElement &rDomElement, const QString element_name, const bool value)
+{
+    QDomDocument ownerDomDocument = rDomElement.ownerDocument();
+    QDomElement subDomElement = ownerDomDocument.createElement(element_name);
+    if(value)
+        subDomElement.appendChild(ownerDomDocument.createTextNode("true"));
+    else
+        subDomElement.appendChild(ownerDomDocument.createTextNode("false"));
+    rDomElement.appendChild(subDomElement);
+}
+
 //! @brief Helper function for adding Dom elements containing one text node (based on a double value)
 void appendDomValueNode(QDomElement &rDomElement, const QString element_name, const double val)
 {
@@ -605,4 +616,9 @@ void parseDomValueNode2(QDomElement domElement, double &rA, double &rB)
 qreal parseDomValueNode(QDomElement domElement)
 {
     return domElement.text().toDouble();
+}
+
+bool parseDomBooleanNode(QDomElement domElement)
+{
+    return (domElement.text() == "true");
 }
