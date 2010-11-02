@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QCursor>
 #include <QAction>
+#include <QTextStream>
 
 #include "PlotWindow.h"
 #include "PlotWidget.h"
@@ -17,6 +18,8 @@
 #include "GUISystem.h"
 #include "GUIUtilities.h"
 #include "GUISystem.h"
+#include "loadObjects.h"
+#include "MessageWidget.h"
 
 
 //! @brief Constructor for the parameter items in the parameter tree
@@ -180,14 +183,14 @@ void PlotParameterTree::updateList()
 
 //! @brief Helper function that creates a new plot window by using a QTreeWidgetItem in the plot variable tree.
 //! @param *item Pointer to the tree widget item whos arrays will be looked up from the map and plotted
-void PlotParameterTree::createPlotWindow(QTreeWidgetItem *item)
+PlotWindow *PlotParameterTree::createPlotWindow(QTreeWidgetItem *item)
 {
     //! @todo This is a kind of dumb check; it assumes that component items have bold font and variables not.
     if(!item->font(0).bold())     //Top level items cannot be plotted (they represent the components)
     {
         //QTreeWidgetItem must be casted to a PlotParameterItem. This is a necessary because double click event can not know which kind of tree item is clicked.
         PlotParameterItem *tempItem = dynamic_cast<PlotParameterItem *>(item);
-        createPlotWindow(tempItem->getComponentName(), tempItem->getPortName(), tempItem->getDataName(), tempItem->getDataUnit());
+        return createPlotWindow(tempItem->getComponentName(), tempItem->getPortName(), tempItem->getDataName(), tempItem->getDataUnit());
     }
 }
 
@@ -197,7 +200,7 @@ void PlotParameterTree::createPlotWindow(QTreeWidgetItem *item)
 //! @param portName Name of the port where the parameter is located
 //! @param dataName Name of the parameter
 //! @param dataUnit Name of the unit of the parameter
-void PlotParameterTree::createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit)
+PlotWindow *PlotParameterTree::createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit)
 {
     QVector<double> xVector = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getTimeVector(componentName, portName));
     QVector<double> yVector;
@@ -206,6 +209,18 @@ void PlotParameterTree::createPlotWindow(QString componentName, QString portName
     PlotWindow *plotWindow = new PlotWindow(this, mpParentMainWindow);
     plotWindow->show();
     plotWindow->addPlotCurve(xVector, yVector, componentName, portName, dataName, dataUnit, QwtPlot::yLeft);
+
+    return plotWindow;
+}
+
+
+PlotWindow *PlotParameterTree::createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit)
+{
+    PlotWindow *plotWindow = new PlotWindow(this, mpParentMainWindow);
+    plotWindow->show();
+    plotWindow->addPlotCurve(xVector, yVector, componentName, portName, dataName, dataUnit, axis);
+
+    return plotWindow;
 }
 
 
@@ -304,6 +319,186 @@ PlotWidget::PlotWidget(MainWindow *parent)
     mpParentMainWindow = parent;
 
     mpPlotParameterTree = new PlotParameterTree(mpParentMainWindow);
+
+    mpLoadButton = new QPushButton(tr("&Load Plot Window from XML"));
+    mpLoadButton->setAutoDefault(false);
+    mpLoadButton->setFixedHeight(30);
+    QFont tempFont = mpLoadButton->font();
+    tempFont.setBold(true);
+    mpLoadButton->setFont(tempFont);
+
     mpLayout = new QGridLayout(this);
-    mpLayout->addWidget(mpPlotParameterTree,0,0,3,1);
+    mpLayout->addWidget(mpPlotParameterTree,0,0,1,1);
+    mpLayout->addWidget(mpLoadButton, 1, 0, 1, 1);
+
+    connect(mpLoadButton, SIGNAL(clicked()),this,SLOT(loadFromXml()));
 }
+
+
+
+void PlotWidget::loadFromXml()
+{
+    QDir fileDialogSaveDir;
+    QString hpwFilePath;
+    hpwFilePath = QFileDialog::getOpenFileName(this, tr("Plot Window File"),
+                                               fileDialogSaveDir.currentPath() + QString(MODELPATH),
+                                               tr("Hopsan Plot Window files (*.hpw)"));
+
+    QFile file(hpwFilePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Unable to read plot window file.");
+        return;
+    }
+    QDomDocument domDocument;
+    QString errorStr;
+    int errorLine, errorColumn;
+    if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
+    {
+        QMessageBox::information(window(), tr("Hopsan GUI"),
+                                 tr("Parse error at line %1, column %2:\n%3")
+                                 .arg(errorLine)
+                                 .arg(errorColumn)
+                                 .arg(errorStr));
+    }
+    else
+    {
+        QDomElement hpwRoot = domDocument.documentElement();
+        if (hpwRoot.tagName() != "hopsanplot")
+        {
+            QMessageBox::information(window(), tr("Hopsan GUI"),
+                                     "The file is not an Hopsan Plot Window file. Incorrect hpw root tag name: "
+                                     + hpwRoot.tagName() + " != hopsanplot");
+        }
+        else
+        {
+            QString hmpfFileName = hpwRoot.firstChildElement("datafile").text();
+            size_t datasize = parseDomValueNode(hpwRoot.firstChildElement("datasize"));
+
+
+            QFile hmpfFile(hmpfFileName);
+            if(!hmpfFile.exists())
+            {
+                qDebug() << "Failed to open file, file not found: " + hmpfFile.fileName();
+                return;
+            }
+            if (!hmpfFile.open(QIODevice::ReadOnly | QIODevice::Text))
+            {
+                return;
+            }
+
+            QList< QVector<double> > xData;
+            QList< QList < QVector<double> > > yData;
+            QVector<double> tempVector;
+            xData.append(tempVector);
+            QList< QVector<double> > tempList;
+            for(size_t i=0; i<datasize; ++i)
+            {
+                tempList.append(tempVector);
+            }
+            yData.append(tempList);
+
+
+            QTextStream fileStream(&hmpfFile);
+            QString line;
+            QTextStream lineStream;
+            size_t generation = 0;
+            double value;
+            while( !fileStream.atEnd() )
+            {
+                line = fileStream.readLine();
+                if(line.startsWith("GENERATIONBREAK"))
+                {
+                    ++generation;
+                    xData.append(tempVector);
+                    yData.append(tempList);
+                }
+                else
+                {
+                    lineStream.setString(&line);
+                    lineStream >> value;
+                    xData[generation].append(value);
+                    for(size_t ic=0; ic<datasize; ++ic)
+                    {
+                        lineStream >> value;
+                        yData[generation][ic].append(value);
+                    }
+                }
+            }
+            hmpfFile.close();
+
+
+            QDomElement curveElement = hpwRoot.firstChildElement("plotcurve");
+            QString componentName = curveElement.firstChildElement("component").text();
+            QString portName = curveElement.firstChildElement("port").text();
+            QString dataName = curveElement.firstChildElement("dataname").text();
+            QString dataUnit = curveElement.firstChildElement("unit").text();
+            size_t axis = parseDomValueNode(curveElement.firstChildElement("axis"));
+            size_t index = parseDomValueNode(curveElement.firstChildElement("index"));
+
+            PlotWindow *pPlotWindow = mpPlotParameterTree->createPlotWindow(xData[0], yData[0][index], axis, componentName, portName, dataName, dataUnit);
+
+            curveElement = curveElement.nextSiblingElement("plotcurve");
+            while(!curveElement.isNull())
+            {
+                componentName = curveElement.firstChildElement("component").text();
+                portName = curveElement.firstChildElement("port").text();
+                dataName = curveElement.firstChildElement("dataname").text();
+                dataUnit = curveElement.firstChildElement("unit").text();
+                axis = parseDomValueNode(curveElement.firstChildElement("axis"));
+                index = parseDomValueNode(curveElement.firstChildElement("index"));
+
+                pPlotWindow->addPlotCurve(xData[0], yData[0][index], componentName, portName, dataName, dataUnit, axis);
+
+                curveElement = curveElement.nextSiblingElement("plotcurve");
+            }
+        }
+    }
+
+    //this->mpPlotParameterTree->createPlotWindow()
+
+
+
+//    while (!lastSessionElement.isNull())
+//    {
+//        mLastSessionModels.prepend(lastSessionElement.text());
+//        lastSessionElement = lastSessionElement.nextSiblingElement("lastsessionmodel");
+//    }
+
+//            QDomElement recentModelElement = modelsElement.firstChildElement("recentmodel");
+//            while (!recentModelElement.isNull())
+//            {
+//                mRecentModels.prepend(QFileInfo(readName(recentModelElement.text())));
+//                recentModelElement = recentModelElement.nextSiblingElement("recentmodel");
+//            }
+
+//            QDomElement unitsElement = configRoot.firstChildElement("units");
+//            QDomElement defaultUnitElement = unitsElement.firstChildElement("defaultunit");
+//            while (!defaultUnitElement.isNull())
+//            {
+//                mDefaultUnits.insert(defaultUnitElement.firstChildElement("dataname").text(),
+//                                     defaultUnitElement.firstChildElement("unitname").text());
+//                defaultUnitElement = defaultUnitElement.nextSiblingElement("defaultunit");
+//            }
+//            QDomElement alternativeUnitElement = unitsElement.firstChildElement("customunit");
+//            while (!alternativeUnitElement.isNull())
+//            {
+//                QString physicalQuantity = alternativeUnitElement.firstChildElement("dataname").text();
+//                QString unitName = alternativeUnitElement.firstChildElement("unitname").text();
+//                double unitScale = parseDomValueNode(alternativeUnitElement.firstChildElement("scale"));
+
+//                if(!mAlternativeUnits.find(physicalQuantity).value().contains(unitName))
+//                {
+//                    mAlternativeUnits.find(physicalQuantity).value().insert(unitName, unitScale);
+//                }
+//                alternativeUnitElement = alternativeUnitElement.nextSiblingElement("customunit");
+//            }
+//        }
+//    }
+//    file.close();
+
+    //mpPlotParameterTree->createPlotWindow();
+}
+
+
+

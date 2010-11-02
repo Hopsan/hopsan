@@ -974,7 +974,7 @@ void PlotWindow::setUnit(int yAxis, QString physicalQuantity, QString selectedUn
 //! @param dataName Name of parameter
 //! @param dataUnit Unit of the parameter
 //! @param axisY tells whether the right or left y-axis shall be used
-void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QString componentName, QString portName, QString dataName, QString dataUnit, QwtPlot::Axis axisY)
+void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY)
 {
     QString title = QString(componentName + ", " + portName + ", " + dataName + " [" + dataUnit + "]");
     QString xLabel = "Time [s]";
@@ -1167,13 +1167,13 @@ void PlotWindow::closeEvent(QCloseEvent *event)
 
 void PlotWindow::saveToXml()
 {
-    QString xmlFileName = QFileDialog::getSaveFileName(
+    QString hpwFileName = QFileDialog::getSaveFileName(
        this, "Export File Name", QString(),
-       "XML Documents (*.xml)");
+       "Hopsan Plot Window file (*.hpw)");
 
-    QString hpfFileName = QString(xmlFileName.left(xmlFileName.size()-3) + "hpf");
+    QString hmpfFileName = QString(hpwFileName.left(hpwFileName.size()-3) + "hmpf");
 
-    if(!saveToHpf(hpfFileName))
+    if(!saveToHmpf(hmpfFileName))
     {
         return;
     }
@@ -1183,7 +1183,7 @@ void PlotWindow::saveToXml()
     QDomElement plotRoot = domDocument.createElement("hopsanplot");
     domDocument.appendChild(plotRoot);
 
-    appendDomTextNode(plotRoot, "datafile", hpfFileName);
+    appendDomTextNode(plotRoot, "datafile", hmpfFileName);
     appendDomValueNode(plotRoot, "datasize", mpCurves.size());
 
     QDomElement xDataElement = appendDomElement(plotRoot, "xdata");
@@ -1211,10 +1211,10 @@ void PlotWindow::saveToXml()
 
     //Save to file
     const int IndentSize = 4;
-    QFile xmlsettings(xmlFileName);
+    QFile xmlsettings(hpwFileName);
     if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        qDebug() << "Failed to open file for writing: " << xmlFileName;
+        qDebug() << "Failed to open file for writing: " << hpwFileName;
         return;
     }
     QTextStream out(&xmlsettings);
@@ -1222,7 +1222,7 @@ void PlotWindow::saveToXml()
 }
 
 
-bool PlotWindow::saveToHpf(QString fileName)
+bool PlotWindow::saveToHmpf(QString fileName)
 {
     QFile file(fileName);
 

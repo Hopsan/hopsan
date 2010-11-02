@@ -69,7 +69,9 @@ public:
     QList<QStringList> mAvailableParameters;
     MainWindow *mpParentMainWindow;
     GUISystem *mpCurrentSystem;
-    void createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit);
+    PlotWindow *createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit);
+    PlotWindow *createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit);
+
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
@@ -80,7 +82,7 @@ protected:
 
 public slots:
     void updateList();
-    void createPlotWindow(QTreeWidgetItem *item);
+    PlotWindow *createPlotWindow(QTreeWidgetItem *item);
 
 private:
     QList<QStringList> mFavoriteParameters;
@@ -94,10 +96,13 @@ public:
     PlotWidget(MainWindow *parent = 0);
     PlotParameterTree *mpPlotParameterTree;
 
+public slots:
+    void loadFromXml();
+
 private:
     MainWindow *mpParentMainWindow;
+    QPushButton *mpLoadButton;
     QGridLayout *mpLayout;
-
 };
 
 #endif // PlotWidget_H

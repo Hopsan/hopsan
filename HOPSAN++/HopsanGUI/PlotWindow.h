@@ -47,7 +47,7 @@ class PlotWindow : public QMainWindow
     Q_OBJECT
 public:
     PlotWindow(PlotParameterTree *PlotParameterTree, MainWindow *parent);
-    void addPlotCurve(QVector<double> xarray, QVector<double> yarray, QString componentName, QString portName, QString dataName, QString dataUnit, QwtPlot::Axis axisY);
+    void addPlotCurve(QVector<double> xarray, QVector<double> yarray, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY);
     void changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit);
     void insertMarker(QwtPlotCurve *curve);
     void setActiveMarker(QwtPlotMarker *marker);
@@ -130,7 +130,7 @@ public slots:
     void stepBack();
     void stepForward();
     void saveToXml();
-    bool saveToHpf(QString fileName);
+    bool saveToHmpf(QString fileName);
 
 private:
     PlotParameterTree *mpPlotParameterTree;
