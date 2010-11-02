@@ -136,7 +136,10 @@ GUIConnector::~GUIConnector()
     delete mpGUIConnectorAppearance;
 
     mpStartPort->getGuiModelObject()->forgetConnector(this);
-    mpEndPort->getGuiModelObject()->forgetConnector(this);
+    if(mEndPortConnected)
+    {
+        mpEndPort->getGuiModelObject()->forgetConnector(this);
+    }
 }
 
 
