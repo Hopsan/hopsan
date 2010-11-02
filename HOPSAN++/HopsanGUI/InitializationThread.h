@@ -30,8 +30,8 @@ protected:
 
 private:
     double mStartTime;
-    size_t mFinishTime;
-    int mSamples;
+    double mFinishTime;
+    size_t mSamples;
 
 };
 

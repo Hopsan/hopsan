@@ -1971,7 +1971,7 @@ void ComponentSystem::loadStartValuesFromSimulation()
 
 
 //! Initializes a system component and all its contained components, also allocates log data memory
-void ComponentSystem::initialize(const double startT, const double stopT, const int nSamples)
+void ComponentSystem::initialize(const double startT, const double stopT, const size_t nSamples)
 {
     cout << "Initializing SubSystem: " << this->mName << endl;
     mStop = false; //This variable can not be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
