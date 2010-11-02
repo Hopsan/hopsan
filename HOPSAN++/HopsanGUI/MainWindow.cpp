@@ -680,6 +680,20 @@ void MainWindow::loadSettings()
             mProgressBarStep = parseDomValueNode(settingsElement.firstChildElement("progressbar_step"));
             mUseMulticore = parseDomBooleanNode(settingsElement.firstChildElement("multicore"));
 
+//            QDomElement libs = appendDomElement(configRoot, "libs");
+//            for(size_t i=0; i<mUserLibs.size(); ++i)
+//            {
+//                appendDomTextNode(libs, "userlib", mUserLibs.at(i));
+//            }
+
+            QDomElement libsElement = configRoot.firstChildElement("libs");
+            QDomElement userLibElement = libsElement.firstChildElement("userlib");
+            while (!userLibElement.isNull())
+            {
+                mUserLibs.prepend(userLibElement.text());
+                userLibElement = userLibElement.nextSiblingElement(("userlib"));
+            }
+
             QDomElement modelsElement = configRoot.firstChildElement("models");
             QDomElement lastSessionElement = modelsElement.firstChildElement("lastsessionmodel");
             while (!lastSessionElement.isNull())
