@@ -216,11 +216,11 @@ namespace hopsan {
             mPrevCSpring = 0.0;
 
             //Write to nodes
-            mpP1->writeNode(NodeHydraulic::MASSFLOW,     mQ1Internal);
+            mpP1->writeNode(NodeHydraulic::FLOW,     mQ1Internal);
             mpP1->writeNode(NodeHydraulic::PRESSURE,     mStartPressure1);
             mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, c1);
             mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc10);
-            mpP2->writeNode(NodeHydraulic::MASSFLOW,     mQ2Internal);
+            mpP2->writeNode(NodeHydraulic::FLOW,     mQ2Internal);
             mpP2->writeNode(NodeHydraulic::PRESSURE,     mStartPressure2);
             mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, c2);
             mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc20);
@@ -237,12 +237,12 @@ namespace hopsan {
         {
             //Get variable values from nodes
             double p1  = mpP1->readNode(NodeHydraulic::PRESSURE);
-            double q1  = mpP1->readNode(NodeHydraulic::MASSFLOW);
+            double q1  = mpP1->readNode(NodeHydraulic::FLOW);
             double c1  = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
             double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
 
             double p2  = mpP2->readNode(NodeHydraulic::PRESSURE);
-            double q2  = mpP2->readNode(NodeHydraulic::MASSFLOW);
+            double q2  = mpP2->readNode(NodeHydraulic::FLOW);
             double c2  = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
             double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
 

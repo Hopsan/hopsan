@@ -48,7 +48,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            double q = mpP1->readNode(NodeHydraulic::MASSFLOW);
+            double q = mpP1->readNode(NodeHydraulic::FLOW);
 
             //Write new values to nodes
             mpOut->writeNode(NodeSignal::VALUE, q);

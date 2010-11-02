@@ -167,13 +167,13 @@ namespace hopsan {
             //Write new values to nodes
 
             mpPP->writeNode(NodeHydraulic::PRESSURE, pp);
-            mpPP->writeNode(NodeHydraulic::MASSFLOW, qp);
+            mpPP->writeNode(NodeHydraulic::FLOW, qp);
             mpPT->writeNode(NodeHydraulic::PRESSURE, pt);
-            mpPT->writeNode(NodeHydraulic::MASSFLOW, qt);
+            mpPT->writeNode(NodeHydraulic::FLOW, qt);
             mpPA->writeNode(NodeHydraulic::PRESSURE, pa);
-            mpPA->writeNode(NodeHydraulic::MASSFLOW, qa);
+            mpPA->writeNode(NodeHydraulic::FLOW, qa);
             mpPB->writeNode(NodeHydraulic::PRESSURE, pb);
-            mpPB->writeNode(NodeHydraulic::MASSFLOW, qb);
+            mpPB->writeNode(NodeHydraulic::FLOW, qb);
         }
     };
 
@@ -284,13 +284,13 @@ namespace hopsan {
             xvin = mpIn->getNodeDataPtr(NodeSignal::VALUE);
 
             pp = mpPP->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            qp = mpPP->getNodeDataPtr(NodeHydraulic::MASSFLOW);
+            qp = mpPP->getNodeDataPtr(NodeHydraulic::FLOW);
             pt = mpPT->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            qt = mpPT->getNodeDataPtr(NodeHydraulic::MASSFLOW);
+            qt = mpPT->getNodeDataPtr(NodeHydraulic::FLOW);
             pa = mpPA->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            qa = mpPA->getNodeDataPtr(NodeHydraulic::MASSFLOW);
+            qa = mpPA->getNodeDataPtr(NodeHydraulic::FLOW);
             pb = mpPB->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            qb = mpPB->getNodeDataPtr(NodeHydraulic::MASSFLOW);
+            qb = mpPB->getNodeDataPtr(NodeHydraulic::FLOW);
         }
 
 

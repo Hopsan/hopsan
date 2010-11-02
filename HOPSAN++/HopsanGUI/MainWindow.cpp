@@ -605,7 +605,7 @@ void MainWindow::loadSettings()
     mRecentModels.clear();
 
     mDefaultUnits.insert("Pressure", "Pa");
-    mDefaultUnits.insert("MassFlow", "m^3/s");
+    mDefaultUnits.insert("Flow", "m^3/s");
     mDefaultUnits.insert("Position", "m");
     mDefaultUnits.insert("Velocity", "m/s");
     mDefaultUnits.insert("Acceleration", "m/s^2");
@@ -634,7 +634,7 @@ void MainWindow::loadSettings()
     QMap<QString, double> AccelerationUnitMap;
     AccelerationUnitMap.insert("m/s^2", 1);
     mAlternativeUnits.insert("Pressure", PressureUnitMap);
-    mAlternativeUnits.insert("MassFlow", FlowUnitMap);
+    mAlternativeUnits.insert("Flow", FlowUnitMap);
     mAlternativeUnits.insert("Force", ForceUnitMap);
     mAlternativeUnits.insert("Position", PositionUnitMap);
     mAlternativeUnits.insert("Velocity", VelocityUnitMap);
@@ -778,6 +778,8 @@ void MainWindow::saveSettings()
             appendDomValueNode(tempElement, "scale", itcu.value());
         }
     }
+
+    appendRootXMLProcessingInstruction(domDocument);
 
     //Save to file
     const int IndentSize = 4;

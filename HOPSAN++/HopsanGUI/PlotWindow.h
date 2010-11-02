@@ -78,6 +78,7 @@ public:
     QToolBar *mpToolBar;
     QToolButton *mpZoomButton;
     QToolButton *mpPanButton;
+    QToolButton *mpSaveButton;
     QToolButton *mpSVGButton;
     QToolButton *mpExportGNUPLOTButton;
     QToolButton *mpImportGNUPLOTButton;
@@ -128,6 +129,8 @@ public slots:
     void setAutoUpdate(bool value);
     void stepBack();
     void stepForward();
+    void saveToXml();
+    bool saveToHpf(QString fileName);
 
 private:
     PlotParameterTree *mpPlotParameterTree;

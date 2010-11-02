@@ -82,11 +82,11 @@ namespace hopsan {
         {
             //Get variable values from nodes
             double p1 = mpP1->readNode(NodeHydraulic::PRESSURE);
-            double q1 = mpP1->readNode(NodeHydraulic::MASSFLOW);
+            double q1 = mpP1->readNode(NodeHydraulic::FLOW);
             double c1  = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
             double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
             double p2 = mpP2->readNode(NodeHydraulic::PRESSURE);
-            double q2 = mpP2->readNode(NodeHydraulic::MASSFLOW);
+            double q2 = mpP2->readNode(NodeHydraulic::FLOW);
             double c2  = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
             double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
 
@@ -194,9 +194,9 @@ namespace hopsan {
             //Write new values to nodes
 
             mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
-            mpP1->writeNode(NodeHydraulic::MASSFLOW, q1);
+            mpP1->writeNode(NodeHydraulic::FLOW, q1);
             mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
-            mpP2->writeNode(NodeHydraulic::MASSFLOW, q2);
+            mpP2->writeNode(NodeHydraulic::FLOW, q2);
 
             mPrevX0 = mX0;
         }

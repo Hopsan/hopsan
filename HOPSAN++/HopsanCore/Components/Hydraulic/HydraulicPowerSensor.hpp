@@ -49,7 +49,7 @@ namespace hopsan {
         {
             //Get variable values from nodes
             double p = mpP1->readNode(NodeHydraulic::PRESSURE);
-            double q = mpP1->readNode(NodeHydraulic::MASSFLOW);
+            double q = mpP1->readNode(NodeHydraulic::FLOW);
 
             //Write new values to nodes
             mpOut->writeNode(NodeSignal::VALUE, p*q);

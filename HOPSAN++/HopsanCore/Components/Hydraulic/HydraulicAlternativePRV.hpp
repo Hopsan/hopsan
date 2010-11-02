@@ -116,7 +116,7 @@ namespace hopsan {
 
             mFs = mPilotArea*mPref;
 
-            double q1 = mpP1->readNode(NodeHydraulic::MASSFLOW); //Needed to calculate p1 for the force equilibrium
+            double q1 = mpP1->readNode(NodeHydraulic::FLOW); //Needed to calculate p1 for the force equilibrium
             double p1 = c1 + q1*Zc1;
 
             double Ftot = p1*mPilotArea - mFs;      //Sum of forces in x direction beside from spring coeff and viscous friction
@@ -183,9 +183,9 @@ namespace hopsan {
             //Write new values to nodes
 
             mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
-            mpP1->writeNode(NodeHydraulic::MASSFLOW, q1);
+            mpP1->writeNode(NodeHydraulic::FLOW, q1);
             mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
-            mpP2->writeNode(NodeHydraulic::MASSFLOW, q2);
+            mpP2->writeNode(NodeHydraulic::FLOW, q2);
 
             if(mpX->isConnected())
                 mpX->writeNode(NodeSignal::VALUE, x0);

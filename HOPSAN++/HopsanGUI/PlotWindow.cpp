@@ -18,6 +18,7 @@
 #include "GUISystem.h"
 #include "GUIUtilities.h"
 #include "GUISystem.h"
+#include "loadObjects.h"
 
 #include "qwt_scale_engine.h"
 #include "qwt_symbol.h"
@@ -48,14 +49,14 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
 
         //Initiate default values for left y-axis
     mCurrentUnitsLeft.insert("Pressure", mpParentMainWindow->mDefaultUnits.find("Pressure").value());
-    mCurrentUnitsLeft.insert("MassFlow", mpParentMainWindow->mDefaultUnits.find("MassFlow").value());
+    mCurrentUnitsLeft.insert("Flow", mpParentMainWindow->mDefaultUnits.find("Flow").value());
     mCurrentUnitsLeft.insert("Position", mpParentMainWindow->mDefaultUnits.find("Position").value());
     mCurrentUnitsLeft.insert("Velocity", mpParentMainWindow->mDefaultUnits.find("Velocity").value());
     mCurrentUnitsLeft.insert("Force", mpParentMainWindow->mDefaultUnits.find("Force").value());
 
         //Initiate default values for right y-axis
     mCurrentUnitsRight.insert("Pressure", mpParentMainWindow->mDefaultUnits.find("Pressure").value());
-    mCurrentUnitsRight.insert("MassFlow", mpParentMainWindow->mDefaultUnits.find("MassFlow").value());
+    mCurrentUnitsRight.insert("Flow", mpParentMainWindow->mDefaultUnits.find("Flow").value());
     mCurrentUnitsRight.insert("Position", mpParentMainWindow->mDefaultUnits.find("Position").value());
     mCurrentUnitsRight.insert("Velocity", mpParentMainWindow->mDefaultUnits.find("Velocity").value());
     mCurrentUnitsRight.insert("Force", mpParentMainWindow->mDefaultUnits.find("Force").value());
@@ -93,6 +94,13 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mpPanButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mpPanButton->setAcceptDrops(false);
     mpToolBar->addWidget(mpPanButton);
+
+    mpSaveButton = new QToolButton(mpToolBar);
+    mpSaveButton->setToolTip("Save Plot Window");
+    mpSaveButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Save.png"));
+    mpSaveButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    mpSaveButton->setAcceptDrops(false);
+    mpToolBar->addWidget(mpSaveButton);
 
     mpSVGButton = new QToolButton(mpToolBar);
     mpSVGButton->setToolTip("Export to SVG");
@@ -238,6 +246,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     connect(buttonbox, SIGNAL(rejected()), this, SLOT(close()));
     connect(mpZoomButton,SIGNAL(toggled(bool)),SLOT(enableZoom(bool)));
     connect(mpPanButton,SIGNAL(toggled(bool)),SLOT(enablePan(bool)));
+    connect(mpSaveButton,SIGNAL(clicked()),this,SLOT(saveToXml()));
     connect(mpSVGButton,SIGNAL(clicked()),SLOT(exportSVG()));
     connect(mpExportGNUPLOTButton,SIGNAL(clicked()),SLOT(exportGNUPLOT()));
     connect(mpImportGNUPLOTButton,SIGNAL(clicked()),SLOT(importGNUPLOT()));
@@ -949,7 +958,7 @@ void PlotWindow::setUnit(int yAxis, QString physicalQuantity, QString selectedUn
                 tempVectorY.append(mVectorY[mCurrentGeneration][i][j]*scale);
             }
             mpCurves.at(i)->setData(mVectorX[mCurrentGeneration][i], tempVectorY);
-            mCurveParameters[i][3] = selectedUnit;
+            //mCurveParameters[i][3] = selectedUnit;
         }
     }
 
@@ -1055,7 +1064,7 @@ void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QS
     }
 
     QStringList parameterDescription;
-    parameterDescription << componentName << portName << dataName << newUnit;
+    parameterDescription << componentName << portName << dataName << dataUnit;
     mCurveParameters.append(parameterDescription);
 }
 
@@ -1153,4 +1162,101 @@ void PlotWindow::closeEvent(QCloseEvent *event)
         event->accept();
         QMainWindow::close();
     }
+}
+
+
+void PlotWindow::saveToXml()
+{
+    QString xmlFileName = QFileDialog::getSaveFileName(
+       this, "Export File Name", QString(),
+       "XML Documents (*.xml)");
+
+    QString hpfFileName = QString(xmlFileName.left(xmlFileName.size()-3) + "hpf");
+
+    if(!saveToHpf(hpfFileName))
+    {
+        return;
+    }
+
+        //Write to hopsanconfig.xml
+    QDomDocument domDocument;
+    QDomElement plotRoot = domDocument.createElement("hopsanplot");
+    domDocument.appendChild(plotRoot);
+
+    appendDomTextNode(plotRoot, "datafile", hpfFileName);
+    appendDomValueNode(plotRoot, "datasize", mpCurves.size());
+
+    QDomElement xDataElement = appendDomElement(plotRoot, "xdata");
+    appendDomBooleanNode(xDataElement, "specialx", mHasSpecialXAxis);
+    if(mHasSpecialXAxis)
+    {
+        appendDomTextNode(xDataElement, "component", mSpecialXParameter[0]);
+        appendDomTextNode(xDataElement, "port", mSpecialXParameter[1]);
+        appendDomTextNode(xDataElement, "dataname", mSpecialXParameter[2]);
+        appendDomTextNode(xDataElement, "unit", mSpecialXParameter[3]);
+    }
+
+    for(size_t i=0; i<mCurveParameters.size(); ++i)
+    {
+        QDomElement curveElement = appendDomElement(plotRoot, "plotcurve");
+        appendDomTextNode(curveElement, "component", mCurveParameters[i][0]);
+        appendDomTextNode(curveElement, "port", mCurveParameters[i][1]);
+        appendDomTextNode(curveElement, "dataname", mCurveParameters[i][2]);
+        appendDomTextNode(curveElement, "unit", mCurveParameters[i][3]);
+        appendDomValueNode(curveElement, "axis", mpCurves[i]->yAxis());
+        appendDomValueNode(curveElement, "index", i);
+    }
+
+    appendRootXMLProcessingInstruction(domDocument);
+
+    //Save to file
+    const int IndentSize = 4;
+    QFile xmlsettings(xmlFileName);
+    if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+    {
+        qDebug() << "Failed to open file for writing: " << xmlFileName;
+        return;
+    }
+    QTextStream out(&xmlsettings);
+    domDocument.save(out, IndentSize);
+}
+
+
+bool PlotWindow::saveToHpf(QString fileName)
+{
+    QFile file(fileName);
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qDebug() << "Failed to open hpf file for writing: " + fileName;
+        return false;
+    }
+    QTextStream hpfFile(&file);  //Create a QTextStream object to stream the content of file
+
+    size_t nGenerations = mVectorX.size();
+    size_t nCurves = mVectorX.back().size();
+
+    for(size_t ig=0; ig<nGenerations; ++ig)
+    {
+        for(size_t id = 0; id<mVectorY.first().first().size(); ++id)
+        {
+            hpfFile << mVectorX[ig][0][id] << " ";
+            for(size_t ic=0; ic<nCurves; ++ic)
+            {
+                hpfFile << mVectorY[ig][ic][id];
+                if(ic!=nCurves-1)
+                {
+                    hpfFile << " ";
+                }
+                else
+                {
+                    hpfFile << "\n";
+                }
+            }
+        }
+        hpfFile << "GENERATIONBREAK\n";
+    }
+    file.close();
+
+    return true;
 }

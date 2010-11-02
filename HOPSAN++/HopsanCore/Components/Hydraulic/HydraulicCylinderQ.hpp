@@ -151,9 +151,9 @@ namespace hopsan {
 
             //Write new values to nodes
             mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
-            mpP1->writeNode(NodeHydraulic::MASSFLOW, q1);
+            mpP1->writeNode(NodeHydraulic::FLOW, q1);
             mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
-            mpP2->writeNode(NodeHydraulic::MASSFLOW, q2);
+            mpP2->writeNode(NodeHydraulic::FLOW, q2);
             mpP3->writeNode(NodeMechanic::POSITION, x2);
             mpP3->writeNode(NodeMechanic::VELOCITY, v2);
             mpP3->writeNode(NodeMechanic::FORCE, F2);
@@ -239,9 +239,9 @@ namespace hopsan {
 
             //Q pointers
             p1 = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            q1 = mpP1->getNodeDataPtr(NodeHydraulic::MASSFLOW);
+            q1 = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
             p2 = mpP2->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            q2 = mpP2->getNodeDataPtr(NodeHydraulic::MASSFLOW);
+            q2 = mpP2->getNodeDataPtr(NodeHydraulic::FLOW);
             x2 = mpP3->getNodeDataPtr(NodeMechanic::POSITION);
             v2 = mpP3->getNodeDataPtr(NodeMechanic::VELOCITY);
             F2 = mpP3->getNodeDataPtr(NodeMechanic::FORCE);

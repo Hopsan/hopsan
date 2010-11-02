@@ -70,9 +70,9 @@ namespace hopsan {
         {
             mZc = mBulkmodulus/mVolume*mTimestep/(1-mAlpha); //Need to be updated at simulation start since it is volume and bulk that are set.
 
-            double q1  = mpP1->readNode(NodeHydraulic::MASSFLOW);
+            double q1  = mpP1->readNode(NodeHydraulic::FLOW);
             double p1  = mpP1->readNode(NodeHydraulic::PRESSURE);
-            double q2  = mpP2->readNode(NodeHydraulic::MASSFLOW);
+            double q2  = mpP2->readNode(NodeHydraulic::FLOW);
             double p2  = mpP2->readNode(NodeHydraulic::PRESSURE);
 
             //Write to nodes
@@ -87,10 +87,10 @@ namespace hopsan {
         {
             //Get variable values from nodes
             //double p1  = mpP1->readNode(NodeHydraulic::PRESSURE);
-            double q1  = mpP1->readNode(NodeHydraulic::MASSFLOW);
+            double q1  = mpP1->readNode(NodeHydraulic::FLOW);
             double c1  = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
             //double p2  = mpP2->readNode(NodeHydraulic::PRESSURE);
-            double q2  = mpP2->readNode(NodeHydraulic::MASSFLOW);
+            double q2  = mpP2->readNode(NodeHydraulic::FLOW);
             double c2  = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
 
             //Volume equations
@@ -179,11 +179,11 @@ namespace hopsan {
         void initialize()
         {
             p1 = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            q1 = mpP1->getNodeDataPtr(NodeHydraulic::MASSFLOW);
+            q1 = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
             c1 = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
             Zc1 = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
             p2 = mpP2->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            q2 = mpP2->getNodeDataPtr(NodeHydraulic::MASSFLOW);
+            q2 = mpP2->getNodeDataPtr(NodeHydraulic::FLOW);
             c2 = mpP2->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
             Zc2 = mpP2->getNodeDataPtr(NodeHydraulic::CHARIMP);
 

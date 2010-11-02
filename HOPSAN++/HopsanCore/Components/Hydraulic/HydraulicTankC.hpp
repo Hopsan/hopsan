@@ -51,7 +51,7 @@ namespace hopsan {
         {
             //write to nodes
             mpP1->writeNode(NodeHydraulic::PRESSURE, mPressure);
-            mpP1->writeNode(NodeHydraulic::MASSFLOW, mStartFlow);
+            mpP1->writeNode(NodeHydraulic::FLOW, mStartFlow);
         }
 
 

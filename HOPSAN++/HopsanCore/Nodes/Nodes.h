@@ -43,14 +43,14 @@ namespace hopsan {
     class NodeHydraulic :public Node
     {
     public:
-        enum {MASSFLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP, HEATFLOW, DATALENGTH};
+        enum {FLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP, HEATFLOW, DATALENGTH};
         static Node* CreatorFunction() {return new NodeHydraulic;}
 
     private:
         NodeHydraulic() : Node(DATALENGTH)
         {
             mNodeType = "NodeHydraulic";
-            setDataNameAndUnit(MASSFLOW, "MassFlow", "Kg/m^3");
+            setDataNameAndUnit(FLOW, "Flow", "m^3/s");
             setDataNameAndUnit(PRESSURE, "Pressure", "Pa");
             setDataNameAndUnit(TEMPERATURE, "Temperature", "K", Node::NOPLOT);
             setDataNameAndUnit(WAVEVARIABLE, "WaveVariable", "?", Node::NOPLOT);

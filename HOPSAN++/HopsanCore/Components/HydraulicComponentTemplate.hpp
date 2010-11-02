@@ -53,11 +53,11 @@ namespace hopsan {
         void initialize()
         {
             //Write to nodes
-            mpPORT1->writeNode(NodeHydraulic::MASSFLOW,     0.0);
+            mpPORT1->writeNode(NodeHydraulic::FLOW,     0.0);
             mpPORT1->writeNode(NodeHydraulic::PRESSURE,     mUserVariable3);
             mpPORT1->writeNode(NodeHydraulic::WAVEVARIABLE, 0.0);
             mpPORT1->writeNode(NodeHydraulic::CHARIMP,      0.0);
-            mpPORT2->writeNode(NodeHydraulic::MASSFLOW,     0.0);
+            mpPORT2->writeNode(NodeHydraulic::FLOW,     0.0);
             mpPORT2->writeNode(NodeHydraulic::PRESSURE,     0.0);
             mpPORT2->writeNode(NodeHydraulic::WAVEVARIABLE, 0.0);
             mpPORT2->writeNode(NodeHydraulic::CHARIMP,      0.0);
@@ -81,9 +81,9 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            double q1 = mpPORT1->readNode(NodeHydraulic::MASSFLOW);
+            double q1 = mpPORT1->readNode(NodeHydraulic::FLOW);
             double p1 = mpPORT1->readNode(NodeHydraulic::PRESSURE);
-            double q2 = mpPORT2->readNode(NodeHydraulic::MASSFLOW);
+            double q2 = mpPORT2->readNode(NodeHydraulic::FLOW);
             double p2 = mpPORT2->readNode(NodeHydraulic::PRESSURE);
 
             //Equations

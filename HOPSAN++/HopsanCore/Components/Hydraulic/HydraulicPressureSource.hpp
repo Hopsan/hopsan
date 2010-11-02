@@ -52,7 +52,7 @@ namespace hopsan {
         {
             //write to nodes
             mpP1->writeNode(NodeHydraulic::PRESSURE, mPressure);
-            mpP1->writeNode(NodeHydraulic::MASSFLOW, mStartFlow);
+            mpP1->writeNode(NodeHydraulic::FLOW, mStartFlow);
         }
 
 
@@ -119,7 +119,7 @@ namespace hopsan {
                 input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
 
             p = mpP1->getNodeDataPtr(NodeHydraulic::PRESSURE);
-            q = mpP1->getNodeDataPtr(NodeHydraulic::MASSFLOW);
+            q = mpP1->getNodeDataPtr(NodeHydraulic::FLOW);
             c = mpP1->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
             Zc = mpP1->getNodeDataPtr(NodeHydraulic::CHARIMP);
 

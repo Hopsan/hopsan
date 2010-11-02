@@ -67,7 +67,7 @@ namespace hopsan {
             double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
 
             mpP1->writeNode(NodeHydraulic::PRESSURE, c1);
-            mpP1->writeNode(NodeHydraulic::MASSFLOW, 0.0);
+            mpP1->writeNode(NodeHydraulic::FLOW, 0.0);
 
             if (mStartPressure < mPmin)         //User has selected an initial pressure lower than the minimum pressure, so use minimum pressure instead
             {
@@ -153,7 +153,7 @@ namespace hopsan {
 
             //Write new values to nodes
             mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
-            mpP1->writeNode(NodeHydraulic::MASSFLOW, q1);
+            mpP1->writeNode(NodeHydraulic::FLOW, q1);
             if (mpOut->isConnected())
             {
                 mpOut->writeNode(NodeSignal::VALUE, mVoil);

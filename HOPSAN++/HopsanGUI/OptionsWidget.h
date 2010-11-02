@@ -44,9 +44,9 @@ public:
     QLabel *mpPressureUnitLabel;
     QComboBox *mpPressureUnitComboBox;
     QPushButton *mpAddPressureUnitButton;
-    QLabel *mpMassFlowUnitLabel;
-    QComboBox *mpMassFlowUnitComboBox;
-    QPushButton *mpAddMassFlowUnitButton;
+    QLabel *mpFlowUnitLabel;
+    QComboBox *mpFlowUnitComboBox;
+    QPushButton *mpAddFlowUnitButton;
     QLabel *mpForceUnitLabel;
     QComboBox *mpForceUnitComboBox;
     QPushButton *mpAddForceUnitButton;
@@ -85,7 +85,7 @@ public slots:
 
 private slots:
     void addPressureUnit();
-    void addMassFlowUnit();
+    void addFlowUnit();
     void addForceUnit();
     void addPositionUnit();
     void addVelocityUnit();
