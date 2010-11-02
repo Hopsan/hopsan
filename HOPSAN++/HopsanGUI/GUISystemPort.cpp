@@ -54,6 +54,7 @@ void GUISystemPort::createPorts()
 
 
 //! Returns a string with the GUIObject type.
+//! @todo maybe not hardcoded string
 QString GUISystemPort::getTypeName()
 {
     return "SystemPort";

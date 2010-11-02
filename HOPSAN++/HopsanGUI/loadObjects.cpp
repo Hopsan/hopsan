@@ -311,6 +311,7 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
     GUIModelObject* pSys = loadGUIModelObject(rData, pLibrary, pSystem, undoSettings);
 
     //Now read the external file to change appearance and populate the system
+    //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,externalpath: " << rData.filepath;
     pSys->loadFromHMF(rData.filepath);
 
     //Set the cqs type of the system

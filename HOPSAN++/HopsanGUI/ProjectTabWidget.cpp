@@ -648,28 +648,13 @@ void ProjectTabWidget::loadModel(QString modelFileName)
 
     mpParentMainWindow->registerRecentModel(fileInfo);
 
-
-
-
-//    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
-//    {
-//        qDebug() << "Failed to open file or not a text file: " + modelFileName;
-//        return;
-//    }
-//    QTextStream inputStream(&file);  //Create a QTextStream object to stream the content of file
-
-
     this->addProjectTab(new ProjectTab(this), fileInfo.fileName());
     ProjectTab *pCurrentTab = qobject_cast<ProjectTab *>(currentWidget());
-//    pCurrentTab->mpSystem->mModelFileName = modelFileName;
-//    pCurrentTab->mpSystem->mUndoStack->newPost();
     pCurrentTab->setSaved(true);
 
     //Temporary hack to atempt loading xml model files
     if (modelFileName.endsWith("x"))
     {
-
-        //QString textStringFile(&file); //Converts to QTextStream
         QDomDocument domDocument;
         QString errorStr;
         int errorLine, errorColumn;
@@ -699,75 +684,15 @@ void ProjectTabWidget::loadModel(QString modelFileName)
                 QDomElement modelProperties = hmfRoot.firstChildElement("modelproperties");
                 QDomElement modelAppearance = hmfRoot.firstChildElement("modelappearance");
                 QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
+                pCurrentTab->mpSystem->mModelFileInfo.setFile(file); //Remember info about the file from which the data was loaded
                 pCurrentTab->mpSystem->loadFromDomElement(systemElement);
             }
-
         }
     }
     else
     {
         pCurrentTab->mpSystem->loadFromHMF(modelFileName);
     }
-
-
-//    //Read the header data, also checks version numbers
-//    //! @todo maybe not check the version numbers in there
-//    HeaderLoadData headerData = readHeader(inputStream, mpParentMainWindow->mpMessageWidget);
-
-//    //It is assumed that these data have been successfully read
-//    mpParentMainWindow->setStartTimeInToolBar(headerData.startTime);
-//    mpParentMainWindow->setTimeStepInToolBar(headerData.timeStep);
-//    mpParentMainWindow->setFinishTimeInToolBar(headerData.stopTime);
-
-//    //It is assumed that these data have been successfully read
-//    getCurrentTab()->mpGraphicsView->centerOn(headerData.viewport_x, headerData.viewport_y);
-//    getCurrentTab()->mpGraphicsView->scale(headerData.viewport_zoomfactor, headerData.viewport_zoomfactor);
-//    getCurrentTab()->mpGraphicsView->mZoomFactor = headerData.viewport_zoomfactor;
-//    getCurrentTab()->mpGraphicsView->updateViewPort();
-
-//    //Sets the file name (exluding path and ending) as the model name
-//    getCurrentTab()->mpSystem->mpCoreSystemAccess->setRootSystemName(fileInfo.baseName());
-
-//    while ( !inputStream.atEnd() )
-//    {
-//        //Extract first word on line
-//        QString inputWord;
-//        inputStream >> inputWord;
-
-//        if ( (inputWord == "SUBSYSTEM") or (inputWord == "BEGINSUBSYSTEM") )
-//        {
-//            SubsystemLoadData subsysData;
-//            subsysData.read(inputStream);
-//            loadSubsystemGUIObject(subsysData, mpParentMainWindow->mpLibrary, pCurrentTab->mpSystem, NOUNDO);
-//            //! @todo convenience function
-//        }
-
-//        if ( (inputWord == "COMPONENT") || (inputWord == "SYSTEMPORT") )
-//        {
-//            loadGUIObject(inputStream, mpParentMainWindow->mpLibrary, pCurrentTab->mpSystem, NOUNDO);
-//        }
-
-
-//        if ( inputWord == "PARAMETER" )
-//        {
-//            loadParameterValues(inputStream, pCurrentTab->mpSystem, NOUNDO);
-//        }
-
-
-//        if ( inputWord == "CONNECT" )
-//        {
-//            loadConnector(inputStream, pCurrentTab->mpSystem, NOUNDO);
-//        }
-//    }
-//    //Deselect all components
-//   //pCurrentTab->mpGraphicsView->deselectAllGUIObjects();
-
-//    pCurrentTab->mpSystem->deselectAll();
-//    this->centerView();
-//    pCurrentTab->mpSystem->mUndoStack->clear();
-//    pCurrentTab->mpGraphicsView->updateViewPort();
-
-//    emit checkMessages();
 }
 
 
