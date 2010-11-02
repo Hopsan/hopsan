@@ -42,7 +42,7 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
     mpNumberOfSamplesLabel = new QLabel(tr("Number of Log Samples"));
     mpNumberOfSamplesLabel->setEnabled(mpParentMainWindow->mEnableProgressBar);
     mpNumberOfSamplesBox = new QLineEdit(this);
-    mpNumberOfSamplesBox->setValidator(new QIntValidator(0, 1000000000000, this));
+    mpNumberOfSamplesBox->setValidator(new QIntValidator(0, 2000000000, this));
     QString samplesText;
     samplesText.setNum(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->getNumberOfSamples());
     mpNumberOfSamplesBox->setText(samplesText);
