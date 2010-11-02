@@ -163,11 +163,19 @@ void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &
 #define HMF_VALUETAG "value"
 #define HMF_POSETAG "pose"
 #define HMF_NAMETEXTPOSTAG "nametextpos"
-#define HMF_VISIBLETAG "visible"
+#define HMF_VISIBLETAG "nametextvisible"
 
 #define HMF_CONNECTORSTARTCOMPONENTTAG "startcomponent"
 #define HMF_CONNECTORSTARTPORTTAG "startport"
 #define HMF_CONNECTORENDCOMPONENTTAG "endcomponent"
 #define HMF_CONNECTORENDPORTTAG "endport"
+
+#define CAF_ROOTTAG "componentappearancefile"
+#define HMF_DISPLAYNAMETAG "displayname"
+#define HMF_ISOICONTAG "isoicon"
+#define HMF_USERICONTAG "usericon"
+#define HMF_ICONROTATIONTAG "iconrotation"
+
+
 
 #endif // LOADOBJECTS_H

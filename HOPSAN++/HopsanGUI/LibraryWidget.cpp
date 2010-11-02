@@ -268,7 +268,8 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
     if (libDir.isEmpty() == true)
         return;
 
-    QDir libDirObject(libDir);  //Create a QDir object that contains the info about the library direction
+    //Create a QDir object that contains the info about the library direction
+    QDir libDirObject(libDir);
 
     //Get the name for the library to be set in the tree
     QString libName = QString(libDirObject.dirName().left(1).toUpper() + libDirObject.dirName().right(libDirObject.dirName().size()-1));
@@ -276,12 +277,14 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
     //Add the library to the tree
     addEmptyLibrary(libName,parentLib);
 
-    QStringList filters;        //Create a QStringList object that contains name filters
-    filters << "*.txt";         //Create the name filter
-    libDirObject.setNameFilters(filters);       //Set the name filter
+    //Create a QStringList object that contains name filters
+    QStringList filters;
+    filters << "*.txt";                     //Create the name filter
+    libDirObject.setNameFilters(filters);   //Set the name filter
 
-    QStringList libList = libDirObject.entryList(); //Create a list with all name of the files in dir libDir
-    for (int i = 0; i < libList.size(); ++i)    //Iterate over the file names
+    //Create a list with all name of the files in dir libDir
+    QStringList libList = libDirObject.entryList();
+    for (int i = 0; i < libList.size(); ++i)        //Iterate over the file names
     {
         QString filename = libDirObject.absolutePath() + "/" + libList.at(i);
         QFile file(filename);   //Create a QFile object
@@ -292,9 +295,43 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
         }
 
         bool sucess = true;
-        QTextStream inFile(&file);  //Create a QTextStream object to stream the content of each file
         AppearanceData *pAppearanceData = new AppearanceData;
-        pAppearanceData->readFromTextStream(inFile); //Read appearance from file
+
+        //Read appearance from file, First check if xml
+        QDomDocument domDocument;
+        QString errorStr;
+        int errorLine, errorColumn;
+        if (domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
+        {
+            //! @todo check caf version
+            QDomElement cafRoot = domDocument.documentElement();
+            if (cafRoot.tagName() != CAF_ROOTTAG)
+            {
+                QMessageBox::information(window(), tr("Hopsan GUI read AppearanceData"),
+                                         "The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: "
+                                         + cafRoot.tagName() + "!=" + CAF_ROOTTAG);
+            }
+            else
+            {
+                //Read appearance data from the caf xml file
+                pAppearanceData->readFromDomElement(cafRoot);
+            }
+        }
+        else
+        {
+            //            QMessageBox::information(window(), tr("Hopsan GUI read AppearanceData"),
+            //                                     tr("Parse error at line %1, column %2:\n%3")
+            //                                     .arg(errorLine)
+            //                                     .arg(errorColumn)
+            //                                     .arg(errorStr));
+
+            file.reset(); //Reset file ptr
+
+            //Assume that the file is ok
+            QTextStream inFile(&file);  //Create a QTextStream object to stream the content of each file
+            pAppearanceData->readFromTextStream(inFile);
+        }
+
         pAppearanceData->setBasePath(libDirObject.absolutePath() + "/");
         if (!pAppearanceData->mIsReadOK)
         {
@@ -336,14 +373,6 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
 //! @see addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList appearanceData)
 void LibraryWidget::addLibrary()
 {
-    /*QFileDialog dialog(this);
-    dialog.setFileMode(QFileDialog::Directory);
-    fileName = QFileDialog::getExistingDirectory();*/
-
-    /*Alt. way
-    fileName = QFileDialog::getOpenFileName(this,
-     tr("Open Image"), "/home/jana", tr("Image Files (*.png *.jpg *.bmp)"));*/
-
     QDir fileDialogOpenDir; //This dir object is used for setting the open directory of the QFileDialog, i.e. apps working dir
 
     QString libDir = QFileDialog::getExistingDirectory(this, tr("Choose Library Directory"),
@@ -422,7 +451,7 @@ void LibraryWidget::addLibraryContentItem(QString libraryName, QString parentLib
         }
         ++it;
     }
-    mName2TypeMap.insert(newComponent->getAppearanceData()->getNonEmptyName(), newComponent->getAppearanceData()->getTypeName()); //! @todo this is a temporary workaround
+    mName2TypeMap.insert(newComponent->getAppearanceData()->getNonEmptyName(), newComponent->getAppearanceData()->getTypeName()); //! @todo this is a temporary workaround, what happens if two components have sae displayname
 }
 
 

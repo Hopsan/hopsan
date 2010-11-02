@@ -19,6 +19,8 @@
 #include "common.h"
 #include "GUIPortAppearance.h"
 
+#include "loadObjects.h"
+
 class AppearanceData
 {
 public:
@@ -46,8 +48,12 @@ public:
 
     void readFromTextStream(QTextStream &is);
 
-    friend QTextStream& operator >>(QTextStream &is, AppearanceData &rData);
-    friend QTextStream& operator <<(QTextStream &os, AppearanceData &rData);
+    void readFromDomElement(QDomElement &rDomElement);
+    void saveToDomElement(QDomElement &rDomElement);
+    void saveToXML(QString filename);
+
+//    friend QTextStream& operator >>(QTextStream &is, AppearanceData &rData);
+//    friend QTextStream& operator <<(QTextStream &os, AppearanceData &rData);
 
     //This bool signals wheter there were errors when reading the data from input stream
     bool mIsReadOK;

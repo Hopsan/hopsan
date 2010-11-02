@@ -1,6 +1,6 @@
 TYPENAME "HydraulicOptimizedVolume"
 DISPLAYNAME "Optimized Hydraulic Volume"
-ISOICON "./hydraulic/volumes/volume_iso.svg"
+ISOICON "../hydraulic/volumes/volume_iso.svg"
 USERICON "../hydraulic/volumes/volume_user.svg"
 ICONROTATION ON
 PORT "P1" 0.0 0.5 0

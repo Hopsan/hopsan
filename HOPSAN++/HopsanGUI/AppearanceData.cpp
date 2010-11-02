@@ -243,7 +243,74 @@ void AppearanceData::readFromTextStream(QTextStream &rIs)
     {
         mIsReadOK = false;
     }
+
+    this->saveToXML("caf");
 }
+
+
+void AppearanceData::readFromDomElement(QDomElement &rDomElement)
+{
+    mTypeName       = rDomElement.firstChildElement(HMF_TYPETAG).text();
+    mName           = rDomElement.firstChildElement(HMF_DISPLAYNAMETAG).text();
+    mIconPathISO    = rDomElement.firstChildElement(HMF_ISOICONTAG).text();
+    mIconPathUser   = rDomElement.firstChildElement(HMF_USERICONTAG).text();
+    mIconRotationBehaviour = rDomElement.firstChildElement(HMF_ICONROTATIONTAG).text();
+
+    QDomElement xmlPort = rDomElement.firstChildElement(HMF_PORTTAG);
+    while (!xmlPort.isNull())
+    {
+        GUIPortAppearance portApp;
+        parseDomValueNode3(xmlPort.firstChildElement(HMF_POSETAG), portApp.x, portApp.y, portApp.rot);
+        mPortAppearanceMap.insert(xmlPort.firstChildElement(HMF_NAMETAG).text(), portApp);
+        xmlPort = xmlPort.nextSiblingElement(HMF_PORTTAG);
+    }
+     this->mIsReadOK = true; //Assume read will be ok
+     //! @todo maybe remove this in xml
+}
+
+
+void AppearanceData::saveToDomElement(QDomElement &rDomElement)
+{
+    appendDomTextNode(rDomElement, HMF_TYPETAG, mTypeName);
+    appendDomTextNode(rDomElement, HMF_DISPLAYNAMETAG, mName);
+    appendDomTextNode(rDomElement, HMF_ISOICONTAG, mIconPathISO);
+    appendDomTextNode(rDomElement, HMF_USERICONTAG, mIconPathUser);
+    appendDomTextNode(rDomElement, HMF_ICONROTATIONTAG, mIconRotationBehaviour);
+
+    PortAppearanceMapT::iterator pit;
+    for (pit=mPortAppearanceMap.begin(); pit!=mPortAppearanceMap.end(); ++pit)
+    {
+        QDomElement xmlPort = appendDomElement(rDomElement,HMF_PORTTAG);
+        appendDomTextNode(xmlPort, HMF_NAMETAG, pit.key());
+        appendDomValueNode3(xmlPort, HMF_POSETAG, pit.value().x, pit.value().y, pit.value().rot);
+    }
+}
+
+//! @brief Temporary hack to test xml appearancedata
+void AppearanceData::saveToXML(QString filename)
+{
+    //Save to file
+    #include <QFile>
+    #include "version.h"
+    QDomDocument doc;
+    QDomElement cafroot = doc.createElement("componentappearancefile");
+    doc.appendChild(cafroot);
+    cafroot.setAttribute("version", CAFVERSION);
+    this->saveToDomElement(cafroot);
+    const int IndentSize = 4;
+    QFile xml(filename);
+    if (!xml.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+    {
+        qDebug() << "Failed to open file for writing: " << xml.fileName();
+        return;
+    }
+    QTextStream out(&xml);
+    appendRootXMLProcessingInstruction(doc); //The xml "comment" on the first line
+    doc.save(out, IndentSize);
+    xml.close();
+}
+
+
 
 void AppearanceData::setTypeName(QString name)
 {

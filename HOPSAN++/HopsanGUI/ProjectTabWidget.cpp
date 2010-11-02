@@ -13,7 +13,7 @@
 #include <QtXml>
 //#include <QDomDocument>
 //#include <QDomElement>
-#include <QDomText>
+//#include <QDomText>
 
 #include <string>
 #include <iostream>
