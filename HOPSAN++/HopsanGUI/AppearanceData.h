@@ -52,10 +52,8 @@ public:
     void saveToDomElement(QDomElement &rDomElement);
     void saveToXML(QString filename);
 
-//    friend QTextStream& operator >>(QTextStream &is, AppearanceData &rData);
-//    friend QTextStream& operator <<(QTextStream &os, AppearanceData &rData);
-
     //This bool signals wheter there were errors when reading the data from input stream
+    //! @todo should we really have it
     bool mIsReadOK;
 
 private:

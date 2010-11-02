@@ -18,46 +18,6 @@ AppearanceData::AppearanceData()
     mPortAppearanceMap.clear();
 }
 
-//QTextStream& operator >>(QTextStream &is, AppearanceData &rData)
-//{
-//    //! @todo handle returned error indication
-//    bool sucess = rData.readFromTextStream(is);
-//    rData.mIsReadOK = sucess;
-//    return is;
-//}
-
-//QTextStream& operator <<(QTextStream &os, AppearanceData &rData)
-//{
-//    //! @todo maybe write header here (probaly not a good place, better somewhere else)
-//    //! @todo find out how to make newline in qt instead of "\n"
-//    os << "TYPENAME " << addQuotes(rData.mTypeName) << "\n";
-//    os << "DISPLAYNAME " << addQuotes(rData.mName) << "\n";
-//    //os << "BASEPATH " << rData.getBasePath() << "\n"; //Base path is computer dependant
-//    if (!rData.mQString(ICONPATH)ISO.isEmpty())
-//    {
-//        os << "ISOICON " << addQuotes(rData.mQString(ICONPATH)ISO) << "\n";
-//    }
-//    if (!rData.mQString(ICONPATH)User.isEmpty())
-//    {
-//        os << "USERICON " << addQuotes(rData.mQString(ICONPATH)User) << "\n";
-//    }
-//    if (!rData.mIconRotationBehaviour.isEmpty())
-//    {
-//        os << "ICONROTATION " << rData.mIconRotationBehaviour << "\n";
-//    }
-
-//    PortAppearanceMapT::iterator it;
-//    for (it = rData.mPortAppearanceMap.begin(); it != rData.mPortAppearanceMap.end(); ++it)
-//    {
-//        os << "PORT " << " "
-//           << addQuotes(it.key()) << " "
-//           << it.value().x << " "
-//           << it.value().y << " "
-//           << it.value().rot << "\n";
-//    }
-//    return os;
-//}
-
 //! @brief get the type-name
 //! @returns The type-name
 QString AppearanceData::getTypeName()
@@ -244,7 +204,7 @@ void AppearanceData::readFromTextStream(QTextStream &rIs)
         mIsReadOK = false;
     }
 
-    this->saveToXML("caf");
+    this->saveToXML("caf"); //only test function to test savetoxml
 }
 
 
@@ -261,11 +221,21 @@ void AppearanceData::readFromDomElement(QDomElement &rDomElement)
     {
         GUIPortAppearance portApp;
         parseDomValueNode3(xmlPort.firstChildElement(HMF_POSETAG), portApp.x, portApp.y, portApp.rot);
+        //! @todo do we really need direction
+        if( (portApp.rot == 0) || (portApp.rot == 180) )
+        {
+            portApp.direction = LEFTRIGHT;
+        }
+        else
+        {
+            portApp.direction = TOPBOTTOM;
+        }
+
         mPortAppearanceMap.insert(xmlPort.firstChildElement(HMF_NAMETAG).text(), portApp);
         xmlPort = xmlPort.nextSiblingElement(HMF_PORTTAG);
     }
      this->mIsReadOK = true; //Assume read will be ok
-     //! @todo maybe remove this in xml
+     //! @todo maybe remove this in xml load
 }
 
 
