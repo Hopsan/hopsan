@@ -413,6 +413,7 @@ GUIModelObject::GUIModelObject(QPoint position, qreal rotation, const Appearance
 
         //Create the textbox containing the name
     mpNameText = new GUIModelObjectDisplayName(this);
+    mpNameText->setFlag(QGraphicsItem::ItemIsSelectable, false); //To minimize problems when move after copy and so on
     mNameTextPos = 0;
     this->setNameTextPos(mNameTextPos);
 
