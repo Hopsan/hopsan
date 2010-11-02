@@ -112,6 +112,9 @@ void GUIObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 //! @brief Defines what happens if a mouse key is pressed while hovering an object
 void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    setFlag(QGraphicsItem::ItemIsMovable, true); //Make the component movable if not
+    setFlag(QGraphicsItem::ItemIsSelectable, true); //Make the component selactable if not
+
         //Store old positions for all components, in case more than one is selected
     if(event->button() == Qt::LeftButton)
     {
@@ -122,8 +125,11 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
     }
 
         //Objects shall not be selectable while creating a connector
-    if(mpParentSystem->mIsCreatingConnector)
+    if(mpParentSystem->getIsCreatingConnected())
     {
+        setFlag(QGraphicsItem::ItemIsMovable, false); //Make the component not movable during connection
+        setFlag(QGraphicsItem::ItemIsSelectable, false); //Make the component not selactable during connection
+
         this->setSelected(false);
         this->setActive(false);
     }
@@ -155,7 +161,7 @@ void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     }
 
         //Objects shall not be selectable while creating a connector
-    if(mpParentSystem->mIsCreatingConnector)
+    if(mpParentSystem->getIsCreatingConnected())
     {
         this->setSelected(false);
         this->setActive(false);
@@ -855,7 +861,7 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
 
             //Snap component if it only has one connector and is dropped close enough (horizontal or vertical) to adjacent component
         if(mpParentSystem != 0 && mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mSnapping &&
-           !mpParentSystem->mIsCreatingConnector && mpParentSystem->mSelectedGUIObjectsList.size() == 1)
+           !mpParentSystem->getIsCreatingConnected() && mpParentSystem->mSelectedGUIObjectsList.size() == 1)
         {
                 //Vertical snap
             if( (mpGUIConnectorPtrs.size() == 1) &&

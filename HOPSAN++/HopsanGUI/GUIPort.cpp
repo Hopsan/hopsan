@@ -224,8 +224,14 @@ void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
         std::cout << "GUIPort.cpp: " << "RightClick" << std::endl;
     }
     magnify(false);
+}
 
-    QGraphicsItem::mousePressEvent(event);
+
+//! Defines what happens when double clicking on a port. Nothing should happen.
+//! @param *event defines the mouse event.
+void GUIPort::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    //Nothing to do, reimplemented just to do nothing
 }
 
 

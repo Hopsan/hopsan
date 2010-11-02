@@ -55,7 +55,6 @@ public:
 
     bool mPortsHidden;
     bool mUndoDisabled;
-    bool mIsCreatingConnector;
     bool mIsRenamingObject;
     bool mJustStoppedCreatingConnector;
     bool isObjectSelected();
@@ -77,6 +76,12 @@ public:
     void setUserIconPath(QString path);
 
     void updateExternalPortPositions();
+
+    void setIsCreatingConnected(bool isConnected);
+    bool getIsCreatingConnected();
+
+protected:
+    bool mIsCreatingConnector;
 
 public slots:
     //void addSystemPort();

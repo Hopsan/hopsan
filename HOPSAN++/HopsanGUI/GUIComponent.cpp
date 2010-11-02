@@ -83,6 +83,7 @@ GUIComponent::~GUIComponent()
 //! Event when double clicking on component icon.
 void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
+    QGraphicsWidget::mouseDoubleClickEvent(event);
     std::cout << "GUIComponent.cpp: " << "mouseDoubleClickEvent " << std::endl;
 
     openParameterDialog();
