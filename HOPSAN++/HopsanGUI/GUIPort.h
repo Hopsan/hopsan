@@ -64,6 +64,7 @@ protected:
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
+    void addPortGraphicsOverlay(QString filepath);
 
     //protected slots:
 public: //! @todo This was made public temporarly to test plot in Python
@@ -88,6 +89,8 @@ private:
 //    qreal mXpos;
 //    qreal mYpos;
     QString name;
+
+    QGraphicsSvgItem* mpPortGraphicsOverlay;
 
 };
 

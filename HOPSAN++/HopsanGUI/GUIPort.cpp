@@ -29,6 +29,9 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     qDebug() << "parentType: " << pParentGUIModelObject->type() << " GUISYSTEM=" << GUISYSTEM;
     qDebug() << "======================= parentName: " << pParentGUIModelObject->getName();
 
+    //Set overlay if it exists
+    this->addPortGraphicsOverlay(pPortAppearance->mIconOverlayPath);
+
     if ( pParentGUIModelObject->mpParentSystem != 0 )
     {
         mpParentSystem = pParentGUIModelObject->mpParentSystem;
@@ -271,6 +274,20 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
                 plot(parameterNames[i], parameterUnits[i]);
             }
         }
+    }
+}
+
+
+void GUIPort::addPortGraphicsOverlay(QString filepath)
+{
+    if (!filepath.isEmpty())
+    {
+        //! @todo check if file exist
+        mpPortGraphicsOverlay = new QGraphicsSvgItem(filepath, this);
+    }
+    else
+    {
+        mpPortGraphicsOverlay = 0;
     }
 }
 
