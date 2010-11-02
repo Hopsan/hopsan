@@ -124,6 +124,8 @@ HeaderLoadData readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidg
 void writeHeader(QTextStream &rStream);
 void addHMFHeader(QDomElement &rDomElement);
 
+void appendRootXMLProcessingInstruction(QDomDocument &rDomDocument);
+
 QDomElement appendDomElement(QDomElement &rDomElement, const QString element_name);
 void appendDomTextNode(QDomElement &rDomElement, const QString element_name, const QString text);
 void appendDomBooleanNode(QDomElement &rDomElement, const QString element_name, const bool value);

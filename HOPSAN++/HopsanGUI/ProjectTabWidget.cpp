@@ -254,7 +254,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     MainWindow *pMainWindow = mpParentProjectTabWidget->mpParentMainWindow;
 
 
-    if((mpSystem->mModelFileInfo.filePath().isEmpty()) | (saveAsFlag == NEWFILE))
+    if((mpSystem->mModelFileInfo.filePath().isEmpty()) || (saveAsFlag == NEWFILE))
     {
         QDir fileDialogSaveDir;
         QString modelFilePath;
@@ -388,7 +388,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     //! @todo maybe have a write xml port help function
 
 
-    //! @todo Do we really need to svae this at all now that we can call update external ports function
+    //! @todo Do we really need to svae this at all now that we can call update external ports function, maybe if we define our own port positions
     QList<GUIPort*>::iterator pit;
     //Note we need a local copy of portlist here calling mpSystem->getPortListPtrs().begin() and .edn() would fail as they would return two DIFFERENT copies
     for (pit=mpSystem->getPortListPtrs().begin(); pit!=mpSystem->getPortListPtrs().end(); ++pit)
@@ -401,7 +401,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     }
 
     //Save the model component hierarcy
-    //! @todo maybe use a saveload object instead of calling save imediately (only load object exist for now)
+    //! @todo maybe use a saveload object instead of calling save imediately (only load object exist for now), or maybe this is fine
     mpSystem->saveToDomElement(hmfRoot);
 
     //Save to file
@@ -413,6 +413,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
         return;
     }
     QTextStream out(&xmlhmf);
+    appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
     domDocument.save(out, IndentSize);
 }
 

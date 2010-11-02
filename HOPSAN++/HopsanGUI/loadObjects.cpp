@@ -517,6 +517,13 @@ void addHMFHeader(QDomElement &rDomElement)
     appendDomTextNode(xmlHeader, "cafversion", CAFVERSION);
 }
 
+
+void appendRootXMLProcessingInstruction(QDomDocument &rDomDocument)
+{
+    QDomNode xmlProcessingInstruction = rDomDocument.createProcessingInstruction("xml","version=\"1.0\" encoding=\"UTF-8\"");
+    rDomDocument.insertBefore(xmlProcessingInstruction, rDomDocument.firstChild());
+}
+
 //! @brief Helper function for adding one initially empty Dom node
 //! @todo maybe retunr reference (is there a difference)
 //! @returns The new sub element dom node
