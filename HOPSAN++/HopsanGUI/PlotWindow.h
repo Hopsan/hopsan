@@ -114,8 +114,7 @@ protected:
 
 public slots:
     void discardGeneration();
-
-private slots:
+    void setUnit(int yAxis, QString physicalQuantity, QString selectedUnit);
     void enableZoom(bool);
     void enablePan(bool);
     void exportSVG();

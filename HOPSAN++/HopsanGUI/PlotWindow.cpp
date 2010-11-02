@@ -758,8 +758,8 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
     QMenu *changeUnitMenuLeft;
     QMenu *changeUnitMenuRight;
 
-    yAxisRightMenu = menu.addMenu(QString("Right Y Axis"));
     yAxisLeftMenu = menu.addMenu(QString("Left Y Axis"));
+    yAxisRightMenu = menu.addMenu(QString("Right Y Axis"));
 
 
         //Create menu for changing unit on left axis
@@ -770,7 +770,6 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
     {
         QAction *tempAction = changeUnitMenuLeft->addAction(itul.key());
         std::string axisTitle = mpVariablePlot->axisTitle(QwtPlot::yLeft).text().toStdString();
-
         if(axisTitle.substr(axisTitle.find("[")+1, axisTitle.find("]")-axisTitle.find("[")-1) == itul.key().toStdString())
         {
            QFont tempFont = tempAction->font();
@@ -791,7 +790,7 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
         {
             QAction *tempAction = changeUnitMenuRight->addAction(itur.key());
             std::string axisTitle = mpVariablePlot->axisTitle(QwtPlot::yRight).text().toStdString();
-            if(axisTitle.substr(axisTitle.find("["), axisTitle.find("]")) == itur.key().toStdString())
+            if(axisTitle.substr(axisTitle.find("[")+1, axisTitle.find("]")-axisTitle.find("[")-1) == itur.key().toStdString())
             {
                 QFont tempFont = tempAction->font();
                 tempFont.setBold(true);
@@ -851,16 +850,16 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
 
 
 
-    // -- Wait for user to make a selection -- //
+    // ----- Wait for user to make a selection ----- //
 
     QCursor *cursor;
     QAction *selectedAction = menu.exec(cursor->pos());
 
-    // -- User has selected something --  //
+    // ----- User has selected something -----  //
 
 
 
-        //User did not click on a menu item
+        // Check if user did not click on a menu item
     if(selectedAction == 0)
     {
         return;
@@ -870,48 +869,14 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
         // Change unit on left axis
     if((selectedAction->parentWidget() == changeUnitMenuLeft) && (mpParentMainWindow->mAlternativeUnits.find(physicalQuantityLeft).value().contains(selectedAction->text())))
     {
-        QString selectedUnit = selectedAction->text();
-        for(size_t i=0; i<mpCurves.size(); ++i)
-        {
-            if(mpCurves.at(i)->yAxis() == QwtPlot::yLeft)
-            {
-                    //Change the curve data to the new x-data and the temporary y-array
-                double scale = mpParentMainWindow->mAlternativeUnits.find(physicalQuantityLeft).value().find(selectedUnit).value();
-                QVector<double> tempVectorY;
-                for(size_t j=0; j<mVectorY[mCurrentGeneration][i].size(); ++j)
-                {
-                    tempVectorY.append(mVectorY[mCurrentGeneration][i][j]*scale);
-                }
-                mpCurves.at(i)->setData(mVectorX[mCurrentGeneration][i], tempVectorY);
-
-                //! @todo Perhaps make mCurveParameters use struct or tuple instead of stringlist. Now we assume that the last value is the unit, which is kind of ugly.
-                mCurveParameters[i][3] = selectedAction->text();
-            }
-            mpVariablePlot->setAxisTitle(QwtPlot::yLeft, physicalQuantityLeft + " [" + selectedAction->text() + "]");
-        }
+        this->setUnit(QwtPlot::yLeft, physicalQuantityLeft, selectedAction->text());
     }
 
 
-        // Change unit on left axis
+        // Change unit on right axis
     if((selectedAction->parentWidget() == changeUnitMenuRight) && (mpParentMainWindow->mAlternativeUnits.find(physicalQuantityRight).value().contains(selectedAction->text())))
     {
-        QString selectedUnit = selectedAction->text();
-        for(size_t i=0; i<mpCurves.size(); ++i)
-        {
-            if(mpCurves.at(i)->yAxis() == QwtPlot::yRight)
-            {
-                    //Change the curve data to the new x-data and the temporary y-array
-                double scale = mpParentMainWindow->mAlternativeUnits.find(physicalQuantityRight).value().find(selectedUnit).value();
-                QVector<double> tempVectorY;
-                for(size_t j=0; j<mVectorY[mCurrentGeneration][i].size(); ++j)
-                {
-                    tempVectorY.append(mVectorY[mCurrentGeneration][i][j]*scale);
-                }
-                mpCurves.at(i)->setData(mVectorX[mCurrentGeneration][i], tempVectorY);
-                mCurveParameters[i][3] = selectedAction->text();
-            }
-            mpVariablePlot->setAxisTitle(QwtPlot::yRight, physicalQuantityRight + " [" + selectedAction->text() + "]");
-        }
+        this->setUnit(QwtPlot::yRight, physicalQuantityRight, selectedAction->text());
     }
 
 
@@ -962,6 +927,33 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
         }
     }
 
+}
+
+
+//! Changes physical unit on specified y axis
+//! @param yAxis Number of the Y-axis (QwtPlot::yLeft or QwtPlot::yRight)
+//! @param physicalQuantity Name of the physical quantity
+//! @param selectedUnit Name of the new unit
+void PlotWindow::setUnit(int yAxis, QString physicalQuantity, QString selectedUnit)
+{
+    double scale = mpParentMainWindow->mAlternativeUnits.find(physicalQuantity).value().find(selectedUnit).value();
+
+    for(size_t i=0; i<mpCurves.size(); ++i)
+    {
+        if(mpCurves.at(i)->yAxis() == yAxis)
+        {
+                //Change the curve data to the new x-data and the temporary y-array
+            QVector<double> tempVectorY;
+            for(size_t j=0; j<mVectorY[mCurrentGeneration][i].size(); ++j)
+            {
+                tempVectorY.append(mVectorY[mCurrentGeneration][i][j]*scale);
+            }
+            mpCurves.at(i)->setData(mVectorX[mCurrentGeneration][i], tempVectorY);
+            mCurveParameters[i][3] = selectedUnit;
+        }
+    }
+
+    mpVariablePlot->setAxisTitle(yAxis, physicalQuantity + " [" + selectedUnit + "]");
 }
 
 

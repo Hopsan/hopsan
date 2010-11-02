@@ -1281,12 +1281,16 @@ double GUISystem::getStopTime()
 }
 
 
+//! Returns the number of samples value of the current project.
+//! @see setNumberOfSamples(double)
 size_t GUISystem::getNumberOfSamples()
 {
     return mNumberOfSamples;
 }
 
 
+//! Sets the number of samples value for the current project
+//! @see getNumberOfSamples()
 void GUISystem::setNumberOfSamples(size_t nSamples)
 {
     mNumberOfSamples = nSamples;
