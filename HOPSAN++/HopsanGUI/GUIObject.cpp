@@ -988,31 +988,37 @@ void GUIModelObject::rotate(undoStatus undoSettings)
     this->fixTextPosition(mpNameText->pos());
     setNameTextPos(tempNameTextPos);
 
+//    for (int i = 0; i != mPortListPtrs.size(); ++i)
+//    {
+//        if(mPortListPtrs.value(i)->getPortDirection() == TOPBOTTOM)
+//            mPortListPtrs.value(i)->setPortDirection(LEFTRIGHT);
+//        else
+//            mPortListPtrs.value(i)->setPortDirection(TOPBOTTOM);
+//        if (mPortListPtrs.value(i)->getPortType() == "POWERPORT")
+//        {
+//            if(this->rotation() == 0 && !mIsFlipped)
+//                mPortListPtrs.value(i)->setRotation(0);
+//            else if(this->rotation() == 0 && mIsFlipped)
+//                mPortListPtrs.value(i)->setRotation(180);
+//            else if(this->rotation() == 90 && !mIsFlipped)
+//                mPortListPtrs.value(i)->setRotation(270);
+//            else if(this->rotation() == 90 && mIsFlipped)
+//                mPortListPtrs.value(i)->setRotation(90);
+//            else if(this->rotation() == 180 && !mIsFlipped)
+//                mPortListPtrs.value(i)->setRotation(180);
+//            else if(this->rotation() == 180 && mIsFlipped)
+//                mPortListPtrs.value(i)->setRotation(0);
+//            else if(this->rotation() == 270 && !mIsFlipped)
+//                mPortListPtrs.value(i)->setRotation(90);
+//            else if(this->rotation() == 270 && mIsFlipped)
+//                mPortListPtrs.value(i)->setRotation(270);
+//        }
+//    }
+
+    //! @todo myabe use signals and slots instead
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
-        if(mPortListPtrs.value(i)->getPortDirection() == TOPBOTTOM)
-            mPortListPtrs.value(i)->setPortDirection(LEFTRIGHT);
-        else
-            mPortListPtrs.value(i)->setPortDirection(TOPBOTTOM);
-        if (mPortListPtrs.value(i)->getPortType() == "POWERPORT")
-        {
-            if(this->rotation() == 0 && !mIsFlipped)
-                mPortListPtrs.value(i)->setRotation(0);
-            else if(this->rotation() == 0 && mIsFlipped)
-                mPortListPtrs.value(i)->setRotation(180);
-            else if(this->rotation() == 90 && !mIsFlipped)
-                mPortListPtrs.value(i)->setRotation(270);
-            else if(this->rotation() == 90 && mIsFlipped)
-                mPortListPtrs.value(i)->setRotation(90);
-            else if(this->rotation() == 180 && !mIsFlipped)
-                mPortListPtrs.value(i)->setRotation(180);
-            else if(this->rotation() == 180 && mIsFlipped)
-                mPortListPtrs.value(i)->setRotation(0);
-            else if(this->rotation() == 270 && !mIsFlipped)
-                mPortListPtrs.value(i)->setRotation(90);
-            else if(this->rotation() == 270 && mIsFlipped)
-                mPortListPtrs.value(i)->setRotation(270);
-        }
+        mPortListPtrs.value(i)->refreshPortOverlayRotation();
     }
 
     if(!mIconRotation)

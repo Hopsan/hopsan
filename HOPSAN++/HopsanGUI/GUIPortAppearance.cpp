@@ -5,7 +5,9 @@
 void GUIPortAppearance::selectPortIcon(QString CQSType, QString porttype, QString nodetype)
 {
     mIconPath.clear();
-    mIconPath.append(QString(PORTICONPATH));
+    mIconOverlayPath.clear();
+
+    mIconPath = QString(PORTICONPATH);
     if (nodetype == "NodeSignal")
     {
         mIconPath.append("SignalPort");
@@ -18,64 +20,66 @@ void GUIPortAppearance::selectPortIcon(QString CQSType, QString porttype, QStrin
             mIconPath.append("_write");
         }
     }
-    else if (nodetype == "NodeMechanic")
-    {
-        mIconPath.append("MechanicPort");
-//        if (CQSType == "C")
-//        {
-//            mIconPath.append("C");
-//        }
-//        else if (CQSType == "Q")
-//        {
-//            mIconPath.append("Q");
-//        }
-    }
-    else if (nodetype == "NodeMechanicRotational")
-    {
-        mIconPath.append("RotationalMechanicPort");
-//        if (CQSType == "C")
-//        {
-//            mIconPath.append("C");
-//        }
-//        else if (CQSType == "Q")
-//        {
-//            mIconPath.append("Q");
-//        }
-    }
-    else if (nodetype == "NodeHydraulic")
-    {
-        mIconPath.append("HydraulicPort");
-//        if (CQSType == "C")
-//        {
-//            mIconPath.append("C");
-//        }
-//        else if (CQSType == "Q")
-//        {
-//            mIconPath.append("Q");
-//        }
-    }
     else
     {
-        //SystemPort is a blank port (that is why we use it here)
-        mIconPath.append("SystemPort");
+        if (nodetype == "NodeMechanic")
+        {
+            mIconPath.append("MechanicPort");
+    //        if (CQSType == "C")
+    //        {
+    //            mIconPath.append("C");
+    //        }
+    //        else if (CQSType == "Q")
+    //        {
+    //            mIconPath.append("Q");
+    //        }
+        }
+        else if (nodetype == "NodeMechanicRotational")
+        {
+            mIconPath.append("RotationalMechanicPort");
+    //        if (CQSType == "C")
+    //        {
+    //            mIconPath.append("C");
+    //        }
+    //        else if (CQSType == "Q")
+    //        {
+    //            mIconPath.append("Q");
+    //        }
+        }
+        else if (nodetype == "NodeHydraulic")
+        {
+            mIconPath.append("HydraulicPort");
+    //        if (CQSType == "C")
+    //        {
+    //            mIconPath.append("C");
+    //        }
+    //        else if (CQSType == "Q")
+    //        {
+    //            mIconPath.append("Q");
+    //        }
+        }
+        else
+        {
+            //SystemPort is a blank port (that is why we use it here)
+            mIconPath.append("SystemPort");
+        }
+
+        //Select overlay icon depending on cqs type
+        mIconOverlayPath = QString(PORTICONPATH);
+        //! @todo maybe should be able to select bassed on other things than cqs type
+        if (CQSType == "C")
+        {
+            mIconOverlayPath.append("PortOverlayC.svg");
+        }
+        else if (CQSType == "Q")
+        {
+            mIconOverlayPath.append("PortOverlayQ.svg");
+        }
+        else
+        {
+            mIconOverlayPath.clear();
+        }
     }
     mIconPath.append(".svg");
-
-    //Select overlay icon depending on cqs type
-    mIconOverlayPath = QString(PORTICONPATH);
-    //! @todo maybe should be able to select bassed on other things than cqs type
-    if (CQSType == "C")
-    {
-        mIconOverlayPath.append("PortOverlayC.svg");
-    }
-    else if (CQSType == "Q")
-    {
-        mIconOverlayPath.append("PortOverlayQ.svg");
-    }
-    else
-    {
-        //No overlay
-        mIconOverlayPath = "";
-    }
 }
 

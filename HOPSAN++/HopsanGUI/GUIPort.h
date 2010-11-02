@@ -41,7 +41,7 @@ public:
     QString getGUIComponentName();
 
     QPointF rectPos;
-    int getPortNumber();
+    //int getPortNumber();
 
     bool getLastNodeData(QString dataName, double& rData);
 
@@ -69,6 +69,7 @@ protected:
     //protected slots:
 public: //! @todo This was made public temporarly to test plot in Python
     void plot(QString dataName, QString dataUnit=QString());
+    void refreshPortOverlayRotation();
 
 signals:
     void portClicked(GUIPort *item);
@@ -86,8 +87,6 @@ private:
     bool mIsMag;
 
     GUIPortAppearance *mpPortAppearance;
-//    qreal mXpos;
-//    qreal mYpos;
     QString name;
 
     QGraphicsSvgItem* mpPortGraphicsOverlay;

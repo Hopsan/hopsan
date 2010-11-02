@@ -70,17 +70,22 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     mpPortLabel->setPos(7.0,7.0);
     mpPortLabel->hide();
 
-    //! @todo this kind of harcoded stuff should not be here, fix the problem in some other way
-    if(this->getPortType() == "POWERPORT")
-    {
-        this->setRotation(0.0);
-        mpPortLabel->setRotation(0.0);
-    }
-    else
-    {
+//    //! @todo this kind of harcoded stuff should not be here, fix the problem in some other way
+//    if(this->getPortType() == "POWERPORT")
+//    {
+//        this->setRotation(0.0);
+//        mpPortLabel->setRotation(0.0);
+//    }
+//    else
+//    {
         this->setRotation(mpPortAppearance->rot);
         mpPortLabel->setRotation(-mpPortAppearance->rot);
-    }
+//        if (mpPortGraphicsOverlay != 0)
+//        {
+//            mpPortGraphicsOverlay->setRotation(-mpPortAppearance->rot);
+//        }
+        this->refreshPortOverlayRotation();
+//    }
 
     mMag = GOLDENRATIO;
     mIsMag = false;
@@ -284,10 +289,26 @@ void GUIPort::addPortGraphicsOverlay(QString filepath)
     {
         //! @todo check if file exist
         mpPortGraphicsOverlay = new QGraphicsSvgItem(filepath, this);
+        mpPortGraphicsOverlay->setTransformOriginPoint(this->getCenterPos());
     }
     else
     {
         mpPortGraphicsOverlay = 0;
+    }
+}
+
+
+//! @brief Refreshes the port overlay rotation and makes sure that the overlay allways have rotation zero (to be readable)
+void GUIPort::refreshPortOverlayRotation()
+{
+    //Take the rotation maped to the scene and make sure its zero
+    if (this->mpPortGraphicsOverlay != 0)
+    {
+        qreal scene_angle = this->mpParentGuiModelObject->rotation() + this->rotation() + mpPortGraphicsOverlay->rotation();
+        //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,before Angle: " << scene_angle;
+        mpPortGraphicsOverlay->setRotation(mpPortGraphicsOverlay->rotation()-scene_angle);
+        scene_angle = this->mpParentGuiModelObject->rotation() + this->rotation() + mpPortGraphicsOverlay->rotation();
+        //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,after Angle: " << scene_angle;
     }
 }
 
