@@ -1018,6 +1018,12 @@ void GUIModelObject::rotate(undoStatus undoSettings)
     //! @todo myabe use signals and slots instead
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
+        //! @todo make sure this is not needed, use the actual port heading instead
+        if(mPortListPtrs.value(i)->getPortDirection() == TOPBOTTOM)
+            mPortListPtrs.value(i)->setPortDirection(LEFTRIGHT);
+        else
+            mPortListPtrs.value(i)->setPortDirection(TOPBOTTOM);
+
         mPortListPtrs.value(i)->refreshPortOverlayRotation();
     }
 
