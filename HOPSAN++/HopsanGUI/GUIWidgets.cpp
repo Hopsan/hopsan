@@ -14,7 +14,7 @@
 #include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QFontDialog>
-#include <QColorDIalog>
+#include <QColorDialog>
 
 
 using namespace std;
