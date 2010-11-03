@@ -14,6 +14,10 @@
 
 #include "GUIObject.h"
 
+#include <QLineEdit>
+#include <QLabel>
+#include <QPushButton>
+
 //class ProjectTabWidget;
 //class GraphicsScene;
 //class GraphicsView;
@@ -33,11 +37,27 @@ public slots:
     //void deselect();
 
 protected:
-    //virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     //virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+
+private slots:
+    void setTextFromDialog();
+    void getFont();
+    void getColor();
 
 private:
     QGraphicsTextItem *mpTextItem;
+    QDialog *mpEditTextDialog;
+    QPushButton *mpFontInDialogButton;
+    QPushButton *mpColorInDialogButton;
+    QPushButton *mpDoneInDialogButton;
+    QPushButton *mpCancelInDialogButton;
+
+    QLabel *mpTextLabel;
+    QLineEdit *mpTextBox;
+    QFont mpSelectedFont;
+    QColor mpSelectedColor;
+    QLabel *mpFontLabel;
 };
 
 
