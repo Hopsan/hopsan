@@ -249,15 +249,15 @@ void GUISystem::loadFromHMF(QString modelFilePath)
         portapp.x = sysappdata.port_xpos[i];
         portapp.y = sysappdata.port_ypos[i];
         portapp.rot = sysappdata.port_angle[i];
-        if( (portapp.rot == 0) || (portapp.rot == 180) )
-        {
-            portapp.direction = LEFTRIGHT;
-        }
-        else
-        {
-            portapp.direction = TOPBOTTOM;
-        }
-        //! @todo portdirection in portapperance should have an initial default value to avoid crash if not set when creating connector
+//        if( (portapp.rot == 0) || (portapp.rot == 180) )
+//        {
+//            portapp.direction = LEFTRIGHT;
+//        }
+//        else
+//        {
+//            portapp.direction = TOPBOTTOM;
+//        }
+//        //! @todo portdirection in portapperance should have an initial default value to avoid crash if not set when creating connector
         portapp.selectPortIcon("","",""); //!< @todo fix this, (maybe not necessary to fix)
 
         portappmap->insert(sysappdata.portnames[i], portapp);

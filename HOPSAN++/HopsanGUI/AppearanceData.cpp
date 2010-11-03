@@ -171,14 +171,14 @@ void AppearanceData::readFromTextStream(QTextStream &rIs)
             }
             portStream >> portapp.rot;
 
-            if( (portapp.rot == 0) || (portapp.rot == 180) )
-            {
-                portapp.direction = LEFTRIGHT;
-            }
-            else
-            {
-                portapp.direction = TOPBOTTOM;
-            }
+//            if( (portapp.rot == 0) || (portapp.rot == 180) )
+//            {
+//                portapp.direction = LEFTRIGHT;
+//            }
+//            else
+//            {
+//                portapp.direction = TOPBOTTOM;
+//            }
 
             mPortAppearanceMap.insert(portName, portapp);
         }
@@ -221,15 +221,15 @@ void AppearanceData::readFromDomElement(QDomElement &rDomElement)
     {
         GUIPortAppearance portApp;
         parseDomValueNode3(xmlPort.firstChildElement(HMF_POSETAG), portApp.x, portApp.y, portApp.rot);
-        //! @todo do we really need direction
-        if( (portApp.rot == 0) || (portApp.rot == 180) )
-        {
-            portApp.direction = LEFTRIGHT;
-        }
-        else
-        {
-            portApp.direction = TOPBOTTOM;
-        }
+//        //! @todo do we really need direction
+//        if( (portApp.rot == 0) || (portApp.rot == 180) )
+//        {
+//            portApp.direction = LEFTRIGHT;
+//        }
+//        else
+//        {
+//            portApp.direction = TOPBOTTOM;
+//        }
 
         mPortAppearanceMap.insert(xmlPort.firstChildElement(HMF_NAMETAG).text(), portApp);
         xmlPort = xmlPort.nextSiblingElement(HMF_PORTTAG);

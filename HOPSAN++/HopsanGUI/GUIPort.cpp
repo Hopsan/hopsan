@@ -373,7 +373,15 @@ void GUIPort::setStartValueDataByNames(QVector<QString> names, QVector<double> v
 
 portDirection GUIPort::getPortDirection()
 {
-    return mpPortAppearance->direction;
+    qreal scene_angle = this->mpParentGuiModelObject->rotation() + this->rotation();
+    if( (scene_angle == 0) || (scene_angle == 180) )
+    {
+        return LEFTRIGHT;
+    }
+    else
+    {
+        return TOPBOTTOM;
+    }
 }
 
 //! @todo Do we really need both direction and heading
@@ -384,10 +392,10 @@ qreal GUIPort::getPortHeading()
 
 
 
-void GUIPort::setPortDirection(portDirection direction)
-{
-    mpPortAppearance->direction = direction;
-}
+//void GUIPort::setPortDirection(portDirection direction)
+//{
+//    mpPortAppearance->direction = direction;
+//}
 
 
 void GUIPort::hide()

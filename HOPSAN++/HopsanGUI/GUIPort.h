@@ -17,6 +17,8 @@ class GUISystem;
 class CoreSystemAccess;
 class GraphicsView;
 
+enum portDirection {TOPBOTTOM, LEFTRIGHT};
+
 class GUIPort :public QGraphicsSvgItem
 {
     Q_OBJECT
@@ -32,7 +34,7 @@ public:
     GUIModelObject *getGuiModelObject();
     void magnify(bool blowup);
     portDirection getPortDirection();
-    void setPortDirection(portDirection direction);
+    //void setPortDirection(portDirection direction);
     qreal getPortHeading();
     void hide();
 

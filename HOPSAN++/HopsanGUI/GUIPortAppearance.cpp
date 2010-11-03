@@ -1,4 +1,5 @@
 #include "GUIPortAppearance.h"
+#include "common.h"
 
 //! @brief Contains hardcoded appearance for different hopsancore ports
 //! @todo maybe this should be placed in som more generic external .txt file in som way
