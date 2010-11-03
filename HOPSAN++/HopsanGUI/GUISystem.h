@@ -10,6 +10,7 @@
 
 #include "common.h"
 #include "GUIObject.h"
+#include "GUIWidgets.h"
 
 //Forward Declaration
 class AppearanceData;
@@ -39,6 +40,7 @@ public:
 
     typedef QHash<QString, GUIModelObject*> GUIModelObjectMapT;
     GUIModelObjectMapT mGUIModelObjectMap;
+    QList<GUITextWidget *> mTextWidgetList;
     QList<GUIObject *> mSelectedGUIObjectsList;
     GUIModelObject* addGUIObject(AppearanceData* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
     void addTextWidget(QPoint position);

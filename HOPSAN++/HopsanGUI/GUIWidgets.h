@@ -27,11 +27,14 @@
 //class GUIPort;
 //class GUISystem;
 
+
 class GUITextWidget : public GUIObject
 {
     Q_OBJECT
 public:
     GUITextWidget(QString text, QPoint pos, qreal rot, selectionStatus startSelected, GUISystem *pSystem, QGraphicsItem *pParent=0);
+    void saveToDomElement(QDomElement &rDomElement);
+    void setText(QString text);
 
 public slots:
     //void deselect();
@@ -53,7 +56,6 @@ private:
     QPushButton *mpDoneInDialogButton;
     QPushButton *mpCancelInDialogButton;
 
-    QLabel *mpTextLabel;
     QTextEdit *mpTextBox;
     QFont mpSelectedFont;
     QColor mpSelectedColor;

@@ -23,7 +23,7 @@ using namespace std;
 GUITextWidget::GUITextWidget(QString text, QPoint pos, qreal rot, selectionStatus startSelected, GUISystem *pSystem, QGraphicsItem *pParent)
     : GUIObject(pos, rot, startSelected, pSystem, pParent)
 {
-    //! @todo This should not be necessary to do in all GUIWidgets...
+    this->mHmfTagName = HMF_TEXTWIDGETTAG;
 
     pSystem->scene()->addItem(this);
     this->setPos(pos);
@@ -45,8 +45,8 @@ void GUITextWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     mpEditTextDialog = new QDialog();
     mpEditTextDialog->setWindowTitle("Set Text Label");
 
-    mpTextLabel = new QLabel("Text: ");
-    mpTextBox = new QTextEdit(mpTextItem->toPlainText());
+    mpTextBox = new QTextEdit();
+    mpTextBox->setPlainText(mpTextItem->toPlainText());
     mpTextBox->setMaximumHeight(70);
     mpFontInDialogButton = new QPushButton("Change Font");
     mpColorInDialogButton = new QPushButton("Change Color");
@@ -62,12 +62,11 @@ void GUITextWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     pButtonBox->addButton(mpCancelInDialogButton, QDialogButtonBox::ActionRole);
 
     QGridLayout *pDialogLayout = new QGridLayout();
-    pDialogLayout->addWidget(mpTextLabel,0,0);
-    pDialogLayout->addWidget(mpTextBox,0,1);
+    pDialogLayout->addWidget(mpTextBox,0,0,1,4);
     pDialogLayout->addWidget(mpFontInDialogButton,1,0);
     pDialogLayout->addWidget(mpColorInDialogButton,1,1);
-    pDialogLayout->addWidget(mpFontLabel, 2, 0, 1, 2);
-    pDialogLayout->addWidget(pButtonBox,3,0,1,2);
+    pDialogLayout->addWidget(mpFontLabel,1,2,1,2);
+    pDialogLayout->addWidget(pButtonBox,2,0,1,2);
     mpEditTextDialog->setLayout(pDialogLayout);
     mpEditTextDialog->show();
 
@@ -96,6 +95,14 @@ void GUITextWidget::setTextFromDialog()
 }
 
 
+void GUITextWidget::setText(QString text)
+{
+    mpTextItem->setPlainText(text);
+    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height(),
+                                               QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+    mpSelectionBox->setPassive();
+}
+
 
 void GUITextWidget::getFont()
 {
@@ -122,4 +129,21 @@ void GUITextWidget::getColor()
         pal.setColor( QPalette::Foreground, mpSelectedColor );
         mpFontLabel->setPalette(pal);
     }
+}
+
+
+
+void GUITextWidget::saveToDomElement(QDomElement &rDomElement)
+{
+    QDomElement xmlObject = appendDomElement(rDomElement, mHmfTagName);
+
+    //Save GUI realted stuff
+    QDomElement xmlGuiStuff = appendDomElement(xmlObject,HMF_HOPSANGUITAG);
+
+    QPointF pos = mapToScene(boundingRect().center());
+    appendDomValueNode2(xmlGuiStuff, HMF_POSETAG, pos.x(), pos.y());
+    appendDomTextNode(xmlGuiStuff, "text", mpTextItem->toPlainText());
+    appendDomTextNode(xmlGuiStuff, "font", mpTextItem->font().toString());
+    appendDomValueNode(xmlGuiStuff, "fontsize", mpTextItem->font().pointSize());
+    appendDomTextNode(xmlGuiStuff, "fontcolor", mpTextItem->defaultTextColor().name());
 }

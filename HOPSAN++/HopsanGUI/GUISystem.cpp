@@ -587,6 +587,12 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
         {
             mSubConnectorList[i]->saveToDomElement(xmlSubsystem);
         }
+
+        //Save all text widgets
+        for(int i = 0; i != mTextWidgetList.size(); ++i)
+        {
+            mTextWidgetList[i]->saveToDomElement(xmlSubsystem);
+        }
     }
 }
 
@@ -643,6 +649,19 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         {
             loadConnector(xmlSubObject, this, NOUNDO);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_CONNECTORTAG);
+        }
+
+        //5. Load all text widgets
+        xmlSubObject = rDomElement.firstChildElement(HMF_TEXTWIDGETTAG);
+        QDomElement guiData = xmlSubObject.firstChildElement(HMF_HOPSANGUITAG);
+        while (!guiData.isNull())
+        {
+            qreal x, y;
+            parseDomValueNode2(guiData.firstChildElement("pose"), x, y);
+            this->addTextWidget(QPoint(x,y));
+            QString thetext = guiData.firstChildElement("text").text();
+            mTextWidgetList.first()->setText(thetext);
+            guiData = guiData.nextSiblingElement(HMF_TEXTWIDGETTAG);
         }
     }
     else
@@ -727,8 +746,7 @@ void GUISystem::addTextWidget(QPoint position)
 {
     GUITextWidget *tempTextWidget;
     tempTextWidget = new GUITextWidget("Text", position, 0, DESELECTED, this);
-
-    //mpScene->addItem(tempTextWidget);
+    mTextWidgetList.append(tempTextWidget);
 }
 
 
