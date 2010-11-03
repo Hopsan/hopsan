@@ -53,6 +53,8 @@ QString GUIGroup::getTypeName()
 GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData* pAppearanceData, GUISystem *system, QGraphicsItem *parent)
     :   GUIContainerObject(QPoint(0.0,0.0), 0, pAppearanceData, DESELECTED, USERGRAPHICS, system, parent)
 {
+    mpParentScene = system->mpScene;
+
     //Set the hmf save tag name
     mHmfTagName = HMF_GROUPTAG;
 
@@ -80,7 +82,8 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData* pAppearanceDa
                     if((compList.contains(GUIConnectorPtrs[i]->getStartPort()->getGuiModelObject())) &&
                        (compList.contains(GUIConnectorPtrs[i]->getEndPort()->getGuiModelObject())))
                     {
-                        //Add the connections which have both ends among selected components for grouping in a list for connections
+                        //Add the connections which have both ends among selected components
+                        //for grouping in a list for connections
                         mGUIConnList.append(GUIConnectorPtrs[i]);
                     }
                     else
