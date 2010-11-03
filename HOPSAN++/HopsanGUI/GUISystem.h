@@ -77,8 +77,8 @@ public:
 
     void updateExternalPortPositions();
 
-    void setIsCreatingConnected(bool isConnected);
-    bool getIsCreatingConnected();
+    void setIsCreatingConnector(bool isCreatingConnector);
+    bool getIsCreatingConnector();
 
 protected:
     bool mIsCreatingConnector;

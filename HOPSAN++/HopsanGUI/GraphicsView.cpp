@@ -73,7 +73,7 @@ void GraphicsView::createActions()
 //! Defines the right click menu event
 void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 {
-    if(!mpSystem->getIsCreatingConnected() && !mpSystem->mJustStoppedCreatingConnector)
+    if(!mpSystem->getIsCreatingConnector() && !mpSystem->mJustStoppedCreatingConnector)
     {
         if (QGraphicsItem *item = itemAt(event->pos()))
             QGraphicsView::contextMenuEvent(event);
@@ -214,10 +214,10 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     }
     else if (event->key() == Qt::Key_Escape)
     {
-        if(mpSystem->getIsCreatingConnected())
+        if(mpSystem->getIsCreatingConnector())
         {
             delete(mpSystem->mpTempConnector);
-            mpSystem->setIsCreatingConnected(false);
+            mpSystem->setIsCreatingConnector(false);
         }
     }
     else if(shiftPressed && event->key() == Qt::Key_K && !mpSystem->mIsRenamingObject)
@@ -282,7 +282,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     }
     else if (ctrlPressed)
     {
-        if (mpSystem->getIsCreatingConnected() && !mpSystem->mpTempConnector->isMakingDiagonal())
+        if (mpSystem->getIsCreatingConnector() && !mpSystem->mpTempConnector->isMakingDiagonal())
         {
             mpSystem->mpTempConnector->makeDiagonal(true);
             mpSystem->mpTempConnector->drawConnector();
@@ -307,7 +307,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 {
         // Releasing ctrl key while creating a connector means return from diagonal mode to orthogonal mode.
-    if(event->key() == Qt::Key_Control && mpSystem->getIsCreatingConnected())
+    if(event->key() == Qt::Key_Control && mpSystem->getIsCreatingConnector())
     {
         mpSystem->mpTempConnector->makeDiagonal(false);
         mpSystem->mpTempConnector->drawConnector();
@@ -330,7 +330,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     //this->updateViewPort();     //Refresh the viewport
         //If creating connector, the end port shall be updated to the mouse position.
-    if (mpSystem->getIsCreatingConnected())
+    if (mpSystem->getIsCreatingConnector())
     {
         mpSystem->mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
         mpSystem->mpTempConnector->drawConnector();
@@ -346,7 +346,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     mpSystem->mJustStoppedCreatingConnector = false;
 
         //No rubber band during connecting:
-    if (mpSystem->getIsCreatingConnected())
+    if (mpSystem->getIsCreatingConnector())
     {
         this->setDragMode(NoDrag);
     }
@@ -359,18 +359,18 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         this->setDragMode(RubberBandDrag);
     }
 
-    if (event->button() == Qt::RightButton && mpSystem->getIsCreatingConnected())
+    if (event->button() == Qt::RightButton && mpSystem->getIsCreatingConnector())
     {
         if((mpSystem->mpTempConnector->getNumberOfLines() == 1 && mpSystem->mpTempConnector->isMakingDiagonal()) ||  (mpSystem->mpTempConnector->getNumberOfLines() == 2 && !mpSystem->mpTempConnector->isMakingDiagonal()))
         {
             mpSystem->mpTempConnector->getStartPort()->isConnected = false;
             mpSystem->mpTempConnector->getStartPort()->show();
             mpSystem->mpTempConnector->getStartPort()->getGuiModelObject()->forgetConnector(mpSystem->mpTempConnector);
-            mpSystem->setIsCreatingConnected(false);
+            mpSystem->setIsCreatingConnector(false);
             mpSystem->mJustStoppedCreatingConnector = true;
         }
         mpSystem->mpTempConnector->removePoint(true);
-        if(mpSystem->getIsCreatingConnected())
+        if(mpSystem->getIsCreatingConnector())
         {
             mpSystem->mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
             mpSystem->mpTempConnector->drawConnector();
@@ -378,7 +378,7 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         }
         //qDebug() << "mIsCreatingConnector = " << mIsCreatingConnector;
     }
-    else if  ((event->button() == Qt::LeftButton) && (mpSystem->getIsCreatingConnected()))
+    else if  ((event->button() == Qt::LeftButton) && (mpSystem->getIsCreatingConnector()))
     {
         qDebug() << "Adding connector point: " << event->pos();
         mpSystem->mpTempConnector->addPoint(this->mapToScene(event->pos()));

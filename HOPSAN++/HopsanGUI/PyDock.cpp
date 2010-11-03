@@ -7,6 +7,8 @@
 //!
 //$Id$
 
+#include<QVector>
+
 #include "PyDock.h"
 
 #include "PythonQt.h"
@@ -23,6 +25,7 @@ PyDock::PyDock(MainWindow *pMainWindow, QWidget * parent)
     : QDockWidget(tr("Python Console"), parent)
 {
         PythonQt::init(PythonQt::IgnoreSiteModule | PythonQt::RedirectStdOut);
+        PythonQt_QtAll::init();
 
         PythonQt::self()->registerCPPClass("MainWindow", "","", PythonQtCreateObject<PyHopsanClassWrapper>);
         PythonQt::self()->registerCPPClass("GUIObject", "","", PythonQtCreateObject<PyGUIObjectClassWrapper>);
@@ -31,6 +34,13 @@ PyDock::PyDock(MainWindow *pMainWindow, QWidget * parent)
         PythonQtObjectPtr  mainContext = PythonQt::self()->getMainModule();
         mainContext.evalScript("import site"); //För att kunna ladda tredjepart libs
         mainContext.addObject("hopsan", pMainWindow);
+
+        QVector<double> *pTest = new QVector<double>;
+        for(size_t i=0;i<10;++i)
+            pTest->append(i+4);
+        //PythonQt::self()->registerClass(&QVector:);
+
+        mainContext.addObject("test", pTest);
 
         mpPyConsole  = new PythonQtScriptingConsole(NULL, mainContext);
         mpPyConsole->consoleMessage("There is an object called hopsan that allow you to interact with Hopsan NG.");

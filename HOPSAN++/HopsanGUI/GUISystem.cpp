@@ -65,7 +65,7 @@ void GUISystem::commonConstructorCode()
     mUndoStack = new UndoStack(this);
 
         //Initialize booleans
-    setIsCreatingConnected(false);
+    setIsCreatingConnector(false);
     mIsRenamingObject = false;
     mPortsHidden = false;
     mUndoDisabled = false;
@@ -963,16 +963,16 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
 //! @param undoSettings is true if the added connector shall not be registered in the undo stack, for example if this function is called by a redo function.
 void GUISystem::createConnector(GUIPort *pPort, undoStatus undoSettings)
 {
-    qDebug() << "mIsCreatingConnector: " << getIsCreatingConnected();
+    qDebug() << "mIsCreatingConnector: " << getIsCreatingConnector();
         //When clicking start port
-    if (!getIsCreatingConnected())
+    if (!getIsCreatingConnector())
     {
         qDebug() << "CreatingConnector in: " << this->getName() << " startPortName: " << pPort->getName();
         //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(pPort->getPortType(), mpParentProjectTab->setGfxType);
         mpTempConnector = new GUIConnector(pPort, this);
         emit deselectAllGUIObjects();
         emit deselectAllGUIConnectors();
-        setIsCreatingConnected(true);
+        setIsCreatingConnector(true);
         mpTempConnector->drawConnector();
     }
         //When clicking end port
@@ -985,7 +985,7 @@ void GUISystem::createConnector(GUIPort *pPort, undoStatus undoSettings)
         qDebug() << "GUI Connect: " << success;
         if (success)
         {
-            setIsCreatingConnected(false);
+            setIsCreatingConnector(false);
             QPointF newPos = pPort->mapToScene(pPort->boundingRect().center());
             mpTempConnector->updateEndPoint(newPos);
             pPort->getGuiModelObject()->rememberConnector(mpTempConnector);
@@ -1403,14 +1403,14 @@ void GUISystem::updateExternalPortPositions()
 
 //! Access function for mIsCreatingConnector
 //! @param isConnected is the new value
-void GUISystem::setIsCreatingConnected(bool isConnected)
+void GUISystem::setIsCreatingConnector(bool isCreatingConnector)
 {
-    mIsCreatingConnector = isConnected;
+    mIsCreatingConnector = isCreatingConnector;
 }
 
 
 //! Access function for mIsCreatingConnector
-bool GUISystem::getIsCreatingConnected()
+bool GUISystem::getIsCreatingConnector()
 {
     return mIsCreatingConnector;
 }

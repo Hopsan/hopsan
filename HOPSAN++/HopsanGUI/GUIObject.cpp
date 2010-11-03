@@ -125,7 +125,7 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
     }
 
         //Objects shall not be selectable while creating a connector
-    if(mpParentSystem->getIsCreatingConnected())
+    if(mpParentSystem->getIsCreatingConnector())
     {
         setFlag(QGraphicsItem::ItemIsMovable, false); //Make the component not movable during connection
         setFlag(QGraphicsItem::ItemIsSelectable, false); //Make the component not selactable during connection
@@ -161,7 +161,7 @@ void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     }
 
         //Objects shall not be selectable while creating a connector
-    if(mpParentSystem->getIsCreatingConnected())
+    if(mpParentSystem->getIsCreatingConnector())
     {
         this->setSelected(false);
         this->setActive(false);
@@ -862,7 +862,7 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
 
             //Snap component if it only has one connector and is dropped close enough (horizontal or vertical) to adjacent component
         if(mpParentSystem != 0 && mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mSnapping &&
-           !mpParentSystem->getIsCreatingConnected() && mpParentSystem->mSelectedGUIObjectsList.size() == 1)
+           !mpParentSystem->getIsCreatingConnector() && mpParentSystem->mSelectedGUIObjectsList.size() == 1)
         {
                 //Vertical snap
             if( (mpGUIConnectorPtrs.size() == 1) &&
