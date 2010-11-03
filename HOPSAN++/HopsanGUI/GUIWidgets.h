@@ -14,7 +14,7 @@
 
 #include "GUIObject.h"
 
-#include <QLineEdit>
+#include <QTextEdit>
 #include <QLabel>
 #include <QPushButton>
 
@@ -54,7 +54,7 @@ private:
     QPushButton *mpCancelInDialogButton;
 
     QLabel *mpTextLabel;
-    QLineEdit *mpTextBox;
+    QTextEdit *mpTextBox;
     QFont mpSelectedFont;
     QColor mpSelectedColor;
     QLabel *mpFontLabel;

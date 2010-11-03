@@ -46,8 +46,8 @@ void GUITextWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     mpEditTextDialog->setWindowTitle("Set Text Label");
 
     mpTextLabel = new QLabel("Text: ");
-    mpTextBox = new QLineEdit();
-    mpTextBox->setText(mpTextItem->toPlainText());
+    mpTextBox = new QTextEdit(mpTextItem->toPlainText());
+    mpTextBox->setMaximumHeight(70);
     mpFontInDialogButton = new QPushButton("Change Font");
     mpColorInDialogButton = new QPushButton("Change Color");
     mpFontLabel = new QLabel("Hopsan is cool!");
@@ -84,7 +84,7 @@ void GUITextWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 void GUITextWidget::setTextFromDialog()
 {
-    mpTextItem->setPlainText(mpTextBox->text());
+    mpTextItem->setPlainText(mpTextBox->toPlainText());
     mpTextItem->setFont(mpSelectedFont);
     mpTextItem->setDefaultTextColor(mpSelectedColor);
 
