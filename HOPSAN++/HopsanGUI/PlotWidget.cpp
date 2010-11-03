@@ -206,6 +206,9 @@ PlotWindow *PlotParameterTree::createPlotWindow(QString componentName, QString p
     QVector<double> yVector;
     mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getPlotData(componentName, portName, dataName, yVector);
 
+    if((xVector.isEmpty()) || (yVector.isEmpty()))
+        return 0;
+
     PlotWindow *plotWindow = new PlotWindow(this, mpParentMainWindow);
     plotWindow->show();
     plotWindow->addPlotCurve(xVector, yVector, componentName, portName, dataName, dataUnit, QwtPlot::yLeft);

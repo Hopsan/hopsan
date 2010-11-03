@@ -930,7 +930,7 @@ void GUIModelObject::showPorts(bool visible)
     else
         for (i = mPortListPtrs.begin(); i != mPortListPtrs.end(); ++i)
         {
-            if ((*i)->isConnected || mpParentSystem->mPortsHidden)
+            if ((*i)->isConnected() || mpParentSystem->mPortsHidden)
             {
                 (*i)->hide();
             }

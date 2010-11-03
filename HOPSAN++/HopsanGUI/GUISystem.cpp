@@ -925,18 +925,18 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
     if(endPortWasConnected && !endPortHasMoreConnections)
     {
         pConnector->getEndPort()->setVisible(!mPortsHidden);
-        pConnector->getEndPort()->isConnected = false;
+        pConnector->getEndPort()->setIsConnected(false);
     }
 
     if(!startPortHasMoreConnections)
     {
         pConnector->getStartPort()->setVisible(!mPortsHidden);
-        pConnector->getStartPort()->isConnected = false;
+        pConnector->getStartPort()->setIsConnected(false);
     }
     else if(startPortHasMoreConnections && !endPortWasConnected)
     {
         pConnector->getStartPort()->setVisible(false);
-        pConnector->getStartPort()->isConnected = true;
+        pConnector->getStartPort()->setIsConnected(true);
     }
 
     if(doDelete)

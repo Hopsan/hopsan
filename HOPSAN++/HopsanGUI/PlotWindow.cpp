@@ -1021,18 +1021,22 @@ void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QS
     tempCurve->setYAxis(axisY);
     mpCurves.append(tempCurve);
 
-
         //Change to default unit
     QString newUnit;
     if(axisY == QwtPlot::yLeft)
     {
-        newUnit = mCurrentUnitsLeft.find(dataName).value();
+        if(mCurrentUnitsLeft.contains(dataName))
+            newUnit = mCurrentUnitsLeft.find(dataName).value();
     }
     else
     {
-        newUnit = mCurrentUnitsRight.find(dataName).value();
+        if(mCurrentUnitsRight.contains(dataName))
+            newUnit = mCurrentUnitsRight.find(dataName).value();
     }
-    double scale = mpParentMainWindow->mAlternativeUnits.find(dataName).value().find(newUnit).value();
+    double scale = 1.0;
+    if(mpParentMainWindow->mAlternativeUnits.contains(dataName))
+        scale = mpParentMainWindow->mAlternativeUnits.find(dataName).value().find(newUnit).value();
+
     QVector<double> tempVectorY;
     for(size_t j=0; j<mVectorY[mCurrentGeneration].last().size(); ++j)
     {

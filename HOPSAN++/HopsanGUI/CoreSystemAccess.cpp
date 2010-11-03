@@ -352,7 +352,12 @@ QString CoreSystemAccess::getPlotDataUnit(const QString compname, const QString 
 {
     std::string dummy, unit;
     Port* pPort = this->getPortPtr(compname, portname);
-    pPort->getNodeDataNameAndUnit(pPort->getNodeDataIdFromName(dataname.toStdString()),dummy,unit);
+    if(pPort)
+    {
+        int idx = pPort->getNodeDataIdFromName(dataname.toStdString());
+        if(idx >= 0)
+            pPort->getNodeDataNameAndUnit(idx,dummy,unit);
+    }
     return QString::fromStdString(unit);
 }
 
@@ -381,7 +386,8 @@ void CoreSystemAccess::getPlotData(const QString compname, const QString portnam
     int dataId = -1;
     Port* pPort = this->getPortPtr(compname, portname);
     if (pPort)
-    {
+        if(pPort->isConnected())
+        {
         dataId = pPort->getNodeDataIdFromName(dataname.toStdString());
 
         if (dataId >= 0)

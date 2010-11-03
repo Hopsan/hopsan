@@ -89,7 +89,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
 
     mMag = GOLDENRATIO;
     mIsMag = false;
-    isConnected = false;
+    mIsConnected = false;
 
     MainWindow *pMainWindow = mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
     connect(this,SIGNAL(portClicked(GUIPort*)),this->getParentSystem(),SLOT(createConnector(GUIPort*)));
@@ -247,7 +247,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
 
-    if ((!this->isConnected) || (mpParentSystem->mpCoreSystemAccess->getTimeVector(getGUIComponentName(), this->getName()).empty()))
+    if ((!this->isConnected()) || (mpParentSystem->mpCoreSystemAccess->getTimeVector(getGUIComponentName(), this->getName()).empty()))
     {
         event->ignore();
     }
@@ -327,22 +327,29 @@ GUIModelObject *GUIPort::getGuiModelObject()
 }
 
 
-//! Plots the varable number 'nVar' in the node the port is connected to.
-//! @param nVar tells which variable to plot.
-//! @todo If dataUnit not supplied no unit will be shown, we should maybe lookup the unit if not supplid, or allways look it up, or demand that it is supplied
-void GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna metoden...
+//! Plots the variable with name 'dataName' in the node the port is connected to.
+//! @param dataName tells which variable to plot.
+//! @param dataUnit sets the unit to show in the plot (has no connection to data, just text).
+bool GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna metoden...
 {
-    if(dataUnit.isEmpty())
-        dataUnit = this->mpParentSystem->mpCoreSystemAccess->getPlotDataUnit(this->getGUIComponentName(),this->getName(),dataName);
-
-    MainWindow *pMainWindow = mpParentGuiModelObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
-
-    if(pMainWindow->mpPlotWidget == 0)
+    bool success = false;
+    if(this->isConnected())
     {
-        pMainWindow->mpPlotWidget = new PlotWidget(pMainWindow);
+        if(dataUnit.isEmpty())
+            dataUnit = this->mpParentSystem->mpCoreSystemAccess->getPlotDataUnit(this->getGUIComponentName(),this->getName(),dataName);
+
+        MainWindow *pMainWindow = mpParentGuiModelObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+
+        if(pMainWindow->mpPlotWidget == 0)
+        {
+            pMainWindow->mpPlotWidget = new PlotWidget(pMainWindow);
+        }
+
+        if(pMainWindow->mpPlotWidget->mpPlotParameterTree->createPlotWindow(mpParentGuiModelObject->getName(), this->getName(), dataName, dataUnit))
+            success = true;
     }
 
-    pMainWindow->mpPlotWidget->mpPlotParameterTree->createPlotWindow(mpParentGuiModelObject->getName(), this->getName(), dataName, dataUnit);
+    return success;
 }
 
 
@@ -383,6 +390,24 @@ portDirection GUIPort::getPortDirection()
         return TOPBOTTOM;
     }
 }
+
+
+//! @brief Access method for mIsConnected
+//! @param isConnected tells if the port is connected or not.
+void GUIPort::setIsConnected(bool isConnected)
+{
+    //! @todo Maybe should this be handled in core only snd just ask core if connected or not
+    mIsConnected = isConnected;
+}
+
+
+//! @brief Access method for mIsConnected
+//! @return if the port is connected or not
+bool GUIPort::isConnected()
+{
+    return mIsConnected;
+}
+
 
 //! @todo Do we really need both direction and heading
 qreal GUIPort::getPortHeading()
@@ -450,11 +475,11 @@ void GUIPort::hideIfNotConnected(bool hidePortsActionTriggered)
 {
     if(mpParentSystem->mpParentProjectTab == mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->getCurrentTab())
     {
-        if(!isConnected && hidePortsActionTriggered)
+        if(!isConnected() && hidePortsActionTriggered)
         {
             this->hide();
         }
-        else if(!isConnected && !hidePortsActionTriggered)
+        else if(!isConnected() && !hidePortsActionTriggered)
         {
             this->show();
         }

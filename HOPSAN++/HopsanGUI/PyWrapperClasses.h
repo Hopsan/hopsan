@@ -24,9 +24,24 @@ class PyGUIPortClassWrapper : public QObject
     Q_OBJECT
 
 public slots:
-    void plot(GUIPort* o, const QString& dataName)
+    QString plot(GUIPort* o, const QString& dataName)
     {
-        o->plot(dataName);
+        QString res;
+        if(!(o->plot(dataName)))
+            res = "Sorry, for some reason this couldn't be plotted";
+        else
+        {
+            res = "Plotted '"; //Kanske inte ska skriva massa skit till Pythonkonsollen
+            res.append(dataName);
+            res.append("' at component '");
+            res.append(o->getGUIComponentName());
+            res.append("' and port '");
+            res.append(o->getName());
+            res.append("'.");
+        }
+
+
+        return res;
     }
 
     double getLastValue(GUIPort* o, const QString& dataName)

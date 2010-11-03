@@ -53,7 +53,8 @@ public:
     void getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<double> &rValues, QVector<QString> &rUnits);
     void setStartValueDataByNames(QVector<QString> names, QVector<double> values);
 
-    bool isConnected;
+    void setIsConnected(bool isConnected);
+    bool isConnected();
 
 public slots:
     void hideIfNotConnected(bool hidePortsActionTriggered);
@@ -70,7 +71,7 @@ protected:
 
     //protected slots:
 public: //! @todo This was made public temporarly to test plot in Python
-    void plot(QString dataName, QString dataUnit=QString());
+    bool plot(QString dataName, QString dataUnit=QString());
     void refreshPortOverlayRotation();
 
 signals:
@@ -87,6 +88,8 @@ private:
     QGraphicsTextItem *mpPortLabel;
     qreal mMag;
     bool mIsMag;
+
+    bool mIsConnected;
 
     GUIPortAppearance *mpPortAppearance;
     QString name;

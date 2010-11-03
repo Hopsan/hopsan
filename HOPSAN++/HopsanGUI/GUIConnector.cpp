@@ -60,8 +60,8 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     setFlags(QGraphicsItem::ItemIsFocusable);
     mpStartPort = startPort;
     mpEndPort = endPort;
-    mpStartPort->isConnected = true;
-    mpEndPort->isConnected = true;
+    mpStartPort->setIsConnected(true);
+    mpEndPort->setIsConnected(true);
     connect(mpStartPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
     connect(mpEndPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
     QPointF startPos = getStartPort()->mapToScene(getStartPort()->boundingRect().center());
@@ -244,7 +244,7 @@ void GUIConnector::removePoint(bool deleteIfEmpty)
 void GUIConnector::setStartPort(GUIPort *port)
 {
     mpStartPort = port;
-    mpStartPort->isConnected = true;
+    mpStartPort->setIsConnected(true);
     connect(mpStartPort->getGuiModelObject(),SIGNAL(objectDeleted()),this,SLOT(deleteMeWithNoUndo()));
     connect(mpStartPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
 }
@@ -259,7 +259,7 @@ void GUIConnector::setEndPort(GUIPort *port)
 {
     mEndPortConnected = true;
     mpEndPort = port;
-    mpEndPort->isConnected = true;
+    mpEndPort->setIsConnected(true);
 
     if( ( ((mpEndPort->getPortDirection() == LEFTRIGHT) && (mGeometries.back() == HORIZONTAL)) ||
           ((mpEndPort->getPortDirection() == TOPBOTTOM) && (mGeometries.back() == VERTICAL)) ) ||
@@ -474,7 +474,7 @@ bool GUIConnector::isConnected()
 {
     //qDebug() << "Entering isConnected()";
     //return (getStartPort()->isConnected and getEndPort()->isConnected);
-    return (getStartPort()->isConnected && mEndPortConnected);
+    return (getStartPort()->isConnected() && mEndPortConnected);
 }
 
 
