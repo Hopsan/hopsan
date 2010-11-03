@@ -35,7 +35,8 @@ SOURCES += main.cpp \
     PyDock.cpp \
     GUIComponent.cpp \
     GUIGroup.cpp \
-    GUISystemPort.cpp
+    GUISystemPort.cpp \
+    GUIWidgets.cpp
 
 HEADERS += MainWindow.h \
     ProjectTabWidget.h \
@@ -71,7 +72,8 @@ HEADERS += MainWindow.h \
     PyDock.h \
     GUIComponent.h \
     GUIGroup.h \
-    GUISystemPort.h
+    GUISystemPort.h \
+    GUIWidgets.h
 
 OTHER_FILES += 
 

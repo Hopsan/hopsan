@@ -76,14 +76,26 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
     if(!mpSystem->getIsCreatingConnector() && !mpSystem->mJustStoppedCreatingConnector)
     {
         if (QGraphicsItem *item = itemAt(event->pos()))
+        {
             QGraphicsView::contextMenuEvent(event);
-        // Context menu when right-clicking:
-//        else
-//        {
-//            QMenu menu(this);
-//            menu.addMenu(menuInsert);
-//            menu.exec(event->globalPos());
-//        }
+        }
+        else
+        {
+            QGraphicsView::contextMenuEvent(event);
+            QMenu menu(this);
+            QAction *addTextAction = menu.addAction("Add text widget");
+
+            QCursor cursor;
+            QAction *selectedAction = menu.exec(cursor.pos());
+
+            if(selectedAction == addTextAction)
+            {
+                this->mpSystem->addTextWidget(this->mapToScene(event->pos()).toPoint());
+            }
+        }
+
+
+
         mpSystem->mJustStoppedCreatingConnector = true;
     }
 }

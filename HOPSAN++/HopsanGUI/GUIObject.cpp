@@ -141,25 +141,6 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 //! @brief Defines what happens if a mouse key is released while hovering an object
 void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    QList<GUIObject *>::iterator it;
-
-        //Loop through all selected objects and register changed positions in undo stack
-    bool alreadyClearedRedo = false;
-    for(it = mpParentSystem->mSelectedGUIObjectsList.begin(); it != mpParentSystem->mSelectedGUIObjectsList.end(); ++it)
-    {
-        if(((*it)->mOldPos != (*it)->pos()) && (event->button() == Qt::LeftButton))
-        {
-                //This check makes sure that only one undo post is created when moving several objects at once
-            if(!alreadyClearedRedo)
-            {
-                mpParentSystem->mUndoStack->newPost();
-                mpParentSystem->mpParentProjectTab->hasChanged();
-                alreadyClearedRedo = true;
-            }
-            mpParentSystem->mUndoStack->registerMovedObject((*it)->mOldPos, (*it)->pos(), (*it)->getName());
-        }
-    }
-
         //Objects shall not be selectable while creating a connector
     if(mpParentSystem->getIsCreatingConnector())
     {
@@ -816,26 +797,30 @@ void GUIModelObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 //}
 
 
-////! @brief Defines what happens if a mouse key is released while hovering an object
-//void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-//{
-//    QList<GUIModelObject *>::iterator it;
+//! @brief Defines what happens if a mouse key is released while hovering an object
+void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    QList<GUIObject *>::iterator it;
 
-//        //Loop through all selected objects and register changed positions in undo stack
-//    bool alreadyClearedRedo = false;
-//    for(it = mpParentSystem->mSelectedGUIObjectsList.begin(); it != mpParentSystem->mSelectedGUIObjectsList.end(); ++it)
-//    {
-//        if(((*it)->mOldPos != (*it)->pos()) && (event->button() == Qt::LeftButton))
-//        {
-//                //This check makes sure that only one undo post is created when moving several objects at once
-//            if(!alreadyClearedRedo)
-//            {
-//                mpParentSystem->mUndoStack->newPost();
-//                mpParentSystem->mpParentProjectTab->hasChanged();
-//                alreadyClearedRedo = true;
-//            }
-//            mpParentSystem->mUndoStack->registerMovedObject((*it)->mOldPos, (*it)->pos(), (*it)->getName());
-//        }
+        //Loop through all selected objects and register changed positions in undo stack
+    bool alreadyClearedRedo = false;
+    for(it = mpParentSystem->mSelectedGUIObjectsList.begin(); it != mpParentSystem->mSelectedGUIObjectsList.end(); ++it)
+    {
+        if(((*it)->mOldPos != (*it)->pos()) && (event->button() == Qt::LeftButton))
+        {
+                //This check makes sure that only one undo post is created when moving several objects at once
+            if(!alreadyClearedRedo)
+            {
+                mpParentSystem->mUndoStack->newPost();
+                mpParentSystem->mpParentProjectTab->hasChanged();
+                alreadyClearedRedo = true;
+            }
+            mpParentSystem->mUndoStack->registerMovedObject((*it)->mOldPos, (*it)->pos(), (*it)->getName());
+        }
+    }
+
+    GUIObject::mouseReleaseEvent(event);
+}
 //    }
 
 //    QGraphicsWidget::mouseReleaseEvent(event);

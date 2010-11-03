@@ -46,6 +46,8 @@ public:
     enum { Type = GUIOBJECT };
     int type() const;
 
+    QPointF mOldPos;
+
 public slots:
     void deleteMe();
     virtual void rotate(undoStatus undoSettings = UNDO);
@@ -74,7 +76,6 @@ protected:
     QString mHmfTagName;
     GUIObjectSelectionBox *mpSelectionBox;
     bool mIsFlipped;
-    QPointF mOldPos;
 };
 
 
@@ -135,6 +136,9 @@ public slots:
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 

@@ -18,6 +18,7 @@
 #include "CoreSystemAccess.h"
 #include "GUIGroup.h"
 #include "GUISystemPort.h"
+#include "GUIWidgets.h"
 
 GUISystem::GUISystem(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
     : GUIContainerObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
@@ -718,6 +719,16 @@ GUIModelObject* GUISystem::addGUIObject(AppearanceData* pAppearanceData, QPoint 
     //this->setFocus();
 
     return mpTempGUIObject;
+}
+
+
+
+void GUISystem::addTextWidget(QPoint position)
+{
+    GUITextWidget *tempTextWidget;
+    tempTextWidget = new GUITextWidget("Text", position, 0, DESELECTED, this);
+
+    //mpScene->addItem(tempTextWidget);
 }
 
 

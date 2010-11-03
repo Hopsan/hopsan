@@ -1227,6 +1227,8 @@ void PlotWindow::saveToXml()
 }
 
 
+//! Saves the plot data for all curves and genereations to the specified .hmpf file
+//! @param fileName Path and name of the target .hmpf file
 bool PlotWindow::saveToHmpf(QString fileName)
 {
     QFile file(fileName);
