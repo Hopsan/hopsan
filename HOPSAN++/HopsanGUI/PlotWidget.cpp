@@ -335,7 +335,7 @@ PlotWidget::PlotWidget(MainWindow *parent)
 }
 
 
-
+//! Loads a plot window from a specified .hpw file. Loads the actual plot data from a .hmpf file.
 void PlotWidget::loadFromXml()
 {
     QDir fileDialogSaveDir;
@@ -374,7 +374,6 @@ void PlotWidget::loadFromXml()
         {
             QString hmpfFileName = hpwRoot.firstChildElement("datafile").text();
             size_t datasize = parseDomValueNode(hpwRoot.firstChildElement("datasize"));
-
 
             QFile hmpfFile(hmpfFileName);
             if(!hmpfFile.exists())
@@ -427,77 +426,73 @@ void PlotWidget::loadFromXml()
             }
             hmpfFile.close();
 
+            QStringList componentName;
+            QStringList portName;
+            QStringList dataName;
+            QStringList dataUnit;
+            QList<size_t> axis;
+            QList<size_t> index;
 
+                //Create plot window and curves from loaded data
             QDomElement curveElement = hpwRoot.firstChildElement("plotcurve");
-            QString componentName = curveElement.firstChildElement("component").text();
-            QString portName = curveElement.firstChildElement("port").text();
-            QString dataName = curveElement.firstChildElement("dataname").text();
-            QString dataUnit = curveElement.firstChildElement("unit").text();
-            size_t axis = parseDomValueNode(curveElement.firstChildElement("axis"));
-            size_t index = parseDomValueNode(curveElement.firstChildElement("index"));
+            componentName.append(curveElement.firstChildElement("component").text());
+            portName.append(curveElement.firstChildElement("port").text());
+            dataName.append(curveElement.firstChildElement("dataname").text());
+            dataUnit.append(curveElement.firstChildElement("unit").text());
+            axis.append(parseDomValueNode(curveElement.firstChildElement("axis")));
+            index.append(parseDomValueNode(curveElement.firstChildElement("index")));
 
-            PlotWindow *pPlotWindow = mpPlotParameterTree->createPlotWindow(xData[0], yData[0][index], axis, componentName, portName, dataName, dataUnit);
+                //Create the actual plot window (with first curve, first generation)
+            PlotWindow *pPlotWindow = mpPlotParameterTree->createPlotWindow(xData[0], yData[0][index.first()], axis.first(), componentName.first(), portName.first(), dataName.first(), dataUnit.first());
 
+            pPlotWindow->mpCurves.first()->setPen(QPen(QColor(curveElement.firstChildElement("linecolor").text()),
+                                                  pPlotWindow->mpCurves.first()->pen().width()));
+
+                //Add the remaining curves (first generation)
             curveElement = curveElement.nextSiblingElement("plotcurve");
             while(!curveElement.isNull())
             {
-                componentName = curveElement.firstChildElement("component").text();
-                portName = curveElement.firstChildElement("port").text();
-                dataName = curveElement.firstChildElement("dataname").text();
-                dataUnit = curveElement.firstChildElement("unit").text();
-                axis = parseDomValueNode(curveElement.firstChildElement("axis"));
-                index = parseDomValueNode(curveElement.firstChildElement("index"));
+                componentName.append(curveElement.firstChildElement("component").text());
+                portName.append(curveElement.firstChildElement("port").text());
+                dataName.append(curveElement.firstChildElement("dataname").text());
+                dataUnit.append(curveElement.firstChildElement("unit").text());
+                axis.append(parseDomValueNode(curveElement.firstChildElement("axis")));
+                index.append(parseDomValueNode(curveElement.firstChildElement("index")));
+                pPlotWindow->addPlotCurve(xData[0], yData[0][index.last()], componentName.last(), portName.last(), dataName.last(), dataUnit.last(), axis.last());
 
-                pPlotWindow->addPlotCurve(xData[0], yData[0][index], componentName, portName, dataName, dataUnit, axis);
+                pPlotWindow->mpCurves.last()->setPen(QPen(QColor(curveElement.firstChildElement("linecolor").text()),
+                                                     pPlotWindow->mpCurves.last()->pen().width()));
 
                 curveElement = curveElement.nextSiblingElement("plotcurve");
             }
+
+                //Add the remaining generations
+            QList< QVector<double> > tempList2;
+            for(size_t ig=1; ig<xData.size(); ++ig)
+            {
+                pPlotWindow->mVectorX.append(tempList2);
+                pPlotWindow->mVectorY.append(tempList2);
+                for(size_t ic=0; ic<index.size(); ++ic)
+                {
+                    pPlotWindow->mVectorX.last().append(xData[ig]);
+                    pPlotWindow->mVectorY.last().append(yData[ig][index[ic]]);
+                }
+            }
+
+                //Set current generation and enable discard button if more than one generation
+            pPlotWindow->mpDiscardGenerationButton->setEnabled(xData.size() > 1);
+            pPlotWindow->setGeneration(xData.size()-1);
+
+
+                //Keep loading xml data
+            pPlotWindow->setLineWidth(parseDomValueNode(hpwRoot.firstChildElement("linewidth")));
+            pPlotWindow->mpVariablePlot->setCanvasBackground(hpwRoot.firstChildElement("backgroundcolor").text());
+            pPlotWindow->enableGrid(parseDomBooleanNode(hpwRoot.firstChildElement("grid")));
+            pPlotWindow->mpVariablePlot->replot();
         }
     }
 
-    //this->mpPlotParameterTree->createPlotWindow()
-
-
-
-//    while (!lastSessionElement.isNull())
-//    {
-//        mLastSessionModels.prepend(lastSessionElement.text());
-//        lastSessionElement = lastSessionElement.nextSiblingElement("lastsessionmodel");
-//    }
-
-//            QDomElement recentModelElement = modelsElement.firstChildElement("recentmodel");
-//            while (!recentModelElement.isNull())
-//            {
-//                mRecentModels.prepend(QFileInfo(readName(recentModelElement.text())));
-//                recentModelElement = recentModelElement.nextSiblingElement("recentmodel");
-//            }
-
-//            QDomElement unitsElement = configRoot.firstChildElement("units");
-//            QDomElement defaultUnitElement = unitsElement.firstChildElement("defaultunit");
-//            while (!defaultUnitElement.isNull())
-//            {
-//                mDefaultUnits.insert(defaultUnitElement.firstChildElement("dataname").text(),
-//                                     defaultUnitElement.firstChildElement("unitname").text());
-//                defaultUnitElement = defaultUnitElement.nextSiblingElement("defaultunit");
-//            }
-//            QDomElement alternativeUnitElement = unitsElement.firstChildElement("customunit");
-//            while (!alternativeUnitElement.isNull())
-//            {
-//                QString physicalQuantity = alternativeUnitElement.firstChildElement("dataname").text();
-//                QString unitName = alternativeUnitElement.firstChildElement("unitname").text();
-//                double unitScale = parseDomValueNode(alternativeUnitElement.firstChildElement("scale"));
-
-//                if(!mAlternativeUnits.find(physicalQuantity).value().contains(unitName))
-//                {
-//                    mAlternativeUnits.find(physicalQuantity).value().insert(unitName, unitScale);
-//                }
-//                alternativeUnitElement = alternativeUnitElement.nextSiblingElement("customunit");
-//            }
-//        }
-//    }
-//    file.close();
-
-    //mpPlotParameterTree->createPlotWindow();
+    file.close();
 }
 
 

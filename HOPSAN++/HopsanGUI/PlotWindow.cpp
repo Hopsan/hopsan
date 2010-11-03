@@ -1165,6 +1165,7 @@ void PlotWindow::closeEvent(QCloseEvent *event)
 }
 
 
+//! Saves the plot window to a .hpw file. Saves the actual plot data to a corresponding .hmpf file.
 void PlotWindow::saveToXml()
 {
     QString hpwFileName = QFileDialog::getSaveFileName(
@@ -1185,6 +1186,9 @@ void PlotWindow::saveToXml()
 
     appendDomTextNode(plotRoot, "datafile", hmpfFileName);
     appendDomValueNode(plotRoot, "datasize", mpCurves.size());
+    appendDomValueNode(plotRoot, "linewidth", mpCurves.first()->pen().width());
+    appendDomTextNode(plotRoot, "backgroundcolor", mpVariablePlot->canvasBackground().name());
+    appendDomBooleanNode(plotRoot, "grid", mpGrid->isVisible());
 
     QDomElement xDataElement = appendDomElement(plotRoot, "xdata");
     appendDomBooleanNode(xDataElement, "specialx", mHasSpecialXAxis);
@@ -1205,6 +1209,7 @@ void PlotWindow::saveToXml()
         appendDomTextNode(curveElement, "unit", mCurveParameters[i][3]);
         appendDomValueNode(curveElement, "axis", mpCurves[i]->yAxis());
         appendDomValueNode(curveElement, "index", i);
+        appendDomTextNode(curveElement, "linecolor", mpCurves[i]->pen().color().name());
     }
 
     appendRootXMLProcessingInstruction(domDocument);
@@ -1254,7 +1259,8 @@ bool PlotWindow::saveToHmpf(QString fileName)
                 }
             }
         }
-        hpfFile << "GENERATIONBREAK\n";
+        if(ig != nGenerations-1)
+            hpfFile << "GENERATIONBREAK\n";
     }
     file.close();
 
