@@ -184,12 +184,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     if(!mLastSessionModels.empty())
     {
-        mpProjectTabs->closeProjectTab(0);
         for(size_t i=0; i<mLastSessionModels.size(); ++i)
         {
             //mpProjectTabs->loadModel(mLastSessionModels.at(i));
             mpProjectTabs->loadModel(mLastSessionModels.at(i));
-
+        }
+        if(mpProjectTabs->count() > 1)      //Close the empty project if at least one last session model is loaded
+        {
+            mpProjectTabs->closeProjectTab(0);
         }
     }
 
@@ -672,13 +674,20 @@ void MainWindow::loadSettings()
         {
             QDomElement settingsElement = configRoot.firstChildElement("settings");
 
-            mBackgroundColor.setNamedColor(settingsElement.firstChildElement("backgroundcolor").text());
-            mAntiAliasing = parseDomBooleanNode(settingsElement.firstChildElement("antialiasing"));
-            mInvertWheel = parseDomBooleanNode(settingsElement.firstChildElement("invertwheel"));
-            mSnapping = parseDomBooleanNode(settingsElement.firstChildElement("snapping"));
-            mEnableProgressBar = parseDomBooleanNode(settingsElement.firstChildElement("progressbar"));
-            mProgressBarStep = parseDomValueNode(settingsElement.firstChildElement("progressbar_step"));
-            mUseMulticore = parseDomBooleanNode(settingsElement.firstChildElement("multicore"));
+            if(!settingsElement.firstChildElement("backgroundcolor").isNull())
+                mBackgroundColor.setNamedColor(settingsElement.firstChildElement("backgroundcolor").text());
+            if(!settingsElement.firstChildElement("antialiasing").isNull())
+                mAntiAliasing = parseDomBooleanNode(settingsElement.firstChildElement("antialiasing"));
+            if(!settingsElement.firstChildElement("invertwheel").isNull())
+                mInvertWheel = parseDomBooleanNode(settingsElement.firstChildElement("invertwheel"));
+            if(!settingsElement.firstChildElement("snapping").isNull())
+                mSnapping = parseDomBooleanNode(settingsElement.firstChildElement("snapping"));
+            if(!settingsElement.firstChildElement("progressbar").isNull())
+                mEnableProgressBar = parseDomBooleanNode(settingsElement.firstChildElement("progressbar"));
+            if(!settingsElement.firstChildElement("progressbar_step").isNull())
+                mProgressBarStep = parseDomValueNode(settingsElement.firstChildElement("progressbar_step"));
+            if(!settingsElement.firstChildElement("multicore").isNull())
+                mUseMulticore = parseDomBooleanNode(settingsElement.firstChildElement("multicore"));
 
 //            QDomElement libs = appendDomElement(configRoot, "libs");
 //            for(size_t i=0; i<mUserLibs.size(); ++i)

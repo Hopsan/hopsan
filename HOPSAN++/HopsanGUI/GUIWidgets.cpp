@@ -15,6 +15,7 @@
 #include <QGridLayout>
 #include <QFontDialog>
 #include <QColorDialog>
+#include <QGroupBox>
 
 
 using namespace std;
@@ -50,11 +51,20 @@ void GUITextWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     mpTextBox->setMaximumHeight(70);
     mpFontInDialogButton = new QPushButton("Change Font");
     mpColorInDialogButton = new QPushButton("Change Color");
-    mpFontLabel = new QLabel("Hopsan is cool!");
-    mpFontLabel->setFont(mpTextItem->font());
+    mpExampleLabel = new QLabel("Hopsan is cool!");
+    mpExampleLabel->setFont(mpTextItem->font());
     QPalette pal(mpSelectedColor);
     pal.setColor( QPalette::Foreground, mpSelectedColor );
-    mpFontLabel->setPalette(pal);
+    mpExampleLabel->setPalette(pal);
+
+    QGridLayout *pTextGroupLayout = new QGridLayout();
+    pTextGroupLayout->addWidget(mpTextBox,0,0,1,4);
+    pTextGroupLayout->addWidget(mpExampleLabel,1,0,1,4);
+    pTextGroupLayout->addWidget(mpFontInDialogButton,2,0);
+    pTextGroupLayout->addWidget(mpColorInDialogButton,2,1);
+    QGroupBox *pTextGroupBox = new QGroupBox();
+    pTextGroupBox->setLayout(pTextGroupLayout);
+
     mpDoneInDialogButton = new QPushButton("Done");
     mpCancelInDialogButton = new QPushButton("Cancel");
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
@@ -62,11 +72,8 @@ void GUITextWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     pButtonBox->addButton(mpCancelInDialogButton, QDialogButtonBox::ActionRole);
 
     QGridLayout *pDialogLayout = new QGridLayout();
-    pDialogLayout->addWidget(mpTextBox,0,0,1,4);
-    pDialogLayout->addWidget(mpFontInDialogButton,1,0);
-    pDialogLayout->addWidget(mpColorInDialogButton,1,1);
-    pDialogLayout->addWidget(mpFontLabel,1,2,1,2);
-    pDialogLayout->addWidget(pButtonBox,2,0,1,2);
+    pDialogLayout->addWidget(pTextGroupBox,0,0);
+    pDialogLayout->addWidget(pButtonBox,1,0);
     mpEditTextDialog->setLayout(pDialogLayout);
     mpEditTextDialog->show();
 
@@ -75,13 +82,13 @@ void GUITextWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
     connect(mpColorInDialogButton,SIGNAL(clicked()),this,SLOT(getColor()));
     connect(mpFontInDialogButton,SIGNAL(clicked()),this,SLOT(getFont()));
-    connect(mpDoneInDialogButton,SIGNAL(clicked()),this,SLOT(setTextFromDialog()));
+    connect(mpDoneInDialogButton,SIGNAL(clicked()),this,SLOT(updateWidgetFromDialog()));
     connect(mpCancelInDialogButton,SIGNAL(clicked()),mpEditTextDialog,SLOT(close()));
 }
 
 
 
-void GUITextWidget::setTextFromDialog()
+void GUITextWidget::updateWidgetFromDialog()
 {
     mpTextItem->setPlainText(mpTextBox->toPlainText());
     mpTextItem->setFont(mpSelectedFont);
@@ -104,6 +111,21 @@ void GUITextWidget::setText(QString text)
 }
 
 
+void GUITextWidget::setTextColor(QColor color)
+{
+    mpTextItem->setDefaultTextColor(color);
+}
+
+
+void GUITextWidget::setTextFont(QFont font)
+{
+    mpTextItem->setFont(font);
+    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height(),
+                                               QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+    mpSelectionBox->setPassive();
+}
+
+
 void GUITextWidget::getFont()
 {
     bool ok;
@@ -111,7 +133,7 @@ void GUITextWidget::getFont()
     if (ok)
     {
         mpSelectedFont = font;
-        mpFontLabel->setFont(font);
+        mpExampleLabel->setFont(font);
     }
 }
 
@@ -127,7 +149,7 @@ void GUITextWidget::getColor()
         mpSelectedColor = color;
         QPalette pal(mpSelectedColor);
         pal.setColor( QPalette::Foreground, mpSelectedColor );
-        mpFontLabel->setPalette(pal);
+        mpExampleLabel->setPalette(pal);
     }
 }
 

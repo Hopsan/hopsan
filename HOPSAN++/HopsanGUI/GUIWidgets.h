@@ -35,6 +35,8 @@ public:
     GUITextWidget(QString text, QPoint pos, qreal rot, selectionStatus startSelected, GUISystem *pSystem, QGraphicsItem *pParent=0);
     void saveToDomElement(QDomElement &rDomElement);
     void setText(QString text);
+    void setTextColor(QColor color);
+    void setTextFont(QFont font);
 
 public slots:
     //void deselect();
@@ -44,7 +46,7 @@ protected:
     //virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 private slots:
-    void setTextFromDialog();
+    void updateWidgetFromDialog();
     void getFont();
     void getColor();
 
@@ -59,7 +61,7 @@ private:
     QTextEdit *mpTextBox;
     QFont mpSelectedFont;
     QColor mpSelectedColor;
-    QLabel *mpFontLabel;
+    QLabel *mpExampleLabel;
 };
 
 

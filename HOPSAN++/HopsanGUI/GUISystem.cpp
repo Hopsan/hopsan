@@ -659,8 +659,14 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
             qreal x, y;
             parseDomValueNode2(guiData.firstChildElement("pose"), x, y);
             this->addTextWidget(QPoint(x,y));
-            QString thetext = guiData.firstChildElement("text").text();
-            mTextWidgetList.first()->setText(thetext);
+            mTextWidgetList.last()->setText(guiData.firstChildElement("text").text());
+            QFont tempFont;
+            tempFont.fromString(guiData.firstChildElement("font").text());
+            qDebug() << "Font = " << tempFont.toString();
+            mTextWidgetList.last()->setTextFont(tempFont);
+            mTextWidgetList.last()->setTextColor(QColor(guiData.firstChildElement("fontcolor").text()));
+            mTextWidgetList.last()->setPos(QPoint(x,y));
+
             guiData = guiData.nextSiblingElement(HMF_TEXTWIDGETTAG);
         }
     }
