@@ -10,12 +10,12 @@
 #include <QLabel>
 #include <QDialog>
 #include <QPushButton>
-#include <QLineEdit>
 #include <QDialogButtonBox>
 #include <QGridLayout>
 #include <QFontDialog>
 #include <QColorDialog>
 #include <QGroupBox>
+#include <QSpinBox>
 
 
 using namespace std;
@@ -199,4 +199,100 @@ void GUITextWidget::saveToDomElement(QDomElement &rDomElement)
     appendDomTextNode(xmlGuiStuff, "font", mpTextItem->font().toString());
     appendDomValueNode(xmlGuiStuff, "fontsize", mpTextItem->font().pointSize());
     appendDomTextNode(xmlGuiStuff, "fontcolor", mpTextItem->defaultTextColor().name());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+//! @brief Constructor for box widget class
+//! @param pos Position of box widget
+//! @param rot Rotation of box widget (should normally be zero)
+//! @param startSelected Initial selection status of box widget
+//! @param pSystem Pointer to the GUI System where box widget is located
+//! @param pParent Pointer to parent object (not required)
+GUIBoxWidget::GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected, GUISystem *pSystem, QGraphicsItem *pParent)
+    : GUIObject(pos, rot, startSelected, pSystem, pParent)
+{
+    this->mHmfTagName = HMF_BOXWIDGETTAG;
+
+    pSystem->scene()->addItem(this);
+    this->setPos(pos);
+    mpRectItem = new QGraphicsRectItem(0, 0, 100, 100, this);
+    QPen tempPen = mpRectItem->pen();
+    tempPen.setColor(QColor("black"));
+    tempPen.setWidth(3);
+    mpRectItem->setPen(tempPen);
+    mpRectItem->setPos(mpRectItem->pen().width()/2.0, mpRectItem->pen().width()/2.0);
+    mpRectItem->show();
+
+    this->resize(mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
+
+    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height(),
+                                                  QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+}
+
+
+
+
+//! Slot that removes text widget from all lists and then deletes it
+void GUIBoxWidget::deleteMe()
+{
+    mpParentSystem->mBoxWidgetList.removeAll(this);
+    mpParentSystem->mSelectedGUIObjectsList.removeAll(this);
+    delete(this);
+}
+
+
+
+
+void GUIBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+
+    //Open a dialog where line width and color can be selected
+mpEditBoxDialog = new QDialog();
+mpEditBoxDialog->setWindowTitle("Set Text Label");
+
+mpWidthLabelInDialog = new QLabel("Line Width: ");
+mpWidthBoxInDialog = new QSpinBox();
+mpWidthBoxInDialog->setMinimum(1);
+mpWidthBoxInDialog->setMaximum(100);
+mpWidthBoxInDialog->setSingleStep(1);
+mpWidthBoxInDialog->setValue(mpRectItem->pen().width());
+mpColorInDialogButton = new QPushButton("Change Color");
+
+QGridLayout *pBoxGroupLayout = new QGridLayout();
+pBoxGroupLayout->addWidget(mpWidthLabelInDialog,0,0);
+pBoxGroupLayout->addWidget(mpWidthBoxInDialog,0,1);
+pBoxGroupLayout->addWidget(mpColorInDialogButton,1,0);
+
+QGroupBox *pBoxGroupBox = new QGroupBox();
+pBoxGroupBox->setLayout(pBoxGroupLayout);
+
+mpDoneInDialogButton = new QPushButton("Done");
+mpCancelInDialogButton = new QPushButton("Cancel");
+QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
+pButtonBox->addButton(mpDoneInDialogButton, QDialogButtonBox::ActionRole);
+pButtonBox->addButton(mpCancelInDialogButton, QDialogButtonBox::ActionRole);
+
+QGridLayout *pDialogLayout = new QGridLayout();
+pDialogLayout->addWidget(pBoxGroupBox,0,0);
+pDialogLayout->addWidget(pButtonBox,1,0);
+mpEditBoxDialog->setLayout(pDialogLayout);
+mpEditBoxDialog->show();
+
+//mSelectedFont = mpTextItem->font();
+//mSelectedColor = mpTextItem->defaultTextColor();
+
+//connect(mpColorInDialogButton,SIGNAL(clicked()),this,SLOT(openColorDialog()));
+//connect(mpFontInDialogButton,SIGNAL(clicked()),this,SLOT(openFontDialog()));
+//connect(mpDoneInDialogButton,SIGNAL(clicked()),this,SLOT(updateWidgetFromDialog()));
+connect(mpCancelInDialogButton,SIGNAL(clicked()),mpEditBoxDialog,SLOT(close()));
 }

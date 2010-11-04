@@ -759,6 +759,14 @@ void GUISystem::addTextWidget(QPoint position)
 }
 
 
+void GUISystem::addBoxWidget(QPoint position)
+{
+    GUIBoxWidget *tempBoxWidget;
+    tempBoxWidget = new GUIBoxWidget(position, 0, DESELECTED, this);
+    mBoxWidgetList.append(tempBoxWidget);
+}
+
+
 //! Delete GUIObject with specified name
 //! @param objectName is the name of the componenet to delete
 void GUISystem::deleteGUIModelObject(QString objectName, undoStatus undoSettings)

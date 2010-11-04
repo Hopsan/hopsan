@@ -17,6 +17,7 @@
 #include <QTextEdit>
 #include <QLabel>
 #include <QPushButton>
+#include <QSpinBox>
 
 
 class GUITextWidget : public GUIObject
@@ -32,8 +33,10 @@ public:
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
-private slots:
+public slots:
     void deleteMe();
+
+private slots:
     void updateWidgetFromDialog();
     void openFontDialog();
     void openColorDialog();
@@ -50,6 +53,42 @@ private:
     QFont mSelectedFont;
     QColor mSelectedColor;
     QLabel *mpExampleLabel;
+};
+
+
+
+
+
+class GUIBoxWidget : public GUIObject
+{
+    Q_OBJECT
+public:
+    GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected, GUISystem *pSystem, QGraphicsItem *pParent=0);
+    //void saveToDomElement(QDomElement &rDomElement);
+
+public slots:
+    void deleteMe();
+
+protected:
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
+private slots:
+    //void updateWidgetFromDialog();
+    //void openFontDialog();
+    //void openColorDialog();
+
+private:
+    QGraphicsRectItem *mpRectItem;
+
+    QDialog *mpEditBoxDialog;
+    QLabel *mpWidthLabelInDialog;
+    QSpinBox *mpWidthBoxInDialog;
+    QPushButton *mpColorInDialogButton;
+    QPushButton *mpDoneInDialogButton;
+    QPushButton *mpCancelInDialogButton;
+
+    int mSelectedWidth;
+    QColor mSelectedColor;
 };
 
 

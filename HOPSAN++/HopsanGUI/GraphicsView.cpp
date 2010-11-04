@@ -84,6 +84,7 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
             QGraphicsView::contextMenuEvent(event);
             QMenu menu(this);
             QAction *addTextAction = menu.addAction("Add text widget");
+            QAction *addBoxAction = menu.addAction("Add box widget");
 
             QCursor cursor;
             QAction *selectedAction = menu.exec(cursor.pos());
@@ -91,6 +92,11 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
             if(selectedAction == addTextAction)
             {
                 this->mpSystem->addTextWidget(this->mapToScene(event->pos()).toPoint());
+            }
+
+            if(selectedAction == addBoxAction)
+            {
+                this->mpSystem->addBoxWidget(this->mapToScene(event->pos()).toPoint());
             }
         }
 

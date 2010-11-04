@@ -154,6 +154,7 @@ void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &
 #define HMF_PARAMETERTAG "parameter"
 #define HMF_GROUPTAG "group"
 #define HMF_TEXTWIDGETTAG "textwidget"
+#define HMF_BOXWIDGETTAG "boxwidget"
 
 #define HMF_NAMETAG "name"
 #define HMF_TYPETAG "typename"

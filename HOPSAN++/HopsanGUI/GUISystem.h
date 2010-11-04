@@ -41,9 +41,11 @@ public:
     typedef QHash<QString, GUIModelObject*> GUIModelObjectMapT;
     GUIModelObjectMapT mGUIModelObjectMap;
     QList<GUITextWidget *> mTextWidgetList;
+    QList<GUIBoxWidget *> mBoxWidgetList;
     QList<GUIObject *> mSelectedGUIObjectsList;
     GUIModelObject* addGUIObject(AppearanceData* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
     void addTextWidget(QPoint position);
+    void addBoxWidget(QPoint position);
     void deleteGUIModelObject(QString componentName, undoStatus undoSettings=UNDO);
     void renameGUIObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
     bool haveGUIObject(QString name);
