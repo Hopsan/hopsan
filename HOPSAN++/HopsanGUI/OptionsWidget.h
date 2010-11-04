@@ -24,7 +24,23 @@ public:
 
     MainWindow *mpParentMainWindow;
 
-    //! @todo Add "m" at the beginning of the members
+public slots:
+    void updateValues();
+    void colorDialog();
+    void show();
+
+private slots:
+    void addPressureUnit();
+    void addFlowUnit();
+    void addForceUnit();
+    void addPositionUnit();
+    void addVelocityUnit();
+    void addAlternativeUnitDialog(QString physicalQuantity);
+    void addAlternativeUnit();
+    void updateAlternativeUnits();
+
+private:
+    QColor mPickedBackgroundColor;
 
     QCheckBox *mpInvertWheelCheckBox;
     QCheckBox *mpAntiAliasingCheckBox;
@@ -66,7 +82,6 @@ public:
 
     QWidget *mpCentralwidget;
 
-
     QDialog *mpAddUnitDialog;
     QLabel *mpNameLabel;
     QLineEdit *mpUnitNameBox;
@@ -75,26 +90,6 @@ public:
     QPushButton *mpDoneInUnitDialogButton;
     QPushButton *mpCancelInUnitDialogButton;
     QString mPhysicalQuantityToModify;
-
-
-
-public slots:
-    void updateValues();
-    void colorDialog();
-    void show();
-
-private slots:
-    void addPressureUnit();
-    void addFlowUnit();
-    void addForceUnit();
-    void addPositionUnit();
-    void addVelocityUnit();
-    void addAlternativeUnitDialog(QString physicalQuantity);
-    void addAlternativeUnit();
-    void updateAlternativeUnits();
-
-private:
-    QColor mPickedBackgroundColor;
 };
 
 #endif // OptionsWidget_H

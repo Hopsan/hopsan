@@ -597,3 +597,24 @@ void UndoWidget::refreshList()
         }
     }
 }
+
+
+//! @brief Returns a pointer to the undo button
+QPushButton *UndoWidget::getUndoButton()
+{
+    return mpUndoButton;
+}
+
+
+//! @brief Returns a pointer to the redo button
+QPushButton *UndoWidget::getRedoButton()
+{
+    return mpRedoButton;
+}
+
+
+//! @brief Returns a pointer to the clear button
+QPushButton *UndoWidget::getClearButton()
+{
+    return mpClearButton;
+}

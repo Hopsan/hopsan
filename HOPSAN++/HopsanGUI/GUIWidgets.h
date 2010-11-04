@@ -18,14 +18,6 @@
 #include <QLabel>
 #include <QPushButton>
 
-//class ProjectTabWidget;
-//class GraphicsScene;
-//class GraphicsView;
-//class GUIConnector;
-//class GUIModelObjectDisplayName;
-//class GUIObjectSelectionBox;
-//class GUIPort;
-//class GUISystem;
 
 
 class GUITextWidget : public GUIObject
@@ -38,17 +30,13 @@ public:
     void setTextColor(QColor color);
     void setTextFont(QFont font);
 
-public slots:
-    //void deselect();
-
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    //virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 private slots:
     void updateWidgetFromDialog();
-    void getFont();
-    void getColor();
+    void openFontDialog();
+    void openColorDialog();
 
 private:
     QGraphicsTextItem *mpTextItem;
@@ -59,8 +47,8 @@ private:
     QPushButton *mpCancelInDialogButton;
 
     QTextEdit *mpTextBox;
-    QFont mpSelectedFont;
-    QColor mpSelectedColor;
+    QFont mSelectedFont;
+    QColor mSelectedColor;
     QLabel *mpExampleLabel;
 };
 

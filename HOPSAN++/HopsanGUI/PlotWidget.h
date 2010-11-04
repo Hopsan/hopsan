@@ -64,14 +64,14 @@ private:
 class PlotParameterTree : public QTreeWidget
 {
     Q_OBJECT
+    friend class PlotWindow;
 public:
     PlotParameterTree(MainWindow *parent = 0);
-    QList<QStringList> mAvailableParameters;
-    MainWindow *mpParentMainWindow;
-    GUISystem *mpCurrentSystem;
     PlotWindow *createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit);
     PlotWindow *createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit);
 
+    MainWindow *mpParentMainWindow;
+    GUISystem *mpCurrentSystem;
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
@@ -86,6 +86,7 @@ public slots:
 
 private:
     QList<QStringList> mFavoriteParameters;
+    QList<QStringList> mAvailableParameters;
 };
 
 

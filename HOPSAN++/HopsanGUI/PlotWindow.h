@@ -45,64 +45,15 @@ class GUISystem;
 class PlotWindow : public QMainWindow
 {
     Q_OBJECT
+    friend class PlotWidget;
 public:
     PlotWindow(PlotParameterTree *PlotParameterTree, MainWindow *parent);
     void addPlotCurve(QVector<double> xarray, QVector<double> yarray, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY);
     void changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit);
-    void insertMarker(QwtPlotCurve *curve);
-    void setActiveMarker(QwtPlotMarker *marker);
     void setGeneration(int gen);
 
     MainWindow *mpParentMainWindow;
     GUISystem *mpCurrentGUISystem;
-
-    QVector<QwtPlotCurve *> mpCurves;
-    QList<QStringList> mCurveParameters;
-    QStringList mSpecialXParameter;
-    QList< QList< QVector<double> > > mVectorX;
-    QList< QList< QVector<double> > > mVectorY;
-
-    QwtPlot *mpVariablePlot;
-    QwtPlotGrid *mpGrid;
-    QwtSymbol *mpMarkerSymbol;
-    QwtPlotMarker *mpActiveMarker;
-    QVector <QwtPlotMarker *> mpMarkers;
-    QHash <QwtPlotCurve *, QwtPlotMarker *> mCurveToMarkerMap;
-    QHash <QwtPlotMarker *, QwtPlotCurve *> mMarkerToCurveMap;
-    QwtPlotCurve *tempCurve;
-    QwtPlotZoomer *mpZoomer;
-    QwtPlotMagnifier *mpMagnifier;
-    QwtPlotPanner *mpPanner;
-    int mCurrentGeneration;
-
-    QToolBar *mpToolBar;
-    QToolButton *mpZoomButton;
-    QToolButton *mpPanButton;
-    QToolButton *mpSaveButton;
-    QToolButton *mpSVGButton;
-    QToolButton *mpExportGNUPLOTButton;
-    QToolButton *mpImportGNUPLOTButton;
-    QToolButton *mpGridButton;
-    QToolButton *mpPreviousButton;
-    QToolButton *mpNextButton;
-    QToolButton *mpDiscardGenerationButton;
-    QToolBar *mpSizeButton;
-    QSpinBox *mpSizeSpinBox;
-    QToolButton *mpColorButton;
-    QToolButton *mpBackgroundColorButton;
-    QCheckBox *mpAutoUpdateCheckBox;
-    QLabel *mpSizeLabel;
-    QLabel *mpGenerationLabel;
-
-    QRubberBand *mpHoverRect;
-    //QPainter *mpHoverRect;
-
-    int nCurves;
-    QStringList mCurveColors;
-    bool mHasSpecialXAxis;
-    bool mRightAxisLogarithmic;
-    bool mLeftAxisLogarithmic;
-    bool mAutoUpdate;
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
@@ -133,9 +84,60 @@ public slots:
     bool saveToHmpf(QString fileName);
 
 private:
+
+    QVector<QwtPlotCurve *> mpCurves;
+    QList<QStringList> mCurveParameters;
+    QStringList mSpecialXParameter;
     PlotParameterTree *mpPlotParameterTree;
     QMap<QString, QString> mCurrentUnitsLeft;
     QMap<QString, QString> mCurrentUnitsRight;
+    QwtPlot *mpVariablePlot;
+    QwtPlotGrid *mpGrid;
+    QwtSymbol *mpMarkerSymbol;
+    QwtPlotMarker *mpActiveMarker;
+
+    QVector <QwtPlotMarker *> mpMarkers;
+    QHash <QwtPlotCurve *, QwtPlotMarker *> mCurveToMarkerMap;
+    QHash <QwtPlotMarker *, QwtPlotCurve *> mMarkerToCurveMap;
+    QwtPlotCurve *tempCurve;
+    QwtPlotZoomer *mpZoomer;
+    QwtPlotMagnifier *mpMagnifier;
+    QwtPlotPanner *mpPanner;
+    int mCurrentGeneration;
+
+    QToolBar *mpToolBar;
+    QToolButton *mpZoomButton;
+    QToolButton *mpPanButton;
+    QToolButton *mpSaveButton;
+    QToolButton *mpSVGButton;
+    QToolButton *mpExportGNUPLOTButton;
+    QToolButton *mpImportGNUPLOTButton;
+    QToolButton *mpGridButton;
+    QToolButton *mpPreviousButton;
+    QToolButton *mpNextButton;
+    QToolButton *mpDiscardGenerationButton;
+    QToolBar *mpSizeButton;
+    QSpinBox *mpSizeSpinBox;
+    QToolButton *mpColorButton;
+    QToolButton *mpBackgroundColorButton;
+    QCheckBox *mpAutoUpdateCheckBox;
+    QLabel *mpSizeLabel;
+    QLabel *mpGenerationLabel;
+
+    QList< QList< QVector<double> > > mVectorX;
+    QList< QList< QVector<double> > > mVectorY;
+
+    QRubberBand *mpHoverRect;
+
+    int nCurves;
+    QStringList mCurveColors;
+    bool mHasSpecialXAxis;
+    bool mRightAxisLogarithmic;
+    bool mLeftAxisLogarithmic;
+    bool mAutoUpdate;
+
+    void insertMarker(QwtPlotCurve *curve);
+    void setActiveMarker(QwtPlotMarker *marker);
 };
 
 #endif // PlotWidget_H

@@ -85,9 +85,9 @@ void GUISystem::commonConstructorCode()
     connect(this, SIGNAL(checkMessages()), mpMainWindow->mpMessageWidget, SLOT(checkMessages()));
     connect(mpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
     connect(mpMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
-    connect(mpMainWindow->mpUndoWidget->mpUndoButton, SIGNAL(pressed()), this, SLOT(undo()));
-    connect(mpMainWindow->mpUndoWidget->mpRedoButton, SIGNAL(pressed()), this, SLOT(redo()));
-    connect(mpMainWindow->mpUndoWidget->mpClearButton, SIGNAL(pressed()), this, SLOT(clearUndo()));
+    connect(mpMainWindow->mpUndoWidget->getUndoButton(), SIGNAL(pressed()), this, SLOT(undo()));
+    connect(mpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(pressed()), this, SLOT(redo()));
+    connect(mpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(pressed()), this, SLOT(clearUndo()));
     connect(mpMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this, SLOT(hidePorts(bool)));
 
     //Create the object in core, and update name

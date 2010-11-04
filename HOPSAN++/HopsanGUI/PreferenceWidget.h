@@ -22,36 +22,35 @@ public:
 
     MainWindow *mpParentMainWindow;
 
-    bool mIsoBool;
-
-    QLineEdit *mpUserIconPath;
-    QLineEdit *mpIsoIconPath;
-    QLabel *mpUserIconLabel;
-    QLabel *mpIsoIconLabel;
-    QPushButton *mpIsoIconBrowseButton;
-    QPushButton *mpUserIconBrowseButton;
-
-    QCheckBox *mpIsoCheckBox;
-    QCheckBox *mpDisableUndoCheckBox;
-
-    QLabel *mpNumberOfSamplesLabel;
-    QLineEdit *mpNumberOfSamplesBox;
-
-    QPushButton *mpCancelButton;
-    QPushButton *mpApplyButton;
-    QPushButton *mpOkButton;
-    QDialogButtonBox *mpButtonBox;
-
-    QWidget *mpCentralwidget;
-    QGridLayout *mpLayout;
-
-
-
 public slots:
     void show();
     void updateValues();
     void browseUser();
     void browseIso();
+
+private:
+    bool mIsoBool;
+
+    QLineEdit *mpUserIconPath;
+    QLineEdit *mpIsoIconPath;
+    QLineEdit *mpNumberOfSamplesBox;
+
+    QLabel *mpUserIconLabel;
+    QLabel *mpIsoIconLabel;
+    QLabel *mpNumberOfSamplesLabel;
+
+    QCheckBox *mpIsoCheckBox;
+    QCheckBox *mpDisableUndoCheckBox;
+
+    QPushButton *mpIsoIconBrowseButton;
+    QPushButton *mpUserIconBrowseButton;
+    QPushButton *mpCancelButton;
+    QPushButton *mpApplyButton;
+    QPushButton *mpOkButton;
+
+    QDialogButtonBox *mpButtonBox;
+    QWidget *mpCentralwidget;
+    QGridLayout *mpLayout;
 };
 
 #endif // PREFERENCEWIDGET_H

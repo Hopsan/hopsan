@@ -36,7 +36,6 @@ public:
     void clear();
     void newPost();
     void insertPost(QString str);
-    //void newRedoPost();
     void undoOneStep();
     void redoOneStep();
 
@@ -51,20 +50,21 @@ class UndoWidget : public QDialog
 {
 public:
     UndoWidget(MainWindow *parent = 0);
+    void show();
+    void refreshList();
+    QPushButton *getUndoButton();
+    QPushButton *getRedoButton();
+    QPushButton *getClearButton();
 
     MainWindow *mpParentMainWindow;
 
+private:
     QTableWidget *mUndoTable;
     QList< QList<QString> > mTempStack;
-
     QPushButton *mpUndoButton;
     QPushButton *mpRedoButton;
     QPushButton *mpClearButton;
-
     QGridLayout *mpLayout;
-
-    void show();
-    void refreshList();
 };
 
 

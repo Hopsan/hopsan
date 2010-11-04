@@ -31,6 +31,7 @@
 //! @param parent is a pointer to the main window
 PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     : QMainWindow(parent)
+
 {
     this->setAttribute(Qt::WA_DeleteOnClose);
     this->setWindowTitle("Hopsan NG Plot Window");

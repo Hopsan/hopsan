@@ -21,6 +21,14 @@
 using namespace std;
 
 
+
+//! @brief Constructor for text widget class
+//! @param text Initial text in the widget
+//! @param pos Position of text widget
+//! @param rot Rotation of text widget (should normally be zero)
+//! @param startSelected Initial selection status of text widget
+//! @param pSystem Pointer to the GUI System where text widget is located
+//! @param pParent Pointer to parent object (not required)
 GUITextWidget::GUITextWidget(QString text, QPoint pos, qreal rot, selectionStatus startSelected, GUISystem *pSystem, QGraphicsItem *pParent)
     : GUIObject(pos, rot, startSelected, pSystem, pParent)
 {
@@ -40,9 +48,11 @@ GUITextWidget::GUITextWidget(QString text, QPoint pos, qreal rot, selectionStatu
 }
 
 
-
+//! @brief Defines double click event for text widget
 void GUITextWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
+
+        //Open a dialog where text and font can be selected
     mpEditTextDialog = new QDialog();
     mpEditTextDialog->setWindowTitle("Set Text Label");
 
@@ -53,8 +63,8 @@ void GUITextWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     mpColorInDialogButton = new QPushButton("Change Color");
     mpExampleLabel = new QLabel("Hopsan is cool!");
     mpExampleLabel->setFont(mpTextItem->font());
-    QPalette pal(mpSelectedColor);
-    pal.setColor( QPalette::Foreground, mpSelectedColor );
+    QPalette pal(mSelectedColor);
+    pal.setColor( QPalette::Foreground, mSelectedColor );
     mpExampleLabel->setPalette(pal);
 
     QGridLayout *pTextGroupLayout = new QGridLayout();
@@ -77,22 +87,22 @@ void GUITextWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     mpEditTextDialog->setLayout(pDialogLayout);
     mpEditTextDialog->show();
 
-    mpSelectedFont = mpTextItem->font();
-    mpSelectedColor = mpTextItem->defaultTextColor();
+    mSelectedFont = mpTextItem->font();
+    mSelectedColor = mpTextItem->defaultTextColor();
 
-    connect(mpColorInDialogButton,SIGNAL(clicked()),this,SLOT(getColor()));
-    connect(mpFontInDialogButton,SIGNAL(clicked()),this,SLOT(getFont()));
+    connect(mpColorInDialogButton,SIGNAL(clicked()),this,SLOT(openColorDialog()));
+    connect(mpFontInDialogButton,SIGNAL(clicked()),this,SLOT(openFontDialog()));
     connect(mpDoneInDialogButton,SIGNAL(clicked()),this,SLOT(updateWidgetFromDialog()));
     connect(mpCancelInDialogButton,SIGNAL(clicked()),mpEditTextDialog,SLOT(close()));
 }
 
 
-
+//! @brief Private function that updates the text widget from the selected values in the text edit dialog
 void GUITextWidget::updateWidgetFromDialog()
 {
     mpTextItem->setPlainText(mpTextBox->toPlainText());
-    mpTextItem->setFont(mpSelectedFont);
-    mpTextItem->setDefaultTextColor(mpSelectedColor);
+    mpTextItem->setFont(mSelectedFont);
+    mpTextItem->setDefaultTextColor(mSelectedColor);
 
     delete(mpSelectionBox);
     mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height(),
@@ -102,6 +112,8 @@ void GUITextWidget::updateWidgetFromDialog()
 }
 
 
+//! @brief Sets the text in the text widget
+//! @param text String containing the text
 void GUITextWidget::setText(QString text)
 {
     mpTextItem->setPlainText(text);
@@ -111,12 +123,16 @@ void GUITextWidget::setText(QString text)
 }
 
 
+//! @brief Changes color in text widget
+//! @param color New color that shall be used
 void GUITextWidget::setTextColor(QColor color)
 {
     mpTextItem->setDefaultTextColor(color);
 }
 
 
+//! @brief Changes font in the text widget
+//! @param font New font that shall be used
 void GUITextWidget::setTextFont(QFont font)
 {
     mpTextItem->setFont(font);
@@ -126,35 +142,37 @@ void GUITextWidget::setTextFont(QFont font)
 }
 
 
-void GUITextWidget::getFont()
+//! @brief Opens a font dialog, places the selected font in the member variable and updates example text in edit dialog
+void GUITextWidget::openFontDialog()
 {
     bool ok;
     QFont font = QFontDialog::getFont(&ok, mpTextItem->font());
     if (ok)
     {
-        mpSelectedFont = font;
+        mSelectedFont = font;
         mpExampleLabel->setFont(font);
     }
 }
 
 
-
-void GUITextWidget::getColor()
+//! @brief Opens a color dialog, places the selected color in the member variable and updates example text in edit dialog
+void GUITextWidget::openColorDialog()
 {
     QColor color;
-    color = QColorDialog::getColor(mpSelectedColor);
+    color = QColorDialog::getColor(mSelectedColor);
 
     if (color.isValid())
     {
-        mpSelectedColor = color;
-        QPalette pal(mpSelectedColor);
-        pal.setColor( QPalette::Foreground, mpSelectedColor );
+        mSelectedColor = color;
+        QPalette pal(mSelectedColor);
+        pal.setColor( QPalette::Foreground, mSelectedColor );
         mpExampleLabel->setPalette(pal);
     }
 }
 
 
-
+//! @brief Saves the text object into a specified dom element
+//! @param rDomElement Reference to dom element to save into
 void GUITextWidget::saveToDomElement(QDomElement &rDomElement)
 {
     QDomElement xmlObject = appendDomElement(rDomElement, mHmfTagName);
