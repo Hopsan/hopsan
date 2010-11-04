@@ -767,6 +767,7 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
     QMenu *selectMarkerMenu;
     QMenu *changeUnitMenuLeft;
     QMenu *changeUnitMenuRight;
+    QMenu *removeCurveMenu;
 
     yAxisLeftMenu = menu.addMenu(QString("Left Y Axis"));
     yAxisRightMenu = menu.addMenu(QString("Right Y Axis"));
@@ -859,6 +860,16 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
     }
 
 
+        //Create menu for removing curves
+    removeCurveMenu = menu.addMenu(QString("Remove Plot Curve"));
+    for(size_t i=0; i<mpCurves.size(); ++i)
+    {
+        tempAction = removeCurveMenu->addAction(mpCurves[i]->title().text());
+        actionToCurveMap.insert(tempAction, mpCurves[i]);
+    }
+
+
+
 
     // ----- Wait for user to make a selection ----- //
 
@@ -919,11 +930,14 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
 
         //Insert curve marker
     QMap<QAction *, QwtPlotCurve *>::iterator it;
-    for(it = actionToCurveMap.begin(); it!=actionToCurveMap.end(); ++it)
+    if(selectedAction->parentWidget() == insertMarkerMenu)
     {
-        if(selectedAction == it.key())
+        for(it = actionToCurveMap.begin(); it!=actionToCurveMap.end(); ++it)
         {
-            this->insertMarker(it.value());
+            if(selectedAction == it.key())
+            {
+                this->insertMarker(it.value());
+            }
         }
     }
 
@@ -937,6 +951,29 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
         }
     }
 
+
+        //Remove plot curve
+    if(selectedAction->parentWidget() == removeCurveMenu)
+    {
+        for(it = actionToCurveMap.begin(); it!=actionToCurveMap.end(); ++it)
+        {
+            if(selectedAction == it.key())
+            {
+                it.value()->detach();
+                size_t i;
+                for(i=0; i<mpCurves.size(); ++i)
+                {
+                    if(mpCurves[i] == it.value())
+                    {
+                        break;
+                    }
+                }
+                mpCurves.remove(i);
+                delete(it.value());
+            }
+        }
+        mpVariablePlot->replot();
+    }
 }
 
 
