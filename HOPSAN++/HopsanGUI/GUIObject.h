@@ -43,6 +43,8 @@ public:
     virtual void saveToDomElement(QDomElement &rDomElement){;}  //! @todo nothing for now
     virtual void loadFromHMF(QString modelFilePath=QString()) {assert(false);} //Only available in GUISubsystem for now
 
+    bool isFlipped();
+
     enum { Type = GUIOBJECT };
     int type() const;
 
@@ -129,7 +131,7 @@ public:
 
 public slots:
     void rotate(undoStatus undoSettings = UNDO);
-    //! @todo flip should work on all ui objects
+    //! @todo flip should work on all gui objects
     void flipVertical(undoStatus undoSettings = UNDO);
     void flipHorizontal(undoStatus undoSettings = UNDO);
     void hideName();

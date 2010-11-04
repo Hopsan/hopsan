@@ -65,7 +65,7 @@ QPointF GUIObject::getCenterPos()
 
 void GUIObject::setCenterPos(QPointF pos)
 {
-    this->setPos(this->pos().x()-this->boundingRect().width()/2.0, this->pos().y()-this->boundingRect().height()/2.0);
+    this->setPos(pos.x()-this->boundingRect().width()/2.0, pos.y()-this->boundingRect().height()/2.0);
 }
 
 
@@ -156,8 +156,6 @@ void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 //! @param change Tells what it is that has changed
 QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    QGraphicsWidget::itemChange(change, value);
-
     if (change == QGraphicsItem::ItemSelectedHasChanged)
     {
         if (this->isSelected())
@@ -263,7 +261,8 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
 //            }
 //        }
 //    }
-    return value;
+
+    return  QGraphicsWidget::itemChange(change, value);
 }
 
 
@@ -309,7 +308,7 @@ void GUIObject::moveUp()
 {
     //qDebug() << "Move up!";
     this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()-1);
-    mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
+    mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort(); //!< @todo If we have many objects selected this will probably call MANY updates of the viewport, maybe should do in some other way, same "problem" in other places
 }
 
 
@@ -353,6 +352,12 @@ void GUIObject::deleteMe()
 {
     //Should not be used
     assert(false);
+}
+
+
+bool GUIObject::isFlipped()
+{
+    return mIsFlipped;
 }
 
 
@@ -838,8 +843,6 @@ void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 //! @param change Tells what it is that has changed
 QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    GUIObject::itemChange(change, value);
-
     //Snap if objects have moved
     if (change == QGraphicsItem::ItemPositionHasChanged)
     {
@@ -911,7 +914,14 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
             }
         }
     }
-    return value;
+    else if (change == QGraphicsItem::ItemScaleHasChanged)
+    {
+        qDebug() << "item scale has changed";
+    }
+
+    qDebug() << "change: " << change;
+
+    return GUIObject::itemChange(change, value);
 }
 
 
@@ -960,13 +970,17 @@ void GUIModelObject::showPorts(bool visible)
 //! @todo try to reuse the code in rotate guiobject
 void GUIModelObject::rotate(undoStatus undoSettings)
 {
-    this->setTransformOriginPoint(mpIcon->boundingRect().center());
-    this->setRotation(this->rotation()+90);
+    qDebug() << "this->boundingrect(): " << this->boundingRect();
+    qDebug() << "this->mpIcon->boundingrect(): " << this->mpIcon->boundingRect();
+    this->setTransformOriginPoint(this->boundingRect().center());
+    this->setRotation(normDeg360(this->rotation()+90));
 
-    if (this->rotation() == 360)
+    //Set to zero if 360 (becouse of normDeg above it will not be larger than 360, we just check to be sure no real rounding issus occure in comparisson)
+    if (this->rotation() >= 360.0)
     {
-        this->setRotation(0);
+        this->setRotation(0.0);
     }
+
 
     int tempNameTextPos = mNameTextPos;
     mpNameText->rotate(-90);
@@ -1012,6 +1026,7 @@ void GUIModelObject::rotate(undoStatus undoSettings)
         mPortListPtrs.value(i)->refreshPortOverlayRotation();
     }
 
+    //! @todo danger real == real
     if(!mIconRotation)
     {
         mpIcon->setRotation(-this->rotation());
@@ -1068,13 +1083,12 @@ void GUIModelObject::rotate(undoStatus undoSettings)
 //! @todo Fix name text position when flipping components
 void GUIModelObject::flipVertical(undoStatus undoSettings)
 {
-    this->rotate(NOUNDO);
-    this->rotate(NOUNDO);
     this->flipHorizontal(NOUNDO);
+    this->rotate(NOUNDO);
+    this->rotate(NOUNDO);
     if(undoSettings == UNDO)
     {
         mpParentSystem->mUndoStack->registerVerticalFlip(this);
-
     }
 }
 
@@ -1084,54 +1098,97 @@ void GUIModelObject::flipVertical(undoStatus undoSettings)
 //! @see flipVertical()
 void GUIModelObject::flipHorizontal(undoStatus undoSettings)
 {
-    for (int i = 0; i != mPortListPtrs.size(); ++i)
-    {
-        if(mPortListPtrs[i]->getPortType() == "READPORT" ||  mPortListPtrs[i]->getPortType() == "WRITEPORT")
-        {
-            if(this->rotation() == 90 ||  this->rotation() == 270)
-            {
-                mPortListPtrs.value(i)->scale(1,-1);
-                mPortListPtrs.value(i)->translate(0, -mPortListPtrs.value(i)->boundingRect().width());
-            }
-            else
-            {
-                mPortListPtrs.value(i)->scale(-1,1);
-                mPortListPtrs.value(i)->translate(-mPortListPtrs.value(i)->boundingRect().width(), 0);
-            }
-        }
-    }
+//    for (int i = 0; i != mPortListPtrs.size(); ++i)
+//    {
+//        if(mPortListPtrs[i]->getPortType() == "READPORT" ||  mPortListPtrs[i]->getPortType() == "WRITEPORT")
+//        {
+//            if(this->rotation() == 90 ||  this->rotation() == 270)
+//            {
+//                mPortListPtrs.value(i)->scale(1,-1);
+//                mPortListPtrs.value(i)->translate(0, -mPortListPtrs.value(i)->boundingRect().width());
+//            }
+//            else
+//            {
+//                mPortListPtrs.value(i)->scale(-1,1);
+//                mPortListPtrs.value(i)->translate(-mPortListPtrs.value(i)->boundingRect().width(), 0);
+//            }
+//        }
+//    }
+
+//    //Flip the entire widget
+//    this->scale(-1, 1);
+//    if(mIsFlipped)
+//    {
+//        this->moveBy(-this->boundingRect().width(),0);
+//        mIsFlipped = false;
+//    }
+//    else
+//    {
+//        this->moveBy(this->boundingRect().width(),0);
+//        mIsFlipped = true;
+//    }
+
+//        //"Un-flip" the ports and name text
+//    for (int i = 0; i != mPortListPtrs.size(); ++i)
+//    {
+//        if(this->rotation() == 90 ||  this->rotation() == 270)
+//        {
+//            mPortListPtrs.value(i)->scale(1,-1);
+//            mPortListPtrs.value(i)->translate(0, -mPortListPtrs.value(i)->boundingRect().width());
+//            this->mpNameText->scale(1,-1);
+//        }
+//        else
+//        {
+//            mPortListPtrs.value(i)->scale(-1,1);
+//            mPortListPtrs.value(i)->translate(-mPortListPtrs.value(i)->boundingRect().width(), 0);
+//            this->mpNameText->scale(-1,1);
+//        }
+//    }
+//    //this->setNameTextPos(mNameTextPos);
+//    this->fixTextPosition(mpNameText->pos());
+
 
     //Flip the entire widget
-    this->scale(-1, 1);
+//    QGraphicsScale horFlip(this);
+//    horFlip.setOrigin(QVector3D(this->boundingRect().center().x(), this->boundingRect().center().y(), this->zValue()));
+//    horFlip.setXScale(-1.0);
+//    QMatrix4x4 horFlipM;
+//    horFlip.applyTo(&horFlipM);
+//    QGraphicsItem::setTransform(horFlipM.toTransform(),true);
+
+//    qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,transformOriginPoint: " << this->transformOriginPoint();
+//    qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,boundingrectcenter: " << this->boundingRect().center();
+//    qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,scenboundingcenter: " << this->sceneBoundingRect().center();
+
+//    qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,transformOriginPoint: " << this->transformOriginPoint();
+
+    QTransform transf;
+    transf.reset();
+    transf.scale(-1.0, 1.0); //Horizontal flip matrix
+    //! @todo transformationorigin point seems to have no effect here for some reason
+    //this->setTransformOriginPoint(this->boundingRect().center()); //Make sure we transform around center point
+    this->setTransform(transf,true);
+
     if(mIsFlipped)
     {
-        this->moveBy(-this->boundingRect().width(),0);
         mIsFlipped = false;
+        this->moveBy(-this->boundingRect().width(),0);
     }
     else
     {
-        this->moveBy(this->boundingRect().width(),0);
         mIsFlipped = true;
+        this->moveBy(this->boundingRect().width(),0);
     }
 
-        //"Un-flip" the ports and name text
+    //Refresh port overlay and nametext
+    //! @todo myabe use signals and slots instead
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
-        if(this->rotation() == 90 ||  this->rotation() == 270)
-        {
-            mPortListPtrs.value(i)->scale(1,-1);
-            mPortListPtrs.value(i)->translate(0, -mPortListPtrs.value(i)->boundingRect().width());
-            this->mpNameText->scale(1,-1);
-        }
-        else
-        {
-            mPortListPtrs.value(i)->scale(-1,1);
-            mPortListPtrs.value(i)->translate(-mPortListPtrs.value(i)->boundingRect().width(), 0);
-            this->mpNameText->scale(-1,1);
-        }
+        mPortListPtrs[i]->refreshPortOverlayRotation();
     }
-    //this->setNameTextPos(mNameTextPos);
     this->fixTextPosition(mpNameText->pos());
+
+
 
 
     if(undoSettings == UNDO)

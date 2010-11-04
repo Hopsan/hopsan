@@ -82,6 +82,41 @@ qreal deg2rad(qreal deg)
     return deg*M_PI/180.0;
 }
 
+//! @brief Utility function to convert degrees to radians
+qreal rad2deg(qreal rad)
+{
+    return rad*180.0/M_PI;
+}
+
+//! @brief normalises degrees to range between -180 and 180 degrees
+qreal normDeg180(qreal deg)
+{
+    return rad2deg(normRad(deg2rad(deg)));
+}
+
+//! @brief normalises degrees to range between 0 and 360 degrees
+qreal normDeg360(qreal deg)
+{
+    while (deg > 360.0 || deg < 0.0)
+    {
+        if (deg > 360.0)
+        {
+            deg -= 360.0;
+        }
+        else
+        {
+            deg += 360.0;
+        }
+    }
+    return deg;
+}
+
+//! @brief normalises radinas to range between -PI and PI degrees
+qreal normRad(qreal rad)
+{
+    return qAtan2(qCos(rad),qSin(rad));
+}
+
 
 
 

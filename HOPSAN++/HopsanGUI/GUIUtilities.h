@@ -24,6 +24,10 @@ QString readName(QString namestring);
 QString addQuotes(QString str);
 QString relativePath(QString pathtochange, QString basepath);
 qreal deg2rad(qreal deg);
+qreal rad2deg(qreal rad);
+qreal normDeg180(qreal deg);
+qreal normDeg360(qreal deg);
+qreal normRad(qreal rad);
 double dist(double x1,double y1, double x2, double y2);
 
 QPointF getOffsetPointfromPort(GUIPort *pPort);

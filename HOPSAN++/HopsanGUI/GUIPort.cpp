@@ -13,6 +13,7 @@
 #include "GraphicsView.h"
 #include "ProjectTabWidget.h"
 #include "GUISystem.h"
+#include "GUIUtilities.h"
 
 using namespace std;
 
@@ -28,9 +29,6 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
 {
     qDebug() << "parentType: " << pParentGUIModelObject->type() << " GUISYSTEM=" << GUISYSTEM;
     qDebug() << "======================= parentName: " << pParentGUIModelObject->getName();
-
-    //Set overlay if it exists
-    this->addPortGraphicsOverlay(pPortAppearance->mIconOverlayPath);
 
     if ( pParentGUIModelObject->mpParentSystem != 0 )
     {
@@ -70,6 +68,8 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     mpPortLabel->setPos(7.0,7.0);
     mpPortLabel->hide();
 
+    //Set overlay if it exists
+    this->addPortGraphicsOverlay(pPortAppearance->mIconOverlayPath);
 //    //! @todo this kind of harcoded stuff should not be here, fix the problem in some other way
 //    if(this->getPortType() == "POWERPORT")
 //    {
@@ -84,6 +84,8 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
 //        {
 //            mpPortGraphicsOverlay->setRotation(-mpPortAppearance->rot);
 //        }
+
+
         this->refreshPortOverlayRotation();
 //    }
 
@@ -282,6 +284,20 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     }
 }
 
+QVariant GUIPort::itemChange( GraphicsItemChange change, const QVariant & value )
+{
+//    qDebug() << "GuiPort item has changed: " << change;
+//    if (change == QGraphicsItem::ItemTransformHasChanged)
+//    {
+//        //Update the port overaly position and the label position
+//        qDebug() << "Refreshing port overlay position";
+
+//    }
+
+
+    return QGraphicsItem::itemChange(change, value);
+}
+
 
 void GUIPort::addPortGraphicsOverlay(QString filepath)
 {
@@ -289,7 +305,8 @@ void GUIPort::addPortGraphicsOverlay(QString filepath)
     {
         //! @todo check if file exist
         mpPortGraphicsOverlay = new QGraphicsSvgItem(filepath, this);
-        mpPortGraphicsOverlay->setTransformOriginPoint(this->getCenterPos());
+        mpPortGraphicsOverlay->setTransformOriginPoint(mpPortGraphicsOverlay->boundingRect().center());
+        mpPortGraphicsOverlay->setFlag(QGraphicsItem::ItemIgnoresTransformations, true); //Dosnt work wery well
     }
     else
     {
@@ -301,15 +318,50 @@ void GUIPort::addPortGraphicsOverlay(QString filepath)
 //! @brief Refreshes the port overlay rotation and makes sure that the overlay allways have rotation zero (to be readable)
 void GUIPort::refreshPortOverlayRotation()
 {
-    //Take the rotation maped to the scene and make sure its zero
     if (this->mpPortGraphicsOverlay != 0)
     {
+        qDebug() << "before, overlay pos: " << this->mpPortGraphicsOverlay->pos();
+
+        QPointF pt1 = this->mpPortGraphicsOverlay->boundingRect().center();
+        QTransform rot;
+
+        rot.rotate(-(this->mpPortGraphicsOverlay->rotation() + this->rotation() + this->mpParentGuiModelObject->rotation()));
+        if (this->mpParentGuiModelObject->isFlipped())
+        {
+            rot.scale(-1.0,1.0);
+        }
+
+        qDebug() << "overlay local angle: " << this->mpPortGraphicsOverlay->rotation();
+        qDebug() << "overlay local+port angle: " << this->mpPortGraphicsOverlay->rotation() + this->rotation();
+        qDebug() << "overlay local+port+parent angle: " << this->mpPortGraphicsOverlay->rotation() + this->rotation() +this->mpParentGuiModelObject->rotation();
+
+        QPointF pt2 =  rot * pt1;
+
+        qDebug() << "pt1: " << pt1;
+        qDebug() << "pt2: " << pt2;
+
+        QPointF pt3 = pt2 - pt1;
+        qDebug() << "pt3: " << pt3;
+
+        this->mpPortGraphicsOverlay->setPos(-pt3);
+
+        qDebug() << "after, overlay pos: " << this->mpPortGraphicsOverlay->pos();
+
         qreal scene_angle = this->mpParentGuiModelObject->rotation() + this->rotation() + mpPortGraphicsOverlay->rotation();
-        //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,before Angle: " << scene_angle;
-        mpPortGraphicsOverlay->setRotation(mpPortGraphicsOverlay->rotation()-scene_angle);
+
+        qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,before scene angle: " << scene_angle;
+
         scene_angle = this->mpParentGuiModelObject->rotation() + this->rotation() + mpPortGraphicsOverlay->rotation();
-        //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,after Angle: " << scene_angle;
+
+        qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,after scene angle: " << scene_angle;
+        qDebug() << "\n";
     }
+}
+
+
+void GUIPort::scalePortOverlay(qreal scale)
+{
+
 }
 
 

@@ -59,6 +59,7 @@ public:
 public slots:
     void hideIfNotConnected(bool hidePortsActionTriggered);
     void setVisible(bool value);
+    void scalePortOverlay(qreal scale);
 
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
@@ -66,6 +67,7 @@ protected:
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+    QVariant itemChange( GraphicsItemChange change, const QVariant & value );
 
     void addPortGraphicsOverlay(QString filepath);
 
