@@ -56,6 +56,7 @@ public:
     bool isConnected();
     bool isMakingDiagonal();
     bool isActive();
+
     void saveToTextStream(QTextStream &rStream, QString prepend=QString());
     void saveToDomElement(QDomElement &rDomElement);
 

@@ -272,7 +272,7 @@ GUIGroup::~GUIGroup()
     for(it=objectsInScenePtrs.begin(); it != objectsInScenePtrs.end(); ++it)
     {
         //! @todo Will cause crash when closing program if the GUIObject has already been deleted by the scene.
-        mpParentSystem->deleteGUIObject(this->getName());
+        mpParentSystem->deleteGUIModelObject(this->getName());
         GUIComponent *pGUIComponent = qgraphicsitem_cast<GUIComponent*>(*it);
         mpGroupScene->removeItem((*it));
 
@@ -283,7 +283,7 @@ GUIGroup::~GUIGroup()
         }
         //mpParentScene->addItem((*it));
     }
-    qDebug() << "mpParentSystem->deleteGUIObject(this->getName()), getName:" << this->getName();
+    qDebug() << "mpParentSystem->deleteGUIModelObject(this->getName()), getName:" << this->getName();
     //delete mpGroupScene;
 }
 

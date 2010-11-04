@@ -37,11 +37,13 @@ GUITextWidget::GUITextWidget(QString text, QPoint pos, qreal rot, selectionStatu
     pSystem->scene()->addItem(this);
     this->setPos(pos);
     mpTextItem = new QGraphicsTextItem(text, this);
-    mpTextItem->setPos(0,0);
     QFont tempFont = mpTextItem->font();
     tempFont.setPointSize(12);
     mpTextItem->setFont(tempFont);
+    mpTextItem->setPos(this->boundingRect().center());
     mpTextItem->show();
+
+    this->resize(mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
 
     mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height(),
                                                   QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
@@ -97,6 +99,15 @@ void GUITextWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
+//! Slot that removes text widget from all lists and then deletes it
+void GUITextWidget::deleteMe()
+{
+    mpParentSystem->mTextWidgetList.removeAll(this);
+    mpParentSystem->mSelectedGUIObjectsList.removeAll(this);
+    delete(this);
+}
+
+
 //! @brief Private function that updates the text widget from the selected values in the text edit dialog
 void GUITextWidget::updateWidgetFromDialog()
 {
@@ -108,6 +119,7 @@ void GUITextWidget::updateWidgetFromDialog()
     mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height(),
                                                QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
     mpSelectionBox->setActive();
+    this->resize(mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
     mpEditTextDialog->close();
 }
 
@@ -139,6 +151,7 @@ void GUITextWidget::setTextFont(QFont font)
     mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height(),
                                                QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
     mpSelectionBox->setPassive();
+    this->resize(mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
 }
 
 
@@ -180,7 +193,7 @@ void GUITextWidget::saveToDomElement(QDomElement &rDomElement)
     //Save GUI realted stuff
     QDomElement xmlGuiStuff = appendDomElement(xmlObject,HMF_HOPSANGUITAG);
 
-    QPointF pos = mapToScene(boundingRect().center());
+    QPointF pos = mapToScene(boundingRect().topLeft());
     appendDomValueNode2(xmlGuiStuff, HMF_POSETAG, pos.x(), pos.y());
     appendDomTextNode(xmlGuiStuff, "text", mpTextItem->toPlainText());
     appendDomTextNode(xmlGuiStuff, "font", mpTextItem->font().toString());

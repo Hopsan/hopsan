@@ -49,7 +49,7 @@ public:
     QPointF mOldPos;
 
 public slots:
-    void deleteMe();
+    virtual void deleteMe();
     virtual void rotate(undoStatus undoSettings = UNDO);
     void rotateTo(qreal angle);
     void moveUp();
@@ -84,6 +84,7 @@ class GUIModelObject : public GUIObject
     Q_OBJECT
 public:
     GUIModelObject(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType graphics = USERGRAPHICS, GUISystem *system = 0, QGraphicsItem *parent = 0);
+    ~GUIModelObject();
 
     void rememberConnector(GUIConnector *item);
     void forgetConnector(GUIConnector *item);
@@ -97,6 +98,8 @@ public:
     virtual QString getTypeName();
     virtual QString getTypeCQS() {assert(false); return "";} //Only available in GUISystemComponent adn GuiComponent for now
     virtual void setTypeCQS(QString typestring) {assert(false);} //Only available in GUISystemComponent
+
+    void deleteMe();
 
     AppearanceData* getAppearanceData();
     void refreshAppearance();

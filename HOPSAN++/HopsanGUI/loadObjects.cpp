@@ -463,7 +463,7 @@ void loadTextWidget(QDomElement &rDomElement, GUISystem *pSystem)
         qDebug() << "Font = " << tempFont.toString();
         pSystem->mTextWidgetList.last()->setTextFont(tempFont);
         pSystem->mTextWidgetList.last()->setTextColor(QColor(guiData.firstChildElement("fontcolor").text()));
-        pSystem->mTextWidgetList.last()->setPos(QPoint(x,y));
+        //pSystem->mTextWidgetList.last()->setPos(QPoint(x,y));
     }
 }
 

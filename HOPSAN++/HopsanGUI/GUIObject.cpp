@@ -48,7 +48,7 @@ GUIObject::GUIObject(QPoint pos, qreal rot, selectionStatus, GUISystem *pSystem,
 //! @brief Destructor for GUI Objects
 GUIObject::~GUIObject()
 {
-    emit objectDeleted();
+
 }
 
 
@@ -351,8 +351,8 @@ void GUIObject::moveRight()
 //! @todo will not work with gui only objects like textboxes, as they ont have unique names
 void GUIObject::deleteMe()
 {
-    qDebug() << "deleteMe in " << this->getName();
-    mpParentSystem->deleteGUIObject(this->getName());
+    //Should not be used
+    assert(false);
 }
 
 
@@ -410,11 +410,11 @@ GUIModelObject::GUIModelObject(QPoint position, qreal rotation, const Appearance
 }
 
 
-////! @brief Destructor for GUI Objects
-//GUIModelObject::~GUIModelObject()
-//{
-//    emit objectDeleted();
-//}
+//! @brief Destructor for GUI Objects
+GUIModelObject::~GUIModelObject()
+{
+    emit objectDeleted();
+}
 
 
 //! @brief Returns the type of the object (object, component, systemport, group etc)
@@ -1222,6 +1222,14 @@ QString GUIModelObject::getTypeName()
     return "";
 }
 
+
+void GUIModelObject::deleteMe()
+{
+    qDebug() << "deleteMe in " << this->getName();
+    mpParentSystem->deleteGUIModelObject(this->getName());
+}
+
+
 //! @brief Returns a pointer to the appearance data object
 AppearanceData* GUIModelObject::getAppearanceData()
 {
@@ -1306,6 +1314,10 @@ void GUIModelObjectDisplayName::deselect()
 {
     this->setSelected(false);
 }
+
+
+
+
 
 
 //! @brief Constructor for GUI object selection box

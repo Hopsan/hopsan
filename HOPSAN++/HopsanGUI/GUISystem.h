@@ -44,7 +44,7 @@ public:
     QList<GUIObject *> mSelectedGUIObjectsList;
     GUIModelObject* addGUIObject(AppearanceData* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
     void addTextWidget(QPoint position);
-    void deleteGUIObject(QString componentName, undoStatus undoSettings=UNDO);
+    void deleteGUIModelObject(QString componentName, undoStatus undoSettings=UNDO);
     void renameGUIObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
     bool haveGUIObject(QString name);
     GUIModelObject *getGUIModelObject(QString name);

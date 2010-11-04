@@ -19,7 +19,6 @@
 #include <QPushButton>
 
 
-
 class GUITextWidget : public GUIObject
 {
     Q_OBJECT
@@ -34,6 +33,7 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 private slots:
+    void deleteMe();
     void updateWidgetFromDialog();
     void openFontDialog();
     void openColorDialog();

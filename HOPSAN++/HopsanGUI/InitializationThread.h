@@ -22,7 +22,6 @@ public:
     InitializationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, size_t nSamples, ProjectTab *parent);
 
     ProjectTab *mpParentProjectTab;
-
     CoreSystemAccess *mpGUIRootSystem;
 
 protected:

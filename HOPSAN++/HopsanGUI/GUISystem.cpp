@@ -761,9 +761,9 @@ void GUISystem::addTextWidget(QPoint position)
 
 //! Delete GUIObject with specified name
 //! @param objectName is the name of the componenet to delete
-void GUISystem::deleteGUIObject(QString objectName, undoStatus undoSettings)
+void GUISystem::deleteGUIModelObject(QString objectName, undoStatus undoSettings)
 {
-    qDebug() << "deleteGUIObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->mpCoreSystemAccess->getRootSystemName() ;
+    qDebug() << "deleteGUIModelObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->mpCoreSystemAccess->getRootSystemName() ;
     GUIModelObjectMapT::iterator it = mGUIModelObjectMap.find(objectName);
     GUIModelObject* obj_ptr = it.value();
 

@@ -126,7 +126,7 @@ void UndoStack::undoOneStep()
                 //! @todo Maybe we only need to save the name
                 readName(poststream); //Discard Type
                 QString name = readName(poststream); //Store name
-                mpParentSystem->deleteGUIObject(name, NOUNDO);
+                mpParentSystem->deleteGUIModelObject(name, NOUNDO);
             }
             else if( undoevent == "ADDEDCONNECTOR" )
             {
@@ -211,7 +211,7 @@ void UndoStack::redoOneStep()
             {
                 readName(poststream); //Discard Type
                 QString name = readName(poststream); //Store name
-                mpParentSystem->deleteGUIObject(name, NOUNDO);
+                mpParentSystem->deleteGUIModelObject(name, NOUNDO);
             }
             else if ( redoevent == "DELETEDCONNECTOR" )
             {
