@@ -22,7 +22,6 @@ public:
     SimulationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, ProjectTab *parent);
 
     ProjectTab *mpParentProjectTab;
-
     CoreSystemAccess *mpGUIRootSystem;
 
 protected:

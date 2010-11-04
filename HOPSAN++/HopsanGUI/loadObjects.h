@@ -120,6 +120,8 @@ void loadParameterValues(QTextStream &rStream, GUISystem* pSystem, undoStatus un
 void loadParameterValue(const ParameterLoadData &rData, GUIModelObject* pObject, undoStatus undoSettings=UNDO);
 void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus undoSettings=UNDO);
 
+void loadTextWidget(QDomElement &rDomElement, GUISystem *pSystem);
+
 HeaderLoadData readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidget);
 void writeHeader(QTextStream &rStream);
 void addHMFHeader(QDomElement &rDomElement);

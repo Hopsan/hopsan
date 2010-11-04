@@ -653,21 +653,24 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 
         //5. Load all text widgets
         xmlSubObject = rDomElement.firstChildElement(HMF_TEXTWIDGETTAG);
-        QDomElement guiData = xmlSubObject.firstChildElement(HMF_HOPSANGUITAG);
-        while (!guiData.isNull())
+        while (!xmlSubObject.isNull())
         {
-            qreal x, y;
-            parseDomValueNode2(guiData.firstChildElement("pose"), x, y);
-            this->addTextWidget(QPoint(x,y));
-            mTextWidgetList.last()->setText(guiData.firstChildElement("text").text());
-            QFont tempFont;
-            tempFont.fromString(guiData.firstChildElement("font").text());
-            qDebug() << "Font = " << tempFont.toString();
-            mTextWidgetList.last()->setTextFont(tempFont);
-            mTextWidgetList.last()->setTextColor(QColor(guiData.firstChildElement("fontcolor").text()));
-            mTextWidgetList.last()->setPos(QPoint(x,y));
+            loadTextWidget(xmlSubObject, this);
 
-            guiData = guiData.nextSiblingElement(HMF_TEXTWIDGETTAG);
+
+
+//            qreal x, y;
+//            parseDomValueNode2(guiData.firstChildElement("pose"), x, y);
+//            this->addTextWidget(QPoint(x,y));
+//            mTextWidgetList.last()->setText(guiData.firstChildElement("text").text());
+//            QFont tempFont;
+//            tempFont.fromString(guiData.firstChildElement("font").text());
+//            qDebug() << "Font = " << tempFont.toString();
+//            mTextWidgetList.last()->setTextFont(tempFont);
+//            mTextWidgetList.last()->setTextColor(QColor(guiData.firstChildElement("fontcolor").text()));
+//            mTextWidgetList.last()->setPos(QPoint(x,y));
+
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_TEXTWIDGETTAG);
         }
     }
     else

@@ -448,6 +448,26 @@ void loadConnector(QDomElement &rDomElement, GUISystem* pSystem, undoStatus undo
     loadConnector(data, pSystem, undoSettings);
 }
 
+//! @brief Convenience function for loading a text widget from a dom element
+void loadTextWidget(QDomElement &rDomElement, GUISystem *pSystem)
+{
+    QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
+    if(!guiData.isNull())
+    {
+        qreal x, y;
+        parseDomValueNode2(guiData.firstChildElement("pose"), x, y);
+        pSystem->addTextWidget(QPoint(x,y));
+        pSystem->mTextWidgetList.last()->setText(guiData.firstChildElement("text").text());
+        QFont tempFont;
+        tempFont.fromString(guiData.firstChildElement("font").text());
+        qDebug() << "Font = " << tempFont.toString();
+        pSystem->mTextWidgetList.last()->setTextFont(tempFont);
+        pSystem->mTextWidgetList.last()->setTextColor(QColor(guiData.firstChildElement("fontcolor").text()));
+        pSystem->mTextWidgetList.last()->setPos(QPoint(x,y));
+    }
+}
+
+
 //! @brief Conveniance function if you dont want to manipulate the loaded data
 void loadParameterValues(QTextStream &rStream, GUISystem* pSystem, undoStatus undoSettings)
 {

@@ -66,15 +66,6 @@ public:
 
     MainWindow *mpParentMainWindow;
 
-    QTableWidget *mpGlobalParametersTable;
-    QPushButton *mpAddButton;
-    QPushButton *mpRemoveButton;
-    QPushButton *mpCloseButton;
-
-    QGridLayout *mpGridLayout;
-
-    QMap<QString,double> mGlobalParametersMap;
-
 public slots:
     void setParameter(QString name, double value);
 
@@ -92,6 +83,13 @@ private:
     QPushButton *mpAddInDialogButton;
     QPushButton *mpDoneInDialogButton;
     QList< QPair<QString, double> > mContents;
+
+    QTableWidget *mpGlobalParametersTable;
+    QPushButton *mpAddButton;
+    QPushButton *mpRemoveButton;
+    QPushButton *mpCloseButton;
+    QGridLayout *mpGridLayout;
+    QMap<QString,double> mGlobalParametersMap;
 };
 
 
