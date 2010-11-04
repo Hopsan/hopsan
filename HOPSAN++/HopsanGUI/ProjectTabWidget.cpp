@@ -264,6 +264,14 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
         mpSystem->mModelFileInfo.setFile(modelFilePath);
     }
 
+    //! @todo quickhack to avoid saving hmfx over hmf
+    if (mpSystem->mModelFileInfo.filePath().endsWith("x"))
+    {
+        QString tmp = mpSystem->mModelFileInfo.filePath();
+        tmp.chop(1);
+        mpSystem->mModelFileInfo.setFile(tmp);
+    }
+
     QFile file(mpSystem->mModelFileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
