@@ -71,11 +71,11 @@ public slots:
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
 
 private slots:
-    //void updateWidgetFromDialog();
-    //void openFontDialog();
-    //void openColorDialog();
+    void openColorDialog();
+    void updateWidgetFromDialog();
 
 private:
     QGraphicsRectItem *mpRectItem;
@@ -87,7 +87,6 @@ private:
     QPushButton *mpDoneInDialogButton;
     QPushButton *mpCancelInDialogButton;
 
-    int mSelectedWidth;
     QColor mSelectedColor;
 };
 

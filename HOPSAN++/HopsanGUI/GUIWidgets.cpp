@@ -16,6 +16,8 @@
 #include <QColorDialog>
 #include <QGroupBox>
 #include <QSpinBox>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsWidget>
 
 
 using namespace std;
@@ -233,6 +235,8 @@ GUIBoxWidget::GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected,
     mpRectItem->setPos(mpRectItem->pen().width()/2.0, mpRectItem->pen().width()/2.0);
     mpRectItem->show();
 
+    this->setFlags(QGraphicsItem::ItemAcceptsInputMethod);
+
     this->resize(mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
 
     mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height(),
@@ -256,43 +260,100 @@ void GUIBoxWidget::deleteMe()
 void GUIBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
 
-    //Open a dialog where line width and color can be selected
-mpEditBoxDialog = new QDialog();
-mpEditBoxDialog->setWindowTitle("Set Text Label");
+        //Open a dialog where line width and color can be selected
+    mpEditBoxDialog = new QDialog();
+    mpEditBoxDialog->setWindowTitle("Set Text Label");
 
-mpWidthLabelInDialog = new QLabel("Line Width: ");
-mpWidthBoxInDialog = new QSpinBox();
-mpWidthBoxInDialog->setMinimum(1);
-mpWidthBoxInDialog->setMaximum(100);
-mpWidthBoxInDialog->setSingleStep(1);
-mpWidthBoxInDialog->setValue(mpRectItem->pen().width());
-mpColorInDialogButton = new QPushButton("Change Color");
+    mpWidthLabelInDialog = new QLabel("Line Width: ");
+    mpWidthBoxInDialog = new QSpinBox();
+    mpWidthBoxInDialog->setMinimum(1);
+    mpWidthBoxInDialog->setMaximum(100);
+    mpWidthBoxInDialog->setSingleStep(1);
+    mpWidthBoxInDialog->setValue(mpRectItem->pen().width());
+    mpColorInDialogButton = new QPushButton("Change Color");
 
-QGridLayout *pBoxGroupLayout = new QGridLayout();
-pBoxGroupLayout->addWidget(mpWidthLabelInDialog,0,0);
-pBoxGroupLayout->addWidget(mpWidthBoxInDialog,0,1);
-pBoxGroupLayout->addWidget(mpColorInDialogButton,1,0);
+    QGridLayout *pBoxGroupLayout = new QGridLayout();
+    pBoxGroupLayout->addWidget(mpWidthLabelInDialog,0,0);
+    pBoxGroupLayout->addWidget(mpWidthBoxInDialog,0,1);
+    pBoxGroupLayout->addWidget(mpColorInDialogButton,1,0);
 
-QGroupBox *pBoxGroupBox = new QGroupBox();
-pBoxGroupBox->setLayout(pBoxGroupLayout);
+    QGroupBox *pBoxGroupBox = new QGroupBox();
+    pBoxGroupBox->setLayout(pBoxGroupLayout);
 
-mpDoneInDialogButton = new QPushButton("Done");
-mpCancelInDialogButton = new QPushButton("Cancel");
-QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
-pButtonBox->addButton(mpDoneInDialogButton, QDialogButtonBox::ActionRole);
-pButtonBox->addButton(mpCancelInDialogButton, QDialogButtonBox::ActionRole);
+    mpDoneInDialogButton = new QPushButton("Done");
+    mpCancelInDialogButton = new QPushButton("Cancel");
+    QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
+    pButtonBox->addButton(mpDoneInDialogButton, QDialogButtonBox::ActionRole);
+    pButtonBox->addButton(mpCancelInDialogButton, QDialogButtonBox::ActionRole);
 
-QGridLayout *pDialogLayout = new QGridLayout();
-pDialogLayout->addWidget(pBoxGroupBox,0,0);
-pDialogLayout->addWidget(pButtonBox,1,0);
-mpEditBoxDialog->setLayout(pDialogLayout);
-mpEditBoxDialog->show();
+    QGridLayout *pDialogLayout = new QGridLayout();
+    pDialogLayout->addWidget(pBoxGroupBox,0,0);
+    pDialogLayout->addWidget(pButtonBox,1,0);
+    mpEditBoxDialog->setLayout(pDialogLayout);
+    mpEditBoxDialog->show();
 
-//mSelectedFont = mpTextItem->font();
-//mSelectedColor = mpTextItem->defaultTextColor();
+    //mSelectedFont = mpTextItem->font();
+    //mSelectedColor = mpTextItem->defaultTextColor();
 
-//connect(mpColorInDialogButton,SIGNAL(clicked()),this,SLOT(openColorDialog()));
-//connect(mpFontInDialogButton,SIGNAL(clicked()),this,SLOT(openFontDialog()));
-//connect(mpDoneInDialogButton,SIGNAL(clicked()),this,SLOT(updateWidgetFromDialog()));
-connect(mpCancelInDialogButton,SIGNAL(clicked()),mpEditBoxDialog,SLOT(close()));
+    connect(mpColorInDialogButton,SIGNAL(clicked()),this,SLOT(openColorDialog()));
+    connect(mpDoneInDialogButton,SIGNAL(clicked()),this,SLOT(updateWidgetFromDialog()));
+    connect(mpCancelInDialogButton,SIGNAL(clicked()),mpEditBoxDialog,SLOT(close()));
+}
+
+
+void GUIBoxWidget::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
+{
+    QGraphicsWidget::hoverMoveEvent(event);
+    if(event->pos().x() > boundingRect().left() && event->pos().x() < boundingRect().left()+4)
+    {
+        this->setCursor(Qt::SizeHorCursor);
+    }
+    else if(event->pos().x() > boundingRect().right()-4 && event->pos().x() < boundingRect().right())
+    {
+        this->setCursor(Qt::SizeHorCursor);
+    }
+    else if(event->pos().y() > boundingRect().top() && event->pos().y() < boundingRect().top()+4)
+    {
+        this->setCursor(Qt::SizeVerCursor);
+    }
+    else     if(event->pos().y() > boundingRect().bottom()-4 && event->pos().y() < boundingRect().bottom())
+    {
+        this->setCursor(Qt::SizeVerCursor);
+    }
+    else
+    {
+        this->setCursor(Qt::ArrowCursor);
+    }
+}
+
+
+
+//! @brief Opens a color dialog and places the selected color in the member variable
+void GUIBoxWidget::openColorDialog()
+{
+    QColor color;
+    color = QColorDialog::getColor(mSelectedColor);
+
+    if (color.isValid())
+    {
+        mSelectedColor = color;
+    }
+}
+
+
+
+//! @brief Private function that updates the text widget from the selected values in the text edit dialog
+void GUIBoxWidget::updateWidgetFromDialog()
+{
+    QPen tempPen = mpRectItem->pen();
+    tempPen.setColor(mSelectedColor);
+    tempPen.setWidth(mpWidthBoxInDialog->value());
+    mpRectItem->setPen(tempPen);
+
+    delete(mpSelectionBox);
+    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height(),
+                                               QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+    mpSelectionBox->setActive();
+    this->resize(mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
+    mpEditBoxDialog->close();
 }
