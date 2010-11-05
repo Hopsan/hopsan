@@ -69,9 +69,10 @@ protected:
     QVariant itemChange( GraphicsItemChange change, const QVariant & value );
 
     void addPortGraphicsOverlay(QString filepath);
+    void scalePortOverlay(qreal scalefactor);
 
 protected slots:
-    void scalePortOverlay(qreal scale);
+    void setPortOverlayScale(qreal scale);
 
     //protected slots:
 public: //! @todo This was made public temporarly to test plot in Python

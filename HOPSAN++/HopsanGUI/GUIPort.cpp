@@ -100,7 +100,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     connect(pMainWindow->hidePortsAction,SIGNAL(triggered(bool)),this, SLOT(hideIfNotConnected(bool)));
 
     //Connect the view zoom change signal to the port overlay scale slot
-    connect(pView, SIGNAL(zoomChange(qreal)), this, SLOT(scalePortOverlay(qreal)));
+    connect(pView, SIGNAL(zoomChange(qreal)), this, SLOT(setPortOverlayScale(qreal)));
 
 
     //connect(pMainWindow->showPortsAction,SIGNAL(triggered()),this, SLOT(showIfNotConnected()));
@@ -115,15 +115,15 @@ void GUIPort::magnify(bool blowup)
     {
         this->moveBy((mMag-1.0)*boundingRect().width()/2.0, (mMag-1.0)*boundingRect().height()/2.0);
         this->scale(1.0/mMag,1.0/mMag);
-        mpPortLabel->scale(mMag,mMag);
-        this->scalePortOverlay(mMag);
+
+        this->scalePortOverlay(1.0/mMag);
         mIsMag = false;
     }
     else if ((blowup) && (!mIsMag))
     {
         this->scale(mMag, mMag);
         this->moveBy(-(mMag-1.0)*boundingRect().width()/2.0, -(mMag-1.0)*boundingRect().height()/2.0);
-        mpPortLabel->scale(1.0/mMag,1.0/mMag);
+
         this->scalePortOverlay(mMag);
         mIsMag = true;
     }
@@ -349,6 +349,7 @@ void GUIPort::refreshPortOverlayRotation()
     qDebug() << "overlay local+port angle: " << mpPortLabel->rotation() + this->rotation();
     qDebug() << "overlay local+port+parent angle: " << mpPortLabel->rotation() + this->rotation() +this->mpParentGuiModelObject->rotation();
 
+    //! @todo something wierd with the portlable it seems to be bigger than what you can see in the gui
     pt1 = this->mpPortLabel->boundingRect().center();
     transf.rotate(-(this->mpPortLabel->rotation() + this->rotation() + this->mpParentGuiModelObject->rotation()));
     if (this->mpParentGuiModelObject->isFlipped())
@@ -356,8 +357,8 @@ void GUIPort::refreshPortOverlayRotation()
         transf.scale(-1.0,1.0);
     }
     pt2 =  transf * pt1;
-    pt3 = pt2 - pt1;
-    this->mpPortLabel->setPos(-pt3);
+    pt3 = this->boundingRect().center();
+    this->mpPortLabel->setPos(pt3-pt2);
 
     qDebug() << "pt1: " << pt1;
     qDebug() << "pt2: " << pt2;
@@ -374,7 +375,6 @@ void GUIPort::refreshPortOverlayRotation()
 //        qDebug() << "overlay local+port angle: " << this->mpPortGraphicsOverlay->rotation() + this->rotation();
 //        qDebug() << "overlay local+port+parent angle: " << this->mpPortGraphicsOverlay->rotation() + this->rotation() +this->mpParentGuiModelObject->rotation();
 
-        //! @todo right now the overlay is same size as porticon but if it is not then maybe we should use the center of the port icon instead, dont know if this will work properly though
         pt1 = this->mpPortGraphicsOverlay->boundingRect().center();
         transf.rotate(-(this->mpPortGraphicsOverlay->rotation() + this->rotation() + this->mpParentGuiModelObject->rotation()));
         if (this->mpParentGuiModelObject->isFlipped())
@@ -382,8 +382,7 @@ void GUIPort::refreshPortOverlayRotation()
             transf.scale(-1.0,1.0);
         }
         pt2 =  transf * pt1;
-        pt3 = pt2 - pt1;
-        this->mpPortGraphicsOverlay->setPos(-pt3);
+        this->mpPortGraphicsOverlay->setPos(pt3-pt2);
 
 //        qDebug() << "pt1: " << pt1;
 //        qDebug() << "pt2: " << pt2;
@@ -397,13 +396,25 @@ void GUIPort::refreshPortOverlayRotation()
 }
 
 //! @brief Scales the port overlay graphics and tooltip
-void GUIPort::scalePortOverlay(qreal scale)
+void GUIPort::setPortOverlayScale(qreal scale)
 {
+    this->mpPortLabel->setScale(scale);
+
     if (this->mpPortGraphicsOverlay != 0)
     {
         this->mpPortGraphicsOverlay->setScale(scale);
     }
 
+}
+
+void GUIPort::scalePortOverlay(qreal scalefactor)
+{
+    this->mpPortLabel->setScale(mpPortLabel->scale()*1.0/scalefactor);
+
+    if (this->mpPortGraphicsOverlay != 0)
+    {
+        this->mpPortGraphicsOverlay->setScale(mpPortGraphicsOverlay->scale() * scalefactor);
+    }
 }
 
 

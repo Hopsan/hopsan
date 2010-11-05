@@ -917,12 +917,12 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
             }
         }
     }
-    else if (change == QGraphicsItem::ItemScaleHasChanged)
-    {
-        qDebug() << "item scale has changed";
-    }
+//    else if (change == QGraphicsItem::ItemScaleHasChanged)
+//    {
+//        qDebug() << "item scale has changed";
+//    }
 
-    qDebug() << "change: " << change;
+//    qDebug() << "change: " << change;
 
     return value;
 }
