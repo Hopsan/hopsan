@@ -113,16 +113,18 @@ void GUIPort::magnify(bool blowup)
 {
     if ((!blowup) && (mIsMag))
     {
-        this->moveBy((mMag-1)*boundingRect().width()/2, (mMag-1)*boundingRect().height()/2);
-        this->scale(1/mMag,1/mMag);
+        this->moveBy((mMag-1.0)*boundingRect().width()/2.0, (mMag-1.0)*boundingRect().height()/2.0);
+        this->scale(1.0/mMag,1.0/mMag);
         mpPortLabel->scale(mMag,mMag);
+        this->scalePortOverlay(this->mpPortGraphicsOverlay->scale()/mMag);
         mIsMag = false;
     }
     else if ((blowup) && (!mIsMag))
     {
         this->scale(mMag, mMag);
-        this->moveBy(-(mMag-1)*boundingRect().width()/2, -(mMag-1)*boundingRect().height()/2);
-        mpPortLabel->scale(1/mMag,1/mMag);
+        this->moveBy(-(mMag-1.0)*boundingRect().width()/2.0, -(mMag-1.0)*boundingRect().height()/2.0);
+        mpPortLabel->scale(1.0/mMag,1.0/mMag);
+        this->scalePortOverlay(this->mpPortGraphicsOverlay->scale()*mMag);
         mIsMag = true;
     }
 }
