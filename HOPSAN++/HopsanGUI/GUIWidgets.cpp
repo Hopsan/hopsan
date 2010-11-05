@@ -102,7 +102,7 @@ void GUITextWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
-//! Slot that removes text widget from all lists and then deletes it
+//! @brief Slot that removes text widget from all lists and then deletes it
 void GUITextWidget::deleteMe()
 {
     mpParentSystem->mTextWidgetList.removeAll(this);
@@ -250,7 +250,7 @@ GUIBoxWidget::GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected,
 
 
 
-//! Slot that removes text widget from all lists and then deletes it
+//! @brief Slot that removes text widget from all lists and then deletes it
 void GUIBoxWidget::deleteMe()
 {
     mpParentSystem->mBoxWidgetList.removeAll(this);
@@ -260,7 +260,7 @@ void GUIBoxWidget::deleteMe()
 
 
 
-
+//! @brief Defines double click events (opens the box edit dialog)
 void GUIBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
 
@@ -379,7 +379,7 @@ void GUIBoxWidget::updateWidgetFromDialog()
 }
 
 
-
+//! @brief Defines what happens when hovering the box widget (changes cursor and defines resize areas)
 void GUIBoxWidget::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
     GUIObject::hoverMoveEvent(event);
@@ -420,7 +420,7 @@ void GUIBoxWidget::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 }
 
 
-
+//! @brief Defines what happens when clicking on the box (defines start position for resizing)
 void GUIBoxWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     GUIObject::mousePressEvent(event);
@@ -434,7 +434,7 @@ void GUIBoxWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
-
+//! @brief Defines what happens when user is moves (or is trying to move) the object with the mouse. Used for resizing.
 void GUIBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     GUIObject::mouseMoveEvent(event);
@@ -489,8 +489,6 @@ void GUIBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
-
-
 //! @brief Saves the box widget into a specified dom element
 //! @param rDomElement Reference to dom element to save into
 void GUIBoxWidget::saveToDomElement(QDomElement &rDomElement)
@@ -519,7 +517,8 @@ void GUIBoxWidget::saveToDomElement(QDomElement &rDomElement)
 }
 
 
-
+//! @brief Sets the line width of the box
+//! @param value New width of the line
 void GUIBoxWidget::setLineWidth(int value)
 {
     QPen tempPen;
@@ -528,6 +527,9 @@ void GUIBoxWidget::setLineWidth(int value)
     mpRectItem->setPen(tempPen);
 }
 
+
+//! @brief Sets the line style of the box
+//! @param style Desired style (enum defined by Qt)
 void GUIBoxWidget::setLineStyle(Qt::PenStyle style)
 {
     QPen tempPen;
@@ -536,6 +538,9 @@ void GUIBoxWidget::setLineStyle(Qt::PenStyle style)
     mpRectItem->setPen(tempPen);
 }
 
+
+//! @brief Sets the color of the box
+//! @param New color
 void GUIBoxWidget::setLineColor(QColor color)
 {
     QPen tempPen;
@@ -544,6 +549,10 @@ void GUIBoxWidget::setLineColor(QColor color)
     mpRectItem->setPen(tempPen);
 }
 
+
+//! @brief Sets the size of the box
+//! @param w New width of the box
+//! @param h New height of the box
 void GUIBoxWidget::setSize(qreal w, qreal h)
 {
     QPointF posBeforeResize = this->pos();
