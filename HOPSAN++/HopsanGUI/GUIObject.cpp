@@ -39,7 +39,6 @@ GUIObject::GUIObject(QPoint pos, qreal rot, selectionStatus, GUISystem *pSystem,
     //Set position orientation and other appearance stuff
     this->setCenterPos(pos);
     this->rotateTo(rot);
-    this->setZValue(10);
     this->setAcceptHoverEvents(true);
     mIsFlipped = false;
 }
@@ -90,7 +89,6 @@ void GUIObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     {
         mpSelectionBox->setHovered();
     }
-    this->setZValue(12);
 
     QGraphicsWidget::hoverEnterEvent(event);
 }
@@ -103,7 +101,6 @@ void GUIObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     {
         mpSelectionBox->setPassive();
     }
-    this->setZValue(10);
 
     QGraphicsWidget::hoverLeaveEvent(event);
 }
@@ -396,6 +393,8 @@ GUIModelObject::GUIModelObject(QPoint position, qreal rotation, const Appearance
     this->setIcon(gfxType);
 
     mTextOffset = 5.0;
+
+    this->setZValue(10);
 
         //Create the textbox containing the name
     mpNameText = new GUIModelObjectDisplayName(this);
@@ -769,6 +768,7 @@ void GUIModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 void GUIModelObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     GUIObject::hoverEnterEvent(event);
+    this->setZValue(12);
     this->showPorts(true);
 }
 
@@ -777,6 +777,7 @@ void GUIModelObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 void GUIModelObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     GUIObject::hoverLeaveEvent(event);
+    this->setZValue(10);
     this->showPorts(false);
 }
 
@@ -843,6 +844,8 @@ void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 //! @param change Tells what it is that has changed
 QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &value)
 {
+    GUIObject::itemChange(change, value);
+
     //Snap if objects have moved
     if (change == QGraphicsItem::ItemPositionHasChanged)
     {
@@ -921,7 +924,7 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
 
     qDebug() << "change: " << change;
 
-    return GUIObject::itemChange(change, value);
+    return value;
 }
 
 

@@ -18,6 +18,7 @@
 #include <QSpinBox>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsWidget>
+#include <QComboBox>
 
 
 using namespace std;
@@ -229,8 +230,9 @@ GUIBoxWidget::GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected,
     this->setPos(pos);
     mpRectItem = new QGraphicsRectItem(0, 0, 100, 100, this);
     QPen tempPen = mpRectItem->pen();
-    tempPen.setColor(QColor("black"));
+    tempPen.setColor(QColor("royalblue"));
     tempPen.setWidth(3);
+    tempPen.setStyle(Qt::DotLine);
     mpRectItem->setPen(tempPen);
     mpRectItem->setPos(mpRectItem->pen().width()/2.0, mpRectItem->pen().width()/2.0);
     mpRectItem->show();
@@ -272,10 +274,29 @@ void GUIBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     mpWidthBoxInDialog->setValue(mpRectItem->pen().width());
     mpColorInDialogButton = new QPushButton("Change Color");
 
+    mpStyleLabelInDialog = new QLabel("Line Style: ");
+    mpStyleBoxInDialog = new QComboBox();
+    mpStyleBoxInDialog->insertItem(0, "Solid Line");
+    mpStyleBoxInDialog->insertItem(1, "Dashes");
+    mpStyleBoxInDialog->insertItem(2, "Dots");
+    mpStyleBoxInDialog->insertItem(3, "Dashes and Dots");
+
+    if(mpRectItem->pen().style() == Qt::SolidLine)
+        mpStyleBoxInDialog->setCurrentIndex(0);
+    if(mpRectItem->pen().style() == Qt::DashLine)
+        mpStyleBoxInDialog->setCurrentIndex(1);
+    if(mpRectItem->pen().style() == Qt::DotLine)
+        mpStyleBoxInDialog->setCurrentIndex(2);
+    if(mpRectItem->pen().style() == Qt::DashDotLine)
+        mpStyleBoxInDialog->setCurrentIndex(3);
+
+
     QGridLayout *pBoxGroupLayout = new QGridLayout();
     pBoxGroupLayout->addWidget(mpWidthLabelInDialog,0,0);
     pBoxGroupLayout->addWidget(mpWidthBoxInDialog,0,1);
     pBoxGroupLayout->addWidget(mpColorInDialogButton,1,0);
+    pBoxGroupLayout->addWidget(mpStyleLabelInDialog, 2, 0);
+    pBoxGroupLayout->addWidget(mpStyleBoxInDialog,2, 1);
 
     QGroupBox *pBoxGroupBox = new QGroupBox();
     pBoxGroupBox->setLayout(pBoxGroupLayout);
@@ -292,8 +313,8 @@ void GUIBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     mpEditBoxDialog->setLayout(pDialogLayout);
     mpEditBoxDialog->show();
 
-    //mSelectedFont = mpTextItem->font();
-    //mSelectedColor = mpTextItem->defaultTextColor();
+    this->setZValue(0);
+    this->setFlags(QGraphicsItem::ItemStacksBehindParent);
 
     connect(mpColorInDialogButton,SIGNAL(clicked()),this,SLOT(openColorDialog()));
     connect(mpDoneInDialogButton,SIGNAL(clicked()),this,SLOT(updateWidgetFromDialog()));
@@ -321,6 +342,14 @@ void GUIBoxWidget::updateWidgetFromDialog()
     QPen tempPen = mpRectItem->pen();
     tempPen.setColor(mSelectedColor);
     tempPen.setWidth(mpWidthBoxInDialog->value());
+    if(mpStyleBoxInDialog->currentIndex() == 0)
+        tempPen.setStyle(Qt::SolidLine);
+    else if(mpStyleBoxInDialog->currentIndex() == 1)
+        tempPen.setStyle(Qt::DashLine);
+    else if(mpStyleBoxInDialog->currentIndex() == 2)
+        tempPen.setStyle(Qt::DotLine);
+    else if(mpStyleBoxInDialog->currentIndex() == 3)
+        tempPen.setStyle(Qt::DashDotLine);
     mpRectItem->setPen(tempPen);
 
     delete(mpSelectionBox);
@@ -337,46 +366,39 @@ void GUIBoxWidget::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
     GUIObject::hoverMoveEvent(event);
 
-    if(event->pos().x() > boundingRect().left() && event->pos().x() < boundingRect().left()+4)
+    this->setCursor(Qt::ArrowCursor);
+    mResizeLeft = false;
+    mResizeRight = false;
+    mResizeTop = false;
+    mResizeBottom = false;
+
+    int resLim = 5;
+
+    if(event->pos().x() > boundingRect().left() && event->pos().x() < boundingRect().left()+resLim)
     {
-        this->setCursor(Qt::SizeHorCursor);
         mResizeLeft = true;
-        mResizeRight = false;
-        mResizeTop = false;
-        mResizeBottom = false;
     }
-    else if(event->pos().x() > boundingRect().right()-4 && event->pos().x() < boundingRect().right())
+    if(event->pos().x() > boundingRect().right()-resLim && event->pos().x() < boundingRect().right())
     {
-        this->setCursor(Qt::SizeHorCursor);
-        mResizeLeft = false;
         mResizeRight = true;
-        mResizeTop = false;
-        mResizeBottom = false;
     }
-    else if(event->pos().y() > boundingRect().top() && event->pos().y() < boundingRect().top()+4)
+    if(event->pos().y() > boundingRect().top() && event->pos().y() < boundingRect().top()+resLim)
     {
-        this->setCursor(Qt::SizeVerCursor);
-        mResizeLeft = false;
-        mResizeRight = false;
         mResizeTop = true;
-        mResizeBottom = false;
     }
-    else     if(event->pos().y() > boundingRect().bottom()-4 && event->pos().y() < boundingRect().bottom())
+    if(event->pos().y() > boundingRect().bottom()-resLim && event->pos().y() < boundingRect().bottom())
     {
-        this->setCursor(Qt::SizeVerCursor);
-        mResizeLeft = false;
-        mResizeRight = false;
-        mResizeTop = false;
         mResizeBottom = true;
     }
-    else
-    {
-        this->setCursor(Qt::ArrowCursor);
-        mResizeLeft = false;
-        mResizeRight = false;
-        mResizeTop = false;
-        mResizeBottom = false;
-    }
+
+    if( (mResizeLeft && mResizeTop) || (mResizeRight && mResizeBottom) )
+        this->setCursor(Qt::SizeFDiagCursor);
+    else if( (mResizeTop && mResizeRight) || (mResizeBottom && mResizeLeft) )
+        this->setCursor(Qt::SizeBDiagCursor);
+    else if(mResizeLeft || mResizeRight)
+        this->setCursor(Qt::SizeHorCursor);
+    else if(mResizeTop || mResizeBottom)
+        this->setCursor(Qt::SizeVerCursor);
 }
 
 
@@ -385,52 +407,11 @@ void GUIBoxWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     GUIObject::mousePressEvent(event);
 
-    if(mResizeLeft)
+    if(mResizeLeft || mResizeRight || mResizeTop || mResizeBottom)
     {
-        qDebug() << "Initiating drag left!";
         mPosBeforeResize = this->pos();
         mWidthBeforeResize = this->mpRectItem->rect().width();
-    }
-    else if(mResizeRight)
-    {
-        qDebug() << "Initiating drag right!";
-        mPosBeforeResize = this->pos();
-        mWidthBeforeResize = this->mpRectItem->rect().width();
-    }
-    else if(mResizeTop)
-    {
-        qDebug() << "Initiating drag top!";
-        mPosBeforeResize = this->pos();
         mHeightBeforeResize = this->mpRectItem->rect().height();
-    }
-    else if(mResizeBottom)
-    {
-        qDebug() << "Initiating drag bottom!";
-        mPosBeforeResize = this->pos();
-        mHeightBeforeResize = this->mpRectItem->rect().height();
-    }
-}
-
-
-void GUIBoxWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    GUIObject::mouseReleaseEvent(event);
-
-    if(mResizeLeft)
-    {
-        qDebug() << "Finished drag left!";
-    }
-    else if(mResizeRight)
-    {
-        qDebug() << "Finished drag right!";
-    }
-    else if(mResizeTop)
-    {
-        qDebug() << "Finished drag top!";
-    }
-    else if(mResizeBottom)
-    {
-        qDebug() << "Finished drag bottom!";
     }
 }
 
@@ -440,24 +421,44 @@ void GUIBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     GUIObject::mouseMoveEvent(event);
 
-    if(mResizeLeft)
+    if(mResizeLeft && mResizeTop)
     {
-        this->mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(), mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x(), mpRectItem->rect().height());
+        mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(), mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x(), mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y());
+    }
+    else if(mResizeTop && mResizeRight)
+    {
+        mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(), mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x(), mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y());
+        this->setX(mPosBeforeResize.x());
+    }
+    else if(mResizeRight && mResizeBottom)
+    {
+        mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(), mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x(), mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y());
+        this->setX(mPosBeforeResize.x());
+        this->setY(mPosBeforeResize.y());
+    }
+    else if(mResizeBottom && mResizeLeft)
+    {
+        mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(), mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x(), mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y());
+        this->setY(mPosBeforeResize.y());
+    }
+    else if(mResizeLeft)
+    {
+        mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(), mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x(), mpRectItem->rect().height());
         this->setY(mPosBeforeResize.y());
     }
     else if(mResizeRight)
     {
-        this->mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(), mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x(), mpRectItem->rect().height());
+        mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(), mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x(), mpRectItem->rect().height());
         this->setPos(mPosBeforeResize);
     }
     else if(mResizeTop)
     {
-        this->mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(),  mpRectItem->rect().width(), mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y());
+        mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(),  mpRectItem->rect().width(), mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y());
         this->setX(mPosBeforeResize.x());
     }
     else if(mResizeBottom)
     {
-        this->mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(), mpRectItem->rect().width(), mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y());
+        mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(), mpRectItem->rect().width(), mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y());
         this->setPos(mPosBeforeResize);
     }
 

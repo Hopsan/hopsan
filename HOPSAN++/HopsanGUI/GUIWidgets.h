@@ -18,6 +18,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QSpinBox>
+#include <QComboBox>
 
 
 class GUITextWidget : public GUIObject
@@ -73,7 +74,6 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 
 private slots:
@@ -87,6 +87,8 @@ private:
     QLabel *mpWidthLabelInDialog;
     QSpinBox *mpWidthBoxInDialog;
     QPushButton *mpColorInDialogButton;
+    QLabel *mpStyleLabelInDialog;
+    QComboBox *mpStyleBoxInDialog;
     QPushButton *mpDoneInDialogButton;
     QPushButton *mpCancelInDialogButton;
 
