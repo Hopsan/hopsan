@@ -19,6 +19,7 @@
 #include <QPushButton>
 #include <QSpinBox>
 #include <QComboBox>
+#include <QToolButton>
 
 
 class GUITextWidget : public GUIObject
@@ -65,7 +66,11 @@ class GUIBoxWidget : public GUIObject
     Q_OBJECT
 public:
     GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected, GUISystem *pSystem, QGraphicsItem *pParent=0);
-    //void saveToDomElement(QDomElement &rDomElement);
+    void saveToDomElement(QDomElement &rDomElement);
+    void setLineWidth(int value);
+    void setLineStyle(Qt::PenStyle style);
+    void setLineColor(QColor color);
+    void setSize(qreal w, qreal h);
 
 public slots:
     void deleteMe();
@@ -86,7 +91,8 @@ private:
     QDialog *mpEditBoxDialog;
     QLabel *mpWidthLabelInDialog;
     QSpinBox *mpWidthBoxInDialog;
-    QPushButton *mpColorInDialogButton;
+    QLabel *mpColorLabelInDialog;
+    QToolButton *mpColorInDialogButton;
     QLabel *mpStyleLabelInDialog;
     QComboBox *mpStyleBoxInDialog;
     QPushButton *mpDoneInDialogButton;

@@ -844,7 +844,7 @@ void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 //! @param change Tells what it is that has changed
 QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    GUIObject::itemChange(change, value);
+    GUIObject::itemChange(change, value);   //This must be done BEFORE the snapping code to avoid an event loop. This is because snap uses "moveBy()", which triggers a new itemChange event.
 
     //Snap if objects have moved
     if (change == QGraphicsItem::ItemPositionHasChanged)

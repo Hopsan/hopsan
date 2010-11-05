@@ -593,6 +593,12 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
         {
             mTextWidgetList[i]->saveToDomElement(xmlSubsystem);
         }
+
+        //Save all box widgets
+        for(int i = 0; i != mBoxWidgetList.size(); ++i)
+        {
+            mBoxWidgetList[i]->saveToDomElement(xmlSubsystem);
+        }
     }
 }
 
@@ -656,21 +662,15 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         while (!xmlSubObject.isNull())
         {
             loadTextWidget(xmlSubObject, this);
-
-
-
-//            qreal x, y;
-//            parseDomValueNode2(guiData.firstChildElement("pose"), x, y);
-//            this->addTextWidget(QPoint(x,y));
-//            mTextWidgetList.last()->setText(guiData.firstChildElement("text").text());
-//            QFont tempFont;
-//            tempFont.fromString(guiData.firstChildElement("font").text());
-//            qDebug() << "Font = " << tempFont.toString();
-//            mTextWidgetList.last()->setTextFont(tempFont);
-//            mTextWidgetList.last()->setTextColor(QColor(guiData.firstChildElement("fontcolor").text()));
-//            mTextWidgetList.last()->setPos(QPoint(x,y));
-
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_TEXTWIDGETTAG);
+        }
+
+        //6. Load all box widgets
+        xmlSubObject = rDomElement.firstChildElement(HMF_BOXWIDGETTAG);
+        while (!xmlSubObject.isNull())
+        {
+            loadBoxWidget(xmlSubObject, this);
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_BOXWIDGETTAG);
         }
     }
     else

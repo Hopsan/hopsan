@@ -448,6 +448,7 @@ void loadConnector(QDomElement &rDomElement, GUISystem* pSystem, undoStatus undo
     loadConnector(data, pSystem, undoSettings);
 }
 
+
 //! @brief Convenience function for loading a text widget from a dom element
 void loadTextWidget(QDomElement &rDomElement, GUISystem *pSystem)
 {
@@ -466,6 +467,34 @@ void loadTextWidget(QDomElement &rDomElement, GUISystem *pSystem)
         //pSystem->mTextWidgetList.last()->setPos(QPoint(x,y));
     }
 }
+
+
+//! @brief Convenience function for loading a box widget from a dom element
+void loadBoxWidget(QDomElement &rDomElement, GUISystem *pSystem)
+{
+    QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
+    if(!guiData.isNull())
+    {
+        qreal x, y;
+        parseDomValueNode2(guiData.firstChildElement("pose"), x, y);
+        pSystem->addBoxWidget(QPoint(x,y));
+        qreal w = parseDomValueNode(guiData.firstChildElement("width"));
+        qreal h = parseDomValueNode(guiData.firstChildElement("height"));
+        pSystem->mBoxWidgetList.last()->setSize(w, h);
+        pSystem->mBoxWidgetList.last()->setLineWidth(parseDomValueNode(guiData.firstChildElement("linewidth")));
+        QString style = guiData.firstChildElement("linestyle").text();
+        if(style == "solidline")
+            pSystem->mBoxWidgetList.last()->setLineStyle(Qt::SolidLine);
+        if(style == "dashline")
+            pSystem->mBoxWidgetList.last()->setLineStyle(Qt::DashLine);
+        if(style == "dotline")
+            pSystem->mBoxWidgetList.last()->setLineStyle(Qt::DotLine);
+        if(style == "dashdotline")
+            pSystem->mBoxWidgetList.last()->setLineStyle(Qt::DashDotLine);
+        pSystem->mBoxWidgetList.last()->setLineColor(QColor(guiData.firstChildElement("linecolor").text()));
+    }
+}
+
 
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data

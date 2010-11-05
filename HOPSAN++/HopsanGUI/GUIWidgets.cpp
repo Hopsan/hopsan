@@ -162,7 +162,7 @@ void GUITextWidget::setTextFont(QFont font)
 void GUITextWidget::openFontDialog()
 {
     bool ok;
-    QFont font = QFontDialog::getFont(&ok, mpTextItem->font());
+    QFont font = QFontDialog::getFont(&ok, mpExampleLabel->font());
     if (ok)
     {
         mSelectedFont = font;
@@ -233,6 +233,8 @@ GUIBoxWidget::GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected,
     tempPen.setColor(QColor("royalblue"));
     tempPen.setWidth(3);
     tempPen.setStyle(Qt::DotLine);
+    tempPen.setCapStyle(Qt::RoundCap);
+    tempPen.setJoinStyle(Qt::RoundJoin);
     mpRectItem->setPen(tempPen);
     mpRectItem->setPos(mpRectItem->pen().width()/2.0, mpRectItem->pen().width()/2.0);
     mpRectItem->show();
@@ -272,7 +274,14 @@ void GUIBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     mpWidthBoxInDialog->setMaximum(100);
     mpWidthBoxInDialog->setSingleStep(1);
     mpWidthBoxInDialog->setValue(mpRectItem->pen().width());
-    mpColorInDialogButton = new QPushButton("Change Color");
+    mpColorLabelInDialog = new QLabel("Line Color: ");
+    mpColorInDialogButton = new QToolButton();
+    QString redString, greenString, blueString;
+    redString.setNum(mpRectItem->pen().color().red());
+    greenString.setNum(mpRectItem->pen().color().green());
+    blueString.setNum(mpRectItem->pen().color().blue());
+    mpColorInDialogButton->setStyleSheet(QString("* { background-color: rgb(" + redString + "," + greenString + "," + blueString + ") }"));
+    mpColorInDialogButton->setAutoRaise(true);
 
     mpStyleLabelInDialog = new QLabel("Line Style: ");
     mpStyleBoxInDialog = new QComboBox();
@@ -294,7 +303,8 @@ void GUIBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     QGridLayout *pBoxGroupLayout = new QGridLayout();
     pBoxGroupLayout->addWidget(mpWidthLabelInDialog,0,0);
     pBoxGroupLayout->addWidget(mpWidthBoxInDialog,0,1);
-    pBoxGroupLayout->addWidget(mpColorInDialogButton,1,0);
+    pBoxGroupLayout->addWidget(mpColorLabelInDialog,1,0);
+    pBoxGroupLayout->addWidget(mpColorInDialogButton,1,1);
     pBoxGroupLayout->addWidget(mpStyleLabelInDialog, 2, 0);
     pBoxGroupLayout->addWidget(mpStyleBoxInDialog,2, 1);
 
@@ -326,11 +336,17 @@ void GUIBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 void GUIBoxWidget::openColorDialog()
 {
     QColor color;
-    color = QColorDialog::getColor(mSelectedColor);
+    color = QColorDialog::getColor(mpRectItem->pen().color());
 
     if (color.isValid())
     {
         mSelectedColor = color;
+
+        QString redString, greenString, blueString;
+        redString.setNum(mSelectedColor.red());
+        greenString.setNum(mSelectedColor.green());
+        blueString.setNum(mSelectedColor.blue());
+        mpColorInDialogButton->setStyleSheet(QString("* { background-color: rgb(" + redString + "," + greenString + "," + blueString + ") }"));
     }
 }
 
@@ -461,6 +477,76 @@ void GUIBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(), mpRectItem->rect().width(), mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y());
         this->setPos(mPosBeforeResize);
     }
+
+    delete(mpSelectionBox);
+    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height(),
+                                               QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+    mpSelectionBox->setActive();
+    this->resize(mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
+    mpRectItem->setPos(mpRectItem->pen().width()/2.0, mpRectItem->pen().width()/2.0);
+}
+
+
+
+
+//! @brief Saves the box widget into a specified dom element
+//! @param rDomElement Reference to dom element to save into
+void GUIBoxWidget::saveToDomElement(QDomElement &rDomElement)
+{
+    QDomElement xmlObject = appendDomElement(rDomElement, mHmfTagName);
+
+    //Save GUI realted stuff
+    QDomElement xmlGuiStuff = appendDomElement(xmlObject,HMF_HOPSANGUITAG);
+
+    QPointF pos = mapToScene(mpRectItem->rect().topLeft());
+    appendDomValueNode2(xmlGuiStuff, HMF_POSETAG, pos.x(), pos.y());
+    appendDomValueNode(xmlGuiStuff, "width", mpRectItem->rect().width());
+    appendDomValueNode(xmlGuiStuff, "height", mpRectItem->rect().height());
+    appendDomValueNode(xmlGuiStuff, "linewidth", mpRectItem->pen().width());
+    QString style;
+    if(mpRectItem->pen().style() == Qt::SolidLine)
+        style = "solidline";
+    else if(mpRectItem->pen().style() == Qt::DashLine)
+        style = "dashline";
+    else if(mpRectItem->pen().style() == Qt::DotLine)
+        style = "dotline";
+    else if(mpRectItem->pen().style() == Qt::DashDotLine)
+        style = "dashdotline";
+    appendDomTextNode(xmlGuiStuff, "linestyle", style);
+    appendDomTextNode(xmlGuiStuff, "linecolor", mpRectItem->pen().color().name());
+}
+
+
+
+void GUIBoxWidget::setLineWidth(int value)
+{
+    QPen tempPen;
+    tempPen = mpRectItem->pen();
+    tempPen.setWidth(value);
+    mpRectItem->setPen(tempPen);
+}
+
+void GUIBoxWidget::setLineStyle(Qt::PenStyle style)
+{
+    QPen tempPen;
+    tempPen = mpRectItem->pen();
+    tempPen.setStyle(style);
+    mpRectItem->setPen(tempPen);
+}
+
+void GUIBoxWidget::setLineColor(QColor color)
+{
+    QPen tempPen;
+    tempPen = mpRectItem->pen();
+    tempPen.setColor(color);
+    mpRectItem->setPen(tempPen);
+}
+
+void GUIBoxWidget::setSize(qreal w, qreal h)
+{
+    QPointF posBeforeResize = this->pos();
+    mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(), w, h);
+    this->setPos(posBeforeResize);
 
     delete(mpSelectionBox);
     mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height(),
