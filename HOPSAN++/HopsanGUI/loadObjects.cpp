@@ -492,6 +492,7 @@ void loadBoxWidget(QDomElement &rDomElement, GUISystem *pSystem)
         if(style == "dashdotline")
             pSystem->mBoxWidgetList.last()->setLineStyle(Qt::DashDotLine);
         pSystem->mBoxWidgetList.last()->setLineColor(QColor(guiData.firstChildElement("linecolor").text()));
+        pSystem->mBoxWidgetList.last()->setSelected(false);
     }
 }
 

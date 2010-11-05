@@ -326,6 +326,8 @@ void GUIBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     this->setZValue(0);
     this->setFlags(QGraphicsItem::ItemStacksBehindParent);
 
+    mSelectedColor = mpRectItem->pen().color();
+
     connect(mpColorInDialogButton,SIGNAL(clicked()),this,SLOT(openColorDialog()));
     connect(mpDoneInDialogButton,SIGNAL(clicked()),this,SLOT(updateWidgetFromDialog()));
     connect(mpCancelInDialogButton,SIGNAL(clicked()),mpEditBoxDialog,SLOT(close()));
