@@ -71,7 +71,7 @@ public:
     QList<QFileInfo> mRecentModels;
     QStringList mLastSessionModels;
     QMap<QString, QString> mDefaultUnits;
-    QMap< QString, QMap<QString, double> > mAlternativeUnits;
+    QMap< QString, QMap<QString, double> > mCustomUnits;
 
     //Menubar items
     QMenuBar *menubar;

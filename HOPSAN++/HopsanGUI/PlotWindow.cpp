@@ -777,7 +777,7 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
     changeUnitMenuLeft = yAxisLeftMenu->addMenu(QString("Change Unit"));
     QString physicalQuantityLeft = QString(mpVariablePlot->axisTitle(QwtPlot::yLeft).text().toStdString().substr(0, mpVariablePlot->axisTitle(QwtPlot::yLeft).text().toStdString().find(' ')).c_str());
     QMap<QString, double>::iterator itul;
-    for(itul=mpParentMainWindow->mAlternativeUnits.find(physicalQuantityLeft).value().begin(); itul!=mpParentMainWindow->mAlternativeUnits.find(physicalQuantityLeft).value().end(); ++itul)
+    for(itul=mpParentMainWindow->mCustomUnits.find(physicalQuantityLeft).value().begin(); itul!=mpParentMainWindow->mCustomUnits.find(physicalQuantityLeft).value().end(); ++itul)
     {
         QAction *tempAction = changeUnitMenuLeft->addAction(itul.key());
         std::string axisTitle = mpVariablePlot->axisTitle(QwtPlot::yLeft).text().toStdString();
@@ -797,7 +797,7 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
         changeUnitMenuRight = yAxisRightMenu->addMenu(QString("Change Unit"));
         physicalQuantityRight = QString(mpVariablePlot->axisTitle(QwtPlot::yRight).text().toStdString().substr(0, mpVariablePlot->axisTitle(QwtPlot::yRight).text().toStdString().find(' ')).c_str());
         QMap<QString, double>::iterator itur;
-        for(itur=mpParentMainWindow->mAlternativeUnits.find(physicalQuantityRight).value().begin(); itur!=mpParentMainWindow->mAlternativeUnits.find(physicalQuantityRight).value().end(); ++itur)
+        for(itur=mpParentMainWindow->mCustomUnits.find(physicalQuantityRight).value().begin(); itur!=mpParentMainWindow->mCustomUnits.find(physicalQuantityRight).value().end(); ++itur)
         {
             QAction *tempAction = changeUnitMenuRight->addAction(itur.key());
             std::string axisTitle = mpVariablePlot->axisTitle(QwtPlot::yRight).text().toStdString();
@@ -888,14 +888,14 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
 
 
         // Change unit on left axis
-    if((selectedAction->parentWidget() == changeUnitMenuLeft) && (mpParentMainWindow->mAlternativeUnits.find(physicalQuantityLeft).value().contains(selectedAction->text())))
+    if((selectedAction->parentWidget() == changeUnitMenuLeft) && (mpParentMainWindow->mCustomUnits.find(physicalQuantityLeft).value().contains(selectedAction->text())))
     {
         this->setUnit(QwtPlot::yLeft, physicalQuantityLeft, selectedAction->text());
     }
 
 
         // Change unit on right axis
-    if((selectedAction->parentWidget() == changeUnitMenuRight) && (mpParentMainWindow->mAlternativeUnits.find(physicalQuantityRight).value().contains(selectedAction->text())))
+    if((selectedAction->parentWidget() == changeUnitMenuRight) && (mpParentMainWindow->mCustomUnits.find(physicalQuantityRight).value().contains(selectedAction->text())))
     {
         this->setUnit(QwtPlot::yRight, physicalQuantityRight, selectedAction->text());
     }
@@ -983,7 +983,7 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
 //! @param selectedUnit Name of the new unit
 void PlotWindow::setUnit(int yAxis, QString physicalQuantity, QString selectedUnit)
 {
-    double scale = mpParentMainWindow->mAlternativeUnits.find(physicalQuantity).value().find(selectedUnit).value();
+    double scale = mpParentMainWindow->mCustomUnits.find(physicalQuantity).value().find(selectedUnit).value();
 
     for(size_t i=0; i<mpCurves.size(); ++i)
     {
@@ -1072,8 +1072,8 @@ void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QS
             newUnit = mCurrentUnitsRight.find(dataName).value();
     }
     double scale = 1.0;
-    if(mpParentMainWindow->mAlternativeUnits.contains(dataName))
-        scale = mpParentMainWindow->mAlternativeUnits.find(dataName).value().find(newUnit).value();
+    if(mpParentMainWindow->mCustomUnits.contains(dataName))
+        scale = mpParentMainWindow->mCustomUnits.find(dataName).value().find(newUnit).value();
 
     QVector<double> tempVectorY;
     for(size_t j=0; j<mVectorY[mCurrentGeneration].last().size(); ++j)

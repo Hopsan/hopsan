@@ -102,7 +102,7 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     mpVelocityUnitLabel = new QLabel(tr("Default Velocity Unit"));
     mpVelocityUnitComboBox = new QComboBox();
 
-    this->updateAlternativeUnits();
+    this->updateCustomUnits();
 
     mpAddPressureUnitButton = new QPushButton("Add Custom Pressure Unit");
     mpAddFlowUnitButton = new QPushButton("Add Custom Flow Unit");
@@ -265,12 +265,12 @@ void OptionsWidget::addVelocityUnit()
 
 
 
-//! Slot that opens "Add Alternative Unit" dialog
+//! Slot that opens "Add Custom Unit" dialog
 void OptionsWidget::addAlternativeUnitDialog(QString physicalQuantity)
 {
     mPhysicalQuantityToModify = physicalQuantity;
     mpAddUnitDialog = new QDialog(this);
-    mpAddUnitDialog->setWindowTitle("Add Alternative " + physicalQuantity + "Unit");
+    mpAddUnitDialog->setWindowTitle("Add Custom " + physicalQuantity + "Unit");
 
     mpNameLabel = new QLabel("Unit Name: ", this);
     mpUnitNameBox = new QLineEdit(this);
@@ -301,20 +301,20 @@ void OptionsWidget::addAlternativeUnitDialog(QString physicalQuantity)
 
 void OptionsWidget::addAlternativeUnit()
 {
-    mpParentMainWindow->mAlternativeUnits.find(mPhysicalQuantityToModify).value().insert(mpUnitNameBox->text(), mpScaleBox->text().toDouble());
-    this->updateAlternativeUnits();
+    mpParentMainWindow->mCustomUnits.find(mPhysicalQuantityToModify).value().insert(mpUnitNameBox->text(), mpScaleBox->text().toDouble());
+    this->updateCustomUnits();
     mpAddUnitDialog->close();
 }
 
 
 
-void OptionsWidget::updateAlternativeUnits()
+void OptionsWidget::updateCustomUnits()
 {
     QMap<QString, double>::iterator it;
 
     mpPressureUnitComboBox->clear();
-    for(it = mpParentMainWindow->mAlternativeUnits.find("Pressure").value().begin();
-        it != mpParentMainWindow->mAlternativeUnits.find("Pressure").value().end(); ++it)
+    for(it = mpParentMainWindow->mCustomUnits.find("Pressure").value().begin();
+        it != mpParentMainWindow->mCustomUnits.find("Pressure").value().end(); ++it)
     {
         mpPressureUnitComboBox->addItem(it.key());
     }
@@ -327,8 +327,8 @@ void OptionsWidget::updateAlternativeUnits()
     }
 
     mpFlowUnitComboBox->clear();
-    for(it = mpParentMainWindow->mAlternativeUnits.find("Flow").value().begin();
-        it != mpParentMainWindow->mAlternativeUnits.find("Flow").value().end(); ++it)
+    for(it = mpParentMainWindow->mCustomUnits.find("Flow").value().begin();
+        it != mpParentMainWindow->mCustomUnits.find("Flow").value().end(); ++it)
     {
         mpFlowUnitComboBox->addItem(it.key());
     }
@@ -341,8 +341,8 @@ void OptionsWidget::updateAlternativeUnits()
     }
 
     mpForceUnitComboBox->clear();
-    for(it = mpParentMainWindow->mAlternativeUnits.find("Force").value().begin();
-        it != mpParentMainWindow->mAlternativeUnits.find("Force").value().end(); ++it)
+    for(it = mpParentMainWindow->mCustomUnits.find("Force").value().begin();
+        it != mpParentMainWindow->mCustomUnits.find("Force").value().end(); ++it)
     {
         mpForceUnitComboBox->addItem(it.key());
     }
@@ -355,8 +355,8 @@ void OptionsWidget::updateAlternativeUnits()
     }
 
     mpPositionUnitComboBox->clear();
-    for(it = mpParentMainWindow->mAlternativeUnits.find("Position").value().begin();
-        it != mpParentMainWindow->mAlternativeUnits.find("Position").value().end(); ++it)
+    for(it = mpParentMainWindow->mCustomUnits.find("Position").value().begin();
+        it != mpParentMainWindow->mCustomUnits.find("Position").value().end(); ++it)
     {
         mpPositionUnitComboBox->addItem(it.key());
     }
@@ -369,8 +369,8 @@ void OptionsWidget::updateAlternativeUnits()
     }
 
     mpVelocityUnitComboBox->clear();
-    for(it = mpParentMainWindow->mAlternativeUnits.find("Velocity").value().begin();
-        it != mpParentMainWindow->mAlternativeUnits.find("Velocity").value().end(); ++it)
+    for(it = mpParentMainWindow->mCustomUnits.find("Velocity").value().begin();
+        it != mpParentMainWindow->mCustomUnits.find("Velocity").value().end(); ++it)
     {
         mpVelocityUnitComboBox->addItem(it.key());
     }

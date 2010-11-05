@@ -608,10 +608,12 @@ void MainWindow::loadSettings()
 
     mDefaultUnits.insert("Pressure", "Pa");
     mDefaultUnits.insert("Flow", "m^3/s");
+    mDefaultUnits.insert("Force", "N");
     mDefaultUnits.insert("Position", "m");
     mDefaultUnits.insert("Velocity", "m/s");
-    mDefaultUnits.insert("Acceleration", "m/s^2");
-    mDefaultUnits.insert("Force", "N");
+    mDefaultUnits.insert("Torque", "Nm");
+    mDefaultUnits.insert("Angle", "rad");
+    mDefaultUnits.insert("Angular Velocity", "rad/s");
 
         //Definition of dalternative units
     QMap<QString, double> PressureUnitMap;
@@ -633,15 +635,24 @@ void MainWindow::loadSettings()
     PositionUnitMap.insert("ft", 3.2808);
     QMap<QString, double> VelocityUnitMap;
     VelocityUnitMap.insert("m/s", 1);
-    QMap<QString, double> AccelerationUnitMap;
-    AccelerationUnitMap.insert("m/s^2", 1);
-    mAlternativeUnits.insert("Pressure", PressureUnitMap);
-    mAlternativeUnits.insert("Flow", FlowUnitMap);
-    mAlternativeUnits.insert("Force", ForceUnitMap);
-    mAlternativeUnits.insert("Position", PositionUnitMap);
-    mAlternativeUnits.insert("Velocity", VelocityUnitMap);
-    mAlternativeUnits.insert("Acceleration", AccelerationUnitMap);
-
+    QMap<QString, double> TorqueUnitMap;
+    TorqueUnitMap.insert("Nm", 1);
+    QMap<QString, double> AngleUnitMap;
+    AngleUnitMap.insert("rad", 1);
+    AngleUnitMap.insert("deg", 57.296);
+    QMap<QString, double> AngularVelocityUnitMap;
+    AngularVelocityUnitMap.insert("rad/s", 1);
+    AngularVelocityUnitMap.insert("deg/s", 57.296);
+    AngularVelocityUnitMap.insert("rev/s", 0.159155);
+    AngularVelocityUnitMap.insert("rpm", 9.549296585);
+    mCustomUnits.insert("Pressure", PressureUnitMap);
+    mCustomUnits.insert("Flow", FlowUnitMap);
+    mCustomUnits.insert("Force", ForceUnitMap);
+    mCustomUnits.insert("Position", PositionUnitMap);
+    mCustomUnits.insert("Velocity", VelocityUnitMap);
+    mCustomUnits.insert("Torque", TorqueUnitMap);
+    mCustomUnits.insert("Angle", AngleUnitMap);
+    mCustomUnits.insert("Angular Velocity", AngularVelocityUnitMap);
 
         //Read from hopsanconfig.xml
     QFile file(QString(MAINPATH) + "hopsanconfig.xml");
@@ -732,9 +743,9 @@ void MainWindow::loadSettings()
                 QString unitName = alternativeUnitElement.firstChildElement("unitname").text();
                 double unitScale = parseDomValueNode(alternativeUnitElement.firstChildElement("scale"));
 
-                if(!mAlternativeUnits.find(physicalQuantity).value().contains(unitName))
+                if(!mCustomUnits.find(physicalQuantity).value().contains(unitName))
                 {
-                    mAlternativeUnits.find(physicalQuantity).value().insert(unitName, unitScale);
+                    mCustomUnits.find(physicalQuantity).value().insert(unitName, unitScale);
                 }
                 alternativeUnitElement = alternativeUnitElement.nextSiblingElement("customunit");
             }
@@ -791,7 +802,7 @@ void MainWindow::saveSettings()
     }
     QMap<QString, QMap<QString, double> >::iterator itpcu;
     QMap<QString, double>::iterator itcu;
-    for(itpcu = mAlternativeUnits.begin(); itpcu != mAlternativeUnits.end(); ++itpcu)
+    for(itpcu = mCustomUnits.begin(); itpcu != mCustomUnits.end(); ++itpcu)
     {
         for(itcu = itpcu.value().begin(); itcu != itpcu.value().end(); ++itcu)
         {

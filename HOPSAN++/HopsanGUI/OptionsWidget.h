@@ -37,7 +37,7 @@ private slots:
     void addVelocityUnit();
     void addAlternativeUnitDialog(QString physicalQuantity);
     void addAlternativeUnit();
-    void updateAlternativeUnits();
+    void updateCustomUnits();
 
 private:
     QColor mPickedBackgroundColor;

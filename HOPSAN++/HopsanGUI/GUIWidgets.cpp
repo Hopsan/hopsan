@@ -6,6 +6,8 @@
 #include "GUISystem.h"
 #include "GUIObject.h"
 #include "GraphicsScene.h"
+#include "ProjectTabWidget.h"
+#include "MainWindow.h"
 
 #include <QLabel>
 #include <QDialog>
@@ -58,7 +60,7 @@ void GUITextWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
 
         //Open a dialog where text and font can be selected
-    mpEditTextDialog = new QDialog();
+    mpEditTextDialog = new QDialog(mpParentSystem->mpMainWindow);
     mpEditTextDialog->setWindowTitle("Set Text Label");
 
     mpTextBox = new QTextEdit();
@@ -162,7 +164,7 @@ void GUITextWidget::setTextFont(QFont font)
 void GUITextWidget::openFontDialog()
 {
     bool ok;
-    QFont font = QFontDialog::getFont(&ok, mpExampleLabel->font());
+    QFont font = QFontDialog::getFont(&ok, mpExampleLabel->font(), mpParentSystem->mpMainWindow);
     if (ok)
     {
         mSelectedFont = font;
@@ -175,7 +177,7 @@ void GUITextWidget::openFontDialog()
 void GUITextWidget::openColorDialog()
 {
     QColor color;
-    color = QColorDialog::getColor(mSelectedColor);
+    color = QColorDialog::getColor(mSelectedColor, mpParentSystem->mpMainWindow);
 
     if (color.isValid())
     {
@@ -265,7 +267,7 @@ void GUIBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
 
         //Open a dialog where line width and color can be selected
-    mpEditBoxDialog = new QDialog();
+    mpEditBoxDialog = new QDialog(mpParentSystem->mpMainWindow);
     mpEditBoxDialog->setWindowTitle("Set Text Label");
 
     mpWidthLabelInDialog = new QLabel("Line Width: ");
@@ -338,7 +340,7 @@ void GUIBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 void GUIBoxWidget::openColorDialog()
 {
     QColor color;
-    color = QColorDialog::getColor(mpRectItem->pen().color());
+    color = QColorDialog::getColor(mpRectItem->pen().color(), mpParentSystem->mpMainWindow);
 
     if (color.isValid())
     {
@@ -373,7 +375,10 @@ void GUIBoxWidget::updateWidgetFromDialog()
     delete(mpSelectionBox);
     mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height(),
                                                QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
-    mpSelectionBox->setActive();
+    if(this->isSelected())
+    {
+        mpSelectionBox->setActive();
+    }
     this->resize(mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
     mpEditBoxDialog->close();
 }
