@@ -94,8 +94,15 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     mIsConnected = false;
 
     MainWindow *pMainWindow = mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+    GraphicsView *pView = mpParentSystem->mpParentProjectTab->mpGraphicsView;
+
     connect(this,SIGNAL(portClicked(GUIPort*)),this->getParentSystem(),SLOT(createConnector(GUIPort*)));
     connect(pMainWindow->hidePortsAction,SIGNAL(triggered(bool)),this, SLOT(hideIfNotConnected(bool)));
+
+    //Connect the view zoom change signal to the port overlay scale slot
+    connect(pView, SIGNAL(zoomChange(qreal)), this, SLOT(scalePortOverlay(qreal)));
+
+
     //connect(pMainWindow->showPortsAction,SIGNAL(triggered()),this, SLOT(showIfNotConnected()));
 }
 
@@ -305,7 +312,8 @@ void GUIPort::addPortGraphicsOverlay(QString filepath)
     {
         //! @todo check if file exist
         mpPortGraphicsOverlay = new QGraphicsSvgItem(filepath, this);
-        mpPortGraphicsOverlay->setTransformOriginPoint(mpPortGraphicsOverlay->boundingRect().center());
+        //mpPortGraphicsOverlay->setTransformOriginPoint(mpPortGraphicsOverlay->boundingRect().center());
+        //this->mpPortGraphicsOverlay->setTransformOriginPoint(0,0);
         mpPortGraphicsOverlay->setFlag(QGraphicsItem::ItemIgnoresTransformations, true); //Dosnt work wery well
     }
     else
@@ -355,12 +363,15 @@ void GUIPort::refreshPortOverlayRotation()
 
         qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,after scene angle: " << scene_angle;
         qDebug() << "\n";
+
+
     }
 }
 
-
+//! @brief Scales the port overlay graphics and tooltip
 void GUIPort::scalePortOverlay(qreal scale)
 {
+    this->mpPortGraphicsOverlay->setScale(scale);
 
 }
 

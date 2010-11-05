@@ -44,7 +44,7 @@ signals:
     void keyPressCtrlDown();
     void keyPressCtrlLeft();
     void keyPressCtrlRight();
-    void zoomChange();
+    void zoomChange(qreal zoomfactor);
     void systemPortSignal(QPoint position);
 
 

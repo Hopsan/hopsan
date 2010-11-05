@@ -59,7 +59,6 @@ public:
 public slots:
     void hideIfNotConnected(bool hidePortsActionTriggered);
     void setVisible(bool value);
-    void scalePortOverlay(qreal scale);
 
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
@@ -70,6 +69,9 @@ protected:
     QVariant itemChange( GraphicsItemChange change, const QVariant & value );
 
     void addPortGraphicsOverlay(QString filepath);
+
+protected slots:
+    void scalePortOverlay(qreal scale);
 
     //protected slots:
 public: //! @todo This was made public temporarly to test plot in Python
