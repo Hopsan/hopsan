@@ -60,15 +60,15 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
 //    pRectParent = parent;
     this->setAcceptHoverEvents(true);
 
-    mpPortLabel = new QGraphicsTextItem(this);
-    QString label("<p><span style=\"background-color:lightyellow\">");
-    label.append(this->getName()).append("</span></p>");
-    mpPortLabel->setHtml(label);
-    mpPortLabel->setTextInteractionFlags(Qt::NoTextInteraction);
-    mpPortLabel->setPos(7.0,7.0);
-    mpPortLabel->hide();
+//    mpPortLabel = new QGraphicsTextItem(this);
+//    QString label("<p><span style=\"background-color:lightyellow\">");
+//    label.append(this->getName()).append("</span></p>");
+//    mpPortLabel->setHtml(label);
+//    mpPortLabel->setTextInteractionFlags(Qt::NoTextInteraction);
+//    mpPortLabel->setPos(7.0,7.0);
+//    mpPortLabel->hide();
 
-    //Set overlay if it exists
+    //Setup port label and overlay (if it exists)
     this->addPortGraphicsOverlay(pPortAppearance->mIconOverlayPath);
 //    //! @todo this kind of harcoded stuff should not be here, fix the problem in some other way
 //    if(this->getPortType() == "POWERPORT")
@@ -79,7 +79,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
 //    else
 //    {
         this->setRotation(mpPortAppearance->rot);
-        mpPortLabel->setRotation(-mpPortAppearance->rot);
+        //mpPortLabel->setRotation(-mpPortAppearance->rot);
 //        if (mpPortGraphicsOverlay != 0)
 //        {
 //            mpPortGraphicsOverlay->setRotation(-mpPortAppearance->rot);
@@ -116,7 +116,7 @@ void GUIPort::magnify(bool blowup)
         this->moveBy((mMag-1.0)*boundingRect().width()/2.0, (mMag-1.0)*boundingRect().height()/2.0);
         this->scale(1.0/mMag,1.0/mMag);
         mpPortLabel->scale(mMag,mMag);
-        this->scalePortOverlay(this->mpPortGraphicsOverlay->scale()/mMag);
+        this->scalePortOverlay(mMag);
         mIsMag = false;
     }
     else if ((blowup) && (!mIsMag))
@@ -124,7 +124,7 @@ void GUIPort::magnify(bool blowup)
         this->scale(mMag, mMag);
         this->moveBy(-(mMag-1.0)*boundingRect().width()/2.0, -(mMag-1.0)*boundingRect().height()/2.0);
         mpPortLabel->scale(1.0/mMag,1.0/mMag);
-        this->scalePortOverlay(this->mpPortGraphicsOverlay->scale()*mMag);
+        this->scalePortOverlay(mMag);
         mIsMag = true;
     }
 }
@@ -148,7 +148,7 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     qDebug() << "hovering over port beloning to: " << mpParentGuiModelObject->getName();
     magnify(true);
 
-    mpPortLabel->setRotation(-mpParentGuiModelObject->rotation()-this->rotation());
+    //mpPortLabel->setRotation(-mpParentGuiModelObject->rotation()-this->rotation());
     //qDebug() << "label: " << mpPortLabel->rotation() << " this: " << this->rotation();
     this->setZValue(1.0);
     mpPortLabel->show();
@@ -310,70 +310,99 @@ QVariant GUIPort::itemChange( GraphicsItemChange change, const QVariant & value 
 
 void GUIPort::addPortGraphicsOverlay(QString filepath)
 {
+    //Setup port graphics overlay
     if (!filepath.isEmpty())
     {
         //! @todo check if file exist
         mpPortGraphicsOverlay = new QGraphicsSvgItem(filepath, this);
-        //mpPortGraphicsOverlay->setTransformOriginPoint(mpPortGraphicsOverlay->boundingRect().center());
-        //this->mpPortGraphicsOverlay->setTransformOriginPoint(0,0);
-        mpPortGraphicsOverlay->setFlag(QGraphicsItem::ItemIgnoresTransformations, true); //Dosnt work wery well
+        mpPortGraphicsOverlay->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
     }
     else
     {
         mpPortGraphicsOverlay = 0;
     }
+
+    //Setup port label (ports allways have lables)
+    QString label("<p><span style=\"background-color:lightyellow\">");
+    label.append(this->getName()).append("</span></p>");
+
+    mpPortLabel = new QGraphicsTextItem(this);
+    mpPortLabel->setHtml(label);
+    mpPortLabel->setTextInteractionFlags(Qt::NoTextInteraction);
+    mpPortLabel->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
+
+    QPointF portcenter = this->boundingRect().center();
+    //mpPortLabel->setPos(portcenter*2.0);
+    mpPortLabel->hide();
 }
 
 
 //! @brief Refreshes the port overlay rotation and makes sure that the overlay allways have rotation zero (to be readable)
 void GUIPort::refreshPortOverlayRotation()
 {
+    QTransform transf;
+    QPointF pt1, pt2, pt3;
+
+    //Refresh the port label position and orientation
+    qDebug() << "before, overlay pos: " << mpPortLabel->pos();
+    qDebug() << "overlay local angle: " << mpPortLabel->rotation();
+    qDebug() << "overlay local+port angle: " << mpPortLabel->rotation() + this->rotation();
+    qDebug() << "overlay local+port+parent angle: " << mpPortLabel->rotation() + this->rotation() +this->mpParentGuiModelObject->rotation();
+
+    pt1 = this->mpPortLabel->boundingRect().center();
+    transf.rotate(-(this->mpPortLabel->rotation() + this->rotation() + this->mpParentGuiModelObject->rotation()));
+    if (this->mpParentGuiModelObject->isFlipped())
+    {
+        transf.scale(-1.0,1.0);
+    }
+    pt2 =  transf * pt1;
+    pt3 = pt2 - pt1;
+    this->mpPortLabel->setPos(-pt3);
+
+    qDebug() << "pt1: " << pt1;
+    qDebug() << "pt2: " << pt2;
+    qDebug() << "pt3: " << pt3;
+    qDebug() << "after, overlay pos: " << mpPortLabel->pos();
+    qDebug() << "\n";
+
+    //Refresh the port overlay graphics
     if (this->mpPortGraphicsOverlay != 0)
     {
-        qDebug() << "before, overlay pos: " << this->mpPortGraphicsOverlay->pos();
+        transf.reset();
+//        qDebug() << "before, overlay pos: " << this->mpPortGraphicsOverlay->pos();
+//        qDebug() << "overlay local angle: " << this->mpPortGraphicsOverlay->rotation();
+//        qDebug() << "overlay local+port angle: " << this->mpPortGraphicsOverlay->rotation() + this->rotation();
+//        qDebug() << "overlay local+port+parent angle: " << this->mpPortGraphicsOverlay->rotation() + this->rotation() +this->mpParentGuiModelObject->rotation();
 
-        QPointF pt1 = this->mpPortGraphicsOverlay->boundingRect().center();
-        QTransform rot;
-
-        rot.rotate(-(this->mpPortGraphicsOverlay->rotation() + this->rotation() + this->mpParentGuiModelObject->rotation()));
+        //! @todo right now the overlay is same size as porticon but if it is not then maybe we should use the center of the port icon instead, dont know if this will work properly though
+        pt1 = this->mpPortGraphicsOverlay->boundingRect().center();
+        transf.rotate(-(this->mpPortGraphicsOverlay->rotation() + this->rotation() + this->mpParentGuiModelObject->rotation()));
         if (this->mpParentGuiModelObject->isFlipped())
         {
-            rot.scale(-1.0,1.0);
+            transf.scale(-1.0,1.0);
         }
-
-        qDebug() << "overlay local angle: " << this->mpPortGraphicsOverlay->rotation();
-        qDebug() << "overlay local+port angle: " << this->mpPortGraphicsOverlay->rotation() + this->rotation();
-        qDebug() << "overlay local+port+parent angle: " << this->mpPortGraphicsOverlay->rotation() + this->rotation() +this->mpParentGuiModelObject->rotation();
-
-        QPointF pt2 =  rot * pt1;
-
-        qDebug() << "pt1: " << pt1;
-        qDebug() << "pt2: " << pt2;
-
-        QPointF pt3 = pt2 - pt1;
-        qDebug() << "pt3: " << pt3;
-
+        pt2 =  transf * pt1;
+        pt3 = pt2 - pt1;
         this->mpPortGraphicsOverlay->setPos(-pt3);
 
-        qDebug() << "after, overlay pos: " << this->mpPortGraphicsOverlay->pos();
-
-        qreal scene_angle = this->mpParentGuiModelObject->rotation() + this->rotation() + mpPortGraphicsOverlay->rotation();
-
-        qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,before scene angle: " << scene_angle;
-
-        scene_angle = this->mpParentGuiModelObject->rotation() + this->rotation() + mpPortGraphicsOverlay->rotation();
-
-        qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,after scene angle: " << scene_angle;
-        qDebug() << "\n";
-
-
+//        qDebug() << "pt1: " << pt1;
+//        qDebug() << "pt2: " << pt2;
+//        qDebug() << "pt3: " << pt3;
+//        qDebug() << "after, overlay pos: " << this->mpPortGraphicsOverlay->pos();
+//        qDebug() << "\n";
     }
+
+
+
 }
 
 //! @brief Scales the port overlay graphics and tooltip
 void GUIPort::scalePortOverlay(qreal scale)
 {
-    this->mpPortGraphicsOverlay->setScale(scale);
+    if (this->mpPortGraphicsOverlay != 0)
+    {
+        this->mpPortGraphicsOverlay->setScale(scale);
+    }
 
 }
 
