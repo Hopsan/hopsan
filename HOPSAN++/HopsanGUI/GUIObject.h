@@ -169,7 +169,8 @@ protected:
     QGraphicsLineItem *mpTempLine;
 
 protected slots:
-    void fixTextPosition(QPointF pos);
+    void snapNameTextPosition(QPointF pos);
+    void calcNameTextPositions(QVector<QPointF> &rPts);
 
 private:
 

@@ -235,12 +235,12 @@ void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
     //QGraphicsItem::mousePressEvent(event); //Don't work if this is called
     if (event->button() == Qt::LeftButton)
     {
-        std::cout << "GUIPort.cpp: " << "portClick emitted\n";
+        //std::cout << "GUIPort.cpp: " << "portClick emitted\n";
         emit portClicked(this);
     }
     else if (event->button() == Qt::RightButton)
     {
-        std::cout << "GUIPort.cpp: " << "RightClick" << std::endl;
+        //std::cout << "GUIPort.cpp: " << "RightClick" << std::endl;
     }
     magnify(false);
 }
