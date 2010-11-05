@@ -301,33 +301,6 @@ void GUIBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
-void GUIBoxWidget::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
-{
-    QGraphicsWidget::hoverMoveEvent(event);
-    if(event->pos().x() > boundingRect().left() && event->pos().x() < boundingRect().left()+4)
-    {
-        this->setCursor(Qt::SizeHorCursor);
-    }
-    else if(event->pos().x() > boundingRect().right()-4 && event->pos().x() < boundingRect().right())
-    {
-        this->setCursor(Qt::SizeHorCursor);
-    }
-    else if(event->pos().y() > boundingRect().top() && event->pos().y() < boundingRect().top()+4)
-    {
-        this->setCursor(Qt::SizeVerCursor);
-    }
-    else     if(event->pos().y() > boundingRect().bottom()-4 && event->pos().y() < boundingRect().bottom())
-    {
-        this->setCursor(Qt::SizeVerCursor);
-    }
-    else
-    {
-        this->setCursor(Qt::ArrowCursor);
-    }
-}
-
-
-
 //! @brief Opens a color dialog and places the selected color in the member variable
 void GUIBoxWidget::openColorDialog()
 {
@@ -356,4 +329,142 @@ void GUIBoxWidget::updateWidgetFromDialog()
     mpSelectionBox->setActive();
     this->resize(mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
     mpEditBoxDialog->close();
+}
+
+
+
+void GUIBoxWidget::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
+{
+    GUIObject::hoverMoveEvent(event);
+
+    if(event->pos().x() > boundingRect().left() && event->pos().x() < boundingRect().left()+4)
+    {
+        this->setCursor(Qt::SizeHorCursor);
+        mResizeLeft = true;
+        mResizeRight = false;
+        mResizeTop = false;
+        mResizeBottom = false;
+    }
+    else if(event->pos().x() > boundingRect().right()-4 && event->pos().x() < boundingRect().right())
+    {
+        this->setCursor(Qt::SizeHorCursor);
+        mResizeLeft = false;
+        mResizeRight = true;
+        mResizeTop = false;
+        mResizeBottom = false;
+    }
+    else if(event->pos().y() > boundingRect().top() && event->pos().y() < boundingRect().top()+4)
+    {
+        this->setCursor(Qt::SizeVerCursor);
+        mResizeLeft = false;
+        mResizeRight = false;
+        mResizeTop = true;
+        mResizeBottom = false;
+    }
+    else     if(event->pos().y() > boundingRect().bottom()-4 && event->pos().y() < boundingRect().bottom())
+    {
+        this->setCursor(Qt::SizeVerCursor);
+        mResizeLeft = false;
+        mResizeRight = false;
+        mResizeTop = false;
+        mResizeBottom = true;
+    }
+    else
+    {
+        this->setCursor(Qt::ArrowCursor);
+        mResizeLeft = false;
+        mResizeRight = false;
+        mResizeTop = false;
+        mResizeBottom = false;
+    }
+}
+
+
+
+void GUIBoxWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    GUIObject::mousePressEvent(event);
+
+    if(mResizeLeft)
+    {
+        qDebug() << "Initiating drag left!";
+        mPosBeforeResize = this->pos();
+        mWidthBeforeResize = this->mpRectItem->rect().width();
+    }
+    else if(mResizeRight)
+    {
+        qDebug() << "Initiating drag right!";
+        mPosBeforeResize = this->pos();
+        mWidthBeforeResize = this->mpRectItem->rect().width();
+    }
+    else if(mResizeTop)
+    {
+        qDebug() << "Initiating drag top!";
+        mPosBeforeResize = this->pos();
+        mHeightBeforeResize = this->mpRectItem->rect().height();
+    }
+    else if(mResizeBottom)
+    {
+        qDebug() << "Initiating drag bottom!";
+        mPosBeforeResize = this->pos();
+        mHeightBeforeResize = this->mpRectItem->rect().height();
+    }
+}
+
+
+void GUIBoxWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    GUIObject::mouseReleaseEvent(event);
+
+    if(mResizeLeft)
+    {
+        qDebug() << "Finished drag left!";
+    }
+    else if(mResizeRight)
+    {
+        qDebug() << "Finished drag right!";
+    }
+    else if(mResizeTop)
+    {
+        qDebug() << "Finished drag top!";
+    }
+    else if(mResizeBottom)
+    {
+        qDebug() << "Finished drag bottom!";
+    }
+}
+
+
+
+void GUIBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    GUIObject::mouseMoveEvent(event);
+
+    if(mResizeLeft)
+    {
+        this->mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(), mWidthBeforeResize+mPosBeforeResize.x()-this->pos().x(), mpRectItem->rect().height());
+        this->setY(mPosBeforeResize.y());
+    }
+    else if(mResizeRight)
+    {
+        this->mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(), mWidthBeforeResize-mPosBeforeResize.x()+this->pos().x(), mpRectItem->rect().height());
+        this->setPos(mPosBeforeResize);
+    }
+    else if(mResizeTop)
+    {
+        this->mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(),  mpRectItem->rect().width(), mHeightBeforeResize+mPosBeforeResize.y()-this->pos().y());
+        this->setX(mPosBeforeResize.x());
+    }
+    else if(mResizeBottom)
+    {
+        this->mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(), mpRectItem->rect().width(), mHeightBeforeResize-mPosBeforeResize.y()+this->pos().y());
+        this->setPos(mPosBeforeResize);
+    }
+
+    delete(mpSelectionBox);
+    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height(),
+                                               QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+    mpSelectionBox->setActive();
+    this->resize(mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
+    mpRectItem->setPos(mpRectItem->pen().width()/2.0, mpRectItem->pen().width()/2.0);
 }
