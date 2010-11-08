@@ -399,8 +399,8 @@ GUIModelObject::GUIModelObject(QPoint position, qreal rotation, const Appearance
         //Create the textbox containing the name
     mpNameText = new GUIModelObjectDisplayName(this);
     mpNameText->setFlag(QGraphicsItem::ItemIsSelectable, false); //To minimize problems when move after copy and so on
-    mNameTextPos = 0;
-    this->setNameTextPos(mNameTextPos);
+
+    this->setNameTextPos(0); //Set initial name text position
 
         //Create connections
     connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(snapNameTextPosition(QPointF)));
@@ -431,87 +431,20 @@ int GUIModelObject::type() const
 //! @param pos Position where name text was dropped
 void GUIModelObject::snapNameTextPosition(QPointF pos)
 {
-//    double x1,x2,y1,y2;
-
-//    if(!mIsFlipped)
-//    {
-//        if(this->rotation() == 0)
-//        {
-//            x1 = mpIcon->boundingRect().width()/2 - mpNameText->boundingRect().width()/2;
-//            y1 = -mpNameText->boundingRect().height() - mTextOffset;  //mTextOffset*
-//            x2 = mpIcon->boundingRect().width()/2 - mpNameText->boundingRect().width()/2;
-//            y2 = mpIcon->boundingRect().height() + mTextOffset;// - mpNameText->boundingRect().height()/2;
-//        }
-//        else if(this->rotation() == 180)
-//        {
-//            x1 = mpIcon->boundingRect().width()/2+mpNameText->boundingRect().width()/2;
-//            y1 = mpIcon->boundingRect().height() + mpNameText->boundingRect().height() + mTextOffset;
-//            x2 = mpIcon->boundingRect().width()/2+mpNameText->boundingRect().width()/2;
-//            y2 = -mTextOffset;
-//        }
-//        else if(this->rotation() == 90)
-//        {
-//            x1 = -mpNameText->boundingRect().height() - mTextOffset;
-//            y1 = mpIcon->boundingRect().height()/2 + mpNameText->boundingRect().width()/2;
-//            x2 = mpIcon->boundingRect().width() + mTextOffset;
-//            y2 = mpIcon->boundingRect().height()/2 + mpNameText->boundingRect().width()/2;
-//        }
-//        else if(this->rotation() == 270)
-//        {
-//            x1 = mpIcon->boundingRect().width() + mpNameText->boundingRect().height() + mTextOffset;
-//            y1 = mpIcon->boundingRect().height()/2 - mpNameText->boundingRect().width()/2;
-//            x2 = -mTextOffset;
-//            y2 = mpIcon->boundingRect().height()/2 - mpNameText->boundingRect().width()/2;
-//        }
-//    }
-//    else
-//    {
-//        if(this->rotation() == 0)
-//        {
-//            x1 = mpIcon->boundingRect().width()/2 - mpNameText->boundingRect().width()/2;
-//            y1 = mpNameText->boundingRect().height() - mTextOffset;  //mTextOffset*
-//            x2 = mpIcon->boundingRect().width()/2 - mpNameText->boundingRect().width()/2;
-//            y2 = -mpIcon->boundingRect().height() + mTextOffset;// - mpNameText->boundingRect().height()/2;
-//        }
-//        else if(this->rotation() == 180)
-//        {
-//            x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
-//            y1 = mpIcon->boundingRect().height() + mpNameText->boundingRect().height() + mTextOffset;
-//            x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
-//            y2 = -mTextOffset;
-//        }
-//        else if(this->rotation() == 90)
-//        {
-//            x1 = -mpNameText->boundingRect().height() - mTextOffset;
-//            y1 = mpIcon->boundingRect().height()/2 - mpNameText->boundingRect().width()/2;
-//            x2 = mpIcon->boundingRect().width() + mTextOffset;
-//            y2 = mpIcon->boundingRect().height()/2 - mpNameText->boundingRect().width()/2;
-//        }
-//        else if(this->rotation() == 270)
-//        {
-//            x1 = mpIcon->boundingRect().width() + mpNameText->boundingRect().height() + mTextOffset;
-//            y1 = mpIcon->boundingRect().height()/2 + mpNameText->boundingRect().width()/2;
-//            x2 = -mTextOffset;
-//            y2 = mpIcon->boundingRect().height()/2 + mpNameText->boundingRect().width()/2;
-//        }
-//    }
-
     QVector<QPointF> pts;
     this->calcNameTextPositions(pts);
 
     QPointF  mtp_pos = mpNameText->mapToParent(pos);
-    //double y = mpNameText->mapToParent(pos).y();
-    QPointF bug(40,40); //temp hack
-//! @ todo make dist function that works with points, if qt dosnt already have one
-    if ( dist(mtp_pos.x(), mtp_pos.y(), pts[0].x(), pts[0].y()) > dist(mtp_pos.x(), mtp_pos.y(), pts[1].x(), pts[1].y()) )
+    if ( dist(mtp_pos, pts[0]) < dist(mtp_pos, pts[1]) )
     {
-        //! @todo this seems wierd 1 and 0 should be same ????
-        mpNameText->setPos(pts[1]+bug);
+        //We dont use this.setnamepos here as that would recaluclate the positions again
+        mpNameText->setPos(pts[0]);
         mNameTextPos = 0;
     }
     else
     {
-        mpNameText->setPos(pts[0]+bug);
+        //We dont use this.setnamepos here as that would recaluclate the positions again
+        mpNameText->setPos(pts[1]);
         mNameTextPos = 1;
     }
 
@@ -525,40 +458,46 @@ void GUIModelObject::calcNameTextPositions(QVector<QPointF> &rPts)
 {
     rPts.clear();
 
-    //pt1 = top, pt2 = bottom
-    QPointF pt1, pt2, tpt1, tpt2;
+    QPointF pt0, pt1, tWH;
+    QPointF localCenter = this->boundingRect().center();
+    QPointF localWH = this->boundingRect().bottomRight();
 
-    //! @todo maybe use set centerpos on nametext intead
-    pt1.rx() = this->boundingRect().width()/2.0 - mpNameText->boundingRect().width()/2.0;
-    pt1.ry() = -mpNameText->boundingRect().height() - mTextOffset;// + mpNameText->boundingRect().height()/2.0;
-
-    pt2.rx() = this->boundingRect().width()/2.0 - mpNameText->boundingRect().width()/2.0;
-    pt2.ry() = this->boundingRect().height() + mTextOffset;// - mpNameText->boundingRect().height()/2.0;
-
-//    x1 = mpIcon->boundingRect().width()/2 - mpNameText->boundingRect().width()/2;
-//    y1 = -mpNameText->boundingRect().height() - mTextOffset;  //mTextOffset*
-//    x2 = mpIcon->boundingRect().width()/2 - mpNameText->boundingRect().width()/2;
-//    y2 = mpIcon->boundingRect().height() + mTextOffset;// - mpNameText->boundingRect().height()/2;
-
+    //Create the transformation, and transform points
     QTransform transf;
     transf.rotate(-(this->rotation()));
     if (this->mIsFlipped)
     {
         transf.scale(-1.0,1.0);
     }
-    tpt1 = transf * pt1;
-    tpt2 =  transf * pt2;
 
-    qDebug() << "pt0: " << pt1;
-    qDebug() << "pt1: " << pt2;
-    qDebug() << "tpt0: " << tpt1;
-    qDebug() << "tpt1: " << tpt2;
+    //First we transform the height and width, (also take absolute values for width and height)
+    tWH = transf*localWH;
+    tWH.setX(fabs(tWH.x()));
+    tWH.setY(fabs(tWH.y()));
 
-    rPts.append(tpt1-pt1);
-    rPts.append(tpt2-pt2);
+    //qDebug() <<  " width: " << this->boundingRect().width() << "height: " << this->boundingRect().height()  << " lWH: " << localWH << " tWH: " << tWH;
+    //Now we transforme the name text posistions
+    //pt0 = top, pt1 = bottom, pts relative loacal center on object
+    pt0.rx() = -mpNameText->boundingRect().width()/2.0;
+    pt0.ry() = -(tWH.y()/2.0 + mpNameText->boundingRect().height() + mTextOffset);
 
-    qDebug() << "rPts0: " << rPts[0];
-    qDebug() << "rPts1: " << rPts[1];
+    pt1.rx() = -mpNameText->boundingRect().width()/2.0;
+    pt1.ry() = tWH.y()/2.0 + mTextOffset;
+
+    //    qDebug() << "pt0: " << pt0;
+    //    qDebug() << "pt1: " << pt1;
+    pt0 = transf * pt0;
+    pt1 =  transf * pt1;
+    //    qDebug() << "tpt0: " << pt0;
+    //    qDebug() << "tpt1: " << pt1;
+
+    //Store transformed positions relative current local origo
+    rPts.append(localCenter+pt0);
+    rPts.append(localCenter+pt1);
+
+//    qDebug() << "rPts0: " << rPts[0];
+//    qDebug() << "rPts1: " << rPts[1];
+//    qDebug() << "\n";
 }
 
 
@@ -1261,52 +1200,10 @@ int GUIModelObject::getNameTextPos()
 //! @see fixTextPosition(QPointF pos)
 void GUIModelObject::setNameTextPos(int textPos)
 {
-    mNameTextPos = textPos;
-
-//    double x1,x2,y1,y2;
-
-//    if(this->rotation() == 0)
-//    {
-//        x1 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
-//        y1 = -mpNameText->boundingRect().height() - mTextOffset;  //mTextOffset*
-//        x2 = mpIcon->boundingRect().width()/2-mpNameText->boundingRect().width()/2;
-//        y2 = mpIcon->boundingRect().height() + mTextOffset;// - mpNameText->boundingRect().height()/2;
-//    }
-//    else if(this->rotation() == 180)
-//    {
-//        x1 = mpIcon->boundingRect().width()/2+mpNameText->boundingRect().width()/2;
-//        y1 = mpIcon->boundingRect().height() + mpNameText->boundingRect().height() + mTextOffset;
-//        x2 = mpIcon->boundingRect().width()/2+mpNameText->boundingRect().width()/2;
-//        y2 = -mTextOffset;
-//    }
-//    else if(this->rotation() == 90)
-//    {
-//        x1 = -mpNameText->boundingRect().height() - mTextOffset;
-//        y1 = mpIcon->boundingRect().height()/2 + mpNameText->boundingRect().width()/2;
-//        x2 = mpIcon->boundingRect().width() + mTextOffset;
-//        y2 = mpIcon->boundingRect().height()/2 + mpNameText->boundingRect().width()/2;
-//    }
-//    else if(this->rotation() == 270)
-//    {
-//        x1 = mpIcon->boundingRect().width() + mpNameText->boundingRect().height() + mTextOffset;
-//        y1 = mpIcon->boundingRect().height()/2 - mpNameText->boundingRect().width()/2;
-//        x2 = -mTextOffset;
-//        y2 = mpIcon->boundingRect().height()/2 - mpNameText->boundingRect().width()/2;
-//    }
-
     QVector<QPointF> pts;
     this->calcNameTextPositions(pts);
+    mNameTextPos = textPos;
     mpNameText->setPos(pts[textPos]);
-
-//    switch(textPos)
-//    {
-//    case 0:
-//        mpNameText->setPos(x2,y2);
-//        break;
-//    case 1:
-//        mpNameText->setPos(x1,y1);
-//        break;
-//    }
 }
 
 

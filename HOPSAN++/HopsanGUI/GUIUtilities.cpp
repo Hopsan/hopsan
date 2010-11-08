@@ -147,3 +147,15 @@ double dist(double x1,double y1, double x2, double y2)
 {
     return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
 }
+
+qreal dist(QPointF &rPoint)
+{
+    return sqrt( rPoint.x()*rPoint.x() + rPoint.y()*rPoint.y() );
+}
+
+qreal dist(QPointF &rPoint1, QPointF &rPoint2)
+{
+    qreal x = rPoint1.x() - rPoint2.x();
+    qreal y = rPoint1.y() - rPoint2.y();
+    return sqrt( x*x + y*y );
+}

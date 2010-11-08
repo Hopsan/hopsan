@@ -28,6 +28,8 @@ qreal rad2deg(qreal rad);
 qreal normDeg180(qreal deg);
 qreal normDeg360(qreal deg);
 qreal normRad(qreal rad);
+qreal dist(QPointF &rPoint);
+qreal dist(QPointF &rPoint1, QPointF &rPoint2);
 double dist(double x1,double y1, double x2, double y2);
 
 QPointF getOffsetPointfromPort(GUIPort *pPort);
