@@ -343,12 +343,12 @@ void GUIPort::refreshPortOverlayRotation()
     QTransform transf;
     QPointF pt1, pt2, pt3;
 
-    //Refresh the port label position and orientation
-    qDebug() << "before, overlay pos: " << mpPortLabel->pos();
-    qDebug() << "overlay local angle: " << mpPortLabel->rotation();
-    qDebug() << "overlay local+port angle: " << mpPortLabel->rotation() + this->rotation();
-    qDebug() << "overlay local+port+parent angle: " << mpPortLabel->rotation() + this->rotation() +this->mpParentGuiModelObject->rotation();
+//    qDebug() << "before, overlay pos: " << mpPortLabel->pos();
+//    qDebug() << "overlay local angle: " << mpPortLabel->rotation();
+//    qDebug() << "overlay local+port angle: " << mpPortLabel->rotation() + this->rotation();
+//    qDebug() << "overlay local+port+parent angle: " << mpPortLabel->rotation() + this->rotation() +this->mpParentGuiModelObject->rotation();
 
+    //Refresh the port label position and orientation
     //! @todo something wierd with the portlable it seems to be bigger than what you can see in the gui
     pt1 = this->mpPortLabel->boundingRect().center();
     transf.rotate(-(this->mpPortLabel->rotation() + this->rotation() + this->mpParentGuiModelObject->rotation()));
@@ -360,11 +360,11 @@ void GUIPort::refreshPortOverlayRotation()
     pt3 = this->boundingRect().center();
     this->mpPortLabel->setPos(pt3-pt2);
 
-    qDebug() << "pt1: " << pt1;
-    qDebug() << "pt2: " << pt2;
-    qDebug() << "pt3: " << pt3;
-    qDebug() << "after, overlay pos: " << mpPortLabel->pos();
-    qDebug() << "\n";
+//    qDebug() << "pt1: " << pt1;
+//    qDebug() << "pt2: " << pt2;
+//    qDebug() << "pt3: " << pt3;
+//    qDebug() << "after, overlay pos: " << mpPortLabel->pos();
+//    qDebug() << "\n";
 
     //Refresh the port overlay graphics
     if (this->mpPortGraphicsOverlay != 0)
@@ -390,9 +390,6 @@ void GUIPort::refreshPortOverlayRotation()
 //        qDebug() << "after, overlay pos: " << this->mpPortGraphicsOverlay->pos();
 //        qDebug() << "\n";
     }
-
-
-
 }
 
 //! @brief Scales the port overlay graphics and tooltip

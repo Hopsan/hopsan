@@ -372,44 +372,45 @@ bool GUIObject::isFlipped()
 GUIModelObject::GUIModelObject(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUISystem *system, QGraphicsItem *parent)
         : GUIObject(position, rotation, startSelected, system, parent)
 {
-    //Set the hmf save tag name
+        //Initialize variables
+    mpIcon = 0;
+    mpNameText = 0;
+    mTextOffset = 5.0;
+
+        //Set the hmf save tag name
     mHmfTagName = HMF_OBJECTTAG; //!< @todo change this
 
     //! @todo Is this comment a todo?
     //remeber the scene ptr
 
-    //Make a local copy of the appearance data (that can safely be modified if needed)
+        //Make a local copy of the appearance data (that can safely be modified if needed)
     mAppearanceData = *pAppearanceData;
-
-        //Set to null ptr initially
-    mpIcon = 0;
-    mpNameText = 0;
 
         //Setup appearance
     this->refreshAppearance();
-    this->setPos(position.x()-mpIcon->boundingRect().width()/2,position.y()-mpIcon->boundingRect().height()/2);
-
-    this->setSelected(startSelected);
+    this->setCenterPos(position);
     this->setIcon(gfxType);
-
-    mTextOffset = 5.0;
-
     this->setZValue(10);
+    this->setSelected(startSelected);
 
         //Create the textbox containing the name
     mpNameText = new GUIModelObjectDisplayName(this);
     mpNameText->setFlag(QGraphicsItem::ItemIsSelectable, false); //To minimize problems when move after copy and so on
-
     this->setNameTextPos(0); //Set initial name text position
 
         //Create connections
     connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(snapNameTextPosition(QPointF)));
     if(mpParentSystem != 0)
     {
+        connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange(qreal)), this, SLOT(setNameTextScale(qreal)));
         connect(mpParentSystem, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
         connect(mpParentSystem, SIGNAL(hideAllNameText()), this, SLOT(hideName()));
         connect(mpParentSystem, SIGNAL(showAllNameText()), this, SLOT(showName()));
         connect(mpParentSystem, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIcon(graphicsType)));
+    }
+    else
+    {
+        //maybe something different
     }
 }
 
@@ -498,6 +499,13 @@ void GUIModelObject::calcNameTextPositions(QVector<QPointF> &rPts)
 //    qDebug() << "rPts0: " << rPts[0];
 //    qDebug() << "rPts1: " << rPts[1];
 //    qDebug() << "\n";
+}
+
+
+//! @brief Slot that scales the name text
+void GUIModelObject::setNameTextScale(qreal scale)
+{
+    this->mpNameText->setScale(scale);
 }
 
 
@@ -1320,9 +1328,6 @@ void GUIModelObjectDisplayName::deselect()
 {
     this->setSelected(false);
 }
-
-
-
 
 
 

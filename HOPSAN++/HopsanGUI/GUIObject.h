@@ -171,6 +171,7 @@ protected:
 protected slots:
     void snapNameTextPosition(QPointF pos);
     void calcNameTextPositions(QVector<QPointF> &rPts);
+    void setNameTextScale(qreal scale);
 
 private:
 
