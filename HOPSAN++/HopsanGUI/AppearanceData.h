@@ -62,7 +62,7 @@ private:
     QString mIconPathUser;
     QString mIconPathISO;
     QString mIconRotationBehaviour;
-    qreal mRotation;
+    //qreal mRotation;
     QPointF mNameTextPos;
 
     PortAppearanceMapT mPortAppearanceMap;

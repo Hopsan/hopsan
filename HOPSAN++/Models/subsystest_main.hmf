@@ -5,7 +5,7 @@ HOPSANGUIVERSION 0.0.1
 HMFVERSION 0.1
 CAFVERSION 0.1
 --------------------------------------------------------------
-SIMULATIONTIME 0 0.01 2
+SIMULATIONTIME 0 0.001 10
 VIEWPORT 2502 2501 1
 --------------------------------------------------------------
 USERICON ""

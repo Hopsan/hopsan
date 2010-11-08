@@ -166,6 +166,8 @@ void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &
 #define HMF_XYTAG "xy"                      //Containes an xy coordinate pair
 #define HMF_EXTERNALPATHTAG "external_path" //Contains the path to an external subsystem
 #define HMF_VALUETAG "value"
+#define HMF_TURETAG "true"
+#define HMF_FALSETAG "false"
 #define HMF_POSETAG "pose"
 #define HMF_NAMETEXTPOSTAG "nametextpos"
 #define HMF_VISIBLETAG "nametextvisible"

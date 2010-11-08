@@ -124,7 +124,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     mpStartPort->getGuiModelObject()->rememberConnector(this);
     mpEndPort->getGuiModelObject()->rememberConnector(this);
 
-    connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange()), this, SLOT(adjustToZoom()));
+    connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange(qreal)), this, SLOT(adjustToZoom(qreal)));
     connect(mpParentSystem, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
     connect(mpParentSystem, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIsoStyle(graphicsType)));
 }
@@ -343,9 +343,9 @@ void GUIConnector::setIsoStyle(graphicsType gfxType)
 
 
 //! @brief Slot that tells the lines to adjust their size to the zoom factor.
-void GUIConnector::adjustToZoom()
+void GUIConnector::adjustToZoom(qreal zoomfactor)
 {
-    mpGUIConnectorAppearance->adjustToZoom(mpParentSystem->mpParentProjectTab->mpGraphicsView->mZoomFactor);
+    mpGUIConnectorAppearance->adjustToZoom(zoomfactor);
     for (int i=0; i!=mpLines.size(); ++i )
     {
         //Refresh each line by setting to passive (primary) appearance

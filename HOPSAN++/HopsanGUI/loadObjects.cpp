@@ -587,21 +587,26 @@ QDomElement appendDomElement(QDomElement &rDomElement, const QString element_nam
 //! @brief Helper function for adding Dom elements containing one text node
 void appendDomTextNode(QDomElement &rDomElement, const QString element_name, const QString text)
 {
-    QDomDocument ownerDomDocument = rDomElement.ownerDocument();
-    QDomElement subDomElement = ownerDomDocument.createElement(element_name);
-    subDomElement.appendChild(ownerDomDocument.createTextNode(text));
-    rDomElement.appendChild(subDomElement);
+    //Only write tag if both name and value is non empty
+    if (!element_name.isEmpty() && !text.isEmpty())
+    {
+        QDomDocument ownerDomDocument = rDomElement.ownerDocument();
+        QDomElement subDomElement = ownerDomDocument.createElement(element_name);
+        subDomElement.appendChild(ownerDomDocument.createTextNode(text));
+        rDomElement.appendChild(subDomElement);
+    }
 }
 
 void appendDomBooleanNode(QDomElement &rDomElement, const QString element_name, const bool value)
 {
-    QDomDocument ownerDomDocument = rDomElement.ownerDocument();
-    QDomElement subDomElement = ownerDomDocument.createElement(element_name);
     if(value)
-        subDomElement.appendChild(ownerDomDocument.createTextNode("true"));
+    {
+        appendDomTextNode(rDomElement, element_name, "HMF_TRUETAG");
+    }
     else
-        subDomElement.appendChild(ownerDomDocument.createTextNode("false"));
-    rDomElement.appendChild(subDomElement);
+    {
+        appendDomTextNode(rDomElement, element_name, "HMF_FALSETAG");
+    }
 }
 
 //! @brief Helper function for adding Dom elements containing one text node (based on a double value)

@@ -36,8 +36,6 @@ public:
     ProjectTab *mpParentProjectTab;
     MainWindow *mpMainWindow;
 
-    //QString mModelFileName;
-
     typedef QHash<QString, GUIModelObject*> GUIModelObjectMapT;
     GUIModelObjectMapT mGUIModelObjectMap;
     QList<GUITextWidget *> mTextWidgetList;
@@ -72,8 +70,8 @@ public:
     double getTimeStep();
     double getStopTime();
 
-    size_t getNumberOfSamples();
-    void setNumberOfSamples(size_t nSamples);
+    size_t getNumberOfLogSamples();
+    void setNumberOfLogSamples(size_t nSamples);
 
     QString getIsoIconPath();
     QString getUserIconPath();
@@ -130,16 +128,15 @@ private:
     double mStartTime;
     double mStopTime;
     double mTimeStep;
-    size_t mNumberOfSamples;
-    QString mUserIconPath;
-    QString mIsoIconPath;
+    size_t mNumberOfLogSamples;
+//    QString mUserIconPath;
+//    QString mIsoIconPath;
 
 public:
     CoreSystemAccess *mpCoreSystemAccess; //!< @todo make this private later
 
 protected:
     void saveCoreDataToDomElement(QDomElement &rDomElement);
-    QDomElement &saveGuiDataToDomElement(QDomElement &rDomElement);
     void saveSystemAppearanceToDomElement(QDomElement &rDomElement);
 
 

@@ -147,7 +147,7 @@ protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
-    virtual QDomElement &saveGuiDataToDomElement(QDomElement &rDomElement);
+    virtual QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
     virtual void saveCoreDataToDomElement(QDomElement &rDomElement);
 
     void groupComponents(QList<QGraphicsItem*> compList);

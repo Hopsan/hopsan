@@ -44,7 +44,7 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
     mpNumberOfSamplesBox = new QLineEdit(this);
     mpNumberOfSamplesBox->setValidator(new QIntValidator(0, 2000000000, this));
     QString samplesText;
-    samplesText.setNum(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->getNumberOfSamples());
+    samplesText.setNum(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->getNumberOfLogSamples());
     mpNumberOfSamplesBox->setText(samplesText);
 
     mpCancelButton = new QPushButton(tr("&Cancel"));
@@ -130,7 +130,7 @@ void PreferenceWidget::updateValues()
 
     mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setUserIconPath(mpUserIconPath->text());
     mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setIsoIconPath(mpIsoIconPath->text());
-    mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setNumberOfSamples(mpNumberOfSamplesBox->text().toInt());
+    mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setNumberOfLogSamples(mpNumberOfSamplesBox->text().toInt());
     this->accept();
 }
 

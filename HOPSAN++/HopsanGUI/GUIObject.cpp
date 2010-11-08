@@ -744,7 +744,7 @@ void GUIModelObject::saveCoreDataToDomElement(QDomElement &rDomElement)
     appendDomTextNode(rDomElement, HMF_NAMETAG, getName());
 }
 
-QDomElement &GUIModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
+QDomElement GUIModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 {
     //Save GUI realted stuff
     QDomElement xmlGuiStuff = appendDomElement(rDomElement,HMF_HOPSANGUITAG);
@@ -1263,9 +1263,9 @@ void GUIModelObject::refreshAppearance()
     }
 
     setIcon(mIconType);
-    qDebug() << pos();
+    //qDebug() << pos();
     setGeometry(pos().x(), pos().y(), mpIcon->boundingRect().width(), mpIcon->boundingRect().height());
-    qDebug() << pos();
+    //qDebug() << pos();
 
     //! @todo problem with hovered or active or passive selection box, should maybe make it possible to resize rather than to create a new selection box on refresh
     mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpIcon->boundingRect().width(), mpIcon->boundingRect().height(),

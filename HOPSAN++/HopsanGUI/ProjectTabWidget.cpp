@@ -124,7 +124,7 @@ bool ProjectTab::simulate()
     double finishTime = mpSystem->getStopTime();
     double dt = finishTime - startTime;
     size_t nSteps = dt/mpSystem->mpCoreSystemAccess->getDesiredTimeStep();
-    size_t nSamples = mpSystem->getNumberOfSamples();
+    size_t nSamples = mpSystem->getNumberOfLogSamples();
 
     if(!mpSystem->mpCoreSystemAccess->isSimulationOk())
     {
@@ -691,7 +691,7 @@ void ProjectTabWidget::loadModel(QString modelFileName)
                 //! @todo use the unused info
                 QDomElement versionInfo = hmfRoot.firstChildElement("hopsanversions");
                 QDomElement modelProperties = hmfRoot.firstChildElement("modelproperties");
-                QDomElement modelAppearance = hmfRoot.firstChildElement("modelappearance");
+                //QDomElement modelAppearance = hmfRoot.firstChildElement("modelappearance");
                 QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
                 pCurrentTab->mpSystem->mModelFileInfo.setFile(file); //Remember info about the file from which the data was loaded
                 pCurrentTab->mpSystem->loadFromDomElement(systemElement);

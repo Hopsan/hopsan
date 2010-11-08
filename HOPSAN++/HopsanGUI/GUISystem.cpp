@@ -58,7 +58,7 @@ void GUISystem::commonConstructorCode()
     mHmfTagName = HMF_SYSTEMTAG;
 
     mpScene = new GraphicsScene();
-    mpScene->addItem(this);     //! Detta kan gå åt helsike
+    //mpScene->addItem(this);     //! Detta kan gå åt helsike
                                 //! @todo Should systems belong to their own scene?! This is why display names appear in the system's scene...
 
     mpMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
@@ -73,12 +73,11 @@ void GUISystem::commonConstructorCode()
 
         //Set default values
     mLoadType = "EMBEDED";
-    //mModelFileInfo.setFile();
     mStartTime = 0;     //! @todo These default values should be options for the user
     mTimeStep = 0.001;
     mStopTime = 10;
     mGfxType = USERGRAPHICS;
-    mNumberOfSamples = 2048;
+    mNumberOfLogSamples = 2048;
 
         //Establish connections
     //connect(this->systemPortAction, SIGNAL(triggered()), SLOT(addSystemPort()));
@@ -540,32 +539,33 @@ void GUISystem::saveSystemAppearanceToDomElement(QDomElement &rDomElement)
 {
     QDomElement xmlApp;
     xmlApp = appendDomElement(rDomElement, HMF_SYSTEMAPPEARANCETAG);
-
-    appendDomTextNode(xmlApp, HMF_USERICONTAG, this->getUserIconPath());
-    appendDomTextNode(xmlApp, HMF_ISOICONTAG, this->getIsoIconPath());
-
     this->updateExternalPortPositions();
 
-    //Now write ports
-    QList<GUIPort*>::iterator pit;
-    for (pit=mPortListPtrs.begin(); pit!=mPortListPtrs.end(); ++pit)
-    {
-        //qDebug() << "Saving port: " << (*pit)->getName();
-        QDomElement xmlPort = appendDomElement(xmlApp, HMF_PORTTAG);
-        appendDomTextNode(xmlPort, HMF_NAMETAG, (*pit)->getName());
-        appendDomValueNode3(xmlPort, HMF_POSETAG, (*pit)->getCenterPos().x(), (*pit)->getCenterPos().y(), (*pit)->getPortHeading());
-        //qDebug() << "Done";
-    }
+    this->mAppearanceData.saveToDomElement(xmlApp);
+
+//    appendDomTextNode(xmlApp, HMF_USERICONTAG, this->getUserIconPath());
+//    appendDomTextNode(xmlApp, HMF_ISOICONTAG, this->getIsoIconPath());
+
+//    //Now write ports
+//    QList<GUIPort*>::iterator pit;
+//    for (pit=mPortListPtrs.begin(); pit!=mPortListPtrs.end(); ++pit)
+//    {
+//        //qDebug() << "Saving port: " << (*pit)->getName();
+//        QDomElement xmlPort = appendDomElement(xmlApp, HMF_PORTTAG);
+//        appendDomTextNode(xmlPort, HMF_NAMETAG, (*pit)->getName());
+//        appendDomValueNode3(xmlPort, HMF_POSETAG, (*pit)->getCenterPos().x(), (*pit)->getCenterPos().y(), (*pit)->getPortHeading());
+//        //qDebug() << "Done";
+//    }
 }
 
-QDomElement &GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
-{
-    //Create reference to created object for further additions, (not sure if we really need a reference copy are not using this everywhere else)
-    QDomElement &guiStuff = GUIModelObject::saveGuiDataToDomElement(rDomElement);
+//QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
+//{
+//    //Create reference to created object for further additions, (not sure if we really need a reference copy are not using this everywhere else)
+//    QDomElement guiStuff = GUIModelObject::saveGuiDataToDomElement(rDomElement);
 
 
-    return guiStuff;
-}
+//    return guiStuff;
+//}
 
 void GUISystem::saveToDomElement(QDomElement &rDomElement)
 {
@@ -605,7 +605,7 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
     //Save gui object stuff
     if (mLoadType!="EXTERNAL")
     {
-        QDomElement &guiStuff = this->saveGuiDataToDomElement(xmlSubsystem);
+        QDomElement guiStuff = this->saveGuiDataToDomElement(xmlSubsystem);
         //Now append the system appearance data
         this->saveSystemAppearanceToDomElement(guiStuff);
     }
@@ -666,6 +666,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
             }
 
             //Load start values
+            //! @todo load start values
 
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_COMPONENTTAG);
         }
@@ -1365,39 +1366,41 @@ double GUISystem::getStopTime()
 
 
 //! Returns the number of samples value of the current project.
-//! @see setNumberOfSamples(double)
-size_t GUISystem::getNumberOfSamples()
+//! @see setNumberOfLogSamples(double)
+size_t GUISystem::getNumberOfLogSamples()
 {
-    return mNumberOfSamples;
+    return mNumberOfLogSamples;
 }
 
 
 //! Sets the number of samples value for the current project
-//! @see getNumberOfSamples()
-void GUISystem::setNumberOfSamples(size_t nSamples)
+//! @see getNumberOfLogSamples()
+void GUISystem::setNumberOfLogSamples(size_t nSamples)
 {
-    mNumberOfSamples = nSamples;
+    mNumberOfLogSamples = nSamples;
 }
 
 
 QString GUISystem::getUserIconPath()
 {
-    return mUserIconPath;
+    return this->mAppearanceData.getIconPathUser();
 }
 
+//! @todo do we return full path or relative
 QString GUISystem::getIsoIconPath()
 {
-    return mIsoIconPath;
+    return this->mAppearanceData.getIconPathISO();
 }
 
+//! @todo do we safe full path or relative
 void GUISystem::setUserIconPath(QString path)
 {
-    mUserIconPath = path;
+    this->mAppearanceData.setIconPathUser(path);
 }
 
 void GUISystem::setIsoIconPath(QString path)
 {
-    mIsoIconPath = path;
+    this->mAppearanceData.setIconPathISO(path);
 }
 
 
