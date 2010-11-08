@@ -139,6 +139,8 @@ public:
 
 protected:
     void saveCoreDataToDomElement(QDomElement &rDomElement);
+    QDomElement &saveGuiDataToDomElement(QDomElement &rDomElement);
+    void saveSystemAppearanceToDomElement(QDomElement &rDomElement);
 
 
 public:

@@ -175,6 +175,7 @@ void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &
 #define HMF_CONNECTORENDCOMPONENTTAG "endcomponent"
 #define HMF_CONNECTORENDPORTTAG "endport"
 
+#define HMF_SYSTEMAPPEARANCETAG "systemappearance"
 #define CAF_ROOTTAG "componentappearancefile"
 #define HMF_DISPLAYNAMETAG "displayname"
 #define HMF_ISOICONTAG "isoicon"

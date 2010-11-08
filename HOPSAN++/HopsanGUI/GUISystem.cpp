@@ -535,6 +535,38 @@ void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
     appendDomTextNode(rDomElement, HMF_NAMETAG, getName());
 }
 
+//! @todo should probably use the appearancedata class to save thiss stuff instead
+void GUISystem::saveSystemAppearanceToDomElement(QDomElement &rDomElement)
+{
+    QDomElement xmlApp;
+    xmlApp = appendDomElement(rDomElement, HMF_SYSTEMAPPEARANCETAG);
+
+    appendDomTextNode(xmlApp, HMF_USERICONTAG, this->getUserIconPath());
+    appendDomTextNode(xmlApp, HMF_ISOICONTAG, this->getIsoIconPath());
+
+    this->updateExternalPortPositions();
+
+    //Now write ports
+    QList<GUIPort*>::iterator pit;
+    for (pit=mPortListPtrs.begin(); pit!=mPortListPtrs.end(); ++pit)
+    {
+        //qDebug() << "Saving port: " << (*pit)->getName();
+        QDomElement xmlPort = appendDomElement(xmlApp, HMF_PORTTAG);
+        appendDomTextNode(xmlPort, HMF_NAMETAG, (*pit)->getName());
+        appendDomValueNode3(xmlPort, HMF_POSETAG, (*pit)->getCenterPos().x(), (*pit)->getCenterPos().y(), (*pit)->getPortHeading());
+        //qDebug() << "Done";
+    }
+}
+
+QDomElement &GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
+{
+    //Create reference to created object for further additions, (not sure if we really need a reference copy are not using this everywhere else)
+    QDomElement &guiStuff = GUIModelObject::saveGuiDataToDomElement(rDomElement);
+
+
+    return guiStuff;
+}
+
 void GUISystem::saveToDomElement(QDomElement &rDomElement)
 {
     //! @todo maybe use enums instead
@@ -571,7 +603,12 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
     }
 
     //Save gui object stuff
-    saveGuiDataToDomElement(xmlSubsystem);
+    if (mLoadType!="EXTERNAL")
+    {
+        QDomElement &guiStuff = this->saveGuiDataToDomElement(xmlSubsystem);
+        //Now append the system appearance data
+        this->saveSystemAppearanceToDomElement(guiStuff);
+    }
 
     //Save all of the sub objects
     if (mLoadType=="EMBEDED" || mLoadType=="ROOT")
@@ -1436,14 +1473,8 @@ void GUISystem::updateExternalPortPositions()
             //pPort->updatePosition(x, y);
             //pPort->setRotation(line.angle());
             //! @todo maybe we should be able to update rotation also
-
-            //Populate the output vector
-            //! @todo maybe we can read the updated actual port appearance instead of returning data here
-            //rExtPortMap.insert(it.value()->getName(), QPointF(x,y));
         }
     }
-
-
 }
 
 

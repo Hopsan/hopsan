@@ -744,7 +744,7 @@ void GUIModelObject::saveCoreDataToDomElement(QDomElement &rDomElement)
     appendDomTextNode(rDomElement, HMF_NAMETAG, getName());
 }
 
-void GUIModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
+QDomElement &GUIModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 {
     //Save GUI realted stuff
     QDomElement xmlGuiStuff = appendDomElement(rDomElement,HMF_HOPSANGUITAG);
@@ -753,6 +753,7 @@ void GUIModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
     appendDomValueNode3(xmlGuiStuff, HMF_POSETAG, pos.x(), pos.y(), rotation());
     appendDomValueNode(xmlGuiStuff, HMF_NAMETEXTPOSTAG, getNameTextPos());
     appendDomValueNode(xmlGuiStuff, HMF_VISIBLETAG, mpNameText->isVisible());
+    return xmlGuiStuff;
 }
 
 
