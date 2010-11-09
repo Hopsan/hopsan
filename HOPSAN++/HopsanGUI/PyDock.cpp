@@ -12,6 +12,7 @@
 #include "PythonQt.h"
 #include "PythonQt_QtAll.h"
 #include "gui/PythonQtScriptingConsole.h"
+#include "PythonQtConversion.h"
 
 #include "PyWrapperClasses.h"
 
@@ -31,6 +32,13 @@ PyDock::PyDock(MainWindow *pMainWindow, QWidget * parent)
         PythonQtObjectPtr  mainContext = PythonQt::self()->getMainModule();
         mainContext.evalScript("import site"); //För att kunna ladda tredjepart libs
         mainContext.addObject("hopsan", pMainWindow);
+
+        /*QVector<double> *pTest = new QVector<double>;
+        pTest->append(3.34);
+        pTest->append(4.45);
+
+        PythonQtRegisterListTemplateConverter(QVector, double);
+        mainContext.addVariable("test", test);*/
 
         mpPyConsole  = new PythonQtScriptingConsole(NULL, mainContext);
         mpPyConsole->consoleMessage("There is an object called hopsan that allow you to interact with Hopsan NG.");

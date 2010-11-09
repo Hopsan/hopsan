@@ -65,7 +65,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData* pAppearanceDa
 
     for (int i=0; i < compList.size(); ++i)
     {
-        GUIComponent *pComponent = qgraphicsitem_cast<GUIComponent*>(compList.at(i));
+        GUIModelObject *pComponent = qgraphicsitem_cast<GUIComponent*>(compList.at(i));
         if (pComponent)
         {
             //Adds the component pComponent to a list of components whose make up the group
@@ -156,8 +156,8 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData* pAppearanceDa
 
         GUIGroupPort *pGroupPortComponent;
 
-        GUIComponent *startComp;
-        GUIComponent *endComp;
+        GUIModelObject *startComp;
+        GUIModelObject *endComp;
         startComp = qgraphicsitem_cast<GUIComponent*>(pTransitConnector->getStartPort()->getGuiModelObject());
         endComp   = qgraphicsitem_cast<GUIComponent*>(pTransitConnector->getEndPort()->getGuiModelObject());
 
@@ -251,6 +251,8 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData* pAppearanceDa
         (*it)->setTransformOriginPoint((*it)->boundingRect().center());
         (*it)->setScale(1.0/scale);
     }
+
+    this->mpParentScene->addItem(this);
 
     connect(this->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
 

@@ -15,7 +15,7 @@
 #include <assert.h>
 
 //class ProjectTabWidget;
-class GraphicsScene;
+//class GraphicsScene;
 //class GraphicsView;
 class GUIConnector;
 class GUIModelObjectDisplayName;

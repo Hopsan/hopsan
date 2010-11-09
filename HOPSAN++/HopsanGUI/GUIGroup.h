@@ -44,7 +44,7 @@ protected:
     GraphicsScene *mpParentScene;
     GraphicsScene *mpGroupScene;
 
-    QList<GUIComponent*> mGUICompList;
+    QList<GUIModelObject*> mGUICompList;
     QList<GUIConnector*> mGUIConnList;
     QList<GUIConnector*> mGUITransitConnList;
 

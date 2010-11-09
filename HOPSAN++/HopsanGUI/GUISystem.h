@@ -18,6 +18,7 @@ class ProjectTab;
 //class GUIContainerObject;
 class UndoStack;
 class MainWindow;
+class GraphicsScene;
 
 #include "CoreSystemAccess.h"
 

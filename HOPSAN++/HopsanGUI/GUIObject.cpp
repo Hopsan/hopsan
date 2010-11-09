@@ -609,7 +609,7 @@ void GUIModelObject::setIcon(graphicsType gfxType)
     QGraphicsSvgItem *tmp = mpIcon;
     if(gfxType && mAppearanceData.haveIsoIcon())
     {
-        mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(ISOGRAPHICS) , this);
+        mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(ISOGRAPHICS), this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
         mIconType = ISOGRAPHICS;
     }
