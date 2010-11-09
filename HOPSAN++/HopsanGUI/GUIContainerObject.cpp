@@ -1,7 +1,7 @@
 #include "GUIContainerObject.h"
 
 
-GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUISystem *system, QGraphicsItem *parent)
+GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUISystem *system, QGraphicsItem *parent)
         : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
 {
     //Something

@@ -12,7 +12,7 @@
 #include "LibraryWidget.h"
 #include "MainWindow.h"
 #include "MessageWidget.h"
-#include "AppearanceData.h"
+#include "GUIModelObjectAppearance.h"
 
 using namespace std;
 using namespace hopsan;
@@ -33,7 +33,7 @@ using namespace hopsan;
 #include <QtGui>
 
 //! Constructor
-LibraryContentItem::LibraryContentItem(AppearanceData *pAppearanceData, QListWidget *pParent)
+LibraryContentItem::LibraryContentItem(GUIModelObjectAppearance *pAppearanceData, QListWidget *pParent)
         : QListWidgetItem(pParent, QListWidgetItem::UserType)
 {
     //Set font
@@ -55,7 +55,7 @@ LibraryContentItem::LibraryContentItem(const QListWidgetItem &other)
 }
 
 //! @brief Get a pointer to appearanceData
-AppearanceData *LibraryContentItem::getAppearanceData()
+GUIModelObjectAppearance *LibraryContentItem::getAppearanceData()
 {
     return mpAppearanceData;
 }
@@ -295,7 +295,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
         }
 
         bool sucess = true;
-        AppearanceData *pAppearanceData = new AppearanceData;
+        GUIModelObjectAppearance *pAppearanceData = new GUIModelObjectAppearance;
 
         //Read appearance from file, First check if xml
         QDomDocument domDocument;
@@ -487,7 +487,7 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int column)
 }
 
 //! @brief This function retrieves the appearance data given the TypeName
-AppearanceData *LibraryWidget::getAppearanceData(QString componentType)
+GUIModelObjectAppearance *LibraryWidget::getAppearanceData(QString componentType)
 {
     //qDebug() << "LibraryWidget::getAppearanceData: " + componentType;
     if (mLibraryContentItemPtrsMap.count(componentType) == 0)
@@ -501,7 +501,7 @@ AppearanceData *LibraryWidget::getAppearanceData(QString componentType)
 
 //! @brief This function retrieves the appearance data given a display name
 //! @todo This is a temporary hack
-AppearanceData *LibraryWidget::getAppearanceDataByDisplayName(QString displayName)
+GUIModelObjectAppearance *LibraryWidget::getAppearanceDataByDisplayName(QString displayName)
 {
     return getAppearanceData(mName2TypeMap.value(displayName));
 }

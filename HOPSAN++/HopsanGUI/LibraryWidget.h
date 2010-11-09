@@ -21,22 +21,22 @@
 #include <QListWidgetItem>
 #include <QStringList>
 
-class AppearanceData;
+class GUIModelObjectAppearance;
 class LibraryContentItem;
 
 class LibraryContentItem : public QListWidgetItem
 {
 public:
-    LibraryContentItem(AppearanceData *pAppearanceData, QListWidget *parent = 0);
+    LibraryContentItem(GUIModelObjectAppearance *pAppearanceData, QListWidget *parent = 0);
     LibraryContentItem(const QListWidgetItem &other);
-    AppearanceData *getAppearanceData();
+    GUIModelObjectAppearance *getAppearanceData();
     QString getTypeName();
 
 //public slots:
     void selectIcon(graphicsType gfxType=USERGRAPHICS);
 
 private:
-    AppearanceData *mpAppearanceData;
+    GUIModelObjectAppearance *mpAppearanceData;
 
 };
 
@@ -83,8 +83,8 @@ public:
     void addLibrary(QString libDir, QString parentLib=QString());
     void addLibraryContentItem(QString libraryName, QString parentLibraryName, LibraryContentItem *newComponent);
     void addExternalLibrary(QString libDir);
-    AppearanceData *getAppearanceData(QString componentType);
-    AppearanceData *getAppearanceDataByDisplayName(QString displayName);
+    GUIModelObjectAppearance *getAppearanceData(QString componentType);
+    GUIModelObjectAppearance *getAppearanceDataByDisplayName(QString displayName);
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event);

@@ -7,7 +7,7 @@ class GUISystemPort : public GUIModelObject
 {
     Q_OBJECT
 public:
-    GUISystemPort(AppearanceData* pAppearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected = SELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
+    GUISystemPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected = SELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
     ~GUISystemPort();
     QString getTypeName();
     void setName(QString newName, renameRestrictions renameSettings);

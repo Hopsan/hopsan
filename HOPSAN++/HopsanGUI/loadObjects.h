@@ -6,7 +6,7 @@
 //#include <QDomDocument>
 //#include <QDomElement>
 //#include <QDomText>
-#include "AppearanceData.h"
+#include "GUIModelObjectAppearance.h"
 #include "XMLUtilities.h"
 
 //Forward Declarations

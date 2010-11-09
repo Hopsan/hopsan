@@ -27,7 +27,7 @@ class GUISystem : public GUIContainerObject
 {
     Q_OBJECT
 public:
-    GUISystem( QPoint position, qreal rotation, const AppearanceData* pAppearanceData, GUISystem *system, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
+    GUISystem( QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, GUISystem *system, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
     GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *parent);
     ~GUISystem();
 
@@ -43,7 +43,7 @@ public:
     QList<GUITextWidget *> mTextWidgetList;
     QList<GUIBoxWidget *> mBoxWidgetList;
     QList<GUIObject *> mSelectedGUIObjectsList;
-    GUIModelObject* addGUIObject(AppearanceData* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
+    GUIModelObject* addGUIObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
     void addTextWidget(QPoint position);
     void addBoxWidget(QPoint position);
     void deleteGUIModelObject(QString componentName, undoStatus undoSettings=UNDO);

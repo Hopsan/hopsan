@@ -23,20 +23,20 @@
 #include "loadObjects.h"
 #include "GUIGroup.h"
 
-#include "AppearanceData.h"
+#include "GUIModelObjectAppearance.h"
 
-GUIComponent::GUIComponent(AppearanceData* pAppearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
+GUIComponent::GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
     : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
 {
     //Create the object in core, and get its default core name
-    mAppearanceData.setName(mpParentSystem->mpCoreSystemAccess->createComponent(mAppearanceData.getTypeName(), mAppearanceData.getName()));
+    mGUIModelObjectAppearance.setName(mpParentSystem->mpCoreSystemAccess->createComponent(mGUIModelObjectAppearance.getTypeName(), mGUIModelObjectAppearance.getName()));
 
     //Sets the ports
     createPorts();
 
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
-    std::cout << "GUIcomponent: " << this->mAppearanceData.getTypeName().toStdString() << std::endl;
+    std::cout << "GUIcomponent: " << this->mGUIModelObjectAppearance.getTypeName().toStdString() << std::endl;
 
     //Set the hmf save tag name
     mHmfTagName = HMF_COMPONENTTAG;
@@ -68,7 +68,7 @@ GUIComponent::~GUIComponent()
 ////        //Check if we want to avoid trying to rename in the graphics view map
 ////        if (renameSettings == CORERENAMEONLY)
 ////        {
-////            mAppearanceData.setName(mpParentSystem->mpCoreSystemAccess->renameSubComponent(this->getName(), newName));
+////            mGUIModelObjectAppearance.setName(mpParentSystem->mpCoreSystemAccess->renameSubComponent(this->getName(), newName));
 ////            refreshDisplayName();
 ////        }
 ////        else
@@ -94,7 +94,7 @@ void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 //! Returns a string with the component type.
 QString GUIComponent::getTypeName()
 {
-    return mAppearanceData.getTypeName();
+    return mGUIModelObjectAppearance.getTypeName();
 }
 
 QString GUIComponent::getTypeCQS()
@@ -155,7 +155,7 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     else if (selectedAction == groupAction)
     {
         //groupComponents(mpParentGraphicsScene->selectedItems());
-        AppearanceData appdata;
+        GUIModelObjectAppearance appdata;
         appdata.setIconPathUser("subsystemtmp.svg");
         appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
         GUIGroup *pGroup = new GUIGroup(this->scene()->selectedItems(), &appdata, mpParentSystem);
@@ -190,7 +190,7 @@ void GUIComponent::createPorts()
     //! @todo make sure that all old ports and connections are cleared, (not really necessary in guicomponents)
     QString cqsType = mpParentSystem->mpCoreSystemAccess->getSubComponentTypeCQS(getName());
     PortAppearanceMapT::iterator i;
-    for (i = mAppearanceData.getPortAppearanceMap().begin(); i != mAppearanceData.getPortAppearanceMap().end(); ++i)
+    for (i = mGUIModelObjectAppearance.getPortAppearanceMap().begin(); i != mGUIModelObjectAppearance.getPortAppearanceMap().end(); ++i)
     {
         QString nodeType = mpParentSystem->mpCoreSystemAccess->getNodeType(this->getName(), i.key());
         QString portType = mpParentSystem->mpCoreSystemAccess->getPortType(this->getName(), i.key());

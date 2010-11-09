@@ -8,11 +8,12 @@
 //!
 //$Id$
 
-#include "AppearanceData.h"
 #include "qdebug.h"
+#include "GUIModelObjectAppearance.h"
+//#include <QVector>
 #include "GUIUtilities.h"
 
-AppearanceData::AppearanceData()
+GUIModelObjectAppearance::GUIModelObjectAppearance()
 {
     //Assume all strings default to ""
     mPortAppearanceMap.clear();
@@ -20,14 +21,14 @@ AppearanceData::AppearanceData()
 
 //! @brief get the type-name
 //! @returns The type-name
-QString AppearanceData::getTypeName()
+QString GUIModelObjectAppearance::getTypeName()
 {
     return mTypeName;
 }
 
 //! @brief get the display name, even if it is empty
 //! @returns The display name
-QString AppearanceData::getName()
+QString GUIModelObjectAppearance::getName()
 {
     return mName;
 }
@@ -35,7 +36,7 @@ QString AppearanceData::getName()
 //! @brief This function returns the name or typename (if name is empty)
 //! Useful if display name has not been specified, then we use the type name
 //! @returns A non-empty name
-QString AppearanceData::getNonEmptyName()
+QString GUIModelObjectAppearance::getNonEmptyName()
 {
     if (mName.isEmpty())
     {
@@ -47,7 +48,7 @@ QString AppearanceData::getNonEmptyName()
     }
 }
 
-QString AppearanceData::getFullIconPath(graphicsType gfxType)
+QString GUIModelObjectAppearance::getFullIconPath(graphicsType gfxType)
 {
     if ( !mIconPathUser.isEmpty() && (gfxType == USERGRAPHICS) )
     {
@@ -76,39 +77,39 @@ QString AppearanceData::getFullIconPath(graphicsType gfxType)
     }
 }
 
-QString AppearanceData::getIconPathUser()
+QString GUIModelObjectAppearance::getIconPathUser()
 {
     return mIconPathUser;
 }
 
-QString AppearanceData::getIconPathISO()
+QString GUIModelObjectAppearance::getIconPathISO()
 {
     return mIconPathISO;
 }
 
-QString AppearanceData::getIconRotationBehaviour()
+QString GUIModelObjectAppearance::getIconRotationBehaviour()
 {
     return mIconRotationBehaviour;
 }
 
-QPointF AppearanceData::getNameTextPos()
+QPointF GUIModelObjectAppearance::getNameTextPos()
 {
     return mNameTextPos;
 }
 
 
-PortAppearanceMapT &AppearanceData::getPortAppearanceMap()
+PortAppearanceMapT &GUIModelObjectAppearance::getPortAppearanceMap()
 {
     return mPortAppearanceMap;
 }
 
 
-QString AppearanceData::getBasePath()
+QString GUIModelObjectAppearance::getBasePath()
 {
     return mBasePath;
 }
 
-void AppearanceData::readFromTextStream(QTextStream &rIs)
+void GUIModelObjectAppearance::readFromTextStream(QTextStream &rIs)
 {
     QString command;
     QString lineStr;
@@ -208,7 +209,7 @@ void AppearanceData::readFromTextStream(QTextStream &rIs)
 }
 
 
-void AppearanceData::readFromDomElement(QDomElement &rDomElement)
+void GUIModelObjectAppearance::readFromDomElement(QDomElement &rDomElement)
 {
     mTypeName       = rDomElement.firstChildElement(HMF_TYPETAG).text();
     mName           = rDomElement.firstChildElement(HMF_DISPLAYNAMETAG).text();
@@ -239,7 +240,7 @@ void AppearanceData::readFromDomElement(QDomElement &rDomElement)
 }
 
 
-void AppearanceData::saveToDomElement(QDomElement &rDomElement)
+void GUIModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
 {
     appendDomTextNode(rDomElement, HMF_TYPETAG, mTypeName);
     appendDomTextNode(rDomElement, HMF_DISPLAYNAMETAG, mName);
@@ -257,7 +258,7 @@ void AppearanceData::saveToDomElement(QDomElement &rDomElement)
 }
 
 //! @brief Temporary hack to test xml appearancedata
-void AppearanceData::saveToXML(QString filename)
+void GUIModelObjectAppearance::saveToXML(QString filename)
 {
     //Save to file
     #include <QFile>
@@ -282,37 +283,37 @@ void AppearanceData::saveToXML(QString filename)
 
 
 
-void AppearanceData::setTypeName(QString name)
+void GUIModelObjectAppearance::setTypeName(QString name)
 {
     mTypeName = name;
 }
 
-void AppearanceData::setName(QString name)
+void GUIModelObjectAppearance::setName(QString name)
 {
     mName = name;
 }
 
-void AppearanceData::setBasePath(QString path)
+void GUIModelObjectAppearance::setBasePath(QString path)
 {
     mBasePath = path;
 }
 
-void AppearanceData::setIconPathUser(QString path)
+void GUIModelObjectAppearance::setIconPathUser(QString path)
 {
     mIconPathUser = path;
 }
 
-void AppearanceData::setIconPathISO(QString path)
+void GUIModelObjectAppearance::setIconPathISO(QString path)
 {
     mIconPathISO = path;
 }
 
-bool AppearanceData::haveIsoIcon()
+bool GUIModelObjectAppearance::haveIsoIcon()
 {
     return !mIconPathISO.isEmpty();
 }
 
-bool AppearanceData::haveUserIcon()
+bool GUIModelObjectAppearance::haveUserIcon()
 {
     return !mIconPathUser.isEmpty();
 }

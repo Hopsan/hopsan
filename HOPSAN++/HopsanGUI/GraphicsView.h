@@ -8,7 +8,7 @@
 
 #include "common.h"
 
-#include "AppearanceData.h"
+#include "GUIModelObjectAppearance.h"
 #include "GUIObject.h"
 
 //Forward Declarations

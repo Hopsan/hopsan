@@ -20,7 +20,7 @@
 #include "GUISystemPort.h"
 #include "GUIWidgets.h"
 
-GUISystem::GUISystem(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
+GUISystem::GUISystem(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
     : GUIContainerObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
 {
     this->mpParentProjectTab = system->mpParentProjectTab;
@@ -29,7 +29,7 @@ GUISystem::GUISystem(QPoint position, qreal rotation, const AppearanceData* pApp
 
 //Root system specific constructor
 GUISystem::GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *parent)
-    : GUIContainerObject(QPoint(0,0), 0, &AppearanceData(), DESELECTED, USERGRAPHICS, 0, parent)
+    : GUIContainerObject(QPoint(0,0), 0, &GUIModelObjectAppearance(), DESELECTED, USERGRAPHICS, 0, parent)
 {
     this->mpParentProjectTab = parentProjectTab;
     this->commonConstructorCode();
@@ -102,7 +102,7 @@ void GUISystem::commonConstructorCode()
     {
         //Create subsystem
         qDebug() << "creating subsystem and setting name in " << mpParentSystem->mpCoreSystemAccess->getRootSystemName();
-        mAppearanceData.setName(mpParentSystem->mpCoreSystemAccess->createSubSystem(this->getName()));
+        mGUIModelObjectAppearance.setName(mpParentSystem->mpCoreSystemAccess->createSubSystem(this->getName()));
         qDebug() << "creating CoreSystemAccess for this subsystem, name: " << this->getName() << " parentname: " << mpParentSystem->getName();
         mpCoreSystemAccess = new CoreSystemAccess(this->getName(), mpParentSystem->mpCoreSystemAccess);
     }
@@ -234,15 +234,15 @@ void GUISystem::loadFromHMF(QString modelFilePath)
 
     if (!sysappdata.usericon_path.isEmpty())
     {
-        mAppearanceData.setIconPathUser(sysappdata.usericon_path);
+        mGUIModelObjectAppearance.setIconPathUser(sysappdata.usericon_path);
     }
     if (!sysappdata.isoicon_path.isEmpty())
     {
-        mAppearanceData.setIconPathISO(sysappdata.isoicon_path);
+        mGUIModelObjectAppearance.setIconPathISO(sysappdata.isoicon_path);
     }
 
     //! @todo reading portappearance should have a common function and be shared with the setappearancedata read function that reads from caf files
-    PortAppearanceMapT* portappmap = &(mAppearanceData.getPortAppearanceMap());
+    PortAppearanceMapT* portappmap = &(mGUIModelObjectAppearance.getPortAppearanceMap());
     for (int i=0; i<sysappdata.portnames.size(); ++i)
     {
         GUIPortAppearance portapp;
@@ -372,15 +372,15 @@ void GUISystem::loadFromHMF(QString modelFilePath)
 
 //    if (!sysappdata.usericon_path.isEmpty())
 //    {
-//        mAppearanceData.setQString(ICONPATH)User(sysappdata.usericon_path);
+//        mGUIModelObjectAppearance.setQString(ICONPATH)User(sysappdata.usericon_path);
 //    }
 //    if (!sysappdata.isoicon_path.isEmpty())
 //    {
-//        mAppearanceData.setQString(ICONPATH)ISO(sysappdata.isoicon_path);
+//        mGUIModelObjectAppearance.setQString(ICONPATH)ISO(sysappdata.isoicon_path);
 //    }
 
 //    //! @todo reading portappearance should have a common function and be shared with the setappearancedata rad function that reads from caf files
-//    PortAppearanceMapT* portappmap = &(mAppearanceData.getPortAppearanceMap());
+//    PortAppearanceMapT* portappmap = &(mGUIModelObjectAppearance.getPortAppearanceMap());
 //    for (int i=0; i<sysappdata.portnames.size(); ++i)
 //    {
 //        PortAppearance portapp;
@@ -450,7 +450,7 @@ void GUISystem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         else if (selectedAction == groupAction)
         {
             //groupComponents(mpParentGraphicsScene->selectedItems());
-            AppearanceData appdata;
+            GUIModelObjectAppearance appdata;
             appdata.setIconPathUser("subsystemtmp.svg");
             appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
             GUIGroup *pGroup = new GUIGroup(this->scene()->selectedItems(), &appdata, mpParentSystem);
@@ -486,7 +486,7 @@ void GUISystem::createPorts()
     //! @todo make sure that all old ports and connections are cleared, (in case we reload, but maybe we can discard old system and create new in that case)
     //Create the graphics for the ports but do NOT create new ports, use the system ports within the subsystem
     PortAppearanceMapT::iterator it;
-    for (it = mAppearanceData.getPortAppearanceMap().begin(); it != mAppearanceData.getPortAppearanceMap().end(); ++it)
+    for (it = mGUIModelObjectAppearance.getPortAppearanceMap().begin(); it != mGUIModelObjectAppearance.getPortAppearanceMap().end(); ++it)
     {
         //! @todo fix this
         qDebug() << "getNode and portType for " << it.key();
@@ -541,7 +541,7 @@ void GUISystem::saveSystemAppearanceToDomElement(QDomElement &rDomElement)
     xmlApp = appendDomElement(rDomElement, HMF_SYSTEMAPPEARANCETAG);
     this->updateExternalPortPositions();
 
-    this->mAppearanceData.saveToDomElement(xmlApp);
+    this->mGUIModelObjectAppearance.saveToDomElement(xmlApp);
 
 //    appendDomTextNode(xmlApp, HMF_USERICONTAG, this->getUserIconPath());
 //    appendDomTextNode(xmlApp, HMF_ISOICONTAG, this->getIsoIconPath());
@@ -584,7 +584,7 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
         mLoadType = "EMBEDED";
     }
 
-    qDebug() << "Saving to dom node in: " << this->mAppearanceData.getName();
+    qDebug() << "Saving to dom node in: " << this->mGUIModelObjectAppearance.getName();
     QDomElement xmlSubsystem = appendDomElement(rDomElement, mHmfTagName);
 
     //Save Core related stuff
@@ -741,7 +741,7 @@ void GUISystem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 //! @param name will be the name of the component.
 //! @returns a pointer to the created and added object
 //! @todo only modelobjects for now
-GUIModelObject* GUISystem::addGUIObject(AppearanceData* pAppearanceData, QPoint position, qreal rotation, selectionStatus startSelected, undoStatus undoSettings)
+GUIModelObject* GUISystem::addGUIObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, selectionStatus startSelected, undoStatus undoSettings)
 {
         //Deselect all other components and connectors
     emit deselectAllGUIObjects();
@@ -1383,24 +1383,24 @@ void GUISystem::setNumberOfLogSamples(size_t nSamples)
 
 QString GUISystem::getUserIconPath()
 {
-    return this->mAppearanceData.getIconPathUser();
+    return this->mGUIModelObjectAppearance.getIconPathUser();
 }
 
 //! @todo do we return full path or relative
 QString GUISystem::getIsoIconPath()
 {
-    return this->mAppearanceData.getIconPathISO();
+    return this->mGUIModelObjectAppearance.getIconPathISO();
 }
 
 //! @todo do we safe full path or relative
 void GUISystem::setUserIconPath(QString path)
 {
-    this->mAppearanceData.setIconPathUser(path);
+    this->mGUIModelObjectAppearance.setIconPathUser(path);
 }
 
 void GUISystem::setIsoIconPath(QString path)
 {
-    this->mAppearanceData.setIconPathISO(path);
+    this->mGUIModelObjectAppearance.setIconPathISO(path);
 }
 
 

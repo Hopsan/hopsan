@@ -1,5 +1,5 @@
 //!
-//! @file   AppearanceData.h
+//! @file   GUIModelObjectAppearance.h
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2010-04-22
 //!
@@ -7,25 +7,22 @@
 //!
 //$Id$
 
-#ifndef APPEARANCEDATA_H
-#define APPEARANCEDATA_H
+#ifndef GUIMODELOBJECTAPPEARANCE_H
+#define GUIMODELOBJECTAPPEARANCE_H
 
 #include <QTextStream>
 #include <QString>
 #include <QPointF>
-#include <QVector>
-//#include <QHash>
-//#include <QPen>
 #include "common.h"
-#include "GUIPortAppearance.h"
+
 #include "XMLUtilities.h"
+#include "GUIPortAppearance.h"
 
-//#include "loadObjects.h"
 
-class AppearanceData
+class GUIModelObjectAppearance
 {
 public:
-    AppearanceData();
+    GUIModelObjectAppearance();
     void setTypeName(QString name);
     void setName(QString name);
     void setBasePath(QString path);

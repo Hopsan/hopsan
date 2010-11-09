@@ -19,7 +19,6 @@ SOURCES += main.cpp \
     OptionsWidget.cpp \
     GUIObject.cpp \
     UndoStack.cpp \
-    AppearanceData.cpp \
     GUIUtilities.cpp \
     GraphicsView.cpp \
     GraphicsScene.cpp \
@@ -39,7 +38,8 @@ SOURCES += main.cpp \
     GUIWidgets.cpp \
     GUIContainerObject.cpp \
     GUIModelObject.cpp \
-    XMLUtilities.cpp
+    XMLUtilities.cpp \
+    GUIModelObjectAppearance.cpp
 
 HEADERS += MainWindow.h \
     ProjectTabWidget.h \
@@ -56,7 +56,7 @@ HEADERS += MainWindow.h \
     PreferenceWidget.h \
     OptionsWidget.h \
     GUIObject.h \
-    AppearanceData.h \
+    GUIModelObjectAppearance.h \
     UndoStack.h \
     GUIUtilities.h \
     CoreSystemAccess.h \

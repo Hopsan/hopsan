@@ -17,7 +17,7 @@
 
 #include "GraphicsView.h"
 #include "GUIObject.h"
-#include "AppearanceData.h"
+#include "GUIModelObjectAppearance.h"
 #include "MainWindow.h"
 #include "ProjectTabWidget.h"
 #include "LibraryWidget.h"

@@ -17,7 +17,7 @@
 //! @param gfxType Initial graphics type (user or iso)
 //! @param system Pointer to the parent system
 //! @param parent Pointer to parent object (not mandatory)
-GUIModelObject::GUIModelObject(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUISystem *system, QGraphicsItem *parent)
+GUIModelObject::GUIModelObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUISystem *system, QGraphicsItem *parent)
         : GUIObject(position, rotation, startSelected, system, parent)
 {
         //Initialize variables
@@ -32,7 +32,7 @@ GUIModelObject::GUIModelObject(QPoint position, qreal rotation, const Appearance
     //remeber the scene ptr
 
         //Make a local copy of the appearance data (that can safely be modified if needed)
-    mAppearanceData = *pAppearanceData;
+    mGUIModelObjectAppearance = *pAppearanceData;
 
         //Setup appearance
     this->refreshAppearance();
@@ -187,7 +187,7 @@ void GUIModelObject::refreshDisplayName()
 {
     if (mpNameText != 0)
     {
-        mpNameText->setPlainText(mAppearanceData.getName());
+        mpNameText->setPlainText(mGUIModelObjectAppearance.getName());
         mpNameText->setSelected(false);
         //Adjust the position of the text
         this->snapNameTextPosition(mpNameText->pos());
@@ -198,7 +198,7 @@ void GUIModelObject::refreshDisplayName()
 //! @brief Returns the name of the object
 QString GUIModelObject::getName()
 {
-    return mAppearanceData.getName();
+    return mGUIModelObjectAppearance.getName();
 }
 
 
@@ -226,7 +226,7 @@ QList<GUIPort*> &GUIModelObject::getPortListPtrs()
 ////    //Check if we want to avoid trying to rename in the graphics view map
 ////    if ( (renameSettings == CORERENAMEONLY) or (mpParentSystem == 0) )
 ////    {
-////        mAppearanceData.setName(mpParentSystem->mpCoreSystemAccess->renameSubComponent(this->getName(), newName));
+////        mGUIModelObjectAppearance.setName(mpParentSystem->mpCoreSystemAccess->renameSubComponent(this->getName(), newName));
 ////        refreshDisplayName();
 ////    }
 ////    else
@@ -236,7 +236,7 @@ QList<GUIPort*> &GUIModelObject::getPortListPtrs()
 ////    }
 
 ////    mpParentSystem->mGUIObjectMap.erase(mpParentSystem->mGUIObjectMap.find(this->getName()));
-////    mAppearanceData.setName(newName);
+////    mGUIModelObjectAppearance.setName(newName);
 ////    refreshDisplayName();
 ////    mpParentSystem->mGUIObjectMap.insert(this->getName(), this);
 //}
@@ -245,7 +245,7 @@ QList<GUIPort*> &GUIModelObject::getPortListPtrs()
 //! @brief Sets the name of the object (may be modified by HopsanCore if name already exists)
 void GUIModelObject::setDisplayName(QString name)
 {
-    mAppearanceData.setName(name);
+    mGUIModelObjectAppearance.setName(name);
     refreshDisplayName();
 }
 
@@ -255,15 +255,15 @@ void GUIModelObject::setDisplayName(QString name)
 void GUIModelObject::setIcon(graphicsType gfxType)
 {
     QGraphicsSvgItem *tmp = mpIcon;
-    if(gfxType && mAppearanceData.haveIsoIcon())
+    if(gfxType && mGUIModelObjectAppearance.haveIsoIcon())
     {
-        mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(ISOGRAPHICS), this);
+        mpIcon = new QGraphicsSvgItem(mGUIModelObjectAppearance.getFullIconPath(ISOGRAPHICS), this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
         mIconType = ISOGRAPHICS;
     }
     else
     {
-        mpIcon = new QGraphicsSvgItem(mAppearanceData.getFullIconPath(USERGRAPHICS), this);
+        mpIcon = new QGraphicsSvgItem(mGUIModelObjectAppearance.getFullIconPath(USERGRAPHICS), this);
         mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
         mIconType = USERGRAPHICS;
     }
@@ -274,7 +274,7 @@ void GUIModelObject::setIcon(graphicsType gfxType)
         delete(tmp);
     }
 
-    if(mAppearanceData.getIconRotationBehaviour() == "ON")
+    if(mGUIModelObjectAppearance.getIconRotationBehaviour() == "ON")
         mIconRotation = true;
     else
         mIconRotation = false;
@@ -894,9 +894,9 @@ void GUIModelObject::deleteMe()
 
 
 //! @brief Returns a pointer to the appearance data object
-AppearanceData* GUIModelObject::getAppearanceData()
+GUIModelObjectAppearance* GUIModelObject::getAppearanceData()
 {
-    return &mAppearanceData;
+    return &mGUIModelObjectAppearance;
 }
 
 

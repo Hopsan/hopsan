@@ -9,7 +9,7 @@
 
 #include "common.h"
 
-#include "AppearanceData.h"
+#include "GUIModelObjectAppearance.h"
 #include <assert.h>
 
 #include "GUIObject.h"

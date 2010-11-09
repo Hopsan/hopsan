@@ -278,10 +278,10 @@ void ParameterLoadData::readDomElement(QDomElement &rDomElement)
 
 GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
 {
-    AppearanceData *pAppearanceData = pLibrary->getAppearanceData(rData.type);
+    GUIModelObjectAppearance *pAppearanceData = pLibrary->getAppearanceData(rData.type);
     if (pAppearanceData != 0)
     {
-        AppearanceData appearanceData = *pAppearanceData; //Make a copy
+        GUIModelObjectAppearance appearanceData = *pAppearanceData; //Make a copy
         appearanceData.setName(rData.name);
 
         GUIModelObject* pObj = pSystem->addGUIObject(&appearanceData, QPoint(rData.posX, rData.posY), 0, DESELECTED, undoSettings);

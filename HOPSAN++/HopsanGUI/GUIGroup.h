@@ -9,7 +9,7 @@
 
 #include "common.h"
 
-#include "AppearanceData.h"
+#include "GUIModelObjectAppearance.h"
 #include <assert.h>
 #include "GUIContainerObject.h"
 
@@ -30,7 +30,7 @@ class GUIGroup : public GUIContainerObject
 {
     Q_OBJECT
 public:
-    GUIGroup(QList<QGraphicsItem*> compList, AppearanceData* pAppearanceData, GUISystem *system, QGraphicsItem *parent = 0);
+    GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAppearanceData, GUISystem *system, QGraphicsItem *parent = 0);
     ~GUIGroup();
 //    QString getName();
 //    void setName(QString name, bool doOnlyLocalRename=false);
@@ -73,7 +73,7 @@ class GUIGroupPort : public GUIModelObject
 {
     Q_OBJECT
 public:
-    GUIGroupPort(AppearanceData* pAppearanceData, QPoint position, GUISystem *system, QGraphicsItem *parent = 0);
+    GUIGroupPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, GUISystem *system, QGraphicsItem *parent = 0);
     QString getTypeName();
     void setName(QString newName);
 

@@ -50,7 +50,7 @@ QString GUIGroup::getTypeName()
 //! @param appearanceData defines the appearance for the group.
 //! @param scene is the scene which should contain the group.
 //! @param parent is the parent QGraphicsItem for the group, default = 0.
-GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData* pAppearanceData, GUISystem *system, QGraphicsItem *parent)
+GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAppearanceData, GUISystem *system, QGraphicsItem *parent)
     :   GUIContainerObject(QPoint(0.0,0.0), 0, pAppearanceData, DESELECTED, USERGRAPHICS, system, parent)
 {
     mpParentScene = system->mpScene;
@@ -150,7 +150,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, AppearanceData* pAppearanceDa
         GUIConnector *pTransitConnector = mGUITransitConnList[i];
 
         //Get the right appearance data for the group port
-        AppearanceData appData;
+        GUIModelObjectAppearance appData;
         appData = *(mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData("SystemPort"));
         appData.setName("aPaApA-port");
 
@@ -338,14 +338,14 @@ void GUIGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 //mpIcon->setGraphicsEffect(graphicsColor);
 
 
-GUIGroupPort::GUIGroupPort(AppearanceData* pAppearanceData, QPoint position, GUISystem *system, QGraphicsItem *parent)
+GUIGroupPort::GUIGroupPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, GUISystem *system, QGraphicsItem *parent)
     : GUIModelObject(position, 0, pAppearanceData, DESELECTED, USERGRAPHICS, system, parent)
 
 {
     //Sets the ports
     //! @todo Only one port in group ports could simplify this
     PortAppearanceMapT::iterator i;
-    for (i = mAppearanceData.getPortAppearanceMap().begin(); i != mAppearanceData.getPortAppearanceMap().end(); ++i)
+    for (i = mGUIModelObjectAppearance.getPortAppearanceMap().begin(); i != mGUIModelObjectAppearance.getPortAppearanceMap().end(); ++i)
     {
         qDebug() << "DEBUG: " << i.key();
         qreal x = i.value().x;
@@ -353,12 +353,12 @@ GUIGroupPort::GUIGroupPort(AppearanceData* pAppearanceData, QPoint position, GUI
 
         i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
 
-//        mAppearanceData.setName(mpParentSystem->mpParentProjectTab->mGUIRootSystem.addSystemPort(i.key()));
-        mAppearanceData.setName(i.key());
+//        mGUIModelObjectAppearance.setName(mpParentSystem->mpParentProjectTab->mGUIRootSystem.addSystemPort(i.key()));
+        mGUIModelObjectAppearance.setName(i.key());
 
         //We supply ptr to rootsystem to indicate that this is a systemport
         //! @todo this is a very bad way of doing this (ptr to rootsystem for systemport), really need to figure out some better way
-        mpGuiPort = new GUIPort(mAppearanceData.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
+        mpGuiPort = new GUIPort(mGUIModelObjectAppearance.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
         mpOuterGuiPort = 0;
         mPortListPtrs.append(mpGuiPort);
     }

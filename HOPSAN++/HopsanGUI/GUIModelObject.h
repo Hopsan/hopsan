@@ -2,7 +2,7 @@
 #define GUIMODELOBJECT_H
 
 #include "GUIObject.h"
-#include "AppearanceData.h"
+#include "GUIModelObjectAppearance.h"
 
 class GUIConnector;
 class GUIModelObjectDisplayName;
@@ -13,7 +13,7 @@ class GUIModelObject : public GUIObject
 {
     Q_OBJECT
 public:
-    GUIModelObject(QPoint position, qreal rotation, const AppearanceData* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType graphics = USERGRAPHICS, GUISystem *system = 0, QGraphicsItem *parent = 0);
+    GUIModelObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType graphics = USERGRAPHICS, GUISystem *system = 0, QGraphicsItem *parent = 0);
     ~GUIModelObject();
 
     void rememberConnector(GUIConnector *item);
@@ -31,7 +31,7 @@ public:
 
     void deleteMe();
 
-    AppearanceData* getAppearanceData();
+    GUIModelObjectAppearance* getAppearanceData();
     void refreshAppearance();
 
     int getNameTextPos();
@@ -82,7 +82,7 @@ protected:
     virtual void createPorts() {assert(false);} //Only availible in GUIComponent for now
 
     //Protected Variables
-    AppearanceData mAppearanceData;
+    GUIModelObjectAppearance mGUIModelObjectAppearance;
 
     double mTextOffset;
     int mNameTextPos;

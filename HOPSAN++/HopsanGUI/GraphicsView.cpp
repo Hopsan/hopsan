@@ -134,7 +134,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
 
         QString typestring = event->mimeData()->text();
-        AppearanceData* pAppearanceData = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(typestring);
+        GUIModelObjectAppearance* pAppearanceData = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(typestring);
 
         //Check if appearnaceData OK otherwihse do not add (usefull if you drag some crap text into the window)
         if(pAppearanceData != 0)

@@ -10,7 +10,7 @@
 #include "common.h"
 #include "XMLUtilities.h"
 
-#include "AppearanceData.h"
+#include "GUIModelObjectAppearance.h"
 #include <assert.h>
 
 class ProjectTabWidget;
@@ -30,7 +30,7 @@ class GUIComponent : public GUIModelObject
 {
     Q_OBJECT
 public:
-    GUIComponent(AppearanceData* pAppearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
+    GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
     ~GUIComponent();
 
     QVector<QString> getParameterNames();
