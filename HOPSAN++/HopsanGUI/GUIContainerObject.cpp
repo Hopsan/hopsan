@@ -54,3 +54,17 @@ void GUIContainerObject::calcSubsystemPortPosition(const double w, const double 
     }
 }
 
+
+//! @brief Retunrs a pointer to the contained scene
+GraphicsScene* GUIContainerObject::getContainedScenePtr()
+{
+    return this->mpScene;
+}
+
+////! @brief Adds connector the the scene in this container
+////! @todo maybe should be called addConnectorToScene to be more clere, dont know
+//void GUIContainerObject::addConnector(GUIConnector *pConnector)
+//{
+//    this->mpScene->addItem(pConnector);
+
+//}

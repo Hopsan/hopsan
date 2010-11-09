@@ -124,6 +124,8 @@ HeaderLoadData readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidg
 void writeHeader(QTextStream &rStream);
 void addHMFHeader(QDomElement &rDomElement);
 
+QDomElement appendHMFRootElement(QDomDocument &rDomDocument);
+
 
 
 #endif // LOADOBJECTS_H

@@ -59,6 +59,9 @@ void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &
 #define HMF_USERICONTAG "usericon"
 #define HMF_ICONROTATIONTAG "iconrotation"
 
+#define HMF_VERSIONTAG "hmfversion"
+#define HMF_HOPSANGUIVERSIONTAG "hopsanguiversion"
+#define HMF_HOPSANCOREVERSIONTAG "hopsancoreversion"
 
 
 #endif // XMLUTILITIES_H

@@ -567,3 +567,13 @@ void addHMFHeader(QDomElement &rDomElement)
     appendDomTextNode(xmlHeader, "cafversion", CAFVERSION);
 }
 
+QDomElement appendHMFRootElement(QDomDocument &rDomDocument)
+{
+    QDomElement hmfRoot = rDomDocument.createElement(HMF_ROOTTAG);
+    rDomDocument.appendChild(hmfRoot);
+    hmfRoot.setAttribute(HMF_VERSIONTAG,HMFVERSION);
+    hmfRoot.setAttribute(HMF_HOPSANGUIVERSIONTAG, HOPSANGUIVERSION);
+    hmfRoot.setAttribute(HMF_HOPSANCOREVERSIONTAG, "0"); //! @todo need to get this data in here somehow, maybe have a global that is set when the hopsan core is instansiated
+    return hmfRoot;
+}
+

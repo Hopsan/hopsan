@@ -369,10 +369,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     qDebug() << "saving to xml";
     //Save xml document
     QDomDocument domDocument;
-    QDomElement hmfRoot = domDocument.createElement(HMF_ROOTTAG);
-    domDocument.appendChild(hmfRoot);
-    addHMFHeader(hmfRoot);
-
+    QDomElement hmfRoot = appendHMFRootElement(domDocument);
     QDomElement xmlModelProperties = appendDomElement(hmfRoot,"modelproperties");
     //Simulation time
     //! @todo maybe use tuple of 3 instead of thre different element (if you can do that in xml)
@@ -691,7 +688,6 @@ void ProjectTabWidget::loadModel(QString modelFileName)
                 //! @todo use the unused info
                 QDomElement versionInfo = hmfRoot.firstChildElement("hopsanversions");
                 QDomElement modelProperties = hmfRoot.firstChildElement("modelproperties");
-                //QDomElement modelAppearance = hmfRoot.firstChildElement("modelappearance");
                 QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
                 pCurrentTab->mpSystem->mModelFileInfo.setFile(file); //Remember info about the file from which the data was loaded
                 pCurrentTab->mpSystem->loadFromDomElement(systemElement);

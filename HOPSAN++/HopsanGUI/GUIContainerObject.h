@@ -2,6 +2,7 @@
 #define GUICONTAINEROBJECT_H
 
 #include "GUIModelObject.h"
+#include "GraphicsScene.h"
 
 class GUIContainerObject : public GUIModelObject
 {
@@ -12,6 +13,11 @@ public:
     void makeRootSystem();
     virtual void updateExternalPortPositions();
     void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y);
+
+    GraphicsScene* getContainedScenePtr();
+    //void addConnector(GUIConnector *pConnector);
+    //Public for now, will fix later
+    GraphicsScene *mpScene;
 
 protected:
     CONTAINERSTATUS getContainerStatus();

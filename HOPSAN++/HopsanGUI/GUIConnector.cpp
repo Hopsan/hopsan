@@ -24,7 +24,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUISystem *parentSystem, QGraphic
         : QGraphicsWidget(parent)
 {
     mpParentSystem = parentSystem;
-    mpParentSystem->scene()->addItem(this);
+    mpParentSystem->getContainedScenePtr()->addItem(this);
     startPort->getGuiModelObject()->rememberConnector(this);
     qDebug() << "startPort->getGuiObject()->getName(): " << startPort->getGuiModelObject()->getName();
 

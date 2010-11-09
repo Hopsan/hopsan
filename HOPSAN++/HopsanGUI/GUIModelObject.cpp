@@ -171,7 +171,7 @@ void GUIModelObject::rememberConnector(GUIConnector *item)
 void GUIModelObject::forgetConnector(GUIConnector *item)
 {
     mpGUIConnectorPtrs.removeOne(item);
-    disconnect(this, SIGNAL(componentMoved()), item, SLOT(drawConnector()));
+    disconnect(this, SIGNAL(objectMoved()), item, SLOT(drawConnector()));
 }
 
 

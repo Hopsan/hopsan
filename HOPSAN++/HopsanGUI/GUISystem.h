@@ -76,7 +76,7 @@ public:
     CoreSystemAccess *mpCoreSystemAccess; //!< @todo make this private later
     QFileInfo mModelFileInfo; //!< @todo should not be public
     UndoStack *mUndoStack;
-    GraphicsScene *mpScene;
+//    GraphicsScene *mpScene;
     ProjectTab *mpParentProjectTab;
     MainWindow *mpMainWindow;
 
