@@ -1,25 +1,25 @@
 #ifndef GUIGROUP_H
 #define GUIGROUP_H
 
-#include <QGraphicsWidget>
-#include <QObject>
-#include <QGraphicsSvgItem>
-#include <QPen>
-#include <QtXml>
+//#include <QGraphicsWidget>
+//#include <QObject>
+//#include <QGraphicsSvgItem>
+//#include <QPen>
+//#include <QtXml>
 
 #include "common.h"
 
 #include "AppearanceData.h"
 #include <assert.h>
-#include "GUIObject.h"
+#include "GUIContainerObject.h"
 
 class ProjectTabWidget;
 class GraphicsScene;
 class GraphicsView;
 class GUIConnector;
-class GUIModelObjectDisplayName;
-class Component;
-class GUIObjectSelectionBox;
+//class GUIModelObjectDisplayName;
+//class Component;
+//class GUIObjectSelectionBox;
 class GUIPort;
 class GUISystem;
 class GUIComponent;

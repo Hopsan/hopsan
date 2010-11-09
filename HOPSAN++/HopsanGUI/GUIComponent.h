@@ -1,29 +1,30 @@
 #ifndef GUICOMPONENT_H
 #define GUICOMPONENT_H
 
-#include <QGraphicsWidget>
-#include <QObject>
-#include <QGraphicsSvgItem>
-#include <QPen>
-#include <QtXml>
+//#include <QGraphicsWidget>
+//#include <QObject>
+//#include <QGraphicsSvgItem>
+//#include <QPen>
+//#include <QtXml>
 //! @todo clean up these includes and forward declarations
 #include "common.h"
+#include "XMLUtilities.h"
 
 #include "AppearanceData.h"
 #include <assert.h>
 
 class ProjectTabWidget;
-class GraphicsScene;
-class GraphicsView;
+//class GraphicsScene;
+//class GraphicsView;
 class GUIConnector;
-class GUIModelObjectDisplayName;
+//class GUIModelObjectDisplayName;
 class Component;
 class GUIObjectSelectionBox;
 class GUIPort;
 class GUISystem;
 //class GUIObject;
 
-#include "GUIObject.h"
+#include "GUIModelObject.h"
 
 class GUIComponent : public GUIModelObject
 {

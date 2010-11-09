@@ -103,4 +103,6 @@ private:
 
 };
 
+QPointF getOffsetPointfromPort(GUIPort *pPort);
+
 #endif // GUIPORT_H

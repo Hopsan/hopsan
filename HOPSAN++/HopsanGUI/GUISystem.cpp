@@ -1,7 +1,7 @@
 #include <float.h>
 #include "GUISystem.h"
 
-#include "GUIObject.h"
+//#include "GUIObject.h"
 #include "GUIComponent.h"
 #include "ProjectTabWidget.h"
 #include "MainWindow.h"

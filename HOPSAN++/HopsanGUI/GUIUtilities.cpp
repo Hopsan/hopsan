@@ -7,13 +7,14 @@
 //!
 //$Id$
 
-#include <cmath>
+//#include <cmath>
+#include <qmath.h>
 #include <QPoint>
 #include <QDir>
 
 #include "GUIUtilities.h"
-#include "GUIPort.h"
-#include "GUIObject.h"
+//#include "GUIPort.h"
+//#include "GUIObject.h"
 
 using namespace std;
 
@@ -118,30 +119,6 @@ qreal normRad(qreal rad)
 }
 
 
-
-
-QPointF getOffsetPointfromPort(GUIPort *pPort)
-{
-    QPointF point;
-
-    if((pPort->getPortDirection() == LEFTRIGHT) && (pPort->getGuiModelObject()->mapToScene(pPort->getGuiModelObject()->boundingRect().center()).x() > pPort->scenePos().x()))
-    {
-        point.setX(-20);
-    }
-    else if((pPort->getPortDirection() == LEFTRIGHT) && (pPort->getGuiModelObject()->mapToScene(pPort->getGuiModelObject()->boundingRect().center()).x() < pPort->scenePos().x()))
-    {
-        point.setX(20);
-    }
-    else if((pPort->getPortDirection() == TOPBOTTOM) && (pPort->getGuiModelObject()->mapToScene(pPort->getGuiModelObject()->boundingRect().center()).y() > pPort->scenePos().y()))
-    {
-        point.setY(-20);
-    }
-    else if((pPort->getPortDirection() == TOPBOTTOM) && (pPort->getGuiModelObject()->mapToScene(pPort->getGuiModelObject()->boundingRect().center()).y() < pPort->scenePos().y()))
-    {
-        point.setY(20);
-    }
-    return point;
-}
 
 double dist(double x1,double y1, double x2, double y2)
 {

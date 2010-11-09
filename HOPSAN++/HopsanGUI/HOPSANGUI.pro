@@ -36,7 +36,10 @@ SOURCES += main.cpp \
     GUIComponent.cpp \
     GUIGroup.cpp \
     GUISystemPort.cpp \
-    GUIWidgets.cpp
+    GUIWidgets.cpp \
+    GUIContainerObject.cpp \
+    GUIModelObject.cpp \
+    XMLUtilities.cpp
 
 HEADERS += MainWindow.h \
     ProjectTabWidget.h \
@@ -73,7 +76,10 @@ HEADERS += MainWindow.h \
     GUIComponent.h \
     GUIGroup.h \
     GUISystemPort.h \
-    GUIWidgets.h
+    GUIWidgets.h \
+    GUIContainerObject.h \
+    GUIModelObject.h \
+    XMLUtilities.h
 
 OTHER_FILES += 
 

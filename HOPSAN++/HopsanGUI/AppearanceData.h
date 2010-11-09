@@ -18,8 +18,9 @@
 //#include <QPen>
 #include "common.h"
 #include "GUIPortAppearance.h"
+#include "XMLUtilities.h"
 
-#include "loadObjects.h"
+//#include "loadObjects.h"
 
 class AppearanceData
 {

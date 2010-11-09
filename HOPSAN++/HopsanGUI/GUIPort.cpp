@@ -17,6 +17,29 @@
 
 using namespace std;
 
+QPointF getOffsetPointfromPort(GUIPort *pPort)
+{
+    QPointF point;
+
+    if((pPort->getPortDirection() == LEFTRIGHT) && (pPort->getGuiModelObject()->mapToScene(pPort->getGuiModelObject()->boundingRect().center()).x() > pPort->scenePos().x()))
+    {
+        point.setX(-20);
+    }
+    else if((pPort->getPortDirection() == LEFTRIGHT) && (pPort->getGuiModelObject()->mapToScene(pPort->getGuiModelObject()->boundingRect().center()).x() < pPort->scenePos().x()))
+    {
+        point.setX(20);
+    }
+    else if((pPort->getPortDirection() == TOPBOTTOM) && (pPort->getGuiModelObject()->mapToScene(pPort->getGuiModelObject()->boundingRect().center()).y() > pPort->scenePos().y()))
+    {
+        point.setY(-20);
+    }
+    else if((pPort->getPortDirection() == TOPBOTTOM) && (pPort->getGuiModelObject()->mapToScene(pPort->getGuiModelObject()->boundingRect().center()).y() < pPort->scenePos().y()))
+    {
+        point.setY(20);
+    }
+    return point;
+}
+
 //! Constructor.
 //! @param portName The name of the port
 //! @param x the x-coord. of where the port should be placed.

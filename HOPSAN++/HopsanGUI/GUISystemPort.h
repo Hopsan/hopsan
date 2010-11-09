@@ -1,7 +1,7 @@
 #ifndef GUISYSTEMPORT_H
 #define GUISYSTEMPORT_H
 
-#include "GUIObject.h"
+#include "GUIModelObject.h"
 
 class GUISystemPort : public GUIModelObject
 {

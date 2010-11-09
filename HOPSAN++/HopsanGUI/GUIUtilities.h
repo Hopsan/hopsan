@@ -16,9 +16,6 @@
 #include <QFileInfo>
 #include <QTextStream>
 
-
-class GUIPort;
-
 QString readName(QTextStream &rTextStream);
 QString readName(QString namestring);
 QString addQuotes(QString str);
@@ -32,6 +29,6 @@ qreal dist(QPointF &rPoint);
 qreal dist(QPointF &rPoint1, QPointF &rPoint2);
 double dist(double x1,double y1, double x2, double y2);
 
-QPointF getOffsetPointfromPort(GUIPort *pPort);
+
 
 #endif // GUIUTILITIES_H

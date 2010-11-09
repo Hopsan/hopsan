@@ -9,17 +9,18 @@
 #include <QFileInfo>
 
 #include "common.h"
-#include "GUIObject.h"
+//#include "GUIObject.h"
 #include "GUIWidgets.h"
 
 //Forward Declaration
-class AppearanceData;
+//class AppearanceData;
 class ProjectTab;
 //class GUIContainerObject;
 class UndoStack;
 class MainWindow;
 class GraphicsScene;
 
+#include "GUIContainerObject.h"
 #include "CoreSystemAccess.h"
 
 class GUISystem : public GUIContainerObject
