@@ -21,7 +21,6 @@ class QPushButton;
 
 class GUIModelObject;
 class GUIComponent;
-//class GUISubsystem;
 class GUISystem;
 
 class ParameterDialog : public QDialog

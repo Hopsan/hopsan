@@ -8,15 +8,13 @@
 
 #include "common.h"
 
-#include "GUIModelObjectAppearance.h"
-#include "GUIObject.h"
-
 //Forward Declarations
 class UndoStack;
 class GUIPort;
 class GUIObject;
 class GUIConnector;
 class ProjectTab;
+class GUISystem;
 
 class GraphicsView : public QGraphicsView
 {

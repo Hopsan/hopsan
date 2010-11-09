@@ -14,10 +14,9 @@
 #include "MainWindow.h"
 #include "MessageWidget.h"
 #include "ProjectTabWidget.h"
-#include "GUIObject.h"
+#include "GUIModelObject.h"
 #include "GUISystem.h"
 #include "GUIPort.h"
-
 
 class PyGUIPortClassWrapper : public QObject
 {

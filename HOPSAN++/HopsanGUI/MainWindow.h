@@ -11,17 +11,6 @@
 #include <QMainWindow>
 #include <QtGui>
 
-//#include <QComboBox>
-//#include <QLabel>
-//class QGridLayout;
-//class QHBoxLayout;
-//class QMenuBar;
-//class QMenu;
-//class QmpStatusBar;
-//class QAction;
-//class QString;
-//class QPlainTextEdit;
-
 class ProjectTabWidget;
 class GraphicsView;
 class GraphicsScene;

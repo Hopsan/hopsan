@@ -7,7 +7,7 @@
 
 #include "common.h"
 //! @todo clean up these includes
-#include "GUIObject.h"
+//#include "GUIObject.h"
 #include "GUISystem.h"
 #include "ProjectTabWidget.h"
 #include "MainWindow.h"
@@ -22,8 +22,6 @@
 #include "LibraryWidget.h"
 #include "loadObjects.h"
 #include "GUIGroup.h"
-
-#include "GUIModelObjectAppearance.h"
 
 GUIComponent::GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
     : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)

@@ -1,30 +1,18 @@
 #ifndef GUIGROUP_H
 #define GUIGROUP_H
 
-//#include <QGraphicsWidget>
-//#include <QObject>
-//#include <QGraphicsSvgItem>
-//#include <QPen>
-//#include <QtXml>
 
-#include "common.h"
-
-#include "GUIModelObjectAppearance.h"
-#include <assert.h>
 #include "GUIContainerObject.h"
+#include "common.h"
+#include <assert.h>
 
 class ProjectTabWidget;
 class GraphicsScene;
 class GraphicsView;
 class GUIConnector;
-//class GUIModelObjectDisplayName;
-//class Component;
-//class GUIObjectSelectionBox;
 class GUIPort;
 class GUISystem;
 class GUIComponent;
-//class GUIContainerObject;
-//! @todo clean up these includes and forward declarations
 
 class GUIGroup : public GUIContainerObject
 {

@@ -11,11 +11,9 @@
 #include "GUIPortAppearance.h"
 
 //Forward declarations
-class GUIObject;
 class GUIModelObject;
 class GUISystem;
 class CoreSystemAccess;
-class GraphicsView;
 
 enum portDirection {TOPBOTTOM, LEFTRIGHT};
 
@@ -24,26 +22,23 @@ class GUIPort :public QGraphicsSvgItem
     Q_OBJECT
 public:
     GUIPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParent = 0, CoreSystemAccess *pGUIRootSystem=0);
-    GUISystem *mpParentSystem;
-    GUIModelObject *mpParentGuiModelObject;
 
     QPointF getCenterPos();
     void updatePosition(qreal x, qreal y);
     void updatePositionByFraction(qreal x, qreal y);
+
     GUISystem *getParentSystem();
     GUIModelObject *getGuiModelObject();
-    void magnify(bool blowup);
+
     portDirection getPortDirection();
-    //void setPortDirection(portDirection direction);
     qreal getPortHeading();
+
+    void magnify(bool blowup);
     void hide();
 
     QString getName();
     void setDisplayName(const QString name);
     QString getGUIComponentName();
-
-    QPointF rectPos;
-    //int getPortNumber();
 
     bool getLastNodeData(QString dataName, double& rData);
 
@@ -56,9 +51,18 @@ public:
     void setIsConnected(bool isConnected);
     bool isConnected();
 
+        //Public member variables
+    GUISystem *mpParentSystem;
+    GUIModelObject *mpParentGuiModelObject;
+    QPointF rectPos;
+
 public slots:
     void hideIfNotConnected(bool hidePortsActionTriggered);
     void setVisible(bool value);
+
+signals:
+    void portClicked(GUIPort *item);
+    void portMoved(GUIPort *item);
 
 protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
@@ -79,10 +83,6 @@ public: //! @todo This was made public temporarly to test plot in Python
     bool plot(QString dataName, QString dataUnit=QString());
     void refreshPortOverlayRotation();
 
-signals:
-    void portClicked(GUIPort *item);
-    void portMoved(GUIPort *item);
-
 private:
     QColor myLineColor;
     qreal myLineWidth;
@@ -100,7 +100,6 @@ private:
     QString name;
 
     QGraphicsSvgItem* mpPortGraphicsOverlay;
-
 };
 
 QPointF getOffsetPointfromPort(GUIPort *pPort);

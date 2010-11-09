@@ -4,8 +4,6 @@
 #include <QString>
 #include <QHash>
 
-//#include "common.h"
-
 class GUIPortAppearance
 {
 public:
@@ -16,7 +14,6 @@ public:
     qreal rot;
     QString mIconPath;
     QString mIconOverlayPath;
-    //portDirection direction; //!< @todo Does this have to be common, (include common.h would not be necessary)
 };
 
 typedef QHash<QString, GUIPortAppearance> PortAppearanceMapT;

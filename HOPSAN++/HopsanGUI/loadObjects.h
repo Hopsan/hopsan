@@ -2,10 +2,6 @@
 #define LOADOBJECTS_H
 
 #include <QTextStream>
-//#include <QtXml>
-//#include <QDomDocument>
-//#include <QDomElement>
-//#include <QDomText>
 #include "GUIModelObjectAppearance.h"
 #include "XMLUtilities.h"
 
@@ -66,7 +62,7 @@ public:
 
 };
 
-//! @todo the class should be shared somehow with the other class that reads appearance data from files for components
+//! @obsolete
 class SystemAppearanceLoadData
 {
 public:

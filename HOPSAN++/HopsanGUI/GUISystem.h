@@ -8,20 +8,17 @@
 #include <QPoint>
 #include <QFileInfo>
 
-#include "common.h"
-//#include "GUIObject.h"
+#include "GUIContainerObject.h"
+#include "CoreSystemAccess.h"
 #include "GUIWidgets.h"
+#include "common.h"
 
 //Forward Declaration
-//class AppearanceData;
 class ProjectTab;
-//class GUIContainerObject;
 class UndoStack;
 class MainWindow;
 class GraphicsScene;
 
-#include "GUIContainerObject.h"
-#include "CoreSystemAccess.h"
 
 class GUISystem : public GUIContainerObject
 {
@@ -31,42 +28,20 @@ public:
     GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *parent);
     ~GUISystem();
 
-
-    void loadFromHMF(QString modelFilePath=QString());
-
-    GraphicsScene *mpScene;
-    ProjectTab *mpParentProjectTab;
-    MainWindow *mpMainWindow;
-
-    typedef QHash<QString, GUIModelObject*> GUIModelObjectMapT;
-    GUIModelObjectMapT mGUIModelObjectMap;
-    QList<GUITextWidget *> mTextWidgetList;
-    QList<GUIBoxWidget *> mBoxWidgetList;
-    QList<GUIObject *> mSelectedGUIObjectsList;
-    GUIModelObject* addGUIObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
     void addTextWidget(QPoint position);
     void addBoxWidget(QPoint position);
+
+    GUIModelObject* addGUIObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
     void deleteGUIModelObject(QString componentName, undoStatus undoSettings=UNDO);
     void renameGUIObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
     bool haveGUIObject(QString name);
     GUIModelObject *getGUIModelObject(QString name);
 
-    QList<GUIConnector *> mSelectedSubConnectorsList;
-    QList<GUIConnector *> mSubConnectorList;
     GUIConnector* findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
     void removeConnector(GUIConnector* pConnector, undoStatus undoSettings=UNDO);
 
-    UndoStack *mUndoStack;
-
-    bool mPortsHidden;
-    bool mUndoDisabled;
-    bool mIsRenamingObject;
-    bool mJustStoppedCreatingConnector;
     bool isObjectSelected();
     bool isConnectorSelected();
-    GUIModelObject *mpTempGUIObject;
-    GUIConnector *mpTempConnector;
-    graphicsType mGfxType;
 
     double getStartTime();
     double getTimeStep();
@@ -85,11 +60,48 @@ public:
     void setIsCreatingConnector(bool isCreatingConnector);
     bool getIsCreatingConnector();
 
-protected:
-    bool mIsCreatingConnector;
+    QString getTypeName();
+    void setName(QString newName);
+    void setTypeCQS(QString typestring);
+    QString getTypeCQS();
+
+    void saveToTextStream(QTextStream &rStream, QString prepend);
+    void saveToDomElement(QDomElement &rDomElement);
+    void loadFromHMF(QString modelFilePath=QString());
+    void loadFromDomElement(QDomElement &rDomElement);
+
+    QVector<QString> getParameterNames();
+
+        //Public member variable
+    CoreSystemAccess *mpCoreSystemAccess; //!< @todo make this private later
+    QFileInfo mModelFileInfo; //!< @todo should not be public
+    UndoStack *mUndoStack;
+    GraphicsScene *mpScene;
+    ProjectTab *mpParentProjectTab;
+    MainWindow *mpMainWindow;
+
+    QList<GUIConnector *> mSelectedSubConnectorsList;
+    QList<GUIConnector *> mSubConnectorList;
+
+    typedef QHash<QString, GUIModelObject*> GUIModelObjectMapT;
+    GUIModelObjectMapT mGUIModelObjectMap;
+    QList<GUITextWidget *> mTextWidgetList;
+    QList<GUIBoxWidget *> mBoxWidgetList;
+    QList<GUIObject *> mSelectedGUIObjectsList;
+
+    bool mPortsHidden;
+    bool mUndoDisabled;
+    bool mIsRenamingObject;
+    bool mJustStoppedCreatingConnector;
+
+    GUIModelObject *mpTempGUIObject;
+    GUIConnector *mpTempConnector;
+    graphicsType mGfxType;
+
+    enum { Type = GUISYSTEM };
+    int type() const;
 
 public slots:
-    //void addSystemPort();
     void createConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);
     void cutSelected();
     void copySelected();
@@ -124,6 +136,17 @@ signals:
     void deleteSelected();
     void componentChanged();
 
+protected:
+    void saveCoreDataToDomElement(QDomElement &rDomElement);
+    void saveSystemAppearanceToDomElement(QDomElement &rDomElement);
+
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void openParameterDialog();
+    void createPorts();
+
+    bool mIsCreatingConnector;
+
 private:
     void commonConstructorCode();
 
@@ -131,44 +154,6 @@ private:
     double mStopTime;
     double mTimeStep;
     size_t mNumberOfLogSamples;
-//    QString mUserIconPath;
-//    QString mIsoIconPath;
-
-public:
-    CoreSystemAccess *mpCoreSystemAccess; //!< @todo make this private later
-
-protected:
-    void saveCoreDataToDomElement(QDomElement &rDomElement);
-    void saveSystemAppearanceToDomElement(QDomElement &rDomElement);
-
-
-public:
-    QString getTypeName();
-    void setName(QString newName);
-    void setTypeCQS(QString typestring);
-    QString getTypeCQS();
-
-    //void loadFromFileNOGUI(QString modelFileName=QString());
-
-    void saveToTextStream(QTextStream &rStream, QString prepend);
-    void saveToDomElement(QDomElement &rDomElement);
-    void loadFromDomElement(QDomElement &rDomElement);
-
-    QVector<QString> getParameterNames();
-
-    enum { Type = GUISYSTEM };
-    int type() const;
-
-protected:
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    void openParameterDialog();
-    void createPorts();
-
-public:
-        QFileInfo mModelFileInfo; //!< @todo should not be public
-
-private:
 
     bool   mIsEmbedded;
     QString mLoadType;

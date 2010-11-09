@@ -1,30 +1,16 @@
 #ifndef GUICOMPONENT_H
 #define GUICOMPONENT_H
 
-//#include <QGraphicsWidget>
-//#include <QObject>
-//#include <QGraphicsSvgItem>
-//#include <QPen>
-//#include <QtXml>
-//! @todo clean up these includes and forward declarations
+#include "GUIModelObject.h"
 #include "common.h"
 #include "XMLUtilities.h"
-
-#include "GUIModelObjectAppearance.h"
 #include <assert.h>
 
+//Forward declarations
 class ProjectTabWidget;
-//class GraphicsScene;
-//class GraphicsView;
 class GUIConnector;
-//class GUIModelObjectDisplayName;
-class Component;
-class GUIObjectSelectionBox;
 class GUIPort;
 class GUISystem;
-//class GUIObject;
-
-#include "GUIModelObject.h"
 
 class GUIComponent : public GUIModelObject
 {
@@ -40,7 +26,6 @@ public:
     void setParameterValue(QString name, double value);
 
     void saveToTextStream(QTextStream &rStream, QString prepend=QString());
-    //void saveToDomElement(QDomElement &rDomElement);
 
     void setName(QString name, renameRestrictions renameSettings=UNRESTRICTED);
     QString getTypeName();
@@ -57,13 +42,6 @@ protected:
     void openParameterDialog();
 
     void createPorts();
-
-    //QString mComponentTypeName;
-
-public slots:
-
-private:
-
 };
 
 #endif // GUICOMPONENT_H

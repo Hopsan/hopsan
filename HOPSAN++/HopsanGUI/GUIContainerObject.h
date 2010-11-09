@@ -3,11 +3,6 @@
 
 #include "GUIModelObject.h"
 
-//class GUIConnector;
-//class GUIModelObjectDisplayName;
-//class GUIPort;
-//class GUISystem;
-
 class GUIContainerObject : public GUIModelObject
 {
     Q_OBJECT

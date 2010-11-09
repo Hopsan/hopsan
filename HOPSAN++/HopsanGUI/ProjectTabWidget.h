@@ -12,7 +12,6 @@
 
 #include <QTabWidget>
 #include "CoreSystemAccess.h"
-#include "GUIObject.h"
 
 //Forward declaration
 class GraphicsScene;
@@ -27,11 +26,13 @@ class ProjectTabWidget : public QTabWidget
 
 public:
     ProjectTabWidget(MainWindow *parent = 0);
-    MainWindow *mpParentMainWindow;
     ProjectTab *getCurrentTab();
     ProjectTab *getTab(int index);
     GUISystem *getCurrentSystem();
     GUISystem *getSystem(int index);
+
+        //Public member variables
+    MainWindow *mpParentMainWindow;
     QString *mpCopyData;
 
 public slots:
@@ -57,13 +58,15 @@ class ProjectTab : public QWidget
 
 public:
     ProjectTab(ProjectTabWidget *parent = 0);
-    GUISystem *mpSystem;
-    ProjectTabWidget *mpParentProjectTabWidget;
-    GraphicsView *mpGraphicsView;
 
     bool isSaved();
     void setSaved(bool value);
     void hasChanged();
+
+        //Public member variables
+    GUISystem *mpSystem;
+    ProjectTabWidget *mpParentProjectTabWidget;
+    GraphicsView *mpGraphicsView;
 
 public slots:
     bool simulate();
