@@ -5,13 +5,11 @@
     <isoicon>laminarorifice_iso.svg</isoicon>
     <usericon>laminarorifice_user.svg</usericon>
     <iconrotation>ON</iconrotation>
-    <port>
-        <name>P1</name>
-        <pose>1.0 0.5 0</pose>
+    <port name="P1">
+        <pose x="1.0" y="0.5" a="0"/>
     </port>
-    <port>
-        <name>P2</name>
-        <pose>0.0 0.5 180</pose>
+    <port name="P2">
+        <pose x="0.0" y="0.5" a="180"/>
     </port>
 </componentappearancefile>
 

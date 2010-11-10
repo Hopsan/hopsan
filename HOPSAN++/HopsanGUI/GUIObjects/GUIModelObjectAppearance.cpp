@@ -10,7 +10,6 @@
 
 #include "qdebug.h"
 #include "GUIModelObjectAppearance.h"
-//#include <QVector>
 #include "../Utilities/GUIUtilities.h"
 
 GUIModelObjectAppearance::GUIModelObjectAppearance()
@@ -221,18 +220,12 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement &rDomElement)
     while (!xmlPort.isNull())
     {
         GUIPortAppearance portApp;
-        parseDomValueNode3(xmlPort.firstChildElement(HMF_POSETAG), portApp.x, portApp.y, portApp.rot);
-//        //! @todo do we really need direction
-//        if( (portApp.rot == 0) || (portApp.rot == 180) )
-//        {
-//            portApp.direction = LEFTRIGHT;
-//        }
-//        else
-//        {
-//            portApp.direction = TOPBOTTOM;
-//        }
+//        parseDomValueNode3(xmlPort.firstChildElement(HMF_POSETAG), portApp.x, portApp.y, portApp.rot);
+//        mPortAppearanceMap.insert(xmlPort.firstChildElement(HMF_NAMETAG).text(), portApp);
+        QString portname = xmlPort.attribute(HMF_NAMETAG);
+        parsePoseTag(xmlPort.firstChildElement(HMF_POSETAG), portApp.x, portApp.y, portApp.rot);
 
-        mPortAppearanceMap.insert(xmlPort.firstChildElement(HMF_NAMETAG).text(), portApp);
+        mPortAppearanceMap.insert(portname, portApp);
         xmlPort = xmlPort.nextSiblingElement(HMF_PORTTAG);
     }
      this->mIsReadOK = true; //Assume read will be ok
@@ -252,8 +245,10 @@ void GUIModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
     for (pit=mPortAppearanceMap.begin(); pit!=mPortAppearanceMap.end(); ++pit)
     {
         QDomElement xmlPort = appendDomElement(rDomElement,HMF_PORTTAG);
-        appendDomTextNode(xmlPort, HMF_NAMETAG, pit.key());
-        appendDomValueNode3(xmlPort, HMF_POSETAG, pit.value().x, pit.value().y, pit.value().rot);
+//        appendDomTextNode(xmlPort, HMF_NAMETAG, pit.key());
+//        appendDomValueNode3(xmlPort, HMF_POSETAG, pit.value().x, pit.value().y, pit.value().rot);
+        xmlPort.setAttribute(HMF_NAMETAG, pit.key());
+        appendPoseTag(xmlPort, pit.value().x, pit.value().y, pit.value().rot);
     }
 }
 
