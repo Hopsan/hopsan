@@ -18,6 +18,24 @@
 #include "GUIObjects/GUISystem.h"
 #include "GUIPort.h"
 
+
+//Just for test purposes
+class pyTestClass : public QObject
+{
+    Q_OBJECT
+
+public slots:
+    QVector<double> getVector()
+    {
+        QVector<double> *pTest = new QVector<double>;
+        pTest->append(3.34);
+        pTest->append(4.45);
+
+        return *pTest;
+    }
+};
+
+
 class PyGUIPortClassWrapper : public QObject
 {
     Q_OBJECT
@@ -48,9 +66,24 @@ public slots:
         double data;
 
         if(!o->getLastNodeData(dataName, data))
-            return  -1.0;
+            return  -1.0; //! @todo this is not very smart
         else
             return data;
+    }
+
+    QVector<double> getDataVector(GUIPort* o, const QString& dataName)
+    {
+        QVector<double> yData;
+        o->getParentSystem()->mpCoreSystemAccess->getPlotData(o->getGuiModelObject()->getName(),o->getName(),dataName,yData);
+
+        return yData;
+    }
+
+    QVector<double> getTimeVector(GUIPort* o)
+    {
+        QVector<double> tVector = QVector<double>::fromStdVector(o->getParentSystem()->mpCoreSystemAccess->getTimeVector(o->getGuiModelObject()->getName(),o->getName()));
+
+        return tVector;
     }
 
 };

@@ -24,6 +24,7 @@ PyDock::PyDock(MainWindow *pMainWindow, QWidget * parent)
     : QDockWidget(tr("Python Console"), parent)
 {
         PythonQt::init(PythonQt::IgnoreSiteModule | PythonQt::RedirectStdOut);
+        PythonQt_QtAll::init();
 
         PythonQt::self()->registerCPPClass("MainWindow", "","", PythonQtCreateObject<PyHopsanClassWrapper>);
         PythonQt::self()->registerCPPClass("GUIObject", "","", PythonQtCreateObject<PyGUIObjectClassWrapper>);
@@ -33,12 +34,8 @@ PyDock::PyDock(MainWindow *pMainWindow, QWidget * parent)
         mainContext.evalScript("import site"); //För att kunna ladda tredjepart libs
         mainContext.addObject("hopsan", pMainWindow);
 
-        /*QVector<double> *pTest = new QVector<double>;
-        pTest->append(3.34);
-        pTest->append(4.45);
-
-        PythonQtRegisterListTemplateConverter(QVector, double);
-        mainContext.addVariable("test", test);*/
+//        pyTestClass *test = new pyTestClass();
+//        mainContext.addObject("test", test);
 
         mpPyConsole  = new PythonQtScriptingConsole(NULL, mainContext);
         mpPyConsole->consoleMessage("There is an object called hopsan that allow you to interact with Hopsan NG.");
