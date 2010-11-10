@@ -137,6 +137,7 @@ void GUIPort::magnify(bool blowup)
     if ((!blowup) && (mIsMag))
     {
         this->moveBy((mMag-1.0)*boundingRect().width()/2.0, (mMag-1.0)*boundingRect().height()/2.0);
+        this->mpPortLabel->moveBy(-(mMag-1.0)*boundingRect().width()/2.0, -(mMag-1.0)*boundingRect().height()/2.0);
         this->scale(1.0/mMag,1.0/mMag);
 
         this->scalePortOverlay(1.0/mMag);
@@ -146,6 +147,7 @@ void GUIPort::magnify(bool blowup)
     {
         this->scale(mMag, mMag);
         this->moveBy(-(mMag-1.0)*boundingRect().width()/2.0, -(mMag-1.0)*boundingRect().height()/2.0);
+        this->mpPortLabel->moveBy((mMag-1.0)*boundingRect().width()/2.0, (mMag-1.0)*boundingRect().height()/2.0);
 
         this->scalePortOverlay(mMag);
         mIsMag = true;
@@ -267,7 +269,7 @@ void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
 /*        if ((!this->isConnected()) || (mpParentSystem->mpCoreSystemAccess->getTimeVector(getGUIComponentName(), this->getName()).empty()))
             openRightClickMenu(event->screenPos());//Ska bort
 */    }
-    magnify(false);
+    //magnify(false);
 }
 
 
@@ -390,7 +392,7 @@ void GUIPort::refreshPortOverlayPosition()
     }
     pt2 =  transf * pt1;
     pt3 = this->boundingRect().center();
-    this->mpPortLabel->setPos(pt3-pt2+QPoint(20,20)); //! @todo This is a mess, magnify fucks the pos for the label
+    this->mpPortLabel->setPos(pt3-pt2+QPoint(10, 10)); //! @todo This is little messy, GUIPort::magnify fucks the pos for the label a bit
 
 //    qDebug() << "pt1: " << pt1;
 //    qDebug() << "pt2: " << pt2;
