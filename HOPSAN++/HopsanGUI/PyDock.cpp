@@ -23,7 +23,7 @@
 PyDock::PyDock(MainWindow *pMainWindow, QWidget * parent)
     : QDockWidget(tr("Python Console"), parent)
 {
-        PythonQt::init(PythonQt::IgnoreSiteModule | PythonQt::RedirectStdOut);
+        PythonQt::init(PythonQt::RedirectStdOut);
         PythonQt_QtAll::init();
 
         PythonQt::self()->registerCPPClass("MainWindow", "","", PythonQtCreateObject<PyHopsanClassWrapper>);
@@ -31,7 +31,6 @@ PyDock::PyDock(MainWindow *pMainWindow, QWidget * parent)
         PythonQt::self()->registerCPPClass("GUIPort", "","", PythonQtCreateObject<PyGUIPortClassWrapper>);
 
         PythonQtObjectPtr  mainContext = PythonQt::self()->getMainModule();
-        mainContext.evalScript("import site"); //För att kunna ladda tredjepart libs
         mainContext.addObject("hopsan", pMainWindow);
 
 //        pyTestClass *test = new pyTestClass();
