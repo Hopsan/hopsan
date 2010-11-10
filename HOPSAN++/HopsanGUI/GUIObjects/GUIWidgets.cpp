@@ -39,7 +39,7 @@ GUITextWidget::GUITextWidget(QString text, QPoint pos, qreal rot, selectionStatu
 {
     this->mHmfTagName = HMF_TEXTWIDGETTAG;
 
-    pSystem->scene()->addItem(this);
+    pSystem->getContainedScenePtr()->addItem(this);
     this->setPos(pos);
     mpTextItem = new QGraphicsTextItem(text, this);
     QFont tempFont = mpTextItem->font();
@@ -228,7 +228,7 @@ GUIBoxWidget::GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected,
 {
     this->mHmfTagName = HMF_BOXWIDGETTAG;
 
-    pSystem->scene()->addItem(this);
+    pSystem->getContainedScenePtr()->addItem(this);
     this->setPos(pos);
     mpRectItem = new QGraphicsRectItem(0, 0, 100, 100, this);
     QPen tempPen = mpRectItem->pen();

@@ -28,6 +28,11 @@ void appendCoordinateTag(QDomElement &rDomElement, qreal x, qreal y);
 void appendViewPortTag(QDomElement &rDomElement, qreal x, qreal y, qreal zoom);
 void appendSimulationTimeTag(QDomElement &rDomElement, qreal start, qreal step, qreal stop);
 
+void parsePoseTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rTheta);
+void parseCoordinateTag(QDomElement domElement, qreal &rX, qreal &rY);
+void parseViewPortTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rZoom);
+void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep, qreal &rStop);
+
 //Save Load Definitions
 #define HMF_ROOTTAG "hopsanmodelfile"
 #define HMF_OBJECTTAG "object"              //Non core Gui Object

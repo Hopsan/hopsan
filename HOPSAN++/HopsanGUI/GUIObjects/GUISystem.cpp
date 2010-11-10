@@ -316,103 +316,6 @@ void GUISystem::loadFromHMF(QString modelFilePath)
     emit checkMessages();
 }
 
-////! @todo Maybe should be somewhere else and be called load subsystem
-//void GUISystem::loadFromFileNOGUI(QString modelFileName)
-//{
-//    QFile file;
-//    QFileInfo fileInfo;
-//    if (modelFileName.isEmpty())
-//    {
-//        QDir fileDialog;
-//        modelFileName = QFileDialog::getOpenFileName(mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
-//                                                             fileDialog.currentPath() + QString("/../../Models"),
-//                                                             tr("Hopsan Model Files (*.hmf)"));
-//        if (modelFileName.isEmpty())
-//            return;
-
-//        file.setFileName(modelFileName);
-//        fileInfo.setFile(file);
-
-//        for(int t=0; t!=mpParentProjectTab->mpParentProjectTabWidget->count(); ++t)
-//        {
-//            if( (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == fileInfo.fileName()) or (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == (fileInfo.fileName() + "*")) )
-//            {
-//                QMessageBox::StandardButton reply;
-//                reply = QMessageBox::information(mpParentProjectTab->mpParentProjectTabWidget, tr("Error"), tr("Unable to load model. File is already open."));
-//                return;
-//            }
-//        }
-//    }
-//    else
-//    {
-//         file.setFileName(modelFileName);
-//         fileInfo.setFile(file);
-//    }
-
-//    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
-//    {
-//        qDebug() << "Failed to open file or not a text file: " + modelFileName;
-//        return;
-//    }
-//    QTextStream textStreamFile(&file); //Converts to QTextStream
-//    mModelFilePath = modelFileName;
-
-//    //Set the name
-//    this->mpParentSystem->renameGUIObject(this->getName(), fileInfo.baseName());
-
-//    //Now read the file data
-//    SystemAppearanceLoadData sysappdata;
-//    HeaderLoadData header;
-
-//    header.read(textStreamFile);
-//    //qDebug() << "Header read";
-//    //! @todo check so that version OK!
-//    sysappdata.read(textStreamFile);
-//    //qDebug() << "Sysapp data read";
-
-//    if (!sysappdata.usericon_path.isEmpty())
-//    {
-//        mGUIModelObjectAppearance.setQString(ICONPATH)User(sysappdata.usericon_path);
-//    }
-//    if (!sysappdata.isoicon_path.isEmpty())
-//    {
-//        mGUIModelObjectAppearance.setQString(ICONPATH)ISO(sysappdata.isoicon_path);
-//    }
-
-//    //! @todo reading portappearance should have a common function and be shared with the setappearancedata rad function that reads from caf files
-//    PortAppearanceMapT* portappmap = &(mGUIModelObjectAppearance.getPortAppearanceMap());
-//    for (int i=0; i<sysappdata.portnames.size(); ++i)
-//    {
-//        PortAppearance portapp;
-//        portapp.x = sysappdata.port_xpos[i];
-//        portapp.y = sysappdata.port_ypos[i];
-//        portapp.rot = sysappdata.port_angle[i];
-//        if( (portapp.rot == 0) || (portapp.rot == 180) )
-//        {
-//            portapp.direction = LEFTRIGHT;
-//        }
-//        else
-//        {
-//            portapp.direction = TOPBOTTOM;
-//        }
-//        //! @todo portdirection in portapperance should have an initial default value to avoid crash if not set when creating connector
-//        portapp.selectPortIcon("","",""); //!< @todo fix this
-
-//        portappmap->insert(sysappdata.portnames[i], portapp);
-//        qDebug() << sysappdata.portnames[i];
-//    }
-//    qDebug() << "Appearance set";
-
-//    //Load the contents of the subsystem from the external file
-//    mpParentProjectTab->mpSystem->mpCoreSystemAccess->loadSystemFromFileCoreOnly(this->getName(), modelFileName);
-//    qDebug() << "Loaded in core";
-
-//    this->refreshAppearance();
-//    this->createPorts();
-//    this->refreshDisplayName();
-//    file.close();
-//}
-
 
 int GUISystem::type() const
 {
@@ -582,8 +485,6 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
     this->saveCoreDataToDomElement(xmlSubsystem);
 
     //! @todo do we really need both systemtype and external path, en empty path could indicate embeded
-    //appendDomTextNode(subsysContainerNode, "SystemType", mLoadType);
-
     if ((mpParentSystem != 0) && (mLoadType=="EXTERNAL"))
     {
         appendDomTextNode(xmlSubsystem, HMF_EXTERNALPATHTAG, relativePath(mModelFileInfo.absoluteFilePath(), mpParentSystem->mModelFileInfo.absolutePath()));
@@ -595,12 +496,6 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
 
     //Save gui object stuff
     this->saveGuiDataToDomElement(xmlSubsystem);
-//    if (mLoadType!="EXTERNAL")
-//    {
-//        QDomElement guiStuff = this->saveGuiDataToDomElement(xmlSubsystem);
-//        //Now append the system appearance data
-//        this->saveSystemAppearanceToDomElement(guiStuff);
-//    }
 
     //Save all of the sub objects
     if (mLoadType=="EMBEDED" || mLoadType=="ROOT")
@@ -635,8 +530,10 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 {
     //! @todo might need some error checking here incase some fields are missing
     //First load the core specific data, might need inherited function for this
-    this->setName(rDomElement.firstChildElement(HMF_NAMETAG).text());
-    this->setTypeCQS(rDomElement.firstChildElement(HMF_CQSTYPETAG).text());
+//    this->setName(rDomElement.firstChildElement(HMF_NAMETAG).text());
+//    this->setTypeCQS(rDomElement.firstChildElement(HMF_CQSTYPETAG).text());
+    this->setName(rDomElement.attribute(HMF_NAMETAG));
+    this->setTypeCQS(rDomElement.attribute(HMF_CQSTYPETAG));
 
     //Check if the subsystem is external or internal, and load appropriately
     QString external_path = rDomElement.firstChildElement(HMF_EXTERNALPATHTAG).text();

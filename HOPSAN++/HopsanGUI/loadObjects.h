@@ -122,7 +122,7 @@ void loadBoxWidget(QDomElement &rDomElement, GUISystem *pSystem);
 
 HeaderLoadData readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidget);
 void writeHeader(QTextStream &rStream);
-void addHMFHeader(QDomElement &rDomElement);
+//void addHMFHeader(QDomElement &rDomElement);
 
 QDomElement appendHMFRootElement(QDomDocument &rDomDocument);
 

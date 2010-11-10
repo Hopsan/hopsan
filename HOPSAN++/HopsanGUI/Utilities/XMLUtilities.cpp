@@ -159,3 +159,30 @@ void appendSimulationTimeTag(QDomElement &rDomElement, qreal start, qreal step, 
     simu.setAttribute("stop", stop);
 }
 
+void parsePoseTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rTheta)
+{
+    rX = domElement.attribute("x").toDouble();
+    rY = domElement.attribute("y").toDouble();
+    rTheta = domElement.attribute("a").toDouble();
+}
+
+void parseCoordinateTag(QDomElement domElement, qreal &rX, qreal &rY)
+{
+    rX = domElement.attribute("x").toDouble();
+    rY = domElement.attribute("y").toDouble();
+}
+
+void parseViewPortTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rZoom)
+{
+    rX = domElement.attribute("x").toDouble();
+    rY = domElement.attribute("y").toDouble();
+    rZoom = domElement.attribute("zoom").toDouble();
+}
+
+void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep, qreal &rStop)
+{
+    rStart = domElement.attribute("start").toDouble();
+    rStep = domElement.attribute("timestep").toDouble();
+    rStop = domElement.attribute("stop").toDouble();
+}
+
