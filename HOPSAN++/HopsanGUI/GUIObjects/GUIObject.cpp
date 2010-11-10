@@ -5,22 +5,15 @@
 
 #include "GUIObject.h"
 #include "GUISystem.h"
-//#include "GUIComponent.h"
-#include "ProjectTabWidget.h"
-#include "MainWindow.h"
-//#include "ParameterDialog.h"
-//#include "GUIPort.h"
-//#include "GUIConnector.h"
-#include "GUIUtilities.h"
-#include "UndoStack.h"
-#include "MessageWidget.h"
-#include "GraphicsScene.h"
-#include "GraphicsView.h"
-#include "LibraryWidget.h"
-//#include "loadObjects.h"
 
-//using namespace std;
-
+#include "../ProjectTabWidget.h"
+#include "../MainWindow.h"
+#include "../Utilities/GUIUtilities.h"
+#include "../UndoStack.h"
+#include "../MessageWidget.h"
+#include "../GraphicsScene.h"
+#include "../GraphicsView.h"
+#include "../LibraryWidget.h"
 
 
 //! @todo should not pSystem and pParent be teh same ?

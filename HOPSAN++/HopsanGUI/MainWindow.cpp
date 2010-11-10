@@ -16,8 +16,8 @@
 #include "ProjectTabWidget.h"
 #include "GraphicsView.h"
 #include "GraphicsScene.h"
-#include "GUISystem.h"
-#include "GUIUtilities.h"
+#include "GUIObjects/GUISystem.h"
+#include "Utilities/GUIUtilities.h"
 #include "PyDock.h"
 #include "GlobalParametersWidget.h"
 

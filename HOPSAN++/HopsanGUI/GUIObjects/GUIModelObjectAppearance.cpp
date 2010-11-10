@@ -11,7 +11,7 @@
 #include "qdebug.h"
 #include "GUIModelObjectAppearance.h"
 //#include <QVector>
-#include "GUIUtilities.h"
+#include "../Utilities/GUIUtilities.h"
 
 GUIModelObjectAppearance::GUIModelObjectAppearance()
 {

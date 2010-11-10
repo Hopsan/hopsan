@@ -8,12 +8,12 @@
 #include "PlotWidget.h"
 #include "MainWindow.h"
 #include "CoreSystemAccess.h"
-#include "GUIObject.h"
+#include "GUIObjects/GUIModelObject.h"
 #include "GraphicsScene.h"
 #include "GraphicsView.h"
 #include "ProjectTabWidget.h"
-#include "GUISystem.h"
-#include "GUIUtilities.h"
+#include "GUIObjects/GUISystem.h"
+#include "Utilities/GUIUtilities.h"
 
 using namespace std;
 

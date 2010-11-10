@@ -15,8 +15,8 @@
 #include <QPointF>
 #include "common.h"
 
-#include "XMLUtilities.h"
-#include "GUIPortAppearance.h"
+#include "../Utilities/XMLUtilities.h"
+#include "../GUIPortAppearance.h"
 
 
 class GUIModelObjectAppearance

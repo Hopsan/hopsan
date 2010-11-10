@@ -12,12 +12,11 @@
 
 #include "MainWindow.h"
 #include "ProjectTabWidget.h"
-#include "GUIObject.h"
+//#include "GUIObject.h"
 #include "GUIPort.h"
 #include "GraphicsView.h"
-#include "GUISystem.h"
-#include "GUIUtilities.h"
-#include "GUISystem.h"
+#include "Utilities/GUIUtilities.h"
+#include "GUIObjects/GUISystem.h"
 #include "loadObjects.h"
 
 #include "qwt_scale_engine.h"

@@ -2,8 +2,8 @@
 #define LOADOBJECTS_H
 
 #include <QTextStream>
-#include "GUIModelObjectAppearance.h"
-#include "XMLUtilities.h"
+#include "GUIObjects/GUIModelObjectAppearance.h"
+#include "Utilities/XMLUtilities.h"
 
 //Forward Declarations
 class GraphicsView;

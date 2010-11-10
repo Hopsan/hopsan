@@ -1,8 +1,8 @@
 #include "common.h"
 
 #include "GraphicsView.h"
-#include "GUIUtilities.h"
-#include "GUIObject.h"
+#include "Utilities/GUIUtilities.h"
+//#include "GUIObject.h"
 #include "GUIPort.h"
 #include "UndoStack.h"
 #include "GUIConnector.h"
@@ -11,7 +11,7 @@
 #include "MessageWidget.h"
 #include "LibraryWidget.h"
 #include "loadObjects.h"
-#include "GUISystem.h"
+#include "GUIObjects/GUISystem.h"
 
 using namespace std;
 

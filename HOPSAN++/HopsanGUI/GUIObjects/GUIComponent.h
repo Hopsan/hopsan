@@ -3,7 +3,7 @@
 
 #include "GUIModelObject.h"
 #include "common.h"
-#include "XMLUtilities.h"
+#include "../Utilities/XMLUtilities.h"
 #include <assert.h>
 
 //Forward declarations

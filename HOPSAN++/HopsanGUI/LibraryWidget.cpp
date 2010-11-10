@@ -12,7 +12,7 @@
 #include "LibraryWidget.h"
 #include "MainWindow.h"
 #include "MessageWidget.h"
-#include "GUIModelObjectAppearance.h"
+#include "GUIObjects/GUIModelObjectAppearance.h"
 
 using namespace std;
 using namespace hopsan;

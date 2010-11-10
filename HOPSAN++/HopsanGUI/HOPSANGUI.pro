@@ -17,14 +17,11 @@ SOURCES += main.cpp \
     InitializationThread.cpp \
     PreferenceWidget.cpp \
     OptionsWidget.cpp \
-    GUIObject.cpp \
     UndoStack.cpp \
-    GUIUtilities.cpp \
     GraphicsView.cpp \
     GraphicsScene.cpp \
     loadObjects.cpp \
     ProgressBarThread.cpp \
-    GUISystem.cpp \
     CoreSystemAccess.cpp \
     GUIPortAppearance.cpp \
     GUIConnectorAppearance.cpp \
@@ -32,14 +29,17 @@ SOURCES += main.cpp \
     PlotWindow.cpp \
     PyWrapperClasses.cpp \
     PyDock.cpp \
-    GUIComponent.cpp \
-    GUIGroup.cpp \
-    GUISystemPort.cpp \
-    GUIWidgets.cpp \
-    GUIContainerObject.cpp \
-    GUIModelObject.cpp \
-    XMLUtilities.cpp \
-    GUIModelObjectAppearance.cpp
+    GUIObjects/GUIWidgets.cpp \
+    GUIObjects/GUISystemPort.cpp \
+    GUIObjects/GUISystem.cpp \
+    GUIObjects/GUIObject.cpp \
+    GUIObjects/GUIModelObjectAppearance.cpp \
+    GUIObjects/GUIModelObject.cpp \
+    GUIObjects/GUIGroup.cpp \
+    GUIObjects/GUIContainerObject.cpp \
+    GUIObjects/GUIComponent.cpp \
+    Utilities/XMLUtilities.cpp \
+    Utilities/GUIUtilities.cpp
 
 HEADERS += MainWindow.h \
     ProjectTabWidget.h \
@@ -55,17 +55,13 @@ HEADERS += MainWindow.h \
     version.h \
     PreferenceWidget.h \
     OptionsWidget.h \
-    GUIObject.h \
-    GUIModelObjectAppearance.h \
     UndoStack.h \
-    GUIUtilities.h \
     CoreSystemAccess.h \
     GraphicsView.h \
     GraphicsScene.h \
     loadObjects.h \
     ProgressBarThread.h \
     common.h \
-    GUISystem.h \
     CoreSystemAccess.h \
     GUIPortAppearance.h \
     GUIConnectorAppearance.h \
@@ -73,13 +69,17 @@ HEADERS += MainWindow.h \
     PlotWindow.h \
     PyWrapperClasses.h \
     PyDock.h \
-    GUIComponent.h \
-    GUIGroup.h \
-    GUISystemPort.h \
-    GUIWidgets.h \
-    GUIContainerObject.h \
-    GUIModelObject.h \
-    XMLUtilities.h
+    GUIObjects/GUIWidgets.h \
+    GUIObjects/GUISystemPort.h \
+    GUIObjects/GUISystem.h \
+    GUIObjects/GUIObject.h \
+    GUIObjects/GUIModelObjectAppearance.h \
+    GUIObjects/GUIModelObject.h \
+    GUIObjects/GUIGroup.h \
+    GUIObjects/GUIContainerObject.h \
+    GUIObjects/GUIComponent.h \
+    Utilities/XMLUtilities.h \
+    Utilities/GUIUtilities.h
 
 OTHER_FILES += 
 

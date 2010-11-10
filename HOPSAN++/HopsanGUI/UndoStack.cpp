@@ -16,8 +16,8 @@
 #include <QTextStream>
 
 #include "GraphicsView.h"
-#include "GUIObject.h"
-#include "GUIModelObjectAppearance.h"
+//#include "GUIObject.h"
+#include "GUIObjects/GUIModelObjectAppearance.h"
 #include "MainWindow.h"
 #include "ProjectTabWidget.h"
 #include "LibraryWidget.h"
@@ -25,8 +25,8 @@
 #include "GUIConnector.h"
 #include "loadObjects.h"
 #include <assert.h>
-#include "GUIUtilities.h"
-#include "GUISystem.h"
+#include "Utilities/GUIUtilities.h"
+#include "GUIObjects/GUISystem.h"
 
 //! @brief Constructor for the undo stack
 //! @param parentSystem Pointer to the current system

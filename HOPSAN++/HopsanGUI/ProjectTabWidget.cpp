@@ -31,15 +31,15 @@
 #include "ProgressBarThread.h"
 #include "UndoStack.h"
 #include "LibraryWidget.h"
-#include "GUIObject.h"
+#include "GUIObjects/GUIObject.h"
 #include "GUIConnector.h"
 #include "GraphicsScene.h"
 #include "GraphicsView.h"
-#include "GUISystem.h"
+#include "GUIObjects/GUISystem.h"
 #include "PlotWidget.h"
 
 #include "version.h"
-#include "GUIUtilities.h"
+#include "Utilities/GUIUtilities.h"
 #include "loadObjects.h"
 
 

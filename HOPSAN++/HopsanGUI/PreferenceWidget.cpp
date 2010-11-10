@@ -14,7 +14,7 @@
 #include "PreferenceWidget.h"
 #include "ProjectTabWidget.h"
 #include "MainWindow.h"
-#include "GUISystem.h"
+#include "GUIObjects/GUISystem.h"
 #include "LibraryWidget.h"
 
 

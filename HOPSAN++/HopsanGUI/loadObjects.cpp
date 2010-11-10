@@ -4,14 +4,14 @@
 
 #include "LibraryWidget.h"
 #include "GraphicsView.h"
-#include "GUIObject.h"
+//#include "GUIObject.h"
 #include "CoreSystemAccess.h"
 #include "GUIConnector.h"
 #include "GUIPort.h"
 #include "MessageWidget.h"
 #include "version.h"
-#include "GUISystem.h"
-#include "GUIUtilities.h"
+#include "GUIObjects/GUISystem.h"
+#include "Utilities/GUIUtilities.h"
 #include "GraphicsScene.h"
 
 void HeaderLoadData::read(QTextStream &rStream)

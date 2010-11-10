@@ -13,11 +13,11 @@
 
 #include "ParameterDialog.h"
 #include "MainWindow.h"
-#include "GUIObject.h"
-#include "GUISystem.h"
+//#include "GUIObjects/GUIModelObject.h"
+#include "GUIObjects/GUISystem.h"
 #include "GUIPort.h"
 #include "MessageWidget.h"
-#include "GUIComponent.h"
+#include "GUIObjects/GUIComponent.h"
 
 
 //! @class ParameterDialog

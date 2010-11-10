@@ -7,12 +7,12 @@
 #include "MainWindow.h"
 #include "GUIPort.h"
 #include "GraphicsView.h"
-#include "GUIUtilities.h"
-#include "GUIObject.h"
+#include "Utilities/GUIUtilities.h"
+#include "GUIObjects/GUIModelObject.h"
 #include "GUIConnector.h"
 #include "UndoStack.h"
 #include "ProjectTabWidget.h"
-#include "GUISystem.h"
+#include "GUIObjects/GUISystem.h"
 #include "loadObjects.h"
 #include <math.h>
 
