@@ -239,8 +239,10 @@ void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
     for(pit = parameterNames.begin(); pit != parameterNames.end(); ++pit)
     {
         QDomElement xmlParam = appendDomElement(rDomElement, HMF_PARAMETERTAG);
-        appendDomTextNode(xmlParam, HMF_NAMETAG, *pit);
-        appendDomValueNode(xmlParam, HMF_VALUETAG, mpParentSystem->mpCoreSystemAccess->getParameterValue(this->getName(), (*pit)));
+//        appendDomTextNode(xmlParam, HMF_NAMETAG, *pit);
+//        appendDomValueNode(xmlParam, HMF_VALUETAG, mpParentSystem->mpCoreSystemAccess->getParameterValue(this->getName(), (*pit)));
+        xmlParam.setAttribute(HMF_NAMETAG, *pit);
+        xmlParam.setAttribute(HMF_VALUETAG, mpParentSystem->mpCoreSystemAccess->getParameterValue(this->getName(), (*pit)));
     }
 
     //Save start values
@@ -253,13 +255,17 @@ void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
         mpParentSystem->mpCoreSystemAccess->getStartValueDataNamesValuesAndUnits(this->getName(), (*portIt)->getName(), startValueNames, startValueValues, dummy);
         if((!startValueNames.empty()))
         {
-            QDomElement xmlPort = appendDomElement(rDomElement, HMF_PORTTAG);
-            appendDomTextNode(xmlPort, HMF_NAMETAG, (*portIt)->getName());
+//            QDomElement xmlPort = appendDomElement(rDomElement, HMF_PORTTAG);
+//            appendDomTextNode(xmlPort, HMF_NAMETAG, (*portIt)->getName());
             for(size_t i = 0; i < startValueNames.size(); ++i)
             {
-                QDomElement xmlStartValue = appendDomElement(xmlPort, "startvalue");
-                appendDomTextNode(xmlStartValue, "quantity", startValueNames[i]);
-                appendDomValueNode(xmlStartValue, "value", startValueValues[i]);
+                //QDomElement xmlStartValue = appendDomElement(xmlPort, "startvalue");
+                QDomElement xmlStartValue = appendDomElement(rDomElement, "startvalue");
+//                appendDomTextNode(xmlStartValue, "quantity", startValueNames[i]);
+//                appendDomValueNode(xmlStartValue, "value", startValueValues[i]);
+                xmlStartValue.setAttribute("portname", (*portIt)->getName());
+                xmlStartValue.setAttribute("variable", startValueNames[i]);
+                xmlStartValue.setAttribute("value", startValueValues[i]);
             }
         }
     }

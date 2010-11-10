@@ -137,8 +137,9 @@ signals:
     void componentChanged();
 
 protected:
+    QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
     void saveCoreDataToDomElement(QDomElement &rDomElement);
-    void saveSystemAppearanceToDomElement(QDomElement &rDomElement);
+//    void saveSystemAppearanceToDomElement(QDomElement &rDomElement);
 
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);

@@ -118,3 +118,44 @@ bool parseDomBooleanNode(QDomElement domElement)
     return (domElement.text() == "true");
 }
 
+//void setAttribute(QDomElement &rDomElement, QString attrname, QString text)
+//{
+//    rDomElement.setAttribute(attrname, text);
+//}
+
+//void setAttribute(QDomElement &rDomElement, QString attrname, int text)
+//{
+//    rDomElement.setAttribute(attrname, text);
+//}
+
+void appendPoseTag(QDomElement &rDomElement, qreal x, qreal y, qreal th)
+{
+    QDomElement pose = appendDomElement(rDomElement, HMF_POSETAG);
+    pose.setAttribute("x",x);
+    pose.setAttribute("y",y);
+    pose.setAttribute("a",th);
+}
+
+void appendCoordinateTag(QDomElement &rDomElement, qreal x, qreal y)
+{
+    QDomElement pose = appendDomElement(rDomElement, HMF_COORDINATETAG);
+    pose.setAttribute("x",x);
+    pose.setAttribute("y",y);
+}
+
+void appendViewPortTag(QDomElement &rDomElement, qreal x, qreal y, qreal zoom)
+{
+    QDomElement pose = appendDomElement(rDomElement, HMF_VIEWPORTTAG);
+    pose.setAttribute("x",x);
+    pose.setAttribute("y",y);
+    pose.setAttribute("zoom",zoom);
+}
+
+void appendSimulationTimeTag(QDomElement &rDomElement, qreal start, qreal step, qreal stop)
+{
+    QDomElement simu = appendDomElement(rDomElement, HMF_SIMULATIONTIMETAG);
+    simu.setAttribute("start", start);
+    simu.setAttribute("timestep", step);
+    simu.setAttribute("stop", stop);
+}
+

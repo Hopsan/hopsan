@@ -530,42 +530,33 @@ void GUISystem::saveToTextStream(QTextStream &rStream, QString prepend)
 //! @todo maybe have a inherited function in some other base class that are specific for guiobjects with core equivalent
 void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
 {
-    appendDomTextNode(rDomElement, HMF_TYPETAG, getTypeName());
-    appendDomTextNode(rDomElement, HMF_NAMETAG, getName());
+    GUIModelObject::saveCoreDataToDomElement(rDomElement);
+    rDomElement.setAttribute(HMF_CQSTYPETAG, getTypeCQS());
+    appendSimulationTimeTag(rDomElement, this->mStartTime, this->mTimeStep, this->mStopTime);
 }
 
-//! @todo should probably use the appearancedata class to save thiss stuff instead
-void GUISystem::saveSystemAppearanceToDomElement(QDomElement &rDomElement)
+QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
 {
-    QDomElement xmlApp;
-    xmlApp = appendDomElement(rDomElement, HMF_SYSTEMAPPEARANCETAG);
-    this->updateExternalPortPositions();
+    QDomElement guiStuff = GUIModelObject::saveGuiDataToDomElement(rDomElement);
 
-    this->mGUIModelObjectAppearance.saveToDomElement(xmlApp);
+    //Should we try to append appearancedata stuff
+    if (mLoadType!="EXTERNAL")
+    {
+        //! @todo what happens if a subsystem (embeded) is asved, then we dont want to set the current graphics view
+        if (this->mpParentProjectTab->mpGraphicsView != 0);
+        {
+            qreal x,y,zoom;
+            this->mpParentProjectTab->mpGraphicsView->getViewPort(x,y,zoom);
+            appendViewPortTag(guiStuff, x, y, zoom);
+        }
 
-//    appendDomTextNode(xmlApp, HMF_USERICONTAG, this->getUserIconPath());
-//    appendDomTextNode(xmlApp, HMF_ISOICONTAG, this->getIsoIconPath());
+        QDomElement xmlApp = appendDomElement(rDomElement, HMF_SYSTEMAPPEARANCETAG);
+        this->updateExternalPortPositions();
 
-//    //Now write ports
-//    QList<GUIPort*>::iterator pit;
-//    for (pit=mPortListPtrs.begin(); pit!=mPortListPtrs.end(); ++pit)
-//    {
-//        //qDebug() << "Saving port: " << (*pit)->getName();
-//        QDomElement xmlPort = appendDomElement(xmlApp, HMF_PORTTAG);
-//        appendDomTextNode(xmlPort, HMF_NAMETAG, (*pit)->getName());
-//        appendDomValueNode3(xmlPort, HMF_POSETAG, (*pit)->getCenterPos().x(), (*pit)->getCenterPos().y(), (*pit)->getPortHeading());
-//        //qDebug() << "Done";
-//    }
+        this->mGUIModelObjectAppearance.saveToDomElement(xmlApp);
+    }
+    return guiStuff;
 }
-
-//QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
-//{
-//    //Create reference to created object for further additions, (not sure if we really need a reference copy are not using this everywhere else)
-//    QDomElement guiStuff = GUIModelObject::saveGuiDataToDomElement(rDomElement);
-
-
-//    return guiStuff;
-//}
 
 void GUISystem::saveToDomElement(QDomElement &rDomElement)
 {
@@ -592,7 +583,7 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
 
     //! @todo do we really need both systemtype and external path, en empty path could indicate embeded
     //appendDomTextNode(subsysContainerNode, "SystemType", mLoadType);
-    appendDomTextNode(xmlSubsystem, HMF_CQSTYPETAG, getTypeCQS());
+
     if ((mpParentSystem != 0) && (mLoadType=="EXTERNAL"))
     {
         appendDomTextNode(xmlSubsystem, HMF_EXTERNALPATHTAG, relativePath(mModelFileInfo.absoluteFilePath(), mpParentSystem->mModelFileInfo.absolutePath()));
@@ -603,12 +594,13 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
     }
 
     //Save gui object stuff
-    if (mLoadType!="EXTERNAL")
-    {
-        QDomElement guiStuff = this->saveGuiDataToDomElement(xmlSubsystem);
-        //Now append the system appearance data
-        this->saveSystemAppearanceToDomElement(guiStuff);
-    }
+    this->saveGuiDataToDomElement(xmlSubsystem);
+//    if (mLoadType!="EXTERNAL")
+//    {
+//        QDomElement guiStuff = this->saveGuiDataToDomElement(xmlSubsystem);
+//        //Now append the system appearance data
+//        this->saveSystemAppearanceToDomElement(guiStuff);
+//    }
 
     //Save all of the sub objects
     if (mLoadType=="EMBEDED" || mLoadType=="ROOT")

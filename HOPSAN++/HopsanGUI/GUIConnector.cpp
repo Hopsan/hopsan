@@ -517,16 +517,22 @@ void GUIConnector::saveToDomElement(QDomElement &rDomElement)
 {
     //Core necessary stuff
     QDomElement xmlConnect = appendDomElement(rDomElement, HMF_CONNECTORTAG);
-    appendDomTextNode(xmlConnect, HMF_CONNECTORSTARTCOMPONENTTAG, getStartComponentName());
-    appendDomTextNode(xmlConnect, HMF_CONNECTORSTARTPORTTAG, getStartPortName());
-    appendDomTextNode(xmlConnect, HMF_CONNECTORENDCOMPONENTTAG, getEndComponentName());
-    appendDomTextNode(xmlConnect, HMF_CONNECTORENDPORTTAG, getEndPortName());
+//    appendDomTextNode(xmlConnect, HMF_CONNECTORSTARTCOMPONENTTAG, getStartComponentName());
+//    appendDomTextNode(xmlConnect, HMF_CONNECTORSTARTPORTTAG, getStartPortName());
+//    appendDomTextNode(xmlConnect, HMF_CONNECTORENDCOMPONENTTAG, getEndComponentName());
+//    appendDomTextNode(xmlConnect, HMF_CONNECTORENDPORTTAG, getEndPortName());
+
+    xmlConnect.setAttribute(HMF_CONNECTORSTARTCOMPONENTTAG, getStartComponentName());
+    xmlConnect.setAttribute(HMF_CONNECTORSTARTPORTTAG, getStartPortName());
+    xmlConnect.setAttribute(HMF_CONNECTORENDCOMPONENTTAG, getEndComponentName());
+    xmlConnect.setAttribute(HMF_CONNECTORENDPORTTAG, getEndPortName());
 
     //Save gui data to dom
     QDomElement xmlConnectGUI = appendDomElement(xmlConnect, HMF_HOPSANGUITAG);
     for(size_t j=0; j<mPoints.size(); ++j)
     {
-        appendDomValueNode2(xmlConnectGUI, HMF_XYTAG, mPoints[j].x(), mPoints[j].y());
+        appendCoordinateTag(xmlConnectGUI, mPoints[j].x(), mPoints[j].y());
+        //appendDomValueNode2(xmlConnectGUI, HMF_XYTAG, mPoints[j].x(), mPoints[j].y());
 //        appendDomTextNode(xmlConnectGUI, "ptx", mPoints[j].x());
 //        appendDomTextNode(xmlConnectGUI, "pty", mPoints[j].y());
     }

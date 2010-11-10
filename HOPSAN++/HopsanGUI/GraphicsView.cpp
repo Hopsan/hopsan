@@ -166,6 +166,14 @@ void GraphicsView::updateViewPort()
     }
 }
 
+//! @brief Returns the vieports center and zoom in the supplied reference variables
+void GraphicsView::getViewPort(qreal &rX, qreal &rY, qreal &rZoom)
+{
+    rX = (horizontalScrollBar()->value() + width()/2.0 - pos().x()) / mZoomFactor;
+    rY = (verticalScrollBar()->value() + height()/2.0 - pos().y()) / mZoomFactor;
+    rZoom = mZoomFactor;
+}
+
 
 //! Defines what happens when scrolling the mouse in a GraphicsView.
 //! @param event contains information of the scrolling operation.

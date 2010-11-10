@@ -24,6 +24,7 @@ public:
     GraphicsView(ProjectTab *parent = 0);
 
     void updateViewPort();
+    void getViewPort(qreal &rX, qreal &rY, qreal &rZoom);
 
     ProjectTab *mpParentProjectTab;
     GUISystem *mpSystem;

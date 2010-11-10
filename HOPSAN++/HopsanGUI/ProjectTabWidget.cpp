@@ -370,19 +370,19 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     //Save xml document
     QDomDocument domDocument;
     QDomElement hmfRoot = appendHMFRootElement(domDocument);
-    QDomElement xmlModelProperties = appendDomElement(hmfRoot,"modelproperties");
+//    QDomElement xmlModelProperties = appendDomElement(hmfRoot,"modelproperties");
     //Simulation time
     //! @todo maybe use tuple of 3 instead of thre different element (if you can do that in xml)
-    appendDomValueNode(xmlModelProperties, "starttime", pMainWindow->getStartTimeFromToolBar());
-    appendDomValueNode(xmlModelProperties, "timestep", pMainWindow->getTimeStepFromToolBar());
-    appendDomValueNode(xmlModelProperties, "stoptime", pMainWindow->getFinishTimeFromToolBar());
+//    appendDomValueNode(xmlModelProperties, "starttime", pMainWindow->getStartTimeFromToolBar());
+//    appendDomValueNode(xmlModelProperties, "timestep", pMainWindow->getTimeStepFromToolBar());
+//    appendDomValueNode(xmlModelProperties, "stoptime", pMainWindow->getFinishTimeFromToolBar());
     //viewport
-    QDomElement xmlViewPort = appendDomElement(xmlModelProperties,"viewport");
-    appendDomValueNode2(xmlViewPort, "xy",
-                        (mpGraphicsView->horizontalScrollBar()->value() + mpGraphicsView->width()/2 - mpGraphicsView->pos().x()) / mpGraphicsView->mZoomFactor,
-                        (mpGraphicsView->verticalScrollBar()->value() + mpGraphicsView->height()/2 - mpGraphicsView->pos().x()) / mpGraphicsView->mZoomFactor);
-    appendDomValueNode(xmlViewPort, "zoom", mpGraphicsView->mZoomFactor);
-    //! @todo save more stuff here
+//    QDomElement xmlViewPort = appendDomElement(xmlModelProperties,"viewport");
+//    appendDomValueNode2(xmlViewPort, "xy",
+//                        (mpGraphicsView->horizontalScrollBar()->value() + mpGraphicsView->width()/2 - mpGraphicsView->pos().x()) / mpGraphicsView->mZoomFactor,
+//                        (mpGraphicsView->verticalScrollBar()->value() + mpGraphicsView->height()/2 - mpGraphicsView->pos().x()) / mpGraphicsView->mZoomFactor);
+//    appendDomValueNode(xmlViewPort, "zoom", mpGraphicsView->mZoomFactor);
+//    //! @todo save more stuff here
 
 //    QDomElement xmlModelAppearance = appendDomElement(hmfRoot,"modelappearance");
 //    //! @todo save more stuff here, like ports and stuff

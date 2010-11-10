@@ -20,6 +20,14 @@ qreal parseDomValueNode(QDomElement domElement);
 void parseDomValueNode2(QDomElement domElement, double &rA, double &rB);
 void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &rC);
 
+//Attribute help functions
+//void setAttribute(QDomElement &rDomElement, QString attrname, QString text);
+//void setAttribute(QDomElement &rDomElement, QString attrname, int text);
+void appendPoseTag(QDomElement &rDomElement, qreal x, qreal y, qreal th);
+void appendCoordinateTag(QDomElement &rDomElement, qreal x, qreal y);
+void appendViewPortTag(QDomElement &rDomElement, qreal x, qreal y, qreal zoom);
+void appendSimulationTimeTag(QDomElement &rDomElement, qreal start, qreal step, qreal stop);
+
 //Save Load Definitions
 #define HMF_ROOTTAG "hopsanmodelfile"
 #define HMF_OBJECTTAG "object"              //Non core Gui Object
@@ -38,12 +46,15 @@ void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &
 #define HMF_PORTTAG "port"
 
 #define HMF_HOPSANGUITAG "hopsangui"
+#define HMF_COORDINATETAG "coordinate"
 #define HMF_XYTAG "xy"                      //Containes an xy coordinate pair
 #define HMF_EXTERNALPATHTAG "external_path" //Contains the path to an external subsystem
 #define HMF_VALUETAG "value"
 #define HMF_TURETAG "true"
 #define HMF_FALSETAG "false"
 #define HMF_POSETAG "pose"
+#define HMF_VIEWPORTTAG "viewport"
+#define HMF_NAMETEXTTAG "nametext"
 #define HMF_NAMETEXTPOSTAG "nametextpos"
 #define HMF_VISIBLETAG "nametextvisible"
 
@@ -62,6 +73,7 @@ void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &
 #define HMF_VERSIONTAG "hmfversion"
 #define HMF_HOPSANGUIVERSIONTAG "hopsanguiversion"
 #define HMF_HOPSANCOREVERSIONTAG "hopsancoreversion"
+#define HMF_SIMULATIONTIMETAG "simulationtime"
 
 
 #endif // XMLUTILITIES_H
