@@ -109,7 +109,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
 //        }
 
 
-        this->refreshPortOverlayRotation();
+        this->refreshPortOverlayPosition();
 //    }
 
     mMag = GOLDENRATIO;
@@ -255,7 +255,7 @@ void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 //! @param *event defines the mouse event.
 void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    //QGraphicsItem::mousePressEvent(event); //Don't work if this is called
+    //QGraphicsSvgItem::mousePressEvent(event); //Don't work if this is called
     if (event->button() == Qt::LeftButton)
     {
         //std::cout << "GUIPort.cpp: " << "portClick emitted\n";
@@ -264,7 +264,9 @@ void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
     else if (event->button() == Qt::RightButton)
     {
         //std::cout << "GUIPort.cpp: " << "RightClick" << std::endl;
-    }
+/*        if ((!this->isConnected()) || (mpParentSystem->mpCoreSystemAccess->getTimeVector(getGUIComponentName(), this->getName()).empty()))
+            openRightClickMenu(event->screenPos());//Ska bort
+*/    }
     magnify(false);
 }
 
@@ -287,34 +289,41 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     }
     else
     {
-        QMenu menu;
+        openRightClickMenu(event->screenPos());
+    }
+}
 
-        QVector<QString> parameterNames;
-        QVector<QString> parameterUnits;
-        mpParentGuiModelObject->mpParentSystem->mpCoreSystemAccess->getPlotDataNamesAndUnits(mpParentGuiModelObject->getName(), this->getName(), parameterNames, parameterUnits);
 
-        //QAction *plotPressureAction = menu.addAction("Plot pressure");
-        //QAction *plotFlowAction = menu.addAction("Plot flow");
-        QVector<QAction *> parameterActions;
-        QAction *tempAction;
-        for(int i=0; i<parameterNames.size(); ++i)
+void GUIPort::openRightClickMenu(QPoint screenPos)
+{
+    QMenu menu;
+
+    QVector<QString> parameterNames;
+    QVector<QString> parameterUnits;
+    mpParentGuiModelObject->mpParentSystem->mpCoreSystemAccess->getPlotDataNamesAndUnits(mpParentGuiModelObject->getName(), this->getName(), parameterNames, parameterUnits);
+
+    //QAction *plotPressureAction = menu.addAction("Plot pressure");
+    //QAction *plotFlowAction = menu.addAction("Plot flow");
+    QVector<QAction *> parameterActions;
+    QAction *tempAction;
+    for(int i=0; i<parameterNames.size(); ++i)
+    {
+
+        tempAction = menu.addAction(QString("Plot "+parameterNames[i]+" ["+parameterUnits[i]+"]"));
+        parameterActions.append(tempAction);
+    }
+
+    QAction *selectedAction = menu.exec(screenPos);
+
+    for(int i=0; i<parameterNames.size(); ++i)
+    {
+        if (selectedAction == parameterActions[i])
         {
-
-            tempAction = menu.addAction(QString("Plot "+parameterNames[i]+" ["+parameterUnits[i]+"]"));
-            parameterActions.append(tempAction);
-        }
-
-        QAction *selectedAction = menu.exec(event->screenPos());
-
-        for(int i=0; i<parameterNames.size(); ++i)
-        {
-            if (selectedAction == parameterActions[i])
-            {
-                plot(parameterNames[i], parameterUnits[i]);
-            }
+            plot(parameterNames[i], parameterUnits[i]);
         }
     }
 }
+
 
 QVariant GUIPort::itemChange( GraphicsItemChange change, const QVariant & value )
 {
@@ -360,8 +369,8 @@ void GUIPort::addPortGraphicsOverlay(QString filepath)
 }
 
 
-//! @brief Refreshes the port overlay rotation and makes sure that the overlay allways have rotation zero (to be readable)
-void GUIPort::refreshPortOverlayRotation()
+//! @brief Refreshes the port overlay position and makes sure that the overlay allways have rotation zero (to be readable)
+void GUIPort::refreshPortOverlayPosition()
 {
     QTransform transf;
     QPointF pt1, pt2, pt3;
@@ -381,7 +390,7 @@ void GUIPort::refreshPortOverlayRotation()
     }
     pt2 =  transf * pt1;
     pt3 = this->boundingRect().center();
-    this->mpPortLabel->setPos(pt3-pt2);
+    this->mpPortLabel->setPos(pt3-pt2+QPoint(20,20)); //! @todo This is a mess, magnify fucks the pos for the label
 
 //    qDebug() << "pt1: " << pt1;
 //    qDebug() << "pt2: " << pt2;
@@ -429,7 +438,7 @@ void GUIPort::setPortOverlayScale(qreal scale)
 
 void GUIPort::scalePortOverlay(qreal scalefactor)
 {
-    this->mpPortLabel->setScale(mpPortLabel->scale()*1.0/scalefactor);
+    //this->mpPortLabel->setScale(mpPortLabel->scale()*1.0/scalefactor);
 
     if (this->mpPortGraphicsOverlay != 0)
     {

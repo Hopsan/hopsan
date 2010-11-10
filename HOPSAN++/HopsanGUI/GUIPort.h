@@ -74,6 +74,7 @@ protected:
 
     void addPortGraphicsOverlay(QString filepath);
     void scalePortOverlay(qreal scalefactor);
+    void openRightClickMenu(QPoint screenPos);
 
 protected slots:
     void setPortOverlayScale(qreal scale);
@@ -81,7 +82,7 @@ protected slots:
     //protected slots:
 public: //! @todo This was made public temporarly to test plot in Python
     bool plot(QString dataName, QString dataUnit=QString());
-    void refreshPortOverlayRotation();
+    void refreshPortOverlayPosition();
 
 private:
     QColor myLineColor;

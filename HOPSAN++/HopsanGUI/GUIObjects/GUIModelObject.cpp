@@ -675,7 +675,7 @@ void GUIModelObject::rotate(undoStatus undoSettings)
 //        else
 //            mPortListPtrs.value(i)->setPortDirection(TOPBOTTOM);
 
-        mPortListPtrs.value(i)->refreshPortOverlayRotation();
+        mPortListPtrs.value(i)->refreshPortOverlayPosition();
     }
 
     //! @todo danger real == real
@@ -836,7 +836,7 @@ void GUIModelObject::flipHorizontal(undoStatus undoSettings)
     //! @todo myabe use signals and slots instead
     for (int i = 0; i != mPortListPtrs.size(); ++i)
     {
-        mPortListPtrs[i]->refreshPortOverlayRotation();
+        mPortListPtrs[i]->refreshPortOverlayPosition();
     }
     this->snapNameTextPosition(mpNameText->pos());
 
