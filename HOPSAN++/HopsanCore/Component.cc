@@ -701,7 +701,7 @@ ComponentSignal::ComponentSignal(string name, double timestep) : Component(name,
     mIsComponentSignal = true;
 }
 
-
+//! @brief Loads the start values to the connected Node from the "start value node" at each Port of the component
 void Component::loadStartValues()
 {
     std::vector<Port*> pPortPtrs = getPortPtrVector();

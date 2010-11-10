@@ -24,15 +24,22 @@ class pyTestClass : public QObject
 {
     Q_OBJECT
 
+public:
+    pyTestClass()
+    {
+        mpVector = new QVector<double>;
+        mpVector->append(3.34);
+        mpVector->append(4.45);
+    }
+
 public slots:
     QVector<double> getVector()
     {
-        QVector<double> *pTest = new QVector<double>;
-        pTest->append(3.34);
-        pTest->append(4.45);
-
-        return *pTest;
+        return *mpVector;
     }
+
+private:
+    QVector<double> *mpVector;
 };
 
 
