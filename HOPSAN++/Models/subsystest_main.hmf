@@ -6,7 +6,7 @@ HMFVERSION 0.1
 CAFVERSION 0.1
 --------------------------------------------------------------
 SIMULATIONTIME 0 0.001 10
-VIEWPORT 2502 2501 1
+VIEWPORT 2508 2387 1
 --------------------------------------------------------------
 USERICON ""
 ISOICON ""
@@ -19,6 +19,7 @@ PARAMETER "Laminar Orifice" "Kc" 1e-11
 COMPONENT "SignalSource" "Constant" 2261 2390 0 0 1
 PARAMETER "Constant" "Value" 1
 COMPONENT "HydraulicPressureSensor" "Pressure Sensor" 2545 2330 0 0 1
+COMPONENT "SignalSink" "Sink_1" 2629 2257 0 0 1
 BEGINSUBSYSTEM "EXTERNAL" "subsystest_sub" "C" "subsystest_sub.hmf" 2447 2469 0 0 1
 ENDSUBSYSTEM
 COMPONENT "HydraulicTankC" "Tank C" 2731 2471 0 0 1
@@ -36,4 +37,5 @@ CONNECT "Constant" "out" "subsystest_sub" "sysp" 2273.5 2390 2340 2390 2340 2424
 CONNECT "subsystest_sub" "sysp_1" "Laminar Orifice" "P2" 2490.16 2440.5 2490.16 2399 2615 2399
 CONNECT "Laminar Orifice" "P1" "Tank C" "P1" 2615 2469 2731 2469 2731 2456.5
 CONNECT "Pressure Sensor" "P1" "subsystest_sub" "sysp_1" 2545 2359.5 2545 2407 2490.16 2407 2490.16 2440.5
+CONNECT "Pressure Sensor" "out" "Sink_1" "in" 2545 2300.5 2545 2257 2616.5 2257
 --------------------------------------------------------------
