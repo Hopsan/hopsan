@@ -22,8 +22,6 @@ namespace hopsan {
     class HydraulicPressureSource : public ComponentC
     {
     private:
-        //double mStartPressure;
-        double mStartFlow;
         double mZc;
         double mPressure;
         Port *mpIn, *mpP1;
@@ -37,7 +35,6 @@ namespace hopsan {
         HydraulicPressureSource(const std::string name) : ComponentC(name)
         {
             mTypeName = "HydraulicPressureSource";
-            mStartFlow      = 0.0;
             mPressure       = 1.0e5;
             mZc             = 0.0;
 
@@ -45,14 +42,16 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
 
             registerParameter("P", "Default pressure", "Pa", mPressure);
+
+            setStartValue(mpP1, NodeHydraulic::PRESSURE, mPressure);
+            setStartValue(mpP1, NodeHydraulic::FLOW, 0.0);
         }
 
 
         void initialize()
         {
-            //write to nodes
-            mpP1->writeNode(NodeHydraulic::PRESSURE, mPressure);
-            mpP1->writeNode(NodeHydraulic::FLOW, mStartFlow);
+            mpP1->writeNode(NodeHydraulic::PRESSURE, mPressure); //Override the startvalue for the pressure
+            setStartValue(mpP1, NodeHydraulic::PRESSURE, mPressure); //This is here to show the user that the start value is hard coded!
         }
 
 

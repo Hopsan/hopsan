@@ -14,6 +14,7 @@
 #include <cassert>
 #include <math.h>
 #include "Component.h"
+#include "CoreUtilities/HopsanCoreMessageHandler.h"
 
 using namespace std;
 using namespace hopsan;
@@ -310,6 +311,10 @@ void Port::setStartValue(const size_t &idx, const double &value)
 {
     if(mpStartNode)
         mpStartNode->setData(idx, value);
+    else
+        gCoreMessageHandler.addWarningMessage("Tried to add StartValue for to Component: " +\
+                                              getComponentName() + "::" + getPortName() +\
+                                              " This was ignored because this port does not have any StartValue to set.");
 }
 
 

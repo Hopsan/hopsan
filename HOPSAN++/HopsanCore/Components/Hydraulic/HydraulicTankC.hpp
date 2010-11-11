@@ -22,8 +22,6 @@ namespace hopsan {
     class HydraulicTankC : public ComponentC
     {
     private:
-        //double mStartPressure;
-        double mStartFlow;
         double mZc;
         double mPressure;
         Port *mpP1;
@@ -37,21 +35,23 @@ namespace hopsan {
         HydraulicTankC(const std::string name) : ComponentC(name)
         {
             mTypeName = "HydraulicTankC";
-            mStartFlow      = 0.0;
             mPressure       = 1.0e5;
             mZc             = 0.0;
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
 
             registerParameter("P", "Default pressure", "Pa", mPressure);
+
+            setStartValue(mpP1, NodeHydraulic::FLOW, 0.0);
+            setStartValue(mpP1, NodeHydraulic::PRESSURE, mPressure);
         }
 
 
         void initialize()
         {
-            //write to nodes
+            //Override the start value
             mpP1->writeNode(NodeHydraulic::PRESSURE, mPressure);
-            mpP1->writeNode(NodeHydraulic::FLOW, mStartFlow);
+            setStartValue(mpP1, NodeHydraulic::PRESSURE, mPressure); //Change the startvalue to notify the user
         }
 
 

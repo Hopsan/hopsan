@@ -24,8 +24,6 @@ namespace hopsan {
     {
 
     private:
-        double mStartPressure;
-        double mStartFlow;
         double mTimeDelay;
         double mAlpha;
         double mZc;
@@ -45,8 +43,6 @@ namespace hopsan {
         {
             //Set member attributes
             mTypeName = "HydraulicTLMRlineR";
-            mStartPressure = 1.0;
-            mStartFlow     = 0.0;
             mTimeDelay     = 0.1;
             mZc            = 1.0e9;
             mAlpha         = 0.0;
@@ -63,24 +59,25 @@ namespace hopsan {
             registerParameter("Zc", "Impedance", "Ns/m^5",  mZc);
             registerParameter("R1", "Resistance 1", "Ns/m^5",  mR1);
             registerParameter("R2", "Resistance 2", "Ns/m^5",  mR2);
+
+            setStartValue(mpP1, NodeHydraulic::FLOW, 0.0);
+            setStartValue(mpP1, NodeHydraulic::PRESSURE, 1.0e5);
+            setStartValue(mpP2, NodeHydraulic::FLOW, 0.0);
+            setStartValue(mpP2, NodeHydraulic::PRESSURE, 1.0e5);
         }
 
 
         void initialize()
         {
             //Write to nodes
-            mpP1->writeNode(NodeHydraulic::FLOW,     mStartFlow);
-            mpP1->writeNode(NodeHydraulic::PRESSURE,     mStartPressure);
-            mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+(mZc+mR1)*mStartFlow);
+            mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, getStartValue(mpP1,NodeHydraulic::PRESSURE)+(mZc+mR1)*getStartValue(mpP1,NodeHydraulic::FLOW));
             mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc+mR1);
-            mpP2->writeNode(NodeHydraulic::FLOW,     mStartFlow);
-            mpP2->writeNode(NodeHydraulic::PRESSURE,     mStartPressure);
-            mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+(mZc+mR2)*mStartFlow);
+            mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, getStartValue(mpP2,NodeHydraulic::PRESSURE)+(mZc+mR2)*getStartValue(mpP2,NodeHydraulic::FLOW));
             mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc+mR2);
 
             //Init delay
-            mDelayedC1.initialize(mTimeDelay-mTimestep, mTimestep, mStartPressure+(mZc+mR1)*mStartFlow); //-mTimestep sue to calc time
-            mDelayedC2.initialize(mTimeDelay-mTimestep, mTimestep, mStartPressure+(mZc+mR1)*mStartFlow);
+            mDelayedC1.initialize(mTimeDelay-mTimestep, mTimestep, getStartValue(mpP1,NodeHydraulic::PRESSURE)+(mZc+mR1)*getStartValue(mpP1,NodeHydraulic::FLOW)); //-mTimestep sue to calc time
+            mDelayedC2.initialize(mTimeDelay-mTimestep, mTimestep, getStartValue(mpP2,NodeHydraulic::PRESSURE)+(mZc+mR1)*getStartValue(mpP2,NodeHydraulic::FLOW));
         }
 
 

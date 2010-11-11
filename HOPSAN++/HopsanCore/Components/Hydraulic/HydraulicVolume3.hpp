@@ -22,8 +22,6 @@ namespace hopsan {
     {
 
     private:
-        double mStartPressure;
-        double mStartFlow;
         double mZc;
         double mAlpha;
         double mVolume;
@@ -40,8 +38,6 @@ namespace hopsan {
         {
             //Set member attributes
             mTypeName = "HydraulicVolume3";
-            mStartPressure = 0.0;
-            mStartFlow     = 0.0;
             mBulkmodulus   = 1.0e9;
             mVolume        = 1.0e-3;
             mAlpha         = 0.1;
@@ -55,6 +51,13 @@ namespace hopsan {
             registerParameter("V", "Volume", "[m^3]",            mVolume);
             registerParameter("Be", "Bulkmodulus", "[Pa]", mBulkmodulus);
             registerParameter("a", "Low pass coeficient to dampen standing delayline waves", "[-]",  mAlpha);
+
+            setStartValue(mpP1, NodeHydraulic::FLOW, 0.0);
+            setStartValue(mpP1, NodeHydraulic::PRESSURE, 1.0e5);
+            setStartValue(mpP2, NodeHydraulic::FLOW, 0.0);
+            setStartValue(mpP2, NodeHydraulic::PRESSURE, 1.0e5);
+            setStartValue(mpP3, NodeHydraulic::FLOW, 0.0);
+            setStartValue(mpP3, NodeHydraulic::PRESSURE, 1.0e5);
         }
 
 
@@ -64,17 +67,17 @@ namespace hopsan {
             mZc = 3 / 2 * mBulkmodulus/mVolume*mTimestep/(1-mAlpha); //Need to be updated at simulation start since it is volume and bulk that are set.
 
             //Write to nodes
-            mpP1->writeNode(NodeHydraulic::FLOW,     mStartFlow);
-            mpP1->writeNode(NodeHydraulic::PRESSURE,     mStartPressure);
-            mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+mZc*mStartFlow);
+            mpP1->writeNode(NodeHydraulic::FLOW,         getStartValue(mpP1,NodeHydraulic::FLOW));
+            mpP1->writeNode(NodeHydraulic::PRESSURE,     getStartValue(mpP1,NodeHydraulic::PRESSURE));
+            mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, getStartValue(mpP1,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP1,NodeHydraulic::FLOW));
             mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc);
-            mpP2->writeNode(NodeHydraulic::FLOW,     mStartFlow);
-            mpP2->writeNode(NodeHydraulic::PRESSURE,     mStartPressure);
-            mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+mZc*mStartFlow);
+            mpP2->writeNode(NodeHydraulic::FLOW,         getStartValue(mpP2,NodeHydraulic::FLOW));
+            mpP2->writeNode(NodeHydraulic::PRESSURE,     getStartValue(mpP2,NodeHydraulic::PRESSURE));
+            mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, getStartValue(mpP2,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP2,NodeHydraulic::FLOW));
             mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc);
-            mpP3->writeNode(NodeHydraulic::FLOW,     mStartFlow);
-            mpP3->writeNode(NodeHydraulic::PRESSURE,     mStartPressure);
-            mpP3->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+mZc*mStartFlow);
+            mpP3->writeNode(NodeHydraulic::FLOW,         getStartValue(mpP3,NodeHydraulic::FLOW));
+            mpP3->writeNode(NodeHydraulic::PRESSURE,     getStartValue(mpP3,NodeHydraulic::PRESSURE));
+            mpP3->writeNode(NodeHydraulic::WAVEVARIABLE, getStartValue(mpP3,NodeHydraulic::PRESSURE)+mZc*getStartValue(mpP3,NodeHydraulic::FLOW));
             mpP3->writeNode(NodeHydraulic::CHARIMP,      mZc);
         }
 
