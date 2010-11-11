@@ -223,7 +223,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAp
         portAppearance.selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
         //We supply ptr to rootsystem to indicate that this is a systemport
         //! @todo this is a very bad way of doing this (ptr to rootsystem for systemport), really need to figure out some better way
-        GUIPort *pGuiPort = new GUIPort(pPortBoundaryInside->getGUIComponentName().append(", ").append(portName),
+        GUIPort *pGuiPort = new GUIPort(pPortBoundaryInside->getGuiModelObjectName().append(", ").append(portName),
                                         mpIcon->boundingRect().center().x()+x,
                                         mpIcon->boundingRect().center().y()-y,
                                         &(portAppearance),

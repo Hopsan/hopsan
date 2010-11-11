@@ -198,7 +198,7 @@ void CoreSystemAccess::setStartValueDataByNames(QString componentName, QString p
 
 void CoreSystemAccess::setParameter(QString componentName, QString parameterName, double value)
 {
-    mpCoreComponentSystem->getComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), value);
+    mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), value);
 }
 
 void CoreSystemAccess::removeSubComponent(QString componentName, bool doDelete)
@@ -223,7 +223,7 @@ void CoreSystemAccess::loadSystemFromFileCoreOnly(QString sysname, QString filep
 
 vector<double> CoreSystemAccess::getTimeVector(QString componentName, QString portName)
 {
-    vector<double>* ptr = (mpCoreComponentSystem->getComponent(componentName.toStdString())->getPort(portName.toStdString())->getTimeVectorPtr());
+    vector<double>* ptr = (mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getPort(portName.toStdString())->getTimeVectorPtr());
     if (ptr != 0)
     {
         return *ptr;
@@ -305,7 +305,7 @@ QVector<QString> CoreSystemAccess::getParameterNames(QString componentName)
 {
     QVector<QString> names;
     //*****Core Interaction*****
-    vector<string> core_names = mpCoreComponentSystem->getComponent(componentName.toStdString())->getParameterNames();
+    vector<string> core_names = mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterNames();
     vector<string>::iterator nit;
     //Copy and cast to qt datatypes
     for ( nit=core_names.begin(); nit!=core_names.end(); ++nit)
@@ -319,17 +319,17 @@ QVector<QString> CoreSystemAccess::getParameterNames(QString componentName)
 
 QString CoreSystemAccess::getParameterUnit(QString componentName, QString parameterName)
 {
-    return QString::fromStdString(mpCoreComponentSystem->getComponent(componentName.toStdString())->getParameterUnit(parameterName.toStdString()));
+    return QString::fromStdString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterUnit(parameterName.toStdString()));
 }
 
 QString CoreSystemAccess::getParameterDescription(QString componentName, QString parameterName)
 {
-    return QString::fromStdString(mpCoreComponentSystem->getComponent(componentName.toStdString())->getParameterDescription(parameterName.toStdString()));
+    return QString::fromStdString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterDescription(parameterName.toStdString()));
 }
 
 double CoreSystemAccess::getParameterValue(QString componentName, QString parameterName)
 {
-    return mpCoreComponentSystem->getComponent(componentName.toStdString())->getParameterValue(parameterName.toStdString());
+    return mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterValue(parameterName.toStdString());
 }
 
 void CoreSystemAccess::deleteSystemPort(QString portname)
@@ -444,7 +444,7 @@ bool CoreSystemAccess::isPortConnected(QString componentName, QString portName)
 //! @returns A pointer to the port or a 0 ptr if component or port not found
 hopsan::Port* CoreSystemAccess::getPortPtr(QString componentName, QString portName)
 {
-    Component* pComp = mpCoreComponentSystem->getComponent(componentName.toStdString());
+    Component* pComp = mpCoreComponentSystem->getSubComponent(componentName.toStdString());
     if (pComp)
     {
         return pComp->getPort(portName.toStdString());

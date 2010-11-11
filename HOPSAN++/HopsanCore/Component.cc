@@ -1022,27 +1022,36 @@ std::string ComponentSystem::determineUniqueComponentName(std::string name)
 }
 
 
-//! @brief Get a Component ptr to the component with supplied name, can also return a ptr to self if no subcomponent found
-//! @todo for this to work we need to make sure that the system and its sub components have unique names
-Component* ComponentSystem::getComponent(string name)
+//! @brief Get a Component ptr to the component with supplied name, can also return a ptr to self if no subcomponent found but systemport with name found
+//! For this to work we need to make sure that the sub components and systemports have unique names
+Component* ComponentSystem::getConnectionComponent(string name)
 {
 //    cout << "getComponent: " << name << " in: " << mName << endl;
     //First try to find among subcomponents
     Component *tmp = getSubComponent(name);
-    if (tmp != 0)
+    if (tmp == 0)
     {
-        return tmp;
+        Port* pPort = this->getPort(name);
+        if (pPort != 0)
+        {
+            if (pPort->getPortType() == Port::SYSTEMPORT)
+            {
+                tmp = pPort->mpComponent;
+            }
+        }
     }
-    else if (name == mName)
-    {
-        cout << "getComponent (name == mName): " << name << " in: " << mName << " returning this" << endl;
-        return this;
-    }
-    else
-    {
-        //cout << "return null" << endl;
-        return 0;
-    }
+    return tmp;
+
+//    else if (name == mName)
+//    {
+//        cout << "getComponent (name == mName): " << name << " in: " << mName << " returning this" << endl;
+//        return this;
+//    }
+//    else
+//    {
+//        //cout << "return null" << endl;
+//        return 0;
+//    }
 }
 
 
@@ -1081,7 +1090,7 @@ vector<string> ComponentSystem::getSubComponentNames()
 {
     //! @todo for now create a vector of the component names, later maybe we should return a pointer to the real internal map
     vector<string> names;
-    map<string, Component*>::iterator it;
+    SubComponentMapT::iterator it;
     for (it = mSubComponentMap.begin(); it != mSubComponentMap.end(); ++it)
     {
         names.push_back(it->first);
@@ -1275,8 +1284,8 @@ bool ComponentSystem::connect(string compname1, string portname1, string compnam
     stringstream ss; //Error string stream
 
     //Check if the components exist (and can be found)
-    Component* pComp1 = getComponent(compname1);
-    Component* pComp2 = getComponent(compname2);
+    Component* pComp1 = getConnectionComponent(compname1);
+    Component* pComp2 = getConnectionComponent(compname2);
 
     if (pComp1 == 0)
     {
@@ -1751,7 +1760,7 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
 //! @todo need to make sure that components and prots given by name exist here
 bool ComponentSystem::disconnect(string compname1, string portname1, string compname2, string portname2)
 {
-    disconnect( getComponent(compname1)->getPort(portname1), getComponent(compname2)->getPort(portname2) );
+    disconnect( getConnectionComponent(compname1)->getPort(portname1), getConnectionComponent(compname2)->getPort(portname2) );
     //! @todo Should return based on sucessfull dissconnect not hardcoded
     return true;
 }

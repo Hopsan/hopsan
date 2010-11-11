@@ -58,7 +58,7 @@ public slots:
             res = "Plotted '"; //Kanske inte ska skriva massa skit till Pythonkonsollen
             res.append(dataName);
             res.append("' at component '");
-            res.append(o->getGUIComponentName());
+            res.append(o->getGuiModelObjectName());
             res.append("' and port '");
             res.append(o->getName());
             res.append("'.");

@@ -867,7 +867,7 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
              {
                  GUIPort *pStartP = pConnector->getStartPort();
                  GUIPort *pEndP = pConnector->getEndPort();
-                 mpCoreSystemAccess->disconnect(pStartP->getGUIComponentName(), pStartP->getName(), pEndP->getGUIComponentName(), pEndP->getName());
+                 mpCoreSystemAccess->disconnect(pStartP->getGuiModelObjectName(), pStartP->getName(), pEndP->getGuiModelObjectName(), pEndP->getName());
                  emit checkMessages();
                  endPortWasConnected = true;
              }
@@ -917,24 +917,6 @@ void GUISystem::removeConnector(GUIConnector* pConnector, undoStatus undoSetting
 }
 
 
-////! @brief A function that adds a system port to the current system
-//void GUISystem::addSystemPort()
-//{
-//    QCursor cursor;
-//    QPointF position = mpParentProjectTab->mpGraphicsView->mapToScene(mpParentProjectTab->mpGraphicsView->mapFromGlobal(cursor.pos()));
-//    mpParentProjectTab->mpGraphicsView->updateViewPort();
-//    //QPoint position = QPoint(2300,2400);
-//
-//    AppearanceData appearanceData;
-//    QTextStream appstream;
-//
-//    appstream << "TypeName SystemPort";
-//    appstream << "QString(ICONPATH) ../../HopsanGUI/systemporttmp.svg";
-//    appstream >> appearanceData;
-//
-//    addGUIObject(appearanceData, position.toPoint());
-//}
-
 
 //! Begins creation of connector or complete creation of connector depending on the mIsCreatingConnector flag.
 //! @param pPort is a pointer to the clicked port, either start or end depending on the mIsCreatingConnector flag.
@@ -959,7 +941,7 @@ void GUISystem::createConnector(GUIPort *pPort, undoStatus undoSettings)
         qDebug() << "clicking end port: " << pPort->getName();
         GUIPort *pStartPort = mpTempConnector->getStartPort();
 
-        bool success = mpCoreSystemAccess->connect(pStartPort->getGUIComponentName(), pStartPort->getName(), pPort->getGUIComponentName(), pPort->getName() );
+        bool success = mpCoreSystemAccess->connect(pStartPort->getGuiModelObjectName(), pStartPort->getName(), pPort->getGuiModelObjectName(), pPort->getName() );
         qDebug() << "GUI Connect: " << success;
         if (success)
         {

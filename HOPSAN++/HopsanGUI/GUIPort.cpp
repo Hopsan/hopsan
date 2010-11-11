@@ -285,7 +285,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
 
-    if ((!this->isConnected()) || (mpParentSystem->getCoreSystemAccessPtr()->getTimeVector(getGUIComponentName(), this->getName()).empty()))
+    if ((!this->isConnected()) || (mpParentSystem->getCoreSystemAccessPtr()->getTimeVector(getGuiModelObjectName(), this->getName()).empty()))
     {
         event->ignore();
     }
@@ -472,7 +472,7 @@ bool GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
     if(this->isConnected())
     {
         if(dataUnit.isEmpty())
-            dataUnit = this->mpParentSystem->getCoreSystemAccessPtr()->getPlotDataUnit(this->getGUIComponentName(),this->getName(),dataName);
+            dataUnit = this->mpParentSystem->getCoreSystemAccessPtr()->getPlotDataUnit(this->getGuiModelObjectName(),this->getName(),dataName);
 
         MainWindow *pMainWindow = mpParentGuiModelObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 
@@ -492,26 +492,26 @@ bool GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
 //! Wrapper for the Core getPortTypeString() function
 QString GUIPort::getPortType()
 {
-    return mpParentSystem->getCoreSystemAccessPtr()->getPortType(getGUIComponentName(), this->getName());
+    return mpParentSystem->getCoreSystemAccessPtr()->getPortType(getGuiModelObjectName(), this->getName());
 }
 
 
 //! Wrapper for the Core getNodeType() function
 QString GUIPort::getNodeType()
 {
-    return mpParentSystem->getCoreSystemAccessPtr()->getNodeType(getGUIComponentName(), this->getName());
+    return mpParentSystem->getCoreSystemAccessPtr()->getNodeType(getGuiModelObjectName(), this->getName());
 }
 
 
 void GUIPort::getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<double> &rValues, QVector<QString> &rUnits)
 {
-    mpParentSystem->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(getGUIComponentName(), this->getName(), rNames, rValues, rUnits);
+    mpParentSystem->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(getGuiModelObjectName(), this->getName(), rNames, rValues, rUnits);
 }
 
 
 void GUIPort::setStartValueDataByNames(QVector<QString> names, QVector<double> values)
 {
-    mpParentSystem->getCoreSystemAccessPtr()->setStartValueDataByNames(getGUIComponentName(), this->getName(), names, values);
+    mpParentSystem->getCoreSystemAccessPtr()->setStartValueDataByNames(getGuiModelObjectName(), this->getName(), names, values);
 }
 
 portDirection GUIPort::getPortDirection()
@@ -553,12 +553,6 @@ qreal GUIPort::getPortHeading()
 
 
 
-//void GUIPort::setPortDirection(portDirection direction)
-//{
-//    mpPortAppearance->direction = direction;
-//}
-
-
 void GUIPort::hide()
 {
     mpPortLabel->hide();
@@ -571,6 +565,11 @@ QString GUIPort::getName()
     return this->name;
 }
 
+QString GUIPort::getGuiModelObjectName()
+{
+    return this->mpParentGuiModelObject->getName();
+}
+
 
 void GUIPort::setDisplayName(const QString name)
 {
@@ -581,27 +580,27 @@ void GUIPort::setDisplayName(const QString name)
 }
 
 
-//! Get the name of the GUIComponent or GUISubsystem that the port is connected to, This is not necessarily the same as the parent GUIObject name (SystemPorts)
-//! @todo this is a very ugly way of handeling system ports should try to think of something better
-//! @todo the name should maybe be getConnectComponentName or similar to make it more clear what is returned
-QString GUIPort::getGUIComponentName()
-{
-    if (mpGUIRootSystem == 0)
-    {
-        //qDebug() << "return guiobject name: " << mpParentGuiObject->getName();
-        return mpParentGuiModelObject->getName();
-    }
-    else
-    {
-        //qDebug() << "return root name: " << mpGUIRootSystem->getName();
-        return mpGUIRootSystem->getRootSystemName();
-    }
-}
+////! Get the name of the GUIComponent or GUISubsystem that the port is connected to, This is not necessarily the same as the parent GUIObject name (SystemPorts)
+////! @todo this is a very ugly way of handeling system ports should try to think of something better
+////! @todo the name should maybe be getConnectComponentName or similar to make it more clear what is returned
+//QString GUIPort::getGUIComponentName()
+//{
+//    if (mpGUIRootSystem == 0)
+//    {
+//        //qDebug() << "return guiobject name: " << mpParentGuiObject->getName();
+//        return mpParentGuiModelObject->getName();
+//    }
+//    else
+//    {
+//        //qDebug() << "return root name: " << mpGUIRootSystem->getName();
+//        return mpGUIRootSystem->getRootSystemName();
+//    }
+//}
 
 
 bool GUIPort::getLastNodeData(QString dataName, double& rData)
 {
-    return mpParentSystem->getCoreSystemAccessPtr()->getLastNodeData(getGUIComponentName(), this->getName(), dataName, rData);
+    return mpParentSystem->getCoreSystemAccessPtr()->getLastNodeData(getGuiModelObjectName(), this->getName(), dataName, rData);
 }
 
 

@@ -416,7 +416,7 @@ QString GUIConnector::getEndPortName()
 //! @see getEndComponentName()
 QString GUIConnector::getStartComponentName()
 {
-    return mpStartPort->getGUIComponentName();
+    return mpStartPort->getGuiModelObjectName();
 }
 
 
@@ -424,7 +424,7 @@ QString GUIConnector::getStartComponentName()
 //! @see getStartComponentName()
 QString GUIConnector::getEndComponentName()
 {
-    return mpEndPort->getGUIComponentName();
+    return mpEndPort->getGuiModelObjectName();
 }
 
 

@@ -38,7 +38,7 @@ public:
 
     QString getName();
     void setDisplayName(const QString name);
-    QString getGUIComponentName();
+    QString getGuiModelObjectName();
 
     bool getLastNodeData(QString dataName, double& rData);
 

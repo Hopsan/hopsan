@@ -122,9 +122,9 @@ void PlotParameterTree::updateList()
         {
             QVector<QString> parameterNames;
             QVector<QString> parameterUnits;
-            mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits((*itp)->getGUIComponentName(), (*itp)->getName(), parameterNames, parameterUnits);
+            mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits((*itp)->getGuiModelObjectName(), (*itp)->getName(), parameterNames, parameterUnits);
 
-            QVector<double> time = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->getTimeVector((*itp)->getGUIComponentName(), (*itp)->getName()));
+            QVector<double> time = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->getTimeVector((*itp)->getGuiModelObjectName(), (*itp)->getName()));
 
             if(time.size() > 0)     //If time vector is greater than zero we have something to plot!
             {
@@ -133,7 +133,7 @@ void PlotParameterTree::updateList()
                     tempPlotParameterItem = new PlotParameterItem(it.value()->getName(), (*itp)->getName(), parameterNames[i], parameterUnits[i], tempComponentItem);
                     tempComponentItem->addChild(tempPlotParameterItem);
                     QStringList parameterDescription;
-                    parameterDescription << (*itp)->getGUIComponentName() << (*itp)->getName() << parameterNames[i] << parameterUnits[i];
+                    parameterDescription << (*itp)->getGuiModelObjectName() << (*itp)->getName() << parameterNames[i] << parameterUnits[i];
                     mAvailableParameters.append(parameterDescription);
                     if(mFavoriteParameters.contains(parameterDescription))
                     {
