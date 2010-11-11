@@ -399,7 +399,8 @@ void GUISystem::createPorts()
         //! @todo fix this
         qDebug() << "getNode and portType for " << it.key();
         //SystemPort "Component Name" (GuiModelObjectName) and portname is same
-        //! @todo to minimaze search time make a get port and node type function
+        //One other way would be to ask our parent to find the types of our ports but that would be even more strange and would not work on the absolute root system
+        //! @todo to minimaze search time make a get porttype  and nodetype function, we need to search twice now
         QString nodeType = mpCoreSystemAccess->getNodeType(it.key(), it.key());
         QString portType = mpCoreSystemAccess->getPortType(it.key(), it.key());
         it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
