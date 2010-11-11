@@ -30,9 +30,10 @@
 using namespace std;
 using namespace hopsan;
 
-//! @brief Helper function to create a unique name among names from a Map
+//! @brief Helper function to create a unique name among names from one Map
+//! @todo try to merge these to help functions into one (the next one bellow which is very similar)
 template<typename MapType>
-string modifyName(MapType &rMap, string name)
+string findUniqueName(MapType &rMap, string name)
 {
     //Make sure name is not empty
     if (name.empty())
@@ -71,6 +72,49 @@ string modifyName(MapType &rMap, string name)
     }
     //cout << name << endl;
 
+    return name;
+}
+
+//! @brief Helper function to create a unique name among names from TWO Map
+template<typename MapType1, typename MapType2>
+string findUniqueName(MapType1 &rMap1, MapType2 &rMap2 , string name)
+{
+    //Make sure name is not empty
+    if (name.empty())
+    {
+        name = "empty_name";
+    }
+
+    size_t ctr = 1; //The suffix number
+    while( (rMap1.count(name)+rMap2.count(name)) != 0)
+    {
+        //strip suffix
+        size_t foundpos = name.rfind("_");
+        if (foundpos != string::npos)
+        {
+            if (foundpos+1 < name.size())
+            {
+                unsigned char nr = name.at(foundpos+1);
+                //cout << "nr after _: " << nr << endl;
+                //Check the ascii code for the charachter
+                if ((nr >= 48) && (nr <= 57))
+                {
+                    //Is number lets assume that the _ found is the beginning of a suffix
+                    name.erase(foundpos, string::npos);
+                }
+            }
+        }
+        //cout << "ctr: " << ctr << " stripped tempname: " << name << endl;
+
+        //add new suffix
+        stringstream suffix;
+        suffix << ctr;
+        name.append("_");
+        name.append(suffix.str());
+        ++ctr;
+        //cout << "ctr: " << ctr << " appended tempname: " << name << endl;
+    }
+    //cout << name << endl;
     return name;
 }
 
@@ -474,7 +518,7 @@ double *Component::getTimePtr()
 Port* Component::addPort(const string portname, Port::PORTTYPE porttype, const NodeTypeT nodetype, Port::CONREQ connection_requirement)
 {
     //Make sure name is unique before insert
-    string newname = modifyName<PortPtrMapT>(mPortPtrMap, portname);
+    string newname = this->determineUniquePortName(portname);
 
     Port* new_port = CreatePort(porttype, nodetype, newname, this);
 
@@ -535,7 +579,7 @@ string Component::renamePort(const string oldname, const string newname)
         it = mPortPtrMap.find(oldname); //Find iterator to port
         temp_port_ptr = it->second;     //Backup copy of port ptr
         mPortPtrMap.erase(it);          //Erase old value
-        string modnewname = modifyName<PortPtrMapT>(mPortPtrMap, newname); //Make sure new name is unique
+        string modnewname = determineUniquePortName(newname); //Make sure new name is unique
         temp_port_ptr->mPortName = modnewname;  //Set new name in port
         mPortPtrMap.insert(PortPtrPairT(modnewname, temp_port_ptr)); //Re add to map
         return modnewname;
@@ -563,9 +607,16 @@ void Component::deletePort(const string name)
 }
 
 
-void Component::setSystemParent(ComponentSystem &rComponentSystem)
+//! @brief a virtual function that detmines a unique port name, needs to be overloaded in ComponentSystem to do this slightly different
+std::string Component::determineUniquePortName(std::string portname)
 {
-    mpSystemParent = &rComponentSystem;
+    return findUniqueName<PortPtrMapT>(mPortPtrMap, portname);
+}
+
+
+void Component::setSystemParent(ComponentSystem *pComponentSystem)
+{
+    mpSystemParent = pComponentSystem;
 }
 
 //Port &Component::getPortById(const size_t port_idx)
@@ -789,13 +840,13 @@ void ComponentSystem::addComponents(vector<Component*> components)
 void ComponentSystem::addComponent(Component *pComponent)
 {
     //First check if the name already exists, in that case change the suffix
-    string modname = modifyName<SubComponentMapT>(mSubComponentMap, pComponent->getName());
+    string modname = this->determineUniqueComponentName(pComponent->getName());
     pComponent->setName(modname);
 
     //Add to the cqs component vectors
     addSubComponentPtrToStorage(pComponent);
 
-    pComponent->setSystemParent(*this);
+    pComponent->setSystemParent(this);
 }
 
 
@@ -813,7 +864,7 @@ void ComponentSystem::renameSubComponent(string oldname, string newname)
         mSubComponentMap.erase(it);
 
         //insert new (with new name)
-        string mod_new_name = modifyName<SubComponentMapT>(mSubComponentMap, newname);
+        string mod_new_name = this->determineUniqueComponentName(newname);
 
         //cout << "new name is: " << mod_name << endl;
         mSubComponentMap.insert(pair<string, Component*>(mod_new_name, temp_c_ptr));
@@ -951,6 +1002,23 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* c_ptr)
     {
         gCoreMessageHandler.addErrorMessage("The component you are trying to remove: " + c_ptr->getName() + " does not exist (Does Nothing)");
     }
+}
+
+
+//! @brief Overloaded function that behaves slightly different when determining unique port names
+//! In systemcomponents we must make sure that systemports and subcomponents have unique names, this simplifies things in the GUI later on
+//! It is VERY important that systemports dont have the same name as a subcomponent
+std::string ComponentSystem::determineUniquePortName(std::string portname)
+{
+    return findUniqueName<PortPtrMapT, SubComponentMapT>(mPortPtrMap,  mSubComponentMap, portname);
+}
+
+//! @brief Overloaded function that behaves slightly different when determining unique component names
+//! In systemcomponents we must make sure that systemports and subcomponents have unique names, this simplifies things in the GUI later on
+//! It is VERY important that systemports dont have the same name as a subcomponent
+std::string ComponentSystem::determineUniqueComponentName(std::string name)
+{
+    return findUniqueName<SubComponentMapT, PortPtrMapT>(mSubComponentMap, mPortPtrMap, name);
 }
 
 

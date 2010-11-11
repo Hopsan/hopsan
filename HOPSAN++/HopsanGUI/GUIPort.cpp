@@ -266,7 +266,7 @@ void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
     else if (event->button() == Qt::RightButton)
     {
         //std::cout << "GUIPort.cpp: " << "RightClick" << std::endl;
-/*        if ((!this->isConnected()) || (mpParentSystem->mpCoreSystemAccess->getTimeVector(getGUIComponentName(), this->getName()).empty()))
+/*        if ((!this->isConnected()) || (mpParentSystem->getCoreSystemAccessPtr()->getTimeVector(getGUIComponentName(), this->getName()).empty()))
             openRightClickMenu(event->screenPos());//Ska bort
 */    }
     //magnify(false);
@@ -285,7 +285,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
 
-    if ((!this->isConnected()) || (mpParentSystem->mpCoreSystemAccess->getTimeVector(getGUIComponentName(), this->getName()).empty()))
+    if ((!this->isConnected()) || (mpParentSystem->getCoreSystemAccessPtr()->getTimeVector(getGUIComponentName(), this->getName()).empty()))
     {
         event->ignore();
     }
@@ -302,7 +302,7 @@ void GUIPort::openRightClickMenu(QPoint screenPos)
 
     QVector<QString> parameterNames;
     QVector<QString> parameterUnits;
-    mpParentGuiModelObject->mpParentSystem->mpCoreSystemAccess->getPlotDataNamesAndUnits(mpParentGuiModelObject->getName(), this->getName(), parameterNames, parameterUnits);
+    mpParentGuiModelObject->mpParentSystem->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(mpParentGuiModelObject->getName(), this->getName(), parameterNames, parameterUnits);
 
     //QAction *plotPressureAction = menu.addAction("Plot pressure");
     //QAction *plotFlowAction = menu.addAction("Plot flow");
@@ -472,7 +472,7 @@ bool GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
     if(this->isConnected())
     {
         if(dataUnit.isEmpty())
-            dataUnit = this->mpParentSystem->mpCoreSystemAccess->getPlotDataUnit(this->getGUIComponentName(),this->getName(),dataName);
+            dataUnit = this->mpParentSystem->getCoreSystemAccessPtr()->getPlotDataUnit(this->getGUIComponentName(),this->getName(),dataName);
 
         MainWindow *pMainWindow = mpParentGuiModelObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 
@@ -492,26 +492,26 @@ bool GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
 //! Wrapper for the Core getPortTypeString() function
 QString GUIPort::getPortType()
 {
-    return mpParentSystem->mpCoreSystemAccess->getPortType(getGUIComponentName(), this->getName());
+    return mpParentSystem->getCoreSystemAccessPtr()->getPortType(getGUIComponentName(), this->getName());
 }
 
 
 //! Wrapper for the Core getNodeType() function
 QString GUIPort::getNodeType()
 {
-    return mpParentSystem->mpCoreSystemAccess->getNodeType(getGUIComponentName(), this->getName());
+    return mpParentSystem->getCoreSystemAccessPtr()->getNodeType(getGUIComponentName(), this->getName());
 }
 
 
 void GUIPort::getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<double> &rValues, QVector<QString> &rUnits)
 {
-    mpParentSystem->mpCoreSystemAccess->getStartValueDataNamesValuesAndUnits(getGUIComponentName(), this->getName(), rNames, rValues, rUnits);
+    mpParentSystem->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(getGUIComponentName(), this->getName(), rNames, rValues, rUnits);
 }
 
 
 void GUIPort::setStartValueDataByNames(QVector<QString> names, QVector<double> values)
 {
-    mpParentSystem->mpCoreSystemAccess->setStartValueDataByNames(getGUIComponentName(), this->getName(), names, values);
+    mpParentSystem->getCoreSystemAccessPtr()->setStartValueDataByNames(getGUIComponentName(), this->getName(), names, values);
 }
 
 portDirection GUIPort::getPortDirection()
@@ -601,7 +601,7 @@ QString GUIPort::getGUIComponentName()
 
 bool GUIPort::getLastNodeData(QString dataName, double& rData)
 {
-    return mpParentSystem->mpCoreSystemAccess->getLastNodeData(getGUIComponentName(), this->getName(), dataName, rData);
+    return mpParentSystem->getCoreSystemAccessPtr()->getLastNodeData(getGUIComponentName(), this->getName(), dataName, rData);
 }
 
 

@@ -9,7 +9,7 @@
 #include <QFileInfo>
 
 #include "GUIContainerObject.h"
-#include "CoreSystemAccess.h"
+//#include "CoreSystemAccess.h"
 #include "GUIWidgets.h"
 #include "common.h"
 
@@ -72,8 +72,10 @@ public:
 
     QVector<QString> getParameterNames();
 
+    CoreSystemAccess* getCoreSystemAccessPtr();
+
         //Public member variable
-    CoreSystemAccess *mpCoreSystemAccess; //!< @todo make this private later
+     //!< @todo make this private later
     QFileInfo mModelFileInfo; //!< @todo should not be public
     UndoStack *mUndoStack;
 //    GraphicsScene *mpScene;
@@ -139,7 +141,6 @@ signals:
 protected:
     QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
     void saveCoreDataToDomElement(QDomElement &rDomElement);
-//    void saveSystemAppearanceToDomElement(QDomElement &rDomElement);
 
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
@@ -158,6 +159,8 @@ private:
 
     bool   mIsEmbedded;
     QString mLoadType;
+
+    CoreSystemAccess *mpCoreSystemAccess;
 };
 
 #endif // GUISYSTEM_H

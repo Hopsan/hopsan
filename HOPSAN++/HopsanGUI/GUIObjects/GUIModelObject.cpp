@@ -226,7 +226,7 @@ QList<GUIPort*> &GUIModelObject::getPortListPtrs()
 ////    //Check if we want to avoid trying to rename in the graphics view map
 ////    if ( (renameSettings == CORERENAMEONLY) or (mpParentSystem == 0) )
 ////    {
-////        mGUIModelObjectAppearance.setName(mpParentSystem->mpCoreSystemAccess->renameSubComponent(this->getName(), newName));
+////        mGUIModelObjectAppearance.setName(mpParentSystem->getCoreSystemAccessPtr()->renameSubComponent(this->getName(), newName));
 ////        refreshDisplayName();
 ////    }
 ////    else

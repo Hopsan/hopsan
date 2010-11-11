@@ -63,7 +63,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 
     emit checkMessages();
 
-    double timeStep = mpSystem->mpCoreSystemAccess->getDesiredTimeStep();
+    double timeStep = mpSystem->getCoreSystemAccessPtr()->getDesiredTimeStep();
 
     mpParentProjectTabWidget->mpParentMainWindow->setTimeStepInToolBar(timeStep);
 
@@ -123,10 +123,10 @@ bool ProjectTab::simulate()
     double startTime = mpSystem->getStartTime();
     double finishTime = mpSystem->getStopTime();
     double dt = finishTime - startTime;
-    size_t nSteps = dt/mpSystem->mpCoreSystemAccess->getDesiredTimeStep();
+    size_t nSteps = dt/mpSystem->getCoreSystemAccessPtr()->getDesiredTimeStep();
     size_t nSamples = mpSystem->getNumberOfLogSamples();
 
-    if(!mpSystem->mpCoreSystemAccess->isSimulationOk())
+    if(!mpSystem->getCoreSystemAccessPtr()->isSimulationOk())
     {
         emit checkMessages();
         return false;
@@ -135,7 +135,7 @@ bool ProjectTab::simulate()
     qDebug() << "Initializing simulation: " << startTime << nSteps << finishTime;
 
         //Ask core to initialize simulation
-    InitializationThread actualInitialization(mpSystem->mpCoreSystemAccess, startTime, finishTime, nSamples, this);
+    InitializationThread actualInitialization(mpSystem->getCoreSystemAccessPtr(), startTime, finishTime, nSamples, this);
     actualInitialization.start();
     actualInitialization.setPriority(QThread::HighestPriority);
 
@@ -154,7 +154,7 @@ bool ProjectTab::simulate()
             progressBar.setValue(i++);
             if (progressBar.wasCanceled())
             {
-                mpSystem->mpCoreSystemAccess->stop();
+                mpSystem->getCoreSystemAccessPtr()->stop();
             }
         }
         progressBar.setValue(i);
@@ -169,7 +169,7 @@ bool ProjectTab::simulate()
     {
         QTime simTimer;
         simTimer.start();
-        SimulationThread actualSimulation(mpSystem->mpCoreSystemAccess, startTime, finishTime, this);
+        SimulationThread actualSimulation(mpSystem->getCoreSystemAccessPtr(), startTime, finishTime, this);
         actualSimulation.start();
         actualSimulation.setPriority(QThread::HighestPriority);
             //! @todo TimeCriticalPriority seem to work on dual core, is it a problem on single core machines only?
@@ -186,14 +186,14 @@ bool ProjectTab::simulate()
                progressThread.start();
                progressThread.setPriority(QThread::LowestPriority);
                progressThread.wait();
-               progressBar.setValue((size_t)(mpSystem->mpCoreSystemAccess->getCurrentTime()/dt * nSteps));
+               progressBar.setValue((size_t)(mpSystem->getCoreSystemAccessPtr()->getCurrentTime()/dt * nSteps));
                if (progressBar.wasCanceled())
                {
-                  mpSystem->mpCoreSystemAccess->stop();
+                  mpSystem->getCoreSystemAccessPtr()->stop();
                }
             }
             progressThread.quit();
-            progressBar.setValue((size_t)(mpSystem->mpCoreSystemAccess->getCurrentTime()/dt * nSteps));
+            progressBar.setValue((size_t)(mpSystem->getCoreSystemAccessPtr()->getCurrentTime()/dt * nSteps));
         }
 
         actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
@@ -205,11 +205,11 @@ bool ProjectTab::simulate()
 
     if (progressBar.wasCanceled())
     {
-        pMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(mpSystem->mpCoreSystemAccess->getRootSystemName()).append(tr("' was terminated!"))));
+        pMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(mpSystem->getCoreSystemAccessPtr()->getRootSystemName()).append(tr("' was terminated!"))));
     }
     else
     {
-        pMessageWidget->printGUIMessage(QString(tr("Simulated '").append(mpSystem->mpCoreSystemAccess->getRootSystemName()).append(tr("' successfully!"))));
+        pMessageWidget->printGUIMessage(QString(tr("Simulated '").append(mpSystem->getCoreSystemAccessPtr()->getRootSystemName()).append(tr("' successfully!"))));
         emit simulationFinished();
         //this->mpParentProjectTabWidget->mpParentMainWindow->mpPlotWidget->mpVariableList->updateList();
     }
@@ -280,7 +280,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     }
 
     //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
-    mpSystem->mpCoreSystemAccess->setRootSystemName(mpSystem->mModelFileInfo.baseName());
+    mpSystem->getCoreSystemAccessPtr()->setRootSystemName(mpSystem->mModelFileInfo.baseName());
     mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), mpSystem->mModelFileInfo.fileName());
 
     QTextStream modelFile(&file);  //Create a QTextStream object to stream the content of file

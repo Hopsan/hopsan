@@ -44,6 +44,11 @@ QString GUIGroup::getTypeName()
     return "";
 }
 
+//! @brief Returns the core access ptr in the parent system, groups are GUI only objects
+CoreSystemAccess* GUIGroup::getCoreSystemAccessPtr()
+{
+    return this->mpParentSystem->getCoreSystemAccessPtr();
+}
 
 //! Constructor.
 //! @param compList is a list for the QGraphicsItems that should be in the group.

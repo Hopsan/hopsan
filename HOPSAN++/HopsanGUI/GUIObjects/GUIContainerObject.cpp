@@ -55,6 +55,12 @@ void GUIContainerObject::calcSubsystemPortPosition(const double w, const double 
 }
 
 
+CoreSystemAccess* GUIContainerObject::getCoreSystemAccessPtr()
+{
+    //Should be overloaded
+    return 0;
+}
+
 //! @brief Retunrs a pointer to the contained scene
 GraphicsScene* GUIContainerObject::getContainedScenePtr()
 {

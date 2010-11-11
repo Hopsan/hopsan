@@ -41,11 +41,11 @@ GUISystem::~GUISystem()
 
     if (mpParentSystem != 0)
     {
-        mpParentSystem->mpCoreSystemAccess->removeSubComponent(this->getName(), true);
+        mpParentSystem->getCoreSystemAccessPtr()->removeSubComponent(this->getName(), true);
     }
     else
     {
-        mpParentSystem->mpCoreSystemAccess->deleteRootSystemPtr();
+        mpParentSystem->getCoreSystemAccessPtr()->deleteRootSystemPtr();
     }
 
     delete mpCoreSystemAccess;
@@ -101,10 +101,10 @@ void GUISystem::commonConstructorCode()
     else
     {
         //Create subsystem
-        qDebug() << "creating subsystem and setting name in " << mpParentSystem->mpCoreSystemAccess->getRootSystemName();
-        mGUIModelObjectAppearance.setName(mpParentSystem->mpCoreSystemAccess->createSubSystem(this->getName()));
+        qDebug() << "creating subsystem and setting name in " << mpParentSystem->getCoreSystemAccessPtr()->getRootSystemName();
+        mGUIModelObjectAppearance.setName(mpParentSystem->getCoreSystemAccessPtr()->createSubSystem(this->getName()));
         qDebug() << "creating CoreSystemAccess for this subsystem, name: " << this->getName() << " parentname: " << mpParentSystem->getName();
-        mpCoreSystemAccess = new CoreSystemAccess(this->getName(), mpParentSystem->mpCoreSystemAccess);
+        mpCoreSystemAccess = new CoreSystemAccess(this->getName(), mpParentSystem->getCoreSystemAccessPtr());
     }
 
     mpCoreSystemAccess->setDesiredTimeStep(mTimeStep);
@@ -152,6 +152,11 @@ QString GUISystem::getTypeCQS()
 QVector<QString> GUISystem::getParameterNames()
 {
     return mpCoreSystemAccess->getParameterNames(this->getName());
+}
+
+CoreSystemAccess* GUISystem::getCoreSystemAccessPtr()
+{
+    return this->mpCoreSystemAccess;
 }
 
 void GUISystem::loadFromHMF(QString modelFilePath)
@@ -698,7 +703,7 @@ void GUISystem::addBoxWidget(QPoint position)
 //! @param objectName is the name of the componenet to delete
 void GUISystem::deleteGUIModelObject(QString objectName, undoStatus undoSettings)
 {
-    qDebug() << "deleteGUIModelObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->mpCoreSystemAccess->getRootSystemName() ;
+    qDebug() << "deleteGUIModelObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->getCoreSystemAccessPtr()->getRootSystemName() ;
     GUIModelObjectMapT::iterator it = mGUIModelObjectMap.find(objectName);
     GUIModelObject* obj_ptr = it.value();
 
@@ -756,11 +761,11 @@ void GUISystem::renameGUIObject(QString oldName, QString newName, undoStatus und
                 //qDebug() << "GUICOMPONENT";
             case GUISYSTEM :
                 //qDebug() << "GUISYSTEM";
-                modNewName = this->mpCoreSystemAccess->renameSubComponent(oldName, newName);
+                modNewName = this->getCoreSystemAccessPtr()->renameSubComponent(oldName, newName);
                 break;
             case GUISYSTEMPORT :
                 //qDebug() << "GUISYSTEMPORT";
-                modNewName = this->mpCoreSystemAccess->renameSystemPort(oldName, newName);
+                modNewName = this->getCoreSystemAccessPtr()->renameSystemPort(oldName, newName);
                 break;
             //default :
                 //qDebug() << "default";

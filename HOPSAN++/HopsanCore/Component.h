@@ -114,10 +114,9 @@ namespace hopsan {
         //==========Protected member functions==========
         //Constructor - Destructor
         Component(std::string name="Component", double timestep=0.001);
-        virtual ~Component(){};
+        //virtual ~Component(){};
 
         //Virtual functions
-
         virtual void simulateOneTimestep();
         virtual void finalize();
         virtual void setTimestep(const double timestep);
@@ -137,6 +136,9 @@ namespace hopsan {
         std::string renamePort(const std::string oldname, const std::string newname);
         void deletePort(const std::string name);
 
+        //Unique name functions
+        virtual std::string determineUniquePortName(std::string portname);
+
         //==========Protected member variables==========
         //string mTypeCQS;
         typeCQS mTypeCQS;
@@ -150,7 +152,7 @@ namespace hopsan {
 
     private:
         //Private member functions
-        void setSystemParent(ComponentSystem &rComponentSystem);
+        void setSystemParent(ComponentSystem *pComponentSystem);
 
         //Private member variables
         std::string mName;
@@ -239,6 +241,10 @@ namespace hopsan {
         //Add and Remove subcomponent ptrs from storage vectors
         void addSubComponentPtrToStorage(Component* pComponent);
         void removeSubComponentPtrFromStorage(Component* c_ptr);
+
+        //UniqueName specifik functions
+        std::string determineUniquePortName(std::string portname);
+        std::string determineUniqueComponentName(std::string name);
 
         //==========Prvate member variables==========
         typedef std::map<std::string, Component*> SubComponentMapT;

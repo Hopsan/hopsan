@@ -28,6 +28,8 @@ public:
 
     QString getTypeName();
 
+    CoreSystemAccess* getCoreSystemAccessPtr();
+
 protected:
     GraphicsScene *mpParentScene;
     GraphicsScene *mpGroupScene;

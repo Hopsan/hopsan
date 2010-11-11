@@ -3,6 +3,7 @@
 
 #include "GUIModelObject.h"
 #include "GraphicsScene.h"
+#include "CoreSystemAccess.h"
 
 class GUIContainerObject : public GUIModelObject
 {
@@ -14,6 +15,8 @@ public:
     virtual void updateExternalPortPositions();
     void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y);
 
+    virtual CoreSystemAccess* getCoreSystemAccessPtr();
+
     GraphicsScene* getContainedScenePtr();
     //void addConnector(GUIConnector *pConnector);
     //Public for now, will fix later
@@ -22,6 +25,8 @@ public:
 protected:
     CONTAINERSTATUS getContainerStatus();
     CONTAINERSTATUS mContainerStatus;
+
+    //CoreSystemAccess *mpCoreSystemAccess;
 
 };
 

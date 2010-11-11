@@ -122,9 +122,9 @@ void PlotParameterTree::updateList()
         {
             QVector<QString> parameterNames;
             QVector<QString> parameterUnits;
-            mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getPlotDataNamesAndUnits((*itp)->getGUIComponentName(), (*itp)->getName(), parameterNames, parameterUnits);
+            mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits((*itp)->getGUIComponentName(), (*itp)->getName(), parameterNames, parameterUnits);
 
-            QVector<double> time = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getTimeVector((*itp)->getGUIComponentName(), (*itp)->getName()));
+            QVector<double> time = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->getTimeVector((*itp)->getGUIComponentName(), (*itp)->getName()));
 
             if(time.size() > 0)     //If time vector is greater than zero we have something to plot!
             {
@@ -201,9 +201,9 @@ PlotWindow *PlotParameterTree::createPlotWindow(QTreeWidgetItem *item)
 //! @param dataUnit Name of the unit of the parameter
 PlotWindow *PlotParameterTree::createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit)
 {
-    QVector<double> xVector = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getTimeVector(componentName, portName));
+    QVector<double> xVector = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->getTimeVector(componentName, portName));
     QVector<double> yVector;
-    mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->mpCoreSystemAccess->getPlotData(componentName, portName, dataName, yVector);
+    mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->getPlotData(componentName, portName, dataName, yVector);
 
     if((xVector.isEmpty()) || (yVector.isEmpty()))
         return 0;
