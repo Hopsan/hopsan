@@ -223,7 +223,7 @@ void FileAccess::loadSystemContents(stringstream &rLoaddatastream, ComponentSyst
                 string parameterName = readName(inputStream);
                 inputStream >> parameterValue;
 
-                (*currentSystems.rbegin())->getSubComponent(componentName)->setParameterValue(parameterName, parameterValue);
+                (*currentSystems.rbegin())->getComponent(componentName)->setParameterValue(parameterName, parameterValue);
             }
 
             //----------- Unrecognized Command -----------//

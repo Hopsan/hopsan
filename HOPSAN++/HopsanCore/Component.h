@@ -193,6 +193,7 @@ namespace hopsan {
         void deleteSystemPort(const std::string name);
 
         //Getting added components and component names
+        Component* getComponent(std::string name);
         Component* getSubComponent(std::string name);
         ComponentSystem* getSubComponentSystem(std::string name);
         std::vector<std::string> getSubComponentNames();
@@ -230,8 +231,8 @@ namespace hopsan {
         void preAllocateLogSpace(const double startT, const double stopT, const size_t nSamples = 2048);
         void logAllNodes(const double time);
 
-        //Get component pointer for connection (can return self if systemport name specified for connection)
-        Component* getConnectionComponent(std::string name);
+        //Try to find sub component ptr
+        //Component* getSubComponent(std::string name);
 
         //Check if connection ok
         bool connectionOK(Node *pNode, Port *pPort1, Port *pPort2);

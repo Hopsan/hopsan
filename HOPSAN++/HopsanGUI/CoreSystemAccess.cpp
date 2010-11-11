@@ -137,6 +137,7 @@ QString CoreSystemAccess::getPortType(QString componentName, QString portName)
     }
     else
     {
+        qDebug() <<  "======================================== EMPTY porttype: " << componentName << " " << portName << " in: " << this->getRootSystemName();
         return QString(); //Empty
     }
 }
@@ -150,6 +151,7 @@ QString CoreSystemAccess::getNodeType(QString componentName, QString portName)
     }
     else
     {
+        qDebug() <<  "======================================== EMPTY nodetype: " << componentName << " " << portName << " in: " << this->getRootSystemName();
         return QString(); //Empty
     }
 }
@@ -444,7 +446,9 @@ bool CoreSystemAccess::isPortConnected(QString componentName, QString portName)
 //! @returns A pointer to the port or a 0 ptr if component or port not found
 hopsan::Port* CoreSystemAccess::getPortPtr(QString componentName, QString portName)
 {
-    Component* pComp = mpCoreComponentSystem->getSubComponent(componentName.toStdString());
+    //We must use getcomponent here if we want to be able to find root system ptr
+    //! @todo see if we can reduce the number f public get functions one, the one which only searches subcomponents make function in core to solve the other access type like bellow
+    Component* pComp = mpCoreComponentSystem->getComponent(componentName.toStdString());
     if (pComp)
     {
         return pComp->getPort(portName.toStdString());

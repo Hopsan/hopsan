@@ -398,8 +398,10 @@ void GUISystem::createPorts()
     {
         //! @todo fix this
         qDebug() << "getNode and portType for " << it.key();
-        QString nodeType = mpCoreSystemAccess->getNodeType(this->getName(), it.key());
-        QString portType = mpCoreSystemAccess->getPortType(this->getName(), it.key());
+        //SystemPort "Component Name" (GuiModelObjectName) and portname is same
+        //! @todo to minimaze search time make a get port and node type function
+        QString nodeType = mpCoreSystemAccess->getNodeType(it.key(), it.key());
+        QString portType = mpCoreSystemAccess->getPortType(it.key(), it.key());
         it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
 
         qreal x = it.value().x;

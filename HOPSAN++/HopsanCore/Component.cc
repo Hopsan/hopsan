@@ -1024,7 +1024,7 @@ std::string ComponentSystem::determineUniqueComponentName(std::string name)
 
 //! @brief Get a Component ptr to the component with supplied name, can also return a ptr to self if no subcomponent found but systemport with name found
 //! For this to work we need to make sure that the sub components and systemports have unique names
-Component* ComponentSystem::getConnectionComponent(string name)
+Component* ComponentSystem::getComponent(string name)
 {
 //    cout << "getComponent: " << name << " in: " << mName << endl;
     //First try to find among subcomponents
@@ -1037,6 +1037,7 @@ Component* ComponentSystem::getConnectionComponent(string name)
             if (pPort->getPortType() == Port::SYSTEMPORT)
             {
                 tmp = pPort->mpComponent;
+                cout << "Found systemport with name: " << name << " returning parent: " << tmp->getName() << endl;
             }
         }
     }
@@ -1284,8 +1285,8 @@ bool ComponentSystem::connect(string compname1, string portname1, string compnam
     stringstream ss; //Error string stream
 
     //Check if the components exist (and can be found)
-    Component* pComp1 = getConnectionComponent(compname1);
-    Component* pComp2 = getConnectionComponent(compname2);
+    Component* pComp1 = getComponent(compname1);
+    Component* pComp2 = getComponent(compname2);
 
     if (pComp1 == 0)
     {
@@ -1760,7 +1761,7 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
 //! @todo need to make sure that components and prots given by name exist here
 bool ComponentSystem::disconnect(string compname1, string portname1, string compname2, string portname2)
 {
-    disconnect( getConnectionComponent(compname1)->getPort(portname1), getConnectionComponent(compname2)->getPort(portname2) );
+    disconnect( getComponent(compname1)->getPort(portname1), getComponent(compname2)->getPort(portname2) );
     //! @todo Should return based on sucessfull dissconnect not hardcoded
     return true;
 }
