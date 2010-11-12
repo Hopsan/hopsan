@@ -34,11 +34,11 @@ void appendDomBooleanNode(QDomElement &rDomElement, const QString element_name, 
 {
     if(value)
     {
-        appendDomTextNode(rDomElement, element_name, "HMF_TRUETAG");
+        appendDomTextNode(rDomElement, element_name, HMF_TRUETAG);
     }
     else
     {
-        appendDomTextNode(rDomElement, element_name, "HMF_FALSETAG");
+        appendDomTextNode(rDomElement, element_name, HMF_FALSETAG);
     }
 }
 

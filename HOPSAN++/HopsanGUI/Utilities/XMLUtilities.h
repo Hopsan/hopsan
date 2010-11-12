@@ -55,7 +55,7 @@ void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep,
 #define HMF_XYTAG "xy"                      //Containes an xy coordinate pair
 #define HMF_EXTERNALPATHTAG "external_path" //Contains the path to an external subsystem
 #define HMF_VALUETAG "value"
-#define HMF_TURETAG "true"
+#define HMF_TRUETAG "true"
 #define HMF_FALSETAG "false"
 #define HMF_POSETAG "pose"
 #define HMF_VIEWPORTTAG "viewport"
