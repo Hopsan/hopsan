@@ -24,7 +24,7 @@ Or copy the lib files into your "run directory".
 \section pythonqt Build/Install PythonQt 
 \subsection pythonqt-ubuntu Ubuntu
 -# Install the python-dev package (sudo aptitude install python-dev)
--# Download PythonQt from <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a>
+-# Download PythonQt from <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a> or check out it direct from its SVN reposotory, "https://pythonqt.svn.sourceforge.net/svnroot/pythonqt"
 -# Go to the PythonQt directory and run "qmake" followed by "make all"
 -# In the HopsanGUI project. Go to the project tab and add the following variable:\n
 PYTHONQT_PATH = /home/homsi68/pythonqt or whatever your path is
@@ -32,7 +32,7 @@ PYTHONQT_PATH = /home/homsi68/pythonqt or whatever your path is
 
 \subsection pythonqt-windows-vc Windows (with Visual C++)
 -# Download and install Python 2.6, can be found at <a href="http://python.org/" target="_blank">http://python.org/</a>
--# Download and unzip PythonQt, it is found here: <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a>
+-# Download and unzip PythonQt, it is found here: <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a> or check out it direct from its SVN reposotory, "https://pythonqt.svn.sourceforge.net/svnroot/pythonqt"
 -# Open QT Creator and the PythonQT project. Use release settings. Deactivate shadowbuild.
 -# Go to the project tab and add the following build variables:\n
 PYTHON_PATH = c:\\Python26 \n
@@ -61,7 +61,7 @@ dlltool -D c:/WINDOWS/system32/python26.dll -d python26.def -l libpython26.a\n
 Or the following for 64-bit Windows:\n
 dlltool -D c:/WINDOWS/syswow64/python26.dll -d python26.def -l libpython26.a\n
   -# Move "libpython26.a" to "/mingw/lib" in your Qt directory.
--# Download and unzip PythonQt, it is found here: <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a>
+-# Download and unzip PythonQt, it is found here: <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a> or check out it direct from its SVN reposotory, "https://pythonqt.svn.sourceforge.net/svnroot/pythonqt"
 -# Open QT Creator and the PythonQT project. Use release settings.
   -# Go to the project tab and add the following variables:\n
 PYTHON_PATH = c:\\Python26 \n
