@@ -27,6 +27,7 @@ namespace hopsan {
 
     public:
         //The user should never bother about Nodes
+        void logData(const double time);  //Public because simlation threads must be able to log data
 
     protected:
         //Protected member functions
@@ -42,7 +43,6 @@ namespace hopsan {
         void setLogSettingsSampleTime(double log_dt, double start, double stop, double sampletime);
         //void preAllocateLogSpace(const size_t nSlots);
         void preAllocateLogSpace();
-        void logData(const double time);
         void saveLogData(std::string filename);
 
         void setData(const size_t &data_type, const double &data);

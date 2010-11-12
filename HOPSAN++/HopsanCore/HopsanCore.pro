@@ -153,4 +153,5 @@ HEADERS += win32dll.h \
     ComponentUtilities/Integrator.hpp \
     ComponentUtilities/FirstOrderFilter.hpp \
     ComponentUtilities/Delay.hpp \
-    ComponentUtilities/SecondOrderTransferFunction.h
+    ComponentUtilities/SecondOrderTransferFunction.h \
+    Components/Signal/SignalDummy.hpp

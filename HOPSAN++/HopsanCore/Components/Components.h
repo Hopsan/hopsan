@@ -73,6 +73,7 @@
 #include "Signal/SignalAnd.hpp"
 #include "Signal/SignalOr.hpp"
 #include "Signal/SignalXor.hpp"
+#include "Signal/SignalDummy.hpp"
 
 
 /* Mechanical Components */

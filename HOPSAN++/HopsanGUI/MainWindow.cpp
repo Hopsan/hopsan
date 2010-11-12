@@ -3,6 +3,8 @@
 #include <iostream>
 #include <QDebug>
 
+#include <iostream>
+
 #include "MainWindow.h"
 #include "version.h"
 #include "common.h"
@@ -27,6 +29,8 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+
+    cout << "Starting Hopsan!";
 
     //QString(MAINPATH) = "../../";
     //mQString(ICONPATH) = QString(MAINPATH) + "HopsanGUI/icons/";
@@ -136,6 +140,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Filters","Signal");
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Logic","Signal");
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Simulation Control","Signal");
+    mpLibrary->addLibrary(QString(COMPONENTPATH) + "signal/Dummy","Signal");
 
     mpLibrary->addEmptyLibrary("Mechanic");
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "mechanic/Transformers","Mechanic");

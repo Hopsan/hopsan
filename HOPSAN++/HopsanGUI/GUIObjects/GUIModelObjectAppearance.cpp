@@ -11,6 +11,7 @@
 #include "qdebug.h"
 #include "GUIModelObjectAppearance.h"
 #include "../Utilities/GUIUtilities.h"
+#include "../version.h"
 
 GUIModelObjectAppearance::GUIModelObjectAppearance()
 {
