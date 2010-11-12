@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
 
-    cout << "Starting Hopsan!";
+    std::cout << "Starting Hopsan!";
 
     //QString(MAINPATH) = "../../";
     //mQString(ICONPATH) = QString(MAINPATH) + "HopsanGUI/icons/";
