@@ -26,7 +26,6 @@
 using namespace std;
 
 
-
 //! @brief Constructor for text widget class
 //! @param text Initial text in the widget
 //! @param pos Position of text widget
@@ -213,16 +212,6 @@ void GUITextWidget::saveToDomElement(QDomElement &rDomElement)
 }
 
 
-
-
-
-
-
-
-
-
-
-
 //! @brief Constructor for box widget class
 //! @param pos Position of box widget
 //! @param rot Rotation of box widget (should normally be zero)
@@ -267,7 +256,6 @@ void GUIBoxWidget::deleteMe()
 }
 
 
-
 //! @brief Defines double click events (opens the box edit dialog)
 void GUIBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -306,7 +294,6 @@ void GUIBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         mpStyleBoxInDialog->setCurrentIndex(2);
     if(mpRectItem->pen().style() == Qt::DashDotLine)
         mpStyleBoxInDialog->setCurrentIndex(3);
-
 
     QGridLayout *pBoxGroupLayout = new QGridLayout();
     pBoxGroupLayout->addWidget(mpWidthLabelInDialog,0,0);
@@ -359,7 +346,6 @@ void GUIBoxWidget::openColorDialog()
         mpColorInDialogButton->setStyleSheet(QString("* { background-color: rgb(" + redString + "," + greenString + "," + blueString + ") }"));
     }
 }
-
 
 
 //! @brief Private function that updates the text widget from the selected values in the text edit dialog
@@ -521,10 +507,7 @@ void GUIBoxWidget::saveToDomElement(QDomElement &rDomElement)
 
     QDomElement xmlLine = appendDomElement(xmlGuiStuff, "line");
     xmlLine.setAttribute("width", mpRectItem->pen().width());
-//    appendDomValueNode2(xmlGuiStuff, HMF_POSETAG, pos.x(), pos.y());
-//    appendDomValueNode(xmlGuiStuff, "width", mpRectItem->rect().width());
-//    appendDomValueNode(xmlGuiStuff, "height", mpRectItem->rect().height());
-//    appendDomValueNode(xmlGuiStuff, "linewidth", mpRectItem->pen().width());
+
     QString style;
     if(mpRectItem->pen().style() == Qt::SolidLine)
         style = "solidline";
@@ -536,8 +519,6 @@ void GUIBoxWidget::saveToDomElement(QDomElement &rDomElement)
         style = "dashdotline";
     xmlLine.setAttribute("style", style);
     xmlLine.setAttribute("color", mpRectItem->pen().color().name());
-//    appendDomTextNode(xmlGuiStuff, "linestyle", style);
-//    appendDomTextNode(xmlGuiStuff, "linecolor", mpRectItem->pen().color().name());
 }
 
 
