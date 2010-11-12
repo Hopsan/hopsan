@@ -278,9 +278,10 @@ void ConnectorLoadData::readDomElement(QDomElement &rDomElement)
     endPortName = rDomElement.attribute(HMF_CONNECTORENDPORTTAG);
 
     //Read gui specific stuff
-    QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
     qreal x,y;
-    QDomElement coordTag = guiData.firstChildElement(HMF_COORDINATETAG);
+    QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
+    QDomElement guiCoordinates = guiData.firstChildElement(HMF_COORDINATES);
+    QDomElement coordTag = guiCoordinates.firstChildElement(HMF_COORDINATETAG);
     while (!coordTag.isNull())
     {
         //parseDomValueNode2(xyNode,x,y);

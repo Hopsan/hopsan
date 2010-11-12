@@ -230,7 +230,7 @@ void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
     GUIModelObject::saveCoreDataToDomElement(rDomElement);
 
     //Save parameters (also core related)
-    QDomElement xmlParameters = appendDomElement(rDomElement, HMF_PARAMETERSTAG);
+    QDomElement xmlParameters = appendDomElement(rDomElement, HMF_PARAMETERS);
     //! @todo need more efficient fetching of both par names and values in one call to avoid re-searching every time
     QVector<QString> parameterNames = mpParentSystem->getCoreSystemAccessPtr()->getParameterNames(this->getName());
     QVector<QString>::iterator pit;
@@ -244,7 +244,7 @@ void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
     }
 
     //Save start values
-    QDomElement xmlStartValues = appendDomElement(rDomElement, HMF_STARTVALUESTAG);
+    QDomElement xmlStartValues = appendDomElement(rDomElement, HMF_STARTVALUES);
     QVector<QString> startValueNames;
     QVector<double> startValueValues;
     QVector<QString> dummy;

@@ -35,14 +35,17 @@ void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep,
 
 //Save Load Definitions
 #define HMF_ROOTTAG "hopsanmodelfile"
+#define HMF_OBJECTS "objects"
 #define HMF_OBJECTTAG "object"              //Non core Gui Object
 #define HMF_COMPONENTTAG "component"
 #define HMF_SYSTEMTAG "system"
 #define HMF_SYSTEMPORTTAG "systemport"
+#define HMF_CONNECTIONS "connections"
 #define HMF_CONNECTORTAG "connect"
 #define HMF_PARAMETERTAG "parameter"
-#define HMF_PARAMETERSTAG "parameters"
-#define HMF_STARTVALUESTAG "startvalues"
+#define HMF_PARAMETERS "parameters"
+#define HMF_STARTVALUES "startvalues"
+#define HMF_STARTVALUE "startvalue"
 #define HMF_GROUPTAG "group"
 #define HMF_TEXTWIDGETTAG "textwidget"
 #define HMF_BOXWIDGETTAG "boxwidget"
@@ -53,7 +56,7 @@ void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep,
 #define HMF_PORTTAG "port"
 
 #define HMF_HOPSANGUITAG "hopsangui"
-#define HMF_COORDINATES "cordinates"
+#define HMF_COORDINATES "coordinates"
 #define HMF_COORDINATETAG "coordinate"
 #define HMF_XYTAG "xy"                      //Containes an xy coordinate pair
 #define HMF_EXTERNALPATHTAG "external_path" //Contains the path to an external subsystem

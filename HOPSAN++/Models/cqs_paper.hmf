@@ -5,8 +5,8 @@ HOPSANGUIVERSION 0.0.1
 HMFVERSION 0.1
 CAFVERSION 0.1
 --------------------------------------------------------------
-SIMULATIONTIME 0 0.01 5
-VIEWPORT 2504 2504 1
+SIMULATIONTIME 0 0.001 10
+VIEWPORT 2504 2502 1
 --------------------------------------------------------------
 USERICON ""
 ISOICON ""
@@ -21,8 +21,6 @@ COMPONENT "HydraulicTLMlossless" "Long pipe" 2527 2539 0 0 0
 PARAMETER "Long pipe" "TD" 0.1
 PARAMETER "Long pipe" "a" 0
 PARAMETER "Long pipe" "Zc" 1e+09
-PARAMETER "Long pipe" "startP" 100000
-PARAMETER "Long pipe" "startQ" 0
 COMPONENT "SignalSubtract" "Subtract" 2376 2463 0 0 0
 COMPONENT "HydraulicFlowSensor" "Flow Sensor" 2605 2497 0 0 0
 COMPONENT "HydraulicTankC" "Tank" 2717 2527 270 0 0

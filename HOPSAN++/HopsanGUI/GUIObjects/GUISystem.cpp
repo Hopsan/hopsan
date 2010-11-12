@@ -504,32 +504,37 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
     //Save gui object stuff
     this->saveGuiDataToDomElement(xmlSubsystem);
 
-    //Save all of the sub objects
+        //Save all of the sub objects
     if (mLoadType=="EMBEDED" || mLoadType=="ROOT")
     {
+            //Save subcomponents and subsystems
+        QDomElement xmlObjects = appendDomElement(xmlSubsystem, HMF_OBJECTS);
         GUIModelObjectMapT::iterator it;
         for(it = mGUIModelObjectMap.begin(); it!=mGUIModelObjectMap.end(); ++it)
         {
-            it.value()->saveToDomElement(xmlSubsystem);
-        }
-
-        //Save the connectors
-        for(int i = 0; i != mSubConnectorList.size(); ++i)
-        {
-            mSubConnectorList[i]->saveToDomElement(xmlSubsystem);
+            it.value()->saveToDomElement(xmlObjects);
         }
 
         //Save all text widgets
         for(int i = 0; i != mTextWidgetList.size(); ++i)
         {
-            mTextWidgetList[i]->saveToDomElement(xmlSubsystem);
+            mTextWidgetList[i]->saveToDomElement(xmlObjects);
         }
 
         //Save all box widgets
         for(int i = 0; i != mBoxWidgetList.size(); ++i)
         {
-            mBoxWidgetList[i]->saveToDomElement(xmlSubsystem);
+            mBoxWidgetList[i]->saveToDomElement(xmlObjects);
         }
+
+        //Save the connectors
+        QDomElement xmlConnections = appendDomElement(xmlSubsystem, HMF_CONNECTIONS);
+        for(int i = 0; i != mSubConnectorList.size(); ++i)
+        {
+            mSubConnectorList[i]->saveToDomElement(xmlConnections);
+        }
+
+
     }
 }
 
@@ -548,13 +553,15 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
     {
         //Load embedded subsystem
         //1. Load all sub-components
-        QDomElement xmlSubObject = rDomElement.firstChildElement(HMF_COMPONENTTAG);
+        QDomElement xmlSubObjects = rDomElement.firstChildElement(HMF_OBJECTS);
+        QDomElement xmlSubObject = xmlSubObjects.firstChildElement(HMF_COMPONENTTAG);
         while (!xmlSubObject.isNull())
         {
             GUIModelObject* pObj = loadGUIModelObject(xmlSubObject, mpMainWindow->mpLibrary, this, NOUNDO);
 
             //Load parameter values
-            QDomElement xmlParameter = xmlSubObject.firstChildElement(HMF_PARAMETERTAG);
+            QDomElement xmlParameters = xmlSubObject.firstChildElement(HMF_PARAMETERS);
+            QDomElement xmlParameter = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
             while (!xmlParameter.isNull())
             {
                 loadParameterValue(xmlParameter, pObj, NOUNDO);
@@ -562,49 +569,56 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
             }
 
             //Load start values
-            //! @todo load start values
+            QDomElement xmlStartValues = xmlSubObject.firstChildElement(HMF_STARTVALUES);
+            QDomElement xmlStartValue = xmlStartValues.firstChildElement(HMF_STARTVALUE);
+            while (!xmlStartValue.isNull())
+            {
+                //! @todo load start values
+                xmlStartValue = xmlStartValue.nextSiblingElement(HMF_PARAMETERTAG);
+            }
 
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_COMPONENTTAG);
         }
 
-        //2. Load all sub-systems
-        xmlSubObject = rDomElement.firstChildElement(HMF_SYSTEMTAG);
-        while (!xmlSubObject.isNull())
-        {
-            loadSubsystemGUIObject(xmlSubObject, mpMainWindow->mpLibrary, this, NOUNDO);
-            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMTAG);
-        }
-
-        //3. Load all systemports
-        xmlSubObject = rDomElement.firstChildElement(HMF_SYSTEMPORTTAG);
-        while (!xmlSubObject.isNull())
-        {
-            loadGUIModelObject(xmlSubObject, mpMainWindow->mpLibrary, this, NOUNDO);
-            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMPORTTAG);
-        }
-
-        //4. Load all connectors
-        xmlSubObject = rDomElement.firstChildElement(HMF_CONNECTORTAG);
-        while (!xmlSubObject.isNull())
-        {
-            loadConnector(xmlSubObject, this, NOUNDO);
-            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_CONNECTORTAG);
-        }
-
-        //5. Load all text widgets
-        xmlSubObject = rDomElement.firstChildElement(HMF_TEXTWIDGETTAG);
+        //2. Load all text widgets
+        xmlSubObject = xmlSubObjects.firstChildElement(HMF_TEXTWIDGETTAG);
         while (!xmlSubObject.isNull())
         {
             loadTextWidget(xmlSubObject, this);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_TEXTWIDGETTAG);
         }
 
-        //6. Load all box widgets
-        xmlSubObject = rDomElement.firstChildElement(HMF_BOXWIDGETTAG);
+        //3. Load all box widgets
+        xmlSubObject = xmlSubObjects.firstChildElement(HMF_BOXWIDGETTAG);
         while (!xmlSubObject.isNull())
         {
             loadBoxWidget(xmlSubObject, this);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_BOXWIDGETTAG);
+        }
+
+        //4. Load all sub-systems
+        xmlSubObject = xmlSubObjects.firstChildElement(HMF_SYSTEMTAG);
+        while (!xmlSubObject.isNull())
+        {
+            loadSubsystemGUIObject(xmlSubObject, mpMainWindow->mpLibrary, this, NOUNDO);
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMTAG);
+        }
+
+        //5. Load all systemports
+        xmlSubObject = xmlSubObjects.firstChildElement(HMF_SYSTEMPORTTAG);
+        while (!xmlSubObject.isNull())
+        {
+            loadGUIModelObject(xmlSubObject, mpMainWindow->mpLibrary, this, NOUNDO);
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMPORTTAG);
+        }
+
+        //6. Load all connectors
+        QDomElement xmlConnections = rDomElement.firstChildElement(HMF_CONNECTIONS);
+        xmlSubObject = xmlConnections.firstChildElement(HMF_CONNECTORTAG);
+        while (!xmlSubObject.isNull())
+        {
+            loadConnector(xmlSubObject, this, NOUNDO);
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_CONNECTORTAG);
         }
     }
     else
