@@ -51,7 +51,6 @@ GUISystem::~GUISystem()
     delete mpCoreSystemAccess;
 }
 
-//! @todo ugly temporary hack
 void GUISystem::commonConstructorCode()
 {
     //Set the hmf save tag name
@@ -59,7 +58,7 @@ void GUISystem::commonConstructorCode()
 
     mpScene = new GraphicsScene();
     //mpScene->addItem(this);     //! Detta kan gå åt helsike
-                                //! @todo Should systems belong to their own scene?! This is why display names appear in the system's scene...
+    //                            //! @todo Should systems belong to their own scene?! This is why display names appear in the system's scene...
 
     mpMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 
