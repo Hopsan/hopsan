@@ -562,7 +562,6 @@ void loadBoxWidget(QDomElement &rDomElement, GUISystem *pSystem)
 }
 
 
-
 //! @brief Conveniance function if you dont want to manipulate the loaded data
 void loadParameterValues(QTextStream &rStream, GUISystem* pSystem, undoStatus undoSettings)
 {
