@@ -74,11 +74,10 @@ public:
 
     CoreSystemAccess* getCoreSystemAccessPtr();
 
-        //Public member variable
-     //!< @todo make this private later
+    //Public member variable
+    //!< @todo make this private later
     QFileInfo mModelFileInfo; //!< @todo should not be public
     UndoStack *mUndoStack;
-//    GraphicsScene *mpScene;
     ProjectTab *mpParentProjectTab;
     MainWindow *mpMainWindow;
 

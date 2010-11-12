@@ -12,50 +12,58 @@ class GUISystem;
 class GUIModelObject : public GUIObject
 {
     Q_OBJECT
+
 public:
     GUIModelObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType graphics = USERGRAPHICS, GUISystem *system = 0, QGraphicsItem *parent = 0);
     ~GUIModelObject();
 
-    void rememberConnector(GUIConnector *item);
-    void forgetConnector(GUIConnector *item);
-
-    QList<GUIConnector*> getGUIConnectorPtrs();
-
+    //Name methods
     virtual QString getName();
-    void refreshDisplayName();
+    virtual void refreshDisplayName();
     //virtual void setName(QString name, renameRestrictions renameSettings=UNRESTRICTED);
-    void setDisplayName(QString name);
+    virtual void setDisplayName(QString name);
     virtual QString getTypeName();
+    virtual int getNameTextPos();
+    virtual void setNameTextPos(int textPos);
+
+    //CQS methods
     virtual QString getTypeCQS() {assert(false); return "";} //Only available in GUISystemComponent adn GuiComponent for now
     virtual void setTypeCQS(QString typestring) {assert(false);} //Only available in GUISystemComponent
 
-    void deleteMe();
+    virtual void deleteMe();
 
-    GUIModelObjectAppearance* getAppearanceData();
-    void refreshAppearance();
+    //Appearance methods
+    virtual GUIModelObjectAppearance* getAppearanceData();
+    virtual void refreshAppearance();
 
-    int getNameTextPos();
-    void setNameTextPos(int textPos);
-
-    void showPorts(bool visible);
-    GUIPort *getPort(QString name);
-    QList<GUIPort*> &getPortListPtrs();
-
+    //Parameter methods
     virtual QVector<QString> getParameterNames();
     virtual QString getParameterUnit(QString name) {assert(false); return "";} //Only availible in GUIComponent for now
     virtual QString getParameterDescription(QString name) {assert(false); return "";} //Only availible in GUIComponent for now
     virtual double getParameterValue(QString name);
     virtual void setParameterValue(QString name, double value);
 
+    //Load and save methods
     virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());
     virtual void saveToDomElement(QDomElement &rDomElement);
     virtual void loadFromHMF(QString modelFilePath=QString()) {assert(false);} //Only available in GUISubsystem for now
 
+    //Connector methods
+    void rememberConnector(GUIConnector *item);
+    void forgetConnector(GUIConnector *item);
+
+    //Port methods
+    void showPorts(bool visible);
+    GUIPort *getPort(QString name);
+    QList<GUIPort*> &getPortListPtrs();
+
+    //Public members
+    GUIModelObjectDisplayName *mpNameText;
+
+    QList<GUIConnector*> getGUIConnectorPtrs();
+
     enum { Type = GUIMODELOBJECT };
     int type() const;
-
-    //Public Vaariables
-    GUIModelObjectDisplayName *mpNameText;
 
 public slots:
     void rotate(undoStatus undoSettings = UNDO);
@@ -68,20 +76,23 @@ public slots:
 
 
 protected:
+    //Reimplemented Qt methods
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
+    //Save and load methods
     virtual QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
     virtual void saveCoreDataToDomElement(QDomElement &rDomElement);
 
-    void groupComponents(QList<QGraphicsItem*> compList);
+    //Group methods
+    //virtual void groupComponents(QList<QGraphicsItem*> compList);
+
+    //Port methods
     virtual void createPorts() {assert(false);} //Only availible in GUIComponent for now
 
-    //Protected Variables
+    //Protected members
     GUIModelObjectAppearance mGUIModelObjectAppearance;
 
     double mTextOffset;
@@ -101,16 +112,15 @@ protected slots:
     void calcNameTextPositions(QVector<QPointF> &rPts);
     void setNameTextScale(qreal scale);
 
-private:
-
 };
+
 
 class GUIModelObjectDisplayName : public QGraphicsTextItem
 {
     Q_OBJECT
+
 public:
     GUIModelObjectDisplayName(GUIModelObject *pParent);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 public slots:
     void deselect();
@@ -119,9 +129,12 @@ signals:
     void textMoved(QPointF pos);
 
 protected:
+    //Reimplemented Qt methods
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
-private:
+protected:
+    //Protected members
     GUIModelObject* mpParentGUIModelObject;
 };
 
