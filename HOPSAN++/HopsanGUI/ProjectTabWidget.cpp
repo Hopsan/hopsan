@@ -70,7 +70,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mIsSaved = true;
 
     mpGraphicsView  = new GraphicsView(this);
-    mpGraphicsView->setScene(mpSystem->mpScene);
+    mpGraphicsView->setScene(mpSystem->getContainedScenePtr());
 
     QVBoxLayout *tabLayout = new QVBoxLayout;
     tabLayout->addWidget(mpGraphicsView);

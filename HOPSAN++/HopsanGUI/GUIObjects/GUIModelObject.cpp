@@ -28,9 +28,6 @@ GUIModelObject::GUIModelObject(QPoint position, qreal rotation, const GUIModelOb
         //Set the hmf save tag name
     mHmfTagName = HMF_OBJECTTAG; //!< @todo change this
 
-    //! @todo Is this comment a todo?
-    //remeber the scene ptr
-
         //Make a local copy of the appearance data (that can safely be modified if needed)
     mGUIModelObjectAppearance = *pAppearanceData;
 
@@ -919,9 +916,7 @@ void GUIModelObject::refreshAppearance()
     }
 
     setIcon(mIconType);
-    //qDebug() << pos();
     setGeometry(pos().x(), pos().y(), mpIcon->boundingRect().width(), mpIcon->boundingRect().height());
-    //qDebug() << pos();
 
     //! @todo problem with hovered or active or passive selection box, should maybe make it possible to resize rather than to create a new selection box on refresh
     mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpIcon->boundingRect().width(), mpIcon->boundingRect().height(),
