@@ -230,12 +230,13 @@ void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
     GUIModelObject::saveCoreDataToDomElement(rDomElement);
 
     //Save parameters (also core related)
+    QDomElement xmlParameters = appendDomElement(rDomElement, HMF_PARAMETERSTAG);
     //! @todo need more efficient fetching of both par names and values in one call to avoid re-searching every time
     QVector<QString> parameterNames = mpParentSystem->getCoreSystemAccessPtr()->getParameterNames(this->getName());
     QVector<QString>::iterator pit;
     for(pit = parameterNames.begin(); pit != parameterNames.end(); ++pit)
     {
-        QDomElement xmlParam = appendDomElement(rDomElement, HMF_PARAMETERTAG);
+        QDomElement xmlParam = appendDomElement(xmlParameters, HMF_PARAMETERTAG);
 //        appendDomTextNode(xmlParam, HMF_NAMETAG, *pit);
 //        appendDomValueNode(xmlParam, HMF_VALUETAG, mpParentSystem->getCoreSystemAccessPtr()->getParameterValue(this->getName(), (*pit)));
         xmlParam.setAttribute(HMF_NAMETAG, *pit);
@@ -243,6 +244,7 @@ void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
     }
 
     //Save start values
+    QDomElement xmlStartValues = appendDomElement(rDomElement, HMF_STARTVALUESTAG);
     QVector<QString> startValueNames;
     QVector<double> startValueValues;
     QVector<QString> dummy;
@@ -257,7 +259,7 @@ void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
             for(size_t i = 0; i < startValueNames.size(); ++i)
             {
                 //QDomElement xmlStartValue = appendDomElement(xmlPort, "startvalue");
-                QDomElement xmlStartValue = appendDomElement(rDomElement, "startvalue");
+                QDomElement xmlStartValue = appendDomElement(xmlStartValues, "startvalue");
 //                appendDomTextNode(xmlStartValue, "quantity", startValueNames[i]);
 //                appendDomValueNode(xmlStartValue, "value", startValueValues[i]);
                 xmlStartValue.setAttribute("portname", (*portIt)->getName());

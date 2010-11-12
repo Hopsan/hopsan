@@ -528,10 +528,12 @@ void GUIConnector::saveToDomElement(QDomElement &rDomElement)
     xmlConnect.setAttribute(HMF_CONNECTORENDPORTTAG, getEndPortName());
 
     //Save gui data to dom
+
     QDomElement xmlConnectGUI = appendDomElement(xmlConnect, HMF_HOPSANGUITAG);
+    QDomElement xmlCoordinates = appendDomElement(xmlConnectGUI, HMF_COORDINATES);
     for(size_t j=0; j<mPoints.size(); ++j)
     {
-        appendCoordinateTag(xmlConnectGUI, mPoints[j].x(), mPoints[j].y());
+        appendCoordinateTag(xmlCoordinates, mPoints[j].x(), mPoints[j].y());
         //appendDomValueNode2(xmlConnectGUI, HMF_XYTAG, mPoints[j].x(), mPoints[j].y());
 //        appendDomTextNode(xmlConnectGUI, "ptx", mPoints[j].x());
 //        appendDomTextNode(xmlConnectGUI, "pty", mPoints[j].y());
