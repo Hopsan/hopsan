@@ -24,11 +24,13 @@ void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &
 //void setAttribute(QDomElement &rDomElement, QString attrname, QString text);
 //void setAttribute(QDomElement &rDomElement, QString attrname, int text);
 void appendPoseTag(QDomElement &rDomElement, qreal x, qreal y, qreal th);
+void appendPortPoseTag(QDomElement &rDomElement, QString name, qreal x, qreal y, qreal th);
 void appendCoordinateTag(QDomElement &rDomElement, qreal x, qreal y);
 void appendViewPortTag(QDomElement &rDomElement, qreal x, qreal y, qreal zoom);
 void appendSimulationTimeTag(QDomElement &rDomElement, qreal start, qreal step, qreal stop);
 
 void parsePoseTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rTheta);
+void parsePortPoseTag(QDomElement domElement, QString &rName, qreal &rX, qreal &rY, qreal &rTheta);
 void parseCoordinateTag(QDomElement domElement, qreal &rX, qreal &rY);
 void parseViewPortTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rZoom);
 void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep, qreal &rStop);
@@ -63,6 +65,7 @@ void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep,
 #define HMF_VALUETAG "value"
 #define HMF_TRUETAG "true"
 #define HMF_FALSETAG "false"
+#define HMF_PORTPOSETAG "portpose"
 #define HMF_POSETAG "pose"
 #define HMF_VIEWPORTTAG "viewport"
 #define HMF_NAMETEXTTAG "nametext"

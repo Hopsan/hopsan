@@ -136,6 +136,15 @@ void appendPoseTag(QDomElement &rDomElement, qreal x, qreal y, qreal th)
     pose.setAttribute("a",th);
 }
 
+void appendPortPoseTag(QDomElement &rDomElement, QString name, qreal x, qreal y, qreal th)
+{
+    QDomElement pose = appendDomElement(rDomElement, HMF_PORTPOSETAG);
+    pose.setAttribute("name",name);
+    pose.setAttribute("x",x);
+    pose.setAttribute("y",y);
+    pose.setAttribute("a",th);
+}
+
 void appendCoordinateTag(QDomElement &rDomElement, qreal x, qreal y)
 {
     QDomElement pose = appendDomElement(rDomElement, HMF_COORDINATETAG);
@@ -164,6 +173,12 @@ void parsePoseTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rTheta)
     rX = domElement.attribute("x").toDouble();
     rY = domElement.attribute("y").toDouble();
     rTheta = domElement.attribute("a").toDouble();
+}
+
+void parsePortPoseTag(QDomElement domElement, QString &rName, qreal &rX, qreal &rY, qreal &rTheta)
+{
+    rName = domElement.attribute("name");
+    parsePoseTag(domElement, rX, rY, rTheta);
 }
 
 void parseCoordinateTag(QDomElement domElement, qreal &rX, qreal &rY)

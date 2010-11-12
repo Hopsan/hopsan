@@ -389,7 +389,7 @@ void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, undoStatu
         GUIPort *endPort = pSystem->getGUIModelObject(endGuiObjName)->getPort(rData.endPortName);
 
         GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, rData.pointVector, pSystem);
-        pSystem->mpScene->addItem(pTempConnector);
+        pSystem->getContainedScenePtr()->addItem(pTempConnector);
 
         //Hide connected ports
         startPort->hide();

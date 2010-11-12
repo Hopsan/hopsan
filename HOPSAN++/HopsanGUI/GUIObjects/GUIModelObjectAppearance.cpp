@@ -216,17 +216,19 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement &rDomElement)
     mIconPathUser   = rDomElement.firstChildElement(HMF_USERICONTAG).text();
     mIconRotationBehaviour = rDomElement.firstChildElement(HMF_ICONROTATIONTAG).text();
 
-    QDomElement xmlPort = rDomElement.firstChildElement(HMF_PORTTAG);
-    while (!xmlPort.isNull())
+    QString portname;
+    QDomElement xmlPortPose = rDomElement.firstChildElement(HMF_PORTPOSETAG);
+    while (!xmlPortPose.isNull())
     {
         GUIPortAppearance portApp;
 //        parseDomValueNode3(xmlPort.firstChildElement(HMF_POSETAG), portApp.x, portApp.y, portApp.rot);
 //        mPortAppearanceMap.insert(xmlPort.firstChildElement(HMF_NAMETAG).text(), portApp);
-        QString portname = xmlPort.attribute(HMF_NAMETAG);
-        parsePoseTag(xmlPort.firstChildElement(HMF_POSETAG), portApp.x, portApp.y, portApp.rot);
+//        QString portname = xmlPort.attribute(HMF_NAMETAG);
+//        parsePoseTag(xmlPort.firstChildElement(HMF_POSETAG), portApp.x, portApp.y, portApp.rot);
 
+        parsePortPoseTag(xmlPortPose, portname, portApp.x, portApp.y, portApp.rot);
         mPortAppearanceMap.insert(portname, portApp);
-        xmlPort = xmlPort.nextSiblingElement(HMF_PORTTAG);
+        xmlPortPose = xmlPortPose.nextSiblingElement(HMF_PORTPOSETAG);
     }
      this->mIsReadOK = true; //Assume read will be ok
      //! @todo maybe remove this in xml load
@@ -244,11 +246,11 @@ void GUIModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
     PortAppearanceMapT::iterator pit;
     for (pit=mPortAppearanceMap.begin(); pit!=mPortAppearanceMap.end(); ++pit)
     {
-        QDomElement xmlPort = appendDomElement(rDomElement,HMF_PORTTAG);
+//        QDomElement xmlPort = appendDomElement(rDomElement,HMF_PORTPOSETAG);
 //        appendDomTextNode(xmlPort, HMF_NAMETAG, pit.key());
 //        appendDomValueNode3(xmlPort, HMF_POSETAG, pit.value().x, pit.value().y, pit.value().rot);
-        xmlPort.setAttribute(HMF_NAMETAG, pit.key());
-        appendPoseTag(xmlPort, pit.value().x, pit.value().y, pit.value().rot);
+//        xmlPort.setAttribute(HMF_NAMETAG, pit.key());
+        appendPortPoseTag(rDomElement, pit.key(), pit.value().x, pit.value().y, pit.value().rot);
     }
 }
 
