@@ -359,34 +359,34 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
 
 void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, undoStatus undoSettings)
 {
-    qDebug() << "loadConnector: " << rData.startComponentName << " " << rData.endComponentName << " " << pSystem->getCoreSystemAccessPtr()->getRootSystemName();
+    //qDebug() << "loadConnector: " << rData.startComponentName << " " << rData.endComponentName << " " << pSystem->getCoreSystemAccessPtr()->getRootSystemName();
     bool success = pSystem->getCoreSystemAccessPtr()->connect(rData.startComponentName, rData.startPortName, rData.endComponentName, rData.endPortName);
     if (success)
     {
-        //Check if the component names are the same as the guiroot system name in such cases we should search for the actual systemport gui object instead
-        //!< @todo this is extremely strange, some day we need to figure out a way that allways works the same way, this will likly mean MAJOR changes
-        QString startGuiObjName, endGuiObjName;
-        if (rData.startComponentName == pSystem->getCoreSystemAccessPtr()->getRootSystemName())
-        {
-            startGuiObjName = rData.startPortName;
-        }
-        else
-        {
-            startGuiObjName = rData.startComponentName;
-        }
-        if (rData.endComponentName == pSystem->getCoreSystemAccessPtr()->getRootSystemName())
-        {
-            endGuiObjName = rData.endPortName;
-        }
-        else
-        {
-            endGuiObjName = rData.endComponentName;
-        }
+//        //Check if the component names are the same as the guiroot system name in such cases we should search for the actual systemport gui object instead
+//        //!< @todo this is extremely strange, some day we need to figure out a way that allways works the same way, this will likly mean MAJOR changes
+//        QString startGuiObjName, endGuiObjName;
+//        if (rData.startComponentName == pSystem->getCoreSystemAccessPtr()->getRootSystemName())
+//        {
+//            startGuiObjName = rData.startPortName;
+//        }
+//        else
+//        {
+//            startGuiObjName = rData.startComponentName;
+//        }
+//        if (rData.endComponentName == pSystem->getCoreSystemAccessPtr()->getRootSystemName())
+//        {
+//            endGuiObjName = rData.endPortName;
+//        }
+//        else
+//        {
+//            endGuiObjName = rData.endComponentName;
+//        }
 
         //! @todo all of this (above and bellow) should be inside some conventiant function like "connect"
         //! @todo Need some error handling here to avoid crash if components or ports do not exist
-        GUIPort *startPort = pSystem->getGUIModelObject(startGuiObjName)->getPort(rData.startPortName);
-        GUIPort *endPort = pSystem->getGUIModelObject(endGuiObjName)->getPort(rData.endPortName);
+        GUIPort *startPort = pSystem->getGUIModelObject(rData.startComponentName)->getPort(rData.startPortName);
+        GUIPort *endPort = pSystem->getGUIModelObject(rData.endComponentName)->getPort(rData.endPortName);
 
         GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, rData.pointVector, pSystem);
         pSystem->getContainedScenePtr()->addItem(pTempConnector);
