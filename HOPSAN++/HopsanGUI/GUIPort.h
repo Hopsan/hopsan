@@ -13,7 +13,7 @@
 //Forward declarations
 class GUIModelObject;
 class GUISystem;
-class CoreSystemAccess;
+//class CoreSystemAccess;
 
 enum portDirection {TOPBOTTOM, LEFTRIGHT};
 
@@ -21,7 +21,7 @@ class GUIPort :public QGraphicsSvgItem
 {
     Q_OBJECT
 public:
-    GUIPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParent = 0, CoreSystemAccess *pGUIRootSystem=0);
+    GUIPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParent = 0/*, CoreSystemAccess *pGUIRootSystem=0*/);
 
     QPointF getCenterPos();
     void updatePosition(qreal x, qreal y);
@@ -90,7 +90,7 @@ private:
 
     QGraphicsLineItem *lineH;
     QGraphicsLineItem *lineV;
-    CoreSystemAccess *mpGUIRootSystem;
+    //CoreSystemAccess *mpGUIRootSystem;
     QGraphicsTextItem *mpPortLabel;
     qreal mMag;
     bool mIsMag;
@@ -98,7 +98,7 @@ private:
     bool mIsConnected;
 
     GUIPortAppearance *mpPortAppearance;
-    QString name;
+    QString mName;
 
     QGraphicsSvgItem* mpPortGraphicsOverlay;
 };

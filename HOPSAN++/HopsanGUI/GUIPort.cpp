@@ -47,20 +47,22 @@ QPointF getOffsetPointfromPort(GUIPort *pPort)
 //! @param rot how the port should be rotated.
 //! @param QString(ICONPATH) a string with the path to the svg-figure representing the port.
 //! @param parent the port's parent, the component it is a part of.
-GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParentGUIModelObject, CoreSystemAccess *pGUIRootSystem)
+GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParentGUIModelObject/*, CoreSystemAccess *pGUIRootSystem*/)
     : QGraphicsSvgItem(pPortAppearance->mIconPath, pParentGUIModelObject)
 {
-    qDebug() << "parentType: " << pParentGUIModelObject->type() << " GUISYSTEM=" << GUISYSTEM;
-    qDebug() << "======================= parentName: " << pParentGUIModelObject->getName();
+//    qDebug() << "parentType: " << pParentGUIModelObject->type() << " GUISYSTEM=" << GUISYSTEM;
+//    qDebug() << "======================= parentName: " << pParentGUIModelObject->getName();
 
+    //Here we try to figure out what to set the parent system pointer to
     if ( pParentGUIModelObject->mpParentSystem != 0 )
     {
+        //This is the normal case, our objects parentsystem
         mpParentSystem = pParentGUIModelObject->mpParentSystem;
     }
     else if ( pParentGUIModelObject->type() == GUISYSTEM )
     {
-        //Assume that parentGuiObject (which is a system) is the root system
-        //! @todo not sure that this is really 100% correct
+        //In this case, our parentobect is a root system (that is it has no parent)
+        //this should only happen in systemports in the root system
         mpParentSystem = qobject_cast<GUISystem*>(pParentGUIModelObject);
     }
     else
@@ -71,9 +73,9 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
 
     mpParentGuiModelObject = pParentGUIModelObject;
     mpPortAppearance = pPortAppearance;
-    mpGUIRootSystem = pGUIRootSystem; //Use this to indicate system port
+    //mpGUIRootSystem = pGUIRootSystem; //Use this to indicate system port
 
-    this->name = portName;
+    this->mName = portName;
 
     updatePosition(xpos, ypos);
     //All rotaion and other transformation should be aplied around the port center
@@ -169,8 +171,8 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     QGraphicsSvgItem::hoverEnterEvent(event);
 
     this->setCursor(Qt::CrossCursor);
-    QBrush brush(Qt::blue);
-    qDebug() << "hovering over port beloning to: " << mpParentGuiModelObject->getName();
+    //QBrush brush(Qt::blue);
+    //qDebug() << "hovering over port beloning to: " << mpParentGuiModelObject->getName();
     magnify(true);
 
     //mpPortLabel->setRotation(-mpParentGuiModelObject->rotation()-this->rotation());
@@ -179,17 +181,17 @@ void GUIPort::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     mpPortLabel->show();
 }
 
-//! @brief Updates the gui port position on its parent object, taking coordinates in aprent coordinate system
-//! @todo it is necessary to be able to update orientation also
+//! @brief Updates the gui port position on its parent object, taking coordinates in parent coordinate system
+//! @todo is it necessary to be able to update orientation also?
 void GUIPort::updatePosition(const qreal x, const qreal y)
 {
-    qDebug() << "Update Port Position in: " << this->getName();
-    qDebug() << "x,y: " << x << " " << y;
-    qDebug() << "Parent bounding rect: " << mpParentGuiModelObject->boundingRect();
-    qDebug() << "Parentrotation: " << mpParentGuiModelObject->rotation();
-    qDebug() << "This bounding rect: " << this->boundingRect();
-    qDebug() << "This bounding rect center: " << this->boundingRect().center();
-    qDebug() << "This transform origin: " << this->transformOriginPoint();
+//    qDebug() << "Update Port Position in: " << this->getName();
+//    qDebug() << "x,y: " << x << " " << y;
+//    qDebug() << "Parent bounding rect: " << mpParentGuiModelObject->boundingRect();
+//    qDebug() << "Parentrotation: " << mpParentGuiModelObject->rotation();
+//    qDebug() << "This bounding rect: " << this->boundingRect();
+//    qDebug() << "This bounding rect center: " << this->boundingRect().center();
+//    qDebug() << "This transform origin: " << this->transformOriginPoint();
 
 
 //    qreal mXpos = x;
@@ -213,7 +215,7 @@ void GUIPort::updatePosition(const qreal x, const qreal y)
     //Reset transformation (rotation) point
     //this->setTransformOriginPoint(0, 0);
 
-    qDebug() << "Resulting pos: " << this->pos();
+//    qDebug() << "Resulting pos: " << this->pos();
 
 }
 
@@ -357,15 +359,16 @@ void GUIPort::addPortGraphicsOverlay(QString filepath)
     }
 
     //Setup port label (ports allways have lables)
-    QString label("<p><span style=\"background-color:lightyellow\">");
-    label.append(this->getName()).append("</span></p>");
-
     mpPortLabel = new QGraphicsTextItem(this);
-    mpPortLabel->setHtml(label);
+    this->setDisplayName(this->getName());
+//    QString label("<p><span style=\"background-color:lightyellow\">");
+//    label.append(this->getName()).append("</span></p>");
+//    mpPortLabel->setHtml(label);
+
     mpPortLabel->setTextInteractionFlags(Qt::NoTextInteraction);
     mpPortLabel->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
 
-    QPointF portcenter = this->boundingRect().center();
+    //QPointF portcenter = this->boundingRect().center();
     //mpPortLabel->setPos(portcenter*2.0);
     mpPortLabel->hide();
 }
@@ -562,7 +565,7 @@ void GUIPort::hide()
 
 QString GUIPort::getName()
 {
-    return this->name;
+    return this->mName;
 }
 
 QString GUIPort::getGuiModelObjectName()
@@ -573,9 +576,9 @@ QString GUIPort::getGuiModelObjectName()
 
 void GUIPort::setDisplayName(const QString name)
 {
-    this->name = name;
+    this->mName = name;
     QString label("<p><span style=\"background-color:lightyellow\">");
-    label.append(this->name).append("</span></p>");
+    label.append(this->mName).append("</span></p>");
     mpPortLabel->setHtml(label);
 }
 

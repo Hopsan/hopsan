@@ -47,7 +47,7 @@ void GUISystemPort::createPorts()
 
     //We supply ptr to rootsystem to indicate that this is a systemport
     //! @todo this is a very bad way of doing this (ptr to rootsystem for systemport), really need to figure out some better way
-    mpGuiPort = new GUIPort(mGUIModelObjectAppearance.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this, mpParentSystem->getCoreSystemAccessPtr());
+    mpGuiPort = new GUIPort(mGUIModelObjectAppearance.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this/*, mpParentSystem->getCoreSystemAccessPtr()*/);
     mPortListPtrs.append(mpGuiPort);
 
 }

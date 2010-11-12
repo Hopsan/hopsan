@@ -34,7 +34,7 @@ GUIComponent::GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPoint pos
 
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 
-    std::cout << "GUIcomponent: " << this->mGUIModelObjectAppearance.getTypeName().toStdString() << std::endl;
+    //std::cout << "GUIcomponent: " << this->mGUIModelObjectAppearance.getTypeName().toStdString() << std::endl;
 
     //Set the hmf save tag name
     mHmfTagName = HMF_COMPONENTTAG;
