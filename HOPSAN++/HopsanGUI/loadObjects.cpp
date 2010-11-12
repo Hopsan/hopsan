@@ -4,7 +4,6 @@
 
 #include "LibraryWidget.h"
 #include "GraphicsView.h"
-//#include "GUIObject.h"
 #include "CoreSystemAccess.h"
 #include "GUIConnector.h"
 #include "GUIPort.h"

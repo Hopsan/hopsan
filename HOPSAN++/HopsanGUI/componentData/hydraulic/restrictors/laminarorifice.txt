@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <componentappearancefile version="0.1">
-    <typename>HydraulicLaminarOrifice</typename>
-    <displayname>Laminar Orifice</displayname>
-    <isoicon>laminarorifice_iso.svg</isoicon>
-    <usericon>laminarorifice_user.svg</usericon>
-    <iconrotation>ON</iconrotation>
-    <portpose name="P1" x="1.0" y="0.5" a="0"/>
-    <portpose name="P2" x="0.0" y="0.5" a="180"/>
+	<modelobject typename="HydraulicLaminarOrifice" displayname="Laminar Orifice">
+		<icon isopath="laminarorifice_iso.svg" userpath="laminarorifice_user.svg" iconrotation="ON"/>
+		<portpose name="P1" x="1.0" y="0.5" a="0"/>
+		<portpose name="P2" x="0.0" y="0.5" a="180"/>
+	</modelobject>
 </componentappearancefile>
 

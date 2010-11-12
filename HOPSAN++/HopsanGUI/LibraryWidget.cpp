@@ -321,23 +321,26 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
             }
             else
             {
-                //Read appearance data from the caf xml file
-                pAppearanceData->readFromDomElement(cafRoot);
+                //Read appearance data from the caf xml file, begin with the first
+                QDomElement xmlModelObjectAppearance = cafRoot.firstChildElement("modelobject"); //! @todo extend this code to be able to read many appearace objects from same file, aslo not hardcode tagnames
+                pAppearanceData->readFromDomElement(xmlModelObjectAppearance);
             }
         }
         else
         {
-            //            QMessageBox::information(window(), tr("Hopsan GUI read AppearanceData"),
-            //                                     tr("Parse error at line %1, column %2:\n%3")
-            //                                     .arg(errorLine)
-            //                                     .arg(errorColumn)
-            //                                     .arg(errorStr));
+//                        QMessageBox::information(window(), tr("Hopsan GUI read AppearanceData in %4"),
+//                                                 tr("Parse error at line %1, column %2:\n%3")
+//                                                 .arg(errorLine)
+//                                                 .arg(errorColumn)
+//                                                 .arg(errorStr)
+//                                                 .arg(file.fileName()));
 
             file.reset(); //Reset file ptr
 
             //Assume that the file is ok
             QTextStream inFile(&file);  //Create a QTextStream object to stream the content of each file
             pAppearanceData->readFromTextStream(inFile);
+            pAppearanceData->saveToXML("apa.xml");
         }
 
         pAppearanceData->setBasePath(libDirObject.absolutePath() + "/");
