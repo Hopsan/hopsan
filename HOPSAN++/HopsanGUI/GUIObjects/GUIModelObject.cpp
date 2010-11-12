@@ -252,18 +252,27 @@ void GUIModelObject::setDisplayName(QString name)
 void GUIModelObject::setIcon(graphicsType gfxType)
 {
     QGraphicsSvgItem *tmp = mpIcon;
+    QString iconPath;
     if(gfxType && mGUIModelObjectAppearance.haveIsoIcon())
     {
-        mpIcon = new QGraphicsSvgItem(mGUIModelObjectAppearance.getFullIconPath(ISOGRAPHICS), this);
-        mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
+        iconPath = mGUIModelObjectAppearance.getFullIconPath(ISOGRAPHICS);
         mIconType = ISOGRAPHICS;
     }
     else
     {
-        mpIcon = new QGraphicsSvgItem(mGUIModelObjectAppearance.getFullIconPath(USERGRAPHICS), this);
-        mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
+        iconPath = mGUIModelObjectAppearance.getFullIconPath(USERGRAPHICS);
         mIconType = USERGRAPHICS;
     }
+    //Check if specified file exist, else use unknown icon
+    QFile iconFile(iconPath);
+    if (!iconFile.exists())
+    {
+        iconPath = COMPONENTPATH + QString("missingcomponenticon.svg");
+    }
+    mpIcon = new QGraphicsSvgItem(iconPath, this);
+    mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
+
+    //! @todo maybe should give warning message
 
     //Delete old icon if it exist;
     if (tmp != 0)

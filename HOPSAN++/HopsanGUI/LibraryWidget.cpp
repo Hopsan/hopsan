@@ -72,9 +72,17 @@ void LibraryContentItem::selectIcon(graphicsType gfxType)
 {
     //Set Icon, prefere user, if its empty use iso
     QIcon icon;
-    QPixmap testPixMap;
+    //QPixmap testPixMap;
 
-    icon.addFile(mpAppearanceData->getFullIconPath(gfxType),QSize(55,55));
+    QString iconPath = mpAppearanceData->getFullIconPath(gfxType);
+    //Check if specified file exist, else use unknown icon
+    QFile iconFile(iconPath);
+    if (!iconFile.exists())
+    {
+        iconPath = COMPONENTPATH + QString("missingcomponenticon.svg");
+    }
+
+    icon.addFile(iconPath,QSize(55,55));
     //this->setSizeHint(QSize(55,55));
     this->setIcon(icon);
     //this->setData(Qt::UserRole, QVariant(icon));

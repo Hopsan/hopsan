@@ -72,7 +72,7 @@ QString GUIModelObjectAppearance::getFullIconPath(graphicsType gfxType)
     else
     {
         //No icon available use som noname icon
-        return "som noname file"; //!< @todo Fix this, Empty icon
+        return COMPONENTPATH + QString("missingcomponenticon.svg");
     }
 }
 
