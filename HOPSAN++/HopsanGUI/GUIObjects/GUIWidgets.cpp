@@ -199,11 +199,17 @@ void GUITextWidget::saveToDomElement(QDomElement &rDomElement)
     QDomElement xmlGuiStuff = appendDomElement(xmlObject,HMF_HOPSANGUITAG);
 
     QPointF pos = mapToScene(boundingRect().topLeft());
-    appendDomValueNode2(xmlGuiStuff, HMF_POSETAG, pos.x(), pos.y());
-    appendDomTextNode(xmlGuiStuff, "text", mpTextItem->toPlainText());
-    appendDomTextNode(xmlGuiStuff, "font", mpTextItem->font().toString());
-    appendDomValueNode(xmlGuiStuff, "fontsize", mpTextItem->font().pointSize());
-    appendDomTextNode(xmlGuiStuff, "fontcolor", mpTextItem->defaultTextColor().name());
+
+    //xmlGuiStuff.setAttribute(HMF_POSETAG, getEndComponentName());
+
+    QDomElement xmlPose = appendDomElement(xmlGuiStuff, HMF_POSETAG);
+    xmlPose.setAttribute("x", pos.x());
+    xmlPose.setAttribute("y", pos.y());
+
+    QDomElement xmlText = appendDomElement(xmlGuiStuff, "textobject");
+    xmlText.setAttribute("text", mpTextItem->toPlainText());
+    xmlText.setAttribute("font", mpTextItem->font().toString());
+    xmlText.setAttribute("fontcolor", mpTextItem->defaultTextColor().name());
 }
 
 
@@ -504,10 +510,21 @@ void GUIBoxWidget::saveToDomElement(QDomElement &rDomElement)
     QDomElement xmlGuiStuff = appendDomElement(xmlObject,HMF_HOPSANGUITAG);
 
     QPointF pos = mapToScene(mpRectItem->rect().topLeft());
-    appendDomValueNode2(xmlGuiStuff, HMF_POSETAG, pos.x(), pos.y());
-    appendDomValueNode(xmlGuiStuff, "width", mpRectItem->rect().width());
-    appendDomValueNode(xmlGuiStuff, "height", mpRectItem->rect().height());
-    appendDomValueNode(xmlGuiStuff, "linewidth", mpRectItem->pen().width());
+
+    QDomElement xmlPose = appendDomElement(xmlGuiStuff, HMF_POSETAG);
+    xmlPose.setAttribute("x", pos.x());
+    xmlPose.setAttribute("y", pos.y());
+
+    QDomElement xmlSize = appendDomElement(xmlGuiStuff, "size");
+    xmlSize.setAttribute("width", mpRectItem->rect().width());
+    xmlSize.setAttribute("height", mpRectItem->rect().height());
+
+    QDomElement xmlLine = appendDomElement(xmlGuiStuff, "line");
+    xmlLine.setAttribute("width", mpRectItem->pen().width());
+//    appendDomValueNode2(xmlGuiStuff, HMF_POSETAG, pos.x(), pos.y());
+//    appendDomValueNode(xmlGuiStuff, "width", mpRectItem->rect().width());
+//    appendDomValueNode(xmlGuiStuff, "height", mpRectItem->rect().height());
+//    appendDomValueNode(xmlGuiStuff, "linewidth", mpRectItem->pen().width());
     QString style;
     if(mpRectItem->pen().style() == Qt::SolidLine)
         style = "solidline";
@@ -517,8 +534,10 @@ void GUIBoxWidget::saveToDomElement(QDomElement &rDomElement)
         style = "dotline";
     else if(mpRectItem->pen().style() == Qt::DashDotLine)
         style = "dashdotline";
-    appendDomTextNode(xmlGuiStuff, "linestyle", style);
-    appendDomTextNode(xmlGuiStuff, "linecolor", mpRectItem->pen().color().name());
+    xmlLine.setAttribute("style", style);
+    xmlLine.setAttribute("color", mpRectItem->pen().color().name());
+//    appendDomTextNode(xmlGuiStuff, "linestyle", style);
+//    appendDomTextNode(xmlGuiStuff, "linecolor", mpRectItem->pen().color().name());
 }
 
 

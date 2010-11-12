@@ -4,6 +4,10 @@
 #include <QTextStream>
 #include "GUIObjects/GUIModelObjectAppearance.h"
 #include "Utilities/XMLUtilities.h"
+#include <QFont>
+#include <QColor>
+#include <QPoint>
+
 
 //Forward Declarations
 class GraphicsView;
@@ -96,6 +100,28 @@ public:
     qreal parameterValue;
 
     void read(QTextStream &rStream);
+    void readDomElement(QDomElement &rDomElement);
+};
+
+class TextWidgetLoadData
+{
+public:
+    QString text;
+    QFont font;
+    QColor fontcolor;
+    QPoint point;
+
+    void readDomElement(QDomElement &rDomElement);
+};
+
+class BoxWidgetLoadData
+{
+public:
+    QString linestyle;
+    QColor linecolor;
+    QPoint point;
+    qreal width, height, linewidth;
+
     void readDomElement(QDomElement &rDomElement);
 };
 

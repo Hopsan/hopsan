@@ -484,51 +484,81 @@ void loadConnector(QDomElement &rDomElement, GUISystem* pSystem, undoStatus undo
 }
 
 
-//! @brief Convenience function for loading a text widget from a dom element
-void loadTextWidget(QDomElement &rDomElement, GUISystem *pSystem)
+void TextWidgetLoadData::readDomElement(QDomElement &rDomElement)
 {
+    //Read gui specific stuff
     QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
+
     if(!guiData.isNull())
     {
-        qreal x, y;
-        parseDomValueNode2(guiData.firstChildElement("pose"), x, y);
-        pSystem->addTextWidget(QPoint(x,y));
-        pSystem->mTextWidgetList.last()->setText(guiData.firstChildElement("text").text());
-        QFont tempFont;
-        tempFont.fromString(guiData.firstChildElement("font").text());
-        qDebug() << "Font = " << tempFont.toString();
-        pSystem->mTextWidgetList.last()->setTextFont(tempFont);
-        pSystem->mTextWidgetList.last()->setTextColor(QColor(guiData.firstChildElement("fontcolor").text()));
-        //pSystem->mTextWidgetList.last()->setPos(QPoint(x,y));
+        QDomElement textobjectTag = guiData.firstChildElement("textobject");
+        text = textobjectTag.attribute("text");
+        font.fromString(textobjectTag.attribute("font"));
+        fontcolor.setNamedColor(textobjectTag.attribute("fontcolor"));
+
+        QDomElement poseTag = guiData.firstChildElement(HMF_POSETAG);
+        point.setX(poseTag.attribute("x").toInt());
+        point.setY(poseTag.attribute("y").toInt());
     }
 }
 
+void loadTextWidget(QDomElement &rDomElement, GUISystem *pSystem)
+{
+    TextWidgetLoadData data;
+    data.readDomElement(rDomElement);
+
+    pSystem->addTextWidget(data.point);
+    pSystem->mTextWidgetList.last()->setText(data.text);
+    qDebug() << "Font = " << data.font.toString();
+    pSystem->mTextWidgetList.last()->setTextFont(data.font);
+    pSystem->mTextWidgetList.last()->setTextColor(data.fontcolor);
+}
+
+
+void BoxWidgetLoadData::readDomElement(QDomElement &rDomElement)
+{
+    //Read gui specific stuff
+    QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
+
+    if(!guiData.isNull())
+    {
+        QDomElement sizeTag = guiData.firstChildElement("size");
+        width = sizeTag.attribute("width").toDouble();
+        height = sizeTag.attribute("height").toDouble();
+
+        QDomElement lineTag = guiData.firstChildElement("line");
+        linewidth = lineTag.attribute("width").toDouble();
+        linestyle = lineTag.attribute("style");
+        linecolor.setNamedColor(lineTag.attribute("color"));
+
+        QDomElement poseTag = guiData.firstChildElement(HMF_POSETAG);
+        point.setX(poseTag.attribute("x").toInt());
+        point.setY(poseTag.attribute("y").toInt());
+    }
+}
 
 //! @brief Convenience function for loading a box widget from a dom element
 void loadBoxWidget(QDomElement &rDomElement, GUISystem *pSystem)
 {
-    QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
-    if(!guiData.isNull())
-    {
-        qreal x, y;
-        parseDomValueNode2(guiData.firstChildElement("pose"), x, y);
-        pSystem->addBoxWidget(QPoint(x,y));
-        qreal w = parseDomValueNode(guiData.firstChildElement("width"));
-        qreal h = parseDomValueNode(guiData.firstChildElement("height"));
-        pSystem->mBoxWidgetList.last()->setSize(w, h);
-        pSystem->mBoxWidgetList.last()->setLineWidth(parseDomValueNode(guiData.firstChildElement("linewidth")));
-        QString style = guiData.firstChildElement("linestyle").text();
-        if(style == "solidline")
-            pSystem->mBoxWidgetList.last()->setLineStyle(Qt::SolidLine);
-        if(style == "dashline")
-            pSystem->mBoxWidgetList.last()->setLineStyle(Qt::DashLine);
-        if(style == "dotline")
-            pSystem->mBoxWidgetList.last()->setLineStyle(Qt::DotLine);
-        if(style == "dashdotline")
-            pSystem->mBoxWidgetList.last()->setLineStyle(Qt::DashDotLine);
-        pSystem->mBoxWidgetList.last()->setLineColor(QColor(guiData.firstChildElement("linecolor").text()));
-        pSystem->mBoxWidgetList.last()->setSelected(false);
-    }
+    BoxWidgetLoadData data;
+    data.readDomElement(rDomElement);
+
+    pSystem->addBoxWidget(data.point);
+    pSystem->mBoxWidgetList.last()->setSize(data.width, data.height);
+    pSystem->mBoxWidgetList.last()->setLineWidth(data.linewidth);
+
+    if(data.linestyle == "solidline")
+        pSystem->mBoxWidgetList.last()->setLineStyle(Qt::SolidLine);
+    if(data.linestyle == "dashline")
+        pSystem->mBoxWidgetList.last()->setLineStyle(Qt::DashLine);
+    if(data.linestyle == "dotline")
+        pSystem->mBoxWidgetList.last()->setLineStyle(Qt::DotLine);
+    if(data.linestyle == "dashdotline")
+        pSystem->mBoxWidgetList.last()->setLineStyle(Qt::DashDotLine);
+
+    pSystem->mBoxWidgetList.last()->setLineColor(data.linecolor);
+    pSystem->mBoxWidgetList.last()->setSelected(false);
+
 }
 
 
