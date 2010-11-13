@@ -5,53 +5,143 @@ HOPSANGUIVERSION 0.0.1
 HMFVERSION 0.1
 CAFVERSION 0.1
 --------------------------------------------------------------
-SIMULATIONTIME 0 0.001 100
-VIEWPORT 2828 2593 1
+SIMULATIONTIME 0 0.001 10
+VIEWPORT 2500 2500 1
 --------------------------------------------------------------
 USERICON ""
 ISOICON ""
 --------------------------------------------------------------
-COMPONENT "SignalDummy" "Dummy Component_12" 2609 2615 0 0 0
-COMPONENT "SignalDummy" "Dummy Component_13" 2607 2687 0 0 0
-COMPONENT "SignalDummy" "Dummy Component_14" 2612 2757 0 0 0
-COMPONENT "SignalDummy" "Dummy Component_15" 2715 2497 0 0 0
-COMPONENT "SignalDummy" "Dummy Component_16" 2717 2558 0 0 0
-COMPONENT "SignalDummy" "Dummy Component_17" 2716 2615 0 0 0
-COMPONENT "SignalDummy" "Dummy Component_18" 2714 2689 0 0 0
-COMPONENT "SignalDummy" "Dummy Component_19" 2719 2759 0 0 0
-COMPONENT "SignalDummy" "Dummy Component_1" 2398 2555 0 0 0
-COMPONENT "SignalDummy" "Dummy Component_2" 2397 2617 0 0 0
-COMPONENT "SignalDummy" "Dummy Component" 2396 2494 0 0 0
-COMPONENT "SignalDummy" "Dummy Component_3" 2395 2686 0 0 0
-COMPONENT "SignalSource" "Constant" 2238 2614 0 0 0
-PARAMETER "Constant" "Value" 10
-COMPONENT "SignalDummy" "Dummy Component_4" 2400 2756 0 0 0
-COMPONENT "SignalDummy" "Dummy Component_5" 2503 2555 0 0 0
-COMPONENT "SignalDummy" "Dummy Component_6" 2501 2494 0 0 0
-COMPONENT "SignalDummy" "Dummy Component_7" 2502 2615 0 0 0
-COMPONENT "SignalDummy" "Dummy Component_8" 2500 2686 0 0 0
-COMPONENT "SignalDummy" "Dummy Component_9" 2505 2756 0 0 0
-COMPONENT "SignalDummy" "Dummy Component_10" 2608 2495 0 0 0
-COMPONENT "SignalDummy" "Dummy Component_11" 2610 2556 0 0 0
+COMPONENT "HydraulicDummyQ" "Q-Type Dummy_3" 2400 2447 0 0 0
+COMPONENT "SignalGain" "Gain_19" 2484 2337 0 0 0
+PARAMETER "Gain_19" "Gain" 1
+COMPONENT "HydraulicDummyQ" "Q-Type Dummy_4" 2400 2485 0 0 0
+COMPONENT "HydraulicDummyQ" "Q-Type Dummy_5" 2400 2632 0 0 0
+COMPONENT "HydraulicDummyQ" "Q-Type Dummy_6" 2400 2595 0 0 0
+COMPONENT "HydraulicDummyQ" "Q-Type Dummy_7" 2400 2559 0 0 0
+COMPONENT "SignalDummy" "Signal Dummy_1" 2680 2393 0 0 0
+COMPONENT "HydraulicDummyQ" "Q-Type Dummy_8" 2400 2522 0 0 0
+COMPONENT "SignalDummy" "Signal Dummy_2" 2680 2424 0 0 0
+COMPONENT "HydraulicDummyQ" "Q-Type Dummy_9" 2400 2670 0 0 0
+COMPONENT "SignalDummy" "Signal Dummy_3" 2680 2455 0 0 0
+COMPONENT "SignalDummy" "Signal Dummy_4" 2680 2486 0 0 0
+COMPONENT "SignalDummy" "Signal Dummy_5" 2681 2641 0 0 0
+COMPONENT "SignalDummy" "Signal Dummy_6" 2681 2610 0 0 0
+COMPONENT "SignalDummy" "Signal Dummy_7" 2681 2579 0 0 0
+COMPONENT "SignalDummy" "Signal Dummy_8" 2681 2548 0 0 0
+COMPONENT "SignalDummy" "Signal Dummy_9" 2680 2509 0 0 0
+COMPONENT "HydraulicDummyC" "C-Type Dummy" 2327 2337 0 0 0
+COMPONENT "SignalSource" "Constant" 2096 2500 0 0 0
+PARAMETER "Constant" "Value" 1
+COMPONENT "HydraulicDummyQ" "Q-Type Dummy" 2400 2337 0 0 0
+COMPONENT "HydraulicDummyC" "C-Type Dummy_1" 2327 2374 0 0 0
+COMPONENT "HydraulicDummyC" "C-Type Dummy_2" 2327 2410 0 0 0
+COMPONENT "HydraulicDummyC" "C-Type Dummy_3" 2327 2447 0 0 0
+COMPONENT "SignalDummy" "Signal Dummy" 2679 2362 0 0 0
+COMPONENT "HydraulicDummyC" "C-Type Dummy_4" 2327 2485 0 0 0
+COMPONENT "HydraulicDummyC" "C-Type Dummy_5" 2327 2559 0 0 0
+COMPONENT "SignalGain" "Gain_1" 2249 2374 0 0 0
+PARAMETER "Gain_1" "Gain" 1
+COMPONENT "HydraulicDummyC" "C-Type Dummy_6" 2327 2522 0 0 0
+COMPONENT "SignalGain" "Gain_2" 2249 2410 0 0 0
+PARAMETER "Gain_2" "Gain" 1
+COMPONENT "SignalGain" "Gain_10" 2485 2670 0 0 0
+PARAMETER "Gain_10" "Gain" 1
+COMPONENT "HydraulicDummyC" "C-Type Dummy_7" 2327 2595 0 0 0
+COMPONENT "SignalGain" "Gain_3" 2249 2447 0 0 0
+PARAMETER "Gain_3" "Gain" 1
+COMPONENT "SignalGain" "Gain" 2249 2337 0 0 0
+PARAMETER "Gain" "Gain" 1
+COMPONENT "SignalGain" "Gain_11" 2485 2632 0 0 0
+PARAMETER "Gain_11" "Gain" 1
+COMPONENT "HydraulicDummyC" "C-Type Dummy_8" 2327 2632 0 0 0
+COMPONENT "SignalGain" "Gain_4" 2250 2485 0 0 0
+PARAMETER "Gain_4" "Gain" 1
+COMPONENT "SignalGain" "Gain_12" 2485 2595 0 0 0
+PARAMETER "Gain_12" "Gain" 1
+COMPONENT "HydraulicDummyC" "C-Type Dummy_9" 2327 2670 0 0 0
+COMPONENT "SignalGain" "Gain_5" 2250 2522 0 0 0
+PARAMETER "Gain_5" "Gain" 1
+COMPONENT "SignalGain" "Gain_13" 2485 2559 0 0 0
+PARAMETER "Gain_13" "Gain" 1
+COMPONENT "SignalGain" "Gain_6" 2250 2559 0 0 0
+PARAMETER "Gain_6" "Gain" 1
+COMPONENT "SignalGain" "Gain_14" 2485 2522 0 0 0
+PARAMETER "Gain_14" "Gain" 1
+COMPONENT "SignalGain" "Gain_7" 2250 2595 0 0 0
+PARAMETER "Gain_7" "Gain" 1
+COMPONENT "SignalGain" "Gain_15" 2485 2485 0 0 0
+PARAMETER "Gain_15" "Gain" 1
+COMPONENT "SignalGain" "Gain_8" 2250 2632 0 0 0
+PARAMETER "Gain_8" "Gain" 1
+COMPONENT "SignalGain" "Gain_16" 2484 2447 0 0 0
+PARAMETER "Gain_16" "Gain" 1
+COMPONENT "SignalGain" "Gain_9" 2250 2670 0 0 0
+PARAMETER "Gain_9" "Gain" 1
+COMPONENT "HydraulicDummyQ" "Q-Type Dummy_1" 2400 2374 0 0 0
+COMPONENT "SignalGain" "Gain_17" 2484 2410 0 0 0
+PARAMETER "Gain_17" "Gain" 1
+COMPONENT "HydraulicDummyQ" "Q-Type Dummy_2" 2400 2410 0 0 0
+COMPONENT "SignalGain" "Gain_18" 2484 2374 0 0 0
+PARAMETER "Gain_18" "Gain" 1
 --------------------------------------------------------------
-CONNECT "Constant" "out" "Dummy Component" "in" 2250.5 2614 2377.5 2494
-CONNECT "Constant" "out" "Dummy Component_1" "in" 2250.5 2614 2379.5 2555
-CONNECT "Constant" "out" "Dummy Component_2" "in" 2250.5 2614 2378.5 2617
-CONNECT "Constant" "out" "Dummy Component_3" "in" 2250.5 2614 2376.5 2686
-CONNECT "Constant" "out" "Dummy Component_4" "in" 2250.5 2614 2381.5 2756
-CONNECT "Constant" "out" "Dummy Component_6" "in" 2250.5 2614 2361 2448 2441 2448 2482.5 2494
-CONNECT "Constant" "out" "Dummy Component_8" "in" 2250.5 2614 2368 2771 2440 2771 2481.5 2686
-CONNECT "Constant" "out" "Dummy Component_9" "in" 2250.5 2614 2364 2780 2441 2780 2486.5 2756
-CONNECT "Constant" "out" "Dummy Component_7" "in" 2250.5 2614 2365 2474 2416 2474 2483.5 2615
-CONNECT "Constant" "out" "Dummy Component_5" "in" 2250.5 2614 2364 2457 2419 2457 2484.5 2555
-CONNECT "Constant" "out" "Dummy Component_12" "in" 2250.5 2614 2357 2440 2521 2440 2590.5 2615
-CONNECT "Constant" "out" "Dummy Component_11" "in" 2250.5 2614 2354 2424 2528 2424 2591.5 2556
-CONNECT "Constant" "out" "Dummy Component_10" "in" 2250.5 2614 2353 2411 2526 2411 2589.5 2495
-CONNECT "Constant" "out" "Dummy Component_17" "in" 2250.5 2614 2349 2399 2619 2399 2697.5 2615
-CONNECT "Constant" "out" "Dummy Component_16" "in" 2250.5 2614 2344 2386 2622 2386 2698.5 2558
-CONNECT "Constant" "out" "Dummy Component_15" "in" 2250.5 2614 2341 2373 2629 2373 2696.5 2497
-CONNECT "Constant" "out" "Dummy Component_13" "in" 2250.5 2614 2358 2792 2542 2792 2588.5 2687
-CONNECT "Constant" "out" "Dummy Component_14" "in" 2250.5 2614 2354 2801 2567 2801 2593.5 2757
-CONNECT "Constant" "out" "Dummy Component_18" "in" 2250.5 2614 2351 2811 2637 2811 2695.5 2689
-CONNECT "Constant" "out" "Dummy Component_19" "in" 2250.5 2614 2347 2823 2652 2823 2700.5 2759
+CONNECT "C-Type Dummy" "P1" "Q-Type Dummy" "P1" 2349.5 2337 2372 2337 2372 2337 2377.5 2337
+CONNECT "C-Type Dummy_1" "P1" "Q-Type Dummy_1" "P1" 2349.5 2374 2376 2374 2376 2374 2377.5 2374
+CONNECT "C-Type Dummy_2" "P1" "Q-Type Dummy_2" "P1" 2349.5 2410 2376 2410 2376 2410 2377.5 2410
+CONNECT "C-Type Dummy_3" "P1" "Q-Type Dummy_3" "P1" 2349.5 2447 2386 2447 2386 2447 2377.5 2447
+CONNECT "C-Type Dummy_4" "P1" "Q-Type Dummy_4" "P1" 2349.5 2485 2376 2485 2376 2485 2377.5 2485
+CONNECT "C-Type Dummy_6" "P1" "Q-Type Dummy_8" "P1" 2349.5 2522 2372 2522 2372 2522 2377.5 2522
+CONNECT "C-Type Dummy_5" "P1" "Q-Type Dummy_7" "P1" 2349.5 2559 2376 2559 2376 2559 2377.5 2559
+CONNECT "C-Type Dummy_7" "P1" "Q-Type Dummy_6" "P1" 2349.5 2595 2376 2595 2376 2595 2377.5 2595
+CONNECT "C-Type Dummy_8" "P1" "Q-Type Dummy_5" "P1" 2349.5 2632 2386 2632 2386 2632 2377.5 2632
+CONNECT "C-Type Dummy_9" "P1" "Q-Type Dummy_9" "P1" 2349.5 2670 2376 2670 2376 2670 2377.5 2670
+CONNECT "Gain_1" "out" "C-Type Dummy_1" "in" 2261.5 2374 2304.5 2374
+CONNECT "Gain" "out" "C-Type Dummy" "in" 2261.5 2337 2304.5 2337
+CONNECT "Gain_2" "out" "C-Type Dummy_2" "in" 2261.5 2410 2304.5 2410
+CONNECT "Gain_3" "out" "C-Type Dummy_3" "in" 2261.5 2447 2304.5 2447
+CONNECT "Gain_4" "out" "C-Type Dummy_4" "in" 2262.5 2485 2304.5 2485
+CONNECT "Gain_5" "out" "C-Type Dummy_6" "in" 2262.5 2522 2304.5 2522
+CONNECT "Gain_6" "out" "C-Type Dummy_5" "in" 2262.5 2559 2304.5 2559
+CONNECT "Gain_9" "out" "C-Type Dummy_9" "in" 2262.5 2670 2304.5 2670
+CONNECT "Gain_7" "out" "C-Type Dummy_7" "in" 2262.5 2595 2304.5 2595
+CONNECT "Gain_8" "out" "C-Type Dummy_8" "in" 2262.5 2632 2304.5 2632
+CONNECT "Gain_19" "out" "Q-Type Dummy" "in" 2471.5 2337 2422.5 2337
+CONNECT "Gain_18" "out" "Q-Type Dummy_1" "in" 2471.5 2374 2422.5 2374
+CONNECT "Gain_17" "out" "Q-Type Dummy_2" "in" 2471.5 2410 2422.5 2410
+CONNECT "Gain_16" "out" "Q-Type Dummy_3" "in" 2471.5 2447 2422.5 2447
+CONNECT "Gain_15" "out" "Q-Type Dummy_4" "in" 2472.5 2485 2422.5 2485
+CONNECT "Gain_14" "out" "Q-Type Dummy_8" "in" 2472.5 2522 2422.5 2522
+CONNECT "Gain_13" "out" "Q-Type Dummy_7" "in" 2472.5 2559 2422.5 2559
+CONNECT "Gain_12" "out" "Q-Type Dummy_6" "in" 2472.5 2595 2422.5 2595
+CONNECT "Gain_11" "out" "Q-Type Dummy_5" "in" 2472.5 2632 2422.5 2632
+CONNECT "Gain_10" "out" "Q-Type Dummy_9" "in" 2472.5 2670 2422.5 2670
+CONNECT "Constant" "out" "Gain_4" "in" 2108.5 2500 2237.5 2485
+CONNECT "Constant" "out" "Gain_5" "in" 2108.5 2500 2237.5 2522
+CONNECT "Constant" "out" "Gain_6" "in" 2108.5 2500 2237.5 2559
+CONNECT "Constant" "out" "Gain_3" "in" 2108.5 2500 2236.5 2447
+CONNECT "Constant" "out" "Gain_2" "in" 2108.5 2500 2236.5 2410
+CONNECT "Constant" "out" "Gain_1" "in" 2108.5 2500 2236.5 2374
+CONNECT "Constant" "out" "Gain" "in" 2108.5 2500 2236.5 2337
+CONNECT "Constant" "out" "Gain_7" "in" 2108.5 2500 2237.5 2595
+CONNECT "Constant" "out" "Gain_8" "in" 2108.5 2500 2237.5 2632
+CONNECT "Constant" "out" "Gain_9" "in" 2108.5 2500 2237.5 2670
+CONNECT "Constant" "out" "Gain_19" "in" 2108.5 2500 2231 2305 2516 2305 2496.5 2337
+CONNECT "Constant" "out" "Gain_18" "in" 2108.5 2500 2227 2296 2524 2296 2496.5 2374
+CONNECT "Constant" "out" "Gain_17" "in" 2108.5 2500 2223 2287 2531 2287 2496.5 2410
+CONNECT "Constant" "out" "Gain_16" "in" 2108.5 2500 2219 2278 2541 2278 2496.5 2447
+CONNECT "Constant" "out" "Gain_15" "in" 2108.5 2500 2218 2270 2553 2270 2497.5 2485
+CONNECT "Constant" "out" "Gain_10" "in" 2108.5 2500 2235 2698 2510 2698 2497.5 2670
+CONNECT "Constant" "out" "Gain_11" "in" 2108.5 2500 2229 2706 2523 2706 2497.5 2632
+CONNECT "Constant" "out" "Gain_12" "in" 2108.5 2500 2225 2714 2535 2714 2497.5 2595
+CONNECT "Constant" "out" "Gain_13" "in" 2108.5 2500 2219 2722 2543 2722 2497.5 2559
+CONNECT "Constant" "out" "Gain_14" "in" 2108.5 2500 2217 2730 2553 2730 2497.5 2522
+CONNECT "Constant" "out" "Signal Dummy_4" "in" 2108.5 2500 2218 2239 2568 2239 2661.5 2486
+CONNECT "Constant" "out" "Signal Dummy_3" "in" 2108.5 2500 2215 2230 2580 2230 2661.5 2455
+CONNECT "Constant" "out" "Signal Dummy_2" "in" 2108.5 2500 2212 2220 2586 2220 2661.5 2424
+CONNECT "Constant" "out" "Signal Dummy_1" "in" 2108.5 2500 2207 2210 2597 2210 2661.5 2393
+CONNECT "Constant" "out" "Signal Dummy" "in" 2108.5 2500 2203 2200 2606 2200 2660.5 2362
+CONNECT "Constant" "out" "Signal Dummy_9" "in" 2108.5 2500 2217 2762 2569 2762 2661.5 2509
+CONNECT "Constant" "out" "Signal Dummy_8" "in" 2108.5 2500 2212 2771 2578 2771 2662.5 2548
+CONNECT "Constant" "out" "Signal Dummy_7" "in" 2108.5 2500 2210 2780 2584 2780 2662.5 2579
+CONNECT "Constant" "out" "Signal Dummy_6" "in" 2108.5 2500 2205 2789 2595 2789 2662.5 2610
+CONNECT "Constant" "out" "Signal Dummy_5" "in" 2108.5 2500 2201 2798 2601 2798 2662.5 2641
 --------------------------------------------------------------

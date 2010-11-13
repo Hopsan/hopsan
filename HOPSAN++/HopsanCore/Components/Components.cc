@@ -59,6 +59,8 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->registerCreatorFunction("HydraulicOptimizedTurbulentOrifice", HydraulicOptimizedTurbulentOrifice::Creator);
     cfact_ptr->registerCreatorFunction("HydraulicOptimizedPressureSource", HydraulicOptimizedPressureSource::Creator);
 
+    cfact_ptr->registerCreatorFunction("HydraulicDummyC", HydraulicDummyC::Creator);
+    cfact_ptr->registerCreatorFunction("HydraulicDummyQ", HydraulicDummyQ::Creator);
 
 
     //Signal components

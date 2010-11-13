@@ -37,6 +37,8 @@
 #include "Hydraulic/HydraulicFixedDisplacementMotorQ.hpp"
 #include "Hydraulic/HydraulicVariableDisplacementMotorQ.hpp"
 #include "Hydraulic/HydraulicVolume3.hpp"
+#include "Hydraulic/HydraulicDummyC.hpp"
+#include "Hydraulic/HydraulicDummyQ.hpp"
 
 
 /* Signal Components */

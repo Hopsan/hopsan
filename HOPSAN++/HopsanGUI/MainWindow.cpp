@@ -156,6 +156,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/actuators","Hydraulic");
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/valves","Hydraulic");
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/pumps","Hydraulic");
+    mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/Dummy","Hydraulic");
 
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "_Optimized");
 

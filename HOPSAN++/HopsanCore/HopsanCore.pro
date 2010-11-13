@@ -154,4 +154,6 @@ HEADERS += win32dll.h \
     ComponentUtilities/FirstOrderFilter.hpp \
     ComponentUtilities/Delay.hpp \
     ComponentUtilities/SecondOrderTransferFunction.h \
-    Components/Signal/SignalDummy.hpp
+    Components/Signal/SignalDummy.hpp \
+    Components/Hydraulic/HydraulicDummyC.hpp \
+    Components/Hydraulic/HydraulicDummyQ.hpp
