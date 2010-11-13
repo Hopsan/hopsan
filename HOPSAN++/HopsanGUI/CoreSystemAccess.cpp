@@ -251,12 +251,12 @@ void CoreSystemAccess::initialize(double mStartTime, double mFinishTime, size_t 
 }
 
 
-void CoreSystemAccess::simulate(double mStartTime, double mFinishTime, simulationMethod type)
+void CoreSystemAccess::simulate(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads)
 {
     if(type == MULTICORE)
     {
         qDebug() << "Starting multicore simulation";
-        mpCoreComponentSystem->simulateMultiThreaded(mStartTime, mFinishTime);
+        mpCoreComponentSystem->simulateMultiThreaded(mStartTime, mFinishTime, nThreads);
     }
     else
     {

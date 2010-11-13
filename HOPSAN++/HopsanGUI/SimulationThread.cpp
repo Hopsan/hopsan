@@ -43,7 +43,7 @@ void SimulationThread::run()
     qDebug() << mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mUseMulticore;
     if(mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mUseMulticore)
     {
-        mpGUIRootSystem->simulate(mStartTime, mFinishTime, MULTICORE);
+        mpGUIRootSystem->simulate(mStartTime, mFinishTime, MULTICORE, mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mNumberOfThreads);
     }
     else
     {

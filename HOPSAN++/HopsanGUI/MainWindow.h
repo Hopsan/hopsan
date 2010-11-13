@@ -51,6 +51,7 @@ public:
     //Settings variable - stored in and loaded from settings.txt
     bool mInvertWheel;
     bool mUseMulticore;
+    size_t mNumberOfThreads;
     int mProgressBarStep;
     bool mEnableProgressBar;
     QColor mBackgroundColor;

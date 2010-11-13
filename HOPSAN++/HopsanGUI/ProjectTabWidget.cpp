@@ -149,7 +149,7 @@ bool ProjectTab::simulate()
         while (actualInitialization.isRunning())
         {
             progressThread.start();
-            progressThread.setPriority(QThread::LowestPriority);
+            progressThread.setPriority(QThread::TimeCriticalPriority);//(QThread::LowestPriority);
             progressThread.wait();
             progressBar.setValue(i++);
             if (progressBar.wasCanceled())

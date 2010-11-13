@@ -210,7 +210,8 @@ namespace hopsan {
         void loadStartValues();
         void loadStartValuesFromSimulation();
         void initialize(const double startT, const double stopT, const size_t nSamples=2048);
-        void simulateMultiThreaded(const double startT, const double stopT);
+        void simulateMultiThreadedOld(const double startT, const double stopT);
+        void simulateMultiThreaded(const double startT, const double stopT, const size_t nThreads = 0);
         void simulate(const double startT, const double stopT);
         void finalize(const double startT, const double stopT);
 

@@ -5,8 +5,8 @@ HOPSANGUIVERSION 0.0.1
 HMFVERSION 0.1
 CAFVERSION 0.1
 --------------------------------------------------------------
-SIMULATIONTIME 0 0.001 10
-VIEWPORT 2500 2500 1
+SIMULATIONTIME 0 0.001 100
+VIEWPORT 2828 2593 1
 --------------------------------------------------------------
 USERICON ""
 ISOICON ""
@@ -23,8 +23,8 @@ COMPONENT "SignalDummy" "Dummy Component_1" 2398 2555 0 0 0
 COMPONENT "SignalDummy" "Dummy Component_2" 2397 2617 0 0 0
 COMPONENT "SignalDummy" "Dummy Component" 2396 2494 0 0 0
 COMPONENT "SignalDummy" "Dummy Component_3" 2395 2686 0 0 0
-COMPONENT "SignalSource" "Constant" 2300 2615 0 0 0
-PARAMETER "Constant" "Value" 500
+COMPONENT "SignalSource" "Constant" 2238 2614 0 0 0
+PARAMETER "Constant" "Value" 10
 COMPONENT "SignalDummy" "Dummy Component_4" 2400 2756 0 0 0
 COMPONENT "SignalDummy" "Dummy Component_5" 2503 2555 0 0 0
 COMPONENT "SignalDummy" "Dummy Component_6" 2501 2494 0 0 0
@@ -34,24 +34,24 @@ COMPONENT "SignalDummy" "Dummy Component_9" 2505 2756 0 0 0
 COMPONENT "SignalDummy" "Dummy Component_10" 2608 2495 0 0 0
 COMPONENT "SignalDummy" "Dummy Component_11" 2610 2556 0 0 0
 --------------------------------------------------------------
-CONNECT "Constant" "out" "Dummy Component" "in" 2312.5 2615 2377.5 2494
-CONNECT "Constant" "out" "Dummy Component_1" "in" 2312.5 2615 2379.5 2555
-CONNECT "Constant" "out" "Dummy Component_2" "in" 2312.5 2615 2378.5 2617
-CONNECT "Constant" "out" "Dummy Component_3" "in" 2312.5 2615 2376.5 2686
-CONNECT "Constant" "out" "Dummy Component_4" "in" 2312.5 2615 2381.5 2756
-CONNECT "Constant" "out" "Dummy Component_6" "in" 2312.5 2615 2361 2448 2441 2448 2482.5 2494
-CONNECT "Constant" "out" "Dummy Component_8" "in" 2312.5 2615 2368 2771 2440 2771 2481.5 2686
-CONNECT "Constant" "out" "Dummy Component_9" "in" 2312.5 2615 2364 2780 2441 2780 2486.5 2756
-CONNECT "Constant" "out" "Dummy Component_7" "in" 2312.5 2615 2365 2474 2416 2474 2483.5 2615
-CONNECT "Constant" "out" "Dummy Component_5" "in" 2312.5 2615 2364 2457 2419 2457 2484.5 2555
-CONNECT "Constant" "out" "Dummy Component_12" "in" 2312.5 2615 2357 2440 2521 2440 2590.5 2615
-CONNECT "Constant" "out" "Dummy Component_11" "in" 2312.5 2615 2354 2424 2528 2424 2591.5 2556
-CONNECT "Constant" "out" "Dummy Component_10" "in" 2312.5 2615 2353 2411 2526 2411 2589.5 2495
-CONNECT "Constant" "out" "Dummy Component_17" "in" 2312.5 2615 2349 2399 2619 2399 2697.5 2615
-CONNECT "Constant" "out" "Dummy Component_16" "in" 2312.5 2615 2344 2386 2622 2386 2698.5 2558
-CONNECT "Constant" "out" "Dummy Component_15" "in" 2312.5 2615 2341 2373 2629 2373 2696.5 2497
-CONNECT "Constant" "out" "Dummy Component_13" "in" 2312.5 2615 2358 2792 2542 2792 2588.5 2687
-CONNECT "Constant" "out" "Dummy Component_14" "in" 2312.5 2615 2354 2801 2567 2801 2593.5 2757
-CONNECT "Constant" "out" "Dummy Component_18" "in" 2312.5 2615 2351 2811 2637 2811 2695.5 2689
-CONNECT "Constant" "out" "Dummy Component_19" "in" 2312.5 2615 2347 2823 2652 2823 2700.5 2759
+CONNECT "Constant" "out" "Dummy Component" "in" 2250.5 2614 2377.5 2494
+CONNECT "Constant" "out" "Dummy Component_1" "in" 2250.5 2614 2379.5 2555
+CONNECT "Constant" "out" "Dummy Component_2" "in" 2250.5 2614 2378.5 2617
+CONNECT "Constant" "out" "Dummy Component_3" "in" 2250.5 2614 2376.5 2686
+CONNECT "Constant" "out" "Dummy Component_4" "in" 2250.5 2614 2381.5 2756
+CONNECT "Constant" "out" "Dummy Component_6" "in" 2250.5 2614 2361 2448 2441 2448 2482.5 2494
+CONNECT "Constant" "out" "Dummy Component_8" "in" 2250.5 2614 2368 2771 2440 2771 2481.5 2686
+CONNECT "Constant" "out" "Dummy Component_9" "in" 2250.5 2614 2364 2780 2441 2780 2486.5 2756
+CONNECT "Constant" "out" "Dummy Component_7" "in" 2250.5 2614 2365 2474 2416 2474 2483.5 2615
+CONNECT "Constant" "out" "Dummy Component_5" "in" 2250.5 2614 2364 2457 2419 2457 2484.5 2555
+CONNECT "Constant" "out" "Dummy Component_12" "in" 2250.5 2614 2357 2440 2521 2440 2590.5 2615
+CONNECT "Constant" "out" "Dummy Component_11" "in" 2250.5 2614 2354 2424 2528 2424 2591.5 2556
+CONNECT "Constant" "out" "Dummy Component_10" "in" 2250.5 2614 2353 2411 2526 2411 2589.5 2495
+CONNECT "Constant" "out" "Dummy Component_17" "in" 2250.5 2614 2349 2399 2619 2399 2697.5 2615
+CONNECT "Constant" "out" "Dummy Component_16" "in" 2250.5 2614 2344 2386 2622 2386 2698.5 2558
+CONNECT "Constant" "out" "Dummy Component_15" "in" 2250.5 2614 2341 2373 2629 2373 2696.5 2497
+CONNECT "Constant" "out" "Dummy Component_13" "in" 2250.5 2614 2358 2792 2542 2792 2588.5 2687
+CONNECT "Constant" "out" "Dummy Component_14" "in" 2250.5 2614 2354 2801 2567 2801 2593.5 2757
+CONNECT "Constant" "out" "Dummy Component_18" "in" 2250.5 2614 2351 2811 2637 2811 2695.5 2689
+CONNECT "Constant" "out" "Dummy Component_19" "in" 2250.5 2614 2347 2823 2652 2823 2700.5 2759
 --------------------------------------------------------------

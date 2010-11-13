@@ -83,12 +83,32 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     mpUseMulticoreCheckBox->setCheckable(true);
     mpUseMulticoreCheckBox->setChecked(mpParentMainWindow->mUseMulticore);
 
+    mpThreadsLabel = new QLabel(tr("Number of Simulation Threads (0 = Auto)"));
+    mpThreadsLabel->setEnabled(mpParentMainWindow->mUseMulticore);
+    mpThreadsSpinBox = new QSpinBox();
+    mpThreadsSpinBox->setMinimum(0);
+    mpThreadsSpinBox->setMaximum(1000000);
+    mpThreadsSpinBox->setSingleStep(1);
+    mpThreadsSpinBox->setValue(mpParentMainWindow->mNumberOfThreads);
+    mpThreadsSpinBox->setEnabled(mpParentMainWindow->mUseMulticore);
+
+    mpThreadsWarningLabel = new QLabel(tr("Caution! Choosing more threads than the number of processor cores may be unstable on some systems."));
+    mpThreadsWarningLabel->setWordWrap(true);
+    QPalette palette = mpThreadsWarningLabel->palette();
+    palette.setColor(mpThreadsWarningLabel->backgroundRole(), Qt::darkRed);
+    palette.setColor(mpThreadsWarningLabel->foregroundRole(), Qt::darkRed);
+    mpThreadsWarningLabel->setPalette(palette);
+
+
     mpSimulationGroupBox = new QGroupBox(tr("Simulation"));
     mpSimulationLayout = new QGridLayout;
     mpSimulationLayout->addWidget(mpEnableProgressBarCheckBox, 0, 0);
     mpSimulationLayout->addWidget(mpProgressBarLabel, 1, 0);
     mpSimulationLayout->addWidget(mpProgressBarSpinBox, 1, 1);
     mpSimulationLayout->addWidget(mpUseMulticoreCheckBox, 2, 0, 1, 2);
+    mpSimulationLayout->addWidget(mpThreadsLabel, 3, 0);
+    mpSimulationLayout->addWidget(mpThreadsSpinBox, 3, 1);
+    mpSimulationLayout->addWidget(mpThreadsWarningLabel, 4, 0, 1, 2);
     mpSimulationGroupBox->setLayout(mpSimulationLayout);
 
     mpPressureUnitLabel = new QLabel(tr("Default Pressure Unit"));
@@ -156,6 +176,9 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     connect(mpAddPositionUnitButton, SIGNAL(pressed()), this, SLOT(addPositionUnit()));
     connect(mpAddVelocityUnitButton, SIGNAL(pressed()), this, SLOT(addVelocityUnit()));
 
+    connect(mpUseMulticoreCheckBox, SIGNAL(toggled(bool)), mpThreadsLabel, SLOT(setEnabled(bool)));
+    connect(mpUseMulticoreCheckBox, SIGNAL(toggled(bool)), mpThreadsSpinBox, SLOT(setEnabled(bool)));
+
     QGridLayout *pLayout = new QGridLayout;
     pLayout->setSizeConstraint(QLayout::SetFixedSize);
     pLayout->addWidget(mpInterfaceGroupBox);
@@ -184,6 +207,7 @@ void OptionsWidget::updateValues()
     mpParentMainWindow->mEnableProgressBar = mpEnableProgressBarCheckBox->isChecked();
     mpParentMainWindow->mProgressBarStep = mpProgressBarSpinBox->value();
     mpParentMainWindow->mUseMulticore = mpUseMulticoreCheckBox->isChecked();
+    mpParentMainWindow->mNumberOfThreads = mpThreadsSpinBox->value();
     mpParentMainWindow->mDefaultUnits.remove("Pressure");
     mpParentMainWindow->mDefaultUnits.insert("Pressure", mpPressureUnitComboBox->currentText());
     mpParentMainWindow->mDefaultUnits.remove("Flow");

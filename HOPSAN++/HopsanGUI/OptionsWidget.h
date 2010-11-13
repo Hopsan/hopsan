@@ -52,6 +52,9 @@ private:
 
     QCheckBox *mpUseMulticoreCheckBox;
     QCheckBox *mpEnableProgressBarCheckBox;
+    QLabel *mpThreadsLabel;
+    QSpinBox *mpThreadsSpinBox;
+    QLabel *mpThreadsWarningLabel;
     QLabel *mpProgressBarLabel;
     QSpinBox *mpProgressBarSpinBox;
     QGroupBox *mpSimulationGroupBox;

@@ -603,6 +603,7 @@ void MainWindow::loadSettings()
         //Apply default values
     mInvertWheel = false;
     mUseMulticore = false;
+    mNumberOfThreads = 0;
     mEnableProgressBar = true;
     mProgressBarStep = 50;
     mSnapping = true;
@@ -704,6 +705,8 @@ void MainWindow::loadSettings()
                 mProgressBarStep = parseDomValueNode(settingsElement.firstChildElement("progressbar_step"));
             if(!settingsElement.firstChildElement("multicore").isNull())
                 mUseMulticore = parseDomBooleanNode(settingsElement.firstChildElement("multicore"));
+            if(!settingsElement.firstChildElement("numberofthreads").isNull())
+                mUseMulticore = parseDomValueNode(settingsElement.firstChildElement("numberofthreads"));
 
 //            QDomElement libs = appendDomElement(configRoot, "libs");
 //            for(size_t i=0; i<mUserLibs.size(); ++i)
@@ -776,6 +779,7 @@ void MainWindow::saveSettings()
     appendDomBooleanNode(settings, "progressbar", mEnableProgressBar);
     appendDomValueNode(settings, "progressbar_step", mProgressBarStep);
     appendDomBooleanNode(settings, "multicore", mUseMulticore);
+    appendDomValueNode(settings, "numberofthreads", mNumberOfThreads);
 
     QDomElement libs = appendDomElement(configRoot, "libs");
     for(size_t i=0; i<mUserLibs.size(); ++i)
