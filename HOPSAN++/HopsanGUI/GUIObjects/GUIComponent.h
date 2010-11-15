@@ -11,12 +11,13 @@ class ProjectTabWidget;
 class GUIConnector;
 class GUIPort;
 class GUISystem;
+class GUIContainerObject;
 
 class GUIComponent : public GUIModelObject
 {
     Q_OBJECT
 public:
-    GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
+    GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *system, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
     ~GUIComponent();
 
     QVector<QString> getParameterNames();

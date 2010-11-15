@@ -13,6 +13,7 @@
 //Forward declarations
 class GUIModelObject;
 class GUISystem;
+class GUIContainerObject;
 //class CoreSystemAccess;
 
 enum portDirection {TOPBOTTOM, LEFTRIGHT};
@@ -27,7 +28,7 @@ public:
     void updatePosition(qreal x, qreal y);
     void updatePositionByFraction(qreal x, qreal y);
 
-    GUISystem *getParentSystem();
+    GUIContainerObject *getParentContainerObjectPtr();
     GUIModelObject *getGuiModelObject();
 
     portDirection getPortDirection();
@@ -52,7 +53,7 @@ public:
     bool isConnected();
 
         //Public member variables
-    GUISystem *mpParentSystem;
+    GUIContainerObject *mpParentContainerObject;
     GUIModelObject *mpParentGuiModelObject;
     QPointF rectPos;
 

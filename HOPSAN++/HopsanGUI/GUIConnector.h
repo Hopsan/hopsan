@@ -19,14 +19,15 @@ class GraphicsView;
 class GUIObject;
 class GUIPort;
 class GUISystem;
+class GUIContainerObject;
 
 class GUIConnector : public QGraphicsWidget
 {
     Q_OBJECT
     friend class GUIConnectorLine;
 public:
-    GUIConnector(GUIPort *startPort, GUISystem *parentSystem, QGraphicsItem *parent = 0);
-    GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> mPoints, GUISystem *parentSystem, QGraphicsItem *parent = 0);
+    GUIConnector(GUIPort *startPort, GUIContainerObject *parentSystem, QGraphicsItem *parent = 0);
+    GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> mPoints, GUIContainerObject *parentSystem, QGraphicsItem *parent = 0);
     ~GUIConnector();
 
     enum { Type = UserType + 1 };           //Va tusan gör den här?! -Det du!
@@ -60,7 +61,7 @@ public:
     void saveToTextStream(QTextStream &rStream, QString prepend=QString());
     void saveToDomElement(QDomElement &rDomElement);
 
-    GUISystem *mpParentSystem;
+    GUIContainerObject *mpParentContainerObject;
     QVector<QPointF> mPoints;
 
 public slots:

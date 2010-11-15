@@ -81,14 +81,14 @@ public slots:
     QVector<double> getDataVector(GUIPort* o, const QString& dataName)
     {
         QVector<double> yData;
-        o->getParentSystem()->getCoreSystemAccessPtr()->getPlotData(o->getGuiModelObject()->getName(),o->getName(),dataName,yData);
+        o->getParentContainerObjectPtr()->getCoreSystemAccessPtr()->getPlotData(o->getGuiModelObject()->getName(),o->getName(),dataName,yData);
 
         return yData;
     }
 
     QVector<double> getTimeVector(GUIPort* o)
     {
-        QVector<double> tVector = QVector<double>::fromStdVector(o->getParentSystem()->getCoreSystemAccessPtr()->getTimeVector(o->getGuiModelObject()->getName(),o->getName()));
+        QVector<double> tVector = QVector<double>::fromStdVector(o->getParentContainerObjectPtr()->getCoreSystemAccessPtr()->getTimeVector(o->getGuiModelObject()->getName(),o->getName()));
 
         return tVector;
     }

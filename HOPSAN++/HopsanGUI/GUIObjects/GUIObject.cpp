@@ -17,14 +17,14 @@
 
 
 //! @todo should not pSystem and pParent be teh same ?
-GUIObject::GUIObject(QPoint pos, qreal rot, selectionStatus, GUISystem *pSystem, QGraphicsItem *pParent)
+GUIObject::GUIObject(QPoint pos, qreal rot, selectionStatus, GUIContainerObject *pSystem, QGraphicsItem *pParent)
     : QGraphicsWidget(pParent)
 {
     //Initi variables
     mHmfTagName = HMF_OBJECTTAG;
     mpSelectionBox = 0;
 
-    mpParentSystem = pSystem;
+    mpParentContainerObject = pSystem;
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
 
     //Set position orientation and other appearance stuff
@@ -108,14 +108,14 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
         //Store old positions for all components, in case more than one is selected
     if(event->button() == Qt::LeftButton)
     {
-        for(size_t i = 0; i < mpParentSystem->mSelectedGUIObjectsList.size(); ++i)
+        for(size_t i = 0; i < mpParentContainerObject->mSelectedGUIObjectsList.size(); ++i)
         {
-            mpParentSystem->mSelectedGUIObjectsList[i]->mOldPos = mpParentSystem->mSelectedGUIObjectsList[i]->pos();
+            mpParentContainerObject->mSelectedGUIObjectsList[i]->mOldPos = mpParentContainerObject->mSelectedGUIObjectsList[i]->pos();
         }
     }
 
         //Objects shall not be selectable while creating a connector
-    if(mpParentSystem->getIsCreatingConnector())
+    if(mpParentContainerObject->getIsCreatingConnector())
     {
         setFlag(QGraphicsItem::ItemIsMovable, false); //Make the component not movable during connection
         setFlag(QGraphicsItem::ItemIsSelectable, false); //Make the component not selactable during connection
@@ -130,7 +130,7 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void GUIObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
         //Objects shall not be selectable while creating a connector
-    if(mpParentSystem->getIsCreatingConnector())
+    if(mpParentContainerObject->getIsCreatingConnector())
     {
         this->setSelected(false);
         this->setActive(false);
@@ -148,35 +148,35 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
     {
         if (this->isSelected())
         {
-            mpParentSystem->mSelectedGUIObjectsList.append(this);
+            mpParentContainerObject->mSelectedGUIObjectsList.append(this);
             mpSelectionBox->setActive();
-            connect(mpParentSystem, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
-            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
-            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
-            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
-            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
-            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
-            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
-            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
-            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
-            disconnect(mpParentSystem, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
-            connect(mpParentSystem, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
+            connect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
+            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
+            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
+            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
+            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
+            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
+            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
+            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
+            disconnect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
+            connect(mpParentContainerObject, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
             emit objectSelected();
         }
         else
         {
-            mpParentSystem->mSelectedGUIObjectsList.removeAll(this);
-            disconnect(mpParentSystem, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
-            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
-            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
-            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
-            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
-            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
-            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
-            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
-            disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
-            connect(mpParentSystem, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
-            disconnect(mpParentSystem, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
+            mpParentContainerObject->mSelectedGUIObjectsList.removeAll(this);
+            disconnect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
+            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
+            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
+            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
+            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
+            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
+            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
+            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
+            connect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
+            disconnect(mpParentContainerObject, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
             mpSelectionBox->setPassive();
         }
     }
@@ -281,7 +281,7 @@ void GUIObject::rotate(undoStatus undoSettings)
 
     if(undoSettings == UNDO)
     {
-        mpParentSystem->mUndoStack->registerRotatedObject(this);
+        mpParentContainerObject->mUndoStack->registerRotatedObject(this);
     }
 
     emit objectMoved();
@@ -296,7 +296,7 @@ void GUIObject::moveUp()
 {
     //qDebug() << "Move up!";
     this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()-1);
-    mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort(); //!< @todo If we have many objects selected this will probably call MANY updates of the viewport, maybe should do in some other way, same "problem" in other places
+    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->updateViewPort(); //!< @todo If we have many objects selected this will probably call MANY updates of the viewport, maybe should do in some other way, same "problem" in other places
 }
 
 
@@ -307,7 +307,7 @@ void GUIObject::moveUp()
 void GUIObject::moveDown()
 {
     this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()+1);
-    mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
+    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->updateViewPort();
 }
 
 
@@ -318,7 +318,7 @@ void GUIObject::moveDown()
 void GUIObject::moveLeft()
 {
     this->setPos(this->mapFromScene(this->mapToScene(this->pos())).x()-1, this->pos().y());
-    mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
+    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->updateViewPort();
 }
 
 
@@ -329,7 +329,7 @@ void GUIObject::moveLeft()
 void GUIObject::moveRight()
 {
     this->setPos(this->mapFromScene(this->mapToScene(this->pos())).x()+1, this->pos().y());
-    mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
+    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->updateViewPort();
 }
 
 

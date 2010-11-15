@@ -10,6 +10,7 @@
 
 //#include "GUIObject.h"
 #include "GUISystem.h"
+#include "GUIContainerObject.h"
 #include "GUIComponent.h"
 #include "../ProjectTabWidget.h"
 #include "../MainWindow.h"
@@ -47,7 +48,7 @@ QString GUIGroup::getTypeName()
 //! @brief Returns the core access ptr in the parent system, groups are GUI only objects
 CoreSystemAccess* GUIGroup::getCoreSystemAccessPtr()
 {
-    return this->mpParentSystem->getCoreSystemAccessPtr();
+    return this->mpParentContainerObject->getCoreSystemAccessPtr();
 }
 
 //! Constructor.
@@ -55,7 +56,7 @@ CoreSystemAccess* GUIGroup::getCoreSystemAccessPtr()
 //! @param appearanceData defines the appearance for the group.
 //! @param scene is the scene which should contain the group.
 //! @param parent is the parent QGraphicsItem for the group, default = 0.
-GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAppearanceData, GUISystem *system, QGraphicsItem *parent)
+GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *system, QGraphicsItem *parent)
     :   GUIContainerObject(QPoint(0.0,0.0), 0, pAppearanceData, DESELECTED, USERGRAPHICS, system, parent)
 {
     mpParentScene = system->getContainedScenePtr();
@@ -65,7 +66,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAp
 
     this->setDisplayName(QString("Grupp_test"));
 
-    MessageWidget *pMessageWidget = mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget;
+    MessageWidget *pMessageWidget = mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget;
     pMessageWidget->printGUIMessage("Group selected components (implementing in progress...) Selected components: ");
 
     for (int i=0; i < compList.size(); ++i)
@@ -106,7 +107,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAp
     }
 
     //Constructs a new scene for the group
-    mpGroupScene = new GraphicsScene(mpParentSystem->mpParentProjectTab);
+    mpGroupScene = new GraphicsScene(mpParentContainerObject->mpParentProjectTab);
 
     double xMin = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
            xMax = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
@@ -156,7 +157,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAp
 
         //Get the right appearance data for the group port
         GUIModelObjectAppearance appData;
-        appData = *(mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData("SystemPort"));
+        appData = *(mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData("SystemPort"));
         appData.setName("aPaApA-port");
 
         GUIGroupPort *pGroupPortComponent;
@@ -186,7 +187,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAp
         groupPortPoint += pPortBoundaryInside->mapToScene(pPortBoundaryInside->boundingRect().center()).toPoint();
 
         //Add a new group port for the boundary at the boundary connector
-        pGroupPortComponent = new GUIGroupPort(&appData, groupPortPoint, mpParentSystem);
+        pGroupPortComponent = new GUIGroupPort(&appData, groupPortPoint, mpParentContainerObject);
         GUIPort *pPort = pGroupPortComponent->getPort("sysp");
         QString portName;
         if(pPort)
@@ -198,7 +199,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAp
             points.append(pPortBoundaryInside->mapToScene(pPortBoundaryInside->boundingRect().center()));
             points.append(pPort->mapToScene(pPort->boundingRect().center())); //! @todo GUIConnector should handle any number of points e.g. 0, 1 or 2
             points.append(pPort->mapToScene(pPort->boundingRect().center()));
-            GUIConnector *pInsideConnector = new GUIConnector(pPortBoundaryInside, pPort, points, mpParentSystem);
+            GUIConnector *pInsideConnector = new GUIConnector(pPortBoundaryInside, pPort, points, mpParentContainerObject);
             mpGroupScene->addItem(pInsideConnector);
 
 //            pGroupPortComponent->addConnector(pInsideConnector);
@@ -231,7 +232,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAp
         mPortListPtrs.append(pGuiPort);
 
         //Make connectors to the group component
-        GUIConnector *tmpConnector = new GUIConnector(pGuiPort, pPortBoundaryOutside,pTransitConnector->getPointsVector(), mpParentSystem);
+        GUIConnector *tmpConnector = new GUIConnector(pGuiPort, pPortBoundaryOutside,pTransitConnector->getPointsVector(), mpParentContainerObject);
         mpParentScene->addItem(tmpConnector);
         this->showPorts(false);
         tmpConnector->drawConnector();
@@ -241,8 +242,8 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAp
     }
 
     //Show this scene
-    mpParentSystem->mpParentProjectTab->mpGraphicsView->setScene(mpGroupScene);
-    mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton->show();
+    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(mpGroupScene);
+    mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton->show();
 
     //Draw a cross in the center of the group component icon (debug)
 //    new QGraphicsLineItem(QLineF(this->rect().center()-QPointF(-10,-10), this->rect().center()-QPointF(10,10)),this);
@@ -259,7 +260,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAp
 
     this->mpParentScene->addItem(this);
 
-    connect(this->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
+    connect(this->mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
 
 }
 
@@ -268,7 +269,7 @@ GUIGroup::~GUIGroup()
 {
     qDebug() << "GUIGroup destructor";
     GUISystem::GUIModelObjectMapT::iterator itm;
-    for(itm = mpParentSystem->mGUIModelObjectMap.begin(); itm != mpParentSystem->mGUIModelObjectMap.end(); ++itm)
+    for(itm = mpParentContainerObject->mGUIModelObjectMap.begin(); itm != mpParentContainerObject->mGUIModelObjectMap.end(); ++itm)
     {
         qDebug() << "GUIObjectMap: " << itm.key();
     }
@@ -279,7 +280,7 @@ GUIGroup::~GUIGroup()
     for(it=objectsInScenePtrs.begin(); it != objectsInScenePtrs.end(); ++it)
     {
         //! @todo Will cause crash when closing program if the GUIObject has already been deleted by the scene.
-        mpParentSystem->deleteGUIModelObject(this->getName());
+        mpParentContainerObject->deleteGUIModelObject(this->getName());
         GUIComponent *pGUIComponent = qgraphicsitem_cast<GUIComponent*>(*it);
         mpGroupScene->removeItem((*it));
 
@@ -298,11 +299,11 @@ GUIGroup::~GUIGroup()
 //! Shows the parent scene. Should be called to exit a group.
 void GUIGroup::showParent()
 {
-    mpParentSystem->mpParentProjectTab->mpGraphicsView->setScene(mpParentScene);
+    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(mpParentScene);
 
-    disconnect(mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
+    disconnect(mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
 
-    mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton->hide();
+    mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton->hide();
 
 }
 
@@ -329,11 +330,11 @@ void GUIGroup::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 void GUIGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mouseDoubleClickEvent(event);
-    mpParentSystem->mpParentProjectTab->mpGraphicsView->setScene(mpGroupScene);
+    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(mpGroupScene);
 
-    mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton->show();
+    mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton->show();
 
-    connect(mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
+    connect(mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
 
 }
 
@@ -343,7 +344,7 @@ void GUIGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 //mpIcon->setGraphicsEffect(graphicsColor);
 
 
-GUIGroupPort::GUIGroupPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, GUISystem *system, QGraphicsItem *parent)
+GUIGroupPort::GUIGroupPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, GUIContainerObject *system, QGraphicsItem *parent)
     : GUIModelObject(position, 0, pAppearanceData, DESELECTED, USERGRAPHICS, system, parent)
 
 {
@@ -391,7 +392,7 @@ void GUIGroupPort::setName(QString newName)
     {
         //Check if we want to avoid trying to rename in the graphics view map
         //Rename
-        mpParentSystem->renameGUIModelObject(oldName, newName);
+        mpParentContainerObject->renameGUIModelObject(oldName, newName);
     }
 }
 

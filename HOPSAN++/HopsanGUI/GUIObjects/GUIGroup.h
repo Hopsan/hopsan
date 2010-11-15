@@ -11,14 +11,13 @@ class GraphicsScene;
 class GraphicsView;
 class GUIConnector;
 class GUIPort;
-class GUISystem;
 class GUIComponent;
 
 class GUIGroup : public GUIContainerObject
 {
     Q_OBJECT
 public:
-    GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAppearanceData, GUISystem *system, QGraphicsItem *parent = 0);
+    GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *system, QGraphicsItem *parent = 0);
     ~GUIGroup();
 //    QString getName();
 //    void setName(QString name, bool doOnlyLocalRename=false);
@@ -63,7 +62,7 @@ class GUIGroupPort : public GUIModelObject
 {
     Q_OBJECT
 public:
-    GUIGroupPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, GUISystem *system, QGraphicsItem *parent = 0);
+    GUIGroupPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, GUIContainerObject *system, QGraphicsItem *parent = 0);
     QString getTypeName();
     void setName(QString newName);
 

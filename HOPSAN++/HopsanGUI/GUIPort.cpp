@@ -54,16 +54,16 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
 //    qDebug() << "======================= parentName: " << pParentGUIModelObject->getName();
 
     //Here we try to figure out what to set the parent system pointer to
-    if ( pParentGUIModelObject->mpParentSystem != 0 )
+    if ( pParentGUIModelObject->mpParentContainerObject != 0 )
     {
         //This is the normal case, our objects parentsystem
-        mpParentSystem = pParentGUIModelObject->mpParentSystem;
+        mpParentContainerObject = pParentGUIModelObject->mpParentContainerObject;
     }
     else if ( pParentGUIModelObject->type() == GUISYSTEM )
     {
         //In this case, our parentobect is a root system (that is it has no parent)
         //this should only happen in systemports in the root system
-        mpParentSystem = qobject_cast<GUISystem*>(pParentGUIModelObject);
+        mpParentContainerObject = qobject_cast<GUISystem*>(pParentGUIModelObject);
     }
     else
     {
@@ -118,10 +118,10 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     mIsMag = false;
     mIsConnected = false;
 
-    MainWindow *pMainWindow = mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
-    GraphicsView *pView = mpParentSystem->mpParentProjectTab->mpGraphicsView;
+    MainWindow *pMainWindow = mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+    GraphicsView *pView = mpParentContainerObject->mpParentProjectTab->mpGraphicsView;
 
-    connect(this,SIGNAL(portClicked(GUIPort*)),this->getParentSystem(),SLOT(createConnector(GUIPort*)));
+    connect(this,SIGNAL(portClicked(GUIPort*)),this->getParentContainerObjectPtr(),SLOT(createConnector(GUIPort*)));
     connect(pMainWindow->hidePortsAction,SIGNAL(triggered(bool)),this, SLOT(hideIfNotConnected(bool)));
 
     //Connect the view zoom change signal to the port overlay scale slot
@@ -287,7 +287,7 @@ void GUIPort::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
 
-    if ((!this->isConnected()) || (mpParentSystem->getCoreSystemAccessPtr()->getTimeVector(getGuiModelObjectName(), this->getName()).empty()))
+    if ((!this->isConnected()) || (mpParentContainerObject->getCoreSystemAccessPtr()->getTimeVector(getGuiModelObjectName(), this->getName()).empty()))
     {
         event->ignore();
     }
@@ -304,7 +304,7 @@ void GUIPort::openRightClickMenu(QPoint screenPos)
 
     QVector<QString> parameterNames;
     QVector<QString> parameterUnits;
-    mpParentGuiModelObject->mpParentSystem->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(mpParentGuiModelObject->getName(), this->getName(), parameterNames, parameterUnits);
+    mpParentGuiModelObject->mpParentContainerObject->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(mpParentGuiModelObject->getName(), this->getName(), parameterNames, parameterUnits);
 
     //QAction *plotPressureAction = menu.addAction("Plot pressure");
     //QAction *plotFlowAction = menu.addAction("Plot flow");
@@ -453,9 +453,9 @@ void GUIPort::scalePortOverlay(qreal scalefactor)
 
 
 //! Returns a pointer to the GraphicsView that the port belongs to.
-GUISystem *GUIPort::getParentSystem()
+GUIContainerObject *GUIPort::getParentContainerObjectPtr()
 {
-    return mpParentSystem;
+    return mpParentContainerObject;
 }
 
 
@@ -475,9 +475,9 @@ bool GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
     if(this->isConnected())
     {
         if(dataUnit.isEmpty())
-            dataUnit = this->mpParentSystem->getCoreSystemAccessPtr()->getPlotDataUnit(this->getGuiModelObjectName(),this->getName(),dataName);
+            dataUnit = this->mpParentContainerObject->getCoreSystemAccessPtr()->getPlotDataUnit(this->getGuiModelObjectName(),this->getName(),dataName);
 
-        MainWindow *pMainWindow = mpParentGuiModelObject->mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+        MainWindow *pMainWindow = mpParentGuiModelObject->mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 
         if(pMainWindow->mpPlotWidget == 0)
         {
@@ -495,26 +495,26 @@ bool GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
 //! Wrapper for the Core getPortTypeString() function
 QString GUIPort::getPortType()
 {
-    return mpParentSystem->getCoreSystemAccessPtr()->getPortType(getGuiModelObjectName(), this->getName());
+    return mpParentContainerObject->getCoreSystemAccessPtr()->getPortType(getGuiModelObjectName(), this->getName());
 }
 
 
 //! Wrapper for the Core getNodeType() function
 QString GUIPort::getNodeType()
 {
-    return mpParentSystem->getCoreSystemAccessPtr()->getNodeType(getGuiModelObjectName(), this->getName());
+    return mpParentContainerObject->getCoreSystemAccessPtr()->getNodeType(getGuiModelObjectName(), this->getName());
 }
 
 
 void GUIPort::getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<double> &rValues, QVector<QString> &rUnits)
 {
-    mpParentSystem->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(getGuiModelObjectName(), this->getName(), rNames, rValues, rUnits);
+    mpParentContainerObject->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(getGuiModelObjectName(), this->getName(), rNames, rValues, rUnits);
 }
 
 
 void GUIPort::setStartValueDataByNames(QVector<QString> names, QVector<double> values)
 {
-    mpParentSystem->getCoreSystemAccessPtr()->setStartValueDataByNames(getGuiModelObjectName(), this->getName(), names, values);
+    mpParentContainerObject->getCoreSystemAccessPtr()->setStartValueDataByNames(getGuiModelObjectName(), this->getName(), names, values);
 }
 
 portDirection GUIPort::getPortDirection()
@@ -603,7 +603,7 @@ void GUIPort::setDisplayName(const QString name)
 
 bool GUIPort::getLastNodeData(QString dataName, double& rData)
 {
-    return mpParentSystem->getCoreSystemAccessPtr()->getLastNodeData(getGuiModelObjectName(), this->getName(), dataName, rData);
+    return mpParentContainerObject->getCoreSystemAccessPtr()->getLastNodeData(getGuiModelObjectName(), this->getName(), dataName, rData);
 }
 
 
@@ -611,7 +611,7 @@ bool GUIPort::getLastNodeData(QString dataName, double& rData)
 //! @param hidePortsActionTriggered is true if ports shall be hidden, otherwise false.
 void GUIPort::hideIfNotConnected(bool hidePortsActionTriggered)
 {
-    if(mpParentSystem->mpParentProjectTab == mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->getCurrentTab())
+    if(mpParentContainerObject->mpParentProjectTab == mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->getCurrentTab())
     {
         if(!isConnected() && hidePortsActionTriggered)
         {

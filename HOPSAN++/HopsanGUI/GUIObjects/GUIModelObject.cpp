@@ -17,7 +17,7 @@
 //! @param gfxType Initial graphics type (user or iso)
 //! @param system Pointer to the parent system
 //! @param parent Pointer to parent object (not mandatory)
-GUIModelObject::GUIModelObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUISystem *system, QGraphicsItem *parent)
+GUIModelObject::GUIModelObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUIContainerObject *system, QGraphicsItem *parent)
         : GUIObject(position, rotation, startSelected, system, parent)
 {
         //Initialize variables
@@ -45,13 +45,13 @@ GUIModelObject::GUIModelObject(QPoint position, qreal rotation, const GUIModelOb
 
         //Create connections
     connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(snapNameTextPosition(QPointF)));
-    if(mpParentSystem != 0)
+    if(mpParentContainerObject != 0)
     {
-        connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange(qreal)), this, SLOT(setNameTextScale(qreal)));
-        connect(mpParentSystem, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
-        connect(mpParentSystem, SIGNAL(hideAllNameText()), this, SLOT(hideName()));
-        connect(mpParentSystem, SIGNAL(showAllNameText()), this, SLOT(showName()));
-        connect(mpParentSystem, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIcon(graphicsType)));
+        connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange(qreal)), this, SLOT(setNameTextScale(qreal)));
+        connect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
+        connect(mpParentContainerObject, SIGNAL(hideAllNameText()), this, SLOT(hideName()));
+        connect(mpParentContainerObject, SIGNAL(showAllNameText()), this, SLOT(showName()));
+        connect(mpParentContainerObject, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIcon(graphicsType)));
     }
     else
     {
@@ -94,9 +94,9 @@ void GUIModelObject::snapNameTextPosition(QPointF pos)
         mNameTextPos = 1;
     }
 
-    if(mpParentSystem != 0)
+    if(mpParentContainerObject != 0)
     {
-        mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
+        mpParentContainerObject->mpParentProjectTab->mpGraphicsView->updateViewPort();
     }
 }
 
@@ -465,18 +465,18 @@ void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
         //Loop through all selected objects and register changed positions in undo stack
     bool alreadyClearedRedo = false;
-    for(it = mpParentSystem->mSelectedGUIObjectsList.begin(); it != mpParentSystem->mSelectedGUIObjectsList.end(); ++it)
+    for(it = mpParentContainerObject->mSelectedGUIObjectsList.begin(); it != mpParentContainerObject->mSelectedGUIObjectsList.end(); ++it)
     {
         if(((*it)->mOldPos != (*it)->pos()) && (event->button() == Qt::LeftButton))
         {
                 //This check makes sure that only one undo post is created when moving several objects at once
             if(!alreadyClearedRedo)
             {
-                mpParentSystem->mUndoStack->newPost();
-                mpParentSystem->mpParentProjectTab->hasChanged();
+                mpParentContainerObject->mUndoStack->newPost();
+                mpParentContainerObject->mpParentProjectTab->hasChanged();
                 alreadyClearedRedo = true;
             }
-            mpParentSystem->mUndoStack->registerMovedObject((*it)->mOldPos, (*it)->pos(), (*it)->getName());
+            mpParentContainerObject->mUndoStack->registerMovedObject((*it)->mOldPos, (*it)->pos(), (*it)->getName());
         }
     }
 
@@ -507,8 +507,8 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
         emit objectMoved();  //This signal must be emitted  before the snap code, because it updates the connectors which is used to determine whether or not to snap.
 
             //Snap component if it only has one connector and is dropped close enough (horizontal or vertical) to adjacent component
-        if(mpParentSystem != 0 && mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mSnapping &&
-           !mpParentSystem->getIsCreatingConnector() && mpParentSystem->mSelectedGUIObjectsList.size() == 1)
+        if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mSnapping &&
+           !mpParentContainerObject->getIsCreatingConnector() && mpParentContainerObject->mSelectedGUIObjectsList.size() == 1)
         {
                 //Vertical snap
             if( (mpGUIConnectorPtrs.size() == 1) &&
@@ -598,7 +598,7 @@ void GUIModelObject::showPorts(bool visible)
     else
         for (i = mPortListPtrs.begin(); i != mPortListPtrs.end(); ++i)
         {
-            if ((*i)->isConnected() || mpParentSystem->mPortsHidden)
+            if ((*i)->isConnected() || mpParentContainerObject->mPortsHidden)
             {
                 (*i)->hide();
             }
@@ -710,7 +710,7 @@ void GUIModelObject::rotate(undoStatus undoSettings)
 
     if(undoSettings == UNDO)
     {
-        mpParentSystem->mUndoStack->registerRotatedObject(this);
+        mpParentContainerObject->mUndoStack->registerRotatedObject(this);
     }
 
     emit objectMoved();
@@ -746,7 +746,7 @@ void GUIModelObject::flipVertical(undoStatus undoSettings)
     this->rotate(NOUNDO);
     if(undoSettings == UNDO)
     {
-        mpParentSystem->mUndoStack->registerVerticalFlip(this);
+        mpParentContainerObject->mUndoStack->registerVerticalFlip(this);
     }
 }
 
@@ -851,7 +851,7 @@ void GUIModelObject::flipHorizontal(undoStatus undoSettings)
 
     if(undoSettings == UNDO)
     {
-        mpParentSystem->mUndoStack->registerHorizontalFlip(this);
+        mpParentContainerObject->mUndoStack->registerHorizontalFlip(this);
     }
 }
 
@@ -903,7 +903,7 @@ QString GUIModelObject::getTypeName()
 void GUIModelObject::deleteMe()
 {
     qDebug() << "deleteMe in " << this->getName();
-    mpParentSystem->deleteGUIModelObject(this->getName());
+    mpParentContainerObject->deleteGUIModelObject(this->getName());
 }
 
 
@@ -972,12 +972,12 @@ QVariant GUIModelObjectDisplayName::itemChange(GraphicsItemChange change, const 
         qDebug() << "ItemSelectedHasChanged";
         if (this->isSelected())
         {
-            mpParentGUIModelObject->mpParentSystem->deselectSelectedNameText();
-            connect(this->mpParentGUIModelObject->mpParentSystem, SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
+            mpParentGUIModelObject->mpParentContainerObject->deselectSelectedNameText();
+            connect(this->mpParentGUIModelObject->mpParentContainerObject, SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
         }
         else
         {
-            disconnect(this->mpParentGUIModelObject->mpParentSystem, SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
+            disconnect(this->mpParentGUIModelObject->mpParentContainerObject, SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
         }
     }
     return value;

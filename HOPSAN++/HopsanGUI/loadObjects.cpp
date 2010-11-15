@@ -310,7 +310,7 @@ void ParameterLoadData::readDomElement(QDomElement &rDomElement)
 
 
 
-GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
+GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
 {
     GUIModelObjectAppearance *pAppearanceData = pLibrary->getAppearanceData(rData.type);
     if (pAppearanceData != 0)
@@ -338,7 +338,7 @@ GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidg
     }
 }
 
-GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
+GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
 {
     //! @todo maybe create a loadGUIObject function that takes appearance data instead of pLibrary (when special apperance are to be used)
     //Load the system the normal way (and add it)
@@ -356,7 +356,7 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
 
 
 
-void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, undoStatus undoSettings)
+void loadConnector(const ConnectorLoadData &rData, GUIContainerObject* pSystem, undoStatus undoSettings)
 {
     //qDebug() << "loadConnector: " << rData.startComponentName << " " << rData.endComponentName << " " << pSystem->getCoreSystemAccessPtr()->getRootSystemName();
     bool success = pSystem->getCoreSystemAccessPtr()->connect(rData.startComponentName, rData.startPortName, rData.endComponentName, rData.endPortName);
@@ -406,7 +406,7 @@ void loadConnector(const ConnectorLoadData &rData, GUISystem* pSystem, undoStatu
 }
 
 //! @brief text version
-void loadParameterValues(const ParameterLoadData &rData, GUISystem* pSystem, undoStatus undoSettings)
+void loadParameterValues(const ParameterLoadData &rData, GUIContainerObject* pSystem, undoStatus undoSettings)
 {
     //qDebug() << "Parameter: " << componentName << " " << parameterName << " " << parameterValue;
     //qDebug() << "count" << pSystem->mGUIObjectMap.count(rData.componentName);
@@ -437,7 +437,7 @@ void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoS
 
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data
-GUIModelObject* loadGUIModelObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
+GUIModelObject* loadGUIModelObject(QTextStream &rStream, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
 {
     ModelObjectLoadData data;
     data.read(rStream);
@@ -445,21 +445,21 @@ GUIModelObject* loadGUIModelObject(QTextStream &rStream, LibraryWidget* pLibrary
 }
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data
-GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
+GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
 {
     ModelObjectLoadData data;
     data.readDomElement(rDomElement);
     return loadGUIModelObject(data,pLibrary, pSystem, undoSettings);
 }
 
-GUIObject* loadSubsystemGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
+GUIObject* loadSubsystemGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
 {
     SubsystemLoadData data;
     data.read(rStream);
     return loadSubsystemGUIObject(data, pLibrary, pSystem, undoSettings);
 }
 
-GUIObject* loadSubsystemGUIObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUISystem* pSystem, undoStatus undoSettings)
+GUIObject* loadSubsystemGUIObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
 {
     SubsystemLoadData data;
     data.readDomElement(rDomElement);
@@ -467,7 +467,7 @@ GUIObject* loadSubsystemGUIObject(QDomElement &rDomElement, LibraryWidget* pLibr
 }
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data
-void loadConnector(QTextStream &rStream, GUISystem* pSystem, undoStatus undoSettings)
+void loadConnector(QTextStream &rStream, GUIContainerObject* pSystem, undoStatus undoSettings)
 {
     ConnectorLoadData data;
     data.read(rStream);
@@ -475,7 +475,7 @@ void loadConnector(QTextStream &rStream, GUISystem* pSystem, undoStatus undoSett
 }
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data
-void loadConnector(QDomElement &rDomElement, GUISystem* pSystem, undoStatus undoSettings)
+void loadConnector(QDomElement &rDomElement, GUIContainerObject* pSystem, undoStatus undoSettings)
 {
     ConnectorLoadData data;
     data.readDomElement(rDomElement);
@@ -501,7 +501,7 @@ void TextWidgetLoadData::readDomElement(QDomElement &rDomElement)
     }
 }
 
-void loadTextWidget(QDomElement &rDomElement, GUISystem *pSystem)
+void loadTextWidget(QDomElement &rDomElement, GUIContainerObject *pSystem)
 {
     TextWidgetLoadData data;
     data.readDomElement(rDomElement);
@@ -537,7 +537,7 @@ void BoxWidgetLoadData::readDomElement(QDomElement &rDomElement)
 }
 
 //! @brief Convenience function for loading a box widget from a dom element
-void loadBoxWidget(QDomElement &rDomElement, GUISystem *pSystem)
+void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pSystem)
 {
     BoxWidgetLoadData data;
     data.readDomElement(rDomElement);
@@ -562,7 +562,7 @@ void loadBoxWidget(QDomElement &rDomElement, GUISystem *pSystem)
 
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data
-void loadParameterValues(QTextStream &rStream, GUISystem* pSystem, undoStatus undoSettings)
+void loadParameterValues(QTextStream &rStream, GUIContainerObject* pSystem, undoStatus undoSettings)
 {
     ParameterLoadData data;
     data.read(rStream);

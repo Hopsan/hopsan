@@ -3,7 +3,7 @@
 #include "GUIPort.h"
 #include "loadObjects.h"
 
-GUISystemPort::GUISystemPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
+GUISystemPort::GUISystemPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
         : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
 {
     this->mHmfTagName = HMF_SYSTEMPORTTAG;
@@ -42,7 +42,7 @@ void GUISystemPort::createPorts()
     i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
 
     //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding systemport with name: " << desiredportname;
-    mGUIModelObjectAppearance.setName(mpParentSystem->getCoreSystemAccessPtr()->addSystemPort(desiredportname));
+    mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->addSystemPort(desiredportname));
     //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,resulting in name from core: " << mGUIModelObjectAppearance.getName();
 
     //We supply ptr to rootsystem to indicate that this is a systemport
@@ -71,14 +71,14 @@ void GUISystemPort::setName(QString newName, renameRestrictions renameSettings)
         if (renameSettings == CORERENAMEONLY)
         {
             //Set name in core component, Also set the current name to the resulting one (might have been changed)
-            mGUIModelObjectAppearance.setName(mpParentSystem->getCoreSystemAccessPtr()->renameSystemPort(oldName, newName));
+            mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->renameSystemPort(oldName, newName));
             refreshDisplayName();
             mpGuiPort->setDisplayName(mGUIModelObjectAppearance.getName()); //change the actual gui port name
         }
         else
         {
             //Rename
-            mpParentSystem->renameGUIModelObject(oldName, newName);
+            mpParentContainerObject->renameGUIModelObject(oldName, newName);
         }
     }
 }

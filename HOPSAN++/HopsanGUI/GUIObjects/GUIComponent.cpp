@@ -23,11 +23,11 @@
 #include "GUIGroup.h"
 #include "GUISystem.h"
 
-GUIComponent::GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUISystem *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
+GUIComponent::GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
     : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
 {
     //Create the object in core, and get its default core name
-    mGUIModelObjectAppearance.setName(mpParentSystem->getCoreSystemAccessPtr()->createComponent(mGUIModelObjectAppearance.getTypeName(), mGUIModelObjectAppearance.getName()));
+    mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->createComponent(mGUIModelObjectAppearance.getTypeName(), mGUIModelObjectAppearance.getName()));
 
     //Sets the ports
     createPorts();
@@ -44,7 +44,7 @@ GUIComponent::~GUIComponent()
 {
     //Remove in core
     //! @todo maybe change to delte instead of remove with dodelete yes
-    mpParentSystem->getCoreSystemAccessPtr()->removeSubComponent(this->getName(), true);
+    mpParentContainerObject->getCoreSystemAccessPtr()->removeSubComponent(this->getName(), true);
 }
 
 
@@ -97,34 +97,34 @@ QString GUIComponent::getTypeName()
 
 QString GUIComponent::getTypeCQS()
 {
-    return mpParentSystem->getCoreSystemAccessPtr()->getSubComponentTypeCQS(this->getName());
+    return mpParentContainerObject->getCoreSystemAccessPtr()->getSubComponentTypeCQS(this->getName());
 }
 
 //! @brief Get a vector with the names of the available parameters
 QVector<QString> GUIComponent::getParameterNames()
 {
-    return mpParentSystem->getCoreSystemAccessPtr()->getParameterNames(this->getName());
+    return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterNames(this->getName());
 }
 
 QString GUIComponent::getParameterUnit(QString name)
 {
-    return mpParentSystem->getCoreSystemAccessPtr()->getParameterUnit(this->getName(), name);
+    return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterUnit(this->getName(), name);
 }
 
 QString GUIComponent::getParameterDescription(QString name)
 {
-    return mpParentSystem->getCoreSystemAccessPtr()->getParameterDescription(this->getName(), name);
+    return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterDescription(this->getName(), name);
 }
 
 double GUIComponent::getParameterValue(QString name)
 {
-    return mpParentSystem->getCoreSystemAccessPtr()->getParameterValue(this->getName(), name);
+    return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValue(this->getName(), name);
 }
 
 //! @brief Set a parameter value, wrapps hopsan core
 void GUIComponent::setParameterValue(QString name, double value)
 {
-    mpParentSystem->getCoreSystemAccessPtr()->setParameter(this->getName(), name, value);
+    mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, value);
 }
 
 void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
@@ -156,7 +156,7 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         GUIModelObjectAppearance appdata;
         appdata.setIconPathUser("subsystemtmp.svg");
         appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
-        GUIGroup *pGroup = new GUIGroup(this->scene()->selectedItems(), &appdata, mpParentSystem);
+        GUIGroup *pGroup = new GUIGroup(this->scene()->selectedItems(), &appdata, mpParentContainerObject);
         this->scene()->addItem(pGroup);
     }
     else if (selectedAction == showNameAction)
@@ -186,12 +186,12 @@ void GUIComponent::openParameterDialog()
 void GUIComponent::createPorts()
 {
     //! @todo make sure that all old ports and connections are cleared, (not really necessary in guicomponents)
-    QString cqsType = mpParentSystem->getCoreSystemAccessPtr()->getSubComponentTypeCQS(getName());
+    QString cqsType = mpParentContainerObject->getCoreSystemAccessPtr()->getSubComponentTypeCQS(getName());
     PortAppearanceMapT::iterator i;
     for (i = mGUIModelObjectAppearance.getPortAppearanceMap().begin(); i != mGUIModelObjectAppearance.getPortAppearanceMap().end(); ++i)
     {
-        QString nodeType = mpParentSystem->getCoreSystemAccessPtr()->getNodeType(this->getName(), i.key());
-        QString portType = mpParentSystem->getCoreSystemAccessPtr()->getPortType(this->getName(), i.key());
+        QString nodeType = mpParentContainerObject->getCoreSystemAccessPtr()->getNodeType(this->getName(), i.key());
+        QString portType = mpParentContainerObject->getCoreSystemAccessPtr()->getPortType(this->getName(), i.key());
         i.value().selectPortIcon(cqsType, portType, nodeType);
 
         qreal x = i.value().x * mpIcon->sceneBoundingRect().width();
@@ -215,13 +215,13 @@ void GUIComponent::saveToTextStream(QTextStream &rStream, QString prepend)
 {
     GUIModelObject::saveToTextStream(rStream, prepend);
 
-    QVector<QString> parameterNames = mpParentSystem->getCoreSystemAccessPtr()->getParameterNames(this->getName());
+    QVector<QString> parameterNames = mpParentContainerObject->getCoreSystemAccessPtr()->getParameterNames(this->getName());
     QVector<QString>::iterator pit;
     for(pit = parameterNames.begin(); pit != parameterNames.end(); ++pit)
     {
         //! @todo It is a bit strange that we can not control the parameter keyword, but then agian spliting this into a separate function with its own prepend variable would also be wierd
         rStream << "PARAMETER " << addQuotes(getName()) << " " << addQuotes(*pit) << " " <<
-                mpParentSystem->getCoreSystemAccessPtr()->getParameterValue(this->getName(), (*pit)) << "\n";
+                mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValue(this->getName(), (*pit)) << "\n";
     }
 }
 
@@ -232,7 +232,7 @@ void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
     //Save parameters (also core related)
     QDomElement xmlParameters = appendDomElement(rDomElement, HMF_PARAMETERS);
     //! @todo need more efficient fetching of both par names and values in one call to avoid re-searching every time
-    QVector<QString> parameterNames = mpParentSystem->getCoreSystemAccessPtr()->getParameterNames(this->getName());
+    QVector<QString> parameterNames = mpParentContainerObject->getCoreSystemAccessPtr()->getParameterNames(this->getName());
     QVector<QString>::iterator pit;
     for(pit = parameterNames.begin(); pit != parameterNames.end(); ++pit)
     {
@@ -240,7 +240,7 @@ void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
 //        appendDomTextNode(xmlParam, HMF_NAMETAG, *pit);
 //        appendDomValueNode(xmlParam, HMF_VALUETAG, mpParentSystem->getCoreSystemAccessPtr()->getParameterValue(this->getName(), (*pit)));
         xmlParam.setAttribute(HMF_NAMETAG, *pit);
-        xmlParam.setAttribute(HMF_VALUETAG, mpParentSystem->getCoreSystemAccessPtr()->getParameterValue(this->getName(), (*pit)));
+        xmlParam.setAttribute(HMF_VALUETAG, mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValue(this->getName(), (*pit)));
     }
 
     //Save start values
@@ -251,7 +251,7 @@ void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
     QList<GUIPort*>::iterator portIt;
     for(portIt = mPortListPtrs.begin(); portIt != mPortListPtrs.end(); ++portIt)
     {
-        mpParentSystem->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(this->getName(), (*portIt)->getName(), startValueNames, startValueValues, dummy);
+        mpParentContainerObject->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(this->getName(), (*portIt)->getName(), startValueNames, startValueValues, dummy);
         if((!startValueNames.empty()))
         {
 //            QDomElement xmlPort = appendDomElement(rDomElement, HMF_PORTTAG);

@@ -234,7 +234,7 @@ void ParameterDialog::createEditStuff()
 //! @brief Reads the values from the dialog and writes them into the core component
 void ParameterDialog::okPressed()
 {
-    mpGUIModelObject->mpParentSystem->renameGUIModelObject(mpGUIModelObject->getName(), mpNameEdit->text());
+    mpGUIModelObject->mpParentContainerObject->renameGUIModelObject(mpGUIModelObject->getName(), mpNameEdit->text());
     //qDebug() << mpNameEdit->text();
 
     setParameters();
@@ -264,7 +264,7 @@ void ParameterDialog::setParameters()
         if (!ok)
         {
 
-            MessageWidget *messageWidget = this->mpGUIModelObject->mpParentSystem->mpMainWindow->mpMessageWidget;//qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent()->parent())->mpMessageWidget;
+            MessageWidget *messageWidget = this->mpGUIModelObject->mpParentContainerObject->mpMainWindow->mpMessageWidget;//qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent()->parent())->mpMessageWidget;
             messageWidget->printGUIMessage(QString("ParameterDialog::setParameters(): You must give a correct value for '").append(mParameterVarVector[i]->text()).append(QString("', putz. Try again!")));
             qDebug() << "Inte okej!";
             return;

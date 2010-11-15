@@ -20,24 +20,24 @@
 //! @param startpos defines the start position of the connector, normally the center of the starting port.
 //! @param *parentView is a pointer to the GraphicsView the connector belongs to.
 //! @param parent is the parent of the port.
-GUIConnector::GUIConnector(GUIPort *startPort, GUISystem *parentSystem, QGraphicsItem *parent)
+GUIConnector::GUIConnector(GUIPort *startPort, GUIContainerObject *parentSystem, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
-    mpParentSystem = parentSystem;
-    mpParentSystem->getContainedScenePtr()->addItem(this);
+    mpParentContainerObject = parentSystem;
+    mpParentContainerObject->getContainedScenePtr()->addItem(this);
     startPort->getGuiModelObject()->rememberConnector(this);
     qDebug() << "startPort->getGuiObject()->getName(): " << startPort->getGuiModelObject()->getName();
 
     setFlags(QGraphicsItem::ItemIsFocusable);
 
-    connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange()), this, SLOT(adjustToZoom()));
-    connect(mpParentSystem, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
-    connect(mpParentSystem, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIsoStyle(graphicsType)));
+    connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange()), this, SLOT(adjustToZoom()));
+    connect(mpParentContainerObject, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
+    connect(mpParentContainerObject, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIsoStyle(graphicsType)));
 
     QPointF startPos = startPort->mapToScene(startPort->boundingRect().center());
     this->setPos(startPos);
     this->updateStartPoint(startPos);
-    mpGUIConnectorAppearance = new GUIConnectorAppearance("notconnected", mpParentSystem->mGfxType);
+    mpGUIConnectorAppearance = new GUIConnectorAppearance("notconnected", mpParentContainerObject->mGfxType);
     mEndPortConnected = false;
     this->drawConnector();
     mMakingDiagonal = false;
@@ -53,10 +53,10 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUISystem *parentSystem, QGraphic
 //! @param points Point vector for the connector
 //! @param *parentView Pointer to the GraphicsView the connector belongs to
 //! @param *parent Pointer to parent of the port
-GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, GUISystem *parentSystem, QGraphicsItem *parent)
+GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, GUIContainerObject *parentSystem, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
-    mpParentSystem = parentSystem;
+    mpParentContainerObject = parentSystem;
     setFlags(QGraphicsItem::ItemIsFocusable);
     mpStartPort = startPort;
     mpEndPort = endPort;
@@ -67,7 +67,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     QPointF startPos = getStartPort()->mapToScene(getStartPort()->boundingRect().center());
     this->setPos(startPos);
 
-    mpGUIConnectorAppearance = new GUIConnectorAppearance(startPort->getPortType(), mpParentSystem->mGfxType);
+    mpGUIConnectorAppearance = new GUIConnectorAppearance(startPort->getPortType(), mpParentContainerObject->mGfxType);
 
     mPoints = points;
 
@@ -124,9 +124,9 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     mpStartPort->getGuiModelObject()->rememberConnector(this);
     mpEndPort->getGuiModelObject()->rememberConnector(this);
 
-    connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange(qreal)), this, SLOT(adjustToZoom(qreal)));
-    connect(mpParentSystem, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
-    connect(mpParentSystem, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIsoStyle(graphicsType)));
+    connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange(qreal)), this, SLOT(adjustToZoom(qreal)));
+    connect(mpParentContainerObject, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
+    connect(mpParentContainerObject, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIsoStyle(graphicsType)));
 }
 
 
@@ -277,7 +277,7 @@ void GUIConnector::setEndPort(GUIPort *port)
         mPoints[mPoints.size()-3] += offsetPoint;
         this->drawConnector();
         //mpParentSystem->setBackgroundBrush(mpParentSystem->mBackgroundColor);
-        mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
+        mpParentContainerObject->mpParentProjectTab->mpGraphicsView->updateViewPort();
     }
 
     this->updateEndPoint(port->mapToScene(port->boundingRect().center()));
@@ -299,7 +299,7 @@ void GUIConnector::setEndPort(GUIPort *port)
 
 
         //Snap if close to a snapping position
-    if(mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mSnapping)
+    if(mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mSnapping)
     {
         if( ((getNumberOfLines() == 1) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE)) ||
             ((getNumberOfLines() < 3) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE)) )
@@ -589,7 +589,7 @@ void GUIConnector::drawConnector()
         mpLines[i]->setLine(mapFromScene(mPoints[i]), mapFromScene(mPoints[i+1]));
     }
 
-    mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
+    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->updateViewPort();
 }
 
 
@@ -675,7 +675,7 @@ void GUIConnector::makeDiagonal(bool enable)
         mMakingDiagonal = true;
         removePoint();
         mGeometries.back() = DIAGONAL;
-        mPoints.back() = mpParentSystem->mpParentProjectTab->mpGraphicsView->mapToScene(mpParentSystem->mpParentProjectTab->mpGraphicsView->mapFromGlobal(cursor.pos()));
+        mPoints.back() = mpParentContainerObject->mpParentProjectTab->mpGraphicsView->mapToScene(mpParentContainerObject->mpParentProjectTab->mpGraphicsView->mapFromGlobal(cursor.pos()));
         drawConnector();
     }
     else
@@ -706,11 +706,11 @@ void GUIConnector::makeDiagonal(bool enable)
                 }
 
             }
-            addPoint(mpParentSystem->mapToScene(mpParentSystem->mpParentProjectTab->mpGraphicsView->mapFromGlobal(cursor.pos())));
+            addPoint(mpParentContainerObject->mapToScene(mpParentContainerObject->mpParentProjectTab->mpGraphicsView->mapFromGlobal(cursor.pos())));
         }
         else    //Only one (diagonal) line exist, so special solution is required
         {
-            addPoint(mpParentSystem->mapToScene(mpParentSystem->mpParentProjectTab->mpGraphicsView->mapFromGlobal(cursor.pos())));
+            addPoint(mpParentContainerObject->mapToScene(mpParentContainerObject->mpParentProjectTab->mpGraphicsView->mapFromGlobal(cursor.pos())));
             if(getStartPort()->getPortDirection() == LEFTRIGHT)
             {
                 mGeometries[0] = VERTICAL;
@@ -742,13 +742,13 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
     {
         if(lineSelected)
         {
-            if(!mpParentSystem->mSelectedSubConnectorsList.contains(this))
+            if(!mpParentContainerObject->mSelectedSubConnectorsList.contains(this))
             {
-                mpParentSystem->mSelectedSubConnectorsList.append(this);
+                mpParentContainerObject->mSelectedSubConnectorsList.append(this);
             }
-            connect(mpParentSystem, SIGNAL(deselectAllGUIConnectors()), this, SLOT(deselect()));
-            disconnect(mpParentSystem, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
-            connect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+            connect(mpParentContainerObject, SIGNAL(deselectAllGUIConnectors()), this, SLOT(deselect()));
+            disconnect(mpParentContainerObject, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
+            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             this->setActive();
             for (int i=0; i != mpLines.size(); ++i)
             {
@@ -771,10 +771,10 @@ void GUIConnector::doSelect(bool lineSelected, int lineNumber)
             if(noneSelected)
             {
                 this->setPassive();
-                mpParentSystem->mSelectedSubConnectorsList.removeOne(this);
-                disconnect(mpParentSystem, SIGNAL(deselectAllGUIConnectors()), this, SLOT(deselect()));
-                connect(mpParentSystem, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
-                disconnect(mpParentSystem->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+                mpParentContainerObject->mSelectedSubConnectorsList.removeOne(this);
+                disconnect(mpParentContainerObject, SIGNAL(deselectAllGUIConnectors()), this, SLOT(deselect()));
+                connect(mpParentContainerObject, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
+                disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             }
         }
     }
@@ -797,7 +797,7 @@ void GUIConnector::selectIfBothComponentsSelected()
 //! @see setPassive()
 void GUIConnector::setActive()
 {
-    connect(mpParentSystem, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
+    connect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
     if(mEndPortConnected)
     {
         mIsActive = true;
@@ -814,7 +814,7 @@ void GUIConnector::setActive()
 //! @see setActive()
 void GUIConnector::setPassive()
 {
-    disconnect(mpParentSystem, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
+    disconnect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
     if(mEndPortConnected)
     {
         mIsActive = false;
@@ -863,7 +863,7 @@ void GUIConnector::setUnHovered()
 void GUIConnector::deleteMe()
 {
     //qDebug() << "deleteMe()";
-    mpParentSystem->removeConnector(this, UNDO);
+    mpParentContainerObject->removeConnector(this, UNDO);
 }
 
 
@@ -872,7 +872,7 @@ void GUIConnector::deleteMe()
 //! @todo Perhaps this function and deleteMe() can be combined to one, wtih UNDO or NOUNDO as input parameter?
 void GUIConnector::deleteMeWithNoUndo()
 {
-    mpParentSystem->removeConnector(this, NOUNDO);
+    mpParentContainerObject->removeConnector(this, NOUNDO);
 }
 
 
@@ -1040,9 +1040,9 @@ void GUIConnectorLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     if((this->pos() != mOldPos) && (event->button() == Qt::LeftButton))
     {
-        mpParentGUIConnector->mpParentSystem->mUndoStack->newPost();
-        mpParentGUIConnector->mpParentSystem->mpParentProjectTab->hasChanged();
-        mpParentGUIConnector->mpParentSystem->mUndoStack->registerModifiedConnector(mOldPos, this->pos(), mpParentGUIConnector, getLineNumber());
+        mpParentGUIConnector->mpParentContainerObject->mUndoStack->newPost();
+        mpParentGUIConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
+        mpParentGUIConnector->mpParentContainerObject->mUndoStack->registerModifiedConnector(mOldPos, this->pos(), mpParentGUIConnector, getLineNumber());
     }
     QGraphicsLineItem::mouseReleaseEvent(event);
 }

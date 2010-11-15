@@ -13,7 +13,7 @@
 #include <QtXml>  //This one is only used for the virtual save function
 
 class GUIObjectSelectionBox;
-class GUISystem;
+class GUIContainerObject;
 
 
 enum GUIObjectEnumT {GUIOBJECT=QGraphicsItem::UserType+1, GUIMODELOBJECT, GUICONTAINEROBJECT, GUISYSTEM, GUICOMPONENT, GUISYSTEMPORT, GUIGROUP, GUIGROUPPORT};
@@ -23,7 +23,7 @@ class GUIObject : public QGraphicsWidget
     Q_OBJECT
 
 public:
-    GUIObject(QPoint pos, qreal rot, selectionStatus=DESELECTED, GUISystem *pSystem=0, QGraphicsItem *pParent=0);
+    GUIObject(QPoint pos, qreal rot, selectionStatus=DESELECTED, GUIContainerObject *pSystem=0, QGraphicsItem *pParent=0);
     ~GUIObject();
 
     //Name methods
@@ -45,7 +45,7 @@ public:
     int type() const;
 
     //Public members
-    GUISystem *mpParentSystem; //!< @todo not public
+    GUIContainerObject *mpParentContainerObject; //!< @todo not public
     QPointF mOldPos;
 
 public slots:
