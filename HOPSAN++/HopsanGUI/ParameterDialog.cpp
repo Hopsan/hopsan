@@ -264,7 +264,7 @@ void ParameterDialog::setParameters()
         if (!ok)
         {
 
-            MessageWidget *messageWidget = this->mpGUIModelObject->mpParentContainerObject->mpMainWindow->mpMessageWidget;//qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent()->parent())->mpMessageWidget;
+            MessageWidget *messageWidget = gpMainWindow->mpMessageWidget;//qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent()->parent())->mpMessageWidget;
             messageWidget->printGUIMessage(QString("ParameterDialog::setParameters(): You must give a correct value for '").append(mParameterVarVector[i]->text()).append(QString("', putz. Try again!")));
             qDebug() << "Inte okej!";
             return;

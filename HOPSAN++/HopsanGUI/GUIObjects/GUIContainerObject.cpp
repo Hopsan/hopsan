@@ -23,7 +23,24 @@
 GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUIContainerObject *system, QGraphicsItem *parent)
         : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
 {
-    //Something
+        //Initialize
+    setIsCreatingConnector(false);
+    mIsRenamingObject = false;
+    mPortsHidden = false;
+    mUndoDisabled = false;
+    mGfxType = USERGRAPHICS;
+
+    //Create the scene
+    mpScene = new GraphicsScene();
+
+//    //Set the parent project tab pointer
+//    this->mpParentProjectTab = system->mpParentProjectTab;
+    //mpMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+
+    //Create the undastack
+    mUndoStack = new UndoStack(this);
+
+
 }
 
 void GUIContainerObject::makeRootSystem()
@@ -147,7 +164,7 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* 
 
     if ( mGUIModelObjectMap.contains(mpTempGUIModelObject->getName()) )
     {
-        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Trying to add component with name: " + mpTempGUIModelObject->getName() + " that already exist in GUIObjectMap, (Not adding)");
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Trying to add component with name: " + mpTempGUIModelObject->getName() + " that already exist in GUIObjectMap, (Not adding)");
         //! @todo Is this check really necessary? Two objects cannot have the same name anyway...
     }
     else
@@ -216,7 +233,7 @@ void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus und
     else
     {
         //qDebug() << "In delete GUIObject: could not find object with name " << objectName;
-        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Error: Could not delete object with name " + objectName + ", object not found");
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Error: Could not delete object with name " + objectName + ", object not found");
     }
     mpParentProjectTab->mpGraphicsView->updateViewPort();
 }
@@ -537,7 +554,7 @@ void GUIContainerObject::paste()
             data.posY -= 50;
 
             //Load (create new) object
-            GUIObject *pObj = loadGUIModelObject(data,mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,this, NOUNDO);
+            GUIObject *pObj = loadGUIModelObject(data,gpMainWindow->mpLibrary,this, NOUNDO);
 
             //Remember old name, in case we want to connect later
             renameMap.insert(data.name, pObj->getName());
@@ -713,14 +730,14 @@ void GUIContainerObject::disableUndo()
         QMessageBox disableUndoWarningBox(QMessageBox::Warning, tr("Warning"),tr("Disabling undo history will clear all undo history for this model. Do you want to continue?"), 0, 0);
         disableUndoWarningBox.addButton(tr("&Yes"), QMessageBox::AcceptRole);
         disableUndoWarningBox.addButton(tr("&No"), QMessageBox::RejectRole);
-        disableUndoWarningBox.setWindowIcon(mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->windowIcon());
+        disableUndoWarningBox.setWindowIcon(gpMainWindow->windowIcon());
 
         if (disableUndoWarningBox.exec() == QMessageBox::AcceptRole)
         {
             this->clearUndo();
             mUndoDisabled = true;
-            mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->undoAction->setDisabled(true);
-            mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->redoAction->setDisabled(true);
+            gpMainWindow->undoAction->setDisabled(true);
+            gpMainWindow->redoAction->setDisabled(true);
         }
         else
         {
@@ -730,8 +747,8 @@ void GUIContainerObject::disableUndo()
     else
     {
         mUndoDisabled = false;
-        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->undoAction->setDisabled(false);
-        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->redoAction->setDisabled(false);
+        gpMainWindow->undoAction->setDisabled(false);
+        gpMainWindow->redoAction->setDisabled(false);
     }
 }
 
@@ -741,13 +758,13 @@ void GUIContainerObject::updateUndoStatus()
 {
     if(mUndoDisabled)
     {
-        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->undoAction->setDisabled(true);
-        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->redoAction->setDisabled(true);
+        gpMainWindow->undoAction->setDisabled(true);
+        gpMainWindow->redoAction->setDisabled(true);
     }
     else
     {
-        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->undoAction->setDisabled(false);
-        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->redoAction->setDisabled(false);
+        gpMainWindow->undoAction->setDisabled(false);
+        gpMainWindow->redoAction->setDisabled(false);
     }
 }
 

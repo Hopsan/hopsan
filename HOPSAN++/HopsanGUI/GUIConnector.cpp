@@ -299,7 +299,7 @@ void GUIConnector::setEndPort(GUIPort *port)
 
 
         //Snap if close to a snapping position
-    if(mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mSnapping)
+    if(gpMainWindow->mSnapping)
     {
         if( ((getNumberOfLines() == 1) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE)) ||
             ((getNumberOfLines() < 3) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE)) )

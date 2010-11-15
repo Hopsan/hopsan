@@ -48,7 +48,7 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     this->createActions();
     this->createMenus();
 
-    this->setRenderHint(QPainter::Antialiasing, mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mAntiAliasing);
+    this->setRenderHint(QPainter::Antialiasing, gpMainWindow->mAntiAliasing);
 }
 
 
@@ -134,7 +134,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
 
 
         QString typestring = event->mimeData()->text();
-        GUIModelObjectAppearance* pAppearanceData = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary->getAppearanceData(typestring);
+        GUIModelObjectAppearance* pAppearanceData = gpMainWindow->mpLibrary->getAppearanceData(typestring);
 
         //Check if appearnaceData OK otherwihse do not add (usefull if you drag some crap text into the window)
         if(pAppearanceData != 0)
@@ -150,11 +150,11 @@ void GraphicsView::dropEvent(QDropEvent *event)
 //! Updates the viewport, used when something has changed. Also changes to the correct background color if it is not the right one.
 void GraphicsView::updateViewPort()
 {
-    MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+    //MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 
-    if( (mpParentProjectTab->mpSystem->mGfxType == USERGRAPHICS) && (this->backgroundBrush().color() != pMainWindow->mBackgroundColor) )
+    if( (mpParentProjectTab->mpSystem->mGfxType == USERGRAPHICS) && (this->backgroundBrush().color() != gpMainWindow->mBackgroundColor) )
     {
-        this->setBackgroundBrush(pMainWindow->mBackgroundColor);
+        this->setBackgroundBrush(gpMainWindow->mBackgroundColor);
     }
     else if( (mpParentProjectTab->mpSystem->mGfxType == ISOGRAPHICS) && (this->backgroundBrush().color() != mIsoColor) )
     {
@@ -181,7 +181,7 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
 {
         //Get value from scroll wheel change
     qreal wheelDelta;
-    if(mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mInvertWheel)
+    if(gpMainWindow->mInvertWheel)
     {
         wheelDelta = event->delta();
     }

@@ -20,35 +20,33 @@ public:
     enum CONTAINERSTATUS {CLOSED, OPEN, ROOT};
     GUIContainerObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, GUIContainerObject *system=0, QGraphicsItem *parent = 0);
     void makeRootSystem();
-    virtual void updateExternalPortPositions();
-    void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y);
 
+    //Scene and Core access
+    GraphicsScene* getContainedScenePtr();
     virtual CoreSystemAccess* getCoreSystemAccessPtr();
 
-    GraphicsScene* getContainedScenePtr();
-    //void addConnector(GUIConnector *pConnector);
+    //Handle GuiModelObjects and GuiWidgets
+    void addTextWidget(QPoint position);
+    void addBoxWidget(QPoint position);
+    GUIModelObject* addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
+    GUIModelObject *getGUIModelObject(QString name);
+    void deleteGUIModelObject(QString componentName, undoStatus undoSettings=UNDO);
+    void renameGUIModelObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
+    bool haveGUIModelObject(QString name);
 
-    //Add Gui Widgets
-    virtual void addTextWidget(QPoint position);
-    virtual void addBoxWidget(QPoint position);
+    //Handle connectors
+    GUIConnector* findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
+    void removeConnector(GUIConnector* pConnector, undoStatus undoSettings=UNDO);
+    void setIsCreatingConnector(bool isCreatingConnector);
+    bool getIsCreatingConnector();
 
-    //Handle GuiModelObjects
-    virtual GUIModelObject* addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
-    virtual GUIModelObject *getGUIModelObject(QString name);
-    virtual void deleteGUIModelObject(QString componentName, undoStatus undoSettings=UNDO);
-    virtual void renameGUIModelObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
-    virtual bool haveGUIModelObject(QString name);
-
-    virtual GUIConnector* findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
-    virtual void removeConnector(GUIConnector* pConnector, undoStatus undoSettings=UNDO);
-
-    virtual QString getIsoIconPath();
-    virtual QString getUserIconPath();
-    virtual void setIsoIconPath(QString path);
-    virtual void setUserIconPath(QString path);
-
-    virtual void setIsCreatingConnector(bool isCreatingConnector);
-    virtual bool getIsCreatingConnector();
+    //Handle container appearance
+    QString getIsoIconPath();
+    QString getUserIconPath();
+    void setIsoIconPath(QString path);
+    void setUserIconPath(QString path);
+    void updateExternalPortPositions();
+    void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y); //!< @todo maybe not public
 
     bool isObjectSelected();
     bool isConnectorSelected();
@@ -58,7 +56,7 @@ public:
     QFileInfo mModelFileInfo; //!< @todo should not be public
     UndoStack *mUndoStack;
     ProjectTab *mpParentProjectTab;
-    MainWindow *mpMainWindow;
+    //MainWindow *mpMainWindow;
 
     QList<GUIConnector *> mSelectedSubConnectorsList;
     QList<GUIConnector *> mSubConnectorList;
@@ -80,39 +78,45 @@ public:
     graphicsType mGfxType;
 
 public slots:
-    void createConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);
-    void cutSelected();
-    void copySelected();
-    void paste();
+        //Selection
     void selectAll();
     void deselectAll();
+    void deselectSelectedNameText();
+        //show/hide
     void hideNames();
     void showNames();
     void hidePorts(bool doIt);
+        //Create and remove
+    void createConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);
+        //CopyPaste
+    void cutSelected();
+    void copySelected();
+    void paste();
+        //UndoRedo
     void undo();
     void redo();
     void clearUndo();
-//    void updateStartTime();
-//    void updateTimeStep();
-//    void updateStopTime();
     void disableUndo();
     void updateUndoStatus();
-//    void updateSimulationParametersInToolBar();
+        //Appearance
     void setGfxType(graphicsType gfxType);
-    void deselectSelectedNameText();
 
 signals:
+        //Selection
     void deselectAllNameText();
-    void hideAllNameText();
-    void showAllNameText();
     void deselectAllGUIObjects();
     void selectAllGUIObjects();
     void deselectAllGUIConnectors();
     void selectAllGUIConnectors();
-    void setAllGfxType(graphicsType);
+        //HideShow
+    void hideAllNameText();
+    void showAllNameText();
+        //Other
     void checkMessages();
     void deleteSelected();
+    void setAllGfxType(graphicsType);
     void componentChanged();
+
 
 protected:
     //virtual QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
@@ -123,12 +127,12 @@ protected:
     virtual void openParameterDialog();
     virtual void createPorts();
 
+private:
     bool mIsCreatingConnector;
 
     CONTAINERSTATUS getContainerStatus();
     CONTAINERSTATUS mContainerStatus;
 
-    //CoreSystemAccess *mpCoreSystemAccess;
     GraphicsScene *mpScene;
 
 };

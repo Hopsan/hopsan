@@ -507,7 +507,7 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
         emit objectMoved();  //This signal must be emitted  before the snap code, because it updates the connectors which is used to determine whether or not to snap.
 
             //Snap component if it only has one connector and is dropped close enough (horizontal or vertical) to adjacent component
-        if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mSnapping &&
+        if(mpParentContainerObject != 0 && gpMainWindow->mSnapping &&
            !mpParentContainerObject->getIsCreatingConnector() && mpParentContainerObject->mSelectedGUIObjectsList.size() == 1)
         {
                 //Vertical snap

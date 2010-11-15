@@ -26,13 +26,14 @@
 #include "loadObjects.h"
 #include <assert.h>
 #include "Utilities/GUIUtilities.h"
+#include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
 
 //! @brief Constructor for the undo stack
 //! @param parentSystem Pointer to the current system
-UndoStack::UndoStack(GUISystem *parentSystem) : QObject()
+UndoStack::UndoStack(GUIContainerObject *parentSystem) : QObject()
 {
-    mpParentSystem = parentSystem;
+    mpParentContainerObject = parentSystem;
     mCurrentStackPosition = -1;
     mStack.clear();
 }
@@ -68,7 +69,7 @@ void UndoStack::newPost()
         mStack.append(tempList);
         ++mCurrentStackPosition;
     }
-    mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
+    gpMainWindow->mpUndoWidget->refreshList();
 }
 
 
@@ -79,10 +80,10 @@ void UndoStack::insertPost(QString str)
     {
         this->clear();
     }
-    if(!mpParentSystem->mUndoDisabled)
+    if(!mpParentContainerObject->mUndoDisabled)
     {
         mStack[mCurrentStackPosition].insert(0,str);
-        mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
+        gpMainWindow->mpUndoWidget->refreshList();
     }
 }
 
@@ -115,18 +116,18 @@ void UndoStack::undoOneStep()
             {
                 //poststream >> junk; //Discard Component load command
                 ////! @todo maybe we should not save it automatically in the guiobject maby let some other external save function add it
-                loadGUIModelObject(poststream, mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentSystem, NOUNDO);
+                loadGUIModelObject(poststream, gpMainWindow->mpLibrary,  mpParentContainerObject, NOUNDO);
             }
             else if ( undoevent == "DELETEDCONNECTOR" )
             {
-                loadConnector(poststream, mpParentSystem, NOUNDO);
+                loadConnector(poststream, mpParentContainerObject, NOUNDO);
             }
             else if( undoevent == "ADDEDOBJECT" )
             {
                 //! @todo Maybe we only need to save the name
                 readName(poststream); //Discard Type
                 QString name = readName(poststream); //Store name
-                mpParentSystem->deleteGUIModelObject(name, NOUNDO);
+                mpParentContainerObject->deleteGUIModelObject(name, NOUNDO);
             }
             else if( undoevent == "ADDEDCONNECTOR" )
             {
@@ -135,14 +136,14 @@ void UndoStack::undoOneStep()
                 QString startPortName = readName(poststream);
                 QString endCompName = readName(poststream);
                 QString endPortName = readName(poststream);
-                GUIConnector *item = mpParentSystem->findConnector(startCompName, startPortName, endCompName, endPortName);
-                mpParentSystem->removeConnector(item, NOUNDO);
+                GUIConnector *item = mpParentContainerObject->findConnector(startCompName, startPortName, endCompName, endPortName);
+                mpParentContainerObject->removeConnector(item, NOUNDO);
             }
             else if( undoevent == "RENAMEDOBJECT" )     //! @todo This does not affect the GUIObject name! (but removes undo post...)
             {
                 QString oldName = readName(poststream);
                 QString newName = readName(poststream);
-                mpParentSystem->renameGUIModelObject(newName, oldName, NOUNDO);
+                mpParentContainerObject->renameGUIModelObject(newName, oldName, NOUNDO);
             }
             else if( undoevent == "MODIFIEDCONNECTOR" )
             {
@@ -154,7 +155,7 @@ void UndoStack::undoOneStep()
                 QString endComp = readName(poststream);
                 QString endPort = readName(poststream);
                 poststream >> oldPt.rx() >> oldPt.ry() >> newPt.rx() >> newPt.ry() >> lineNumber;
-                GUIConnector *item = mpParentSystem->findConnector(startComp, startPort, endComp, endPort);
+                GUIConnector *item = mpParentContainerObject->findConnector(startComp, startPort, endComp, endPort);
 
                 QPointF dXY = newPt-oldPt;
                 item->getLine(lineNumber)->setPos(item->getLine(lineNumber)->pos()-dXY);
@@ -165,32 +166,32 @@ void UndoStack::undoOneStep()
                 QPointF oldPt, newPt;
                 QString name = readName(poststream);
                 poststream >> oldPt.rx() >> oldPt.ry() >> newPt.rx() >> newPt.ry();
-                mpParentSystem->getGUIModelObject(name)->setPos(oldPt);
+                mpParentContainerObject->getGUIModelObject(name)->setPos(oldPt);
             }
             else if( undoevent == "ROTATEDOBJECT" )
             {
                 QString name = readName(poststream);
                 //! @todo This feels wierd, why rotate three times
-                mpParentSystem->getGUIModelObject(name)->rotate(NOUNDO);
-                mpParentSystem->getGUIModelObject(name)->rotate(NOUNDO);
-                mpParentSystem->getGUIModelObject(name)->rotate(NOUNDO);
+                mpParentContainerObject->getGUIModelObject(name)->rotate(NOUNDO);
+                mpParentContainerObject->getGUIModelObject(name)->rotate(NOUNDO);
+                mpParentContainerObject->getGUIModelObject(name)->rotate(NOUNDO);
             }
             else if( undoevent == "VERTICALFLIP" )
             {
                 QString name = readName(poststream);
-                mpParentSystem->getGUIModelObject(name)->flipVertical(NOUNDO);
+                mpParentContainerObject->getGUIModelObject(name)->flipVertical(NOUNDO);
             }
             else if( undoevent == "HORIZONTALFLIP" )
             {
                 QString name = readName(poststream);
-                mpParentSystem->getGUIModelObject(name)->flipHorizontal(NOUNDO);
+                mpParentContainerObject->getGUIModelObject(name)->flipHorizontal(NOUNDO);
             }
         }
         mCurrentStackPosition = undoPosition - 1;
 
-        mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
+        mpParentContainerObject->mpParentProjectTab->mpGraphicsView->updateViewPort();
     }
-    mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
+    gpMainWindow->mpUndoWidget->refreshList();
 }
 
 
@@ -211,7 +212,7 @@ void UndoStack::redoOneStep()
             {
                 readName(poststream); //Discard Type
                 QString name = readName(poststream); //Store name
-                mpParentSystem->deleteGUIModelObject(name, NOUNDO);
+                mpParentContainerObject->deleteGUIModelObject(name, NOUNDO);
             }
             else if ( redoevent == "DELETEDCONNECTOR" )
             {
@@ -220,22 +221,22 @@ void UndoStack::redoOneStep()
                 QString startPortName = readName(poststream);
                 QString endCompName = readName(poststream);
                 QString endPortName = readName(poststream);
-                GUIConnector *item = mpParentSystem->findConnector(startCompName, startPortName, endCompName, endPortName);
-                mpParentSystem->removeConnector(item, NOUNDO);
+                GUIConnector *item = mpParentContainerObject->findConnector(startCompName, startPortName, endCompName, endPortName);
+                mpParentContainerObject->removeConnector(item, NOUNDO);
             }
             else if( redoevent == "ADDEDOBJECT" )
             {
-                  loadGUIModelObject(poststream, mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,  mpParentSystem, NOUNDO);
+                  loadGUIModelObject(poststream, gpMainWindow->mpLibrary,  mpParentContainerObject, NOUNDO);
             }
             else if( redoevent == "ADDEDCONNECTOR" )
             {
-                loadConnector(poststream, mpParentSystem, NOUNDO);
+                loadConnector(poststream, mpParentContainerObject, NOUNDO);
             }
             else if( redoevent == "RENAMEDOBJECT" )
             {
                 QString oldName = readName(poststream);
                 QString newName = readName(poststream);
-                mpParentSystem->renameGUIModelObject(oldName, newName, NOUNDO);
+                mpParentContainerObject->renameGUIModelObject(oldName, newName, NOUNDO);
             }
             else if( redoevent == "MODIFIEDCONNECTOR" )
             {
@@ -247,7 +248,7 @@ void UndoStack::redoOneStep()
                 QString endPort = readName(poststream);
                 poststream >> oldPt.rx() >> oldPt.ry() >> newPt.rx() >> newPt.ry() >> lineNumber;
 
-                GUIConnector *item = mpParentSystem->findConnector(startComp, startPort, endComp, endPort);
+                GUIConnector *item = mpParentContainerObject->findConnector(startComp, startPort, endComp, endPort);
 
                 QPointF dXY = newPt-oldPt;
                 item->getLine(lineNumber)->setPos(item->getLine(lineNumber)->pos()+dXY);
@@ -258,20 +259,20 @@ void UndoStack::redoOneStep()
                 QPointF oldPt, newPt;
                 QString name = readName(poststream);
                 poststream >> oldPt.rx() >> oldPt.ry() >> newPt.rx() >> newPt.ry();
-                mpParentSystem->getGUIModelObject(name)->setPos(newPt);
+                mpParentContainerObject->getGUIModelObject(name)->setPos(newPt);
             }
             else if( redoevent == "ROTATEDOBJECT" )
             {
                 QString name;
                 name = readName(poststream);
                 //! @todo This feels wierd, why rotate one time
-                mpParentSystem->getGUIModelObject(name)->rotate(NOUNDO);
+                mpParentContainerObject->getGUIModelObject(name)->rotate(NOUNDO);
             }
         }
-        mpParentSystem->mpParentProjectTab->mpGraphicsView->updateViewPort();
+        mpParentContainerObject->mpParentProjectTab->mpGraphicsView->updateViewPort();
     }
     //! @todo why dont I know of my own UndoWidget (should maybe have a pointer to it directly)
-    mpParentSystem->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpUndoWidget->refreshList();
+    gpMainWindow->mpUndoWidget->refreshList();
 }
 
 

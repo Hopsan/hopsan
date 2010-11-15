@@ -59,7 +59,7 @@ void GUITextWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
 
         //Open a dialog where text and font can be selected
-    mpEditTextDialog = new QDialog(mpParentContainerObject->mpMainWindow);
+    mpEditTextDialog = new QDialog(gpMainWindow);
     mpEditTextDialog->setWindowTitle("Set Text Label");
 
     mpTextBox = new QTextEdit();
@@ -163,7 +163,7 @@ void GUITextWidget::setTextFont(QFont font)
 void GUITextWidget::openFontDialog()
 {
     bool ok;
-    QFont font = QFontDialog::getFont(&ok, mpExampleLabel->font(), mpParentContainerObject->mpMainWindow);
+    QFont font = QFontDialog::getFont(&ok, mpExampleLabel->font(), gpMainWindow);
     if (ok)
     {
         mSelectedFont = font;
@@ -176,7 +176,7 @@ void GUITextWidget::openFontDialog()
 void GUITextWidget::openColorDialog()
 {
     QColor color;
-    color = QColorDialog::getColor(mSelectedColor, mpParentContainerObject->mpMainWindow);
+    color = QColorDialog::getColor(mSelectedColor, gpMainWindow);
 
     if (color.isValid())
     {
@@ -261,7 +261,7 @@ void GUIBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
 
         //Open a dialog where line width and color can be selected
-    mpEditBoxDialog = new QDialog(mpParentContainerObject->mpMainWindow);
+    mpEditBoxDialog = new QDialog(gpMainWindow);
     mpEditBoxDialog->setWindowTitle("Set Text Label");
 
     mpWidthLabelInDialog = new QLabel("Line Width: ");
@@ -333,7 +333,7 @@ void GUIBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 void GUIBoxWidget::openColorDialog()
 {
     QColor color;
-    color = QColorDialog::getColor(mpRectItem->pen().color(), mpParentContainerObject->mpMainWindow);
+    color = QColorDialog::getColor(mpRectItem->pen().color(), gpMainWindow);
 
     if (color.isValid())
     {

@@ -118,11 +118,11 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     mIsMag = false;
     mIsConnected = false;
 
-    MainWindow *pMainWindow = mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+    //MainWindow *pMainWindow = mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
     GraphicsView *pView = mpParentContainerObject->mpParentProjectTab->mpGraphicsView;
 
     connect(this,SIGNAL(portClicked(GUIPort*)),this->getParentContainerObjectPtr(),SLOT(createConnector(GUIPort*)));
-    connect(pMainWindow->hidePortsAction,SIGNAL(triggered(bool)),this, SLOT(hideIfNotConnected(bool)));
+    connect(gpMainWindow->hidePortsAction,SIGNAL(triggered(bool)),this, SLOT(hideIfNotConnected(bool)));
 
     //Connect the view zoom change signal to the port overlay scale slot
     connect(pView, SIGNAL(zoomChange(qreal)), this, SLOT(setPortOverlayScale(qreal)));
@@ -477,14 +477,14 @@ bool GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
         if(dataUnit.isEmpty())
             dataUnit = this->mpParentContainerObject->getCoreSystemAccessPtr()->getPlotDataUnit(this->getGuiModelObjectName(),this->getName(),dataName);
 
-        MainWindow *pMainWindow = mpParentGuiModelObject->mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+        //MainWindow *pMainWindow = mpParentGuiModelObject->mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 
-        if(pMainWindow->mpPlotWidget == 0)
+        if(gpMainWindow->mpPlotWidget == 0)
         {
-            pMainWindow->mpPlotWidget = new PlotWidget(pMainWindow);
+            gpMainWindow->mpPlotWidget = new PlotWidget(gpMainWindow);
         }
 
-        if(pMainWindow->mpPlotWidget->mpPlotParameterTree->createPlotWindow(mpParentGuiModelObject->getName(), this->getName(), dataName, dataUnit))
+        if(gpMainWindow->mpPlotWidget->mpPlotParameterTree->createPlotWindow(mpParentGuiModelObject->getName(), this->getName(), dataName, dataUnit))
             success = true;
     }
 

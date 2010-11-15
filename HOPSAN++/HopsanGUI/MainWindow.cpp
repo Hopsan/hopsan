@@ -29,8 +29,9 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-
-    std::cout << "Starting Hopsan!";
+    //First we set the global mainwindow pointer to this, we can (should) only have ONE main window
+    gpMainWindow = this;
+    //std::cout << "Starting Hopsan!";
 
     //QString(MAINPATH) = "../../";
     //mQString(ICONPATH) = QString(MAINPATH) + "HopsanGUI/icons/";

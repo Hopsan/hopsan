@@ -7,6 +7,9 @@
 #include "common.h"
 #include "MainWindow.h"
 
+//Global stuff
+MainWindow* gpMainWindow = 0;
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);

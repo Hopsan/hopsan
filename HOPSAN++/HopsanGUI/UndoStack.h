@@ -15,14 +15,15 @@ class GUIObject;
 class GraphicsView;
 class GUIConnector;
 class MainWindow;
-class GUISystem;
+//class GUISystem;
+class GUIContainerObject;
 
 class UndoStack : public QObject
 {
 friend class UndoWidget;
 
 public:
-    UndoStack(GUISystem *parentSystem);
+    UndoStack(GUIContainerObject *parentSystem);
     void registerDeletedObject(GUIObject *item);
     void registerDeletedConnector(GUIConnector *item);
     void registerAddedObject(GUIObject *item);
@@ -40,7 +41,7 @@ public:
     void redoOneStep();
 
 private:
-    GUISystem *mpParentSystem;
+    GUIContainerObject *mpParentContainerObject;
     QList< QList<QString> > mStack;
     int mCurrentStackPosition;
 };

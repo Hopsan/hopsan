@@ -56,37 +56,37 @@ void GUISystem::commonConstructorCode()
     //Set the hmf save tag name
     mHmfTagName = HMF_SYSTEMTAG;
 
-    mpScene = new GraphicsScene();
-    //mpScene->addItem(this);     //! Detta kan gå åt helsike
-    //                            //! @todo Should systems belong to their own scene?! This is why display names appear in the system's scene...
+//    mpScene = new GraphicsScene();
+//    //mpScene->addItem(this);     //! Detta kan gå åt helsike
+//    //                            //! @todo Should systems belong to their own scene?! This is why display names appear in the system's scene...
 
-    mpMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
+//    mpMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 
-    mUndoStack = new UndoStack(this);
+//    mUndoStack = new UndoStack(this);
 
-        //Initialize booleans
-    setIsCreatingConnector(false);
-    mIsRenamingObject = false;
-    mPortsHidden = false;
-    mUndoDisabled = false;
+//        //Initialize booleans
+//    setIsCreatingConnector(false);
+//    mIsRenamingObject = false;
+//    mPortsHidden = false;
+//    mUndoDisabled = false;
 
         //Set default values
     mLoadType = "EMBEDED";
     mStartTime = 0;     //! @todo These default values should be options for the user
     mTimeStep = 0.001;
     mStopTime = 10;
-    mGfxType = USERGRAPHICS;
+//    mGfxType = USERGRAPHICS;
     mNumberOfLogSamples = 2048;
 
         //Establish connections
     //connect(this->systemPortAction, SIGNAL(triggered()), SLOT(addSystemPort()));
-    connect(this, SIGNAL(checkMessages()), mpMainWindow->mpMessageWidget, SLOT(checkMessages()));
-    connect(mpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
-    connect(mpMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
-    connect(mpMainWindow->mpUndoWidget->getUndoButton(), SIGNAL(pressed()), this, SLOT(undo()));
-    connect(mpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(pressed()), this, SLOT(redo()));
-    connect(mpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(pressed()), this, SLOT(clearUndo()));
-    connect(mpMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this, SLOT(hidePorts(bool)));
+    connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()));
+    connect(gpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
+    connect(gpMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
+    connect(gpMainWindow->mpUndoWidget->getUndoButton(), SIGNAL(pressed()), this, SLOT(undo()));
+    connect(gpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(pressed()), this, SLOT(redo()));
+    connect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(pressed()), this, SLOT(clearUndo()));
+    connect(gpMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this, SLOT(hidePorts(bool)));
 
     //Create the object in core, and update name
     if (this->mpParentContainerObject == 0)
@@ -215,15 +215,15 @@ void GUISystem::loadFromHMF(QString modelFilePath)
     //Now read the file data
     //Read the header data, also checks version numbers
     //! @todo maybe not check the version numbers in there
-    HeaderLoadData headerData = readHeader(textStreamFile, mpMainWindow->mpMessageWidget);
+    HeaderLoadData headerData = readHeader(textStreamFile, gpMainWindow->mpMessageWidget);
 
     //Only set this stuff if this is the root system, (that is if no systemparent exist)
     if (this->mpParentContainerObject == 0)
     {
         //It is assumed that these data have been successfully read
-        mpMainWindow->setStartTimeInToolBar(headerData.startTime);
-        mpMainWindow->setTimeStepInToolBar(headerData.timeStep);
-        mpMainWindow->setFinishTimeInToolBar(headerData.stopTime);
+        gpMainWindow->setStartTimeInToolBar(headerData.startTime);
+        gpMainWindow->setTimeStepInToolBar(headerData.timeStep);
+        gpMainWindow->setFinishTimeInToolBar(headerData.stopTime);
 
         //It is assumed that these data have been successfully read
         mpParentProjectTab->mpGraphicsView->centerOn(headerData.viewport_x, headerData.viewport_y);
@@ -281,12 +281,12 @@ void GUISystem::loadFromHMF(QString modelFilePath)
 
         if ( (inputWord == "SUBSYSTEM") ||  (inputWord == "BEGINSUBSYSTEM") )
         {
-            loadSubsystemGUIObject(textStreamFile, mpMainWindow->mpLibrary, this, NOUNDO);
+            loadSubsystemGUIObject(textStreamFile, gpMainWindow->mpLibrary, this, NOUNDO);
         }
 
         if ( (inputWord == "COMPONENT") || (inputWord == "SYSTEMPORT") )
         {
-            loadGUIModelObject(textStreamFile, mpMainWindow->mpLibrary, this, NOUNDO);
+            loadGUIModelObject(textStreamFile, gpMainWindow->mpLibrary, this, NOUNDO);
         }
 
         if ( inputWord == "PARAMETER" )
@@ -557,7 +557,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         QDomElement xmlSubObject = xmlSubObjects.firstChildElement(HMF_COMPONENTTAG);
         while (!xmlSubObject.isNull())
         {
-            GUIModelObject* pObj = loadGUIModelObject(xmlSubObject, mpMainWindow->mpLibrary, this, NOUNDO);
+            GUIModelObject* pObj = loadGUIModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
 
             //Load parameter values
             QDomElement xmlParameters = xmlSubObject.firstChildElement(HMF_PARAMETERS);
@@ -600,7 +600,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_SYSTEMTAG);
         while (!xmlSubObject.isNull())
         {
-            loadSubsystemGUIObject(xmlSubObject, mpMainWindow->mpLibrary, this, NOUNDO);
+            loadSubsystemGUIObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMTAG);
         }
 
@@ -608,7 +608,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_SYSTEMPORTTAG);
         while (!xmlSubObject.isNull())
         {
-            loadGUIModelObject(xmlSubObject, mpMainWindow->mpLibrary, this, NOUNDO);
+            loadGUIModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMPORTTAG);
         }
 
@@ -679,7 +679,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 
 //    if ( mGUIModelObjectMap.contains(mpTempGUIObject->getName()) )
 //    {
-//        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Trying to add component with name: " + mpTempGUIObject->getName() + " that already exist in GUIObjectMap, (Not adding)");
+//        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Trying to add component with name: " + mpTempGUIObject->getName() + " that already exist in GUIObjectMap, (Not adding)");
 //        //! @todo Is this check really necessary? Two objects cannot have the same name anyway...
 //    }
 //    else
@@ -748,7 +748,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 //    else
 //    {
 //        //qDebug() << "In delete GUIObject: could not find object with name " << objectName;
-//        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Error: Could not delete object with name " + objectName + ", object not found");
+//        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Error: Could not delete object with name " + objectName + ", object not found");
 //    }
 //    mpParentProjectTab->mpGraphicsView->updateViewPort();
 //}
@@ -1071,7 +1071,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 //            data.posY -= 50;
 
 //            //Load (create new) object
-//            GUIObject *pObj = loadGUIModelObject(data,mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->mpLibrary,this, NOUNDO);
+//            GUIObject *pObj = loadGUIModelObject(data,gpMainWindow->mpLibrary,this, NOUNDO);
 
 //            //Remember old name, in case we want to connect later
 //            renameMap.insert(data.name, pObj->getName());
@@ -1208,7 +1208,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 //! @see updateStopTime()
 void GUISystem::updateStartTime()
 {
-    mStartTime = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->getStartTimeFromToolBar();
+    mStartTime = gpMainWindow->getStartTimeFromToolBar();
 }
 
 
@@ -1217,7 +1217,7 @@ void GUISystem::updateStartTime()
 //! @see updateStopTime()
 void GUISystem::updateTimeStep()
 {
-    mTimeStep = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->getTimeStepFromToolBar();
+    mTimeStep = gpMainWindow->getTimeStepFromToolBar();
 }
 
 
@@ -1226,7 +1226,7 @@ void GUISystem::updateTimeStep()
 //! @see updateTimeStep()
 void GUISystem::updateStopTime()
 {
-    mStopTime = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->getFinishTimeFromToolBar();
+    mStopTime = gpMainWindow->getFinishTimeFromToolBar();
 }
 
 
@@ -1396,14 +1396,14 @@ void GUISystem::updateExternalPortPositions()
 //        QMessageBox disableUndoWarningBox(QMessageBox::Warning, tr("Warning"),tr("Disabling undo history will clear all undo history for this model. Do you want to continue?"), 0, 0);
 //        disableUndoWarningBox.addButton(tr("&Yes"), QMessageBox::AcceptRole);
 //        disableUndoWarningBox.addButton(tr("&No"), QMessageBox::RejectRole);
-//        disableUndoWarningBox.setWindowIcon(mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->windowIcon());
+//        disableUndoWarningBox.setWindowIcon(gpMainWindow->windowIcon());
 
 //        if (disableUndoWarningBox.exec() == QMessageBox::AcceptRole)
 //        {
 //            this->clearUndo();
 //            mUndoDisabled = true;
-//            mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->undoAction->setDisabled(true);
-//            mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->redoAction->setDisabled(true);
+//            gpMainWindow->undoAction->setDisabled(true);
+//            gpMainWindow->redoAction->setDisabled(true);
 //        }
 //        else
 //        {
@@ -1413,8 +1413,8 @@ void GUISystem::updateExternalPortPositions()
 //    else
 //    {
 //        mUndoDisabled = false;
-//        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->undoAction->setDisabled(false);
-//        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->redoAction->setDisabled(false);
+//        gpMainWindow->undoAction->setDisabled(false);
+//        gpMainWindow->redoAction->setDisabled(false);
 //    }
 //}
 
@@ -1424,13 +1424,13 @@ void GUISystem::updateExternalPortPositions()
 //{
 //    if(mUndoDisabled)
 //    {
-//        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->undoAction->setDisabled(true);
-//        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->redoAction->setDisabled(true);
+//        gpMainWindow->undoAction->setDisabled(true);
+//        gpMainWindow->redoAction->setDisabled(true);
 //    }
 //    else
 //    {
-//        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->undoAction->setDisabled(false);
-//        mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->redoAction->setDisabled(false);
+//        gpMainWindow->undoAction->setDisabled(false);
+//        gpMainWindow->redoAction->setDisabled(false);
 //    }
 //}
 
@@ -1438,9 +1438,9 @@ void GUISystem::updateExternalPortPositions()
 //! Slot that updates the values in the simulation setup widget to display new values when current project tab is changed.
 void GUISystem::updateSimulationParametersInToolBar()
 {
-    mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->setStartTimeInToolBar(mStartTime);
-    mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->setTimeStepInToolBar(mTimeStep);
-    mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow->setFinishTimeInToolBar(mStopTime);
+    gpMainWindow->setStartTimeInToolBar(mStartTime);
+    gpMainWindow->setTimeStepInToolBar(mTimeStep);
+    gpMainWindow->setFinishTimeInToolBar(mStopTime);
 }
 
 
