@@ -741,16 +741,16 @@ void MainWindow::loadSettings()
             QDomElement defaultUnitElement = unitsElement.firstChildElement("defaultunit");
             while (!defaultUnitElement.isNull())
             {
-                mDefaultUnits.insert(defaultUnitElement.firstChildElement("dataname").text(),
-                                     defaultUnitElement.firstChildElement("unitname").text());
+                mDefaultUnits.insert(defaultUnitElement.attribute("name"),
+                                     defaultUnitElement.attribute("unit"));
                 defaultUnitElement = defaultUnitElement.nextSiblingElement("defaultunit");
             }
             QDomElement alternativeUnitElement = unitsElement.firstChildElement("customunit");
             while (!alternativeUnitElement.isNull())
             {
-                QString physicalQuantity = alternativeUnitElement.firstChildElement("dataname").text();
-                QString unitName = alternativeUnitElement.firstChildElement("unitname").text();
-                double unitScale = parseDomValueNode(alternativeUnitElement.firstChildElement("scale"));
+                QString physicalQuantity = alternativeUnitElement.attribute("name");
+                QString unitName = alternativeUnitElement.attribute("unit");
+                double unitScale = alternativeUnitElement.attribute("scale").toDouble();
 
                 if(!mCustomUnits.find(physicalQuantity).value().contains(unitName))
                 {
@@ -806,9 +806,9 @@ void MainWindow::saveSettings()
     QMap<QString, QString>::iterator itdu;
     for(itdu = mDefaultUnits.begin(); itdu != mDefaultUnits.end(); ++itdu)
     {
-        QDomElement tempElement = appendDomElement(units, "defaultunit");
-        appendDomTextNode(tempElement, "dataname", itdu.key());
-        appendDomTextNode(tempElement, "unitname", itdu.value());
+        QDomElement xmlTemp = appendDomElement(units, "defaultunit");
+        xmlTemp.setAttribute("name", itdu.key());
+        xmlTemp.setAttribute("unit", itdu.value());
     }
     QMap<QString, QMap<QString, double> >::iterator itpcu;
     QMap<QString, double>::iterator itcu;
@@ -816,10 +816,10 @@ void MainWindow::saveSettings()
     {
         for(itcu = itpcu.value().begin(); itcu != itpcu.value().end(); ++itcu)
         {
-            QDomElement tempElement = appendDomElement(units, "customunit");
-            appendDomTextNode(tempElement, "dataname", itpcu.key());
-            appendDomTextNode(tempElement, "unitname", itcu.key());
-            appendDomValueNode(tempElement, "scale", itcu.value());
+            QDomElement xmlTemp = appendDomElement(units, "customunit");
+            xmlTemp.setAttribute("name", itpcu.key());
+            xmlTemp.setAttribute("unit", itcu.key());
+            xmlTemp.setAttribute("scale", itcu.value());
         }
     }
 

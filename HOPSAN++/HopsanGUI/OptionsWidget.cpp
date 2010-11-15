@@ -294,7 +294,7 @@ void OptionsWidget::addAlternativeUnitDialog(QString physicalQuantity)
 {
     mPhysicalQuantityToModify = physicalQuantity;
     mpAddUnitDialog = new QDialog(this);
-    mpAddUnitDialog->setWindowTitle("Add Custom " + physicalQuantity + "Unit");
+    mpAddUnitDialog->setWindowTitle("Add Custom " + physicalQuantity + " Unit");
 
     mpNameLabel = new QLabel("Unit Name: ", this);
     mpUnitNameBox = new QLineEdit(this);
