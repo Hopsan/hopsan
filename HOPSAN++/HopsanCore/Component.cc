@@ -1727,14 +1727,15 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
 
     cout << "nQ: " << n_Qcomponents << " nC: " << n_Ccomponents << endl;
     //Normaly we want at most one c and one q component but if there happen to be a subsystem in the picture allow one extra
+    //This is only true if at least one powerport is connected - signal connecetions can be between any types of components
     //! @todo not 100% sure that this will work allways. Only work if we assume that the subsystem has the correct cqs type when connecting
-    if (n_Ccomponents > 1+n_SYScomponentCs)
+    if ((n_Ccomponents > 1+n_SYScomponentCs) && (n_PowerPorts > 0))
     {
         cout << "Trying to connect two C-Components to each other" << endl;
         gCoreMessageHandler.addErrorMessage("Trying to connect two C-Component ports to each other");
         return false;
     }
-    if (n_Qcomponents > 1+n_SYScomponentQs)
+    if ((n_Qcomponents > 1+n_SYScomponentQs) && (n_PowerPorts > 0))
     {
         cout << "Trying to connect two Q-Components to each other" << endl;
         gCoreMessageHandler.addErrorMessage("Trying to connect two Q-Component ports to each other");
@@ -2214,8 +2215,7 @@ public:
             //! Signal Components !//
 
             ++(*mpBarrier_s);
-            while(*mpLock_s) {}
-
+            while(*mpLock_s){}
 
             for(size_t i=0; i<mVectorS.size(); ++i)
             {
@@ -2226,17 +2226,18 @@ public:
             //! C Components !//
 
             ++(*mpBarrier_c);
-            while(*mpLock_c) {}
+            while(*mpLock_c){}
 
             for(size_t i=0; i<mVectorC.size(); ++i)
             {
                 mVectorC[i]->simulate(mTime, mTime+mTimeStep);
             }
 
+
             //! Q Components !//
 
             ++(*mpBarrier_q);
-            while(*mpLock_q) {}
+            while(*mpLock_q){}
 
             for(size_t i=0; i<mVectorQ.size(); ++i)
             {
@@ -2247,7 +2248,7 @@ public:
             //! Log Nodes !//
 
             ++(*mpBarrier_n);
-            while(*mpLock_n) {}
+            while(*mpLock_n){}
 
             for(size_t i=0; i<mVectorN.size(); ++i)
             {

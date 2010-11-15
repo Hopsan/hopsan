@@ -100,6 +100,8 @@ void GUIObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 //! @brief Defines what happens if a mouse key is pressed while hovering an object
 void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    QGraphicsWidget::mousePressEvent(event);    //This must be before the code! Otherwise old position will not be stored for this object!
+
     setFlag(QGraphicsItem::ItemIsMovable, true); //Make the component movable if not
     setFlag(QGraphicsItem::ItemIsSelectable, true); //Make the component selactable if not
 
@@ -121,8 +123,6 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
         this->setSelected(false);
         this->setActive(false);
     }
-
-    QGraphicsWidget::mousePressEvent(event);
 }
 
 
