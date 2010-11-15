@@ -141,7 +141,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
         {
             event->accept();
             QPoint position = event->pos();
-            mpSystem->addGUIObject(pAppearanceData, this->mapToScene(position).toPoint());
+            mpSystem->addGUIModelObject(pAppearanceData, this->mapToScene(position).toPoint());
         }
     }
 }

@@ -126,7 +126,7 @@ void GUISystem::setName(QString newName)
     }
     else
     {
-        mpParentSystem->renameGUIObject(this->getName(), newName);
+        mpParentSystem->renameGUIModelObject(this->getName(), newName);
     }
 }
 
@@ -651,7 +651,7 @@ void GUISystem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 //! @param name will be the name of the component.
 //! @returns a pointer to the created and added object
 //! @todo only modelobjects for now
-GUIModelObject* GUISystem::addGUIObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, selectionStatus startSelected, undoStatus undoSettings)
+GUIModelObject* GUISystem::addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, selectionStatus startSelected, undoStatus undoSettings)
 {
         //Deselect all other components and connectors
     emit deselectAllGUIObjects();
@@ -755,7 +755,7 @@ void GUISystem::deleteGUIModelObject(QString objectName, undoStatus undoSettings
 
 
 //! This function is used to rename a SubGUIObject
-void GUISystem::renameGUIObject(QString oldName, QString newName, undoStatus undoSettings)
+void GUISystem::renameGUIModelObject(QString oldName, QString newName, undoStatus undoSettings)
 {
     //Avoid work if no change is requested
     if (oldName != newName)
@@ -810,7 +810,7 @@ void GUISystem::renameGUIObject(QString oldName, QString newName, undoStatus und
 
 
 //! Tells whether or not a component with specified name exist in the GraphicsView
-bool GUISystem::haveGUIObject(QString name)
+bool GUISystem::haveGUIModelObject(QString name)
 {
     return (mGUIModelObjectMap.count(name) > 0);
 }

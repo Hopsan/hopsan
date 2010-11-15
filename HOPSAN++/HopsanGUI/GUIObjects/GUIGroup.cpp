@@ -58,7 +58,7 @@ CoreSystemAccess* GUIGroup::getCoreSystemAccessPtr()
 GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAppearanceData, GUISystem *system, QGraphicsItem *parent)
     :   GUIContainerObject(QPoint(0.0,0.0), 0, pAppearanceData, DESELECTED, USERGRAPHICS, system, parent)
 {
-    mpParentScene = system->mpScene;
+    mpParentScene = system->getContainedScenePtr();
 
     //Set the hmf save tag name
     mHmfTagName = HMF_GROUPTAG;
@@ -391,7 +391,7 @@ void GUIGroupPort::setName(QString newName)
     {
         //Check if we want to avoid trying to rename in the graphics view map
         //Rename
-        mpParentSystem->renameGUIObject(oldName, newName);
+        mpParentSystem->renameGUIModelObject(oldName, newName);
     }
 }
 

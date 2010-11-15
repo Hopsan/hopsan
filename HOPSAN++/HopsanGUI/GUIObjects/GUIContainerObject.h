@@ -20,13 +20,14 @@ public:
     GraphicsScene* getContainedScenePtr();
     //void addConnector(GUIConnector *pConnector);
     //Public for now, will fix later
-    GraphicsScene *mpScene;
+
 
 protected:
     CONTAINERSTATUS getContainerStatus();
     CONTAINERSTATUS mContainerStatus;
 
     //CoreSystemAccess *mpCoreSystemAccess;
+    GraphicsScene *mpScene;
 
 };
 

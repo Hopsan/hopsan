@@ -142,7 +142,7 @@ void UndoStack::undoOneStep()
             {
                 QString oldName = readName(poststream);
                 QString newName = readName(poststream);
-                mpParentSystem->renameGUIObject(newName, oldName, NOUNDO);
+                mpParentSystem->renameGUIModelObject(newName, oldName, NOUNDO);
             }
             else if( undoevent == "MODIFIEDCONNECTOR" )
             {
@@ -235,7 +235,7 @@ void UndoStack::redoOneStep()
             {
                 QString oldName = readName(poststream);
                 QString newName = readName(poststream);
-                mpParentSystem->renameGUIObject(oldName, newName, NOUNDO);
+                mpParentSystem->renameGUIModelObject(oldName, newName, NOUNDO);
             }
             else if( redoevent == "MODIFIEDCONNECTOR" )
             {

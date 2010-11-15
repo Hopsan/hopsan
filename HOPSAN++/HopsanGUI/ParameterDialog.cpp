@@ -234,7 +234,7 @@ void ParameterDialog::createEditStuff()
 //! @brief Reads the values from the dialog and writes them into the core component
 void ParameterDialog::okPressed()
 {
-    mpGUIModelObject->mpParentSystem->renameGUIObject(mpGUIModelObject->getName(), mpNameEdit->text());
+    mpGUIModelObject->mpParentSystem->renameGUIModelObject(mpGUIModelObject->getName(), mpNameEdit->text());
     //qDebug() << mpNameEdit->text();
 
     setParameters();

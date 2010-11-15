@@ -78,7 +78,7 @@ void GUISystemPort::setName(QString newName, renameRestrictions renameSettings)
         else
         {
             //Rename
-            mpParentSystem->renameGUIObject(oldName, newName);
+            mpParentSystem->renameGUIModelObject(oldName, newName);
         }
     }
 }
