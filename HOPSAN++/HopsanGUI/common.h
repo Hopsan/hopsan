@@ -1,6 +1,8 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include "Configuration.h"
+
 #define GOLDENRATIO 1.61803399
 #define SNAPDISTANCE 10
 #define MAINPATH "../../"
@@ -22,5 +24,7 @@ enum simulationMethod {SINGLECORE, MULTICORE};
 //Global pointer to the main window
 class MainWindow;
 extern MainWindow* gpMainWindow;
+
+extern Configuration gConfig;
 
 #endif // COMMON_H

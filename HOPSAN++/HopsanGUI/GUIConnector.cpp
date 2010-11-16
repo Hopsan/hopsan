@@ -299,7 +299,7 @@ void GUIConnector::setEndPort(GUIPort *port)
 
 
         //Snap if close to a snapping position
-    if(gpMainWindow->mSnapping)
+    if(gConfig.getSnapping())
     {
         if( ((getNumberOfLines() == 1) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE)) ||
             ((getNumberOfLines() < 3) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE)) )

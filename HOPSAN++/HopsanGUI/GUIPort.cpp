@@ -268,7 +268,7 @@ void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
     else if (event->button() == Qt::RightButton)
     {
         //std::cout << "GUIPort.cpp: " << "RightClick" << std::endl;
-/*        if ((!this->isConnected()) || (mpParentSystem->getCoreSystemAccessPtr()->getTimeVector(getGUIComponentName(), this->getName()).empty()))
+/*        if ((!this->isConnected()) || (gpMainWindow->getCoreSystemAccessPtr()->getTimeVector(getGUIComponentName(), this->getName()).empty()))
             openRightClickMenu(event->screenPos());//Ska bort
 */    }
     //magnify(false);

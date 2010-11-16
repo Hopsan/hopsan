@@ -40,7 +40,7 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
     mpDisableUndoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
 
     mpNumberOfSamplesLabel = new QLabel(tr("Number of Log Samples"));
-    mpNumberOfSamplesLabel->setEnabled(mpParentMainWindow->mEnableProgressBar);
+    mpNumberOfSamplesLabel->setEnabled(gConfig.getEnableProgressBar());
     mpNumberOfSamplesBox = new QLineEdit(this);
     mpNumberOfSamplesBox->setValidator(new QIntValidator(0, 2000000000, this));
     QString samplesText;

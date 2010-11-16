@@ -22,16 +22,22 @@
 #include "Utilities/GUIUtilities.h"
 #include "PyDock.h"
 #include "GlobalParametersWidget.h"
+#include "Configuration.h"
 
 #include "loadObjects.h"
 
-//! Constructor
+
+Configuration gConfig;
+
+//! @brief Constructor for main window
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     //First we set the global mainwindow pointer to this, we can (should) only have ONE main window
     gpMainWindow = this;
     //std::cout << "Starting Hopsan!";
+
+    gConfig = Configuration();
 
     //QString(MAINPATH) = "../../";
     //mQString(ICONPATH) = QString(MAINPATH) + "HopsanGUI/icons/";
@@ -77,7 +83,8 @@ MainWindow::MainWindow(QWidget *parent)
     mpMessageWidget->printGUIMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
     connect(mpClearMessageWidgetButton, SIGNAL(pressed()),mpMessageWidget,SLOT(clear()));
 
-    this->loadSettings();
+    gConfig.loadFromXml();
+    //this->loadSettings();
 
     //Create a dock for the componentslibrary
     mpLibDock = new QDockWidget(tr("Component Library"), this);
@@ -91,7 +98,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Set dock widget corner owner
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
-    //setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
     this->createActions();
     this->createToolbars();
@@ -117,19 +123,16 @@ MainWindow::MainWindow(QWidget *parent)
     this->setStatusBar(mpStatusBar);
 
     mpUndoWidget = new UndoWidget(this);
-
     mpProjectTabs->addNewProjectTab();
-
     mpPreferenceWidget = new PreferenceWidget(this);
     mpOptionsWidget = new OptionsWidget(this);
 
             //Load default libraries
     mpLibrary->addEmptyLibrary("User defined libraries");
 
-    for(size_t i=0; i<mUserLibs.size(); ++i)
+    for(size_t i=0; i<gConfig.getUserLibs().size(); ++i)
     {
-        qDebug() << "Adding: " << mUserLibs.at(i);
-        mpLibrary->addExternalLibrary(mUserLibs.at(i));
+        mpLibrary->addExternalLibrary(gConfig.getUserLibs().at(i));
     }
 
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "Subsystem");
@@ -189,12 +192,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateToolBarsToNewTab()));
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(refreshUndoWidgetList()));
 
-    if(!mLastSessionModels.empty())
+    if(!gConfig.getLastSessionModels().empty())
     {
-        for(size_t i=0; i<mLastSessionModels.size(); ++i)
+        for(size_t i=0; i<gConfig.getLastSessionModels().size(); ++i)
         {
             //mpProjectTabs->loadModel(mLastSessionModels.at(i));
-            mpProjectTabs->loadModel(mLastSessionModels.at(i));
+            mpProjectTabs->loadModel(gConfig.getLastSessionModels().at(i));
         }
         if(mpProjectTabs->count() > 1)      //Close the empty project if at least one last session model is loaded
         {
@@ -205,7 +208,7 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 
-//! Destructor
+//! @brief Destructor
 MainWindow::~MainWindow()
 {
     delete mpProjectTabs;
@@ -214,7 +217,7 @@ MainWindow::~MainWindow()
 }
 
 
-//! Overloaded function for showing the mainwindow. This is to make sure the view is centered when the program starts.
+//! @brief Overloaded function for showing the mainwindow. This is to make sure the view is centered when the program starts.
 void MainWindow::show()
 {
     QMainWindow::show();
@@ -222,7 +225,7 @@ void MainWindow::show()
 }
 
 
-//! Opens the plot widget.
+//! @brief Opens the plot widget.
 void MainWindow::openPlotWidget()
 {
     if(mpProjectTabs->count() != 0)
@@ -247,7 +250,7 @@ void MainWindow::openPlotWidget()
 }
 
 
-//! Event triggered re-implemented method that closes the main window.
+//! @brief Event triggered re-implemented method that closes the main window.
 //! First all tabs (models) are closed, if the user do not push Cancel
 //! (closeAllProjectTabs then returns 'false') the event is accepted and
 //! the main window is closed.
@@ -263,11 +266,12 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->ignore();
     }
 
-    this->saveSettings();
+    //this->saveSettings();
+    gConfig.saveToXml();
 }
 
 
-//! Defines the actions used by the toolbars
+//! @brief Defines the actions used by the toolbars
 void MainWindow::createActions()
 {
     newAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-New.png"), tr("&New"), this);
@@ -394,7 +398,7 @@ void MainWindow::createActions()
 }
 
 
-//! Creates the menus
+//! @brief Creates the menus
 void MainWindow::createMenus()
 {
     //Create the menubar
@@ -426,9 +430,6 @@ void MainWindow::createMenus()
 
     menuTools = new QMenu(menubar);
     menuTools->setTitle("&Tools");
-
-    //menuPlot = new QMenu(menubar);
-    //menuPlot->setTitle("&Plot");
 
     this->setMenuBar(menubar);
 
@@ -480,7 +481,7 @@ void MainWindow::createMenus()
     menubar->addAction(menuView->menuAction());
 }
 
-//! Creates the toolbars
+//! @brief Creates the toolbars
 void MainWindow::createToolbars()
 {
     mpFileToolBar = addToolBar(tr("File Toolbar"));
@@ -523,7 +524,7 @@ void MainWindow::createToolbars()
 }
 
 
-//! Opens the undo widget.
+//! @brief Opens the undo widget.
 void MainWindow::openUndoWidget()
 {
     if(!mpUndoWidgetDock->isVisible())
@@ -536,7 +537,7 @@ void MainWindow::openUndoWidget()
 }
 
 
-//! Opens the undo widget.
+//! @brief Opens the undo widget.
 void MainWindow::openGlobalParametersWidget()
 {
     if(!mpGlobalParametersDock->isVisible())
@@ -559,7 +560,7 @@ void MainWindow::openGlobalParametersWidget()
 }
 
 
-//! Updates the toolbar values that are tab specific when a new tab is activated
+//! @brief Updates the toolbar values that are tab specific when a new tab is activated
 void MainWindow::updateToolBarsToNewTab()
 {
     if(mpProjectTabs->count() > 0)
@@ -593,259 +594,47 @@ void MainWindow::updateToolBarsToNewTab()
 }
 
 
-//! Slot that calls refresh list function in undo widget. Used because undo widget cannot have slots.
+//! @brief Slot that calls refresh list function in undo widget. Used because undo widget cannot have slots.
 void MainWindow::refreshUndoWidgetList()
 {
     mpUndoWidget->refreshList();
 }
 
-//! Loads global settings from a text file
-void MainWindow::loadSettings()
+
+//! @brief Registers a recently opened model file in the "Recent Models" list
+void MainWindow::registerRecentModel(QFileInfo model)
 {
-        //Apply default values
-    mInvertWheel = false;
-    mUseMulticore = false;
-    mNumberOfThreads = 0;
-    mEnableProgressBar = true;
-    mProgressBarStep = 50;
-    mSnapping = true;
-    mBackgroundColor = QColor("white");
-    mAntiAliasing = true;
-    mLastSessionModels.clear();
-    mRecentModels.clear();
-
-    mDefaultUnits.insert("Pressure", "Pa");
-    mDefaultUnits.insert("Flow", "m^3/s");
-    mDefaultUnits.insert("Force", "N");
-    mDefaultUnits.insert("Position", "m");
-    mDefaultUnits.insert("Velocity", "m/s");
-    mDefaultUnits.insert("Torque", "Nm");
-    mDefaultUnits.insert("Angle", "rad");
-    mDefaultUnits.insert("Angular Velocity", "rad/s");
-
-        //Definition of dalternative units
-    QMap<QString, double> PressureUnitMap;
-    PressureUnitMap.insert("Pa", 1);
-    PressureUnitMap.insert("Bar", 1e-5);
-    PressureUnitMap.insert("MPa", 1e-6);
-    PressureUnitMap.insert("psi", 1.450326e-4);
-    QMap<QString, double> FlowUnitMap;
-    FlowUnitMap.insert("m^3/s", 1);
-    FlowUnitMap.insert("l/min", 60000);
-    QMap<QString, double> ForceUnitMap;
-    ForceUnitMap.insert("N", 1);
-    ForceUnitMap.insert("kN", 1e-3);
-    QMap<QString, double> PositionUnitMap;
-    PositionUnitMap.insert("m", 1);
-    PositionUnitMap.insert("mm", 1000);
-    PositionUnitMap.insert("cm", 100);
-    PositionUnitMap.insert("inch", 39.3700787);
-    PositionUnitMap.insert("ft", 3.2808);
-    QMap<QString, double> VelocityUnitMap;
-    VelocityUnitMap.insert("m/s", 1);
-    QMap<QString, double> TorqueUnitMap;
-    TorqueUnitMap.insert("Nm", 1);
-    QMap<QString, double> AngleUnitMap;
-    AngleUnitMap.insert("rad", 1);
-    AngleUnitMap.insert("deg", 57.296);
-    QMap<QString, double> AngularVelocityUnitMap;
-    AngularVelocityUnitMap.insert("rad/s", 1);
-    AngularVelocityUnitMap.insert("deg/s", 57.296);
-    AngularVelocityUnitMap.insert("rev/s", 0.159155);
-    AngularVelocityUnitMap.insert("rpm", 9.549296585);
-    mCustomUnits.insert("Pressure", PressureUnitMap);
-    mCustomUnits.insert("Flow", FlowUnitMap);
-    mCustomUnits.insert("Force", ForceUnitMap);
-    mCustomUnits.insert("Position", PositionUnitMap);
-    mCustomUnits.insert("Velocity", VelocityUnitMap);
-    mCustomUnits.insert("Torque", TorqueUnitMap);
-    mCustomUnits.insert("Angle", AngleUnitMap);
-    mCustomUnits.insert("Angular Velocity", AngularVelocityUnitMap);
-
-        //Read from hopsanconfig.xml
-    QFile file(QString(MAINPATH) + "hopsanconfig.xml");
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        mpMessageWidget->printGUIErrorMessage("Unable to read settings file. Using default settings.");
+    if(model.fileName() == "")
         return;
-    }
-    QDomDocument domDocument;
-    QString errorStr;
-    int errorLine, errorColumn;
-    if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
-    {
-        QMessageBox::information(window(), tr("Hopsan GUI"),
-                                 tr("Parse error at line %1, column %2:\n%3")
-                                 .arg(errorLine)
-                                 .arg(errorColumn)
-                                 .arg(errorStr));
-    }
-    else
-    {
-        QDomElement configRoot = domDocument.documentElement();
-        if (configRoot.tagName() != "hopsanconfig")
-        {
-            QMessageBox::information(window(), tr("Hopsan GUI"),
-                                     "The file is not an Hopsan Configuration File. Incorrect hmf root tag name: "
-                                     + configRoot.tagName() + " != hopsanconfig");
-        }
-        else
-        {
-            QDomElement settingsElement = configRoot.firstChildElement("settings");
 
-            if(!settingsElement.firstChildElement("backgroundcolor").isNull())
-                mBackgroundColor.setNamedColor(settingsElement.firstChildElement("backgroundcolor").text());
-            if(!settingsElement.firstChildElement("antialiasing").isNull())
-                mAntiAliasing = parseDomBooleanNode(settingsElement.firstChildElement("antialiasing"));
-            if(!settingsElement.firstChildElement("invertwheel").isNull())
-                mInvertWheel = parseDomBooleanNode(settingsElement.firstChildElement("invertwheel"));
-            if(!settingsElement.firstChildElement("snapping").isNull())
-                mSnapping = parseDomBooleanNode(settingsElement.firstChildElement("snapping"));
-            if(!settingsElement.firstChildElement("progressbar").isNull())
-                mEnableProgressBar = parseDomBooleanNode(settingsElement.firstChildElement("progressbar"));
-            if(!settingsElement.firstChildElement("progressbar_step").isNull())
-                mProgressBarStep = parseDomValueNode(settingsElement.firstChildElement("progressbar_step"));
-            if(!settingsElement.firstChildElement("multicore").isNull())
-                mUseMulticore = parseDomBooleanNode(settingsElement.firstChildElement("multicore"));
-            if(!settingsElement.firstChildElement("numberofthreads").isNull())
-                mUseMulticore = parseDomValueNode(settingsElement.firstChildElement("numberofthreads"));
-
-//            QDomElement libs = appendDomElement(configRoot, "libs");
-//            for(size_t i=0; i<mUserLibs.size(); ++i)
-//            {
-//                appendDomTextNode(libs, "userlib", mUserLibs.at(i));
-//            }
-
-            QDomElement libsElement = configRoot.firstChildElement("libs");
-            QDomElement userLibElement = libsElement.firstChildElement("userlib");
-            while (!userLibElement.isNull())
-            {
-                mUserLibs.prepend(userLibElement.text());
-                userLibElement = userLibElement.nextSiblingElement(("userlib"));
-            }
-
-            QDomElement modelsElement = configRoot.firstChildElement("models");
-            QDomElement lastSessionElement = modelsElement.firstChildElement("lastsessionmodel");
-            while (!lastSessionElement.isNull())
-            {
-                mLastSessionModels.prepend(lastSessionElement.text());
-                lastSessionElement = lastSessionElement.nextSiblingElement("lastsessionmodel");
-            }
-            QDomElement recentModelElement = modelsElement.firstChildElement("recentmodel");
-            while (!recentModelElement.isNull())
-            {
-                mRecentModels.prepend(QFileInfo(readName(recentModelElement.text())));
-                recentModelElement = recentModelElement.nextSiblingElement("recentmodel");
-            }
-
-            QDomElement unitsElement = configRoot.firstChildElement("units");
-            QDomElement defaultUnitElement = unitsElement.firstChildElement("defaultunit");
-            while (!defaultUnitElement.isNull())
-            {
-                mDefaultUnits.insert(defaultUnitElement.attribute("name"),
-                                     defaultUnitElement.attribute("unit"));
-                defaultUnitElement = defaultUnitElement.nextSiblingElement("defaultunit");
-            }
-            QDomElement alternativeUnitElement = unitsElement.firstChildElement("customunit");
-            while (!alternativeUnitElement.isNull())
-            {
-                QString physicalQuantity = alternativeUnitElement.attribute("name");
-                QString unitName = alternativeUnitElement.attribute("unit");
-                double unitScale = alternativeUnitElement.attribute("scale").toDouble();
-
-                if(!mCustomUnits.find(physicalQuantity).value().contains(unitName))
-                {
-                    mCustomUnits.find(physicalQuantity).value().insert(unitName, unitScale);
-                }
-                alternativeUnitElement = alternativeUnitElement.nextSiblingElement("customunit");
-            }
-        }
-    }
-    file.close();
+    gConfig.addRecentModel(model.filePath());
+    updateRecentList();
 }
 
 
-//! Saves global settings to a text file
-void MainWindow::saveSettings()
+//! @brief Updates the "Recent Models" list
+void MainWindow::updateRecentList()
 {
-        //Write to hopsanconfig.xml
-    QDomDocument domDocument;
-    QDomElement configRoot = domDocument.createElement("hopsanconfig");
-    domDocument.appendChild(configRoot);
+    recentMenu->clear();
 
-    QDomElement settings = appendDomElement(configRoot,"settings");
-    appendDomTextNode(settings, "backgroundcolor", mBackgroundColor.name());
-    appendDomBooleanNode(settings, "antialiasing", mAntiAliasing);
-    appendDomBooleanNode(settings, "invertwheel", mInvertWheel);
-    appendDomBooleanNode(settings, "snapping", mSnapping);
-    appendDomBooleanNode(settings, "progressbar", mEnableProgressBar);
-    appendDomValueNode(settings, "progressbar_step", mProgressBarStep);
-    appendDomBooleanNode(settings, "multicore", mUseMulticore);
-    appendDomValueNode(settings, "numberofthreads", mNumberOfThreads);
-
-    QDomElement libs = appendDomElement(configRoot, "libs");
-    for(size_t i=0; i<mUserLibs.size(); ++i)
+    recentMenu->setEnabled(!gConfig.getRecentModels().empty());
+    if(!gConfig.getRecentModels().empty())
     {
-        appendDomTextNode(libs, "userlib", mUserLibs.at(i));
-    }
-
-    QDomElement models = appendDomElement(configRoot, "models");
-    for(size_t i=0; i<mLastSessionModels.size(); ++i)
-    {
-        if(mLastSessionModels.at(i) != "")
+        for(size_t i=0; i<gConfig.getRecentModels().size(); ++i)
         {
-            appendDomTextNode(models, "lastsessionmodel", mLastSessionModels.at(i));
+            if(gConfig.getRecentModels().at(i) != "")
+            {
+                QAction *tempAction;
+                tempAction = recentMenu->addAction(gConfig.getRecentModels().at(i));
+            }
         }
     }
-    for(size_t i = 0; i<mRecentModels.size(); ++i)
-    {
-        if(mRecentModels.at(i).filePath() != "")
-            appendDomTextNode(models, "recentmodel", mRecentModels.at(i).filePath());
-    }
-
-    QDomElement units = appendDomElement(configRoot, "units");
-    QMap<QString, QString>::iterator itdu;
-    for(itdu = mDefaultUnits.begin(); itdu != mDefaultUnits.end(); ++itdu)
-    {
-        QDomElement xmlTemp = appendDomElement(units, "defaultunit");
-        xmlTemp.setAttribute("name", itdu.key());
-        xmlTemp.setAttribute("unit", itdu.value());
-    }
-    QMap<QString, QMap<QString, double> >::iterator itpcu;
-    QMap<QString, double>::iterator itcu;
-    for(itpcu = mCustomUnits.begin(); itpcu != mCustomUnits.end(); ++itpcu)
-    {
-        for(itcu = itpcu.value().begin(); itcu != itpcu.value().end(); ++itcu)
-        {
-            QDomElement xmlTemp = appendDomElement(units, "customunit");
-            xmlTemp.setAttribute("name", itpcu.key());
-            xmlTemp.setAttribute("unit", itcu.key());
-            xmlTemp.setAttribute("scale", itcu.value());
-        }
-    }
-
-    appendRootXMLProcessingInstruction(domDocument);
-
-    //Save to file
-    const int IndentSize = 4;
-    QFile xmlsettings(QString(MAINPATH) + "hopsanconfig.xml");
-    if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-    {
-        qDebug() << "Failed to open file for writing: " << QString(MAINPATH) << "settings.xml";
-        return;
-    }
-    QTextStream out(&xmlsettings);
-    domDocument.save(out, IndentSize);
-
 }
 
 
 
 
-
-
-
-//! Make sure the values make sens.
+//! @brief Make sure the values make sens.
 //! @see fixTimeStep()
 void MainWindow::fixSimulationParameterValues()
 {
@@ -854,45 +643,7 @@ void MainWindow::fixSimulationParameterValues()
 }
 
 
-void MainWindow::registerRecentModel(QFileInfo model)
-{
-    if(model.fileName() == "")
-        return;
-
-    mRecentModels.removeAll(model);
-    mRecentModels.prepend(model);
-    while(mRecentModels.size() > 10)
-    {
-        mRecentModels.pop_back();
-    }
-    updateRecentList();
-}
-
-
-void MainWindow::updateRecentList()
-{
-    recentMenu->clear();
-    if(mRecentModels.empty())
-    {
-        recentMenu->setDisabled(true);
-    }
-    else
-    {
-        recentMenu->setEnabled(true);
-        for(size_t i=0; i<mRecentModels.size(); ++i)
-        {
-            if(mRecentModels.at(i).fileName() != "")
-            {
-                QAction *tempAction;
-                tempAction = recentMenu->addAction(mRecentModels.at(i).fileName());
-            }
-        }
-    }
-}
-
-
-
-//! Make sure that the finishs time of the simulation is not smaller than start time.
+//! @brief Make sure that the finishs time of the simulation is not smaller than start time.
 //! @see fixTimeStep()
 //! @see fixLabelValues()
 void MainWindow::fixFinishTime()
@@ -903,7 +654,7 @@ void MainWindow::fixFinishTime()
 }
 
 
-//! Make sure that the timestep is in the right range i.e. not larger than the simulation time.
+//! @brief Make sure that the timestep is in the right range i.e. not larger than the simulation time.
 //! @see fixFinishTime()
 //! @see fixLabelValues()
 void MainWindow::fixTimeStep()
@@ -919,7 +670,7 @@ void MainWindow::fixTimeStep()
 }
 
 
-//! Sets a new startvalue.
+//! @brief Sets a new startvalue.
 //! @param startTime is the new value
 void MainWindow::setStartTimeInToolBar(double startTime)
 {
@@ -931,7 +682,7 @@ void MainWindow::setStartTimeInToolBar(double startTime)
 }
 
 
-//! Sets a new timestep.
+//! @brief Sets a new timestep.
 //! @param timeStep is the new value
 void MainWindow::setTimeStepInToolBar(double timeStep)
 {
@@ -943,7 +694,7 @@ void MainWindow::setTimeStepInToolBar(double timeStep)
 }
 
 
-//! Sets a new finish value.
+//! @brief Sets a new finish value.
 //! @param finishTime is the new value
 void MainWindow::setFinishTimeInToolBar(double finishTime)
 {
@@ -955,7 +706,7 @@ void MainWindow::setFinishTimeInToolBar(double finishTime)
 }
 
 
-//! Acess function to the starttimelabel value.
+//! @brief Access function to the starttimelabel value.
 //! @returns the starttime value
 double MainWindow::getStartTimeFromToolBar()
 {
@@ -963,7 +714,7 @@ double MainWindow::getStartTimeFromToolBar()
 }
 
 
-//! Acess function to the timesteplabel value.
+//! @brief Access function to the timesteplabel value.
 //! @returns the timestep value
 double MainWindow::getTimeStepFromToolBar()
 {
@@ -971,7 +722,7 @@ double MainWindow::getTimeStepFromToolBar()
 }
 
 
-//! Acess function to the finishlabel value.
+//! @brief Access function to the finishlabel value.
 //! @returns the finish value
 double MainWindow::getFinishTimeFromToolBar()
 {

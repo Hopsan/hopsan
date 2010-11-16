@@ -38,23 +38,23 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     QString redString;
     QString greenString;
     QString blueString;
-    redString.setNum(mpParentMainWindow->mBackgroundColor.red());
-    greenString.setNum(mpParentMainWindow->mBackgroundColor.green());
-    blueString.setNum(mpParentMainWindow->mBackgroundColor.blue());
+    redString.setNum(gConfig.getBackgroundColor().red());
+    greenString.setNum(gConfig.getBackgroundColor().green());
+    blueString.setNum(gConfig.getBackgroundColor().blue());
     mpBackgroundColorButton->setStyleSheet(QString("* { background-color: rgb(" + redString + "," + greenString + "," + blueString + ") }"));
     mpBackgroundColorButton->setAutoRaise(true);
 
     mpAntiAliasingCheckBox = new QCheckBox(tr("Use Anti-Aliasing"));
     mpAntiAliasingCheckBox->setCheckable(true);
-    mpAntiAliasingCheckBox->setChecked(mpParentMainWindow->mAntiAliasing);
+    mpAntiAliasingCheckBox->setChecked(gConfig.getAntiAliasing());
 
     mpInvertWheelCheckBox = new QCheckBox(tr("Invert Mouse Wheel"));
     mpInvertWheelCheckBox->setCheckable(true);
-    mpInvertWheelCheckBox->setChecked(mpParentMainWindow->mInvertWheel);
+    mpInvertWheelCheckBox->setChecked(gConfig.getInvertWheel());
 
     mpSnappingCheckBox = new QCheckBox(tr("Auto Snap Components"));
     mpSnappingCheckBox->setCheckable(true);
-    mpSnappingCheckBox->setChecked(mpParentMainWindow->mSnapping);
+    mpSnappingCheckBox->setChecked(gConfig.getSnapping());
 
     mpInterfaceGroupBox = new QGroupBox(tr("Interface"));
     mpInterfaceLayout = new QGridLayout;
@@ -68,29 +68,29 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
         //Simulation Options
     mpEnableProgressBarCheckBox = new QCheckBox(tr("Enable Simulation Progress Bar"));
     mpEnableProgressBarCheckBox->setCheckable(true);
-    mpEnableProgressBarCheckBox->setChecked(mpParentMainWindow->mEnableProgressBar);
+    mpEnableProgressBarCheckBox->setChecked(gConfig.getEnableProgressBar());
 
     mpProgressBarLabel = new QLabel(tr("Progress Bar Time Step [ms]"));
-    mpProgressBarLabel->setEnabled(mpParentMainWindow->mEnableProgressBar);
+    mpProgressBarLabel->setEnabled(gConfig.getEnableProgressBar());
     mpProgressBarSpinBox = new QSpinBox();
     mpProgressBarSpinBox->setMinimum(1);
     mpProgressBarSpinBox->setMaximum(5000);
     mpProgressBarSpinBox->setSingleStep(10);
-    mpProgressBarSpinBox->setValue(mpParentMainWindow->mProgressBarStep);
-    mpProgressBarSpinBox->setEnabled(mpParentMainWindow->mEnableProgressBar);
+    mpProgressBarSpinBox->setValue(gConfig.getProgressBarStep());
+    mpProgressBarSpinBox->setEnabled(gConfig.getEnableProgressBar());
 
     mpUseMulticoreCheckBox = new QCheckBox(tr("Use Multi-Threaded Simulation"));
     mpUseMulticoreCheckBox->setCheckable(true);
-    mpUseMulticoreCheckBox->setChecked(mpParentMainWindow->mUseMulticore);
+    mpUseMulticoreCheckBox->setChecked(gConfig.getUseMulticore());
 
     mpThreadsLabel = new QLabel(tr("Number of Simulation Threads (0 = Auto)"));
-    mpThreadsLabel->setEnabled(mpParentMainWindow->mUseMulticore);
+    mpThreadsLabel->setEnabled(gConfig.getUseMulticore());
     mpThreadsSpinBox = new QSpinBox();
     mpThreadsSpinBox->setMinimum(0);
     mpThreadsSpinBox->setMaximum(1000000);
     mpThreadsSpinBox->setSingleStep(1);
-    mpThreadsSpinBox->setValue(mpParentMainWindow->mNumberOfThreads);
-    mpThreadsSpinBox->setEnabled(mpParentMainWindow->mUseMulticore);
+    mpThreadsSpinBox->setValue(gConfig.getNumberOfThreads());
+    mpThreadsSpinBox->setEnabled(gConfig.getUseMulticore());
 
     mpThreadsWarningLabel = new QLabel(tr("Caution! Choosing more threads than the number of processor cores may be unstable on some systems."));
     mpThreadsWarningLabel->setWordWrap(true);
@@ -192,33 +192,29 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
 //! Slot that updates and saves the settings based on the choices made in the dialog box
 void OptionsWidget::updateValues()
 {
-    mpParentMainWindow->mInvertWheel = mpInvertWheelCheckBox->isChecked();
-    mpParentMainWindow->mAntiAliasing = mpAntiAliasingCheckBox->isChecked();
-    mpParentMainWindow->mSnapping = mpSnappingCheckBox->isChecked();
+    gConfig.setInvertWheel(mpInvertWheelCheckBox->isChecked());
+    gConfig.setAntiAliasing(mpAntiAliasingCheckBox->isChecked());
+    gConfig.setSnapping(mpSnappingCheckBox->isChecked());
     for(size_t i=0; i<mpParentMainWindow->mpProjectTabs->count(); ++i)
     {
-        mpParentMainWindow->mpProjectTabs->getTab(i)->mpGraphicsView->setRenderHint(QPainter::Antialiasing, mpParentMainWindow->mAntiAliasing);
+        mpParentMainWindow->mpProjectTabs->getTab(i)->mpGraphicsView->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
     }
-    mpParentMainWindow->mBackgroundColor = mPickedBackgroundColor;
+    gConfig.setBackgroundColor(mPickedBackgroundColor);
     for(size_t i=0; i<mpParentMainWindow->mpProjectTabs->count(); ++i)
     {
         mpParentMainWindow->mpProjectTabs->getTab(i)->mpGraphicsView->updateViewPort();
     }
-    mpParentMainWindow->mEnableProgressBar = mpEnableProgressBarCheckBox->isChecked();
-    mpParentMainWindow->mProgressBarStep = mpProgressBarSpinBox->value();
-    mpParentMainWindow->mUseMulticore = mpUseMulticoreCheckBox->isChecked();
-    mpParentMainWindow->mNumberOfThreads = mpThreadsSpinBox->value();
-    mpParentMainWindow->mDefaultUnits.remove("Pressure");
-    mpParentMainWindow->mDefaultUnits.insert("Pressure", mpPressureUnitComboBox->currentText());
-    mpParentMainWindow->mDefaultUnits.remove("Flow");
-    mpParentMainWindow->mDefaultUnits.insert("Flow", mpFlowUnitComboBox->currentText());
-    mpParentMainWindow->mDefaultUnits.remove("Force");
-    mpParentMainWindow->mDefaultUnits.insert("Force", mpForceUnitComboBox->currentText());
-    mpParentMainWindow->mDefaultUnits.remove("Position");
-    mpParentMainWindow->mDefaultUnits.insert("Position", mpPositionUnitComboBox->currentText());
-    mpParentMainWindow->mDefaultUnits.remove("Velocity");
-    mpParentMainWindow->mDefaultUnits.insert("Velocity", mpVelocityUnitComboBox->currentText());
-    mpParentMainWindow->saveSettings();
+    gConfig.setEnableProgressBar(mpEnableProgressBarCheckBox->isChecked());
+    gConfig.setProgressBarStep(mpProgressBarSpinBox->value());
+    gConfig.setUseMultiCore(mpUseMulticoreCheckBox->isChecked());
+    gConfig.setNumberOfThreads(mpThreadsSpinBox->value());
+    gConfig.setDefaultUnit("Pressure", mpPressureUnitComboBox->currentText());
+    gConfig.setDefaultUnit("Flow", mpFlowUnitComboBox->currentText());
+    gConfig.setDefaultUnit("Force", mpForceUnitComboBox->currentText());
+    gConfig.setDefaultUnit("Position", mpPositionUnitComboBox->currentText());
+    gConfig.setDefaultUnit("Velocity", mpVelocityUnitComboBox->currentText());
+    gConfig.saveToXml();
+
     this->accept();
 }
 
@@ -226,7 +222,7 @@ void OptionsWidget::updateValues()
 //! Slot that opens a color dialog where user can select a background color
 void OptionsWidget::colorDialog()
 {
-    mPickedBackgroundColor = QColorDialog::getColor(mpParentMainWindow->mBackgroundColor, this);
+    mPickedBackgroundColor = QColorDialog::getColor(gConfig.getBackgroundColor(), this);
     if (mPickedBackgroundColor.isValid())
     {
         QString redString;
@@ -240,7 +236,7 @@ void OptionsWidget::colorDialog()
     }
     else
     {
-        mPickedBackgroundColor = mpParentMainWindow->mBackgroundColor;
+        mPickedBackgroundColor = gConfig.getBackgroundColor();
     }
 }
 
@@ -251,11 +247,11 @@ void OptionsWidget::show()
     QString redString;
     QString greenString;
     QString blueString;
-    redString.setNum(mpParentMainWindow->mBackgroundColor.red());
-    greenString.setNum(mpParentMainWindow->mBackgroundColor.green());
-    blueString.setNum(mpParentMainWindow->mBackgroundColor.blue());
+    redString.setNum(gConfig.getBackgroundColor().red());
+    greenString.setNum(gConfig.getBackgroundColor().green());
+    blueString.setNum(gConfig.getBackgroundColor().blue());
     mpBackgroundColorButton->setStyleSheet(QString("* { background-color: rgb(" + redString + "," + greenString + "," + blueString + ") }"));
-    mPickedBackgroundColor = mpParentMainWindow->mBackgroundColor;
+    mPickedBackgroundColor = gConfig.getBackgroundColor();
 
     QDialog::show();
 }
@@ -264,33 +260,33 @@ void OptionsWidget::show()
 
 void OptionsWidget::addPressureUnit()
 {
-    addAlternativeUnitDialog("Pressure");
+    addCustomUnitDialog("Pressure");
 }
 
 void OptionsWidget::addFlowUnit()
 {
-    addAlternativeUnitDialog("Flow");
+    addCustomUnitDialog("Flow");
 }
 
 void OptionsWidget::addForceUnit()
 {
-    addAlternativeUnitDialog("Force");
+    addCustomUnitDialog("Force");
 }
 
 void OptionsWidget::addPositionUnit()
 {
-    addAlternativeUnitDialog("Position");
+    addCustomUnitDialog("Position");
 }
 
 void OptionsWidget::addVelocityUnit()
 {
-    addAlternativeUnitDialog("Velocity");
+    addCustomUnitDialog("Velocity");
 }
 
 
 
 //! Slot that opens "Add Custom Unit" dialog
-void OptionsWidget::addAlternativeUnitDialog(QString physicalQuantity)
+void OptionsWidget::addCustomUnitDialog(QString physicalQuantity)
 {
     mPhysicalQuantityToModify = physicalQuantity;
     mpAddUnitDialog = new QDialog(this);
@@ -316,16 +312,16 @@ void OptionsWidget::addAlternativeUnitDialog(QString physicalQuantity)
     mpAddUnitDialog->setLayout(pDialogLayout);
     mpAddUnitDialog->show();
 
-    connect(mpDoneInUnitDialogButton,SIGNAL(clicked()),this,SLOT(addAlternativeUnit()));
+    connect(mpDoneInUnitDialogButton,SIGNAL(clicked()),this,SLOT(addCustomUnit()));
     connect(mpCancelInUnitDialogButton,SIGNAL(clicked()),mpAddUnitDialog,SLOT(close()));
 }
 
 
 
 
-void OptionsWidget::addAlternativeUnit()
+void OptionsWidget::addCustomUnit()
 {
-    mpParentMainWindow->mCustomUnits.find(mPhysicalQuantityToModify).value().insert(mpUnitNameBox->text(), mpScaleBox->text().toDouble());
+    gConfig.addCustomUnit(mPhysicalQuantityToModify, mpUnitNameBox->text(), mpScaleBox->text().toDouble());
     this->updateCustomUnits();
     mpAddUnitDialog->close();
 }
@@ -334,73 +330,72 @@ void OptionsWidget::addAlternativeUnit()
 
 void OptionsWidget::updateCustomUnits()
 {
-    QMap<QString, double>::iterator it;
-
     mpPressureUnitComboBox->clear();
-    for(it = mpParentMainWindow->mCustomUnits.find("Pressure").value().begin();
-        it != mpParentMainWindow->mCustomUnits.find("Pressure").value().end(); ++it)
+    QMap<QString, double> customPressureUnits = gConfig.getCustomUnits("Pressure");
+    QMap<QString, double>::iterator it;
+    for(it = customPressureUnits.begin(); it != customPressureUnits.end(); ++it)
     {
         mpPressureUnitComboBox->addItem(it.key());
     }
     for(size_t i = 0; i<mpPressureUnitComboBox->count(); ++i)
     {
-        if(mpPressureUnitComboBox->itemText(i) == mpParentMainWindow->mDefaultUnits.find("Pressure").value())
+        if(mpPressureUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Pressure"))
         {
             mpPressureUnitComboBox->setCurrentIndex(i);
         }
     }
 
     mpFlowUnitComboBox->clear();
-    for(it = mpParentMainWindow->mCustomUnits.find("Flow").value().begin();
-        it != mpParentMainWindow->mCustomUnits.find("Flow").value().end(); ++it)
+    QMap<QString, double> customFlowUnits = gConfig.getCustomUnits("Flow");
+    for(it = customFlowUnits.begin(); it != customFlowUnits.end(); ++it)
     {
         mpFlowUnitComboBox->addItem(it.key());
     }
     for(size_t i = 0; i<mpFlowUnitComboBox->count(); ++i)
     {
-        if(mpFlowUnitComboBox->itemText(i) == mpParentMainWindow->mDefaultUnits.find("Flow").value())
+        if(mpFlowUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Flow"))
         {
             mpFlowUnitComboBox->setCurrentIndex(i);
         }
     }
 
     mpForceUnitComboBox->clear();
-    for(it = mpParentMainWindow->mCustomUnits.find("Force").value().begin();
-        it != mpParentMainWindow->mCustomUnits.find("Force").value().end(); ++it)
+    QMap<QString, double> customForceUnits = gConfig.getCustomUnits("Force");
+    for(it = customForceUnits.begin(); it != customForceUnits.end(); ++it)
     {
         mpForceUnitComboBox->addItem(it.key());
     }
     for(size_t i = 0; i<mpForceUnitComboBox->count(); ++i)
     {
-        if(mpForceUnitComboBox->itemText(i) == mpParentMainWindow->mDefaultUnits.find("Force").value())
+        if(mpForceUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Force"))
         {
             mpForceUnitComboBox->setCurrentIndex(i);
         }
     }
 
     mpPositionUnitComboBox->clear();
-    for(it = mpParentMainWindow->mCustomUnits.find("Position").value().begin();
-        it != mpParentMainWindow->mCustomUnits.find("Position").value().end(); ++it)
+    QMap<QString, double> customPositionUnits = gConfig.getCustomUnits("Position");
+    for(it = customPositionUnits.begin(); it != customPositionUnits.end(); ++it)
     {
         mpPositionUnitComboBox->addItem(it.key());
     }
     for(size_t i = 0; i<mpPositionUnitComboBox->count(); ++i)
     {
-        if(mpPositionUnitComboBox->itemText(i) == mpParentMainWindow->mDefaultUnits.find("Position").value())
+        if(mpPositionUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Position"))
         {
             mpPositionUnitComboBox->setCurrentIndex(i);
         }
     }
 
     mpVelocityUnitComboBox->clear();
-    for(it = mpParentMainWindow->mCustomUnits.find("Velocity").value().begin();
-        it != mpParentMainWindow->mCustomUnits.find("Velocity").value().end(); ++it)
+    QMap<QString, double> customVelocityUnits = gConfig.getCustomUnits("Velocity");
+    for(it = customVelocityUnits.begin(); it != customVelocityUnits.end(); ++it)
     {
         mpVelocityUnitComboBox->addItem(it.key());
     }
     for(size_t i = 0; i<mpVelocityUnitComboBox->count(); ++i)
     {
-        if(mpVelocityUnitComboBox->itemText(i) == mpParentMainWindow->mDefaultUnits.find("Velocity").value())
+        if(mpVelocityUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Velocity"))
         {
             mpVelocityUnitComboBox->setCurrentIndex(i);
         }

@@ -39,7 +39,8 @@ SOURCES += main.cpp \
     GUIObjects/GUIContainerObject.cpp \
     GUIObjects/GUIComponent.cpp \
     Utilities/XMLUtilities.cpp \
-    Utilities/GUIUtilities.cpp
+    Utilities/GUIUtilities.cpp \
+    Configuration.cpp
 
 HEADERS += MainWindow.h \
     ProjectTabWidget.h \
@@ -79,7 +80,8 @@ HEADERS += MainWindow.h \
     GUIObjects/GUIContainerObject.h \
     GUIObjects/GUIComponent.h \
     Utilities/XMLUtilities.h \
-    Utilities/GUIUtilities.h
+    Utilities/GUIUtilities.h \
+    Configuration.h
 
 OTHER_FILES += 
 

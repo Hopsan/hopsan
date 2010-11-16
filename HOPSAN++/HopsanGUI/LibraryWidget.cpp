@@ -225,10 +225,11 @@ LibraryWidget::LibraryWidget(MainWindow *parent)
 //! @see addLibrary(QString libDir, QString parentLib)
 //! @see addLibrary()
 //! @see addComponent(QString libraryName, ListWidgetItem *newComponent, QStringList appearanceData)
-void LibraryWidget::addEmptyLibrary(QString libraryName, QString parentLibraryName)
+void LibraryWidget::addEmptyLibrary(QString libraryName, QString parentLibraryName, QString libraryPath)
 {
     QTreeWidgetItem *newTreePost = new QTreeWidgetItem((QTreeWidget*)0);
     newTreePost->setText(0, QString(libraryName));
+    newTreePost->setToolTip(0,libraryPath);
 
     LibraryContent *newLibContent = new LibraryContent((LibraryContent*)0, parentLibraryName + libraryName, this, newTreePost);
     newLibContent->setDragEnabled(true);
@@ -264,7 +265,7 @@ void LibraryWidget::addEmptyLibrary(QString libraryName, QString parentLibraryNa
 }
 
 
-//! Adds a library to the library widget.
+//! @brief Adds a library to the library widget.
 //! @param libDir is the library directory.
 //! @param parentLib is the name of an eventually parent library.
 //! @see addEmptyLibrary(QString libraryName, QString parentLibraryName)
@@ -283,7 +284,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
     QString libName = QString(libDirObject.dirName().left(1).toUpper() + libDirObject.dirName().right(libDirObject.dirName().size()-1));
 
     //Add the library to the tree
-    addEmptyLibrary(libName,parentLib);
+    addEmptyLibrary(libName,parentLib,libDir);
 
     //Create a QStringList object that contains name filters
     QStringList filters;
@@ -390,9 +391,9 @@ void LibraryWidget::addLibrary()
                                                  fileDialogOpenDir.currentPath(),
                                                  QFileDialog::ShowDirsOnly
                                                  | QFileDialog::DontResolveSymlinks);
-    if(!mpParentMainWindow->mUserLibs.contains(libDir))
+    if(!gConfig.hasUserLib(libDir))
     {
-        mpParentMainWindow->mUserLibs.append(libDir);
+        gConfig.addUserLib(libDir);
         addExternalLibrary(libDir);
     }
     else
@@ -597,15 +598,16 @@ void LibraryTreeWidget::contextMenuEvent(QContextMenuEvent *event)
         QMessageBox::StandardButton reply;
         reply = QMessageBox::information(this, tr("Information"), tr("Program must be restarted for this to take effect."));
         qDebug() << "Trying to remove " << this->currentItem()->text(0);
-        for(size_t i=0; i<mpParentLibraryWidget->mpParentMainWindow->mUserLibs.size(); ++i)
-        {
-            if(mpParentLibraryWidget->mpParentMainWindow->mUserLibs.at(i).endsWith("/"+this->currentItem()->text(0)))
-            {
-                qDebug() << "Removing at " << i;
-                mpParentLibraryWidget->mpParentMainWindow->mUserLibs.removeAt(i);
-                --i;
-            }
-        }
+//        for(size_t i=0; i<mpParentLibraryWidget->mpParentMainWindow->mUserLibs.size(); ++i)
+//        {
+//            if(mpParentLibraryWidget->mpParentMainWindow->mUserLibs.at(i).endsWith("/"+this->currentItem()->text(0)))
+//            {
+//                qDebug() << "Removing at " << i;
+//                mpParentLibraryWidget->mpParentMainWindow->mUserLibs.removeAt(i);
+//                --i;
+//            }
+//        }
+        gConfig.removeUserLib(this->currentItem()->toolTip(0));
     }
     else if (selectedAction == loadAction)
     {

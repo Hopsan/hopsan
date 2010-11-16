@@ -48,18 +48,18 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mAutoUpdate = true;
 
         //Initiate default values for left y-axis
-    mCurrentUnitsLeft.insert("Pressure", mpParentMainWindow->mDefaultUnits.find("Pressure").value());
-    mCurrentUnitsLeft.insert("Flow", mpParentMainWindow->mDefaultUnits.find("Flow").value());
-    mCurrentUnitsLeft.insert("Position", mpParentMainWindow->mDefaultUnits.find("Position").value());
-    mCurrentUnitsLeft.insert("Velocity", mpParentMainWindow->mDefaultUnits.find("Velocity").value());
-    mCurrentUnitsLeft.insert("Force", mpParentMainWindow->mDefaultUnits.find("Force").value());
+    mCurrentUnitsLeft.insert("Pressure", gConfig.getDefaultUnit("Pressure"));
+    mCurrentUnitsLeft.insert("Flow", gConfig.getDefaultUnit("Flow"));
+    mCurrentUnitsLeft.insert("Position", gConfig.getDefaultUnit("Position"));
+    mCurrentUnitsLeft.insert("Velocity", gConfig.getDefaultUnit("Velocity"));
+    mCurrentUnitsLeft.insert("Force", gConfig.getDefaultUnit("Force"));
 
         //Initiate default values for right y-axis
-    mCurrentUnitsRight.insert("Pressure", mpParentMainWindow->mDefaultUnits.find("Pressure").value());
-    mCurrentUnitsRight.insert("Flow", mpParentMainWindow->mDefaultUnits.find("Flow").value());
-    mCurrentUnitsRight.insert("Position", mpParentMainWindow->mDefaultUnits.find("Position").value());
-    mCurrentUnitsRight.insert("Velocity", mpParentMainWindow->mDefaultUnits.find("Velocity").value());
-    mCurrentUnitsRight.insert("Force", mpParentMainWindow->mDefaultUnits.find("Force").value());
+    mCurrentUnitsRight.insert("Pressure", gConfig.getDefaultUnit("Pressure"));
+    mCurrentUnitsRight.insert("Flow", gConfig.getDefaultUnit("Flow"));
+    mCurrentUnitsRight.insert("Position", gConfig.getDefaultUnit("Position"));
+    mCurrentUnitsRight.insert("Velocity", gConfig.getDefaultUnit("Velocity"));
+    mCurrentUnitsRight.insert("Force", gConfig.getDefaultUnit("Force"));
 
         //Create the actual plot widget
     mpVariablePlot = new QwtPlot();
@@ -776,7 +776,7 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
     changeUnitMenuLeft = yAxisLeftMenu->addMenu(QString("Change Unit"));
     QString physicalQuantityLeft = QString(mpVariablePlot->axisTitle(QwtPlot::yLeft).text().toStdString().substr(0, mpVariablePlot->axisTitle(QwtPlot::yLeft).text().toStdString().find(' ')).c_str());
     QMap<QString, double>::iterator itul;
-    for(itul=mpParentMainWindow->mCustomUnits.find(physicalQuantityLeft).value().begin(); itul!=mpParentMainWindow->mCustomUnits.find(physicalQuantityLeft).value().end(); ++itul)
+    for(itul=gConfig.getCustomUnits(physicalQuantityLeft).begin(); itul!=gConfig.getCustomUnits(physicalQuantityLeft).end(); ++itul)
     {
         QAction *tempAction = changeUnitMenuLeft->addAction(itul.key());
         std::string axisTitle = mpVariablePlot->axisTitle(QwtPlot::yLeft).text().toStdString();
@@ -796,7 +796,7 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
         changeUnitMenuRight = yAxisRightMenu->addMenu(QString("Change Unit"));
         physicalQuantityRight = QString(mpVariablePlot->axisTitle(QwtPlot::yRight).text().toStdString().substr(0, mpVariablePlot->axisTitle(QwtPlot::yRight).text().toStdString().find(' ')).c_str());
         QMap<QString, double>::iterator itur;
-        for(itur=mpParentMainWindow->mCustomUnits.find(physicalQuantityRight).value().begin(); itur!=mpParentMainWindow->mCustomUnits.find(physicalQuantityRight).value().end(); ++itur)
+        for(itur=gConfig.getCustomUnits(physicalQuantityRight).begin(); itur!=gConfig.getCustomUnits(physicalQuantityRight).end(); ++itur)
         {
             QAction *tempAction = changeUnitMenuRight->addAction(itur.key());
             std::string axisTitle = mpVariablePlot->axisTitle(QwtPlot::yRight).text().toStdString();
@@ -887,14 +887,14 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
 
 
         // Change unit on left axis
-    if((selectedAction->parentWidget() == changeUnitMenuLeft) && (mpParentMainWindow->mCustomUnits.find(physicalQuantityLeft).value().contains(selectedAction->text())))
+    if((selectedAction->parentWidget() == changeUnitMenuLeft) && (gConfig.getCustomUnits(physicalQuantityLeft).contains(selectedAction->text())))
     {
         this->setUnit(QwtPlot::yLeft, physicalQuantityLeft, selectedAction->text());
     }
 
 
         // Change unit on right axis
-    if((selectedAction->parentWidget() == changeUnitMenuRight) && (mpParentMainWindow->mCustomUnits.find(physicalQuantityRight).value().contains(selectedAction->text())))
+    if((selectedAction->parentWidget() == changeUnitMenuRight) && (gConfig.getCustomUnits(physicalQuantityRight).contains(selectedAction->text())))
     {
         this->setUnit(QwtPlot::yRight, physicalQuantityRight, selectedAction->text());
     }
@@ -982,7 +982,7 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
 //! @param selectedUnit Name of the new unit
 void PlotWindow::setUnit(int yAxis, QString physicalQuantity, QString selectedUnit)
 {
-    double scale = mpParentMainWindow->mCustomUnits.find(physicalQuantity).value().find(selectedUnit).value();
+    double scale = gConfig.getCustomUnits(physicalQuantity).find(selectedUnit).value();
 
     for(size_t i=0; i<mpCurves.size(); ++i)
     {
@@ -1071,8 +1071,7 @@ void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QS
             newUnit = mCurrentUnitsRight.find(dataName).value();
     }
     double scale = 1.0;
-    if(mpParentMainWindow->mCustomUnits.contains(dataName))
-        scale = mpParentMainWindow->mCustomUnits.find(dataName).value().find(newUnit).value();
+    scale = gConfig.getCustomUnits(dataName).find(newUnit).value();
 
     QVector<double> tempVectorY;
     for(size_t j=0; j<mVectorY[mCurrentGeneration].last().size(); ++j)

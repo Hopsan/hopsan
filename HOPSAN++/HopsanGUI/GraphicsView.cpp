@@ -48,7 +48,7 @@ GraphicsView::GraphicsView(ProjectTab *parent)
     this->createActions();
     this->createMenus();
 
-    this->setRenderHint(QPainter::Antialiasing, gpMainWindow->mAntiAliasing);
+    this->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
 }
 
 
@@ -152,9 +152,9 @@ void GraphicsView::updateViewPort()
 {
     //MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 
-    if( (mpParentProjectTab->mpSystem->mGfxType == USERGRAPHICS) && (this->backgroundBrush().color() != gpMainWindow->mBackgroundColor) )
+    if( (mpParentProjectTab->mpSystem->mGfxType == USERGRAPHICS) && (this->backgroundBrush().color() != gConfig.getBackgroundColor()) )
     {
-        this->setBackgroundBrush(gpMainWindow->mBackgroundColor);
+        this->setBackgroundBrush(gConfig.getBackgroundColor());
     }
     else if( (mpParentProjectTab->mpSystem->mGfxType == ISOGRAPHICS) && (this->backgroundBrush().color() != mIsoColor) )
     {
@@ -181,7 +181,7 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
 {
         //Get value from scroll wheel change
     qreal wheelDelta;
-    if(gpMainWindow->mInvertWheel)
+    if(gConfig.getInvertWheel())
     {
         wheelDelta = event->delta();
     }

@@ -141,7 +141,7 @@ bool ProjectTab::simulate()
 
     ProgressBarThread progressThread(this);
     QProgressDialog progressBar(tr("Initializing simulation..."), tr("&Abort initialization"), 0, 0, this);
-    if(gpMainWindow->mEnableProgressBar)
+    if(gConfig.getEnableProgressBar())
     {
         progressBar.setWindowModality(Qt::WindowModal);
         progressBar.setWindowTitle(tr("Simulate!"));
@@ -175,7 +175,7 @@ bool ProjectTab::simulate()
             //! @todo TimeCriticalPriority seem to work on dual core, is it a problem on single core machines only?
         //actualSimulation.setPriority(QThread::TimeCriticalPriority); //No bar appears in Windows with this prio
 
-        if(gpMainWindow->mEnableProgressBar)
+        if(gConfig.getEnableProgressBar())
         {
             progressBar.setLabelText(tr("Running simulation..."));
             progressBar.setCancelButtonText(tr("&Abort simulation"));
@@ -558,12 +558,12 @@ bool ProjectTabWidget::closeProjectTab(int index)
 //! @see saveProjectTab()
 bool ProjectTabWidget::closeAllProjectTabs()
 {
-    gpMainWindow->mLastSessionModels.clear();
+    gConfig.clearLastSessionModels();
 
     while(count() > 0)
     {
         setCurrentIndex(count()-1);
-        gpMainWindow->mLastSessionModels.append(getCurrentSystem()->mModelFileInfo.filePath());
+        gConfig.addLastSessionModel(getCurrentSystem()->mModelFileInfo.filePath());
         if (!closeProjectTab(count()-1))
         {
             return false;

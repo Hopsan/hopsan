@@ -25,5 +25,5 @@ ProgressBarThread::ProgressBarThread(ProjectTab *parent)
 //! Implements the task for the thread.
 void ProgressBarThread::run()
 {
-    this->msleep(gpMainWindow->mProgressBarStep);
+    this->msleep(gConfig.getProgressBarStep());
 }

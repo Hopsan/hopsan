@@ -40,10 +40,9 @@ SimulationThread::SimulationThread(CoreSystemAccess *pGUIRootSystem, double star
 //! @brief Implements the task for the thread.
 void SimulationThread::run()
 {
-    qDebug() << gpMainWindow->mUseMulticore;
-    if(gpMainWindow->mUseMulticore)
+    if(gConfig.getUseMulticore())
     {
-        mpGUIRootSystem->simulate(mStartTime, mFinishTime, MULTICORE, gpMainWindow->mNumberOfThreads);
+        mpGUIRootSystem->simulate(mStartTime, mFinishTime, MULTICORE, gConfig.getNumberOfThreads());
     }
     else
     {

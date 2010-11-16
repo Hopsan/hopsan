@@ -35,8 +35,8 @@ private slots:
     void addForceUnit();
     void addPositionUnit();
     void addVelocityUnit();
-    void addAlternativeUnitDialog(QString physicalQuantity);
-    void addAlternativeUnit();
+    void addCustomUnitDialog(QString physicalQuantity);
+    void addCustomUnit();
     void updateCustomUnits();
 
 private:

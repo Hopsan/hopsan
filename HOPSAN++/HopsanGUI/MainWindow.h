@@ -22,6 +22,7 @@ class MessageWidget;
 class PlotWidget;
 class PyDock;
 class GlobalParametersWidget;
+class Configuration;
 
 class MainWindow : public QMainWindow
 {
@@ -47,21 +48,6 @@ public:
     QStatusBar *mpStatusBar;
     PlotWidget *mpPlotWidget;
     GlobalParametersWidget *mpGlobalParametersWidget;
-
-    //Settings variable - stored in and loaded from settings.txt
-    bool mInvertWheel;
-    bool mUseMulticore;
-    size_t mNumberOfThreads;
-    int mProgressBarStep;
-    bool mEnableProgressBar;
-    QColor mBackgroundColor;
-    bool mAntiAliasing;
-    QStringList mUserLibs;
-    bool mSnapping;
-    QList<QFileInfo> mRecentModels;
-    QStringList mLastSessionModels;
-    QMap<QString, QString> mDefaultUnits;
-    QMap< QString, QMap<QString, double> > mCustomUnits;
 
     //Menubar items
     QMenuBar *menubar;
@@ -123,11 +109,7 @@ public:
     double getStartTimeFromToolBar();
     double getTimeStepFromToolBar();
     double getFinishTimeFromToolBar();
-
     QPushButton *mpBackButton;
-
-    //QString libDir;
-
     void closeEvent(QCloseEvent *event);
 
 public slots:
@@ -137,14 +119,11 @@ public slots:
     void fixSimulationParameterValues();
     void registerRecentModel(QFileInfo model);
     void updateRecentList();
-    void saveSettings();
-
 
 private slots:
     void openPlotWidget();
     void openUndoWidget();
     void openGlobalParametersWidget();
-    void loadSettings();
 
 private:
     //Dock area widgets
