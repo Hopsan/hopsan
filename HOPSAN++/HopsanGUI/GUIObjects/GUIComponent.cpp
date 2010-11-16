@@ -150,15 +150,6 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         openParameterDialog();
     }
-    else if (selectedAction == groupAction)
-    {
-        //groupComponents(mpParentGraphicsScene->selectedItems());
-        GUIModelObjectAppearance appdata;
-        appdata.setIconPathUser("subsystemtmp.svg");
-        appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
-        GUIGroup *pGroup = new GUIGroup(this->scene()->selectedItems(), &appdata, mpParentContainerObject);
-        this->scene()->addItem(pGroup);
-    }
     else if (selectedAction == showNameAction)
     {
         if(mpNameText->isVisible())
@@ -170,7 +161,25 @@ void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
             this->showName();
         }
     }
+    else if (selectedAction == groupAction)
+    {
+//        //groupComponents(mpParentGraphicsScene->selectedItems());
+//        GUIModelObjectAppearance appdata;
+//        appdata.setIconPathUser("subsystemtmp.svg");
+//        appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
+//        //! @todo add like all other guimodelobjects add as proper object
+
+//        //qDebug() << "Group event pos: " << event->pos() << " in scene: " << this->mapToScene(event->pos());
+//        GUIGroup *pGroup = new GUIGroup(this->mapToScene(event->pos()).toPoint(), 0.0, &appdata, this->mpParentContainerObject);
+//        this->mpParentContainerObject->getContainedScenePtr()->addItem(pGroup);
+
+        //! @todo this does not work at all will fix tomorrow if I can figure it out
+        connect(this, SIGNAL(groupSelected(QPointF)), this->mpParentContainerObject, SLOT(groupSelected(QPointF)));
+        emit groupSelected(this->mapToScene(event->pos()));
+        //disconnect(this, SIGNAL(groupSelected(QPointF)), this->mpParentContainerObject, SLOT(groupSelected(QPointF)));
+    }
     QGraphicsItem::contextMenuEvent(event);
+
 }
 
 

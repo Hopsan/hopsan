@@ -24,6 +24,7 @@
 #include "../GraphicsView.h"
 #include "../LibraryWidget.h"
 #include "../loadObjects.h"
+#include "../CopyStack.h"
 
 using namespace std;
 
@@ -56,257 +57,280 @@ CoreSystemAccess* GUIGroup::getCoreSystemAccessPtr()
 //! @param appearanceData defines the appearance for the group.
 //! @param scene is the scene which should contain the group.
 //! @param parent is the parent QGraphicsItem for the group, default = 0.
-GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *system, QGraphicsItem *parent)
-    :   GUIContainerObject(QPoint(0.0,0.0), 0, pAppearanceData, DESELECTED, USERGRAPHICS, system, parent)
+GUIGroup::GUIGroup(QPoint position, qreal rotation, const GUIModelObjectAppearance *pAppearanceData, GUIContainerObject *system, QGraphicsItem *parent)
+    :   GUIContainerObject(position, rotation, pAppearanceData, DESELECTED, USERGRAPHICS, system, parent)
 {
-    //mpParentScene = system->getContainedScenePtr();
-
     //Set the hmf save tag name
     mHmfTagName = HMF_GROUPTAG;
 
     this->setDisplayName(QString("Grupp_test"));
 
-    MessageWidget *pMessageWidget = gpMainWindow->mpMessageWidget;
-    pMessageWidget->printGUIMessage("Group selected components (implementing in progress...) Selected components: ");
+    //Add this item to the parent container scene, no we do this outside
+    //this->mpParentContainerObject->getContainedScenePtr()->addItem(this);
 
-    for (int i=0; i < compList.size(); ++i)
-    {
-        GUIModelObject *pComponent = qgraphicsitem_cast<GUIComponent*>(compList.at(i));
-        if (pComponent)
-        {
-            //Adds the component pComponent to a list of components whose make up the group
-            mGUICompList.append(pComponent);
-            pMessageWidget->printGUIMessage(pComponent->getName());
-
-            QList<GUIConnector*> GUIConnectorPtrs = pComponent->getGUIConnectorPtrs();
-            for(int i = 0; i != GUIConnectorPtrs.size(); ++i)
-            {
-                //Loop trough the GUIConnectors that are connected to pComponent
-                if((GUIConnectorPtrs[i]->getStartComponentName() == pComponent->getName()) ||
-                   (GUIConnectorPtrs[i]->getEndComponentName() == pComponent->getName()))
-                {
-                    if((compList.contains(GUIConnectorPtrs[i]->getStartPort()->getGuiModelObject())) &&
-                       (compList.contains(GUIConnectorPtrs[i]->getEndPort()->getGuiModelObject())))
-                    {
-                        //Add the connections which have both ends among selected components
-                        //for grouping in a list for connections
-                        mGUIConnList.append(GUIConnectorPtrs[i]);
-                    }
-                    else
-                    {
-                        //Add the connections that go trough the group boundary to a list
-                        mGUITransitConnList.append(GUIConnectorPtrs[i]);
-                    }
-                }
-                if(GUIConnectorPtrs.empty())
-                {
-                    break;
-                }
-            }
-        }
-    }
-
-    //Constructs a new scene for the group
-    //getContainedScenePtr() = new GraphicsScene(mpParentContainerObject->mpParentProjectTab);
-
-    double xMin = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
-           xMax = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
-           yMin = mGUICompList.at(0)->y()+mGUICompList.at(0)->rect().height()/2.0,
-           yMax = mGUICompList.at(0)->y()+mGUICompList.at(0)->rect().height()/2.0;
-    for (int i=0; i < mGUICompList.size(); ++i)
-    {
-        //Add the components in the group to the group scene
-        getContainedScenePtr()->addItem(mGUICompList.at(i));
-
-        //Find the rect for the selscted items (the group)
-        if (mGUICompList.at(i)->x()+mGUICompList.at(i)->rect().width()/2.0 < xMin)
-            xMin = mGUICompList.at(i)->x()+mGUICompList.at(i)->rect().width()/2.0;
-        if (mGUICompList.at(i)->x()+mGUICompList.at(i)->rect().width()/2.0 > xMax)
-            xMax = mGUICompList.at(i)->x()+mGUICompList.at(i)->rect().width()/2.0;
-        if (mGUICompList.at(i)->y()+mGUICompList.at(i)->rect().height()/2.0 < yMin)
-            yMin = mGUICompList.at(i)->y()+mGUICompList.at(i)->rect().height()/2.0;
-        if (mGUICompList.at(i)->y()+mGUICompList.at(i)->rect().height()/2.0 > yMax)
-            yMax = mGUICompList.at(i)->y()+mGUICompList.at(i)->rect().height()/2.0;
-    }
-    //Fix the position for the group item
-    this->setPos((xMax+xMin)/2.0-this->rect().width()/2.0,(yMax+yMin)/2.0-this->rect().height()/2.0);
-
-    for (int i=0; i < mGUIConnList.size(); ++i)
-    {
-        //Add the connections in the group to the group scene
-        getContainedScenePtr()->addItem(mGUIConnList.at(i));
-    }
-
-    getContainedScenePtr()->setSceneRect(0,0,0,0); //Dirty(?) fix to re-calculate the correct scenerect
-    QPointF sceneCenterPointF = getContainedScenePtr()->sceneRect().center();
-
-    //Draw a cross in the center of the scene (just for debugging)
-//    getContainedScenePtr()->addLine(-10+sceneCenterPointF.x(), -10+sceneCenterPointF.y(), 10+sceneCenterPointF.x(), 10+sceneCenterPointF.y());
-//    getContainedScenePtr()->addLine(10+sceneCenterPointF.x(), -10+sceneCenterPointF.y(), -10+sceneCenterPointF.x(), 10+sceneCenterPointF.y());
-//    qDebug() << "Center: " << sceneCenterPointF << getContainedScenePtr()->sceneRect();
-
-    //Adjusts the size of the group component icon
-    double scale = 1.0;//.75*min(getContainedScenePtr()->sceneRect().width()/this->boundingRect().width(),getContainedScenePtr()->sceneRect().height()/this->boundingRect().height());
-    this->setTransformOriginPoint(this->boundingRect().center());
-    this->setScale(scale);
-
-    //Take care of the boundary connections of the group
-    for(int i=0; i < mGUITransitConnList.size(); ++i)
-    {
-        GUIConnector *pTransitConnector = mGUITransitConnList[i];
-
-        //Get the right appearance data for the group port
-        GUIModelObjectAppearance appData;
-        appData = *(gpMainWindow->mpLibrary->getAppearanceData("SystemPort"));
-        appData.setName("aPaApA-port");
-
-        GUIGroupPort *pGroupPortComponent;
-
-        GUIModelObject *startComp;
-        GUIModelObject *endComp;
-        startComp = qgraphicsitem_cast<GUIComponent*>(pTransitConnector->getStartPort()->getGuiModelObject());
-        endComp   = qgraphicsitem_cast<GUIComponent*>(pTransitConnector->getEndPort()->getGuiModelObject());
-
-        QPoint groupPortPoint;
-        GUIPort *pPortBoundaryInside; //Inside the group
-        GUIPort *pPortBoundaryOutside; //Outside the group
-        if((startComp) && (mGUICompList.contains(startComp)))
-        {
-            //Find the right point for the group boundary port (in this case the boundary is at the connector start point)
-            pPortBoundaryInside = pTransitConnector->getStartPort();
-            pPortBoundaryOutside = pTransitConnector->getEndPort();
-        }
-        if((endComp) && (mGUICompList.contains(endComp)))
-        {
-            //Find the right point for the group boundary port (in this case the boundary is at the connector end point)
-            pPortBoundaryInside = pTransitConnector->getEndPort();
-            pPortBoundaryOutside = pTransitConnector->getStartPort();
-        }
-        groupPortPoint = getOffsetPointfromPort(pPortBoundaryInside).toPoint();
-        groupPortPoint += QPoint(2.0*groupPortPoint.x(), 2.0*groupPortPoint.y());
-        groupPortPoint += pPortBoundaryInside->mapToScene(pPortBoundaryInside->boundingRect().center()).toPoint();
-
-        //Add a new group port for the boundary at the boundary connector
-        pGroupPortComponent = new GUIGroupPort(&appData, groupPortPoint, mpParentContainerObject);
-        GUIPort *pPort = pGroupPortComponent->getPort("sysp");
-        QString portName;
-        if(pPort)
-        {
-            pGroupPortComponent->setOuterGuiPort(pPortBoundaryOutside);
-            portName = pTransitConnector->getStartPortName();
-
-            QVector<QPointF> points;
-            points.append(pPortBoundaryInside->mapToScene(pPortBoundaryInside->boundingRect().center()));
-            points.append(pPort->mapToScene(pPort->boundingRect().center())); //! @todo GUIConnector should handle any number of points e.g. 0, 1 or 2
-            points.append(pPort->mapToScene(pPort->boundingRect().center()));
-            GUIConnector *pInsideConnector = new GUIConnector(pPortBoundaryInside, pPort, points, mpParentContainerObject);
-            getContainedScenePtr()->addItem(pInsideConnector);
-
-//            pGroupPortComponent->addConnector(pInsideConnector);
-            getContainedScenePtr()->addItem(pGroupPortComponent);
-            pGroupPortComponent->showPorts(false);
-
-        }
-
-        //A line from center to port, used to determine the angle
-        QLineF line(QPointF(sceneCenterPointF.x(), sceneCenterPointF.y()), QPointF(groupPortPoint.x(), groupPortPoint.y()));
-//        getContainedScenePtr()->addLine(line); //(just for debugging)
-        //Determine the placement of the ports on the group icon
-        double vinkel=line.angle()*3.141592/180.0;
-        double b = mpIcon->boundingRect().width()/2.0;
-        double h = mpIcon->boundingRect().height()/2.0;
-        double x, y;
-        calcSubsystemPortPosition(b, h, vinkel, x, y);
-
-        qDebug() << portName << " vinkel: " << tan(vinkel) << " x: " << x << " ber x: " << h/tan(vinkel) << " b: " << b << " y: " << y << " ber y: " << b*tan(vinkel) << " h: " << h;
-        //Make ports on the group system icon
-        GUIPortAppearance portAppearance;
-        portAppearance.selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
-        //We supply ptr to rootsystem to indicate that this is a systemport
-        //! @todo this is a very bad way of doing this (ptr to rootsystem for systemport), really need to figure out some better way
-        GUIPort *pGuiPort = new GUIPort(pPortBoundaryInside->getGuiModelObjectName().append(", ").append(portName),
-                                        mpIcon->boundingRect().center().x()+x,
-                                        mpIcon->boundingRect().center().y()-y,
-                                        &(portAppearance),
-                                        this);
-        mPortListPtrs.append(pGuiPort);
-
-        //Make connectors to the group component
-        GUIConnector *tmpConnector = new GUIConnector(pGuiPort, pPortBoundaryOutside,pTransitConnector->getPointsVector(), mpParentContainerObject);
-        //mpParentScene->addItem(tmpConnector);
-        this->mpParentContainerObject->getContainedScenePtr()->addItem(tmpConnector);
-        this->showPorts(false);
-        tmpConnector->drawConnector();
-
-        //Delete the old connector
-        delete pTransitConnector;
-    }
-
-    //Show this scene
-    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(getContainedScenePtr());
-    gpMainWindow->mpBackButton->show();
-
-    //Draw a cross in the center of the group component icon (debug)
-//    new QGraphicsLineItem(QLineF(this->rect().center()-QPointF(-10,-10), this->rect().center()-QPointF(10,10)),this);
-//    new QGraphicsLineItem(QLineF(this->rect().center()-QPointF(-10,10), this->rect().center()-QPointF(10,-10)),this);
-
-    //Scale up the ports and so on
-    //! @todo Add a method to mpSelectionBox so the lines could be scaled
-    QList<GUIPort*>::iterator it;
-    for (it = mPortListPtrs.begin(); it != mPortListPtrs.end(); ++it)
-    {
-        (*it)->setTransformOriginPoint((*it)->boundingRect().center());
-        (*it)->setScale(1.0/scale);
-    }
-
-    //this->mpParentScene->addItem(this);
-    this->mpParentContainerObject->getContainedScenePtr()->addItem(this);
-
-    connect(gpMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
-
+    //! @todo this is not good all mpParentProjectTab should be set in one common place not in guigroup and guisystem
+    this->mpParentProjectTab = system->mpParentProjectTab;
 }
 
 
 GUIGroup::~GUIGroup()
 {
-    qDebug() << "GUIGroup destructor";
-    GUISystem::GUIModelObjectMapT::iterator itm;
-    for(itm = mpParentContainerObject->mGUIModelObjectMap.begin(); itm != mpParentContainerObject->mGUIModelObjectMap.end(); ++itm)
-    {
-        qDebug() << "GUIObjectMap: " << itm.key();
-    }
+//    qDebug() << "GUIGroup destructor";
+//    GUISystem::GUIModelObjectMapT::iterator itm;
+//    for(itm = mpParentContainerObject->mGUIModelObjectMap.begin(); itm != mpParentContainerObject->mGUIModelObjectMap.end(); ++itm)
+//    {
+//        qDebug() << "GUIObjectMap: " << itm.key();
+//    }
 
 
-    QList<QGraphicsItem*> objectsInScenePtrs = getContainedScenePtr()->items();
-    QList<QGraphicsItem*>::iterator it;
-    for(it=objectsInScenePtrs.begin(); it != objectsInScenePtrs.end(); ++it)
-    {
-        //! @todo Will cause crash when closing program if the GUIObject has already been deleted by the scene.
-        mpParentContainerObject->deleteGUIModelObject(this->getName());
-        GUIComponent *pGUIComponent = qgraphicsitem_cast<GUIComponent*>(*it);
-        getContainedScenePtr()->removeItem((*it));
+//    QList<QGraphicsItem*> objectsInScenePtrs = getContainedScenePtr()->items();
+//    QList<QGraphicsItem*>::iterator it;
+//    for(it=objectsInScenePtrs.begin(); it != objectsInScenePtrs.end(); ++it)
+//    {
+//        //! @todo Will cause crash when closing program if the GUIObject has already been deleted by the scene.
+//        mpParentContainerObject->deleteGUIModelObject(this->getName());
+//        GUIComponent *pGUIComponent = qgraphicsitem_cast<GUIComponent*>(*it);
+//        getContainedScenePtr()->removeItem((*it));
 
-        if(pGUIComponent)
-        {
-            qDebug() << "Add this to parent scene: " << pGUIComponent->getName();
-            //mpParentScene->addItem(pGUIComponent);
-            this->mpParentContainerObject->getContainedScenePtr()->addItem(pGUIComponent);
-        }
-        //mpParentScene->addItem((*it));
-    }
-    qDebug() << "mpParentSystem->deleteGUIModelObject(this->getName()), getName:" << this->getName();
-    //delete getContainedScenePtr();
+//        if(pGUIComponent)
+//        {
+//            qDebug() << "Add this to parent scene: " << pGUIComponent->getName();
+//            //mpParentScene->addItem(pGUIComponent);
+//            this->mpParentContainerObject->getContainedScenePtr()->addItem(pGUIComponent);
+//        }
+//        //mpParentScene->addItem((*it));
+//    }
+//    qDebug() << "mpParentSystem->deleteGUIModelObject(this->getName()), getName:" << this->getName();
+//    //delete getContainedScenePtr();
+}
+
+//! @todo Add group contents from a copy/paste object
+void GUIGroup::setContents(CopyStack *pCopyStack)
+{
+    MessageWidget *pMessageWidget = gpMainWindow->mpMessageWidget;
+    //QDomElement *copyRoot = pCopyStack->getCopyRoot();
+
+    this->paste(pCopyStack);
+
+//    pMessageWidget->printGUIMessage("Group selected components (implementing in progress...) Selected components: ");
+
+//    for (int i=0; i < compList.size(); ++i)
+//    {
+//        GUIModelObject *pComponent = qgraphicsitem_cast<GUIComponent*>(compList.at(i));
+//        if (pComponent)
+//        {
+//            //Adds the component pComponent to a list of components whose make up the group
+//            mGUICompList.append(pComponent);
+//            pMessageWidget->printGUIMessage(pComponent->getName());
+
+//            QList<GUIConnector*> GUIConnectorPtrs = pComponent->getGUIConnectorPtrs();
+//            for(int i = 0; i != GUIConnectorPtrs.size(); ++i)
+//            {
+//                //Loop trough the GUIConnectors that are connected to pComponent
+//                if((GUIConnectorPtrs[i]->getStartComponentName() == pComponent->getName()) ||
+//                   (GUIConnectorPtrs[i]->getEndComponentName() == pComponent->getName()))
+//                {
+//                    if((compList.contains(GUIConnectorPtrs[i]->getStartPort()->getGuiModelObject())) &&
+//                       (compList.contains(GUIConnectorPtrs[i]->getEndPort()->getGuiModelObject())))
+//                    {
+//                        //Add the connections which have both ends among selected components
+//                        //for grouping in a list for connections
+//                        mGUIConnList.append(GUIConnectorPtrs[i]);
+//                    }
+//                    else
+//                    {
+//                        //Add the connections that go trough the group boundary to a list
+//                        mGUITransitConnList.append(GUIConnectorPtrs[i]);
+//                    }
+//                }
+//                if(GUIConnectorPtrs.empty())
+//                {
+//                    break;
+//                }
+//            }
+//        }
+//    }
+
+//    //Constructs a new scene for the group
+//    //getContainedScenePtr() = new GraphicsScene(mpParentContainerObject->mpParentProjectTab);
+
+//    double xMin = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
+//           xMax = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
+//           yMin = mGUICompList.at(0)->y()+mGUICompList.at(0)->rect().height()/2.0,
+//           yMax = mGUICompList.at(0)->y()+mGUICompList.at(0)->rect().height()/2.0;
+//    for (int i=0; i < mGUICompList.size(); ++i)
+//    {
+//        //Add the components in the group to the group scene
+//        getContainedScenePtr()->addItem(mGUICompList.at(i));
+
+//        //Find the rect for the selscted items (the group)
+//        if (mGUICompList.at(i)->x()+mGUICompList.at(i)->rect().width()/2.0 < xMin)
+//            xMin = mGUICompList.at(i)->x()+mGUICompList.at(i)->rect().width()/2.0;
+//        if (mGUICompList.at(i)->x()+mGUICompList.at(i)->rect().width()/2.0 > xMax)
+//            xMax = mGUICompList.at(i)->x()+mGUICompList.at(i)->rect().width()/2.0;
+//        if (mGUICompList.at(i)->y()+mGUICompList.at(i)->rect().height()/2.0 < yMin)
+//            yMin = mGUICompList.at(i)->y()+mGUICompList.at(i)->rect().height()/2.0;
+//        if (mGUICompList.at(i)->y()+mGUICompList.at(i)->rect().height()/2.0 > yMax)
+//            yMax = mGUICompList.at(i)->y()+mGUICompList.at(i)->rect().height()/2.0;
+//    }
+//    //Fix the position for the group item
+//    this->setPos((xMax+xMin)/2.0-this->rect().width()/2.0,(yMax+yMin)/2.0-this->rect().height()/2.0);
+
+//    for (int i=0; i < mGUIConnList.size(); ++i)
+//    {
+//        //Add the connections in the group to the group scene
+//        getContainedScenePtr()->addItem(mGUIConnList.at(i));
+//    }
+
+//    getContainedScenePtr()->setSceneRect(0,0,0,0); //Dirty(?) fix to re-calculate the correct scenerect
+//    QPointF sceneCenterPointF = getContainedScenePtr()->sceneRect().center();
+
+//    //Draw a cross in the center of the scene (just for debugging)
+////    getContainedScenePtr()->addLine(-10+sceneCenterPointF.x(), -10+sceneCenterPointF.y(), 10+sceneCenterPointF.x(), 10+sceneCenterPointF.y());
+////    getContainedScenePtr()->addLine(10+sceneCenterPointF.x(), -10+sceneCenterPointF.y(), -10+sceneCenterPointF.x(), 10+sceneCenterPointF.y());
+////    qDebug() << "Center: " << sceneCenterPointF << getContainedScenePtr()->sceneRect();
+
+//    //Adjusts the size of the group component icon
+//    double scale = 1.0;//.75*min(getContainedScenePtr()->sceneRect().width()/this->boundingRect().width(),getContainedScenePtr()->sceneRect().height()/this->boundingRect().height());
+//    this->setTransformOriginPoint(this->boundingRect().center());
+//    this->setScale(scale);
+
+//    //Take care of the boundary connections of the group
+//    for(int i=0; i < mGUITransitConnList.size(); ++i)
+//    {
+//        GUIConnector *pTransitConnector = mGUITransitConnList[i];
+
+//        //Get the right appearance data for the group port
+//        GUIModelObjectAppearance appData;
+//        appData = *(gpMainWindow->mpLibrary->getAppearanceData("SystemPort"));
+//        appData.setName("aPaApA-port");
+
+//        GUIGroupPort *pGroupPortComponent;
+
+//        GUIModelObject *startComp;
+//        GUIModelObject *endComp;
+//        startComp = qgraphicsitem_cast<GUIComponent*>(pTransitConnector->getStartPort()->getGuiModelObject());
+//        endComp   = qgraphicsitem_cast<GUIComponent*>(pTransitConnector->getEndPort()->getGuiModelObject());
+
+//        QPoint groupPortPoint;
+//        GUIPort *pPortBoundaryInside; //Inside the group
+//        GUIPort *pPortBoundaryOutside; //Outside the group
+//        if((startComp) && (mGUICompList.contains(startComp)))
+//        {
+//            //Find the right point for the group boundary port (in this case the boundary is at the connector start point)
+//            pPortBoundaryInside = pTransitConnector->getStartPort();
+//            pPortBoundaryOutside = pTransitConnector->getEndPort();
+//        }
+//        if((endComp) && (mGUICompList.contains(endComp)))
+//        {
+//            //Find the right point for the group boundary port (in this case the boundary is at the connector end point)
+//            pPortBoundaryInside = pTransitConnector->getEndPort();
+//            pPortBoundaryOutside = pTransitConnector->getStartPort();
+//        }
+//        groupPortPoint = getOffsetPointfromPort(pPortBoundaryInside).toPoint();
+//        groupPortPoint += QPoint(2.0*groupPortPoint.x(), 2.0*groupPortPoint.y());
+//        groupPortPoint += pPortBoundaryInside->mapToScene(pPortBoundaryInside->boundingRect().center()).toPoint();
+
+//        //Add a new group port for the boundary at the boundary connector
+//        pGroupPortComponent = new GUIGroupPort(&appData, groupPortPoint, mpParentContainerObject);
+//        GUIPort *pPort = pGroupPortComponent->getPort("sysp");
+//        QString portName;
+//        if(pPort)
+//        {
+//            pGroupPortComponent->setOuterGuiPort(pPortBoundaryOutside);
+//            portName = pTransitConnector->getStartPortName();
+
+//            QVector<QPointF> points;
+//            points.append(pPortBoundaryInside->mapToScene(pPortBoundaryInside->boundingRect().center()));
+//            points.append(pPort->mapToScene(pPort->boundingRect().center())); //! @todo GUIConnector should handle any number of points e.g. 0, 1 or 2
+//            points.append(pPort->mapToScene(pPort->boundingRect().center()));
+//            GUIConnector *pInsideConnector = new GUIConnector(pPortBoundaryInside, pPort, points, mpParentContainerObject);
+//            getContainedScenePtr()->addItem(pInsideConnector);
+
+////            pGroupPortComponent->addConnector(pInsideConnector);
+//            getContainedScenePtr()->addItem(pGroupPortComponent);
+//            pGroupPortComponent->showPorts(false);
+
+//        }
+
+//        //A line from center to port, used to determine the angle
+//        QLineF line(QPointF(sceneCenterPointF.x(), sceneCenterPointF.y()), QPointF(groupPortPoint.x(), groupPortPoint.y()));
+////        getContainedScenePtr()->addLine(line); //(just for debugging)
+//        //Determine the placement of the ports on the group icon
+//        double vinkel=line.angle()*3.141592/180.0;
+//        double b = mpIcon->boundingRect().width()/2.0;
+//        double h = mpIcon->boundingRect().height()/2.0;
+//        double x, y;
+//        calcSubsystemPortPosition(b, h, vinkel, x, y);
+
+//        qDebug() << portName << " vinkel: " << tan(vinkel) << " x: " << x << " ber x: " << h/tan(vinkel) << " b: " << b << " y: " << y << " ber y: " << b*tan(vinkel) << " h: " << h;
+//        //Make ports on the group system icon
+//        GUIPortAppearance portAppearance;
+//        portAppearance.selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
+//        //We supply ptr to rootsystem to indicate that this is a systemport
+//        //! @todo this is a very bad way of doing this (ptr to rootsystem for systemport), really need to figure out some better way
+//        GUIPort *pGuiPort = new GUIPort(pPortBoundaryInside->getGuiModelObjectName().append(", ").append(portName),
+//                                        mpIcon->boundingRect().center().x()+x,
+//                                        mpIcon->boundingRect().center().y()-y,
+//                                        &(portAppearance),
+//                                        this);
+//        mPortListPtrs.append(pGuiPort);
+
+//        //Make connectors to the group component
+//        GUIConnector *tmpConnector = new GUIConnector(pGuiPort, pPortBoundaryOutside,pTransitConnector->getPointsVector(), mpParentContainerObject);
+//        //mpParentScene->addItem(tmpConnector);
+//        this->mpParentContainerObject->getContainedScenePtr()->addItem(tmpConnector);
+//        this->showPorts(false);
+//        tmpConnector->drawConnector();
+
+//        //Delete the old connector
+//        delete pTransitConnector;
+//    }
+
+
+
+//    //Draw a cross in the center of the group component icon (debug)
+////    new QGraphicsLineItem(QLineF(this->rect().center()-QPointF(-10,-10), this->rect().center()-QPointF(10,10)),this);
+////    new QGraphicsLineItem(QLineF(this->rect().center()-QPointF(-10,10), this->rect().center()-QPointF(10,-10)),this);
+
+//    //Scale up the ports and so on
+//    //! @todo Add a method to mpSelectionBox so the lines could be scaled
+//    QList<GUIPort*>::iterator it;
+//    for (it = mPortListPtrs.begin(); it != mPortListPtrs.end(); ++it)
+//    {
+//        (*it)->setTransformOriginPoint((*it)->boundingRect().center());
+//        (*it)->setScale(1.0/scale);
+//    }
+
+}
+
+void GUIGroup::enterContainer()
+{
+    //Show this scene
+    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(getContainedScenePtr());
+    connect(gpMainWindow->mpBackButton, SIGNAL(clicked()), this, SLOT(exitContainer()));
+    gpMainWindow->mpBackButton->show();
+
+}
+
+//! @brief Exit a container and shows the parents scene instead
+void GUIGroup::exitContainer()
+{
+    gpMainWindow->mpBackButton->hide();
+    disconnect(gpMainWindow->mpBackButton, SIGNAL(clicked()), this, SLOT(exitContainer()));
+    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(this->mpParentContainerObject->getContainedScenePtr());
+
 }
 
 
 //! Shows the parent scene. Should be called to exit a group.
 void GUIGroup::showParent()
 {
-    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(this->mpParentContainerObject->getContainedScenePtr());
+//    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(this->mpParentContainerObject->getContainedScenePtr());
 
-    disconnect(gpMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
+//    disconnect(gpMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
 
-    gpMainWindow->mpBackButton->hide();
+//    gpMainWindow->mpBackButton->hide();
 
 }
 

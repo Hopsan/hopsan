@@ -51,6 +51,11 @@ public:
     bool isObjectSelected();
     bool isConnectorSelected();
 
+    //Enter and exit a container object
+    //! @todo dont know if these names are good
+    virtual void enterContainer();
+    virtual void exitContainer();
+
     //Public member variable
     //!< @todo make this private later
     QFileInfo mModelFileInfo; //!< @todo should not be public
@@ -88,6 +93,7 @@ public slots:
     void hidePorts(bool doIt);
         //Create and remove
     void createConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);
+    void groupSelected(QPointF pt);
         //CopyPaste
     void cutSelected(CopyStack *xmlStack = 0);
     void copySelected(CopyStack *xmlStack = 0);

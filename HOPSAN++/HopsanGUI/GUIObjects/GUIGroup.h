@@ -17,10 +17,15 @@ class GUIGroup : public GUIContainerObject
 {
     Q_OBJECT
 public:
-    GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *system, QGraphicsItem *parent = 0);
+    GUIGroup(QPoint position, qreal rotation, const GUIModelObjectAppearance *pAppearanceData, GUIContainerObject *system, QGraphicsItem *parent = 0);
     ~GUIGroup();
+
+    void setContents(CopyStack *pCopyStack);
 //    QString getName();
 //    void setName(QString name, bool doOnlyLocalRename=false);
+
+    void enterContainer();
+
 
     enum { Type = GUIGROUP };
     int type() const;
@@ -41,6 +46,7 @@ protected:
 
 public slots:
     void showParent();
+    void exitContainer();
 
 private:
 //    GUIPort *mpGuiPort;

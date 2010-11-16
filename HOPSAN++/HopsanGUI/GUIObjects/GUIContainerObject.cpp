@@ -608,6 +608,25 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
 }
 
 
+//! Groups the selected objects together
+void GUIContainerObject::groupSelected(QPointF pt)
+{
+    //! @todo dont hardcode group appearance like this
+    GUIModelObjectAppearance appdata;
+    appdata.setIconPathUser("subsystemtmp.svg");
+    appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
+
+    //! @todo add like all other guimodelobjects add as proper object
+    GUIGroup *pGroup = new GUIGroup(pt.toPoint(), 0.0, &appdata, this);
+    this->getContainedScenePtr()->addItem(pGroup);
+
+    CopyStack copyStack;
+    this->cutSelected(&copyStack);
+    //this->copySelected(&copyStack);
+    //pGroup->setContents(&copyStack);
+}
+
+
 //! Selects all objects and connectors.
 void GUIContainerObject::selectAll()
 {
@@ -815,12 +834,8 @@ void GUIContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     }
     else if (selectedAction == groupAction)
     {
-        //groupComponents(mpParentGraphicsScene->selectedItems());
-        GUIModelObjectAppearance appdata;
-        appdata.setIconPathUser("subsystemtmp.svg");
-        appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
-        GUIGroup *pGroup = new GUIGroup(this->scene()->selectedItems(), &appdata, mpParentContainerObject);
-        mpScene->addItem(pGroup);
+        //! @todo try to break out this and other actions into a virtual contextMenuEvent method in a base class
+        this->mpParentContainerObject->groupSelected(this->mapToScene(event->pos()).toPoint());
     }
     else if (selectedAction == showNameAction)
     {
@@ -841,17 +856,29 @@ void GUIContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
 void GUIContainerObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(mModelFileInfo.filePath().isEmpty())
-    {
-        loadFromHMF();
-    }
-    else
-    {
-        return;
-    }
+    this->enterContainer();
+//    if(mModelFileInfo.filePath().isEmpty())
+//    {
+//        loadFromHMF();
+
+//    }
+//    else
+//    {
+//        return;
+//    }
 }
 
 void GUIContainerObject::openParameterDialog()
 {
     //Do Nothing
+}
+
+void GUIContainerObject::enterContainer()
+{
+    //Nothing for now
+}
+
+void GUIContainerObject::exitContainer()
+{
+    //Nothing for now
 }

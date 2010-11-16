@@ -74,6 +74,8 @@ public slots:
     void showName();
     void setIcon(graphicsType);
 
+signals:
+    void groupSelected(QPointF pt);
 
 protected:
     //Reimplemented Qt methods
