@@ -89,9 +89,9 @@ public slots:
         //Create and remove
     void createConnector(GUIPort *pPort, undoStatus undoSettings=UNDO);
         //CopyPaste
-    void cutSelected();
-    void copySelected();
-    void paste();
+    void cutSelected(CopyStack *xmlStack = 0);
+    void copySelected(CopyStack *xmlStack = 0);
+    void paste(CopyStack *xmlStack = 0);
         //UndoRedo
     void undo();
     void redo();

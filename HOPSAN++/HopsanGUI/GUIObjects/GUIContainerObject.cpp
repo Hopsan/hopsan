@@ -487,9 +487,9 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
 //! Copies the selected components, and then deletes them.
 //! @see copySelected()
 //! @see paste()
-void GUIContainerObject::cutSelected()
+void GUIContainerObject::cutSelected(CopyStack *xmlStack)
 {
-    this->copySelected();
+    this->copySelected(xmlStack);
     emit deleteSelected();
     mpParentProjectTab->mpGraphicsView->updateViewPort();
 }
@@ -498,29 +498,33 @@ void GUIContainerObject::cutSelected()
 //! Puts the selected components in the copy stack, and their positions in the copy position stack.
 //! @see cutSelected()
 //! @see paste()
-void GUIContainerObject::copySelected()
+void GUIContainerObject::copySelected(CopyStack *xmlStack)
 {
     mUndoStack->newPost();
-
-    delete(mpParentProjectTab->mpParentProjectTabWidget->mpCopyData);
-    mpParentProjectTab->mpParentProjectTabWidget->mpCopyData = new QString;
     gCopyStack.clear();
 
+    QDomElement *copyRoot;
+    if(xmlStack == 0)
+    {
+        copyRoot = gCopyStack.getCopyRoot();
+    }
+    else
+    {
+        copyRoot = xmlStack->getCopyRoot();
+    }
 
-    QTextStream copyStream;
-    copyStream.setString(mpParentProjectTab->mpParentProjectTabWidget->mpCopyData);
-
+        //Copy components
     QList<GUIObject *>::iterator it;
     for(it = mSelectedGUIObjectsList.begin(); it!=mSelectedGUIObjectsList.end(); ++it)
     {
-        (*it)->saveToDomElement(*gCopyStack.getCopyRoot());
+        (*it)->saveToDomElement(*copyRoot);
     }
 
     for(int i = 0; i != mSubConnectorList.size(); ++i)
     {
         if(mSubConnectorList[i]->getStartPort()->getGuiModelObject()->isSelected() && mSubConnectorList[i]->getEndPort()->getGuiModelObject()->isSelected() && mSubConnectorList[i]->isActive())
         {
-            mSubConnectorList[i]->saveToDomElement(*gCopyStack.getCopyRoot());
+            mSubConnectorList[i]->saveToDomElement(*copyRoot);
         }
     }
 }
@@ -529,13 +533,20 @@ void GUIContainerObject::copySelected()
 //! Creates each item in the copy stack, and places it on its respective position in the position copy stack.
 //! @see cutSelected()
 //! @see copySelected()
-void GUIContainerObject::paste()
+void GUIContainerObject::paste(CopyStack *xmlStack)
 {
     mUndoStack->newPost();
     mpParentProjectTab->hasChanged();
 
-    QTextStream copyStream;
-    copyStream.setString(mpParentProjectTab->mpParentProjectTabWidget->mpCopyData);
+    QDomElement *copyRoot;
+    if(xmlStack == 0)
+    {
+        copyRoot = gCopyStack.getCopyRoot();
+    }
+    else
+    {
+        copyRoot = xmlStack->getCopyRoot();
+    }
 
         //Deselect all components & connectors
     emit deselectAllGUIObjects();
@@ -543,8 +554,8 @@ void GUIContainerObject::paste()
 
     QHash<QString, QString> renameMap;       //Used to track name changes, so that connectors will know what components are called
 
-        //Load components
-    QDomElement objectElement = gCopyStack.getCopyRoot()->firstChildElement("component");
+        //Paste components
+    QDomElement objectElement = copyRoot->firstChildElement("component");
     while(!objectElement.isNull())
     {
         GUIObject *pObj = loadGUIModelObject(objectElement, gpMainWindow->mpLibrary, this);
@@ -554,8 +565,8 @@ void GUIContainerObject::paste()
         objectElement = objectElement.nextSiblingElement("component");
     }
 
-        //Load connectors
-    QDomElement connectorElement = gCopyStack.getCopyRoot()->firstChildElement("connect");
+        //Paste connectors
+    QDomElement connectorElement = copyRoot->firstChildElement("connect");
     while(!connectorElement.isNull())
     {
             //Replace names of start and end component, since they likely have been changed
@@ -564,6 +575,26 @@ void GUIContainerObject::paste()
 
         loadConnector(connectorElement, this);
         connectorElement = connectorElement.nextSiblingElement("connect");
+    }
+
+        //Paste text widgets
+    QDomElement textElement = copyRoot->firstChildElement("textwidget");
+    while(!textElement.isNull())
+    {
+        loadTextWidget(textElement, this);
+        mTextWidgetList.last()->setSelected(true);
+        mTextWidgetList.last()->moveBy(-30, -30);
+        textElement = textElement.nextSiblingElement("textwidget");
+    }
+
+        //Paste box widgets
+    QDomElement boxElement = copyRoot->firstChildElement("boxwidget");
+    while(!boxElement.isNull())
+    {
+        loadBoxWidget(boxElement, this);
+        mBoxWidgetList.last()->setSelected(true);
+        mBoxWidgetList.last()->moveBy(-30, -30);
+        boxElement = boxElement.nextSiblingElement("boxwidget");
     }
 
         //Select all pasted comonents
