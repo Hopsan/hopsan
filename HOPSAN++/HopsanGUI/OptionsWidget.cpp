@@ -16,6 +16,7 @@
 #include "MainWindow.h"
 #include "GraphicsView.h"
 #include "PlotWidget.h"
+#include "Configuration.h"
 
 class ProjectTabWidget;
 

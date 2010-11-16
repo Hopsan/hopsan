@@ -17,6 +17,7 @@
 #include "GraphicsView.h"
 #include "Utilities/GUIUtilities.h"
 #include "GUIObjects/GUISystem.h"
+#include "Configuration.h"
 #include "loadObjects.h"
 
 #include "qwt_scale_engine.h"

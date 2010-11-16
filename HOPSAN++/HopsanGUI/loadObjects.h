@@ -129,7 +129,7 @@ public:
 
 GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
 GUIModelObject* loadGUIModelObject(QTextStream &rStream, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
-GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings);
+GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
 
 GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings);
 GUIObject* loadSubsystemGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings);
@@ -137,7 +137,7 @@ GUIObject* loadSubsystemGUIObject(QDomElement &rDomElement, LibraryWidget* pLibr
 
 void loadConnector(const ConnectorLoadData &rData, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
 void loadConnector(QTextStream &rStream, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
-void loadConnector(QDomElement &rDomElement, GUIContainerObject* pSystem, undoStatus undoSettings);
+void loadConnector(QDomElement &rDomElement, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
 
 void loadParameterValues(const ParameterLoadData &rData, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
 void loadParameterValues(QTextStream &rStream, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);

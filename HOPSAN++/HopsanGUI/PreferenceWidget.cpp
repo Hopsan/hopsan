@@ -16,6 +16,7 @@
 #include "MainWindow.h"
 #include "GUIObjects/GUISystem.h"
 #include "LibraryWidget.h"
+#include "Configuration.h"
 
 
 //! @brief Constructor for Model Preferences dialog

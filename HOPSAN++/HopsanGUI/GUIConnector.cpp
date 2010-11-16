@@ -14,6 +14,7 @@
 #include "ProjectTabWidget.h"
 #include "GUIObjects/GUISystem.h"
 #include "loadObjects.h"
+#include "Configuration.h"
 #include <math.h>
 
 //! @brief Constructor for connector class

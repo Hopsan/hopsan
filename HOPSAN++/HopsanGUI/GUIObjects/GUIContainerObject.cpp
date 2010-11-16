@@ -14,11 +14,16 @@
 #include "../LibraryWidget.h"
 #include "../loadObjects.h"
 #include "../CoreSystemAccess.h"
+#include "GUIObject.h"
 #include "GUIComponent.h"
 #include "GUIGroup.h"
 #include "GUISystemPort.h"
 #include "GUIWidgets.h"
 #include "GUISystem.h"
+#include "../CopyStack.h"
+
+#include <QDomElement>
+
 
 GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUIContainerObject *system, QGraphicsItem *parent)
         : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
@@ -499,6 +504,8 @@ void GUIContainerObject::copySelected()
 
     delete(mpParentProjectTab->mpParentProjectTabWidget->mpCopyData);
     mpParentProjectTab->mpParentProjectTabWidget->mpCopyData = new QString;
+    gCopyStack.clear();
+
 
     QTextStream copyStream;
     copyStream.setString(mpParentProjectTab->mpParentProjectTabWidget->mpCopyData);
@@ -506,14 +513,14 @@ void GUIContainerObject::copySelected()
     QList<GUIObject *>::iterator it;
     for(it = mSelectedGUIObjectsList.begin(); it!=mSelectedGUIObjectsList.end(); ++it)
     {
-        (*it)->saveToTextStream(copyStream, "COMPONENT");
+        (*it)->saveToDomElement(*gCopyStack.getCopyRoot());
     }
 
     for(int i = 0; i != mSubConnectorList.size(); ++i)
     {
         if(mSubConnectorList[i]->getStartPort()->getGuiModelObject()->isSelected() && mSubConnectorList[i]->getEndPort()->getGuiModelObject()->isSelected() && mSubConnectorList[i]->isActive())
         {
-            mSubConnectorList[i]->saveToTextStream(copyStream, "CONNECT");
+            mSubConnectorList[i]->saveToDomElement(*gCopyStack.getCopyRoot());
         }
     }
 }
@@ -530,78 +537,33 @@ void GUIContainerObject::paste()
     QTextStream copyStream;
     copyStream.setString(mpParentProjectTab->mpParentProjectTabWidget->mpCopyData);
 
-        //Deselect all components
+        //Deselect all components & connectors
     emit deselectAllGUIObjects();
-
-        //Deselect all connectors
     emit deselectAllGUIConnectors();
 
-
     QHash<QString, QString> renameMap;       //Used to track name changes, so that connectors will know what components are called
-    QString inputWord;
 
-    //! @todo Could we not use some common load function for the stuff bellow
-
-    while ( !copyStream.atEnd() )
+        //Load components
+    QDomElement objectElement = gCopyStack.getCopyRoot()->firstChildElement("component");
+    while(!objectElement.isNull())
     {
-        //Extract first word on line
-        copyStream >> inputWord;
+        GUIObject *pObj = loadGUIModelObject(objectElement, gpMainWindow->mpLibrary, this);
+        pObj->moveBy(-30, -30);
+        renameMap.insert(objectElement.attribute("name"), pObj->getName());
+        objectElement.setAttribute("name", renameMap.find(objectElement.attribute("name")).value());
+        objectElement = objectElement.nextSiblingElement("component");
+    }
 
-        if(inputWord == "COMPONENT")
-        {
-            //QString oldname;
-            ModelObjectLoadData data;
+        //Load connectors
+    QDomElement connectorElement = gCopyStack.getCopyRoot()->firstChildElement("connect");
+    while(!connectorElement.isNull())
+    {
+            //Replace names of start and end component, since they likely have been changed
+        connectorElement.setAttribute("startcomponent", renameMap.find(connectorElement.attribute("startcomponent")).value());
+        connectorElement.setAttribute("endcomponent", renameMap.find(connectorElement.attribute("endcomponent")).value());
 
-            //Read the data from stream
-            data.read(copyStream);
-
-            //Remember old name
-            //oldname = data.name;
-
-            //Add offset to pos (to avoid pasting on top of old data)
-            //! @todo maybe take pos from mouse cursor
-            data.posX -= 50;
-            data.posY -= 50;
-
-            //Load (create new) object
-            GUIObject *pObj = loadGUIModelObject(data,gpMainWindow->mpLibrary,this, NOUNDO);
-
-            //Remember old name, in case we want to connect later
-            renameMap.insert(data.name, pObj->getName());
-            //! @todo FINDOUT WHY: Cant select here because then the select all components bellow wont auto select the connectors DONT KNOW WHY, need to figure this out and clean up, (not that I realy nead to set selected here)
-            //pObj->setSelected(true);
-
-            mUndoStack->registerAddedObject(pObj);
-        }
-        else if ( inputWord == "PARAMETER" )
-        {
-            ParameterLoadData data;
-                //Read parameter data
-            data.read(copyStream);
-                //Replace the component name to the actual new name
-            data.componentName = renameMap.find(data.componentName).value();
-                //Load it into the new copy
-            loadParameterValues(data,this, NOUNDO);
-        }
-        else if(inputWord == "CONNECT")
-        {
-            ConnectorLoadData data;
-                //Read the data
-            data.read(copyStream);
-                //Replace component names with posiibly renamed names
-            data.startComponentName = renameMap.find(data.startComponentName).value();
-            data.endComponentName = renameMap.find(data.endComponentName).value();
-
-                //Apply offset
-            //! @todo maybe use mose pointer location
-            for (int i=0; i < data.pointVector.size(); ++i)
-            {
-                data.pointVector[i].rx() -= 50;
-                data.pointVector[i].ry() -= 50;
-            }
-
-            loadConnector(data, this, NOUNDO);
-        }
+        loadConnector(connectorElement, this);
+        connectorElement = connectorElement.nextSiblingElement("connect");
     }
 
         //Select all pasted comonents

@@ -23,11 +23,13 @@
 #include "PyDock.h"
 #include "GlobalParametersWidget.h"
 #include "Configuration.h"
+#include "CopyStack.h"
 
 #include "loadObjects.h"
 
 
 Configuration gConfig;
+CopyStack gCopyStack;
 
 //! @brief Constructor for main window
 MainWindow::MainWindow(QWidget *parent)
@@ -38,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
     //std::cout << "Starting Hopsan!";
 
     gConfig = Configuration();
+    gCopyStack = CopyStack();
 
     //QString(MAINPATH) = "../../";
     //mQString(ICONPATH) = QString(MAINPATH) + "HopsanGUI/icons/";
@@ -548,12 +551,6 @@ void MainWindow::openGlobalParametersWidget()
         }
         mpGlobalParametersDock->setWidget(mpGlobalParametersWidget);
 
-//        if( (dockWidgetArea(mpGlobalParametersDock) == dockWidgetArea(mpPlotWidgetDock)) ||
-//             dockWidgetArea(mpGlobalParametersDock) == dockWidgetArea(mpUndoWidgetDock) )
-//        {
-//            tabifyDockWidget(mpGlobalParametersDock, mpUndoWidgetDock);
-//        }
-
         mpGlobalParametersDock->show();
         mpGlobalParametersDock->raise();
     }
@@ -632,44 +629,6 @@ void MainWindow::updateRecentList()
 }
 
 
-
-
-//! @brief Make sure the values make sens.
-//! @see fixTimeStep()
-void MainWindow::fixSimulationParameterValues()
-{
-    fixFinishTime();
-    fixTimeStep();
-}
-
-
-//! @brief Make sure that the finishs time of the simulation is not smaller than start time.
-//! @see fixTimeStep()
-//! @see fixLabelValues()
-void MainWindow::fixFinishTime()
-{
-    if (getFinishTimeFromToolBar() < getStartTimeFromToolBar())
-        setFinishTimeInToolBar(getStartTimeFromToolBar());
-
-}
-
-
-//! @brief Make sure that the timestep is in the right range i.e. not larger than the simulation time.
-//! @see fixFinishTime()
-//! @see fixLabelValues()
-void MainWindow::fixTimeStep()
-{
-    //! @todo Maybe more checks, i.e. the time step should be even divided into the simulation time.
-    if (getTimeStepFromToolBar() > (getFinishTimeFromToolBar() - getStartTimeFromToolBar()))
-        setTimeStepInToolBar(getFinishTimeFromToolBar() - getStartTimeFromToolBar());
-
-    if (mpProjectTabs->getCurrentTab()) //crashes if not if statement if no tabs are there...
-    {
-        mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->setDesiredTimeStep(getTimeStepFromToolBar());
-    }
-}
-
-
 //! @brief Sets a new startvalue.
 //! @param startTime is the new value
 void MainWindow::setStartTimeInToolBar(double startTime)
@@ -727,4 +686,40 @@ double MainWindow::getTimeStepFromToolBar()
 double MainWindow::getFinishTimeFromToolBar()
 {
     return mpFinishTimeLineEdit->text().toDouble();
+}
+
+
+//! @brief Make sure the values make sens.
+//! @see fixTimeStep()
+void MainWindow::fixSimulationParameterValues()
+{
+    fixFinishTime();
+    fixTimeStep();
+}
+
+
+//! @brief Make sure that the finishs time of the simulation is not smaller than start time.
+//! @see fixTimeStep()
+//! @see fixLabelValues()
+void MainWindow::fixFinishTime()
+{
+    if (getFinishTimeFromToolBar() < getStartTimeFromToolBar())
+        setFinishTimeInToolBar(getStartTimeFromToolBar());
+
+}
+
+
+//! @brief Make sure that the timestep is in the right range i.e. not larger than the simulation time.
+//! @see fixFinishTime()
+//! @see fixLabelValues()
+void MainWindow::fixTimeStep()
+{
+    //! @todo Maybe more checks, i.e. the time step should be even divided into the simulation time.
+    if (getTimeStepFromToolBar() > (getFinishTimeFromToolBar() - getStartTimeFromToolBar()))
+        setTimeStepInToolBar(getFinishTimeFromToolBar() - getStartTimeFromToolBar());
+
+    if (mpProjectTabs->getCurrentTab()) //crashes if not if statement if no tabs are there...
+    {
+        mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->setDesiredTimeStep(getTimeStepFromToolBar());
+    }
 }

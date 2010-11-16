@@ -13,6 +13,7 @@
 #include "CoreSystemAccess.h"
 #include "MainWindow.h"
 #include <QThread>
+#include "Configuration.h"
 
 
 //! Constructor.

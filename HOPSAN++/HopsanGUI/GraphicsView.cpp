@@ -12,6 +12,7 @@
 #include "LibraryWidget.h"
 #include "loadObjects.h"
 #include "GUIObjects/GUISystem.h"
+#include "Configuration.h"
 
 using namespace std;
 

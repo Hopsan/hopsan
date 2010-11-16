@@ -13,6 +13,7 @@
 #include "MainWindow.h"
 #include "MessageWidget.h"
 #include "GUIObjects/GUIModelObjectAppearance.h"
+#include "Configuration.h"
 
 using namespace std;
 using namespace hopsan;

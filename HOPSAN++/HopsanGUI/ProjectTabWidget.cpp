@@ -37,7 +37,7 @@
 #include "GraphicsView.h"
 #include "GUIObjects/GUISystem.h"
 #include "PlotWidget.h"
-
+#include "Configuration.h"
 #include "version.h"
 #include "Utilities/GUIUtilities.h"
 #include "loadObjects.h"
@@ -575,7 +575,7 @@ bool ProjectTabWidget::closeAllProjectTabs()
 
 //! Loads a model from a file and opens it in a new project tab.
 //! @see loadModel(QString modelFileName)
-//! @see saveModel(saveTarget saveAsFlag)
+//! @see Model(saveTarget saveAsFlag)
 void ProjectTabWidget::loadModel()
 {
     QDir fileDialogOpenDir;

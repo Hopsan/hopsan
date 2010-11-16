@@ -7,6 +7,7 @@
 #include "../GUIConnector.h"
 #include "../GUIPort.h"
 #include "../UndoStack.h"
+#include "../Configuration.h"
 #include "../MainWindow.h"
 
 //! @brief Constructor for GUI Objects

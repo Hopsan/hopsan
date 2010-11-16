@@ -40,7 +40,8 @@ SOURCES += main.cpp \
     GUIObjects/GUIComponent.cpp \
     Utilities/XMLUtilities.cpp \
     Utilities/GUIUtilities.cpp \
-    Configuration.cpp
+    Configuration.cpp \
+    CopyStack.cpp
 
 HEADERS += MainWindow.h \
     ProjectTabWidget.h \
@@ -81,7 +82,8 @@ HEADERS += MainWindow.h \
     GUIObjects/GUIComponent.h \
     Utilities/XMLUtilities.h \
     Utilities/GUIUtilities.h \
-    Configuration.h
+    Configuration.h \
+    CopyStack.h
 
 OTHER_FILES += 
 

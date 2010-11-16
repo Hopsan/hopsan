@@ -23,6 +23,7 @@ class PlotWidget;
 class PyDock;
 class GlobalParametersWidget;
 class Configuration;
+class CopyStack;
 
 class MainWindow : public QMainWindow
 {

@@ -12,6 +12,7 @@
 #include "ProjectTabWidget.h"
 #include "CoreSystemAccess.h"
 #include "MainWindow.h"
+#include "Configuration.h"
 
 
 //! @class SimulationThread
