@@ -78,15 +78,15 @@ void GUISystem::commonConstructorCode()
 //    mGfxType = USERGRAPHICS;
     mNumberOfLogSamples = 2048;
 
-        //Establish connections
-    //connect(this->systemPortAction, SIGNAL(triggered()), SLOT(addSystemPort()));
-    connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()));
-    connect(gpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
-    connect(gpMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
-    connect(gpMainWindow->mpUndoWidget->getUndoButton(), SIGNAL(pressed()), this, SLOT(undo()));
-    connect(gpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(pressed()), this, SLOT(redo()));
-    connect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(pressed()), this, SLOT(clearUndo()));
-    connect(gpMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this, SLOT(hidePorts(bool)));
+//        //Establish connections
+//    //connect(this->systemPortAction, SIGNAL(triggered()), SLOT(addSystemPort()));
+//    connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()));
+//    connect(gpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
+//    connect(gpMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
+//    connect(gpMainWindow->mpUndoWidget->getUndoButton(), SIGNAL(pressed()), this, SLOT(undo()));
+//    connect(gpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(pressed()), this, SLOT(redo()));
+//    connect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(pressed()), this, SLOT(clearUndo()));
+//    connect(gpMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this, SLOT(hidePorts(bool)));
 
     //Create the object in core, and update name
     if (this->mpParentContainerObject == 0)
@@ -94,8 +94,9 @@ void GUISystem::commonConstructorCode()
         //Create root system
         qDebug() << "creating ROOT access system";
         mpCoreSystemAccess = new CoreSystemAccess();
-        mpCoreSystemAccess->setRootSystemName("RootSystem");
-        this->setDisplayName(mpCoreSystemAccess->getRootSystemName());
+        this->setName("RootSystem");
+//        mpCoreSystemAccess->setRootSystemName("RootSystem");
+//        this->setDisplayName(mpCoreSystemAccess->getRootSystemName());
     }
     else
     {
@@ -121,7 +122,6 @@ void GUISystem::setName(QString newName)
 {
     if (mpParentContainerObject == 0)
     {
-        //! @todo This means that the display name will appearn in the graphics view, since it belongs to the systems scene for some reason...
         setDisplayName(mpCoreSystemAccess->setRootSystemName(newName));
     }
     else

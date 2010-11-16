@@ -59,7 +59,7 @@ CoreSystemAccess* GUIGroup::getCoreSystemAccessPtr()
 GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *system, QGraphicsItem *parent)
     :   GUIContainerObject(QPoint(0.0,0.0), 0, pAppearanceData, DESELECTED, USERGRAPHICS, system, parent)
 {
-    mpParentScene = system->getContainedScenePtr();
+    //mpParentScene = system->getContainedScenePtr();
 
     //Set the hmf save tag name
     mHmfTagName = HMF_GROUPTAG;
@@ -107,7 +107,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAp
     }
 
     //Constructs a new scene for the group
-    mpGroupScene = new GraphicsScene(mpParentContainerObject->mpParentProjectTab);
+    //getContainedScenePtr() = new GraphicsScene(mpParentContainerObject->mpParentProjectTab);
 
     double xMin = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
            xMax = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
@@ -116,7 +116,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAp
     for (int i=0; i < mGUICompList.size(); ++i)
     {
         //Add the components in the group to the group scene
-        mpGroupScene->addItem(mGUICompList.at(i));
+        getContainedScenePtr()->addItem(mGUICompList.at(i));
 
         //Find the rect for the selscted items (the group)
         if (mGUICompList.at(i)->x()+mGUICompList.at(i)->rect().width()/2.0 < xMin)
@@ -134,19 +134,19 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAp
     for (int i=0; i < mGUIConnList.size(); ++i)
     {
         //Add the connections in the group to the group scene
-        mpGroupScene->addItem(mGUIConnList.at(i));
+        getContainedScenePtr()->addItem(mGUIConnList.at(i));
     }
 
-    mpGroupScene->setSceneRect(0,0,0,0); //Dirty(?) fix to re-calculate the correct scenerect
-    QPointF sceneCenterPointF = mpGroupScene->sceneRect().center();
+    getContainedScenePtr()->setSceneRect(0,0,0,0); //Dirty(?) fix to re-calculate the correct scenerect
+    QPointF sceneCenterPointF = getContainedScenePtr()->sceneRect().center();
 
     //Draw a cross in the center of the scene (just for debugging)
-//    mpGroupScene->addLine(-10+sceneCenterPointF.x(), -10+sceneCenterPointF.y(), 10+sceneCenterPointF.x(), 10+sceneCenterPointF.y());
-//    mpGroupScene->addLine(10+sceneCenterPointF.x(), -10+sceneCenterPointF.y(), -10+sceneCenterPointF.x(), 10+sceneCenterPointF.y());
-//    qDebug() << "Center: " << sceneCenterPointF << mpGroupScene->sceneRect();
+//    getContainedScenePtr()->addLine(-10+sceneCenterPointF.x(), -10+sceneCenterPointF.y(), 10+sceneCenterPointF.x(), 10+sceneCenterPointF.y());
+//    getContainedScenePtr()->addLine(10+sceneCenterPointF.x(), -10+sceneCenterPointF.y(), -10+sceneCenterPointF.x(), 10+sceneCenterPointF.y());
+//    qDebug() << "Center: " << sceneCenterPointF << getContainedScenePtr()->sceneRect();
 
     //Adjusts the size of the group component icon
-    double scale = 1.0;//.75*min(mpGroupScene->sceneRect().width()/this->boundingRect().width(),mpGroupScene->sceneRect().height()/this->boundingRect().height());
+    double scale = 1.0;//.75*min(getContainedScenePtr()->sceneRect().width()/this->boundingRect().width(),getContainedScenePtr()->sceneRect().height()/this->boundingRect().height());
     this->setTransformOriginPoint(this->boundingRect().center());
     this->setScale(scale);
 
@@ -200,17 +200,17 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAp
             points.append(pPort->mapToScene(pPort->boundingRect().center())); //! @todo GUIConnector should handle any number of points e.g. 0, 1 or 2
             points.append(pPort->mapToScene(pPort->boundingRect().center()));
             GUIConnector *pInsideConnector = new GUIConnector(pPortBoundaryInside, pPort, points, mpParentContainerObject);
-            mpGroupScene->addItem(pInsideConnector);
+            getContainedScenePtr()->addItem(pInsideConnector);
 
 //            pGroupPortComponent->addConnector(pInsideConnector);
-            mpGroupScene->addItem(pGroupPortComponent);
+            getContainedScenePtr()->addItem(pGroupPortComponent);
             pGroupPortComponent->showPorts(false);
 
         }
 
         //A line from center to port, used to determine the angle
         QLineF line(QPointF(sceneCenterPointF.x(), sceneCenterPointF.y()), QPointF(groupPortPoint.x(), groupPortPoint.y()));
-//        mpGroupScene->addLine(line); //(just for debugging)
+//        getContainedScenePtr()->addLine(line); //(just for debugging)
         //Determine the placement of the ports on the group icon
         double vinkel=line.angle()*3.141592/180.0;
         double b = mpIcon->boundingRect().width()/2.0;
@@ -233,7 +233,8 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAp
 
         //Make connectors to the group component
         GUIConnector *tmpConnector = new GUIConnector(pGuiPort, pPortBoundaryOutside,pTransitConnector->getPointsVector(), mpParentContainerObject);
-        mpParentScene->addItem(tmpConnector);
+        //mpParentScene->addItem(tmpConnector);
+        this->mpParentContainerObject->getContainedScenePtr()->addItem(tmpConnector);
         this->showPorts(false);
         tmpConnector->drawConnector();
 
@@ -242,7 +243,7 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAp
     }
 
     //Show this scene
-    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(mpGroupScene);
+    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(getContainedScenePtr());
     gpMainWindow->mpBackButton->show();
 
     //Draw a cross in the center of the group component icon (debug)
@@ -258,7 +259,8 @@ GUIGroup::GUIGroup(QList<QGraphicsItem*> compList, GUIModelObjectAppearance* pAp
         (*it)->setScale(1.0/scale);
     }
 
-    this->mpParentScene->addItem(this);
+    //this->mpParentScene->addItem(this);
+    this->mpParentContainerObject->getContainedScenePtr()->addItem(this);
 
     connect(gpMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
 
@@ -275,31 +277,32 @@ GUIGroup::~GUIGroup()
     }
 
 
-    QList<QGraphicsItem*> objectsInScenePtrs = mpGroupScene->items();
+    QList<QGraphicsItem*> objectsInScenePtrs = getContainedScenePtr()->items();
     QList<QGraphicsItem*>::iterator it;
     for(it=objectsInScenePtrs.begin(); it != objectsInScenePtrs.end(); ++it)
     {
         //! @todo Will cause crash when closing program if the GUIObject has already been deleted by the scene.
         mpParentContainerObject->deleteGUIModelObject(this->getName());
         GUIComponent *pGUIComponent = qgraphicsitem_cast<GUIComponent*>(*it);
-        mpGroupScene->removeItem((*it));
+        getContainedScenePtr()->removeItem((*it));
 
         if(pGUIComponent)
         {
             qDebug() << "Add this to parent scene: " << pGUIComponent->getName();
-            mpParentScene->addItem(pGUIComponent);
+            //mpParentScene->addItem(pGUIComponent);
+            this->mpParentContainerObject->getContainedScenePtr()->addItem(pGUIComponent);
         }
         //mpParentScene->addItem((*it));
     }
     qDebug() << "mpParentSystem->deleteGUIModelObject(this->getName()), getName:" << this->getName();
-    //delete mpGroupScene;
+    //delete getContainedScenePtr();
 }
 
 
 //! Shows the parent scene. Should be called to exit a group.
 void GUIGroup::showParent()
 {
-    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(mpParentScene);
+    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(this->mpParentContainerObject->getContainedScenePtr());
 
     disconnect(gpMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
 
@@ -330,7 +333,7 @@ void GUIGroup::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 void GUIGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mouseDoubleClickEvent(event);
-    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(mpGroupScene);
+    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(getContainedScenePtr());
 
     gpMainWindow->mpBackButton->show();
 

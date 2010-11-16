@@ -10,14 +10,14 @@
 
 #include "GUIContainerObject.h"
 //#include "CoreSystemAccess.h"
-#include "GUIWidgets.h"
+//#include "GUIWidgets.h"
 #include "common.h"
 
 //Forward Declaration
 class ProjectTab;
-class UndoStack;
-class MainWindow;
-class GraphicsScene;
+//class UndoStack;
+//class MainWindow;
+//class GraphicsScene;
 
 
 class GUISystem : public GUIContainerObject
@@ -133,7 +133,7 @@ signals:
 //    void deselectAllGUIConnectors();
 //    void selectAllGUIConnectors();
 //    void setAllGfxType(graphicsType);
-    void checkMessages();
+//    void checkMessages();
 //    void deleteSelected();
 //    void componentChanged();
 
@@ -156,7 +156,7 @@ private:
     double mTimeStep;
     size_t mNumberOfLogSamples;
 
-    bool   mIsEmbedded;
+    //bool   mIsEmbedded;
     QString mLoadType;
 
     CoreSystemAccess *mpCoreSystemAccess;

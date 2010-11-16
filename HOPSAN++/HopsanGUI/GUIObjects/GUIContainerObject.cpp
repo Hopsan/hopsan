@@ -40,6 +40,16 @@ GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GU
     //Create the undastack
     mUndoStack = new UndoStack(this);
 
+    //Establish connections
+    //connect(this->systemPortAction, SIGNAL(triggered()), SLOT(addSystemPort()));
+    connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()));
+    connect(gpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
+    connect(gpMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
+    connect(gpMainWindow->mpUndoWidget->getUndoButton(), SIGNAL(pressed()), this, SLOT(undo()));
+    connect(gpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(pressed()), this, SLOT(redo()));
+    connect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(pressed()), this, SLOT(clearUndo()));
+    connect(gpMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this, SLOT(hidePorts(bool)));
+
 
 }
 
@@ -91,14 +101,14 @@ void GUIContainerObject::calcSubsystemPortPosition(const double w, const double 
 }
 
 
-CoreSystemAccess* GUIContainerObject::getCoreSystemAccessPtr()
+CoreSystemAccess *GUIContainerObject::getCoreSystemAccessPtr()
 {
     //Should be overloaded
     return 0;
 }
 
 //! @brief Retunrs a pointer to the contained scene
-GraphicsScene* GUIContainerObject::getContainedScenePtr()
+GraphicsScene *GUIContainerObject::getContainedScenePtr()
 {
     return this->mpScene;
 }
@@ -143,14 +153,14 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* 
     emit deselectAllGUIConnectors();
 
     QString componentTypeName = pAppearanceData->getTypeName();
-    qDebug()  << "Add GUIModelObject, typename: " << componentTypeName << " displayname: " << pAppearanceData->getName() << " systemname: " << this->getName();
+    qDebug()  << "Adding GUIModelObject, typename: " << componentTypeName << " displayname: " << pAppearanceData->getName() << " systemname: " << this->getName();
     if (componentTypeName == "Subsystem")
     {
         mpTempGUIModelObject= new GUISystem(position, rotation, pAppearanceData, this, startSelected, mGfxType);
     }
-    else if (componentTypeName == "SystemPort")
+    else if (componentTypeName == "SystemPort") //!< @todo dont hardcode
     {
-        qDebug() << "======================================================Loading systemport";
+        //qDebug() << "======================================================Loading systemport";
         mpTempGUIModelObject = new GUISystemPort(pAppearanceData, position, rotation, this, startSelected, mGfxType);
     }
     else //Assume some standard component type

@@ -11,7 +11,7 @@ class ProjectTab;
 class UndoStack;
 class MainWindow;
 class GraphicsScene;
-class GUIContainerObject;
+//class GUIContainerObject;
 
 class GUIContainerObject : public GUIModelObject
 {
@@ -22,20 +22,20 @@ public:
     void makeRootSystem();
 
     //Scene and Core access
-    GraphicsScene* getContainedScenePtr();
-    virtual CoreSystemAccess* getCoreSystemAccessPtr();
+    GraphicsScene *getContainedScenePtr();
+    virtual CoreSystemAccess *getCoreSystemAccessPtr();
 
     //Handle GuiModelObjects and GuiWidgets
     void addTextWidget(QPoint position);
     void addBoxWidget(QPoint position);
-    GUIModelObject* addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
+    GUIModelObject *addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
     GUIModelObject *getGUIModelObject(QString name);
     void deleteGUIModelObject(QString componentName, undoStatus undoSettings=UNDO);
     void renameGUIModelObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
     bool haveGUIModelObject(QString name);
 
     //Handle connectors
-    GUIConnector* findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
+    GUIConnector *findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
     void removeConnector(GUIConnector* pConnector, undoStatus undoSettings=UNDO);
     void setIsCreatingConnector(bool isCreatingConnector);
     bool getIsCreatingConnector();

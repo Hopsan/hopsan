@@ -30,8 +30,8 @@ public:
     CoreSystemAccess* getCoreSystemAccessPtr();
 
 protected:
-    GraphicsScene *mpParentScene;
-    GraphicsScene *mpGroupScene;
+    //GraphicsScene *mpParentScene;
+    //GraphicsScene *mpGroupScene;
 
     QList<GUIModelObject*> mGUICompList;
     QList<GUIConnector*> mGUIConnList;
