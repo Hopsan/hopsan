@@ -44,6 +44,7 @@ GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GU
 
     //Create the undastack
     mUndoStack = new UndoStack(this);
+    mUndoStack->clear();
 
     //Establish connections
     //connect(this->systemPortAction, SIGNAL(triggered()), SLOT(addSystemPort()));
