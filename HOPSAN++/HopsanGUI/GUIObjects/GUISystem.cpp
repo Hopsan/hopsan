@@ -33,6 +33,7 @@ GUISystem::GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *parent)
 {
     this->mpParentProjectTab = parentProjectTab;
     this->commonConstructorCode();
+    this->mUndoStack->newPost();
 }
 
 GUISystem::~GUISystem()

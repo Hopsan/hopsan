@@ -352,6 +352,7 @@ GUIConnector* GUIContainerObject::findConnector(QString startComp, QString start
             break;
         }
     }
+    assert(!item == 0);
     return item;
 }
 
@@ -559,7 +560,12 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
     while(!objectElement.isNull())
     {
         GUIObject *pObj = loadGUIModelObject(objectElement, gpMainWindow->mpLibrary, this);
+
+            //Apply offset to pasted object
+        QPointF oldPos = pObj->pos();
         pObj->moveBy(-30, -30);
+        mUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
+
         renameMap.insert(objectElement.attribute("name"), pObj->getName());
         objectElement.setAttribute("name", renameMap.find(objectElement.attribute("name")).value());
         objectElement = objectElement.nextSiblingElement("component");
@@ -574,6 +580,13 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
         connectorElement.setAttribute("endcomponent", renameMap.find(connectorElement.attribute("endcomponent")).value());
 
         loadConnector(connectorElement, this);
+
+        GUIConnector *tempConnector = this->findConnector(connectorElement.attribute("startcomponent"), connectorElement.attribute("startport"),
+                                                          connectorElement.attribute("endcomponent"), connectorElement.attribute("endport"));
+        //this->removeConnector(tempConnector);
+        tempConnector->moveAllPoints(-30, -30);
+        tempConnector->drawConnector();
+
         connectorElement = connectorElement.nextSiblingElement("connect");
     }
 

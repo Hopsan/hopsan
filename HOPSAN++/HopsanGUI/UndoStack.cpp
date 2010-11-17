@@ -28,6 +28,8 @@
 #include "Utilities/GUIUtilities.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
+#include "MessageWidget.h"
+
 
 //! @brief Constructor for the undo stack
 //! @param parentSystem Pointer to the current system
@@ -35,7 +37,6 @@ UndoStack::UndoStack(GUIContainerObject *parentSystem) : QObject()
 {
     mpParentContainerObject = parentSystem;
     mCurrentStackPosition = -1;
-    mStack.clear();
 }
 
 
@@ -43,154 +44,150 @@ UndoStack::UndoStack(GUIContainerObject *parentSystem) : QObject()
 void UndoStack::clear()
 {
     mCurrentStackPosition = -1;
-    mStack.clear();
-    newPost();
+    mUndoRoot.clear();
+    mUndoRoot = mDomDocument.createElement("hopsanundo");
+    mDomDocument.appendChild(mUndoRoot);
+    QDomElement firstPost = appendDomElement(mUndoRoot, "post");
+    firstPost.setAttribute("number", mCurrentStackPosition);
 }
 
 
 //! @brief Adds a new empty post to the undo stack
 void UndoStack::newPost()
 {
-    int tempSize = mStack.size()-1;
-    for(int i = mCurrentStackPosition; i != tempSize; ++i)
+    ++mCurrentStackPosition;
+    QDomElement maybeDeletePost = mUndoRoot.firstChildElement("post");
+    while(!maybeDeletePost.isNull())
     {
-        mStack.pop_back();
+        QDomElement tempPost = maybeDeletePost;
+        maybeDeletePost = maybeDeletePost.nextSiblingElement("post");
+        if(tempPost.attribute("number").toInt() > mCurrentStackPosition-1)
+        {
+            mUndoRoot.removeChild(tempPost);
+        }
     }
+    QDomElement newPost = appendDomElement(mUndoRoot, "post");
+    newPost.setAttribute("number", mCurrentStackPosition);
 
-    if(mCurrentStackPosition < 0)
-    {
-        QList<QString> tempList;
-        mStack.append(tempList);
-        mCurrentStackPosition = 0;
-    }
-    else if(!mStack[mCurrentStackPosition].empty())
-    {
-        QList<QString> tempList;
-        mStack.append(tempList);
-        ++mCurrentStackPosition;
-    }
     gpMainWindow->mpUndoWidget->refreshList();
-}
-
-
-//! @brief Inserts an undo post to the current stack position
-void UndoStack::insertPost(QString str)
-{
-    if(mCurrentStackPosition < 0)
-    {
-        this->clear();
-    }
-    if(!mpParentContainerObject->mUndoDisabled)
-    {
-        mStack[mCurrentStackPosition].insert(0,str);
-        gpMainWindow->mpUndoWidget->refreshList();
-    }
 }
 
 
 //! @brief Will undo the changes registered in the last stack position, and switch stack pointer one step back
 void UndoStack::undoOneStep()
 {
-    int undoPosition = mCurrentStackPosition;
-    if(mCurrentStackPosition < 0)
+    bool didSomething = false;
+    QList<QDomElement> connectorList;
+    QList<QDomElement> deletedList;
+    QDomElement stuffElement = getCurrentPost().firstChildElement("stuff");
+    while(!stuffElement.isNull())
     {
-        undoPosition = -1;
-    }
-    else
-    {
-        while( mStack[undoPosition].empty() && (undoPosition != 0) )
+        didSomething = true;
+        if(stuffElement.attribute("what") == "deletedobject")
         {
-            --undoPosition;
+            QDomElement componentElement = stuffElement.firstChildElement("component");
+            loadGUIModelObject(componentElement, gpMainWindow->mpLibrary, mpParentContainerObject, NOUNDO);
         }
-    }
-
-    if(undoPosition > -1)
-    {
-        for(int i = 0; i < mStack[undoPosition].size(); ++i)
+        else if(stuffElement.attribute("what") == "addedobject")
         {
-            QString undoevent;
-            QTextStream poststream(&mStack[undoPosition][i]);
-            poststream >> undoevent;
-
-            if( undoevent == "DELETEDOBJECT" )
-            {
-                //poststream >> junk; //Discard Component load command
-                ////! @todo maybe we should not save it automatically in the guiobject maby let some other external save function add it
-                loadGUIModelObject(poststream, gpMainWindow->mpLibrary,  mpParentContainerObject, NOUNDO);
-            }
-            else if ( undoevent == "DELETEDCONNECTOR" )
-            {
-                loadConnector(poststream, mpParentContainerObject, NOUNDO);
-            }
-            else if( undoevent == "ADDEDOBJECT" )
-            {
-                //! @todo Maybe we only need to save the name
-                readName(poststream); //Discard Type
-                QString name = readName(poststream); //Store name
-                mpParentContainerObject->deleteGUIModelObject(name, NOUNDO);
-            }
-            else if( undoevent == "ADDEDCONNECTOR" )
-            {
-                //! @todo Do we really need to save the entire connector for this
-                QString startCompName = readName(poststream);
-                QString startPortName = readName(poststream);
-                QString endCompName = readName(poststream);
-                QString endPortName = readName(poststream);
-                GUIConnector *item = mpParentContainerObject->findConnector(startCompName, startPortName, endCompName, endPortName);
-                mpParentContainerObject->removeConnector(item, NOUNDO);
-            }
-            else if( undoevent == "RENAMEDOBJECT" )     //! @todo This does not affect the GUIObject name! (but removes undo post...)
-            {
-                QString oldName = readName(poststream);
-                QString newName = readName(poststream);
-                mpParentContainerObject->renameGUIModelObject(newName, oldName, NOUNDO);
-            }
-            else if( undoevent == "MODIFIEDCONNECTOR" )
-            {
-                QPointF oldPt, newPt;
-                int lineNumber;
-
-                QString startComp = readName(poststream);
-                QString startPort = readName(poststream);
-                QString endComp = readName(poststream);
-                QString endPort = readName(poststream);
-                poststream >> oldPt.rx() >> oldPt.ry() >> newPt.rx() >> newPt.ry() >> lineNumber;
-                GUIConnector *item = mpParentContainerObject->findConnector(startComp, startPort, endComp, endPort);
-
-                QPointF dXY = newPt-oldPt;
-                item->getLine(lineNumber)->setPos(item->getLine(lineNumber)->pos()-dXY);
-                item->updateLine(lineNumber);
-            }
-            else if( undoevent == "MOVEDOBJECT" )
-            {
-                QPointF oldPt, newPt;
-                QString name = readName(poststream);
-                poststream >> oldPt.rx() >> oldPt.ry() >> newPt.rx() >> newPt.ry();
-                mpParentContainerObject->getGUIModelObject(name)->setPos(oldPt);
-            }
-            else if( undoevent == "ROTATEDOBJECT" )
-            {
-                QString name = readName(poststream);
-                //! @todo This feels wierd, why rotate three times
-                mpParentContainerObject->getGUIModelObject(name)->rotate(NOUNDO);
-                mpParentContainerObject->getGUIModelObject(name)->rotate(NOUNDO);
-                mpParentContainerObject->getGUIModelObject(name)->rotate(NOUNDO);
-            }
-            else if( undoevent == "VERTICALFLIP" )
-            {
-                QString name = readName(poststream);
-                mpParentContainerObject->getGUIModelObject(name)->flipVertical(NOUNDO);
-            }
-            else if( undoevent == "HORIZONTALFLIP" )
-            {
-                QString name = readName(poststream);
-                mpParentContainerObject->getGUIModelObject(name)->flipHorizontal(NOUNDO);
-            }
+            QDomElement componentElement = stuffElement.firstChildElement("component");
+            deletedList.append(componentElement);
         }
-        mCurrentStackPosition = undoPosition - 1;
+        else if(stuffElement.attribute("what") == "deletedconnector")
+        {
+            QDomElement connectorElement = stuffElement.firstChildElement("connect");
+            connectorList.append(connectorElement);
+        }
+        else if(stuffElement.attribute("what") == "addedconnector")
+        {
+            QDomElement connectorElement = stuffElement.firstChildElement("connect");
+            QString startComponent = connectorElement.attribute("startcomponent");
+            QString startPort = connectorElement.attribute("startport");
+            QString endComponent = connectorElement.attribute("endcomponent");
+            QString endPort = connectorElement.attribute("endport");
+            mpParentContainerObject->removeConnector(mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort), NOUNDO);
+        }
+        else if(stuffElement.attribute("what") == "rename")
+        {
+            QString newName = stuffElement.attribute("newname");
+            QString oldName = stuffElement.attribute("oldname");
+            mpParentContainerObject->renameGUIModelObject(newName, oldName, NOUNDO);
+        }
+        else if(stuffElement.attribute("what") == "modifiedconnector")
+        {
+            double tempX, tempY;
+            QDomElement oldPosElement = stuffElement.firstChildElement("oldpos");
+            parseDomValueNode2(oldPosElement, tempX, tempY);
+            QPointF oldPos = QPointF(tempX, tempY);
+            QDomElement newPosElement = stuffElement.firstChildElement("newpos");
+            parseDomValueNode2(newPosElement, tempX, tempY);
+            QPointF newPos = QPointF(tempX, tempY);
 
-        mpParentContainerObject->mpParentProjectTab->mpGraphicsView->updateViewPort();
+            int lineNumber = stuffElement.attribute("linenumber").toDouble();
+
+            QDomElement connectorElement = stuffElement.firstChildElement("connect");
+            QString startComponent = connectorElement.attribute("startcomponent");
+            QString startPort = connectorElement.attribute("startport");
+            QString endComponent = connectorElement.attribute("endcomponent");
+            QString endPort = connectorElement.attribute("endport");
+
+            QPointF dXY = newPos-oldPos;
+            GUIConnector *item = mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort);
+
+            item->getLine(lineNumber)->setPos(item->getLine(lineNumber)->pos()-dXY);
+            item->updateLine(lineNumber);
+        }
+        else if(stuffElement.attribute("what") == "movedobject")
+        {
+            double x, y;
+            QDomElement oldPosElement = stuffElement.firstChildElement("oldpos");
+            parseDomValueNode2(oldPosElement, x, y);
+            QString name = stuffElement.attribute("name");
+            mpParentContainerObject->getGUIModelObject(name)->setPos(x, y);
+        }
+        else if(stuffElement.attribute("what") == "rotate")
+        {
+            QDomElement componentElement = stuffElement.firstChildElement("component");
+            QString name = componentElement.attribute("name");
+            //! @todo Make a function for rotation clockwise, this is crazy!
+            mpParentContainerObject->getGUIModelObject(name)->rotate(NOUNDO);
+            mpParentContainerObject->getGUIModelObject(name)->rotate(NOUNDO);
+            mpParentContainerObject->getGUIModelObject(name)->rotate(NOUNDO);
+        }
+        else if(stuffElement.attribute("what") == "verticalflip")
+        {
+            QDomElement componentElement = stuffElement.firstChildElement("component");
+            QString name = componentElement.attribute("name");
+            mpParentContainerObject->getGUIModelObject(name)->flipVertical(NOUNDO);
+        }
+        else if(stuffElement.attribute("what") == "rotate")
+        {
+            QDomElement componentElement = stuffElement.firstChildElement("component");
+            QString name = componentElement.attribute("name");
+            mpParentContainerObject->getGUIModelObject(name)->flipHorizontal(NOUNDO);
+        }
+        stuffElement = stuffElement.nextSiblingElement("stuff");
     }
+
+        //Create connectors after everything else, to make sure components are created before connectors
+    QList<QDomElement>::iterator it;
+    for(it=connectorList.begin(); it!=connectorList.end(); ++it)
+    {
+        loadConnector(*it, mpParentContainerObject, NOUNDO);
+    }
+
+    for(it = deletedList.begin(); it!=deletedList.end(); ++it)
+    {
+        QString name = (*it).attribute("name");
+        this->mpParentContainerObject->deleteGUIModelObject(name, NOUNDO);
+    }
+
+        //Reduce stack position if something was done (otherwise stack is empty)
+    if(didSomething)
+    {
+        mCurrentStackPosition--;
+    }
+
     gpMainWindow->mpUndoWidget->refreshList();
 }
 
@@ -198,79 +195,111 @@ void UndoStack::undoOneStep()
 //! @brief Will redo the previously undone changes if they exist, and re-add the undo command to the undo stack.
 void UndoStack::redoOneStep()
 {
-    if( (mCurrentStackPosition != mStack.size()-1) && (!mStack[mCurrentStackPosition+1].empty()) )
+    bool didSomething = false;
+    ++mCurrentStackPosition;
+    QList<QDomElement> connectorList;
+    QDomElement stuffElement = getCurrentPost().firstChildElement("stuff");
+    while(!stuffElement.isNull())
     {
-        ++mCurrentStackPosition;
-        for(int i = mStack[mCurrentStackPosition].size()-1; i > -1; --i)
+        didSomething = true;
+        if(stuffElement.attribute("what") == "deletedobject")
         {
-            QString redoevent;
-            QTextStream poststream (&mStack[mCurrentStackPosition][i]);
-            poststream >> redoevent;
-
-            //qDebug() << "REDO: " << redoevent;
-            if( redoevent == "DELETEDOBJECT" )
-            {
-                readName(poststream); //Discard Type
-                QString name = readName(poststream); //Store name
-                mpParentContainerObject->deleteGUIModelObject(name, NOUNDO);
-            }
-            else if ( redoevent == "DELETEDCONNECTOR" )
-            {
-                //! @todo Do we really need to save the entire connector for this
-                QString startCompName = readName(poststream);
-                QString startPortName = readName(poststream);
-                QString endCompName = readName(poststream);
-                QString endPortName = readName(poststream);
-                GUIConnector *item = mpParentContainerObject->findConnector(startCompName, startPortName, endCompName, endPortName);
-                mpParentContainerObject->removeConnector(item, NOUNDO);
-            }
-            else if( redoevent == "ADDEDOBJECT" )
-            {
-                  loadGUIModelObject(poststream, gpMainWindow->mpLibrary,  mpParentContainerObject, NOUNDO);
-            }
-            else if( redoevent == "ADDEDCONNECTOR" )
-            {
-                loadConnector(poststream, mpParentContainerObject, NOUNDO);
-            }
-            else if( redoevent == "RENAMEDOBJECT" )
-            {
-                QString oldName = readName(poststream);
-                QString newName = readName(poststream);
-                mpParentContainerObject->renameGUIModelObject(oldName, newName, NOUNDO);
-            }
-            else if( redoevent == "MODIFIEDCONNECTOR" )
-            {
-                QPointF oldPt, newPt;
-                int lineNumber;
-                QString startComp = readName(poststream);
-                QString startPort = readName(poststream);
-                QString endComp = readName(poststream);
-                QString endPort = readName(poststream);
-                poststream >> oldPt.rx() >> oldPt.ry() >> newPt.rx() >> newPt.ry() >> lineNumber;
-
-                GUIConnector *item = mpParentContainerObject->findConnector(startComp, startPort, endComp, endPort);
-
-                QPointF dXY = newPt-oldPt;
-                item->getLine(lineNumber)->setPos(item->getLine(lineNumber)->pos()+dXY);
-                item->updateLine(lineNumber);
-            }
-            else if( redoevent == "MOVEDOBJECT" )
-            {
-                QPointF oldPt, newPt;
-                QString name = readName(poststream);
-                poststream >> oldPt.rx() >> oldPt.ry() >> newPt.rx() >> newPt.ry();
-                mpParentContainerObject->getGUIModelObject(name)->setPos(newPt);
-            }
-            else if( redoevent == "ROTATEDOBJECT" )
-            {
-                QString name;
-                name = readName(poststream);
-                //! @todo This feels wierd, why rotate one time
-                mpParentContainerObject->getGUIModelObject(name)->rotate(NOUNDO);
-            }
+            QDomElement componentElement = stuffElement.firstChildElement("component");
+            QString name = componentElement.attribute("name");
+            this->mpParentContainerObject->deleteGUIModelObject(name, NOUNDO);
         }
-        mpParentContainerObject->mpParentProjectTab->mpGraphicsView->updateViewPort();
+        else if(stuffElement.attribute("what") == "addedobject")
+        {
+            QDomElement componentElement = stuffElement.firstChildElement("component");
+            loadGUIModelObject(componentElement, gpMainWindow->mpLibrary, mpParentContainerObject, NOUNDO);
+        }
+        else if(stuffElement.attribute("what") == "deletedconnector")
+        {
+            QDomElement connectorElement = stuffElement.firstChildElement("connect");
+            QString startComponent = connectorElement.attribute("startcomponent");
+            QString startPort = connectorElement.attribute("startport");
+            QString endComponent = connectorElement.attribute("endcomponent");
+            QString endPort = connectorElement.attribute("endport");
+
+            mpParentContainerObject->removeConnector(mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort), NOUNDO);
+        }
+        else if(stuffElement.attribute("what") == "addedconnector")
+        {
+            QDomElement connectorElement = stuffElement.firstChildElement("connect");
+            connectorList.append(connectorElement);
+        }
+        else if(stuffElement.attribute("what") == "rename")
+        {
+            QString newName = stuffElement.attribute("newname");
+            QString oldName = stuffElement.attribute("oldname");
+            mpParentContainerObject->renameGUIModelObject(oldName, newName, NOUNDO);
+        }
+        else if(stuffElement.attribute("what") == "modifiedconnector")
+        {
+            double tempX, tempY;
+            QDomElement oldPosElement = stuffElement.firstChildElement("oldpos");
+            parseDomValueNode2(oldPosElement, tempX, tempY);
+            QPointF oldPos = QPointF(tempX, tempY);
+            QDomElement newPosElement = stuffElement.firstChildElement("newpos");
+            parseDomValueNode2(newPosElement, tempX, tempY);
+            QPointF newPos = QPointF(tempX, tempY);
+
+            int lineNumber = stuffElement.attribute("linenumber").toDouble();
+
+            QDomElement connectorElement = stuffElement.firstChildElement("connect");
+            QString startComponent = connectorElement.attribute("startcomponent");
+            QString startPort = connectorElement.attribute("startport");
+            QString endComponent = connectorElement.attribute("endcomponent");
+            QString endPort = connectorElement.attribute("endport");
+
+            QPointF dXY = oldPos-newPos;
+            GUIConnector *item = mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort);
+
+            item->getLine(lineNumber)->setPos(item->getLine(lineNumber)->pos()-dXY);
+            item->updateLine(lineNumber);
+        }
+        else if(stuffElement.attribute("what") == "movedobject")
+        {
+            double x, y;
+            QDomElement newPosElement = stuffElement.firstChildElement("newpos");
+            parseDomValueNode2(newPosElement, x, y);
+            QString name = stuffElement.attribute("name");
+            mpParentContainerObject->getGUIModelObject(name)->setPos(x, y);
+        }
+        else if(stuffElement.attribute("what") == "rotate")
+        {
+            QDomElement componentElement = stuffElement.firstChildElement("component");
+            QString name = componentElement.attribute("name");
+            mpParentContainerObject->getGUIModelObject(name)->rotate(NOUNDO);
+        }
+        else if(stuffElement.attribute("what") == "verticalflip")
+        {
+            QDomElement componentElement = stuffElement.firstChildElement("component");
+            QString name = componentElement.attribute("name");
+            mpParentContainerObject->getGUIModelObject(name)->flipVertical(NOUNDO);
+        }
+        else if(stuffElement.attribute("what") == "rotate")
+        {
+            QDomElement componentElement = stuffElement.firstChildElement("component");
+            QString name = componentElement.attribute("name");
+            mpParentContainerObject->getGUIModelObject(name)->flipHorizontal(NOUNDO);
+        }
+        stuffElement = stuffElement.nextSiblingElement("stuff");
     }
+
+        //Create connectors after everything else, to make sure components are created before connectors
+    QList<QDomElement>::iterator it;
+    for(it=connectorList.begin(); it!=connectorList.end(); ++it)
+    {
+        loadConnector(*it, mpParentContainerObject, NOUNDO);
+    }
+
+        //Reduce stack pointer if something was done (otherwise stack is at max position)
+    if(!didSomething)
+    {
+        --mCurrentStackPosition;
+    }
+
     //! @todo why dont I know of my own UndoWidget (should maybe have a pointer to it directly)
     gpMainWindow->mpUndoWidget->refreshList();
 }
@@ -280,11 +309,13 @@ void UndoStack::redoOneStep()
 //! @param item Pointer to the component about to be deleted
 void UndoStack::registerDeletedObject(GUIObject *item)
 {
-    //qDebug() << "registerDeletedObject()";
-    QString str;
-    QTextStream stream(&str);
-    item->saveToTextStream(stream, "DELETEDOBJECT");
-    this->insertPost(str);
+    QDomElement currentPostElement = getCurrentPost();
+    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+    stuffElement.setAttribute("what", "deletedobject");
+    item->saveToDomElement(stuffElement);
+    gpMainWindow->mpUndoWidget->refreshList();
+
+    gpMainWindow->mpMessageWidget->printGUIInfoMessage(gpMainWindow->mpProjectTabs->getCurrentSystem()->mUndoStack->mDomDocument.toString());
 }
 
 
@@ -292,12 +323,11 @@ void UndoStack::registerDeletedObject(GUIObject *item)
 //! @param item Pointer to the connector about to be deleted
 void UndoStack::registerDeletedConnector(GUIConnector *item)
 {
-    qDebug() << "Entering: registerDeletedConnector()";
-    QString str;
-    QTextStream stream(&str);
-    item->saveToTextStream(stream, "DELETEDCONNECTOR");
-    this->insertPost(str);
-    qDebug() << "Leaving: registerDeletedConnector()";
+    QDomElement currentPostElement = getCurrentPost();
+    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+    stuffElement.setAttribute("what", "deletedconnector");
+    item->saveToDomElement(stuffElement);
+    gpMainWindow->mpUndoWidget->refreshList();
 }
 
 
@@ -305,11 +335,11 @@ void UndoStack::registerDeletedConnector(GUIConnector *item)
 //! @param itemName Name of the added object
 void UndoStack::registerAddedObject(GUIObject *item)
 {
-    QString str;
-    QTextStream stream(&str);
-
-    item->saveToTextStream(stream, "ADDEDOBJECT"); //! @todo We now save the parameters also (not necessary as they are dafult, (does not do any harm however)
-    this->insertPost(str);
+    QDomElement currentPostElement = getCurrentPost();
+    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+    stuffElement.setAttribute("what", "addedobject");
+    item->saveToDomElement(stuffElement);
+    gpMainWindow->mpUndoWidget->refreshList();
 }
 
 
@@ -317,11 +347,11 @@ void UndoStack::registerAddedObject(GUIObject *item)
 //! @param item Pointer to the added connector
 void UndoStack::registerAddedConnector(GUIConnector *item)
 {
-    //qDebug() << "registerAddedConnector()";
-    QString str;
-    QTextStream stream(&str);
-    item->saveToTextStream(stream, "ADDEDCONNECTOR");
-    this->insertPost(str);
+    QDomElement currentPostElement = getCurrentPost();
+    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+    stuffElement.setAttribute("what", "addedconnector");
+    item->saveToDomElement(stuffElement);
+    gpMainWindow->mpUndoWidget->refreshList();
 }
 
 
@@ -330,10 +360,12 @@ void UndoStack::registerAddedConnector(GUIConnector *item)
 //! @param newName New object name
 void UndoStack::registerRenameObject(QString oldName, QString newName)
 {
-    QString str;
-    QTextStream stream(&str);
-    stream << "RENAMEDOBJECT " << addQuotes(oldName) << " " << addQuotes(newName);
-    this->insertPost(str);
+    QDomElement currentPostElement = getCurrentPost();
+    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+    stuffElement.setAttribute("what", "rename");
+    stuffElement.setAttribute("oldname", oldName);
+    stuffElement.setAttribute("newname", newName);
+    gpMainWindow->mpUndoWidget->refreshList();
 }
 
 
@@ -343,14 +375,14 @@ void UndoStack::registerRenameObject(QString oldName, QString newName)
 //! @param lineNumber Number of the line that was moved
 void UndoStack::registerModifiedConnector(QPointF oldPos, QPointF newPos, GUIConnector *item, int lineNumber)
 {
-    QString str;
-    QTextStream stream(&str);
-
-    stream << "MODIFIEDCONNECTOR" << " " << addQuotes(item->getStartComponentName()) << " " << addQuotes(item->getStartPortName())
-                                  << " " << addQuotes(item->getEndComponentName())   << " " << addQuotes(item->getEndPortName())
-                                  << " " << oldPos.x() << " " << oldPos.y() << " " << newPos.x() << " " << newPos.y() << " " << lineNumber;
-    this->insertPost(str);
-
+    QDomElement currentPostElement = getCurrentPost();
+    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+    stuffElement.setAttribute("what", "modifiedconnector");
+    stuffElement.setAttribute("linenumber", lineNumber);
+    appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
+    appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
+    item->saveToDomElement(stuffElement);
+    gpMainWindow->mpUndoWidget->refreshList();
 }
 
 
@@ -359,11 +391,13 @@ void UndoStack::registerModifiedConnector(QPointF oldPos, QPointF newPos, GUICon
 //! @param objectName Name of the object
 void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString objectName)
 {
-    QString str;
-    QTextStream stream(&str);
-    stream << "MOVEDOBJECT " <<  addQuotes(objectName) << " " << oldPos.x() << " " << oldPos.y() << " " << newPos.x() << " " << newPos.y();
-    this->insertPost(str);
-
+    QDomElement currentPostElement = getCurrentPost();
+    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+    stuffElement.setAttribute("what", "movedobject");
+    stuffElement.setAttribute("name", objectName);
+    appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
+    appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
+    gpMainWindow->mpUndoWidget->refreshList();
 }
 
 
@@ -371,10 +405,11 @@ void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString obje
 //! @param item Pointer to the object
 void UndoStack::registerRotatedObject(GUIObject *item)
 {
-    QString str;
-    QTextStream stream(&str);
-    stream << "ROTATEDOBJECT " << addQuotes(item->getName());
-    this->insertPost(str);
+    QDomElement currentPostElement = getCurrentPost();
+    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+    stuffElement.setAttribute("what", "rotate");
+    item->saveToDomElement(stuffElement);
+    gpMainWindow->mpUndoWidget->refreshList();
 }
 
 
@@ -382,10 +417,11 @@ void UndoStack::registerRotatedObject(GUIObject *item)
 //! @param item Pointer to the object
 void UndoStack::registerVerticalFlip(GUIObject *item)
 {
-    QString str;
-    QTextStream stream(&str);
-    stream << "VERTICALFLIP " << item->getName();
-    this->insertPost(str);
+    QDomElement currentPostElement = getCurrentPost();
+    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+    stuffElement.setAttribute("what", "verticalflip");
+    item->saveToDomElement(stuffElement);
+    gpMainWindow->mpUndoWidget->refreshList();
 }
 
 
@@ -394,10 +430,27 @@ void UndoStack::registerVerticalFlip(GUIObject *item)
 //! @todo Maybe we should combine this and registerVerticalFlip to one function?
 void UndoStack::registerHorizontalFlip(GUIObject *item)
 {
-    QString str;
-    QTextStream stream(&str);
-    stream << "HORIZONTALFLIP " << item->getName();
-    this->insertPost(str);
+    QDomElement currentPostElement = getCurrentPost();
+    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+    stuffElement.setAttribute("what", "horizontalflip");
+    item->saveToDomElement(stuffElement);
+    gpMainWindow->mpUndoWidget->refreshList();
+}
+
+
+//! @brief Returns the DOM element for the current undo post
+QDomElement UndoStack::getCurrentPost()
+{
+    QDomElement postElement = mUndoRoot.firstChildElement("post");
+    while(!postElement.isNull())
+    {
+        if(postElement.attribute("number").toDouble() == mCurrentStackPosition)
+        {
+            return postElement;
+        }
+        postElement = postElement.nextSiblingElement("post");
+    }
+    return QDomElement();
 }
 
 
@@ -459,144 +512,81 @@ void UndoWidget::refreshList()
     {
         return;
     }
-    mTempStack = mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoStack->mStack;
-    QTableWidgetItem *item;
 
+    QTableWidgetItem *item;
     mUndoTable->clear();
     mUndoTable->setRowCount(0);
 
-    int x = 0;
 
-    if(mTempStack.empty())
-    {
-        item = new QTableWidgetItem();
-        //! @todo what the heck is this suposed to mean !ENUM, item->setFlags(!Qt::ItemIsEditable);
-        item->setText("No undo history found.");
-        item->setBackgroundColor(QColor("white"));
-        mUndoTable->insertRow(x);
-        mUndoTable->setItem(x,0,item);
-        ++x;
-        mUndoTable->verticalHeader()->hide();
-        item->setTextAlignment(Qt::AlignCenter);
-    }
-    else if(mTempStack[0].empty())
-    {
-        item = new QTableWidgetItem();
-        //! @todo What the heck does this todo mean?
-        //! @todo what the heck is this suposed to mean !ENUM, item->setFlags(!Qt::ItemIsEditable);
-        item->setText("No undo history found.");
-        item->setBackgroundColor(QColor("white"));
-        mUndoTable->insertRow(x);
-        mUndoTable->setItem(x,0,item);
-        ++x;
-        mUndoTable->verticalHeader()->hide();
-        item->setTextAlignment(Qt::AlignCenter);
-    }
-    else
-    {
-        mUndoTable->verticalHeader()->show();
-    }
+    //XML//
 
-    for(int i = mTempStack.size()-1; i != -1; --i)
+    QColor oddColor = QColor("white");
+    QColor evenColor = QColor("antiquewhite");
+    QColor activeColor = QColor("gold");
+
+    size_t pos = 0;
+    bool found = true;
+    //! @todo Give me a pointer to my undo stack, so I don't need to ask the main window about it!
+    QDomElement undoRoot = gpMainWindow->mpProjectTabs->getCurrentSystem()->mUndoStack->mUndoRoot;
+    QDomElement postElement = undoRoot.firstChildElement("post");
+    while(found)
     {
-        for(int j = mTempStack[i].size()-1; j != -1; --j)
+        found = false;
+        //stuffList.append(QStringList());
+        while(!postElement.isNull())
         {
-            item = new QTableWidgetItem();
-            //! @todo what the heck is this suposed to mean !ENUM, item->setFlags(!Qt::ItemIsEditable);
-
-                // Translate the command words into better looking explanations
-            QTextStream stream(&mTempStack[i][j]);
-            QString commandword;
-            stream >> commandword;
-
-            if (commandword == "DELETEDOBJECT")
+            if(postElement.attribute("number").toInt() == pos)
             {
-                item->setText("Deleted Object");
-            }
-            else if (commandword == "DELETEDCONNECTOR")
-            {
-                item->setText("Deleted Connector");
-            }
-            else if (commandword == "ADDEDOBJECT")
-            {
-                item->setText("Added Object");
-            }
-            else if (commandword == "ADDEDCONNECTOR")
-            {
-                item->setText("Added Connector");
-            }
-            else if (commandword == "RENAMEDOBJECT")
-            {
-                item->setText("Renamed Object");
-            }
-            else if (commandword == "MODIFIEDCONNECTOR")
-            {
-                item->setText("Modified Connector");
-            }
-            else if (commandword == "MOVEDOBJECT")
-            {
-                item->setText("Moved Object");
-            }
-            else if (commandword == "ROTATEDOBJECT")
-            {
-                item->setText("Rotated Object");
-            }
-            else if (commandword == "VERTICALFLIP")
-            {
-                item->setText("Flipped Vertical");
-            }
-            else if (commandword == "HORIZONTALFLIP")
-            {
-                item->setText("Flipped Horizontal");
-            }
-            else
-            {
-                item->setText(commandword);
-            }
-
-                // Figure out which color to use.
-            if(i > mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoStack->mCurrentStackPosition)
-            {
-                if (i%2 == 0)
+                //Found correct number, write it's contents to the list
+                found = true;
+                QDomElement stuffElement = postElement.firstChildElement("stuff");
+                while(!stuffElement.isNull())
                 {
-                    item->setBackgroundColor(QColor("white"));
+                    item = new QTableWidgetItem();
+                    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+                    item->setText(translateTag(stuffElement.attribute("what")));
+                    if(pos == gpMainWindow->mpProjectTabs->getCurrentSystem()->mUndoStack->mCurrentStackPosition)
+                    {
+                        item->setBackgroundColor(activeColor);
+                    }
+                    else if(pos%2 == 0)
+                    {
+                        item->setBackgroundColor(evenColor);
+                    }
+                    else
+                    {
+                        item->setBackgroundColor(oddColor);
+                    }
+                    mUndoTable->insertRow(0);
+                    mUndoTable->setItem(0,0,item);
+                    stuffElement = stuffElement.nextSiblingElement("stuff");
                 }
-                else
-                {
-                    item->setBackgroundColor(QColor("antiquewhite"));
-                }
+                break;
             }
-            else if(i < mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoStack->mCurrentStackPosition)
-            {
-                if (i%2 == 0)
-                {
-                    item->setBackgroundColor(QColor("white"));
-                    item->setTextColor(QColor("black"));
-                }
-                else
-                {
-                    item->setBackgroundColor(QColor("antiquewhite"));
-                    item->setTextColor(QColor("black"));
-                }
-            }
-            else
-            {
-                item->setBackgroundColor(QColor("lightgreen"));
-                item->setTextColor(QColor("black"));
-                QFont tempFont = item->font();
-                tempFont.setBold(true);
-                item->setFont(tempFont);
-            }
-
-                //Insert a new line in the table and display the action
-            if(commandword != "PARAMETER")                              //Don't show parameter lines, because they "belong" to the object lines.
-            {
-                mUndoTable->insertRow(x);
-                mUndoTable->setItem(x,0,item);
-                ++x;
-            }
+            postElement = postElement.nextSiblingElement("post");
         }
+        ++pos;
     }
+}
+
+QString UndoWidget::translateTag(QString tag)
+{
+    QMap<QString, QString> tagMap;
+    tagMap.insert("addedobject",        "Added Object");
+    tagMap.insert("addedconnector",     "Added Connector");
+    tagMap.insert("deletedobject",      "Deleted Object");
+    tagMap.insert("deletedconnector",   "Deleted Connector");
+    tagMap.insert("movedobject",        "Moved Object");
+    tagMap.insert("rename",             "Renamed Object");
+    tagMap.insert("modifiedconnector",  "Modified Connector");
+    tagMap.insert("rotate",             "Rotated Object");
+    tagMap.insert("flipvertical",       "Flipped Vertical");
+    tagMap.insert("fliphorizontal",     "Flipped Horizontal");
+
+    if(tagMap.contains(tag))
+        return tagMap.find(tag).value();
+    else
+        return "Undefined Action";
 }
 
 

@@ -10,6 +10,9 @@
 #include <QObject>
 #include <QGridLayout>
 
+#include <QDomElement>
+#include <QDomDocument>
+
     //Forward Declarations
 class GUIObject;
 class GraphicsView;
@@ -44,6 +47,10 @@ private:
     GUIContainerObject *mpParentContainerObject;
     QList< QList<QString> > mStack;
     int mCurrentStackPosition;
+
+    QDomElement getCurrentPost();
+    QDomDocument mDomDocument;
+    QDomElement mUndoRoot;
 };
 
 
@@ -53,6 +60,7 @@ public:
     UndoWidget(MainWindow *parent = 0);
     void show();
     void refreshList();
+    QString translateTag(QString tag);
     QPushButton *getUndoButton();
     QPushButton *getRedoButton();
     QPushButton *getClearButton();
