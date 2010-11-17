@@ -1542,7 +1542,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
             {
                 //Create an instance of the node specified in nodespecifications
                 pNode = gCoreNodeFactory.createInstance(pPort1->getNodeType());
-                cout << "Created NodeType: " << pNode->getNodeType() << endl;
+                //cout << "Created NodeType: " << pNode->getNodeType() << endl;
                 // Check so the ports can be connected
                 if (!connectionOK(pNode, pPort1, pPort2))
                 {
@@ -1725,7 +1725,8 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
         return false;
     }
 
-    cout << "nQ: " << n_Qcomponents << " nC: " << n_Ccomponents << endl;
+    //cout << "nQ: " << n_Qcomponents << " nC: " << n_Ccomponents << endl;
+
     //Normaly we want at most one c and one q component but if there happen to be a subsystem in the picture allow one extra
     //This is only true if at least one powerport is connected - signal connecetions can be between any types of components
     //! @todo not 100% sure that this will work allways. Only work if we assume that the subsystem has the correct cqs type when connecting
@@ -1776,10 +1777,10 @@ void ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
     //! @todo some more advanced error handling (are the ports really connected to each other and such)
     if (pPort1->isConnected() && pPort2->isConnected())
     {
-        cout << "disconnecting " << pPort1->mpComponent->getName() << " " << pPort1->getPortName() << "  and  " << pPort2->mpComponent->getName() << " " << pPort2->getPortName() << endl;
+        //cout << "disconnecting " << pPort1->mpComponent->getName() << " " << pPort1->getPortName() << "  and  " << pPort2->mpComponent->getName() << " " << pPort2->getPortName() << endl;
 
         Node* node_ptr = pPort1->getNodePtr();
-        cout << "nPorts in node: " << node_ptr->mPortPtrs.size() << endl;
+        //cout << "nPorts in node: " << node_ptr->mPortPtrs.size() << endl;
 
         //Remove the port pointer from the node and clear the port if it is not used by someone else
 
@@ -1794,7 +1795,7 @@ void ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
         {
             pPort1->eraseConnectedPort(pPort2);
         }
-        cout << "nPorts in node after remove 1: " << node_ptr->mPortPtrs.size() << endl;
+        //cout << "nPorts in node after remove 1: " << node_ptr->mPortPtrs.size() << endl;
 
         if (pPort2->mConnectedPorts.size() <= 1)
         {
@@ -1805,7 +1806,7 @@ void ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
         {
             pPort2->eraseConnectedPort(pPort1);
         }
-        cout << "nPorts in node after remove 2: " << node_ptr->mPortPtrs.size() << endl;
+        //cout << "nPorts in node after remove 2: " << node_ptr->mPortPtrs.size() << endl;
 
         ss << "Disconnected: {"<< pPort1->mpComponent->getName() << "::" << pPort1->getPortName() << "} and {" << pPort2->mpComponent->getName() << "::" << pPort2->getPortName() << "}";
         cout << ss.str() << endl;
@@ -1815,7 +1816,7 @@ void ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
         //If no more connections exist, remove the entier node and free the memory
         if (node_ptr->mPortPtrs.size() == 0)
         {
-            cout << "No more connections to the node exists, deleteing the node";
+            //cout << "No more connections to the node exists, deleteing the node";
             removeSubNode(node_ptr);
             delete node_ptr;
             //! @todo maybe need to let the factory remove it insted of manually, in case of user supplied external nodes

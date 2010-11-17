@@ -480,11 +480,8 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
     tabName.append(QString::number(mNumberOfUntitledTabs));
 
     ProjectTab *newTab = new ProjectTab(this);
-    //newTab->mIsSaved = false;
-
     newTab->mpSystem->setName(tabName);
 
-    //addTab(newTab, tabName.append(QString("*")));
     this->addTab(newTab, tabName);
     this->setCurrentWidget(newTab);
 
@@ -554,7 +551,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
 
     //Delete project tab
     delete widget(index);
-    removeTab(index);
+    //We dont need to call removeTab here, this seems to be handled automatically
     return true;
 }
 
