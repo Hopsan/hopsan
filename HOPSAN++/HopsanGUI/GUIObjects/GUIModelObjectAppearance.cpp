@@ -209,7 +209,7 @@ void GUIModelObjectAppearance::readFromTextStream(QTextStream &rIs)
 }
 
 
-void GUIModelObjectAppearance::readFromDomElement(QDomElement &rDomElement)
+void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
 {
 //    mTypeName       = rDomElement.firstChildElement(HMF_TYPETAG).text();
 //    mName           = rDomElement.firstChildElement(HMF_DISPLAYNAMETAG).text();
@@ -232,16 +232,17 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement &rDomElement)
 //        xmlPortPose = xmlPortPose.nextSiblingElement(HMF_PORTPOSETAG);
 //    }
 
-    mTypeName       = rDomElement.attribute(HMF_TYPETAG);
-    mName           = rDomElement.attribute(HMF_DISPLAYNAMETAG);
+    //! @todo we should not overwrite existing data if xml file is missing data, that is dont overwrite with null
+    mTypeName       = domElement.attribute(HMF_TYPETAG);
+    mName           = domElement.attribute(HMF_DISPLAYNAMETAG);
 
-    QDomElement xmlIcon = rDomElement.firstChildElement("icon");
+    QDomElement xmlIcon = domElement.firstChildElement("icon");
     mIconPathISO    = xmlIcon.attribute("isopath");
     mIconPathUser   = xmlIcon.attribute("userpath");
     mIconRotationBehaviour = xmlIcon.attribute("iconrotation");
 
     QString portname;
-    QDomElement xmlPortPose = rDomElement.firstChildElement(HMF_PORTPOSETAG);
+    QDomElement xmlPortPose = domElement.firstChildElement(HMF_PORTPOSETAG);
     while (!xmlPortPose.isNull())
     {
         GUIPortAppearance portApp;

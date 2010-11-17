@@ -45,6 +45,7 @@ public:
     virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());
     virtual void saveToDomElement(QDomElement &rDomElement);
     virtual void loadFromHMF(QString modelFilePath=QString()) {assert(false);} //Only available in GUISubsystem for now
+    virtual void loadFromDomElement(QDomElement &rDomElement) {assert(false);} //Only available in GUISubsystem for now
 
     //Connector methods
     void rememberConnector(GUIConnector *item);

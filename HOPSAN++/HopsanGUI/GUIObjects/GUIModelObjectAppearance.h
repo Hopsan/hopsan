@@ -46,7 +46,7 @@ public:
 
     void readFromTextStream(QTextStream &is);
 
-    void readFromDomElement(QDomElement &rDomElement);
+    void readFromDomElement(QDomElement domElement);
     void saveToDomElement(QDomElement &rDomElement);
     void saveToXML(QString filename);
 

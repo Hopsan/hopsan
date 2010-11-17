@@ -346,7 +346,28 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
 
     //Now read the external file to change appearance and populate the system
     //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,externalpath: " << rData.filepath;
-    pSys->loadFromHMF(rData.filepath);
+    if (rData.filepath.endsWith("x")) //! @todo this is temp hack untill we only use xml files
+    {
+
+        //! @todo assumes that the supplied path is rellative, need to make sure that this does not crash if that is not the case
+        //! @todo what if the parent system does not have a path (embeded systems)
+        QString path = pSystem->mModelFileInfo.absolutePath() + "/" + rData.filepath;
+        QFile file(path);
+        if (!file.exists());
+        {
+            qDebug() << "file: " << path << " does not exist";
+        }
+        QDomDocument domDocument;
+        QDomElement externalRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
+        QDomElement systemRoot = externalRoot.firstChildElement(HMF_SYSTEMTAG);
+        //! @todo set the modefile info, maybe we should have built in helpfunction for loading directly from file in System
+        pSys->loadFromDomElement(systemRoot);
+        //! @todo this code is duplicated with the one in system->loadfromdomelement (external code) that code will never run, as this will take care of it. When we have embeded subsystems will will need to fix this
+    }
+    else
+    {
+        pSys->loadFromHMF(rData.filepath);
+    }
 
     //Set the cqs type of the system
     pSys->setTypeCQS(rData.cqs_type);

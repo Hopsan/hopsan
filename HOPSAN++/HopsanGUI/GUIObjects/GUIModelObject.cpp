@@ -918,6 +918,7 @@ GUIModelObjectAppearance* GUIModelObject::getAppearanceData()
 //! @brief Refreshes the appearance of the object
 void GUIModelObject::refreshAppearance()
 {
+    //! @todo maybe we can break (some of) this code out and run it in a base class maybe even guiobjekt
     bool hasActiveSelectionBox = false;
     if (mpSelectionBox != 0)
     {

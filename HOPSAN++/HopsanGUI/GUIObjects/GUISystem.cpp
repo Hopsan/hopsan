@@ -543,9 +543,12 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
 void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 {
     //! @todo might need some error checking here incase some fields are missing
-    //First load the core specific data, might need inherited function for this
-//    this->setName(rDomElement.firstChildElement(HMF_NAMETAG).text());
-//    this->setTypeCQS(rDomElement.firstChildElement(HMF_CQSTYPETAG).text());
+    //Load the GUI stuff like appearance data and viewport
+    this->mGUIModelObjectAppearance.readFromDomElement(rDomElement.firstChildElement(HMF_SYSTEMAPPEARANCETAG).firstChildElement("modelobject"));
+    //! @todo load viewport and simulationtime and pose and stuff
+
+    //Now load the core specific data, might need inherited function for this
+    //It is important to load core data after the guistuff in case the guistuff is incomplete
     this->setName(rDomElement.attribute(HMF_NAMETAG));
     this->setTypeCQS(rDomElement.attribute(HMF_CQSTYPETAG));
 
@@ -622,14 +625,34 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
             loadConnector(xmlSubObject, this, NOUNDO);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_CONNECTORTAG);
         }
+
+        //Refresh the appearnce of the subsystemem and create the GUIPorts
+        //! @todo This is a bit strange, refreshAppearance MUST be run before create ports or create ports will not know some necessary stuff
+        this->refreshAppearance();
+        this->createPorts();
+
+        //Deselect all components
+        this->deselectAll();
+        this->mUndoStack->clear();
+        //Only do this for the root system
+        //! @todo maybe can do this for subsystems to (even if we dont see them right now)
+        if (this->mpParentContainerObject == 0)
+        {
+            //mpParentProjectTab->mpGraphicsView->centerView();
+            mpParentProjectTab->mpGraphicsView->updateViewPort();
+        }
+        emit checkMessages();
     }
     else
     {
         //Load external system
-        //! @todo do this code
+        //! @todo use some code that opens the atual file in this case
+        //! @todo this code does not seem to ever run right now, this will probalby never be called as loadobjects handle this
+//        QFile file(external_path);
+//        QDomElement externalRoot = loadXMLDomDocument(file, HMF_ROOTTAG);
+//        QDomElement systemRoot = externalRoot.firstChildElement(HMF_SYSTEMTAG);
+//        loadSubsystemGUIObject(systemRoot, gpMainWindow->mpLibrary, this, NOUNDO);
     }
-
-
 }
 
 //void GUISystem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)

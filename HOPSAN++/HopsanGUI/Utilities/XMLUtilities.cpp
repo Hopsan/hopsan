@@ -2,12 +2,11 @@
 #include <QMessageBox>
 
 
-QDomElement openXMLFile(QFile &rFile, const QString rootTagName)
+QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString rootTagName)
 {
-    QDomDocument domDocument;
     QString errorStr;
     int errorLine, errorColumn;
-    if (!domDocument.setContent(&rFile, false, &errorStr, &errorLine, &errorColumn))
+    if (!rDomDocument.setContent(&rFile, false, &errorStr, &errorLine, &errorColumn))
     {
         QMessageBox::information(0, "Hopsan GUI",
                                  QString("Parse error at line %1, column %2:\n%3")
@@ -17,11 +16,11 @@ QDomElement openXMLFile(QFile &rFile, const QString rootTagName)
     }
     else
     {
-        QDomElement xmlRoot = domDocument.documentElement();
+        QDomElement xmlRoot = rDomDocument.documentElement();
         if (xmlRoot.tagName() != rootTagName)
         {
             QMessageBox::information(0, "Hopsan GUI",
-                                     QString("The file is not an Hopsan Model File file. Incorrect hmf root tag name: ")
+                                     QString("The file is has the wrong Root Tag Name: ")
                                      + xmlRoot.tagName() + "!=" + rootTagName);
         }
         else

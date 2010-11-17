@@ -3,7 +3,7 @@
 
 #include <QtXml>
 
-QDomElement openXMLFile(QFile &rFile, QString rootTagName);
+QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString rootTagName);
 
 void appendRootXMLProcessingInstruction(QDomDocument &rDomDocument);
 
