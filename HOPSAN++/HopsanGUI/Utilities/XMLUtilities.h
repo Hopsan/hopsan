@@ -3,6 +3,8 @@
 
 #include <QtXml>
 
+QDomElement openXMLFile(QFile &rFile, QString rootTagName);
+
 void appendRootXMLProcessingInstruction(QDomDocument &rDomDocument);
 
 QDomElement appendDomElement(QDomElement &rDomElement, const QString element_name);

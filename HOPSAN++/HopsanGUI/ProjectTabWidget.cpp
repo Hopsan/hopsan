@@ -598,6 +598,7 @@ void ProjectTabWidget::loadModel()
 //! @see saveModel(saveTarget saveAsFlag)
 void ProjectTabWidget::loadModel(QString modelFileName)
 {
+    //! @todo write utility function that opens filel checks existance and sets fileinfo
     if (modelFileName.isEmpty())
         return;
 
@@ -631,38 +632,44 @@ void ProjectTabWidget::loadModel(QString modelFileName)
     //Temporary hack to atempt loading xml model files
     if (modelFileName.endsWith("x"))
     {
-        QDomDocument domDocument;
-        QString errorStr;
-        int errorLine, errorColumn;
-        if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
-        {
-            QMessageBox::information(window(), tr("Hopsan GUI"),
-                                     tr("Parse error at line %1, column %2:\n%3")
-                                     .arg(errorLine)
-                                     .arg(errorColumn)
-                                     .arg(errorStr));
-        }
-        else
-        {
-            QDomElement hmfRoot = domDocument.documentElement();
-            if (hmfRoot.tagName() != HMF_ROOTTAG)
-            {
-                QMessageBox::information(window(), tr("Hopsan GUI"),
-                                         "The file is not an Hopsan Model File file. Incorrect hmf root tag name: "
-                                         + hmfRoot.tagName() + "!=" + HMF_ROOTTAG);
-            }
-            else
-            {
-                //Do some header read stuff
-                //! @todo clean this up and check for existance .isNull can be used
-                //! @todo use the unused info
-                QDomElement versionInfo = hmfRoot.firstChildElement("hopsanversions");
-                QDomElement modelProperties = hmfRoot.firstChildElement("modelproperties");
-                QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
-                pCurrentTab->mpSystem->mModelFileInfo.setFile(file); //Remember info about the file from which the data was loaded
-                pCurrentTab->mpSystem->loadFromDomElement(systemElement);
-            }
-        }
+//        QDomDocument domDocument;
+//        QString errorStr;
+//        int errorLine, errorColumn;
+//        if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
+//        {
+//            QMessageBox::information(window(), tr("Hopsan GUI"),
+//                                     tr("Parse error at line %1, column %2:\n%3")
+//                                     .arg(errorLine)
+//                                     .arg(errorColumn)
+//                                     .arg(errorStr));
+//        }
+//        else
+//        {
+//            QDomElement hmfRoot = domDocument.documentElement();
+//            if (hmfRoot.tagName() != HMF_ROOTTAG)
+//            {
+//                QMessageBox::information(window(), tr("Hopsan GUI"),
+//                                         "The file is not an Hopsan Model File file. Incorrect hmf root tag name: "
+//                                         + hmfRoot.tagName() + "!=" + HMF_ROOTTAG);
+//            }
+//            else
+//            {
+//                //Do some header read stuff
+//                //! @todo clean this up and check for existance .isNull can be used
+//                //! @todo use the unused info
+//                QDomElement versionInfo = hmfRoot.firstChildElement("hopsanversions");
+//                QDomElement modelProperties = hmfRoot.firstChildElement("modelproperties");
+//                QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
+//                pCurrentTab->mpSystem->mModelFileInfo.setFile(file); //Remember info about the file from which the data was loaded
+//                pCurrentTab->mpSystem->loadFromDomElement(systemElement);
+//            }
+//        }
+        QDomElement hmfRoot = openXMLFile(file, HMF_ROOTTAG);
+        //! @todo Check version numbers
+        //! @todo check if we could load else give error message and dont attempt to load
+        QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
+        pCurrentTab->mpSystem->mModelFileInfo.setFile(file); //Remember info about the file from which the data was loaded
+        pCurrentTab->mpSystem->loadFromDomElement(systemElement);
     }
     else
     {

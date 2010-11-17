@@ -1,4 +1,36 @@
 #include "XMLUtilities.h"
+#include <QMessageBox>
+
+
+QDomElement openXMLFile(QFile &rFile, const QString rootTagName)
+{
+    QDomDocument domDocument;
+    QString errorStr;
+    int errorLine, errorColumn;
+    if (!domDocument.setContent(&rFile, false, &errorStr, &errorLine, &errorColumn))
+    {
+        QMessageBox::information(0, "Hopsan GUI",
+                                 QString("Parse error at line %1, column %2:\n%3")
+                                 .arg(errorLine)
+                                 .arg(errorColumn)
+                                 .arg(errorStr));
+    }
+    else
+    {
+        QDomElement xmlRoot = domDocument.documentElement();
+        if (xmlRoot.tagName() != rootTagName)
+        {
+            QMessageBox::information(0, "Hopsan GUI",
+                                     QString("The file is not an Hopsan Model File file. Incorrect hmf root tag name: ")
+                                     + xmlRoot.tagName() + "!=" + rootTagName);
+        }
+        else
+        {
+            return xmlRoot;
+        }
+    }
+    return QDomElement(); //NULL
+}
 
 
 void appendRootXMLProcessingInstruction(QDomDocument &rDomDocument)
