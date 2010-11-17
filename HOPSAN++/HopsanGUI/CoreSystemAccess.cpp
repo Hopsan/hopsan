@@ -29,12 +29,14 @@ ComponentSystem* CoreSystemAccess::getCoreSubSystemPtr(QString name)
 CoreSystemAccess::~CoreSystemAccess()
 {
     //Dont remove the mpCoreComponentSystem here you must do that manually until we have found a samrter way to do all of this
+    //see deleteRootSystemPtr()
+    //delete mpCoreComponentSystem;
 }
 
-//This is an extremaly stupid ugly function
+//! @todo This is very strange, needed becouse core systems are deleted from parent if they are subsystems (not if root systems), this is the only way to safely delete the ore object
 void CoreSystemAccess::deleteRootSystemPtr()
 {
-    delete mpCoreComponentSystem; //!< @todo this may be unsafe, dont know
+    delete mpCoreComponentSystem;
 }
 
 bool CoreSystemAccess::connect(QString compname1, QString portname1, QString compname2, QString portname2)

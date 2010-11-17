@@ -58,12 +58,14 @@ class ProjectTab : public QWidget
 
 public:
     ProjectTab(ProjectTabWidget *parent = 0);
+    ~ProjectTab();
 
     bool isSaved();
     void setSaved(bool value);
     void hasChanged();
 
         //Public member variables
+    //! @todo these should not be public
     GUISystem *mpSystem;
     ProjectTabWidget *mpParentProjectTabWidget;
     GraphicsView *mpGraphicsView;

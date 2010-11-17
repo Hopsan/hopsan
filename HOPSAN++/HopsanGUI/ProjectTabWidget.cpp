@@ -77,6 +77,14 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     this->setLayout(tabLayout);
 }
 
+ProjectTab::~ProjectTab()
+{
+    //! @todo do we need to call inheritet class destructor also
+    qDebug() << "projectTab destructor";
+    delete mpSystem;
+    //! @todo do we need to delete the graphicsiew or is that handled automatically
+}
+
 
 //! Should be called when a model has changed in some sense,
 //! e.g. a component added or a connection has changed.
@@ -509,46 +517,45 @@ bool ProjectTabWidget::closeProjectTab(int index)
             // Save was clicked
             std::cout << "ProjectTabWidget: " << "Save and close" << std::endl;
             getTab(index)->save();
-            removeTab(index);
-            return true;
+            break;
         case QMessageBox::Discard:
             // Don't Save was clicked
-            removeTab(index);
-            return true;
+            break;
         case QMessageBox::Cancel:
             // Cancel was clicked
-            std::cout << "ProjectTabWidget: " << "Cancel closing" << std::endl;
+            //std::cout << "ProjectTabWidget: " << "Cancel closing" << std::endl;
             return false;
         default:
             // should never be reached
             return false;
         }
     }
-    else
-    {
-        std::cout << "ProjectTabWidget: " << "Closing project: " << qPrintable(tabText(index)) << std::endl;
-        //statusBar->showMessage(QString("Closing project: ").append(tabText(index)));
-        disconnect(gpMainWindow->resetZoomAction, SIGNAL(triggered()),getTab(index)->mpGraphicsView,SLOT(resetZoom()));
-        disconnect(gpMainWindow->zoomInAction, SIGNAL(triggered()),getTab(index)->mpGraphicsView,SLOT(zoomIn()));
-        disconnect(gpMainWindow->zoomOutAction, SIGNAL(triggered()),getTab(index)->mpGraphicsView,SLOT(zoomOut()));
-        disconnect(gpMainWindow->exportPDFAction, SIGNAL(triggered()), getTab(index)->mpGraphicsView,SLOT(exportToPDF()));
-        disconnect(gpMainWindow->centerViewAction,SIGNAL(triggered()),getTab(index)->mpGraphicsView,SLOT(centerView()));
-        disconnect(gpMainWindow->hideNamesAction, SIGNAL(triggered()),getSystem(index),SLOT(hideNames()));
-        disconnect(gpMainWindow->showNamesAction, SIGNAL(triggered()),getSystem(index),SLOT(showNames()));
-        disconnect(gpMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), getSystem(index), SLOT(updateStartTime()));
-        disconnect(gpMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getSystem(index), SLOT(updateTimeStep()));
-        disconnect(gpMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getSystem(index), SLOT(updateStopTime()));
-        disconnect(gpMainWindow->disableUndoAction,SIGNAL(triggered()),getSystem(index), SLOT(disableUndo()));
-        disconnect(gpMainWindow->simulateAction, SIGNAL(triggered()), getTab(index), SLOT(simulate()));
-        disconnect(gpMainWindow->mpStartTimeLineEdit, SIGNAL(editingFinished()), getSystem(index),SLOT(updateStartTime()));
-        disconnect(gpMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()), getSystem(index),SLOT(updateStopTime()));
-        disconnect(gpMainWindow->mpTimeStepLineEdit, SIGNAL(editingFinished()), getSystem(index),SLOT(updateTimeStep()));
-        disconnect(gpMainWindow->saveAction, SIGNAL(triggered()), getTab(index), SLOT(save()));
-        disconnect(gpMainWindow->saveAsAction, SIGNAL(triggered()), getTab(index), SLOT(saveAs()));
 
-        removeTab(index);
-        return true;
-    }
+    //Disconnect signals
+    //std::cout << "ProjectTabWidget: " << "Closing project: " << qPrintable(tabText(index)) << std::endl;
+    //statusBar->showMessage(QString("Closing project: ").append(tabText(index)));
+    disconnect(gpMainWindow->resetZoomAction,       SIGNAL(triggered()),    getTab(index)->mpGraphicsView,  SLOT(resetZoom()));
+    disconnect(gpMainWindow->zoomInAction,          SIGNAL(triggered()),    getTab(index)->mpGraphicsView,  SLOT(zoomIn()));
+    disconnect(gpMainWindow->zoomOutAction,         SIGNAL(triggered()),    getTab(index)->mpGraphicsView,  SLOT(zoomOut()));
+    disconnect(gpMainWindow->exportPDFAction,       SIGNAL(triggered()),    getTab(index)->mpGraphicsView,  SLOT(exportToPDF()));
+    disconnect(gpMainWindow->centerViewAction,      SIGNAL(triggered()),    getTab(index)->mpGraphicsView,  SLOT(centerView()));
+    disconnect(gpMainWindow->hideNamesAction,       SIGNAL(triggered()),    getSystem(index),               SLOT(hideNames()));
+    disconnect(gpMainWindow->showNamesAction,       SIGNAL(triggered()),    getSystem(index),               SLOT(showNames()));
+    disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()), getSystem(index),            SLOT(updateStartTime()));
+    disconnect(gpMainWindow->mpTimeStepLineEdit,    SIGNAL(editingFinished()), getSystem(index),            SLOT(updateTimeStep()));
+    disconnect(gpMainWindow->mpFinishTimeLineEdit,  SIGNAL(editingFinished()), getSystem(index),            SLOT(updateStopTime()));
+    disconnect(gpMainWindow->disableUndoAction,     SIGNAL(triggered()),    getSystem(index),               SLOT(disableUndo()));
+    disconnect(gpMainWindow->simulateAction,        SIGNAL(triggered()),    getTab(index),                  SLOT(simulate()));
+    disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()), getSystem(index),            SLOT(updateStartTime()));
+    disconnect(gpMainWindow->mpFinishTimeLineEdit,  SIGNAL(editingFinished()), getSystem(index),            SLOT(updateStopTime()));
+    disconnect(gpMainWindow->mpTimeStepLineEdit,    SIGNAL(editingFinished()), getSystem(index),            SLOT(updateTimeStep()));
+    disconnect(gpMainWindow->saveAction,            SIGNAL(triggered()),    getTab(index),                  SLOT(save()));
+    disconnect(gpMainWindow->saveAsAction,          SIGNAL(triggered()),    getTab(index),                  SLOT(saveAs()));
+
+    //Delete project tab
+    delete widget(index);
+    removeTab(index);
+    return true;
 }
 
 

@@ -14,7 +14,7 @@ GUISystemPort::GUISystemPort(GUIModelObjectAppearance* pAppearanceData, QPoint p
 
 GUISystemPort::~GUISystemPort()
 {
-    //! @todo delete systemport in core
+    this->mpParentContainerObject->getCoreSystemAccessPtr()->deleteSystemPort(this->getName());
 }
 
 //! @brief Help function to create ports in the component when it is created

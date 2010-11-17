@@ -30,8 +30,6 @@ public:
     virtual QString getTypeCQS() {assert(false); return "";} //Only available in GUISystemComponent adn GuiComponent for now
     virtual void setTypeCQS(QString typestring) {assert(false);} //Only available in GUISystemComponent
 
-    virtual void deleteMe();
-
     //Appearance methods
     virtual GUIModelObjectAppearance* getAppearanceData();
     virtual void refreshAppearance();
@@ -66,6 +64,7 @@ public:
     int type() const;
 
 public slots:
+    void deleteMe();
     void rotate(undoStatus undoSettings = UNDO);
     //! @todo flip should work on all gui objects
     void flipVertical(undoStatus undoSettings = UNDO);
