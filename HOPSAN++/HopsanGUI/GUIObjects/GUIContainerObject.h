@@ -72,6 +72,7 @@ public:
     QList<GUITextWidget *> mTextWidgetList;
     QList<GUIBoxWidget *> mBoxWidgetList;
     QList<GUIObject *> mSelectedGUIObjectsList;
+    QList<GUIWidget *> mSelectedGUIWidgetsList;
 
     bool mPortsHidden;
     bool mUndoDisabled;
@@ -140,6 +141,8 @@ private:
     CONTAINERSTATUS mContainerStatus;
 
     GraphicsScene *mpScene;
+
+    double mPasteOffset;
 
 };
 

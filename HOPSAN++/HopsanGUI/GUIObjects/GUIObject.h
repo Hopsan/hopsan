@@ -14,6 +14,7 @@
 
 class GUIObjectSelectionBox;
 class GUIContainerObject;
+class GUIConnector;
 
 
 enum GUIObjectEnumT {GUIOBJECT=QGraphicsItem::UserType+1, GUIMODELOBJECT, GUICONTAINEROBJECT, GUISYSTEM, GUICOMPONENT, GUISYSTEMPORT, GUIGROUP, GUIGROUPPORT};
@@ -48,6 +49,8 @@ public:
     GUIContainerObject *mpParentContainerObject; //!< @todo not public
     QPointF mOldPos;
 
+    QList<GUIConnector*> getGUIConnectorPtrs();
+
 public slots:
     virtual void flipVertical(undoStatus undoSettings = UNDO){;} //!< @todo nothing for now
     virtual void flipHorizontal(undoStatus undoSettings = UNDO){;}  //!< @todo nothing for now
@@ -80,6 +83,8 @@ protected:
     bool mIsFlipped;
 
     GUIObjectSelectionBox *mpSelectionBox;
+
+    QList<GUIConnector*> mpGUIConnectorPtrs;
 
 };
 

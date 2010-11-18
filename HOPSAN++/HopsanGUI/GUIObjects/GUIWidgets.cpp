@@ -4,7 +4,6 @@
 
 #include "GUIWidgets.h"
 #include "GUISystem.h"
-#include "GUIObject.h"
 #include "GraphicsScene.h"
 #include "ProjectTabWidget.h"
 #include "MainWindow.h"
@@ -26,6 +25,32 @@
 using namespace std;
 
 
+GUIWidget::GUIWidget(QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent)
+    : GUIObject(pos, rot, startSelected, pSystem, pParent)
+{
+    pSystem->getContainedScenePtr()->addItem(this);
+    this->setPos(pos);
+}
+
+
+QVariant GUIWidget::itemChange(GraphicsItemChange change, const QVariant &value)
+{
+    if(change == QGraphicsItem::ItemSelectedHasChanged)
+    {
+        if(this->isSelected())
+        {
+            mpParentContainerObject->mSelectedGUIWidgetsList.append(this);
+        }
+        else
+        {
+            mpParentContainerObject->mSelectedGUIWidgetsList.removeAll(this);
+        }
+    }
+
+    return GUIObject::itemChange(change, value);
+}
+
+
 //! @brief Constructor for text widget class
 //! @param text Initial text in the widget
 //! @param pos Position of text widget
@@ -34,12 +59,10 @@ using namespace std;
 //! @param pSystem Pointer to the GUI System where text widget is located
 //! @param pParent Pointer to parent object (not required)
 GUITextWidget::GUITextWidget(QString text, QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent)
-    : GUIObject(pos, rot, startSelected, pSystem, pParent)
+    : GUIWidget(pos, rot, startSelected, pSystem, pParent)
 {
     this->mHmfTagName = HMF_TEXTWIDGETTAG;
 
-    pSystem->getContainedScenePtr()->addItem(this);
-    this->setPos(pos);
     mpTextItem = new QGraphicsTextItem(text, this);
     QFont tempFont = mpTextItem->font();
     tempFont.setPointSize(12);
@@ -219,12 +242,10 @@ void GUITextWidget::saveToDomElement(QDomElement &rDomElement)
 //! @param pSystem Pointer to the GUI System where box widget is located
 //! @param pParent Pointer to parent object (not required)
 GUIBoxWidget::GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent)
-    : GUIObject(pos, rot, startSelected, pSystem, pParent)
+    : GUIWidget(pos, rot, startSelected, pSystem, pParent)
 {
     this->mHmfTagName = HMF_BOXWIDGETTAG;
 
-    pSystem->getContainedScenePtr()->addItem(this);
-    this->setPos(pos);
     mpRectItem = new QGraphicsRectItem(0, 0, 100, 100, this);
     QPen tempPen = mpRectItem->pen();
     tempPen.setColor(QColor("royalblue"));

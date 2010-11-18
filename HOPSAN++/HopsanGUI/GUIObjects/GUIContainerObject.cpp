@@ -35,6 +35,8 @@ GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GU
     mUndoDisabled = false;
     mGfxType = USERGRAPHICS;
 
+    mPasteOffset = -30;
+
     //Create the scene
     mpScene = new GraphicsScene();
 
@@ -537,7 +539,7 @@ void GUIContainerObject::copySelected(CopyStack *xmlStack)
 //! @see copySelected()
 void GUIContainerObject::paste(CopyStack *xmlStack)
 {
-    mUndoStack->newPost();
+    mUndoStack->newPost();      //! @todo Add option to tell undo stack that this is a paste post, so it won't shop everything in widget list
     mpParentProjectTab->hasChanged();
 
     QDomElement *copyRoot;
@@ -564,7 +566,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
 
             //Apply offset to pasted object
         QPointF oldPos = pObj->pos();
-        pObj->moveBy(-30, -30);
+        pObj->moveBy(mPasteOffset, mPasteOffset);
         mUndoStack->registerMovedObject(oldPos, pObj->pos(), pObj->getName());
 
         renameMap.insert(objectElement.attribute("name"), pObj->getName());
@@ -580,13 +582,24 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
         connectorElement.setAttribute("startcomponent", renameMap.find(connectorElement.attribute("startcomponent")).value());
         connectorElement.setAttribute("endcomponent", renameMap.find(connectorElement.attribute("endcomponent")).value());
 
-        loadConnector(connectorElement, this);
+        loadConnector(connectorElement, this, UNDO);
 
         GUIConnector *tempConnector = this->findConnector(connectorElement.attribute("startcomponent"), connectorElement.attribute("startport"),
                                                           connectorElement.attribute("endcomponent"), connectorElement.attribute("endport"));
-        //this->removeConnector(tempConnector);
-        tempConnector->moveAllPoints(-30, -30);
+
+            //Apply offset to connector and register it in undo stack
+//        QList<QPointF> oldPosList;
+//        for(size_t i=0; i<tempConnector->getNumberOfLines()-2; ++i)
+//        {
+//            oldPosList.append(tempConnector->getLine(i+1)->pos());
+//        }
+        tempConnector->moveAllPoints(mPasteOffset, mPasteOffset);
         tempConnector->drawConnector();
+        for(size_t i=0; i<tempConnector->getNumberOfLines()-2; ++i)
+        {
+            mUndoStack->registerModifiedConnector(QPointF(tempConnector->getLine(i)->pos().x()-mPasteOffset, tempConnector->getLine(i)->pos().y()-mPasteOffset),
+                                                  tempConnector->getLine(i+1)->pos(), tempConnector, i+1);
+        }
 
         connectorElement = connectorElement.nextSiblingElement("connect");
     }
@@ -597,7 +610,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
     {
         loadTextWidget(textElement, this);
         mTextWidgetList.last()->setSelected(true);
-        mTextWidgetList.last()->moveBy(-30, -30);
+        mTextWidgetList.last()->moveBy(mPasteOffset, mPasteOffset);
         textElement = textElement.nextSiblingElement("textwidget");
     }
 
@@ -607,7 +620,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
     {
         loadBoxWidget(boxElement, this);
         mBoxWidgetList.last()->setSelected(true);
-        mBoxWidgetList.last()->moveBy(-30, -30);
+        mBoxWidgetList.last()->moveBy(mPasteOffset, mPasteOffset);
         boxElement = boxElement.nextSiblingElement("boxwidget");
     }
 

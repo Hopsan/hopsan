@@ -12,6 +12,7 @@
 #include "GUIObjects/GUISystem.h"
 #include "Utilities/GUIUtilities.h"
 #include "GraphicsScene.h"
+#include "UndoStack.h"
 
 void HeaderLoadData::read(QTextStream &rStream)
 {
@@ -419,6 +420,11 @@ void loadConnector(const ConnectorLoadData &rData, GUIContainerObject* pSystem, 
         QObject::connect(endPort->getGuiModelObject(),SIGNAL(objectDeleted()),pTempConnector,SLOT(deleteMeWithNoUndo()));
 
         pSystem->mSubConnectorList.append(pTempConnector);
+
+        if(undoSettings == UNDO)
+        {
+            pSystem->mUndoStack->registerAddedConnector(pTempConnector);
+        }
     }
     else
     {

@@ -59,8 +59,6 @@ public:
     //Public members
     GUIModelObjectDisplayName *mpNameText;
 
-    QList<GUIConnector*> getGUIConnectorPtrs();
-
     enum { Type = GUIMODELOBJECT };
     int type() const;
 
@@ -105,7 +103,6 @@ protected:
     QGraphicsSvgItem *mpIcon;
 
     QList<GUIPort*> mPortListPtrs;
-    QList<GUIConnector*> mpGUIConnectorPtrs;
 
     QGraphicsLineItem *mpTempLine;
 

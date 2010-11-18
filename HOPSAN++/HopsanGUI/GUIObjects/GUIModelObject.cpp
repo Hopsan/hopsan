@@ -173,13 +173,6 @@ void GUIModelObject::forgetConnector(GUIConnector *item)
 }
 
 
-//! @param Returns the a list with pointers to the connecetors connected to the object
-QList<GUIConnector*> GUIModelObject::getGUIConnectorPtrs()
-{
-    return mpGUIConnectorPtrs;
-}
-
-
 //! @brief Refreshes the displayed name (HopsanCore may have changed it)
 void GUIModelObject::refreshDisplayName()
 {
@@ -470,6 +463,7 @@ void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     {
         if(((*it)->mOldPos != (*it)->pos()) && (event->button() == Qt::LeftButton))
         {
+            emit objectMoved();
                 //This check makes sure that only one undo post is created when moving several objects at once
             if(!alreadyClearedRedo)
             {
@@ -501,6 +495,18 @@ void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     GUIObject::itemChange(change, value);   //This must be done BEFORE the snapping code to avoid an event loop. This is because snap uses "moveBy()", which triggers a new itemChange event.
+
+    if (change == QGraphicsItem::ItemSelectedHasChanged)
+    {
+        if(this->isSelected())
+        {
+            mpParentContainerObject->mSelectedGUIObjectsList.append(this);
+        }
+        else
+        {
+            mpParentContainerObject->mSelectedGUIObjectsList.removeAll(this);
+        }
+    }
 
     //Snap if objects have moved
     if (change == QGraphicsItem::ItemPositionHasChanged)

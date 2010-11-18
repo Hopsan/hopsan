@@ -122,6 +122,7 @@ public:
     void setGeometry(connectorGeometry geometry);
     void setLine(QPointF pos1, QPointF pos2);
     int getLineNumber();
+    QPointF mOldPos;
 
 public slots:
 
@@ -155,7 +156,6 @@ private:
     QGraphicsLineItem *mArrowLine2;
     qreal mArrowSize;
     qreal mArrowAngle;
-    QPointF mOldPos;
 };
 
 #endif // GUICONNECTOR_H

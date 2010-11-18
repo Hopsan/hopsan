@@ -5,6 +5,7 @@
 
 #include "GUIObject.h"
 #include "GUISystem.h"
+#include "GUIConnector.h"
 
 #include "../ProjectTabWidget.h"
 #include "../MainWindow.h"
@@ -97,6 +98,15 @@ void GUIObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 }
 
 
+//! @param Returns the a list with pointers to the connecetors connected to the object
+QList<GUIConnector*> GUIObject::getGUIConnectorPtrs()
+{
+    return mpGUIConnectorPtrs;
+}
+
+
+
+
 //! @brief Defines what happens if a mouse key is pressed while hovering an object
 void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -111,6 +121,11 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
         for(size_t i = 0; i < mpParentContainerObject->mSelectedGUIObjectsList.size(); ++i)
         {
             mpParentContainerObject->mSelectedGUIObjectsList[i]->mOldPos = mpParentContainerObject->mSelectedGUIObjectsList[i]->pos();
+
+        }
+        for(size_t i = 0; i < mpParentContainerObject->mSelectedGUIWidgetsList.size(); ++i)
+        {
+            mpParentContainerObject->mSelectedGUIWidgetsList[i]->mOldPos = mpParentContainerObject->mSelectedGUIWidgetsList[i]->pos();
         }
     }
 
@@ -148,7 +163,6 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
     {
         if (this->isSelected())
         {
-            mpParentContainerObject->mSelectedGUIObjectsList.append(this);
             mpSelectionBox->setActive();
             connect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
             connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
@@ -165,7 +179,6 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
         }
         else
         {
-            mpParentContainerObject->mSelectedGUIObjectsList.removeAll(this);
             disconnect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
             disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));

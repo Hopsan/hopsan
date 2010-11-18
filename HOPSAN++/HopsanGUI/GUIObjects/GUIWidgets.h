@@ -21,8 +21,18 @@
 #include <QComboBox>
 #include <QToolButton>
 
+class GUIWidget : public GUIObject
+{
+    Q_OBJECT
+public:
+    GUIWidget(QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent=0);
 
-class GUITextWidget : public GUIObject
+protected:
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+};
+
+
+class GUITextWidget : public GUIWidget
 {
     Q_OBJECT
 public:
@@ -61,7 +71,7 @@ private:
 
 
 
-class GUIBoxWidget : public GUIObject
+class GUIBoxWidget : public GUIWidget
 {
     Q_OBJECT
 public:
