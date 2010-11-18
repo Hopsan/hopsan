@@ -504,7 +504,7 @@ void GUIContainerObject::cutSelected(CopyStack *xmlStack)
 //! @see paste()
 void GUIContainerObject::copySelected(CopyStack *xmlStack)
 {
-    mUndoStack->newPost();
+    //mUndoStack->newPost();
     gCopyStack.clear();
 
     QDomElement *copyRoot;
@@ -539,7 +539,7 @@ void GUIContainerObject::copySelected(CopyStack *xmlStack)
 //! @see copySelected()
 void GUIContainerObject::paste(CopyStack *xmlStack)
 {
-    mUndoStack->newPost();      //! @todo Add option to tell undo stack that this is a paste post, so it won't shop everything in widget list
+    mUndoStack->newPost("paste");
     mpParentProjectTab->hasChanged();
 
     QDomElement *copyRoot;

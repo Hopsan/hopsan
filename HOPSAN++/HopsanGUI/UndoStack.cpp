@@ -49,11 +49,13 @@ void UndoStack::clear()
     mDomDocument.appendChild(mUndoRoot);
     QDomElement firstPost = appendDomElement(mUndoRoot, "post");
     firstPost.setAttribute("number", mCurrentStackPosition);
+
+    gpMainWindow->mpUndoWidget->refreshList();
 }
 
 
 //! @brief Adds a new empty post to the undo stack
-void UndoStack::newPost()
+void UndoStack::newPost(QString type)
 {
     ++mCurrentStackPosition;
     QDomElement maybeDeletePost = mUndoRoot.firstChildElement("post");
@@ -68,6 +70,10 @@ void UndoStack::newPost()
     }
     QDomElement newPost = appendDomElement(mUndoRoot, "post");
     newPost.setAttribute("number", mCurrentStackPosition);
+    if(!type.isEmpty())
+    {
+        newPost.setAttribute("type", type);
+    }
 
     gpMainWindow->mpUndoWidget->refreshList();
 }
@@ -605,8 +611,8 @@ void UndoWidget::refreshList()
     //XML//
 
     QColor oddColor = QColor("white");
-    QColor evenColor = QColor("antiquewhite");
-    QColor activeColor = QColor("gold");
+    QColor evenColor = QColor("whitesmoke");
+    QColor activeColor = QColor("chartreuse");
 
     size_t pos = 0;
     bool found = true;
@@ -616,19 +622,17 @@ void UndoWidget::refreshList()
     while(found)
     {
         found = false;
-        //stuffList.append(QStringList());
         while(!postElement.isNull())
         {
             if(postElement.attribute("number").toInt() == pos)
             {
                 //Found correct number, write it's contents to the list
                 found = true;
-                QDomElement stuffElement = postElement.firstChildElement("stuff");
-                while(!stuffElement.isNull())
+                if(postElement.attribute("type") != QString())
                 {
                     item = new QTableWidgetItem();
                     item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-                    item->setText(translateTag(stuffElement.attribute("what")));
+                    item->setText(translateTag(postElement.attribute("type")));
                     if(pos == gpMainWindow->mpProjectTabs->getCurrentSystem()->mUndoStack->mCurrentStackPosition)
                     {
                         item->setBackgroundColor(activeColor);
@@ -643,7 +647,31 @@ void UndoWidget::refreshList()
                     }
                     mUndoTable->insertRow(0);
                     mUndoTable->setItem(0,0,item);
-                    stuffElement = stuffElement.nextSiblingElement("stuff");
+                }
+                else
+                {
+                    QDomElement stuffElement = postElement.firstChildElement("stuff");
+                    while(!stuffElement.isNull())
+                    {
+                        item = new QTableWidgetItem();
+                        item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+                        item->setText(translateTag(stuffElement.attribute("what")));
+                        if(pos == gpMainWindow->mpProjectTabs->getCurrentSystem()->mUndoStack->mCurrentStackPosition)
+                        {
+                            item->setBackgroundColor(activeColor);
+                        }
+                        else if(pos%2 == 0)
+                        {
+                            item->setBackgroundColor(evenColor);
+                        }
+                        else
+                        {
+                            item->setBackgroundColor(oddColor);
+                        }
+                        mUndoTable->insertRow(0);
+                        mUndoTable->setItem(0,0,item);
+                        stuffElement = stuffElement.nextSiblingElement("stuff");
+                    }
                 }
                 break;
             }
@@ -651,6 +679,7 @@ void UndoWidget::refreshList()
         }
         ++pos;
     }
+    qDebug() << gpMainWindow->mpProjectTabs->getCurrentSystem()->mUndoStack->mDomDocument.toString();
 }
 
 QString UndoWidget::translateTag(QString tag)
@@ -666,6 +695,8 @@ QString UndoWidget::translateTag(QString tag)
     tagMap.insert("rotate",             "Rotated Object");
     tagMap.insert("flipvertical",       "Flipped Vertical");
     tagMap.insert("fliphorizontal",     "Flipped Horizontal");
+    tagMap.insert("paste",              "Paste");
+    tagMap.insert("movedmultiple",      "Moved Objects");
 
     if(tagMap.contains(tag))
         return tagMap.find(tag).value();

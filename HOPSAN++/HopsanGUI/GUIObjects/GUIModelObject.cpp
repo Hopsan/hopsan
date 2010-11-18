@@ -467,7 +467,14 @@ void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
                 //This check makes sure that only one undo post is created when moving several objects at once
             if(!alreadyClearedRedo)
             {
-                mpParentContainerObject->mUndoStack->newPost();
+                if(mpParentContainerObject->mSelectedGUIObjectsList.size() > 1)
+                {
+                    mpParentContainerObject->mUndoStack->newPost("movedmultiple");
+                }
+                else
+                {
+                    mpParentContainerObject->mUndoStack->newPost();
+                }
                 mpParentContainerObject->mpParentProjectTab->hasChanged();
                 alreadyClearedRedo = true;
             }

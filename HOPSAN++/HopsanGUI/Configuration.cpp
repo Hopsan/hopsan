@@ -152,6 +152,7 @@ AngularVelocityUnitMap.insert("rad/s", 1);
 AngularVelocityUnitMap.insert("deg/s", 57.296);
 AngularVelocityUnitMap.insert("rev/s", 0.159155);
 AngularVelocityUnitMap.insert("rpm", 9.549296585);
+QMap<QString, double> ValueUnitMap;
 mCustomUnits.insert("Pressure", PressureUnitMap);
 mCustomUnits.insert("Flow", FlowUnitMap);
 mCustomUnits.insert("Force", ForceUnitMap);
@@ -160,6 +161,7 @@ mCustomUnits.insert("Velocity", VelocityUnitMap);
 mCustomUnits.insert("Torque", TorqueUnitMap);
 mCustomUnits.insert("Angle", AngleUnitMap);
 mCustomUnits.insert("Angular Velocity", AngularVelocityUnitMap);
+mCustomUnits.insert("Value", ValueUnitMap);
 
     //Read from hopsanconfig.xml
 QFile file(QString(MAINPATH) + "hopsanconfig.xml");

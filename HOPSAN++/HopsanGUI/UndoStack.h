@@ -39,7 +39,7 @@ public:
     void registerVerticalFlip(GUIObject *item);
     void registerHorizontalFlip(GUIObject *item);
     void clear();
-    void newPost();
+    void newPost(QString type = "");
     void insertPost(QString str);
     void undoOneStep();
     void redoOneStep();
