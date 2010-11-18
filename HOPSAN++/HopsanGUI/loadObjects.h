@@ -44,6 +44,7 @@ public:
     QString type;
     QString name;
     qreal posX, posY, rotation;
+    bool isFlipped;
     int nameTextPos;
     int textVisible;
 

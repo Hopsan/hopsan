@@ -400,11 +400,8 @@ QDomElement GUIModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
     QDomElement xmlGuiStuff = appendDomElement(rDomElement,HMF_HOPSANGUITAG);
 
     QPointF pos = mapToScene(boundingRect().center());
-    //appendDomValueNode3(xmlGuiStuff, HMF_POSETAG, pos.x(), pos.y(), rotation());
-    //appendDomValueNode(xmlGuiStuff, HMF_NAMETEXTPOSTAG, getNameTextPos());
-    //appendDomValueNode(xmlGuiStuff, HMF_VISIBLETAG, mpNameText->isVisible());
 
-    appendPoseTag(xmlGuiStuff,pos.x(), pos.y(), rotation());
+    appendPoseTag(xmlGuiStuff,pos.x(), pos.y(), rotation(), this->mIsFlipped);
     QDomElement nametext = appendDomElement(xmlGuiStuff, HMF_NAMETEXTTAG);
     nametext.setAttribute("position", getNameTextPos());
     nametext.setAttribute("visible", mpNameText->isVisible());

@@ -1625,7 +1625,6 @@ bool ComponentSystem::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
                 n_SYScomponentQs += 1;
             }
         }
-
     }
 
     //Check the kind of ports in the components subjected for connection

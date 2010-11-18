@@ -159,12 +159,13 @@ bool parseDomBooleanNode(QDomElement domElement)
 //    rDomElement.setAttribute(attrname, text);
 //}
 
-void appendPoseTag(QDomElement &rDomElement, qreal x, qreal y, qreal th)
+void appendPoseTag(QDomElement &rDomElement, qreal x, qreal y, qreal th, bool flipped)
 {
     QDomElement pose = appendDomElement(rDomElement, HMF_POSETAG);
     pose.setAttribute("x",x);
     pose.setAttribute("y",y);
     pose.setAttribute("a",th);
+    pose.setAttribute("flipped", flipped);
 }
 
 void appendPortPoseTag(QDomElement &rDomElement, QString name, qreal x, qreal y, qreal th)
@@ -199,17 +200,19 @@ void appendSimulationTimeTag(QDomElement &rDomElement, qreal start, qreal step, 
     simu.setAttribute("stop", stop);
 }
 
-void parsePoseTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rTheta)
+void parsePoseTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rTheta, bool &rFlipped)
 {
     rX = domElement.attribute("x").toDouble();
     rY = domElement.attribute("y").toDouble();
     rTheta = domElement.attribute("a").toDouble();
+    rFlipped = (domElement.attribute("flipped") == "1");
 }
 
 void parsePortPoseTag(QDomElement domElement, QString &rName, qreal &rX, qreal &rY, qreal &rTheta)
 {
     rName = domElement.attribute("name");
-    parsePoseTag(domElement, rX, rY, rTheta);
+    bool dummy;
+    parsePoseTag(domElement, rX, rY, rTheta, dummy);
 }
 
 void parseCoordinateTag(QDomElement domElement, qreal &rX, qreal &rY)

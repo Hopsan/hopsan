@@ -112,7 +112,7 @@ void ModelObjectLoadData::readGuiDataFromDomElement(QDomElement &rDomElement)
 //    nameTextPos = parseDomValueNode(guiData.firstChildElement(HMF_NAMETEXTPOSTAG));
 //    textVisible = parseDomValueNode(guiData.firstChildElement(HMF_VISIBLETAG))+0.5; //should be bool, +0.5 to roound to int on truncation
 
-    parsePoseTag(guiData.firstChildElement(HMF_POSETAG), posX, posY, rotation);
+    parsePoseTag(guiData.firstChildElement(HMF_POSETAG), posX, posY, rotation, isFlipped);
     nameTextPos = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("position").toInt();
     textVisible = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("visible").toInt(); //should be bool, +0.5 to roound to int on truncation
 }
@@ -324,6 +324,10 @@ GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidg
         if(!rData.textVisible)
         {
             pObj->hideName();
+        }
+        if (rData.isFlipped)
+        {
+            pObj->flipHorizontal(undoSettings);
         }
         while(pObj->rotation() != rData.rotation)
         {
