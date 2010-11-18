@@ -49,6 +49,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mAutoUpdate = true;
 
         //Initiate default values for left y-axis
+    mCurrentUnitsLeft.insert("Value", gConfig.getDefaultUnit("Value"));
     mCurrentUnitsLeft.insert("Pressure", gConfig.getDefaultUnit("Pressure"));
     mCurrentUnitsLeft.insert("Flow", gConfig.getDefaultUnit("Flow"));
     mCurrentUnitsLeft.insert("Position", gConfig.getDefaultUnit("Position"));
@@ -56,6 +57,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     mCurrentUnitsLeft.insert("Force", gConfig.getDefaultUnit("Force"));
 
         //Initiate default values for right y-axis
+    mCurrentUnitsRight.insert("Value", gConfig.getDefaultUnit("Value"));
     mCurrentUnitsRight.insert("Pressure", gConfig.getDefaultUnit("Pressure"));
     mCurrentUnitsRight.insert("Flow", gConfig.getDefaultUnit("Flow"));
     mCurrentUnitsRight.insert("Position", gConfig.getDefaultUnit("Position"));
