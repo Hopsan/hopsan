@@ -110,6 +110,7 @@ mAntiAliasing = true;
 mLastSessionModels.clear();
 mRecentModels.clear();
 
+mDefaultUnits.insert("Value", "-");
 mDefaultUnits.insert("Pressure", "Pa");
 mDefaultUnits.insert("Flow", "m^3/s");
 mDefaultUnits.insert("Force", "N");
@@ -153,6 +154,7 @@ AngularVelocityUnitMap.insert("deg/s", 57.296);
 AngularVelocityUnitMap.insert("rev/s", 0.159155);
 AngularVelocityUnitMap.insert("rpm", 9.549296585);
 QMap<QString, double> ValueUnitMap;
+ValueUnitMap.insert("-", 1);
 mCustomUnits.insert("Pressure", PressureUnitMap);
 mCustomUnits.insert("Flow", FlowUnitMap);
 mCustomUnits.insert("Force", ForceUnitMap);
