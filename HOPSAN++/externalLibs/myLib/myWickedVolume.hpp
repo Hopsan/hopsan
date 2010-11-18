@@ -55,11 +55,11 @@ namespace hopsan {
             mZc = mBulkmodulus/mVolume*mTimestep/(1-mAlpha); //Need to be updated at simulation start since it is volume and bulk that are set.
 
             //Write to nodes
-            mpP1->writeNode(NodeHydraulic::MASSFLOW,     mStartFlow);
+            mpP1->writeNode(NodeHydraulic::FLOW,         mStartFlow);
             mpP1->writeNode(NodeHydraulic::PRESSURE,     mStartPressure);
             mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+mZc*mStartFlow);
             mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc);
-            mpP2->writeNode(NodeHydraulic::MASSFLOW,     mStartFlow);
+            mpP2->writeNode(NodeHydraulic::FLOW,         mStartFlow);
             mpP2->writeNode(NodeHydraulic::PRESSURE,     mStartPressure);
             mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+mZc*mStartFlow);
             mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc);
@@ -68,9 +68,9 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            double q1  = mpP1->readNode(NodeHydraulic::MASSFLOW);
+            double q1  = mpP1->readNode(NodeHydraulic::FLOW);
             double c1  = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
-            double q2  = mpP2->readNode(NodeHydraulic::MASSFLOW);
+            double q2  = mpP2->readNode(NodeHydraulic::FLOW);
             double c2  = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
 
             //Volume equations
