@@ -294,7 +294,7 @@ void GUIObject::rotate(undoStatus undoSettings)
 
     if(undoSettings == UNDO)
     {
-        mpParentContainerObject->mUndoStack->registerRotatedObject(this);
+        mpParentContainerObject->mUndoStack->registerRotatedObject(this->getName());
     }
 
     emit objectMoved();

@@ -182,15 +182,20 @@ void UndoStack::undoOneStep()
         }
         else if(stuffElement.attribute("what") == "verticalflip")
         {
-            QDomElement componentElement = stuffElement.firstChildElement("component");
-            QString name = componentElement.attribute("name");
+            QString name = stuffElement.attribute("objectname");
             mpParentContainerObject->getGUIModelObject(name)->flipVertical(NOUNDO);
         }
-        else if(stuffElement.attribute("what") == "rotate")
+        else if(stuffElement.attribute("what") == "horizontalflip")
         {
-            QDomElement componentElement = stuffElement.firstChildElement("component");
-            QString name = componentElement.attribute("name");
+            QString name = stuffElement.attribute("objectname");
             mpParentContainerObject->getGUIModelObject(name)->flipHorizontal(NOUNDO);
+        }
+        else if(stuffElement.attribute("what") == "changedparameter")
+        {
+            QString objectName = stuffElement.attribute("objectname");
+            QString parameterName = stuffElement.attribute("parametername");
+            double oldValue = stuffElement.attribute("oldvalue").toDouble();
+            mpParentContainerObject->getGUIModelObject(objectName)->setParameterValue(parameterName, oldValue);
         }
         stuffElement = stuffElement.nextSiblingElement("stuff");
     }
@@ -321,6 +326,13 @@ void UndoStack::redoOneStep()
             QDomElement componentElement = stuffElement.firstChildElement("component");
             QString name = componentElement.attribute("name");
             mpParentContainerObject->getGUIModelObject(name)->flipHorizontal(NOUNDO);
+        }
+        else if(stuffElement.attribute("what") == "changedparameter")
+        {
+            QString objectName = stuffElement.attribute("objectname");
+            QString parameterName = stuffElement.attribute("parametername");
+            double newValue = stuffElement.attribute("newvalue").toDouble();
+            mpParentContainerObject->getGUIModelObject(objectName)->setParameterValue(parameterName, newValue);
         }
         stuffElement = stuffElement.nextSiblingElement("stuff");
     }
@@ -479,38 +491,38 @@ void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString obje
 }
 
 
-void UndoStack::registerMovedConnector(double dx, double dy, GUIConnector *item)
-{
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", "movedconnector");
-    stuffElement.setAttribute("dx", dx);
-    stuffElement.setAttribute("dy", dy);
-    item->saveToDomElement(stuffElement);
-    gpMainWindow->mpUndoWidget->refreshList();
-}
+//void UndoStack::registerMovedConnector(double dx, double dy, GUIConnector *item)
+//{
+//    QDomElement currentPostElement = getCurrentPost();
+//    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+//    stuffElement.setAttribute("what", "movedconnector");
+//    stuffElement.setAttribute("dx", dx);
+//    stuffElement.setAttribute("dy", dy);
+//    item->saveToDomElement(stuffElement);
+//    gpMainWindow->mpUndoWidget->refreshList();
+//}
 
 
 //! @brief Register function for rotating an object
 //! @param item Pointer to the object
-void UndoStack::registerRotatedObject(GUIObject *item)
+void UndoStack::registerRotatedObject(QString objectName)
 {
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
     stuffElement.setAttribute("what", "rotate");
-    item->saveToDomElement(stuffElement);
+    stuffElement.setAttribute("objectname", objectName);
     gpMainWindow->mpUndoWidget->refreshList();
 }
 
 
 //! @brief Register function for vertical flip of an object
 //! @param item Pointer to the object
-void UndoStack::registerVerticalFlip(GUIObject *item)
+void UndoStack::registerVerticalFlip(QString objectName)
 {
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
     stuffElement.setAttribute("what", "verticalflip");
-    item->saveToDomElement(stuffElement);
+    stuffElement.setAttribute("objectname", objectName);
     gpMainWindow->mpUndoWidget->refreshList();
 }
 
@@ -518,13 +530,26 @@ void UndoStack::registerVerticalFlip(GUIObject *item)
 //! @brief Register function for horizontal flip of an object
 //! @param item Pointer to the object
 //! @todo Maybe we should combine this and registerVerticalFlip to one function?
-void UndoStack::registerHorizontalFlip(GUIObject *item)
+void UndoStack::registerHorizontalFlip(QString objectName)
 {
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
     stuffElement.setAttribute("what", "horizontalflip");
-    item->saveToDomElement(stuffElement);
+    stuffElement.setAttribute("objectname", objectName);
     gpMainWindow->mpUndoWidget->refreshList();
+}
+
+
+//! @brief Registser function for changing parameters of an object
+void UndoStack::registerChangedParameter(QString objectName, QString parameterName, double oldValue, double newValue)
+{
+    QDomElement currentPostElement = getCurrentPost();
+    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+    stuffElement.setAttribute("what", "changedparameter");
+    stuffElement.setAttribute("parametername", parameterName);
+    stuffElement.setAttribute("oldvalue", oldValue);
+    stuffElement.setAttribute("newvalue", newValue);
+    stuffElement.setAttribute("objectname", objectName);
 }
 
 
@@ -697,6 +722,8 @@ QString UndoWidget::translateTag(QString tag)
     tagMap.insert("fliphorizontal",     "Flipped Horizontal");
     tagMap.insert("paste",              "Paste");
     tagMap.insert("movedmultiple",      "Moved Objects");
+    tagMap.insert("cut",                "Cut");
+    tagMap.insert("changedparameters",  "Changed Parameter(s)");
 
     if(tagMap.contains(tag))
         return tagMap.find(tag).value();

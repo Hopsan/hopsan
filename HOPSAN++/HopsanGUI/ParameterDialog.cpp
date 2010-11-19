@@ -18,6 +18,7 @@
 #include "GUIPort.h"
 #include "MessageWidget.h"
 #include "GUIObjects/GUIComponent.h"
+#include "UndoStack.h"
 
 
 //! @class ParameterDialog
@@ -251,27 +252,39 @@ void ParameterDialog::okPressed()
 //! Sets the parameters in the core component. Read the values from the dialog and write them into the core component.
 void ParameterDialog::setParameters()
 {
+    bool addedUndoPost = false;
     for (size_t i=0 ; i < mParameterValueVector.size(); ++i )
     {
+
+        //! @test This is just a preliminary check for how global parameters can be implemented
         qDebug() << "Checking " << mParameterVarVector[i]->text();
         if(mParameterValueVector[i]->text().startsWith("<") && mParameterValueVector[i]->text().endsWith(">")) //! @todo Break out global parameter stuff to own method so it can be used, for example, in start value method too
         {
             QString requestedParameter = mParameterValueVector[i]->text().mid(1, mParameterValueVector[i]->text().size()-2);
             qDebug() << "Found global parameter \"" << requestedParameter << "\"";
         }
+
         bool ok;
         double newValue = mParameterValueVector[i]->text().toDouble(&ok);
         if (!ok)
         {
-
             MessageWidget *messageWidget = gpMainWindow->mpMessageWidget;//qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent()->parent())->mpMessageWidget;
             messageWidget->printGUIMessage(QString("ParameterDialog::setParameters(): You must give a correct value for '").append(mParameterVarVector[i]->text()).append(QString("', putz. Try again!")));
             qDebug() << "Inte okej!";
             return;
         }
+
+        if(mpGUIModelObject->getParameterValue(mParameterVarVector[i]->text()) != newValue)
+        {
+            if(!addedUndoPost)
+            {
+                this->mpGUIModelObject->mpParentContainerObject->mUndoStack->newPost("changedparameters");
+                addedUndoPost = true;
+            }
+            this->mpGUIModelObject->mpParentContainerObject->mUndoStack->registerChangedParameter(mpGUIModelObject->getName(), mParameterVarVector[i]->text(), mpGUIModelObject->getParameterValue(mParameterVarVector[i]->text()), newValue);
+        }
         mpGUIModelObject->setParameterValue(mParameterVarVector[i]->text(), newValue);
     }
-
 
     std::cout << "Parameters updated." << std::endl;
     this->close();

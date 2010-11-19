@@ -8,6 +8,8 @@
 //$Id: OptionsWidget.cpp 1196 2010-04-01 09:55:04Z robbr48 $
 
 
+//! @todo Rename this class and file to OptionsDialog
+
 #include <QtGui>
 #include <QDebug>
 
@@ -112,6 +114,8 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     mpSimulationLayout->addWidget(mpThreadsWarningLabel, 4, 0, 1, 2);
     mpSimulationGroupBox->setLayout(mpSimulationLayout);
 
+    mpValueUnitLabel = new QLabel(tr("Default Value Unit"));
+    mpValueUnitComboBox = new QComboBox();
     mpPressureUnitLabel = new QLabel(tr("Default Pressure Unit"));
     mpPressureUnitComboBox = new QComboBox();
     mpFlowUnitLabel = new QLabel(tr("Default Flow Unit"));
@@ -125,6 +129,7 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
 
     this->updateCustomUnits();
 
+    mpAddValueUnitButton = new QPushButton("Add Custom Value Unit");
     mpAddPressureUnitButton = new QPushButton("Add Custom Pressure Unit");
     mpAddFlowUnitButton = new QPushButton("Add Custom Flow Unit");
     mpAddForceUnitButton = new QPushButton("Add Custom Force Unit");
@@ -133,21 +138,24 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
 
     mpPlottingGroupBox = new QGroupBox(tr("Plotting"));
     mpPlottingLayout = new QGridLayout;
-    mpPlottingLayout->addWidget(mpPressureUnitLabel, 0, 0);
-    mpPlottingLayout->addWidget(mpPressureUnitComboBox, 0, 1);
-    mpPlottingLayout->addWidget(mpAddPressureUnitButton, 0, 2);
-    mpPlottingLayout->addWidget(mpFlowUnitLabel, 1, 0);
-    mpPlottingLayout->addWidget(mpFlowUnitComboBox, 1, 1);
-    mpPlottingLayout->addWidget(mpAddFlowUnitButton, 1, 2);
-    mpPlottingLayout->addWidget(mpForceUnitLabel, 2, 0);
-    mpPlottingLayout->addWidget(mpForceUnitComboBox, 2, 1);
-    mpPlottingLayout->addWidget(mpAddForceUnitButton, 2, 2);
-    mpPlottingLayout->addWidget(mpPositionUnitLabel, 3, 0);
-    mpPlottingLayout->addWidget(mpPositionUnitComboBox, 3, 1);
-    mpPlottingLayout->addWidget(mpAddPositionUnitButton, 3, 2);
-    mpPlottingLayout->addWidget(mpVelocityUnitLabel, 4, 0);
-    mpPlottingLayout->addWidget(mpVelocityUnitComboBox, 4, 1);
-    mpPlottingLayout->addWidget(mpAddVelocityUnitButton, 4, 2);
+    mpPlottingLayout->addWidget(mpValueUnitLabel, 0, 0);
+    mpPlottingLayout->addWidget(mpValueUnitComboBox, 0, 1);
+    mpPlottingLayout->addWidget(mpAddValueUnitButton, 0, 2);
+    mpPlottingLayout->addWidget(mpPressureUnitLabel, 1, 0);
+    mpPlottingLayout->addWidget(mpPressureUnitComboBox, 1, 1);
+    mpPlottingLayout->addWidget(mpAddPressureUnitButton, 1, 2);
+    mpPlottingLayout->addWidget(mpFlowUnitLabel, 2, 0);
+    mpPlottingLayout->addWidget(mpFlowUnitComboBox, 2, 1);
+    mpPlottingLayout->addWidget(mpAddFlowUnitButton, 2, 2);
+    mpPlottingLayout->addWidget(mpForceUnitLabel, 3, 0);
+    mpPlottingLayout->addWidget(mpForceUnitComboBox, 3, 1);
+    mpPlottingLayout->addWidget(mpAddForceUnitButton, 3, 2);
+    mpPlottingLayout->addWidget(mpPositionUnitLabel, 4, 0);
+    mpPlottingLayout->addWidget(mpPositionUnitComboBox, 4, 1);
+    mpPlottingLayout->addWidget(mpAddPositionUnitButton, 4, 2);
+    mpPlottingLayout->addWidget(mpVelocityUnitLabel, 5, 0);
+    mpPlottingLayout->addWidget(mpVelocityUnitComboBox, 5, 1);
+    mpPlottingLayout->addWidget(mpAddVelocityUnitButton, 5, 2);
     mpPlottingGroupBox->setLayout(mpPlottingLayout);
 
     //QLabel *mpPressureUnitLabel;
@@ -171,6 +179,7 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
     connect(mpCancelButton, SIGNAL(pressed()), this, SLOT(reject()));
     connect(mpOkButton, SIGNAL(pressed()), this, SLOT(updateValues()));
 
+    connect(mpAddValueUnitButton, SIGNAL(pressed()), this, SLOT(addValueUnit()));
     connect(mpAddPressureUnitButton, SIGNAL(pressed()), this, SLOT(addPressureUnit()));
     connect(mpAddFlowUnitButton, SIGNAL(pressed()), this, SLOT(addFlowUnit()));
     connect(mpAddForceUnitButton, SIGNAL(pressed()), this, SLOT(addForceUnit()));
@@ -209,6 +218,7 @@ void OptionsWidget::updateValues()
     gConfig.setProgressBarStep(mpProgressBarSpinBox->value());
     gConfig.setUseMultiCore(mpUseMulticoreCheckBox->isChecked());
     gConfig.setNumberOfThreads(mpThreadsSpinBox->value());
+    gConfig.setDefaultUnit("Value", mpValueUnitComboBox->currentText());
     gConfig.setDefaultUnit("Pressure", mpPressureUnitComboBox->currentText());
     gConfig.setDefaultUnit("Flow", mpFlowUnitComboBox->currentText());
     gConfig.setDefaultUnit("Force", mpForceUnitComboBox->currentText());
@@ -258,6 +268,10 @@ void OptionsWidget::show()
 }
 
 
+void OptionsWidget::addValueUnit()
+{
+    addCustomUnitDialog("Value");
+}
 
 void OptionsWidget::addPressureUnit()
 {
@@ -331,9 +345,23 @@ void OptionsWidget::addCustomUnit()
 
 void OptionsWidget::updateCustomUnits()
 {
+    mpValueUnitComboBox->clear();
+    QMap<QString, double> customValueUnits = gConfig.getCustomUnits("Value");
+    QMap<QString, double>::iterator it;
+    for(it = customValueUnits.begin(); it != customValueUnits.end(); ++it)
+    {
+        mpValueUnitComboBox->addItem(it.key());
+    }
+    for(size_t i = 0; i<mpValueUnitComboBox->count(); ++i)
+    {
+        if(mpValueUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Value"))
+        {
+            mpValueUnitComboBox->setCurrentIndex(i);
+        }
+    }
+
     mpPressureUnitComboBox->clear();
     QMap<QString, double> customPressureUnits = gConfig.getCustomUnits("Pressure");
-    QMap<QString, double>::iterator it;
     for(it = customPressureUnits.begin(); it != customPressureUnits.end(); ++it)
     {
         mpPressureUnitComboBox->addItem(it.key());

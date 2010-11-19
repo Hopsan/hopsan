@@ -721,7 +721,7 @@ void GUIModelObject::rotate(undoStatus undoSettings)
 
     if(undoSettings == UNDO)
     {
-        mpParentContainerObject->mUndoStack->registerRotatedObject(this);
+        mpParentContainerObject->mUndoStack->registerRotatedObject(this->getName());
     }
 
     emit objectMoved();
@@ -757,7 +757,7 @@ void GUIModelObject::flipVertical(undoStatus undoSettings)
     this->rotate(NOUNDO);
     if(undoSettings == UNDO)
     {
-        mpParentContainerObject->mUndoStack->registerVerticalFlip(this);
+        mpParentContainerObject->mUndoStack->registerVerticalFlip(this->getName());
     }
 }
 
@@ -862,7 +862,7 @@ void GUIModelObject::flipHorizontal(undoStatus undoSettings)
 
     if(undoSettings == UNDO)
     {
-        mpParentContainerObject->mUndoStack->registerHorizontalFlip(this);
+        mpParentContainerObject->mUndoStack->registerHorizontalFlip(this->getName());
     }
 }
 

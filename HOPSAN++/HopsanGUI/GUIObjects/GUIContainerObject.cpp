@@ -494,6 +494,7 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
 void GUIContainerObject::cutSelected(CopyStack *xmlStack)
 {
     this->copySelected(xmlStack);
+    this->mUndoStack->newPost("cut");
     emit deleteSelected();
     mpParentProjectTab->mpGraphicsView->updateViewPort();
 }
@@ -595,7 +596,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
 //        }
         tempConnector->moveAllPoints(mPasteOffset, mPasteOffset);
         tempConnector->drawConnector();
-        for(size_t i=0; i<tempConnector->getNumberOfLines()-2; ++i)
+        for(int i=0; i<(tempConnector->getNumberOfLines()-2); ++i)
         {
             mUndoStack->registerModifiedConnector(QPointF(tempConnector->getLine(i)->pos().x()-mPasteOffset, tempConnector->getLine(i)->pos().y()-mPasteOffset),
                                                   tempConnector->getLine(i+1)->pos(), tempConnector, i+1);

@@ -7,6 +7,7 @@
 //!
 //$Id$
 
+//! @todo Rename this class and file to PreferencesDialog
 
 #include <QtGui>
 #include <QDebug>

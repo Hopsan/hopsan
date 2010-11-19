@@ -30,6 +30,7 @@ public slots:
     void show();
 
 private slots:
+    void addValueUnit();
     void addPressureUnit();
     void addFlowUnit();
     void addForceUnit();
@@ -60,6 +61,9 @@ private:
     QGroupBox *mpSimulationGroupBox;
     QGridLayout *mpSimulationLayout;
 
+    QLabel *mpValueUnitLabel;
+    QComboBox *mpValueUnitComboBox;
+    QPushButton *mpAddValueUnitButton;
     QLabel *mpPressureUnitLabel;
     QComboBox *mpPressureUnitComboBox;
     QPushButton *mpAddPressureUnitButton;
