@@ -79,11 +79,10 @@ void UndoStack::newPost(QString type)
 }
 
 
-//! @brief Will undo the changes registered in the last stack position, and switch stack pointer one step back
+//! @brief Will undo the changes registered in the current stack position and decrease stack position one step
 void UndoStack::undoOneStep()
 {
     bool didSomething = false;
-    //QList<QDomElement> modifiedConnectorList;
     QList<QDomElement> deletedConnectorList;
     QList<QDomElement> addedConnectorList;
     QList<QDomElement> addedObjectList;
@@ -111,7 +110,11 @@ void UndoStack::undoOneStep()
         else if(stuffElement.attribute("what") == "addedconnector")
         {
             QDomElement connectorElement = stuffElement.firstChildElement("connect");
-            addedConnectorList.append(connectorElement);
+            QString startComponent = connectorElement.attribute("startcomponent");
+            QString startPort = connectorElement.attribute("startport");
+            QString endComponent = connectorElement.attribute("endcomponent");
+            QString endPort = connectorElement.attribute("endport");
+            mpParentContainerObject->removeConnector(mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort), NOUNDO);
         }
         else if(stuffElement.attribute("what") == "rename")
         {
@@ -128,24 +131,19 @@ void UndoStack::undoOneStep()
             QDomElement newPosElement = stuffElement.firstChildElement("newpos");
             parseDomValueNode2(newPosElement, tempX, tempY);
             QPointF newPos = QPointF(tempX, tempY);
-
             int lineNumber = stuffElement.attribute("linenumber").toDouble();
-
             QDomElement connectorElement = stuffElement.firstChildElement("connect");
             QString startComponent = connectorElement.attribute("startcomponent");
             QString startPort = connectorElement.attribute("startport");
             QString endComponent = connectorElement.attribute("endcomponent");
             QString endPort = connectorElement.attribute("endport");
-
             GUIConnector *item = mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort);
             QPointF dXY = newPos - oldPos;
-
             item->getLine(lineNumber)->setPos(item->getLine(lineNumber)->pos()-dXY);
             item->updateLine(lineNumber);
         }
         else if(stuffElement.attribute("what") == "movedobject")
         {
-            //! @todo If undoing two moved objects which are connected, move connector as well somehow
             double x, y, x_new, y_new;
             QDomElement newPosElement = stuffElement.firstChildElement("newpos");
             QDomElement oldPosElement = stuffElement.firstChildElement("oldpos");
@@ -153,7 +151,6 @@ void UndoStack::undoOneStep()
             parseDomValueNode2(oldPosElement, x, y);
             QString name = stuffElement.attribute("name");
             mpParentContainerObject->getGUIModelObject(name)->setPos(x, y);
-
             movedObjects.append(name);
             dx = x_new - x;
             dy = y_new - y;
@@ -173,8 +170,7 @@ void UndoStack::undoOneStep()
         }
         else if(stuffElement.attribute("what") == "rotate")
         {
-            QDomElement componentElement = stuffElement.firstChildElement("component");
-            QString name = componentElement.attribute("name");
+            QString name = stuffElement.attribute("objectname");
             //! @todo Make a function for rotation clockwise, this is crazy!
             mpParentContainerObject->getGUIModelObject(name)->rotate(NOUNDO);
             mpParentContainerObject->getGUIModelObject(name)->rotate(NOUNDO);
@@ -200,34 +196,24 @@ void UndoStack::undoOneStep()
         stuffElement = stuffElement.nextSiblingElement("stuff");
     }
 
-        //Create connectors after everything else, to make sure components are created before connectors
+        //Re-add connectors after components, to make sure start and end component exist
     QList<QDomElement>::iterator it;
     for(it=deletedConnectorList.begin(); it!=deletedConnectorList.end(); ++it)
     {
         loadConnector(*it, mpParentContainerObject, NOUNDO);
     }
 
-    for(it = addedConnectorList.begin(); it!=addedConnectorList.end(); ++it)
-    {
-        QString startComponent = (*it).attribute("startcomponent");
-        QString startPort = (*it).attribute("startport");
-        QString endComponent = (*it).attribute("endcomponent");
-        QString endPort = (*it).attribute("endport");
-        mpParentContainerObject->removeConnector(mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort), NOUNDO);
-    }
-
+        //Remove objects after removing connectors, to make sure connectors don't lose their start and end components
     for(it = addedObjectList.begin(); it!=addedObjectList.end(); ++it)
     {
         QString name = (*it).attribute("name");
         this->mpParentContainerObject->deleteGUIModelObject(name, NOUNDO);
     }
 
-        //Move all connectors that are connectet between two components that has moved
+        //Move all connectors that are connected between two components that has moved (must be done after components have been moved)
     QList<GUIConnector *>::iterator itc;
     for(itc=mpParentContainerObject->mSubConnectorList.begin(); itc!=mpParentContainerObject->mSubConnectorList.end(); ++itc)
     {
-        //GUIConnector test;
-
         if(movedObjects.contains((*itc)->getStartComponentName()) && movedObjects.contains((*itc)->getEndComponentName()))
         {
             (*itc)->moveAllPoints(-dx, -dy);
@@ -245,7 +231,7 @@ void UndoStack::undoOneStep()
 }
 
 
-//! @brief Will redo the previously undone changes if they exist, and re-add the undo command to the undo stack.
+//! @brief Will redo the previously undone changes if they exist, and increase stsack position one step
 void UndoStack::redoOneStep()
 {
     bool didSomething = false;
@@ -311,20 +297,17 @@ void UndoStack::redoOneStep()
         }
         else if(stuffElement.attribute("what") == "rotate")
         {
-            QDomElement componentElement = stuffElement.firstChildElement("component");
-            QString name = componentElement.attribute("name");
+            QString name = stuffElement.attribute("objectname");
             mpParentContainerObject->getGUIModelObject(name)->rotate(NOUNDO);
         }
         else if(stuffElement.attribute("what") == "verticalflip")
         {
-            QDomElement componentElement = stuffElement.firstChildElement("component");
-            QString name = componentElement.attribute("name");
+            QString name = stuffElement.attribute("objectname");
             mpParentContainerObject->getGUIModelObject(name)->flipVertical(NOUNDO);
         }
-        else if(stuffElement.attribute("what") == "rotate")
+        else if(stuffElement.attribute("what") == "horizontalflip")
         {
-            QDomElement componentElement = stuffElement.firstChildElement("component");
-            QString name = componentElement.attribute("name");
+            QString name = stuffElement.attribute("objectname");
             mpParentContainerObject->getGUIModelObject(name)->flipHorizontal(NOUNDO);
         }
         else if(stuffElement.attribute("what") == "changedparameter")

@@ -10,6 +10,7 @@ class CopyStack
 public:
     CopyStack();
     void clear();
+    QString getXML();
     QDomElement *getCopyRoot();
 
 private:

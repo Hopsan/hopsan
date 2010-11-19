@@ -28,6 +28,12 @@ void CopyStack::clear()
 }
 
 
+QString CopyStack::getXML()
+{
+    return mDomDocument.toString();
+}
+
+
 QDomElement *CopyStack::getCopyRoot()
 {
     return &mCopyRoot;

@@ -540,6 +540,9 @@ void GUIContainerObject::copySelected(CopyStack *xmlStack)
 //! @see copySelected()
 void GUIContainerObject::paste(CopyStack *xmlStack)
 {
+
+    gpMainWindow->mpMessageWidget->printGUIInfoMessage(gCopyStack.getXML());
+
     mUndoStack->newPost("paste");
     mpParentProjectTab->hasChanged();
 
