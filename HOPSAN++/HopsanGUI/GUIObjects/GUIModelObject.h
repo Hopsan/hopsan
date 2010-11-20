@@ -73,10 +73,15 @@ public slots:
     void setIcon(graphicsType);
 
 signals:
-    void groupSelected(QPointF pt);
+    //void groupSelected(QPointF pt);
 
 protected:
+    //Protexted methods
+    virtual void openParameterDialog(){}
+    virtual QAction *buildBaseContextMenu(QMenu &rMenue, QPointF pos);
+
     //Reimplemented Qt methods
+    virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);

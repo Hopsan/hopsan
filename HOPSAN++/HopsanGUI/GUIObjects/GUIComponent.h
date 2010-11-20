@@ -39,7 +39,7 @@ protected:
     void saveCoreDataToDomElement(QDomElement &rDomElement);
 
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+//    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void openParameterDialog();
 
     void createPorts();

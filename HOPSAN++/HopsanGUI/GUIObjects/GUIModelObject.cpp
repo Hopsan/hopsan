@@ -410,6 +410,15 @@ QDomElement GUIModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 }
 
 
+void GUIModelObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+    QMenu menu;
+    this->buildBaseContextMenu(menu, event->screenPos());
+
+    QGraphicsItem::contextMenuEvent(event);
+}
+
+
 //! @brief Defines what happens when mouse starts hovering the object
 void GUIModelObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
@@ -492,6 +501,48 @@ void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 //        this->setActive(false);
 //    }
 //}
+
+QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QPointF pos)
+{
+    rMenu.addSeparator();
+    QAction *groupAction;
+    if (!this->scene()->selectedItems().empty())
+        groupAction = rMenu.addAction(tr("Group components"));
+    QAction *parameterAction = rMenu.addAction(tr("Change parameters"));
+    QAction *showNameAction = rMenu.addAction(tr("Show name"));
+    showNameAction->setCheckable(true);
+    showNameAction->setChecked(mpNameText->isVisible());
+
+    QAction *selectedAction = rMenu.exec(pos.toPoint());
+
+    if (selectedAction == parameterAction)
+    {
+        openParameterDialog();
+    }
+    else if (selectedAction == showNameAction)
+    {
+        if(mpNameText->isVisible())
+        {
+            this->hideName();
+        }
+        else
+        {
+            this->showName();
+        }
+    }
+    else if (selectedAction == groupAction)
+    {
+        //! @todo fix this if possible
+    }
+    else
+    {
+        return selectedAction;
+    }
+
+    //Return 0 action if any of the above actions were triggered
+    return 0;
+}
+
 
 
 //! @brief Defines what happens when object is selected, deselected or has moved
