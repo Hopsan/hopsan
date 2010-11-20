@@ -86,6 +86,8 @@ MainWindow::MainWindow(QWidget *parent)
     mpMessageWidget->printGUIMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
     connect(mpClearMessageWidgetButton, SIGNAL(pressed()),mpMessageWidget,SLOT(clear()));
 
+    qDebug() << "D1";
+
     gConfig.loadFromXml();
     //this->loadSettings();
 
@@ -101,6 +103,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Set dock widget corner owner
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
+
+    qDebug() << "D2";
 
     this->createActions();
     this->createToolbars();

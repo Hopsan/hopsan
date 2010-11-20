@@ -39,7 +39,7 @@ public:
     void registerVerticalFlip(QString objectName);
     void registerHorizontalFlip(QString objectName);
     void registerChangedParameter(QString objectName, QString parameterName, double oldValue, double newValue);
-    void clear();
+    void clear(QString errorMsg = "");
     void newPost(QString type = "");
     void insertPost(QString str);
     void undoOneStep();

@@ -360,6 +360,31 @@ GUIConnector* GUIContainerObject::findConnector(QString startComp, QString start
 }
 
 
+//! @brief Tells whether or not there is a connector between two specified ports
+bool GUIContainerObject::hasConnector(QString startComp, QString startPort, QString endComp, QString endPort)
+{
+    for(int i = 0; i < mSubConnectorList.size(); ++i)
+    {
+        if((mSubConnectorList[i]->getStartComponentName() == startComp) &&
+           (mSubConnectorList[i]->getStartPortName() == startPort) &&
+           (mSubConnectorList[i]->getEndComponentName() == endComp) &&
+           (mSubConnectorList[i]->getEndPortName() == endPort))
+        {
+            return true;
+        }
+        //Find even if the caller mixed up start and stop
+        else if((mSubConnectorList[i]->getStartComponentName() == endComp) &&
+                (mSubConnectorList[i]->getStartPortName() == endPort) &&
+                (mSubConnectorList[i]->getEndComponentName() == startComp) &&
+                (mSubConnectorList[i]->getEndPortName() == startPort))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+
 //! Removes the connector from the model.
 //! @param pConnector is a pointer to the connector to remove.
 //! @param undoSettings is true if the removal of the connector shall not be registered in the undo stack, for example if this function is called by a redo-function.

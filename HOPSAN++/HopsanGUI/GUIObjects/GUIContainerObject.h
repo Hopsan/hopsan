@@ -36,6 +36,7 @@ public:
 
     //Handle connectors
     GUIConnector *findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
+    bool hasConnector(QString startComp, QString startPort, QString endComp, QString endPort);
     void removeConnector(GUIConnector* pConnector, undoStatus undoSettings=UNDO);
     void setIsCreatingConnector(bool isCreatingConnector);
     bool getIsCreatingConnector();
