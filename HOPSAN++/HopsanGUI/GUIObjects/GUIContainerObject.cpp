@@ -313,7 +313,7 @@ void GUIContainerObject::renameGUIModelObject(QString oldName, QString newName, 
 
 
 //! Tells whether or not a component with specified name exist in the GraphicsView
-bool GUIContainerObject::haveGUIModelObject(QString name)
+bool GUIContainerObject::hasGUIModelObject(QString name)
 {
     return (mGUIModelObjectMap.count(name) > 0);
 }

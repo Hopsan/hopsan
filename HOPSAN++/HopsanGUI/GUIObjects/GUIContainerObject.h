@@ -32,7 +32,7 @@ public:
     GUIModelObject *getGUIModelObject(QString name);
     void deleteGUIModelObject(QString componentName, undoStatus undoSettings=UNDO);
     void renameGUIModelObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
-    bool haveGUIModelObject(QString name);
+    bool hasGUIModelObject(QString name);
 
     //Handle connectors
     GUIConnector *findConnector(QString startComp, QString startPort, QString endComp, QString endPort);

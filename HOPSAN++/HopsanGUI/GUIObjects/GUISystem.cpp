@@ -835,7 +835,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 
 
 ////! Tells whether or not a component with specified name exist in the GraphicsView
-//bool GUISystem::haveGUIModelObject(QString name)
+//bool GUISystem::hasGUIModelObject(QString name)
 //{
 //    return (mGUIModelObjectMap.count(name) > 0);
 //}

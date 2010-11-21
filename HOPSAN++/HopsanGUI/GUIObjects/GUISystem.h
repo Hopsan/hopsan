@@ -34,7 +34,7 @@ public:
 //    GUIModelObject* addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
 //    void deleteGUIModelObject(QString componentName, undoStatus undoSettings=UNDO);
 //    void renameGUIModelObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
-//    bool haveGUIModelObject(QString name);
+//    bool hasGUIModelObject(QString name);
 //    GUIModelObject *getGUIModelObject(QString name);
 
 //    GUIConnector* findConnector(QString startComp, QString startPort, QString endComp, QString endPort);

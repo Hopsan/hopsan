@@ -117,24 +117,15 @@ void UndoStack::undoOneStep()
         else if(stuffElement.attribute("what") == "addedconnector")
         {
             QDomElement connectorElement = stuffElement.firstChildElement("connect");
-            QString startComponent = connectorElement.attribute("startcomponent");
-            QString startPort = connectorElement.attribute("startport");
-            QString endComponent = connectorElement.attribute("endcomponent");
-            QString endPort = connectorElement.attribute("endport");
-            if(!mpParentContainerObject->hasConnector(startComponent, startPort, endComponent, endPort))
-            {
-                this->clear("Undo stack attempted to access non-existing connector. Stack was cleared to ensure stability.");
-                return;
-            }
-            mpParentContainerObject->removeConnector(mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort), NOUNDO);
+            addedConnectorList.append(connectorElement);
         }
         else if(stuffElement.attribute("what") == "rename")
         {
             QString newName = stuffElement.attribute("newname");
             QString oldName = stuffElement.attribute("oldname");
-            if(!mpParentContainerObject->haveGUIModelObject(newName))
+            if(!mpParentContainerObject->hasGUIModelObject(newName))
             {
-                this->clear("Undo stack attempted to access non-existing connector. Stack was cleared to ensure stability.");
+                this->clear("Undo stack attempted to access non-existing conmponent. Stack was cleared to ensure stability.");
                 return;
             }
             mpParentContainerObject->renameGUIModelObject(newName, oldName, NOUNDO);
@@ -172,7 +163,7 @@ void UndoStack::undoOneStep()
             parseDomValueNode2(newPosElement, x_new, y_new);
             parseDomValueNode2(oldPosElement, x, y);
             QString name = stuffElement.attribute("name");
-            if(!mpParentContainerObject->haveGUIModelObject(name))
+            if(!mpParentContainerObject->hasGUIModelObject(name))
             {
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
                 return;
@@ -203,7 +194,7 @@ void UndoStack::undoOneStep()
         else if(stuffElement.attribute("what") == "rotate")
         {
             QString name = stuffElement.attribute("objectname");
-            if(!mpParentContainerObject->haveGUIModelObject(name))
+            if(!mpParentContainerObject->hasGUIModelObject(name))
             {
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
                 return;
@@ -216,7 +207,7 @@ void UndoStack::undoOneStep()
         else if(stuffElement.attribute("what") == "verticalflip")
         {
             QString name = stuffElement.attribute("objectname");
-            if(!mpParentContainerObject->haveGUIModelObject(name))
+            if(!mpParentContainerObject->hasGUIModelObject(name))
             {
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
                 return;
@@ -226,7 +217,7 @@ void UndoStack::undoOneStep()
         else if(stuffElement.attribute("what") == "horizontalflip")
         {
             QString name = stuffElement.attribute("objectname");
-            if(!mpParentContainerObject->haveGUIModelObject(name))
+            if(!mpParentContainerObject->hasGUIModelObject(name))
             {
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
                 return;
@@ -238,7 +229,7 @@ void UndoStack::undoOneStep()
             QString objectName = stuffElement.attribute("objectname");
             QString parameterName = stuffElement.attribute("parametername");
             double oldValue = stuffElement.attribute("oldvalue").toDouble();
-            if(!mpParentContainerObject->haveGUIModelObject(objectName))
+            if(!mpParentContainerObject->hasGUIModelObject(objectName))
             {
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
                 return;
@@ -254,7 +245,7 @@ void UndoStack::undoOneStep()
     {
         QString startComponent = (*it).attribute("startcomponent");
         QString endComponent = (*it).attribute("endcomponent");
-        if(!mpParentContainerObject->haveGUIModelObject(startComponent) || !mpParentContainerObject->haveGUIModelObject(endComponent))
+        if(!mpParentContainerObject->hasGUIModelObject(startComponent) || !mpParentContainerObject->hasGUIModelObject(endComponent))
         {
             this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
             return;
@@ -262,11 +253,26 @@ void UndoStack::undoOneStep()
         loadConnector(*it, mpParentContainerObject, NOUNDO);
     }
 
+        //Remove connectors after modified connector action
+    for(it=addedConnectorList.begin(); it!=addedConnectorList.end(); ++it)
+    {
+        QString startComponent = (*it).attribute("startcomponent");
+        QString startPort = (*it).attribute("startport");
+        QString endComponent = (*it).attribute("endcomponent");
+        QString endPort = (*it).attribute("endport");
+        if(!mpParentContainerObject->hasConnector(startComponent, startPort, endComponent, endPort))
+        {
+            this->clear("Undo stack attempted to access non-existing connector. Stack was cleared to ensure stability.");
+            return;
+        }
+        mpParentContainerObject->removeConnector(mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort), NOUNDO);
+    }
+
         //Remove objects after removing connectors, to make sure connectors don't lose their start and end components
     for(it = addedObjectList.begin(); it!=addedObjectList.end(); ++it)
     {
         QString name = (*it).attribute("name");
-        if(!mpParentContainerObject->haveGUIModelObject(name))
+        if(!mpParentContainerObject->hasGUIModelObject(name))
         {
             this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
             return;
@@ -315,6 +321,11 @@ void UndoStack::redoOneStep()
         {
             QDomElement componentElement = stuffElement.firstChildElement("component");
             QString name = componentElement.attribute("name");
+            if(!mpParentContainerObject->hasGUIModelObject(name))
+            {
+                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
+                return;
+            }
             this->mpParentContainerObject->deleteGUIModelObject(name, NOUNDO);
         }
         else if(stuffElement.attribute("what") == "addedobject")
@@ -329,7 +340,11 @@ void UndoStack::redoOneStep()
             QString startPort = connectorElement.attribute("startport");
             QString endComponent = connectorElement.attribute("endcomponent");
             QString endPort = connectorElement.attribute("endport");
-
+            if(!mpParentContainerObject->hasConnector(startComponent, startPort, endComponent, endPort))
+            {
+                this->clear("Undo stack attempted to access non-existing connector. Stack was cleared to ensure stability.");
+                return;
+            }
             mpParentContainerObject->removeConnector(mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort), NOUNDO);
         }
         else if(stuffElement.attribute("what") == "addedconnector")
@@ -341,6 +356,11 @@ void UndoStack::redoOneStep()
         {
             QString newName = stuffElement.attribute("newname");
             QString oldName = stuffElement.attribute("oldname");
+            if(!mpParentContainerObject->hasGUIModelObject(oldName))
+            {
+                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
+                return;
+            }
             mpParentContainerObject->renameGUIModelObject(oldName, newName, NOUNDO);
         }
         else if(stuffElement.attribute("what") == "modifiedconnector")
@@ -356,8 +376,12 @@ void UndoStack::redoOneStep()
             parseDomValueNode2(newPosElement, x, y);
             parseDomValueNode2(oldPosElement, x_old, y_old);
             QString name = stuffElement.attribute("name");
+            if(!mpParentContainerObject->hasGUIModelObject(name))
+            {
+                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
+                return;
+            }
             mpParentContainerObject->getGUIModelObject(name)->setPos(x, y);
-
             movedObjects.append(name);
             dx = x - x_old;
             dy = y - y_old;
@@ -365,16 +389,31 @@ void UndoStack::redoOneStep()
         else if(stuffElement.attribute("what") == "rotate")
         {
             QString name = stuffElement.attribute("objectname");
+            if(!mpParentContainerObject->hasGUIModelObject(name))
+            {
+                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
+                return;
+            }
             mpParentContainerObject->getGUIModelObject(name)->rotate(NOUNDO);
         }
         else if(stuffElement.attribute("what") == "verticalflip")
         {
             QString name = stuffElement.attribute("objectname");
+            if(!mpParentContainerObject->hasGUIModelObject(name))
+            {
+                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
+                return;
+            }
             mpParentContainerObject->getGUIModelObject(name)->flipVertical(NOUNDO);
         }
         else if(stuffElement.attribute("what") == "horizontalflip")
         {
             QString name = stuffElement.attribute("objectname");
+            if(!mpParentContainerObject->hasGUIModelObject(name))
+            {
+                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
+                return;
+            }
             mpParentContainerObject->getGUIModelObject(name)->flipHorizontal(NOUNDO);
         }
         else if(stuffElement.attribute("what") == "changedparameter")
@@ -382,6 +421,11 @@ void UndoStack::redoOneStep()
             QString objectName = stuffElement.attribute("objectname");
             QString parameterName = stuffElement.attribute("parametername");
             double newValue = stuffElement.attribute("newvalue").toDouble();
+            if(!mpParentContainerObject->hasGUIModelObject(objectName))
+            {
+                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
+                return;
+            }
             mpParentContainerObject->getGUIModelObject(objectName)->setParameterValue(parameterName, newValue);
         }
         stuffElement = stuffElement.nextSiblingElement("stuff");
@@ -411,8 +455,12 @@ void UndoStack::redoOneStep()
         QString startPort = connectorElement.attribute("startport");
         QString endComponent = connectorElement.attribute("endcomponent");
         QString endPort = connectorElement.attribute("endport");
-
         QPointF dXY = oldPos-newPos;
+        if(!mpParentContainerObject->hasConnector(startComponent, startPort, endComponent, endPort))
+        {
+            this->clear("Undo stack attempted to access non-existing connector. Stack was cleared to ensure stability.");
+            return;
+        }
         GUIConnector *item = mpParentContainerObject->findConnector(startComponent, startPort, endComponent, endPort);
 
         item->getLine(lineNumber)->setPos(item->getLine(lineNumber)->pos()-dXY);
@@ -423,10 +471,10 @@ void UndoStack::redoOneStep()
     QList<GUIConnector *>::iterator itc;
     for(itc=mpParentContainerObject->mSubConnectorList.begin(); itc!=mpParentContainerObject->mSubConnectorList.end(); ++itc)
     {
-        //GUIConnector test;
-
+        //No error checking necessary
         if(movedObjects.contains((*itc)->getStartComponentName()) && movedObjects.contains((*itc)->getEndComponentName()))
         {
+            //! @todo This will add an additional modifiedConneector in undo stack (solved by ugly hack in redo code), but there is no support for NOUNDO in these functions...
             (*itc)->moveAllPoints(dx, dy);
             (*itc)->drawConnector();
         }
@@ -439,6 +487,7 @@ void UndoStack::redoOneStep()
     }
 
     //! @todo why dont I know of my own UndoWidget (should maybe have a pointer to it directly)
+    //! This is because there is only one undo widget, while each loaded model has its own undo stack.
     gpMainWindow->mpUndoWidget->refreshList();
 }
 
@@ -513,16 +562,17 @@ void UndoStack::registerRenameObject(QString oldName, QString newName)
 //! @param lineNumber Number of the line that was moved
 void UndoStack::registerModifiedConnector(QPointF oldPos, QPointF newPos, GUIConnector *item, int lineNumber)
 {
-    qDebug() << "registerModifiedConnector(" << oldPos << ", " << newPos << ", item, lineNumber)";
-
-    QDomElement currentPostElement = getCurrentPost();
-    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", "modifiedconnector");
-    stuffElement.setAttribute("linenumber", lineNumber);
-    appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
-    appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
-    item->saveToDomElement(stuffElement);
-    gpMainWindow->mpUndoWidget->refreshList();
+    if(!(getCurrentPost().attribute("type") == "paste"))    //Connectors are modified when undoing paste operations, but this will modify them twice, so don't register it
+    {
+        QDomElement currentPostElement = getCurrentPost();
+        QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+        stuffElement.setAttribute("what", "modifiedconnector");
+        stuffElement.setAttribute("linenumber", lineNumber);
+        appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
+        appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
+        item->saveToDomElement(stuffElement);
+        gpMainWindow->mpUndoWidget->refreshList();
+    }
 }
 
 
