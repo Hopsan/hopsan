@@ -28,6 +28,9 @@ public:
 
     MainWindow *mpParentMainWindow;
 
+    double getParameter(QString name);
+    bool hasParameter(QString name);
+
 public slots:
     void setParameter(QString name, double value);
 
@@ -37,6 +40,9 @@ private slots:
     void removeSelectedParameters();
     void update();
 
+signals:
+    void modifiedGlobalParameter();
+
 private:
     QLabel *mpNameLabel;
     QLineEdit *mpNameBox;
@@ -44,7 +50,7 @@ private:
     QLineEdit *mpValueBox;
     QPushButton *mpAddInDialogButton;
     QPushButton *mpDoneInDialogButton;
-    QList< QPair<QString, double> > mContents;
+    //QList< QPair<QString, double> > mContents;
 
     QTableWidget *mpGlobalParametersTable;
     QPushButton *mpAddButton;

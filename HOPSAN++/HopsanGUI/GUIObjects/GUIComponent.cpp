@@ -22,6 +22,7 @@
 
 #include "GUIGroup.h"
 #include "GUISystem.h"
+#include "GlobalParametersWidget.h"
 
 GUIComponent::GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
     : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
@@ -125,6 +126,47 @@ double GUIComponent::getParameterValue(QString name)
 void GUIComponent::setParameterValue(QString name, double value)
 {
     mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, value);
+    mGlobalParameters.remove(name);
+    if(mGlobalParameters.empty())
+    {
+        disconnect(gpMainWindow->mpGlobalParametersWidget, SIGNAL(modifiedGlobalParameter()), this, SLOT(updateGlobalParameters()));
+    }
+}
+
+
+void GUIComponent::setGlobalParameter(QString name, QString gPar)
+{
+    mGlobalParameters.insert(name, gPar);
+    mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, gpMainWindow->mpGlobalParametersWidget->getParameter(gPar));
+    connect(gpMainWindow->mpGlobalParametersWidget, SIGNAL(modifiedGlobalParameter()), this, SLOT(updateGlobalParameters()));
+}
+
+
+void GUIComponent::updateGlobalParameters()
+{
+    QStringList parametersToRemove;
+    QMap<QString, QString>::iterator it;
+    for(it=mGlobalParameters.begin(); it!=mGlobalParameters.end(); ++it)
+    {
+        if(gpMainWindow->mpGlobalParametersWidget->hasParameter(it.key()))
+        {
+            mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), it.value(), gpMainWindow->mpGlobalParametersWidget->getParameter(it.value()));
+        }
+        else
+        {
+            parametersToRemove.append(it.key());
+        }
+    }
+
+    for(size_t i=0; i=parametersToRemove.size(); ++i)
+    {
+        mGlobalParameters.remove(parametersToRemove.at(i));
+    }
+
+    if(mGlobalParameters.empty())
+    {
+        disconnect(gpMainWindow->mpGlobalParametersWidget, SIGNAL(modifiedGlobalParameter()), this, SLOT(updateGlobalParameters()));
+    }
 }
 
 //void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)

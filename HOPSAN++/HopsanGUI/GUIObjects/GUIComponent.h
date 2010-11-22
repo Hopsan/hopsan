@@ -24,6 +24,7 @@ public:
     QString getParameterDescription(QString name);
     double getParameterValue(QString name);
     void setParameterValue(QString name, double value);
+    void setGlobalParameter(QString name, QString gPar);
 
     //void saveToTextStream(QTextStream &rStream, QString prepend=QString());
 
@@ -34,6 +35,9 @@ public:
     enum { Type = GUICOMPONENT };
     int type() const;
 
+public slots:
+    void updateGlobalParameters();
+
 protected:
     void saveCoreDataToDomElement(QDomElement &rDomElement);
 
@@ -42,6 +46,9 @@ protected:
     void openParameterDialog();
 
     void createPorts();
+
+private:
+    QMap<QString, QString> mGlobalParameters;
 };
 
 #endif // GUICOMPONENT_H

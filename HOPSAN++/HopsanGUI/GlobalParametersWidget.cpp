@@ -66,7 +66,7 @@ GlobalParametersWidget::GlobalParametersWidget(MainWindow *parent)
     this->resize(400,500);
     this->setWindowTitle("Undo History");
 
-    mContents.clear();
+    mGlobalParametersMap.clear();//mContents.clear();
 
     mpGlobalParametersTable = new QTableWidget(0,1,this);
     mpGlobalParametersTable->setBaseSize(400, 500);
@@ -98,6 +98,18 @@ GlobalParametersWidget::GlobalParametersWidget(MainWindow *parent)
 }
 
 
+double GlobalParametersWidget::getParameter(QString name)
+{
+    return mGlobalParametersMap.find(name).value();
+}
+
+
+bool GlobalParametersWidget::hasParameter(QString name)
+{
+    return mGlobalParametersMap.contains(name);
+}
+
+
 //! Slot that adds a global parameter value
 //! @param name Lookup name for the global parameter
 //! @param value Value of the global parameter
@@ -114,8 +126,11 @@ void GlobalParametersWidget::setParameter(QString name, double value)
         name.append(">");
     }
 
-    mContents.append(QPair<QString,double>(name, value));
+    //mContents.append(QPair<QString,double>(name, value));
+    mGlobalParametersMap.insert(name, value);
     update();
+
+    emit modifiedGlobalParameter();
 }
 
 
@@ -124,24 +139,25 @@ void GlobalParametersWidget::setParameter(QString name, double value)
 void GlobalParametersWidget::removeSelectedParameters()
 {
     QList<QTableWidgetItem *> pSelectedItems = mpGlobalParametersTable->selectedItems();
-    QList< QPair<QString, double> > parametersToRemove;
+    QStringList parametersToRemove;
     QString tempName;
     double tempValue;
 
     for(size_t i=0; i<pSelectedItems.size(); ++i)
     {
         tempName = mpGlobalParametersTable->item(pSelectedItems[i]->row(),0)->text();
-        tempValue = mpGlobalParametersTable->item(pSelectedItems[i]->row(),1)->text().toDouble();
-        if(!parametersToRemove.contains(QPair<QString, double>(tempName, tempValue)))
+        //tempValue = mpGlobalParametersTable->item(pSelectedItems[i]->row(),1)->text().toDouble();
+        if(!parametersToRemove.contains(tempName))
         {
-            parametersToRemove.append(QPair<QString, double>(tempName, tempValue));
+            parametersToRemove.append(tempName);
         }
     }
 
     for(size_t j=0; j<parametersToRemove.size(); ++j)
     {
         qDebug() << "Removing: " << parametersToRemove[j];
-        mContents.removeAll(parametersToRemove[j]);
+        //mContents.removeAll(parametersToRemove[j]);
+        mGlobalParametersMap.remove(parametersToRemove.at(j));
     }
 
     update();
@@ -192,7 +208,8 @@ void GlobalParametersWidget::addParameter()
 void GlobalParametersWidget::update()
 {
     mpGlobalParametersTable->clear();
-    if(mContents.empty())
+    //if(mContents.empty())
+    if(mGlobalParametersMap.empty())
     {
         mpGlobalParametersTable->setColumnCount(1);
         mpGlobalParametersTable->setRowCount(1);
@@ -211,12 +228,13 @@ void GlobalParametersWidget::update()
         mpGlobalParametersTable->setColumnWidth(0, 120);
         mpGlobalParametersTable->verticalHeader()->show();
     }
-    for(int i=0; i<mContents.size(); ++i)
+    QMap<QString, double>::iterator it;
+    for(it=mGlobalParametersMap.begin(); it!=mGlobalParametersMap.end(); ++it)
     {
         QString valueString;
-        valueString.setNum(mContents[i].second);
+        valueString.setNum(it.value());
         this->mpGlobalParametersTable->insertRow(mpGlobalParametersTable->rowCount());
-        mpGlobalParametersTable->setItem(mpGlobalParametersTable->rowCount()-1, 0, new QTableWidgetItem(mContents[i].first));
+        mpGlobalParametersTable->setItem(mpGlobalParametersTable->rowCount()-1, 0, new QTableWidgetItem(it.key()));
         mpGlobalParametersTable->setItem(mpGlobalParametersTable->rowCount()-1, 1, new QTableWidgetItem(valueString));
     }
 }

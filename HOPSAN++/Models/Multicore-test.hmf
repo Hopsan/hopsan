@@ -5,7 +5,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2180" y="2493.5" zoom="1"/>
+            <viewport x="2185" y="2499" zoom="1"/>
             <hopsanobjectappearance>
                 <modelobject typename="" displayname="Multicore-test">
                     <icon isopath="" iconrotation="" userpath=""/>
@@ -380,7 +380,7 @@
                     <startvalue portname="out" variable="Value" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2257" y="2485" flipped="0" a="0"/>
+                    <pose x="2255" y="2485" flipped="0" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -565,6 +565,11 @@
                         <coordinate x="2372" y="2337"/>
                         <coordinate x="2422.5" y="2337"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="P1" endcomponent="Q-Type Dummy_1" startport="P1" startcomponent="C-Type Dummy_1">
@@ -575,6 +580,11 @@
                         <coordinate x="2376" y="2374"/>
                         <coordinate x="2422.5" y="2374"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="P1" endcomponent="Q-Type Dummy_2" startport="P1" startcomponent="C-Type Dummy_2">
@@ -585,6 +595,11 @@
                         <coordinate x="2376" y="2410"/>
                         <coordinate x="2422.5" y="2410"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="P1" endcomponent="Q-Type Dummy_3" startport="P1" startcomponent="C-Type Dummy_3">
@@ -595,6 +610,11 @@
                         <coordinate x="2386" y="2447"/>
                         <coordinate x="2422.5" y="2447"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="P1" endcomponent="Q-Type Dummy_4" startport="P1" startcomponent="C-Type Dummy_4">
@@ -605,6 +625,11 @@
                         <coordinate x="2376" y="2485"/>
                         <coordinate x="2422.5" y="2485"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="P1" endcomponent="Q-Type Dummy_8" startport="P1" startcomponent="C-Type Dummy_6">
@@ -615,6 +640,11 @@
                         <coordinate x="2372" y="2522"/>
                         <coordinate x="2422.5" y="2522"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="P1" endcomponent="Q-Type Dummy_7" startport="P1" startcomponent="C-Type Dummy_5">
@@ -625,6 +655,11 @@
                         <coordinate x="2376" y="2559"/>
                         <coordinate x="2422.5" y="2559"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="P1" endcomponent="Q-Type Dummy_6" startport="P1" startcomponent="C-Type Dummy_7">
@@ -635,6 +670,11 @@
                         <coordinate x="2376" y="2595"/>
                         <coordinate x="2422.5" y="2595"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="P1" endcomponent="Q-Type Dummy_5" startport="P1" startcomponent="C-Type Dummy_8">
@@ -645,6 +685,11 @@
                         <coordinate x="2386" y="2632"/>
                         <coordinate x="2422.5" y="2632"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="P1" endcomponent="Q-Type Dummy_9" startport="P1" startcomponent="C-Type Dummy_9">
@@ -655,6 +700,11 @@
                         <coordinate x="2376" y="2670"/>
                         <coordinate x="2422.5" y="2670"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="C-Type Dummy_1" startport="out" startcomponent="Gain_1">
@@ -663,6 +713,9 @@
                         <coordinate x="2268.5" y="2374"/>
                         <coordinate x="2304.5" y="2374"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="C-Type Dummy" startport="out" startcomponent="Gain">
@@ -671,6 +724,9 @@
                         <coordinate x="2268.5" y="2337"/>
                         <coordinate x="2304.5" y="2337"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="C-Type Dummy_2" startport="out" startcomponent="Gain_2">
@@ -679,6 +735,9 @@
                         <coordinate x="2268.5" y="2410"/>
                         <coordinate x="2304.5" y="2410"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="C-Type Dummy_3" startport="out" startcomponent="Gain_3">
@@ -687,14 +746,9 @@
                         <coordinate x="2268.5" y="2447"/>
                         <coordinate x="2304.5" y="2447"/>
                     </coordinates>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="C-Type Dummy_4" startport="out" startcomponent="Gain_4">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2269.5" y="2485"/>
-                        <coordinate x="2304.5" y="2485"/>
-                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="C-Type Dummy_6" startport="out" startcomponent="Gain_5">
@@ -703,6 +757,9 @@
                         <coordinate x="2269.5" y="2522"/>
                         <coordinate x="2304.5" y="2522"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="C-Type Dummy_5" startport="out" startcomponent="Gain_6">
@@ -711,6 +768,9 @@
                         <coordinate x="2269.5" y="2559"/>
                         <coordinate x="2304.5" y="2559"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="C-Type Dummy_9" startport="out" startcomponent="Gain_9">
@@ -719,6 +779,9 @@
                         <coordinate x="2269.5" y="2670"/>
                         <coordinate x="2304.5" y="2670"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="C-Type Dummy_7" startport="out" startcomponent="Gain_7">
@@ -727,6 +790,9 @@
                         <coordinate x="2269.5" y="2595"/>
                         <coordinate x="2304.5" y="2595"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="C-Type Dummy_8" startport="out" startcomponent="Gain_8">
@@ -735,6 +801,9 @@
                         <coordinate x="2269.5" y="2632"/>
                         <coordinate x="2304.5" y="2632"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Q-Type Dummy" startport="out" startcomponent="Gain_19">
@@ -743,6 +812,9 @@
                         <coordinate x="2483.5" y="2337"/>
                         <coordinate x="2377.5" y="2337"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Q-Type Dummy_1" startport="out" startcomponent="Gain_18">
@@ -751,6 +823,9 @@
                         <coordinate x="2483.5" y="2374"/>
                         <coordinate x="2377.5" y="2374"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Q-Type Dummy_2" startport="out" startcomponent="Gain_17">
@@ -759,6 +834,9 @@
                         <coordinate x="2483.5" y="2410"/>
                         <coordinate x="2377.5" y="2410"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Q-Type Dummy_3" startport="out" startcomponent="Gain_16">
@@ -767,6 +845,9 @@
                         <coordinate x="2483.5" y="2447"/>
                         <coordinate x="2377.5" y="2447"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Q-Type Dummy_4" startport="out" startcomponent="Gain_15">
@@ -775,6 +856,9 @@
                         <coordinate x="2484.5" y="2485"/>
                         <coordinate x="2377.5" y="2485"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Q-Type Dummy_8" startport="out" startcomponent="Gain_14">
@@ -783,6 +867,9 @@
                         <coordinate x="2484.5" y="2522"/>
                         <coordinate x="2377.5" y="2522"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Q-Type Dummy_7" startport="out" startcomponent="Gain_13">
@@ -791,6 +878,9 @@
                         <coordinate x="2484.5" y="2559"/>
                         <coordinate x="2377.5" y="2559"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Q-Type Dummy_6" startport="out" startcomponent="Gain_12">
@@ -799,6 +889,9 @@
                         <coordinate x="2484.5" y="2595"/>
                         <coordinate x="2377.5" y="2595"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Q-Type Dummy_5" startport="out" startcomponent="Gain_11">
@@ -807,6 +900,9 @@
                         <coordinate x="2484.5" y="2632"/>
                         <coordinate x="2377.5" y="2632"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Q-Type Dummy_9" startport="out" startcomponent="Gain_10">
@@ -815,14 +911,9 @@
                         <coordinate x="2484.5" y="2670"/>
                         <coordinate x="2377.5" y="2670"/>
                     </coordinates>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Gain_4" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2054.5" y="2504"/>
-                        <coordinate x="2244.5" y="2485"/>
-                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Gain_5" startport="out" startcomponent="Constant">
@@ -831,6 +922,9 @@
                         <coordinate x="2054.5" y="2504"/>
                         <coordinate x="2244.5" y="2522"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Gain_6" startport="out" startcomponent="Constant">
@@ -839,6 +933,9 @@
                         <coordinate x="2054.5" y="2504"/>
                         <coordinate x="2244.5" y="2559"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Gain_3" startport="out" startcomponent="Constant">
@@ -847,6 +944,9 @@
                         <coordinate x="2054.5" y="2504"/>
                         <coordinate x="2243.5" y="2447"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Gain_2" startport="out" startcomponent="Constant">
@@ -855,6 +955,9 @@
                         <coordinate x="2054.5" y="2504"/>
                         <coordinate x="2243.5" y="2410"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Gain_1" startport="out" startcomponent="Constant">
@@ -863,6 +966,9 @@
                         <coordinate x="2054.5" y="2504"/>
                         <coordinate x="2243.5" y="2374"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Gain" startport="out" startcomponent="Constant">
@@ -871,6 +977,9 @@
                         <coordinate x="2054.5" y="2504"/>
                         <coordinate x="2243.5" y="2337"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Gain_7" startport="out" startcomponent="Constant">
@@ -879,6 +988,9 @@
                         <coordinate x="2054.5" y="2504"/>
                         <coordinate x="2244.5" y="2595"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Gain_8" startport="out" startcomponent="Constant">
@@ -887,6 +999,9 @@
                         <coordinate x="2054.5" y="2504"/>
                         <coordinate x="2244.5" y="2632"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Gain_9" startport="out" startcomponent="Constant">
@@ -895,6 +1010,9 @@
                         <coordinate x="2054.5" y="2504"/>
                         <coordinate x="2244.5" y="2670"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Gain_19" startport="out" startcomponent="Constant">
@@ -905,6 +1023,11 @@
                         <coordinate x="2516" y="2305"/>
                         <coordinate x="2458.5" y="2337"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Gain_18" startport="out" startcomponent="Constant">
@@ -915,6 +1038,11 @@
                         <coordinate x="2524" y="2296"/>
                         <coordinate x="2458.5" y="2374"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Gain_17" startport="out" startcomponent="Constant">
@@ -925,6 +1053,11 @@
                         <coordinate x="2531" y="2287"/>
                         <coordinate x="2458.5" y="2410"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Gain_16" startport="out" startcomponent="Constant">
@@ -935,6 +1068,11 @@
                         <coordinate x="2541" y="2278"/>
                         <coordinate x="2458.5" y="2447"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Gain_15" startport="out" startcomponent="Constant">
@@ -945,6 +1083,11 @@
                         <coordinate x="2553" y="2270"/>
                         <coordinate x="2459.5" y="2485"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Gain_10" startport="out" startcomponent="Constant">
@@ -955,6 +1098,11 @@
                         <coordinate x="2510" y="2698"/>
                         <coordinate x="2459.5" y="2670"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Gain_11" startport="out" startcomponent="Constant">
@@ -965,6 +1113,11 @@
                         <coordinate x="2523" y="2706"/>
                         <coordinate x="2459.5" y="2632"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Gain_12" startport="out" startcomponent="Constant">
@@ -975,6 +1128,11 @@
                         <coordinate x="2535" y="2714"/>
                         <coordinate x="2459.5" y="2595"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Gain_13" startport="out" startcomponent="Constant">
@@ -985,6 +1143,11 @@
                         <coordinate x="2543" y="2722"/>
                         <coordinate x="2459.5" y="2559"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Gain_14" startport="out" startcomponent="Constant">
@@ -995,6 +1158,11 @@
                         <coordinate x="2553" y="2730.36"/>
                         <coordinate x="2459.5" y="2522"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Signal Dummy_4" startport="out" startcomponent="Constant">
@@ -1005,6 +1173,11 @@
                         <coordinate x="2568" y="2261.63"/>
                         <coordinate x="2661.5" y="2486"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Signal Dummy_3" startport="out" startcomponent="Constant">
@@ -1015,6 +1188,11 @@
                         <coordinate x="2580" y="2252.63"/>
                         <coordinate x="2661.5" y="2455"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Signal Dummy_2" startport="out" startcomponent="Constant">
@@ -1025,6 +1203,11 @@
                         <coordinate x="2586" y="2242.63"/>
                         <coordinate x="2661.5" y="2424"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Signal Dummy_1" startport="out" startcomponent="Constant">
@@ -1035,6 +1218,11 @@
                         <coordinate x="2597" y="2232.63"/>
                         <coordinate x="2661.5" y="2393"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Signal Dummy" startport="out" startcomponent="Constant">
@@ -1045,6 +1233,11 @@
                         <coordinate x="2606" y="2222.63"/>
                         <coordinate x="2660.5" y="2362"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Signal Dummy_9" startport="out" startcomponent="Constant">
@@ -1055,6 +1248,11 @@
                         <coordinate x="2569" y="2739"/>
                         <coordinate x="2661.5" y="2517"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Signal Dummy_8" startport="out" startcomponent="Constant">
@@ -1065,6 +1263,11 @@
                         <coordinate x="2578" y="2748"/>
                         <coordinate x="2662.5" y="2548"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Signal Dummy_7" startport="out" startcomponent="Constant">
@@ -1075,6 +1278,11 @@
                         <coordinate x="2584" y="2756.81"/>
                         <coordinate x="2662.5" y="2579"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Signal Dummy_6" startport="out" startcomponent="Constant">
@@ -1085,6 +1293,11 @@
                         <coordinate x="2595" y="2765.81"/>
                         <coordinate x="2662.5" y="2610"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in" endcomponent="Signal Dummy_5" startport="out" startcomponent="Constant">
@@ -1095,6 +1308,33 @@
                         <coordinate x="2601" y="2774.81"/>
                         <coordinate x="2662.5" y="2641"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="C-Type Dummy_4" startport="out" startcomponent="Gain_4">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2267.5" y="2485"/>
+                        <coordinate x="2304.5" y="2485"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="out" endcomponent="Constant" startport="in" startcomponent="Gain_4">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2242.5" y="2485"/>
+                        <coordinate x="2054.5" y="2504"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
         </connections>
