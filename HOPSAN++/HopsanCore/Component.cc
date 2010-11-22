@@ -1037,22 +1037,11 @@ Component* ComponentSystem::getComponent(string name)
             if (pPort->getPortType() == Port::SYSTEMPORT)
             {
                 tmp = pPort->mpComponent;
-                cout << "Found systemport with name: " << name << " returning parent: " << tmp->getName() << endl;
+                //cout << "Found systemport with name: " << name << " returning parent: " << tmp->getName() << endl;
             }
         }
     }
     return tmp;
-
-//    else if (name == mName)
-//    {
-//        cout << "getComponent (name == mName): " << name << " in: " << mName << " returning this" << endl;
-//        return this;
-//    }
-//    else
-//    {
-//        //cout << "return null" << endl;
-//        return 0;
-//    }
 }
 
 
@@ -1066,7 +1055,7 @@ Component* ComponentSystem::getSubComponent(string name)
     }
     else
     {
-        cout << "getSubComponent: The component you requested: " << name << " does not exist in: " << this->mName << endl;
+        //cout << "getSubComponent: The component you requested: " << name << " does not exist in: " << this->mName << endl;
         return 0;
     }
 }
@@ -1570,7 +1559,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         }
     }
     ss << "Connected: {" << pComp1->getName() << "::" << pPort1->getPortName() << "} and {" << pComp2->getName() << "::" << pPort2->getPortName() << "}";
-    cout << ss.str() << endl;
+    //cout << ss.str() << endl;
     gCoreMessageHandler.addInfoMessage(ss.str());
     return true;
 }

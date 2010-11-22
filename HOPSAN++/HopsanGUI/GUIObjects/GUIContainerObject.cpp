@@ -130,7 +130,7 @@ void GUIContainerObject::createPorts()
     for (it = mGUIModelObjectAppearance.getPortAppearanceMap().begin(); it != mGUIModelObjectAppearance.getPortAppearanceMap().end(); ++it)
     {
         //! @todo fix this
-        qDebug() << "getNode and portType for " << it.key();
+        //qDebug() << "getNode and portType for " << it.key();
         //SystemPort "Component Name" (GuiModelObjectName) and portname is same
         //One other way would be to ask our parent to find the types of our ports but that would be even more strange and would not work on the absolute root system
         //! @todo to minimaze search time make a get porttype  and nodetype function, we need to search twice now
@@ -141,7 +141,7 @@ void GUIContainerObject::createPorts()
         qreal x = it.value().x;
         qreal y = it.value().y;
 
-        qDebug() << "this-type(): " << this->type();
+        //qDebug() << "this-type(): " << this->type();
         GUIPort *pNewPort = new GUIPort(it.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(it.value()), this);
         mPortListPtrs.append(pNewPort);
     }
@@ -160,15 +160,14 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* 
     emit deselectAllGUIObjects();
     emit deselectAllGUIConnectors();
 
+    //qDebug()  << "Adding GUIModelObject, typename: " << componentTypeName << " displayname: " << pAppearanceData->getName() << " systemname: " << this->getName();
     QString componentTypeName = pAppearanceData->getTypeName();
-    qDebug()  << "Adding GUIModelObject, typename: " << componentTypeName << " displayname: " << pAppearanceData->getName() << " systemname: " << this->getName();
     if (componentTypeName == "Subsystem")
     {
         mpTempGUIModelObject= new GUISystem(position, rotation, pAppearanceData, this, startSelected, mGfxType);
     }
     else if (componentTypeName == "SystemPort") //!< @todo dont hardcode
     {
-        //qDebug() << "======================================================Loading systemport";
         mpTempGUIModelObject = new GUISystemPort(pAppearanceData, position, rotation, this, startSelected, mGfxType);
     }
     else //Assume some standard component type
@@ -233,7 +232,7 @@ void GUIContainerObject::addBoxWidget(QPoint position)
 //! @param objectName is the name of the componenet to delete
 void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus undoSettings)
 {
-    qDebug() << "deleteGUIModelObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->getCoreSystemAccessPtr()->getRootSystemName() ;
+    //qDebug() << "deleteGUIModelObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->getCoreSystemAccessPtr()->getRootSystemName() ;
     GUIModelObjectMapT::iterator it = mGUIModelObjectMap.find(objectName);
     GUIModelObject* obj_ptr = it.value();
 
@@ -284,7 +283,7 @@ void GUIContainerObject::renameGUIModelObject(QString oldName, QString newName, 
                 //Erase old record
             mGUIModelObjectMap.erase(it);
                 //Set new name, first in core then in gui object
-            qDebug() << "Renaming: " << oldName << " " << newName << " type: " << obj_ptr->type();
+            //qDebug() << "Renaming: " << oldName << " " << newName << " type: " << obj_ptr->type();
             switch (obj_ptr->type())
             {
             case GUICOMPONENT:
@@ -301,7 +300,7 @@ void GUIContainerObject::renameGUIModelObject(QString oldName, QString newName, 
                 //qDebug() << "default";
                     //No Core rename action
             }
-            qDebug() << "modNewName: " << modNewName;
+            //qDebug() << "modNewName: " << modNewName;
             obj_ptr->setDisplayName(modNewName);
                 //Re insert
             mGUIModelObjectMap.insert(obj_ptr->getName(), obj_ptr);
@@ -407,7 +406,7 @@ void GUIContainerObject::removeConnector(GUIConnector* pConnector, undoStatus un
     bool endPortHasMoreConnections = false;
     int i;
 
-    qDebug() << "Svampar i min diskho";
+    //qDebug() << "Svampar i min diskho";
 
     if(undoSettings == UNDO)
     {

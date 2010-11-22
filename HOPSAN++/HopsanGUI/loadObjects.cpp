@@ -98,8 +98,6 @@ void ModelObjectLoadData::read(QTextStream &rStream)
 void ModelObjectLoadData::readDomElement(QDomElement &rDomElement)
 {
     //Read core specific data
-//    type = rDomElement.firstChildElement(HMF_TYPETAG).text();
-//    name = rDomElement.firstChildElement(HMF_NAMETAG).text();
     type = rDomElement.attribute(HMF_TYPETAG);
     name = rDomElement.attribute(HMF_NAMETAG);
 
@@ -110,10 +108,6 @@ void ModelObjectLoadData::readDomElement(QDomElement &rDomElement)
 void ModelObjectLoadData::readGuiDataFromDomElement(QDomElement &rDomElement)
 {
     QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
-    //parseDomValueNode3(guiData.firstChildElement(HMF_POSETAG), posX, posY, rotation);
-//    nameTextPos = parseDomValueNode(guiData.firstChildElement(HMF_NAMETEXTPOSTAG));
-//    textVisible = parseDomValueNode(guiData.firstChildElement(HMF_VISIBLETAG))+0.5; //should be bool, +0.5 to roound to int on truncation
-
     parsePoseTag(guiData.firstChildElement(HMF_POSETAG), posX, posY, rotation, isFlipped);
     nameTextPos = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("position").toInt();
     textVisible = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("visible").toInt(); //should be bool, +0.5 to roound to int on truncation
@@ -157,13 +151,8 @@ void SubsystemLoadData::readDomElement(QDomElement &rDomElement)
 {
     //! @todo should check if tagname is what we expect really, should do this in all readDomElement functions
     type = "Subsystem"; //Hardcode the type, regardles of hmf contents (should not contain type
-    //loadtype = readName(rStream);
-//    name = rDomElement.firstChildElement("name").text();
-//    cqs_type = rDomElement.firstChildElement("cqs_type").text();
-//    filepath = rDomElement.firstChildElement("external_path").text();
     name = rDomElement.attribute(HMF_NAMETAG);
     cqs_type = rDomElement.attribute(HMF_CQSTYPETAG);
-    //filepath = rDomElement.attribute(HMF_EXTERNALPATHTAG);
     filepath = rDomElement.firstChildElement(HMF_EXTERNALPATHTAG).text();
 
     //! @todo loadtype should probably be removed
@@ -178,25 +167,6 @@ void SubsystemLoadData::readDomElement(QDomElement &rDomElement)
 
     //Read gui specific data
     this->readGuiDataFromDomElement(rDomElement);
-
-//    if (loadtype == "EXTERNAL")
-//    {
-//        //Read gui specific data
-//        this->readGuiDataFromDomElement(rDomElement);
-//    }
-//    else if (loadtype == "embeded")
-//    {
-//        //not implemented yet
-//        //! @todo handle error
-//        assert(false);
-//    }
-//    else
-//    {
-//        //incorrect type
-//        qDebug() << QString("This loadtype is not supported: ") + loadtype;
-//        //! @todo handle error
-//    }
-
 }
 
 //! @brief Reads system appearnce data from stream
@@ -255,25 +225,7 @@ void ConnectorLoadData::read(QTextStream &rStream)
 
 void ConnectorLoadData::readDomElement(QDomElement &rDomElement)
 {
-//    //Read core specific stuff
-//    startComponentName = rDomElement.firstChildElement(HMF_CONNECTORSTARTCOMPONENTTAG).text();
-//    startPortName = rDomElement.firstChildElement(HMF_CONNECTORSTARTPORTTAG).text();
-//    endComponentName = rDomElement.firstChildElement(HMF_CONNECTORENDCOMPONENTTAG).text();
-//    endPortName = rDomElement.firstChildElement(HMF_CONNECTORENDPORTTAG).text();
-
-//    //Read gui specific stuff
-//    QDomElement guiData = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
-//    qreal x,y;
-//    QDomElement xyNode = guiData.firstChildElement(HMF_XYTAG);
-//    while (!xyNode.isNull())
-//    {
-//        parseDomValueNode2(xyNode,x,y);
-//        pointVector.push_back(QPointF(x,y));
-//        xyNode = xyNode.nextSiblingElement(HMF_XYTAG);
-//    }
-
     //Read core specific stuff
-//    QDomElement xmlConnector = rDomElement.firstChildElement(HMF_CONNECTORTAG);
     startComponentName = rDomElement.attribute(HMF_CONNECTORSTARTCOMPONENTTAG);
     startPortName = rDomElement.attribute(HMF_CONNECTORSTARTPORTTAG);
     endComponentName = rDomElement.attribute(HMF_CONNECTORENDCOMPONENTTAG);
@@ -309,10 +261,6 @@ void ParameterLoadData::read(QTextStream &rStream)
 
 void ParameterLoadData::readDomElement(QDomElement &rDomElement)
 {
-//    componentName = ""; //not used
-//    parameterName = rDomElement.firstChildElement("name").text();
-//    parameterValue = parseDomValueNode(rDomElement.firstChildElement("value"));
-
     parameterName = rDomElement.attribute(HMF_NAMETAG);
     parameterValue = rDomElement.attribute(HMF_VALUETAG).toDouble();
 }
@@ -381,7 +329,7 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
     //! @todo this code is duplicated with the one in system->loadfromdomelement (external code) that code will never run, as this will take care of it. When we have embeded subsystems will will need to fix this
 
     //Set the cqs type of the system
-    pSys->setTypeCQS(rData.cqs_type);
+    pSys->setTypeCQS(rData.cqs_type); //!< @todo is this necessary isnt cqs set insed loadfromdoelement
 
     return pSys;
 }
@@ -642,22 +590,22 @@ HeaderLoadData readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidg
     return headerData;
 }
 
-//! @todo thois should be in a save related file, or make this file both save and load
-void writeHeader(QTextStream &rStream)
-{
-    //Make sure that the readHeader function is synced with changes here
+////! @todo thois should be in a save related file, or make this file both save and load
+//void writeHeader(QTextStream &rStream)
+//{
+//    //Make sure that the readHeader function is synced with changes here
 
-    //Write Header to save file
-    rStream << "--------------------------------------------------------------\n";
-    rStream << "-------------------  HOPSAN NG MODEL FILE  -------------------\n";
-    rStream << "--------------------------------------------------------------\n";
-    rStream << "HOPSANGUIVERSION " << HOPSANGUIVERSION << "\n";
-    rStream << "HMFVERSION " << HMFVERSION << "\n";
-    rStream << "CAFVERSION " << CAFVERSION << "\n";
-    rStream << "--------------------------------------------------------------\n";
+//    //Write Header to save file
+//    rStream << "--------------------------------------------------------------\n";
+//    rStream << "-------------------  HOPSAN NG MODEL FILE  -------------------\n";
+//    rStream << "--------------------------------------------------------------\n";
+//    rStream << "HOPSANGUIVERSION " << HOPSANGUIVERSION << "\n";
+//    rStream << "HMFVERSION " << HMFVERSION << "\n";
+//    rStream << "CAFVERSION " << CAFVERSION << "\n";
+//    rStream << "--------------------------------------------------------------\n";
 
-    //! @todo wite more header data like time and viewport
-}
+//    //! @todo wite more header data like time and viewport
+//}
 
 //void addHMFHeader(QDomElement &rDomElement)
 //{

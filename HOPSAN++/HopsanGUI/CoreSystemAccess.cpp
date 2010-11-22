@@ -275,7 +275,7 @@ void CoreSystemAccess::finalize(double mStartTime, double mFinishTime)
 
 QString CoreSystemAccess::createComponent(QString type, QString name)
 {
-    qDebug() << "createComponent: " << "type: " << type << " desired name:  " << name << " in system: " << this->getRootSystemName();
+    //qDebug() << "createComponent: " << "type: " << type << " desired name:  " << name << " in system: " << this->getRootSystemName();
     Component *pCoreComponent = HopsanEssentials::getInstance()->CreateComponent(type.toStdString());
     if (pCoreComponent != 0)
     {
@@ -284,7 +284,7 @@ QString CoreSystemAccess::createComponent(QString type, QString name)
         {
             pCoreComponent->setName(name.toStdString());
         }
-        qDebug() << "createComponent: name after add: " << QString::fromStdString(pCoreComponent->getName()) << " added to: " << QString::fromStdString(mpCoreComponentSystem->getName());
+        //qDebug() << "createComponent: name after add: " << QString::fromStdString(pCoreComponent->getName()) << " added to: " << QString::fromStdString(mpCoreComponentSystem->getName());
         return QString::fromStdString(pCoreComponent->getName());
     }
     else
