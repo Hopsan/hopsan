@@ -1,8 +1,8 @@
-TYPENAME "HydraulicTurbulentOrifice"
-DISPLAYNAME "Turbulent Orifice"
-ISOICON "turbulentorifice_iso.svg"
-USERICON "turbulentorifice_user.svg"
-ICONROTATION ON
-PORT "P1" 1.0 0.5 0
-PORT "P2" 0.0 0.5 180
-
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="HydraulicTurbulentOrifice" displayname="Turbulent Orifice">
+        <icon isopath="turbulentorifice_iso.svg" iconrotation="ON" userpath="turbulentorifice_user.svg"/>
+        <portpose x="1" y="0.5" a="0" name="P1"/>
+        <portpose x="0" y="0.5" a="180" name="P2"/>
+    </modelobject>
+</hopsanobjectappearance>

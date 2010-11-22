@@ -297,7 +297,7 @@ void GUIModelObjectAppearance::saveToXML(QString filename)
     #include <QFile>
     #include "version.h"
     QDomDocument doc;
-    QDomElement cafroot = doc.createElement("componentappearancefile");
+    QDomElement cafroot = doc.createElement(CAF_ROOTTAG);
     doc.appendChild(cafroot);
     cafroot.setAttribute("version", CAFVERSION);
     this->saveToDomElement(cafroot);

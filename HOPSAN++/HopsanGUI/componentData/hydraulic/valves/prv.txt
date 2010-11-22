@@ -1,7 +1,8 @@
-TYPENAME "HydraulicPressureReliefValve"
-DISPLAYNAME "Pressure Relief Valve"
-ISOICON "prv_iso.svg"
-USERICON "prv_user.svg"
-ICONROTATION ON
-PORT "P1" 0.4762 0.0000 90
-PORT "P2" 0.4762 1.0000 270
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="HydraulicPressureReliefValve" displayname="Pressure Relief Valve">
+        <icon isopath="prv_iso.svg" iconrotation="ON" userpath="prv_user.svg"/>
+        <portpose x="0.4762" y="0" a="90" name="P1"/>
+        <portpose x="0.4762" y="1" a="270" name="P2"/>
+    </modelobject>
+</hopsanobjectappearance>

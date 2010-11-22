@@ -342,7 +342,10 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
             //Assume that the file is ok
             QTextStream inFile(&file);  //Create a QTextStream object to stream the content of each file
             pAppearanceData->readFromTextStream(inFile);
-            pAppearanceData->saveToXML("apa.xml");
+            if (pAppearanceData->mIsReadOK)
+            {
+                pAppearanceData->saveToXML(filename); //Overwrite old file
+            }
         }
 
         pAppearanceData->setBasePath(libDirObject.absolutePath() + "/");

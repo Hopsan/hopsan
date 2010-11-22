@@ -1,7 +1,8 @@
-TYPENAME "SignalSecondOrderFilter"
-DISPLAYNAME "General second order filter"
-USERICON "secondorder.svg"
-ICONROTATION ON
-PORT "in" 0 .5 0
-PORT "out" 1 .5 0
-
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="SignalSecondOrderFilter" displayname="General second order filter">
+        <icon isopath="" iconrotation="ON" userpath="secondorder.svg"/>
+        <portpose x="0" y="0.5" a="0" name="in"/>
+        <portpose x="1" y="0.5" a="0" name="out"/>
+    </modelobject>
+</hopsanobjectappearance>

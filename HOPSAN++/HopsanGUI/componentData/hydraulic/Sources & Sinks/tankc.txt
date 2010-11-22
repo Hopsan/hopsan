@@ -1,7 +1,7 @@
-TYPENAME "HydraulicTankC"
-DISPLAYNAME "Tank C"
-ISOICON "tank_iso.svg"
-USERICON "tank_user.svg"
-ICONROTATION ON
-PORT "P1" 0.5000 0.000 90
-
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="HydraulicTankC" displayname="Tank C">
+        <icon isopath="tank_iso.svg" iconrotation="ON" userpath="tank_user.svg"/>
+        <portpose x="0.5" y="0" a="90" name="P1"/>
+    </modelobject>
+</hopsanobjectappearance>

@@ -1,8 +1,9 @@
-TYPENAME "HydraulicFixedDisplacementMotorQ"
-DISPLAYNAME "Motor with Inertia Load"
-ISOICON "fixedmotorq_iso.svg"
-USERICON "fixedmotorq_user.svg"
-ICONROTATION ON
-PORT "P1" 0.6667 0.0 90
-PORT "P2" 0.6667 1.0 270
-PORT "P3" 0.000 0.500 0
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="HydraulicFixedDisplacementMotorQ" displayname="Motor with Inertia Load">
+        <icon isopath="fixedmotorq_iso.svg" iconrotation="ON" userpath="fixedmotorq_user.svg"/>
+        <portpose x="0.6667" y="0" a="90" name="P1"/>
+        <portpose x="0.6667" y="1" a="270" name="P2"/>
+        <portpose x="0" y="0.5" a="0" name="P3"/>
+    </modelobject>
+</hopsanobjectappearance>

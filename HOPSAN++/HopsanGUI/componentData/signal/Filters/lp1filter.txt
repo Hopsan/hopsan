@@ -1,7 +1,8 @@
-TYPENAME "SignalLP1Filter"
-DISPLAYNAME "First order low pass filter"
-USERICON "lp1filter.svg"
-ICONROTATION ON
-PORT "in" 0 .5 0
-PORT "out" 1 .5 0
-
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="SignalLP1Filter" displayname="First order low pass filter">
+        <icon isopath="" iconrotation="ON" userpath="lp1filter.svg"/>
+        <portpose x="0" y="0.5" a="0" name="in"/>
+        <portpose x="1" y="0.5" a="0" name="out"/>
+    </modelobject>
+</hopsanobjectappearance>

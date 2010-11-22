@@ -1,10 +1,11 @@
-TYPENAME "Hydraulic43Valve"
-DISPLAYNAME "4/3 Servo Valve"
-ISOICON "43valve_iso.svg"
-USERICON "43valve_user.svg"
-ICONROTATION ON
-PORT "PP" 0.5624 1.0000 90
-PORT "PT" 0.6885 1.0000 90
-PORT "PA" 0.5624 0.0000 270
-PORT "PB" 0.6885 0.0000 270
-PORT "in" 0.0000 0.7000 0
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="Hydraulic43Valve" displayname="4/3 Servo Valve">
+        <icon isopath="43valve_iso.svg" iconrotation="ON" userpath="43valve_user.svg"/>
+        <portpose x="0.5624" y="1" a="90" name="PP"/>
+        <portpose x="0.5624" y="0" a="270" name="PA"/>
+        <portpose x="0.6885" y="0" a="270" name="PB"/>
+        <portpose x="0.6885" y="1" a="90" name="PT"/>
+        <portpose x="0" y="0.7" a="0" name="in"/>
+    </modelobject>
+</hopsanobjectappearance>

@@ -1,9 +1,9 @@
-TYPENAME "HydraulicVolume3"
-DISPLAYNAME "Hydraulic Volume with 3 Ports"
-ISOICON "volume_iso.svg"
-USERICON "volume_user.svg"
-ICONROTATION ON
-PORT "P1" 0.0 0.5 0
-PORT "P2" 1.0 0.5 0
-PORT "P3" 0.5 1.0 90
-
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="HydraulicVolume3" displayname="Hydraulic Volume with 3 Ports">
+        <icon isopath="volume_iso.svg" iconrotation="ON" userpath="volume_user.svg"/>
+        <portpose x="0" y="0.5" a="0" name="P1"/>
+        <portpose x="1" y="0.5" a="0" name="P2"/>
+        <portpose x="0.5" y="1" a="90" name="P3"/>
+    </modelobject>
+</hopsanobjectappearance>

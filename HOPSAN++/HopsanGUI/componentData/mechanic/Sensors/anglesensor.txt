@@ -1,8 +1,8 @@
-TYPENAME "MechanicAngleSensor"
-DISPLAYNAME "Angle Sensor"
-ISOICON "anglesensor.svg"
-USERICON "anglesensor_user.svg"
-ICONROTATION ON
-PORT "P1" 0.5 1.0 90
-PORT "out" 0.5 0.0 270
-
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="MechanicAngleSensor" displayname="Angle Sensor">
+        <icon isopath="anglesensor.svg" iconrotation="ON" userpath="anglesensor_user.svg"/>
+        <portpose x="0.5" y="1" a="90" name="P1"/>
+        <portpose x="0.5" y="0" a="270" name="out"/>
+    </modelobject>
+</hopsanobjectappearance>

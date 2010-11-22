@@ -1,5 +1,7 @@
-TYPENAME "SystemPort"
-ISOICON "../../systemporttmp.svg"
-ICONROTATION ON
-PORT "sysp" 0.5 0.5 0
-
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="SystemPort" displayname="">
+        <icon isopath="../../systemporttmp.svg" iconrotation="ON" userpath=""/>
+        <portpose x="0.5" y="0.5" a="0" name="sysp"/>
+    </modelobject>
+</hopsanobjectappearance>

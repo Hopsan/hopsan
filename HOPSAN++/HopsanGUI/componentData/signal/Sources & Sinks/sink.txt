@@ -1,6 +1,7 @@
-TYPENAME "SignalSink"
-DISPLAYNAME "Sink"
-USERICON "Sink.svg"
-ICONROTATION ON
-PORT "in" 0.0 0.5 0
-
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="SignalSink" displayname="Sink">
+        <icon isopath="" iconrotation="ON" userpath="Sink.svg"/>
+        <portpose x="0" y="0.5" a="0" name="in"/>
+    </modelobject>
+</hopsanobjectappearance>

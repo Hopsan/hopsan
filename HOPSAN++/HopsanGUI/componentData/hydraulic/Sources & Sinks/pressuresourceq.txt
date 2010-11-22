@@ -1,8 +1,8 @@
-TYPENAME "HydraulicPressureSourceQ"
-DISPLAYNAME "Prescribed Pressure Q"
-ISOICON "pressuresource_iso.svg"
-USERICON "pressuresource_user.svg"
-ICONROTATION ON
-PORT "in" 0.5 1.0 270
-PORT "P1" 0.5 0.0 90
-
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="HydraulicPressureSourceQ" displayname="Prescribed Pressure Q">
+        <icon isopath="pressuresource_iso.svg" iconrotation="ON" userpath="pressuresource_user.svg"/>
+        <portpose x="0.5" y="0" a="90" name="P1"/>
+        <portpose x="0.5" y="1" a="270" name="in"/>
+    </modelobject>
+</hopsanobjectappearance>

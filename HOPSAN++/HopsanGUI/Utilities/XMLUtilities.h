@@ -80,7 +80,7 @@ void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep,
 #define HMF_CONNECTORENDPORTTAG "endport"
 
 #define HMF_SYSTEMAPPEARANCETAG "systemappearance"
-#define CAF_ROOTTAG "componentappearancefile"
+#define CAF_ROOTTAG "hopsanobjectappearance"
 #define HMF_DISPLAYNAMETAG "displayname"
 #define HMF_ISOICONTAG "isoicon"
 #define HMF_USERICONTAG "usericon"

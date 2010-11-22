@@ -1,10 +1,9 @@
-TYPENAME "HydraulicCylinderQ"
-DISPLAYNAME "Cylinder Q"
-ISOICON "cylinderq_iso.svg"
-USERICON "cylinderq_user.svg"
-ICONROTATION ON
-PORT "P1" 0.0274 1.000 90
-PORT "P2" 0.4660 1.000 90
-PORT "P3" 1.000 0.500 0
-
-
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="HydraulicCylinderQ" displayname="Cylinder Q">
+        <icon isopath="cylinderq_iso.svg" iconrotation="ON" userpath="cylinderq_user.svg"/>
+        <portpose x="0.0274" y="1" a="90" name="P1"/>
+        <portpose x="0.466" y="1" a="90" name="P2"/>
+        <portpose x="1" y="0.5" a="0" name="P3"/>
+    </modelobject>
+</hopsanobjectappearance>
