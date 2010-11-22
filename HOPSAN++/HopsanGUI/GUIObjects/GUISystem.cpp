@@ -427,13 +427,23 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 {
     //! @todo might need some error checking here incase some fields are missing
     //Load the GUI stuff like appearance data and viewport
-    this->mGUIModelObjectAppearance.readFromDomElement(rDomElement.firstChildElement(CAF_ROOTTAG).firstChildElement("modelobject"));
-    //! @todo load viewport and simulationtime and pose and stuff
+    QDomElement guiStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
+    this->mGUIModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOTTAG).firstChildElement("modelobject"));
+    //! @todo load viewport and pose and stuff
 
     //Now load the core specific data, might need inherited function for this
     //It is important to load core data after the guistuff in case the guistuff is incomplete
     this->setName(rDomElement.attribute(HMF_NAMETAG));
     this->setTypeCQS(rDomElement.attribute(HMF_CQSTYPETAG));
+
+    //Load simulation time
+    double start, ts, stop;
+    parseSimulationTimeTag(rDomElement.firstChildElement(HMF_SIMULATIONTIMETAG), start, ts, stop);
+    //! @todo figure out a better way to do this seems a bit strange that we must go through mainwindow and is the local variables even set
+    gpMainWindow->setStartTimeInToolBar(start);
+    gpMainWindow->setTimeStepInToolBar(ts);
+    gpMainWindow->setFinishTimeInToolBar(stop);
+
 
     //Check if the subsystem is external or internal, and load appropriately
     QString external_path = rDomElement.firstChildElement(HMF_EXTERNALPATHTAG).text();

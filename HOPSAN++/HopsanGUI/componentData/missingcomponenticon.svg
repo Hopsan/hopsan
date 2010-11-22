@@ -9,8 +9,8 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="48.65625"
-   height="30.875"
+   width="59.947613"
+   height="38.076824"
    id="svg2531"
    sodipodi:version="0.32"
    inkscape:version="0.48.0 r9654"
@@ -30,8 +30,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="4.8291554"
-     inkscape:cx="-27.813923"
-     inkscape:cy="-9.1547661"
+     inkscape:cx="-16.511763"
+     inkscape:cy="6.3248245"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -48,7 +48,7 @@
      fit-margin-bottom="0">
     <sodipodi:guide
        orientation="1,0"
-       position="67.31868,77.063794"
+       position="78.62084,84.260363"
        id="guide3946" />
   </sodipodi:namedview>
   <metadata
@@ -67,25 +67,25 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-384.6875,-480.90625)">
+     transform="translate(-373.38534,-480.901)">
     <rect
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.7172991;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.88410419;stroke-miterlimit:4;stroke-dasharray:none"
        id="rect2878"
-       width="47.919918"
-       height="30.17552"
-       x="385.05438"
-       y="481.25964"
+       width="59.063507"
+       height="37.192719"
+       x="373.82739"
+       y="481.34305"
        ry="0" />
     <text
        xml:space="preserve"
-       style="font-size:32.16844559px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ff0000;fill-opacity:1;stroke:none;font-family:DejaVu Serif;-inkscape-font-specification:DejaVu Serif"
-       x="400.07693"
-       y="508.05716"
+       style="font-size:39.64908981px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ff0000;fill-opacity:1;stroke:none;font-family:DejaVu Serif;-inkscape-font-specification:DejaVu Serif"
+       x="392.34335"
+       y="514.37225"
        id="text4308"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4310"
-         x="400.07693"
-         y="508.05716">?</tspan></text>
+         x="392.34335"
+         y="514.37225">?</tspan></text>
   </g>
 </svg>
