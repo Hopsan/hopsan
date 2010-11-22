@@ -1,0 +1,55 @@
+--------------------------------------------------------------
+-------------------  HOPSAN NG MODEL FILE  -------------------
+--------------------------------------------------------------
+HOPSANGUIVERSION 0.0.1
+HMFVERSION 0.1
+CAFVERSION 0.1
+--------------------------------------------------------------
+SIMULATIONTIME 0 0.001 10
+VIEWPORT 2500 2500 1
+--------------------------------------------------------------
+USERICON ""
+ISOICON ""
+--------------------------------------------------------------
+COMPONENT "SignalSineWave" "Sine Wave" 2533 2603 0 0 0
+PARAMETER "Sine Wave" "StartTime" 0
+PARAMETER "Sine Wave" "Frequency" 0.1
+PARAMETER "Sine Wave" "Amplitude" 80
+PARAMETER "Sine Wave" "Offset" 0
+COMPONENT "HydraulicVolume" "Hydraulic Volume_1" 2390 2571 90 0 0
+PARAMETER "Hydraulic Volume_1" "V" 0.0001
+PARAMETER "Hydraulic Volume_1" "Be" 1e+09
+PARAMETER "Hydraulic Volume_1" "a" 0.1
+COMPONENT "MechanicForceTransformer" "Force Transformer" 2559 2503 180 0 0
+PARAMETER "Force Transformer" "x0" 1
+PARAMETER "Force Transformer" "v0" 0
+PARAMETER "Force Transformer" "Force" 0
+COMPONENT "SignalSource" "Constant" 2534 2550 0 0 0
+PARAMETER "Constant" "Value" 80
+COMPONENT "HydraulicPressureSourceQ" "Prescribed Pressure Q_1" 2390 2635 0 0 0
+PARAMETER "Prescribed Pressure Q_1" "P" 100000
+COMPONENT "HydraulicCylinderQ" "Cylinder Q" 2397 2503 0 0 0
+PARAMETER "Cylinder Q" "Area1" 0.001
+PARAMETER "Cylinder Q" "Area2" 0.001
+PARAMETER "Cylinder Q" "Stroke" 1
+PARAMETER "Cylinder Q" "Bp" 0
+PARAMETER "Cylinder Q" "Mass" 500
+PARAMETER "Cylinder Q" "Bl" 100
+PARAMETER "Cylinder Q" "Kl" 0
+COMPONENT "HydraulicVolume" "Hydraulic Volume" 2310 2573 90 0 0
+PARAMETER "Hydraulic Volume" "V" 0.0001
+PARAMETER "Hydraulic Volume" "Be" 1e+09
+PARAMETER "Hydraulic Volume" "a" 0.1
+COMPONENT "HydraulicPressureSourceQ" "Prescribed Pressure Q" 2310 2635 0 0 0
+PARAMETER "Prescribed Pressure Q" "P" 200000
+COMPONENT "SignalAdd" "Add" 2610 2603 0 0 0
+--------------------------------------------------------------
+CONNECT "Hydraulic Volume" "P1" "Cylinder Q" "P1" 2310 2548 2310 2524 2310.99 2524 2310.99 2523
+CONNECT "Hydraulic Volume_1" "P1" "Cylinder Q" "P2" 2390 2546 2390 2525 2390.81 2525 2390.81 2523
+CONNECT "Prescribed Pressure Q_1" "P1" "Hydraulic Volume_1" "P2" 2390 2623 2390 2616 2390 2616 2390 2596
+CONNECT "Force Transformer" "P1" "Cylinder Q" "P3" 2539.5 2503 2508 2503 2508 2503 2488 2503
+CONNECT "Constant" "out" "Add" "in2" 2546.5 2550 2610 2550 2610 2590.5
+CONNECT "Hydraulic Volume" "P2" "Prescribed Pressure Q" "P1" 2310 2598 2310 2614 2310 2614 2310 2623
+CONNECT "Sine Wave" "out" "Add" "in1" 2553 2603 2597.5 2603
+CONNECT "Add" "out" "Force Transformer" "in" 2622.5 2603 2655 2603 2655 2503 2578.5 2503
+--------------------------------------------------------------
