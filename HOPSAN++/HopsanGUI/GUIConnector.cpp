@@ -266,6 +266,8 @@ void GUIConnector::setEndPort(GUIPort *port)
     {
             //Wrong direction of last line, so remove last point. It will be fine.
         this->removePoint();
+        this->scene()->removeItem(mpLines.back());
+        delete(mpLines.back());
         this->mpLines.pop_back();
     }
     else
@@ -538,6 +540,7 @@ void GUIConnector::drawConnector()
         while(mpLines.size() > mPoints.size()-1)
         {
             this->scene()->removeItem(mpLines.back());
+            delete(mpLines.back());
             mpLines.pop_back();
         }
             //Add lines if there are too few
