@@ -7,8 +7,6 @@
 //!
 //$Id$
 
-//! @todo Rename this class and file to PreferencesDialog
-
 #include <QtGui>
 #include <QDebug>
 
@@ -18,6 +16,13 @@
 #include "GUIObjects/GUISystem.h"
 #include "LibraryWidget.h"
 #include "Configuration.h"
+
+
+//! @class PreferenceDialog
+//! @brief The PreferenceDialog class is used to display a dialog window where user can change model specific settings
+//!
+//! Changes are either stored in model or discarded depending on user input.
+//!
 
 
 //! @brief Constructor for Model Preferences dialog

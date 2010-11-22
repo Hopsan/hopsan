@@ -7,9 +7,6 @@
 //!
 //$Id: OptionsDialog.cpp 1196 2010-04-01 09:55:04Z robbr48 $
 
-
-//! @todo Rename this class and file to OptionsDialog
-
 #include <QtGui>
 #include <QDebug>
 
@@ -22,6 +19,12 @@
 
 class ProjectTabWidget;
 
+
+//! @class OptionsDialog
+//! @brief A class for displaying a dialog window where user can change global program settings
+//!
+//! Settings are either stored in global config object or discarded, depending on user input.
+//!
 
 //! Constructor for the options dialog
 //! @param parent Pointer to the main window
