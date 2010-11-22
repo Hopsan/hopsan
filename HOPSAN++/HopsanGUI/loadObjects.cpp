@@ -286,10 +286,16 @@ void ConnectorLoadData::readDomElement(QDomElement &rDomElement)
     QDomElement coordTag = guiCoordinates.firstChildElement(HMF_COORDINATETAG);
     while (!coordTag.isNull())
     {
-        //parseDomValueNode2(xyNode,x,y);
         parseCoordinateTag(coordTag, x, y);
         pointVector.push_back(QPointF(x,y));
         coordTag = coordTag.nextSiblingElement(HMF_COORDINATETAG);
+    }
+    QDomElement guiGeometries = guiData.firstChildElement(HMF_GEOMETRIES);
+    QDomElement geometryTag = guiGeometries.firstChildElement(HMF_GEOMETRYTAG);
+    while (!geometryTag.isNull())
+    {
+        geometryList.append(geometryTag.text());
+        geometryTag = geometryTag.nextSiblingElement(HMF_GEOMETRYTAG);
     }
 }
 
@@ -422,7 +428,7 @@ void loadConnector(const ConnectorLoadData &rData, GUIContainerObject* pSystem, 
         GUIPort *startPort = pSystem->getGUIModelObject(rData.startComponentName)->getPort(rData.startPortName);
         GUIPort *endPort = pSystem->getGUIModelObject(rData.endComponentName)->getPort(rData.endPortName);
 
-        GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, rData.pointVector, pSystem);
+        GUIConnector *pTempConnector = new GUIConnector(startPort, endPort, rData.pointVector, pSystem, rData.geometryList);
         pSystem->getContainedScenePtr()->addItem(pTempConnector);
 
         //Hide connected ports

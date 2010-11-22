@@ -62,6 +62,8 @@ void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep,
 #define HMF_HOPSANGUITAG "hopsangui"
 #define HMF_COORDINATES "coordinates"
 #define HMF_COORDINATETAG "coordinate"
+#define HMF_GEOMETRIES "geometries"
+#define HMF_GEOMETRYTAG "geometry"
 #define HMF_XYTAG "xy"                      //Containes an xy coordinate pair
 #define HMF_EXTERNALPATHTAG "external_path" //Contains the path to an external subsystem
 #define HMF_VALUETAG "value"

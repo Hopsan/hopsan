@@ -27,7 +27,7 @@ class GUIConnector : public QGraphicsWidget
     friend class GUIConnectorLine;
 public:
     GUIConnector(GUIPort *startPort, GUIContainerObject *parentSystem, QGraphicsItem *parent = 0);
-    GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> mPoints, GUIContainerObject *parentSystem, QGraphicsItem *parent = 0);
+    GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> mPoints, GUIContainerObject *parentSystem, QStringList geometries = QStringList(), QGraphicsItem *parent = 0);
     ~GUIConnector();
 
     enum { Type = UserType + 1 };           //Va tusan gör den här?! -Det du!

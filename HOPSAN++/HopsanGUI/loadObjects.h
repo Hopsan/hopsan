@@ -90,6 +90,7 @@ class ConnectorLoadData
 public:
     QString startComponentName, endComponentName, startPortName, endPortName;
     QVector<QPointF> pointVector;
+    QStringList geometryList;
 
     void read(QTextStream &rStream);
     void readDomElement(QDomElement &rDomElement);

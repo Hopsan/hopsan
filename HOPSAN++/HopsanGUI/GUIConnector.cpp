@@ -53,7 +53,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIContainerObject *parentSystem,
 //! @param points Point vector for the connector
 //! @param *parentView Pointer to the GraphicsView the connector belongs to
 //! @param *parent Pointer to parent of the port
-GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, GUIContainerObject *parentSystem, QGraphicsItem *parent)
+GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, GUIContainerObject *parentSystem, QStringList geometries, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
     mpParentContainerObject = parentSystem;
@@ -71,15 +71,27 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
 
     mPoints = points;
 
-        //Setup the geometries vector based on the point geometry
+        //Setup the geometries vector based on the point geometry or supplied geometry list
     for(int i=0; i < mPoints.size()-1; ++i)
     {
-        if(mPoints[i].x() == mPoints[i+1].x())
-            mGeometries.push_back(HORIZONTAL);
-        else if(mPoints[i].y() == mPoints[i+1].y())
-            mGeometries.push_back(VERTICAL);
+        if(geometries.empty())
+        {
+            if(mPoints[i].x() == mPoints[i+1].x())
+                mGeometries.push_back(HORIZONTAL);
+            else if(mPoints[i].y() == mPoints[i+1].y())
+                mGeometries.push_back(VERTICAL);
+            else
+                mGeometries.push_back(DIAGONAL);
+        }
         else
-            mGeometries.push_back(DIAGONAL);
+        {
+            if(geometries.at(i) == "horizontal")
+                mGeometries.push_back(HORIZONTAL);
+            else if(geometries.at(i) == "vertical")
+                mGeometries.push_back(VERTICAL);
+            else
+                mGeometries.push_back(DIAGONAL);
+        }
     }
 
     mEndPortConnected = true;
@@ -526,6 +538,16 @@ void GUIConnector::saveToDomElement(QDomElement &rDomElement)
         //appendDomValueNode2(xmlConnectGUI, HMF_XYTAG, mPoints[j].x(), mPoints[j].y());
 //        appendDomTextNode(xmlConnectGUI, "ptx", mPoints[j].x());
 //        appendDomTextNode(xmlConnectGUI, "pty", mPoints[j].y());
+    }
+    QDomElement xmlGeometries = appendDomElement(xmlConnectGUI, HMF_GEOMETRIES);
+    for(size_t j=0; j<mGeometries.size(); ++j)
+    {
+        if(mGeometries.at(j) == VERTICAL)
+            appendDomTextNode(xmlGeometries, HMF_GEOMETRYTAG, "vertical");
+        if(mGeometries.at(j) == HORIZONTAL)
+            appendDomTextNode(xmlGeometries, HMF_GEOMETRYTAG, "horizontal");
+        if(mGeometries.at(j) == DIAGONAL)
+            appendDomTextNode(xmlGeometries, HMF_GEOMETRYTAG, "diagonal");
     }
 }
 
