@@ -495,7 +495,7 @@ void ProjectTabWidget::addNewProjectTab(QString tabName)
 //! @see closeAllProjectTabs()
 bool ProjectTabWidget::closeProjectTab(int index)
 {
-    if (!(this->getCurrentTab()->isSaved()))
+    if (!(this->getTab(index)->isSaved()))
     {
         QString modelName;
         modelName = tabText(index);
@@ -512,7 +512,6 @@ bool ProjectTabWidget::closeProjectTab(int index)
         {
         case QMessageBox::Save:
             // Save was clicked
-            std::cout << "ProjectTabWidget: " << "Save and close" << std::endl;
             getTab(index)->save();
             break;
         case QMessageBox::Discard:
@@ -520,7 +519,6 @@ bool ProjectTabWidget::closeProjectTab(int index)
             break;
         case QMessageBox::Cancel:
             // Cancel was clicked
-            //std::cout << "ProjectTabWidget: " << "Cancel closing" << std::endl;
             return false;
         default:
             // should never be reached
