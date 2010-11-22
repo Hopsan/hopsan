@@ -13,9 +13,8 @@ public:
     void setType(const QString porttype);
     void setIsoStyle(graphicsType gfxType);
     void setTypeAndIsoStyle(QString porttype, graphicsType gfxType);
-    QPen getPen(QString situation, QString type, graphicsType gfxType);
+    QPen getPen(QString type, graphicsType gfxType, QString situation);
     QPen getPen(QString situation);
-    void adjustToZoom(qreal zoomFactor);
 
 private:
     QPen mPrimaryPenPowerUser;

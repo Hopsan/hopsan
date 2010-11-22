@@ -80,7 +80,6 @@ public slots:
     void setUnHovered();
     void deleteMe();
     void deleteMeWithNoUndo();
-    void adjustToZoom(qreal zoomfactor);
     void deselect();
     void select();
 

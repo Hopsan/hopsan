@@ -452,9 +452,23 @@ QMap<QString, double> Configuration::getCustomUnits(QString key)
 //! @param type Type of connector (Power, Signal, NonFinished)
 //! @param gfxType Graphics type (User or Iso)
 //! @param situation Defines when connector is used (Primary, Hovered, Active)
-QPen Configuration::getPen(QString type, QString gfxType, QString situation)
+QPen Configuration::getPen(QString type, graphicsType gfxType, QString situation)
 {
-    return mPenStyles.find(type).value().find(gfxType).value().find(situation).value();
+    QString gfxString;
+    if(gfxType == ISOGRAPHICS) { gfxString = "Iso"; }
+    else { gfxString = "User"; }
+
+    if(mPenStyles.contains(type))
+    {
+        if(mPenStyles.find(type).value().contains(gfxString))
+        {
+            if(mPenStyles.find(type).value().find(gfxString).value().contains(situation))
+            {
+                return mPenStyles.find(type).value().find(gfxString).value().find(situation).value();
+            }
+        }
+    }
+    return QPen(QColor("black"), 1, Qt::SolidLine, Qt::SquareCap);
 }
 
 

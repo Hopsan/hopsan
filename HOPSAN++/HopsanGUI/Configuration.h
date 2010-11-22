@@ -31,7 +31,7 @@ public:
     QStringList getLastSessionModels();
     QString getDefaultUnit(QString key);
     QMap<QString, double> getCustomUnits(QString key);
-    QPen getPen(QString type, QString gfxType, QString situation);
+    QPen getPen(QString type, graphicsType gfxType, QString situation);
 
 
     void setInvertWheel(bool value);
