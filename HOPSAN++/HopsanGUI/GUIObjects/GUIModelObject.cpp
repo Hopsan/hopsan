@@ -364,19 +364,19 @@ void GUIModelObject::setParameterValue(QString name, double value)
 }
 
 
-//! @brief Saves the GUIModelObject to a text stream
-//! @param &rStream Text stream to save into
-//! @param prepend String to prepend before object data
-void GUIModelObject::saveToTextStream(QTextStream &rStream, QString prepend)
-{
-    QPointF pos = mapToScene(boundingRect().center());
-    if (!prepend.isEmpty())
-    {
-        rStream << prepend << " ";
-    }
-    rStream << addQuotes(getTypeName()) << " " << addQuotes(getName()) << " "
-            << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << " " << mpNameText->isVisible() << "\n";
-}
+////! @brief Saves the GUIModelObject to a text stream
+////! @param &rStream Text stream to save into
+////! @param prepend String to prepend before object data
+//void GUIModelObject::saveToTextStream(QTextStream &rStream, QString prepend)
+//{
+//    QPointF pos = mapToScene(boundingRect().center());
+//    if (!prepend.isEmpty())
+//    {
+//        rStream << prepend << " ";
+//    }
+//    rStream << addQuotes(getTypeName()) << " " << addQuotes(getName()) << " "
+//            << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << " " << mpNameText->isVisible() << "\n";
+//}
 
 
 void GUIModelObject::saveToDomElement(QDomElement &rDomElement)

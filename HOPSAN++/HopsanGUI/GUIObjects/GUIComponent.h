@@ -25,7 +25,7 @@ public:
     double getParameterValue(QString name);
     void setParameterValue(QString name, double value);
 
-    void saveToTextStream(QTextStream &rStream, QString prepend=QString());
+    //void saveToTextStream(QTextStream &rStream, QString prepend=QString());
 
     void setName(QString name, renameRestrictions renameSettings=UNRESTRICTED);
     QString getTypeName();

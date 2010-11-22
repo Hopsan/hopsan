@@ -1,7 +1,8 @@
-TYPENAME "sep2"
-DISPLAYNAME "sep2"
-ISOICON "Pictures/sep2.svg"
-USERICON "Pictures/sep2.svg"
-ICONROTATION ON
-PORT "P1" 0 0.5 0
-PORT "P2" 1.0 0.5 0
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="sep2" displayname="sep2">
+        <icon isopath="Pictures/sep2.svg" iconrotation="ON" userpath="Pictures/sep2.svg"/>
+        <portpose x="0" y="0.5" a="0" name="P1"/>
+        <portpose x="1" y="0.5" a="0" name="P2"/>
+    </modelobject>
+</hopsanobjectappearance>

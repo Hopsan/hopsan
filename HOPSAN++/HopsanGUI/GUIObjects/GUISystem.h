@@ -37,7 +37,7 @@ public:
     void setTypeCQS(QString typestring);
     QString getTypeCQS();
 
-    void saveToTextStream(QTextStream &rStream, QString prepend);
+    //void saveToTextStream(QTextStream &rStream, QString prepend);
     void saveToDomElement(QDomElement &rDomElement);
     void loadFromHMF(QString modelFilePath=QString());
     void loadFromDomElement(QDomElement &rDomElement);

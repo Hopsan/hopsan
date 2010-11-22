@@ -220,20 +220,20 @@ int GUIComponent::type() const
 }
 
 
-//! @brief Save GuiObject to a text stream
-void GUIComponent::saveToTextStream(QTextStream &rStream, QString prepend)
-{
-    GUIModelObject::saveToTextStream(rStream, prepend);
+////! @brief Save GuiObject to a text stream
+//void GUIComponent::saveToTextStream(QTextStream &rStream, QString prepend)
+//{
+//    GUIModelObject::saveToTextStream(rStream, prepend);
 
-    QVector<QString> parameterNames = mpParentContainerObject->getCoreSystemAccessPtr()->getParameterNames(this->getName());
-    QVector<QString>::iterator pit;
-    for(pit = parameterNames.begin(); pit != parameterNames.end(); ++pit)
-    {
-        //! @todo It is a bit strange that we can not control the parameter keyword, but then agian spliting this into a separate function with its own prepend variable would also be wierd
-        rStream << "PARAMETER " << addQuotes(getName()) << " " << addQuotes(*pit) << " " <<
-                mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValue(this->getName(), (*pit)) << "\n";
-    }
-}
+//    QVector<QString> parameterNames = mpParentContainerObject->getCoreSystemAccessPtr()->getParameterNames(this->getName());
+//    QVector<QString>::iterator pit;
+//    for(pit = parameterNames.begin(); pit != parameterNames.end(); ++pit)
+//    {
+//        //! @todo It is a bit strange that we can not control the parameter keyword, but then agian spliting this into a separate function with its own prepend variable would also be wierd
+//        rStream << "PARAMETER " << addQuotes(getName()) << " " << addQuotes(*pit) << " " <<
+//                mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValue(this->getName(), (*pit)) << "\n";
+//    }
+//}
 
 void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
 {
