@@ -154,7 +154,7 @@ void GUIContainerObject::createPorts()
 //! @param name will be the name of the component.
 //! @returns a pointer to the created and added object
 //! @todo only modelobjects for now
-GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, selectionStatus startSelected, undoStatus undoSettings)
+GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, selectionStatus startSelected, nameVisibility nameStatus, undoStatus undoSettings)
 {
         //Deselect all other components and connectors
     emit deselectAllGUIObjects();
@@ -189,6 +189,17 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* 
     {
         mGUIModelObjectMap.insert(mpTempGUIModelObject->getName(), mpTempGUIModelObject);
     }
+
+        //Set name visibility status (no undo because it will be registered as an added object anyway)
+    if(nameStatus == NAMEVISIBLE)
+    {
+        mpTempGUIModelObject->showName(NOUNDO);
+    }
+    else
+    {
+        mpTempGUIModelObject->hideName(NOUNDO);
+    }
+
 
     if(undoSettings == UNDO)
     {
@@ -703,6 +714,7 @@ void GUIContainerObject::deselectAll()
 //! @see showNames()
 void GUIContainerObject::hideNames()
 {
+    mUndoStack->newPost("hideallnames");
     mIsRenamingObject = false;
     emit deselectAllNameText();
     emit hideAllNameText();
@@ -713,6 +725,7 @@ void GUIContainerObject::hideNames()
 //! @see hideNames()
 void GUIContainerObject::showNames()
 {
+    mUndoStack->newPost("showallnames");
     emit showAllNameText();
 }
 

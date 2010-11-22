@@ -1,11 +1,11 @@
 //!
-//! @file   OptionsWidget.cpp
+//! @file   OptionsDialog.cpp
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2010-XX-XX
 //!
 //! @brief Contains a class for the options dialog
 //!
-//$Id: OptionsWidget.cpp 1196 2010-04-01 09:55:04Z robbr48 $
+//$Id: OptionsDialog.cpp 1196 2010-04-01 09:55:04Z robbr48 $
 
 
 //! @todo Rename this class and file to OptionsDialog
@@ -13,7 +13,7 @@
 #include <QtGui>
 #include <QDebug>
 
-#include "OptionsWidget.h"
+#include "OptionsDialog.h"
 #include "ProjectTabWidget.h"
 #include "MainWindow.h"
 #include "GraphicsView.h"
@@ -25,13 +25,13 @@ class ProjectTabWidget;
 
 //! Constructor for the options dialog
 //! @param parent Pointer to the main window
-OptionsWidget::OptionsWidget(MainWindow *parent)
+OptionsDialog::OptionsDialog(MainWindow *parent)
     : QDialog(parent)
 {
     mpParentMainWindow = parent;
 
         //Set the name and size of the main window
-    this->setObjectName("OptionsWidget");
+    this->setObjectName("OptionsDialog");
     this->resize(640,480);
     this->setWindowTitle("Options");
 
@@ -200,7 +200,7 @@ OptionsWidget::OptionsWidget(MainWindow *parent)
 
 
 //! Slot that updates and saves the settings based on the choices made in the dialog box
-void OptionsWidget::updateValues()
+void OptionsDialog::updateValues()
 {
     gConfig.setInvertWheel(mpInvertWheelCheckBox->isChecked());
     gConfig.setAntiAliasing(mpAntiAliasingCheckBox->isChecked());
@@ -231,7 +231,7 @@ void OptionsWidget::updateValues()
 
 
 //! Slot that opens a color dialog where user can select a background color
-void OptionsWidget::colorDialog()
+void OptionsDialog::colorDialog()
 {
     mPickedBackgroundColor = QColorDialog::getColor(gConfig.getBackgroundColor(), this);
     if (mPickedBackgroundColor.isValid())
@@ -253,7 +253,7 @@ void OptionsWidget::colorDialog()
 
 
 //! Reimplementation of show() slot. This is used to make sure that the background color button resets its color if the cancel button was pressed last time options were opened.
-void OptionsWidget::show()
+void OptionsDialog::show()
 {
     QString redString;
     QString greenString;
@@ -268,32 +268,32 @@ void OptionsWidget::show()
 }
 
 
-void OptionsWidget::addValueUnit()
+void OptionsDialog::addValueUnit()
 {
     addCustomUnitDialog("Value");
 }
 
-void OptionsWidget::addPressureUnit()
+void OptionsDialog::addPressureUnit()
 {
     addCustomUnitDialog("Pressure");
 }
 
-void OptionsWidget::addFlowUnit()
+void OptionsDialog::addFlowUnit()
 {
     addCustomUnitDialog("Flow");
 }
 
-void OptionsWidget::addForceUnit()
+void OptionsDialog::addForceUnit()
 {
     addCustomUnitDialog("Force");
 }
 
-void OptionsWidget::addPositionUnit()
+void OptionsDialog::addPositionUnit()
 {
     addCustomUnitDialog("Position");
 }
 
-void OptionsWidget::addVelocityUnit()
+void OptionsDialog::addVelocityUnit()
 {
     addCustomUnitDialog("Velocity");
 }
@@ -301,7 +301,7 @@ void OptionsWidget::addVelocityUnit()
 
 
 //! Slot that opens "Add Custom Unit" dialog
-void OptionsWidget::addCustomUnitDialog(QString physicalQuantity)
+void OptionsDialog::addCustomUnitDialog(QString physicalQuantity)
 {
     mPhysicalQuantityToModify = physicalQuantity;
     mpAddUnitDialog = new QDialog(this);
@@ -334,7 +334,7 @@ void OptionsWidget::addCustomUnitDialog(QString physicalQuantity)
 
 
 
-void OptionsWidget::addCustomUnit()
+void OptionsDialog::addCustomUnit()
 {
     gConfig.addCustomUnit(mPhysicalQuantityToModify, mpUnitNameBox->text(), mpScaleBox->text().toDouble());
     this->updateCustomUnits();
@@ -343,7 +343,7 @@ void OptionsWidget::addCustomUnit()
 
 
 
-void OptionsWidget::updateCustomUnits()
+void OptionsDialog::updateCustomUnits()
 {
     mpValueUnitComboBox->clear();
     QMap<QString, double> customValueUnits = gConfig.getCustomUnits("Value");

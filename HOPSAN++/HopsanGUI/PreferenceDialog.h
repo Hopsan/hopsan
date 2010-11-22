@@ -1,7 +1,7 @@
 //$Id$
 
-#ifndef PREFERENCEWIDGET_H
-#define PREFERENCEWIDGET_H
+#ifndef PREFERENCEDIALOG_H
+#define PREFERENCEDIALOG_H
 
 #include <QDialog>
 #include <QCheckBox>
@@ -13,12 +13,12 @@
 
 class MainWindow;
 
-class PreferenceWidget : public QDialog
+class PreferenceDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    PreferenceWidget(MainWindow *parent = 0);
+    PreferenceDialog(MainWindow *parent = 0);
 
     MainWindow *mpParentMainWindow;
 
@@ -53,4 +53,4 @@ private:
     QGridLayout *mpLayout;
 };
 
-#endif // PREFERENCEWIDGET_H
+#endif // PREFERENCEDIALOG_H

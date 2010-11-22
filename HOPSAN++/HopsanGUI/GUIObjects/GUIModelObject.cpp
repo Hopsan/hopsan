@@ -521,6 +521,7 @@ QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QPointF pos)
     }
     else if (selectedAction == showNameAction)
     {
+        mpParentContainerObject->mUndoStack->newPost();
         if(mpNameText->isVisible())
         {
             this->hideName();
@@ -908,9 +909,6 @@ void GUIModelObject::flipHorizontal(undoStatus undoSettings)
     }
     this->snapNameTextPosition(mpNameText->pos());
 
-
-
-
     if(undoSettings == UNDO)
     {
         mpParentContainerObject->mUndoStack->registerHorizontalFlip(this->getName());
@@ -941,17 +939,28 @@ void GUIModelObject::setNameTextPos(int textPos)
 
 
 //! @brief Slots that hides the name text of the object
-void GUIModelObject::hideName()
+void GUIModelObject::hideName(undoStatus undoSettings)
 {
+    bool previousStatus = mpNameText->isVisible();
     mpNameText->setVisible(false);
+    if(undoSettings == UNDO && previousStatus == true)
+    {
+        mpParentContainerObject->mUndoStack->registerNameVisibilityChange(this->getName(), false);
+    }
 }
 
 
 //! @brief Slots that makes the name text of the object visible
-void GUIModelObject::showName()
+void GUIModelObject::showName(undoStatus undoSettings)
 {
+    bool previousStatus = mpNameText->isVisible();
     mpNameText->setVisible(true);
+    if(undoSettings == UNDO && previousStatus == false)
+    {
+        mpParentContainerObject->mUndoStack->registerNameVisibilityChange(this->getName(), true);
+    }
 }
+
 
 
 //! @brief Virtual dummy function that returns the type name of the object (must be reimplemented by children)

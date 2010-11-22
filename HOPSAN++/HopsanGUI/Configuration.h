@@ -14,7 +14,6 @@ class Configuration
 {
 
 public:
-    Configuration();
     void saveToXml();
     void loadFromXml();
 
@@ -47,7 +46,7 @@ public:
     void addLastSessionModel(QString value);
     void clearLastSessionModels();
     void setDefaultUnit(QString key, QString value);
-    void addCustomUnit(QString dataname, QString parname, double scale);
+    void addCustomUnit(QString dataname, QString unitname, double scale);
 
 private:
     bool mInvertWheel;

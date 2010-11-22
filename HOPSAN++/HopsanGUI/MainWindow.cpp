@@ -11,8 +11,8 @@
 
 #include "PlotWidget.h"
 #include "MessageWidget.h"
-#include "PreferenceWidget.h"
-#include "OptionsWidget.h"
+#include "PreferenceDialog.h"
+#include "OptionsDialog.h"
 #include "UndoStack.h"
 #include "LibraryWidget.h"
 #include "ProjectTabWidget.h"
@@ -131,8 +131,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     mpUndoWidget = new UndoWidget(this);
     mpProjectTabs->addNewProjectTab();
-    mpPreferenceWidget = new PreferenceWidget(this);
-    mpOptionsWidget = new OptionsWidget(this);
+    mpPreferenceDialog = new PreferenceDialog(this);
+    mpOptionsDialog = new OptionsDialog(this);
 
             //Load default libraries
     mpLibrary->addEmptyLibrary("User defined libraries");

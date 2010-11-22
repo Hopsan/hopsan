@@ -39,6 +39,7 @@ public:
     void registerVerticalFlip(QString objectName);
     void registerHorizontalFlip(QString objectName);
     void registerChangedParameter(QString objectName, QString parameterName, double oldValue, double newValue);
+    void registerNameVisibilityChange(QString objectName, bool isVisible);
     void clear(QString errorMsg = "");
     void newPost(QString type = "");
     void insertPost(QString str);

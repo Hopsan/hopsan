@@ -1,5 +1,5 @@
 //!
-//! @file   PreferenceWidget.cpp
+//! @file   PreferenceDialog.cpp
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2010-XX-XX
 //!
@@ -12,7 +12,7 @@
 #include <QtGui>
 #include <QDebug>
 
-#include "PreferenceWidget.h"
+#include "PreferenceDialog.h"
 #include "ProjectTabWidget.h"
 #include "MainWindow.h"
 #include "GUIObjects/GUISystem.h"
@@ -22,13 +22,13 @@
 
 //! @brief Constructor for Model Preferences dialog
 //! @param parent Pointer to the main window
-PreferenceWidget::PreferenceWidget(MainWindow *parent)
+PreferenceDialog::PreferenceDialog(MainWindow *parent)
     : QDialog(parent)
 {
     mpParentMainWindow = parent;
 
         //Set the name and size of the main window
-    this->setObjectName("PreferenceWidget");
+    this->setObjectName("PreferenceDialog");
     this->resize(640,480);
     this->setWindowTitle("Model Preferences");
 
@@ -94,7 +94,7 @@ PreferenceWidget::PreferenceWidget(MainWindow *parent)
 
 
 //! @brief Reimplementation of QDialog::show(), used to update values in the box to current settings every time it is shown
-void PreferenceWidget::show()
+void PreferenceDialog::show()
 {
     mpIsoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mGfxType);
     mpDisableUndoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
@@ -105,7 +105,7 @@ void PreferenceWidget::show()
 
 
 //! @brief Updates model settings according to the selected values
-void PreferenceWidget::updateValues()
+void PreferenceDialog::updateValues()
 {
     if(mpIsoCheckBox->isChecked())
     {
@@ -138,7 +138,7 @@ void PreferenceWidget::updateValues()
 
 
 //! @brief Slot that opens a file dialog where user can select a user icon for the system
-void PreferenceWidget::browseUser()
+void PreferenceDialog::browseUser()
 {
     QDir fileDialogOpenDir;
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose user icon"),
@@ -148,7 +148,7 @@ void PreferenceWidget::browseUser()
 
 
 //! @brief Slot that opens a file dialog where user can select an iso icon for the system
-void PreferenceWidget::browseIso()
+void PreferenceDialog::browseIso()
 {
     QDir fileDialogOpenDir;
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose ISO icon"),

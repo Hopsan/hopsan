@@ -12,6 +12,7 @@
 //Enums
 //! @todo all of these should not be common
 enum selectionStatus {DESELECTED, SELECTED};
+enum nameVisibility {NAMEVISIBLE, NAMENOTVISIBLE};
 enum graphicsType {USERGRAPHICS, ISOGRAPHICS};
 enum connectorGeometry {VERTICAL, HORIZONTAL, DIAGONAL};
 enum renameRestrictions {UNRESTRICTED, CORERENAMEONLY};

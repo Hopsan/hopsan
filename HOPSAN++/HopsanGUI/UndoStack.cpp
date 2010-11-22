@@ -8,15 +8,13 @@
 //$Id$
 
 #include <QtGui>
-//
+
 #include "UndoStack.h"
 
-//#include <sstream>
 #include <QDebug>
 #include <QTextStream>
 
 #include "GraphicsView.h"
-//#include "GUIObject.h"
 #include "GUIObjects/GUIModelObjectAppearance.h"
 #include "MainWindow.h"
 #include "ProjectTabWidget.h"
@@ -29,6 +27,15 @@
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
 #include "MessageWidget.h"
+
+
+
+//! @class UndoStack
+//! @brief The UndoStack class is used as an XML-based storage for undo and redo operations.
+//!
+//! The stack consists of "undo posts", where each post can contain several actions. One undo post equal pressing ctrl-z once. To add a new post, use newPost().
+//! New actions are registered to the stack with their respective register functions. To undo or redo, use the undoOneStep() and redoOneStep() functions.
+//!
 
 
 //! @brief Constructor for the undo stack
@@ -236,6 +243,19 @@ void UndoStack::undoOneStep()
             }
             mpParentContainerObject->getGUIModelObject(objectName)->setParameterValue(parameterName, oldValue);
         }
+        else if(stuffElement.attribute("what") == "namevisibilitychange")
+        {
+            QString objectName = stuffElement.attribute("objectname");
+            bool isVisible = (stuffElement.attribute("isvisible").toInt() == 1);
+            if(isVisible)
+            {
+                mpParentContainerObject->getGUIModelObject(objectName)->hideName(NOUNDO);
+            }
+            else
+            {
+                mpParentContainerObject->getGUIModelObject(objectName)->showName(NOUNDO);
+            }
+        }
         stuffElement = stuffElement.nextSiblingElement("stuff");
     }
 
@@ -428,6 +448,19 @@ void UndoStack::redoOneStep()
             }
             mpParentContainerObject->getGUIModelObject(objectName)->setParameterValue(parameterName, newValue);
         }
+        else if(stuffElement.attribute("what") == "namevisibilitychange")
+        {
+            QString objectName = stuffElement.attribute("objectname");
+            bool isVisible = (stuffElement.attribute("isvisible").toInt() == 1);
+            if(isVisible)
+            {
+                mpParentContainerObject->getGUIModelObject(objectName)->showName(NOUNDO);
+            }
+            else
+            {
+                mpParentContainerObject->getGUIModelObject(objectName)->hideName(NOUNDO);
+            }
+        }
         stuffElement = stuffElement.nextSiblingElement("stuff");
     }
 
@@ -591,18 +624,6 @@ void UndoStack::registerMovedObject(QPointF oldPos, QPointF newPos, QString obje
 }
 
 
-//void UndoStack::registerMovedConnector(double dx, double dy, GUIConnector *item)
-//{
-//    QDomElement currentPostElement = getCurrentPost();
-//    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-//    stuffElement.setAttribute("what", "movedconnector");
-//    stuffElement.setAttribute("dx", dx);
-//    stuffElement.setAttribute("dy", dy);
-//    item->saveToDomElement(stuffElement);
-//    gpMainWindow->mpUndoWidget->refreshList();
-//}
-
-
 //! @brief Register function for rotating an object
 //! @param item Pointer to the object
 void UndoStack::registerRotatedObject(QString objectName)
@@ -650,6 +671,19 @@ void UndoStack::registerChangedParameter(QString objectName, QString parameterNa
     stuffElement.setAttribute("oldvalue", oldValue);
     stuffElement.setAttribute("newvalue", newValue);
     stuffElement.setAttribute("objectname", objectName);
+    gpMainWindow->mpUndoWidget->refreshList();
+}
+
+
+//! @brief Register function for changing name visibility of an object
+void UndoStack::registerNameVisibilityChange(QString objectName, bool isVisible)
+{
+    QDomElement currentPostElement = getCurrentPost();
+    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+    stuffElement.setAttribute("what", "namevisibilitychange");
+    stuffElement.setAttribute("objectname", objectName);
+    stuffElement.setAttribute("isvisible", isVisible);
+    gpMainWindow->mpUndoWidget->refreshList();
 }
 
 
@@ -810,20 +844,23 @@ void UndoWidget::refreshList()
 QString UndoWidget::translateTag(QString tag)
 {
     QMap<QString, QString> tagMap;
-    tagMap.insert("addedobject",        "Added Object");
-    tagMap.insert("addedconnector",     "Added Connector");
-    tagMap.insert("deletedobject",      "Deleted Object");
-    tagMap.insert("deletedconnector",   "Deleted Connector");
-    tagMap.insert("movedobject",        "Moved Object");
-    tagMap.insert("rename",             "Renamed Object");
-    tagMap.insert("modifiedconnector",  "Modified Connector");
-    tagMap.insert("rotate",             "Rotated Object");
-    tagMap.insert("flipvertical",       "Flipped Vertical");
-    tagMap.insert("fliphorizontal",     "Flipped Horizontal");
-    tagMap.insert("paste",              "Paste");
-    tagMap.insert("movedmultiple",      "Moved Objects");
-    tagMap.insert("cut",                "Cut");
-    tagMap.insert("changedparameters",  "Changed Parameter(s)");
+    tagMap.insert("addedobject",            "Added Object");
+    tagMap.insert("addedconnector",         "Added Connector");
+    tagMap.insert("deletedobject",          "Deleted Object");
+    tagMap.insert("deletedconnector",       "Deleted Connector");
+    tagMap.insert("movedobject",            "Moved Object");
+    tagMap.insert("rename",                 "Renamed Object");
+    tagMap.insert("modifiedconnector",      "Modified Connector");
+    tagMap.insert("rotate",                 "Rotated Object");
+    tagMap.insert("flipvertical",           "Flipped Vertical");
+    tagMap.insert("fliphorizontal",         "Flipped Horizontal");
+    tagMap.insert("namevisibilitychange",   "Changed Name Visibility");
+    tagMap.insert("paste",                  "Paste");
+    tagMap.insert("movedmultiple",          "Moved Objects");
+    tagMap.insert("cut",                    "Cut");
+    tagMap.insert("changedparameters",      "Changed Parameter(s)");
+    tagMap.insert("hideallnames",           "Hide All Name Text");
+    tagMap.insert("showallnames",           "Show All Name Text");
 
     if(tagMap.contains(tag))
         return tagMap.find(tag).value();

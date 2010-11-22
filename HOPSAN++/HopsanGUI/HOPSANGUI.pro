@@ -15,8 +15,8 @@ SOURCES += main.cpp \
     MessageWidget.cpp \
     SimulationThread.cpp \
     InitializationThread.cpp \
-    PreferenceWidget.cpp \
-    OptionsWidget.cpp \
+    PreferenceDialog.cpp \
+    OptionsDialog.cpp \
     UndoStack.cpp \
     GraphicsView.cpp \
     GraphicsScene.cpp \
@@ -41,7 +41,7 @@ SOURCES += main.cpp \
     Utilities/XMLUtilities.cpp \
     Utilities/GUIUtilities.cpp \
     Configuration.cpp \
-    CopyStack.cpp
+    CopyStack.cpp \
 
 HEADERS += MainWindow.h \
     ProjectTabWidget.h \
@@ -55,8 +55,8 @@ HEADERS += MainWindow.h \
     SimulationThread.h \
     InitializationThread.h \
     version.h \
-    PreferenceWidget.h \
-    OptionsWidget.h \
+    PreferenceDialog.h \
+    OptionsDialog.h \
     UndoStack.h \
     CoreSystemAccess.h \
     GraphicsView.h \
@@ -83,7 +83,7 @@ HEADERS += MainWindow.h \
     Utilities/XMLUtilities.h \
     Utilities/GUIUtilities.h \
     Configuration.h \
-    CopyStack.h
+    CopyStack.h \
 
 OTHER_FILES += 
 

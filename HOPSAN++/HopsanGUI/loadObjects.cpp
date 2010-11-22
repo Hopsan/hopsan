@@ -319,12 +319,19 @@ GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidg
         GUIModelObjectAppearance appearanceData = *pAppearanceData; //Make a copy
         appearanceData.setName(rData.name);
 
-        GUIModelObject* pObj = pSystem->addGUIModelObject(&appearanceData, QPoint(rData.posX, rData.posY), 0, DESELECTED, undoSettings);
-        pObj->setNameTextPos(rData.nameTextPos);
-        if(!rData.textVisible)
+        nameVisibility nameStatus;
+        if(rData.textVisible)
         {
-            pObj->hideName();
+           nameStatus = NAMEVISIBLE;
         }
+        else
+        {
+            nameStatus = NAMENOTVISIBLE;
+        }
+
+        GUIModelObject* pObj = pSystem->addGUIModelObject(&appearanceData, QPoint(rData.posX, rData.posY), 0, DESELECTED, nameStatus, undoSettings);
+        pObj->setNameTextPos(rData.nameTextPos);
+
         if (rData.isFlipped)
         {
             pObj->flipHorizontal(undoSettings);

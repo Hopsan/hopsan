@@ -19,10 +19,14 @@
 #include <QMap>
 
 
-Configuration::Configuration()
-{
-}
+//! @class Configuration
+//! @brief The Configuration class is used as a global XML-based storage for program configuration variables
+//!
+//! Use loadFromXml or saveToXml functions to read or write to hopsanconfig.xml. Use get, set, add and clear functions to access the data.
+//!
 
+
+//! @brief Saves the current settings to hopsanconfig.xml
 void Configuration::saveToXml()
 {
         //Write to hopsanconfig.xml
@@ -96,6 +100,7 @@ void Configuration::saveToXml()
 }
 
 
+//! @brief Updates all settings from hopsanconfig.xml
 void Configuration::loadFromXml()
 {
     //Apply default values
@@ -263,130 +268,157 @@ file.close();
 
 
 
-
-
-
+//! @brief Returns whether or not invert wheel shall be used
 bool Configuration::getInvertWheel()
 {
     return this->mInvertWheel;
 }
 
 
+//! @brief Returns whether or not multi-threading shall be used
 bool Configuration::getUseMulticore()
 {
     return this->mUseMulticore;
 }
 
 
+//! @brief Returns number of simulation threads that shall be used
 size_t Configuration::getNumberOfThreads()
 {
     return this->mNumberOfThreads;
 }
 
 
+//! @brief Returns the step size that shall be used in progress bar
 int Configuration::getProgressBarStep()
 {
     return this->mProgressBarStep;
 }
 
 
+//! @brief Returns whether or not the progress bar shall be displayed during simulation
 bool Configuration::getEnableProgressBar()
 {
     return this->mEnableProgressBar;
 }
 
 
+//! @brief Returns the background color
 QColor Configuration::getBackgroundColor()
 {
     return this->mBackgroundColor;
 }
 
 
+//! @brief Returns whether or not anti-aliasing shall be used
 bool Configuration::getAntiAliasing()
 {
     return this->mAntiAliasing;
 }
 
 
+//! @brief Returns a list of paths to the user libraries that shall be loaded
 QStringList Configuration::getUserLibs()
 {
     return this->mUserLibs;
 }
 
 
+//! @brief Returns whether or not connector snapping shall be used
 bool Configuration::getSnapping()
 {
     return this->mSnapping;
 }
 
 
+//! @brief Returns a list of paths to recently opened models
 QStringList Configuration::getRecentModels()
 {
     return this->mRecentModels;
 }
 
 
+//! @brief Returns a list of paths to models that were open last time program was closed
 QStringList Configuration::getLastSessionModels()
 {
     return this->mLastSessionModels;
 }
 
 
+//! @brief Returns the selected default unit for the specified physical quantity
+//! @param key Name of the physical quantity (e.g. "Pressure" or "Velocity")
 QString Configuration::getDefaultUnit(QString key)
 {
     return this->mDefaultUnits.find(key).value();
 }
 
 
+//! @brief Returns a map with custom units (names and scale factor) for specified physical quantity
+//! @param key Name of the physical quantity (e.g. "Pressure" or "Velocity")
 QMap<QString, double> Configuration::getCustomUnits(QString key)
 {
     return this->mCustomUnits.find(key).value();
 }
 
 
-
+//! @brief Set function for invert wheel option
+//! @param value Desired setting
 void Configuration::setInvertWheel(bool value)
 {
     this->mInvertWheel = value;
 }
 
 
+//! @brief Set function for multi-threading option
+//! @param value Desired setting
 void Configuration::setUseMultiCore(bool value)
 {
     this->mUseMulticore = value;
 }
 
 
+//! @brief Set function for number of simlation threads
+//! @param value Desired number of threads
 void Configuration::setNumberOfThreads(size_t value)
 {
     this->mNumberOfThreads = value;
 }
 
 
+//! @brief Set function for progress bar time step
+//! @param value Desired step
 void Configuration::setProgressBarStep(int value)
 {
     this->mProgressBarStep = value;
 }
 
 
+//! @brief Set function for use progress bar setting
+//! @param value Desired setting
 void Configuration::setEnableProgressBar(bool value)
 {
     this->mEnableProgressBar = value;
 }
 
 
+//! @brief Set function for background color setting
+//! @param value Desired color
 void Configuration::setBackgroundColor(QColor value)
 {
     this->mBackgroundColor = value;
 }
 
 
+//! @brief Set function for anti-aliasing setting
+//! @param value Desired setting
 void Configuration::setAntiAliasing(bool value)
 {
     this->mAntiAliasing = value;
 }
 
 
+//! @brief Adds a user library to the library list
+//! @param value Path to the new library
 void Configuration::addUserLib(QString value)
 {
     if(!mUserLibs.contains(value))
@@ -396,24 +428,32 @@ void Configuration::addUserLib(QString value)
 }
 
 
+//! @brief Removes a user library from the library list
+//! @param value Path to the library that is to be removed
 void Configuration::removeUserLib(QString value)
 {
     mUserLibs.removeAll(value);
 }
 
 
+//! @brief Tells whether or not a specified user library exist in the library list
+//! @param value Path to the library
 bool Configuration::hasUserLib(QString value)
 {
     return mUserLibs.contains(value);
 }
 
 
+//! @brief Set function for connector snapping setting
+//! @param value Desired setting
 void Configuration::setSnapping(bool value)
 {
     this->mSnapping = value;
 }
 
 
+//! @brief Adds a model to the list of recently opened models
+//! @brief value Path to the model
 void Configuration::addRecentModel(QString value)
 {
     mRecentModels.removeAll(value);
@@ -425,18 +465,24 @@ void Configuration::addRecentModel(QString value)
 }
 
 
+//! @brief Adds a model to the list of models that was open last time program closed
+//! @param value Path to the model
 void Configuration::addLastSessionModel(QString value)
 {
     mLastSessionModels.append(value);
 }
 
 
+//! @brief Removes all last session models from the list
 void Configuration::clearLastSessionModels()
 {
     mLastSessionModels.clear();
 }
 
 
+//! @brief Sets the default unit for specified physical quantity
+//! @param key Name of the physical quantity (e.g. "Pressure" or "Velocity")
+//! @param value Name of the desired default unit
 void Configuration::setDefaultUnit(QString key, QString value)
 {
     this->mDefaultUnits.remove(key);
@@ -444,9 +490,11 @@ void Configuration::setDefaultUnit(QString key, QString value)
 }
 
 
-void Configuration::addCustomUnit(QString dataname, QString parname, double scale)
+//! @brief Adds a new custom unit to the specified physical quantity
+//! @param dataname Name of the physical quantity (e.g. "Pressure" or "Velocity")
+//! @param unitname Name of the new unit
+//! @param scale Scale factor from SI unit to the new unit
+void Configuration::addCustomUnit(QString dataname, QString unitname, double scale)
 {
-    this->mCustomUnits.find(dataname).value().insert(parname, scale);
+    this->mCustomUnits.find(dataname).value().insert(unitname, scale);
 }
-
-

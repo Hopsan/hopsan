@@ -1,7 +1,7 @@
-//$Id: OptionsWidget.h 1195 2010-04-01 09:25:58Z robbr48 $
+//$Id: OptionsDialog.h 1195 2010-04-01 09:25:58Z robbr48 $
 
-#ifndef OptionsWidget_H
-#define OptionsWidget_H
+#ifndef OPTIONSDIALOG_H
+#define OPTIONSDIALOG_H
 
 #include <QDialog>
 #include <QLabel>
@@ -15,12 +15,12 @@
 
 class MainWindow;
 
-class OptionsWidget : public QDialog
+class OptionsDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    OptionsWidget(MainWindow *parent = 0);
+    OptionsDialog(MainWindow *parent = 0);
 
     MainWindow *mpParentMainWindow;
 
@@ -99,4 +99,4 @@ private:
     QString mPhysicalQuantityToModify;
 };
 
-#endif // OptionsWidget_H
+#endif // OPTIONSDIALOG_H

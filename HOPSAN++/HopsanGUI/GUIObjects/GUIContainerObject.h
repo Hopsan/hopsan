@@ -28,7 +28,7 @@ public:
     //Handle GuiModelObjects and GuiWidgets
     void addTextWidget(QPoint position);
     void addBoxWidget(QPoint position);
-    GUIModelObject *addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, undoStatus undoSettings = UNDO);
+    GUIModelObject *addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = NAMEVISIBLE, undoStatus undoSettings = UNDO);
     GUIModelObject *getGUIModelObject(QString name);
     void deleteGUIModelObject(QString componentName, undoStatus undoSettings=UNDO);
     void renameGUIModelObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
