@@ -91,6 +91,8 @@ void ModelObjectLoadData::read(QTextStream &rStream)
     rStream >> rotation;
     rStream >> nameTextPos;
     rStream >> textVisible;
+
+    isFlipped = false; //default to false
 }
 
 void ModelObjectLoadData::readDomElement(QDomElement &rDomElement)
