@@ -388,8 +388,6 @@ void GUIModelObject::saveToDomElement(QDomElement &rDomElement)
 
 void GUIModelObject::saveCoreDataToDomElement(QDomElement &rDomElement)
 {
-    //appendDomTextNode(rDomElement, HMF_TYPETAG, getTypeName());
-    //appendDomTextNode(rDomElement, HMF_NAMETAG, getName());
     rDomElement.setAttribute(HMF_TYPETAG, getTypeName());
     rDomElement.setAttribute(HMF_NAMETAG, getName());
 }

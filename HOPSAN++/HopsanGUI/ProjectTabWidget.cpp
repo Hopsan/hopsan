@@ -11,9 +11,6 @@
 #include <QSizePolicy>
 #include <QHash>
 #include <QtXml>
-//#include <QDomDocument>
-//#include <QDomElement>
-//#include <QDomText>
 
 #include <string>
 #include <iostream>
@@ -410,9 +407,6 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
 ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
         :   QTabWidget(parent)
 {
-    //mpParentMainWindow = parent;
-    //MainWindow *pMainWindow = (qobject_cast<MainWindow *>(parent)); //Ugly!!!
-
     connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
     setTabsClosable(true);

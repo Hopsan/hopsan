@@ -11,7 +11,6 @@ class ProjectTab;
 class UndoStack;
 class MainWindow;
 class GraphicsScene;
-//class GUIContainerObject;
 
 class GUIContainerObject : public GUIModelObject
 {

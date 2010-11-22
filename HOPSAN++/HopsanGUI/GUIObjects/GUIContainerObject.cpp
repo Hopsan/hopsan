@@ -889,49 +889,6 @@ void GUIContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         loadFromHMF();
     }
     QGraphicsItem::contextMenuEvent(event);
-
-////    QAction *groupAction;
-////    if (!this->scene()->selectedItems().empty())
-////        groupAction = menu.addAction(tr("Group components"));
-
-//    QAction *parameterAction = menu.addAction(tr("Change parameters"));
-//    //menu.insertSeparator(parameterAction);
-
-//    QAction *showNameAction = menu.addAction(tr("Show name"));
-//    showNameAction->setCheckable(true);
-//    showNameAction->setChecked(mpNameText->isVisible());
-
-////    QAction *loadAction = menu.addAction(tr("Load Subsystem File"));
-////    if(!mModelFileInfo.filePath().isEmpty()) loadAction->setDisabled(true);
-
-//    QAction *selectedAction = menu.exec(event->screenPos());
-
-
-
-//    if (selectedAction == parameterAction)
-//    {
-//        openParameterDialog();
-//    }
-//    else if (selectedAction == groupAction)
-//    {
-//        //! @todo try to break out this and other actions into a virtual contextMenuEvent method in a base class
-//        this->mpParentContainerObject->groupSelected(this->mapToScene(event->pos()).toPoint());
-//    }
-//    else if (selectedAction == showNameAction)
-//    {
-//        if(mpNameText->isVisible())
-//        {
-//            this->hideName();
-//        }
-//        else
-//        {
-//            this->showName();
-//        }
-//    }
-//    else if (selectedAction == loadAction)
-//    {
-//        loadFromHMF();
-//    }
 }
 
 void GUIContainerObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)

@@ -211,27 +211,6 @@ void GUIModelObjectAppearance::readFromTextStream(QTextStream &rIs)
 
 void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
 {
-//    mTypeName       = rDomElement.firstChildElement(HMF_TYPETAG).text();
-//    mName           = rDomElement.firstChildElement(HMF_DISPLAYNAMETAG).text();
-//    mIconPathISO    = rDomElement.firstChildElement(HMF_ISOICONTAG).text();
-//    mIconPathUser   = rDomElement.firstChildElement(HMF_USERICONTAG).text();
-//    mIconRotationBehaviour = rDomElement.firstChildElement(HMF_ICONROTATIONTAG).text();
-
-//    QString portname;
-//    QDomElement xmlPortPose = rDomElement.firstChildElement(HMF_PORTPOSETAG);
-//    while (!xmlPortPose.isNull())
-//    {
-//        GUIPortAppearance portApp;
-////        parseDomValueNode3(xmlPort.firstChildElement(HMF_POSETAG), portApp.x, portApp.y, portApp.rot);
-////        mPortAppearanceMap.insert(xmlPort.firstChildElement(HMF_NAMETAG).text(), portApp);
-////        QString portname = xmlPort.attribute(HMF_NAMETAG);
-////        parsePoseTag(xmlPort.firstChildElement(HMF_POSETAG), portApp.x, portApp.y, portApp.rot);
-
-//        parsePortPoseTag(xmlPortPose, portname, portApp.x, portApp.y, portApp.rot);
-//        mPortAppearanceMap.insert(portname, portApp);
-//        xmlPortPose = xmlPortPose.nextSiblingElement(HMF_PORTPOSETAG);
-//    }
-
     //! @todo we should not overwrite existing data if xml file is missing data, that is dont overwrite with null
     mTypeName       = domElement.attribute(HMF_TYPETAG);
     mName           = domElement.attribute(HMF_DISPLAYNAMETAG);
@@ -258,22 +237,6 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
 
 void GUIModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
 {
-//    appendDomTextNode(rDomElement, HMF_TYPETAG, mTypeName);
-//    appendDomTextNode(rDomElement, HMF_DISPLAYNAMETAG, mName);
-//    appendDomTextNode(rDomElement, HMF_ISOICONTAG, mIconPathISO);
-//    appendDomTextNode(rDomElement, HMF_USERICONTAG, mIconPathUser);
-//    appendDomTextNode(rDomElement, HMF_ICONROTATIONTAG, mIconRotationBehaviour);
-
-//    PortAppearanceMapT::iterator pit;
-//    for (pit=mPortAppearanceMap.begin(); pit!=mPortAppearanceMap.end(); ++pit)
-//    {
-////        QDomElement xmlPort = appendDomElement(rDomElement,HMF_PORTPOSETAG);
-////        appendDomTextNode(xmlPort, HMF_NAMETAG, pit.key());
-////        appendDomValueNode3(xmlPort, HMF_POSETAG, pit.value().x, pit.value().y, pit.value().rot);
-////        xmlPort.setAttribute(HMF_NAMETAG, pit.key());
-//        appendPortPoseTag(rDomElement, pit.key(), pit.value().x, pit.value().y, pit.value().rot);
-//    }
-
     //! @todo not use hardcoded strings here
     QDomElement xmlObject = appendDomElement(rDomElement, "modelobject");
     xmlObject.setAttribute(HMF_TYPETAG, mTypeName);

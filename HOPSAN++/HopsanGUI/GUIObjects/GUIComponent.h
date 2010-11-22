@@ -10,7 +10,6 @@
 class ProjectTabWidget;
 class GUIConnector;
 class GUIPort;
-class GUISystem;
 class GUIContainerObject;
 
 class GUIComponent : public GUIModelObject

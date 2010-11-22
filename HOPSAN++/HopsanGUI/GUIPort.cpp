@@ -47,7 +47,7 @@ QPointF getOffsetPointfromPort(GUIPort *pPort)
 //! @param rot how the port should be rotated.
 //! @param QString(ICONPATH) a string with the path to the svg-figure representing the port.
 //! @param parent the port's parent, the component it is a part of.
-GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParentGUIModelObject/*, CoreSystemAccess *pGUIRootSystem*/)
+GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParentGUIModelObject)
     : QGraphicsSvgItem(pPortAppearance->mIconPath, pParentGUIModelObject)
 {
 //    qDebug() << "parentType: " << pParentGUIModelObject->type() << " GUISYSTEM=" << GUISYSTEM;
@@ -73,7 +73,6 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
 
     mpParentGuiModelObject = pParentGUIModelObject;
     mpPortAppearance = pPortAppearance;
-    //mpGUIRootSystem = pGUIRootSystem; //Use this to indicate system port
 
     this->mName = portName;
 
@@ -81,44 +80,17 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     //All rotaion and other transformation should be aplied around the port center
     setTransformOriginPoint(boundingRect().center());
 
-
-//    pRectParent = parent;
     this->setAcceptHoverEvents(true);
-
-//    mpPortLabel = new QGraphicsTextItem(this);
-//    QString label("<p><span style=\"background-color:lightyellow\">");
-//    label.append(this->getName()).append("</span></p>");
-//    mpPortLabel->setHtml(label);
-//    mpPortLabel->setTextInteractionFlags(Qt::NoTextInteraction);
-//    mpPortLabel->setPos(7.0,7.0);
-//    mpPortLabel->hide();
 
     //Setup port label and overlay (if it exists)
     this->addPortGraphicsOverlay(pPortAppearance->mIconOverlayPath);
-//    //! @todo this kind of harcoded stuff should not be here, fix the problem in some other way
-//    if(this->getPortType() == "POWERPORT")
-//    {
-//        this->setRotation(0.0);
-//        mpPortLabel->setRotation(0.0);
-//    }
-//    else
-//    {
-        this->setRotation(mpPortAppearance->rot);
-        //mpPortLabel->setRotation(-mpPortAppearance->rot);
-//        if (mpPortGraphicsOverlay != 0)
-//        {
-//            mpPortGraphicsOverlay->setRotation(-mpPortAppearance->rot);
-//        }
-
-
-        this->refreshPortOverlayPosition();
-//    }
+    this->setRotation(mpPortAppearance->rot);
+    this->refreshPortOverlayPosition();
 
     mMag = GOLDENRATIO;
     mIsMag = false;
     mIsConnected = false;
 
-    //MainWindow *pMainWindow = mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
     GraphicsView *pView = mpParentContainerObject->mpParentProjectTab->mpGraphicsView;
 
     connect(this,SIGNAL(portClicked(GUIPort*)),this->getParentContainerObjectPtr(),SLOT(createConnector(GUIPort*)));
@@ -476,8 +448,6 @@ bool GUIPort::plot(QString dataName, QString dataUnit) //En del vansinne i denna
     {
         if(dataUnit.isEmpty())
             dataUnit = this->mpParentContainerObject->getCoreSystemAccessPtr()->getPlotDataUnit(this->getGuiModelObjectName(),this->getName(),dataName);
-
-        //MainWindow *pMainWindow = mpParentGuiModelObject->mpParentContainerObject->mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
 
         if(gpMainWindow->mpPlotWidget == 0)
         {
