@@ -1,24 +1,74 @@
---------------------------------------------------------------
--------------------  HOPSAN NG MODEL FILE  -------------------
---------------------------------------------------------------
-HOPSANGUIVERSION 0.0.1
-HMFVERSION 0.1
-CAFVERSION 0.1
---------------------------------------------------------------
-SIMULATIONTIME 0 1e-06 10
-VIEWPORT 2500 2499 1
---------------------------------------------------------------
-USERICON ""
-ISOICON ""
---------------------------------------------------------------
-COMPONENT "SignalSink" "Sink" 2488 2517 0 0 1
-COMPONENT "SignalLP1Filter" "First order low pass filter" 2365 2517 0 0 1
-PARAMETER "First order low pass filter" "w" 1000
-COMPONENT "SignalStep" "Step" 2234 2517 0 0 1
-PARAMETER "Step" "BaseValue" 0
-PARAMETER "Step" "Amplitude" 1
-PARAMETER "Step" "StepTime" 1
---------------------------------------------------------------
-CONNECT "Sink" "in" "First order low pass filter" "out" 2475.5 2517 2413 2517 2413 2517 2393.5 2517
-CONNECT "Step" "out" "First order low pass filter" "in" 2254 2517 2314 2517 2314 2517 2336.5 2517
---------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.1" hopsanguiversion="0.0.1" hopsancoreversion="0">
+    <system typename="Subsystem" cqs_type="S" name="BEtest">
+        <simulationtime stop="10" timestep="0.001" start="0"/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="0" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2502" y="2500.5" zoom="1"/>
+            <hopsanobjectappearance>
+                <modelobject typename="" displayname="BEtest">
+                    <icon isopath="" iconrotation="" userpath=""/>
+                </modelobject>
+            </hopsanobjectappearance>
+        </hopsangui>
+        <objects>
+            <component typename="SignalSink" name="Sink">
+                <parameters/>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2488" y="2517" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalLP1Filter" name="First order low pass filter">
+                <parameters>
+                    <parameter value="1000" name="w"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2365" y="2517" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalStep" name="Step">
+                <parameters>
+                    <parameter value="0" name="BaseValue"/>
+                    <parameter value="1" name="Amplitude"/>
+                    <parameter value="1" name="StepTime"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2234" y="2517" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+        </objects>
+        <connections>
+            <connect endport="out" endcomponent="First order low pass filter" startport="in" startcomponent="Sink">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2475.5" y="2517"/>
+                        <coordinate x="2413" y="2517"/>
+                        <coordinate x="2413" y="2517"/>
+                        <coordinate x="2393.5" y="2517"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="First order low pass filter" startport="out" startcomponent="Step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2254" y="2517"/>
+                        <coordinate x="2314" y="2517"/>
+                        <coordinate x="2314" y="2517"/>
+                        <coordinate x="2336.5" y="2517"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

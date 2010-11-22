@@ -1,41 +1,215 @@
---------------------------------------------------------------
--------------------  HOPSAN NG MODEL FILE  -------------------
---------------------------------------------------------------
-HOPSANGUIVERSION 0.0.1
-HMFVERSION 0.1
-CAFVERSION 0.1
---------------------------------------------------------------
-SIMULATIONTIME 0 0.001 10
-VIEWPORT 2510 2388 1
---------------------------------------------------------------
-USERICON ""
-ISOICON ""
---------------------------------------------------------------
-COMPONENT "SignalGain" "Gain_1" 2351 2620 0 0 1
-PARAMETER "Gain_1" "Gain" 1
-COMPONENT "SignalSink" "Sink" 2651 2530 0 0 1
-COMPONENT "HydraulicLaminarOrifice" "Laminar Orifice" 2615 2434 90 0 1
-PARAMETER "Laminar Orifice" "Kc" 1e-11
-COMPONENT "SignalSource" "Constant" 2261 2390 0 0 1
-PARAMETER "Constant" "Value" 1
-COMPONENT "HydraulicPressureSensor" "Pressure Sensor" 2545 2330 0 0 1
-COMPONENT "SignalSink" "Sink_1" 2629 2257 0 0 1
-BEGINSUBSYSTEM "EXTERNAL" "subsystest_sub" "C" "subsystest_sub.hmf" 2447 2469 0 0 1
-ENDSUBSYSTEM
-COMPONENT "HydraulicTankC" "Tank C" 2731 2471 0 0 1
-PARAMETER "Tank C" "P" 100000
-COMPONENT "SignalGain" "Gain" 2584 2574 0 0 1
-PARAMETER "Gain" "Gain" 1
-COMPONENT "SignalSource" "Constant_1" 2245 2559 0 0 1
-PARAMETER "Constant_1" "Value" 1
---------------------------------------------------------------
-CONNECT "subsystest_sub" "sysp_3" "Gain" "in" 2493 2497.5 2493 2584 2546 2584 2546 2574 2571.5 2574
-CONNECT "Gain" "out" "Sink" "in" 2596.5 2574 2616 2574 2616 2530 2638.5 2530
-CONNECT "Constant_1" "out" "Gain_1" "in" 2257.5 2559 2304 2559 2304 2620 2338.5 2620
-CONNECT "Gain_1" "out" "subsystest_sub" "sysp_2" 2363.5 2620 2372 2620 2372 2527 2401 2527 2401 2494.25
-CONNECT "Constant" "out" "subsystest_sub" "sysp" 2273.5 2390 2340 2390 2340 2424 2403.81 2424 2403.81 2440.5
-CONNECT "subsystest_sub" "sysp_1" "Laminar Orifice" "P2" 2490.16 2440.5 2490.16 2399 2615 2399
-CONNECT "Laminar Orifice" "P1" "Tank C" "P1" 2615 2469 2731 2469 2731 2456.5
-CONNECT "Pressure Sensor" "P1" "subsystest_sub" "sysp_1" 2545 2359.5 2545 2407 2490.16 2407 2490.16 2440.5
-CONNECT "Pressure Sensor" "out" "Sink_1" "in" 2545 2300.5 2545 2257 2616.5 2257
---------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.1" hopsanguiversion="0.0.1" hopsancoreversion="0">
+    <system typename="Subsystem" cqs_type="S" name="subsystest_main">
+        <simulationtime stop="10" timestep="0.001" start="0"/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="0" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2512" y="2389.5" zoom="1"/>
+            <hopsanobjectappearance>
+                <modelobject typename="" displayname="subsystest_main">
+                    <icon isopath="" iconrotation="" userpath=""/>
+                </modelobject>
+            </hopsanobjectappearance>
+        </hopsangui>
+        <objects>
+            <component typename="SignalGain" name="Gain_1">
+                <parameters>
+                    <parameter value="1" name="Gain"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2351" y="2620" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink">
+                <parameters/>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2651" y="2530" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicLaminarOrifice" name="Laminar Orifice">
+                <parameters>
+                    <parameter value="9.999999999999999e-12" name="Kc"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2615" y="2434" flipped="0" a="90"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSource" name="Constant">
+                <parameters>
+                    <parameter value="1" name="Value"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2261" y="2390" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicPressureSensor" name="Pressure Sensor">
+                <parameters/>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2545" y="2330" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_1">
+                <parameters/>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2629" y="2257" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <system typename="Subsystem" cqs_type="C" name="subsystest_sub">
+                <simulationtime stop="10" timestep="0.001" start="0"/>
+                <external_path>subsystest_sub.hmf</external_path>
+                <hopsangui>
+                    <pose x="2447" y="2469" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </system>
+            <component typename="HydraulicTankC" name="Tank C">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2731" y="2471" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalGain" name="Gain">
+                <parameters>
+                    <parameter value="1" name="Gain"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2584" y="2574" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSource" name="Constant_1">
+                <parameters>
+                    <parameter value="1" name="Value"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2245" y="2559" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+        </objects>
+        <connections>
+            <connect endport="in" endcomponent="Gain" startport="sysp_3" startcomponent="subsystest_sub">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2492.999816" y="2497.5"/>
+                        <coordinate x="2492.999816" y="2584"/>
+                        <coordinate x="2546" y="2584"/>
+                        <coordinate x="2546" y="2574"/>
+                        <coordinate x="2571.5" y="2574"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Gain">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2596.5" y="2574"/>
+                        <coordinate x="2616" y="2574"/>
+                        <coordinate x="2616" y="2530"/>
+                        <coordinate x="2638.5" y="2530"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Gain_1" startport="out" startcomponent="Constant_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2257.5" y="2559"/>
+                        <coordinate x="2304" y="2559"/>
+                        <coordinate x="2304" y="2620"/>
+                        <coordinate x="2338.5" y="2620"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="sysp_2" endcomponent="subsystest_sub" startport="out" startcomponent="Gain_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2363.5" y="2620"/>
+                        <coordinate x="2372" y="2620"/>
+                        <coordinate x="2372" y="2527"/>
+                        <coordinate x="2401" y="2527"/>
+                        <coordinate x="2401" y="2494.251798"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="sysp" endcomponent="subsystest_sub" startport="out" startcomponent="Constant">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2273.5" y="2390"/>
+                        <coordinate x="2340" y="2390"/>
+                        <coordinate x="2340" y="2424"/>
+                        <coordinate x="2403.8068464" y="2424"/>
+                        <coordinate x="2403.8068464" y="2440.5"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Laminar Orifice" startport="sysp_1" startcomponent="subsystest_sub">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2490.161248" y="2440.5"/>
+                        <coordinate x="2490.161248" y="2399"/>
+                        <coordinate x="2615" y="2399"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Tank C" startport="P1" startcomponent="Laminar Orifice">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2615" y="2469"/>
+                        <coordinate x="2731" y="2469"/>
+                        <coordinate x="2731" y="2456.5"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="sysp_1" endcomponent="subsystest_sub" startport="P1" startcomponent="Pressure Sensor">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2545" y="2359.5"/>
+                        <coordinate x="2545" y="2407"/>
+                        <coordinate x="2490.161248" y="2407"/>
+                        <coordinate x="2490.161248" y="2440.5"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Pressure Sensor">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2545" y="2300.5"/>
+                        <coordinate x="2545" y="2257"/>
+                        <coordinate x="2616.5" y="2257"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

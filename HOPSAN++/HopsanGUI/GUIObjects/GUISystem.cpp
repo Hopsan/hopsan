@@ -348,9 +348,8 @@ QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
             appendViewPortTag(guiStuff, x, y, zoom);
         }
 
-        QDomElement xmlApp = appendDomElement(rDomElement, HMF_SYSTEMAPPEARANCETAG);
         this->updateExternalPortPositions();
-
+        QDomElement xmlApp = appendDomElement(guiStuff, CAF_ROOTTAG);
         this->mGUIModelObjectAppearance.saveToDomElement(xmlApp);
     }
     return guiStuff;
@@ -403,26 +402,24 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
             it.value()->saveToDomElement(xmlObjects);
         }
 
-        //Save all text widgets
+            //Save all text widgets
         for(int i = 0; i != mTextWidgetList.size(); ++i)
         {
             mTextWidgetList[i]->saveToDomElement(xmlObjects);
         }
 
-        //Save all box widgets
+            //Save all box widgets
         for(int i = 0; i != mBoxWidgetList.size(); ++i)
         {
             mBoxWidgetList[i]->saveToDomElement(xmlObjects);
         }
 
-        //Save the connectors
+            //Save the connectors
         QDomElement xmlConnections = appendDomElement(xmlSubsystem, HMF_CONNECTIONS);
         for(int i = 0; i != mSubConnectorList.size(); ++i)
         {
             mSubConnectorList[i]->saveToDomElement(xmlConnections);
         }
-
-
     }
 }
 
@@ -430,7 +427,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 {
     //! @todo might need some error checking here incase some fields are missing
     //Load the GUI stuff like appearance data and viewport
-    this->mGUIModelObjectAppearance.readFromDomElement(rDomElement.firstChildElement(HMF_SYSTEMAPPEARANCETAG).firstChildElement("modelobject"));
+    this->mGUIModelObjectAppearance.readFromDomElement(rDomElement.firstChildElement(CAF_ROOTTAG).firstChildElement("modelobject"));
     //! @todo load viewport and simulationtime and pose and stuff
 
     //Now load the core specific data, might need inherited function for this

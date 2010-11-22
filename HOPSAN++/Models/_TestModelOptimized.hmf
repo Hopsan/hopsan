@@ -1,71 +1,294 @@
---------------------------------------------------------------
--------------------  HOPSAN NG MODEL FILE  -------------------
---------------------------------------------------------------
-HOPSANGUIVERSION 0.0.1
-HMFVERSION 0.1
-CAFVERSION 0.1
---------------------------------------------------------------
-SIMULATIONTIME 0 0.0001 300
-VIEWPORT 2758 2596 1
---------------------------------------------------------------
-USERICON ""
-ISOICON ""
---------------------------------------------------------------
-COMPONENT "HydraulicOptimizedVolume" "Optimized Hydraulic Volume" 2590 2571 90 0 0
-PARAMETER "Optimized Hydraulic Volume" "V" 0.001
-PARAMETER "Optimized Hydraulic Volume" "Be" 1e+09
-PARAMETER "Optimized Hydraulic Volume" "a" 0.1
-COMPONENT "HydraulicOptimized43Valve" "Optimized 4/3 Servo Valve" 2614 2681 0 0 0
-PARAMETER "Optimized 4/3 Servo Valve" "Cq" 0.67
-PARAMETER "Optimized 4/3 Servo Valve" "d" 0.01
-PARAMETER "Optimized 4/3 Servo Valve" "f" 1
-PARAMETER "Optimized 4/3 Servo Valve" "xvmax" 0.01
-PARAMETER "Optimized 4/3 Servo Valve" "overlap_pa" 0
-PARAMETER "Optimized 4/3 Servo Valve" "overlap_pb" 0
-PARAMETER "Optimized 4/3 Servo Valve" "overlap_at" 0
-PARAMETER "Optimized 4/3 Servo Valve" "overlap_pa" 0
-PARAMETER "Optimized 4/3 Servo Valve" "omegah" 100
-PARAMETER "Optimized 4/3 Servo Valve" "deltah" 0
-COMPONENT "MechanicOptimizedForceTransformer" "Optimized Force Transformer" 2882 2503 180 0 0
-PARAMETER "Optimized Force Transformer" "x0" 0
-PARAMETER "Optimized Force Transformer" "v0" 0
-PARAMETER "Optimized Force Transformer" "Force" 0
-COMPONENT "SignalOptimizedSubtract" "Optimized Subtract" 2379 2691 0 0 0
-COMPONENT "SignalOptimizedGain" "Optimized Gain" 2464 2691 0 0 0
-PARAMETER "Optimized Gain" "Gain" 0.03
-COMPONENT "HydraulicOptimizedPressureSource" "Optimized Prescribed Pressure C" 2588 2775 0 0 0
-PARAMETER "Optimized Prescribed Pressure C" "P" 2e+07
-COMPONENT "MechanicOptimizedPositionSensor" "Optimized Position Sensor" 2808 2416 0 0 0
-COMPONENT "HydraulicOptimizedPressureSource" "Optimized Prescribed Pressure C_1" 2686 2777 0 0 0
-PARAMETER "Optimized Prescribed Pressure C_1" "P" 100000
-COMPONENT "HydraulicOptimizedCylinderQ" "Optimized Cylinder Q" 2676 2503 0 0 0
-PARAMETER "Optimized Cylinder Q" "Area1" 0.001
-PARAMETER "Optimized Cylinder Q" "Area2" 0.001
-PARAMETER "Optimized Cylinder Q" "Stroke" 1
-PARAMETER "Optimized Cylinder Q" "Bp" 0
-PARAMETER "Optimized Cylinder Q" "Mass" 100
-PARAMETER "Optimized Cylinder Q" "Bl" 100
-PARAMETER "Optimized Cylinder Q" "Kl" 100
-COMPONENT "HydraulicOptimizedVolume" "Optimized Hydraulic Volume_1" 2670 2574 90 0 0
-PARAMETER "Optimized Hydraulic Volume_1" "V" 0.001
-PARAMETER "Optimized Hydraulic Volume_1" "Be" 1e+09
-PARAMETER "Optimized Hydraulic Volume_1" "a" 0.1
-COMPONENT "SignalOptimizedSineWave" "Optimized Sine Wave" 2279 2691 0 0 1
-PARAMETER "Optimized Sine Wave" "StartTime" 0
-PARAMETER "Optimized Sine Wave" "Frequency" 0.1
-PARAMETER "Optimized Sine Wave" "Amplitude" 1
-PARAMETER "Optimized Sine Wave" "Offset" 0
---------------------------------------------------------------
-CONNECT "Optimized Hydraulic Volume" "P1" "Optimized Cylinder Q" "P1" 2590 2546 2590 2540 2589.99 2540 2589.99 2523
-CONNECT "Optimized Hydraulic Volume_1" "P1" "Optimized Cylinder Q" "P2" 2670 2549 2670 2542 2669.81 2542 2669.81 2523
-CONNECT "Optimized Hydraulic Volume" "P2" "Optimized 4/3 Servo Valve" "PA" 2590 2596 2590 2627 2623.92 2627 2623.92 2656
-CONNECT "Optimized Hydraulic Volume_1" "P2" "Optimized 4/3 Servo Valve" "PB" 2670 2599 2670 2628 2643.97 2628 2643.97 2656
-CONNECT "Optimized Prescribed Pressure C_1" "P1" "Optimized 4/3 Servo Valve" "PT" 2686 2765 2686 2730 2643.97 2730 2643.97 2706
-CONNECT "Optimized Prescribed Pressure C" "P1" "Optimized 4/3 Servo Valve" "PP" 2588 2763 2588 2728 2623.92 2728 2623.92 2706
-CONNECT "Optimized Gain" "out" "Optimized 4/3 Servo Valve" "in" 2476.5 2691 2512 2691 2512 2691 2534.5 2691
-CONNECT "Optimized Subtract" "out" "Optimized Gain" "in" 2391.5 2691 2430 2691 2430 2691 2451.5 2691
-CONNECT "Optimized Force Transformer" "P1" "Optimized Cylinder Q" "P3" 2862.5 2503 2788 2503 2788 2503 2767 2503
-CONNECT "Optimized Position Sensor" "P1" "Optimized Cylinder Q" "P3" 2808 2428.5 2767 2503
-CONNECT "Optimized Sine Wave" "out" "Optimized Subtract" "in1" 2299 2691 2366.5 2691
-CONNECT "Optimized Position Sensor" "out" "Optimized Subtract" "in2" 2808 2403.5 2808 2353 2379 2353 2379 2678.5
---------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.1" hopsanguiversion="0.0.1" hopsancoreversion="0">
+    <system typename="Subsystem" cqs_type="S" name="_TestModelOptimized">
+        <simulationtime stop="10" timestep="0.001" start="0"/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="0" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2760" y="2597.5" zoom="1"/>
+            <hopsanobjectappearance>
+                <modelobject typename="" displayname="_TestModelOptimized">
+                    <icon isopath="" iconrotation="" userpath=""/>
+                </modelobject>
+            </hopsanobjectappearance>
+        </hopsangui>
+        <objects>
+            <component typename="HydraulicOptimizedVolume" name="Optimized Hydraulic Volume">
+                <parameters>
+                    <parameter value="0.001" name="V"/>
+                    <parameter value="1000000000" name="Be"/>
+                    <parameter value="0.1" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="0"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2590" y="2571" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicOptimized43Valve" name="Optimized 4/3 Servo Valve">
+                <parameters>
+                    <parameter value="0.67" name="Cq"/>
+                    <parameter value="0.01" name="d"/>
+                    <parameter value="1" name="f"/>
+                    <parameter value="0.01" name="xvmax"/>
+                    <parameter value="0" name="overlap_pa"/>
+                    <parameter value="0" name="overlap_pb"/>
+                    <parameter value="0" name="overlap_at"/>
+                    <parameter value="0" name="overlap_pa"/>
+                    <parameter value="100" name="omegah"/>
+                    <parameter value="0" name="deltah"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2614" y="2681" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicOptimizedForceTransformer" name="Optimized Force Transformer">
+                <parameters>
+                    <parameter value="0" name="x0"/>
+                    <parameter value="0" name="v0"/>
+                    <parameter value="0" name="Force"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Velocity" value="0"/>
+                    <startvalue portname="P1" variable="Force" value="0"/>
+                    <startvalue portname="P1" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2882" y="2503" flipped="0" a="180"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalOptimizedSubtract" name="Optimized Subtract">
+                <parameters/>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2379" y="2691" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalOptimizedGain" name="Optimized Gain">
+                <parameters>
+                    <parameter value="0.03" name="Gain"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2464" y="2691" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicOptimizedPressureSource" name="Optimized Prescribed Pressure C">
+                <parameters>
+                    <parameter value="20000000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2588" y="2775" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicOptimizedPositionSensor" name="Optimized Position Sensor">
+                <parameters/>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2808" y="2416" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicOptimizedPressureSource" name="Optimized Prescribed Pressure C_1">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2686" y="2777" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicOptimizedCylinderQ" name="Optimized Cylinder Q">
+                <parameters>
+                    <parameter value="0.001" name="Area1"/>
+                    <parameter value="0.001" name="Area2"/>
+                    <parameter value="1" name="Stroke"/>
+                    <parameter value="0" name="Bp"/>
+                    <parameter value="100" name="Mass"/>
+                    <parameter value="100" name="Bl"/>
+                    <parameter value="100" name="Kl"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2676" y="2503" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicOptimizedVolume" name="Optimized Hydraulic Volume_1">
+                <parameters>
+                    <parameter value="0.001" name="V"/>
+                    <parameter value="1000000000" name="Be"/>
+                    <parameter value="0.1" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="0"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2670" y="2574" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalOptimizedSineWave" name="Optimized Sine Wave">
+                <parameters>
+                    <parameter value="0" name="StartTime"/>
+                    <parameter value="0.1" name="Frequency"/>
+                    <parameter value="1" name="Amplitude"/>
+                    <parameter value="0" name="Offset"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2279" y="2691" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+        </objects>
+        <connections>
+            <connect endport="P1" endcomponent="Optimized Cylinder Q" startport="P1" startcomponent="Optimized Hydraulic Volume">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2590" y="2546"/>
+                        <coordinate x="2590" y="2540"/>
+                        <coordinate x="2589.9868" y="2540"/>
+                        <coordinate x="2589.9868" y="2523"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Optimized Cylinder Q" startport="P1" startcomponent="Optimized Hydraulic Volume_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2670" y="2549"/>
+                        <coordinate x="2670" y="2542"/>
+                        <coordinate x="2669.812" y="2542"/>
+                        <coordinate x="2669.812" y="2523"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="PA" endcomponent="Optimized 4/3 Servo Valve" startport="P2" startcomponent="Optimized Hydraulic Volume">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2590" y="2596"/>
+                        <coordinate x="2590" y="2627"/>
+                        <coordinate x="2623.9216" y="2627"/>
+                        <coordinate x="2623.9216" y="2656"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="PB" endcomponent="Optimized 4/3 Servo Valve" startport="P2" startcomponent="Optimized Hydraulic Volume_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2670" y="2599"/>
+                        <coordinate x="2670" y="2628"/>
+                        <coordinate x="2643.9715" y="2628"/>
+                        <coordinate x="2643.9715" y="2656"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="PT" endcomponent="Optimized 4/3 Servo Valve" startport="P1" startcomponent="Optimized Prescribed Pressure C_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2686" y="2765"/>
+                        <coordinate x="2686" y="2730"/>
+                        <coordinate x="2643.9715" y="2730"/>
+                        <coordinate x="2643.9715" y="2706"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="PP" endcomponent="Optimized 4/3 Servo Valve" startport="P1" startcomponent="Optimized Prescribed Pressure C">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2588" y="2763"/>
+                        <coordinate x="2588" y="2728"/>
+                        <coordinate x="2623.9216" y="2728"/>
+                        <coordinate x="2623.9216" y="2706"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Optimized 4/3 Servo Valve" startport="out" startcomponent="Optimized Gain">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2476.5" y="2691"/>
+                        <coordinate x="2512" y="2691"/>
+                        <coordinate x="2512" y="2691"/>
+                        <coordinate x="2534.5" y="2691"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Optimized Gain" startport="out" startcomponent="Optimized Subtract">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2391.5" y="2691"/>
+                        <coordinate x="2430" y="2691"/>
+                        <coordinate x="2430" y="2691"/>
+                        <coordinate x="2451.5" y="2691"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P3" endcomponent="Optimized Cylinder Q" startport="P1" startcomponent="Optimized Force Transformer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2862.5" y="2503"/>
+                        <coordinate x="2788" y="2503"/>
+                        <coordinate x="2788" y="2503"/>
+                        <coordinate x="2767" y="2503"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P3" endcomponent="Optimized Cylinder Q" startport="P1" startcomponent="Optimized Position Sensor">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2808" y="2428.5"/>
+                        <coordinate x="2767" y="2503"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="in1" endcomponent="Optimized Subtract" startport="out" startcomponent="Optimized Sine Wave">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2299" y="2691"/>
+                        <coordinate x="2366.5" y="2691"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="in2" endcomponent="Optimized Subtract" startport="out" startcomponent="Optimized Position Sensor">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2808" y="2403.5"/>
+                        <coordinate x="2808" y="2353"/>
+                        <coordinate x="2379" y="2353"/>
+                        <coordinate x="2379" y="2678.5"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

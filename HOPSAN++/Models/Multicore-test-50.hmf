@@ -1,305 +1,1308 @@
---------------------------------------------------------------
--------------------  HOPSAN NG MODEL FILE  -------------------
---------------------------------------------------------------
-HOPSANGUIVERSION 0.0.1
-HMFVERSION 0.1
-CAFVERSION 0.1
---------------------------------------------------------------
-SIMULATIONTIME 0 0.001 5
-VIEWPORT 2500.33 2500.33 0.649913
---------------------------------------------------------------
-USERICON ""
-ISOICON ""
---------------------------------------------------------------
-COMPONENT "Hydraulic43Valve" "4/3 Servo Valve_128" 2395 2559 0 0 0
-PARAMETER "4/3 Servo Valve_128" "Cq" 0.67
-PARAMETER "4/3 Servo Valve_128" "d" 0.01
-PARAMETER "4/3 Servo Valve_128" "f" 1
-PARAMETER "4/3 Servo Valve_128" "xvmax" 0.01
-PARAMETER "4/3 Servo Valve_128" "overlap_pa" 0
-PARAMETER "4/3 Servo Valve_128" "overlap_pb" 0
-PARAMETER "4/3 Servo Valve_128" "overlap_at" 0
-PARAMETER "4/3 Servo Valve_128" "overlap_pa" 0
-PARAMETER "4/3 Servo Valve_128" "omegah" 100
-PARAMETER "4/3 Servo Valve_128" "deltah" 0
-COMPONENT "Hydraulic43Valve" "4/3 Servo Valve_129" 2599 2559 0 0 0
-PARAMETER "4/3 Servo Valve_129" "Cq" 0.67
-PARAMETER "4/3 Servo Valve_129" "d" 0.01
-PARAMETER "4/3 Servo Valve_129" "f" 1
-PARAMETER "4/3 Servo Valve_129" "xvmax" 0.01
-PARAMETER "4/3 Servo Valve_129" "overlap_pa" 0
-PARAMETER "4/3 Servo Valve_129" "overlap_pb" 0
-PARAMETER "4/3 Servo Valve_129" "overlap_at" 0
-PARAMETER "4/3 Servo Valve_129" "overlap_pa" 0
-PARAMETER "4/3 Servo Valve_129" "omegah" 100
-PARAMETER "4/3 Servo Valve_129" "deltah" 0
-COMPONENT "Hydraulic43Valve" "4/3 Servo Valve_130" 2794 2558 0 0 0
-PARAMETER "4/3 Servo Valve_130" "Cq" 0.67
-PARAMETER "4/3 Servo Valve_130" "d" 0.01
-PARAMETER "4/3 Servo Valve_130" "f" 1
-PARAMETER "4/3 Servo Valve_130" "xvmax" 0.01
-PARAMETER "4/3 Servo Valve_130" "overlap_pa" 0
-PARAMETER "4/3 Servo Valve_130" "overlap_pb" 0
-PARAMETER "4/3 Servo Valve_130" "overlap_at" 0
-PARAMETER "4/3 Servo Valve_130" "overlap_pa" 0
-PARAMETER "4/3 Servo Valve_130" "omegah" 100
-PARAMETER "4/3 Servo Valve_130" "deltah" 0
-COMPONENT "Hydraulic43Valve" "4/3 Servo Valve_195" 2187 2559 0 0 0
-PARAMETER "4/3 Servo Valve_195" "Cq" 0.67
-PARAMETER "4/3 Servo Valve_195" "d" 0.01
-PARAMETER "4/3 Servo Valve_195" "f" 1
-PARAMETER "4/3 Servo Valve_195" "xvmax" 0.01
-PARAMETER "4/3 Servo Valve_195" "overlap_pa" 0
-PARAMETER "4/3 Servo Valve_195" "overlap_pb" 0
-PARAMETER "4/3 Servo Valve_195" "overlap_at" 0
-PARAMETER "4/3 Servo Valve_195" "overlap_pa" 0
-PARAMETER "4/3 Servo Valve_195" "omegah" 100
-PARAMETER "4/3 Servo Valve_195" "deltah" 0
-COMPONENT "HydraulicCylinderC" "Cylinder C_128" 2350 2463 0 0 0
-PARAMETER "Cylinder C_128" "x0" 0
-PARAMETER "Cylinder C_128" "v0" 0
-PARAMETER "Cylinder C_128" "Area1" 0.001
-PARAMETER "Cylinder C_128" "Area2" 0.001
-PARAMETER "Cylinder C_128" "Stroke" 1
-PARAMETER "Cylinder C_128" "EquivalentMass" 1000
-PARAMETER "Cylinder C_128" "DeadVolume1" 0.01
-PARAMETER "Cylinder C_128" "DeadVolume2" 0.01
-PARAMETER "Cylinder C_128" "Bp" 10
-PARAMETER "Cylinder C_128" "Betae" 1e+09
-COMPONENT "HydraulicCylinderC" "Cylinder C_129" 2554 2463 0 0 0
-PARAMETER "Cylinder C_129" "x0" 0
-PARAMETER "Cylinder C_129" "v0" 0
-PARAMETER "Cylinder C_129" "Area1" 0.001
-PARAMETER "Cylinder C_129" "Area2" 0.001
-PARAMETER "Cylinder C_129" "Stroke" 1
-PARAMETER "Cylinder C_129" "EquivalentMass" 1000
-PARAMETER "Cylinder C_129" "DeadVolume1" 0.01
-PARAMETER "Cylinder C_129" "DeadVolume2" 0.01
-PARAMETER "Cylinder C_129" "Bp" 10
-PARAMETER "Cylinder C_129" "Betae" 1e+09
-COMPONENT "HydraulicCylinderC" "Cylinder C_130" 2749 2463 0 0 0
-PARAMETER "Cylinder C_130" "x0" 0
-PARAMETER "Cylinder C_130" "v0" 0
-PARAMETER "Cylinder C_130" "Area1" 0.001
-PARAMETER "Cylinder C_130" "Area2" 0.001
-PARAMETER "Cylinder C_130" "Stroke" 1
-PARAMETER "Cylinder C_130" "EquivalentMass" 1000
-PARAMETER "Cylinder C_130" "DeadVolume1" 0.01
-PARAMETER "Cylinder C_130" "DeadVolume2" 0.01
-PARAMETER "Cylinder C_130" "Bp" 10
-PARAMETER "Cylinder C_130" "Betae" 1e+09
-COMPONENT "HydraulicCylinderC" "Cylinder C_191" 2142 2463 0 0 0
-PARAMETER "Cylinder C_191" "x0" 0
-PARAMETER "Cylinder C_191" "v0" 0
-PARAMETER "Cylinder C_191" "Area1" 0.001
-PARAMETER "Cylinder C_191" "Area2" 0.001
-PARAMETER "Cylinder C_191" "Stroke" 1
-PARAMETER "Cylinder C_191" "EquivalentMass" 1000
-PARAMETER "Cylinder C_191" "DeadVolume1" 0.01
-PARAMETER "Cylinder C_191" "DeadVolume2" 0.01
-PARAMETER "Cylinder C_191" "Bp" 10
-PARAMETER "Cylinder C_191" "Betae" 1e+09
-COMPONENT "HydraulicFixedDisplacementPump" "Fixed Displacement Pump_38" 2025 2733 0 0 0
-PARAMETER "Fixed Displacement Pump_38" "Speed" 125
-PARAMETER "Fixed Displacement Pump_38" "Dp" 5e-05
-PARAMETER "Fixed Displacement Pump_38" "Kcp" 0.001
-COMPONENT "MechanicForceTransformer" "Force Transformer_128" 2311 2405 0 0 0
-PARAMETER "Force Transformer_128" "x0" 0
-PARAMETER "Force Transformer_128" "v0" 0
-PARAMETER "Force Transformer_128" "Force" 0
-COMPONENT "MechanicForceTransformer" "Force Transformer_129" 2515 2405 0 0 0
-PARAMETER "Force Transformer_129" "x0" 0
-PARAMETER "Force Transformer_129" "v0" 0
-PARAMETER "Force Transformer_129" "Force" 0
-COMPONENT "MechanicForceTransformer" "Force Transformer_130" 2730 2405 0 0 0
-PARAMETER "Force Transformer_130" "x0" 0
-PARAMETER "Force Transformer_130" "v0" 0
-PARAMETER "Force Transformer_130" "Force" 0
-COMPONENT "MechanicForceTransformer" "Force Transformer_191" 2103 2405 0 0 0
-PARAMETER "Force Transformer_191" "x0" 0
-PARAMETER "Force Transformer_191" "v0" 0
-PARAMETER "Force Transformer_191" "Force" 0
-COMPONENT "HydraulicVolume" "Hydraulic Volume" 2764 2658 0 0 0
-PARAMETER "Hydraulic Volume" "V" 0.001
-PARAMETER "Hydraulic Volume" "Be" 1e+09
-PARAMETER "Hydraulic Volume" "a" 0
-PARAMETER "Hydraulic Volume" "debug" 0
-PARAMETER "Hydraulic Volume" "t1" 0
-PARAMETER "Hydraulic Volume" "t2" 0.01
-COMPONENT "HydraulicVolume3" "Hydraulic Volume with 3 Ports_128" 2196 2659 180 0 0
-PARAMETER "Hydraulic Volume with 3 Ports_128" "V" 0.001
-PARAMETER "Hydraulic Volume with 3 Ports_128" "Be" 1e+09
-PARAMETER "Hydraulic Volume with 3 Ports_128" "a" 0
-COMPONENT "HydraulicVolume3" "Hydraulic Volume with 3 Ports_129" 2404 2659 180 0 0
-PARAMETER "Hydraulic Volume with 3 Ports_129" "V" 0.001
-PARAMETER "Hydraulic Volume with 3 Ports_129" "Be" 1e+09
-PARAMETER "Hydraulic Volume with 3 Ports_129" "a" 0
-COMPONENT "HydraulicVolume3" "Hydraulic Volume with 3 Ports_130" 2608 2659 180 0 0
-PARAMETER "Hydraulic Volume with 3 Ports_130" "V" 0.001
-PARAMETER "Hydraulic Volume with 3 Ports_130" "Be" 1e+09
-PARAMETER "Hydraulic Volume with 3 Ports_130" "a" 0
-COMPONENT "HydraulicVolume3" "Hydraulic Volume with 3 Ports_191" 2040 2659 0 0 0
-PARAMETER "Hydraulic Volume with 3 Ports_191" "V" 0.001
-PARAMETER "Hydraulic Volume with 3 Ports_191" "Be" 1e+09
-PARAMETER "Hydraulic Volume with 3 Ports_191" "a" 0
-COMPONENT "HydraulicLaminarOrifice" "Laminar Orifice_128" 2304 2659 90 0 0
-PARAMETER "Laminar Orifice_128" "Kc" 1e-11
-COMPONENT "HydraulicLaminarOrifice" "Laminar Orifice_129" 2508 2659 90 0 0
-PARAMETER "Laminar Orifice_129" "Kc" 1e-11
-COMPONENT "HydraulicLaminarOrifice" "Laminar Orifice_130" 2689 2659 90 0 0
-PARAMETER "Laminar Orifice_130" "Kc" 1e-11
-COMPONENT "HydraulicLaminarOrifice" "Laminar Orifice_191" 2124 2659 90 0 0
-PARAMETER "Laminar Orifice_191" "Kc" 1e-11
-COMPONENT "HydraulicPressureReliefValve" "Pressure Relief Valve_38" 1900 2738 0 0 0
-PARAMETER "Pressure Relief Valve_38" "pref" 2e+06
-PARAMETER "Pressure Relief Valve_38" "tao" 0.01
-PARAMETER "Pressure Relief Valve_38" "kcs" 1e-08
-PARAMETER "Pressure Relief Valve_38" "kcf" 1e-08
-PARAMETER "Pressure Relief Valve_38" "qnom" 0.001
-PARAMETER "Pressure Relief Valve_38" "ph" 500000
-COMPONENT "SignalSineWave" "Sine Wave_128" 2676 2610 0 0 0
-PARAMETER "Sine Wave_128" "StartTime" 0
-PARAMETER "Sine Wave_128" "Frequency" 1
-PARAMETER "Sine Wave_128" "Amplitude" 1
-PARAMETER "Sine Wave_128" "Offset" 0
-COMPONENT "SignalSineWave" "Sine Wave_129" 2228 2331 0 0 0
-PARAMETER "Sine Wave_129" "StartTime" 0
-PARAMETER "Sine Wave_129" "Frequency" 1
-PARAMETER "Sine Wave_129" "Amplitude" 1
-PARAMETER "Sine Wave_129" "Offset" 0
-COMPONENT "SignalSineWave" "Sine Wave_130" 2659 2362 0 0 0
-PARAMETER "Sine Wave_130" "StartTime" 0
-PARAMETER "Sine Wave_130" "Frequency" 1
-PARAMETER "Sine Wave_130" "Amplitude" 1
-PARAMETER "Sine Wave_130" "Offset" 0
-COMPONENT "SignalSineWave" "Sine Wave_191" 2272 2612 0 0 0
-PARAMETER "Sine Wave_191" "StartTime" 0
-PARAMETER "Sine Wave_191" "Frequency" 1
-PARAMETER "Sine Wave_191" "Amplitude" 1
-PARAMETER "Sine Wave_191" "Offset" 0
-COMPONENT "SignalSquareWave" "Square Wave_128" 2476 2610 0 0 0
-PARAMETER "Square Wave_128" "StartTime" 0
-PARAMETER "Square Wave_128" "Frequency" 1
-PARAMETER "Square Wave_128" "Amplitude" 1
-PARAMETER "Square Wave_128" "BaseValue" 0
-COMPONENT "SignalSquareWave" "Square Wave_129" 2043 2334 0 0 0
-PARAMETER "Square Wave_129" "StartTime" 0
-PARAMETER "Square Wave_129" "Frequency" 1
-PARAMETER "Square Wave_129" "Amplitude" 1
-PARAMETER "Square Wave_129" "BaseValue" 0
-COMPONENT "SignalSquareWave" "Square Wave_130" 2439 2338 0 0 0
-PARAMETER "Square Wave_130" "StartTime" 0
-PARAMETER "Square Wave_130" "Frequency" 1
-PARAMETER "Square Wave_130" "Amplitude" 1
-PARAMETER "Square Wave_130" "BaseValue" 0
-COMPONENT "SignalSquareWave" "Square Wave_191" 2053 2609 0 0 0
-PARAMETER "Square Wave_191" "StartTime" 0
-PARAMETER "Square Wave_191" "Frequency" 1
-PARAMETER "Square Wave_191" "Amplitude" 1
-PARAMETER "Square Wave_191" "BaseValue" 0
-COMPONENT "HydraulicTankC" "Tank C_204" 1898 2827 0 0 0
-PARAMETER "Tank C_204" "P" 100000
-COMPONENT "HydraulicTankC" "Tank C_205" 2040 2830 0 0 0
-PARAMETER "Tank C_205" "P" 100000
-COMPONENT "HydraulicTankC" "Tank C_206" 2217 2608 0 0 0
-PARAMETER "Tank C_206" "P" 100000
-COMPONENT "HydraulicTankC" "Tank C_207" 2425 2608 0 0 0
-PARAMETER "Tank C_207" "P" 100000
-COMPONENT "HydraulicTankC" "Tank C_208" 2629 2613 0 0 0
-PARAMETER "Tank C_208" "P" 100000
-COMPONENT "HydraulicTankC" "Tank C_209" 2824 2609 0 0 0
-PARAMETER "Tank C_209" "P" 100000
-COMPONENT "MechanicTranslationalMass" "Translational Mass_329" 2439 2463 0 0 0
-PARAMETER "Translational Mass_329" "Mass" 1
-PARAMETER "Translational Mass_329" "B" 10
-PARAMETER "Translational Mass_329" "k" 0
-COMPONENT "MechanicTranslationalMass" "Translational Mass_330" 2379 2405 0 0 0
-PARAMETER "Translational Mass_330" "Mass" 1
-PARAMETER "Translational Mass_330" "B" 10
-PARAMETER "Translational Mass_330" "k" 0
-COMPONENT "MechanicTranslationalMass" "Translational Mass_331" 2643 2463 0 0 0
-PARAMETER "Translational Mass_331" "Mass" 1
-PARAMETER "Translational Mass_331" "B" 10
-PARAMETER "Translational Mass_331" "k" 0
-COMPONENT "MechanicTranslationalMass" "Translational Mass_332" 2583 2405 0 0 0
-PARAMETER "Translational Mass_332" "Mass" 1
-PARAMETER "Translational Mass_332" "B" 10
-PARAMETER "Translational Mass_332" "k" 0
-COMPONENT "MechanicTranslationalMass" "Translational Mass_333" 2838 2463 0 0 0
-PARAMETER "Translational Mass_333" "Mass" 1
-PARAMETER "Translational Mass_333" "B" 10
-PARAMETER "Translational Mass_333" "k" 0
-COMPONENT "MechanicTranslationalMass" "Translational Mass_334" 2798 2405 0 0 0
-PARAMETER "Translational Mass_334" "Mass" 1
-PARAMETER "Translational Mass_334" "B" 10
-PARAMETER "Translational Mass_334" "k" 0
-COMPONENT "MechanicTranslationalMass" "Translational Mass_335" 2231 2463 0 0 0
-PARAMETER "Translational Mass_335" "Mass" 1
-PARAMETER "Translational Mass_335" "B" 10
-PARAMETER "Translational Mass_335" "k" 0
-COMPONENT "MechanicTranslationalMass" "Translational Mass_336" 2171 2405 0 0 0
-PARAMETER "Translational Mass_336" "Mass" 1
-PARAMETER "Translational Mass_336" "B" 10
-PARAMETER "Translational Mass_336" "k" 0
-COMPONENT "MechanicTranslationalSpring" "Translational Spring_128" 2442 2405 0 0 0
-PARAMETER "Translational Spring_128" "k" 100
-COMPONENT "MechanicTranslationalSpring" "Translational Spring_129" 2646 2405 0 0 0
-PARAMETER "Translational Spring_129" "k" 100
-COMPONENT "MechanicTranslationalSpring" "Translational Spring_130" 2856 2406 0 0 0
-PARAMETER "Translational Spring_130" "k" 100
-COMPONENT "MechanicTranslationalSpring" "Translational Spring_193" 2234 2405 0 0 0
-PARAMETER "Translational Spring_193" "k" 100
---------------------------------------------------------------
-CONNECT "Fixed Displacement Pump_38" "P2" "Hydraulic Volume with 3 Ports_191" "P3" 2040 2683 2040 2680.01 2040 2674
-CONNECT "Hydraulic Volume with 3 Ports_191" "P2" "Laminar Orifice_191" "P2" 2065 2659 2084.22 2659 2084.22 2659 2089.5 2659
-CONNECT "Laminar Orifice_191" "P1" "Hydraulic Volume with 3 Ports_128" "P2" 2158.5 2659 2175.22 2659 2175.22 2659 2171 2659
-CONNECT "Hydraulic Volume with 3 Ports_128" "P3" "4/3 Servo Valve_195" "PP" 2196 2644 2196.92 2644 2196.92 2584
-CONNECT "Tank C_206" "P1" "4/3 Servo Valve_195" "PT" 2217 2593.5 2217 2610.01 2216.97 2610.01 2216.97 2584
-CONNECT "4/3 Servo Valve_195" "PA" "Cylinder C_191" "P1" 2196.92 2534 2196.92 2528.01 2087.47 2528.01 2087.47 2483
-CONNECT "4/3 Servo Valve_195" "PB" "Cylinder C_191" "P2" 2216.97 2534 2216.97 2514.01 2167.06 2514.01 2167.06 2483
-CONNECT "Cylinder C_191" "P3" "Translational Mass_335" "P1" 2201.5 2463 2210.22 2463 2210.22 2463 2199 2463
-CONNECT "Translational Spring_193" "P2" "Translational Mass_335" "P2" 2250.5 2405 2272.22 2405 2272.22 2463 2263 2463
-CONNECT "Translational Mass_336" "P2" "Translational Spring_193" "P1" 2203 2405 2216.22 2405 2216.22 2405 2217.5 2405
-CONNECT "Force Transformer_191" "P1" "Translational Mass_336" "P1" 2122.5 2405 2133.22 2405 2133.22 2405 2139 2405
-CONNECT "Laminar Orifice_128" "P1" "Hydraulic Volume with 3 Ports_129" "P2" 2338.5 2659 2383.22 2659 2383.22 2659 2379 2659
-CONNECT "Hydraulic Volume with 3 Ports_129" "P3" "4/3 Servo Valve_128" "PP" 2404 2644 2404.92 2644 2404.92 2584
-CONNECT "Tank C_207" "P1" "4/3 Servo Valve_128" "PT" 2425 2593.5 2425 2610.01 2424.97 2610.01 2424.97 2584
-CONNECT "4/3 Servo Valve_128" "PA" "Cylinder C_128" "P1" 2404.92 2534 2404.92 2528.01 2295.47 2528.01 2295.47 2483
-CONNECT "4/3 Servo Valve_128" "PB" "Cylinder C_128" "P2" 2424.97 2534 2424.97 2514.01 2375.06 2514.01 2375.06 2483
-CONNECT "Cylinder C_128" "P3" "Translational Mass_329" "P1" 2409.5 2463 2418.22 2463 2418.22 2463 2407 2463
-CONNECT "Translational Spring_128" "P2" "Translational Mass_329" "P2" 2458.5 2405 2480.22 2405 2480.22 2463 2471 2463
-CONNECT "Translational Mass_330" "P2" "Translational Spring_128" "P1" 2411 2405 2424.22 2405 2424.22 2405 2425.5 2405
-CONNECT "Force Transformer_128" "P1" "Translational Mass_330" "P1" 2330.5 2405 2341.22 2405 2341.22 2405 2347 2405
-CONNECT "Hydraulic Volume with 3 Ports_128" "P1" "Laminar Orifice_128" "P2" 2221 2659 2279.22 2659 2279.22 2659 2269.5 2659
-CONNECT "Laminar Orifice_129" "P1" "Hydraulic Volume with 3 Ports_130" "P2" 2542.5 2659 2587.22 2659 2587.22 2659 2583 2659
-CONNECT "Hydraulic Volume with 3 Ports_130" "P3" "4/3 Servo Valve_129" "PP" 2608 2644 2608.92 2644 2608.92 2584
-CONNECT "Tank C_208" "P1" "4/3 Servo Valve_129" "PT" 2629 2598.5 2629 2593.01 2628.97 2593.01 2628.97 2584
-CONNECT "4/3 Servo Valve_129" "PA" "Cylinder C_129" "P1" 2608.92 2534 2608.92 2528.01 2499.47 2528.01 2499.47 2483
-CONNECT "4/3 Servo Valve_129" "PB" "Cylinder C_129" "P2" 2628.97 2534 2628.97 2514.01 2579.06 2514.01 2579.06 2483
-CONNECT "Cylinder C_129" "P3" "Translational Mass_331" "P1" 2613.5 2463 2622.22 2463 2622.22 2463 2611 2463
-CONNECT "Translational Spring_129" "P2" "Translational Mass_331" "P2" 2662.5 2405 2684.22 2405 2684.22 2463 2675 2463
-CONNECT "Translational Mass_332" "P2" "Translational Spring_129" "P1" 2615 2405 2628.22 2405 2628.22 2405 2629.5 2405
-CONNECT "Force Transformer_129" "P1" "Translational Mass_332" "P1" 2534.5 2405 2545.22 2405 2545.22 2405 2551 2405
-CONNECT "Hydraulic Volume with 3 Ports_129" "P1" "Laminar Orifice_129" "P2" 2429 2659 2486.22 2659 2486.22 2659 2473.5 2659
-CONNECT "Tank C_209" "P1" "4/3 Servo Valve_130" "PT" 2824 2594.5 2824 2595.01 2823.97 2595.01 2823.97 2583
-CONNECT "4/3 Servo Valve_130" "PA" "Cylinder C_130" "P1" 2803.92 2533 2803.92 2528.01 2694.47 2528.01 2694.47 2483
-CONNECT "4/3 Servo Valve_130" "PB" "Cylinder C_130" "P2" 2823.97 2533 2823.97 2514.01 2774.06 2514.01 2774.06 2483
-CONNECT "Cylinder C_130" "P3" "Translational Mass_333" "P1" 2808.5 2463 2817.22 2463 2817.22 2463 2806 2463
-CONNECT "Translational Spring_130" "P2" "Translational Mass_333" "P2" 2872.5 2406 2879.22 2406 2879.22 2463 2870 2463
-CONNECT "Translational Mass_334" "P2" "Translational Spring_130" "P1" 2830 2405 2840.22 2405 2840.22 2406 2839.5 2406
-CONNECT "Force Transformer_130" "P1" "Translational Mass_334" "P1" 2749.5 2405 2740.22 2405 2740.22 2405 2766 2405
-CONNECT "Hydraulic Volume with 3 Ports_130" "P1" "Laminar Orifice_130" "P2" 2633 2659 2682.22 2659 2682.22 2659 2654.5 2659
-CONNECT "Square Wave_191" "out" "4/3 Servo Valve_195" "in" 2073 2609 2088.22 2609 2088.22 2569 2107.5 2569
-CONNECT "Sine Wave_191" "out" "4/3 Servo Valve_128" "in" 2292 2612 2304.22 2612 2304.22 2569 2315.5 2569
-CONNECT "Square Wave_128" "out" "4/3 Servo Valve_129" "in" 2496 2610 2509.22 2610 2509.22 2569 2519.5 2569
-CONNECT "Sine Wave_128" "out" "4/3 Servo Valve_130" "in" 2696 2610 2705.22 2610 2705.22 2568 2714.5 2568
-CONNECT "Square Wave_130" "out" "Force Transformer_129" "in" 2459 2338 2486.22 2338 2486.22 2405 2495.5 2405
-CONNECT "Sine Wave_129" "out" "Force Transformer_128" "in" 2248 2331 2280.22 2331 2280.22 2405 2291.5 2405
-CONNECT "Square Wave_129" "out" "Force Transformer_191" "in" 2063 2334 2074.22 2334 2074.22 2405 2083.5 2405
-CONNECT "Pressure Relief Valve_38" "P1" "Hydraulic Volume with 3 Ports_191" "P1" 1898 2698 1898 2659 2015 2659
-CONNECT "Tank C_205" "P1" "Fixed Displacement Pump_38" "P1" 2040 2815.5 2040 2809.09 2040 2809.09 2040 2783
-CONNECT "Tank C_204" "P1" "Pressure Relief Valve_38" "P2" 1898 2812.5 1898 2801.14 1898 2801.14 1898 2778
-CONNECT "Sine Wave_130" "out" "Force Transformer_130" "in" 2679 2362 2697 2362 2697 2405 2710.5 2405
-CONNECT "Laminar Orifice_130" "P1" "Hydraulic Volume" "P1" 2723.5 2659 2731.88 2659 2731.88 2658 2739 2658
-CONNECT "Hydraulic Volume" "P2" "4/3 Servo Valve_130" "PP" 2789 2658 2803.92 2658 2803.92 2583
---------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.1" hopsanguiversion="0.0.1" hopsancoreversion="0">
+    <system typename="Subsystem" cqs_type="S" name="Multicore-test-50">
+        <simulationtime stop="10" timestep="0.001" start="0"/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="0" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2501.87332766078" y="2502.642661402373" zoom="0.649913"/>
+            <hopsanobjectappearance>
+                <modelobject typename="" displayname="Multicore-test-50">
+                    <icon isopath="" iconrotation="" userpath=""/>
+                </modelobject>
+            </hopsanobjectappearance>
+        </hopsangui>
+        <objects>
+            <component typename="SignalSineWave" name="Sine Wave_129">
+                <parameters>
+                    <parameter value="0" name="StartTime"/>
+                    <parameter value="1" name="Frequency"/>
+                    <parameter value="1" name="Amplitude"/>
+                    <parameter value="0" name="Offset"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2228" y="2331" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicLaminarOrifice" name="Laminar Orifice_128">
+                <parameters>
+                    <parameter value="9.999999999999999e-12" name="Kc"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2304" y="2659" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicLaminarOrifice" name="Laminar Orifice_129">
+                <parameters>
+                    <parameter value="9.999999999999999e-12" name="Kc"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2508" y="2659" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicForceTransformer" name="Force Transformer_128">
+                <parameters>
+                    <parameter value="0" name="x0"/>
+                    <parameter value="0" name="v0"/>
+                    <parameter value="0" name="Force"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Velocity" value="0"/>
+                    <startvalue portname="P1" variable="Force" value="0"/>
+                    <startvalue portname="P1" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2311" y="2405" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicForceTransformer" name="Force Transformer_129">
+                <parameters>
+                    <parameter value="0" name="x0"/>
+                    <parameter value="0" name="v0"/>
+                    <parameter value="0" name="Force"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Velocity" value="0"/>
+                    <startvalue portname="P1" variable="Force" value="0"/>
+                    <startvalue portname="P1" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2515" y="2405" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolume3" name="Hydraulic Volume with 3 Ports_128">
+                <parameters>
+                    <parameter value="0.001" name="V"/>
+                    <parameter value="1000000000" name="Be"/>
+                    <parameter value="0" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                    <startvalue portname="P3" variable="Flow" value="0"/>
+                    <startvalue portname="P3" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2196" y="2659" flipped="0" a="180"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSquareWave" name="Square Wave_191">
+                <parameters>
+                    <parameter value="0" name="StartTime"/>
+                    <parameter value="1" name="Frequency"/>
+                    <parameter value="1" name="Amplitude"/>
+                    <parameter value="0" name="BaseValue"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2053" y="2609" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolume3" name="Hydraulic Volume with 3 Ports_129">
+                <parameters>
+                    <parameter value="0.001" name="V"/>
+                    <parameter value="1000000000" name="Be"/>
+                    <parameter value="0" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                    <startvalue portname="P3" variable="Flow" value="0"/>
+                    <startvalue portname="P3" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2404" y="2659" flipped="0" a="180"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSineWave" name="Sine Wave_130">
+                <parameters>
+                    <parameter value="0" name="StartTime"/>
+                    <parameter value="1" name="Frequency"/>
+                    <parameter value="1" name="Amplitude"/>
+                    <parameter value="0" name="Offset"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2659" y="2362" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicCylinderC" name="Cylinder C_128">
+                <parameters>
+                    <parameter value="0" name="x0"/>
+                    <parameter value="0" name="v0"/>
+                    <parameter value="0.001" name="Area1"/>
+                    <parameter value="0.001" name="Area2"/>
+                    <parameter value="1" name="Stroke"/>
+                    <parameter value="1000" name="EquivalentMass"/>
+                    <parameter value="0.01" name="DeadVolume1"/>
+                    <parameter value="0.01" name="DeadVolume2"/>
+                    <parameter value="10" name="Bp"/>
+                    <parameter value="1000000000" name="Betae"/>
+                    <parameter value="1.08223501455499e-312" name="Cip"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="0"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="0"/>
+                    <startvalue portname="P3" variable="Velocity" value="0"/>
+                    <startvalue portname="P3" variable="Force" value="0"/>
+                    <startvalue portname="P3" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2350" y="2463" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicLaminarOrifice" name="Laminar Orifice_130">
+                <parameters>
+                    <parameter value="9.999999999999999e-12" name="Kc"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2689" y="2659" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicCylinderC" name="Cylinder C_129">
+                <parameters>
+                    <parameter value="0" name="x0"/>
+                    <parameter value="0" name="v0"/>
+                    <parameter value="0.001" name="Area1"/>
+                    <parameter value="0.001" name="Area2"/>
+                    <parameter value="1" name="Stroke"/>
+                    <parameter value="1000" name="EquivalentMass"/>
+                    <parameter value="0.01" name="DeadVolume1"/>
+                    <parameter value="0.01" name="DeadVolume2"/>
+                    <parameter value="10" name="Bp"/>
+                    <parameter value="1000000000" name="Betae"/>
+                    <parameter value="3.732606666453117e-317" name="Cip"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="0"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="0"/>
+                    <startvalue portname="P3" variable="Velocity" value="0"/>
+                    <startvalue portname="P3" variable="Force" value="0"/>
+                    <startvalue portname="P3" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2554" y="2463" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalMass" name="Translational Mass_329">
+                <parameters>
+                    <parameter value="1" name="Mass"/>
+                    <parameter value="10" name="B"/>
+                    <parameter value="0" name="k"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2439" y="2463" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicForceTransformer" name="Force Transformer_130">
+                <parameters>
+                    <parameter value="0" name="x0"/>
+                    <parameter value="0" name="v0"/>
+                    <parameter value="0" name="Force"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Velocity" value="0"/>
+                    <startvalue portname="P1" variable="Force" value="0"/>
+                    <startvalue portname="P1" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2730" y="2405" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolume3" name="Hydraulic Volume with 3 Ports_130">
+                <parameters>
+                    <parameter value="0.001" name="V"/>
+                    <parameter value="1000000000" name="Be"/>
+                    <parameter value="0" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                    <startvalue portname="P3" variable="Flow" value="0"/>
+                    <startvalue portname="P3" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2608" y="2659" flipped="0" a="180"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolume" name="Hydraulic Volume">
+                <parameters>
+                    <parameter value="0.001" name="V"/>
+                    <parameter value="1000000000" name="Be"/>
+                    <parameter value="0" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2764" y="2658" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalSpring" name="Translational Spring_128">
+                <parameters>
+                    <parameter value="100" name="k"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Velocity" value="0"/>
+                    <startvalue portname="P1" variable="Force" value="0"/>
+                    <startvalue portname="P1" variable="Position" value="0"/>
+                    <startvalue portname="P2" variable="Velocity" value="0"/>
+                    <startvalue portname="P2" variable="Force" value="0"/>
+                    <startvalue portname="P2" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2442" y="2405" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicCylinderC" name="Cylinder C_130">
+                <parameters>
+                    <parameter value="0" name="x0"/>
+                    <parameter value="0" name="v0"/>
+                    <parameter value="0.001" name="Area1"/>
+                    <parameter value="0.001" name="Area2"/>
+                    <parameter value="1" name="Stroke"/>
+                    <parameter value="1000" name="EquivalentMass"/>
+                    <parameter value="0.01" name="DeadVolume1"/>
+                    <parameter value="0.01" name="DeadVolume2"/>
+                    <parameter value="10" name="Bp"/>
+                    <parameter value="1000000000" name="Betae"/>
+                    <parameter value="9.346050367912777e-307" name="Cip"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="0"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="0"/>
+                    <startvalue portname="P3" variable="Velocity" value="0"/>
+                    <startvalue portname="P3" variable="Force" value="0"/>
+                    <startvalue portname="P3" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2749" y="2463" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalSpring" name="Translational Spring_129">
+                <parameters>
+                    <parameter value="100" name="k"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Velocity" value="0"/>
+                    <startvalue portname="P1" variable="Force" value="0"/>
+                    <startvalue portname="P1" variable="Position" value="0"/>
+                    <startvalue portname="P2" variable="Velocity" value="0"/>
+                    <startvalue portname="P2" variable="Force" value="0"/>
+                    <startvalue portname="P2" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2646" y="2405" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalMass" name="Translational Mass_330">
+                <parameters>
+                    <parameter value="1" name="Mass"/>
+                    <parameter value="10" name="B"/>
+                    <parameter value="0" name="k"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2379" y="2405" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank C_204">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="1898" y="2827" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalMass" name="Translational Mass_331">
+                <parameters>
+                    <parameter value="1" name="Mass"/>
+                    <parameter value="10" name="B"/>
+                    <parameter value="0" name="k"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2643" y="2463" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank C_205">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2040" y="2830" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalMass" name="Translational Mass_332">
+                <parameters>
+                    <parameter value="1" name="Mass"/>
+                    <parameter value="10" name="B"/>
+                    <parameter value="0" name="k"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2583" y="2405" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank C_206">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2217" y="2608" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalMass" name="Translational Mass_333">
+                <parameters>
+                    <parameter value="1" name="Mass"/>
+                    <parameter value="10" name="B"/>
+                    <parameter value="0" name="k"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2838" y="2463" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank C_207">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2425" y="2608" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSquareWave" name="Square Wave_128">
+                <parameters>
+                    <parameter value="0" name="StartTime"/>
+                    <parameter value="1" name="Frequency"/>
+                    <parameter value="1" name="Amplitude"/>
+                    <parameter value="0" name="BaseValue"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2476" y="2610" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalMass" name="Translational Mass_334">
+                <parameters>
+                    <parameter value="1" name="Mass"/>
+                    <parameter value="10" name="B"/>
+                    <parameter value="0" name="k"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2798" y="2405" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalSpring" name="Translational Spring_130">
+                <parameters>
+                    <parameter value="100" name="k"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Velocity" value="0"/>
+                    <startvalue portname="P1" variable="Force" value="0"/>
+                    <startvalue portname="P1" variable="Position" value="0"/>
+                    <startvalue portname="P2" variable="Velocity" value="0"/>
+                    <startvalue portname="P2" variable="Force" value="0"/>
+                    <startvalue portname="P2" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2856" y="2406" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank C_208">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2629" y="2613" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSquareWave" name="Square Wave_129">
+                <parameters>
+                    <parameter value="0" name="StartTime"/>
+                    <parameter value="1" name="Frequency"/>
+                    <parameter value="1" name="Amplitude"/>
+                    <parameter value="0" name="BaseValue"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2043" y="2334" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalMass" name="Translational Mass_335">
+                <parameters>
+                    <parameter value="1" name="Mass"/>
+                    <parameter value="10" name="B"/>
+                    <parameter value="0" name="k"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2231" y="2463" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank C_209">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2824" y="2609" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="Hydraulic43Valve" name="4/3 Servo Valve_195">
+                <parameters>
+                    <parameter value="0.67" name="Cq"/>
+                    <parameter value="0.01" name="d"/>
+                    <parameter value="1" name="f"/>
+                    <parameter value="0.01" name="xvmax"/>
+                    <parameter value="0" name="overlap_pa"/>
+                    <parameter value="0" name="overlap_pb"/>
+                    <parameter value="0" name="overlap_at"/>
+                    <parameter value="0" name="overlap_pa"/>
+                    <parameter value="100" name="omegah"/>
+                    <parameter value="0" name="deltah"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2187" y="2559" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalMass" name="Translational Mass_336">
+                <parameters>
+                    <parameter value="1" name="Mass"/>
+                    <parameter value="10" name="B"/>
+                    <parameter value="0" name="k"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2171" y="2405" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSquareWave" name="Square Wave_130">
+                <parameters>
+                    <parameter value="0" name="StartTime"/>
+                    <parameter value="1" name="Frequency"/>
+                    <parameter value="1" name="Amplitude"/>
+                    <parameter value="0" name="BaseValue"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2439" y="2338" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="Hydraulic43Valve" name="4/3 Servo Valve_128">
+                <parameters>
+                    <parameter value="0.67" name="Cq"/>
+                    <parameter value="0.01" name="d"/>
+                    <parameter value="1" name="f"/>
+                    <parameter value="0.01" name="xvmax"/>
+                    <parameter value="0" name="overlap_pa"/>
+                    <parameter value="0" name="overlap_pb"/>
+                    <parameter value="0" name="overlap_at"/>
+                    <parameter value="0" name="overlap_pa"/>
+                    <parameter value="100" name="omegah"/>
+                    <parameter value="0" name="deltah"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2395" y="2559" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicLaminarOrifice" name="Laminar Orifice_191">
+                <parameters>
+                    <parameter value="9.999999999999999e-12" name="Kc"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2124" y="2659" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="Hydraulic43Valve" name="4/3 Servo Valve_129">
+                <parameters>
+                    <parameter value="0.67" name="Cq"/>
+                    <parameter value="0.01" name="d"/>
+                    <parameter value="1" name="f"/>
+                    <parameter value="0.01" name="xvmax"/>
+                    <parameter value="0" name="overlap_pa"/>
+                    <parameter value="0" name="overlap_pb"/>
+                    <parameter value="0" name="overlap_at"/>
+                    <parameter value="0" name="overlap_pa"/>
+                    <parameter value="100" name="omegah"/>
+                    <parameter value="0" name="deltah"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2599" y="2559" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicFixedDisplacementPump" name="Fixed Displacement Pump_38">
+                <parameters>
+                    <parameter value="125" name="Speed"/>
+                    <parameter value="5e-05" name="Dp"/>
+                    <parameter value="0.001" name="Kcp"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2025" y="2733" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicForceTransformer" name="Force Transformer_191">
+                <parameters>
+                    <parameter value="0" name="x0"/>
+                    <parameter value="0" name="v0"/>
+                    <parameter value="0" name="Force"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Velocity" value="0"/>
+                    <startvalue portname="P1" variable="Force" value="0"/>
+                    <startvalue portname="P1" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2103" y="2405" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolume3" name="Hydraulic Volume with 3 Ports_191">
+                <parameters>
+                    <parameter value="0.001" name="V"/>
+                    <parameter value="1000000000" name="Be"/>
+                    <parameter value="0" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                    <startvalue portname="P3" variable="Flow" value="0"/>
+                    <startvalue portname="P3" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2040" y="2659" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="Hydraulic43Valve" name="4/3 Servo Valve_130">
+                <parameters>
+                    <parameter value="0.67" name="Cq"/>
+                    <parameter value="0.01" name="d"/>
+                    <parameter value="1" name="f"/>
+                    <parameter value="0.01" name="xvmax"/>
+                    <parameter value="0" name="overlap_pa"/>
+                    <parameter value="0" name="overlap_pb"/>
+                    <parameter value="0" name="overlap_at"/>
+                    <parameter value="0" name="overlap_pa"/>
+                    <parameter value="100" name="omegah"/>
+                    <parameter value="0" name="deltah"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2794" y="2558" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicCylinderC" name="Cylinder C_191">
+                <parameters>
+                    <parameter value="0" name="x0"/>
+                    <parameter value="0" name="v0"/>
+                    <parameter value="0.001" name="Area1"/>
+                    <parameter value="0.001" name="Area2"/>
+                    <parameter value="1" name="Stroke"/>
+                    <parameter value="1000" name="EquivalentMass"/>
+                    <parameter value="0.01" name="DeadVolume1"/>
+                    <parameter value="0.01" name="DeadVolume2"/>
+                    <parameter value="10" name="Bp"/>
+                    <parameter value="1000000000" name="Betae"/>
+                    <parameter value="1.557056183171539e-316" name="Cip"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="0"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="0"/>
+                    <startvalue portname="P3" variable="Velocity" value="0"/>
+                    <startvalue portname="P3" variable="Force" value="0"/>
+                    <startvalue portname="P3" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2142" y="2463" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSineWave" name="Sine Wave_191">
+                <parameters>
+                    <parameter value="0" name="StartTime"/>
+                    <parameter value="1" name="Frequency"/>
+                    <parameter value="1" name="Amplitude"/>
+                    <parameter value="0" name="Offset"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2272" y="2612" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicPressureReliefValve" name="Pressure Relief Valve_38">
+                <parameters>
+                    <parameter value="2000000" name="pref"/>
+                    <parameter value="0.01" name="tao"/>
+                    <parameter value="1e-08" name="kcs"/>
+                    <parameter value="1e-08" name="kcf"/>
+                    <parameter value="0.001" name="qnom"/>
+                    <parameter value="500000" name="ph"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="1900" y="2738" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalSpring" name="Translational Spring_193">
+                <parameters>
+                    <parameter value="100" name="k"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Velocity" value="0"/>
+                    <startvalue portname="P1" variable="Force" value="0"/>
+                    <startvalue portname="P1" variable="Position" value="0"/>
+                    <startvalue portname="P2" variable="Velocity" value="0"/>
+                    <startvalue portname="P2" variable="Force" value="0"/>
+                    <startvalue portname="P2" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2234" y="2405" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSineWave" name="Sine Wave_128">
+                <parameters>
+                    <parameter value="0" name="StartTime"/>
+                    <parameter value="1" name="Frequency"/>
+                    <parameter value="1" name="Amplitude"/>
+                    <parameter value="0" name="Offset"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2676" y="2610" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+        </objects>
+        <connections>
+            <connect endport="P3" endcomponent="Hydraulic Volume with 3 Ports_191" startport="P2" startcomponent="Fixed Displacement Pump_38">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2040.003" y="2683"/>
+                        <coordinate x="2040" y="2680.01"/>
+                        <coordinate x="2040" y="2674"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Laminar Orifice_191" startport="P2" startcomponent="Hydraulic Volume with 3 Ports_191">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2065" y="2659"/>
+                        <coordinate x="2084.22" y="2659"/>
+                        <coordinate x="2084.22" y="2624"/>
+                        <coordinate x="2124" y="2624"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Hydraulic Volume with 3 Ports_128" startport="P1" startcomponent="Laminar Orifice_191">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2124" y="2694"/>
+                        <coordinate x="2175.22" y="2694"/>
+                        <coordinate x="2175.22" y="2659"/>
+                        <coordinate x="2171" y="2659"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="PP" endcomponent="4/3 Servo Valve_195" startport="P3" startcomponent="Hydraulic Volume with 3 Ports_128">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2196" y="2644"/>
+                        <coordinate x="2196.9216" y="2644"/>
+                        <coordinate x="2196.9216" y="2584"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="PT" endcomponent="4/3 Servo Valve_195" startport="P1" startcomponent="Tank C_206">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2217" y="2593.5"/>
+                        <coordinate x="2217" y="2610.01"/>
+                        <coordinate x="2216.9715" y="2610.01"/>
+                        <coordinate x="2216.9715" y="2584"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Cylinder C_191" startport="PA" startcomponent="4/3 Servo Valve_195">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2196.9216" y="2534"/>
+                        <coordinate x="2196.9216" y="2528.01"/>
+                        <coordinate x="2087.4742" y="2528.01"/>
+                        <coordinate x="2087.4742" y="2483"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Cylinder C_191" startport="PB" startcomponent="4/3 Servo Valve_195">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2216.9715" y="2534"/>
+                        <coordinate x="2216.9715" y="2514.01"/>
+                        <coordinate x="2167.0614" y="2514.01"/>
+                        <coordinate x="2167.0614" y="2483"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Translational Mass_335" startport="P3" startcomponent="Cylinder C_191">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2201.5" y="2463"/>
+                        <coordinate x="2210.22" y="2463"/>
+                        <coordinate x="2210.22" y="2463"/>
+                        <coordinate x="2199" y="2463"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Translational Mass_335" startport="P2" startcomponent="Translational Spring_193">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2250.5" y="2405"/>
+                        <coordinate x="2272.22" y="2405"/>
+                        <coordinate x="2272.22" y="2463"/>
+                        <coordinate x="2263" y="2463"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Translational Spring_193" startport="P2" startcomponent="Translational Mass_336">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2203" y="2405"/>
+                        <coordinate x="2216.22" y="2405"/>
+                        <coordinate x="2216.22" y="2405"/>
+                        <coordinate x="2217.5" y="2405"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Translational Mass_336" startport="P1" startcomponent="Force Transformer_191">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2122.5" y="2405"/>
+                        <coordinate x="2133.22" y="2405"/>
+                        <coordinate x="2133.22" y="2405"/>
+                        <coordinate x="2139" y="2405"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Hydraulic Volume with 3 Ports_129" startport="P1" startcomponent="Laminar Orifice_128">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2304" y="2694"/>
+                        <coordinate x="2383.22" y="2694"/>
+                        <coordinate x="2383.22" y="2659"/>
+                        <coordinate x="2379" y="2659"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="PP" endcomponent="4/3 Servo Valve_128" startport="P3" startcomponent="Hydraulic Volume with 3 Ports_129">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2404" y="2644"/>
+                        <coordinate x="2404.9216" y="2644"/>
+                        <coordinate x="2404.9216" y="2584"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="PT" endcomponent="4/3 Servo Valve_128" startport="P1" startcomponent="Tank C_207">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2425" y="2593.5"/>
+                        <coordinate x="2425" y="2610.01"/>
+                        <coordinate x="2424.9715" y="2610.01"/>
+                        <coordinate x="2424.9715" y="2584"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Cylinder C_128" startport="PA" startcomponent="4/3 Servo Valve_128">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2404.9216" y="2534"/>
+                        <coordinate x="2404.9216" y="2528.01"/>
+                        <coordinate x="2295.4742" y="2528.01"/>
+                        <coordinate x="2295.4742" y="2483"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Cylinder C_128" startport="PB" startcomponent="4/3 Servo Valve_128">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2424.9715" y="2534"/>
+                        <coordinate x="2424.9715" y="2514.01"/>
+                        <coordinate x="2375.0614" y="2514.01"/>
+                        <coordinate x="2375.0614" y="2483"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Translational Mass_329" startport="P3" startcomponent="Cylinder C_128">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2409.5" y="2463"/>
+                        <coordinate x="2418.22" y="2463"/>
+                        <coordinate x="2418.22" y="2463"/>
+                        <coordinate x="2407" y="2463"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Translational Mass_329" startport="P2" startcomponent="Translational Spring_128">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2458.5" y="2405"/>
+                        <coordinate x="2480.22" y="2405"/>
+                        <coordinate x="2480.22" y="2463"/>
+                        <coordinate x="2471" y="2463"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Translational Spring_128" startport="P2" startcomponent="Translational Mass_330">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2411" y="2405"/>
+                        <coordinate x="2424.22" y="2405"/>
+                        <coordinate x="2424.22" y="2405"/>
+                        <coordinate x="2425.5" y="2405"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Translational Mass_330" startport="P1" startcomponent="Force Transformer_128">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2330.5" y="2405"/>
+                        <coordinate x="2341.22" y="2405"/>
+                        <coordinate x="2341.22" y="2405"/>
+                        <coordinate x="2347" y="2405"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Laminar Orifice_128" startport="P1" startcomponent="Hydraulic Volume with 3 Ports_128">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2221" y="2659"/>
+                        <coordinate x="2279.22" y="2659"/>
+                        <coordinate x="2279.22" y="2624"/>
+                        <coordinate x="2304" y="2624"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Hydraulic Volume with 3 Ports_130" startport="P1" startcomponent="Laminar Orifice_129">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2508" y="2694"/>
+                        <coordinate x="2587.22" y="2694"/>
+                        <coordinate x="2587.22" y="2659"/>
+                        <coordinate x="2583" y="2659"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="PP" endcomponent="4/3 Servo Valve_129" startport="P3" startcomponent="Hydraulic Volume with 3 Ports_130">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2608" y="2644"/>
+                        <coordinate x="2608.9216" y="2644"/>
+                        <coordinate x="2608.9216" y="2584"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="PT" endcomponent="4/3 Servo Valve_129" startport="P1" startcomponent="Tank C_208">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2629" y="2598.5"/>
+                        <coordinate x="2629" y="2593.01"/>
+                        <coordinate x="2628.9715" y="2593.01"/>
+                        <coordinate x="2628.9715" y="2584"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Cylinder C_129" startport="PA" startcomponent="4/3 Servo Valve_129">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2608.9216" y="2534"/>
+                        <coordinate x="2608.9216" y="2528.01"/>
+                        <coordinate x="2499.4742" y="2528.01"/>
+                        <coordinate x="2499.4742" y="2483"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Cylinder C_129" startport="PB" startcomponent="4/3 Servo Valve_129">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2628.9715" y="2534"/>
+                        <coordinate x="2628.9715" y="2514.01"/>
+                        <coordinate x="2579.0614" y="2514.01"/>
+                        <coordinate x="2579.0614" y="2483"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Translational Mass_331" startport="P3" startcomponent="Cylinder C_129">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2613.5" y="2463"/>
+                        <coordinate x="2622.22" y="2463"/>
+                        <coordinate x="2622.22" y="2463"/>
+                        <coordinate x="2611" y="2463"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Translational Mass_331" startport="P2" startcomponent="Translational Spring_129">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2662.5" y="2405"/>
+                        <coordinate x="2684.22" y="2405"/>
+                        <coordinate x="2684.22" y="2463"/>
+                        <coordinate x="2675" y="2463"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Translational Spring_129" startport="P2" startcomponent="Translational Mass_332">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2615" y="2405"/>
+                        <coordinate x="2628.22" y="2405"/>
+                        <coordinate x="2628.22" y="2405"/>
+                        <coordinate x="2629.5" y="2405"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Translational Mass_332" startport="P1" startcomponent="Force Transformer_129">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2534.5" y="2405"/>
+                        <coordinate x="2545.22" y="2405"/>
+                        <coordinate x="2545.22" y="2405"/>
+                        <coordinate x="2551" y="2405"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Laminar Orifice_129" startport="P1" startcomponent="Hydraulic Volume with 3 Ports_129">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2429" y="2659"/>
+                        <coordinate x="2486.22" y="2659"/>
+                        <coordinate x="2486.22" y="2624"/>
+                        <coordinate x="2508" y="2624"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="PT" endcomponent="4/3 Servo Valve_130" startport="P1" startcomponent="Tank C_209">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2824" y="2594.5"/>
+                        <coordinate x="2824" y="2595.01"/>
+                        <coordinate x="2823.9715" y="2595.01"/>
+                        <coordinate x="2823.9715" y="2583"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Cylinder C_130" startport="PA" startcomponent="4/3 Servo Valve_130">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2803.9216" y="2533"/>
+                        <coordinate x="2803.9216" y="2528.01"/>
+                        <coordinate x="2694.4742" y="2528.01"/>
+                        <coordinate x="2694.4742" y="2483"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Cylinder C_130" startport="PB" startcomponent="4/3 Servo Valve_130">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2823.9715" y="2533"/>
+                        <coordinate x="2823.9715" y="2514.01"/>
+                        <coordinate x="2774.0614" y="2514.01"/>
+                        <coordinate x="2774.0614" y="2483"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Translational Mass_333" startport="P3" startcomponent="Cylinder C_130">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2808.5" y="2463"/>
+                        <coordinate x="2817.22" y="2463"/>
+                        <coordinate x="2817.22" y="2463"/>
+                        <coordinate x="2806" y="2463"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Translational Mass_333" startport="P2" startcomponent="Translational Spring_130">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2872.5" y="2406"/>
+                        <coordinate x="2879.22" y="2406"/>
+                        <coordinate x="2879.22" y="2463"/>
+                        <coordinate x="2870" y="2463"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Translational Spring_130" startport="P2" startcomponent="Translational Mass_334">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2830" y="2405"/>
+                        <coordinate x="2840.22" y="2405"/>
+                        <coordinate x="2840.22" y="2406"/>
+                        <coordinate x="2839.5" y="2406"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Translational Mass_334" startport="P1" startcomponent="Force Transformer_130">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2749.5" y="2405"/>
+                        <coordinate x="2740.22" y="2405"/>
+                        <coordinate x="2740.22" y="2405"/>
+                        <coordinate x="2766" y="2405"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Laminar Orifice_130" startport="P1" startcomponent="Hydraulic Volume with 3 Ports_130">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2633" y="2659"/>
+                        <coordinate x="2682.22" y="2659"/>
+                        <coordinate x="2682.22" y="2624"/>
+                        <coordinate x="2689" y="2624"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="4/3 Servo Valve_195" startport="out" startcomponent="Square Wave_191">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2073" y="2609"/>
+                        <coordinate x="2088.22" y="2609"/>
+                        <coordinate x="2088.22" y="2569"/>
+                        <coordinate x="2107.5" y="2569"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="4/3 Servo Valve_128" startport="out" startcomponent="Sine Wave_191">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2292" y="2612"/>
+                        <coordinate x="2304.22" y="2612"/>
+                        <coordinate x="2304.22" y="2569"/>
+                        <coordinate x="2315.5" y="2569"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="4/3 Servo Valve_129" startport="out" startcomponent="Square Wave_128">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2496" y="2610"/>
+                        <coordinate x="2509.22" y="2610"/>
+                        <coordinate x="2509.22" y="2569"/>
+                        <coordinate x="2519.5" y="2569"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="4/3 Servo Valve_130" startport="out" startcomponent="Sine Wave_128">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2696" y="2610"/>
+                        <coordinate x="2705.22" y="2610"/>
+                        <coordinate x="2705.22" y="2568"/>
+                        <coordinate x="2714.5" y="2568"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Force Transformer_129" startport="out" startcomponent="Square Wave_130">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2459" y="2338"/>
+                        <coordinate x="2486.22" y="2338"/>
+                        <coordinate x="2486.22" y="2405"/>
+                        <coordinate x="2495.5" y="2405"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Force Transformer_128" startport="out" startcomponent="Sine Wave_129">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2248" y="2331"/>
+                        <coordinate x="2280.22" y="2331"/>
+                        <coordinate x="2280.22" y="2405"/>
+                        <coordinate x="2291.5" y="2405"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Force Transformer_191" startport="out" startcomponent="Square Wave_129">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2063" y="2334"/>
+                        <coordinate x="2074.22" y="2334"/>
+                        <coordinate x="2074.22" y="2405"/>
+                        <coordinate x="2083.5" y="2405"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Hydraulic Volume with 3 Ports_191" startport="P1" startcomponent="Pressure Relief Valve_38">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1898.0008" y="2698"/>
+                        <coordinate x="1898.0008" y="2659"/>
+                        <coordinate x="2015" y="2659"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Fixed Displacement Pump_38" startport="P1" startcomponent="Tank C_205">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2040" y="2815.5"/>
+                        <coordinate x="2040" y="2809.09"/>
+                        <coordinate x="2040.003" y="2809.09"/>
+                        <coordinate x="2040.003" y="2783"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Pressure Relief Valve_38" startport="P1" startcomponent="Tank C_204">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1898" y="2812.5"/>
+                        <coordinate x="1898" y="2801.14"/>
+                        <coordinate x="1898.0008" y="2801.14"/>
+                        <coordinate x="1898.0008" y="2778"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Force Transformer_130" startport="out" startcomponent="Sine Wave_130">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2679" y="2362"/>
+                        <coordinate x="2697" y="2362"/>
+                        <coordinate x="2697" y="2405"/>
+                        <coordinate x="2710.5" y="2405"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Hydraulic Volume" startport="P1" startcomponent="Laminar Orifice_130">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2689" y="2694"/>
+                        <coordinate x="2731.88" y="2694"/>
+                        <coordinate x="2731.88" y="2658"/>
+                        <coordinate x="2739" y="2658"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="PP" endcomponent="4/3 Servo Valve_130" startport="P2" startcomponent="Hydraulic Volume">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2789" y="2658"/>
+                        <coordinate x="2803.9216" y="2658"/>
+                        <coordinate x="2803.9216" y="2583"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

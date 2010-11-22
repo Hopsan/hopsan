@@ -1,43 +1,113 @@
---------------------------------------------------------------
--------------------  HOPSAN NG MODEL FILE  -------------------
---------------------------------------------------------------
-HOPSANGUIVERSION 0.0.1
-HMFVERSION 0.1
-CAFVERSION 0.1
---------------------------------------------------------------
-SIMULATIONTIME 0 0.001 10
-VIEWPORT 2502 2502 1
---------------------------------------------------------------
-USERICON ""
-ISOICON ""
---------------------------------------------------------------
-COMPONENT "HydraulicAlternativePRV" "AlternativePRV" 2594 2511 0 1 0
-PARAMETER "AlternativePRV" "pref" 1e+07
-PARAMETER "AlternativePRV" "cq" 0.67
-PARAMETER "AlternativePRV" "spooldiameter" 0.02
-PARAMETER "AlternativePRV" "frac" 1
-PARAMETER "AlternativePRV" "pilotarea" 0.0001
-PARAMETER "AlternativePRV" "k" 30000
-PARAMETER "AlternativePRV" "c" 0
-PARAMETER "AlternativePRV" "m" 0.05
-PARAMETER "AlternativePRV" "xhyst" 0
-PARAMETER "AlternativePRV" "xmax" 0.01
-PARAMETER "AlternativePRV" "debug" 0
-PARAMETER "AlternativePRV" "t1" 0
-PARAMETER "AlternativePRV" "t2" 0.01
-COMPONENT "HydraulicFlowSourceQ" "FlowSourceQ" 2376 2446 0 1 1
-PARAMETER "FlowSourceQ" "Flow" 2e-05
-COMPONENT "HydraulicTankC" "PressureSource" 2592 2583 0 1 0
-PARAMETER "PressureSource" "P" 100000
-COMPONENT "HydraulicVolume" "Volume" 2488 2446 0 0 1
-PARAMETER "Volume" "V" 0.003
-PARAMETER "Volume" "Be" 1e+09
-PARAMETER "Volume" "a" 0
-PARAMETER "Volume" "debug" 0
-PARAMETER "Volume" "t1" 0
-PARAMETER "Volume" "t2" 0.01
---------------------------------------------------------------
-CONNECT "FlowSourceQ" "P1" "Volume" "P1" 2388 2446 2395 2446 2395 2446 2463 2446
-CONNECT "PressureSource" "P1" "AlternativePRV" "P2" 2592 2568.5 2592 2566 2592 2566 2592 2551
-CONNECT "Volume" "P2" "AlternativePRV" "P1" 2513 2446 2592 2446 2592 2471
---------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.1" hopsanguiversion="0.0.1" hopsancoreversion="0">
+    <system typename="Subsystem" cqs_type="S" name="prvtest">
+        <simulationtime stop="10" timestep="0.001" start="0"/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="0" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2504" y="2503.5" zoom="1"/>
+            <hopsanobjectappearance>
+                <modelobject typename="" displayname="prvtest">
+                    <icon isopath="" iconrotation="" userpath=""/>
+                </modelobject>
+            </hopsanobjectappearance>
+        </hopsangui>
+        <objects>
+            <component typename="HydraulicTankC" name="PressureSource">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2592" y="2583" flipped="0" a="0"/>
+                    <nametext position="1" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicFlowSourceQ" name="FlowSourceQ">
+                <parameters>
+                    <parameter value="2e-05" name="Flow"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2376" y="2446" flipped="0" a="0"/>
+                    <nametext position="1" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolume" name="Volume">
+                <parameters>
+                    <parameter value="0.003" name="V"/>
+                    <parameter value="1000000000" name="Be"/>
+                    <parameter value="0" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2488" y="2446" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicAlternativePRV" name="AlternativePRV">
+                <parameters>
+                    <parameter value="10000000" name="pref"/>
+                    <parameter value="0.67" name="cq"/>
+                    <parameter value="0.02" name="spooldiameter"/>
+                    <parameter value="1" name="frac"/>
+                    <parameter value="0.0001" name="pilotarea"/>
+                    <parameter value="30000" name="k"/>
+                    <parameter value="0" name="c"/>
+                    <parameter value="0.05" name="m"/>
+                    <parameter value="0" name="xhyst"/>
+                    <parameter value="0.01" name="xmax"/>
+                    <parameter value="0" name="debug"/>
+                    <parameter value="0" name="t1"/>
+                    <parameter value="0.01" name="t2"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="X" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2594" y="2511" flipped="0" a="0"/>
+                    <nametext position="1" visible="0"/>
+                </hopsangui>
+            </component>
+        </objects>
+        <connections>
+            <connect endport="P1" endcomponent="Volume" startport="P1" startcomponent="FlowSourceQ">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2388" y="2446"/>
+                        <coordinate x="2395" y="2446"/>
+                        <coordinate x="2395" y="2446"/>
+                        <coordinate x="2463" y="2446"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="AlternativePRV" startport="P1" startcomponent="PressureSource">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2592" y="2568.5"/>
+                        <coordinate x="2592" y="2566"/>
+                        <coordinate x="2592.0008" y="2566"/>
+                        <coordinate x="2592.0008" y="2551"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="AlternativePRV" startport="P2" startcomponent="Volume">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2513" y="2446"/>
+                        <coordinate x="2592.0008" y="2446"/>
+                        <coordinate x="2592.0008" y="2471"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

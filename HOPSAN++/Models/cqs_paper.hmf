@@ -1,45 +1,221 @@
---------------------------------------------------------------
--------------------  HOPSAN NG MODEL FILE  -------------------
---------------------------------------------------------------
-HOPSANGUIVERSION 0.0.1
-HMFVERSION 0.1
-CAFVERSION 0.1
---------------------------------------------------------------
-SIMULATIONTIME 0 0.001 10
-VIEWPORT 2504 2502 1
---------------------------------------------------------------
-USERICON ""
-ISOICON ""
---------------------------------------------------------------
-COMPONENT "HydraulicLaminarOrifice" "Orifice" 2410 2527 90 0 0
-PARAMETER "Orifice" "Kc" 1e-11
-COMPONENT "HydraulicPressureSource" "Pressure" 2313 2527 90 0 0
-PARAMETER "Pressure" "P" 100000
-COMPONENT "HydraulicLaminarOrifice" "Orifice_1" 2672 2527 90 0 0
-PARAMETER "Orifice_1" "Kc" 1e-11
-COMPONENT "HydraulicTLMlossless" "Long pipe" 2527 2539 0 0 0
-PARAMETER "Long pipe" "TD" 0.1
-PARAMETER "Long pipe" "a" 0
-PARAMETER "Long pipe" "Zc" 1e+09
-COMPONENT "SignalSubtract" "Subtract" 2376 2463 0 0 0
-COMPONENT "HydraulicFlowSensor" "Flow Sensor" 2605 2497 0 0 0
-COMPONENT "HydraulicTankC" "Tank" 2717 2527 270 0 0
-PARAMETER "Tank" "P" 100000
-COMPONENT "SignalRamp" "ref" 2316 2463 0 0 0
-PARAMETER "ref" "BaseValue" 0
-PARAMETER "ref" "Amplitude" 1
-PARAMETER "ref" "StartTime" 1
-PARAMETER "ref" "StopTime" 2
-COMPONENT "SignalGain" "Gain" 2432 2463 0 0 0
-PARAMETER "Gain" "Gain" 1
---------------------------------------------------------------
-CONNECT "Pressure" "P1" "Orifice" "P2" 2325 2527 2327.43 2527 2327.43 2492 2410 2492
-CONNECT "Long pipe" "P2" "Orifice_1" "P2" 2583.5 2539 2625.43 2539 2625.43 2492 2672 2492
-CONNECT "Orifice_1" "P1" "Tank" "P1" 2672 2562 2708.43 2562 2708.43 2527 2702.5 2527
-CONNECT "ref" "out" "Subtract" "in1" 2336 2463 2340.43 2463 2340.43 2463 2363.5 2463
-CONNECT "Subtract" "out" "Gain" "in" 2388.5 2463 2394.43 2463 2394.43 2463 2419.5 2463
-CONNECT "Subtract" "in2" "Flow Sensor" "out" 2376 2450.5 2376 2434.61 2605 2434.61 2605 2467.5
-CONNECT "Orifice" "P1" "Long pipe" "P1" 2410 2562 2443.43 2562 2443.43 2539 2470.5 2539
-CONNECT "Gain" "out" "Pressure" "In" 2444.5 2463 2463.54 2463 2463.54 2506.61 2285.31 2506.61 2285.31 2527 2301 2527
-CONNECT "Flow Sensor" "P1" "Long pipe" "P2" 2605 2526.5 2605 2539 2583.5 2539
---------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.1" hopsanguiversion="0.0.1" hopsancoreversion="0">
+    <system typename="Subsystem" cqs_type="S" name="cqs_paper">
+        <simulationtime stop="10" timestep="0.001" start="0"/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="0" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2506" y="2503.5" zoom="1"/>
+            <hopsanobjectappearance>
+                <modelobject typename="" displayname="cqs_paper">
+                    <icon isopath="" iconrotation="" userpath=""/>
+                </modelobject>
+            </hopsanobjectappearance>
+        </hopsangui>
+        <objects>
+            <component typename="HydraulicLaminarOrifice" name="Orifice">
+                <parameters>
+                    <parameter value="9.999999999999999e-12" name="Kc"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2410" y="2527" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicPressureSource" name="Pressure">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2313" y="2527" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicLaminarOrifice" name="Orifice_1">
+                <parameters>
+                    <parameter value="9.999999999999999e-12" name="Kc"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2672" y="2527" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTLMlossless" name="Long pipe">
+                <parameters>
+                    <parameter value="0.1" name="TD"/>
+                    <parameter value="0" name="a"/>
+                    <parameter value="1000000000" name="Zc"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2527" y="2539" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSubtract" name="Subtract">
+                <parameters/>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2376" y="2463" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicFlowSensor" name="Flow Sensor">
+                <parameters/>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2605" y="2497" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2717" y="2527" flipped="0" a="270"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalRamp" name="ref">
+                <parameters>
+                    <parameter value="0" name="BaseValue"/>
+                    <parameter value="1" name="Amplitude"/>
+                    <parameter value="1" name="StartTime"/>
+                    <parameter value="2" name="StopTime"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2316" y="2463" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalGain" name="Gain">
+                <parameters>
+                    <parameter value="1" name="Gain"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2432" y="2463" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+        </objects>
+        <connections>
+            <connect endport="P2" endcomponent="Orifice" startport="P1" startcomponent="Pressure">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2325" y="2527"/>
+                        <coordinate x="2327.43" y="2527"/>
+                        <coordinate x="2327.43" y="2492"/>
+                        <coordinate x="2410" y="2492"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Orifice_1" startport="P2" startcomponent="Long pipe">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2583.5" y="2539"/>
+                        <coordinate x="2625.43" y="2539"/>
+                        <coordinate x="2625.43" y="2492"/>
+                        <coordinate x="2672" y="2492"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Tank" startport="P1" startcomponent="Orifice_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2672" y="2562"/>
+                        <coordinate x="2708.43" y="2562"/>
+                        <coordinate x="2708.43" y="2527"/>
+                        <coordinate x="2702.5" y="2527"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="in1" endcomponent="Subtract" startport="out" startcomponent="ref">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2336" y="2463"/>
+                        <coordinate x="2340.43" y="2463"/>
+                        <coordinate x="2340.43" y="2463"/>
+                        <coordinate x="2363.5" y="2463"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Gain" startport="out" startcomponent="Subtract">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2388.5" y="2463"/>
+                        <coordinate x="2394.43" y="2463"/>
+                        <coordinate x="2394.43" y="2463"/>
+                        <coordinate x="2419.5" y="2463"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="out" endcomponent="Flow Sensor" startport="in2" startcomponent="Subtract">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2376" y="2450.5"/>
+                        <coordinate x="2376" y="2434.61"/>
+                        <coordinate x="2605" y="2434.61"/>
+                        <coordinate x="2605" y="2467.5"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Long pipe" startport="P1" startcomponent="Orifice">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2410" y="2562"/>
+                        <coordinate x="2443.43" y="2562"/>
+                        <coordinate x="2443.43" y="2539"/>
+                        <coordinate x="2470.5" y="2539"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="In" endcomponent="Pressure" startport="out" startcomponent="Gain">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2444.5" y="2463"/>
+                        <coordinate x="2463.54" y="2463"/>
+                        <coordinate x="2463.54" y="2506.61"/>
+                        <coordinate x="2285.31" y="2506.61"/>
+                        <coordinate x="2285.31" y="2527"/>
+                        <coordinate x="2301" y="2527"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Long pipe" startport="P1" startcomponent="Flow Sensor">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2605" y="2526.5"/>
+                        <coordinate x="2605" y="2539"/>
+                        <coordinate x="2583.5" y="2539"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

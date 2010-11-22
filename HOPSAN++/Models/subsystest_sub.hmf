@@ -1,33 +1,132 @@
---------------------------------------------------------------
--------------------  HOPSAN NG MODEL FILE  -------------------
---------------------------------------------------------------
-HOPSANGUIVERSION 0.0.1
-HMFVERSION 0.1
-CAFVERSION 0.1
---------------------------------------------------------------
-SIMULATIONTIME 0 0.001 10
-VIEWPORT 2508 2507 1
---------------------------------------------------------------
-USERICON ""
-ISOICON ""
-PORT "sysp" 0.0305092 0 0
-PORT "sysp_1" 0.969144 0 0
-PORT "sysp_2" 0 0.943014 0
-PORT "sysp_3" 0.999998 1 0
---------------------------------------------------------------
-SYSTEMPORT "SystemPort" "sysp" 2283 2434 0 0 1
-COMPONENT "SignalSource" "Constant" 2274 2503 0 0 1
-PARAMETER "Constant" "Value" 1
-SYSTEMPORT "SystemPort" "sysp_1" 2549 2439 0 0 1
-SYSTEMPORT "SystemPort" "sysp_2" 2276 2553 0 0 1
-SYSTEMPORT "SystemPort" "sysp_3" 2569 2561 0 0 1
-COMPONENT "HydraulicPressureSource" "Prescribed Pressure C" 2367 2434 90 0 1
-PARAMETER "Prescribed Pressure C" "P" 100000
-COMPONENT "SignalAdd" "Add" 2408 2561 0 0 1
---------------------------------------------------------------
-CONNECT "sysp" "sysp" "Prescribed Pressure C" "In" 2283 2434 2331 2434 2331 2434 2355 2434
-CONNECT "Prescribed Pressure C" "P1" "sysp_1" "sysp_1" 2379 2434 2526 2434 2526 2439 2549 2439
-CONNECT "Constant" "out" "Add" "in2" 2286.5 2503 2408 2503 2408 2548.5
-CONNECT "sysp_2" "sysp_2" "Add" "in1" 2276 2553 2367 2553 2367 2561 2395.5 2561
-CONNECT "Add" "out" "sysp_3" "sysp_3" 2420.5 2561 2527 2561 2527 2561 2569 2561
---------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.1" hopsanguiversion="0.0.1" hopsancoreversion="0">
+    <system typename="Subsystem" cqs_type="S" name="subsystest_sub">
+        <simulationtime stop="10" timestep="0.001" start="0"/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="0" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2510" y="2508.5" zoom="1"/>
+            <hopsanobjectappearance>
+                <modelobject typename="" displayname="subsystest_sub">
+                    <icon isopath="" iconrotation="" userpath=""/>
+                    <portpose x="0.0305092" y="0" a="0" name="sysp"/>
+                    <portpose x="0.969144" y="0" a="0" name="sysp_1"/>
+                    <portpose x="0" y="0.943014" a="0" name="sysp_2"/>
+                    <portpose x="0.9999980000000001" y="1" a="0" name="sysp_3"/>
+                </modelobject>
+            </hopsanobjectappearance>
+        </hopsangui>
+        <objects>
+            <systemport typename="SystemPort" name="sysp">
+                <hopsangui>
+                    <pose x="2283" y="2434" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </systemport>
+            <component typename="SignalSource" name="Constant">
+                <parameters>
+                    <parameter value="1" name="Value"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2274" y="2503" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <systemport typename="SystemPort" name="sysp_1">
+                <hopsangui>
+                    <pose x="2549" y="2439" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </systemport>
+            <systemport typename="SystemPort" name="sysp_2">
+                <hopsangui>
+                    <pose x="2276" y="2553" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </systemport>
+            <systemport typename="SystemPort" name="sysp_3">
+                <hopsangui>
+                    <pose x="2569" y="2561" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </systemport>
+            <component typename="HydraulicPressureSource" name="Prescribed Pressure C">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2367" y="2434" flipped="0" a="90"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalAdd" name="Add">
+                <parameters/>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2408" y="2561" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+        </objects>
+        <connections>
+            <connect endport="In" endcomponent="Prescribed Pressure C" startport="sysp" startcomponent="sysp">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2283" y="2434"/>
+                        <coordinate x="2331" y="2434"/>
+                        <coordinate x="2331" y="2434"/>
+                        <coordinate x="2355" y="2434"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="sysp_1" endcomponent="sysp_1" startport="P1" startcomponent="Prescribed Pressure C">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2379" y="2434"/>
+                        <coordinate x="2526" y="2434"/>
+                        <coordinate x="2526" y="2439"/>
+                        <coordinate x="2549" y="2439"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="in2" endcomponent="Add" startport="out" startcomponent="Constant">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2286.5" y="2503"/>
+                        <coordinate x="2408" y="2503"/>
+                        <coordinate x="2408" y="2548.5"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="in1" endcomponent="Add" startport="sysp_2" startcomponent="sysp_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2276" y="2553"/>
+                        <coordinate x="2367" y="2553"/>
+                        <coordinate x="2367" y="2561"/>
+                        <coordinate x="2395.5" y="2561"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="sysp_3" endcomponent="sysp_3" startport="out" startcomponent="Add">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2420.5" y="2561"/>
+                        <coordinate x="2527" y="2561"/>
+                        <coordinate x="2527" y="2561"/>
+                        <coordinate x="2569" y="2561"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

@@ -256,9 +256,6 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
         this->setSaved(true);
     }
 
-    //MainWindow *pMainWindow = mpParentProjectTabWidget->mpParentMainWindow;
-
-
     if((mpSystem->mModelFileInfo.filePath().isEmpty()) || (saveAsFlag == NEWFILE))
     {
         QDir fileDialogSaveDir;
@@ -269,7 +266,8 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
         mpSystem->mModelFileInfo.setFile(modelFilePath);
     }
 
-    //! @todo quickhack to avoid saving hmfx over hmf
+    //! @obsolete quickhack to avoid saving hmfx over hmf
+    //! @obsolete we shall allways save xml format as hmf from now on
     if (mpSystem->mModelFileInfo.filePath().endsWith("x"))
     {
         QString tmp = mpSystem->mModelFileInfo.filePath();
@@ -285,93 +283,94 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     }
 
     //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
+    //! @todo cant we use one of the setname or rename functions to accomplish this?
     mpSystem->getCoreSystemAccessPtr()->setRootSystemName(mpSystem->mModelFileInfo.baseName());
     mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), mpSystem->mModelFileInfo.fileName());
 
-    QTextStream modelFile(&file);  //Create a QTextStream object to stream the content of file
+//    QTextStream modelFile(&file);  //Create a QTextStream object to stream the content of file
 
 
-    writeHeader(modelFile);
+//    writeHeader(modelFile);
 
 
 
-    modelFile << "SIMULATIONTIME " << gpMainWindow->getStartTimeFromToolBar() << " " << gpMainWindow->getTimeStepFromToolBar() << " " <<  gpMainWindow->getFinishTimeFromToolBar() << "\n";
-    modelFile << "VIEWPORT " << (mpGraphicsView->horizontalScrollBar()->value() + mpGraphicsView->width()/2 - mpGraphicsView->pos().x()) / mpGraphicsView->mZoomFactor << " " <<
-                                (mpGraphicsView->verticalScrollBar()->value() + mpGraphicsView->height()/2 - mpGraphicsView->pos().x()) / mpGraphicsView->mZoomFactor << " " <<
-                                mpGraphicsView->mZoomFactor << "\n";
-    modelFile << "--------------------------------------------------------------\n";
-    modelFile << "USERICON " << addQuotes(mpSystem->getUserIconPath()) << "\n";
-    modelFile << "ISOICON " << addQuotes(mpSystem->getIsoIconPath()) << "\n";
+//    modelFile << "SIMULATIONTIME " << gpMainWindow->getStartTimeFromToolBar() << " " << gpMainWindow->getTimeStepFromToolBar() << " " <<  gpMainWindow->getFinishTimeFromToolBar() << "\n";
+//    modelFile << "VIEWPORT " << (mpGraphicsView->horizontalScrollBar()->value() + mpGraphicsView->width()/2 - mpGraphicsView->pos().x()) / mpGraphicsView->mZoomFactor << " " <<
+//                                (mpGraphicsView->verticalScrollBar()->value() + mpGraphicsView->height()/2 - mpGraphicsView->pos().x()) / mpGraphicsView->mZoomFactor << " " <<
+//                                mpGraphicsView->mZoomFactor << "\n";
+//    modelFile << "--------------------------------------------------------------\n";
+//    modelFile << "USERICON " << addQuotes(mpSystem->getUserIconPath()) << "\n";
+//    modelFile << "ISOICON " << addQuotes(mpSystem->getIsoIconPath()) << "\n";
 
-    //Calculate the position of the subsystem ports:
-    GUISystem::GUIModelObjectMapT::iterator it;
-    QLineF line;
-    double angle, x, y;
+//    //Calculate the position of the subsystem ports:
+//    GUISystem::GUIModelObjectMapT::iterator it;
+//    QLineF line;
+//    double angle, x, y;
 
-    double xMax = mpSystem->mGUIModelObjectMap.begin().value()->x() + mpSystem->mGUIModelObjectMap.begin().value()->rect().width()/2.0;
-    double xMin = mpSystem->mGUIModelObjectMap.begin().value()->x() + mpSystem->mGUIModelObjectMap.begin().value()->rect().width()/2.0;
-    double yMax = mpSystem->mGUIModelObjectMap.begin().value()->y() + mpSystem->mGUIModelObjectMap.begin().value()->rect().height()/2.0;
-    double yMin = mpSystem->mGUIModelObjectMap.begin().value()->y() + mpSystem->mGUIModelObjectMap.begin().value()->rect().height()/2.0;
+//    double xMax = mpSystem->mGUIModelObjectMap.begin().value()->x() + mpSystem->mGUIModelObjectMap.begin().value()->rect().width()/2.0;
+//    double xMin = mpSystem->mGUIModelObjectMap.begin().value()->x() + mpSystem->mGUIModelObjectMap.begin().value()->rect().width()/2.0;
+//    double yMax = mpSystem->mGUIModelObjectMap.begin().value()->y() + mpSystem->mGUIModelObjectMap.begin().value()->rect().height()/2.0;
+//    double yMin = mpSystem->mGUIModelObjectMap.begin().value()->y() + mpSystem->mGUIModelObjectMap.begin().value()->rect().height()/2.0;
 
-    for(it = mpSystem->mGUIModelObjectMap.begin(); it!=mpSystem->mGUIModelObjectMap.end(); ++it)
-    {
-        if (it.value()->x()+it.value()->rect().width()/2.0 < xMin)
-            xMin = it.value()->x()+it.value()->rect().width()/2.0;
-        if (it.value()->x()+it.value()->rect().width()/2.0 > xMax)
-            xMax = it.value()->x()+it.value()->rect().width()/2.0;
-        if (it.value()->y()+it.value()->rect().height()/2.0 < yMin)
-            yMin = it.value()->y()+it.value()->rect().height()/2.0;
-        if (it.value()->y()+it.value()->rect().height()/2.0 > yMax)
-            yMax = it.value()->y()+it.value()->rect().height()/2.0;
-    }
+//    for(it = mpSystem->mGUIModelObjectMap.begin(); it!=mpSystem->mGUIModelObjectMap.end(); ++it)
+//    {
+//        if (it.value()->x()+it.value()->rect().width()/2.0 < xMin)
+//            xMin = it.value()->x()+it.value()->rect().width()/2.0;
+//        if (it.value()->x()+it.value()->rect().width()/2.0 > xMax)
+//            xMax = it.value()->x()+it.value()->rect().width()/2.0;
+//        if (it.value()->y()+it.value()->rect().height()/2.0 < yMin)
+//            yMin = it.value()->y()+it.value()->rect().height()/2.0;
+//        if (it.value()->y()+it.value()->rect().height()/2.0 > yMax)
+//            yMax = it.value()->y()+it.value()->rect().height()/2.0;
+//    }
 
-    QPointF center = QPointF((xMax+xMin)/2, (yMax+yMin)/2);
-    double w = xMax-xMin;
-    double h = yMax-yMin;
+//    QPointF center = QPointF((xMax+xMin)/2, (yMax+yMin)/2);
+//    double w = xMax-xMin;
+//    double h = yMax-yMin;
 
-    for(it = mpSystem->mGUIModelObjectMap.begin(); it!=mpSystem->mGUIModelObjectMap.end(); ++it)
-    {
-        if(it.value()->getTypeName() == "SystemPort")
-        {
-            line = QLineF(center.x(), center.y(), it.value()->x()+it.value()->rect().width()/2, it.value()->y()+it.value()->rect().height()/2);
-            //getCurrentTab()->mpGraphicsScene->addLine(line); //debug-grej
-            angle = line.angle()*3.141592/180.0;
-            mpSystem->calcSubsystemPortPosition(w, h, angle, x, y);
-            x = (x/w+1)/2; //Change coordinate system
-            y = (-y/h+1)/2; //Change coordinate system
-            modelFile << "PORT " << addQuotes(it.value()->getName()) <<" " << x << " " << y << " " << it.value()->rotation() << "\n";
-        }
-    }
-        modelFile << "--------------------------------------------------------------\n";
+//    for(it = mpSystem->mGUIModelObjectMap.begin(); it!=mpSystem->mGUIModelObjectMap.end(); ++it)
+//    {
+//        if(it.value()->getTypeName() == "SystemPort")
+//        {
+//            line = QLineF(center.x(), center.y(), it.value()->x()+it.value()->rect().width()/2, it.value()->y()+it.value()->rect().height()/2);
+//            //getCurrentTab()->mpGraphicsScene->addLine(line); //debug-grej
+//            angle = line.angle()*3.141592/180.0;
+//            mpSystem->calcSubsystemPortPosition(w, h, angle, x, y);
+//            x = (x/w+1)/2; //Change coordinate system
+//            y = (-y/h+1)/2; //Change coordinate system
+//            modelFile << "PORT " << addQuotes(it.value()->getName()) <<" " << x << " " << y << " " << it.value()->rotation() << "\n";
+//        }
+//    }
+//        modelFile << "--------------------------------------------------------------\n";
 
-    //QHash<QString, GUIObject*>::iterator it;
-    for(it = mpSystem->mGUIModelObjectMap.begin(); it!=mpSystem->mGUIModelObjectMap.end(); ++it)
-    {
-        if ( it.value()->getTypeName() == QString("Subsystem") )
-        {
-            it.value()->saveToTextStream(modelFile, "BEGINSUBSYSTEM");
-            modelFile << "ENDSUBSYSTEM" << "\n"; //!< @todo Do this in some better way, end subsystem is needed by core (but not gui as embedded systems are not suportet (yet))
-        }
-        else if (it.value()->getTypeName() == QString("SystemPort"))
-        {
-            it.value()->saveToTextStream(modelFile, "SYSTEMPORT");
-        }
-        else
-        {
-            it.value()->saveToTextStream(modelFile, "COMPONENT");
-        }
-    }
+//    //QHash<QString, GUIObject*>::iterator it;
+//    for(it = mpSystem->mGUIModelObjectMap.begin(); it!=mpSystem->mGUIModelObjectMap.end(); ++it)
+//    {
+//        if ( it.value()->getTypeName() == QString("Subsystem") )
+//        {
+//            it.value()->saveToTextStream(modelFile, "BEGINSUBSYSTEM");
+//            modelFile << "ENDSUBSYSTEM" << "\n"; //!< @todo Do this in some better way, end subsystem is needed by core (but not gui as embedded systems are not suportet (yet))
+//        }
+//        else if (it.value()->getTypeName() == QString("SystemPort"))
+//        {
+//            it.value()->saveToTextStream(modelFile, "SYSTEMPORT");
+//        }
+//        else
+//        {
+//            it.value()->saveToTextStream(modelFile, "COMPONENT");
+//        }
+//    }
 
-    modelFile << "--------------------------------------------------------------\n";
+//    modelFile << "--------------------------------------------------------------\n";
 
-    for(int i = 0; i != mpSystem->mSubConnectorList.size(); ++i)
-    {
-        mpSystem->mSubConnectorList[i]->saveToTextStream(modelFile, "CONNECT");
-    }
-    modelFile << "--------------------------------------------------------------\n";
-    file.close();
+//    for(int i = 0; i != mpSystem->mSubConnectorList.size(); ++i)
+//    {
+//        mpSystem->mSubConnectorList[i]->saveToTextStream(modelFile, "CONNECT");
+//    }
+//    modelFile << "--------------------------------------------------------------\n";
+//    file.close();
 
-    qDebug() << "saving to xml";
+//    qDebug() << "saving to xml";
     //Save xml document
     QDomDocument domDocument;
     QDomElement hmfRoot = appendHMFRootElement(domDocument);
@@ -382,7 +381,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
 
     //Save to file
     const int IndentSize = 4;
-    QFile xmlhmf(mpSystem->mModelFileInfo.filePath()+"x");
+    QFile xmlhmf(mpSystem->mModelFileInfo.filePath());
     if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
         qDebug() << "Failed to open file for writing: " << mpSystem->mModelFileInfo.filePath() << "x";
@@ -616,12 +615,12 @@ void ProjectTabWidget::loadModel(QString modelFileName)
     ProjectTab *pCurrentTab = this->getCurrentTab();
     pCurrentTab->setSaved(true);
 
-    //Temporary hack to atempt loading xml model files
-    if (modelFileName.endsWith("x"))
+    //Check if this is an expected hmf xml file
+    //! @todo maybe write helpfunction that does this directly in system (or container)
+    QDomDocument domDocument;
+    QDomElement hmfRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
+    if (!hmfRoot.isNull())
     {
-        //! @todo maybe write helpfunction that does this directly in system (or container)
-        QDomDocument domDocument;
-        QDomElement hmfRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
         //! @todo Check version numbers
         //! @todo check if we could load else give error message and dont attempt to load
         QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
@@ -630,7 +629,11 @@ void ProjectTabWidget::loadModel(QString modelFileName)
     }
     else
     {
+        //! @obsolete
+        //! Should be removed later
+        //Assume that this is an old text baseed hmf file load it and convert it
         pCurrentTab->mpSystem->loadFromHMF(modelFileName);
+        pCurrentTab->save();
     }
 }
 

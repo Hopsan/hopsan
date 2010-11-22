@@ -1,38 +1,154 @@
---------------------------------------------------------------
--------------------  HOPSAN NG MODEL FILE  -------------------
---------------------------------------------------------------
-HOPSANGUIVERSION 0.0.1
-HMFVERSION 0.1
-CAFVERSION 0.1
---------------------------------------------------------------
-SIMULATIONTIME 0 0.01 5
-VIEWPORT 2504 2498 1
---------------------------------------------------------------
-USERICON ""
-ISOICON ""
---------------------------------------------------------------
-COMPONENT "MechanicTranslationalSpring" "TranslationalSpring" 2686 2487 0 1 1
-PARAMETER "TranslationalSpring" "k" 100000
-COMPONENT "MechanicTranslationalMass" "TranslationalMass" 2400 2487 0 0 1
-PARAMETER "TranslationalMass" "Mass" 100
-PARAMETER "TranslationalMass" "B" 0
-PARAMETER "TranslationalMass" "k" 0
-COMPONENT "MechanicTranslationalMass" "TranslationalMass_1" 2587 2487 0 0 1
-PARAMETER "TranslationalMass_1" "Mass" 100
-PARAMETER "TranslationalMass_1" "B" 0
-PARAMETER "TranslationalMass_1" "k" 0
-COMPONENT "MechanicTranslationalSpring" "TranslationalSpring_1" 2495 2487 0 1 1
-PARAMETER "TranslationalSpring_1" "k" 100000
-COMPONENT "MechanicVelocityTransformer" "VelocityTransformer" 2762 2487 180 0 1
-PARAMETER "VelocityTransformer" "Speed" 0
-COMPONENT "MechanicForceTransformer" "ForceTransformer" 2309 2487 0 1 1
-PARAMETER "ForceTransformer" "x0" 0
-PARAMETER "ForceTransformer" "v0" 1
-PARAMETER "ForceTransformer" "Force" 0
---------------------------------------------------------------
-CONNECT "VelocityTransformer" "out" "TranslationalSpring" "P2" 2742.5 2487 2722 2487 2722 2487 2702.5 2487
-CONNECT "TranslationalSpring" "P1" "TranslationalMass_1" "P2" 2669.5 2487 2591 2487 2591 2487 2619 2487
-CONNECT "TranslationalSpring_1" "P2" "TranslationalMass_1" "P1" 2511.5 2487 2536 2487 2536 2487 2555 2487
-CONNECT "TranslationalMass" "P2" "TranslationalSpring_1" "P1" 2432 2487 2454 2487 2454 2487 2478.5 2487
-CONNECT "ForceTransformer" "P1" "TranslationalMass" "P1" 2328.5 2487 2351 2487 2351 2487 2368 2487
---------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.1" hopsanguiversion="0.0.1" hopsancoreversion="0">
+    <system typename="Subsystem" cqs_type="S" name="2-mass-comp-amesim">
+        <simulationtime stop="10" timestep="0.001" start="0"/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="0" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2506" y="2499.5" zoom="1"/>
+            <hopsanobjectappearance>
+                <modelobject typename="" displayname="2-mass-comp-amesim">
+                    <icon isopath="" iconrotation="" userpath=""/>
+                </modelobject>
+            </hopsanobjectappearance>
+        </hopsangui>
+        <objects>
+            <component typename="MechanicTranslationalSpring" name="TranslationalSpring">
+                <parameters>
+                    <parameter value="100000" name="k"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Velocity" value="0"/>
+                    <startvalue portname="P1" variable="Force" value="0"/>
+                    <startvalue portname="P1" variable="Position" value="0"/>
+                    <startvalue portname="P2" variable="Velocity" value="0"/>
+                    <startvalue portname="P2" variable="Force" value="0"/>
+                    <startvalue portname="P2" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2686" y="2487" flipped="0" a="0"/>
+                    <nametext position="1" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalMass" name="TranslationalMass">
+                <parameters>
+                    <parameter value="100" name="Mass"/>
+                    <parameter value="0" name="B"/>
+                    <parameter value="0" name="k"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2400" y="2487" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalMass" name="TranslationalMass_1">
+                <parameters>
+                    <parameter value="100" name="Mass"/>
+                    <parameter value="0" name="B"/>
+                    <parameter value="0" name="k"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2587" y="2487" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalSpring" name="TranslationalSpring_1">
+                <parameters>
+                    <parameter value="100000" name="k"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Velocity" value="0"/>
+                    <startvalue portname="P1" variable="Force" value="0"/>
+                    <startvalue portname="P1" variable="Position" value="0"/>
+                    <startvalue portname="P2" variable="Velocity" value="0"/>
+                    <startvalue portname="P2" variable="Force" value="0"/>
+                    <startvalue portname="P2" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2495" y="2487" flipped="0" a="0"/>
+                    <nametext position="1" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicVelocityTransformer" name="VelocityTransformer">
+                <parameters>
+                    <parameter value="0" name="Speed"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2762" y="2487" flipped="0" a="180"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicForceTransformer" name="ForceTransformer">
+                <parameters>
+                    <parameter value="0" name="x0"/>
+                    <parameter value="1" name="v0"/>
+                    <parameter value="0" name="Force"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Velocity" value="0"/>
+                    <startvalue portname="P1" variable="Force" value="0"/>
+                    <startvalue portname="P1" variable="Position" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2309" y="2487" flipped="0" a="0"/>
+                    <nametext position="1" visible="1"/>
+                </hopsangui>
+            </component>
+        </objects>
+        <connections>
+            <connect endport="P2" endcomponent="TranslationalSpring" startport="out" startcomponent="VelocityTransformer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2742.5" y="2487"/>
+                        <coordinate x="2722" y="2487"/>
+                        <coordinate x="2722" y="2487"/>
+                        <coordinate x="2702.5" y="2487"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="TranslationalMass_1" startport="P1" startcomponent="TranslationalSpring">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2669.5" y="2487"/>
+                        <coordinate x="2591" y="2487"/>
+                        <coordinate x="2591" y="2487"/>
+                        <coordinate x="2619" y="2487"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="TranslationalMass_1" startport="P2" startcomponent="TranslationalSpring_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2511.5" y="2487"/>
+                        <coordinate x="2536" y="2487"/>
+                        <coordinate x="2536" y="2487"/>
+                        <coordinate x="2555" y="2487"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="TranslationalSpring_1" startport="P2" startcomponent="TranslationalMass">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2432" y="2487"/>
+                        <coordinate x="2454" y="2487"/>
+                        <coordinate x="2454" y="2487"/>
+                        <coordinate x="2478.5" y="2487"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="TranslationalMass" startport="P1" startcomponent="ForceTransformer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2328.5" y="2487"/>
+                        <coordinate x="2351" y="2487"/>
+                        <coordinate x="2351" y="2487"/>
+                        <coordinate x="2368" y="2487"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

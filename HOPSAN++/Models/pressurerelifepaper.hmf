@@ -1,38 +1,124 @@
---------------------------------------------------------------
--------------------  HOPSAN NG MODEL FILE  -------------------
---------------------------------------------------------------
-HOPSANGUIVERSION 0.0.1
-HMFVERSION 0.1
-CAFVERSION 0.1
---------------------------------------------------------------
-SIMULATIONTIME 0 0.01 5
-VIEWPORT 2502 2502 1
---------------------------------------------------------------
-USERICON ""
-ISOICON ""
---------------------------------------------------------------
-COMPONENT "HydraulicVolume" "Hydraulic Volume" 2454 2480 0 0 0
-PARAMETER "Hydraulic Volume" "V" 0.001
-PARAMETER "Hydraulic Volume" "Be" 1e+09
-PARAMETER "Hydraulic Volume" "a" 0
-PARAMETER "Hydraulic Volume" "debug" 0
-PARAMETER "Hydraulic Volume" "t1" 0
-PARAMETER "Hydraulic Volume" "t2" 0.01
-COMPONENT "HydraulicPressureSourceQ" "Prescribed Pressure Q" 2391 2480 90 0 0
-PARAMETER "Prescribed Pressure Q" "P" 100000
-COMPONENT "HydraulicPressureReliefValve" "Pressure Relief Valve" 2519 2526 0 0 0
-PARAMETER "Pressure Relief Valve" "pref" 2e+06
-PARAMETER "Pressure Relief Valve" "tao" 0.01
-PARAMETER "Pressure Relief Valve" "kcs" 1e-08
-PARAMETER "Pressure Relief Valve" "kcf" 1e-08
-PARAMETER "Pressure Relief Valve" "qnom" 0.001
-PARAMETER "Pressure Relief Valve" "ph" 500000
-COMPONENT "HydraulicPressureSensor" "Pressure Sensor" 2517 2450 0 0 0
-COMPONENT "HydraulicTankC" "Tank C" 2517 2580 0 0 0
-PARAMETER "Tank C" "P" 100000
---------------------------------------------------------------
-CONNECT "Tank C" "P1" "Pressure Relief Valve" "P2" 2517 2565.5 2517 2589 2517 2589 2517 2566
-CONNECT "Prescribed Pressure Q" "P1" "Hydraulic Volume" "P1" 2403 2480 2409 2480 2409 2480 2429 2480
-CONNECT "Hydraulic Volume" "P2" "Pressure Relief Valve" "P1" 2479 2480 2517 2480 2517 2486
-CONNECT "Pressure Sensor" "P1" "Pressure Relief Valve" "P1" 2517 2479.5 2517 2467.37 2517 2467.37 2517 2486
---------------------------------------------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.1" hopsanguiversion="0.0.1" hopsancoreversion="0">
+    <system typename="Subsystem" cqs_type="S" name="pressurerelifepaper">
+        <simulationtime stop="10" timestep="0.001" start="0"/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="0" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2504" y="2503.5" zoom="1"/>
+            <hopsanobjectappearance>
+                <modelobject typename="" displayname="pressurerelifepaper">
+                    <icon isopath="" iconrotation="" userpath=""/>
+                </modelobject>
+            </hopsanobjectappearance>
+        </hopsangui>
+        <objects>
+            <component typename="HydraulicPressureSensor" name="Pressure Sensor">
+                <parameters/>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2517" y="2450" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolume" name="Hydraulic Volume">
+                <parameters>
+                    <parameter value="0.001" name="V"/>
+                    <parameter value="1000000000" name="Be"/>
+                    <parameter value="0" name="a"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                    <startvalue portname="P2" variable="Flow" value="0"/>
+                    <startvalue portname="P2" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2454" y="2480" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicPressureSourceQ" name="Prescribed Pressure Q">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2391" y="2480" flipped="0" a="90"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank C">
+                <parameters>
+                    <parameter value="100000" name="P"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="P1" variable="Flow" value="0"/>
+                    <startvalue portname="P1" variable="Pressure" value="100000"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2517" y="2580" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicPressureReliefValve" name="Pressure Relief Valve">
+                <parameters>
+                    <parameter value="2000000" name="pref"/>
+                    <parameter value="0.01" name="tao"/>
+                    <parameter value="1e-08" name="kcs"/>
+                    <parameter value="1e-08" name="kcf"/>
+                    <parameter value="0.001" name="qnom"/>
+                    <parameter value="500000" name="ph"/>
+                </parameters>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2519" y="2526" flipped="0" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+        </objects>
+        <connections>
+            <connect endport="P2" endcomponent="Pressure Relief Valve" startport="P1" startcomponent="Tank C">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2517" y="2565.5"/>
+                        <coordinate x="2517" y="2589"/>
+                        <coordinate x="2517.0008" y="2589"/>
+                        <coordinate x="2517.0008" y="2566"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Hydraulic Volume" startport="P1" startcomponent="Prescribed Pressure Q">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2403" y="2480"/>
+                        <coordinate x="2409" y="2480"/>
+                        <coordinate x="2409" y="2480"/>
+                        <coordinate x="2429" y="2480"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Pressure Relief Valve" startport="P2" startcomponent="Hydraulic Volume">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2479" y="2480"/>
+                        <coordinate x="2517.0008" y="2480"/>
+                        <coordinate x="2517.0008" y="2486"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Pressure Relief Valve" startport="P1" startcomponent="Pressure Sensor">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2517" y="2479.5"/>
+                        <coordinate x="2517" y="2467.37"/>
+                        <coordinate x="2517.0008" y="2467.37"/>
+                        <coordinate x="2517.0008" y="2486"/>
+                    </coordinates>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>
