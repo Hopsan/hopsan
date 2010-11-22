@@ -1,27 +1,28 @@
 #include "GUIConnectorAppearance.h"
 #include "qdebug.h"
+#include "Configuration.h"
+#include "common.h"
 
 GUIConnectorAppearance::GUIConnectorAppearance(QString type, graphicsType gfxType)
 {
-    //! @todo Dont set these here should be set once when the program starts, should be possible to change appearance by config
-    //Sets the hardcoded connector pen appearance
-    mPrimaryPenPowerIso = QPen(QColor("black"),1, Qt::SolidLine, Qt::RoundCap);
-    mActivePenPowerIso = QPen(QColor("red"), 2, Qt::SolidLine, Qt::RoundCap);
-    mHoverPenPowerIso = QPen(QColor("darkRed"),2, Qt::SolidLine, Qt::RoundCap);
+        //Obtain pen styles from config object
+    mPrimaryPenPowerIso = gConfig.getPen("Power", "Iso", "Primary");
+    mActivePenPowerIso = gConfig.getPen("Power", "Iso", "Active");
+    mHoverPenPowerIso = gConfig.getPen("Power", "Iso", "Hover");
 
-    mPrimaryPenSignalIso = QPen(QColor("blue"),1, Qt::DashLine);
-    mActivePenSignalIso = QPen(QColor("red"), 2, Qt::DashLine);
-    mHoverPenSignalIso = QPen(QColor("darkRed"),2, Qt::DashLine);
+    mPrimaryPenSignalIso = gConfig.getPen("Signal", "Iso", "Primary");
+    mActivePenSignalIso = gConfig.getPen("Signal", "Iso", "Active");
+    mHoverPenSignalIso = gConfig.getPen("Signal", "Iso", "Hover");
 
-    mPrimaryPenPowerUser = QPen(QColor("black"),2, Qt::SolidLine, Qt::RoundCap);
-    mActivePenPowerUser = QPen(QColor("red"), 3, Qt::SolidLine, Qt::RoundCap);
-    mHoverPenPowerUser = QPen(QColor("darkRed"),3, Qt::SolidLine, Qt::RoundCap);
+    mPrimaryPenPowerUser = gConfig.getPen("Power", "User", "Primary");
+    mActivePenPowerUser = gConfig.getPen("Power", "User", "Active");
+    mHoverPenPowerUser = gConfig.getPen("Power", "User", "Hover");
 
-    mPrimaryPenSignalUser = QPen(QColor("blue"),1, Qt::DashLine);
-    mActivePenSignalUser = QPen(QColor("red"), 2, Qt::DashLine);
-    mHoverPenSignalUser = QPen(QColor("darkRed"),2, Qt::DashLine);
+    mPrimaryPenSignalUser = gConfig.getPen("Signal", "User", "Primary");
+    mActivePenSignalUser = gConfig.getPen("Signal", "User", "Active");
+    mHoverPenSignalUser = gConfig.getPen("Signal", "User", "Hover");
 
-    mNonFinishedPen = QPen(QColor("lightslategray"),3,Qt::SolidLine, Qt::RoundCap);
+    mNonFinishedPen = gConfig.getPen("NonFinished", "User", "Primary");
 
     //Set the connector type and style
     setTypeAndIsoStyle(type, gfxType);     //Need to use set type instead of setting directly as setType narrows types down to power or signal

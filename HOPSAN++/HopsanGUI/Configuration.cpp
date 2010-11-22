@@ -44,6 +44,30 @@ void Configuration::saveToXml()
     appendDomBooleanNode(settings, "multicore", mUseMulticore);
     appendDomValueNode(settings, "numberofthreads", mNumberOfThreads);
 
+    QDomElement style = appendDomElement(configRoot, "style");
+
+    QMap<QString, QMap<QString, QMap<QString, QPen> > >::iterator it1;
+    QMap<QString, QMap<QString, QPen> >::iterator it2;
+    QMap<QString, QPen>::iterator it3;
+
+    for(it1 = mPenStyles.begin(); it1 != mPenStyles.end(); ++it1)
+    {
+        for(it2 = it1.value().begin(); it2 != it1.value().end(); ++it2)
+        {
+            for(it3 = it2.value().begin(); it3 != it2.value().end(); ++it3)
+            {
+                QDomElement tempElement = appendDomElement(style, "penstyle");
+                tempElement.setAttribute("type", it1.key());
+                tempElement.setAttribute("gfxtype", it2.key());
+                tempElement.setAttribute("situation", it3.key());
+                tempElement.setAttribute("color", it3.value().color().name());
+                tempElement.setAttribute("width", it3.value().width());
+                tempElement.setAttribute("style", it3.value().style());
+                tempElement.setAttribute("capstyle", it3.value().capStyle());
+            }
+        }
+    }
+
     QDomElement libs = appendDomElement(configRoot, "libs");
     for(size_t i=0; i<mUserLibs.size(); ++i)
     {
@@ -125,8 +149,42 @@ mDefaultUnits.insert("Torque", "Nm");
 mDefaultUnits.insert("Angle", "rad");
 mDefaultUnits.insert("Angular Velocity", "rad/s");
 
-QMap<QString, double> testMap;
-testMap.insert("Hej", 123);
+QMap<QString, QPen> isoPenMap;
+QMap<QString, QPen> userPenMap;
+
+QMap<QString, QMap<QString, QPen> > powerPenMap;
+isoPenMap.insert("Primary", QPen(QColor("black"),1, Qt::SolidLine, Qt::RoundCap));
+isoPenMap.insert("Active", QPen(QColor("red"), 2, Qt::SolidLine, Qt::RoundCap));
+isoPenMap.insert("Hover", QPen(QColor("darkRed"),2, Qt::SolidLine, Qt::RoundCap));
+powerPenMap.insert("Iso", isoPenMap);
+userPenMap.insert("Primary", QPen(QColor("black"),2, Qt::SolidLine, Qt::RoundCap));
+userPenMap.insert("Active", QPen(QColor("red"), 3, Qt::SolidLine, Qt::RoundCap));
+userPenMap.insert("Hover", QPen(QColor("darkRed"),3, Qt::SolidLine, Qt::RoundCap));
+powerPenMap.insert("User", userPenMap);
+mPenStyles.insert("Power", powerPenMap);
+
+isoPenMap.clear();
+userPenMap.clear();
+
+QMap<QString, QMap<QString, QPen> > signalPenMap;
+isoPenMap.insert("Primary", QPen(QColor("blue"),1, Qt::DashLine));
+isoPenMap.insert("Active", QPen(QColor("red"), 2, Qt::DashLine));
+isoPenMap.insert("Hover", QPen(QColor("darkRed"),2, Qt::DashLine));
+signalPenMap.insert("Iso", isoPenMap);
+userPenMap.insert("Primary", QPen(QColor("blue"),1, Qt::DashLine));
+userPenMap.insert("Active", QPen(QColor("red"), 2, Qt::DashLine));
+userPenMap.insert("Hover", QPen(QColor("darkRed"),2, Qt::DashLine));
+signalPenMap.insert("User", userPenMap);
+mPenStyles.insert("Signal", signalPenMap);
+
+isoPenMap.clear();
+
+QMap<QString, QMap<QString, QPen> >nonFinishedPenMap;
+isoPenMap.insert("Primary", QPen(QColor("lightslategray"),3,Qt::SolidLine, Qt::RoundCap));
+nonFinishedPenMap.insert("Iso", isoPenMap);
+nonFinishedPenMap.insert("User", isoPenMap);
+mPenStyles.insert("NonFinished", nonFinishedPenMap);
+
 
     //Definition of custom units
 QMap<QString, double> PressureUnitMap;
@@ -359,6 +417,13 @@ QMap<QString, double> Configuration::getCustomUnits(QString key)
 {
     return this->mCustomUnits.find(key).value();
 }
+
+
+QPen Configuration::getPen(QString type, QString gfxType, QString situation)
+{
+    return mPenStyles.find(type).value().find(gfxType).value().find(situation).value();
+}
+
 
 
 //! @brief Set function for invert wheel option

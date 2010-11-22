@@ -7,6 +7,7 @@
 #include <QColor>
 #include <QList>
 #include <QFileInfo>
+#include <QPen>
 
 class MainWindow;
 
@@ -30,6 +31,8 @@ public:
     QStringList getLastSessionModels();
     QString getDefaultUnit(QString key);
     QMap<QString, double> getCustomUnits(QString key);
+    QPen getPen(QString type, QString gfxType, QString situation);
+
 
     void setInvertWheel(bool value);
     void setUseMultiCore(bool value);
@@ -63,6 +66,20 @@ private:
     QMap<QString, QString> mDefaultUnits;
     QMap< QString, QMap<QString, double> > mCustomUnits;
 
+    QMap < QString, QMap< QString, QMap<QString, QPen> > > mPenStyles;
+//    QPen mPrimaryPenPowerUser;
+//    QPen mActivePenPowerUser;
+//    QPen mHoverPenPowerUser;
+//    QPen mPrimaryPenSignalUser;
+//    QPen mActivePenSignalUser;
+//    QPen mHoverPenSignalUser;
+//    QPen mPrimaryPenPowerIso;
+//    QPen mActivePenPowerIso;
+//    QPen mHoverPenPowerIso;
+//    QPen mPrimaryPenSignalIso;
+//    QPen mActivePenSignalIso;
+//    QPen mHoverPenSignalIso;
+//    QPen mNonFinishedPen;
 };
 
 #endif // Configuration_H

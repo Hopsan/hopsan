@@ -13,7 +13,6 @@
 
 #include "ParameterDialog.h"
 #include "MainWindow.h"
-//#include "GUIObjects/GUIModelObject.h"
 #include "GUIObjects/GUISystem.h"
 #include "GUIPort.h"
 #include "MessageWidget.h"
@@ -24,7 +23,7 @@
 //! @class ParameterDialog
 //! @brief The ParameterDialog class is a Widget used to interact with component parameters.
 //!
-//! It read and write parameters to the core components.
+//! It reads and writes parameters to the core components.
 //!
 
 
