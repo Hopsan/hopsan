@@ -228,6 +228,7 @@ mCustomUnits.insert("Angle", AngleUnitMap);
 mCustomUnits.insert("Angular Velocity", AngularVelocityUnitMap);
 mCustomUnits.insert("Value", ValueUnitMap);
 
+
     //Read from hopsanconfig.xml
 QFile file(QString(MAINPATH) + "hopsanconfig.xml");
 if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -275,6 +276,34 @@ else
             mUseMulticore = parseDomBooleanNode(settingsElement.firstChildElement("multicore"));
         if(!settingsElement.firstChildElement("numberofthreads").isNull())
             mUseMulticore = parseDomValueNode(settingsElement.firstChildElement("numberofthreads"));
+
+        QDomElement styleElement = configRoot.firstChildElement("style");
+        QDomElement penElement = styleElement.firstChildElement("penstyle");
+        while(!penElement.isNull())
+        {
+            QString type = penElement.attribute("type");
+            QString gfxType = penElement.attribute("gfxtype");
+            QString situation = penElement.attribute("situation");
+            QString color = penElement.attribute("color");
+            int width = penElement.attribute("width").toInt();
+            Qt::PenStyle style = Qt::PenStyle(penElement.attribute("style").toInt());
+            Qt::PenCapStyle capStyle = Qt::PenCapStyle(penElement.attribute("capstyle").toInt());
+            QPen pen = QPen(QColor(color), width, style, capStyle);
+
+            if(!mPenStyles.contains(type))
+            {
+                QMap<QString, QMap<QString, QPen> > tempMap;
+                mPenStyles.insert(type, tempMap);
+            }
+            if(!mPenStyles.find(type).value().contains(gfxType))
+            {
+                QMap<QString, QPen> tempMap;
+                mPenStyles.find(type).value().insert(gfxType, tempMap);
+            }
+            mPenStyles.find(type).value().find(gfxType).value().insert(situation, pen);
+
+            penElement = penElement.nextSiblingElement("penstyle");
+        }
 
         QDomElement libsElement = configRoot.firstChildElement("libs");
         QDomElement userLibElement = libsElement.firstChildElement("userlib");
@@ -419,11 +448,14 @@ QMap<QString, double> Configuration::getCustomUnits(QString key)
 }
 
 
+//! @brief Returns connector pen for specified connector type
+//! @param type Type of connector (Power, Signal, NonFinished)
+//! @param gfxType Graphics type (User or Iso)
+//! @param situation Defines when connector is used (Primary, Hovered, Active)
 QPen Configuration::getPen(QString type, QString gfxType, QString situation)
 {
     return mPenStyles.find(type).value().find(gfxType).value().find(situation).value();
 }
-
 
 
 //! @brief Set function for invert wheel option
