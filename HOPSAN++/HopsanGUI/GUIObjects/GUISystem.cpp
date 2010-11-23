@@ -73,6 +73,7 @@ void GUISystem::commonConstructorCode()
         mpCoreSystemAccess = new CoreSystemAccess();
         this->setName("RootSystem");
         mpCoreSystemAccess->setRootTypeCQS("S");
+        //qDebug() << "the core root system name: " << mpCoreSystemAccess->getRootSystemName();
     }
     else
     {
@@ -328,7 +329,7 @@ void GUISystem::openParameterDialog()
 void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
 {
     GUIModelObject::saveCoreDataToDomElement(rDomElement);
-    rDomElement.setAttribute(HMF_CQSTYPETAG, getTypeCQS());
+    rDomElement.setAttribute(HMF_CQSTYPETAG, this->getTypeCQS());
     appendSimulationTimeTag(rDomElement, this->mStartTime, this->mTimeStep, this->mStopTime);
 }
 
@@ -336,7 +337,7 @@ QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
 {
     QDomElement guiStuff = GUIModelObject::saveGuiDataToDomElement(rDomElement);
 
-    //Should we try to append appearancedata stuff
+    //Should we try to append appearancedata stuff, we dont want this in external systems as they contain their own appearance
     if (mLoadType!="EXTERNAL")
     {
         //! @todo what happens if a subsystem (embeded) is asved, then we dont want to set the current graphics view
@@ -356,6 +357,9 @@ QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
 
 void GUISystem::saveToDomElement(QDomElement &rDomElement)
 {
+    //qDebug() << "Saving to dom node in: " << this->mGUIModelObjectAppearance.getName();
+    QDomElement xmlSubsystem = appendDomElement(rDomElement, mHmfTagName);
+
     //! @todo maybe use enums instead
     //! @todo should not need to set this here
     if (mpParentContainerObject==0)
@@ -371,20 +375,12 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
         mLoadType = "EMBEDED";
     }
 
-    qDebug() << "Saving to dom node in: " << this->mGUIModelObjectAppearance.getName();
-    QDomElement xmlSubsystem = appendDomElement(rDomElement, mHmfTagName);
-
-    //Save Core related stuff
-    this->saveCoreDataToDomElement(xmlSubsystem);
-
     //! @todo do we really need both systemtype and external path, en empty path could indicate embeded
     if ((mpParentContainerObject != 0) && (mLoadType=="EXTERNAL"))
     {
-        appendDomTextNode(xmlSubsystem, HMF_EXTERNALPATHTAG, relativePath(mModelFileInfo.absoluteFilePath(), mpParentContainerObject->mModelFileInfo.absolutePath()));
-    }
-    else
-    {
-        //appendDomTextNode(subsysContainerNode, "ExternalPath", QString()); //Maybe dont need this on root systems
+        //This information should ONLY be used to indicate that a system is external, it SHOULD NOT be included in the actual external system
+        //If it would be, the load function will fail
+        xmlSubsystem.setAttribute( HMF_EXTERNALPATHTAG, relativePath(mModelFileInfo.absoluteFilePath(), mpParentContainerObject->mModelFileInfo.absolutePath()) );
     }
 
     //Save gui object stuff
@@ -393,6 +389,9 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
         //Save all of the sub objects
     if (mLoadType=="EMBEDED" || mLoadType=="ROOT")
     {
+            //Save Core related stuff
+        this->saveCoreDataToDomElement(xmlSubsystem); //Only save core stuff in root and embeded systems
+
             //Save subcomponents and subsystems
         QDomElement xmlObjects = appendDomElement(xmlSubsystem, HMF_OBJECTS);
         GUIModelObjectMapT::iterator it;
@@ -424,28 +423,28 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
 
 void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 {
-    //! @todo might need some error checking here incase some fields are missing
-    //Load the GUI stuff like appearance data and viewport
-    QDomElement guiStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
-    this->mGUIModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOTTAG).firstChildElement("modelobject"));
-    //! @todo load viewport and pose and stuff
-
-    //Now load the core specific data, might need inherited function for this
-    //It is important to load core data after the guistuff in case the guistuff is incomplete
-    this->setName(rDomElement.attribute(HMF_NAMETAG));
-    this->setTypeCQS(rDomElement.attribute(HMF_CQSTYPETAG));
-
-    //Load simulation time
-    parseSimulationTimeTag(rDomElement.firstChildElement(HMF_SIMULATIONTIMETAG), mStartTime, mTimeStep, mStopTime);
-    gpMainWindow->setStartTimeInToolBar(mStartTime);
-    gpMainWindow->setTimeStepInToolBar(mTimeStep);
-    gpMainWindow->setFinishTimeInToolBar(mStopTime);
-
     //Check if the subsystem is external or internal, and load appropriately
-    QString external_path = rDomElement.firstChildElement(HMF_EXTERNALPATHTAG).text();
+    QString external_path = rDomElement.attribute(HMF_EXTERNALPATHTAG);
     if (external_path.isEmpty())
     {
         //Load embedded subsystem
+        //0. Load core and gui stuff
+        //! @todo might need some error checking here incase some fields are missing
+        //Now load the core specific data, might need inherited function for this
+        this->setName(rDomElement.attribute(HMF_NAMETAG));
+        this->setTypeCQS(rDomElement.attribute(HMF_CQSTYPETAG));
+
+        //Load the GUI stuff like appearance data and viewport
+        QDomElement guiStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
+        this->mGUIModelObjectAppearance.readFromDomElement(guiStuff.firstChildElement(CAF_ROOTTAG).firstChildElement("modelobject"));
+        //! @todo load viewport and pose and stuff
+
+        //Load simulation time
+        parseSimulationTimeTag(rDomElement.firstChildElement(HMF_SIMULATIONTIMETAG), mStartTime, mTimeStep, mStopTime);
+        gpMainWindow->setStartTimeInToolBar(mStartTime);
+        gpMainWindow->setTimeStepInToolBar(mTimeStep);
+        gpMainWindow->setFinishTimeInToolBar(mStopTime);
+
         //1. Load all sub-components
         QDomElement xmlSubObjects = rDomElement.firstChildElement(HMF_OBJECTS);
         QDomElement xmlSubObject = xmlSubObjects.firstChildElement(HMF_COMPONENTTAG);
@@ -544,6 +543,11 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
     }
 }
 
+
+void GUISystem::setModelFileInfo(QFile &rFile)
+{
+    this->mModelFileInfo.setFile(rFile);
+}
 
 //! Function that updates start time value of the current project to the one in the simulation setup widget.
 //! @see updateTimeStep()

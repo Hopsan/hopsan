@@ -60,7 +60,7 @@ class SubsystemLoadData :public ModelObjectLoadData
 {
 public:
     QString loadtype;
-    QString filepath;
+    QString externalfilepath;
     QString cqs_type;
 
     void read(QTextStream &rStream);

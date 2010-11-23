@@ -122,7 +122,7 @@ void SubsystemLoadData::read(QTextStream &rStream)
 
     if (loadtype == "EXTERNAL")
     {
-        filepath = readName(rStream);
+        externalfilepath = readName(rStream);
 
         //Read the gui stuff
         rStream >> posX;
@@ -149,21 +149,10 @@ void SubsystemLoadData::read(QTextStream &rStream)
 
 void SubsystemLoadData::readDomElement(QDomElement &rDomElement)
 {
-    //! @todo should check if tagname is what we expect really, should do this in all readDomElement functions
     type = "Subsystem"; //Hardcode the type, regardles of hmf contents (should not contain type
-    name = rDomElement.attribute(HMF_NAMETAG);
-    cqs_type = rDomElement.attribute(HMF_CQSTYPETAG);
-    filepath = rDomElement.firstChildElement(HMF_EXTERNALPATHTAG).text();
-
-    //! @todo loadtype should probably be removed
-    if(filepath.isEmpty())
-    {
-        loadtype = "embeded";
-    }
-    else
-    {
-        loadtype = "EXTERNAL";
-    }
+//    name = rDomElement.attribute(HMF_NAMETAG);
+//    cqs_type = rDomElement.attribute(HMF_CQSTYPETAG);
+    externalfilepath = rDomElement.attribute(HMF_EXTERNALPATHTAG);
 
     //Read gui specific data
     this->readGuiDataFromDomElement(rDomElement);
@@ -308,6 +297,8 @@ GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidg
 
 GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
 {
+    //! @todo can only handle external subsystems for now
+
     //! @todo maybe create a loadGUIObject function that takes appearance data instead of pLibrary (when special apperance are to be used)
     //Load the system the normal way (and add it)
     GUIModelObject* pSys = loadGUIModelObject(rData, pLibrary, pSystem, undoSettings);
@@ -315,9 +306,9 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
     //Now read the external file to change appearance and populate the system
     //! @todo assumes that the supplied path is rellative, need to make sure that this does not crash if that is not the case
     //! @todo what if the parent system does not have a path (embeded systems)
-    QString path = pSystem->mModelFileInfo.absolutePath() + "/" + rData.filepath;
+    QString path = pSystem->mModelFileInfo.absolutePath() + "/" + rData.externalfilepath;
     QFile file(path);
-    if (!file.exists());
+    if (!(file.exists()));
     {
         qDebug() << "file: " << path << " does not exist";
     }
@@ -325,6 +316,7 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
     QDomElement externalRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
     QDomElement systemRoot = externalRoot.firstChildElement(HMF_SYSTEMTAG);
     //! @todo set the modefile info, maybe we should have built in helpfunction for loading directly from file in System
+    pSys->setModelFileInfo(file);
     pSys->loadFromDomElement(systemRoot);
     //! @todo this code is duplicated with the one in system->loadfromdomelement (external code) that code will never run, as this will take care of it. When we have embeded subsystems will will need to fix this
 

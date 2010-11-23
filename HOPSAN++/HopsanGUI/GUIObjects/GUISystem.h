@@ -41,6 +41,7 @@ public:
     void saveToDomElement(QDomElement &rDomElement);
     void loadFromHMF(QString modelFilePath=QString());
     void loadFromDomElement(QDomElement &rDomElement);
+    void setModelFileInfo(QFile &rFile);
 
     QVector<QString> getParameterNames();
 

@@ -242,7 +242,7 @@ void ParameterDialog::okPressed()
 
     if (isGUISubsystem)
     {
-        qDebug() << "Setting CQS type to: " << this->mpCQSEdit->displayText();
+        //qDebug() << "Setting CQS type to: " << this->mpCQSEdit->displayText();
         mpGUIModelObject->setTypeCQS(this->mpCQSEdit->displayText());
     }
 }

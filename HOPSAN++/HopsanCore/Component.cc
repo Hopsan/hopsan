@@ -637,7 +637,7 @@ Port *Component::getPort(const string portname)
     }
     else
     {
-        cout << "failed to find port: " << portname << endl;
+        cout << "failed to find port: " << portname << " in component: " << this->mName << endl;
         gCoreMessageHandler.addWarningMessage("Trying to get port {" + portname + "}, but not found, pointer invalid", 1);
         return 0;
     }
@@ -1279,7 +1279,7 @@ bool ComponentSystem::connect(string compname1, string portname1, string compnam
 
     if (pComp1 == 0)
     {
-        ss << "Component: "<< compname1 << " can not be found when atempting connect";
+        ss << "Component1: "<< compname1 << " can not be found when atempting connect";
         cout << ss.str() << endl;
         gCoreMessageHandler.addErrorMessage(ss.str());
         return false;
@@ -1287,7 +1287,7 @@ bool ComponentSystem::connect(string compname1, string portname1, string compnam
 
     if (pComp2 == 0)
     {
-        ss << "Component: "<< compname2 << " can not be found when atempting connect";
+        ss << "Component2: "<< compname2 << " can not be found when atempting connect";
         cout << ss.str() << endl;
         gCoreMessageHandler.addErrorMessage(ss.str());
         return false;

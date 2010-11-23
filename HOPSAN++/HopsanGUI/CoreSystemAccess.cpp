@@ -65,7 +65,7 @@ double CoreSystemAccess::getDesiredTimeStep()
 
 void CoreSystemAccess::setRootTypeCQS(const QString cqs_type)
 {
-    qDebug () << "setting root type cqs to: " << cqs_type;
+    qDebug () << "setting cqs to: " << cqs_type;
     mpCoreComponentSystem->setTypeCQS(cqs_type.toStdString());
 }
 
@@ -95,7 +95,9 @@ QString CoreSystemAccess::getSubComponentTypeCQS(QString componentName)
 
 QString CoreSystemAccess::setRootSystemName(QString name)
 {
+    //qDebug() << "setting root system name to: " << name;
     mpCoreComponentSystem->setName(name.toStdString());
+    //qDebug() << "root system name after rename: " << QString::fromStdString(mpCoreComponentSystem->getName());
     return QString::fromStdString(mpCoreComponentSystem->getName());
 }
 
@@ -108,8 +110,10 @@ QString CoreSystemAccess::setRootSystemName(QString name)
 
 QString CoreSystemAccess::renameSubComponent(QString componentName, QString name)
 {
+    qDebug() << "rename subcomponent from " << componentName << " to: " << name;
     Component *pTempComponent = mpCoreComponentSystem->getSubComponent(componentName.toStdString());
     pTempComponent->setName(name.toStdString());
+    qDebug() << "name after: " << QString::fromStdString(pTempComponent->getName());
     return QString::fromStdString(pTempComponent->getName());
 }
 
@@ -309,14 +313,19 @@ QVector<QString> CoreSystemAccess::getParameterNames(QString componentName)
 {
     QVector<QString> names;
     //*****Core Interaction*****
-    vector<string> core_names = mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterNames();
-    vector<string>::iterator nit;
-    //Copy and cast to qt datatypes
-    for ( nit=core_names.begin(); nit!=core_names.end(); ++nit)
+    //First check if subcomponent can be found
+    //! @todo this is temporary hack to avoid trying to find ourselfs when access through GUIsystem
+    if (mpCoreComponentSystem->haveSubComponent(componentName.toStdString()))
     {
-        names.push_back(QString::fromStdString(*nit));
+        vector<string> core_names = mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterNames();
+        vector<string>::iterator nit;
+        //Copy and cast to qt datatypes
+        for ( nit=core_names.begin(); nit!=core_names.end(); ++nit)
+        {
+            names.push_back(QString::fromStdString(*nit));
+        }
+        //**************************
     }
-    //**************************
 
     return names;
 }

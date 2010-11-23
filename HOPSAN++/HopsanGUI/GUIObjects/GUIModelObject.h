@@ -44,8 +44,9 @@ public:
     //Load and save methods
     //virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());
     virtual void saveToDomElement(QDomElement &rDomElement);
-    virtual void loadFromHMF(QString modelFilePath=QString()) {assert(false);} //Only available in GUISubsystem for now
-    virtual void loadFromDomElement(QDomElement &rDomElement) {assert(false);} //Only available in GUISubsystem for now
+    virtual void loadFromHMF(QString modelFilePath=QString()) {assert(false);} //Only available in GUISystem for now
+    virtual void loadFromDomElement(QDomElement &rDomElement) {assert(false);} //Only available in GUISystem for now
+    virtual void setModelFileInfo(QFile &rFile){assert(false);} //Only available in GUISystem for now
 
     //Connector methods
     void rememberConnector(GUIConnector *item);
