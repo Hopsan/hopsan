@@ -436,14 +436,9 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
     this->setTypeCQS(rDomElement.attribute(HMF_CQSTYPETAG));
 
     //Load simulation time
-    double start, ts, stop;
-    parseSimulationTimeTag(rDomElement.firstChildElement(HMF_SIMULATIONTIMETAG), start, ts, stop);
-    //! @todo figure out a better way to do this seems a bit strange that we must go through mainwindow and is the local variables even set
-    mStartTime = start;
+    parseSimulationTimeTag(rDomElement.firstChildElement(HMF_SIMULATIONTIMETAG), mStartTime, mTimeStep, mStopTime);
     gpMainWindow->setStartTimeInToolBar(mStartTime);
-    mTimeStep = ts;
     gpMainWindow->setTimeStepInToolBar(mTimeStep);
-    mStopTime = stop;
     gpMainWindow->setFinishTimeInToolBar(mStopTime);
 
     //Check if the subsystem is external or internal, and load appropriately
