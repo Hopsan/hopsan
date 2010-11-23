@@ -439,10 +439,12 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
     double start, ts, stop;
     parseSimulationTimeTag(rDomElement.firstChildElement(HMF_SIMULATIONTIMETAG), start, ts, stop);
     //! @todo figure out a better way to do this seems a bit strange that we must go through mainwindow and is the local variables even set
-    gpMainWindow->setStartTimeInToolBar(start);
-    gpMainWindow->setTimeStepInToolBar(ts);
-    gpMainWindow->setFinishTimeInToolBar(stop);
-
+    mStartTime = start;
+    gpMainWindow->setStartTimeInToolBar(mStartTime);
+    mTimeStep = ts;
+    gpMainWindow->setTimeStepInToolBar(mTimeStep);
+    mStopTime = stop;
+    gpMainWindow->setFinishTimeInToolBar(mStopTime);
 
     //Check if the subsystem is external or internal, and load appropriately
     QString external_path = rDomElement.firstChildElement(HMF_EXTERNALPATHTAG).text();
