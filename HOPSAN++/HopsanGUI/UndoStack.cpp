@@ -708,7 +708,7 @@ QDomElement UndoStack::getCurrentPost()
 UndoWidget::UndoWidget(MainWindow *parent)
     : QDialog(parent)
 {
-    mpParentMainWindow = parent;
+    //mpParentMainWindow = parent;
     //Set the name and size of the main window
     this->setObjectName("UndoWidget");
     this->resize(400,500);
@@ -757,7 +757,7 @@ void UndoWidget::show()
 //! @brief Refresh function for the list. Reads from the current undo stack and displays the results in the table.
 void UndoWidget::refreshList()
 {
-    if(mpParentMainWindow->mpProjectTabs->count() == 0)
+    if(gpMainWindow->mpProjectTabs->count() == 0)
     {
         return;
     }

@@ -6,7 +6,7 @@ using namespace hopsan;
 MessageWidget::MessageWidget(MainWindow *pParent)
     : QTextEdit(pParent)
 {
-    mpParentMainWindow = pParent;
+    //mpParentMainWindow = pParent;
 }
 
 QSize MessageWidget::sizeHint() const

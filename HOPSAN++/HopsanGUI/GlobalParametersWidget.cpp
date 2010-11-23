@@ -60,7 +60,7 @@
 GlobalParametersWidget::GlobalParametersWidget(MainWindow *parent)
     : QWidget(parent)
 {
-    mpParentMainWindow = parent;
+    //mpParentMainWindow = parent;
     //Set the name and size of the main window
     this->setObjectName("UndoWidget");
     this->resize(400,500);

@@ -31,7 +31,7 @@ class ProjectTabWidget;
 OptionsDialog::OptionsDialog(MainWindow *parent)
     : QDialog(parent)
 {
-    mpParentMainWindow = parent;
+    //mpParentMainWindow = parent;
 
         //Set the name and size of the main window
     this->setObjectName("OptionsDialog");
@@ -175,7 +175,7 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
     mpButtonBox->addButton(mpOkButton, QDialogButtonBox::ActionRole);
 
-    connect(mpParentMainWindow->optionsAction,SIGNAL(triggered()),this,SLOT(show()));
+    connect(gpMainWindow->optionsAction,SIGNAL(triggered()),this,SLOT(show()));
     connect(mpEnableProgressBarCheckBox,SIGNAL(toggled(bool)), mpProgressBarLabel, SLOT(setEnabled(bool)));
     connect(mpEnableProgressBarCheckBox,SIGNAL(toggled(bool)), mpProgressBarSpinBox, SLOT(setEnabled(bool)));
     connect(mpBackgroundColorButton, SIGNAL(pressed()), this, SLOT(colorDialog()));
@@ -208,14 +208,14 @@ void OptionsDialog::updateValues()
     gConfig.setInvertWheel(mpInvertWheelCheckBox->isChecked());
     gConfig.setAntiAliasing(mpAntiAliasingCheckBox->isChecked());
     gConfig.setSnapping(mpSnappingCheckBox->isChecked());
-    for(size_t i=0; i<mpParentMainWindow->mpProjectTabs->count(); ++i)
+    for(size_t i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
     {
-        mpParentMainWindow->mpProjectTabs->getTab(i)->mpGraphicsView->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
+        gpMainWindow->mpProjectTabs->getTab(i)->mpGraphicsView->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
     }
     gConfig.setBackgroundColor(mPickedBackgroundColor);
-    for(size_t i=0; i<mpParentMainWindow->mpProjectTabs->count(); ++i)
+    for(size_t i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
     {
-        mpParentMainWindow->mpProjectTabs->getTab(i)->mpGraphicsView->updateViewPort();
+        gpMainWindow->mpProjectTabs->getTab(i)->mpGraphicsView->updateViewPort();
     }
     gConfig.setEnableProgressBar(mpEnableProgressBarCheckBox->isChecked());
     gConfig.setProgressBarStep(mpProgressBarSpinBox->value());

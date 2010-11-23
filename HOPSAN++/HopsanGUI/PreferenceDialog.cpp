@@ -30,7 +30,7 @@
 PreferenceDialog::PreferenceDialog(MainWindow *parent)
     : QDialog(parent)
 {
-    mpParentMainWindow = parent;
+    //mpParentMainWindow = parent;
 
         //Set the name and size of the main window
     this->setObjectName("PreferenceDialog");
@@ -40,18 +40,18 @@ PreferenceDialog::PreferenceDialog(MainWindow *parent)
         //Define items in the dialog box
     mpIsoCheckBox = new QCheckBox(tr("Use ISO 1219 Graphics"));
     mpIsoCheckBox->setCheckable(true);
-    mpIsoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mGfxType);
+    mpIsoCheckBox->setChecked(gpMainWindow->mpProjectTabs->getCurrentSystem()->mGfxType);
 
     mpDisableUndoCheckBox = new QCheckBox(tr("Disable Undo Function"));
     mpDisableUndoCheckBox->setCheckable(true);
-    mpDisableUndoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
+    mpDisableUndoCheckBox->setChecked(gpMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
 
     mpNumberOfSamplesLabel = new QLabel(tr("Number of Log Samples"));
     mpNumberOfSamplesLabel->setEnabled(gConfig.getEnableProgressBar());
     mpNumberOfSamplesBox = new QLineEdit(this);
     mpNumberOfSamplesBox->setValidator(new QIntValidator(0, 2000000000, this));
     QString samplesText;
-    samplesText.setNum(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->getNumberOfLogSamples());
+    samplesText.setNum(gpMainWindow->mpProjectTabs->getCurrentSystem()->getNumberOfLogSamples());
     mpNumberOfSamplesBox->setText(samplesText);
 
     mpCancelButton = new QPushButton(tr("&Cancel"));
@@ -76,7 +76,7 @@ PreferenceDialog::PreferenceDialog(MainWindow *parent)
         //Create connections
     connect(mpCancelButton, SIGNAL(pressed()), this, SLOT(reject()));
     connect(mpOkButton, SIGNAL(pressed()), this, SLOT(updateValues()));
-    connect(mpParentMainWindow->preferencesAction,SIGNAL(triggered()),this,SLOT(show()));
+    connect(gpMainWindow->preferencesAction,SIGNAL(triggered()),this,SLOT(show()));
     connect(mpIsoIconBrowseButton, SIGNAL(clicked()), this, SLOT(browseIso()));
     connect(mpUserIconBrowseButton, SIGNAL(clicked()), this, SLOT(browseUser()));
 
@@ -101,10 +101,10 @@ PreferenceDialog::PreferenceDialog(MainWindow *parent)
 //! @brief Reimplementation of QDialog::show(), used to update values in the box to current settings every time it is shown
 void PreferenceDialog::show()
 {
-    mpIsoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mGfxType);
-    mpDisableUndoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
-    mpUserIconPath->setText(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->getUserIconPath());
-    mpIsoIconPath->setText(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->getIsoIconPath());
+    mpIsoCheckBox->setChecked(gpMainWindow->mpProjectTabs->getCurrentSystem()->mGfxType);
+    mpDisableUndoCheckBox->setChecked(gpMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
+    mpUserIconPath->setText(gpMainWindow->mpProjectTabs->getCurrentSystem()->getUserIconPath());
+    mpIsoIconPath->setText(gpMainWindow->mpProjectTabs->getCurrentSystem()->getIsoIconPath());
     QDialog::show();
 }
 
@@ -114,30 +114,30 @@ void PreferenceDialog::updateValues()
 {
     if(mpIsoCheckBox->isChecked())
     {
-        if(mpParentMainWindow->mpProjectTabs->count() > 0)
+        if(gpMainWindow->mpProjectTabs->count() > 0)
         {
-            mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setGfxType(ISOGRAPHICS);
+            gpMainWindow->mpProjectTabs->getCurrentSystem()->setGfxType(ISOGRAPHICS);
         }
-        mpParentMainWindow->mpLibrary->setGfxType(ISOGRAPHICS);
+        gpMainWindow->mpLibrary->setGfxType(ISOGRAPHICS);
     }
     else
     {
-        if(mpParentMainWindow->mpProjectTabs->count() > 0)
+        if(gpMainWindow->mpProjectTabs->count() > 0)
         {
-            mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setGfxType(USERGRAPHICS);
+            gpMainWindow->mpProjectTabs->getCurrentSystem()->setGfxType(USERGRAPHICS);
         }
-        mpParentMainWindow->mpLibrary->setGfxType(USERGRAPHICS);
+        gpMainWindow->mpLibrary->setGfxType(USERGRAPHICS);
     }
 
-    if( (mpDisableUndoCheckBox->isChecked()) != (mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled) )
+    if( (mpDisableUndoCheckBox->isChecked()) != (gpMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled) )
     {
-        mpParentMainWindow->mpProjectTabs->getCurrentSystem()->disableUndo();
-        mpDisableUndoCheckBox->setChecked(mpParentMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
+        gpMainWindow->mpProjectTabs->getCurrentSystem()->disableUndo();
+        mpDisableUndoCheckBox->setChecked(gpMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
     }
 
-    mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setUserIconPath(mpUserIconPath->text());
-    mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setIsoIconPath(mpIsoIconPath->text());
-    mpParentMainWindow->mpProjectTabs->getCurrentSystem()->setNumberOfLogSamples(mpNumberOfSamplesBox->text().toInt());
+    gpMainWindow->mpProjectTabs->getCurrentSystem()->setUserIconPath(mpUserIconPath->text());
+    gpMainWindow->mpProjectTabs->getCurrentSystem()->setIsoIconPath(mpIsoIconPath->text());
+    gpMainWindow->mpProjectTabs->getCurrentSystem()->setNumberOfLogSamples(mpNumberOfSamplesBox->text().toInt());
     this->accept();
 }
 

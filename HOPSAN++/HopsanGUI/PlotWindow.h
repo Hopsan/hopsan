@@ -52,7 +52,7 @@ public:
     void changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit);
     void setGeneration(int gen);
 
-    MainWindow *mpParentMainWindow;
+    //MainWindow *mpParentMainWindow;
     GUISystem *mpCurrentGUISystem;
 
 protected:

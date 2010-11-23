@@ -14,6 +14,7 @@
 #include "MessageWidget.h"
 #include "GUIObjects/GUIModelObjectAppearance.h"
 #include "Configuration.h"
+#include "common.h"
 
 using namespace std;
 using namespace hopsan;
@@ -196,7 +197,7 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
 LibraryWidget::LibraryWidget(MainWindow *parent)
         :   QWidget(parent)
 {
-    mpParentMainWindow = parent;
+    //mpParentMainWindow = parent;
 
     mpTree = new LibraryTreeWidget(this);
     mpTree->setHeaderHidden(true);
@@ -351,7 +352,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
         pAppearanceData->setBasePath(libDirObject.absolutePath() + "/");
         if (!pAppearanceData->mIsReadOK)
         {
-            mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Error when reading appearance data from file: " + filename);
+            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Error when reading appearance data from file: " + filename);
             sucess = false;
         }
         else
@@ -363,7 +364,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
                 sucess = pHopsanCore->hasComponent(pAppearanceData->getTypeName().toStdString()); //Check so that there is such component availible in the Core
                 if (!sucess)
                 {
-                    mpParentMainWindow->mpMessageWidget->printGUIWarningMessage("Warning: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)");
+                    gpMainWindow->mpMessageWidget->printGUIWarningMessage("Warning: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)");
                 }
             }
             //**************************
@@ -402,7 +403,7 @@ void LibraryWidget::addLibrary()
     }
     else
     {
-        mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Error: Library " + libDir + " is already loaded!");
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Error: Library " + libDir + " is already loaded!");
     }
     //std::cout << qPrintable(libDir) << std::endl;
 }
@@ -509,7 +510,7 @@ GUIModelObjectAppearance *LibraryWidget::getAppearanceData(QString componentType
     if (mLibraryContentItemPtrsMap.count(componentType) == 0)
     {
         qDebug() << "Trying to fetch appearanceData for " + componentType + " which does not appear to exist in the Map, returning empty data";
-        mpParentMainWindow->mpMessageWidget->printGUIWarningMessage("Trying to fetch appearanceData for " + componentType + " which does not appear to exist in the Map, returning empty data");
+        gpMainWindow->mpMessageWidget->printGUIWarningMessage("Trying to fetch appearanceData for " + componentType + " which does not appear to exist in the Map, returning empty data");
         return 0;
     }
     return mLibraryContentItemPtrsMap.value(componentType)->getAppearanceData();

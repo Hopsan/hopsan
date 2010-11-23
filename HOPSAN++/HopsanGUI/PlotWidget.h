@@ -70,7 +70,7 @@ public:
     PlotWindow *createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit);
     PlotWindow *createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit);
 
-    MainWindow *mpParentMainWindow;
+    //MainWindow *mpParentMainWindow;
     GUISystem *mpCurrentSystem;
 
 protected:
@@ -101,7 +101,7 @@ public slots:
     void loadFromXml();
 
 private:
-    MainWindow *mpParentMainWindow;
+    //MainWindow *mpParentMainWindow;
     QPushButton *mpLoadButton;
     QGridLayout *mpLayout;
 };

@@ -71,8 +71,8 @@ QString PlotParameterItem::getDataUnit()
 PlotParameterTree::PlotParameterTree(MainWindow *parent)
         : QTreeWidget(parent)
 {
-    mpParentMainWindow = parent;
-    mpCurrentSystem = mpParentMainWindow->mpProjectTabs->getCurrentSystem();
+    //mpParentMainWindow = parent;
+    mpCurrentSystem = gpMainWindow->mpProjectTabs->getCurrentSystem();
     mFavoriteParameters.clear();
 
     this->setDragEnabled(true);
@@ -81,11 +81,11 @@ PlotParameterTree::PlotParameterTree(MainWindow *parent)
     this->setHeaderHidden(true);
     this->setColumnCount(1);
 
-    connect(mpParentMainWindow->mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateList()));
-    connect(mpParentMainWindow->mpProjectTabs, SIGNAL(tabCloseRequested(int)), this, SLOT(updateList()));
-    connect(mpParentMainWindow->mpProjectTabs, SIGNAL(newTabAdded()), this, SLOT(updateList()));
-    connect(mpParentMainWindow->mpProjectTabs->getCurrentSystem(), SIGNAL(componentChanged()), this, SLOT(updateList()));
-    connect(mpParentMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
+    connect(gpMainWindow->mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateList()));
+    connect(gpMainWindow->mpProjectTabs, SIGNAL(tabCloseRequested(int)), this, SLOT(updateList()));
+    connect(gpMainWindow->mpProjectTabs, SIGNAL(newTabAdded()), this, SLOT(updateList()));
+    connect(gpMainWindow->mpProjectTabs->getCurrentSystem(), SIGNAL(componentChanged()), this, SLOT(updateList()));
+    connect(gpMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
     connect(this,SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),this,SLOT(createPlotWindow(QTreeWidgetItem*)));
 }
 
@@ -96,12 +96,12 @@ void PlotParameterTree::updateList()
     mAvailableParameters.clear();
     this->clear();
 
-    if(mpParentMainWindow->mpProjectTabs->count() == 0)     //Check so that at least one project tab exists
+    if(gpMainWindow->mpProjectTabs->count() == 0)     //Check so that at least one project tab exists
     {
         return;
     }
 
-    mpCurrentSystem = mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem;
+    mpCurrentSystem = gpMainWindow->mpProjectTabs->getCurrentTab()->mpSystem;
     QTreeWidgetItem *tempComponentItem;     //Tree item for components
     PlotParameterItem *tempPlotParameterItem;       //Tree item for parameters - reimplemented so they can store information about the parameter
 
@@ -122,9 +122,9 @@ void PlotParameterTree::updateList()
         {
             QVector<QString> parameterNames;
             QVector<QString> parameterUnits;
-            mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits((*itp)->getGuiModelObjectName(), (*itp)->getName(), parameterNames, parameterUnits);
+            gpMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits((*itp)->getGuiModelObjectName(), (*itp)->getName(), parameterNames, parameterUnits);
 
-            QVector<double> time = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->getTimeVector((*itp)->getGuiModelObjectName(), (*itp)->getName()));
+            QVector<double> time = QVector<double>::fromStdVector(gpMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->getTimeVector((*itp)->getGuiModelObjectName(), (*itp)->getName()));
 
             if(time.size() > 0)     //If time vector is greater than zero we have something to plot!
             {
@@ -175,8 +175,8 @@ void PlotParameterTree::updateList()
 
         // This connection makes sure that the plot list is connected to the new tab, so that it will update if the new tab is simulated.
         // It must first be disconnected in case it was already connected, to avoid duplication of connection.
-    disconnect(mpParentMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
-    connect(mpParentMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
+    disconnect(gpMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
+    connect(gpMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
 }
 
 
@@ -201,14 +201,14 @@ PlotWindow *PlotParameterTree::createPlotWindow(QTreeWidgetItem *item)
 //! @param dataUnit Name of the unit of the parameter
 PlotWindow *PlotParameterTree::createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit)
 {
-    QVector<double> xVector = QVector<double>::fromStdVector(mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->getTimeVector(componentName, portName));
+    QVector<double> xVector = QVector<double>::fromStdVector(gpMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->getTimeVector(componentName, portName));
     QVector<double> yVector;
-    mpParentMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->getPlotData(componentName, portName, dataName, yVector);
+    gpMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->getPlotData(componentName, portName, dataName, yVector);
 
     if((xVector.isEmpty()) || (yVector.isEmpty()))
         return 0;
 
-    PlotWindow *plotWindow = new PlotWindow(this, mpParentMainWindow);
+    PlotWindow *plotWindow = new PlotWindow(this, gpMainWindow);
     plotWindow->show();
     plotWindow->addPlotCurve(xVector, yVector, componentName, portName, dataName, dataUnit, QwtPlot::yLeft);
 
@@ -218,7 +218,7 @@ PlotWindow *PlotParameterTree::createPlotWindow(QString componentName, QString p
 
 PlotWindow *PlotParameterTree::createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit)
 {
-    PlotWindow *plotWindow = new PlotWindow(this, mpParentMainWindow);
+    PlotWindow *plotWindow = new PlotWindow(this, gpMainWindow);
     plotWindow->show();
     plotWindow->addPlotCurve(xVector, yVector, componentName, portName, dataName, dataUnit, axis);
 
@@ -318,9 +318,9 @@ void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
 PlotWidget::PlotWidget(MainWindow *parent)
         : QWidget(parent)
 {
-    mpParentMainWindow = parent;
+    //mpParentMainWindow = parent;
 
-    mpPlotParameterTree = new PlotParameterTree(mpParentMainWindow);
+    mpPlotParameterTree = new PlotParameterTree(gpMainWindow);
 
     mpLoadButton = new QPushButton(tr("&Load Plot Window from XML"));
     mpLoadButton->setAutoDefault(false);
@@ -349,7 +349,7 @@ void PlotWidget::loadFromXml()
     QFile file(hpwFilePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        mpParentMainWindow->mpMessageWidget->printGUIErrorMessage("Unable to read plot window file.");
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Unable to read plot window file.");
         return;
     }
     QDomDocument domDocument;

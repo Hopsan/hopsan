@@ -68,7 +68,7 @@ public:
     QPushButton *getRedoButton();
     QPushButton *getClearButton();
 
-    MainWindow *mpParentMainWindow;
+    //MainWindow *mpParentMainWindow;
 
 private:
     QTableWidget *mUndoTable;

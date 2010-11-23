@@ -20,7 +20,7 @@ class PreferenceDialog : public QDialog
 public:
     PreferenceDialog(MainWindow *parent = 0);
 
-    MainWindow *mpParentMainWindow;
+    //MainWindow *mpParentMainWindow;
 
 public slots:
     void show();

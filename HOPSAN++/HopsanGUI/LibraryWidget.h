@@ -99,7 +99,7 @@ private slots:
 
 private:
     //Member variables
-    MainWindow *mpParentMainWindow;
+    //MainWindow *mpParentMainWindow;
 
     QHash<QString, LibraryContent*> mLibraryContentPtrsMap;
     QMultiMap<QString, LibraryContentItem*> mLibraryContentItemPtrsMap;

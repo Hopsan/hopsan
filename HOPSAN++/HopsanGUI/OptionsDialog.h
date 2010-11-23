@@ -22,7 +22,7 @@ class OptionsDialog : public QDialog
 public:
     OptionsDialog(MainWindow *parent = 0);
 
-    MainWindow *mpParentMainWindow;
+    //MainWindow *mpParentMainWindow;
 
 public slots:
     void updateValues();

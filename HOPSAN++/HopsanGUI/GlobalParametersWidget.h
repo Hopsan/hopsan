@@ -26,7 +26,7 @@ class GlobalParametersWidget : public QWidget
 public:
     GlobalParametersWidget(MainWindow *parent = 0);
 
-    MainWindow *mpParentMainWindow;
+    //MainWindow *mpParentMainWindow;
 
     double getParameter(QString name);
     bool hasParameter(QString name);
