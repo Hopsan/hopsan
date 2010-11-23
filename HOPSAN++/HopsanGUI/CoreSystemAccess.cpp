@@ -87,9 +87,9 @@ QString CoreSystemAccess::getRootSystemTypeCQS()
 
 QString CoreSystemAccess::getSubComponentTypeCQS(QString componentName)
 {
-    qDebug() << "getSubComponentTypeCQS: " << componentName << " in " << QString::fromStdString(mpCoreComponentSystem->getName());
+    //qDebug() << "getSubComponentTypeCQS: " << componentName << " in " << QString::fromStdString(mpCoreComponentSystem->getName());
     QString ans = QString::fromStdString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getTypeCQSString());
-    qDebug() << "cqs answer: " << ans;
+    //qDebug() << "cqs answer: " << ans;
     return ans;
 }
 

@@ -838,7 +838,7 @@ void UndoWidget::refreshList()
         }
         ++pos;
     }
-    qDebug() << gpMainWindow->mpProjectTabs->getCurrentSystem()->mUndoStack->mDomDocument.toString();
+    //qDebug() << gpMainWindow->mpProjectTabs->getCurrentSystem()->mUndoStack->mDomDocument.toString();
 }
 
 QString UndoWidget::translateTag(QString tag)

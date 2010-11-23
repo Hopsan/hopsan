@@ -689,8 +689,8 @@ void GUIModelObject::showPorts(bool visible)
 //! @todo try to reuse the code in rotate guiobject
 void GUIModelObject::rotate(undoStatus undoSettings)
 {
-    qDebug() << "this->boundingrect(): " << this->boundingRect();
-    qDebug() << "this->mpIcon->boundingrect(): " << this->mpIcon->boundingRect();
+    //qDebug() << "this->boundingrect(): " << this->boundingRect();
+    //qDebug() << "this->mpIcon->boundingrect(): " << this->mpIcon->boundingRect();
     this->setTransformOriginPoint(this->boundingRect().center());
     this->setRotation(normDeg360(this->rotation()+90));
 

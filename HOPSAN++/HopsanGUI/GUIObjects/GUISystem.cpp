@@ -72,6 +72,7 @@ void GUISystem::commonConstructorCode()
         qDebug() << "creating ROOT access system";
         mpCoreSystemAccess = new CoreSystemAccess();
         this->setName("RootSystem");
+        mpCoreSystemAccess->setRootTypeCQS("S");
     }
     else
     {
@@ -83,8 +84,6 @@ void GUISystem::commonConstructorCode()
     }
 
     mpCoreSystemAccess->setDesiredTimeStep(mTimeStep);
-    mpCoreSystemAccess->setRootTypeCQS("S");
-
     refreshDisplayName(); //Make sure name window is correct size for center positioning
 }
 

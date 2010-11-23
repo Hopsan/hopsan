@@ -36,7 +36,7 @@ namespace hopsan {
         //! @brief Used to register creator functions
         _Key registerCreatorFunction(_Key idKey, CreatorFunctionT classCreator)
         {
-            std::cout << "Registering: " << idKey << std::endl;
+            //std::cout << "Registering: " << idKey << std::endl;
             //std::cout << "BeforeInsert: Size: " << mFactoryMap.size() << std::endl;
             std::pair<typename FactoryMapT::iterator, bool> rc;
             rc = mFactoryMap.insert(FactoryPairT(idKey, classCreator));

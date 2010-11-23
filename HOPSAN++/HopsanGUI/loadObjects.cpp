@@ -329,7 +329,7 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
     //! @todo this code is duplicated with the one in system->loadfromdomelement (external code) that code will never run, as this will take care of it. When we have embeded subsystems will will need to fix this
 
     //Set the cqs type of the system
-    pSys->setTypeCQS(rData.cqs_type); //!< @todo is this necessary isnt cqs set insed loadfromdoelement
+    //pSys->setTypeCQS(rData.cqs_type); //!< @todo is this necessary isnt cqs set insed loadfromdoelement
 
     return pSys;
 }

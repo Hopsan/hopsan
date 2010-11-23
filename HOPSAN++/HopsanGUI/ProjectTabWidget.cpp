@@ -55,7 +55,6 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mpParentProjectTabWidget = parent;
     mpSystem = new GUISystem(this, 0);
 
-    //MainWindow *pMainWindow = mpParentProjectTabWidget->mpParentMainWindow;
     connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()));
 
     emit checkMessages();
@@ -77,7 +76,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 ProjectTab::~ProjectTab()
 {
     //! @todo do we need to call inheritet class destructor also
-    qDebug() << "projectTab destructor";
+    //qDebug() << "projectTab destructor";
     delete mpSystem;
     //! @todo do we need to delete the graphicsiew or is that handled automatically
 }
