@@ -48,6 +48,20 @@ void FirstOrderFilter::setMinMax(double min, double max)
 }
 
 
+void FirstOrderFilter::setNum(double num[2])
+{
+    mCoeffU[0] = num[1]*mTimeStep-2.0*num[0];
+    mCoeffU[1] = num[1]*mTimeStep+2.0*num[0];
+}
+
+
+void FirstOrderFilter::setDen(double den[2])
+{
+    mCoeffY[0] = den[1]*mTimeStep-2.0*den[0];
+    mCoeffY[1] = den[1]*mTimeStep+2.0*den[0];
+}
+
+
 void FirstOrderFilter::setNumDen(double num[2], double den[2])
 {
     mCoeffU[0] = num[1]*mTimeStep-2.0*num[0];

@@ -20,7 +20,7 @@ namespace hopsan {
             num[0]*s + num[1]
     G = -------------------------
             den[0]*s + den[1]
-*/
+    */
 
     class DLLIMPORTEXPORT FirstOrderFilter
     {
@@ -29,6 +29,8 @@ namespace hopsan {
         void initialize(double timestep, double num[2], double den[2], double u0=0.0, double y0=0.0, double min=-1.5E+300, double max=1.5E+300);
         void initializeValues(double u0, double y0);
         void setMinMax(double min, double max);
+        void setNum(double num[2]);
+        void setDen(double den[2]);
         void setNumDen(double num[2], double den[2]);
         double update(double &u);
         double &value();
