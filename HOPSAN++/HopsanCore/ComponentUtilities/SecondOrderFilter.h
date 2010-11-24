@@ -28,6 +28,8 @@ namespace hopsan {
         SecondOrderFilter();
         void initialize(double timestep, double num[3], double den[3], double u0=0.0, double y0=0.0, double min=-1.5E+300, double max=1.5E+300);
         void initializeValues(double u0, double y0);
+        void setNum(double num[3]);
+        void setDen(double den[3]);
         void setNumDen(double num[3], double den[3]);
         void setMinMax(double min, double max);
         double update(double u);

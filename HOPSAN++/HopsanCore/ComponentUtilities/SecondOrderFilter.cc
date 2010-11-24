@@ -42,6 +42,22 @@ void SecondOrderFilter::initialize(double timestep, double num[3], double den[3]
 }
 
 
+void SecondOrderFilter::setNum(double num[3])
+{
+    mCoeffU[0] = num[2]*mTimeStep*mTimeStep - 2.0*num[1]*mTimeStep + 4.0*num[0];
+    mCoeffU[1] = 2.0*num[2]*mTimeStep*mTimeStep - 8.0*num[0];
+    mCoeffU[2] = num[2]*mTimeStep*mTimeStep + 2.0*num[1]*mTimeStep + 4.0*num[0];
+}
+
+
+void SecondOrderFilter::setDen(double den[3])
+{
+    mCoeffY[0] = den[2]*mTimeStep*mTimeStep - 2.0*den[1]*mTimeStep + 4.0*den[0];
+    mCoeffY[1] = 2.0*den[2]*mTimeStep*mTimeStep - 8.0*den[0];
+    mCoeffY[2] = den[2]*mTimeStep*mTimeStep + 2.0*den[1]*mTimeStep + 4.0*den[0];
+}
+
+
 void SecondOrderFilter::setNumDen(double num[3], double den[3])
 {
 //num =
