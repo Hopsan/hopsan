@@ -12,6 +12,7 @@
             </hopsanobjectappearance>
         </hopsangui>
         <simulationtime stop="10" timestep="0.001" start="0"/>
+        <parameters/>
         <objects>
             <component typename="SignalGain" name="Gain_1">
                 <parameters>
@@ -21,7 +22,7 @@
                     <startvalue portname="out" variable="Value" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2351" y="2620" flipped="0" a="0"/>
+                    <pose x="2331" y="2488" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -75,7 +76,7 @@
             </component>
             <system external_path="subsystest_sub.hmf">
                 <hopsangui>
-                    <pose x="2413.5" y="2449.5" flipped="0" a="0"/>
+                    <pose x="2396.5" y="2439.5" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </system>
@@ -112,7 +113,7 @@
                     <startvalue portname="out" variable="Value" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2245" y="2559" flipped="0" a="0"/>
+                    <pose x="2224" y="2488" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -121,8 +122,8 @@
             <connect endport="in" endcomponent="Gain" startport="sysp_3" startcomponent="subsystest_sub">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2442.999882" y="2468.5"/>
-                        <coordinate x="2442.999882" y="2584"/>
+                        <coordinate x="2425.999882" y="2458.5"/>
+                        <coordinate x="2425.999882" y="2584"/>
                         <coordinate x="2546" y="2584"/>
                         <coordinate x="2546" y="2574"/>
                         <coordinate x="2571.5" y="2574"/>
@@ -153,10 +154,10 @@
             <connect endport="in" endcomponent="Gain_1" startport="out" startcomponent="Constant_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2257.5" y="2559"/>
-                        <coordinate x="2304" y="2559"/>
-                        <coordinate x="2304" y="2620"/>
-                        <coordinate x="2338.5" y="2620"/>
+                        <coordinate x="2236.5" y="2488"/>
+                        <coordinate x="2304" y="2488"/>
+                        <coordinate x="2304" y="2488"/>
+                        <coordinate x="2318.5" y="2488"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -168,11 +169,11 @@
             <connect endport="sysp_2" endcomponent="subsystest_sub" startport="out" startcomponent="Gain_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2363.5" y="2620"/>
-                        <coordinate x="2372" y="2620"/>
-                        <coordinate x="2372" y="2527"/>
-                        <coordinate x="2384" y="2527"/>
-                        <coordinate x="2384" y="2466.334532"/>
+                        <coordinate x="2343.5" y="2488"/>
+                        <coordinate x="2367" y="2488"/>
+                        <coordinate x="2367" y="2481"/>
+                        <coordinate x="2367" y="2481"/>
+                        <coordinate x="2367" y="2456.334532"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -188,8 +189,8 @@
                         <coordinate x="2273.5" y="2390"/>
                         <coordinate x="2340" y="2390"/>
                         <coordinate x="2340" y="2424"/>
-                        <coordinate x="2385.8000428" y="2424"/>
-                        <coordinate x="2385.8000428" y="2430.5"/>
+                        <coordinate x="2368.8000428" y="2424"/>
+                        <coordinate x="2368.8000428" y="2420.5"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -202,8 +203,8 @@
             <connect endport="P2" endcomponent="Laminar Orifice" startport="sysp_1" startcomponent="subsystest_sub">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2441.179496" y="2430.5"/>
-                        <coordinate x="2441.179496" y="2399"/>
+                        <coordinate x="2424.179496" y="2420.5"/>
+                        <coordinate x="2424.179496" y="2399"/>
                         <coordinate x="2615" y="2399"/>
                     </coordinates>
                     <geometries>
@@ -230,8 +231,8 @@
                     <coordinates>
                         <coordinate x="2545" y="2359.5"/>
                         <coordinate x="2545" y="2407"/>
-                        <coordinate x="2441.179496" y="2407"/>
-                        <coordinate x="2441.179496" y="2430.5"/>
+                        <coordinate x="2424.179496" y="2407"/>
+                        <coordinate x="2424.179496" y="2420.5"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>

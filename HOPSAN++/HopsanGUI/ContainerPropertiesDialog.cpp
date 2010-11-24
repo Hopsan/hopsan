@@ -6,7 +6,7 @@
 
 #include "ProjectTabWidget.h"
 #include "MainWindow.h"
-#include "GUIObjects/GUISystem.h" //! @todo should we really need this we are going through main window to set stuff in our selfes (see below)
+#include "GUIObjects/GUISystem.h"
 #include "LibraryWidget.h"
 
 //! @brief Constructor for the parameter dialog for containers

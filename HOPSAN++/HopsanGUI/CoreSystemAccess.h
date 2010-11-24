@@ -21,6 +21,7 @@ public:
     void setDesiredTimeStep(double timestep);
     double getDesiredTimeStep();
 
+    //! @todo maybe we should use name="" (empty) to indicate root system instead, to cut down on the number of functions
     void setRootTypeCQS(const QString cqs_type);
     void setSubSystemTypeCQS(const QString systemName, const QString cqs_type);
     QString getRootSystemTypeCQS();

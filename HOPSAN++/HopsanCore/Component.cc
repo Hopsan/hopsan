@@ -35,10 +35,10 @@ using namespace hopsan;
 template<typename MapType>
 string findUniqueName(MapType &rMap, string name)
 {
-    //Make sure name is not empty
+    //New name must not be empty, empty name is "reserved" to be used in the API to indicate that we want to manipulate the current root system
     if (name.empty())
     {
-        name = "empty_name";
+        name = "Untitled";
     }
 
     size_t ctr = 1; //The suffix number
@@ -79,10 +79,10 @@ string findUniqueName(MapType &rMap, string name)
 template<typename MapType1, typename MapType2>
 string findUniqueName(MapType1 &rMap1, MapType2 &rMap2 , string name)
 {
-    //Make sure name is not empty
+    //New name must not be empty, empty name is "reserved" to be used in the API to indicate that we want to manipulate the current root system
     if (name.empty())
     {
-        name = "empty_name";
+        name = "Untitled";
     }
 
     size_t ctr = 1; //The suffix number
