@@ -19,6 +19,8 @@ namespace hopsan {
         double mMass;
         double mB;
         double mk;
+        double mLength; //This length is not accesible by the user,
+                        //it is set from the start values by the c-components in the ends
         SecondOrderFilter mFilter;
         Integrator mInt;
         Port *mpP1, *mpP2;
@@ -52,13 +54,16 @@ namespace hopsan {
         {
             //mFilter.initialize(0.0,0.0, mTime);
             double x1  = mpP1->readNode(NodeMechanic::POSITION);
+            double x2  = mpP2->readNode(NodeMechanic::POSITION);
             double v1  = mpP1->readNode(NodeMechanic::VELOCITY);
             double F1  = mpP1->readNode(NodeMechanic::FORCE);
+            mLength = x1+x2;
             //cout << "x0 = " << x1 << endl;
             double num [] = {0.0, 1.0, 0.0};
             double den [] = {mMass, mB, mk};
             mFilter.initialize(mTimestep, num, den, -F1, -v1);
-            mInt.initialize(mTimestep, -v1, -x1);
+            mInt.initialize(mTimestep, -v1, -x1+mLength);
+            //std::cout << "apa: " << mLength << std::endl;
             //mFilter.update(0);
         }
 
@@ -79,7 +84,7 @@ namespace hopsan {
             double v2 = mFilter.update(c1-c2);
             double v1 = -v2;
             double x2 = mInt.update(v2);
-            double x1 = -x2;
+            double x1 = -x2 + mLength;
             double F1 = c1 + Zx1*v1;
             double F2 = c2 + Zx2*v2;
 
