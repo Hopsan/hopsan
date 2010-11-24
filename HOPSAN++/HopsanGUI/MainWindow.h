@@ -15,7 +15,7 @@ class ProjectTabWidget;
 class GraphicsView;
 class GraphicsScene;
 class LibraryWidget;
-class ContainerPropertiesDialog;
+//class ContainerPropertiesDialog;
 class OptionsDialog;
 class UndoWidget;
 class MessageWidget;
@@ -42,7 +42,7 @@ public:
     ProjectTabWidget *mpProjectTabs;
     LibraryWidget *mpLibrary;
     OptionsDialog *mpOptionsDialog;
-    ContainerPropertiesDialog *mpSystemPropertiesDialog;
+    //ContainerPropertiesDialog *mpSystemPropertiesDialog;
     MessageWidget *mpMessageWidget;
     QPushButton *mpClearMessageWidgetButton;
 
@@ -91,7 +91,7 @@ public:
     QAction *simulateAction;
     QAction *plotAction;
     QAction *loadLibsAction;
-    QAction *preferencesAction;
+    QAction *propertiesAction;
     QAction *optionsAction;
     QAction *resetZoomAction;
     QAction *zoomInAction;

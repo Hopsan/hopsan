@@ -27,11 +27,11 @@ class ContainerPropertiesDialog : public QDialog
 public:
     ContainerPropertiesDialog(GUIContainerObject *pContainerObject, QWidget *pParentWidget);
 
-public slots:
-    void show();
+//public slots:
+//    void show();
 
 private:
-    bool mIsoBool;
+//    bool mIsoBool;
 
     GUIContainerObject *mpContainerObject;
 

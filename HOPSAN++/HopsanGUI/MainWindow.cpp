@@ -11,7 +11,7 @@
 
 #include "PlotWidget.h"
 #include "MessageWidget.h"
-#include "ContainerPropertiesDialog.h"
+//#include "ContainerPropertiesDialog.h"
 #include "OptionsDialog.h"
 #include "UndoStack.h"
 #include "LibraryWidget.h"
@@ -127,7 +127,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     mpUndoWidget = new UndoWidget(this);
     mpProjectTabs->addNewProjectTab();
-    //mpSystemPropertiesDialog = new ContainerPropertiesDialog(this);
     mpOptionsDialog = new OptionsDialog(this);
 
             //Load default libraries
@@ -347,9 +346,9 @@ void MainWindow::createActions()
     loadLibsAction->setText("Load Libraries");
     connect(loadLibsAction,SIGNAL(triggered()),mpLibrary,SLOT(addLibrary()));
 
-    preferencesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Configure.png"), tr("&Model Preferences"), this);
-    preferencesAction->setText("Model Preferences");
-    preferencesAction->setShortcut(QKeySequence("Ctrl+Alt+p"));
+    propertiesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Configure.png"), tr("&Model Properties"), this);
+    propertiesAction->setText("Model Properties");
+    propertiesAction->setShortcut(QKeySequence("Ctrl+Alt+p"));
 
     optionsAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Options.png"), tr("&Options"), this);
     optionsAction->setText("Options");
@@ -449,7 +448,7 @@ void MainWindow::createMenus()
     menuFile->addSeparator();
     menuFile->addAction(loadLibsAction);
     menuFile->addSeparator();
-    menuFile->addAction(preferencesAction);
+    menuFile->addAction(propertiesAction);
     menuFile->addAction(openGlobalParametersAction);
     menuFile->addSeparator();
     menuFile->addAction(closeAction);
@@ -524,7 +523,7 @@ void MainWindow::createToolbars()
     mpSimToolBar->addWidget(mpFinishTimeLineEdit);
     mpSimToolBar->addAction(simulateAction);
     mpSimToolBar->addAction(plotAction);
-    mpSimToolBar->addAction(preferencesAction);
+    mpSimToolBar->addAction(propertiesAction);
     mpSimToolBar->addAction(openGlobalParametersAction);
 }
 
@@ -588,7 +587,7 @@ void MainWindow::updateToolBarsToNewTab()
     mpFinishTimeLineEdit->setEnabled(!noTabs);
     simulateAction->setEnabled(!noTabs);
     plotAction->setEnabled(!noTabs);
-    preferencesAction->setEnabled(!noTabs);
+    propertiesAction->setEnabled(!noTabs);
 }
 
 

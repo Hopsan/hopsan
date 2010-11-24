@@ -70,7 +70,6 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     //Create connections
     connect(mpCancelButton, SIGNAL(pressed()), this, SLOT(close()));
     connect(mpDoneButton, SIGNAL(pressed()), this, SLOT(setValues()));
-    //connect(gpMainWindow->preferencesAction,SIGNAL(triggered()),this,SLOT(show()));
     connect(mpIsoIconBrowseButton, SIGNAL(clicked()), this, SLOT(browseIso()));
     connect(mpUserIconBrowseButton, SIGNAL(clicked()), this, SLOT(browseUser()));
 
@@ -109,16 +108,16 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     setLayout(mpLayout);
 }
 
-//! @brief Reimplementation of QDialog::show(), used to update values in the box to current settings every time it is shown
-//! @todo is this really necessary as uptodate values are set in constructor
-void ContainerPropertiesDialog::show()
-{
-//    mpIsoCheckBox->setChecked(gpMainWindow->mpProjectTabs->getCurrentSystem()->mGfxType);
-//    mpDisableUndoCheckBox->setChecked(gpMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
-//    mpUserIconPath->setText(gpMainWindow->mpProjectTabs->getCurrentSystem()->getUserIconPath());
-//    mpIsoIconPath->setText(gpMainWindow->mpProjectTabs->getCurrentSystem()->getIsoIconPath());
-    QDialog::show();
-}
+////! @brief Reimplementation of QDialog::show(), used to update values in the box to current settings every time it is shown
+////! @todo is this really necessary as uptodate values are set in constructor
+//void ContainerPropertiesDialog::show()
+//{
+////    mpIsoCheckBox->setChecked(gpMainWindow->mpProjectTabs->getCurrentSystem()->mGfxType);
+////    mpDisableUndoCheckBox->setChecked(gpMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
+////    mpUserIconPath->setText(gpMainWindow->mpProjectTabs->getCurrentSystem()->getUserIconPath());
+////    mpIsoIconPath->setText(gpMainWindow->mpProjectTabs->getCurrentSystem()->getIsoIconPath());
+//    QDialog::show();
+//}
 
 
 //! @brief Updates model settings according to the selected values

@@ -669,7 +669,7 @@ void ProjectTabWidget::tabChanged()
         disconnect(gpMainWindow->cutAction,             SIGNAL(triggered()),        getSystem(i),       SLOT(cutSelected()));
         disconnect(gpMainWindow->copyAction,            SIGNAL(triggered()),        getSystem(i),       SLOT(copySelected()));
         disconnect(gpMainWindow->pasteAction,           SIGNAL(triggered()),        getSystem(i),       SLOT(paste()));
-        disconnect(gpMainWindow->preferencesAction,     SIGNAL(triggered()),        getSystem(i),       SLOT(openPropertiesDialogSlot()));
+        disconnect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        getSystem(i),       SLOT(openPropertiesDialogSlot()));
     }
     if(this->count() != 0)
     {
@@ -693,7 +693,7 @@ void ProjectTabWidget::tabChanged()
         connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        getCurrentSystem(),     SLOT(cutSelected()));
         connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        getCurrentSystem(),     SLOT(copySelected()));
         connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        getCurrentSystem(),     SLOT(paste()));
-        connect(gpMainWindow->preferencesAction,    SIGNAL(triggered()),        getCurrentSystem(),     SLOT(openPropertiesDialogSlot()));
+        connect(gpMainWindow->propertiesAction,    SIGNAL(triggered()),        getCurrentSystem(),     SLOT(openPropertiesDialogSlot()));
         getCurrentSystem()->updateUndoStatus();
         getCurrentSystem()->updateSimulationParametersInToolBar();
     }
