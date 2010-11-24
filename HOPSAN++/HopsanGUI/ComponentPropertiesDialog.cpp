@@ -81,10 +81,12 @@ void ComponentPropertiesDialog::createEditStuff()
 
         mParameterValueVector.push_back(new QLineEdit());
 
+
         QToolButton *pGlobalButton = new QToolButton();
         pGlobalButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-GlobalParameter.png"));
         connect(pGlobalButton, SIGNAL(pressed()), this, SLOT(showListOfGlobalParameters()));
 
+        mGlobalParameterButtons.append(pGlobalButton);
         mGlobalParameterVector.push_back(pGlobalButton);
         //mValueVector.back()->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mValueVector.back()));
 
@@ -363,15 +365,25 @@ void ComponentPropertiesDialog::showListOfGlobalParameters()
     {
         QString valueString;
         valueString.setNum(it.value());
-        QAction *tempAction = menu.addAction(QString(it.key().c_str()) + " (" + valueString + ")");
+        QAction *tempAction = menu.addAction(QString(it.key().c_str()));
+        tempAction->setIconVisibleInMenu(false);
+    }
+
+    size_t i;
+    for(i=0; i<mGlobalParameterButtons.size(); ++i)
+    {
+        if(mGlobalParameterButtons.at(i)->underMouse())
+        {
+            qDebug() << "Clicked on number " << i;
+            break;
+        }
     }
 
     QCursor cursor;
-    menu.exec(cursor.pos());
+    QAction *selectedAction = menu.exec(cursor.pos());
 
-//    for(size_t i=0; i<mpParameterGlobalLayout->count(); ++i)
-//    {
-//        if(mpParameterGlobalLayout->itemAt(i))
-//    }
-    //if(qDebug() << this->mpParameterGlobalLayout->indexOf(mpParameterGlobalLayout->itemAt()))
+    if(selectedAction != 0)
+    {
+        this->mParameterValueVector[i]->setText(selectedAction->text());
+    }
 }

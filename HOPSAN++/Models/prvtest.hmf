@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2494" y="2500" zoom="1"/>
+            <viewport x="2352.5" y="2500" zoom="1"/>
             <hopsanobjectappearance>
                 <modelobject typename="" displayname="prvtest">
                     <icon isopath="" iconrotation="" userpath=""/>
@@ -13,7 +13,9 @@
         </hopsangui>
         <simulationtime stop="10" timestep="0.001" start="0"/>
         <parameters>
+            <mappedparameter value="4e+052" name="bamse"/>
             <mappedparameter value="0.005" name="pi"/>
+            <mappedparameter value="123.456" name="skalman"/>
         </parameters>
         <objects>
             <component typename="SignalSink" name="Sink">
@@ -60,7 +62,7 @@
                     <startvalue portname="P2" variable="Pressure" value="100000"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2487" y="2453" flipped="0" a="0"/>
+                    <pose x="2487" y="2452" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -95,8 +97,8 @@
                     <coordinates>
                         <coordinate x="2375" y="2453"/>
                         <coordinate x="2395" y="2453"/>
-                        <coordinate x="2395" y="2453"/>
-                        <coordinate x="2462" y="2453"/>
+                        <coordinate x="2395" y="2452"/>
+                        <coordinate x="2462" y="2452"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -123,8 +125,8 @@
             <connect endport="P1" endcomponent="AlternativePRV" startport="P2" startcomponent="Volume">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2512" y="2453"/>
-                        <coordinate x="2592.0008" y="2453"/>
+                        <coordinate x="2512" y="2452"/>
+                        <coordinate x="2592.0008" y="2452"/>
                         <coordinate x="2592.0008" y="2471"/>
                     </coordinates>
                     <geometries>

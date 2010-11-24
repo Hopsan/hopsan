@@ -59,6 +59,9 @@ private:
     std::vector<QLineEdit*> mParameterValueVector;
     std::vector<QToolButton*> mGlobalParameterVector;
 
+    QVector<QToolButton *> mGlobalParameterButtons;
+    QVector<QLineEdit *> mParameterValueLineEdits;
+
     QVector<QVector<QLabel*> > mStartDataNames;
     QVector<QVector<QLineEdit*> > mStartDataValues;
     QVector<QVector<QLabel*> > mStartDataUnits;
