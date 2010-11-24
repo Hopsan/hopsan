@@ -18,6 +18,7 @@
 #include "MessageWidget.h"
 #include "GUIObjects/GUIComponent.h"
 #include "UndoStack.h"
+#include <QToolButton>
 
 
 //! @class ComponentPropertiesDialog
@@ -79,6 +80,10 @@ void ComponentPropertiesDialog::createEditStuff()
         mParameterUnitVector.push_back(new QLabel(mpGUIModelObject->getParameterUnit(*pit)));
 
         mParameterValueVector.push_back(new QLineEdit());
+
+        QToolButton *pGlobalButton = new QToolButton();
+        pGlobalButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-GlobalParameter.png"));
+        mGlobalParameterVector.push_back(pGlobalButton);
         //mValueVector.back()->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mValueVector.back()));
 
         QString valueTxt;
@@ -184,12 +189,14 @@ void ComponentPropertiesDialog::createEditStuff()
     QVBoxLayout *parameterDescriptionLayput = new QVBoxLayout;
     QVBoxLayout *parameterVarLayout = new QVBoxLayout;
     QVBoxLayout *parameterValueLayout = new QVBoxLayout;
+    QVBoxLayout *parameterGlobalLayout = new QVBoxLayout;
     QVBoxLayout *parameterUnitLayout = new QVBoxLayout;
     for (size_t i=0 ; i <mParameterVarVector.size(); ++i )
     {
         parameterDescriptionLayput->addWidget(mParameterDescriptionVector[i]);
         parameterVarLayout->addWidget(mParameterVarVector[i]);
         parameterValueLayout->addWidget(mParameterValueVector[i]);
+        parameterGlobalLayout->addWidget(mGlobalParameterVector[i]);
         parameterUnitLayout->addWidget(mParameterUnitVector[i]);
     }
 
@@ -197,6 +204,7 @@ void ComponentPropertiesDialog::createEditStuff()
     parameterLayout->addLayout(parameterDescriptionLayput);
     parameterLayout->addLayout(parameterVarLayout);
     parameterLayout->addLayout(parameterValueLayout);
+    parameterLayout->addLayout(parameterGlobalLayout);
     parameterLayout->addLayout(parameterUnitLayout);
     parameterLayout->addStretch(1);
 

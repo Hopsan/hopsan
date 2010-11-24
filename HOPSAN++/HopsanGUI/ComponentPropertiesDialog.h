@@ -18,6 +18,7 @@ class QGroupBox;
 class QLabel;
 class QLineEdit;
 class QPushButton;
+class QToolButton;
 
 class GUIModelObject;
 class GUIComponent;
@@ -54,6 +55,7 @@ private:
     std::vector<QLabel*> mParameterDescriptionVector;
     std::vector<QLabel*> mParameterUnitVector;
     std::vector<QLineEdit*> mParameterValueVector;
+    std::vector<QToolButton*> mGlobalParameterVector;
 
     QVector<QVector<QLabel*> > mStartDataNames;
     QVector<QVector<QLineEdit*> > mStartDataValues;
