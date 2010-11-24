@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanmodelfile hmfversion="0.1" hopsanguiversion="0.0.1" hopsancoreversion="0">
     <system typename="Subsystem" cqs_type="S" name="prvtest">
-        <simulationtime stop="10" timestep="0.001" start="0"/>
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2504" y="2503.5" zoom="1"/>
+            <viewport x="2361" y="2500" zoom="1"/>
             <hopsanobjectappearance>
                 <modelobject typename="" displayname="prvtest">
                     <icon isopath="" iconrotation="" userpath=""/>
                 </modelobject>
             </hopsanobjectappearance>
         </hopsangui>
+        <simulationtime stop="10" timestep="0.001" start="0"/>
+        <parameters>
+            <mappedparameter value="3.14" name="pi"/>
+        </parameters>
         <objects>
+            <component typename="SignalSink" name="Sink">
+                <parameters/>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2698" y="2511" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
             <component typename="HydraulicTankC" name="PressureSource">
                 <parameters>
                     <parameter value="100000" name="P"/>
@@ -28,7 +39,7 @@
             </component>
             <component typename="HydraulicFlowSourceQ" name="FlowSourceQ">
                 <parameters>
-                    <parameter value="2e-05" name="Flow"/>
+                    <parameter value="2e-005" name="Flow"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -49,7 +60,7 @@
                     <startvalue portname="P2" variable="Pressure" value="100000"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2488" y="2446" flipped="0" a="0"/>
+                    <pose x="2487" y="2451" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -84,9 +95,14 @@
                     <coordinates>
                         <coordinate x="2388" y="2446"/>
                         <coordinate x="2395" y="2446"/>
-                        <coordinate x="2395" y="2446"/>
-                        <coordinate x="2463" y="2446"/>
+                        <coordinate x="2395" y="2451"/>
+                        <coordinate x="2462" y="2451"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="P2" endcomponent="AlternativePRV" startport="P1" startcomponent="PressureSource">
@@ -97,15 +113,35 @@
                         <coordinate x="2592.0008" y="2566"/>
                         <coordinate x="2592.0008" y="2551"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="P1" endcomponent="AlternativePRV" startport="P2" startcomponent="Volume">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2513" y="2446"/>
-                        <coordinate x="2592.0008" y="2446"/>
+                        <coordinate x="2512" y="2451"/>
+                        <coordinate x="2592.0008" y="2451"/>
                         <coordinate x="2592.0008" y="2471"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="X" startcomponent="AlternativePRV">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2636" y="2511"/>
+                        <coordinate x="2685.5" y="2511"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
         </connections>

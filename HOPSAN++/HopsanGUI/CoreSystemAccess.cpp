@@ -484,7 +484,8 @@ double CoreSystemAccess::getGlobalParameter(QString name)
 
 bool CoreSystemAccess::hasGlobalParameter(QString name)
 {
-    return (mpCoreComponentSystem->getMappedParameters().find(name.toStdString()) != mpCoreComponentSystem->getMappedParameters().end());
+    std::map<std::string, double> tempMap = mpCoreComponentSystem->getMappedParameters();
+    return (tempMap.find(name.toStdString()) != tempMap.end());
 }
 
 

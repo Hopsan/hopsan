@@ -18,6 +18,8 @@
 #include "MessageWidget.h"
 #include "GUIObjects/GUIComponent.h"
 #include "UndoStack.h"
+#include "ProjectTabWidget.h"
+
 #include <QToolButton>
 
 
@@ -68,9 +70,7 @@ void ComponentPropertiesDialog::createEditStuff()
     QLabel *pParameterLabel = new QLabel("Parameters");
     pParameterLabel->setFont(fontH1);
 
-    //qDebug() << "before parnames";
     QVector<QString> parnames = mpGUIModelObject->getParameterNames();
-    //qDebug() << "parnames.size: " << parnames.size();
     QVector<QString>::iterator pit;
     for ( pit=parnames.begin(); pit!=parnames.end(); ++pit )
     {
@@ -83,13 +83,32 @@ void ComponentPropertiesDialog::createEditStuff()
 
         QToolButton *pGlobalButton = new QToolButton();
         pGlobalButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-GlobalParameter.png"));
+        connect(pGlobalButton, SIGNAL(pressed()), this, SLOT(showListOfGlobalParameters()));
+
         mGlobalParameterVector.push_back(pGlobalButton);
         //mValueVector.back()->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mValueVector.back()));
 
-        QString valueTxt;
-        valueTxt.setNum(mpGUIModelObject->getParameterValue(*pit), 'g', 6 );
-        mParameterValueVector.back()->setText(valueTxt);
-
+        if(mpGUIModelObject->hasGlobalParameter(*pit))
+        {
+            if(mpGUIModelObject->mpParentContainerObject->getCoreSystemAccessPtr()->hasGlobalParameter(mpGUIModelObject->getGlobalParameterKey(*pit)))
+            {
+                mParameterValueVector.back()->setText(mpGUIModelObject->getGlobalParameterKey(*pit));
+            }
+            else
+            {
+                mpGUIModelObject->forgetGlobalParameter(*pit);
+                QString valueTxt;
+                valueTxt.setNum(mpGUIModelObject->getParameterValue(*pit), 'g', 6 );
+                mParameterValueVector.back()->setText(valueTxt);
+                gpMainWindow->mpMessageWidget->printGUIWarningMessage(tr("Warning: Global parameter no longer exists, replacing with last used value."));
+            }
+        }
+        else
+        {
+            QString valueTxt;
+            valueTxt.setNum(mpGUIModelObject->getParameterValue(*pit), 'g', 6 );
+            mParameterValueVector.back()->setText(valueTxt);
+        }
         mParameterVarVector.back()->setBuddy(mParameterValueVector.back());
 
     }
@@ -189,14 +208,14 @@ void ComponentPropertiesDialog::createEditStuff()
     QVBoxLayout *parameterDescriptionLayput = new QVBoxLayout;
     QVBoxLayout *parameterVarLayout = new QVBoxLayout;
     QVBoxLayout *parameterValueLayout = new QVBoxLayout;
-    QVBoxLayout *parameterGlobalLayout = new QVBoxLayout;
+    mpParameterGlobalLayout = new QVBoxLayout;
     QVBoxLayout *parameterUnitLayout = new QVBoxLayout;
     for (size_t i=0 ; i <mParameterVarVector.size(); ++i )
     {
         parameterDescriptionLayput->addWidget(mParameterDescriptionVector[i]);
         parameterVarLayout->addWidget(mParameterVarVector[i]);
         parameterValueLayout->addWidget(mParameterValueVector[i]);
-        parameterGlobalLayout->addWidget(mGlobalParameterVector[i]);
+        mpParameterGlobalLayout->addWidget(mGlobalParameterVector[i]);
         parameterUnitLayout->addWidget(mParameterUnitVector[i]);
     }
 
@@ -204,7 +223,7 @@ void ComponentPropertiesDialog::createEditStuff()
     parameterLayout->addLayout(parameterDescriptionLayput);
     parameterLayout->addLayout(parameterVarLayout);
     parameterLayout->addLayout(parameterValueLayout);
-    parameterLayout->addLayout(parameterGlobalLayout);
+    parameterLayout->addLayout(mpParameterGlobalLayout);
     parameterLayout->addLayout(parameterUnitLayout);
     parameterLayout->addStretch(1);
 
@@ -265,27 +284,30 @@ void ComponentPropertiesDialog::setParameters()
 
         //! @test This is just a preliminary check for how global parameters can be implemented
         qDebug() << "Checking " << mParameterVarVector[i]->text();
-        if(mParameterValueVector[i]->text().startsWith("<") && mParameterValueVector[i]->text().endsWith(">")) //! @todo Break out global parameter stuff to own method so it can be used, for example, in start value method too
+
+
+        QString requestedParameter = mParameterValueVector[i]->text();
+        bool ok;
+        double newValue = requestedParameter.toDouble(&ok);
+
+        if(!ok)     //Global parameter
         {
-            //QString requestedParameter = mParameterValueVector[i]->text().mid(1, mParameterValueVector[i]->text().size()-2);
-            QString requestedParameter = mParameterValueVector[i]->text();
-            qDebug() << "Found global parameter \"" << requestedParameter << "\"";
-            requestedParameter = requestedParameter.mid(1, requestedParameter.size()-2);
-            mpGUIModelObject->setGlobalParameter(mParameterVarVector[i]->text(), requestedParameter);
-        }
-        else
-        {
-            bool ok;
-            double newValue = mParameterValueVector[i]->text().toDouble(&ok);
-            if (!ok)
+            if(mpGUIModelObject->mpParentContainerObject->getCoreSystemAccessPtr()->hasGlobalParameter(requestedParameter))
             {
+                mpGUIModelObject->setGlobalParameter(mParameterVarVector[i]->text(), requestedParameter);
+            }
+            else    //User has written something illegal
+            {
+                //! @todo Make something better, like showing a warning box, if parameter is not ok. Maybe check all parameters before setting any of them.
                 MessageWidget *messageWidget = gpMainWindow->mpMessageWidget;//qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent()->parent())->mpMessageWidget;
                 messageWidget->printGUIMessage(QString("ComponentPropertiesDialog::setParameters(): You must give a correct value for '").append(mParameterVarVector[i]->text()).append(QString("', putz. Try again!")));
                 qDebug() << "Inte okej!";
                 return;
             }
-
-            if(mpGUIModelObject->getParameterValue(mParameterVarVector[i]->text()) != newValue)
+        }
+        else
+        {
+            if(mpGUIModelObject->getParameterValue(mParameterVarVector[i]->text()) != newValue)     //Normal parameter (a double value)
             {
                 if(!addedUndoPost)
                 {
@@ -327,4 +349,29 @@ void ComponentPropertiesDialog::setStartValues()
     }
     std::cout << "Start values updated." << std::endl;
     this->close();
+}
+
+
+
+void ComponentPropertiesDialog::showListOfGlobalParameters()
+{
+    QMenu menu;
+
+    QMap<std::string, double> globalMap = gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getGlobalParametersMap();
+    QMap<std::string, double>::iterator it;
+    for(it=globalMap.begin(); it!=globalMap.end(); ++it)
+    {
+        QString valueString;
+        valueString.setNum(it.value());
+        QAction *tempAction = menu.addAction(QString(it.key().c_str()) + " (" + valueString + ")");
+    }
+
+    QCursor cursor;
+    menu.exec(cursor.pos());
+
+//    for(size_t i=0; i<mpParameterGlobalLayout->count(); ++i)
+//    {
+//        if(mpParameterGlobalLayout->itemAt(i))
+//    }
+    //if(qDebug() << this->mpParameterGlobalLayout->indexOf(mpParameterGlobalLayout->itemAt()))
 }

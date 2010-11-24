@@ -126,45 +126,38 @@ double GUIComponent::getParameterValue(QString name)
 void GUIComponent::setParameterValue(QString name, double value)
 {
     mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, value);
-    mGlobalParameters.remove(name);
-    if(mGlobalParameters.empty())
-    {
-        disconnect(gpMainWindow->mpGlobalParametersWidget, SIGNAL(modifiedGlobalParameter()), this, SLOT(updateGlobalParameters()));
-    }
+    forgetGlobalParameter(name);
 }
 
 
 void GUIComponent::setGlobalParameter(QString name, QString gPar)
 {
     mpParentContainerObject->getCoreSystemAccessPtr()->registserGlobalParameter(this->getName(), name, gPar);
+    rememberGlobalParameter(name, gPar);
 }
 
 
-void GUIComponent::updateGlobalParameters()
+void GUIComponent::rememberGlobalParameter(QString name, QString key)
 {
-    QStringList parametersToRemove;
-    QMap<QString, QString>::iterator it;
-    for(it=mGlobalParameters.begin(); it!=mGlobalParameters.end(); ++it)
-    {
-        if(gpMainWindow->mpGlobalParametersWidget->hasParameter(it.key()))
-        {
-            mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), it.value(), gpMainWindow->mpGlobalParametersWidget->getParameter(it.value()));
-        }
-        else
-        {
-            parametersToRemove.append(it.key());
-        }
-    }
+    mGlobalParameters.insert(name, key);
+}
 
-    for(size_t i=0; i=parametersToRemove.size(); ++i)
-    {
-        mGlobalParameters.remove(parametersToRemove.at(i));
-    }
 
-    if(mGlobalParameters.empty())
-    {
-        disconnect(gpMainWindow->mpGlobalParametersWidget, SIGNAL(modifiedGlobalParameter()), this, SLOT(updateGlobalParameters()));
-    }
+void GUIComponent::forgetGlobalParameter(QString name)
+{
+    mGlobalParameters.remove(name);
+}
+
+
+bool GUIComponent::hasGlobalParameter(QString name)
+{
+    return mGlobalParameters.contains(name);
+}
+
+
+QString GUIComponent::getGlobalParameterKey(QString parameterName)
+{
+    return mGlobalParameters.find(parameterName).value();
 }
 
 //void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)

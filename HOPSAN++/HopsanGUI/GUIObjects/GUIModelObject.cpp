@@ -369,6 +369,31 @@ void GUIModelObject::setGlobalParameter(QString name, QString gPar)
     assert(false);
 }
 
+
+void GUIModelObject::rememberGlobalParameter(QString name)
+{
+    assert(false);
+}
+
+
+void GUIModelObject::forgetGlobalParameter(QString name)
+{
+    assert(false);
+}
+
+
+bool GUIModelObject::hasGlobalParameter(QString name)
+{
+    assert(false);
+}
+
+
+QString GUIModelObject::getGlobalParameterKey(QString parameterName)
+{
+    assert(false);
+}
+
+
 ////! @brief Saves the GUIModelObject to a text stream
 ////! @param &rStream Text stream to save into
 ////! @param prepend String to prepend before object data

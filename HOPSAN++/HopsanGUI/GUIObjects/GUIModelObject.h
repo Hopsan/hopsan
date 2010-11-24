@@ -41,6 +41,10 @@ public:
     virtual double getParameterValue(QString name);
     virtual void setParameterValue(QString name, double value);
     virtual void setGlobalParameter(QString name, QString gPar);
+    virtual void rememberGlobalParameter(QString name);
+    virtual void forgetGlobalParameter(QString name);
+    virtual bool hasGlobalParameter(QString name);
+    virtual QString getGlobalParameterKey(QString parameterName);
 
     //Load and save methods
     //virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());

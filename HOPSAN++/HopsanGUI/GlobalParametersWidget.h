@@ -58,7 +58,6 @@ private:
     QPushButton *mpRemoveButton;
     QPushButton *mpCloseButton;
     QGridLayout *mpGridLayout;
-    QMap<QString,double> mGlobalParametersMap;
 };
 
 

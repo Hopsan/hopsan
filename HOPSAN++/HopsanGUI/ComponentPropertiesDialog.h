@@ -19,6 +19,7 @@ class QLabel;
 class QLineEdit;
 class QPushButton;
 class QToolButton;
+class QVBoxLayout;
 
 class GUIModelObject;
 class GUIComponent;
@@ -35,13 +36,14 @@ public:
 
 protected slots:
     void okPressed();
+    void showListOfGlobalParameters();
 
 protected:
     void setParameters();
     void setStartValues();
 
 private:
-    GUIModelObject    *mpGUIModelObject;
+    GUIModelObject *mpGUIModelObject;
     bool isGUISubsystem;
 
     void createEditStuff();
@@ -61,6 +63,7 @@ private:
     QVector<QVector<QLineEdit*> > mStartDataValues;
     QVector<QVector<QLabel*> > mStartDataUnits;
 
+    QVBoxLayout *mpParameterGlobalLayout;
 
     QDialogButtonBox *buttonBox;
     QPushButton *okButton;

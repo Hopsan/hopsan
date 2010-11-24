@@ -70,8 +70,6 @@ GlobalParametersWidget::GlobalParametersWidget(MainWindow *parent)
     this->resize(400,500);
     this->setWindowTitle("Undo History");
 
-    //mGlobalParametersMap.clear();//mContents.clear();
-
     mpGlobalParametersTable = new QTableWidget(0,1,this);
     mpGlobalParametersTable->setBaseSize(400, 500);
     mpGlobalParametersTable->horizontalHeader()->setStretchLastSection(true);
@@ -79,7 +77,7 @@ GlobalParametersWidget::GlobalParametersWidget(MainWindow *parent)
 
     update();
 
-    mpAddButton = new QPushButton(tr("&Add"), this);
+    mpAddButton = new QPushButton(tr("&Set"), this);
     mpAddButton->setFixedHeight(30);
     mpAddButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     mpAddButton->setAutoDefault(false);
@@ -87,7 +85,7 @@ GlobalParametersWidget::GlobalParametersWidget(MainWindow *parent)
     tempFont.setBold(true);
     mpAddButton->setFont(tempFont);
 
-    mpRemoveButton = new QPushButton(tr("&Remove"), this);
+    mpRemoveButton = new QPushButton(tr("&Unset"), this);
     mpRemoveButton->setFixedHeight(30);
     mpRemoveButton->setAutoDefault(false);
     mpRemoveButton->setFont(tempFont);
@@ -99,20 +97,17 @@ GlobalParametersWidget::GlobalParametersWidget(MainWindow *parent)
 
     connect(mpAddButton,SIGNAL(clicked()),this,SLOT(openComponentPropertiesDialog()));
     connect(mpRemoveButton,SIGNAL(clicked()),this,SLOT(removeSelectedParameters()));
-    //connect(mpGlobalParametersTable, SIGNAL(QTableWidgetItem*)), this, SLOT(setParameters()));
 }
 
 
 double GlobalParametersWidget::getParameter(QString name)
 {
-    //return mGlobalParametersMap.find(name).value();
     return gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getGlobalParameter(name);
 }
 
 
 bool GlobalParametersWidget::hasParameter(QString name)
 {
-    //return mGlobalParametersMap.contains(name);
     return gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->hasGlobalParameter(name);
 }
 
@@ -122,14 +117,6 @@ bool GlobalParametersWidget::hasParameter(QString name)
 //! @param value Value of the global parameter
 void GlobalParametersWidget::setParameter(QString name, double value)
 {
-//    if(!name.startsWith("<"))
-//    {
-//        name.insert(0,"<");
-//    }
-//    if(!name.endsWith(">"))
-//    {
-//        name.append(">");
-//    }
     gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->setGlobalParameter(name, value);
     update();
 
@@ -145,14 +132,6 @@ void GlobalParametersWidget::setParameters()
         {
             QString name = mpGlobalParametersTable->item(i, 0)->text();
             double value = mpGlobalParametersTable->item(i, 1)->text().toDouble();
-//            if(!name.startsWith("<"))
-//            {
-//                name.insert(0,"<");
-//            }
-//            if(!name.endsWith(">"))
-//            {
-//                name.append(">");
-//            }
             gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->setGlobalParameter(name, value);
         }
     }
@@ -171,7 +150,6 @@ void GlobalParametersWidget::removeSelectedParameters()
     for(size_t i=0; i<pSelectedItems.size(); ++i)
     {
         tempName = mpGlobalParametersTable->item(pSelectedItems[i]->row(),0)->text();
-        //tempValue = mpGlobalParametersTable->item(pSelectedItems[i]->row(),1)->text().toDouble();
         if(!parametersToRemove.contains(tempName))
         {
             parametersToRemove.append(tempName);
@@ -181,8 +159,6 @@ void GlobalParametersWidget::removeSelectedParameters()
     for(size_t j=0; j<parametersToRemove.size(); ++j)
     {
         qDebug() << "Removing: " << parametersToRemove[j];
-        //mContents.removeAll(parametersToRemove[j]);
-        //mGlobalParametersMap.remove(parametersToRemove.at(j));
         gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->removeGlobalParameter(parametersToRemove.at(j));
     }
 
@@ -194,7 +170,7 @@ void GlobalParametersWidget::removeSelectedParameters()
 void GlobalParametersWidget::openComponentPropertiesDialog()
 {
     QDialog *pAddComponentPropertiesDialog = new QDialog(this);
-    pAddComponentPropertiesDialog->setWindowTitle("Add Global Parameter");
+    pAddComponentPropertiesDialog->setWindowTitle("Set Global Parameter");
 
     mpNameLabel = new QLabel("Name: ", this);
     mpNameBox = new QLineEdit(this);
@@ -232,8 +208,6 @@ void GlobalParametersWidget::addParameter()
 //! Updates the parameter table from the contents list
 void GlobalParametersWidget::update()
 {
-    qDebug() << "update(), numberOfGlobalParameters = " << gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getNumberOfGlobalParameters();
-
     mpGlobalParametersTable->clear();
 
     if(gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getNumberOfGlobalParameters() == 0)
@@ -246,6 +220,7 @@ void GlobalParametersWidget::update()
         item->setText("No global parameters set.");
         item->setBackgroundColor(QColor("white"));
         item->setTextAlignment(Qt::AlignCenter);
+        item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         mpGlobalParametersTable->setItem(0,0,item);
     }
     else
@@ -262,7 +237,11 @@ void GlobalParametersWidget::update()
         QString valueString;
         valueString.setNum(it.value());
         this->mpGlobalParametersTable->insertRow(mpGlobalParametersTable->rowCount());
-        mpGlobalParametersTable->setItem(mpGlobalParametersTable->rowCount()-1, 0, new QTableWidgetItem(QString(it.key().c_str())));
-        mpGlobalParametersTable->setItem(mpGlobalParametersTable->rowCount()-1, 1, new QTableWidgetItem(valueString));
+        QTableWidgetItem *nameItem = new QTableWidgetItem(QString(it.key().c_str()));
+        QTableWidgetItem *valueItem = new QTableWidgetItem(valueString);
+        nameItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        valueItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        mpGlobalParametersTable->setItem(mpGlobalParametersTable->rowCount()-1, 0, nameItem);
+        mpGlobalParametersTable->setItem(mpGlobalParametersTable->rowCount()-1, 1, valueItem);
     }
 }

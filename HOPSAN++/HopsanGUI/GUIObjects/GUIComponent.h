@@ -25,6 +25,10 @@ public:
     double getParameterValue(QString name);
     void setParameterValue(QString name, double value);
     void setGlobalParameter(QString name, QString gPar);
+    void rememberGlobalParameter(QString name, QString parameterName);
+    void forgetGlobalParameter(QString name);
+    bool hasGlobalParameter(QString name);
+    QString getGlobalParameterKey(QString parameterName);
 
     //void saveToTextStream(QTextStream &rStream, QString prepend=QString());
 
@@ -34,9 +38,6 @@ public:
 
     enum { Type = GUICOMPONENT };
     int type() const;
-
-public slots:
-    void updateGlobalParameters();
 
 protected:
     void saveCoreDataToDomElement(QDomElement &rDomElement);
