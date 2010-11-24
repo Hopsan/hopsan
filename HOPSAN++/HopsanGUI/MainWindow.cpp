@@ -317,8 +317,9 @@ void MainWindow::createActions()
     disableUndoAction->setCheckable(true);
     disableUndoAction->setChecked(false);
 
-    openGlobalParametersAction = new QAction(tr("&Global Parameters"), this);
+    openGlobalParametersAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-GlobalParameter.png"), tr("&Global Parameters"), this);
     openGlobalParametersAction->setText("Global Parameters");
+    openGlobalParametersAction->setShortcut(tr("Ctrl+alt+g"));
     connect(openGlobalParametersAction,SIGNAL(triggered()),this,SLOT(openGlobalParametersWidget()));
 
     cutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Cut.png"), tr("&Cut"), this);
@@ -524,6 +525,7 @@ void MainWindow::createToolbars()
     mpSimToolBar->addAction(simulateAction);
     mpSimToolBar->addAction(plotAction);
     mpSimToolBar->addAction(preferencesAction);
+    mpSimToolBar->addAction(openGlobalParametersAction);
 }
 
 
@@ -587,7 +589,6 @@ void MainWindow::updateToolBarsToNewTab()
     simulateAction->setEnabled(!noTabs);
     plotAction->setEnabled(!noTabs);
     preferencesAction->setEnabled(!noTabs);
-
 }
 
 

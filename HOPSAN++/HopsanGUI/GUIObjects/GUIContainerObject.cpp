@@ -904,7 +904,7 @@ void GUIContainerObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 //    }
 }
 
-void GUIContainerObject::openParameterDialog()
+void GUIContainerObject::openComponentPropertiesDialog()
 {
     //Do Nothing
 }

@@ -7,8 +7,8 @@
 //!
 //$Id$
 
-#ifndef PARAMETERDIALOG_H
-#define PARAMETERDIALOG_H
+#ifndef ComponentPropertiesDialog_H
+#define ComponentPropertiesDialog_H
 
 #include <QDialog>
 
@@ -23,14 +23,14 @@ class GUIModelObject;
 class GUIComponent;
 class GUISystem;
 
-class ParameterDialog : public QDialog
+class ComponentPropertiesDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    ParameterDialog(GUIComponent *pGUIComponent, QWidget *parent = 0);
-    //ParameterDialog(GUISubsystem *pGUISubsystem, QWidget *parent = 0);
-    ParameterDialog(GUISystem *pGUISubsystem, QWidget *parent = 0);
+    ComponentPropertiesDialog(GUIComponent *pGUIComponent, QWidget *parent = 0);
+    //ComponentPropertiesDialog(GUISubsystem *pGUISubsystem, QWidget *parent = 0);
+    ComponentPropertiesDialog(GUISystem *pGUISubsystem, QWidget *parent = 0);
 
 protected slots:
     void okPressed();
@@ -66,4 +66,4 @@ private:
     QWidget *extension;
 };
 
-#endif // PARAMETERDIALOG_H
+#endif // ComponentPropertiesDialog_H

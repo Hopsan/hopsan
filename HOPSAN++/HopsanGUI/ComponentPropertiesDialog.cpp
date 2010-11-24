@@ -3,7 +3,7 @@
 //! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2010-03-01
 //!
-//! @brief Contains a class for interact with paramters
+//! @brief Contains a dialog class for changing component properties
 //!
 //$Id$
 
@@ -20,8 +20,8 @@
 #include "UndoStack.h"
 
 
-//! @class ParameterDialog
-//! @brief The ParameterDialog class is a Widget used to interact with component parameters.
+//! @class ComponentPropertiesDialog
+//! @brief The ComponentPropertiesDialog class is a Widget used to interact with component parameters.
 //!
 //! It reads and writes parameters to the core components.
 //!
@@ -30,7 +30,7 @@
 //! @brief Constructor for the parameter dialog for components
 //! @param pGUIComponent Pointer to the component
 //! @param parent Pointer to the parent widget
-ParameterDialog::ParameterDialog(GUIComponent *pGUIComponent, QWidget *parent)
+ComponentPropertiesDialog::ComponentPropertiesDialog(GUIComponent *pGUIComponent, QWidget *parent)
     : QDialog(parent)
 {
     mpGUIModelObject = pGUIComponent;
@@ -43,7 +43,7 @@ ParameterDialog::ParameterDialog(GUIComponent *pGUIComponent, QWidget *parent)
 //! @brief Constructor for the parameter dialog for a subsystem
 //! @param pGUISubsystem Pointer to the subsystem
 //! @param parent Pointer to the parent widget
-ParameterDialog::ParameterDialog(GUISystem *pGUISubsystem, QWidget *parent)     : QDialog(parent)
+ComponentPropertiesDialog::ComponentPropertiesDialog(GUISystem *pGUISubsystem, QWidget *parent)     : QDialog(parent)
 {
     mpGUIModelObject = pGUISubsystem;
     isGUISubsystem = true;
@@ -53,7 +53,7 @@ ParameterDialog::ParameterDialog(GUISystem *pGUISubsystem, QWidget *parent)     
 
 
 //! @brief Creates the contents in the parameter dialog
-void ParameterDialog::createEditStuff()
+void ComponentPropertiesDialog::createEditStuff()
 {
     mpNameEdit = new QLineEdit(mpGUIModelObject->getName());
 
@@ -232,7 +232,7 @@ void ParameterDialog::createEditStuff()
 
 
 //! @brief Reads the values from the dialog and writes them into the core component
-void ParameterDialog::okPressed()
+void ComponentPropertiesDialog::okPressed()
 {
     mpGUIModelObject->mpParentContainerObject->renameGUIModelObject(mpGUIModelObject->getName(), mpNameEdit->text());
     //qDebug() << mpNameEdit->text();
@@ -242,14 +242,14 @@ void ParameterDialog::okPressed()
 
     if (isGUISubsystem)
     {
-        //qDebug() << "Setting CQS type to: " << this->mpCQSEdit->displayText();
+        qDebug() << "Setting CQS type to: " << this->mpCQSEdit->displayText();
         mpGUIModelObject->setTypeCQS(this->mpCQSEdit->displayText());
     }
 }
 
 
 //! Sets the parameters in the core component. Read the values from the dialog and write them into the core component.
-void ParameterDialog::setParameters()
+void ComponentPropertiesDialog::setParameters()
 {
     bool addedUndoPost = false;
     for (size_t i=0 ; i < mParameterValueVector.size(); ++i )
@@ -259,30 +259,35 @@ void ParameterDialog::setParameters()
         qDebug() << "Checking " << mParameterVarVector[i]->text();
         if(mParameterValueVector[i]->text().startsWith("<") && mParameterValueVector[i]->text().endsWith(">")) //! @todo Break out global parameter stuff to own method so it can be used, for example, in start value method too
         {
-            QString requestedParameter = mParameterValueVector[i]->text().mid(1, mParameterValueVector[i]->text().size()-2);
+            //QString requestedParameter = mParameterValueVector[i]->text().mid(1, mParameterValueVector[i]->text().size()-2);
+            QString requestedParameter = mParameterValueVector[i]->text();
             qDebug() << "Found global parameter \"" << requestedParameter << "\"";
+            requestedParameter = requestedParameter.mid(1, requestedParameter.size()-2);
+            mpGUIModelObject->setGlobalParameter(mParameterVarVector[i]->text(), requestedParameter);
         }
-
-        bool ok;
-        double newValue = mParameterValueVector[i]->text().toDouble(&ok);
-        if (!ok)
+        else
         {
-            MessageWidget *messageWidget = gpMainWindow->mpMessageWidget;//qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent()->parent())->mpMessageWidget;
-            messageWidget->printGUIMessage(QString("ParameterDialog::setParameters(): You must give a correct value for '").append(mParameterVarVector[i]->text()).append(QString("', putz. Try again!")));
-            qDebug() << "Inte okej!";
-            return;
-        }
-
-        if(mpGUIModelObject->getParameterValue(mParameterVarVector[i]->text()) != newValue)
-        {
-            if(!addedUndoPost)
+            bool ok;
+            double newValue = mParameterValueVector[i]->text().toDouble(&ok);
+            if (!ok)
             {
-                this->mpGUIModelObject->mpParentContainerObject->mUndoStack->newPost("changedparameters");
-                addedUndoPost = true;
+                MessageWidget *messageWidget = gpMainWindow->mpMessageWidget;//qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent()->parent())->mpMessageWidget;
+                messageWidget->printGUIMessage(QString("ComponentPropertiesDialog::setParameters(): You must give a correct value for '").append(mParameterVarVector[i]->text()).append(QString("', putz. Try again!")));
+                qDebug() << "Inte okej!";
+                return;
             }
-            this->mpGUIModelObject->mpParentContainerObject->mUndoStack->registerChangedParameter(mpGUIModelObject->getName(), mParameterVarVector[i]->text(), mpGUIModelObject->getParameterValue(mParameterVarVector[i]->text()), newValue);
+
+            if(mpGUIModelObject->getParameterValue(mParameterVarVector[i]->text()) != newValue)
+            {
+                if(!addedUndoPost)
+                {
+                    this->mpGUIModelObject->mpParentContainerObject->mUndoStack->newPost("changedparameters");
+                    addedUndoPost = true;
+                }
+                this->mpGUIModelObject->mpParentContainerObject->mUndoStack->registerChangedParameter(mpGUIModelObject->getName(), mParameterVarVector[i]->text(), mpGUIModelObject->getParameterValue(mParameterVarVector[i]->text()), newValue);
+            }
+            mpGUIModelObject->setParameterValue(mParameterVarVector[i]->text(), newValue);
         }
-        mpGUIModelObject->setParameterValue(mParameterVarVector[i]->text(), newValue);
     }
 
     std::cout << "Parameters updated." << std::endl;
@@ -290,7 +295,7 @@ void ParameterDialog::setParameters()
 }
 
 
-void ParameterDialog::setStartValues()
+void ComponentPropertiesDialog::setStartValues()
 {
     QList<GUIPort*> ports = mpGUIModelObject->getPortListPtrs();
     QList<GUIPort*>::iterator portIt;

@@ -294,9 +294,9 @@ int GUISystem::type() const
 }
 
 
-void GUISystem::openParameterDialog()
+void GUISystem::openComponentPropertiesDialog()
 {
-    ParameterDialog *dialog = new ParameterDialog(this);
+    ComponentPropertiesDialog *dialog = new ComponentPropertiesDialog(this);
     dialog->exec();
 }
 
@@ -331,6 +331,16 @@ void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
     GUIModelObject::saveCoreDataToDomElement(rDomElement);
     rDomElement.setAttribute(HMF_CQSTYPETAG, this->getTypeCQS());
     appendSimulationTimeTag(rDomElement, this->mStartTime, this->mTimeStep, this->mStopTime);
+
+    QDomElement parElement = appendDomElement(rDomElement, "parameters");
+    QMap<std::string, double>::iterator it;
+    QMap<std::string, double> parMap = mpCoreSystemAccess->getGlobalParametersMap();
+    for(it = parMap.begin(); it != parMap.end(); ++it)
+    {
+        QDomElement mappedElement = appendDomElement(parElement, "mappedparameter");
+        mappedElement.setAttribute("name", QString(it.key().c_str()));
+        mappedElement.setAttribute("value", it.value());
+    }
 }
 
 QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
@@ -512,6 +522,15 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         {
             loadConnector(xmlSubObject, this, NOUNDO);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_CONNECTORTAG);
+        }
+
+        //7. Load global parameters
+        QDomElement xmlParameters = rDomElement.firstChildElement("parameters");
+        xmlSubObject = xmlParameters.firstChildElement("mappedparameter");
+        while (!xmlSubObject.isNull())
+        {
+            mpCoreSystemAccess->setGlobalParameter(xmlSubObject.attribute("name"), xmlSubObject.attribute("value").toDouble());
+            xmlSubObject = xmlSubObject.nextSiblingElement("mappedparameter");
         }
 
         //Refresh the appearnce of the subsystemem and create the GUIPorts

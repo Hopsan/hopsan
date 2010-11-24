@@ -77,6 +77,13 @@ ProjectTab::~ProjectTab()
 {
     //! @todo do we need to call inheritet class destructor also
     //qDebug() << "projectTab destructor";
+
+    for(size_t i=0; i<mpSystem->getPortListPtrs().size(); ++i)
+    {
+        disconnect(gpMainWindow->hidePortsAction,SIGNAL(triggered(bool)),mpSystem->getPortListPtrs().at(i), SLOT(hideIfNotConnected(bool)));
+        disconnect(mpGraphicsView, SIGNAL(zoomChange(qreal)), mpSystem->getPortListPtrs().at(i), SLOT(setPortOverlayScale(qreal)));
+    }
+
     delete mpSystem;
     //! @todo do we need to delete the graphicsiew or is that handled automatically
 }

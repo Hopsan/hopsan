@@ -53,7 +53,7 @@ private:
 
 //    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-//    void openParameterDialog();
+//    void openComponentPropertiesDialog();
 //
 //    QString mComponentTypeName;
 //

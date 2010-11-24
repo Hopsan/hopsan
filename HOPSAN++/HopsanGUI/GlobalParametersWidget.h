@@ -33,9 +33,10 @@ public:
 
 public slots:
     void setParameter(QString name, double value);
+    void setParameters();
 
 private slots:
-    void openParameterDialog();
+    void openComponentPropertiesDialog();
     void addParameter();
     void removeSelectedParameters();
     void update();

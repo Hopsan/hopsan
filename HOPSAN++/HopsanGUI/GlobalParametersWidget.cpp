@@ -54,6 +54,10 @@
 #include <QDialog>
 
 #include "MainWindow.h"
+#include "ProjectTabWidget.h"
+#include "GUIObjects/GUISystem.h"
+
+#include "common.h"
 
 //! Construtor for Global Parameters widget, where the user can see and change the global parameters in the model.
 //! @param parent Pointer to the main window
@@ -66,7 +70,7 @@ GlobalParametersWidget::GlobalParametersWidget(MainWindow *parent)
     this->resize(400,500);
     this->setWindowTitle("Undo History");
 
-    mGlobalParametersMap.clear();//mContents.clear();
+    //mGlobalParametersMap.clear();//mContents.clear();
 
     mpGlobalParametersTable = new QTableWidget(0,1,this);
     mpGlobalParametersTable->setBaseSize(400, 500);
@@ -93,20 +97,23 @@ GlobalParametersWidget::GlobalParametersWidget(MainWindow *parent)
     mpGridLayout->addWidget(mpAddButton, 1, 0);
     mpGridLayout->addWidget(mpRemoveButton, 2, 0);
 
-    connect(this->mpAddButton,SIGNAL(clicked()),this,SLOT(openParameterDialog()));
+    connect(mpAddButton,SIGNAL(clicked()),this,SLOT(openComponentPropertiesDialog()));
     connect(mpRemoveButton,SIGNAL(clicked()),this,SLOT(removeSelectedParameters()));
+    //connect(mpGlobalParametersTable, SIGNAL(QTableWidgetItem*)), this, SLOT(setParameters()));
 }
 
 
 double GlobalParametersWidget::getParameter(QString name)
 {
-    return mGlobalParametersMap.find(name).value();
+    //return mGlobalParametersMap.find(name).value();
+    return gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getGlobalParameter(name);
 }
 
 
 bool GlobalParametersWidget::hasParameter(QString name)
 {
-    return mGlobalParametersMap.contains(name);
+    //return mGlobalParametersMap.contains(name);
+    return gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->hasGlobalParameter(name);
 }
 
 
@@ -115,22 +122,40 @@ bool GlobalParametersWidget::hasParameter(QString name)
 //! @param value Value of the global parameter
 void GlobalParametersWidget::setParameter(QString name, double value)
 {
-    //! @todo Check if parameter label is already registered in system. Cannot be done yet because map in system is not implemented.
-
-    if(!name.startsWith("<"))
-    {
-        name.insert(0,"<");
-    }
-    if(!name.endsWith(">"))
-    {
-        name.append(">");
-    }
-
-    //mContents.append(QPair<QString,double>(name, value));
-    mGlobalParametersMap.insert(name, value);
+//    if(!name.startsWith("<"))
+//    {
+//        name.insert(0,"<");
+//    }
+//    if(!name.endsWith(">"))
+//    {
+//        name.append(">");
+//    }
+    gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->setGlobalParameter(name, value);
     update();
 
     emit modifiedGlobalParameter();
+}
+
+
+void GlobalParametersWidget::setParameters()
+{
+    if(gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getNumberOfGlobalParameters() > 0)
+    {
+        for(size_t i=0; i<mpGlobalParametersTable->rowCount(); ++i)
+        {
+            QString name = mpGlobalParametersTable->item(i, 0)->text();
+            double value = mpGlobalParametersTable->item(i, 1)->text().toDouble();
+//            if(!name.startsWith("<"))
+//            {
+//                name.insert(0,"<");
+//            }
+//            if(!name.endsWith(">"))
+//            {
+//                name.append(">");
+//            }
+            gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->setGlobalParameter(name, value);
+        }
+    }
 }
 
 
@@ -157,7 +182,8 @@ void GlobalParametersWidget::removeSelectedParameters()
     {
         qDebug() << "Removing: " << parametersToRemove[j];
         //mContents.removeAll(parametersToRemove[j]);
-        mGlobalParametersMap.remove(parametersToRemove.at(j));
+        //mGlobalParametersMap.remove(parametersToRemove.at(j));
+        gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->removeGlobalParameter(parametersToRemove.at(j));
     }
 
     update();
@@ -165,10 +191,10 @@ void GlobalParametersWidget::removeSelectedParameters()
 
 
 //! Slot that opens "Add Parameter" dialog, where the user can add new global parameters
-void GlobalParametersWidget::openParameterDialog()
+void GlobalParametersWidget::openComponentPropertiesDialog()
 {
-    QDialog *pAddParameterDialog = new QDialog(this);
-    pAddParameterDialog->setWindowTitle("Add Global Parameter");
+    QDialog *pAddComponentPropertiesDialog = new QDialog(this);
+    pAddComponentPropertiesDialog->setWindowTitle("Add Global Parameter");
 
     mpNameLabel = new QLabel("Name: ", this);
     mpNameBox = new QLineEdit(this);
@@ -187,10 +213,10 @@ void GlobalParametersWidget::openParameterDialog()
     pDialogLayout->addWidget(mpValueLabel,1,0);
     pDialogLayout->addWidget(mpValueBox,1,1);
     pDialogLayout->addWidget(pButtonBox,2,0,1,2);
-    pAddParameterDialog->setLayout(pDialogLayout);
-    pAddParameterDialog->show();
+    pAddComponentPropertiesDialog->setLayout(pDialogLayout);
+    pAddComponentPropertiesDialog->show();
 
-    connect(mpDoneInDialogButton,SIGNAL(clicked()),pAddParameterDialog,SLOT(close()));
+    connect(mpDoneInDialogButton,SIGNAL(clicked()),pAddComponentPropertiesDialog,SLOT(close()));
     connect(mpAddInDialogButton,SIGNAL(clicked()),this,SLOT(addParameter()));
 }
 
@@ -200,16 +226,17 @@ void GlobalParametersWidget::addParameter()
 {
     bool ok;    
     setParameter(mpNameBox->text(), mpValueBox->text().toDouble(&ok));
-    qDebug() << "ok = " << ok;
 }
 
 
 //! Updates the parameter table from the contents list
 void GlobalParametersWidget::update()
 {
+    qDebug() << "update(), numberOfGlobalParameters = " << gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getNumberOfGlobalParameters();
+
     mpGlobalParametersTable->clear();
-    //if(mContents.empty())
-    if(mGlobalParametersMap.empty())
+
+    if(gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getNumberOfGlobalParameters() == 0)
     {
         mpGlobalParametersTable->setColumnCount(1);
         mpGlobalParametersTable->setRowCount(1);
@@ -228,13 +255,14 @@ void GlobalParametersWidget::update()
         mpGlobalParametersTable->setColumnWidth(0, 120);
         mpGlobalParametersTable->verticalHeader()->show();
     }
-    QMap<QString, double>::iterator it;
-    for(it=mGlobalParametersMap.begin(); it!=mGlobalParametersMap.end(); ++it)
+    QMap<std::string, double>::iterator it;
+    QMap<std::string, double> tempMap = gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getGlobalParametersMap();
+    for(it=tempMap.begin(); it!=tempMap.end(); ++it)
     {
         QString valueString;
         valueString.setNum(it.value());
         this->mpGlobalParametersTable->insertRow(mpGlobalParametersTable->rowCount());
-        mpGlobalParametersTable->setItem(mpGlobalParametersTable->rowCount()-1, 0, new QTableWidgetItem(it.key()));
+        mpGlobalParametersTable->setItem(mpGlobalParametersTable->rowCount()-1, 0, new QTableWidgetItem(QString(it.key().c_str())));
         mpGlobalParametersTable->setItem(mpGlobalParametersTable->rowCount()-1, 1, new QTableWidgetItem(valueString));
     }
 }

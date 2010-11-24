@@ -85,7 +85,7 @@ void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsWidget::mouseDoubleClickEvent(event);
     std::cout << "GUIComponent.cpp: " << "mouseDoubleClickEvent " << std::endl;
 
-    openParameterDialog();
+    openComponentPropertiesDialog();
 
 }
 
@@ -136,9 +136,7 @@ void GUIComponent::setParameterValue(QString name, double value)
 
 void GUIComponent::setGlobalParameter(QString name, QString gPar)
 {
-    mGlobalParameters.insert(name, gPar);
-    mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, gpMainWindow->mpGlobalParametersWidget->getParameter(gPar));
-    connect(gpMainWindow->mpGlobalParametersWidget, SIGNAL(modifiedGlobalParameter()), this, SLOT(updateGlobalParameters()));
+    mpParentContainerObject->getCoreSystemAccessPtr()->registserGlobalParameter(this->getName(), name, gPar);
 }
 
 
@@ -191,7 +189,7 @@ void GUIComponent::updateGlobalParameters()
 
 ////    if (selectedAction == parameterAction)
 ////    {
-////        openParameterDialog();
+////        openComponentPropertiesDialog();
 ////    }
 ////    else if (selectedAction == showNameAction)
 ////    {
@@ -227,9 +225,9 @@ void GUIComponent::updateGlobalParameters()
 
 
 //! @brief Slot that opens the parameter dialog for the component
-void GUIComponent::openParameterDialog()
+void GUIComponent::openComponentPropertiesDialog()
 {
-    ParameterDialog *dialog = new ParameterDialog(this);
+    ComponentPropertiesDialog *dialog = new ComponentPropertiesDialog(this);
     dialog->exec();
 }
 

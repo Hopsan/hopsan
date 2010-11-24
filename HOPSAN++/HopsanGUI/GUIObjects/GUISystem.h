@@ -62,7 +62,7 @@ protected:
     QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
     void saveCoreDataToDomElement(QDomElement &rDomElement);
 
-    void openParameterDialog();
+    void openComponentPropertiesDialog();
 
 private:
     void commonConstructorCode();

@@ -395,7 +395,6 @@ void loadParameterValues(const ParameterLoadData &rData, GUIContainerObject* pSy
         ptr->setParameterValue(rData.parameterName, rData.parameterValue);
     else
         assert(false);
-
 }
 
 //! @brief xml version

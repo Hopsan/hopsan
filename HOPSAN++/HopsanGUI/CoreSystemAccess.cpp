@@ -466,3 +466,48 @@ hopsan::Port* CoreSystemAccess::getPortPtr(QString componentName, QString portNa
     }
     return 0;
 }
+
+
+
+void CoreSystemAccess::setGlobalParameter(QString name, double value)
+{
+    qDebug() << "setGlobalParameter(" << name << ", " << value << ")";
+    mpCoreComponentSystem->setMappedParameter(name.toStdString(), value);
+}
+
+
+double CoreSystemAccess::getGlobalParameter(QString name)
+{
+    return mpCoreComponentSystem->getMappedParameters().find(name.toStdString())->second;
+}
+
+
+bool CoreSystemAccess::hasGlobalParameter(QString name)
+{
+    return (mpCoreComponentSystem->getMappedParameters().find(name.toStdString()) != mpCoreComponentSystem->getMappedParameters().end());
+}
+
+
+void CoreSystemAccess::removeGlobalParameter(QString name)
+{
+    mpCoreComponentSystem->unsetMappedParameter(name.toStdString());
+}
+
+
+int CoreSystemAccess::getNumberOfGlobalParameters()
+{
+    return mpCoreComponentSystem->getMappedParameters().size();
+}
+
+
+QMap<std::string, double> CoreSystemAccess::getGlobalParametersMap()
+{
+    return QMap<std::string, double>(mpCoreComponentSystem->getMappedParameters());
+}
+
+
+void CoreSystemAccess::registserGlobalParameter(QString objName, QString parName, QString mapKey)
+{
+    qDebug() << "bamse = " << mpCoreComponentSystem->getMappedParameters().find("<bamse>")->second;
+    mpCoreComponentSystem->getComponent(objName.toStdString())->setParameterValue(parName.toStdString(), mapKey.toStdString());
+}

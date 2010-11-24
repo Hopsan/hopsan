@@ -131,7 +131,7 @@ protected:
 
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    virtual void openParameterDialog();
+    virtual void openComponentPropertiesDialog();
     virtual void createPorts();
 
 private:

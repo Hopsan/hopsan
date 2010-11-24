@@ -364,6 +364,11 @@ void GUIModelObject::setParameterValue(QString name, double value)
 }
 
 
+void GUIModelObject::setGlobalParameter(QString name, QString gPar)
+{
+    assert(false);
+}
+
 ////! @brief Saves the GUIModelObject to a text stream
 ////! @param &rStream Text stream to save into
 ////! @param prepend String to prepend before object data
@@ -515,7 +520,7 @@ QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QPointF pos)
 
     if (selectedAction == parameterAction)
     {
-        openParameterDialog();
+        openComponentPropertiesDialog();
     }
     else if (selectedAction == showNameAction)
     {

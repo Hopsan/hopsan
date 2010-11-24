@@ -40,6 +40,7 @@ public:
     virtual QString getParameterDescription(QString name) {assert(false); return "";} //Only availible in GUIComponent for now
     virtual double getParameterValue(QString name);
     virtual void setParameterValue(QString name, double value);
+    virtual void setGlobalParameter(QString name, QString gPar);
 
     //Load and save methods
     //virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());
@@ -78,7 +79,7 @@ signals:
 
 protected:
     //Protexted methods
-    virtual void openParameterDialog(){}
+    virtual void openComponentPropertiesDialog(){}
     virtual QAction *buildBaseContextMenu(QMenu &rMenue, QPointF pos);
 
     //Reimplemented Qt methods
