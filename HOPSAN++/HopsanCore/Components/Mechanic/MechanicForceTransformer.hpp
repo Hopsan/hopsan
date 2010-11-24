@@ -85,9 +85,9 @@ namespace hopsan {
     {
 
     private:
-        double mStartPosition;
-        double mStartVelocity;
-        double mStartForce;
+        //double mStartPosition;
+        //double mStartVelocity;
+        //double mStartForce;
         double mSignal;
         Port *mpIn, *mpP1;
 
@@ -103,9 +103,9 @@ namespace hopsan {
         {
             //Set member attributes
             mTypeName = "MechanicOptimizedForceTransformer";
-            mStartPosition = 0.0;
-            mStartVelocity = 0.0;
-            mStartForce = 0.0;
+            //mStartPosition = 0.0;
+            //mStartVelocity = 0.0;
+            //mStartForce = 0.0;
             mSignal = 0.0;
 
             //Add ports to the component
@@ -113,8 +113,8 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeMechanic");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("x0", "Initial Position", "[m]", mStartPosition);
-            registerParameter("v0", "Initial Velocity", "[m/s]", mStartVelocity);
+            //registerParameter("x0", "Initial Position", "[m]", mStartPosition);
+            //registerParameter("v0", "Initial Velocity", "[m/s]", mStartVelocity);
             registerParameter("Force", "Generated force", "[N]", mSignal);
         }
 
@@ -132,9 +132,9 @@ namespace hopsan {
                 input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
             }
 
-            *x1 = mStartPosition;
-            *v1 = mStartVelocity;
-            *F1 = mStartForce;
+            //*x1 = mStartPosition;
+            //*v1 = mStartVelocity;
+            //*F1 = mStartForce;
             *c1 = 0.0;
             *Zc1 = 0.0;
         }
