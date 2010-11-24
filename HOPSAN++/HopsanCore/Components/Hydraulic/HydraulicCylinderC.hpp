@@ -340,12 +340,12 @@ namespace hopsan {
             if (mXInternal > mStroke)
             {
                 mZSpring = mZSpring0 / (1.0 - mAlphaSpring);
-                mCSpring0 = -mZSpring0 / mTimestep * (mXInternal - mStroke) - mZSpring * mVInternal;
+                mCSpring0 = -mZSpring0 / mTimestep * (mXInternal - mStroke) - mZSpring0 * mVInternal;
             }
             else if (mXInternal < 0.0)
             {
                 mZSpring = mZSpring0 / (1.0 - mAlphaSpring);
-                mCSpring0 = -mZSpring0 / mTimestep * mXInternal - mZSpring * mVInternal;
+                mCSpring0 = -mZSpring0 / mTimestep * mXInternal - mZSpring0 * mVInternal;
             }
             else
             {

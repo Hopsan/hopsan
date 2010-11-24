@@ -16,6 +16,7 @@
 #include "win32dll.h"
 #include <string>
 #include <list>
+#include <map>
 
 namespace hopsan {
 
@@ -35,11 +36,13 @@ namespace hopsan {
         CompParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
 
         void setValue(const double value);
+        //void setMappedValue(std::string key);
 
         std::string mName;
         std::string mDescription;
         std::string mUnit;
         double* mpValue;
+        std::string mMapKey;
     };
 
 
@@ -77,6 +80,7 @@ namespace hopsan {
         const std::string getParameterDescription(const std::string name);
         double getParameterValue(const std::string name);
         void setParameterValue(const std::string name, const double value);
+        void setParameterValue(const std::string name, const std::string mapKey);
 
         std::vector<CompParameter> getParameterVector();
         std::map<std::string, double> getParameterMap();
@@ -222,6 +226,12 @@ namespace hopsan {
         //Stop a running init or simulation
         void stop();
 
+        void setMappedParameter(std::string, double);
+        void unsetMappedParameter(std::string mapKey);
+        std::map<std::string, double> getMappedParameters();
+        void registerMappedParameter(std::string mapKey, double *pValue);
+        void unregisterMappedParameter(double *pValue);
+
     private:
         //==========Private functions==========
         //Time specific functions
@@ -262,6 +272,9 @@ namespace hopsan {
         NodeFactory mpNodeFactory;
 
         bool mStop;
+
+        std::map<std::string, double> mMappedParameters;
+        std::multimap<std::string, double *> mMappedParameterPointers;
     };
 
     class DLLIMPORTEXPORT ComponentSignal :public Component

@@ -158,6 +158,12 @@ void CompParameter::setValue(const double value)
 }
 
 
+//void CompParameter::setMappedValue(const double value)
+//{
+//    *mpValue = value;
+//}
+
+
 //Constructor
 Component::Component(string name, double timestep)
 {
@@ -448,6 +454,7 @@ void Component::setParameterValue(const string name, const double value)
         if (name == mParameters[i].getName())
         {
             mParameters[i].setValue(value);
+            mpSystemParent->unregisterMappedParameter(mParameters.at(i).mpValue);
             notset = false;
         }
     }
@@ -457,6 +464,35 @@ void Component::setParameterValue(const string name, const double value)
     }
 }
 
+
+void Component::setParameterValue(const string name, const string mapKey)
+{
+    bool notset = true;
+    bool notfound = true;
+    for (size_t i=0; i<mParameters.size(); ++i)
+    {
+        if (name == mParameters[i].getName())
+        {
+            std::map<std::string, double> tempMap;
+            tempMap = mpSystemParent->getMappedParameters();
+            if(tempMap.find(mapKey) != tempMap.end())
+            {
+                mParameters.at(i).setValue(mpSystemParent->getMappedParameters().find(mapKey)->second);
+                mpSystemParent->registerMappedParameter(mapKey, mParameters.at(i).mpValue);
+                notfound = false;
+            }
+            notset = false;
+        }
+    }
+    if(notset)
+    {
+        cout << "No such parameter (does nothing): " << name << endl;
+    }
+    if(notfound)
+    {
+        cout << "Mapped parameter not found (does nothing): " << mapKey << endl;
+    }
+}
 
 //! @todo Maby not have this function, solve in some other nicer way
 vector<Port*> Component::getPortPtrVector()
@@ -823,6 +859,68 @@ double ComponentSystem::getDesiredTimeStep()
 void ComponentSystem::stop()
 {
     mStop = true;
+}
+
+
+void ComponentSystem::setMappedParameter(std::string mapKey, double mapValue)
+{
+    if(mMappedParameters.find(mapKey) == mMappedParameters.end())
+    {
+        mMappedParameters.insert(make_pair(mapKey, mapValue));
+    }
+    else
+    {
+        mMappedParameters.erase(mapKey);
+        mMappedParameters.insert(make_pair(mapKey, mapValue));
+    }
+
+    std::multimap<std::string, double *>::iterator it;
+    for(it = mMappedParameterPointers.begin(); it != mMappedParameterPointers.end(); ++it)
+    {
+        double *pValue = it->second;
+        std::string mapKey = it->first;
+        *pValue = mMappedParameters.find(mapKey)->second;
+    }
+}
+
+
+void ComponentSystem::unsetMappedParameter(std::string mapKey)
+{
+    std::map<std::string, double>::iterator it;
+    for(it = mMappedParameters.begin(); it != mMappedParameters.end(); ++it)
+    {
+        if((*it).first == mapKey)
+        {
+            mMappedParameters.erase(it);
+            break;
+        }
+    }
+}
+
+
+std::map<std::string, double> ComponentSystem::getMappedParameters()
+{
+    return mMappedParameters;
+}
+
+
+void ComponentSystem::registerMappedParameter(std::string mapKey, double *pValue)
+{
+    mMappedParameterPointers.insert(std::pair<std::string, double *>(mapKey, pValue));
+}
+
+
+void ComponentSystem::unregisterMappedParameter(double *pValue)
+{
+    std::multimap<std::string, double *>::iterator it;
+    for(it = mMappedParameterPointers.begin(); it != mMappedParameterPointers.end(); ++it)
+    {
+        if(it->second == pValue)
+        {
+            mMappedParameterPointers.erase(it);
+            break;
+        }
+    }
 }
 
 
