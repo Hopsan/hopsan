@@ -101,6 +101,7 @@ class ParameterLoadData
 public:
     QString componentName, parameterName;
     qreal parameterValue;
+    QString parameterGlobalKey;
 
     void read(QTextStream &rStream);
     void readDomElement(QDomElement &rDomElement);

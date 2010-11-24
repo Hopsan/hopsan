@@ -252,6 +252,7 @@ void ParameterLoadData::readDomElement(QDomElement &rDomElement)
 {
     parameterName = rDomElement.attribute(HMF_NAMETAG);
     parameterValue = rDomElement.attribute(HMF_VALUETAG).toDouble();
+    parameterGlobalKey = rDomElement.attribute(HMF_GLOBALPARAMETERTAG);
 }
 
 
@@ -400,7 +401,14 @@ void loadParameterValues(const ParameterLoadData &rData, GUIContainerObject* pSy
 //! @brief xml version
 void loadParameterValue(const ParameterLoadData &rData, GUIModelObject* pObject, undoStatus undoSettings)
 {
-    pObject->setParameterValue(rData.parameterName, rData.parameterValue);
+    if(rData.parameterGlobalKey.isEmpty())
+    {
+        pObject->setParameterValue(rData.parameterName, rData.parameterValue);
+    }
+    else
+    {
+        pObject->setGlobalParameter(rData.parameterName, rData.parameterGlobalKey);
+    }
 }
 
 //! @brief xml version

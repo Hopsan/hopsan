@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2361" y="2500" zoom="1"/>
+            <viewport x="2500" y="2489" zoom="1"/>
             <hopsanobjectappearance>
                 <modelobject typename="" displayname="prvtest">
                     <icon isopath="" iconrotation="" userpath=""/>
@@ -49,7 +49,7 @@
             </component>
             <component typename="HydraulicVolume" name="Volume">
                 <parameters>
-                    <parameter value="0.003" name="V"/>
+                    <parameter globalkey="pi" value="3.14" name="V"/>
                     <parameter value="1000000000" name="Be"/>
                     <parameter value="0" name="a"/>
                 </parameters>
@@ -60,7 +60,7 @@
                     <startvalue portname="P2" variable="Pressure" value="100000"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2487" y="2451" flipped="0" a="0"/>
+                    <pose x="2487" y="2453" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -95,8 +95,8 @@
                     <coordinates>
                         <coordinate x="2388" y="2446"/>
                         <coordinate x="2395" y="2446"/>
-                        <coordinate x="2395" y="2451"/>
-                        <coordinate x="2462" y="2451"/>
+                        <coordinate x="2395" y="2453"/>
+                        <coordinate x="2462" y="2453"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -123,8 +123,8 @@
             <connect endport="P1" endcomponent="AlternativePRV" startport="P2" startcomponent="Volume">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2512" y="2451"/>
-                        <coordinate x="2592.0008" y="2451"/>
+                        <coordinate x="2512" y="2453"/>
+                        <coordinate x="2592.0008" y="2453"/>
                         <coordinate x="2592.0008" y="2471"/>
                     </coordinates>
                     <geometries>

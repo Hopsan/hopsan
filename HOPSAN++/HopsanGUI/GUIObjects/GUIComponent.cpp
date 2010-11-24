@@ -284,6 +284,10 @@ void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
 //        appendDomValueNode(xmlParam, HMF_VALUETAG, mpParentSystem->getCoreSystemAccessPtr()->getParameterValue(this->getName(), (*pit)));
         xmlParam.setAttribute(HMF_NAMETAG, *pit);
         xmlParam.setAttribute(HMF_VALUETAG, mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValue(this->getName(), (*pit)));
+        if(this->hasGlobalParameter(*pit))
+        {
+            xmlParam.setAttribute(HMF_GLOBALPARAMETERTAG, this->getGlobalParameterKey(*pit));
+        }
     }
 
     //Save start values
