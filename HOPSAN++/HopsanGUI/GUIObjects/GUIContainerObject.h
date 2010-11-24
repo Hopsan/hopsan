@@ -56,6 +56,10 @@ public:
     virtual void enterContainer();
     virtual void exitContainer();
 
+    //This need to be here for now, and be public, used in containerPropertiesDialog by systems
+    virtual void setTypeCQS(QString typestring){}
+    virtual void setNumberOfLogSamples(size_t nSamples){}
+
     //Public member variable
     //!< @todo make this private later
     QFileInfo mModelFileInfo; //!< @todo should not be public
@@ -105,8 +109,9 @@ public slots:
     void clearUndo();
     void disableUndo();
     void updateUndoStatus();
-        //Appearance
+        //Appearance and settings
     void setGfxType(graphicsType gfxType);
+    void openPropertiesDialogSlot();
 
 signals:
         //Selection
@@ -129,12 +134,14 @@ protected:
     //virtual QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
     //virtual void saveCoreDataToDomElement(QDomElement &rDomElement);
     //Protected methods
-    virtual void openPropertiesDialog();
     virtual void createPorts();
-
+    virtual void openPropertiesDialog();
     //Protected overloaded Qt methods
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
+protected slots:
+
 
 private:
     bool mIsCreatingConnector;

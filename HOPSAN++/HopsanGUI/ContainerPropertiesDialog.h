@@ -29,13 +29,13 @@ public:
 
 public slots:
     void show();
-    void updateValues();
-    void browseUser();
-    void browseIso();
 
 private:
     bool mIsoBool;
 
+    GUIContainerObject *mpContainerObject;
+
+    QLabel *mpNameLabel;
     QLineEdit *mpNameEdit;
 
     QLineEdit *mpUserIconPath;
@@ -55,11 +55,17 @@ private:
     QPushButton *mpUserIconBrowseButton;
     QPushButton *mpCancelButton;
     QPushButton *mpApplyButton;
-    QPushButton *mpOkButton;
+    QPushButton *mpDoneButton;
 
     QDialogButtonBox *mpButtonBox;
     QWidget *mpCentralwidget;
     QGridLayout *mpLayout;
+
+private slots:
+    void setValues();
+    void browseUser();
+    void browseIso();
+
 };
 
 #endif // CONTAINERPROPERTIESDIALOG_H

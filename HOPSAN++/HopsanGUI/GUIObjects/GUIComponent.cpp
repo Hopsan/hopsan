@@ -220,8 +220,9 @@ QString GUIComponent::getGlobalParameterKey(QString parameterName)
 //! @brief Slot that opens the parameter dialog for the component
 void GUIComponent::openPropertiesDialog()
 {
-    ComponentPropertiesDialog *dialog = new ComponentPropertiesDialog(this);
-    dialog->exec();
+    ComponentPropertiesDialog *pDialog = new ComponentPropertiesDialog(this);
+    pDialog->exec();
+    delete pDialog;
 }
 
 

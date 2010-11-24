@@ -14,7 +14,6 @@ SOURCES += main.cpp \
     MessageWidget.cpp \
     SimulationThread.cpp \
     InitializationThread.cpp \
-    PreferenceDialog.cpp \
     OptionsDialog.cpp \
     UndoStack.cpp \
     GraphicsView.cpp \
@@ -55,7 +54,6 @@ HEADERS += MainWindow.h \
     SimulationThread.h \
     InitializationThread.h \
     version.h \
-    PreferenceDialog.h \
     OptionsDialog.h \
     UndoStack.h \
     CoreSystemAccess.h \

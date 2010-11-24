@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanmodelfile hmfversion="0.1" hopsanguiversion="0.0.1" hopsancoreversion="0">
-    <system typename="Subsystem" cqs_type="S" name="subsystest_sub">
+    <system typename="Subsystem" cqs_type="C" name="subsystest_sub">
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
@@ -16,6 +16,7 @@
             </hopsanobjectappearance>
         </hopsangui>
         <simulationtime stop="10" timestep="0.001" start="0"/>
+        <parameters/>
         <objects>
             <systemport typename="SystemPort" name="sysp">
                 <hopsangui>

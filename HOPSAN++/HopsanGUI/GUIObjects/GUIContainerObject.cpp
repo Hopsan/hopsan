@@ -866,6 +866,12 @@ void GUIContainerObject::setGfxType(graphicsType gfxType)
     emit setAllGfxType(mGfxType);
 }
 
+//! @brief A slot that opens the properties dialog
+void GUIContainerObject::openPropertiesDialogSlot()
+{
+    this->openPropertiesDialog();
+}
+
 
 //! Slot that tells all selected name texts to deselect themselves
 void GUIContainerObject::deselectSelectedNameText()

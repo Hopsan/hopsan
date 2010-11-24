@@ -15,7 +15,7 @@ class ProjectTabWidget;
 class GraphicsView;
 class GraphicsScene;
 class LibraryWidget;
-class PreferenceDialog;
+class ContainerPropertiesDialog;
 class OptionsDialog;
 class UndoWidget;
 class MessageWidget;
@@ -42,7 +42,7 @@ public:
     ProjectTabWidget *mpProjectTabs;
     LibraryWidget *mpLibrary;
     OptionsDialog *mpOptionsDialog;
-    PreferenceDialog *mpPreferenceDialog;
+    ContainerPropertiesDialog *mpSystemPropertiesDialog;
     MessageWidget *mpMessageWidget;
     QPushButton *mpClearMessageWidgetButton;
 

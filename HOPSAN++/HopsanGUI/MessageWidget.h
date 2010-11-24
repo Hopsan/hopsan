@@ -22,8 +22,6 @@ public:
     void printGUIInfoMessage(QString message);
     QSize sizeHint() const;
 
-    //MainWindow *mpParentMainWindow;
-
 public slots:
     void checkMessages();
 };
