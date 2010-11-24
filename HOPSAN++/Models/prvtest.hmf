@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500" y="2489" zoom="1"/>
+            <viewport x="2494" y="2500" zoom="1"/>
             <hopsanobjectappearance>
                 <modelobject typename="" displayname="prvtest">
                     <icon isopath="" iconrotation="" userpath=""/>
@@ -13,7 +13,7 @@
         </hopsangui>
         <simulationtime stop="10" timestep="0.001" start="0"/>
         <parameters>
-            <mappedparameter value="3.14" name="pi"/>
+            <mappedparameter value="0.005" name="pi"/>
         </parameters>
         <objects>
             <component typename="SignalSink" name="Sink">
@@ -43,13 +43,13 @@
                 </parameters>
                 <startvalues/>
                 <hopsangui>
-                    <pose x="2376" y="2446" flipped="0" a="0"/>
+                    <pose x="2363" y="2453" flipped="0" a="0"/>
                     <nametext position="1" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicVolume" name="Volume">
                 <parameters>
-                    <parameter globalkey="pi" value="3.14" name="V"/>
+                    <parameter globalkey="pi" value="0.005" name="V"/>
                     <parameter value="1000000000" name="Be"/>
                     <parameter value="0" name="a"/>
                 </parameters>
@@ -93,8 +93,8 @@
             <connect endport="P1" endcomponent="Volume" startport="P1" startcomponent="FlowSourceQ">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2388" y="2446"/>
-                        <coordinate x="2395" y="2446"/>
+                        <coordinate x="2375" y="2453"/>
+                        <coordinate x="2395" y="2453"/>
                         <coordinate x="2395" y="2453"/>
                         <coordinate x="2462" y="2453"/>
                     </coordinates>

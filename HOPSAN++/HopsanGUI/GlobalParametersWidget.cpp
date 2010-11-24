@@ -177,7 +177,7 @@ void GlobalParametersWidget::openComponentPropertiesDialog()
     mpValueLabel = new QLabel("Value: ", this);
     mpValueBox = new QLineEdit(this);
     mpValueBox->setValidator(new QDoubleValidator(this));
-    mpAddInDialogButton = new QPushButton("Add", this);
+    mpAddInDialogButton = new QPushButton("Set", this);
     mpDoneInDialogButton = new QPushButton("Done", this);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
     pButtonBox->addButton(mpAddInDialogButton, QDialogButtonBox::ActionRole);

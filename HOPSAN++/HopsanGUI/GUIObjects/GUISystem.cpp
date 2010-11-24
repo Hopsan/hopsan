@@ -529,7 +529,8 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = xmlParameters.firstChildElement("mappedparameter");
         while (!xmlSubObject.isNull())
         {
-            mpCoreSystemAccess->setGlobalParameter(xmlSubObject.attribute("name"), xmlSubObject.attribute("value").toDouble());
+            loadGlobalParameter(xmlSubObject, this);
+
             xmlSubObject = xmlSubObject.nextSiblingElement("mappedparameter");
         }
 

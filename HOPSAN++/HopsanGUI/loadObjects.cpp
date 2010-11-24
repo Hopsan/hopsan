@@ -383,6 +383,13 @@ void loadConnector(const ConnectorLoadData &rData, GUIContainerObject* pSystem, 
     }
 }
 
+
+void loadGlobalParameter(const GlobalParameterLoadData &rData, GUIContainerObject* pSystem)
+{
+    pSystem->getCoreSystemAccessPtr()->setGlobalParameter(rData.name, rData.value);
+}
+
+
 //! @brief text version
 void loadParameterValues(const ParameterLoadData &rData, GUIContainerObject* pSystem, undoStatus undoSettings)
 {
@@ -466,6 +473,14 @@ void loadConnector(QDomElement &rDomElement, GUIContainerObject* pSystem, undoSt
     loadConnector(data, pSystem, undoSettings);
 }
 
+//! @brief Conveniance function if you dont want to manipulate the loaded data
+void loadGlobalParameter(QDomElement &rDomElement, GUIContainerObject* pSystem)
+{
+    GlobalParameterLoadData data;
+    data.readDomElement(rDomElement);
+    loadGlobalParameter(data, pSystem);
+}
+
 
 void TextWidgetLoadData::readDomElement(QDomElement &rDomElement)
 {
@@ -518,6 +533,13 @@ void BoxWidgetLoadData::readDomElement(QDomElement &rDomElement)
         point.setX(poseTag.attribute("x").toInt());
         point.setY(poseTag.attribute("y").toInt());
     }
+}
+
+
+void GlobalParameterLoadData::readDomElement(QDomElement &rDomElement)
+{
+    name = rDomElement.attribute("name");
+    value = rDomElement.attribute("value").toDouble();
 }
 
 //! @brief Convenience function for loading a box widget from a dom element
