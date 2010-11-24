@@ -9,7 +9,7 @@
 //! @todo clean up these includes
 #include "../ProjectTabWidget.h"
 #include "../MainWindow.h"
-#include "../ParameterDialog.h"
+#include "../ComponentPropertiesDialog.h"
 #include "../GUIPort.h"
 #include "../GUIConnector.h"
 #include "../Utilities/GUIUtilities.h"

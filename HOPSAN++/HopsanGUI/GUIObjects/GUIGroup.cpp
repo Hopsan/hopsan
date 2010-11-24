@@ -14,7 +14,7 @@
 #include "GUIComponent.h"
 #include "../ProjectTabWidget.h"
 #include "../MainWindow.h"
-#include "../ParameterDialog.h"
+#include "../ComponentPropertiesDialog.h"
 #include "../GUIPort.h"
 #include "../GUIConnector.h"
 #include "../Utilities/GUIUtilities.h"

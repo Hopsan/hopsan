@@ -11,7 +11,6 @@ SOURCES += main.cpp \
     GUIConnector.cpp \
     GUIPort.cpp \
     PlotWidget.cpp \
-    ParameterDialog.cpp \
     MessageWidget.cpp \
     SimulationThread.cpp \
     InitializationThread.cpp \
@@ -42,6 +41,7 @@ SOURCES += main.cpp \
     Utilities/GUIUtilities.cpp \
     Configuration.cpp \
     CopyStack.cpp \
+    ComponentPropertiesDialog.cpp
 
 HEADERS += MainWindow.h \
     ProjectTabWidget.h \
@@ -50,7 +50,6 @@ HEADERS += MainWindow.h \
     GUIConnector.h \
     GUIPort.h \
     PlotWidget.h \
-    ParameterDialog.h \
     MessageWidget.h \
     SimulationThread.h \
     InitializationThread.h \
@@ -84,6 +83,7 @@ HEADERS += MainWindow.h \
     Utilities/GUIUtilities.h \
     Configuration.h \
     CopyStack.h \
+    ComponentPropertiesDialog.h
 
 OTHER_FILES += 
 

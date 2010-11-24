@@ -1,5 +1,5 @@
 //!
-//! @file   ParameterDialog.cpp
+//! @file   ComponentPropertiesDialog.cpp
 //! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2010-03-01
 //!
@@ -11,7 +11,7 @@
 #include <cassert>
 #include <iostream>
 
-#include "ParameterDialog.h"
+#include "ComponentPropertiesDialog.h"
 #include "MainWindow.h"
 #include "GUIObjects/GUISystem.h"
 #include "GUIPort.h"
