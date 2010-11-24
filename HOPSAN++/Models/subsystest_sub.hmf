@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanmodelfile hmfversion="0.1" hopsanguiversion="0.0.1" hopsancoreversion="0">
     <system typename="Subsystem" cqs_type="S" name="subsystest_sub">
-        <simulationtime stop="10" timestep="0.001" start="0"/>
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2510" y="2508.5" zoom="1"/>
+            <viewport x="2502" y="2501.5" zoom="1"/>
             <hopsanobjectappearance>
                 <modelobject typename="" displayname="subsystest_sub">
                     <icon isopath="" iconrotation="" userpath=""/>
@@ -16,6 +15,7 @@
                 </modelobject>
             </hopsanobjectappearance>
         </hopsangui>
+        <simulationtime stop="10" timestep="0.001" start="0"/>
         <objects>
             <systemport typename="SystemPort" name="sysp">
                 <hopsangui>
@@ -37,19 +37,19 @@
             </component>
             <systemport typename="SystemPort" name="sysp_1">
                 <hopsangui>
-                    <pose x="2549" y="2439" flipped="0" a="0"/>
+                    <pose x="2551" y="2434" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </systemport>
             <systemport typename="SystemPort" name="sysp_2">
                 <hopsangui>
-                    <pose x="2276" y="2553" flipped="0" a="0"/>
+                    <pose x="2275" y="2561" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </systemport>
             <systemport typename="SystemPort" name="sysp_3">
                 <hopsangui>
-                    <pose x="2569" y="2561" flipped="0" a="0"/>
+                    <pose x="2516" y="2561" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </systemport>
@@ -86,6 +86,11 @@
                         <coordinate x="2331" y="2434"/>
                         <coordinate x="2355" y="2434"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="sysp_1" endcomponent="sysp_1" startport="P1" startcomponent="Prescribed Pressure C">
@@ -93,9 +98,14 @@
                     <coordinates>
                         <coordinate x="2379" y="2434"/>
                         <coordinate x="2526" y="2434"/>
-                        <coordinate x="2526" y="2439"/>
-                        <coordinate x="2549" y="2439"/>
+                        <coordinate x="2526" y="2434"/>
+                        <coordinate x="2551" y="2434"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in2" endcomponent="Add" startport="out" startcomponent="Constant">
@@ -105,16 +115,25 @@
                         <coordinate x="2408" y="2503"/>
                         <coordinate x="2408" y="2548.5"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="in1" endcomponent="Add" startport="sysp_2" startcomponent="sysp_2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2276" y="2553"/>
-                        <coordinate x="2367" y="2553"/>
+                        <coordinate x="2275" y="2561"/>
+                        <coordinate x="2367" y="2561"/>
                         <coordinate x="2367" y="2561"/>
                         <coordinate x="2395.5" y="2561"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="sysp_3" endcomponent="sysp_3" startport="out" startcomponent="Add">
@@ -123,8 +142,13 @@
                         <coordinate x="2420.5" y="2561"/>
                         <coordinate x="2527" y="2561"/>
                         <coordinate x="2527" y="2561"/>
-                        <coordinate x="2569" y="2561"/>
+                        <coordinate x="2516" y="2561"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
         </connections>

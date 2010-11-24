@@ -85,7 +85,7 @@ void GUIComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsWidget::mouseDoubleClickEvent(event);
     std::cout << "GUIComponent.cpp: " << "mouseDoubleClickEvent " << std::endl;
 
-    openComponentPropertiesDialog();
+    openPropertiesDialog();
 
 }
 
@@ -225,7 +225,7 @@ void GUIComponent::updateGlobalParameters()
 
 
 //! @brief Slot that opens the parameter dialog for the component
-void GUIComponent::openComponentPropertiesDialog()
+void GUIComponent::openPropertiesDialog()
 {
     ComponentPropertiesDialog *dialog = new ComponentPropertiesDialog(this);
     dialog->exec();

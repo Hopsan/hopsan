@@ -4,7 +4,7 @@
 //! @todo clean these up
 #include "../ProjectTabWidget.h"
 #include "../MainWindow.h"
-#include "../ComponentPropertiesDialog.h"
+#include "../ContainerPropertiesDialog.h"
 #include "../GUIPort.h"
 #include "../GUIConnector.h"
 #include "../Utilities/GUIUtilities.h"
@@ -294,9 +294,9 @@ int GUISystem::type() const
 }
 
 
-void GUISystem::openComponentPropertiesDialog()
+void GUISystem::openPropertiesDialog()
 {
-    ComponentPropertiesDialog *dialog = new ComponentPropertiesDialog(this);
+    ContainerPropertiesDialog *dialog = new ContainerPropertiesDialog(this, gpMainWindow);
     dialog->exec();
 }
 

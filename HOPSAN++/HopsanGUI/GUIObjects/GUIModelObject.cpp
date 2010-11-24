@@ -511,16 +511,16 @@ QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QPointF pos)
     QAction *groupAction;
     if (!this->scene()->selectedItems().empty())
         groupAction = rMenu.addAction(tr("Group components"));
-    QAction *parameterAction = rMenu.addAction(tr("Change parameters"));
     QAction *showNameAction = rMenu.addAction(tr("Show name"));
     showNameAction->setCheckable(true);
     showNameAction->setChecked(mpNameText->isVisible());
+    QAction *parameterAction = rMenu.addAction(tr("Properties"));
 
     QAction *selectedAction = rMenu.exec(pos.toPoint());
 
     if (selectedAction == parameterAction)
     {
-        openComponentPropertiesDialog();
+        openPropertiesDialog();
     }
     else if (selectedAction == showNameAction)
     {

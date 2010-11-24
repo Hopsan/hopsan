@@ -128,11 +128,13 @@ signals:
 protected:
     //virtual QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
     //virtual void saveCoreDataToDomElement(QDomElement &rDomElement);
+    //Protected methods
+    virtual void openPropertiesDialog();
+    virtual void createPorts();
 
+    //Protected overloaded Qt methods
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    virtual void openComponentPropertiesDialog();
-    virtual void createPorts();
 
 private:
     bool mIsCreatingConnector;

@@ -79,7 +79,7 @@ signals:
 
 protected:
     //Protexted methods
-    virtual void openComponentPropertiesDialog(){}
+    virtual void openPropertiesDialog(){}
     virtual QAction *buildBaseContextMenu(QMenu &rMenue, QPointF pos);
 
     //Reimplemented Qt methods

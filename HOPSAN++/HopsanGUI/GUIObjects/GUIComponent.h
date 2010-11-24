@@ -43,7 +43,7 @@ protected:
 
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 //    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-    void openComponentPropertiesDialog();
+    void openPropertiesDialog();
 
     void createPorts();
 
