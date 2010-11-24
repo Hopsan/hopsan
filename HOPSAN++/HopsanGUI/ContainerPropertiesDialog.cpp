@@ -74,36 +74,36 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     connect(mpUserIconBrowseButton, SIGNAL(clicked()), this, SLOT(browseUser()));
 
     //Define the layout of the box
+    size_t row = 0;
     mpLayout = new QGridLayout();
     mpLayout->setSizeConstraint(QLayout::SetFixedSize);
-    mpLayout->addWidget(mpNameLabel, 0, 0);
-    mpLayout->addWidget(mpNameEdit, 0, 1);
-
-    mpLayout->addWidget(mpUserIconLabel, 1, 0);
-    mpLayout->addWidget(mpIsoIconLabel, 2, 0);
-    mpLayout->addWidget(mpUserIconPath, 1, 1);
-    mpLayout->addWidget(mpIsoIconPath, 2, 1);
-    mpLayout->addWidget(mpUserIconBrowseButton, 1, 1, 1, 1, Qt::AlignRight);
-    mpLayout->addWidget(mpIsoIconBrowseButton, 2, 1, 1, 1, Qt::AlignRight);
-
-    mpLayout->addWidget(mpIsoCheckBox, 3, 0);
-    mpLayout->addWidget(mpDisableUndoCheckBox, 4, 0);
-
+    mpLayout->addWidget(mpNameLabel, row, 0);
+    mpLayout->addWidget(mpNameEdit, row, 1);
+    ++row;
+    mpLayout->addWidget(mpUserIconLabel, row, 0);
+    mpLayout->addWidget(mpUserIconPath, row, 1);
+    mpLayout->addWidget(mpUserIconBrowseButton, row, 1, 1, 1, Qt::AlignRight);
+    ++row;
+    mpLayout->addWidget(mpIsoIconLabel, row, 0);
+    mpLayout->addWidget(mpIsoIconPath, row, 1);
+    mpLayout->addWidget(mpIsoIconBrowseButton, row, 1, 1, 1, Qt::AlignRight);
+    ++row;
+    mpLayout->addWidget(mpIsoCheckBox, row, 0);
+    ++row;
+    mpLayout->addWidget(mpDisableUndoCheckBox, row, 0);
+    ++row;
     //Set GuiSystem specific stuff
     if (mpContainerObject->type() == GUISYSTEM)
     {
-        mpLayout->addWidget(mpNumberOfSamplesLabel, 5, 0);
-        mpLayout->addWidget(mpNumberOfSamplesBox, 5, 1);
-
-        mpLayout->addWidget(mpCQSLable, 6, 0);
-        mpLayout->addWidget(mpCQSLineEdit, 6, 1);
-
-        mpLayout->addWidget(mpButtonBox, 7, 1, 2, 2, Qt::AlignHCenter);
+        mpLayout->addWidget(mpNumberOfSamplesLabel, row, 0);
+        mpLayout->addWidget(mpNumberOfSamplesBox, row, 1);
+        ++row;
+        mpLayout->addWidget(mpCQSLable, row, 0);
+        mpLayout->addWidget(mpCQSLineEdit, row, 1);
+        ++row;
     }
-    else
-    {
-        mpLayout->addWidget(mpButtonBox, 5, 1, 2, 2, Qt::AlignHCenter);
-    }
+    mpLayout->addWidget(mpButtonBox, row, 1, 2, 2, Qt::AlignHCenter);
+    ++row;
 
     setLayout(mpLayout);
 }
@@ -127,19 +127,11 @@ void ContainerPropertiesDialog::setValues()
 
     if(mpIsoCheckBox->isChecked())
     {
-//        if(gpMainWindow->mpProjectTabs->count() > 0)
-//        {
-//            gpMainWindow->mpProjectTabs->getCurrentSystem()->setGfxType(ISOGRAPHICS);
-//        }
         this->mpContainerObject->setGfxType(ISOGRAPHICS);
         gpMainWindow->mpLibrary->setGfxType(ISOGRAPHICS);
     }
     else
     {
-//        if(gpMainWindow->mpProjectTabs->count() > 0)
-//        {
-//            gpMainWindow->mpProjectTabs->getCurrentSystem()->setGfxType(USERGRAPHICS);
-//        }
         this->mpContainerObject->setGfxType(USERGRAPHICS);
         gpMainWindow->mpLibrary->setGfxType(USERGRAPHICS);
     }
