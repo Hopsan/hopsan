@@ -21,9 +21,7 @@ class QPushButton;
 class QToolButton;
 class QVBoxLayout;
 
-class GUIModelObject;
 class GUIComponent;
-class GUISystem;
 
 class ComponentPropertiesDialog : public QDialog
 {
@@ -31,8 +29,6 @@ class ComponentPropertiesDialog : public QDialog
 
 public:
     ComponentPropertiesDialog(GUIComponent *pGUIComponent, QWidget *parent = 0);
-    //ComponentPropertiesDialog(GUISubsystem *pGUISubsystem, QWidget *parent = 0);
-    ComponentPropertiesDialog(GUISystem *pGUISubsystem, QWidget *parent = 0);
 
 protected slots:
     void okPressed();
@@ -43,8 +39,7 @@ protected:
     void setStartValues();
 
 private:
-    GUIModelObject *mpGUIModelObject;
-    bool isGUISubsystem;
+    GUIComponent *mpGUIComponent;
 
     void createEditStuff();
 
@@ -52,7 +47,6 @@ private:
     QLineEdit *lineEdit;
 
     QLineEdit *mpNameEdit;
-    QLineEdit *mpCQSEdit;
     std::vector<QLabel*> mParameterVarVector;
     std::vector<QLabel*> mParameterDescriptionVector;
     std::vector<QLabel*> mParameterUnitVector;
