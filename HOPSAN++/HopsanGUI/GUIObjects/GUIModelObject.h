@@ -40,6 +40,7 @@ public:
     virtual QString getParameterDescription(QString name) {assert(false); return "";} //Only availible in GUIComponent for now
     virtual double getParameterValue(QString name);
     virtual void setParameterValue(QString name, double value);
+    virtual void setStartValue(QString portName, QString variable, double startValue);
     virtual void setGlobalParameter(QString name, QString gPar);
     virtual void rememberGlobalParameter(QString name);
     virtual void forgetGlobalParameter(QString name);

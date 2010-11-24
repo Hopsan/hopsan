@@ -24,6 +24,7 @@ public:
     QString getParameterDescription(QString name);
     double getParameterValue(QString name);
     void setParameterValue(QString name, double value);
+    void setStartValue(QString portName, QString variable, double startValue);
     void setGlobalParameter(QString name, QString gPar);
     void rememberGlobalParameter(QString name, QString parameterName);
     void forgetGlobalParameter(QString name);

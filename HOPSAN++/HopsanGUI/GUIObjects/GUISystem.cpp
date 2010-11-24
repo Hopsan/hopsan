@@ -483,7 +483,8 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
             while (!xmlStartValue.isNull())
             {
                 //! @todo load start values
-                xmlStartValue = xmlStartValue.nextSiblingElement(HMF_PARAMETERTAG);
+                loadStartValue(xmlStartValue, pObj, NOUNDO);
+                xmlStartValue = xmlStartValue.nextSiblingElement(HMF_STARTVALUE);
             }
 
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_COMPONENTTAG);

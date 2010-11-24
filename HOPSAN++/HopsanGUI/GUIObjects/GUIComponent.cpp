@@ -129,6 +129,15 @@ void GUIComponent::setParameterValue(QString name, double value)
     forgetGlobalParameter(name);
 }
 
+void GUIComponent::setStartValue(QString portName, QString variable, double startValue)
+{
+    QVector<QString> vVariable;
+    QVector<double> vStartValue;
+    vVariable.append(variable);
+    vStartValue.append(startValue);
+    this->getPort(portName)->setStartValueDataByNames(vVariable, vStartValue);
+}
+
 
 void GUIComponent::setGlobalParameter(QString name, QString gPar)
 {

@@ -255,46 +255,13 @@ void ParameterLoadData::readDomElement(QDomElement &rDomElement)
     parameterGlobalKey = rDomElement.attribute(HMF_GLOBALPARAMETERTAG);
 }
 
-
-
-GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
+void StartValueLoadData::readDomElement(QDomElement &rDomElement)
 {
-    GUIModelObjectAppearance *pAppearanceData = pLibrary->getAppearanceData(rData.type);
-    if (pAppearanceData != 0)
-    {
-        GUIModelObjectAppearance appearanceData = *pAppearanceData; //Make a copy
-        appearanceData.setName(rData.name);
-
-        nameVisibility nameStatus;
-        if(rData.textVisible)
-        {
-           nameStatus = NAMEVISIBLE;
-        }
-        else
-        {
-            nameStatus = NAMENOTVISIBLE;
-        }
-
-        GUIModelObject* pObj = pSystem->addGUIModelObject(&appearanceData, QPoint(rData.posX, rData.posY), 0, DESELECTED, nameStatus, undoSettings);
-        pObj->setNameTextPos(rData.nameTextPos);
-
-        if (rData.isFlipped)
-        {
-            pObj->flipHorizontal(undoSettings);
-        }
-        while(pObj->rotation() != rData.rotation)
-        {
-            pObj->rotate(undoSettings);
-        }
-        return pObj;
-    }
-    else
-    {
-        qDebug() << "loadGUIObj Some errer happend pAppearanceData == 0";
-        //! @todo Some error message
-        return 0;
-    }
+    portName = rDomElement.attribute("portname");
+    variable = rDomElement.attribute("variable");
+    startValue = rDomElement.attribute("value").toDouble();
 }
+
 
 GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
 {
@@ -427,12 +394,67 @@ void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoS
 }
 
 
+//! @brief xml version
+void loadStartValue(const StartValueLoadData &rData, GUIModelObject* pObject, undoStatus undoSettings)
+{
+    pObject->setStartValue(rData.portName, rData.variable, rData.startValue);
+}
+
+//! @brief xml version
+void loadStartValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus undoSettings)
+{
+    StartValueLoadData data;
+    data.readDomElement(rDomElement);
+    loadStartValue(data, pObject, undoSettings);
+}
+
+
+GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
+{
+    GUIModelObjectAppearance *pAppearanceData = pLibrary->getAppearanceData(rData.type);
+    if (pAppearanceData != 0)
+    {
+        GUIModelObjectAppearance appearanceData = *pAppearanceData; //Make a copy
+        appearanceData.setName(rData.name);
+
+        nameVisibility nameStatus;
+        if(rData.textVisible)
+        {
+           nameStatus = NAMEVISIBLE;
+        }
+        else
+        {
+            nameStatus = NAMENOTVISIBLE;
+        }
+
+        GUIModelObject* pObj = pSystem->addGUIModelObject(&appearanceData, QPoint(rData.posX, rData.posY), 0, DESELECTED, nameStatus, undoSettings);
+        pObj->setNameTextPos(rData.nameTextPos);
+
+        if (rData.isFlipped)
+        {
+            pObj->flipHorizontal(undoSettings);
+        }
+        while(pObj->rotation() != rData.rotation)
+        {
+            pObj->rotate(undoSettings);
+        }
+        return pObj;
+    }
+    else
+    {
+        qDebug() << "loadGUIObj Some errer happend pAppearanceData == 0";
+        //! @todo Some error message
+        return 0;
+    }
+}
+
+
 //! @brief Conveniance function if you dont want to manipulate the loaded data
 GUIModelObject* loadGUIModelObject(QTextStream &rStream, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
 {
     ModelObjectLoadData data;
     data.read(rStream);
-    return loadGUIModelObject(data,pLibrary, pSystem, undoSettings);
+    return loadGUIModelObject(data, pLibrary, pSystem, undoSettings);
 }
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data
@@ -440,7 +462,7 @@ GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLib
 {
     ModelObjectLoadData data;
     data.readDomElement(rDomElement);
-    return loadGUIModelObject(data,pLibrary, pSystem, undoSettings);
+    return loadGUIModelObject(data, pLibrary, pSystem, undoSettings);
 }
 
 GUIObject* loadSubsystemGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)

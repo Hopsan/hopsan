@@ -107,6 +107,15 @@ public:
     void readDomElement(QDomElement &rDomElement);
 };
 
+class StartValueLoadData
+{
+public:
+    QString portName, variable;
+    qreal startValue;
+
+    void readDomElement(QDomElement &rDomElement);
+};
+
 class TextWidgetLoadData
 {
 public:
@@ -154,6 +163,9 @@ void loadParameterValues(const ParameterLoadData &rData, GUIContainerObject* pSy
 void loadParameterValues(QTextStream &rStream, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
 void loadParameterValue(const ParameterLoadData &rData, GUIModelObject* pObject, undoStatus undoSettings=UNDO);
 void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus undoSettings=UNDO);
+
+void loadStartValue(const StartValueLoadData &rData, GUIModelObject* pObject, undoStatus undoSettings=UNDO);
+void loadStartValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus undoSettings=UNDO);
 
 void loadGlobalParameter(const GlobalParameterLoadData &rData, GUIContainerObject* pSystem);
 void loadGlobalParameter(QDomElement &rDomElement, GUIContainerObject* pSystem);

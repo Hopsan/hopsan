@@ -364,6 +364,17 @@ void GUIModelObject::setParameterValue(QString name, double value)
 }
 
 
+//! @brief Virtual function that sets specified startValue to specified value
+//! @param portName Name of port
+//! @param variable Name of variable in port
+//! @param startValue New parameter value
+void GUIModelObject::setStartValue(QString portName, QString variable, double startValue)
+{
+    //cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
+    assert(false);
+}
+
+
 void GUIModelObject::setGlobalParameter(QString name, QString gPar)
 {
     assert(false);

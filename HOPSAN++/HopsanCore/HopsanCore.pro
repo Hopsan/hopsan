@@ -152,7 +152,6 @@ HEADERS += win32dll.h \
     Components/Signal/SignalTime.hpp \
     ComponentUtilities/Integrator.hpp \
     ComponentUtilities/FirstOrderFilter.hpp \
-    ComponentUtilities/Delay.hpp \
     ComponentUtilities/SecondOrderTransferFunction.h \
     Components/Signal/SignalDummy.hpp \
     Components/Hydraulic/HydraulicDummyC.hpp \
