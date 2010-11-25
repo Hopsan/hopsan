@@ -17,7 +17,7 @@ namespace hopsan {
 
     typedef std::string NodeTypeT;
 
-    class Port; //forward declaration
+    class Port;
 
     class DLLIMPORTEXPORT Node
     {
@@ -57,6 +57,7 @@ namespace hopsan {
         void getDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits);
         void getDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<double> &rValues, std::vector<std::string> &rUnits);
         void setDataValuesByNames(std::vector<std::string> names, std::vector<double> values);
+        int getNumberOfPortsByType(int type);
 
         //Protected member variables
         NodeTypeT mNodeType;

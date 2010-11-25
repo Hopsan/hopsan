@@ -18,6 +18,7 @@
 #include "Component.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "CoreUtilities/FileAccess.h"
+#include "Port.h"
 
 #define USETBB            //Uncomment this will enable TBB package. Only use if you have it installed.
 #ifdef USETBB
@@ -2066,8 +2067,15 @@ bool ComponentSystem::isSimulationOk()
             gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is not connected!");
             return false;
         }
+        else if( ports[i]->isConnected() )
+        {
+            if(ports[i]->getNodePublic()->getNumberOfPortsByType(Port::POWERPORT) == 1)
+            {
+                gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is connected to a node with only one power port!");
+                return false;
+            }
+        }
     }
-
 
     //Check all subcomponents to make sure that all requirements for simulation are met
     //scmit = The subcomponent map iterator
@@ -2086,27 +2094,14 @@ bool ComponentSystem::isSimulationOk()
                 gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " on " + pComp->getName() + " is not connected!");
                 return false;
             }
-//            bool twoPowerPorts = false;
-//            for (size_t p=0; p<ports[i]->getNodePublic()->mPortPtrs.size(); ++p)
-//            {
-//                if((ports[i]->getNodePublic()->mPortPtrs[p] != ports[i]) &&
-//                   ports[i]->mpComponent->getTypeCQS() == Component::C &&
-//                   ports[i]->getNodePublic()->mPortPtrs[p]->mpComponent->getTypeCQS() == Component::Q)
-//                {
-//                    twoPowerPorts = true;
-//                }
-//                else if((ports[i]->getNodePublic()->mPortPtrs[p] != ports[i]) &&
-//                   ports[i]->mpComponent->getTypeCQS() == Component::Q &&
-//                   ports[i]->getNodePublic()->mPortPtrs[p]->mpComponent->getTypeCQS() == Component::C)
-//                {
-//                    twoPowerPorts = true;
-//                }
-//            }
-//            if(!twoPowerPorts)
-//            {
-//                gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " on " + pComp->getName() + " is not connected to a power port!");
-//                return false;
-//            }
+            else if( ports[i]->isConnected() )
+            {
+                if(ports[i]->getNodePublic()->getNumberOfPortsByType(Port::POWERPORT) == 1)
+                {
+                    gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is connected to a node with only one power port!");
+                    return false;
+                }
+            }
         }
 
         //! @todo check that all C-component required ports are connected to Q-component ports

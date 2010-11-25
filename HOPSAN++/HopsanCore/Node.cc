@@ -18,6 +18,7 @@
 #include <sstream>
 #include "Node.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
+#include "Port.h"
 
 using namespace std;
 using namespace hopsan;
@@ -427,6 +428,20 @@ void Node::disableLog()
     mDoLog = false;
 }
 
+
+int Node::getNumberOfPortsByType(int type)
+{
+    int n_Ports = 0;
+    std::vector<Port*>::iterator it;
+    for (it=mPortPtrs.begin(); it!=mPortPtrs.end(); ++it)
+    {
+        if ((*it)->getPortType() == type)
+        {
+            n_Ports++;
+        }
+    }
+    return n_Ports;
+}
 
 NodeFactory hopsan::gCoreNodeFactory;
 DLLIMPORTEXPORT NodeFactory* hopsan::getCoreNodeFactoryPtr()

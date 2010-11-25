@@ -8,7 +8,6 @@
 //$Id$
 
 #include "Port.h"
-#include "Node.h"
 #include <iostream>
 #include <sstream>
 #include <cassert>

@@ -51,7 +51,10 @@ namespace hopsan {
             double p = mpP1->readNode(NodeHydraulic::PRESSURE);
 
             //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, p);
+            if(mpOut->isConnected())
+            {
+                mpOut->writeNode(NodeSignal::VALUE, p);
+            }
         }
     };
 }
