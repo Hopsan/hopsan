@@ -471,44 +471,42 @@ hopsan::Port* CoreSystemAccess::getPortPtr(QString componentName, QString portNa
 
 void CoreSystemAccess::setSystemParameter(QString name, double value)
 {
-    qDebug() << "setSystemParameter(" << name << ", " << value << ")";
-    mpCoreComponentSystem->setMappedParameter(name.toStdString(), value);
+    mpCoreComponentSystem->setSystemParametersMap(name.toStdString(), value);
 }
 
 
 double CoreSystemAccess::getSystemParameter(QString name)
 {
-    return mpCoreComponentSystem->getMappedParameters().find(name.toStdString())->second;
+    return mpCoreComponentSystem->getSystemParametersMap().find(name.toStdString())->second;
 }
 
 
 bool CoreSystemAccess::hasSystemParameter(QString name)
 {
-    std::map<std::string, double> tempMap = mpCoreComponentSystem->getMappedParameters();
+    std::map<std::string, double> tempMap = mpCoreComponentSystem->getSystemParametersMap();
     return (tempMap.find(name.toStdString()) != tempMap.end());
 }
 
 
 void CoreSystemAccess::removeSystemParameter(QString name)
 {
-    mpCoreComponentSystem->unsetMappedParameter(name.toStdString());
+    mpCoreComponentSystem->unsetSystemParameter(name.toStdString());
 }
 
 
 int CoreSystemAccess::getNumberOfSystemParameters()
 {
-    return mpCoreComponentSystem->getMappedParameters().size();
+    return mpCoreComponentSystem->getSystemParametersMap().size();
 }
 
 
 QMap<std::string, double> CoreSystemAccess::getSystemParametersMap()
 {
-    return QMap<std::string, double>(mpCoreComponentSystem->getMappedParameters());
+    return QMap<std::string, double>(mpCoreComponentSystem->getSystemParametersMap());
 }
 
 
 void CoreSystemAccess::registserSystemParameter(QString objName, QString parName, QString mapKey)
 {
-    qDebug() << "bamse = " << mpCoreComponentSystem->getMappedParameters().find("<bamse>")->second;
     mpCoreComponentSystem->getComponent(objName.toStdString())->setParameterValue(parName.toStdString(), mapKey.toStdString());
 }

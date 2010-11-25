@@ -226,11 +226,11 @@ namespace hopsan {
         //Stop a running init or simulation
         void stop();
 
-        void setMappedParameter(std::string, double);
-        void unsetMappedParameter(std::string mapKey);
-        std::map<std::string, double> getMappedParameters();
-        void registerMappedParameter(std::string mapKey, double *pValue);
-        void unregisterMappedParameter(double *pValue);
+        void setSystemParameter(std::string systemParameterKey, double value);
+        void unsetSystemParameter(std::string systemParameterKey);
+        std::map<std::string, double> getSystemParametersMap();
+        void mapParameterValuePointerToSystemParameter(std::string systemParameterKey, double *pValue);
+        void unmapParameterValuePointerToSystemParameter(double *pValue);
 
     private:
         //==========Private functions==========
@@ -273,8 +273,8 @@ namespace hopsan {
 
         bool mStop;
 
-        std::map<std::string, double> mMappedParameters;
-        std::multimap<std::string, double *> mMappedParameterPointers;
+        std::map<std::string, double> mSystemParameters;
+        std::multimap<std::string, double *> mSystemParameterPointers;
     };
 
     class DLLIMPORTEXPORT ComponentSignal :public Component

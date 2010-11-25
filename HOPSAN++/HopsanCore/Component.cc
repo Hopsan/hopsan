@@ -446,6 +446,9 @@ map<string, double> Component::getParameterMap()
 }
 
 
+//! @brief Sets a specified parameter to a specified value
+//! @param name Name of the parameter
+//! @param value Value to asign the parameter with
 void Component::setParameterValue(const string name, const double value)
 {
     bool notset = true;
@@ -454,7 +457,7 @@ void Component::setParameterValue(const string name, const double value)
         if (name == mParameters[i].getName())
         {
             mParameters[i].setValue(value);
-            mpSystemParent->unregisterMappedParameter(mParameters.at(i).mpValue);
+            mpSystemParent->unmapParameterValuePointerToSystemParameter(mParameters.at(i).mpValue);
             notset = false;
         }
     }
@@ -465,20 +468,23 @@ void Component::setParameterValue(const string name, const double value)
 }
 
 
-void Component::setParameterValue(const string name, const string mapKey)
+//! @brief Sets a parameter value using a key to a system parameter
+//! @param parameterName Name of the parameter
+//! @param systemParameterKey Key name of the system parameter
+void Component::setParameterValue(const string parameterName, const string systemParameterKey)
 {
     bool notset = true;
     bool notfound = true;
     for (size_t i=0; i<mParameters.size(); ++i)
     {
-        if (name == mParameters[i].getName())
+        if (parameterName == mParameters[i].getName())
         {
             std::map<std::string, double> tempMap;
-            tempMap = mpSystemParent->getMappedParameters();
-            if(tempMap.find(mapKey) != tempMap.end())
+            tempMap = mpSystemParent->getSystemParametersMap();
+            if(tempMap.find(systemParameterKey) != tempMap.end())
             {
-                mParameters.at(i).setValue(mpSystemParent->getMappedParameters().find(mapKey)->second);
-                mpSystemParent->registerMappedParameter(mapKey, mParameters.at(i).mpValue);
+                mParameters.at(i).setValue(mpSystemParent->getSystemParametersMap().find(systemParameterKey)->second);
+                mpSystemParent->mapParameterValuePointerToSystemParameter(systemParameterKey, mParameters.at(i).mpValue);
                 notfound = false;
             }
             notset = false;
@@ -486,11 +492,11 @@ void Component::setParameterValue(const string name, const string mapKey)
     }
     if(notset)
     {
-        cout << "No such parameter (does nothing): " << name << endl;
+        cout << "No such parameter (does nothing): " << parameterName << endl;
     }
     if(notfound)
     {
-        cout << "Mapped parameter not found (does nothing): " << mapKey << endl;
+        cout << "Mapped parameter not found (does nothing): " << systemParameterKey << endl;
     }
 }
 
@@ -862,62 +868,75 @@ void ComponentSystem::stop()
 }
 
 
-void ComponentSystem::setMappedParameter(std::string mapKey, double mapValue)
+//! @brief Defines a new system parameter
+//! @param systemParameterKey Key name of the system parameter
+//! @param value Initial value of the system parameter
+void ComponentSystem::setSystemParameter(std::string systemParameterKey, double value)
 {
-    if(mMappedParameters.find(mapKey) == mMappedParameters.end())
+    if(mSystemParameters.find(systemParameterKey) == mSystemParameters.end())
     {
-        mMappedParameters.insert(make_pair(mapKey, mapValue));
+        mSystemParameters.insert(make_pair(systemParameterKey, value));
     }
     else
     {
-        mMappedParameters.erase(mapKey);
-        mMappedParameters.insert(make_pair(mapKey, mapValue));
+        mSystemParameters.erase(systemParameterKey);
+        mSystemParameters.insert(make_pair(systemParameterKey, value));
     }
 
     std::multimap<std::string, double *>::iterator it;
-    for(it = mMappedParameterPointers.begin(); it != mMappedParameterPointers.end(); ++it)
+    for(it = mSystemParameterPointers.begin(); it != mSystemParameterPointers.end(); ++it)
     {
         double *pValue = it->second;
-        std::string mapKey = it->first;
-        *pValue = mMappedParameters.find(mapKey)->second;
+        std::string key = it->first;
+        *pValue = mSystemParameters.find(key)->second;
     }
 }
 
 
-void ComponentSystem::unsetMappedParameter(std::string mapKey)
+//! @brief Removes a system parameter
+//! @param systemParameterKey Key name of the system parameter to remove
+void ComponentSystem::unsetSystemParameter(std::string systemParameterKey)
 {
     std::map<std::string, double>::iterator it;
-    for(it = mMappedParameters.begin(); it != mMappedParameters.end(); ++it)
+    for(it = mSystemParameters.begin(); it != mSystemParameters.end(); ++it)
     {
-        if((*it).first == mapKey)
+        if((*it).first == systemParameterKey)
         {
-            mMappedParameters.erase(it);
+            mSystemParameters.erase(it);
             break;
         }
     }
 }
 
 
-std::map<std::string, double> ComponentSystem::getMappedParameters()
+//! @brief Returns a copy of the system parameter map
+std::map<std::string, double> ComponentSystem::getSystemParametersMap()
 {
-    return mMappedParameters;
+    return mSystemParameters;
 }
 
 
-void ComponentSystem::registerMappedParameter(std::string mapKey, double *pValue)
+//! @brief Maps a pointer to a parameter value to a system parameter
+//! @param systemParameterKey Key name of the system parameter
+//! @param pValue Pointer to the parameter value that shall be mapped
+//! @see unmapParameterValuePointerToSystemParameter()
+void ComponentSystem::mapParameterValuePointerToSystemParameter(std::string systemParameterKey, double *pValue)
 {
-    mMappedParameterPointers.insert(std::pair<std::string, double *>(mapKey, pValue));
+    mSystemParameterPointers.insert(std::pair<std::string, double *>(systemParameterKey, pValue));
 }
 
 
-void ComponentSystem::unregisterMappedParameter(double *pValue)
+//! @brief Unmaps a pointer to a parameter value to a system parameter
+//! @param pValue Pointer to the parameter value that shall be unmapped
+//! @see mapParameterValuePointerToSystemParameter()
+void ComponentSystem::unmapParameterValuePointerToSystemParameter(double *pValue)
 {
     std::multimap<std::string, double *>::iterator it;
-    for(it = mMappedParameterPointers.begin(); it != mMappedParameterPointers.end(); ++it)
+    for(it = mSystemParameterPointers.begin(); it != mSystemParameterPointers.end(); ++it)
     {
         if(it->second == pValue)
         {
-            mMappedParameterPointers.erase(it);
+            mSystemParameterPointers.erase(it);
             break;
         }
     }
