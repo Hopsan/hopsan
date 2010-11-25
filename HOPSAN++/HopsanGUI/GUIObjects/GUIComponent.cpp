@@ -21,7 +21,7 @@
 
 #include "GUIGroup.h"
 #include "GUISystem.h"
-#include "GlobalParametersWidget.h"
+#include "SystemParametersWidget.h"
 
 GUIComponent::GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
     : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
@@ -125,7 +125,7 @@ double GUIComponent::getParameterValue(QString name)
 void GUIComponent::setParameterValue(QString name, double value)
 {
     mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, value);
-    forgetGlobalParameter(name);
+    forgetSystemParameterMapping(name);
 }
 
 void GUIComponent::setStartValue(QString portName, QString variable, double startValue)
@@ -137,35 +137,34 @@ void GUIComponent::setStartValue(QString portName, QString variable, double star
     this->getPort(portName)->setStartValueDataByNames(vVariable, vStartValue);
 }
 
-
-void GUIComponent::setGlobalParameter(QString name, QString gPar)
+void GUIComponent::mapParameterToSystemParameter(QString parameterName, QString systemParameterKey)
 {
-    mpParentContainerObject->getCoreSystemAccessPtr()->registserGlobalParameter(this->getName(), name, gPar);
-    rememberGlobalParameter(name, gPar);
+    mpParentContainerObject->getCoreSystemAccessPtr()->registserSystemParameter(this->getName(), parameterName, systemParameterKey);
+    rememberSystemParameterMapping(parameterName, systemParameterKey);
 }
 
 
-void GUIComponent::rememberGlobalParameter(QString name, QString key)
+void GUIComponent::rememberSystemParameterMapping(QString parameterName, QString systemParameterKey)
 {
-    mGlobalParameters.insert(name, key);
+    mParameterToSystemParameterMap.insert(parameterName, systemParameterKey);
 }
 
 
-void GUIComponent::forgetGlobalParameter(QString name)
+void GUIComponent::forgetSystemParameterMapping(QString parameterName)
 {
-    mGlobalParameters.remove(name);
+    mParameterToSystemParameterMap.remove(parameterName);
 }
 
 
-bool GUIComponent::hasGlobalParameter(QString name)
+bool GUIComponent::isParameterMappedToSystemParameter(QString parameterName)
 {
-    return mGlobalParameters.contains(name);
+    return mParameterToSystemParameterMap.contains(parameterName);
 }
 
 
-QString GUIComponent::getGlobalParameterKey(QString parameterName)
+QString GUIComponent::getSystemParameterKey(QString parameterName)
 {
-    return mGlobalParameters.find(parameterName).value();
+    return mParameterToSystemParameterMap.find(parameterName).value();
 }
 
 //void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
@@ -293,9 +292,9 @@ void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
 //        appendDomValueNode(xmlParam, HMF_VALUETAG, mpParentSystem->getCoreSystemAccessPtr()->getParameterValue(this->getName(), (*pit)));
         xmlParam.setAttribute(HMF_NAMETAG, *pit);
         xmlParam.setAttribute(HMF_VALUETAG, mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValue(this->getName(), (*pit)));
-        if(this->hasGlobalParameter(*pit))
+        if(this->isParameterMappedToSystemParameter(*pit))
         {
-            xmlParam.setAttribute(HMF_GLOBALPARAMETERTAG, this->getGlobalParameterKey(*pit));
+            xmlParam.setAttribute(HMF_SystemParameterTAG, this->getSystemParameterKey(*pit));
         }
     }
 

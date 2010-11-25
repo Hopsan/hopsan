@@ -138,7 +138,7 @@ public:
     void readDomElement(QDomElement &rDomElement);
 };
 
-class GlobalParameterLoadData
+class SystemParameterLoadData
 {
 public:
     QString name;
@@ -166,9 +166,8 @@ void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoS
 
 void loadStartValue(const StartValueLoadData &rData, GUIModelObject* pObject, undoStatus undoSettings=UNDO);
 void loadStartValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus undoSettings=UNDO);
-
-void loadGlobalParameter(const GlobalParameterLoadData &rData, GUIContainerObject* pSystem);
-void loadGlobalParameter(QDomElement &rDomElement, GUIContainerObject* pSystem);
+void loadSystemParameter(const SystemParameterLoadData &rData, GUIContainerObject* pSystem);
+void loadSystemParameter(QDomElement &rDomElement, GUIContainerObject* pSystem);
 
 void loadTextWidget(QDomElement &rDomElement, GUIContainerObject *pSystem);
 void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pSystem);

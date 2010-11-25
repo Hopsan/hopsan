@@ -19,7 +19,7 @@
 #include "GUIObjects/GUISystem.h"
 #include "Utilities/GUIUtilities.h"
 #include "PyDock.h"
-#include "GlobalParametersWidget.h"
+#include "SystemParametersWidget.h"
 #include "Configuration.h"
 #include "CopyStack.h"
 
@@ -53,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setDockOptions(QMainWindow::ForceTabbedDocks);
 
     mpPlotWidget = 0;
-    mpGlobalParametersWidget = 0;
+    mpSystemParametersWidget = 0;
 
     QMetaObject::connectSlotsByName(this);
 
@@ -171,10 +171,10 @@ MainWindow::MainWindow(QWidget *parent)
     addDockWidget(Qt::RightDockWidgetArea, mpPlotWidgetDock);
 
         //Create the global parameters dock widget and hide it
-    mpGlobalParametersDock = new QDockWidget(tr("Global Parameters"), this);
-    mpGlobalParametersDock->setAllowedAreas((Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea));
-    addDockWidget(Qt::RightDockWidgetArea, mpGlobalParametersDock);
-    mpGlobalParametersDock->hide();
+    mpSystemParametersDock = new QDockWidget(tr("Global Parameters"), this);
+    mpSystemParametersDock->setAllowedAreas((Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea));
+    addDockWidget(Qt::RightDockWidgetArea, mpSystemParametersDock);
+    mpSystemParametersDock->hide();
 
         //Create the undo dock widget and hide it
     mpUndoWidgetDock = new QDockWidget(tr("Undo History"), this);
@@ -183,11 +183,11 @@ MainWindow::MainWindow(QWidget *parent)
     addDockWidget(Qt::RightDockWidgetArea, mpUndoWidgetDock);
 
         //Make dock widgets that share same dock area tabified, instead of stacking them above each other
-    tabifyDockWidget(mpPlotWidgetDock, mpGlobalParametersDock);
-    tabifyDockWidget(mpGlobalParametersDock, mpUndoWidgetDock);
+    tabifyDockWidget(mpPlotWidgetDock, mpSystemParametersDock);
+    tabifyDockWidget(mpSystemParametersDock, mpUndoWidgetDock);
     tabifyDockWidget(mpUndoWidgetDock, mpPlotWidgetDock);
 
-    tabifyDockWidget(mpMessageDock, mpPyDock);
+    tabifyDockWidget(mpPyDock, mpMessageDock);
 
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateToolBarsToNewTab()));
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(refreshUndoWidgetList()));
@@ -314,10 +314,10 @@ void MainWindow::createActions()
     disableUndoAction->setCheckable(true);
     disableUndoAction->setChecked(false);
 
-    openGlobalParametersAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-GlobalParameter.png"), tr("&Global Parameters"), this);
-    openGlobalParametersAction->setText("Global Parameters");
-    openGlobalParametersAction->setShortcut(tr("Ctrl+alt+g"));
-    connect(openGlobalParametersAction,SIGNAL(triggered()),this,SLOT(openGlobalParametersWidget()));
+    openSystemParametersAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"), tr("&Global Parameters"), this);
+    openSystemParametersAction->setText("Global Parameters");
+    openSystemParametersAction->setShortcut(tr("Ctrl+alt+g"));
+    connect(openSystemParametersAction,SIGNAL(triggered()),this,SLOT(openSystemParametersWidget()));
 
     cutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Cut.png"), tr("&Cut"), this);
     cutAction->setShortcut(tr("Ctrl+x"));
@@ -447,7 +447,7 @@ void MainWindow::createMenus()
     menuFile->addAction(loadLibsAction);
     menuFile->addSeparator();
     menuFile->addAction(propertiesAction);
-    menuFile->addAction(openGlobalParametersAction);
+    menuFile->addAction(openSystemParametersAction);
     menuFile->addSeparator();
     menuFile->addAction(closeAction);
 
@@ -522,7 +522,7 @@ void MainWindow::createToolbars()
     mpSimToolBar->addAction(simulateAction);
     mpSimToolBar->addAction(plotAction);
     mpSimToolBar->addAction(propertiesAction);
-    mpSimToolBar->addAction(openGlobalParametersAction);
+    mpSimToolBar->addAction(openSystemParametersAction);
 }
 
 
@@ -540,18 +540,18 @@ void MainWindow::openUndoWidget()
 
 
 //! @brief Opens the undo widget.
-void MainWindow::openGlobalParametersWidget()
+void MainWindow::openSystemParametersWidget()
 {
-    if(!mpGlobalParametersDock->isVisible())
+    if(!mpSystemParametersDock->isVisible())
     {
-        if(mpGlobalParametersWidget == 0)
+        if(mpSystemParametersWidget == 0)
         {
-            mpGlobalParametersWidget = new GlobalParametersWidget(this);
+            mpSystemParametersWidget = new SystemParametersWidget(this);
         }
-        mpGlobalParametersDock->setWidget(mpGlobalParametersWidget);
+        mpSystemParametersDock->setWidget(mpSystemParametersWidget);
 
-        mpGlobalParametersDock->show();
-        mpGlobalParametersDock->raise();
+        mpSystemParametersDock->show();
+        mpSystemParametersDock->raise();
     }
 }
 

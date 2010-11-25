@@ -339,7 +339,7 @@ void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
 
     QDomElement parElement = appendDomElement(rDomElement, "parameters");
     QMap<std::string, double>::iterator it;
-    QMap<std::string, double> parMap = mpCoreSystemAccess->getGlobalParametersMap();
+    QMap<std::string, double> parMap = mpCoreSystemAccess->getSystemParametersMap();
     for(it = parMap.begin(); it != parMap.end(); ++it)
     {
         QDomElement mappedElement = appendDomElement(parElement, "mappedparameter");
@@ -535,7 +535,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = xmlParameters.firstChildElement("mappedparameter");
         while (!xmlSubObject.isNull())
         {
-            loadGlobalParameter(xmlSubObject, this);
+            loadSystemParameter(xmlSubObject, this);
 
             xmlSubObject = xmlSubObject.nextSiblingElement("mappedparameter");
         }

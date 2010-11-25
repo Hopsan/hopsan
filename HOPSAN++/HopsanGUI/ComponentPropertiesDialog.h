@@ -32,7 +32,7 @@ public:
 
 protected slots:
     void okPressed();
-    void showListOfGlobalParameters();
+    void showListOfSystemParameters();
 
 protected:
     void setParameters();
@@ -51,9 +51,9 @@ private:
     std::vector<QLabel*> mParameterDescriptionVector;
     std::vector<QLabel*> mParameterUnitVector;
     std::vector<QLineEdit*> mParameterValueVector;
-    std::vector<QToolButton*> mGlobalParameterVector;
+    std::vector<QToolButton*> mSystemParameterVector;
 
-    QVector<QToolButton *> mGlobalParameterButtons;
+    QVector<QToolButton *> mSystemParameterButtons;
     QVector<QLineEdit *> mParameterValueLineEdits;
 
     QVector<QVector<QLabel*> > mStartDataNames;

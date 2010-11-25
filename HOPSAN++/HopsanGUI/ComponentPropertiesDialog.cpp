@@ -70,22 +70,22 @@ void ComponentPropertiesDialog::createEditStuff()
 
 
         QToolButton *pGlobalButton = new QToolButton();
-        pGlobalButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-GlobalParameter.png"));
-        connect(pGlobalButton, SIGNAL(pressed()), this, SLOT(showListOfGlobalParameters()));
+        pGlobalButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"));
+        connect(pGlobalButton, SIGNAL(pressed()), this, SLOT(showListOfSystemParameters()));
 
-        mGlobalParameterButtons.append(pGlobalButton);
-        mGlobalParameterVector.push_back(pGlobalButton);
+        mSystemParameterButtons.append(pGlobalButton);
+        mSystemParameterVector.push_back(pGlobalButton);
         //mValueVector.back()->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mValueVector.back()));
 
-        if(mpGUIComponent->hasGlobalParameter(*pit))
+        if(mpGUIComponent->isParameterMappedToSystemParameter(*pit))
         {
-            if(mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->hasGlobalParameter(mpGUIComponent->getGlobalParameterKey(*pit)))
+            if(mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(mpGUIComponent->getSystemParameterKey(*pit)))
             {
-                mParameterValueVector.back()->setText(mpGUIComponent->getGlobalParameterKey(*pit));
+                mParameterValueVector.back()->setText(mpGUIComponent->getSystemParameterKey(*pit));
             }
             else
             {
-                mpGUIComponent->forgetGlobalParameter(*pit);
+                mpGUIComponent->forgetSystemParameterMapping(*pit);
                 QString valueTxt;
                 valueTxt.setNum(mpGUIComponent->getParameterValue(*pit), 'g', 6 );
                 mParameterValueVector.back()->setText(valueTxt);
@@ -192,7 +192,7 @@ void ComponentPropertiesDialog::createEditStuff()
         parameterDescriptionLayput->addWidget(mParameterDescriptionVector[i]);
         parameterVarLayout->addWidget(mParameterVarVector[i]);
         parameterValueLayout->addWidget(mParameterValueVector[i]);
-        mpParameterGlobalLayout->addWidget(mGlobalParameterVector[i]);
+        mpParameterGlobalLayout->addWidget(mSystemParameterVector[i]);
         parameterUnitLayout->addWidget(mParameterUnitVector[i]);
     }
 
@@ -259,9 +259,9 @@ void ComponentPropertiesDialog::setParameters()
 
         if(!ok)     //Global parameter
         {
-            if(mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->hasGlobalParameter(requestedParameter))
+            if(mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(requestedParameter))
             {
-                mpGUIComponent->setGlobalParameter(mParameterVarVector[i]->text(), requestedParameter);
+                mpGUIComponent->mapParameterToSystemParameter(mParameterVarVector[i]->text(), requestedParameter);
             }
             else    //User has written something illegal
             {
@@ -320,11 +320,11 @@ void ComponentPropertiesDialog::setStartValues()
 
 
 
-void ComponentPropertiesDialog::showListOfGlobalParameters()
+void ComponentPropertiesDialog::showListOfSystemParameters()
 {
     QMenu menu;
 
-    QMap<std::string, double> globalMap = gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getGlobalParametersMap();
+    QMap<std::string, double> globalMap = gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getSystemParametersMap();
     QMap<std::string, double>::iterator it;
     for(it=globalMap.begin(); it!=globalMap.end(); ++it)
     {
@@ -335,9 +335,9 @@ void ComponentPropertiesDialog::showListOfGlobalParameters()
     }
 
     size_t i;
-    for(i=0; i<mGlobalParameterButtons.size(); ++i)
+    for(i=0; i<mSystemParameterButtons.size(); ++i)
     {
-        if(mGlobalParameterButtons.at(i)->underMouse())
+        if(mSystemParameterButtons.at(i)->underMouse())
         {
             qDebug() << "Clicked on number " << i;
             break;

@@ -1,5 +1,5 @@
-#ifndef GLOBALPARAMETERSWIDGET_H
-#define GLOBALPARAMETERSWIDGET_H
+#ifndef SystemParameterSWIDGET_H
+#define SystemParameterSWIDGET_H
 
 #include <QList>
 #include <QStringList>
@@ -20,11 +20,11 @@ class MainWindow;
 class GUISystem;
 
 
-class GlobalParametersWidget : public QWidget
+class SystemParametersWidget : public QWidget
 {
     Q_OBJECT
 public:
-    GlobalParametersWidget(MainWindow *parent = 0);
+    SystemParametersWidget(MainWindow *parent = 0);
 
     //MainWindow *mpParentMainWindow;
 
@@ -42,7 +42,7 @@ private slots:
     void update();
 
 signals:
-    void modifiedGlobalParameter();
+    void modifiedSystemParameter();
 
 private:
     QLabel *mpNameLabel;
@@ -53,7 +53,7 @@ private:
     QPushButton *mpDoneInDialogButton;
     //QList< QPair<QString, double> > mContents;
 
-    QTableWidget *mpGlobalParametersTable;
+    QTableWidget *mpSystemParametersTable;
     QPushButton *mpAddButton;
     QPushButton *mpRemoveButton;
     QPushButton *mpCloseButton;
@@ -61,4 +61,4 @@ private:
 };
 
 
-#endif // GLOBALPARAMETERSWIDGET_H
+#endif // SystemParameterSWIDGET_H

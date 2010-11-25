@@ -22,7 +22,7 @@ SOURCES += main.cpp \
     CoreSystemAccess.cpp \
     GUIPortAppearance.cpp \
     GUIConnectorAppearance.cpp \
-    GlobalParametersWidget.cpp \
+    SystemParametersWidget.cpp \
     PlotWindow.cpp \
     PyWrapperClasses.cpp \
     PyDock.cpp \
@@ -63,7 +63,7 @@ HEADERS += MainWindow.h \
     CoreSystemAccess.h \
     GUIPortAppearance.h \
     GUIConnectorAppearance.h \
-    GlobalParametersWidget.h \
+    SystemParametersWidget.h \
     PlotWindow.h \
     PyWrapperClasses.h \
     PyDock.h \

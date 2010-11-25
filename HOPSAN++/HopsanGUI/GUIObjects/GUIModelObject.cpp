@@ -375,31 +375,31 @@ void GUIModelObject::setStartValue(QString portName, QString variable, double st
 }
 
 
-void GUIModelObject::setGlobalParameter(QString name, QString gPar)
+void GUIModelObject::mapParameterToSystemParameter(QString parameterName, QString systesmParameterKey)
 {
     assert(false);
 }
 
 
-void GUIModelObject::rememberGlobalParameter(QString name)
+void GUIModelObject::rememberSystemParameterMapping(QString name)
 {
     assert(false);
 }
 
 
-void GUIModelObject::forgetGlobalParameter(QString name)
+void GUIModelObject::forgetSystemParameterMapping(QString name)
 {
     assert(false);
 }
 
 
-bool GUIModelObject::hasGlobalParameter(QString name)
+bool GUIModelObject::isParameterMappedToSystemParameter(QString parameterName)
 {
     assert(false);
 }
 
 
-QString GUIModelObject::getGlobalParameterKey(QString parameterName)
+QString GUIModelObject::getSystemParameterKey(QString parameterName)
 {
     assert(false);
 }

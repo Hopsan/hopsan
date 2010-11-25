@@ -21,7 +21,7 @@ class UndoWidget;
 class MessageWidget;
 class PlotWidget;
 class PyDock;
-class GlobalParametersWidget;
+class SystemParametersWidget;
 class Configuration;
 class CopyStack;
 
@@ -48,7 +48,7 @@ public:
 
     QStatusBar *mpStatusBar;
     PlotWidget *mpPlotWidget;
-    GlobalParametersWidget *mpGlobalParametersWidget;
+    SystemParametersWidget *mpSystemParametersWidget;
 
     //Menubar items
     QMenuBar *menubar;
@@ -83,7 +83,7 @@ public:
     QAction *undoAction;
     QAction *redoAction;
     QAction *openUndoAction;
-    QAction *openGlobalParametersAction;
+    QAction *openSystemParametersAction;
     QAction *disableUndoAction;
     QAction *cutAction;
     QAction *copyAction;
@@ -124,7 +124,7 @@ public slots:
 private slots:
     void openPlotWidget();
     void openUndoWidget();
-    void openGlobalParametersWidget();
+    void openSystemParametersWidget();
 
 private:
     //Dock area widgets
@@ -133,7 +133,7 @@ private:
     QDockWidget *mpPlotWidgetDock;
     QDockWidget *mpUndoWidgetDock;
     PyDock      *mpPyDock;
-    QDockWidget *mpGlobalParametersDock;
+    QDockWidget *mpSystemParametersDock;
 
     //Methods that adjusts simulation parameters if they are illegal
     void fixFinishTime();

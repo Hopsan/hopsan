@@ -63,13 +63,13 @@ public:
     QString addSystemPort(QString portname);
     QString renameSystemPort(QString oldname, QString newname);
 
-    void setGlobalParameter(QString name, double value);
-    double getGlobalParameter(QString name);
-    bool hasGlobalParameter(QString name);
-    void removeGlobalParameter(QString name);
-    int getNumberOfGlobalParameters();
-    QMap<std::string, double> getGlobalParametersMap();
-    void registserGlobalParameter(QString objName, QString parName, QString mapKey);
+    void setSystemParameter(QString name, double value);
+    double getSystemParameter(QString name);
+    bool hasSystemParameter(QString name);
+    void removeSystemParameter(QString name);
+    int getNumberOfSystemParameters();
+    QMap<std::string, double> getSystemParametersMap();
+    void registserSystemParameter(QString objName, QString parName, QString mapKey);
 
     std::vector<double> getTimeVector(QString componentName, QString portName);
     void getPlotDataNamesAndUnits(const QString compname, const QString portname, QVector<QString> &rNames, QVector<QString> &rUnits);

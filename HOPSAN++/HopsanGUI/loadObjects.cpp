@@ -251,7 +251,7 @@ void ParameterLoadData::readDomElement(QDomElement &rDomElement)
 {
     parameterName = rDomElement.attribute(HMF_NAMETAG);
     parameterValue = rDomElement.attribute(HMF_VALUETAG).toDouble();
-    parameterGlobalKey = rDomElement.attribute(HMF_GLOBALPARAMETERTAG);
+    parameterGlobalKey = rDomElement.attribute(HMF_SystemParameterTAG);
 }
 
 void StartValueLoadData::readDomElement(QDomElement &rDomElement)
@@ -350,9 +350,9 @@ void loadConnector(const ConnectorLoadData &rData, GUIContainerObject* pSystem, 
 }
 
 
-void loadGlobalParameter(const GlobalParameterLoadData &rData, GUIContainerObject* pSystem)
+void loadSystemParameter(const SystemParameterLoadData &rData, GUIContainerObject* pSystem)
 {
-    pSystem->getCoreSystemAccessPtr()->setGlobalParameter(rData.name, rData.value);
+    pSystem->getCoreSystemAccessPtr()->setSystemParameter(rData.name, rData.value);
 }
 
 
@@ -380,7 +380,7 @@ void loadParameterValue(const ParameterLoadData &rData, GUIModelObject* pObject,
     }
     else
     {
-        pObject->setGlobalParameter(rData.parameterName, rData.parameterGlobalKey);
+        pObject->mapParameterToSystemParameter(rData.parameterName, rData.parameterGlobalKey);
     }
 }
 
@@ -495,11 +495,11 @@ void loadConnector(QDomElement &rDomElement, GUIContainerObject* pSystem, undoSt
 }
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data
-void loadGlobalParameter(QDomElement &rDomElement, GUIContainerObject* pSystem)
+void loadSystemParameter(QDomElement &rDomElement, GUIContainerObject* pSystem)
 {
-    GlobalParameterLoadData data;
+    SystemParameterLoadData data;
     data.readDomElement(rDomElement);
-    loadGlobalParameter(data, pSystem);
+    loadSystemParameter(data, pSystem);
 }
 
 
@@ -557,7 +557,7 @@ void BoxWidgetLoadData::readDomElement(QDomElement &rDomElement)
 }
 
 
-void GlobalParameterLoadData::readDomElement(QDomElement &rDomElement)
+void SystemParameterLoadData::readDomElement(QDomElement &rDomElement)
 {
     name = rDomElement.attribute("name");
     value = rDomElement.attribute("value").toDouble();
