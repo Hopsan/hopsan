@@ -7,6 +7,7 @@
 #define OBJECTICONPATH "../../HopsanGUI/graphics/objecticons/"
 #define ICONPATH "../../HopsanGUI/graphics/uiicons/"
 #define PORTICONPATH "../../HopsanGUI/graphics/porticons/"
+#define GRAPHICSPATH "../../HopsanGUI/graphics/"
 #define COMPONENTPATH "../../HopsanGUI/componentData/"
 
 #define MODELPATH "/../../Models/"

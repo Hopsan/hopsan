@@ -40,7 +40,8 @@ SOURCES += main.cpp \
     Configuration.cpp \
     CopyStack.cpp \
     ComponentPropertiesDialog.cpp \
-    ContainerPropertiesDialog.cpp
+    ContainerPropertiesDialog.cpp \
+    AboutDialog.cpp
 
 HEADERS += MainWindow.h \
     ProjectTabWidget.h \
@@ -81,7 +82,8 @@ HEADERS += MainWindow.h \
     Configuration.h \
     CopyStack.h \
     ComponentPropertiesDialog.h \
-    ContainerPropertiesDialog.h
+    ContainerPropertiesDialog.h \
+    AboutDialog.h
 
 OTHER_FILES += 
 

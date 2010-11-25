@@ -22,6 +22,7 @@
 #include "SystemParametersWidget.h"
 #include "Configuration.h"
 #include "CopyStack.h"
+#include "AboutDialog.h"
 
 #include "loadObjects.h"
 
@@ -51,6 +52,8 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle("HOPSAN NG");
     this->setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
     this->setDockOptions(QMainWindow::ForceTabbedDocks);
+
+    mpAboutDialog = new AboutDialog(this);
 
     mpPlotWidget = 0;
     mpSystemParametersWidget = 0;
@@ -204,7 +207,6 @@ MainWindow::MainWindow(QWidget *parent)
             mpProjectTabs->closeProjectTab(0);
         }
     }
-
 }
 
 
@@ -372,6 +374,10 @@ void MainWindow::createActions()
     exportPDFAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SaveToPDF.png"), tr("&Export To PDF"), this);
     exportPDFAction->setText("Export Model to PDF");
 
+    aboutAction = new QAction(this);
+    aboutAction->setText("About");
+    connect(aboutAction, SIGNAL(triggered()), mpAboutDialog, SLOT(open()));
+
     QIcon hidePortsIcon;
     hidePortsIcon.addFile(QString(ICONPATH) + "Hopsan-HidePorts.png", QSize(), QIcon::Normal, QIcon::On);
     hidePortsAction = new QAction(hidePortsIcon, tr("&Hide All Ports"), this);
@@ -432,6 +438,9 @@ void MainWindow::createMenus()
     menuTools = new QMenu(menubar);
     menuTools->setTitle("&Tools");
 
+    menuHelp = new QMenu(menubar);
+    menuHelp->setTitle("&Help");
+
     this->setMenuBar(menubar);
 
     //Add the actionbuttons to the menues
@@ -475,11 +484,14 @@ void MainWindow::createMenus()
 
     menuSimulation->addAction(plotAction);
 
+    menuHelp->addAction(aboutAction);
+
     menubar->addAction(menuFile->menuAction());
     menubar->addAction(menuEdit->menuAction());
     menubar->addAction(menuTools->menuAction());
     menubar->addAction(menuSimulation->menuAction());
     menubar->addAction(menuView->menuAction());
+    menubar->addAction(menuHelp->menuAction());
 }
 
 //! @brief Creates the toolbars

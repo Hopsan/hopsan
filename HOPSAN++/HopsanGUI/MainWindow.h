@@ -24,6 +24,7 @@ class PyDock;
 class SystemParametersWidget;
 class Configuration;
 class CopyStack;
+class AboutDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -45,6 +46,7 @@ public:
     //ContainerPropertiesDialog *mpSystemPropertiesDialog;
     MessageWidget *mpMessageWidget;
     QPushButton *mpClearMessageWidgetButton;
+    AboutDialog *mpAboutDialog;
 
     QStatusBar *mpStatusBar;
     PlotWidget *mpPlotWidget;
@@ -61,6 +63,7 @@ public:
     QMenu *menuTools;
     QMenu *menuPlot;
     QMenu *recentMenu;
+    QMenu *menuHelp;
 
     //Toolbar items
     QToolBar *mpFileToolBar;
@@ -102,6 +105,7 @@ public:
     QAction *hidePortsAction;
     QAction *showPortsAction;
     QAction *exportPDFAction;
+    QAction *aboutAction;
 
     //Set and get methods for simulation parameters in toolbar
     void setStartTimeInToolBar(double startTime);
