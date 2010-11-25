@@ -11,7 +11,6 @@
 #include "version.h"
 #include "GUIObjects/GUISystem.h"
 #include "Utilities/GUIUtilities.h"
-#include "GraphicsScene.h"
 #include "UndoStack.h"
 
 void HeaderLoadData::read(QTextStream &rStream)

@@ -17,7 +17,6 @@ SOURCES += main.cpp \
     OptionsDialog.cpp \
     UndoStack.cpp \
     GraphicsView.cpp \
-    GraphicsScene.cpp \
     loadObjects.cpp \
     ProgressBarThread.cpp \
     CoreSystemAccess.cpp \
@@ -58,7 +57,6 @@ HEADERS += MainWindow.h \
     UndoStack.h \
     CoreSystemAccess.h \
     GraphicsView.h \
-    GraphicsScene.h \
     loadObjects.h \
     ProgressBarThread.h \
     common.h \

@@ -4,7 +4,6 @@
 
 #include "GUIWidgets.h"
 #include "GUISystem.h"
-#include "GraphicsScene.h"
 #include "ProjectTabWidget.h"
 #include "MainWindow.h"
 

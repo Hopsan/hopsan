@@ -7,7 +7,7 @@
 #include <assert.h>
 
 class ProjectTabWidget;
-class GraphicsScene;
+class QGraphicsScene;
 class GraphicsView;
 class GUIConnector;
 class GUIPort;
@@ -35,8 +35,8 @@ public:
     CoreSystemAccess* getCoreSystemAccessPtr();
 
 protected:
-    //GraphicsScene *mpParentScene;
-    //GraphicsScene *mpGroupScene;
+    //QGraphicsScene *mpParentScene;
+    //QGraphicsScene *mpGroupScene;
 
     QList<GUIModelObject*> mGUICompList;
     QList<GUIConnector*> mGUIConnList;
@@ -57,7 +57,7 @@ private:
 //
 //    QString mComponentTypeName;
 //
-//    GraphicsScene *mpGroupScene;
+//    QGraphicsScene *mpGroupScene;
 //
 //public slots:
 //     void deleteMe();

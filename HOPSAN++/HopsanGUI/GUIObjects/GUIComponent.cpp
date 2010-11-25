@@ -15,7 +15,6 @@
 #include "../Utilities/GUIUtilities.h"
 #include "../UndoStack.h"
 #include "../MessageWidget.h"
-#include "../GraphicsScene.h"
 #include "../GraphicsView.h"
 #include "../LibraryWidget.h"
 #include "../loadObjects.h"
@@ -206,7 +205,7 @@ QString GUIComponent::getGlobalParameterKey(QString parameterName)
 ////    }
 ////    else if (selectedAction == groupAction)
 ////    {
-//////        //groupComponents(mpParentGraphicsScene->selectedItems());
+//////        //groupComponents(mpParentQGraphicsScene->selectedItems());
 //////        GUIModelObjectAppearance appdata;
 //////        appdata.setIconPathUser("subsystemtmp.svg");
 //////        appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD

@@ -20,7 +20,6 @@
 #include "../Utilities/GUIUtilities.h"
 #include "../UndoStack.h"
 #include "../MessageWidget.h"
-#include "../GraphicsScene.h"
 #include "../GraphicsView.h"
 #include "../LibraryWidget.h"
 #include "../loadObjects.h"
@@ -152,7 +151,7 @@ void GUIGroup::setContents(CopyStack *pCopyStack)
 //    }
 
 //    //Constructs a new scene for the group
-//    //getContainedScenePtr() = new GraphicsScene(mpParentContainerObject->mpParentProjectTab);
+//    //getContainedScenePtr() = new QGraphicsScene(mpParentContainerObject->mpParentProjectTab);
 
 //    double xMin = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
 //           xMax = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,

@@ -12,7 +12,6 @@
 #include "../Utilities/GUIUtilities.h"
 #include "../UndoStack.h"
 #include "../MessageWidget.h"
-#include "../GraphicsScene.h"
 #include "../GraphicsView.h"
 #include "../LibraryWidget.h"
 

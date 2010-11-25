@@ -11,13 +11,11 @@
 
 #include "PlotWidget.h"
 #include "MessageWidget.h"
-//#include "ContainerPropertiesDialog.h"
 #include "OptionsDialog.h"
 #include "UndoStack.h"
 #include "LibraryWidget.h"
 #include "ProjectTabWidget.h"
 #include "GraphicsView.h"
-#include "GraphicsScene.h"
 #include "GUIObjects/GUISystem.h"
 #include "Utilities/GUIUtilities.h"
 #include "PyDock.h"

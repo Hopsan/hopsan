@@ -2,7 +2,6 @@
 #define GUICONTAINEROBJECT_H
 
 #include "GUIModelObject.h"
-#include "GraphicsScene.h"
 #include "CoreSystemAccess.h"
 #include "GUIWidgets.h"
 
@@ -10,7 +9,7 @@
 class ProjectTab;
 class UndoStack;
 class MainWindow;
-class GraphicsScene;
+class QGraphicsScene;
 
 class GUIContainerObject : public GUIModelObject
 {
@@ -21,7 +20,7 @@ public:
     void makeRootSystem();
 
     //Scene and Core access
-    GraphicsScene *getContainedScenePtr();
+    QGraphicsScene *getContainedScenePtr();
     virtual CoreSystemAccess *getCoreSystemAccessPtr();
 
     //Handle GuiModelObjects and GuiWidgets
@@ -149,7 +148,7 @@ private:
     CONTAINERSTATUS getContainerStatus();
     CONTAINERSTATUS mContainerStatus;
 
-    GraphicsScene *mpScene;
+    QGraphicsScene *mpScene;
 
     double mPasteOffset;
 

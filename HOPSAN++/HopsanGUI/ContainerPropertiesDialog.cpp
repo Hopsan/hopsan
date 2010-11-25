@@ -12,15 +12,14 @@
 //! @brief Constructor for the parameter dialog for containers
 //! @param pGUIComponent Pointer to the component
 //! @param parent Pointer to the parent widget
-//! @todo we need to delete once we are done, or add parent this on all new
 ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContainerObject, QWidget *pParentWidget)
     : QDialog(pParentWidget)
 {
     mpContainerObject = pContainerObject;
 
     //First build the properties box
-    mpNameLabel = new QLabel("Name: ");
-    mpNameEdit = new QLineEdit(pContainerObject->getName());
+    mpNameLabel = new QLabel("Name: ", this);
+    mpNameEdit = new QLineEdit(pContainerObject->getName(), this);
 
     //Set the name and size of the main window
     this->setObjectName("PreferenceDialog");
@@ -28,16 +27,16 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     this->setWindowTitle("Model Preferences");
 
     //Define items in the dialog box
-    mpIsoCheckBox = new QCheckBox(tr("Use ISO 1219 Graphics"));
+    mpIsoCheckBox = new QCheckBox(tr("Use ISO 1219 Graphics"), this);
     mpIsoCheckBox->setCheckable(true);
     mpIsoCheckBox->setChecked(gpMainWindow->mpProjectTabs->getCurrentSystem()->mGfxType);
     //! @todo should we really need this we are going through main window to set stuff in our selfes
 
-    mpDisableUndoCheckBox = new QCheckBox(tr("Disable Undo Function"));
+    mpDisableUndoCheckBox = new QCheckBox(tr("Disable Undo Function"), this);
     mpDisableUndoCheckBox->setCheckable(true);
     mpDisableUndoCheckBox->setChecked(gpMainWindow->mpProjectTabs->getCurrentSystem()->mUndoDisabled);
 
-    mpNumberOfSamplesLabel = new QLabel(tr("Number of Log Samples"));
+    mpNumberOfSamplesLabel = new QLabel(tr("Number of Log Samples"), this);
     mpNumberOfSamplesLabel->setEnabled(true);
     mpNumberOfSamplesBox = new QLineEdit(this);
     mpNumberOfSamplesBox->setValidator(new QIntValidator(0, 2000000000, this));
@@ -45,37 +44,37 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     samplesText.setNum(gpMainWindow->mpProjectTabs->getCurrentSystem()->getNumberOfLogSamples());
     mpNumberOfSamplesBox->setText(samplesText);
 
-    mpCancelButton = new QPushButton(tr("&Cancel"));
+    mpCancelButton = new QPushButton(tr("&Cancel"), this);
     mpCancelButton->setAutoDefault(false);
-    mpDoneButton = new QPushButton(tr("&Done"));
+    mpDoneButton = new QPushButton(tr("&Done"), this);
     mpDoneButton->setAutoDefault(true);
 
     mpButtonBox = new QDialogButtonBox(Qt::Horizontal);
     mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
     mpButtonBox->addButton(mpDoneButton, QDialogButtonBox::ActionRole);
 
-    mpUserIconLabel = new QLabel("Icon Path:");
-    mpIsoIconLabel = new QLabel("ISO Icon Path:");
-    mpUserIconPath = new QLineEdit();
-    mpIsoIconPath = new QLineEdit();
+    mpUserIconLabel = new QLabel("Icon Path:", this);
+    mpIsoIconLabel = new QLabel("ISO Icon Path:", this);
+    mpUserIconPath = new QLineEdit(mpContainerObject->getUserIconPath(), this);
+    mpIsoIconPath = new QLineEdit(mpContainerObject->getIsoIconPath(), this);
 
-    mpIsoIconBrowseButton = new QPushButton(tr("..."));
-    mpUserIconBrowseButton = new QPushButton(tr("..."));
+    mpIsoIconBrowseButton = new QPushButton(tr("..."), this);
+    mpUserIconBrowseButton = new QPushButton(tr("..."), this);
     mpIsoIconBrowseButton->setFixedSize(25, 22);
     mpUserIconBrowseButton->setFixedSize(25, 22);
 
-    mpCQSLable = new QLabel("CQS: ");
-    mpCQSLineEdit = new QLineEdit(pContainerObject->getTypeCQS());
+    mpCQSLable = new QLabel("CQS: ", this);
+    mpCQSLineEdit = new QLineEdit(pContainerObject->getTypeCQS(), this);
 
     //Create connections
-    connect(mpCancelButton, SIGNAL(pressed()), this, SLOT(close()));
-    connect(mpDoneButton, SIGNAL(pressed()), this, SLOT(setValues()));
-    connect(mpIsoIconBrowseButton, SIGNAL(clicked()), this, SLOT(browseIso()));
+    connect(mpCancelButton,         SIGNAL(pressed()), this, SLOT(close()));
+    connect(mpDoneButton,           SIGNAL(pressed()), this, SLOT(setValues()));
+    connect(mpIsoIconBrowseButton,  SIGNAL(clicked()), this, SLOT(browseIso()));
     connect(mpUserIconBrowseButton, SIGNAL(clicked()), this, SLOT(browseUser()));
 
     //Define the layout of the box
     size_t row = 0;
-    mpLayout = new QGridLayout();
+    mpLayout = new QGridLayout(this);
     mpLayout->setSizeConstraint(QLayout::SetFixedSize);
     mpLayout->addWidget(mpNameLabel, row, 0);
     mpLayout->addWidget(mpNameEdit, row, 1);
@@ -142,15 +141,21 @@ void ContainerPropertiesDialog::setValues()
         mpDisableUndoCheckBox->setChecked(false);
     }
 
-    mpContainerObject->setUserIconPath(mpUserIconPath->text());
-    mpContainerObject->setIsoIconPath(mpIsoIconPath->text());
+    //Set the icon paths, only update and refresh appearance if a change has occured
+    if ( (mpContainerObject->getIsoIconPath() != mpIsoIconPath->text()) || (mpContainerObject->getUserIconPath() != mpUserIconPath->text()) )
+    {
+        mpContainerObject->setUserIconPath(mpUserIconPath->text());
+        mpContainerObject->setIsoIconPath(mpIsoIconPath->text());
+        mpContainerObject->refreshAppearance();
+    }
+
     //Set GuiSystem specific stuff
     if (mpContainerObject->type() == GUISYSTEM)
     {
         mpContainerObject->setNumberOfLogSamples(mpNumberOfSamplesBox->text().toInt());
         mpContainerObject->setTypeCQS(this->mpCQSLineEdit->text());
     }
-//    this->accept();
+
     this->done(0);
 }
 
@@ -161,7 +166,10 @@ void ContainerPropertiesDialog::browseUser()
     QDir fileDialogOpenDir;
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose user icon"),
                                                          fileDialogOpenDir.currentPath() + QString(MODELPATH));
-    mpUserIconPath->setText(modelFileName);
+    if (!modelFileName.isEmpty())
+    {
+        mpUserIconPath->setText(modelFileName);
+    }
 }
 
 
@@ -171,5 +179,8 @@ void ContainerPropertiesDialog::browseIso()
     QDir fileDialogOpenDir;
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose ISO icon"),
                                                          fileDialogOpenDir.currentPath() + QString(MODELPATH));
-    mpIsoIconPath->setText(modelFileName);
+    if (!modelFileName.isEmpty())
+    {
+        mpIsoIconPath->setText(modelFileName);
+    }
 }

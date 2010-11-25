@@ -30,7 +30,6 @@
 #include "LibraryWidget.h"
 #include "GUIObjects/GUIObject.h"
 #include "GUIConnector.h"
-#include "GraphicsScene.h"
 #include "GraphicsView.h"
 #include "GUIObjects/GUISystem.h"
 #include "PlotWidget.h"
@@ -339,7 +338,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
 //        if(it.value()->getTypeName() == "SystemPort")
 //        {
 //            line = QLineF(center.x(), center.y(), it.value()->x()+it.value()->rect().width()/2, it.value()->y()+it.value()->rect().height()/2);
-//            //getCurrentTab()->mpGraphicsScene->addLine(line); //debug-grej
+//            //getCurrentTab()->mpQGraphicsScene->addLine(line); //debug-grej
 //            angle = line.angle()*3.141592/180.0;
 //            mpSystem->calcSubsystemPortPosition(w, h, angle, x, y);
 //            x = (x/w+1)/2; //Change coordinate system

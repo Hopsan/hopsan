@@ -9,7 +9,6 @@
 #include "../Utilities/GUIUtilities.h"
 #include "../UndoStack.h"
 #include "../MessageWidget.h"
-#include "../GraphicsScene.h"
 #include "../GraphicsView.h"
 #include "../LibraryWidget.h"
 #include "../loadObjects.h"
@@ -38,7 +37,7 @@ GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GU
     mPasteOffset = -30;
 
     //Create the scene
-    mpScene = new GraphicsScene();
+    mpScene = new QGraphicsScene();
 
 //    //Set the parent project tab pointer
 //    this->mpParentProjectTab = system->mpParentProjectTab;
@@ -116,7 +115,7 @@ CoreSystemAccess *GUIContainerObject::getCoreSystemAccessPtr()
 }
 
 //! @brief Retunrs a pointer to the contained scene
-GraphicsScene *GUIContainerObject::getContainedScenePtr()
+QGraphicsScene *GUIContainerObject::getContainedScenePtr()
 {
     return this->mpScene;
 }

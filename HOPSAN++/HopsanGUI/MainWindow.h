@@ -13,7 +13,7 @@
 
 class ProjectTabWidget;
 class GraphicsView;
-class GraphicsScene;
+class QGraphicsScene;
 class LibraryWidget;
 //class ContainerPropertiesDialog;
 class OptionsDialog;

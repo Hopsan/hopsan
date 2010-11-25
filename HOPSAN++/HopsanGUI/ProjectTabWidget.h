@@ -14,7 +14,7 @@
 #include "CoreSystemAccess.h"
 
 //Forward declaration
-class GraphicsScene;
+class QGraphicsScene;
 class GraphicsView;
 //class MainWindow;
 class ProjectTab;

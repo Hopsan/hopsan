@@ -9,7 +9,6 @@
 #include "MainWindow.h"
 #include "CoreSystemAccess.h"
 #include "GUIObjects/GUIModelObject.h"
-#include "GraphicsScene.h"
 #include "GraphicsView.h"
 #include "ProjectTabWidget.h"
 #include "GUIObjects/GUISystem.h"

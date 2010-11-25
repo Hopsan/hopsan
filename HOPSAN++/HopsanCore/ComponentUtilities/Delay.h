@@ -10,7 +10,6 @@
 #ifndef DELAY_H_INCLUDED
 #define DELAY_H_INCLUDED
 
-#include <deque>
 #include "../win32dll.h"
 #include "assert.h"
 #include "math.h"
@@ -37,7 +36,6 @@ namespace hopsan {
 
         void initialize(const size_t delaySteps, const double init_value)
         {
-            std::cout << "DelayBuffer, size: " << delaySteps << " init_value: " << init_value << std::endl;
             if (mpArray != 0)
             {
                 delete  mpArray;
@@ -46,7 +44,7 @@ namespace hopsan {
             mSize = delaySteps+1;
 
             mpArray = new double[mSize];
-            std::cout << "mSize: " << mSize;
+            std::cout << "DelayBuffer, size: " << delaySteps << ", mSize: " << mSize << ", init_value: " << init_value << std::endl;
 
             //! @todo use c++ vector to init, or some smarter init
             for (size_t i=0; i<mSize; ++i)

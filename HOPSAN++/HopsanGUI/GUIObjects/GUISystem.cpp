@@ -10,7 +10,6 @@
 #include "../Utilities/GUIUtilities.h"
 #include "../UndoStack.h"
 #include "../MessageWidget.h"
-#include "../GraphicsScene.h"
 #include "../GraphicsView.h"
 #include "../LibraryWidget.h"
 #include "../loadObjects.h"
@@ -693,7 +692,7 @@ void GUISystem::updateExternalPortPositions()
         {
             //! @todo here we extract center pos again, shuold have function for it
             line = QLineF(center.x(), center.y(), it.value()->x()+it.value()->rect().width()/2, it.value()->y()+it.value()->rect().height()/2);
-            //getCurrentTab()->mpGraphicsScene->addLine(line); //debug-grej
+            //getCurrentTab()->mpQGraphicsScene->addLine(line); //debug-grej
             angle = deg2rad(line.angle());
             calcSubsystemPortPosition(w, h, angle, x, y);
 
