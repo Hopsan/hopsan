@@ -159,7 +159,7 @@ void GUIModelObject::setNameTextScale(qreal scale)
 //! @param item Pointer to connector that shall be stored
 void GUIModelObject::rememberConnector(GUIConnector *item)
 {
-    mpGUIConnectorPtrs.append(item);
+    mGUIConnectorPtrs.append(item);
     connect(this, SIGNAL(objectMoved()), item, SLOT(drawConnector()));
 }
 
@@ -168,8 +168,14 @@ void GUIModelObject::rememberConnector(GUIConnector *item)
 //! @param item Pointer to connector that shall be forgotten
 void GUIModelObject::forgetConnector(GUIConnector *item)
 {
-    mpGUIConnectorPtrs.removeOne(item);
+    mGUIConnectorPtrs.removeOne(item);
     disconnect(this, SIGNAL(objectMoved()), item, SLOT(drawConnector()));
+}
+
+//! @param Returns a copy of the list with pointers to the connecetors connected to the object
+QList<GUIConnector*> GUIModelObject::getGUIConnectorPtrs()
+{
+    return mGUIConnectorPtrs;
 }
 
 
@@ -613,63 +619,63 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
            !mpParentContainerObject->getIsCreatingConnector() && mpParentContainerObject->mSelectedGUIObjectsList.size() == 1)
         {
                 //Vertical snap
-            if( (mpGUIConnectorPtrs.size() == 1) &&
-                (mpGUIConnectorPtrs.first()->getNumberOfLines() < 4) &&
-                !(mpGUIConnectorPtrs.first()->isFirstAndLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() == 2) &&
-                !(mpGUIConnectorPtrs.first()->isFirstOrLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() > 1) &&
-                (abs(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x()) < SNAPDISTANCE) &&
-                (abs(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x()) > 0.0) )
+            if( (mGUIConnectorPtrs.size() == 1) &&
+                (mGUIConnectorPtrs.first()->getNumberOfLines() < 4) &&
+                !(mGUIConnectorPtrs.first()->isFirstAndLastDiagonal() && mGUIConnectorPtrs.first()->getNumberOfLines() == 2) &&
+                !(mGUIConnectorPtrs.first()->isFirstOrLastDiagonal() && mGUIConnectorPtrs.first()->getNumberOfLines() > 1) &&
+                (abs(mGUIConnectorPtrs.first()->mPoints.first().x() - mGUIConnectorPtrs.first()->mPoints.last().x()) < SNAPDISTANCE) &&
+                (abs(mGUIConnectorPtrs.first()->mPoints.first().x() - mGUIConnectorPtrs.first()->mPoints.last().x()) > 0.0) )
             {
-                if(this->mpGUIConnectorPtrs.first()->getStartPort()->mpParentGuiModelObject == this)
+                if(this->mGUIConnectorPtrs.first()->getStartPort()->mpParentGuiModelObject == this)
                 {
-                    this->moveBy(mpGUIConnectorPtrs.first()->mPoints.last().x() - mpGUIConnectorPtrs.first()->mPoints.first().x(), 0);
+                    this->moveBy(mGUIConnectorPtrs.first()->mPoints.last().x() - mGUIConnectorPtrs.first()->mPoints.first().x(), 0);
                 }
                 else
                 {
-                    this->moveBy(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x(), 0);
+                    this->moveBy(mGUIConnectorPtrs.first()->mPoints.first().x() - mGUIConnectorPtrs.first()->mPoints.last().x(), 0);
                 }
             }
-//            else if( (mpGUIConnectorPtrs.size() == 2) &&
-//                     (mpGUIConnectorPtrs.first()->getNumberOfLines() < 4) &&
-//                     (mpGUIConnectorPtrs.last()->getNumberOfLines() < 4) &&
+//            else if( (mGUIConnectorPtrs.size() == 2) &&
+//                     (mGUIConnectorPtrs.first()->getNumberOfLines() < 4) &&
+//                     (mGUIConnectorPtrs.last()->getNumberOfLines() < 4) &&
 //                     ( ( (this->rotation() == 0 || this->rotation() == 180) &&
 //                       (mPortListPtrs.first()->pos().y() == mPortListPtrs.last()->pos().y()) ) ||
 //                       ( (this->rotation() == 90 || this->rotation() == 270) &&
 //                       (mPortListPtrs.first()->pos().x() == mPortListPtrs.last()->pos().x()) ) ) &&
-//                     !(mpGUIConnectorPtrs.first()->isFirstAndLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() == 2) &&
-//                     !(mpGUIConnectorPtrs.first()->isFirstOrLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() > 1) &&
-//                     (abs(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x()) < SNAPDISTANCE) &&
-//                     (abs(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x()) > 0.0) &&
-//                     !(mpGUIConnectorPtrs.last()->isFirstAndLastDiagonal() && mpGUIConnectorPtrs.last()->getNumberOfLines() == 2) &&
-//                     !(mpGUIConnectorPtrs.last()->isFirstOrLastDiagonal() && mpGUIConnectorPtrs.last()->getNumberOfLines() > 1) &&
-//                     (abs(mpGUIConnectorPtrs.last()->mPoints.first().x() - mpGUIConnectorPtrs.last()->mPoints.last().x()) < SNAPDISTANCE) &&
-//                     (abs(mpGUIConnectorPtrs.last()->mPoints.first().x() - mpGUIConnectorPtrs.last()->mPoints.last().x()) > 0.0) )
+//                     !(mGUIConnectorPtrs.first()->isFirstAndLastDiagonal() && mGUIConnectorPtrs.first()->getNumberOfLines() == 2) &&
+//                     !(mGUIConnectorPtrs.first()->isFirstOrLastDiagonal() && mGUIConnectorPtrs.first()->getNumberOfLines() > 1) &&
+//                     (abs(mGUIConnectorPtrs.first()->mPoints.first().x() - mGUIConnectorPtrs.first()->mPoints.last().x()) < SNAPDISTANCE) &&
+//                     (abs(mGUIConnectorPtrs.first()->mPoints.first().x() - mGUIConnectorPtrs.first()->mPoints.last().x()) > 0.0) &&
+//                     !(mGUIConnectorPtrs.last()->isFirstAndLastDiagonal() && mGUIConnectorPtrs.last()->getNumberOfLines() == 2) &&
+//                     !(mGUIConnectorPtrs.last()->isFirstOrLastDiagonal() && mGUIConnectorPtrs.last()->getNumberOfLines() > 1) &&
+//                     (abs(mGUIConnectorPtrs.last()->mPoints.first().x() - mGUIConnectorPtrs.last()->mPoints.last().x()) < SNAPDISTANCE) &&
+//                     (abs(mGUIConnectorPtrs.last()->mPoints.first().x() - mGUIConnectorPtrs.last()->mPoints.last().x()) > 0.0) )
 //            {
-//                if(this->mpGUIConnectorPtrs.first()->getStartPort()->mpParentGuiObject == this)
+//                if(this->mGUIConnectorPtrs.first()->getStartPort()->mpParentGuiObject == this)
 //                {
-//                    this->moveBy(mpGUIConnectorPtrs.first()->mPoints.last().x() - mpGUIConnectorPtrs.first()->mPoints.first().x(), 0);
+//                    this->moveBy(mGUIConnectorPtrs.first()->mPoints.last().x() - mGUIConnectorPtrs.first()->mPoints.first().x(), 0);
 //                }
 //                else
 //                {
-//                    this->moveBy(mpGUIConnectorPtrs.first()->mPoints.first().x() - mpGUIConnectorPtrs.first()->mPoints.last().x(), 0);
+//                    this->moveBy(mGUIConnectorPtrs.first()->mPoints.first().x() - mGUIConnectorPtrs.first()->mPoints.last().x(), 0);
 //                }
 //            }
 
                 //Horizontal snap
-            if( (mpGUIConnectorPtrs.size() == 1) &&
-                (mpGUIConnectorPtrs.first()->getNumberOfLines() < 4) &&
-                !(mpGUIConnectorPtrs.first()->isFirstAndLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() == 2) &&
-                !(mpGUIConnectorPtrs.first()->isFirstOrLastDiagonal() && mpGUIConnectorPtrs.first()->getNumberOfLines() > 2) &&
-                (abs(mpGUIConnectorPtrs.first()->mPoints.first().y() - mpGUIConnectorPtrs.first()->mPoints.last().y()) < SNAPDISTANCE) &&
-                (abs(mpGUIConnectorPtrs.first()->mPoints.first().y() - mpGUIConnectorPtrs.first()->mPoints.last().y()) > 0.0) )
+            if( (mGUIConnectorPtrs.size() == 1) &&
+                (mGUIConnectorPtrs.first()->getNumberOfLines() < 4) &&
+                !(mGUIConnectorPtrs.first()->isFirstAndLastDiagonal() && mGUIConnectorPtrs.first()->getNumberOfLines() == 2) &&
+                !(mGUIConnectorPtrs.first()->isFirstOrLastDiagonal() && mGUIConnectorPtrs.first()->getNumberOfLines() > 2) &&
+                (abs(mGUIConnectorPtrs.first()->mPoints.first().y() - mGUIConnectorPtrs.first()->mPoints.last().y()) < SNAPDISTANCE) &&
+                (abs(mGUIConnectorPtrs.first()->mPoints.first().y() - mGUIConnectorPtrs.first()->mPoints.last().y()) > 0.0) )
             {
-                if(this->mpGUIConnectorPtrs.first()->getStartPort()->mpParentGuiModelObject == this)
+                if(this->mGUIConnectorPtrs.first()->getStartPort()->mpParentGuiModelObject == this)
                 {
-                    this->moveBy(0, mpGUIConnectorPtrs.first()->mPoints.last().y() - mpGUIConnectorPtrs.first()->mPoints.first().y());
+                    this->moveBy(0, mGUIConnectorPtrs.first()->mPoints.last().y() - mGUIConnectorPtrs.first()->mPoints.first().y());
                 }
                 else
                 {
-                    this->moveBy(0, mpGUIConnectorPtrs.first()->mPoints.first().y() - mpGUIConnectorPtrs.first()->mPoints.last().y());
+                    this->moveBy(0, mGUIConnectorPtrs.first()->mPoints.first().y() - mGUIConnectorPtrs.first()->mPoints.last().y());
                 }
             }
         }

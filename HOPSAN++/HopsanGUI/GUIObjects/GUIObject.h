@@ -49,8 +49,6 @@ public:
     GUIContainerObject *mpParentContainerObject; //!< @todo not public
     QPointF mOldPos;
 
-    QList<GUIConnector*> getGUIConnectorPtrs();
-
 public slots:
     virtual void flipVertical(undoStatus undoSettings = UNDO){;} //!< @todo nothing for now
     virtual void flipHorizontal(undoStatus undoSettings = UNDO){;}  //!< @todo nothing for now
@@ -81,11 +79,7 @@ protected:
     //Protected members
     QString mHmfTagName;
     bool mIsFlipped;
-
     GUIObjectSelectionBox *mpSelectionBox;
-
-    QList<GUIConnector*> mpGUIConnectorPtrs;
-
 };
 
 

@@ -55,6 +55,7 @@ public:
     virtual void setModelFileInfo(QFile &rFile){assert(false);} //Only available in GUISystem for now
 
     //Connector methods
+    QList<GUIConnector*> getGUIConnectorPtrs();
     void rememberConnector(GUIConnector *item);
     void forgetConnector(GUIConnector *item);
 
@@ -115,6 +116,7 @@ protected:
     QGraphicsSvgItem *mpIcon;
 
     QList<GUIPort*> mPortListPtrs;
+    QList<GUIConnector*> mGUIConnectorPtrs;
 
     QGraphicsLineItem *mpTempLine;
 

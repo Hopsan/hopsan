@@ -97,13 +97,6 @@ void GUIObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 }
 
 
-//! @param Returns the a list with pointers to the connecetors connected to the object
-QList<GUIConnector*> GUIObject::getGUIConnectorPtrs()
-{
-    return mpGUIConnectorPtrs;
-}
-
-
 
 
 //! @brief Defines what happens if a mouse key is pressed while hovering an object
