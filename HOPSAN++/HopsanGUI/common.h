@@ -4,9 +4,11 @@
 #define GOLDENRATIO 1.61803399
 #define SNAPDISTANCE 10
 #define MAINPATH "../../"
-#define ICONPATH "../../HopsanGUI/icons/"
+#define OBJECTICONPATH "../../HopsanGUI/graphics/objecticons/"
+#define ICONPATH "../../HopsanGUI/graphics/uiicons/"
+#define PORTICONPATH "../../HopsanGUI/graphics/porticons/"
 #define COMPONENTPATH "../../HopsanGUI/componentData/"
-#define PORTICONPATH "../../HopsanGUI/porticons/"
+
 #define MODELPATH "/../../Models/"
 
 //Enums

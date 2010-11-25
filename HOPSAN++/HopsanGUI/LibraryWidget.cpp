@@ -81,7 +81,7 @@ void LibraryContentItem::selectIcon(graphicsType gfxType)
     QFile iconFile(iconPath);
     if (!iconFile.exists())
     {
-        iconPath = COMPONENTPATH + QString("missingcomponenticon.svg");
+        iconPath = OBJECTICONPATH + QString("missingcomponenticon.svg");
     }
 
     icon.addFile(iconPath,QSize(55,55));

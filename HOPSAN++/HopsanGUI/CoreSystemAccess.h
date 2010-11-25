@@ -88,10 +88,4 @@ private:
     //**************************
 };
 
-class CoreAccess
-{
-public:
-
-};
-
 #endif // GUIROOTSYSTEM_H
