@@ -4,6 +4,11 @@
 
 using namespace hopsan;
 
+//! @class MessageWidget
+//! @brief The class for the message widget at the bottom of the main window
+//!
+//! Messages are either gathered from core or added directly from GUI. They are added to a list and then shown by calling the updateDisplay() function.
+//!
 
 //! @brief Constructor for the message widget class
 //! @param pParent Parent pointer (not necessary)

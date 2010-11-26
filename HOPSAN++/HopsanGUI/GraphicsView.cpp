@@ -2,7 +2,6 @@
 
 #include "GraphicsView.h"
 #include "Utilities/GUIUtilities.h"
-//#include "GUIObject.h"
 #include "GUIPort.h"
 #include "UndoStack.h"
 #include "GUIConnector.h"
