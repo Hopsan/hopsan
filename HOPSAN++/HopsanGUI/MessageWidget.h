@@ -23,6 +23,7 @@ public:
     QSize sizeHint() const;
 
 public slots:
+    void clear();
     void checkMessages();
     void setGroupByTag(bool value);
     void showErrorMessages(bool value);

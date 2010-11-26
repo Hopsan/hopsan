@@ -71,7 +71,7 @@ void MessageWidget::setMessageColor(QString type)
 //! @brief Updates the displayed messages from the message list
 void MessageWidget::updateDisplay()
 {
-    this->clear();
+    QTextEdit::clear();
     QStringList usedTags;
     QList<GUIMessage>::iterator it;
     for(it=mMessageList.begin(); it!=mMessageList.end(); ++it)
@@ -92,7 +92,7 @@ void MessageWidget::updateDisplay()
                     qDebug() << "Blä 2";
                     usedTags.append((*it).tag);
                     QString numString;
-                    numString.setNum(tagCount((*it).tag));
+                    numString.setNum(tagCount((*it).tag)-1);
                     append((*it).message + " (" + numString + " similar)");
                 }
             }
@@ -176,6 +176,13 @@ void MessageWidget::printGUIDebugMessage(QString message, QString tag)
 {
     mMessageList.append(GUIMessage(message.prepend("Debug: "), "debug", tag));
     updateDisplay();
+}
+
+
+void MessageWidget::clear()
+{
+    QTextEdit::clear();
+    mMessageList.clear();
 }
 
 
