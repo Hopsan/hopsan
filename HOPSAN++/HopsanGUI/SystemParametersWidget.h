@@ -1,3 +1,12 @@
+//!
+//! @file   SystemParametersWidget.h
+//! @author Flumes <flumes@lists.iei.liu.se>
+//! @date   2010-11-20
+//!
+//! @brief Contains a System parameter widget class
+//!
+//$Id$
+
 #ifndef SYSTEMPARAMETERSWIDGET_H
 #define SYSTEMPARAMETERSWIDGET_H
 
