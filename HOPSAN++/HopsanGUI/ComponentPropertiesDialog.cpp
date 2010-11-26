@@ -341,7 +341,6 @@ QString ParameterLayout::getDataValueTxt()
 void ParameterLayout::showListOfSystemParameters()
 {
     //mSystemParameterToolButton.setDown(false);
-    mSystemParameterToolButton.animateClick();;
 
     QMenu menu;
 
