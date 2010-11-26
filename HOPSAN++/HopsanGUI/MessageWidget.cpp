@@ -4,6 +4,9 @@
 
 using namespace hopsan;
 
+
+//! @brief Constructor for the message widget class
+//! @param pParent Parent pointer (not necessary)
 MessageWidget::MessageWidget(MainWindow *pParent)
     : QTextEdit(pParent)
 {
@@ -16,6 +19,8 @@ MessageWidget::MessageWidget(MainWindow *pParent)
     mpCoreAccess = new CoreMessagesAccess;
 }
 
+
+//! @brief Reimplementation of QTextEdit::sizeHint(), probably used to reduce the size of the message widget
 QSize MessageWidget::sizeHint() const
 {
     QSize size = QTextEdit::sizeHint();
@@ -24,6 +29,9 @@ QSize MessageWidget::sizeHint() const
     return size;
 }
 
+
+//! @brief Sets the color for the next added message, depending on type of message
+//! @param type Type name of the message (error, warning, info etc...)
 void MessageWidget::setMessageColor(QString type)
 {
     if (type == "error")
@@ -53,6 +61,7 @@ void MessageWidget::setMessageColor(QString type)
 }
 
 
+//! @brief Updates the displayed messages from the message list
 void MessageWidget::updateDisplay()
 {
     this->clear();
@@ -72,107 +81,110 @@ void MessageWidget::updateDisplay()
 }
 
 
+//! @brief Obtains messages from core and prints them in the message widget
 void MessageWidget::printCoreMessages()
 {
-
-
-
-        size_t nmsg = mpCoreAccess->getNumberOfMessages();
-        for (size_t idx=0; idx < nmsg; ++idx)
-        {
-            QString message, type;
-            mpCoreAccess->getMessage(message, type);
-            mMessageList.append(QPair<QString, QString>(message, type));
-            this->updateDisplay();
-        }
-
-
-//    //*****Core Interaction*****
-//    HopsanCoreMessage msg;
-//    HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
-//    if (pHopsanCore != 0)
-//    {
-//        size_t nmsg = pHopsanCore->checkMessage();
-//        for (size_t idx=0; idx < nmsg; ++idx)
-//        {
-//            msg = pHopsanCore->getMessage();
-//            mMessageList.append(msg);
-//            this->updateDisplay();
-//        }
-//    }
-//    else
-//    {
-//        printGUIMessage("The hopsan core pointer is not set, can not get core messages");
-//    }
-//    //**************************
+    size_t nmsg = mpCoreAccess->getNumberOfMessages();
+    for (size_t idx=0; idx < nmsg; ++idx)
+    {
+        QString message, type;
+        mpCoreAccess->getMessage(message, type);
+        mMessageList.append(QPair<QString, QString>(message, type));
+        this->updateDisplay();
+    }
 }
 
+
+//! @brief Prints a GUI message of default type
+//! @param message String containing the message
 void MessageWidget::printGUIMessage(QString message)
 {
-//    hopsan::HopsanCoreMessage msg;
-//    msg.message = message.toStdString();
-//    msg.type = hopsan::HopsanCoreMessage::DEFAULT;
-    this->mMessageList.append(QPair<QString, QString>(message, "default"));
-    this->updateDisplay();
+    mMessageList.append(QPair<QString, QString>(message, "default"));
+    updateDisplay();
 }
 
+
+//! @brief Prints a GUI error message
+//! @param message String containing the message
 void MessageWidget::printGUIErrorMessage(QString message)
 {
-//    hopsan::HopsanCoreMessage msg;
-//    msg.message = message.toStdString();
-//    msg.type = hopsan::HopsanCoreMessage::ERROR;
-    this->mMessageList.append(QPair<QString, QString>(message, "error"));
-    this->updateDisplay();
+    mMessageList.append(QPair<QString, QString>(message.prepend("Error: "), "error"));
+    updateDisplay();
 }
 
+
+//! @brief Prints a GUI warning message
+//! @param message String containing the message
 void MessageWidget::printGUIWarningMessage(QString message)
 {
-//    hopsan::HopsanCoreMessage msg;
-//    msg.message = message.toStdString();
-//    msg.type = hopsan::HopsanCoreMessage::WARNING;
-    this->mMessageList.append(QPair<QString, QString>(message, "warning"));
-    this->updateDisplay();
+    mMessageList.append(QPair<QString, QString>(message.prepend("Warning: "), "warning"));
+    updateDisplay();
 }
 
+
+//! @brief Prints a GUI info message
+//! @param message String containing the message
 void MessageWidget::printGUIInfoMessage(QString message)
 {
-//    hopsan::HopsanCoreMessage msg;
-//    msg.message = message.toStdString();
-//    msg.type = hopsan::HopsanCoreMessage::INFO;
-    this->mMessageList.append(QPair<QString, QString>(message, "info"));
-    this->updateDisplay();
+    mMessageList.append(QPair<QString, QString>(message.prepend("Info: "), "info"));
+    updateDisplay();
 }
 
+
+//! @brief Prints a GUI info message
+//! @param message String containing the message
+void MessageWidget::printGUIDebugMessage(QString message)
+{
+    mMessageList.append(QPair<QString, QString>(message.prepend("Debug: "), "debug"));
+    updateDisplay();
+}
+
+
+//! @brief Slot that checks messages from core and prints them
 void MessageWidget::checkMessages()
 {
     printCoreMessages();
 }
 
 
+//! @brief Tells the message widget wether or not it shall show error messages
+//! @param value True means show messages
 void MessageWidget::showErrorMessages(bool value)
 {
     mShowErrorMessages = value;
     updateDisplay();
 }
 
+
+//! @brief Tells the message widget wether or not it shall show warning messages
+//! @param value True means show messages
 void MessageWidget::showWarningMessages(bool value)
 {
     mShowWarningMessages = value;
     updateDisplay();
 }
 
+
+//! @brief Tells the message widget wether or not it shall show info messages
+//! @param value True means show messages
 void MessageWidget::showInfoMessages(bool value)
 {
     mShowInfoMessages = value;
     updateDisplay();
 }
 
+
+//! @brief Tells the message widget wether or not it shall show default messages
+//! @param value True means show messages
 void MessageWidget::showDefaultMessages(bool value)
 {
     mShowDefaultMessages = value;
     updateDisplay();
 }
 
+
+//! @brief Tells the message widget wether or not it shall show debug messages
+//! @param value True means show messages
 void MessageWidget::showDebugMessages(bool value)
 {
     mShowDebugMessages = value;

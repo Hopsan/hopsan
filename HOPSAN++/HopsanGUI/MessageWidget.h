@@ -18,6 +18,7 @@ public:
     void printGUIErrorMessage(QString message);
     void printGUIWarningMessage(QString message);
     void printGUIInfoMessage(QString message);
+    void printGUIDebugMessage(QString message);
     QSize sizeHint() const;
 
 public slots:

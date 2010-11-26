@@ -233,7 +233,7 @@ mCustomUnits.insert("Value", ValueUnitMap);
 QFile file(QString(MAINPATH) + "hopsanconfig.xml");
 if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
 {
-    gpMainWindow->mpMessageWidget->printGUIErrorMessage("Unable to read settings file. Using default settings.");
+    gpMainWindow->mpMessageWidget->printGUIWarningMessage("Unable to read settings file. Using default settings.");
     return;
 }
 QDomDocument domDocument;
