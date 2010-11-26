@@ -2,7 +2,7 @@
 #define GUICONTAINEROBJECT_H
 
 #include "GUIModelObject.h"
-#include "CoreSystemAccess.h"
+#include "CoreAccess.h"
 #include "GUIWidgets.h"
 
 //Forward Declarations

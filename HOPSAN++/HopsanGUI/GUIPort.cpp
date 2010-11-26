@@ -7,7 +7,7 @@
 #include "GUIPort.h"
 #include "PlotWidget.h"
 #include "MainWindow.h"
-#include "CoreSystemAccess.h"
+#include "CoreAccess.h"
 #include "GUIObjects/GUIModelObject.h"
 #include "GraphicsView.h"
 #include "ProjectTabWidget.h"

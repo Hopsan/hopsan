@@ -11,7 +11,7 @@
 #include "InitializationThread.h"
 #include "ProjectTabWidget.h"
 #include "MainWindow.h"
-#include "CoreSystemAccess.h"
+#include "CoreAccess.h"
 
 
 //! @class InitializationThread

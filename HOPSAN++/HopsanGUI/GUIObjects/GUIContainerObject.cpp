@@ -12,7 +12,7 @@
 #include "../GraphicsView.h"
 #include "../LibraryWidget.h"
 #include "../loadObjects.h"
-#include "../CoreSystemAccess.h"
+#include "../CoreAccess.h"
 #include "GUIObject.h"
 #include "GUIComponent.h"
 #include "GUIGroup.h"

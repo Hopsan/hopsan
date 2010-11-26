@@ -11,7 +11,7 @@
 #define PROJECTTABWIDGET_H
 
 #include <QTabWidget>
-#include "CoreSystemAccess.h"
+#include "CoreAccess.h"
 
 //Forward declaration
 class QGraphicsScene;

@@ -19,7 +19,6 @@ SOURCES += main.cpp \
     GraphicsView.cpp \
     loadObjects.cpp \
     ProgressBarThread.cpp \
-    CoreSystemAccess.cpp \
     GUIPortAppearance.cpp \
     GUIConnectorAppearance.cpp \
     SystemParametersWidget.cpp \
@@ -41,7 +40,8 @@ SOURCES += main.cpp \
     CopyStack.cpp \
     ComponentPropertiesDialog.cpp \
     ContainerPropertiesDialog.cpp \
-    AboutDialog.cpp
+    AboutDialog.cpp \
+    CoreAccess.cpp
 
 HEADERS += MainWindow.h \
     ProjectTabWidget.h \
@@ -56,12 +56,12 @@ HEADERS += MainWindow.h \
     version.h \
     OptionsDialog.h \
     UndoStack.h \
-    CoreSystemAccess.h \
+    CoreAccess.h \
     GraphicsView.h \
     loadObjects.h \
     ProgressBarThread.h \
     common.h \
-    CoreSystemAccess.h \
+    CoreAccess.h \
     GUIPortAppearance.h \
     GUIConnectorAppearance.h \
     SystemParametersWidget.h \
