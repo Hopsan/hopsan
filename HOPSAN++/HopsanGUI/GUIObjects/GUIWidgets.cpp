@@ -70,9 +70,7 @@ GUITextWidget::GUITextWidget(QString text, QPoint pos, qreal rot, selectionStatu
     mpTextItem->show();
 
     this->resize(mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
-
-    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height(),
-                                                  QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+    mpSelectionBox->setSize(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
 }
 
 
@@ -141,9 +139,10 @@ void GUITextWidget::updateWidgetFromDialog()
     mpTextItem->setFont(mSelectedFont);
     mpTextItem->setDefaultTextColor(mSelectedColor);
 
-    delete(mpSelectionBox);
-    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height(),
-                                               QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+//    delete(mpSelectionBox);
+//    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height(),
+//                                               QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+    mpSelectionBox->setSize(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
     mpSelectionBox->setActive();
     this->resize(mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
     mpEditTextDialog->close();
@@ -155,8 +154,9 @@ void GUITextWidget::updateWidgetFromDialog()
 void GUITextWidget::setText(QString text)
 {
     mpTextItem->setPlainText(text);
-    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height(),
-                                               QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+//    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height(),
+//                                               QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+    mpSelectionBox->setSize(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
     mpSelectionBox->setPassive();
 }
 
@@ -174,8 +174,9 @@ void GUITextWidget::setTextColor(QColor color)
 void GUITextWidget::setTextFont(QFont font)
 {
     mpTextItem->setFont(font);
-    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height(),
-                                               QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+//    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height(),
+//                                               QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+    mpSelectionBox->setSize(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
     mpSelectionBox->setPassive();
     this->resize(mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
 }
@@ -260,8 +261,9 @@ GUIBoxWidget::GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected,
 
     this->resize(mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
 
-    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height(),
-                                                  QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+//    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height(),
+//                                                  QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+    mpSelectionBox->setSize(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
 }
 
 
@@ -384,9 +386,11 @@ void GUIBoxWidget::updateWidgetFromDialog()
         tempPen.setStyle(Qt::DashDotLine);
     mpRectItem->setPen(tempPen);
 
-    delete(mpSelectionBox);
-    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height(),
-                                               QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+//    delete(mpSelectionBox);
+//    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height(),
+//                                               QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+    mpSelectionBox->setSize(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
+
     if(this->isSelected())
     {
         mpSelectionBox->setActive();
@@ -497,9 +501,11 @@ void GUIBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         this->setPos(mPosBeforeResize);
     }
 
-    delete(mpSelectionBox);
-    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height(),
-                                               QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+//    delete(mpSelectionBox);
+//    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height(),
+//                                               QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+    mpSelectionBox->setSize(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
+
     mpSelectionBox->setActive();
     this->resize(mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
     mpRectItem->setPos(mpRectItem->pen().width()/2.0, mpRectItem->pen().width()/2.0);
@@ -584,9 +590,11 @@ void GUIBoxWidget::setSize(qreal w, qreal h)
     mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(), w, h);
     this->setPos(posBeforeResize);
 
-    delete(mpSelectionBox);
-    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height(),
-                                               QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+//    delete(mpSelectionBox);
+//    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height(),
+//                                               QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+    mpSelectionBox->setSize(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
+
     mpSelectionBox->setActive();
     this->resize(mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
     mpRectItem->setPos(mpRectItem->pen().width()/2.0, mpRectItem->pen().width()/2.0);

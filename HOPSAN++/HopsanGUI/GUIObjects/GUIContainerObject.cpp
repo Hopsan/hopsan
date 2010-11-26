@@ -890,7 +890,25 @@ void GUIContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     QAction *pAction = this->buildBaseContextMenu(menu, event->screenPos());
     if (pAction == loadAction)
     {
-        loadFromHMF();
+        //! @todo use loadHMF once we have scraped teh text based stuff and only uses xml
+        //loadFromHMF();
+        QDir fileDialog;
+        QFile file;
+        QString modelFilePath = QFileDialog::getOpenFileName(mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
+                                                             fileDialog.currentPath() + QString(MODELPATH),
+                                                             tr("Hopsan Model Files (*.hmf)"));
+
+        file.setFileName(modelFilePath);
+        QDomDocument domDocument;
+        QDomElement hmfRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
+        if (!hmfRoot.isNull())
+        {
+            //! @todo Check version numbers
+            //! @todo check if we could load else give error message and dont attempt to load
+            QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
+            this->setModelFileInfo(file); //Remember info about the file from which the data was loaded
+            this->loadFromDomElement(systemElement);
+        }
     }
     QGraphicsItem::contextMenuEvent(event);
 }

@@ -28,6 +28,8 @@ GUIObject::GUIObject(QPoint pos, qreal rot, selectionStatus, GUIContainerObject 
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
 
     //Set position orientation and other appearance stuff
+    //Initially we dont know the selection box size
+    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, 0.0, 0.0, QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
     this->setCenterPos(pos);
     this->rotateTo(rot);
     this->setAcceptHoverEvents(true);
@@ -366,45 +368,51 @@ bool GUIObject::isFlipped()
 GUIObjectSelectionBox::GUIObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal y2, QPen activePen, QPen hoverPen, GUIObject *parent)
         : QGraphicsItemGroup(parent)
 {
-    mpParentGUIObject = parent;
-    qreal b = 5;
-    qreal a = 5;
-    x1 = x1-3;
-    y1 = y1-3;
-    x2 = x2+3;
-    y2 = y2+3;
+    //mpParentGUIObject = parent;
 
     mActivePen = activePen;
     mHoverPen = hoverPen;
     this->setPassive();
 
-    QGraphicsLineItem *tempLine = new QGraphicsLineItem(x1,y1+b,x1,y1,this);
-    mLines.push_back(tempLine);
-    tempLine = new QGraphicsLineItem(x1,y1,x1+a,y1,this);
-    mLines.push_back(tempLine);
-    tempLine = new QGraphicsLineItem(x2-a,y1,x2,y1,this);
-    mLines.push_back(tempLine);
-    tempLine = new QGraphicsLineItem(x2,y1,x2,y1+b,this);
-    mLines.push_back(tempLine);
-    tempLine = new QGraphicsLineItem(x1+a,y2,x1,y2,this);
-    mLines.push_back(tempLine);
-    tempLine = new QGraphicsLineItem(x1,y2-b,x1,y2,this);
-    mLines.push_back(tempLine);
-    tempLine = new QGraphicsLineItem(x2,y2-b,x2,y2,this);
-    mLines.push_back(tempLine);
-    tempLine = new QGraphicsLineItem(x2,y2,x2-a,y2,this);
-    mLines.push_back(tempLine);
+    //Create 8 small lines, if you want more or less lines, sync your changes
+    //with the setSize() function
+    QGraphicsLineItem *tempLine;
+    for (int i=0; i<8; ++i)
+    {
+        tempLine = new QGraphicsLineItem(this);
+        mLines.push_back(tempLine);
+    }
+    this->setSize(x1,y1,x2,y2);
 }
 
+void GUIObjectSelectionBox::setSize(qreal x1, qreal y1, qreal x2, qreal y2)
+{
+    qreal b = 5;
+    qreal a = 5;
+    x1 += -3;
+    y1 += -3;
+    x2 += 3;
+    y2 += 3;
+
+    qDebug() << "mLines.size(): " << mLines.size();
+
+    mLines[0]->setLine(x1,y1+b,x1,y1);
+    mLines[1]->setLine(x1,y1,x1+a,y1);
+    mLines[2]->setLine(x2-a,y1,x2,y1);
+    mLines[3]->setLine(x2,y1,x2,y1+b);
+    mLines[4]->setLine(x1+a,y2,x1,y2);
+    mLines[5]->setLine(x1,y2-b,x1,y2);
+    mLines[6]->setLine(x2,y2-b,x2,y2);
+    mLines[7]->setLine(x2,y2,x2-a,y2);
+}
 
 //! @brief Makes the box visible and makes it use "active" style
 //! @see setPassive();
 //! @see setHovered();
 void GUIObjectSelectionBox::setActive()
 {
-
     this->setVisible(true);
-    for(std::size_t i=0;i!=mLines.size();++i)
+    for(std::size_t i=0; i<mLines.size(); ++i)
     {
         mLines[i]->setPen(mActivePen);
     }
@@ -426,7 +434,7 @@ void GUIObjectSelectionBox::setPassive()
 void GUIObjectSelectionBox::setHovered()
 {
     this->setVisible(true);
-    for(std::size_t i=0;i!=mLines.size();++i)
+    for(std::size_t i=0; i<mLines.size(); ++i)
     {
         mLines[i]->setPen(mHoverPen);
     }

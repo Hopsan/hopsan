@@ -1033,24 +1033,27 @@ GUIModelObjectAppearance* GUIModelObject::getAppearanceData()
 //! @brief Refreshes the appearance of the object
 void GUIModelObject::refreshAppearance()
 {
-    //! @todo maybe we can break (some of) this code out and run it in a base class maybe even guiobjekt
-    bool hasActiveSelectionBox = false;
-    if (mpSelectionBox != 0)
-    {
-        hasActiveSelectionBox = mpSelectionBox->isVisible(); //!< @todo This is a bit strange need to fix see todo bellow
-        delete mpSelectionBox;
-    }
+//    //! @todo maybe we can break (some of) this code out and run it in a base class maybe even guiobjekt
+//    bool hasActiveSelectionBox = false;
+//    if (mpSelectionBox != 0)
+//    {
+//        hasActiveSelectionBox = mpSelectionBox->isVisible(); //!< @todo This is a bit strange need to fix see todo bellow
+//        delete mpSelectionBox;
+//    }
 
     setIcon(mIconType);
     setGeometry(pos().x(), pos().y(), mpIcon->boundingRect().width(), mpIcon->boundingRect().height());
 
-    //! @todo problem with hovered or active or passive selection box, should maybe make it possible to resize rather than to create a new selection box on refresh
-    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpIcon->boundingRect().width(), mpIcon->boundingRect().height(),
-                                                  QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
-    if (hasActiveSelectionBox)
-    {
-        mpSelectionBox->setActive();
-    }
+    //Resize the selection box
+    mpSelectionBox->setSize(0.0, 0.0, mpIcon->boundingRect().width(), mpIcon->boundingRect().height());
+
+//    //! @todo problem with hovered or active or passive selection box, should maybe make it possible to resize rather than to create a new selection box on refresh
+//    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpIcon->boundingRect().width(), mpIcon->boundingRect().height(),
+//                                                  QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+//    if (hasActiveSelectionBox)
+//    {
+//        mpSelectionBox->setActive();
+//    }
 
     this->refreshDisplayName();
 }

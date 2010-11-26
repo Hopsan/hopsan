@@ -84,12 +84,11 @@ protected:
 
 
 
-class GUIObjectSelectionBox : public QObject, public QGraphicsItemGroup
+class GUIObjectSelectionBox : public QGraphicsItemGroup
 {
-    Q_OBJECT
-
 public:
     GUIObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal y2, QPen activePen, QPen hoverPen, GUIObject *parent = 0);
+    void setSize(qreal x1, qreal y1, qreal x2, qreal y2);
 
     //Selection/active methods
     void setActive();
@@ -97,11 +96,11 @@ public:
     void setHovered();
 
     //Public members
-    GUIObject *mpParentGUIObject;
+    //GUIObject *mpParentGUIObject;
 
 protected:
     //Protected members
-    std::vector<QGraphicsLineItem*> mLines;
+    QVector<QGraphicsLineItem*> mLines;
 
     QPen mActivePen;
     QPen mHoverPen;
