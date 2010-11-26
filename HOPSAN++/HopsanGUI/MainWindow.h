@@ -46,6 +46,12 @@ public:
     //ContainerPropertiesDialog *mpSystemPropertiesDialog;
     MessageWidget *mpMessageWidget;
     QPushButton *mpClearMessageWidgetButton;
+    QToolButton *mpShowErrorMessagesButton;
+    QToolButton *mpShowWarningMessagesButton;
+    QToolButton *mpShowInfoMessagesButton;
+    QToolButton *mpShowDefaultMessagesButton;
+    QToolButton *mpShowDebugMessagesButton;
+
     AboutDialog *mpAboutDialog;
 
     QStatusBar *mpStatusBar;

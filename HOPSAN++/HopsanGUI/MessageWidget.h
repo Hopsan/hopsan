@@ -10,9 +10,6 @@ class MainWindow;
 class MessageWidget : public QTextEdit
 {
     Q_OBJECT
-private:
-    void setMessageColor(int type);
-
 public:
     MessageWidget(MainWindow *pParent=0);
     void printCoreMessages();
@@ -24,6 +21,22 @@ public:
 
 public slots:
     void checkMessages();
+    void showErrorMessages(bool value);
+    void showWarningMessages(bool value);
+    void showInfoMessages(bool value);
+    void showDefaultMessages(bool value);
+    void showDebugMessages(bool value);
+
+private:
+    void setMessageColor(int type);
+    void updateDisplay();
+    QList<hopsan::HopsanCoreMessage> mMessageList;
+    bool mShowErrorMessages;
+    bool mShowInfoMessages;
+    bool mShowWarningMessages;
+    bool mShowDefaultMessages;
+    bool mShowDebugMessages;
+
 };
 
 #endif // MESSAGEWIDGET_H

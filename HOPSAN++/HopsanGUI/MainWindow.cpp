@@ -73,19 +73,63 @@ MainWindow::MainWindow(QWidget *parent)
     mpMessageDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
     mpMessageWidget = new MessageWidget(this);
     mpMessageWidget->setReadOnly(true);
+
     mpClearMessageWidgetButton = new QPushButton("Clear Messages");
     QFont tempFont = mpClearMessageWidgetButton->font();
     tempFont.setBold(true);
     mpClearMessageWidgetButton->setFont(tempFont);
+    mpClearMessageWidgetButton->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+
+    mpShowErrorMessagesButton = new QToolButton();
+    mpShowErrorMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowErrorMessages.png"));
+    mpShowErrorMessagesButton->setCheckable(true);
+    mpShowErrorMessagesButton->setChecked(true);
+    mpShowErrorMessagesButton->setToolTip("Show Error Messages");
+
+    mpShowWarningMessagesButton = new QToolButton();
+    mpShowWarningMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowWarningMessages.png"));
+    mpShowWarningMessagesButton->setCheckable(true);
+    mpShowWarningMessagesButton->setChecked(true);
+    mpShowWarningMessagesButton->setToolTip("Show Warning Messages");
+
+    mpShowInfoMessagesButton = new QToolButton();
+    mpShowInfoMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowInfoMessages.png"));
+    mpShowInfoMessagesButton->setCheckable(true);
+    mpShowInfoMessagesButton->setChecked(true);
+    mpShowInfoMessagesButton->setToolTip("Show Info Messages");
+
+    mpShowDefaultMessagesButton = new QToolButton();
+    mpShowDefaultMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowDefaultMessages.png"));
+    mpShowDefaultMessagesButton->setCheckable(true);
+    mpShowDefaultMessagesButton->setChecked(true);
+    mpShowDefaultMessagesButton->setToolTip("Show Default Messages");
+
+    mpShowDebugMessagesButton = new QToolButton();
+    mpShowDebugMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowDebugMessages.png"));
+    mpShowDebugMessagesButton->setCheckable(true);
+    mpShowDebugMessagesButton->setChecked(false);
+    mpShowDebugMessagesButton->setToolTip("Show Debug Messages");
+
     QGridLayout *pTempLayout = new QGridLayout(mpMessageDock);
-    pTempLayout->addWidget(mpMessageWidget,0,0,1,5);
+    pTempLayout->addWidget(mpMessageWidget,0,0,1,7);
     pTempLayout->addWidget(mpClearMessageWidgetButton,1,0,1,1);
+    pTempLayout->addWidget(mpShowErrorMessagesButton,1,1,1,1);
+    pTempLayout->addWidget(mpShowWarningMessagesButton,1,2,1,1);
+    pTempLayout->addWidget(mpShowInfoMessagesButton,1,3,1,1);
+    pTempLayout->addWidget(mpShowDefaultMessagesButton,1,4,1,1);
+    pTempLayout->addWidget(mpShowDebugMessagesButton,1,5,1,1);
+
     QWidget *pTempWidget = new QWidget(this);
     pTempWidget->setLayout(pTempLayout);
     mpMessageDock->setWidget(pTempWidget);
     addDockWidget(Qt::BottomDockWidgetArea, mpMessageDock);
     mpMessageWidget->printGUIMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
     connect(mpClearMessageWidgetButton, SIGNAL(pressed()),mpMessageWidget,SLOT(clear()));
+    connect(mpShowErrorMessagesButton, SIGNAL(toggled(bool)), mpMessageWidget, SLOT(showErrorMessages(bool)));
+    connect(mpShowWarningMessagesButton, SIGNAL(toggled(bool)), mpMessageWidget, SLOT(showWarningMessages(bool)));
+    connect(mpShowInfoMessagesButton, SIGNAL(toggled(bool)), mpMessageWidget, SLOT(showInfoMessages(bool)));
+    connect(mpShowDefaultMessagesButton, SIGNAL(toggled(bool)), mpMessageWidget, SLOT(showDefaultMessages(bool)));
+    connect(mpShowDebugMessagesButton, SIGNAL(toggled(bool)), mpMessageWidget, SLOT(showDebugMessages(bool)));
 
     gConfig.loadFromXml();
     //this->loadSettings();
