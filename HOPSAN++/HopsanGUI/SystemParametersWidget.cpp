@@ -66,9 +66,9 @@ SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
 {
     //mpParentMainWindow = parent;
     //Set the name and size of the main window
-    this->setObjectName("UndoWidget");
+    this->setObjectName("SystemParameterWidget");
     this->resize(400,500);
-    this->setWindowTitle("Undo History");
+    this->setWindowTitle("System Parameters");
 
     mpSystemParametersTable = new QTableWidget(0,1,this);
     mpSystemParametersTable->setBaseSize(400, 500);

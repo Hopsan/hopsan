@@ -217,8 +217,8 @@ MainWindow::MainWindow(QWidget *parent)
     mpPlotWidgetDock->hide();
     addDockWidget(Qt::RightDockWidgetArea, mpPlotWidgetDock);
 
-        //Create the global parameters dock widget and hide it
-    mpSystemParametersDock = new QDockWidget(tr("Global Parameters"), this);
+        //Create the system parameters dock widget and hide it
+    mpSystemParametersDock = new QDockWidget(tr("System Parameters"), this);
     mpSystemParametersDock->setAllowedAreas((Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea));
     addDockWidget(Qt::RightDockWidgetArea, mpSystemParametersDock);
     mpSystemParametersDock->hide();
