@@ -394,8 +394,6 @@ void GUIObjectSelectionBox::setSize(qreal x1, qreal y1, qreal x2, qreal y2)
     x2 += 3;
     y2 += 3;
 
-    qDebug() << "mLines.size(): " << mLines.size();
-
     mLines[0]->setLine(x1,y1+b,x1,y1);
     mLines[1]->setLine(x1,y1,x1+a,y1);
     mLines[2]->setLine(x2-a,y1,x2,y1);

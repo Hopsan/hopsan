@@ -104,7 +104,7 @@ PortAppearanceMapT &GUIModelObjectAppearance::getPortAppearanceMap()
 }
 
 
-QString GUIModelObjectAppearance::getBasePath()
+QString GUIModelObjectAppearance::getBaseIconPath()
 {
     return mBasePath;
 }
@@ -205,7 +205,7 @@ void GUIModelObjectAppearance::readFromTextStream(QTextStream &rIs)
         mIsReadOK = false;
     }
 
-    this->saveToXML("caf"); //only test function to test savetoxml
+    //this->saveToXML("caf"); //only test function to test savetoxml
 }
 
 
@@ -289,7 +289,7 @@ void GUIModelObjectAppearance::setName(QString name)
     mName = name;
 }
 
-void GUIModelObjectAppearance::setBasePath(QString path)
+void GUIModelObjectAppearance::setBaseIconPath(QString path)
 {
     mBasePath = path;
 }

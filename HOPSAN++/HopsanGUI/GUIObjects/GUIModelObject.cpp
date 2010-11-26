@@ -10,6 +10,8 @@
 #include "../Configuration.h"
 #include "../MainWindow.h"
 
+#include <QSvgRenderer>
+
 //! @brief Constructor for GUI Objects
 //! @param position Initial scene coordinates where object shall be placed
 //! @param rotation Initial rotation of the object
@@ -251,7 +253,6 @@ void GUIModelObject::setDisplayName(QString name)
 //! @param gfxType Graphics type that shall be used
 void GUIModelObject::setIcon(graphicsType gfxType)
 {
-    QGraphicsSvgItem *tmp = mpIcon;
     QString iconPath;
     if(gfxType && mGUIModelObjectAppearance.haveIsoIcon())
     {
@@ -269,16 +270,28 @@ void GUIModelObject::setIcon(graphicsType gfxType)
     {
         iconPath = OBJECTICONPATH + QString("missingcomponenticon.svg");
     }
-    mpIcon = new QGraphicsSvgItem(iconPath, this);
-    mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
 
-    //! @todo maybe should give warning message
-
-    //Delete old icon if it exist;
-    if (tmp != 0)
+    //If we have no Icon, create one
+    if (mpIcon == 0)
     {
-        delete(tmp);
+        mpIcon = new QGraphicsSvgItem(iconPath, this);
     }
+    else
+    {
+        //! @todo this seems to load new graphics in old scale, need to fix this
+        //If we have an icon, change graphics, and redraww by calling hide and then show
+        if (mpIcon->renderer()->load(iconPath))
+        {
+            mpIcon->hide();
+            mpIcon->show();
+        }
+        else
+        {
+            qDebug() << "failed to swap icon to: " << iconPath;
+        }
+    }
+
+    mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
 
     if(mGUIModelObjectAppearance.getIconRotationBehaviour() == "ON")
         mIconRotation = true;

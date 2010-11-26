@@ -144,8 +144,22 @@ void ContainerPropertiesDialog::setValues()
     //Set the icon paths, only update and refresh appearance if a change has occured
     if ( (mpContainerObject->getIsoIconPath() != mpIsoIconPath->text()) || (mpContainerObject->getUserIconPath() != mpUserIconPath->text()) )
     {
-        mpContainerObject->setUserIconPath(mpUserIconPath->text());
-        mpContainerObject->setIsoIconPath(mpIsoIconPath->text());
+        //mpContainerObject->setUserIconPath(mpUserIconPath->text());
+        //mpContainerObject->setIsoIconPath(mpIsoIconPath->text());
+        //! @todo in the future we should be able to set iso and user icons with different paths separately, right now only user icon is available only try iso if user empty
+        QString newpath;
+        if (mpUserIconPath->text().isEmpty())
+        {
+            newpath = mpIsoIconPath->text();
+        }
+        else
+        {
+            newpath = mpUserIconPath->text();
+        }
+
+        mpContainerObject->setIsoIconPath("");
+        mpContainerObject->setUserIconPath(newpath);
+
         mpContainerObject->refreshAppearance();
     }
 

@@ -679,7 +679,7 @@ void GUIContainerObject::groupSelected(QPointF pt)
     //! @todo dont hardcode group appearance like this
     GUIModelObjectAppearance appdata;
     appdata.setIconPathUser("subsystemtmp.svg");
-    appdata.setBasePath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
+    appdata.setBaseIconPath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
 
     //! @todo add like all other guimodelobjects add as proper object
     GUIGroup *pGroup = new GUIGroup(pt.toPoint(), 0.0, &appdata, this);
@@ -788,12 +788,18 @@ QString GUIContainerObject::getIsoIconPath()
 //! @todo do we safe full path or relative
 void GUIContainerObject::setUserIconPath(QString path)
 {
-    this->mGUIModelObjectAppearance.setIconPathUser(path);
+    QFileInfo fi;
+    fi.setFile(path);
+    this->mGUIModelObjectAppearance.setIconPathUser(fi.fileName());
+    this->mGUIModelObjectAppearance.setBaseIconPath(fi.absolutePath()+"/");
 }
 
 void GUIContainerObject::setIsoIconPath(QString path)
 {
-    this->mGUIModelObjectAppearance.setIconPathISO(path);
+    QFileInfo fi;
+    fi.setFile(path);
+    this->mGUIModelObjectAppearance.setIconPathISO(fi.fileName());
+    this->mGUIModelObjectAppearance.setBaseIconPath(fi.absolutePath()+"/");
 }
 
 //! Access function for mIsCreatingConnector

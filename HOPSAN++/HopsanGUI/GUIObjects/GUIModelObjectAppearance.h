@@ -25,7 +25,7 @@ public:
     GUIModelObjectAppearance();
     void setTypeName(QString name);
     void setName(QString name);
-    void setBasePath(QString path);
+    void setBaseIconPath(QString path);
     void setIconPathUser(QString path);
     void setIconPathISO(QString path);
 
@@ -42,10 +42,9 @@ public:
     bool haveIsoIcon();
     bool haveUserIcon();
 
-    QString getBasePath();
+    QString getBaseIconPath();
 
     void readFromTextStream(QTextStream &is);
-
     void readFromDomElement(QDomElement domElement);
     void saveToDomElement(QDomElement &rDomElement);
     void saveToXML(QString filename);
@@ -59,6 +58,9 @@ private:
     QString mName;
     QString mIconPathUser;
     QString mIconPathISO;
+    //! @todo In the future we should store file info separately for iso and user icons, and not use one common base path
+    //QFileInfo mUserIconInfo;
+    //QFileInfo mISOIconInfo;
     QString mIconRotationBehaviour;
     QPointF mNameTextPos;
 

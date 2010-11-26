@@ -349,7 +349,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
             }
         }
 
-        pAppearanceData->setBasePath(libDirObject.absolutePath() + "/");
+        pAppearanceData->setBaseIconPath(libDirObject.absolutePath() + "/");
         if (!pAppearanceData->mIsReadOK)
         {
             gpMainWindow->mpMessageWidget->printGUIErrorMessage("Error when reading appearance data from file: " + filename);
