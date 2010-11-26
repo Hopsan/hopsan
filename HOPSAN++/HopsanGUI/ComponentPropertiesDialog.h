@@ -22,6 +22,7 @@ class QToolButton;
 class QVBoxLayout;
 
 class GUIComponent;
+class ParameterLayout;
 
 class ComponentPropertiesDialog : public QDialog
 {
@@ -32,7 +33,6 @@ public:
 
 protected slots:
     void okPressed();
-    void showListOfSystemParameters();
 
 protected:
     void setParameters();
@@ -47,20 +47,9 @@ private:
     QLineEdit *lineEdit;
 
     QLineEdit *mpNameEdit;
-    std::vector<QLabel*> mParameterVarVector;
-    std::vector<QLabel*> mParameterDescriptionVector;
-    std::vector<QLabel*> mParameterUnitVector;
-    std::vector<QLineEdit*> mParameterValueVector;
-    std::vector<QToolButton*> mSystemParameterVector;
 
-    QVector<QToolButton *> mSystemParameterButtons;
-    QVector<QLineEdit *> mParameterValueLineEdits;
-
-    QVector<QVector<QLabel*> > mStartDataNames;
-    QVector<QVector<QLineEdit*> > mStartDataValues;
-    QVector<QVector<QLabel*> > mStartDataUnits;
-
-    QVBoxLayout *mpParameterGlobalLayout;
+    QVector<ParameterLayout *> mvParameterLayout;
+    QVector<QVector<ParameterLayout *> > mvStartValueLayout;
 
     QDialogButtonBox *buttonBox;
     QPushButton *okButton;

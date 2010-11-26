@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2543" y="2482,5" zoom="1"/>
+            <viewport x="2500" y="2442,5" zoom="1"/>
             <hopsanobjectappearance>
                 <modelobject typename="" displayname="2-mass-comp-amesim">
                     <icon isopath="" iconrotation="" userpath=""/>
@@ -33,7 +33,7 @@
             </component>
             <component typename="MechanicTranslationalMass" name="TranslationalMass">
                 <parameters>
-                    <parameter value="100" name="Mass"/>
+                    <parameter value="100" name="m"/>
                     <parameter value="0" name="B"/>
                     <parameter value="0" name="k"/>
                 </parameters>
@@ -45,7 +45,7 @@
             </component>
             <component typename="MechanicTranslationalMass" name="TranslationalMass_1">
                 <parameters>
-                    <parameter value="100" name="Mass"/>
+                    <parameter value="100" name="m"/>
                     <parameter value="0" name="B"/>
                     <parameter value="0" name="k"/>
                 </parameters>

@@ -41,7 +41,7 @@
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2010-10-04
 //!
-//! @brief Contains a global parameter widget class
+//! @brief Contains a System parameter widget class
 //!
 //$Id$
 
@@ -59,7 +59,7 @@
 
 #include "common.h"
 
-//! Construtor for Global Parameters widget, where the user can see and change the global parameters in the model.
+//! Construtor for System Parameters widget, where the user can see and change the System parameters in the model.
 //! @param parent Pointer to the main window
 SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
     : QWidget(parent)
@@ -112,9 +112,9 @@ bool SystemParametersWidget::hasParameter(QString name)
 }
 
 
-//! Slot that adds a global parameter value
-//! @param name Lookup name for the global parameter
-//! @param value Value of the global parameter
+//! Slot that adds a System parameter value
+//! @param name Lookup name for the System parameter
+//! @param value Value of the System parameter
 void SystemParametersWidget::setParameter(QString name, double value)
 {
     gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->setSystemParameter(name, value);
@@ -138,8 +138,8 @@ void SystemParametersWidget::setParameters()
 }
 
 
-//! Slot that removes all selected global parameters in parameter table
-//! @todo This shall remove the actual global parameters when they have been implemented, wherever they are stored.
+//! Slot that removes all selected System parameters in parameter table
+//! @todo This shall remove the actual System parameters when they have been implemented, wherever they are stored.
 void SystemParametersWidget::removeSelectedParameters()
 {
     QList<QTableWidgetItem *> pSelectedItems = mpSystemParametersTable->selectedItems();
@@ -166,11 +166,11 @@ void SystemParametersWidget::removeSelectedParameters()
 }
 
 
-//! Slot that opens "Add Parameter" dialog, where the user can add new global parameters
+//! Slot that opens "Add Parameter" dialog, where the user can add new System parameters
 void SystemParametersWidget::openComponentPropertiesDialog()
 {
     QDialog *pAddComponentPropertiesDialog = new QDialog(this);
-    pAddComponentPropertiesDialog->setWindowTitle("Set Global Parameter");
+    pAddComponentPropertiesDialog->setWindowTitle("Set System Parameter");
 
     mpNameLabel = new QLabel("Name: ", this);
     mpNameBox = new QLineEdit(this);
@@ -217,7 +217,7 @@ void SystemParametersWidget::update()
         mpSystemParametersTable->verticalHeader()->hide();
 
         QTableWidgetItem *item = new QTableWidgetItem();
-        item->setText("No global parameters set.");
+        item->setText("No System parameters set.");
         item->setBackgroundColor(QColor("white"));
         item->setTextAlignment(Qt::AlignCenter);
         item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
@@ -243,5 +243,125 @@ void SystemParametersWidget::update()
         valueItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         mpSystemParametersTable->setItem(mpSystemParametersTable->rowCount()-1, 0, nameItem);
         mpSystemParametersTable->setItem(mpSystemParametersTable->rowCount()-1, 1, valueItem);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, double dataValue, QString unitName, GUIModelObject *pGUIModelObject, QWidget *parent)
+{
+    QString dataValueStr;
+    dataValueStr.setNum(dataValue);
+    commonConstructorCode(dataName, descriptionName, dataValueStr, unitName, pGUIModelObject, parent);
+}
+
+
+ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, QString dataValue, QString unitName, GUIModelObject *pGUIModelObject, QWidget *parent)
+    : QGridLayout(parent)
+{
+    commonConstructorCode(dataName, descriptionName, dataValue, unitName, pGUIModelObject, parent);
+}
+
+
+void ParameterLayout::commonConstructorCode(QString dataName, QString descriptionName, QString dataValue, QString unitName, GUIModelObject *pGUIModelObject, QWidget *parent)
+{
+    mpGUIModelObject = pGUIModelObject;
+
+    mDescriptionNameLabel.setMinimumWidth(100);
+    mDescriptionNameLabel.setMaximumWidth(100);
+    mDataNameLabel.setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+    mDataNameLabel.setMinimumWidth(50);
+    mDataNameLabel.setMaximumWidth(50);
+    mDataValuesLineEdit.setMinimumWidth(100);
+    mDataValuesLineEdit.setMaximumWidth(100);
+    mUnitNameLabel.setMinimumWidth(50);
+    mUnitNameLabel.setMaximumWidth(50);
+
+    mSystemParameterToolButton.setIcon(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"));
+
+    mDataNameLabel.setText(dataName);
+    mDescriptionNameLabel.setText(descriptionName);
+    mDataValuesLineEdit.setText(dataValue);
+    mUnitNameLabel.setText(unitName);
+
+    addWidget(&mDescriptionNameLabel, 0, 0);
+    addWidget(&mDataNameLabel, 0, 1);
+    addWidget(&mDataValuesLineEdit, 0, 2);
+    addWidget(&mSystemParameterToolButton, 0, 3);
+    addWidget(&mUnitNameLabel, 0, 4);
+
+    connect(&mSystemParameterToolButton, SIGNAL(pressed()), this, SLOT(showListOfSystemParameters()));
+}
+
+
+QString ParameterLayout::getDescriptionName()
+{
+    return mDescriptionNameLabel.text();
+}
+
+
+QString ParameterLayout::getDataName()
+{
+    return mDataNameLabel.text();
+}
+
+
+double ParameterLayout::getDataValue()
+{
+    return mDataValuesLineEdit.text().toDouble();
+}
+
+QString ParameterLayout::getDataValueTxt()
+{
+    return mDataValuesLineEdit.text();
+}
+
+
+void ParameterLayout::showListOfSystemParameters()
+{
+    //mSystemParameterToolButton.setDown(false);
+    mSystemParameterToolButton.animateClick();;
+
+    QMenu menu;
+
+    QMap<std::string, double> SystemMap = gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getSystemParametersMap();
+    QMap<std::string, double>::iterator it;
+    for(it=SystemMap.begin(); it!=SystemMap.end(); ++it)
+    {
+        QString valueString;
+        valueString.setNum(it.value());
+        QAction *tempAction = menu.addAction(QString(it.key().c_str()));
+        tempAction->setIconVisibleInMenu(false);
+    }
+
+    QCursor cursor;
+    QAction *selectedAction = menu.exec(cursor.pos());
+    if(selectedAction != 0)
+    {
+        mDataValuesLineEdit.setText(selectedAction->text());
     }
 }
