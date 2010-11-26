@@ -7,6 +7,7 @@
 
 class MainWindow;
 class CoreMessagesAccess;
+class GUIMessage;
 
 class MessageWidget : public QTextEdit
 {
@@ -14,15 +15,16 @@ class MessageWidget : public QTextEdit
 public:
     MessageWidget(MainWindow *pParent=0);
     void printCoreMessages();
-    void printGUIMessage(QString message);
-    void printGUIErrorMessage(QString message);
-    void printGUIWarningMessage(QString message);
-    void printGUIInfoMessage(QString message);
-    void printGUIDebugMessage(QString message);
+    void printGUIMessage(QString message, QString tag=QString());
+    void printGUIErrorMessage(QString message, QString tag=QString());
+    void printGUIWarningMessage(QString message, QString tag=QString());
+    void printGUIInfoMessage(QString message, QString tag=QString());
+    void printGUIDebugMessage(QString message, QString tag=QString());
     QSize sizeHint() const;
 
 public slots:
     void checkMessages();
+    void setGroupByTag(bool value);
     void showErrorMessages(bool value);
     void showWarningMessages(bool value);
     void showInfoMessages(bool value);
@@ -32,15 +34,28 @@ public slots:
 private:
     void setMessageColor(QString type);
     void updateDisplay();
-    QList< QPair<QString, QString> > mMessageList;
+    size_t tagCount(QString tag);
+    QList< GUIMessage > mMessageList;
+    bool mGroupByTag;
     bool mShowErrorMessages;
     bool mShowInfoMessages;
     bool mShowWarningMessages;
     bool mShowDefaultMessages;
     bool mShowDebugMessages;
 
+
     CoreMessagesAccess *mpCoreAccess;
 
+};
+
+
+class GUIMessage
+{
+public:
+    GUIMessage(QString message, QString type, QString tag="");
+    QString message;
+    QString type;
+    QString tag;
 };
 
 #endif // MESSAGEWIDGET_H

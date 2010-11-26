@@ -11,10 +11,11 @@ size_t CoreMessagesAccess::getNumberOfMessages()
     return HopsanEssentials::getInstance()->checkMessage();
 }
 
-void CoreMessagesAccess::getMessage(QString &message, QString &type)
+void CoreMessagesAccess::getMessage(QString &message, QString &type, QString &tag)
 {
     hopsan::HopsanCoreMessage coreMsg = HopsanEssentials::getInstance()->getMessage();
     message = QString(coreMsg.message.c_str());
+    tag = QString(coreMsg.tag.c_str());
     switch (coreMsg.type)
     {
     case hopsan::HopsanCoreMessage::ERROR:

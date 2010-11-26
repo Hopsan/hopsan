@@ -577,7 +577,7 @@ Port* Component::addPort(const string portname, Port::PORTTYPE porttype, const N
     //Signal autmatic name change
     if (newname != portname)
     {
-        gCoreMessageHandler.addInfoMessage("Automatically changed name of added port from: {" + portname + "} to {" + newname + "}", 1);
+        gCoreMessageHandler.addInfoMessage("Automatically changed name of added port from: {" + portname + "} to {" + newname + "}");
     }
 
     return new_port;
@@ -629,7 +629,7 @@ string Component::renamePort(const string oldname, const string newname)
     }
     else
     {
-        gCoreMessageHandler.addWarningMessage("Trying to rename port {" + oldname + "}, but not found", 1);
+        gCoreMessageHandler.addWarningMessage("Trying to rename port {" + oldname + "}, but not found");
         return oldname;
     }
 }
@@ -645,7 +645,7 @@ void Component::deletePort(const string name)
     }
     else
     {
-        gCoreMessageHandler.addWarningMessage("Trying to delete port {" + name + "}, but not found", 1);
+        gCoreMessageHandler.addWarningMessage("Trying to delete port {" + name + "}, but not found");
     }
 }
 
@@ -681,7 +681,7 @@ Port *Component::getPort(const string portname)
     else
     {
         cout << "failed to find port: " << portname << " in component: " << this->mName << endl;
-        gCoreMessageHandler.addWarningMessage("Trying to get port {" + portname + "}, but not found, pointer invalid", 1);
+        gCoreMessageHandler.addWarningMessage("Trying to get port {" + portname + "}, but not found, pointer invalid");
         return 0;
     }
 }
@@ -725,7 +725,7 @@ double Component::getMeasuredTime()
 //! Write an Info message, i.e. for debugging purposes.
 void Component::addDebugMessage(string message)
 {
-    gCoreMessageHandler.addComponentDebugMessage(message);
+    gCoreMessageHandler.addDebugMessage(message);
 }
 
 
@@ -1678,7 +1678,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     }
     ss << "Connected: {" << pComp1->getName() << "::" << pPort1->getPortName() << "} and {" << pComp2->getName() << "::" << pPort2->getPortName() << "}";
     //cout << ss.str() << endl;
-    gCoreMessageHandler.addInfoMessage(ss.str());
+    gCoreMessageHandler.addInfoMessage(ss.str(), "succesfulconnect");
     return true;
 }
 
@@ -1930,7 +1930,7 @@ void ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
     }
     else
     {
-        gCoreMessageHandler.addWarningMessage("In disconnect: At least one of the ports do not seem to be connected, (does nothing)", 1);
+        gCoreMessageHandler.addWarningMessage("In disconnect: At least one of the ports do not seem to be connected, (does nothing)");
     }
 }
 
@@ -2592,7 +2592,7 @@ void ComponentSystem::simulateMultiThreadedOld(const double startT, const double
         nCores = atoi(nCoresString.c_str());
         std::stringstream ss;
         ss << nCores;
-        gCoreMessageHandler.addInfoMessage("NUMBER_OF_PROCESSORS = " + nCoresString + ", setting to " + ss.str());
+        gCoreMessageHandler.addDebugMessage("NUMBER_OF_PROCESSORS = " + nCoresString + ", setting to " + ss.str());
     }
 
 

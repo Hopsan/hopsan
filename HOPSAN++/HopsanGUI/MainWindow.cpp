@@ -106,14 +106,18 @@ MainWindow::MainWindow(QWidget *parent)
     mpShowDebugMessagesButton->setChecked(false);
     mpShowDebugMessagesButton->setToolTip("Show Debug Messages");
 
+    mpGroupByTagCheckBox = new QCheckBox("Group Similar Messages");
+    mpGroupByTagCheckBox->setChecked(false);
+
     QGridLayout *pTempLayout = new QGridLayout(mpMessageDock);
-    pTempLayout->addWidget(mpMessageWidget,0,0,1,7);
+    pTempLayout->addWidget(mpMessageWidget,0,0,1,8);
     pTempLayout->addWidget(mpClearMessageWidgetButton,1,0,1,1);
     pTempLayout->addWidget(mpShowErrorMessagesButton,1,1,1,1);
     pTempLayout->addWidget(mpShowWarningMessagesButton,1,2,1,1);
     pTempLayout->addWidget(mpShowInfoMessagesButton,1,3,1,1);
     pTempLayout->addWidget(mpShowDefaultMessagesButton,1,4,1,1);
     pTempLayout->addWidget(mpShowDebugMessagesButton,1,5,1,1);
+    pTempLayout->addWidget(mpGroupByTagCheckBox, 1,6,1,1);
 
     QWidget *pTempWidget = new QWidget(this);
     pTempWidget->setLayout(pTempLayout);
@@ -126,6 +130,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mpShowInfoMessagesButton, SIGNAL(toggled(bool)), mpMessageWidget, SLOT(showInfoMessages(bool)));
     connect(mpShowDefaultMessagesButton, SIGNAL(toggled(bool)), mpMessageWidget, SLOT(showDefaultMessages(bool)));
     connect(mpShowDebugMessagesButton, SIGNAL(toggled(bool)), mpMessageWidget, SLOT(showDebugMessages(bool)));
+    connect(mpGroupByTagCheckBox, SIGNAL(toggled(bool)), mpMessageWidget, SLOT(setGroupByTag(bool)));
 
     gConfig.loadFromXml();
     //this->loadSettings();

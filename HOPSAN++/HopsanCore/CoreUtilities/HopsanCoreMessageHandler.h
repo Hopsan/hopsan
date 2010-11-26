@@ -23,22 +23,22 @@ namespace hopsan {
         int type;
         int debuglevel;
         std::string message;
+        std::string tag;
     };
 
     class DLLIMPORTEXPORT HopsanCoreMessageHandler
     {
     private:
         std::queue<HopsanCoreMessage> mMessageQueue;
-        void addMessage(int type, std::string preFix, std::string message, int debuglevel=0);
+        void addMessage(int type, std::string preFix, std::string message, std::string tag, int debuglevel=0);
         size_t mMaxQueueSize;
 
     public:
         HopsanCoreMessageHandler();
-        void addInfoMessage(std::string message, int dbglevel=0);
-        void addWarningMessage(std::string message, int dbglevel=0);
-        void addErrorMessage(std::string message, int dbglevel=0);
-
-        void addComponentDebugMessage(std::string message, int dbglevel=0);
+        void addInfoMessage(std::string message, std::string tag="", int dbglevel=0);
+        void addWarningMessage(std::string message, std::string tag="", int dbglevel=0);
+        void addErrorMessage(std::string message, std::string tag="", int dbglevel=0);
+        void addDebugMessage(std::string message, std::string tag="", int dbglevel=0);
 
         //const HopsanCoreMessage &peakMessage();
         HopsanCoreMessage getMessage();

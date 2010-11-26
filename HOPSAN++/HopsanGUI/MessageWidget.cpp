@@ -15,6 +15,8 @@ using namespace hopsan;
 MessageWidget::MessageWidget(MainWindow *pParent)
     : QTextEdit(pParent)
 {
+    mGroupByTag = false;
+
     mShowErrorMessages = true;
     mShowWarningMessages = true;
     mShowInfoMessages = true;
@@ -70,19 +72,51 @@ void MessageWidget::setMessageColor(QString type)
 void MessageWidget::updateDisplay()
 {
     this->clear();
-    QList< QPair<QString, QString> >::iterator it;
+    QStringList usedTags;
+    QList<GUIMessage>::iterator it;
     for(it=mMessageList.begin(); it!=mMessageList.end(); ++it)
     {
-        if( !((*it).second == "error" && !mShowErrorMessages) &&
-            !((*it).second == "warning" && !mShowWarningMessages) &&
-            !((*it).second == "info" && !mShowInfoMessages) &&
-            !((*it).second == "default" && !mShowDefaultMessages) &&
-            !((*it).second == "debug" && !mShowDebugMessages))
+        if( !((*it).type == "error" && !mShowErrorMessages) &&
+            !((*it).type == "warning" && !mShowWarningMessages) &&
+            !((*it).type == "info" && !mShowInfoMessages) &&
+            !((*it).type == "default" && !mShowDefaultMessages) &&
+            !((*it).type == "debug" && !mShowDebugMessages))
         {
-            setMessageColor((*it).second);
-            append((*it).first);
+            setMessageColor((*it).type);
+            qDebug() << (*it).tag;
+            if(!(*it).tag.isEmpty() && mGroupByTag)
+            {
+                qDebug() << "Blä 1";
+                if(!usedTags.contains((*it).tag))
+                {
+                    qDebug() << "Blä 2";
+                    usedTags.append((*it).tag);
+                    QString numString;
+                    numString.setNum(tagCount((*it).tag));
+                    append((*it).message + " (" + numString + " similar)");
+                }
+            }
+            else
+            {
+                append((*it).message);
+            }
         }
     }
+}
+
+
+size_t MessageWidget::tagCount(QString tag)
+{
+    size_t nTags = 0;
+    QList<GUIMessage>::iterator it;
+    for(it=mMessageList.begin(); it!=mMessageList.end(); ++it)
+    {
+        if((*it).tag == tag)
+        {
+            ++nTags;
+        }
+    }
+    return nTags;
 }
 
 
@@ -92,9 +126,9 @@ void MessageWidget::printCoreMessages()
     size_t nmsg = mpCoreAccess->getNumberOfMessages();
     for (size_t idx=0; idx < nmsg; ++idx)
     {
-        QString message, type;
-        mpCoreAccess->getMessage(message, type);
-        mMessageList.append(QPair<QString, QString>(message, type));
+        QString message, type, tag;
+        mpCoreAccess->getMessage(message, type, tag);
+        mMessageList.append(GUIMessage(message, type, tag));
         this->updateDisplay();
     }
 }
@@ -102,45 +136,45 @@ void MessageWidget::printCoreMessages()
 
 //! @brief Prints a GUI message of default type
 //! @param message String containing the message
-void MessageWidget::printGUIMessage(QString message)
+void MessageWidget::printGUIMessage(QString message, QString tag)
 {
-    mMessageList.append(QPair<QString, QString>(message, "default"));
+    mMessageList.append(GUIMessage(message, "default", tag));
     updateDisplay();
 }
 
 
 //! @brief Prints a GUI error message
 //! @param message String containing the message
-void MessageWidget::printGUIErrorMessage(QString message)
+void MessageWidget::printGUIErrorMessage(QString message, QString tag)
 {
-    mMessageList.append(QPair<QString, QString>(message.prepend("Error: "), "error"));
+    mMessageList.append(GUIMessage(message.prepend("Error: "), "error", tag));
     updateDisplay();
 }
 
 
 //! @brief Prints a GUI warning message
 //! @param message String containing the message
-void MessageWidget::printGUIWarningMessage(QString message)
+void MessageWidget::printGUIWarningMessage(QString message, QString tag)
 {
-    mMessageList.append(QPair<QString, QString>(message.prepend("Warning: "), "warning"));
+    mMessageList.append(GUIMessage(message.prepend("Warning: "), "warning", tag));
     updateDisplay();
 }
 
 
 //! @brief Prints a GUI info message
 //! @param message String containing the message
-void MessageWidget::printGUIInfoMessage(QString message)
+void MessageWidget::printGUIInfoMessage(QString message, QString tag)
 {
-    mMessageList.append(QPair<QString, QString>(message.prepend("Info: "), "info"));
+    mMessageList.append(GUIMessage(message.prepend("Info: "), "info", tag));
     updateDisplay();
 }
 
 
 //! @brief Prints a GUI info message
 //! @param message String containing the message
-void MessageWidget::printGUIDebugMessage(QString message)
+void MessageWidget::printGUIDebugMessage(QString message, QString tag)
 {
-    mMessageList.append(QPair<QString, QString>(message.prepend("Debug: "), "debug"));
+    mMessageList.append(GUIMessage(message.prepend("Debug: "), "debug", tag));
     updateDisplay();
 }
 
@@ -149,6 +183,13 @@ void MessageWidget::printGUIDebugMessage(QString message)
 void MessageWidget::checkMessages()
 {
     printCoreMessages();
+}
+
+
+void MessageWidget::setGroupByTag(bool value)
+{
+    mGroupByTag = value;
+    updateDisplay();
 }
 
 
@@ -197,4 +238,12 @@ void MessageWidget::showDebugMessages(bool value)
 }
 
 
+
+
+GUIMessage::GUIMessage(QString message, QString type, QString tag)
+{
+    this->message = message;
+    this->type = type;
+    this->tag = tag;
+}
 

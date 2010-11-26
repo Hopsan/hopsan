@@ -210,7 +210,7 @@ bool ProjectTab::simulate()
         actualSimulation.quit();
         QString timeString;
         timeString.setNum(simTimer.elapsed());
-        pMessageWidget->printGUIInfoMessage(QString("Simulation time: ").append(timeString).append(" ms"));
+        pMessageWidget->printGUIDebugMessage(QString("Simulation time: ").append(timeString).append(" ms"));
     }
 
     if (progressBar.wasCanceled())

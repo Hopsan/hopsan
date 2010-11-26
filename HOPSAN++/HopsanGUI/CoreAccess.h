@@ -11,7 +11,7 @@ class CoreMessagesAccess
 {
 public:
     size_t getNumberOfMessages();
-    void getMessage(QString &message, QString &type);
+    void getMessage(QString &message, QString &type, QString &tag);
 };
 
 class CoreSystemAccess

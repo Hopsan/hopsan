@@ -51,6 +51,7 @@ public:
     QToolButton *mpShowInfoMessagesButton;
     QToolButton *mpShowDefaultMessagesButton;
     QToolButton *mpShowDebugMessagesButton;
+    QCheckBox *mpGroupByTagCheckBox;
 
     AboutDialog *mpAboutDialog;
 

@@ -16,12 +16,13 @@ HopsanCoreMessageHandler::HopsanCoreMessageHandler()
     mMaxQueueSize = 10000;
 }
 
-void HopsanCoreMessageHandler::addMessage(int type, string preFix, string message, int debuglevel)
+void HopsanCoreMessageHandler::addMessage(int type, string preFix, string message, string tag, int debuglevel)
 {
     HopsanCoreMessage msg;
     msg.type = type;
     msg.debuglevel = debuglevel;
     msg.message = preFix + message;
+    msg.tag = tag;
     mMessageQueue.push(msg);
     if (mMessageQueue.size() > mMaxQueueSize)
     {
@@ -31,24 +32,24 @@ void HopsanCoreMessageHandler::addMessage(int type, string preFix, string messag
 }
 
 
-void HopsanCoreMessageHandler::addInfoMessage(string message, int dbglevel)
+void HopsanCoreMessageHandler::addInfoMessage(string message, string tag, int dbglevel)
 {
-    addMessage(HopsanCoreMessage::INFO, "Info: ", message, dbglevel);
+    addMessage(HopsanCoreMessage::INFO, "Info: ", message, tag, dbglevel);
 }
 
-void HopsanCoreMessageHandler::addWarningMessage(string message, int dbglevel)
+void HopsanCoreMessageHandler::addWarningMessage(string message, string tag, int dbglevel)
 {
-    addMessage(HopsanCoreMessage::WARNING, "Warning: ", message, dbglevel);
+    addMessage(HopsanCoreMessage::WARNING, "Warning: ", message, tag, dbglevel);
 }
 
-void HopsanCoreMessageHandler::addErrorMessage(string message, int dbglevel)
+void HopsanCoreMessageHandler::addErrorMessage(string message, string tag, int dbglevel)
 {
-    addMessage(HopsanCoreMessage::ERROR, "Error: ", message, dbglevel);
+    addMessage(HopsanCoreMessage::ERROR, "Error: ", message, tag, dbglevel);
 }
 
-void HopsanCoreMessageHandler::addComponentDebugMessage(string message, int dbglevel)
+void HopsanCoreMessageHandler::addDebugMessage(string message, string tag, int dbglevel)
 {
-    addMessage(HopsanCoreMessage::DEBUG, "Debug: ", message, dbglevel);
+    addMessage(HopsanCoreMessage::DEBUG, "Debug: ", message, tag, dbglevel);
 }
 
 

@@ -535,7 +535,7 @@ void UndoStack::registerDeletedObject(GUIObject *item)
     item->saveToDomElement(stuffElement);
     gpMainWindow->mpUndoWidget->refreshList();
 
-    gpMainWindow->mpMessageWidget->printGUIInfoMessage(gpMainWindow->mpProjectTabs->getCurrentSystem()->mUndoStack->mDomDocument.toString());
+    gpMainWindow->mpMessageWidget->printGUIDebugMessage(gpMainWindow->mpProjectTabs->getCurrentSystem()->mUndoStack->mDomDocument.toString());
 }
 
 
