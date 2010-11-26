@@ -11,11 +11,11 @@
 #include <QDebug>
 
 #include "OptionsDialog.h"
-#include "ProjectTabWidget.h"
-#include "MainWindow.h"
-#include "GraphicsView.h"
-#include "PlotWidget.h"
-#include "Configuration.h"
+#include "../ProjectTabWidget.h"
+#include "../MainWindow.h"
+#include "../GraphicsView.h"
+#include "../PlotWidget.h"
+#include "../Configuration.h"
 
 class ProjectTabWidget;
 

@@ -1,4 +1,4 @@
-//$Id: OptionsDialog.h 1195 2010-04-01 09:25:58Z robbr48 $
+//$Id$
 
 #ifndef ABOUTDIALOG_H
 #define ABOUTDIALOG_H

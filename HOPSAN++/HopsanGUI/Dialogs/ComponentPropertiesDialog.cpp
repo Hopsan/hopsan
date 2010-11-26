@@ -12,17 +12,15 @@
 #include <iostream>
 
 #include "ComponentPropertiesDialog.h"
-#include "MainWindow.h"
-#include "GUIPort.h"
-#include "MessageWidget.h"
-#include "GUIObjects/GUIComponent.h"
-#include "GUIObjects/GUIContainerObject.h"
-#include "GUIObjects/GUISystem.h"
-#include "UndoStack.h"
-#include "ProjectTabWidget.h"
+#include "../MainWindow.h"
+#include "../GUIPort.h"
+#include "../MessageWidget.h"
+#include "../GUIObjects/GUIComponent.h"
+#include "../GUIObjects/GUIContainerObject.h"
+#include "../GUIObjects/GUISystem.h"
+#include "../UndoStack.h"
+#include "../ProjectTabWidget.h"
 #include "SystemParametersWidget.h"
-
-#include <QToolButton>
 
 
 //! @class ComponentPropertiesDialog

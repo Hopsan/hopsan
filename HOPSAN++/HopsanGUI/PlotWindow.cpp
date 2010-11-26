@@ -12,7 +12,6 @@
 
 #include "MainWindow.h"
 #include "ProjectTabWidget.h"
-//#include "GUIObject.h"
 #include "GUIPort.h"
 #include "GraphicsView.h"
 #include "Utilities/GUIUtilities.h"

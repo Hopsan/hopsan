@@ -1,13 +1,13 @@
 #include "ContainerPropertiesDialog.h"
-#include "GUIObjects/GUIContainerObject.h"
+#include "../GUIObjects/GUIContainerObject.h"
 
 //#include <QtGui>
 #include <QDebug>
 
-#include "ProjectTabWidget.h"
-#include "MainWindow.h"
-#include "GUIObjects/GUISystem.h"
-#include "LibraryWidget.h"
+#include "../ProjectTabWidget.h"
+#include "../MainWindow.h"
+#include "../GUIObjects/GUISystem.h"
+#include "../LibraryWidget.h"
 
 //! @brief Constructor for the parameter dialog for containers
 //! @param pGUIComponent Pointer to the component

@@ -4,7 +4,7 @@
 //! @todo clean these up
 #include "../ProjectTabWidget.h"
 #include "../MainWindow.h"
-#include "../ContainerPropertiesDialog.h"
+#include "../Dialogs/ContainerPropertiesDialog.h"
 #include "../GUIPort.h"
 #include "../GUIConnector.h"
 #include "../Utilities/GUIUtilities.h"

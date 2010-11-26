@@ -8,11 +8,11 @@
 //$Id: OptionsDialog.cpp 1196 2010-04-01 09:55:04Z robbr48 $
 
 #include "AboutDialog.h"
-#include "MainWindow.h"
+#include "../MainWindow.h"
 #include <QPixmap>
 
-#include "common.h"
-#include "version.h"
+#include "../common.h"
+#include "../version.h"
 
 
 //! @class AboutDialog

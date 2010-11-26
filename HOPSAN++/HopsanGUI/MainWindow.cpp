@@ -11,7 +11,7 @@
 
 #include "PlotWidget.h"
 #include "MessageWidget.h"
-#include "OptionsDialog.h"
+#include "Dialogs/OptionsDialog.h"
 #include "UndoStack.h"
 #include "LibraryWidget.h"
 #include "ProjectTabWidget.h"
@@ -22,7 +22,7 @@
 #include "SystemParametersWidget.h"
 #include "Configuration.h"
 #include "CopyStack.h"
-#include "AboutDialog.h"
+#include "Dialogs/AboutDialog.h"
 
 #include "loadObjects.h"
 

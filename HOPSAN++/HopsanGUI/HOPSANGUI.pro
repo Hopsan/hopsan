@@ -14,7 +14,7 @@ SOURCES += main.cpp \
     MessageWidget.cpp \
     SimulationThread.cpp \
     InitializationThread.cpp \
-    OptionsDialog.cpp \
+    Dialogs/OptionsDialog.cpp \
     UndoStack.cpp \
     GraphicsView.cpp \
     loadObjects.cpp \
@@ -38,9 +38,9 @@ SOURCES += main.cpp \
     Utilities/GUIUtilities.cpp \
     Configuration.cpp \
     CopyStack.cpp \
-    ComponentPropertiesDialog.cpp \
-    ContainerPropertiesDialog.cpp \
-    AboutDialog.cpp \
+    Dialogs/ComponentPropertiesDialog.cpp \
+    Dialogs/ContainerPropertiesDialog.cpp \
+    Dialogs/AboutDialog.cpp \
     CoreAccess.cpp
 
 HEADERS += MainWindow.h \
@@ -54,7 +54,7 @@ HEADERS += MainWindow.h \
     SimulationThread.h \
     InitializationThread.h \
     version.h \
-    OptionsDialog.h \
+    Dialogs/OptionsDialog.h \
     UndoStack.h \
     CoreAccess.h \
     GraphicsView.h \
@@ -81,9 +81,9 @@ HEADERS += MainWindow.h \
     Utilities/GUIUtilities.h \
     Configuration.h \
     CopyStack.h \
-    ComponentPropertiesDialog.h \
-    ContainerPropertiesDialog.h \
-    AboutDialog.h
+    Dialogs/ComponentPropertiesDialog.h \
+    Dialogs/ContainerPropertiesDialog.h \
+    Dialogs/AboutDialog.h
 
 OTHER_FILES += 
 

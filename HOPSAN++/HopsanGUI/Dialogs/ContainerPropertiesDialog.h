@@ -16,7 +16,6 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QGridLayout>
-//#include <QSpinBox>
 
 class GUIContainerObject;
 
