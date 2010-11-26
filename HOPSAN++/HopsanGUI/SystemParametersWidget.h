@@ -1,27 +1,16 @@
-#ifndef SystemParameterSWIDGET_H
-#define SystemParameterSWIDGET_H
+#ifndef SYSTEMPARAMETERSWIDGET_H
+#define SYSTEMPARAMETERSWIDGET_H
 
 #include <QList>
 #include <QStringList>
 #include <QTableWidget>
 #include <QPushButton>
-#include <QToolButton>
 #include <QDialog>
 #include <QTableWidget>
 #include <QObject>
 #include <QLabel>
 #include <QGridLayout>
 #include <QMenu>
-#include <qwidget.h>
-#include <qlabel.h>
-
-#include <common.h>
-
-//Ska bort:
-#include <ProjectTabWidget.h>
-#include <MainWindow.h>
-#include <QIcon>
-#include <GUIObjects/GUISystem.h>
 
 
     //Forward Declarations
@@ -73,41 +62,4 @@ private:
     QGridLayout *mpGridLayout;
 };
 
-
-//! @class This class implement a Layout for user interaction of values with name, value and units
-class ParameterLayout : public QGridLayout
-{
-    Q_OBJECT
-
-public:
-
-    ParameterLayout(QString dataName="", QString descriptionName="", double dataValue=0, QString unitName="", GUIModelObject *pGUIModelObject=0, QWidget *parent=0);
-
-    ParameterLayout(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="", GUIModelObject *pGUIModelObject=0, QWidget *parent=0);
-
-    void commonConstructorCode(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="", GUIModelObject *pGUIModelObject=0, QWidget *parent=0);
-
-    QString getDescriptionName();
-
-    QString getDataName();
-
-    double getDataValue();
-    QString getDataValueTxt();
-
-protected slots:
-
-    void showListOfSystemParameters();
-
-protected:
-    GUIModelObject *mpGUIModelObject;
-
-    QLabel mDataNameLabel;
-    QLabel mDescriptionNameLabel;
-    QLineEdit mDataValuesLineEdit;
-    QLabel mUnitNameLabel;
-
-    QToolButton mSystemParameterToolButton;
-};
-
-
-#endif // SystemParameterSWIDGET_H
+#endif // SYSTEMPARAMETERSWIDGET_H
