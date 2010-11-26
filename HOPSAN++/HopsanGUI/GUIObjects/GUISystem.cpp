@@ -28,8 +28,9 @@ GUISystem::GUISystem(QPoint position, qreal rotation, const GUIModelObjectAppear
 
 //Root system specific constructor
 GUISystem::GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *parent)
-    : GUIContainerObject(QPoint(0,0), 0, &GUIModelObjectAppearance(), DESELECTED, USERGRAPHICS, 0, parent)
+    : GUIContainerObject(QPoint(0,0), 0, 0, DESELECTED, USERGRAPHICS, 0, parent)
 {
+    this->mGUIModelObjectAppearance = *(gpMainWindow->mpLibrary->getAppearanceData("Subsystem")); //This will crash if Subsystem not already loaded
     this->mpParentProjectTab = parentProjectTab;
     this->commonConstructorCode();
     this->mUndoStack->newPost();

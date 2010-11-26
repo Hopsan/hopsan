@@ -32,7 +32,10 @@ GUIModelObject::GUIModelObject(QPoint position, qreal rotation, const GUIModelOb
     mHmfTagName = HMF_OBJECTTAG; //!< @todo change this
 
         //Make a local copy of the appearance data (that can safely be modified if needed)
-    mGUIModelObjectAppearance = *pAppearanceData;
+    if (pAppearanceData != 0)
+    {
+        mGUIModelObjectAppearance = *pAppearanceData;
+    }
 
         //Setup appearance
     this->refreshAppearance();
@@ -321,20 +324,6 @@ void GUIModelObject::setIcon(graphicsType gfxType)
     }
 
 }
-
-
-////! @brief Slot that deselects the object
-//void GUIModelObject::deselect()
-//{
-//    this->setSelected(false);
-//}
-
-
-////! @brief Slot that selects the object
-//void GUIModelObject::select()
-//{
-//    this->setSelected(true);
-//}
 
 
 //! @brief Returns a pointer to the port with the specified name
@@ -693,12 +682,6 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
             }
         }
     }
-//    else if (change == QGraphicsItem::ItemScaleHasChanged)
-//    {
-//        qDebug() << "item scale has changed";
-//    }
-
-//    qDebug() << "change: " << change;
 
     return value;
 }
@@ -725,22 +708,6 @@ void GUIModelObject::showPorts(bool visible)
             }
         }
 }
-
-
-////! Figures out the number of a component port by using a pointer to the port.
-////! @see getPort(int number)
-//int GUIModelObject::getPortNumber(GUIPort *port)
-//{
-//    for (int i = 0; i != mPortListPtrs.size(); ++i)
-//    {
-//        if(port == mPortListPtrs.value(i))
-//        {
-//            return i;
-//        }
-//    }
-//    qDebug() << "Request for port number of non-existing port.";
-//    assert(false);      /// @todo: Trough exception
-//}
 
 
 //! @brief Rotates a component 90 degrees clockwise

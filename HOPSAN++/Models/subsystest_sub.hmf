@@ -7,7 +7,7 @@
             <viewport x="2502" y="2501.5" zoom="1"/>
             <hopsanobjectappearance>
                 <modelobject typename="" displayname="subsystest_sub">
-                    <icon isopath="" iconrotation="" userpath=""/>
+                    <icon isopath="" iconrotation="" userpath="../../graphics/objecticons/subsystemtmp.svg"/>
                     <portpose x="0.0305092" y="0" a="0" name="sysp"/>
                     <portpose x="0.969144" y="0" a="0" name="sysp_1"/>
                     <portpose x="0" y="0.943014" a="0" name="sysp_2"/>

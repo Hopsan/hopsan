@@ -41,10 +41,6 @@ MainWindow::MainWindow(QWidget *parent)
     gConfig = Configuration();
     gCopyStack = CopyStack();
 
-    //QString(MAINPATH) = "../../";
-    //mQString(ICONPATH) = QString(MAINPATH) + "HopsanGUI/icons/";
-    //mComponentPath = QString(MAINPATH) + "HopsanGUI/componentData/";
-
     //Set the name and size of the main window
     this->setObjectName("MainWindow");
     this->resize(1024,768);
@@ -171,7 +167,6 @@ MainWindow::MainWindow(QWidget *parent)
     this->setStatusBar(mpStatusBar);
 
     mpUndoWidget = new UndoWidget(this);
-    mpProjectTabs->addNewProjectTab();
     mpOptionsDialog = new OptionsDialog(this);
 
             //Load default libraries
@@ -210,6 +205,9 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "hydraulic/Dummy","Hydraulic");
 
     mpLibrary->addLibrary(QString(COMPONENTPATH) + "_Optimized");
+
+    //Create one new project tab, IMPORTANT: must be after Subsystem library has been loaded as we need Subsystem Appearance
+    mpProjectTabs->addNewProjectTab();
 
         //Create the plot dock widget and hide it
     mpPlotWidgetDock = new QDockWidget(tr("Plot Variables"), this);
