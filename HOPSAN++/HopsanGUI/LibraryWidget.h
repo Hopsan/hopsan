@@ -75,6 +75,7 @@ class LibraryWidget : public QWidget
 
     friend class LibraryContent;
     friend class LibraryTreeWidget;
+    friend class MainWindow;
 
 public:
     //Member functions
