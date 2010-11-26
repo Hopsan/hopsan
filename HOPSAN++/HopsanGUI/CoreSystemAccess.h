@@ -7,6 +7,13 @@
 #include <QString>
 #include <qdebug.h>
 
+class CoreMessagesAccess
+{
+public:
+    size_t getNumberOfMessages();
+    void getMessage(QString &message, QString &type);
+};
+
 class CoreSystemAccess
 {
 public:

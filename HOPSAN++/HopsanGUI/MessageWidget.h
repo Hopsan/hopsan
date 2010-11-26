@@ -6,6 +6,7 @@
 
 
 class MainWindow;
+class CoreMessagesAccess;
 
 class MessageWidget : public QTextEdit
 {
@@ -28,14 +29,16 @@ public slots:
     void showDebugMessages(bool value);
 
 private:
-    void setMessageColor(int type);
+    void setMessageColor(QString type);
     void updateDisplay();
-    QList<hopsan::HopsanCoreMessage> mMessageList;
+    QList< QPair<QString, QString> > mMessageList;
     bool mShowErrorMessages;
     bool mShowInfoMessages;
     bool mShowWarningMessages;
     bool mShowDefaultMessages;
     bool mShowDebugMessages;
+
+    CoreMessagesAccess *mpCoreAccess;
 
 };
 

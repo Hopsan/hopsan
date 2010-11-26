@@ -5,6 +5,37 @@
 using namespace std;
 using namespace hopsan;
 
+
+size_t CoreMessagesAccess::getNumberOfMessages()
+{
+    return HopsanEssentials::getInstance()->checkMessage();
+}
+
+void CoreMessagesAccess::getMessage(QString &message, QString &type)
+{
+    hopsan::HopsanCoreMessage coreMsg = HopsanEssentials::getInstance()->getMessage();
+    message = QString(coreMsg.message.c_str());
+    switch (coreMsg.type)
+    {
+    case hopsan::HopsanCoreMessage::ERROR:
+        type = "error";
+        break;
+    case hopsan::HopsanCoreMessage::WARNING:
+        type = "warning";
+        break;
+    case hopsan::HopsanCoreMessage::INFO:
+        type = "info";
+        break;
+    case hopsan::HopsanCoreMessage::DEFAULT:
+        type = "default";
+        break;
+    case hopsan::HopsanCoreMessage::DEBUG:
+        type = "debug";
+        break;
+    }
+}
+
+
 CoreSystemAccess::CoreSystemAccess(QString name, CoreSystemAccess* pParentCoreSystemAccess)
 {
     //Create new Core system component

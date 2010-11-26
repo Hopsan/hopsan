@@ -1,5 +1,6 @@
 #include "MessageWidget.h"
 #include "MainWindow.h"
+#include "CoreSystemAccess.h"
 
 using namespace hopsan;
 
@@ -11,6 +12,8 @@ MessageWidget::MessageWidget(MainWindow *pParent)
     mShowInfoMessages = true;
     mShowDefaultMessages = true;
     mShowDebugMessages = false;
+
+    mpCoreAccess = new CoreMessagesAccess;
 }
 
 QSize MessageWidget::sizeHint() const
@@ -21,23 +24,27 @@ QSize MessageWidget::sizeHint() const
     return size;
 }
 
-void MessageWidget::setMessageColor(int type)
+void MessageWidget::setMessageColor(QString type)
 {
-    if (type == HopsanCoreMessage::ERROR)
+    if (type == "error")
     {
         setTextColor("RED");
     }
-    else if (type == HopsanCoreMessage::WARNING)
+    else if (type == "warning")
     {
         setTextColor("ORANGE");
     }
-    else if (type == HopsanCoreMessage::INFO)
+    else if (type == "info")
     {
         setTextColor("GREEN");
     }
-    else if (type == HopsanCoreMessage::DEFAULT)
+    else if (type == "default")
     {
         setTextColor("BLACK");
+    }
+    else if (type == "debug")
+    {
+        setTextColor("BLUE");
     }
     else
     {
@@ -49,17 +56,17 @@ void MessageWidget::setMessageColor(int type)
 void MessageWidget::updateDisplay()
 {
     this->clear();
-    QList<hopsan::HopsanCoreMessage>::iterator it;
+    QList< QPair<QString, QString> >::iterator it;
     for(it=mMessageList.begin(); it!=mMessageList.end(); ++it)
     {
-        if( !((*it).type == hopsan::HopsanCoreMessage::ERROR && !mShowErrorMessages) &&
-            !((*it).type == hopsan::HopsanCoreMessage::WARNING && !mShowWarningMessages) &&
-            !((*it).type == hopsan::HopsanCoreMessage::INFO && !mShowInfoMessages) &&
-            !((*it).type == hopsan::HopsanCoreMessage::DEFAULT && !mShowDefaultMessages) &&
-            !((*it).type == hopsan::HopsanCoreMessage::DEBUG && !mShowDebugMessages))
+        if( !((*it).second == "error" && !mShowErrorMessages) &&
+            !((*it).second == "warning" && !mShowWarningMessages) &&
+            !((*it).second == "info" && !mShowInfoMessages) &&
+            !((*it).second == "default" && !mShowDefaultMessages) &&
+            !((*it).second == "debug" && !mShowDebugMessages))
         {
-            setMessageColor((*it).type);
-            append(QString::fromStdString((*it).message));
+            setMessageColor((*it).second);
+            append((*it).first);
         }
     }
 }
@@ -67,59 +74,72 @@ void MessageWidget::updateDisplay()
 
 void MessageWidget::printCoreMessages()
 {
-    //*****Core Interaction*****
-    HopsanCoreMessage msg;
-    HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
-    if (pHopsanCore != 0)
-    {
-        size_t nmsg = pHopsanCore->checkMessage();
+
+
+
+        size_t nmsg = mpCoreAccess->getNumberOfMessages();
         for (size_t idx=0; idx < nmsg; ++idx)
         {
-            msg = pHopsanCore->getMessage();
-            mMessageList.append(msg);
+            QString message, type;
+            mpCoreAccess->getMessage(message, type);
+            mMessageList.append(QPair<QString, QString>(message, type));
             this->updateDisplay();
         }
-    }
-    else
-    {
-        printGUIMessage("The hopsan core pointer is not set, can not get core messages");
-    }
-    //**************************
+
+
+//    //*****Core Interaction*****
+//    HopsanCoreMessage msg;
+//    HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
+//    if (pHopsanCore != 0)
+//    {
+//        size_t nmsg = pHopsanCore->checkMessage();
+//        for (size_t idx=0; idx < nmsg; ++idx)
+//        {
+//            msg = pHopsanCore->getMessage();
+//            mMessageList.append(msg);
+//            this->updateDisplay();
+//        }
+//    }
+//    else
+//    {
+//        printGUIMessage("The hopsan core pointer is not set, can not get core messages");
+//    }
+//    //**************************
 }
 
 void MessageWidget::printGUIMessage(QString message)
 {
-    hopsan::HopsanCoreMessage msg;
-    msg.message = message.toStdString();
-    msg.type = hopsan::HopsanCoreMessage::DEFAULT;
-    this->mMessageList.append(msg);
+//    hopsan::HopsanCoreMessage msg;
+//    msg.message = message.toStdString();
+//    msg.type = hopsan::HopsanCoreMessage::DEFAULT;
+    this->mMessageList.append(QPair<QString, QString>(message, "default"));
     this->updateDisplay();
 }
 
 void MessageWidget::printGUIErrorMessage(QString message)
 {
-    hopsan::HopsanCoreMessage msg;
-    msg.message = message.toStdString();
-    msg.type = hopsan::HopsanCoreMessage::ERROR;
-    this->mMessageList.append(msg);
+//    hopsan::HopsanCoreMessage msg;
+//    msg.message = message.toStdString();
+//    msg.type = hopsan::HopsanCoreMessage::ERROR;
+    this->mMessageList.append(QPair<QString, QString>(message, "error"));
     this->updateDisplay();
 }
 
 void MessageWidget::printGUIWarningMessage(QString message)
 {
-    hopsan::HopsanCoreMessage msg;
-    msg.message = message.toStdString();
-    msg.type = hopsan::HopsanCoreMessage::WARNING;
-    this->mMessageList.append(msg);
+//    hopsan::HopsanCoreMessage msg;
+//    msg.message = message.toStdString();
+//    msg.type = hopsan::HopsanCoreMessage::WARNING;
+    this->mMessageList.append(QPair<QString, QString>(message, "warning"));
     this->updateDisplay();
 }
 
 void MessageWidget::printGUIInfoMessage(QString message)
 {
-    hopsan::HopsanCoreMessage msg;
-    msg.message = message.toStdString();
-    msg.type = hopsan::HopsanCoreMessage::INFO;
-    this->mMessageList.append(msg);
+//    hopsan::HopsanCoreMessage msg;
+//    msg.message = message.toStdString();
+//    msg.type = hopsan::HopsanCoreMessage::INFO;
+    this->mMessageList.append(QPair<QString, QString>(message, "info"));
     this->updateDisplay();
 }
 
