@@ -7,8 +7,8 @@
 //!
 //$Id$
 
-#ifndef ComponentPropertiesDialog_H
-#define ComponentPropertiesDialog_H
+#ifndef COMPONENTPROPERTIESDIALOG_H
+#define COMPONENTPROPERTIESDIALOG_H
 
 #include <QtGui>
 
@@ -56,33 +56,25 @@ class ParameterLayout : public QGridLayout
     Q_OBJECT
 
 public:
-
     ParameterLayout(QString dataName="", QString descriptionName="", double dataValue=0, QString unitName="", GUIModelObject *pGUIModelObject=0, QWidget *parent=0);
-
     ParameterLayout(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="", GUIModelObject *pGUIModelObject=0, QWidget *parent=0);
-
     void commonConstructorCode(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="", GUIModelObject *pGUIModelObject=0, QWidget *parent=0);
 
     QString getDescriptionName();
-
     QString getDataName();
-
     double getDataValue();
     QString getDataValueTxt();
 
 protected slots:
-
     void showListOfSystemParameters();
 
 protected:
     GUIModelObject *mpGUIModelObject;
-
     QLabel mDataNameLabel;
     QLabel mDescriptionNameLabel;
     QLineEdit mDataValuesLineEdit;
     QLabel mUnitNameLabel;
-
     QToolButton mSystemParameterToolButton;
 };
 
-#endif // ComponentPropertiesDialog_H
+#endif // COMPONENTPROPERTIESDIALOG_H
