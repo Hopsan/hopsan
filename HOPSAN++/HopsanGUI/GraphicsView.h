@@ -5,11 +5,12 @@
 #include <QGraphicsView>
 #include <QObject>
 #include <QVector>
+#include "UndoStack.h"
 
 #include "common.h"
 
 //Forward Declarations
-class UndoStack;
+//class UndoStack;
 class GUIPort;
 class GUIObject;
 class GUIConnector;

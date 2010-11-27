@@ -17,12 +17,12 @@
 #include "ProjectTabWidget.h"
 #include "GraphicsView.h"
 #include "GUIObjects/GUISystem.h"
-#include "Utilities/GUIUtilities.h"
 #include "PyDock.h"
 #include "SystemParametersWidget.h"
 #include "Configuration.h"
 #include "CopyStack.h"
 #include "Dialogs/AboutDialog.h"
+#include "Widgets/UndoWidget.h"
 
 #include "loadObjects.h"
 

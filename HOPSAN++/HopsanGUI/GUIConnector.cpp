@@ -17,6 +17,8 @@
 #include "Configuration.h"
 #include <math.h>
 
+class UndoStack;
+
 //! @brief Constructor for connector class
 //! @param startpos defines the start position of the connector, normally the center of the starting port.
 //! @param *parentView is a pointer to the GraphicsView the connector belongs to.

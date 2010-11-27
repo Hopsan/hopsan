@@ -41,7 +41,8 @@ SOURCES += main.cpp \
     Dialogs/ComponentPropertiesDialog.cpp \
     Dialogs/ContainerPropertiesDialog.cpp \
     Dialogs/AboutDialog.cpp \
-    CoreAccess.cpp
+    CoreAccess.cpp \
+    Widgets/UndoWidget.cpp
 
 HEADERS += MainWindow.h \
     ProjectTabWidget.h \
@@ -83,7 +84,8 @@ HEADERS += MainWindow.h \
     CopyStack.h \
     Dialogs/ComponentPropertiesDialog.h \
     Dialogs/ContainerPropertiesDialog.h \
-    Dialogs/AboutDialog.h
+    Dialogs/AboutDialog.h \
+    Widgets/UndoWidget.h
 
 OTHER_FILES += 
 

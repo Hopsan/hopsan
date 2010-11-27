@@ -11,13 +11,14 @@
 #include <QMainWindow>
 #include <QtGui>
 
+#include "Widgets/UndoWidget.h"
+
 class ProjectTabWidget;
 class GraphicsView;
 class QGraphicsScene;
 class LibraryWidget;
-//class ContainerPropertiesDialog;
 class OptionsDialog;
-class UndoWidget;
+//class UndoWidget;
 class MessageWidget;
 class PlotWidget;
 class PyDock;

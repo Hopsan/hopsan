@@ -18,7 +18,6 @@ class GUIObject;
 class GraphicsView;
 class GUIConnector;
 class MainWindow;
-//class GUISystem;
 class GUIContainerObject;
 
 class UndoStack : public QObject
@@ -34,7 +33,6 @@ public:
     void registerRenameObject(QString oldName, QString newName);
     void registerModifiedConnector(QPointF oldPos, QPointF newPos, GUIConnector *item, int lineNumber);
     void registerMovedObject(QPointF oldPos, QPointF newPos, QString objectName);
-    //void registerMovedConnector(double dx, double dy, GUIConnector *item);
     void registerRotatedObject(QString objectName);
     void registerVerticalFlip(QString objectName);
     void registerHorizontalFlip(QString objectName);
@@ -54,29 +52,6 @@ private:
     QDomElement getCurrentPost();
     QDomDocument mDomDocument;
     QDomElement mUndoRoot;
-};
-
-
-class UndoWidget : public QDialog
-{
-public:
-    UndoWidget(MainWindow *parent = 0);
-    void show();
-    void refreshList();
-    QString translateTag(QString tag);
-    QPushButton *getUndoButton();
-    QPushButton *getRedoButton();
-    QPushButton *getClearButton();
-
-    //MainWindow *mpParentMainWindow;
-
-private:
-    QTableWidget *mUndoTable;
-    QList< QList<QString> > mTempStack;
-    QPushButton *mpUndoButton;
-    QPushButton *mpRedoButton;
-    QPushButton *mpClearButton;
-    QGridLayout *mpLayout;
 };
 
 

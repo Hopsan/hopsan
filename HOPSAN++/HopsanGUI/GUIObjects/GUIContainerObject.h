@@ -4,6 +4,7 @@
 #include "GUIModelObject.h"
 #include "CoreAccess.h"
 #include "GUIWidgets.h"
+//#include "../UndoStack.h"
 
 //Forward Declarations
 class ProjectTab;
