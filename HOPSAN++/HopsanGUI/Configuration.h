@@ -9,6 +9,8 @@
 #include <QFileInfo>
 #include <QPen>
 
+#include "common.h"
+
 class MainWindow;
 
 class Configuration

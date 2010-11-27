@@ -2518,7 +2518,7 @@ private:
 #ifdef USETBB
 //! The system component version of simulate
 void ComponentSystem::simulateMultiThreadedOld(const double startT, const double stopT)
-{
+{    
     mStop = false; //This variable can not be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
     mTime = startT;
     double stopTsafe = stopT - mTimestep/2.0; //minus halv a timestep is here to ensure that no numerical issues occure
@@ -2595,9 +2595,8 @@ void ComponentSystem::simulateMultiThreadedOld(const double startT, const double
         gCoreMessageHandler.addDebugMessage("NUMBER_OF_PROCESSORS = " + nCoresString + ", setting to " + ss.str());
     }
 
-
         //Attempt to distribute C component equally over vectors (one for each core)
-    vector< vector<Component*> > splitCVector;
+    vector< vector<Component*> > splitCVector;      //Vector containing the C vectors
     splitCVector.resize(nCores);
     size_t cCompNum=0;
     while(true)
@@ -2776,6 +2775,13 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         nCores = 1; //At least on single core Ubuntu 10.04 getenv("NUMBER_OF_PROCESSORS") returns NULL and crash, solved by this if block
     }
 
+        //Create vector used for time measurement (DEBUG)
+    vector<double> timeVector;                                                                              //DEBUG
+    timeVector.resize(nCores);                                                                              //DEBUG
+    for(size_t i=0; i<nCores; ++i)                                                                          //DEBUG
+    {                                                                                                       //DEBUG
+        timeVector[i] = 0;                                                                                  //DEBUG
+    }                                                                                                       //DEBUG
 
         //Attempt to distribute S component equally over vectors (one for each core)
     vector< vector<Component*> > splitSVector;
@@ -2788,11 +2794,21 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
             if(sCompNum == mComponentSignalptrs.size())
                 break;
             splitSVector[coreNumber].push_back(mComponentSignalptrs[sCompNum]);
+            timeVector[coreNumber] += mComponentSignalptrs[sCompNum]->getMeasuredTime();                    //DEBUG
             ++sCompNum;
         }
         if(sCompNum == mComponentSignalptrs.size())
             break;
     }
+
+    for(size_t i=0; i<nCores; ++i)                                                                                              //DEBUG
+    {                                                                                                                           //DEBUG
+        stringstream ss;                                                                                                        //DEBUG
+        ss << timeVector[i]*1000;                                                                                               //DEBUG
+        gCoreMessageHandler.addDebugMessage("Creating signal thread vector, measured time = " + ss.str() + " ms", "svector");   //DEBUG
+        timeVector[i] = 0;                                                                                                      //DEBUG
+    }                                                                                                                           //DEBUG
+
 
         //Attempt to distribute C component equally over vectors (one for each core)
     vector< vector<Component*> > splitCVector;
@@ -2805,11 +2821,20 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
             if(cCompNum == mComponentCptrs.size())
                 break;
             splitCVector[coreNumber].push_back(mComponentCptrs[cCompNum]);
+            timeVector[coreNumber] += mComponentCptrs[cCompNum]->getMeasuredTime();                         //DEBUG
             ++cCompNum;
         }
         if(cCompNum == mComponentCptrs.size())
             break;
     }
+
+    for(size_t i=0; i<nCores; ++i)                                                                                              //DEBUG
+    {                                                                                                                           //DEBUG
+        stringstream ss;                                                                                                        //DEBUG
+        ss << timeVector[i]*1000;                                                                                               //DEBUG
+        gCoreMessageHandler.addDebugMessage("Creating C-type thread vector, measured time = " + ss.str() + " ms", "cvector");   //DEBUG
+        timeVector[i] = 0;                                                                                                      //DEBUG
+    }                                                                                                                           //DEBUG
 
         //Attempt to distribute Q component equally over vectors (one for each core)
     vector< vector<Component*> > splitQVector;
@@ -2822,11 +2847,20 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
             if(qCompNum == mComponentQptrs.size())
                 break;
             splitQVector[coreNumber].push_back(mComponentQptrs[qCompNum]);
+            timeVector[coreNumber] += mComponentQptrs[qCompNum]->getMeasuredTime();                         //DEBUG
             ++qCompNum;
         }
         if(qCompNum == mComponentQptrs.size())
             break;
     }
+
+    for(size_t i=0; i<nCores; ++i)                                                                                              //DEBUG
+    {                                                                                                                           //DEBUG
+        stringstream ss;                                                                                                        //DEBUG
+        ss << timeVector[i]*1000;                                                                                               //DEBUG
+        gCoreMessageHandler.addDebugMessage("Creating Q-type thread vector, measured time = " + ss.str() + " ms", "qvector");   //DEBUG
+        timeVector[i] = 0;                                                                                                      //DEBUG
+    }                                                                                                                           //DEBUG
 
         //Distribute node pointers equally over vectors (no sorting necessary)
     vector< vector<Node*> > splitNodeVector;

@@ -71,32 +71,39 @@ void MessageWidget::setMessageColor(QString type)
 //! @brief Updates the displayed messages from the message list
 void MessageWidget::updateDisplay()
 {
-    QTextEdit::clear();
+    QTextEdit::clear();         //Clear the message box (we can not call this->clear(), since this would also clear the message list and we wouldn't have anything to print)
     QStringList usedTags;
+
+        //Loop through message list and print messages
     QList<GUIMessage>::iterator it;
     for(it=mMessageList.begin(); it!=mMessageList.end(); ++it)
     {
-        if( !((*it).type == "error" && !mShowErrorMessages) &&
+        if( !((*it).type == "error" && !mShowErrorMessages) &&          //Do not show message if its type shall not be shown
             !((*it).type == "warning" && !mShowWarningMessages) &&
             !((*it).type == "info" && !mShowInfoMessages) &&
             !((*it).type == "default" && !mShowDefaultMessages) &&
             !((*it).type == "debug" && !mShowDebugMessages))
         {
             setMessageColor((*it).type);
-            qDebug() << (*it).tag;
-            if(!(*it).tag.isEmpty() && mGroupByTag)
+            if(!(*it).tag.isEmpty() && mGroupByTag)     //Message is tagged, and group by tag setting is active
             {
-                qDebug() << "Blä 1";
-                if(!usedTags.contains((*it).tag))
+                if(!usedTags.contains((*it).tag))       //Check that tag is not used before
                 {
-                    qDebug() << "Blä 2";
                     usedTags.append((*it).tag);
-                    QString numString;
-                    numString.setNum(tagCount((*it).tag)-1);
-                    append((*it).message + " (" + numString + " similar)");
+                    size_t nTags = tagCount((*it).tag);
+                    if(nTags == 1)                      //There is only one tag, so avoid appending "(0 similar)"
+                    {
+                        append((*it).message);
+                    }
+                    else                                //There are more than one tag, so append ("X similar)"
+                    {
+                        QString numString;
+                        numString.setNum(nTags-1);
+                        append((*it).message + " (" + numString + " similar)");
+                    }
                 }
             }
-            else
+            else        //Message is not tagged, or group by tag setting is not active
             {
                 append((*it).message);
             }
@@ -105,6 +112,8 @@ void MessageWidget::updateDisplay()
 }
 
 
+//! @brief Help function that counts how many messages with a specified tag that exists in message list
+//! @param tag Name of the tag that shall be counted
 size_t MessageWidget::tagCount(QString tag)
 {
     size_t nTags = 0;
@@ -179,6 +188,7 @@ void MessageWidget::printGUIDebugMessage(QString message, QString tag)
 }
 
 
+//! @brief Clear function for message widget, this will empty the message widget and also remove all messages from the list
 void MessageWidget::clear()
 {
     QTextEdit::clear();
@@ -193,6 +203,8 @@ void MessageWidget::checkMessages()
 }
 
 
+//! @brief Tells the message widget wether or not messages shall be grouped by tags
+//! @param value True means that messages shall be grouped
 void MessageWidget::setGroupByTag(bool value)
 {
     mGroupByTag = value;
@@ -246,7 +258,13 @@ void MessageWidget::showDebugMessages(bool value)
 
 
 
+//! @class GUIMessage
+//! @brief The GUIMessage class represent a message in the message widget
+//!
+//! There are three public strings; message, type and tag. These can be accessed directly.
+//!
 
+//! @brief Constructor for the GUIMessage class
 GUIMessage::GUIMessage(QString message, QString type, QString tag)
 {
     this->message = message;

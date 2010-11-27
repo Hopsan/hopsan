@@ -222,7 +222,7 @@ void Node::setLogSettingsNSamples(size_t nSamples, double start, double stop, do
         mLogSlots = ((stop - start) / sampletime);
         std::stringstream ss;
         ss << "You requested nSamples: " << nSamples << ". This is more than total simulation samples, limiting to: " << mLogSlots;
-        gCoreMessageHandler.addWarningMessage(ss.str());
+        gCoreMessageHandler.addWarningMessage(ss.str(), "toofewsamples");
     }
     else
     {

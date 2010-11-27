@@ -275,7 +275,8 @@ else
         if(!settingsElement.firstChildElement("multicore").isNull())
             mUseMulticore = parseDomBooleanNode(settingsElement.firstChildElement("multicore"));
         if(!settingsElement.firstChildElement("numberofthreads").isNull())
-            mUseMulticore = parseDomValueNode(settingsElement.firstChildElement("numberofthreads"));
+            this->mNumberOfThreads = parseDomValueNode(settingsElement.firstChildElement("numberofthreads"));
+
 
         QDomElement styleElement = configRoot.firstChildElement("style");
         QDomElement penElement = styleElement.firstChildElement("penstyle");
