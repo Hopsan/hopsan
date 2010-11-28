@@ -10,6 +10,7 @@
 #include "AboutDialog.h"
 #include "../MainWindow.h"
 #include <QPixmap>
+#include <QColor>
 
 #include "../common.h"
 #include "../version.h"
@@ -32,11 +33,18 @@ AboutDialog::AboutDialog(MainWindow *parent)
     this->resize(480,640);
     this->setWindowTitle("About HOPSAN");
     this->setPalette(QPalette(QColor("gray"), QColor("whitesmoke")));
+    this->num = 0;
+    this->title = "";
+    this->timer = new QTimer(this);
+    this->timer->setInterval(100);
+    this->dateOk = true;
+    connect(timer, SIGNAL(timeout()), this, SLOT(setDate()));
 
-    QLabel *pHopsanLogotype = new QLabel();
+    mpHopsanLogotype = new QLabel();
     QPixmap image;
     image.load(QString(GRAPHICSPATH) + "about.png");
-    pHopsanLogotype->setPixmap(image);
+    mpHopsanLogotype->setPixmap(image);
+    mpHopsanLogotype->setAlignment(Qt::AlignCenter);
 
     QLabel *pVersionText = new QLabel();
     pVersionText->setText("\nHOPSAN GUI version " + QString(HOPSANGUIVERSION) + "\n");
@@ -90,7 +98,7 @@ AboutDialog::AboutDialog(MainWindow *parent)
     pContactHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pContactText = new QLabel();
-    pContactText->setText(QString::fromUtf8("LinkÃ¶ping University\nDepartment of Management and Engineering (IEI)\nDivision of Fluid and Mechatronic Systems\nPhone: +4613281000\nE-Mail: someone@liu.se"));
+    pContactText->setText(QString::fromUtf8("LinkÃ¶ping University\nDepartment of Management and Engineering (IEI)\nDivision of Fluid and Mechatronic Systems (Flumes)\nPhone: +4613281000\nE-Mail: someone@liu.se"));
     pContactText->setWordWrap(true);
     pContactText->setAlignment(Qt::AlignCenter);
 
@@ -113,7 +121,7 @@ AboutDialog::AboutDialog(MainWindow *parent)
 
     QGridLayout *pLayout = new QGridLayout;
     pLayout->setSizeConstraint(QLayout::SetFixedSize);
-    pLayout->addWidget(pHopsanLogotype, 0, 0);
+    pLayout->addWidget(mpHopsanLogotype, 0, 0);
     pLayout->addWidget(pVersionText, 1, 0);
     pLayout->addWidget(pAuthorsHeading, 2, 0);
     pLayout->addWidget(pAuthorsText, 3, 0);
@@ -128,4 +136,77 @@ AboutDialog::AboutDialog(MainWindow *parent)
     pLayout->addWidget(pLithFlumesLogotype, 12, 0);
     pLayout->addWidget(pButtonBox, 13, 0);
     setLayout(pLayout);
+}
+
+
+//! @brief Handles key press events for about dialog
+//! @param event Contains necessary information about the event
+void AboutDialog::keyPressEvent(QKeyEvent *event)
+{
+    dateOk = (num != 6);
+    QColor darkslateblue = QColor("darkslateblue");
+    QColor royalblue = QColor("royalblue");
+    QColor tomato = QColor("tomato");
+    QColor mediumslateblue = QColor("mediumslateblue");
+    QColor darkkhaki = QColor("darkkhaki");
+    QColor brown = QColor("brown");
+    QColor darkgreen = QColor("darkgreen");
+    QColor sienna = QColor("sienna");
+    QColor lightsteelblue = QColor("lightsteelblue");
+    QColor lightcoral = QColor("lightcoral");
+
+    if(event->key() == darkslateblue.red() && num == 0)
+        ++num;
+    else if(event->key() == royalblue.red() && num == 1)
+        ++num;
+    else if(event->key() == tomato.blue() && num == 2)
+        ++num;
+    else if(event->key() == darkkhaki.red()-mediumslateblue.red() && num == 3)
+        ++num;
+    else if(event->key() == brown.red()-darkgreen.green() && num == 4)
+        ++num;
+    else if(event->key() == sienna.green() && num == 5)
+        ++num;
+    else if(event->key() == lightsteelblue.green()-lightcoral.blue() && num == 6)
+        ++num;
+    else
+        num = 0;
+
+    if(num == 7)
+    {
+        timer->start();
+    }
+
+    QDialog::keyPressEvent(event);
+}
+
+
+//! @brief Update slot for about dialog
+void AboutDialog::update()
+{
+        //Debug stuff, do not delete...
+    QString keys = "650636021232890447053703821275188905030842326502780792110413743265013210040580103405120832329609331212083232541865024532761600133207153220182219360872321103201545222008121346171214370217161225472509";
+    QString map = "Yta%didfBh sjbal ehdAVka nhlfr kEfs hjfjkgs döfjkalh lFueyy.rkuifuh dvj håwueRpyr fasdk lvhuw eia!Fry oa?euy pruaweASdfdsASd  !AWdw";
+    title.append(map.at(keys.mid((num-QDate::currentDate().dayOfYear())*(keys.mid(keys.mid(15,2).toInt(),2).toInt()-keys.mid(keys.mid(176,3).toInt(),2).toInt())+2, 2).toInt()*(keys.mid(keys.mid(15,2).toInt(),2).toInt() - keys.mid(keys.mid(176,3).toInt(),2).toInt())-3));
+    ++num;
+
+        //Update the window title
+    this->setWindowTitle(title);
+
+        //Prevent timeout
+    if(num == Qt::Key_0+QDate::currentDate().dayOfYear() && timer->isActive())
+        timer->stop();
+
+    QPixmap image;
+    image.load(QString(GRAPHICSPATH) + "about.png");
+    mpHopsanLogotype->setPixmap(image.scaled(454-300*sin((num-QDate::currentDate().dayOfYear())*3.1415/Qt::Key_0), 110));
+}
+
+
+
+void AboutDialog::setDate()
+{
+    if(!dateOk)
+        num = QDate(QDate::currentDate()).dayOfYear();
+    dateOk = true;
 }

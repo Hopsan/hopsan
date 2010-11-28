@@ -91,7 +91,7 @@ namespace hopsan {
         {
             double num[3] = {0.0, 0.0, 1.0};
             double den[3] = {1.0/momegah*momegah, 2.0*mdeltah/momegah, 1.0};
-            myFilter.initialize(mTimestep, num, den);
+            myFilter.initialize(mTimestep, num, den, 0, 0, -mxvmax, mxvmax);
         }
 
 
@@ -112,10 +112,10 @@ namespace hopsan {
             double xv = myFilter.value();
 
             //Valve equations
-            if (fabs(xv)>mxvmax)
-            {
-                xv = mxvmax*sign(xv);
-            }
+//            if (fabs(xv)>mxvmax)
+//            {
+//                xv = mxvmax*sign(xv);
+//            }
             double xpanom = std::max(xv-moverlap_pa,0.0);
             double xpbnom = std::max(-xv-moverlap_pb,0.0);
             double xatnom = std::max(-xv-moverlap_at,0.0);

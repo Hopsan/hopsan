@@ -461,9 +461,19 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         gpMainWindow->setTimeStepInToolBar(mTimeStep);
         gpMainWindow->setFinishTimeInToolBar(mStopTime);
 
-        //1. Load all sub-components
+        //1. Load global parameters
+        QDomElement xmlParameters = rDomElement.firstChildElement("parameters");
+        QDomElement xmlSubObject = xmlParameters.firstChildElement("mappedparameter");
+        while (!xmlSubObject.isNull())
+        {
+            loadSystemParameter(xmlSubObject, this);
+
+            xmlSubObject = xmlSubObject.nextSiblingElement("mappedparameter");
+        }
+
+        //2. Load all sub-components
         QDomElement xmlSubObjects = rDomElement.firstChildElement(HMF_OBJECTS);
-        QDomElement xmlSubObject = xmlSubObjects.firstChildElement(HMF_COMPONENTTAG);
+        xmlSubObject = xmlSubObjects.firstChildElement(HMF_COMPONENTTAG);
         while (!xmlSubObject.isNull())
         {
             GUIModelObject* pObj = loadGUIModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
@@ -490,7 +500,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_COMPONENTTAG);
         }
 
-        //2. Load all text widgets
+        //3. Load all text widgets
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_TEXTWIDGETTAG);
         while (!xmlSubObject.isNull())
         {
@@ -498,7 +508,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_TEXTWIDGETTAG);
         }
 
-        //3. Load all box widgets
+        //4. Load all box widgets
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_BOXWIDGETTAG);
         while (!xmlSubObject.isNull())
         {
@@ -506,7 +516,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_BOXWIDGETTAG);
         }
 
-        //4. Load all sub-systems
+        //5. Load all sub-systems
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_SYSTEMTAG);
         while (!xmlSubObject.isNull())
         {
@@ -514,7 +524,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMTAG);
         }
 
-        //5. Load all systemports
+        //6. Load all systemports
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_SYSTEMPORTTAG);
         while (!xmlSubObject.isNull())
         {
@@ -522,23 +532,13 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMPORTTAG);
         }
 
-        //6. Load all connectors
+        //7. Load all connectors
         QDomElement xmlConnections = rDomElement.firstChildElement(HMF_CONNECTIONS);
         xmlSubObject = xmlConnections.firstChildElement(HMF_CONNECTORTAG);
         while (!xmlSubObject.isNull())
         {
             loadConnector(xmlSubObject, this, NOUNDO);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_CONNECTORTAG);
-        }
-
-        //7. Load global parameters
-        QDomElement xmlParameters = rDomElement.firstChildElement("parameters");
-        xmlSubObject = xmlParameters.firstChildElement("mappedparameter");
-        while (!xmlSubObject.isNull())
-        {
-            loadSystemParameter(xmlSubObject, this);
-
-            xmlSubObject = xmlSubObject.nextSiblingElement("mappedparameter");
         }
 
         //Refresh the appearnce of the subsystemem and create the GUIPorts

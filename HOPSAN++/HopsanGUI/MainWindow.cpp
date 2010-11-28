@@ -425,6 +425,7 @@ void MainWindow::createActions()
     aboutAction->setText("About");
     connect(aboutAction, SIGNAL(triggered()), mpAboutDialog, SLOT(open()));
     connect(aboutAction, SIGNAL(triggered()), this, SLOT(blurMe()));
+    connect(mpAboutDialog->timer, SIGNAL(timeout()), mpAboutDialog, SLOT(update()));
 
     QIcon hidePortsIcon;
     hidePortsIcon.addFile(QString(ICONPATH) + "Hopsan-HidePorts.png", QSize(), QIcon::Normal, QIcon::On);
