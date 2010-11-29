@@ -156,6 +156,9 @@ void MessageWidget::updateDisplay()
 }
 
 
+//! @brief Counts number of subsequent tags of the same name from a certain position in the message list
+//! @param tag Tag name to look for
+//! @param startIdx Position in list to start looking
 size_t MessageWidget::subsequentTagCount(QString tag, size_t startIdx)
 {
     size_t nTags = 0;
@@ -173,8 +176,10 @@ size_t MessageWidget::subsequentTagCount(QString tag, size_t startIdx)
     return nTags;
 }
 
+
 //! @brief Help function that counts how many messages with a specified tag that exists in message list
 //! @param tag Name of the tag that shall be counted
+//! @todo This is no longer used and can safely be removed
 size_t MessageWidget::tagCount(QString tag)
 {
     size_t nTags = 0;

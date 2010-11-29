@@ -50,7 +50,6 @@ private:
 };
 
 
-//! @class This class implement a Layout for user interaction of values with name, value and units
 class ParameterLayout : public QGridLayout
 {
     Q_OBJECT
