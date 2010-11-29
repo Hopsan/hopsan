@@ -13,9 +13,11 @@ CONFIG += dll
 # win32:DEFINES += STATICCORE
 win32:DEFINES += DOCOREDLLEXPORT
 win32:DEFINES -= UNICODE
+win32:INCLUDEPATH += c:/tbb30_20100915oss/include/tbb
 win32:INCLUDEPATH += c:/tbb/tbb30_20100406oss/include/tbb
 #win32:INCLUDEPATH += C:\tbb\tbb30_20100406oss_win\tbb30_20100406oss\include\tbb
 
+#Stada upp denna rora, nagot for windoesanvandarna!
 CONFIG(debug, debug|release) {
     DESTDIR = ../bin/debug
     win32:LIBS += -Lc:/tbb/tbb30_20100406oss/build/windows_ia32_gcc_mingw_debug
@@ -24,8 +26,9 @@ CONFIG(debug, debug|release) {
 }
 CONFIG(release, debug|release) {
     DESTDIR = ../bin/release
+    win32:LIBS += -LC:/tbb30_20100915oss/build/windows_ia32_gcc_mingw_release
     win32:LIBS += -Lc:/tbb/tbb30_20100406oss/build/windows_ia32_gcc_mingw_release
-    win32:LIBS += -Lc:\tbb\tbb30_20100406oss_win\tbb30_20100406oss\lib\ia32\vc9
+    win32:LIBS += -Lc:/tbb/tbb30_20100406oss_win/tbb30_20100406oss/lib/ia32/vc9
     win32:LIBS += -ltbb
 }
 
