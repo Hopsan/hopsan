@@ -3,6 +3,8 @@
 #ifndef MECHANICTRANSLATIONALMASS_HPP_INCLUDED
 #define MECHANICTRANSLATIONALMASS_HPP_INCLUDED
 
+#include <sstream>
+
 #include "../../ComponentEssentials.h"
 #include "../../ComponentUtilities.h"
 
@@ -71,6 +73,13 @@ namespace hopsan {
             mInt.initialize(mTimestep, -v1, -x1+mLength);
             //std::cout << "apa: " << mLength << std::endl;
             //mFilter.update(0);
+            if(mpP1->readNode(NodeMechanic::VELOCITY) != -mpP2->readNode(NodeMechanic::VELOCITY))
+            {
+                std::stringstream ss;
+                ss << "Start velocities does not match, {" << getName() << "::" << mpP1->getPortName() <<
+                        "} and {" << getName() << "::" << mpP2->getPortName() << "}.";
+                this->addDebugMessage(ss.str());
+            }
         }
 
 

@@ -1,13 +1,13 @@
 #ifndef GUIGROUP_H
 #define GUIGROUP_H
 
+#include<QGraphicsScene>
 
 #include "GUIContainerObject.h"
 #include "../common.h"
 #include <assert.h>
 
 class ProjectTabWidget;
-class QGraphicsScene;
 class GraphicsView;
 class GUIConnector;
 class GUIPort;
