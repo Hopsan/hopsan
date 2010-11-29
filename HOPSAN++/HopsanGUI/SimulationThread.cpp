@@ -9,7 +9,7 @@
 
 
 #include "SimulationThread.h"
-#include "ProjectTabWidget.h"
+#include "Widgets/ProjectTabWidget.h"
 #include "CoreAccess.h"
 #include "MainWindow.h"
 #include "Configuration.h"

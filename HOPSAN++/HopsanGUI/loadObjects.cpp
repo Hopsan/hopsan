@@ -2,12 +2,12 @@
 
 #include <QObject> //!< @todo maybe not this one for connect()
 
-#include "LibraryWidget.h"
+#include "Widgets/LibraryWidget.h"
 #include "GraphicsView.h"
 #include "CoreAccess.h"
 #include "GUIConnector.h"
 #include "GUIPort.h"
-#include "MessageWidget.h"
+#include "Widgets/MessageWidget.h"
 #include "version.h"
 #include "GUIObjects/GUISystem.h"
 #include "Utilities/GUIUtilities.h"

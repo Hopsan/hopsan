@@ -1,7 +1,7 @@
 #include "GUIModelObject.h"
 
 #include "GUISystem.h"
-#include "../ProjectTabWidget.h"
+#include "../Widgets/ProjectTabWidget.h"
 #include "../GraphicsView.h"
 #include "../Utilities/GUIUtilities.h"
 #include "../GUIConnector.h"

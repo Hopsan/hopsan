@@ -1,6 +1,6 @@
 #include "MessageWidget.h"
-#include "MainWindow.h"
-#include "CoreAccess.h"
+#include "../MainWindow.h"
+#include "../CoreAccess.h"
 
 using namespace hopsan;
 

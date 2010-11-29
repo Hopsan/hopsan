@@ -11,7 +11,7 @@
 
 #include "../MainWindow.h"
 #include "../UndoStack.h"
-#include "../ProjectTabWidget.h"
+#include "ProjectTabWidget.h"
 #include "../Utilities/GUIUtilities.h"
 #include "../GUIObjects/GUIContainerObject.h"
 #include "../GUIObjects/GUISystem.h"

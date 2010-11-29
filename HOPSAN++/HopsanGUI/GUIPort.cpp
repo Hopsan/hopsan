@@ -5,12 +5,12 @@
 #include "common.h"
 
 #include "GUIPort.h"
-#include "PlotWidget.h"
+#include "Widgets/PlotWidget.h"
 #include "MainWindow.h"
 #include "CoreAccess.h"
 #include "GUIObjects/GUIModelObject.h"
 #include "GraphicsView.h"
-#include "ProjectTabWidget.h"
+#include "Widgets/ProjectTabWidget.h"
 #include "GUIObjects/GUISystem.h"
 #include "Utilities/GUIUtilities.h"
 

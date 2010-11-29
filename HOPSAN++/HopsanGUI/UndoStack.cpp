@@ -13,13 +13,13 @@
 
 #include "UndoStack.h"
 #include "MainWindow.h"
-#include "ProjectTabWidget.h"
+#include "Widgets/ProjectTabWidget.h"
 #include "GUIPort.h"
 #include "GUIConnector.h"
 #include "loadObjects.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
-#include "MessageWidget.h"
+#include "Widgets/MessageWidget.h"
 #include "Widgets/UndoWidget.h"
 
 

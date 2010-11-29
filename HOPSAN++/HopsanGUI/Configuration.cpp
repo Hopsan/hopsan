@@ -12,7 +12,7 @@
 #include "Utilities/XMLUtilities.h"
 #include "Utilities/GUIUtilities.h"
 #include "MainWindow.h"
-#include "MessageWidget.h"
+#include "Widgets/MessageWidget.h"
 #include "PyDock.h"
 
 #include <QDomElement>

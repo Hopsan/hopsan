@@ -8,16 +8,16 @@
 #include <QAction>
 #include <QTextStream>
 
-#include "PlotWindow.h"
+#include "../PlotWindow.h"
 #include "PlotWidget.h"
-#include "MainWindow.h"
+#include "../MainWindow.h"
 #include "ProjectTabWidget.h"
-#include "GUIObjects/GUIModelObject.h"
-#include "GUIPort.h"
-#include "GraphicsView.h"
-#include "GUIObjects/GUISystem.h"
-#include "Utilities/GUIUtilities.h"
-#include "loadObjects.h"
+#include "../GUIObjects/GUIModelObject.h"
+#include "../GUIPort.h"
+#include "../GraphicsView.h"
+#include "../GUIObjects/GUISystem.h"
+#include "../Utilities/GUIUtilities.h"
+#include "../loadObjects.h"
 #include "MessageWidget.h"
 
 

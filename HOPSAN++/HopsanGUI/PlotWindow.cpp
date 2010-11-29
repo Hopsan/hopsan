@@ -7,11 +7,11 @@
 
 #include <cstring>
 
-#include "PlotWidget.h"
+#include "Widgets/PlotWidget.h"
 #include "PlotWindow.h"
 
 #include "MainWindow.h"
-#include "ProjectTabWidget.h"
+#include "Widgets/ProjectTabWidget.h"
 #include "GUIPort.h"
 #include "GraphicsView.h"
 #include "Utilities/GUIUtilities.h"

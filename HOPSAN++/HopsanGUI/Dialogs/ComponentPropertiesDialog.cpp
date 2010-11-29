@@ -14,13 +14,13 @@
 #include "ComponentPropertiesDialog.h"
 #include "../MainWindow.h"
 #include "../GUIPort.h"
-#include "../MessageWidget.h"
+#include "../Widgets/MessageWidget.h"
 #include "../GUIObjects/GUIComponent.h"
 #include "../GUIObjects/GUIContainerObject.h"
 #include "../GUIObjects/GUISystem.h"
 #include "../UndoStack.h"
-#include "../ProjectTabWidget.h"
-#include "SystemParametersWidget.h"
+#include "../Widgets/ProjectTabWidget.h"
+#include "../Widgets/SystemParametersWidget.h"
 
 
 //! @class ComponentPropertiesDialog

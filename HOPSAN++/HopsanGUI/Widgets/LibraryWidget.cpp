@@ -10,11 +10,11 @@
 #include <QtGui>
 
 #include "LibraryWidget.h"
-#include "MainWindow.h"
+#include "../MainWindow.h"
 #include "MessageWidget.h"
-#include "GUIObjects/GUIModelObjectAppearance.h"
-#include "Configuration.h"
-#include "common.h"
+#include "../GUIObjects/GUIModelObjectAppearance.h"
+#include "../Configuration.h"
+#include "../common.h"
 
 using namespace std;
 using namespace hopsan;

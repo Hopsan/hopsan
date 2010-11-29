@@ -12,8 +12,8 @@
 
 #include <QObject>
 #include "MainWindow.h"
-#include "MessageWidget.h"
-#include "ProjectTabWidget.h"
+#include "Widgets/MessageWidget.h"
+#include "Widgets/ProjectTabWidget.h"
 #include "GUIObjects/GUIModelObject.h"
 #include "GUIObjects/GUISystem.h"
 #include "GUIPort.h"

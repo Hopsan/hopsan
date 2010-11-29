@@ -7,21 +7,21 @@
 
 #include "common.h"
 //! @todo clean up these includes
-#include "../ProjectTabWidget.h"
+#include "../Widgets/ProjectTabWidget.h"
 #include "../MainWindow.h"
 #include "../Dialogs/ComponentPropertiesDialog.h"
 #include "../GUIPort.h"
 #include "../GUIConnector.h"
 #include "../Utilities/GUIUtilities.h"
 #include "../UndoStack.h"
-#include "../MessageWidget.h"
+#include "../Widgets/MessageWidget.h"
 #include "../GraphicsView.h"
-#include "../LibraryWidget.h"
+#include "../Widgets/LibraryWidget.h"
 #include "../loadObjects.h"
 
 #include "GUIGroup.h"
 #include "GUISystem.h"
-#include "SystemParametersWidget.h"
+#include "Widgets/SystemParametersWidget.h"
 
 GUIComponent::GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
     : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)

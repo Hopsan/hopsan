@@ -7,13 +7,13 @@
 #include "GUISystem.h"
 #include "GUIConnector.h"
 
-#include "../ProjectTabWidget.h"
+#include "../Widgets/ProjectTabWidget.h"
 #include "../MainWindow.h"
 #include "../Utilities/GUIUtilities.h"
 #include "../UndoStack.h"
-#include "../MessageWidget.h"
+#include "../Widgets/MessageWidget.h"
 #include "../GraphicsView.h"
-#include "../LibraryWidget.h"
+#include "../Widgets/LibraryWidget.h"
 
 
 //! @todo should not pSystem and pParent be teh same ?

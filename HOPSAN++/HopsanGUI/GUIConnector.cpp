@@ -11,7 +11,7 @@
 #include "GUIObjects/GUIModelObject.h"
 #include "GUIConnector.h"
 #include "UndoStack.h"
-#include "ProjectTabWidget.h"
+#include "Widgets/ProjectTabWidget.h"
 #include "GUIObjects/GUISystem.h"
 #include "loadObjects.h"
 #include "Configuration.h"

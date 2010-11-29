@@ -47,15 +47,14 @@
 
 #include <QtGui>
 
-#include "MainWindow.h"
+#include "../MainWindow.h"
 #include "SystemParametersWidget.h"
 
 #include <QWidget>
 #include <QDialog>
 
-#include "MainWindow.h"
 #include "ProjectTabWidget.h"
-#include "GUIObjects/GUISystem.h"
+#include "../GUIObjects/GUISystem.h"
 
 #include "common.h"
 

@@ -9,7 +9,7 @@
 
 
 #include "ProgressBarThread.h"
-#include "ProjectTabWidget.h"
+#include "Widgets/ProjectTabWidget.h"
 #include "CoreAccess.h"
 #include "MainWindow.h"
 #include <QThread>

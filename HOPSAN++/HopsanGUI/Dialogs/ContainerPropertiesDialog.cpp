@@ -4,10 +4,10 @@
 //#include <QtGui>
 #include <QDebug>
 
-#include "../ProjectTabWidget.h"
+#include "../Widgets/ProjectTabWidget.h"
 #include "../MainWindow.h"
 #include "../GUIObjects/GUISystem.h"
-#include "../LibraryWidget.h"
+#include "../Widgets/LibraryWidget.h"
 
 //! @brief Constructor for the parameter dialog for containers
 //! @param pGUIComponent Pointer to the component

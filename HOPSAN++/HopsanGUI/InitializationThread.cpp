@@ -9,7 +9,7 @@
 
 
 #include "InitializationThread.h"
-#include "ProjectTabWidget.h"
+#include "Widgets/ProjectTabWidget.h"
 #include "MainWindow.h"
 #include "CoreAccess.h"
 

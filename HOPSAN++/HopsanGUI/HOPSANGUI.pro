@@ -6,12 +6,12 @@ TARGET = HOPSANGUI
 TEMPLATE = app
 SOURCES += main.cpp \
     MainWindow.cpp \
-    ProjectTabWidget.cpp \
-    LibraryWidget.cpp \
+    Widgets/ProjectTabWidget.cpp \
+    Widgets/LibraryWidget.cpp \
     GUIConnector.cpp \
     GUIPort.cpp \
-    PlotWidget.cpp \
-    MessageWidget.cpp \
+    Widgets/PlotWidget.cpp \
+    Widgets/MessageWidget.cpp \
     SimulationThread.cpp \
     InitializationThread.cpp \
     Dialogs/OptionsDialog.cpp \
@@ -21,7 +21,7 @@ SOURCES += main.cpp \
     ProgressBarThread.cpp \
     GUIPortAppearance.cpp \
     GUIConnectorAppearance.cpp \
-    SystemParametersWidget.cpp \
+    Widgets/SystemParametersWidget.cpp \
     PlotWindow.cpp \
     PyWrapperClasses.cpp \
     PyDock.cpp \
@@ -45,13 +45,13 @@ SOURCES += main.cpp \
     Widgets/UndoWidget.cpp
 
 HEADERS += MainWindow.h \
-    ProjectTabWidget.h \
-    LibraryWidget.h \
+    Widgets/ProjectTabWidget.h \
+    Widgets/LibraryWidget.h \
     ../HopsanCore/HopsanCore.h \
     GUIConnector.h \
     GUIPort.h \
-    PlotWidget.h \
-    MessageWidget.h \
+    Widgets/PlotWidget.h \
+    Widgets/MessageWidget.h \
     SimulationThread.h \
     InitializationThread.h \
     version.h \
@@ -65,7 +65,7 @@ HEADERS += MainWindow.h \
     CoreAccess.h \
     GUIPortAppearance.h \
     GUIConnectorAppearance.h \
-    SystemParametersWidget.h \
+    Widgets/SystemParametersWidget.h \
     PlotWindow.h \
     PyWrapperClasses.h \
     PyDock.h \

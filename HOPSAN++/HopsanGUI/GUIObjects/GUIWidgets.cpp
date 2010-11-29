@@ -4,7 +4,7 @@
 
 #include "GUIWidgets.h"
 #include "GUISystem.h"
-#include "ProjectTabWidget.h"
+#include "Widgets/ProjectTabWidget.h"
 #include "MainWindow.h"
 
 #include <QLabel>
