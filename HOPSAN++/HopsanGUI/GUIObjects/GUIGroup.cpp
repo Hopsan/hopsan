@@ -1,4 +1,4 @@
-//$Id: GUIObject.cpp 2032 2010-10-27 15:50:41Z bjoer $
+//$Id$
 
 //! @todo clean up this include and forward declaration mess
 #include "GUIGroup.h"
