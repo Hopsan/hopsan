@@ -51,11 +51,6 @@ public:
     bool isObjectSelected();
     bool isConnectorSelected();
 
-    //Enter and exit a container object
-    //! @todo dont know if these names are good
-    virtual void enterContainer();
-    virtual void exitContainer();
-
     //This need to be here for now, and be public, used in containerPropertiesDialog by systems
     virtual void setTypeCQS(QString /*typestring*/){}
     virtual void setNumberOfLogSamples(size_t /*nSamples*/){}
@@ -114,6 +109,10 @@ public slots:
         //Appearance and settings
     void setGfxType(graphicsType gfxType);
     void openPropertiesDialogSlot();
+        //Enter and exit a container object
+    //! @todo dont know if these names are good
+    void enterContainer();
+    void exitContainer();
 
 signals:
         //Selection

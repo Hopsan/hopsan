@@ -151,8 +151,6 @@ void GraphicsView::dropEvent(QDropEvent *event)
 //! Updates the viewport, used when something has changed. Also changes to the correct background color if it is not the right one.
 void GraphicsView::updateViewPort()
 {
-    //MainWindow *pMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
-
     if( (mpParentProjectTab->mpSystem->mGfxType == USERGRAPHICS) && (this->backgroundBrush().color() != gConfig.getBackgroundColor()) )
     {
         this->setBackgroundBrush(gConfig.getBackgroundColor());
@@ -165,6 +163,12 @@ void GraphicsView::updateViewPort()
     {
         this->viewport()->update();
     }
+}
+
+//! @brief Set the system that the view is representing
+void GraphicsView::setContainerPtr(GUIContainerObject *pContainer)
+{
+    this->mpSystem = pContainer;
 }
 
 //! @brief Returns the vieports center and zoom in the supplied reference variables

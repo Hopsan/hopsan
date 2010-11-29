@@ -26,9 +26,10 @@ public:
 
     void updateViewPort();
     void getViewPort(qreal &rX, qreal &rY, qreal &rZoom);
+    void setContainerPtr(GUIContainerObject *pContainer);
 
     ProjectTab *mpParentProjectTab;
-    GUISystem *mpSystem;
+
     QAction *systemPortAction;
     QMenu *menuInsert;
     qreal mZoomFactor;
@@ -69,6 +70,8 @@ private:
     void createActions();
     void createMenus();
     QColor mIsoColor;
+
+    GUIContainerObject *mpSystem; //!< @todo rename mpSystem
 };
 
 #endif // GRAPHICSVIEW_H

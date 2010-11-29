@@ -303,23 +303,23 @@ void GUIGroup::setContents(CopyStack *pCopyStack)
 
 }
 
-void GUIGroup::enterContainer()
-{
-    //Show this scene
-    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(getContainedScenePtr());
-    connect(gpMainWindow->mpBackButton, SIGNAL(clicked()), this, SLOT(exitContainer()));
-    gpMainWindow->mpBackButton->show();
+//void GUIGroup::enterContainer()
+//{
+////    //Show this scene
+////    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(getContainedScenePtr());
+////    connect(gpMainWindow->mpBackButton, SIGNAL(clicked()), this, SLOT(exitContainer()));
+////    gpMainWindow->mpBackButton->show();
 
-}
+//}
 
-//! @brief Exit a container and shows the parents scene instead
-void GUIGroup::exitContainer()
-{
-    gpMainWindow->mpBackButton->hide();
-    disconnect(gpMainWindow->mpBackButton, SIGNAL(clicked()), this, SLOT(exitContainer()));
-    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(this->mpParentContainerObject->getContainedScenePtr());
+////! @brief Exit a container and shows the parents scene instead
+//void GUIGroup::exitContainer()
+//{
+//    gpMainWindow->mpBackButton->hide();
+//    disconnect(gpMainWindow->mpBackButton, SIGNAL(clicked()), this, SLOT(exitContainer()));
+//    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(this->mpParentContainerObject->getContainedScenePtr());
 
-}
+//}
 
 void GUIGroup::setName(QString newName)
 {
@@ -329,16 +329,16 @@ void GUIGroup::setName(QString newName)
 }
 
 
-//! Shows the parent scene. Should be called to exit a group.
-void GUIGroup::showParent()
-{
-//    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(this->mpParentContainerObject->getContainedScenePtr());
+////! Shows the parent scene. Should be called to exit a group.
+//void GUIGroup::showParent()
+//{
+////    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(this->mpParentContainerObject->getContainedScenePtr());
 
-//    disconnect(gpMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
+////    disconnect(gpMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
 
-//    gpMainWindow->mpBackButton->hide();
+////    gpMainWindow->mpBackButton->hide();
 
-}
+//}
 
 
 void GUIGroup::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)

@@ -934,15 +934,7 @@ void GUIContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 void GUIContainerObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     this->enterContainer();
-//    if(mModelFileInfo.filePath().isEmpty())
-//    {
-//        loadFromHMF();
 
-//    }
-//    else
-//    {
-//        return;
-//    }
 }
 
 void GUIContainerObject::openPropertiesDialog()
@@ -953,10 +945,18 @@ void GUIContainerObject::openPropertiesDialog()
 
 void GUIContainerObject::enterContainer()
 {
-    //Nothing for now
+    //Show this scene
+    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(getContainedScenePtr());
+    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setContainerPtr(this);
+    connect(gpMainWindow->mpBackButton, SIGNAL(clicked()), this, SLOT(exitContainer()));
+    gpMainWindow->mpBackButton->show();
 }
 
 void GUIContainerObject::exitContainer()
 {
-    //Nothing for now
+    //Go back to parent system
+    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(this->mpParentContainerObject->getContainedScenePtr());
+    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setContainerPtr(this->mpParentContainerObject);
+    disconnect(gpMainWindow->mpBackButton, SIGNAL(clicked()), this, SLOT(exitContainer()));
+    gpMainWindow->mpBackButton->hide();
 }

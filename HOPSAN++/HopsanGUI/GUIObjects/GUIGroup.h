@@ -25,7 +25,7 @@ public:
 //    void setName(QString name, bool doOnlyLocalRename=false);
     void setName(QString newName);
 
-    void enterContainer();
+    //void enterContainer();
 
 
     enum { Type = GUIGROUP };
@@ -46,8 +46,8 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 public slots:
-    void showParent();
-    void exitContainer();
+//    void showParent();
+//    void exitContainer();
 
 private:
 //    GUIPort *mpGuiPort;

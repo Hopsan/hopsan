@@ -16,7 +16,6 @@
 //Forward declaration
 class QGraphicsScene;
 class GraphicsView;
-//class MainWindow;
 class ProjectTab;
 class GUISystem;
 
@@ -32,7 +31,6 @@ public:
     GUISystem *getSystem(int index);
 
         //Public member variables
-    //MainWindow *mpParentMainWindow;
     QString *mpCopyData;
 
 public slots:
