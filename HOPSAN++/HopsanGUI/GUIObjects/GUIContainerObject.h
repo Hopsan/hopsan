@@ -41,7 +41,6 @@ public:
     bool getIsCreatingConnector();
 
     //Handle container appearance
-    virtual void setName(QString name);
     QString getIsoIconPath();
     QString getUserIconPath();
     void setIsoIconPath(QString path);
@@ -58,8 +57,8 @@ public:
     virtual void exitContainer();
 
     //This need to be here for now, and be public, used in containerPropertiesDialog by systems
-    virtual void setTypeCQS(QString typestring){}
-    virtual void setNumberOfLogSamples(size_t nSamples){}
+    virtual void setTypeCQS(QString /*typestring*/){}
+    virtual void setNumberOfLogSamples(size_t /*nSamples*/){}
 
     //Public member variable
     //!< @todo make this private later

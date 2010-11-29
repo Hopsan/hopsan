@@ -311,7 +311,7 @@ void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
         {
 //            QDomElement xmlPort = appendDomElement(rDomElement, HMF_PORTTAG);
 //            appendDomTextNode(xmlPort, HMF_NAMETAG, (*portIt)->getName());
-            for(size_t i = 0; i < startValueNames.size(); ++i)
+            for(int i = 0; i < startValueNames.size(); ++i)
             {
                 //QDomElement xmlStartValue = appendDomElement(xmlPort, "startvalue");
                 QDomElement xmlStartValue = appendDomElement(xmlStartValues, "startvalue");

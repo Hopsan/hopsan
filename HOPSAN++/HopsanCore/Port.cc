@@ -419,7 +419,7 @@ ReadPort::ReadPort(std::string node_type, std::string portname, Component *portO
 }
 
 
-void ReadPort::writeNode(const size_t idx, const double value)
+void ReadPort::writeNode(const size_t /*idx*/, const double /*value*/)
 {
     cout << "Could not write to port, this is a ReadPort" << endl;
     assert(false);
@@ -440,7 +440,7 @@ WritePort::WritePort(std::string node_type, std::string portname, Component *por
 }
 
 
-double WritePort::readNode(const size_t idx)
+double WritePort::readNode(const size_t /*idx*/)
 {
     cout << "Could not read from port, this is a WritePort" << endl;
     assert(false);

@@ -203,6 +203,12 @@ QString GUIModelObject::getName()
     return mGUIModelObjectAppearance.getName();
 }
 
+void GUIModelObject::setName(QString /*name*/)
+{
+    //Must be overloaded
+    assert(false);
+}
+
 
 //! @brief Returns a list with pointers to the ports in the object
 QList<GUIPort*> &GUIModelObject::getPortListPtrs()
@@ -345,7 +351,7 @@ GUIPort *GUIModelObject::getPort(QString name)
 
 //! @brief Virtual function that returns the specified parameter value
 //! @param name Name of the parameter to return value from
-double GUIModelObject::getParameterValue(QString name)
+double GUIModelObject::getParameterValue(QString /*name*/)
 {
     //cout << "This function should only be available in GUIComponent" << endl;
     assert(false);
@@ -365,7 +371,7 @@ QVector<QString> GUIModelObject::getParameterNames()
 //! @brief Virtual function that sets specified parameter to specified value
 //! @param name Name of parameter
 //! @param value New parameter value
-void GUIModelObject::setParameterValue(QString name, double value)
+void GUIModelObject::setParameterValue(QString /*name*/, double /*value*/)
 {
     //cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
     assert(false);
@@ -376,56 +382,47 @@ void GUIModelObject::setParameterValue(QString name, double value)
 //! @param portName Name of port
 //! @param variable Name of variable in port
 //! @param startValue New parameter value
-void GUIModelObject::setStartValue(QString portName, QString variable, double startValue)
+void GUIModelObject::setStartValue(QString /*portName*/, QString /*variable*/, double /*startValue*/)
 {
     //cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
     assert(false);
 }
 
 
-void GUIModelObject::mapParameterToSystemParameter(QString parameterName, QString systesmParameterKey)
+void GUIModelObject::mapParameterToSystemParameter(QString /*parameterName*/, QString /*systesmParameterKey*/)
 {
     assert(false);
 }
 
 
-void GUIModelObject::rememberSystemParameterMapping(QString name)
+void GUIModelObject::rememberSystemParameterMapping(QString /*name*/)
 {
     assert(false);
 }
 
 
-void GUIModelObject::forgetSystemParameterMapping(QString name)
+void GUIModelObject::forgetSystemParameterMapping(QString /*name*/)
 {
     assert(false);
 }
 
 
-bool GUIModelObject::isParameterMappedToSystemParameter(QString parameterName)
+bool GUIModelObject::isParameterMappedToSystemParameter(QString /*parameterName*/)
 {
     assert(false);
 }
 
 
-QString GUIModelObject::getSystemParameterKey(QString parameterName)
+QString GUIModelObject::getSystemParameterKey(QString /*parameterName*/)
 {
     assert(false);
 }
 
-
-////! @brief Saves the GUIModelObject to a text stream
-////! @param &rStream Text stream to save into
-////! @param prepend String to prepend before object data
-//void GUIModelObject::saveToTextStream(QTextStream &rStream, QString prepend)
-//{
-//    QPointF pos = mapToScene(boundingRect().center());
-//    if (!prepend.isEmpty())
-//    {
-//        rStream << prepend << " ";
-//    }
-//    rStream << addQuotes(getTypeName()) << " " << addQuotes(getName()) << " "
-//            << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << " " << mpNameText->isVisible() << "\n";
-//}
+void GUIModelObject::setModelFileInfo(QFile &/*rFile*/)
+{
+    //Only available in GUISystem for now
+    assert(false);
+}
 
 
 void GUIModelObject::saveToDomElement(QDomElement &rDomElement)

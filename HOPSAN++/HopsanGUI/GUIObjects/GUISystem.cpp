@@ -357,7 +357,7 @@ QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
     if (mLoadType!="EXTERNAL")
     {
         //! @todo what happens if a subsystem (embeded) is asved, then we dont want to set the current graphics view
-        if (this->mpParentProjectTab->mpGraphicsView != 0);
+        if (this->mpParentProjectTab->mpGraphicsView != 0)
         {
             qreal x,y,zoom;
             this->mpParentProjectTab->mpGraphicsView->getViewPort(x,y,zoom);

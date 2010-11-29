@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2502" y="2485.5" zoom="1"/>
+            <viewport x="2502" y="2501.5" zoom="1"/>
             <hopsanobjectappearance>
                 <modelobject typename="" displayname="subsystest_main">
                     <icon isopath="" iconrotation="" userpath=""/>
@@ -68,7 +68,7 @@
                     <startvalue portname="out" variable="Value" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2545" y="2330" flipped="0" a="0"/>
+                    <pose x="2509" y="2324" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -229,8 +229,8 @@
             <connect endport="sysp_1" endcomponent="subsystest_sub2" startport="P1" startcomponent="Pressure Sensor">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2545" y="2359.5"/>
-                        <coordinate x="2545" y="2407"/>
+                        <coordinate x="2509" y="2353.5"/>
+                        <coordinate x="2509" y="2407"/>
                         <coordinate x="2439.161248" y="2407"/>
                         <coordinate x="2439.161248" y="2410.5"/>
                     </coordinates>
@@ -244,8 +244,8 @@
             <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Pressure Sensor">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2545" y="2300.5"/>
-                        <coordinate x="2545" y="2257"/>
+                        <coordinate x="2509" y="2294.5"/>
+                        <coordinate x="2509" y="2257"/>
                         <coordinate x="2616.5" y="2257"/>
                     </coordinates>
                     <geometries>

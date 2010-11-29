@@ -118,7 +118,7 @@ MainWindow::MainWindow(QWidget *parent)
             //Load default libraries
     mpLibrary->addEmptyLibrary("User defined libraries");
 
-    for(size_t i=0; i<gConfig.getUserLibs().size(); ++i)
+    for(int i=0; i<gConfig.getUserLibs().size(); ++i)
     {
         mpLibrary->addExternalLibrary(gConfig.getUserLibs().at(i));
     }
@@ -185,7 +185,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     if(!gConfig.getLastSessionModels().empty())
     {
-        for(size_t i=0; i<gConfig.getLastSessionModels().size(); ++i)
+        for(int i=0; i<gConfig.getLastSessionModels().size(); ++i)
         {
             //mpProjectTabs->loadModel(mLastSessionModels.at(i));
             mpProjectTabs->loadModel(gConfig.getLastSessionModels().at(i));
@@ -624,7 +624,7 @@ void MainWindow::updateRecentList()
     recentMenu->setEnabled(!gConfig.getRecentModels().empty());
     if(!gConfig.getRecentModels().empty())
     {
-        for(size_t i=0; i<gConfig.getRecentModels().size(); ++i)
+        for(int i=0; i<gConfig.getRecentModels().size(); ++i)
         {
             if(gConfig.getRecentModels().at(i) != "")
             {

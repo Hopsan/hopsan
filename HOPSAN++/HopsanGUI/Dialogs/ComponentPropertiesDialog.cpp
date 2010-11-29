@@ -119,7 +119,7 @@ void ComponentPropertiesDialog::createEditStuff()
             ++sr;
 
             mvStartValueLayout[j].resize(startDataNamesStr[j].size());
-            for(size_t i=0; i < startDataNamesStr[j].size(); ++i)
+            for(int i=0; i < startDataNamesStr[j].size(); ++i)
             {
                 mvStartValueLayout[j][i]= new ParameterLayout("",
                                                               startDataNamesStr[j][i],
@@ -195,7 +195,7 @@ void ComponentPropertiesDialog::okPressed()
 void ComponentPropertiesDialog::setParameters()
 {
     bool addedUndoPost = false;
-    for (size_t i=0 ; i < mvParameterLayout.size(); ++i )
+    for (int i=0 ; i < mvParameterLayout.size(); ++i )
     {
         QString requestedParameter = mvParameterLayout[i]->getDataValueTxt();
         bool ok;
@@ -248,7 +248,7 @@ void ComponentPropertiesDialog::setStartValues()
         startDataNamesStr.resize(mvStartValueLayout[j].size());
         startDataValuesDbl.resize(mvStartValueLayout[j].size());
         startDataUnitsStr.resize(mvStartValueLayout[j].size());
-        for(size_t i=0; i < mvStartValueLayout[j].size(); ++i)
+        for(int i=0; i < mvStartValueLayout[j].size(); ++i)
         {
             startDataNamesStr[i] = mvStartValueLayout[j][i]->getDescriptionName();
             startDataValuesDbl[i] = mvStartValueLayout[j][i]->getDataValue();

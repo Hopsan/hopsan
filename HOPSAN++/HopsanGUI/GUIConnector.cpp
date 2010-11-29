@@ -599,7 +599,7 @@ void GUIConnector::drawConnector()
        //Redraw the lines based on the mPoints vector
     for(int i = 0; i != mPoints.size()-1; ++i)
     {
-        if( (mpLines[i]->line().p1() != mPoints[i]) || (mpLines[i]->line().p2() != mPoints[i+1]) );   //Don't redraw the line if it has not changed
+        if( (mpLines[i]->line().p1() != mPoints[i]) || (mpLines[i]->line().p2() != mPoints[i+1]) )   //Don't redraw the line if it has not changed
         mpLines[i]->setLine(mapFromScene(mPoints[i]), mapFromScene(mPoints[i+1]));
     }
 

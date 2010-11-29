@@ -236,7 +236,7 @@ void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus und
     GUIModelObject* obj_ptr = it.value();
 
     QList<GUIConnector *> pConnectorList = obj_ptr->getGUIConnectorPtrs();
-    for(size_t i=0; i<pConnectorList.size(); ++i)
+    for(int i=0; i<pConnectorList.size(); ++i)
     {
         this->removeConnector(pConnectorList[i], undoSettings);
     }
@@ -772,11 +772,6 @@ bool GUIContainerObject::isObjectSelected()
 bool GUIContainerObject::isConnectorSelected()
 {
     return (mSelectedSubConnectorsList.size() > 0);
-}
-
-void GUIContainerObject::setName(QString name)
-{
-    //Must be overloaded
 }
 
 QString GUIContainerObject::getUserIconPath()

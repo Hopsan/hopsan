@@ -185,7 +185,7 @@ Component::Component(string name, double timestep)
 
 
 //! Virtual Function, base version which gives you an error if you try to use it.
-void Component::initialize(const double startT, const double stopT, const size_t nSamples)
+void Component::initialize(const double /*startT*/, const double /*stopT*/, const size_t /*nSamples*/)
 {
     cout << "Error! This function should only be used by system components, it should be overloded. For a component use initialize() instead" << endl;
     assert(false);
@@ -193,7 +193,7 @@ void Component::initialize(const double startT, const double stopT, const size_t
 
 
 //! Virtual Function, base version which gives you an error if you try to use it.
-void Component::finalize(const double startT, const double stopT)
+void Component::finalize(const double /*startT*/, const double /*stopT*/)
 {
     cout << "Error! This function should only be used by system components, it should be overloded. For a component use finalize() instead" << endl;
     assert(false);
@@ -517,7 +517,7 @@ vector<Port*> Component::getPortPtrVector()
 }
 
 
-void Component::setDesiredTimestep(const double timestep)
+void Component::setDesiredTimestep(const double /*timestep*/)
 {
     cout << "Warning this function setDesiredTimestep is only available on subsystem components" << endl;
     assert(false);
@@ -2794,7 +2794,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     size_t sCompNum=0;
     while(true)
     {
-        for(int coreNumber=0; coreNumber<nCores; ++coreNumber)
+        for(size_t coreNumber=0; coreNumber<nCores; ++coreNumber)
         {
             if(sCompNum == mComponentSignalptrs.size())
                 break;
@@ -2821,7 +2821,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     size_t cCompNum=0;
     while(true)
     {
-        for(int coreNumber=0; coreNumber<nCores; ++coreNumber)
+        for(size_t coreNumber=0; coreNumber<nCores; ++coreNumber)
         {
             if(cCompNum == mComponentCptrs.size())
                 break;
@@ -2847,7 +2847,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     size_t qCompNum=0;
     while(true)
     {
-        for(int coreNumber=0; coreNumber<nCores; ++coreNumber)
+        for(size_t coreNumber=0; coreNumber<nCores; ++coreNumber)
         {
             if(qCompNum == mComponentQptrs.size())
                 break;

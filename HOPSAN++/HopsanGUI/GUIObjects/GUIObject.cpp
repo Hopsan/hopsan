@@ -112,12 +112,12 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
         //Store old positions for all components, in case more than one is selected
     if(event->button() == Qt::LeftButton)
     {
-        for(size_t i = 0; i < mpParentContainerObject->mSelectedGUIObjectsList.size(); ++i)
+        for(int i = 0; i < mpParentContainerObject->mSelectedGUIObjectsList.size(); ++i)
         {
             mpParentContainerObject->mSelectedGUIObjectsList[i]->mOldPos = mpParentContainerObject->mSelectedGUIObjectsList[i]->pos();
 
         }
-        for(size_t i = 0; i < mpParentContainerObject->mSelectedGUIWidgetsList.size(); ++i)
+        for(int i = 0; i < mpParentContainerObject->mSelectedGUIWidgetsList.size(); ++i)
         {
             mpParentContainerObject->mSelectedGUIWidgetsList[i]->mOldPos = mpParentContainerObject->mSelectedGUIWidgetsList[i]->pos();
         }
@@ -410,7 +410,7 @@ void GUIObjectSelectionBox::setSize(qreal x1, qreal y1, qreal x2, qreal y2)
 void GUIObjectSelectionBox::setActive()
 {
     this->setVisible(true);
-    for(std::size_t i=0; i<mLines.size(); ++i)
+    for(int i=0; i<mLines.size(); ++i)
     {
         mLines[i]->setPen(mActivePen);
     }
@@ -432,7 +432,7 @@ void GUIObjectSelectionBox::setPassive()
 void GUIObjectSelectionBox::setHovered()
 {
     this->setVisible(true);
-    for(std::size_t i=0; i<mLines.size(); ++i)
+    for(int i=0; i<mLines.size(); ++i)
     {
         mLines[i]->setPen(mHoverPen);
     }

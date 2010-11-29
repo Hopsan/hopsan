@@ -150,7 +150,7 @@ int Node::getDataIdFromName(const string name)
 //! @param [in,out] rUnits This vector will contain the units
 void Node::getDataNamesValuesAndUnits(vector<string> &rNames, std::vector<double> &rValues, vector<string> &rUnits)
 {
-    for(int i=0; i != mDataNames.size(); ++i)
+    for(size_t i=0; i<mDataNames.size(); ++i)
     {
         if(mPlotBehaviour[i] == Node::PLOT)
         {
@@ -164,7 +164,7 @@ void Node::getDataNamesValuesAndUnits(vector<string> &rNames, std::vector<double
 
 void Node::setDataValuesByNames(vector<string> names, std::vector<double> values)
 {
-    for(int i=0; i != names.size(); ++i)
+    for(size_t i=0; i<names.size(); ++i)
     {
         this->setData(this->getDataIdFromName(names[i]),values[i]);
     }
@@ -176,7 +176,7 @@ void Node::setDataValuesByNames(vector<string> names, std::vector<double> values
 //! @param [in,out] rUnits This vector will contain the units
 void Node::getDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits)
 {
-    for(int i=0; i != mDataNames.size(); ++i)
+    for(size_t i=0; i<mDataNames.size(); ++i)
     {
         if(mPlotBehaviour[i] == Node::PLOT)
         {
@@ -194,7 +194,7 @@ void Node::copyNodeVariables(Node *pNode)
     //this ska kopiera sina varabler till rNode
     if(pNode->getNodeType()==this->getNodeType())
     {
-        for(int i=0; i != mDataNames.size(); ++i)
+        for(size_t i=0; i<mDataNames.size(); ++i)
         {
             if(mPlotBehaviour[i] == Node::PLOT)
             {

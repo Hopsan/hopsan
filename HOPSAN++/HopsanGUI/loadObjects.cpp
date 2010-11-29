@@ -277,7 +277,7 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
     //! @todo what if the parent system does not have a path (embeded systems)
     QString path = pSystem->mModelFileInfo.absolutePath() + "/" + rData.externalfilepath;
     QFile file(path);
-    if (!(file.exists()));
+    if (!(file.exists()))
     {
         qDebug() << "file: " << path << " does not exist";
     }

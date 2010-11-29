@@ -18,18 +18,17 @@ public:
     ~GUIModelObject();
 
     //Name methods
-    virtual void setName(QString name){;}
+    virtual void setName(QString name);
     virtual QString getName();
     virtual void refreshDisplayName();
-    //virtual void setName(QString name, renameRestrictions renameSettings=UNRESTRICTED);
     virtual void setDisplayName(QString name);
     virtual QString getTypeName();
     virtual int getNameTextPos();
     virtual void setNameTextPos(int textPos);
 
     //CQS methods
-    virtual QString getTypeCQS() {assert(false); return "";} //Only available in GUISystemComponent adn GuiComponent for now
-    virtual void setTypeCQS(QString typestring) {assert(false);} //Only available in GUISystemComponent
+    virtual QString getTypeCQS(){assert(false); return "";} //Only available in GUISystemComponent adn GuiComponent for now
+    virtual void setTypeCQS(QString /*typestring*/) {assert(false);} //Only available in GUISystemComponent
 
     //Appearance methods
     virtual GUIModelObjectAppearance* getAppearanceData();
@@ -37,8 +36,8 @@ public:
 
     //Parameter methods
     virtual QVector<QString> getParameterNames();
-    virtual QString getParameterUnit(QString name) {assert(false); return "";} //Only availible in GUIComponent for now
-    virtual QString getParameterDescription(QString name) {assert(false); return "";} //Only availible in GUIComponent for now
+    virtual QString getParameterUnit(QString /*name*/) {assert(false); return "";} //Only availible in GUIComponent for now
+    virtual QString getParameterDescription(QString /*name*/) {assert(false); return "";} //Only availible in GUIComponent for now
     virtual double getParameterValue(QString name);
     virtual void setParameterValue(QString name, double value);
     virtual void setStartValue(QString portName, QString variable, double startValue);
@@ -51,9 +50,9 @@ public:
     //Load and save methods
     //virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());
     virtual void saveToDomElement(QDomElement &rDomElement);
-    virtual void loadFromHMF(QString modelFilePath=QString()) {assert(false);} //Only available in GUISystem for now
-    virtual void loadFromDomElement(QDomElement &rDomElement) {assert(false);} //Only available in GUISystem for now
-    virtual void setModelFileInfo(QFile &rFile){assert(false);} //Only available in GUISystem for now
+    virtual void loadFromHMF(QString /*modelFilePath=QString()*/) {assert(false);} //Only available in GUISystem for now
+    virtual void loadFromDomElement(QDomElement &/*rDomElement*/) {assert(false);} //Only available in GUISystem for now
+    virtual void setModelFileInfo(QFile &rFile);
 
     //Connector methods
     QList<GUIConnector*> getGUIConnectorPtrs();

@@ -145,7 +145,7 @@ void PlotParameterTree::updateList()
     }
 
         //Append favorite plot variables to tree if they still exist
-    for(size_t i=0; i<mFavoriteParameters.size(); ++i)
+    for(int i=0; i<mFavoriteParameters.size(); ++i)
     {
         if(mAvailableParameters.contains(mFavoriteParameters.at(i)))
         {
@@ -162,7 +162,7 @@ void PlotParameterTree::updateList()
     }
 
         //Remove no longer existing favorite parameters
-    for(size_t i=0; i<mFavoriteParameters.size(); ++i)
+    for(int i=0; i<mFavoriteParameters.size(); ++i)
     {
         if(!mAvailableParameters.contains(mFavoriteParameters.at(i)))
         {

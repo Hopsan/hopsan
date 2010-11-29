@@ -37,8 +37,8 @@ public:
 
     //Load and save methods
     //virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString()){;} //! @todo nothing for now
-    virtual void saveToDomElement(QDomElement &rDomElement){;}  //! @todo nothing for now
-    virtual void loadFromHMF(QString modelFilePath=QString()) {assert(false);} //Only available in GUISubsystem for now
+    virtual void saveToDomElement(QDomElement /*&rDomElement*/){}  //! @todo nothing for now
+    virtual void loadFromHMF(QString /*modelFilePath=QString()*/) {assert(false);} //Only available in GUISubsystem for now
 
     bool isFlipped();
 
@@ -50,10 +50,10 @@ public:
     QPointF mOldPos;
 
 public slots:
-    virtual void flipVertical(undoStatus undoSettings = UNDO){;} //!< @todo nothing for now
-    virtual void flipHorizontal(undoStatus undoSettings = UNDO){;}  //!< @todo nothing for now
+    virtual void flipVertical(undoStatus /*undoSettings = UNDO*/){} //!< @todo nothing for now
+    virtual void flipHorizontal(undoStatus /*undoSettings = UNDO*/){}  //!< @todo nothing for now
     virtual void deleteMe();
-    virtual void rotate(undoStatus undoSettings = UNDO);
+    virtual void rotate(undoStatus undoSettings=UNDO);
 
     void rotateTo(qreal angle);
     void moveUp();

@@ -96,7 +96,7 @@ void UndoWidget::refreshList()
     QColor evenColor = QColor("whitesmoke");
     QColor activeColor = QColor("chartreuse");
 
-    size_t pos = 0;
+    int pos = 0;
     bool found = true;
 
     QDomElement undoRoot = gpMainWindow->mpProjectTabs->getCurrentSystem()->mUndoStack->mUndoRoot;
