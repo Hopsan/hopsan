@@ -23,6 +23,7 @@ public:
     void setContents(CopyStack *pCopyStack);
 //    QString getName();
 //    void setName(QString name, bool doOnlyLocalRename=false);
+    void setName(QString newName);
 
     void enterContainer();
 

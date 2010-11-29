@@ -264,6 +264,8 @@ void StartValueLoadData::readDomElement(QDomElement &rDomElement)
 
 GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
 {
+    //! @todo We need to be able to save a custom display name for external subsystems that overwrite the name loaded from the external system
+
     //! @todo can only handle external subsystems for now
 
     //! @todo maybe create a loadGUIObject function that takes appearance data instead of pLibrary (when special apperance are to be used)

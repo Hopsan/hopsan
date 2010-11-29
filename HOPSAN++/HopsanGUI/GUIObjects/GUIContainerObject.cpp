@@ -774,6 +774,11 @@ bool GUIContainerObject::isConnectorSelected()
     return (mSelectedSubConnectorsList.size() > 0);
 }
 
+void GUIContainerObject::setName(QString name)
+{
+    //Must be overloaded
+}
+
 QString GUIContainerObject::getUserIconPath()
 {
     return this->mGUIModelObjectAppearance.getIconPathUser();

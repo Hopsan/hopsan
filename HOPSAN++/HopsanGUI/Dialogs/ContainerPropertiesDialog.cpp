@@ -122,7 +122,7 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
 //! @brief Updates model settings according to the selected values
 void ContainerPropertiesDialog::setValues()
 {
-    //! @todo set name, need to figure out how to do it for containers in genereal
+    this->mpContainerObject->setName(this->mpNameEdit->text());
 
     if(mpIsoCheckBox->isChecked())
     {

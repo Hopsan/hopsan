@@ -321,6 +321,13 @@ void GUIGroup::exitContainer()
 
 }
 
+void GUIGroup::setName(QString newName)
+{
+    //Groups dont out care about unique names, can set whatever you want
+    this->mGUIModelObjectAppearance.setName(newName);
+    this->refreshDisplayName();
+}
+
 
 //! Shows the parent scene. Should be called to exit a group.
 void GUIGroup::showParent()

@@ -41,6 +41,7 @@ public:
     bool getIsCreatingConnector();
 
     //Handle container appearance
+    virtual void setName(QString name);
     QString getIsoIconPath();
     QString getUserIconPath();
     void setIsoIconPath(QString path);
@@ -65,7 +66,6 @@ public:
     QFileInfo mModelFileInfo; //!< @todo should not be public
     UndoStack *mUndoStack;
     ProjectTab *mpParentProjectTab;
-    //MainWindow *mpMainWindow;
 
     QList<GUIConnector *> mSelectedSubConnectorsList;
     QList<GUIConnector *> mSubConnectorList;
