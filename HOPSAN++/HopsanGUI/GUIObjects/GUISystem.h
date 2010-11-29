@@ -1,3 +1,5 @@
+//$Id$
+
 #ifndef GUISYSTEM_H
 #define GUISYSTEM_H
 

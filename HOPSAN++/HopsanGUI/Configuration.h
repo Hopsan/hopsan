@@ -1,7 +1,7 @@
 //$Id$
 
-#ifndef Configuration_H
-#define Configuration_H
+#ifndef CONFIGURATION_H
+#define CONFIGURATION_H
 
 #include <QMap>
 #include <QColor>
@@ -84,4 +84,4 @@ private:
 //    QPen mNonFinishedPen;
 };
 
-#endif // Configuration_H
+#endif // CONFIGURATION_H

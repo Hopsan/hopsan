@@ -1,3 +1,5 @@
+//$Id$
+
 #ifndef GUIGROUP_H
 #define GUIGROUP_H
 

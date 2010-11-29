@@ -1,3 +1,5 @@
+//$Id$
+
 #include "CoreAccess.h"
 #include <QString>
 #include <QVector>

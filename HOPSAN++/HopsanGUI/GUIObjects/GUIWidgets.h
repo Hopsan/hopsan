@@ -21,9 +21,11 @@
 #include <QComboBox>
 #include <QToolButton>
 
+
 class GUIWidget : public GUIObject
 {
     Q_OBJECT
+
 public:
     GUIWidget(QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent=0);
     size_t mWidgetIndex;
@@ -70,9 +72,6 @@ private:
     QColor mSelectedColor;
     QLabel *mpExampleLabel;
 };
-
-
-
 
 
 class GUIBoxWidget : public GUIWidget

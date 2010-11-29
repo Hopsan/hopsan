@@ -1,3 +1,5 @@
+//$Id$
+
 #ifndef GUISYSTEMPORT_H
 #define GUISYSTEMPORT_H
 

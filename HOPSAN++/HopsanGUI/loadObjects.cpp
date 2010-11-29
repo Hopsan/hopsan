@@ -1,3 +1,5 @@
+//$Id$
+
 #include "loadObjects.h"
 
 #include <QObject> //!< @todo maybe not this one for connect()

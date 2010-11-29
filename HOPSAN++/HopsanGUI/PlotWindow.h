@@ -3,29 +3,7 @@
 #ifndef PlotWindow_H
 #define PlotWindow_H
 
-#include <QGridLayout>
-#include <iostream>
-#include <QWidget>
-#include <QDialog>
-#include <QDialogButtonBox>
-#include <QVector>
-#include <QTreeWidget>
-#include <QTreeWidgetItem>
-#include <QHash>
-#include <QToolBar>
-#include <QToolButton>
-#include <QMainWindow>
-#include <QColor>
-#include <QMouseEvent>
-#include <QApplication>
-#include <QDragMoveEvent>
-#include <qwt_legend.h>
-#include <QFileDialog>
-#include <QSvgGenerator>
-#include <QSpinBox>
-#include <QLabel>
-#include <QCheckBox>
-#include <QGridLayout>
+#include <QtGui>
 
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>

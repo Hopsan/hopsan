@@ -5,7 +5,7 @@
 //!
 //! @brief Contains a class for the options dialog
 //!
-//$Id: OptionsDialog.cpp 1196 2010-04-01 09:55:04Z robbr48 $
+//$Id$
 
 #include "AboutDialog.h"
 #include "../MainWindow.h"

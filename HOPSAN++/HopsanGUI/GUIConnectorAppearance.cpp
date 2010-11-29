@@ -1,3 +1,5 @@
+//$Id$
+
 #include "GUIConnectorAppearance.h"
 #include "qdebug.h"
 #include "Configuration.h"

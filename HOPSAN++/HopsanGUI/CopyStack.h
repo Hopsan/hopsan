@@ -1,7 +1,7 @@
 //$Id$
 
-#ifndef CopyStack_H
-#define CopyStack_H
+#ifndef COPYSTACK_H
+#define COPYSTACK_H
 
 #include <QDomElement>
 
@@ -18,4 +18,4 @@ private:
     QDomElement mCopyRoot;
 };
 
-#endif // CopyStack_H
+#endif // COPYSTACK_H

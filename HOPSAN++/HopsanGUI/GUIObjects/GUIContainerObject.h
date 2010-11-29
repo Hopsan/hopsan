@@ -1,3 +1,5 @@
+//$Id$
+
 #ifndef GUICONTAINEROBJECT_H
 #define GUICONTAINEROBJECT_H
 

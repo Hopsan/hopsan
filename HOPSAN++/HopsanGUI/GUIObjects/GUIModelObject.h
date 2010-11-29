@@ -1,3 +1,5 @@
+//$Id$
+
 #ifndef GUIMODELOBJECT_H
 #define GUIMODELOBJECT_H
 

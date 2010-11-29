@@ -1,3 +1,5 @@
+//$Id$
+
 #ifndef GUIPORTAPPEARANCE_H
 #define GUIPORTAPPEARANCE_H
 

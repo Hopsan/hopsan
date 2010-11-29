@@ -1,3 +1,5 @@
+//$Id$
+
 #include <QDebug>
 #include <QSpinBox>
 #include <QColorDialog>

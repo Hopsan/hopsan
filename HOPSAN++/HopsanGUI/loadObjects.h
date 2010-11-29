@@ -1,3 +1,5 @@
+//$Id$
+
 #ifndef LOADOBJECTS_H
 #define LOADOBJECTS_H
 

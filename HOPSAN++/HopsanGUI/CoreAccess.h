@@ -1,3 +1,5 @@
+//$Id$
+
 #ifndef GUIROOTSYSTEM_H
 #define GUIROOTSYSTEM_H
 

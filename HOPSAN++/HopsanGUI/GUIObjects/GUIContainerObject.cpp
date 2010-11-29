@@ -1,3 +1,5 @@
+//$Id$
+
 #include "GUIContainerObject.h"
 
 //! @todo clean these up
