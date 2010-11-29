@@ -18,6 +18,7 @@ public:
     ~GUIModelObject();
 
     //Name methods
+    virtual void setName(QString name){;}
     virtual QString getName();
     virtual void refreshDisplayName();
     //virtual void setName(QString name, renameRestrictions renameSettings=UNRESTRICTED);

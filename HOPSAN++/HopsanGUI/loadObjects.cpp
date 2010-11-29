@@ -149,7 +149,7 @@ void SubsystemLoadData::read(QTextStream &rStream)
 void SubsystemLoadData::readDomElement(QDomElement &rDomElement)
 {
     type = "Subsystem"; //Hardcode the type, regardles of hmf contents (should not contain type
-//    name = rDomElement.attribute(HMF_NAMETAG);
+    name = rDomElement.attribute(HMF_NAMETAG);
 //    cqs_type = rDomElement.attribute(HMF_CQSTYPETAG);
     externalfilepath = rDomElement.attribute(HMF_EXTERNALPATHTAG);
 
@@ -283,14 +283,17 @@ GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget*
     }
     QDomDocument domDocument;
     QDomElement externalRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
-    QDomElement systemRoot = externalRoot.firstChildElement(HMF_SYSTEMTAG);
+    QDomElement externalSystemRoot = externalRoot.firstChildElement(HMF_SYSTEMTAG);
     //! @todo set the modefile info, maybe we should have built in helpfunction for loading directly from file in System
     pSys->setModelFileInfo(file);
-    pSys->loadFromDomElement(systemRoot);
+    pSys->loadFromDomElement(externalSystemRoot);
     //! @todo this code is duplicated with the one in system->loadfromdomelement (external code) that code will never run, as this will take care of it. When we have embeded subsystems will will need to fix this
 
-    //Set the cqs type of the system
-    //pSys->setTypeCQS(rData.cqs_type); //!< @todo is this necessary isnt cqs set insed loadfromdoelement
+    //Overwrite any loaded external name with the one that was stored in the main file from which we are loading
+    if (!rData.name.isEmpty())
+    {
+        pSys->setName(rData.name);
+    }
 
     return pSys;
 }

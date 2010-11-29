@@ -397,7 +397,12 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
         //This information should ONLY be used to indicate that a system is external, it SHOULD NOT be included in the actual external system
         //If it would be, the load function will fail
         xmlSubsystem.setAttribute( HMF_EXTERNALPATHTAG, relativePath(mModelFileInfo.absoluteFilePath(), mpParentContainerObject->mModelFileInfo.absolutePath()) );
+
+        //Save the name that we have set for this subsystem, this name will overwrite the defualt one in the external file
+        xmlSubsystem.setAttribute( HMF_NAMETAG, this->getName());
     }
+
+
 
     //Save gui object stuff
     this->saveGuiDataToDomElement(xmlSubsystem);
@@ -567,6 +572,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 //        QDomElement externalRoot = loadXMLDomDocument(file, HMF_ROOTTAG);
 //        QDomElement systemRoot = externalRoot.firstChildElement(HMF_SYSTEMTAG);
 //        loadSubsystemGUIObject(systemRoot, gpMainWindow->mpLibrary, this, NOUNDO);
+
     }
 }
 
