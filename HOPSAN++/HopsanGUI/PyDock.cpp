@@ -40,7 +40,7 @@ PyDock::PyDock(MainWindow *pMainWindow, QWidget * parent)
         mpPyConsole->consoleMessage("There is an object called hopsan that allow you to interact with Hopsan NG.");
         mpPyConsole->appendCommandPrompt();
 
-        mpScriptFileLineEdit = new QLineEdit("../../../pyscripts/pyBE.py");
+        mpScriptFileLineEdit = new QLineEdit();
         //mpScriptFileLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
         //mpStartTimeLineEdit->setValidator(new QDoubleValidator(-999.0, 999.0, 6, mpStartTimeLineEdit));
 
@@ -65,9 +65,25 @@ PyDock::PyDock(MainWindow *pMainWindow, QWidget * parent)
 }
 
 
+void PyDock::saveSettingsToDomElement(QDomElement &rDomElement)
+{
+    QDomElement lastscript = appendDomElement(rDomElement, "lastscript");
+    lastscript.setAttribute("file", mpScriptFileLineEdit->text());
+}
+
+
+void PyDock::loadSettingsFromDomElement(QDomElement &rDomElement)
+{
+    QDomElement lastscript = rDomElement.firstChildElement("lastscript");
+    QString filename = lastscript.attribute("file");
+    if(!(filename.isEmpty()))
+        mpScriptFileLineEdit->setText(filename);
+}
+
+
 void PyDock::runPyScript()
 {
-    PythonQtObjectPtr  mainContext = PythonQt::self()->getMainModule();
+    PythonQtObjectPtr mainContext = PythonQt::self()->getMainModule();
     QString command = QString("execfile('").append(mpScriptFileLineEdit->text()).append("')");
     mainContext.evalScript(command);
     mpPyConsole->appendCommandPrompt();

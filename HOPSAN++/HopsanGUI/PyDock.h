@@ -11,6 +11,7 @@
 #define PYDOCK_H
 
 #include <QtGui>
+#include <QtXml>
 
 class MainWindow;
 class PythonQtScriptingConsole;
@@ -21,6 +22,9 @@ class PyDock : public QDockWidget
 
 public:
     PyDock(MainWindow *pMainWindow, QWidget * parent = 0);
+    QString getScriptFileName();
+    void saveSettingsToDomElement(QDomElement &rDomElement);
+    void loadSettingsFromDomElement(QDomElement &rDomElement);
 
 public slots:
     void runPyScript();

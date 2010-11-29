@@ -125,6 +125,8 @@ public:
     QPushButton *mpBackButton;
     void closeEvent(QCloseEvent *event);
 
+    PyDock *getPythonDock();
+
 public slots:
     void show();
     void updateToolBarsToNewTab();

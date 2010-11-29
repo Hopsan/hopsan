@@ -132,6 +132,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mpShowDebugMessagesButton, SIGNAL(toggled(bool)), mpMessageWidget, SLOT(showDebugMessages(bool)));
     connect(mpGroupByTagCheckBox, SIGNAL(toggled(bool)), mpMessageWidget, SLOT(setGroupByTag(bool)));
 
+    mpPyDock = new PyDock(this, this);
+    addDockWidget(Qt::BottomDockWidgetArea, mpPyDock);
+
     gConfig.loadFromXml();
     //this->loadSettings();
 
@@ -141,9 +144,6 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibrary = new LibraryWidget(this);
     mpLibDock->setWidget(mpLibrary);
     addDockWidget(Qt::LeftDockWidgetArea, mpLibDock);
-
-    mpPyDock = new PyDock(this, this);
-    addDockWidget(Qt::BottomDockWidgetArea, mpPyDock);
 
     //Set dock widget corner owner
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
@@ -318,6 +318,13 @@ void MainWindow::closeEvent(QCloseEvent *event)
     //this->saveSettings();
     gConfig.saveToXml();
 }
+
+
+PyDock *MainWindow::getPythonDock()
+{
+    return mpPyDock;
+}
+
 
 
 //! @brief Defines the actions used by the toolbars
