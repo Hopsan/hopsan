@@ -13,7 +13,7 @@
 #include "Utilities/GUIUtilities.h"
 #include "MainWindow.h"
 #include "Widgets/MessageWidget.h"
-#include "PyDockWidget.h"
+#include "Widgets/PyDockWidget.h"
 
 #include <QDomElement>
 #include <QMessageBox>

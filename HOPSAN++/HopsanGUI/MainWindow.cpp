@@ -17,7 +17,7 @@
 #include "Widgets/ProjectTabWidget.h"
 #include "GraphicsView.h"
 #include "GUIObjects/GUISystem.h"
-#include "PyDockWidget.h"
+#include "Widgets/PyDockWidget.h"
 #include "Widgets/SystemParametersWidget.h"
 #include "Configuration.h"
 #include "CopyStack.h"
