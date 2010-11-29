@@ -77,7 +77,7 @@ double SecondOrderTransferFunction::value()
     return y0;
 }
 
-void SecondOrderTransferFunction::initialize(double initValueU, double initValueY, double &rTime)
+void SecondOrderTransferFunction::initialize(double initValueU, double initValueY)
 {
     mDelayu[0] = initValueU;
     mDelayu[1] = initValueU;

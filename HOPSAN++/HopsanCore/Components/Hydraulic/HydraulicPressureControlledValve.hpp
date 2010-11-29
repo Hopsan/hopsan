@@ -74,7 +74,7 @@ namespace hopsan {
             //double wCutoff = 100;     DEBUG
             double num [3] = {1.0, 0.0, 0.0};
             double den [3] = {1.0, 1.0/wCutoff, 0.0};
-            mFilterLP.initialize(0.0,0.0, mTime);
+            mFilterLP.initialize(0.0,0.0);
             mFilterLP.setCoefficients(num, den, mTimestep);
         }
 

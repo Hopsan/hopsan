@@ -14,7 +14,7 @@ namespace hopsan {
         void update(double signal);
         void setCoefficients(double num [3], double den [3], double timestep);
         double value();
-        void initialize(double initValueU, double initValueY, double &rTime);
+        void initialize(double initValueU, double initValueY);
 
     private:
         double u0, u1, u2;

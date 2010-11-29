@@ -23,7 +23,6 @@ namespace hopsan {
     {
 
     private:
-        double mStartY;
         double mPrevU;
         double mPrevY;
         Port *mpIn, *mpOut;
@@ -37,7 +36,6 @@ namespace hopsan {
         SignalIntegrator(const std::string name) : ComponentSignal(name)
         {
             mTypeName = "SignalIntegrator";
-            mStartY = 0.0;
 
             mpIn = addReadPort("in", "NodeSignal");
             mpOut = addWritePort("out", "NodeSignal");
@@ -46,10 +44,9 @@ namespace hopsan {
 
         void initialize()
         {
-            double u0 = mpIn->readNode(NodeSignal::VALUE);
-            mPrevU = mStartY;
-            mPrevY = mStartY;
-            mpOut->writeNode(NodeSignal::VALUE, mStartY);
+            double startY = mpOut->getStartValue(NodeSignal::VALUE);
+            mPrevU = startY;
+            mPrevY = startY;
         }
 
 

@@ -300,6 +300,8 @@ double Port::getStartValue(const size_t idx)
 {
     if(mpStartNode)
         return mpStartNode->getData(idx);
+    assert(false);
+    return 0.0;
 }
 
 

@@ -60,7 +60,7 @@
                     <parameter value="100000" name="k"/>
                 </parameters>
                 <startvalues>
-                    <startvalue portname="P1" variable="Velocity" value="0"/>
+                    <startvalue portname="P1" variable="Velocity" value="-1"/>
                     <startvalue portname="P1" variable="Force" value="0"/>
                     <startvalue portname="P1" variable="Position" value="18"/>
                     <startvalue portname="P2" variable="Velocity" value="0"/>
