@@ -1,7 +1,7 @@
 //$Id$
 
-#ifndef PlotWindow_H
-#define PlotWindow_H
+#ifndef PLOTWINDOW_H
+#define PLOTWINDOW_H
 
 #include <QtGui>
 
@@ -118,4 +118,4 @@ private:
     void setActiveMarker(QwtPlotMarker *marker);
 };
 
-#endif // PlotWidget_H
+#endif // PLOTWINDOW_H
