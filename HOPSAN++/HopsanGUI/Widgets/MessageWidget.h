@@ -1,15 +1,14 @@
 #ifndef MESSAGEWIDGET_H
 #define MESSAGEWIDGET_H
 
-#include <QPlainTextEdit>
+#include <QtGui>
 #include "HopsanCore.h"
-
 
 class MainWindow;
 class CoreMessagesAccess;
 class GUIMessage;
 
-class MessageWidget : public QTextEdit
+class MessageWidget : public QWidget
 {
     Q_OBJECT
 public:
@@ -44,9 +43,17 @@ private:
     bool mShowDefaultMessages;
     bool mShowDebugMessages;
 
-
     CoreMessagesAccess *mpCoreAccess;
 
+    QTextEdit *mpTextEdit;
+    QGridLayout *mpLayout;
+    QPushButton *mpClearMessageWidgetButton;
+    QToolButton *mpShowErrorMessagesButton;
+    QToolButton *mpShowWarningMessagesButton;
+    QToolButton *mpShowInfoMessagesButton;
+    QToolButton *mpShowDefaultMessagesButton;
+    QToolButton *mpShowDebugMessagesButton;
+    QCheckBox *mpGroupByTagCheckBox;
 };
 
 

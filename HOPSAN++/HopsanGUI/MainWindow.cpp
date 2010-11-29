@@ -68,69 +68,9 @@ MainWindow::MainWindow(QWidget *parent)
     mpMessageDock = new QDockWidget(tr("Messages"), this);
     mpMessageDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
     mpMessageWidget = new MessageWidget(this);
-    mpMessageWidget->setReadOnly(true);
-
-    mpClearMessageWidgetButton = new QPushButton("Clear Messages");
-    QFont tempFont = mpClearMessageWidgetButton->font();
-    tempFont.setBold(true);
-    mpClearMessageWidgetButton->setFont(tempFont);
-    mpClearMessageWidgetButton->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-
-    mpShowErrorMessagesButton = new QToolButton();
-    mpShowErrorMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowErrorMessages.png"));
-    mpShowErrorMessagesButton->setCheckable(true);
-    mpShowErrorMessagesButton->setChecked(true);
-    mpShowErrorMessagesButton->setToolTip("Show Error Messages");
-
-    mpShowWarningMessagesButton = new QToolButton();
-    mpShowWarningMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowWarningMessages.png"));
-    mpShowWarningMessagesButton->setCheckable(true);
-    mpShowWarningMessagesButton->setChecked(true);
-    mpShowWarningMessagesButton->setToolTip("Show Warning Messages");
-
-    mpShowInfoMessagesButton = new QToolButton();
-    mpShowInfoMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowInfoMessages.png"));
-    mpShowInfoMessagesButton->setCheckable(true);
-    mpShowInfoMessagesButton->setChecked(true);
-    mpShowInfoMessagesButton->setToolTip("Show Info Messages");
-
-    mpShowDefaultMessagesButton = new QToolButton();
-    mpShowDefaultMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowDefaultMessages.png"));
-    mpShowDefaultMessagesButton->setCheckable(true);
-    mpShowDefaultMessagesButton->setChecked(true);
-    mpShowDefaultMessagesButton->setToolTip("Show Default Messages");
-
-    mpShowDebugMessagesButton = new QToolButton();
-    mpShowDebugMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowDebugMessages.png"));
-    mpShowDebugMessagesButton->setCheckable(true);
-    mpShowDebugMessagesButton->setChecked(false);
-    mpShowDebugMessagesButton->setToolTip("Show Debug Messages");
-
-    mpGroupByTagCheckBox = new QCheckBox("Group Similar Messages");
-    mpGroupByTagCheckBox->setChecked(false);
-
-    QGridLayout *pTempLayout = new QGridLayout(mpMessageDock);
-    pTempLayout->addWidget(mpMessageWidget,0,0,1,8);
-    pTempLayout->addWidget(mpClearMessageWidgetButton,1,0,1,1);
-    pTempLayout->addWidget(mpShowErrorMessagesButton,1,1,1,1);
-    pTempLayout->addWidget(mpShowWarningMessagesButton,1,2,1,1);
-    pTempLayout->addWidget(mpShowInfoMessagesButton,1,3,1,1);
-    pTempLayout->addWidget(mpShowDefaultMessagesButton,1,4,1,1);
-    pTempLayout->addWidget(mpShowDebugMessagesButton,1,5,1,1);
-    pTempLayout->addWidget(mpGroupByTagCheckBox, 1,6,1,1);
-
-    QWidget *pTempWidget = new QWidget(this);
-    pTempWidget->setLayout(pTempLayout);
-    mpMessageDock->setWidget(pTempWidget);
+    mpMessageDock->setWidget(mpMessageWidget);
     addDockWidget(Qt::BottomDockWidgetArea, mpMessageDock);
     mpMessageWidget->printGUIMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
-    connect(mpClearMessageWidgetButton, SIGNAL(pressed()),mpMessageWidget,SLOT(clear()));
-    connect(mpShowErrorMessagesButton, SIGNAL(toggled(bool)), mpMessageWidget, SLOT(showErrorMessages(bool)));
-    connect(mpShowWarningMessagesButton, SIGNAL(toggled(bool)), mpMessageWidget, SLOT(showWarningMessages(bool)));
-    connect(mpShowInfoMessagesButton, SIGNAL(toggled(bool)), mpMessageWidget, SLOT(showInfoMessages(bool)));
-    connect(mpShowDefaultMessagesButton, SIGNAL(toggled(bool)), mpMessageWidget, SLOT(showDefaultMessages(bool)));
-    connect(mpShowDebugMessagesButton, SIGNAL(toggled(bool)), mpMessageWidget, SLOT(showDebugMessages(bool)));
-    connect(mpGroupByTagCheckBox, SIGNAL(toggled(bool)), mpMessageWidget, SLOT(setGroupByTag(bool)));
 
     mpPyDockWidget = new PyDockWidget(this, this);
     addDockWidget(Qt::BottomDockWidgetArea, mpPyDockWidget);

@@ -13,8 +13,11 @@ using namespace hopsan;
 //! @brief Constructor for the message widget class
 //! @param pParent Parent pointer (not necessary)
 MessageWidget::MessageWidget(MainWindow *pParent)
-    : QTextEdit(pParent)
+    : QWidget(pParent)
 {
+    mpTextEdit = new QTextEdit(this);
+    mpTextEdit->setReadOnly(true);
+
     mGroupByTag = false;
 
     mShowErrorMessages = true;
@@ -24,13 +27,72 @@ MessageWidget::MessageWidget(MainWindow *pParent)
     mShowDebugMessages = false;
 
     mpCoreAccess = new CoreMessagesAccess;
+
+    mpClearMessageWidgetButton = new QPushButton("Clear Messages");
+    QFont tempFont = mpClearMessageWidgetButton->font();
+    tempFont.setBold(true);
+    mpClearMessageWidgetButton->setFont(tempFont);
+    mpClearMessageWidgetButton->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+
+    mpShowErrorMessagesButton = new QToolButton();
+    mpShowErrorMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowErrorMessages.png"));
+    mpShowErrorMessagesButton->setCheckable(true);
+    mpShowErrorMessagesButton->setChecked(true);
+    mpShowErrorMessagesButton->setToolTip("Show Error Messages");
+
+    mpShowWarningMessagesButton = new QToolButton();
+    mpShowWarningMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowWarningMessages.png"));
+    mpShowWarningMessagesButton->setCheckable(true);
+    mpShowWarningMessagesButton->setChecked(true);
+    mpShowWarningMessagesButton->setToolTip("Show Warning Messages");
+
+    mpShowInfoMessagesButton = new QToolButton();
+    mpShowInfoMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowInfoMessages.png"));
+    mpShowInfoMessagesButton->setCheckable(true);
+    mpShowInfoMessagesButton->setChecked(true);
+    mpShowInfoMessagesButton->setToolTip("Show Info Messages");
+
+    mpShowDefaultMessagesButton = new QToolButton();
+    mpShowDefaultMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowDefaultMessages.png"));
+    mpShowDefaultMessagesButton->setCheckable(true);
+    mpShowDefaultMessagesButton->setChecked(true);
+    mpShowDefaultMessagesButton->setToolTip("Show Default Messages");
+
+    mpShowDebugMessagesButton = new QToolButton();
+    mpShowDebugMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowDebugMessages.png"));
+    mpShowDebugMessagesButton->setCheckable(true);
+    mpShowDebugMessagesButton->setChecked(false);
+    mpShowDebugMessagesButton->setToolTip("Show Debug Messages");
+
+    mpGroupByTagCheckBox = new QCheckBox("Group Similar Messages");
+    mpGroupByTagCheckBox->setChecked(false);
+
+    mpLayout = new QGridLayout(this);
+    mpLayout->addWidget(mpTextEdit,0,0,1,8);
+    mpLayout->addWidget(mpClearMessageWidgetButton,1,0,1,1);
+    mpLayout->addWidget(mpShowErrorMessagesButton,1,1,1,1);
+    mpLayout->addWidget(mpShowWarningMessagesButton,1,2,1,1);
+    mpLayout->addWidget(mpShowInfoMessagesButton,1,3,1,1);
+    mpLayout->addWidget(mpShowDefaultMessagesButton,1,4,1,1);
+    mpLayout->addWidget(mpShowDebugMessagesButton,1,5,1,1);
+    mpLayout->addWidget(mpGroupByTagCheckBox, 1,6,1,1);
+
+    this->setLayout(mpLayout);
+    connect(mpClearMessageWidgetButton, SIGNAL(pressed()),this, SLOT(clear()));
+    connect(mpShowErrorMessagesButton, SIGNAL(toggled(bool)), this, SLOT(showErrorMessages(bool)));
+    connect(mpShowWarningMessagesButton, SIGNAL(toggled(bool)), this, SLOT(showWarningMessages(bool)));
+    connect(mpShowInfoMessagesButton, SIGNAL(toggled(bool)), this, SLOT(showInfoMessages(bool)));
+    connect(mpShowDefaultMessagesButton, SIGNAL(toggled(bool)), this, SLOT(showDefaultMessages(bool)));
+    connect(mpShowDebugMessagesButton, SIGNAL(toggled(bool)), this, SLOT(showDebugMessages(bool)));
+    connect(mpGroupByTagCheckBox, SIGNAL(toggled(bool)), this, SLOT(setGroupByTag(bool)));
+
 }
 
 
 //! @brief Reimplementation of QTextEdit::sizeHint(), probably used to reduce the size of the message widget
 QSize MessageWidget::sizeHint() const
 {
-    QSize size = QTextEdit::sizeHint();
+    QSize size = QWidget::sizeHint();
     //Set very small height. A minimum apperantly stops at resonable size.
     size.rheight() = 48; //pixels
     return size;
@@ -43,27 +105,27 @@ void MessageWidget::setMessageColor(QString type)
 {
     if (type == "error")
     {
-        setTextColor("RED");
+        mpTextEdit->setTextColor("RED");
     }
     else if (type == "warning")
     {
-        setTextColor("ORANGE");
+        mpTextEdit->setTextColor("ORANGE");
     }
     else if (type == "info")
     {
-        setTextColor("GREEN");
+        mpTextEdit->setTextColor("GREEN");
     }
     else if (type == "default")
     {
-        setTextColor("BLACK");
+        mpTextEdit->setTextColor("BLACK");
     }
     else if (type == "debug")
     {
-        setTextColor("BLUE");
+        mpTextEdit->setTextColor("BLUE");
     }
     else
     {
-        setTextColor("GRAY");
+        mpTextEdit->setTextColor("GRAY");
     }
 }
 
@@ -71,7 +133,7 @@ void MessageWidget::setMessageColor(QString type)
 //! @brief Updates the displayed messages from the message list
 void MessageWidget::updateDisplay()
 {
-    QTextEdit::clear();         //Clear the message box (we can not call this->clear(), since this would also clear the message list and we wouldn't have anything to print)
+    mpTextEdit->clear();         //Clear the message box (we can not call this->clear(), since this would also clear the message list and we wouldn't have anything to print)
     QStringList usedTags;
 
         //Loop through message list and print messages
@@ -93,19 +155,19 @@ void MessageWidget::updateDisplay()
                     size_t nTags = tagCount((*it).tag);
                     if(nTags == 1)                      //There is only one tag, so avoid appending "(0 similar)"
                     {
-                        append((*it).message);
+                        mpTextEdit->append((*it).message);
                     }
                     else                                //There are more than one tag, so append ("X similar)"
                     {
                         QString numString;
                         numString.setNum(nTags-1);
-                        append((*it).message + " (" + numString + " similar)");
+                        mpTextEdit->append((*it).message + " (" + numString + " similar)");
                     }
                 }
             }
             else        //Message is not tagged, or group by tag setting is not active
             {
-                append((*it).message);
+                mpTextEdit->append((*it).message);
             }
         }
     }
@@ -138,7 +200,7 @@ void MessageWidget::printCoreMessages()
         QString message, type, tag;
         mpCoreAccess->getMessage(message, type, tag);
         mMessageList.append(GUIMessage(message, type, tag));
-        this->updateDisplay();
+        updateDisplay();
     }
 }
 
@@ -191,7 +253,7 @@ void MessageWidget::printGUIDebugMessage(QString message, QString tag)
 //! @brief Clear function for message widget, this will empty the message widget and also remove all messages from the list
 void MessageWidget::clear()
 {
-    QTextEdit::clear();
+    mpTextEdit->clear();
     mMessageList.clear();
 }
 
