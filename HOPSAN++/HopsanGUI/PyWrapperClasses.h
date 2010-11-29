@@ -140,7 +140,7 @@ public slots:
 
     void printMessage(MainWindow* o, const QString& message)
     {
-        o->mpMessageWidget->printGUIMessage(QString("pyMessage: ").append(message));
+        o->mpMessageWidget->printGUIInfoMessage(QString("pyMessage: ").append(message));
         o->mpMessageWidget->checkMessages();
     }
 

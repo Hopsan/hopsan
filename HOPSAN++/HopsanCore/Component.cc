@@ -1014,6 +1014,9 @@ void ComponentSystem::removeSubComponent(string name, bool doDelete)
 //! @param[in] doDelete Set this to true if the component should be deleted after removal
 void ComponentSystem::removeSubComponent(Component* c_ptr, bool doDelete)
 {
+    std::string compName;
+    compName = c_ptr->getName();
+
     //Disconnect all ports before erase from system
     PortPtrMapT::iterator ports_it;
     vector<Port*>::iterator conn_ports_it;
@@ -1035,6 +1038,8 @@ void ComponentSystem::removeSubComponent(Component* c_ptr, bool doDelete)
     {
         delete c_ptr; //! @todo can I really delete here or do I need to use the factory for external components
     }
+
+    gCoreMessageHandler.addDebugMessage("Removed component: \"" + compName + "\" from system: \"" + this->getName() + "\"", "removedcomponent");
 }
 
 void ComponentSystem::addSubComponentPtrToStorage(Component* pComponent)
@@ -1678,7 +1683,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     }
     ss << "Connected: {" << pComp1->getName() << "::" << pPort1->getPortName() << "} and {" << pComp2->getName() << "::" << pPort2->getPortName() << "}";
     //cout << ss.str() << endl;
-    gCoreMessageHandler.addInfoMessage(ss.str(), "succesfulconnect");
+    gCoreMessageHandler.addDebugMessage(ss.str(), "succesfulconnect");
     return true;
 }
 
@@ -1916,7 +1921,7 @@ void ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 
         ss << "Disconnected: {"<< pPort1->mpComponent->getName() << "::" << pPort1->getPortName() << "} and {" << pPort2->mpComponent->getName() << "::" << pPort2->getPortName() << "}";
         cout << ss.str() << endl;
-        gCoreMessageHandler.addInfoMessage(ss.str());
+        gCoreMessageHandler.addDebugMessage(ss.str(), "succesfuldisconnect");
 
 
         //If no more connections exist, remove the entier node and free the memory

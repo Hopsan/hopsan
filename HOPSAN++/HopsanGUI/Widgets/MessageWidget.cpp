@@ -23,7 +23,6 @@ MessageWidget::MessageWidget(MainWindow *pParent)
     mShowErrorMessages = true;
     mShowWarningMessages = true;
     mShowInfoMessages = true;
-    mShowDefaultMessages = true;
     mShowDebugMessages = false;
 
     mpCoreAccess = new CoreMessagesAccess;
@@ -52,12 +51,6 @@ MessageWidget::MessageWidget(MainWindow *pParent)
     mpShowInfoMessagesButton->setChecked(true);
     mpShowInfoMessagesButton->setToolTip("Show Info Messages");
 
-    mpShowDefaultMessagesButton = new QToolButton();
-    mpShowDefaultMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowDefaultMessages.png"));
-    mpShowDefaultMessagesButton->setCheckable(true);
-    mpShowDefaultMessagesButton->setChecked(true);
-    mpShowDefaultMessagesButton->setToolTip("Show Default Messages");
-
     mpShowDebugMessagesButton = new QToolButton();
     mpShowDebugMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowDebugMessages.png"));
     mpShowDebugMessagesButton->setCheckable(true);
@@ -68,21 +61,19 @@ MessageWidget::MessageWidget(MainWindow *pParent)
     mpGroupByTagCheckBox->setChecked(false);
 
     mpLayout = new QGridLayout(this);
-    mpLayout->addWidget(mpTextEdit,0,0,1,8);
+    mpLayout->addWidget(mpTextEdit,0,0,1,7);
     mpLayout->addWidget(mpClearMessageWidgetButton,1,0,1,1);
     mpLayout->addWidget(mpShowErrorMessagesButton,1,1,1,1);
     mpLayout->addWidget(mpShowWarningMessagesButton,1,2,1,1);
     mpLayout->addWidget(mpShowInfoMessagesButton,1,3,1,1);
-    mpLayout->addWidget(mpShowDefaultMessagesButton,1,4,1,1);
-    mpLayout->addWidget(mpShowDebugMessagesButton,1,5,1,1);
-    mpLayout->addWidget(mpGroupByTagCheckBox, 1,6,1,1);
+    mpLayout->addWidget(mpShowDebugMessagesButton,1,4,1,1);
+    mpLayout->addWidget(mpGroupByTagCheckBox, 1,5,1,1);
 
     this->setLayout(mpLayout);
     connect(mpClearMessageWidgetButton, SIGNAL(pressed()),this, SLOT(clear()));
     connect(mpShowErrorMessagesButton, SIGNAL(toggled(bool)), this, SLOT(showErrorMessages(bool)));
     connect(mpShowWarningMessagesButton, SIGNAL(toggled(bool)), this, SLOT(showWarningMessages(bool)));
     connect(mpShowInfoMessagesButton, SIGNAL(toggled(bool)), this, SLOT(showInfoMessages(bool)));
-    connect(mpShowDefaultMessagesButton, SIGNAL(toggled(bool)), this, SLOT(showDefaultMessages(bool)));
     connect(mpShowDebugMessagesButton, SIGNAL(toggled(bool)), this, SLOT(showDebugMessages(bool)));
     connect(mpGroupByTagCheckBox, SIGNAL(toggled(bool)), this, SLOT(setGroupByTag(bool)));
 
@@ -113,10 +104,6 @@ void MessageWidget::setMessageColor(QString type)
     }
     else if (type == "info")
     {
-        mpTextEdit->setTextColor("GREEN");
-    }
-    else if (type == "default")
-    {
         mpTextEdit->setTextColor("BLACK");
     }
     else if (type == "debug")
@@ -137,42 +124,54 @@ void MessageWidget::updateDisplay()
     QStringList usedTags;
 
         //Loop through message list and print messages
-    QList<GUIMessage>::iterator it;
-    for(it=mMessageList.begin(); it!=mMessageList.end(); ++it)
+    for(size_t msg=0; msg<mMessageList.size(); ++msg)
     {
-        if( !((*it).type == "error" && !mShowErrorMessages) &&          //Do not show message if its type shall not be shown
-            !((*it).type == "warning" && !mShowWarningMessages) &&
-            !((*it).type == "info" && !mShowInfoMessages) &&
-            !((*it).type == "default" && !mShowDefaultMessages) &&
-            !((*it).type == "debug" && !mShowDebugMessages))
+        if( !(mMessageList.at(msg).type == "error" && !mShowErrorMessages) &&          //Do not show message if its type shall not be shown
+            !(mMessageList.at(msg).type == "warning" && !mShowWarningMessages) &&
+            !(mMessageList.at(msg).type == "info" && !mShowInfoMessages) &&
+            !(mMessageList.at(msg).type == "debug" && !mShowDebugMessages))
         {
-            setMessageColor((*it).type);
-            if(!(*it).tag.isEmpty() && mGroupByTag)     //Message is tagged, and group by tag setting is active
+            setMessageColor(mMessageList.at(msg).type);
+            if(!mMessageList.at(msg).tag.isEmpty() && mGroupByTag)     //Message is tagged, and group by tag setting is active
             {
-                if(!usedTags.contains((*it).tag))       //Check that tag is not used before
+                size_t nTags = subsequentTagCount(mMessageList.at(msg).tag, msg);
+                if(nTags == 1)                      //There is only one tag, so avoid appending "(0 similar)"
                 {
-                    usedTags.append((*it).tag);
-                    size_t nTags = tagCount((*it).tag);
-                    if(nTags == 1)                      //There is only one tag, so avoid appending "(0 similar)"
-                    {
-                        mpTextEdit->append((*it).message);
-                    }
-                    else                                //There are more than one tag, so append ("X similar)"
-                    {
-                        QString numString;
-                        numString.setNum(nTags-1);
-                        mpTextEdit->append((*it).message + " (" + numString + " similar)");
-                    }
+                    mpTextEdit->append(mMessageList.at(msg).message);
                 }
+                else                                //There are more than one tag, so append ("X similar)"
+                {
+                    QString numString;
+                    numString.setNum(nTags-1);
+                    mpTextEdit->append(mMessageList.at(msg).message + "    (" + numString + " similar)");
+                }
+                msg += nTags-1;
             }
             else        //Message is not tagged, or group by tag setting is not active
             {
-                mpTextEdit->append((*it).message);
+                mpTextEdit->append(mMessageList.at(msg).message);
             }
         }
     }
 }
 
+
+size_t MessageWidget::subsequentTagCount(QString tag, size_t startIdx)
+{
+    size_t nTags = 0;
+    for(size_t i=startIdx; i<mMessageList.size(); ++i)
+    {
+        if(mMessageList.at(i).tag == tag)
+        {
+            ++nTags;
+        }
+        else
+        {
+            return nTags;
+        }
+    }
+    return nTags;
+}
 
 //! @brief Help function that counts how many messages with a specified tag that exists in message list
 //! @param tag Name of the tag that shall be counted
@@ -202,15 +201,6 @@ void MessageWidget::printCoreMessages()
         mMessageList.append(GUIMessage(message, type, tag));
         updateDisplay();
     }
-}
-
-
-//! @brief Prints a GUI message of default type
-//! @param message String containing the message
-void MessageWidget::printGUIMessage(QString message, QString tag)
-{
-    mMessageList.append(GUIMessage(message, "default", tag));
-    updateDisplay();
 }
 
 
@@ -297,15 +287,6 @@ void MessageWidget::showWarningMessages(bool value)
 void MessageWidget::showInfoMessages(bool value)
 {
     mShowInfoMessages = value;
-    updateDisplay();
-}
-
-
-//! @brief Tells the message widget wether or not it shall show default messages
-//! @param value True means show messages
-void MessageWidget::showDefaultMessages(bool value)
-{
-    mShowDefaultMessages = value;
     updateDisplay();
 }
 

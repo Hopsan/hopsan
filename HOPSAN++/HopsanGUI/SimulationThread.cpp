@@ -13,6 +13,8 @@
 #include "CoreAccess.h"
 #include "MainWindow.h"
 #include "Configuration.h"
+#include "Widgets/MessageWidget.h"
+#include "common.h"
 
 
 //! @class SimulationThread

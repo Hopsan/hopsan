@@ -27,9 +27,6 @@ void CoreMessagesAccess::getMessage(QString &message, QString &type, QString &ta
     case hopsan::HopsanCoreMessage::INFO:
         type = "info";
         break;
-    case hopsan::HopsanCoreMessage::DEFAULT:
-        type = "default";
-        break;
     case hopsan::HopsanCoreMessage::DEBUG:
         type = "debug";
         break;

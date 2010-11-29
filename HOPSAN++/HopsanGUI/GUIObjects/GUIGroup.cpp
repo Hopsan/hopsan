@@ -111,7 +111,7 @@ void GUIGroup::setContents(CopyStack *pCopyStack)
 
     this->paste(pCopyStack);
 
-//    pMessageWidget->printGUIMessage("Group selected components (implementing in progress...) Selected components: ");
+//    pMessageWidget->printGUIInfoMessage("Group selected components (implementing in progress...) Selected components: ");
 
 //    for (int i=0; i < compList.size(); ++i)
 //    {
@@ -120,7 +120,7 @@ void GUIGroup::setContents(CopyStack *pCopyStack)
 //        {
 //            //Adds the component pComponent to a list of components whose make up the group
 //            mGUICompList.append(pComponent);
-//            pMessageWidget->printGUIMessage(pComponent->getName());
+//            pMessageWidget->printGUIInfoMessage(pComponent->getName());
 
 //            QList<GUIConnector*> GUIConnectorPtrs = pComponent->getGUIConnectorPtrs();
 //            for(int i = 0; i != GUIConnectorPtrs.size(); ++i)

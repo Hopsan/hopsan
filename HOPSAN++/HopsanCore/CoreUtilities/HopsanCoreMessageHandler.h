@@ -19,7 +19,7 @@ namespace hopsan {
     class DLLIMPORTEXPORT HopsanCoreMessage
     {
     public:
-        enum MessageTypes {DEFAULT, INFO, WARNING, ERROR, DEBUG};
+        enum MessageTypes {INFO, WARNING, ERROR, DEBUG};
         int type;
         int debuglevel;
         std::string message;

@@ -70,7 +70,8 @@ MainWindow::MainWindow(QWidget *parent)
     mpMessageWidget = new MessageWidget(this);
     mpMessageDock->setWidget(mpMessageWidget);
     addDockWidget(Qt::BottomDockWidgetArea, mpMessageDock);
-    mpMessageWidget->printGUIMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
+
+    mpMessageWidget->printGUIInfoMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
 
     mpPyDockWidget = new PyDockWidget(this, this);
     addDockWidget(Qt::BottomDockWidgetArea, mpPyDockWidget);

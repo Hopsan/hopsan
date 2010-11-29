@@ -211,7 +211,7 @@ void ComponentPropertiesDialog::setParameters()
             {
                 //! @todo Make something better, like showing a warning box, if parameter is not ok. Maybe check all parameters before setting any of them.
                 MessageWidget *messageWidget = gpMainWindow->mpMessageWidget;//qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent()->parent())->mpMessageWidget;
-                messageWidget->printGUIMessage(QString("ComponentPropertiesDialog::setParameters(): You must give a correct value for '").append(mvParameterLayout[i]->getDataName()).append(QString("', putz. Try again!")));
+                messageWidget->printGUIInfoMessage(QString("ComponentPropertiesDialog::setParameters(): You must give a correct value for '").append(mvParameterLayout[i]->getDataName()).append(QString("', putz. Try again!")));
                 qDebug() << "Inte okej!";
                 return;
             }

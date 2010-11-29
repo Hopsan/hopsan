@@ -175,9 +175,15 @@ bool ProjectTab::simulate()
 
 
         //Ask core to execute (and finalize) simulation
+    QTime simTimer;
     if (!progressBar.wasCanceled())
     {
-        QTime simTimer;
+        if(gConfig.getUseMulticore())
+            gpMainWindow->mpMessageWidget->printGUIInfoMessage("Starting Multi Threaded Simulation");
+        else
+            gpMainWindow->mpMessageWidget->printGUIInfoMessage("Starting Single Threaded Simulation");
+
+
         simTimer.start();
         SimulationThread actualSimulation(mpSystem->getCoreSystemAccessPtr(), startTime, finishTime, this);
         actualSimulation.start();
@@ -208,19 +214,18 @@ bool ProjectTab::simulate()
 
         actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
         actualSimulation.quit();
-        QString timeString;
-        timeString.setNum(simTimer.elapsed());
         emit checkMessages();
-        pMessageWidget->printGUIDebugMessage(QString("Simulation time: ").append(timeString).append(" ms"));
     }
 
+    QString timeString;
+    timeString.setNum(simTimer.elapsed());
     if (progressBar.wasCanceled())
     {
-        pMessageWidget->printGUIMessage(QString(tr("Simulation of '").append(mpSystem->getCoreSystemAccessPtr()->getRootSystemName()).append(tr("' was terminated!"))));
+        pMessageWidget->printGUIInfoMessage(QString(tr("Simulation of '").append(mpSystem->getCoreSystemAccessPtr()->getRootSystemName()).append(tr("' was terminated!"))));
     }
     else
     {
-        pMessageWidget->printGUIMessage(QString(tr("Simulated '").append(mpSystem->getCoreSystemAccessPtr()->getRootSystemName()).append(tr("' successfully!"))));
+        pMessageWidget->printGUIInfoMessage(QString(tr("Simulated '").append(mpSystem->getCoreSystemAccessPtr()->getRootSystemName()).append(tr("' successfully!  WSimulation time: ").append(timeString).append(" ms"))));
         emit simulationFinished();
         //this->mpParentProjectTabWidget->mpParentMainWindow->mpPlotWidget->mpVariableList->updateList();
     }
