@@ -24,7 +24,7 @@ SOURCES += main.cpp \
     Widgets/SystemParametersWidget.cpp \
     PlotWindow.cpp \
     PyWrapperClasses.cpp \
-    PyDock.cpp \
+    PyDockWidget.cpp \
     GUIObjects/GUIWidgets.cpp \
     GUIObjects/GUISystemPort.cpp \
     GUIObjects/GUISystem.cpp \
@@ -68,7 +68,7 @@ HEADERS += MainWindow.h \
     Widgets/SystemParametersWidget.h \
     PlotWindow.h \
     PyWrapperClasses.h \
-    PyDock.h \
+    PyDockWidget.h \
     GUIObjects/GUIWidgets.h \
     GUIObjects/GUISystemPort.h \
     GUIObjects/GUISystem.h \

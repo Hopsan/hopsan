@@ -1,5 +1,5 @@
 //!
-//! @file   PyDock.h
+//! @file   PyDockWidget.h
 //! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2010-09-21
 //!
@@ -7,8 +7,8 @@
 //!
 //$Id$
 
-#ifndef PYDOCK_H
-#define PYDOCK_H
+#ifndef PYDOCKWIDGET_H
+#define PYDOCKWIDGET_H
 
 #include <QtGui>
 #include <QtXml>
@@ -16,12 +16,12 @@
 class MainWindow;
 class PythonQtScriptingConsole;
 
-class PyDock : public QDockWidget
+class PyDockWidget : public QDockWidget
 {
     Q_OBJECT
 
 public:
-    PyDock(MainWindow *pMainWindow, QWidget * parent = 0);
+    PyDockWidget(MainWindow *pMainWindow, QWidget * parent = 0);
     QString getScriptFileName();
     void saveSettingsToDomElement(QDomElement &rDomElement);
     void loadSettingsFromDomElement(QDomElement &rDomElement);
@@ -34,4 +34,4 @@ private:
     QLineEdit *mpScriptFileLineEdit;
 };
 
-#endif // PYDOCK_H
+#endif // PYDOCKWIDGET_H

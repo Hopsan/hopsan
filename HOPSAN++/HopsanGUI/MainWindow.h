@@ -21,7 +21,7 @@ class OptionsDialog;
 //class UndoWidget;
 class MessageWidget;
 class PlotWidget;
-class PyDock;
+class PyDockWidget;
 class SystemParametersWidget;
 class Configuration;
 class CopyStack;
@@ -125,7 +125,7 @@ public:
     QPushButton *mpBackButton;
     void closeEvent(QCloseEvent *event);
 
-    PyDock *getPythonDock();
+    PyDockWidget *getPythonDock();
 
 public slots:
     void show();
@@ -146,7 +146,7 @@ private:
     QDockWidget *mpLibDock;
     QDockWidget *mpPlotWidgetDock;
     QDockWidget *mpUndoWidgetDock;
-    PyDock      *mpPyDock;
+    PyDockWidget      *mpPyDockWidget;
     QDockWidget *mpSystemParametersDock;
 
     //Methods that adjusts simulation parameters if they are illegal

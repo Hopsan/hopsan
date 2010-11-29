@@ -17,7 +17,7 @@
 #include "Widgets/ProjectTabWidget.h"
 #include "GraphicsView.h"
 #include "GUIObjects/GUISystem.h"
-#include "PyDock.h"
+#include "PyDockWidget.h"
 #include "Widgets/SystemParametersWidget.h"
 #include "Configuration.h"
 #include "CopyStack.h"
@@ -132,8 +132,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mpShowDebugMessagesButton, SIGNAL(toggled(bool)), mpMessageWidget, SLOT(showDebugMessages(bool)));
     connect(mpGroupByTagCheckBox, SIGNAL(toggled(bool)), mpMessageWidget, SLOT(setGroupByTag(bool)));
 
-    mpPyDock = new PyDock(this, this);
-    addDockWidget(Qt::BottomDockWidgetArea, mpPyDock);
+    mpPyDockWidget = new PyDockWidget(this, this);
+    addDockWidget(Qt::BottomDockWidgetArea, mpPyDockWidget);
 
     gConfig.loadFromXml();
     //this->loadSettings();
@@ -237,7 +237,7 @@ MainWindow::MainWindow(QWidget *parent)
     tabifyDockWidget(mpSystemParametersDock, mpUndoWidgetDock);
     tabifyDockWidget(mpUndoWidgetDock, mpPlotWidgetDock);
 
-    tabifyDockWidget(mpPyDock, mpMessageDock);
+    tabifyDockWidget(mpPyDockWidget, mpMessageDock);
 
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateToolBarsToNewTab()));
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(refreshUndoWidgetList()));
@@ -320,9 +320,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
 }
 
 
-PyDock *MainWindow::getPythonDock()
+PyDockWidget *MainWindow::getPythonDock()
 {
-    return mpPyDock;
+    return mpPyDockWidget;
 }
 
 
@@ -534,7 +534,7 @@ void MainWindow::createMenus()
     menuView->addAction(mpFileToolBar->toggleViewAction());
     menuView->addAction(mpEditToolBar->toggleViewAction());
     menuView->addAction(mpSimToolBar->toggleViewAction());
-    menuView->addAction(mpPyDock->toggleViewAction());
+    menuView->addAction(mpPyDockWidget->toggleViewAction());
 
     menuTools->addAction(optionsAction);
 

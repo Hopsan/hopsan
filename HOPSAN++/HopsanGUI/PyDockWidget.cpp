@@ -1,5 +1,5 @@
 //!
-//! @file   PyDock.cpp
+//! @file   PyDockWidget.cpp
 //! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2010-09-21
 //!
@@ -7,7 +7,7 @@
 //!
 //$Id$
 
-#include "PyDock.h"
+#include "PyDockWidget.h"
 
 #include "PythonQt.h"
 #include "PythonQt_QtAll.h"
@@ -20,7 +20,7 @@
 //! Create a dock for the Python console
 
 //! Constructor
-PyDock::PyDock(MainWindow *pMainWindow, QWidget * parent)
+PyDockWidget::PyDockWidget(MainWindow *pMainWindow, QWidget * parent)
     : QDockWidget(tr("Python Console"), parent)
 {
         PythonQt::init(PythonQt::RedirectStdOut);
@@ -65,14 +65,14 @@ PyDock::PyDock(MainWindow *pMainWindow, QWidget * parent)
 }
 
 
-void PyDock::saveSettingsToDomElement(QDomElement &rDomElement)
+void PyDockWidget::saveSettingsToDomElement(QDomElement &rDomElement)
 {
     QDomElement lastscript = appendDomElement(rDomElement, "lastscript");
     lastscript.setAttribute("file", mpScriptFileLineEdit->text());
 }
 
 
-void PyDock::loadSettingsFromDomElement(QDomElement &rDomElement)
+void PyDockWidget::loadSettingsFromDomElement(QDomElement &rDomElement)
 {
     QDomElement lastscript = rDomElement.firstChildElement("lastscript");
     QString filename = lastscript.attribute("file");
@@ -81,7 +81,7 @@ void PyDock::loadSettingsFromDomElement(QDomElement &rDomElement)
 }
 
 
-void PyDock::runPyScript()
+void PyDockWidget::runPyScript()
 {
     PythonQtObjectPtr mainContext = PythonQt::self()->getMainModule();
     QString command = QString("execfile('").append(mpScriptFileLineEdit->text()).append("')");

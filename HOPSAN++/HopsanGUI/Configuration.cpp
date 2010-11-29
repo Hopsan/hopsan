@@ -13,7 +13,7 @@
 #include "Utilities/GUIUtilities.h"
 #include "MainWindow.h"
 #include "Widgets/MessageWidget.h"
-#include "PyDock.h"
+#include "PyDockWidget.h"
 
 #include <QDomElement>
 #include <QMessageBox>
@@ -355,7 +355,7 @@ void Configuration::loadFromXml()
                 customUnitElement = customUnitElement.nextSiblingElement("customunit");
             }
 
-            //Load settings to PyDock in MainWindow
+            //Load settings to PyDockWidget in MainWindow
             QDomElement pythonElement = configRoot.firstChildElement("python");
             gpMainWindow->getPythonDock()->loadSettingsFromDomElement(pythonElement);
         }
