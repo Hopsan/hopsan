@@ -19,6 +19,8 @@ class GraphicsView;
 class GUIConnector;
 class MainWindow;
 class GUIContainerObject;
+class GUIWidget;
+class GUIBoxWidget;
 
 class UndoStack : public QObject
 {
@@ -38,6 +40,8 @@ public:
     void registerHorizontalFlip(QString objectName);
     void registerChangedParameter(QString objectName, QString parameterName, double oldValue, double newValue);
     void registerNameVisibilityChange(QString objectName, bool isVisible);
+    void registerAddedBoxWidget(GUIBoxWidget *item);
+    void registerDeletedBoxWidget(GUIBoxWidget *item);
     void clear(QString errorMsg = "");
     void newPost(QString type = "");
     void insertPost(QString str);

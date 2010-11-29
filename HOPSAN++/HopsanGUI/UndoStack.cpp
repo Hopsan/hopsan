@@ -249,6 +249,17 @@ void UndoStack::undoOneStep()
                 mpParentContainerObject->getGUIModelObject(objectName)->showName(NOUNDO);
             }
         }
+        else if(stuffElement.attribute("what") == "addedboxwidget")
+        {
+             size_t index = stuffElement.attribute("index").toInt();
+             mpParentContainerObject->mWidgetMap.find(index).value()->deleteMe(NOUNDO);
+        }
+        else if(stuffElement.attribute("what") == "deletedboxwidget")
+        {
+             QDomElement boxElement = stuffElement.firstChildElement(HMF_BOXWIDGETTAG);
+             loadBoxWidget(boxElement, mpParentContainerObject, NOUNDO);
+             stuffElement.setAttribute("index", mpParentContainerObject->mHighestWidgetIndex-1);
+        }
         stuffElement = stuffElement.nextSiblingElement("stuff");
     }
 
@@ -453,6 +464,18 @@ void UndoStack::redoOneStep()
             {
                 mpParentContainerObject->getGUIModelObject(objectName)->hideName(NOUNDO);
             }
+        }
+        else if(stuffElement.attribute("what") == "addedboxwidget")
+        {
+            //size_t index = stuffElement.attribute("index").toInt();
+            QDomElement boxElement = stuffElement.firstChildElement(HMF_BOXWIDGETTAG);
+            loadBoxWidget(boxElement, mpParentContainerObject, NOUNDO);
+            stuffElement.setAttribute("index", mpParentContainerObject->mHighestWidgetIndex-1);
+        }
+        else if(stuffElement.attribute("what") == "deletedboxwidget")
+        {
+             size_t index = stuffElement.attribute("index").toInt();
+             mpParentContainerObject->mWidgetMap.find(index).value()->deleteMe(NOUNDO);
         }
         stuffElement = stuffElement.nextSiblingElement("stuff");
     }
@@ -676,6 +699,28 @@ void UndoStack::registerNameVisibilityChange(QString objectName, bool isVisible)
     stuffElement.setAttribute("what", "namevisibilitychange");
     stuffElement.setAttribute("objectname", objectName);
     stuffElement.setAttribute("isvisible", isVisible);
+    gpMainWindow->mpUndoWidget->refreshList();
+}
+
+
+void UndoStack::registerAddedBoxWidget(GUIBoxWidget *item)
+{
+    QDomElement currentPostElement = getCurrentPost();
+    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+    stuffElement.setAttribute("what", "addedboxwidget");
+    stuffElement.setAttribute("index", item->mWidgetIndex);
+    item->saveToDomElement(stuffElement);
+    gpMainWindow->mpUndoWidget->refreshList();
+}
+
+
+void UndoStack::registerDeletedBoxWidget(GUIBoxWidget *item)
+{
+    QDomElement currentPostElement = getCurrentPost();
+    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+    stuffElement.setAttribute("what", "addedboxwidget");
+    stuffElement.setAttribute("index", item->mWidgetIndex);
+    item->saveToDomElement(stuffElement);
     gpMainWindow->mpUndoWidget->refreshList();
 }
 

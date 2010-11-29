@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanmodelfile hmfversion="0.1" hopsanguiversion="0.0.1" hopsancoreversion="0">
     <system typename="Subsystem" cqs_type="S" name="exempelsystemFlumesIDA">
-        <simulationtime stop="10" timestep="0.001" start="0"/>
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2451" y="2502.5" zoom="1"/>
+            <viewport x="2500" y="2500" zoom="1"/>
             <hopsanobjectappearance>
                 <modelobject typename="" displayname="exempelsystemFlumesIDA">
                     <icon isopath="" iconrotation="" userpath=""/>
                 </modelobject>
             </hopsanobjectappearance>
         </hopsangui>
+        <simulationtime stop="10" timestep="0.002" start="0"/>
+        <parameters/>
         <objects>
             <component typename="SignalSink" name="Sink">
                 <parameters/>
@@ -57,7 +58,7 @@
                     <startvalue portname="P2" variable="Pressure" value="100000"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2442" y="2444" flipped="0" a="0"/>
+                    <pose x="2444" y="2440" flipped="0" a="0"/>
                     <nametext position="1" visible="0"/>
                 </hopsangui>
             </component>
@@ -67,7 +68,7 @@
                     <parameter value="0.67" name="cq"/>
                     <parameter value="0.0025" name="spooldiameter"/>
                     <parameter value="1" name="frac"/>
-                    <parameter value="5e-05" name="pilotarea"/>
+                    <parameter value="5e-005" name="pilotarea"/>
                     <parameter value="150000" name="k"/>
                     <parameter value="400" name="c"/>
                     <parameter value="0" name="m"/>
@@ -95,6 +96,11 @@
                         <coordinate x="2575" y="2492"/>
                         <coordinate x="2609.5" y="2492"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="P1" endcomponent="Volume" startport="P1" startcomponent="FlowSourceQ">
@@ -103,9 +109,15 @@
                         <coordinate x="2366" y="2444"/>
                         <coordinate x="2349" y="2444"/>
                         <coordinate x="2349" y="2444"/>
-                        <coordinate x="2417" y="2444"/>
-                        <coordinate x="2417" y="2444"/>
+                        <coordinate x="2419" y="2444"/>
+                        <coordinate x="2419" y="2440"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="P1" endcomponent="PressureSource" startport="P2" startcomponent="AlternativePRV">
@@ -116,15 +128,24 @@
                         <coordinate x="2524" y="2552"/>
                         <coordinate x="2524" y="2558.5"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
             <connect endport="P1" endcomponent="AlternativePRV" startport="P2" startcomponent="Volume">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2467" y="2444"/>
-                        <coordinate x="2524.0008" y="2444"/>
+                        <coordinate x="2469" y="2440"/>
+                        <coordinate x="2524.0008" y="2440"/>
                         <coordinate x="2524.0008" y="2465"/>
                     </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
                 </hopsangui>
             </connect>
         </connections>

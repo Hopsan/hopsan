@@ -6,6 +6,7 @@
 #include "GUISystem.h"
 #include "../Widgets/ProjectTabWidget.h"
 #include "../MainWindow.h"
+#include "UndoStack.h"
 
 #include <QLabel>
 #include <QDialog>
@@ -49,6 +50,11 @@ QVariant GUIWidget::itemChange(GraphicsItemChange change, const QVariant &value)
     return GUIObject::itemChange(change, value);
 }
 
+void GUIWidget::deleteMe(undoStatus undoSettings)
+{
+    assert(1 == 2);
+}
+
 
 //! @brief Constructor for text widget class
 //! @param text Initial text in the widget
@@ -57,7 +63,7 @@ QVariant GUIWidget::itemChange(GraphicsItemChange change, const QVariant &value)
 //! @param startSelected Initial selection status of text widget
 //! @param pSystem Pointer to the GUI System where text widget is located
 //! @param pParent Pointer to parent object (not required)
-GUITextWidget::GUITextWidget(QString text, QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent)
+GUITextWidget::GUITextWidget(QString text, QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent)
     : GUIWidget(pos, rot, startSelected, pSystem, pParent)
 {
     this->mHmfTagName = HMF_TEXTWIDGETTAG;
@@ -71,6 +77,8 @@ GUITextWidget::GUITextWidget(QString text, QPoint pos, qreal rot, selectionStatu
 
     this->resize(mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
     mpSelectionBox->setSize(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
+
+    mWidgetIndex = widgetIndex;
 }
 
 
@@ -124,7 +132,7 @@ void GUITextWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 
 //! @brief Slot that removes text widget from all lists and then deletes it
-void GUITextWidget::deleteMe()
+void GUITextWidget::deleteMe(undoStatus undoSettings)
 {
     mpParentContainerObject->mTextWidgetList.removeAll(this);
     mpParentContainerObject->mSelectedGUIObjectsList.removeAll(this);
@@ -241,16 +249,16 @@ void GUITextWidget::saveToDomElement(QDomElement &rDomElement)
 //! @param startSelected Initial selection status of box widget
 //! @param pSystem Pointer to the GUI System where box widget is located
 //! @param pParent Pointer to parent object (not required)
-GUIBoxWidget::GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent)
+GUIBoxWidget::GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent)
     : GUIWidget(pos, rot, startSelected, pSystem, pParent)
 {
     this->mHmfTagName = HMF_BOXWIDGETTAG;
 
     mpRectItem = new QGraphicsRectItem(0, 0, 100, 100, this);
     QPen tempPen = mpRectItem->pen();
-    tempPen.setColor(QColor("royalblue"));
-    tempPen.setWidth(3);
-    tempPen.setStyle(Qt::DotLine);
+    tempPen.setColor(QColor("brown"));
+    tempPen.setWidth(2);
+    tempPen.setStyle(Qt::SolidLine);//Qt::DotLine);
     tempPen.setCapStyle(Qt::RoundCap);
     tempPen.setJoinStyle(Qt::RoundJoin);
     mpRectItem->setPen(tempPen);
@@ -264,16 +272,24 @@ GUIBoxWidget::GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected,
 //    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height(),
 //                                                  QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
     mpSelectionBox->setSize(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
+
+    mWidgetIndex = widgetIndex;
 }
 
 
 
 
 //! @brief Slot that removes text widget from all lists and then deletes it
-void GUIBoxWidget::deleteMe()
+void GUIBoxWidget::deleteMe(undoStatus undoSettings)
 {
+    if(undoSettings == UNDO)
+    {
+        mpParentContainerObject->mUndoStack->newPost();
+        mpParentContainerObject->mUndoStack->registerDeletedBoxWidget(this);
+    }
     mpParentContainerObject->mBoxWidgetList.removeAll(this);
     mpParentContainerObject->mSelectedGUIObjectsList.removeAll(this);
+    mpParentContainerObject->mWidgetMap.remove(this->mWidgetIndex);
     delete(this);
 }
 

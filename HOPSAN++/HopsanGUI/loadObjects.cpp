@@ -526,7 +526,7 @@ void TextWidgetLoadData::readDomElement(QDomElement &rDomElement)
     }
 }
 
-void loadTextWidget(QDomElement &rDomElement, GUIContainerObject *pSystem)
+void loadTextWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoStatus undoSettings)
 {
     TextWidgetLoadData data;
     data.readDomElement(rDomElement);
@@ -569,12 +569,12 @@ void SystemParameterLoadData::readDomElement(QDomElement &rDomElement)
 }
 
 //! @brief Convenience function for loading a box widget from a dom element
-void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pSystem)
+void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoStatus undoSettings)
 {
     BoxWidgetLoadData data;
     data.readDomElement(rDomElement);
 
-    pSystem->addBoxWidget(data.point);
+    pSystem->addBoxWidget(data.point, undoSettings);
     pSystem->mBoxWidgetList.last()->setSize(data.width, data.height);
     pSystem->mBoxWidgetList.last()->setLineWidth(data.linewidth);
 

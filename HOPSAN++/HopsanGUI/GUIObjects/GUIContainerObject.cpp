@@ -34,6 +34,8 @@ GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GU
     mUndoDisabled = false;
     mGfxType = USERGRAPHICS;
 
+    mHighestWidgetIndex = 0;
+
     mPasteOffset = -30;
 
     //Create the scene
@@ -214,16 +216,26 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* 
 void GUIContainerObject::addTextWidget(QPoint position)
 {
     GUITextWidget *tempTextWidget;
-    tempTextWidget = new GUITextWidget("Text", position, 0, DESELECTED, this);
+    tempTextWidget = new GUITextWidget("Text", position, 0, DESELECTED, this, mHighestWidgetIndex);
     mTextWidgetList.append(tempTextWidget);
+    mWidgetMap.insert(mHighestWidgetIndex, tempTextWidget);
+    ++mHighestWidgetIndex;
 }
 
 
-void GUIContainerObject::addBoxWidget(QPoint position)
+void GUIContainerObject::addBoxWidget(QPoint position, undoStatus undoSettings)
 {
+    qDebug() << "Adding box widget, index = " << mHighestWidgetIndex;
     GUIBoxWidget *tempBoxWidget;
-    tempBoxWidget = new GUIBoxWidget(position, 0, DESELECTED, this);
+    tempBoxWidget = new GUIBoxWidget(position, 0, DESELECTED, this, mHighestWidgetIndex);
     mBoxWidgetList.append(tempBoxWidget);
+    mWidgetMap.insert(mHighestWidgetIndex, tempBoxWidget);
+    ++mHighestWidgetIndex;
+    if(undoSettings == UNDO)
+    {
+        mUndoStack->newPost();
+        mUndoStack->registerAddedBoxWidget(tempBoxWidget);
+    }
 }
 
 

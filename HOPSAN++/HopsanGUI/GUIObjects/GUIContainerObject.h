@@ -26,7 +26,7 @@ public:
 
     //Handle GuiModelObjects and GuiWidgets
     void addTextWidget(QPoint position);
-    void addBoxWidget(QPoint position);
+    void addBoxWidget(QPoint position, undoStatus undoSettings=UNDO);
     GUIModelObject *addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = NAMEVISIBLE, undoStatus undoSettings = UNDO);
     GUIModelObject *getGUIModelObject(QString name);
     void deleteGUIModelObject(QString componentName, undoStatus undoSettings=UNDO);
@@ -85,6 +85,9 @@ public:
     GUIModelObject *mpTempGUIModelObject;
     GUIConnector *mpTempConnector;
     graphicsType mGfxType;
+
+    size_t mHighestWidgetIndex;
+    QMap<size_t, GUIWidget *> mWidgetMap;
 
 public slots:
         //Selection

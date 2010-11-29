@@ -169,8 +169,8 @@ void loadStartValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatu
 void loadSystemParameter(const SystemParameterLoadData &rData, GUIContainerObject* pSystem);
 void loadSystemParameter(QDomElement &rDomElement, GUIContainerObject* pSystem);
 
-void loadTextWidget(QDomElement &rDomElement, GUIContainerObject *pSystem);
-void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pSystem);
+void loadTextWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoStatus undoSettings=UNDO);
+void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoStatus undoSettings=UNDO);
 
 HeaderLoadData readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidget);
 void writeHeader(QTextStream &rStream);

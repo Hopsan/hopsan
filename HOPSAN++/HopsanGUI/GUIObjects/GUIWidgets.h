@@ -26,9 +26,13 @@ class GUIWidget : public GUIObject
     Q_OBJECT
 public:
     GUIWidget(QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent=0);
+    size_t mWidgetIndex;
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+
+public slots:
+    virtual void deleteMe(undoStatus undoSettings=UNDO);
 };
 
 
@@ -36,7 +40,7 @@ class GUITextWidget : public GUIWidget
 {
     Q_OBJECT
 public:
-    GUITextWidget(QString text, QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent=0);
+    GUITextWidget(QString text, QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
     void saveToDomElement(QDomElement &rDomElement);
     void setText(QString text);
     void setTextColor(QColor color);
@@ -46,7 +50,7 @@ protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 public slots:
-    void deleteMe();
+    void deleteMe(undoStatus undoSettings=UNDO);
 
 private slots:
     void updateWidgetFromDialog();
@@ -75,7 +79,7 @@ class GUIBoxWidget : public GUIWidget
 {
     Q_OBJECT
 public:
-    GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent=0);
+    GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
     void saveToDomElement(QDomElement &rDomElement);
     void setLineWidth(int value);
     void setLineStyle(Qt::PenStyle style);
@@ -83,7 +87,7 @@ public:
     void setSize(qreal w, qreal h);
 
 public slots:
-    void deleteMe();
+    void deleteMe(undoStatus undoSettings=UNDO);
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
