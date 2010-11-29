@@ -13,7 +13,7 @@
 #include <QTextStream>
 #include <QString>
 #include <QPointF>
-#include "common.h"
+#include "../common.h"
 
 #include "../Utilities/XMLUtilities.h"
 #include "../GUIPortAppearance.h"

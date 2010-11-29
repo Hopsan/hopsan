@@ -14,7 +14,7 @@
 #include "gui/PythonQtScriptingConsole.h"
 #include "PythonQtConversion.h"
 
-#include "PyWrapperClasses.h"
+#include "../PyWrapperClasses.h"
 
 
 //! Create a dock for the Python console

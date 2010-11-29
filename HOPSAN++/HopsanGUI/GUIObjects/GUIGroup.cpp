@@ -6,7 +6,7 @@
 #include <QVector>
 #include <QtGui> //!< @todo maybe only need qtfile dialog
 
-#include "common.h"
+#include "../common.h"
 
 //#include "GUIObject.h"
 #include "GUISystem.h"

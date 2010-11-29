@@ -7,7 +7,7 @@
 #include <QObject>
 #include <QGraphicsWidget>
 
-#include "common.h"
+#include "../common.h"
 
 //#include "GUIModelObjectAppearance.h"
 #include <assert.h>

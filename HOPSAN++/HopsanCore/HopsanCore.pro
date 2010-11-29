@@ -20,6 +20,7 @@ win32:INCLUDEPATH += c:/tbb/tbb30_20100406oss/include/tbb
 #Stada upp denna rora, nagot for windoesanvandarna!
 CONFIG(debug, debug|release) {
     DESTDIR = ../bin/debug
+    win32:LIBS += -Lc:/tbb30_20100915oss/build/windows_ia32_gcc_mingw_debug
     win32:LIBS += -Lc:/tbb/tbb30_20100406oss/build/windows_ia32_gcc_mingw_debug
  #   win32:LIBS += -Lc:\tbb\tbb30_20100406oss_win\tbb30_20100406oss\lib\ia32\vc9
     win32:LIBS += -ltbb_debug

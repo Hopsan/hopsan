@@ -2,7 +2,7 @@
 #define GUICONTAINEROBJECT_H
 
 #include "GUIModelObject.h"
-#include "CoreAccess.h"
+#include "../CoreAccess.h"
 #include "GUIWidgets.h"
 //#include "../UndoStack.h"
 

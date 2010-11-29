@@ -56,7 +56,7 @@
 #include "ProjectTabWidget.h"
 #include "../GUIObjects/GUISystem.h"
 
-#include "common.h"
+#include "../common.h"
 
 //! Construtor for System Parameters widget, where the user can see and change the System parameters in the model.
 //! @param parent Pointer to the main window

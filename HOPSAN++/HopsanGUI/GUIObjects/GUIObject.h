@@ -9,7 +9,7 @@
 #include <QPen>
 
 #include <assert.h>
-#include "common.h"
+#include "../common.h"
 #include <QtXml>  //This one is only used for the virtual save function
 
 class GUIObjectSelectionBox;

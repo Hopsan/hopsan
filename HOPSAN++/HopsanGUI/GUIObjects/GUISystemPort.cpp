@@ -1,7 +1,7 @@
 #include "GUISystemPort.h"
 #include "GUISystem.h"
-#include "GUIPort.h"
-#include "loadObjects.h"
+#include "../GUIPort.h"
+#include "../loadObjects.h"
 
 GUISystemPort::GUISystemPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
         : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)

@@ -9,7 +9,7 @@
 #include <QFileInfo>
 
 #include "GUIContainerObject.h"
-#include "common.h"
+#include "../common.h"
 
 //Forward Declaration
 class ProjectTab;

@@ -5,7 +5,7 @@
 
 #include "GUIObject.h"
 #include "GUISystem.h"
-#include "GUIConnector.h"
+#include "../GUIConnector.h"
 
 #include "../Widgets/ProjectTabWidget.h"
 #include "../MainWindow.h"

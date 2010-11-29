@@ -5,7 +5,7 @@
 #include <QVector>
 #include <QtGui> //!< @todo maybe only need qtfile dialog
 
-#include "common.h"
+#include "../common.h"
 //! @todo clean up these includes
 #include "../Widgets/ProjectTabWidget.h"
 #include "../MainWindow.h"
@@ -21,7 +21,7 @@
 
 #include "GUIGroup.h"
 #include "GUISystem.h"
-#include "Widgets/SystemParametersWidget.h"
+#include "../Widgets/SystemParametersWidget.h"
 
 GUIComponent::GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
     : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
