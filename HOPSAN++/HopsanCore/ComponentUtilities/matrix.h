@@ -7,7 +7,7 @@
 //!
 //!
 //! matrix data structure, and routines for matrix manipulation.
-//! (found by Petter on the net, ref may be nice)
+//! (found by Petter on the net, url may be nice)
 //!
 //$Id$
 

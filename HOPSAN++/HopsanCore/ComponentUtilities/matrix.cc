@@ -8,7 +8,7 @@
 //!
 //! Utility routines for allocating space for matrices and vectors,
 //! printing matrices and vectors, and copying one matrix to another.
-//! (found by Petter on the net, ref may be nice)
+//! (found by Petter on the net, url may be nice)
 //!
 //$Id$
 

@@ -11,7 +11,7 @@
 //! Chapter 2, Programs 3-5, Fig. 2.8-2.10
 //! Gerald/Wheatley, APPLIED NUMERICAL ANALYSIS (fourth edition)
 //! Addison-Wesley, 1989
-//! (found by Petter on the net, ref may be nice)
+//! (found by Petter on the net, url may be nice)
 //!
 //$Id$
 
