@@ -328,8 +328,8 @@ void GUIConnector::setEndPort(GUIPort *port)
                 mpEndPort->mpParentGuiModelObject->moveBy(mPoints.first().x() - mPoints.last().x(), 0);
             }
         }
-        else if( (getNumberOfLines() == 1) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE) ||
-                 (getNumberOfLines() < 4) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE) )
+        else if( ((getNumberOfLines() == 1) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE)) ||
+                 ((getNumberOfLines() < 4) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE)) )
         {
             if(mpStartPort->mpParentGuiModelObject->getGUIConnectorPtrs().size() == 1)
             {
@@ -534,7 +534,7 @@ void GUIConnector::saveToDomElement(QDomElement &rDomElement)
 
     QDomElement xmlConnectGUI = appendDomElement(xmlConnect, HMF_HOPSANGUITAG);
     QDomElement xmlCoordinates = appendDomElement(xmlConnectGUI, HMF_COORDINATES);
-    for(size_t j=0; j<mPoints.size(); ++j)
+    for(int j=0; j<mPoints.size(); ++j)
     {
         appendCoordinateTag(xmlCoordinates, mPoints[j].x(), mPoints[j].y());
         //appendDomValueNode2(xmlConnectGUI, HMF_XYTAG, mPoints[j].x(), mPoints[j].y());
@@ -542,7 +542,7 @@ void GUIConnector::saveToDomElement(QDomElement &rDomElement)
 //        appendDomTextNode(xmlConnectGUI, "pty", mPoints[j].y());
     }
     QDomElement xmlGeometries = appendDomElement(xmlConnectGUI, HMF_GEOMETRIES);
-    for(size_t j=0; j<mGeometries.size(); ++j)
+    for(int j=0; j<mGeometries.size(); ++j)
     {
         if(mGeometries.at(j) == VERTICAL)
             appendDomTextNode(xmlGeometries, HMF_GEOMETRYTAG, "vertical");

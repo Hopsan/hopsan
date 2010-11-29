@@ -191,6 +191,7 @@ PlotWindow *PlotParameterTree::createPlotWindow(QTreeWidgetItem *item)
         PlotParameterItem *tempItem = dynamic_cast<PlotParameterItem *>(item);
         return createPlotWindow(tempItem->getComponentName(), tempItem->getPortName(), tempItem->getDataName(), tempItem->getDataUnit());
     }
+    return 0; //! @todo Should this return 0?
 }
 
 
@@ -470,11 +471,11 @@ void PlotWidget::loadFromXml()
 
                 //Add the remaining generations
             QList< QVector<double> > tempList2;
-            for(size_t ig=1; ig<xData.size(); ++ig)
+            for(int ig=1; ig<xData.size(); ++ig)
             {
                 pPlotWindow->mVectorX.append(tempList2);
                 pPlotWindow->mVectorY.append(tempList2);
-                for(size_t ic=0; ic<index.size(); ++ic)
+                for(int ic=0; ic<index.size(); ++ic)
                 {
                     pPlotWindow->mVectorX.last().append(xData[ig]);
                     pPlotWindow->mVectorY.last().append(yData[ig][index[ic]]);

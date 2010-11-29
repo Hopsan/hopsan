@@ -70,20 +70,20 @@ void Configuration::saveToXml()
     }
 
     QDomElement libs = appendDomElement(configRoot, "libs");
-    for(size_t i=0; i<mUserLibs.size(); ++i)
+    for(int i=0; i<mUserLibs.size(); ++i)
     {
         appendDomTextNode(libs, "userlib", mUserLibs.at(i));
     }
 
     QDomElement models = appendDomElement(configRoot, "models");
-    for(size_t i=0; i<mLastSessionModels.size(); ++i)
+    for(int i=0; i<mLastSessionModels.size(); ++i)
     {
         if(mLastSessionModels.at(i) != "")
         {
             appendDomTextNode(models, "lastsessionmodel", mLastSessionModels.at(i));
         }
     }
-    for(size_t i = 0; i<mRecentModels.size(); ++i)
+    for(int i = 0; i<mRecentModels.size(); ++i)
     {
         if(mRecentModels.at(i) != "")
             appendDomTextNode(models, "recentmodel", mRecentModels.at(i));

@@ -127,7 +127,7 @@ void SystemParametersWidget::setParameters()
 {
     if(gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getNumberOfSystemParameters() > 0)
     {
-        for(size_t i=0; i<mpSystemParametersTable->rowCount(); ++i)
+        for(int i=0; i<mpSystemParametersTable->rowCount(); ++i)
         {
             QString name = mpSystemParametersTable->item(i, 0)->text();
             double value = mpSystemParametersTable->item(i, 1)->text().toDouble();
@@ -146,7 +146,7 @@ void SystemParametersWidget::removeSelectedParameters()
     QString tempName;
     double tempValue;
 
-    for(size_t i=0; i<pSelectedItems.size(); ++i)
+    for(int i=0; i<pSelectedItems.size(); ++i)
     {
         tempName = mpSystemParametersTable->item(pSelectedItems[i]->row(),0)->text();
         if(!parametersToRemove.contains(tempName))
@@ -155,7 +155,7 @@ void SystemParametersWidget::removeSelectedParameters()
         }
     }
 
-    for(size_t j=0; j<parametersToRemove.size(); ++j)
+    for(int j=0; j<parametersToRemove.size(); ++j)
     {
         qDebug() << "Removing: " << parametersToRemove[j];
         gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->removeSystemParameter(parametersToRemove.at(j));

@@ -57,7 +57,6 @@ class ParameterLayout : public QGridLayout
 public:
     ParameterLayout(QString dataName="", QString descriptionName="", double dataValue=0, QString unitName="", GUIModelObject *pGUIModelObject=0, QWidget *parent=0);
     ParameterLayout(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="", GUIModelObject *pGUIModelObject=0, QWidget *parent=0);
-    void commonConstructorCode(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="", GUIModelObject *pGUIModelObject=0, QWidget *parent=0);
 
     QString getDescriptionName();
     QString getDataName();
@@ -74,6 +73,9 @@ protected:
     QLineEdit mDataValuesLineEdit;
     QLabel mUnitNameLabel;
     QToolButton mSystemParameterToolButton;
+
+private:
+    void commonConstructorCode(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="", GUIModelObject *pGUIModelObject=0);
 };
 
 #endif // COMPONENTPROPERTIESDIALOG_H

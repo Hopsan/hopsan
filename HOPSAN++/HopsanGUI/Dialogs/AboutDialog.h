@@ -26,7 +26,7 @@ public slots:
 
 private:
     QLabel *mpHopsanLogotype;
-    size_t num;
+    int num;
     QString title;
     bool dateOk;
 };

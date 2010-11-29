@@ -77,7 +77,7 @@ ProjectTab::~ProjectTab()
     //! @todo do we need to call inheritet class destructor also
     //qDebug() << "projectTab destructor";
 
-    for(size_t i=0; i<mpSystem->getPortListPtrs().size(); ++i)
+    for(int i=0; i<mpSystem->getPortListPtrs().size(); ++i)
     {
         disconnect(gpMainWindow->hidePortsAction,SIGNAL(triggered(bool)),mpSystem->getPortListPtrs().at(i), SLOT(hideIfNotConnected(bool)));
         disconnect(mpGraphicsView, SIGNAL(zoomChange(qreal)), mpSystem->getPortListPtrs().at(i), SLOT(setPortOverlayScale(qreal)));
@@ -651,7 +651,7 @@ void ProjectTabWidget::loadModel(QString modelFileName)
 
 void ProjectTabWidget::tabChanged()
 {
-    for(size_t i=0; i<count(); ++i)
+    for(int i=0; i<count(); ++i)
     {
             //If you add a disconnect here, remember to also add it to the close tab function!
         disconnect(gpMainWindow->resetZoomAction,   SIGNAL(triggered()),    getTab(i)->mpGraphicsView,  SLOT(resetZoom()));

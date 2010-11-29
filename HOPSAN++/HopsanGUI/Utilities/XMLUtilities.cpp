@@ -112,7 +112,7 @@ void appendDomValueNode3(QDomElement &rDomElement, const QString element_name, c
 void appendDomValueNodeN(QDomElement &rDomElement, const QString element_name, const QVector<qreal> &rValues)
 {
     QString num,str;
-    for (unsigned int i=0; i<rValues.size(); ++i)
+    for (int i=0; i<rValues.size(); ++i)
     {
         num.setNum(rValues[i]);
         str.append(num);

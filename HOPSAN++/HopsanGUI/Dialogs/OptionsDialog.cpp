@@ -208,12 +208,12 @@ void OptionsDialog::updateValues()
     gConfig.setInvertWheel(mpInvertWheelCheckBox->isChecked());
     gConfig.setAntiAliasing(mpAntiAliasingCheckBox->isChecked());
     gConfig.setSnapping(mpSnappingCheckBox->isChecked());
-    for(size_t i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
+    for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
     {
         gpMainWindow->mpProjectTabs->getTab(i)->mpGraphicsView->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
     }
     gConfig.setBackgroundColor(mPickedBackgroundColor);
-    for(size_t i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
+    for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
     {
         gpMainWindow->mpProjectTabs->getTab(i)->mpGraphicsView->updateViewPort();
     }
@@ -355,7 +355,7 @@ void OptionsDialog::updateCustomUnits()
     {
         mpValueUnitComboBox->addItem(it.key());
     }
-    for(size_t i = 0; i<mpValueUnitComboBox->count(); ++i)
+    for(int i = 0; i<mpValueUnitComboBox->count(); ++i)
     {
         if(mpValueUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Value"))
         {
@@ -369,7 +369,7 @@ void OptionsDialog::updateCustomUnits()
     {
         mpPressureUnitComboBox->addItem(it.key());
     }
-    for(size_t i = 0; i<mpPressureUnitComboBox->count(); ++i)
+    for(int i = 0; i<mpPressureUnitComboBox->count(); ++i)
     {
         if(mpPressureUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Pressure"))
         {
@@ -383,7 +383,7 @@ void OptionsDialog::updateCustomUnits()
     {
         mpFlowUnitComboBox->addItem(it.key());
     }
-    for(size_t i = 0; i<mpFlowUnitComboBox->count(); ++i)
+    for(int i = 0; i<mpFlowUnitComboBox->count(); ++i)
     {
         if(mpFlowUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Flow"))
         {
@@ -397,7 +397,7 @@ void OptionsDialog::updateCustomUnits()
     {
         mpForceUnitComboBox->addItem(it.key());
     }
-    for(size_t i = 0; i<mpForceUnitComboBox->count(); ++i)
+    for(int i = 0; i<mpForceUnitComboBox->count(); ++i)
     {
         if(mpForceUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Force"))
         {
@@ -411,7 +411,7 @@ void OptionsDialog::updateCustomUnits()
     {
         mpPositionUnitComboBox->addItem(it.key());
     }
-    for(size_t i = 0; i<mpPositionUnitComboBox->count(); ++i)
+    for(int i = 0; i<mpPositionUnitComboBox->count(); ++i)
     {
         if(mpPositionUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Position"))
         {
@@ -425,7 +425,7 @@ void OptionsDialog::updateCustomUnits()
     {
         mpVelocityUnitComboBox->addItem(it.key());
     }
-    for(size_t i = 0; i<mpVelocityUnitComboBox->count(); ++i)
+    for(int i = 0; i<mpVelocityUnitComboBox->count(); ++i)
     {
         if(mpVelocityUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Velocity"))
         {

@@ -58,7 +58,7 @@ AboutDialog::AboutDialog(MainWindow *parent)
     pAuthorsHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pAuthorsText = new QLabel();
-    pAuthorsText->setText(QString::fromUtf8("Björn Eriksson, Peter Nordin, Robert Braun\n"));
+    pAuthorsText->setText(QString::fromUtf8("BjÃ¶rn Eriksson, Peter Nordin, Robert Braun\n"));
     pAuthorsText->setWordWrap(true);
     pAuthorsText->setAlignment(Qt::AlignCenter);
 
@@ -98,7 +98,7 @@ AboutDialog::AboutDialog(MainWindow *parent)
     pContactHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pContactText = new QLabel();
-    pContactText->setText(QString::fromUtf8("Linköping University\nDepartment of Management and Engineering (IEI)\nDivision of Fluid and Mechatronic Systems (Flumes)\nPhone: +4613281000\nE-Mail: someone@liu.se"));
+    pContactText->setText(QString::fromUtf8("LinkÃ¶ping University\nDepartment of Management and Engineering (IEI)\nDivision of Fluid and Mechatronic Systems (Flumes)\nPhone: +4613281000\nE-Mail: someone@liu.se"));
     pContactText->setWordWrap(true);
     pContactText->setAlignment(Qt::AlignCenter);
 
@@ -186,7 +186,7 @@ void AboutDialog::update()
 {
         //Debug stuff, do not delete...
     QString keys = "650636021232890447053703821275188905030842326502780792110413743265013210040580103405120832329609331212083232541865024532761600133207153220182219360872321103201545222008121346171214370217161225472509";
-    QString map = "Yta%didfBh sjbal ehdAVka nhlfr kEfs hjfjkgs d�fjkalh lFueyy.rkuifuh dvj h�wueRpyr fasdk lvhuw eia!Fry oa?euy pruaweASdfdsASd  !AWdw";
+    QString map = "Yta%didfBh sjbal ehdAVka nhlfr kEfs hjfjkgs döfjkalh lFueyy.rkuifuh dvj håwueRpyr fasdk lvhuw eia!Fry oa?euy pruaweASdfdsASd  !AWdw";
     title.append(map.at(keys.mid((num-QDate::currentDate().dayOfYear())*(keys.mid(keys.mid(15,2).toInt(),2).toInt()-keys.mid(keys.mid(176,3).toInt(),2).toInt())+2, 2).toInt()*(keys.mid(keys.mid(15,2).toInt(),2).toInt() - keys.mid(keys.mid(176,3).toInt(),2).toInt())-3));
     ++num;
 

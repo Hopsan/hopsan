@@ -552,7 +552,7 @@ void PlotWindow::importGNUPLOT()
 //! @param size is the desired line width in pixels
 void PlotWindow::setLineWidth(int size)
 {
-    for(size_t i=0; i<mpCurves.size(); ++i)
+    for(int i=0; i<mpCurves.size(); ++i)
     {
         mpCurves.at(i)->setPen(QPen(mpCurves.at(i)->pen().color(),size));
     }
@@ -827,7 +827,7 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
     insertMarkerMenu = menu.addMenu(QString("Insert Curve Marker"));
     QMap <QAction *, QwtPlotCurve *> actionToCurveMap;
     QAction *tempAction;
-    for(size_t i=0; i<mpCurves.size(); ++i)
+    for(int i=0; i<mpCurves.size(); ++i)
     {
         tempAction = insertMarkerMenu->addAction(mpCurves[i]->title().text());
         actionToCurveMap.insert(tempAction, mpCurves[i]);
@@ -847,7 +847,7 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
     }
     else
     {
-        for(size_t i=0; i<mpMarkers.size(); ++i)
+        for(int i=0; i<mpMarkers.size(); ++i)
         {
             tempAction = selectMarkerMenu->addAction(mMarkerToCurveMap.value(mpMarkers[i])->title().text());
             actionToMarkerMap.insert(tempAction, mpMarkers[i]);
@@ -863,7 +863,7 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
 
         //Create menu for removing curves
     removeCurveMenu = menu.addMenu(QString("Remove Plot Curve"));
-    for(size_t i=0; i<mpCurves.size(); ++i)
+    for(int i=0; i<mpCurves.size(); ++i)
     {
         tempAction = removeCurveMenu->addAction(mpCurves[i]->title().text());
         actionToCurveMap.insert(tempAction, mpCurves[i]);
@@ -961,7 +961,7 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
             if(selectedAction == it.key())
             {
                 it.value()->detach();
-                size_t i;
+                int i;
                 for(i=0; i<mpCurves.size(); ++i)
                 {
                     if(mpCurves[i] == it.value())
@@ -986,13 +986,13 @@ void PlotWindow::setUnit(int yAxis, QString physicalQuantity, QString selectedUn
 {
     double scale = gConfig.getCustomUnits(physicalQuantity).find(selectedUnit).value();
 
-    for(size_t i=0; i<mpCurves.size(); ++i)
+    for(int i=0; i<mpCurves.size(); ++i)
     {
         if(mpCurves.at(i)->yAxis() == yAxis)
         {
                 //Change the curve data to the new x-data and the temporary y-array
             QVector<double> tempVectorY;
-            for(size_t j=0; j<mVectorY[mCurrentGeneration][i].size(); ++j)
+            for(int j=0; j<mVectorY[mCurrentGeneration][i].size(); ++j)
             {
                 tempVectorY.append(mVectorY[mCurrentGeneration][i][j]*scale);
             }
@@ -1076,7 +1076,7 @@ void PlotWindow::addPlotCurve(QVector<double> xArray, QVector<double> yArray, QS
     scale = gConfig.getCustomUnits(dataName).find(newUnit).value();
 
     QVector<double> tempVectorY;
-    for(size_t j=0; j<mVectorY[mCurrentGeneration].last().size(); ++j)
+    for(int j=0; j<mVectorY[mCurrentGeneration].last().size(); ++j)
     {
         tempVectorY.append(mVectorY[mCurrentGeneration].last()[j]*scale);
     }
@@ -1121,7 +1121,7 @@ void PlotWindow::changeXVector(QVector<double> xArray, QString componentName, QS
 {
     QString xLabel = QString(dataName + " [" + dataUnit + "]");
     QVector<double> tempYArray;
-    for(size_t i=0; i<mpCurves.size(); ++i)
+    for(int i=0; i<mpCurves.size(); ++i)
     {
             //Loop through each y-axis and append each value to a new array
         for(size_t j=0; j<mpCurves.at(i)->data().size(); ++j)       //! @todo Figure out a less stupid way of replacing only the x values...
@@ -1242,7 +1242,7 @@ void PlotWindow::saveToXml()
         appendDomTextNode(xDataElement, "unit", mSpecialXParameter[3]);
     }
 
-    for(size_t i=0; i<mCurveParameters.size(); ++i)
+    for(int i=0; i<mCurveParameters.size(); ++i)
     {
         QDomElement curveElement = appendDomElement(plotRoot, "plotcurve");
         appendDomTextNode(curveElement, "component", mCurveParameters[i][0]);
@@ -1287,7 +1287,7 @@ bool PlotWindow::saveToHmpf(QString fileName)
 
     for(size_t ig=0; ig<nGenerations; ++ig)
     {
-        for(size_t id = 0; id<mVectorY.first().first().size(); ++id)
+        for(int id = 0; id<mVectorY.first().first().size(); ++id)
         {
             hpfFile << mVectorX[ig][0][id] << " ";
             for(size_t ic=0; ic<nCurves; ++ic)

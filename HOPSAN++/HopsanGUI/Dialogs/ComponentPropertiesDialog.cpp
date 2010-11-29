@@ -268,21 +268,22 @@ void ComponentPropertiesDialog::setStartValues()
 
 
 ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, double dataValue, QString unitName, GUIModelObject *pGUIModelObject, QWidget *parent)
+    : QGridLayout(parent)
 {
     QString dataValueStr;
     dataValueStr.setNum(dataValue);
-    commonConstructorCode(dataName, descriptionName, dataValueStr, unitName, pGUIModelObject, parent);
+    commonConstructorCode(dataName, descriptionName, dataValueStr, unitName, pGUIModelObject);
 }
 
 
 ParameterLayout::ParameterLayout(QString dataName, QString descriptionName, QString dataValue, QString unitName, GUIModelObject *pGUIModelObject, QWidget *parent)
     : QGridLayout(parent)
 {
-    commonConstructorCode(dataName, descriptionName, dataValue, unitName, pGUIModelObject, parent);
+    commonConstructorCode(dataName, descriptionName, dataValue, unitName, pGUIModelObject);
 }
 
 
-void ParameterLayout::commonConstructorCode(QString dataName, QString descriptionName, QString dataValue, QString unitName, GUIModelObject *pGUIModelObject, QWidget *parent)
+void ParameterLayout::commonConstructorCode(QString dataName, QString descriptionName, QString dataValue, QString unitName, GUIModelObject *pGUIModelObject)
 {
     mpGUIModelObject = pGUIModelObject;
 

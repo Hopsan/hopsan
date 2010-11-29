@@ -219,7 +219,7 @@ void CoreSystemAccess::setStartValueDataByNames(QString componentName, QString p
     std::vector<double> stdValues;
     stdNames.resize(names.size());
     stdValues.resize(values.size());
-    for(size_t i=0; i < names.size(); ++i) //! @todo Make a nicer conversion fron std::vector<std::string> --> QVector<QString>
+    for(int i=0; i < names.size(); ++i) //! @todo Make a nicer conversion fron std::vector<std::string> --> QVector<QString>
     {
         stdNames[i] = names[i].toStdString();
     }

@@ -124,7 +124,7 @@ void MessageWidget::updateDisplay()
     QStringList usedTags;
 
         //Loop through message list and print messages
-    for(size_t msg=0; msg<mMessageList.size(); ++msg)
+    for(int msg=0; msg<mMessageList.size(); ++msg)
     {
         if( !(mMessageList.at(msg).type == "error" && !mShowErrorMessages) &&          //Do not show message if its type shall not be shown
             !(mMessageList.at(msg).type == "warning" && !mShowWarningMessages) &&
@@ -162,7 +162,7 @@ void MessageWidget::updateDisplay()
 size_t MessageWidget::subsequentTagCount(QString tag, size_t startIdx)
 {
     size_t nTags = 0;
-    for(size_t i=startIdx; i<mMessageList.size(); ++i)
+    for(int i=startIdx; i<mMessageList.size(); ++i)
     {
         if(mMessageList.at(i).tag == tag)
         {
