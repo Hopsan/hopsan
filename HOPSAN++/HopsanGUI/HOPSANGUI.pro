@@ -42,7 +42,8 @@ SOURCES += main.cpp \
     Dialogs/ContainerPropertiesDialog.cpp \
     Dialogs/AboutDialog.cpp \
     CoreAccess.cpp \
-    Widgets/UndoWidget.cpp
+    Widgets/UndoWidget.cpp \
+    Widgets/QuickNavigationWidget.cpp
 
 HEADERS += MainWindow.h \
     Widgets/ProjectTabWidget.h \
@@ -85,7 +86,8 @@ HEADERS += MainWindow.h \
     Dialogs/ComponentPropertiesDialog.h \
     Dialogs/ContainerPropertiesDialog.h \
     Dialogs/AboutDialog.h \
-    Widgets/UndoWidget.h
+    Widgets/UndoWidget.h \
+    Widgets/QuickNavigationWidget.h
 
 OTHER_FILES += 
 

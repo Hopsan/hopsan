@@ -26,6 +26,7 @@ class SystemParametersWidget;
 class Configuration;
 class CopyStack;
 class AboutDialog;
+class QuickNavigationWidget;
 
 class MainWindow : public QMainWindow
 {
@@ -116,6 +117,7 @@ public:
     double getTimeStepFromToolBar();
     double getFinishTimeFromToolBar();
     QPushButton *mpBackButton;
+    QuickNavigationWidget *mpQuickNavigationWidget;
     void closeEvent(QCloseEvent *event);
 
     PyDockWidget *getPythonDock();

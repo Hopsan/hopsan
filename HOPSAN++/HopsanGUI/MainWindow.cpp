@@ -23,6 +23,7 @@
 #include "CopyStack.h"
 #include "Dialogs/AboutDialog.h"
 #include "Widgets/UndoWidget.h"
+#include "Widgets/QuickNavigationWidget.h"
 
 #include "loadObjects.h"
 
@@ -97,10 +98,14 @@ MainWindow::MainWindow(QWidget *parent)
     mpProjectTabs = new ProjectTabWidget(this);
     mpProjectTabs->setObjectName("projectTabs");
 
+    mpQuickNavigationWidget = new QuickNavigationWidget();
+    mpQuickNavigationWidget->setObjectName("quickNavigation");
     mpBackButton = new QPushButton("Back");
     mpCentralgrid->addWidget(mpBackButton,0,0);
-    mpCentralgrid->addWidget(mpProjectTabs,1,0);
+    mpCentralgrid->addWidget(mpQuickNavigationWidget,1,0);
+    mpCentralgrid->addWidget(mpProjectTabs,2,0);
     mpBackButton->hide();
+    mpQuickNavigationWidget->show();
 
     mpCentralwidget->setLayout(mpCentralgrid);
 
