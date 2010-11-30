@@ -64,6 +64,7 @@ public:
     QString loadtype;
     QString externalfilepath;
     QString cqs_type;
+    QDomElement embededSystemDomElement;
 
     void read(QTextStream &rStream);
     void readDomElement(QDomElement &rDomElement);
@@ -153,7 +154,7 @@ GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidg
 GUIModelObject* loadGUIModelObject(QTextStream &rStream, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
 GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
 
-GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings);
+GUIObject* loadSubsystemGUIObject(SubsystemLoadData &rData, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings);
 GUIObject* loadSubsystemGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings);
 GUIObject* loadSubsystemGUIObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings);
 

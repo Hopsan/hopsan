@@ -157,6 +157,12 @@ void SubsystemLoadData::readDomElement(QDomElement &rDomElement)
 
     //Read gui specific data
     this->readGuiDataFromDomElement(rDomElement);
+
+    //Save the domElement to read embeded system
+    if (externalfilepath.isEmpty())
+    {
+        embededSystemDomElement = rDomElement;
+    }
 }
 
 //! @brief Reads system appearnce data from stream
@@ -264,37 +270,44 @@ void StartValueLoadData::readDomElement(QDomElement &rDomElement)
 }
 
 
-GUIObject* loadSubsystemGUIObject(const SubsystemLoadData &rData, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
+GUIObject* loadSubsystemGUIObject(SubsystemLoadData &rData, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
 {
-    //! @todo We need to be able to save a custom display name for external subsystems that overwrite the name loaded from the external system
-
     //! @todo can only handle external subsystems for now
 
     //! @todo maybe create a loadGUIObject function that takes appearance data instead of pLibrary (when special apperance are to be used)
     //Load the system the normal way (and add it)
     GUIModelObject* pSys = loadGUIModelObject(rData, pLibrary, pSystem, undoSettings);
 
-    //Now read the external file to change appearance and populate the system
-    //! @todo assumes that the supplied path is rellative, need to make sure that this does not crash if that is not the case
-    //! @todo what if the parent system does not have a path (embeded systems)
-    QString path = pSystem->mModelFileInfo.absolutePath() + "/" + rData.externalfilepath;
-    QFile file(path);
-    if (!(file.exists()))
+    //Check if we should load a embeded or external system
+    if (rData.externalfilepath.isEmpty())
     {
-        qDebug() << "file: " << path << " does not exist";
+        //Load embeded system
+        pSys->loadFromDomElement(rData.embededSystemDomElement);
     }
-    QDomDocument domDocument;
-    QDomElement externalRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
-    QDomElement externalSystemRoot = externalRoot.firstChildElement(HMF_SYSTEMTAG);
-    //! @todo set the modefile info, maybe we should have built in helpfunction for loading directly from file in System
-    pSys->setModelFileInfo(file);
-    pSys->loadFromDomElement(externalSystemRoot);
-    //! @todo this code is duplicated with the one in system->loadfromdomelement (external code) that code will never run, as this will take care of it. When we have embeded subsystems will will need to fix this
-
-    //Overwrite any loaded external name with the one that was stored in the main file from which we are loading
-    if (!rData.name.isEmpty())
+    else
     {
-        pSys->setName(rData.name);
+        //Now read the external file to change appearance and populate the system
+        //! @todo assumes that the supplied path is rellative, need to make sure that this does not crash if that is not the case
+        QString path = pSystem->mModelFileInfo.absolutePath() + "/" + rData.externalfilepath;
+        QFile file(path);
+        if (!(file.exists()))
+        {
+            qDebug() << "file: " << path << " does not exist";
+        }
+        QDomDocument domDocument;
+        QDomElement externalRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
+        QDomElement externalSystemRoot = externalRoot.firstChildElement(HMF_SYSTEMTAG);
+        //! @todo set the modefile info, maybe we should have built in helpfunction for loading directly from file in System
+        pSys->setModelFileInfo(file);
+        pSys->loadFromDomElement(externalSystemRoot);
+        //! @todo this code is duplicated with the one in system->loadfromdomelement (external code) that code will never run, as this will take care of it. When we have embeded subsystems will will need to fix this
+
+        //Overwrite any loaded external name with the one that was stored in the main file from which we are loading
+        if (!rData.name.isEmpty())
+        {
+            pSys->setName(rData.name);
+        }
+
     }
 
     return pSys;
