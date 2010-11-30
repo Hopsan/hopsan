@@ -251,7 +251,7 @@ void GUIContainerObject::addBoxWidget(QPoint position, undoStatus undoSettings)
 void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus undoSettings)
 {
     //qDebug() << "deleteGUIModelObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->getCoreSystemAccessPtr()->getRootSystemName() ;
-    gpMainWindow->mpPlotWidget->removeFavoriteParameterByComponentName(objectName);
+    this->removeFavoriteParameterByComponentName(objectName);   //Does nothing unless this is a system
 
     GUIModelObjectMapT::iterator it = mGUIModelObjectMap.find(objectName);
     GUIModelObject* obj_ptr = it.value();

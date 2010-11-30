@@ -86,7 +86,6 @@ public slots:
     PlotWindow *createPlotWindow(QTreeWidgetItem *item);
 
 private:
-    QList<QStringList> mFavoriteParameters;
     QList<QStringList> mAvailableParameters;
 };
 
@@ -97,9 +96,6 @@ class PlotWidget : public QWidget
 public:
     PlotWidget(MainWindow *parent = 0);
     PlotParameterTree *mpPlotParameterTree;
-    QList<QStringList> getFavoriteParameters();
-    void setFavoriteParameter(QString componentName, QString portName, QString dataName, QString dataUnit);
-    void removeFavoriteParameterByComponentName(QString componentName);
 
 public slots:
     void loadFromXml();

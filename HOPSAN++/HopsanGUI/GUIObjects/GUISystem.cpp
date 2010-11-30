@@ -297,6 +297,48 @@ int GUISystem::type() const
 }
 
 
+QList<QStringList> GUISystem::getFavoriteParameters()
+{
+    return mFavoriteParameters;
+}
+
+
+void GUISystem::setFavoriteParameter(QString componentName, QString portName, QString dataName, QString dataUnit)
+{
+    QStringList tempParameter;
+    tempParameter.append(componentName);
+    tempParameter.append(portName);
+    tempParameter.append(dataName);
+    tempParameter.append(dataUnit);
+    if(!mFavoriteParameters.contains(tempParameter))
+    {
+        mFavoriteParameters.append(tempParameter);
+    }
+    gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
+
+    mpParentProjectTab->hasChanged();
+}
+
+
+void GUISystem::removeFavoriteParameterByComponentName(QString componentName)
+{
+    QList<QStringList>::iterator it;
+    for(it=
+    mFavoriteParameters.begin(); it!=
+    mFavoriteParameters.end(); ++it)
+    {
+        if((*it).at(0) == componentName)
+        {
+            mFavoriteParameters.removeAll((*it));
+            return;
+        }
+    }
+    gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
+
+    mpParentProjectTab->hasChanged();
+}
+
+
 void GUISystem::openPropertiesDialog()
 {
     ContainerPropertiesDialog dialog(this, gpMainWindow);
@@ -342,7 +384,7 @@ void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
     appendSimulationTimeTag(rDomElement, this->mStartTime, this->mTimeStep, this->mStopTime);
 
     QDomElement parElement = appendDomElement(rDomElement, HMF_PARAMETERS);
-    QList<QStringList> favPars = gpMainWindow->mpPlotWidget->getFavoriteParameters();
+    QList<QStringList> favPars = this->getFavoriteParameters();
     QList<QStringList>::iterator itf;
     for(itf = favPars.begin(); itf != favPars.end(); ++itf)
     {
@@ -481,8 +523,8 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         gpMainWindow->setFinishTimeInToolBar(mStopTime);
 
         //1. Load global parameters
-        QDomElement xmlParameters = rDomElement.firstChildElement("parameters");
-        QDomElement xmlSubObject = xmlParameters.firstChildElement("mappedparameter");
+        QDomElement xmlParameters = rDomElement.firstChildElement(HMF_PARAMETERS);
+        QDomElement xmlSubObject = xmlParameters.firstChildElement(HMF_MAPPEDPARAMETERTAG);
         while (!xmlSubObject.isNull())
         {
             loadSystemParameter(xmlSubObject, this);
@@ -566,7 +608,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         {
             loadFavoriteParameter(xmlSubObject, this);
 
-            xmlSubObject = xmlSubObject.nextSiblingElement("mappedparameter");
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_FAVORITEPARAMETERTAG);
         }
 
         //Refresh the appearnce of the subsystemem and create the GUIPorts
@@ -584,6 +626,8 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
             //mpParentProjectTab->mpGraphicsView->centerView();
             mpParentProjectTab->mpGraphicsView->updateViewPort();
         }
+        this->mpParentProjectTab->setSaved(true);
+
         emit checkMessages();
     }
     else

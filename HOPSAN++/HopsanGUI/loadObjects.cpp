@@ -382,7 +382,7 @@ void loadSystemParameter(const SystemParameterLoadData &rData, GUIContainerObjec
 void loadFavoriteParameter(const FavoriteParameterLoadData &rData, GUIContainerObject *pSystem)
 {
     gpMainWindow->makeSurePlotWidgetIsCreated();
-    gpMainWindow->mpPlotWidget->setFavoriteParameter(rData.componentName, rData.portName, rData.dataName, rData.dataUnit);
+    dynamic_cast<GUISystem *>(pSystem)->setFavoriteParameter(rData.componentName, rData.portName, rData.dataName, rData.dataUnit);
 }
 
 

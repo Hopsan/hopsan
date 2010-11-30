@@ -82,6 +82,8 @@ void UndoStack::newPost(QString type)
     }
 
     gpMainWindow->mpUndoWidget->refreshList();
+
+   //mpParentContainerObject->mpParentProjectTab->hasChanged();
 }
 
 

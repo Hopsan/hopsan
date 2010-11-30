@@ -96,7 +96,10 @@ void ProjectTab::hasChanged()
     {
         QString tabName = mpParentProjectTabWidget->tabText(mpParentProjectTabWidget->currentIndex());
 
-        tabName.append("*");
+        if(!tabName.endsWith("*"))
+        {
+            tabName.append("*");
+        }
         mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
 
         mIsSaved = false;
@@ -115,8 +118,13 @@ bool ProjectTab::isSaved()
 void ProjectTab::setSaved(bool value)
 {
     mIsSaved = value;
+    QString tabName = mpParentProjectTabWidget->tabText(mpParentProjectTabWidget->currentIndex());
+    while(tabName.endsWith("*"))
+    {
+        tabName.chop(1);
+        mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
+    }
 }
-
 
 
 //! Simulates the model in the tab in a separate thread, the GUI runs a progressbar parallel to the simulation.

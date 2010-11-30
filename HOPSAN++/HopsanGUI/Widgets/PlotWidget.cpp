@@ -73,7 +73,7 @@ PlotParameterTree::PlotParameterTree(MainWindow *parent)
 {
     //mpParentMainWindow = parent;
     mpCurrentSystem = gpMainWindow->mpProjectTabs->getCurrentSystem();
-    mFavoriteParameters.clear();
+    gpMainWindow->mpProjectTabs->getCurrentSystem()->mFavoriteParameters.clear();
 
     this->setDragEnabled(true);
     this->setAcceptDrops(false);
@@ -135,7 +135,7 @@ void PlotParameterTree::updateList()
                     QStringList parameterDescription;
                     parameterDescription << (*itp)->getGuiModelObjectName() << (*itp)->getName() << parameterNames[i] << parameterUnits[i];
                     mAvailableParameters.append(parameterDescription);
-                    if(mFavoriteParameters.contains(parameterDescription))
+                    if(gpMainWindow->mpProjectTabs->getCurrentSystem()->mFavoriteParameters.contains(parameterDescription))
                     {
                         tempPlotParameterItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
                     }
@@ -145,12 +145,12 @@ void PlotParameterTree::updateList()
     }
 
         //Append favorite plot variables to tree if they still exist
-    for(int i=0; i<mFavoriteParameters.size(); ++i)
+    for(int i=0; i<gpMainWindow->mpProjectTabs->getCurrentSystem()->mFavoriteParameters.size(); ++i)
     {
-        QString componentName = mFavoriteParameters.at(i).at(0);
-        QString portName = mFavoriteParameters.at(i).at(1);
-        QString dataName = mFavoriteParameters.at(i).at(2);
-        QString dataUnit = mFavoriteParameters.at(i).at(3);
+        QString componentName = gpMainWindow->mpProjectTabs->getCurrentSystem()->mFavoriteParameters.at(i).at(0);
+        QString portName = gpMainWindow->mpProjectTabs->getCurrentSystem()->mFavoriteParameters.at(i).at(1);
+        QString dataName = gpMainWindow->mpProjectTabs->getCurrentSystem()->mFavoriteParameters.at(i).at(2);
+        QString dataUnit = gpMainWindow->mpProjectTabs->getCurrentSystem()->mFavoriteParameters.at(i).at(3);
 
         if(!componentName.isEmpty())
         {
@@ -158,16 +158,16 @@ void PlotParameterTree::updateList()
             tempPlotParameterItem->setText(0, tempPlotParameterItem->text(0).prepend(" " + componentName + ", "));
             tempPlotParameterItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
             this->addTopLevelItem(tempPlotParameterItem);
-            tempPlotParameterItem->setDisabled(!mAvailableParameters.contains(mFavoriteParameters.at(i)));
+            tempPlotParameterItem->setDisabled(!mAvailableParameters.contains(gpMainWindow->mpProjectTabs->getCurrentSystem()->mFavoriteParameters.at(i)));
         }
     }
 
         //Remove no longer existing favorite parameters
-    for(int i=0; i<mFavoriteParameters.size(); ++i)
+    for(int i=0; i<gpMainWindow->mpProjectTabs->getCurrentSystem()->mFavoriteParameters.size(); ++i)
     {
-        if(!mAvailableParameters.contains(mFavoriteParameters.at(i)))
+        if(!mAvailableParameters.contains(gpMainWindow->mpProjectTabs->getCurrentSystem()->mFavoriteParameters.at(i)))
         {
-           // mFavoriteParameters.removeAll(mFavoriteParameters.at(i));
+           // gpMainWindow->mpProjectTabs->getCurrentSystem()->mFavoriteParameters.removeAll(gpMainWindow->mpProjectTabs->getCurrentSystem()->mFavoriteParameters.at(i));
         }
     }
 
@@ -283,7 +283,7 @@ void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
         QStringList parameterDescription;
         parameterDescription << item->getComponentName() << item->getPortName() << item->getDataName() << item->getDataUnit();
         QMenu menu;
-        if(!mFavoriteParameters.contains(parameterDescription))
+        if(!gpMainWindow->mpProjectTabs->getCurrentSystem()->mFavoriteParameters.contains(parameterDescription))
         {
             QAction *addToFavoritesAction;
             addToFavoritesAction = menu.addAction(QString("Add Favorite Parameter"));
@@ -293,8 +293,7 @@ void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
 
             if(selectedAction == addToFavoritesAction)
             {
-               mFavoriteParameters.append(parameterDescription);
-               this->updateList();
+                gpMainWindow->mpProjectTabs->getCurrentSystem()->setFavoriteParameter(parameterDescription.at(0), parameterDescription.at(1), parameterDescription.at(2), parameterDescription.at(3));
             }
         }
         else
@@ -307,7 +306,7 @@ void PlotParameterTree::contextMenuEvent(QContextMenuEvent *event)
 
             if(selectedAction == removeFromFavoritesAction)
             {
-               mFavoriteParameters.removeAll(parameterDescription);
+               gpMainWindow->mpProjectTabs->getCurrentSystem()->mFavoriteParameters.removeAll(parameterDescription);
                this->updateList();
             }
         }
@@ -336,42 +335,6 @@ PlotWidget::PlotWidget(MainWindow *parent)
     mpLayout->addWidget(mpLoadButton, 1, 0, 1, 1);
 
     connect(mpLoadButton, SIGNAL(clicked()),this,SLOT(loadFromXml()));
-}
-
-
-QList<QStringList> PlotWidget::getFavoriteParameters()
-{
-    return mpPlotParameterTree->mFavoriteParameters;
-}
-
-
-void PlotWidget::setFavoriteParameter(QString componentName, QString portName, QString dataName, QString dataUnit)
-{
-    QStringList tempParameter;
-    tempParameter.append(componentName);
-    tempParameter.append(portName);
-    tempParameter.append(dataName);
-    tempParameter.append(dataUnit);
-    if(!mpPlotParameterTree->mFavoriteParameters.contains(tempParameter))
-    {
-        mpPlotParameterTree->mFavoriteParameters.append(tempParameter);
-    }
-    mpPlotParameterTree->updateList();
-}
-
-
-void PlotWidget::removeFavoriteParameterByComponentName(QString componentName)
-{
-    QList<QStringList>::iterator it;
-    for(it=mpPlotParameterTree->mFavoriteParameters.begin(); it!=mpPlotParameterTree->mFavoriteParameters.end(); ++it)
-    {
-        if((*it).at(0) == componentName)
-        {
-            mpPlotParameterTree->mFavoriteParameters.removeAll((*it));
-            return;
-        }
-    }
-    mpPlotParameterTree->updateList();
 }
 
 

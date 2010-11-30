@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanmodelfile hmfversion="0.1" hopsanguiversion="0.0.1" hopsancoreversion="0">
-    <system typename="Subsystem" cqs_type="S" name="Untitled1">
+    <system typename="Subsystem" cqs_type="S" name="PV52">
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500" y="2489" zoom="1"/>
+            <viewport x="2361" y="2500" zoom="1"/>
             <hopsanobjectappearance>
-                <modelobject typename="Subsystem" displayname="Untitled1">
+                <modelobject typename="Subsystem" displayname="PV52">
                     <icon isopath="../../graphics/objecticons/subsystemtmp.svg" iconrotation="" userpath=""/>
                 </modelobject>
             </hopsanobjectappearance>
@@ -14,7 +14,8 @@
         <simulationtime stop="20" timestep="0.001" start="0"/>
         <parameters>
             <favoriteparameter dataunit="-" portname="in" componentname="Spool Position" dataname="Value"/>
-            <favoriteparameter dataunit="-" portname="in" componentname="Load Pressure" dataname="Value"/>
+            <favoriteparameter dataunit="" portname="" componentname="" dataname=""/>
+            <favoriteparameter dataunit="-" portname="out" componentname="Sine Wave" dataname="Value"/>
             <mappedparameter value="0" name=""/>
             <mappedparameter value="0" name="flow"/>
             <mappedparameter value="14500000" name="p_s"/>
@@ -171,7 +172,7 @@
                     <startvalue portname="out" variable="Value" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2469" y="2362" flipped="0" a="0"/>
+                    <pose x="2472" y="2362" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -266,7 +267,7 @@
             <connect endport="P1" endcomponent="Hydraulic Volume_1" startport="P1" startcomponent="Pressure Sensor_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2469" y="2391.5"/>
+                        <coordinate x="2472" y="2391.5"/>
                         <coordinate x="2386" y="2392"/>
                     </coordinates>
                     <geometries>
@@ -288,8 +289,8 @@
             <connect endport="in1" endcomponent="Subtract" startport="out" startcomponent="Pressure Sensor_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2469" y="2332.5"/>
-                        <coordinate x="2469" y="2271"/>
+                        <coordinate x="2472" y="2332.5"/>
+                        <coordinate x="2472" y="2271"/>
                         <coordinate x="2353" y="2271"/>
                         <coordinate x="2353" y="2217"/>
                         <coordinate x="2386.5" y="2217"/>

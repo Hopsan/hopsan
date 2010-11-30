@@ -56,6 +56,7 @@ public:
     //This need to be here for now, and be public, used in containerPropertiesDialog by systems
     virtual void setTypeCQS(QString /*typestring*/){}
     virtual void setNumberOfLogSamples(size_t /*nSamples*/){}
+    virtual void removeFavoriteParameterByComponentName(QString /*componentName*/){}
 
     //Public member variable
     //!< @todo make this private later
