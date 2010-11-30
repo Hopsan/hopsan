@@ -1036,7 +1036,7 @@ void ComponentSystem::stop()
 
 SystemParameters &ComponentSystem::getSystemParameters()
 {
-    return this->mNewSystemParameters;
+    return this->mSystemParameters;
 }
 
 

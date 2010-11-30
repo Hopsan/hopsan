@@ -297,10 +297,7 @@ namespace hopsan {
 
         bool mStop;
 
-        //std::map<std::string, double> mSystemParameters;
-        //std::multimap<std::string, double *> mSystemParameterPointers;
-
-        SystemParameters mNewSystemParameters;
+        SystemParameters mSystemParameters;
     };
 
     class DLLIMPORTEXPORT ComponentSignal :public Component
