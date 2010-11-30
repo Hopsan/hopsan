@@ -510,8 +510,8 @@ void CoreSystemAccess::setSystemParameter(QString name, double value)
 
 double CoreSystemAccess::getSystemParameter(QString name)
 {
-//    return mpCoreComponentSystem->getSystemParameters().getValue(name.toStdString());
-    return mpCoreComponentSystem->getSystemParameters().getValue(name.toStdString())->second;
+    return mpCoreComponentSystem->getSystemParameters().getValue(name.toStdString());
+//    return mpCoreComponentSystem->getSystemParametersMap().find(name.toStdString())->second;
 }
 
 
