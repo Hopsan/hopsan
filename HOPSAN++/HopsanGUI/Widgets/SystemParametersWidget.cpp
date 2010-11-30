@@ -125,15 +125,15 @@ void SystemParametersWidget::setParameter(QString name, double value)
 
 void SystemParametersWidget::setParameters()
 {
-    if(gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getNumberOfSystemParameters() > 0)
-    {
+//    if(gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getNumberOfSystemParameters() > 0)
+//    {
         for(int i=0; i<mpSystemParametersTable->rowCount(); ++i)
         {
             QString name = mpSystemParametersTable->item(i, 0)->text();
             double value = mpSystemParametersTable->item(i, 1)->text().toDouble();
             gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->setSystemParameter(name, value);
         }
-    }
+//    }
 }
 
 
@@ -144,7 +144,6 @@ void SystemParametersWidget::removeSelectedParameters()
     QList<QTableWidgetItem *> pSelectedItems = mpSystemParametersTable->selectedItems();
     QStringList parametersToRemove;
     QString tempName;
-    double tempValue;
 
     for(int i=0; i<pSelectedItems.size(); ++i)
     {
@@ -207,9 +206,12 @@ void SystemParametersWidget::addParameter()
 //! Updates the parameter table from the contents list
 void SystemParametersWidget::update()
 {
+    QMap<std::string, double>::iterator it;
+    QMap<std::string, double> tempMap = gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getSystemParametersMap();
+
     mpSystemParametersTable->clear();
 
-    if(gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getNumberOfSystemParameters() == 0)
+    if(tempMap.isEmpty())
     {
         mpSystemParametersTable->setColumnCount(1);
         mpSystemParametersTable->setRowCount(1);
@@ -229,8 +231,6 @@ void SystemParametersWidget::update()
         mpSystemParametersTable->setColumnWidth(0, 120);
         mpSystemParametersTable->verticalHeader()->show();
     }
-    QMap<std::string, double>::iterator it;
-    QMap<std::string, double> tempMap = gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getSystemParametersMap();
     for(it=tempMap.begin(); it!=tempMap.end(); ++it)
     {
         QString valueString;

@@ -46,6 +46,28 @@ namespace hopsan {
     };
 
 
+    class DLLIMPORTEXPORT SystemParameters
+    {
+    public:
+        void add(std::string sysParName, double value);
+        double getValue(std::string sysParName);
+        std::map<std::string, double> getSystemParameterMap();
+        std::string findOccurrence(double *mappedValue);
+        void erase(std::string sysParName);
+        void mapParameter(std::string sysParName, double *mappedValue);
+        void unMapParameter(std::string sysParName, double *mappedValue);
+        void unMapParameter(double *mappedValue);
+        void update();
+
+    protected:
+
+    private:
+        typedef std::list<double*> DblPointerList;
+        typedef std::pair<double, DblPointerList> SystemParameter;
+
+        std::map<std::string, SystemParameter> mSystemParameters;
+    };
+
 
     class ComponentSystem; //Forward declaration
 
@@ -232,6 +254,9 @@ namespace hopsan {
         void mapParameterValuePointerToSystemParameter(std::string systemParameterKey, double *pValue);
         void unmapParameterValuePointerToSystemParameter(double *pValue);
 
+        //System parameters
+        SystemParameters &getSystemParameters();
+
     private:
         //==========Private functions==========
         //Time specific functions
@@ -275,6 +300,8 @@ namespace hopsan {
 
         std::map<std::string, double> mSystemParameters;
         std::multimap<std::string, double *> mSystemParameterPointers;
+
+        SystemParameters mNewSystemParameters;
     };
 
     class DLLIMPORTEXPORT ComponentSignal :public Component

@@ -464,8 +464,8 @@ bool CoreSystemAccess::getLastNodeData(const QString compname, const QString por
             rData = pData->back().at(dataId);
             return 1;
         }
-        return 0;
     }
+    return 0;
 }
 
 
@@ -502,12 +502,15 @@ hopsan::Port* CoreSystemAccess::getPortPtr(QString componentName, QString portNa
 
 void CoreSystemAccess::setSystemParameter(QString name, double value)
 {
+    mpCoreComponentSystem->getSystemParameters().add(name.toStdString(), value);
+
     mpCoreComponentSystem->setSystemParameter(name.toStdString(), value);
 }
 
 
 double CoreSystemAccess::getSystemParameter(QString name)
 {
+//    return mpCoreComponentSystem->getSystemParameters().getValue(name.toStdString());
     return mpCoreComponentSystem->getSystemParametersMap().find(name.toStdString())->second;
 }
 
@@ -521,19 +524,21 @@ bool CoreSystemAccess::hasSystemParameter(QString name)
 
 void CoreSystemAccess::removeSystemParameter(QString name)
 {
-    mpCoreComponentSystem->unsetSystemParameter(name.toStdString());
+    mpCoreComponentSystem->getSystemParameters().erase(name.toStdString());
+    //mpCoreComponentSystem->unsetSystemParameter(name.toStdString());
 }
 
 
-int CoreSystemAccess::getNumberOfSystemParameters()
+/*int CoreSystemAccess::getNumberOfSystemParameters()
 {
     return mpCoreComponentSystem->getSystemParametersMap().size();
-}
+}*/
 
 
 QMap<std::string, double> CoreSystemAccess::getSystemParametersMap()
 {
-    return QMap<std::string, double>(mpCoreComponentSystem->getSystemParametersMap());
+//    return QMap<std::string, double>(mpCoreComponentSystem->getSystemParametersMap());
+    return QMap<std::string, double>(mpCoreComponentSystem->getSystemParameters().getSystemParameterMap());
 }
 
 

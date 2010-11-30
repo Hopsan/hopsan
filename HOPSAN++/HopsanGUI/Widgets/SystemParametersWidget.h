@@ -34,6 +34,7 @@ class GUIModelObject;
 class SystemParametersWidget : public QWidget
 {
     Q_OBJECT
+
 public:
     SystemParametersWidget(MainWindow *parent = 0);
 

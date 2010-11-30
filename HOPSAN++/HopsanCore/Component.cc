@@ -165,6 +165,101 @@ void CompParameter::setValue(const double value)
 //}
 
 
+void SystemParameters::add(std::string sysParName, double value)
+{
+    SystemParameter sysPar;
+    sysPar.first = value;
+    mSystemParameters[sysParName] = sysPar;
+}
+
+double SystemParameters::getValue(std::string sysParName)
+{
+    return mSystemParameters[sysParName].first;
+}
+
+std::map<std::string, double> SystemParameters::getSystemParameterMap()
+{
+    std::map<std::string, double> sysPar;
+    std::map<std::string, SystemParameter>::iterator map_it;
+    for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
+    {
+        sysPar[map_it->first] = map_it->second.first;
+    }
+    return sysPar;
+}
+
+std::string SystemParameters::findOccurrence(double *mappedValue)
+{
+    std::string sysParName ="";
+    std::list<double*>::iterator list_it;
+    std::map<std::string, SystemParameter>::iterator map_it;
+    for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
+    {
+        for(list_it = map_it->second.second.begin(); list_it != map_it->second.second.end(); ++list_it)
+        {
+            if(*list_it == mappedValue)
+            {
+                sysParName = map_it->first;
+            }
+        }
+    }
+    return sysParName;
+}
+
+void SystemParameters::erase(std::string sysParName)
+{
+    mSystemParameters.erase(sysParName);
+}
+
+void SystemParameters::mapParameter(std::string sysParName, double *mappedValue)
+{
+    unMapParameter(mappedValue);
+
+    std::map<std::string, SystemParameter>::iterator it;
+    it = mSystemParameters.find(sysParName);
+    if(it != mSystemParameters.end())
+    {
+        it->second.second.push_back(mappedValue);
+        *mappedValue = it->second.first;
+    }
+}
+
+void SystemParameters::unMapParameter(std::string sysParName, double *mappedValue)
+{
+    std::list<double*>::iterator list_it, remove_it;
+    for(list_it = mSystemParameters[sysParName].second.begin(); list_it !=mSystemParameters[sysParName].second.end(); ++list_it)
+    {
+        if(*list_it == mappedValue)
+        {
+            remove_it = list_it;
+        }
+    }
+    mSystemParameters[sysParName].second.erase(remove_it);
+}
+
+void SystemParameters::unMapParameter(double *mappedValue)
+{
+    std::map<std::string, SystemParameter>::iterator map_it;
+    for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
+    {
+        unMapParameter(map_it->first, mappedValue);
+    }
+}
+
+void SystemParameters::update()
+{
+    std::list<double*>::iterator list_it;
+    std::map<std::string, SystemParameter>::iterator map_it;
+    for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
+    {
+        for(list_it = map_it->second.second.begin(); list_it != map_it->second.second.end(); ++list_it)
+        {
+            *(*list_it) = map_it->second.first;
+        }
+    }
+}
+
+
 //Constructor
 Component::Component(string name, double timestep)
 {
@@ -941,6 +1036,12 @@ void ComponentSystem::unmapParameterValuePointerToSystemParameter(double *pValue
             break;
         }
     }
+}
+
+
+SystemParameters &ComponentSystem::getSystemParameters()
+{
+    return this->mNewSystemParameters;
 }
 
 

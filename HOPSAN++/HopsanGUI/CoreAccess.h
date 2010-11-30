@@ -76,7 +76,7 @@ public:
     double getSystemParameter(QString name);
     bool hasSystemParameter(QString name);
     void removeSystemParameter(QString name);
-    int getNumberOfSystemParameters();
+//    int getNumberOfSystemParameters();
     QMap<std::string, double> getSystemParametersMap();
     void registserSystemParameter(QString objName, QString parName, QString mapKey);
 
