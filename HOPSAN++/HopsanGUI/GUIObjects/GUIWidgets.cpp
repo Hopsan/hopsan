@@ -30,6 +30,7 @@ GUIWidget::GUIWidget(QPoint pos, qreal rot, selectionStatus startSelected, GUICo
 {
     pSystem->getContainedScenePtr()->addItem(this);
     this->setPos(pos);
+    mIsResizing = false;        //Only used for resizable widgets
 }
 
 
@@ -64,7 +65,7 @@ void GUIWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     bool alreadyClearedRedo = false;
     for(it = mpParentContainerObject->mSelectedGUIWidgetsList.begin(); it != mpParentContainerObject->mSelectedGUIWidgetsList.end(); ++it)
     {
-        if(((*it)->mOldPos != (*it)->pos()) && (event->button() == Qt::LeftButton))
+        if(((*it)->mOldPos != (*it)->pos()) && (event->button() == Qt::LeftButton) && !(*it)->mIsResizing)
         {
             //emit objectMoved();
                 //This check makes sure that only one undo post is created when moving several objects at once
@@ -85,12 +86,11 @@ void GUIWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
             qDebug() << "About to register; oldPos = " << (*it)->mOldPos << ", newPos = " << (*it)->pos();
             //mpParentContainerObject->mUndoStack->registerMovedWidget((*it)->mOldPos, (*it)->pos(), (*it)->getName());
         }
+        (*it)->mIsResizing = false;
     }
 
     GUIObject::mouseReleaseEvent(event);
 }
-
-
 
 
 //! @brief Constructor for text widget class
@@ -508,8 +508,12 @@ void GUIBoxWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
         mPosBeforeResize = this->pos();
         mWidthBeforeResize = this->mpRectItem->rect().width();
         mHeightBeforeResize = this->mpRectItem->rect().height();
+        mIsResizing = true;
     }
-
+    else
+    {
+        mIsResizing = false;
+    }
     GUIObject::mousePressEvent(event);
 }
 

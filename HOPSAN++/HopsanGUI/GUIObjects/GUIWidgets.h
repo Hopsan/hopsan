@@ -36,6 +36,9 @@ protected:
 public slots:
     virtual void deleteMe(undoStatus undoSettings=UNDO);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
+protected:
+    bool mIsResizing;
 };
 
 
