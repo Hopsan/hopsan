@@ -961,7 +961,7 @@ void GUIContainerObject::enterContainer()
     mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setContainerPtr(this);
     gpMainWindow->mpQuickNavigationWidget->addOpenContainer(this);
     //connect(gpMainWindow->mpBackButton, SIGNAL(clicked()), this, SLOT(exitContainer()));
-    gpMainWindow->mpBackButton->show();
+//    gpMainWindow->mpBackButton->show();
 }
 
 void GUIContainerObject::exitContainer()
@@ -970,5 +970,5 @@ void GUIContainerObject::exitContainer()
     mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(this->mpParentContainerObject->getContainedScenePtr());
     mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setContainerPtr(this->mpParentContainerObject);
     //disconnect(gpMainWindow->mpBackButton, SIGNAL(clicked()), this, SLOT(exitContainer()));
-    gpMainWindow->mpBackButton->hide();
+//    gpMainWindow->mpBackButton->hide();
 }

@@ -365,9 +365,9 @@ void GUIGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsItem::mouseDoubleClickEvent(event);
     mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(getContainedScenePtr());
 
-    gpMainWindow->mpBackButton->show();
+//    gpMainWindow->mpBackButton->show();
 
-    connect(gpMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
+//    connect(gpMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
 
 }
 

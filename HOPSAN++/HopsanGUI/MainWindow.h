@@ -36,8 +36,8 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    QWidget *mpCentralwidget;
-    QGridLayout *mpCentralgrid;
+    QWidget *mpCentralWidget;
+    QGridLayout *mpCentralGridLayout;
     QGridLayout *mpTabgrid;
 
     //Widgets that can be displayed in main window
@@ -116,7 +116,7 @@ public:
     double getStartTimeFromToolBar();
     double getTimeStepFromToolBar();
     double getFinishTimeFromToolBar();
-    QPushButton *mpBackButton;
+    //QPushButton *mpBackButton;
     QuickNavigationWidget *mpQuickNavigationWidget;
     void closeEvent(QCloseEvent *event);
 

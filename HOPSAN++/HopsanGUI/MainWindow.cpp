@@ -58,12 +58,12 @@ MainWindow::MainWindow(QWidget *parent)
     QMetaObject::connectSlotsByName(this);
 
     //Create a centralwidget for the main window
-    mpCentralwidget = new QWidget(this);
-    mpCentralwidget->setObjectName("centralwidget");
+    mpCentralWidget = new QWidget(this);
+    mpCentralWidget->setObjectName("centralwidget");
 
     //Create a grid on the centralwidget
-    mpCentralgrid = new QGridLayout(mpCentralwidget);
-    mpCentralgrid->setSpacing(10);
+    mpCentralGridLayout = new QGridLayout(mpCentralWidget);
+    mpCentralGridLayout->setSpacing(40);
 
     //Create a dock for the MessageWidget
     mpMessageDock = new QDockWidget(tr("Messages"), this);
@@ -98,19 +98,21 @@ MainWindow::MainWindow(QWidget *parent)
     mpProjectTabs = new ProjectTabWidget(this);
     mpProjectTabs->setObjectName("projectTabs");
 
-    mpQuickNavigationWidget = new QuickNavigationWidget();
+    mpQuickNavigationWidget = new QuickNavigationWidget(this);
     mpQuickNavigationWidget->setObjectName("quickNavigation");
-    mpBackButton = new QPushButton("Back");
-    mpCentralgrid->addWidget(mpBackButton,0,0);
-    mpCentralgrid->addWidget(mpQuickNavigationWidget,1,0);
-    mpCentralgrid->addWidget(mpProjectTabs,2,0);
-    mpBackButton->hide();
-    mpQuickNavigationWidget->show();
+    //mpBackButton = new QPushButton("Back");
+    //mpCentralgrid->addWidget(mpBackButton,0,0);
+    mpCentralGridLayout->addWidget(mpProjectTabs,0,0);
+    mpCentralGridLayout->addWidget(mpQuickNavigationWidget,1,0);
+    mpQuickNavigationWidget->hide();
 
-    mpCentralwidget->setLayout(mpCentralgrid);
+
+    //mpBackButton->hide();
+
+    //mpCentralwidget->setLayout(mpCentralgrid);
 
     //Set the centralwidget
-    this->setCentralWidget(mpCentralwidget);
+    this->setCentralWidget(mpCentralWidget);
 
     //Create the Statusbar
     mpStatusBar = new QStatusBar();
