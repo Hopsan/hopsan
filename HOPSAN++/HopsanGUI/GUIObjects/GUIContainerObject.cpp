@@ -228,6 +228,7 @@ void GUIContainerObject::addTextWidget(QPoint position, undoStatus undoSettings)
         mUndoStack->newPost();
         mUndoStack->registerAddedTextWidget(tempTextWidget);
     }
+    mpParentProjectTab->hasChanged();
 }
 
 
@@ -243,6 +244,7 @@ void GUIContainerObject::addBoxWidget(QPoint position, undoStatus undoSettings)
         mUndoStack->newPost();
         mUndoStack->registerAddedBoxWidget(tempBoxWidget);
     }
+    mpParentProjectTab->hasChanged();
 }
 
 
