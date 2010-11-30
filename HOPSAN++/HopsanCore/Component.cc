@@ -172,9 +172,15 @@ void SystemParameters::add(std::string sysParName, double value)
     mSystemParameters[sysParName] = sysPar;
 }
 
-double SystemParameters::getValue(std::string sysParName)
+bool SystemParameters::getValue(std::string sysParName, double &value)
 {
-    return mSystemParameters[sysParName].first;
+    if(mSystemParameters.count(sysParName))
+    {
+        value = mSystemParameters[sysParName].first;
+        return 1;
+    }
+    else
+        return 0;
 }
 
 std::map<std::string, double> SystemParameters::getSystemParameterMap()

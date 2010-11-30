@@ -50,7 +50,7 @@ namespace hopsan {
     {
     public:
         void add(std::string sysParName, double value);
-        double getValue(std::string sysParName);
+        bool getValue(std::string sysParName, double &value);
         std::map<std::string, double> getSystemParameterMap();
         std::string findOccurrence(double *mappedValue);
         void erase(std::string sysParName);
