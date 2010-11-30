@@ -28,7 +28,7 @@ class GUIWidget : public GUIObject
 
 public:
     GUIWidget(QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent=0);
-    size_t mWidgetIndex;
+    int mWidgetIndex;
 
 protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
