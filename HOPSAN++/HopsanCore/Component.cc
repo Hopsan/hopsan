@@ -233,14 +233,19 @@ void SystemParameters::mapParameter(std::string sysParName, double *mappedValue)
 void SystemParameters::unMapParameter(std::string sysParName, double *mappedValue)
 {
     std::list<double*>::iterator list_it, remove_it;
+    bool found = false;
     for(list_it = mSystemParameters[sysParName].second.begin(); list_it !=mSystemParameters[sysParName].second.end(); ++list_it)
     {
         if(*list_it == mappedValue)
         {
             remove_it = list_it;
+            found = true;
         }
     }
-    mSystemParameters[sysParName].second.erase(remove_it);
+    if((mSystemParameters.count(sysParName)) && found)
+    {
+        mSystemParameters[sysParName].second.erase(remove_it);
+    }
 }
 
 void SystemParameters::unMapParameter(double *mappedValue)
