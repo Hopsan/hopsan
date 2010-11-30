@@ -22,7 +22,6 @@ GUIObject::GUIObject(QPoint pos, qreal rot, selectionStatus, GUIContainerObject 
 {
     //Initi variables
     mHmfTagName = HMF_OBJECTTAG;
-    mpSelectionBox = 0;
 
     mpParentContainerObject = pSystem;
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
@@ -30,6 +29,7 @@ GUIObject::GUIObject(QPoint pos, qreal rot, selectionStatus, GUIContainerObject 
     //Set position orientation and other appearance stuff
     //Initially we dont know the selection box size
     mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, 0.0, 0.0, QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+    mpSelectionBox->setPassive();
     this->setCenterPos(pos);
     this->rotateTo(rot);
     this->setAcceptHoverEvents(true);

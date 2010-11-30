@@ -48,6 +48,8 @@ void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep,
 #define HMF_CONNECTORTAG "connect"
 #define HMF_PARAMETERTAG "parameter"
 #define HMF_PARAMETERS "parameters"
+#define HMF_MAPPEDPARAMETERTAG "mappedparameter"
+#define HMF_FAVORITEPARAMETERTAG "favoriteparameter"
 #define HMF_STARTVALUES "startvalues"
 #define HMF_STARTVALUE "startvalue"
 #define HMF_GROUPTAG "group"

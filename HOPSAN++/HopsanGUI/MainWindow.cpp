@@ -215,6 +215,15 @@ void MainWindow::show()
 }
 
 
+void MainWindow::makeSurePlotWidgetIsCreated()
+{
+    if(mpPlotWidget == 0)
+    {
+        mpPlotWidget = new PlotWidget(this);
+    }
+}
+
+
 //! @brief Opens the plot widget.
 void MainWindow::openPlotWidget()
 {
@@ -222,10 +231,7 @@ void MainWindow::openPlotWidget()
     {
         if(!mpPlotWidgetDock->isVisible())
         {
-            if(mpPlotWidget == 0)
-            {
-                mpPlotWidget = new PlotWidget(this);
-            }
+            this->makeSurePlotWidgetIsCreated();
             mpPlotWidgetDock->setWidget(mpPlotWidget);
 
             mpPlotWidgetDock->show();

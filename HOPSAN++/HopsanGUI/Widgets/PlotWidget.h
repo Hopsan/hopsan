@@ -65,6 +65,7 @@ class PlotParameterTree : public QTreeWidget
 {
     Q_OBJECT
     friend class PlotWindow;
+    friend class PlotWidget;
 public:
     PlotParameterTree(MainWindow *parent = 0);
     PlotWindow *createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit);
@@ -96,6 +97,9 @@ class PlotWidget : public QWidget
 public:
     PlotWidget(MainWindow *parent = 0);
     PlotParameterTree *mpPlotParameterTree;
+    QList<QStringList> getFavoriteParameters();
+    void setFavoriteParameter(QString componentName, QString portName, QString dataName, QString dataUnit);
+    void removeFavoriteParameterByComponentName(QString componentName);
 
 public slots:
     void loadFromXml();

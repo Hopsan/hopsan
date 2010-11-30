@@ -53,6 +53,7 @@ QVariant GUIWidget::itemChange(GraphicsItemChange change, const QVariant &value)
     return GUIObject::itemChange(change, value);
 }
 
+
 void GUIWidget::deleteMe(undoStatus undoSettings)
 {
     assert(1 == 2);
@@ -317,7 +318,6 @@ GUIBoxWidget::GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected,
 //    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height(),
 //                                                  QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
     mpSelectionBox->setSize(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
-
     mWidgetIndex = widgetIndex;
 }
 

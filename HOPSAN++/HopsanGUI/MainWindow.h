@@ -127,6 +127,7 @@ public slots:
     void fixSimulationParameterValues();
     void registerRecentModel(QFileInfo model);
     void updateRecentList();
+    void makeSurePlotWidgetIsCreated();
 
 private slots:
     void openPlotWidget();

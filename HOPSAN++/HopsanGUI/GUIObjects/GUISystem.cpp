@@ -20,6 +20,7 @@
 #include "GUIGroup.h"
 #include "GUISystemPort.h"
 #include "GUIWidgets.h"
+#include "Widgets/PlotWidget.h"
 
 GUISystem::GUISystem(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
     : GUIContainerObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
@@ -340,12 +341,23 @@ void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
     rDomElement.setAttribute(HMF_CQSTYPETAG, this->getTypeCQS());
     appendSimulationTimeTag(rDomElement, this->mStartTime, this->mTimeStep, this->mStopTime);
 
-    QDomElement parElement = appendDomElement(rDomElement, "parameters");
+    QDomElement parElement = appendDomElement(rDomElement, HMF_PARAMETERS);
+    QList<QStringList> favPars = gpMainWindow->mpPlotWidget->getFavoriteParameters();
+    QList<QStringList>::iterator itf;
+    for(itf = favPars.begin(); itf != favPars.end(); ++itf)
+    {
+        QDomElement favoriteElement = appendDomElement(parElement, HMF_FAVORITEPARAMETERTAG);
+        favoriteElement.setAttribute("componentname", (*itf).at(0));
+        favoriteElement.setAttribute("portname", (*itf).at(1));
+        favoriteElement.setAttribute("dataname", (*itf).at(2));
+        favoriteElement.setAttribute("dataunit", (*itf).at(3));
+    }
+
     QMap<std::string, double>::iterator it;
     QMap<std::string, double> parMap = mpCoreSystemAccess->getSystemParametersMap();
     for(it = parMap.begin(); it != parMap.end(); ++it)
     {
-        QDomElement mappedElement = appendDomElement(parElement, "mappedparameter");
+        QDomElement mappedElement = appendDomElement(parElement, HMF_MAPPEDPARAMETERTAG);
         mappedElement.setAttribute("name", QString(it.key().c_str()));
         mappedElement.setAttribute("value", it.value());
     }
@@ -475,7 +487,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         {
             loadSystemParameter(xmlSubObject, this);
 
-            xmlSubObject = xmlSubObject.nextSiblingElement("mappedparameter");
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_MAPPEDPARAMETERTAG);
         }
 
         //2. Load all sub-components
@@ -546,6 +558,15 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         {
             loadConnector(xmlSubObject, this, NOUNDO);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_CONNECTORTAG);
+        }
+
+        //8. Load favorite parameters
+        xmlSubObject = xmlParameters.firstChildElement(HMF_FAVORITEPARAMETERTAG);
+        while (!xmlSubObject.isNull())
+        {
+            loadFavoriteParameter(xmlSubObject, this);
+
+            xmlSubObject = xmlSubObject.nextSiblingElement("mappedparameter");
         }
 
         //Refresh the appearnce of the subsystemem and create the GUIPorts

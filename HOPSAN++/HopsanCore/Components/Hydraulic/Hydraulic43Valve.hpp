@@ -36,7 +36,7 @@ namespace hopsan {
         TurbulentFlowFunction mQturbat;
         TurbulentFlowFunction mQturbbt;
 #define pi 3.14159
-        Port *mpPP, *mpPT, *mpPA, *mpPB, *mpIn;
+        Port *mpPP, *mpPT, *mpPA, *mpPB, *mpIn, *mpOut;
         double sign(double x)
         {
             if (x>=0.0)
@@ -73,6 +73,7 @@ namespace hopsan {
             mpPA = addPowerPort("PA", "NodeHydraulic");
             mpPB = addPowerPort("PB", "NodeHydraulic");
             mpIn = addReadPort("in", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal");
 
             registerParameter("Cq", "Flow Coefficient", "[-]", mCq);
             registerParameter("d", "Diameter", "[m]", md);
@@ -174,6 +175,7 @@ namespace hopsan {
             mpPA->writeNode(NodeHydraulic::FLOW, qa);
             mpPB->writeNode(NodeHydraulic::PRESSURE, pb);
             mpPB->writeNode(NodeHydraulic::FLOW, qb);
+            mpOut->writeNode(NodeSignal::VALUE, xv);
         }
     };
 

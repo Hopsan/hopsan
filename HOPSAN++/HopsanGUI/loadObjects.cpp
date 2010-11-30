@@ -14,6 +14,9 @@
 #include "GUIObjects/GUISystem.h"
 #include "Utilities/GUIUtilities.h"
 #include "UndoStack.h"
+#include "common.h"
+#include "MainWindow.h"
+#include "Widgets/PlotWidget.h"
 
 void HeaderLoadData::read(QTextStream &rStream)
 {
@@ -376,6 +379,14 @@ void loadSystemParameter(const SystemParameterLoadData &rData, GUIContainerObjec
 }
 
 
+void loadFavoriteParameter(const FavoriteParameterLoadData &rData, GUIContainerObject *pSystem)
+{
+    gpMainWindow->makeSurePlotWidgetIsCreated();
+    gpMainWindow->mpPlotWidget->setFavoriteParameter(rData.componentName, rData.portName, rData.dataName, rData.dataUnit);
+}
+
+
+
 //! @brief text version
 void loadParameterValues(const ParameterLoadData &rData, GUIContainerObject* pSystem, undoStatus undoSettings)
 {
@@ -523,6 +534,14 @@ void loadSystemParameter(QDomElement &rDomElement, GUIContainerObject* pSystem)
 }
 
 
+void loadFavoriteParameter(QDomElement &rDomElement, GUIContainerObject* pSystem)
+{
+    FavoriteParameterLoadData data;
+    data.readDomElement(rDomElement);
+    loadFavoriteParameter(data, pSystem);
+}
+
+
 void TextWidgetLoadData::readDomElement(QDomElement &rDomElement)
 {
     //Read gui specific stuff
@@ -583,6 +602,16 @@ void SystemParameterLoadData::readDomElement(QDomElement &rDomElement)
     value = rDomElement.attribute("value").toDouble();
 }
 
+
+void FavoriteParameterLoadData::readDomElement(QDomElement &rDomElement)
+{
+    componentName = rDomElement.attribute("componentname");
+    portName = rDomElement.attribute("portname"),
+    dataName = rDomElement.attribute("dataname");
+    dataUnit = rDomElement.attribute("dataunit");
+}
+
+
 //! @brief Convenience function for loading a box widget from a dom element
 void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoStatus undoSettings)
 {
@@ -603,8 +632,8 @@ void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoSt
         pSystem->mBoxWidgetList.last()->setLineStyle(Qt::DashDotLine);
 
     pSystem->mBoxWidgetList.last()->setLineColor(data.linecolor);
-    pSystem->mBoxWidgetList.last()->setSelected(false);
-
+    pSystem->mBoxWidgetList.last()->setSelected(true);
+    pSystem->mBoxWidgetList.last()->setSelected(false);     //For some reason this is needed
 }
 
 

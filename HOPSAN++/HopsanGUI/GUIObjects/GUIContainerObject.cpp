@@ -22,6 +22,7 @@
 #include "GUIWidgets.h"
 #include "GUISystem.h"
 #include "../CopyStack.h"
+#include "Widgets/PlotWidget.h"
 
 #include <QDomElement>
 
@@ -250,6 +251,8 @@ void GUIContainerObject::addBoxWidget(QPoint position, undoStatus undoSettings)
 void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus undoSettings)
 {
     //qDebug() << "deleteGUIModelObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->getCoreSystemAccessPtr()->getRootSystemName() ;
+    gpMainWindow->mpPlotWidget->removeFavoriteParameterByComponentName(objectName);
+
     GUIModelObjectMapT::iterator it = mGUIModelObjectMap.find(objectName);
     GUIModelObject* obj_ptr = it.value();
 

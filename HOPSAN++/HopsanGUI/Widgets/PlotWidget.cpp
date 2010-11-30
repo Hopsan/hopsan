@@ -147,17 +147,18 @@ void PlotParameterTree::updateList()
         //Append favorite plot variables to tree if they still exist
     for(int i=0; i<mFavoriteParameters.size(); ++i)
     {
-        if(mAvailableParameters.contains(mFavoriteParameters.at(i)))
-        {
-            QString componentName = mFavoriteParameters.at(i).at(0);
-            QString portName = mFavoriteParameters.at(i).at(1);
-            QString dataName = mFavoriteParameters.at(i).at(2);
-            QString dataUnit = mFavoriteParameters.at(i).at(3);
+        QString componentName = mFavoriteParameters.at(i).at(0);
+        QString portName = mFavoriteParameters.at(i).at(1);
+        QString dataName = mFavoriteParameters.at(i).at(2);
+        QString dataUnit = mFavoriteParameters.at(i).at(3);
 
+        if(!componentName.isEmpty())
+        {
             tempPlotParameterItem = new PlotParameterItem(componentName, portName, dataName, dataUnit);
             tempPlotParameterItem->setText(0, tempPlotParameterItem->text(0).prepend(" " + componentName + ", "));
             tempPlotParameterItem->setIcon(0, QIcon(QString(ICONPATH) + "Hopsan-Favorite.png"));
             this->addTopLevelItem(tempPlotParameterItem);
+            tempPlotParameterItem->setDisabled(!mAvailableParameters.contains(mFavoriteParameters.at(i)));
         }
     }
 
@@ -166,7 +167,7 @@ void PlotParameterTree::updateList()
     {
         if(!mAvailableParameters.contains(mFavoriteParameters.at(i)))
         {
-            mFavoriteParameters.removeAll(mFavoriteParameters.at(i));
+           // mFavoriteParameters.removeAll(mFavoriteParameters.at(i));
         }
     }
 
@@ -185,7 +186,7 @@ void PlotParameterTree::updateList()
 PlotWindow *PlotParameterTree::createPlotWindow(QTreeWidgetItem *item)
 {
     //! @todo This is a kind of dumb check; it assumes that component items have bold font and variables not.
-    if(!item->font(0).bold())     //Top level items cannot be plotted (they represent the components)
+    if(!item->font(0).bold() || !item->isDisabled())     //Top level items cannot be plotted (they represent the components)
     {
         //QTreeWidgetItem must be casted to a PlotParameterItem. This is a necessary because double click event can not know which kind of tree item is clicked.
         PlotParameterItem *tempItem = dynamic_cast<PlotParameterItem *>(item);
@@ -335,6 +336,42 @@ PlotWidget::PlotWidget(MainWindow *parent)
     mpLayout->addWidget(mpLoadButton, 1, 0, 1, 1);
 
     connect(mpLoadButton, SIGNAL(clicked()),this,SLOT(loadFromXml()));
+}
+
+
+QList<QStringList> PlotWidget::getFavoriteParameters()
+{
+    return mpPlotParameterTree->mFavoriteParameters;
+}
+
+
+void PlotWidget::setFavoriteParameter(QString componentName, QString portName, QString dataName, QString dataUnit)
+{
+    QStringList tempParameter;
+    tempParameter.append(componentName);
+    tempParameter.append(portName);
+    tempParameter.append(dataName);
+    tempParameter.append(dataUnit);
+    if(!mpPlotParameterTree->mFavoriteParameters.contains(tempParameter))
+    {
+        mpPlotParameterTree->mFavoriteParameters.append(tempParameter);
+    }
+    mpPlotParameterTree->updateList();
+}
+
+
+void PlotWidget::removeFavoriteParameterByComponentName(QString componentName)
+{
+    QList<QStringList>::iterator it;
+    for(it=mpPlotParameterTree->mFavoriteParameters.begin(); it!=mpPlotParameterTree->mFavoriteParameters.end(); ++it)
+    {
+        if((*it).at(0) == componentName)
+        {
+            mpPlotParameterTree->mFavoriteParameters.removeAll((*it));
+            return;
+        }
+    }
+    mpPlotParameterTree->updateList();
 }
 
 

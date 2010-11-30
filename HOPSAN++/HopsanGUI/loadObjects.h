@@ -150,6 +150,17 @@ public:
     void readDomElement(QDomElement &rDomElement);
 };
 
+class FavoriteParameterLoadData
+{
+public:
+    QString componentName;
+    QString portName;
+    QString dataName;
+    QString dataUnit;
+
+    void readDomElement(QDomElement &rDomElement);
+};
+
 GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
 GUIModelObject* loadGUIModelObject(QTextStream &rStream, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
 GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
@@ -171,6 +182,10 @@ void loadStartValue(const StartValueLoadData &rData, GUIModelObject* pObject, un
 void loadStartValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus undoSettings=UNDO);
 void loadSystemParameter(const SystemParameterLoadData &rData, GUIContainerObject* pSystem);
 void loadSystemParameter(QDomElement &rDomElement, GUIContainerObject* pSystem);
+void loadFavoriteParameter(const FavoriteParameterLoadData &rData, GUIContainerObject* pSystem);
+void loadFavoriteParameter(QDomElement &rDomElement, GUIContainerObject* pSystem);
+
+
 
 void loadTextWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoStatus undoSettings=UNDO);
 void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoStatus undoSettings=UNDO);
