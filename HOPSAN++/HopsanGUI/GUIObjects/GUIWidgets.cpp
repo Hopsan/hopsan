@@ -28,6 +28,8 @@ using namespace std;
 GUIWidget::GUIWidget(QPoint pos, qreal rot, selectionStatus startSelected, GUIContainerObject *pSystem, QGraphicsItem *pParent)
     : GUIObject(pos, rot, startSelected, pSystem, pParent)
 {
+    setFlag(QGraphicsItem::ItemIsMovable, true);
+    setFlag(QGraphicsItem::ItemIsSelectable, true);
     pSystem->getContainedScenePtr()->addItem(this);
     this->setPos(pos);
     mIsResizing = false;        //Only used for resizable widgets
@@ -67,24 +69,22 @@ void GUIWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     {
         if(((*it)->mOldPos != (*it)->pos()) && (event->button() == Qt::LeftButton) && !(*it)->mIsResizing)
         {
-            //emit objectMoved();
                 //This check makes sure that only one undo post is created when moving several objects at once
             if(!alreadyClearedRedo)
             {
                 if(mpParentContainerObject->mSelectedGUIWidgetsList.size() > 1)
                 {
-                    //mpParentContainerObject->mUndoStack->newPost("movedmultiplewidgets");
+                    mpParentContainerObject->mUndoStack->newPost("movedmultiplewidgets");
                 }
                 else
                 {
-                    //mpParentContainerObject->mUndoStack->newPost();
+                    mpParentContainerObject->mUndoStack->newPost();
                 }
                 mpParentContainerObject->mpParentProjectTab->hasChanged();
                 alreadyClearedRedo = true;
             }
 
-            qDebug() << "About to register; oldPos = " << (*it)->mOldPos << ", newPos = " << (*it)->pos();
-            //mpParentContainerObject->mUndoStack->registerMovedWidget((*it)->mOldPos, (*it)->pos(), (*it)->getName());
+            mpParentContainerObject->mUndoStack->registerMovedWidget((*it), (*it)->mOldPos, (*it)->pos());
         }
         (*it)->mIsResizing = false;
     }
@@ -111,6 +111,8 @@ GUITextWidget::GUITextWidget(QString text, QPoint pos, qreal rot, selectionStatu
     mpTextItem->setFont(tempFont);
     mpTextItem->setPos(this->boundingRect().center());
     mpTextItem->show();
+
+    this->setTextColor(QColor("darkolivegreen"));
 
     this->resize(mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
     mpSelectionBox->setSize(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
@@ -299,7 +301,7 @@ GUIBoxWidget::GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected,
 
     mpRectItem = new QGraphicsRectItem(0, 0, 100, 100, this);
     QPen tempPen = mpRectItem->pen();
-    tempPen.setColor(QColor("brown"));
+    tempPen.setColor(QColor("darkolivegreen"));
     tempPen.setWidth(2);
     tempPen.setStyle(Qt::SolidLine);//Qt::DotLine);
     tempPen.setCapStyle(Qt::RoundCap);
@@ -308,7 +310,7 @@ GUIBoxWidget::GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected,
     mpRectItem->setPos(mpRectItem->pen().width()/2.0, mpRectItem->pen().width()/2.0);
     mpRectItem->show();
 
-    this->setFlags(QGraphicsItem::ItemAcceptsInputMethod);
+    this->setFlag(QGraphicsItem::ItemAcceptsInputMethod, true);
 
     this->resize(mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
 

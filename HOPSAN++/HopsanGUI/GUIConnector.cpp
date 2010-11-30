@@ -839,7 +839,7 @@ void GUIConnector::setPassive()
         }
     }
 
-    this->setZValue(0);
+    this->setZValue(1);
 }
 
 
@@ -1009,7 +1009,7 @@ void GUIConnectorLine::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWi
 void GUIConnectorLine::setActive()
 {
         this->setPen(mpConnectorAppearance->getPen("Active"));
-        this->mpParentGUIConnector->setZValue(0);
+        this->mpParentGUIConnector->setZValue(1);
 }
 
 
@@ -1090,9 +1090,9 @@ void GUIConnectorLine::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     if(!mpParentGUIConnector->mIsActive)
     {
-        mpParentGUIConnector->setZValue(0);
+        mpParentGUIConnector->setZValue(1);
     }
-    this->mpParentGUIConnector->setZValue(0);
+    this->mpParentGUIConnector->setZValue(1);
     emit lineHoverLeave();
 }
 

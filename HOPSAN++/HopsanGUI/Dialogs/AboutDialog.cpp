@@ -116,8 +116,6 @@ AboutDialog::AboutDialog(MainWindow *parent)
     pButtonBox->setCenterButtons(true);
 
     connect(pOkButton, SIGNAL(pressed()), this, SLOT(close()));
-    connect(pOkButton, SIGNAL(pressed()), gpMainWindow, SLOT(unBlurMe()));
-
 
     QGridLayout *pLayout = new QGridLayout;
     pLayout->setSizeConstraint(QLayout::SetFixedSize);

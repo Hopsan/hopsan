@@ -372,7 +372,6 @@ void MainWindow::createActions()
     aboutAction = new QAction(this);
     aboutAction->setText("About");
     connect(aboutAction, SIGNAL(triggered()), mpAboutDialog, SLOT(open()));
-    connect(aboutAction, SIGNAL(triggered()), this, SLOT(blurMe()));
     connect(mpAboutDialog->timer, SIGNAL(timeout()), mpAboutDialog, SLOT(update()));
 
     QIcon hidePortsIcon;

@@ -47,6 +47,7 @@ public:
     void registerDeletedBoxWidget(GUIBoxWidget *item);
     void registerAddedTextWidget(GUITextWidget *item);
     void registerDeletedTextWidget(GUITextWidget *item);
+    void registerMovedWidget(GUIWidget *item, QPointF oldPos, QPointF newPos);
     void clear(QString errorMsg = "");
     void newPost(QString type = "");
     void insertPost(QString str);
