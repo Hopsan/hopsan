@@ -249,9 +249,9 @@ namespace hopsan {
         void stop();
 
         //void setSystemParameter(std::string systemParameterKey, double value);
-        std::map<std::string, double> getSystemParametersMap();
-        void mapParameterValuePointerToSystemParameter(std::string systemParameterKey, double *pValue);
-        void unmapParameterValuePointerToSystemParameter(double *pValue);
+        //std::map<std::string, double> getSystemParametersMap();
+        //void mapParameterValuePointerToSystemParameter(std::string systemParameterKey, double *pValue);
+        //void unmapParameterValuePointerToSystemParameter(double *pValue);
 
         //System parameters
         SystemParameters &getSystemParameters();

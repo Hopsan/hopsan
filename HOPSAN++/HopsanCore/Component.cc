@@ -585,7 +585,7 @@ void Component::setParameterValue(const string parameterName, const string syste
             tempMap = mpSystemParent->getSystemParameters().getSystemParameterMap();
             if(tempMap.find(systemParameterKey) != tempMap.end())
             {
-                mParameters.at(i).setValue(mpSystemParent->getSystemParametersMap().find(systemParameterKey)->second);
+                mParameters.at(i).setValue(mpSystemParent->getSystemParameters().getSystemParameterMap().find(systemParameterKey)->second);
                 mpSystemParent->getSystemParameters().mapParameter(systemParameterKey, mParameters.at(i).mpValue);
                 notfound = false;
             }
