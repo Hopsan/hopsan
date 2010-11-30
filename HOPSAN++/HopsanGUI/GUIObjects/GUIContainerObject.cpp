@@ -563,7 +563,6 @@ void GUIContainerObject::cutSelected(CopyStack *xmlStack)
 //! @see paste()
 void GUIContainerObject::copySelected(CopyStack *xmlStack)
 {
-    //mUndoStack->newPost();
     gCopyStack.clear();
 
     QDomElement *copyRoot;
@@ -577,7 +576,7 @@ void GUIContainerObject::copySelected(CopyStack *xmlStack)
     }
 
         //Copy components
-    QList<GUIObject *>::iterator it;
+    QList<GUIModelObject *>::iterator it;
     for(it = mSelectedGUIObjectsList.begin(); it!=mSelectedGUIObjectsList.end(); ++it)
     {
         (*it)->saveToDomElement(*copyRoot);
@@ -599,7 +598,7 @@ void GUIContainerObject::copySelected(CopyStack *xmlStack)
 void GUIContainerObject::paste(CopyStack *xmlStack)
 {
 
-    //gpMainWindow->mpMessageWidget->printGUIDebugMessage(gCopyStack.getXML());
+    gpMainWindow->mpMessageWidget->printGUIDebugMessage(gCopyStack.getXML());
 
     mUndoStack->newPost("paste");
     mpParentProjectTab->hasChanged();
@@ -624,7 +623,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
     QDomElement objectElement = copyRoot->firstChildElement("component");
     while(!objectElement.isNull())
     {
-        GUIObject *pObj = loadGUIModelObject(objectElement, gpMainWindow->mpLibrary, this);
+        GUIModelObject *pObj = loadGUIModelObject(objectElement, gpMainWindow->mpLibrary, this);
 
             //Apply offset to pasted object
         QPointF oldPos = pObj->pos();

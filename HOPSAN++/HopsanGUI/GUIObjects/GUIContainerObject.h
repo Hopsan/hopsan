@@ -72,7 +72,7 @@ public:
     GUIModelObjectMapT mGUIModelObjectMap;
     QList<GUITextWidget *> mTextWidgetList;
     QList<GUIBoxWidget *> mBoxWidgetList;
-    QList<GUIObject *> mSelectedGUIObjectsList;
+    QList<GUIModelObject *> mSelectedGUIObjectsList;
     QList<GUIWidget *> mSelectedGUIWidgetsList;
 
     bool mPortsHidden;

@@ -507,7 +507,7 @@ void GUIModelObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 //! @brief Defines what happens if a mouse key is released while hovering an object
 void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    QList<GUIObject *>::iterator it;
+    QList<GUIModelObject *>::iterator it;
 
         //Loop through all selected objects and register changed positions in undo stack
     bool alreadyClearedRedo = false;
