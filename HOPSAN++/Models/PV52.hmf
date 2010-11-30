@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2361" y="2500" zoom="1"/>
+            <viewport x="2500" y="2500" zoom="1"/>
             <hopsanobjectappearance>
                 <modelobject typename="Subsystem" displayname="PV52">
                     <icon isopath="../../graphics/objecticons/subsystemtmp.svg" iconrotation="" userpath=""/>
@@ -207,6 +207,19 @@
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
+            <textwidget>
+                <hopsangui>
+                    <pose x="2621" y="2523"/>
+                    <textobject fontcolor="#556b2f" text="Text" font="MS Shell Dlg 2,12,-1,5,50,0,0,0,0,0"/>
+                </hopsangui>
+            </textwidget>
+            <boxwidget>
+                <hopsangui>
+                    <pose x="2588" y="2372"/>
+                    <size width="100" height="100"/>
+                    <line width="2" style="solidline" color="#556b2f"/>
+                </hopsangui>
+            </boxwidget>
         </objects>
         <connections>
             <connect endport="P2" endcomponent="Hydraulic Volume" startport="PA" startcomponent="4/3 Servo Valve">

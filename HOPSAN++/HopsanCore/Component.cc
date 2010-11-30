@@ -576,7 +576,7 @@ void Component::setParameterValue(const string parameterName, const string syste
         if (parameterName == mParameters[i].getName())
         {
             std::map<std::string, double> tempMap;
-            tempMap = mpSystemParent->getSystemParametersMap();
+            tempMap = mpSystemParent->getSystemParameters().getSystemParameterMap();
             if(tempMap.find(systemParameterKey) != tempMap.end())
             {
                 mParameters.at(i).setValue(mpSystemParent->getSystemParametersMap().find(systemParameterKey)->second);
@@ -985,22 +985,6 @@ void ComponentSystem::setSystemParameter(std::string systemParameterKey, double 
         double *pValue = it->second;
         std::string key = it->first;
         *pValue = mSystemParameters.find(key)->second;
-    }
-}
-
-
-//! @brief Removes a system parameter
-//! @param systemParameterKey Key name of the system parameter to remove
-void ComponentSystem::unsetSystemParameter(std::string systemParameterKey)
-{
-    std::map<std::string, double>::iterator it;
-    for(it = mSystemParameters.begin(); it != mSystemParameters.end(); ++it)
-    {
-        if((*it).first == systemParameterKey)
-        {
-            mSystemParameters.erase(it);
-            break;
-        }
     }
 }
 

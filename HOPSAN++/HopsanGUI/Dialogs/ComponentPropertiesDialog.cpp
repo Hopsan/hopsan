@@ -226,6 +226,7 @@ void ComponentPropertiesDialog::setParameters()
                     addedUndoPost = true;
                 }
                 this->mpGUIComponent->mpParentContainerObject->mUndoStack->registerChangedParameter(mpGUIComponent->getName(), mvParameterLayout[i]->getDataName(), mpGUIComponent->getParameterValue(mvParameterLayout[i]->getDataName()), newValue);
+                mpGUIComponent->mpParentContainerObject->mpParentProjectTab->hasChanged();
             }
             mpGUIComponent->setParameterValue(mvParameterLayout[i]->getDataName(), newValue);
         }

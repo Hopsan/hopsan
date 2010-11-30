@@ -504,20 +504,20 @@ void CoreSystemAccess::setSystemParameter(QString name, double value)
 {
     mpCoreComponentSystem->getSystemParameters().add(name.toStdString(), value);
 
-    mpCoreComponentSystem->setSystemParameter(name.toStdString(), value);
+    mpCoreComponentSystem->setSystemParameter(name.toStdString(), value);   //! DELETEHERE
 }
 
 
 double CoreSystemAccess::getSystemParameter(QString name)
 {
 //    return mpCoreComponentSystem->getSystemParameters().getValue(name.toStdString());
-    return mpCoreComponentSystem->getSystemParametersMap().find(name.toStdString())->second;
+    return mpCoreComponentSystem->getSystemParameters().getValue(name.toStdString())->second;
 }
 
 
 bool CoreSystemAccess::hasSystemParameter(QString name)
 {
-    std::map<std::string, double> tempMap = mpCoreComponentSystem->getSystemParametersMap();
+    std::map<std::string, double> tempMap = mpCoreComponentSystem->getSystemParameters().getSystemParameterMap();
     return (tempMap.find(name.toStdString()) != tempMap.end());
 }
 
