@@ -553,7 +553,7 @@ void Component::setParameterValue(const string name, const double value)
         if (name == mParameters[i].getName())
         {
             mParameters[i].setValue(value);
-            mpSystemParent->unmapParameterValuePointerToSystemParameter(mParameters.at(i).mpValue);
+            mpSystemParent->getSystemParameters().unMapParameter(mParameters.at(i).mpValue);
             notset = false;
         }
     }
@@ -580,7 +580,7 @@ void Component::setParameterValue(const string parameterName, const string syste
             if(tempMap.find(systemParameterKey) != tempMap.end())
             {
                 mParameters.at(i).setValue(mpSystemParent->getSystemParametersMap().find(systemParameterKey)->second);
-                mpSystemParent->mapParameterValuePointerToSystemParameter(systemParameterKey, mParameters.at(i).mpValue);
+                mpSystemParent->getSystemParameters().mapParameter(systemParameterKey, mParameters.at(i).mpValue);
                 notfound = false;
             }
             notset = false;
@@ -964,63 +964,63 @@ void ComponentSystem::stop()
 }
 
 
-//! @brief Defines a new system parameter
-//! @param systemParameterKey Key name of the system parameter
-//! @param value Initial value of the system parameter
-void ComponentSystem::setSystemParameter(std::string systemParameterKey, double value)
-{
-    if(mSystemParameters.find(systemParameterKey) == mSystemParameters.end())
-    {
-        mSystemParameters.insert(make_pair(systemParameterKey, value));
-    }
-    else
-    {
-        mSystemParameters.erase(systemParameterKey);
-        mSystemParameters.insert(make_pair(systemParameterKey, value));
-    }
+////! @brief Defines a new system parameter
+////! @param systemParameterKey Key name of the system parameter
+////! @param value Initial value of the system parameter
+//void ComponentSystem::setSystemParameter(std::string systemParameterKey, double value)
+//{
+//    if(mSystemParameters.find(systemParameterKey) == mSystemParameters.end())
+//    {
+//        mSystemParameters.insert(make_pair(systemParameterKey, value));
+//    }
+//    else
+//    {
+//        mSystemParameters.erase(systemParameterKey);
+//        mSystemParameters.insert(make_pair(systemParameterKey, value));
+//    }
 
-    std::multimap<std::string, double *>::iterator it;
-    for(it = mSystemParameterPointers.begin(); it != mSystemParameterPointers.end(); ++it)
-    {
-        double *pValue = it->second;
-        std::string key = it->first;
-        *pValue = mSystemParameters.find(key)->second;
-    }
-}
-
-
-//! @brief Returns a copy of the system parameter map
-std::map<std::string, double> ComponentSystem::getSystemParametersMap()
-{
-    return mSystemParameters;
-}
+//    std::multimap<std::string, double *>::iterator it;
+//    for(it = mSystemParameterPointers.begin(); it != mSystemParameterPointers.end(); ++it)
+//    {
+//        double *pValue = it->second;
+//        std::string key = it->first;
+//        *pValue = mSystemParameters.find(key)->second;
+//    }
+//}
 
 
-//! @brief Maps a pointer to a parameter value to a system parameter
-//! @param systemParameterKey Key name of the system parameter
-//! @param pValue Pointer to the parameter value that shall be mapped
-//! @see unmapParameterValuePointerToSystemParameter()
-void ComponentSystem::mapParameterValuePointerToSystemParameter(std::string systemParameterKey, double *pValue)
-{
-    mSystemParameterPointers.insert(std::pair<std::string, double *>(systemParameterKey, pValue));
-}
+////! @brief Returns a copy of the system parameter map
+//std::map<std::string, double> ComponentSystem::getSystemParametersMap()
+//{
+//    return mSystemParameters;
+//}
 
 
-//! @brief Unmaps a pointer to a parameter value to a system parameter
-//! @param pValue Pointer to the parameter value that shall be unmapped
-//! @see mapParameterValuePointerToSystemParameter()
-void ComponentSystem::unmapParameterValuePointerToSystemParameter(double *pValue)
-{
-    std::multimap<std::string, double *>::iterator it;
-    for(it = mSystemParameterPointers.begin(); it != mSystemParameterPointers.end(); ++it)
-    {
-        if(it->second == pValue)
-        {
-            mSystemParameterPointers.erase(it);
-            break;
-        }
-    }
-}
+////! @brief Maps a pointer to a parameter value to a system parameter
+////! @param systemParameterKey Key name of the system parameter
+////! @param pValue Pointer to the parameter value that shall be mapped
+////! @see unmapParameterValuePointerToSystemParameter()
+//void ComponentSystem::mapParameterValuePointerToSystemParameter(std::string systemParameterKey, double *pValue)
+//{
+//    mSystemParameterPointers.insert(std::pair<std::string, double *>(systemParameterKey, pValue));
+//}
+
+
+////! @brief Unmaps a pointer to a parameter value to a system parameter
+////! @param pValue Pointer to the parameter value that shall be unmapped
+////! @see mapParameterValuePointerToSystemParameter()
+//void ComponentSystem::unmapParameterValuePointerToSystemParameter(double *pValue)
+//{
+//    std::multimap<std::string, double *>::iterator it;
+//    for(it = mSystemParameterPointers.begin(); it != mSystemParameterPointers.end(); ++it)
+//    {
+//        if(it->second == pValue)
+//        {
+//            mSystemParameterPointers.erase(it);
+//            break;
+//        }
+//    }
+//}
 
 
 SystemParameters &ComponentSystem::getSystemParameters()
