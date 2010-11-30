@@ -56,6 +56,43 @@ void GUIWidget::deleteMe(undoStatus undoSettings)
 }
 
 
+void GUIWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    QList<GUIWidget *>::iterator it;
+
+        //Loop through all selected widgets and register changed positions in undo stack
+    bool alreadyClearedRedo = false;
+    for(it = mpParentContainerObject->mSelectedGUIWidgetsList.begin(); it != mpParentContainerObject->mSelectedGUIWidgetsList.end(); ++it)
+    {
+        if(((*it)->mOldPos != (*it)->pos()) && (event->button() == Qt::LeftButton))
+        {
+            //emit objectMoved();
+                //This check makes sure that only one undo post is created when moving several objects at once
+            if(!alreadyClearedRedo)
+            {
+                if(mpParentContainerObject->mSelectedGUIWidgetsList.size() > 1)
+                {
+                    //mpParentContainerObject->mUndoStack->newPost("movedmultiplewidgets");
+                }
+                else
+                {
+                    //mpParentContainerObject->mUndoStack->newPost();
+                }
+                mpParentContainerObject->mpParentProjectTab->hasChanged();
+                alreadyClearedRedo = true;
+            }
+
+            qDebug() << "About to register; oldPos = " << (*it)->mOldPos << ", newPos = " << (*it)->pos();
+            //mpParentContainerObject->mUndoStack->registerMovedWidget((*it)->mOldPos, (*it)->pos(), (*it)->getName());
+        }
+    }
+
+    GUIObject::mouseReleaseEvent(event);
+}
+
+
+
+
 //! @brief Constructor for text widget class
 //! @param text Initial text in the widget
 //! @param pos Position of text widget
@@ -134,8 +171,14 @@ void GUITextWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 //! @brief Slot that removes text widget from all lists and then deletes it
 void GUITextWidget::deleteMe(undoStatus undoSettings)
 {
+    if(undoSettings == UNDO)
+    {
+        mpParentContainerObject->mUndoStack->newPost();
+        mpParentContainerObject->mUndoStack->registerDeletedTextWidget(this);
+    }
     mpParentContainerObject->mTextWidgetList.removeAll(this);
-    mpParentContainerObject->mSelectedGUIObjectsList.removeAll(this);
+    mpParentContainerObject->mSelectedGUIWidgetsList.removeAll(this);
+    mpParentContainerObject->mWidgetMap.remove(this->mWidgetIndex);
     delete(this);
 }
 
@@ -288,7 +331,7 @@ void GUIBoxWidget::deleteMe(undoStatus undoSettings)
         mpParentContainerObject->mUndoStack->registerDeletedBoxWidget(this);
     }
     mpParentContainerObject->mBoxWidgetList.removeAll(this);
-    mpParentContainerObject->mSelectedGUIObjectsList.removeAll(this);
+    mpParentContainerObject->mSelectedGUIWidgetsList.removeAll(this);
     mpParentContainerObject->mWidgetMap.remove(this->mWidgetIndex);
     delete(this);
 }
@@ -460,14 +503,14 @@ void GUIBoxWidget::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 //! @brief Defines what happens when clicking on the box (defines start position for resizing)
 void GUIBoxWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    GUIObject::mousePressEvent(event);
-
     if(mResizeLeft || mResizeRight || mResizeTop || mResizeBottom)
     {
         mPosBeforeResize = this->pos();
         mWidthBeforeResize = this->mpRectItem->rect().width();
         mHeightBeforeResize = this->mpRectItem->rect().height();
     }
+
+    GUIObject::mousePressEvent(event);
 }
 
 

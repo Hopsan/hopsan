@@ -27,7 +27,7 @@ public:
     virtual CoreSystemAccess *getCoreSystemAccessPtr();
 
     //Handle GuiModelObjects and GuiWidgets
-    void addTextWidget(QPoint position);
+    void addTextWidget(QPoint position, undoStatus undoSettings=UNDO);
     void addBoxWidget(QPoint position, undoStatus undoSettings=UNDO);
     GUIModelObject *addGUIModelObject(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = NAMEVISIBLE, undoStatus undoSettings = UNDO);
     GUIModelObject *getGUIModelObject(QString name);

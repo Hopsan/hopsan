@@ -533,7 +533,7 @@ void loadTextWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoS
     TextWidgetLoadData data;
     data.readDomElement(rDomElement);
 
-    pSystem->addTextWidget(data.point);
+    pSystem->addTextWidget(data.point, undoSettings);
     pSystem->mTextWidgetList.last()->setText(data.text);
     qDebug() << "Font = " << data.font.toString();
     pSystem->mTextWidgetList.last()->setTextFont(data.font);

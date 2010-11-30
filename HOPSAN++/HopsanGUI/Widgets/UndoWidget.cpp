@@ -187,6 +187,10 @@ QString UndoWidget::translateTag(QString tag)
     tagMap.insert("changedparameters",      "Changed Parameter(s)");
     tagMap.insert("hideallnames",           "Hide All Name Text");
     tagMap.insert("showallnames",           "Show All Name Text");
+    tagMap.insert("addedboxwidget",         "Added Box Widget");
+    tagMap.insert("deletedboxwidget",       "Deleted Box Widget");
+    tagMap.insert("addedtextwidget",        "Added Text Widget");
+    tagMap.insert("deletedtextwidget",      "Deleted Text Widget");
 
     if(tagMap.contains(tag))
         return tagMap.find(tag).value();

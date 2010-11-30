@@ -258,7 +258,22 @@ void UndoStack::undoOneStep()
         {
              QDomElement boxElement = stuffElement.firstChildElement(HMF_BOXWIDGETTAG);
              loadBoxWidget(boxElement, mpParentContainerObject, NOUNDO);
-             stuffElement.setAttribute("index", mpParentContainerObject->mHighestWidgetIndex-1);
+             mpParentContainerObject->mWidgetMap.insert(stuffElement.attribute("index").toInt(), mpParentContainerObject->mWidgetMap.find(mpParentContainerObject->mHighestWidgetIndex-1).value());
+             mpParentContainerObject->mWidgetMap.remove(mpParentContainerObject->mHighestWidgetIndex-1);
+             mpParentContainerObject->mHighestWidgetIndex -= 1;
+        }
+        else if(stuffElement.attribute("what") == "addedtextwidget")
+        {
+             size_t index = stuffElement.attribute("index").toInt();
+             mpParentContainerObject->mWidgetMap.find(index).value()->deleteMe(NOUNDO);
+        }
+        else if(stuffElement.attribute("what") == "deletedtextwidget")
+        {
+             QDomElement textElement = stuffElement.firstChildElement(HMF_TEXTWIDGETTAG);
+             loadTextWidget(textElement, mpParentContainerObject, NOUNDO);
+             mpParentContainerObject->mWidgetMap.insert(stuffElement.attribute("index").toInt(), mpParentContainerObject->mWidgetMap.find(mpParentContainerObject->mHighestWidgetIndex-1).value());
+             mpParentContainerObject->mWidgetMap.remove(mpParentContainerObject->mHighestWidgetIndex-1);
+             mpParentContainerObject->mHighestWidgetIndex -= 1;
         }
         stuffElement = stuffElement.nextSiblingElement("stuff");
     }
@@ -467,16 +482,31 @@ void UndoStack::redoOneStep()
         }
         else if(stuffElement.attribute("what") == "addedboxwidget")
         {
-            //size_t index = stuffElement.attribute("index").toInt();
             QDomElement boxElement = stuffElement.firstChildElement(HMF_BOXWIDGETTAG);
             loadBoxWidget(boxElement, mpParentContainerObject, NOUNDO);
-            stuffElement.setAttribute("index", mpParentContainerObject->mHighestWidgetIndex-1);
+            mpParentContainerObject->mWidgetMap.insert(stuffElement.attribute("index").toInt(), mpParentContainerObject->mWidgetMap.find(mpParentContainerObject->mHighestWidgetIndex-1).value());
+            mpParentContainerObject->mWidgetMap.remove(mpParentContainerObject->mHighestWidgetIndex-1);
+            mpParentContainerObject->mHighestWidgetIndex -= 1;
         }
         else if(stuffElement.attribute("what") == "deletedboxwidget")
         {
              size_t index = stuffElement.attribute("index").toInt();
              mpParentContainerObject->mWidgetMap.find(index).value()->deleteMe(NOUNDO);
         }
+        else if(stuffElement.attribute("what") == "addedtextwidget")
+        {
+            QDomElement textElement = stuffElement.firstChildElement(HMF_TEXTWIDGETTAG);
+            loadTextWidget(textElement, mpParentContainerObject, NOUNDO);
+            mpParentContainerObject->mWidgetMap.insert(stuffElement.attribute("index").toInt(), mpParentContainerObject->mWidgetMap.find(mpParentContainerObject->mHighestWidgetIndex-1).value());
+            mpParentContainerObject->mWidgetMap.remove(mpParentContainerObject->mHighestWidgetIndex-1);
+            mpParentContainerObject->mHighestWidgetIndex -= 1;
+        }
+        else if(stuffElement.attribute("what") == "deletedtextwidget")
+        {
+             size_t index = stuffElement.attribute("index").toInt();
+             mpParentContainerObject->mWidgetMap.find(index).value()->deleteMe(NOUNDO);
+        }
+
         stuffElement = stuffElement.nextSiblingElement("stuff");
     }
 
@@ -718,7 +748,29 @@ void UndoStack::registerDeletedBoxWidget(GUIBoxWidget *item)
 {
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
-    stuffElement.setAttribute("what", "addedboxwidget");
+    stuffElement.setAttribute("what", "deletedboxwidget");
+    stuffElement.setAttribute("index", item->mWidgetIndex);
+    item->saveToDomElement(stuffElement);
+    gpMainWindow->mpUndoWidget->refreshList();
+}
+
+
+void UndoStack::registerAddedTextWidget(GUITextWidget *item)
+{
+    QDomElement currentPostElement = getCurrentPost();
+    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+    stuffElement.setAttribute("what", "addedtextwidget");
+    stuffElement.setAttribute("index", item->mWidgetIndex);
+    item->saveToDomElement(stuffElement);
+    gpMainWindow->mpUndoWidget->refreshList();
+}
+
+
+void UndoStack::registerDeletedTextWidget(GUITextWidget *item)
+{
+    QDomElement currentPostElement = getCurrentPost();
+    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+    stuffElement.setAttribute("what", "deletedtextwidget");
     stuffElement.setAttribute("index", item->mWidgetIndex);
     item->saveToDomElement(stuffElement);
     gpMainWindow->mpUndoWidget->refreshList();

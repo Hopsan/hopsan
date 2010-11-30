@@ -215,19 +215,23 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* 
 
 
 
-void GUIContainerObject::addTextWidget(QPoint position)
+void GUIContainerObject::addTextWidget(QPoint position, undoStatus undoSettings)
 {
     GUITextWidget *tempTextWidget;
     tempTextWidget = new GUITextWidget("Text", position, 0, DESELECTED, this, mHighestWidgetIndex);
     mTextWidgetList.append(tempTextWidget);
     mWidgetMap.insert(mHighestWidgetIndex, tempTextWidget);
     ++mHighestWidgetIndex;
+    if(undoSettings == UNDO)
+    {
+        mUndoStack->newPost();
+        mUndoStack->registerAddedTextWidget(tempTextWidget);
+    }
 }
 
 
 void GUIContainerObject::addBoxWidget(QPoint position, undoStatus undoSettings)
 {
-    qDebug() << "Adding box widget, index = " << mHighestWidgetIndex;
     GUIBoxWidget *tempBoxWidget;
     tempBoxWidget = new GUIBoxWidget(position, 0, DESELECTED, this, mHighestWidgetIndex);
     mBoxWidgetList.append(tempBoxWidget);

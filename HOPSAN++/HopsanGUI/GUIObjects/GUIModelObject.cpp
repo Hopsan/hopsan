@@ -603,10 +603,14 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
         if(this->isSelected())
         {
             mpParentContainerObject->mSelectedGUIObjectsList.append(this);
+            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
+            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
         }
         else
         {
             mpParentContainerObject->mSelectedGUIObjectsList.removeAll(this);
+            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
+            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
         }
     }
 

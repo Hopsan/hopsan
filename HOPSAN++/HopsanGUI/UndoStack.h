@@ -23,6 +23,7 @@ class MainWindow;
 class GUIContainerObject;
 class GUIWidget;
 class GUIBoxWidget;
+class GUITextWidget;
 
 class UndoStack : public QObject
 {
@@ -44,6 +45,8 @@ public:
     void registerNameVisibilityChange(QString objectName, bool isVisible);
     void registerAddedBoxWidget(GUIBoxWidget *item);
     void registerDeletedBoxWidget(GUIBoxWidget *item);
+    void registerAddedTextWidget(GUITextWidget *item);
+    void registerDeletedTextWidget(GUITextWidget *item);
     void clear(QString errorMsg = "");
     void newPost(QString type = "");
     void insertPost(QString str);
