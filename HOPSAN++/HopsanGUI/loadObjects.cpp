@@ -268,7 +268,7 @@ void StartValueLoadData::readDomElement(QDomElement &rDomElement)
 {
     portName = rDomElement.attribute("portname");
     variable = rDomElement.attribute("variable");
-    startValue = rDomElement.attribute("value").toDouble();
+    startValue = rDomElement.attribute("value");
 }
 
 
@@ -428,7 +428,16 @@ void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoS
 //! @brief xml version
 void loadStartValue(const StartValueLoadData &rData, GUIModelObject* pObject, undoStatus undoSettings)
 {
-    pObject->setStartValue(rData.portName, rData.variable, rData.startValue);
+    bool isDbl;
+    double value = rData.startValue.toDouble(&isDbl);
+    if(isDbl)
+    {
+        pObject->setStartValue(rData.portName, rData.variable, value);
+    }
+    else
+    {
+        pObject->setStartValue(rData.portName, rData.variable, rData.startValue);
+    }
 }
 
 //! @brief xml version

@@ -286,10 +286,54 @@ void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vec
 }
 
 
+void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vector<std::string> &rValuesTxt, std::vector<std::string> &rUnits)
+{
+    if(mpStartNode)
+    {
+        std::vector<double> values;
+        mpStartNode->getDataNamesValuesAndUnits(rNames, values, rUnits);
+        rValuesTxt.resize(values.size());
+        for(size_t i = 0; i < rNames.size(); ++i)
+        {
+            std::string valueTxt = mpComponent->getSystemParent()->getSystemParameters().findOccurrence(mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(rNames[i])));
+            if(!(valueTxt.empty()))
+            {
+                rValuesTxt[i] = valueTxt;
+            }
+            else
+            {
+                std::ostringstream oss;
+                oss << values[i];
+                rValuesTxt[i] = oss.str();
+            }
+        }
+    }
+}
+
+
 void Port::setStartValueDataByNames(vector<string> names, std::vector<double> values)
 {
     if(mpStartNode)
         mpStartNode->setDataValuesByNames(names, values);
+}
+
+
+void Port::setStartValueDataByNames(vector<std::string> names, std::vector<std::string> sysParNames)
+{
+    if(mpStartNode)
+    {
+        std::vector<double> values;
+        values.resize(sysParNames.size());
+        for(size_t i = 0; i < sysParNames.size(); ++i)
+        {
+            if(!(mpComponent->getSystemParent()->getSystemParameters().getValue(sysParNames[i], values[i])))
+            {
+                assert(false);
+            }
+            mpComponent->getSystemParent()->getSystemParameters().mapParameter(sysParNames[i], mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(names[i])));
+        }
+        mpStartNode->setDataValuesByNames(names, values);
+    }
 }
 
 

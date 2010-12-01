@@ -92,13 +92,15 @@ void ComponentPropertiesDialog::createEditStuff()
     double j=0;
     QVector<QVector<QString> > startDataNamesStr, startDataUnitsStr;
     QVector<QVector<double> > startDataValuesDbl;
+    QVector<QVector<QString> > startDataValuesTxt;
     startDataNamesStr.resize(ports.size());
     startDataValuesDbl.resize(ports.size());
+    startDataValuesTxt.resize(ports.size());
     startDataUnitsStr.resize(ports.size());
     mvStartValueLayout.resize(ports.size());
     for ( portIt=ports.begin(); portIt!=ports.end(); ++portIt )
     {
-        (*portIt)->getStartValueDataNamesValuesAndUnits(startDataNamesStr[j], startDataValuesDbl[j], startDataUnitsStr[j]);
+        (*portIt)->getStartValueDataNamesValuesAndUnits(startDataNamesStr[j], startDataValuesTxt[j], startDataUnitsStr[j]);
         if(!(startDataNamesStr[j].isEmpty()))
         {
             QString portName("Port, ");
@@ -113,7 +115,7 @@ void ComponentPropertiesDialog::createEditStuff()
             {
                 mvStartValueLayout[j][i]= new ParameterLayout("",
                                                               startDataNamesStr[j][i],
-                                                              startDataValuesDbl[j][i],
+                                                              startDataValuesTxt[j][i],
                                                               startDataUnitsStr[j][i],
                                                               mpGUIComponent);
                 startValueLayout->addLayout(mvStartValueLayout[j][i], sr, 0);
@@ -236,17 +238,46 @@ void ComponentPropertiesDialog::setStartValues()
     size_t j=0;
     for ( portIt=ports.begin(); portIt!=ports.end(); ++portIt )
     {
-        startDataNamesStr.resize(mvStartValueLayout[j].size());
-        startDataValuesDbl.resize(mvStartValueLayout[j].size());
-        startDataUnitsStr.resize(mvStartValueLayout[j].size());
+        startDataNamesStr.clear();
+        startDataValuesDbl.clear();
+        startDataUnitsStr.clear();
         for(int i=0; i < mvStartValueLayout[j].size(); ++i)
         {
-            startDataNamesStr[i] = mvStartValueLayout[j][i]->getDescriptionName();
-            startDataValuesDbl[i] = mvStartValueLayout[j][i]->getDataValue();
+            bool ok;
+            mvStartValueLayout[j][i]->getDataValueTxt().toDouble(&ok);
+            if(ok)
+            {
+                startDataNamesStr.append(mvStartValueLayout[j][i]->getDescriptionName());
+                startDataValuesDbl.append(mvStartValueLayout[j][i]->getDataValue());
+            }
         }
         (*portIt)->setStartValueDataByNames(startDataNamesStr, startDataValuesDbl);
         ++j;
     }
+
+    QVector<QString> startDataValuesTxt;
+    j=0;
+    for ( portIt=ports.begin(); portIt!=ports.end(); ++portIt )
+    {
+        startDataNamesStr.clear();
+        startDataValuesDbl.clear();
+        startDataUnitsStr.clear();
+        startDataValuesTxt.clear();
+        for(int i=0; i < mvStartValueLayout[j].size(); ++i)
+        {
+            QString dataValueTxt = mvStartValueLayout[j][i]->getDataValueTxt();
+            bool isDbl;
+            dataValueTxt.toDouble(&isDbl);
+            if(!isDbl)
+            {
+                startDataNamesStr.append(mvStartValueLayout[j][i]->getDescriptionName());
+                startDataValuesTxt.append(mvStartValueLayout[j][i]->getDataValueTxt());
+            }
+        }
+        (*portIt)->setStartValueDataByNames(startDataNamesStr, startDataValuesTxt);
+        ++j;
+    }
+
     std::cout << "Start values updated." << std::endl;
     this->close();
 }

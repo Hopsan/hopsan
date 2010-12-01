@@ -46,7 +46,9 @@ public:
     QString getNodeType();
 
     void getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<double> &rValues, QVector<QString> &rUnits);
+    void getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<QString> &rValuesTxt, QVector<QString> &rUnits);
     void setStartValueDataByNames(QVector<QString> names, QVector<double> values);
+    void setStartValueDataByNames(QVector<QString> names, QVector<QString> valuesTxt);
 
     void setIsConnected(bool isConnected);
     bool isConnected();

@@ -46,7 +46,9 @@ public:
     QString getNodeType(QString componentName, QString portName);
 
     void getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<double> &rStartDataValues, QVector<QString> &rUnits);
+    void getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<QString> &rStartDataValuesTxt, QVector<QString> &rUnits);
     void setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<double> startDataValues);
+    void setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<QString> startDataValues);
 
     QVector<QString> getParameterNames(QString componentName);
     QString getParameterUnit(QString componentName, QString parameterName);

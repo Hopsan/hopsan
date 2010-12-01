@@ -142,6 +142,16 @@ void GUIComponent::setStartValue(QString portName, QString variable, double star
 }
 
 
+void GUIComponent::setStartValue(QString portName, QString variable, QString sysParName)
+{
+    QVector<QString> vVariable;
+    QVector<QString> vSysParName;
+    vVariable.append(variable);
+    vSysParName.append(sysParName);
+    this->getPort(portName)->setStartValueDataByNames(vVariable, vSysParName);
+}
+
+
 //void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 //{
 //    QMenu menu;
@@ -276,12 +286,12 @@ void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
     //Save start values
     QDomElement xmlStartValues = appendDomElement(rDomElement, HMF_STARTVALUES);
     QVector<QString> startValueNames;
-    QVector<double> startValueValues;
+    QVector<QString> startValueValuesTxt;
     QVector<QString> dummy;
     QList<GUIPort*>::iterator portIt;
     for(portIt = mPortListPtrs.begin(); portIt != mPortListPtrs.end(); ++portIt)
     {
-        mpParentContainerObject->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(this->getName(), (*portIt)->getName(), startValueNames, startValueValues, dummy);
+        mpParentContainerObject->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(this->getName(), (*portIt)->getName(), startValueNames, startValueValuesTxt, dummy);
         if((!startValueNames.empty()))
         {
 //            QDomElement xmlPort = appendDomElement(rDomElement, HMF_PORTTAG);
@@ -294,7 +304,7 @@ void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
 //                appendDomValueNode(xmlStartValue, "value", startValueValues[i]);
                 xmlStartValue.setAttribute("portname", (*portIt)->getName());
                 xmlStartValue.setAttribute("variable", startValueNames[i]);
-                xmlStartValue.setAttribute("value", startValueValues[i]);
+                xmlStartValue.setAttribute("value", startValueValuesTxt[i]);
             }
         }
     }

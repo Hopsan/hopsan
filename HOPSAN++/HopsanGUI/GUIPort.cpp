@@ -481,9 +481,20 @@ void GUIPort::getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVe
 }
 
 
+void GUIPort::getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<QString> &rValuesTxt, QVector<QString> &rUnits)
+{
+    mpParentContainerObject->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(getGuiModelObjectName(), this->getName(), rNames, rValuesTxt, rUnits);
+}
+
+
 void GUIPort::setStartValueDataByNames(QVector<QString> names, QVector<double> values)
 {
     mpParentContainerObject->getCoreSystemAccessPtr()->setStartValueDataByNames(getGuiModelObjectName(), this->getName(), names, values);
+}
+
+void GUIPort::setStartValueDataByNames(QVector<QString> names, QVector<QString> valuesTxt)
+{
+    mpParentContainerObject->getCoreSystemAccessPtr()->setStartValueDataByNames(getGuiModelObjectName(), this->getName(), names, valuesTxt);
 }
 
 portDirection GUIPort::getPortDirection()

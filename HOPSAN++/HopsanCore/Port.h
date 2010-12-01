@@ -47,7 +47,9 @@ namespace hopsan {
         std::vector<std::vector<double> > *getDataVectorPtr();
 
         void getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<double> &rValues, std::vector<std::string> &rUnits);
+        void getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rValuesTxt, std::vector<std::string> &rUnits);
         void setStartValueDataByNames(std::vector<std::string> names, std::vector<double> values);
+        void setStartValueDataByNames(std::vector<std::string> names, std::vector<std::string> sysParNames);
 
         double getStartValue(const size_t idx);
         void setStartValue(const size_t &idx, const double &value);

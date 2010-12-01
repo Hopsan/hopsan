@@ -114,7 +114,7 @@ class StartValueLoadData
 {
 public:
     QString portName, variable;
-    qreal startValue;
+    QString startValue;
 
     void readDomElement(QDomElement &rDomElement);
 };

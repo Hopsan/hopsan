@@ -215,6 +215,27 @@ void CoreSystemAccess::getStartValueDataNamesValuesAndUnits(QString componentNam
 }
 
 
+void CoreSystemAccess::getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<QString> &rValuesTxt, QVector<QString> &rUnits)
+{
+    std::vector<std::string> stdNames, stdUnits;
+    std::vector<std::string> stdValuesTxt;
+    Port *pPort = this->getPortPtr(componentName, portName);
+    if(pPort)
+    {
+        pPort->getStartValueDataNamesValuesAndUnits(stdNames, stdValuesTxt, stdUnits);
+    }
+    rNames.resize(stdNames.size());
+    rValuesTxt.resize(stdValuesTxt.size());
+    rUnits.resize(stdUnits.size());
+    for(size_t i=0; i < stdNames.size(); ++i) //! @todo Make a nicer conversion fron std::vector<std::string> --> QVector<QString>
+    {
+        rNames[i] = QString::fromStdString(stdNames[i]);
+        rValuesTxt[i] = QString::fromStdString(stdValuesTxt[i]);
+        rUnits[i] = QString::fromStdString(stdUnits[i]);
+    }
+}
+
+
 void CoreSystemAccess::setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<double> values)
 {
     std::vector<std::string> stdNames;
@@ -231,6 +252,25 @@ void CoreSystemAccess::setStartValueDataByNames(QString componentName, QString p
     if(pPort)
     {
         pPort->setStartValueDataByNames(stdNames, stdValues);
+    }
+}
+
+
+void CoreSystemAccess::setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<QString> valuesTxt)
+{
+    std::vector<std::string> stdNames, stdValuesTxt;
+    stdNames.resize(names.size());
+    stdValuesTxt.resize(valuesTxt.size());
+    for(int i=0; i < names.size(); ++i) //! @todo Make a nicer conversion fron std::vector<std::string> --> QVector<QString>
+    {
+        stdNames[i] = names[i].toStdString();
+        stdValuesTxt[i] = valuesTxt[i].toStdString();
+    }
+
+    Port *pPort = this->getPortPtr(componentName, portName);
+    if(pPort)
+    {
+        pPort->setStartValueDataByNames(stdNames, stdValuesTxt);
     }
 }
 
