@@ -268,16 +268,6 @@ void ProjectTab::saveAs()
 //! @see loadModel()
 void ProjectTab::saveModel(saveTarget saveAsFlag)
 {
-        //Remove the asterix if tab goes from unsaved to saved
-    if(!mIsSaved)
-    {
-        QString tabName = mpParentProjectTabWidget->tabText(mpParentProjectTabWidget->currentIndex());
-        tabName.chop(1);
-        mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
-        std::cout << "ProjectTabWidget: " << qPrintable(QString("Project: ").append(tabName).append(QString(" saved"))) << std::endl;
-        this->setSaved(true);
-    }
-
     if((mpSystem->mModelFileInfo.filePath().isEmpty()) || (saveAsFlag == NEWFILE))
     {
         QDir fileDialogSaveDir;
@@ -303,6 +293,17 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
         qDebug() << "Failed to open file for writing: " + mpSystem->mModelFileInfo.filePath();
         return;
     }
+
+//    //Remove the asterix if tab goes from unsaved to saved
+//    if(!mIsSaved)
+//    {
+        //QString tabName = mpParentProjectTabWidget->tabText(mpParentProjectTabWidget->currentIndex());
+        QString tabName = mpSystem->mModelFileInfo.baseName();
+        //tabName.chop(1);
+        mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
+        qDebug() << "ProjectTabWidget: " << qPrintable(QString("Project: ").append(tabName).append(QString(" saved")));
+        this->setSaved(true);
+//    }
 
     //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
     mpSystem->setName(mpSystem->mModelFileInfo.baseName());
