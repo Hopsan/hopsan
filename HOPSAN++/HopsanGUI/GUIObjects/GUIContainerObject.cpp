@@ -45,10 +45,6 @@ GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GU
     //Create the scene
     mpScene = new QGraphicsScene();
 
-//    //Set the parent project tab pointer
-//    this->mpParentProjectTab = system->mpParentProjectTab;
-    //mpMainWindow = mpParentProjectTab->mpParentProjectTabWidget->mpParentMainWindow;
-
     //Create the undastack
     mUndoStack = new UndoStack(this);
     mUndoStack->clear();
@@ -429,16 +425,13 @@ void GUIContainerObject::removeConnector(GUIConnector* pConnector, undoStatus un
     bool startPortHasMoreConnections = false;
     bool endPortWasConnected = false;
     bool endPortHasMoreConnections = false;
-    int i;
-
-    //qDebug() << "Svampar i min diskho";
 
     if(undoSettings == UNDO)
     {
         mUndoStack->registerDeletedConnector(pConnector);
     }
 
-    for(i = 0; i < mSubConnectorList.size(); ++i)
+    for(int i = 0; i < mSubConnectorList.size(); ++i)
     {
         if(mSubConnectorList[i] == pConnector)
         {

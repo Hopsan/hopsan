@@ -353,30 +353,6 @@ void GUISystem::openPropertiesDialog()
 }
 
 
-////! @brief Save GUISystem to a text stream
-////! @todo here we are NOT using the save function in the guiobject base class becouse subsystems are saved completely differently, need to make this more uniform in the future
-//void GUISystem::saveToTextStream(QTextStream &rStream, QString prepend)
-//{
-//    QPointF pos = mapToScene(boundingRect().center());
-//    if (!prepend.isEmpty())
-//    {
-//        rStream << prepend << " ";
-//    }
-
-//    if (!mModelFileInfo.filePath().isEmpty())
-//    {
-//        mLoadType = "EXTERNAL";
-//    }
-//    else
-//    {
-//        mLoadType = "EMBEDED";
-//    }
-
-//    rStream << addQuotes(mLoadType) << " " << addQuotes(getName()) << " " << addQuotes(getTypeCQS()) << " "
-//            << addQuotes(relativePath(mModelFileInfo.absoluteFilePath(), mpParentContainerObject->mModelFileInfo.absolutePath())) << " "
-//            << pos.x() << " " << pos.y() << " " << rotation() << " " << getNameTextPos() << " " << mpNameText->isVisible() << "\n";
-//}
-
 //! @todo maybe have a inherited function in some other base class that are specific for guiobjects with core equivalent
 void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
 {

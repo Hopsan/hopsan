@@ -72,10 +72,10 @@ protected:
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
-    QVariant itemChange( GraphicsItemChange change, const QVariant & value );
+//    QVariant itemChange( GraphicsItemChange change, const QVariant & value );
 
     void addPortGraphicsOverlay(QString filepath);
-    void scalePortOverlay(qreal scalefactor);
+
     void openRightClickMenu(QPoint screenPos);
 
 protected slots:
@@ -87,21 +87,23 @@ public: //! @todo This was made public temporarly to test plot in Python
     void refreshPortOverlayPosition();
 
 private:
+    void setPortOverlayIconScale();
+
     QColor myLineColor;
     qreal myLineWidth;
 
     QGraphicsLineItem *lineH;
     QGraphicsLineItem *lineV;
 
-    QGraphicsTextItem *mpPortLabel;
     qreal mMag;
-    bool mIsMag;
-
+    qreal mOverlaySetScale;
+    bool mIsMagnified;
     bool mIsConnected;
 
     GUIPortAppearance *mpPortAppearance;
     QString mName;
 
+    QGraphicsTextItem *mpPortLabel;
     QGraphicsSvgItem* mpPortGraphicsOverlay;
 };
 

@@ -496,34 +496,10 @@ bool GUIConnector::isActive()
 }
 
 
-//! @brief Saves all necessary information about the connetor to a text stream. Used for save, undo and copy operations.
-//! @param QTextSream Text stream with the information
-void GUIConnector::saveToTextStream(QTextStream &rStream, QString prepend)
-{
-    QString startObjName = getStartComponentName();
-    QString endObjName = getEndComponentName();
-    QString startPortName  = getStartPortName();
-    QString endPortName = getEndPortName();
-    if (!prepend.isEmpty())
-    {
-        rStream << prepend << " ";
-    }
-    rStream << ( addQuotes(startObjName) + " " + addQuotes(startPortName) + " " + addQuotes(endObjName) + " " + addQuotes(endPortName) );
-    for(int j = 0; j != mPoints.size(); ++j)
-    {
-        rStream << " " << mPoints[j].x() << " " << mPoints[j].y();
-    }
-    rStream << "\n";
-}
-
 void GUIConnector::saveToDomElement(QDomElement &rDomElement)
 {
     //Core necessary stuff
     QDomElement xmlConnect = appendDomElement(rDomElement, HMF_CONNECTORTAG);
-//    appendDomTextNode(xmlConnect, HMF_CONNECTORSTARTCOMPONENTTAG, getStartComponentName());
-//    appendDomTextNode(xmlConnect, HMF_CONNECTORSTARTPORTTAG, getStartPortName());
-//    appendDomTextNode(xmlConnect, HMF_CONNECTORENDCOMPONENTTAG, getEndComponentName());
-//    appendDomTextNode(xmlConnect, HMF_CONNECTORENDPORTTAG, getEndPortName());
 
     xmlConnect.setAttribute(HMF_CONNECTORSTARTCOMPONENTTAG, getStartComponentName());
     xmlConnect.setAttribute(HMF_CONNECTORSTARTPORTTAG, getStartPortName());
@@ -531,15 +507,11 @@ void GUIConnector::saveToDomElement(QDomElement &rDomElement)
     xmlConnect.setAttribute(HMF_CONNECTORENDPORTTAG, getEndPortName());
 
     //Save gui data to dom
-
     QDomElement xmlConnectGUI = appendDomElement(xmlConnect, HMF_HOPSANGUITAG);
     QDomElement xmlCoordinates = appendDomElement(xmlConnectGUI, HMF_COORDINATES);
     for(int j=0; j<mPoints.size(); ++j)
     {
         appendCoordinateTag(xmlCoordinates, mPoints[j].x(), mPoints[j].y());
-        //appendDomValueNode2(xmlConnectGUI, HMF_XYTAG, mPoints[j].x(), mPoints[j].y());
-//        appendDomTextNode(xmlConnectGUI, "ptx", mPoints[j].x());
-//        appendDomTextNode(xmlConnectGUI, "pty", mPoints[j].y());
     }
     QDomElement xmlGeometries = appendDomElement(xmlConnectGUI, HMF_GEOMETRIES);
     for(int j=0; j<mGeometries.size(); ++j)
@@ -677,7 +649,7 @@ void GUIConnector::updateLine(int lineNumber)
 //! @param offsetY Distance to move in Y direction
 void GUIConnector::moveAllPoints(qreal offsetX, qreal offsetY)
 {
-    for(int i=0; i != mPoints.size(); ++i)
+    for(int i=0; i<mPoints.size(); ++i)
     {
         mPoints[i] = QPointF(mPoints[i].x()+offsetX, mPoints[i].y()+offsetY);
     }
