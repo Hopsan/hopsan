@@ -23,7 +23,6 @@
 #include "CopyStack.h"
 #include "Dialogs/AboutDialog.h"
 #include "Widgets/UndoWidget.h"
-#include "Widgets/QuickNavigationWidget.h"
 
 #include "loadObjects.h"
 
@@ -92,22 +91,17 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Create a grid on the centralwidget
     mpCentralGridLayout = new QGridLayout(mpCentralWidget);
-    mpCentralGridLayout->setSpacing(20);
+    //mpCentralGridLayout->setSpacing(1);
 
     //Create the main tab container, need at least one tab
     mpProjectTabs = new ProjectTabWidget(this);
     mpProjectTabs->setObjectName("projectTabs");
 
-    mpQuickNavigationWidget = new QuickNavigationWidget(this);
-    mpQuickNavigationWidget->setObjectName("quickNavigation");
-
     mpCentralGridLayout->addWidget(mpProjectTabs,0,0);
-    mpCentralGridLayout->addWidget(mpQuickNavigationWidget,1,0);
-    //mpQuickNavigationWidget->hide();
-    //mpProjectTabs->hide();
 
+    //! @todo This should not be needed as we set centralwidget as paranent when gridlayout is created, asser check for now can remove later
     assert(mpCentralWidget->layout() == mpCentralGridLayout);
-    //mpCentralwidget->setLayout(mpCentralgrid);
+    //mpCentralWidget->setLayout(mpCentralGridLayout);
 
     //Set the centralwidget
     this->setCentralWidget(mpCentralWidget);

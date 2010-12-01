@@ -26,7 +26,6 @@ class SystemParametersWidget;
 class Configuration;
 class CopyStack;
 class AboutDialog;
-class QuickNavigationWidget;
 
 class MainWindow : public QMainWindow
 {
@@ -116,8 +115,6 @@ public:
     double getStartTimeFromToolBar();
     double getTimeStepFromToolBar();
     double getFinishTimeFromToolBar();
-    //QPushButton *mpBackButton;
-    QuickNavigationWidget *mpQuickNavigationWidget;
     void closeEvent(QCloseEvent *event);
 
     PyDockWidget *getPythonDock();
@@ -142,7 +139,7 @@ private:
     QDockWidget *mpLibDock;
     QDockWidget *mpPlotWidgetDock;
     QDockWidget *mpUndoWidgetDock;
-    PyDockWidget      *mpPyDockWidget;
+    PyDockWidget *mpPyDockWidget;
     QDockWidget *mpSystemParametersDock;
 
     //Methods that adjusts simulation parameters if they are illegal

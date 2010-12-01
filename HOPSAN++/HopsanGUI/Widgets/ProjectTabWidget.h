@@ -12,6 +12,7 @@
 
 #include <QTabWidget>
 #include "../CoreAccess.h"
+#include "QuickNavigationWidget.h"
 
 //Forward declaration
 class QGraphicsScene;
@@ -31,7 +32,6 @@ public:
     GUISystem *getSystem(int index);
 
         //Public member variables
-//    QString *mpCopyData;
 
 public slots:
     void addProjectTab(ProjectTab *projectTab, QString tabName="Untitled");
@@ -67,6 +67,7 @@ public:
     GUISystem *mpSystem;
     ProjectTabWidget *mpParentProjectTabWidget;
     GraphicsView *mpGraphicsView;
+    QuickNavigationWidget *mpQuickNavigationWidget;
 
 public slots:
     bool simulate();

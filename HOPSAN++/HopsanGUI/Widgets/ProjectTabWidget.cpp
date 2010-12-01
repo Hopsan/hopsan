@@ -52,6 +52,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     : QWidget(parent)
 {
     mpParentProjectTabWidget = parent;
+    mpQuickNavigationWidget = new QuickNavigationWidget(this);
     mpSystem = new GUISystem(this, 0);
 
     connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()));
@@ -67,9 +68,11 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mpGraphicsView  = new GraphicsView(this);
     mpGraphicsView->setScene(mpSystem->getContainedScenePtr());
 
-    QVBoxLayout *tabLayout = new QVBoxLayout;
+    QVBoxLayout *tabLayout = new QVBoxLayout(this);
+    tabLayout->setSpacing(0);
+    tabLayout->addWidget(mpQuickNavigationWidget);
     tabLayout->addWidget(mpGraphicsView);
-    this->setLayout(tabLayout);
+    //this->setLayout(tabLayout);
 }
 
 ProjectTab::~ProjectTab()
@@ -343,8 +346,6 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
 
     setTabsClosable(true);
     mNumberOfUntitledTabs = 0;
-
-//    mpCopyData = new QString;
 
     connect(this,SIGNAL(currentChanged(int)),SLOT(tabChanged()));
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(closeProjectTab(int)));

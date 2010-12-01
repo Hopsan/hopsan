@@ -1,5 +1,6 @@
 #include "QuickNavigationWidget.h"
 #include "GUIObjects/GUIContainerObject.h"
+//#include "MainWindow.h"
 
 #include <QHBoxLayout>
 #include <QDebug>
@@ -7,38 +8,29 @@
 QuickNavigationWidget::QuickNavigationWidget(QWidget *parent) :
     QWidget(parent)
 {
-    qDebug() << "---------------------------------------------------------in QuickNavigationWidget Constructor";
-
-    this->mpGroupBox = new QGroupBox(this);
-    QHBoxLayout *hboxlayout = new QHBoxLayout(this->mpGroupBox);
-
-//    QPushButton *tmp = new QPushButton("alg", this);
-//    hboxlayout->addWidget(tmp);
-
+    QHBoxLayout *pHBoxLayout = new QHBoxLayout(this);  //Create the horizontal layout for this GroupBox
     this->mpButtonGroup = new QButtonGroup(this);
     connect(this->mpButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(gotoContainerClosingSubcontainers(int)));
 
-//    tmp = new QPushButton("alg2", this);
-//    hboxlayout->addWidget(tmp);
-
-    this->mpGroupBox->setFlat(true);
-
-    //this->mpGroupBox->show();
-
+    pHBoxLayout->setContentsMargins(0,0,0,0); //Make narrow margins
+    pHBoxLayout->setSpacing(0);
+    pHBoxLayout->setAlignment(Qt::AlignLeft);
 
     this->refreshVisible();
-
 }
 
 void QuickNavigationWidget::addOpenContainer(GUIContainerObject* pContainer)
 {
-    this->mContainerObjectPtrs.append(pContainer);                          //Add the container object ptr from storage
-    QPushButton *tmp = new QPushButton(pContainer->mpParentContainerObject->getName(), this);   //Create new button with parent name
-    this->mPushButtonPtrs.append(tmp);                                      //Remember the new button in storage
-    this->mpGroupBox->layout()->addWidget(tmp);                             //Add the button to the graphics widget
-    this->mpButtonGroup->addButton(tmp);                                    //Add the button to the buttons group
-    this->mpButtonGroup->setId(tmp, this->mContainerObjectPtrs.size()-1);   //Give the button the same Id as its corresponding container pointer
+    //! @todo we can use the button group as button storage instead of having an extra Qvector
+    this->mContainerObjectPtrs.append(pContainer);                              //Add the container object ptr from storage
+    QPushButton *tmp = new QPushButton(pContainer->mpParentContainerObject->getName()+" ::", this);   //Create new button with parent name
+    tmp->setStyleSheet("padding:0px");
+    tmp->setFlat(true);
 
+    this->mPushButtonPtrs.append(tmp);                                          //Remember the new button in storage
+    this->layout()->addWidget(tmp);                                             //Add the button to the graphics widget
+    this->mpButtonGroup->addButton(tmp,this->mContainerObjectPtrs.size()-1);    //Add the button to the buttons group with the
+                                                                                //Id that is corresponding to its container pointer
     this->refreshVisible();
 }
 
@@ -49,7 +41,7 @@ void QuickNavigationWidget::gotoContainerClosingSubcontainers(int id)
     {
         mContainerObjectPtrs[i]->exitContainer();
         this->mpButtonGroup->removeButton(this->mPushButtonPtrs.value(i));  //Remove button from button group
-        mpGroupBox->layout()->removeWidget(this->mPushButtonPtrs.value(i)); //Remove button from graphics box
+        this->layout()->removeWidget(this->mPushButtonPtrs.value(i));       //Remove button from graphics box
         delete this->mPushButtonPtrs.last();                                //Delete the actual button
         this->mPushButtonPtrs.pop_back();                                   //Remove button ptr from storage
         this->mContainerObjectPtrs.pop_back();                              //Remove the container object ptr from storage
@@ -61,10 +53,6 @@ void QuickNavigationWidget::gotoContainerClosingSubcontainers(int id)
 void QuickNavigationWidget::refreshVisible()
 {
     qDebug() << "PushButtons.size(): " << this->mPushButtonPtrs.size();
-
-    this->mpGroupBox->adjustSize();
-    this->adjustSize();
-
 
     if (this->mPushButtonPtrs.size() > 0)
     {
