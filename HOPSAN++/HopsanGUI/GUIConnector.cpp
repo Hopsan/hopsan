@@ -555,6 +555,12 @@ void GUIConnector::saveToDomElement(QDomElement &rDomElement)
 
 
 
+void GUIConnector::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+    QGraphicsWidget::contextMenuEvent(event);
+}
+
+
 //! @brief Draws lines between the points in the mPoints vector, and stores them in the mpLines vector
 void GUIConnector::drawConnector()
 {

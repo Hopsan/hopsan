@@ -80,7 +80,6 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
         if (QGraphicsItem *item = itemAt(event->pos()))
         {
             QGraphicsView::contextMenuEvent(event);
-
         }
         else
         {

@@ -96,6 +96,7 @@ void UndoStack::undoOneStep()
     QList<QDomElement> addedConnectorList;
     QList<QDomElement> addedObjectList;
     QStringList movedObjects;
+    QList<int> addedWidgetList;
     int dx, dy;
     QDomElement stuffElement = getCurrentPost().firstChildElement("stuff");
     while(!stuffElement.isNull())
@@ -256,6 +257,18 @@ void UndoStack::undoOneStep()
              size_t index = stuffElement.attribute("index").toInt();
              mpParentContainerObject->mWidgetMap.find(index).value()->deleteMe(NOUNDO);
         }
+        else if(stuffElement.attribute("what") == "resizedboxwidget")
+        {
+            size_t index = stuffElement.attribute("index").toInt();
+            double w_old = stuffElement.attribute("w_old").toDouble();
+            double h_old = stuffElement.attribute("h_old").toDouble();
+            double x_old, y_old;
+            QDomElement oldPosElement = stuffElement.firstChildElement("oldpos");
+            parseDomValueNode2(oldPosElement, x_old, y_old);
+            GUIBoxWidget *tempWidget = qobject_cast<GUIBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value());
+            tempWidget->setSize(w_old, h_old);
+            tempWidget->setPos(x_old, y_old);
+        }
         else if(stuffElement.attribute("what") == "deletedboxwidget")
         {
              QDomElement boxElement = stuffElement.firstChildElement(HMF_BOXWIDGETTAG);
@@ -267,7 +280,7 @@ void UndoStack::undoOneStep()
         else if(stuffElement.attribute("what") == "addedtextwidget")
         {
              size_t index = stuffElement.attribute("index").toInt();
-             mpParentContainerObject->mWidgetMap.find(index).value()->deleteMe(NOUNDO);
+             addedWidgetList.append(index);
         }
         else if(stuffElement.attribute("what") == "deletedtextwidget")
         {
@@ -344,6 +357,11 @@ void UndoStack::undoOneStep()
             (*itc)->moveAllPoints(-dx, -dy);
             (*itc)->drawConnector();
         }
+    }
+
+    for(size_t i=0; i<addedWidgetList.size(); ++i)
+    {
+        mpParentContainerObject->mWidgetMap.find(addedWidgetList.at(i)).value()->deleteMe(NOUNDO);
     }
 
         //Reduce stack position if something was done (otherwise stack is empty)
@@ -498,6 +516,7 @@ void UndoStack::redoOneStep()
         else if(stuffElement.attribute("what") == "addedboxwidget")
         {
             QDomElement boxElement = stuffElement.firstChildElement(HMF_BOXWIDGETTAG);
+            gpMainWindow->mpMessageWidget->printGUIDebugMessage(boxElement.toDocument().toString());
             loadBoxWidget(boxElement, mpParentContainerObject, NOUNDO);
             mpParentContainerObject->mWidgetMap.insert(stuffElement.attribute("index").toInt(), mpParentContainerObject->mWidgetMap.find(mpParentContainerObject->mHighestWidgetIndex-1).value());
             mpParentContainerObject->mWidgetMap.remove(mpParentContainerObject->mHighestWidgetIndex-1);
@@ -507,6 +526,18 @@ void UndoStack::redoOneStep()
         {
              size_t index = stuffElement.attribute("index").toInt();
              mpParentContainerObject->mWidgetMap.find(index).value()->deleteMe(NOUNDO);
+        }
+        else if(stuffElement.attribute("what") == "resizedboxwidget")
+        {
+            size_t index = stuffElement.attribute("index").toInt();
+            double w_new = stuffElement.attribute("w_new").toDouble();
+            double h_new = stuffElement.attribute("h_new").toDouble();
+            double x_new, y_new;
+            QDomElement newPosElement = stuffElement.firstChildElement("newpos");
+            parseDomValueNode2(newPosElement, x_new, y_new);
+            GUIBoxWidget *tempWidget = qobject_cast<GUIBoxWidget *>(mpParentContainerObject->mWidgetMap.find(index).value());
+            tempWidget->setSize(w_new, h_new);
+            tempWidget->setPos(x_new, y_new);
         }
         else if(stuffElement.attribute("what") == "addedtextwidget")
         {
@@ -779,6 +810,24 @@ void UndoStack::registerDeletedBoxWidget(GUIBoxWidget *item)
     stuffElement.setAttribute("index", item->mWidgetIndex);
     item->saveToDomElement(stuffElement);
     gpMainWindow->mpUndoWidget->refreshList();
+}
+
+
+void UndoStack::registerResizedBoxWidget(int index, double w_old, double h_old, double w_new, double h_new, QPointF oldPos, QPointF newPos)
+{
+    QDomElement currentPostElement = getCurrentPost();
+    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+    stuffElement.setAttribute("what", "resizedboxwidget");
+    stuffElement.setAttribute("index", index);
+    stuffElement.setAttribute("w_old", w_old);
+    stuffElement.setAttribute("h_old", h_old);
+    stuffElement.setAttribute("w_new", w_new);
+    stuffElement.setAttribute("h_new", h_new);
+    appendDomValueNode2(stuffElement, "oldpos", oldPos.x(), oldPos.y());
+    appendDomValueNode2(stuffElement, "newpos", newPos.x(), newPos.y());
+    gpMainWindow->mpUndoWidget->refreshList();
+
+    gpMainWindow->mpMessageWidget->printGUIDebugMessage( mDomDocument.toString(4));
 }
 
 

@@ -64,6 +64,9 @@ public:
     GUIContainerObject *mpParentContainerObject;
     QVector<QPointF> mPoints;
 
+protected:
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+
 public slots:
     void setIsoStyle(graphicsType gfxType);
     void drawConnector();

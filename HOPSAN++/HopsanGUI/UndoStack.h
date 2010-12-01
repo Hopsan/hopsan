@@ -45,6 +45,7 @@ public:
     void registerNameVisibilityChange(QString objectName, bool isVisible);
     void registerAddedBoxWidget(GUIBoxWidget *item);
     void registerDeletedBoxWidget(GUIBoxWidget *item);
+    void registerResizedBoxWidget(int index, double w_old, double h_old, double w_new, double h_new, QPointF oldPos, QPointF newPos);
     void registerAddedTextWidget(GUITextWidget *item);
     void registerDeletedTextWidget(GUITextWidget *item);
     void registerMovedWidget(GUIWidget *item, QPointF oldPos, QPointF newPos);

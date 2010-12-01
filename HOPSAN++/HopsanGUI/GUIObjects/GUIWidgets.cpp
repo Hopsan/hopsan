@@ -315,10 +315,12 @@ GUIBoxWidget::GUIBoxWidget(QPoint pos, qreal rot, selectionStatus startSelected,
 
     this->resize(mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
 
-//    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height(),
-//                                                  QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
     mpSelectionBox->setSize(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
     mWidgetIndex = widgetIndex;
+
+    mWidthBeforeResize = mpRectItem->rect().width();
+    mHeightBeforeResize = mpRectItem->rect().height();
+    mPosBeforeResize = this->pos();
 }
 
 
@@ -577,6 +579,21 @@ void GUIBoxWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
+
+void GUIBoxWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    GUIWidget::mouseReleaseEvent(event);
+    if(mWidthBeforeResize != mpRectItem->rect().width() || mHeightBeforeResize != mpRectItem->rect().height())
+    {
+        mpParentContainerObject->mUndoStack->newPost();
+        mpParentContainerObject->mUndoStack->registerResizedBoxWidget( mWidgetIndex, mWidthBeforeResize, mHeightBeforeResize, mpRectItem->rect().width(), mpRectItem->rect().height(), mPosBeforeResize, this->pos());
+        mWidthBeforeResize = mpRectItem->rect().width();
+        mHeightBeforeResize = mpRectItem->rect().height();
+        mPosBeforeResize = this->pos();
+    }
+}
+
+
 //! @brief Saves the box widget into a specified dom element
 //! @param rDomElement Reference to dom element to save into
 void GUIBoxWidget::saveToDomElement(QDomElement &rDomElement)
@@ -655,12 +672,13 @@ void GUIBoxWidget::setSize(qreal w, qreal h)
     mpRectItem->setRect(mpRectItem->rect().x(), mpRectItem->rect().y(), w, h);
     this->setPos(posBeforeResize);
 
-//    delete(mpSelectionBox);
-//    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height(),
-//                                               QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
     mpSelectionBox->setSize(0.0, 0.0, mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
 
     mpSelectionBox->setActive();
     this->resize(mpRectItem->boundingRect().width(), mpRectItem->boundingRect().height());
     mpRectItem->setPos(mpRectItem->pen().width()/2.0, mpRectItem->pen().width()/2.0);
+
+    mWidthBeforeResize = mpRectItem->rect().width();
+    mHeightBeforeResize = mpRectItem->rect().height();
+    mPosBeforeResize = this->pos();
 }

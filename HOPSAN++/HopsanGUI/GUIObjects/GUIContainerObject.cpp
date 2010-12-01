@@ -584,11 +584,31 @@ void GUIContainerObject::copySelected(CopyStack *xmlStack)
         (*it)->saveToDomElement(*copyRoot);
     }
 
+        //Copy connectors
     for(int i = 0; i != mSubConnectorList.size(); ++i)
     {
         if(mSubConnectorList[i]->getStartPort()->getGuiModelObject()->isSelected() && mSubConnectorList[i]->getEndPort()->getGuiModelObject()->isSelected() && mSubConnectorList[i]->isActive())
         {
             mSubConnectorList[i]->saveToDomElement(*copyRoot);
+        }
+    }
+
+        //Copy widgets
+    //! @todo All widgets should probably use the same load/save functions. Then we could use the mSelectedWidgetList, and this would be much nicer.
+    QList<GUIBoxWidget *>::iterator itbw;
+    for(itbw = mBoxWidgetList.begin(); itbw!=mBoxWidgetList.end(); ++itbw)
+    {
+        if((*itbw)->isSelected())
+        {
+            (*itbw)->saveToDomElement(*copyRoot);
+        }
+    }
+    QList<GUITextWidget *>::iterator ittw;
+    for(ittw = mTextWidgetList.begin(); ittw!=mTextWidgetList.end(); ++ittw)
+    {
+        if((*ittw)->isSelected())
+        {
+            (*ittw)->saveToDomElement(*copyRoot);
         }
     }
 }
