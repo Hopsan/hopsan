@@ -28,10 +28,10 @@ public:
     void setParameterValue(QString name, double value);
     void setStartValue(QString portName, QString variable, double startValue);
     void mapParameterToSystemParameter(QString parameterName, QString systemParameterKey);
-    void rememberSystemParameterMapping(QString parameterName, QString systemParameterKey);
-    void forgetSystemParameterMapping(QString parameterName);
-    bool isParameterMappedToSystemParameter(QString parameterName);
-    QString getSystemParameterKey(QString parameterName);
+    //void rememberSystemParameterMapping(QString parameterName, QString systemParameterKey);
+    //void forgetSystemParameterMapping(QString parameterName);
+    //bool isParameterMappedToSystemParameter(QString parameterName);
+    //QString getSystemParameterKey(QString parameterName);
 
     //void saveToTextStream(QTextStream &rStream, QString prepend=QString());
 
@@ -52,7 +52,7 @@ protected:
     void createPorts();
 
 private:
-    QMap<QString, QString> mParameterToSystemParameterMap;
+    //QMap<QString, QString> mParameterToSystemParameterMap;
 };
 
 #endif // GUICOMPONENT_H

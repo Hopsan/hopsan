@@ -52,6 +52,7 @@ public:
     QString getParameterUnit(QString componentName, QString parameterName);
     QString getParameterDescription(QString componentName, QString parameterName);
     double getParameterValue(QString componentName, QString parameterName);
+    QString getParameterValueTxt(QString componentName, QString parameterName);
     void setParameter(QString componentName, QString parameterName, double value); //!< @todo maybe call this set parameter value
 
     QString createComponent(QString type, QString name="");

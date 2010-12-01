@@ -125,7 +125,7 @@ double GUIComponent::getParameterValue(QString name)
 void GUIComponent::setParameterValue(QString name, double value)
 {
     mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, value);
-    forgetSystemParameterMapping(name);
+//    forgetSystemParameterMapping(name);
 }
 
 void GUIComponent::setStartValue(QString portName, QString variable, double startValue)
@@ -140,32 +140,32 @@ void GUIComponent::setStartValue(QString portName, QString variable, double star
 void GUIComponent::mapParameterToSystemParameter(QString parameterName, QString systemParameterKey)
 {
     mpParentContainerObject->getCoreSystemAccessPtr()->registserSystemParameter(this->getName(), parameterName, systemParameterKey);
-    rememberSystemParameterMapping(parameterName, systemParameterKey);
+//    rememberSystemParameterMapping(parameterName, systemParameterKey);
 }
 
 
-void GUIComponent::rememberSystemParameterMapping(QString parameterName, QString systemParameterKey)
+/*void GUIComponent::rememberSystemParameterMapping(QString parameterName, QString systemParameterKey)
 {
     mParameterToSystemParameterMap.insert(parameterName, systemParameterKey);
-}
+}*/
 
 
-void GUIComponent::forgetSystemParameterMapping(QString parameterName)
+/*void GUIComponent::forgetSystemParameterMapping(QString parameterName)
 {
     mParameterToSystemParameterMap.remove(parameterName);
-}
+}*/
 
 
-bool GUIComponent::isParameterMappedToSystemParameter(QString parameterName)
+/*bool GUIComponent::isParameterMappedToSystemParameter(QString parameterName)
 {
     return mParameterToSystemParameterMap.contains(parameterName);
-}
+}*/
 
 
-QString GUIComponent::getSystemParameterKey(QString parameterName)
+/*QString GUIComponent::getSystemParameterKey(QString parameterName)
 {
     return mParameterToSystemParameterMap.find(parameterName).value();
-}
+}*/
 
 //void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 //{
@@ -291,11 +291,11 @@ void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
 //        appendDomTextNode(xmlParam, HMF_NAMETAG, *pit);
 //        appendDomValueNode(xmlParam, HMF_VALUETAG, mpParentSystem->getCoreSystemAccessPtr()->getParameterValue(this->getName(), (*pit)));
         xmlParam.setAttribute(HMF_NAMETAG, *pit);
-        xmlParam.setAttribute(HMF_VALUETAG, mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValue(this->getName(), (*pit)));
-        if(this->isParameterMappedToSystemParameter(*pit))
+        xmlParam.setAttribute(HMF_VALUETAG, mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValueTxt(this->getName(), (*pit)));
+        /*if(this->isParameterMappedToSystemParameter(*pit))
         {
             xmlParam.setAttribute(HMF_SystemParameterTAG, this->getSystemParameterKey(*pit));
-        }
+        }*/
     }
 
     //Save start values

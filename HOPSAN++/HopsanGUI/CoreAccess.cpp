@@ -376,6 +376,11 @@ double CoreSystemAccess::getParameterValue(QString componentName, QString parame
     return mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterValue(parameterName.toStdString());
 }
 
+QString CoreSystemAccess::getParameterValueTxt(QString componentName, QString parameterName)
+{
+    return QString::fromStdString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameterValueTxt(parameterName.toStdString()));
+}
+
 void CoreSystemAccess::deleteSystemPort(QString portname)
 {
     mpCoreComponentSystem->deleteSystemPort(portname.toStdString());

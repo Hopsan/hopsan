@@ -31,6 +31,7 @@ namespace hopsan {
         std::string getUnit();
 
         double getValue();
+        double *getValuePtr();
 
     private:
         CompParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
@@ -101,6 +102,7 @@ namespace hopsan {
         const std::string getParameterUnit(const std::string name);
         const std::string getParameterDescription(const std::string name);
         double getParameterValue(const std::string name);
+        std::string getParameterValueTxt(const std::string name);
         void setParameterValue(const std::string name, const double value);
         void setParameterValue(const std::string name, const std::string mapKey);
 

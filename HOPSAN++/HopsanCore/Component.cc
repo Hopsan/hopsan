@@ -153,6 +153,12 @@ double CompParameter::getValue()
 }
 
 
+double *CompParameter::getValuePtr()
+{
+    return mpValue;
+}
+
+
 void CompParameter::setValue(const double value)
 {
     *mpValue = value;
@@ -494,6 +500,30 @@ double Component::getParameterValue(const string name)
     //! @todo We should create a debug warning to user if this happens (not only in this function)
     //! @todo maybe break out find parameter function (maybe even use something else then vector for storage)
     return 0.0;
+}
+
+
+std::string Component::getParameterValueTxt(const string name)
+{
+    std::string paramTxt;
+    for (size_t i=0; i<mParameters.size(); ++i)
+    {
+        if (mParameters[i].getName() == name)
+        {
+            paramTxt = mpSystemParent->getSystemParameters().findOccurrence(mParameters[i].getValuePtr());
+            if(paramTxt.empty())
+            {
+                double value = getParameterValue(name);
+                std::ostringstream oss;
+                oss << value;
+                paramTxt = oss.str();
+            }
+        }
+    }
+//    cout << "No such parameter (return 0): " << name << endl;
+    //! @todo We should create a debug warning to user if this happens (not only in this function)
+    //! @todo maybe break out find parameter function (maybe even use something else then vector for storage)
+    return paramTxt;
 }
 
 

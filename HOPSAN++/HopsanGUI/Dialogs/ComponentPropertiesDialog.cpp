@@ -63,24 +63,26 @@ void ComponentPropertiesDialog::createEditStuff()
     size_t n = 0;
     for ( pit=parnames.begin(); pit!=parnames.end(); ++pit )
     {
-        QString valueTxt;
-        if(mpGUIComponent->isParameterMappedToSystemParameter(*pit))
+        QString valueTxt = mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValueTxt(mpGUIComponent->getName(), (*pit));
+        bool ok;
+        valueTxt.toDouble(&ok);
+        if((!ok) && !(mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(mpGUIComponent->getName())))
         {
-            if(mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(mpGUIComponent->getSystemParameterKey(*pit)))
-            {
-                valueTxt = mpGUIComponent->getSystemParameterKey(*pit);
-            }
-            else
-            {
-                mpGUIComponent->forgetSystemParameterMapping(*pit);
-                valueTxt.setNum(mpGUIComponent->getParameterValue(*pit), 'g', 6 );
+//            if(mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(mpGUIComponent->getName()))
+//            {
+//                valueTxt = mpGUIComponent->getSystemParameterKey(*pit);
+//            }
+//            else
+//            {
+//                mpGUIComponent->forgetSystemParameterMapping(*pit);
+//                valueTxt.setNum(mpGUIComponent->getParameterValue(*pit), 'g', 6 );
                 gpMainWindow->mpMessageWidget->printGUIWarningMessage(tr("Warning: Global parameter no longer exists, replacing with last used value."));
-            }
+//            }
         }
-        else
-        {
-            valueTxt.setNum(mpGUIComponent->getParameterValue(*pit), 'g', 6 );
-        }
+//        else
+//        {
+//            valueTxt.setNum(mpGUIComponent->getParameterValue(*pit), 'g', 6 );
+//        }
         mvParameterLayout.push_back(new ParameterLayout(*pit,
                                                         mpGUIComponent->getParameterDescription(*pit),
                                                         valueTxt,

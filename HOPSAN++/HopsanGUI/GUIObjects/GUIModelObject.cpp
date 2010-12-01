@@ -397,28 +397,28 @@ void GUIModelObject::mapParameterToSystemParameter(QString /*parameterName*/, QS
 }
 
 
-void GUIModelObject::rememberSystemParameterMapping(QString /*name*/)
-{
-    assert(false);
-}
+//void GUIModelObject::rememberSystemParameterMapping(QString /*name*/)
+//{
+//    assert(false);
+//}
 
 
-void GUIModelObject::forgetSystemParameterMapping(QString /*name*/)
-{
-    assert(false);
-}
+//void GUIModelObject::forgetSystemParameterMapping(QString /*name*/)
+//{
+//    assert(false);
+//}
 
 
-bool GUIModelObject::isParameterMappedToSystemParameter(QString /*parameterName*/)
-{
-    assert(false);
-}
+//bool GUIModelObject::isParameterMappedToSystemParameter(QString /*parameterName*/)
+//{
+//    assert(false);
+//}
 
 
-QString GUIModelObject::getSystemParameterKey(QString /*parameterName*/)
-{
-    assert(false);
-}
+//QString GUIModelObject::getSystemParameterKey(QString /*parameterName*/)
+//{
+//    assert(false);
+//}
 
 void GUIModelObject::setModelFileInfo(QFile &/*rFile*/)
 {
