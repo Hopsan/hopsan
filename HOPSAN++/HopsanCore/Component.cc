@@ -165,14 +165,24 @@ void CompParameter::setValue(const double value)
 }
 
 
+//! @brief Adds a new System parameter to the system or change the vaölue of an existing one
+//!
+//! A parameter is added but has no ponters to values.
+//! Or if there exist a parameter with this name the value is changed and the ponters are unchanged.
+//! The parameter is then mapped to one or more doubles with the mapParameter method.
+//! @param[in] sysParName is the name of the new System parameter.
+//! @param[in] value is the value of the System parameter.
+//! @see mapParameter(std::string sysParName, double *mappedValue)
 void SystemParameters::add(std::string sysParName, double value)
 {
     if(mSystemParameters.count(sysParName) > 0)
+    //sysParName is already present, change its value
     {
         mSystemParameters[sysParName].first = value;
         update(sysParName);
     }
     else
+    //sysParName is not present, create a new one
     {
         SystemParameter sysPar;
         sysPar.first = value;
@@ -180,28 +190,41 @@ void SystemParameters::add(std::string sysParName, double value)
     }
 }
 
+//! @brief Read the value of System parameter
+//!
+//! @param[in] sysParName is the name of the new System parameter.
+//! @param[out] value is the value of the System parameter.
+//! @return true if a post with sysParName exsited, false otherwise
 bool SystemParameters::getValue(std::string sysParName, double &value)
 {
     if(mSystemParameters.count(sysParName))
     {
         value = mSystemParameters[sysParName].first;
-        return 1;
+        return true;
     }
     else
-        return 0;
+        return false;
 }
 
+//! @brief Get a map with System parameter names as keys and their values as values
+//!
+//! @return a map with keys: System parameter names, values: System parameter values
 std::map<std::string, double> SystemParameters::getSystemParameterMap()
 {
     std::map<std::string, double> sysPar;
     std::map<std::string, SystemParameter>::iterator map_it;
     for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
     {
+        //Create a new map with only the name and value (no pointers)
         sysPar[map_it->first] = map_it->second.first;
     }
     return sysPar;
 }
 
+//! @brief Finds out if a double has a reference in the System parameters
+//!
+//! @param[in] mappedValue is a pointer to a double.
+//! @return the name of the System parameter which is mapped to the input, an empty std::string if its not.
 std::string SystemParameters::findOccurrence(double *mappedValue)
 {
     std::string sysParName ="";
@@ -209,6 +232,7 @@ std::string SystemParameters::findOccurrence(double *mappedValue)
     std::map<std::string, SystemParameter>::iterator map_it;
     for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
     {
+        //Go through all pointers to see if mappedValue are present somewhere
         for(list_it = map_it->second.second.begin(); list_it != map_it->second.second.end(); ++list_it)
         {
             if(*list_it == mappedValue)
@@ -220,30 +244,56 @@ std::string SystemParameters::findOccurrence(double *mappedValue)
     return sysParName;
 }
 
+//! @brief Delete a System parameter
+//!
+//! @param[in] sysParName the System parameter to be deleted.
 void SystemParameters::erase(std::string sysParName)
 {
     mSystemParameters.erase(sysParName);
 }
 
+//! @brief Maps a double to a System parameter
+//!
+//! After this method has been ran the SystemParameter object have a pointer
+//! stored to the double and can write the System parameter value to it directly
+//! without the knoledge of the "double owner".
+//! If the sysParName does not exist in the SystemParameters nothing will happen.
+//!
+//! @param[in] sysParName is the name of the System parameter which should point to the double.
+//! @param[in] mappedValue is a pointer to a double.
+//! @see unMapParameter(std::string sysParName, double *mappedValue)
 void SystemParameters::mapParameter(std::string sysParName, double *mappedValue)
 {
+    //If mappedValue is in the map somwhere else it is removed first
     unMapParameter(mappedValue);
 
     std::map<std::string, SystemParameter>::iterator it;
     it = mSystemParameters.find(sysParName);
+    //If the sysParName exists in the mappedValue is added, if not nothing happens
     if(it != mSystemParameters.end())
     {
         it->second.second.push_back(mappedValue);
+        //the System parameter value is written to the mappedValue
         *mappedValue = it->second.first;
     }
 }
 
+//! @brief Unmaps a double from a System parameter
+//!
+//! This method removes the pointer to the mappedValue from the SystemParameters.
+//! After this is ran the double is free from the SystemParameters
+//!
+//! @param[in] sysParName is the name of the System parameter which should point to the double.
+//! @param[in] mappedValue is a pointer to a double.
+//! @see MapParameter(std::string sysParName, double *mappedValue)
 void SystemParameters::unMapParameter(std::string sysParName, double *mappedValue)
 {
     std::list<double*>::iterator list_it, remove_it;
     bool found = false;
+    //Go through all mapped values for the System parameter sysParName
     for(list_it = mSystemParameters[sysParName].second.begin(); list_it !=mSystemParameters[sysParName].second.end(); ++list_it)
     {
+        //If it is found it is saved to be removed
         if(*list_it == mappedValue)
         {
             remove_it = list_it;
@@ -252,28 +302,43 @@ void SystemParameters::unMapParameter(std::string sysParName, double *mappedValu
     }
     if((mSystemParameters.count(sysParName)) && found)
     {
+        //remove the occurance of the mappedValue
         mSystemParameters[sysParName].second.erase(remove_it);
     }
 }
 
+//! @brief Unmaps a double from a System parameter
+//!
+//! This method removes the pointer to the mappedValue from the SystemParameters.
+//! After this is ran the double is free from the SystemParameters
+//!
+//! @param[in] mappedValue is a pointer to a double.
+//! @see MapParameter(std::string sysParName, double *mappedValue)
 void SystemParameters::unMapParameter(double *mappedValue)
 {
     std::map<std::string, SystemParameter>::iterator map_it;
+    //Go through all mapped values for all the System parameters
     for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
     {
+        //remove the pointer for the mappedValue in System parameters
         unMapParameter(map_it->first, mappedValue);
     }
 }
 
+//! @brief Write the all System parameters values to the doubles that they points to.
 void SystemParameters::update()
 {
     std::map<std::string, SystemParameter>::iterator map_it;
     for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
     {
+        //Write the System parameter value to all pointer addresses
         update(map_it->first);
     }
 }
 
+//! @brief Write the System parameter value to the doubles that sysParName points to.
+//!
+//! @param[in] sysParName the System parameter to update
 void SystemParameters::update(std::string sysParName)
 {
     std::list<double*>::iterator list_it;
@@ -281,6 +346,7 @@ void SystemParameters::update(std::string sysParName)
     {
         for(list_it = mSystemParameters[sysParName].second.begin(); list_it != mSystemParameters[sysParName].second.end(); ++list_it)
         {
+            //Write the System parameter value to all pointer addresses for sysParName
             *(*list_it) = mSystemParameters[sysParName].first;
         }
     }

@@ -47,6 +47,10 @@ namespace hopsan {
     };
 
 
+    //! @class SystemParameters
+    //! @brief Adds a new system parameter
+    //!
+    //! This class is used in ComponentSystems to contain "system global" parameters
     class DLLIMPORTEXPORT SystemParameters
     {
     public:
