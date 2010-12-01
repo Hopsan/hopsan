@@ -259,6 +259,7 @@ void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus und
     GUIModelObjectMapT::iterator it = mGUIModelObjectMap.find(objectName);
     GUIModelObject* obj_ptr = it.value();
 
+        //Remove connectors that are connected to the model object
     QList<GUIConnector *> pConnectorList = obj_ptr->getGUIConnectorPtrs();
     for(int i=0; i<pConnectorList.size(); ++i)
     {
@@ -267,10 +268,11 @@ void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus und
 
     if (undoSettings == UNDO)
     {
-        //Register removal of connector in undo stack (must be done after removal of connectors or the order of the commands in the undo stack will be wrong!)
+        //Register removal of model object in undo stack
         this->mUndoStack->registerDeletedObject(it.value());
         emit componentChanged();
     }
+
 
     if (it != mGUIModelObjectMap.end())
     {

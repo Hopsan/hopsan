@@ -600,7 +600,7 @@ void UndoStack::redoOneStep()
 
 //! @brief Register function for deleted objects
 //! @param item Pointer to the component about to be deleted
-void UndoStack::registerDeletedObject(GUIObject *item)
+void UndoStack::registerDeletedObject(GUIModelObject *item)
 {
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
@@ -626,7 +626,7 @@ void UndoStack::registerDeletedConnector(GUIConnector *item)
 
 //! @brief Register function for added objects
 //! @param itemName Name of the added object
-void UndoStack::registerAddedObject(GUIObject *item)
+void UndoStack::registerAddedObject(GUIModelObject *item)
 {
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");

@@ -16,7 +16,7 @@
 #include <QDomDocument>
 
     //Forward Declarations
-class GUIObject;
+class GUIModelObject;
 class GraphicsView;
 class GUIConnector;
 class MainWindow;
@@ -31,9 +31,9 @@ friend class UndoWidget;
 
 public:
     UndoStack(GUIContainerObject *parentSystem);
-    void registerDeletedObject(GUIObject *item);
+    void registerDeletedObject(GUIModelObject *item);
     void registerDeletedConnector(GUIConnector *item);
-    void registerAddedObject(GUIObject *item);
+    void registerAddedObject(GUIModelObject *item);
     void registerAddedConnector(GUIConnector *item);
     void registerRenameObject(QString oldName, QString newName);
     void registerModifiedConnector(QPointF oldPos, QPointF newPos, GUIConnector *item, int lineNumber);

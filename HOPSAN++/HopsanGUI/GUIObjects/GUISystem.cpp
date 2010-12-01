@@ -333,6 +333,7 @@ void GUISystem::removeFavoriteParameterByComponentName(QString componentName)
             return;
         }
     }
+    gpMainWindow->makeSurePlotWidgetIsCreated();
     gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
 
     mpParentProjectTab->hasChanged();
