@@ -46,8 +46,10 @@ public:
     void registerAddedBoxWidget(GUIBoxWidget *item);
     void registerDeletedBoxWidget(GUIBoxWidget *item);
     void registerResizedBoxWidget(int index, double w_old, double h_old, double w_new, double h_new, QPointF oldPos, QPointF newPos);
+    void registerModifiedBoxWidgetStyle(int index, int oldLineWidth, Qt::PenStyle oldLineStyle, QColor oldLineColor, int lineWidth, Qt::PenStyle lineStyle, QColor lineColor);
     void registerAddedTextWidget(GUITextWidget *item);
     void registerDeletedTextWidget(GUITextWidget *item);
+    void registerModifiedTextWidget(int index, QString oldText, QFont oldFont, QColor oldColor, QString text, QFont font, QColor color);
     void registerMovedWidget(GUIWidget *item, QPointF oldPos, QPointF newPos);
     void clear(QString errorMsg = "");
     void newPost(QString type = "");

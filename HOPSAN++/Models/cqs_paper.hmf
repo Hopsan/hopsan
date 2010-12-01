@@ -16,7 +16,7 @@
         <objects>
             <component typename="HydraulicLaminarOrifice" name="Orifice">
                 <parameters>
-                    <parameter value="9.999999999999999e-012" name="Kc"/>
+                    <parameter value="1e-011" name="Kc"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -39,7 +39,7 @@
             </component>
             <component typename="HydraulicLaminarOrifice" name="Orifice_1">
                 <parameters>
-                    <parameter value="9.999999999999999e-012" name="Kc"/>
+                    <parameter value="1e-011" name="Kc"/>
                 </parameters>
                 <startvalues/>
                 <hopsangui>
@@ -51,7 +51,7 @@
                 <parameters>
                     <parameter value="0.1" name="TD"/>
                     <parameter value="0" name="a"/>
-                    <parameter value="1000000000" name="Zc"/>
+                    <parameter value="1e+009" name="Zc"/>
                 </parameters>
                 <startvalues>
                     <startvalue portname="P1" variable="Flow" value="0"/>
@@ -126,15 +126,15 @@
             </component>
             <textwidget>
                 <hopsangui>
-                    <pose x="2263" y="2386"/>
-                    <textobject fontcolor="#556b2f" text="Text" font="MS Shell Dlg 2,12,-1,5,50,0,0,0,0,0"/>
+                    <pose x="2188" y="2358"/>
+                    <textobject fontcolor="#aa557f" text="Something Interesting" font="MV Boli,24,-1,5,75,0,0,0,0,0"/>
                 </hopsangui>
             </textwidget>
             <boxwidget>
                 <hopsangui>
                     <pose x="2268" y="2412"/>
                     <size width="192" height="179"/>
-                    <line width="2" style="dashdotline" color="#556b2f"/>
+                    <line width="5" style="dotline" color="#aa557f"/>
                 </hopsangui>
             </boxwidget>
         </objects>

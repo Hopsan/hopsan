@@ -194,6 +194,8 @@ QString UndoWidget::translateTag(QString tag)
     tagMap.insert("movedwidget",            "Moved Widget");
     tagMap.insert("movedmultiplewidgets",   "Moved Widgets");
     tagMap.insert("resizedboxwidget",       "Resized Box Widget");
+    tagMap.insert("modifiedboxwidgetstyle", "Modified Box Widget");
+    tagMap.insert("modifiedtextwidget",     "Modified Text Widget");
 
     if(tagMap.contains(tag))
         return tagMap.find(tag).value();

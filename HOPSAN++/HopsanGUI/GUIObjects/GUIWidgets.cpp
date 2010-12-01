@@ -189,6 +189,9 @@ void GUITextWidget::deleteMe(undoStatus undoSettings)
 //! @brief Private function that updates the text widget from the selected values in the text edit dialog
 void GUITextWidget::updateWidgetFromDialog()
 {
+    mpParentContainerObject->mUndoStack->newPost();
+    mpParentContainerObject->mUndoStack->registerModifiedTextWidget(mWidgetIndex, mpTextItem->toPlainText(), mpTextItem->font(), mpTextItem->defaultTextColor(), mpTextBox->toPlainText(), mSelectedFont, mSelectedColor);
+
     mpTextItem->setPlainText(mpTextBox->toPlainText());
     mpTextItem->setFont(mSelectedFont);
     mpTextItem->setDefaultTextColor(mSelectedColor);
@@ -436,17 +439,24 @@ void GUIBoxWidget::openColorDialog()
 //! @brief Private function that updates the text widget from the selected values in the text edit dialog
 void GUIBoxWidget::updateWidgetFromDialog()
 {
+    Qt::PenStyle selectedStyle;
+    if(mpStyleBoxInDialog->currentIndex() == 0)
+        selectedStyle = Qt::SolidLine;
+    else if(mpStyleBoxInDialog->currentIndex() == 1)
+        selectedStyle = Qt::DashLine;
+    else if(mpStyleBoxInDialog->currentIndex() == 2)
+        selectedStyle = Qt::DotLine;
+    else if(mpStyleBoxInDialog->currentIndex() == 3)
+        selectedStyle = Qt::DashDotLine;
+
+    mpParentContainerObject->mUndoStack->newPost();
+    mpParentContainerObject->mUndoStack->registerModifiedBoxWidgetStyle(mWidgetIndex, mpRectItem->pen().width(), mpRectItem->pen().style(), mpRectItem->pen().color(),
+                                                                        mpWidthBoxInDialog->value(), selectedStyle, mSelectedColor);
+
     QPen tempPen = mpRectItem->pen();
     tempPen.setColor(mSelectedColor);
     tempPen.setWidth(mpWidthBoxInDialog->value());
-    if(mpStyleBoxInDialog->currentIndex() == 0)
-        tempPen.setStyle(Qt::SolidLine);
-    else if(mpStyleBoxInDialog->currentIndex() == 1)
-        tempPen.setStyle(Qt::DashLine);
-    else if(mpStyleBoxInDialog->currentIndex() == 2)
-        tempPen.setStyle(Qt::DotLine);
-    else if(mpStyleBoxInDialog->currentIndex() == 3)
-        tempPen.setStyle(Qt::DashDotLine);
+    tempPen.setStyle(selectedStyle);
     mpRectItem->setPen(tempPen);
 
 //    delete(mpSelectionBox);
