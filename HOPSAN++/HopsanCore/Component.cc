@@ -537,6 +537,9 @@ const string &Component::getTypeName()
 }
 
 
+//! @brief Terminate/stop a running simulation
+//!
+//! Typically used inside components simulateOneTimestep method
 void Component::stopSimulation()
 {
     this->getSystemParent()->stop();
@@ -563,6 +566,9 @@ void Component::listParametersConsole()
 }
 
 
+//! @brief Get the value of a parameter
+//! @param[in] name is the name of the wanted parameter
+//! @returns the value of the parameter
 double Component::getParameterValue(const string name)
 {
     for (size_t i=0; i<mParameters.size(); ++i)
@@ -578,6 +584,12 @@ double Component::getParameterValue(const string name)
     return 0.0;
 }
 
+//! @brief Get a pointer to a parameter
+//!
+//! This method is useful with mapping and unmapping to System parameters
+//!
+//! @param[in] name is the name of the wanted parameter
+//! @returns a pointer to the parameter, a null ponter if not present
 double *Component::getParameterValuePtr(const string name)
 {
     for (size_t i=0; i<mParameters.size(); ++i)
@@ -592,16 +604,26 @@ double *Component::getParameterValuePtr(const string name)
 }
 
 
+//! @brief Get the value of a parameter in string format
+//!
+//! If the parameter is mapped by a System parameter the name of the System parameter is given instead of the value
+//!
+//! @param[in] name is the name of the wanted parameter
+//! @returns the value of the parameter in string format, an empty string if name is not present as a parameter
 std::string Component::getParameterValueTxt(const string name)
 {
     std::string paramTxt="";
     for (size_t i=0; i<mParameters.size(); ++i)
     {
+        //The parameter is present
         if (mParameters[i].getName() == name)
         {
+            //Check if the parameter is mapped ba a System parameter, then set the system parameter name to paramTxt
             paramTxt = mpSystemParent->getSystemParameters().findOccurrence(mParameters[i].getValuePtr());
+            //The parameter is not mapped to a system parameter
             if(paramTxt.empty())
             {
+                //Read out the parameter value to the string
                 double value = getParameterValue(name);
                 std::ostringstream oss;
                 oss << value;
@@ -616,6 +638,8 @@ std::string Component::getParameterValueTxt(const string name)
 }
 
 
+//! @brief Get the parameters of the component, typically "k" in the case of a spring coeff.
+//! @returns a vector of the parameters
 const vector<string> Component::getParameterNames()
 {
     vector<string> names;
@@ -627,6 +651,9 @@ const vector<string> Component::getParameterNames()
 }
 
 
+//! @brief Get the unit of the parameter, typically "N/m" in the case of a spring coeff.
+//! @param[in] name is the name of the wanted parameter
+//! @returns the unit of the parameter
 const string Component::getParameterUnit(const string name)
 {
     for (size_t i=0; i<mParameters.size(); ++i)
@@ -641,6 +668,9 @@ const string Component::getParameterUnit(const string name)
 }
 
 
+//! @brief Get the description of the parameter, typically "Spring coeff." in the case of a spring coeff.
+//! @param[in] name is the name of the wanted parameter
+//! @returns the description of the parameter
 const string Component::getParameterDescription(const string name)
 {
     for (size_t i=0; i<mParameters.size(); ++i)
@@ -655,12 +685,16 @@ const string Component::getParameterDescription(const string name)
 }
 
 
+//! @brief Access method for the parameter vector
+//! @returns the parameter vector
 vector<CompParameter> Component::getParameterVector()
 {
     return mParameters;
 }
 
 
+//! @brief Access method for the parameters
+//! @returns a map with parameter names and values
 map<string, double> Component::getParameterMap()
 {
     map<string, double> parameterMap;
@@ -672,7 +706,7 @@ map<string, double> Component::getParameterMap()
 }
 
 
-//! @brief Sets a specified parameter to a specified value
+//! @brief Sets a parameter to a value
 //! @param name Name of the parameter
 //! @param value Value to asign the parameter with
 void Component::setParameterValue(const string name, const double value)
@@ -683,12 +717,14 @@ void Component::setParameterValue(const string name, const double value)
         if (name == mParameters[i].getName())
         {
             mParameters[i].setValue(value);
+            //Unmap the parameter if it is pointed from the System parameters
             mpSystemParent->getSystemParameters().unMapParameter(mParameters.at(i).mpValue);
             notset = false;
         }
     }
     if (notset)
     {
+        //! @todo Maybe some error handling
         cout << "No such parameter (does nothing): " << name << endl;
     }
 }
@@ -702,9 +738,12 @@ void Component::setParameterValue(const std::string parName, const std::string s
     double value;
     if(!(getSystemParent()->getSystemParameters().getValue(sysParName, value)))
     {
+        //! @todo The system parameter soes not exist, maybe some error handling
         assert(false);
     }
+    //Sets the paramter to the value hold by the System parameter
     setParameterValue(parName, value);
+    //Map it to the system parameter
     getSystemParent()->getSystemParameters().mapParameter(sysParName, getParameterValuePtr(parName));
 }
 
@@ -1086,65 +1125,11 @@ void ComponentSystem::stop()
 }
 
 
-////! @brief Defines a new system parameter
-////! @param systemParameterKey Key name of the system parameter
-////! @param value Initial value of the system parameter
-//void ComponentSystem::setSystemParameter(std::string systemParameterKey, double value)
-//{
-//    if(mSystemParameters.find(systemParameterKey) == mSystemParameters.end())
-//    {
-//        mSystemParameters.insert(make_pair(systemParameterKey, value));
-//    }
-//    else
-//    {
-//        mSystemParameters.erase(systemParameterKey);
-//        mSystemParameters.insert(make_pair(systemParameterKey, value));
-//    }
-
-//    std::multimap<std::string, double *>::iterator it;
-//    for(it = mSystemParameterPointers.begin(); it != mSystemParameterPointers.end(); ++it)
-//    {
-//        double *pValue = it->second;
-//        std::string key = it->first;
-//        *pValue = mSystemParameters.find(key)->second;
-//    }
-//}
-
-
-////! @brief Returns a copy of the system parameter map
-//std::map<std::string, double> ComponentSystem::getSystemParametersMap()
-//{
-//    return mSystemParameters;
-//}
-
-
-////! @brief Maps a pointer to a parameter value to a system parameter
-////! @param systemParameterKey Key name of the system parameter
-////! @param pValue Pointer to the parameter value that shall be mapped
-////! @see unmapParameterValuePointerToSystemParameter()
-//void ComponentSystem::mapParameterValuePointerToSystemParameter(std::string systemParameterKey, double *pValue)
-//{
-//    mSystemParameterPointers.insert(std::pair<std::string, double *>(systemParameterKey, pValue));
-//}
-
-
-////! @brief Unmaps a pointer to a parameter value to a system parameter
-////! @param pValue Pointer to the parameter value that shall be unmapped
-////! @see mapParameterValuePointerToSystemParameter()
-//void ComponentSystem::unmapParameterValuePointerToSystemParameter(double *pValue)
-//{
-//    std::multimap<std::string, double *>::iterator it;
-//    for(it = mSystemParameterPointers.begin(); it != mSystemParameterPointers.end(); ++it)
-//    {
-//        if(it->second == pValue)
-//        {
-//            mSystemParameterPointers.erase(it);
-//            break;
-//        }
-//    }
-//}
-
-
+//! @brief Get a reference to the System parameters
+//!
+//! Use this method to manipulate the System parameters, e.g. getSystemParameters().add("myNewSysPar", 42.0);
+//!
+//! @returns A reference to the System parameters
 SystemParameters &ComponentSystem::getSystemParameters()
 {
     return this->mSystemParameters;
