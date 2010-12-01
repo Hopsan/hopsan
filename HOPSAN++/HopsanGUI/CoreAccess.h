@@ -78,9 +78,7 @@ public:
     double getSystemParameter(QString name);
     bool hasSystemParameter(QString name);
     void removeSystemParameter(QString name);
-//    int getNumberOfSystemParameters();
     QMap<std::string, double> getSystemParametersMap();
-//    void registserSystemParameter(QString objName, QString parName, QString mapKey);
 
     std::vector<double> getTimeVector(QString componentName, QString portName);
     void getPlotDataNamesAndUnits(const QString compname, const QString portname, QVector<QString> &rNames, QVector<QString> &rUnits);

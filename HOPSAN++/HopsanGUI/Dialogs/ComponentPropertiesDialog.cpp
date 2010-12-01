@@ -68,7 +68,7 @@ void ComponentPropertiesDialog::createEditStuff()
         valueTxt.toDouble(&ok);
         if((!ok) && !(mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(valueTxt)))
         {
-                gpMainWindow->mpMessageWidget->printGUIWarningMessage(tr("Warning: Global parameter no longer exists, replacing with last used value."));
+                gpMainWindow->mpMessageWidget->printGUIWarningMessage(tr("Global parameter no longer exists, replacing with last used value."));
         }
 
         mvParameterLayout.push_back(new ParameterLayout(*pit,
