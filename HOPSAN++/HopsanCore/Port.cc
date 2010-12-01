@@ -286,29 +286,44 @@ vector<vector<double> > *Port::getDataVectorPtr()
 }
 
 
+//! @brief Read the start values to a start value node in the port
+//! @param[out] rNames is the Vector of names of the star values
+//! @param[out] rValues is the Vector of values of the star values, if it is mapped to a System parameter the value of this will be here
+//! @param[out] rUnits is the Vector of units of the star values
 void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vector<double> &rValues, vector<string> &rUnits)
 {
     if(mpStartNode)
+    {
         mpStartNode->getDataNamesValuesAndUnits(rNames, rValues, rUnits);
+    }
 }
 
 
+//! @brief Read the start values to a start value node in the port
+//! @param[out] rNames is the Vector of names of the star values
+//! @param[out] rValues is the Vector of values of the star values, if it is mapped to a System parameter the name of this will be here
+//! @param[out] rUnits is the Vector of units of the star values
 void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vector<std::string> &rValuesTxt, std::vector<std::string> &rUnits)
 {
     if(mpStartNode)
     {
         std::vector<double> values;
-        mpStartNode->getDataNamesValuesAndUnits(rNames, values, rUnits);
+        getStartValueDataNamesValuesAndUnits(rNames, values, rUnits);
         rValuesTxt.resize(values.size());
         for(size_t i = 0; i < rNames.size(); ++i)
         {
-            std::string valueTxt = mpComponent->getSystemParent()->getSystemParameters().findOccurrence(mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(rNames[i])));
+            //Get a pointer to the actual node data
+            double *nodeDataPtr = mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(rNames[i]));
+            //Check if the nodeDataPtr is in the System parameters
+            std::string valueTxt = mpComponent->getSystemParent()->getSystemParameters().findOccurrence(nodeDataPtr);
             if(!(valueTxt.empty()))
             {
+                //The nodeDataPrt is connected to a System parameter, read out this name
                 rValuesTxt[i] = valueTxt;
             }
             else
             {
+                //The nodeDataPrt is not connected to a System parameter, read out the node data value to the string
                 std::ostringstream oss;
                 oss << values[i];
                 rValuesTxt[i] = oss.str();
@@ -318,19 +333,32 @@ void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vec
 }
 
 
+//! @brief Sets start values to a start value node in the port
+//! @param[in] names is a Vector of names to be set
+//! @param[in] values is a Vector of start values to be set
 void Port::setStartValueDataByNames(vector<string> names, std::vector<double> values)
 {
     if(mpStartNode)
     {
+        //Remove references from the System parameters if any
         for(size_t i = 0; i < names.size(); ++i)
         {
-            mpComponent->getSystemParent()->getSystemParameters().unMapParameter(mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(names[i])));
+            //Get a pointer to the actual node data
+            double *nodeDataPtr = mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(names[i]));
+            mpComponent->getSystemParent()->getSystemParameters().unMapParameter(nodeDataPtr);
         }
+        //Write the value to the start value node
         mpStartNode->setDataValuesByNames(names, values);
     }
 }
 
 
+//! @brief Sets start values to a start value node in the port
+//!
+//! Observe that this method is ONLY used to map System parameters to the start values!
+//!
+//! @param[in] names is a Vector of names to be set
+//! @param[in] sysParNames is a Vector of names of System parameters that should be associated to the start value
 void Port::setStartValueDataByNames(vector<std::string> names, std::vector<std::string> sysParNames)
 {
     if(mpStartNode)
@@ -341,9 +369,14 @@ void Port::setStartValueDataByNames(vector<std::string> names, std::vector<std::
         {
             if(!(mpComponent->getSystemParent()->getSystemParameters().getValue(sysParNames[i], values[i])))
             {
+                //If the System parameter does not exist
+                //! @todo Some more sophisticated error handling...
                 assert(false);
             }
-            mpComponent->getSystemParent()->getSystemParameters().mapParameter(sysParNames[i], mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(names[i])));
+            //Get a pointer to the actual node data
+            double *nodeDataPtr = mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(names[i]));
+            //Map the node data to the System parameter
+            mpComponent->getSystemParent()->getSystemParameters().mapParameter(sysParNames[i], nodeDataPtr);
         }
         mpStartNode->setDataValuesByNames(names, values);
     }
@@ -368,11 +401,15 @@ double Port::getStartValue(const size_t idx)
 void Port::setStartValue(const size_t &idx, const double &value)
 {
     if(mpStartNode)
+    {
         mpStartNode->setData(idx, value);
+    }
     else
+    {
         gCoreMessageHandler.addWarningMessage("Tried to add StartValue for to Component: " +\
                                               getComponentName() + "::" + getPortName() +\
                                               " This was ignored because this port does not have any StartValue to set.");
+    }
 }
 
 
