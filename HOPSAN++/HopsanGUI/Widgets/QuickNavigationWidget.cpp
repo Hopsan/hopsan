@@ -9,20 +9,21 @@ QuickNavigationWidget::QuickNavigationWidget(QWidget *parent) :
 {
     qDebug() << "---------------------------------------------------------in QuickNavigationWidget Constructor";
 
-    this->mpGroupBox = new QGroupBox("box",this);
+    this->mpGroupBox = new QGroupBox(this);
     QHBoxLayout *hboxlayout = new QHBoxLayout(this->mpGroupBox);
 
-    QPushButton *tmp = new QPushButton("alg", this);
-    hboxlayout->addWidget(tmp);
+//    QPushButton *tmp = new QPushButton("alg", this);
+//    hboxlayout->addWidget(tmp);
 
     this->mpButtonGroup = new QButtonGroup(this);
     connect(this->mpButtonGroup, SIGNAL(buttonClicked(int)), this, SLOT(gotoContainerClosingSubcontainers(int)));
 
-    tmp = new QPushButton("alg2", this);
-    hboxlayout->addWidget(tmp);
+//    tmp = new QPushButton("alg2", this);
+//    hboxlayout->addWidget(tmp);
 
     this->mpGroupBox->setFlat(true);
-//    this->mpGroupBox->setVisible(true);
+
+    //this->mpGroupBox->show();
 
 
     this->refreshVisible();
@@ -32,9 +33,9 @@ QuickNavigationWidget::QuickNavigationWidget(QWidget *parent) :
 void QuickNavigationWidget::addOpenContainer(GUIContainerObject* pContainer)
 {
     this->mContainerObjectPtrs.append(pContainer);
-    QPushButton *tmp = new QPushButton(pContainer->getName(), this);
+    QPushButton *tmp = new QPushButton(pContainer->mpParentContainerObject->getName(), this);
     this->mpGroupBox->layout()->addWidget(tmp);
-    this->mPushButtons.append(tmp);
+    this->mPushButtonPtrs.append(tmp);
     this->mpButtonGroup->addButton(tmp);
     this->mpButtonGroup->setId(tmp, this->mContainerObjectPtrs.size()-1);
 
@@ -44,10 +45,10 @@ void QuickNavigationWidget::addOpenContainer(GUIContainerObject* pContainer)
 void QuickNavigationWidget::gotoContainerClosingSubcontainers(int id)
 {
     //Reverse close subsystems,one at a time
-    for (int i=this->mContainerObjectPtrs.size()-1; i>id; --i)
+    for (int i=this->mContainerObjectPtrs.size()-1; i>=id; --i)
     {
         mContainerObjectPtrs[i]->exitContainer();
-        this->mpButtonGroup->removeButton(this->mPushButtons.value(i));
+        this->mpButtonGroup->removeButton(this->mPushButtonPtrs.value(i));
     }
 
     this->refreshVisible();
@@ -60,9 +61,14 @@ void QuickNavigationWidget::closeLastContainer()
 
 void QuickNavigationWidget::refreshVisible()
 {
-    qDebug() << "PushButtons.size(): " << this->mPushButtons.size();
-    this->setVisible(this->mPushButtons.size() > 0);
+    qDebug() << "PushButtons.size(): " << this->mPushButtonPtrs.size();
 
-    this->setVisible(true);
-    this->show();
+    if (this->mPushButtonPtrs.size() > 0)
+    {
+        this->show();
+    }
+    else
+    {
+        this->hide();
+    }
 }

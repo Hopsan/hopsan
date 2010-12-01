@@ -344,7 +344,7 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     setTabsClosable(true);
     mNumberOfUntitledTabs = 0;
 
-    mpCopyData = new QString;
+//    mpCopyData = new QString;
 
     connect(this,SIGNAL(currentChanged(int)),SLOT(tabChanged()));
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(closeProjectTab(int)));

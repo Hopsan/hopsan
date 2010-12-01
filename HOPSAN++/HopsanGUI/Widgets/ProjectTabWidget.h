@@ -31,7 +31,7 @@ public:
     GUISystem *getSystem(int index);
 
         //Public member variables
-    QString *mpCopyData;
+//    QString *mpCopyData;
 
 public slots:
     void addProjectTab(ProjectTab *projectTab, QString tabName="Untitled");

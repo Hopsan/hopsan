@@ -13,7 +13,7 @@ class QuickNavigationWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit QuickNavigationWidget(QWidget *parent = 0);
+    QuickNavigationWidget(QWidget *parent = 0);
     void addOpenContainer(GUIContainerObject* pContainer);
 
 signals:
@@ -26,7 +26,7 @@ private:
     void refreshVisible();
 
     QVector<GUIContainerObject*> mContainerObjectPtrs;
-    QVector<QPushButton*> mPushButtons;
+    QVector<QPushButton*> mPushButtonPtrs;
     QGroupBox *mpGroupBox;
     QButtonGroup *mpButtonGroup;
 

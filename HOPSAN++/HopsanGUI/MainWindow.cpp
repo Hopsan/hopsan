@@ -57,14 +57,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     QMetaObject::connectSlotsByName(this);
 
-    //Create a centralwidget for the main window
-    mpCentralWidget = new QWidget(this);
-    mpCentralWidget->setObjectName("centralwidget");
-
-    //Create a grid on the centralwidget
-    mpCentralGridLayout = new QGridLayout(mpCentralWidget);
-    mpCentralGridLayout->setSpacing(40);
-
     //Create a dock for the MessageWidget
     mpMessageDock = new QDockWidget(tr("Messages"), this);
     mpMessageDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
@@ -94,21 +86,27 @@ MainWindow::MainWindow(QWidget *parent)
     this->createToolbars();
     this->createMenus();
 
+    //Create a centralwidget for the main window
+    mpCentralWidget = new QWidget(this);
+    mpCentralWidget->setObjectName("centralwidget");
+
+    //Create a grid on the centralwidget
+    mpCentralGridLayout = new QGridLayout(mpCentralWidget);
+    mpCentralGridLayout->setSpacing(50);
+
     //Create the main tab container, need at least one tab
     mpProjectTabs = new ProjectTabWidget(this);
     mpProjectTabs->setObjectName("projectTabs");
 
-    mpQuickNavigationWidget = new QuickNavigationWidget(this);
+    mpQuickNavigationWidget = new QuickNavigationWidget();
     mpQuickNavigationWidget->setObjectName("quickNavigation");
-    //mpBackButton = new QPushButton("Back");
-    //mpCentralgrid->addWidget(mpBackButton,0,0);
+
     mpCentralGridLayout->addWidget(mpProjectTabs,0,0);
-    mpCentralGridLayout->addWidget(mpQuickNavigationWidget,1,0);
-    mpQuickNavigationWidget->hide();
+    //mpCentralGridLayout->addWidget(mpQuickNavigationWidget,1,0);
+    //mpQuickNavigationWidget->hide();
+    //mpProjectTabs->hide();
 
-
-    //mpBackButton->hide();
-
+    assert(mpCentralWidget->layout() == mpCentralGridLayout);
     //mpCentralwidget->setLayout(mpCentralgrid);
 
     //Set the centralwidget
