@@ -411,35 +411,6 @@ void GUIModelObject::setStartValue(QString /*portName*/, QString /*variable*/, Q
 }
 
 
-//void GUIModelObject::mapParameterToSystemParameter(QString /*parameterName*/, QString /*systesmParameterKey*/)
-//{
-//    assert(false);
-//}
-
-
-//void GUIModelObject::rememberSystemParameterMapping(QString /*name*/)
-//{
-//    assert(false);
-//}
-
-
-//void GUIModelObject::forgetSystemParameterMapping(QString /*name*/)
-//{
-//    assert(false);
-//}
-
-
-//bool GUIModelObject::isParameterMappedToSystemParameter(QString /*parameterName*/)
-//{
-//    assert(false);
-//}
-
-
-//QString GUIModelObject::getSystemParameterKey(QString /*parameterName*/)
-//{
-//    assert(false);
-//}
-
 void GUIModelObject::setModelFileInfo(QFile &/*rFile*/)
 {
     //Only available in GUISystem for now
