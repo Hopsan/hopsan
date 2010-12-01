@@ -240,6 +240,11 @@ void CoreSystemAccess::setParameter(QString componentName, QString parameterName
     mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), value);
 }
 
+bool CoreSystemAccess::setParameter(QString componentName, QString parameterName, QString valueTxt)
+{
+    mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), valueTxt.toStdString());
+}
+
 void CoreSystemAccess::removeSubComponent(QString componentName, bool doDelete)
 {
     mpCoreComponentSystem->removeSubComponent(componentName.toStdString(), doDelete);
@@ -551,7 +556,7 @@ QMap<std::string, double> CoreSystemAccess::getSystemParametersMap()
 }
 
 
-void CoreSystemAccess::registserSystemParameter(QString objName, QString parName, QString mapKey)
-{
-    mpCoreComponentSystem->getComponent(objName.toStdString())->setParameterValue(parName.toStdString(), mapKey.toStdString());
-}
+//void CoreSystemAccess::registserSystemParameter(QString objName, QString parName, QString mapKey)
+//{
+//    mpCoreComponentSystem->getComponent(objName.toStdString())->setParameterValue(parName.toStdString(), mapKey.toStdString());
+//}

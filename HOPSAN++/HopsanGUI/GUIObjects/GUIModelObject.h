@@ -42,12 +42,8 @@ public:
     virtual QString getParameterDescription(QString /*name*/) {assert(false); return "";} //Only availible in GUIComponent for now
     virtual double getParameterValue(QString name);
     virtual void setParameterValue(QString name, double value);
+    virtual bool setParameterValue(QString name, QString valueTxt);
     virtual void setStartValue(QString portName, QString variable, double startValue);
-    virtual void mapParameterToSystemParameter(QString parameterName, QString systemParameterKey);
-//    virtual void rememberSystemParameterMapping(QString parameterName);
-//    virtual void forgetSystemParameterMapping(QString parameterName);
-//    virtual bool isParameterMappedToSystemParameter(QString parameterName);
-//    virtual QString getSystemParameterKey(QString parameterName);
 
     //Load and save methods
     //virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());

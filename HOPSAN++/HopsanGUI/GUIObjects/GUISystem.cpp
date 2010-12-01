@@ -400,7 +400,7 @@ void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
     QMap<std::string, double> parMap = mpCoreSystemAccess->getSystemParametersMap();
     for(it = parMap.begin(); it != parMap.end(); ++it)
     {
-        QDomElement mappedElement = appendDomElement(parElement, HMF_MAPPEDPARAMETERTAG);
+        QDomElement mappedElement = appendDomElement(parElement, HMF_PARAMETERTAG);
         mappedElement.setAttribute("name", QString(it.key().c_str()));
         mappedElement.setAttribute("value", it.value());
     }
@@ -525,12 +525,12 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 
         //1. Load global parameters
         QDomElement xmlParameters = rDomElement.firstChildElement(HMF_PARAMETERS);
-        QDomElement xmlSubObject = xmlParameters.firstChildElement(HMF_MAPPEDPARAMETERTAG);
+        QDomElement xmlSubObject = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
         while (!xmlSubObject.isNull())
         {
             loadSystemParameter(xmlSubObject, this);
 
-            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_MAPPEDPARAMETERTAG);
+            xmlSubObject = xmlSubObject.nextSiblingElement(HMF_PARAMETERTAG);
         }
 
         //2. Load all sub-components

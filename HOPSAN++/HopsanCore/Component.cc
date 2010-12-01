@@ -165,17 +165,19 @@ void CompParameter::setValue(const double value)
 }
 
 
-//void CompParameter::setMappedValue(const double value)
-//{
-//    *mpValue = value;
-//}
-
-
 void SystemParameters::add(std::string sysParName, double value)
 {
-    SystemParameter sysPar;
-    sysPar.first = value;
-    mSystemParameters[sysParName] = sysPar;
+    if(mSystemParameters.count(sysParName) > 0)
+    {
+        mSystemParameters[sysParName].first = value;
+        update(sysParName);
+    }
+    else
+    {
+        SystemParameter sysPar;
+        sysPar.first = value;
+        mSystemParameters[sysParName] = sysPar;
+    }
 }
 
 bool SystemParameters::getValue(std::string sysParName, double &value)
@@ -265,13 +267,21 @@ void SystemParameters::unMapParameter(double *mappedValue)
 
 void SystemParameters::update()
 {
-    std::list<double*>::iterator list_it;
     std::map<std::string, SystemParameter>::iterator map_it;
     for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
     {
-        for(list_it = map_it->second.second.begin(); list_it != map_it->second.second.end(); ++list_it)
+        update(map_it->first);
+    }
+}
+
+void SystemParameters::update(std::string sysParName)
+{
+    std::list<double*>::iterator list_it;
+    if(mSystemParameters.count(sysParName) > 0)
+    {
+        for(list_it = mSystemParameters[sysParName].second.begin(); list_it != mSystemParameters[sysParName].second.end(); ++list_it)
         {
-            *(*list_it) = map_it->second.first;
+            *(*list_it) = mSystemParameters[sysParName].first;
         }
     }
 }
@@ -502,10 +512,23 @@ double Component::getParameterValue(const string name)
     return 0.0;
 }
 
+double *Component::getParameterValuePtr(const string name)
+{
+    for (size_t i=0; i<mParameters.size(); ++i)
+    {
+        if (mParameters[i].getName() == name)
+        {
+            return mParameters[i].getValuePtr();
+        }
+    }
+    cout << "No such parameter (return 0): " << name << endl;
+    return 0;
+}
+
 
 std::string Component::getParameterValueTxt(const string name)
 {
-    std::string paramTxt;
+    std::string paramTxt="";
     for (size_t i=0; i<mParameters.size(); ++i)
     {
         if (mParameters[i].getName() == name)
@@ -606,35 +629,17 @@ void Component::setParameterValue(const string name, const double value)
 
 
 //! @brief Sets a parameter value using a key to a system parameter
-//! @param parameterName Name of the parameter
-//! @param systemParameterKey Key name of the system parameter
-void Component::setParameterValue(const string parameterName, const string systemParameterKey)
+//! @param parName Name of the parameter
+//! @param sysParName Name name of the system parameter
+void Component::setParameterValue(const std::string parName, const std::string sysParName)
 {
-    bool notset = true;
-    bool notfound = true;
-    for (size_t i=0; i<mParameters.size(); ++i)
+    double value;
+    if(!(getSystemParent()->getSystemParameters().getValue(sysParName, value)))
     {
-        if (parameterName == mParameters[i].getName())
-        {
-            std::map<std::string, double> tempMap;
-            tempMap = mpSystemParent->getSystemParameters().getSystemParameterMap();
-            if(tempMap.find(systemParameterKey) != tempMap.end())
-            {
-                mParameters.at(i).setValue(mpSystemParent->getSystemParameters().getSystemParameterMap().find(systemParameterKey)->second);
-                mpSystemParent->getSystemParameters().mapParameter(systemParameterKey, mParameters.at(i).mpValue);
-                notfound = false;
-            }
-            notset = false;
-        }
+        assert(false);
     }
-    if(notset)
-    {
-        cout << "No such parameter (does nothing): " << parameterName << endl;
-    }
-    if(notfound)
-    {
-        cout << "Mapped parameter not found (does nothing): " << systemParameterKey << endl;
-    }
+    setParameterValue(parName, value);
+    getSystemParent()->getSystemParameters().mapParameter(sysParName, getParameterValuePtr(parName));
 }
 
 //! @todo Maby not have this function, solve in some other nicer way

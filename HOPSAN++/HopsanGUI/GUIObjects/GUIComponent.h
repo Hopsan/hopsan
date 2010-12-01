@@ -17,6 +17,7 @@ class GUIContainerObject;
 class GUIComponent : public GUIModelObject
 {
     Q_OBJECT
+
 public:
     GUIComponent(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *system, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, QGraphicsItem *parent = 0);
     ~GUIComponent();
@@ -26,12 +27,8 @@ public:
     QString getParameterDescription(QString name);
     double getParameterValue(QString name);
     void setParameterValue(QString name, double value);
+    bool setParameterValue(QString name, QString valueTxt);
     void setStartValue(QString portName, QString variable, double startValue);
-    void mapParameterToSystemParameter(QString parameterName, QString systemParameterKey);
-    //void rememberSystemParameterMapping(QString parameterName, QString systemParameterKey);
-    //void forgetSystemParameterMapping(QString parameterName);
-    //bool isParameterMappedToSystemParameter(QString parameterName);
-    //QString getSystemParameterKey(QString parameterName);
 
     //void saveToTextStream(QTextStream &rStream, QString prepend=QString());
 
@@ -50,9 +47,6 @@ protected:
     void openPropertiesDialog();
 
     void createPorts();
-
-private:
-    //QMap<QString, QString> mParameterToSystemParameterMap;
 };
 
 #endif // GUICOMPONENT_H

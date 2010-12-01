@@ -66,23 +66,11 @@ void ComponentPropertiesDialog::createEditStuff()
         QString valueTxt = mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValueTxt(mpGUIComponent->getName(), (*pit));
         bool ok;
         valueTxt.toDouble(&ok);
-        if((!ok) && !(mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(mpGUIComponent->getName())))
+        if((!ok) && !(mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(valueTxt)))
         {
-//            if(mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(mpGUIComponent->getName()))
-//            {
-//                valueTxt = mpGUIComponent->getSystemParameterKey(*pit);
-//            }
-//            else
-//            {
-//                mpGUIComponent->forgetSystemParameterMapping(*pit);
-//                valueTxt.setNum(mpGUIComponent->getParameterValue(*pit), 'g', 6 );
                 gpMainWindow->mpMessageWidget->printGUIWarningMessage(tr("Warning: Global parameter no longer exists, replacing with last used value."));
-//            }
         }
-//        else
-//        {
-//            valueTxt.setNum(mpGUIComponent->getParameterValue(*pit), 'g', 6 );
-//        }
+
         mvParameterLayout.push_back(new ParameterLayout(*pit,
                                                         mpGUIComponent->getParameterDescription(*pit),
                                                         valueTxt,
@@ -207,7 +195,7 @@ void ComponentPropertiesDialog::setParameters()
         {
             if(mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(requestedParameter))
             {
-                mpGUIComponent->mapParameterToSystemParameter(mvParameterLayout[i]->getDataName(), requestedParameter);
+                mpGUIComponent->setParameterValue(mvParameterLayout[i]->getDataName(), requestedParameter);
             }
             else    //User has written something illegal
             {

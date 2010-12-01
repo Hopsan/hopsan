@@ -379,6 +379,15 @@ void GUIModelObject::setParameterValue(QString /*name*/, double /*value*/)
     assert(false);
 }
 
+//! @brief Virtual function that sets specified parameter to specified system parameter
+//! @param name Name of parameter
+//! @param valueTxt System parameter
+bool GUIModelObject::setParameterValue(QString /*name*/, QString /*valueTxt*/)
+{
+    //cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
+    assert(false);
+}
+
 
 //! @brief Virtual function that sets specified startValue to specified value
 //! @param portName Name of port
@@ -391,10 +400,10 @@ void GUIModelObject::setStartValue(QString /*portName*/, QString /*variable*/, d
 }
 
 
-void GUIModelObject::mapParameterToSystemParameter(QString /*parameterName*/, QString /*systesmParameterKey*/)
-{
-    assert(false);
-}
+//void GUIModelObject::mapParameterToSystemParameter(QString /*parameterName*/, QString /*systesmParameterKey*/)
+//{
+//    assert(false);
+//}
 
 
 //void GUIModelObject::rememberSystemParameterMapping(QString /*name*/)

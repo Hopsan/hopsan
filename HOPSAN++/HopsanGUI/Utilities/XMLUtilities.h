@@ -48,7 +48,6 @@ void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep,
 #define HMF_CONNECTORTAG "connect"
 #define HMF_PARAMETERTAG "parameter"
 #define HMF_PARAMETERS "parameters"
-#define HMF_MAPPEDPARAMETERTAG "mappedparameter"
 #define HMF_FAVORITEPARAMETERTAG "favoriteparameter"
 #define HMF_STARTVALUES "startvalues"
 #define HMF_STARTVALUE "startvalue"
@@ -69,7 +68,7 @@ void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep,
 #define HMF_XYTAG "xy"                      //Containes an xy coordinate pair
 #define HMF_EXTERNALPATHTAG "external_path" //Contains the path to an external subsystem
 #define HMF_VALUETAG "value"
-#define HMF_SystemParameterTAG "globalkey"
+#define HMF_SYSTEMPARAMETERTAG "globalkey"
 #define HMF_TRUETAG "true"
 #define HMF_FALSETAG "false"
 #define HMF_PORTPOSETAG "portpose"

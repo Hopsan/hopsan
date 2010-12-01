@@ -125,7 +125,11 @@ double GUIComponent::getParameterValue(QString name)
 void GUIComponent::setParameterValue(QString name, double value)
 {
     mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, value);
-//    forgetSystemParameterMapping(name);
+}
+
+bool GUIComponent::setParameterValue(QString name, QString valueTxt)
+{
+    return mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, valueTxt);
 }
 
 void GUIComponent::setStartValue(QString portName, QString variable, double startValue)
@@ -137,35 +141,6 @@ void GUIComponent::setStartValue(QString portName, QString variable, double star
     this->getPort(portName)->setStartValueDataByNames(vVariable, vStartValue);
 }
 
-void GUIComponent::mapParameterToSystemParameter(QString parameterName, QString systemParameterKey)
-{
-    mpParentContainerObject->getCoreSystemAccessPtr()->registserSystemParameter(this->getName(), parameterName, systemParameterKey);
-//    rememberSystemParameterMapping(parameterName, systemParameterKey);
-}
-
-
-/*void GUIComponent::rememberSystemParameterMapping(QString parameterName, QString systemParameterKey)
-{
-    mParameterToSystemParameterMap.insert(parameterName, systemParameterKey);
-}*/
-
-
-/*void GUIComponent::forgetSystemParameterMapping(QString parameterName)
-{
-    mParameterToSystemParameterMap.remove(parameterName);
-}*/
-
-
-/*bool GUIComponent::isParameterMappedToSystemParameter(QString parameterName)
-{
-    return mParameterToSystemParameterMap.contains(parameterName);
-}*/
-
-
-/*QString GUIComponent::getSystemParameterKey(QString parameterName)
-{
-    return mParameterToSystemParameterMap.find(parameterName).value();
-}*/
 
 //void GUIComponent::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 //{
@@ -294,7 +269,7 @@ void GUIComponent::saveCoreDataToDomElement(QDomElement &rDomElement)
         xmlParam.setAttribute(HMF_VALUETAG, mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValueTxt(this->getName(), (*pit)));
         /*if(this->isParameterMappedToSystemParameter(*pit))
         {
-            xmlParam.setAttribute(HMF_SystemParameterTAG, this->getSystemParameterKey(*pit));
+            xmlParam.setAttribute(HMF_SYSTEMPARAMETERTAG, this->getSystemParameterKey(*pit));
         }*/
     }
 

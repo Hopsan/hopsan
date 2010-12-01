@@ -54,6 +54,7 @@ public:
     double getParameterValue(QString componentName, QString parameterName);
     QString getParameterValueTxt(QString componentName, QString parameterName);
     void setParameter(QString componentName, QString parameterName, double value); //!< @todo maybe call this set parameter value
+    bool setParameter(QString componentName, QString parameterName, QString valueTxt);
 
     QString createComponent(QString type, QString name="");
     QString createSubSystem(QString name="");
@@ -79,7 +80,7 @@ public:
     void removeSystemParameter(QString name);
 //    int getNumberOfSystemParameters();
     QMap<std::string, double> getSystemParametersMap();
-    void registserSystemParameter(QString objName, QString parName, QString mapKey);
+//    void registserSystemParameter(QString objName, QString parName, QString mapKey);
 
     std::vector<double> getTimeVector(QString componentName, QString portName);
     void getPlotDataNamesAndUnits(const QString compname, const QString portname, QVector<QString> &rNames, QVector<QString> &rUnits);

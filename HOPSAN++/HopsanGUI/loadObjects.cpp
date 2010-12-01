@@ -261,8 +261,7 @@ void ParameterLoadData::read(QTextStream &rStream)
 void ParameterLoadData::readDomElement(QDomElement &rDomElement)
 {
     parameterName = rDomElement.attribute(HMF_NAMETAG);
-    parameterValue = rDomElement.attribute(HMF_VALUETAG).toDouble();
-    parameterGlobalKey = rDomElement.attribute(HMF_SystemParameterTAG);
+    parameterValue = rDomElement.attribute(HMF_VALUETAG);
 }
 
 void StartValueLoadData::readDomElement(QDomElement &rDomElement)
@@ -405,13 +404,15 @@ void loadParameterValues(const ParameterLoadData &rData, GUIContainerObject* pSy
 //! @brief xml version
 void loadParameterValue(const ParameterLoadData &rData, GUIModelObject* pObject, undoStatus undoSettings)
 {
-    if(rData.parameterGlobalKey.isEmpty())
+    bool isDbl;
+    double value = rData.parameterValue.toDouble(&isDbl);
+    if(isDbl)
     {
-        pObject->setParameterValue(rData.parameterName, rData.parameterValue);
+        pObject->setParameterValue(rData.parameterName, value);
     }
     else
     {
-        pObject->mapParameterToSystemParameter(rData.parameterName, rData.parameterGlobalKey);
+        pObject->setParameterValue(rData.parameterName, rData.parameterValue);
     }
 }
 

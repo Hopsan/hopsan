@@ -59,6 +59,7 @@ namespace hopsan {
         void unMapParameter(std::string sysParName, double *mappedValue);
         void unMapParameter(double *mappedValue);
         void update();
+        void update(std::string sysParName);
 
     protected:
 
@@ -102,9 +103,10 @@ namespace hopsan {
         const std::string getParameterUnit(const std::string name);
         const std::string getParameterDescription(const std::string name);
         double getParameterValue(const std::string name);
+        double *getParameterValuePtr(const std::string name);
         std::string getParameterValueTxt(const std::string name);
         void setParameterValue(const std::string name, const double value);
-        void setParameterValue(const std::string name, const std::string mapKey);
+        void setParameterValue(const std::string parName, const std::string sysParName);
 
         std::vector<CompParameter> getParameterVector();
         std::map<std::string, double> getParameterMap();
