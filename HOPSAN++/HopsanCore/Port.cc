@@ -35,7 +35,14 @@ Port::Port(string node_type, string portname, Component *portOwner)
 //Destructor
 Port::~Port()
 {
-    //Nothing for now
+    //! Remove the mapping to eventual system parameters to avoid cowboy-writing in memory after deleted port.
+    //! dataNames and dataUnits are here just to decide the number of elements in the start node.
+    std::vector<std::string> dataNames, dataUnits;
+    mpStartNode->getDataNamesAndUnits(dataNames, dataUnits);
+    for(size_t i = 0; i < dataNames.size(); ++i)
+    {
+        mpComponent->getSystemParent()->getSystemParameters().unMapParameter(mpStartNode->getDataPtr(i));
+    }
 }
 
 
@@ -314,7 +321,13 @@ void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vec
 void Port::setStartValueDataByNames(vector<string> names, std::vector<double> values)
 {
     if(mpStartNode)
+    {
+        for(size_t i = 0; i < names.size(); ++i)
+        {
+            mpComponent->getSystemParent()->getSystemParameters().unMapParameter(mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(names[i])));
+        }
         mpStartNode->setDataValuesByNames(names, values);
+    }
 }
 
 

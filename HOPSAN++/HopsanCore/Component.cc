@@ -936,6 +936,16 @@ ComponentSignal::ComponentSignal(string name, double timestep) : Component(name,
     mIsComponentSignal = true;
 }
 
+Component::~Component()
+{
+    //! Remove the mapping to eventual system parameters to avoid cowboy-writing in memory after deleted component.
+    for(size_t i = 0; i < mParameters.size(); ++i)
+    {
+        mpSystemParent->getSystemParameters().unMapParameter(mParameters[i].getValuePtr());
+    }
+}
+
+
 //! @brief Loads the start values to the connected Node from the "start value node" at each Port of the component
 void Component::loadStartValues()
 {

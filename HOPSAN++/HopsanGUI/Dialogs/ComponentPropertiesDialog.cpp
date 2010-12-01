@@ -243,9 +243,9 @@ void ComponentPropertiesDialog::setStartValues()
         startDataUnitsStr.clear();
         for(int i=0; i < mvStartValueLayout[j].size(); ++i)
         {
-            bool ok;
-            mvStartValueLayout[j][i]->getDataValueTxt().toDouble(&ok);
-            if(ok)
+            bool isDbl;
+            mvStartValueLayout[j][i]->getDataValueTxt().toDouble(&isDbl);
+            if(isDbl)
             {
                 startDataNamesStr.append(mvStartValueLayout[j][i]->getDescriptionName());
                 startDataValuesDbl.append(mvStartValueLayout[j][i]->getDataValue());

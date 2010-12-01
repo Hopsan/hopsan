@@ -78,6 +78,8 @@ namespace hopsan {
         friend class ComponentSystem;
 
     public:
+        virtual ~Component();
+
         enum typeCQS {C, Q, S, NOCQSTYPE};
         //==========Public functions==========
         //Virtual functions
@@ -144,7 +146,6 @@ namespace hopsan {
         //==========Protected member functions==========
         //Constructor - Destructor
         Component(std::string name="Component", double timestep=0.001);
-        //virtual ~Component(){};
 
         //Virtual functions
         virtual void simulateOneTimestep();
