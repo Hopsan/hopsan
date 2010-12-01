@@ -121,12 +121,12 @@ bool ProjectTab::isSaved()
 void ProjectTab::setSaved(bool value)
 {
     mIsSaved = value;
-    QString tabName = mpParentProjectTabWidget->tabText(mpParentProjectTabWidget->currentIndex());
-    while(tabName.endsWith("*"))
-    {
-        tabName.chop(1);
-        mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
-    }
+//    QString tabName = mpParentProjectTabWidget->tabText(mpParentProjectTabWidget->currentIndex());
+//    while(tabName.endsWith("*"))
+//    {
+//        tabName.chop(1);
+//        mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
+//    }
 }
 
 
@@ -301,7 +301,6 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
         QString tabName = mpSystem->mModelFileInfo.baseName();
         //tabName.chop(1);
         mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
-        qDebug() << "ProjectTabWidget: " << qPrintable(QString("Project: ").append(tabName).append(QString(" saved")));
         this->setSaved(true);
 //    }
 

@@ -44,7 +44,7 @@ ComponentPropertiesDialog::ComponentPropertiesDialog(GUIComponent *pGUIComponent
 //! @brief Creates the contents in the parameter dialog
 void ComponentPropertiesDialog::createEditStuff()
 {
-    mpNameEdit = new QLineEdit(mpGUIComponent->getName());
+    mpNameEdit = new QLineEdit(mpGUIComponent->getName(), this);
 
     QFont fontH1;
     fontH1.setBold(true);
@@ -53,10 +53,10 @@ void ComponentPropertiesDialog::createEditStuff()
     fontH2.setBold(true);
     fontH2.setItalic(true);
 
-    QLabel *pParameterLabel = new QLabel("Parameters");
+    QLabel *pParameterLabel = new QLabel("Parameters", this);
     pParameterLabel->setFont(fontH1);
 
-    QGridLayout *parameterLayout = new QGridLayout;
+    QGridLayout *parameterLayout = new QGridLayout();
 
     QVector<QString> parnames = mpGUIComponent->getParameterNames();
     QVector<QString>::iterator pit;
@@ -82,9 +82,9 @@ void ComponentPropertiesDialog::createEditStuff()
     }
 
 
-    QGridLayout *startValueLayout = new QGridLayout;
+    QGridLayout *startValueLayout = new QGridLayout();
     size_t sr=0;
-    QLabel *pStartValueLabel = new QLabel("Start Values");
+    QLabel *pStartValueLabel = new QLabel("Start Values", this);
     pStartValueLabel->setFont(fontH1);
 
     QList<GUIPort*> ports = mpGUIComponent->getPortListPtrs();
@@ -103,7 +103,7 @@ void ComponentPropertiesDialog::createEditStuff()
         {
             QString portName("Port, ");
             portName.append((*portIt)->getName());
-            QLabel *portLabelName = new QLabel(portName);
+            QLabel *portLabelName = new QLabel(portName, this);
             portLabelName->setFont(fontH2);
             startValueLayout->addWidget(portLabelName, sr, 0);
             ++sr;
@@ -127,24 +127,24 @@ void ComponentPropertiesDialog::createEditStuff()
 
     //qDebug() << "after parnames";
 
-    okButton = new QPushButton(tr("&Ok"));
+    okButton = new QPushButton(tr("&Ok"), this);
     okButton->setDefault(true);
-    cancelButton = new QPushButton(tr("&Cancel"));
+    cancelButton = new QPushButton(tr("&Cancel"), this);
     cancelButton->setDefault(false);
 
-    buttonBox = new QDialogButtonBox(Qt::Vertical);
+    buttonBox = new QDialogButtonBox(Qt::Vertical, this);
     buttonBox->addButton(okButton, QDialogButtonBox::ActionRole);
     buttonBox->addButton(cancelButton, QDialogButtonBox::ActionRole);
 
     connect(okButton, SIGNAL(pressed()), SLOT(okPressed()));
     connect(cancelButton, SIGNAL(pressed()), SLOT(close()));
 
-    QHBoxLayout *pNameLayout = new QHBoxLayout;
-    QLabel *pNameLabel = new QLabel("Name: ");
+    QHBoxLayout *pNameLayout = new QHBoxLayout();
+    QLabel *pNameLabel = new QLabel("Name: ", this);
     pNameLayout->addWidget(pNameLabel);
     pNameLayout->addWidget(mpNameEdit);
 
-    QGridLayout *mainLayout = new QGridLayout;
+    QGridLayout *mainLayout = new QGridLayout();
     mainLayout->setSizeConstraint(QLayout::SetFixedSize);
     int lr = 0; //Layout row
     mainLayout->addLayout(pNameLayout, lr, 0);

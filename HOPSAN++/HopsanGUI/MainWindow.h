@@ -18,7 +18,6 @@ class GraphicsView;
 class QGraphicsScene;
 class LibraryWidget;
 class OptionsDialog;
-//class UndoWidget;
 class MessageWidget;
 class PlotWidget;
 class PyDockWidget;
@@ -44,7 +43,6 @@ public:
     ProjectTabWidget *mpProjectTabs;
     LibraryWidget *mpLibrary;
     OptionsDialog *mpOptionsDialog;
-    //ContainerPropertiesDialog *mpSystemPropertiesDialog;
     MessageWidget *mpMessageWidget;
 
     AboutDialog *mpAboutDialog;
