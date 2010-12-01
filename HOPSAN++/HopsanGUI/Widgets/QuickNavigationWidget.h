@@ -22,7 +22,6 @@ public slots:
     void gotoContainerClosingSubcontainers(int id);
 
 private:
-    void closeLastContainer();
     void refreshVisible();
 
     QVector<GUIContainerObject*> mContainerObjectPtrs;

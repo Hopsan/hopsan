@@ -92,17 +92,17 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Create a grid on the centralwidget
     mpCentralGridLayout = new QGridLayout(mpCentralWidget);
-    mpCentralGridLayout->setSpacing(50);
+    mpCentralGridLayout->setSpacing(20);
 
     //Create the main tab container, need at least one tab
     mpProjectTabs = new ProjectTabWidget(this);
     mpProjectTabs->setObjectName("projectTabs");
 
-    mpQuickNavigationWidget = new QuickNavigationWidget();
+    mpQuickNavigationWidget = new QuickNavigationWidget(this);
     mpQuickNavigationWidget->setObjectName("quickNavigation");
 
     mpCentralGridLayout->addWidget(mpProjectTabs,0,0);
-    //mpCentralGridLayout->addWidget(mpQuickNavigationWidget,1,0);
+    mpCentralGridLayout->addWidget(mpQuickNavigationWidget,1,0);
     //mpQuickNavigationWidget->hide();
     //mpProjectTabs->hide();
 
