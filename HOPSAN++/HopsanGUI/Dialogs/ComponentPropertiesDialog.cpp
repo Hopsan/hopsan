@@ -185,79 +185,64 @@ void ComponentPropertiesDialog::okPressed()
 //! @brief Sets the parameters and start values in the core component. Read the values from the dialog and write them into the core component.
 void ComponentPropertiesDialog::setParametersAndStartValues()
 {
+    //! @todo Maybe only use strings as value to parameters and start values and interpret it in core, this opens up for aritmetric expressions as well
+
+    //Parameters
     bool addedUndoPost = false;
     for (int i=0 ; i < mvParameterLayout.size(); ++i )
     {
         QString valueTxt = mvParameterLayout[i]->getDataValueTxt();
 
-        //Set the parameter
-        mpGUIComponent->setParameterValue(mvParameterLayout[i]->getDataName(), valueTxt);
-
-        //Parameter has changed, add to undo stack FIX THIS!!!
-        if(mpGUIComponent->getParameterValueTxt(mvParameterLayout[i]->getDataName()) != valueTxt)
+        //Get the old value to se if it changed
+        QString oldValueTxt = mpGUIComponent->getParameterValueTxt(mvParameterLayout[i]->getDataName());
+        //Parameter has changed, add to undo stack
+        if(oldValueTxt != valueTxt)
         {
             if(!addedUndoPost)
             {
                 this->mpGUIComponent->mpParentContainerObject->mUndoStack->newPost("changedparameters");
                 addedUndoPost = true;
             }
-            this->mpGUIComponent->mpParentContainerObject->mUndoStack->registerChangedParameter(mpGUIComponent->getName(), mvParameterLayout[i]->getDataName(), mpGUIComponent->getParameterValueTxt(mvParameterLayout[i]->getDataName()), valueTxt);
+            this->mpGUIComponent->mpParentContainerObject->mUndoStack->registerChangedParameter(mpGUIComponent->getName(),
+                                                                                                mvParameterLayout[i]->getDataName(),
+                                                                                                oldValueTxt,
+                                                                                                valueTxt);
             mpGUIComponent->mpParentContainerObject->mpParentProjectTab->hasChanged();
         }
+        //Set the parameter
+        mpGUIComponent->setParameterValue(mvParameterLayout[i]->getDataName(), valueTxt);
     }
 
-
-//    std::cout << "Parameters updated." << std::endl;
-//    this->close();
-//}
-
-
-////! @brief Sets the start values in the core component. Read the values from the dialog and write them into the core component.
-//void ComponentPropertiesDialog::setStartValues()
-//{
-    //! @todo Maybe only use strings as value to parameters and start values and interpret it in core, this opens up for aritmetric expressions as well
-
+    //StartValues
     QList<GUIPort*> ports = mpGUIComponent->getPortListPtrs();
     QList<GUIPort*>::iterator portIt;
-    //Used for plain values
-    QVector<QString> startDataNamesStr;
-    QVector<double> startDataValuesDbl;
-    //Used for mapped to system parameters start values
-    QVector<QString> startDataNamesStrSysPar;
-    QVector<QString> startDataValuesTxtSysPar;
-
-    size_t j=0;
-    //This loop deal with plain values, not mapped system parameters
-    for ( portIt=ports.begin(); portIt!=ports.end(); ++portIt )
+    int j = 0;
+    for(portIt=ports.begin(); portIt!=ports.end(); ++portIt)
     {
-        startDataNamesStr.clear();
-        startDataValuesDbl.clear();
-        startDataNamesStrSysPar.clear();
-        startDataValuesTxtSysPar.clear();
-        //Go trough all start values in all ports
         for(int i=0; i < mvStartValueLayout[j].size(); ++i)
         {
-            bool isDbl;
-            //Check if the start value is convertible to a double, if so assume that it is just a plain value that should be used,
-            //if not assume that it should be mapped to a System parameter
-            mvStartValueLayout[j][i]->getDataValueTxt().toDouble(&isDbl);
-            if(isDbl)
+            QString valueTxt = mvStartValueLayout[j][i]->getDataValueTxt();
+
+            //Get the old value to se if it changed
+            QString oldValueTxt = mpGUIComponent->getStartValueTxt((*portIt)->getName(), mvStartValueLayout[j][i]->getDescriptionName());
+            //Parameter has changed, add to undo stack
+            if(oldValueTxt != valueTxt)
             {
-                //Save the start values that should be set to just plain values (e.g. 17.0) into tmp vectors
-                startDataNamesStr.append(mvStartValueLayout[j][i]->getDescriptionName());
-                startDataValuesDbl.append(mvStartValueLayout[j][i]->getDataValue());
+                if(!addedUndoPost)
+                {
+                    this->mpGUIComponent->mpParentContainerObject->mUndoStack->newPost("changedparameters");
+                    addedUndoPost = true;
+                }
+                this->mpGUIComponent->mpParentContainerObject->mUndoStack->registerChangedStartValue(mpGUIComponent->getName(),
+                                                                                                     (*portIt)->getName(),
+                                                                                                     mvStartValueLayout[j][i]->getDescriptionName(),
+                                                                                                     oldValueTxt,
+                                                                                                     valueTxt);
+                mpGUIComponent->mpParentContainerObject->mpParentProjectTab->hasChanged();
             }
-            else
-            {
-                //Save the System parameter name (e.g. "myparameter") that should be mapped with the start value
-                startDataNamesStrSysPar.append(mvStartValueLayout[j][i]->getDescriptionName());
-                startDataValuesTxtSysPar.append(mvStartValueLayout[j][i]->getDataValueTxt());
-            }
+            //Set the start value
+            mpGUIComponent->setStartValue((*portIt)->getName(), mvStartValueLayout[j][i]->getDescriptionName(), valueTxt);
         }
-        //Set this plain start values to the ports
-        (*portIt)->setStartValueDataByNames(startDataNamesStr, startDataValuesDbl);
-        //Set/map the start values to the system parameters for the ports
-        (*portIt)->setStartValueDataByNames(startDataNamesStrSysPar, startDataValuesTxtSysPar);
         ++j;
     }
 

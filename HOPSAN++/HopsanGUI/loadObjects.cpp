@@ -430,14 +430,14 @@ void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoS
 //! @brief xml version
 void loadStartValue(const StartValueLoadData &rData, GUIModelObject* pObject, undoStatus undoSettings)
 {
-    bool isDbl;
-    //Assumes that if it is convertible to a double it is a plain value otherwise it is assumed to be mapped to a System parameter
-    double value = rData.startValue.toDouble(&isDbl);
-    if(isDbl)
-    {
-        pObject->setStartValue(rData.portName, rData.variable, value);
-    }
-    else
+//    bool isDbl;
+//    //Assumes that if it is convertible to a double it is a plain value otherwise it is assumed to be mapped to a System parameter
+//    double value = rData.startValue.toDouble(&isDbl);
+//    if(isDbl)
+//    {
+//        pObject->setStartValue(rData.portName, rData.variable, value);
+//    }
+//    else
     {
         //Use the setStartValue method that mapps to System parameter
         pObject->setStartValue(rData.portName, rData.variable, rData.startValue);

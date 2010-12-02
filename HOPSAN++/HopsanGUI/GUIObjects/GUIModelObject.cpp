@@ -380,15 +380,6 @@ QVector<QString> GUIModelObject::getParameterNames()
 }
 
 
-////! @brief Virtual function that sets specified parameter to specified value
-////! @param name Name of parameter
-////! @param value New parameter value
-//void GUIModelObject::setParameterValue(QString /*name*/, double /*value*/)
-//{
-//    //cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
-//    assert(false);
-//}
-
 //! @brief Virtual function that sets specified parameter to specified system parameter
 //! @param name Name of parameter
 //! @param valueTxt System parameter
@@ -399,16 +390,15 @@ bool GUIModelObject::setParameterValue(QString /*name*/, QString /*valueTxt*/)
 }
 
 
-//! @brief Virtual function that sets specified startValue to specified value
-//! @param portName Name of port
-//! @param variable Name of variable in port
-//! @param startValue New parameter value
-void GUIModelObject::setStartValue(QString /*portName*/, QString /*variable*/, double /*startValue*/)
+//! @brief Virtual function that returns the specified start value
+//! @param portName Name of the port to return value from
+//! @param variable Name of the parameter to return value from
+QString GUIModelObject::getStartValueTxt(QString portName, QString variable)
 {
-    //cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
+    //cout << "This function should only be available in GUIComponent" << endl;
     assert(false);
+    return "";
 }
-
 
 //! @brief Virtual function that sets specified startValue to specified value
 //! @param portName Name of port

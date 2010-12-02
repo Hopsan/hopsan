@@ -126,26 +126,10 @@ QString GUIComponent::getParameterValueTxt(QString name)
     return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValueTxt(this->getName(), name);
 }
 
-////! @brief Set a parameter value, wrapps hopsan core
-//void GUIComponent::setParameterValue(QString name, double value)
-//{
-//    mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, value);
-//}
-
 //! @brief Set a parameter value to be mapped to a System parameter
 bool GUIComponent::setParameterValue(QString name, QString sysParName)
 {
     return mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, sysParName);
-}
-
-//! @brief Set a start value
-void GUIComponent::setStartValue(QString portName, QString variable, double startValue)
-{
-    QVector<QString> vVariable;
-    QVector<double> vStartValue;
-    vVariable.append(variable);
-    vStartValue.append(startValue);
-    this->getPort(portName)->setStartValueDataByNames(vVariable, vStartValue);
 }
 
 //! @brief Set a start value to be mapped to a System parameter
@@ -156,6 +140,19 @@ void GUIComponent::setStartValue(QString portName, QString variable, QString sys
     vVariable.append(variable);
     vSysParName.append(sysParName);
     this->getPort(portName)->setStartValueDataByNames(vVariable, vSysParName);
+}
+
+
+//! @brief Set a start value to be mapped to a System parameter
+QString GUIComponent::getStartValueTxt(QString portName, QString variable)
+{
+    QVector<QString> vVariable, vSysParName, vUnit;
+    this->getPort(portName)->getStartValueDataNamesValuesAndUnits(vVariable, vSysParName, vUnit);
+    int idx = vVariable.indexOf(variable);
+    if(idx < 0)
+        return "";
+    else
+        return vSysParName[idx];
 }
 
 

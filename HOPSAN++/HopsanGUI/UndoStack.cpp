@@ -239,6 +239,19 @@ void UndoStack::undoOneStep()
             }
             mpParentContainerObject->getGUIModelObject(objectName)->setParameterValue(parameterName, oldValue);
         }
+        else if(stuffElement.attribute("what") == "changedstartvalue")
+        {
+            QString objectName = stuffElement.attribute("objectname");
+            QString portName = stuffElement.attribute("portname");
+            QString parameterName = stuffElement.attribute("parametername");
+            QString oldValue = stuffElement.attribute("oldvalue");
+            if(!mpParentContainerObject->hasGUIModelObject(objectName))
+            {
+                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
+                return;
+            }
+            mpParentContainerObject->getGUIModelObject(objectName)->setStartValue(portName, parameterName, oldValue);
+        }
         else if(stuffElement.attribute("what") == "namevisibilitychange")
         {
             QString objectName = stuffElement.attribute("objectname");
@@ -533,6 +546,19 @@ void UndoStack::redoOneStep()
                 return;
             }
             mpParentContainerObject->getGUIModelObject(objectName)->setParameterValue(parameterName, newValue);
+        }
+        else if(stuffElement.attribute("what") == "changedstartvalue")
+        {
+            QString objectName = stuffElement.attribute("objectname");
+            QString portName = stuffElement.attribute("portname");
+            QString parameterName = stuffElement.attribute("parametername");
+            QString newValue = stuffElement.attribute("newvalue");
+            if(!mpParentContainerObject->hasGUIModelObject(objectName))
+            {
+                this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
+                return;
+            }
+            mpParentContainerObject->getGUIModelObject(objectName)->setStartValue(portName, parameterName, newValue);
         }
         else if(stuffElement.attribute("what") == "namevisibilitychange")
         {
@@ -845,6 +871,22 @@ void UndoStack::registerChangedParameter(QString objectName, QString parameterNa
     stuffElement.setAttribute("objectname", objectName);
     gpMainWindow->mpUndoWidget->refreshList();
 }
+
+
+//! @brief Registser function for changing parameters of an object
+void UndoStack::registerChangedStartValue(QString objectName, QString portName, QString parameterName, QString oldValueTxt, QString newValueTxt)
+{
+    QDomElement currentPostElement = getCurrentPost();
+    QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
+    stuffElement.setAttribute("what", "changedstartvalue");
+    stuffElement.setAttribute("parametername", parameterName);
+    stuffElement.setAttribute("oldvalue", oldValueTxt);
+    stuffElement.setAttribute("newvalue", newValueTxt);
+    stuffElement.setAttribute("objectname", objectName);
+    stuffElement.setAttribute("portname", portName);
+    gpMainWindow->mpUndoWidget->refreshList();
+}
+
 
 
 //! @brief Register function for changing name visibility of an object

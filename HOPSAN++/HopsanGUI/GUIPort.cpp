@@ -414,10 +414,10 @@ void GUIPort::getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVe
 }
 
 
-void GUIPort::setStartValueDataByNames(QVector<QString> names, QVector<double> values)
-{
-    mpParentContainerObject->getCoreSystemAccessPtr()->setStartValueDataByNames(getGuiModelObjectName(), this->getName(), names, values);
-}
+//void GUIPort::setStartValueDataByNames(QVector<QString> names, QVector<double> values)
+//{
+//    mpParentContainerObject->getCoreSystemAccessPtr()->setStartValueDataByNames(getGuiModelObjectName(), this->getName(), names, values);
+//}
 
 void GUIPort::setStartValueDataByNames(QVector<QString> names, QVector<QString> valuesTxt)
 {

@@ -27,9 +27,8 @@ public:
     QString getParameterDescription(QString name);
     double getParameterValue(QString name);
     QString getParameterValueTxt(QString name);
-//    void setParameterValue(QString name, double value);
     bool setParameterValue(QString name, QString sysParName);
-    void setStartValue(QString portName, QString variable, double startValue);
+    QString getStartValueTxt(QString portName, QString variable);
     void setStartValue(QString portName, QString variable, QString sysParName);
     //void saveToTextStream(QTextStream &rStream, QString prepend=QString());
 
