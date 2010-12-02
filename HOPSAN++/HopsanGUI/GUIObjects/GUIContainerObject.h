@@ -53,10 +53,11 @@ public:
     bool isObjectSelected();
     bool isConnectorSelected();
 
-    //This need to be here for now, and be public, used in containerPropertiesDialog by systems
-    virtual void setTypeCQS(QString /*typestring*/){}
-    virtual void setNumberOfLogSamples(size_t /*nSamples*/){}
-    virtual void removeFavoriteParameterByComponentName(QString /*componentName*/){}
+    //This (overloaded versions) are used in containerPropertiesDialog by systems
+    virtual void setTypeCQS(QString /*typestring*/){assert(false);}
+    virtual size_t getNumberOfLogSamples(){assert(false);}
+    virtual void setNumberOfLogSamples(size_t /*nSamples*/){assert(false);}
+    virtual void removeFavoriteParameterByComponentName(QString /*componentName*/){assert(false);}
 
     //Public member variable
     //!< @todo make this private later

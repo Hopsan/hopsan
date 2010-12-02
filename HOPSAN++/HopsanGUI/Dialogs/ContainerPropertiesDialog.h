@@ -12,12 +12,9 @@
 
 #include <QDialog>
 #include <QCheckBox>
-#include <QDialogButtonBox>
 #include <QLineEdit>
-#include <QLabel>
-#include <QGridLayout>
-#include <QHBoxLayout>
 
+//Forward Declaration
 class GUIContainerObject;
 
 class ContainerPropertiesDialog : public QDialog
@@ -27,46 +24,21 @@ class ContainerPropertiesDialog : public QDialog
 public:
     ContainerPropertiesDialog(GUIContainerObject *pContainerObject, QWidget *pParentWidget);
 
-//public slots:
-//    void show();
-
 private:
-//    bool mIsoBool;
-
     GUIContainerObject *mpContainerObject;
 
-    QLabel *mpNameLabel;
     QLineEdit *mpNameEdit;
-    QHBoxLayout *mpNameLayout;
-
     QLineEdit *mpUserIconPath;
     QLineEdit *mpIsoIconPath;
-    QLineEdit *mpNumberOfSamplesBox;
+    QLineEdit *mpNSamplesEdit;
     QLineEdit *mpCQSLineEdit;
-
-    QLabel *mpUserIconLabel;
-    QLabel *mpIsoIconLabel;
-    QLabel *mpNumberOfSamplesLabel;
-    QLabel *mpCQSLable;
-
     QCheckBox *mpIsoCheckBox;
     QCheckBox *mpDisableUndoCheckBox;
-
-    QPushButton *mpIsoIconBrowseButton;
-    QPushButton *mpUserIconBrowseButton;
-    QPushButton *mpCancelButton;
-    QPushButton *mpApplyButton;
-    QPushButton *mpDoneButton;
-
-    QDialogButtonBox *mpButtonBox;
-    QWidget *mpCentralwidget;
-    QGridLayout *mpLayout;
 
 private slots:
     void setValues();
     void browseUser();
     void browseIso();
-
 };
 
 #endif // CONTAINERPROPERTIESDIALOG_H
