@@ -16,6 +16,7 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QGridLayout>
+#include <QHBoxLayout>
 
 class GUIContainerObject;
 
@@ -36,6 +37,7 @@ private:
 
     QLabel *mpNameLabel;
     QLineEdit *mpNameEdit;
+    QHBoxLayout *mpNameLayout;
 
     QLineEdit *mpUserIconPath;
     QLineEdit *mpIsoIconPath;

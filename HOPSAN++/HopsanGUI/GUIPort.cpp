@@ -87,6 +87,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     this->refreshPortOverlayPosition();
 
     mMag = GOLDENRATIO;
+    mOverlaySetScale = 1.0;
     mIsMagnified = false;
     mIsConnected = false;
 

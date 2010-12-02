@@ -17,16 +17,19 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
 {
     mpContainerObject = pContainerObject;
 
-    //First build the properties box
-    mpNameLabel = new QLabel("Name: ", this);
-    mpNameEdit = new QLineEdit(pContainerObject->getName(), this);
-
     //Set the name and size of the main window
     this->setObjectName("PreferenceDialog");
     this->resize(640,480);
     this->setWindowTitle("Model Preferences");
 
     //Define items in the dialog box
+    mpNameLabel = new QLabel("Name: ", this);
+    mpNameEdit = new QLineEdit(pContainerObject->getName(), this);
+    mpNameLayout = new QHBoxLayout();
+    mpNameLayout->addWidget(mpNameLabel);
+    mpNameLayout->addWidget(mpNameEdit);
+
+
     mpIsoCheckBox = new QCheckBox(tr("Use ISO 1219 Graphics"), this);
     mpIsoCheckBox->setCheckable(true);
     mpIsoCheckBox->setChecked(gpMainWindow->mpProjectTabs->getCurrentSystem()->mGfxType);
@@ -76,8 +79,7 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     size_t row = 0;
     mpLayout = new QGridLayout(this);
     mpLayout->setSizeConstraint(QLayout::SetFixedSize);
-    mpLayout->addWidget(mpNameLabel, row, 0);
-    mpLayout->addWidget(mpNameEdit, row, 1);
+    mpLayout->addLayout(mpNameLayout, row, 0, 1, 2);
     ++row;
     mpLayout->addWidget(mpUserIconLabel, row, 0);
     mpLayout->addWidget(mpUserIconPath, row, 1);

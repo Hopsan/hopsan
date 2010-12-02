@@ -96,12 +96,7 @@ MainWindow::MainWindow(QWidget *parent)
     //Create the main tab container, need at least one tab
     mpProjectTabs = new ProjectTabWidget(this);
     mpProjectTabs->setObjectName("projectTabs");
-
     mpCentralGridLayout->addWidget(mpProjectTabs,0,0);
-
-    //! @todo This should not be needed as we set centralwidget as paranent when gridlayout is created, asser check for now can remove later
-    assert(mpCentralWidget->layout() == mpCentralGridLayout);
-    //mpCentralWidget->setLayout(mpCentralGridLayout);
 
     //Set the centralwidget
     this->setCentralWidget(mpCentralWidget);
