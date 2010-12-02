@@ -26,7 +26,8 @@ public:
     QString getParameterUnit(QString name);
     QString getParameterDescription(QString name);
     double getParameterValue(QString name);
-    void setParameterValue(QString name, double value);
+    QString getParameterValueTxt(QString name);
+//    void setParameterValue(QString name, double value);
     bool setParameterValue(QString name, QString sysParName);
     void setStartValue(QString portName, QString variable, double startValue);
     void setStartValue(QString portName, QString variable, QString sysParName);

@@ -27,8 +27,7 @@ protected slots:
     void okPressed();
 
 protected:
-    void setParameters();
-    void setStartValues();
+    void setParametersAndStartValues();
 
 private:
     GUIComponent *mpGUIComponent;

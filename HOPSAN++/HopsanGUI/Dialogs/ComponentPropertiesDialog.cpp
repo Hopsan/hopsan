@@ -63,12 +63,12 @@ void ComponentPropertiesDialog::createEditStuff()
     size_t n = 0;
     for ( pit=parnames.begin(); pit!=parnames.end(); ++pit )
     {
-        QString valueTxt = mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValueTxt(mpGUIComponent->getName(), (*pit));
+        QString valueTxt = mpGUIComponent->getParameterValueTxt(*pit);
         bool ok;
         valueTxt.toDouble(&ok);
         if((!ok) && !(mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(valueTxt)))
         {
-                gpMainWindow->mpMessageWidget->printGUIWarningMessage(tr("Global parameter no longer exists, replacing with last used value."));
+            gpMainWindow->mpMessageWidget->printGUIWarningMessage(tr("Global parameter no longer exists, replacing with last used value."));
         }
 
         mvParameterLayout.push_back(new ParameterLayout(*pit,
@@ -178,61 +178,43 @@ void ComponentPropertiesDialog::okPressed()
     mpGUIComponent->mpParentContainerObject->renameGUIModelObject(mpGUIComponent->getName(), mpNameEdit->text());
     //qDebug() << mpNameEdit->text();
 
-    setParameters();
-    setStartValues();
+    setParametersAndStartValues();
 }
 
 
-//! @brief Sets the parameters in the core component. Read the values from the dialog and write them into the core component.
-void ComponentPropertiesDialog::setParameters()
+//! @brief Sets the parameters and start values in the core component. Read the values from the dialog and write them into the core component.
+void ComponentPropertiesDialog::setParametersAndStartValues()
 {
     bool addedUndoPost = false;
     for (int i=0 ; i < mvParameterLayout.size(); ++i )
     {
-        QString requestedParameter = mvParameterLayout[i]->getDataValueTxt();
-        bool isDbl;
-        //Check if the parameter is convertible to a double, if so assume that it is just a plain value that should be used
-        double newValue = requestedParameter.toDouble(&isDbl);
+        QString valueTxt = mvParameterLayout[i]->getDataValueTxt();
 
-        if(!isDbl)     //Should be set/mapped to a system parameter
+        //Set the parameter
+        mpGUIComponent->setParameterValue(mvParameterLayout[i]->getDataName(), valueTxt);
+
+        //Parameter has changed, add to undo stack FIX THIS!!!
+        if(mpGUIComponent->getParameterValueTxt(mvParameterLayout[i]->getDataName()) != valueTxt)
         {
-            if(mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(requestedParameter))
+            if(!addedUndoPost)
             {
-                mpGUIComponent->setParameterValue(mvParameterLayout[i]->getDataName(), requestedParameter);
+                this->mpGUIComponent->mpParentContainerObject->mUndoStack->newPost("changedparameters");
+                addedUndoPost = true;
             }
-            else    //User has written something illegal
-            {
-                //! @todo Make something better, like showing a warning box, if parameter is not ok. Maybe check all parameters before setting any of them.
-                MessageWidget *messageWidget = gpMainWindow->mpMessageWidget;//qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent()->parent())->mpMessageWidget;
-                messageWidget->printGUIInfoMessage(QString("ComponentPropertiesDialog::setParameters(): You must give a correct value for '").append(mvParameterLayout[i]->getDataName()).append(QString("', putz. Try again!")));
-                qDebug() << "Inte okej!";
-                return;
-            }
-        }
-        else
-        {
-            if(mpGUIComponent->getParameterValue(mvParameterLayout[i]->getDataName()) != newValue)     //Normal parameter (a double value)
-            {
-                if(!addedUndoPost)
-                {
-                    this->mpGUIComponent->mpParentContainerObject->mUndoStack->newPost("changedparameters");
-                    addedUndoPost = true;
-                }
-                this->mpGUIComponent->mpParentContainerObject->mUndoStack->registerChangedParameter(mpGUIComponent->getName(), mvParameterLayout[i]->getDataName(), mpGUIComponent->getParameterValue(mvParameterLayout[i]->getDataName()), newValue);
-                mpGUIComponent->mpParentContainerObject->mpParentProjectTab->hasChanged();
-            }
-            mpGUIComponent->setParameterValue(mvParameterLayout[i]->getDataName(), newValue);
+            this->mpGUIComponent->mpParentContainerObject->mUndoStack->registerChangedParameter(mpGUIComponent->getName(), mvParameterLayout[i]->getDataName(), mpGUIComponent->getParameterValueTxt(mvParameterLayout[i]->getDataName()), valueTxt);
+            mpGUIComponent->mpParentContainerObject->mpParentProjectTab->hasChanged();
         }
     }
 
-    std::cout << "Parameters updated." << std::endl;
-    this->close();
-}
+
+//    std::cout << "Parameters updated." << std::endl;
+//    this->close();
+//}
 
 
-//! @brief Sets the start values in the core component. Read the values from the dialog and write them into the core component.
-void ComponentPropertiesDialog::setStartValues()
-{
+////! @brief Sets the start values in the core component. Read the values from the dialog and write them into the core component.
+//void ComponentPropertiesDialog::setStartValues()
+//{
     //! @todo Maybe only use strings as value to parameters and start values and interpret it in core, this opens up for aritmetric expressions as well
 
     QList<GUIPort*> ports = mpGUIComponent->getPortListPtrs();
@@ -279,7 +261,7 @@ void ComponentPropertiesDialog::setStartValues()
         ++j;
     }
 
-    std::cout << "Start values updated." << std::endl;
+    std::cout << "Parameters and start values updated." << std::endl;
     this->close();
 }
 

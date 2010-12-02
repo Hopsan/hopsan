@@ -1,6 +1,8 @@
 //$Id$
 
 #include "CoreAccess.h"
+#include "MainWindow.h"
+#include "Widgets/MessageWidget.h"
 #include <QString>
 #include <QVector>
 
@@ -258,6 +260,8 @@ void CoreSystemAccess::setStartValueDataByNames(QString componentName, QString p
 
 void CoreSystemAccess::setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<QString> valuesTxt)
 {
+    //MOVE HERE CODE LIKE FOR PARAMETERS FIX THIS!!!
+
     std::vector<std::string> stdNames, stdValuesTxt;
     stdNames.resize(names.size());
     stdValuesTxt.resize(valuesTxt.size());
@@ -280,9 +284,33 @@ void CoreSystemAccess::setParameter(QString componentName, QString parameterName
     mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), value);
 }
 
-bool CoreSystemAccess::setParameter(QString componentName, QString parameterName, QString sysParName)
+bool CoreSystemAccess::setParameter(QString componentName, QString parameterName, QString valueTxt)
 {
-    mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), sysParName.toStdString());
+    bool isDbl;
+    //Check if the parameter is convertible to a double, if so assume that it is just a plain value that should be used
+    double valueDbl = valueTxt.toDouble(&isDbl);
+
+    if(!isDbl)     //Should be set/mapped to a system parameter
+    {
+        if(hasSystemParameter(valueTxt))
+        {
+            mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), valueTxt.toStdString());
+        }
+        else    //User has written something illegal
+        {
+            //! @todo Make something better, like showing a warning box, if parameter is not ok. Maybe check all parameters before setting any of them.
+            MessageWidget *messageWidget = gpMainWindow->mpMessageWidget;//qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent()->parent())->mpMessageWidget;
+            messageWidget->printGUIInfoMessage(QString("ComponentPropertiesDialog::setParameters(): You must give a correct value for '").append(parameterName).append(QString("', putz. Try again!")));
+            qDebug() << "Inte okej!";
+            return false;
+        }
+    }
+    else
+    {
+        //The parameter is just a simple double with no mapping to System parameter
+        setParameter(componentName, parameterName, valueDbl);
+    }
+    return true;
 }
 
 void CoreSystemAccess::removeSubComponent(QString componentName, bool doDelete)

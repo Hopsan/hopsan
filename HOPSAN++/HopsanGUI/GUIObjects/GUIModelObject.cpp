@@ -361,6 +361,16 @@ double GUIModelObject::getParameterValue(QString /*name*/)
 }
 
 
+//! @brief Virtual function that returns the specified parameter value
+//! @param name Name of the parameter to return value from
+QString GUIModelObject::getParameterValueTxt(QString /*name*/)
+{
+    //cout << "This function should only be available in GUIComponent" << endl;
+    assert(false);
+    return "";
+}
+
+
 //! @brief Virtual function that returns a vector with the names of the parameteres in the object
 QVector<QString> GUIModelObject::getParameterNames()
 {
@@ -370,14 +380,14 @@ QVector<QString> GUIModelObject::getParameterNames()
 }
 
 
-//! @brief Virtual function that sets specified parameter to specified value
-//! @param name Name of parameter
-//! @param value New parameter value
-void GUIModelObject::setParameterValue(QString /*name*/, double /*value*/)
-{
-    //cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
-    assert(false);
-}
+////! @brief Virtual function that sets specified parameter to specified value
+////! @param name Name of parameter
+////! @param value New parameter value
+//void GUIModelObject::setParameterValue(QString /*name*/, double /*value*/)
+//{
+//    //cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
+//    assert(false);
+//}
 
 //! @brief Virtual function that sets specified parameter to specified system parameter
 //! @param name Name of parameter

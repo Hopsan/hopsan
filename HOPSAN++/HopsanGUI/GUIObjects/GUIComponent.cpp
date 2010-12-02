@@ -121,11 +121,16 @@ double GUIComponent::getParameterValue(QString name)
     return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValue(this->getName(), name);
 }
 
-//! @brief Set a parameter value, wrapps hopsan core
-void GUIComponent::setParameterValue(QString name, double value)
+QString GUIComponent::getParameterValueTxt(QString name)
 {
-    mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, value);
+    return mpParentContainerObject->getCoreSystemAccessPtr()->getParameterValueTxt(this->getName(), name);
 }
+
+////! @brief Set a parameter value, wrapps hopsan core
+//void GUIComponent::setParameterValue(QString name, double value)
+//{
+//    mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, value);
+//}
 
 //! @brief Set a parameter value to be mapped to a System parameter
 bool GUIComponent::setParameterValue(QString name, QString sysParName)

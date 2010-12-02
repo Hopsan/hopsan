@@ -41,7 +41,7 @@ public:
     void registerRotatedObject(QString objectName);
     void registerVerticalFlip(QString objectName);
     void registerHorizontalFlip(QString objectName);
-    void registerChangedParameter(QString objectName, QString parameterName, double oldValue, double newValue);
+    void registerChangedParameter(QString objectName, QString parameterName, QString oldValueTxt, QString newValueTxt);
     void registerNameVisibilityChange(QString objectName, bool isVisible);
     void registerAddedBoxWidget(GUIBoxWidget *item);
     void registerDeletedBoxWidget(GUIBoxWidget *item);

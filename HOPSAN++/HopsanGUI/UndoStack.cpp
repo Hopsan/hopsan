@@ -231,7 +231,7 @@ void UndoStack::undoOneStep()
         {
             QString objectName = stuffElement.attribute("objectname");
             QString parameterName = stuffElement.attribute("parametername");
-            double oldValue = stuffElement.attribute("oldvalue").toDouble();
+            QString oldValue = stuffElement.attribute("oldvalue");
             if(!mpParentContainerObject->hasGUIModelObject(objectName))
             {
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
@@ -526,7 +526,7 @@ void UndoStack::redoOneStep()
         {
             QString objectName = stuffElement.attribute("objectname");
             QString parameterName = stuffElement.attribute("parametername");
-            double newValue = stuffElement.attribute("newvalue").toDouble();
+            QString newValue = stuffElement.attribute("newvalue");
             if(!mpParentContainerObject->hasGUIModelObject(objectName))
             {
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
@@ -834,14 +834,14 @@ void UndoStack::registerHorizontalFlip(QString objectName)
 
 
 //! @brief Registser function for changing parameters of an object
-void UndoStack::registerChangedParameter(QString objectName, QString parameterName, double oldValue, double newValue)
+void UndoStack::registerChangedParameter(QString objectName, QString parameterName, QString oldValueTxt, QString newValueTxt)
 {
     QDomElement currentPostElement = getCurrentPost();
     QDomElement stuffElement = appendDomElement(currentPostElement, "stuff");
     stuffElement.setAttribute("what", "changedparameter");
     stuffElement.setAttribute("parametername", parameterName);
-    stuffElement.setAttribute("oldvalue", oldValue);
-    stuffElement.setAttribute("newvalue", newValue);
+    stuffElement.setAttribute("oldvalue", oldValueTxt);
+    stuffElement.setAttribute("newvalue", newValueTxt);
     stuffElement.setAttribute("objectname", objectName);
     gpMainWindow->mpUndoWidget->refreshList();
 }

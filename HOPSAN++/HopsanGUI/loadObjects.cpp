@@ -404,14 +404,14 @@ void loadParameterValues(const ParameterLoadData &rData, GUIContainerObject* pSy
 //! @brief xml version
 void loadParameterValue(const ParameterLoadData &rData, GUIModelObject* pObject, undoStatus undoSettings)
 {
-    bool isDbl;
-    //Assumes that if it is convertible to a double it is a plain value otherwise it is assumed to be mapped to a System parameter
-    double value = rData.parameterValue.toDouble(&isDbl);
-    if(isDbl)
-    {
-        pObject->setParameterValue(rData.parameterName, value);
-    }
-    else
+//    bool isDbl;
+//    //Assumes that if it is convertible to a double it is a plain value otherwise it is assumed to be mapped to a System parameter
+//    double value = rData.parameterValue.toDouble(&isDbl);
+//    if(isDbl)
+//    {
+//        pObject->setParameterValue(rData.parameterName, value);
+//    }
+//    else
     {
         //Use the setParameter method that mapps to System parameter
         pObject->setParameterValue(rData.parameterName, rData.parameterValue);

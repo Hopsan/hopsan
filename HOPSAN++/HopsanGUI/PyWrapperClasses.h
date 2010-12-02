@@ -108,7 +108,7 @@ public slots:
 
     void setParameter(GUIModelObject* o, const QString& parName, const double& value)
     {
-        o->setParameterValue(parName, value);
+        o->setParameterValue(parName, QString::number(value));
     }
 
     GUIPort* port(GUIModelObject* o, const QString& portName)
@@ -209,7 +209,7 @@ public slots:
 
     void setParameter(MainWindow* o, const QString& compName, const QString& parName, const double& value)
     {
-        o->mpProjectTabs->getCurrentSystem()->getGUIModelObject(compName)->setParameterValue(parName, value);
+        o->mpProjectTabs->getCurrentSystem()->getGUIModelObject(compName)->setParameterValue(parName, QString::number(value));
     }
 
     void plot(MainWindow* o, const QString& compName, const QString& portName, const QString& dataName)
