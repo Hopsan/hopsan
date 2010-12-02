@@ -405,6 +405,7 @@ void loadParameterValues(const ParameterLoadData &rData, GUIContainerObject* pSy
 void loadParameterValue(const ParameterLoadData &rData, GUIModelObject* pObject, undoStatus undoSettings)
 {
     bool isDbl;
+    //Assumes that if it is convertible to a double it is a plain value otherwise it is assumed to be mapped to a System parameter
     double value = rData.parameterValue.toDouble(&isDbl);
     if(isDbl)
     {
@@ -412,6 +413,7 @@ void loadParameterValue(const ParameterLoadData &rData, GUIModelObject* pObject,
     }
     else
     {
+        //Use the setParameter method that mapps to System parameter
         pObject->setParameterValue(rData.parameterName, rData.parameterValue);
     }
 }
@@ -429,6 +431,7 @@ void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoS
 void loadStartValue(const StartValueLoadData &rData, GUIModelObject* pObject, undoStatus undoSettings)
 {
     bool isDbl;
+    //Assumes that if it is convertible to a double it is a plain value otherwise it is assumed to be mapped to a System parameter
     double value = rData.startValue.toDouble(&isDbl);
     if(isDbl)
     {
@@ -436,6 +439,7 @@ void loadStartValue(const StartValueLoadData &rData, GUIModelObject* pObject, un
     }
     else
     {
+        //Use the setStartValue method that mapps to System parameter
         pObject->setStartValue(rData.portName, rData.variable, rData.startValue);
     }
 }

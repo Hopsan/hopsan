@@ -127,11 +127,13 @@ void GUIComponent::setParameterValue(QString name, double value)
     mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, value);
 }
 
-bool GUIComponent::setParameterValue(QString name, QString valueTxt)
+//! @brief Set a parameter value to be mapped to a System parameter
+bool GUIComponent::setParameterValue(QString name, QString sysParName)
 {
-    return mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, valueTxt);
+    return mpParentContainerObject->getCoreSystemAccessPtr()->setParameter(this->getName(), name, sysParName);
 }
 
+//! @brief Set a start value
 void GUIComponent::setStartValue(QString portName, QString variable, double startValue)
 {
     QVector<QString> vVariable;
@@ -141,7 +143,7 @@ void GUIComponent::setStartValue(QString portName, QString variable, double star
     this->getPort(portName)->setStartValueDataByNames(vVariable, vStartValue);
 }
 
-
+//! @brief Set a start value to be mapped to a System parameter
 void GUIComponent::setStartValue(QString portName, QString variable, QString sysParName)
 {
     QVector<QString> vVariable;

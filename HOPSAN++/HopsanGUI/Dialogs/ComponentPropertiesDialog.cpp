@@ -183,17 +183,18 @@ void ComponentPropertiesDialog::okPressed()
 }
 
 
-//! Sets the parameters in the core component. Read the values from the dialog and write them into the core component.
+//! @brief Sets the parameters in the core component. Read the values from the dialog and write them into the core component.
 void ComponentPropertiesDialog::setParameters()
 {
     bool addedUndoPost = false;
     for (int i=0 ; i < mvParameterLayout.size(); ++i )
     {
         QString requestedParameter = mvParameterLayout[i]->getDataValueTxt();
-        bool ok;
-        double newValue = requestedParameter.toDouble(&ok);
+        bool isDbl;
+        //Check if the parameter is convertible to a double, if so assume that it is just a plain value that should be used
+        double newValue = requestedParameter.toDouble(&isDbl);
 
-        if(!ok)     //Global parameter
+        if(!isDbl)     //Should be set/mapped to a system parameter
         {
             if(mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(requestedParameter))
             {
@@ -229,60 +230,58 @@ void ComponentPropertiesDialog::setParameters()
 }
 
 
+//! @brief Sets the start values in the core component. Read the values from the dialog and write them into the core component.
 void ComponentPropertiesDialog::setStartValues()
 {
+    //! @todo Maybe only use strings as value to parameters and start values and interpret it in core, this opens up for aritmetric expressions as well
+
     QList<GUIPort*> ports = mpGUIComponent->getPortListPtrs();
     QList<GUIPort*>::iterator portIt;
-    QVector<QString> startDataNamesStr, startDataUnitsStr;
+    //Used for plain values
+    QVector<QString> startDataNamesStr;
     QVector<double> startDataValuesDbl;
+    //Used for mapped to system parameters start values
+    QVector<QString> startDataNamesStrSysPar;
+    QVector<QString> startDataValuesTxtSysPar;
+
     size_t j=0;
+    //This loop deal with plain values, not mapped system parameters
     for ( portIt=ports.begin(); portIt!=ports.end(); ++portIt )
     {
         startDataNamesStr.clear();
         startDataValuesDbl.clear();
-        startDataUnitsStr.clear();
+        startDataNamesStrSysPar.clear();
+        startDataValuesTxtSysPar.clear();
+        //Go trough all start values in all ports
         for(int i=0; i < mvStartValueLayout[j].size(); ++i)
         {
             bool isDbl;
+            //Check if the start value is convertible to a double, if so assume that it is just a plain value that should be used,
+            //if not assume that it should be mapped to a System parameter
             mvStartValueLayout[j][i]->getDataValueTxt().toDouble(&isDbl);
             if(isDbl)
             {
+                //Save the start values that should be set to just plain values (e.g. 17.0) into tmp vectors
                 startDataNamesStr.append(mvStartValueLayout[j][i]->getDescriptionName());
                 startDataValuesDbl.append(mvStartValueLayout[j][i]->getDataValue());
             }
-        }
-        (*portIt)->setStartValueDataByNames(startDataNamesStr, startDataValuesDbl);
-        ++j;
-    }
-
-    QVector<QString> startDataValuesTxt;
-    j=0;
-    for ( portIt=ports.begin(); portIt!=ports.end(); ++portIt )
-    {
-        startDataNamesStr.clear();
-        startDataValuesDbl.clear();
-        startDataUnitsStr.clear();
-        startDataValuesTxt.clear();
-        for(int i=0; i < mvStartValueLayout[j].size(); ++i)
-        {
-            QString dataValueTxt = mvStartValueLayout[j][i]->getDataValueTxt();
-            bool isDbl;
-            dataValueTxt.toDouble(&isDbl);
-            if(!isDbl)
+            else
             {
-                startDataNamesStr.append(mvStartValueLayout[j][i]->getDescriptionName());
-                startDataValuesTxt.append(mvStartValueLayout[j][i]->getDataValueTxt());
+                //Save the System parameter name (e.g. "myparameter") that should be mapped with the start value
+                startDataNamesStrSysPar.append(mvStartValueLayout[j][i]->getDescriptionName());
+                startDataValuesTxtSysPar.append(mvStartValueLayout[j][i]->getDataValueTxt());
             }
         }
-        (*portIt)->setStartValueDataByNames(startDataNamesStr, startDataValuesTxt);
+        //Set this plain start values to the ports
+        (*portIt)->setStartValueDataByNames(startDataNamesStr, startDataValuesDbl);
+        //Set/map the start values to the system parameters for the ports
+        (*portIt)->setStartValueDataByNames(startDataNamesStrSysPar, startDataValuesTxtSysPar);
         ++j;
     }
 
     std::cout << "Start values updated." << std::endl;
     this->close();
 }
-
-
 
 
 

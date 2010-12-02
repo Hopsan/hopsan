@@ -280,9 +280,9 @@ void CoreSystemAccess::setParameter(QString componentName, QString parameterName
     mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), value);
 }
 
-bool CoreSystemAccess::setParameter(QString componentName, QString parameterName, QString valueTxt)
+bool CoreSystemAccess::setParameter(QString componentName, QString parameterName, QString sysParName)
 {
-    mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), valueTxt.toStdString());
+    mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), sysParName.toStdString());
 }
 
 void CoreSystemAccess::removeSubComponent(QString componentName, bool doDelete)
