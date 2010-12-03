@@ -175,11 +175,24 @@ void CompParameter::setValue(const double value)
 //! @see mapParameter(std::string sysParName, double *mappedValue)
 void SystemParameters::add(std::string sysParName, double value)
 {
+    //This is a QD for handling negative values...
+    if(sysParName.at(0) == '-')
+        assert(false);
+    //This is a QD for handling negative values...
+
     if(mSystemParameters.count(sysParName) > 0)
     //sysParName is already present, change its value
     {
         mSystemParameters[sysParName].first = value;
         update(sysParName);
+
+        //This is a QD for handling negative values...
+        std::ostringstream oss;
+        oss << "-" << sysParName;
+        std::string negSysParName = oss.str();
+        mSystemParameters[negSysParName].first = -value;
+        update(negSysParName);
+        //This is a QD for handling negative values...
     }
     else
     //sysParName is not present, create a new one
@@ -187,6 +200,15 @@ void SystemParameters::add(std::string sysParName, double value)
         SystemParameter sysPar;
         sysPar.first = value;
         mSystemParameters[sysParName] = sysPar;
+
+        //This is a QD for handling negative values...
+        std::ostringstream oss;
+        oss << "-" << sysParName;
+        std::string negSysParName = oss.str();
+        SystemParameter negSysPar;
+        negSysPar.first = -value;
+        mSystemParameters[negSysParName] = negSysPar;
+        //This is a QD for handling negative values...
     }
 }
 
@@ -216,7 +238,13 @@ std::map<std::string, double> SystemParameters::getSystemParameterMap()
     for(map_it = mSystemParameters.begin(); map_it != mSystemParameters.end(); ++map_it)
     {
         //Create a new map with only the name and value (no pointers)
-        sysPar[map_it->first] = map_it->second.first;
+        //This is a QD for handling negative values...
+        //Do not count if it start with '-' because then there is this special hack!
+        if(map_it->first.at(0) != '-')
+        //This is a QD for handling negative values...
+        {
+            sysPar[map_it->first] = map_it->second.first;
+        }
     }
     return sysPar;
 }
@@ -250,6 +278,13 @@ std::string SystemParameters::findOccurrence(double *mappedValue)
 void SystemParameters::erase(std::string sysParName)
 {
     mSystemParameters.erase(sysParName);
+
+    //This is a QD for handling negative values...
+    std::ostringstream oss;
+    oss << "-" << sysParName;
+    std::string negSysParName = oss.str();
+    mSystemParameters.erase(negSysParName);
+    //This is a QD for handling negative values...
 }
 
 //! @brief Maps a double to a System parameter

@@ -117,6 +117,10 @@ namespace hopsan {
         std::vector<CompParameter> getParameterVector();
         std::map<std::string, double> getParameterMap();
 
+        //Start values
+        double getStartValue(Port* pPort, const size_t idx);
+        void setStartValue(Port* pPort, const size_t &idx, const double &value);
+
         //Ports
         std::vector<Port*> getPortPtrVector();
         Port *getPort(const std::string portname);
@@ -140,10 +144,7 @@ namespace hopsan {
 
         void addDebugMessage(std::string message);
 
-        double getStartValue(Port* pPort, const size_t idx);
-        void setStartValue(Port* pPort, const size_t &idx, const double &value);
-
-            //Temporarily made public for RT-simulation
+        //Temporarily made public for RT-simulation
         virtual void initialize(); //! @todo Default values are hard set
 
     protected:
