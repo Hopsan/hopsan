@@ -19,7 +19,7 @@ GUISystemPort::~GUISystemPort()
     this->mpParentContainerObject->getCoreSystemAccessPtr()->deleteSystemPort(this->getName());
 }
 
-//! @brief Help function to create ports in the component when it is created
+//! @brief Help function to create ports in the SystemPort Object when it is created
 void GUISystemPort::createPorts()
 {
     //A system port only contains one port, which should be first in the map, ignore any others (should not be any more)
@@ -43,13 +43,11 @@ void GUISystemPort::createPorts()
     //! @todo should make this function select a systemport icon not undefined
     i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
 
-    //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding systemport with name: " << desiredportname;
+    qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding systemport with name: " << desiredportname;
     mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->addSystemPort(desiredportname));
-    //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,resulting in name from core: " << mGUIModelObjectAppearance.getName();
+    qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,resulting in name from core: " << mGUIModelObjectAppearance.getName();
 
-    //We supply ptr to rootsystem to indicate that this is a systemport
-    //! @todo this is a very bad way of doing this (ptr to rootsystem for systemport), really need to figure out some better way
-    mpGuiPort = new GUIPort(mGUIModelObjectAppearance.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this/*, mpParentSystem->getCoreSystemAccessPtr()*/);
+    mpGuiPort = new GUIPort(mGUIModelObjectAppearance.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
     mPortListPtrs.append(mpGuiPort);
 
 }

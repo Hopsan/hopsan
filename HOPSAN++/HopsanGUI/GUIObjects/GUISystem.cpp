@@ -583,7 +583,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_FAVORITEPARAMETERTAG);
         }
 
-        //Refresh the appearnce of the subsystemem and create the GUIPorts
+        //Refresh the appearnce of the subsystemem and create the GUIPorts based on the loaded portappearance information
         //! @todo This is a bit strange, refreshAppearance MUST be run before create ports or create ports will not know some necessary stuff
         this->refreshAppearance();
         this->createPorts();
@@ -749,7 +749,7 @@ void GUISystem::updateExternalPortPositions()
 
             qDebug() << "--------------------x,y changed: " << x << " " << y;
 
-            //modelFile << "PORT " << addQuotes(it.value()->getName()) <<" " << x << " " << y << " " << it.value()->rotation() << "\n";
+
             //! @todo mybe we should update the ports as we now know where they should be
             GUIPort* pPort = this->getPort(it.value()->getName());
             //! @todo need some kind of function that wraps this somehow "x*mpIcon->sceneBoundingRect().width()"

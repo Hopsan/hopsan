@@ -49,20 +49,23 @@ QPointF getOffsetPointfromPort(GUIPort *pPort)
 GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParentGUIModelObject)
     : QGraphicsSvgItem(pPortAppearance->mIconPath, pParentGUIModelObject)
 {
-//    qDebug() << "parentType: " << pParentGUIModelObject->type() << " GUISYSTEM=" << GUISYSTEM;
+//    qDebug() << "parentType: " << pParentGUIModelObject->type() << " GUISYSTEM=" << GUISYSTEM << " GUICONTAINER=" << GUICONTAINEROBJECT;
 //    qDebug() << "======================= parentName: " << pParentGUIModelObject->getName();
 
-    //Here we try to figure out what to set the parent system pointer to
+    //Here we try to figure out what to set the parent container pointer to
     if ( pParentGUIModelObject->mpParentContainerObject != 0 )
     {
         //This is the normal case, our objects parentsystem
         mpParentContainerObject = pParentGUIModelObject->mpParentContainerObject;
+        //qDebug() << "This seems to be a normal port, setting parentContainer for this port to system: " << mpParentContainerObject->getName();
     }
     else if ( pParentGUIModelObject->type() == GUISYSTEM )
     {
-        //In this case, our parentobect is a root system (that is it has no parent)
-        //this should only happen in systemports in the root system
+        //In this case, our parentobject is a root system (that is it has no parent)
+        //this should only happen for external systemports in the root system
         mpParentContainerObject = qobject_cast<GUISystem*>(pParentGUIModelObject);
+        qDebug() << "This seems to be a Root system and a systemport, ptr: " << mpParentContainerObject;
+        qDebug() << "port ParentContainerName: " << mpParentContainerObject->getName();
     }
     else
     {

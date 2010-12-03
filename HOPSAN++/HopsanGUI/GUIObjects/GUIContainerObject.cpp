@@ -142,9 +142,21 @@ void GUIContainerObject::createPorts()
         qreal x = it.value().x;
         qreal y = it.value().y;
 
-        //qDebug() << "this-type(): " << this->type();
-        GUIPort *pNewPort = new GUIPort(it.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(it.value()), this);
-        mPortListPtrs.append(pNewPort);
+        //Create new external port if if does not already exist )this is the ussual case for individual components)
+        GUIPort *pPort = this->getPort(it.key());
+        if ( pPort == 0 )
+        {
+            qDebug() << "##This is OK though as this means that we should create the stupid port for the first time";
+            pPort = new GUIPort(it.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(it.value()), this);
+            mPortListPtrs.append(pPort);
+        }
+        else
+        {
+            //The external port already seems to exist, lets update it incase something has changed
+            //! @todo Maybe need to have a refresh portappearance function, dont really know if thiss will ever be used though, will fix when it becomes necessary
+            //pPort->mpP
+            qDebug() << "----------------------------------------ExternalPort already exist does not create it again: " << it.key() << " in: " << this->getName();
+        }
     }
 }
 
@@ -170,6 +182,10 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* 
     else if (componentTypeName == "SystemPort") //!< @todo dont hardcode
     {
         mpTempGUIModelObject = new GUISystemPort(pAppearanceData, position, rotation, this, startSelected, mGfxType);
+        //Add appearance data for the external version of this systemport to the continer object so that the external port can be created with the creatPorts method
+        mGUIModelObjectAppearance.getPortAppearanceMap().insert(mpTempGUIModelObject->getName(), GUIPortAppearance());
+        this->createPorts();
+        this->updateExternalPortPositions();
     }
     else //Assume some standard component type
     {

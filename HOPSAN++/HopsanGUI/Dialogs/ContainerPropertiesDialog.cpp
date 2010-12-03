@@ -49,6 +49,8 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     QPushButton *pUserIconBrowseButton = new QPushButton(tr("..."), this);
     pIsoIconBrowseButton->setFixedSize(25, 22);
     pUserIconBrowseButton->setFixedSize(25, 22);
+    pIsoIconBrowseButton->setAutoDefault(false);
+    pUserIconBrowseButton->setAutoDefault(false);
 
     pUserIconLayout->addWidget(pUserIconLabel);
     pUserIconLayout->addWidget(mpUserIconPath);

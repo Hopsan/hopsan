@@ -337,7 +337,7 @@ void GUIModelObject::setIcon(graphicsType gfxType)
 //! @brief Returns a pointer to the port with the specified name
 GUIPort *GUIModelObject::getPort(QString name)
 {
-
+    //qDebug() << "Trying to find GUIPort with name: " << name;
     //! @todo use the a guiport map instead   (Is this really a good idea? The number of ports is probably too small to make it beneficial, and it would slow down everything else...)
     for (int i=0; i<mPortListPtrs.size(); ++i)
     {
@@ -345,7 +345,9 @@ GUIPort *GUIModelObject::getPort(QString name)
         {
             return mPortListPtrs[i];
         }
+        //qDebug() << mPortListPtrs[i]->getName() << " != " << name;
     }
+    qDebug() << "Did NOT find GUIPort with name: " << name << " in: " << this->getName() << " returning NULL ptr";
 
     return 0;
 }
@@ -1007,33 +1009,14 @@ GUIModelObjectAppearance* GUIModelObject::getAppearanceData()
 //! @brief Refreshes the appearance of the object
 void GUIModelObject::refreshAppearance()
 {
-//    //! @todo maybe we can break (some of) this code out and run it in a base class maybe even guiobjekt
-//    bool hasActiveSelectionBox = false;
-//    if (mpSelectionBox != 0)
-//    {
-//        hasActiveSelectionBox = mpSelectionBox->isVisible(); //!< @todo This is a bit strange need to fix see todo bellow
-//        delete mpSelectionBox;
-//    }
-
     setIcon(mIconType);
     setGeometry(pos().x(), pos().y(), mpIcon->boundingRect().width(), mpIcon->boundingRect().height());
 
     //Resize the selection box
     mpSelectionBox->setSize(0.0, 0.0, mpIcon->boundingRect().width(), mpIcon->boundingRect().height());
 
-//    //! @todo problem with hovered or active or passive selection box, should maybe make it possible to resize rather than to create a new selection box on refresh
-//    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpIcon->boundingRect().width(), mpIcon->boundingRect().height(),
-//                                                  QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
-//    if (hasActiveSelectionBox)
-//    {
-//        mpSelectionBox->setActive();
-//    }
-
     this->refreshDisplayName();
 }
-
-
-
 
 
 //! @brief Construtor for the name text object

@@ -274,8 +274,6 @@ void StartValueLoadData::readDomElement(QDomElement &rDomElement)
 
 GUIObject* loadSubsystemGUIObject(SubsystemLoadData &rData, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
 {
-    //! @todo can only handle external subsystems for now
-
     //! @todo maybe create a loadGUIObject function that takes appearance data instead of pLibrary (when special apperance are to be used)
     //Load the system the normal way (and add it)
     GUIModelObject* pSys = loadGUIModelObject(rData, pLibrary, pSystem, undoSettings);
