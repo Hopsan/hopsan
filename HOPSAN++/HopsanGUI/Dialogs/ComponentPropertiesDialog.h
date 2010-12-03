@@ -61,6 +61,7 @@ public:
     QString getDataName();
     double getDataValue();
     QString getDataValueTxt();
+    void setDataValueTxt(QString valueTxt);
 
 protected slots:
     void showListOfSystemParameters();

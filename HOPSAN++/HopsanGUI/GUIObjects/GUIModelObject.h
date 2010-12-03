@@ -44,7 +44,7 @@ public:
     virtual QString getParameterValueTxt(QString name);
     virtual bool setParameterValue(QString name, QString valueTxt);
     virtual QString getStartValueTxt(QString portName, QString variable);
-    virtual void setStartValue(QString portName, QString variable, QString sysParName);
+    virtual bool setStartValue(QString portName, QString variable, QString sysParName);
     //Load and save methods
     //virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());
     virtual void saveToDomElement(QDomElement &rDomElement);

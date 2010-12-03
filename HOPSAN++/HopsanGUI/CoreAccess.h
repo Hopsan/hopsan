@@ -46,15 +46,15 @@ public:
 
     void getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<double> &rStartDataValues, QVector<QString> &rUnits);
     void getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<QString> &rStartDataValuesTxt, QVector<QString> &rUnits);
-    void setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<double> startDataValues);
-    void setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<QString> startDataValues);
+    bool setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<double> startDataValues);
+    bool setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<QString> startDataValues);
 
     QVector<QString> getParameterNames(QString componentName);
     QString getParameterUnit(QString componentName, QString parameterName);
     QString getParameterDescription(QString componentName, QString parameterName);
     double getParameterValue(QString componentName, QString parameterName);
     QString getParameterValueTxt(QString componentName, QString parameterName);
-    void setParameter(QString componentName, QString parameterName, double value); //!< @todo maybe call this set parameter value
+    bool setParameter(QString componentName, QString parameterName, double value); //!< @todo maybe call this set parameter value
     bool setParameter(QString componentName, QString parameterName, QString sysParName);
 
     QString createComponent(QString type, QString name="");

@@ -173,11 +173,12 @@ void CompParameter::setValue(const double value)
 //! @param[in] sysParName is the name of the new System parameter.
 //! @param[in] value is the value of the System parameter.
 //! @see mapParameter(std::string sysParName, double *mappedValue)
-void SystemParameters::add(std::string sysParName, double value)
+//! @return true if a it went OK, false otherwise
+bool SystemParameters::add(std::string sysParName, double value)
 {
     //This is a QD for handling negative values...
     if(sysParName.at(0) == '-')
-        assert(false);
+        return false;
     //This is a QD for handling negative values...
 
     if(mSystemParameters.count(sysParName) > 0)
@@ -210,6 +211,7 @@ void SystemParameters::add(std::string sysParName, double value)
         mSystemParameters[negSysParName] = negSysPar;
         //This is a QD for handling negative values...
     }
+    return true;
 }
 
 //! @brief Read the value of System parameter
@@ -296,9 +298,11 @@ void SystemParameters::erase(std::string sysParName)
 //!
 //! @param[in] sysParName is the name of the System parameter which should point to the double.
 //! @param[in] mappedValue is a pointer to a double.
+//! @return true if a it went OK, false otherwise
 //! @see unMapParameter(std::string sysParName, double *mappedValue)
-void SystemParameters::mapParameter(std::string sysParName, double *mappedValue)
+bool SystemParameters::mapParameter(std::string sysParName, double *mappedValue)
 {
+    bool success = false;
     //If mappedValue is in the map somwhere else it is removed first
     unMapParameter(mappedValue);
 
@@ -310,7 +314,9 @@ void SystemParameters::mapParameter(std::string sysParName, double *mappedValue)
         it->second.second.push_back(mappedValue);
         //the System parameter value is written to the mappedValue
         *mappedValue = it->second.first;
+        success = true;
     }
+    return success;
 }
 
 //! @brief Unmaps a double from a System parameter
@@ -374,8 +380,10 @@ void SystemParameters::update()
 //! @brief Write the System parameter value to the doubles that sysParName points to.
 //!
 //! @param[in] sysParName the System parameter to update
-void SystemParameters::update(std::string sysParName)
+//! @return true if a it went OK, false otherwise
+bool SystemParameters::update(std::string sysParName)
 {
+    bool success = false;
     std::list<double*>::iterator list_it;
     if(mSystemParameters.count(sysParName) > 0)
     {
@@ -384,7 +392,9 @@ void SystemParameters::update(std::string sysParName)
             //Write the System parameter value to all pointer addresses for sysParName
             *(*list_it) = mSystemParameters[sysParName].first;
         }
+        success = true;
     }
+    return success;
 }
 
 
@@ -744,9 +754,10 @@ map<string, double> Component::getParameterMap()
 //! @brief Sets a parameter to a value
 //! @param name Name of the parameter
 //! @param value Value to asign the parameter with
-void Component::setParameterValue(const string name, const double value)
+//! @return true if it went OK, false otherwise
+bool Component::setParameterValue(const string name, const double value)
 {
-    bool notset = true;
+    bool success = false;
     for (size_t i=0; i<mParameters.size(); ++i)
     {
         if (name == mParameters[i].getName())
@@ -754,32 +765,31 @@ void Component::setParameterValue(const string name, const double value)
             mParameters[i].setValue(value);
             //Unmap the parameter if it is pointed from the System parameters
             mpSystemParent->getSystemParameters().unMapParameter(mParameters.at(i).mpValue);
-            notset = false;
+            success = true;
         }
     }
-    if (notset)
+    if (!success)
     {
         //! @todo Maybe some error handling
         cout << "No such parameter (does nothing): " << name << endl;
     }
+    return success;
 }
 
 
 //! @brief Sets a parameter value using a key to a system parameter
 //! @param parName Name of the parameter
 //! @param sysParName Name name of the system parameter
-void Component::setParameterValue(const std::string parName, const std::string sysParName)
+//! @return true if it went OK, false otherwise
+bool Component::setParameterValue(const std::string parName, const std::string sysParName)
 {
+    bool success = false;
     double value;
-    if(!(getSystemParent()->getSystemParameters().getValue(sysParName, value)))
-    {
-        //! @todo The system parameter soes not exist, maybe some error handling
-        assert(false);
-    }
     //Sets the paramter to the value hold by the System parameter
-    setParameterValue(parName, value);
+    success = setParameterValue(parName, value);
     //Map it to the system parameter
-    getSystemParent()->getSystemParameters().mapParameter(sysParName, getParameterValuePtr(parName));
+    success = getSystemParent()->getSystemParameters().mapParameter(sysParName, getParameterValuePtr(parName));
+    return success;
 }
 
 //! @todo Maby not have this function, solve in some other nicer way

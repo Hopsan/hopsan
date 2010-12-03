@@ -29,7 +29,7 @@ public:
     QString getParameterValueTxt(QString name);
     bool setParameterValue(QString name, QString sysParName);
     QString getStartValueTxt(QString portName, QString variable);
-    void setStartValue(QString portName, QString variable, QString sysParName);
+    bool setStartValue(QString portName, QString variable, QString sysParName);
     //void saveToTextStream(QTextStream &rStream, QString prepend=QString());
 
     void setName(QString name, renameRestrictions renameSettings=UNRESTRICTED);

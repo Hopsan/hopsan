@@ -228,8 +228,9 @@ void CoreSystemAccess::getStartValueDataNamesValuesAndUnits(QString componentNam
 }
 
 
-void CoreSystemAccess::setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<double> values)
+bool CoreSystemAccess::setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<double> values)
 {
+    bool success = true;
     std::vector<std::string> stdNames;
     std::vector<double> stdValues;
     stdNames.resize(names.size());
@@ -243,13 +244,15 @@ void CoreSystemAccess::setStartValueDataByNames(QString componentName, QString p
     Port *pPort = this->getPortPtr(componentName, portName);
     if(pPort)
     {
-        pPort->setStartValueDataByNames(stdNames, stdValues);
+        success = pPort->setStartValueDataByNames(stdNames, stdValues);
     }
+    return success;
 }
 
 
-void CoreSystemAccess::setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<QString> valuesTxt)
+bool CoreSystemAccess::setStartValueDataByNames(QString componentName, QString portName, QVector<QString> names, QVector<QString> valuesTxt)
 {
+    bool success = false;
     //Used for plain values
     QVector<QString> startDataNamesStr;
     QVector<double> startDataValuesDbl;
@@ -277,7 +280,7 @@ void CoreSystemAccess::setStartValueDataByNames(QString componentName, QString p
         }
     }
     //Set this plain start values to the ports
-    this->setStartValueDataByNames(componentName, portName, startDataNamesStr, startDataValuesDbl);
+    success = this->setStartValueDataByNames(componentName, portName, startDataNamesStr, startDataValuesDbl);
 
     //Set the System parameters to the ports
     std::vector<std::string> stdNames, stdValuesTxt;
@@ -292,18 +295,20 @@ void CoreSystemAccess::setStartValueDataByNames(QString componentName, QString p
     Port *pPort = this->getPortPtr(componentName, portName);
     if(pPort)
     {
-        pPort->setStartValueDataByNames(stdNames, stdValuesTxt);
+        success *= pPort->setStartValueDataByNames(stdNames, stdValuesTxt);
     }
+    return success;
 }
 
 
-void CoreSystemAccess::setParameter(QString componentName, QString parameterName, double value)
+bool CoreSystemAccess::setParameter(QString componentName, QString parameterName, double value)
 {
-    mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), value);
+    return mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), value);
 }
 
 bool CoreSystemAccess::setParameter(QString componentName, QString parameterName, QString valueTxt)
 {
+    bool success = false;
     bool isDbl;
     //Check if the parameter is convertible to a double, if so assume that it is just a plain value that should be used
     double valueDbl = valueTxt.toDouble(&isDbl);
@@ -312,7 +317,7 @@ bool CoreSystemAccess::setParameter(QString componentName, QString parameterName
     {
         if(hasSystemParameter(valueTxt))
         {
-            mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), valueTxt.toStdString());
+            success = mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), valueTxt.toStdString());
         }
         else    //User has written something illegal
         {
@@ -320,15 +325,14 @@ bool CoreSystemAccess::setParameter(QString componentName, QString parameterName
             MessageWidget *messageWidget = gpMainWindow->mpMessageWidget;//qobject_cast<MainWindow *>(this->parent()->parent()->parent()->parent()->parent()->parent())->mpMessageWidget;
             messageWidget->printGUIInfoMessage(QString("ComponentPropertiesDialog::setParameters(): You must give a correct value for '").append(parameterName).append(QString("', putz. Try again!")));
             qDebug() << "Inte okej!";
-            return false;
         }
     }
     else
     {
         //The parameter is just a simple double with no mapping to System parameter
-        setParameter(componentName, parameterName, valueDbl);
+        success = setParameter(componentName, parameterName, valueDbl);
     }
-    return true;
+    return success;
 }
 
 void CoreSystemAccess::removeSubComponent(QString componentName, bool doDelete)

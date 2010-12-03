@@ -406,10 +406,11 @@ QString GUIModelObject::getStartValueTxt(QString portName, QString variable)
 //! @param portName Name of port
 //! @param variable Name of variable in port
 //! @param sysParName System parameter name
-void GUIModelObject::setStartValue(QString /*portName*/, QString /*variable*/, QString /*sysParName*/)
+bool GUIModelObject::setStartValue(QString /*portName*/, QString /*variable*/, QString /*sysParName*/)
 {
     //cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
     assert(false);
+    return false;
 }
 
 

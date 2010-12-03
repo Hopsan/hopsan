@@ -210,7 +210,15 @@ void ComponentPropertiesDialog::setParametersAndStartValues()
             mpGUIComponent->mpParentContainerObject->mpParentProjectTab->hasChanged();
         }
         //Set the parameter
-        mpGUIComponent->setParameterValue(mvParameterLayout[i]->getDataName(), valueTxt);
+        if(!mpGUIComponent->setParameterValue(mvParameterLayout[i]->getDataName(), valueTxt))
+        {
+            QMessageBox::critical(0, "Hopsan GUI",
+                                  QString("'%1' is an invalid value for parameter '%2'.")
+                                  .arg(valueTxt)
+                                  .arg(mvParameterLayout[i]->getDataName()));
+            mvParameterLayout[i]->setDataValueTxt(oldValueTxt);
+            return;
+        }
     }
 
     //StartValues
@@ -241,7 +249,15 @@ void ComponentPropertiesDialog::setParametersAndStartValues()
                 mpGUIComponent->mpParentContainerObject->mpParentProjectTab->hasChanged();
             }
             //Set the start value
-            mpGUIComponent->setStartValue((*portIt)->getName(), mvStartValueLayout[j][i]->getDescriptionName(), valueTxt);
+            if(!mpGUIComponent->setStartValue((*portIt)->getName(), mvStartValueLayout[j][i]->getDescriptionName(), valueTxt))
+            {
+                QMessageBox::critical(0, "Hopsan GUI",
+                                      QString("'%1' is an invalid value for start value '%2'.")
+                                      .arg(valueTxt)
+                                      .arg(mvStartValueLayout[j][i]->getDescriptionName()));
+                mvStartValueLayout[j][i]->setDataValueTxt(oldValueTxt);
+                return;
+            }
         }
         ++j;
     }
@@ -322,6 +338,12 @@ double ParameterLayout::getDataValue()
 QString ParameterLayout::getDataValueTxt()
 {
     return mDataValuesLineEdit.text();
+}
+
+
+void ParameterLayout::setDataValueTxt(QString valueTxt)
+{
+    mDataValuesLineEdit.setText(valueTxt);
 }
 
 

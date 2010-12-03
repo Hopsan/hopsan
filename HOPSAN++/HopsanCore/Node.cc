@@ -162,12 +162,15 @@ void Node::getDataNamesValuesAndUnits(vector<string> &rNames, std::vector<double
 }
 
 
-void Node::setDataValuesByNames(vector<string> names, std::vector<double> values)
+bool Node::setDataValuesByNames(vector<string> names, std::vector<double> values)
 {
+    bool success = true;
     for(size_t i=0; i<names.size(); ++i)
     {
         this->setData(this->getDataIdFromName(names[i]),values[i]);
+        //! @todo introduce setDataSafe and similar at many places in code
     }
+    return success;
 }
 
 

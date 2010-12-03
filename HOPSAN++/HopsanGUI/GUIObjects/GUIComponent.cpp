@@ -133,13 +133,13 @@ bool GUIComponent::setParameterValue(QString name, QString sysParName)
 }
 
 //! @brief Set a start value to be mapped to a System parameter
-void GUIComponent::setStartValue(QString portName, QString variable, QString sysParName)
+bool GUIComponent::setStartValue(QString portName, QString variable, QString sysParName)
 {
     QVector<QString> vVariable;
     QVector<QString> vSysParName;
     vVariable.append(variable);
     vSysParName.append(sysParName);
-    this->getPort(portName)->setStartValueDataByNames(vVariable, vSysParName);
+    return this->getPort(portName)->setStartValueDataByNames(vVariable, vSysParName);
 }
 
 

@@ -54,16 +54,16 @@ namespace hopsan {
     class DLLIMPORTEXPORT SystemParameters
     {
     public:
-        void add(std::string sysParName, double value);
+        bool add(std::string sysParName, double value);
         bool getValue(std::string sysParName, double &value);
         std::map<std::string, double> getSystemParameterMap();
         std::string findOccurrence(double *mappedValue);
         void erase(std::string sysParName);
-        void mapParameter(std::string sysParName, double *mappedValue);
+        bool mapParameter(std::string sysParName, double *mappedValue);
         void unMapParameter(std::string sysParName, double *mappedValue);
         void unMapParameter(double *mappedValue);
         void update();
-        void update(std::string sysParName);
+        bool update(std::string sysParName);
 
     protected:
 
@@ -111,8 +111,8 @@ namespace hopsan {
         double getParameterValue(const std::string name);
         double *getParameterValuePtr(const std::string name);
         std::string getParameterValueTxt(const std::string name);
-        void setParameterValue(const std::string name, const double value);
-        void setParameterValue(const std::string parName, const std::string sysParName);
+        bool setParameterValue(const std::string name, const double value);
+        bool setParameterValue(const std::string parName, const std::string sysParName);
 
         std::vector<CompParameter> getParameterVector();
         std::map<std::string, double> getParameterMap();

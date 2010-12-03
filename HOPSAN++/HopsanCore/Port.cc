@@ -336,8 +336,9 @@ void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vec
 //! @brief Sets start values to a start value node in the port
 //! @param[in] names is a Vector of names to be set
 //! @param[in] values is a Vector of start values to be set
-void Port::setStartValueDataByNames(vector<string> names, std::vector<double> values)
+bool Port::setStartValueDataByNames(vector<string> names, std::vector<double> values)
 {
+    bool success = false;
     if(mpStartNode)
     {
         //Remove references from the System parameters if any
@@ -348,8 +349,9 @@ void Port::setStartValueDataByNames(vector<string> names, std::vector<double> va
             mpComponent->getSystemParent()->getSystemParameters().unMapParameter(nodeDataPtr);
         }
         //Write the value to the start value node
-        mpStartNode->setDataValuesByNames(names, values);
+        success = mpStartNode->setDataValuesByNames(names, values);
     }
+    return success;
 }
 
 
@@ -359,27 +361,25 @@ void Port::setStartValueDataByNames(vector<string> names, std::vector<double> va
 //!
 //! @param[in] names is a Vector of names to be set
 //! @param[in] sysParNames is a Vector of names of System parameters that should be associated to the start value
-void Port::setStartValueDataByNames(vector<std::string> names, std::vector<std::string> sysParNames)
+bool Port::setStartValueDataByNames(vector<std::string> names, std::vector<std::string> sysParNames)
 {
+    bool success = false;
     if(mpStartNode)
     {
+        success = true;
         std::vector<double> values;
         values.resize(sysParNames.size());
         for(size_t i = 0; i < sysParNames.size(); ++i)
         {
-            if(!(mpComponent->getSystemParent()->getSystemParameters().getValue(sysParNames[i], values[i])))
-            {
-                //If the System parameter does not exist
-                //! @todo Some more sophisticated error handling...
-                assert(false);
-            }
+            mpComponent->getSystemParent()->getSystemParameters().getValue(sysParNames[i], values[i]);
             //Get a pointer to the actual node data
             double *nodeDataPtr = mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(names[i]));
             //Map the node data to the System parameter
-            mpComponent->getSystemParent()->getSystemParameters().mapParameter(sysParNames[i], nodeDataPtr);
+            success = mpComponent->getSystemParent()->getSystemParameters().mapParameter(sysParNames[i], nodeDataPtr);
         }
-        mpStartNode->setDataValuesByNames(names, values);
+        success *= mpStartNode->setDataValuesByNames(names, values);
     }
+    return success;
 }
 
 
