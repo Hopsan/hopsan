@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.1" hopsanguiversion="0.0.1" hopsancoreversion="0">
+    <system typename="Subsystem" cqs_type="S" name="embededsubsystemTest">
+        <hopsangui>
+            <pose x="0" y="0" flipped="0" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2502" y="2502.5" zoom="1"/>
+            <hopsanobjectappearance>
+                <modelobject typename="Subsystem" displayname="embededsubsystemTest">
+                    <icon isopath="../../graphics/objecticons/subsystemtmp.svg" iconrotation="" userpath=""/>
+                </modelobject>
+            </hopsanobjectappearance>
+        </hopsangui>
+        <simulationtime stop="10" timestep="0.001" start="0"/>
+        <parameters/>
+        <objects>
+            <component typename="SignalSineWave" name="Sine Wave">
+                <parameters>
+                    <parameter value="0" name="StartTime"/>
+                    <parameter value="1" name="Frequency"/>
+                    <parameter value="1" name="Amplitude"/>
+                    <parameter value="0" name="Offset"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="out" variable="Value" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2260" y="2475" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink">
+                <parameters/>
+                <startvalues/>
+                <hopsangui>
+                    <pose x="2543" y="2477" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <system typename="Subsystem" cqs_type="NOCQSTYPE" name="apa">
+                <hopsangui>
+                    <pose x="2412" y="2486" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <viewport x="2502" y="2502.5" zoom="1"/>
+                    <hopsanobjectappearance>
+                        <modelobject typename="Subsystem" displayname="apa">
+                            <icon isopath="../../graphics/objecticons/subsystemtmp.svg" iconrotation="" userpath=""/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+                <simulationtime stop="10" timestep="0.001" start="0"/>
+                <parameters/>
+                <objects>
+                    <component typename="SignalGain" name="Gain">
+                        <parameters>
+                            <parameter value="1" name="Gain"/>
+                        </parameters>
+                        <startvalues>
+                            <startvalue portname="out" variable="Value" value="0"/>
+                        </startvalues>
+                        <hopsangui>
+                            <pose x="2394" y="2470" flipped="0" a="0"/>
+                            <nametext position="0" visible="1"/>
+                        </hopsangui>
+                    </component>
+                </objects>
+                <connections/>
+            </system>
+        </objects>
+        <connections/>
+    </system>
+</hopsanmodelfile>
