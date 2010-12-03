@@ -858,6 +858,7 @@ void GUIConnector::setUnHovered()
 void GUIConnector::deleteMe()
 {
     //qDebug() << "deleteMe()";
+    qDebug() << "calling remove connector in system: " << mpParentContainerObject->getName();
     mpParentContainerObject->removeConnector(this, UNDO);
 }
 

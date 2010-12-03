@@ -277,7 +277,7 @@ void GUISystem::loadFromHMF(QString modelFilePath)
     this->refreshExternalPortsAppearanceAndPosition();
 
     //Deselect all components
-    this->deselectAll();
+    this->deselectAll(); //! @todo maybe this should be a signal
     this->mUndoStack->clear();
     //Only do this for the root system
     //! @todo maybe can do this for subsystems to (even if we dont see them right now)
@@ -591,7 +591,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         //this->createPorts();
 
         //Deselect all components
-        this->deselectAll();
+        this->deselectAll(); //! @todo maybe this should be a signal
         this->mUndoStack->clear();
         //Only do this for the root system
         //! @todo maybe can do this for subsystems to (even if we dont see them right now)

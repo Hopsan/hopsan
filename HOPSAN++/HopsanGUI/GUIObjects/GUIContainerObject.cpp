@@ -490,6 +490,7 @@ void GUIContainerObject::removeConnector(GUIConnector* pConnector, undoStatus un
         mUndoStack->registerDeletedConnector(pConnector);
     }
 
+    qDebug() << "removeConnector in: " << this->getName();
     for(int i = 0; i < mSubConnectorList.size(); ++i)
     {
         if(mSubConnectorList[i] == pConnector)
@@ -562,8 +563,7 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
         qDebug() << "CreatingConnector in: " << this->getName() << " startPortName: " << pPort->getName();
         //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(pPort->getPortType(), mpParentProjectTab->setGfxType);
         mpTempConnector = new GUIConnector(pPort, this);
-        emit deselectAllGUIObjects();
-        emit deselectAllGUIConnectors();
+        this->deselectAll(); //! @todo maybe this should be a signal
         setIsCreatingConnector(true);
         mpTempConnector->drawConnector();
     }
@@ -1013,13 +1013,14 @@ void GUIContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
             this->loadFromDomElement(systemElement);
         }
     }
-    QGraphicsItem::contextMenuEvent(event);
+    //QGraphicsItem::contextMenuEvent(event);
+    GUIModelObject::contextMenuEvent(event);
 }
 
 void GUIContainerObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
+    GUIModelObject::mouseDoubleClickEvent(event);
     this->enterContainer();
-
 }
 
 void GUIContainerObject::openPropertiesDialog()
@@ -1030,9 +1031,15 @@ void GUIContainerObject::openPropertiesDialog()
 
 void GUIContainerObject::enterContainer()
 {
+    //First deselect everything so that buttons pressed in the view are not sent to obejcts in the previous container
+    this->deselectAll(); //! @todo maybe this should be a signal
+    //! @todo WHY dosnt deselectALL deselct myself????
+    //! @todo there is apperantly a deselect all guiwidgets also that is not in deselect all
+    this->deselect();
+
     //Show this scene
-    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(getContainedScenePtr());
-    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setContainerPtr(this);
+    /*mpParentContainerObject->*/mpParentProjectTab->mpGraphicsView->setScene(getContainedScenePtr());
+    /*mpParentContainerObject->*/mpParentProjectTab->mpGraphicsView->setContainerPtr(this);
     mpParentProjectTab->mpQuickNavigationWidget->addOpenContainer(this);
 
 }
@@ -1040,7 +1047,7 @@ void GUIContainerObject::enterContainer()
 void GUIContainerObject::exitContainer()
 {
     //Go back to parent system
-    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(this->mpParentContainerObject->getContainedScenePtr());
-    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setContainerPtr(this->mpParentContainerObject);
+    /*mpParentContainerObject->*/mpParentProjectTab->mpGraphicsView->setScene(this->mpParentContainerObject->getContainedScenePtr());
+    /*mpParentContainerObject->*/mpParentProjectTab->mpGraphicsView->setContainerPtr(this->mpParentContainerObject);
 
 }

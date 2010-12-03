@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2627.5" y="2435" zoom="1"/>
+            <viewport x="2502" y="2485.5" zoom="1"/>
             <hopsanobjectappearance>
                 <modelobject typename="Subsystem" displayname="embededsubsystemTest">
                     <icon isopath="../../graphics/objecticons/subsystemtmp.svg" iconrotation="" userpath=""/>
@@ -41,7 +41,7 @@
                 <hopsangui>
                     <pose x="2412" y="2486" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
-                    <viewport x="2627.5" y="2435" zoom="1"/>
+                    <viewport x="2502" y="2485.5" zoom="1"/>
                     <hopsanobjectappearance>
                         <modelobject typename="Subsystem" displayname="apa">
                             <icon isopath="../../graphics/objecticons/subsystemtmp.svg" iconrotation="" userpath=""/>
@@ -61,19 +61,19 @@
                             <startvalue portname="out" variable="Value" value="0"/>
                         </startvalues>
                         <hopsangui>
-                            <pose x="2467" y="2471" flipped="0" a="0"/>
+                            <pose x="2475" y="2465" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </component>
                     <systemport typename="SystemPort" name="sysp">
                         <hopsangui>
-                            <pose x="2311" y="2471" flipped="0" a="0"/>
+                            <pose x="2280" y="2506" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </systemport>
                     <systemport typename="SystemPort" name="sysp_1">
                         <hopsangui>
-                            <pose x="2549" y="2471" flipped="0" a="0"/>
+                            <pose x="2596" y="2498" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </systemport>
@@ -85,13 +85,57 @@
                             <startvalue portname="out" variable="Value" value="0"/>
                         </startvalues>
                         <hopsangui>
-                            <pose x="2394" y="2471" flipped="0" a="0"/>
+                            <pose x="2393" y="2465" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </component>
                 </objects>
                 <connections>
-                    
+                    <connect endport="in" endcomponent="Gain" startport="sysp" startcomponent="sysp">
+                        <hopsangui>
+                            <coordinates>
+                                <coordinate x="2280" y="2506"/>
+                                <coordinate x="2337" y="2506"/>
+                                <coordinate x="2337" y="2465"/>
+                                <coordinate x="2380.5" y="2465"/>
+                            </coordinates>
+                            <geometries>
+                                <geometry>vertical</geometry>
+                                <geometry>horizontal</geometry>
+                                <geometry>vertical</geometry>
+                            </geometries>
+                        </hopsangui>
+                    </connect>
+                    <connect endport="in" endcomponent="Gain_1" startport="out" startcomponent="Gain">
+                        <hopsangui>
+                            <coordinates>
+                                <coordinate x="2405.5" y="2465"/>
+                                <coordinate x="2443" y="2465"/>
+                                <coordinate x="2443" y="2465"/>
+                                <coordinate x="2462.5" y="2465"/>
+                            </coordinates>
+                            <geometries>
+                                <geometry>vertical</geometry>
+                                <geometry>horizontal</geometry>
+                                <geometry>vertical</geometry>
+                            </geometries>
+                        </hopsangui>
+                    </connect>
+                    <connect endport="sysp_1" endcomponent="sysp_1" startport="out" startcomponent="Gain_1">
+                        <hopsangui>
+                            <coordinates>
+                                <coordinate x="2487.5" y="2465"/>
+                                <coordinate x="2537" y="2465"/>
+                                <coordinate x="2537" y="2498"/>
+                                <coordinate x="2596" y="2498"/>
+                            </coordinates>
+                            <geometries>
+                                <geometry>vertical</geometry>
+                                <geometry>horizontal</geometry>
+                                <geometry>vertical</geometry>
+                            </geometries>
+                        </hopsangui>
+                    </connect>
                 </connections>
             </system>
         </objects>

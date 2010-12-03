@@ -121,12 +121,6 @@ bool ProjectTab::isSaved()
 void ProjectTab::setSaved(bool value)
 {
     mIsSaved = value;
-//    QString tabName = mpParentProjectTabWidget->tabText(mpParentProjectTabWidget->currentIndex());
-//    while(tabName.endsWith("*"))
-//    {
-//        tabName.chop(1);
-//        mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
-//    }
 }
 
 
