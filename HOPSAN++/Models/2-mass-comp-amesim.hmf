@@ -13,7 +13,7 @@
         </hopsangui>
         <simulationtime stop="2" timestep="0,001" start="0"/>
         <parameters>
-            <parameter value="17,43" name="startpos"/>
+            <parameter value="1" name="v0"/>
         </parameters>
         <objects>
             <component typename="MechanicTranslationalSpring" name="TranslationalSpring">
@@ -62,9 +62,9 @@
                     <parameter value="100000" name="k"/>
                 </parameters>
                 <startvalues>
-                    <startvalue portname="P1" variable="Velocity" value="-1"/>
+                    <startvalue portname="P1" variable="Velocity" value="-v0"/>
                     <startvalue portname="P1" variable="Force" value="0"/>
-                    <startvalue portname="P1" variable="Position" value="startpos"/>
+                    <startvalue portname="P1" variable="Position" value="0"/>
                     <startvalue portname="P2" variable="Velocity" value="0"/>
                     <startvalue portname="P2" variable="Force" value="0"/>
                     <startvalue portname="P2" variable="Position" value="6"/>
@@ -89,7 +89,7 @@
                     <parameter value="0" name="Force"/>
                 </parameters>
                 <startvalues>
-                    <startvalue portname="P1" variable="Velocity" value="1"/>
+                    <startvalue portname="P1" variable="Velocity" value="v0"/>
                     <startvalue portname="P1" variable="Force" value="0"/>
                     <startvalue portname="P1" variable="Position" value="0"/>
                 </startvalues>
