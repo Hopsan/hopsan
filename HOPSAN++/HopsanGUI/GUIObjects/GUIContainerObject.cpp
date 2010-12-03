@@ -67,7 +67,7 @@ void GUIContainerObject::makeRootSystem()
     mContainerStatus = ROOT;
 }
 
-void GUIContainerObject::updateExternalPortPositions()
+void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
 {
     //Nothing for now
 }
@@ -125,38 +125,81 @@ QGraphicsScene *GUIContainerObject::getContainedScenePtr()
 
 void GUIContainerObject::createPorts()
 {
-    //! @todo make sure that all old ports and connections are cleared, (in case we reload, but maybe we can discard old system and create new in that case)
-    //Create the graphics for the ports but do NOT create new ports, use the system ports within the subsystem
-    PortAppearanceMapT::iterator it;
-    for (it = mGUIModelObjectAppearance.getPortAppearanceMap().begin(); it != mGUIModelObjectAppearance.getPortAppearanceMap().end(); ++it)
+//    //! @todo make sure that all old ports and connections are cleared, (in case we reload, but maybe we can discard old system and create new in that case)
+//    //Create the graphics for the ports but do NOT create new ports, use the system ports within the subsystem
+//    PortAppearanceMapT::iterator it;
+//    for (it = mGUIModelObjectAppearance.getPortAppearanceMap().begin(); it != mGUIModelObjectAppearance.getPortAppearanceMap().end(); ++it)
+//    {
+//        //Create new external port if if does not already exist (this is the ussual case for individual components)
+//        GUIPort *pPort = this->getPort(it.key());
+
+//        if ( pPort == 0 )
+//        {
+//            qDebug() << "##This is OK though as this means that we should create the stupid port for the first time";
+//            //! @todo fix this
+//            //qDebug() << "getNode and portType for " << it.key();
+//            //SystemPort "Component Name" (GuiModelObjectName) and portname is same
+//            //One other way would be to ask our parent to find the types of our ports but that would be even more strange and would not work on the absolute root system
+//            //! @todo to minimaze search time make a get porttype  and nodetype function, we need to search twice now
+//            QString nodeType = this->getCoreSystemAccessPtr()->getNodeType(it.key(), it.key());
+//            QString portType = this->getCoreSystemAccessPtr()->getPortType(it.key(), it.key());
+//            it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
+
+//            qreal x = it.value().x;
+//            qreal y = it.value().y;
+
+//            pPort = new GUIPort(it.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(it.value()), this);
+//            mPortListPtrs.append(pPort);
+//        }
+//        else
+//        {
+//            //The external port already seems to exist, lets update it incase something has changed
+//            //! @todo Maybe need to have a refresh portappearance function, dont really know if thiss will ever be used though, will fix when it becomes necessary
+//            //pPort->mpP
+//            qDebug() << "----------------------------------------ExternalPort already exist does not create it again: " << it.key() << " in: " << this->getName();
+//        }
+//    }
+    assert(false);
+}
+
+//! @brief This method creates ONE external port. It assumes that port appearance information for this port exists
+//! @todo maybe defualt create that info if it is missing
+void GUIContainerObject::createExternalPort(QString portName)
+{
+    //Fetch appearance data
+    PortAppearanceMapT::iterator it = mGUIModelObjectAppearance.getPortAppearanceMap().find(portName);
+    if (it != mGUIModelObjectAppearance.getPortAppearanceMap().end())
     {
-        //! @todo fix this
-        //qDebug() << "getNode and portType for " << it.key();
-        //SystemPort "Component Name" (GuiModelObjectName) and portname is same
-        //One other way would be to ask our parent to find the types of our ports but that would be even more strange and would not work on the absolute root system
         //! @todo to minimaze search time make a get porttype  and nodetype function, we need to search twice now
         QString nodeType = this->getCoreSystemAccessPtr()->getNodeType(it.key(), it.key());
         QString portType = this->getCoreSystemAccessPtr()->getPortType(it.key(), it.key());
         it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
 
-        qreal x = it.value().x;
-        qreal y = it.value().y;
-
-        //Create new external port if if does not already exist )this is the ussual case for individual components)
+        //Create new external port if if does not already exist (this is the usual case for individual components)
         GUIPort *pPort = this->getPort(it.key());
         if ( pPort == 0 )
         {
             qDebug() << "##This is OK though as this means that we should create the stupid port for the first time";
+
+            qreal x = it.value().x;
+            qreal y = it.value().y;
+
             pPort = new GUIPort(it.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(it.value()), this);
             mPortListPtrs.append(pPort);
         }
         else
         {
+
             //The external port already seems to exist, lets update it incase something has changed
             //! @todo Maybe need to have a refresh portappearance function, dont really know if thiss will ever be used though, will fix when it becomes necessary
-            //pPort->mpP
-            qDebug() << "----------------------------------------ExternalPort already exist does not create it again: " << it.key() << " in: " << this->getName();
+            pPort->refreshPortGraphics();
+            qDebug() << "--------------------------ExternalPort already exist refreshing its graphics: " << it.key() << " in: " << this->getName();
         }
+    }
+    else
+    {
+        qDebug() << "Could not find portappearance info for port: " << portName << " in: " << this->getName();
+        assert(false);
     }
 }
 
@@ -184,8 +227,8 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* 
         mpTempGUIModelObject = new GUISystemPort(pAppearanceData, position, rotation, this, startSelected, mGfxType);
         //Add appearance data for the external version of this systemport to the continer object so that the external port can be created with the creatPorts method
         mGUIModelObjectAppearance.getPortAppearanceMap().insert(mpTempGUIModelObject->getName(), GUIPortAppearance());
-        this->createPorts();
-        this->updateExternalPortPositions();
+        this->createExternalPort(mpTempGUIModelObject->getName());
+        this->refreshExternalPortsAppearanceAndPosition();
     }
     else //Assume some standard component type
     {

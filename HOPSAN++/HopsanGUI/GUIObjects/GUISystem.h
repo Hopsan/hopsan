@@ -32,7 +32,7 @@ public:
     size_t getNumberOfLogSamples();
     void setNumberOfLogSamples(size_t nSamples);
 
-    void updateExternalPortPositions();
+    void refreshExternalPortsAppearanceAndPosition();
 
     QString getTypeName();
     void setName(QString newName);

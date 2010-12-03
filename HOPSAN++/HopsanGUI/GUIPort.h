@@ -85,6 +85,7 @@ protected slots:
 public: //! @todo This was made public temporarly to test plot in Python
     bool plot(QString dataName, QString dataUnit=QString());
     void refreshPortOverlayPosition();
+    void refreshPortGraphics();
 
 private:
     void setPortOverlayIconScale();

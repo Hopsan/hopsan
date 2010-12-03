@@ -166,7 +166,7 @@ QString CoreSystemAccess::getPortType(QString componentName, QString portName)
     }
     else
     {
-        qDebug() <<  "======================================== EMPTY porttype: " << componentName << " " << portName << " in: " << this->getRootSystemName();
+        qDebug() <<  "================================= EMPTY porttype: " << componentName << " " << portName << " in: " << this->getRootSystemName();
         return QString(); //Empty
     }
 }

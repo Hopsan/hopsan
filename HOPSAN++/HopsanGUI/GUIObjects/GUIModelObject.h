@@ -101,7 +101,7 @@ protected:
     //virtual void groupComponents(QList<QGraphicsItem*> compList);
 
     //Port methods
-    virtual void createPorts() {assert(false);} //Only availible in GUIComponent for now
+    virtual void createPorts() {assert(false);} //Need to be overloaded
 
     //Protected members
     GUIModelObjectAppearance mGUIModelObjectAppearance;

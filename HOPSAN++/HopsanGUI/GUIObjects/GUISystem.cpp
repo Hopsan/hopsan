@@ -273,7 +273,8 @@ void GUISystem::loadFromHMF(QString modelFilePath)
     //Refresh the appearnce of the subsystemem and create the GUIPorts
     //! @todo This is a bit strange, refreshAppearance MUST be run before create ports or create ports will not know some necessary stuff
     this->refreshAppearance();
-    this->createPorts();
+    //this->createPorts();
+    this->refreshExternalPortsAppearanceAndPosition();
 
     //Deselect all components
     this->deselectAll();
@@ -392,7 +393,7 @@ QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
             appendViewPortTag(guiStuff, x, y, zoom);
         }
 
-        this->updateExternalPortPositions();
+        this->refreshExternalPortsAppearanceAndPosition();
         QDomElement xmlApp = appendDomElement(guiStuff, CAF_ROOTTAG);
         this->mGUIModelObjectAppearance.saveToDomElement(xmlApp);
     }
@@ -586,7 +587,8 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         //Refresh the appearnce of the subsystemem and create the GUIPorts based on the loaded portappearance information
         //! @todo This is a bit strange, refreshAppearance MUST be run before create ports or create ports will not know some necessary stuff
         this->refreshAppearance();
-        this->createPorts();
+        this->refreshExternalPortsAppearanceAndPosition();
+        //this->createPorts();
 
         //Deselect all components
         this->deselectAll();
@@ -691,8 +693,9 @@ void GUISystem::setNumberOfLogSamples(size_t nSamples)
 }
 
 
-void GUISystem::updateExternalPortPositions()
+void GUISystem::refreshExternalPortsAppearanceAndPosition()
 {
+    //refresh the external port poses
     GUIModelObjectMapT::iterator it;
     QLineF line;
     double angle, x, y, val;
@@ -731,7 +734,6 @@ void GUISystem::updateExternalPortPositions()
     double w = xMax-xMin;
     double h = yMax-yMin;
 
-    //rExtPortMap.clear(); //Make sure this is clean
     for(it = mGUIModelObjectMap.begin(); it != mGUIModelObjectMap.end(); ++it)
     {
         if(it.value()->type() == GUISYSTEMPORT)
@@ -758,6 +760,10 @@ void GUISystem::updateExternalPortPositions()
             //pPort->updatePosition(x, y);
             //pPort->setRotation(line.angle());
             //! @todo maybe we should be able to update rotation also
+
+            //refresh the external port graphics
+            //! @todo wierd to use createfunction to refresh graphics, but ok for now
+            this->createExternalPort(it.value()->getName());
         }
     }
 }

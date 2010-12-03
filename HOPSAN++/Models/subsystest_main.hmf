@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2419" y="2434" zoom="1"/>
+            <viewport x="2283" y="2381.5" zoom="1"/>
             <hopsanobjectappearance>
                 <modelobject typename="" displayname="subsystest_main">
                     <icon isopath="" iconrotation="" userpath=""/>
@@ -58,7 +58,7 @@
                     <startvalue portname="out" variable="Value" value="0"/>
                 </startvalues>
                 <hopsangui>
-                    <pose x="2079" y="2410" flipped="0" a="0"/>
+                    <pose x="2079" y="2410.5" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -134,43 +134,13 @@
                     </geometries>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Gain_1" startport="out" startcomponent="Constant_1">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2096.5" y="2464"/>
-                        <coordinate x="2164" y="2464"/>
-                        <coordinate x="2164" y="2464"/>
-                        <coordinate x="2178.5" y="2464"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
-            <connect endport="out" endcomponent="Constant" startport="sysp" startcomponent="subsystest_sub2">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2352.8068464" y="2410.5"/>
-                        <coordinate x="2117" y="2410.5"/>
-                        <coordinate x="2117" y="2410"/>
-                        <coordinate x="2091.5" y="2410"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                </hopsangui>
-            </connect>
             <connect endport="sysp_2" endcomponent="subsystest_sub2" startport="out" startcomponent="Gain_1">
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2203.5" y="2464"/>
                         <coordinate x="2326" y="2464"/>
-                        <coordinate x="2326" y="2464.251798"/>
-                        <coordinate x="2350" y="2464.251798"/>
+                        <coordinate x="2326" y="2467.5"/>
+                        <coordinate x="2350.332129963899" y="2467.5"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -182,7 +152,7 @@
             <connect endport="in" endcomponent="Gain" startport="sysp_3" startcomponent="subsystest_sub2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2441.999816" y="2467.5"/>
+                        <coordinate x="2430.375451263538" y="2467.5"/>
                         <coordinate x="2536" y="2467.5"/>
                         <coordinate x="2536" y="2468"/>
                         <coordinate x="2570.5" y="2468"/>
@@ -200,7 +170,7 @@
                         <coordinate x="2564" y="2410"/>
                         <coordinate x="2461" y="2410"/>
                         <coordinate x="2461" y="2410.5"/>
-                        <coordinate x="2439.161248" y="2410.5"/>
+                        <coordinate x="2442" y="2410.5"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -227,7 +197,7 @@
                     <coordinates>
                         <coordinate x="2509" y="2353.5"/>
                         <coordinate x="2509" y="2410.5"/>
-                        <coordinate x="2439.161248" y="2410.5"/>
+                        <coordinate x="2442" y="2410.5"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -247,6 +217,36 @@
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Gain_1" startport="out" startcomponent="Constant_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2096.5" y="2464"/>
+                        <coordinate x="2159" y="2464"/>
+                        <coordinate x="2159" y="2464"/>
+                        <coordinate x="2178.5" y="2464"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                </hopsangui>
+            </connect>
+            <connect endport="out" endcomponent="Constant" startport="sysp" startcomponent="subsystest_sub2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2352.98916967509" y="2410.5"/>
+                        <coordinate x="2113" y="2410.5"/>
+                        <coordinate x="2113" y="2410.5"/>
+                        <coordinate x="2091.5" y="2410.5"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
                     </geometries>
                 </hopsangui>
             </connect>

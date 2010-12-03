@@ -4,7 +4,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2502" y="2502.5" zoom="1"/>
+            <viewport x="2627.5" y="2435" zoom="1"/>
             <hopsanobjectappearance>
                 <modelobject typename="Subsystem" displayname="embededsubsystemTest">
                     <icon isopath="../../graphics/objecticons/subsystemtmp.svg" iconrotation="" userpath=""/>
@@ -41,16 +41,42 @@
                 <hopsangui>
                     <pose x="2412" y="2486" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
-                    <viewport x="2502" y="2502.5" zoom="1"/>
+                    <viewport x="2627.5" y="2435" zoom="1"/>
                     <hopsanobjectappearance>
                         <modelobject typename="Subsystem" displayname="apa">
                             <icon isopath="../../graphics/objecticons/subsystemtmp.svg" iconrotation="" userpath=""/>
+                            <portpose x="0" y="0" a="0" name="sysp"/>
+                            <portpose x="0" y="0" a="0" name="sysp_1"/>
                         </modelobject>
                     </hopsanobjectappearance>
                 </hopsangui>
                 <simulationtime stop="10" timestep="0.001" start="0"/>
                 <parameters/>
                 <objects>
+                    <component typename="SignalGain" name="Gain_1">
+                        <parameters>
+                            <parameter value="1" name="Gain"/>
+                        </parameters>
+                        <startvalues>
+                            <startvalue portname="out" variable="Value" value="0"/>
+                        </startvalues>
+                        <hopsangui>
+                            <pose x="2467" y="2471" flipped="0" a="0"/>
+                            <nametext position="0" visible="1"/>
+                        </hopsangui>
+                    </component>
+                    <systemport typename="SystemPort" name="sysp">
+                        <hopsangui>
+                            <pose x="2311" y="2471" flipped="0" a="0"/>
+                            <nametext position="0" visible="1"/>
+                        </hopsangui>
+                    </systemport>
+                    <systemport typename="SystemPort" name="sysp_1">
+                        <hopsangui>
+                            <pose x="2549" y="2471" flipped="0" a="0"/>
+                            <nametext position="0" visible="1"/>
+                        </hopsangui>
+                    </systemport>
                     <component typename="SignalGain" name="Gain">
                         <parameters>
                             <parameter value="1" name="Gain"/>
@@ -59,12 +85,14 @@
                             <startvalue portname="out" variable="Value" value="0"/>
                         </startvalues>
                         <hopsangui>
-                            <pose x="2394" y="2470" flipped="0" a="0"/>
+                            <pose x="2394" y="2471" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </component>
                 </objects>
-                <connections/>
+                <connections>
+                    
+                </connections>
             </system>
         </objects>
         <connections/>

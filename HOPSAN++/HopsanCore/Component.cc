@@ -962,7 +962,7 @@ Port *Component::getPort(const string portname)
     else
     {
         cout << "failed to find port: " << portname << " in component: " << this->mName << endl;
-        gCoreMessageHandler.addWarningMessage("Trying to get port {" + portname + "}, but not found, pointer invalid");
+        gCoreMessageHandler.addDebugMessage("Trying to get port {" + portname + "}, but not found, pointer invalid");
         return 0;
     }
 }

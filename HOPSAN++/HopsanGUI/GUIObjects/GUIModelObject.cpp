@@ -290,7 +290,7 @@ void GUIModelObject::setIcon(graphicsType gfxType)
     else
     {
         //! @todo this seems to load new graphics in old scale, need to fix this
-        //If we have an icon, change graphics, and redraww by calling hide and then show
+        //If we have an icon, change graphics, and redraw by calling hide and then show
         if (mpIcon->renderer()->load(iconPath))
         {
             mpIcon->hide();

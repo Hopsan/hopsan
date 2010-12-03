@@ -14,6 +14,8 @@
 #include "GUIObjects/GUISystem.h"
 #include "Utilities/GUIUtilities.h"
 
+#include <QSvgRenderer>
+
 using namespace std;
 
 QPointF getOffsetPointfromPort(GUIPort *pPort)
@@ -265,11 +267,6 @@ void GUIPort::openRightClickMenu(QPoint screenPos)
 }
 
 
-//QVariant GUIPort::itemChange( GraphicsItemChange change, const QVariant & value )
-//{
-//    return QGraphicsItem::itemChange(change, value);
-//}
-
 
 void GUIPort::addPortGraphicsOverlay(QString filepath)
 {
@@ -327,6 +324,42 @@ void GUIPort::refreshPortOverlayPosition()
         }
         pt2 =  transf * pt1;
         this->mpPortGraphicsOverlay->setPos(pt3-pt2);
+    }
+}
+
+
+//! @brief recreate the port graphics overlay
+//! @todo This needs to be synced and clean up with addPortOverlayGraphics, right now duplicate work, also should not change if icon same as before
+void GUIPort::refreshPortGraphics()
+{
+    //! @todo this seems to load new graphics in old scale, need to fix this
+    //If we have an icon, change graphics, and redraw by calling hide and then show
+    if (this->renderer()->load(this->mpPortAppearance->mIconPath))
+    {
+        this->hide();
+        this->show();
+    }
+    else
+    {
+        qDebug() << "failed to swap icon to: " << this->mpPortAppearance->mIconPath;
+    }
+
+    //! @todo instead of delete we should use swap graphics trick like above, but we need to fix the scale problem first
+    //Setup port graphics overlay
+    if (mpPortGraphicsOverlay!=0)
+    {
+        delete mpPortGraphicsOverlay;
+    }
+
+    if (!this->mpPortAppearance->mIconOverlayPath.isEmpty())
+    {
+        //! @todo check if file exist
+        mpPortGraphicsOverlay = new QGraphicsSvgItem(this->mpPortAppearance->mIconOverlayPath, this);
+        mpPortGraphicsOverlay->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
+    }
+    else
+    {
+        mpPortGraphicsOverlay = 0;
     }
 }
 

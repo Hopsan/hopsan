@@ -47,7 +47,7 @@ public:
     QString getUserIconPath();
     void setIsoIconPath(QString path);
     void setUserIconPath(QString path);
-    void updateExternalPortPositions();
+    void refreshExternalPortsAppearanceAndPosition();
     void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y); //!< @todo maybe not public
 
     bool isObjectSelected();
@@ -136,12 +136,11 @@ signals:
 
 
 protected:
-    //virtual QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
-    //virtual void saveCoreDataToDomElement(QDomElement &rDomElement);
-    //Protected methods
+        //Protected methods
     virtual void createPorts();
+    virtual void createExternalPort(QString portName);
     virtual void openPropertiesDialog();
-    //Protected overloaded Qt methods
+        //Protected overloaded Qt methods
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 

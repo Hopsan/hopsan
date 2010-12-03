@@ -28,38 +28,14 @@ void GUIPortAppearance::selectPortIcon(QString CQSType, QString porttype, QStrin
         if (nodetype == "NodeMechanic")
         {
             mIconPath.append("MechanicPort");
-    //        if (CQSType == "C")
-    //        {
-    //            mIconPath.append("C");
-    //        }
-    //        else if (CQSType == "Q")
-    //        {
-    //            mIconPath.append("Q");
-    //        }
         }
         else if (nodetype == "NodeMechanicRotational")
         {
             mIconPath.append("RotationalMechanicPort");
-    //        if (CQSType == "C")
-    //        {
-    //            mIconPath.append("C");
-    //        }
-    //        else if (CQSType == "Q")
-    //        {
-    //            mIconPath.append("Q");
-    //        }
         }
         else if (nodetype == "NodeHydraulic")
         {
             mIconPath.append("HydraulicPort");
-    //        if (CQSType == "C")
-    //        {
-    //            mIconPath.append("C");
-    //        }
-    //        else if (CQSType == "Q")
-    //        {
-    //            mIconPath.append("Q");
-    //        }
         }
         else
         {
