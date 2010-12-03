@@ -90,8 +90,16 @@ namespace hopsan {
 
         void initialize()
         {
+//            num[0] = mK/(mWnum*mWnum);
+//            num[1] = mK*2.0*mDnum/mWnum;
+//            num[2] = mK;
+//            den[0] = 1.0/pow(mWden, 2);
+//            den[1] = 2.0*mDden/mWden;
+//            den[2] = 1.0;
+
             double num[3] = {0.0, 0.0, 1.0};
-            double den[3] = {1.0/momegah*momegah, 2.0*mdeltah/momegah, 1.0};
+
+            double den[3] = {1.0/(momegah*momegah), 2.0*mdeltah/momegah, 1.0};
             myFilter.initialize(mTimestep, num, den, 0, 0, -mxvmax, mxvmax);
         }
 

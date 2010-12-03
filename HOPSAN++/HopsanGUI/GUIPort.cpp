@@ -463,12 +463,19 @@ bool GUIPort::setStartValueDataByNames(QVector<QString> names, QVector<QString> 
 portDirection GUIPort::getPortDirection()
 {
     qreal scene_angle = this->mpParentGuiModelObject->rotation() + this->rotation();
+    while(scene_angle > 359)
+    {
+        scene_angle -= 360;
+    }
+    qDebug() << "scene_angle = " << scene_angle;
     if( (scene_angle == 0) || (scene_angle == 180) )
     {
+        qDebug() << "Returning LEFTRIGHT";
         return LEFTRIGHT;
     }
     else
     {
+        qDebug() << "Returning TOPBOTTOM";
         return TOPBOTTOM;
     }
 }
