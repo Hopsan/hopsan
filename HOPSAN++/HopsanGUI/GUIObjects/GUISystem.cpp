@@ -344,12 +344,7 @@ void GUISystem::openPropertiesDialog()
 {
     ContainerPropertiesDialog dialog(this, gpMainWindow);
     dialog.setAttribute(Qt::WA_DeleteOnClose, false);
-    qDebug() << "test attribute: " << dialog.testAttribute(Qt::WA_DeleteOnClose);
     dialog.exec();
-    //qDebug() << "test attribute: " << dialog.testAttribute(Qt::WA_DeleteOnClose);
-    //qDebug() << "pDialog: " << &dialog;
-    //delete pDialog;
-    qDebug() << "pDialog: " << &dialog;
 }
 
 

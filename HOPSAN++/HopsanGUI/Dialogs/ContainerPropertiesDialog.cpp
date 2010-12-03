@@ -78,7 +78,7 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContai
     {
             //Log sampels
         QHBoxLayout *pNSamplesLayout = new QHBoxLayout();
-        QLabel *pNSamplesLabel = new QLabel(tr("Number of Log Samples"), this);
+        QLabel *pNSamplesLabel = new QLabel(tr("Number of Log Samples:"), this);
         pNSamplesLabel->setEnabled(true);
         QString NSamplesText;
         NSamplesText.setNum(mpContainerObject->getNumberOfLogSamples()); //!< @todo what if group

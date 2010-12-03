@@ -1,10 +1,6 @@
 //$Id$
 
-#include <iostream>
 #include <QDebug>
-
-#include <iostream>
-
 #include "MainWindow.h"
 #include "version.h"
 #include "common.h"
@@ -63,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpMessageDock->setWidget(mpMessageWidget);
     addDockWidget(Qt::BottomDockWidgetArea, mpMessageDock);
 
+    mpMessageWidget->checkMessages();
     mpMessageWidget->printGUIInfoMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
 
     mpPyDockWidget = new PyDockWidget(this, this);

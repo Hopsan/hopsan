@@ -73,11 +73,16 @@ HopsanEssentials::~HopsanEssentials()
     mHasInstance = false;
 }
 
+//! Returns the hopsa core version as a string
+std::string HopsanEssentials::getCoreVersion()
+{
+    return HOPSANCOREVERSION;
+}
 
-//!Creates a component with the specified key-value and returns a pointer to this component.
+//! Creates a component with the specified key-value and returns a pointer to this component.
 Component* HopsanEssentials::CreateComponent(const string &rString)
 {
-        return mpComponentFactory->createInstance(rString.c_str());
+    return mpComponentFactory->createInstance(rString.c_str());
 }
 
 bool HopsanEssentials::hasComponent(const string type)

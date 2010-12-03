@@ -35,11 +35,10 @@ public:
     void setSubSystemTypeCQS(const QString systemName, const QString cqs_type);
     QString getRootSystemTypeCQS();
     QString getSubComponentTypeCQS(QString componentName);
-    //QString getSystemTypeCQS(QString systemName); //!< @todo dont think that we need this one the component specifik one should do
 
     QString setRootSystemName(QString name);
     QString getRootSystemName();
-    //QString setSystemName(QString systemname, QString name, bool doOnlyLocalRename=false); //!< @todo This might not be necessary, should be able to use the component base class specifik one
+
     QString renameSubComponent(QString componentName, QString name);
 
     QString getPortType(QString componentName, QString portName);

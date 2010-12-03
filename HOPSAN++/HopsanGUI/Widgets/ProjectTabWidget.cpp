@@ -294,28 +294,18 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
         return;
     }
 
-//    //Remove the asterix if tab goes from unsaved to saved
-//    if(!mIsSaved)
-//    {
-        //QString tabName = mpParentProjectTabWidget->tabText(mpParentProjectTabWidget->currentIndex());
-        QString tabName = mpSystem->mModelFileInfo.baseName();
-        //tabName.chop(1);
-        mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
-        this->setSaved(true);
-//    }
-
-    //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
+        //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
     mpSystem->setName(mpSystem->mModelFileInfo.baseName());
 
-    //Save xml document
+        //Save xml document
     QDomDocument domDocument;
     QDomElement hmfRoot = appendHMFRootElement(domDocument);
 
-    //Save the model component hierarcy
+        //Save the model component hierarcy
     //! @todo maybe use a saveload object instead of calling save imediately (only load object exist for now), or maybe this is fine
     mpSystem->saveToDomElement(hmfRoot);
 
-    //Save to file
+        //Save to file
     const int IndentSize = 4;
     QFile xmlhmf(mpSystem->mModelFileInfo.filePath());
     if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
@@ -326,6 +316,11 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     QTextStream out(&xmlhmf);
     appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
     domDocument.save(out, IndentSize);
+
+        //Set the tab name to the model name, efectively removing *, also arke the tab as saved
+    QString tabName = mpSystem->mModelFileInfo.baseName();
+    mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
+    this->setSaved(true);
 }
 
 

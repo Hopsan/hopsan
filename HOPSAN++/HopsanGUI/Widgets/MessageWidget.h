@@ -2,7 +2,6 @@
 #define MESSAGEWIDGET_H
 
 #include <QtGui>
-#include "HopsanCore.h"
 
 class MainWindow;
 class CoreMessagesAccess;

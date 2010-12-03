@@ -43,6 +43,8 @@ namespace hopsan {
         static HopsanEssentials* getInstance();
         ~HopsanEssentials();
 
+        std::string getCoreVersion();
+
         Component* CreateComponent(const std::string &rString);
         bool hasComponent(const std::string type);
         ComponentSystem* CreateComponentSystem();

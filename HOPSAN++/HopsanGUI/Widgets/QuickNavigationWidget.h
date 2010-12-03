@@ -3,13 +3,10 @@
 
 #include <QWidget>
 #include <QPushButton>
-#include <QGroupBox>
 #include <QButtonGroup>
-#include <QHBoxLayout>
 
 //Forward Declarations
 class GUIContainerObject;
-//class MainWindow;
 
 class QuickNavigationWidget : public QWidget
 {
@@ -29,7 +26,6 @@ private:
     QVector<GUIContainerObject*> mContainerObjectPtrs;
     QVector<QPushButton*> mPushButtonPtrs;
     QButtonGroup *mpButtonGroup;
-    //QHBoxLayout *mpHBoxLayout;
 };
 
 #endif // QUICKNAVIGATIONWIDGET_H

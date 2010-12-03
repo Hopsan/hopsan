@@ -1,8 +1,8 @@
 #include "QuickNavigationWidget.h"
 #include "GUIObjects/GUIContainerObject.h"
-//#include "MainWindow.h"
 
 #include <QHBoxLayout>
+#include <QGroupBox>
 #include <QDebug>
 
 QuickNavigationWidget::QuickNavigationWidget(QWidget *parent) :
@@ -52,8 +52,7 @@ void QuickNavigationWidget::gotoContainerClosingSubcontainers(int id)
 
 void QuickNavigationWidget::refreshVisible()
 {
-    qDebug() << "PushButtons.size(): " << this->mPushButtonPtrs.size();
-
+    //qDebug() << "PushButtons.size(): " << this->mPushButtonPtrs.size();
     if (this->mPushButtonPtrs.size() > 0)
     {
         this->show();

@@ -107,11 +107,6 @@ void CoreSystemAccess::setSubSystemTypeCQS(QString systemName, const QString cqs
     mpCoreComponentSystem->getSubComponentSystem(systemName.toStdString())->setTypeCQS(cqs_type.toStdString());
 }
 
-//QString GUIRootSystem::getSystemTypeCQS(QString systemName)
-//{
-//    return QString::fromStdString(mpCoreComponentSystem->getSubComponentSystem(systemName.toStdString())->getTypeCQSString());
-//}
-
 QString CoreSystemAccess::getRootSystemTypeCQS()
 {
     //qDebug() << "getRootTypeCQS: " << componentName;
@@ -126,6 +121,7 @@ QString CoreSystemAccess::getSubComponentTypeCQS(QString componentName)
     return ans;
 }
 
+
 QString CoreSystemAccess::setRootSystemName(QString name)
 {
     //qDebug() << "setting root system name to: " << name;
@@ -134,12 +130,6 @@ QString CoreSystemAccess::setRootSystemName(QString name)
     return QString::fromStdString(mpCoreComponentSystem->getName());
 }
 
-//QString GUIRootSystem::setSystemName(QString systemname, QString name, bool doOnlyLocalRename)
-//{
-//    ComponentSystem *pTempComponentSystem = mpCoreComponentSystem->getSubComponentSystem(systemname.toStdString());
-//    pTempComponentSystem->setName(name.toStdString(), doOnlyLocalRename);
-//    return QString::fromStdString(pTempComponentSystem->getName());
-//}
 
 QString CoreSystemAccess::renameSubComponent(QString componentName, QString name)
 {
@@ -346,10 +336,6 @@ void CoreSystemAccess::removeSubComponent(QString componentName, bool doDelete)
     mpCoreComponentSystem->removeSubComponent(componentName.toStdString(), doDelete);
 }
 
-//void GUIRootSystem::removeSystem(QString name)
-//{
-//    mpCoreComponentSystem->removeSubComponent(mpCoreComponentSystem->getSubComponentSystem(name.toStdString()), true);
-//}
 
 //! @brief This function loads a system from a file without adding any graphics
 //! It calls the core load function and adds all contents into the specified subsystem

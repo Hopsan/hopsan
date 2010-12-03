@@ -323,26 +323,6 @@ void loadConnector(const ConnectorLoadData &rData, GUIContainerObject* pSystem, 
     bool success = pSystem->getCoreSystemAccessPtr()->connect(rData.startComponentName, rData.startPortName, rData.endComponentName, rData.endPortName);
     if (success)
     {
-//        //Check if the component names are the same as the guiroot system name in such cases we should search for the actual systemport gui object instead
-//        //!< @todo this is extremely strange, some day we need to figure out a way that allways works the same way, this will likly mean MAJOR changes
-//        QString startGuiObjName, endGuiObjName;
-//        if (rData.startComponentName == pSystem->getCoreSystemAccessPtr()->getRootSystemName())
-//        {
-//            startGuiObjName = rData.startPortName;
-//        }
-//        else
-//        {
-//            startGuiObjName = rData.startComponentName;
-//        }
-//        if (rData.endComponentName == pSystem->getCoreSystemAccessPtr()->getRootSystemName())
-//        {
-//            endGuiObjName = rData.endPortName;
-//        }
-//        else
-//        {
-//            endGuiObjName = rData.endComponentName;
-//        }
-
         //! @todo all of this (above and bellow) should be inside some conventiant function like "connect"
         //! @todo Need some error handling here to avoid crash if components or ports do not exist
         GUIPort *startPort = pSystem->getGUIModelObject(rData.startComponentName)->getPort(rData.startPortName);
@@ -695,30 +675,6 @@ HeaderLoadData readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidg
     return headerData;
 }
 
-////! @todo thois should be in a save related file, or make this file both save and load
-//void writeHeader(QTextStream &rStream)
-//{
-//    //Make sure that the readHeader function is synced with changes here
-
-//    //Write Header to save file
-//    rStream << "--------------------------------------------------------------\n";
-//    rStream << "-------------------  HOPSAN NG MODEL FILE  -------------------\n";
-//    rStream << "--------------------------------------------------------------\n";
-//    rStream << "HOPSANGUIVERSION " << HOPSANGUIVERSION << "\n";
-//    rStream << "HMFVERSION " << HMFVERSION << "\n";
-//    rStream << "CAFVERSION " << CAFVERSION << "\n";
-//    rStream << "--------------------------------------------------------------\n";
-
-//    //! @todo wite more header data like time and viewport
-//}
-
-//void addHMFHeader(QDomElement &rDomElement)
-//{
-//    QDomElement xmlHeader = appendDomElement(rDomElement,"versionnumbers");
-//    appendDomTextNode(xmlHeader, "hopsanguiversion", HOPSANGUIVERSION);
-//    appendDomTextNode(xmlHeader, "hmfversion", HMFVERSION);
-//    appendDomTextNode(xmlHeader, "cafversion", CAFVERSION);
-//}
 
 QDomElement appendHMFRootElement(QDomDocument &rDomDocument)
 {
