@@ -323,7 +323,7 @@ PlotWidget::PlotWidget(MainWindow *parent)
 
     mpPlotParameterTree = new PlotParameterTree(gpMainWindow);
 
-    mpLoadButton = new QPushButton(tr("&Load Plot Window from XML"));
+    mpLoadButton = new QPushButton(tr("&Load Plot Window from XML"), this);
     mpLoadButton->setAutoDefault(false);
     mpLoadButton->setFixedHeight(30);
     QFont tempFont = mpLoadButton->font();

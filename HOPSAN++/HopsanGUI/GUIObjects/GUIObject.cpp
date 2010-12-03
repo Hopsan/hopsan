@@ -28,7 +28,7 @@ GUIObject::GUIObject(QPoint pos, qreal rot, selectionStatus, GUIContainerObject 
 
     //Set position orientation and other appearance stuff
     //Initially we dont know the selection box size
-    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, 0.0, 0.0, QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
+    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, 0.0, 0.0, QPen(QColor("red"),2), QPen(QColor("darkRed"),2), this);
     mpSelectionBox->setPassive();
     this->setCenterPos(pos);
     this->rotateTo(rot);
@@ -383,12 +383,12 @@ GUIObjectSelectionBox::GUIObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal
 
 void GUIObjectSelectionBox::setSize(qreal x1, qreal y1, qreal x2, qreal y2)
 {
-    qreal b = 5;
-    qreal a = 5;
-    x1 += -3;
-    y1 += -3;
-    x2 += 3;
-    y2 += 3;
+    qreal b = 6;
+    qreal a = 6;
+    x1 += -4;
+    y1 += -4;
+    x2 += 4;
+    y2 += 4;
 
     mLines[0]->setLine(x1,y1+b,x1,y1);
     mLines[1]->setLine(x1,y1,x1+a,y1);
