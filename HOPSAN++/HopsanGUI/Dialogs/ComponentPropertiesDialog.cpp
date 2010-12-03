@@ -291,11 +291,11 @@ void ParameterLayout::commonConstructorCode(QString dataName, QString descriptio
 {
     mpGUIModelObject = pGUIModelObject;
 
-    mDescriptionNameLabel.setMinimumWidth(100);
-    mDescriptionNameLabel.setMaximumWidth(100);
+    mDescriptionNameLabel.setMinimumWidth(110);
+    mDescriptionNameLabel.setMaximumWidth(110);
     mDataNameLabel.setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-    mDataNameLabel.setMinimumWidth(50);
-    mDataNameLabel.setMaximumWidth(50);
+    mDataNameLabel.setMinimumWidth(70);
+    mDataNameLabel.setMaximumWidth(70);
     mDataValuesLineEdit.setMinimumWidth(100);
     mDataValuesLineEdit.setMaximumWidth(100);
     mUnitNameLabel.setMinimumWidth(50);
