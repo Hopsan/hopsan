@@ -29,7 +29,7 @@ CopyStack gCopyStack;
 //! @brief Constructor for main window
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-{
+{    
     //First we set the global mainwindow pointer to this, we can (should) only have ONE main window
     gpMainWindow = this;
     //std::cout << "Starting Hopsan!";

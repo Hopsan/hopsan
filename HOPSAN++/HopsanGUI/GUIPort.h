@@ -108,6 +108,6 @@ private:
     QGraphicsSvgItem* mpPortGraphicsOverlay;
 };
 
-QPointF getOffsetPointfromPort(GUIPort *pPort);
+QPointF getOffsetPointfromPort(GUIPort *pStartPortGUIPort, GUIPort *pEndPort);
 
 #endif // GUIPORT_H

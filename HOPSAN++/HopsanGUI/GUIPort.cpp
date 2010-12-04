@@ -1,6 +1,9 @@
 //$Id$
 
+#include "stdlib.h"
+
 #include <QtGui>
+#include <QSvgRenderer>
 
 #include "common.h"
 
@@ -14,29 +17,28 @@
 #include "GUIObjects/GUISystem.h"
 #include "Utilities/GUIUtilities.h"
 
-#include <QSvgRenderer>
 
 using namespace std;
 
-QPointF getOffsetPointfromPort(GUIPort *pPort)
+QPointF getOffsetPointfromPort(GUIPort *pStartPort, GUIPort *pEndPort)
 {
     QPointF point;
 
-    if((pPort->getPortDirection() == LEFTRIGHT) && (pPort->getGuiModelObject()->mapToScene(pPort->getGuiModelObject()->boundingRect().center()).x() > pPort->scenePos().x()))
+    if((pEndPort->getPortDirection() == LEFTRIGHT) && (pEndPort->getGuiModelObject()->mapToScene(pEndPort->getGuiModelObject()->boundingRect().center()).x() > pEndPort->scenePos().x()))
     {
-        point.setX(-20);
+        point.setX(-1 * std::min(20.0, abs(pStartPort->scenePos().x()-pEndPort->scenePos().x())/2.0));
     }
-    else if((pPort->getPortDirection() == LEFTRIGHT) && (pPort->getGuiModelObject()->mapToScene(pPort->getGuiModelObject()->boundingRect().center()).x() < pPort->scenePos().x()))
+    else if((pEndPort->getPortDirection() == LEFTRIGHT) && (pEndPort->getGuiModelObject()->mapToScene(pEndPort->getGuiModelObject()->boundingRect().center()).x() < pEndPort->scenePos().x()))
     {
-        point.setX(20);
+        point.setX(std::min(20.0, abs(pStartPort->scenePos().x()-pEndPort->scenePos().x())/2.0));
     }
-    else if((pPort->getPortDirection() == TOPBOTTOM) && (pPort->getGuiModelObject()->mapToScene(pPort->getGuiModelObject()->boundingRect().center()).y() > pPort->scenePos().y()))
+    else if((pEndPort->getPortDirection() == TOPBOTTOM) && (pEndPort->getGuiModelObject()->mapToScene(pEndPort->getGuiModelObject()->boundingRect().center()).y() > pEndPort->scenePos().y()))
     {
-        point.setY(-20);
+        point.setY(-1 * std::min(20.0, abs(pStartPort->scenePos().y()-pEndPort->scenePos().y())/2.0));
     }
-    else if((pPort->getPortDirection() == TOPBOTTOM) && (pPort->getGuiModelObject()->mapToScene(pPort->getGuiModelObject()->boundingRect().center()).y() < pPort->scenePos().y()))
+    else if((pEndPort->getPortDirection() == TOPBOTTOM) && (pEndPort->getGuiModelObject()->mapToScene(pEndPort->getGuiModelObject()->boundingRect().center()).y() < pEndPort->scenePos().y()))
     {
-        point.setY(20);
+        point.setY(std::min(20.0, abs(pStartPort->scenePos().y()-pEndPort->scenePos().y())/2.0));
     }
     return point;
 }

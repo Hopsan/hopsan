@@ -287,7 +287,7 @@ void GUIConnector::setEndPort(GUIPort *port)
     else
     {
             //Move second last line a bit outwards from the component
-        QPointF offsetPoint = getOffsetPointfromPort(mpEndPort);
+        QPointF offsetPoint = getOffsetPointfromPort(mpStartPort, mpEndPort);
         mPoints[mPoints.size()-2] = mpEndPort->mapToScene(mpEndPort->boundingRect().center()) + offsetPoint;
         if(offsetPoint.x() != 0.0)
             mPoints[mPoints.size()-3].setX(mPoints[mPoints.size()-2].x());
