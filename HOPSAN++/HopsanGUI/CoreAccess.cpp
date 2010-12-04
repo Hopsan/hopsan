@@ -596,9 +596,19 @@ hopsan::Port* CoreSystemAccess::getPortPtr(QString componentName, QString portNa
 
 
 
-void CoreSystemAccess::setSystemParameter(QString name, double value)
+bool CoreSystemAccess::setSystemParameter(QString name, double value)
 {
-    mpCoreComponentSystem->getSystemParameters().add(name.toStdString(), value);
+    //Makes sure name is not a number
+    bool isDbl;
+    name.toDouble(&isDbl);
+    if(isDbl)
+    {
+        return false;
+    }
+    else
+    {
+        return mpCoreComponentSystem->getSystemParameters().add(name.toStdString(), value);
+    }
 }
 
 

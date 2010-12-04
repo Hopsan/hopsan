@@ -58,6 +58,7 @@
 
 #include "../common.h"
 
+
 //! Construtor for System Parameters widget, where the user can see and change the System parameters in the model.
 //! @param parent Pointer to the main window
 SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
@@ -94,8 +95,24 @@ SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
     mpGridLayout->addWidget(mpAddButton, 1, 0);
     mpGridLayout->addWidget(mpRemoveButton, 2, 0);
 
-    connect(mpAddButton,SIGNAL(clicked()),this,SLOT(openComponentPropertiesDialog()));
-    connect(mpRemoveButton,SIGNAL(clicked()),this,SLOT(removeSelectedParameters()));
+    connect(mpAddButton, SIGNAL(clicked()), this, SLOT(openComponentPropertiesDialog()));
+    connect(mpRemoveButton, SIGNAL(clicked()), this, SLOT(removeSelectedParameters()));
+    connect(mpSystemParametersTable, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(changeParameter(QTableWidgetItem*)));
+}
+
+//! @brief Used for parameter changes done directly in the label
+void SystemParametersWidget::changeParameter(QTableWidgetItem *item)
+{
+    //Filter out value labels
+    if(item->column() == 1)
+    {
+        QTableWidgetItem *neighborItem = mpSystemParametersTable->itemAt(item->row(), item->column()-1);
+        QString parName = neighborItem->text();
+        QString parValue = item->text();
+
+        //Do not do update, then crash due to the rebuild of the QTableWidgetItems
+        setParameter(parName, parValue, false);
+    }
 }
 
 
@@ -114,12 +131,43 @@ bool SystemParametersWidget::hasParameter(QString name)
 //! Slot that adds a System parameter value
 //! @param name Lookup name for the System parameter
 //! @param value Value of the System parameter
-void SystemParametersWidget::setParameter(QString name, double value)
+void SystemParametersWidget::setParameter(QString name, double value, bool doUpdate)
 {
-    gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->setSystemParameter(name, value);
-    update();
+    //Error check
+    if(!(gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->setSystemParameter(name, value)))
+    {
+        QMessageBox::critical(0, "Hopsan GUI",
+                              QString("'%1' is an invalid name for a system parameter.")
+                              .arg(name));
+        return;
+    }
+    if(doUpdate)
+    {
+        update();
+    }
 
     emit modifiedSystemParameter();
+}
+
+
+//! Slot that adds a System parameter value
+//! @param name Lookup name for the System parameter
+//! @param value Value of the System parameter
+void SystemParametersWidget::setParameter(QString name, QString valueTxt, bool doUpdate)
+{
+    //Error check
+    bool isDbl;
+    double value = valueTxt.toDouble((&isDbl));
+    if(!(isDbl))
+    {
+        QMessageBox::critical(0, "Hopsan GUI",
+                              QString("'%1' is not a valid number.")
+                              .arg(valueTxt));
+    }
+    else
+    {
+        setParameter(name, value, doUpdate);
+    }
 }
 
 
@@ -131,7 +179,7 @@ void SystemParametersWidget::setParameters()
         {
             QString name = mpSystemParametersTable->item(i, 0)->text();
             double value = mpSystemParametersTable->item(i, 1)->text().toDouble();
-            gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->setSystemParameter(name, value);
+            setParameter(name, value);
         }
 //    }
 }
@@ -239,7 +287,7 @@ void SystemParametersWidget::update()
         QTableWidgetItem *nameItem = new QTableWidgetItem(QString(it.key().c_str()));
         QTableWidgetItem *valueItem = new QTableWidgetItem(valueString);
         nameItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-        valueItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        valueItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
         mpSystemParametersTable->setItem(mpSystemParametersTable->rowCount()-1, 0, nameItem);
         mpSystemParametersTable->setItem(mpSystemParametersTable->rowCount()-1, 1, valueItem);
     }

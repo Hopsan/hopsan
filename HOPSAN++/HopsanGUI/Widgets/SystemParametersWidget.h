@@ -44,8 +44,10 @@ public:
     bool hasParameter(QString name);
 
 public slots:
-    void setParameter(QString name, double value);
+    void setParameter(QString name, QString valueTxt, bool doUpdate=true);
+    void setParameter(QString name, double value, bool doUpdate=true);
     void setParameters();
+    void changeParameter(QTableWidgetItem *item);
 
 private slots:
     void openComponentPropertiesDialog();
