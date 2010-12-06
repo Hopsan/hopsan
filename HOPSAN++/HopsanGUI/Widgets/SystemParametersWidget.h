@@ -47,7 +47,7 @@ public slots:
     void setParameters();
     void changeParameter(QTableWidgetItem *item);
 
-private slots:
+//private slots:
     void openComponentPropertiesDialog();
     void addParameter();
     void removeSelectedParameters();

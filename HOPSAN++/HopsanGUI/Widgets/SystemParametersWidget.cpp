@@ -59,36 +59,6 @@
 #include "../common.h"
 
 
-SystemParameterTableWidget::SystemParameterTableWidget(int rows, int columns, QWidget *parent)
-    : QTableWidget(rows, columns, parent)
-{
-    setFocusPolicy(Qt::StrongFocus);
-    setSelectionMode(QAbstractItemView::SingleSelection);
-
-    setBaseSize(400, 500);
-    horizontalHeader()->setStretchLastSection(true);
-    horizontalHeader()->hide();
-
-    update();
-
-    connect(this, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(changeParameter(QTableWidgetItem*)));
-}
-
-
-void SystemParameterTableWidget::keyPressEvent(QKeyEvent *event)
-{
-    QTableWidget::keyPressEvent(event);
-    if(event->key() == Qt::Key_Delete)
-    {
-        if(currentColumn()<1)
-        {
-            std::cout << "Delete current Item" << std::endl;
-            removeSelectedParameters();
-        }
-    }
-}
-
-
 //! Construtor for System Parameters widget, where the user can see and change the System parameters in the model.
 //! @param parent Pointer to the main window
 SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
@@ -122,6 +92,35 @@ SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
 
     connect(mpAddButton, SIGNAL(clicked()), mpSystemParametersTable, SLOT(openComponentPropertiesDialog()));
     connect(mpRemoveButton, SIGNAL(clicked()), mpSystemParametersTable, SLOT(removeSelectedParameters()));
+}
+
+
+SystemParameterTableWidget::SystemParameterTableWidget(int rows, int columns, QWidget *parent)
+    : QTableWidget(rows, columns, parent)
+{
+    setFocusPolicy(Qt::StrongFocus);
+    setSelectionMode(QAbstractItemView::SingleSelection);
+
+    setBaseSize(400, 500);
+    horizontalHeader()->setStretchLastSection(true);
+    horizontalHeader()->hide();
+
+    update();
+
+    connect(this, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(changeParameter(QTableWidgetItem*)));
+    connect(gpMainWindow->mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(update()));//Strössel!
+    connect(gpMainWindow->mpProjectTabs, SIGNAL(newTabAdded()), this, SLOT(update()));//Strössel!
+}
+
+
+void SystemParameterTableWidget::keyPressEvent(QKeyEvent *event)
+{
+    QTableWidget::keyPressEvent(event);
+    if(event->key() == Qt::Key_Delete)
+    {
+        std::cout << "Delete current System Parameter Widget Items" << std::endl;
+        removeSelectedParameters();
+    }
 }
 
 
@@ -232,11 +231,13 @@ void SystemParameterTableWidget::removeSelectedParameters()
         {
             parametersToRemove.append(tempName);
         }
+        removeCellWidget(pSelectedItems[i]->row(), pSelectedItems[i]->column());
+        delete pSelectedItems[i];
     }
 
     for(int j=0; j<parametersToRemove.size(); ++j)
     {
-        qDebug() << "Removing: " << parametersToRemove[j];
+        std::cout << "Removing: " << parametersToRemove[j].toStdString() << std::endl;
         gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->removeSystemParameter(parametersToRemove.at(j));
     }
 
@@ -287,7 +288,17 @@ void SystemParameterTableWidget::addParameter()
 void SystemParameterTableWidget::update()
 {
     QMap<std::string, double>::iterator it;
-    QMap<std::string, double> tempMap = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->getSystemParametersMap();
+    QMap<std::string, double> tempMap;
+    if(gpMainWindow->mpProjectTabs->count()>0)
+    {
+        tempMap = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->getSystemParametersMap();
+    }
+    else
+    {
+        selectAll();
+//        removeSelectedParameters();
+        tempMap.clear();
+    }
 
     clear();
 
