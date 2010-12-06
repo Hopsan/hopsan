@@ -163,6 +163,13 @@ void SystemParametersWidget::setParameter(QString name, QString valueTxt, bool d
         QMessageBox::critical(0, "Hopsan GUI",
                               QString("'%1' is not a valid number.")
                               .arg(valueTxt));
+        QString oldValue = QString::number(gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getSystemParameter(name));
+        QList<QTableWidgetItem *> items = mpSystemParametersTable->selectedItems();
+        //Error if size() > 1, but it should not be! :)
+        for(int i = 0; i<items.size(); ++i)
+        {
+            items[i]->setText(oldValue);
+        }
     }
     else
     {
