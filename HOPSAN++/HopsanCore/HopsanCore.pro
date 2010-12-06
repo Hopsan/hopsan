@@ -165,4 +165,6 @@ HEADERS += win32dll.h \
     ComponentUtilities/matrix.h \
     ComponentUtilities/ludcmp.h \
     Components/Hydraulic/Hydraulic32Valve.hpp \
-    Components/Hydraulic/Hydraulic33Valve.hpp
+    Components/Hydraulic/Hydraulic33Valve.hpp \
+    Components/Signal/SignalHP1Filter.hpp \
+    Components/Signal/SignalHP2Filter.hpp

@@ -81,6 +81,8 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->registerCreatorFunction("SignalDeadZone", SignalDeadZone::Creator);
     cfact_ptr->registerCreatorFunction("SignalLP1Filter", SignalLP1Filter::Creator);
     cfact_ptr->registerCreatorFunction("SignalLP2Filter", SignalLP2Filter::Creator);
+    cfact_ptr->registerCreatorFunction("SignalHP1Filter", SignalHP1Filter::Creator);
+    cfact_ptr->registerCreatorFunction("SignalHP2Filter", SignalHP2Filter::Creator);
     cfact_ptr->registerCreatorFunction("SignalPulse", SignalPulse::Creator);
     cfact_ptr->registerCreatorFunction("SignalSoftStep", SignalSoftStep::Creator);
     cfact_ptr->registerCreatorFunction("SignalIntegrator", SignalIntegrator::Creator);

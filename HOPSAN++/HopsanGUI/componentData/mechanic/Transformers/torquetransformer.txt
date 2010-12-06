@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.1">
     <modelobject typename="MechanicTorqueTransformer" displayname="Torque Transformer">
         <icon isopath="torquetransformer.svg" iconrotation="ON" userpath=""/>
-        <portpose x="1" y="0.5" a="0" name="P1"/>
-        <portpose x="0" y="0.5" a="0" name="in"/>
+        <portpose x="0" y="0.435" a="0" name="in"/>
+        <portpose x="0.6" y="0.435" a="0" name="P1"/>
     </modelobject>
 </hopsanobjectappearance>

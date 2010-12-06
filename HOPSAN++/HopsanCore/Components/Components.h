@@ -59,6 +59,8 @@
 #include "Signal/SignalDeadZone.hpp"
 #include "Signal/SignalLP1Filter.hpp"
 #include "Signal/SignalLP2Filter.hpp"
+#include "Signal/SignalHP1Filter.hpp"
+#include "Signal/SignalHP2Filter.hpp"
 #include "Signal/SignalPulse.hpp"
 #include "Signal/SignalSoftStep.hpp"
 #include "Signal/SignalIntegrator.hpp"
