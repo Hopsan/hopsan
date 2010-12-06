@@ -1018,8 +1018,10 @@ void GUIContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
             this->loadFromDomElement(systemElement);
         }
     }
-    //QGraphicsItem::contextMenuEvent(event);
-    GUIModelObject::contextMenuEvent(event);
+
+    //Dont call GUIModelObject::contextMenuEvent as that will open an other menu after this one is closed
+    //GUIModelObject::contextMenuEvent(event);
+    ////QGraphicsItem::contextMenuEvent(event);
 }
 
 void GUIContainerObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
@@ -1041,7 +1043,7 @@ void GUIContainerObject::enterContainer()
     //! @todo WHY dosnt deselectALL deselct myself????
     //! @todo there is apperantly a deselect all guiwidgets also that is not in deselect all
     //this->deselect();
-    mpParentContainerObject->deselectAll();
+    mpParentContainerObject->deselectAll(); //deselect myself and anyone else
 
     //Show this scene
     /*mpParentContainerObject->*/mpParentProjectTab->mpGraphicsView->setScene(getContainedScenePtr());

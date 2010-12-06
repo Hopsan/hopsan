@@ -693,11 +693,13 @@ void GUISystem::setNumberOfLogSamples(size_t nSamples)
 }
 
 
+//! @todo use enums instead
 int GUISystem::findPortEdge(QPointF center, QPointF pt)
 {
     //By swapping place of pt1 and pt2 we get the angle in the same coordinate system as the view
-    QLineF line = QLineF(pt, center);
-    qreal angle = normRad(deg2rad(line.angle()));
+    QPointF diff = pt-center;
+    qreal angle = normRad(qAtan2(diff.x(), diff.y()));
+    qDebug() << "angle: " << rad2deg(angle);
     if (fabs(angle) <= M_PI_4)
     {
         return 0;
@@ -708,70 +710,110 @@ int GUISystem::findPortEdge(QPointF center, QPointF pt)
     }
     else if (angle > M_PI_4)
     {
-        return 3;
+        return 1;
     }
     else
     {
-        return 4;
+        return 3;
     }
 }
 
 void GUISystem::refreshExternalPortsAppearanceAndPosition()
 {
     //refresh the external port poses
-    GUIModelObjectMapT::iterator it;
-    QLineF line;
-    double angle, x, y, val;
+    GUIModelObjectMapT::iterator moit;
+    double val;
 
     //Set the initial values to be overwriten by the if bellow
     //! @todo maybe declare these or something like really big number in HopsanGUI to avoid needing to include float.h
     double xMin=FLT_MAX, xMax=FLT_MIN, yMin=FLT_MAX, yMax=FLT_MIN;
-    for(it = mGUIModelObjectMap.begin(); it != mGUIModelObjectMap.end(); ++it)
+    for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
     {
-        //check x max and min
-        val = it.value()->getCenterPos().x();
-        xMin = std::min(xMin,val);
-        xMax = std::max(xMax,val);
-        //check y max and min
-        val = it.value()->getCenterPos().y();
-        yMin = std::min(yMin,val);
-        yMax = std::max(yMax,val);
+        if(moit.value()->type() == GUISYSTEMPORT)
+        {
+            //check x max and min
+            val = moit.value()->getCenterPos().x();
+            xMin = std::min(xMin,val);
+            xMax = std::max(xMax,val);
+            //check y max and min
+            val = moit.value()->getCenterPos().y();
+            yMin = std::min(yMin,val);
+            yMax = std::max(yMax,val);
+        }
     }
     //! @todo Find out if it is possible to ask the scene or view for this information instead of calulating it ourselves
     QPointF center = QPointF((xMax+xMin)/2.0, (yMax+yMin)/2.0);
-    double internalW = xMax-xMin;
-    double internalH = yMax-yMin;
-    double externalW = this->boundingRect().width();
-    double externalH = this->boundingRect().height();
+    //qDebug() << "center max min: " << center << " " << xMin << " " << xMax << " " << yMin << " " << yMax;
 
-    for(it = mGUIModelObjectMap.begin(); it != mGUIModelObjectMap.end(); ++it)
+    QVector<GUIPort*> leftEdge;
+    QVector<GUIPort*> rightEdge;
+    QVector<GUIPort*> topEdge;
+    QVector<GUIPort*> bottomEdge;
+
+    for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
     {
-        if(it.value()->type() == GUISYSTEMPORT)
+        if(moit.value()->type() == GUISYSTEMPORT)
         {
-            line = QLineF(center, it.value()->getCenterPos());
-            this->getContainedScenePtr()->addLine(line); //debug-grej
-            angle = deg2rad(line.angle());
-            qDebug() << " sysp: " << it.value()->getName() << " angle: " << line.angle();
+//            QLineF line = QLineF(center, moit.value()->getCenterPos());
+//            this->getContainedScenePtr()->addLine(line); //debug-grej
 
-            calcSubsystemPortPosition(externalW, externalH, angle, x, y);
+            int edge = findPortEdge(center, moit.value()->getCenterPos());
+            //qDebug() << " sysp: " << moit.value()->getName() << " edge: " << edge;
 
-            qDebug() << "--------------------x,y unchanged: " << x << " " << y;
-            //! @todo what about this coordinate switch should we not use the same coordinate system everywhere
-//            x = (x/internalW+1.0)/2.0; //Change coordinate system
-//            y = (-y/internalH+1.0)/2.0; //Change coordinate system
-
-            qDebug() << "--------------------x,y changed: " << x << " " << y;
-
-
-            GUIPort* pPort = this->getPort(it.value()->getName());
-            //pPort->updatePositionByFraction(x,y);
-            pPort->updatePosition(x,y);
-            //! @todo maybe we should be able to update rotation also
-
-            //refresh the external port graphics
-            //! @todo wierd to use createfunction to refresh graphics, but ok for now
-            this->createExternalPort(it.value()->getName());
+            switch (edge) {
+            case 0:
+                rightEdge.append(this->getPort(moit.value()->getName()));
+                break;
+            case 1:
+                bottomEdge.append(this->getPort(moit.value()->getName()));
+                break;
+            case 2:
+                leftEdge.append(this->getPort(moit.value()->getName()));
+                break;
+            case 3:
+                topEdge.append(this->getPort(moit.value()->getName()));
+                break;
+            }
         }
+    }
+
+    //Now disperse the port icons evenly along each edge
+    QVector<GUIPort*>::iterator it;
+    qreal disp; //Dispersion factor
+
+    //! @todo maybe we should be able to update rotation in all of these also
+    //! @todo need to be sure we sort them in the correct order first
+    //! @todo wierd to use createfunction to refresh graphics, but ok for now
+    disp = 1.0/((qreal)(rightEdge.size()+1));
+    for (it=rightEdge.begin(); it!=rightEdge.end(); ++it)
+    {
+        (*it)->updatePositionByFraction(1.0, disp);
+        this->createExternalPort((*it)->getName());    //refresh the external port graphics
+        disp += disp;
+    }
+
+    disp = 1.0/((qreal)(bottomEdge.size()+1));
+    for (it=bottomEdge.begin(); it!=bottomEdge.end(); ++it)
+    {
+        (*it)->updatePositionByFraction(disp, 1.0);
+        this->createExternalPort((*it)->getName());    //refresh the external port graphics
+        disp += disp;
+    }
+
+    disp = 1.0/((qreal)(leftEdge.size()+1));
+    for (it=leftEdge.begin(); it!=leftEdge.end(); ++it)
+    {
+        (*it)->updatePositionByFraction(0.0, disp);
+        this->createExternalPort((*it)->getName());    //refresh the external port graphics
+        disp += disp;
+    }
+
+    disp = 1.0/((qreal)(topEdge.size()+1));
+    for (it=topEdge.begin(); it!=topEdge.end(); ++it)
+    {
+        (*it)->updatePositionByFraction(disp, 0.0);
+        this->createExternalPort((*it)->getName());    //refresh the external port graphics
+        disp += disp;
     }
 }
 
