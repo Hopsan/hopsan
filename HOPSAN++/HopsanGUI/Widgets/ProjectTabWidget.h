@@ -28,7 +28,8 @@ public:
     ProjectTabWidget(MainWindow *parent = 0);
     ProjectTab *getCurrentTab();
     ProjectTab *getTab(int index);
-    GUISystem *getCurrentSystem();
+    GUISystem *getCurrentTopLevelSystem();
+    GUIContainerObject *getCurrentContainer();
     GUISystem *getSystem(int index);
 
         //Public member variables

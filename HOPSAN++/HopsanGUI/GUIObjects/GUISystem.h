@@ -53,12 +53,6 @@ public:
     enum { Type = GUISYSTEM };
     int type() const;
 
-    QList<QStringList> getFavoriteParameters();
-    void setFavoriteParameter(QString componentName, QString portName, QString dataName, QString dataUnit);
-    void removeFavoriteParameterByComponentName(QString componentName);
-
-    QList<QStringList> mFavoriteParameters;
-
 public slots:
     void updateStartTime();
     void updateTimeStep();

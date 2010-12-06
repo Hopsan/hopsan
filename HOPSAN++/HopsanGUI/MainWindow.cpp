@@ -721,7 +721,7 @@ void MainWindow::fixTimeStep()
     if (getTimeStepFromToolBar() > (getFinishTimeFromToolBar() - getStartTimeFromToolBar()))
         setTimeStepInToolBar(getFinishTimeFromToolBar() - getStartTimeFromToolBar());
 
-    if (mpProjectTabs->getCurrentTab()) //crashes if not if statement if no tabs are there...
+    if (mpProjectTabs->count() > 0)
     {
         mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->setDesiredTimeStep(getTimeStepFromToolBar());
     }

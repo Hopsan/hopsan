@@ -38,7 +38,7 @@
 
 
 class MainWindow;
-class GUISystem;
+class GUIContainerObject;
 class PlotWindow;
 class PlotWidget;
 class PlotParameterTree;
@@ -72,7 +72,7 @@ public:
     PlotWindow *createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit);
 
     //MainWindow *mpParentMainWindow;
-    GUISystem *mpCurrentSystem;
+    GUIContainerObject *mpCurrentContainer;
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event);

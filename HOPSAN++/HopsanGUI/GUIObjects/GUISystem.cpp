@@ -298,49 +298,6 @@ int GUISystem::type() const
 }
 
 
-QList<QStringList> GUISystem::getFavoriteParameters()
-{
-    return mFavoriteParameters;
-}
-
-
-void GUISystem::setFavoriteParameter(QString componentName, QString portName, QString dataName, QString dataUnit)
-{
-    QStringList tempParameter;
-    tempParameter.append(componentName);
-    tempParameter.append(portName);
-    tempParameter.append(dataName);
-    tempParameter.append(dataUnit);
-    if(!mFavoriteParameters.contains(tempParameter))
-    {
-        mFavoriteParameters.append(tempParameter);
-    }
-    gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
-
-    mpParentProjectTab->hasChanged();
-}
-
-
-void GUISystem::removeFavoriteParameterByComponentName(QString componentName)
-{
-    QList<QStringList>::iterator it;
-    for(it=
-    mFavoriteParameters.begin(); it!=
-    mFavoriteParameters.end(); ++it)
-    {
-        if((*it).at(0) == componentName)
-        {
-            mFavoriteParameters.removeAll((*it));
-            return;
-        }
-    }
-    gpMainWindow->makeSurePlotWidgetIsCreated();
-    gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
-
-    mpParentProjectTab->hasChanged();
-}
-
-
 void GUISystem::openPropertiesDialog()
 {
     ContainerPropertiesDialog dialog(this, gpMainWindow);

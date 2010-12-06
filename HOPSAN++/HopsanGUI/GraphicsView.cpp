@@ -174,6 +174,13 @@ void GraphicsView::setContainerPtr(GUIContainerObject *pContainer)
     this->mpSystem = pContainer;
 }
 
+
+GUIContainerObject *GraphicsView::getContainerPtr()
+{
+    return this->mpSystem;
+}
+
+
 //! @brief Returns the vieports center and zoom in the supplied reference variables
 void GraphicsView::getViewPort(qreal &rX, qreal &rY, qreal &rZoom)
 {

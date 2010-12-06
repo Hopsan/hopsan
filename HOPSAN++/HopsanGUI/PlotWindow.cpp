@@ -40,7 +40,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
     resize(700,600);    //! @todo Maybe user should be allowed to change default plot window size, or someone will become annoyed...
 
     //mpParentMainWindow = parent;
-    mpCurrentGUISystem = gpMainWindow->mpProjectTabs->getCurrentSystem();
+    mpCurrentGUISystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
     mpPlotParameterTree = plotParameterTree;
 
         //Default settings
@@ -732,9 +732,9 @@ void PlotWindow::dropEvent(QDropEvent *event)
             dataName = readName(mimeStream);
             dataUnit = readName(mimeStream);
 
-            QVector<double> xVector = QVector<double>::fromStdVector(gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getTimeVector(componentName, portName));
+            QVector<double> xVector = QVector<double>::fromStdVector(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->getTimeVector(componentName, portName));
             QVector<double> yVector;
-            gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getPlotData(componentName, portName, dataName, yVector);
+            gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->getPlotData(componentName, portName, dataName, yVector);
 
             QCursor cursor;
             if(this->mapFromGlobal(cursor.pos()).y() > this->height()/2 && mpCurves.size() >= 1)
@@ -1163,14 +1163,14 @@ void PlotWindow::checkNewValues()
             QVector<double> xVector;
             if(mHasSpecialXAxis && mpPlotParameterTree->mAvailableParameters.contains(mSpecialXParameter))
             {
-                gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getPlotData(mSpecialXParameter[0], mSpecialXParameter[1], mSpecialXParameter[2], xVector);
+                gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->getPlotData(mSpecialXParameter[0], mSpecialXParameter[1], mSpecialXParameter[2], xVector);
             }
             else
             {
                 xVector = QVector<double>::fromStdVector(gpMainWindow->mpProjectTabs->getCurrentTab()->mpSystem->getCoreSystemAccessPtr()->getTimeVector(mCurveParameters[i][0], mCurveParameters[i][1]));
             }
             QVector<double> yVector;
-            gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getPlotData(mCurveParameters[i][0], mCurveParameters[i][1], mCurveParameters[i][2], yVector);
+            gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->getPlotData(mCurveParameters[i][0], mCurveParameters[i][1], mCurveParameters[i][2], yVector);
 
             mVectorX.last().append(xVector);
             mVectorY.last().append(yVector);

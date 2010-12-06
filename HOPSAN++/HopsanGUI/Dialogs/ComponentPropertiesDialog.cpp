@@ -353,7 +353,7 @@ void ParameterLayout::showListOfSystemParameters()
 
     QMenu menu;
 
-    QMap<std::string, double> SystemMap = gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getSystemParametersMap();
+    QMap<std::string, double> SystemMap = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->getSystemParametersMap();
     QMap<std::string, double>::iterator it;
     for(it=SystemMap.begin(); it!=SystemMap.end(); ++it)
     {

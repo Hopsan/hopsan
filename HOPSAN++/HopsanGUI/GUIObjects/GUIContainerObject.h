@@ -57,7 +57,6 @@ public:
     virtual void setTypeCQS(QString /*typestring*/){assert(false);}
     virtual size_t getNumberOfLogSamples(){assert(false);}
     virtual void setNumberOfLogSamples(size_t /*nSamples*/){assert(false);}
-    virtual void removeFavoriteParameterByComponentName(QString /*componentName*/){assert(false);}
 
     //Public member variable
     //!< @todo make this private later
@@ -87,6 +86,12 @@ public:
 
     size_t mHighestWidgetIndex;
     QMap<size_t, GUIWidget *> mWidgetMap;
+
+    QList<QStringList> getFavoriteParameters();
+    void setFavoriteParameter(QString componentName, QString portName, QString dataName, QString dataUnit);
+    void removeFavoriteParameterByComponentName(QString componentName);
+
+    QList<QStringList> mFavoriteParameters;
 
 public slots:
         //Selection

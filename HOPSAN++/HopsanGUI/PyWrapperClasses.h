@@ -164,7 +164,7 @@ public slots:
 
     GUIObject* component(MainWindow* o, const QString& compName)
     {
-        return o->mpProjectTabs->getCurrentSystem()->getGUIModelObject(compName);
+        return o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName);
     }
 
     void setStartTime(MainWindow* o, const double& start)
@@ -204,17 +204,17 @@ public slots:
 
     double getParameter(MainWindow* o, const QString& compName, const QString& parName)
     {
-        return o->mpProjectTabs->getCurrentSystem()->getGUIModelObject(compName)->getParameterValue(parName);
+        return o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->getParameterValue(parName);
     }
 
     void setParameter(MainWindow* o, const QString& compName, const QString& parName, const double& value)
     {
-        o->mpProjectTabs->getCurrentSystem()->getGUIModelObject(compName)->setParameterValue(parName, QString::number(value));
+        o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->setParameterValue(parName, QString::number(value));
     }
 
     void plot(MainWindow* o, const QString& compName, const QString& portName, const QString& dataName)
     {
-        o->mpProjectTabs->getCurrentSystem()->getGUIModelObject(compName)->getPort(portName)->plot(dataName);
+        o->mpProjectTabs->getCurrentTopLevelSystem()->getGUIModelObject(compName)->getPort(portName)->plot(dataName);
     }
 
 };

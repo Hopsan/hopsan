@@ -143,13 +143,13 @@ void SystemParameterTableWidget::changeParameter(QTableWidgetItem *item)
 
 double SystemParameterTableWidget::getParameter(QString name)
 {
-    return gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getSystemParameter(name);
+    return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->getSystemParameter(name);
 }
 
 
 bool SystemParameterTableWidget::hasParameter(QString name)
 {
-    return gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->hasSystemParameter(name);
+    return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->hasSystemParameter(name);
 }
 
 
@@ -159,7 +159,7 @@ bool SystemParameterTableWidget::hasParameter(QString name)
 void SystemParameterTableWidget::setParameter(QString name, double value, bool doUpdate)
 {
     //Error check
-    if(!(gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->setSystemParameter(name, value)))
+    if(!(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->setSystemParameter(name, value)))
     {
         QMessageBox::critical(0, "Hopsan GUI",
                               QString("'%1' is an invalid name for a system parameter.")
@@ -188,7 +188,7 @@ void SystemParameterTableWidget::setParameter(QString name, QString valueTxt, bo
         QMessageBox::critical(0, "Hopsan GUI",
                               QString("'%1' is not a valid number.")
                               .arg(valueTxt));
-        QString oldValue = QString::number(gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getSystemParameter(name));
+        QString oldValue = QString::number(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->getSystemParameter(name));
         QList<QTableWidgetItem *> items = selectedItems();
         //Error if size() > 1, but it should not be! :)
         for(int i = 0; i<items.size(); ++i)
@@ -205,7 +205,7 @@ void SystemParameterTableWidget::setParameter(QString name, QString valueTxt, bo
 
 void SystemParameterTableWidget::setParameters()
 {
-//    if(gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getNumberOfSystemParameters() > 0)
+//    if(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->getNumberOfSystemParameters() > 0)
 //    {
         for(int i=0; i<rowCount(); ++i)
         {
@@ -237,7 +237,7 @@ void SystemParameterTableWidget::removeSelectedParameters()
     for(int j=0; j<parametersToRemove.size(); ++j)
     {
         qDebug() << "Removing: " << parametersToRemove[j];
-        gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->removeSystemParameter(parametersToRemove.at(j));
+        gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->removeSystemParameter(parametersToRemove.at(j));
     }
 
     update();
@@ -287,7 +287,7 @@ void SystemParameterTableWidget::addParameter()
 void SystemParameterTableWidget::update()
 {
     QMap<std::string, double>::iterator it;
-    QMap<std::string, double> tempMap = gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getSystemParametersMap();
+    QMap<std::string, double> tempMap = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->getSystemParametersMap();
 
     clear();
 

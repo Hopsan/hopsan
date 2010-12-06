@@ -29,6 +29,7 @@ public:
     void updateViewPort();
     void getViewPort(qreal &rX, qreal &rY, qreal &rZoom);
     void setContainerPtr(GUIContainerObject *pContainer);
+    GUIContainerObject *getContainerPtr();
 
     ProjectTab *mpParentProjectTab;
 

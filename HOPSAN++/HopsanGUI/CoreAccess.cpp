@@ -353,7 +353,9 @@ void CoreSystemAccess::loadSystemFromFileCoreOnly(QString sysname, QString filep
 
 vector<double> CoreSystemAccess::getTimeVector(QString componentName, QString portName)
 {
-    vector<double>* ptr = (mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getPort(portName.toStdString())->getTimeVectorPtr());
+    qDebug() << "getTimeVector, " << componentName << ", " << portName;
+
+    vector<double>* ptr = (mpCoreComponentSystem->getComponent(componentName.toStdString())->getPort(portName.toStdString())->getTimeVectorPtr());
     if (ptr != 0)
     {
         return *ptr;

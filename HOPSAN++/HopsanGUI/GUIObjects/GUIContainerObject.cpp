@@ -276,6 +276,48 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* 
 }
 
 
+QList<QStringList> GUIContainerObject::getFavoriteParameters()
+{
+    return mFavoriteParameters;
+}
+
+
+void GUIContainerObject::setFavoriteParameter(QString componentName, QString portName, QString dataName, QString dataUnit)
+{
+    QStringList tempParameter;
+    tempParameter.append(componentName);
+    tempParameter.append(portName);
+    tempParameter.append(dataName);
+    tempParameter.append(dataUnit);
+    if(!mFavoriteParameters.contains(tempParameter))
+    {
+        mFavoriteParameters.append(tempParameter);
+    }
+    gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
+
+    mpParentProjectTab->hasChanged();
+}
+
+
+void GUIContainerObject::removeFavoriteParameterByComponentName(QString componentName)
+{
+    QList<QStringList>::iterator it;
+    for(it=
+    mFavoriteParameters.begin(); it!=
+    mFavoriteParameters.end(); ++it)
+    {
+        if((*it).at(0) == componentName)
+        {
+            mFavoriteParameters.removeAll((*it));
+            return;
+        }
+    }
+    gpMainWindow->makeSurePlotWidgetIsCreated();
+    gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
+
+    mpParentProjectTab->hasChanged();
+}
+
 
 void GUIContainerObject::addTextWidget(QPoint position, undoStatus undoSettings)
 {
@@ -1050,6 +1092,8 @@ void GUIContainerObject::enterContainer()
     /*mpParentContainerObject->*/mpParentProjectTab->mpGraphicsView->setContainerPtr(this);
     mpParentProjectTab->mpQuickNavigationWidget->addOpenContainer(this);
 
+    gpMainWindow->makeSurePlotWidgetIsCreated();
+    gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
 }
 
 void GUIContainerObject::exitContainer()
@@ -1059,4 +1103,6 @@ void GUIContainerObject::exitContainer()
     /*mpParentContainerObject->*/mpParentProjectTab->mpGraphicsView->setScene(this->mpParentContainerObject->getContainedScenePtr());
     /*mpParentContainerObject->*/mpParentProjectTab->mpGraphicsView->setContainerPtr(this->mpParentContainerObject);
 
+    gpMainWindow->makeSurePlotWidgetIsCreated();
+    gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
 }

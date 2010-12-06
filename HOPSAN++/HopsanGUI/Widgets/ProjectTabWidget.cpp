@@ -363,9 +363,15 @@ ProjectTab *ProjectTabWidget::getTab(int index)
 
 
 //! Returns a pointer to the currently system model - be sure to check that the number of tabs is not zero before calling this
-GUISystem *ProjectTabWidget::getCurrentSystem()
+GUISystem *ProjectTabWidget::getCurrentTopLevelSystem()
 {
     return getCurrentTab()->mpSystem;
+}
+
+
+GUIContainerObject *ProjectTabWidget::getCurrentContainer()
+{
+    return getCurrentTab()->mpGraphicsView->getContainerPtr();
 }
 
 
@@ -481,7 +487,7 @@ bool ProjectTabWidget::closeAllProjectTabs()
     while(count() > 0)
     {
         setCurrentIndex(count()-1);
-        gConfig.addLastSessionModel(getCurrentSystem()->mModelFileInfo.filePath());
+        gConfig.addLastSessionModel(getCurrentTopLevelSystem()->mModelFileInfo.filePath());
         if (!closeProjectTab(count()-1))
         {
             return false;
@@ -595,23 +601,23 @@ void ProjectTabWidget::tabChanged()
         connect(gpMainWindow->zoomOutAction,        SIGNAL(triggered()),        getCurrentTab()->mpGraphicsView,    SLOT(zoomOut()));
         connect(gpMainWindow->exportPDFAction,      SIGNAL(triggered()),        getCurrentTab()->mpGraphicsView,    SLOT(exportToPDF()));
         connect(gpMainWindow->centerViewAction,     SIGNAL(triggered()),        getCurrentTab()->mpGraphicsView,    SLOT(centerView()));
-        connect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        getCurrentSystem(),     SLOT(hideNames()));
-        connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        getCurrentSystem(),     SLOT(showNames()));
-        connect(gpMainWindow->mpStartTimeLineEdit,  SIGNAL(editingFinished()),  getCurrentSystem(),     SLOT(updateStartTime()));
-        connect(gpMainWindow->mpTimeStepLineEdit,   SIGNAL(editingFinished()),  getCurrentSystem(),     SLOT(updateTimeStep()));
-        connect(gpMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()),  getCurrentSystem(),     SLOT(updateStopTime()));
-        connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        getCurrentSystem(),     SLOT(disableUndo()));
+        connect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        getCurrentTopLevelSystem(),     SLOT(hideNames()));
+        connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        getCurrentTopLevelSystem(),     SLOT(showNames()));
+        connect(gpMainWindow->mpStartTimeLineEdit,  SIGNAL(editingFinished()),  getCurrentTopLevelSystem(),     SLOT(updateStartTime()));
+        connect(gpMainWindow->mpTimeStepLineEdit,   SIGNAL(editingFinished()),  getCurrentTopLevelSystem(),     SLOT(updateTimeStep()));
+        connect(gpMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()),  getCurrentTopLevelSystem(),     SLOT(updateStopTime()));
+        connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        getCurrentTopLevelSystem(),     SLOT(disableUndo()));
         connect(gpMainWindow->simulateAction,       SIGNAL(triggered()),        getCurrentTab(),        SLOT(simulate()));
-        connect(gpMainWindow->mpStartTimeLineEdit,  SIGNAL(editingFinished()),  getCurrentSystem(),     SLOT(updateStartTime()));
-        connect(gpMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()),  getCurrentSystem(),     SLOT(updateStopTime()));
-        connect(gpMainWindow->mpTimeStepLineEdit,   SIGNAL(editingFinished()),  getCurrentSystem(),     SLOT(updateTimeStep()));
+        connect(gpMainWindow->mpStartTimeLineEdit,  SIGNAL(editingFinished()),  getCurrentTopLevelSystem(),     SLOT(updateStartTime()));
+        connect(gpMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()),  getCurrentTopLevelSystem(),     SLOT(updateStopTime()));
+        connect(gpMainWindow->mpTimeStepLineEdit,   SIGNAL(editingFinished()),  getCurrentTopLevelSystem(),     SLOT(updateTimeStep()));
         connect(gpMainWindow->saveAction,           SIGNAL(triggered()),        getCurrentTab(),        SLOT(save()));
         connect(gpMainWindow->saveAsAction,         SIGNAL(triggered()),        getCurrentTab(),        SLOT(saveAs()));
-        connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        getCurrentSystem(),     SLOT(cutSelected()));
-        connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        getCurrentSystem(),     SLOT(copySelected()));
-        connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        getCurrentSystem(),     SLOT(paste()));
-        connect(gpMainWindow->propertiesAction,    SIGNAL(triggered()),        getCurrentSystem(),     SLOT(openPropertiesDialogSlot()));
-        getCurrentSystem()->updateUndoStatus();
-        getCurrentSystem()->updateSimulationParametersInToolBar();
+        connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        getCurrentTopLevelSystem(),     SLOT(cutSelected()));
+        connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        getCurrentTopLevelSystem(),     SLOT(copySelected()));
+        connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        getCurrentTopLevelSystem(),     SLOT(paste()));
+        connect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        getCurrentTopLevelSystem(),     SLOT(openPropertiesDialogSlot()));
+        getCurrentTopLevelSystem()->updateUndoStatus();
+        getCurrentTopLevelSystem()->updateSimulationParametersInToolBar();
     }
 }
