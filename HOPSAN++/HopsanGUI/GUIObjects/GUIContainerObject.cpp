@@ -746,7 +746,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
     QDomElement textElement = copyRoot->firstChildElement("textwidget");
     while(!textElement.isNull())
     {
-        loadTextWidget(textElement, this);
+        loadTextWidget(textElement, this, NOUNDO);
         mTextWidgetList.last()->setSelected(true);
         mTextWidgetList.last()->moveBy(mPasteOffset, mPasteOffset);
         mUndoStack->registerAddedTextWidget(mTextWidgetList.last());

@@ -196,9 +196,6 @@ void GUITextWidget::updateWidgetFromDialog()
     mpTextItem->setFont(mSelectedFont);
     mpTextItem->setDefaultTextColor(mSelectedColor);
 
-//    delete(mpSelectionBox);
-//    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height(),
-//                                               QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
     mpSelectionBox->setSize(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
     mpSelectionBox->setActive();
     this->resize(mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
@@ -211,8 +208,6 @@ void GUITextWidget::updateWidgetFromDialog()
 void GUITextWidget::setText(QString text)
 {
     mpTextItem->setPlainText(text);
-//    mpSelectionBox = new GUIObjectSelectionBox(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height(),
-//                                               QPen(QColor("red"),2*GOLDENRATIO), QPen(QColor("darkRed"),2*GOLDENRATIO), this);
     mpSelectionBox->setSize(0.0, 0.0, mpTextItem->boundingRect().width(), mpTextItem->boundingRect().height());
     mpSelectionBox->setPassive();
 }

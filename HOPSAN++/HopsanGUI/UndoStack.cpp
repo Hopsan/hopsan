@@ -313,7 +313,7 @@ void UndoStack::undoOneStep()
              loadBoxWidget(boxElement, mpParentContainerObject, NOUNDO);
              mpParentContainerObject->mWidgetMap.insert(stuffElement.attribute("index").toInt(), mpParentContainerObject->mWidgetMap.find(mpParentContainerObject->mHighestWidgetIndex-1).value());
              mpParentContainerObject->mWidgetMap.remove(mpParentContainerObject->mHighestWidgetIndex-1);
-             mpParentContainerObject->mHighestWidgetIndex -= 1;
+            // mpParentContainerObject->mHighestWidgetIndex -= 1;
         }
         else if(stuffElement.attribute("what") == "addedtextwidget")
         {
@@ -326,7 +326,7 @@ void UndoStack::undoOneStep()
              loadTextWidget(textElement, mpParentContainerObject, NOUNDO);
              mpParentContainerObject->mWidgetMap.insert(stuffElement.attribute("index").toInt(), mpParentContainerObject->mWidgetMap.find(mpParentContainerObject->mHighestWidgetIndex-1).value());
              mpParentContainerObject->mWidgetMap.remove(mpParentContainerObject->mHighestWidgetIndex-1);
-             mpParentContainerObject->mHighestWidgetIndex -= 1;
+             //mpParentContainerObject->mHighestWidgetIndex -= 1;
         }
         else if(stuffElement.attribute("what") == "modifiedtextwidget")
         {
