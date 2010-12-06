@@ -101,6 +101,7 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->registerCreatorFunction("SignalAnd", SignalAnd::Creator);
     cfact_ptr->registerCreatorFunction("SignalOr", SignalOr::Creator);
     cfact_ptr->registerCreatorFunction("SignalXor", SignalXor::Creator);
+    cfact_ptr->registerCreatorFunction("SignalDelay", SignalDelay::Creator);
 
     cfact_ptr->registerCreatorFunction("SignalOptimizedSineWave", SignalOptimizedSineWave::Creator);
     cfact_ptr->registerCreatorFunction("SignalOptimizedSubtract", SignalOptimizedSubtract::Creator);

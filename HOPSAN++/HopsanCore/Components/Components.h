@@ -80,7 +80,7 @@
 #include "Signal/SignalOr.hpp"
 #include "Signal/SignalXor.hpp"
 #include "Signal/SignalDummy.hpp"
-
+#include "Signal/SignalDelay.hpp"
 
 /* Mechanical Components */
 #include "Mechanic/MechanicForceTransformer.hpp"

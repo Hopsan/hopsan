@@ -60,7 +60,8 @@ SOURCES += Port.cc \
     ComponentUtilities/DoubleIntegratorWithDamping.cpp \
     ComponentUtilities/SecondOrderTransferFunction.cc \
     ComponentUtilities/matrix.cc \
-    ComponentUtilities/ludcmp.cc
+    ComponentUtilities/ludcmp.cc \
+
 HEADERS += win32dll.h \
     Port.h \
     Node.h \
@@ -167,4 +168,6 @@ HEADERS += win32dll.h \
     Components/Hydraulic/Hydraulic32Valve.hpp \
     Components/Hydraulic/Hydraulic33Valve.hpp \
     Components/Signal/SignalHP1Filter.hpp \
-    Components/Signal/SignalHP2Filter.hpp
+    Components/Signal/SignalHP2Filter.hpp \
+    Components/Signal/SignalDelay.hpp
+
