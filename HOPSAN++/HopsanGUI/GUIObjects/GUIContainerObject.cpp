@@ -87,25 +87,26 @@ GUIContainerObject::CONTAINERSTATUS GUIContainerObject::getContainerStatus()
 void GUIContainerObject::calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y)
 {
     //! @todo make common PI declaration, maybe also PIhalf or include math.h and use M_PI
+    double tanAngle = tan(angle)+.0001;//Otherwise division by zero
     if(angle>3.1415*3.0/2.0)
     {
-        x=-std::max(std::min(h/tan(angle), w), -w);
-        y=std::max(std::min(w*tan(angle), h), -h);
+        x=-std::max(std::min(h/tanAngle, w), -w);
+        y=std::max(std::min(w*tanAngle, h), -h);
     }
     else if(angle>3.1415)
     {
-        x=-std::max(std::min(h/tan(angle), w), -w);
-        y=-std::max(std::min(w*tan(angle), h), -h);
+        x=-std::max(std::min(h/tanAngle, w), -w);
+        y=-std::max(std::min(w*tanAngle, h), -h);
     }
     else if(angle>3.1415/2.0)
     {
-        x=std::max(std::min(h/tan(angle), w), -w);
-        y=-std::max(std::min(w*tan(angle), h), -h);
+        x=std::max(std::min(h/tanAngle, w), -w);
+        y=-std::max(std::min(w*tanAngle, h), -h);
     }
     else
     {
-        x=std::max(std::min(h/tan(angle), w), -w);
-        y=std::max(std::min(w*tan(angle), h), -h);
+        x=std::max(std::min(h/tanAngle, w), -w);
+        y=std::max(std::min(w*tanAngle, h), -h);
     }
 }
 

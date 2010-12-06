@@ -785,10 +785,11 @@ bool Component::setParameterValue(const std::string parName, const std::string s
 {
     bool success = false;
     double value;
+    success = getSystemParent()->getSystemParameters().getValue(parName, value);
     //Sets the paramter to the value hold by the System parameter
-    success = setParameterValue(parName, value);
+    success *= setParameterValue(parName, value);
     //Map it to the system parameter
-    success = getSystemParent()->getSystemParameters().mapParameter(sysParName, getParameterValuePtr(parName));
+    success *= getSystemParent()->getSystemParameters().mapParameter(sysParName, getParameterValuePtr(parName));
     return success;
 }
 
