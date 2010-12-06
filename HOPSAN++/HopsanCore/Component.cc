@@ -221,6 +221,11 @@ bool SystemParameters::add(std::string sysParName, double value)
 //! @return true if a post with sysParName exsited, false otherwise
 bool SystemParameters::getValue(std::string sysParName, double &value)
 {
+//std::map<std::string, SystemParameter>::iterator it;
+//for(it = mSystemParameters.begin(); it != mSystemParameters.end(); ++it)
+//{
+//    std::cout << it->first << mSystemParameters.count(sysParName) << std::endl;
+//}
     if(mSystemParameters.count(sysParName))
     {
         value = mSystemParameters[sysParName].first;
@@ -784,12 +789,8 @@ bool Component::setParameterValue(const string name, const double value)
 bool Component::setParameterValue(const std::string parName, const std::string sysParName)
 {
     bool success = false;
-    double value;
-    success = getSystemParent()->getSystemParameters().getValue(parName, value);
-    //Sets the paramter to the value hold by the System parameter
-    success *= setParameterValue(parName, value);
     //Map it to the system parameter
-    success *= getSystemParent()->getSystemParameters().mapParameter(sysParName, getParameterValuePtr(parName));
+    success = getSystemParent()->getSystemParameters().mapParameter(sysParName, getParameterValuePtr(parName));
     return success;
 }
 
