@@ -59,6 +59,36 @@
 #include "../common.h"
 
 
+SystemParameterTableWidget::SystemParameterTableWidget(int rows, int columns, QWidget *parent)
+    : QTableWidget(rows, columns, parent)
+{
+    setFocusPolicy(Qt::StrongFocus);
+    setSelectionMode(QAbstractItemView::SingleSelection);
+
+    setBaseSize(400, 500);
+    horizontalHeader()->setStretchLastSection(true);
+    horizontalHeader()->hide();
+
+    update();
+
+    connect(this, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(changeParameter(QTableWidgetItem*)));
+}
+
+
+void SystemParameterTableWidget::keyPressEvent(QKeyEvent *event)
+{
+    QTableWidget::keyPressEvent(event);
+    if(event->key() == Qt::Key_Delete)
+    {
+        if(currentColumn()<1)
+        {
+            std::cout << "Delete current Item" << std::endl;
+            removeSelectedParameters();
+        }
+    }
+}
+
+
 //! Construtor for System Parameters widget, where the user can see and change the System parameters in the model.
 //! @param parent Pointer to the main window
 SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
@@ -70,12 +100,7 @@ SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
     this->resize(400,500);
     this->setWindowTitle("System Parameters");
 
-    mpSystemParametersTable = new QTableWidget(0,1,this);
-    mpSystemParametersTable->setBaseSize(400, 500);
-    mpSystemParametersTable->horizontalHeader()->setStretchLastSection(true);
-    mpSystemParametersTable->horizontalHeader()->hide();
-
-    update();
+    mpSystemParametersTable = new SystemParameterTableWidget(0,1,this);
 
     mpAddButton = new QPushButton(tr("&Set"), this);
     mpAddButton->setFixedHeight(30);
@@ -95,20 +120,18 @@ SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
     mpGridLayout->addWidget(mpAddButton, 1, 0);
     mpGridLayout->addWidget(mpRemoveButton, 2, 0);
 
-    mpSystemParametersTable->setSelectionMode(QAbstractItemView::SingleSelection);
-
-    connect(mpAddButton, SIGNAL(clicked()), this, SLOT(openComponentPropertiesDialog()));
-    connect(mpRemoveButton, SIGNAL(clicked()), this, SLOT(removeSelectedParameters()));
-    connect(mpSystemParametersTable, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(changeParameter(QTableWidgetItem*)));
+    connect(mpAddButton, SIGNAL(clicked()), mpSystemParametersTable, SLOT(openComponentPropertiesDialog()));
+    connect(mpRemoveButton, SIGNAL(clicked()), mpSystemParametersTable, SLOT(removeSelectedParameters()));
 }
 
+
 //! @brief Used for parameter changes done directly in the label
-void SystemParametersWidget::changeParameter(QTableWidgetItem *item)
+void SystemParameterTableWidget::changeParameter(QTableWidgetItem *item)
 {
     //Filter out value labels
     if(item->column() == 1)
     {
-        QTableWidgetItem *neighborItem = mpSystemParametersTable->itemAt(item->row(), item->column()-1);
+        QTableWidgetItem *neighborItem = itemAt(item->row(), item->column()-1);
         QString parName = neighborItem->text();
         QString parValue = item->text();
 
@@ -118,13 +141,13 @@ void SystemParametersWidget::changeParameter(QTableWidgetItem *item)
 }
 
 
-double SystemParametersWidget::getParameter(QString name)
+double SystemParameterTableWidget::getParameter(QString name)
 {
     return gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getSystemParameter(name);
 }
 
 
-bool SystemParametersWidget::hasParameter(QString name)
+bool SystemParameterTableWidget::hasParameter(QString name)
 {
     return gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->hasSystemParameter(name);
 }
@@ -133,7 +156,7 @@ bool SystemParametersWidget::hasParameter(QString name)
 //! Slot that adds a System parameter value
 //! @param name Lookup name for the System parameter
 //! @param value Value of the System parameter
-void SystemParametersWidget::setParameter(QString name, double value, bool doUpdate)
+void SystemParameterTableWidget::setParameter(QString name, double value, bool doUpdate)
 {
     //Error check
     if(!(gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->setSystemParameter(name, value)))
@@ -155,7 +178,7 @@ void SystemParametersWidget::setParameter(QString name, double value, bool doUpd
 //! Slot that adds a System parameter value
 //! @param name Lookup name for the System parameter
 //! @param value Value of the System parameter
-void SystemParametersWidget::setParameter(QString name, QString valueTxt, bool doUpdate)
+void SystemParameterTableWidget::setParameter(QString name, QString valueTxt, bool doUpdate)
 {
     //Error check
     bool isDbl;
@@ -166,7 +189,7 @@ void SystemParametersWidget::setParameter(QString name, QString valueTxt, bool d
                               QString("'%1' is not a valid number.")
                               .arg(valueTxt));
         QString oldValue = QString::number(gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getSystemParameter(name));
-        QList<QTableWidgetItem *> items = mpSystemParametersTable->selectedItems();
+        QList<QTableWidgetItem *> items = selectedItems();
         //Error if size() > 1, but it should not be! :)
         for(int i = 0; i<items.size(); ++i)
         {
@@ -180,14 +203,14 @@ void SystemParametersWidget::setParameter(QString name, QString valueTxt, bool d
 }
 
 
-void SystemParametersWidget::setParameters()
+void SystemParameterTableWidget::setParameters()
 {
 //    if(gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getNumberOfSystemParameters() > 0)
 //    {
-        for(int i=0; i<mpSystemParametersTable->rowCount(); ++i)
+        for(int i=0; i<rowCount(); ++i)
         {
-            QString name = mpSystemParametersTable->item(i, 0)->text();
-            double value = mpSystemParametersTable->item(i, 1)->text().toDouble();
+            QString name = item(i, 0)->text();
+            double value = item(i, 1)->text().toDouble();
             setParameter(name, value);
         }
 //    }
@@ -196,15 +219,15 @@ void SystemParametersWidget::setParameters()
 
 //! Slot that removes all selected System parameters in parameter table
 //! @todo This shall remove the actual System parameters when they have been implemented, wherever they are stored.
-void SystemParametersWidget::removeSelectedParameters()
+void SystemParameterTableWidget::removeSelectedParameters()
 {
-    QList<QTableWidgetItem *> pSelectedItems = mpSystemParametersTable->selectedItems();
+    QList<QTableWidgetItem *> pSelectedItems = selectedItems();
     QStringList parametersToRemove;
     QString tempName;
 
     for(int i=0; i<pSelectedItems.size(); ++i)
     {
-        tempName = mpSystemParametersTable->item(pSelectedItems[i]->row(),0)->text();
+        tempName = item(pSelectedItems[i]->row(),0)->text();
         if(!parametersToRemove.contains(tempName))
         {
             parametersToRemove.append(tempName);
@@ -222,7 +245,7 @@ void SystemParametersWidget::removeSelectedParameters()
 
 
 //! Slot that opens "Add Parameter" dialog, where the user can add new System parameters
-void SystemParametersWidget::openComponentPropertiesDialog()
+void SystemParameterTableWidget::openComponentPropertiesDialog()
 {
     QDialog *pAddComponentPropertiesDialog = new QDialog(this);
     pAddComponentPropertiesDialog->setWindowTitle("Set System Parameter");
@@ -253,7 +276,7 @@ void SystemParametersWidget::openComponentPropertiesDialog()
 
 
 //! @Private help slot that adds a parameter from the selected name and value in "Add Parameter" dialog
-void SystemParametersWidget::addParameter()
+void SystemParameterTableWidget::addParameter()
 {
     bool ok;    
     setParameter(mpNameBox->text(), mpValueBox->text().toDouble(&ok));
@@ -261,43 +284,43 @@ void SystemParametersWidget::addParameter()
 
 
 //! Updates the parameter table from the contents list
-void SystemParametersWidget::update()
+void SystemParameterTableWidget::update()
 {
     QMap<std::string, double>::iterator it;
     QMap<std::string, double> tempMap = gpMainWindow->mpProjectTabs->getCurrentSystem()->getCoreSystemAccessPtr()->getSystemParametersMap();
 
-    mpSystemParametersTable->clear();
+    clear();
 
     if(tempMap.isEmpty())
     {
-        mpSystemParametersTable->setColumnCount(1);
-        mpSystemParametersTable->setRowCount(1);
-        mpSystemParametersTable->verticalHeader()->hide();
+        setColumnCount(1);
+        setRowCount(1);
+        verticalHeader()->hide();
 
         QTableWidgetItem *item = new QTableWidgetItem();
         item->setText("No System parameters set.");
         item->setBackgroundColor(QColor("white"));
         item->setTextAlignment(Qt::AlignCenter);
         item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-        mpSystemParametersTable->setItem(0,0,item);
+        setItem(0,0,item);
     }
     else
     {
-        mpSystemParametersTable->setRowCount(0);
-        mpSystemParametersTable->setColumnCount(2);
-        mpSystemParametersTable->setColumnWidth(0, 120);
-        mpSystemParametersTable->verticalHeader()->show();
+        setRowCount(0);
+        setColumnCount(2);
+        setColumnWidth(0, 120);
+        verticalHeader()->show();
     }
     for(it=tempMap.begin(); it!=tempMap.end(); ++it)
     {
         QString valueString;
         valueString.setNum(it.value());
-        this->mpSystemParametersTable->insertRow(mpSystemParametersTable->rowCount());
+        insertRow(rowCount());
         QTableWidgetItem *nameItem = new QTableWidgetItem(QString(it.key().c_str()));
         QTableWidgetItem *valueItem = new QTableWidgetItem(valueString);
         nameItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         valueItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
-        mpSystemParametersTable->setItem(mpSystemParametersTable->rowCount()-1, 0, nameItem);
-        mpSystemParametersTable->setItem(mpSystemParametersTable->rowCount()-1, 1, valueItem);
+        setItem(rowCount()-1, 0, nameItem);
+        setItem(rowCount()-1, 1, valueItem);
     }
 }

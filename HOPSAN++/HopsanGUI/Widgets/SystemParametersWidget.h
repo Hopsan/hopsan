@@ -31,14 +31,12 @@ class GUISystem;
 class GUIModelObject;
 
 
-class SystemParametersWidget : public QWidget
+class SystemParameterTableWidget : public QTableWidget
 {
     Q_OBJECT
 
 public:
-    SystemParametersWidget(MainWindow *parent = 0);
-
-    //MainWindow *mpParentMainWindow;
+    SystemParameterTableWidget(int rows, int columns, QWidget *parent=0);
 
     double getParameter(QString name);
     bool hasParameter(QString name);
@@ -58,6 +56,9 @@ private slots:
 signals:
     void modifiedSystemParameter();
 
+protected:
+    void keyPressEvent(QKeyEvent *event);
+
 private:
     QLabel *mpNameLabel;
     QLineEdit *mpNameBox;
@@ -65,9 +66,20 @@ private:
     QLineEdit *mpValueBox;
     QPushButton *mpAddInDialogButton;
     QPushButton *mpDoneInDialogButton;
+};
+
+
+class SystemParametersWidget : public QWidget
+{
+    Q_OBJECT
+
+public:
+    SystemParametersWidget(MainWindow *parent = 0);
+
+private:
     //QList< QPair<QString, double> > mContents;
 
-    QTableWidget *mpSystemParametersTable;
+    SystemParameterTableWidget *mpSystemParametersTable;
     QPushButton *mpAddButton;
     QPushButton *mpRemoveButton;
     QPushButton *mpCloseButton;
