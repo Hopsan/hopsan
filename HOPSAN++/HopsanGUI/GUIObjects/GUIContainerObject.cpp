@@ -1037,10 +1037,11 @@ void GUIContainerObject::openPropertiesDialog()
 void GUIContainerObject::enterContainer()
 {
     //First deselect everything so that buttons pressed in the view are not sent to obejcts in the previous container
-    this->deselectAll(); //! @todo maybe this should be a signal
+    //this->deselectAll(); //! @todo maybe this should be a signal
     //! @todo WHY dosnt deselectALL deselct myself????
     //! @todo there is apperantly a deselect all guiwidgets also that is not in deselect all
-    this->deselect();
+    //this->deselect();
+    mpParentContainerObject->deselectAll();
 
     //Show this scene
     /*mpParentContainerObject->*/mpParentProjectTab->mpGraphicsView->setScene(getContainedScenePtr());
@@ -1051,6 +1052,7 @@ void GUIContainerObject::enterContainer()
 
 void GUIContainerObject::exitContainer()
 {
+    this->deselectAll();
     //Go back to parent system
     /*mpParentContainerObject->*/mpParentProjectTab->mpGraphicsView->setScene(this->mpParentContainerObject->getContainedScenePtr());
     /*mpParentContainerObject->*/mpParentProjectTab->mpGraphicsView->setContainerPtr(this->mpParentContainerObject);

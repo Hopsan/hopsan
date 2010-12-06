@@ -703,62 +703,44 @@ void GUISystem::refreshExternalPortsAppearanceAndPosition()
     //Set the initial values to be overwriten by the if bellow
     //! @todo maybe declare these or something like really big number in HopsanGUI to avoid needing to include float.h
     double xMin=FLT_MAX, xMax=FLT_MIN, yMin=FLT_MAX, yMax=FLT_MIN;
-
     for(it = mGUIModelObjectMap.begin(); it != mGUIModelObjectMap.end(); ++it)
     {
-        //val is the center of each component, its coordinates topleft plus half of the size in x and y
-        //! @todo maybe we need a function in guiobject that returns this i think it is calculated all over the place
         //check x max and min
-        val = it.value()->x()+it.value()->rect().width()/2.0;
-        if (val < xMin)
-        {
-            xMin = val;
-        }
-        if (val > xMax)
-        {
-            xMax = val;
-        }
+        val = it.value()->getCenterPos().x();
+        xMin = std::min(xMin,val);
+        xMax = std::max(xMax,val);
         //check y max and min
-        val = it.value()->y()+it.value()->rect().height()/2.0;
-        if (val < yMin)
-        {
-            yMin = val;
-        }
-        if (val > yMax)
-        {
-            yMax = val;
-        }
+        val = it.value()->getCenterPos().y();
+        yMin = std::min(yMin,val);
+        yMax = std::max(yMax,val);
     }
-    //! @todo Find out if it is possible to ask the scene or wive for this information instead of calulating it ourselves
+    //! @todo Find out if it is possible to ask the scene or view for this information instead of calulating it ourselves
     QPointF center = QPointF((xMax+xMin)/2.0, (yMax+yMin)/2.0);
-    double w = xMax-xMin;
-    double h = yMax-yMin;
+    double internalW = xMax-xMin;
+    double internalH = yMax-yMin;
+    double externalW = this->boundingRect().width();
+    double externalH = this->boundingRect().height();
 
     for(it = mGUIModelObjectMap.begin(); it != mGUIModelObjectMap.end(); ++it)
     {
         if(it.value()->type() == GUISYSTEMPORT)
         {
-            //! @todo here we extract center pos again, shuold have function for it
-            line = QLineF(center.x(), center.y(), it.value()->x()+it.value()->rect().width()/2, it.value()->y()+it.value()->rect().height()/2);
+            line = QLineF(center.x(), center.y(), it.value()->getCenterPos().x(), it.value()->getCenterPos().y());
             //getCurrentTab()->mpQGraphicsScene->addLine(line); //debug-grej
             angle = deg2rad(line.angle());
-            calcSubsystemPortPosition(w, h, angle, x, y);
+
+            calcSubsystemPortPosition(internalW, internalH, angle, x, y);
 
             qDebug() << "--------------------x,y unchanged: " << x << " " << y;
             //! @todo what about this coordinate switch should we not use the same coordinate system everywhere
-            x = (x/w+1.0)/2.0; //Change coordinate system
-            y = (-y/h+1.0)/2.0; //Change coordinate system
+            x = (x/internalW+1.0)/2.0; //Change coordinate system
+            y = (-y/internalH+1.0)/2.0; //Change coordinate system
 
             qDebug() << "--------------------x,y changed: " << x << " " << y;
 
 
-            //! @todo mybe we should update the ports as we now know where they should be
             GUIPort* pPort = this->getPort(it.value()->getName());
-            //! @todo need some kind of function that wraps this somehow "x*mpIcon->sceneBoundingRect().width()"
-            //pPort->updatePosition(x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height());
             pPort->updatePositionByFraction(x,y);
-            //pPort->updatePosition(x, y);
-            //pPort->setRotation(line.angle());
             //! @todo maybe we should be able to update rotation also
 
             //refresh the external port graphics
