@@ -95,6 +95,8 @@ SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
     mpGridLayout->addWidget(mpAddButton, 1, 0);
     mpGridLayout->addWidget(mpRemoveButton, 2, 0);
 
+    mpSystemParametersTable->setSelectionMode(QAbstractItemView::SingleSelection);
+
     connect(mpAddButton, SIGNAL(clicked()), this, SLOT(openComponentPropertiesDialog()));
     connect(mpRemoveButton, SIGNAL(clicked()), this, SLOT(removeSelectedParameters()));
     connect(mpSystemParametersTable, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(changeParameter(QTableWidgetItem*)));
