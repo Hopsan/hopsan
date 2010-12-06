@@ -163,4 +163,6 @@ HEADERS += win32dll.h \
     Components/Hydraulic/HydraulicDummyC.hpp \
     Components/Hydraulic/HydraulicDummyQ.hpp \
     ComponentUtilities/matrix.h \
-    ComponentUtilities/ludcmp.h
+    ComponentUtilities/ludcmp.h \
+    Components/Hydraulic/Hydraulic32Valve.hpp \
+    Components/Hydraulic/Hydraulic33Valve.hpp

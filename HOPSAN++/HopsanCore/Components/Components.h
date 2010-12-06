@@ -18,6 +18,8 @@
 #include "Hydraulic/HydraulicPressureSourceQ.hpp"
 #include "Hydraulic/HydraulicFixedDisplacementPump.hpp"
 #include "Hydraulic/HydraulicCheckValve.hpp"
+#include "Hydraulic/Hydraulic32Valve.hpp"
+#include "Hydraulic/Hydraulic33Valve.hpp"
 #include "Hydraulic/Hydraulic43Valve.hpp"
 #include "Hydraulic/HydraulicTurbulentOrifice.hpp"
 #include "Hydraulic/HydraulicTLMRLineR.hpp"
