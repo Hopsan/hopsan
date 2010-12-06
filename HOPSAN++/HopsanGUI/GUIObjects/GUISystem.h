@@ -32,6 +32,7 @@ public:
     size_t getNumberOfLogSamples();
     void setNumberOfLogSamples(size_t nSamples);
 
+    int findPortEdge(QPointF center, QPointF pt);
     void refreshExternalPortsAppearanceAndPosition();
 
     QString getTypeName();

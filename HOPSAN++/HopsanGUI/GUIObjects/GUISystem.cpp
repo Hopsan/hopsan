@@ -693,6 +693,29 @@ void GUISystem::setNumberOfLogSamples(size_t nSamples)
 }
 
 
+int GUISystem::findPortEdge(QPointF center, QPointF pt)
+{
+    //By swapping place of pt1 and pt2 we get the angle in the same coordinate system as the view
+    QLineF line = QLineF(pt, center);
+    qreal angle = normRad(deg2rad(line.angle()));
+    if (fabs(angle) <= M_PI_4)
+    {
+        return 0;
+    }
+    else if (fabs(angle) >= 3.0*M_PI_4)
+    {
+        return 2;
+    }
+    else if (angle > M_PI_4)
+    {
+        return 3;
+    }
+    else
+    {
+        return 4;
+    }
+}
+
 void GUISystem::refreshExternalPortsAppearanceAndPosition()
 {
     //refresh the external port poses
@@ -725,22 +748,24 @@ void GUISystem::refreshExternalPortsAppearanceAndPosition()
     {
         if(it.value()->type() == GUISYSTEMPORT)
         {
-            line = QLineF(center.x(), center.y(), it.value()->getCenterPos().x(), it.value()->getCenterPos().y());
-            //getCurrentTab()->mpQGraphicsScene->addLine(line); //debug-grej
+            line = QLineF(center, it.value()->getCenterPos());
+            this->getContainedScenePtr()->addLine(line); //debug-grej
             angle = deg2rad(line.angle());
+            qDebug() << " sysp: " << it.value()->getName() << " angle: " << line.angle();
 
-            calcSubsystemPortPosition(internalW, internalH, angle, x, y);
+            calcSubsystemPortPosition(externalW, externalH, angle, x, y);
 
             qDebug() << "--------------------x,y unchanged: " << x << " " << y;
             //! @todo what about this coordinate switch should we not use the same coordinate system everywhere
-            x = (x/internalW+1.0)/2.0; //Change coordinate system
-            y = (-y/internalH+1.0)/2.0; //Change coordinate system
+//            x = (x/internalW+1.0)/2.0; //Change coordinate system
+//            y = (-y/internalH+1.0)/2.0; //Change coordinate system
 
             qDebug() << "--------------------x,y changed: " << x << " " << y;
 
 
             GUIPort* pPort = this->getPort(it.value()->getName());
-            pPort->updatePositionByFraction(x,y);
+            //pPort->updatePositionByFraction(x,y);
+            pPort->updatePosition(x,y);
             //! @todo maybe we should be able to update rotation also
 
             //refresh the external port graphics
