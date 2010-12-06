@@ -220,6 +220,9 @@ void Node::setLogSettingsNSamples(size_t nSamples, double start, double stop, do
 {
     //make sure we dont try to log more samples than we will simulate
     //! @todo may need som rounding tricks here
+
+    start = max(start, 0.0);  // Do not log data for negative time
+
     if ( ((stop - start) / sampletime) < nSamples )
     {
         mLogSlots = ((stop - start) / sampletime);
