@@ -93,6 +93,7 @@ namespace hopsan {
         virtual void simulate(const double startT, const double Ts);
         virtual void finalize(const double startT, const double Ts);
         virtual void setDesiredTimestep(const double timestep);
+        virtual bool isSimulationOk();
 
         //Name and type
         void setName(std::string name, bool doOnlyLocalRename=false);

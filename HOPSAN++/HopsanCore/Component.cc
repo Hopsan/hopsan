@@ -816,6 +816,12 @@ void Component::setDesiredTimestep(const double /*timestep*/)
     assert(false);
 }
 
+bool Component::isSimulationOk()
+{
+    cout << "Warning this function isSimulationOk() is only available on subsystem components" << endl;
+    assert(false);
+}
+
 
 bool Component::isComponentC()
 {
@@ -1811,30 +1817,25 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
                 return false;
             }
 
-            //NOTE! this check has been moved to isConnectionOK can probably remove this code
-//            //Check so ...C-Q-C-Q-C... pattern is consistent
-//            else if ((pPort1->getPortType() == Port::POWERPORT) && (pPort2->getPortType() == Port::POWERPORT))
-//            {
-//                if ((pPort1->mpComponent->isComponentC()) && (pPort2->mpComponent->isComponentC()))
-//                {
-//                    ss << "Both components, {" << pPort1->mpComponent->getName() << "} and {" << pPort2->mpComponent->getName() << "}, are of C-type";
-//                    cout << ss.str() << endl;
-//                    gCoreMessageHandler.addErrorMessage(ss.str());
-//                    return false;
-//                }
-//                else if ((pPort1->mpComponent->isComponentQ()) && (pPort2->mpComponent->isComponentQ()))
-//                {
-//                    ss << "Both components, {" << pPort1->mpComponent->getName() << "} and {" << pPort2->mpComponent->getName() << "}, are of Q-type";
-//                    cout << ss.str() << endl;
-//                    gCoreMessageHandler.addErrorMessage(ss.str());
-//                    return false;
-//                }
-//            }
 
-            //Check if One of the ports already is connected to a node
-            if (pPort1->isConnected() || pPort2->isConnected())
+            //Check if both ports are already connected to nodes
+            if (pPort1->isConnected() && pPort2->isConnected())
             {
-                //If rComponent1 is connected to a node
+                if ( pPort1->mpComponent->isComponentSystem() || pPort2->mpComponent->isComponentSystem() )
+                {
+                    //! @todo merge nodes
+                }
+                else
+                {
+                    ss << "Both component ports are already connected: " << pComp1->getName() << ": " << pPort1->getPortName() << " and " << pComp2->getName() << ": " << pPort2->getPortName();
+                    gCoreMessageHandler.addWarningMessage(ss.str());
+                    return false;
+                }
+            }
+            //Check if One of the ports already is connected to a node
+            else if (pPort1->isConnected() || pPort2->isConnected())
+            {
+                //If pPort1 is connected to a node
                 if (pPort1->isConnected())
                 {
                     pNode = pPort1->getNodePtr();
@@ -1855,13 +1856,12 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
                         //Add port pointers to node
                         pNode->setPort(pPort2);
 
-                        //let the ports know about each other
+                        //Let the ports know about each other
                         pPort1->addConnectedPort(pPort2);
                         pPort2->addConnectedPort(pPort1);
-
                     }
                 }
-                //else rComponent2 is connected to a node
+                //else pPort2 is connected to a node
                 else
                 {
                     pNode = pPort2->getNodePtr();
@@ -2327,7 +2327,6 @@ bool ComponentSystem::isSimulationOk()
     for ( ; scmit!=mSubComponentMap.end(); ++scmit)
     {
         Component* pComp = scmit->second; //Component pointer
-        //! @todo how to handle subsystems should recurse
 
         //Check that ALL ports that MUST be connected are connected
         vector<Port*> ports = pComp->getPortPtrVector();
@@ -2345,6 +2344,15 @@ bool ComponentSystem::isSimulationOk()
                     gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is connected to a node with only one power port!");
                     return false;
                 }
+            }
+        }
+
+        //Recures testing into subsystems
+        if (pComp->isComponentSystem())
+        {
+            if (!pComp->isSimulationOk())
+            {
+                return false;
             }
         }
 
