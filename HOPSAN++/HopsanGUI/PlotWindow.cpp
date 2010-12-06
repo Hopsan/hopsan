@@ -780,7 +780,8 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
     changeUnitMenuLeft = yAxisLeftMenu->addMenu(QString("Change Unit"));
     QString physicalQuantityLeft = QString(mpVariablePlot->axisTitle(QwtPlot::yLeft).text().toStdString().substr(0, mpVariablePlot->axisTitle(QwtPlot::yLeft).text().toStdString().find(' ')).c_str());
     QMap<QString, double>::iterator itul;
-    for(itul=gConfig.getCustomUnits(physicalQuantityLeft).begin(); itul!=gConfig.getCustomUnits(physicalQuantityLeft).end(); ++itul)
+    QMap<QString, double> customMap = gConfig.getCustomUnits(physicalQuantityLeft);
+    for(itul=customMap.begin(); itul!=customMap.end(); ++itul)
     {
         QAction *tempAction = changeUnitMenuLeft->addAction(itul.key());
         std::string axisTitle = mpVariablePlot->axisTitle(QwtPlot::yLeft).text().toStdString();
@@ -800,7 +801,8 @@ void PlotWindow::contextMenuEvent(QContextMenuEvent *event)
         changeUnitMenuRight = yAxisRightMenu->addMenu(QString("Change Unit"));
         physicalQuantityRight = QString(mpVariablePlot->axisTitle(QwtPlot::yRight).text().toStdString().substr(0, mpVariablePlot->axisTitle(QwtPlot::yRight).text().toStdString().find(' ')).c_str());
         QMap<QString, double>::iterator itur;
-        for(itur=gConfig.getCustomUnits(physicalQuantityRight).begin(); itur!=gConfig.getCustomUnits(physicalQuantityRight).end(); ++itur)
+        customMap = gConfig.getCustomUnits(physicalQuantityRight);
+        for(itur=customMap.begin(); itur!=customMap.end(); ++itur)
         {
             QAction *tempAction = changeUnitMenuRight->addAction(itur.key());
             std::string axisTitle = mpVariablePlot->axisTitle(QwtPlot::yRight).text().toStdString();

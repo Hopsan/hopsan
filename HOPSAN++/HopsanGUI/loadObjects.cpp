@@ -557,11 +557,16 @@ void loadTextWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoS
     TextWidgetLoadData data;
     data.readDomElement(rDomElement);
 
-    pSystem->addTextWidget(data.point, undoSettings);
+    pSystem->addTextWidget(data.point, NOUNDO);
     pSystem->mTextWidgetList.last()->setText(data.text);
     qDebug() << "Font = " << data.font.toString();
     pSystem->mTextWidgetList.last()->setTextFont(data.font);
     pSystem->mTextWidgetList.last()->setTextColor(data.fontcolor);
+
+    if(undoSettings == UNDO)
+    {
+        pSystem->mUndoStack->registerAddedBoxWidget(pSystem->mBoxWidgetList.last());
+    }
 }
 
 
@@ -610,7 +615,7 @@ void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoSt
     BoxWidgetLoadData data;
     data.readDomElement(rDomElement);
 
-    pSystem->addBoxWidget(data.point, undoSettings);
+    pSystem->addBoxWidget(data.point, NOUNDO);
     pSystem->mBoxWidgetList.last()->setSize(data.width, data.height);
     pSystem->mBoxWidgetList.last()->setLineWidth(data.linewidth);
 
@@ -626,6 +631,11 @@ void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoSt
     pSystem->mBoxWidgetList.last()->setLineColor(data.linecolor);
     pSystem->mBoxWidgetList.last()->setSelected(true);
     pSystem->mBoxWidgetList.last()->setSelected(false);     //For some reason this is needed
+
+    if(undoSettings == UNDO)
+    {
+        pSystem->mUndoStack->registerAddedBoxWidget(pSystem->mBoxWidgetList.last());
+    }
 }
 
 

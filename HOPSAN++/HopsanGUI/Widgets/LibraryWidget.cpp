@@ -85,8 +85,10 @@ void LibraryContentItem::selectIcon(graphicsType gfxType)
     }
 
     icon.addFile(iconPath,QSize(55,55));
+
     //this->setSizeHint(QSize(55,55));
     this->setIcon(icon);
+
     //this->setData(Qt::UserRole, QVariant(icon));
 }
 

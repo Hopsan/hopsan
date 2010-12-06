@@ -93,11 +93,13 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 
             if(selectedAction == addTextAction)
             {
+                mpSystem->mUndoStack->newPost();
                 this->mpSystem->addTextWidget(this->mapToScene(event->pos()).toPoint());
             }
 
             if(selectedAction == addBoxAction)
             {
+                mpSystem->mUndoStack->newPost();
                 this->mpSystem->addBoxWidget(this->mapToScene(event->pos()).toPoint());
             }
         }

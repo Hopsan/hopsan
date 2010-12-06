@@ -286,7 +286,6 @@ void GUIContainerObject::addTextWidget(QPoint position, undoStatus undoSettings)
     ++mHighestWidgetIndex;
     if(undoSettings == UNDO)
     {
-        mUndoStack->newPost();
         mUndoStack->registerAddedTextWidget(tempTextWidget);
     }
     mpParentProjectTab->hasChanged();
@@ -302,7 +301,6 @@ void GUIContainerObject::addBoxWidget(QPoint position, undoStatus undoSettings)
     ++mHighestWidgetIndex;
     if(undoSettings == UNDO)
     {
-        mUndoStack->newPost();
         mUndoStack->registerAddedBoxWidget(tempBoxWidget);
     }
     mpParentProjectTab->hasChanged();
@@ -751,6 +749,7 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
         loadTextWidget(textElement, this);
         mTextWidgetList.last()->setSelected(true);
         mTextWidgetList.last()->moveBy(mPasteOffset, mPasteOffset);
+        mUndoStack->registerAddedTextWidget(mTextWidgetList.last());
         textElement = textElement.nextSiblingElement("textwidget");
     }
 
@@ -758,9 +757,10 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
     QDomElement boxElement = copyRoot->firstChildElement("boxwidget");
     while(!boxElement.isNull())
     {
-        loadBoxWidget(boxElement, this);
+        loadBoxWidget(boxElement, this, NOUNDO);
         mBoxWidgetList.last()->setSelected(true);
         mBoxWidgetList.last()->moveBy(mPasteOffset, mPasteOffset);
+        mUndoStack->registerAddedBoxWidget(mBoxWidgetList.last());
         boxElement = boxElement.nextSiblingElement("boxwidget");
     }
 
