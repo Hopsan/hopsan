@@ -157,7 +157,7 @@ void UndoStack::undoOneStep()
             QPointF dXY = newPos - oldPos;
             item->getLine(lineNumber)->setPos(item->getLine(lineNumber)->pos()-dXY);
             item->updateLine(lineNumber);
-    }
+        }
         else if(stuffElement.attribute("what") == "movedobject")
         {
             double x, y, x_new, y_new;
@@ -175,7 +175,7 @@ void UndoStack::undoOneStep()
             movedObjects.append(name);
             dx = x_new - x;
             dy = y_new - y;
-    }
+        }
         else if(stuffElement.attribute("what") == "movedconnector")
         {
             double dx = stuffElement.attribute("dx").toDouble();
@@ -426,6 +426,8 @@ void UndoStack::undoOneStep()
 //! @todo Add error checking (like in undoOneStep()
 void UndoStack::redoOneStep()
 {
+    gpMainWindow->mpMessageWidget->printGUIDebugMessage(mDomDocument.toString(2));
+
     bool didSomething = false;
     ++mCurrentStackPosition;
     QList<QDomElement> addedConnectorList;
@@ -717,8 +719,6 @@ void UndoStack::redoOneStep()
         --mCurrentStackPosition;
     }
 
-    //! @todo why dont I know of my own UndoWidget (should maybe have a pointer to it directly)
-    //! This is because there is only one undo widget, while each loaded model has its own undo stack.
     gpMainWindow->mpUndoWidget->refreshList();
 }
 
@@ -732,8 +732,6 @@ void UndoStack::registerDeletedObject(GUIModelObject *item)
     stuffElement.setAttribute("what", "deletedobject");
     item->saveToDomElement(stuffElement);
     gpMainWindow->mpUndoWidget->refreshList();
-
-    //gpMainWindow->mpMessageWidget->printGUIDebugMessage(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mUndoStack->mDomDocument.toString());
 }
 
 

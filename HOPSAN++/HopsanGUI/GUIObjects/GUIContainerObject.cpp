@@ -226,6 +226,10 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* 
     if (componentTypeName == "Subsystem")
     {
         mpTempGUIModelObject= new GUISystem(position, rotation, pAppearanceData, this, startSelected, mGfxType);
+
+            //Disconnect new subsystem with ctrl-z and ctrl-y (they will be reconnected when entering system)
+        disconnect(gpMainWindow->undoAction, SIGNAL(triggered()), mpTempGUIModelObject, SLOT(undo()));
+        disconnect(gpMainWindow->redoAction, SIGNAL(triggered()), mpTempGUIModelObject, SLOT(redo()));
     }
     else if (componentTypeName == "SystemPort") //!< @todo dont hardcode
     {
@@ -1078,6 +1082,7 @@ void GUIContainerObject::openPropertiesDialog()
     //Do Nothing
 }
 
+
 void GUIContainerObject::enterContainer()
 {
     //First deselect everything so that buttons pressed in the view are not sent to obejcts in the previous container
@@ -1092,9 +1097,18 @@ void GUIContainerObject::enterContainer()
     /*mpParentContainerObject->*/mpParentProjectTab->mpGraphicsView->setContainerPtr(this);
     mpParentProjectTab->mpQuickNavigationWidget->addOpenContainer(this);
 
+        //Disconnect parent system and connect new system with undo and redo actions
+    disconnect(gpMainWindow->undoAction, SIGNAL(triggered()), mpParentContainerObject, SLOT(undo()));
+    disconnect(gpMainWindow->redoAction, SIGNAL(triggered()), mpParentContainerObject, SLOT(redo()));
+    connect(gpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
+    connect(gpMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
+
+        //Upddate plot widget and undo widget to new container
     gpMainWindow->makeSurePlotWidgetIsCreated();
     gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
+    gpMainWindow->mpUndoWidget->refreshList();
 }
+
 
 void GUIContainerObject::exitContainer()
 {
@@ -1103,6 +1117,14 @@ void GUIContainerObject::exitContainer()
     /*mpParentContainerObject->*/mpParentProjectTab->mpGraphicsView->setScene(this->mpParentContainerObject->getContainedScenePtr());
     /*mpParentContainerObject->*/mpParentProjectTab->mpGraphicsView->setContainerPtr(this->mpParentContainerObject);
 
+        //Disconnect this system and connect parent system with undo and redo actions
+    disconnect(gpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
+    disconnect(gpMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
+    connect(gpMainWindow->undoAction, SIGNAL(triggered()), mpParentContainerObject, SLOT(undo()));
+    connect(gpMainWindow->redoAction, SIGNAL(triggered()), mpParentContainerObject, SLOT(redo()));
+
+        //Upddate plot widget and undo widget to new container
     gpMainWindow->makeSurePlotWidgetIsCreated();
     gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
+    gpMainWindow->mpUndoWidget->refreshList();
 }

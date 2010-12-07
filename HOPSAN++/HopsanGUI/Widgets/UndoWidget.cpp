@@ -99,7 +99,7 @@ void UndoWidget::refreshList()
     int pos = 0;
     bool found = true;
 
-    QDomElement undoRoot = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mUndoStack->mUndoRoot;
+    QDomElement undoRoot = gpMainWindow->mpProjectTabs->getCurrentContainer()->mUndoStack->mUndoRoot;
     QDomElement postElement = undoRoot.firstChildElement("post");
     while(found)
     {
@@ -115,7 +115,7 @@ void UndoWidget::refreshList()
                     item = new QTableWidgetItem();
                     item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
                     item->setText(translateTag(postElement.attribute("type")));
-                    if(pos == gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mUndoStack->mCurrentStackPosition)
+                    if(pos == gpMainWindow->mpProjectTabs->getCurrentContainer()->mUndoStack->mCurrentStackPosition)
                     {
                         item->setBackgroundColor(activeColor);
                     }
@@ -138,7 +138,7 @@ void UndoWidget::refreshList()
                         item = new QTableWidgetItem();
                         item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
                         item->setText(translateTag(stuffElement.attribute("what")));
-                        if(pos == gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mUndoStack->mCurrentStackPosition)
+                        if(pos == gpMainWindow->mpProjectTabs->getCurrentContainer()->mUndoStack->mCurrentStackPosition)
                         {
                             item->setBackgroundColor(activeColor);
                         }
@@ -161,7 +161,7 @@ void UndoWidget::refreshList()
         }
         ++pos;
     }
-    //qDebug() << gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mUndoStack->mDomDocument.toString();
+    //qDebug() << gpMainWindow->mpProjectTabs->getCurrentContainer()->mUndoStack->mDomDocument.toString();
 }
 
 
