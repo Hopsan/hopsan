@@ -1683,11 +1683,102 @@ bool ComponentSystem::connect(string compname1, string portname1, string compnam
     return connect( pPort1, pPort2 );
 }
 
+bool ComponentSystem::doConnectChildToParent(Port* pChildPort, Port* pParentPort)
+{
+    //Create an instance of the node specified in nodespecifications
+    Node* pNode = gCoreNodeFactory.createInstance(pChildPort->getNodeType());
+    //Set nodetype in the systemport (should be empty by default)
+    pParentPort->mNodeType = pChildPort->getNodeType();
+    if( connectionOK(pNode, pParentPort, pChildPort) )
+    {
+        //add node to component and parent system ports
+        pChildPort->setNode(pNode);
+        pParentPort->setNode(pNode);
+        //remember the port in the node
+        pNode->setPort(pParentPort);
+        pNode->setPort(pChildPort);
+        //let the ports know about each other
+        pParentPort->addConnectedPort(pChildPort);
+        pChildPort->addConnectedPort(pParentPort);
+        //Add the node to the system (parent)
+        pChildPort->mpComponent->getSystemParent()->addSubNode(pNode);    //Component1 will contain this node as subnode
+        return true;
+    }
+    else
+    {
+        stringstream ss;
+        ss << "Problem occured at connection" << pParentPort->mpComponent->getName() << " and " << pChildPort->mpComponent->getName();
+        cout << ss.str() << endl;
+        gCoreMessageHandler.addErrorMessage(ss.str());
+        //delete pNode;
+        return false;
+    }
+}
+
+bool ComponentSystem::doConnectToExistingConnection(Port *pExistingConnectionPort, Port *pNewPort)
+{
+    Node* pNode = pExistingConnectionPort->getNodePtr();
+    // Check so the ports can be connected
+    if (connectionOK(pNode, pExistingConnectionPort, pNewPort))
+    {
+        //Set node in both components ports and add it to the parent system component
+        pNewPort->setNode(pNode);
+
+        //Add port pointers to node
+        pNode->setPort(pNewPort);
+
+        //Let the ports know about each other
+        pExistingConnectionPort->addConnectedPort(pNewPort);
+        pNewPort->addConnectedPort(pExistingConnectionPort);
+        return true;
+    }
+    else
+    {
+        stringstream ss;
+        ss << "Problem occured at connection" << pExistingConnectionPort->mpComponent->getName() << " and " << pNewPort->mpComponent->getName();
+        gCoreMessageHandler.addErrorMessage(ss.str());
+        delete pNode;
+        return false;
+    }
+}
+
+bool ComponentSystem::doConnectChildToChild(Port *pPort1, Port *pPort2)
+{
+    //Create an instance of the node specified in nodespecifications
+    Node* pNode = gCoreNodeFactory.createInstance(pPort1->getNodeType());
+
+    // Check so the ports can be connected
+    if (connectionOK(pNode, pPort1, pPort2))
+    {
+        //Set node in both components ports and add it to the parent system component
+        pPort1->setNode(pNode);
+        pPort2->setNode(pNode);
+
+        //Add port pointers to node
+        pNode->setPort(pPort1);
+        pNode->setPort(pPort2);
+
+        //let the ports know about each other
+        pPort1->addConnectedPort(pPort2);
+        pPort2->addConnectedPort(pPort1);
+
+        //Add the node to this system
+        this->addSubNode(pNode);
+        return true;
+    }
+    else
+    {
+        stringstream ss;
+        ss << "Problem occured at connection" << pPort1->mpComponent->getName() << " and " << pPort2->mpComponent->getName();
+        gCoreMessageHandler.addErrorMessage(ss.str());
+        delete pNode;
+        return false;
+    }
+}
 
 //! Connect two components with specified ports to each other, reference version
 bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
 {
-    Node* pNode;
     Component* pComp1 = pPort1->mpComponent;
     Component* pComp2 = pPort2->mpComponent;
 
@@ -1701,254 +1792,138 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         return false;
     }
 
-//    //! @todo this will be a problem if we want to connect sensors and such
-//    if (pPort1->isConnected() && pPort2->isConnected())
-//        //Both already are connected to nodes
-//    {
-//        ss << "Both component ports are already connected: " << pComp1->getName() << ": " << pPort1->getPortName() << " and " << pComp2->getName() << ": " << pPort2->getPortName();
-//        cout << ss.str() << endl;
-//        gCoreMessageHandler.addWarningMessage(ss.str());
-//        return false;
-//    }
-//    else
+
+    //! @todo must make sure that ONLY ONE powerport can be internally connected to systemports (no sensors or anything else) to amke stuff simpler
+    //! @todo Should really cleanup better after failure i.e. delete the created Node, right now memmory leak, however not sure if we can delete node or if this must be done by possible other shared object for external nodes (use factory to delete through registered delete function), delete seems to crash dont know why
+    //Check if component1 is a System component containing Component2
+    if (pComp1 == pComp2->getSystemParent())
     {
-        //! @todo must make sure that ONLY ONE powerport can be internally connected to systemports (no sensors or anything else) to amke stuff simpler
-        //! @todo Should really cleanup better after failure i.e. delete the created Node, right now memmory leak, however not sure if we can delete node or if this must be done by possible other shared object for external nodes (use factory to delete through registered delete function), delete seems to crash dont know why
-        //Check if component1 is a System component containing Component2
-        if (pComp1 == pComp2->getSystemParent())
+        //! @todo maybe check so that the parent system port is a system port
+        if (!pPort1->isConnected())
         {
-            //! @todo maybe check so that the parent system port is a system port
-            if (!pPort1->isConnected())
+            if (!doConnectChildToParent(pPort2, pPort1))
             {
-                //Create an instance of the node specified in nodespecifications
-                pNode = gCoreNodeFactory.createInstance(pPort2->getNodeType());
-                //Set nodetype in the systemport (should be empty by default)
-                pPort1->mNodeType = pPort2->getNodeType();
-                if( connectionOK(pNode, pPort1, pPort2) )
-                {
-                    //add node to components and parent system
-                    pPort2->setNode(pNode);
-                    pPort1->setNode(pNode);
-                    pNode->setPort(pPort1);
-                    pNode->setPort(pPort2);
-                    pComp2->getSystemParent()->addSubNode(pNode);    //Component1 will contain this node as subnode
-                    //let the ports know about each other
-                    pPort1->addConnectedPort(pPort2);
-                    pPort2->addConnectedPort(pPort1);
-                }
-                else
-                {
-                    ss << "Problem occured at connection" << pComp1->getName() << " and " << pComp2->getName();
-                    cout << ss.str() << endl;
-                    gCoreMessageHandler.addErrorMessage(ss.str());
-                    //delete pNode;
-                    return false;
-                }
-            }
-            else
-            {
-                ss << "You can only have on port connect to a system port";
-                cout << ss.str() << endl;
-                gCoreMessageHandler.addErrorMessage(ss.str());
-                //delete pNode;
-                return false;
-            }
-        }
-        //Check if component2 is a System component containing Component1
-        else if (pComp2 == pComp1->getSystemParent())
-        {
-            if ( !pPort2->isConnected() )
-            {
-                //! @todo both these checks could be boken out into subfunction as the code is the same only swapped 1 with 2
-                //Create an instance of the node specified in nodespecifications
-                pNode = gCoreNodeFactory.createInstance(pPort1->getNodeType());
-                //Set nodetype in the systemport (should be empty by default)
-                pPort2->mNodeType = pPort1->getNodeType();
-                if( connectionOK(pNode, pPort1, pPort2) )
-                {
-                    //add node to components and parentsystem
-                    pPort1->setNode(pNode);
-                    pPort2->setNode(pNode);
-                    pNode->setPort(pPort2);
-                    pNode->setPort(pPort1);
-                    pComp1->getSystemParent()->addSubNode(pNode);    //Component2 will contain this node as subnode
-                    //let the ports know about each other
-                    pPort1->addConnectedPort(pPort2);
-                    pPort2->addConnectedPort(pPort1);
-                }
-                else
-                {
-                    ss << "Problem occured at connection" << pComp1->getName() << " and " << pComp2->getName();
-                    cout << ss.str() << endl;
-                    gCoreMessageHandler.addErrorMessage(ss.str());
-                    //delete pNode;
-                    return false;
-                }
-            }
-            else
-            {
-                ss << "You can only have on port connect to a system port";
-                cout << ss.str() << endl;
-                gCoreMessageHandler.addErrorMessage(ss.str());
-                //delete pNode;
                 return false;
             }
         }
         else
         {
-            //! @todo this maybe should be checked every time not only if same level, with some modification as i can connect to myself aswell
-            //Check so that both systems to connect have been added to this system
-            if ( (pComp1->getSystemParent() != (Component*)this) && ((pComp1->getSystemParent() != (Component*)this)) )
+            ss << "You can only have on port connect to a system port";
+            gCoreMessageHandler.addErrorMessage(ss.str());
+            return false;
+        }
+    }
+    //Check if component2 is a System component containing Component1
+    else if (pComp2 == pComp1->getSystemParent())
+    {
+        if ( !pPort2->isConnected() )
+        {
+            if (!doConnectChildToParent(pPort1, pPort2))
             {
-                ss << "The components, {"<< pComp1->getName() << "} and {" << pComp2->getName() << "}, "<< "must belong to the same subsystem";
-                cout << ss.str() << endl;
-                gCoreMessageHandler.addErrorMessage(ss.str());
                 return false;
             }
+        }
+        else
+        {
+            ss << "You can only have on port connect to a system port";
+            gCoreMessageHandler.addErrorMessage(ss.str());
+            return false;
+        }
+    }
+    else
+    {
+        //! @todo this maybe should be checked every time not only if same level, with some modification as i can connect to myself aswell
+        //Check so that both systems to connect have been added to this system
+        if ( (pComp1->getSystemParent() != (Component*)this) && ((pComp1->getSystemParent() != (Component*)this)) )
+        {
+            ss << "The components, {"<< pComp1->getName() << "} and {" << pComp2->getName() << "}, "<< "must belong to the same subsystem";
+            cout << ss.str() << endl;
+            gCoreMessageHandler.addErrorMessage(ss.str());
+            return false;
+        }
 
-            //check if both ports have the same node type specified
-            if (pPort1->getNodeType() != pPort2->getNodeType())
+        //check if both ports have the same node type specified
+        if (pPort1->getNodeType() != pPort2->getNodeType())
+        {
+            ss << "You can not connect a {" << pPort1->getNodeType() << "} port to a {" << pPort2->getNodeType()  << "} port." << std::endl << "When connecting: {" << pComp1->getName() << "::" << pPort1->getPortName() << "} to {" << pComp2->getName() << "::" << pPort2->getPortName() << "}";
+            cout << ss.str() << endl;
+            gCoreMessageHandler.addErrorMessage(ss.str());
+            return false;
+        }
+
+
+        //Check if both ports are already connected to nodes
+        if (pPort1->isConnected() && pPort2->isConnected())
+        {
+            if ( pPort1->mpComponent->isComponentSystem() || pPort2->mpComponent->isComponentSystem() )
             {
-                ss << "You can not connect a {" << pPort1->getNodeType() << "} port to a {" << pPort2->getNodeType()  << "} port." << std::endl << "When connecting: {" << pComp1->getName() << "::" << pPort1->getPortName() << "} to {" << pComp2->getName() << "::" << pPort2->getPortName() << "}";
-                cout << ss.str() << endl;
-                gCoreMessageHandler.addErrorMessage(ss.str());
-                return false;
+                //! @todo maybe keep the one in the subsystem, maybe this can only happen between two or more subsystems
+                Node* pNode1 = pPort1->getNodePtr();
+                Node* pNode2 = pPort2->getNodePtr();
+
+                std::cout << "node2 ports size: " <<  pNode2->mPortPtrs.size() << std::endl;
+                std::cout << "node1 ports size: " <<  pNode1->mPortPtrs.size() << std::endl;
+                std::cout << "pPort1 connports size: " <<  pPort1->getConnectedPorts().size() << std::endl;
+                std::cout << "pPort2 connports size: " <<  pPort2->getConnectedPorts().size() << std::endl;
+
+                //Replace the node in port2 and all of its connected ports
+                pPort2->setNode(pNode1);
+                pNode2->removePort(pPort2);
+                vector<Port*>::iterator pit;
+                for (pit=pPort2->getConnectedPorts().begin(); pit!=pPort2->getConnectedPorts().end(); ++pit) //getConnectedPorts return a reference thats why we can cal it withou making a copy
+                {
+                    (*pit)->setNode(pNode1);
+                    pNode1->setPort(*pit);
+                    pNode2->removePort(*pit); //this node will be deleted so we really dont have to remove ports but lets do it anyway to be sure
+                }
+
+
+                std::cout << "node2 ports size: " <<  pNode2->mPortPtrs.size() << std::endl;
+                //! @todo make sure this is correct
+                ComponentSystem* pSys2 = dynamic_cast<ComponentSystem*>(pPort2->mpComponent);
+                if (pSys2 != 0)
+                {
+                    pSys2->removeSubNode(pNode2);
+                }
+                //! @todo we should get parent insted if dyncast fail
+                delete pNode2;
             }
-
-
-            //Check if both ports are already connected to nodes
-            if (pPort1->isConnected() && pPort2->isConnected())
-            {
-                if ( pPort1->mpComponent->isComponentSystem() || pPort2->mpComponent->isComponentSystem() )
-                {
-                    //! @todo maybe keep the one in the subsystem, maybe this can only happen between two or more subsystems
-                    Node* pNode1 = pPort1->getNodePtr();
-                    Node* pNode2 = pPort2->getNodePtr();
-
-                    std::cout << "node2 ports size: " <<  pNode2->mPortPtrs.size() << std::endl;
-                    std::cout << "node1 ports size: " <<  pNode1->mPortPtrs.size() << std::endl;
-                    std::cout << "pPort1 connports size: " <<  pPort1->getConnectedPorts().size() << std::endl;
-                    std::cout << "pPort2 connports size: " <<  pPort2->getConnectedPorts().size() << std::endl;
-
-                    //Replace the node in port2 and all of its connected ports
-                    pPort2->setNode(pNode1);
-                    pNode2->removePort(pPort2);
-                    vector<Port*>::iterator pit;
-                    for (pit=pPort2->getConnectedPorts().begin(); pit!=pPort2->getConnectedPorts().end(); ++pit) //getConnectedPorts return a reference thats why we can cal it withou making a copy
-                    {
-                        (*pit)->setNode(pNode1);
-                        pNode1->setPort(*pit);
-                        pNode2->removePort(*pit); //this node will be deleted so we really dont have to remove ports but lets do it anyway to be sure
-                    }
-
-
-                    std::cout << "node2 ports size: " <<  pNode2->mPortPtrs.size() << std::endl;
-                    //! @todo make sure this is correct
-                    ComponentSystem* pSys2 = dynamic_cast<ComponentSystem*>(pPort2->mpComponent);
-                    if (pSys2 != 0)
-                    {
-                        pSys2->removeSubNode(pNode2);
-                    }
-                    //! @todo we should get parent insted if dyncast fail
-                    delete pNode2;
-                }
-                else
-                {
-                    ss << "Both component ports are already connected: " << pComp1->getName() << ": " << pPort1->getPortName() << " and " << pComp2->getName() << ": " << pPort2->getPortName();
-                    gCoreMessageHandler.addWarningMessage(ss.str());
-                    return false;
-                }
-            }
-            //Check if One of the ports already is connected to a node
-            else if (pPort1->isConnected() || pPort2->isConnected())
-            {
-                //If pPort1 is connected to a node
-                if (pPort1->isConnected())
-                {
-                    pNode = pPort1->getNodePtr();
-                    // Check so the ports can be connected
-                    if (!connectionOK(pNode, pPort1, pPort2))
-                    {
-                        ss << "Problem occured at connection" << pComp1->getName() << " and " << pComp2->getName();
-                        cout << ss.str() << endl;
-                        gCoreMessageHandler.addErrorMessage(ss.str());
-                        //delete pNode;
-                        return false;
-                    }
-                    else
-                    {
-                        //Set node in both components ports and add it to the parent system component
-                        pPort2->setNode(pNode);
-
-                        //Add port pointers to node
-                        pNode->setPort(pPort2);
-
-                        //Let the ports know about each other
-                        pPort1->addConnectedPort(pPort2);
-                        pPort2->addConnectedPort(pPort1);
-                    }
-                }
-                //else pPort2 is connected to a node
-                else
-                {
-                    pNode = pPort2->getNodePtr();
-                    // Check so the ports can be connected
-                    if (!connectionOK(pNode, pPort1, pPort2))
-                    {
-                        ss << "Problem occured at connection" << pComp1->getName() << " and " << pComp2->getName();
-                        cout << ss.str() << endl;
-                        gCoreMessageHandler.addErrorMessage(ss.str());
-                        //delete pNode;
-                        return false;
-                    }
-                    else
-                    {
-                        //Set node in both components ports and add it to the parent system component
-                        pPort1->setNode(pNode);
-
-                        //Add port pointers to node
-                        pNode->setPort(pPort1);
-
-                        //let the ports know about each other
-                        pPort1->addConnectedPort(pPort2);
-                        pPort2->addConnectedPort(pPort1);
-                    }
-                }
-            }
-            //else None of the components are connected
             else
             {
-                //Create an instance of the node specified in nodespecifications
-                pNode = gCoreNodeFactory.createInstance(pPort1->getNodeType());
-                //cout << "Created NodeType: " << pNode->getNodeType() << endl;
-                // Check so the ports can be connected
-                if (!connectionOK(pNode, pPort1, pPort2))
+                ss << "Both component ports are already connected: " << pComp1->getName() << ": " << pPort1->getPortName() << " and " << pComp2->getName() << ": " << pPort2->getPortName();
+                gCoreMessageHandler.addWarningMessage(ss.str());
+                return false;
+            }
+        }
+        //Check if One of the ports already is connected to a node
+        else if (pPort1->isConnected() || pPort2->isConnected())
+        {
+            //If pPort1 is connected to a node
+            if (pPort1->isConnected())
+            {
+                if(!doConnectToExistingConnection(pPort1, pPort2))
                 {
-                    ss << "Problem occured at connection" << pComp1->getName() << " and " << pComp2->getName();
-                    cout << ss.str() << endl;
-                    gCoreMessageHandler.addErrorMessage(ss.str());
-                    //delete pNode;
                     return false;
                 }
-                //rComponent1.getSystemparent().addSubNode(pNode); //doesnt work getSystemparent returns Component , addSubNode is in ComponentSystem
-                this->addSubNode(pNode);
-
-                //Set node in both components ports and add it to the parent system component
-                pPort1->setNode(pNode);
-                pPort2->setNode(pNode);
-
-                //Add port pointers to node
-                pNode->setPort(pPort1);
-                pNode->setPort(pPort2);
-
-                //let the ports know about each other
-                pPort1->addConnectedPort(pPort2);
-                pPort2->addConnectedPort(pPort1);
+            }
+            else    //else pPort2 is connected to a node
+            {
+                if(!doConnectToExistingConnection(pPort2, pPort1))
+                {
+                    return false;
+                }
+            }
+        }
+        else    //else None of the components are connected
+        {
+            if (!doConnectChildToChild(pPort1, pPort2))
+            {
+                return false;
             }
         }
     }
+
     ss << "Connected: {" << pComp1->getName() << "::" << pPort1->getPortName() << "} and {" << pComp2->getName() << "::" << pPort2->getPortName() << "}";
-    //cout << ss.str() << endl;
     gCoreMessageHandler.addDebugMessage(ss.str(), "succesfulconnect");
     return true;
 }

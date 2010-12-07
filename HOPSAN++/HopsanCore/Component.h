@@ -275,8 +275,11 @@ namespace hopsan {
         //Try to find sub component ptr
         //Component* getSubComponent(std::string name);
 
-        //Check if connection ok
+        //Help Functions to connect
         bool connectionOK(Node *pNode, Port *pPort1, Port *pPort2);
+        bool doConnectChildToParent(Port *pChildPort, Port *pParentPort);
+        bool doConnectToExistingConnection(Port *pExistingConnectionPort, Port *pNewPort);
+        bool doConnectChildToChild(Port *pPort1, Port *pPort2);
 
         //Add and Remove sub nodes
         void addSubNode(Node* node_ptr);
