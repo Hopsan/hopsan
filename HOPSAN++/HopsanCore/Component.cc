@@ -1685,8 +1685,6 @@ bool ComponentSystem::connect(string compname1, string portname1, string compnam
 
 
 //! Connect two components with specified ports to each other, reference version
-//! @todo Cleanup this connect madness only 1 or two alternatives maybe string version default (or pointer version)
-//bool ComponentSystem::connect(Component &rComponent1, const string portname1, Component &rComponent2, const string portname2)
 bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
 {
     Node* pNode;
@@ -1703,16 +1701,16 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         return false;
     }
 
-    //! @todo this will be a problem if we want to connect sensors and such
-    if (pPort1->isConnected() && pPort2->isConnected())
-        //Both already are connected to nodes
-    {
-        ss << "Both component ports are already connected: " << pComp1->getName() << ": " << pPort1->getPortName() << " and " << pComp2->getName() << ": " << pPort2->getPortName();
-        cout << ss.str() << endl;
-        gCoreMessageHandler.addWarningMessage(ss.str());
-        return false;
-    }
-    else
+//    //! @todo this will be a problem if we want to connect sensors and such
+//    if (pPort1->isConnected() && pPort2->isConnected())
+//        //Both already are connected to nodes
+//    {
+//        ss << "Both component ports are already connected: " << pComp1->getName() << ": " << pPort1->getPortName() << " and " << pComp2->getName() << ": " << pPort2->getPortName();
+//        cout << ss.str() << endl;
+//        gCoreMessageHandler.addWarningMessage(ss.str());
+//        return false;
+//    }
+//    else
     {
         //! @todo must make sure that ONLY ONE powerport can be internally connected to systemports (no sensors or anything else) to amke stuff simpler
         //! @todo Should really cleanup better after failure i.e. delete the created Node, right now memmory leak, however not sure if we can delete node or if this must be done by possible other shared object for external nodes (use factory to delete through registered delete function), delete seems to crash dont know why
@@ -1823,7 +1821,35 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
             {
                 if ( pPort1->mpComponent->isComponentSystem() || pPort2->mpComponent->isComponentSystem() )
                 {
-                    //! @todo merge nodes
+                    //! @todo maybe keep the one in the subsystem, maybe this can only happen between two or more subsystems
+                    Node* pNode1 = pPort1->getNodePtr();
+                    Node* pNode2 = pPort2->getNodePtr();
+
+                    std::cout << "node2 ports size: " <<  pNode2->mPortPtrs.size() << std::endl;
+                    std::cout << "node1 ports size: " <<  pNode1->mPortPtrs.size() << std::endl;
+                    std::cout << "pPort1 connports size: " <<  pPort1->getConnectedPorts().size() << std::endl;
+                    std::cout << "pPort2 connports size: " <<  pPort2->getConnectedPorts().size() << std::endl;
+
+                    //Replace the node in port2 and all of its connected ports
+                    vector<Port*>::iterator pit;
+                    //getConnectedPorts return a reference thats why we can cal it withou making a copy
+                    for (pit=pPort2->getConnectedPorts().begin(); pit!=pPort2->getConnectedPorts().end(); ++pit)
+                    {
+                        (*pit)->setNode(pNode1);
+                        pNode1->setPort(*pit);
+                        pNode2->removePort(*pit); //this node will be deleted so we really dosnt have to remove ports but lets do it anyway to be sure
+                    }
+                    pNode2->removePort(pPort2);
+
+                    std::cout << "node2 ports size: " <<  pNode2->mPortPtrs.size() << std::endl;
+                    //! @todo make sure this is correct
+                    ComponentSystem* pSys2 = dynamic_cast<ComponentSystem*>(pPort2->mpComponent);
+                    if (pSys2 != 0)
+                    {
+                        pSys2->removeSubNode(pNode2);
+                    }
+                    //! @todo we should get parent insted
+                    //delete pNode2;
                 }
                 else
                 {

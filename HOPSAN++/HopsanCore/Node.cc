@@ -179,8 +179,10 @@ bool Node::setDataValuesByNames(vector<string> names, std::vector<double> values
 //! @param [in,out] rUnits This vector will contain the units
 void Node::getDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits)
 {
+    std::cout << "mDataNames.size(): " << mPlotBehaviour.size() << std::endl;
     for(size_t i=0; i<mDataNames.size(); ++i)
     {
+        std::cout << "mPlotBehaviour.size(): " << mPlotBehaviour.size() << std::endl;
         if(mPlotBehaviour[i] == Node::PLOT)
         {
             rNames.push_back(mDataNames[i]);
@@ -360,8 +362,8 @@ void Node::saveLogData(string filename)
 //! @param [in] pPort The port pointer
 void Node::setPort(Port *pPort)
 {
-    //Prevent duplicate port registration that can happen if oter code is not doing what it is suposed to
-    //The other code (connect) will be easier to write if we handle this in here though
+    //Prevent duplicate port registration that can happen when "merging" nodes
+    //The other code (connect) will be easier to write if we handle this in here
     bool found = false;
     vector<Port*>::iterator it;
     for (it=mPortPtrs.begin(); it!=mPortPtrs.end(); ++it)
@@ -370,7 +372,7 @@ void Node::setPort(Port *pPort)
         {
             found = true;
             break;
-            cout << "Warning: you are trying to add a Port that does already exist in this node  (does nothing)" << endl;
+            //cout << "Warning: you are trying to add a Port that does already exist in this node  (does nothing)" << endl;
         }
     }
 
