@@ -190,8 +190,6 @@ void SystemParameterTableWidget::setParameter(QString name, double value, bool d
     {
         update();
     }
-
-    gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
     emit modifiedSystemParameter();
 }
 
@@ -254,6 +252,7 @@ void SystemParameterTableWidget::removeSelectedParameters()
             if(!parametersToRemove.contains(tempName))
             {
                 parametersToRemove.append(tempName);
+                gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
             }
             removeCellWidget(pSelectedItems[i]->row(), pSelectedItems[i]->column());
             delete pSelectedItems[i];
@@ -265,7 +264,6 @@ void SystemParameterTableWidget::removeSelectedParameters()
             gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->removeSystemParameter(parametersToRemove.at(j));
         }
     }
-
     update();
 }
 
@@ -306,6 +304,7 @@ void SystemParameterTableWidget::addParameter()
 {
     bool ok;    
     setParameter(mpNameBox->text(), mpValueBox->text().toDouble(&ok));
+    gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
 }
 
 
