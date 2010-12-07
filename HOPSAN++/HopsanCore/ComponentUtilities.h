@@ -11,8 +11,6 @@
 #include "ComponentUtilities/ValveHysteresis.h"
 #include "ComponentUtilities/DoubleIntegratorWithDamping.h"
 #include "ComponentUtilities/Hysteresis.h"
-#include "ComponentUtilities/matrix.h"
-#include "ComponentUtilities/ludcmp.h"
 
 #include "ComponentUtilities/AuxiliarySimulationFunctions.h"
 

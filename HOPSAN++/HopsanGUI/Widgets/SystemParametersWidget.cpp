@@ -191,6 +191,7 @@ void SystemParameterTableWidget::setParameter(QString name, double value, bool d
         update();
     }
 
+    gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
     emit modifiedSystemParameter();
 }
 

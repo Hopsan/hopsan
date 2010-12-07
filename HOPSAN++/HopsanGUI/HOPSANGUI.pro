@@ -133,8 +133,10 @@ win32 {
     LIBS += -Lc:/temp_qwt/lib
 
     INCLUDEPATH += c:/Qwt-5.2.2-svn/include
+    INCLUDEPATH += ../ExternalDependencies/Qwt-5.2/src
     INCLUDEPATH += c:/Qwt-5.2.1-svn/include
     LIBS += -Lc:/Qwt-5.2.2-svn/lib
+    LIBS += -L../ExternalDependencies/qwt-build-desktop/lib
     LIBS += -Lc:/Qwt-5.2.1-svn/lib
 
     CONFIG(debug, debug|release) {
