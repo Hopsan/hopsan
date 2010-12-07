@@ -92,6 +92,25 @@ SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
 
     connect(mpAddButton, SIGNAL(clicked()), mpSystemParametersTable, SLOT(openComponentPropertiesDialog()));
     connect(mpRemoveButton, SIGNAL(clicked()), mpSystemParametersTable, SLOT(removeSelectedParameters()));
+    connect(gpMainWindow->mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(update()));//Strössel!
+    connect(gpMainWindow->mpProjectTabs, SIGNAL(newTabAdded()), this, SLOT(update()));//Strössel!
+}
+
+
+void SystemParametersWidget::update()
+{
+    if(gpMainWindow->mpProjectTabs->count()>0)
+    {
+        mpAddButton->setEnabled(true);
+        mpRemoveButton->setEnabled(true);
+    }
+    else
+    {
+        mpAddButton->setEnabled(false);
+        mpRemoveButton->setEnabled(false);
+    }
+
+    mpSystemParametersTable->update();
 }
 
 
@@ -108,8 +127,6 @@ SystemParameterTableWidget::SystemParameterTableWidget(int rows, int columns, QW
     update();
 
     connect(this, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(changeParameter(QTableWidgetItem*)));
-    connect(gpMainWindow->mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(update()));//Strössel!
-    connect(gpMainWindow->mpProjectTabs, SIGNAL(newTabAdded()), this, SLOT(update()));//Strössel!
 }
 
 
@@ -220,25 +237,28 @@ void SystemParameterTableWidget::setParameters()
 //! @todo This shall remove the actual System parameters when they have been implemented, wherever they are stored.
 void SystemParameterTableWidget::removeSelectedParameters()
 {
-    QList<QTableWidgetItem *> pSelectedItems = selectedItems();
-    QStringList parametersToRemove;
-    QString tempName;
-
-    for(int i=0; i<pSelectedItems.size(); ++i)
+    if(gpMainWindow->mpProjectTabs->count()>0)
     {
-        tempName = item(pSelectedItems[i]->row(),0)->text();
-        if(!parametersToRemove.contains(tempName))
+        QList<QTableWidgetItem *> pSelectedItems = selectedItems();
+        QStringList parametersToRemove;
+        QString tempName;
+
+        for(int i=0; i<pSelectedItems.size(); ++i)
         {
-            parametersToRemove.append(tempName);
+            tempName = item(pSelectedItems[i]->row(),0)->text();
+            if(!parametersToRemove.contains(tempName))
+            {
+                parametersToRemove.append(tempName);
+            }
+            removeCellWidget(pSelectedItems[i]->row(), pSelectedItems[i]->column());
+            delete pSelectedItems[i];
         }
-        removeCellWidget(pSelectedItems[i]->row(), pSelectedItems[i]->column());
-        delete pSelectedItems[i];
-    }
 
-    for(int j=0; j<parametersToRemove.size(); ++j)
-    {
-        std::cout << "Removing: " << parametersToRemove[j].toStdString() << std::endl;
-        gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->removeSystemParameter(parametersToRemove.at(j));
+        for(int j=0; j<parametersToRemove.size(); ++j)
+        {
+            std::cout << "Removing: " << parametersToRemove[j].toStdString() << std::endl;
+            gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->removeSystemParameter(parametersToRemove.at(j));
+        }
     }
 
     update();
@@ -295,9 +315,8 @@ void SystemParameterTableWidget::update()
     }
     else
     {
-        selectAll();
-//        removeSelectedParameters();
         tempMap.clear();
+        return;
     }
 
     clear();

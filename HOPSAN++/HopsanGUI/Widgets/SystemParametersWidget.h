@@ -76,6 +76,9 @@ class SystemParametersWidget : public QWidget
 public:
     SystemParametersWidget(MainWindow *parent = 0);
 
+public slots:
+    void update();
+
 private:
     //QList< QPair<QString, double> > mContents;
 
