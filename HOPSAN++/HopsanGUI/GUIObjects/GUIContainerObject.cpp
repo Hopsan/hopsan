@@ -1097,16 +1097,33 @@ void GUIContainerObject::enterContainer()
     /*mpParentContainerObject->*/mpParentProjectTab->mpGraphicsView->setContainerPtr(this);
     mpParentProjectTab->mpQuickNavigationWidget->addOpenContainer(this);
 
-        //Disconnect parent system and connect new system with undo and redo actions
-    disconnect(gpMainWindow->undoAction, SIGNAL(triggered()), mpParentContainerObject, SLOT(undo()));
-    disconnect(gpMainWindow->redoAction, SIGNAL(triggered()), mpParentContainerObject, SLOT(redo()));
-    connect(gpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
-    connect(gpMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
+        //Disconnect parent system and connect new system with actions
+    disconnect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(hideNames()));
+    disconnect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(showNames()));
+    disconnect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        mpParentContainerObject,     SLOT(disableUndo()));
+    disconnect(gpMainWindow->cutAction,            SIGNAL(triggered()),        mpParentContainerObject,     SLOT(cutSelected()));
+    disconnect(gpMainWindow->copyAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(copySelected()));
+    disconnect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        mpParentContainerObject,     SLOT(paste()));
+    disconnect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        mpParentContainerObject,     SLOT(openPropertiesDialogSlot()));
+    disconnect(gpMainWindow->undoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(undo()));
+    disconnect(gpMainWindow->redoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(redo()));
+
+    connect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        this,     SLOT(hideNames()));
+    connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        this,     SLOT(showNames()));
+    connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        this,     SLOT(disableUndo()));
+    connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        this,     SLOT(cutSelected()));
+    connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        this,     SLOT(copySelected()));
+    connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        this,     SLOT(paste()));
+    connect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()));
+    connect(gpMainWindow->undoAction,           SIGNAL(triggered()),        this,     SLOT(undo()));
+    connect(gpMainWindow->redoAction,           SIGNAL(triggered()),        this,     SLOT(redo()));
 
         //Upddate plot widget and undo widget to new container
     gpMainWindow->makeSurePlotWidgetIsCreated();
     gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
     gpMainWindow->mpUndoWidget->refreshList();
+    gpMainWindow->undoAction->setDisabled(this->mUndoDisabled);
+    gpMainWindow->redoAction->setDisabled(this->mUndoDisabled);
 }
 
 
@@ -1118,13 +1135,30 @@ void GUIContainerObject::exitContainer()
     /*mpParentContainerObject->*/mpParentProjectTab->mpGraphicsView->setContainerPtr(this->mpParentContainerObject);
 
         //Disconnect this system and connect parent system with undo and redo actions
-    disconnect(gpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
-    disconnect(gpMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
-    connect(gpMainWindow->undoAction, SIGNAL(triggered()), mpParentContainerObject, SLOT(undo()));
-    connect(gpMainWindow->redoAction, SIGNAL(triggered()), mpParentContainerObject, SLOT(redo()));
+    disconnect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        this,     SLOT(hideNames()));
+    disconnect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        this,     SLOT(showNames()));
+    disconnect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        this,     SLOT(disableUndo()));
+    disconnect(gpMainWindow->cutAction,            SIGNAL(triggered()),        this,     SLOT(cutSelected()));
+    disconnect(gpMainWindow->copyAction,           SIGNAL(triggered()),        this,     SLOT(copySelected()));
+    disconnect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        this,     SLOT(paste()));
+    disconnect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()));
+    disconnect(gpMainWindow->undoAction,           SIGNAL(triggered()),        this,     SLOT(undo()));
+    disconnect(gpMainWindow->redoAction,           SIGNAL(triggered()),        this,     SLOT(redo()));
+
+    connect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(hideNames()));
+    connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(showNames()));
+    connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        mpParentContainerObject,     SLOT(disableUndo()));
+    connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        mpParentContainerObject,     SLOT(cutSelected()));
+    connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(copySelected()));
+    connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        mpParentContainerObject,     SLOT(paste()));
+    connect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        mpParentContainerObject,     SLOT(openPropertiesDialogSlot()));
+    connect(gpMainWindow->undoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(undo()));
+    connect(gpMainWindow->redoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(redo()));
 
         //Upddate plot widget and undo widget to new container
     gpMainWindow->makeSurePlotWidgetIsCreated();
     gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
     gpMainWindow->mpUndoWidget->refreshList();
+    gpMainWindow->undoAction->setDisabled(mpParentContainerObject->mUndoDisabled);
+    gpMainWindow->redoAction->setDisabled(mpParentContainerObject->mUndoDisabled);
 }

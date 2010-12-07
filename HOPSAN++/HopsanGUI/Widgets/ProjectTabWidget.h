@@ -29,6 +29,7 @@ public:
     ProjectTab *getCurrentTab();
     ProjectTab *getTab(int index);
     GUISystem *getCurrentTopLevelSystem();
+    GUIContainerObject *getContainer(int index);
     GUIContainerObject *getCurrentContainer();
     GUISystem *getSystem(int index);
 
