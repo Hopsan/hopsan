@@ -1831,15 +1831,16 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
                     std::cout << "pPort2 connports size: " <<  pPort2->getConnectedPorts().size() << std::endl;
 
                     //Replace the node in port2 and all of its connected ports
+                    pPort2->setNode(pNode1);
+                    pNode2->removePort(pPort2);
                     vector<Port*>::iterator pit;
-                    //getConnectedPorts return a reference thats why we can cal it withou making a copy
-                    for (pit=pPort2->getConnectedPorts().begin(); pit!=pPort2->getConnectedPorts().end(); ++pit)
+                    for (pit=pPort2->getConnectedPorts().begin(); pit!=pPort2->getConnectedPorts().end(); ++pit) //getConnectedPorts return a reference thats why we can cal it withou making a copy
                     {
                         (*pit)->setNode(pNode1);
                         pNode1->setPort(*pit);
-                        pNode2->removePort(*pit); //this node will be deleted so we really dosnt have to remove ports but lets do it anyway to be sure
+                        pNode2->removePort(*pit); //this node will be deleted so we really dont have to remove ports but lets do it anyway to be sure
                     }
-                    pNode2->removePort(pPort2);
+
 
                     std::cout << "node2 ports size: " <<  pNode2->mPortPtrs.size() << std::endl;
                     //! @todo make sure this is correct
@@ -1848,8 +1849,8 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
                     {
                         pSys2->removeSubNode(pNode2);
                     }
-                    //! @todo we should get parent insted
-                    //delete pNode2;
+                    //! @todo we should get parent insted if dyncast fail
+                    delete pNode2;
                 }
                 else
                 {
