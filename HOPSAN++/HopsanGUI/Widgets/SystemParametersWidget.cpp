@@ -79,16 +79,20 @@ SystemParametersWidget::SystemParametersWidget(MainWindow *parent)
     QFont tempFont = mpAddButton->font();
     tempFont.setBold(true);
     mpAddButton->setFont(tempFont);
+    mpAddButton->setEnabled(false);
 
     mpRemoveButton = new QPushButton(tr("&Unset"), this);
     mpRemoveButton->setFixedHeight(30);
     mpRemoveButton->setAutoDefault(false);
     mpRemoveButton->setFont(tempFont);
+    mpRemoveButton->setEnabled(false);
 
     mpGridLayout = new QGridLayout(this);
     mpGridLayout->addWidget(mpSystemParametersTable, 0, 0);
     mpGridLayout->addWidget(mpAddButton, 1, 0);
     mpGridLayout->addWidget(mpRemoveButton, 2, 0);
+
+    update();
 
     connect(mpAddButton, SIGNAL(clicked()), mpSystemParametersTable, SLOT(openComponentPropertiesDialog()));
     connect(mpRemoveButton, SIGNAL(clicked()), mpSystemParametersTable, SLOT(removeSelectedParameters()));
@@ -221,15 +225,15 @@ void SystemParameterTableWidget::setParameter(QString name, QString valueTxt, bo
 
 void SystemParameterTableWidget::setParameters()
 {
-//    if(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->getNumberOfSystemParameters() > 0)
-//    {
-        for(int i=0; i<rowCount(); ++i)
-        {
-            QString name = item(i, 0)->text();
-            double value = item(i, 1)->text().toDouble();
-            setParameter(name, value);
-        }
-//    }
+    //    if(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->getNumberOfSystemParameters() > 0)
+    //    {
+    for(int i=0; i<rowCount(); ++i)
+    {
+        QString name = item(i, 0)->text();
+        double value = item(i, 1)->text().toDouble();
+        setParameter(name, value);
+    }
+    //    }
 }
 
 
@@ -309,18 +313,12 @@ void SystemParameterTableWidget::update()
 {
     QMap<std::string, double>::iterator it;
     QMap<std::string, double> tempMap;
+    tempMap.clear();
+    clear();
     if(gpMainWindow->mpProjectTabs->count()>0)
     {
         tempMap = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getCoreSystemAccessPtr()->getSystemParametersMap();
     }
-    else
-    {
-        tempMap.clear();
-        return;
-    }
-
-    clear();
-
     if(tempMap.isEmpty())
     {
         setColumnCount(1);
@@ -340,17 +338,18 @@ void SystemParameterTableWidget::update()
         setColumnCount(2);
         setColumnWidth(0, 120);
         verticalHeader()->show();
-    }
-    for(it=tempMap.begin(); it!=tempMap.end(); ++it)
-    {
-        QString valueString;
-        valueString.setNum(it.value());
-        insertRow(rowCount());
-        QTableWidgetItem *nameItem = new QTableWidgetItem(QString(it.key().c_str()));
-        QTableWidgetItem *valueItem = new QTableWidgetItem(valueString);
-        nameItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-        valueItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
-        setItem(rowCount()-1, 0, nameItem);
-        setItem(rowCount()-1, 1, valueItem);
+
+        for(it=tempMap.begin(); it!=tempMap.end(); ++it)
+        {
+            QString valueString;
+            valueString.setNum(it.value());
+            insertRow(rowCount());
+            QTableWidgetItem *nameItem = new QTableWidgetItem(QString(it.key().c_str()));
+            QTableWidgetItem *valueItem = new QTableWidgetItem(valueString);
+            nameItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+            valueItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
+            setItem(rowCount()-1, 0, nameItem);
+            setItem(rowCount()-1, 1, valueItem);
+        }
     }
 }
