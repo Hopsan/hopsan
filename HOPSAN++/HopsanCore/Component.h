@@ -280,6 +280,9 @@ namespace hopsan {
         bool doConnectChildToParent(Port *pChildPort, Port *pParentPort);
         bool doConnectToExistingConnection(Port *pExistingConnectionPort, Port *pNewPort);
         bool doConnectChildToChild(Port *pPort1, Port *pPort2);
+        bool ensureSystemportInternallyConnected(Port* pSysPort, Port* pOtherPort);
+        bool ensureComponentsAddedToThisSystem(Port* pPort1, Port* pPort2);
+        bool ensureSameNodeType(Port *pPort1, Port *pPort2);
 
         //Add and Remove sub nodes
         void addSubNode(Node* node_ptr);

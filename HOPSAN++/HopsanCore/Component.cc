@@ -1535,6 +1535,7 @@ Port* ComponentSystem::addSystemPort(string portname)
         portname = "p";
     }
 
+    //! @todo not hardcode, "undefined_nodetype" maybe define or something, it is used elsevere also
     return addPort(portname, Port::SYSTEMPORT, "undefined_nodetype", Port::REQUIRED);
 }
 
@@ -1776,6 +1777,50 @@ bool ComponentSystem::doConnectChildToChild(Port *pPort1, Port *pPort2)
     }
 }
 
+bool ComponentSystem::ensureSystemportInternallyConnected(Port* pSysPort, Port* pOtherPort)
+{
+    //Do not chekc if we are connecting an internal port to undefined systemport, only chek for external connections
+    if (pOtherPort->mpComponent->getSystemParent() != pSysPort->mpComponent)
+    {
+        if (pSysPort->getNodeType() == "undefined_nodetype")
+        {
+            stringstream ss;
+            ss << "The systemport {" << pSysPort->getPortName() << "} must be internally connected before external connections can be made";
+            gCoreMessageHandler.addErrorMessage(ss.str());
+            return false;
+        }
+    }
+    return true;
+}
+
+//! @todo this can only be used in a system when connecting subcomponents
+bool ComponentSystem::ensureComponentsAddedToThisSystem(Port* pPort1, Port* pPort2)
+{
+    //Check so that both components to connect have been added to the same (this) system
+    if ( (pPort1->mpComponent->getSystemParent() != this) || (pPort2->mpComponent->getSystemParent() != this) )
+    {
+        stringstream ss;
+        ss << "The components, {"<< pPort1->mpComponent->getName() << "} and {" << pPort2->mpComponent->getName() << "}, "<< "must belong to the same subsystem";
+        gCoreMessageHandler.addErrorMessage(ss.str());
+        return false;
+    }
+    return true;
+}
+
+bool ComponentSystem::ensureSameNodeType(Port *pPort1, Port *pPort2)
+{
+    //Check if both ports have the same node type specified
+    if (pPort1->getNodeType() != pPort2->getNodeType())
+    {
+        stringstream ss;
+        ss << "You can not connect a {" << pPort1->getNodeType() << "} port to a {" << pPort2->getNodeType()  << "} port." << std::endl <<
+              "When connecting: {" << pPort1->mpComponent->getName() << "::" << pPort1->getPortName() << "} to {" << pPort2->mpComponent->getName() << "::" << pPort2->getPortName() << "}";
+        gCoreMessageHandler.addErrorMessage(ss.str());
+        return false;
+    }
+    return true;
+}
+
 //! Connect two components with specified ports to each other, reference version
 bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
 {
@@ -1783,8 +1828,9 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     Component* pComp2 = pPort2->mpComponent;
 
     //First some error checking
-    stringstream ss; //Error string stream
+    stringstream ss; //Message string stream
 
+    //Prevent connection with self
     if (pPort1 == pPort2)
     {
         ss << "You can not connect a port to it self";
@@ -1792,6 +1838,22 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         return false;
     }
 
+    //Prevent connection to internally unconnected systemport from outside
+    if (pPort1->getPortType() == Port::SYSTEMPORT)
+    {
+        if(!ensureSystemportInternallyConnected(pPort1, pPort2))
+        {
+            return false;
+        }
+    }
+
+    if (pPort2->getPortType() == Port::SYSTEMPORT)
+    {
+        if(!ensureSystemportInternallyConnected(pPort2, pPort1))
+        {
+            return false;
+        }
+    }
 
     //! @todo must make sure that ONLY ONE powerport can be internally connected to systemports (no sensors or anything else) to amke stuff simpler
     //! @todo Should really cleanup better after failure i.e. delete the created Node, right now memmory leak, however not sure if we can delete node or if this must be done by possible other shared object for external nodes (use factory to delete through registered delete function), delete seems to crash dont know why
@@ -1834,20 +1896,14 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     {
         //! @todo this maybe should be checked every time not only if same level, with some modification as i can connect to myself aswell
         //Check so that both systems to connect have been added to this system
-        if ( (pComp1->getSystemParent() != (Component*)this) && ((pComp1->getSystemParent() != (Component*)this)) )
+        if(!ensureComponentsAddedToThisSystem(pPort1, pPort2))
         {
-            ss << "The components, {"<< pComp1->getName() << "} and {" << pComp2->getName() << "}, "<< "must belong to the same subsystem";
-            cout << ss.str() << endl;
-            gCoreMessageHandler.addErrorMessage(ss.str());
             return false;
         }
 
         //check if both ports have the same node type specified
-        if (pPort1->getNodeType() != pPort2->getNodeType())
+        if (!ensureSameNodeType(pPort1, pPort2))
         {
-            ss << "You can not connect a {" << pPort1->getNodeType() << "} port to a {" << pPort2->getNodeType()  << "} port." << std::endl << "When connecting: {" << pComp1->getName() << "::" << pPort1->getPortName() << "} to {" << pComp2->getName() << "::" << pPort2->getPortName() << "}";
-            cout << ss.str() << endl;
-            gCoreMessageHandler.addErrorMessage(ss.str());
             return false;
         }
 
