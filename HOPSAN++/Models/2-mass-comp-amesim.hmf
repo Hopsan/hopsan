@@ -4,14 +4,14 @@
         <hopsangui>
             <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500" y="2483,5" zoom="1"/>
+            <viewport x="2500" y="2500" zoom="1"/>
             <hopsanobjectappearance>
                 <modelobject typename="" displayname="2-mass-comp-amesim">
                     <icon isopath="" iconrotation="" userpath=""/>
                 </modelobject>
             </hopsanobjectappearance>
         </hopsangui>
-        <simulationtime stop="2" timestep="0,001" start="0"/>
+        <simulationtime stop="2" timestep="0.001" start="0"/>
         <parameters>
             <parameter value="1" name="v0"/>
         </parameters>
@@ -103,10 +103,10 @@
             <connect endport="P2" endcomponent="TranslationalSpring" startport="out" startcomponent="VelocityTransformer">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2742,5" y="2487"/>
+                        <coordinate x="2742.5" y="2487"/>
                         <coordinate x="2722" y="2487"/>
                         <coordinate x="2722" y="2487"/>
-                        <coordinate x="2702,5" y="2487"/>
+                        <coordinate x="2702.5" y="2487"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -118,7 +118,7 @@
             <connect endport="P2" endcomponent="TranslationalMass_1" startport="P1" startcomponent="TranslationalSpring">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2669,5" y="2487"/>
+                        <coordinate x="2669.5" y="2487"/>
                         <coordinate x="2591" y="2487"/>
                         <coordinate x="2591" y="2487"/>
                         <coordinate x="2619" y="2487"/>
@@ -133,7 +133,7 @@
             <connect endport="P1" endcomponent="TranslationalMass_1" startport="P2" startcomponent="TranslationalSpring_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2511,5" y="2487"/>
+                        <coordinate x="2511.5" y="2487"/>
                         <coordinate x="2536" y="2487"/>
                         <coordinate x="2536" y="2487"/>
                         <coordinate x="2555" y="2487"/>
@@ -151,7 +151,7 @@
                         <coordinate x="2432" y="2487"/>
                         <coordinate x="2454" y="2487"/>
                         <coordinate x="2454" y="2487"/>
-                        <coordinate x="2478,5" y="2487"/>
+                        <coordinate x="2478.5" y="2487"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -163,7 +163,7 @@
             <connect endport="P1" endcomponent="TranslationalMass" startport="P1" startcomponent="ForceTransformer">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2328,5" y="2487"/>
+                        <coordinate x="2328.5" y="2487"/>
                         <coordinate x="2351" y="2487"/>
                         <coordinate x="2351" y="2487"/>
                         <coordinate x="2368" y="2487"/>
