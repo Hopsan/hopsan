@@ -153,8 +153,10 @@ void ComponentPropertiesDialog::createEditStuff()
     QGroupBox *pHelpGroupBox = new QGroupBox();
     QVBoxLayout *pHelpLayout = new QVBoxLayout();
     pHelpPicture->setAlignment(Qt::AlignCenter);
-    pHelpLayout->addWidget(pHelpPicture);
-    pHelpLayout->addWidget(pHelpText);
+    if(!mpGUIComponent->getHelpPicture().isNull())
+        pHelpLayout->addWidget(pHelpPicture);
+    if(!mpGUIComponent->getHelpText().isNull())
+        pHelpLayout->addWidget(pHelpText);
     pHelpGroupBox->setStyleSheet(QString::fromUtf8("QGroupBox {background-color: white; border: 2px solid gray; border-radius: 5px; margin-top: 1ex;}"));
     pHelpGroupBox->setLayout(pHelpLayout);
 
@@ -166,7 +168,7 @@ void ComponentPropertiesDialog::createEditStuff()
     QGridLayout *mainLayout = new QGridLayout();
     mainLayout->setSizeConstraint(QLayout::SetFixedSize);
     int lr = 0; //Layout row
-    if(!pHelpText->text().isEmpty())
+    if(!mpGUIComponent->getHelpText().isNull() || !mpGUIComponent->getHelpPicture().isNull())
     {
         mainLayout->addWidget(pHelpGroupBox, lr, 0, 1, 2);
     }

@@ -151,7 +151,7 @@ namespace hopsan {
     protected:
         //==========Protected member functions==========
         //Constructor - Destructor
-        Component(std::string name="Component", double timestep=0.001);
+        Component(std::string name="Component");
 
         //Virtual functions
         virtual void simulateOneTimestep();
@@ -207,7 +207,7 @@ namespace hopsan {
     public:
         //==========Public functions==========
         //Constructor - Destructor
-        ComponentSystem(std::string name="ComponentSystem", double timestep=0.001);
+        ComponentSystem(std::string name="ComponentSystem");
 
         //Load from external file
         void loadSystemFromFile(std::string filepath);
@@ -315,21 +315,21 @@ namespace hopsan {
     class DLLIMPORTEXPORT ComponentSignal :public Component
     {
     protected:
-        ComponentSignal(std::string name, double timestep=0.001);
+        ComponentSignal(std::string name);
     };
 
 
     class DLLIMPORTEXPORT ComponentC :public Component
     {
     protected:
-        ComponentC(std::string name, double timestep=0.001);
+        ComponentC(std::string name);
     };
 
 
     class DLLIMPORTEXPORT ComponentQ :public Component
     {
     protected:
-        ComponentQ(std::string name, double timestep=0.001);
+        ComponentQ(std::string name);
     };
 
     typedef ClassFactory<std::string, Component> ComponentFactory;

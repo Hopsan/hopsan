@@ -404,10 +404,10 @@ bool SystemParameters::update(std::string sysParName)
 
 
 //Constructor
-Component::Component(string name, double timestep)
+Component::Component(string name)
 {
     mName = name;
-    mTimestep = timestep;
+    mTimestep = 0.001;
 
     mIsComponentC = false;
     mIsComponentQ = false;
@@ -1087,7 +1087,7 @@ ComponentSystem *Component::getSystemParent()
 
 
 //constructor ComponentSignal
-ComponentSignal::ComponentSignal(string name, double timestep) : Component(name, timestep)
+ComponentSignal::ComponentSignal(string name) : Component(name)
 {
     //mTypeCQS = "S";
     mTypeCQS = Component::S;
@@ -1130,7 +1130,7 @@ void Component::loadStartValuesFromSimulation()
 
 
 //constructor ComponentC
-ComponentC::ComponentC(string name, double timestep) : Component(name, timestep)
+ComponentC::ComponentC(string name) : Component(name)
 {
     //mTypeCQS = "C";
     mTypeCQS = Component::C;
@@ -1139,7 +1139,7 @@ ComponentC::ComponentC(string name, double timestep) : Component(name, timestep)
 
 
 //Constructor ComponentQ
-ComponentQ::ComponentQ(string name, double timestep) : Component(name, timestep)
+ComponentQ::ComponentQ(string name) : Component(name)
 {
     //mTypeCQS = "Q";
     mTypeCQS = Component::Q;
@@ -1148,11 +1148,11 @@ ComponentQ::ComponentQ(string name, double timestep) : Component(name, timestep)
 
 
 //Constructor
-ComponentSystem::ComponentSystem(string name, double timestep) : Component(name, timestep)
+ComponentSystem::ComponentSystem(string name) : Component(name)
 {
     mTypeName = "ComponentSystem";
     mIsComponentSystem = true;
-    mDesiredTimestep = timestep;
+    mDesiredTimestep = 0.001;
 }
 
 //! @todo maybe not have this in this class maybe external function, or maybe all loading internal in all classes
@@ -1191,10 +1191,10 @@ SystemParameters &ComponentSystem::getSystemParameters()
 
 void ComponentSystem::addComponents(vector<Component*> components)
 {
-    //! @todo use iterator instead of idx loop (not really necessary)
-    for (size_t idx=0; idx<components.size(); ++idx)
+    std::vector<Component *>::iterator itx;
+    for(itx = components.begin(); itx != components.end(); ++itx)
     {
-        addComponent(components[idx]);
+        addComponent((*itx));
     }
 }
 
@@ -1233,7 +1233,6 @@ void ComponentSystem::renameSubComponent(string oldname, string newname)
         mSubComponentMap.insert(pair<string, Component*>(mod_new_name, temp_c_ptr));
 
         //Now change the actual component name, without trying to do rename (we are in rename now, would cause infinite loop)
-        //! @todo it might be a good idea to rething all of this renaming stuff, right now its prety strange (but works), setname loop
         temp_c_ptr->setName(mod_new_name, true);
     }
     else
