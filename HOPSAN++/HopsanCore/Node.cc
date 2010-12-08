@@ -33,6 +33,9 @@ Node::Node(size_t datalength)
     mTimeStorage.clear();
     mPortPtrs.clear();
 
+    //Init pointer
+    mpOwnerSystem = 0;
+
     //Sett initial node type
     mNodeType = "UndefinedNode";
 
@@ -450,6 +453,11 @@ int Node::getNumberOfPortsByType(int type)
         }
     }
     return n_Ports;
+}
+
+ComponentSystem *Node::getOwnerSystem()
+{
+    return mpOwnerSystem;
 }
 
 NodeFactory hopsan::gCoreNodeFactory;

@@ -278,6 +278,8 @@ namespace hopsan {
         //Help Functions to connect
         bool connectionOK(Node *pNode, Port *pPort1, Port *pPort2);
         bool doConnectChildToParent(Port *pChildPort, Port *pParentPort);
+        bool doConnectChildSubsystemToParent(Port* pChildPort, Port* pParentPort);
+        bool doConnectSystemToSystem(Port* pPort1, Port* pPort2);
         bool doConnectToExistingConnection(Port *pExistingConnectionPort, Port *pNewPort);
         bool doConnectChildToChild(Port *pPort1, Port *pPort2);
         bool ensureSystemportInternallyConnected(Port* pSysPort, Port* pOtherPort);

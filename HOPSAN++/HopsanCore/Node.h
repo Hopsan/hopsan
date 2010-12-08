@@ -17,7 +17,9 @@ namespace hopsan {
 
     typedef std::string NodeTypeT;
 
+    //Forward Declarations
     class Port;
+    class ComponentSystem;
 
     class DLLIMPORTEXPORT Node
     {
@@ -59,6 +61,8 @@ namespace hopsan {
         bool setDataValuesByNames(std::vector<std::string> names, std::vector<double> values);
         int getNumberOfPortsByType(int type);
 
+        ComponentSystem *getOwnerSystem();
+
         //Protected member variables
         NodeTypeT mNodeType;
         std::vector<double> mDataVector;
@@ -77,6 +81,7 @@ namespace hopsan {
         std::vector<std::string> mDataNames;
         std::vector<std::string> mDataUnits;
         std::vector<Node::PLOTORNOT> mPlotBehaviour;
+        ComponentSystem *mpOwnerSystem;
 
         //Log specific
         std::vector<double> mTimeStorage;
