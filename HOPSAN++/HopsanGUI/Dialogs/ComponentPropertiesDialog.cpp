@@ -53,6 +53,14 @@ void ComponentPropertiesDialog::createEditStuff()
     fontH2.setBold(true);
     fontH2.setItalic(true);
 
+    QLabel *pHelpPicture = new QLabel();
+    QPixmap helpPixMap;
+    helpPixMap.load(mpGUIComponent->getAppearanceData()->getBaseIconPath() + mpGUIComponent->getHelpPicture());
+    pHelpPicture->setPixmap(helpPixMap);
+
+    QLabel *pHelpText = new QLabel(mpGUIComponent->getHelpText(), this);
+    pHelpText->setWordWrap(true);
+
     QLabel *pParameterLabel = new QLabel("Parameters", this);
     pParameterLabel->setFont(fontH1);
 
@@ -142,6 +150,14 @@ void ComponentPropertiesDialog::createEditStuff()
     connect(okButton, SIGNAL(pressed()), SLOT(okPressed()));
     connect(cancelButton, SIGNAL(pressed()), SLOT(close()));
 
+    QGroupBox *pHelpGroupBox = new QGroupBox();
+    QVBoxLayout *pHelpLayout = new QVBoxLayout();
+    pHelpPicture->setAlignment(Qt::AlignCenter);
+    pHelpLayout->addWidget(pHelpPicture);
+    pHelpLayout->addWidget(pHelpText);
+    pHelpGroupBox->setStyleSheet(QString::fromUtf8("QGroupBox {background-color: white; border: 2px solid gray; border-radius: 5px; margin-top: 1ex;}"));
+    pHelpGroupBox->setLayout(pHelpLayout);
+
     QHBoxLayout *pNameLayout = new QHBoxLayout();
     QLabel *pNameLabel = new QLabel("Name: ", this);
     pNameLayout->addWidget(pNameLabel);
@@ -150,8 +166,16 @@ void ComponentPropertiesDialog::createEditStuff()
     QGridLayout *mainLayout = new QGridLayout();
     mainLayout->setSizeConstraint(QLayout::SetFixedSize);
     int lr = 0; //Layout row
+    if(!pHelpText->text().isEmpty())
+    {
+        mainLayout->addWidget(pHelpGroupBox, lr, 0, 1, 2);
+    }
+
+    ++lr;
+
     mainLayout->addLayout(pNameLayout, lr, 0);
     mainLayout->addWidget(buttonBox, lr, 1);
+
     ++lr;
 
     if(!(mvParameterLayout.empty()))
@@ -161,11 +185,19 @@ void ComponentPropertiesDialog::createEditStuff()
         mainLayout->addLayout(parameterLayout, lr, 0);
         ++lr;
     }
+    else
+    {
+        pParameterLabel->hide();
+    }
     if(!(mvStartValueLayout[0].isEmpty()))
     {
         mainLayout->addWidget(pStartValueLabel,lr, 0);
         ++lr;
         mainLayout->addLayout(startValueLayout, lr, 0);
+    }
+    else
+    {
+        pStartValueLabel->hide();
     }
     setLayout(mainLayout);
 

@@ -25,6 +25,7 @@ public:
     GUIModelObjectAppearance();
     void setTypeName(QString name);
     void setName(QString name);
+    void setHelpText(QString text);
     void setBaseIconPath(QString path);
     void setIconPathUser(QString path);
     void setIconPathISO(QString path);
@@ -32,6 +33,8 @@ public:
     QString getTypeName();
     QString getName();
     QString getNonEmptyName();
+    QString getHelpPicture();
+    QString getHelpText();
     QString getFullIconPath(graphicsType gfxType=USERGRAPHICS);
     QString getIconPathUser();
     QString getIconPathISO();
@@ -56,6 +59,8 @@ public:
 private:
     QString mTypeName;
     QString mName;
+    QString mHelpPicture;
+    QString mHelpText;
     QString mIconPathUser;
     QString mIconPathISO;
     //! @todo In the future we should store file info separately for iso and user icons, and not use one common base path

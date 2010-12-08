@@ -36,6 +36,10 @@ public:
     QString getTypeName();
     QString getTypeCQS();
 
+    //Help methods
+    QString getHelpPicture();
+    QString getHelpText();
+
     enum { Type = GUICOMPONENT };
     int type() const;
 

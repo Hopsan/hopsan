@@ -100,6 +100,19 @@ QString GUIComponent::getTypeCQS()
     return mpParentContainerObject->getCoreSystemAccessPtr()->getSubComponentTypeCQS(this->getName());
 }
 
+
+QString GUIComponent::getHelpPicture()
+{
+    return mGUIModelObjectAppearance.getHelpPicture();
+}
+
+
+QString GUIComponent::getHelpText()
+{
+    return mGUIModelObjectAppearance.getHelpText();
+}
+
+
 //! @brief Get a vector with the names of the available parameters
 QVector<QString> GUIComponent::getParameterNames()
 {

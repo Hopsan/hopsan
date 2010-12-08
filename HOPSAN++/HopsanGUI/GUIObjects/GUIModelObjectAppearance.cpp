@@ -48,6 +48,18 @@ QString GUIModelObjectAppearance::getNonEmptyName()
     }
 }
 
+
+QString GUIModelObjectAppearance::getHelpPicture()
+{
+    return mHelpPicture;
+}
+
+
+QString GUIModelObjectAppearance::getHelpText()
+{
+    return mHelpText;
+}
+
 QString GUIModelObjectAppearance::getFullIconPath(graphicsType gfxType)
 {
     if ( !mIconPathUser.isEmpty() && (gfxType == USERGRAPHICS) )
@@ -215,6 +227,13 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
     mTypeName       = domElement.attribute(HMF_TYPETAG);
     mName           = domElement.attribute(HMF_DISPLAYNAMETAG);
 
+    QDomElement xmlHelp = domElement.firstChildElement("help");
+    if(!xmlHelp.isNull())
+    {
+        mHelpPicture    = xmlHelp.attribute("picture");
+        mHelpText       = xmlHelp.attribute("text");
+    }
+
     QDomElement xmlIcon = domElement.firstChildElement("icon");
     mIconPathISO    = xmlIcon.attribute("isopath");
     mIconPathUser   = xmlIcon.attribute("userpath");
@@ -287,6 +306,11 @@ void GUIModelObjectAppearance::setTypeName(QString name)
 void GUIModelObjectAppearance::setName(QString name)
 {
     mName = name;
+}
+
+void GUIModelObjectAppearance::setHelpText(QString text)
+{
+    mHelpText = text;
 }
 
 void GUIModelObjectAppearance::setBaseIconPath(QString path)
