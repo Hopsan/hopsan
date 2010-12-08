@@ -41,6 +41,7 @@ public slots:
     bool closeProjectTab(int index);
     bool closeAllProjectTabs();
     void loadModel();
+    void loadModel(QAction *action);
     void loadModel(QString modelFileName);
     void tabChanged();
 

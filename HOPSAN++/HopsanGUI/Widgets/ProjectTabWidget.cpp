@@ -339,9 +339,6 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
     connect(this,SIGNAL(currentChanged(int)),SLOT(tabChanged()));
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(closeProjectTab(int)));
     connect(this,SIGNAL(tabCloseRequested(int)),SLOT(tabChanged()));
-
-    connect(gpMainWindow->newAction, SIGNAL(triggered()), this, SLOT(addNewProjectTab()));
-    connect(gpMainWindow->openAction, SIGNAL(triggered()), this, SLOT(loadModel()));
 }
 
 
@@ -517,6 +514,14 @@ void ProjectTabWidget::loadModel()
                                                          fileDialogOpenDir.currentPath() + QString(MODELPATH),
                                                          tr("Hopsan Model Files (*.hmf *.hmfx)"));
     loadModel(modelFileName);
+
+    emit newTabAdded();
+}
+
+
+void ProjectTabWidget::loadModel(QAction *action)
+{
+    loadModel(action->text());
 
     emit newTabAdded();
 }

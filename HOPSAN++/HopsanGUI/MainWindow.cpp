@@ -78,10 +78,6 @@ MainWindow::MainWindow(QWidget *parent)
     //Set dock widget corner owner
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
 
-    this->createActions();
-    this->createToolbars();
-    this->createMenus();
-
     //Create a centralwidget for the main window
     mpCentralWidget = new QWidget(this);
     mpCentralWidget->setObjectName("centralwidget");
@@ -94,6 +90,10 @@ MainWindow::MainWindow(QWidget *parent)
     mpProjectTabs = new ProjectTabWidget(this);
     mpProjectTabs->setObjectName("projectTabs");
     mpCentralGridLayout->addWidget(mpProjectTabs,0,0);
+
+    this->createActions();
+    this->createToolbars();
+    this->createMenus();
 
     //Set the centralwidget
     this->setCentralWidget(mpCentralWidget);
@@ -271,10 +271,12 @@ void MainWindow::createActions()
     newAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-New.png"), tr("&New"), this);
     newAction->setShortcut(tr("New"));
     newAction->setStatusTip(tr("Create New Project"));
+    connect(newAction, SIGNAL(triggered()), mpProjectTabs, SLOT(addNewProjectTab()));
 
     openAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Open.png"), tr("&Open"), this);
     openAction->setShortcut(QKeySequence("Ctrl+o"));
     openAction->setStatusTip(tr("Load Model File"));
+    connect(openAction, SIGNAL(triggered()), mpProjectTabs, SLOT(loadModel()));
 
     saveAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Save.png"), tr("&Save"), this);
     saveAction->setShortcut(QKeySequence("Ctrl+s"));
@@ -626,6 +628,8 @@ void MainWindow::updateRecentList()
             {
                 QAction *tempAction;
                 tempAction = recentMenu->addAction(gConfig.getRecentModels().at(i));
+                disconnect(recentMenu, SIGNAL(triggered(QAction *)), mpProjectTabs, SLOT(loadModel(QAction *)));    //Ugly hack to make sure connecetions are not made twice (then program would try to open model more than once...)
+                connect(recentMenu, SIGNAL(triggered(QAction *)), mpProjectTabs, SLOT(loadModel(QAction *)));
             }
         }
     }
