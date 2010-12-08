@@ -171,6 +171,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     tabifyDockWidget(mpPyDockWidget, mpMessageDock);
 
+    mpSystemParametersWidget = new SystemParametersWidget(this);
+    mpSystemParametersWidget->setVisible(false);
+
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateToolBarsToNewTab()));
     connect(mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(refreshUndoWidgetList()));
 
@@ -546,7 +549,7 @@ void MainWindow::openUndoWidget()
 }
 
 
-//! @brief Opens the undo widget.
+//! @brief Opens the SystemParametersWidget widget.
 void MainWindow::openSystemParametersWidget()
 {
     if(!mpSystemParametersDock->isVisible())

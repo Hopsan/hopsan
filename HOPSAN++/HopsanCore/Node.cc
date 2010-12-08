@@ -203,6 +203,7 @@ void Node::copyNodeVariables(Node *pNode)
         {
             if(mPlotBehaviour[i] == Node::PLOT)
             {
+                //cout << "Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << endl;
                 pNode->mDataNames[i] = mDataNames[i];
                 pNode->mDataVector[i] = mDataVector[i];
                 pNode->mDataUnits[i] = mDataUnits[i];

@@ -120,6 +120,14 @@ bool ProjectTab::isSaved()
 //! Set function to tell the tab whether or not it is saved
 void ProjectTab::setSaved(bool value)
 {
+    if(value)
+    {
+        QString tabName = mpParentProjectTabWidget->tabText(mpParentProjectTabWidget->currentIndex());
+        if(tabName.endsWith("*"))
+        {
+            tabName.chop(1);
+        }
+    }
     mIsSaved = value;
 }
 
@@ -557,7 +565,6 @@ void ProjectTabWidget::loadModel(QString modelFileName)
 
     this->addProjectTab(new ProjectTab(this), fileInfo.fileName());
     ProjectTab *pCurrentTab = this->getCurrentTab();
-    pCurrentTab->setSaved(true);
 
     //Check if this is an expected hmf xml file
     //! @todo maybe write helpfunction that does this directly in system (or container)
@@ -579,6 +586,7 @@ void ProjectTabWidget::loadModel(QString modelFileName)
         pCurrentTab->mpSystem->loadFromHMF(modelFileName);
         pCurrentTab->save();
     }
+    pCurrentTab->setSaved(true);
 }
 
 

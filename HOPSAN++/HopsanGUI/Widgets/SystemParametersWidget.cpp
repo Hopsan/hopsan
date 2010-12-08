@@ -124,6 +124,13 @@ void SystemParameterTableWidget::changeParameter(QTableWidgetItem *item)
         QString parName = neighborItem->text();
         QString parValue = item->text();
 
+        QString apa = item->text();
+        double ko = getParameter(parName);
+        if(item->text() != QString::number(getParameter(parName)))
+        {
+            gpMainWindow->mpProjectTabs->getCurrentTab()->hasChanged();
+        }
+
         //Do not do update, then crash due to the rebuild of the QTableWidgetItems
         setParameter(parName, parValue, false);
     }
