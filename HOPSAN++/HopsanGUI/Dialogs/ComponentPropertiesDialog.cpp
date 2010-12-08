@@ -21,6 +21,7 @@
 #include "../UndoStack.h"
 #include "../Widgets/ProjectTabWidget.h"
 #include "../Widgets/SystemParametersWidget.h"
+#include "../Widgets/LibraryWidget.h"
 
 
 //! @class ComponentPropertiesDialog
@@ -58,9 +59,14 @@ void ComponentPropertiesDialog::createEditStuff()
     helpPixMap.load(mpGUIComponent->getAppearanceData()->getBaseIconPath() + mpGUIComponent->getHelpPicture());
     pHelpPicture->setPixmap(helpPixMap);
 
+    QLabel *pHelpHeading = new QLabel(gpMainWindow->mpLibrary->getAppearanceData(mpGUIComponent->getTypeName())->getName(), this);
+    pHelpHeading->setAlignment(Qt::AlignCenter);
+    QFont tempFont = pHelpHeading->font();
+    tempFont.setPixelSize(16);
+    tempFont.setBold(true);
+    pHelpHeading->setFont(tempFont);
     QLabel *pHelpText = new QLabel(mpGUIComponent->getHelpText(), this);
     pHelpText->setWordWrap(true);
-
     QLabel *pParameterLabel = new QLabel("Parameters", this);
     pParameterLabel->setFont(fontH1);
 
@@ -153,6 +159,7 @@ void ComponentPropertiesDialog::createEditStuff()
     QGroupBox *pHelpGroupBox = new QGroupBox();
     QVBoxLayout *pHelpLayout = new QVBoxLayout();
     pHelpPicture->setAlignment(Qt::AlignCenter);
+    pHelpLayout->addWidget(pHelpHeading);
     if(!mpGUIComponent->getHelpPicture().isNull())
         pHelpLayout->addWidget(pHelpPicture);
     if(!mpGUIComponent->getHelpText().isNull())
