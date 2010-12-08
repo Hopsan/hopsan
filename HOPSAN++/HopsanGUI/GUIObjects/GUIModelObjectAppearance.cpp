@@ -264,6 +264,14 @@ void GUIModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
     xmlIcon.setAttribute("isopath", mIconPathISO);
     xmlIcon.setAttribute("userpath", mIconPathUser);
     xmlIcon.setAttribute("iconrotation", mIconRotationBehaviour);
+    if(!mHelpText.isNull() || !mHelpPicture.isNull())
+    {
+        QDomElement xmlHelp = appendDomElement(xmlObject, "help");
+        if(!mHelpText.isNull())
+            xmlHelp.setAttribute("text", mHelpText);
+        if(!mHelpPicture.isNull())
+            xmlHelp.setAttribute("picture", mHelpPicture);
+    }
 
     PortAppearanceMapT::iterator pit;
     for (pit=mPortAppearanceMap.begin(); pit!=mPortAppearanceMap.end(); ++pit)
