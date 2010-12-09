@@ -24,6 +24,7 @@
 #include "../CopyStack.h"
 #include "../Widgets/QuickNavigationWidget.h"
 #include "Widgets/PlotWidget.h"
+#include <float.h>
 
 #include <QDomElement>
 
@@ -67,9 +68,139 @@ void GUIContainerObject::makeRootSystem()
     mContainerStatus = ROOT;
 }
 
+
+//! @todo use enums instead
+int GUIContainerObject::findPortEdge(QPointF center, QPointF pt)
+{
+    //By swapping place of pt1 and pt2 we get the angle in the same coordinate system as the view
+    QPointF diff = pt-center;
+    //qDebug() << "=============The Diff: " << diff;
+
+    //If only one sysport default to left side
+    //! @todo Do this smarter later and take ito account port orientation, or position relative all other components, need to extend this function a bit for that though
+    if (diff.manhattanLength() < 1.0)
+    {
+        return 2;
+    }
+
+    qreal angle = normRad(qAtan2(diff.x(), diff.y()));
+    qDebug() << "angle: " << rad2deg(angle);
+    if (fabs(angle) <= M_PI_4)
+    {
+        return 0;
+    }
+    else if (fabs(angle) >= 3.0*M_PI_4)
+    {
+        return 2;
+    }
+    else if (angle > M_PI_4)
+    {
+        return 1;
+    }
+    else
+    {
+        return 3;
+    }
+}
+
+
 void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
 {
-    //Nothing for now
+    //refresh the external port poses
+    GUIModelObjectMapT::iterator moit;
+    double val;
+
+    //Set the initial values to be overwriten by the if bellow
+    //! @todo maybe declare these or something like really big number in HopsanGUI to avoid needing to include float.h
+    double xMin=FLT_MAX, xMax=FLT_MIN, yMin=FLT_MAX, yMax=FLT_MIN;
+    for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
+    {
+        if(moit.value()->type() == GUISYSTEMPORT)
+        {
+            //check x max and min
+            val = moit.value()->getCenterPos().x();
+            xMin = std::min(xMin,val);
+            xMax = std::max(xMax,val);
+            //check y max and min
+            val = moit.value()->getCenterPos().y();
+            yMin = std::min(yMin,val);
+            yMax = std::max(yMax,val);
+        }
+    }
+    //! @todo Find out if it is possible to ask the scene or view for this information instead of calulating it ourselves
+    QPointF center = QPointF((xMax+xMin)/2.0, (yMax+yMin)/2.0);
+    //qDebug() << "center max min: " << center << " " << xMin << " " << xMax << " " << yMin << " " << yMax;
+
+    QVector<GUIPort*> leftEdge;
+    QVector<GUIPort*> rightEdge;
+    QVector<GUIPort*> topEdge;
+    QVector<GUIPort*> bottomEdge;
+
+    for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
+    {
+        if(moit.value()->type() == GUISYSTEMPORT)
+        {
+            //            QLineF line = QLineF(center, moit.value()->getCenterPos());
+            //            this->getContainedScenePtr()->addLine(line); //debug-grej
+
+            int edge = findPortEdge(center, moit.value()->getCenterPos());
+            //qDebug() << " sysp: " << moit.value()->getName() << " edge: " << edge;
+
+            switch (edge) {
+            case 0:
+                rightEdge.append(this->getPort(moit.value()->getName()));
+                break;
+            case 1:
+                bottomEdge.append(this->getPort(moit.value()->getName()));
+                break;
+            case 2:
+                leftEdge.append(this->getPort(moit.value()->getName()));
+                break;
+            case 3:
+                topEdge.append(this->getPort(moit.value()->getName()));
+                break;
+            }
+        }
+    }
+
+    //Now disperse the port icons evenly along each edge
+    QVector<GUIPort*>::iterator it;
+    qreal disp; //Dispersion factor
+
+    //! @todo maybe we should be able to update rotation in all of these also
+    //! @todo need to be sure we sort them in the correct order first
+    //! @todo wierd to use createfunction to refresh graphics, but ok for now
+    disp = 1.0/((qreal)(rightEdge.size()+1));
+    for (it=rightEdge.begin(); it!=rightEdge.end(); ++it)
+    {
+        (*it)->updatePositionByFraction(1.0, disp);
+        this->createExternalPort((*it)->getName());    //refresh the external port graphics
+        disp += disp;
+    }
+
+    disp = 1.0/((qreal)(bottomEdge.size()+1));
+    for (it=bottomEdge.begin(); it!=bottomEdge.end(); ++it)
+    {
+        (*it)->updatePositionByFraction(disp, 1.0);
+        this->createExternalPort((*it)->getName());    //refresh the external port graphics
+        disp += disp;
+    }
+
+    disp = 1.0/((qreal)(leftEdge.size()+1));
+    for (it=leftEdge.begin(); it!=leftEdge.end(); ++it)
+    {
+        (*it)->updatePositionByFraction(0.0, disp);
+        this->createExternalPort((*it)->getName());    //refresh the external port graphics
+        disp += disp;
+    }
+
+    disp = 1.0/((qreal)(topEdge.size()+1));
+    for (it=topEdge.begin(); it!=topEdge.end(); ++it)
+    {
+        (*it)->updatePositionByFraction(disp, 0.0);
+        this->createExternalPort((*it)->getName());    //refresh the external port graphics
+        disp += disp;
+    }
 }
 
 GUIContainerObject::CONTAINERSTATUS GUIContainerObject::getContainerStatus()
@@ -1087,8 +1218,7 @@ void GUIContainerObject::enterContainer()
 {
     //First deselect everything so that buttons pressed in the view are not sent to obejcts in the previous container
     //this->deselectAll(); //! @todo maybe this should be a signal
-    //! @todo WHY dosnt deselectALL deselct myself????
-    //! @todo there is apperantly a deselect all guiwidgets also that is not in deselect all
+    //! @todo there is apperantly a deselect all guiwidgets also that is not in deselect all, has nothing to do with this code though
     //this->deselect();
     mpParentContainerObject->deselectAll(); //deselect myself and anyone else
 
@@ -1161,4 +1291,8 @@ void GUIContainerObject::exitContainer()
     gpMainWindow->mpUndoWidget->refreshList();
     gpMainWindow->undoAction->setDisabled(mpParentContainerObject->mUndoDisabled);
     gpMainWindow->redoAction->setDisabled(mpParentContainerObject->mUndoDisabled);
+
+        //Refresh external port appearance
+    //! @todo We only need to do this if ports have change, right now we always refresh, dont know if this is a big deal
+    this->refreshExternalPortsAppearanceAndPosition();
 }

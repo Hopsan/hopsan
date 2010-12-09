@@ -334,6 +334,8 @@ void GUIPort::refreshPortOverlayPosition()
 //! @todo This needs to be synced and clean up with addPortOverlayGraphics, right now duplicate work, also should not change if icon same as before
 void GUIPort::refreshPortGraphics()
 {
+    //! @todo the port graphics is not updated when you return to an unconnected systemport, this is probably a problem in core, maybe nodetype is nod reset, need to fix
+
     //! @todo this seems to load new graphics in old scale, need to fix this
     //If we have an icon, change graphics, and redraw by calling hide and then show
     if (this->renderer()->load(this->mpPortAppearance->mIconPath))

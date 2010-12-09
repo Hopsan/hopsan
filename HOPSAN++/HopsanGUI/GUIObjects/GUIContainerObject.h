@@ -47,6 +47,7 @@ public:
     QString getUserIconPath();
     void setIsoIconPath(QString path);
     void setUserIconPath(QString path);
+    int findPortEdge(QPointF center, QPointF pt);
     void refreshExternalPortsAppearanceAndPosition();
     void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y); //!< @todo maybe not public
 
