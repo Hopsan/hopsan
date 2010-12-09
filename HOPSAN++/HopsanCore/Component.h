@@ -282,6 +282,8 @@ namespace hopsan {
         bool doConnectSystemToSystem(Port* pPort1, Port* pPort2);
         bool doConnectToExistingConnection(Port *pExistingConnectionPort, Port *pNewPort);
         bool doConnectChildToChild(Port *pPort1, Port *pPort2);
+        bool doDisconnectChildFromChild(Port *pPort1, Port *pPort2);
+        bool doDisconnectSystemFromSystem(Port* pPort1, Port* pPort2);
         bool ensureSystemportInternallyConnected(Port* pSysPort, Port* pOtherPort);
         bool ensureComponentsAddedToThisSystem(Port* pPort1, Port* pPort2);
         bool ensureSameNodeType(Port *pPort1, Port *pPort2);
