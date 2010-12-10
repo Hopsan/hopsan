@@ -145,6 +145,7 @@ protected:
         //Protected methods
     virtual void createPorts();
     virtual void createExternalPort(QString portName);
+    virtual void removeExternalPort(QString portName);
     virtual void openPropertiesDialog();
         //Protected overloaded Qt methods
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);

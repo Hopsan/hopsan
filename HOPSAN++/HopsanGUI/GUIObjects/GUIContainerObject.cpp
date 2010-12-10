@@ -339,6 +339,21 @@ void GUIContainerObject::createExternalPort(QString portName)
     }
 }
 
+//! @todo do we ever actaully DELETE the external guiport
+//! @todo maybe we should use a map instead to make delete more efficient, (may not amtter usually not htat many external ports)
+void GUIContainerObject::removeExternalPort(QString portName)
+{
+    QList<GUIPort*>::iterator plit;
+    for (plit=mPortListPtrs.begin(); plit!=mPortListPtrs.end(); ++plit)
+    {
+        if ((*plit)->getName() == portName )
+        {
+            mPortListPtrs.erase(plit);
+            delete *plit;
+        }
+    }
+}
+
 //! @brief Temporary addSubSystem functin should be same later on
 //! Adds a new component to the GraphicsView.
 //! @param componentType is a string defining the type of component.
@@ -511,7 +526,12 @@ void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus und
 
     if (it != mGUIModelObjectMap.end())
     {
-        //qDebug() << "Höns från Korea";
+        //! @todo maybe this should be handled somwhere else (not sure maybe this is the best place)
+        if ((*it)->type() == GUISYSTEMPORT )
+        {
+            this->removeExternalPort((*it)->getName());
+        }
+
         mGUIModelObjectMap.erase(it);
         mSelectedGUIObjectsList.removeOne(obj_ptr);
         mpScene->removeItem(obj_ptr);
