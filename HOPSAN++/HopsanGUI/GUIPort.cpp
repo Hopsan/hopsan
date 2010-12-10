@@ -133,10 +133,17 @@ void GUIPort::magnify(bool doMagnify)
 }
 
 
+//! Reimplemented to call custom show hide instead
 void GUIPort::setVisible(bool value)
 {
-    QGraphicsSvgItem::setVisible(value);
-    mpPortLabel->setVisible(false);
+    if (value)
+    {
+        this->show();
+    }
+    else
+    {
+        this->hide();
+    }
 }
 
 
@@ -186,8 +193,6 @@ QPointF GUIPort::getCenterPos()
 //! @param *event defines the mouse event.
 void GUIPort::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-    //QBrush brush(Qt::green);
-    //this->setBrush(brush);
     this->setCursor(Qt::ArrowCursor);
     magnify(false);
 
@@ -512,8 +517,15 @@ qreal GUIPort::getPortHeading()
 
 void GUIPort::hide()
 {
+    this->magnify(false);
     mpPortLabel->hide();
     QGraphicsSvgItem::hide();
+}
+
+void GUIPort::show()
+{
+    QGraphicsSvgItem::show();
+    mpPortLabel->hide();
 }
 
 

@@ -34,6 +34,7 @@ public:
     qreal getPortHeading();
 
     void magnify(bool blowup);
+    void show();
     void hide();
 
     QString getName();
