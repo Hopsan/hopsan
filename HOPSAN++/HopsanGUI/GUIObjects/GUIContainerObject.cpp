@@ -166,40 +166,45 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     //Now disperse the port icons evenly along each edge
     QVector<GUIPort*>::iterator it;
     qreal disp; //Dispersion factor
+    qreal sdisp; //sumofdispersionfactors
 
     //! @todo maybe we should be able to update rotation in all of these also
     //! @todo need to be sure we sort them in the correct order first
     //! @todo wierd to use createfunction to refresh graphics, but ok for now
     disp = 1.0/((qreal)(rightEdge.size()+1));
+    sdisp=disp;
     for (it=rightEdge.begin(); it!=rightEdge.end(); ++it)
     {
-        (*it)->updatePositionByFraction(1.0, disp);
+        (*it)->updatePositionByFraction(1.0, sdisp);
         this->createExternalPort((*it)->getName());    //refresh the external port graphics
-        disp += disp;
+        sdisp += disp;
     }
 
     disp = 1.0/((qreal)(bottomEdge.size()+1));
+    sdisp=disp;
     for (it=bottomEdge.begin(); it!=bottomEdge.end(); ++it)
     {
-        (*it)->updatePositionByFraction(disp, 1.0);
+        (*it)->updatePositionByFraction(sdisp, 1.0);
         this->createExternalPort((*it)->getName());    //refresh the external port graphics
-        disp += disp;
+        sdisp += disp;
     }
 
     disp = 1.0/((qreal)(leftEdge.size()+1));
+    sdisp=disp;
     for (it=leftEdge.begin(); it!=leftEdge.end(); ++it)
     {
-        (*it)->updatePositionByFraction(0.0, disp);
+        (*it)->updatePositionByFraction(0.0, sdisp);
         this->createExternalPort((*it)->getName());    //refresh the external port graphics
-        disp += disp;
+        sdisp += disp;
     }
 
     disp = 1.0/((qreal)(topEdge.size()+1));
+    sdisp=disp;
     for (it=topEdge.begin(); it!=topEdge.end(); ++it)
     {
-        (*it)->updatePositionByFraction(disp, 0.0);
+        (*it)->updatePositionByFraction(sdisp, 0.0);
         this->createExternalPort((*it)->getName());    //refresh the external port graphics
-        disp += disp;
+        sdisp += disp;
     }
 }
 
@@ -343,15 +348,18 @@ void GUIContainerObject::createExternalPort(QString portName)
 //! @todo maybe we should use a map instead to make delete more efficient, (may not amtter usually not htat many external ports)
 void GUIContainerObject::removeExternalPort(QString portName)
 {
+    qDebug() << "mPortListPtrs.size(): " << mPortListPtrs.size();
     QList<GUIPort*>::iterator plit;
     for (plit=mPortListPtrs.begin(); plit!=mPortListPtrs.end(); ++plit)
     {
         if ((*plit)->getName() == portName )
         {
-            mPortListPtrs.erase(plit);
             delete *plit;
+            mPortListPtrs.erase(plit);
+            break;
         }
     }
+    qDebug() << "mPortListPtrs.size(): " << mPortListPtrs.size();
 }
 
 //! @brief Temporary addSubSystem functin should be same later on
