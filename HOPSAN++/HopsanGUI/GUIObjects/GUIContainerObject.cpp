@@ -344,11 +344,10 @@ void GUIContainerObject::createExternalPort(QString portName)
     }
 }
 
-//! @todo do we ever actaully DELETE the external guiport
 //! @todo maybe we should use a map instead to make delete more efficient, (may not amtter usually not htat many external ports)
 void GUIContainerObject::removeExternalPort(QString portName)
 {
-    qDebug() << "mPortListPtrs.size(): " << mPortListPtrs.size();
+    //qDebug() << "mPortListPtrs.size(): " << mPortListPtrs.size();
     QList<GUIPort*>::iterator plit;
     for (plit=mPortListPtrs.begin(); plit!=mPortListPtrs.end(); ++plit)
     {
@@ -359,7 +358,7 @@ void GUIContainerObject::removeExternalPort(QString portName)
             break;
         }
     }
-    qDebug() << "mPortListPtrs.size(): " << mPortListPtrs.size();
+    //qDebug() << "mPortListPtrs.size(): " << mPortListPtrs.size();
 }
 
 //! @brief Temporary addSubSystem functin should be same later on

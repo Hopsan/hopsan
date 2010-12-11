@@ -19,11 +19,13 @@ namespace hopsan {
     //Forward declarations
     class Component;
     class ComponentSystem;
+    class ConnectionAssistant;
 
     class DLLIMPORTEXPORT Port
     {
         friend class Component;
         friend class ComponentSystem;
+        friend class ConnectionAssistant;
 
     public:
         enum PORTTYPE {POWERPORT, READPORT, WRITEPORT, SYSTEMPORT, UNDEFINEDPORT};
@@ -37,7 +39,6 @@ namespace hopsan {
         virtual void writeNode(const size_t &idx, const double &value);
 
         double *getNodeDataPtr(const size_t idx);
-        double &getNodeDataRef(const size_t idx);
 
         void saveLogData(std::string filename);
         void getNodeDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits);
@@ -63,10 +64,10 @@ namespace hopsan {
         const std::string &getPortName();
         const std::string &getComponentName();
 
-        Node* getNodePublic();
-
         void loadStartValues();
         void loadStartValuesFromSimulation();
+
+        Component* getComponent();
 
     protected:
 
@@ -75,7 +76,6 @@ namespace hopsan {
         NodeTypeT mNodeType;
 
         void setNode(Node* pNode);
-        Node &getNode();
         Node *getNodePtr();
 
         Node* mpStartNode;
@@ -90,7 +90,7 @@ namespace hopsan {
         void addConnectedPort(Port* pPort);
         void eraseConnectedPort(Port* pPort);
         std::vector<Port*> &getConnectedPorts();
-        void clearConnection();
+        //void clearConnection();
     };
 
 
@@ -98,6 +98,7 @@ namespace hopsan {
     {
         friend class Component;
         friend class ComponentSystem;
+        friend class ConnectionAssistant;
 
     public:
         //Constructors
@@ -110,6 +111,7 @@ namespace hopsan {
     {
         friend class Component;
         friend class ComponentSystem;
+        friend class ConnectionAssistant;
 
     public:
         //Constructors
@@ -122,6 +124,7 @@ namespace hopsan {
     {
         friend class Component;
         friend class ComponentSystem;
+        friend class ConnectionAssistant;
 
     public:
         //Constructors
@@ -136,6 +139,7 @@ namespace hopsan {
     {
         friend class Component;
         friend class ComponentSystem;
+        friend class ConnectionAssistant;
 
     public:
         //Constructors

@@ -74,6 +74,22 @@ namespace hopsan {
         std::map<std::string, SystemParameter> mSystemParameters;
     };
 
+    class ConnectionAssistant
+    {
+    public:
+        bool createNewNodeConnection(Port *pPort1, Port *pPort2, Node *&rpCreatedNode);
+        bool mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, Node *&rpCreatedNode);
+        void determineWhereToStoreNodeAndStoreIt(Node* pNode);
+        bool ensureSameNodeType(Port *pPort1, Port *pPort2);
+        bool connectionOK(Node *pNode, Port *pPort1, Port *pPort2);
+
+        bool deleteNodeConnection(Port *pPort1, Port *pPort2);
+        bool unmergeOrUnjoinConnection(Port *pPort1, Port *pPort2);
+        void recursivelySetNode(Port *pPort, Port *pParentPort, Node *pNode);
+
+        void clearSysPortNodeTypeIfEmpty(Port *pPort);
+
+    };
 
     class ComponentSystem; //Forward declaration
 
@@ -128,6 +144,7 @@ namespace hopsan {
 
         //System parent
         ComponentSystem *getSystemParent();
+        size_t getModelHierarchyDepth();
 
         // Component type identification
         bool isComponentC();
@@ -187,6 +204,8 @@ namespace hopsan {
         bool mIsComponentSystem;
         bool mIsComponentSignal;
 
+        size_t mModelHierarchyDepth; //This variable containes the depth of the system in the model hierarchy, (used by connect to figure out where to store nodes)
+
     private:
         //Private member functions
         void setSystemParent(ComponentSystem *pComponentSystem);
@@ -204,6 +223,8 @@ namespace hopsan {
 
     class DLLIMPORTEXPORT ComponentSystem :public Component
     {
+        friend class ConnectionAssistant;
+
     public:
         //==========Public functions==========
         //Constructor - Destructor
@@ -238,6 +259,7 @@ namespace hopsan {
 
         //Connecting and disconnecting components
         bool connect(Port *pPort1, Port *pPort2);
+        //bool connectOld(Port *pPort1, Port *pPort2);
         bool connect(std::string compname1, std::string portname1, std::string compname2, std::string portname2);
         bool disconnect(std::string compname1, std::string portname1, std::string compname2, std::string portname2);
         void disconnect(Port *pPort1, Port *pPort2);
@@ -276,17 +298,19 @@ namespace hopsan {
         //Component* getSubComponent(std::string name);
 
         //Help Functions to connect
-        bool connectionOK(Node *pNode, Port *pPort1, Port *pPort2);
-        bool doConnectChildToParent(Port *pChildPort, Port *pParentPort);
-        bool doConnectChildSubsystemToParent(Port* pChildPort, Port* pParentPort);
-        bool doConnectSystemToSystem(Port* pPort1, Port* pPort2);
-        bool doConnectToExistingConnection(Port *pExistingConnectionPort, Port *pNewPort);
-        bool doConnectChildToChild(Port *pPort1, Port *pPort2);
-        bool doDisconnectChildFromChild(Port *pPort1, Port *pPort2);
-        bool doDisconnectSystemFromSystem(Port* pPort1, Port* pPort2);
-        bool ensureSystemportInternallyConnected(Port* pSysPort, Port* pOtherPort);
-        bool ensureComponentsAddedToThisSystem(Port* pPort1, Port* pPort2);
-        bool ensureSameNodeType(Port *pPort1, Port *pPort2);
+
+//        bool doConnectChildToParent(Port *pChildPort, Port *pParentPort);
+//        bool doConnectChildSubsystemToParent(Port* pChildPort, Port* pParentPort);
+//        bool doConnectSystemToSystem(Port* pPort1, Port* pPort2);
+//        bool doConnectToExistingConnection(Port *pExistingConnectionPort, Port *pNewPort);
+//        bool doConnectChildToChild(Port *pPort1, Port *pPort2);
+//        bool doDisconnectChildFromChild(Port *pPort1, Port *pPort2);
+//        bool doDisconnectSystemFromSystem(Port* pPort1, Port* pPort2);
+//        bool ensureSystemportInternallyConnected(Port* pSysPort, Port* pOtherPort);
+//        bool ensureComponentsAddedToThisSystem(Port* pPort1, Port* pPort2);
+
+
+
 
         //Add and Remove sub nodes
         void addSubNode(Node* node_ptr);

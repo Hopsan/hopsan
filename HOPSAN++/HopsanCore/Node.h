@@ -20,12 +20,14 @@ namespace hopsan {
     //Forward Declarations
     class Port;
     class ComponentSystem;
+    class ConnectionAssistant;
 
     class DLLIMPORTEXPORT Node
     {
         friend class Port;
         friend class Component;
         friend class ComponentSystem;
+        friend class ConnectionAssistant;
 
     public:
         //The user should never bother about Nodes

@@ -27,7 +27,9 @@ Port::Port(string node_type, string portname, Component *portOwner)
     mNodeType = node_type;
     mpComponent = portOwner;
     mConnectionRequired = true;
-    clearConnection();
+    //clearConnection();
+    mpNode = 0;
+    mConnectedPorts.clear();
     mpStartNode = 0;
 }
 
@@ -46,14 +48,14 @@ Port::~Port()
 }
 
 
-//! Helper function for quickly clearing all connection info
-void Port::clearConnection()
-{
-    //! @todo maybe should be virtual so that we may also clear node type in system ports
-    mpNode = 0;
-    mConnectedPorts.clear();
-    mIsConnected = false;
-}
+////! Helper function for quickly clearing all connection info
+//void Port::clearConnection()
+//{
+//    //! @todo maybe should be virtual so that we may also clear node type in system ports
+//    mpNode = 0;
+//    mConnectedPorts.clear();
+//    mIsConnected = false;
+//}
 
 
 //! Returns the type of node that can be connected to this port
@@ -63,18 +65,10 @@ const string &Port::getNodeType()
 }
 
 
-//! Returns referense to connected node (Dont use this)
-Node &Port::getNode()
+//! Returns the parent component
+Component* Port::getComponent()
 {
-    //! @todo error handle if 0
-    return *mpNode;
-}
-
-
-//! This one shal be removed
-Node* Port::getNodePublic()
-{
-    return mpNode;
+    return mpComponent;
 }
 
 
@@ -142,18 +136,13 @@ double *Port::getNodeDataPtr(const size_t idx)
 }
 
 
-double &Port::getNodeDataRef(const size_t idx)
-{
-    return mpNode->getDataRef(idx);
-}
-
 
 //! Set the node that the port is connected to
 //! @param [in] pNode A pointer to the Node
 void Port::setNode(Node* pNode)
 {
     mpNode = pNode;
-    mIsConnected = true; //!< @todo do we really need this bool, we can compare pointer != 0 instead
+    //mIsConnected = true; //!< @todo do we really need this bool, we can compare pointer != 0 instead
 }
 
 
@@ -177,12 +166,17 @@ void Port::eraseConnectedPort(Port* pPort)
         {
             mConnectedPorts.erase(it);
             found = true;
+            //If this was the last port removed the clear rhe node ptr
+            if (mConnectedPorts.size() == 0)
+            {
+                mpNode = 0;
+            }
             break;
         }
     }
     if (!found)
     {
-        cout << "Warning: You tried to erase port ptr that did not exist in the connected ports list" << endl;
+        cout << "Error: You tried to erase port ptr that did not exist in the connected ports list" << endl;
     }
 }
 
@@ -416,7 +410,7 @@ void Port::setStartValue(const size_t &idx, const double &value)
 //! Check if the port is curently connected
 bool Port::isConnected()
 {
-    return mIsConnected;
+    return (mConnectedPorts.size() > 0);
 }
 
 
