@@ -2092,7 +2092,7 @@ bool ConnectionAssistant::createNewNodeConnection(Port *pPort1, Port *pPort2, No
     Node* pNode = gCoreNodeFactory.createInstance(pPort1->getNodeType());
 
     // Check so the ports can be connected
-    if (connectionOK(pNode, pPort1, pPort2))
+    if (ensureConnectionOK(pNode, pPort1, pPort2))
     {
         //Set node in both components ports and add it to the parent system component
         pPort1->setNode(pNode);
@@ -2124,12 +2124,18 @@ bool ConnectionAssistant::createNewNodeConnection(Port *pPort1, Port *pPort2, No
 
 bool ConnectionAssistant::mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, Node *&rpCreatedNode)
 {
+    std::cout << "-----------------------------mergeOrJoinNodeConnection" << std::endl;
     //! @todo no isok check is performed (not checks at all are performed)
     Port *pMergeFrom, *pMergeTo;
     assert(pPort1->isConnected() || pPort2->isConnected());
+
+    if (!ensureSameNodeType(pPort1, pPort2))
+    {
+        return false;
+    }
+
     //Ok, should we merge or join node connection
     //lets allways merge, but if node is missing in one prt than the "merge" is actually a join
-
     if (!pPort1->isConnected())
     {
         pMergeFrom = pPort1;
@@ -2151,26 +2157,28 @@ bool ConnectionAssistant::mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, 
     Node *pKeepNode = pMergeTo->getNodePtr();
     Node *pDiscardNode = pMergeFrom->getNodePtr();
 
-    vector<Port*>::iterator pit;
-    //Replace the node in pMergeFrom and all its connected ports, also clear them from the node to be discarded
-    pMergeFrom->setNode(pKeepNode);
-    pKeepNode->setPort(pMergeFrom);
-    if (pDiscardNode != 0)
-    {
-        pDiscardNode->removePort(pMergeFrom); //this node will be deleted so we really dont have to remove ports but lets do it anyway to be sure
-    }
-    //! @todo is checking the connected ports really enough, the other ports may have other connections that uses the node (should do this recursivly)
-    for (pit=pMergeFrom->getConnectedPorts().begin(); pit!=pMergeFrom->getConnectedPorts().end(); ++pit) //getConnectedPorts return a reference thats why we can call it withou making a copy
-    {
-        //connect keppnode to ports
-        (*pit)->setNode(pKeepNode);
-        pKeepNode->setPort(*pit);
-        //Discconect old ports from the node to be discarded
-        if (pDiscardNode != 0)
-        {
-            pDiscardNode->removePort(*pit); //this node will be deleted so we really dont have to remove ports but lets do it anyway to be sure
-        }
-    }
+//    vector<Port*>::iterator pit;
+//    //Replace the node in pMergeFrom and all its connected ports, also clear them from the node to be discarded
+//    pMergeFrom->setNode(pKeepNode);
+//    pKeepNode->setPort(pMergeFrom);
+////    if (pDiscardNode != 0)
+////    {
+////        pDiscardNode->removePort(pMergeFrom); //this node will be deleted so we really dont have to remove ports but lets do it anyway to be sure
+////    }
+//    //! @todo is checking the connected ports really enough, the other ports may have other connections that uses the node (should do this recursivly)
+//    for (pit=pMergeFrom->getConnectedPorts().begin(); pit!=pMergeFrom->getConnectedPorts().end(); ++pit) //getConnectedPorts return a reference thats why we can call it withou making a copy
+//    {
+//        //connect keppnode to ports
+//        (*pit)->setNode(pKeepNode);
+//        pKeepNode->setPort(*pit);
+////        //Discconect old ports from the node to be discarded
+////        if (pDiscardNode != 0)
+////        {
+////            pDiscardNode->removePort(*pit); //this node will be deleted so we really dont have to remove ports but lets do it anyway to be sure
+////        }
+//    }
+    //
+    recursivelySetNode(pMergeFrom,0, pKeepNode);
 
     //let the ports know about each other
     pMergeFrom->addConnectedPort(pMergeTo);
@@ -2178,19 +2186,32 @@ bool ConnectionAssistant::mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, 
 
     if (pDiscardNode != 0)
     {
-        std::cout << "node2 ports size: " <<  pDiscardNode->mPortPtrs.size() << std::endl;
-        assert(pDiscardNode->mPortPtrs.size() == 0);
-        //! @todo make sure this is correct
+//        std::cout << "node2 ports size: " <<  pDiscardNode->mPortPtrs.size() << std::endl;
+//        assert(pDiscardNode->mPortPtrs.size() == 0);
+        //! @todo Right now we dont empty the node to be discarded, we just delete it, this should be OK, but if we implement a recursivelyUnSetNode function we could do this is empty check agian, the advantage of this check is to make sure that we are not doing any mistakes in the code
         pDiscardNode->getOwnerSystem()->removeSubNode(pDiscardNode);
         delete pDiscardNode;
     }
 
-    rpCreatedNode = pKeepNode;
-    return true;
+
+    if (ensureConnectionOK(pKeepNode, pMergeFrom, pMergeTo))
+    {
+        rpCreatedNode = pKeepNode;
+        return true;
+    }
+    else
+    {
+        unmergeOrUnjoinConnection(pMergeFrom, pMergeTo); //Undo connection
+        rpCreatedNode = 0;
+        return false;
+    }
 }
 
 void ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(Node* pNode)
 {
+    //node ptr should not be zero
+    assert(pNode != 0);
+
     vector<Port*>::iterator pit;
     Component *pMinLevelComp;
     size_t min = 99999999999999; //! @todo not hardcoded value like this, should use a defined MAX value (maybe for unsinged int)
@@ -2214,7 +2235,6 @@ void ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(Node* pNode)
     {
         pMinLevelComp->getSystemParent()->addSubNode(pNode);
     }
-
 }
 
 bool ConnectionAssistant::deleteNodeConnection(Port *pPort1, Port *pPort2)
@@ -2280,9 +2300,8 @@ bool ConnectionAssistant::unmergeOrUnjoinConnection(Port *pPort1, Port *pPort2)
     else
     {
         //unmerge
-
+        //Handled by if below
     }
-
 
     //Check if we are unjoining
     if (pPortToBecomeEmpty !=0)
@@ -2365,6 +2384,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         }
     }
 
+    Node *pResultingNode = 0;
     //Now lets find out if one of the ports is a blank systemport
     //! @todo better way to find out if systemports are blank might give more clear code
     if ( ( (pPort1->getPortType() == Port::SYSTEMPORT) && (!pPort1->isConnected()) ) || ( (pPort2->getPortType() == Port::SYSTEMPORT) && (!pPort2->isConnected()) ) )
@@ -2390,43 +2410,37 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
             assert(false);
         }
 
-        Node *pNode;
         pBlankSysPort->mNodeType = pOtherPort->getNodeType(); //set the nodetype in the sysport
         if (!pOtherPort->isConnected())
         {
-            sucess = connAssist.createNewNodeConnection(pBlankSysPort, pOtherPort, pNode);
+            sucess = connAssist.createNewNodeConnection(pBlankSysPort, pOtherPort, pResultingNode);
         }
         else
         {
-            sucess = connAssist.mergeOrJoinNodeConnection(pBlankSysPort, pOtherPort, pNode);
+            sucess = connAssist.mergeOrJoinNodeConnection(pBlankSysPort, pOtherPort, pResultingNode);
         }
-
-        connAssist.determineWhereToStoreNodeAndStoreIt(pNode);
-        //! @todo determine where the node should be stored, change if already owned by someone
-
     }
     //Non of the ports  are blank systemports
     else
     {
-        Node *pNode;
         if (!pPort1->isConnected() && !pPort2->isConnected())
         {
-            sucess = connAssist.createNewNodeConnection(pPort1, pPort2, pNode);
+            sucess = connAssist.createNewNodeConnection(pPort1, pPort2, pResultingNode);
         }
         else
         {
-            sucess = connAssist.mergeOrJoinNodeConnection(pPort1, pPort2, pNode);
+            sucess = connAssist.mergeOrJoinNodeConnection(pPort1, pPort2, pResultingNode);
         }
-
-        //! @todo determine where the node should be stored, change if already owned by someone
-        connAssist.determineWhereToStoreNodeAndStoreIt(pNode);
-
     }
 
+    //Abbort conenction if there was a connect failure
     if (!sucess)
     {
         return false;
     }
+
+    //Update the node placement
+    connAssist.determineWhereToStoreNodeAndStoreIt(pResultingNode);
 
     ss << "Connected: {" << pComp1->getName() << "::" << pPort1->getPortName() << "} and {" << pComp2->getName() << "::" << pPort2->getPortName() << "}";
     gCoreMessageHandler.addDebugMessage(ss.str(), "succesfulconnect");
@@ -2599,7 +2613,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
 //}
 
 
-bool ConnectionAssistant::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
+bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pPort2)
 {
     size_t n_ReadPorts = 0;
     size_t n_WritePorts = 0;
@@ -2651,7 +2665,7 @@ bool ConnectionAssistant::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
     }
 
     //Check the kind of ports in the components subjected for connection
-    //Dont count port if it is already conected to node as it was counted in teh code above (avoids double counting)
+    //Dont count port if it is already conected to node as it was counted in the code above (avoids double counting)
     if ( !pNode->isConnectedToPort(pPort1) )
     {
         if ( pPort1->getPortType() == Port::READPORT )
@@ -2688,6 +2702,7 @@ bool ConnectionAssistant::connectionOK(Node *pNode, Port *pPort1, Port *pPort2)
         }
     }
 
+    //Dont count port if it is already conected to node as it was counted in the code above (avoids double counting)
     if ( !pNode->isConnectedToPort(pPort2) )
     {
         if ( pPort2->getPortType() == Port::READPORT )

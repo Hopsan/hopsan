@@ -81,7 +81,7 @@ namespace hopsan {
         bool mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, Node *&rpCreatedNode);
         void determineWhereToStoreNodeAndStoreIt(Node* pNode);
         bool ensureSameNodeType(Port *pPort1, Port *pPort2);
-        bool connectionOK(Node *pNode, Port *pPort1, Port *pPort2);
+        bool ensureConnectionOK(Node *pNode, Port *pPort1, Port *pPort2);
 
         bool deleteNodeConnection(Port *pPort1, Port *pPort2);
         bool unmergeOrUnjoinConnection(Port *pPort1, Port *pPort2);
