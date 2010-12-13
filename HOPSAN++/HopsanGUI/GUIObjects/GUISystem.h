@@ -32,15 +32,11 @@ public:
     size_t getNumberOfLogSamples();
     void setNumberOfLogSamples(size_t nSamples);
 
-//    int findPortEdge(QPointF center, QPointF pt);
-//    void refreshExternalPortsAppearanceAndPosition();
-
     QString getTypeName();
     void setName(QString newName);
     void setTypeCQS(QString typestring);
     QString getTypeCQS();
 
-    //void saveToTextStream(QTextStream &rStream, QString prepend);
     void saveToDomElement(QDomElement &rDomElement);
     void loadFromHMF(QString modelFilePath=QString());
     void loadFromDomElement(QDomElement &rDomElement);

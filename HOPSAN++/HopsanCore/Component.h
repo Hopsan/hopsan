@@ -79,16 +79,18 @@ namespace hopsan {
     public:
         bool createNewNodeConnection(Port *pPort1, Port *pPort2, Node *&rpCreatedNode);
         bool mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, Node *&rpCreatedNode);
+        bool deleteNodeConnection(Port *pPort1, Port *pPort2);
+        bool unmergeOrUnjoinConnection(Port *pPort1, Port *pPort2);
+
         void determineWhereToStoreNodeAndStoreIt(Node* pNode);
+        void clearSysPortNodeTypeIfEmpty(Port *pPort);
+
+        bool ensureNotCrossConnecting(Port *pPort1, Port *pPort2);
         bool ensureSameNodeType(Port *pPort1, Port *pPort2);
         bool ensureConnectionOK(Node *pNode, Port *pPort1, Port *pPort2);
 
-        bool deleteNodeConnection(Port *pPort1, Port *pPort2);
-        bool unmergeOrUnjoinConnection(Port *pPort1, Port *pPort2);
+    private:
         void recursivelySetNode(Port *pPort, Port *pParentPort, Node *pNode);
-
-        void clearSysPortNodeTypeIfEmpty(Port *pPort);
-
     };
 
     class ComponentSystem; //Forward declaration
@@ -259,7 +261,6 @@ namespace hopsan {
 
         //Connecting and disconnecting components
         bool connect(Port *pPort1, Port *pPort2);
-        //bool connectOld(Port *pPort1, Port *pPort2);
         bool connect(std::string compname1, std::string portname1, std::string compname2, std::string portname2);
         bool disconnect(std::string compname1, std::string portname1, std::string compname2, std::string portname2);
         void disconnect(Port *pPort1, Port *pPort2);
@@ -293,24 +294,6 @@ namespace hopsan {
         //log specific functions
         void preAllocateLogSpace(const double startT, const double stopT, const size_t nSamples = 2048);
         void logAllNodes(const double time);
-
-        //Try to find sub component ptr
-        //Component* getSubComponent(std::string name);
-
-        //Help Functions to connect
-
-//        bool doConnectChildToParent(Port *pChildPort, Port *pParentPort);
-//        bool doConnectChildSubsystemToParent(Port* pChildPort, Port* pParentPort);
-//        bool doConnectSystemToSystem(Port* pPort1, Port* pPort2);
-//        bool doConnectToExistingConnection(Port *pExistingConnectionPort, Port *pNewPort);
-//        bool doConnectChildToChild(Port *pPort1, Port *pPort2);
-//        bool doDisconnectChildFromChild(Port *pPort1, Port *pPort2);
-//        bool doDisconnectSystemFromSystem(Port* pPort1, Port* pPort2);
-//        bool ensureSystemportInternallyConnected(Port* pSysPort, Port* pOtherPort);
-//        bool ensureComponentsAddedToThisSystem(Port* pPort1, Port* pPort2);
-
-
-
 
         //Add and Remove sub nodes
         void addSubNode(Node* node_ptr);
