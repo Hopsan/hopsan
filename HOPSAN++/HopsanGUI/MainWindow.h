@@ -130,6 +130,7 @@ private slots:
     void openPlotWidget();
     void openUndoWidget();
     void openSystemParametersWidget();
+    void openRecentModel();
 
 private:
     //Dock area widgets

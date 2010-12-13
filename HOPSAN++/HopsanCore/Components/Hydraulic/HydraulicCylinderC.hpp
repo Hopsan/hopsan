@@ -12,6 +12,8 @@
 #ifndef HYDRAULICCYLINDERC_HPP_INCLUDED
 #define HYDRAULICCYLINDERC_HPP_INCLUDED
 
+#include <sstream>
+
 #include "../../ComponentEssentials.h"
 #include "../../ComponentUtilities.h"
 
@@ -25,14 +27,6 @@ namespace hopsan {
     {
 
     private:
-            //Initial values
-        double mStartPressure1;
-        double mStartPressure2;
-        double mStartPosition;
-        double mStartVelocity;
-        double mStartAcceleration;
-        double mStartForce;
-
             //Changeable parameters
         double mArea1;
         double mArea2;
@@ -75,6 +69,8 @@ namespace hopsan {
         double mPrevC1Internal, mPrevC2Internal;
         double mPrevC1InternalEffective, mPrevC2InternalEffective;
         double mPrevCSpring;
+
+        size_t mDebugCount;
 
         Port *mpP1, *mpP2, *mpP3;//, *mpDebug1, *mpDebug2;
 
@@ -131,13 +127,10 @@ namespace hopsan {
             mCSpring0 = 0;
             mKSpring = 0;
 
+            mDebugCount = 0;
+
             //Set member attributes
             mTypeName = "HydraulicCylinderC";
-            mStartPosition = 0.0;
-            mStartVelocity = 0.0;
-            mStartForce = 0.0;
-            mStartPressure1 = 100000;       //! @todo Don't know if we should assume atmospheric pressure like this
-            mStartPressure2 = 100000;
             mArea1 = 1.0e-3;
             mArea2 = 1.0e-3;
             mStroke = 1.0;
@@ -158,8 +151,6 @@ namespace hopsan {
             //mpDebug2 = addWritePort("Debug2", "NodeSignal");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("x0", "Initial Position", "[m]", mStartPosition);
-            registerParameter("v0", "Initial Velocity", "[m]", mStartVelocity);
             registerParameter("Area1", "Piston Area 1", "[m^2]", mArea1);
             registerParameter("Area2", "Piston Area 2", "[m^2]", mArea2);
             registerParameter("Stroke", "Stroke", "[m]", mStroke);
@@ -179,9 +170,6 @@ namespace hopsan {
             mMinVolume1 = mBetae * mTimestep*mTimestep  * mArea1*mArea1 / (mWfak * mEquivalentMass);
             mMinVolume2 = mBetae * mTimestep*mTimestep  * mArea2*mArea2 / (mWfak * mEquivalentMass);
 
-            mXInternal = mStartPosition;
-            mVInternal = mStartVelocity;
-
             mVolume1 = mDeadVolume1 + mXInternal*mArea1;
             mVolume2 = mDeadVolume2 + (mStroke-mXInternal)*mArea2;
             if (mVolume1 < mMinVolume1) { mVolume1 = mMinVolume1; }
@@ -196,14 +184,17 @@ namespace hopsan {
             mQ1Internal = -mArea1 * mVInternal;
             mQ2Internal = mArea2 * mVInternal;
 
-            double c1 = mStartPressure1 - mZc10 * mQ1Internal;
-            double c2 = mStartPressure2 - mZc20 * mQ2Internal;
+            double p1  = mpP1->readNode(NodeHydraulic::PRESSURE);
+            double p2  = mpP2->readNode(NodeHydraulic::PRESSURE);
+
+            double c1 = p1 - mZc10 * mQ1Internal;
+            double c2 = p2 - mZc20 * mQ2Internal;
 
             mPrevC1 = c1;
             mPrevC2 = c2;
 
-            mC1Internal = mStartPressure1 - mZc10 * (mQ1Internal - mLeakageCoefficient * (mStartPressure1 - mStartPressure2));
-            mC2Internal = mStartPressure2 - mZc20 * (mQ2Internal - mLeakageCoefficient * (mStartPressure2 - mStartPressure1));
+            mC1Internal = p1 - mZc10 * (mQ1Internal - mLeakageCoefficient * (p1 - p2));
+            mC2Internal = p2 - mZc20 * (mQ2Internal - mLeakageCoefficient * (p2 - p1));
 
             mPrevC1Internal = mC1Internal;
             mPrevC2Internal = mC2Internal;
@@ -217,11 +208,9 @@ namespace hopsan {
 
             //Write to nodes
             mpP1->writeNode(NodeHydraulic::FLOW,     mQ1Internal);
-            mpP1->writeNode(NodeHydraulic::PRESSURE,     mStartPressure1);
             mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, c1);
             mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc10);
             mpP2->writeNode(NodeHydraulic::FLOW,     mQ2Internal);
-            mpP2->writeNode(NodeHydraulic::PRESSURE,     mStartPressure2);
             mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, c2);
             mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc20);
             mpP3->writeNode(NodeMechanic::POSITION,      -mXInternal);
@@ -357,6 +346,20 @@ namespace hopsan {
 
             mCSpring = mAlphaSpring * mPrevCSpring + (1.0 - mAlphaSpring) * mCSpring0;
             mPrevCSpring = mCSpring;
+
+            if(mDebugCount == 100)
+            {
+                mDebugCount = 0;
+                std::stringstream ss;
+                ss << "mTime = ";
+                ss << mTime;
+                ss << ", mZSpring = ";
+                ss << mZSpring;
+                ss << ", mCSpring = ";
+                ss << mCSpring;
+                addDebugMessage(ss.str());
+            }
+            ++mDebugCount;
 
             c3 = mC1InternalEffective*mArea1 - mC2InternalEffective*mArea2 + mCSpring;
             Zc3 = mArea1*mArea1 * mZc10 + mArea2*mArea2 * mZc20 + mBp + mZSpring;

@@ -566,6 +566,17 @@ void MainWindow::openSystemParametersWidget()
 }
 
 
+void MainWindow::openRecentModel()
+{
+    QAction *action = qobject_cast<QAction *>(sender());
+    qDebug() << "Trying to open " << action->text();
+    if (action)
+    {
+        mpProjectTabs->loadModel(action->text());
+    }
+}
+
+
 //! @brief Updates the toolbar values that are tab specific when a new tab is activated
 void MainWindow::updateToolBarsToNewTab()
 {
@@ -632,7 +643,7 @@ void MainWindow::updateRecentList()
                 QAction *tempAction;
                 tempAction = recentMenu->addAction(gConfig.getRecentModels().at(i));
                 disconnect(recentMenu, SIGNAL(triggered(QAction *)), mpProjectTabs, SLOT(loadModel(QAction *)));    //Ugly hack to make sure connecetions are not made twice (then program would try to open model more than once...)
-                connect(recentMenu, SIGNAL(triggered(QAction *)), mpProjectTabs, SLOT(loadModel(QAction *)));
+                connect(tempAction, SIGNAL(triggered()), this, SLOT(openRecentModel()));
             }
         }
     }
