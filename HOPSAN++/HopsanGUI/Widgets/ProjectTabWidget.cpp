@@ -227,7 +227,7 @@ bool ProjectTab::simulate()
 
         actualSimulation.wait(); //Make sure actualSimulation do not goes out of scope during simulation
         actualSimulation.quit();
-        emit checkMessages();
+        //emit checkMessages();
     }
 
     QString timeString;

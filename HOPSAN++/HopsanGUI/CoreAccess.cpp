@@ -387,6 +387,7 @@ void CoreSystemAccess::simulate(double mStartTime, double mFinishTime, simulatio
     {
         qDebug() << "Starting multicore simulation";
         mpCoreComponentSystem->simulateMultiThreaded(mStartTime, mFinishTime, nThreads);
+        //mpCoreComponentSystem->simulateMultiThreadedOld(mStartTime, mFinishTime);
     }
     else
     {

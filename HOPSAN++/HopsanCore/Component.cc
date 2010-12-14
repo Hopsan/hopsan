@@ -2896,7 +2896,6 @@ public:
                 mVectorN[i]->logData(mTime);
             }
 
-
             *mpSimTime = mTime;     //Update time in component system, so that progress bar can use it
 
             mTime += mTimeStep;
@@ -3093,6 +3092,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
     logAllNodes(mTime);
 
+    tbb::tick_count measurement_start = tbb::tick_count::now();
 
         //Simulate S, C and Q components one time step on single core and meassure the required time
     for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
@@ -3290,6 +3290,13 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     }
 
 
+    tbb::tick_count measurement_end = tbb::tick_count::now();
+    stringstream ss;                                                                                                        //DEBUG
+    ss << (double)((measurement_end-measurement_start).seconds());                                                                                               //DEBUG
+    gCoreMessageHandler.addDebugMessage("Measurement time = " + ss.str() + " ms");   //DEBUG
+
+
+
         //Initialize TBB routines for parallel  simulation
     tbb::task_group *coreTasks;
     coreTasks = new tbb::task_group;
@@ -3321,6 +3328,8 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         coreTasks->run(taskSimSlave(splitSVector[coreNumber], splitCVector[coreNumber], splitQVector[coreNumber], splitNodeVector[coreNumber], mTime, mTimestep, stopTsafe, nCores, coreNumber, &barrier_s, &barrier_c, &barrier_q, &barrier_n, &lock_s, &lock_c, &lock_q, &lock_n));
     }
     coreTasks->wait();
+
+    delete(coreTasks);
 }
 
 #else
