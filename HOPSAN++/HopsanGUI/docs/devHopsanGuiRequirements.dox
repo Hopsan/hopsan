@@ -22,13 +22,15 @@ Remember to add the libfolder, probably "c:\Qwt-5.2.1-svn\lib", to your system p
 Or copy the lib files into your "run directory".
 
 \section pythonqt Build/Install PythonQt 
+If you build PythonQt2.0.1 against Qt 4.7 or later you need to blockcomment "CocoaRequestModal = QEvent::CocoaRequestModal," in "com_trolltech_qt_core0.h"
 \subsection pythonqt-ubuntu Ubuntu
 -# Install the python-dev package (sudo aptitude install python-dev)
 -# Download PythonQt from <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a> or check out it direct from its SVN reposotory, "https://pythonqt.svn.sourceforge.net/svnroot/pythonqt"
--# Go to the PythonQt directory and run "qmake" followed by "make all"
+-# Go to the PythonQt directory and run "qmake" followed by "make all", if you are using a Qt SDK, make sure that you are compiling PythonQt against the same libQt version as the rest of the code. (You may have one version installed in your system and an other in you SDK)
 -# In the HopsanGUI project. Go to the project tab and add the following variable:\n
 PYTHONQT_PATH = /home/homsi68/pythonqt or whatever your path is
--# Smooth and simple!
+-# In the HopsanGUI project. Go to the project tab and add the folowinf variable:\n
+LD_LIBRARY_PATH = /home/homsi68/pythonqt/lib or whatever your path is
 
 \subsection pythonqt-windows-vc Windows (with Visual C++)
 -# Download and install Python 2.6, can be found at <a href="http://python.org/" target="_blank">http://python.org/</a>
