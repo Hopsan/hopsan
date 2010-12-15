@@ -21,6 +21,7 @@
 #include "Hydraulic/Hydraulic32Valve.hpp"
 #include "Hydraulic/Hydraulic33Valve.hpp"
 #include "Hydraulic/Hydraulic43Valve.hpp"
+#include "Hydraulic/Hydraulic43LoadSensingValve.hpp"
 #include "Hydraulic/HydraulicTurbulentOrifice.hpp"
 #include "Hydraulic/HydraulicTLMRLineR.hpp"
 #include "Hydraulic/HydraulicTLMlossless.hpp"

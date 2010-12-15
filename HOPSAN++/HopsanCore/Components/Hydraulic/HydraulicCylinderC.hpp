@@ -364,9 +364,6 @@ namespace hopsan {
             c3 = mC1InternalEffective*mArea1 - mC2InternalEffective*mArea2 + mCSpring;
             Zc3 = mArea1*mArea1 * mZc10 + mArea2*mArea2 * mZc20 + mBp + mZSpring;
 
-            //mpDebug1->writeNode(NodeSignal::VALUE, mC1Internal);
-            //mpDebug2->writeNode(NodeSignal::VALUE, mC2Internal);
-
             //Write new values to nodes
             mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, c1);
             mpP1->writeNode(NodeHydraulic::CHARIMP,      Zc1);
