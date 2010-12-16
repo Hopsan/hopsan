@@ -792,13 +792,20 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
 
             //If systemport refresh graphics
             qDebug() << "Port Types: " << mpTempConnector->getStartPort()->getPortType() << " " << mpTempConnector->getEndPort()->getPortType();
+            QString cqsType, portType, nodeType;
             if (mpTempConnector->getStartPort()->getPortType() == "SYSTEMPORT") //! @todo not hardcoded should be defined somewhere
             {
-                mpTempConnector->getStartPort()->refreshPortGraphics();
+                cqsType = mpTempConnector->getStartPort()->getGuiModelObject()->getTypeCQS();
+                portType = mpTempConnector->getStartPort()->getPortType();
+                nodeType = mpTempConnector->getStartPort()->getNodeType();
+                mpTempConnector->getStartPort()->refreshPortGraphics(cqsType, portType, nodeType);
             }
             if (mpTempConnector->getEndPort()->getPortType() == "SYSTEMPORT") //! @todo not hardcoded should be defined somewhere
             {
-                mpTempConnector->getEndPort()->refreshPortGraphics();
+                cqsType = mpTempConnector->getEndPort()->getGuiModelObject()->getTypeCQS();
+                portType = mpTempConnector->getEndPort()->getPortType();
+                nodeType = mpTempConnector->getEndPort()->getNodeType();
+                mpTempConnector->getEndPort()->refreshPortGraphics(cqsType, portType, nodeType);
             }
 
                 //Hide ports; connected ports shall not be visible

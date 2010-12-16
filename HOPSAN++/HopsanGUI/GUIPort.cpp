@@ -334,6 +334,12 @@ void GUIPort::refreshPortOverlayPosition()
     }
 }
 
+void GUIPort::refreshPortGraphics(QString cqsType, QString portType, QString nodeType)
+{
+    mpPortAppearance->selectPortIcon(cqsType, portType, nodeType);
+    refreshPortGraphics();
+}
+
 
 //! @brief recreate the port graphics overlay
 //! @todo This needs to be synced and clean up with addPortOverlayGraphics, right now duplicate work, also should not change if icon same as before

@@ -87,6 +87,7 @@ public: //! @todo This was made public temporarly to test plot in Python
     bool plot(QString dataName, QString dataUnit=QString());
     void refreshPortOverlayPosition();
     void refreshPortGraphics();
+    void refreshPortGraphics(QString cqsType, QString portType, QString nodeType);
 
 private:
     void setPortOverlayIconScale();
