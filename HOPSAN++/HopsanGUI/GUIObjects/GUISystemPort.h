@@ -24,6 +24,7 @@ protected:
     //void saveCoreDataToDomElement(QDomElement &rDomElement);
 
 private:
+    bool mIsSystemPort;
     GUIPort *mpGuiPort;
 };
 

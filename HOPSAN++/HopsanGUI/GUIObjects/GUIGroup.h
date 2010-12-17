@@ -24,11 +24,8 @@ public:
 
     void setContents(CopyStack *pCopyStack);
 //    QString getName();
-//    void setName(QString name, bool doOnlyLocalRename=false);
+
     void setName(QString newName);
-
-    //void enterContainer();
-
 
     enum { Type = GUIGROUP };
     int type() const;
@@ -38,14 +35,11 @@ public:
     CoreSystemAccess* getCoreSystemAccessPtr();
 
 protected:
-    //QGraphicsScene *mpParentScene;
-    //QGraphicsScene *mpGroupScene;
-
     QList<GUIModelObject*> mGUICompList;
     QList<GUIConnector*> mGUIConnList;
     QList<GUIConnector*> mGUITransitConnList;
 
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    //void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 public slots:
 //    void showParent();
@@ -67,22 +61,22 @@ private:
 };
 
 
-class GUIGroupPort : public GUIModelObject
-{
-    Q_OBJECT
-public:
-    GUIGroupPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, GUIContainerObject *system, QGraphicsItem *parent = 0);
-    QString getTypeName();
-    void setName(QString newName);
+//class GUIGroupPort : public GUIModelObject
+//{
+//    Q_OBJECT
+//public:
+//    GUIGroupPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, GUIContainerObject *system, QGraphicsItem *parent = 0);
+//    QString getTypeName();
+//    void setName(QString newName);
 
-    void setOuterGuiPort(GUIPort *pPort);
+//    void setOuterGuiPort(GUIPort *pPort);
 
-    enum { Type = GUIGROUPPORT };
-    int type() const;
+//    enum { Type = GUIGROUPPORT };
+//    int type() const;
 
-private:
-    GUIPort *mpGuiPort;
-    GUIPort *mpOuterGuiPort;
-};
+//private:
+//    GUIPort *mpGuiPort;
+//    GUIPort *mpOuterGuiPort;
+//};
 
 #endif // GUIGROUP_H

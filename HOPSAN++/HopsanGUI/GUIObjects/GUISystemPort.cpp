@@ -5,9 +5,11 @@
 #include "../GUIPort.h"
 #include "../loadObjects.h"
 
+//! @todo rename GUISystemPort to ContainerPort
 GUISystemPort::GUISystemPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
         : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
 {
+    mIsSystemPort = (system->type() == GUISYSTEM); //determine if I am a system port
     this->mHmfTagName = HMF_SYSTEMPORTTAG;
     //Sets the ports
     createPorts();
@@ -16,7 +18,10 @@ GUISystemPort::GUISystemPort(GUIModelObjectAppearance* pAppearanceData, QPoint p
 
 GUISystemPort::~GUISystemPort()
 {
-    this->mpParentContainerObject->getCoreSystemAccessPtr()->deleteSystemPort(this->getName());
+    if (mIsSystemPort)
+    {
+        this->mpParentContainerObject->getCoreSystemAccessPtr()->deleteSystemPort(this->getName());
+    }
 }
 
 //! @brief Help function to create ports in the SystemPort Object when it is created
@@ -43,9 +48,19 @@ void GUISystemPort::createPorts()
     //! @todo should make this function select a systemport icon not undefined
     i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
 
-    qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding systemport with name: " << desiredportname;
-    mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->addSystemPort(desiredportname));
-    qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,resulting in name from core: " << mGUIModelObjectAppearance.getName();
+
+    if (mIsSystemPort)
+    {
+        qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding systemport with name: " << desiredportname;
+        mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->addSystemPort(desiredportname));
+        qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,resulting in name from core: " << mGUIModelObjectAppearance.getName();
+    }
+    else
+    {
+        qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding groupport with name: " << desiredportname;
+        //! @todo Check unique name in GUI
+        mGUIModelObjectAppearance.setName(desiredportname);
+    }
 
     mpGuiPort = new GUIPort(mGUIModelObjectAppearance.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
     mPortListPtrs.append(mpGuiPort);
@@ -57,7 +72,16 @@ void GUISystemPort::createPorts()
 //! @todo maybe not hardcoded string
 QString GUISystemPort::getTypeName()
 {
-    return "SystemPort";
+    if (mIsSystemPort)
+    {
+        return "SystemPort";
+    }
+    else
+    {
+        //! @todo return something usefulould make sure that the gui can register these guispecific names in core to avoid creating objects with these type names
+        //! @todo we sh
+        return "GUIGroupPort";
+    }
 }
 
 //! Set the name of a system port
@@ -70,13 +94,23 @@ void GUISystemPort::setName(QString newName, renameRestrictions renameSettings)
         //Check if we want to avoid trying to rename in the graphics view map
         if (renameSettings == CORERENAMEONLY)
         {
-            //Set name in core component, Also set the current name to the resulting one (might have been changed)
-            mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->renameSystemPort(oldName, newName));
+            if (mIsSystemPort)
+            {
+                //Set name in core component, Also set the current name to the resulting one (might have been changed)
+                mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->renameSystemPort(oldName, newName));
+            }
+            else
+            {
+                //! @todo we need to make sure we can rename with unique name in gui, only for the gui only specifik stuff
+                mGUIModelObjectAppearance.setName(newName);
+            }
+
             refreshDisplayName();
             mpGuiPort->setDisplayName(mGUIModelObjectAppearance.getName()); //change the actual gui port name
         }
         else
         {
+            //! @todo we need to make sure we can rename with unique name in gui, only for the gui only specifik stuff
             //Rename
             mpParentContainerObject->renameGUIModelObject(oldName, newName);
         }

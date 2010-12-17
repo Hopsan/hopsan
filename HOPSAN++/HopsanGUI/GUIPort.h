@@ -43,8 +43,8 @@ public:
 
     bool getLastNodeData(QString dataName, double& rData);
 
-    QString getPortType();
-    QString getNodeType();
+    virtual QString getPortType();
+    virtual QString getNodeType();
 
     void getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<double> &rValues, QVector<QString> &rUnits);
     void getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<QString> &rValuesTxt, QVector<QString> &rUnits);
@@ -108,6 +108,14 @@ private:
 
     QGraphicsTextItem *mpPortLabel;
     QGraphicsSvgItem* mpPortGraphicsOverlay;
+};
+
+class GroupPort : public GUIPort
+{
+public:
+    GroupPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParent = 0);
+    QString getPortType();
+    QString getNodeType();
 };
 
 QPointF getOffsetPointfromPort(GUIPort *pStartPortGUIPort, GUIPort *pEndPort);

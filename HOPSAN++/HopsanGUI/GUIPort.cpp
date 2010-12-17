@@ -18,7 +18,7 @@
 #include "Utilities/GUIUtilities.h"
 
 
-using namespace std;
+//using namespace std;
 
 QPointF getOffsetPointfromPort(GUIPort *pStartPort, GUIPort *pEndPort)
 {
@@ -578,3 +578,24 @@ void GUIPort::hideIfNotConnected(bool hidePortsActionTriggered)
     }
 }
 
+
+GroupPort::GroupPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParent)
+    : GUIPort(name, xpos, ypos, pPortAppearance, pParent)
+{
+    //Nothing extra yet
+}
+
+//! Overloaded as groups laks core connection
+QString GroupPort::getPortType()
+{
+    //! @todo Return something smart
+    return "GropPortType";
+}
+
+
+//! Overloaded as groups laks core connection
+QString GroupPort::getNodeType()
+{
+    //! @todo Return something smart
+    return "GropPortNodeType";
+}

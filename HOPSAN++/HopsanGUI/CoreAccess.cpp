@@ -355,17 +355,25 @@ vector<double> CoreSystemAccess::getTimeVector(QString componentName, QString po
 {
     qDebug() << "getTimeVector, " << componentName << ", " << portName;
 
-    vector<double>* ptr = (mpCoreComponentSystem->getComponent(componentName.toStdString())->getPort(portName.toStdString())->getTimeVectorPtr());
-    if (ptr != 0)
+    Component* pComp = mpCoreComponentSystem->getComponent(componentName.toStdString());
+    Port* pPort = 0;
+    if (pComp != 0)
     {
-        return *ptr;
+        pPort = pComp->getPort(portName.toStdString());
     }
-    else
+
+    if (pPort != 0)
     {
-        //Return empty dummy
-        vector<double> dummy;
-        return dummy;
+        vector<double> *ptr = pPort->getTimeVectorPtr();
+        if (ptr != 0)
+        {
+            return *ptr; //Return a copy of the vector
+        }
     }
+
+    //Return empty dummy
+    vector<double> dummy;
+    return dummy;
 }
 
 

@@ -325,7 +325,16 @@ void GUIContainerObject::createExternalPort(QString portName)
             qreal x = it.value().x;
             qreal y = it.value().y;
 
-            pPort = new GUIPort(it.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(it.value()), this);
+            if (this->type() == GUIGROUP)
+            {
+                pPort = new GroupPort(it.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(it.value()), this);
+            }
+            else
+            {
+                pPort = new GUIPort(it.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(it.value()), this);
+            }
+
+
             mPortListPtrs.append(pPort);
         }
         else
@@ -391,6 +400,13 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* 
         mGUIModelObjectAppearance.getPortAppearanceMap().insert(mpTempGUIModelObject->getName(), GUIPortAppearance());
         this->createExternalPort(mpTempGUIModelObject->getName());
         this->refreshExternalPortsAppearanceAndPosition();
+    }
+    else if (componentTypeName == "HopsanGUIGroup") //!< @todo dont hardcode
+    {
+        mpTempGUIModelObject = new GUIGroup(position, rotation, pAppearanceData, this);
+        //Disconnect new subsystem with ctrl-z and ctrl-y (they will be reconnected when entering system)
+        disconnect(gpMainWindow->undoAction, SIGNAL(triggered()), mpTempGUIModelObject, SLOT(undo()));
+        disconnect(gpMainWindow->redoAction, SIGNAL(triggered()), mpTempGUIModelObject, SLOT(redo()));
     }
     else //Assume some standard component type
     {
@@ -1268,8 +1284,8 @@ void GUIContainerObject::enterContainer()
     mpParentContainerObject->deselectAll(); //deselect myself and anyone else
 
     //Show this scene
-    /*mpParentContainerObject->*/mpParentProjectTab->mpGraphicsView->setScene(getContainedScenePtr());
-    /*mpParentContainerObject->*/mpParentProjectTab->mpGraphicsView->setContainerPtr(this);
+    mpParentProjectTab->mpGraphicsView->setScene(getContainedScenePtr());
+    mpParentProjectTab->mpGraphicsView->setContainerPtr(this);
     mpParentProjectTab->mpQuickNavigationWidget->addOpenContainer(this);
 
         //Disconnect parent system and connect new system with actions
@@ -1306,8 +1322,8 @@ void GUIContainerObject::exitContainer()
 {
     this->deselectAll();
     //Go back to parent system
-    /*mpParentContainerObject->*/mpParentProjectTab->mpGraphicsView->setScene(this->mpParentContainerObject->getContainedScenePtr());
-    /*mpParentContainerObject->*/mpParentProjectTab->mpGraphicsView->setContainerPtr(this->mpParentContainerObject);
+    mpParentProjectTab->mpGraphicsView->setScene(this->mpParentContainerObject->getContainedScenePtr());
+    mpParentProjectTab->mpGraphicsView->setContainerPtr(this->mpParentContainerObject);
 
         //Disconnect this system and connect parent system with undo and redo actions
     disconnect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        this,     SLOT(hideNames()));
@@ -1330,7 +1346,7 @@ void GUIContainerObject::exitContainer()
     connect(gpMainWindow->undoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(undo()));
     connect(gpMainWindow->redoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(redo()));
 
-        //Upddate plot widget and undo widget to new container
+        //Update plot widget and undo widget to new container
     gpMainWindow->makeSurePlotWidgetIsCreated();
     gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
     gpMainWindow->mpUndoWidget->refreshList();

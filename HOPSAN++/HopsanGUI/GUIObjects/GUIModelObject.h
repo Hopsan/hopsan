@@ -29,7 +29,7 @@ public:
     virtual void setNameTextPos(int textPos);
 
     //CQS methods
-    virtual QString getTypeCQS(){assert(false); return "";} //Only available in GUISystemComponent adn GuiComponent for now
+    virtual QString getTypeCQS(){return "hasNoCqsType";} //Overloaded in GUISystem and GUIComponent
     virtual void setTypeCQS(QString /*typestring*/) {assert(false);} //Only available in GUISystemComponent
 
     //Appearance methods

@@ -361,7 +361,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
         {
             //*****Core Interaction*****
             HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
-            if(!((pAppearanceData->getTypeName()=="Subsystem") || (pAppearanceData->getTypeName()=="SystemPort"))) //Do not check if it is Subsystem or SystemPort
+            if(!((pAppearanceData->getTypeName()=="Subsystem") || (pAppearanceData->getTypeName()=="SystemPort") || (pAppearanceData->getTypeName()=="HopsanGUIGroup"))) //Do not check if it is Subsystem or SystemPort
             {
                 sucess = pHopsanCore->hasComponent(pAppearanceData->getTypeName().toStdString()); //Check so that there is such component availible in the Core
                 if (!sucess)

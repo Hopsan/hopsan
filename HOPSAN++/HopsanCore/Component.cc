@@ -1406,11 +1406,13 @@ Component* ComponentSystem::getComponent(string name)
     Component *tmp = getSubComponent(name);
     if (tmp == 0)
     {
+        //Now try to find among systemports
         Port* pPort = this->getPort(name);
         if (pPort != 0)
         {
             if (pPort->getPortType() == Port::SYSTEMPORT)
             {
+                //Return the systemports owner (the system component)
                 tmp = pPort->mpComponent;
                 //cout << "Found systemport with name: " << name << " returning parent: " << tmp->getName() << endl;
             }

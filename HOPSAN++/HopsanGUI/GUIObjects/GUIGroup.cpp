@@ -64,9 +64,6 @@ GUIGroup::GUIGroup(QPoint position, qreal rotation, const GUIModelObjectAppearan
 
     this->setDisplayName(QString("Grupp_test"));
 
-    //Add this item to the parent container scene, no we do this outside
-    //this->mpParentContainerObject->getContainedScenePtr()->addItem(this);
-
     //! @todo this is not good all mpParentProjectTab should be set in one common place not in guigroup and guisystem
     this->mpParentProjectTab = system->mpParentProjectTab;
 }
@@ -303,23 +300,7 @@ void GUIGroup::setContents(CopyStack *pCopyStack)
 
 }
 
-//void GUIGroup::enterContainer()
-//{
-////    //Show this scene
-////    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(getContainedScenePtr());
-////    connect(gpMainWindow->mpBackButton, SIGNAL(clicked()), this, SLOT(exitContainer()));
-////    gpMainWindow->mpBackButton->show();
 
-//}
-
-////! @brief Exit a container and shows the parents scene instead
-//void GUIGroup::exitContainer()
-//{
-//    gpMainWindow->mpBackButton->hide();
-//    disconnect(gpMainWindow->mpBackButton, SIGNAL(clicked()), this, SLOT(exitContainer()));
-//    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(this->mpParentContainerObject->getContainedScenePtr());
-
-//}
 
 void GUIGroup::setName(QString newName)
 {
@@ -327,19 +308,6 @@ void GUIGroup::setName(QString newName)
     this->mGUIModelObjectAppearance.setName(newName);
     this->refreshDisplayName();
 }
-
-
-////! Shows the parent scene. Should be called to exit a group.
-//void GUIGroup::showParent()
-//{
-////    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(this->mpParentContainerObject->getContainedScenePtr());
-
-////    disconnect(gpMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
-
-////    gpMainWindow->mpBackButton->hide();
-
-//}
-
 
 void GUIGroup::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
@@ -358,79 +326,73 @@ void GUIGroup::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 }
 
 
-//! A slot that makes an entrance into a group at double clicks.
-//! @param event contain information of the doubleclick event.
-void GUIGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
-{
-    QGraphicsItem::mouseDoubleClickEvent(event);
-    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(getContainedScenePtr());
+////! A slot that makes an entrance into a group at double clicks.
+////! @param event contain information of the doubleclick event.
+//void GUIGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+//{
+//    QGraphicsItem::mouseDoubleClickEvent(event);
+//    mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setScene(getContainedScenePtr());
 
-//    gpMainWindow->mpBackButton->show();
+////    gpMainWindow->mpBackButton->show();
 
-//    connect(gpMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
+////    connect(gpMainWindow->mpBackButton,SIGNAL(clicked()),this,SLOT(showParent()));
 
-}
+//}
 
-//QGraphicsColorizeEffect *graphicsColor = new QGraphicsColorizeEffect;
-//graphicsColor ->setColor(Qt::red);
-//graphicsColor->setEnabled(true);
-//mpIcon->setGraphicsEffect(graphicsColor);
+//GUIGroupPort::GUIGroupPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, GUIContainerObject *system, QGraphicsItem *parent)
+//    : GUIModelObject(position, 0, pAppearanceData, DESELECTED, USERGRAPHICS, system, parent)
 
+//{
+//    //Sets the ports
+//    //! @todo Only one port in group ports could simplify this
+//    PortAppearanceMapT::iterator i;
+//    for (i = mGUIModelObjectAppearance.getPortAppearanceMap().begin(); i != mGUIModelObjectAppearance.getPortAppearanceMap().end(); ++i)
+//    {
+//        qDebug() << "DEBUG: " << i.key();
+//        qreal x = i.value().x;
+//        qreal y = i.value().y;
 
-GUIGroupPort::GUIGroupPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, GUIContainerObject *system, QGraphicsItem *parent)
-    : GUIModelObject(position, 0, pAppearanceData, DESELECTED, USERGRAPHICS, system, parent)
+//        i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
 
-{
-    //Sets the ports
-    //! @todo Only one port in group ports could simplify this
-    PortAppearanceMapT::iterator i;
-    for (i = mGUIModelObjectAppearance.getPortAppearanceMap().begin(); i != mGUIModelObjectAppearance.getPortAppearanceMap().end(); ++i)
-    {
-        qDebug() << "DEBUG: " << i.key();
-        qreal x = i.value().x;
-        qreal y = i.value().y;
+////        mGUIModelObjectAppearance.setName(mpParentSystem->mpParentProjectTab->mGUIRootSystem.addSystemPort(i.key()));
+//        mGUIModelObjectAppearance.setName(i.key());
 
-        i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
-
-//        mGUIModelObjectAppearance.setName(mpParentSystem->mpParentProjectTab->mGUIRootSystem.addSystemPort(i.key()));
-        mGUIModelObjectAppearance.setName(i.key());
-
-        //We supply ptr to rootsystem to indicate that this is a systemport
-        //! @todo this is a very bad way of doing this (ptr to rootsystem for systemport), really need to figure out some better way
-        mpGuiPort = new GUIPort(mGUIModelObjectAppearance.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
-        mpOuterGuiPort = 0;
-        mPortListPtrs.append(mpGuiPort);
-    }
-}
+//        //We supply ptr to rootsystem to indicate that this is a systemport
+//        //! @todo this is a very bad way of doing this (ptr to rootsystem for systemport), really need to figure out some better way
+//        mpGuiPort = new GUIPort(mGUIModelObjectAppearance.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);
+//        mpOuterGuiPort = 0;
+//        mPortListPtrs.append(mpGuiPort);
+//    }
+//}
 
 
-void GUIGroupPort::setOuterGuiPort(GUIPort *pPort)
-{
-    mpOuterGuiPort = pPort;
-}
+//void GUIGroupPort::setOuterGuiPort(GUIPort *pPort)
+//{
+//    mpOuterGuiPort = pPort;
+//}
 
 
-//! Returns a string with the GUIObject type.
-QString GUIGroupPort::getTypeName()
-{
-    return "GroupPort";
-}
+////! Returns a string with the GUIObject type.
+//QString GUIGroupPort::getTypeName()
+//{
+//    return "GroupPort";
+//}
 
-//! Set the name of a group port
-void GUIGroupPort::setName(QString newName)
-{
-    QString oldName = getName();
-    //If name same as before do nothing
-    if (newName != oldName)
-    {
-        //Check if we want to avoid trying to rename in the graphics view map
-        //Rename
-        mpParentContainerObject->renameGUIModelObject(oldName, newName);
-    }
-}
+////! Set the name of a group port
+//void GUIGroupPort::setName(QString newName)
+//{
+//    QString oldName = getName();
+//    //If name same as before do nothing
+//    if (newName != oldName)
+//    {
+//        //Check if we want to avoid trying to rename in the graphics view map
+//        //Rename
+//        mpParentContainerObject->renameGUIModelObject(oldName, newName);
+//    }
+//}
 
 
-int GUIGroupPort::type() const
-{
-    return Type;
-}
+//int GUIGroupPort::type() const
+//{
+//    return Type;
+//}
