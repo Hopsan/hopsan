@@ -232,7 +232,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 {
     bool doNotForwardEvent = false;
     bool ctrlPressed = event->modifiers().testFlag(Qt::ControlModifier);
-    bool shiftPressed = event->modifiers().testFlag(Qt::ShiftModifier);
+    //bool shiftPressed = event->modifiers().testFlag(Qt::ShiftModifier);   //Commented because it is not used, to avoid compile warnings
     //bool altPressed = event->modifiers().testFlag(Qt::AltModifier);       //Commented because it is not used, to avoid compile warnings
 
     if (event->key() == Qt::Key_Delete && !mpSystem->mIsRenamingObject)

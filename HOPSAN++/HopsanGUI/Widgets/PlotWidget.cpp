@@ -186,7 +186,7 @@ void PlotParameterTree::updateList()
 PlotWindow *PlotParameterTree::createPlotWindow(QTreeWidgetItem *item)
 {
     //! @todo This is a kind of dumb check; it assumes that component items have bold font and variables not.
-    if(!item->font(0).bold() || !item->isDisabled())     //Top level items cannot be plotted (they represent the components)
+    if(!item->font(0).bold() && !item->isDisabled())     //Top level items cannot be plotted (they represent the components)
     {
         //QTreeWidgetItem must be casted to a PlotParameterItem. This is a necessary because double click event can not know which kind of tree item is clicked.
         PlotParameterItem *tempItem = dynamic_cast<PlotParameterItem *>(item);
