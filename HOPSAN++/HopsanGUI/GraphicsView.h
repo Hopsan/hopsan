@@ -51,7 +51,6 @@ signals:
     void zoomChange(qreal zoomfactor);
     void systemPortSignal(QPoint position);
 
-
 public slots:
     void resetZoom();
     void zoomIn();

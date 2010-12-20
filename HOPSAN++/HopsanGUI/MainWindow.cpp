@@ -307,6 +307,7 @@ void MainWindow::createActions()
     openUndoAction = new QAction(tr("&Undo History"), this);
     openUndoAction->setText("Undo History");
     connect(openUndoAction,SIGNAL(triggered()),this,SLOT(openUndoWidget()));
+    openUndoAction->setShortcut(QKeySequence("Ctrl+Alt+u"));
 
     disableUndoAction = new QAction(tr("&Disable Undo"), this);
     disableUndoAction->setText("Disable Undo");
@@ -333,11 +334,13 @@ void MainWindow::createActions()
     simulateAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Simulate.png"), tr("&Simulate"), this);
     simulateAction->setShortcut(tr("Simulate"));
     simulateAction->setStatusTip(tr("Simulate Current Project"));
+    simulateAction->setShortcut(QKeySequence("Ctrl+Shift+s"));
 
     plotAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Plot.png"), tr("&Plot Variables"), this);
     plotAction->setShortcut(tr("Plot"));
     plotAction->setStatusTip(tr("Plot Variables"));
     connect(plotAction, SIGNAL(triggered()),this,SLOT(openPlotWidget()));
+    plotAction->setShortcut(QKeySequence("Ctrl+Alt+p"));
 
     loadLibsAction = new QAction(this);
     loadLibsAction->setText("Load Libraries");
@@ -345,10 +348,11 @@ void MainWindow::createActions()
 
     propertiesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Configure.png"), tr("&Model Properties"), this);
     propertiesAction->setText("Model Properties");
-    propertiesAction->setShortcut(QKeySequence("Ctrl+Alt+p"));
+    propertiesAction->setShortcut(QKeySequence("Ctrl+Alt+m"));
 
     optionsAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Options.png"), tr("&Options"), this);
     optionsAction->setText("Options");
+    optionsAction->setShortcut(QKeySequence("Ctrl+Alt+o"));
 
     resetZoomAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Zoom100.png"), tr("&Reset Zoom"), this);
     resetZoomAction->setText("Reset Zoom");
@@ -364,9 +368,11 @@ void MainWindow::createActions()
 
     hideNamesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-HideNames.png"), tr("&Hide All Component Names"), this);
     hideNamesAction->setText("Hide All Component Names");
+    hideNamesAction->setShortcut(QKeySequence("Ctrl+h"));
 
     showNamesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ShowNames.png"), tr("&Show All Component Names"), this);
     showNamesAction->setText("Show All Component Names");
+    showNamesAction->setShortcut(QKeySequence("Ctrl+j"));
 
     exportPDFAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SaveToPDF.png"), tr("&Export To PDF"), this);
     exportPDFAction->setText("Export Model to PDF");
@@ -381,6 +387,7 @@ void MainWindow::createActions()
     hidePortsAction = new QAction(hidePortsIcon, tr("&Hide All Ports"), this);
     hidePortsAction->setText("Hide All Ports");
     hidePortsAction->setCheckable(true);
+    hidePortsAction->setShortcut(QKeySequence("Ctrl+g"));
 
     mpStartTimeLineEdit = new QLineEdit("0.0");
     mpStartTimeLineEdit->setMaximumWidth(100);
@@ -726,7 +733,6 @@ void MainWindow::fixFinishTime()
 {
     if (getFinishTimeFromToolBar() < getStartTimeFromToolBar())
         setFinishTimeInToolBar(getStartTimeFromToolBar());
-
 }
 
 

@@ -261,7 +261,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
             mpSystem->setIsCreatingConnector(false);
         }
     }
-    else if(shiftPressed && event->key() == Qt::Key_K && !mpSystem->mIsRenamingObject)
+    else if(ctrlPressed && event->key() == Qt::Key_D && !mpSystem->mIsRenamingObject)
     {
         if(mpSystem->isObjectSelected())
         {
@@ -270,7 +270,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         }
         emit keyPressShiftK();
     }
-    else if(shiftPressed && event->key() == Qt::Key_L && !mpSystem->mIsRenamingObject)
+    else if(ctrlPressed && event->key() == Qt::Key_F && !mpSystem->mIsRenamingObject)
     {
         if(mpSystem->isObjectSelected())
         {

@@ -148,4 +148,4 @@ win32 {
     INCLUDEPATH += $(PYTHON_PATH)/include
     LIBS += -L$(PYTHON_PATH)/libs
 }
-RESOURCES += 
+RESOURCES +=  
