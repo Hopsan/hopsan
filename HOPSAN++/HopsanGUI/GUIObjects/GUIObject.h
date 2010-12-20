@@ -24,8 +24,8 @@ class GUIObject : public QGraphicsWidget
     Q_OBJECT
 
 public:
-    GUIObject(QPoint pos, qreal rot, selectionStatus=DESELECTED, GUIContainerObject *pSystem=0, QGraphicsItem *pParent=0);
-    ~GUIObject();
+    GUIObject(QPoint pos, qreal rot, selectionStatus=DESELECTED, GUIContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
+    virtual ~GUIObject();
 
     //Name methods
     virtual QString getTypeName() {assert(false);} //Maybe sould not bee here

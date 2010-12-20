@@ -17,13 +17,13 @@
 
 
 //! @todo should not pSystem and pParent be teh same ?
-GUIObject::GUIObject(QPoint pos, qreal rot, selectionStatus, GUIContainerObject *pSystem, QGraphicsItem *pParent)
+GUIObject::GUIObject(QPoint pos, qreal rot, selectionStatus, GUIContainerObject *pParentContainer, QGraphicsItem *pParent)
     : QGraphicsWidget(pParent)
 {
     //Initi variables
     mHmfTagName = HMF_OBJECTTAG;
 
-    mpParentContainerObject = pSystem;
+    mpParentContainerObject = pParentContainer;
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
 
     //Set position orientation and other appearance stuff
@@ -364,8 +364,6 @@ bool GUIObject::isFlipped()
 GUIObjectSelectionBox::GUIObjectSelectionBox(qreal x1, qreal y1, qreal x2, qreal y2, QPen activePen, QPen hoverPen, GUIObject *parent)
         : QGraphicsItemGroup(parent)
 {
-    //mpParentGUIObject = parent;
-
     mActivePen = activePen;
     mHoverPen = hoverPen;
     this->setPassive();

@@ -16,8 +16,8 @@ class GUIModelObject : public GUIObject
     Q_OBJECT
 
 public:
-    GUIModelObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType graphics = USERGRAPHICS, GUIContainerObject *system = 0, QGraphicsItem *parent = 0);
-    ~GUIModelObject();
+    GUIModelObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType graphics = USERGRAPHICS, GUIContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
+    virtual ~GUIModelObject();
 
     //Name methods
     virtual void setName(QString name);

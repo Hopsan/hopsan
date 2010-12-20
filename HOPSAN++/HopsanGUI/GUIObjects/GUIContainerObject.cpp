@@ -29,8 +29,8 @@
 #include <QDomElement>
 
 
-GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUIContainerObject *system, QGraphicsItem *parent)
-        : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
+GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUIContainerObject *pParentContainer, QGraphicsItem *pParent)
+        : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParent)
 {
         //Initialize
     setIsCreatingConnector(false);
@@ -61,6 +61,11 @@ GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GU
     connect(gpMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this, SLOT(hidePorts(bool)));
 
 
+}
+
+GUIContainerObject::~GUIContainerObject()
+{
+    qDebug() << ",,,,,,,,,,,,GUIContainer destructor";
 }
 
 void GUIContainerObject::makeRootSystem()

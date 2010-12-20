@@ -19,7 +19,8 @@ class GUIContainerObject : public GUIModelObject
     Q_OBJECT
 public:
     enum CONTAINERSTATUS {CLOSED, OPEN, ROOT};
-    GUIContainerObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, GUIContainerObject *system=0, QGraphicsItem *parent = 0);
+    GUIContainerObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, GUIContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
+    virtual ~GUIContainerObject();
     void makeRootSystem();
 
     //Scene and Core access

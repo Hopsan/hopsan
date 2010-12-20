@@ -246,6 +246,8 @@ namespace hopsan {
         void renameSubComponent(std::string old_name, std::string new_name);
         void removeSubComponent(std::string name, bool doDelete=false);
         void removeSubComponent(Component *pComponent, bool doDelete=false);
+        std::string reserveUniqueName(std::string desiredName);
+        void unReserveUniqueName(std::string name);
 
         //Handle system ports
         Port* addSystemPort(std::string portname);
@@ -309,7 +311,9 @@ namespace hopsan {
 
         //==========Prvate member variables==========
         typedef std::map<std::string, Component*> SubComponentMapT;
+        typedef std::map<std::string, int> ReservedNamesT;
         SubComponentMapT mSubComponentMap;
+        ReservedNamesT mReservedNames;
         std::vector<Component*> mComponentSignalptrs;
         std::vector<Component*> mComponentQptrs;
         std::vector<Component*> mComponentCptrs;

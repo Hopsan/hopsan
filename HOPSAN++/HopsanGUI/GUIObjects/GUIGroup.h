@@ -19,7 +19,7 @@ class GUIGroup : public GUIContainerObject
 {
     Q_OBJECT
 public:
-    GUIGroup(QPoint position, qreal rotation, const GUIModelObjectAppearance *pAppearanceData, GUIContainerObject *system, QGraphicsItem *parent = 0);
+    GUIGroup(QPoint position, qreal rotation, const GUIModelObjectAppearance *pAppearanceData, GUIContainerObject *pParentContainer);
     ~GUIGroup();
 
     void setContents(CopyStack *pCopyStack);

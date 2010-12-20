@@ -56,21 +56,25 @@ CoreSystemAccess* GUIGroup::getCoreSystemAccessPtr()
 //! @param appearanceData defines the appearance for the group.
 //! @param scene is the scene which should contain the group.
 //! @param parent is the parent QGraphicsItem for the group, default = 0.
-GUIGroup::GUIGroup(QPoint position, qreal rotation, const GUIModelObjectAppearance *pAppearanceData, GUIContainerObject *system, QGraphicsItem *parent)
-    :   GUIContainerObject(position, rotation, pAppearanceData, DESELECTED, USERGRAPHICS, system, parent)
+GUIGroup::GUIGroup(QPoint position, qreal rotation, const GUIModelObjectAppearance *pAppearanceData, GUIContainerObject *pParentContainer)
+    :   GUIContainerObject(position, rotation, pAppearanceData, DESELECTED, USERGRAPHICS, pParentContainer, pParentContainer)
 {
+    qDebug() << "GUIGroup: ,,,,,,,,,,,,,,setting parent to: " << pParentContainer;
     //Set the hmf save tag name
     mHmfTagName = HMF_GROUPTAG;
 
-    this->setDisplayName(QString("Grupp_test"));
+    QString newname = this->getCoreSystemAccessPtr()->reserveUniqueName("Grupp_test"); //Dont forget to unreserve this later when renaming or deleting
+    this->setDisplayName(newname);
 
     //! @todo this is not good all mpParentProjectTab should be set in one common place not in guigroup and guisystem
-    this->mpParentProjectTab = system->mpParentProjectTab;
+    this->mpParentProjectTab = pParentContainer->mpParentProjectTab;
 }
 
 
 GUIGroup::~GUIGroup()
 {
+    qDebug() << ",,,,,,,,,GuiGroupDestructor";
+    this->getCoreSystemAccessPtr()->unReserveUniqueName(this->getName());
 //    qDebug() << "GUIGroup destructor";
 //    GUISystem::GUIModelObjectMapT::iterator itm;
 //    for(itm = mpParentContainerObject->mGUIModelObjectMap.begin(); itm != mpParentContainerObject->mGUIModelObjectMap.end(); ++itm)

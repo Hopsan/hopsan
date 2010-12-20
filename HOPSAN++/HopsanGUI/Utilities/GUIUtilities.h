@@ -29,6 +29,4 @@ qreal dist(QPointF &rPoint);
 qreal dist(QPointF &rPoint1, QPointF &rPoint2);
 double dist(double x1,double y1, double x2, double y2);
 
-
-
 #endif // GUIUTILITIES_H

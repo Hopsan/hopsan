@@ -6,10 +6,11 @@
 #include "../loadObjects.h"
 
 //! @todo rename GUISystemPort to ContainerPort
-GUISystemPort::GUISystemPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
-        : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
+GUISystemPort::GUISystemPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
+        : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
-    mIsSystemPort = (system->type() == GUISYSTEM); //determine if I am a system port
+    qDebug() << "GUISystemPort: ,,,,,,,,,,,,,,setting parent to: " << pParentContainer;
+    mIsSystemPort = (pParentContainer->type() == GUISYSTEM); //determine if I am a system port
     this->mHmfTagName = HMF_SYSTEMPORTTAG;
     //Sets the ports
     createPorts();
@@ -18,9 +19,14 @@ GUISystemPort::GUISystemPort(GUIModelObjectAppearance* pAppearanceData, QPoint p
 
 GUISystemPort::~GUISystemPort()
 {
+    qDebug() << "GuiSystemPort destructor: " << this->getName();
     if (mIsSystemPort)
     {
-        this->mpParentContainerObject->getCoreSystemAccessPtr()->deleteSystemPort(this->getName());
+        mpParentContainerObject->getCoreSystemAccessPtr()->deleteSystemPort(this->getName());
+    }
+    else
+    {
+        mpParentContainerObject->getCoreSystemAccessPtr()->unReserveUniqueName(this->getName());
     }
 }
 
@@ -57,9 +63,8 @@ void GUISystemPort::createPorts()
     }
     else
     {
-        qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding groupport with name: " << desiredportname;
-        //! @todo Check unique name in GUI
-        mGUIModelObjectAppearance.setName(desiredportname);
+        qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Adding groupport with desired name: " << desiredportname;
+        mGUIModelObjectAppearance.setName(mpParentContainerObject->getCoreSystemAccessPtr()->reserveUniqueName(desiredportname));
     }
 
     mpGuiPort = new GUIPort(mGUIModelObjectAppearance.getName(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(i.value()), this);

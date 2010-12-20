@@ -75,6 +75,9 @@ public:
     QString addSystemPort(QString portname);
     QString renameSystemPort(QString oldname, QString newname);
 
+    QString reserveUniqueName(QString desiredName);
+    void unReserveUniqueName(QString name);
+
     bool setSystemParameter(QString name, double value);
     double getSystemParameter(QString name);
     bool hasSystemParameter(QString name);

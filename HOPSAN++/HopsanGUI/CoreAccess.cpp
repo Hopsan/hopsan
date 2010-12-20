@@ -499,6 +499,16 @@ QString CoreSystemAccess::renameSystemPort(QString oldname, QString newname)
     return QString::fromStdString(mpCoreComponentSystem->renameSystemPort(oldname.toStdString(), newname.toStdString()));
 }
 
+QString CoreSystemAccess::reserveUniqueName(QString desiredName)
+{
+    return QString::fromStdString(mpCoreComponentSystem->reserveUniqueName(desiredName.toStdString()));
+}
+
+void CoreSystemAccess::unReserveUniqueName(QString name)
+{
+    mpCoreComponentSystem->unReserveUniqueName(name.toStdString());
+}
+
 QString CoreSystemAccess::getPlotDataUnit(const QString compname, const QString portname, const QString dataname)
 {
     std::string dummy, unit;

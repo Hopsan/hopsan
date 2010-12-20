@@ -76,9 +76,52 @@ string findUniqueName(MapType &rMap, string name)
     return name;
 }
 
+////! @brief Helper function to create a unique name among names from TWO Map
+//template<typename MapType1, typename MapType2>
+//string findUniqueName(MapType1 &rMap1, MapType2 &rMap2 , string name)
+//{
+//    //New name must not be empty, empty name is "reserved" to be used in the API to indicate that we want to manipulate the current root system
+//    if (name.empty())
+//    {
+//        name = "Untitled";
+//    }
+
+//    size_t ctr = 1; //The suffix number
+//    while( (rMap1.count(name)+rMap2.count(name)) != 0)
+//    {
+//        //strip suffix
+//        size_t foundpos = name.rfind("_");
+//        if (foundpos != string::npos)
+//        {
+//            if (foundpos+1 < name.size())
+//            {
+//                unsigned char nr = name.at(foundpos+1);
+//                //cout << "nr after _: " << nr << endl;
+//                //Check the ascii code for the charachter
+//                if ((nr >= 48) && (nr <= 57))
+//                {
+//                    //Is number lets assume that the _ found is the beginning of a suffix
+//                    name.erase(foundpos, string::npos);
+//                }
+//            }
+//        }
+//        //cout << "ctr: " << ctr << " stripped tempname: " << name << endl;
+
+//        //add new suffix
+//        stringstream suffix;
+//        suffix << ctr;
+//        name.append("_");
+//        name.append(suffix.str());
+//        ++ctr;
+//        //cout << "ctr: " << ctr << " appended tempname: " << name << endl;
+//    }
+//    //cout << name << endl;
+//    return name;
+//}
+
 //! @brief Helper function to create a unique name among names from TWO Map
-template<typename MapType1, typename MapType2>
-string findUniqueName(MapType1 &rMap1, MapType2 &rMap2 , string name)
+template<typename MapType1, typename MapType2, typename ReservedNamesType>
+string findUniqueName(MapType1 &rMap1, MapType2 &rMap2, ReservedNamesType &rReservedMap, string name)
 {
     //New name must not be empty, empty name is "reserved" to be used in the API to indicate that we want to manipulate the current root system
     if (name.empty())
@@ -87,7 +130,7 @@ string findUniqueName(MapType1 &rMap1, MapType2 &rMap2 , string name)
     }
 
     size_t ctr = 1; //The suffix number
-    while( (rMap1.count(name)+rMap2.count(name)) != 0)
+    while( (rMap1.count(name)+rMap2.count(name)+rReservedMap.count(name)) != 0)
     {
         //strip suffix
         size_t foundpos = name.rfind("_");
@@ -1294,6 +1337,21 @@ void ComponentSystem::removeSubComponent(Component* c_ptr, bool doDelete)
     gCoreMessageHandler.addDebugMessage("Removed component: \"" + compName + "\" from system: \"" + this->getName() + "\"", "removedcomponent");
 }
 
+string ComponentSystem::reserveUniqueName(string desiredName)
+{
+    string newname = this->determineUniqueComponentName(desiredName);
+    mReservedNames.insert(std::pair<std::string, int>(newname,0)); //The inte 0 is a dummy value that is never used
+    return newname;
+}
+
+void ComponentSystem::unReserveUniqueName(string name)
+{
+    cout << "unReserveUniqueName: " << name;
+    cout << " count before: " << mReservedNames.count(name);
+    mReservedNames.erase(name);
+    cout << " count after: " << mReservedNames.count(name) << std::endl;
+}
+
 void ComponentSystem::addSubComponentPtrToStorage(Component* pComponent)
 {
     switch (pComponent->getTypeCQS())
@@ -1385,15 +1443,16 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* c_ptr)
 //! It is VERY important that systemports dont have the same name as a subcomponent
 std::string ComponentSystem::determineUniquePortName(std::string portname)
 {
-    return findUniqueName<PortPtrMapT, SubComponentMapT>(mPortPtrMap,  mSubComponentMap, portname);
+    return findUniqueName<PortPtrMapT, SubComponentMapT, ReservedNamesT>(mPortPtrMap,  mSubComponentMap, mReservedNames, portname);
 }
 
 //! @brief Overloaded function that behaves slightly different when determining unique component names
 //! In systemcomponents we must make sure that systemports and subcomponents have unique names, this simplifies things in the GUI later on
 //! It is VERY important that systemports dont have the same name as a subcomponent
+//! @todo the determineUniquePortNAme and ComponentName looks VERY similar maybe we could use the same function for both
 std::string ComponentSystem::determineUniqueComponentName(std::string name)
 {
-    return findUniqueName<SubComponentMapT, PortPtrMapT>(mSubComponentMap, mPortPtrMap, name);
+    return findUniqueName<SubComponentMapT, PortPtrMapT, ReservedNamesT>(mSubComponentMap, mPortPtrMap, mReservedNames, name);
 }
 
 

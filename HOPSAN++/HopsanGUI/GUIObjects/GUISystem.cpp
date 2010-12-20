@@ -22,16 +22,16 @@
 #include "GUIWidgets.h"
 #include "Widgets/PlotWidget.h"
 
-GUISystem::GUISystem(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *system, selectionStatus startSelected, graphicsType gfxType, QGraphicsItem *parent)
-    : GUIContainerObject(position, rotation, pAppearanceData, startSelected, gfxType, system, parent)
+GUISystem::GUISystem(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
+    : GUIContainerObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
-    this->mpParentProjectTab = system->mpParentProjectTab;
+    this->mpParentProjectTab = pParentContainer->mpParentProjectTab;
     this->commonConstructorCode();
 }
 
 //Root system specific constructor
-GUISystem::GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *parent)
-    : GUIContainerObject(QPoint(0,0), 0, 0, DESELECTED, USERGRAPHICS, 0, parent)
+GUISystem::GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *pParent)
+    : GUIContainerObject(QPoint(0,0), 0, 0, DESELECTED, USERGRAPHICS, 0, pParent)
 {
     this->mGUIModelObjectAppearance = *(gpMainWindow->mpLibrary->getAppearanceData("Subsystem")); //This will crash if Subsystem not already loaded
     this->mpParentProjectTab = parentProjectTab;
