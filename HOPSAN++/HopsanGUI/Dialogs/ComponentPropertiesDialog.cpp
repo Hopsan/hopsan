@@ -95,6 +95,20 @@ void ComponentPropertiesDialog::createEditStuff()
         ++n;
     }
 
+        //Adjust sizes of labels, to make sure that all text is visible and that the spacing is not too big between them
+    int descriptionSize=30;
+    int nameSize = 10;
+    for(size_t i=0; i<mvParameterLayout.size(); ++i)
+    {
+        descriptionSize = std::max(descriptionSize, mvParameterLayout.at(i)->mDescriptionNameLabel.width());
+        nameSize = std::max(nameSize, mvParameterLayout.at(i)->mDataNameLabel.width());
+    }
+    for(size_t i=0; i<mvParameterLayout.size(); ++i)
+    {
+        mvParameterLayout.at(i)->mDescriptionNameLabel.setFixedWidth(descriptionSize+10);   //Offset of 10 as extra margin
+        mvParameterLayout.at(i)->mDataNameLabel.setFixedWidth(nameSize+10);
+    }
+
 
     QGridLayout *startValueLayout = new QGridLayout();
     size_t sr=0;
@@ -138,6 +152,25 @@ void ComponentPropertiesDialog::createEditStuff()
                 ++sr;
             }
             ++j;
+        }     
+    }
+
+    descriptionSize=30;
+    nameSize = 10;
+    for(size_t j=0; j<mvStartValueLayout.size(); ++j)
+    {
+        for(size_t i=0; i<mvStartValueLayout.at(j).size(); ++i)
+        {
+            descriptionSize = std::max(descriptionSize, mvStartValueLayout.at(j).at(i)->mDescriptionNameLabel.width());
+            nameSize = std::max(nameSize, mvStartValueLayout.at(j).at(i)->mDataNameLabel.width());
+        }
+    }
+    for(size_t j=0; j<mvStartValueLayout.size(); ++j)
+    {
+        for(size_t i=0; i<mvStartValueLayout.at(j).size(); ++i)
+        {
+            mvStartValueLayout.at(j).at(i)->mDescriptionNameLabel.setFixedWidth(descriptionSize+10);   //Offset of 10 as extra margin
+            mvStartValueLayout.at(j).at(i)->mDataNameLabel.setFixedWidth(nameSize+10);
         }
     }
 
@@ -332,11 +365,11 @@ void ParameterLayout::commonConstructorCode(QString dataName, QString descriptio
 {
     mpGUIModelObject = pGUIModelObject;
 
-    mDescriptionNameLabel.setMinimumWidth(110);
-    mDescriptionNameLabel.setMaximumWidth(110);
+    mDescriptionNameLabel.setMinimumWidth(30);
+    mDescriptionNameLabel.setMaximumWidth(200);
     mDataNameLabel.setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-    mDataNameLabel.setMinimumWidth(70);
-    mDataNameLabel.setMaximumWidth(70);
+    mDataNameLabel.setMinimumWidth(10);
+    mDataNameLabel.setMaximumWidth(100);
     mDataValuesLineEdit.setMinimumWidth(100);
     mDataValuesLineEdit.setMaximumWidth(100);
     mUnitNameLabel.setMinimumWidth(50);
@@ -345,7 +378,9 @@ void ParameterLayout::commonConstructorCode(QString dataName, QString descriptio
     mSystemParameterToolButton.setIcon(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"));
 
     mDataNameLabel.setText(dataName);
+    mDataNameLabel.adjustSize();
     mDescriptionNameLabel.setText(descriptionName);
+    mDescriptionNameLabel.adjustSize();
     mDataValuesLineEdit.setText(dataValue);
     mUnitNameLabel.setText(unitName);
 

@@ -52,7 +52,7 @@ private:
 class ParameterLayout : public QGridLayout
 {
     Q_OBJECT
-
+    friend class ComponentPropertiesDialog;
 public:
     ParameterLayout(QString dataName="", QString descriptionName="", double dataValue=0, QString unitName="", GUIModelObject *pGUIModelObject=0, QWidget *parent=0);
     ParameterLayout(QString dataName="", QString descriptionName="", QString dataValue="", QString unitName="", GUIModelObject *pGUIModelObject=0, QWidget *parent=0);
