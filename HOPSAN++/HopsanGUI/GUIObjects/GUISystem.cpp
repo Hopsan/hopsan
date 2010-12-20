@@ -490,12 +490,12 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_COMPONENTTAG);
         }
-
+        qDebug() << "Loading text widgets!";
         //3. Load all text widgets
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_TEXTWIDGETTAG);
         while (!xmlSubObject.isNull())
         {
-            loadTextWidget(xmlSubObject, this);
+            loadTextWidget(xmlSubObject, this, NOUNDO);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_TEXTWIDGETTAG);
         }
 
@@ -503,7 +503,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_BOXWIDGETTAG);
         while (!xmlSubObject.isNull())
         {
-            loadBoxWidget(xmlSubObject, this);
+            loadBoxWidget(xmlSubObject, this, NOUNDO);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_BOXWIDGETTAG);
         }
 

@@ -35,7 +35,7 @@ PlotWindow::PlotWindow(PlotParameterTree *plotParameterTree, MainWindow *parent)
 
 {
     this->setAttribute(Qt::WA_DeleteOnClose);
-    this->setWindowTitle("Hopsan NG Plot Window");
+    this->setWindowTitle("HOPSAN NG Plot Window");
     this->setAcceptDrops(true);
     resize(700,600);    //! @todo Maybe user should be allowed to change default plot window size, or someone will become annoyed...
 

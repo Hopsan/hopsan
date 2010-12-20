@@ -7,6 +7,8 @@
 #ifndef HYDRAULIC43VALVE_HPP_INCLUDED
 #define HYDRAULIC43VALVE_HPP_INCLUDED
 
+#define pi 3.14159
+
 #include <iostream>
 #include "../../ComponentEssentials.h"
 #include "../../ComponentUtilities.h"
@@ -35,19 +37,8 @@ namespace hopsan {
         TurbulentFlowFunction mQturbpb;
         TurbulentFlowFunction mQturbat;
         TurbulentFlowFunction mQturbbt;
-#define pi 3.14159
-        Port *mpPP, *mpPT, *mpPA, *mpPB, *mpIn, *mpOut;
-        double sign(double x)
-        {
-            if (x>=0.0)
-            {
-                return 1.0;
-            }
-            else
-            {
-                return -1.0;
-            }
-        }
+        Port *mpPP, *mpPT, *mpPA, *mpPB, *mpIn;
+
     public:
         static Component *Creator()
         {
@@ -73,7 +64,6 @@ namespace hopsan {
             mpPA = addPowerPort("PA", "NodeHydraulic");
             mpPB = addPowerPort("PB", "NodeHydraulic");
             mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal");
 
             registerParameter("Cq", "Flow Coefficient", "[-]", mCq);
             registerParameter("d", "Diameter", "[m]", md);
@@ -90,15 +80,7 @@ namespace hopsan {
 
         void initialize()
         {
-//            num[0] = mK/(mWnum*mWnum);
-//            num[1] = mK*2.0*mDnum/mWnum;
-//            num[2] = mK;
-//            den[0] = 1.0/pow(mWden, 2);
-//            den[1] = 2.0*mDden/mWden;
-//            den[2] = 1.0;
-
             double num[3] = {0.0, 0.0, 1.0};
-
             double den[3] = {1.0/(momegah*momegah), 2.0*mdeltah/momegah, 1.0};
             myFilter.initialize(mTimestep, num, den, 0, 0, -mxvmax, mxvmax);
         }
@@ -121,10 +103,6 @@ namespace hopsan {
             double xv = myFilter.value();
 
             //Valve equations
-//            if (fabs(xv)>mxvmax)
-//            {
-//                xv = mxvmax*sign(xv);
-//            }
             double xpanom = std::max(xv-moverlap_pa,0.0);
             double xpbnom = std::max(-xv-moverlap_pb,0.0);
             double xatnom = std::max(-xv-moverlap_at,0.0);
@@ -183,7 +161,6 @@ namespace hopsan {
             mpPA->writeNode(NodeHydraulic::FLOW, qa);
             mpPB->writeNode(NodeHydraulic::PRESSURE, pb);
             mpPB->writeNode(NodeHydraulic::FLOW, qb);
-            mpOut->writeNode(NodeSignal::VALUE, xv);
         }
     };
 

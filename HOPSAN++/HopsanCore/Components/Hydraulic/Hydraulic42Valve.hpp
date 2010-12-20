@@ -1,12 +1,12 @@
 //!
-//! @file   Hydraulic33Valve.hpp
+//! @file   Hydraulic42Valve.hpp
 //! @author Robert Braun <robert.braun@liu.se>
-//! @date   2010-12-06
+//! @date   2010-12-20
 //!
-//! @brief Contains a hydraulic 3/3-valve of Q-type
+//! @brief Contains a hydraulic 4/2-valve of Q-type
 
-#ifndef HYDRAULIC33VALVE_HPP_INCLUDED
-#define HYDRAULIC33VALVE_HPP_INCLUDED
+#ifndef HYDRAULIC42VALVE_HPP_INCLUDED
+#define HYDRAULIC42VALVE_HPP_INCLUDED
 
 #define pi 3.14159
 
@@ -17,55 +17,61 @@
 namespace hopsan {
 
     //!
-    //! @brief Hydraulic 3/3-valve (closed centre) of Q-type.
+    //! @brief Hydraulic 4/2-valve of Q-type.
     //! @ingroup HydraulicComponents
     //!
-    class Hydraulic33Valve : public ComponentQ
+    class Hydraulic42Valve : public ComponentQ
     {
     private:
         double mCq;
         double md;
         double mf;
         double mxvmax;
-        double moverlap_pa;
-        double moverlap_at;
-        double moverlap_bt;
+        double mOverlap_pa;
+        double mOverlap_pb;
+        double mOverlap_at;
+        double mOverlap_bt;
         double momegah;
         double mdeltah;
         SecondOrderFilter myFilter;
-        TurbulentFlowFunction mQturbpa;
-        TurbulentFlowFunction mQturbat;
+        TurbulentFlowFunction mQturb_pa;
+        TurbulentFlowFunction mQturb_bt;
         Port *mpPP, *mpPT, *mpPA, *mpPB, *mpIn;
 
     public:
         static Component *Creator()
         {
-            return new Hydraulic33Valve("Hydraulic 3/3 Valve");
+            return new Hydraulic42Valve("Hydraulic 4/2 Valve");
         }
 
-        Hydraulic33Valve(const std::string name) : ComponentQ(name)
+        Hydraulic42Valve(const std::string name) : ComponentQ(name)
         {
-            mTypeName = "Hydraulic33Valve";
+            mTypeName = "Hydraulic42Valve";
             mCq = 0.67;
             md = 0.01;
             mf = 1.0;
             mxvmax = 0.01;
-            moverlap_pa = 0.0;
-            moverlap_at = 0.0;
+            mOverlap_pa = 0.0;
+            mOverlap_pb = 0.0;
+            mOverlap_at = 0.0;
+            mOverlap_bt = 0.0;
             momegah = 100.0;
             mdeltah = 0.0;
 
             mpPP = addPowerPort("PP", "NodeHydraulic");
             mpPT = addPowerPort("PT", "NodeHydraulic");
             mpPA = addPowerPort("PA", "NodeHydraulic");
+            mpPB = addPowerPort("PB", "NodeHydraulic");
             mpIn = addReadPort("in", "NodeSignal");
 
             registerParameter("Cq", "Flow Coefficient", "[-]", mCq);
             registerParameter("d", "Diameter", "[m]", md);
             registerParameter("f", "Spool Fraction of the Diameter", "[-]", mf);
             registerParameter("xvmax", "Maximum Spool Displacement", "[m]", mxvmax);
-            registerParameter("overlap_pa", "Spool Overlap From Port P To A", "[m]", moverlap_pa);
-            registerParameter("overlap_at", "Spool Overlap From Port A To T", "[m]", moverlap_at);
+            registerParameter("overlap", "Spool Overlap From Port P To A", "[m]", mOverlap_pa);
+            registerParameter("overlap", "Spool Overlap From Port P To A", "[m]", mOverlap_pb);
+            registerParameter("overlap", "Spool Overlap From Port P To A", "[m]", mOverlap_at);
+            registerParameter("overlap", "Spool Overlap From Port P To A", "[m]", mOverlap_bt);
             registerParameter("omegah", "Resonance Frequency", "[rad/s]", momegah);
             registerParameter("deltah", "Damping Factor", "[-]", mdeltah);
         }
@@ -73,9 +79,10 @@ namespace hopsan {
 
         void initialize()
         {
+            //Initiate second order low pass filter
             double num[3] = {0.0, 0.0, 1.0};
             double den[3] = {1.0/(momegah*momegah), 2.0*mdeltah/momegah, 1.0};
-            myFilter.initialize(mTimestep, num, den, 0, 0, -mxvmax, mxvmax);
+            myFilter.initialize(mTimestep, num, den, 0, 0, 0, mxvmax);
         }
 
 
@@ -88,52 +95,55 @@ namespace hopsan {
             double Zct = mpPT->readNode(NodeHydraulic::CHARIMP);
             double ca  = mpPA->readNode(NodeHydraulic::WAVEVARIABLE);
             double Zca = mpPA->readNode(NodeHydraulic::CHARIMP);
+            double cb  = mpPB->readNode(NodeHydraulic::WAVEVARIABLE);
+            double Zcb = mpPB->readNode(NodeHydraulic::CHARIMP);
             double xvin  = mpIn->readNode(NodeSignal::VALUE);
 
+            //Dynamics of spool position (second order low pass filter)
             myFilter.update(xvin);
             double xv = myFilter.value();
 
-            double xpanom = std::max(xv-moverlap_pa,0.0);
-            double xatnom = std::max(-xv-moverlap_at,0.0);
+            //Determine flow coefficient
+            double Kc = mCq*mf*pi*md*xv*sqrt(2.0/890.0);
 
-            double Kcpa = mCq*mf*pi*md*xpanom*sqrt(2.0/890.0);
-            double Kcat = mCq*mf*pi*md*xatnom*sqrt(2.0/890.0);
-
-            //With TurbulentFlowFunction:
-            mQturbpa.setFlowCoefficient(Kcpa);
-            mQturbat.setFlowCoefficient(Kcat);
-
-            double qpa = mQturbpa.getFlow(cp, ca, Zcp, Zca);
-            double qat = mQturbat.getFlow(ca, ct, Zca, Zct);
-
-            double qp, qa, qt;
+            //Calculate flow
+            mQturb_pa.setFlowCoefficient(Kc);
+            mQturb_bt.setFlowCoefficient(Kc);
+            double qpa = mQturb_pa.getFlow(cp, ca, Zcp, Zca);
+            double qbt = mQturb_bt.getFlow(cb, ct, Zcb, Zct);
+            double qp, qa, qb, qt;
             if (xv >= 0.0)
             {
                 qp = -qpa;
                 qa = qpa;
-                qt = 0;
+                qb = -qbt;
+                qt = qbt;
             }
             else
             {
                 qp = 0;
-                qa = -qat;
-                qt = qat;
+                qa = 0;
+                qb = 0;
+                qt = 0;
             }
 
+            //Calculate pressures from flow and impedance
             double pp = cp + qp*Zcp;
             double pa = ca + qa*Zca;
+            double pb = cb + qb*Zcb;
             double pt = ct + qt*Zct;
 
             //Write new values to nodes
-
             mpPP->writeNode(NodeHydraulic::PRESSURE, pp);
             mpPP->writeNode(NodeHydraulic::FLOW, qp);
             mpPT->writeNode(NodeHydraulic::PRESSURE, pt);
             mpPT->writeNode(NodeHydraulic::FLOW, qt);
             mpPA->writeNode(NodeHydraulic::PRESSURE, pa);
             mpPA->writeNode(NodeHydraulic::FLOW, qa);
+            mpPB->writeNode(NodeHydraulic::PRESSURE, pb);
+            mpPB->writeNode(NodeHydraulic::FLOW, qb);
         }
     };
 }
 
-#endif // HYDRAULIC33VALVE_HPP_INCLUDED
+#endif // HYDRAULIC42VALVE_HPP_INCLUDED

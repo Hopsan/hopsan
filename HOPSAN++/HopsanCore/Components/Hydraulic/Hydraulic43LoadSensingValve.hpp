@@ -7,6 +7,8 @@
 #ifndef HYDRAULIC43LOADSENSINGVALVE_HPP_INCLUDED
 #define HYDRAULIC43LOADSENSINGVALVE_HPP_INCLUDED
 
+#define pi 3.14159
+
 #include <iostream>
 #include "../../ComponentEssentials.h"
 #include "../../ComponentUtilities.h"
@@ -35,19 +37,8 @@ namespace hopsan {
         TurbulentFlowFunction mQturbpb;
         TurbulentFlowFunction mQturbat;
         TurbulentFlowFunction mQturbbt;
-#define pi 3.14159
         Port *mpPP, *mpPT, *mpPA, *mpPB, *mpIn, *mpPL;
-        double sign(double x)
-        {
-            if (x>=0.0)
-            {
-                return 1.0;
-            }
-            else
-            {
-                return -1.0;
-            }
-        }
+
     public:
         static Component *Creator()
         {

@@ -554,18 +554,20 @@ void TextWidgetLoadData::readDomElement(QDomElement &rDomElement)
 
 void loadTextWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoStatus undoSettings)
 {
+    qDebug() << "1";
     TextWidgetLoadData data;
     data.readDomElement(rDomElement);
-
+    qDebug() << "2";
     pSystem->addTextWidget(data.point, NOUNDO);
     pSystem->mTextWidgetList.last()->setText(data.text);
     pSystem->mTextWidgetList.last()->setTextFont(data.font);
     pSystem->mTextWidgetList.last()->setTextColor(data.fontcolor);
-
+    qDebug() << "3";
     if(undoSettings == UNDO)
     {
         pSystem->mUndoStack->registerAddedBoxWidget(pSystem->mBoxWidgetList.last());
     }
+    qDebug() << "4";
 }
 
 

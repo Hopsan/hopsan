@@ -17,7 +17,7 @@
 namespace hopsan {
 
     //!
-    //! @brief A Hydraulic Pressure Releife Vale
+    //! @brief A Hydraulic Pressure Releife Valve
     //! @ingroup HydraulicComponents
     //!
     class HydraulicPressureReliefValve : public ComponentQ

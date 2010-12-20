@@ -1,11 +1,14 @@
 //!
 //! @file   Hydraulic32Valve.hpp
-//! @author Karl Pettersson <karl.pettersson@liu.se>
-//! @date   2010-01-12
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-12-06
 //!
 //! @brief Contains a hydraulic 3/2-valve of Q-type
+
 #ifndef HYDRAULIC32VALVE_HPP_INCLUDED
 #define HYDRAULIC32VALVE_HPP_INCLUDED
+
+#define pi 3.14159
 
 #include <iostream>
 #include "../../ComponentEssentials.h"
@@ -32,19 +35,8 @@ namespace hopsan {
         SecondOrderFilter myFilter;
         TurbulentFlowFunction mQturbpa;
         TurbulentFlowFunction mQturbat;
-#define pi 3.14159
-        Port *mpPP, *mpPT, *mpPA, *mpPB, *mpIn, *mpOut;
-        double sign(double x)
-        {
-            if (x>=0.0)
-            {
-                return 1.0;
-            }
-            else
-            {
-                return -1.0;
-            }
-        }
+        Port *mpPP, *mpPT, *mpPA, *mpPB, *mpIn;
+
     public:
         static Component *Creator()
         {

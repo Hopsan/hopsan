@@ -35,8 +35,10 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->registerCreatorFunction("HydraulicPressureSourceQ", HydraulicPressureSourceQ::Creator);
     cfact_ptr->registerCreatorFunction("HydraulicFixedDisplacementPump", HydraulicFixedDisplacementPump::Creator);
     cfact_ptr->registerCreatorFunction("HydraulicCheckValve", HydraulicCheckValve::Creator);
+    cfact_ptr->registerCreatorFunction("Hydraulic22Valve", Hydraulic22Valve::Creator);
     cfact_ptr->registerCreatorFunction("Hydraulic32Valve", Hydraulic32Valve::Creator);
     cfact_ptr->registerCreatorFunction("Hydraulic33Valve", Hydraulic33Valve::Creator);
+    cfact_ptr->registerCreatorFunction("Hydraulic42Valve", Hydraulic42Valve::Creator);
     cfact_ptr->registerCreatorFunction("Hydraulic43Valve", Hydraulic43Valve::Creator);
     cfact_ptr->registerCreatorFunction("Hydraulic43LoadSensingValve", Hydraulic43LoadSensingValve::Creator);
     cfact_ptr->registerCreatorFunction("HydraulicVariableDisplacementPump", HydraulicVariableDisplacementPump::Creator);
@@ -103,6 +105,7 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->registerCreatorFunction("SignalOr", SignalOr::Creator);
     cfact_ptr->registerCreatorFunction("SignalXor", SignalXor::Creator);
     cfact_ptr->registerCreatorFunction("SignalDelay", SignalDelay::Creator);
+    cfact_ptr->registerCreatorFunction("SignalShuttleValve", SignalShuttleValve::Creator);
 
     cfact_ptr->registerCreatorFunction("SignalOptimizedSineWave", SignalOptimizedSineWave::Creator);
     cfact_ptr->registerCreatorFunction("SignalOptimizedSubtract", SignalOptimizedSubtract::Creator);

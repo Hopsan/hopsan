@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.1">
+    <modelobject typename="Hydraulic43LoadSensingValve" displayname="4/3 Servo Valve with Load Sensing Port">
+        <icon isopath="43lsvalve_iso.svg" iconrotation="ON" userpath="43lsvalve_user.svg"/>
+        <portpose x="0.4977" y="1" a="90" name="PP"/>
+        <portpose x="0.4977" y="0" a="270" name="PA"/>
+        <portpose x="0.6779" y="0" a="270" name="PB"/>
+        <portpose x="0.6779" y="1" a="90" name="PT"/>
+        <portpose x="0.5878" y="1" a="90" name="PL"/>
+        <portpose x="0" y="0.7" a="0" name="in"/>
+    </modelobject>
+</hopsanobjectappearance>

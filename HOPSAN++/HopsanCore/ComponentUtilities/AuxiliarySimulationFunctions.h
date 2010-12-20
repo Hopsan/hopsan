@@ -9,5 +9,6 @@ namespace hopsan {
     void limit(double &value, double min, double max);
     bool doubleToBool(double value);
     double boolToDouble(bool value);
+    double sign(double x);
 }
 #endif // AUXILIARYSIMULATIONFUNCTIONS_H

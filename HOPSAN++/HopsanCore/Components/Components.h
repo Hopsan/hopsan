@@ -18,8 +18,10 @@
 #include "Hydraulic/HydraulicPressureSourceQ.hpp"
 #include "Hydraulic/HydraulicFixedDisplacementPump.hpp"
 #include "Hydraulic/HydraulicCheckValve.hpp"
+#include "Hydraulic/Hydraulic22Valve.hpp"
 #include "Hydraulic/Hydraulic32Valve.hpp"
 #include "Hydraulic/Hydraulic33Valve.hpp"
+#include "Hydraulic/Hydraulic42Valve.hpp"
 #include "Hydraulic/Hydraulic43Valve.hpp"
 #include "Hydraulic/Hydraulic43LoadSensingValve.hpp"
 #include "Hydraulic/HydraulicTurbulentOrifice.hpp"
@@ -82,6 +84,7 @@
 #include "Signal/SignalXor.hpp"
 #include "Signal/SignalDummy.hpp"
 #include "Signal/SignalDelay.hpp"
+#include "Signal/SignalShuttleValve.hpp"
 
 /* Mechanical Components */
 #include "Mechanic/MechanicForceTransformer.hpp"
