@@ -149,6 +149,9 @@ void LibraryContent::mouseMoveEvent(QMouseEvent *event)
             }
             mpHoveredItem = tempItem;
         }
+
+        //Change name in component name field. Resize the text if needed, so that the library widget does not change size.
+        mpParentLibraryWidget->mpComponentNameField->setFont(QFont(mpParentLibraryWidget->mpComponentNameField->font().family(), min(12.0, mpParentLibraryWidget->width()/(0.615*tempItem->toolTip().size()))));
         mpParentLibraryWidget->mpComponentNameField->setText(tempItem->toolTip());
     }
     else

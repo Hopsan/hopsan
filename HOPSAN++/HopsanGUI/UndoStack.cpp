@@ -28,6 +28,7 @@
 //!
 //! The stack consists of "undo posts", where each post can contain several actions. One undo post equal pressing ctrl-z once. To add a new post, use newPost().
 //! New actions are registered to the stack with their respective register functions. To undo or redo, use the undoOneStep() and redoOneStep() functions.
+//! In order to maximize performance, it is important not to send more data than necessary to the register functions.
 //!
 
 
@@ -61,6 +62,7 @@ void UndoStack::clear(QString errorMsg)
 
 
 //! @brief Adds a new empty post to the undo stack
+//! @param type String used to specify a post type. This tells the undo widget to display the entire post as one item. For example "paste" is used for paste operations, so that every added object, connector and widget is not shown in the undo widget list.
 void UndoStack::newPost(QString type)
 {
     ++mCurrentStackPosition;
@@ -82,8 +84,6 @@ void UndoStack::newPost(QString type)
     }
 
     gpMainWindow->mpUndoWidget->refreshList();
-
-   //mpParentContainerObject->mpParentProjectTab->hasChanged();
 }
 
 
@@ -313,7 +313,6 @@ void UndoStack::undoOneStep()
              loadBoxWidget(boxElement, mpParentContainerObject, NOUNDO);
              mpParentContainerObject->mWidgetMap.insert(stuffElement.attribute("index").toInt(), mpParentContainerObject->mWidgetMap.find(mpParentContainerObject->mHighestWidgetIndex-1).value());
              mpParentContainerObject->mWidgetMap.remove(mpParentContainerObject->mHighestWidgetIndex-1);
-            // mpParentContainerObject->mHighestWidgetIndex -= 1;
         }
         else if(stuffElement.attribute("what") == "addedtextwidget")
         {
@@ -326,7 +325,6 @@ void UndoStack::undoOneStep()
              loadTextWidget(textElement, mpParentContainerObject, NOUNDO);
              mpParentContainerObject->mWidgetMap.insert(stuffElement.attribute("index").toInt(), mpParentContainerObject->mWidgetMap.find(mpParentContainerObject->mHighestWidgetIndex-1).value());
              mpParentContainerObject->mWidgetMap.remove(mpParentContainerObject->mHighestWidgetIndex-1);
-             //mpParentContainerObject->mHighestWidgetIndex -= 1;
         }
         else if(stuffElement.attribute("what") == "modifiedtextwidget")
         {
@@ -423,7 +421,6 @@ void UndoStack::undoOneStep()
 
 //! @brief Will redo the previously undone changes if they exist, and increase stsack position one step
 //! @see undoOneStep()
-//! @todo Add error checking (like in undoOneStep()
 void UndoStack::redoOneStep()
 {
     gpMainWindow->mpMessageWidget->printGUIDebugMessage(mDomDocument.toString(2));
@@ -876,6 +873,10 @@ void UndoStack::registerHorizontalFlip(QString objectName)
 
 
 //! @brief Registser function for changing parameters of an object
+//! @param objectName Name of the object with the parameter
+//! @param parameterName Name of the changed parameter
+//! @param oldValueTxt Text string with old parameter value
+//! @param newValueTxt Text string with new parameter value
 void UndoStack::registerChangedParameter(QString objectName, QString parameterName, QString oldValueTxt, QString newValueTxt)
 {
     if(mpParentContainerObject->mUndoDisabled)
@@ -891,7 +892,12 @@ void UndoStack::registerChangedParameter(QString objectName, QString parameterNa
 }
 
 
-//! @brief Registser function for changing parameters of an object
+//! @brief Registser function for changing the start values of an object
+//! @param objectName Name of the object
+//! @param portName Name of the port where start value has changed
+//! @param parameterName Name of the changed start value
+//! @param oldValueTxt Text string with old start value
+//! @param newValueTxt Text string with new start value
 void UndoStack::registerChangedStartValue(QString objectName, QString portName, QString parameterName, QString oldValueTxt, QString newValueTxt)
 {
     if(mpParentContainerObject->mUndoDisabled)
@@ -910,6 +916,8 @@ void UndoStack::registerChangedStartValue(QString objectName, QString portName, 
 
 
 //! @brief Register function for changing name visibility of an object
+//! @param objectName Name of the object
+//! @param isVisible Boolean that tells whether the object has become visible (true) or invisible (false)
 void UndoStack::registerNameVisibilityChange(QString objectName, bool isVisible)
 {
     if(mpParentContainerObject->mUndoDisabled)
@@ -923,6 +931,8 @@ void UndoStack::registerNameVisibilityChange(QString objectName, bool isVisible)
 }
 
 
+//! @brief Register function for adding a box widget
+//! @param item Pointer to the box widget item
 void UndoStack::registerAddedBoxWidget(GUIBoxWidget *item)
 {
     if(mpParentContainerObject->mUndoDisabled)
@@ -936,6 +946,8 @@ void UndoStack::registerAddedBoxWidget(GUIBoxWidget *item)
 }
 
 
+//! @brief Register function for deleting a box widget
+//! @param item Pointer to box widget about to be deleted
 void UndoStack::registerDeletedBoxWidget(GUIBoxWidget *item)
 {
     if(mpParentContainerObject->mUndoDisabled)
@@ -949,6 +961,15 @@ void UndoStack::registerDeletedBoxWidget(GUIBoxWidget *item)
 }
 
 
+//! @brief Register function for resizing a box widget
+//! Although this function handles position changes, it must not be confused with registerMovedWidget function. This functin only remembers the position because resizing a box will move the center position.
+//! @param index Widget index of the resized box widget
+//! @param w_old Previous width of the box widget
+//! @param h_old Previous height of the box widget
+//! @param w_new New width of the box widget
+//! @param h_new New height of the box widget
+//! @param oldPos Previous position of the box widget
+//! @param newPos New position of the box widget
 void UndoStack::registerResizedBoxWidget(int index, double w_old, double h_old, double w_new, double h_new, QPointF oldPos, QPointF newPos)
 {
     if(mpParentContainerObject->mUndoDisabled)
@@ -969,6 +990,14 @@ void UndoStack::registerResizedBoxWidget(int index, double w_old, double h_old, 
 }
 
 
+//! @brief Register function for modifying the style of a box widget
+//! @param index Widget index of the modified box widget
+//! @param oldLineWidth Previous line width
+//! @param oldLineStyle Previous pen style (Qt enum)
+//! @param oldLineColor Previous line color
+//! @param lineWidth New line width
+//! @param lineStyle New pen style
+//! @param lineColor New line color
 void UndoStack::registerModifiedBoxWidgetStyle(int index, int oldLineWidth, Qt::PenStyle oldLineStyle, QColor oldLineColor, int lineWidth, Qt::PenStyle lineStyle, QColor lineColor)
 {
     if(mpParentContainerObject->mUndoDisabled)
@@ -1004,6 +1033,8 @@ void UndoStack::registerModifiedBoxWidgetStyle(int index, int oldLineWidth, Qt::
 }
 
 
+//! @brief Register function for adding a text widget
+//! @param item Pointer to the new text widget
 void UndoStack::registerAddedTextWidget(GUITextWidget *item)
 {
     if(mpParentContainerObject->mUndoDisabled)
@@ -1017,6 +1048,8 @@ void UndoStack::registerAddedTextWidget(GUITextWidget *item)
 }
 
 
+//! @brief Register function for deleting a text widget
+//! @param item Pointer to the text widget about to be deleted
 void UndoStack::registerDeletedTextWidget(GUITextWidget *item)
 {
     if(mpParentContainerObject->mUndoDisabled)
@@ -1030,6 +1063,14 @@ void UndoStack::registerDeletedTextWidget(GUITextWidget *item)
 }
 
 
+//! @brief Register function for modying a text widget
+//! @param index Widget index of the text widget
+//! @param oldText Previous text
+//! @param oldFont Previous text font
+//! @param oldColor Previous text color
+//! @param text New text
+//! @param font New text font
+//! @param color New text color
 void UndoStack::registerModifiedTextWidget(int index, QString oldText, QFont oldFont, QColor oldColor, QString text, QFont font, QColor color)
 {
     if(mpParentContainerObject->mUndoDisabled)
@@ -1048,6 +1089,10 @@ void UndoStack::registerModifiedTextWidget(int index, QString oldText, QFont old
 }
 
 
+//! @brief Register function for moving a GUI Widget
+//! @param item Pointer to the moved GUI Widget
+//! @param oldPos Previous position
+//! @param newPos New Position
 void UndoStack::registerMovedWidget(GUIWidget *item, QPointF oldPos, QPointF newPos)
 {
     if(mpParentContainerObject->mUndoDisabled)

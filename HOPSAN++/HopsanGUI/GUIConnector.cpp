@@ -270,15 +270,17 @@ void GUIConnector::setStartPort(GUIPort *port)
 //! @see getEndPort()
 void GUIConnector::setEndPort(GUIPort *port)
 {
+        //Set the end port pointer, flag that the end port is connector and tell the port to flag that it is connected
     mEndPortConnected = true;
     mpEndPort = port;
     mpEndPort->setIsConnected(true);
 
+        //Figure out whether or not the last line had the right direction, and make necessary corrections
     if( ( ((mpEndPort->getPortDirection() == LEFTRIGHT) && (mGeometries.back() == HORIZONTAL)) ||
           ((mpEndPort->getPortDirection() == TOPBOTTOM) && (mGeometries.back() == VERTICAL)) ) ||
           (mGeometries[mGeometries.size()-2] == DIAGONAL))
     {
-            //Wrong direction of last line, so remove last point. It will be fine.
+            //Wrong direction of last line, so remove last point. This is because an extra line was added with the last click, that shall not be there.
         this->removePoint();
         this->scene()->removeItem(mpLines.back());
         delete(mpLines.back());
@@ -286,7 +288,8 @@ void GUIConnector::setEndPort(GUIPort *port)
     }
     else
     {
-            //Move second last line a bit outwards from the component
+            //Correct direction of last line, which was added due to the final mouse click. This means that the last "real" line has the wrong direction.
+            //We therefore keep the extra line, and move second last line a bit outwards from the component.
         QPointF offsetPoint = getOffsetPointfromPort(mpStartPort, mpEndPort);
         mPoints[mPoints.size()-2] = mpEndPort->mapToScene(mpEndPort->boundingRect().center()) + offsetPoint;
         if(offsetPoint.x() != 0.0)
@@ -298,7 +301,11 @@ void GUIConnector::setEndPort(GUIPort *port)
         mpParentContainerObject->mpParentProjectTab->mpGraphicsView->updateViewPort();
     }
 
+        //Make sure the end point of the connector is the center position of the end port
     this->updateEndPoint(port->mapToScene(port->boundingRect().center()));
+
+        //Connect the connector with delete and select slots in the new end component.
+        //This will make it deleted when component is deleted, and selected if both start and end components are selected.
     connect(mpEndPort->getGuiModelObject(),SIGNAL(objectDeleted()),this,SLOT(deleteMeWithNoUndo()));
     connect(mpEndPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
 
@@ -306,15 +313,23 @@ void GUIConnector::setEndPort(GUIPort *port)
     if(mpLines.size() > 1)
     {
         for(int i=1; i!=mpLines.size()-1; ++i)
+        {
             mpLines[i]->setFlag(QGraphicsItem::ItemIsMovable, true);
+        }
     }
     for(int i=0; i!=mpLines.size(); ++i)
+    {
         mpLines[i]->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    }
 
+        //Let the world know that we are connected!
     emit endPortConnected();
-    this->determineAppearance();
-    this->setPassive();
 
+        //Figure out which connector appearance to use
+    this->determineAppearance();
+
+        //Make line passive (deselected)
+    this->setPassive();
 
         //Snap if close to a snapping position
     if(gConfig.getSnapping())
@@ -499,6 +514,8 @@ bool GUIConnector::isActive()
 }
 
 
+//! @brief Saves connector to xml format
+//! @param rDomElement Reference to the DOM element to write to
 void GUIConnector::saveToDomElement(QDomElement &rDomElement)
 {
     //Core necessary stuff
@@ -529,7 +546,7 @@ void GUIConnector::saveToDomElement(QDomElement &rDomElement)
 }
 
 
-
+//! @brief Handlex context menu eventse for connector
 void GUIConnector::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     QGraphicsWidget::contextMenuEvent(event);
@@ -659,7 +676,7 @@ void GUIConnector::moveAllPoints(qreal offsetX, qreal offsetY)
 }
 
 
-//! @brief Tells the connector to create one diagonal lines instead of the last two horizontal/vertical, or to return to horizontal/diagonal mode.
+//! @brief Changes the last two vertical/horizontal lines to one diagonal, or changes back to vertical horizontal if last line is already diagonal
 //! @param enable True (false) if diagonal mode shall be enabled (disabled)
 //! @see isMakingDiagonal()
 void GUIConnector::makeDiagonal(bool enable)
@@ -857,7 +874,6 @@ void GUIConnector::setUnHovered()
 //! @todo Rename this to something less childish!
 void GUIConnector::deleteMe()
 {
-    //qDebug() << "deleteMe()";
     qDebug() << "calling remove connector in system: " << mpParentContainerObject->getName();
     mpParentContainerObject->removeConnector(this, UNDO);
 }
