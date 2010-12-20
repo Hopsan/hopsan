@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsandefaults>
+    <settings>
+        <backgroundcolor>#ffffff</backgroundcolor>
+        <antialiasing>true</antialiasing>
+        <invertwheel>false</invertwheel>
+        <snapping>true</snapping>
+        <progressbar>true</progressbar>
+        <progressbar_step>50</progressbar_step>
+        <multicore>false</multicore>
+        <numberofthreads>0</numberofthreads>
+    </settings>
+    <style>
+        <penstyle width="3" situation="Primary" capstyle="32" type="NonFinished" style="1" color="#778899" gfxtype="Iso"/>
+        <penstyle width="3" situation="Primary" capstyle="32" type="NonFinished" style="1" color="#778899" gfxtype="User"/>
+        <penstyle width="2" situation="Active" capstyle="32" type="Power" style="1" color="#ff0000" gfxtype="Iso"/>
+        <penstyle width="2" situation="Hover" capstyle="32" type="Power" style="1" color="#8b0000" gfxtype="Iso"/>
+        <penstyle width="1" situation="Primary" capstyle="32" type="Power" style="1" color="#000000" gfxtype="Iso"/>
+        <penstyle width="3" situation="Active" capstyle="32" type="Power" style="1" color="#ff0000" gfxtype="User"/>
+        <penstyle width="3" situation="Hover" capstyle="32" type="Power" style="1" color="#8b0000" gfxtype="User"/>
+        <penstyle width="2" situation="Primary" capstyle="32" type="Power" style="1" color="#000000" gfxtype="User"/>
+        <penstyle width="2" situation="Active" capstyle="16" type="Signal" style="2" color="#ff0000" gfxtype="Iso"/>
+        <penstyle width="2" situation="Hover" capstyle="16" type="Signal" style="2" color="#8b0000" gfxtype="Iso"/>
+        <penstyle width="1" situation="Primary" capstyle="16" type="Signal" style="2" color="#0000ff" gfxtype="Iso"/>
+        <penstyle width="2" situation="Active" capstyle="16" type="Signal" style="2" color="#ff0000" gfxtype="User"/>
+        <penstyle width="2" situation="Hover" capstyle="16" type="Signal" style="2" color="#8b0000" gfxtype="User"/>
+        <penstyle width="1" situation="Primary" capstyle="16" type="Signal" style="2" color="#0000ff" gfxtype="User"/>
+    </style>
+    <units>
+        <defaultunit unit="rad" name="Angle"/>
+        <defaultunit unit="rad/s" name="Angular Velocity"/>
+        <defaultunit unit="m^3/s" name="Flow"/>
+        <defaultunit unit="N" name="Force"/>
+        <defaultunit unit="m" name="Position"/>
+        <defaultunit unit="Pa" name="Pressure"/>
+        <defaultunit unit="Nm" name="Torque"/>
+        <defaultunit unit="-" name="Value"/>
+        <defaultunit unit="m/s" name="Velocity"/>
+        <customunit unit="deg" scale="57.296" name="Angle"/>
+        <customunit unit="rad" scale="1" name="Angle"/>
+        <customunit unit="deg/s" scale="57.296" name="Angular Velocity"/>
+        <customunit unit="rad/s" scale="1" name="Angular Velocity"/>
+        <customunit unit="rev/s" scale="0.159155" name="Angular Velocity"/>
+        <customunit unit="rpm" scale="9.549296585" name="Angular Velocity"/>
+        <customunit unit="l/min" scale="60000" name="Flow"/>
+        <customunit unit="m^3/s" scale="1" name="Flow"/>
+        <customunit unit="N" scale="1" name="Force"/>
+        <customunit unit="kN" scale="0.001" name="Force"/>
+        <customunit unit="cm" scale="100" name="Position"/>
+        <customunit unit="ft" scale="3.2808" name="Position"/>
+        <customunit unit="inch" scale="39.3700787" name="Position"/>
+        <customunit unit="m" scale="1" name="Position"/>
+        <customunit unit="mm" scale="1000" name="Position"/>
+        <customunit unit="Bar" scale="1e-005" name="Pressure"/>
+        <customunit unit="MPa" scale="1e-006" name="Pressure"/>
+        <customunit unit="Pa" scale="1" name="Pressure"/>
+        <customunit unit="psi" scale="0.0001450326" name="Pressure"/>
+        <customunit unit="Nm" scale="1" name="Torque"/>
+        <customunit unit="-" scale="1" name="Value"/>
+        <customunit unit="m/s" scale="1" name="Velocity"/>
+    </units>
+</hopsandefaults>

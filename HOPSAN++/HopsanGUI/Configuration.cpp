@@ -132,107 +132,110 @@ void Configuration::saveToXml()
 //! @brief Updates all settings from hopsanconfig.xml
 void Configuration::loadFromXml()
 {
-    //Apply default values
-    mInvertWheel = false;
-    mUseMulticore = false;
-    mNumberOfThreads = 0;
-    mEnableProgressBar = true;
-    mProgressBarStep = 50;
-    mSnapping = true;
-    mBackgroundColor = QColor("white");
-    mAntiAliasing = true;
-    mLastSessionModels.clear();
-    mRecentModels.clear();
+//    //Apply default values
+//    mInvertWheel = false;
+//    mUseMulticore = false;
+//    mNumberOfThreads = 0;
+//    mEnableProgressBar = true;
+//    mProgressBarStep = 50;
+//    mSnapping = true;
+//    mBackgroundColor = QColor("white");
+//    mAntiAliasing = true;
+//    mLastSessionModels.clear();
+//    mRecentModels.clear();
 
-    mDefaultUnits.insert("Value", "-");
-    mDefaultUnits.insert("Pressure", "Pa");
-    mDefaultUnits.insert("Flow", "m^3/s");
-    mDefaultUnits.insert("Force", "N");
-    mDefaultUnits.insert("Position", "m");
-    mDefaultUnits.insert("Velocity", "m/s");
-    mDefaultUnits.insert("Torque", "Nm");
-    mDefaultUnits.insert("Angle", "rad");
-    mDefaultUnits.insert("Angular Velocity", "rad/s");
+//    mDefaultUnits.insert("Value", "-");
+//    mDefaultUnits.insert("Pressure", "Pa");
+//    mDefaultUnits.insert("Flow", "m^3/s");
+//    mDefaultUnits.insert("Force", "N");
+//    mDefaultUnits.insert("Position", "m");
+//    mDefaultUnits.insert("Velocity", "m/s");
+//    mDefaultUnits.insert("Torque", "Nm");
+//    mDefaultUnits.insert("Angle", "rad");
+//    mDefaultUnits.insert("Angular Velocity", "rad/s");
 
-    QMap<QString, QPen> isoPenMap;
-    QMap<QString, QPen> userPenMap;
+//    QMap<QString, QPen> isoPenMap;
+//    QMap<QString, QPen> userPenMap;
 
-    QMap<QString, QMap<QString, QPen> > powerPenMap;
-    isoPenMap.insert("Primary", QPen(QColor("black"),1, Qt::SolidLine, Qt::RoundCap));
-    isoPenMap.insert("Active", QPen(QColor("red"), 2, Qt::SolidLine, Qt::RoundCap));
-    isoPenMap.insert("Hover", QPen(QColor("darkRed"),2, Qt::SolidLine, Qt::RoundCap));
-    powerPenMap.insert("Iso", isoPenMap);
-    userPenMap.insert("Primary", QPen(QColor("black"),2, Qt::SolidLine, Qt::RoundCap));
-    userPenMap.insert("Active", QPen(QColor("red"), 3, Qt::SolidLine, Qt::RoundCap));
-    userPenMap.insert("Hover", QPen(QColor("darkRed"),3, Qt::SolidLine, Qt::RoundCap));
-    powerPenMap.insert("User", userPenMap);
-    mPenStyles.insert("Power", powerPenMap);
+//    QMap<QString, QMap<QString, QPen> > powerPenMap;
+//    isoPenMap.insert("Primary", QPen(QColor("black"),1, Qt::SolidLine, Qt::RoundCap));
+//    isoPenMap.insert("Active", QPen(QColor("red"), 2, Qt::SolidLine, Qt::RoundCap));
+//    isoPenMap.insert("Hover", QPen(QColor("darkRed"),2, Qt::SolidLine, Qt::RoundCap));
+//    powerPenMap.insert("Iso", isoPenMap);
+//    userPenMap.insert("Primary", QPen(QColor("black"),2, Qt::SolidLine, Qt::RoundCap));
+//    userPenMap.insert("Active", QPen(QColor("red"), 3, Qt::SolidLine, Qt::RoundCap));
+//    userPenMap.insert("Hover", QPen(QColor("darkRed"),3, Qt::SolidLine, Qt::RoundCap));
+//    powerPenMap.insert("User", userPenMap);
+//    mPenStyles.insert("Power", powerPenMap);
 
-    isoPenMap.clear();
-    userPenMap.clear();
+//    isoPenMap.clear();
+//    userPenMap.clear();
 
-    QMap<QString, QMap<QString, QPen> > signalPenMap;
-    isoPenMap.insert("Primary", QPen(QColor("blue"),1, Qt::DashLine));
-    isoPenMap.insert("Active", QPen(QColor("red"), 2, Qt::DashLine));
-    isoPenMap.insert("Hover", QPen(QColor("darkRed"),2, Qt::DashLine));
-    signalPenMap.insert("Iso", isoPenMap);
-    userPenMap.insert("Primary", QPen(QColor("blue"),1, Qt::DashLine));
-    userPenMap.insert("Active", QPen(QColor("red"), 2, Qt::DashLine));
-    userPenMap.insert("Hover", QPen(QColor("darkRed"),2, Qt::DashLine));
-    signalPenMap.insert("User", userPenMap);
-    mPenStyles.insert("Signal", signalPenMap);
+//    QMap<QString, QMap<QString, QPen> > signalPenMap;
+//    isoPenMap.insert("Primary", QPen(QColor("blue"),1, Qt::DashLine));
+//    isoPenMap.insert("Active", QPen(QColor("red"), 2, Qt::DashLine));
+//    isoPenMap.insert("Hover", QPen(QColor("darkRed"),2, Qt::DashLine));
+//    signalPenMap.insert("Iso", isoPenMap);
+//    userPenMap.insert("Primary", QPen(QColor("blue"),1, Qt::DashLine));
+//    userPenMap.insert("Active", QPen(QColor("red"), 2, Qt::DashLine));
+//    userPenMap.insert("Hover", QPen(QColor("darkRed"),2, Qt::DashLine));
+//    signalPenMap.insert("User", userPenMap);
+//    mPenStyles.insert("Signal", signalPenMap);
 
-    isoPenMap.clear();
+//    isoPenMap.clear();
 
-    QMap<QString, QMap<QString, QPen> >nonFinishedPenMap;
-    isoPenMap.insert("Primary", QPen(QColor("lightslategray"),3,Qt::SolidLine, Qt::RoundCap));
-    nonFinishedPenMap.insert("Iso", isoPenMap);
-    nonFinishedPenMap.insert("User", isoPenMap);
-    mPenStyles.insert("NonFinished", nonFinishedPenMap);
+//    QMap<QString, QMap<QString, QPen> >nonFinishedPenMap;
+//    isoPenMap.insert("Primary", QPen(QColor("lightslategray"),3,Qt::SolidLine, Qt::RoundCap));
+//    nonFinishedPenMap.insert("Iso", isoPenMap);
+//    nonFinishedPenMap.insert("User", isoPenMap);
+//    mPenStyles.insert("NonFinished", nonFinishedPenMap);
 
 
-    //Definition of custom units
-    QMap<QString, double> PressureUnitMap;
-    PressureUnitMap.insert("Pa", 1);
-    PressureUnitMap.insert("Bar", 1e-5);
-    PressureUnitMap.insert("MPa", 1e-6);
-    PressureUnitMap.insert("psi", 1.450326e-4);
-    QMap<QString, double> FlowUnitMap;
-    FlowUnitMap.insert("m^3/s", 1);
-    FlowUnitMap.insert("l/min", 60000);
-    QMap<QString, double> ForceUnitMap;
-    ForceUnitMap.insert("N", 1);
-    ForceUnitMap.insert("kN", 1e-3);
-    QMap<QString, double> PositionUnitMap;
-    PositionUnitMap.insert("m", 1);
-    PositionUnitMap.insert("mm", 1000);
-    PositionUnitMap.insert("cm", 100);
-    PositionUnitMap.insert("inch", 39.3700787);
-    PositionUnitMap.insert("ft", 3.2808);
-    QMap<QString, double> VelocityUnitMap;
-    VelocityUnitMap.insert("m/s", 1);
-    QMap<QString, double> TorqueUnitMap;
-    TorqueUnitMap.insert("Nm", 1);
-    QMap<QString, double> AngleUnitMap;
-    AngleUnitMap.insert("rad", 1);
-    AngleUnitMap.insert("deg", 57.296);
-    QMap<QString, double> AngularVelocityUnitMap;
-    AngularVelocityUnitMap.insert("rad/s", 1);
-    AngularVelocityUnitMap.insert("deg/s", 57.296);
-    AngularVelocityUnitMap.insert("rev/s", 0.159155);
-    AngularVelocityUnitMap.insert("rpm", 9.549296585);
-    QMap<QString, double> ValueUnitMap;
-    ValueUnitMap.insert("-", 1);
-    mCustomUnits.insert("Pressure", PressureUnitMap);
-    mCustomUnits.insert("Flow", FlowUnitMap);
-    mCustomUnits.insert("Force", ForceUnitMap);
-    mCustomUnits.insert("Position", PositionUnitMap);
-    mCustomUnits.insert("Velocity", VelocityUnitMap);
-    mCustomUnits.insert("Torque", TorqueUnitMap);
-    mCustomUnits.insert("Angle", AngleUnitMap);
-    mCustomUnits.insert("Angular Velocity", AngularVelocityUnitMap);
-    mCustomUnits.insert("Value", ValueUnitMap);
+//    //Definition of custom units
+//    QMap<QString, double> PressureUnitMap;
+//    PressureUnitMap.insert("Pa", 1);
+//    PressureUnitMap.insert("Bar", 1e-5);
+//    PressureUnitMap.insert("MPa", 1e-6);
+//    PressureUnitMap.insert("psi", 1.450326e-4);
+//    QMap<QString, double> FlowUnitMap;
+//    FlowUnitMap.insert("m^3/s", 1);
+//    FlowUnitMap.insert("l/min", 60000);
+//    QMap<QString, double> ForceUnitMap;
+//    ForceUnitMap.insert("N", 1);
+//    ForceUnitMap.insert("kN", 1e-3);
+//    QMap<QString, double> PositionUnitMap;
+//    PositionUnitMap.insert("m", 1);
+//    PositionUnitMap.insert("mm", 1000);
+//    PositionUnitMap.insert("cm", 100);
+//    PositionUnitMap.insert("inch", 39.3700787);
+//    PositionUnitMap.insert("ft", 3.2808);
+//    QMap<QString, double> VelocityUnitMap;
+//    VelocityUnitMap.insert("m/s", 1);
+//    QMap<QString, double> TorqueUnitMap;
+//    TorqueUnitMap.insert("Nm", 1);
+//    QMap<QString, double> AngleUnitMap;
+//    AngleUnitMap.insert("rad", 1);
+//    AngleUnitMap.insert("deg", 57.296);
+//    QMap<QString, double> AngularVelocityUnitMap;
+//    AngularVelocityUnitMap.insert("rad/s", 1);
+//    AngularVelocityUnitMap.insert("deg/s", 57.296);
+//    AngularVelocityUnitMap.insert("rev/s", 0.159155);
+//    AngularVelocityUnitMap.insert("rpm", 9.549296585);
+//    QMap<QString, double> ValueUnitMap;
+//    ValueUnitMap.insert("-", 1);
+//    mCustomUnits.insert("Pressure", PressureUnitMap);
+//    mCustomUnits.insert("Flow", FlowUnitMap);
+//    mCustomUnits.insert("Force", ForceUnitMap);
+//    mCustomUnits.insert("Position", PositionUnitMap);
+//    mCustomUnits.insert("Velocity", VelocityUnitMap);
+//    mCustomUnits.insert("Torque", TorqueUnitMap);
+//    mCustomUnits.insert("Angle", AngleUnitMap);
+//    mCustomUnits.insert("Angular Velocity", AngularVelocityUnitMap);
+//    mCustomUnits.insert("Value", ValueUnitMap);
 
+
+    //Read from hopsandefaults.xml
+    loadDefaultsFromXml();
 
     //Read from hopsanconfig.xml
     QFile file(QString(MAINPATH) + "hopsanconfig.xml");
@@ -361,6 +364,121 @@ void Configuration::loadFromXml()
         }
     }
     file.close();
+}
+
+
+
+void Configuration::loadDefaultsFromXml()
+{
+    //Read from hopsandefaults.xml
+    QFile file(QString(MAINPATH) + "hopsandefaults");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+                                 gpMainWindow->tr("Unable to read default configuration file. Please reinstall program."));
+
+        qApp->quit();
+    }
+    QDomDocument domDocument;
+    QString errorStr;
+    int errorLine, errorColumn;
+    if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
+    {
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+                                 gpMainWindow->tr("Parse error at line %1, column %2:\n%3")
+                                 .arg(errorLine)
+                                 .arg(errorColumn)
+                                 .arg(errorStr));
+    }
+    else
+    {
+        QDomElement configRoot = domDocument.documentElement();
+        if (configRoot.tagName() != "hopsandefaults")
+        {
+            QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan GUI"),
+                                     "The file is not an Hopsan Configuration File. Incorrect hmf root tag name: "
+                                     + configRoot.tagName() + " != hopsandefaults");
+        }
+        else
+        {
+            QDomElement settingsElement = configRoot.firstChildElement("settings");
+
+            if(!settingsElement.firstChildElement("backgroundcolor").isNull())
+                mBackgroundColor.setNamedColor(settingsElement.firstChildElement("backgroundcolor").text());
+            if(!settingsElement.firstChildElement("antialiasing").isNull())
+                mAntiAliasing = parseDomBooleanNode(settingsElement.firstChildElement("antialiasing"));
+            if(!settingsElement.firstChildElement("invertwheel").isNull())
+                mInvertWheel = parseDomBooleanNode(settingsElement.firstChildElement("invertwheel"));
+            if(!settingsElement.firstChildElement("snapping").isNull())
+                mSnapping = parseDomBooleanNode(settingsElement.firstChildElement("snapping"));
+            if(!settingsElement.firstChildElement("progressbar").isNull())
+                mEnableProgressBar = parseDomBooleanNode(settingsElement.firstChildElement("progressbar"));
+            if(!settingsElement.firstChildElement("progressbar_step").isNull())
+                mProgressBarStep = parseDomValueNode(settingsElement.firstChildElement("progressbar_step"));
+            if(!settingsElement.firstChildElement("multicore").isNull())
+                mUseMulticore = parseDomBooleanNode(settingsElement.firstChildElement("multicore"));
+            if(!settingsElement.firstChildElement("numberofthreads").isNull())
+                this->mNumberOfThreads = parseDomValueNode(settingsElement.firstChildElement("numberofthreads"));
+            QDomElement styleElement = configRoot.firstChildElement("style");
+            QDomElement penElement = styleElement.firstChildElement("penstyle");
+            while(!penElement.isNull())
+            {
+                QString type = penElement.attribute("type");
+                QString gfxType = penElement.attribute("gfxtype");
+                QString situation = penElement.attribute("situation");
+                QString color = penElement.attribute("color");
+                int width = penElement.attribute("width").toInt();
+                Qt::PenStyle style = Qt::PenStyle(penElement.attribute("style").toInt());
+                Qt::PenCapStyle capStyle = Qt::PenCapStyle(penElement.attribute("capstyle").toInt());
+                QPen pen = QPen(QColor(color), width, style, capStyle);
+
+                if(!mPenStyles.contains(type))
+                {
+                    QMap<QString, QMap<QString, QPen> > tempMap;
+                    mPenStyles.insert(type, tempMap);
+                }
+                if(!mPenStyles.find(type).value().contains(gfxType))
+                {
+                    QMap<QString, QPen> tempMap;
+                    mPenStyles.find(type).value().insert(gfxType, tempMap);
+                }
+                mPenStyles.find(type).value().find(gfxType).value().insert(situation, pen);
+
+                penElement = penElement.nextSiblingElement("penstyle");
+            }
+            QDomElement unitsElement = configRoot.firstChildElement("units");
+            QDomElement defaultUnitElement = unitsElement.firstChildElement("defaultunit");
+            while (!defaultUnitElement.isNull())
+            {
+                mDefaultUnits.insert(defaultUnitElement.attribute("name"),
+                                     defaultUnitElement.attribute("unit"));
+                defaultUnitElement = defaultUnitElement.nextSiblingElement("defaultunit");
+            }
+            mCustomUnits.insert("Pressure", QMap<QString, double>());
+            mCustomUnits.insert("Flow", QMap<QString, double>());
+            mCustomUnits.insert("Force", QMap<QString, double>());
+            mCustomUnits.insert("Position", QMap<QString, double>());
+            mCustomUnits.insert("Velocity", QMap<QString, double>());
+            mCustomUnits.insert("Torque", QMap<QString, double>());
+            mCustomUnits.insert("Angle", QMap<QString, double>());
+            mCustomUnits.insert("Angular Velocity", QMap<QString, double>());
+            mCustomUnits.insert("Value", QMap<QString, double>());
+            QDomElement customUnitElement = unitsElement.firstChildElement("customunit");
+            while (!customUnitElement.isNull())
+            {
+                QString physicalQuantity = customUnitElement.attribute("name");
+                QString unitName = customUnitElement.attribute("unit");
+                double unitScale = customUnitElement.attribute("scale").toDouble();
+                if(!mCustomUnits.find(physicalQuantity).value().contains(unitName))
+                {
+                    mCustomUnits.find(physicalQuantity).value().insert(unitName, unitScale);
+                }
+                customUnitElement = customUnitElement.nextSiblingElement("customunit");
+            }
+        }
+    }
+    file.close();
+    return;
 }
 
 

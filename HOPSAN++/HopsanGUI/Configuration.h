@@ -19,6 +19,7 @@ class Configuration
 public:
     void saveToXml();
     void loadFromXml();
+    void loadDefaultsFromXml();
 
     bool getInvertWheel();
     bool getUseMulticore();

@@ -165,6 +165,12 @@ namespace hopsan {
 
         void initialize()
         {
+
+            double x   = mpP3->readNode(NodeMechanic::POSITION);
+            double v   = mpP3->readNode(NodeMechanic::VELOCITY);
+            mXInternal = -x;
+            mVInternal = -v;
+
             mZSpring0 = mWfak * mEquivalentMass / mTimestep;
 
             mMinVolume1 = mBetae * mTimestep*mTimestep  * mArea1*mArea1 / (mWfak * mEquivalentMass);
@@ -330,36 +336,67 @@ namespace hopsan {
             {
                 mZSpring = mZSpring0 / (1.0 - mAlphaSpring);
                 mCSpring0 = -mZSpring0 / mTimestep * (mXInternal - mStroke) - mZSpring0 * mVInternal;
+
+                if(mDebugCount == 100)
+                {
+                    mDebugCount = 0;
+                    std::stringstream ss;
+                    ss << "mCSpring0 = -";
+                    ss << mZSpring0;
+                    ss << " / ";
+                    ss << mTimestep;
+                    ss << " * (";
+                    ss << mXInternal;
+                    ss << " - ";
+                    ss << mStroke;
+                    ss << ") - ";
+                    ss << mZSpring0;
+                    ss << " * ";
+                    ss << mVInternal;
+                    ss << " = ";
+                    ss << mCSpring0;
+                    addDebugMessage(ss.str());
+                }
+                ++mDebugCount;
             }
             else if (mXInternal < 0.0)
             {
                 mZSpring = mZSpring0 / (1.0 - mAlphaSpring);
                 mCSpring0 = -mZSpring0 / mTimestep * mXInternal - mZSpring0 * mVInternal;
+
+                if(mDebugCount == 100)
+                {
+                    mDebugCount = 0;
+                    std::stringstream ss;
+                    ss << "mCSpring0 = -";
+                    ss << mZSpring0;
+                    ss << " / ";
+                    ss << mTimestep;
+                    ss << " * (";
+                    ss << mXInternal;
+                    ss << " - ";
+                    ss << mStroke;
+                    ss << ") - ";
+                    ss << mZSpring0;
+                    ss << " * ";
+                    ss << mVInternal;
+                    ss << " = ";
+                    ss << mCSpring0;
+                    addDebugMessage(ss.str());
+                }
+                ++mDebugCount;
             }
             else
             {
                 mZSpring = 0.0;
                 mCSpring0 = 0.0;
+                mPrevCSpring = 0.0;
             }
 
                 /* Filtering of the characteristics */
 
             mCSpring = mAlphaSpring * mPrevCSpring + (1.0 - mAlphaSpring) * mCSpring0;
             mPrevCSpring = mCSpring;
-
-            if(mDebugCount == 100)
-            {
-                mDebugCount = 0;
-                std::stringstream ss;
-                ss << "mTime = ";
-                ss << mTime;
-                ss << ", mZSpring = ";
-                ss << mZSpring;
-                ss << ", mCSpring = ";
-                ss << mCSpring;
-                addDebugMessage(ss.str());
-            }
-            ++mDebugCount;
 
             c3 = mC1InternalEffective*mArea1 - mC2InternalEffective*mArea2 + mCSpring;
             Zc3 = mArea1*mArea1 * mZc10 + mArea2*mArea2 * mZc20 + mBp + mZSpring;
