@@ -7,14 +7,11 @@
 //!
 //$Id$
 
-//#include <cmath>
 #include <qmath.h>
 #include <QPoint>
 #include <QDir>
 
 #include "GUIUtilities.h"
-//#include "GUIPort.h"
-//#include "GUIObject.h"
 
 using namespace std;
 
@@ -54,6 +51,16 @@ QString readName(QTextStream &rTextStream)
 //! It is assumed that the name was saved OK. but error indicated by empty string
 QString readName(QString namestring)
 {
+//    if (namestring.endsWith("\""))
+//    {
+//        namestring.chop(1);
+//    }
+
+//    if (namestring.startsWith("\""))
+//    {
+//        namestring.remove(1,0);
+//    }
+
     QTextStream namestream(&namestring);
     return readName(namestream);
 }

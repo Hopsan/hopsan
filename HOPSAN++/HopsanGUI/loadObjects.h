@@ -3,7 +3,6 @@
 #ifndef LOADOBJECTS_H
 #define LOADOBJECTS_H
 
-#include <QTextStream>
 #include "GUIObjects/GUIModelObjectAppearance.h"
 #include "Utilities/XMLUtilities.h"
 #include <QFont>
@@ -21,24 +20,24 @@ class MessageWidget;
 class GUISystem;
 class GUIContainerObject;
 
-class HeaderLoadData
-{
-public:
-    double startTime;
-    double timeStep;
-    double stopTime;
+//class HeaderLoadData
+//{
+//public:
+//    double startTime;
+//    double timeStep;
+//    double stopTime;
 
-    QString hopsangui_version;
-    QString hopsancore_version;
-    QString hmf_version;
-    QString caf_version;
+//    QString hopsangui_version;
+//    QString hopsancore_version;
+//    QString hmf_version;
+//    QString caf_version;
 
-    double viewport_x;
-    double viewport_y;
-    double viewport_zoomfactor;
+//    double viewport_x;
+//    double viewport_y;
+//    double viewport_zoomfactor;
 
-    void read(QTextStream &rStream);
-};
+//    void read(QTextStream &rStream);
+//};
 
 class ModelObjectLoadData
 {
@@ -50,7 +49,7 @@ public:
     int nameTextPos;
     int textVisible;
 
-    void read(QTextStream &rStream);
+    //void read(QTextStream &rStream);
     void readDomElement(QDomElement &rDomElement);
 
 protected:
@@ -66,27 +65,27 @@ public:
     QString cqs_type;
     QDomElement embededSystemDomElement;
 
-    void read(QTextStream &rStream);
+    //void read(QTextStream &rStream);
     void readDomElement(QDomElement &rDomElement);
 
 };
 
-//! @obsolete
-class SystemAppearanceLoadData
-{
-public:
-    QString usericon_path;
-    QString isoicon_path;
-    //! @todo code these four vectors in some other smarter way, compare with port apperance
-    QVector<QString> portnames;
-    QVector<qreal> port_xpos;
-    QVector<qreal> port_ypos;
-    QVector<qreal> port_angle;
+////! @obsolete
+//class SystemAppearanceLoadData
+//{
+//public:
+//    QString usericon_path;
+//    QString isoicon_path;
+//    //! @todo code these four vectors in some other smarter way, compare with port apperance
+//    QVector<QString> portnames;
+//    QVector<qreal> port_xpos;
+//    QVector<qreal> port_ypos;
+//    QVector<qreal> port_angle;
 
-    void read(QTextStream &rStream);
-    //void readDomElement(QDomElement &rDomElement);
+//    void read(QTextStream &rStream);
+//    //void readDomElement(QDomElement &rDomElement);
 
-};
+//};
 
 class ConnectorLoadData
 {
@@ -95,7 +94,7 @@ public:
     QVector<QPointF> pointVector;
     QStringList geometryList;
 
-    void read(QTextStream &rStream);
+    //void read(QTextStream &rStream);
     void readDomElement(QDomElement &rDomElement);
 };
 
@@ -106,7 +105,7 @@ public:
     QString parameterValue;
     //QString parameterGlobalKey;
 
-    void read(QTextStream &rStream);
+    //void read(QTextStream &rStream);
     void readDomElement(QDomElement &rDomElement);
 };
 
@@ -162,19 +161,19 @@ public:
 };
 
 GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
-GUIModelObject* loadGUIModelObject(QTextStream &rStream, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
+//GUIModelObject* loadGUIModelObject(QTextStream &rStream, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
 GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
 
 GUIObject* loadSubsystemGUIObject(SubsystemLoadData &rData, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings);
-GUIObject* loadSubsystemGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings);
+//GUIObject* loadSubsystemGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings);
 GUIObject* loadSubsystemGUIObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings);
 
 void loadConnector(const ConnectorLoadData &rData, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
-void loadConnector(QTextStream &rStream, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
+//void loadConnector(QTextStream &rStream, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
 void loadConnector(QDomElement &rDomElement, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
 
-void loadParameterValues(const ParameterLoadData &rData, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
-void loadParameterValues(QTextStream &rStream, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
+//void loadParameterValues(const ParameterLoadData &rData, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
+//void loadParameterValues(QTextStream &rStream, GUIContainerObject* pSystem, undoStatus undoSettings=UNDO);
 void loadParameterValue(const ParameterLoadData &rData, GUIModelObject* pObject, undoStatus undoSettings=UNDO);
 void loadParameterValue(QDomElement &rDomElement, GUIModelObject* pObject, undoStatus undoSettings=UNDO);
 
@@ -185,13 +184,11 @@ void loadSystemParameter(QDomElement &rDomElement, GUIContainerObject* pSystem);
 void loadFavoriteParameter(const FavoriteParameterLoadData &rData, GUIContainerObject* pSystem);
 void loadFavoriteParameter(QDomElement &rDomElement, GUIContainerObject* pSystem);
 
-
-
 void loadTextWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoStatus undoSettings=UNDO);
 void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoStatus undoSettings=UNDO);
 
-HeaderLoadData readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidget);
-void writeHeader(QTextStream &rStream);
+//HeaderLoadData readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidget);
+//void writeHeader(QTextStream &rStream);
 //void addHMFHeader(QDomElement &rDomElement);
 
 QDomElement appendHMFRootElement(QDomDocument &rDomDocument);

@@ -38,7 +38,7 @@ public:
     QString getTypeCQS();
 
     void saveToDomElement(QDomElement &rDomElement);
-    void loadFromHMF(QString modelFilePath=QString());
+    //void loadFromHMF(QString modelFilePath=QString());
     void loadFromDomElement(QDomElement &rDomElement);
     void setModelFileInfo(QFile &rFile);
 

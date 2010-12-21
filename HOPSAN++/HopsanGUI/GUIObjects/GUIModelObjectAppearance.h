@@ -10,7 +10,7 @@
 #ifndef GUIMODELOBJECTAPPEARANCE_H
 #define GUIMODELOBJECTAPPEARANCE_H
 
-#include <QTextStream>
+//#include <QTextStream>
 #include <QString>
 #include <QPointF>
 #include "../common.h"
@@ -47,14 +47,14 @@ public:
 
     QString getBaseIconPath();
 
-    void readFromTextStream(QTextStream &is);
+    //void readFromTextStream(QTextStream &is);
     void readFromDomElement(QDomElement domElement);
     void saveToDomElement(QDomElement &rDomElement);
     void saveToXML(QString filename);
 
     //This bool signals wheter there were errors when reading the data from input stream
     //! @todo should we really have it
-    bool mIsReadOK;
+    //bool mIsReadOK;
 
 private:
     QString mTypeName;

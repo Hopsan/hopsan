@@ -138,160 +138,160 @@ CoreSystemAccess* GUISystem::getCoreSystemAccessPtr()
     return this->mpCoreSystemAccess;
 }
 
-void GUISystem::loadFromHMF(QString modelFilePath)
-{
-    //! @todo maybe break out the load file function it is used in many places (with some diffeerenses every time), should be enough to return file and filinfo obejct maybe
-    QFile file;
-    if (modelFilePath.isEmpty())
-    {
-        QFileInfo fileInfo;
-        QDir fileDialog;
-        modelFilePath = QFileDialog::getOpenFileName(mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
-                                                             fileDialog.currentPath() + QString(MODELPATH),
-                                                             tr("Hopsan Model Files (*.hmf)"));
-        if (modelFilePath.isEmpty())
-            return;
+//void GUISystem::loadFromHMF(QString modelFilePath)
+//{
+//    //! @todo maybe break out the load file function it is used in many places (with some diffeerenses every time), should be enough to return file and filinfo obejct maybe
+//    QFile file;
+//    if (modelFilePath.isEmpty())
+//    {
+//        QFileInfo fileInfo;
+//        QDir fileDialog;
+//        modelFilePath = QFileDialog::getOpenFileName(mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
+//                                                             fileDialog.currentPath() + QString(MODELPATH),
+//                                                             tr("Hopsan Model Files (*.hmf)"));
+//        if (modelFilePath.isEmpty())
+//            return;
 
-        file.setFileName(modelFilePath);
-        fileInfo.setFile(file);
-        for(int t=0; t!=mpParentProjectTab->mpParentProjectTabWidget->count(); ++t)
-        {
-            if( (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == fileInfo.fileName()) ||  (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == (fileInfo.fileName() + "*")) )
-            {
-                QMessageBox::StandardButton reply;
-                reply = QMessageBox::information(mpParentProjectTab->mpParentProjectTabWidget, tr("Error"), tr("Unable to load model. File is already open."));
-                return;
-            }
-        }
-    }
-    else
-    {
-        //Open the file with a path relative to the parent system, in case of rootsystem assume that the given path is absolute and correct
-        if (mpParentContainerObject != 0)
-        {
-            //! @todo assumes that the supplied path is rellative, need to make sure that this does not crash if that is not the case
-            //! @todo what if the parent system does not have a path (embeded systems)
-            file.setFileName(this->mpParentContainerObject->mModelFileInfo.absolutePath() + "/" + modelFilePath);
-        }
-        else
-        {
-            file.setFileName(modelFilePath);
-        }
-    }
+//        file.setFileName(modelFilePath);
+//        fileInfo.setFile(file);
+//        for(int t=0; t!=mpParentProjectTab->mpParentProjectTabWidget->count(); ++t)
+//        {
+//            if( (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == fileInfo.fileName()) ||  (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == (fileInfo.fileName() + "*")) )
+//            {
+//                QMessageBox::StandardButton reply;
+//                reply = QMessageBox::information(mpParentProjectTab->mpParentProjectTabWidget, tr("Error"), tr("Unable to load model. File is already open."));
+//                return;
+//            }
+//        }
+//    }
+//    else
+//    {
+//        //Open the file with a path relative to the parent system, in case of rootsystem assume that the given path is absolute and correct
+//        if (mpParentContainerObject != 0)
+//        {
+//            //! @todo assumes that the supplied path is rellative, need to make sure that this does not crash if that is not the case
+//            //! @todo what if the parent system does not have a path (embeded systems)
+//            file.setFileName(this->mpParentContainerObject->mModelFileInfo.absolutePath() + "/" + modelFilePath);
+//        }
+//        else
+//        {
+//            file.setFileName(modelFilePath);
+//        }
+//    }
 
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
-    {
-        qDebug() << "Failed to open file or not a text file: " + file.fileName();
-        return;
-    }
-    mModelFileInfo.setFile(file);
+//    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
+//    {
+//        qDebug() << "Failed to open file or not a text file: " + file.fileName();
+//        return;
+//    }
+//    mModelFileInfo.setFile(file);
 
-    QTextStream textStreamFile(&file); //Converts to QTextStream
-    mUndoStack->newPost();
+//    QTextStream textStreamFile(&file); //Converts to QTextStream
+//    mUndoStack->newPost();
 
-    //Set the name
-    this->setName(mModelFileInfo.baseName());
+//    //Set the name
+//    this->setName(mModelFileInfo.baseName());
 
-    //Now read the file data
-    //Read the header data, also checks version numbers
-    //! @todo maybe not check the version numbers in there
-    HeaderLoadData headerData = readHeader(textStreamFile, gpMainWindow->mpMessageWidget);
+//    //Now read the file data
+//    //Read the header data, also checks version numbers
+//    //! @todo maybe not check the version numbers in there
+//    HeaderLoadData headerData = readHeader(textStreamFile, gpMainWindow->mpMessageWidget);
 
-    //Only set this stuff if this is the root system, (that is if no systemparent exist)
-    if (this->mpParentContainerObject == 0)
-    {
-        //It is assumed that these data have been successfully read
-        gpMainWindow->setStartTimeInToolBar(headerData.startTime);
-        gpMainWindow->setTimeStepInToolBar(headerData.timeStep);
-        gpMainWindow->setFinishTimeInToolBar(headerData.stopTime);
+//    //Only set this stuff if this is the root system, (that is if no systemparent exist)
+//    if (this->mpParentContainerObject == 0)
+//    {
+//        //It is assumed that these data have been successfully read
+//        gpMainWindow->setStartTimeInToolBar(headerData.startTime);
+//        gpMainWindow->setTimeStepInToolBar(headerData.timeStep);
+//        gpMainWindow->setFinishTimeInToolBar(headerData.stopTime);
 
-        //It is assumed that these data have been successfully read
-        mpParentProjectTab->mpGraphicsView->centerOn(headerData.viewport_x, headerData.viewport_y);
-        mpParentProjectTab->mpGraphicsView->scale(headerData.viewport_zoomfactor, headerData.viewport_zoomfactor);
-        mpParentProjectTab->mpGraphicsView->mZoomFactor = headerData.viewport_zoomfactor;
-        mpParentProjectTab->mpGraphicsView->updateViewPort();
-    }
+//        //It is assumed that these data have been successfully read
+//        mpParentProjectTab->mpGraphicsView->centerOn(headerData.viewport_x, headerData.viewport_y);
+//        mpParentProjectTab->mpGraphicsView->scale(headerData.viewport_zoomfactor, headerData.viewport_zoomfactor);
+//        mpParentProjectTab->mpGraphicsView->mZoomFactor = headerData.viewport_zoomfactor;
+//        mpParentProjectTab->mpGraphicsView->updateViewPort();
+//    }
 
-    //Read the system appearance data
-    SystemAppearanceLoadData sysappdata;
-    sysappdata.read(textStreamFile);
+//    //Read the system appearance data
+//    SystemAppearanceLoadData sysappdata;
+//    sysappdata.read(textStreamFile);
 
-    if (!sysappdata.usericon_path.isEmpty())
-    {
-        mGUIModelObjectAppearance.setIconPathUser(sysappdata.usericon_path);
-    }
-    if (!sysappdata.isoicon_path.isEmpty())
-    {
-        mGUIModelObjectAppearance.setIconPathISO(sysappdata.isoicon_path);
-    }
+//    if (!sysappdata.usericon_path.isEmpty())
+//    {
+//        mGUIModelObjectAppearance.setIconPathUser(sysappdata.usericon_path);
+//    }
+//    if (!sysappdata.isoicon_path.isEmpty())
+//    {
+//        mGUIModelObjectAppearance.setIconPathISO(sysappdata.isoicon_path);
+//    }
 
-    //! @todo reading portappearance should have a common function and be shared with the setappearancedata read function that reads from caf files
-    PortAppearanceMapT* portappmap = &(mGUIModelObjectAppearance.getPortAppearanceMap());
-    for (int i=0; i<sysappdata.portnames.size(); ++i)
-    {
-        GUIPortAppearance portapp;
-        portapp.x = sysappdata.port_xpos[i];
-        portapp.y = sysappdata.port_ypos[i];
-        portapp.rot = sysappdata.port_angle[i];
+//    //! @todo reading portappearance should have a common function and be shared with the setappearancedata read function that reads from caf files
+//    PortAppearanceMapT* portappmap = &(mGUIModelObjectAppearance.getPortAppearanceMap());
+//    for (int i=0; i<sysappdata.portnames.size(); ++i)
+//    {
+//        GUIPortAppearance portapp;
+//        portapp.x = sysappdata.port_xpos[i];
+//        portapp.y = sysappdata.port_ypos[i];
+//        portapp.rot = sysappdata.port_angle[i];
 
-        portapp.selectPortIcon("","",""); //!< @todo fix this, (maybe not necessary to fix)
+//        portapp.selectPortIcon("","",""); //!< @todo fix this, (maybe not necessary to fix)
 
-        portappmap->insert(sysappdata.portnames[i], portapp);
-        //qDebug() << sysappdata.portnames[i];
-    }
+//        portappmap->insert(sysappdata.portnames[i], portapp);
+//        //qDebug() << sysappdata.portnames[i];
+//    }
 
-    qDebug() << "Appearance set for system: " << this->getName();
-    qDebug() << "loadFromHMF contents, name: " << this->getName();
-    //Now load the contens of the subsystem
-    while ( !textStreamFile.atEnd() )
-    {
-        //Extract first word on line
-        QString inputWord;
-        textStreamFile >> inputWord;
+//    qDebug() << "Appearance set for system: " << this->getName();
+//    qDebug() << "loadFromHMF contents, name: " << this->getName();
+//    //Now load the contens of the subsystem
+//    while ( !textStreamFile.atEnd() )
+//    {
+//        //Extract first word on line
+//        QString inputWord;
+//        textStreamFile >> inputWord;
 
-        //! @todo what about NOUNDO here should we be able to select this from the outside maybe
+//        //! @todo what about NOUNDO here should we be able to select this from the outside maybe
 
-        if ( (inputWord == "SUBSYSTEM") ||  (inputWord == "BEGINSUBSYSTEM") )
-        {
-            loadSubsystemGUIObject(textStreamFile, gpMainWindow->mpLibrary, this, NOUNDO);
-        }
+//        if ( (inputWord == "SUBSYSTEM") ||  (inputWord == "BEGINSUBSYSTEM") )
+//        {
+//            loadSubsystemGUIObject(textStreamFile, gpMainWindow->mpLibrary, this, NOUNDO);
+//        }
 
-        if ( (inputWord == "COMPONENT") || (inputWord == "SYSTEMPORT") )
-        {
-            loadGUIModelObject(textStreamFile, gpMainWindow->mpLibrary, this, NOUNDO);
-        }
+//        if ( (inputWord == "COMPONENT") || (inputWord == "SYSTEMPORT") )
+//        {
+//            loadGUIModelObject(textStreamFile, gpMainWindow->mpLibrary, this, NOUNDO);
+//        }
 
-        if ( inputWord == "PARAMETER" )
-        {
-            loadParameterValues(textStreamFile, this, NOUNDO);
-        }
+//        if ( inputWord == "PARAMETER" )
+//        {
+//            loadParameterValues(textStreamFile, this, NOUNDO);
+//        }
 
-        if ( inputWord == "CONNECT" )
-        {
-            loadConnector(textStreamFile, this, NOUNDO);
-        }
-    }
+//        if ( inputWord == "CONNECT" )
+//        {
+//            loadConnector(textStreamFile, this, NOUNDO);
+//        }
+//    }
 
-    //Refresh the appearnce of the subsystemem and create the GUIPorts
-    //! @todo This is a bit strange, refreshAppearance MUST be run before create ports or create ports will not know some necessary stuff
-    this->refreshAppearance();
-    //this->createPorts();
-    this->refreshExternalPortsAppearanceAndPosition();
+//    //Refresh the appearnce of the subsystemem and create the GUIPorts
+//    //! @todo This is a bit strange, refreshAppearance MUST be run before create ports or create ports will not know some necessary stuff
+//    this->refreshAppearance();
+//    //this->createPorts();
+//    this->refreshExternalPortsAppearanceAndPosition();
 
-    //Deselect all components
-    this->deselectAll(); //! @todo maybe this should be a signal
-    this->mUndoStack->clear();
-    //Only do this for the root system
-    //! @todo maybe can do this for subsystems to (even if we dont see them right now)
-    if (this->mpParentContainerObject == 0)
-    {
-        //mpParentProjectTab->mpGraphicsView->centerView();
-        mpParentProjectTab->mpGraphicsView->updateViewPort();
-    }
+//    //Deselect all components
+//    this->deselectAll(); //! @todo maybe this should be a signal
+//    this->mUndoStack->clear();
+//    //Only do this for the root system
+//    //! @todo maybe can do this for subsystems to (even if we dont see them right now)
+//    if (this->mpParentContainerObject == 0)
+//    {
+//        //mpParentProjectTab->mpGraphicsView->centerView();
+//        mpParentProjectTab->mpGraphicsView->updateViewPort();
+//    }
 
-    file.close();
-    emit checkMessages();
-}
+//    file.close();
+//    emit checkMessages();
+//}
 
 
 int GUISystem::type() const

@@ -310,7 +310,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
             return;
         }
 
-        bool sucess = true;
+
         GUIModelObjectAppearance *pAppearanceData = new GUIModelObjectAppearance;
 
         //Read appearance from file, First check if xml
@@ -336,32 +336,36 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
         }
         else
         {
-//                        QMessageBox::information(window(), tr("Hopsan GUI read AppearanceData in %4"),
-//                                                 tr("Parse error at line %1, column %2:\n%3")
-//                                                 .arg(errorLine)
-//                                                 .arg(errorColumn)
-//                                                 .arg(errorStr)
-//                                                 .arg(file.fileName()));
+            QMessageBox::information(window(), tr("Hopsan GUI read AppearanceData in %4"),
+                                     tr("Parse error at line %1, column %2:\n%3")
+                                     .arg(errorLine)
+                                     .arg(errorColumn)
+                                     .arg(errorStr)
+                                     .arg(file.fileName()));
 
-            file.reset(); //Reset file ptr
+            //! @todo give smart warning message, this is not an xml file
 
-            //Assume that the file is ok
-            QTextStream inFile(&file);  //Create a QTextStream object to stream the content of each file
-            pAppearanceData->readFromTextStream(inFile);
-            if (pAppearanceData->mIsReadOK)
-            {
-                pAppearanceData->saveToXML(filename); //Overwrite old file
-            }
+//            file.reset(); //Reset file ptr
+
+//            //Assume that the file is ok
+//            QTextStream inFile(&file);  //Create a QTextStream object to stream the content of each file
+//            pAppearanceData->readFromTextStream(inFile);
+//            if (pAppearanceData->mIsReadOK)
+//            {
+//                pAppearanceData->saveToXML(filename); //Overwrite old file
+//            }
         }
 
+        bool sucess = true;
         pAppearanceData->setBaseIconPath(libDirObject.absolutePath() + "/");
-        if (!pAppearanceData->mIsReadOK)
-        {
-            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Error when reading appearance data from file: " + filename);
-            sucess = false;
-        }
-        else
-        {
+//        if (!pAppearanceData->mIsReadOK)
+//        {
+//            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Error when reading appearance data from file: " + filename);
+//            sucess = false;
+//        }
+//        else
+//        {
+        //! @todo maybe we need to check appearance data for a minimuma amount of necessary data
             //*****Core Interaction*****
             HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
             if(!((pAppearanceData->getTypeName()=="Subsystem") || (pAppearanceData->getTypeName()=="SystemPort") || (pAppearanceData->getTypeName()=="HopsanGUIGroup"))) //Do not check if it is Subsystem or SystemPort
@@ -374,7 +378,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
                 }
             }
             //**************************
-        }
+//        }
 
         if (sucess)
         {

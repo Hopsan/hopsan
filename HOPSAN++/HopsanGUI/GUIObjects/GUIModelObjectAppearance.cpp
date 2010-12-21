@@ -121,104 +121,104 @@ QString GUIModelObjectAppearance::getBaseIconPath()
     return mBasePath;
 }
 
-void GUIModelObjectAppearance::readFromTextStream(QTextStream &rIs)
-{
-    QString command;
-    QString lineStr;
-    this->mIsReadOK = true; //Assume read will be ok, set to false if fail bellow
+//void GUIModelObjectAppearance::readFromTextStream(QTextStream &rIs)
+//{
+//    QString command;
+//    QString lineStr;
+//    this->mIsReadOK = true; //Assume read will be ok, set to false if fail bellow
 
-    while (!rIs.atEnd())
-    {
-        //! @todo need som error handling here if file stream has incorect data
-        rIs >> command; //Read the command word
+//    while (!rIs.atEnd())
+//    {
+//        //! @todo need som error handling here if file stream has incorect data
+//        rIs >> command; //Read the command word
 
-        if (command == "TYPENAME")
-        {
-            mTypeName = readName(rIs.readLine().trimmed());
-        }
-        else if (command == "DISPLAYNAME")
-        {
-            mName = readName(rIs.readLine().trimmed());
-        }
-        else if (command == "ISOICON")
-        {
-            mIconPathISO = readName(rIs.readLine().trimmed());
-        }
-        else if (command == "USERICON")
-        {
-            mIconPathUser = readName(rIs.readLine().trimmed());
-        }
-        else if (command == "ICONROTATION")
-        {
-            mIconRotationBehaviour = rIs.readLine().trimmed();
-        }
-        else if (command == "PORT")
-        {
-            lineStr = rIs.readLine();
-            QTextStream portStream(&lineStr);
-            QString portName=readName(portStream);
-            if(portName == "")
-            {
-                qDebug() << "FEL I PORTNAMN";
-                mIsReadOK = false;
-            }
-
-            GUIPortAppearance portapp;
-
-            if(portStream.atEnd())
-            {
-                qDebug() << "SAKNAS DATA";
-                mIsReadOK = false;
-            }
-            portStream >> portapp.x;
-            if(portStream.atEnd())
-            {
-                qDebug() << "SAKNAS DATA";
-                mIsReadOK = false;
-            }
-            portStream >> portapp.y;
-            if(portStream.atEnd())
-            {
-                qDebug() << "SAKNAS DATA";
-                mIsReadOK = false;
-            }
-            portStream >> portapp.rot;
-
-//            if( (portapp.rot == 0) || (portapp.rot == 180) )
+//        if (command == "TYPENAME")
+//        {
+//            mTypeName = readName(rIs.readLine().trimmed());
+//        }
+//        else if (command == "DISPLAYNAME")
+//        {
+//            mName = readName(rIs.readLine().trimmed());
+//        }
+//        else if (command == "ISOICON")
+//        {
+//            mIconPathISO = readName(rIs.readLine().trimmed());
+//        }
+//        else if (command == "USERICON")
+//        {
+//            mIconPathUser = readName(rIs.readLine().trimmed());
+//        }
+//        else if (command == "ICONROTATION")
+//        {
+//            mIconRotationBehaviour = rIs.readLine().trimmed();
+//        }
+//        else if (command == "PORT")
+//        {
+//            lineStr = rIs.readLine();
+//            QTextStream portStream(&lineStr);
+//            QString portName=readName(portStream);
+//            if(portName == "")
 //            {
-//                portapp.direction = LEFTRIGHT;
-//            }
-//            else
-//            {
-//                portapp.direction = TOPBOTTOM;
+//                qDebug() << "FEL I PORTNAMN";
+//                mIsReadOK = false;
 //            }
 
-            mPortAppearanceMap.insert(portName, portapp);
-        }
-        else if (command == "BASEPATH")
-        {
-            mBasePath = rIs.readLine().trimmed();
-        }
-        else
-        {
-            //If incorrect command discard rest of line, ignoring empty lines
-            if (!command.isEmpty())
-            {
-                rIs.readLine().trimmed();
-                //qDebug() << "appearanceData: Incorrect command: " + command;
-            }
-        }
-    }
+//            GUIPortAppearance portapp;
 
-    //Check if read OK!
-    //We must have at least a type name
-    if (mTypeName.isEmpty())
-    {
-        mIsReadOK = false;
-    }
+//            if(portStream.atEnd())
+//            {
+//                qDebug() << "SAKNAS DATA";
+//                mIsReadOK = false;
+//            }
+//            portStream >> portapp.x;
+//            if(portStream.atEnd())
+//            {
+//                qDebug() << "SAKNAS DATA";
+//                mIsReadOK = false;
+//            }
+//            portStream >> portapp.y;
+//            if(portStream.atEnd())
+//            {
+//                qDebug() << "SAKNAS DATA";
+//                mIsReadOK = false;
+//            }
+//            portStream >> portapp.rot;
 
-    //this->saveToXML("caf"); //only test function to test savetoxml
-}
+////            if( (portapp.rot == 0) || (portapp.rot == 180) )
+////            {
+////                portapp.direction = LEFTRIGHT;
+////            }
+////            else
+////            {
+////                portapp.direction = TOPBOTTOM;
+////            }
+
+//            mPortAppearanceMap.insert(portName, portapp);
+//        }
+//        else if (command == "BASEPATH")
+//        {
+//            mBasePath = rIs.readLine().trimmed();
+//        }
+//        else
+//        {
+//            //If incorrect command discard rest of line, ignoring empty lines
+//            if (!command.isEmpty())
+//            {
+//                rIs.readLine().trimmed();
+//                //qDebug() << "appearanceData: Incorrect command: " + command;
+//            }
+//        }
+//    }
+
+//    //Check if read OK!
+//    //We must have at least a type name
+//    if (mTypeName.isEmpty())
+//    {
+//        mIsReadOK = false;
+//    }
+
+//    //this->saveToXML("caf"); //only test function to test savetoxml
+//}
 
 
 void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
@@ -249,8 +249,8 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
         xmlPortPose = xmlPortPose.nextSiblingElement(HMF_PORTPOSETAG);
     }
 
-     this->mIsReadOK = true; //Assume read will be ok
-     //! @todo maybe remove this in xml load
+//     this->mIsReadOK = true; //Assume read will be ok
+//     //! @todo maybe remove this in xml load
 }
 
 

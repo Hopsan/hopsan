@@ -18,86 +18,86 @@
 #include "MainWindow.h"
 #include "Widgets/PlotWidget.h"
 
-void HeaderLoadData::read(QTextStream &rStream)
-{
-    QString inputWord;
+//void HeaderLoadData::read(QTextStream &rStream)
+//{
+//    QString inputWord;
 
-    //Read and discard title block
-    rStream.readLine();
-    rStream.readLine();
-    rStream.readLine();
+//    //Read and discard title block
+//    rStream.readLine();
+//    rStream.readLine();
+//    rStream.readLine();
 
-    //Read the three version numbers
-    for (int i=0; i<3; ++i)
-    {
-        rStream >> inputWord;
+//    //Read the three version numbers
+//    for (int i=0; i<3; ++i)
+//    {
+//        rStream >> inputWord;
 
-        if ( inputWord == "HOPSANGUIVERSION")
-        {
-            rStream >> hopsangui_version;
-        }
-        else if ( inputWord == "HMFVERSION")
-        {
-            rStream >> hmf_version;
-        }
-        else if ( inputWord == "CAFVERSION") //CAF = Component Appearance File
-        {
-            rStream >> caf_version;
-        }
-        else
-        {
-            //! @todo handle errors
-            //pMessageWidget->printGUIErrorMessage(QString("Error: unknown HEADER command: " + inputWord));
-        }
-    }
+//        if ( inputWord == "HOPSANGUIVERSION")
+//        {
+//            rStream >> hopsangui_version;
+//        }
+//        else if ( inputWord == "HMFVERSION")
+//        {
+//            rStream >> hmf_version;
+//        }
+//        else if ( inputWord == "CAFVERSION") //CAF = Component Appearance File
+//        {
+//            rStream >> caf_version;
+//        }
+//        else
+//        {
+//            //! @todo handle errors
+//            //pMessageWidget->printGUIErrorMessage(QString("Error: unknown HEADER command: " + inputWord));
+//        }
+//    }
 
-    //Remove end line and dashed line
-    rStream.readLine();
-    rStream.readLine();
+//    //Remove end line and dashed line
+//    rStream.readLine();
+//    rStream.readLine();
 
-    //Read Simulation time
-    rStream >> inputWord;
-    if (inputWord == "SIMULATIONTIME")
-    {
-        rStream >> startTime >> timeStep >> stopTime;
-    }
-    else
-    {
-        qDebug() << QString("ERROR SIMULATIONTIME EXPECTED, got: ") + inputWord;
-        //! @todo handle errors
-    }
+//    //Read Simulation time
+//    rStream >> inputWord;
+//    if (inputWord == "SIMULATIONTIME")
+//    {
+//        rStream >> startTime >> timeStep >> stopTime;
+//    }
+//    else
+//    {
+//        qDebug() << QString("ERROR SIMULATIONTIME EXPECTED, got: ") + inputWord;
+//        //! @todo handle errors
+//    }
 
-    //Read viewport
-    rStream >> inputWord;
-    if (inputWord == "VIEWPORT")
-    {
-        rStream >> viewport_x >> viewport_y >> viewport_zoomfactor;
-    }
-    else
-    {
-        qDebug() << QString("ERROR VIEWPORT EXPECTED, got") + inputWord;
-        //! @todo handle errors
-    }
+//    //Read viewport
+//    rStream >> inputWord;
+//    if (inputWord == "VIEWPORT")
+//    {
+//        rStream >> viewport_x >> viewport_y >> viewport_zoomfactor;
+//    }
+//    else
+//    {
+//        qDebug() << QString("ERROR VIEWPORT EXPECTED, got") + inputWord;
+//        //! @todo handle errors
+//    }
 
-    //Remove newline and dashed ending line
-    rStream.readLine();
-    rStream.readLine();
-}
+//    //Remove newline and dashed ending line
+//    rStream.readLine();
+//    rStream.readLine();
+//}
 
-void ModelObjectLoadData::read(QTextStream &rStream)
-{
-    type = readName(rStream);
-    name = readName(rStream);  //Now read the name, assume that the name is contained within quotes signs, "name"
-    rStream >> posX;
-    rStream >> posY;
+//void ModelObjectLoadData::read(QTextStream &rStream)
+//{
+//    type = readName(rStream);
+//    name = readName(rStream);  //Now read the name, assume that the name is contained within quotes signs, "name"
+//    rStream >> posX;
+//    rStream >> posY;
 
-    //! @todo if not end of stream do this, to allow incomplete load_data
-    rStream >> rotation;
-    rStream >> nameTextPos;
-    rStream >> textVisible;
+//    //! @todo if not end of stream do this, to allow incomplete load_data
+//    rStream >> rotation;
+//    rStream >> nameTextPos;
+//    rStream >> textVisible;
 
-    isFlipped = false; //default to false
-}
+//    isFlipped = false; //default to false
+//}
 
 void ModelObjectLoadData::readDomElement(QDomElement &rDomElement)
 {
@@ -117,39 +117,39 @@ void ModelObjectLoadData::readGuiDataFromDomElement(QDomElement &rDomElement)
     textVisible = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("visible").toInt(); //should be bool, +0.5 to roound to int on truncation
 }
 
-void SubsystemLoadData::read(QTextStream &rStream)
-{
-    type = "Subsystem";
-    loadtype = readName(rStream);
-    name = readName(rStream);
-    cqs_type = readName(rStream);
+//void SubsystemLoadData::read(QTextStream &rStream)
+//{
+//    type = "Subsystem";
+//    loadtype = readName(rStream);
+//    name = readName(rStream);
+//    cqs_type = readName(rStream);
 
-    if (loadtype == "EXTERNAL")
-    {
-        externalfilepath = readName(rStream);
-
-        //Read the gui stuff
-        rStream >> posX;
-        rStream >> posY;
-
-        //! @todo if not end of stream do this, to allow incomplete load_data
-        rStream >> rotation;
-        rStream >> nameTextPos;
-        rStream >> textVisible;
-    }
-//    else if (loadtype == "embeded")
+//    if (loadtype == "EXTERNAL")
 //    {
-//        //not implemented yet
-//        //! @todo handle error
-//        assert(false);
+//        externalfilepath = readName(rStream);
+
+//        //Read the gui stuff
+//        rStream >> posX;
+//        rStream >> posY;
+
+//        //! @todo if not end of stream do this, to allow incomplete load_data
+//        rStream >> rotation;
+//        rStream >> nameTextPos;
+//        rStream >> textVisible;
 //    }
-    else
-    {
-        //incorrect type
-        qDebug() << QString("This loadtype is not supported: ") + loadtype;
-        //! @todo handle error
-    }
-}
+////    else if (loadtype == "embeded")
+////    {
+////        //not implemented yet
+////        //! @todo handle error
+////        assert(false);
+////    }
+//    else
+//    {
+//        //incorrect type
+//        qDebug() << QString("This loadtype is not supported: ") + loadtype;
+//        //! @todo handle error
+//    }
+//}
 
 void SubsystemLoadData::readDomElement(QDomElement &rDomElement)
 {
@@ -168,59 +168,59 @@ void SubsystemLoadData::readDomElement(QDomElement &rDomElement)
     }
 }
 
-//! @brief Reads system appearnce data from stream
-//! Assumes that this data ends when commandword has - as first sign
-//! Header must have been removed (read) first
-void SystemAppearanceLoadData::read(QTextStream &rStream)
-{
-    QString commandword;
+////! @brief Reads system appearnce data from stream
+////! Assumes that this data ends when commandword has - as first sign
+////! Header must have been removed (read) first
+//void SystemAppearanceLoadData::read(QTextStream &rStream)
+//{
+//    QString commandword;
 
-    while ( !commandword.startsWith("-") )
-    {
-        rStream >> commandword;
-        //qDebug() << commandword;
+//    while ( !commandword.startsWith("-") )
+//    {
+//        rStream >> commandword;
+//        //qDebug() << commandword;
 
-        //! @todo maybe do this the same way as read apperance data, will examine this later
-        if (commandword == "ISOICON")
-        {
-            isoicon_path = readName(rStream);
-        }
-        else if (commandword == "USERICON")
-        {
-            usericon_path = readName(rStream);
-        }
-        else if (commandword == "PORT")
-        {
-            QString name = readName(rStream);
-            qreal x,y,th;
-            rStream >> x >> y >> th;
+//        //! @todo maybe do this the same way as read apperance data, will examine this later
+//        if (commandword == "ISOICON")
+//        {
+//            isoicon_path = readName(rStream);
+//        }
+//        else if (commandword == "USERICON")
+//        {
+//            usericon_path = readName(rStream);
+//        }
+//        else if (commandword == "PORT")
+//        {
+//            QString name = readName(rStream);
+//            qreal x,y,th;
+//            rStream >> x >> y >> th;
 
-            portnames.append(name);
-            port_xpos.append(x);
-            port_ypos.append(y);
-            port_angle.append(th);
-        }
-    }
-}
+//            portnames.append(name);
+//            port_xpos.append(x);
+//            port_ypos.append(y);
+//            port_angle.append(th);
+//        }
+//    }
+//}
 
 
-void ConnectorLoadData::read(QTextStream &rStream)
-{
-    startComponentName = readName(rStream);
-    startPortName = readName(rStream);
-    endComponentName = readName(rStream);
-    endPortName = readName(rStream);
+//void ConnectorLoadData::read(QTextStream &rStream)
+//{
+//    startComponentName = readName(rStream);
+//    startPortName = readName(rStream);
+//    endComponentName = readName(rStream);
+//    endPortName = readName(rStream);
 
-    qreal tempX, tempY;
-    QString restOfLineString = rStream.readLine();
-    QTextStream restOfLineStream(&restOfLineString);
-    while( !restOfLineStream.atEnd() )
-    {
-        restOfLineStream >> tempX;
-        restOfLineStream >> tempY;
-        pointVector.push_back(QPointF(tempX, tempY));
-    }
-}
+//    qreal tempX, tempY;
+//    QString restOfLineString = rStream.readLine();
+//    QTextStream restOfLineStream(&restOfLineString);
+//    while( !restOfLineStream.atEnd() )
+//    {
+//        restOfLineStream >> tempX;
+//        restOfLineStream >> tempY;
+//        pointVector.push_back(QPointF(tempX, tempY));
+//    }
+//}
 
 void ConnectorLoadData::readDomElement(QDomElement &rDomElement)
 {
@@ -251,12 +251,12 @@ void ConnectorLoadData::readDomElement(QDomElement &rDomElement)
 }
 
 
-void ParameterLoadData::read(QTextStream &rStream)
-{
-    componentName = readName(rStream);
-    parameterName = readName(rStream);
-    rStream >> parameterValue;
-}
+//void ParameterLoadData::read(QTextStream &rStream)
+//{
+//    componentName = readName(rStream);
+//    parameterName = readName(rStream);
+//    rStream >> parameterValue;
+//}
 
 void ParameterLoadData::readDomElement(QDomElement &rDomElement)
 {
@@ -364,20 +364,20 @@ void loadFavoriteParameter(const FavoriteParameterLoadData &rData, GUIContainerO
 
 
 
-//! @brief text version
-void loadParameterValues(const ParameterLoadData &rData, GUIContainerObject* pSystem, undoStatus undoSettings)
-{
-    //qDebug() << "Parameter: " << componentName << " " << parameterName << " " << parameterValue;
-    //qDebug() << "count" << pSystem->mGUIObjectMap.count(rData.componentName);
-    qDebug() << "load Parameter value for component: " << rData.componentName  << " in " << pSystem->getName();
-    //qDebug() << "Parameter: " << rData.parameterName << " " << rData.parameterValue;
-    GUIModelObject* ptr = pSystem->mGUIModelObjectMap.find(rData.componentName).value();
-    qDebug() << ptr->getName();
-    if (ptr != 0)
-        ptr->setParameterValue(rData.parameterName, rData.parameterValue);
-    else
-        assert(false);
-}
+////! @brief text version
+//void loadParameterValues(const ParameterLoadData &rData, GUIContainerObject* pSystem, undoStatus undoSettings)
+//{
+//    //qDebug() << "Parameter: " << componentName << " " << parameterName << " " << parameterValue;
+//    //qDebug() << "count" << pSystem->mGUIObjectMap.count(rData.componentName);
+//    qDebug() << "load Parameter value for component: " << rData.componentName  << " in " << pSystem->getName();
+//    //qDebug() << "Parameter: " << rData.parameterName << " " << rData.parameterValue;
+//    GUIModelObject* ptr = pSystem->mGUIModelObjectMap.find(rData.componentName).value();
+//    qDebug() << ptr->getName();
+//    if (ptr != 0)
+//        ptr->setParameterValue(rData.parameterName, rData.parameterValue);
+//    else
+//        assert(false);
+//}
 
 //! @brief xml version
 void loadParameterValue(const ParameterLoadData &rData, GUIModelObject* pObject, undoStatus undoSettings)
@@ -471,13 +471,13 @@ GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidg
 }
 
 
-//! @brief Conveniance function if you dont want to manipulate the loaded data
-GUIModelObject* loadGUIModelObject(QTextStream &rStream, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
-{
-    ModelObjectLoadData data;
-    data.read(rStream);
-    return loadGUIModelObject(data, pLibrary, pSystem, undoSettings);
-}
+////! @brief Conveniance function if you dont want to manipulate the loaded data
+//GUIModelObject* loadGUIModelObject(QTextStream &rStream, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
+//{
+//    ModelObjectLoadData data;
+//    data.read(rStream);
+//    return loadGUIModelObject(data, pLibrary, pSystem, undoSettings);
+//}
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data
 GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
@@ -487,12 +487,12 @@ GUIModelObject* loadGUIModelObject(QDomElement &rDomElement, LibraryWidget* pLib
     return loadGUIModelObject(data, pLibrary, pSystem, undoSettings);
 }
 
-GUIObject* loadSubsystemGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
-{
-    SubsystemLoadData data;
-    data.read(rStream);
-    return loadSubsystemGUIObject(data, pLibrary, pSystem, undoSettings);
-}
+//GUIObject* loadSubsystemGUIObject(QTextStream &rStream, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
+//{
+//    SubsystemLoadData data;
+//    data.read(rStream);
+//    return loadSubsystemGUIObject(data, pLibrary, pSystem, undoSettings);
+//}
 
 GUIObject* loadSubsystemGUIObject(QDomElement &rDomElement, LibraryWidget* pLibrary, GUIContainerObject* pSystem, undoStatus undoSettings)
 {
@@ -501,13 +501,13 @@ GUIObject* loadSubsystemGUIObject(QDomElement &rDomElement, LibraryWidget* pLibr
     return loadSubsystemGUIObject(data, pLibrary, pSystem, undoSettings);
 }
 
-//! @brief Conveniance function if you dont want to manipulate the loaded data
-void loadConnector(QTextStream &rStream, GUIContainerObject* pSystem, undoStatus undoSettings)
-{
-    ConnectorLoadData data;
-    data.read(rStream);
-    loadConnector(data, pSystem, undoSettings);
-}
+////! @brief Conveniance function if you dont want to manipulate the loaded data
+//void loadConnector(QTextStream &rStream, GUIContainerObject* pSystem, undoStatus undoSettings)
+//{
+//    ConnectorLoadData data;
+//    data.read(rStream);
+//    loadConnector(data, pSystem, undoSettings);
+//}
 
 //! @brief Conveniance function if you dont want to manipulate the loaded data
 void loadConnector(QDomElement &rDomElement, GUIContainerObject* pSystem, undoStatus undoSettings)
@@ -640,49 +640,49 @@ void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoSt
 }
 
 
-//! @brief Conveniance function if you dont want to manipulate the loaded data
-void loadParameterValues(QTextStream &rStream, GUIContainerObject* pSystem, undoStatus undoSettings)
-{
-    ParameterLoadData data;
-    data.read(rStream);
-    loadParameterValues(data, pSystem, undoSettings);
-}
+////! @brief Conveniance function if you dont want to manipulate the loaded data
+//void loadParameterValues(QTextStream &rStream, GUIContainerObject* pSystem, undoStatus undoSettings)
+//{
+//    ParameterLoadData data;
+//    data.read(rStream);
+//    loadParameterValues(data, pSystem, undoSettings);
+//}
 
-//! @brief Loads the hmf file HEADER data and checks version numbers
-HeaderLoadData readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidget)
-{
-    HeaderLoadData headerData;
-    headerData.read(rInputStream);
+////! @brief Loads the hmf file HEADER data and checks version numbers
+//HeaderLoadData readHeader(QTextStream &rInputStream, MessageWidget *pMessageWidget)
+//{
+//    HeaderLoadData headerData;
+//    headerData.read(rInputStream);
 
-    if(headerData.hopsangui_version > QString(HOPSANGUIVERSION))
-    {
-        pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
-    }
-    else if(headerData.hopsangui_version < QString(HOPSANGUIVERSION))
-    {
-        pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
-    }
+//    if(headerData.hopsangui_version > QString(HOPSANGUIVERSION))
+//    {
+//        pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
+//    }
+//    else if(headerData.hopsangui_version < QString(HOPSANGUIVERSION))
+//    {
+//        pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
+//    }
 
-    if(headerData.hmf_version > QString(HMFVERSION))
-    {
-        pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
-    }
-    else if(headerData.hmf_version < QString(HMFVERSION))
-    {
-        pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
-    }
+//    if(headerData.hmf_version > QString(HMFVERSION))
+//    {
+//        pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
+//    }
+//    else if(headerData.hmf_version < QString(HMFVERSION))
+//    {
+//        pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
+//    }
 
-    if(headerData.caf_version > QString(CAFVERSION))
-    {
-        pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
-    }
-    else if(headerData.caf_version < QString(CAFVERSION))
-    {
-        pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
-    }
+//    if(headerData.caf_version > QString(CAFVERSION))
+//    {
+//        pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in newer version of Hopsan"));
+//    }
+//    else if(headerData.caf_version < QString(CAFVERSION))
+//    {
+//        pMessageWidget->printGUIWarningMessage(QString("Warning: File was saved in older version of Hopsan"));
+//    }
 
-    return headerData;
-}
+//    return headerData;
+//}
 
 
 QDomElement appendHMFRootElement(QDomDocument &rDomDocument)

@@ -280,14 +280,14 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
         mpSystem->mModelFileInfo.setFile(modelFilePath);
     }
 
-    //! @obsolete quickhack to avoid saving hmfx over hmf
-    //! @obsolete we shall allways save xml format as hmf from now on
-    if (mpSystem->mModelFileInfo.filePath().endsWith("x"))
-    {
-        QString tmp = mpSystem->mModelFileInfo.filePath();
-        tmp.chop(1);
-        mpSystem->mModelFileInfo.setFile(tmp);
-    }
+//    //! @obsolete quickhack to avoid saving hmfx over hmf
+//    //! @obsolete we shall allways save xml format as hmf from now on
+//    if (mpSystem->mModelFileInfo.filePath().endsWith("x"))
+//    {
+//        QString tmp = mpSystem->mModelFileInfo.filePath();
+//        tmp.chop(1);
+//        mpSystem->mModelFileInfo.setFile(tmp);
+//    }
 
     QFile file(mpSystem->mModelFileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
@@ -319,7 +319,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
     domDocument.save(out, IndentSize);
 
-        //Set the tab name to the model name, efectively removing *, also arke the tab as saved
+        //Set the tab name to the model name, efectively removing *, also mark the tab as saved
     QString tabName = mpSystem->mModelFileInfo.baseName();
     mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
     this->setSaved(true);
@@ -520,7 +520,7 @@ void ProjectTabWidget::loadModel()
     QDir fileDialogOpenDir;
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Model File"),
                                                          fileDialogOpenDir.currentPath() + QString(MODELPATH),
-                                                         tr("Hopsan Model Files (*.hmf *.hmfx)"));
+                                                         tr("Hopsan Model Files (*.hmf)"));
     loadModel(modelFileName);
 
     emit newTabAdded();
@@ -580,11 +580,7 @@ void ProjectTabWidget::loadModel(QString modelFileName)
     }
     else
     {
-        //! @obsolete
-        //! Should be removed later
-        //Assume that this is an old text baseed hmf file load it and convert it
-        pCurrentTab->mpSystem->loadFromHMF(modelFileName);
-        pCurrentTab->save();
+        //! @todo give some cool error message
     }
     pCurrentTab->setSaved(true);
 }
