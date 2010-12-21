@@ -41,7 +41,9 @@ GUISystem::GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *pParent)
 
 GUISystem::~GUISystem()
 {
-    //! @todo should remove all subcomponents first then run the code bellow, to cleanup nicely in the correct order
+    qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,GUISystem destructor";
+    //First remove all contents
+    this->clearContents();
 
     if (mpParentContainerObject != 0)
     {

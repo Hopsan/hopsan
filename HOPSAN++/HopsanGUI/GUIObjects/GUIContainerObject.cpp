@@ -531,7 +531,7 @@ void GUIContainerObject::addBoxWidget(QPoint position, undoStatus undoSettings)
 //! @param objectName is the name of the componenet to delete
 void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus undoSettings)
 {
-    //qDebug() << "deleteGUIModelObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->getCoreSystemAccessPtr()->getRootSystemName() ;
+    qDebug() << "deleteGUIModelObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->getCoreSystemAccessPtr()->getRootSystemName() ;
     this->removeFavoriteParameterByComponentName(objectName);   //Does nothing unless this is a system
 
     GUIModelObjectMapT::iterator it = mGUIModelObjectMap.find(objectName);
@@ -1277,6 +1277,32 @@ void GUIContainerObject::openPropertiesDialog()
 {
     //! @todo maybe move code from system here
     //Do Nothing
+}
+
+//! @brief Clears all of the contained objects (and delets them)
+//! This code cant be run in the desturctor as this wold cause wired behaviour in the derived susyem class.
+//! The core system would be deleted before container clear code is run, that is why we have it as a convenient protected function
+void GUIContainerObject::clearContents()
+{
+    GUIModelObjectMapT::iterator mit;
+    QMap<size_t, GUIWidget *>::iterator wit;
+
+    qDebug() << "Clearing model objects";
+    //We cant use for loop over iterators as the maps are modified on each delete (and iterators invalidated)
+    mit=mGUIModelObjectMap.begin();
+    while (mit!=mGUIModelObjectMap.end())
+    {
+        (*mit)->deleteMe();
+        mit=mGUIModelObjectMap.begin();
+    }
+
+    qDebug() << "Clearing widget objects";
+    wit=mWidgetMap.begin();
+    while (wit!=mWidgetMap.end())
+    {
+        (*wit)->deleteMe();
+        wit=mWidgetMap.begin();
+    }
 }
 
 

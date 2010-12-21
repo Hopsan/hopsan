@@ -74,6 +74,9 @@ GUIGroup::GUIGroup(QPoint position, qreal rotation, const GUIModelObjectAppearan
 GUIGroup::~GUIGroup()
 {
     qDebug() << ",,,,,,,,,GuiGroupDestructor";
+    //First remove all contents
+    this->clearContents();
+    //Now unregister my name in core (instead of delete in core as I am not a core obejct)
     this->getCoreSystemAccessPtr()->unReserveUniqueName(this->getName());
 //    qDebug() << "GUIGroup destructor";
 //    GUISystem::GUIModelObjectMapT::iterator itm;

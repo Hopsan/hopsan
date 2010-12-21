@@ -72,7 +72,7 @@ public:
     //SHOULD BE PROTECTED
     typedef QHash<QString, GUIModelObject*> GUIModelObjectMapT;
     GUIModelObjectMapT mGUIModelObjectMap;
-    QList<GUITextWidget *> mTextWidgetList;
+    QList<GUITextWidget *> mTextWidgetList; //! @todo we should really have one common list for all guiwidgets, or maybe only have the guiwidget map bellow
     QList<GUIBoxWidget *> mBoxWidgetList;
     QList<GUIModelObject *> mSelectedGUIObjectsList;
     QList<GUIWidget *> mSelectedGUIWidgetsList;
@@ -148,6 +148,7 @@ protected:
     virtual void createExternalPort(QString portName);
     virtual void removeExternalPort(QString portName);
     virtual void openPropertiesDialog();
+    void clearContents();
         //Protected overloaded Qt methods
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
