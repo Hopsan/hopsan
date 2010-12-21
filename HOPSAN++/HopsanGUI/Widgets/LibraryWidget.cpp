@@ -295,7 +295,7 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
 
     //Create a QStringList object that contains name filters
     QStringList filters;
-    filters << "*.txt";                     //Create the name filter
+    filters << "*.xml";                     //Create the name filter
     libDirObject.setNameFilters(filters);   //Set the name filter
 
     //Create a list with all name of the files in dir libDir
