@@ -330,21 +330,21 @@ namespace hopsan {
     class DLLIMPORTEXPORT ComponentSignal :public Component
     {
     protected:
-        ComponentSignal(std::string name);
+        ComponentSignal(std::string name="");
     };
 
 
     class DLLIMPORTEXPORT ComponentC :public Component
     {
     protected:
-        ComponentC(std::string name);
+        ComponentC(std::string name="");
     };
 
 
     class DLLIMPORTEXPORT ComponentQ :public Component
     {
     protected:
-        ComponentQ(std::string name);
+        ComponentQ(std::string name="");
     };
 
     typedef ClassFactory<std::string, Component> ComponentFactory;

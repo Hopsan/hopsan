@@ -15,10 +15,11 @@ Schematic image:
 #ifndef SEP2_HPP_INCLUDED
 #define SEP2_HPP_INCLUDED
 
-
+//#include "P:/Hopsan_ng/Hopsan_latest/include/ComponentEssentials.h"
+//#include "P:/Hopsan_ng/Hopsan_latest/include/ComponentUtilities.h"
 #include "../../HopsanCore/ComponentEssentials.h"
 #include "../../HopsanCore/ComponentUtilities.h"
-//#include "../../HopsanCore/ComponentUtilities/Integrator.hpp"
+
 
 namespace hopsan {
 
@@ -34,10 +35,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new sep2("sep2");
+            return new sep2();
         }
 
-        sep2(const std::string name) : ComponentQ(name)
+        sep2() : ComponentQ()
         {
             //Set member attributes
             mTypeName = "sep2";

@@ -14,9 +14,10 @@ Schematic image:
 #ifndef VSRC_HPP_INCLUDED
 #define VSRC_HPP_INCLUDED
 
+//#include "P:/Hopsan_ng/Hopsan_latest/include/ComponentEssentials.h"
+//#include "P:/Hopsan_ng/Hopsan_latest/include/ComponentUtilities.h"
 #include "../../HopsanCore/ComponentEssentials.h"
 #include "../../HopsanCore/ComponentUtilities.h"
-//#include "../../HopsanCore/ComponentUtilities/Integrator.hpp"
 
 namespace hopsan {
 
@@ -31,10 +32,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new vsrc("vsrc");
+            return new vsrc();
         }
 
-        vsrc(const std::string name) : ComponentQ(name)
+        vsrc() : ComponentQ()
         {
             //Set member attributes
             mTypeName = "vsrc";

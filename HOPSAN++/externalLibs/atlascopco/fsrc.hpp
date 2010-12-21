@@ -14,9 +14,11 @@ Schematic image:
 #ifndef FSRC_HPP_INCLUDED
 #define FSRC_HPP_INCLUDED
 
+//#include "P:/Hopsan_ng/Hopsan_latest/include/ComponentEssentials.h"
+//#include "P:/Hopsan_ng/Hopsan_latest/include/ComponentUtilities.h"
 #include "../../HopsanCore/ComponentEssentials.h"
 #include "../../HopsanCore/ComponentUtilities.h"
-//#include "../../HopsanCore/ComponentUtilities/Integrator.hpp"
+
 
 namespace hopsan {
 
@@ -31,10 +33,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new fsrc("fsrc");
+            return new fsrc();
         }
 
-        fsrc(const std::string name) : ComponentQ(name)
+        fsrc() : ComponentQ()
         {
             //Set member attributes
             mTypeName = "fsrc";

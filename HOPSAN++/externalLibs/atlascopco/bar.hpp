@@ -18,9 +18,11 @@ I         I
 #include <iostream>
 #include <vector>
 using namespace std;
+//#include "P:/Hopsan_ng/Hopsan_latest/include/ComponentEssentials.h"
+//#include "P:/Hopsan_ng/Hopsan_latest/include/ComponentUtilities.h"
 #include "../../HopsanCore/ComponentEssentials.h"
 #include "../../HopsanCore/ComponentUtilities.h"
-//#include "../../HopsanCore/ComponentUtilities/FirstOrderFilter.hpp"
+
 
 namespace hopsan {
 
@@ -60,10 +62,10 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new bar("bar");
+            return new bar();
         }
 
-        bar(const std::string name) : ComponentC(name)
+        bar() : ComponentC()
         {
             //Set member attributes
             mTypeName = "bar";

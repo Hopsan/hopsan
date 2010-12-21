@@ -36,7 +36,7 @@ void Integrator::initializeValues(double u0, double y0)
     mDelayY = y0;
 }
 
-
+//! Updates the integrator one timestep and returns the new value
 double Integrator::update(double &u)
 {
     //Filter equation
@@ -48,7 +48,7 @@ double Integrator::update(double &u)
 }
 
 
-//! Observe that a call to this method has to be followed by another call to value(double u) or to update(double u)
+//! Returns the integrator value
 //! @return The integrated actual value.
 //! @see value(double u)
 double Integrator::value()

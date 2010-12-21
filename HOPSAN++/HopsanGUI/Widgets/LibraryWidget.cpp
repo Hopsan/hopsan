@@ -366,10 +366,11 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
             HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
             if(!((pAppearanceData->getTypeName()=="Subsystem") || (pAppearanceData->getTypeName()=="SystemPort") || (pAppearanceData->getTypeName()=="HopsanGUIGroup"))) //Do not check if it is Subsystem or SystemPort
             {
+                //! @todo this check (hasComponent) should be wrapped inside some coreaccess class
                 sucess = pHopsanCore->hasComponent(pAppearanceData->getTypeName().toStdString()); //Check so that there is such component availible in the Core
                 if (!sucess)
                 {
-                    gpMainWindow->mpMessageWidget->printGUIWarningMessage("Warning: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)");
+                    gpMainWindow->mpMessageWidget->printGUIWarningMessage("ComponentType: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)");
                 }
             }
             //**************************

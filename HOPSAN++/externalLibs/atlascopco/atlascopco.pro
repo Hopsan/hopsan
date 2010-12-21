@@ -20,7 +20,11 @@ HEADERS += \
     fsrc.hpp \
     con2.hpp \
     bar.hpp \
-    atlascopco.h
+    ubar.hpp \
+    reflfree.hpp \
+    dturb.hpp \
+    con3.hpp \
+    aturb.hpp
 
 SOURCES += \
     atlascopco.cc
