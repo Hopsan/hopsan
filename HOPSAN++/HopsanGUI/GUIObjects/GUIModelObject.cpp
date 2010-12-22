@@ -56,7 +56,7 @@ GUIModelObject::GUIModelObject(QPoint position, qreal rotation, const GUIModelOb
     if(mpParentContainerObject != 0)
     {
         connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(zoomChange(qreal)), this, SLOT(setNameTextScale(qreal)));
-        connect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
+//        connect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
         connect(mpParentContainerObject, SIGNAL(hideAllNameText()), this, SLOT(hideName()));
         connect(mpParentContainerObject, SIGNAL(showAllNameText()), this, SLOT(showName()));
         connect(mpParentContainerObject, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIcon(graphicsType)));
@@ -72,6 +72,27 @@ GUIModelObject::GUIModelObject(QPoint position, qreal rotation, const GUIModelOb
 GUIModelObject::~GUIModelObject()
 {
     emit objectDeleted();
+}
+
+void GUIModelObject::refreshParentContainerConnections()
+{
+    //First refresh connections higher up
+    GUIObject::refreshParentContainerConnections();
+
+    //Refresh local connections
+    if(mpParentContainerObject != 0)
+    {
+        //First clear the slot and then establish new connection
+        disconnect(this, SLOT(select()), 0, 0); //! @todo Not sure if this will remove some connections made from some other part of the code, hope not
+        connect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
+    }
+
+    //Refresh any port connections
+    for (int i=0; i<mPortListPtrs.size(); ++i)
+    {
+        mPortListPtrs[i]->refreshParentContainerConnection();
+    }
+
 }
 
 
@@ -453,7 +474,7 @@ QDomElement GUIModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 void GUIModelObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     QMenu menu;
-    this->buildBaseContextMenu(menu, event->screenPos());
+    this->buildBaseContextMenu(menu, event);
 
     QGraphicsItem::contextMenuEvent(event);
 }
@@ -505,7 +526,7 @@ void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
         //Loop through all selected objects and register changed positions in undo stack
     bool alreadyClearedRedo = false;
-    for(it = mpParentContainerObject->mSelectedGUIObjectsList.begin(); it != mpParentContainerObject->mSelectedGUIObjectsList.end(); ++it)
+    for(it = mpParentContainerObject->mSelectedGUIModelObjectsList.begin(); it != mpParentContainerObject->mSelectedGUIModelObjectsList.end(); ++it)
     {
         if(((*it)->mOldPos != (*it)->pos()) && (event->button() == Qt::LeftButton))
         {
@@ -513,7 +534,7 @@ void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
                 //This check makes sure that only one undo post is created when moving several objects at once
             if(!alreadyClearedRedo)
             {
-                if(mpParentContainerObject->mSelectedGUIObjectsList.size() > 1)
+                if(mpParentContainerObject->mSelectedGUIModelObjectsList.size() > 1)
                 {
                     mpParentContainerObject->mUndoStack->newPost("movedmultiple");
                 }
@@ -542,7 +563,7 @@ void GUIModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 //    }
 //}
 
-QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QPointF pos)
+QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMenuEvent* pEvent)
 {
     rMenu.addSeparator();
     QAction *groupAction;
@@ -553,7 +574,7 @@ QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QPointF pos)
     showNameAction->setChecked(mpNameText->isVisible());
     QAction *parameterAction = rMenu.addAction(tr("Properties"));
 
-    QAction *selectedAction = rMenu.exec(pos.toPoint());
+    QAction *selectedAction = rMenu.exec(pEvent->screenPos());
 
     if (selectedAction == parameterAction)
     {
@@ -574,6 +595,7 @@ QAction *GUIModelObject::buildBaseContextMenu(QMenu &rMenu, QPointF pos)
     else if (selectedAction == groupAction)
     {
         //! @todo fix this if possible
+        this->mpParentContainerObject->groupSelected(pEvent->scenePos());
     }
     else
     {
@@ -596,13 +618,13 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
     {
         if(this->isSelected())
         {
-            mpParentContainerObject->mSelectedGUIObjectsList.append(this);
+            mpParentContainerObject->mSelectedGUIModelObjectsList.append(this);
             connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
             connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
         }
         else
         {
-            mpParentContainerObject->mSelectedGUIObjectsList.removeAll(this);
+            mpParentContainerObject->mSelectedGUIModelObjectsList.removeAll(this);
             disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
             disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
         }
@@ -615,7 +637,7 @@ QVariant GUIModelObject::itemChange(GraphicsItemChange change, const QVariant &v
 
             //Snap component if it only has one connector and is dropped close enough (horizontal or vertical) to adjacent component
         if(mpParentContainerObject != 0 && gConfig.getSnapping() &&
-           !mpParentContainerObject->getIsCreatingConnector() && mpParentContainerObject->mSelectedGUIObjectsList.size() == 1)
+           !mpParentContainerObject->getIsCreatingConnector() && mpParentContainerObject->mSelectedGUIModelObjectsList.size() == 1)
         {
                 //Vertical snap
             if( (mGUIConnectorPtrs.size() == 1) &&
@@ -711,7 +733,7 @@ void GUIModelObject::showPorts(bool visible)
 //! @param undoSettings Tells whether or not this shall be registered in undo stsack
 //! @see rotateTo(qreal angle);
 //! @todo try to reuse the code in rotate guiobject
-void GUIModelObject::rotate(undoStatus undoSettings)
+void GUIModelObject::rotate90cw(undoStatus undoSettings)
 {
     //qDebug() << "this->boundingrect(): " << this->boundingRect();
     //qDebug() << "this->mpIcon->boundingrect(): " << this->mpIcon->boundingRect();
@@ -827,8 +849,8 @@ void GUIModelObject::rotate(undoStatus undoSettings)
 void GUIModelObject::flipVertical(undoStatus undoSettings)
 {
     this->flipHorizontal(NOUNDO);
-    this->rotate(NOUNDO);
-    this->rotate(NOUNDO);
+    this->rotate90cw(NOUNDO);
+    this->rotate90cw(NOUNDO);
     if(undoSettings == UNDO)
     {
         mpParentContainerObject->mUndoStack->registerVerticalFlip(this->getName());

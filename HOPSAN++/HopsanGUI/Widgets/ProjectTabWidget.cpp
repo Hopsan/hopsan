@@ -471,18 +471,22 @@ bool ProjectTabWidget::closeProjectTab(int index)
     disconnect(gpMainWindow->zoomOutAction,         SIGNAL(triggered()),    getTab(index)->mpGraphicsView,  SLOT(zoomOut()));
     disconnect(gpMainWindow->exportPDFAction,       SIGNAL(triggered()),    getTab(index)->mpGraphicsView,  SLOT(exportToPDF()));
     disconnect(gpMainWindow->centerViewAction,      SIGNAL(triggered()),    getTab(index)->mpGraphicsView,  SLOT(centerView()));
-    disconnect(gpMainWindow->hideNamesAction,       SIGNAL(triggered()),    getContainer(index),               SLOT(hideNames()));
-    disconnect(gpMainWindow->showNamesAction,       SIGNAL(triggered()),    getContainer(index),               SLOT(showNames()));
-    disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()), getContainer(index),            SLOT(updateStartTime()));
-    disconnect(gpMainWindow->mpTimeStepLineEdit,    SIGNAL(editingFinished()), getContainer(index),            SLOT(updateTimeStep()));
-    disconnect(gpMainWindow->mpFinishTimeLineEdit,  SIGNAL(editingFinished()), getContainer(index),            SLOT(updateStopTime()));
-    disconnect(gpMainWindow->disableUndoAction,     SIGNAL(triggered()),    getContainer(index),               SLOT(disableUndo()));
+
     disconnect(gpMainWindow->simulateAction,        SIGNAL(triggered()),    getTab(index),                  SLOT(simulate()));
-    disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()), getContainer(index),            SLOT(updateStartTime()));
-    disconnect(gpMainWindow->mpFinishTimeLineEdit,  SIGNAL(editingFinished()), getContainer(index),            SLOT(updateStopTime()));
-    disconnect(gpMainWindow->mpTimeStepLineEdit,    SIGNAL(editingFinished()), getContainer(index),            SLOT(updateTimeStep()));
     disconnect(gpMainWindow->saveAction,            SIGNAL(triggered()),    getTab(index),                  SLOT(save()));
     disconnect(gpMainWindow->saveAsAction,          SIGNAL(triggered()),    getTab(index),                  SLOT(saveAs()));
+
+//    disconnect(gpMainWindow->hideNamesAction,       SIGNAL(triggered()),    getContainer(index),               SLOT(hideNames()));
+//    disconnect(gpMainWindow->showNamesAction,       SIGNAL(triggered()),    getContainer(index),               SLOT(showNames()));
+//    disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()), getContainer(index),            SLOT(updateStartTime()));
+//    disconnect(gpMainWindow->mpTimeStepLineEdit,    SIGNAL(editingFinished()), getContainer(index),            SLOT(updateTimeStep()));
+//    disconnect(gpMainWindow->mpFinishTimeLineEdit,  SIGNAL(editingFinished()), getContainer(index),            SLOT(updateStopTime()));
+//    disconnect(gpMainWindow->disableUndoAction,     SIGNAL(triggered()),    getContainer(index),               SLOT(disableUndo()));
+//    disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()), getContainer(index),            SLOT(updateStartTime()));
+//    disconnect(gpMainWindow->mpFinishTimeLineEdit,  SIGNAL(editingFinished()), getContainer(index),            SLOT(updateStopTime()));
+//    disconnect(gpMainWindow->mpTimeStepLineEdit,    SIGNAL(editingFinished()), getContainer(index),            SLOT(updateTimeStep()));
+    getContainer(index)->disconnectMainWindowActions();
+
 
     //Delete project tab
     delete widget(index);
@@ -591,51 +595,56 @@ void ProjectTabWidget::tabChanged()
     for(int i=0; i<count(); ++i)
     {
             //If you add a disconnect here, remember to also add it to the close tab function!
+        //! @todo  NO!!!!!!  Write a common function instead to avoid code duplication
         disconnect(gpMainWindow->resetZoomAction,       SIGNAL(triggered()),        getTab(i)->mpGraphicsView,  SLOT(resetZoom()));
         disconnect(gpMainWindow->zoomInAction,          SIGNAL(triggered()),        getTab(i)->mpGraphicsView,  SLOT(zoomIn()));
         disconnect(gpMainWindow->zoomOutAction,         SIGNAL(triggered()),        getTab(i)->mpGraphicsView,  SLOT(zoomOut()));
         disconnect(gpMainWindow->exportPDFAction,       SIGNAL(triggered()),        getTab(i)->mpGraphicsView,  SLOT(exportToPDF()));
         disconnect(gpMainWindow->centerViewAction,      SIGNAL(triggered()),        getTab(i)->mpGraphicsView,  SLOT(centerView()));
-        disconnect(gpMainWindow->hideNamesAction,       SIGNAL(triggered()),        getContainer(i),               SLOT(hideNames()));
-        disconnect(gpMainWindow->showNamesAction,       SIGNAL(triggered()),        getContainer(i),               SLOT(showNames()));
-        disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()),  getContainer(i),       SLOT(updateStartTime()));
-        disconnect(gpMainWindow->mpTimeStepLineEdit,    SIGNAL(editingFinished()),  getContainer(i),       SLOT(updateTimeStep()));
-        disconnect(gpMainWindow->mpFinishTimeLineEdit,  SIGNAL(editingFinished()),  getContainer(i),       SLOT(updateStopTime()));
-        disconnect(gpMainWindow->disableUndoAction,     SIGNAL(triggered()),        getContainer(i),       SLOT(disableUndo()));
+//        disconnect(gpMainWindow->hideNamesAction,       SIGNAL(triggered()),        getContainer(i),               SLOT(hideNames()));
+//        disconnect(gpMainWindow->showNamesAction,       SIGNAL(triggered()),        getContainer(i),               SLOT(showNames()));
+//        disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()),  getContainer(i),       SLOT(updateStartTime()));
+//        disconnect(gpMainWindow->mpTimeStepLineEdit,    SIGNAL(editingFinished()),  getContainer(i),       SLOT(updateTimeStep()));
+//        disconnect(gpMainWindow->mpFinishTimeLineEdit,  SIGNAL(editingFinished()),  getContainer(i),       SLOT(updateStopTime()));
+//        disconnect(gpMainWindow->disableUndoAction,     SIGNAL(triggered()),        getContainer(i),       SLOT(disableUndo()));
+//        disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()),  getContainer(i),       SLOT(updateStartTime()));
+//        disconnect(gpMainWindow->mpFinishTimeLineEdit,  SIGNAL(editingFinished()),  getContainer(i),       SLOT(updateStopTime()));
+//        disconnect(gpMainWindow->mpTimeStepLineEdit,    SIGNAL(editingFinished()),  getContainer(i),       SLOT(updateTimeStep()));
+//        disconnect(gpMainWindow->cutAction,             SIGNAL(triggered()),        getContainer(i),       SLOT(cutSelected()));
+//        disconnect(gpMainWindow->copyAction,            SIGNAL(triggered()),        getContainer(i),       SLOT(copySelected()));
+//        disconnect(gpMainWindow->pasteAction,           SIGNAL(triggered()),        getContainer(i),       SLOT(paste()));
+//        disconnect(gpMainWindow->propertiesAction,      SIGNAL(triggered()),        getContainer(i),       SLOT(openPropertiesDialogSlot()));
+        getContainer(i)->disconnectMainWindowActions();
+
         disconnect(gpMainWindow->simulateAction,        SIGNAL(triggered()),        getTab(i),          SLOT(simulate()));
-        disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()),  getContainer(i),       SLOT(updateStartTime()));
-        disconnect(gpMainWindow->mpFinishTimeLineEdit,  SIGNAL(editingFinished()),  getContainer(i),       SLOT(updateStopTime()));
-        disconnect(gpMainWindow->mpTimeStepLineEdit,    SIGNAL(editingFinished()),  getContainer(i),       SLOT(updateTimeStep()));
         disconnect(gpMainWindow->saveAction,            SIGNAL(triggered()),        getTab(i),          SLOT(save()));
         disconnect(gpMainWindow->saveAsAction,          SIGNAL(triggered()),        getTab(i),          SLOT(saveAs()));
-        disconnect(gpMainWindow->cutAction,             SIGNAL(triggered()),        getContainer(i),       SLOT(cutSelected()));
-        disconnect(gpMainWindow->copyAction,            SIGNAL(triggered()),        getContainer(i),       SLOT(copySelected()));
-        disconnect(gpMainWindow->pasteAction,           SIGNAL(triggered()),        getContainer(i),       SLOT(paste()));
-        disconnect(gpMainWindow->propertiesAction,      SIGNAL(triggered()),        getContainer(i),       SLOT(openPropertiesDialogSlot()));
     }
     if(this->count() != 0)
     {
+        connect(gpMainWindow->simulateAction,       SIGNAL(triggered()),        getCurrentTab(),        SLOT(simulate()));
+        connect(gpMainWindow->saveAction,           SIGNAL(triggered()),        getCurrentTab(),        SLOT(save()));
+        connect(gpMainWindow->saveAsAction,         SIGNAL(triggered()),        getCurrentTab(),        SLOT(saveAs()));
+
         connect(gpMainWindow->resetZoomAction,      SIGNAL(triggered()),        getCurrentTab()->mpGraphicsView,    SLOT(resetZoom()));
         connect(gpMainWindow->zoomInAction,         SIGNAL(triggered()),        getCurrentTab()->mpGraphicsView,    SLOT(zoomIn()));
         connect(gpMainWindow->zoomOutAction,        SIGNAL(triggered()),        getCurrentTab()->mpGraphicsView,    SLOT(zoomOut()));
         connect(gpMainWindow->exportPDFAction,      SIGNAL(triggered()),        getCurrentTab()->mpGraphicsView,    SLOT(exportToPDF()));
         connect(gpMainWindow->centerViewAction,     SIGNAL(triggered()),        getCurrentTab()->mpGraphicsView,    SLOT(centerView()));
-        connect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        getCurrentContainer(),     SLOT(hideNames()));
-        connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        getCurrentContainer(),     SLOT(showNames()));
-        connect(gpMainWindow->mpStartTimeLineEdit,  SIGNAL(editingFinished()),  getCurrentContainer(),     SLOT(updateStartTime()));
-        connect(gpMainWindow->mpTimeStepLineEdit,   SIGNAL(editingFinished()),  getCurrentContainer(),     SLOT(updateTimeStep()));
-        connect(gpMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()),  getCurrentContainer(),     SLOT(updateStopTime()));
-        connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        getCurrentContainer(),     SLOT(disableUndo()));
-        connect(gpMainWindow->simulateAction,       SIGNAL(triggered()),        getCurrentTab(),        SLOT(simulate()));
-        connect(gpMainWindow->mpStartTimeLineEdit,  SIGNAL(editingFinished()),  getCurrentContainer(),     SLOT(updateStartTime()));
-        connect(gpMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()),  getCurrentContainer(),     SLOT(updateStopTime()));
-        connect(gpMainWindow->mpTimeStepLineEdit,   SIGNAL(editingFinished()),  getCurrentContainer(),     SLOT(updateTimeStep()));
-        connect(gpMainWindow->saveAction,           SIGNAL(triggered()),        getCurrentTab(),        SLOT(save()));
-        connect(gpMainWindow->saveAsAction,         SIGNAL(triggered()),        getCurrentTab(),        SLOT(saveAs()));
-        connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        getCurrentContainer(),     SLOT(cutSelected()));
-        connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        getCurrentContainer(),     SLOT(copySelected()));
-        connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        getCurrentContainer(),     SLOT(paste()));
-        connect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        getCurrentContainer(),     SLOT(openPropertiesDialogSlot()));
+//        connect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        getCurrentContainer(),     SLOT(hideNames()));
+//        connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        getCurrentContainer(),     SLOT(showNames()));
+//        connect(gpMainWindow->mpStartTimeLineEdit,  SIGNAL(editingFinished()),  getCurrentContainer(),     SLOT(updateStartTime()));
+//        connect(gpMainWindow->mpTimeStepLineEdit,   SIGNAL(editingFinished()),  getCurrentContainer(),     SLOT(updateTimeStep()));
+//        connect(gpMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()),  getCurrentContainer(),     SLOT(updateStopTime()));
+//        connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        getCurrentContainer(),     SLOT(disableUndo()));
+//        connect(gpMainWindow->mpStartTimeLineEdit,  SIGNAL(editingFinished()),  getCurrentContainer(),     SLOT(updateStartTime()));
+//        connect(gpMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()),  getCurrentContainer(),     SLOT(updateStopTime()));
+//        connect(gpMainWindow->mpTimeStepLineEdit,   SIGNAL(editingFinished()),  getCurrentContainer(),     SLOT(updateTimeStep()));
+//        connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        getCurrentContainer(),     SLOT(cutSelected()));
+//        connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        getCurrentContainer(),     SLOT(copySelected()));
+//        connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        getCurrentContainer(),     SLOT(paste()));
+//        connect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        getCurrentContainer(),     SLOT(openPropertiesDialogSlot()));
+        getCurrentContainer()->connectMainWindowActions();
         getCurrentContainer()->updateUndoStatus();
         getCurrentTopLevelSystem()->updateSimulationParametersInToolBar();
     }

@@ -43,6 +43,23 @@ GUIObject::~GUIObject()
 
 }
 
+////! @brief Establishes (or reestablishes) signal slot connections
+////! This is not meant for the selected specific connections
+//void GUIObject::establishStaticSigSlotConnections()
+//{
+//    //No connections right now
+//}
+
+//void GUIObject::establishDynamicSigSlotConnections()
+//{
+//    //No connections right now
+//}
+
+void GUIObject::refreshParentContainerConnections()
+{
+    //Nothing here right now
+
+}
 
 //! @brief Returns the type of the object (object, component, systemport, group etc)
 int GUIObject::type() const
@@ -58,6 +75,11 @@ QPointF GUIObject::getCenterPos()
 void GUIObject::setCenterPos(QPointF pos)
 {
     this->setPos(pos.x()-this->boundingRect().width()/2.0, pos.y()-this->boundingRect().height()/2.0);
+}
+
+GUIContainerObject *GUIObject::getParentContainerObject()
+{
+    return mpParentContainerObject;
 }
 
 
@@ -112,9 +134,9 @@ void GUIObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
         //Store old positions for all components, in case more than one is selected
     if(event->button() == Qt::LeftButton)
     {
-        for(int i = 0; i < mpParentContainerObject->mSelectedGUIObjectsList.size(); ++i)
+        for(int i = 0; i < mpParentContainerObject->mSelectedGUIModelObjectsList.size(); ++i)
         {
-            mpParentContainerObject->mSelectedGUIObjectsList[i]->mOldPos = mpParentContainerObject->mSelectedGUIObjectsList[i]->pos();
+            mpParentContainerObject->mSelectedGUIModelObjectsList[i]->mOldPos = mpParentContainerObject->mSelectedGUIModelObjectsList[i]->pos();
 
         }
         for(int i = 0; i < mpParentContainerObject->mSelectedGUIWidgetsList.size(); ++i)
@@ -160,7 +182,7 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
             mpSelectionBox->setActive();
             connect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
             connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
-            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
+            connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate90cw()));
             connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
             connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
             connect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
@@ -173,7 +195,7 @@ QVariant GUIObject::itemChange(GraphicsItemChange change, const QVariant &value)
         {
             disconnect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
             disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
-            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate()));
+            disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlR()), this, SLOT(rotate90cw()));
             disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
             disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
             disconnect(mpParentContainerObject->mpParentProjectTab->mpGraphicsView, SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
@@ -265,19 +287,19 @@ void GUIObject::rotateTo(qreal angle)
 {
     while(this->rotation() != angle)
     {
-        this->rotate(NOUNDO);
+        this->rotate90cw(NOUNDO);
     }
 }
 
 //! @brief Rotates a component 90 degrees clockwise
 //! @param undoSettings Tells whether or not this shall be registered in undo stsack
 //! @see rotateTo(qreal angle);
-void GUIObject::rotate(undoStatus undoSettings)
+void GUIObject::rotate90cw(undoStatus undoSettings)
 {
     this->setTransformOriginPoint(this->boundingRect().center());
     this->setRotation(this->rotation()+90);
 
-    if (this->rotation() == 360)
+    if (this->rotation() >= 359)
     {
         this->setRotation(0);
     }

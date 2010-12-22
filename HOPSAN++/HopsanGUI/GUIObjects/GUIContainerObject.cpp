@@ -44,21 +44,18 @@ GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GU
     mPasteOffset = -30;
 
     //Create the scene
-    mpScene = new QGraphicsScene();
+    mpScene = new QGraphicsScene(this);
 
     //Create the undastack
     mUndoStack = new UndoStack(this);
     mUndoStack->clear();
 
     //Establish connections
-    //connect(this->systemPortAction, SIGNAL(triggered()), SLOT(addSystemPort()));
-    connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()));
-    connect(gpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
-    connect(gpMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
-    connect(gpMainWindow->mpUndoWidget->getUndoButton(), SIGNAL(pressed()), this, SLOT(undo()));
-    connect(gpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(pressed()), this, SLOT(redo()));
-    connect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(pressed()), this, SLOT(clearUndo()));
-    connect(gpMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this, SLOT(hidePorts(bool)));
+    connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()), Qt::UniqueConnection);
+    connect(gpMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this, SLOT(hidePorts(bool)), Qt::UniqueConnection);
+
+
+
 
 
 }
@@ -66,6 +63,69 @@ GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GU
 GUIContainerObject::~GUIContainerObject()
 {
     qDebug() << ",,,,,,,,,,,,GUIContainer destructor";
+}
+
+////! @brief Establishes (or reestablishes) signal slot connections
+////! This is not meant for the selected specific connections
+//void GUIObject::establishStaticSigSlotConnections()
+//{
+//    connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()), Qt::UniqueConnection);
+//    connect(gpMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this, SLOT(hidePorts(bool)), Qt::UniqueConnection);
+//}
+
+//void GUIObject::establishDynamicSigSlotConnections()
+//{
+//    //No connections right now
+//}
+
+void GUIContainerObject::connectMainWindowActions()
+{
+    connect(gpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()), Qt::UniqueConnection);
+    connect(gpMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpUndoWidget->getUndoButton(), SIGNAL(pressed()), this, SLOT(undo()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(pressed()), this, SLOT(redo()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(pressed()), this, SLOT(clearUndo()), Qt::UniqueConnection);
+
+    connect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        this,     SLOT(hideNames()), Qt::UniqueConnection);
+    connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        this,     SLOT(showNames()), Qt::UniqueConnection);
+    connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        this,     SLOT(disableUndo()), Qt::UniqueConnection);
+    connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        this,     SLOT(cutSelected()), Qt::UniqueConnection);
+    connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        this,     SLOT(copySelected()), Qt::UniqueConnection);
+    connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        this,     SLOT(paste()), Qt::UniqueConnection);
+    connect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()), Qt::UniqueConnection);
+
+    connect(gpMainWindow->mpStartTimeLineEdit,  SIGNAL(editingFinished()),  this,     SLOT(updateStartTime()), Qt::UniqueConnection);//! @todo should these be here (start stop ts)?  and duplicates?
+    connect(gpMainWindow->mpTimeStepLineEdit,   SIGNAL(editingFinished()),  this,     SLOT(updateTimeStep()), Qt::UniqueConnection);
+    connect(gpMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()),  this,     SLOT(updateStopTime()), Qt::UniqueConnection);
+//    connect(gpMainWindow->mpStartTimeLineEdit,  SIGNAL(editingFinished()),  this,     SLOT(updateStartTime())); //! @todo should these be here (start stop ts)?
+//    connect(gpMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()),  this,     SLOT(updateStopTime()));
+//    connect(gpMainWindow->mpTimeStepLineEdit,   SIGNAL(editingFinished()),  this,     SLOT(updateTimeStep()));
+
+    //getCurrentContainer()->updateUndoStatus();
+}
+
+void GUIContainerObject::disconnectMainWindowActions()
+{
+    disconnect(gpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
+    disconnect(gpMainWindow->redoAction, SIGNAL(triggered()), this, SLOT(redo()));
+    disconnect(gpMainWindow->mpUndoWidget->getUndoButton(), SIGNAL(pressed()), this, SLOT(undo()));
+    disconnect(gpMainWindow->mpUndoWidget->getRedoButton(), SIGNAL(pressed()), this, SLOT(redo()));
+    disconnect(gpMainWindow->mpUndoWidget->getClearButton(), SIGNAL(pressed()), this, SLOT(clearUndo()));
+
+    disconnect(gpMainWindow->hideNamesAction,       SIGNAL(triggered()),        this,    SLOT(hideNames()));
+    disconnect(gpMainWindow->showNamesAction,       SIGNAL(triggered()),        this,    SLOT(showNames()));
+    disconnect(gpMainWindow->disableUndoAction,     SIGNAL(triggered()),        this,    SLOT(disableUndo()));
+    disconnect(gpMainWindow->cutAction,             SIGNAL(triggered()),        this,    SLOT(cutSelected()));
+    disconnect(gpMainWindow->copyAction,            SIGNAL(triggered()),        this,    SLOT(copySelected()));
+    disconnect(gpMainWindow->pasteAction,           SIGNAL(triggered()),        this,    SLOT(paste()));
+    disconnect(gpMainWindow->propertiesAction,      SIGNAL(triggered()),        this,    SLOT(openPropertiesDialogSlot()));
+
+    disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()),  this,    SLOT(updateStartTime()));//! @todo should these be here (start stop ts)? and duplicates?
+    disconnect(gpMainWindow->mpTimeStepLineEdit,    SIGNAL(editingFinished()),  this,    SLOT(updateTimeStep()));
+    disconnect(gpMainWindow->mpFinishTimeLineEdit,  SIGNAL(editingFinished()),  this,    SLOT(updateStopTime()));
+//    disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()),  this,    SLOT(updateStartTime())); //! @todo should these be here (start stop ts)?
+//    disconnect(gpMainWindow->mpFinishTimeLineEdit,  SIGNAL(editingFinished()),  this,    SLOT(updateStopTime()));
+//    disconnect(gpMainWindow->mpTimeStepLineEdit,    SIGNAL(editingFinished()),  this,    SLOT(updateTimeStep()));
 }
 
 void GUIContainerObject::makeRootSystem()
@@ -400,7 +460,7 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* 
     }
     else if (componentTypeName == "SystemPort") //!< @todo dont hardcode
     {
-        mpTempGUIModelObject = new GUISystemPort(pAppearanceData, position, rotation, this, startSelected, mGfxType);
+        mpTempGUIModelObject = new GUIContainerPort(pAppearanceData, position, rotation, this, startSelected, mGfxType);
         //Add appearance data for the external version of this systemport to the continer object so that the external port can be created with the creatPorts method
         mGUIModelObjectAppearance.getPortAppearanceMap().insert(mpTempGUIModelObject->getName(), GUIPortAppearance());
         this->createExternalPort(mpTempGUIModelObject->getName());
@@ -561,7 +621,7 @@ void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus und
         }
 
         mGUIModelObjectMap.erase(it);
-        mSelectedGUIObjectsList.removeOne(obj_ptr);
+        mSelectedGUIModelObjectsList.removeOne(obj_ptr);
         mpScene->removeItem(obj_ptr);
         delete(obj_ptr);
         emit checkMessages();
@@ -634,6 +694,45 @@ void GUIContainerObject::renameGUIModelObject(QString oldName, QString newName, 
 bool GUIContainerObject::hasGUIModelObject(QString name)
 {
     return (mGUIModelObjectMap.count(name) > 0);
+}
+
+//! @brief Takes ownership of supplied objects, widgets and connectors
+//!
+//! This method assumes that the previous owner have forgotten all about these objects, it however sets iself as new Qtparent, parentContainer and scene, overwriting the old values
+void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectList, QList<GUIWidget*> &rWidgetList, QList<GUIConnector*> &rConnectorList)
+{
+    for (int i=0; i<rModelObjectList.size(); ++i)
+    {
+        //! @if a containerport is received we must update the external port list also, we cant handle such objects right now
+        this->getContainedScenePtr()->addItem(rModelObjectList[i]);
+        rModelObjectList[i]->mpParentContainerObject = this; //! @todo use accessmethod later on when ptr protected
+        mGUIModelObjectMap.insert(rModelObjectList[i]->getName(), rModelObjectList[i]);
+        //! @todo what if name already taken, dont care for now as we shal only move into groups when they are created
+
+        rModelObjectList[i]->refreshParentContainerConnections();
+    }
+
+    for (int i=0; i<rWidgetList.size(); ++i)
+    {
+        this->getContainedScenePtr()->addItem(rWidgetList[i]);
+        rWidgetList[i]->mpParentContainerObject = this; //! @todo use accessmethod later on when ptr protected
+        mWidgetMap.insert(rWidgetList[i]->mWidgetIndex, rWidgetList[i]);
+        //! @todo what if idx already taken, dont care for now as we shal only move into groups when they are created
+        rWidgetList[i]->refreshParentContainerConnections();
+    }
+
+    for (int i=0; i<rConnectorList.size(); ++i)
+    {
+        this->getContainedScenePtr()->addItem(rConnectorList[i]);
+        rConnectorList[i]->mpParentContainerObject = this; //! @todo use accessmethod later on when ptr protected
+        mSubConnectorList.append(rConnectorList[i]);
+        //rConnectorList[i]->refresh.....................
+        //!< @todo implement the line above
+    }
+
+    //! @todo do much more stuff
+
+
 }
 
 
@@ -877,7 +976,7 @@ void GUIContainerObject::copySelected(CopyStack *xmlStack)
 
         //Copy components
     QList<GUIModelObject *>::iterator it;
-    for(it = mSelectedGUIObjectsList.begin(); it!=mSelectedGUIObjectsList.end(); ++it)
+    for(it = mSelectedGUIModelObjectsList.begin(); it!=mSelectedGUIModelObjectsList.end(); ++it)
     {
         (*it)->saveToDomElement(*copyRoot);
     }
@@ -1021,19 +1120,45 @@ void GUIContainerObject::paste(CopyStack *xmlStack)
 //! Groups the selected objects together
 void GUIContainerObject::groupSelected(QPointF pt)
 {
-    //! @todo dont hardcode group appearance like this
-    GUIModelObjectAppearance appdata;
-    appdata.setIconPathUser("subsystemtmp.svg");
-    appdata.setBaseIconPath("../../HopsanGUI/"); //!< @todo This is EXTREAMLY BAD
+    qDebug() << "pos where we want to create group: " << pt;
+    qDebug() << "In group selected";
 
-    //! @todo add like all other guimodelobjects add as proper object
-    GUIGroup *pGroup = new GUIGroup(pt.toPoint(), 0.0, &appdata, this);
-    this->getContainedScenePtr()->addItem(pGroup);
+    //Copy the selected objects, the lists will be cleared by addGuiobject and we need to keep this information
+    QList<GUIModelObject*> modelObjects = mSelectedGUIModelObjectsList;
+    QList<GUIWidget*> widgets = mSelectedGUIWidgetsList;
+    QList<GUIConnector*> connectors = mSelectedSubConnectorsList;
 
-    CopyStack copyStack;
-    this->cutSelected(&copyStack);
-    //this->copySelected(&copyStack);
-    //pGroup->setContents(&copyStack);
+    //"Detach" the selected objects from this container, basically by removing pointers from the subobject storage maps, make this container forget aboout these objects
+    for (int i=0; i<modelObjects.size(); ++i)
+    {
+        //! @todo if a containerport is selcted we need to remove it in core, not only from the storage vector, we must also make sure that the external ports are updated accordingly
+        mGUIModelObjectMap.remove(modelObjects[i]->getName());
+    }
+
+    for (int i=0; i<widgets.size(); ++i)
+    {
+        mWidgetMap.remove(widgets[i]->mWidgetIndex);
+    }
+
+    for (int i=0; i<connectors.size(); ++i)
+    {
+        mGUIConnectorPtrs.removeOne(connectors[i]);
+    }
+
+    //Create a new group at the location of the specified
+    GUIModelObjectAppearance* pAppdata = gpMainWindow->mpLibrary->getAppearanceData("HopsanGUIGroup");
+    GUIModelObject* pObj =  this->addGUIModelObject(pAppdata, pt.toPoint(),0);
+    GUIContainerObject* pContainer =  qobject_cast<GUIContainerObject*>(pObj);
+
+    //If dyncast sucessfull (it should allways be) then let new group take ownership of objects
+    if (pContainer != 0)
+    {
+        pContainer->takeOwnershipOf(modelObjects, widgets, connectors);
+    }
+    else
+    {
+        assert(false);
+    }
 }
 
 
@@ -1109,7 +1234,7 @@ void GUIContainerObject::clearUndo()
 //! Returns true if at least one GUIObject is selected
 bool GUIContainerObject::isObjectSelected()
 {
-    return (mSelectedGUIObjectsList.size() > 0);
+    return (mSelectedGUIModelObjectsList.size() > 0);
 }
 
 
@@ -1238,7 +1363,7 @@ void GUIContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         loadAction->setDisabled(true);
     }
-    QAction *pAction = this->buildBaseContextMenu(menu, event->screenPos());
+    QAction *pAction = this->buildBaseContextMenu(menu, event);
     if (pAction == loadAction)
     {
         //! @todo use loadHMF once we have scraped teh text based stuff and only uses xml
@@ -1320,25 +1445,27 @@ void GUIContainerObject::enterContainer()
     mpParentProjectTab->mpQuickNavigationWidget->addOpenContainer(this);
 
         //Disconnect parent system and connect new system with actions
-    disconnect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(hideNames()));
-    disconnect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(showNames()));
-    disconnect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        mpParentContainerObject,     SLOT(disableUndo()));
-    disconnect(gpMainWindow->cutAction,            SIGNAL(triggered()),        mpParentContainerObject,     SLOT(cutSelected()));
-    disconnect(gpMainWindow->copyAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(copySelected()));
-    disconnect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        mpParentContainerObject,     SLOT(paste()));
-    disconnect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        mpParentContainerObject,     SLOT(openPropertiesDialogSlot()));
-    disconnect(gpMainWindow->undoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(undo()));
-    disconnect(gpMainWindow->redoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(redo()));
+//    disconnect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(hideNames()));
+//    disconnect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(showNames()));
+//    disconnect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        mpParentContainerObject,     SLOT(disableUndo()));
+//    disconnect(gpMainWindow->cutAction,            SIGNAL(triggered()),        mpParentContainerObject,     SLOT(cutSelected()));
+//    disconnect(gpMainWindow->copyAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(copySelected()));
+//    disconnect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        mpParentContainerObject,     SLOT(paste()));
+//    disconnect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        mpParentContainerObject,     SLOT(openPropertiesDialogSlot()));
+//    disconnect(gpMainWindow->undoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(undo()));
+//    disconnect(gpMainWindow->redoAction,           SIGNAL(triggered()),        mpParentContainerObject,     SLOT(redo()));
+      mpParentContainerObject->disconnectMainWindowActions();
 
-    connect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        this,     SLOT(hideNames()));
-    connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        this,     SLOT(showNames()));
-    connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        this,     SLOT(disableUndo()));
-    connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        this,     SLOT(cutSelected()));
-    connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        this,     SLOT(copySelected()));
-    connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        this,     SLOT(paste()));
-    connect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()));
-    connect(gpMainWindow->undoAction,           SIGNAL(triggered()),        this,     SLOT(undo()));
-    connect(gpMainWindow->redoAction,           SIGNAL(triggered()),        this,     SLOT(redo()));
+//    connect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        this,     SLOT(hideNames()));
+//    connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        this,     SLOT(showNames()));
+//    connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        this,     SLOT(disableUndo()));
+//    connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        this,     SLOT(cutSelected()));
+//    connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        this,     SLOT(copySelected()));
+//    connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        this,     SLOT(paste()));
+//    connect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()));
+//    connect(gpMainWindow->undoAction,           SIGNAL(triggered()),        this,     SLOT(undo()));
+//    connect(gpMainWindow->redoAction,           SIGNAL(triggered()),        this,     SLOT(redo()));
+      this->connectMainWindowActions();
 
         //Upddate plot widget and undo widget to new container
     gpMainWindow->makeSurePlotWidgetIsCreated();
@@ -1357,15 +1484,15 @@ void GUIContainerObject::exitContainer()
     mpParentProjectTab->mpGraphicsView->setContainerPtr(this->mpParentContainerObject);
 
         //Disconnect this system and connect parent system with undo and redo actions
-    disconnect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        this,     SLOT(hideNames()));
-    disconnect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        this,     SLOT(showNames()));
-    disconnect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        this,     SLOT(disableUndo()));
-    disconnect(gpMainWindow->cutAction,            SIGNAL(triggered()),        this,     SLOT(cutSelected()));
-    disconnect(gpMainWindow->copyAction,           SIGNAL(triggered()),        this,     SLOT(copySelected()));
-    disconnect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        this,     SLOT(paste()));
-    disconnect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()));
-    disconnect(gpMainWindow->undoAction,           SIGNAL(triggered()),        this,     SLOT(undo()));
-    disconnect(gpMainWindow->redoAction,           SIGNAL(triggered()),        this,     SLOT(redo()));
+//    disconnect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        this,     SLOT(hideNames()));
+//    disconnect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        this,     SLOT(showNames()));
+//    disconnect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        this,     SLOT(disableUndo()));
+//    disconnect(gpMainWindow->cutAction,            SIGNAL(triggered()),        this,     SLOT(cutSelected()));
+//    disconnect(gpMainWindow->copyAction,           SIGNAL(triggered()),        this,     SLOT(copySelected()));
+//    disconnect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        this,     SLOT(paste()));
+//    disconnect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        this,     SLOT(openPropertiesDialogSlot()));
+//    disconnect(gpMainWindow->undoAction,           SIGNAL(triggered()),        this,     SLOT(undo()));
+//    disconnect(gpMainWindow->redoAction,           SIGNAL(triggered()),        this,     SLOT(redo()));
 
     connect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(hideNames()));
     connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        mpParentContainerObject,     SLOT(showNames()));

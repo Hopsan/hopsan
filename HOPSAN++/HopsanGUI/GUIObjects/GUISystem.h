@@ -45,6 +45,7 @@ public:
     QVector<QString> getParameterNames();
 
     CoreSystemAccess* getCoreSystemAccessPtr();
+    GUIContainerObject *getParentContainerObject();
 
     enum { Type = GUISYSTEM };
     int type() const;

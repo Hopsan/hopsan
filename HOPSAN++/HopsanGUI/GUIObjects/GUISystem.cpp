@@ -138,6 +138,19 @@ CoreSystemAccess* GUISystem::getCoreSystemAccessPtr()
     return this->mpCoreSystemAccess;
 }
 
+//! @brief Overloaded version that returns self if root system
+GUIContainerObject *GUISystem::getParentContainerObject()
+{
+    if (mpParentContainerObject==0)
+    {
+        return this;
+    }
+    else
+    {
+        return mpParentContainerObject;
+    }
+}
+
 //void GUISystem::loadFromHMF(QString modelFilePath)
 //{
 //    //! @todo maybe break out the load file function it is used in many places (with some diffeerenses every time), should be enough to return file and filinfo obejct maybe

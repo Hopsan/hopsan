@@ -33,6 +33,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIContainerObject *parentSystem,
 
     setFlags(QGraphicsItem::ItemIsFocusable);
 
+    //! @todo need to mov these into a refreshParentcontainer connections function
     connect(mpParentContainerObject, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
     connect(mpParentContainerObject, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIsoStyle(graphicsType)));
 
@@ -138,6 +139,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     mpStartPort->getGuiModelObject()->rememberConnector(this);
     mpEndPort->getGuiModelObject()->rememberConnector(this);
 
+        //! @todo need to mov these into a refreshParentcontainer connections function
     connect(mpParentContainerObject, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
     connect(mpParentContainerObject, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIsoStyle(graphicsType)));
 }

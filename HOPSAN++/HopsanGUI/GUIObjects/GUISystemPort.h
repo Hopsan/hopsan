@@ -5,12 +5,12 @@
 
 #include "GUIModelObject.h"
 
-class GUISystemPort : public GUIModelObject
+class GUIContainerPort : public GUIModelObject
 {
     Q_OBJECT
 public:
-    GUISystemPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected = SELECTED, graphicsType gfxType = USERGRAPHICS);
-    ~GUISystemPort();
+    GUIContainerPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected = SELECTED, graphicsType gfxType = USERGRAPHICS);
+    ~GUIContainerPort();
     QString getTypeName();
     void setName(QString newName, renameRestrictions renameSettings);
 

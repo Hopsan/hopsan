@@ -23,6 +23,9 @@ public:
     virtual ~GUIContainerObject();
     void makeRootSystem();
 
+    void connectMainWindowActions();
+    void disconnectMainWindowActions();
+
     //Scene and Core access
     QGraphicsScene *getContainedScenePtr();
     virtual CoreSystemAccess *getCoreSystemAccessPtr();
@@ -35,6 +38,7 @@ public:
     void deleteGUIModelObject(QString componentName, undoStatus undoSettings=UNDO);
     void renameGUIModelObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
     bool hasGUIModelObject(QString name);
+    void takeOwnershipOf(QList<GUIModelObject*> &rModeObjectlist, QList<GUIWidget*> &rWidgetList, QList<GUIConnector*> &rConnectorList);
 
     //Handle connectors
     GUIConnector *findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
@@ -74,7 +78,7 @@ public:
     GUIModelObjectMapT mGUIModelObjectMap;
     QList<GUITextWidget *> mTextWidgetList; //! @todo we should really have one common list for all guiwidgets, or maybe only have the guiwidget map bellow
     QList<GUIBoxWidget *> mBoxWidgetList;
-    QList<GUIModelObject *> mSelectedGUIObjectsList;
+    QList<GUIModelObject *> mSelectedGUIModelObjectsList;
     QList<GUIWidget *> mSelectedGUIWidgetsList;
 
     bool mPortsHidden;

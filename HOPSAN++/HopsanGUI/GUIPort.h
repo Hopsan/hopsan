@@ -22,6 +22,7 @@ class GUIPort :public QGraphicsSvgItem
     Q_OBJECT
 public:
     GUIPort(QString name, qreal xpos, qreal ypos, GUIPortAppearance* pPortAppearance, GUIModelObject *pParent = 0);
+    virtual void refreshParentContainerConnection();
 
     QPointF getCenterPos();
     void updatePosition(qreal x, qreal y);
@@ -55,7 +56,7 @@ public:
     bool isConnected();
 
         //Public member variables
-    GUIContainerObject *mpParentContainerObject;
+    //GUIContainerObject *mpParentContainerObject;
     GUIModelObject *mpParentGuiModelObject;
     QPointF rectPos;
 

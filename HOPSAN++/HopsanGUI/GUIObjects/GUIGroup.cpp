@@ -8,7 +8,6 @@
 
 #include "../common.h"
 
-//#include "GUIObject.h"
 #include "GUISystem.h"
 #include "GUIContainerObject.h"
 #include "GUIComponent.h"

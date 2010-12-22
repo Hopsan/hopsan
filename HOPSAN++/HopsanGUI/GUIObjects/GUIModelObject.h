@@ -18,6 +18,7 @@ class GUIModelObject : public GUIObject
 public:
     GUIModelObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType graphics = USERGRAPHICS, GUIContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
     virtual ~GUIModelObject();
+    virtual void refreshParentContainerConnections();
 
     //Name methods
     virtual void setName(QString name);
@@ -70,7 +71,7 @@ public:
 
 public slots:
     void deleteMe();
-    void rotate(undoStatus undoSettings = UNDO);
+    void rotate90cw(undoStatus undoSettings = UNDO);
     //! @todo flip should work on all gui objects
     void flipVertical(undoStatus undoSettings = UNDO);
     void flipHorizontal(undoStatus undoSettings = UNDO);
@@ -84,7 +85,7 @@ signals:
 protected:
     //Protexted methods
     virtual void openPropertiesDialog(){}
-    virtual QAction *buildBaseContextMenu(QMenu &rMenue, QPointF pos);
+    virtual QAction *buildBaseContextMenu(QMenu &rMenue, QGraphicsSceneContextMenuEvent* pEvent);
 
     //Reimplemented Qt methods
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);

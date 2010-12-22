@@ -203,9 +203,9 @@ void UndoStack::undoOneStep()
                 return;
             }
             //! @todo Make a function for rotation clockwise, this is crazy!
-            mpParentContainerObject->getGUIModelObject(name)->rotate(NOUNDO);
-            mpParentContainerObject->getGUIModelObject(name)->rotate(NOUNDO);
-            mpParentContainerObject->getGUIModelObject(name)->rotate(NOUNDO);
+            mpParentContainerObject->getGUIModelObject(name)->rotate90cw(NOUNDO);
+            mpParentContainerObject->getGUIModelObject(name)->rotate90cw(NOUNDO);
+            mpParentContainerObject->getGUIModelObject(name)->rotate90cw(NOUNDO);
         }
         else if(stuffElement.attribute("what") == "verticalflip")
         {
@@ -512,7 +512,7 @@ void UndoStack::redoOneStep()
                 this->clear("Undo stack attempted to access non-existing component. Stack was cleared to ensure stability.");
                 return;
             }
-            mpParentContainerObject->getGUIModelObject(name)->rotate(NOUNDO);
+            mpParentContainerObject->getGUIModelObject(name)->rotate90cw(NOUNDO);
         }
         else if(stuffElement.attribute("what") == "verticalflip")
         {

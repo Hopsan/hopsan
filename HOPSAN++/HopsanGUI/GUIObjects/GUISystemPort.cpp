@@ -5,8 +5,8 @@
 #include "../GUIPort.h"
 #include "../loadObjects.h"
 
-//! @todo rename GUISystemPort to ContainerPort
-GUISystemPort::GUISystemPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
+//! @todo rename GUISystemPort to ContainerPort, rename files also
+GUIContainerPort::GUIContainerPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
         : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
     qDebug() << "GUISystemPort: ,,,,,,,,,,,,,,setting parent to: " << pParentContainer;
@@ -17,7 +17,7 @@ GUISystemPort::GUISystemPort(GUIModelObjectAppearance* pAppearanceData, QPoint p
     refreshDisplayName();
 }
 
-GUISystemPort::~GUISystemPort()
+GUIContainerPort::~GUIContainerPort()
 {
     qDebug() << "GuiSystemPort destructor: " << this->getName();
     if (mIsSystemPort)
@@ -31,7 +31,7 @@ GUISystemPort::~GUISystemPort()
 }
 
 //! @brief Help function to create ports in the SystemPort Object when it is created
-void GUISystemPort::createPorts()
+void GUIContainerPort::createPorts()
 {
     //A system port only contains one port, which should be first in the map, ignore any others (should not be any more)
     PortAppearanceMapT::iterator i = mGUIModelObjectAppearance.getPortAppearanceMap().begin();
@@ -75,7 +75,7 @@ void GUISystemPort::createPorts()
 
 //! Returns a string with the GUIObject type.
 //! @todo maybe not hardcoded string
-QString GUISystemPort::getTypeName()
+QString GUIContainerPort::getTypeName()
 {
     if (mIsSystemPort)
     {
@@ -90,7 +90,7 @@ QString GUISystemPort::getTypeName()
 }
 
 //! Set the name of a system port
-void GUISystemPort::setName(QString newName, renameRestrictions renameSettings)
+void GUIContainerPort::setName(QString newName, renameRestrictions renameSettings)
 {
     QString oldName = getName();
     //If name same as before do nothing
@@ -123,7 +123,7 @@ void GUISystemPort::setName(QString newName, renameRestrictions renameSettings)
 }
 
 
-int GUISystemPort::type() const
+int GUIContainerPort::type() const
 {
     return Type;
 }

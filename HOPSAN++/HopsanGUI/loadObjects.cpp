@@ -458,7 +458,7 @@ GUIModelObject* loadGUIModelObject(const ModelObjectLoadData &rData, LibraryWidg
         }
         while(pObj->rotation() != rData.rotation)
         {
-            pObj->rotate(undoSettings);
+            pObj->rotate90cw(undoSettings);
         }
         return pObj;
     }

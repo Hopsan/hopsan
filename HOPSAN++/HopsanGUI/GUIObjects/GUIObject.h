@@ -27,6 +27,11 @@ public:
     GUIObject(QPoint pos, qreal rot, selectionStatus=DESELECTED, GUIContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
     virtual ~GUIObject();
 
+    //(re)Establish Signal and slot connections
+//    virtual void establishStaticSigSlotConnections();
+//    virtual void establishDynamicSigSlotConnections();
+    virtual void refreshParentContainerConnections();
+
     //Name methods
     virtual QString getTypeName() {assert(false);} //Maybe sould not bee here
     virtual QString getName() {assert(false);} //Maybe sould not bee here
@@ -40,6 +45,8 @@ public:
     virtual void saveToDomElement(QDomElement /*&rDomElement*/){}  //! @todo nothing for now
     virtual void loadFromHMF(QString /*modelFilePath=QString()*/) {assert(false);} //Only available in GUISubsystem for now
 
+    //Other methods
+    virtual GUIContainerObject *getParentContainerObject();
     bool isFlipped();
 
     enum { Type = GUIOBJECT };
@@ -53,7 +60,7 @@ public slots:
     virtual void flipVertical(undoStatus /*undoSettings = UNDO*/){} //!< @todo nothing for now
     virtual void flipHorizontal(undoStatus /*undoSettings = UNDO*/){}  //!< @todo nothing for now
     virtual void deleteMe();
-    virtual void rotate(undoStatus undoSettings=UNDO);
+    virtual void rotate90cw(undoStatus undoSettings=UNDO);
 
     void rotateTo(qreal angle);
     void moveUp();
