@@ -99,6 +99,7 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     mIsConnected = false;
 
     //connect(this,SIGNAL(portClicked(GUIPort*)),this->getParentContainerObjectPtr(),SLOT(createConnector(GUIPort*)));
+    this->refreshParentContainerSigSlotConnections();
     connect(gpMainWindow->hidePortsAction,SIGNAL(triggered(bool)),this, SLOT(hideIfNotConnected(bool)));
 
     //Connect the view zoom change signal to the port overlay scale slot
@@ -106,9 +107,9 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     connect(pView, SIGNAL(zoomChange(qreal)), this, SLOT(setPortOverlayScale(qreal)));
 }
 
-void GUIPort::refreshParentContainerConnection()
+void GUIPort::refreshParentContainerSigSlotConnections()
 {
-    //! @todo cant we solve this in some other way to avoid the need to refresh connections when moving into groups, OK fior now though
+    //! @todo cant we solve this in some other way to avoid the need to refresh connections when moving into groups, OK for now though
     disconnect(this, SIGNAL(portClicked(GUIPort*)), 0, 0);
     connect(this, SIGNAL(portClicked(GUIPort*)), this->getParentContainerObjectPtr(), SLOT(createConnector(GUIPort*)));
 }
@@ -255,7 +256,7 @@ void GUIPort::openRightClickMenu(QPoint screenPos)
 
     QVector<QString> parameterNames;
     QVector<QString> parameterUnits;
-    mpParentGuiModelObject->mpParentContainerObject->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(mpParentGuiModelObject->getName(), this->getName(), parameterNames, parameterUnits);
+    mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(mpParentGuiModelObject->getName(), this->getName(), parameterNames, parameterUnits);
 
     //QAction *plotPressureAction = menu.addAction("Plot pressure");
     //QAction *plotFlowAction = menu.addAction("Plot flow");

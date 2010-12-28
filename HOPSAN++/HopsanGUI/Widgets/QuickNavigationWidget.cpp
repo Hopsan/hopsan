@@ -23,7 +23,7 @@ void QuickNavigationWidget::addOpenContainer(GUIContainerObject* pContainer)
 {
     //! @todo we can use the button group as button storage instead of having an extra Qvector
     this->mContainerObjectPtrs.append(pContainer);                              //Add the container object ptr from storage
-    QPushButton *tmp = new QPushButton(pContainer->mpParentContainerObject->getName()+" ::", this);   //Create new button with parent name
+    QPushButton *tmp = new QPushButton(pContainer->getParentContainerObject()->getName()+" ::", this);   //Create new button with parent name
     tmp->setStyleSheet("padding:0px");
     tmp->setFlat(true);
 

@@ -74,25 +74,15 @@ GUIModelObject::~GUIModelObject()
     emit objectDeleted();
 }
 
-void GUIModelObject::refreshParentContainerConnections()
+void GUIModelObject::setParentContainerObject(GUIContainerObject *pParentContainer)
 {
-    //First refresh connections higher up
-    GUIObject::refreshParentContainerConnections();
+    GUIObject::setParentContainerObject(pParentContainer);
 
-    //Refresh local connections
-    if(mpParentContainerObject != 0)
-    {
-        //First clear the slot and then establish new connection
-        disconnect(this, SLOT(select()), 0, 0); //! @todo Not sure if this will remove some connections made from some other part of the code, hope not
-        connect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
-    }
-
-    //Refresh any port connections
+    //Refresh the port signals and slots connections
     for (int i=0; i<mPortListPtrs.size(); ++i)
     {
-        mPortListPtrs[i]->refreshParentContainerConnection();
+        mPortListPtrs[i]->refreshParentContainerSigSlotConnections();
     }
-
 }
 
 
@@ -196,7 +186,7 @@ void GUIModelObject::rememberConnector(GUIConnector *item)
 //! @param item Pointer to connector that shall be forgotten
 void GUIModelObject::forgetConnector(GUIConnector *item)
 {
-    mGUIConnectorPtrs.removeOne(item);
+    mGUIConnectorPtrs.removeAll(item);
     disconnect(this, SIGNAL(objectMoved()), item, SLOT(drawConnector()));
 }
 
@@ -1072,12 +1062,12 @@ QVariant GUIModelObjectDisplayName::itemChange(GraphicsItemChange change, const 
         qDebug() << "ItemSelectedHasChanged";
         if (this->isSelected())
         {
-            mpParentGUIModelObject->mpParentContainerObject->deselectSelectedNameText();
-            connect(this->mpParentGUIModelObject->mpParentContainerObject, SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
+            mpParentGUIModelObject->getParentContainerObject()->deselectSelectedNameText();
+            connect(mpParentGUIModelObject->getParentContainerObject(), SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
         }
         else
         {
-            disconnect(this->mpParentGUIModelObject->mpParentContainerObject, SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
+            disconnect(mpParentGUIModelObject->getParentContainerObject(), SIGNAL(deselectAllNameText()),this,SLOT(deselect()));
         }
     }
     return value;

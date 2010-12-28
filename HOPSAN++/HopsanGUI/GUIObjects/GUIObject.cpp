@@ -21,9 +21,10 @@ GUIObject::GUIObject(QPoint pos, qreal rot, selectionStatus, GUIContainerObject 
     : QGraphicsWidget(pParent)
 {
     //Initi variables
+    mpParentContainerObject = 0;
     mHmfTagName = HMF_OBJECTTAG;
 
-    mpParentContainerObject = pParentContainer;
+    this->setParentContainerObject(pParentContainer);
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
 
     //Set position orientation and other appearance stuff
@@ -43,23 +44,17 @@ GUIObject::~GUIObject()
 
 }
 
-////! @brief Establishes (or reestablishes) signal slot connections
-////! This is not meant for the selected specific connections
-//void GUIObject::establishStaticSigSlotConnections()
-//{
-//    //No connections right now
-//}
-
-//void GUIObject::establishDynamicSigSlotConnections()
-//{
-//    //No connections right now
-//}
-
-void GUIObject::refreshParentContainerConnections()
+void GUIObject::setParentContainerObject(GUIContainerObject *pParentContainer)
 {
-    //Nothing here right now
-
+    if(mpParentContainerObject != 0)
+    {
+        //First clear the slot and then establish new connection
+        disconnect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
+    }
+    mpParentContainerObject = pParentContainer;
+    connect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()),Qt::UniqueConnection);
 }
+
 
 //! @brief Returns the type of the object (object, component, systemport, group etc)
 int GUIObject::type() const

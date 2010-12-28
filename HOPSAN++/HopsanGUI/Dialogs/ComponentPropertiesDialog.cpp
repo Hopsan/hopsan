@@ -80,7 +80,7 @@ void ComponentPropertiesDialog::createEditStuff()
         QString valueTxt = mpGUIComponent->getParameterValueTxt(*pit);
         bool ok;
         valueTxt.toDouble(&ok);
-        if((!ok) && !(mpGUIComponent->mpParentContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(valueTxt)))
+        if((!ok) && !(mpGUIComponent->getParentContainerObject()->getCoreSystemAccessPtr()->hasSystemParameter(valueTxt)))
         {
             gpMainWindow->mpMessageWidget->printGUIWarningMessage(tr("Global parameter no longer exists, replacing with last used value."));
         }
@@ -250,7 +250,7 @@ void ComponentPropertiesDialog::createEditStuff()
 //! @brief Reads the values from the dialog and writes them into the core component
 void ComponentPropertiesDialog::okPressed()
 {
-    mpGUIComponent->mpParentContainerObject->renameGUIModelObject(mpGUIComponent->getName(), mpNameEdit->text());
+    mpGUIComponent->getParentContainerObject()->renameGUIModelObject(mpGUIComponent->getName(), mpNameEdit->text());
     //qDebug() << mpNameEdit->text();
 
     setParametersAndStartValues();
@@ -275,14 +275,14 @@ void ComponentPropertiesDialog::setParametersAndStartValues()
         {
             if(!addedUndoPost)
             {
-                this->mpGUIComponent->mpParentContainerObject->mUndoStack->newPost("changedparameters");
+                this->mpGUIComponent->getParentContainerObject()->mUndoStack->newPost("changedparameters");
                 addedUndoPost = true;
             }
-            this->mpGUIComponent->mpParentContainerObject->mUndoStack->registerChangedParameter(mpGUIComponent->getName(),
+            this->mpGUIComponent->getParentContainerObject()->mUndoStack->registerChangedParameter(mpGUIComponent->getName(),
                                                                                                 mvParameterLayout[i]->getDataName(),
                                                                                                 oldValueTxt,
                                                                                                 valueTxt);
-            mpGUIComponent->mpParentContainerObject->mpParentProjectTab->hasChanged();
+            mpGUIComponent->getParentContainerObject()->mpParentProjectTab->hasChanged();
         }
         //Set the parameter
         if(!mpGUIComponent->setParameterValue(mvParameterLayout[i]->getDataName(), valueTxt))
@@ -313,15 +313,15 @@ void ComponentPropertiesDialog::setParametersAndStartValues()
             {
                 if(!addedUndoPost)
                 {
-                    this->mpGUIComponent->mpParentContainerObject->mUndoStack->newPost("changedparameters");
+                    this->mpGUIComponent->getParentContainerObject()->mUndoStack->newPost("changedparameters");
                     addedUndoPost = true;
                 }
-                this->mpGUIComponent->mpParentContainerObject->mUndoStack->registerChangedStartValue(mpGUIComponent->getName(),
+                this->mpGUIComponent->getParentContainerObject()->mUndoStack->registerChangedStartValue(mpGUIComponent->getName(),
                                                                                                      mvStartValueLayout[j][i]->getDescriptionName(),
                                                                                                      mvStartValueLayout[j][i]->getDataName(),
                                                                                                      oldValueTxt,
                                                                                                      valueTxt);
-                mpGUIComponent->mpParentContainerObject->mpParentProjectTab->hasChanged();
+                mpGUIComponent->getParentContainerObject()->mpParentProjectTab->hasChanged();
             }
             //Set the start value
             if(!mpGUIComponent->setStartValue(mvStartValueLayout[j][i]->getDescriptionName(), mvStartValueLayout[j][i]->getDataName(), valueTxt))

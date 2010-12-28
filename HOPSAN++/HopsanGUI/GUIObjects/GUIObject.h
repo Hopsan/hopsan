@@ -27,10 +27,8 @@ public:
     GUIObject(QPoint pos, qreal rot, selectionStatus=DESELECTED, GUIContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
     virtual ~GUIObject();
 
-    //(re)Establish Signal and slot connections
-//    virtual void establishStaticSigSlotConnections();
-//    virtual void establishDynamicSigSlotConnections();
-    virtual void refreshParentContainerConnections();
+    virtual void setParentContainerObject(GUIContainerObject *pParentContainer);
+    virtual GUIContainerObject *getParentContainerObject();
 
     //Name methods
     virtual QString getTypeName() {assert(false);} //Maybe sould not bee here
@@ -46,14 +44,12 @@ public:
     virtual void loadFromHMF(QString /*modelFilePath=QString()*/) {assert(false);} //Only available in GUISubsystem for now
 
     //Other methods
-    virtual GUIContainerObject *getParentContainerObject();
     bool isFlipped();
 
     enum { Type = GUIOBJECT };
     int type() const;
 
     //Public members
-    GUIContainerObject *mpParentContainerObject; //!< @todo not public
     QPointF mOldPos;
 
 public slots:
@@ -84,6 +80,7 @@ protected:
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
     //Protected members
+    GUIContainerObject *mpParentContainerObject;
     QString mHmfTagName;
     bool mIsFlipped;
     GUIObjectSelectionBox *mpSelectionBox;

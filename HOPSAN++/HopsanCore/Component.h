@@ -265,7 +265,7 @@ namespace hopsan {
         bool connect(Port *pPort1, Port *pPort2);
         bool connect(std::string compname1, std::string portname1, std::string compname2, std::string portname2);
         bool disconnect(std::string compname1, std::string portname1, std::string compname2, std::string portname2);
-        void disconnect(Port *pPort1, Port *pPort2);
+        bool disconnect(Port *pPort1, Port *pPort2);
 
         //initialize and simulate
         bool isSimulationOk();

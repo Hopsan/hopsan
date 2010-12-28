@@ -23,30 +23,40 @@ class UndoStack;
 //! @param startpos defines the start position of the connector, normally the center of the starting port.
 //! @param *parentView is a pointer to the GraphicsView the connector belongs to.
 //! @param parent is the parent of the port.
-GUIConnector::GUIConnector(GUIPort *startPort, GUIContainerObject *parentSystem, QGraphicsItem *parent)
+GUIConnector::GUIConnector(GUIPort *startPort, GUIContainerObject *pParentContainer, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
-    mpParentContainerObject = parentSystem;
-    mpParentContainerObject->getContainedScenePtr()->addItem(this);
-    startPort->getGuiModelObject()->rememberConnector(this);
-    qDebug() << "startPort->getGuiObject()->getName(): " << startPort->getGuiModelObject()->getName();
+    //qDebug() << "startPort->getGuiObject()->getName(): " << startPort->getGuiModelObject()->getName();
+
+    //! @todo maybe this init stuff should be common for both constructors
+    //Init members
+    mpParentContainerObject = 0;
+    mpStartPort = 0;
+    mpEndPort = 0;
+    mEndPortConnected = false;
+    mMakingDiagonal = false;
 
     setFlags(QGraphicsItem::ItemIsFocusable);
 
-    //! @todo need to mov these into a refreshParentcontainer connections function
-    connect(mpParentContainerObject, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
-    connect(mpParentContainerObject, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIsoStyle(graphicsType)));
+    this->setParentContainer(pParentContainer);
 
-    QPointF startPos = startPort->mapToScene(startPort->boundingRect().center());
+    mpParentContainerObject->getContainedScenePtr()->addItem(this);
+
+    this->setStartPort(startPort);
+    startPort->getGuiModelObject()->rememberConnector(this);
+    QPointF startPos = startPort->getGuiModelObject()->getCenterPos();
     this->setPos(startPos);
     this->updateStartPoint(startPos);
+
     mpGUIConnectorAppearance = new GUIConnectorAppearance("notconnected", mpParentContainerObject->mGfxType);
-    mEndPortConnected = false;
+    this->addPoint(startPos);
+    this->addPoint(startPos);
     this->drawConnector();
-    mMakingDiagonal = false;
-    this->setStartPort(startPort);
-    this->addPoint(startPos);
-    this->addPoint(startPos);
+
+//    //! @todo need to mov these into a refreshParentcontainer connections function
+//    connect(mpParentContainerObject, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
+//    connect(mpParentContainerObject, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIsoStyle(graphicsType)));
+//    this->refreshParentContainerSigSlotConnections();
 }
 
 
@@ -56,18 +66,26 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIContainerObject *parentSystem,
 //! @param points Point vector for the connector
 //! @param *parentView Pointer to the GraphicsView the connector belongs to
 //! @param *parent Pointer to parent of the port
-GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, GUIContainerObject *parentSystem, QStringList geometries, QGraphicsItem *parent)
+GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> points, GUIContainerObject *pParentContainer, QStringList geometries, QGraphicsItem *parent)
         : QGraphicsWidget(parent)
 {
-    mpParentContainerObject = parentSystem;
+    //! @todo maybe this init stuff should be common for both constructors
+    //Init members
+    mpParentContainerObject = 0;
+    mpStartPort = 0;
+    mpEndPort = 0;
+    mEndPortConnected = false;
+    mMakingDiagonal = false;
+
+    this->setParentContainer(pParentContainer);
     setFlags(QGraphicsItem::ItemIsFocusable);
     mpStartPort = startPort;
     mpEndPort = endPort;
     mpStartPort->setIsConnected(true);
     mpEndPort->setIsConnected(true);
-    connect(mpStartPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
-    connect(mpEndPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
-    QPointF startPos = getStartPort()->mapToScene(getStartPort()->boundingRect().center());
+//    connect(mpStartPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
+//    connect(mpEndPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
+    QPointF startPos = getStartPort()->getGuiModelObject()->getCenterPos();
     this->setPos(startPos);
 
     mpGUIConnectorAppearance = new GUIConnectorAppearance(startPort->getPortType(), mpParentContainerObject->mGfxType);
@@ -100,7 +118,7 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     mEndPortConnected = true;
     emit endPortConnected();
     this->setPassive();
-    connect(mpEndPort->getGuiModelObject(),SIGNAL(objectDeleted()),this,SLOT(deleteMeWithNoUndo()));
+//    connect(mpEndPort->getGuiModelObject(),SIGNAL(objectDeleted()),this,SLOT(deleteMeWithNoUndo()));
 
         //Create the lines, so that drawConnector has something to work with
     for(int i=0; i < mPoints.size()-1; ++i)
@@ -128,20 +146,13 @@ GUIConnector::GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF
     for(int i=0; i<mpLines.size(); ++i)
         mpLines[i]->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
-
-
-//      //Add arrow to the connector if it is of signal type
-//    if(mpEndPort->getPortType() == "READPORT" && mpEndPort->getNodeType() == "NodeSignal")
-//        this->getLastLine()->addEndArrow();
-//    else if(mpEndPort->getPortType() == "WRITEPORT" && mpEndPort->getNodeType() == "NodeSignal")
-//        mpLines[0]->addStartArrow();
-
     mpStartPort->getGuiModelObject()->rememberConnector(this);
     mpEndPort->getGuiModelObject()->rememberConnector(this);
 
-        //! @todo need to mov these into a refreshParentcontainer connections function
-    connect(mpParentContainerObject, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
-    connect(mpParentContainerObject, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIsoStyle(graphicsType)));
+//        //! @todo need to mov these into a refreshParentcontainer connections function
+//    connect(mpParentContainerObject, SIGNAL(selectAllGUIConnectors()), this, SLOT(select()));
+//    connect(mpParentContainerObject, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIsoStyle(graphicsType)));
+//    this->refreshParentContainerSigSlotConnections();
 }
 
 
@@ -155,6 +166,63 @@ GUIConnector::~GUIConnector()
     {
         mpEndPort->getGuiModelObject()->forgetConnector(this);
     }
+}
+
+void GUIConnector::disconnectPortSigSlots(GUIPort* pPort)
+{
+    bool sucess1 = true;
+    bool sucess2 = true;
+    if (pPort != 0)
+    {
+        sucess1 = disconnect(pPort->getGuiModelObject(), SIGNAL(objectDeleted()), this, SLOT(deleteMeWithNoUndo()));
+        sucess2 = disconnect(pPort->getGuiModelObject(), SIGNAL(objectSelected()), this, SLOT(selectIfBothComponentsSelected()));
+        //! @todo something wierd, this second disconnect allways seem to fail
+    }
+
+    if (!sucess1 || !sucess2)
+    {
+        qDebug() << "__________disconnect failed: " << sucess1 << " " << sucess2;
+    }
+
+}
+
+//! @todo if we would let the guimodelobjects connect to the connector we could avoid having two separate disconnect / connect functions we could just let the modelobject refresh the sigslot connections against the connector
+void GUIConnector::connectPortSigSlots(GUIPort* pPort)
+{
+    bool sucess1 = true;
+    bool sucess2 = true;
+
+    if (pPort != 0)
+    {
+        sucess1 = connect(pPort->getGuiModelObject(),   SIGNAL(objectDeleted()),    this,   SLOT(deleteMeWithNoUndo()), Qt::UniqueConnection);
+        sucess2 = connect(pPort->getGuiModelObject(),   SIGNAL(objectSelected()),   this,   SLOT(selectIfBothComponentsSelected()), Qt::UniqueConnection);
+    }
+
+    if (!sucess1 || !sucess2)
+    {
+        qDebug() << "__________connect failed: " << sucess1 << " " << sucess2;
+    }
+}
+
+void GUIConnector::setParentContainer(GUIContainerObject *pParentContainer)
+{
+    if (mpParentContainerObject != 0)
+    {
+        //Disconnect all old sigslot connections
+        disconnect(mpParentContainerObject, SIGNAL(selectAllGUIConnectors()),       this, SLOT(select()));
+        disconnect(mpParentContainerObject, SIGNAL(setAllGfxType(graphicsType)),    this, SLOT(setIsoStyle(graphicsType)));
+    }
+
+    mpParentContainerObject = pParentContainer;
+
+    //Establish new connections
+    connect(mpParentContainerObject, SIGNAL(selectAllGUIConnectors()),      this, SLOT(select()),                   Qt::UniqueConnection);
+    connect(mpParentContainerObject, SIGNAL(setAllGfxType(graphicsType)),   this, SLOT(setIsoStyle(graphicsType)),  Qt::UniqueConnection);
+}
+
+GUIContainerObject *GUIConnector::getParentContainer()
+{
+    return mpParentContainerObject;
 }
 
 
@@ -258,10 +326,12 @@ void GUIConnector::removePoint(bool deleteIfEmpty)
 //! @see getEndPort()
 void GUIConnector::setStartPort(GUIPort *port)
 {
+    this->disconnectPortSigSlots(mpStartPort);
     mpStartPort = port;
     mpStartPort->setIsConnected(true);
-    connect(mpStartPort->getGuiModelObject(),SIGNAL(objectDeleted()),this,SLOT(deleteMeWithNoUndo()));
-    connect(mpStartPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
+    this->connectPortSigSlots(mpStartPort);
+//    connect(mpStartPort->getGuiModelObject(),SIGNAL(objectDeleted()),this,SLOT(deleteMeWithNoUndo()));
+//    connect(mpStartPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
 }
 
 
@@ -273,9 +343,11 @@ void GUIConnector::setStartPort(GUIPort *port)
 void GUIConnector::setEndPort(GUIPort *port)
 {
         //Set the end port pointer, flag that the end port is connector and tell the port to flag that it is connected
+    this->disconnectPortSigSlots(mpEndPort);
     mEndPortConnected = true;
     mpEndPort = port;
     mpEndPort->setIsConnected(true);
+    this->connectPortSigSlots(mpEndPort);
 
         //Figure out whether or not the last line had the right direction, and make necessary corrections
     if( ( ((mpEndPort->getPortDirection() == LEFTRIGHT) && (mGeometries.back() == HORIZONTAL)) ||
@@ -308,8 +380,8 @@ void GUIConnector::setEndPort(GUIPort *port)
 
         //Connect the connector with delete and select slots in the new end component.
         //This will make it deleted when component is deleted, and selected if both start and end components are selected.
-    connect(mpEndPort->getGuiModelObject(),SIGNAL(objectDeleted()),this,SLOT(deleteMeWithNoUndo()));
-    connect(mpEndPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
+//    connect(mpEndPort->getGuiModelObject(),SIGNAL(objectDeleted()),this,SLOT(deleteMeWithNoUndo()));
+//    connect(mpEndPort->getGuiModelObject(),SIGNAL(objectSelected()),this,SLOT(selectIfBothComponentsSelected()));
 
         //Make all lines selectable and all lines except first and last movable
     if(mpLines.size() > 1)

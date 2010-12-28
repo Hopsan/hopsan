@@ -26,9 +26,13 @@ class GUIConnector : public QGraphicsWidget
     Q_OBJECT
     friend class GUIConnectorLine;
 public:
-    GUIConnector(GUIPort *startPort, GUIContainerObject *parentSystem, QGraphicsItem *parent = 0);
-    GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> mPoints, GUIContainerObject *parentSystem, QStringList geometries = QStringList(), QGraphicsItem *parent = 0);
+    GUIConnector(GUIPort *startPort, GUIContainerObject *pParentContainer, QGraphicsItem *parent = 0);
+    GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> mPoints, GUIContainerObject *pParentContainer, QStringList geometries = QStringList(), QGraphicsItem *parent = 0);
     ~GUIConnector();
+    //void refreshParentContainerSigSlotConnections();
+    //void refreshPortSigSlotConnections();
+    void setParentContainer(GUIContainerObject *pParentContainer);
+    GUIContainerObject *getParentContainer();
 
     enum { Type = UserType + 1 };           //Va tusan gör den här?! -Det du!
 
@@ -60,7 +64,6 @@ public:
 
     void saveToDomElement(QDomElement &rDomElement);
 
-    GUIContainerObject *mpParentContainerObject;
     QVector<QPointF> mPoints;
 
 protected:
@@ -89,10 +92,14 @@ signals:
     void endPortConnected();
 
 private:
+    void disconnectPortSigSlots(GUIPort* pPort);
+    void connectPortSigSlots(GUIPort* pPort);
+
     bool mIsActive;
     bool mEndPortConnected;
     bool mMakingDiagonal;
 
+    GUIContainerObject *mpParentContainerObject;
     GUIConnectorAppearance *mpGUIConnectorAppearance;
     GUIPort *mpStartPort;
     GUIPort *mpEndPort;

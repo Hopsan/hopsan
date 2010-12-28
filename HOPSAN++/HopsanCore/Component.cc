@@ -2346,14 +2346,32 @@ bool ConnectionAssistant::ensureNotCrossConnecting(Port *pPort1, Port *pPort2)
 //! @todo need to make sure that components and prots given by name exist here
 bool ComponentSystem::disconnect(string compname1, string portname1, string compname2, string portname2)
 {
-    disconnect( getComponent(compname1)->getPort(portname1), getComponent(compname2)->getPort(portname2) );
-    //! @todo Should return based on sucessfull dissconnect not hardcoded
-    return true;
+    Component *pComp1, *pComp2;
+    Port *pPort1, *pPort2;
+
+    pComp1 = getComponent(compname1);
+    pComp2 = getComponent(compname2);
+
+    if ( (pComp1!=0) && (pComp2!=0) )
+    {
+        pPort1 = pComp1->getPort(portname1);
+        pPort2 = pComp2->getPort(portname2);
+
+        if ( (pComp1!=0) && (pComp2!=0) )
+        {
+            return disconnect(pPort1, pPort2);
+        }
+    }
+
+    stringstream ss;
+    ss << "Disconnect: Could not find either " << compname1 << "->" << portname1 << " or " << compname2 << "->" << portname2 << endl;
+    gCoreMessageHandler.addDebugMessage(ss.str());
+    return false;
 }
 
 //! Disconnects two ports and remove node if no one is using it any more
 //! @todo whay about system ports they are somewaht speciall
-void ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
+bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 {
     cout << "disconnecting " << pPort1->mpComponent->getName() << " " << pPort1->getPortName() << "  and  " << pPort2->mpComponent->getName() << " " << pPort2->getPortName() << endl;
 
@@ -2395,6 +2413,7 @@ void ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
     cout << ss.str() << endl;
     gCoreMessageHandler.addDebugMessage(ss.str(), "succesfuldisconnect");
 
+    return true; //! @todo we should try to determine if it is really true
 }
 
 

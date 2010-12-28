@@ -310,7 +310,6 @@ void GUIGroup::setContents(CopyStack *pCopyStack)
 
 void GUIGroup::setName(QString newName)
 {
-    //Groups dont out care about unique names, can set whatever you want
     this->mGUIModelObjectAppearance.setName(newName);
     this->refreshDisplayName();
 }

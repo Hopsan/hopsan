@@ -550,6 +550,7 @@ void GUIContainerObject::removeFavoriteParameterByComponentName(QString componen
             return;
         }
     }
+    //! @todo why do we need to care about plotwidget stuff after removing favoriteparameters ?
     gpMainWindow->makeSurePlotWidgetIsCreated();
     gpMainWindow->mpPlotWidget->mpPlotParameterTree->updateList();
 
@@ -608,7 +609,7 @@ void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus und
     {
         //Register removal of model object in undo stack
         this->mUndoStack->registerDeletedObject(it.value());
-        emit componentChanged();
+        emit componentChanged(); //!< @todo Why do we need to emit this signal after regestering in undostack
     }
 
 
@@ -619,18 +620,18 @@ void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus und
         {
             this->removeExternalPort((*it)->getName());
         }
-
         mGUIModelObjectMap.erase(it);
         mSelectedGUIModelObjectsList.removeOne(obj_ptr);
         mpScene->removeItem(obj_ptr);
         delete(obj_ptr);
-        emit checkMessages();
     }
     else
     {
         //qDebug() << "In delete GUIObject: could not find object with name " << objectName;
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Error: Could not delete object with name " + objectName + ", object not found");
     }
+
+    emit checkMessages();
     mpParentProjectTab->mpGraphicsView->updateViewPort();
 }
 
@@ -699,39 +700,134 @@ bool GUIContainerObject::hasGUIModelObject(QString name)
 //! @brief Takes ownership of supplied objects, widgets and connectors
 //!
 //! This method assumes that the previous owner have forgotten all about these objects, it however sets iself as new Qtparent, parentContainer and scene, overwriting the old values
-void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectList, QList<GUIWidget*> &rWidgetList, QList<GUIConnector*> &rConnectorList)
+void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectList, QList<GUIWidget*> &rWidgetList)
 {
     for (int i=0; i<rModelObjectList.size(); ++i)
     {
-        //! @if a containerport is received we must update the external port list also, we cant handle such objects right now
-        this->getContainedScenePtr()->addItem(rModelObjectList[i]);
-        rModelObjectList[i]->mpParentContainerObject = this; //! @todo use accessmethod later on when ptr protected
-        mGUIModelObjectMap.insert(rModelObjectList[i]->getName(), rModelObjectList[i]);
-        //! @todo what if name already taken, dont care for now as we shal only move into groups when they are created
+        //! @todo if a containerport is received we must update the external port list also, we cant handle such objects right now
+        if (rModelObjectList[i]->type() != GUISYSTEMPORT)
+        {
+            this->getContainedScenePtr()->addItem(rModelObjectList[i]);
+            rModelObjectList[i]->setParentContainerObject(this);
+            mGUIModelObjectMap.insert(rModelObjectList[i]->getName(), rModelObjectList[i]);
+            //! @todo what if name already taken, dont care for now as we shal only move into groups when they are created
 
-        rModelObjectList[i]->refreshParentContainerConnections();
+            //rModelObjectList[i]->refreshParentContainerSigSlotConnections();
+        }
+        else
+        {
+            //We cant handle this yet
+            assert(false);
+        }
     }
 
     for (int i=0; i<rWidgetList.size(); ++i)
     {
         this->getContainedScenePtr()->addItem(rWidgetList[i]);
-        rWidgetList[i]->mpParentContainerObject = this; //! @todo use accessmethod later on when ptr protected
+        rWidgetList[i]->setParentContainerObject(this);
         mWidgetMap.insert(rWidgetList[i]->mWidgetIndex, rWidgetList[i]);
         //! @todo what if idx already taken, dont care for now as we shal only move into groups when they are created
-        rWidgetList[i]->refreshParentContainerConnections();
+        //rWidgetList[i]->refreshParentContainerSigSlotConnections();
     }
 
-    for (int i=0; i<rConnectorList.size(); ++i)
+    QList<GUIConnector*> transitConnectors;
+    QList<GUIConnector*> internalConnectors;
+
+    //Determine what connectors are transitconnectors
+    for (int i=0; i<rModelObjectList.size(); ++i)
     {
-        this->getContainedScenePtr()->addItem(rConnectorList[i]);
-        rConnectorList[i]->mpParentContainerObject = this; //! @todo use accessmethod later on when ptr protected
-        mSubConnectorList.append(rConnectorList[i]);
+        GUIModelObject *pObj = rModelObjectList[i];
+
+        QList<GUIConnector*> connectorPtrs = pObj->getGUIConnectorPtrs();
+        for(int i=0; i<connectorPtrs.size(); ++i)
+        {
+            if((rModelObjectList.contains(connectorPtrs[i]->getStartPort()->getGuiModelObject())) &&
+               (rModelObjectList.contains(connectorPtrs[i]->getEndPort()->getGuiModelObject())))
+            {
+                //This seems to be an internal connector, add to internal connector list, (if it has not already been added)
+                if (!internalConnectors.contains(connectorPtrs[i]))
+                {
+                    internalConnectors.append(connectorPtrs[i]);
+                }
+
+            }
+            else
+            {
+                //This seems to be a connector that connects to an external modelobject, lets create a transit connector
+                if (!transitConnectors.contains(connectorPtrs[i]))
+                {
+                    transitConnectors.append(connectorPtrs[i]);
+                }
+            }
+        }
+    }
+
+    //! @todo move this code up into loop above
+    //Add the internal connectors
+    for (int i=0; i<internalConnectors.size(); ++i)
+    {
+        qDebug() << "___Adding internalConnection";
+        //Make previous parent container forget about the connector
+        internalConnectors[i]->getParentContainer()->forgetContainedConnector(internalConnectors[i]);
+
+        //Make new container own and know about the connector
+        this->getContainedScenePtr()->addItem(internalConnectors[i]);
+        internalConnectors[i]->setParentContainer(this);
+        mSubConnectorList.append(internalConnectors[i]);
         //rConnectorList[i]->refresh.....................
-        //!< @todo implement the line above
+        //!< @todo implement the line above, and fix sigslot connection maddnes in connectors
+    }
+
+    //Add the transit connectors and create group ports
+    for (int i=0; i<transitConnectors.size(); ++i)
+    {
+        qDebug() << "___Adding transitConnection";
+        QPointF portpos;
+        bool endPortIsTransitPort = false;
+        if (rModelObjectList.contains(transitConnectors[i]->getStartPort()->getGuiModelObject()))
+        {
+            portpos = transitConnectors[i]->getEndPort()->getGuiModelObject()->getCenterPos();
+            //Make end object forget about this connector as we are actually splitting it into two new connectors
+            transitConnectors[i]->getEndPort()->getGuiModelObject()->forgetConnector(transitConnectors[i]);
+            endPortIsTransitPort = true;
+        }
+        else
+        {
+            portpos = transitConnectors[i]->getStartPort()->getGuiModelObject()->getCenterPos();
+            //Make start object forget about this connector as we are actually splitting it into two new connectors
+            transitConnectors[i]->getStartPort()->getGuiModelObject()->forgetConnector(transitConnectors[i]);
+        }
+
+        //Create the "transit port"
+        GUIModelObjectAppearance *portApp = gpMainWindow->mpLibrary->getAppearanceData("SystemPort"); //! @todo do not hardcode, use define
+        GUIModelObject *pTransPort = this->addGUIModelObject(portApp, portpos.toPoint(),0);
+
+        //Make previous parent container forget about the connector
+        transitConnectors[i]->getParentContainer()->forgetContainedConnector(transitConnectors[i]);
+
+        //Add the port to this container
+        this->getContainedScenePtr()->addItem(transitConnectors[i]);
+        transitConnectors[i]->setParentContainer(this);
+        mSubConnectorList.append(transitConnectors[i]);
+
+        //! @todo instead of having set startport and set end port, (we can keep them also maybe), we should have a function that sets startport if no port is set and end port if start port already set, dont know if good idea but we can keep it in mind, then we would not have to do stuff like bellow. (maybe we could call that function "connect")
+        if (endPortIsTransitPort)
+        {
+            //Make new port and connector know about eachother
+            transitConnectors[i]->setEndPort(pTransPort->getPortListPtrs().at(0));
+            transitConnectors[i]->getEndPort()->getGuiModelObject()->rememberConnector(transitConnectors[i]);
+        }
+        else
+        {
+            //Make new port and connector know about eachother
+            transitConnectors[i]->setStartPort(pTransPort->getPortListPtrs().at(0));
+            transitConnectors[i]->getStartPort()->getGuiModelObject()->rememberConnector(transitConnectors[i]);
+        }
     }
 
     //! @todo do much more stuff
 
+    //! @todo center the objects in the new view
 
 }
 
@@ -1126,23 +1222,21 @@ void GUIContainerObject::groupSelected(QPointF pt)
     //Copy the selected objects, the lists will be cleared by addGuiobject and we need to keep this information
     QList<GUIModelObject*> modelObjects = mSelectedGUIModelObjectsList;
     QList<GUIWidget*> widgets = mSelectedGUIWidgetsList;
-    QList<GUIConnector*> connectors = mSelectedSubConnectorsList;
+    //QList<GUIConnector*> connectors = mSelectedSubConnectorsList;
 
     //"Detach" the selected objects from this container, basically by removing pointers from the subobject storage maps, make this container forget aboout these objects
     for (int i=0; i<modelObjects.size(); ++i)
     {
         //! @todo if a containerport is selcted we need to remove it in core, not only from the storage vector, we must also make sure that the external ports are updated accordingly
-        mGUIModelObjectMap.remove(modelObjects[i]->getName());
+        if (modelObjects[i]->type() != GUISYSTEMPORT)
+        {
+            mGUIModelObjectMap.remove(modelObjects[i]->getName());
+        }
     }
 
     for (int i=0; i<widgets.size(); ++i)
     {
         mWidgetMap.remove(widgets[i]->mWidgetIndex);
-    }
-
-    for (int i=0; i<connectors.size(); ++i)
-    {
-        mGUIConnectorPtrs.removeOne(connectors[i]);
     }
 
     //Create a new group at the location of the specified
@@ -1153,7 +1247,7 @@ void GUIContainerObject::groupSelected(QPointF pt)
     //If dyncast sucessfull (it should allways be) then let new group take ownership of objects
     if (pContainer != 0)
     {
-        pContainer->takeOwnershipOf(modelObjects, widgets, connectors);
+        pContainer->takeOwnershipOf(modelObjects, widgets);
     }
     else
     {
@@ -1286,6 +1380,15 @@ bool GUIContainerObject::getIsCreatingConnector()
     return mIsCreatingConnector;
 }
 
+//! @brief This is a helpfunction that can be used to make a container "forget" about a certain connector
+//!
+//! It does not delete the connector and connected components dos not forget about it
+//! use only when transfering ownership of objects to an other container
+void GUIContainerObject::forgetContainedConnector(GUIConnector *pConnector)
+{
+    mSubConnectorList.removeAll(pConnector);
+}
+
 
 //! Disables the undo function for the current model
 void GUIContainerObject::disableUndo()
@@ -1412,16 +1515,17 @@ void GUIContainerObject::clearContents()
     GUIModelObjectMapT::iterator mit;
     QMap<size_t, GUIWidget *>::iterator wit;
 
-    qDebug() << "Clearing model objects";
+    qDebug() << "Clearing model objects in " << getName();
     //We cant use for loop over iterators as the maps are modified on each delete (and iterators invalidated)
     mit=mGUIModelObjectMap.begin();
     while (mit!=mGUIModelObjectMap.end())
     {
+        //! @todo calling deleteMe in this destructor will probably leed to a delete including undo registration which we should avoid in this case, same for widgets bellow
         (*mit)->deleteMe();
         mit=mGUIModelObjectMap.begin();
     }
 
-    qDebug() << "Clearing widget objects";
+    qDebug() << "Clearing widget objects in " << getName();
     wit=mWidgetMap.begin();
     while (wit!=mWidgetMap.end())
     {
