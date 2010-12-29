@@ -11,6 +11,7 @@
 #define SIGNALHYSTERESIS_HPP_INCLUDED
 
 #include "../../ComponentEssentials.h"
+#include "../../ComponentUtilities.h"
 
 namespace hopsan {
 
@@ -25,6 +26,7 @@ namespace hopsan {
         double mHysteresisWidth;
         Delay mDelayedInput;
         ValveHysteresis mHyst;
+        double *input, *output;
         Port *mpIn, *mpOut;
 
     public:
@@ -39,7 +41,7 @@ namespace hopsan {
             mHysteresisWidth = 1.0;
 
             mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("HysteresisWidth", "Width of the Hysteresis", "-", mHysteresisWidth);
         }
@@ -47,22 +49,26 @@ namespace hopsan {
 
         void initialize()
         {
+            input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+
+            if(mpOut->isConnected())
+            {
+                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                output = new double();
+            }
+
             mDelayedInput.initialize(1, 0.0);
-            //mDelayedInput.setStepDelay(1);
         }
 
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes
-            double input = mpIn->readNode(NodeSignal::VALUE);
-
             //Hysteresis equations
-            double output = mHyst.getValue(input, mHysteresisWidth, mDelayedInput.getOldest());
-            mDelayedInput.update(output);
-
-            //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, output);
+            (*output) = mHyst.getValue((*input), mHysteresisWidth, mDelayedInput.getOldest());
+            mDelayedInput.update((*output));
         }
     };
 }

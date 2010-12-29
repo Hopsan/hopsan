@@ -93,6 +93,8 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     this->setRotation(mpPortAppearance->rot);
     this->refreshPortOverlayPosition();
 
+    this->refreshParentContainerConnection();
+
     mMag = GOLDENRATIO;
     mOverlaySetScale = 1.0;
     mIsMagnified = false;
@@ -217,7 +219,7 @@ void GUIPort::mousePressEvent(QGraphicsSceneMouseEvent *event)
     //QGraphicsSvgItem::mousePressEvent(event); //Don't work if this is called
     if (event->button() == Qt::LeftButton)
     {
-        //std::cout << "GUIPort.cpp: " << "portClick emitted\n";
+        qDebug() << "portClick emitted\n";
         emit portClicked(this);
     }
     else if (event->button() == Qt::RightButton)

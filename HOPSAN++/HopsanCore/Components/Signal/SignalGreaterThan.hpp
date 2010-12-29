@@ -23,6 +23,7 @@ namespace hopsan {
 
     private:
         double mLimit;
+        double *input, *output;
         Port *mpIn, *mpOut;
 
     public:
@@ -37,7 +38,7 @@ namespace hopsan {
             mLimit = 0.0;
 
             mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("x", "Limit Value", "-", mLimit);
         }
@@ -45,28 +46,30 @@ namespace hopsan {
 
         void initialize()
         {
+            input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            if(mpOut->isConnected())
+            {
+                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                output = new double();
+            }
             simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes
-            double u = mpIn->readNode(NodeSignal::VALUE);
-
             //Greater than equations
-            double y;
-            if(u > mLimit)
+            if( (*input) > mLimit )
             {
-                y = 1.0;
+                (*output) = 1.0;
             }
             else
             {
-                y = 0.0;
+                (*output) =  0.0;
             }
-
-            //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, y);
         }
     };
 }

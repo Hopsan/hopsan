@@ -25,6 +25,7 @@ namespace hopsan {
     private:
         double mPrevU;
         double mPrevY;
+        double *input, *output;
         Port *mpIn, *mpOut;
 
     public:
@@ -37,13 +38,31 @@ namespace hopsan {
         {
             mTypeName = "SignalIntegrator";
 
-            mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal");
+            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
         }
 
 
         void initialize()
         {
+            if(mpIn->isConnected())
+            {
+                input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                input = new double(0);
+            }
+
+            if(mpOut->isConnected())
+            {
+                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                output = new double();
+            }
+
             double startY = mpOut->getStartValue(NodeSignal::VALUE);
             mPrevU = startY;
             mPrevY = startY;
@@ -52,19 +71,13 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes
-            double u = mpIn->readNode(NodeSignal::VALUE);
-
             //Filter equation
             //Bilinear transform is used
-            double y = mPrevY + mTimestep/2.0*(u + mPrevU);
-
-            //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, y);
+            (*output) = mPrevY + mTimestep/2.0*((*input) + mPrevU);
 
             //Update filter:
-            mPrevU = u;
-            mPrevY = y;
+            mPrevU = (*input);
+            mPrevY = (*output);
         }
     };
 }

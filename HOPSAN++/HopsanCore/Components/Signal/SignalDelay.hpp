@@ -25,6 +25,7 @@ namespace hopsan {
     private:
         Delay mDelay;
         double mDt;
+        double *input, *output;
         Port *mpIn, *mpOut;
 
     public:
@@ -40,7 +41,7 @@ namespace hopsan {
             mDt=1;
 
             mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("dt", "Delay time", "s", mDt);
         }
@@ -48,17 +49,24 @@ namespace hopsan {
 
         void initialize()
         {
+            input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            if(mpOut->isConnected())
+            {
+                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                output = new double();
+            }
+
             mDelay.initialize(mDt, mTimestep, mpOut->getStartValue(NodeSignal::VALUE));
         }
 
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes
-            double u = mpIn->readNode(NodeSignal::VALUE);
-
             //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, mDelay.update(u));
+            (*output) = mDelay.update((*input));
         }
     };
 }

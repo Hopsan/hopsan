@@ -26,6 +26,7 @@ namespace hopsan {
         SecondOrderFilter mFilter;
         double mW, mD, mMin, mMax;
         double mStartY;
+        double *input, *output;
         Port *mpIn, *mpOut;
 
     public:
@@ -45,8 +46,8 @@ namespace hopsan {
             mW=1000.0;
             mD=1.0;
 
-            mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal");
+            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("w", "Break frequency", "rad/s", mW);
             registerParameter("d", "Damp coefficient", "-", mD);
@@ -55,6 +56,26 @@ namespace hopsan {
 
         void initialize()
         {
+                //Make in1 or in2 be zero if they are not connected
+            if(mpIn->isConnected())
+            {
+                input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                input = new double(0);
+            }
+
+                //output must be connected
+            if(mpOut->isConnected())
+            {
+                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                output = new double();
+            }
+
             double num[3];
             double den[3];
 
@@ -68,17 +89,13 @@ namespace hopsan {
             mFilter.initialize(mTimestep, num, den, mStartY, mStartY, mMin, mMax);
 
             //Writes out the value for time "zero"
-            mpOut->writeNode(NodeSignal::VALUE, mStartY);
+            (*output) = mStartY;
         }
 
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes
-            double u = mpIn->readNode(NodeSignal::VALUE);
-
-            //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, mFilter.update(u));
+            (*output) = mFilter.update((*input));
         }
     };
 }

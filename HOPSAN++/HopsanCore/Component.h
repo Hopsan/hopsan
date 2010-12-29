@@ -305,6 +305,9 @@ namespace hopsan {
         void addSubComponentPtrToStorage(Component* pComponent);
         void removeSubComponentPtrFromStorage(Component* c_ptr);
 
+        void sortSignalComponentVector();
+        bool componentVectorContains(std::vector<Component*> vector, Component *pComp);
+
         //UniqueName specific functions
         std::string determineUniquePortName(std::string portname);
         std::string determineUniqueComponentName(std::string name);

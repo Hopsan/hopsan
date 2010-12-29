@@ -19,6 +19,7 @@ namespace hopsan {
 
     //Forward Declarations
     class Port;
+    class Component;
     class ComponentSystem;
     class ConnectionAssistant;
 
@@ -32,6 +33,7 @@ namespace hopsan {
     public:
         //The user should never bother about Nodes
         void logData(const double time);  //Public because simlation threads must be able to log data
+        Component *getWritePortComponentPtr();
 
     protected:
         //Protected member functions

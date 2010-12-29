@@ -331,6 +331,22 @@ void Node::logData(const double time)
 }
 
 
+//! @brief Returns a pointer to the component with the write port in the node.
+//! If connection is ok, any node can only have one write port. If no write port exists, a null pointer is returned.
+Component *Node::getWritePortComponentPtr()
+{
+    for(size_t i=0; i!=mPortPtrs.size(); ++i)
+    {
+        if(mPortPtrs.at(i)->getPortType() == Port::WRITEPORT)
+        {
+            return mPortPtrs.at(i)->getComponent();
+        }
+    }
+
+    return 0;   //Return null pointer if no write port was found
+}
+
+
 //! debug function to dump loged node data to a file
 void Node::saveLogData(string filename)
 {

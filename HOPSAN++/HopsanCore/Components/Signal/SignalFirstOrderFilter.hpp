@@ -27,6 +27,7 @@ namespace hopsan {
         double mWnum, mWden, mK;
         double mStartY;
         double mMin, mMax;
+        double *input, *output;
         Port *mpIn, *mpOut;
 
     public:
@@ -45,8 +46,8 @@ namespace hopsan {
             mWnum = 1E+10;
             mWden = 1000.0;
 
-            mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal");
+            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("k", "Gain", "-", mK);
             registerParameter("wnum", "Numerator break frequency", "rad/s", mWnum);
@@ -58,6 +59,23 @@ namespace hopsan {
 
         void initialize()
         {
+            if(mpIn->isConnected())
+            {
+                input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                input = new double(0);
+            }
+            if(mpOut->isConnected())
+            {
+                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                output = new double();
+            }
+
             double num[2];
             double den[2];
 
@@ -68,18 +86,13 @@ namespace hopsan {
 
             mFilter.initialize(mTimestep, num, den, mStartY, mStartY, mMin, mMax);
 
-            //Writes out the value for time "zero"
-            mpOut->writeNode(NodeSignal::VALUE, mStartY);
+            (*output) = mStartY;
         }
 
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes
-            double u = mpIn->readNode(NodeSignal::VALUE);
-
-            //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, mFilter.update(u));
+            (*output) = mFilter.update((*input));
         }
     };
 }

@@ -25,6 +25,7 @@ namespace hopsan {
     private:
         double mMin, mMax;
         double mPrevU, mPrevY;
+        double *input, *output;
         Port *mpIn, *mpOut;
 
     public:
@@ -37,16 +38,34 @@ namespace hopsan {
         {
             mTypeName = "SignalIntegratorLimited";
 
-            mMin = -1.5E+300;
+            mMin = -1.5E+300;   //! @todo Shouldn't these be registered parameters?
             mMax = 1.5E+300;
 
-            mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal");
+            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
         }
 
 
         void initialize()
         {
+            if(mpIn->isConnected())
+            {
+                input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                input = new double(0);
+            }
+
+            if(mpOut->isConnected())
+            {
+                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                output = new double();
+            }
+
             double startY = mpOut->getStartValue(NodeSignal::VALUE);
             mPrevU = startY;
             mPrevY = std::max(std::min(startY, mMax), mMin);
@@ -55,30 +74,22 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes
-            double u = mpIn->readNode(NodeSignal::VALUE);
-
             //Filter equations
             //Bilinear transform is used
-            double y = mPrevY + mTimestep/2.0*(u + mPrevU);
+            (*output) = mPrevY + mTimestep/2.0*((*input) + mPrevU);
 
-            if (y >= mMax)
+            if ((*output) >= mMax)
             {
-                mpOut->writeNode(NodeSignal::VALUE, mMax);
+                (*output) = mMax;
             }
-            else if (y <= mMin)
+            else if ((*output) <= mMin)
             {
-                mpOut->writeNode(NodeSignal::VALUE, mMin);
+                (*output) = mMin;
             }
-            else
-            {
-                //Write new values to nodes
-                mpOut->writeNode(NodeSignal::VALUE, y);
 
-                //Update filter:
-                mPrevU = u;
-                mPrevY = y;
-            }
+            //Update filter:
+            mPrevU = (*input);
+            mPrevY = (*output);
         }
     };
 }

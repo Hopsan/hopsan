@@ -23,6 +23,7 @@ namespace hopsan {
     {
 
     private:
+        double *in1, *in2, *output;
         Port *mpIn1, *mpIn2, *mpOut;
 
     public:
@@ -43,22 +44,18 @@ namespace hopsan {
 
         void initialize()
         {
+            in1 = mpIn1->getNodeDataPtr(NodeSignal::VALUE);
+            in2 = mpIn2->getNodeDataPtr(NodeSignal::VALUE);
+            output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+
             simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
-
-            //Get variable values from nodes
-            double signal1 = mpIn1->readNode(NodeSignal::VALUE);
-            double signal2 = mpIn2->readNode(NodeSignal::VALUE);
-
             //And operator equation
-            double output = boolToDouble(doubleToBool(signal1) && doubleToBool(signal2));
-
-            //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, output);
+            (*output) = boolToDouble(doubleToBool((*in1)) && doubleToBool((*in2)));
         }
     };
 }

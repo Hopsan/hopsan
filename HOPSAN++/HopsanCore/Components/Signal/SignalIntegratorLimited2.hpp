@@ -26,6 +26,7 @@ namespace hopsan {
         IntegratorLimited mIntegrator;
         double mStartY;
         double mMin, mMax;
+        double *input, *output;
         Port *mpIn, *mpOut;
 
     public:
@@ -39,33 +40,44 @@ namespace hopsan {
             mTypeName = "SignalIntegratorLimited2";
             mStartY = 0.0;
 
-            mMin = -1.5E+300;
+            mMin = -1.5E+300;   //! @todo Shouldn't these be registered parameters?
             mMax = 1.5E+300;
 
-            mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal");
+            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
         }
 
 
         void initialize()
         {
-            double u0 = mpIn->readNode(NodeSignal::VALUE);
+            if(mpIn->isConnected())
+            {
+                input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                input = new double(0);
+            }
 
-            mIntegrator.initialize(mTimestep, u0, mStartY, mMin, mMax);
+            if(mpOut->isConnected())
+            {
+                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                output = new double();
+            }
+
+            mIntegrator.initialize(mTimestep, (*input), mStartY, mMin, mMax);
             mpOut->writeNode(NodeSignal::VALUE, mStartY);
         }
 
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes
-            double u = mpIn->readNode(NodeSignal::VALUE);
 
             //Filter equation
-            //Get variable values from nodes
-
-            //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, mIntegrator.update(u));
+            (*output) = mIntegrator.update((*input));
         }
     };
 }

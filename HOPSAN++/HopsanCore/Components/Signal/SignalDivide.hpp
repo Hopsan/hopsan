@@ -22,6 +22,7 @@ namespace hopsan {
     {
 
     private:
+        double *input1, *input2, *output;
         Port *mpIn1, *mpIn2, *mpOut;
 
     public:
@@ -34,51 +35,47 @@ namespace hopsan {
         {
             mTypeName = "SignalDivide";
 
-            mpIn1 = addReadPort("in1", "NodeSignal");
-            mpIn2 = addReadPort("in2", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal");
+            mpIn1 = addReadPort("in1", "NodeSignal", Port::NOTREQUIRED);
+            mpIn2 = addReadPort("in2", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
         }
 
 
         void initialize()
         {
-            //Nothing to initilize
+            if (mpIn1->isConnected())
+            {
+                input1 = mpIn1->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                input1 = new double(0);     //Output shall be zero if no nominator input
+            }
+
+            if (mpIn2->isConnected())
+            {
+                input2 = mpIn2->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                input2 = new double(1);     //Divide by one if no denominator input
+            }
+
+            if (mpOut->isConnected())
+            {
+                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                output = new double(0);     //Create a dummy pointer if output not connected
+            }
         }
 
 
         void simulateOneTimestep()
         {
-
-            //Get variable values from nodes
-            double signal1, signal2;
-
-            if (mpIn1->isConnected() && mpIn2->isConnected())       //Both ports connected
-            {
-                signal1 = mpIn1->readNode(NodeSignal::VALUE);
-                signal2 = mpIn2->readNode(NodeSignal::VALUE);
-            }
-            else if (mpIn1->isConnected() && !mpIn2->isConnected())       //Port 1 connected, port 2 disconnected (no division since no denominator)
-            {
-                signal1 = mpIn1->readNode(NodeSignal::VALUE);
-                signal2 = 1;
-            }
-            else if (!mpIn1->isConnected() && mpIn2->isConnected())       //Port 2 connected, port 1 disconnected (nothing to divide, return zero)
-            {
-                signal1 = 0;
-                signal2 = mpIn2->readNode(NodeSignal::VALUE);
-            }
-            else
-            {
-                signal1 = 0;                                                     //Nothing connected, return zero
-                signal2 = 1;
-            }
-
-
-            //Gain equations
-            double output = signal1 / signal2;                         //! @todo Add division-by-zero check -> exception
-
-            //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, output);
+            //Divide equation
+            (*output) = (*input1) / (*input2);
         }
     };
 }

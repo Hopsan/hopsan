@@ -1438,6 +1438,71 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* c_ptr)
 }
 
 
+//! @brief Sorts the signal component vector
+//! Components are sorted so that they are always simulated after the components they receive signals from. Algebraic loops can be detected, in that case this function does nothing.
+void ComponentSystem::sortSignalComponentVector()
+{
+    std::vector<Component*> newSignalVector;
+
+    bool didSomething = true;
+    while(didSomething)
+    {
+        didSomething = false;
+        std::vector<Component*>::iterator it;
+        for(it=mComponentSignalptrs.begin(); it!=mComponentSignalptrs.end(); ++it)  //Loop through the unsorted signal component vector
+        {
+            if(!componentVectorContains(newSignalVector, (*it)))    //Ignore components that are already added to the new vector
+            {
+                bool readyToAdd=true;
+                std::vector<Port*>::iterator itp;
+                std::vector<Port*> portVector = (*it)->getPortPtrVector();
+                for(itp=portVector.begin(); itp!=portVector.end(); ++itp) //Ask each port for its node, then ask the node for its write port component
+                {
+                    if(((*itp)->getPortType() == Port::READPORT) && (!componentVectorContains(newSignalVector, (*itp)->getNodePtr()->getWritePortComponentPtr())) && ((*itp)->getNodePtr()->getWritePortComponentPtr() != 0))
+                    {
+                        readyToAdd=false;   //Flag false if required component is not yet added to signal vector, in case node has a write port
+                    }
+                }
+                if(readyToAdd)  //Add the component if all required write port components was already added
+                {
+                    newSignalVector.push_back((*it));
+                    didSomething = true;
+                }
+            }
+        }
+    }
+
+    if(newSignalVector.size() == mComponentSignalptrs.size())   //All components moved to new vector = success!
+    {
+        mComponentSignalptrs = newSignalVector;
+        stringstream ss;
+        std::vector<Component*>::iterator it;
+        for(it=newSignalVector.begin(); it!=newSignalVector.end(); ++it)
+            ss << (*it)->getName() << "\n";                                                                                               //DEBUG
+        gCoreMessageHandler.addDebugMessage("Sorted signal components:\n" + ss.str());
+    }
+    else    //Something went wrong, all components were not moved. This is likely due to an algebraic loop.
+    {
+        gCoreMessageHandler.addWarningMessage("Found algebraic loop in signal components. Sorting not possible.");
+    }
+}
+
+
+//! @brief Figures out whether or not a component vector contains a certain component
+bool ComponentSystem::componentVectorContains(std::vector<Component*> vector, Component *pComp)
+{
+    std::vector<Component*>::iterator it;
+    for(it=vector.begin(); it!=vector.end(); ++it)
+    {
+        if((*it) == pComp)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+
 //! @brief Overloaded function that behaves slightly different when determining unique port names
 //! In systemcomponents we must make sure that systemports and subcomponents have unique names, this simplifies things in the GUI later on
 //! It is VERY important that systemports dont have the same name as a subcomponent
@@ -3423,6 +3488,9 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
 void ComponentSystem::simulate(const double startT, const double stopT)
 {
+    this->sortSignalComponentVector();
+
+
     mStop = false; //This variable can not be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
 
     mTime = startT;

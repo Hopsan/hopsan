@@ -5,69 +5,69 @@
 
 namespace hopsan {
 
-//!
-//! @brief
-//! @ingroup SignalComponents
-//!
-class SignalDeadZone : public ComponentSignal
-{
-
-
-private:
-    double mStartDead;
-    double mEndDead;
-
-    Port *mpIn, *mpOut;
-
-public:
-    static Component *Creator()
+    //!
+    //! @brief
+    //! @ingroup SignalComponents
+    //!
+    class SignalDeadZone : public ComponentSignal
     {
-        return new SignalDeadZone("DeadZone");
-    }
 
-    SignalDeadZone(const std::string name) : ComponentSignal(name)
-    {
-        mTypeName = "SignalDeadZone";
-        mStartDead = -1.0;
-        mEndDead = 1.0;
 
-        mpIn = addReadPort("in", "NodeSignal");
-        mpOut = addWritePort("out", "NodeSignal");
+    private:
+        double mStartDead;
+        double mEndDead;
+        double *input, *output;
+        Port *mpIn, *mpOut;
 
-        registerParameter("StartDead", "Start of Dead Zone", "-", mStartDead);
-        registerParameter("EndDead", "End of Dead Zone", "-", mEndDead);
-    }
-
-    void initialize()
-    {
-        //Nothing to initilize
-    }
-
-    void simulateOneTimestep()
-    {
-        //get variable values from nodes
-        double input = mpIn->readNode(NodeSignal::VALUE);
-
-        //deadzone equations
-        double output;
-
-        if (input < mStartDead)
+    public:
+        static Component *Creator()
         {
-            output = input - mStartDead;
-        }
-        else if (input > mStartDead && input < mEndDead)
+            return new SignalDeadZone("DeadZone");
+            }
+
+        SignalDeadZone(const std::string name) : ComponentSignal(name)
         {
-            output = 0;
-        }
-        else
-        {
-            output = input - mEndDead;
+            mTypeName = "SignalDeadZone";
+            mStartDead = -1.0;
+            mEndDead = 1.0;
+
+            mpIn = addReadPort("in", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
+
+            registerParameter("StartDead", "Start of Dead Zone", "-", mStartDead);
+            registerParameter("EndDead", "End of Dead Zone", "-", mEndDead);
         }
 
-        //write new values to node
-        mpOut->writeNode(NodeSignal::VALUE, output);
-    }
-};
+        void initialize()
+        {
+            input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            if(mpOut->isConnected())
+            {
+                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                output = new double();
+            }
+        }
+
+        void simulateOneTimestep()
+        {
+            //Deadzone equations
+            if ( (*input) < mStartDead)
+            {
+                (*output) = (*input) - mStartDead;
+            }
+            else if ( (*input) > mStartDead && (*input) < mEndDead)
+            {
+                (*output) = 0;
+            }
+            else
+            {
+                (*output) = (*input) - mEndDead;
+            }
+        }
+    };
 }
 
 #endif // SIGNALDEADZONE_HPP_INCLUDED
