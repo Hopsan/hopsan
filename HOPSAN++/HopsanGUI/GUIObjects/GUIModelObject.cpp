@@ -1031,6 +1031,17 @@ void GUIModelObject::refreshAppearance()
     this->refreshDisplayName();
 }
 
+QString GUIModelObject::getHelpPicture()
+{
+    return mGUIModelObjectAppearance.getHelpPicture();
+}
+
+
+QString GUIModelObject::getHelpText()
+{
+    return mGUIModelObjectAppearance.getHelpText();
+}
+
 
 //! @brief Construtor for the name text object
 //! @param pParent Pointer to the object which the name text belongs to

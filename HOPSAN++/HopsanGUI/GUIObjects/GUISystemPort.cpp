@@ -1,15 +1,14 @@
 //$Id$
 
 #include "GUISystemPort.h"
-#include "GUISystem.h"
+#include "GUIContainerObject.h"
 #include "../GUIPort.h"
-#include "../loadObjects.h"
 
 //! @todo rename GUISystemPort to ContainerPort, rename files also
 GUIContainerPort::GUIContainerPort(GUIModelObjectAppearance* pAppearanceData, QPoint position, qreal rotation, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
         : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
-    qDebug() << "GUISystemPort: ,,,,,,,,,,,,,,setting parent to: " << pParentContainer;
+    //qDebug() << "GUISystemPort: ,,,,,,,,,,,,,,setting parent to: " << pParentContainer;
     mIsSystemPort = (pParentContainer->type() == GUISYSTEM); //determine if I am a system port
     this->mHmfTagName = HMF_SYSTEMPORTTAG;
     //Sets the ports
@@ -74,19 +73,20 @@ void GUIContainerPort::createPorts()
 
 
 //! Returns a string with the GUIObject type.
-//! @todo maybe not hardcoded string
 QString GUIContainerPort::getTypeName()
 {
-    if (mIsSystemPort)
-    {
-        return "SystemPort";
-    }
-    else
-    {
-        //! @todo return something usefulould make sure that the gui can register these guispecific names in core to avoid creating objects with these type names
-        //! @todo we sh
-        return "GUIGroupPort";
-    }
+//    if (mIsSystemPort)
+//    {
+//        return HOPSANGUISYSTEMPORTTYPENAME;
+//    }
+//    else
+//    {
+//        //! @todo we should make sure that the gui can register these guispecific names in core to avoid creating objects with these type names
+//        return HOPSANGUIGROUPPORTTYPENAME;
+//    }
+
+    //! @todo we should make sure that the gui can register these guispecific names in core to avoid creating objects with these type names
+    return HOPSANGUICONTAINERPORTTYPENAME;
 }
 
 //! Set the name of a system port
@@ -119,6 +119,15 @@ void GUIContainerPort::setName(QString newName, renameRestrictions renameSetting
             //Rename
             mpParentContainerObject->renameGUIModelObject(oldName, newName);
         }
+    }
+}
+
+//! @brief ContainerPorts shal only save their port name if they are systemports, if they are group ports no core data should be saved
+void GUIContainerPort::saveCoreDataToDomElement(QDomElement &rDomElement)
+{
+    if (mIsSystemPort)
+    {
+        rDomElement.setAttribute(HMF_NAMETAG, getName());
     }
 }
 

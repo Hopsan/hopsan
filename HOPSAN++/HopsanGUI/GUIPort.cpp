@@ -93,15 +93,15 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     this->setRotation(mpPortAppearance->rot);
     this->refreshPortOverlayPosition();
 
-    this->refreshParentContainerConnection();
-
     mMag = GOLDENRATIO;
     mOverlaySetScale = 1.0;
     mIsMagnified = false;
     mIsConnected = false;
 
-    //connect(this,SIGNAL(portClicked(GUIPort*)),this->getParentContainerObjectPtr(),SLOT(createConnector(GUIPort*)));
+    //Create connections to the parent container object
     this->refreshParentContainerSigSlotConnections();
+
+    //Create a connection to the mainwindow buttons
     connect(gpMainWindow->hidePortsAction,SIGNAL(triggered(bool)),this, SLOT(hideIfNotConnected(bool)));
 
     //Connect the view zoom change signal to the port overlay scale slot

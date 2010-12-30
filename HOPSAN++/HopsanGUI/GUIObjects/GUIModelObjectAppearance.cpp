@@ -1,10 +1,9 @@
 //!
-//! @file   AppearanceData.cpp
+//! @file   GUIModelObjectAppearance.cpp
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2010-04-22
 //!
-//! @brief Contains appearance data to be used by guiobjects and library widget
-//! @todo Also contains some other appearance stuff that maybe should not be in this fil
+//! @brief Contains appearance data to be used by ModelObjects and the LibraryWidget
 //!
 //$Id$
 
@@ -60,6 +59,10 @@ QString GUIModelObjectAppearance::getHelpText()
     return mHelpText;
 }
 
+//! @brief Get the full Icon path for specified graphics type
+//! @param [in] gfxType The graphics type enum (ISO or USER)
+//! If the specified type is missing, return the other type.
+//! If that is also missing retunr a path to the missing graphics icon
 QString GUIModelObjectAppearance::getFullIconPath(graphicsType gfxType)
 {
     if ( !mIconPathUser.isEmpty() && (gfxType == USERGRAPHICS) )
@@ -89,11 +92,13 @@ QString GUIModelObjectAppearance::getFullIconPath(graphicsType gfxType)
     }
 }
 
+//! @brief Returns the (not full) path to the user graphics icon
 QString GUIModelObjectAppearance::getIconPathUser()
 {
     return mIconPathUser;
 }
 
+//! @brief Returns the (not full) path to the ISO graphics icon
 QString GUIModelObjectAppearance::getIconPathISO()
 {
     return mIconPathISO;
@@ -109,118 +114,20 @@ QPointF GUIModelObjectAppearance::getNameTextPos()
     return mNameTextPos;
 }
 
-
+//! @brief Returns a reference to the map containing port appearance
+//! @returns Reference to mPortAppearanceMap
 PortAppearanceMapT &GUIModelObjectAppearance::getPortAppearanceMap()
 {
     return mPortAppearanceMap;
 }
 
-
+//! @brief Get the base path that all icon paths are relative
 QString GUIModelObjectAppearance::getBaseIconPath()
 {
     return mBasePath;
 }
 
-//void GUIModelObjectAppearance::readFromTextStream(QTextStream &rIs)
-//{
-//    QString command;
-//    QString lineStr;
-//    this->mIsReadOK = true; //Assume read will be ok, set to false if fail bellow
-
-//    while (!rIs.atEnd())
-//    {
-//        //! @todo need som error handling here if file stream has incorect data
-//        rIs >> command; //Read the command word
-
-//        if (command == "TYPENAME")
-//        {
-//            mTypeName = readName(rIs.readLine().trimmed());
-//        }
-//        else if (command == "DISPLAYNAME")
-//        {
-//            mName = readName(rIs.readLine().trimmed());
-//        }
-//        else if (command == "ISOICON")
-//        {
-//            mIconPathISO = readName(rIs.readLine().trimmed());
-//        }
-//        else if (command == "USERICON")
-//        {
-//            mIconPathUser = readName(rIs.readLine().trimmed());
-//        }
-//        else if (command == "ICONROTATION")
-//        {
-//            mIconRotationBehaviour = rIs.readLine().trimmed();
-//        }
-//        else if (command == "PORT")
-//        {
-//            lineStr = rIs.readLine();
-//            QTextStream portStream(&lineStr);
-//            QString portName=readName(portStream);
-//            if(portName == "")
-//            {
-//                qDebug() << "FEL I PORTNAMN";
-//                mIsReadOK = false;
-//            }
-
-//            GUIPortAppearance portapp;
-
-//            if(portStream.atEnd())
-//            {
-//                qDebug() << "SAKNAS DATA";
-//                mIsReadOK = false;
-//            }
-//            portStream >> portapp.x;
-//            if(portStream.atEnd())
-//            {
-//                qDebug() << "SAKNAS DATA";
-//                mIsReadOK = false;
-//            }
-//            portStream >> portapp.y;
-//            if(portStream.atEnd())
-//            {
-//                qDebug() << "SAKNAS DATA";
-//                mIsReadOK = false;
-//            }
-//            portStream >> portapp.rot;
-
-////            if( (portapp.rot == 0) || (portapp.rot == 180) )
-////            {
-////                portapp.direction = LEFTRIGHT;
-////            }
-////            else
-////            {
-////                portapp.direction = TOPBOTTOM;
-////            }
-
-//            mPortAppearanceMap.insert(portName, portapp);
-//        }
-//        else if (command == "BASEPATH")
-//        {
-//            mBasePath = rIs.readLine().trimmed();
-//        }
-//        else
-//        {
-//            //If incorrect command discard rest of line, ignoring empty lines
-//            if (!command.isEmpty())
-//            {
-//                rIs.readLine().trimmed();
-//                //qDebug() << "appearanceData: Incorrect command: " + command;
-//            }
-//        }
-//    }
-
-//    //Check if read OK!
-//    //We must have at least a type name
-//    if (mTypeName.isEmpty())
-//    {
-//        mIsReadOK = false;
-//    }
-
-//    //this->saveToXML("caf"); //only test function to test savetoxml
-//}
-
-
+//! @brief Read the ModelObjectAppearance contents from an XML DOM Element
 void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
 {
     //! @todo we should not overwrite existing data if xml file is missing data, that is dont overwrite with null
@@ -248,12 +155,10 @@ void GUIModelObjectAppearance::readFromDomElement(QDomElement domElement)
         mPortAppearanceMap.insert(portname, portApp);
         xmlPortPose = xmlPortPose.nextSiblingElement(HMF_PORTPOSETAG);
     }
-
-//     this->mIsReadOK = true; //Assume read will be ok
-//     //! @todo maybe remove this in xml load
 }
 
-
+//! @brief Writes the ModelObjectAppearance contents to an XML DOM Element
+//! @param rDomElement The DOM element to write to
 void GUIModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
 {
     //! @todo not use hardcoded strings here
@@ -305,42 +210,49 @@ void GUIModelObjectAppearance::saveToXML(QString filename)
 }
 
 
-
+//! @brief Access method to manually set the TypeName
 void GUIModelObjectAppearance::setTypeName(QString name)
 {
     mTypeName = name;
 }
 
+//! @brief Access method to manually set the Name
 void GUIModelObjectAppearance::setName(QString name)
 {
     mName = name;
 }
 
+//! @brief Access method to manually set the HelpText
 void GUIModelObjectAppearance::setHelpText(QString text)
 {
     mHelpText = text;
 }
 
+//! @brief Access method to manually set the BaseIconPath
 void GUIModelObjectAppearance::setBaseIconPath(QString path)
 {
     mBasePath = path;
 }
 
+//! @brief Access method to manually set the BasePath relative UserIconPath
 void GUIModelObjectAppearance::setIconPathUser(QString path)
 {
     mIconPathUser = path;
 }
 
+//! @brief Access method to manually set the BasePath relative ISOIconPath
 void GUIModelObjectAppearance::setIconPathISO(QString path)
 {
     mIconPathISO = path;
 }
 
+//! @brief Check if a IsoIcon path is available, (does not check if icon actaully exists)
 bool GUIModelObjectAppearance::haveIsoIcon()
 {
     return !mIconPathISO.isEmpty();
 }
 
+//! @brief Check if a UserIcon path is available, (does not check if icon actaully exists)
 bool GUIModelObjectAppearance::haveUserIcon()
 {
     return !mIconPathUser.isEmpty();

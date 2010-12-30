@@ -29,8 +29,7 @@ public:
     GUIConnector(GUIPort *startPort, GUIContainerObject *pParentContainer, QGraphicsItem *parent = 0);
     GUIConnector(GUIPort *startPort, GUIPort *endPort, QVector<QPointF> mPoints, GUIContainerObject *pParentContainer, QStringList geometries = QStringList(), QGraphicsItem *parent = 0);
     ~GUIConnector();
-    //void refreshParentContainerSigSlotConnections();
-    //void refreshPortSigSlotConnections();
+
     void setParentContainer(GUIContainerObject *pParentContainer);
     GUIContainerObject *getParentContainer();
 

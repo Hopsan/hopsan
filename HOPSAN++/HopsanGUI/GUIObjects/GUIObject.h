@@ -9,15 +9,13 @@
 #include <QPen>
 
 #include <assert.h>
-#include "../common.h"
 #include <QtXml>  //This one is only used for the virtual save function
+#include "../common.h"
 
 class GUIObjectSelectionBox;
 class GUIContainerObject;
-class GUIConnector;
 
-
-enum GUIObjectEnumT {GUIOBJECT=QGraphicsItem::UserType+1, GUIMODELOBJECT, GUICONTAINEROBJECT, GUISYSTEM, GUICOMPONENT, GUISYSTEMPORT, GUIGROUP, GUIGROUPPORT};
+enum GUIObjectEnumT {GUIOBJECT=QGraphicsItem::UserType+1, GUIMODELOBJECT, GUICONTAINEROBJECT, GUISYSTEM, GUICOMPONENT, GUICONTAINERPORT, GUIGROUP, GUIGROUPPORT};
 
 class GUIObject : public QGraphicsWidget
 {
@@ -39,7 +37,6 @@ public:
     virtual void setCenterPos(QPointF pos);
 
     //Load and save methods
-    //virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString()){;} //! @todo nothing for now
     virtual void saveToDomElement(QDomElement /*&rDomElement*/){}  //! @todo nothing for now
     virtual void loadFromHMF(QString /*modelFilePath=QString()*/) {assert(false);} //Only available in GUISubsystem for now
 

@@ -126,17 +126,19 @@ qreal normRad(qreal rad)
 }
 
 
-
+//! @brief Calculates the distance between two points
 double dist(double x1,double y1, double x2, double y2)
 {
     return sqrt(pow(x2-x1,2) + pow(y2-y1,2));
 }
 
+//! @brief Calculates the 2NORM of one point, the absoulte distance from 0,0
 qreal dist(QPointF &rPoint)
 {
     return sqrt( rPoint.x()*rPoint.x() + rPoint.y()*rPoint.y() );
 }
 
+//! @brief Calculates the distance between two points
 qreal dist(QPointF &rPoint1, QPointF &rPoint2)
 {
     qreal x = rPoint1.x() - rPoint2.x();

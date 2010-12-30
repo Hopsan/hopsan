@@ -2,32 +2,29 @@
 
 #include "GUIContainerObject.h"
 
-//! @todo clean these up
-#include "../Widgets/ProjectTabWidget.h"
+//! @todo clean these up, they are nott all needed probably, copied from elsewere
 #include "../MainWindow.h"
-#include "../Dialogs/ComponentPropertiesDialog.h"
 #include "../GUIPort.h"
 #include "../GUIConnector.h"
-#include "../Utilities/GUIUtilities.h"
 #include "../UndoStack.h"
-#include "../Widgets/MessageWidget.h"
 #include "../GraphicsView.h"
-#include "../Widgets/LibraryWidget.h"
 #include "../loadObjects.h"
 #include "../CoreAccess.h"
-#include "GUIObject.h"
+#include "../CopyStack.h"
+#include "../Widgets/ProjectTabWidget.h"
+#include "../Widgets/MessageWidget.h"
+#include "../Widgets/LibraryWidget.h"
+#include "../Widgets/QuickNavigationWidget.h"
+#include "../Widgets/PlotWidget.h"
+#include "../Utilities/GUIUtilities.h"
 #include "GUIComponent.h"
 #include "GUIGroup.h"
 #include "GUISystemPort.h"
 #include "GUIWidgets.h"
 #include "GUISystem.h"
-#include "../CopyStack.h"
-#include "../Widgets/QuickNavigationWidget.h"
-#include "Widgets/PlotWidget.h"
+
 #include <float.h>
-
 #include <QDomElement>
-
 
 GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, GUIContainerObject *pParentContainer, QGraphicsItem *pParent)
         : GUIModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParent)
@@ -50,14 +47,9 @@ GUIContainerObject::GUIContainerObject(QPoint position, qreal rotation, const GU
     mUndoStack = new UndoStack(this);
     mUndoStack->clear();
 
-    //Establish connections
+    //Establish connections that should always remain
     connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()), Qt::UniqueConnection);
     connect(gpMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this, SLOT(hidePorts(bool)), Qt::UniqueConnection);
-
-
-
-
-
 }
 
 GUIContainerObject::~GUIContainerObject()
@@ -65,19 +57,8 @@ GUIContainerObject::~GUIContainerObject()
     qDebug() << ",,,,,,,,,,,,GUIContainer destructor";
 }
 
-////! @brief Establishes (or reestablishes) signal slot connections
-////! This is not meant for the selected specific connections
-//void GUIObject::establishStaticSigSlotConnections()
-//{
-//    connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()), Qt::UniqueConnection);
-//    connect(gpMainWindow->hidePortsAction, SIGNAL(triggered(bool)), this, SLOT(hidePorts(bool)), Qt::UniqueConnection);
-//}
-
-//void GUIObject::establishDynamicSigSlotConnections()
-//{
-//    //No connections right now
-//}
-
+//! @brief Connects all SignalAndSlot connections to the mainwindow buttons from this container
+//! This is useful when we are swithching what continer we want to the buttons to trigger actions in
 void GUIContainerObject::connectMainWindowActions()
 {
     connect(gpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()), Qt::UniqueConnection);
@@ -104,6 +85,8 @@ void GUIContainerObject::connectMainWindowActions()
     //getCurrentContainer()->updateUndoStatus();
 }
 
+//! @brief Disconnects all SignalAndSlot connections to the mainwindow buttons from this container
+//! This is useful when we are swithching what continer we want to the buttons to trigger actions in
 void GUIContainerObject::disconnectMainWindowActions()
 {
     disconnect(gpMainWindow->undoAction, SIGNAL(triggered()), this, SLOT(undo()));
@@ -128,47 +111,45 @@ void GUIContainerObject::disconnectMainWindowActions()
 //    disconnect(gpMainWindow->mpTimeStepLineEdit,    SIGNAL(editingFinished()),  this,    SLOT(updateTimeStep()));
 }
 
-void GUIContainerObject::makeRootSystem()
-{
-    mContainerStatus = ROOT;
-}
-
-
-//! @todo use enums instead
-int GUIContainerObject::findPortEdge(QPointF center, QPointF pt)
+//! @brief A helpfunction that determines on which edge an external port should be placed based on its internal position
+//! @param[in] center The center point of all objects to be compared with
+//! @param[in] pt The position of this object, used to determine the center relative posistion
+//! @returns An enum that indicates on which side the port should be placed
+GUIContainerObject::CONTAINEREDGE GUIContainerObject::findPortEdge(QPointF center, QPointF pt)
 {
     //By swapping place of pt1 and pt2 we get the angle in the same coordinate system as the view
     QPointF diff = pt-center;
     //qDebug() << "=============The Diff: " << diff;
 
     //If only one sysport default to left side
-    //! @todo Do this smarter later and take ito account port orientation, or position relative all other components, need to extend this function a bit for that though
+    //! @todo Do this smarter later and take into account port orientation, or position relative all other components, need to extend this function a bit for that though
     if (diff.manhattanLength() < 1.0)
     {
-        return 2;
+        return LEFTEDGE;
     }
 
+    //Determine on what edge the port should be placed based on the angle from the center point
     qreal angle = normRad(qAtan2(diff.x(), diff.y()));
-    qDebug() << "angle: " << rad2deg(angle);
+    //qDebug() << "angle: " << rad2deg(angle);
     if (fabs(angle) <= M_PI_4)
     {
-        return 0;
+        return RIGHTEDGE;
     }
     else if (fabs(angle) >= 3.0*M_PI_4)
     {
-        return 2;
+        return LEFTEDGE;
     }
     else if (angle > M_PI_4)
     {
-        return 1;
+        return BOTTOMEDGE;
     }
     else
     {
-        return 3;
+        return TOPEDGE;
     }
 }
 
-
+//! @brief Refreshes the appearance and postion of all external ports
 void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
 {
     //refresh the external port poses
@@ -180,8 +161,8 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     double xMin=FLT_MAX, xMax=FLT_MIN, yMin=FLT_MAX, yMax=FLT_MIN;
     for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
     {
-        if(moit.value()->type() == GUISYSTEMPORT)
-        {
+        //if(moit.value()->type() == GUICONTAINERPORT)
+        //{
             //check x max and min
             val = moit.value()->getCenterPos().x();
             xMin = std::min(xMin,val);
@@ -190,7 +171,7 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
             val = moit.value()->getCenterPos().y();
             yMin = std::min(yMin,val);
             yMax = std::max(yMax,val);
-        }
+        //}
     }
     //! @todo Find out if it is possible to ask the scene or view for this information instead of calulating it ourselves
     QPointF center = QPointF((xMax+xMin)/2.0, (yMax+yMin)/2.0);
@@ -203,25 +184,25 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
 
     for(moit = mGUIModelObjectMap.begin(); moit != mGUIModelObjectMap.end(); ++moit)
     {
-        if(moit.value()->type() == GUISYSTEMPORT)
+        if(moit.value()->type() == GUICONTAINERPORT)
         {
             //            QLineF line = QLineF(center, moit.value()->getCenterPos());
             //            this->getContainedScenePtr()->addLine(line); //debug-grej
 
-            int edge = findPortEdge(center, moit.value()->getCenterPos());
+            CONTAINEREDGE edge = findPortEdge(center, moit.value()->getCenterPos());
             //qDebug() << " sysp: " << moit.value()->getName() << " edge: " << edge;
 
             switch (edge) {
-            case 0:
+            case RIGHTEDGE:
                 rightEdge.append(this->getPort(moit.value()->getName()));
                 break;
-            case 1:
+            case BOTTOMEDGE:
                 bottomEdge.append(this->getPort(moit.value()->getName()));
                 break;
-            case 2:
+            case LEFTEDGE:
                 leftEdge.append(this->getPort(moit.value()->getName()));
                 break;
-            case 3:
+            case TOPEDGE:
                 topEdge.append(this->getPort(moit.value()->getName()));
                 break;
             }
@@ -234,7 +215,7 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
     qreal sdisp; //sumofdispersionfactors
 
     //! @todo maybe we should be able to update rotation in all of these also
-    //! @todo need to be sure we sort them in the correct order first
+    //! @todo need to be sure we sort them in the correct order, that is the port in top left will be first (highest up) among the external ports
     //! @todo wierd to use createfunction to refresh graphics, but ok for now
     disp = 1.0/((qreal)(rightEdge.size()+1));
     sdisp=disp;
@@ -271,11 +252,6 @@ void GUIContainerObject::refreshExternalPortsAppearanceAndPosition()
         this->createExternalPort((*it)->getName());    //refresh the external port graphics
         sdisp += disp;
     }
-}
-
-GUIContainerObject::CONTAINERSTATUS GUIContainerObject::getContainerStatus()
-{
-    return mContainerStatus;
 }
 
 //! @brief Use this function to calculate the placement of the ports on a subsystem icon.
@@ -315,7 +291,8 @@ void GUIContainerObject::calcSubsystemPortPosition(const double w, const double 
     }
 }
 
-
+//! @brief Returns a pointer to the CoreSystemAccess that this container represents
+//! @returns Pointer the the CoreSystemAccess that this container represents
 CoreSystemAccess *GUIContainerObject::getCoreSystemAccessPtr()
 {
     //Should be overloaded
@@ -331,44 +308,13 @@ QGraphicsScene *GUIContainerObject::getContainedScenePtr()
 
 void GUIContainerObject::createPorts()
 {
-//    //! @todo make sure that all old ports and connections are cleared, (in case we reload, but maybe we can discard old system and create new in that case)
-//    //Create the graphics for the ports but do NOT create new ports, use the system ports within the subsystem
-//    PortAppearanceMapT::iterator it;
-//    for (it = mGUIModelObjectAppearance.getPortAppearanceMap().begin(); it != mGUIModelObjectAppearance.getPortAppearanceMap().end(); ++it)
-//    {
-//        //Create new external port if if does not already exist (this is the ussual case for individual components)
-//        GUIPort *pPort = this->getPort(it.key());
-
-//        if ( pPort == 0 )
-//        {
-//            qDebug() << "##This is OK though as this means that we should create the stupid port for the first time";
-//            //! @todo fix this
-//            //qDebug() << "getNode and portType for " << it.key();
-//            //SystemPort "Component Name" (GuiModelObjectName) and portname is same
-//            //One other way would be to ask our parent to find the types of our ports but that would be even more strange and would not work on the absolute root system
-//            //! @todo to minimaze search time make a get porttype  and nodetype function, we need to search twice now
-//            QString nodeType = this->getCoreSystemAccessPtr()->getNodeType(it.key(), it.key());
-//            QString portType = this->getCoreSystemAccessPtr()->getPortType(it.key(), it.key());
-//            it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
-
-//            qreal x = it.value().x;
-//            qreal y = it.value().y;
-
-//            pPort = new GUIPort(it.key(), x*mpIcon->sceneBoundingRect().width(), y*mpIcon->sceneBoundingRect().height(), &(it.value()), this);
-//            mPortListPtrs.append(pPort);
-//        }
-//        else
-//        {
-//            //The external port already seems to exist, lets update it incase something has changed
-//            //! @todo Maybe need to have a refresh portappearance function, dont really know if thiss will ever be used though, will fix when it becomes necessary
-//            //pPort->mpP
-//            qDebug() << "----------------------------------------ExternalPort already exist does not create it again: " << it.key() << " in: " << this->getName();
-//        }
-//    }
+    //! @todo maybe try to make this function the same as refreshExternal.... and have one common function in modelobject, component and containerports class,
+    //This one should not be used in this class only for component and containerport
     assert(false);
 }
 
-//! @brief This method creates ONE external port. It assumes that port appearance information for this port exists
+//! @brief This method creates ONE external port. Or refreshes existing ports. It assumes that port appearance information for this port exists
+//! @param[portName] The name of the port to create
 //! @todo maybe defualt create that info if it is missing
 void GUIContainerObject::createExternalPort(QString portName)
 {
@@ -418,6 +364,8 @@ void GUIContainerObject::createExternalPort(QString portName)
     }
 }
 
+//! @breif Removes an external Port from a container object
+//! @param[in] portName The name of the port to be removed
 //! @todo maybe we should use a map instead to make delete more efficient, (may not amtter usually not htat many external ports)
 void GUIContainerObject::removeExternalPort(QString portName)
 {
@@ -435,8 +383,7 @@ void GUIContainerObject::removeExternalPort(QString portName)
     //qDebug() << "mPortListPtrs.size(): " << mPortListPtrs.size();
 }
 
-//! @brief Temporary addSubSystem functin should be same later on
-//! Adds a new component to the GraphicsView.
+//! @brief Creates and adds a GuiModel Object to the current container
 //! @param componentType is a string defining the type of component.
 //! @param position is the position where the component will be created.
 //! @param name will be the name of the component.
@@ -450,28 +397,30 @@ GUIModelObject* GUIContainerObject::addGUIModelObject(GUIModelObjectAppearance* 
 
     //qDebug()  << "Adding GUIModelObject, typename: " << componentTypeName << " displayname: " << pAppearanceData->getName() << " systemname: " << this->getName();
     QString componentTypeName = pAppearanceData->getTypeName();
-    if (componentTypeName == "Subsystem")
+    if (componentTypeName == HOPSANGUISYSTEMTYPENAME)
     {
         mpTempGUIModelObject= new GUISystem(position, rotation, pAppearanceData, this, startSelected, mGfxType);
 
             //Disconnect new subsystem with ctrl-z and ctrl-y (they will be reconnected when entering system)
-        disconnect(gpMainWindow->undoAction, SIGNAL(triggered()), mpTempGUIModelObject, SLOT(undo()));
-        disconnect(gpMainWindow->redoAction, SIGNAL(triggered()), mpTempGUIModelObject, SLOT(redo()));
+//        //! @todo make sure if this is needed now that we have the "refresh connections function"
+//        disconnect(gpMainWindow->undoAction, SIGNAL(triggered()), mpTempGUIModelObject, SLOT(undo()));
+//        disconnect(gpMainWindow->redoAction, SIGNAL(triggered()), mpTempGUIModelObject, SLOT(redo()));
     }
-    else if (componentTypeName == "SystemPort") //!< @todo dont hardcode
+    else if (componentTypeName == HOPSANGUICONTAINERPORTTYPENAME)
     {
         mpTempGUIModelObject = new GUIContainerPort(pAppearanceData, position, rotation, this, startSelected, mGfxType);
         //Add appearance data for the external version of this systemport to the continer object so that the external port can be created with the creatPorts method
-        mGUIModelObjectAppearance.getPortAppearanceMap().insert(mpTempGUIModelObject->getName(), GUIPortAppearance());
+        mGUIModelObjectAppearance.getPortAppearanceMap().insert(mpTempGUIModelObject->getName(), GUIPortAppearance()); //! @todo maybe this should be handeled automatically inside create external port if missing
         this->createExternalPort(mpTempGUIModelObject->getName());
         this->refreshExternalPortsAppearanceAndPosition();
     }
-    else if (componentTypeName == "HopsanGUIGroup") //!< @todo dont hardcode
+    else if (componentTypeName == HOPSANGUIGROUPTYPENAME)
     {
         mpTempGUIModelObject = new GUIGroup(position, rotation, pAppearanceData, this);
         //Disconnect new subsystem with ctrl-z and ctrl-y (they will be reconnected when entering system)
-        disconnect(gpMainWindow->undoAction, SIGNAL(triggered()), mpTempGUIModelObject, SLOT(undo()));
-        disconnect(gpMainWindow->redoAction, SIGNAL(triggered()), mpTempGUIModelObject, SLOT(redo()));
+//        //! @todo make sure if this is needed now that we have the "refresh connections function"
+//        disconnect(gpMainWindow->undoAction, SIGNAL(triggered()), mpTempGUIModelObject, SLOT(undo()));
+//        disconnect(gpMainWindow->redoAction, SIGNAL(triggered()), mpTempGUIModelObject, SLOT(redo()));
     }
     else //Assume some standard component type
     {
@@ -616,7 +565,7 @@ void GUIContainerObject::deleteGUIModelObject(QString objectName, undoStatus und
     if (it != mGUIModelObjectMap.end())
     {
         //! @todo maybe this should be handled somwhere else (not sure maybe this is the best place)
-        if ((*it)->type() == GUISYSTEMPORT )
+        if ((*it)->type() == GUICONTAINERPORT )
         {
             this->removeExternalPort((*it)->getName());
         }
@@ -661,7 +610,7 @@ void GUIContainerObject::renameGUIModelObject(QString oldName, QString newName, 
                 //qDebug() << "GUISYSTEM";
                 modNewName = this->getCoreSystemAccessPtr()->renameSubComponent(oldName, newName);
                 break;
-            case GUISYSTEMPORT :
+            case GUICONTAINERPORT : //!< @todo What will happen when we try to rename a groupport
                 //qDebug() << "GUISYSTEMPORT";
                 modNewName = this->getCoreSystemAccessPtr()->renameSystemPort(oldName, newName);
                 break;
@@ -705,7 +654,7 @@ void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectLis
     for (int i=0; i<rModelObjectList.size(); ++i)
     {
         //! @todo if a containerport is received we must update the external port list also, we cant handle such objects right now
-        if (rModelObjectList[i]->type() != GUISYSTEMPORT)
+        if (rModelObjectList[i]->type() != GUICONTAINERPORT)
         {
             this->getContainedScenePtr()->addItem(rModelObjectList[i]);
             rModelObjectList[i]->setParentContainerObject(this);
@@ -799,7 +748,7 @@ void GUIContainerObject::takeOwnershipOf(QList<GUIModelObject*> &rModelObjectLis
         }
 
         //Create the "transit port"
-        GUIModelObjectAppearance *portApp = gpMainWindow->mpLibrary->getAppearanceData("SystemPort"); //! @todo do not hardcode, use define
+        GUIModelObjectAppearance *portApp = gpMainWindow->mpLibrary->getAppearanceData(HOPSANGUICONTAINERPORTTYPENAME);
         GUIModelObject *pTransPort = this->addGUIModelObject(portApp, portpos.toPoint(),0);
 
         //Make previous parent container forget about the connector
@@ -984,9 +933,8 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
     if (!getIsCreatingConnector())
     {
         qDebug() << "CreatingConnector in: " << this->getName() << " startPortName: " << pPort->getName();
-        //GUIConnectorAppearance *pConnApp = new GUIConnectorAppearance(pPort->getPortType(), mpParentProjectTab->setGfxType);
         mpTempConnector = new GUIConnector(pPort, this);
-        this->deselectAll(); //! @todo maybe this should be a signal
+        this->deselectAll();
         setIsCreatingConnector(true);
         mpTempConnector->drawConnector();
     }
@@ -996,27 +944,35 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
         qDebug() << "clicking end port: " << pPort->getName();
         GUIPort *pStartPort = mpTempConnector->getStartPort();
 
-        bool success = this->getCoreSystemAccessPtr()->connect(pStartPort->getGuiModelObjectName(), pStartPort->getName(), pPort->getGuiModelObjectName(), pPort->getName() );
-        qDebug() << "GUI Connect: " << success;
+        bool success = false;
+        //If we are connecting to group run special gui only check if connection OK
+        if (pPort->getGuiModelObject()->type() == GUIGROUP)
+        {
+            //! @todo do this
+        }
+        else
+        {
+            success = this->getCoreSystemAccessPtr()->connect(pStartPort->getGuiModelObjectName(), pStartPort->getName(), pPort->getGuiModelObjectName(), pPort->getName() );
+        }
+
+        qDebug() << "GUI Connect success?: " << success;
         if (success)
         {
             setIsCreatingConnector(false);
-            QPointF newPos = pPort->mapToScene(pPort->boundingRect().center());
-            mpTempConnector->updateEndPoint(newPos);
             pPort->getGuiModelObject()->rememberConnector(mpTempConnector);
             mpTempConnector->setEndPort(pPort);
 
-            //If systemport refresh graphics
+            //If containerport refresh graphics
             qDebug() << "Port Types: " << mpTempConnector->getStartPort()->getPortType() << " " << mpTempConnector->getEndPort()->getPortType();
             QString cqsType, portType, nodeType;
-            if (mpTempConnector->getStartPort()->getPortType() == "SYSTEMPORT") //! @todo not hardcoded should be defined somewhere
+            if (mpTempConnector->getStartPort()->getPortType() == HOPSANGUICONTAINERPORTTYPENAME)
             {
                 cqsType = mpTempConnector->getStartPort()->getGuiModelObject()->getTypeCQS();
                 portType = mpTempConnector->getStartPort()->getPortType();
                 nodeType = mpTempConnector->getStartPort()->getNodeType();
                 mpTempConnector->getStartPort()->refreshPortGraphics(cqsType, portType, nodeType);
             }
-            if (mpTempConnector->getEndPort()->getPortType() == "SYSTEMPORT") //! @todo not hardcoded should be defined somewhere
+            if (mpTempConnector->getEndPort()->getPortType() == HOPSANGUICONTAINERPORTTYPENAME)
             {
                 cqsType = mpTempConnector->getEndPort()->getGuiModelObject()->getTypeCQS();
                 portType = mpTempConnector->getEndPort()->getPortType();
@@ -1030,12 +986,12 @@ void GUIContainerObject::createConnector(GUIPort *pPort, undoStatus undoSettings
 
             mSubConnectorList.append(mpTempConnector);
 
-            mUndoStack->newPost();
-            mpParentProjectTab->hasChanged();
+            mUndoStack->newPost(); //!< @todo should we really create a new post even if we dont want to be abled to undo, see if bellow
             if(undoSettings == UNDO)
             {
                 mUndoStack->registerAddedConnector(mpTempConnector);
             }
+            mpParentProjectTab->hasChanged();
         }
         emit checkMessages();
      }
@@ -1228,7 +1184,7 @@ void GUIContainerObject::groupSelected(QPointF pt)
     for (int i=0; i<modelObjects.size(); ++i)
     {
         //! @todo if a containerport is selcted we need to remove it in core, not only from the storage vector, we must also make sure that the external ports are updated accordingly
-        if (modelObjects[i]->type() != GUISYSTEMPORT)
+        if (modelObjects[i]->type() != GUICONTAINERPORT)
         {
             mGUIModelObjectMap.remove(modelObjects[i]->getName());
         }
@@ -1501,9 +1457,9 @@ void GUIContainerObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     this->enterContainer();
 }
 
+//! @breif Opens the properites dialog for container objects
 void GUIContainerObject::openPropertiesDialog()
 {
-    //! @todo maybe move code from system here
     //Do Nothing
 }
 
@@ -1534,7 +1490,7 @@ void GUIContainerObject::clearContents()
     }
 }
 
-
+//! @brief Enters a container object and maks the view represent it contents
 void GUIContainerObject::enterContainer()
 {
     //First deselect everything so that buttons pressed in the view are not sent to obejcts in the previous container
@@ -1579,7 +1535,7 @@ void GUIContainerObject::enterContainer()
     gpMainWindow->redoAction->setDisabled(this->mUndoDisabled);
 }
 
-
+//! @brief Exit a container object and maks its the view represent its parents contents
 void GUIContainerObject::exitContainer()
 {
     this->deselectAll();

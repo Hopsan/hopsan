@@ -4,9 +4,8 @@
 #define GUICONTAINEROBJECT_H
 
 #include "GUIModelObject.h"
-#include "../CoreAccess.h"
 #include "GUIWidgets.h"
-//#include "../UndoStack.h"
+#include "../CoreAccess.h"
 
 //Forward Declarations
 class ProjectTab;
@@ -18,10 +17,9 @@ class GUIContainerObject : public GUIModelObject
 {
     Q_OBJECT
 public:
-    enum CONTAINERSTATUS {CLOSED, OPEN, ROOT};
+    enum CONTAINEREDGE {RIGHTEDGE, BOTTOMEDGE, LEFTEDGE, TOPEDGE};
     GUIContainerObject(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, GUIContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
     virtual ~GUIContainerObject();
-    void makeRootSystem();
 
     void connectMainWindowActions();
     void disconnectMainWindowActions();
@@ -53,14 +51,14 @@ public:
     QString getUserIconPath();
     void setIsoIconPath(QString path);
     void setUserIconPath(QString path);
-    int findPortEdge(QPointF center, QPointF pt);
+    CONTAINEREDGE findPortEdge(QPointF center, QPointF pt);
     void refreshExternalPortsAppearanceAndPosition();
     void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y); //!< @todo maybe not public
 
     bool isObjectSelected();
     bool isConnectorSelected();
 
-    //This (overloaded versions) are used in containerPropertiesDialog by systems
+    //These (overloaded versions) are used in containerPropertiesDialog by systems
     virtual void setTypeCQS(QString /*typestring*/){assert(false);}
     virtual size_t getNumberOfLogSamples(){assert(false);}
     virtual void setNumberOfLogSamples(size_t /*nSamples*/){assert(false);}
@@ -126,7 +124,6 @@ public slots:
     void setGfxType(graphicsType gfxType);
     void openPropertiesDialogSlot();
         //Enter and exit a container object
-    //! @todo dont know if these names are good
     void enterContainer();
     void exitContainer();
 
@@ -163,12 +160,7 @@ protected slots:
 
 private:
     bool mIsCreatingConnector;
-
-    CONTAINERSTATUS getContainerStatus();
-    CONTAINERSTATUS mContainerStatus;
-
     QGraphicsScene *mpScene;
-
     double mPasteOffset;
 
 };

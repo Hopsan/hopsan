@@ -30,15 +30,10 @@ public:
     bool setParameterValue(QString name, QString sysParName);
     QString getStartValueTxt(QString portName, QString variable);
     bool setStartValue(QString portName, QString variable, QString sysParName);
-    //void saveToTextStream(QTextStream &rStream, QString prepend=QString());
 
     void setName(QString name, renameRestrictions renameSettings=UNRESTRICTED);
     QString getTypeName();
     QString getTypeCQS();
-
-    //Help methods
-    QString getHelpPicture();
-    QString getHelpText();
 
     enum { Type = GUICOMPONENT };
     int type() const;
@@ -47,7 +42,6 @@ protected:
     void saveCoreDataToDomElement(QDomElement &rDomElement);
 
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-//    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void openPropertiesDialog();
 
     void createPorts();

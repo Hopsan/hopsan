@@ -15,13 +15,13 @@ public:
     void setName(QString newName, renameRestrictions renameSettings);
 
 
-    enum { Type = GUISYSTEMPORT };
+    enum { Type = GUICONTAINERPORT };
     int type() const;
 
 protected:
     void createPorts();
     //void saveToDomElement(QDomElement &rDomElement);
-    //void saveCoreDataToDomElement(QDomElement &rDomElement);
+    void saveCoreDataToDomElement(QDomElement &rDomElement);
 
 private:
     bool mIsSystemPort;

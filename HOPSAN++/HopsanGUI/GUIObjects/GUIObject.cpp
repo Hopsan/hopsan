@@ -1,19 +1,9 @@
 //$Id$
 
-#include <QVector>
-#include <QtGui> //!< @todo maybe only need qtfile dialog
-
 #include "GUIObject.h"
-#include "GUISystem.h"
-#include "../GUIConnector.h"
-
-#include "../Widgets/ProjectTabWidget.h"
-#include "../MainWindow.h"
-#include "../Utilities/GUIUtilities.h"
-#include "../UndoStack.h"
-#include "../Widgets/MessageWidget.h"
+#include "GUIContainerObject.h"
 #include "../GraphicsView.h"
-#include "../Widgets/LibraryWidget.h"
+#include "../Widgets/ProjectTabWidget.h"
 
 
 //! @todo should not pSystem and pParent be teh same ?

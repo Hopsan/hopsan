@@ -368,9 +368,10 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
         //! @todo maybe we need to check appearance data for a minimuma amount of necessary data
             //*****Core Interaction*****
             HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
-            if(!((pAppearanceData->getTypeName()=="Subsystem") || (pAppearanceData->getTypeName()=="SystemPort") || (pAppearanceData->getTypeName()=="HopsanGUIGroup"))) //Do not check if it is Subsystem or SystemPort
+            if(!((pAppearanceData->getTypeName()==HOPSANGUISYSTEMTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUIGROUPTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUICONTAINERPORTTYPENAME)) ) //Do not check if it is Subsystem or SystemPort
             {
                 //! @todo this check (hasComponent) should be wrapped inside some coreaccess class
+                //! @todo maybe systemport should be in the core component factory (HopsanCore related), not like that right now
                 sucess = pHopsanCore->hasComponent(pAppearanceData->getTypeName().toStdString()); //Check so that there is such component availible in the Core
                 if (!sucess)
                 {

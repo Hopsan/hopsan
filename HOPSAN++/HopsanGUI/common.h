@@ -35,6 +35,11 @@ enum undoStatus {NOUNDO, UNDO};
 enum saveTarget {EXISTINGFILE, NEWFILE};
 enum simulationMethod {SINGLECORE, MULTICORE};
 
+//Gui TypeName defines
+#define HOPSANGUIGROUPTYPENAME "HopsanGUIGroup"
+#define HOPSANGUISYSTEMTYPENAME "Subsystem"
+#define HOPSANGUICONTAINERPORTTYPENAME "HopsanGUIContainerPort"
+
 //Global pointer to the main window
 class MainWindow;
 extern MainWindow* gpMainWindow;

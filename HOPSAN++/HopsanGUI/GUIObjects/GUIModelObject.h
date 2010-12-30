@@ -38,6 +38,10 @@ public:
     virtual GUIModelObjectAppearance* getAppearanceData();
     virtual void refreshAppearance();
 
+    //Help methods
+    QString getHelpPicture();
+    QString getHelpText();
+
     //Parameter methods
     virtual QVector<QString> getParameterNames();
     virtual QString getParameterUnit(QString /*name*/) {assert(false); return "";} //Only availible in GUIComponent for now
@@ -48,7 +52,6 @@ public:
     virtual QString getStartValueTxt(QString portName, QString variable);
     virtual bool setStartValue(QString portName, QString variable, QString sysParName);
     //Load and save methods
-    //virtual void saveToTextStream(QTextStream &rStream, QString prepend=QString());
     virtual void saveToDomElement(QDomElement &rDomElement);
     virtual void loadFromHMF(QString /*modelFilePath=QString()*/) {assert(false);} //Only available in GUISystem for now
     virtual void loadFromDomElement(QDomElement &/*rDomElement*/) {assert(false);} //Only available in GUISystem for now
@@ -73,7 +76,7 @@ public:
 public slots:
     void deleteMe();
     void rotate90cw(undoStatus undoSettings = UNDO);
-    //! @todo flip should work on all gui objects
+    //! @todo maybe flip should work on all gui objects
     void flipVertical(undoStatus undoSettings = UNDO);
     void flipHorizontal(undoStatus undoSettings = UNDO);
     void hideName(undoStatus undoSettings = UNDO);
@@ -81,7 +84,6 @@ public slots:
     void setIcon(graphicsType);
 
 signals:
-    //void groupSelected(QPointF pt);
 
 protected:
     //Protexted methods
@@ -98,9 +100,6 @@ protected:
     //Save and load methods
     virtual QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
     virtual void saveCoreDataToDomElement(QDomElement &rDomElement);
-
-    //Group methods
-    //virtual void groupComponents(QList<QGraphicsItem*> compList);
 
     //Port methods
     virtual void createPorts() {assert(false);} //Need to be overloaded

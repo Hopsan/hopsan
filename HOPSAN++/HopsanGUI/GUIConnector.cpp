@@ -344,8 +344,8 @@ void GUIConnector::setEndPort(GUIPort *port)
 {
         //Set the end port pointer, flag that the end port is connector and tell the port to flag that it is connected
     this->disconnectPortSigSlots(mpEndPort);
-    mEndPortConnected = true;
     mpEndPort = port;
+    mEndPortConnected = true;
     mpEndPort->setIsConnected(true);
     this->connectPortSigSlots(mpEndPort);
 

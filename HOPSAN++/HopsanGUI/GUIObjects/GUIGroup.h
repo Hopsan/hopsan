@@ -22,7 +22,7 @@ public:
     GUIGroup(QPoint position, qreal rotation, const GUIModelObjectAppearance *pAppearanceData, GUIContainerObject *pParentContainer);
     ~GUIGroup();
 
-    void setContents(CopyStack *pCopyStack);
+//    void setContents(CopyStack *pCopyStack);
 //    QString getName();
 
     void setName(QString newName);

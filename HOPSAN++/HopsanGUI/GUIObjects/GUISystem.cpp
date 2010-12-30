@@ -1,26 +1,16 @@
 //$Id$
 
-//#include <float.h>
 #include "GUISystem.h"
-
-//! @todo clean these up
-#include "../Widgets/ProjectTabWidget.h"
 #include "../MainWindow.h"
-#include "../Dialogs/ContainerPropertiesDialog.h"
-#include "../GUIPort.h"
-#include "../GUIConnector.h"
-#include "../Utilities/GUIUtilities.h"
-#include "../UndoStack.h"
-#include "../Widgets/MessageWidget.h"
 #include "../GraphicsView.h"
-#include "../Widgets/LibraryWidget.h"
-#include "../loadObjects.h"
 #include "../CoreAccess.h"
-#include "GUIComponent.h"
-#include "GUIGroup.h"
-#include "GUISystemPort.h"
-#include "GUIWidgets.h"
-#include "Widgets/PlotWidget.h"
+#include "../loadObjects.h"
+#include "../GUIConnector.h"
+#include "../UndoStack.h"
+#include "../Widgets/LibraryWidget.h"
+#include "../Widgets/ProjectTabWidget.h"
+#include "../Dialogs/ContainerPropertiesDialog.h"
+#include "../Utilities/GUIUtilities.h"
 
 GUISystem::GUISystem(QPoint position, qreal rotation, const GUIModelObjectAppearance* pAppearanceData, GUIContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
     : GUIContainerObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
@@ -33,10 +23,10 @@ GUISystem::GUISystem(QPoint position, qreal rotation, const GUIModelObjectAppear
 GUISystem::GUISystem(ProjectTab *parentProjectTab, QGraphicsItem *pParent)
     : GUIContainerObject(QPoint(0,0), 0, 0, DESELECTED, USERGRAPHICS, 0, pParent)
 {
-    this->mGUIModelObjectAppearance = *(gpMainWindow->mpLibrary->getAppearanceData("Subsystem")); //This will crash if Subsystem not already loaded
+    this->mGUIModelObjectAppearance = *(gpMainWindow->mpLibrary->getAppearanceData(HOPSANGUISYSTEMTYPENAME)); //This will crash if Subsystem not already loaded
     this->mpParentProjectTab = parentProjectTab;
     this->commonConstructorCode();
-    this->mUndoStack->newPost();
+    this->mUndoStack->newPost(); //!< @todo why do we need undostack new post here
 }
 
 GUISystem::~GUISystem()
@@ -58,6 +48,7 @@ GUISystem::~GUISystem()
     delete mpCoreSystemAccess;
 }
 
+//! @brief This code is common among the two constructors, we use one function to avoid code duplication
 void GUISystem::commonConstructorCode()
 {
         //Set the hmf save tag name
@@ -115,24 +106,31 @@ void GUISystem::setName(QString newName)
 QString GUISystem::getTypeName()
 {
     //! @todo is this OK should really ask the subsystem but result should be subsystem i think
-    return "Subsystem";
+    return HOPSANGUISYSTEMTYPENAME;
 }
 
+//! @brief Set the system cqs type
+//! @param[in] typestring A string containgin the CQS type, C Q or S is accepted
 void GUISystem::setTypeCQS(QString typestring)
 {
     mpCoreSystemAccess->setRootTypeCQS(typestring);
 }
 
+//! @brief Get the system cqs type
+//! @returns A string containing the CQS type
 QString GUISystem::getTypeCQS()
 {
     return mpCoreSystemAccess->getRootSystemTypeCQS();
 }
 
+//! @brief get The parameter names of this system
+//! @returns A QVector containing the parameter names
 QVector<QString> GUISystem::getParameterNames()
 {
     return mpCoreSystemAccess->getParameterNames(this->getName());
 }
 
+//! @brief Get a pointer the the CoreSystemAccess object that this system is representing
 CoreSystemAccess* GUISystem::getCoreSystemAccessPtr()
 {
     return this->mpCoreSystemAccess;
@@ -151,180 +149,29 @@ GUIContainerObject *GUISystem::getParentContainerObject()
     }
 }
 
-//void GUISystem::loadFromHMF(QString modelFilePath)
-//{
-//    //! @todo maybe break out the load file function it is used in many places (with some diffeerenses every time), should be enough to return file and filinfo obejct maybe
-//    QFile file;
-//    if (modelFilePath.isEmpty())
-//    {
-//        QFileInfo fileInfo;
-//        QDir fileDialog;
-//        modelFilePath = QFileDialog::getOpenFileName(mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
-//                                                             fileDialog.currentPath() + QString(MODELPATH),
-//                                                             tr("Hopsan Model Files (*.hmf)"));
-//        if (modelFilePath.isEmpty())
-//            return;
-
-//        file.setFileName(modelFilePath);
-//        fileInfo.setFile(file);
-//        for(int t=0; t!=mpParentProjectTab->mpParentProjectTabWidget->count(); ++t)
-//        {
-//            if( (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == fileInfo.fileName()) ||  (mpParentProjectTab->mpParentProjectTabWidget->tabText(t) == (fileInfo.fileName() + "*")) )
-//            {
-//                QMessageBox::StandardButton reply;
-//                reply = QMessageBox::information(mpParentProjectTab->mpParentProjectTabWidget, tr("Error"), tr("Unable to load model. File is already open."));
-//                return;
-//            }
-//        }
-//    }
-//    else
-//    {
-//        //Open the file with a path relative to the parent system, in case of rootsystem assume that the given path is absolute and correct
-//        if (mpParentContainerObject != 0)
-//        {
-//            //! @todo assumes that the supplied path is rellative, need to make sure that this does not crash if that is not the case
-//            //! @todo what if the parent system does not have a path (embeded systems)
-//            file.setFileName(this->mpParentContainerObject->mModelFileInfo.absolutePath() + "/" + modelFilePath);
-//        }
-//        else
-//        {
-//            file.setFileName(modelFilePath);
-//        }
-//    }
-
-//    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open file
-//    {
-//        qDebug() << "Failed to open file or not a text file: " + file.fileName();
-//        return;
-//    }
-//    mModelFileInfo.setFile(file);
-
-//    QTextStream textStreamFile(&file); //Converts to QTextStream
-//    mUndoStack->newPost();
-
-//    //Set the name
-//    this->setName(mModelFileInfo.baseName());
-
-//    //Now read the file data
-//    //Read the header data, also checks version numbers
-//    //! @todo maybe not check the version numbers in there
-//    HeaderLoadData headerData = readHeader(textStreamFile, gpMainWindow->mpMessageWidget);
-
-//    //Only set this stuff if this is the root system, (that is if no systemparent exist)
-//    if (this->mpParentContainerObject == 0)
-//    {
-//        //It is assumed that these data have been successfully read
-//        gpMainWindow->setStartTimeInToolBar(headerData.startTime);
-//        gpMainWindow->setTimeStepInToolBar(headerData.timeStep);
-//        gpMainWindow->setFinishTimeInToolBar(headerData.stopTime);
-
-//        //It is assumed that these data have been successfully read
-//        mpParentProjectTab->mpGraphicsView->centerOn(headerData.viewport_x, headerData.viewport_y);
-//        mpParentProjectTab->mpGraphicsView->scale(headerData.viewport_zoomfactor, headerData.viewport_zoomfactor);
-//        mpParentProjectTab->mpGraphicsView->mZoomFactor = headerData.viewport_zoomfactor;
-//        mpParentProjectTab->mpGraphicsView->updateViewPort();
-//    }
-
-//    //Read the system appearance data
-//    SystemAppearanceLoadData sysappdata;
-//    sysappdata.read(textStreamFile);
-
-//    if (!sysappdata.usericon_path.isEmpty())
-//    {
-//        mGUIModelObjectAppearance.setIconPathUser(sysappdata.usericon_path);
-//    }
-//    if (!sysappdata.isoicon_path.isEmpty())
-//    {
-//        mGUIModelObjectAppearance.setIconPathISO(sysappdata.isoicon_path);
-//    }
-
-//    //! @todo reading portappearance should have a common function and be shared with the setappearancedata read function that reads from caf files
-//    PortAppearanceMapT* portappmap = &(mGUIModelObjectAppearance.getPortAppearanceMap());
-//    for (int i=0; i<sysappdata.portnames.size(); ++i)
-//    {
-//        GUIPortAppearance portapp;
-//        portapp.x = sysappdata.port_xpos[i];
-//        portapp.y = sysappdata.port_ypos[i];
-//        portapp.rot = sysappdata.port_angle[i];
-
-//        portapp.selectPortIcon("","",""); //!< @todo fix this, (maybe not necessary to fix)
-
-//        portappmap->insert(sysappdata.portnames[i], portapp);
-//        //qDebug() << sysappdata.portnames[i];
-//    }
-
-//    qDebug() << "Appearance set for system: " << this->getName();
-//    qDebug() << "loadFromHMF contents, name: " << this->getName();
-//    //Now load the contens of the subsystem
-//    while ( !textStreamFile.atEnd() )
-//    {
-//        //Extract first word on line
-//        QString inputWord;
-//        textStreamFile >> inputWord;
-
-//        //! @todo what about NOUNDO here should we be able to select this from the outside maybe
-
-//        if ( (inputWord == "SUBSYSTEM") ||  (inputWord == "BEGINSUBSYSTEM") )
-//        {
-//            loadSubsystemGUIObject(textStreamFile, gpMainWindow->mpLibrary, this, NOUNDO);
-//        }
-
-//        if ( (inputWord == "COMPONENT") || (inputWord == "SYSTEMPORT") )
-//        {
-//            loadGUIModelObject(textStreamFile, gpMainWindow->mpLibrary, this, NOUNDO);
-//        }
-
-//        if ( inputWord == "PARAMETER" )
-//        {
-//            loadParameterValues(textStreamFile, this, NOUNDO);
-//        }
-
-//        if ( inputWord == "CONNECT" )
-//        {
-//            loadConnector(textStreamFile, this, NOUNDO);
-//        }
-//    }
-
-//    //Refresh the appearnce of the subsystemem and create the GUIPorts
-//    //! @todo This is a bit strange, refreshAppearance MUST be run before create ports or create ports will not know some necessary stuff
-//    this->refreshAppearance();
-//    //this->createPorts();
-//    this->refreshExternalPortsAppearanceAndPosition();
-
-//    //Deselect all components
-//    this->deselectAll(); //! @todo maybe this should be a signal
-//    this->mUndoStack->clear();
-//    //Only do this for the root system
-//    //! @todo maybe can do this for subsystems to (even if we dont see them right now)
-//    if (this->mpParentContainerObject == 0)
-//    {
-//        //mpParentProjectTab->mpGraphicsView->centerView();
-//        mpParentProjectTab->mpGraphicsView->updateViewPort();
-//    }
-
-//    file.close();
-//    emit checkMessages();
-//}
-
 
 int GUISystem::type() const
 {
     return Type;
 }
 
-
+//! @brief Opens the GUISystem properties dialog
 void GUISystem::openPropertiesDialog()
 {
+    //! @todo shouldnt this be in the containerproperties class, right now groups are not working thats is why it is here, the containerproperties dialog only works with systems for now
     ContainerPropertiesDialog dialog(this, gpMainWindow);
     dialog.setAttribute(Qt::WA_DeleteOnClose, false);
     dialog.exec();
 }
 
 
-//! @todo maybe have a inherited function in some other base class that are specific for guiobjects with core equivalent
+//! @brief Saves the System specific coredata to XML DOM Element
+//! @param[in] rDomElement The DOM Element to save to
 void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
 {
-    GUIModelObject::saveCoreDataToDomElement(rDomElement);
+    //GUIModelObject::saveCoreDataToDomElement(rDomElement);
+    //We dont need to save the type in systems
+    rDomElement.setAttribute(HMF_NAMETAG, getName());
     rDomElement.setAttribute(HMF_CQSTYPETAG, this->getTypeCQS());
     appendSimulationTimeTag(rDomElement, this->mStartTime, this->mTimeStep, this->mStopTime);
 
@@ -350,6 +197,8 @@ void GUISystem::saveCoreDataToDomElement(QDomElement &rDomElement)
     }
 }
 
+//! @brief Saves the System specific GUI data to XML DOM Element
+//! @param[in] rDomElement The DOM Element to save to
 QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
 {
     QDomElement guiStuff = GUIModelObject::saveGuiDataToDomElement(rDomElement);
@@ -372,12 +221,14 @@ QDomElement GUISystem::saveGuiDataToDomElement(QDomElement &rDomElement)
     return guiStuff;
 }
 
+//! @brief Overloaded special XML DOM save function for System Objects
+//! @param[in] rDomElement The DOM Element to save to
 void GUISystem::saveToDomElement(QDomElement &rDomElement)
 {
     //qDebug() << "Saving to dom node in: " << this->mGUIModelObjectAppearance.getName();
     QDomElement xmlSubsystem = appendDomElement(rDomElement, mHmfTagName);
 
-    //! @todo maybe use enums instead
+    //! @todo maybe use enums instead of strings
     //! @todo should not need to set this here
     if (mpParentContainerObject==0)
     {
@@ -402,8 +253,6 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
         //Save the name that we have set for this subsystem, this name will overwrite the defualt one in the external file
         xmlSubsystem.setAttribute( HMF_NAMETAG, this->getName());
     }
-
-
 
     //Save gui object stuff
     this->saveGuiDataToDomElement(xmlSubsystem);
@@ -443,6 +292,8 @@ void GUISystem::saveToDomElement(QDomElement &rDomElement)
     }
 }
 
+//! @brief Loads a System from an XML DOM Element
+//! @param[in] rDomElement The element to load from
 void GUISystem::loadFromDomElement(QDomElement &rDomElement)
 {
     //Check if the subsystem is external or internal, and load appropriately
@@ -498,7 +349,6 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
             QDomElement xmlStartValue = xmlStartValues.firstChildElement(HMF_STARTVALUE);
             while (!xmlStartValue.isNull())
             {
-                //! @todo load start values
                 loadStartValue(xmlStartValue, pObj, NOUNDO);
                 xmlStartValue = xmlStartValue.nextSiblingElement(HMF_STARTVALUE);
             }
@@ -526,7 +376,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_SYSTEMTAG);
         while (!xmlSubObject.isNull())
         {
-            loadSubsystemGUIObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
+            loadGUISystemObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMTAG);
         }
 
@@ -534,7 +384,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_SYSTEMPORTTAG);
         while (!xmlSubObject.isNull())
         {
-            loadGUIModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
+            loadContainerPortObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMPORTTAG);
         }
 
@@ -563,7 +413,7 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
         //this->createPorts();
 
         //Deselect all components
-        this->deselectAll(); //! @todo maybe this should be a signal
+        this->deselectAll();
         this->mUndoStack->clear();
         //Only do this for the root system
         //! @todo maybe can do this for subsystems to (even if we dont see them right now)
@@ -589,7 +439,8 @@ void GUISystem::loadFromDomElement(QDomElement &rDomElement)
     }
 }
 
-
+//! @brief Sets the modelfile info from the file representing this system
+//! @param[in] rFile The QFile objects representing the file we want to information about
 void GUISystem::setModelFileInfo(QFile &rFile)
 {
     this->mModelFileInfo.setFile(rFile);

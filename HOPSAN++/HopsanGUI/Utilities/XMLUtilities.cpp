@@ -1,7 +1,11 @@
 #include "XMLUtilities.h"
 #include <QMessageBox>
 
-
+//! @brief Function for loading an XML DOM Documunt from file
+//! @param[in] rFile The file to load from
+//! @param[in] rDomDocument The DOM Document to load into
+//! @param[in] rootTagName The expected root tag name to extract from the Dom Document
+//! @returns The extracted DOM root element from the loaded DOM document
 QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString rootTagName)
 {
     QString errorStr;
@@ -31,15 +35,17 @@ QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString
     return QDomElement(); //NULL
 }
 
-
+//! @brief Appends xml processing instructions before the root tag in a DOM Document, run this ONCE before writing to file
+//! @param[in] rDomDocument The DOM Document to append ProcessingInstructions to
 void appendRootXMLProcessingInstruction(QDomDocument &rDomDocument)
 {
     QDomNode xmlProcessingInstruction = rDomDocument.createProcessingInstruction("xml","version=\"1.0\" encoding=\"UTF-8\"");
     rDomDocument.insertBefore(xmlProcessingInstruction, rDomDocument.firstChild());
 }
 
-//! @brief Helper function for adding one initially empty Dom node
-//! @todo maybe retunr reference (is there a difference)
+//! @brief Function for adding one initially empty Dom Element to extingd Element
+//! @param[in] rDomElement The DOM Element to append to
+//! @param[in] element_name The name of the new DOM element
 //! @returns The new sub element dom node
 QDomElement appendDomElement(QDomElement &rDomElement, const QString element_name)
 {
@@ -48,7 +54,10 @@ QDomElement appendDomElement(QDomElement &rDomElement, const QString element_nam
     return subDomElement;
 }
 
-//! @brief Helper function for adding Dom elements containing one text node
+//! @brief Function for adding Dom elements containing one text node
+//! @param[in] rDomElement The DOM Element to add to
+//! @param[in] element_name The name of the new DOM element
+//! @param[in] text The text contents of the text node
 void appendDomTextNode(QDomElement &rDomElement, const QString element_name, const QString text)
 {
     //Only write tag if both name and value is non empty
@@ -61,6 +70,10 @@ void appendDomTextNode(QDomElement &rDomElement, const QString element_name, con
     }
 }
 
+//! @brief Function for adding Dom elements containing one boolean text node
+//! @param[in] rDomElement The DOM Element to add to
+//! @param[in] element_name The name of the new DOM element
+//! @param[in] value The boolen value
 void appendDomBooleanNode(QDomElement &rDomElement, const QString element_name, const bool value)
 {
     if(value)
@@ -73,7 +86,10 @@ void appendDomBooleanNode(QDomElement &rDomElement, const QString element_name, 
     }
 }
 
-//! @brief Helper function for adding Dom elements containing one text node (based on a double value)
+//! @brief Function for adding Dom elements containing one text node (based on a double value)
+//! @param[in] rDomElement The DOM Element to add to
+//! @param[in] element_name The name of the new DOM element
+//! @param[in] val The double value
 void appendDomValueNode(QDomElement &rDomElement, const QString element_name, const double val)
 {
     QString tmp_string;
@@ -81,7 +97,11 @@ void appendDomValueNode(QDomElement &rDomElement, const QString element_name, co
     appendDomTextNode(rDomElement, element_name, tmp_string);
 }
 
-
+//! @brief Function for adding Dom elements containing one text node (based on two double values)
+//! @param[in] rDomElement The DOM Element to add to
+//! @param[in] element_name The name of the new DOM element
+//! @param[in] a The first double value
+//! @param[in] b The second double value
 void appendDomValueNode2(QDomElement &rDomElement, const QString element_name, const double a, const double b)
 {
     QString num,str;
@@ -93,7 +113,12 @@ void appendDomValueNode2(QDomElement &rDomElement, const QString element_name, c
     appendDomTextNode(rDomElement, element_name, str);
 }
 
-
+//! @brief Function for adding Dom elements containing one text node (based on three double values)
+//! @param[in] rDomElement The DOM Element to add to
+//! @param[in] element_name The name of the new DOM element
+//! @param[in] a The first double value
+//! @param[in] b The second double value
+//! @param[in] c The theird double value
 void appendDomValueNode3(QDomElement &rDomElement, const QString element_name, const double a, const double b, const double c)
 {
     QString num,str;
@@ -108,7 +133,10 @@ void appendDomValueNode3(QDomElement &rDomElement, const QString element_name, c
     appendDomTextNode(rDomElement, element_name, str);
 }
 
-
+//! @brief Function for adding Dom elements containing one text node (based on N double values)
+//! @param[in] rDomElement The DOM Element to add to
+//! @param[in] element_name The name of the new DOM element
+//! @param[in] rValues A QVector containing all of the values to add
 void appendDomValueNodeN(QDomElement &rDomElement, const QString element_name, const QVector<qreal> &rValues)
 {
     QString num,str;
@@ -123,7 +151,11 @@ void appendDomValueNodeN(QDomElement &rDomElement, const QString element_name, c
 }
 
 
-
+//! @brief Function that parses one DOM elements containing one text node (based on three double values)
+//! @param[in] domElement The DOM Element to parse
+//! @param[out] rA The first extracted double value
+//! @param[out] rB The second extracted double value
+//! @param[out] rC The theird extracted double value
 void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &rC)
 {
     QStringList poseList = domElement.text().split(" ");
@@ -132,6 +164,10 @@ void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &
     rC = poseList[2].toDouble();
 }
 
+//! @brief Function that parses one DOM elements containing one text node (based on two double values)
+//! @param[in] domElement The DOM Element to parse
+//! @param[out] rA The first extracted double value
+//! @param[out] rB The second extracted double value
 void parseDomValueNode2(QDomElement domElement, double &rA, double &rB)
 {
     QStringList poseList = domElement.text().split(" ");
@@ -139,26 +175,27 @@ void parseDomValueNode2(QDomElement domElement, double &rA, double &rB)
     rB = poseList[1].toDouble();
 }
 
+//! @brief Function that parses one DOM elements containing one text node (based on a double value)
+//! @param[in] domElement The DOM Element to parse
+//! @returns The extracted value
 qreal parseDomValueNode(QDomElement domElement)
 {
     return domElement.text().toDouble();
 }
 
+//! @brief Function that parses one DOM elements containing one text node (based on a boolean value)
+//! @param[in] domElement The DOM Element to parse
+//! @returns The extracted boolean value
 bool parseDomBooleanNode(QDomElement domElement)
 {
-    return (domElement.text() == "true");
+    return (domElement.text() == HMF_TRUETAG);
 }
 
-//void setAttribute(QDomElement &rDomElement, QString attrname, QString text)
-//{
-//    rDomElement.setAttribute(attrname, text);
-//}
-
-//void setAttribute(QDomElement &rDomElement, QString attrname, int text)
-//{
-//    rDomElement.setAttribute(attrname, text);
-//}
-
+//! @brief Special purpose function for adding a Hopsan specific XML tag containing Object Pose information
+//! @param[in] x The x coordinate
+//! @param[in] y The y coordinate
+//! @param[in] a The orientaion (angle)
+//! @param[in] flipped isFlipped status of the object
 void appendPoseTag(QDomElement &rDomElement, qreal x, qreal y, qreal th, bool flipped)
 {
     QDomElement pose = appendDomElement(rDomElement, HMF_POSETAG);
@@ -168,6 +205,11 @@ void appendPoseTag(QDomElement &rDomElement, qreal x, qreal y, qreal th, bool fl
     pose.setAttribute("flipped", flipped);
 }
 
+//! @brief Special purpose function for adding a Hopsan specific XML tag containing PortPose information
+//! @param[in] name The port name
+//! @param[in] x The x coordinate
+//! @param[in] y The y coordinate
+//! @param[in] a The orientaion (angle)
 void appendPortPoseTag(QDomElement &rDomElement, QString name, qreal x, qreal y, qreal th)
 {
     QDomElement pose = appendDomElement(rDomElement, HMF_PORTPOSETAG);
@@ -177,6 +219,9 @@ void appendPortPoseTag(QDomElement &rDomElement, QString name, qreal x, qreal y,
     pose.setAttribute("a",th);
 }
 
+//! @brief Special purpose function for adding a Hopsan specific XML tag containing a coordinate
+//! @param[in] x The x coordinate
+//! @param[in] y The y coordinate
 void appendCoordinateTag(QDomElement &rDomElement, qreal x, qreal y)
 {
     QDomElement pose = appendDomElement(rDomElement, HMF_COORDINATETAG);
@@ -184,6 +229,10 @@ void appendCoordinateTag(QDomElement &rDomElement, qreal x, qreal y)
     pose.setAttribute("y",y);
 }
 
+//! @brief Special purpose help function for adding a Hopsan specific XML tag containing viewport information
+//! @param[in] x The x coordinate
+//! @param[in] y The y coordinate
+//! @param[in] zoom The zoom factor
 void appendViewPortTag(QDomElement &rDomElement, qreal x, qreal y, qreal zoom)
 {
     QDomElement pose = appendDomElement(rDomElement, HMF_VIEWPORTTAG);
@@ -192,6 +241,10 @@ void appendViewPortTag(QDomElement &rDomElement, qreal x, qreal y, qreal zoom)
     pose.setAttribute("zoom",zoom);
 }
 
+//! @brief Special purpose help function for adding a Hopsan specific XML tag containing simulationtime information
+//! @param[in] start The starttime
+//! @param[in] step The timestep size
+//! @param[in] stop The stoptime
 void appendSimulationTimeTag(QDomElement &rDomElement, qreal start, qreal step, qreal stop)
 {
     QDomElement simu = appendDomElement(rDomElement, HMF_SIMULATIONTIMETAG);
@@ -200,6 +253,11 @@ void appendSimulationTimeTag(QDomElement &rDomElement, qreal start, qreal step, 
     simu.setAttribute("stop", stop);
 }
 
+//! @brief Special purpose function for parsing a Hopsan specific XML tag containing Object Pose information
+//! @param[out] rX The x coordinate
+//! @param[out] rY The y coordinate
+//! @param[out] rTheta The orientaion (angle)
+//! @param[out] rFlipped isFlipped status of the object
 void parsePoseTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rTheta, bool &rFlipped)
 {
     rX = domElement.attribute("x").toDouble();
@@ -208,6 +266,10 @@ void parsePoseTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rTheta, b
     rFlipped = (domElement.attribute("flipped") == "1");
 }
 
+//! @brief Special purpose function for parsing a Hopsan specific XML tag containing PortPose information
+//! @param[out] rX The x coordinate
+//! @param[out] rY The y coordinate
+//! @param[out] rTheta The orientaion (angle)
 void parsePortPoseTag(QDomElement domElement, QString &rName, qreal &rX, qreal &rY, qreal &rTheta)
 {
     rName = domElement.attribute("name");
@@ -215,12 +277,19 @@ void parsePortPoseTag(QDomElement domElement, QString &rName, qreal &rX, qreal &
     parsePoseTag(domElement, rX, rY, rTheta, dummy);
 }
 
+//! @brief Special purpose function for parsing a Hopsan specific XML tag containing a coordinate
+//! @param[out] rX The x coordinate
+//! @param[out] rY The y coordinate
 void parseCoordinateTag(QDomElement domElement, qreal &rX, qreal &rY)
 {
     rX = domElement.attribute("x").toDouble();
     rY = domElement.attribute("y").toDouble();
 }
 
+//! @brief Special purpose help function for parsing a Hopsan specific XML tag containing viewport information
+//! @param[out] rX The x coordinate
+//! @param[out] rY The y coordinate
+//! @param[out] rZoom The zoom factor
 void parseViewPortTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rZoom)
 {
     rX = domElement.attribute("x").toDouble();
@@ -228,10 +297,13 @@ void parseViewPortTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rZoom
     rZoom = domElement.attribute("zoom").toDouble();
 }
 
+//! @brief Special purpose help function for parsing a Hopsan specific XML tag containing simulationtime information
+//! @param[out] rStart The starttime
+//! @param[out] rStep The timestep size
+//! @param[out] rStop The stoptime
 void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep, qreal &rStop)
 {
     rStart = domElement.attribute("start").toDouble();
     rStep = domElement.attribute("timestep").toDouble();
     rStop = domElement.attribute("stop").toDouble();
 }
-

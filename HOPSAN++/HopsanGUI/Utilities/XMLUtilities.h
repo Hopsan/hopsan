@@ -7,12 +7,12 @@ QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString
 
 void appendRootXMLProcessingInstruction(QDomDocument &rDomDocument);
 
+//! @todo We could go back to using only appendDomNode and then overload manny different functions with same anme but different input arguments)
 QDomElement appendDomElement(QDomElement &rDomElement, const QString element_name);
 void appendDomTextNode(QDomElement &rDomElement, const QString element_name, const QString text);
 void appendDomBooleanNode(QDomElement &rDomElement, const QString element_name, const bool value);
 
 void appendDomValueNode(QDomElement &rDomElement, const QString element_name, const double val);
-//! @todo maybe revert to using only appendDomTextNode names on all functions (then you need to think less)
 void appendDomValueNode2(QDomElement &rDomElement, const QString element_name, const double a, const double b);
 void appendDomValueNode3(QDomElement &rDomElement, const QString element_name, const double a, const double b, const double c);
 void appendDomValueNodeN(QDomElement &rDomElement, const QString element_name, const QVector<qreal> &rValues);
