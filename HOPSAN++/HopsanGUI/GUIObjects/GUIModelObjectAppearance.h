@@ -3,7 +3,7 @@
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2010-04-22
 //!
-//! @brief Contains appearance data to be used by guiobjects and library widget
+//! @brief Contains appearance data to be used by GuiModelObjects and library widget
 //!
 //$Id$
 

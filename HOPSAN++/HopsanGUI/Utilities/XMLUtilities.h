@@ -2,10 +2,10 @@
 //! @file   XMLUtilities.h
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2010-11-xx
-//! @version $Id$
 //!
 //! @brief Contains XML DOM help functions that are more or less Hopsan specific
 //!
+//$Id$
 
 #ifndef XMLUTILITIES_H
 #define XMLUTILITIES_H

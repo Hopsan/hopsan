@@ -1,3 +1,10 @@
+//!
+//! @file   CoreAccess.cpp
+//! @author Flumes <flumes@lists.iei.liu.se>
+//! @date   2010-01-01
+//!
+//! @brief Contains the CoreAccess class, The API class for communication with the HopsanCore
+//!
 //$Id$
 
 #include "CoreAccess.h"

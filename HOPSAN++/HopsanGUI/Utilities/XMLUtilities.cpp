@@ -2,10 +2,10 @@
 //! @file   XMLUtilities.cpp
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2010-11-xx
-//! @version $Id$
 //!
 //! @brief Contains XML DOM help functions that are more or less Hopsan specific
 //!
+//$Id$
 
 #include "XMLUtilities.h"
 #include <QMessageBox>

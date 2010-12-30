@@ -1,3 +1,12 @@
+//!
+//! @file   ContainerPropertiesDialog.cpp
+//! @author Peter Nordin <peter.nordin@liu.se>
+//! @date   2010-11-24
+//!
+//! @brief Contains a class for manimulation of Container properties
+//!
+//$Id$
+
 #include "ContainerPropertiesDialog.h"
 
 #include <QDebug>

@@ -1,3 +1,10 @@
+//!
+//! @file   GUIWidgets.h
+//! @author Flumes <flumes@lists.iei.liu.se>
+//! @date   2010-01-01
+//!
+//! @brief Contains the GUIWidgets classes
+//!
 //$Id$
 
 #ifndef GUIWIDGETS_H
@@ -5,14 +12,10 @@
 
 #include <QGraphicsWidget>
 #include <QObject>
-#include <QGraphicsWidget>
-
-#include "../common.h"
-
-//#include "GUIModelObjectAppearance.h"
 #include <assert.h>
 
 #include "GUIObject.h"
+#include "../common.h"
 
 #include <QTextEdit>
 #include <QLabel>

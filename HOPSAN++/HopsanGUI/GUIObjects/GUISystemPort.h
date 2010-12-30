@@ -1,3 +1,10 @@
+//!
+//! @file   GUISystemPort.h
+//! @author Flumes <flumes@lists.iei.liu.se>
+//! @date   2010-01-01
+//!
+//! @brief Contains the ContainerPort class
+//!
 //$Id$
 
 #ifndef GUISYSTEMPORT_H
@@ -5,6 +12,7 @@
 
 #include "GUIModelObject.h"
 
+//! @todo Rename this and cpp file
 class GUIContainerPort : public GUIModelObject
 {
     Q_OBJECT

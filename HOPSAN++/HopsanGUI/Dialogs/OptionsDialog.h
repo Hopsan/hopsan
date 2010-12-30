@@ -1,3 +1,10 @@
+//!
+//! @file   OptionsDialog.h
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-XX-XX
+//!
+//! @brief Contains a class for the options dialog
+//!
 //$Id: OptionsDialog.h 1195 2010-04-01 09:25:58Z robbr48 $
 
 #ifndef OPTIONSDIALOG_H

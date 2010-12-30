@@ -1,3 +1,10 @@
+//!
+//! @file   common.h
+//! @author Flumes <flumes@lists.iei.liu.se>
+//! @date   2010-01-01
+//!
+//! @brief Contains HopsanGUI common global definitions, enums and objects
+//!
 //$Id$
 
 #ifndef COMMON_H

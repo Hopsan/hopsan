@@ -1,3 +1,12 @@
+//!
+//! @file   UndoStack.h
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-XX-XX
+//!
+//! @brief Contains classes for the undo stack and the undo widget (which displays the stack)
+//!
+//$Id$
+
 #ifndef UNDOWIDGET_H
 #define UNDOWIDGET_H
 

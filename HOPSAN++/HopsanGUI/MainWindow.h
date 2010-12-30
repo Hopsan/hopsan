@@ -1,9 +1,11 @@
+//!
+//! @file   MainWindow.h
+//! @author Flumes <flumes@lists.iei.liu.se>
+//! @date   2010-01-01
+//!
+//! @brief Contains the HopsanGUI MainWindow class
+//!
 //$Id$
-
-//!
-//! \mainpage
-//! Library used in Hopsan NG is 'qwt-5'
-//!
 
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H

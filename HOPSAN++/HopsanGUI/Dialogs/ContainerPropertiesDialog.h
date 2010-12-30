@@ -3,9 +3,9 @@
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2010-11-24
 //!
-//! @brief Contains a class for interact with paramters
+//! @brief Contains a class for manimulation of Container properties
 //!
-//$Id: ContainerPropertiesDialog.h 2206 2010-11-24 09:27:21Z petno25 $
+//$Id$
 
 #ifndef CONTAINERPROPERTIESDIALOG_H
 #define CONTAINERPROPERTIESDIALOG_H

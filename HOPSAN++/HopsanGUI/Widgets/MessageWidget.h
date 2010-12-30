@@ -2,10 +2,10 @@
 //! @file   MessageWidget.h
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2010-10-xx
-//! @version $Id$
 //!
 //! @brief Contains the MessageWidget that dissplays messages to the user
 //!
+//$Id$
 
 #ifndef MESSAGEWIDGET_H
 #define MESSAGEWIDGET_H

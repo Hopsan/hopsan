@@ -1,3 +1,10 @@
+//!
+//! @file   loadObjects.h
+//! @author Flumes <flumes@lists.iei.liu.se>
+//! @date   2010-01-01
+//!
+//! @brief Contains classes and functions used to recreate models from load data
+//!
 //$Id$
 
 #ifndef LOADOBJECTS_H

@@ -1,3 +1,10 @@
+//!
+//! @file   Configuration.h
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-11-15
+//!
+//! @brief Contains a class for the configuration object
+//!
 //$Id$
 
 #ifndef CONFIGURATION_H

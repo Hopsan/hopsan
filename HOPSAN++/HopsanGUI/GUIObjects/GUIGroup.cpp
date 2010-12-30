@@ -1,3 +1,10 @@
+//!
+//! @file   GUIGroup.h
+//! @author Flumes <flumes@lists.iei.liu.se>
+//! @date   2010-01-01
+//!
+//! @brief Contains the GUI Group class
+//!
 //$Id$
 
 //! @todo clean up this include and forward declaration mess

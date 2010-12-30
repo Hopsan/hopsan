@@ -2,10 +2,10 @@
 //! @file   UndoStack.cpp
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2010-XX-XX
-//! @version $Id$
 //!
 //! @brief Contains classes for the undo stack and the undo widget (which displays the stack)
 //!
+//$Id$
 
 #include <QtGui>
 

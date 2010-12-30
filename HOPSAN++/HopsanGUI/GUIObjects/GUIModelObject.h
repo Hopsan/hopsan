@@ -1,3 +1,10 @@
+//!
+//! @file   GUIModelObject.h
+//! @author Flumes <flumes@lists.iei.liu.se>
+//! @date   2010-01-01
+//!
+//! @brief Contains the GUIModelObject class (The baseclass for all objects representing model parts)
+//!
 //$Id$
 
 #ifndef GUIMODELOBJECT_H

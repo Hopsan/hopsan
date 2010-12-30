@@ -1,3 +1,10 @@
+//!
+//! @file   GUIConnectorAppearance.h
+//! @author Flumes <flumes@lists.iei.liu.se>
+//! @date   2010-01-01
+//!
+//! @brief Contains the GUIConnectorAppearance class
+//!
 //$Id$
 
 #ifndef GUICONNECTORAPPEARANCE_H

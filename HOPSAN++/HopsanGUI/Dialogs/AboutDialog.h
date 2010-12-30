@@ -1,3 +1,10 @@
+//!
+//! @file   AboutDialog.cpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-XX-XX
+//!
+//! @brief Contains a class for the About dialog
+//!
 //$Id$
 
 #ifndef ABOUTDIALOG_H

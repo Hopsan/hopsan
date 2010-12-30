@@ -1,3 +1,10 @@
+//!
+//! @file   GUIContainerObject.h
+//! @author Flumes <flumes@lists.iei.liu.se>
+//! @date   2010-01-01
+//!
+//! @brief Contains the GUI Container class (base class for Systems and Groups)
+//!
 //$Id$
 
 #ifndef GUICONTAINEROBJECT_H
