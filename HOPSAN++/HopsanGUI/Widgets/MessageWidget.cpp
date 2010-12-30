@@ -1,3 +1,12 @@
+//!
+//! @file   MessageWidget.cpp
+//! @author Peter Nordin <peter.nordin@liu.se>
+//! @date   2010-12-xx
+//! @version $Id$
+//!
+//! @brief Contains the MessageWidget that dissplays messages to the user
+//!
+
 #include "MessageWidget.h"
 #include "../MainWindow.h"
 #include "../CoreAccess.h"

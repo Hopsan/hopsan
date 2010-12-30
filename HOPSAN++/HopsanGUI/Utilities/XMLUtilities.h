@@ -1,3 +1,12 @@
+//!
+//! @file   XMLUtilities.h
+//! @author Peter Nordin <peter.nordin@liu.se>
+//! @date   2010-11-xx
+//! @version $Id$
+//!
+//! @brief Contains XML DOM help functions that are more or less Hopsan specific
+//!
+
 #ifndef XMLUTILITIES_H
 #define XMLUTILITIES_H
 
@@ -25,8 +34,6 @@ void parseDomValueNode2(QDomElement domElement, double &rA, double &rB);
 void parseDomValueNode3(QDomElement domElement, double &rA, double &rB, double &rC);
 
 //Attribute help functions
-//void setAttribute(QDomElement &rDomElement, QString attrname, QString text);
-//void setAttribute(QDomElement &rDomElement, QString attrname, int text);
 void appendPoseTag(QDomElement &rDomElement, qreal x, qreal y, qreal th, bool flipped);
 void appendPortPoseTag(QDomElement &rDomElement, QString name, qreal x, qreal y, qreal th);
 void appendCoordinateTag(QDomElement &rDomElement, qreal x, qreal y);
@@ -40,6 +47,7 @@ void parseViewPortTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rZoom
 void parseSimulationTimeTag(QDomElement domElement, qreal &rStart, qreal &rStep, qreal &rStop);
 
 //Save Load Definitions
+//! @todo clean up this list and give some smarter names
 #define HMF_ROOTTAG "hopsanmodelfile"
 #define HMF_OBJECTS "objects"
 #define HMF_OBJECTTAG "object"              //Non core Gui Object
