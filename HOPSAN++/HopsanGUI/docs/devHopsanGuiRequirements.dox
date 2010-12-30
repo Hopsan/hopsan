@@ -41,7 +41,7 @@ PYTHON_PATH = c:\\Python26 \n
 PYTHON_LIB  = c:\\Python26\\libs
 -# Add the PythonQt*.*.*\\src folder to the "Include Path" in your project.
 -# Build PythonQt in release mode.
--# If you want to run the tests add the PythonQt*.*.*\lib directory to your path (in build environment)
+-# If you want to run the tests add the PythonQt*.*.*\\lib directory to your path (in build environment)
 -# Add the PYTHONQT_PATH = C:\\Users\\petno25\\Downloads\\PythonQt2.0.1 (or whatever your path is), to the HopsanGui build environment
 -# Add the  C:\\Users\\petno25\\Downloads\\PythonQt2.0.1\\lib (or whatever your path is) to the PATH variable in your HopsanGui build environment
 
@@ -53,7 +53,7 @@ Some useful information can be found at <a href="http://www.emmestech.com/moron_
   -# Create a file called "pydistutils.cfg" that contain:\n
 [build]\n
 compiler=mingw32
-  -# Next, use pexports to export the python dll symbols. The library can typically be found under C:\WINDOWS\system32. Use the following command:\n
+  -# Next, use pexports to export the python dll symbols. The library can typically be found under C:\\WINDOWS\\system32. Use the following command:\n
 pexports c:/WINDOWS/system32/python26.dll >python26.def\n
 Or the following for 64-bit Windows:\n
 pexports c:/WINDOWS/syswow64/python26.dll >python26.def\n

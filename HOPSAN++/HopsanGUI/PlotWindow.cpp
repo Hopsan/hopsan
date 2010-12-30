@@ -337,7 +337,7 @@ void PlotWindow::insertMarker(QwtPlotCurve *curve)
 
 
 //! @brief Changes the active marker (the on that can be moved around)
-//! @marker is a pointer to the marker that shall be activated
+//! @param[in] marker is a pointer to the marker that shall be activated
 void PlotWindow::setActiveMarker(QwtPlotMarker *marker)
 {
     this->mpActiveMarker = marker;
@@ -394,7 +394,7 @@ void PlotWindow::discardGeneration()
 
 
 //! @brief Slot that enables or disables rubber band zooming
-//! @on is true if it shall be enabled or false if it should be disabled
+//! param[in] on is true if it shall be enabled or false if it should be disabled
 void PlotWindow::enableZoom(bool on)
 {
     mpZoomer->setEnabled(on);

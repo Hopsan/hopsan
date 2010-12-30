@@ -1,5 +1,5 @@
 //!
-//! @file   AboutDialog.cpp
+//! @file   AboutDialog.h
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2010-XX-XX
 //!

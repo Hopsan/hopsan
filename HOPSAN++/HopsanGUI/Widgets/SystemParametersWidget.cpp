@@ -275,7 +275,7 @@ void SystemParameterTableWidget::openComponentPropertiesDialog()
 }
 
 
-//! @Private help slot that adds a parameter from the selected name and value in "Add Parameter" dialog
+//! @brief Private help slot that adds a parameter from the selected name and value in "Add Parameter" dialog
 void SystemParameterTableWidget::addParameter()
 {
     bool ok;    

@@ -1,9 +1,9 @@
 //!
-//! @file   UndoStack.h
+//! @file   UndoWidget.h
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2010-XX-XX
 //!
-//! @brief Contains classes for the undo stack and the undo widget (which displays the stack)
+//! @brief Contains the undo widget class (which displays the stack)
 //!
 //$Id$
 

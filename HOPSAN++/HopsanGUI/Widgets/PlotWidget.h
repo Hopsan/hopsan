@@ -1,3 +1,10 @@
+//!
+//! @file   PlotWidget.h
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010-XX-XX
+//!
+//! @brief Contains the PlotWidget and otehr plot related classes
+//!
 //$Id$
 
 #ifndef PlotWidget_H

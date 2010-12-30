@@ -12,6 +12,10 @@
 #include "../Utilities/GUIUtilities.h"
 #include "../version.h"
 
+//These are only used in temporary save to file
+#include <QFile>
+#include "version.h"
+
 GUIModelObjectAppearance::GUIModelObjectAppearance()
 {
     //Assume all strings default to ""
@@ -189,8 +193,6 @@ void GUIModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
 void GUIModelObjectAppearance::saveToXML(QString filename)
 {
     //Save to file
-    #include <QFile>
-    #include "version.h"
     QDomDocument doc;
     QDomElement cafroot = doc.createElement(CAF_ROOTTAG);
     doc.appendChild(cafroot);

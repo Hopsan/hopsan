@@ -217,9 +217,10 @@ bool parseDomBooleanNode(QDomElement domElement)
 }
 
 //! @brief Special purpose function for adding a Hopsan specific XML tag containing Object Pose information
+//! @param[in] rDomElement The DOM Element to append to
 //! @param[in] x The x coordinate
 //! @param[in] y The y coordinate
-//! @param[in] a The orientaion (angle)
+//! @param[in] th The orientaion (angle)
 //! @param[in] flipped isFlipped status of the object
 void appendPoseTag(QDomElement &rDomElement, qreal x, qreal y, qreal th, bool flipped)
 {
@@ -231,10 +232,11 @@ void appendPoseTag(QDomElement &rDomElement, qreal x, qreal y, qreal th, bool fl
 }
 
 //! @brief Special purpose function for adding a Hopsan specific XML tag containing PortPose information
+//! @param[in] rDomElement The DOM Element to append to
 //! @param[in] name The port name
 //! @param[in] x The x coordinate
 //! @param[in] y The y coordinate
-//! @param[in] a The orientaion (angle)
+//! @param[in] th The orientaion (angle)
 void appendPortPoseTag(QDomElement &rDomElement, QString name, qreal x, qreal y, qreal th)
 {
     QDomElement pose = appendDomElement(rDomElement, HMF_PORTPOSETAG);
@@ -245,6 +247,7 @@ void appendPortPoseTag(QDomElement &rDomElement, QString name, qreal x, qreal y,
 }
 
 //! @brief Special purpose function for adding a Hopsan specific XML tag containing a coordinate
+//! @param[in] rDomElement The DOM Element to append to
 //! @param[in] x The x coordinate
 //! @param[in] y The y coordinate
 void appendCoordinateTag(QDomElement &rDomElement, qreal x, qreal y)
@@ -255,6 +258,7 @@ void appendCoordinateTag(QDomElement &rDomElement, qreal x, qreal y)
 }
 
 //! @brief Special purpose help function for adding a Hopsan specific XML tag containing viewport information
+//! @param[in] rDomElement The DOM Element to append to
 //! @param[in] x The x coordinate
 //! @param[in] y The y coordinate
 //! @param[in] zoom The zoom factor
@@ -267,6 +271,7 @@ void appendViewPortTag(QDomElement &rDomElement, qreal x, qreal y, qreal zoom)
 }
 
 //! @brief Special purpose help function for adding a Hopsan specific XML tag containing simulationtime information
+//! @param[in] rDomElement The DOM Element to append to
 //! @param[in] start The starttime
 //! @param[in] step The timestep size
 //! @param[in] stop The stoptime
@@ -279,6 +284,7 @@ void appendSimulationTimeTag(QDomElement &rDomElement, qreal start, qreal step, 
 }
 
 //! @brief Special purpose function for parsing a Hopsan specific XML tag containing Object Pose information
+//! @param[in] domElement The DOM Element to parse
 //! @param[out] rX The x coordinate
 //! @param[out] rY The y coordinate
 //! @param[out] rTheta The orientaion (angle)
@@ -292,6 +298,8 @@ void parsePoseTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rTheta, b
 }
 
 //! @brief Special purpose function for parsing a Hopsan specific XML tag containing PortPose information
+//! @param[in] domElement The DOM Element to parse
+//! @param[out] rName The name of the port
 //! @param[out] rX The x coordinate
 //! @param[out] rY The y coordinate
 //! @param[out] rTheta The orientaion (angle)
@@ -303,6 +311,7 @@ void parsePortPoseTag(QDomElement domElement, QString &rName, qreal &rX, qreal &
 }
 
 //! @brief Special purpose function for parsing a Hopsan specific XML tag containing a coordinate
+//! @param[in] domElement The DOM Element to parse
 //! @param[out] rX The x coordinate
 //! @param[out] rY The y coordinate
 void parseCoordinateTag(QDomElement domElement, qreal &rX, qreal &rY)
@@ -312,6 +321,7 @@ void parseCoordinateTag(QDomElement domElement, qreal &rX, qreal &rY)
 }
 
 //! @brief Special purpose help function for parsing a Hopsan specific XML tag containing viewport information
+//! @param[in] domElement The DOM Element to parse
 //! @param[out] rX The x coordinate
 //! @param[out] rY The y coordinate
 //! @param[out] rZoom The zoom factor
@@ -323,6 +333,7 @@ void parseViewPortTag(QDomElement domElement, qreal &rX, qreal &rY, qreal &rZoom
 }
 
 //! @brief Special purpose help function for parsing a Hopsan specific XML tag containing simulationtime information
+//! @param[in] domElement The DOM Element to parse
 //! @param[out] rStart The starttime
 //! @param[out] rStep The timestep size
 //! @param[out] rStop The stoptime

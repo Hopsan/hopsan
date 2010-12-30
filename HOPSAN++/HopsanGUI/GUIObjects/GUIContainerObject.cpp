@@ -1512,7 +1512,7 @@ void GUIContainerObject::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     this->enterContainer();
 }
 
-//! @breif Opens the properites dialog for container objects
+//! @brief Opens the properites dialog for container objects
 void GUIContainerObject::openPropertiesDialog()
 {
     //Do Nothing

@@ -104,7 +104,7 @@ void GUIObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 }
 
 
-//! @bried Defines what happens when mouse stops hovering the object
+//! @brief Defines what happens when mouse stops hovering the object
 void GUIObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     if(!this->isSelected())

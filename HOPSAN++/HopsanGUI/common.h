@@ -13,7 +13,7 @@
 #define GOLDENRATIO 1.61803399
 #define SNAPDISTANCE 10
 
-//Development defines
+//Development defines, swich commen block with release++ bellow on real release
 #define MAINPATH "../../"
 #define OBJECTICONPATH "../../HopsanGUI/graphics/objecticons/"
 #define ICONPATH "../../HopsanGUI/graphics/uiicons/"
@@ -31,8 +31,8 @@
 //#define COMPONENTPATH "componentData/"
 //#define MODELPATH "Models/"
 
+//! @todo all of these dont have to be common
 //Enums
-//! @todo all of these should not be common
 enum selectionStatus {DESELECTED, SELECTED};
 enum nameVisibility {NAMEVISIBLE, NAMENOTVISIBLE};
 enum graphicsType {USERGRAPHICS, ISOGRAPHICS};

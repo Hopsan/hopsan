@@ -20,8 +20,8 @@
 #include "../Widgets/LibraryWidget.h"
 
 //! @brief Constructor for the container properties dialog
-//! @param pGUIContainerObject Pointer to the container
-//! @param pParentWidget Pointer to the parent widget
+//! @param[in] pContainerObject Pointer to the container
+//! @param[in] pParentWidget Pointer to the parent widget
 ContainerPropertiesDialog::ContainerPropertiesDialog(GUIContainerObject *pContainerObject, QWidget *pParentWidget)
     : QDialog(pParentWidget)
 {
