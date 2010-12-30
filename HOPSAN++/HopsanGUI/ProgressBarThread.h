@@ -12,20 +12,20 @@
 #define PROGRESSBARTHREAD_H
 
 #include <QThread>
-#include <QProgressDialog>
+//#include <QProgressDialog>
 
-class ProjectTab;
+//class ProjectTab;
 
 class ProgressBarThread : public QThread
 {
 public:
-    ProgressBarThread(ProjectTab *parent);
+    ProgressBarThread(QObject *parent/*ProjectTab *parent*/);
 
 protected:
     void run();
 
 private:
-    ProjectTab *mpParentProjectTab;
+    //ProjectTab *mpParentProjectTab;
 };
 
 #endif // PROGRESSBARTHREAD_H

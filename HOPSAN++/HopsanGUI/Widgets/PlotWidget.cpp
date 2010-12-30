@@ -71,7 +71,6 @@ QString PlotParameterItem::getDataUnit()
 PlotParameterTree::PlotParameterTree(MainWindow *parent)
         : QTreeWidget(parent)
 {
-    //mpParentMainWindow = parent;
     mpCurrentContainer = gpMainWindow->mpProjectTabs->getCurrentContainer();
     gpMainWindow->mpProjectTabs->getCurrentContainer()->mFavoriteParameters.clear();
 

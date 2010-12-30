@@ -344,42 +344,26 @@ void LibraryWidget::addLibrary(QString libDir, QString parentLib)
                                      .arg(file.fileName()));
 
             //! @todo give smart warning message, this is not an xml file
-
-//            file.reset(); //Reset file ptr
-
-//            //Assume that the file is ok
-//            QTextStream inFile(&file);  //Create a QTextStream object to stream the content of each file
-//            pAppearanceData->readFromTextStream(inFile);
-//            if (pAppearanceData->mIsReadOK)
-//            {
-//                pAppearanceData->saveToXML(filename); //Overwrite old file
-//            }
         }
+        //! @todo maybe use the convenient helpfunction for the stuff above (open file and check xml and root tagname) now that we have one
 
         bool sucess = true;
         pAppearanceData->setBaseIconPath(libDirObject.absolutePath() + "/");
-//        if (!pAppearanceData->mIsReadOK)
-//        {
-//            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Error when reading appearance data from file: " + filename);
-//            sucess = false;
-//        }
-//        else
-//        {
+
         //! @todo maybe we need to check appearance data for a minimuma amount of necessary data
-            //*****Core Interaction*****
-            HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
-            if(!((pAppearanceData->getTypeName()==HOPSANGUISYSTEMTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUIGROUPTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUICONTAINERPORTTYPENAME)) ) //Do not check if it is Subsystem or SystemPort
+        //*****Core Interaction*****
+        HopsanEssentials *pHopsanCore = HopsanEssentials::getInstance();
+        if(!((pAppearanceData->getTypeName()==HOPSANGUISYSTEMTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUIGROUPTYPENAME) || (pAppearanceData->getTypeName()==HOPSANGUICONTAINERPORTTYPENAME)) ) //Do not check if it is Subsystem or SystemPort
+        {
+            //! @todo this check (hasComponent) should be wrapped inside some coreaccess class
+            //! @todo maybe systemport should be in the core component factory (HopsanCore related), not like that right now
+            sucess = pHopsanCore->hasComponent(pAppearanceData->getTypeName().toStdString()); //Check so that there is such component availible in the Core
+            if (!sucess)
             {
-                //! @todo this check (hasComponent) should be wrapped inside some coreaccess class
-                //! @todo maybe systemport should be in the core component factory (HopsanCore related), not like that right now
-                sucess = pHopsanCore->hasComponent(pAppearanceData->getTypeName().toStdString()); //Check so that there is such component availible in the Core
-                if (!sucess)
-                {
-                    gpMainWindow->mpMessageWidget->printGUIWarningMessage("ComponentType: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)");
-                }
+                gpMainWindow->mpMessageWidget->printGUIWarningMessage("ComponentType: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)");
             }
-            //**************************
-//        }
+        }
+        //**************************
 
         if (sucess)
         {

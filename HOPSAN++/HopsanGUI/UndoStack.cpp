@@ -8,17 +8,13 @@
 //$Id$
 
 #include <QtGui>
-
 #include <assert.h>
 
 #include "UndoStack.h"
 #include "MainWindow.h"
-#include "Widgets/ProjectTabWidget.h"
-#include "GUIPort.h"
 #include "GUIConnector.h"
 #include "loadObjects.h"
 #include "GUIObjects/GUIContainerObject.h"
-#include "GUIObjects/GUISystem.h"
 #include "Widgets/MessageWidget.h"
 #include "Widgets/UndoWidget.h"
 

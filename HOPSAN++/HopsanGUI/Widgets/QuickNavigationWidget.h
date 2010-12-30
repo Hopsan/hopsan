@@ -1,3 +1,12 @@
+//!
+//! @file   QuickNavigationWidget.h
+//! @author Peter Nordin <peter.nordin@liu.se>
+//! @date   2010-12-xx
+//! @version $Id$
+//!
+//! @brief Contains the quick navigation widget that is used to go back after entering into container objects
+//!
+
 #ifndef QUICKNAVIGATIONWIDGET_H
 #define QUICKNAVIGATIONWIDGET_H
 

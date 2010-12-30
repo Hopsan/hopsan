@@ -36,7 +36,7 @@ public:
     void deleteGUIModelObject(QString componentName, undoStatus undoSettings=UNDO);
     void renameGUIModelObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
     bool hasGUIModelObject(QString name);
-    void takeOwnershipOf(QList<GUIModelObject*> &rModeObjectlist, QList<GUIWidget*> &rWidgetList, QList<GUIConnector*> &rConnectorList);
+    void takeOwnershipOf(QList<GUIModelObject*> &rModeObjectlist, QList<GUIWidget*> &rWidgetList);
 
     //Handle connectors
     GUIConnector *findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
@@ -44,6 +44,7 @@ public:
     void removeConnector(GUIConnector* pConnector, undoStatus undoSettings=UNDO);
     void setIsCreatingConnector(bool isCreatingConnector);
     bool getIsCreatingConnector();
+    void forgetContainedConnector(GUIConnector *pConnector); //! @todo maybe can be protected, other container (and self) should be able to access it, noone else needs to
 
     //Handle container appearance
     QString getIsoIconPath();

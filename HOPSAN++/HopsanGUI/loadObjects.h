@@ -143,6 +143,4 @@ void loadFavoriteParameter(QDomElement &rDomElement, GUIContainerObject* pSystem
 void loadTextWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoStatus undoSettings=UNDO);
 void loadBoxWidget(QDomElement &rDomElement, GUIContainerObject *pSystem, undoStatus undoSettings=UNDO);
 
-QDomElement appendHMFRootElement(QDomDocument &rDomDocument);
-
 #endif // LOADOBJECTS_H

@@ -27,12 +27,4 @@ int main(int argc, char *argv[])
     //splash.finish(&mainwindow);
 
     return a.exec();
-
-
-
-
-/*    QApplication a(argc, argv);
-    MainWindow mainwindow;
-    mainwindow.show();
-    return a.exec();*/
 }

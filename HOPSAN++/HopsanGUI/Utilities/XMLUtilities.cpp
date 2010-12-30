@@ -43,6 +43,22 @@ void appendRootXMLProcessingInstruction(QDomDocument &rDomDocument)
     rDomDocument.insertBefore(xmlProcessingInstruction, rDomDocument.firstChild());
 }
 
+//! @brief This function adds the root alement including version info to a HMF xml document
+//! @param[in] rDomDocument The XML DOM document to append to
+//! @param[in] hmfVersion The version string of the hmf file
+//! @param[in] hopsanGuiVersion The version string of the Hopsan GUI Application
+//! @param[in] hopsanCoreVersion The version string of the Hopsan Core Library
+//! @returns The created root DOM element
+QDomElement appendHMFRootElement(QDomDocument &rDomDocument, QString hmfVersion, QString hopsanGuiVersion, QString hopsanCoreVersion)
+{
+    QDomElement hmfRoot = rDomDocument.createElement(HMF_ROOTTAG);
+    rDomDocument.appendChild(hmfRoot);
+    hmfRoot.setAttribute(HMF_VERSIONTAG, hmfVersion);
+    hmfRoot.setAttribute(HMF_HOPSANGUIVERSIONTAG, hopsanGuiVersion);
+    hmfRoot.setAttribute(HMF_HOPSANCOREVERSIONTAG, hopsanCoreVersion);
+    return hmfRoot;
+}
+
 //! @brief Function for adding one initially empty Dom Element to extingd Element
 //! @param[in] rDomElement The DOM Element to append to
 //! @param[in] element_name The name of the new DOM element

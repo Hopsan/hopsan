@@ -13,21 +13,19 @@
 
 #include <QThread>
 
-class ProjectTab;
+//Forward Declaration
 class CoreSystemAccess;
 
 class SimulationThread : public QThread
 {
 public:
-    SimulationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, ProjectTab *parent);
-
-    ProjectTab *mpParentProjectTab;
-    CoreSystemAccess *mpGUIRootSystem;
+    SimulationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, QObject *parent);
 
 protected:
     void run();
 
 private:
+    CoreSystemAccess *mpCoreSystemAccess;
     double mStartTime;
     double mFinishTime;
 

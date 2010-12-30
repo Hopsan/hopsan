@@ -3,21 +3,14 @@
 #ifndef GRAPHICSVIEW_H
 #define GRAPHICSVIEW_H
 
-#include <QtGui>
+#include <QMenu>
 #include <QGraphicsView>
-#include <QObject>
-#include <QVector>
-#include "UndoStack.h"
 
 #include "common.h"
 
 //Forward Declarations
-//class UndoStack;
-class GUIPort;
-class GUIObject;
-class GUIConnector;
 class ProjectTab;
-class GUISystem;
+class GUIContainerObject;
 
 class GraphicsView : public QGraphicsView
 {
@@ -73,7 +66,7 @@ private:
     void createMenus();
     QColor mIsoColor;
 
-    GUIContainerObject *mpSystem; //!< @todo rename mpSystem
+    GUIContainerObject *mpContainerObject;
 };
 
 #endif // GRAPHICSVIEW_H

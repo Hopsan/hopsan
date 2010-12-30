@@ -9,11 +9,8 @@
 
 
 #include "SimulationThread.h"
-#include "Widgets/ProjectTabWidget.h"
 #include "CoreAccess.h"
-#include "MainWindow.h"
 #include "Configuration.h"
-#include "Widgets/MessageWidget.h"
 #include "common.h"
 
 
@@ -28,12 +25,11 @@
 //! @param pComponentSystem Pointer to the system to simulate.
 //! @param startTime Start time for the simulation.
 //! @param finishTime Finish time for the simulation.
-//! @param parent Parent of the thread, the ProjectTabWidget
-SimulationThread::SimulationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, ProjectTab *parent)
+//! @param parent Parent of the thread, the ProjectTab (Automatically casted to QObject*)
+SimulationThread::SimulationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, QObject *parent)
+    : QThread(parent)
 {
-    mpParentProjectTab = parent;
-
-    mpGUIRootSystem = pGUIRootSystem;
+    mpCoreSystemAccess = pGUIRootSystem;
 
     mStartTime = startTime;
     mFinishTime = finishTime;
@@ -45,13 +41,13 @@ void SimulationThread::run()
 {
     if(gConfig.getUseMulticore())
     {
-        mpGUIRootSystem->simulate(mStartTime, mFinishTime, MULTICORE, gConfig.getNumberOfThreads());
+        mpCoreSystemAccess->simulate(mStartTime, mFinishTime, MULTICORE, gConfig.getNumberOfThreads());
     }
     else
     {
-        mpGUIRootSystem->simulate(mStartTime, mFinishTime, SINGLECORE);
+        mpCoreSystemAccess->simulate(mStartTime, mFinishTime, SINGLECORE);
     }
-    mpGUIRootSystem->finalize(mStartTime, mFinishTime);
+    mpCoreSystemAccess->finalize(mStartTime, mFinishTime);
 
     //exec(); //Is used if one want to run an event loop in this thread.
 }

@@ -2,12 +2,9 @@
 #define UNDOWIDGET_H
 
 #include <QList>
-#include <QStringList>
-#include <QTableWidget>
 #include <QPushButton>
 #include <QDialog>
 #include <QTableWidget>
-#include <QObject>
 #include <QGridLayout>
 
 #include <QDomElement>
@@ -15,12 +12,7 @@
 #include "../MainWindow.h"
 
     //Forward Declarations
-//class GUIObject;
-//class GraphicsView;
-//class GUIConnector;
 class MainWindow;
-//class GUIContainerObject;
-
 
 class UndoWidget : public QDialog
 {

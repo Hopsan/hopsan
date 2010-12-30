@@ -1,3 +1,12 @@
+//!
+//! @file   QuickNavigationWidget.cpp
+//! @author Peter Nordin <peter.nordin@liu.se>
+//! @date   2010-12-xx
+//! @version $Id$
+//!
+//! @brief Contains the quick navigation widget that is used to go back after entering into container objects
+//!
+
 #include "QuickNavigationWidget.h"
 #include "GUIObjects/GUIContainerObject.h"
 
@@ -19,6 +28,8 @@ QuickNavigationWidget::QuickNavigationWidget(QWidget *parent) :
     this->refreshVisible();
 }
 
+//! @brief Append a new opened container to teh navigation widget
+//! @param[in] pContainer A pointer to the Container Object
 void QuickNavigationWidget::addOpenContainer(GUIContainerObject* pContainer)
 {
     //! @todo we can use the button group as button storage instead of having an extra Qvector
@@ -34,6 +45,8 @@ void QuickNavigationWidget::addOpenContainer(GUIContainerObject* pContainer)
     this->refreshVisible();
 }
 
+//! @brief Backstep to the given container closing all bellow it on the way
+//! @param[in] id The id of the container to go to
 void QuickNavigationWidget::gotoContainerClosingSubcontainers(int id)
 {
     //Reverse close subsystems,one at a time
@@ -50,6 +63,7 @@ void QuickNavigationWidget::gotoContainerClosingSubcontainers(int id)
     this->refreshVisible();
 }
 
+//! @brief Determines if the widget should be visible or not
 void QuickNavigationWidget::refreshVisible()
 {
     //qDebug() << "PushButtons.size(): " << this->mPushButtonPtrs.size();

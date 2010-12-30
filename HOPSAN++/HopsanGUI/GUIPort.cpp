@@ -1,24 +1,20 @@
 //$Id$
 
-#include "stdlib.h"
-
 #include <QtGui>
 #include <QSvgRenderer>
 
 #include "common.h"
-
 #include "GUIPort.h"
-#include "Widgets/PlotWidget.h"
+
 #include "MainWindow.h"
 #include "CoreAccess.h"
-#include "GUIObjects/GUIModelObject.h"
 #include "GraphicsView.h"
-#include "Widgets/ProjectTabWidget.h"
-#include "GUIObjects/GUISystem.h"
+#include "GUIObjects/GUIModelObject.h"
+#include "GUIObjects/GUIContainerObject.h"
 #include "Utilities/GUIUtilities.h"
+#include "Widgets/PlotWidget.h"
+#include "Widgets/ProjectTabWidget.h"
 
-
-//using namespace std;
 
 QPointF getOffsetPointfromPort(GUIPort *pStartPort, GUIPort *pEndPort)
 {
@@ -56,27 +52,6 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
 //    qDebug() << "parentType: " << pParentGUIModelObject->type() << " GUISYSTEM=" << GUISYSTEM << " GUICONTAINER=" << GUICONTAINEROBJECT;
 //    qDebug() << "======================= parentName: " << pParentGUIModelObject->getName();
 
-//    //Here we try to figure out what to set the parent container pointer to
-//    if ( pParentGUIModelObject->mpParentContainerObject != 0 )
-//    {
-//        //This is the normal case, our objects parentsystem
-//        mpParentContainerObject = pParentGUIModelObject->mpParentContainerObject;
-//        //qDebug() << "This seems to be a normal port, setting parentContainer for this port to system: " << mpParentContainerObject->getName();
-//    }
-//    else if ( pParentGUIModelObject->type() == GUISYSTEM )
-//    {
-//        //In this case, our parentobject is a root system (that is it has no parent)
-//        //this should only happen for external systemports in the root system
-//        mpParentContainerObject = qobject_cast<GUISystem*>(pParentGUIModelObject);
-//        qDebug() << "This seems to be a Root system and a systemport, ptr: " << mpParentContainerObject;
-//        qDebug() << "port ParentContainerName: " << mpParentContainerObject->getName();
-//    }
-//    else
-//    {
-//        qDebug() << "This should not happen";
-//        assert(false);
-//    }
-
     mpParentGuiModelObject = pParentGUIModelObject;
     mpPortAppearance = pPortAppearance;
 
@@ -101,12 +76,16 @@ GUIPort::GUIPort(QString portName, qreal xpos, qreal ypos, GUIPortAppearance* pP
     //Create connections to the parent container object
     this->refreshParentContainerSigSlotConnections();
 
-    //Create a connection to the mainwindow buttons
-    connect(gpMainWindow->hidePortsAction,SIGNAL(triggered(bool)),this, SLOT(hideIfNotConnected(bool)));
-
-    //Connect the view zoom change signal to the port overlay scale slot
+    //Create a permanent connection to the mainwindow buttons and the view zoom change signal for port overlay scaleing
     GraphicsView *pView = mpParentGuiModelObject->getParentContainerObject()->mpParentProjectTab->mpGraphicsView; //! @todo need to be able to access this in some nicer way then ptr madness
-    connect(pView, SIGNAL(zoomChange(qreal)), this, SLOT(setPortOverlayScale(qreal)));
+    connect(gpMainWindow->hidePortsAction,  SIGNAL(triggered(bool)),    this, SLOT(hideIfNotConnected(bool)));
+    connect(pView,                          SIGNAL(zoomChange(qreal)),  this, SLOT(setPortOverlayScale(qreal)));
+}
+
+GUIPort::~GUIPort()
+{
+    //We dont need to disconnect the permanent connection to the mainwindow buttons and the view zoom change signal for port overlay scaleing
+    //They should be disconnected automatically when the objects die
 }
 
 void GUIPort::refreshParentContainerSigSlotConnections()

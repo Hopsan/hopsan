@@ -10,34 +10,19 @@
 #include <QtGui>
 #include <QSizePolicy>
 #include <QHash>
-#include <QtXml>
-
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <cstdlib>
-#include <cassert>
 
 #include "ProjectTabWidget.h"
-#include "../MainWindow.h"
-#include "../GUIPort.h"
 #include "MessageWidget.h"
+
+#include "../MainWindow.h"
+#include "../GraphicsView.h"
 #include "../InitializationThread.h"
 #include "../SimulationThread.h"
 #include "../ProgressBarThread.h"
-#include "../UndoStack.h"
-#include "LibraryWidget.h"
-#include "../GUIObjects/GUIObject.h"
-#include "../GUIConnector.h"
-#include "../GraphicsView.h"
-#include "../GUIObjects/GUISystem.h"
-#include "PlotWidget.h"
 #include "../Configuration.h"
+#include "../Utilities/XMLUtilities.h"
+#include "../GUIObjects/GUISystem.h"
 #include "../version.h"
-#include "../Utilities/GUIUtilities.h"
-#include "../loadObjects.h"
-
 
 //! @class ProjectTab
 //! @brief The ProjectTab class is a Widget to contain a simulation model
@@ -73,21 +58,14 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     tabLayout->addWidget(mpQuickNavigationWidget);
     tabLayout->addWidget(mpGraphicsView);
     //this->setLayout(tabLayout);
+
+    mpGraphicsView->centerView();
 }
 
 ProjectTab::~ProjectTab()
 {
-    //! @todo do we need to call inheritet class destructor also
     //qDebug() << "projectTab destructor";
-
-    for(int i=0; i<mpSystem->getPortListPtrs().size(); ++i)
-    {
-        disconnect(gpMainWindow->hidePortsAction,SIGNAL(triggered(bool)),mpSystem->getPortListPtrs().at(i), SLOT(hideIfNotConnected(bool)));
-        disconnect(mpGraphicsView, SIGNAL(zoomChange(qreal)), mpSystem->getPortListPtrs().at(i), SLOT(setPortOverlayScale(qreal)));
-    }
-
     delete mpSystem;
-    //! @todo do we need to delete the graphicsiew or is that handled automatically
 }
 
 
@@ -280,15 +258,6 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
         mpSystem->mModelFileInfo.setFile(modelFilePath);
     }
 
-//    //! @obsolete quickhack to avoid saving hmfx over hmf
-//    //! @obsolete we shall allways save xml format as hmf from now on
-//    if (mpSystem->mModelFileInfo.filePath().endsWith("x"))
-//    {
-//        QString tmp = mpSystem->mModelFileInfo.filePath();
-//        tmp.chop(1);
-//        mpSystem->mModelFileInfo.setFile(tmp);
-//    }
-
     QFile file(mpSystem->mModelFileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
@@ -301,7 +270,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
 
         //Save xml document
     QDomDocument domDocument;
-    QDomElement hmfRoot = appendHMFRootElement(domDocument);
+    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMFVERSION, HOPSANGUIVERSION, "0"); //!< @todo need to get coreversion in here somehow, maybe have a global that is set when the hopsan core is instansiated
 
         //Save the model component hierarcy
     //! @todo maybe use a saveload object instead of calling save imediately (only load object exist for now), or maybe this is fine
@@ -476,17 +445,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
     disconnect(gpMainWindow->saveAction,            SIGNAL(triggered()),    getTab(index),                  SLOT(save()));
     disconnect(gpMainWindow->saveAsAction,          SIGNAL(triggered()),    getTab(index),                  SLOT(saveAs()));
 
-//    disconnect(gpMainWindow->hideNamesAction,       SIGNAL(triggered()),    getContainer(index),               SLOT(hideNames()));
-//    disconnect(gpMainWindow->showNamesAction,       SIGNAL(triggered()),    getContainer(index),               SLOT(showNames()));
-//    disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()), getContainer(index),            SLOT(updateStartTime()));
-//    disconnect(gpMainWindow->mpTimeStepLineEdit,    SIGNAL(editingFinished()), getContainer(index),            SLOT(updateTimeStep()));
-//    disconnect(gpMainWindow->mpFinishTimeLineEdit,  SIGNAL(editingFinished()), getContainer(index),            SLOT(updateStopTime()));
-//    disconnect(gpMainWindow->disableUndoAction,     SIGNAL(triggered()),    getContainer(index),               SLOT(disableUndo()));
-//    disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()), getContainer(index),            SLOT(updateStartTime()));
-//    disconnect(gpMainWindow->mpFinishTimeLineEdit,  SIGNAL(editingFinished()), getContainer(index),            SLOT(updateStopTime()));
-//    disconnect(gpMainWindow->mpTimeStepLineEdit,    SIGNAL(editingFinished()), getContainer(index),            SLOT(updateTimeStep()));
     getContainer(index)->disconnectMainWindowActions();
-
 
     //Delete project tab
     delete widget(index);
@@ -595,25 +554,13 @@ void ProjectTabWidget::tabChanged()
     for(int i=0; i<count(); ++i)
     {
             //If you add a disconnect here, remember to also add it to the close tab function!
-        //! @todo  NO!!!!!!  Write a common function instead to avoid code duplication
+        //! @todo  Are these connections such connection that are supposed to be permanent conections? otherwise they should be in the disconnectMainWindowActions function
         disconnect(gpMainWindow->resetZoomAction,       SIGNAL(triggered()),        getTab(i)->mpGraphicsView,  SLOT(resetZoom()));
         disconnect(gpMainWindow->zoomInAction,          SIGNAL(triggered()),        getTab(i)->mpGraphicsView,  SLOT(zoomIn()));
         disconnect(gpMainWindow->zoomOutAction,         SIGNAL(triggered()),        getTab(i)->mpGraphicsView,  SLOT(zoomOut()));
         disconnect(gpMainWindow->exportPDFAction,       SIGNAL(triggered()),        getTab(i)->mpGraphicsView,  SLOT(exportToPDF()));
         disconnect(gpMainWindow->centerViewAction,      SIGNAL(triggered()),        getTab(i)->mpGraphicsView,  SLOT(centerView()));
-//        disconnect(gpMainWindow->hideNamesAction,       SIGNAL(triggered()),        getContainer(i),               SLOT(hideNames()));
-//        disconnect(gpMainWindow->showNamesAction,       SIGNAL(triggered()),        getContainer(i),               SLOT(showNames()));
-//        disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()),  getContainer(i),       SLOT(updateStartTime()));
-//        disconnect(gpMainWindow->mpTimeStepLineEdit,    SIGNAL(editingFinished()),  getContainer(i),       SLOT(updateTimeStep()));
-//        disconnect(gpMainWindow->mpFinishTimeLineEdit,  SIGNAL(editingFinished()),  getContainer(i),       SLOT(updateStopTime()));
-//        disconnect(gpMainWindow->disableUndoAction,     SIGNAL(triggered()),        getContainer(i),       SLOT(disableUndo()));
-//        disconnect(gpMainWindow->mpStartTimeLineEdit,   SIGNAL(editingFinished()),  getContainer(i),       SLOT(updateStartTime()));
-//        disconnect(gpMainWindow->mpFinishTimeLineEdit,  SIGNAL(editingFinished()),  getContainer(i),       SLOT(updateStopTime()));
-//        disconnect(gpMainWindow->mpTimeStepLineEdit,    SIGNAL(editingFinished()),  getContainer(i),       SLOT(updateTimeStep()));
-//        disconnect(gpMainWindow->cutAction,             SIGNAL(triggered()),        getContainer(i),       SLOT(cutSelected()));
-//        disconnect(gpMainWindow->copyAction,            SIGNAL(triggered()),        getContainer(i),       SLOT(copySelected()));
-//        disconnect(gpMainWindow->pasteAction,           SIGNAL(triggered()),        getContainer(i),       SLOT(paste()));
-//        disconnect(gpMainWindow->propertiesAction,      SIGNAL(triggered()),        getContainer(i),       SLOT(openPropertiesDialogSlot()));
+
         getContainer(i)->disconnectMainWindowActions();
 
         disconnect(gpMainWindow->simulateAction,        SIGNAL(triggered()),        getTab(i),          SLOT(simulate()));
@@ -631,20 +578,9 @@ void ProjectTabWidget::tabChanged()
         connect(gpMainWindow->zoomOutAction,        SIGNAL(triggered()),        getCurrentTab()->mpGraphicsView,    SLOT(zoomOut()));
         connect(gpMainWindow->exportPDFAction,      SIGNAL(triggered()),        getCurrentTab()->mpGraphicsView,    SLOT(exportToPDF()));
         connect(gpMainWindow->centerViewAction,     SIGNAL(triggered()),        getCurrentTab()->mpGraphicsView,    SLOT(centerView()));
-//        connect(gpMainWindow->hideNamesAction,      SIGNAL(triggered()),        getCurrentContainer(),     SLOT(hideNames()));
-//        connect(gpMainWindow->showNamesAction,      SIGNAL(triggered()),        getCurrentContainer(),     SLOT(showNames()));
-//        connect(gpMainWindow->mpStartTimeLineEdit,  SIGNAL(editingFinished()),  getCurrentContainer(),     SLOT(updateStartTime()));
-//        connect(gpMainWindow->mpTimeStepLineEdit,   SIGNAL(editingFinished()),  getCurrentContainer(),     SLOT(updateTimeStep()));
-//        connect(gpMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()),  getCurrentContainer(),     SLOT(updateStopTime()));
-//        connect(gpMainWindow->disableUndoAction,    SIGNAL(triggered()),        getCurrentContainer(),     SLOT(disableUndo()));
-//        connect(gpMainWindow->mpStartTimeLineEdit,  SIGNAL(editingFinished()),  getCurrentContainer(),     SLOT(updateStartTime()));
-//        connect(gpMainWindow->mpFinishTimeLineEdit, SIGNAL(editingFinished()),  getCurrentContainer(),     SLOT(updateStopTime()));
-//        connect(gpMainWindow->mpTimeStepLineEdit,   SIGNAL(editingFinished()),  getCurrentContainer(),     SLOT(updateTimeStep()));
-//        connect(gpMainWindow->cutAction,            SIGNAL(triggered()),        getCurrentContainer(),     SLOT(cutSelected()));
-//        connect(gpMainWindow->copyAction,           SIGNAL(triggered()),        getCurrentContainer(),     SLOT(copySelected()));
-//        connect(gpMainWindow->pasteAction,          SIGNAL(triggered()),        getCurrentContainer(),     SLOT(paste()));
-//        connect(gpMainWindow->propertiesAction,     SIGNAL(triggered()),        getCurrentContainer(),     SLOT(openPropertiesDialogSlot()));
+
         getCurrentContainer()->connectMainWindowActions();
+
         getCurrentContainer()->updateUndoStatus();
         getCurrentTopLevelSystem()->updateSimulationParametersInToolBar();
     }

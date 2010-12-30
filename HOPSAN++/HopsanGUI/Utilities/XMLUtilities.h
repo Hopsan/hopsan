@@ -7,6 +7,8 @@ QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString
 
 void appendRootXMLProcessingInstruction(QDomDocument &rDomDocument);
 
+QDomElement appendHMFRootElement(QDomDocument &rDomDocument, QString hmfVersion, QString hopsanGuiVersion, QString hopsanCoreVersion);
+
 //! @todo We could go back to using only appendDomNode and then overload manny different functions with same anme but different input arguments)
 QDomElement appendDomElement(QDomElement &rDomElement, const QString element_name);
 void appendDomTextNode(QDomElement &rDomElement, const QString element_name, const QString text);

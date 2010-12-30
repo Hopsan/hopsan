@@ -7,22 +7,24 @@
 
 #include "Widgets/PlotWidget.h"
 #include "Widgets/MessageWidget.h"
-#include "Dialogs/OptionsDialog.h"
-#include "UndoStack.h"
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/ProjectTabWidget.h"
-#include "GraphicsView.h"
-#include "GUIObjects/GUISystem.h"
 #include "Widgets/PyDockWidget.h"
 #include "Widgets/SystemParametersWidget.h"
-#include "Configuration.h"
-#include "CopyStack.h"
-#include "Dialogs/AboutDialog.h"
 #include "Widgets/UndoWidget.h"
 
-#include "loadObjects.h"
+#include "Dialogs/OptionsDialog.h"
+#include "Dialogs/AboutDialog.h"
 
+#include "UndoStack.h"
+#include "Configuration.h"
+#include "CopyStack.h"
 
+//! @todo maybe we can make sure that we dont need to include these here
+#include "GraphicsView.h"
+#include "GUIObjects/GUISystem.h"
+
+//Declaration of global variables
 Configuration gConfig;
 CopyStack gCopyStack;
 
@@ -205,6 +207,7 @@ MainWindow::~MainWindow()
 void MainWindow::show()
 {
     QMainWindow::show();
+    //! @todo this should not be done here should happen when a new tab is created, OK! MainWindow must be shown before center works, maybe we can go through projecttabwidget instead, leaveing it for now
     mpProjectTabs->getCurrentTab()->mpGraphicsView->centerView();
 }
 

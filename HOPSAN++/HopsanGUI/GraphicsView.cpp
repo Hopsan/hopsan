@@ -1,21 +1,20 @@
 //$Id$
 
 #include "common.h"
-
 #include "GraphicsView.h"
-#include "Utilities/GUIUtilities.h"
-#include "GUIPort.h"
-#include "UndoStack.h"
-#include "GUIConnector.h"
-#include "Widgets/ProjectTabWidget.h"
-#include "MainWindow.h"
-#include "Widgets/MessageWidget.h"
-#include "Widgets/LibraryWidget.h"
-#include "loadObjects.h"
-#include "GUIObjects/GUISystem.h"
-#include "Configuration.h"
 
-using namespace std;
+#include "MainWindow.h"
+#include "Configuration.h"
+#include "GUIConnector.h"
+#include "UndoStack.h"
+
+#include "Widgets/ProjectTabWidget.h"
+#include "GUIObjects/GUIContainerObject.h"
+#include "GUIObjects/GUISystem.h"
+
+//Maybe we can remove these to when some cleanup has happend in the code later on (maybe even GUIPort.h)
+#include "GUIPort.h"
+#include "Widgets/LibraryWidget.h"
 
 //! @class GraphicsView
 //! @brief The GraphicsView class is a class which display the content of a scene of components.
@@ -28,7 +27,7 @@ GraphicsView::GraphicsView(ProjectTab *parent)
         : QGraphicsView(parent)
 {
     mpParentProjectTab = parent;
-    mpSystem = mpParentProjectTab->mpSystem;
+    mpContainerObject = mpParentProjectTab->mpSystem;
 
     mCtrlKeyPressed = false;
     this->setDragMode(RubberBandDrag);
@@ -75,7 +74,7 @@ void GraphicsView::createActions()
 //! Defines the right click menu event
 void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 {
-    if(!mpSystem->getIsCreatingConnector() && !mpSystem->mJustStoppedCreatingConnector)
+    if(!mpContainerObject->getIsCreatingConnector() && !mpContainerObject->mJustStoppedCreatingConnector)
     {
         if (QGraphicsItem *item = itemAt(event->pos()))
         {
@@ -93,20 +92,20 @@ void GraphicsView::contextMenuEvent ( QContextMenuEvent * event )
 
             if(selectedAction == addTextAction)
             {
-                mpSystem->mUndoStack->newPost();
-                this->mpSystem->addTextWidget(this->mapToScene(event->pos()).toPoint());
+                mpContainerObject->mUndoStack->newPost();
+                this->mpContainerObject->addTextWidget(this->mapToScene(event->pos()).toPoint());
             }
 
             if(selectedAction == addBoxAction)
             {
-                mpSystem->mUndoStack->newPost();
-                this->mpSystem->addBoxWidget(this->mapToScene(event->pos()).toPoint());
+                mpContainerObject->mUndoStack->newPost();
+                this->mpContainerObject->addBoxWidget(this->mapToScene(event->pos()).toPoint());
             }
         }
 
 
 
-        mpSystem->mJustStoppedCreatingConnector = true;
+        mpContainerObject->mJustStoppedCreatingConnector = true;
     }
 }
 
@@ -133,19 +132,20 @@ void GraphicsView::dropEvent(QDropEvent *event)
     //if (event->mimeData()->hasFormat("application/x-text"))
     if (event->mimeData()->hasText())
     {
-        mpSystem->mUndoStack->newPost();
+        mpContainerObject->mUndoStack->newPost();
         mpParentProjectTab->hasChanged();
 
 
         QString typestring = event->mimeData()->text();
         GUIModelObjectAppearance* pAppearanceData = gpMainWindow->mpLibrary->getAppearanceData(typestring);
+        //! @todo Send in typename into add bellow instead of appearance data
 
         //Check if appearnaceData OK otherwihse do not add (usefull if you drag some crap text into the window)
         if(pAppearanceData != 0)
         {
             event->accept();
             QPoint position = event->pos();
-            mpSystem->addGUIModelObject(pAppearanceData, this->mapToScene(position).toPoint());
+            mpContainerObject->addGUIModelObject(pAppearanceData, this->mapToScene(position).toPoint());
         }
     }
 }
@@ -171,13 +171,13 @@ void GraphicsView::updateViewPort()
 //! @brief Set the system that the view is representing
 void GraphicsView::setContainerPtr(GUIContainerObject *pContainer)
 {
-    this->mpSystem = pContainer;
+    this->mpContainerObject = pContainer;
 }
 
 
 GUIContainerObject *GraphicsView::getContainerPtr()
 {
-    return this->mpSystem;
+    return this->mpContainerObject;
 }
 
 
@@ -235,98 +235,98 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     //bool shiftPressed = event->modifiers().testFlag(Qt::ShiftModifier);   //Commented because it is not used, to avoid compile warnings
     //bool altPressed = event->modifiers().testFlag(Qt::AltModifier);       //Commented because it is not used, to avoid compile warnings
 
-    if (event->key() == Qt::Key_Delete && !mpSystem->mIsRenamingObject)
+    if (event->key() == Qt::Key_Delete && !mpContainerObject->mIsRenamingObject)
     {
-        if(mpSystem->isObjectSelected() || mpSystem->isConnectorSelected())
+        if(mpContainerObject->isObjectSelected() || mpContainerObject->isConnectorSelected())
         {
-            mpSystem->mUndoStack->newPost();
+            mpContainerObject->mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit keyPressDelete();
     }
-    else if (ctrlPressed && event->key() == Qt::Key_R && !mpSystem->mIsRenamingObject)
+    else if (ctrlPressed && event->key() == Qt::Key_R && !mpContainerObject->mIsRenamingObject)
     {
-        if(mpSystem->isObjectSelected())
+        if(mpContainerObject->isObjectSelected())
         {
-            mpSystem->mUndoStack->newPost();
+            mpContainerObject->mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit keyPressCtrlR();
     }
     else if (event->key() == Qt::Key_Escape)
     {
-        if(mpSystem->getIsCreatingConnector())
+        if(mpContainerObject->getIsCreatingConnector())
         {
-            delete(mpSystem->mpTempConnector);
-            mpSystem->setIsCreatingConnector(false);
+            delete(mpContainerObject->mpTempConnector);
+            mpContainerObject->setIsCreatingConnector(false);
         }
     }
-    else if(ctrlPressed && event->key() == Qt::Key_D && !mpSystem->mIsRenamingObject)
+    else if(ctrlPressed && event->key() == Qt::Key_D && !mpContainerObject->mIsRenamingObject)
     {
-        if(mpSystem->isObjectSelected())
+        if(mpContainerObject->isObjectSelected())
         {
-            mpSystem->mUndoStack->newPost();
+            mpContainerObject->mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit keyPressShiftK();
     }
-    else if(ctrlPressed && event->key() == Qt::Key_F && !mpSystem->mIsRenamingObject)
+    else if(ctrlPressed && event->key() == Qt::Key_F && !mpContainerObject->mIsRenamingObject)
     {
-        if(mpSystem->isObjectSelected())
+        if(mpContainerObject->isObjectSelected())
         {
-            mpSystem->mUndoStack->newPost();
+            mpContainerObject->mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit keyPressShiftL();
     }
     else if(ctrlPressed && event->key() == Qt::Key_Up)
     {
-        if(mpSystem->isObjectSelected())
+        if(mpContainerObject->isObjectSelected())
         {
-            mpSystem->mUndoStack->newPost();
+            mpContainerObject->mUndoStack->newPost();
         }
         emit keyPressCtrlUp();
         doNotForwardEvent = true;
     }
     else if(ctrlPressed && event->key() == Qt::Key_Down)
     {
-        if(mpSystem->isObjectSelected())
+        if(mpContainerObject->isObjectSelected())
         {
-            mpSystem->mUndoStack->newPost();
+            mpContainerObject->mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit keyPressCtrlDown();
         doNotForwardEvent = true;
     }
-    else if(ctrlPressed && event->key() == Qt::Key_Left && !mpSystem->mIsRenamingObject)
+    else if(ctrlPressed && event->key() == Qt::Key_Left && !mpContainerObject->mIsRenamingObject)
     {
-        if(mpSystem->isObjectSelected())
+        if(mpContainerObject->isObjectSelected())
         {
-            mpSystem->mUndoStack->newPost();
+            mpContainerObject->mUndoStack->newPost();
         }
         emit keyPressCtrlLeft();
         doNotForwardEvent = true;
     }
-    else if(ctrlPressed && event->key() == Qt::Key_Right && !mpSystem->mIsRenamingObject)
+    else if(ctrlPressed && event->key() == Qt::Key_Right && !mpContainerObject->mIsRenamingObject)
     {
-        if(mpSystem->isObjectSelected())
+        if(mpContainerObject->isObjectSelected())
         {
-            mpSystem->mUndoStack->newPost();
+            mpContainerObject->mUndoStack->newPost();
             mpParentProjectTab->hasChanged();
         }
         emit keyPressCtrlRight();
         doNotForwardEvent = true;
     }
-    else if (ctrlPressed && event->key() == Qt::Key_A && !mpSystem->mIsRenamingObject)
+    else if (ctrlPressed && event->key() == Qt::Key_A && !mpContainerObject->mIsRenamingObject)
     {
-        mpSystem->selectAll();
+        mpContainerObject->selectAll();
     }
     else if (ctrlPressed)
     {
-        if (mpSystem->getIsCreatingConnector() && !mpSystem->mpTempConnector->isMakingDiagonal())
+        if (mpContainerObject->getIsCreatingConnector() && !mpContainerObject->mpTempConnector->isMakingDiagonal())
         {
-            mpSystem->mpTempConnector->makeDiagonal(true);
-            mpSystem->mpTempConnector->drawConnector();
+            mpContainerObject->mpTempConnector->makeDiagonal(true);
+            mpContainerObject->mpTempConnector->drawConnector();
             this->updateViewPort();
         }
         else
@@ -348,10 +348,10 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
 void GraphicsView::keyReleaseEvent(QKeyEvent *event)
 {
         // Releasing ctrl key while creating a connector means return from diagonal mode to orthogonal mode.
-    if(event->key() == Qt::Key_Control && mpSystem->getIsCreatingConnector())
+    if(event->key() == Qt::Key_Control && mpContainerObject->getIsCreatingConnector())
     {
-        mpSystem->mpTempConnector->makeDiagonal(false);
-        mpSystem->mpTempConnector->drawConnector();
+        mpContainerObject->mpTempConnector->makeDiagonal(false);
+        mpContainerObject->mpTempConnector->drawConnector();
         this->updateViewPort();
     }
 
@@ -371,10 +371,10 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     //this->updateViewPort();     //Refresh the viewport
         //If creating connector, the end port shall be updated to the mouse position.
-    if (mpSystem->getIsCreatingConnector())
+    if (mpContainerObject->getIsCreatingConnector())
     {
-        mpSystem->mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
-        mpSystem->mpTempConnector->drawConnector();
+        mpContainerObject->mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
+        mpContainerObject->mpTempConnector->drawConnector();
     }
     QGraphicsView::mouseMoveEvent(event);
 }
@@ -384,10 +384,10 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 //! @param event contains information of the mouse click operation.
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
-    mpSystem->mJustStoppedCreatingConnector = false;
+    mpContainerObject->mJustStoppedCreatingConnector = false;
 
         //No rubber band during connecting:
-    if (mpSystem->getIsCreatingConnector())
+    if (mpContainerObject->getIsCreatingConnector())
     {
         this->setDragMode(NoDrag);
     }
@@ -400,29 +400,30 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
         this->setDragMode(RubberBandDrag);
     }
 
-    if (event->button() == Qt::RightButton && mpSystem->getIsCreatingConnector())
+    //! @todo what does this stuff do, it forces us to manually manipulate ports in a way that is not clear, the purpose is also unclear
+    if (event->button() == Qt::RightButton && mpContainerObject->getIsCreatingConnector())
     {
-        if((mpSystem->mpTempConnector->getNumberOfLines() == 1 && mpSystem->mpTempConnector->isMakingDiagonal()) ||  (mpSystem->mpTempConnector->getNumberOfLines() == 2 && !mpSystem->mpTempConnector->isMakingDiagonal()))
+        if((mpContainerObject->mpTempConnector->getNumberOfLines() == 1 && mpContainerObject->mpTempConnector->isMakingDiagonal()) ||  (mpContainerObject->mpTempConnector->getNumberOfLines() == 2 && !mpContainerObject->mpTempConnector->isMakingDiagonal()))
         {
-            mpSystem->mpTempConnector->getStartPort()->setIsConnected(false);
-            mpSystem->mpTempConnector->getStartPort()->show();
-            mpSystem->mpTempConnector->getStartPort()->getGuiModelObject()->forgetConnector(mpSystem->mpTempConnector);
-            mpSystem->setIsCreatingConnector(false);
-            mpSystem->mJustStoppedCreatingConnector = true;
+            mpContainerObject->mpTempConnector->getStartPort()->setIsConnected(false);
+            mpContainerObject->mpTempConnector->getStartPort()->show();
+            mpContainerObject->mpTempConnector->getStartPort()->getGuiModelObject()->forgetConnector(mpContainerObject->mpTempConnector);
+            mpContainerObject->setIsCreatingConnector(false);
+            mpContainerObject->mJustStoppedCreatingConnector = true;
         }
-        mpSystem->mpTempConnector->removePoint(true);
-        if(mpSystem->getIsCreatingConnector())
+        mpContainerObject->mpTempConnector->removePoint(true);
+        if(mpContainerObject->getIsCreatingConnector())
         {
-            mpSystem->mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
-            mpSystem->mpTempConnector->drawConnector();
+            mpContainerObject->mpTempConnector->updateEndPoint(this->mapToScene(event->pos()));
+            mpContainerObject->mpTempConnector->drawConnector();
             this->updateViewPort();
         }
         //qDebug() << "mIsCreatingConnector = " << mIsCreatingConnector;
     }
-    else if  ((event->button() == Qt::LeftButton) && (mpSystem->getIsCreatingConnector()))
+    else if  ((event->button() == Qt::LeftButton) && (mpContainerObject->getIsCreatingConnector()))
     {
         qDebug() << "Adding connector point: " << event->pos();
-        mpSystem->mpTempConnector->addPoint(this->mapToScene(event->pos()));
+        mpContainerObject->mpTempConnector->addPoint(this->mapToScene(event->pos()));
     }
     QGraphicsView::mousePressEvent(event);
 }
