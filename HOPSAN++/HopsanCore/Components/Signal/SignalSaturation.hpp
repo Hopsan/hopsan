@@ -24,6 +24,7 @@ namespace hopsan {
     private:
         double mUpperLimit;
         double mLowerLimit;
+        double *input, *output;
         Port *mpIn, *mpOut;
 
     public:
@@ -39,7 +40,7 @@ namespace hopsan {
             mLowerLimit = -1.0;
 
             mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("UpperLimit", "Upper Limit", "-", mUpperLimit);
             registerParameter("LowerLimit", "Lower Limit", "-", mLowerLimit);
@@ -48,32 +49,36 @@ namespace hopsan {
 
         void initialize()
         {
+            input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+
+            if(mpOut->isConnected())
+            {
+                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                output = new double();
+            }
+
             simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes
-            double input = mpIn->readNode(NodeSignal::VALUE);
-
-            //Gain equations
-            double output;
-            if (input > mUpperLimit)
+               //Gain equations
+            if ( (*input) > mUpperLimit )
             {
-                output = mUpperLimit;
+                (*output) = mUpperLimit;
             }
-            else if (input < mLowerLimit)
+            else if ( (*input) < mLowerLimit )
             {
-                output = mLowerLimit;
+                (*output) = mLowerLimit;
             }
             else
             {
-                output = input;
+                (*output) = (*input);
             }
-
-            //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, output);
         }
     };
 }

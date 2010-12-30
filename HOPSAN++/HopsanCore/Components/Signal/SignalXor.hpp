@@ -23,6 +23,8 @@ namespace hopsan {
     {
 
     private:
+        double *input1, *input2, *output;
+        bool inputBool1, inputBool2;
         Port *mpIn1, *mpIn2, *mpOut;
 
     public:
@@ -37,28 +39,34 @@ namespace hopsan {
 
             mpIn1 = addReadPort("in1", "NodeSignal");
             mpIn2 = addReadPort("in2", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
         }
 
 
         void initialize()
         {
+            input1 = mpIn1->getNodeDataPtr(NodeSignal::VALUE);
+            input2 = mpIn2->getNodeDataPtr(NodeSignal::VALUE);
+
+            if(mpOut->isConnected())
+            {
+                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                output = new double();
+            }
+
             simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
-
-            //Get variable values from nodes
-            double signal1 = mpIn1->readNode(NodeSignal::VALUE);
-            double signal2 = mpIn2->readNode(NodeSignal::VALUE);
-
-            //And operator equation
-            double output = boolToDouble( (doubleToBool(signal1) || doubleToBool(signal2)) && !(doubleToBool(signal1) && doubleToBool(signal2)) );
-
-            //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, output);
+            //Xor operator equation
+            inputBool1 = doubleToBool(*input1);
+            inputBool2 = doubleToBool(*input2);
+            (*output) = boolToDouble( (inputBool1 || inputBool2) && !(inputBool1 && inputBool2) );
         }
     };
 }

@@ -23,6 +23,7 @@ namespace hopsan {
 
     private:
         double mValue;
+        double *output;
         Port *mpOut;
 
     public:
@@ -36,7 +37,7 @@ namespace hopsan {
             mTypeName = "SignalSource";
             mValue = 1.0;
 
-            mpOut = addWritePort("out", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("Value", "Source Value", "-", mValue);
         }
@@ -44,58 +45,23 @@ namespace hopsan {
 
         void initialize()
         {
+            if(mpOut->isConnected())
+            {
+                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                output = new double();
+            }
+
             //Initialize value to the node
-            mpOut->writeNode(NodeSignal::VALUE, mValue);
+           (*output) = mValue;
         }
 
 
         void simulateOneTimestep()
         {
-            //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, mValue);
-        }
-    };
-
-
-
-
-
-    class SignalOptimizedSource : public ComponentSignal
-    {
-
-    private:
-        double mValue;
-        Port *mpOut;
-        double *out;
-
-    public:
-        static Component *Creator()
-        {
-            return new SignalOptimizedSource("OptimizedSource");
-        }
-
-        SignalOptimizedSource(const std::string name) : ComponentSignal(name)
-        {
-            mTypeName = "SignalOptimizedSource";
-            mValue = 1.0;
-
-            mpOut = addWritePort("out", "NodeSignal");
-
-            registerParameter("Value", "Source Value", "-", mValue);
-        }
-
-
-        void initialize()
-        {
-            //Initialize value to the node
-            out = mpOut->getNodeDataPtr(NodeSignal::VALUE);
-            *out = mValue;
-        }
-
-
-        void simulateOneTimestep()
-        {
-            //Nothing changes because it's a constant
+            //Nothing to do (only one write port can exist in the node, so no one else shall write to the value)
         }
     };
 }

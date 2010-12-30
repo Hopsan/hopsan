@@ -32,6 +32,8 @@ namespace hopsan {
         double mdeltah;
         SecondOrderFilter myFilter;
         TurbulentFlowFunction mQturbpa;
+        double xv, xpanom, Kcpa, qpa;
+        double *cp, *Zcp, *ca, *Zca, *xvin, *pp, *qp, *pa, *qa;
         Port *mpPP, *mpPA, *mpIn;
 
     public:
@@ -67,6 +69,18 @@ namespace hopsan {
 
         void initialize()
         {
+            pp = mpPP->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            qp = mpPP->getNodeDataPtr(NodeHydraulic::FLOW);
+            cp = mpPP->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            Zcp = mpPP->getNodeDataPtr(NodeHydraulic::CHARIMP);
+
+            pa = mpPA->getNodeDataPtr(NodeHydraulic::PRESSURE);
+            qa = mpPA->getNodeDataPtr(NodeHydraulic::FLOW);
+            ca = mpPA->getNodeDataPtr(NodeHydraulic::WAVEVARIABLE);
+            Zca = mpPA->getNodeDataPtr(NodeHydraulic::CHARIMP);
+
+            xvin = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+
             //Initiate second order low pass filter
             double num[3] = {0.0, 0.0, 1.0};
             double den[3] = {1.0/(momegah*momegah), 2.0*mdeltah/momegah, 1.0};
@@ -76,46 +90,31 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes
-            double cp  = mpPP->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zcp = mpPP->readNode(NodeHydraulic::CHARIMP);
-            double ca  = mpPA->readNode(NodeHydraulic::WAVEVARIABLE);
-            double Zca = mpPA->readNode(NodeHydraulic::CHARIMP);
-            double xvin  = mpIn->readNode(NodeSignal::VALUE);
-
             //Dynamics of spool position (second order low pass filter)
-            myFilter.update(xvin);
-            double xv = myFilter.value();
+            myFilter.update(*xvin);
+            xv = myFilter.value();
 
             //Determine flow coefficient
-            //double xpanom = std::max((mxvmax+xv)/2-mOverlap, 0.0);
-            double xpanom = xv;
-            double Kcpa = mCq*mf*pi*md*xpanom*sqrt(2.0/890.0);
+            xpanom = xv;
+            Kcpa = mCq*mf*pi*md*xpanom*sqrt(2.0/890.0);
 
             //Calculate flow
             mQturbpa.setFlowCoefficient(Kcpa);
-            double qpa = mQturbpa.getFlow(cp, ca, Zcp, Zca);
-            double qp, qa;
+            qpa = mQturbpa.getFlow(*cp, *ca, *Zcp, *Zca);
             if (xv >= 0.0)
             {
-                qp = -qpa;
-                qa = qpa;
+                (*qp) = -qpa;
+                (*qa) = qpa;
             }
             else
             {
-                qp = 0;
-                qa = 0;
+                (*qp) = 0;
+                (*qa) = 0;
             }
 
             //Calculate pressures from flow and impedance
-            double pp = cp + qp*Zcp;
-            double pa = ca + qa*Zca;
-
-            //Write new values to nodes
-            mpPP->writeNode(NodeHydraulic::PRESSURE, pp);
-            mpPP->writeNode(NodeHydraulic::FLOW, qp);
-            mpPA->writeNode(NodeHydraulic::PRESSURE, pa);
-            mpPA->writeNode(NodeHydraulic::FLOW, qa);
+            (*pp) = (*cp) + (*qp) * (*Zcp);
+            (*pa) = (*ca) + (*qa) * (*Zca);
         }
     };
 }

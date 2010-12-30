@@ -107,11 +107,7 @@ DLLIMPORTEXPORT void hopsan::register_components(ComponentFactory* cfact_ptr)
     cfact_ptr->registerCreatorFunction("SignalDelay", SignalDelay::Creator);
     cfact_ptr->registerCreatorFunction("SignalShuttleValve", SignalShuttleValve::Creator);
 
-    cfact_ptr->registerCreatorFunction("SignalOptimizedSineWave", SignalOptimizedSineWave::Creator);
-    cfact_ptr->registerCreatorFunction("SignalOptimizedSubtract", SignalOptimizedSubtract::Creator);
-    cfact_ptr->registerCreatorFunction("SignalOptimizedSource", SignalOptimizedSource::Creator);
     cfact_ptr->registerCreatorFunction("SignalDummy", SignalDummy::Creator);
-
 
 
     //Mechanical components

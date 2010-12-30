@@ -62,14 +62,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Greater than equations
-            if( (*input) > mLimit )
-            {
-                (*output) = 1.0;
-            }
-            else
-            {
-                (*output) =  0.0;
-            }
+            (*output) = boolToDouble( (*input) > mLimit );
         }
     };
 }

@@ -41,6 +41,7 @@ namespace hopsan {
         double mFrequency;
         double mAmplitude;
         double mOffset;
+        double *output;
         Port *mpOut;
 
     public:
@@ -57,7 +58,7 @@ namespace hopsan {
             mAmplitude = 1.0;
             mOffset = 0.0;
 
-            mpOut = addWritePort("out", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("StartTime", "Start Time", "s", mStartTime);
             registerParameter("Frequency", "Frequencty", "Hz", mFrequency);
@@ -68,74 +69,15 @@ namespace hopsan {
 
         void initialize()
         {
-            simulateOneTimestep();
-        }
-
-
-        void simulateOneTimestep()
-        {
-
-            //Sinewave Equations
-            double output;
-            if (mTime < mStartTime)
+            if(mpOut->isConnected())
             {
-                output = 0.0;     //Before start
+                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
             }
             else
             {
-                output = mAmplitude*sin((mTime-mStartTime)*mFrequency*2*3.14159265 - mOffset);
+                output = new double();
             }
 
-            //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, output);
-        }
-    };
-
-
-
-    //!
-    //! @brief
-    //! @ingroup SignalComponents
-    //!
-    class SignalOptimizedSineWave : public ComponentSignal
-    {
-
-    private:
-        double mStartTime;
-        double mFrequency;
-        double mAmplitude;
-        double mOffset;
-        Port *mpOut;
-        std::vector<double> mOutput;
-        double *out;
-
-    public:
-        static Component *Creator()
-        {
-            return new SignalOptimizedSineWave("SineWave");
-        }
-
-        SignalOptimizedSineWave(const std::string name) : ComponentSignal(name)
-        {
-            mTypeName = "SignalOptimizedSineWave";
-            mStartTime = 0.0;
-            mFrequency = 1.0;
-            mAmplitude = 1.0;
-            mOffset = 0.0;
-
-            mpOut = addWritePort("out", "NodeSignal");
-
-            registerParameter("StartTime", "Start Time", "s", mStartTime);
-            registerParameter("Frequency", "Frequencty", "Hz", mFrequency);
-            registerParameter("Amplitude", "Amplitude", "-", mAmplitude);
-            registerParameter("Offset", "Offset", "s", mOffset);
-        }
-
-
-        void initialize()
-        {
-            out = mpOut->getNodeDataPtr(NodeSignal::VALUE);
-            *out = 0;
             simulateOneTimestep();
         }
 
@@ -145,11 +87,11 @@ namespace hopsan {
             //Sinewave Equations
             if (mTime < mStartTime)
             {
-                *out = 0.0;     //Before start
+                (*output) = 0.0;     //Before start
             }
             else
             {
-                *out = mAmplitude*sin((mTime-mStartTime)*mFrequency*2*3.14159265 - mOffset);
+                (*output) = mAmplitude*sin((mTime-mStartTime)*mFrequency*2*3.14159265 - mOffset);
             }
         }
     };

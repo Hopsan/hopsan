@@ -23,6 +23,7 @@ namespace hopsan {
     {
 
     private:
+        double *input;
         Port *mpIn;
 
     public:
@@ -35,29 +36,29 @@ namespace hopsan {
         {
             mTypeName = "SignalStopSimulation";
 
-            mpIn = addReadPort("in", "NodeSignal");
+            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
         }
 
 
         void initialize()
         {
+            if(mpIn->isConnected())
+            {
+                input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                input = new double(boolToDouble(false));
+            }
         }
 
 
         void simulateOneTimestep()
         {
-            if (mpIn->isConnected())
+            if(doubleToBool(*input))
             {
-                if(doubleToBool(mpIn->readNode(NodeSignal::VALUE)))
-                {
-                    this->stopSimulation();
-                }
+                this->stopSimulation();
             }
-        }
-
-
-        void finalize()
-        {
         }
     };
 }

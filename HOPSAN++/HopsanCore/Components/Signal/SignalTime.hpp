@@ -22,6 +22,7 @@ namespace hopsan {
     {
 
     private:
+        double *output;
         Port *mpOut;
 
     public:
@@ -34,20 +35,29 @@ namespace hopsan {
         {
             mTypeName = "SignalTime";
 
-            mpOut = addWritePort("out", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
         }
 
 
         void initialize()
         {
-            mpOut->writeNode(NodeSignal::VALUE, 0.0);
+            if(mpOut->isConnected())
+            {
+                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                output = new double();
+            }
+
+            simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
-            mpOut->writeNode(NodeSignal::VALUE, mTime);
+            (*output) = mTime;
         }
     };
 }

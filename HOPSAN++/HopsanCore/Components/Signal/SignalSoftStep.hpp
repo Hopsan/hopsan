@@ -44,6 +44,7 @@ namespace hopsan {
         double mAmplitude;
         double mFrequency;
         double mOffset;
+        double *output;
         Port *mpOut;
 
     public:
@@ -61,7 +62,7 @@ namespace hopsan {
             mAmplitude = 1.0;
             mFrequency = pi/(mStopTime-mStartTime);       //omega = 2pi/T, T = (stoptime-starttime)*4
 
-            mpOut = addWritePort("out", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("StartTime", "Start Time", "s", mStartTime);
             registerParameter("StopTime", "Stop Time", "s", mStopTime);
@@ -72,30 +73,34 @@ namespace hopsan {
 
         void initialize()
         {
-
+            if(mpOut->isConnected())
+            {
+                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                output = new double();
+            }
         }
 
 
         void simulateOneTimestep()
         {
             //Sinewave Equations
-            double output;
+
             mFrequency = pi/(mStopTime-mStartTime);
             if (mTime < mStartTime)
             {
-                output = mBaseValue;     //Before start
+                (*output) = mBaseValue;     //Before start
             }
             else if (mTime > mStartTime && mTime < mStopTime)
             {
-                output = mBaseValue + 0.5*mAmplitude*sin((mTime-mStartTime)*mFrequency - 3.141592653589/2) + mAmplitude*0.5;
+                (*output) = mBaseValue + 0.5*mAmplitude*sin((mTime-mStartTime)*mFrequency - 3.141592653589/2) + mAmplitude*0.5;
             }
             else
             {
-                output = mBaseValue + mAmplitude;
+                (*output) = mBaseValue + mAmplitude;
             }
-
-            //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, output);
         }
     };
 }

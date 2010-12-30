@@ -40,6 +40,7 @@ namespace hopsan {
         double mAmplitude;
         double mStartTime;
         double mStopTime;
+        double *output;
         Port *mpOut;
 
     public:
@@ -56,7 +57,7 @@ namespace hopsan {
             mStartTime = 1.0;
             mStopTime = 2.0;
 
-            mpOut = addWritePort("out", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("BaseValue", "Base Value", "-", mBaseValue);
             registerParameter("Amplitude", "Amplitude", "-", mAmplitude);
@@ -67,31 +68,35 @@ namespace hopsan {
 
         void initialize()
         {
+            if(mpOut->isConnected())
+            {
+                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                output = new double();
+            }
+
             simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
-            //Step Equations
-            double output;
 
+                //Step Equations
             if (mTime < mStartTime)
             {
-                output = mBaseValue;     //Before ramp
+                (*output) = mBaseValue;     //Before ramp
             }
             else if (mTime >= mStartTime && mTime < mStopTime)
             {
-                output = ((mTime - mStartTime) / (mStopTime - mStartTime)) * mAmplitude + mBaseValue ;     //During ramp
+                (*output) = ((mTime - mStartTime) / (mStopTime - mStartTime)) * mAmplitude + mBaseValue ;     //During ramp
             }
             else
             {
-                output = mBaseValue + mAmplitude;     //After ramp
+                (*output) = mBaseValue + mAmplitude;     //After ramp
             }
-
-            //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, output);
-
         }
     };
 }

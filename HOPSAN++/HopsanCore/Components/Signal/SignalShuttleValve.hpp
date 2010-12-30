@@ -23,6 +23,7 @@ namespace hopsan {
 
     private:
         double mIn1, mIn2;
+        double *input1, *input2, *output;
         Port *mpIn1, *mpIn2, *mpOut;
 
     public:
@@ -37,28 +38,38 @@ namespace hopsan {
 
             mpIn1 = addReadPort("in1", "NodeSignal");
             mpIn2 = addReadPort("in2", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal");
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
         }
 
 
         void initialize()
         {
+            input1 = mpIn1->getNodeDataPtr(NodeSignal::VALUE);
+            input2 = mpIn2->getNodeDataPtr(NodeSignal::VALUE);
+
+            if(mpOut->isConnected())
+            {
+                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                output = new double();
+            }
+
             simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
-            mIn1 = mpIn1->readNode(NodeSignal::VALUE);
-            mIn2 = mpIn1->readNode(NodeSignal::VALUE);
 
-            if(mIn1 > mIn2)
+            if((*input1) > (*input2))
             {
-                mpOut->writeNode(NodeSignal::VALUE, mIn1);
+                (*output) = (*input1);
             }
             else
             {
-                mpOut->writeNode(NodeSignal::VALUE, mIn2);
+                (*output) = (*input2);
             }
         }
     };

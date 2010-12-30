@@ -34,7 +34,7 @@ namespace hopsan {
         {
             mTypeName = "SignalSink";
 
-            mpIn = addReadPort("in", "NodeSignal");
+            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
         }
 
 

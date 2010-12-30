@@ -22,6 +22,7 @@ namespace hopsan {
     {
 
     private:
+        double *input1, *input2, *output;
         Port *mpIn1, *mpIn2, *mpOut;
 
     public:
@@ -42,44 +43,47 @@ namespace hopsan {
 
         void initialize()
         {
+
+            //If only one input port is conncted, the other shall be 1 (= multiply by 1).
+            //If no input ports are connected, output shall be 0, so both inputs are set to 0.
+            if(mpIn1->isConnected() && mpIn2->isConnected())
+            {
+                input1 = mpIn1->getNodeDataPtr(NodeSignal::VALUE);
+                input2 = mpIn2->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else if(mpIn1->isConnected() && !mpIn2->isConnected())
+            {
+                input1 = mpIn1->getNodeDataPtr(NodeSignal::VALUE);
+                input2 = new double(1);
+            }
+            else if(!mpIn1->isConnected() && mpIn2->isConnected())
+            {
+                input1 = new double(1);
+                input2 = mpIn2->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                input1 = new double(0);
+                input2 = new double(0);
+            }
+
+            if(mpOut->isConnected())
+            {
+                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                output = new double();
+            }
+
             simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
-
-            //Get variable values from nodes
-            double signal1, signal2;
-
-            if (mpIn1->isConnected() && mpIn2->isConnected())       //Both ports connected
-            {
-                signal1 = mpIn1->readNode(NodeSignal::VALUE);
-                signal2 = mpIn2->readNode(NodeSignal::VALUE);
-            }
-            else if (mpIn1->isConnected() && !mpIn2->isConnected())       //Port 1 connected, port 2 disconnected
-            {
-                signal1 = mpIn1->readNode(NodeSignal::VALUE);
-                signal2 = 1;
-            }
-            else if (!mpIn1->isConnected() && mpIn2->isConnected())       //Port 2 connected, port 1 disconnected
-            {
-                signal1 = 1;
-                signal2 = mpIn2->readNode(NodeSignal::VALUE);
-            }
-            else
-            {
-                signal1 = 0;                                                     //Nothing connected
-                signal2 = 0;
-            }
-
-
-            //Gain equations
-            double output = signal1 * signal2;
-
-            //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, output);
-
+                //Multiplication equation
+            (*output) = (*input1) * (*input2);
         }
     };
 }

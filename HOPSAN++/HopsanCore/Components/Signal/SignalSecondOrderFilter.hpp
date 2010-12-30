@@ -27,12 +27,12 @@ namespace hopsan {
         double mWnum, mDnum, mWden, mDden, mK;
         double mStartY;
         double mMin, mMax;
+        double *input, *output;
         Port *mpIn, *mpOut;
 
     public:
         static Component *Creator()
         {
-            //cout << "running Second Order Filter creator" << std::endl;
             return new SignalSecondOrderFilter("Filter");
         }
 
@@ -50,8 +50,8 @@ namespace hopsan {
             mWden = 1000;
             mDden = 1.0;
 
-            mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal");
+            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("k", "Gain", "-", mK);
             registerParameter("wnum", "Numerator break frequency", "rad/s", mWnum);
@@ -65,7 +65,23 @@ namespace hopsan {
 
         void initialize()
         {
-            //double u0 = mpIn->readNode(NodeSignal::VALUE);
+            if(mpIn->isConnected())
+            {
+                input = mpIn->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                input = new double(0);
+            }
+
+            if(mpOut->isConnected())
+            {
+                output = mpOut->getNodeDataPtr(NodeSignal::VALUE);
+            }
+            else
+            {
+                output = new double();
+            }
 
             double num[3];
             double den[3];
@@ -80,17 +96,13 @@ namespace hopsan {
             mFilter.initialize(mTimestep, num, den, mStartY, mStartY, mMin, mMax);
 
             //Writes out the value for time "zero"
-            mpOut->writeNode(NodeSignal::VALUE, mStartY);
+            (*output) = mStartY;
         }
 
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes
-            double u = mpIn->readNode(NodeSignal::VALUE);
-
-            //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, mFilter.update(u));
+            (*output) = mFilter.update(*input);
         }
     };
 }
